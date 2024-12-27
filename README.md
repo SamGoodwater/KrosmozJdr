@@ -37,8 +37,9 @@
 
 <h2>Contacts</h2>
 <p>Une version en ligne :  <a href="https://krosmoz-jdr.fr/" target="\_blank">https://krosmoz-jdr.fr/</a> (En cours de création)</p>
-<p>Pour contribuer : <a href="https://krosmoz-jdr.fr/#contribuer" target="\_blank">#contribuer</a> (En cours de création)</p>
+<p>Pour contribuer : <a href="https://project.krosmoz-jdr.fr/#contribuer" target="\_blank">#contribuer (Nextcloud)</a> (En cours de création)</p>
 <p>Le discord du projet : <a href="https://discord.gg/XVu4VWFskj" target="\_blank">#XVu4VWFskj</a></p>
+<p>Le Github du projet : <a href="https://github.com/SamGoodwater/KrosmozJdr" target="\_blank">SamGoodwater/KrosmozJdr</a></p>
 
 <h2>Le code du projet</h2>
 <p>Le projet se base sur un backend Laravel et un frontend VueJS avec Invertia pour faire l'interface entre les deux.</p>
