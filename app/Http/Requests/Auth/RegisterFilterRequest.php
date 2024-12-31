@@ -3,6 +3,8 @@
 namespace App\Http\Requests\Auth;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Str;
+use Illuminate\Validation\Rule;
 
 class RegisterFilterRequest extends FormRequest
 {
@@ -22,7 +24,16 @@ class RegisterFilterRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'name' => ['required', 'string', 'max:255'],
+            'email' => ['required', 'email', 'max:255', Rule::unique("users", "email")->ignore($this->route()->parameter('user'))],
+            'password' => ['required', 'confirmed', 'min:6'],
         ];
+    }
+
+    public function prepareForValidation(): void
+    {
+        $this->merge([
+            'email' => Str::lower($this->string('email'))
+        ]);
     }
 }

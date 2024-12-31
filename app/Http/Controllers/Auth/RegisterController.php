@@ -14,26 +14,24 @@ class RegisterController extends Controller
 {
     use AuthorizesRequests;
 
-    public function inscription(): \Inertia\Response
+    public function show(): \Inertia\Response
     {
         return inertia('Auth/Register');
     }
 
-    public function register(RegisterFilterRequest $request): RedirectResponse
+    public function add(RegisterFilterRequest $request): RedirectResponse
     {
-        $request->validate([
-            'name' => 'required',
-            'email' => 'required|email',
-            'password' => 'required|confirmed',
-        ]);
+        $request->validate();
 
-        User::create([
+        $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
+            'role' => User::ROLES['user'],
+            'uniqid' => uniqid()
         ]);
 
-        Auth::attempt($request->only('email', 'password'));
+        Auth::login($user);
 
         return redirect()->route('home');
     }

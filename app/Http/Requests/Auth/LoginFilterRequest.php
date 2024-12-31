@@ -29,7 +29,16 @@ class LoginFilterRequest extends FormRequest
         return [
             'email' => ['required', 'string', 'email'],
             'password' => ['required', 'string'],
+            'remember' => ['boolean'],
         ];
+    }
+
+    public function prepareForValidation(): void
+    {
+        $this->merge([
+            'email' => Str::lower($this->string('email')),
+            'remember' => $this->boolean('remember') ?? false,
+        ]);
     }
 
     /**

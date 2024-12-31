@@ -38,15 +38,15 @@ Route::get('/', function () {
 })->name('home');
 
 // Auth
-Route::prefix('login')->name("login.")->controller(LoginController::class)->middleware('guest')->group(function () {
-    Route::get('/', 'connexion')->name('connexion');
-    Route::post('/login', 'login')->name('login');
+Route::prefix('connexion')->name("login.")->controller(LoginController::class)->middleware('guest')->group(function () {
+    Route::get('/', 'show')->name('show');
+    Route::post('/connect', 'connect')->name('connect');
     Route::post('/logout', 'logout')->name('logout');
 });
 
-Route::prefix('register')->name("register.")->controller(RegisterController::class)->group(function () {
-    Route::get('/', 'inscription')->name('inscription');
-    Route::post('/register', 'register')->name('register');
+Route::prefix('inscription')->name("register.")->controller(RegisterController::class)->group(function () {
+    Route::get('/', 'show')->name('show');
+    Route::post('/add', 'add')->name('add');
 });
 
 Route::prefix('auth')->name("auth.")->controller(AuthController::class)->group(function () use ($uniqidRegex) {

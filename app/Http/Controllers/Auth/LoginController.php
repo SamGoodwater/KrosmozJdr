@@ -12,32 +12,30 @@ class LoginController extends Controller
 {
     use AuthorizesRequests;
 
-    public function connexion(): \Inertia\Response
+    public function show(): \Inertia\Response
     {
         return inertia('Auth/Login');
     }
 
-    public function login(LoginFilterRequest $request): RedirectResponse
+    public function connect(LoginFilterRequest $request): RedirectResponse
     {
-        $request->validate([
-            'email' => 'required|email',
-            'password' => 'required',
-        ]);
+        $credential = $request->validate();
 
-        if (Auth::attempt($request->only('email', 'password'))) {
-            return redirect()->route('home');
+        if (Auth::attempt($credential)) {
+            $request->session()->regenerate();
+            return redirect()->intended(route('home'));
         }
 
         return back()->withErrors([
             'email' => 'Les informations d\'identification fournies ne correspondent pas à nos enregistrements.',
-        ]);
+        ])->onlyInput('email');
     }
 
     public function logout(): RedirectResponse
     {
         Auth::logout();
 
-        return redirect()->route('login');
+        return redirect()->route('login.show');
     }
 
 }
