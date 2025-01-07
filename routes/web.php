@@ -23,10 +23,7 @@ use App\Http\Controllers\Modules\RessourcetypeController;
 
 use App\Http\Controllers\SectionController;
 use App\Http\Controllers\UserController;
-use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\PageController;
-use App\Http\Controllers\Auth\RegisterController;
-use App\Http\Controllers\Auth\AuthController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -38,27 +35,7 @@ Route::get('/', function () {
 })->name('home');
 
 // Auth
-Route::prefix('connexion')->name("login.")->controller(LoginController::class)->middleware('guest')->group(function () {
-    Route::get('/', 'show')->name('show');
-    Route::post('/connect', 'connect')->name('connect');
-    Route::post('/logout', 'logout')->name('logout');
-});
-
-Route::prefix('inscription')->name("register.")->controller(RegisterController::class)->group(function () {
-    Route::get('/', 'show')->name('show');
-    Route::post('/add', 'add')->name('add');
-});
-
-Route::prefix('auth')->name("auth.")->controller(AuthController::class)->group(function () use ($uniqidRegex) {
-    Route::get('/confirm_password[user:uniqid]', 'confirm_password_show')->name('confirm_password_show')->where('user', $uniqidRegex);
-    Route::post('/confirm_password_request', 'confirm_password_request')->name('confirm_password_request');
-    Route::get('/forget_password[user:uniqid]', 'forget_password_show')->name('forget_password_show')->where('user', $uniqidRegex);
-    Route::post('/forget_password_request', 'forget_password_request')->name('forget_password_request');
-    Route::get('/reset_password[user:uniqid]', 'reset_password_show')->name('reset_password_show')->where('user', $uniqidRegex);
-    Route::post('/reset_password_request', 'reset_password_request')->name('reset_password_request');
-    Route::get('/verify_email[user:uniqid]', 'verify_email_show')->name('verify_email_show')->where('user', $uniqidRegex);
-    Route::post('/verify_email_request', 'verify_email_request')->name('verify_email_request');
-});
+require_once __DIR__ . '/auth.php';
 
 // Users
 Route::prefix('user')->name("user.")->controller(UserController::class)->middleware(['auth', 'verified'])->group(function () use ($uniqidRegex) {
@@ -99,268 +76,69 @@ Route::prefix("section")->name("section.")->controller(SectionController::class)
     Route::delete('/{section:uniqid}', 'forcedDelete')->name('forcedDelete')->middleware(['auth', 'verified'])->where('section', $uniqidRegex);
 });
 
+
 // Campaigns
-Route::prefix('campaign')->name("campaign.")->controller(CampaignController::class)->group(function () use ($uniqidRegex, $slugRegex) {
-    Route::inertia('/', 'index')->name('index');
-    Route::inertia('/{campaign:slug}', 'show')->name('show')->where('campaign', $slugRegex);
-    Route::inertia('/create', 'create')->name('create')->middleware(['auth', 'verified']);
-    Route::post('/', 'store')->name('store')->middleware(['auth', 'verified']);
-    Route::inertia('/{campaign:slug}/edit', 'edit')->name('edit')->middleware(['auth', 'verified'])->where('campaign', $slugRegex);
-    Route::patch('/{campaign:uniqid}', 'update')->name('update')->middleware(['auth', 'verified'])->where('campaign', $uniqidRegex);
-    Route::delete('/{campaign:uniqid}', 'delete')->name('delete')->middleware(['auth', 'verified'])->where('campaign', $uniqidRegex);
-    Route::post('/{campaign:uniqid}', 'restore')->name('restore')->middleware(['auth', 'verified'])->where('campaign', $uniqidRegex);
-    Route::delete('/{campaign:uniqid}', 'forcedDelete')->name('forcedDelete')->middleware(['auth', 'verified'])->where('campaign', $uniqidRegex);
-});
+require_once __DIR__ . '/modules/campaign.php';
 
 // Scenarios
-Route::prefix('scenario')->name("scenario.")->controller(ScenarioController::class)->group(function () use ($uniqidRegex, $slugRegex) {
-    Route::inertia('/', 'index')->name('index');
-    Route::inertia('/{scenario:slug}', 'show')->name('show')->where('scenario', $slugRegex);
-    Route::inertia('/create', 'create')->name('create')->middleware(['auth', 'verified']);
-    Route::post('/', 'store')->name('store')->middleware(['auth', 'verified']);
-    Route::inertia('/{scenario:slug}/edit', 'edit')->name('edit')->middleware(['auth', 'verified'])->where('scenario', $slugRegex);
-    Route::patch('/{scenario:uniqid}', 'update')->name('update')->middleware(['auth', 'verified'])->where('scenario', $uniqidRegex);
-    Route::delete('/{scenario:uniqid}', 'delete')->name('delete')->middleware(['auth', 'verified'])->where('scenario', $uniqidRegex);
-    Route::post('/{scenario:uniqid}', 'restore')->name('restore')->middleware(['auth', 'verified'])->where('scenario', $uniqidRegex);
-    Route::delete('/{scenario:uniqid}', 'forcedDelete')->name('forcedDelete')->middleware(['auth', 'verified'])->where('scenario', $uniqidRegex);
-});
+require_once __DIR__ . '/modules/scenario.php';
 
 // Items
-Route::prefix('item')->name("item.")->controller(ItemController::class)->group(function () use ($uniqidRegex) {
-    Route::inertia('/', 'index')->name('index');
-    Route::inertia('/{item:uniqid}', 'show')->name('show')->where('item', $uniqidRegex);
-    Route::inertia('/create', 'create')->name('create')->middleware(['auth', 'verified']);
-    Route::post('/', 'store')->name('store')->middleware(['auth', 'verified']);
-    Route::inertia('/{item:uniqid}/edit', 'edit')->name('edit')->middleware(['auth', 'verified'])->where('item', $uniqidRegex);
-    Route::patch('/{item:uniqid}', 'update')->name('update')->middleware(['auth', 'verified'])->where('item', $uniqidRegex);
-    Route::delete('/{item:uniqid}', 'delete')->name('delete')->middleware(['auth', 'verified'])->where('item', $uniqidRegex);
-    Route::post('/{item:uniqid}', 'restore')->name('restore')->middleware(['auth', 'verified'])->where('item', $uniqidRegex);
-    Route::delete('/{item:uniqid}', 'forcedDelete')->name('forcedDelete')->middleware(['auth', 'verified'])->where('item', $uniqidRegex);
-});
+require_once __DIR__ . '/modules/item.php';
 
 // Itemtypes
-Route::prefix('itemtype')->name("itemtype.")->controller(ItemtypeController::class)->group(function () use ($uniqidRegex) {
-    Route::inertia('/', 'index')->name('index');
-    Route::inertia('/{itemtype:uniqid}', 'show')->name('show')->where('itemtype', $uniqidRegex);
-    Route::inertia('/create', 'create')->name('create')->middleware(['auth', 'verified']);
-    Route::post('/', 'store')->name('store')->middleware(['auth', 'verified']);
-    Route::inertia('/{itemtype:uniqid}/edit', 'edit')->name('edit')->middleware(['auth', 'verified'])->where('itemtype', $uniqidRegex);
-    Route::patch('/{itemtype:uniqid}', 'update')->name('update')->middleware(['auth', 'verified'])->where('itemtype', $uniqidRegex);
-    Route::delete('/{itemtype:uniqid}', 'delete')->name('delete')->middleware(['auth', 'verified'])->where('itemtype', $uniqidRegex);
-    Route::post('/{itemtype:uniqid}', 'restore')->name('restore')->middleware(['auth', 'verified'])->where('itemtype', $uniqidRegex);
-    Route::delete('/{itemtype:uniqid}', 'forcedDelete')->name('forcedDelete')->middleware(['auth', 'verified'])->where('itemtype', $uniqidRegex);
-});
+require_once __DIR__ . '/modules/itemtype.php';
 
 // Attributes
-Route::prefix('attribute')->name("attribute.")->controller(AttributeController::class)->group(function () use ($uniqidRegex) {
-    Route::inertia('/', 'index')->name('index');
-    Route::inertia('/{attribute:uniqid}', 'show')->name('show')->where('attribute', $uniqidRegex);
-    Route::inertia('/create', 'create')->name('create')->middleware(['auth', 'verified']);
-    Route::post('/', 'store')->name('store')->middleware(['auth', 'verified']);
-    Route::inertia('/{attribute:uniqid}/edit', 'edit')->name('edit')->middleware(['auth', 'verified'])->where('attribute', $uniqidRegex);
-    Route::patch('/{attribute:uniqid}', 'update')->name('update')->middleware(['auth', 'verified'])->where('attribute', $uniqidRegex);
-    Route::delete('/{attribute:uniqid}', 'delete')->name('delete')->middleware(['auth', 'verified'])->where('attribute', $uniqidRegex);
-    Route::post('/{attribute:uniqid}', 'restore')->name('restore')->middleware(['auth', 'verified'])->where('attribute', $uniqidRegex);
-    Route::delete('/{attribute:uniqid}', 'forcedDelete')->name('forcedDelete')->middleware(['auth', 'verified'])->where('attribute', $uniqidRegex);
-});
+require_once __DIR__ . '/modules/attribute.php';
 
 // Capabilities
-Route::prefix('capability')->name("capability.")->controller(CapabilityController::class)->group(function () use ($uniqidRegex) {
-    Route::inertia('/', 'index')->name('index');
-    Route::inertia('/{capability:uniqid}', 'show')->name('show')->where('capability', $uniqidRegex);
-    Route::inertia('/create', 'create')->name('create')->middleware(['auth', 'verified']);
-    Route::post('/', 'store')->name('store')->middleware(['auth', 'verified']);
-    Route::inertia('/{capability:uniqid}/edit', 'edit')->name('edit')->middleware(['auth', 'verified'])->where('capability', $uniqidRegex);
-    Route::patch('/{capability:uniqid}', 'update')->name('update')->middleware(['auth', 'verified'])->where('capability', $uniqidRegex);
-    Route::delete('/{capability:uniqid}', 'delete')->name('delete')->middleware(['auth', 'verified'])->where('capability', $uniqidRegex);
-    Route::post('/{capability:uniqid}', 'restore')->name('restore')->middleware(['auth', 'verified'])->where('capability', $uniqidRegex);
-    Route::delete('/{capability:uniqid}', 'forcedDelete')->name('forcedDelete')->middleware(['auth', 'verified'])->where('capability', $uniqidRegex);
-});
+require_once __DIR__ . '/modules/capability.php';
 
 // Classes
-Route::prefix('classe')->name("classe.")->controller(ClasseController::class)->group(function () use ($uniqidRegex) {
-    Route::inertia('/', 'index')->name('index');
-    Route::inertia('/{class:uniqid}', 'show')->name('show')->where('classe', $uniqidRegex);
-    Route::inertia('/create', 'create')->name('create')->middleware(['auth', 'verified']);
-    Route::post('/', 'store')->name('store')->middleware(['auth', 'verified']);
-    Route::inertia('/{classe:uniqid}/edit', 'edit')->name('edit')->middleware(['auth', 'verified'])->where('classe', $uniqidRegex);
-    Route::patch('/{classe:uniqid}', 'update')->name('update')->middleware(['auth', 'verified'])->where('classe', $uniqidRegex);
-    Route::delete('/{classe:uniqid}', 'delete')->name('delete')->middleware(['auth', 'verified'])->where('classe', $uniqidRegex);
-    Route::post('/{classe:uniqid}', 'restore')->name('restore')->middleware(['auth', 'verified'])->where('classe', $uniqidRegex);
-    Route::delete('/{classe:uniqid}', 'forcedDelete')->name('forcedDelete')->middleware(['auth', 'verified'])->where('classe', $uniqidRegex);
-});
+require_once __DIR__ . '/modules/classe.php';
 
 //Conditions
-Route::prefix('condition')->name("condition.")->controller(ConditionController::class)->group(function () use ($uniqidRegex) {
-    Route::inertia('/', 'index')->name('index');
-    Route::inertia('/{condition:uniqid}', 'show')->name('show')->where('condition', $uniqidRegex);
-    Route::inertia('/create', 'create')->name('create')->middleware(['auth', 'verified']);
-    Route::post('/', 'store')->name('store')->middleware(['auth', 'verified']);
-    Route::inertia('/{condition:uniqid}/edit', 'edit')->name('edit')->middleware(['auth', 'verified'])->where('condition', $uniqidRegex);
-    Route::patch('/{condition:uniqid}', 'update')->name('update')->middleware(['auth', 'verified'])->where('condition', $uniqidRegex);
-    Route::delete('/{condition:uniqid}', 'delete')->name('delete')->middleware(['auth', 'verified'])->where('condition', $uniqidRegex);
-    Route::post('/{condition:uniqid}', 'restore')->name('restore')->middleware(['auth', 'verified'])->where('condition', $uniqidRegex);
-    Route::delete('/{condition:uniqid}', 'forcedDelete')->name('forcedDelete')->middleware(['auth', 'verified'])->where('condition', $uniqidRegex);
-});
+require_once __DIR__ . '/modules/condition.php';
 
 // Consumables
-Route::prefix('consumable')->name("consumable.")->controller(ConsumableController::class)->group(function () use ($uniqidRegex) {
-    Route::inertia('/', 'index')->name('index');
-    Route::inertia('/{consumable:uniqid}', 'show')->name('show')->where('consumable', $uniqidRegex);
-    Route::inertia('/create', 'create')->name('create')->middleware(['auth', 'verified']);
-    Route::post('/', 'store')->name('store')->middleware(['auth', 'verified']);
-    Route::inertia('/{consumable:uniqid}/edit', 'edit')->name('edit')->middleware(['auth', 'verified'])->where('consumable', $uniqidRegex);
-    Route::patch('/{consumable:uniqid}', 'update')->name('update')->middleware(['auth', 'verified'])->where('consumable', $uniqidRegex);
-    Route::delete('/{consumable:uniqid}', 'delete')->name('delete')->middleware(['auth', 'verified'])->where('consumable', $uniqidRegex);
-    Route::post('/{consumable:uniqid}', 'restore')->name('restore')->middleware(['auth', 'verified'])->where('consumable', $uniqidRegex);
-    Route::delete('/{consumable:uniqid}', 'forcedDelete')->name('forcedDelete')->middleware(['auth', 'verified'])->where('consumable', $uniqidRegex);
-});
+require_once __DIR__ . '/modules/consumable.php';
 
 // Cosumabletypes
-Route::prefix('consumabletype')->name("consumabletype.")->controller(ConsumabletypeController::class)->group(function () use ($uniqidRegex) {
-    Route::inertia('/', 'index')->name('index');
-    Route::inertia('/{consumabletype:uniqid}', 'show')->name('show')->where('consumabletype', $uniqidRegex);
-    Route::inertia('/create', 'create')->name('create')->middleware(['auth', 'verified']);
-    Route::post('/', 'store')->name('store')->middleware(['auth', 'verified']);
-    Route::inertia('/{consumabletype:uniqid}/edit', 'edit')->name('edit')->middleware(['auth', 'verified'])->where('consumabletype', $uniqidRegex);
-    Route::patch('/{consumabletype:uniqid}', 'update')->name('update')->middleware(['auth', 'verified'])->where('consumabletype', $uniqidRegex);
-    Route::delete('/{consumabletype:uniqid}', 'delete')->name('delete')->middleware(['auth', 'verified'])->where('consumabletype', $uniqidRegex);
-    Route::post('/{consumabletype:uniqid}', 'restore')->name('restore')->middleware(['auth', 'verified'])->where('consumabletype', $uniqidRegex);
-    Route::delete('/{consumabletype:uniqid}', 'forcedDelete')->name('forcedDelete')->middleware(['auth', 'verified'])->where('consumabletype', $uniqidRegex);
-});
+require_once __DIR__ . '/modules/consumabletype.php';
 
 // Mobs
-Route::prefix('mob')->name("mob.")->controller(MobController::class)->group(function () use ($uniqidRegex) {
-    Route::inertia('/', 'index')->name('index');
-    Route::inertia('/{mob:uniqid}', 'show')->name('show')->where('mob', $uniqidRegex);
-    Route::inertia('/create', 'create')->name('create')->middleware(['auth', 'verified']);
-    Route::post('/', 'store')->name('store')->middleware(['auth', 'verified']);
-    Route::inertia('/{mob:uniqid}/edit', 'edit')->name('edit')->middleware(['auth', 'verified'])->where('mob', $uniqidRegex);
-    Route::patch('/{mob:uniqid}', 'update')->name('update')->middleware(['auth', 'verified'])->where('mob', $uniqidRegex);
-    Route::delete('/{mob:uniqid}', 'delete')->name('delete')->middleware(['auth', 'verified'])->where('mob', $uniqidRegex);
-    Route::post('/{mob:uniqid}', 'restore')->name('restore')->middleware(['auth', 'verified'])->where('mob', $uniqidRegex);
-    Route::delete('/{mob:uniqid}', 'forcedDelete')->name('forcedDelete')->middleware(['auth', 'verified'])->where('mob', $uniqidRegex);
-});
+require_once __DIR__ . '/modules/mob.php';
 
 // Mobraces
-Route::prefix('mobrace')->name("mobrace.")->controller(MobraceController::class)->group(function () use ($uniqidRegex) {
-    Route::inertia('/', 'index')->name('index');
-    Route::inertia('/{mobrace:uniqid}', 'show')->name('show')->where('mobrace', $uniqidRegex);
-    Route::inertia('/create', 'create')->name('create')->middleware(['auth', 'verified']);
-    Route::post('/', 'store')->name('store')->middleware(['auth', 'verified']);
-    Route::inertia('/{mobrace:uniqid}/edit', 'edit')->name('edit')->middleware(['auth', 'verified'])->where('mobrace', $uniqidRegex);
-    Route::patch('/{mobrace:uniqid}', 'update')->name('update')->middleware(['auth', 'verified'])->where('mobrace', $uniqidRegex);
-    Route::delete('/{mobrace:uniqid}', 'delete')->name('delete')->middleware(['auth', 'verified'])->where('mobrace', $uniqidRegex);
-    Route::post('/{mobrace:uniqid}', 'restore')->name('restore')->middleware(['auth', 'verified'])->where('mobrace', $uniqidRegex);
-    Route::delete('/{mobrace:uniqid}', 'forcedDelete')->name('forcedDelete')->middleware(['auth', 'verified'])->where('mobrace', $uniqidRegex);
-});
+require_once __DIR__ . '/modules/mobrace.php';
 
 // Npcs
-Route::prefix('npc')->name("npc.")->controller(NpcController::class)->group(function () use ($uniqidRegex) {
-    Route::inertia('/', 'index')->name('index');
-    Route::inertia('/{npc:uniqid}', 'show')->name('show')->where('npc', $uniqidRegex);
-    Route::inertia('/create', 'create')->name('create')->middleware(['auth', 'verified']);
-    Route::post('/', 'store')->name('store')->middleware(['auth', 'verified']);
-    Route::inertia('/{npc:uniqid}/edit', 'edit')->name('edit')->middleware(['auth', 'verified'])->where('npc', $uniqidRegex);
-    Route::patch('/{npc:uniqid}', 'update')->name('update')->middleware(['auth', 'verified'])->where('npc', $uniqidRegex);
-    Route::delete('/{npc:uniqid}', 'delete')->name('delete')->middleware(['auth', 'verified'])->where('npc', $uniqidRegex);
-    Route::post('/{npc:uniqid}', 'restore')->name('restore')->middleware(['auth', 'verified'])->where('npc', $uniqidRegex);
-    Route::delete('/{npc:uniqid}', 'forcedDelete')->name('forcedDelete')->middleware(['auth', 'verified'])->where('npc', $uniqidRegex);
-});
+require_once __DIR__ . '/modules/npc.php';
 
 // Panoplies
-Route::prefix('panoply')->name("panoply.")->controller(PanoplyController::class)->group(function () use ($uniqidRegex) {
-    Route::inertia('/', 'index')->name('index');
-    Route::inertia('/{panoply:uniqid}', 'show')->name('show')->where('panoply', $uniqidRegex);
-    Route::inertia('/create', 'create')->name('create')->middleware(['auth', 'verified']);
-    Route::post('/', 'store')->name('store')->middleware(['auth', 'verified']);
-    Route::inertia('/{panoply:uniqid}/edit', 'edit')->name('edit')->middleware(['auth', 'verified'])->where('panoply', $uniqidRegex);
-    Route::patch('/{panoply:uniqid}', 'update')->name('update')->middleware(['auth', 'verified'])->where('panoply', $uniqidRegex);
-    Route::delete('/{panoply:uniqid}', 'delete')->name('delete')->middleware(['auth', 'verified'])->where('panoply', $uniqidRegex);
-    Route::post('/{panoply:uniqid}', 'restore')->name('restore')->middleware(['auth', 'verified'])->where('panoply', $uniqidRegex);
-    Route::delete('/{panoply:uniqid}', 'forcedDelete')->name('forcedDelete')->middleware(['auth', 'verified'])->where('panoply', $uniqidRegex);
-});
+require_once __DIR__ . '/modules/panoply.php';
 
 // Ressources
-Route::prefix('ressource')->name("ressource.")->controller(RessourceController::class)->group(function () use ($uniqidRegex) {
-    Route::inertia('/', 'index')->name('index');
-    Route::inertia('/{ressource:uniqid}', 'show')->name('show')->where('ressource', $uniqidRegex);
-    Route::inertia('/create', 'create')->name('create')->middleware(['auth', 'verified']);
-    Route::post('/', 'store')->name('store')->middleware(['auth', 'verified']);
-    Route::inertia('/{ressource:uniqid}/edit', 'edit')->name('edit')->middleware(['auth', 'verified'])->where('ressource', $uniqidRegex);
-    Route::patch('/{ressource:uniqid}', 'update')->name('update')->middleware(['auth', 'verified'])->where('ressource', $uniqidRegex);
-    Route::delete('/{ressource:uniqid}', 'delete')->name('delete')->middleware(['auth', 'verified'])->where('ressource', $uniqidRegex);
-    Route::post('/{ressource:uniqid}', 'restore')->name('restore')->middleware(['auth', 'verified'])->where('ressource', $uniqidRegex);
-    Route::delete('/{ressource:uniqid}', 'forcedDelete')->name('forcedDelete')->middleware(['auth', 'verified'])->where('ressource', $uniqidRegex);
-});
+require_once __DIR__ . '/modules/ressource.php';
 
 // RessourceTypes
-Route::prefix('ressourcetype')->name("ressourcetype.")->controller(RessourcetypeController::class)->group(function () use ($uniqidRegex) {
-    Route::inertia('/', 'index')->name('index');
-    Route::inertia('/{ressourcetype:uniqid}', 'show')->name('show')->where('ressourcetype', $uniqidRegex);
-    Route::inertia('/create', 'create')->name('create')->middleware(['auth', 'verified']);
-    Route::post('/', 'store')->name('store')->middleware(['auth', 'verified']);
-    Route::inertia('/{ressourcetype:uniqid}/edit', 'edit')->name('edit')->middleware(['auth', 'verified'])->where('ressourcetype', $uniqidRegex);
-    Route::patch('/{ressourcetype:uniqid}', 'update')->name('update')->middleware(['auth', 'verified'])->where('ressourcetype', $uniqidRegex);
-    Route::delete('/{ressourcetype:uniqid}', 'delete')->name('delete')->middleware(['auth', 'verified'])->where('ressourcetype', $uniqidRegex);
-    Route::post('/{ressourcetype:uniqid}', 'restore')->name('restore')->middleware(['auth', 'verified'])->middleware(['auth', 'verified'])->where('ressourcetype', $uniqidRegex);
-    Route::delete('/{ressourcetype:uniqid}', 'forcedDelete')->name('forcedDelete')->middleware(['auth', 'verified'])->where('ressourcetype', $uniqidRegex);
-});
+require_once __DIR__ . '/modules/ressourcetype.php';
 
 // Shops
-Route::prefix('shop')->name("shop.")->controller(ShopController::class)->group(function () use ($uniqidRegex) {
-    Route::inertia('/', 'index')->name('index');
-    Route::inertia('/{shop:uniqid}', 'show')->name('show')->where('shop', $uniqidRegex);
-    Route::inertia('/create', 'create')->name('create')->middleware(['auth', 'verified']);
-    Route::post('/', 'store')->name('store')->middleware(['auth', 'verified']);
-    Route::inertia('/{shop:uniqid}/edit', 'edit')->name('edit')->middleware(['auth', 'verified'])->where('shop', $uniqidRegex);
-    Route::patch('/{shop:uniqid}', 'update')->name('update')->middleware(['auth', 'verified'])->where('shop', $uniqidRegex);
-    Route::delete('/{shop:uniqid}', 'delete')->name('delete')->middleware(['auth', 'verified'])->where('shop', $uniqidRegex);
-    Route::post('/{shop:uniqid}', 'restore')->name('restore')->middleware(['auth', 'verified'])->where('shop', $uniqidRegex);
-    Route::delete('/{shop:uniqid}', 'forcedDelete')->name('forcedDelete')->middleware(['auth', 'verified'])->where('shop', $uniqidRegex);
-});
+require_once __DIR__ . '/modules/shop.php';
 
 // Specializations
-Route::prefix('specialization')->name("specialization.")->controller(SpecializationController::class)->group(function () use ($uniqidRegex) {
-    Route::inertia('/', 'index')->name('index');
-    Route::inertia('/{specialization:uniqid}', 'show')->name('show')->where('specialization', $uniqidRegex);
-    Route::inertia('/create', 'create')->name('create')->middleware(['auth', 'verified']);
-    Route::post('/', 'store')->name('store')->middleware(['auth', 'verified']);
-    Route::inertia('/{specialization:uniqid}/edit', 'edit')->name('edit')->middleware(['auth', 'verified'])->where('specialization', $uniqidRegex);
-    Route::patch('/{specialization:uniqid}', 'update')->name('update')->middleware(['auth', 'verified'])->where('specialization', $uniqidRegex);
-    Route::delete('/{specialization:uniqid}', 'delete')->name('delete')->middleware(['auth', 'verified'])->where('specialization', $uniqidRegex);
-    Route::post('/{specialization:uniqid}', 'restore')->name('restore')->middleware(['auth', 'verified'])->where('specialization', $uniqidRegex);
-    Route::delete('/{specialization:uniqid}', 'forcedDelete')->name('forcedDelete')->middleware(['auth', 'verified'])->where('specialization', $uniqidRegex);
-});
+require_once __DIR__ . '/modules/specialization.php';
 
 // Spells
-Route::prefix('spell')->name("spell.")->controller(SpellController::class)->group(function () use ($uniqidRegex) {
-    Route::inertia('/', 'index')->name('index');
-    Route::inertia('/{spell:uniqid}', 'show')->name('show')->where('spell', $uniqidRegex);
-    Route::inertia('/create', 'create')->middleware(['auth', 'verified'])->name('create');
-    Route::post('/', 'store')->middleware(['auth', 'verified'])->name('store');
-    Route::inertia('/{spell:uniqid}/edit', 'edit')->name('edit')->middleware(['auth', 'verified'])->where('spell', $uniqidRegex);
-    Route::patch('/{spell:uniqid}', 'update')->name('update')->middleware(['auth', 'verified'])->where('spell', $uniqidRegex);
-    Route::delete('/{spell:uniqid}', 'delete')->name('delete')->middleware(['auth', 'verified'])->where('spell', $uniqidRegex);
-    Route::post('/{spell:uniqid}', 'restore')->name('restore')->middleware(['auth', 'verified'])->where('spell', $uniqidRegex);
-    Route::delete('/{spell:uniqid}', 'forcedDelete')->name('forcedDelete')->middleware(['auth', 'verified'])->where('spell', $uniqidRegex);
-});
+require_once __DIR__ . '/modules/spell.php';
 
 // Spelltypes
-Route::prefix('spelltype')->name("spelltype.")->controller(SpelltypeController::class)->group(function () use ($uniqidRegex) {
-    Route::inertia('/', 'index')->name('index');
-    Route::inertia('/{spelltype:uniqid}', 'show')->name('show')->where('spelltype', $uniqidRegex);
-    Route::inertia('/create', 'create')->middleware(['auth', 'verified'])->name('create');
-    Route::post('/', 'store')->middleware(['auth', 'verified'])->name('store');
-    Route::inertia('/{spelltype:uniqid}/edit', 'edit')->name('edit')->middleware(['auth', 'verified'])->where('spelltype', $uniqidRegex);
-    Route::patch('/{spelltype:uniqid}', 'update')->name('update')->middleware(['auth', 'verified'])->where('spelltype', $uniqidRegex);
-    Route::delete('/{spelltype:uniqid}', 'delete')->name('delete')->middleware(['auth', 'verified'])->where('spelltype', $uniqidRegex);
-    Route::post('/{spelltype:uniqid}', 'restore')->name('restore')->middleware(['auth', 'verified'])->where('spelltype', $uniqidRegex);
-    Route::delete('/{spelltype:uniqid}', 'forcedDelete')->name('forcedDelete')->middleware(['auth', 'verified'])->where('spelltype', $uniqidRegex);
-});
+require_once __DIR__ . '/modules/spelltype.php';
+
+
 
 // Système de gestion des images avec Glyde : https://grafikart.fr/tutoriels/image-resize-glide-php-1358
 // Impossible d'installer glyde
 // Route::get('/image/{path}', [App\Http\Controllers\Utilities\ImageController::class, 'show']);
-
-require __DIR__ . '/auth.php';
