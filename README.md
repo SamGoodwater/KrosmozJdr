@@ -1,7 +1,8 @@
-<img src="https://krosmoz-jdr.fr/storage/logos/logo.webp" width="300px" alt='logo'>
+<img src="https://krosmoz-jdr.fr/storage/logos/logo.webp" width="150px" alt='logo'>
 
 <h1>Kromos JDR</h1>
-
+<p>DofusJDR devient KrosmozJDR</p>
+<img src="https://krosmoz-jdr.fr/storage/documents/verskrosmozjdr.png" width="100px" alt='logo'>
 <h2>Le jeu de rôle</h2
         <h3 id="bienvenue-dans-krosmozjdr-l-aventure-pique-dans-l-univers-du-monde-des-douze-">Bienvenue dans
             <strong>KrosmozJDR</strong>, l’aventure épique dans l’univers du monde des Douze !
