@@ -1,8 +1,8 @@
-<p style="text-align:center;"><img src="https://krosmoz-jdr.fr/storage/logos/logo.webp" width="150px" alt='logo'></p>
+<p style="text-align: center;"><img src="https://krosmoz-jdr.fr/storage/logos/logo.webp" width="150px" alt='logo'></p>
 
 <h1>Kromos JDR</h1>
 <p>DofusJDR devient KrosmozJDR</p>
-<p style="text-align:center;"><img src="https://krosmoz-jdr.fr/storage/documents/vers_krosmozjdr.png" lenght="50px" alt='changement de nom'></p>
+<p style="text-align: center;"><img src="https://krosmoz-jdr.fr/storage/documents/vers_krosmozjdr.png" height="100px" alt='changement de nom'></p>
 
 <h2>Le jeu de rôle</h2
         <h3 id="bienvenue-dans-krosmozjdr-l-aventure-pique-dans-l-univers-du-monde-des-douze-">Bienvenue dans
