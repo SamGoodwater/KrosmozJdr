@@ -1,10 +1,10 @@
 <script setup>
-import searchInput from "../Layouts/components/searchInput.vue";
-import toggleSidebar from '../Layouts/components/ToggleSidebar.vue';
-import Tooltips from "../Components/feedback/tooltips.vue";
+import searchInput from "@/Pages/Layouts/components/searchInput.vue";
+import toggleSidebar from '@/Pages/Layouts/components/ToggleSidebar.vue';
+import Tooltips from "@/Pages/Components/feedback/tooltips.vue";
 import { ref } from "vue";
-import Route from "../Components/text/Route.vue";
-import { useSidebar } from "../../composables/useSidebar";
+import Route from "@/Pages/Components/text/Route.vue";
+import { useSidebar } from "@/composables/useSidebar";
 
 const { isSidebarOpen } = useSidebar();
 const appSlogan = ref(import.meta.env.VITE_APP_SLOGAN);

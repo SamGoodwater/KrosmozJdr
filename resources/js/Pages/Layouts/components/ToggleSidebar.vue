@@ -1,7 +1,7 @@
 <script setup>
 import { ref, computed } from "vue";
-import tooltips from "../../Components/feedback/tooltips.vue";
-import { useSidebar } from "../../../composables/useSidebar";
+import tooltips from "@/Pages/Components/feedback/tooltips.vue";
+import { useSidebar } from "@/composables/useSidebar";
 
 const { toggleSidebar, isSidebarOpen } = useSidebar();
 

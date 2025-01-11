@@ -92,7 +92,7 @@ class IconsJsonGenerator extends Command
         $files = [];
         $iterator = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($directory));
         foreach ($iterator as $file) {
-            if ($file->isFile()) {
+            if ($file->isFile() && in_array($file->getExtension(), ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'svg', 'webp'])) {
                 $files[] = $file->getPathname();
             }
         }

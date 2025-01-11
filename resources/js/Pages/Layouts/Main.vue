@@ -1,8 +1,8 @@
 <script setup>
-import Header from './Header.vue';
-import Aside from './Aside.vue';
-import Footer from './Footer.vue';
-import { useSidebar } from '../../composables/useSidebar';
+import Header from '@/Pages/Layouts/Header.vue';
+import Aside from '@/Pages/Layouts/Aside.vue';
+import Footer from '@/Pages/Layouts/Footer.vue';
+import { useSidebar } from '@/composables/useSidebar';
 
 const { isSidebarOpen } = useSidebar();
 

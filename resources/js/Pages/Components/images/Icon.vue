@@ -1,6 +1,6 @@
 <script setup>
-import { IconsGetter } from '../../../Utils/IconsGetter';
-import { imageExists } from '../../../Utils/Images';
+import { IconsGetter } from '@/Utils/IconsGetter';
+import { imageExists } from '@/Utils/Images';
 import { computed, defineProps, ref } from 'vue';
 
 const props = defineProps({

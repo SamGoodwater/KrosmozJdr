@@ -3,7 +3,8 @@
     "type": "module",
     "scripts": {
         "build": "vite build",
-        "dev": "vite"
+        "dev": "vite",
+        "build:css": "sass resources/scss/app.scss resources/css/app.css --no-source-map"
     },
     "devDependencies": {
         "@inertiajs/vue3": "latest",
@@ -14,7 +15,7 @@
         "autoprefixer": "latest",
         "axios": "latest",
         "concurrently": "latest",
-        "daisyui": "latest",
+        "daisyui": "^4.12.23",
         "laravel-vite-plugin": "latest",
         "postcss": "latest",
         "prettier": "latest",

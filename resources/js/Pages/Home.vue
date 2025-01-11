@@ -1,9 +1,9 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import { usePage } from '@inertiajs/vue3';
-import Btn from './Components/actions/Btn.vue';
-import { IconsGetter } from '../Utils/IconsGetter';
-import Icons from './Components/images/Icon.vue';
+import Btn from '@/Pages/Components/actions/Btn.vue';
+import { IconsGetter } from '@/Utils/IconsGetter';
+import Icons from '@/Pages/Components/images/Icon.vue';
 
 const iconPA = ref('');
 const iconPM = ref('');

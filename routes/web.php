@@ -1,25 +1,25 @@
 <?php
 
-use App\Http\Controllers\Modules\ItemController;
-use App\Http\Controllers\Modules\CampaignController;
-use App\Http\Controllers\Modules\ScenarioController;
-use App\Http\Controllers\Modules\AttributeController;
-use App\Http\Controllers\Modules\CapabilityController;
-use App\Http\Controllers\Modules\ClasseController;
-use App\Http\Controllers\Modules\ConditionController;
-use App\Http\Controllers\Modules\ConsumableController;
-use App\Http\Controllers\Modules\MobController;
-use App\Http\Controllers\Modules\MobraceController;
-use App\Http\Controllers\Modules\NpcController;
-use App\Http\Controllers\Modules\PanoplyController;
-use App\Http\Controllers\Modules\RessourceController;
-use App\Http\Controllers\Modules\ShopController;
-use App\Http\Controllers\Modules\SpecializationController;
-use App\Http\Controllers\Modules\SpellController;
-use App\Http\Controllers\Modules\SpelltypeController;
-use App\Http\Controllers\Modules\ItemtypeController;
-use App\Http\Controllers\Modules\ConsumabletypeController;
-use App\Http\Controllers\Modules\RessourcetypeController;
+// use App\Http\Controllers\Modules\ItemController;
+// use App\Http\Controllers\Modules\CampaignController;
+// use App\Http\Controllers\Modules\ScenarioController;
+// use App\Http\Controllers\Modules\AttributeController;
+// use App\Http\Controllers\Modules\CapabilityController;
+// use App\Http\Controllers\Modules\ClasseController;
+// use App\Http\Controllers\Modules\ConditionController;
+// use App\Http\Controllers\Modules\ConsumableController;
+// use App\Http\Controllers\Modules\MobController;
+// use App\Http\Controllers\Modules\MobraceController;
+// use App\Http\Controllers\Modules\NpcController;
+// use App\Http\Controllers\Modules\PanoplyController;
+// use App\Http\Controllers\Modules\RessourceController;
+// use App\Http\Controllers\Modules\ShopController;
+// use App\Http\Controllers\Modules\SpecializationController;
+// use App\Http\Controllers\Modules\SpellController;
+// use App\Http\Controllers\Modules\SpelltypeController;
+// use App\Http\Controllers\Modules\ItemtypeController;
+// use App\Http\Controllers\Modules\ConsumabletypeController;
+// use App\Http\Controllers\Modules\RessourcetypeController;
 
 use App\Http\Controllers\SectionController;
 use App\Http\Controllers\UserController;

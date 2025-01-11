@@ -1,6 +1,6 @@
 <script setup>
-import Btn from '../../Components/actions/Btn.vue';
-import Route from '../../Components/text/Route.vue';
+import Btn from '@/Pages/Components/actions/Btn.vue';
+import Route from '@/Pages/Components/text/Route.vue';
 </script>
 
 <template>

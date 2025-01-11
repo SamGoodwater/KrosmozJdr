@@ -1,11 +1,11 @@
 <script setup>
-import searchInput from '../Layouts/components/searchInput.vue';
-import toggleSidebar from '../Layouts/components/ToggleSidebar.vue';
-import LoginHeaderContainer from '../Layouts/components/LoginHeaderContainer.vue';
-import tooltips from '../Components/feedback/tooltips.vue';
-import { useHeader } from '../../composables/useHeader';
+import searchInput from '@/Pages/Layouts/components/searchInput.vue';
+import toggleSidebar from '@/Pages/Layouts/components/ToggleSidebar.vue';
+import LoginHeaderContainer from '@/Pages/Layouts/components/LoginHeaderContainer.vue';
+import tooltips from '@/Pages/Components/feedback/tooltips.vue';
+import { useHeader } from '@/composables/useHeader';
 import { ref, onMounted } from 'vue';
-import { useSidebar } from '../../composables/useSidebar';
+import { useSidebar } from '@/composables/useSidebar';
 
 const { isSidebarOpen } = useSidebar();
 

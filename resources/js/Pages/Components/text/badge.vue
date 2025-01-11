@@ -1,6 +1,6 @@
 <script setup>
 import { computed, defineProps, ref } from 'vue';
-import { adjustIntensityColor } from '../../js/Utils/Color';
+import { adjustIntensityColor } from '@/Utils/Color';
 
 const props = defineProps({
     theme: {

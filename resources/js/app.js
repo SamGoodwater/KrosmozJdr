@@ -1,12 +1,11 @@
 import "../css/app.css";
-import "./bootstrap";
+import "@/bootstrap";
 
 import { createInertiaApp, Head, Link } from "@inertiajs/vue3";
 import { resolvePageComponent } from "laravel-vite-plugin/inertia-helpers";
 import { createApp, h } from "vue";
 import { ZiggyVue } from "../../vendor/tightenco/ziggy";
-import DefaultLayout from "/resources/js/Pages/Layouts/main.vue";
-import { IconsGetter } from "./Utils/IconsGetter";
+import DefaultLayout from "@/Pages/Layouts/Main.vue";
 
 const appName = import.meta.env.VITE_APP_NAME || "KrosmozJDR";
 const appDescription = import.meta.env.VITE_APP_DESCRIPTION;
@@ -29,7 +28,7 @@ createInertiaApp({
         ).then((module) => {
             const page = module.default;
             page.layout = page.layout || DefaultLayout;
-            return module;
+            return page;
         }),
     setup({ el, App, props, plugin }) {
         const app = createApp({ render: () => h(App, props) });
@@ -49,11 +48,6 @@ createInertiaApp({
         // The color of the progress bar...
         color: "#155e75", // Cyan 800
         // Whether to include the default NProgress styles...
-        includeCSS: true,
-        // Whether the NProgress spinner will be shown...
-        showSpinner: false,
+        showSpinner: true,
     },
 });
-
-// Charger les icônes au démarrage de l'application
-IconsGetter.loadIcons();

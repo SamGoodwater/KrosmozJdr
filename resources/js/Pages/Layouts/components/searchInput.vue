@@ -1,5 +1,5 @@
 <script setup>
-import tooltips from '../../Components/feedback/tooltips.vue';
+import tooltips from '@/Pages/Components/feedback/tooltips.vue';
 import { ref, onMounted, onUnmounted } from 'vue';
 const appName = ref(import.meta.env.VITE_APP_NAME);
 
