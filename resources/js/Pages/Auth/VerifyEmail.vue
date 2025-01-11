@@ -1,7 +1,7 @@
 <script setup>
 import { computed } from 'vue';
 // import GuestLayout from '@/Layouts/GuestLayout.vue';
-import Btn from '@/Components/actions/Btn.vue';
+import Btn from '@/Pages/Components/actions/Btn.vue';
 import { Head, Link, useForm } from '@inertiajs/vue3';
 
 const props = defineProps({

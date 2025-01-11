@@ -1,23 +1,22 @@
 <script setup>
-import { computed, defineProps } from 'vue';
+import { ref, computed } from 'vue';
 
 const props = defineProps({
-    theme: {
+    for: {
         type: String,
-        default: ''
+        required: true,
     },
     value: {
+        type: String,
+        required: true,
+    },
+    theme: {
         type: String,
         default: '',
     },
     size: {
         type: String,
-        default: 'sm',
-        validator: (value) => ['', 'xs', 'sm', 'md', 'lg', 'xl', '2xl', '3xl', '4xl', '5xl', '6xl'].includes(value),
-    },
-    color: {
-        type: String,
-        default: 'primary-200',
+        default: '',
     },
     tooltip: {
         type: String,
@@ -25,33 +24,31 @@ const props = defineProps({
     },
     tooltipPosition: {
         type: String,
-        default: 'bottom',
-        validator: (value) => ['', 'top', 'right', 'bottom', 'left'].includes(value),
+        default: 'top',
     },
 });
 
-const getClasses = computed(() => {
-    let classes = ['block', 'font-medium'];
+const classes = computed(() => {
+    let classes = [];
     let match;
 
     if (props.theme) {
-
         // COLOR
-        const regexColor = /(?:^|\s)(?<capture>([a-zA-Z]{3,}-((50)|([1-9]00)))|primary|secondary|success|accent|neutral|info|warning|error)(?:\s|$)/
-        match = regexColor.exec(props.theme)
+        const regexColor = /(?:^|\s)(?<capture>([a-zA-Z]{3,}-((50)|([1-9]00)))|primary|secondary|success|accent|neutral|info|warning|error)(?:\s|$)/;
+        match = regexColor.exec(props.theme);
         if (match && match?.groups?.capture) {
             classes.push(`text-${match.groups.capture}`);
         } else {
-            classes.push(`text-red-600`);
+            classes.push('text-red-600');
         }
 
-        // SiZE
+        // SIZE
         const regexSize = /(?:^|\s)(?<capture>xs|sm|md|lg|xl|2xl|3xl|4xl|5xl|6xl)(?:\s|$)/;
-        match = regexSize.exec(props.theme)
+        match = regexSize.exec(props.theme);
         if (match && match?.groups?.capture) {
             classes.push(`text-${match.groups.capture}`);
         } else {
-            classes.push(`text-md`);
+            classes.push('text-md');
         }
     }
 
@@ -62,24 +59,16 @@ const getClasses = computed(() => {
     }
 
     if (props.tooltip) {
-        classes.push(`tooltip`);
+        classes.push('tooltip');
         classes.push(`tooltip-${props.tooltipPosition}`);
     }
 
-    if (props.color) {
-        classes.push(`text-${props.color}`);
-    }
-
     return classes.join(' ');
-})
-
+});
 </script>
 
 <template>
-    <label :class="`${getClasses}`" :data-tip="tooltip">
-        <span v-if="value">{{ value }}</span>
-        <span v-else>
-            <slot />
-        </span>
+    <label :for="props.for" :class="classes">
+        {{ props.value }}
     </label>
 </template>

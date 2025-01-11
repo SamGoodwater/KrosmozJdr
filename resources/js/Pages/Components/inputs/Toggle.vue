@@ -9,7 +9,7 @@ const props = defineProps({
         default: ''
     },
     checked: {
-        type: String | Boolean,
+        type: [String, Boolean],
         required: true,
     },
     label: {
@@ -26,124 +26,76 @@ const props = defineProps({
         validator: (value) => ['', 'xs', 'sm', 'md', 'lg'].includes(value),
     },
     autofocus: {
-        type: Boolean | String,
+        type: [Boolean, String],
         default: false,
     },
     required: {
-        type: Boolean,
+        type: [Boolean, String],
         default: false,
-    },
-    tooltip: {
-        type: String,
-        default: '',
-    },
-    tooltipPosition: {
-        type: String,
-        default: 'bottom',
-        validator: (value) => ['', 'top', 'right', 'bottom', 'left'].includes(value),
     },
 });
 
-let checkedRef = ref(props.checked);
-let autofocusRef = ref(false);
-let requiredRef = ref('');
+const isChecked = ref(props.checked);
 
-const getClasses = computed(() => {
+const classes = computed(() => {
     let classes = ['toggle'];
     let match;
 
     if (props.theme) {
-
         // COLOR
-        const regexColor = /(?:^|\s)(?<capture>([a-zA-Z]{3,}-((50)|([1-9]00)))|primary|secondary|success|accent|neutral|info|warning|error)(?:\s|$)/
-        match = regexColor.exec(props.theme)
+        const regexColor = /(?:^|\s)(?<capture>([a-zA-Z]{3,}-((50)|([1-9]00)))|primary|secondary|success|accent|neutral|info|warning|error)(?:\s|$)/;
+        match = regexColor.exec(props.theme);
         if (match && match?.groups?.capture) {
-            classes.push(`toggle-${match.groups.capture}`);
+            classes.push(`text-${match.groups.capture}`);
         } else {
-            classes.push(`toggle-main-500`);
+            classes.push(`text-${props.color}`);
         }
 
-        // SiZE
+        // SIZE
         const regexSize = /(?:^|\s)(?<capture>xs|sm|md|lg)(?:\s|$)/;
-        match = regexSize.exec(props.theme)
+        match = regexSize.exec(props.theme);
         if (match && match?.groups?.capture) {
             classes.push(`toggle-${match.groups.capture}`);
         } else {
-            classes.push(`toggle-md`);
-        }
-
-        // CHECKED
-        const regexChecked = /(?:^|\s)(?<capture>checked)(?:\s|$)/;
-        match = regexChecked.exec(props.theme)
-        if (match && match?.groups?.capture) {
-            checkedRef = 'checked';
+            classes.push(`toggle-${props.size}`);
         }
 
         // Autofocus
         const regexAutofocus = /(?:^|\s)(?<capture>autofocus)(?:\s|$)/;
-        match = regexAutofocus.exec(props.theme)
+        match = regexAutofocus.exec(props.theme);
         if (match && match?.groups?.capture) {
-            autofocusRef = true;
+            props.autofocus = true;
         }
 
         // Required
         const regexRequired = /(?:^|\s)(?<capture>required)(?:\s|$)/;
-        match = regexRequired.exec(props.theme)
+        match = regexRequired.exec(props.theme);
         if (match && match?.groups?.capture) {
-            requiredRefRef = "required";
+            props.required = true;
         }
-    }
-
-    if (!['xs', 'sm', 'md', 'lg'].some(word => props.theme.includes(word))) {
-        if (props.size) {
-            classes.push(`icon-${props.size}`);
-        }
-    }
-
-    if (props.checked) {
-        checkedRef = 'checked';
-    }
-
-    if (props.autofocus) {
-        autofocusRef = true;
-    }
-
-    if (props.required === true || requiredRef === "required") {
-        autofocusRef = "required";
-    }
-
-    if (props.tooltip) {
-        classes.push(`tooltip`);
-        classes.push(`tooltip-${props.tooltipPosition}`);
-    }
-
-    if (props.color) {
-        classes.push(`toggle-${props.color}`);
+    } else {
+        classes.push(`text-${props.color}`);
+        classes.push(`toggle-${props.size}`);
     }
 
     return classes.join(' ');
-})
-
-const proxyToggle = computed({
-    get() {
-        return checkedRef.value;
-    },
-
-    set(val) {
-        emit('update:checked', val);
-    },
 });
+
+const updateChecked = (event) => {
+    isChecked.value = event.target.checked;
+    emit('update:checked', isChecked.value);
+};
 </script>
 
 <template>
-    <div class="form-control w-52">
-        <label class="label cursor-pointer" :data-tip="tooltip">
-            <span v-if="label" class="label-text">{{ label }}</span>
-            <span v-else>
-                <slot />
-            </span>
-            <input :required="requiredRef" type="checkbox" :autofocus="autofocusRef" :checked="checkedRef"
-                :class="`${getClasses}`" v-model="proxyToggle" />
-        </label>
-    </div>
+    <label :class="classes">
+        <input
+            type="checkbox"
+            :checked="isChecked"
+            @change="updateChecked"
+            :autofocus="props.autofocus"
+            :required="props.required"
+        />
+        <span>{{ props.label }}</span>
+    </label>
 </template>

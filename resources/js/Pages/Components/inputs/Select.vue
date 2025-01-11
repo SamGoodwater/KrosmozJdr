@@ -1,10 +1,7 @@
 <script setup>
 import { computed, defineProps, ref, onMounted } from 'vue';
 
-const model = defineModel({
-    type: String,
-    required: true,
-});
+const emit = defineEmits(['update:value']);
 
 const props = defineProps({
     theme: {
@@ -12,8 +9,12 @@ const props = defineProps({
         default: ''
     },
     value: {
+        type: [String, Number],
+        default: '',
+    },
+    options: {
         type: Array,
-        default: [],
+        required: true,
     },
     color: {
         type: String,
@@ -26,115 +27,92 @@ const props = defineProps({
     },
     label: {
         type: String,
-        default: 'Séléctionner une option',
+        default: 'Sélectionner une option',
     },
     autofocus: {
-        type: Boolean | String,
+        type: [Boolean, String],
         default: false,
     },
     required: {
-        type: Boolean,
+        type: [Boolean, String],
         default: false,
-    },
-    tooltip: {
-        type: String,
-        default: '',
-    },
-    tooltipPosition: {
-        type: String,
-        default: 'bottom',
-        validator: (value) => ['', 'top', 'right', 'bottom', 'left'].includes(value),
     },
 });
 
-const select = ref(null);
+const input = ref(null);
 
-let autofocusRef = ref(false);
-let requiredRef = ref('');
-
-const getClasses = computed(() => {
+const classes = computed(() => {
     let classes = ['select', 'w-full', 'max-w-xs'];
     let match;
 
     if (props.theme) {
-
         // COLOR
-        const regexColor = /(?:^|\s)(?<capture>([a-zA-Z]{3,}-((50)|([1-9]00)))|primary|secondary|success|accent|neutral|info|warning|error)(?:\s|$)/
-        match = regexColor.exec(props.theme)
+        const regexColor = /(?:^|\s)(?<capture>([a-zA-Z]{3,}-((50)|([1-9]00)))|primary|secondary|success|accent|neutral|info|warning|error)(?:\s|$)/;
+        match = regexColor.exec(props.theme);
         if (match && match?.groups?.capture) {
             classes.push(`text-${match.groups.capture}`);
             classes.push(`border-${match.groups.capture}`);
-            colorRef = match.groups.capture;
         } else {
-            classes.push(`text-main-500`);
-            classes.push(`border-main-500`);
+            classes.push('text-main-500');
+            classes.push('border-main-500');
         }
 
-        // SiZE
+        // SIZE
         const regexSize = /(?:^|\s)(?<capture>xs|sm|md|lg)(?:\s|$)/;
-        match = regexSize.exec(props.theme)
+        match = regexSize.exec(props.theme);
         if (match && match?.groups?.capture) {
             classes.push(`select-${match.groups.capture}`);
         } else {
-            classes.push(`select-md`);
+            classes.push('select-md');
         }
 
         // Autofocus
         const regexAutofocus = /(?:^|\s)(?<capture>autofocus)(?:\s|$)/;
-        match = regexAutofocus.exec(props.theme)
+        match = regexAutofocus.exec(props.theme);
         if (match && match?.groups?.capture) {
-            autofocusRef = true;
+            props.autofocus = true;
         }
 
         // Required
         const regexRequired = /(?:^|\s)(?<capture>required)(?:\s|$)/;
-        match = regexRequired.exec(props.theme)
+        match = regexRequired.exec(props.theme);
         if (match && match?.groups?.capture) {
-            requiredRefRef = "required";
+            props.required = true;
         }
-    }
-
-    if (!['xs', 'sm', 'md', 'lg'].some(word => props.theme.includes(word))) {
-        if (props.size) {
-            classes.push(`select-${props.size}`);
-        }
-    }
-
-    if (props.autofocus) {
-        autofocusRef = true;
-    }
-
-    if (props.required === true || requiredRef === "required") {
-        autofocusRef = "required";
-    }
-
-    if (props.tooltip) {
-        classes.push(`tooltip`);
-        classes.push(`tooltip-${props.tooltipPosition}`);
-    }
-
-    if (props.color) {
-        classes.push(`text-${props.color}`);
-        classes.push(`border-${props.color}`);
-        colorRef = props.color;
+    } else {
+        classes.push('text-main-500');
+        classes.push('border-main-500');
+        classes.push('select-md');
     }
 
     return classes.join(' ');
-})
-
-onMounted(() => {
-    if (select.value.hasAttribute('autofocus')) {
-        select.value.focus();
-    }
 });
 
-defineExpose({ focus: () => select.value.focus() });
+const updateValue = (event) => {
+    emit('update:value', event.target.value);
+};
+
+onMounted(() => {
+    if (input.value && props.autofocus) {
+        input.value.focus();
+    }
+});
 </script>
 
 <template>
-    <select :required="requiredRef" :autofocus="autofocusRef" ref="select" v-model="model" :data-tip="tooltip"
-        :class="`${getClasses}`">
-        <option disabled selected>{{ label }}</option>
-        <option v-for="option in value" :key="option.value" :value="option.value">{{ option.text }}</option>
-    </select>
+    <label :class="classes">
+        <span>{{ props.label }}</span>
+        <select
+            ref="input"
+            :value="props.value"
+            @change="updateValue"
+            :autofocus="props.autofocus"
+            :required="props.required"
+            :class="classes"
+        >
+            <option v-for="option in props.options" :key="option.value" :value="option.value">
+                {{ option.label }}
+            </option>
+        </select>
+    </label>
 </template>

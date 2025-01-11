@@ -1,9 +1,9 @@
 <script setup>
-import InputError from "../Components/inputs/InputError.vue";
-import InputLabel from "../Components/inputs/InputLabel.vue";
-import Btn from "../Components/actions/Btn.vue";
-import Route from "../Components/text/Route.vue";
-import TextInput from "../Components/inputs/TextInput.vue";
+import InputError from "@/Pages/Components/inputs/InputError.vue";
+import InputLabel from "@/Pages/Components/inputs/InputLabel.vue";
+import Btn from "@/Pages/Components/actions/Btn.vue";
+import Route from "@/Pages/Components/text/Route.vue";
+import TextInput from "@/Pages/Components/inputs/TextInput.vue";
 import { useForm } from "@inertiajs/vue3";
 import { onMounted } from "vue";
 
@@ -27,45 +27,37 @@ onMounted(() => {
 <template>
     <form @submit.prevent="submit">
         <div>
-            <InputLabel for="name" value="Name" />
-
+            <InputLabel for="name" value="Pseudo" />
             <TextInput
                 id="name"
-                type="text"
+                theme="secondary autofocus required text"
                 class="mt-1 block w-full"
                 v-model="form.name"
-                required
-                autofocus
-                autocomplete="name"
+                autocomplete="pseudo"
             />
-
             <InputError class="mt-2" :message="form.errors.name" />
         </div>
 
         <div class="mt-4">
             <InputLabel for="email" value="Email" />
-
             <TextInput
                 id="email"
-                type="email"
+                theme="secondary required email"
                 class="mt-1 block w-full"
                 v-model="form.email"
-                required
                 autocomplete="username"
             />
-
             <InputError class="mt-2" :message="form.errors.email" />
         </div>
 
         <div class="mt-4">
-            <InputLabel for="password" value="Password" />
+            <InputLabel for="password" value="Mot de passe / Passphrase" />
 
             <TextInput
                 id="password"
-                type="password"
+                theme="secondary required password"
                 class="mt-1 block w-full"
                 v-model="form.password"
-                required
                 autocomplete="new-password"
             />
 
@@ -73,34 +65,40 @@ onMounted(() => {
         </div>
 
         <div class="mt-4">
-            <InputLabel for="password_confirmation" value="Confirm Password" />
-
+            <InputLabel for="password_confirmation" value="Confirme  ton mot de passe / Passphrase" />
             <TextInput
                 id="password_confirmation"
-                type="password"
+                theme="secondary required password"
                 class="mt-1 block w-full"
                 v-model="form.password_confirmation"
-                required
                 autocomplete="new-password"
             />
-
             <InputError
                 class="mt-2"
                 :message="form.errors.password_confirmation"
             />
         </div>
 
-        <div class="mt-4 flex items-center justify-end">
-            <Route route="login">
-                <Btn theme="link md main-600" label="Déjà inscrit ?" />
-            </Route>
+        <div class="mt-4 block text-center">
+            <div>
+                <Route route="login.show">
+                    <Btn theme="link md secondary" label="Déjà inscrit ?" />
+                </Route>
+            </div>
 
+            <div>
                 <Btn
-                    theme="main-600 glass submit"
-                    class="ms-4"
+                    theme="secondary glass submit"
+                    class="my-4"
                     :disabled="form.processing"
                     label="S'enregistrer"
                 />
+            </div>
+        </div>
+
+        <div class="mt-2 text-gray-600/80 dark:text-gray-400/60">
+            <p>Confidentialité des données</p>
+            <p class="max-w-80"><small>Nous nous engageons à ne partager aucune donnée avec des tiers. Vos informations ne seront pas utilisées à des fins statistiques. Aucune autre plateforme n'a accès aux informations que vous sauvegardez ici.</small></p>
         </div>
     </form>
 </template>
