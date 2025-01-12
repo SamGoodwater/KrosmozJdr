@@ -21,8 +21,6 @@ class RegisterController extends Controller
 
     public function add(RegisterFilterRequest $request): RedirectResponse
     {
-        $request->validate();
-
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,

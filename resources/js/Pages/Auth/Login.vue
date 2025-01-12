@@ -64,7 +64,7 @@ onMounted(() => {
 
             <div class="mt-4 flex items-center justify-center">
                 <Route route="auth.forget_password_show">
-                    <Btn theme="link sm gray-600"> Mot de passe oublié ? </Btn>
+                    <Btn theme="link sm simple"> Mot de passe oublié ? </Btn>
                 </Route>
 
                 <Btn
@@ -73,6 +73,10 @@ onMounted(() => {
                     :disabled="form.processing"
                     label="Se connecter"
                 />
+
+                <Route route="register.show">
+                    <Btn theme="link sm simple"> Pas encore de compte ? </Btn>
+                </Route>
             </div>
         </form>
     </div>

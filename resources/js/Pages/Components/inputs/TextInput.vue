@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted, defineExpose, computed } from 'vue';
+import { ref, onMounted, defineExpose, computed, defineEmits } from 'vue';
 import { useAttrs } from 'vue';
 
 const props = defineProps({
@@ -49,6 +49,7 @@ const props = defineProps({
     },
 });
 
+const emit = defineEmits(['update:modelValue']);
 const input = ref(null);
 const attrs = useAttrs();
 let colorRef = ref('gray-600');

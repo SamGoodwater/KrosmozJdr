@@ -13,7 +13,7 @@ class RegisterFilterRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -33,7 +33,7 @@ class RegisterFilterRequest extends FormRequest
     public function prepareForValidation(): void
     {
         $this->merge([
-            'email' => Str::lower($this->string('email'))
+            'email' => Str::lower($this->input('email'))
         ]);
     }
 }

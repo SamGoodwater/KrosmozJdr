@@ -15,10 +15,12 @@ const form = useForm({
 });
 
 const submit = () => {
+    console.log(form);
     form.post(route("register.add"), {
         onFinish: () => form.reset("password", "password_confirmation"),
     });
 };
+
 onMounted(() => {
     document.title = "Inscription";
 });
@@ -33,6 +35,7 @@ onMounted(() => {
                 theme="secondary autofocus required text"
                 class="mt-1 block w-full"
                 v-model="form.name"
+                aria-placeholder="Pseudo"
                 autocomplete="pseudo"
             />
             <InputError class="mt-2" :message="form.errors.name" />
@@ -45,32 +48,38 @@ onMounted(() => {
                 theme="secondary required email"
                 class="mt-1 block w-full"
                 v-model="form.email"
-                autocomplete="username"
+                aria-placeholder="exemple@exemple.fr"
+                autocomplete="email"
             />
             <InputError class="mt-2" :message="form.errors.email" />
         </div>
 
         <div class="mt-4">
-            <InputLabel for="password" value="Mot de passe / Passphrase" />
-
+            <InputLabel for="password" value="Mot de passe" />
             <TextInput
                 id="password"
-                theme="secondary required password"
+                type="password"
+                theme="secondary autofocus required text"
                 class="mt-1 block w-full"
                 v-model="form.password"
+                aria-placeholder="Mot de passe"
                 autocomplete="new-password"
             />
-
             <InputError class="mt-2" :message="form.errors.password" />
         </div>
 
         <div class="mt-4">
-            <InputLabel for="password_confirmation" value="Confirme  ton mot de passe / Passphrase" />
+            <InputLabel
+                for="password_confirmation"
+                value="Confirmer le mot de passe"
+            />
             <TextInput
                 id="password_confirmation"
-                theme="secondary required password"
+                type="password"
+                theme="secondary autofocus required text"
                 class="mt-1 block w-full"
                 v-model="form.password_confirmation"
+                aria-placeholder="Confirmer le mot de passe"
                 autocomplete="new-password"
             />
             <InputError
@@ -82,13 +91,14 @@ onMounted(() => {
         <div class="mt-4 block text-center">
             <div>
                 <Route route="login.show">
-                    <Btn theme="link md secondary" label="Déjà inscrit ?" />
+                    <Btn theme="link md simple" label="Déjà inscrit ?" />
                 </Route>
             </div>
 
             <div>
                 <Btn
-                    theme="secondary glass submit"
+                    type="submit"
+                    theme="secondary glass"
                     class="my-4"
                     :disabled="form.processing"
                     label="S'enregistrer"
@@ -98,7 +108,14 @@ onMounted(() => {
 
         <div class="mt-2 text-gray-600/80 dark:text-gray-400/60">
             <p>Confidentialité des données</p>
-            <p class="max-w-80"><small>Nous nous engageons à ne partager aucune donnée avec des tiers. Vos informations ne seront pas utilisées à des fins statistiques. Aucune autre plateforme n'a accès aux informations que vous sauvegardez ici.</small></p>
+            <p class="max-w-80">
+                <small
+                    >Nous nous engageons à ne partager aucune donnée avec des
+                    tiers. Vos informations ne seront pas utilisées à des fins
+                    statistiques. Aucune autre plateforme n'a accès aux
+                    informations que vous sauvegardez ici.</small
+                >
+            </p>
         </div>
     </form>
 </template>

@@ -1,5 +1,5 @@
 <script setup>
-import { computed, defineProps, ref, onMounted } from 'vue';
+import { computed, defineProps, ref, onMounted, defineEmits } from 'vue';
 
 const emit = defineEmits(['update:value']);
 
