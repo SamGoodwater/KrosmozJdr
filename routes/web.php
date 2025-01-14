@@ -37,6 +37,11 @@ Route::get('/', function () {
 // Auth
 require_once __DIR__ . '/auth.php';
 
+// Permanent
+Route::get('/contribuer', function () {
+    return Inertia::render('Permanent/contribute');
+})->name('contribute');
+
 // Pages
 Route::prefix('page')->name("page.")->controller(PageController::class)->group(function () use ($slugRegex, $uniqidRegex) {
     Route::inertia('/', 'index')->name('index');
