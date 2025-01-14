@@ -2,12 +2,11 @@
 
 namespace App\Models\Modules;
 
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 /**
- * 
+ *
  *
  * @mixin IdeHelperMob
  * @property int|null $creature_id
@@ -53,15 +52,6 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 class Mob extends Creature
 {
     use HasFactory, SoftDeletes;
-
-    const HOSTILITY = [
-        "amicale" => 0,
-        "currieux" => 1,
-        "neutre" => 2,
-        "perreux" => 3,
-        "agressif" => 4,
-        "hostile" => 5
-    ];
 
     const SIZE = [
         "très petite" => 0,

@@ -12,5 +12,5 @@ Route::prefix('spelltype')->name("spelltype.")->controller(SpelltypeController::
     Route::patch('/{spelltype:uniqid}', 'update')->name('update')->middleware(['auth', 'verified'])->where('spelltype', $uniqidRegex);
     Route::delete('/{spelltype:uniqid}', 'delete')->name('delete')->middleware(['auth', 'verified'])->where('spelltype', $uniqidRegex);
     Route::post('/{spelltype:uniqid}', 'restore')->name('restore')->middleware(['auth', 'verified'])->where('spelltype', $uniqidRegex);
-    Route::delete('/{spelltype:uniqid}', 'forcedDelete')->name('forcedDelete')->middleware(['auth', 'verified'])->where('spelltype', $uniqidRegex);
+    Route::delete('/forcedDelete/{spelltype:uniqid}', 'forcedDelete')->name('forcedDelete')->middleware(['auth', 'verified'])->where('spelltype', $uniqidRegex);
 });

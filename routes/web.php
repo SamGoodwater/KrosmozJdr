@@ -37,19 +37,6 @@ Route::get('/', function () {
 // Auth
 require_once __DIR__ . '/auth.php';
 
-// Users
-Route::prefix('user')->name("user.")->controller(UserController::class)->middleware(['auth', 'verified'])->group(function () use ($uniqidRegex) {
-    Route::inertia('/', 'index')->name('index');
-    Route::inertia('/{user:uniqid}', 'show')->name('show')->where('user', $uniqidRegex);
-    Route::inertia('/create', 'create')->name('create');
-    Route::post('/', 'store')->name('store');
-    Route::inertia('/{user:uniqid}/edit', 'edit')->name('edit')->where('user', $uniqidRegex);
-    Route::patch('/{user:uniqid}', 'update')->name('update')->where('user', $uniqidRegex);
-    Route::delete('/{user:uniqid}', 'delete')->name('delete')->where('user', $uniqidRegex);
-    Route::post('/{user:uniqid}', 'restore')->name('restore')->where('user', $uniqidRegex);
-    Route::delete('/{user:uniqid}', 'forcedDelete')->name('forcedDelete')->where('user', $uniqidRegex);
-});
-
 // Pages
 Route::prefix('page')->name("page.")->controller(PageController::class)->group(function () use ($slugRegex, $uniqidRegex) {
     Route::inertia('/', 'index')->name('index');
@@ -60,7 +47,7 @@ Route::prefix('page')->name("page.")->controller(PageController::class)->group(f
     Route::patch('/{page:uniqid}', 'update')->name('update')->middleware(['auth', 'verified'])->where('page', $uniqidRegex);
     Route::delete('/{page:uniqid}', 'delete')->name('delete')->middleware(['auth', 'verified'])->where('page', $uniqidRegex);
     Route::post('/{page:uniqid}', 'restore')->name('restore')->middleware(['auth', 'verified'])->where('page', $uniqidRegex);
-    Route::delete('/{page:uniqid}', 'forcedDelete')->name('forcedDelete')->middleware(['auth', 'verified'])->where('page', $uniqidRegex);
+    Route::delete('/forcedDelete/{page:uniqid}', 'forcedDelete')->name('forcedDelete')->middleware(['auth', 'verified'])->where('page', $uniqidRegex);
 });
 
 // Sections
@@ -73,7 +60,7 @@ Route::prefix("section")->name("section.")->controller(SectionController::class)
     Route::patch('/{section:uniqid}', 'update')->name('update')->middleware(['auth', 'verified'])->where('section', $uniqidRegex);
     Route::delete('/{section:uniqid}', 'delete')->name('delete')->middleware(['auth', 'verified'])->where('section', $uniqidRegex);
     Route::post('/{section:uniqid}', 'restore')->name('restore')->middleware(['auth', 'verified'])->where('section', $uniqidRegex);
-    Route::delete('/{section:uniqid}', 'forcedDelete')->name('forcedDelete')->middleware(['auth', 'verified'])->where('section', $uniqidRegex);
+    Route::delete('/forcedDelete/{section:uniqid}', 'forcedDelete')->name('forcedDelete')->middleware(['auth', 'verified'])->where('section', $uniqidRegex);
 });
 
 

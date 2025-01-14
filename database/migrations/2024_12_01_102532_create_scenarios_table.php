@@ -28,7 +28,7 @@ return new class extends Migration
             $table->foreignIdFor(\App\Models\User::class, 'created_by')->nullable()->constrained()->cascadeOnDelete();
         });
 
-        Schema::create('file_sscenario', function (Blueprint $table) {
+        Schema::create('file_scenario', function (Blueprint $table) {
             $table->id();
             $table->foreignIdFor(\App\Models\Modules\Scenario::class)->constrained()->cascadeOnDelete();
             $table->string('file');
@@ -121,9 +121,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::dropIfExists('scenarios');
-        Schema::table('scenarios', function (Blueprint $table) {
-            $table->dropForeignIdFor(\App\Models\User::class, 'created_by');
-        });
+        Schema::dropIfExists('file_scenario');
         Schema::dropIfExists('scenario_page');
         Schema::dropIfExists('consumable_scenario');
         Schema::dropIfExists('item_scenario');

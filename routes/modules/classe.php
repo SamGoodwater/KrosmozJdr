@@ -12,5 +12,5 @@ Route::prefix('classe')->name("classe.")->controller(ClasseController::class)->g
     Route::patch('/{classe:uniqid}', 'update')->name('update')->middleware(['auth', 'verified'])->where('classe', $uniqidRegex);
     Route::delete('/{classe:uniqid}', 'delete')->name('delete')->middleware(['auth', 'verified'])->where('classe', $uniqidRegex);
     Route::post('/{classe:uniqid}', 'restore')->name('restore')->middleware(['auth', 'verified'])->where('classe', $uniqidRegex);
-    Route::delete('/{classe:uniqid}', 'forcedDelete')->name('forcedDelete')->middleware(['auth', 'verified'])->where('classe', $uniqidRegex);
+    Route::delete('/forcedDelete/{classe:uniqid}', 'forcedDelete')->name('forcedDelete')->middleware(['auth', 'verified'])->where('classe', $uniqidRegex);
 });

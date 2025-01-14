@@ -12,5 +12,5 @@ Route::prefix('spell')->name("spell.")->controller(SpellController::class)->grou
     Route::patch('/{spell:uniqid}', 'update')->name('update')->middleware(['auth', 'verified'])->where('spell', $uniqidRegex);
     Route::delete('/{spell:uniqid}', 'delete')->name('delete')->middleware(['auth', 'verified'])->where('spell', $uniqidRegex);
     Route::post('/{spell:uniqid}', 'restore')->name('restore')->middleware(['auth', 'verified'])->where('spell', $uniqidRegex);
-    Route::delete('/{spell:uniqid}', 'forcedDelete')->name('forcedDelete')->middleware(['auth', 'verified'])->where('spell', $uniqidRegex);
+    Route::delete('/forcedDelete/{spell:uniqid}', 'forcedDelete')->name('forcedDelete')->middleware(['auth', 'verified'])->where('spell', $uniqidRegex);
 });

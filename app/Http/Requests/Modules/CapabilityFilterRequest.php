@@ -42,7 +42,7 @@ class CapabilityFilterRequest extends FormRequest
             "name" => ["string", "min:4", "max:255", "required"],
             "description" => ["string", "min:4", "max:1000", "nullable"],
             "is_visible" => ["boolean"],
-            "uniqid" => ["string", "min:1", "max:255", "required", Rule::unique("capabilitys", "uniqid")->ignore($this->route()->parameter('capability'))],
+            "uniqid" => ["string", "min:1", "max:255", "required", Rule::unique("capabilities", "uniqid")->ignore($this->route()->parameter('capability'))],
             'created_by' => ["integer", "nullable", "exists:users,id"],
             "image" => FileRules::rules([FileRules::TYPE_IMAGE]),
         ];

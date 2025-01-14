@@ -11,26 +11,6 @@ class AuthController extends Controller
 {
     use AuthorizesRequests;
 
-    public function login_show(AuthFilterRequest $request, User $use) : \Inertia\Response
-    {
-        return inertia('auth.login');
-    }
-
-    public function login_request(AuthFilterRequest $request) : \Illuminate\Http\JsonResponse
-    {
-        return response()->json(['message' => 'login_request']);
-    }
-
-    public function register_show(AuthFilterRequest $request, User $use) : \Inertia\Response
-    {
-        return inertia('auth.register');
-    }
-
-    public function register_request(AuthFilterRequest $request) : \Illuminate\Http\JsonResponse
-    {
-        return response()->json(['message' => 'register_request']);
-    }
-
     public function confirm_password_show(AuthFilterRequest $request, User $use) : \Inertia\Response
     {
         return inertia('auth.confirm_password');

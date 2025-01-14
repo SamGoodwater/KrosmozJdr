@@ -12,5 +12,5 @@ Route::prefix('campaign')->name("campaign.")->controller(CampaignController::cla
     Route::patch('/{campaign:uniqid}', 'update')->name('update')->middleware(['auth', 'verified'])->where('campaign', $uniqidRegex);
     Route::delete('/{campaign:uniqid}', 'delete')->name('delete')->middleware(['auth', 'verified'])->where('campaign', $uniqidRegex);
     Route::post('/{campaign:uniqid}', 'restore')->name('restore')->middleware(['auth', 'verified'])->where('campaign', $uniqidRegex);
-    Route::delete('/{campaign:uniqid}', 'forcedDelete')->name('forcedDelete')->middleware(['auth', 'verified'])->where('campaign', $uniqidRegex);
+    Route::delete('/forcedDelete/{campaign:uniqid}', 'forcedDelete')->name('forcedDelete')->middleware(['auth', 'verified'])->where('campaign', $uniqidRegex);
 });

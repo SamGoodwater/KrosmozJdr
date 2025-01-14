@@ -12,5 +12,5 @@ Route::prefix('npc')->name("npc.")->controller(NpcController::class)->group(func
     Route::patch('/{npc:uniqid}', 'update')->name('update')->middleware(['auth', 'verified'])->where('npc', $uniqidRegex);
     Route::delete('/{npc:uniqid}', 'delete')->name('delete')->middleware(['auth', 'verified'])->where('npc', $uniqidRegex);
     Route::post('/{npc:uniqid}', 'restore')->name('restore')->middleware(['auth', 'verified'])->where('npc', $uniqidRegex);
-    Route::delete('/{npc:uniqid}', 'forcedDelete')->name('forcedDelete')->middleware(['auth', 'verified'])->where('npc', $uniqidRegex);
+    Route::delete('/forcedDelete/{npc:uniqid}', 'forcedDelete')->name('forcedDelete')->middleware(['auth', 'verified'])->where('npc', $uniqidRegex);
 });

@@ -23,10 +23,10 @@ class CapabilityController extends Controller
         // Récupère la valeur de 'paginationMaxDisplay' depuis la requête, avec une valeur par défaut de 25
         $paginationMaxDisplay = max(1, min(500, (int) $request->input('paginationMaxDisplay', 25)));
 
-        $capabilitys = Capability::paginate($paginationMaxDisplay);
+        $capabilities = Capability::paginate($paginationMaxDisplay);
 
         return Inertia::render('capability.index', [
-            'capabilitys' => $capabilitys,
+            'capabilities' => $capabilities,
         ]);
     }
 
@@ -34,7 +34,7 @@ class CapabilityController extends Controller
     {
         $this->authorize('view', $capability);
 
-        return Inertia::render('Capabilitys/Show', [
+        return Inertia::render('Capabilities/Show', [
             'ressources' => $capability->ressources,
             'panoply' => $capability->panoply,
         ]);

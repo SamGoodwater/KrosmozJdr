@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Support\Facades\Storage;
 
 /**
- * 
+ *
  *
  * @mixin IdeHelperAttribute
  * @property int $id

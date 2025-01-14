@@ -26,7 +26,7 @@ return new class extends Migration
             $table->foreignIdFor(\App\Models\User::class, 'created_by')->nullable()->constrained()->cascadeOnDelete();
         });
 
-        Schema::create('capabilitys_specializations', function (Blueprint $table) {
+        Schema::create('capabilities_specializations', function (Blueprint $table) {
             $table->foreignIdFor(\App\Models\Modules\Capability::class)->constrained()->cascadeOnDelete();
             $table->foreignIdFor(\App\Models\Modules\Specialization::class)->constrained()->cascadeOnDelete();
             $table->primary(['capability_id', 'specialization_id']);
@@ -46,6 +46,6 @@ return new class extends Migration
         Schema::table('specializations', function (Blueprint $table) {
             $table->dropForeignIdFor(\App\Models\Page::class);
         });
-        Schema::dropIfExists('capabilitys_specializations');
+        Schema::dropIfExists('capabilities_specializations');
     }
 };

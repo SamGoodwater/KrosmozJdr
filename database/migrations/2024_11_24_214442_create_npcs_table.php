@@ -14,17 +14,17 @@ return new class extends Migration
      */
     public function up(): void
     {
-
         Schema::create('npcs', function (Blueprint $table) {
+            $table->id();
             $table->foreignIdFor(\App\Models\Modules\Creature::class)->nullable()->constrained()->cascadeOnDelete();
-            $table->primary(['creature_id']);
             $table->string('story')->nullable();
             $table->string('historical')->nullable();
             $table->string('age')->nullable();
             $table->string('size')->nullable();
-
-            $table->foreignIdFor(Classe::class)->nullable()->constrained()->cascadeOnDelete();
-            $table->foreignIdFor(Specialization::class)->nullable()->constrained()->cascadeOnDelete();
+            $table->foreignIdFor(\App\Models\Modules\Classe::class)->nullable()->constrained()->cascadeOnDelete();
+            $table->foreignIdFor(\App\Models\Modules\Specialization::class)->nullable()->constrained()->cascadeOnDelete();
+            $table->timestamps();
+            $table->softDeletes();
         });
     }
 

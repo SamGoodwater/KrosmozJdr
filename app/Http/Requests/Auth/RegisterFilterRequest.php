@@ -25,8 +25,8 @@ class RegisterFilterRequest extends FormRequest
     {
         return [
             'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'email', 'max:255', Rule::unique("users", "email")->ignore($this->route()->parameter('user'))],
-            'password' => ['required', 'confirmed', 'min:6'],
+            'email' => ['required', 'string', 'email', 'max:255', Rule::unique("users", "email")->ignore($this->route()->parameter('user'))],
+            'password' => ['required', 'string', 'confirmed', 'min:6'],
         ];
     }
 

@@ -12,5 +12,5 @@ Route::prefix('scenario')->name("scenario.")->controller(ScenarioController::cla
     Route::patch('/{scenario:uniqid}', 'update')->name('update')->middleware(['auth', 'verified'])->where('scenario', $uniqidRegex);
     Route::delete('/{scenario:uniqid}', 'delete')->name('delete')->middleware(['auth', 'verified'])->where('scenario', $uniqidRegex);
     Route::post('/{scenario:uniqid}', 'restore')->name('restore')->middleware(['auth', 'verified'])->where('scenario', $uniqidRegex);
-    Route::delete('/{scenario:uniqid}', 'forcedDelete')->name('forcedDelete')->middleware(['auth', 'verified'])->where('scenario', $uniqidRegex);
+    Route::delete('/forcedDelete/{scenario:uniqid}', 'forcedDelete')->name('forcedDelete')->middleware(['auth', 'verified'])->where('scenario', $uniqidRegex);
 });

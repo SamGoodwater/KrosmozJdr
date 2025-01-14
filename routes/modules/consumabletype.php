@@ -12,5 +12,5 @@ Route::prefix('consumabletype')->name("consumabletype.")->controller(Consumablet
     Route::patch('/{consumabletype:uniqid}', 'update')->name('update')->middleware(['auth', 'verified'])->where('consumabletype', $uniqidRegex);
     Route::delete('/{consumabletype:uniqid}', 'delete')->name('delete')->middleware(['auth', 'verified'])->where('consumabletype', $uniqidRegex);
     Route::post('/{consumabletype:uniqid}', 'restore')->name('restore')->middleware(['auth', 'verified'])->where('consumabletype', $uniqidRegex);
-    Route::delete('/{consumabletype:uniqid}', 'forcedDelete')->name('forcedDelete')->middleware(['auth', 'verified'])->where('consumabletype', $uniqidRegex);
+    Route::delete('/forcedDelete/{consumabletype:uniqid}', 'forcedDelete')->name('forcedDelete')->middleware(['auth', 'verified'])->where('consumabletype', $uniqidRegex);
 });

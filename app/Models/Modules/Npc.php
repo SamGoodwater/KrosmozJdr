@@ -2,12 +2,11 @@
 
 namespace App\Models\Modules;
 
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 /**
- * 
+ *
  *
  * @mixin IdeHelperNpc
  * @property int|null $creature_id

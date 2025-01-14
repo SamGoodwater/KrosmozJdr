@@ -12,5 +12,5 @@ Route::prefix('specialization')->name("specialization.")->controller(Specializat
     Route::patch('/{specialization:uniqid}', 'update')->name('update')->middleware(['auth', 'verified'])->where('specialization', $uniqidRegex);
     Route::delete('/{specialization:uniqid}', 'delete')->name('delete')->middleware(['auth', 'verified'])->where('specialization', $uniqidRegex);
     Route::post('/{specialization:uniqid}', 'restore')->name('restore')->middleware(['auth', 'verified'])->where('specialization', $uniqidRegex);
-    Route::delete('/{specialization:uniqid}', 'forcedDelete')->name('forcedDelete')->middleware(['auth', 'verified'])->where('specialization', $uniqidRegex);
+    Route::delete('/forcedDelete/{specialization:uniqid}', 'forcedDelete')->name('forcedDelete')->middleware(['auth', 'verified'])->where('specialization', $uniqidRegex);
 });

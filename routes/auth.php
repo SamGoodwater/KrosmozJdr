@@ -13,6 +13,8 @@
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Auth\AuthController;
+use App\Http\Controllers\UserController;
+use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 
 use Illuminate\Support\Facades\Route;
@@ -52,6 +54,24 @@ Route::prefix('auth')->name("auth.")->controller(AuthController::class)->group(f
     Route::post('/reset_password_request', 'reset_password_request')->name('reset_password_request');
     Route::get('/verify_email[user:uniqid]', 'verify_email_show')->name('verify_email_show')->where('user', $uniqidRegex);
     Route::post('/verify_email_request', 'verify_email_request')->name('verify_email_request');
+});
+
+// API
+Route::get('/checkuserlogged', function () {
+    return response()->json(['isLoggedIn' => Auth::check()]);
+})->middleware('auth');
+
+// Users
+Route::prefix('user')->name("user.")->controller(UserController::class)->middleware(['auth', 'verified'])->group(function () use ($uniqidRegex) {
+    Route::inertia('/', 'index')->name('index');
+    Route::inertia('/{user:uniqid}', 'show')->name('show')->where('user', $uniqidRegex);
+    Route::inertia('/create', 'create')->name('create');
+    Route::post('/', 'store')->name('store');
+    Route::inertia('/{user:uniqid}/edit', 'edit')->name('edit')->where('user', $uniqidRegex);
+    Route::patch('/{user:uniqid}', 'update')->name('update')->where('user', $uniqidRegex);
+    Route::delete('/{user:uniqid}', 'delete')->name('delete')->where('user', $uniqidRegex);
+    Route::post('/{user:uniqid}', 'restore')->name('restore')->where('user', $uniqidRegex);
+    Route::delete('/forcedDelete/{user:uniqid}', 'forcedDelete')->name('forcedDelete')->where('user', $uniqidRegex);
 });
 
 // Route::middleware('auth')->group(function () {

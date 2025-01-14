@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('capabilitys', function (Blueprint $table) {
+        Schema::create('capabilities', function (Blueprint $table) {
             $table->id();
             $table->string('uniqid', 20)->unique();
             $table->timestamps();
@@ -43,8 +43,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('capabilitys');
-        Schema::table('capabilitys', function (Blueprint $table) {
+        Schema::dropIfExists('capabilities');
+        Schema::table('capabilities', function (Blueprint $table) {
             $table->dropForeignIdFor(\App\Models\User::class, 'created_by');
         });
     }

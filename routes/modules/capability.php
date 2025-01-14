@@ -12,5 +12,5 @@ Route::prefix('capability')->name("capability.")->controller(CapabilityControlle
     Route::patch('/{capability:uniqid}', 'update')->name('update')->middleware(['auth', 'verified'])->where('capability', $uniqidRegex);
     Route::delete('/{capability:uniqid}', 'delete')->name('delete')->middleware(['auth', 'verified'])->where('capability', $uniqidRegex);
     Route::post('/{capability:uniqid}', 'restore')->name('restore')->middleware(['auth', 'verified'])->where('capability', $uniqidRegex);
-    Route::delete('/{capability:uniqid}', 'forcedDelete')->name('forcedDelete')->middleware(['auth', 'verified'])->where('capability', $uniqidRegex);
+    Route::delete('/forcedDelete/{capability:uniqid}', 'forcedDelete')->name('forcedDelete')->middleware(['auth', 'verified'])->where('capability', $uniqidRegex);
 });

@@ -12,5 +12,5 @@ Route::prefix('attribute')->name("attribute.")->controller(AttributeController::
     Route::patch('/{attribute:uniqid}', 'update')->name('update')->middleware(['auth', 'verified'])->where('attribute', $uniqidRegex);
     Route::delete('/{attribute:uniqid}', 'delete')->name('delete')->middleware(['auth', 'verified'])->where('attribute', $uniqidRegex);
     Route::post('/{attribute:uniqid}', 'restore')->name('restore')->middleware(['auth', 'verified'])->where('attribute', $uniqidRegex);
-    Route::delete('/{attribute:uniqid}', 'forcedDelete')->name('forcedDelete')->middleware(['auth', 'verified'])->where('attribute', $uniqidRegex);
+    Route::delete('/forcedDelete/{attribute:uniqid}', 'forcedDelete')->name('forcedDelete')->middleware(['auth', 'verified'])->where('attribute', $uniqidRegex);
 });

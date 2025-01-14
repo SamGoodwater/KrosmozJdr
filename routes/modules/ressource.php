@@ -12,5 +12,5 @@ Route::prefix('ressource')->name("ressource.")->controller(RessourceController::
     Route::patch('/{ressource:uniqid}', 'update')->name('update')->middleware(['auth', 'verified'])->where('ressource', $uniqidRegex);
     Route::delete('/{ressource:uniqid}', 'delete')->name('delete')->middleware(['auth', 'verified'])->where('ressource', $uniqidRegex);
     Route::post('/{ressource:uniqid}', 'restore')->name('restore')->middleware(['auth', 'verified'])->where('ressource', $uniqidRegex);
-    Route::delete('/{ressource:uniqid}', 'forcedDelete')->name('forcedDelete')->middleware(['auth', 'verified'])->where('ressource', $uniqidRegex);
+    Route::delete('/forcedDelete/{ressource:uniqid}', 'forcedDelete')->name('forcedDelete')->middleware(['auth', 'verified'])->where('ressource', $uniqidRegex);
 });

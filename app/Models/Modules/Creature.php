@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Support\Facades\Storage;
 
 /**
- * 
+ *
  *
  * @mixin IdeHelperCreature
  * @property int $id
@@ -323,32 +323,32 @@ class Creature extends Model
 
     public function ressources(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
     {
-        return $this->belongsToMany(Ressource::class)->withPivot('quantity'); // Voir si on garde withPivot (Set the columns on the pivot table to retrieve. : Définissez les colonnes du tableau croisé dynamique à récupérer.)
+        return $this->belongsToMany(Ressource::class, 'creature_ressource');
     }
 
     public function capabilities(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
     {
-        return $this->belongsToMany(Capability::class);
+        return $this->belongsToMany(Capability::class, 'capability_creature');
     }
 
     public function consumables(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
     {
-        return $this->belongsToMany(Consumable::class);
+        return $this->belongsToMany(Consumable::class, 'consumable_creature');
     }
 
     public function items(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
     {
-        return $this->belongsToMany(Item::class);
+        return $this->belongsToMany(Item::class, 'creature_item');
     }
 
     public function spells(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
     {
-        return $this->belongsToMany(Spell::class);
+        return $this->belongsToMany(Spell::class, 'creature_spell');
     }
 
-    public function attributes(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    public function attributes(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
     {
-        return $this->belongsTo(Attribute::class);
+        return $this->belongsToMany(Attribute::class, 'attribute_creature');
     }
 
     public function campaigns(): \Illuminate\Database\Eloquent\Relations\BelongsToMany

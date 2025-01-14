@@ -12,5 +12,5 @@ Route::prefix('condition')->name("condition.")->controller(ConditionController::
     Route::patch('/{condition:uniqid}', 'update')->name('update')->middleware(['auth', 'verified'])->where('condition', $uniqidRegex);
     Route::delete('/{condition:uniqid}', 'delete')->name('delete')->middleware(['auth', 'verified'])->where('condition', $uniqidRegex);
     Route::post('/{condition:uniqid}', 'restore')->name('restore')->middleware(['auth', 'verified'])->where('condition', $uniqidRegex);
-    Route::delete('/{condition:uniqid}', 'forcedDelete')->name('forcedDelete')->middleware(['auth', 'verified'])->where('condition', $uniqidRegex);
+    Route::delete('/forcedDelete/{condition:uniqid}', 'forcedDelete')->name('forcedDelete')->middleware(['auth', 'verified'])->where('condition', $uniqidRegex);
 });

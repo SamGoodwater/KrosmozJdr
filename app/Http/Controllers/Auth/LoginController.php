@@ -19,9 +19,9 @@ class LoginController extends Controller
 
     public function connect(LoginFilterRequest $request): RedirectResponse
     {
-        $credential = $request->validate();
+        // $credential = $request->validate();
 
-        if (Auth::attempt($credential)) {
+        if (Auth::attempt($request)) {
             $request->session()->regenerate();
             return redirect()->intended(route('home'));
         }

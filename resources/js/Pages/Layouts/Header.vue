@@ -2,10 +2,13 @@
 import searchInput from '@/Pages/Layouts/components/searchInput.vue';
 import toggleSidebar from '@/Pages/Layouts/components/ToggleSidebar.vue';
 import LoginHeaderContainer from '@/Pages/Layouts/components/LoginHeaderContainer.vue';
+import LoggedHeaderContainer from '@/Pages/Layouts/components/LoggedHeaderContainer.vue';
 import tooltips from '@/Pages/Components/feedback/tooltips.vue';
 import { useHeader } from '@/composables/useHeader';
 import { ref, onMounted } from 'vue';
 import { useSidebar } from '@/composables/useSidebar';
+
+let isUserLoggedIn = ref(false);
 
 const { isSidebarOpen } = useSidebar();
 
@@ -13,8 +16,22 @@ const { isHeaderOpen, toggleHeader } = useHeader();
 
 const appTitle = ref(import.meta.env.VITE_APP_NAME);
 
-onMounted(() => {
+onMounted(async () => {
     updateTitle();
+
+    try {
+        const response = await fetch('/checkuserlogged', {
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+            },
+            credentials: 'include', // pour envoyer les cookies avec chaque requête
+        });
+        const data = await response.json();
+        isUserLoggedIn.value = data.isLoggedIn;
+    } catch (error) {
+        console.error('Error checking login status:', error);
+    }
 });
 
 function updateTitle() {
@@ -44,7 +61,12 @@ function updateTitle() {
         </div>
 
         <div class="flex justify-content-between gap-3 align-items-center">
-            <LoginHeaderContainer />
+            <template v-if="isUserLoggedIn">
+                <LoggedHeaderContainer />
+            </template>
+            <template v-else>
+                <LoginHeaderContainer />
+            </template>
 
             <!-- Boutton pour déplier ou replier le header -->
             <tooltips bgColor="bg-body-900">

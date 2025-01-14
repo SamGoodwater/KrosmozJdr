@@ -12,5 +12,5 @@ Route::prefix('mobrace')->name("mobrace.")->controller(MobraceController::class)
     Route::patch('/{mobrace:uniqid}', 'update')->name('update')->middleware(['auth', 'verified'])->where('mobrace', $uniqidRegex);
     Route::delete('/{mobrace:uniqid}', 'delete')->name('delete')->middleware(['auth', 'verified'])->where('mobrace', $uniqidRegex);
     Route::post('/{mobrace:uniqid}', 'restore')->name('restore')->middleware(['auth', 'verified'])->where('mobrace', $uniqidRegex);
-    Route::delete('/{mobrace:uniqid}', 'forcedDelete')->name('forcedDelete')->middleware(['auth', 'verified'])->where('mobrace', $uniqidRegex);
+    Route::delete('/forcedDelete/{mobrace:uniqid}', 'forcedDelete')->name('forcedDelete')->middleware(['auth', 'verified'])->where('mobrace', $uniqidRegex);
 });

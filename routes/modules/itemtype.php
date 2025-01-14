@@ -12,5 +12,5 @@ Route::prefix('itemtype')->name("itemtype.")->controller(ItemtypeController::cla
     Route::patch('/{itemtype:uniqid}', 'update')->name('update')->middleware(['auth', 'verified'])->where('itemtype', $uniqidRegex);
     Route::delete('/{itemtype:uniqid}', 'delete')->name('delete')->middleware(['auth', 'verified'])->where('itemtype', $uniqidRegex);
     Route::post('/{itemtype:uniqid}', 'restore')->name('restore')->middleware(['auth', 'verified'])->where('itemtype', $uniqidRegex);
-    Route::delete('/{itemtype:uniqid}', 'forcedDelete')->name('forcedDelete')->middleware(['auth', 'verified'])->where('itemtype', $uniqidRegex);
+    Route::delete('/forcedDelete/{itemtype:uniqid}', 'forcedDelete')->name('forcedDelete')->middleware(['auth', 'verified'])->where('itemtype', $uniqidRegex);
 });

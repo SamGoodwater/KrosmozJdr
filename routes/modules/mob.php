@@ -12,5 +12,5 @@ Route::prefix('mob')->name("mob.")->controller(MobController::class)->group(func
     Route::patch('/{mob:uniqid}', 'update')->name('update')->middleware(['auth', 'verified'])->where('mob', $uniqidRegex);
     Route::delete('/{mob:uniqid}', 'delete')->name('delete')->middleware(['auth', 'verified'])->where('mob', $uniqidRegex);
     Route::post('/{mob:uniqid}', 'restore')->name('restore')->middleware(['auth', 'verified'])->where('mob', $uniqidRegex);
-    Route::delete('/{mob:uniqid}', 'forcedDelete')->name('forcedDelete')->middleware(['auth', 'verified'])->where('mob', $uniqidRegex);
+    Route::delete('/forcedDelete/{mob:uniqid}', 'forcedDelete')->name('forcedDelete')->middleware(['auth', 'verified'])->where('mob', $uniqidRegex);
 });
