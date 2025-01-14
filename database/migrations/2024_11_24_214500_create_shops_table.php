@@ -49,10 +49,10 @@ return new class extends Migration
             $table->softDeletes();
         });
 
-        Schema::create('ressource_shop', function (Blueprint $table) {
-            $table->foreignIdFor(\App\Models\Modules\Ressource::class)->constrained()->cascadeOnDelete();
+        Schema::create('resource_shop', function (Blueprint $table) {
+            $table->foreignIdFor(\App\Models\Modules\Resource::class)->constrained()->cascadeOnDelete();
             $table->foreignIdFor(\App\Models\Modules\Shop::class)->constrained()->cascadeOnDelete();
-            $table->primary(['ressource_id', 'shop_id']);
+            $table->primary(['resource_id', 'shop_id']);
             $table->string('quantity')->nullable();
             $table->string('price')->nullable();
             $table->string('comment')->nullable();
@@ -74,6 +74,6 @@ return new class extends Migration
         });
         Schema::dropIfExists('consumable_shop');
         Schema::dropIfExists('item_shop');
-        Schema::dropIfExists('ressource_shop');
+        Schema::dropIfExists('resource_shop');
     }
 };

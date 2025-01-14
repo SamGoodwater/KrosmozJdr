@@ -2,13 +2,13 @@
 
 namespace Database\Factories\Modules;
 
-use App\Models\Modules\Specialization;
+use App\Models\Modules\Spell;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Str;
 
-class SpecializationFactory extends Factory
+class SpellFactory extends Factory
 {
-    protected $model = Specialization::class;
+    protected $model = Spell::class;
 
     public function definition(): array
     {

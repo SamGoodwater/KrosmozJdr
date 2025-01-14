@@ -39,8 +39,8 @@ use App\Models\User;
  * @property-read int|null $pages_count
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Modules\Panoply> $panoplies
  * @property-read int|null $panoplies_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Modules\Ressource> $ressources
- * @property-read int|null $ressources_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Modules\Resource> $resources
+ * @property-read int|null $resources_count
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Modules\Scenario> $scenarios
  * @property-read int|null $scenarios_count
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Modules\Shop> $shops
@@ -69,6 +69,7 @@ use App\Models\User;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Campaign whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Campaign withTrashed()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Campaign withoutTrashed()
+ * @method static \Database\Factories\Modules\CampaignFactory factory($count = null, $state = [])
  * @mixin \Eloquent
  */
 class Campaign extends Model
@@ -154,9 +155,9 @@ class Campaign extends Model
         return $this->belongsToMany(Item::class);
     }
 
-    public function ressources(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
+    public function resources(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
     {
-        return $this->belongsToMany(Ressource::class);
+        return $this->belongsToMany(Resource::class);
     }
 
     public function consumables(): \Illuminate\Database\Eloquent\Relations\BelongsToMany

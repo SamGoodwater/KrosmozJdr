@@ -36,7 +36,7 @@ class MobController extends Controller
         $this->authorize('view', $mob);
 
         return Inertia::render('Mobs/Show', [
-            'ressources' => $mob->ressources,
+            'resources' => $mob->resources,
             'panoply' => $mob->panoply,
         ]);
     }
@@ -67,7 +67,7 @@ class MobController extends Controller
         $data['created_by'] = Auth::user()?->id ?? "-1";
         $mob = Mob::create($data);
         $mob->spells()->sync($request->input('spells'));
-        $mob->ressources()->sync($request->input('ressources'));
+        $mob->resources()->sync($request->input('resources'));
         $mob->attributes()->sync($request->input('attributes'));
         $mob->items()->sync($request->input('items'));
         $mob->capabilities()->sync($request->input('capabilities'));
@@ -84,7 +84,7 @@ class MobController extends Controller
 
         return Inertia::render('mob.edit', [
             'mob' => $mob,
-            'ressources' => $mob->ressources,
+            'resources' => $mob->resources,
             'panoply' => $mob->panoply,
         ]);
     }
@@ -108,7 +108,7 @@ class MobController extends Controller
         }
         $mob->update($data);
         $mob->spells()->sync($request->input('spells'));
-        $mob->ressources()->sync($request->input('ressources'));
+        $mob->resources()->sync($request->input('resources'));
         $mob->attributes()->sync($request->input('attributes'));
         $mob->items()->sync($request->input('items'));
         $mob->capabilities()->sync($request->input('capabilities'));
@@ -133,7 +133,7 @@ class MobController extends Controller
         $this->authorize('forceDelete', $mob);
 
         $mob->spells()->detach();
-        $mob->ressources()->detach();
+        $mob->resources()->detach();
         $mob->attributes()->detach();
         $mob->items()->detach();
         $mob->capabilities()->detach();

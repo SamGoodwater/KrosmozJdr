@@ -35,7 +35,7 @@ class ShopController extends Controller
         $this->authorize('view', $shop);
 
         return Inertia::render('Shops/Show', [
-            'ressources' => $shop->ressources,
+            'resources' => $shop->resources,
             'panoply' => $shop->panoply,
         ]);
     }
@@ -66,7 +66,7 @@ class ShopController extends Controller
         $data['created_by'] = Auth::user()?->id ?? "-1";
         $shop = Shop::create($data);
         $shop->items()->sync($request->input('items'));
-        $shop->ressources()->sync($request->input('ressources'));
+        $shop->resources()->sync($request->input('resources'));
         $shop->consumables()->sync($request->input('consumables'));
 
         event(new NotificationSuperAdminEvent('shop', 'create',  $shop));
@@ -80,7 +80,7 @@ class ShopController extends Controller
 
         return Inertia::render('shop.edit', [
             'shop' => $shop,
-            'ressources' => $shop->ressources,
+            'resources' => $shop->resources,
             'panoply' => $shop->panoply,
         ]);
     }
@@ -104,7 +104,7 @@ class ShopController extends Controller
         }
         $shop->update($data);
         $shop->items()->sync($request->input('items'));
-        $shop->ressources()->sync($request->input('ressources'));
+        $shop->resources()->sync($request->input('resources'));
         $shop->consumables()->sync($request->input('consumables'));
 
         event(new NotificationSuperAdminEvent('shop', "update", $shop, $old_shop));
@@ -126,7 +126,7 @@ class ShopController extends Controller
         $this->authorize('forceDelete', $shop);
 
         $shop->items()->detach();
-        $shop->ressources()->detach();
+        $shop->resources()->detach();
         $shop->consumables()->detach();
 
         DataService::deleteFile($shop, 'image');

@@ -35,7 +35,7 @@ class MobraceController extends Controller
         $this->authorize('view', $mobrace);
 
         return Inertia::render('Mobraces/Show', [
-            'ressources' => $mobrace->ressources,
+            'resources' => $mobrace->resources,
             'panoply' => $mobrace->panoply,
         ]);
     }
@@ -69,7 +69,7 @@ class MobraceController extends Controller
 
         return Inertia::render('mobrace.edit', [
             'mobrace' => $mobrace,
-            'ressources' => $mobrace->ressources,
+            'resources' => $mobrace->resources,
             'panoply' => $mobrace->panoply,
         ]);
     }

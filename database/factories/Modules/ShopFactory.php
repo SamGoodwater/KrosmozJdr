@@ -2,13 +2,13 @@
 
 namespace Database\Factories\Modules;
 
-use App\Models\Modules\Scenario;
+use App\Models\Modules\Shop;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Str;
 
-class ScenarioFactory extends Factory
+class ShopFactory extends Factory
 {
-    protected $model = Scenario::class;
+    protected $model = Shop::class;
 
     public function definition(): array
     {

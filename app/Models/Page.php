@@ -74,9 +74,7 @@ class Page extends Model
         'is_public',
         "is_visible",
         'is_editable',
-        "page_id",
         "uniqid",
-        'is_visible',
         'created_by',
 
     ];
@@ -85,7 +83,11 @@ class Page extends Model
 
     public function page(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
-        return $this->belongsTo(Page::class);
+        if ($this->page_id && $this->page_id > 0 && is_int($this->page_id)) {
+            return $this->belongsTo(Page::class);
+        } else {
+            return $this->page_id;
+        }
     }
 
     public function sections(): \Illuminate\Database\Eloquent\Relations\HasMany

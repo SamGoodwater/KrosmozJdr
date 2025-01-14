@@ -25,6 +25,53 @@ use Illuminate\Support\Facades\Storage;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Capability query()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Capability withTrashed()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Capability withoutTrashed()
+ * @property int $id
+ * @property string $uniqid
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property string $name
+ * @property string|null $description
+ * @property string|null $effect
+ * @property int $level
+ * @property string|null $pa
+ * @property string $po
+ * @property int $po_editable
+ * @property string|null $time_before_use_again
+ * @property string|null $casting_time
+ * @property string|null $duration
+ * @property int $element
+ * @property int $is_magic
+ * @property int $ritual_available
+ * @property int $powerful
+ * @property int $usable
+ * @property int $is_visible
+ * @property string|null $image
+ * @property \Illuminate\Support\Carbon|null $deleted_at
+ * @property int|null $created_by
+ * @method static \Database\Factories\Modules\CapabilityFactory factory($count = null, $state = [])
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Capability whereCastingTime($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Capability whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Capability whereCreatedBy($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Capability whereDeletedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Capability whereDescription($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Capability whereDuration($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Capability whereEffect($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Capability whereElement($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Capability whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Capability whereImage($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Capability whereIsMagic($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Capability whereIsVisible($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Capability whereLevel($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Capability whereName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Capability wherePa($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Capability wherePo($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Capability wherePoEditable($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Capability wherePowerful($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Capability whereRitualAvailable($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Capability whereTimeBeforeUseAgain($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Capability whereUniqid($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Capability whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Capability whereUsable($value)
  * @mixin \Eloquent
  */
 class Capability extends Model

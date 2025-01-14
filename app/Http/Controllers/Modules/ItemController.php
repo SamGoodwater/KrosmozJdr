@@ -35,7 +35,7 @@ class ItemController extends Controller
         $this->authorize('view', $item);
 
         return Inertia::render('Items/Show', [
-            'ressources' => $item->ressources,
+            'resources' => $item->resources,
             'panoply' => $item->panoply,
             'type' => $item->type()
         ]);
@@ -66,7 +66,7 @@ class ItemController extends Controller
         }
         $data['created_by'] = Auth::user()?->id ?? "-1";
         $item = Item::create($data);
-        $item->ressources()->sync($request->input('ressources', []));
+        $item->resources()->sync($request->input('resources', []));
 
         event(new NotificationSuperAdminEvent('item', 'create',  $item));
 
@@ -79,7 +79,7 @@ class ItemController extends Controller
 
         return Inertia::render('item.edit', [
             'item' => $item,
-            'ressources' => $item->ressources,
+            'resources' => $item->resources,
             'panoply' => $item->panoply,
             'type' => $item->type()
         ]);
@@ -103,7 +103,7 @@ class ItemController extends Controller
             return redirect()->back()->withInput();
         }
         $item->update($data);
-        $item->ressources()->sync($request->input('ressources', []));
+        $item->resources()->sync($request->input('resources', []));
 
         event(new NotificationSuperAdminEvent('item', "update", $item, $old_item));
 
@@ -123,7 +123,7 @@ class ItemController extends Controller
     {
         $this->authorize('forceDelete', $item);
 
-        $item->ressources()->detach();
+        $item->resources()->detach();
 
         DataService::deleteFile($item, 'image');
         event(new NotificationSuperAdminEvent('item', "forced_delete", $item));

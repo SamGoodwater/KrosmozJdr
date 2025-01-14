@@ -100,10 +100,10 @@ return new class extends Migration
             $table->softDeletes();
         });
 
-        Schema::create('ressource_scenario', function (Blueprint $table) {
-            $table->foreignIdFor(\App\Models\Modules\Ressource::class)->constrained()->onDelete('cascade');
+        Schema::create('resource_scenario', function (Blueprint $table) {
+            $table->foreignIdFor(\App\Models\Modules\Resource::class)->constrained()->onDelete('cascade');
             $table->foreignIdFor(\App\Models\Modules\Scenario::class)->constrained()->onDelete('cascade');
-            $table->primary(['ressource_id', 'scenario_id']);
+            $table->primary(['resource_id', 'scenario_id']);
             $table->softDeletes();
         });
 
@@ -131,7 +131,7 @@ return new class extends Migration
         Schema::dropIfExists('scenario_shop');
         Schema::dropIfExists('scenario_spell');
         Schema::dropIfExists('campaign_scenario');
-        Schema::dropIfExists('ressource_scenario');
+        Schema::dropIfExists('resource_scenario');
         Schema::dropIfExists('scenario_panoply');
     }
 };

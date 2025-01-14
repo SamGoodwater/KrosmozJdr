@@ -40,11 +40,11 @@ return new class extends Migration
             $table->foreignIdFor(\App\Models\User::class, 'created_by')->nullable()->constrained()->cascadeOnDelete();
         });
 
-        Schema::create('item_ressource', function (Blueprint $table) {
+        Schema::create('item_resource', function (Blueprint $table) {
             $table->foreignIdFor(\App\Models\Modules\Item::class)->constrained()->cascadeOnDelete();
-            $table->foreignIdFor(\App\Models\Modules\Ressource::class)->constrained()->cascadeOnDelete();
+            $table->foreignIdFor(\App\Models\Modules\Resource::class)->constrained()->cascadeOnDelete();
             $table->string('quantity')->default('1');
-            $table->primary(['item_id', 'ressource_id']);
+            $table->primary(['item_id', 'resource_id']);
             $table->softDeletes();
         });
 
@@ -62,7 +62,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::dropIfExists('items');
-        Schema::dropIfExists('item_ressource');
+        Schema::dropIfExists('item_resource');
         Schema::dropIfExists('item_panoply');
         Schema::table('items', function (Blueprint $table) {
             $table->dropForeignIdFor(\App\Models\User::class, 'created_by');

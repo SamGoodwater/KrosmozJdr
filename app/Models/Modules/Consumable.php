@@ -38,8 +38,8 @@ use Illuminate\Support\Facades\Storage;
  * @property-read int|null $mobs_count
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Modules\Npc> $npcs
  * @property-read int|null $npcs_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Modules\Ressource> $ressources
- * @property-read int|null $ressources_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Modules\Resource> $resources
+ * @property-read int|null $resources_count
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Modules\Scenario> $scenarios
  * @property-read int|null $scenarios_count
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Modules\Shop> $shops
@@ -104,9 +104,9 @@ class Consumable extends Model
         return $this->belongsTo(Consumabletype::class);
     }
 
-    public function ressources(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
+    public function resources(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
     {
-        return $this->belongsToMany(Ressource::class)->withPivot('quantity'); // Voir si on garde withPivot (Set the columns on the pivot table to retrieve. : Définissez les colonnes du tableau croisé dynamique à récupérer.)
+        return $this->belongsToMany(Resource::class)->withPivot('quantity'); // Voir si on garde withPivot (Set the columns on the pivot table to retrieve. : Définissez les colonnes du tableau croisé dynamique à récupérer.)
     }
 
     public function mobs(): \Illuminate\Database\Eloquent\Relations\BelongsToMany

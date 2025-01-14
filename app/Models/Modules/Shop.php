@@ -32,8 +32,8 @@ use Illuminate\Support\Facades\Storage;
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Modules\Item> $items
  * @property-read int|null $items_count
  * @property-read \App\Models\Modules\Npc|null $npc
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Modules\Ressource> $ressources
- * @property-read int|null $ressources_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Modules\Resource> $resources
+ * @property-read int|null $resources_count
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Modules\Scenario> $scenarios
  * @property-read int|null $scenarios_count
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Shop newModelQuery()
@@ -95,9 +95,9 @@ class Shop extends Model
         );
     }
 
-    public function ressources(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
+    public function resources(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
     {
-        return $this->belongsToMany(Ressource::class)->withPivot(
+        return $this->belongsToMany(Resource::class)->withPivot(
             'quantity',
             'price',
             'comment'

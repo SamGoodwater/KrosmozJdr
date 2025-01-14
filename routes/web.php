@@ -12,14 +12,14 @@
 // use App\Http\Controllers\Modules\MobraceController;
 // use App\Http\Controllers\Modules\NpcController;
 // use App\Http\Controllers\Modules\PanoplyController;
-// use App\Http\Controllers\Modules\RessourceController;
+// use App\Http\Controllers\Modules\ResourceController;
 // use App\Http\Controllers\Modules\ShopController;
 // use App\Http\Controllers\Modules\SpecializationController;
 // use App\Http\Controllers\Modules\SpellController;
 // use App\Http\Controllers\Modules\SpelltypeController;
 // use App\Http\Controllers\Modules\ItemtypeController;
 // use App\Http\Controllers\Modules\ConsumabletypeController;
-// use App\Http\Controllers\Modules\RessourcetypeController;
+// use App\Http\Controllers\Modules\ResourcetypeController;
 
 use App\Http\Controllers\SectionController;
 use App\Http\Controllers\UserController;
@@ -111,11 +111,11 @@ require_once __DIR__ . '/modules/npc.php';
 // Panoplies
 require_once __DIR__ . '/modules/panoply.php';
 
-// Ressources
-require_once __DIR__ . '/modules/ressource.php';
+// Resources
+require_once __DIR__ . '/modules/resource.php';
 
-// RessourceTypes
-require_once __DIR__ . '/modules/ressourcetype.php';
+// ResourceTypes
+require_once __DIR__ . '/modules/resourcetype.php';
 
 // Shops
 require_once __DIR__ . '/modules/shop.php';

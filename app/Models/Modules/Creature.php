@@ -94,7 +94,7 @@ use Illuminate\Support\Facades\Storage;
  * @property string|null $drop_
  * @property string|null $other_item
  * @property string|null $other_consumable
- * @property string|null $other_ressource
+ * @property string|null $other_resource
  * @property string|null $other_spell
  * @property int $usable
  * @property int $is_visible
@@ -110,8 +110,8 @@ use Illuminate\Support\Facades\Storage;
  * @property-read int|null $consumables_count
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Modules\Item> $items
  * @property-read int|null $items_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Modules\Ressource> $ressources
- * @property-read int|null $ressources_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Modules\Resource> $resources
+ * @property-read int|null $resources_count
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Modules\Scenario> $scenarios
  * @property-read int|null $scenarios_count
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Modules\Spell> $spells
@@ -173,7 +173,7 @@ use Illuminate\Support\Facades\Storage;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Creature whereOtherConsumable($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Creature whereOtherInfo($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Creature whereOtherItem($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Creature whereOtherRessource($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Creature whereOtherResource($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Creature whereOtherSpell($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Creature wherePa($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Creature wherePerceptionBonus($value)
@@ -321,9 +321,9 @@ class Creature extends Model
         'deleted_at'
     ];
 
-    public function ressources(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
+    public function resources(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
     {
-        return $this->belongsToMany(Ressource::class, 'creature_ressource');
+        return $this->belongsToMany(Resource::class, 'creature_resource');
     }
 
     public function capabilities(): \Illuminate\Database\Eloquent\Relations\BelongsToMany

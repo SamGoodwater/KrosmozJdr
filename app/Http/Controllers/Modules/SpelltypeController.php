@@ -35,7 +35,7 @@ class SpelltypeController extends Controller
         $this->authorize('view', $spelltype);
 
         return Inertia::render('Spelltypes/Show', [
-            'ressources' => $spelltype->ressources,
+            'resources' => $spelltype->resources,
             'panoply' => $spelltype->panoply,
         ]);
     }
@@ -69,7 +69,7 @@ class SpelltypeController extends Controller
 
         return Inertia::render('spelltype.edit', [
             'spelltype' => $spelltype,
-            'ressources' => $spelltype->ressources,
+            'resources' => $spelltype->resources,
             'panoply' => $spelltype->panoply,
         ]);
     }

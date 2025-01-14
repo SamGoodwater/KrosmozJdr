@@ -35,7 +35,7 @@ class CapabilityController extends Controller
         $this->authorize('view', $capability);
 
         return Inertia::render('Capabilities/Show', [
-            'ressources' => $capability->ressources,
+            'resources' => $capability->resources,
             'panoply' => $capability->panoply,
         ]);
     }
@@ -78,7 +78,7 @@ class CapabilityController extends Controller
 
         return Inertia::render('capability.edit', [
             'capability' => $capability,
-            'ressources' => $capability->ressources,
+            'resources' => $capability->resources,
             'panoply' => $capability->panoply,
         ]);
     }

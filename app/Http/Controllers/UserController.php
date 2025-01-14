@@ -34,7 +34,7 @@ class UserController extends Controller
         $this->authorize('view', $user);
 
         return Inertia::render('Users/Show', [
-            'ressources' => $user->ressources,
+            'resources' => $user->resources,
             'panoply' => $user->panoply,
         ]);
     }
@@ -78,7 +78,7 @@ class UserController extends Controller
 
         return Inertia::render('Users/Edit', [
             'user' => $user,
-            'ressources' => $user->ressources,
+            'resources' => $user->resources,
             'panoply' => $user->panoply,
         ]);
     }

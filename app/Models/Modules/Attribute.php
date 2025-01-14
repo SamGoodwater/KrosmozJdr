@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Support\Facades\Storage;
 
 /**
- *
+ * 
  *
  * @mixin IdeHelperAttribute
  * @property int $id
@@ -43,6 +43,7 @@ use Illuminate\Support\Facades\Storage;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Attribute whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Attribute withTrashed()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Attribute withoutTrashed()
+ * @method static \Database\Factories\Modules\AttributeFactory factory($count = null, $state = [])
  * @mixin \Eloquent
  */
 class Attribute extends Model

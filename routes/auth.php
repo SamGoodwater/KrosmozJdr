@@ -36,8 +36,7 @@ use Illuminate\Support\Facades\Route;
 // Auth
 Route::prefix('connexion')->name("login.")->controller(LoginController::class)->middleware('guest')->group(function () {
     Route::get('/', 'show')->name('show');
-    Route::post('/connect', 'connect')->name('connect');
-    Route::post('/logout', 'logout')->name('logout');
+    Route::post('/login', 'login')->name('login');
 });
 
 Route::prefix('inscription')->name("register.")->controller(RegisterController::class)->group(function () {
@@ -46,6 +45,7 @@ Route::prefix('inscription')->name("register.")->controller(RegisterController::
 });
 
 Route::prefix('auth')->name("auth.")->controller(AuthController::class)->group(function () use ($uniqidRegex) {
+    Route::delete('/logout', 'logout')->name('logout');
     Route::get('/confirm_password[user:uniqid]', 'confirm_password_show')->name('confirm_password_show')->where('user', $uniqidRegex);
     Route::post('/confirm_password_request', 'confirm_password_request')->name('confirm_password_request');
     Route::get('/forget_password[user:uniqid]', 'forget_password_show')->name('forget_password_show')->where('user', $uniqidRegex);

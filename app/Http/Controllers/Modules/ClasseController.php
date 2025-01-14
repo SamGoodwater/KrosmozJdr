@@ -35,7 +35,7 @@ class ClasseController extends Controller
         $this->authorize('view', $classe);
 
         return Inertia::render('Classes/Show', [
-            'ressources' => $classe->ressources,
+            'resources' => $classe->resources,
             'panoply' => $classe->panoply,
         ]);
     }
@@ -87,7 +87,7 @@ class ClasseController extends Controller
 
         return Inertia::render('classe.edit', [
             'classe' => $classe,
-            'ressources' => $classe->ressources,
+            'resources' => $classe->resources,
             'panoply' => $classe->panoply,
         ]);
     }

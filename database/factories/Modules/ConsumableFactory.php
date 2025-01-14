@@ -2,13 +2,13 @@
 
 namespace Database\Factories\Modules;
 
-use App\Models\Modules\Condition;
+use App\Models\Modules\Consumable;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Str;
 
-class ConditionFactory extends Factory
+class ConsumableFactory extends Factory
 {
-    protected $model = Condition::class;
+    protected $model = Consumable::class;
 
     public function definition(): array
     {

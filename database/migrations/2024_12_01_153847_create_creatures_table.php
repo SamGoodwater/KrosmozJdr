@@ -91,7 +91,7 @@ return new class extends Migration
             $table->string('drop_')->nullable();
             $table->string('other_item')->nullable();
             $table->string('other_consumable')->nullable();
-            $table->string('other_ressource')->nullable();
+            $table->string('other_resource')->nullable();
             $table->string('other_spell')->nullable();
             $table->boolean('usable')->default(true);
             $table->boolean('is_visible')->default(false);
@@ -131,11 +131,11 @@ return new class extends Migration
             $table->softDeletes();
         });
 
-        Schema::create('creature_ressource', function (Blueprint $table) {
+        Schema::create('creature_resource', function (Blueprint $table) {
             $table->foreignIdFor(\App\Models\Modules\Creature::class)->constrained()->cascadeOnDelete();
-            $table->foreignIdFor(\App\Models\Modules\Ressource::class)->constrained()->cascadeOnDelete();
+            $table->foreignIdFor(\App\Models\Modules\Resource::class)->constrained()->cascadeOnDelete();
             $table->string('quantity')->default('1');
-            $table->primary(['creature_id', 'ressource_id']);
+            $table->primary(['creature_id', 'resource_id']);
             $table->softDeletes();
         });
 
@@ -157,7 +157,7 @@ return new class extends Migration
         Schema::dropIfExists('consumable_creature');
         Schema::dropIfExists('creature_item');
         Schema::dropIfExists('creature_spell');
-        Schema::dropIfExists('creature_ressource');
+        Schema::dropIfExists('creature_resource');
         Schema::dropIfExists('attribute_creature');
     }
 };

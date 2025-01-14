@@ -65,6 +65,7 @@ use Illuminate\Support\Facades\Storage;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Classe whereUsable($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Classe withTrashed()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Classe withoutTrashed()
+ * @method static \Database\Factories\Modules\ClasseFactory factory($count = null, $state = [])
  * @mixin \Eloquent
  */
 class Classe extends Model

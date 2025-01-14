@@ -48,6 +48,7 @@ namespace App\Models\Modules{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Attribute whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Attribute withTrashed()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Attribute withoutTrashed()
+ * @method static \Database\Factories\Modules\AttributeFactory factory($count = null, $state = [])
  * @mixin \Eloquent
  */
 	class Attribute extends \Eloquent {}
@@ -84,8 +85,8 @@ namespace App\Models\Modules{
  * @property-read int|null $pages_count
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Modules\Panoply> $panoplies
  * @property-read int|null $panoplies_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Modules\Ressource> $ressources
- * @property-read int|null $ressources_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Modules\Resource> $resources
+ * @property-read int|null $resources_count
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Modules\Scenario> $scenarios
  * @property-read int|null $scenarios_count
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Modules\Shop> $shops
@@ -114,6 +115,7 @@ namespace App\Models\Modules{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Campaign whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Campaign withTrashed()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Campaign withoutTrashed()
+ * @method static \Database\Factories\Modules\CampaignFactory factory($count = null, $state = [])
  * @mixin \Eloquent
  */
 	class Campaign extends \Eloquent {}
@@ -138,6 +140,53 @@ namespace App\Models\Modules{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Capability query()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Capability withTrashed()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Capability withoutTrashed()
+ * @property int $id
+ * @property string $uniqid
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property string $name
+ * @property string|null $description
+ * @property string|null $effect
+ * @property int $level
+ * @property string|null $pa
+ * @property string $po
+ * @property int $po_editable
+ * @property string|null $time_before_use_again
+ * @property string|null $casting_time
+ * @property string|null $duration
+ * @property int $element
+ * @property int $is_magic
+ * @property int $ritual_available
+ * @property int $powerful
+ * @property int $usable
+ * @property int $is_visible
+ * @property string|null $image
+ * @property \Illuminate\Support\Carbon|null $deleted_at
+ * @property int|null $created_by
+ * @method static \Database\Factories\Modules\CapabilityFactory factory($count = null, $state = [])
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Capability whereCastingTime($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Capability whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Capability whereCreatedBy($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Capability whereDeletedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Capability whereDescription($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Capability whereDuration($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Capability whereEffect($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Capability whereElement($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Capability whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Capability whereImage($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Capability whereIsMagic($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Capability whereIsVisible($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Capability whereLevel($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Capability whereName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Capability wherePa($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Capability wherePo($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Capability wherePoEditable($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Capability wherePowerful($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Capability whereRitualAvailable($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Capability whereTimeBeforeUseAgain($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Capability whereUniqid($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Capability whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Capability whereUsable($value)
  * @mixin \Eloquent
  */
 	class Capability extends \Eloquent {}
@@ -202,6 +251,7 @@ namespace App\Models\Modules{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Classe whereUsable($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Classe withTrashed()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Classe withoutTrashed()
+ * @method static \Database\Factories\Modules\ClasseFactory factory($count = null, $state = [])
  * @mixin \Eloquent
  */
 	class Classe extends \Eloquent {}
@@ -244,6 +294,7 @@ namespace App\Models\Modules{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Condition whereUsable($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Condition withTrashed()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Condition withoutTrashed()
+ * @method static \Database\Factories\Modules\ConditionFactory factory($count = null, $state = [])
  * @mixin \Eloquent
  */
 	class Condition extends \Eloquent {}
@@ -281,8 +332,8 @@ namespace App\Models\Modules{
  * @property-read int|null $mobs_count
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Modules\Npc> $npcs
  * @property-read int|null $npcs_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Modules\Ressource> $ressources
- * @property-read int|null $ressources_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Modules\Resource> $resources
+ * @property-read int|null $resources_count
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Modules\Scenario> $scenarios
  * @property-read int|null $scenarios_count
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Modules\Shop> $shops
@@ -316,6 +367,7 @@ namespace App\Models\Modules{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Consumable withTrashed()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Consumable withoutTrashed()
  * @mixin \Eloquent
+ * @method static \Database\Factories\Modules\ConsumableFactory factory($count = null, $state = [])
  */
 	class Consumable extends \Eloquent {}
 }
@@ -435,7 +487,7 @@ namespace App\Models\Modules{
  * @property string|null $drop_
  * @property string|null $other_item
  * @property string|null $other_consumable
- * @property string|null $other_ressource
+ * @property string|null $other_resource
  * @property string|null $other_spell
  * @property int $usable
  * @property int $is_visible
@@ -451,8 +503,8 @@ namespace App\Models\Modules{
  * @property-read int|null $consumables_count
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Modules\Item> $items
  * @property-read int|null $items_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Modules\Ressource> $ressources
- * @property-read int|null $ressources_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Modules\Resource> $resources
+ * @property-read int|null $resources_count
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Modules\Scenario> $scenarios
  * @property-read int|null $scenarios_count
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Modules\Spell> $spells
@@ -514,7 +566,7 @@ namespace App\Models\Modules{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Creature whereOtherConsumable($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Creature whereOtherInfo($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Creature whereOtherItem($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Creature whereOtherRessource($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Creature whereOtherResource($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Creature whereOtherSpell($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Creature wherePa($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Creature wherePerceptionBonus($value)
@@ -554,6 +606,7 @@ namespace App\Models\Modules{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Creature withTrashed()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Creature withoutTrashed()
  * @mixin \Eloquent
+ * @property-read int|null $attributes_count
  */
 	class Creature extends \Eloquent {}
 }
@@ -597,8 +650,8 @@ namespace App\Models\Modules{
  * @property-read int|null $npcs_count
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Modules\Panoply> $panoply
  * @property-read int|null $panoply_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Modules\Ressource> $ressources
- * @property-read int|null $ressources_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Modules\Resource> $resources
+ * @property-read int|null $resources_count
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Modules\Scenario> $scenarios
  * @property-read int|null $scenarios_count
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Modules\Shop> $shops
@@ -637,6 +690,7 @@ namespace App\Models\Modules{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Item withTrashed()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Item withoutTrashed()
  * @mixin \Eloquent
+ * @method static \Database\Factories\Modules\ItemFactory factory($count = null, $state = [])
  */
 	class Item extends \Eloquent {}
 }
@@ -692,8 +746,8 @@ namespace App\Models\Modules{
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Modules\Item> $items
  * @property-read int|null $items_count
  * @property-read \App\Models\Modules\Mobrace|null $mobrace
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Modules\Ressource> $ressources
- * @property-read int|null $ressources_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Modules\Resource> $resources
+ * @property-read int|null $resources_count
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Modules\Scenario> $scenarios
  * @property-read int|null $scenarios_count
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Modules\Spell> $spells
@@ -712,6 +766,16 @@ namespace App\Models\Modules{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Mob withTrashed()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Mob withoutTrashed()
  * @mixin \Eloquent
+ * @property int $id
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property \Illuminate\Support\Carbon|null $deleted_at
+ * @property-read int|null $attributes_count
+ * @method static \Database\Factories\Modules\MobFactory factory($count = null, $state = [])
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Mob whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Mob whereDeletedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Mob whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Mob whereUpdatedAt($value)
  */
 	class Mob extends \Eloquent {}
 }
@@ -748,6 +812,7 @@ namespace App\Models\Modules{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Mobrace withTrashed()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Mobrace withoutTrashed()
  * @mixin \Eloquent
+ * @method static \Database\Factories\Modules\MobraceFactory factory($count = null, $state = [])
  */
 	class Mobrace extends \Eloquent {}
 }
@@ -774,8 +839,8 @@ namespace App\Models\Modules{
  * @property-read int|null $consumables_count
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Modules\Item> $items
  * @property-read int|null $items_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Modules\Ressource> $ressources
- * @property-read int|null $ressources_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Modules\Resource> $resources
+ * @property-read int|null $resources_count
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Modules\Scenario> $scenarios
  * @property-read int|null $scenarios_count
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Modules\Shop> $shops
@@ -797,6 +862,16 @@ namespace App\Models\Modules{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Npc withTrashed()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Npc withoutTrashed()
  * @mixin \Eloquent
+ * @property int $id
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property \Illuminate\Support\Carbon|null $deleted_at
+ * @property-read int|null $attributes_count
+ * @method static \Database\Factories\Modules\NpcFactory factory($count = null, $state = [])
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Npc whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Npc whereDeletedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Npc whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Npc whereUpdatedAt($value)
  */
 	class Npc extends \Eloquent {}
 }
@@ -841,6 +916,7 @@ namespace App\Models\Modules{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Panoply withTrashed()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Panoply withoutTrashed()
  * @mixin \Eloquent
+ * @method static \Database\Factories\Modules\PanoplyFactory factory($count = null, $state = [])
  */
 	class Panoply extends \Eloquent {}
 }
@@ -849,7 +925,7 @@ namespace App\Models\Modules{
 /**
  * 
  *
- * @mixin IdeHelperRessource
+ * @mixin IdeHelperResource
  * @property int $id
  * @property string|null $dofusdb_id
  * @property int|null $official_id
@@ -868,7 +944,7 @@ namespace App\Models\Modules{
  * @property string|null $image
  * @property int $auto_update
  * @property \Illuminate\Support\Carbon|null $deleted_at
- * @property int|null $ressourcetype_id
+ * @property int|null $resourcetype_id
  * @property int|null $created_by
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Modules\Campaign> $campaigns
  * @property-read int|null $campaigns_count
@@ -884,63 +960,64 @@ namespace App\Models\Modules{
  * @property-read int|null $scenarios_count
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Modules\Shop> $shops
  * @property-read int|null $shops_count
- * @property-read \App\Models\Modules\Ressourcetype|null $type
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Ressource newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Ressource newQuery()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Ressource onlyTrashed()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Ressource query()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Ressource whereAutoUpdate($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Ressource whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Ressource whereCreatedBy($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Ressource whereDeletedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Ressource whereDescription($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Ressource whereDofusVersion($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Ressource whereDofusdbId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Ressource whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Ressource whereImage($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Ressource whereIsVisible($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Ressource whereLevel($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Ressource whereName($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Ressource whereOfficialId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Ressource wherePrice($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Ressource whereRarity($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Ressource whereRessourcetypeId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Ressource whereUniqid($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Ressource whereUpdatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Ressource whereUsable($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Ressource whereWeight($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Ressource withTrashed()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Ressource withoutTrashed()
+ * @property-read \App\Models\Modules\Resourcetype|null $type
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Resource newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Resource newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Resource onlyTrashed()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Resource query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Resource whereAutoUpdate($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Resource whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Resource whereCreatedBy($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Resource whereDeletedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Resource whereDescription($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Resource whereDofusVersion($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Resource whereDofusdbId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Resource whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Resource whereImage($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Resource whereIsVisible($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Resource whereLevel($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Resource whereName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Resource whereOfficialId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Resource wherePrice($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Resource whereRarity($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Resource whereResourcetypeId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Resource whereUniqid($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Resource whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Resource whereUsable($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Resource whereWeight($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Resource withTrashed()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Resource withoutTrashed()
  * @mixin \Eloquent
+ * @method static \Database\Factories\Modules\ResourceFactory factory($count = null, $state = [])
  */
-	class Ressource extends \Eloquent {}
+	class Resource extends \Eloquent {}
 }
 
 namespace App\Models\Modules{
 /**
  * 
  *
- * @mixin IdeHelperRessourcetype
+ * @mixin IdeHelperResourcetype
  * @property int $id
  * @property string $uniqid
  * @property string $name
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property string|null $deleted_at
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Modules\Ressource> $ressources
- * @property-read int|null $ressources_count
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Ressourcetype newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Ressourcetype newQuery()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Ressourcetype query()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Ressourcetype whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Ressourcetype whereDeletedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Ressourcetype whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Ressourcetype whereName($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Ressourcetype whereUniqid($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Ressourcetype whereUpdatedAt($value)
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Modules\Resource> $resources
+ * @property-read int|null $resources_count
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Resourcetype newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Resourcetype newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Resourcetype query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Resourcetype whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Resourcetype whereDeletedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Resourcetype whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Resourcetype whereName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Resourcetype whereUniqid($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Resourcetype whereUpdatedAt($value)
  * @mixin \Eloquent
  */
-	class Ressourcetype extends \Eloquent {}
+	class Resourcetype extends \Eloquent {}
 }
 
 namespace App\Models\Modules{
@@ -976,8 +1053,8 @@ namespace App\Models\Modules{
  * @property-read int|null $pages_count
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Modules\Panoply> $panoplies
  * @property-read int|null $panoplies_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Modules\Ressource> $ressources
- * @property-read int|null $ressources_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Modules\Resource> $resources
+ * @property-read int|null $resources_count
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Modules\Shop> $shops
  * @property-read int|null $shops_count
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Modules\Spell> $spells
@@ -1005,6 +1082,7 @@ namespace App\Models\Modules{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Scenario withTrashed()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Scenario withoutTrashed()
  * @mixin \Eloquent
+ * @method static \Database\Factories\Modules\ScenarioFactory factory($count = null, $state = [])
  */
 	class Scenario extends \Eloquent {}
 }
@@ -1035,8 +1113,8 @@ namespace App\Models\Modules{
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Modules\Item> $items
  * @property-read int|null $items_count
  * @property-read \App\Models\Modules\Npc|null $npc
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Modules\Ressource> $ressources
- * @property-read int|null $ressources_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Modules\Resource> $resources
+ * @property-read int|null $resources_count
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Modules\Scenario> $scenarios
  * @property-read int|null $scenarios_count
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Shop newModelQuery()
@@ -1060,6 +1138,7 @@ namespace App\Models\Modules{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Shop withTrashed()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Shop withoutTrashed()
  * @mixin \Eloquent
+ * @method static \Database\Factories\Modules\ShopFactory factory($count = null, $state = [])
  */
 	class Shop extends \Eloquent {}
 }
@@ -1103,6 +1182,7 @@ namespace App\Models\Modules{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Specialization withTrashed()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Specialization withoutTrashed()
  * @mixin \Eloquent
+ * @method static \Database\Factories\Modules\SpecializationFactory factory($count = null, $state = [])
  */
 	class Specialization extends \Eloquent {}
 }
@@ -1189,6 +1269,7 @@ namespace App\Models\Modules{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Spell withTrashed()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Spell withoutTrashed()
  * @mixin \Eloquent
+ * @method static \Database\Factories\Modules\SpellFactory factory($count = null, $state = [])
  */
 	class Spell extends \Eloquent {}
 }
@@ -1227,6 +1308,7 @@ namespace App\Models\Modules{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Spelltype withTrashed()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Spelltype withoutTrashed()
  * @mixin \Eloquent
+ * @method static \Database\Factories\Modules\SpelltypeFactory factory($count = null, $state = [])
  */
 	class Spelltype extends \Eloquent {}
 }
@@ -1323,6 +1405,7 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Section withTrashed()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Section withoutTrashed()
  * @mixin \Eloquent
+ * @method static \Database\Factories\SectionFactory factory($count = null, $state = [])
  */
 	class Section extends \Eloquent {}
 }

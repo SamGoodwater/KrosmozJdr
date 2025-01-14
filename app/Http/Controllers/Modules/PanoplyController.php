@@ -35,7 +35,7 @@ class PanoplyController extends Controller
         $this->authorize('view', $panoply);
 
         return Inertia::render('Panoplys/Show', [
-            'ressources' => $panoply->ressources,
+            'resources' => $panoply->resources,
             'panoply' => $panoply->panoply,
         ]);
     }
@@ -78,7 +78,7 @@ class PanoplyController extends Controller
 
         return Inertia::render('panoply.edit', [
             'panoply' => $panoply,
-            'ressources' => $panoply->ressources,
+            'resources' => $panoply->resources,
             'panoply' => $panoply->panoply,
         ]);
     }

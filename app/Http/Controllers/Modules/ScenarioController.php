@@ -35,7 +35,7 @@ class ScenarioController extends Controller
         $this->authorize('view', $scenario);
 
         return Inertia::render('Scenarios/Show', [
-            'ressources' => $scenario->ressources,
+            'resources' => $scenario->resources,
             'panoply' => $scenario->panoply,
             'files' => $scenario->getPathFiles(),
         ]);
@@ -78,7 +78,7 @@ class ScenarioController extends Controller
         $scenario->npcs()->sync($request->validated('npcs'));
         $scenario->items()->sync($request->validated('items'));
         $scenario->shops()->sync($request->validated('shops'));
-        $scenario->ressources()->sync($request->validated('ressources'));
+        $scenario->resources()->sync($request->validated('resources'));
         $scenario->consumables()->sync($request->validated('consumables'));
         $scenario->panoplies()->sync($request->validated('panoplies'));
         $scenario->pages()->sync($request->validated('pages'));
@@ -94,7 +94,7 @@ class ScenarioController extends Controller
 
         return Inertia::render('scenario.edit', [
             'scenario' => $scenario,
-            'ressources' => $scenario->ressources,
+            'resources' => $scenario->resources,
             'files' => $scenario->getPathFiles(),
         ]);
     }
@@ -129,7 +129,7 @@ class ScenarioController extends Controller
         $scenario->npcs()->sync($request->validated('npcs'));
         $scenario->items()->sync($request->validated('items'));
         $scenario->shops()->sync($request->validated('shops'));
-        $scenario->ressources()->sync($request->validated('ressources'));
+        $scenario->resources()->sync($request->validated('resources'));
         $scenario->consumables()->sync($request->validated('consumables'));
         $scenario->panoplies()->sync($request->validated('panoplies'));
         $scenario->pages()->sync($request->validated('pages'));
@@ -157,7 +157,7 @@ class ScenarioController extends Controller
         $scenario->npcs()->detach();
         $scenario->items()->detach();
         $scenario->shops()->detach();
-        $scenario->ressources()->detach();
+        $scenario->resources()->detach();
         $scenario->consumables()->detach();
         $scenario->panoplies()->detach();
         $scenario->pages()->detach();

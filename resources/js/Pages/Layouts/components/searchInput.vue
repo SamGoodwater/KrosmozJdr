@@ -46,7 +46,7 @@ onUnmounted(() => {
                         <li><span class="badge bg-page-800">pages</span></li>
                         <li><span class="badge bg-classe-800">classes</span></li>
                         <li><span class="badge bg-item-800">items</span></li>
-                        <li><span class="badge bg-ressource-800">ressources</span></li>
+                        <li><span class="badge bg-resource-800">resources</span></li>
                         <li><span class="badge bg-consumable-800">consommables</span></li>
                     </ul>
                     <ul>

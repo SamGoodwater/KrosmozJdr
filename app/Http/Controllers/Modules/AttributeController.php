@@ -37,7 +37,7 @@ class AttributeController extends Controller
         $this->authorize('view', $attribute);
 
         return Inertia::render('Attributes/Show', [
-            'ressources' => $attribute->ressources,
+            'resources' => $attribute->resources,
             'panoply' => $attribute->panoply,
         ]);
     }
@@ -78,7 +78,7 @@ class AttributeController extends Controller
 
         return Inertia::render('attribute.edit', [
             'attribute' => $attribute,
-            'ressources' => $attribute->ressources,
+            'resources' => $attribute->resources,
             'panoply' => $attribute->panoply,
         ]);
     }

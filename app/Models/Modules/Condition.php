@@ -43,6 +43,7 @@ use Illuminate\Support\Facades\Storage;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Condition whereUsable($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Condition withTrashed()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Condition withoutTrashed()
+ * @method static \Database\Factories\Modules\ConditionFactory factory($count = null, $state = [])
  * @mixin \Eloquent
  */
 class Condition extends Model

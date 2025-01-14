@@ -17,13 +17,13 @@ class LoginController extends Controller
         return inertia('Auth/Login');
     }
 
-    public function connect(LoginFilterRequest $request): RedirectResponse
+    public function login(LoginFilterRequest $request): RedirectResponse
     {
         // $credential = $request->validate();
 
         if (Auth::attempt($request)) {
             $request->session()->regenerate();
-            return redirect()->intended(route('home'));
+            return redirect()->intended(route('home'))->with('success', 'Vous êtes connecté avec succès.');
         }
 
         return back()->withErrors([

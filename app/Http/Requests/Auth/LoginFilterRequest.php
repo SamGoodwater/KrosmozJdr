@@ -28,7 +28,7 @@ class LoginFilterRequest extends FormRequest
     {
         return [
             'email' => ['required', 'string', 'email'],
-            'password' => ['required', 'string'],
+            'password' => ['required', 'string', 'max:6'],
             'remember' => ['boolean'],
         ];
     }

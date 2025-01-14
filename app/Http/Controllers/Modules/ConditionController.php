@@ -35,7 +35,7 @@ class ConditionController extends Controller
         $this->authorize('view', $condition);
 
         return Inertia::render('Conditions/Show', [
-            'ressources' => $condition->ressources,
+            'resources' => $condition->resources,
             'panoply' => $condition->panoply,
         ]);
     }
@@ -77,7 +77,7 @@ class ConditionController extends Controller
 
         return Inertia::render('condition.edit', [
             'condition' => $condition,
-            'ressources' => $condition->ressources,
+            'resources' => $condition->resources,
             'panoply' => $condition->panoply,
         ]);
     }

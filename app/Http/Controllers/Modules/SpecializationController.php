@@ -35,7 +35,7 @@ class SpecializationController extends Controller
         $this->authorize('view', $specialization);
 
         return Inertia::render('Specializations/Show', [
-            'ressources' => $specialization->ressources,
+            'resources' => $specialization->resources,
             'panoply' => $specialization->panoply,
         ]);
     }
@@ -79,7 +79,7 @@ class SpecializationController extends Controller
 
         return Inertia::render('specialization.edit', [
             'specialization' => $specialization,
-            'ressources' => $specialization->ressources,
+            'resources' => $specialization->resources,
             'panoply' => $specialization->panoply,
         ]);
     }

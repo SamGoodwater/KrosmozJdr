@@ -36,7 +36,7 @@ class CampaignController extends Controller
         $this->authorize('view', $campaign);
 
         return Inertia::render('Campaigns/Show', [
-            'ressources' => $campaign->ressources,
+            'resources' => $campaign->resources,
             'files' => $campaign->getPathFiles(),
         ]);
     }
@@ -79,7 +79,7 @@ class CampaignController extends Controller
         $campaign->npcs()?->sync($request->validated('npcs'));
         $campaign->items()?->sync($request->validated('items'));
         $campaign->shops()?->sync($request->validated('shops'));
-        $campaign->ressources()?->sync($request->validated('ressources'));
+        $campaign->resources()?->sync($request->validated('resources'));
         $campaign->panoplies()?->sync($request->validated('panoplies'));
 
         event(new NotificationSuperAdminEvent('campaign', 'create',  $campaign));
@@ -93,7 +93,7 @@ class CampaignController extends Controller
 
         return Inertia::render('campaign.edit', [
             'campaign' => $campaign,
-            'ressources' => $campaign->ressources,
+            'resources' => $campaign->resources,
             'files' => $campaign->getPathFiles(),
         ]);
     }
@@ -129,7 +129,7 @@ class CampaignController extends Controller
         $campaign->npcs()->sync($request->validated('npcs'));
         $campaign->items()->sync($request->validated('items'));
         $campaign->shops()->sync($request->validated('shops'));
-        $campaign->ressources()->sync($request->validated('ressources'));
+        $campaign->resources()->sync($request->validated('resources'));
         $campaign->panoplies()->sync($request->validated('panoplies'));
 
         event(new NotificationSuperAdminEvent('campaign', "update", $campaign, $old_campaign));
@@ -154,7 +154,7 @@ class CampaignController extends Controller
 
         $campaign->panoplies()->detach();
         $campaign->consumables()->detach();
-        $campaign->ressources()->detach();
+        $campaign->resources()->detach();
         $campaign->items()->detach();
         $campaign->shops()->detach();
         $campaign->spells()->detach();

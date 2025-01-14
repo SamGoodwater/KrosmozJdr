@@ -35,7 +35,7 @@ class NpcController extends Controller
         $this->authorize('view', $npc);
 
         return Inertia::render('Npcs/Show', [
-            'ressources' => $npc->ressources,
+            'resources' => $npc->resources,
             'panoply' => $npc->panoply,
         ]);
     }
@@ -66,7 +66,7 @@ class NpcController extends Controller
         $data['created_by'] = Auth::user()?->id ?? "-1";
         $npc = Npc::create($data);
         $npc->spells()->sync($request->input('spells'));
-        $npc->ressources()->sync($request->input('ressources'));
+        $npc->resources()->sync($request->input('resources'));
         $npc->attributes()->sync($request->input('attributes'));
         $npc->items()->sync($request->input('items'));
         $npc->capabilities()->sync($request->input('capabilities'));
@@ -83,7 +83,7 @@ class NpcController extends Controller
 
         return Inertia::render('npc.edit', [
             'npc' => $npc,
-            'ressources' => $npc->ressources,
+            'resources' => $npc->resources,
             'panoply' => $npc->panoply,
         ]);
     }
@@ -107,7 +107,7 @@ class NpcController extends Controller
         }
         $npc->update($data);
         $npc->spells()->sync($request->input('spells'));
-        $npc->ressources()->sync($request->input('ressources'));
+        $npc->resources()->sync($request->input('resources'));
         $npc->attributes()->sync($request->input('attributes'));
         $npc->items()->sync($request->input('items'));
         $npc->capabilities()->sync($request->input('capabilities'));
@@ -132,7 +132,7 @@ class NpcController extends Controller
         $this->authorize('forceDelete', $npc);
 
         $npc->spells()->detach();
-        $npc->ressources()->detach();
+        $npc->resources()->detach();
         $npc->attributes()->detach();
         $npc->items()->detach();
         $npc->capabilities()->detach();

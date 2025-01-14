@@ -93,10 +93,10 @@ return new class extends Migration
             $table->softDeletes();
         });
 
-        Schema::create('ressource_campaign', function (Blueprint $table) {
-            $table->foreignIdFor(\App\Models\Modules\Ressource::class)->constrained()->onDelete('cascade');
+        Schema::create('resource_campaign', function (Blueprint $table) {
+            $table->foreignIdFor(\App\Models\Modules\Resource::class)->constrained()->onDelete('cascade');
             $table->foreignIdFor(\App\Models\Modules\Campaign::class)->constrained()->onDelete('cascade');
-            $table->primary(['ressource_id', 'campaign_id']);
+            $table->primary(['resource_id', 'campaign_id']);
             $table->softDeletes();
         });
 
@@ -125,7 +125,7 @@ return new class extends Migration
         Schema::dropIfExists('mob_campaign');
         Schema::dropIfExists('campaign_shop');
         Schema::dropIfExists('campaign_spell');
-        Schema::dropIfExists('ressource_campaign');
+        Schema::dropIfExists('resource_campaign');
         Schema::dropIfExists('campaign_panoply');
     }
 };

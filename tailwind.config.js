@@ -126,7 +126,7 @@ export default {
                 item: colors.indigo,
                 mob: colors.pink,
                 npc: colors.green,
-                ressource: colors.sky,
+                resource: colors.sky,
                 scenario: colors.neutral,
                 shop: colors.amber,
                 specialization: colors.lime,

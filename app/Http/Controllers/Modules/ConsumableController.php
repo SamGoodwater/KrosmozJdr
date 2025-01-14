@@ -35,7 +35,7 @@ class ConsumableController extends Controller
         $this->authorize('view', $consumable);
 
         return Inertia::render('Consumables/Show', [
-            'ressources' => $consumable->ressources,
+            'resources' => $consumable->resources,
             'panoply' => $consumable->panoply,
             'type' => $consumable->type()
         ]);
@@ -66,7 +66,7 @@ class ConsumableController extends Controller
         }
         $data['created_by'] = Auth::user()?->id ?? "-1";
         $consumable = Consumable::create($data);
-        $consumable->ressources()->sync($request->input('ressources'));
+        $consumable->resources()->sync($request->input('resources'));
 
         event(new NotificationSuperAdminEvent('consumable', 'create',  $consumable));
 
@@ -79,7 +79,7 @@ class ConsumableController extends Controller
 
         return Inertia::render('consumable.edit', [
             'consumable' => $consumable,
-            'ressources' => $consumable->ressources,
+            'resources' => $consumable->resources,
             'panoply' => $consumable->panoply,
             'type' => $consumable->type()
         ]);
@@ -103,7 +103,7 @@ class ConsumableController extends Controller
             return redirect()->back()->withInput();
         }
         $consumable->update($data);
-        $consumable->ressources()->sync($request->input('ressources'));
+        $consumable->resources()->sync($request->input('resources'));
 
         event(new NotificationSuperAdminEvent('consumable', "update", $consumable, $old_consumable));
 
@@ -123,7 +123,7 @@ class ConsumableController extends Controller
     {
         $this->authorize('forceDelete', $consumable);
 
-        $consumable->ressources()->detach();
+        $consumable->resources()->detach();
 
         DataService::deleteFile($consumable, 'image');
         event(new NotificationSuperAdminEvent('consumable', "forced_delete", $consumable));
