@@ -1,0 +1,147 @@
+@layer base {
+  * {
+    -webkit-box-sizing: border-box;
+            box-sizing: border-box;
+  }
+  html,
+  body {
+    height: 100vh;
+    width: 100vw;
+    overflow-x: hidden;
+  }
+  blockquote,
+  dl,
+  dd,
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6,
+  hr,
+  figure,
+  p,
+  a,
+  pre {
+    margin: 0;
+    padding: 0;
+    margin-inline: 0;
+    margin-block: 0;
+    padding-inline: 0;
+    padding-block: 0;
+  }
+}
+@layer components {
+  .align-items-start {
+    -webkit-box-align: start;
+        -ms-flex-align: start;
+            align-items: flex-start;
+  }
+  .align-items-end {
+    -webkit-box-align: end;
+        -ms-flex-align: end;
+            align-items: flex-end;
+  }
+  .align-items-center {
+    -webkit-box-align: center;
+        -ms-flex-align: center;
+            align-items: center;
+  }
+  .align-items-baseline {
+    -webkit-box-align: baseline;
+        -ms-flex-align: baseline;
+            align-items: baseline;
+  }
+  .align-items-stretch {
+    -webkit-box-align: stretch;
+        -ms-flex-align: stretch;
+            align-items: stretch;
+  }
+  * {
+    font-family: "Albert Sans", sans-serif;
+    font-weight: 400;
+  }
+  html,
+  body {
+    height: 100vh;
+    width: 100vw;
+  }
+  .typography {
+    font-size: var(--text-base);
+    color: var(--color-gray-700);
+    font-family: "Albert Sans", sans-serif;
+  }
+  .Albert-Sans {
+    font-family: "Albert Sans", sans-serif;
+  }
+  .Albert-Sans-thin, .Albert-Sans-100 {
+    font-weight: 100;
+  }
+  .Albert-Sans-light, .Albert-Sans-300 {
+    font-weight: 300;
+  }
+  .Albert-Sans-regular, .Albert-Sans-400 {
+    font-weight: 400;
+  }
+  .Albert-Sans-bold, .Albert-Sans-700 {
+    font-weight: 700;
+  }
+  .Albert-Sans-black, .Albert-Sans-900 {
+    font-weight: 900;
+  }
+  .prose {
+    max-width: 100ch;
+  }
+  .w-fit-available {
+    width: 100%;
+    width: -moz-available; /* WebKit-based browsers will ignore this. */
+    width: -webkit-fill-available; /* Mozilla-based browsers will ignore this. */
+    width: fill-available;
+  }
+  .h-fit-available {
+    height: 100%;
+    height: -moz-available; /* WebKit-based browsers will ignore this. */
+    height: -webkit-fill-available; /* Mozilla-based browsers will ignore this. */
+    height: fill-available;
+  }
+  .bg-blur-1 {
+    -webkit-backdrop-filter: blur(1px);
+            backdrop-filter: blur(1px);
+  }
+  .bg-blur-2 {
+    -webkit-backdrop-filter: blur(2px);
+            backdrop-filter: blur(2px);
+  }
+  .bg-blur-3 {
+    -webkit-backdrop-filter: blur(3px);
+            backdrop-filter: blur(3px);
+  }
+  .bg-blur-4 {
+    -webkit-backdrop-filter: blur(4px);
+            backdrop-filter: blur(4px);
+  }
+  .bg-blur-5 {
+    -webkit-backdrop-filter: blur(5px);
+            backdrop-filter: blur(5px);
+  }
+  .bg-blur-6 {
+    -webkit-backdrop-filter: blur(6px);
+            backdrop-filter: blur(6px);
+  }
+  .bg-blur-7 {
+    -webkit-backdrop-filter: blur(7px);
+            backdrop-filter: blur(7px);
+  }
+  .bg-blur-8 {
+    -webkit-backdrop-filter: blur(8px);
+            backdrop-filter: blur(8px);
+  }
+  .bg-blur-9 {
+    -webkit-backdrop-filter: blur(9px);
+            backdrop-filter: blur(9px);
+  }
+  .bg-blur-10 {
+    -webkit-backdrop-filter: blur(10px);
+            backdrop-filter: blur(10px);
+  }
+}

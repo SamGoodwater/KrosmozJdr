@@ -34,7 +34,7 @@ class SpellController extends Controller
     {
         $this->authorize('view', $spell);
 
-        return Inertia::render('Spells/Show', [
+        return Inertia::render('Organisms/Spells/Show', [
             'resources' => $spell->resources,
             'panoply' => $spell->panoply,
         ]);

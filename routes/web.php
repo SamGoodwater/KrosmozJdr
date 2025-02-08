@@ -1,43 +1,47 @@
 <?php
 
-// use App\Http\Controllers\Modules\ItemController;
-// use App\Http\Controllers\Modules\CampaignController;
-// use App\Http\Controllers\Modules\ScenarioController;
-// use App\Http\Controllers\Modules\AttributeController;
-// use App\Http\Controllers\Modules\CapabilityController;
-// use App\Http\Controllers\Modules\ClasseController;
-// use App\Http\Controllers\Modules\ConditionController;
-// use App\Http\Controllers\Modules\ConsumableController;
-// use App\Http\Controllers\Modules\MobController;
-// use App\Http\Controllers\Modules\MobraceController;
-// use App\Http\Controllers\Modules\NpcController;
-// use App\Http\Controllers\Modules\PanoplyController;
-// use App\Http\Controllers\Modules\ResourceController;
-// use App\Http\Controllers\Modules\ShopController;
-// use App\Http\Controllers\Modules\SpecializationController;
-// use App\Http\Controllers\Modules\SpellController;
-// use App\Http\Controllers\Modules\SpelltypeController;
-// use App\Http\Controllers\Modules\ItemtypeController;
-// use App\Http\Controllers\Modules\ConsumabletypeController;
-// use App\Http\Controllers\Modules\ResourcetypeController;
-
-use App\Http\Controllers\SectionController;
-use App\Http\Controllers\UserController;
-use App\Http\Controllers\PageController;
+use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
+use Illuminate\Support\Fluent;
+use Illuminate\Support\Facades\Auth;
+use App\Http\Controllers\PageController;
+use App\Http\Controllers\SectionController;
 
-$uniqidRegex = '[A-Za-z0-9]+';
-$slugRegex = '[A-Za-z0-9]+(?:(-|_).[A-Za-z0-9]+)*';
+use App\Http\Controllers\Modules\ItemController;
+use App\Http\Controllers\Modules\CampaignController;
+use App\Http\Controllers\Modules\ScenarioController;
+use App\Http\Controllers\Modules\AttributeController;
+use App\Http\Controllers\Modules\CapabilityController;
+use App\Http\Controllers\Modules\ClasseController;
+use App\Http\Controllers\Modules\ConditionController;
+use App\Http\Controllers\Modules\ConsumableController;
+use App\Http\Controllers\Modules\MobController;
+use App\Http\Controllers\Modules\MobraceController;
+use App\Http\Controllers\Modules\NpcController;
+use App\Http\Controllers\Modules\PanoplyController;
+use App\Http\Controllers\Modules\ResourceController;
+use App\Http\Controllers\Modules\ShopController;
+use App\Http\Controllers\Modules\SpecializationController;
+use App\Http\Controllers\Modules\SpellController;
+use App\Http\Controllers\Modules\SpelltypeController;
+use App\Http\Controllers\Modules\ItemtypeController;
+use App\Http\Controllers\Modules\ConsumabletypeController;
+use App\Http\Controllers\Modules\ResourcetypeController;
 
 Route::get('/', function () {
-    return Inertia::render('Home');
+    return Inertia::render('Home', [
+        'canLogin' => Route::has('login'),
+        'canRegister' => Route::has('register'),
+        'isLogged' => Auth::check(),
+        'user' => Auth::user() ? new Fluent(Auth::user()->only('name', 'email', 'image')) : null,
+    ]);
 })->name('home');
 
-// Auth
-require_once __DIR__ . '/auth.php';
+// AUTH
+require __DIR__ . '/auth.php';
 
-// Permanent
+// PERMANENT
 Route::get('/contribuer', function () {
     return Inertia::render('Permanent/contribute');
 })->name('contribute');
@@ -67,7 +71,6 @@ Route::prefix("section")->name("section.")->controller(SectionController::class)
     Route::post('/{section:uniqid}', 'restore')->name('restore')->middleware(['auth', 'verified'])->where('section', $uniqidRegex);
     Route::delete('/forcedDelete/{section:uniqid}', 'forcedDelete')->name('forcedDelete')->middleware(['auth', 'verified'])->where('section', $uniqidRegex);
 });
-
 
 // Campaigns
 require_once __DIR__ . '/modules/campaign.php';
@@ -128,7 +131,6 @@ require_once __DIR__ . '/modules/spell.php';
 
 // Spelltypes
 require_once __DIR__ . '/modules/spelltype.php';
-
 
 
 // Système de gestion des images avec Glyde : https://grafikart.fr/tutoriels/image-resize-glide-php-1358

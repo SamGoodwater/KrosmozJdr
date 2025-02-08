@@ -34,7 +34,7 @@ class CapabilityController extends Controller
     {
         $this->authorize('view', $capability);
 
-        return Inertia::render('Capabilities/Show', [
+        return Inertia::render('Organisms/Capabilities/Show', [
             'resources' => $capability->resources,
             'panoply' => $capability->panoply,
         ]);

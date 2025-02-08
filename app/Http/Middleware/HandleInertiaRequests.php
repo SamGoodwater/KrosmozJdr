@@ -33,13 +33,17 @@ class HandleInertiaRequests extends Middleware
         return [
             ...parent::share($request),
             'auth' => [
-                'user' => $request->user() ? $request->user()->only('id', 'name') : null,
+                'user' => function () use ($request) {
+                    return $request->user()
+                        ? $request->user()->only('id', 'name', 'email', 'image')
+                        : null;
+                },
+                'isLoggedIn' => fn() => $request->user() !== null,
             ],
             'ziggy' => fn() => [
                 ...(new Ziggy)->toArray(),
                 'location' => $request->url(),
             ],
-            "appName" => config("app.name"),
         ];
     }
 }

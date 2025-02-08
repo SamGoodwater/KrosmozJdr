@@ -35,7 +35,7 @@ class CampaignController extends Controller
     {
         $this->authorize('view', $campaign);
 
-        return Inertia::render('Campaigns/Show', [
+        return Inertia::render('Organisms/Campaigns/Show', [
             'resources' => $campaign->resources,
             'files' => $campaign->getPathFiles(),
         ]);

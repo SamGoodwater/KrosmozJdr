@@ -9,6 +9,7 @@ use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Support\Facades\Auth;
 use App\Services\DataService;
 use App\Events\NotificationSuperAdminEvent;
+use Inertia\Inertia;
 
 class PageController extends Controller
 {
@@ -25,7 +26,7 @@ class PageController extends Controller
         // Il faut orderBy les sections par order_num
         $pages = Page::with('page', 'sections')->orderBy('order_num')->paginate($paginationMaxDisplay);
 
-        return inertia('Pages/index', [
+        return Inertia::render('Pages/index', [
             'pages' => $pages
         ]);
     }
@@ -34,7 +35,7 @@ class PageController extends Controller
     {
         $this->authorize('view', $page);
 
-        return inertia('Pages/Show', [
+        return Inertia::render('Pages/Show', [
             'page' => $page,
             "sections" => $page->sections()->orderBy("order_num")->get(),
             "campaigns" => $page->campaigns()->get(),
@@ -47,7 +48,7 @@ class PageController extends Controller
         $this->authorize('create', Page::class);
 
         $page = new Page();
-        return inertia('Pages/Create', [
+        return Inertia::render('Pages/Create', [
             'page' => $page,
             'pages' => Page::orderBy('order_num')->pluck("name", "is_editable", "is_public", "is_visible", "is_dropdown", "uniqid",)
         ]);
@@ -74,7 +75,7 @@ class PageController extends Controller
     {
         $this->authorize('update', $page);
 
-        return inertia('Pages/Edit', [
+        return Inertia::render('Pages/Edit', [
             'page' => $page,
             'pages' => Page::orderBy('order_num')->pluck("name", "is_editable", "is_public", "is_visible", "is_dropdown", "uniqid",)
         ]);

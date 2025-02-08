@@ -34,7 +34,7 @@ class SectionController extends Controller
     {
         $this->authorize('view', $section);
 
-        return Inertia::render('Sections/Show', [
+        return Inertia::render('Organisms/Sections/Show', [
             'section' => $section,
             'files' => $section->getPathFiles()
         ]);
@@ -45,7 +45,7 @@ class SectionController extends Controller
         $this->authorize('create', Section::class);
 
         $section = new Section();
-        return Inertia::render('Sections/Create', [
+        return Inertia::render('Organisms/Sections/Create', [
             'section' => $section,
             'pages' => Page::orderBy('order_num')->pluck("name", "is_editable", "is_public", "is_visible", "is_dropdown", "uniqid",)
         ]);
@@ -79,7 +79,7 @@ class SectionController extends Controller
     {
         $this->authorize('update', $section);
 
-        return Inertia::render('Sections/Edit', [
+        return Inertia::render('Organisms/Sections/Edit', [
             'section' => $section,
             'pages' => Page::pluck("name", "is_editable", "is_public", "is_visible", "is_dropdown", "uniqid",),
             'files' => $section->getPathFiles()

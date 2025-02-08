@@ -34,7 +34,7 @@ class MobraceController extends Controller
     {
         $this->authorize('view', $mobrace);
 
-        return Inertia::render('Mobraces/Show', [
+        return Inertia::render('Organisms/Mobraces/Show', [
             'resources' => $mobrace->resources,
             'panoply' => $mobrace->panoply,
         ]);

@@ -34,7 +34,7 @@ class ItemtypeController extends Controller
     {
         $this->authorize('view', $itemtype);
 
-        return Inertia::render('Itemtypes/Show', [
+        return Inertia::render('Organisms/Itemtypes/Show', [
             'items' => $itemtype->items()
         ]);
     }

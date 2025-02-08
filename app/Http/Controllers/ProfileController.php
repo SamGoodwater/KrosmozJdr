@@ -10,24 +10,9 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
 use Inertia\Inertia;
 use Inertia\Response;
-use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
-use App\Services\DataService;
-
 
 class ProfileController extends Controller
 {
-    use AuthorizesRequests;
-
-    public function login(): Response
-    {
-        return Inertia::render('Auth/Login');
-    }
-
-    public function register(): Response
-    {
-        return Inertia::render('Auth/Register');
-    }
-
     /**
      * Display the user's profile form.
      */

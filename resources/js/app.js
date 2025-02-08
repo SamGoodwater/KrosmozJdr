@@ -1,10 +1,11 @@
 import "../css/app.css";
-import "@/bootstrap";
+import "./bootstrap";
 
 import { createInertiaApp, Head, Link } from "@inertiajs/vue3";
 import { resolvePageComponent } from "laravel-vite-plugin/inertia-helpers";
 import { createApp, h } from "vue";
 import { ZiggyVue } from "../../vendor/tightenco/ziggy";
+import { createPinia } from "pinia"; // Import Pinia
 import DefaultLayout from "@/Pages/Layouts/Main.vue";
 
 const appName = import.meta.env.VITE_APP_NAME || "KrosmozJDR";
@@ -31,15 +32,11 @@ createInertiaApp({
             return page;
         }),
     setup({ el, App, props, plugin }) {
-        const app = createApp({ render: () => h(App, props) });
-        app.config.globalProperties.$appName = appName; // Définir la propriété globale
-        app.config.globalProperties.$appDescription = appDescription;
-        app.config.globalProperties.$appVersion = appVersion;
-        app.config.globalProperties.$appStability = appStability;
-        app.config.globalProperties.$appStabilitySymbol = appStabilitySymbol;
-        return app
+        const pinia = createPinia(); // Créez une instance de Pinia
+        return createApp({ render: () => h(App, props) })
             .use(plugin)
             .use(ZiggyVue)
+            .use(pinia) // Utilisez Pinia
             .component("Head", Head)
             .component("Link", Link)
             .mount(el);

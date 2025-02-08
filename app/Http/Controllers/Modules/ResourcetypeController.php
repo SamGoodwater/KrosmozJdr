@@ -34,7 +34,7 @@ class ResourcetypeController extends Controller
     {
         $this->authorize('view', $resourcetype);
 
-        return Inertia::render('Resourcetypes/Show', [
+        return Inertia::render('Organisms/Resourcetypes/Show', [
             'resources' => $resourcetype->resources()
         ]);
     }

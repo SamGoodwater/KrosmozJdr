@@ -36,7 +36,7 @@ class AttributeController extends Controller
     {
         $this->authorize('view', $attribute);
 
-        return Inertia::render('Attributes/Show', [
+        return Inertia::render('Organisms/Attributes/Show', [
             'resources' => $attribute->resources,
             'panoply' => $attribute->panoply,
         ]);

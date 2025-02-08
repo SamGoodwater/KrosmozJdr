@@ -34,7 +34,7 @@ class ShopController extends Controller
     {
         $this->authorize('view', $shop);
 
-        return Inertia::render('Shops/Show', [
+        return Inertia::render('Organisms/Shops/Show', [
             'resources' => $shop->resources,
             'panoply' => $shop->panoply,
         ]);

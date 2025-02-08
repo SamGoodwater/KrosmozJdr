@@ -44,6 +44,7 @@ use Illuminate\Support\Facades\Storage;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Attribute withTrashed()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Attribute withoutTrashed()
  * @method static \Database\Factories\Modules\AttributeFactory factory($count = null, $state = [])
+ * @property-read \App\Models\Modules\TFactory|null $use_factory
  * @mixin \Eloquent
  */
 class Attribute extends Model

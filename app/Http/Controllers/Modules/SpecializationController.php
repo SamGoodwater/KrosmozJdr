@@ -34,7 +34,7 @@ class SpecializationController extends Controller
     {
         $this->authorize('view', $specialization);
 
-        return Inertia::render('Specializations/Show', [
+        return Inertia::render('Organisms/Specializations/Show', [
             'resources' => $specialization->resources,
             'panoply' => $specialization->panoply,
         ]);

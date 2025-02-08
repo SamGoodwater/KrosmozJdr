@@ -25,18 +25,13 @@ class loadCommand extends Command
      */
     public function handle()
     {
-        $runNpmServer = '-w load sp -V cmd /c "cd ' . getcwd() . ' && npm run dev';
-        $runPhpServer = '-w load sp -V php artisan serve';
-
         $this->info('Optimisation de Laravel');
         $this->call('optimize');
 
-        $this->info('Lancement du serveur PHP');
-        $this->info($runPhpServer);
-        exec('wt ' . $runPhpServer);
+        $this->info('Lancement de vivaldi');
+        exec("start vivaldi 'http://localhost:8000'");
 
-        $this->info('Lancement du serveur Node');
-        $this->info($runNpmServer);
-        exec('wt ' . $runNpmServer);
+        $this->info('Lancement du serveur PHP');
+        exec('composer run dev');
     }
 }

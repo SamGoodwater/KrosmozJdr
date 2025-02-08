@@ -35,7 +35,7 @@ class MobController extends Controller
     {
         $this->authorize('view', $mob);
 
-        return Inertia::render('Mobs/Show', [
+        return Inertia::render('Organisms/Mobs/Show', [
             'resources' => $mob->resources,
             'panoply' => $mob->panoply,
         ]);

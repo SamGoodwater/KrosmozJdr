@@ -24,7 +24,7 @@ class UserController extends Controller
 
         $users = User::paginate($paginationMaxDisplay);
 
-        return Inertia::render('Users/', [
+        return Inertia::render('Organisms/Users/', [
             'users' => $users,
         ]);
     }
@@ -33,7 +33,7 @@ class UserController extends Controller
     {
         $this->authorize('view', $user);
 
-        return Inertia::render('Users/Show', [
+        return Inertia::render('Organisms/Users/Show', [
             'resources' => $user->resources,
             'panoply' => $user->panoply,
         ]);
@@ -43,7 +43,7 @@ class UserController extends Controller
     {
         $this->authorize('create', User::class);
 
-        return Inertia::render('Users/Create');
+        return Inertia::render('Organisms/Users/Create');
     }
 
     public function store(UserFilterRequest $request): RedirectResponse
@@ -69,14 +69,14 @@ class UserController extends Controller
 
         event(new NotificationSuperAdminEvent('user', 'create',  $user));
 
-        return redirect()->route('user.show', ['user' => $user]);
+        return redirect()->route('dashboard', ['user' => $user]);
     }
 
     public function edit(User $user): \Inertia\Response
     {
         $this->authorize('update', $user);
 
-        return Inertia::render('Users/Edit', [
+        return Inertia::render('Organisms/Users/Edit', [
             'user' => $user,
             'resources' => $user->resources,
             'panoply' => $user->panoply,

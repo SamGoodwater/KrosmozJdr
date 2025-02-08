@@ -34,7 +34,7 @@ class ConsumableController extends Controller
     {
         $this->authorize('view', $consumable);
 
-        return Inertia::render('Consumables/Show', [
+        return Inertia::render('Organisms/Consumables/Show', [
             'resources' => $consumable->resources,
             'panoply' => $consumable->panoply,
             'type' => $consumable->type()

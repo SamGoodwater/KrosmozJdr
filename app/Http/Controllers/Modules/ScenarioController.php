@@ -34,7 +34,7 @@ class ScenarioController extends Controller
     {
         $this->authorize('view', $scenario);
 
-        return Inertia::render('Scenarios/Show', [
+        return Inertia::render('Organisms/Scenarios/Show', [
             'resources' => $scenario->resources,
             'panoply' => $scenario->panoply,
             'files' => $scenario->getPathFiles(),

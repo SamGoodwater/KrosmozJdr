@@ -12,7 +12,6 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules;
 use Inertia\Inertia;
 use Inertia\Response;
-use Illuminate\Validation\Rule;
 
 class RegisteredUserController extends Controller
 {
@@ -21,7 +20,7 @@ class RegisteredUserController extends Controller
      */
     public function create(): Response
     {
-        return Inertia::render('Auth/Register');
+        return Inertia::render('Organisms/Auth/Register');
     }
 
     /**
@@ -35,8 +34,6 @@ class RegisteredUserController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|string|lowercase|email|max:255|unique:' . User::class,
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
-            'role' =>  ['required', 'string', Rule::in(User::ROLES)],
-            'uniqid' => 'required|string|max:20|unique:' . User::class
         ]);
 
         $user = User::create([

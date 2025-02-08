@@ -1,19 +1,17 @@
 <script setup>
 import { ref, onMounted } from "vue";
 import { usePage } from "@inertiajs/vue3";
-import Btn from "@/Pages/Components/actions/Btn.vue";
+import Btn from "@/Pages/Atoms/actions/Btn.vue";
 import { IconsGetter } from "@/Utils/IconsGetter";
-import Icons from "@/Pages/Components/images/Icon.vue";
-
-import TextInput from "@/Pages/Components/inputs/TextInput.vue";
-import InputError from "@/Pages/Components/inputs/InputError.vue";
-import InputLabel from "@/Pages/Components/inputs/InputLabel.vue";
+import Icons from "@/Pages/Atoms/images/Icon.vue";
 
 const iconPA = ref("");
 const iconPM = ref("");
 const iconPO = ref("");
 const iconTacle = ref("");
 const iconRes_terre = ref("");
+
+const page = usePage();
 
 onMounted(async () => {
     iconPA.value = await IconsGetter.get("modules", "pa");
@@ -34,53 +32,37 @@ const appDescription = ref(import.meta.env.VITE_APP_DESCRIPTION);
 const appKeywords = ref(import.meta.env.VITE_APP_KEYWORDS);
 
 const form = ref({
-    email: '',
+    email: "",
 });
-
-const page = usePage();
 </script>
 
 <template>
     <section
-        class="prose prose-state prose-a:text-secondary max-sm:prose-sm lg:prose-lg"
+        class="prose prose-state prose-a:text-content max-sm:prose-sm lg:prose-lg"
     >
         <h1 class="text-amber-800 text-center">Site en construction</h1>
-
-        <div>
-            <InputLabel for="email" value="Email" />
-            <TextInput
-                id="email"
-                type="email"
-                placeholder="exemple@exemple.fr"
-                v-model="form.email"
-                required
-                autofocus
-                autocomplete="username"
-            />
-            <!-- <InputError class="mt-2" :message="form.errors.email" /> -->
-        </div>
 
         <!-- TESTS BUTTONS -->
         <div class="text-center">
             <div class="flex gap-4 justify-content-around flex-wrap">
-                <Btn theme="main glass sm" label="Principale" />
-                <Btn theme="minor glass sm" label="Mineure" />
-                <Btn theme="validate glass sm" label="Valider" />
-                <Btn theme="cancel glass sm" label="Annuler" />
+                <Btn theme="primary glass sm" label="Primaire" />
+                <Btn theme="secondary glass sm" label="Secondaire" />
+                <Btn theme="success glass sm" label="Succès" />
+                <Btn theme="error glass sm" label="Erreur" />
                 <Btn theme="simple glass sm" label="Simple" />
             </div>
             <div class="flex mt-4 gap-4 justify-content-around flex-wrap">
-                <Btn theme="outline sm main">
+                <Btn theme="outline sm primary">
                     <template #label> Principale </template>
                 </Btn>
 
-                <Btn theme="outline sm minor">
+                <Btn theme="outline sm secondary">
                     <template #label> Mineure </template>
                 </Btn>
-                <Btn theme="outline sm validate">
+                <Btn theme="outline sm success">
                     <template #label> Valider </template>
                 </Btn>
-                <Btn theme="outline sm cancel">
+                <Btn theme="outline sm error">
                     <template #label> Annuler </template>
                 </Btn>
                 <Btn theme="outline sm simple">
@@ -88,16 +70,16 @@ const page = usePage();
                 </Btn>
             </div>
             <div class="flex mt-4 gap-4 justify-content-around flex-wrap">
-                <Btn theme="link sm main">
+                <Btn theme="link sm primary">
                     <template #label> Principale </template>
                 </Btn>
-                <Btn theme="link sm minor">
+                <Btn theme="link sm secondary">
                     <template #label> Mineure </template>
                 </Btn>
-                <Btn theme="link sm validate">
+                <Btn theme="link sm success">
                     <template #label> Valider </template>
                 </Btn>
-                <Btn theme="link sm cancel">
+                <Btn theme="link sm error">
                     <template #label> Annuler </template>
                 </Btn>
                 <Btn theme="link sm simple">
@@ -121,6 +103,7 @@ const page = usePage();
         </div>
 
         <h3
+            class="text-title"
             id="bienvenue-dans-krosmozjdr-l-aventure-pique-dans-l-univers-du-monde-des-douze-"
         >
             Bienvenue dans <strong>KrosmozJDR</strong>, l’aventure épique dans
@@ -133,7 +116,9 @@ const page = usePage();
             Ici, chaque partie est une porte ouverte vers des terres
             fascinantes, des créatures captivantes et des combats épiques.
         </p>
-        <h4 id="explorez-des-lieux-mythiques">Explorez des lieux mythiques</h4>
+        <h4 class="text-subtitle" id="explorez-des-lieux-mythiques">
+            Explorez des lieux mythiques
+        </h4>
         <p>
             De la cité lumineuse de Bonta aux mystères d’Astrub, en passant par
             les plaines sauvages des Craqueleurs et les secrets d’Amakna,
@@ -143,7 +128,9 @@ const page = usePage();
             et à affronter les puissants maîtres des donjons comme Kardorim,
             Groloum ou encore le Comte Harebourg.
         </p>
-        <h4 id="incarnez-une-classe-iconique">Incarnez une classe iconique</h4>
+        <h4 class="text-subtitle" id="incarnez-une-classe-iconique">
+            Incarnez une classe iconique
+        </h4>
         <p>
             Choisissez parmi une grande variété de classes emblématiques :
             serez-vous un Crâ précis et implacable, un Iop téméraire et
@@ -153,7 +140,9 @@ const page = usePage();
             offre des mécaniques uniques et des sorts adaptés à l’univers du jeu
             de rôle.
         </p>
-        <h4 id="d-veloppez-votre-personnage">Développez votre personnage</h4>
+        <h4 class="text-subtitle" id="d-veloppez-votre-personnage">
+            Développez votre personnage
+        </h4>
         <p>
             Grâce à un système de compétences et d’aptitudes inspiré de D&amp;D,
             personnalisez votre héros pour qu’il reflète votre style de jeu.
@@ -161,7 +150,7 @@ const page = usePage();
             inspirées des subtilités des races de D&amp;D, et explorez des
             gameplays toujours plus variés et profonds.
         </p>
-        <h4 id="un-gameplay-enrichi-et-immersif">
+        <h4 class="text-subtitle" id="un-gameplay-enrichi-et-immersif">
             Un gameplay enrichi et immersif
         </h4>
         <p>
@@ -172,7 +161,7 @@ const page = usePage();
             votre légende dans un monde en perpétuelle évolution.
         </p>
         <hr />
-        <h3 id="-tes-vous-pr-t-rejoindre-l-aventure-">
+        <h3 class="text-title" id="-tes-vous-pr-t-rejoindre-l-aventure-">
             Êtes-vous prêt à rejoindre l’aventure ?
         </h3>
         <p>

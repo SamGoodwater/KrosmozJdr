@@ -1,5 +1,5 @@
 * {
-    font-family: "Lato", sans-serif;
+    font-family: "Albert Sans", sans-serif;
     font-weight: 400;
 }
 
@@ -9,8 +9,14 @@ body {
     width: 100vw;
 }
 
-.lato {
-    font-family: "Lato", sans-serif;
+.typography {
+    font-size: var(--text-base);
+    color: var(--color-gray-700);
+    font-family: "Albert Sans", sans-serif;
+}
+
+.Albert-Sans {
+    font-family: "Albert Sans", sans-serif;
 
     &-thin,
     &-100 {

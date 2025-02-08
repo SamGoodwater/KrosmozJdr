@@ -13,6 +13,14 @@ class UserFilterRequest extends FormRequest
     /**
      * Determine if the user is authorized to make this request.
      */
+    public function authorize(): bool
+    {
+        return true;
+    }
+
+    /**
+     * Determine if the user is authorized to make this request.
+     */
     public function rules(): array
     {
         return [
@@ -21,7 +29,7 @@ class UserFilterRequest extends FormRequest
             'password' => ["string", "min:1", "max:255", "required"],
             'role' => ["string", [User::ROLES], "required"],
             'email_verified_at' => ["date", "nullable"],
-            "uniqid" => ["string", "min:1", "max:255", "required", Rule::unique("sections", "uniqid")->ignore($this->route()->parameter('section'))],
+            "uniqid" => ["string", "min:1", "max:255", "required", Rule::unique("users", "uniqid")->ignore($this->route()->parameter('user'))],
             "image" => FileRules::rules([FileRules::TYPE_IMAGE]),
         ];
     }

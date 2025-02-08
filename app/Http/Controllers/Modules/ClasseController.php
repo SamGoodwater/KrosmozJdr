@@ -34,7 +34,7 @@ class ClasseController extends Controller
     {
         $this->authorize('view', $classe);
 
-        return Inertia::render('Classes/Show', [
+        return Inertia::render('Organisms/Classes/Show', [
             'resources' => $classe->resources,
             'panoply' => $classe->panoply,
         ]);
