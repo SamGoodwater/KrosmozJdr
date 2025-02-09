@@ -75,8 +75,7 @@ Route::prefix('user')->name("user.")->middleware('auth')->group(function () use 
     Route::get('/', [UserController::class, 'dashboard'])->name('dashboard');
     Route::get('/{user:uniqid}', [UserController::class, 'dashboard'])->name('otherdashboard')->where('user', $uniqidRegex);
     Route::get('/create', [UserController::class, 'create'])->name('create');
-    // Route::post('/', [UserController::class, 'store'])->name('store');
-    Route::inertia('/{user:uniqid}/edit', 'Organisms/User/Edit')->name('edit')->where('user', $uniqidRegex);
+    Route::post('/', [UserController::class, 'store'])->name('store');
     Route::patch('/{user:uniqid}', [UserController::class, 'update'])->name('update')->where('user', $uniqidRegex);
     Route::delete('/{user:uniqid}', [UserController::class, 'delete'])->name('delete')->where('user', $uniqidRegex);
     Route::post('/{user:uniqid}', [UserController::class, 'restore'])->name('restore')->where('user', $uniqidRegex);

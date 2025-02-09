@@ -47,7 +47,7 @@ function updateTitle() {
         </div>
 
         <div class="flex justify-content-between gap-2 align-items-center">
-            <template v-if="page.props.isLogged">
+            <template v-if="page.props.auth.isLogged">
                 <LoggedHeaderContainer />
             </template>
             <template v-else>

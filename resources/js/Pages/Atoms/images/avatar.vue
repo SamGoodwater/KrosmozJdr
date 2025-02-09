@@ -9,15 +9,11 @@ const props = defineProps({
     },
     rounded: {
         type: String,
-        default: "rounded-none",
+        default: "full",
         validator: (value) =>
-            [
-                "rounded-xs",
-                "rounded-md",
-                "rounded-lg",
-                "rounded-xl",
-                "rounded-full",
-            ].includes(value),
+            ["none", "sm", "md", "lg", "xl", "2xl", "3xl", "full"].includes(
+                value,
+            ),
     },
     size: {
         type: String,
@@ -61,7 +57,7 @@ const getClasses = computed(() => {
     }
 
     if (props.rounded) {
-        classes.push(props.rounded);
+        classes.push("rounded-"+props.rounded);
     }
 
     return classes.join(" ");

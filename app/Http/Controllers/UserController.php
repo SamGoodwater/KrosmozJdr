@@ -10,12 +10,14 @@ use Inertia\Inertia;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Support\Facades\Auth;
 use App\Services\DataService;
+use Illuminate\Support\Facades\Log;
+use Request;
 
 class UserController extends Controller
 {
     use AuthorizesRequests;
 
-    public function listing(UserFilterRequest $request): \Inertia\Response
+    public function listing(Request $request): \Inertia\Response
     {
         $this->authorize('viewAny', User::class);
 
@@ -29,12 +31,12 @@ class UserController extends Controller
         ]);
     }
 
-    public function dashboard(User $user, UserFilterRequest $request): \Inertia\Response
+    public function dashboard(Request $request): \Inertia\Response
     {
-
+        $user = Auth::user();
         $this->authorize('view', $user);
 
-        return Inertia::render('Organisms/User/Dashboard.vue', [
+        return Inertia::render('Organisms/User/Dashboard', [
             'verifiedEmail' => $user->hasVerifiedEmail(),
             'user' => $user,
             'resources' => $user->resources,

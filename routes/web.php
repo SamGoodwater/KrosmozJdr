@@ -32,9 +32,7 @@ use App\Http\Controllers\Modules\ResourcetypeController;
 Route::get('/', function () {
     return Inertia::render('Home', [
         'canLogin' => Route::has('login'),
-        'canRegister' => Route::has('register'),
-        'isLogged' => Auth::check(),
-        'user' => Auth::user() ? new Fluent(Auth::user()->only('name', 'email', 'image')) : null,
+        'canRegister' => Route::has('register')
     ]);
 })->name('home');
 

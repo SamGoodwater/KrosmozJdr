@@ -38,7 +38,7 @@ class HandleInertiaRequests extends Middleware
                         ? $request->user()->only('id', 'name', 'email', 'image')
                         : null;
                 },
-                'isLoggedIn' => fn() => $request->user() !== null,
+                'isLogged' => fn() => $request->user() !== null,
             ],
             'ziggy' => fn() => [
                 ...(new Ziggy)->toArray(),

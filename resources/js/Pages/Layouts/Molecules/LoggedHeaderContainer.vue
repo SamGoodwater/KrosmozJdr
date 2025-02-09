@@ -1,7 +1,7 @@
 <script setup>
 import Btn from "@/Pages/Atoms/actions/Btn.vue";
 import Route from "@/Pages/Atoms/text/Route.vue";
-import Avatar from "@/Pages/Atoms/images/avatar.vue";
+import Avatar from "@/Pages/Atoms/images/Avatar.vue";
 import Dropdown from "@/Pages/Atoms/actions/Dropdown.vue";
 import { usePage } from "@inertiajs/vue3";
 import { onMounted, ref, watch } from "vue";
@@ -30,7 +30,7 @@ watch(
                         :source="image"
                         :altText="pseudo"
                         size="sm"
-                        rounded="rounded-full"
+                        rounded="full"
                     />
                     <span>{{ pseudo }}</span>
                 </div>
