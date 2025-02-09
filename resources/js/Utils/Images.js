@@ -11,9 +11,14 @@ export function getSizeImage(url) {
     });
 }
 
-export const imageExists = (url) => {
-    const http = new XMLHttpRequest();
-    http.open("HEAD", url, false);
-    http.send();
-    return http.status !== 404;
+export const imageExists = async (url) => {
+    try {
+        const response = await fetch(url, { method: "HEAD" });
+        if (response.status === 404) {
+            return false;
+        }
+        return true;
+    } catch (error) {
+        return false;
+    }
 };

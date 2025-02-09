@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 use App\Models\User;
 
-class SectionRessource extends JsonResource
+class SectionResource extends JsonResource
 {
     /**
      * Transform the resource into an array.

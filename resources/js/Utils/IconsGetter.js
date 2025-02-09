@@ -4,9 +4,9 @@ export class IconsGetter {
 
     static async loadIcons() {
         try {
-            const response = await fetch("storage/icons/icons.json");
+            const response = await fetch("/storage/icons/icons.json"); // Assurez-vous que le chemin est correct
             if (!response.ok) {
-                console.error("Failed to load icons");
+                throw new Error("Failed to load icons");
             }
             IconsGetter.icons = await response.json();
             IconsGetter.iconsLoaded = true;
@@ -23,6 +23,7 @@ export class IconsGetter {
             await IconsGetter.loadIcons();
         }
         if (!IconsGetter.icons[dir] || !IconsGetter.icons[dir][name]) {
+            console.warn(`Icon not found: ${dir}/${name}`);
             return "";
         }
         return IconsGetter.icons[dir][name];

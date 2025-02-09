@@ -64,10 +64,6 @@ Route::middleware('auth')->group(function () {
         ->name('logout');
 });
 
-Route::get('/dashboard', function () {
-    return Inertia::render('Dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
-
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
@@ -75,14 +71,14 @@ Route::middleware('auth')->group(function () {
 });
 
 // Users
-Route::prefix('user')->name("user.")->controller(UserController::class)->middleware(['auth', 'verified'])->group(function () use ($uniqidRegex) {
-    Route::inertia('/', 'index')->name('index');
-    Route::inertia('/{user:uniqid}', 'show')->name('show')->where('user', $uniqidRegex);
-    Route::inertia('/create', 'create')->name('create');
-    Route::post('/', 'store')->name('store');
-    Route::inertia('/{user:uniqid}/edit', 'edit')->name('edit')->where('user', $uniqidRegex);
-    Route::patch('/{user:uniqid}', 'update')->name('update')->where('user', $uniqidRegex);
-    Route::delete('/{user:uniqid}', 'delete')->name('delete')->where('user', $uniqidRegex);
-    Route::post('/{user:uniqid}', 'restore')->name('restore')->where('user', $uniqidRegex);
-    Route::delete('/forcedDelete/{user:uniqid}', 'forcedDelete')->name('forcedDelete')->where('user', $uniqidRegex);
+Route::prefix('user')->name("user.")->middleware('auth')->group(function () use ($uniqidRegex) {
+    Route::get('/', [UserController::class, 'dashboard'])->name('dashboard');
+    Route::get('/{user:uniqid}', [UserController::class, 'dashboard'])->name('otherdashboard')->where('user', $uniqidRegex);
+    Route::get('/create', [UserController::class, 'create'])->name('create');
+    // Route::post('/', [UserController::class, 'store'])->name('store');
+    Route::inertia('/{user:uniqid}/edit', 'Organisms/User/Edit')->name('edit')->where('user', $uniqidRegex);
+    Route::patch('/{user:uniqid}', [UserController::class, 'update'])->name('update')->where('user', $uniqidRegex);
+    Route::delete('/{user:uniqid}', [UserController::class, 'delete'])->name('delete')->where('user', $uniqidRegex);
+    Route::post('/{user:uniqid}', [UserController::class, 'restore'])->name('restore')->where('user', $uniqidRegex);
+    Route::delete('/forcedDelete/{user:uniqid}', [UserController::class, 'forcedDelete'])->name('forcedDelete')->where('user', $uniqidRegex);
 });

@@ -27,7 +27,7 @@ class UserFilterRequest extends FormRequest
             'name' => ["string", "min:1", "max:255", "required"],
             'email' => ["string", "email", "min:1", "max:255", "required"],
             'password' => ["string", "min:1", "max:255", "required"],
-            'role' => ["string", [User::ROLES], "required"],
+            'role' => ["string", Rule::in(array_keys(User::ROLES)), "required"],
             'email_verified_at' => ["date", "nullable"],
             "uniqid" => ["string", "min:1", "max:255", "required", Rule::unique("users", "uniqid")->ignore($this->route()->parameter('user'))],
             "image" => FileRules::rules([FileRules::TYPE_IMAGE]),

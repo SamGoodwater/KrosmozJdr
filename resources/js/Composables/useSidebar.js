@@ -1,7 +1,6 @@
 import { ref, onMounted, onUnmounted } from "vue";
 
 const isSidebarOpen = ref(true);
-
 let waitBeforeToggle = false;
 
 export function useSidebar() {
@@ -17,6 +16,10 @@ export function useSidebar() {
 
     const checkIfSidebarIsOpen = () => {
         const sidebar = document.getElementById("menuSidebar");
+        if (!sidebar) {
+            console.warn("Sidebar element not found");
+            return false;
+        }
         if (sidebar.classList.contains("sidebar-on")) {
             isSidebarOpen.value = true;
             return true;

@@ -22,7 +22,7 @@ const props = defineProps({
     size: {
         type: String,
         default: "md",
-        validator: (value) => ["xs", "ms", "md", "lg", "xl"].includes(value),
+        validator: (value) => ["xs", "sm", "md", "lg", "xl"].includes(value),
     },
     altText: {
         type: String,

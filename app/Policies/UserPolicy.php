@@ -12,7 +12,9 @@ class UserPolicy
         if ($user->role === User::ROLES['super_admin']) {
             return true;
         }
+        return null; // Important de retourner null pour ne pas court-circuiter les autres méthodes
     }
+
     /**
      * Determine whether the user can view any models.
      */
@@ -42,11 +44,7 @@ class UserPolicy
      */
     public function update(User $user, User $model): bool
     {
-        if ($model->id === $user->id) {
-            return true;
-        } else {
-            return $user->verifyRole(User::ROLES['admin']);
-        }
+        return $model->id === $user->id || $user->verifyRole(User::ROLES['admin']);
     }
 
     /**
@@ -54,11 +52,7 @@ class UserPolicy
      */
     public function delete(User $user, User $model): bool
     {
-        if ($model->id === $user->id) {
-            return true;
-        } else {
-            return $user->verifyRole(User::ROLES['admin']);
-        }
+        return $model->id === $user->id || $user->verifyRole(User::ROLES['admin']);
     }
 
     /**

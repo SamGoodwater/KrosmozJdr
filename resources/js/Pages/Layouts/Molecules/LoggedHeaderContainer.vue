@@ -37,21 +37,14 @@ watch(
             </template>
             <template #list>
                 <li>
-                    <Route route="dashboard">
-                        <Btn theme="simple link md" label="Dashboard" />
+                    <Route route="user.dashboard">
+                        <Btn theme="simple link md" label="Mon compte" />
                     </Route>
                 </li>
                 <li>
                     <Route route="logout" method="post">
                         <Btn theme="simple link md" label="Se déconnecter" />
                     </Route>
-                </li>
-                <li>
-                    <Btn
-                        theme="simple link md"
-                        label="Update User"
-                        @click="updateUser"
-                    />
                 </li>
             </template>
         </Dropdown>

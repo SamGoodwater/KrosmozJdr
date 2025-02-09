@@ -9,16 +9,6 @@ import { createPinia } from "pinia"; // Import Pinia
 import DefaultLayout from "@/Pages/Layouts/Main.vue";
 
 const appName = import.meta.env.VITE_APP_NAME || "KrosmozJDR";
-const appDescription = import.meta.env.VITE_APP_DESCRIPTION;
-const appVersion = import.meta.env.VITE_APP_VERSION;
-const appStability = import.meta.env.VITE_APP_STABILITY;
-const convertStability = {
-    alpha: "α",
-    beta: "β",
-    rc: "rc",
-    stable: "",
-};
-const appStabilitySymbol = convertStability[appStability] || appStability;
 
 createInertiaApp({
     title: (title) => `${title} - ${appName}`,

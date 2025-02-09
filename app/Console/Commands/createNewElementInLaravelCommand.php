@@ -18,7 +18,7 @@ class createNewElementInLaravelCommand extends Command
      *
      * @var string
      */
-    protected $description = "Créer un nouveau élément (controller, ressource, factory, models, ...) en créant l'ensemble des élements hébituels (pages, section, auth, modules)";
+    protected $description = "Créer un nouveau élément (controller, resource, factory, models, ...) en créant l'ensemble des élements hébituels (pages, section, auth, modules)";
 
     const ELEMENT_TYPE_DEFAULT = 'controller';
     const BASE = [

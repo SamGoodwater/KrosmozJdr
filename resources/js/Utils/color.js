@@ -1,4 +1,4 @@
-// adjustement: number of intensity levels to adjust (1 to 9)
+// adjustment: number of intensity levels to adjust (1 to 9)
 // direction: "auto" (default), "decrease" or "augmentation"
 export function adjustIntensityColor(
     color,
@@ -21,7 +21,8 @@ export function adjustIntensityColor(
 
     const currentIndex = intensities.indexOf(intensity);
     if (currentIndex === -1) {
-        throw new Error("Invalid intensity value");
+        console.error("Invalid intensity value");
+        return color;
     }
 
     let newIndex;
@@ -36,7 +37,8 @@ export function adjustIntensityColor(
     } else if (direction === "augmentation") {
         newIndex = currentIndex + adjustment;
     } else {
-        throw new Error("Invalid direction value");
+        console.error("Invalid direction value");
+        return color;
     }
 
     newIndex = Math.max(0, Math.min(intensities.length - 1, newIndex));

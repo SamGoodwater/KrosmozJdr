@@ -15,7 +15,7 @@ class UserController extends Controller
 {
     use AuthorizesRequests;
 
-    public function index(UserFilterRequest $request): \Inertia\Response
+    public function listing(UserFilterRequest $request): \Inertia\Response
     {
         $this->authorize('viewAny', User::class);
 
@@ -24,18 +24,21 @@ class UserController extends Controller
 
         $users = User::paginate($paginationMaxDisplay);
 
-        return Inertia::render('Organisms/Users/', [
+        return Inertia::render('Organisms/User/Dashboard.vue', [
             'users' => $users,
         ]);
     }
 
-    public function show(User $user, UserFilterRequest $request): \Inertia\Response
+    public function dashboard(User $user, UserFilterRequest $request): \Inertia\Response
     {
+
         $this->authorize('view', $user);
 
-        return Inertia::render('Organisms/Users/Show', [
+        return Inertia::render('Organisms/User/Dashboard.vue', [
+            'verifiedEmail' => $user->hasVerifiedEmail(),
+            'user' => $user,
             'resources' => $user->resources,
-            'panoply' => $user->panoply,
+            'panoplies' => $user->panoply,
         ]);
     }
 
@@ -69,7 +72,7 @@ class UserController extends Controller
 
         event(new NotificationSuperAdminEvent('user', 'create',  $user));
 
-        return redirect()->route('dashboard', ['user' => $user]);
+        return redirect()->route('user.dashboard', ['user' => $user]);
     }
 
     public function edit(User $user): \Inertia\Response
