@@ -186,6 +186,7 @@ text-fuchsia-500
 bg-blue-700
 border-blue-700
 text-blue-700
-bg-slate-700/20"
+bg-base-900/80
+bg-base-900/40"
 ></div>
 </template>

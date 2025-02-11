@@ -78,6 +78,11 @@ onUnmounted(() => {
                                 >consommables</span
                             >
                         </li>
+                        <li>
+                            <span class="badge bg-campaign-800 m-0.5"
+                                >campagnes</span
+                            >
+                        </li>
                     </ul>
                     <ul>
                         <li>
@@ -92,6 +97,11 @@ onUnmounted(() => {
                         <li>
                             <span class="badge bg-specialization-800 m-0.5"
                                 >Spécialisations</span
+                            >
+                        </li>
+                        <li>
+                            <span class="badge bg-scenario-800 m-0.5"
+                                >scénarios</span
                             >
                         </li>
                         <li class="m-0.5">etc.</li>

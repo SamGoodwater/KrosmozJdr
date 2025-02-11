@@ -8,11 +8,11 @@ const props = defineProps({
     },
     bgColor: {
         type: String,
-        default: "slate-700",
+        default: "base-900",
     },
     bgOpacity: {
         type: String,
-        default: "20",
+        default: "40",
     },
     blur: {
         type: String,
@@ -42,9 +42,14 @@ const getClasses = computed(() => {
     let classes = [
         "container",
         "mx-auto",
-        "p-6",
-        "max-md:p-6",
-        "max-sm:p-4",
+        "py-6",
+        "max-md:py-6",
+        "max-sm:py-4",
+        "px-24",
+        "max-xl:px-32",
+        "max-lg:px-24",
+        "max-md:px-10",
+        "max-sm:px-2",
         "w-fit-available",
         "h-fit-available",
     ];

@@ -23,7 +23,7 @@ watch(
 
 <template>
     <div class="flex flex-col text-center">
-        <Dropdown>
+        <Dropdown placement="bottom-end">
             <template #label>
                 <div class="flex items-center space-x-2">
                     <Avatar
