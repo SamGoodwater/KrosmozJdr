@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use App\Models\Modules\Specialization;
 use App\Models\Modules\Scenario;
 use App\Models\Modules\Campaign;
+use Illuminate\Support\Facades\Storage;
 
 class Page extends Model
 {
@@ -25,6 +26,7 @@ class Page extends Model
         'is_editable',
         "uniqid",
         'created_by',
+        'image',
 
     ];
     protected $hidden = ['id', 'created_at', 'updated_at', 'deleted_at'];
@@ -57,5 +59,10 @@ class Page extends Model
     public function specialization(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(Specialization::class);
+    }
+
+    public function imagePath(): string
+    {
+        return Storage::url($this->image);
     }
 }

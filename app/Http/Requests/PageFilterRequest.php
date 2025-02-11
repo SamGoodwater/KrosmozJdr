@@ -36,6 +36,7 @@ class PageFilterRequest extends FormRequest
             "uniqid" => ["string", "min:1", "max:255", "required", Rule::unique("pages", "uniqid")->ignore($this->route()->parameter('page'))],
             "sections" => ["array", 'exists:sections,uniqid'],
             'created_by' => ["integer", "nullable", "exists:users,id"],
+            'image' => ["string", "nullable"],
         ];
     }
 

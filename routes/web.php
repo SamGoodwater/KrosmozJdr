@@ -28,6 +28,7 @@ use App\Http\Controllers\Modules\SpelltypeController;
 use App\Http\Controllers\Modules\ItemtypeController;
 use App\Http\Controllers\Modules\ConsumabletypeController;
 use App\Http\Controllers\Modules\ResourcetypeController;
+use App\Models\Section;
 
 Route::get('/', function () {
     return Inertia::render('Home', [
@@ -45,29 +46,29 @@ Route::get('/contribuer', function () {
 })->name('contribute');
 
 // Pages
-Route::prefix('page')->name("page.")->controller(PageController::class)->group(function () use ($slugRegex, $uniqidRegex) {
-    Route::inertia('/', 'index')->name('index');
-    Route::inertia('/{page:slug}', 'show')->name('show')->where('page', $slugRegex);
-    Route::inertia('/create', 'create')->name('create')->middleware(['auth', 'verified']);
-    Route::post('/', 'store')->name('store')->middleware(['auth', 'verified']);
-    Route::inertia('/{page:slug}/edit', 'edit')->name('edit')->middleware(['auth', 'verified'])->where('page', $slugRegex);
-    Route::patch('/{page:uniqid}', 'update')->name('update')->middleware(['auth', 'verified'])->where('page', $uniqidRegex);
-    Route::delete('/{page:uniqid}', 'delete')->name('delete')->middleware(['auth', 'verified'])->where('page', $uniqidRegex);
-    Route::post('/{page:uniqid}', 'restore')->name('restore')->middleware(['auth', 'verified'])->where('page', $uniqidRegex);
-    Route::delete('/forcedDelete/{page:uniqid}', 'forcedDelete')->name('forcedDelete')->middleware(['auth', 'verified'])->where('page', $uniqidRegex);
+Route::prefix('page')->name("page.")->group(function () use ($slugRegex, $uniqidRegex) {
+    Route::get('/', [PageController::class, 'index'])->name('index');
+    Route::get('/{page:slug}', [PageController::class, 'show'])->name('show')->where('page', $slugRegex);
+    Route::get('/create', [PageController::class, 'create'])->name('create')->middleware(['auth', 'verified']);
+    Route::post('/store', [PageController::class, 'store'])->name('store')->middleware(['auth', 'verified']);
+    Route::get('/{page:slug}/edit', [PageController::class, 'edit'])->name('edit')->middleware(['auth', 'verified'])->where('page', $slugRegex);
+    Route::patch('/{page:uniqid}', [PageController::class, 'update'])->name('update')->middleware(['auth', 'verified'])->where('page', $uniqidRegex);
+    Route::delete('/{page:uniqid}', [PageController::class, 'delete'])->name('delete')->middleware(['auth', 'verified'])->where('page', $uniqidRegex);
+    Route::post('/{page:uniqid}', [PageController::class, 'restore'])->name('restore')->middleware(['auth', 'verified'])->where('page', $uniqidRegex);
+    Route::delete('/forcedDelete/{page:uniqid}', [PageController::class, 'forcedDelete'])->name('forcedDelete')->middleware(['auth', 'verified'])->where('page', $uniqidRegex);
 });
 
 // Sections
-Route::prefix("section")->name("section.")->controller(SectionController::class)->group(function () use ($uniqidRegex) {
-    Route::inertia('/', 'index')->name('index');
-    Route::inertia('/{section:uniqid}', 'show')->name('show')->where('section', $uniqidRegex);
-    Route::inertia('/create', 'create')->name('create')->middleware(['auth', 'verified']);
-    Route::post('/', 'store')->name('store')->middleware(['auth', 'verified']);
-    Route::inertia('/{section:uniqid}/edit', 'edit')->name('edit')->middleware(['auth', 'verified'])->where('section', $uniqidRegex);
-    Route::patch('/{section:uniqid}', 'update')->name('update')->middleware(['auth', 'verified'])->where('section', $uniqidRegex);
-    Route::delete('/{section:uniqid}', 'delete')->name('delete')->middleware(['auth', 'verified'])->where('section', $uniqidRegex);
-    Route::post('/{section:uniqid}', 'restore')->name('restore')->middleware(['auth', 'verified'])->where('section', $uniqidRegex);
-    Route::delete('/forcedDelete/{section:uniqid}', 'forcedDelete')->name('forcedDelete')->middleware(['auth', 'verified'])->where('section', $uniqidRegex);
+Route::prefix('section')->name("section.")->group(function () use ($slugRegex, $uniqidRegex) {
+    Route::get('/', [SectionController::class, 'index'])->name('index');
+    Route::get('/{section:slug}', [SectionController::class, 'show'])->name('show')->where('section', $slugRegex);
+    Route::get('/create', [SectionController::class, 'create'])->name('create')->middleware(['auth', 'verified']);
+    Route::post('/store', [SectionController::class, 'store'])->name('store')->middleware(['auth', 'verified']);
+    Route::get('/{section:slug}/edit', [SectionController::class, 'edit'])->name('edit')->middleware(['auth', 'verified'])->where('section', $slugRegex);
+    Route::patch('/{section:uniqid}', [SectionController::class, 'update'])->name('update')->middleware(['auth', 'verified'])->where('section', $uniqidRegex);
+    Route::delete('/{section:uniqid}', [SectionController::class, 'delete'])->name('destroy')->middleware(['auth', 'verified'])->where('section', $uniqidRegex);
+    Route::post('/{section:uniqid}', [SectionController::class, 'restore'])->name('restore')->middleware(['auth', 'verified'])->where('section', $uniqidRegex);
+    Route::delete('/forcedDelete/{section:uniqid}', [SectionController::class, 'forcedDelete'])->name('forcedDelete')->middleware(['auth', 'verified'])->where('section', $uniqidRegex);
 });
 
 // Campaigns

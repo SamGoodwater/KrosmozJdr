@@ -20,7 +20,8 @@ class Section extends Model
         'is_visible',
         'page_id',
         'is_visible',
-        'created_by'
+        'created_by',
+        'image',
     ];
     protected $hidden = ['id', 'created_at', 'updated_at', 'deleted_at'];
 
@@ -60,5 +61,10 @@ class Section extends Model
             return Storage::disk('modules')->url($file);
         });
         return $files;
+    }
+
+    public function imagePath(): string
+    {
+        return Storage::url($this->image);
     }
 }

@@ -62,7 +62,7 @@ const getClasses = computed(() => {
             /(?:^|\s)(?<capture>blur-(none|xs|sm|md|lg|xl|2xl))(?:\s|$)/;
         match = regexBlur.exec(props.theme);
         if (match && match?.groups?.capture) {
-            classes.push(`backdrop-blur-${match.groups.capture}`);
+            classes.push(`backdrop-${match.groups.capture}`);
         } else {
             classes.push(`backdrop-blur-${props.blur}`);
         }
@@ -76,7 +76,7 @@ const getClasses = computed(() => {
             /(?:^|\s)(?<capture>shadow-(none|xs|sm|md|lg|xl|2xl|3xl))(?:\s|$)/;
         match = regexShadow.exec(props.theme);
         if (match && match?.groups?.capture) {
-            classes.push(`shadow-${match.groups.capture}`);
+            classes.push(`${match.groups.capture}`);
         } else {
             classes.push(`shadow-${props.shadow}`);
         }

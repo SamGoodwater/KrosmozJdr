@@ -34,6 +34,7 @@ class SectionFilterRequest extends FormRequest
             "uniqid" => ["string", "min:1", "max:255", "required", Rule::unique("sections", "uniqid")->ignore($this->route()->parameter('section'))],
             'created_by' => ["integer", "nullable", "exists:users,id"],
             "file" => FileRules::rules([FileRules::TYPE_IMAGE, FileRules::TYPE_AUDIO, FileRules::TYPE_DOCUMENT, fileRules::TYPE_VIDEO]),
+            "image" => FileRules::rules([FileRules::TYPE_IMAGE]),
         ];
     }
 

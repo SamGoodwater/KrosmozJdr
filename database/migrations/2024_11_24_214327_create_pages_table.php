@@ -25,6 +25,7 @@ return new class extends Migration
             $table->boolean('is_public')->default(false);
             $table->boolean('is_visible')->default(false);
             $table->boolean('is_editable')->default(true);
+            $table->string('image')->nullable();
             $table->softDeletes();
 
             $table->foreignIdFor(Page::class)->nullable()->constrained()->cascadeOnDelete();
@@ -40,6 +41,7 @@ return new class extends Migration
             $table->longText('content')->nullable();
             $table->integer('order_num')->default(0);
             $table->boolean('is_visible')->default(true);
+            $table->string('image')->nullable();
             $table->softDeletes();
 
             $table->foreignIdFor(Page::class)->nullable()->constrained()->cascadeOnDelete();
