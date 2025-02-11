@@ -1,12 +1,7 @@
 <script setup>
-import { useFloating, autoUpdate, flip, shift, offset } from "@floating-ui/vue";
-import { ref } from "vue";
+import { ref, defineProps } from "vue";
 
 const props = defineProps({
-    placement: {
-        type: String,
-        default: "bottom-center",
-    },
     bgColor: {
         type: String,
         default: "bg-secondary-500/15",

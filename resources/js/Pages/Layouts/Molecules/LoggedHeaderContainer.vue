@@ -32,7 +32,7 @@ watch(
                         size="sm"
                         rounded="full"
                     />
-                    <span>{{ pseudo }}</span>
+                    <span>{{ pseudo.charAt(0).toUpperCase() + pseudo.slice(1) }}</span>
                 </div>
             </template>
             <template #list>

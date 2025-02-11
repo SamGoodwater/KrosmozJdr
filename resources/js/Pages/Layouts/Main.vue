@@ -20,7 +20,19 @@ const { isSidebarOpen } = useSidebar();
             :class="[isSidebarOpen ? 'ml-64' : 'ml-0']"
             class="relative max-sm:ml-0 flex flex-col align-items-center z-0 w-fit-available h-fit-available overflow-x-hidden"
         >
-            <div class="mt-24 mb-24 lg:mx-10 md:mx-6 sm:mx-6 max-sm:mx-4">
+            <div class="
+                mt-20
+                max-md:mt-18
+                max-sm:mt-16
+                mb-26
+                max-md:mb-24
+                max-sm:mb-20
+                mx-16
+                max-xl:mx-30
+                max-lg:mx-24
+                max-md:mx-4
+                max-sm:mx-2
+                w-fit-available h-fit-available flex justify-center">
                 <slot />
             </div>
             <div
