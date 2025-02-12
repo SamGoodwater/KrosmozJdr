@@ -1,5 +1,6 @@
 <script setup>
-import { computed, defineProps, ref, defineEmits } from "vue";
+import { computed, ref } from "vue";
+import { extractTheme } from "@/Utils/extractTheme";
 
 const emit = defineEmits(["update:checked"]);
 
@@ -16,75 +17,35 @@ const props = defineProps({
         type: String,
         default: "",
     },
-    color: {
+    tooltip: {
         type: String,
-        default: "primary-500",
-    },
-    size: {
-        type: String,
-        default: "md",
-        validator: (value) => ["", "xs", "sm", "md", "lg"].includes(value),
-    },
-    autofocus: {
-        type: [Boolean, String],
-        default: false,
-    },
-    required: {
-        type: [Boolean, String],
-        default: false,
+        default: "",
     },
 });
 
 const isChecked = ref(props.checked);
 
-const classes = computed(() => {
-    let classes = ["toggle"];
-    let match;
+const buildToggleClasses = (themeProps, props) => {
+    const classes = ["toggle"];
 
-    if (props.theme) {
-        // COLOR
-        const regexColor =
-            /(?:^|\s)(?<capture>([a-zA-Z]{3,}-((50)|([1-9]00)))|primary|secondary|success|accent|neutral|info|warning|error)(?:\s|$)/;
-        match = regexColor.exec(props.theme);
-        if (match && match?.groups?.capture) {
-            classes.push(`text-${match.groups.capture}`);
-        } else {
-            classes.push(`text-${props.color}`);
-        }
+    // Color
+    const color = themeProps.color || 'primary-500';
+    classes.push(`text-${color}`);
 
-        // SIZE
-        const regexSize = /(?:^|\s)(?<capture>xs|sm|md|lg)(?:\s|$)/;
-        match = regexSize.exec(props.theme);
-        if (match && match?.groups?.capture) {
-            classes.push(`toggle-${match.groups.capture}`);
-        } else {
-            classes.push(`toggle-${props.size}`);
-        }
+    // Size
+    const size = themeProps.size || 'md';
+    classes.push(`toggle-${size}`);
 
-        // Autofocus
-        const regexAutofocus = /(?:^|\s)(?<capture>autofocus)(?:\s|$)/;
-        match = regexAutofocus.exec(props.theme);
-        if (match && match?.groups?.capture) {
-            props.autofocus = true;
-        } else {
-            props.autofocus = props.autofocus ? props.autofocus : false;
-        }
-
-        // Required
-        const regexRequired = /(?:^|\s)(?<capture>required)(?:\s|$)/;
-        match = regexRequired.exec(props.theme);
-        if (match && match?.groups?.capture) {
-            props.required = true;
-        } else {
-            props.required = props.required ? props.required : false;
-        }
-    } else {
-        classes.push(`text-${props.color}`);
-        classes.push(`toggle-${props.size}`);
+    // Border style
+    if (themeProps.bordered) {
+        classes.push("toggle-bordered");
     }
 
     return classes.join(" ");
-});
+};
+
+const themeProps = computed(() => extractTheme(props.theme));
+const getClasses = computed(() => buildToggleClasses(themeProps.value, props));
 
 const updateChecked = (event) => {
     isChecked.value = event.target.checked;
@@ -93,14 +54,15 @@ const updateChecked = (event) => {
 </script>
 
 <template>
-    <label :class="classes">
+    <label :class="getClasses">
         <input
             type="checkbox"
             :checked="isChecked"
             @change="updateChecked"
-            :autofocus="props.autofocus"
-            :required="props.required"
+            :autofocus="themeProps.autofocus"
+            :required="themeProps.required"
+            :data-tip="tooltip"
         />
-        <span>{{ props.label }}</span>
+        <span>{{ label }}</span>
     </label>
 </template>

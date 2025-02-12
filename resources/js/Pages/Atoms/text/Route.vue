@@ -1,8 +1,13 @@
 <script setup>
-import { computed, defineProps, ref } from "vue";
+import { computed, ref } from "vue";
 import { Link } from "@inertiajs/vue3";
+import { extractTheme } from "@/Utils/extractTheme";
 
 const props = defineProps({
+    theme: {
+        type: String,
+        default: "",
+    },
     href: {
         type: String,
         default: "#",
@@ -14,39 +19,36 @@ const props = defineProps({
     target: {
         type: String,
         default: "",
-        validator: (value) =>
-            ["", "_blank", "_self", "_parent", "_top"].includes(value),
     },
     tooltip: {
         type: String,
         default: "",
     },
-    tooltipPosition: {
-        type: String,
-        default: "bottom",
-        validator: (value) =>
-            ["", "top", "right", "bottom", "left"].includes(value),
-    },
 });
 
-let hrefRef = ref(props.href);
+const hrefRef = ref(props.href);
 
-const getClasses = computed(() => {
-    let classes = [];
+const buildRouteClasses = (themeProps, props) => {
+    const classes = [];
 
-    if (props.route) {
-        hrefRef.value = route(props.route);
-    } else if (props.href) {
-        hrefRef.value = props.href;
-    }
-
+    // Tooltip
     if (props.tooltip) {
-        classes.push(`tooltip`);
-        classes.push(`tooltip-${props.tooltipPosition}`);
+        classes.push('tooltip');
+        if (themeProps.tooltipPosition) {
+            classes.push(`tooltip-${themeProps.tooltipPosition}`);
+        }
     }
 
     return classes.join(" ");
-});
+};
+
+const themeProps = computed(() => extractTheme(props.theme));
+const getClasses = computed(() => buildRouteClasses(themeProps.value, props));
+
+// Update href if route is provided
+if (props.route) {
+    hrefRef.value = route(props.route);
+}
 </script>
 
 <template>
@@ -54,7 +56,7 @@ const getClasses = computed(() => {
         :href="hrefRef"
         :target="target"
         :data-tip="tooltip"
-        :class="`${getClasses}`"
+        :class="getClasses"
     >
         <slot />
     </Link>

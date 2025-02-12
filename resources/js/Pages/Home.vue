@@ -49,7 +49,7 @@ const form = ref({
                 <Btn theme="secondary glass sm" label="Secondaire" />
                 <Btn theme="success glass sm" label="Succès" />
                 <Btn theme="error glass sm" label="Erreur" />
-                <Btn theme="simple glass sm" label="Simple" />
+                <Btn theme="neutral glass sm" label="Simple" />
             </div>
             <div class="flex mt-4 gap-4 justify-content-around flex-wrap">
                 <Btn theme="outline sm primary">
@@ -65,7 +65,7 @@ const form = ref({
                 <Btn theme="outline sm error">
                     <template #label> Annuler </template>
                 </Btn>
-                <Btn theme="outline sm simple">
+                <Btn theme="outline sm neutral">
                     <template #label> Simple </template>
                 </Btn>
             </div>
@@ -82,7 +82,7 @@ const form = ref({
                 <Btn theme="link sm error">
                     <template #label> Annuler </template>
                 </Btn>
-                <Btn theme="link sm simple">
+                <Btn theme="link sm neutral">
                     <template #label> Simple </template>
                 </Btn>
             </div>
@@ -187,6 +187,27 @@ bg-blue-700
 border-blue-700
 text-blue-700
 bg-base-900/80
-bg-base-900/40"
+bg-base-900/40
+bg-primary
+border-primary
+text-primary
+bg-secondary
+border-secondary
+text-secondary
+bg-success
+border-success
+text-success
+bg-error
+border-error
+text-error
+bg-neutral
+border-neutral
+text-neutral
+bg-info
+border-info
+text-info
+bg-warning
+border-warning
+text-warning"
 ></div>
 </template>

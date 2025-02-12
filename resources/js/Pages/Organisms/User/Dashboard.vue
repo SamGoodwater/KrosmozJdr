@@ -9,6 +9,7 @@ import Route from "@/Pages/Atoms/text/Route.vue";
 import BadgeRole from "@/Pages/Organisms/User/Molecules/badgeRole.vue";
 import Container from "@/Pages/Atoms/panels/Container.vue";
 import Badge from "@/Pages/Atoms/text/Badge.vue";
+import Card from "@/Pages/Atoms/panels/Card.vue";
 
 // Récupération des données partagées par Inertia
 const page = usePage();
@@ -73,7 +74,7 @@ const verifiedEmail = ref(page.props.verifiedEmail);
                             <div>
                                 <Route route="">
                                     <Btn
-                                        theme="sm simple glass"
+                                        theme="sm neutral glass"
                                         label="Vérifier mon mail"
                                     />
                                 </Route>
@@ -95,7 +96,9 @@ const verifiedEmail = ref(page.props.verifiedEmail);
             <!-- Mes Campagnes -->
             <div class="flex flex-col items-start gap-4 my-5">
                 <div>
-                    <h3 class="text-lg font-bold text-gray-900 dark:text-gray-100">
+                    <h3
+                        class="text-lg font-bold text-gray-900 dark:text-gray-100"
+                    >
                         Mes Campagnes
                         <Badge class="ml-2" color="campaign-800">
                             Campagne
@@ -104,13 +107,24 @@ const verifiedEmail = ref(page.props.verifiedEmail);
                     <p class="text-gray-600 dark:text-gray-300">
                         0 campagnes en cours
                     </p>
+                    <div>
+                        <Card theme="w-24 h-24">
+                            <p>Test</p>
+                        </Card>
+                    </div>
                 </div>
                 <div class="flex gap-4">
                     <Route route="">
-                        <Btn theme="sm primary glass" label="Créer une campagne" />
+                        <Btn
+                            theme="sm primary glass"
+                            label="Créer une campagne"
+                        />
                     </Route>
                     <Route route="">
-                        <Btn theme="sm simple glass" label="Voir mes campagnes" />
+                        <Btn
+                            theme="sm neutral glass"
+                            label="Voir mes campagnes"
+                        />
                     </Route>
                 </div>
             </div>
@@ -118,7 +132,9 @@ const verifiedEmail = ref(page.props.verifiedEmail);
             <!-- Mes Scénarios -->
             <div class="flex flex-col items-start gap-4 my-5">
                 <div>
-                    <h3 class="text-lg font-bold text-gray-900 dark:text-gray-100">
+                    <h3
+                        class="text-lg font-bold text-gray-900 dark:text-gray-100"
+                    >
                         Mes Scénarios
                         <Badge class="ml-2" color="scenario-800">
                             Scénario
@@ -130,10 +146,16 @@ const verifiedEmail = ref(page.props.verifiedEmail);
                 </div>
                 <div class="flex gap-4">
                     <Route route="">
-                        <Btn theme="sm primary glass" label="Créer un scénario" />
+                        <Btn
+                            theme="sm primary glass"
+                            label="Créer un scénario"
+                        />
                     </Route>
                     <Route route="">
-                        <Btn theme="sm simple glass" label="Voir mes scénarios" />
+                        <Btn
+                            theme="sm neutral glass"
+                            label="Voir mes scénarios"
+                        />
                     </Route>
                 </div>
             </div>
@@ -141,22 +163,20 @@ const verifiedEmail = ref(page.props.verifiedEmail);
             <!-- Mes PNJ -->
             <div class="flex flex-col items-start gap-4 my-5">
                 <div>
-                    <h3 class="text-lg font-bold text-gray-900 dark:text-gray-100">
+                    <h3
+                        class="text-lg font-bold text-gray-900 dark:text-gray-100"
+                    >
                         Mes PNJ
-                        <Badge class="ml-2" color="npc-800">
-                            PNJ
-                        </Badge>
+                        <Badge class="ml-2" color="npc-800"> PNJ </Badge>
                     </h3>
-                    <p class="text-gray-600 dark:text-gray-300">
-                        0 pnj créé
-                    </p>
+                    <p class="text-gray-600 dark:text-gray-300">0 pnj créé</p>
                 </div>
                 <div class="flex gap-4">
                     <Route route="">
                         <Btn theme="sm primary glass" label="Créer un PNJ" />
                     </Route>
                     <Route route="">
-                        <Btn theme="sm simple glass" label="Voir mes PNJ" />
+                        <Btn theme="sm neutral glass" label="Voir mes PNJ" />
                     </Route>
                 </div>
             </div>
@@ -164,13 +184,13 @@ const verifiedEmail = ref(page.props.verifiedEmail);
             <div class="flex justify-end gap-4 flex-wrap items-center">
                 <div>
                     <Route route="logout" method="post">
-                        <Btn theme="simple outline sm" label="Se déconnecter" />
+                        <Btn theme="neutral outline sm" label="Se déconnecter" />
                     </Route>
                 </div>
                 <div>
                     <Route route="">
                         <Btn
-                            theme="simple ing outline sm"
+                            theme="neutral ing outline sm"
                             label="Obtenir mes informations"
                         />
                     </Route>

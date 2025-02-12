@@ -1,41 +1,20 @@
 <script setup>
-import { ref, onMounted, defineExpose, computed, defineEmits } from "vue";
+import { ref, onMounted, defineExpose, computed } from "vue";
 import { useAttrs } from "vue";
+import { extractTheme } from "@/Utils/extractTheme";
 
 const props = defineProps({
     modelValue: {
         type: [String, Number],
         default: "",
     },
-    type: {
+    theme: {
         type: String,
-        default: "text",
-        validator: (value) =>
-            ["text", "email", "password", "tel", "url"].includes(value),
+        default: "",
     },
     placeholder: {
         type: String,
         default: "",
-    },
-    required: {
-        type: Boolean,
-        default: false,
-    },
-    autofocus: {
-        type: Boolean,
-        default: false,
-    },
-    maxlength: {
-        type: [String, Number],
-        default: null,
-    },
-    minlength: {
-        type: [String, Number],
-        default: null,
-    },
-    pattern: {
-        type: String,
-        default: null,
     },
     tooltip: {
         type: String,
@@ -45,112 +24,41 @@ const props = defineProps({
         type: Boolean,
         default: false,
     },
-    theme: {
-        type: String,
-        default: "",
-    },
 });
 
 const emit = defineEmits(["update:modelValue"]);
 const input = ref(null);
 const attrs = useAttrs();
-let colorRef = ref("gray-600");
-let typeRef = ref(props.type);
-let autofocusRef = ref(props.autofocus);
-let requiredRef = ref(props.required);
-let maxRef = ref(props.maxlength);
-let minRef = ref(props.minlength);
 
-const getClasses = computed(() => {
-    let classes = ["input", "w-full", "max-w-xs"];
-    let match;
+const buildInputClasses = (themeProps, props) => {
+    const classes = ["input", "w-full", "max-w-xs"];
 
-    if (props.theme) {
-        // COLOR
-        const regexColor =
-            /(?:^|\s)(?<capture>([a-zA-Z]{3,}-((50)|([1-9]00)))|primary|secondary|success|accent|neutral|info|warning|error)(?:\s|$)/;
-        match = regexColor.exec(props.theme);
-        if (match && match?.groups?.capture) {
-            classes.push(`text-${match.groups.capture}`);
-            classes.push(`border-${match.groups.capture}`);
-            colorRef.value = match.groups.capture;
-        } else {
-            classes.push("text-primary-500");
-            classes.push("border-primary-500");
-        }
+    // Color
+    const color = themeProps.color || 'primary-500';
+    classes.push(`text-${color}`);
+    classes.push(`border-${color}`);
 
-        // TYPE
-        const regexType =
-            /(?:^|\s)(?<capture>text|email|password|tel|url)(?:\s|$)/;
-        match = regexType.exec(props.theme);
-        if (match && match?.groups?.capture) {
-            typeRef.value = match.groups.capture;
-        } else {
-            typeRef.value = props.type ? props.type : "text";
-        }
+    // Size
+    const size = themeProps.size || 'md';
+    classes.push(`input-${size}`);
 
-        // SIZE
-        const regexSize = /(?:^|\s)(?<capture>xs|sm|md|lg)(?:\s|$)/;
-        match = regexSize.exec(props.theme);
-        if (match && match?.groups?.capture) {
-            classes.push(`input-${match.groups.capture}`);
-        } else {
-            classes.push("input-md");
-        }
-
-        // Autofocus
-        const regexAutofocus = /(?:^|\s)(?<capture>autofocus)(?:\s|$)/;
-        match = regexAutofocus.exec(props.theme);
-        if (match && match?.groups?.capture) {
-            autofocusRef.value = true;
-        } else {
-            autofocusRef.value = props.autofocus ? props.autofocus : false;
-        }
-
-        // Required
-        const regexRequired = /(?:^|\s)(?<capture>required)(?:\s|$)/;
-        match = regexRequired.exec(props.theme);
-        if (match && match?.groups?.capture) {
-            requiredRef.value = true;
-        } else {
-            requiredRef.value = props.required ? props.required : false;
-        }
-
-        // Bordered
-        const regexBordered = /(?:^|\s)(?<capture>border|bordered)(?:\s|$)/;
-        match = regexBordered.exec(props.theme);
-        if (match && match?.groups?.capture) {
-            classes.push("input-bordered");
-        }
-
-        // Max
-        const regexMax = /(?:^|\s)max:(?<capture>[0-9]+)(?:\s|$)/; // max:1000
-        match = regexMax.exec(props.theme);
-        if (match && match?.groups?.capture) {
-            maxRef.value = match.groups.capture;
-        } else {
-            maxRef.value = props.maxlength ? props.maxlength : null;
-        }
-
-        // Min
-        const regexMin = /(?:^|\s)min:(?<capture>[0-9]+)(?:\s|$)/; // min:0
-        match = regexMin.exec(props.theme);
-        if (match && match?.groups?.capture) {
-            minRef.value = match.groups.capture;
-        } else {
-            minRef.value = props.minlength ? props.minlength : null;
-        }
+    // Border style
+    if (themeProps.bordered) {
+        classes.push("input-bordered");
     }
 
     return classes.join(" ");
-});
+};
+
+const themeProps = computed(() => extractTheme(props.theme));
+const getClasses = computed(() => buildInputClasses(themeProps.value, props));
 
 const updateValue = (event) => {
     emit("update:modelValue", event.target.value);
 };
 
 onMounted(() => {
-    if (input.value && autofocusRef.value) {
+    if (input.value && themeProps.value.autofocus) {
         input.value.focus();
     }
 });
@@ -161,21 +69,21 @@ defineExpose({ focus: () => input.value.focus() });
 <template>
     <label
         v-if="labelInside"
-        :class="`input border-${colorRef} text-${colorRef} input-bordered flex items-center gap-2`"
+        :class="`input border-${themeProps.color || 'primary-500'} text-${themeProps.color || 'primary-500'} input-bordered flex items-center gap-2`"
     >
         <slot v-if="labelInside" name="before" />
         <input
             v-bind="attrs"
-            :required="requiredRef"
-            :autofocus="autofocusRef"
+            :required="themeProps.required"
+            :autofocus="themeProps.autofocus"
             :value="modelValue"
             @input="updateValue"
             ref="input"
-            :type="typeRef"
+            :type="themeProps.type || 'text'"
             :placeholder="placeholder"
-            :maxlength="maxRef"
-            :minlength="minRef"
-            :pattern="pattern"
+            :maxlength="themeProps.maxLength"
+            :minlength="themeProps.minLength"
+            :pattern="attrs.pattern"
             :data-tip="tooltip"
             :class="getClasses"
         />
@@ -184,16 +92,16 @@ defineExpose({ focus: () => input.value.focus() });
     <input
         v-else
         v-bind="attrs"
-        :required="requiredRef"
-        :autofocus="autofocusRef"
+        :required="themeProps.required"
+        :autofocus="themeProps.autofocus"
         :value="modelValue"
         @input="updateValue"
         ref="input"
-        :type="typeRef"
+        :type="themeProps.type || 'text'"
         :placeholder="placeholder"
-        :maxlength="maxRef"
-        :minlength="minRef"
-        :pattern="pattern"
+        :maxlength="themeProps.maxLength"
+        :minlength="themeProps.minLength"
+        :pattern="attrs.pattern"
         :data-tip="tooltip"
         :class="getClasses"
     />

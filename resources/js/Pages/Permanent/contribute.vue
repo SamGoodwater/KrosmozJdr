@@ -22,7 +22,7 @@ import Container from "@/Pages/Atoms/panels/Container.vue";
                         Le projet Krosmoz JDR est porté par une communauté de
                         passionnés, et votre contribution peut faire toute la
                         différence. Que vous souhaitiez partager vos idées,
-                        participer au développement ou simplement suivre l'évolution
+                        participer au développement ou neutralment suivre l'évolution
                         du projet, plusieurs options s'offrent à vous.
                     </p>
                 </div>

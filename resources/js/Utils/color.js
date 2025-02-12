@@ -1,8 +1,28 @@
-
 const colorNames = [
-    "red", "orange", "amber", "yellow", "lime", "green", "emerald", "teal", "cyan",
-    "sky", "blue", "indigo", "violet", "purple", "fuchsia", "pink", "rose", "slate",
-    "gray", "zinc", "neutral", "stone", "black", "white"
+    "red",
+    "orange",
+    "amber",
+    "yellow",
+    "lime",
+    "green",
+    "emerald",
+    "teal",
+    "cyan",
+    "sky",
+    "blue",
+    "indigo",
+    "violet",
+    "purple",
+    "fuchsia",
+    "pink",
+    "rose",
+    "slate",
+    "gray",
+    "zinc",
+    "neutral",
+    "stone",
+    "black",
+    "white",
 ];
 
 // adjustment: number of intensity levels to adjust (1 to 9)
@@ -10,7 +30,7 @@ const colorNames = [
 export function adjustIntensityColor(
     color,
     adjustment = 2,
-    direction = "auto"
+    direction = "auto",
 ) {
     const intensities = [50, 100, 200, 300, 400, 500, 600, 700, 800, 900];
     const colorParts = color.split("-");
@@ -54,7 +74,7 @@ export function adjustIntensityColor(
 }
 
 export function getColorFromString(input, number = 500) {
-    if (!input || typeof input !== 'string') {
+    if (!input || typeof input !== "string") {
         console.error("Invalid input value");
         return null;
     }
@@ -68,7 +88,12 @@ export function getColorFromString(input, number = 500) {
     const firstCharCode = letters.charCodeAt(0) - 97;
     const secondCharCode = letters.length > 1 ? letters.charCodeAt(1) - 97 : 0;
 
-    if (firstCharCode < 0 || firstCharCode > 25 || secondCharCode < 0 || secondCharCode > 25) {
+    if (
+        firstCharCode < 0 ||
+        firstCharCode > 25 ||
+        secondCharCode < 0 ||
+        secondCharCode > 25
+    ) {
         console.error("Input contains non-alphabetical characters");
         return null;
     }
@@ -88,7 +113,12 @@ export function getColorFromString(input, number = 500) {
  * @returns {string|null} - The adjusted base color with increased contrast, or null if input is invalid.
  */
 export function adjustColorForContrast(baseColor, targetColor) {
-    if (!baseColor || !targetColor || typeof baseColor !== 'string' || typeof targetColor !== 'string') {
+    if (
+        !baseColor ||
+        !targetColor ||
+        typeof baseColor !== "string" ||
+        typeof targetColor !== "string"
+    ) {
         console.error("Invalid input value");
         return null;
     }
@@ -96,10 +126,10 @@ export function adjustColorForContrast(baseColor, targetColor) {
     const baseColorParts = baseColor.split("-");
     const targetColorParts = targetColor.split("-");
     if (baseColorParts.length !== 2) {
-        baseColorParts[1] = '500';
+        baseColorParts[1] = "500";
     }
     if (targetColorParts.length !== 2) {
-        targetColorParts[1] = '500';
+        targetColorParts[1] = "500";
     }
 
     const baseColorIndex = colorNames.indexOf(baseColorParts[0]);
@@ -110,16 +140,54 @@ export function adjustColorForContrast(baseColor, targetColor) {
         return null;
     }
 
-    if (baseColorParts[0] === 'black') {
-        return targetColorIndex < colorNames.indexOf('gray') ? 'white' : 'black';
+    if (baseColorParts[0] === "black") {
+        return targetColorIndex < colorNames.indexOf("gray")
+            ? "white"
+            : "black";
     }
 
-    if (baseColorParts[0] === 'white') {
-        return targetColorIndex > colorNames.indexOf('gray') ? 'black' : 'white';
+    if (baseColorParts[0] === "white") {
+        return targetColorIndex > colorNames.indexOf("gray")
+            ? "black"
+            : "white";
     }
 
     const contrastDifference = Math.abs(baseColorIndex - targetColorIndex);
     const adjustment = Math.ceil(contrastDifference / 2);
 
-    return adjustIntensityColor(baseColor, adjustment, baseColorIndex > targetColorIndex ? "decrease" : "augmentation");
+    return adjustIntensityColor(
+        baseColor,
+        adjustment,
+        baseColorIndex > targetColorIndex ? "decrease" : "augmentation",
+    );
+}
+
+/**
+ * Détermine si une couleur est considérée comme sombre
+ *
+ * @param {string} color - La couleur au format "color-intensity" ou juste "color"
+ * @returns {boolean} - true si la couleur est sombre (>500 ou sans intensité), false sinon
+ */
+export function isDark(color) {
+    if (!color || typeof color !== "string") {
+        return true;
+    }
+
+    const colorParts = color.split("-");
+    if (colorParts.length === 1) {
+        return false;
+    }
+
+    const intensity = parseInt(colorParts[1]);
+    return intensity >= 500;
+}
+
+/**
+ * Détermine si une couleur est considérée comme claire
+ *
+ * @param {string} color - La couleur au format "color-intensity" ou juste "color"
+ * @returns {boolean} - true si la couleur est claire (<500), false sinon
+ */
+export function isLight(color) {
+    return !isDark(color);
 }

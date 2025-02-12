@@ -1,5 +1,6 @@
 <script setup>
-import { computed, defineProps, ref, onMounted, defineEmits } from "vue";
+import { computed, ref, onMounted } from "vue";
+import { extractTheme } from "@/Utils/extractTheme";
 
 const emit = defineEmits(["update:value"]);
 
@@ -16,89 +17,43 @@ const props = defineProps({
         type: Number,
         default: 0,
     },
-    max: {
-        type: Number,
-        default: 100000000,
-    },
-    min: {
-        type: Number,
-        default: 0,
-    },
-    step: {
-        type: Number,
-        default: 1,
-    },
-    autofocus: {
-        type: Boolean,
-        default: false,
-    },
-    required: {
-        type: Boolean,
-        default: false,
+    tooltip: {
+        type: String,
+        default: "",
     },
 });
 
 const input = ref(null);
-const isFocused = ref(false);
 
-const classes = computed(() => {
-    let classes = ["input", "w-full", "max-w-xs"];
-    let match;
+const buildInputClasses = (themeProps, props) => {
+    const classes = ["input", "w-full", "max-w-xs"];
 
-    if (props.theme) {
-        // COLOR
-        const regexColor =
-            /(?:^|\s)(?<capture>([a-zA-Z]{3,}-((50)|([1-9]00)))|primary|secondary|success|accent|neutral|info|warning|error)(?:\s|$)/;
-        match = regexColor.exec(props.theme);
-        if (match && match?.groups?.capture) {
-            classes.push(`text-${match.groups.capture}`);
-            classes.push(`border-${match.groups.capture}`);
-        } else {
-            classes.push("text-primary-500");
-            classes.push("border-primary-500");
-        }
+    // Color
+    const color = themeProps.color || 'primary-500';
+    classes.push(`text-${color}`);
+    classes.push(`border-${color}`);
 
-        // SIZE
-        const regexSize = /(?:^|\s)(?<capture>xs|sm|md|lg)(?:\s|$)/;
-        match = regexSize.exec(props.theme);
-        if (match && match?.groups?.capture) {
-            classes.push(`input-${match.groups.capture}`);
-        } else {
-            classes.push("input-md");
-        }
+    // Size
+    const size = themeProps.size || 'md';
+    classes.push(`input-${size}`);
 
-        // Autofocus
-        const regexAutofocus = /(?:^|\s)(?<capture>autofocus)(?:\s|$)/;
-        match = regexAutofocus.exec(props.theme);
-        if (match && match?.groups?.capture) {
-            props.autofocus = true;
-        } else {
-            props.autofocus = props.autofocus ? props.autofocus : false;
-        }
-
-        // Required
-        const regexRequired = /(?:^|\s)(?<capture>required)(?:\s|$)/;
-        match = regexRequired.exec(props.theme);
-        if (match && match?.groups?.capture) {
-            props.required = true;
-        } else {
-            props.required = props.required ? props.required : false;
-        }
-    } else {
-        classes.push("text-primary-500");
-        classes.push("border-primary-500");
-        classes.push("input-md");
+    // Border style
+    if (themeProps.bordered) {
+        classes.push("input-bordered");
     }
 
     return classes.join(" ");
-});
+};
+
+const themeProps = computed(() => extractTheme(props.theme));
+const getClasses = computed(() => buildInputClasses(themeProps.value, props));
 
 const updateValue = (event) => {
     emit("update:value", Number(event.target.value));
 };
 
 onMounted(() => {
-    if (input.value && props.autofocus) {
+    if (input.value && themeProps.value.autofocus) {
         input.value.focus();
     }
 });
@@ -108,14 +63,15 @@ onMounted(() => {
     <input
         ref="input"
         type="number"
-        :value="props.value"
+        :value="value"
         @input="updateValue"
-        :placeholder="props.placeholder"
-        :max="props.max"
-        :min="props.min"
-        :step="props.step"
-        :autofocus="props.autofocus"
-        :required="props.required"
-        :class="classes"
+        :placeholder="placeholder"
+        :max="themeProps.maxLength"
+        :min="themeProps.minLength"
+        :step="attrs?.step || 1"
+        :required="themeProps.required"
+        :autofocus="themeProps.autofocus"
+        :data-tip="tooltip"
+        :class="getClasses"
     />
 </template>

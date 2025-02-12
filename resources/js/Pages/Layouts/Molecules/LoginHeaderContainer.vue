@@ -7,7 +7,7 @@ import Route from "@/Pages/Atoms/text/Route.vue";
     <div class="flex flex-col text-right">
         <Route route="login" class="pt-1 px-4">
             <Btn
-                theme="simple link md"
+                theme="neutral link md"
                 label="Se connecter"
                 tooltipPosition="left"
                 tooltip="S'identifier à l'aide de son compte"
@@ -16,7 +16,7 @@ import Route from "@/Pages/Atoms/text/Route.vue";
 
         <Route route="register" class="pb-1 px-4">
             <Btn
-                theme="simple link md"
+                theme="neutral link md"
                 label="S'inscrire"
                 tooltipPosition="left"
                 tooltip="Créer un compte"

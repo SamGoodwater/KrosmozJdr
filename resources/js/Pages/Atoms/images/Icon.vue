@@ -1,7 +1,8 @@
 <script setup>
 import { IconsGetter } from '@/Utils/IconsGetter';
 import { imageExists } from '@/Utils/Images';
-import { computed, defineProps, ref } from 'vue';
+import { computed, ref } from 'vue';
+import { extractTheme } from "@/Utils/extractTheme";
 
 const props = defineProps({
     source: {
@@ -16,34 +17,42 @@ const props = defineProps({
         type: String,
         default: 'button'
     },
-    rounded: {
-        type: String,
-        default: 'rounded-none',
-        validator: (value) => ['', 'rounded-sm', 'rounded', 'rounded-md', 'rounded-lg', 'rounded-xl', 'rounded-3xl', 'rounded-3xl', 'rounded-full', 'rounded-none'].includes(value),
-    },
-    size: {
-        type: String,
-        default: 'md',
-        validator: (value) => ['', 'xs', 'sm', 'md', 'lg', 'xl', "2xl", '3xl', '4xl', '5xl', '6xl'].includes(value),
-    },
     tooltip: {
         type: String,
         default: '',
     },
-    tooltipPosition: {
-        type: String,
-        default: 'bottom',
-        validator: (value) => ['', 'top', 'right', 'bottom', 'left'].includes(value),
-    }
 });
 
-let sourceRef = ref('');
-let altRef = ref('');
+const sourceRef = ref('');
+const altRef = ref('');
 
-const getClasses = computed(() => {
+const buildIconClasses = (themeProps, props) => {
+    const classes = ['icon'];
+
+    // Size
+    const size = themeProps.size || 'md';
+    classes.push(`icon-${size}`);
+
+    // Rounded
+    const rounded = themeProps.rounded || 'none';
+    if (rounded !== 'none') {
+        classes.push(`rounded-${rounded}`);
+    }
+
+    // Tooltip
+    if (props.tooltip) {
+        classes.push('tooltip');
+        if (themeProps.tooltipPosition) {
+            classes.push(`tooltip-${themeProps.tooltipPosition}`);
+        }
+    }
+
+    return classes.join(' ');
+};
+
+const initializeSource = () => {
     let source = '';
     if (props.source) {
-
         if (Array.isArray(props.source)) {
             source = IconsGetter.get(props.source);
         } else {
@@ -51,66 +60,33 @@ const getClasses = computed(() => {
         }
 
         if (imageExists(source)) {
-            sourceRef = source;
+            sourceRef.value = source;
         } else {
-            sourceRef = IconsGetter.get('icons', 'no_icon_found');
+            sourceRef.value = IconsGetter.get('icons', 'no_icon_found');
         }
-
     } else {
-        sourceRef = IconsGetter.get('icons', 'no_icon_found');
+        sourceRef.value = IconsGetter.get('icons', 'no_icon_found');
     }
 
     if (!props.alt) {
         const fileName = source.split('/').pop().split('.').shift();
-        altRef = fileName;
+        altRef.value = fileName;
     }
+};
 
-    let classes = ['icon'];
-    let match;
-    if (props.theme) {
+const themeProps = computed(() => extractTheme(props.theme));
+const getClasses = computed(() => buildIconClasses(themeProps.value, props));
 
-        // SiZE
-        const regexSize = /(?:^|\s)(?<capture>xs|sm|md|lg|xl|2xl|3xl|4xl|5xl|6xl)(?:\s|$)/;
-        let match = regexSize.exec(props.theme)
-        if (match && match?.groups?.capture) {
-            classes.push(`icon-${match.groups.capture}`);
-        } else {
-            classes.push(`icon-md`);
-        }
-
-        const regexRounded = /(?:^|\s)(?<capture>|rounded-sm|rounded|rounded-md|rounded-lg|rounded-xl|rounded-3xl|rounded-full|rounded-none)(?:\s|$)/;
-        match = regexRounded.exec(props.theme)
-        if (match && match?.groups?.capture) {
-            classes.push(match.groups.capture);
-        } else {
-            classes.push(`rounded-none`);
-        }
-    }
-
-    if (!['xs', 'sm', 'md', 'lg', 'xl', '2xl', '3xl', '4xl', '5xl', '6xl'].some(word => props.theme.includes(word))) {
-        if (props.size) {
-            classes.push(`icon-${props.size}`);
-        }
-    }
-
-    if (!['rounded-sm', 'rounded', 'rounded-md', 'rounded-lg', 'rounded-xl', 'rounded-3xl', 'rounded-full', 'rounded-none'].some(word => props.theme.includes(word))) {
-        if (props.rounded) {
-            classes.push(props.rounded);
-        }
-    }
-
-    if (props.tooltip) {
-        classes.push(`tooltip`);
-        classes.push(`tooltip-${props.tooltipPosition}`);
-    }
-
-    return classes.join(' ');
-})
-
+initializeSource();
 </script>
 
 <template>
-    <img :class="`${getClasses}`" :src="sourceRef" :alt="altRef" :data-tip="tooltip">
+    <img
+        :class="getClasses"
+        :src="sourceRef"
+        :alt="altRef"
+        :data-tip="tooltip"
+    >
 </template>
 
 <style scoped lang="scss">
@@ -122,54 +98,19 @@ const getClasses = computed(() => {
     padding: 0;
     display: inline-block;
 
-    &-xs {
-        width: auto;
-        height: 0.75rem;
-    }
+    &-xs { height: 0.75rem; }
+    &-sm { height: 1rem; }
+    &-md { height: 1.5rem; }
+    &-lg { height: 2rem; }
+    &-xl { height: 3rem; }
+    &-2xl { height: 4rem; }
+    &-3xl { height: 5rem; }
+    &-4xl { height: 6rem; }
+    &-5xl { height: 7rem; }
+    &-6xl { height: 8rem; }
 
-    &-sm {
+    &-xs, &-sm, &-md, &-lg, &-xl, &-2xl, &-3xl, &-4xl, &-5xl, &-6xl {
         width: auto;
-        height: 1rem;
-    }
-
-    &-md {
-        width: auto;
-        height: 1.5rem;
-    }
-
-    &-lg {
-        width: auto;
-        height: 2rem;
-    }
-
-    &-xl {
-        width: auto;
-        height: 3rem;
-    }
-
-    &-2xl {
-        width: auto;
-        height: 4rem;
-    }
-
-    &-3xl {
-        width: auto;
-        height: 5rem;
-    }
-
-    &-4xl {
-        width: auto;
-        height: 6rem;
-    }
-
-    &-5xl {
-        width: auto;
-        height: 7rem;
-    }
-
-    &-6xl {
-        width: auto;
-        height: 8rem;
     }
 }
 </style>

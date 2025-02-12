@@ -1,8 +1,8 @@
-
 /**
  * Avatar component that displays an image or a placeholder with initials.
  *
  * Props:
+ * - theme (String): The theme of the avatar. Default is an empty string.
  * - source (String): The source URL of the avatar image. Default is an empty string.
  * - rounded (String): The border radius of the avatar. Default is "full".
  *   Valid values are "none", "sm", "md", "lg", "xl", "2xl", "3xl", "full".
@@ -32,9 +32,14 @@
 <script setup>
 import { defineProps, computed, ref } from "vue";
 import { imageExists } from "@/Utils/Images";
-import {getColorFromString} from "@/Utils/Color.js";
+import { getColorFromString } from "@/Utils/Color.js";
+import { extractTheme } from "@/Utils/extractTheme";
 
 const props = defineProps({
+    theme: {
+        type: String,
+        default: "",
+    },
     source: {
         type: String,
         default: "",
@@ -42,15 +47,10 @@ const props = defineProps({
     rounded: {
         type: String,
         default: "full",
-        validator: (value) =>
-            ["none", "sm", "md", "lg", "xl", "2xl", "3xl", "full"].includes(
-                value,
-            ),
     },
     size: {
         type: String,
         default: "md",
-        validator: (value) => ["xs", "sm", "md", "lg", "xl"].includes(value),
     },
     altText: {
         type: String,
@@ -63,13 +63,14 @@ const props = defineProps({
 });
 
 const sourceRef = ref("");
-
 const textSize = ref("text-md");
 
-const getClasses = computed(() => {
-    let classes = ['light:text-primary-950','dark:text-primary-50','!flex','items-center','justify-center'];
+const buildAvatarClasses = (themeProps, props) => {
+    const classes = ['light:text-primary-950', 'dark:text-primary-50', '!flex', 'items-center', 'justify-center'];
 
-    switch (props.size) {
+    // Size
+    const size = props.size || themeProps.size || "md";
+    switch (size) {
         case "xs":
             classes.push("w-6");
             textSize.value = "text-sm";
@@ -92,58 +93,43 @@ const getClasses = computed(() => {
             break;
     }
 
-    if(props.color) {
-        classes.push("bg-"+props.color);
-    } else if(props.altText) {
-        classes.push("bg-"+getColorFromString(props.altText));
+    // Color
+    let bgColor = props.color;
+    if (themeProps.colorAuto) {
+        bgColor = getColorFromString(props.altText);
+    } else if (themeProps.color) {
+        bgColor = themeProps.color;
+    }
+
+    if (bgColor) {
+        classes.push(`bg-${bgColor}`);
     } else {
         classes.push("bg-primary-500");
     }
 
-    switch (props.rounded) {
-        case "none":
-            classes.push("rounded-none");
-        case "sm":
-            classes.push("rounded-sm");
-        case "md":
-            classes.push("rounded-md");
-        case "lg":
-            classes.push("rounded-lg");
-        case "xl":
-            classes.push("rounded-xl");
-        case "2xl":
-            classes.push("rounded-2xl");
-        case "3xl":
-            classes.push("rounded-3xl");
-        case "full":
-            classes.push("rounded-full");
+    // Rounded
+    const rounded = props.rounded || themeProps.rounded || "full";
+    if (rounded && rounded !== "none") {
+        classes.push(`rounded-${rounded}`);
     }
 
     return classes.join(" ");
-});
+};
 
-const getClassParent = computed(() => {
-    let classes = ['avatar','placeholder'];
-    switch (props.rounded) {
-        case "none":
-            classes.push("rounded-none");
-        case "sm":
-            classes.push("rounded-sm");
-        case "md":
-            classes.push("rounded-md");
-        case "lg":
-            classes.push("rounded-lg");
-        case "xl":
-            classes.push("rounded-xl");
-        case "2xl":
-            classes.push("rounded-2xl");
-        case "3xl":
-            classes.push("rounded-3xl");
-        case "full":
-            classes.push("rounded-full");
+const buildParentClasses = (themeProps, props) => {
+    const classes = ['avatar', 'placeholder'];
+
+    const rounded = props.rounded || themeProps.rounded || "full";
+    if (rounded && rounded !== "none") {
+        classes.push(`rounded-${rounded}`);
     }
+
     return classes.join(" ");
-});
+};
+
+const themeProps = computed(() => extractTheme(props.theme));
+const getClasses = computed(() => buildAvatarClasses(themeProps.value, props));
+const getClassParent = computed(() => buildParentClasses(themeProps.value, props));
 
 const getAltText = computed(() => {
     const trimmedText = props.altText.trim();

@@ -1,5 +1,6 @@
 <script setup>
-import { computed, defineProps } from "vue";
+import { computed } from "vue";
+import { extractTheme } from "@/Utils/extractTheme";
 
 const props = defineProps({
     theme: {
@@ -10,28 +11,6 @@ const props = defineProps({
         type: String,
         default: "",
     },
-    color: {
-        type: String,
-        default: "red-600",
-    },
-    size: {
-        type: String,
-        default: "sm",
-        validator: (value) =>
-            [
-                "",
-                "xs",
-                "sm",
-                "md",
-                "lg",
-                "xl",
-                "2xl",
-                "3xl",
-                "4xl",
-                "5xl",
-                "6xl",
-            ].includes(value),
-    },
     tooltip: {
         type: String,
         default: "",
@@ -39,52 +18,35 @@ const props = defineProps({
     tooltipPosition: {
         type: String,
         default: "bottom",
-        validator: (value) =>
-            ["", "top", "right", "bottom", "left"].includes(value),
     },
 });
 
-const classes = computed(() => {
-    let classes = [];
-    let match;
+const buildErrorClasses = (themeProps, props) => {
+    const classes = [];
 
-    if (props.theme) {
-        // COLOR
-        const regexColor =
-            /(?:^|\s)(?<capture>([a-zA-Z]{3,}-((50)|([1-9]00)))|primary|secondary|success|accent|neutral|info|warning|error)(?:\s|$)/;
-        match = regexColor.exec(props.theme);
-        if (match && match?.groups?.capture) {
-            classes.push(`text-${match.groups.capture}`);
-        } else {
-            classes.push(`text-${props.color}`);
-        }
+    // Color
+    const color = themeProps.color || 'error-600';
+    classes.push(`text-${color}`);
 
-        // SIZE
-        const regexSize =
-            /(?:^|\s)(?<capture>xs|sm|md|lg|xl|2xl|3xl|4xl|5xl|6xl)(?:\s|$)/;
-        match = regexSize.exec(props.theme);
-        if (match && match?.groups?.capture) {
-            classes.push(`text-${match.groups.capture}`);
-        } else {
-            classes.push(`text-${props.size}`);
-        }
-    } else {
-        if (props.color) classes.push(`text-${props.color}`);
-        if (props.size) classes.push(`text-${props.size}`);
-    }
+    // Size
+    const size = themeProps.size || 'sm';
+    classes.push(`text-${size}`);
 
+    // Tooltip
     if (props.tooltip) {
-        classes.push("tooltip");
-        if (props.tooltipPosition)
-            classes.push(`tooltip-${props.tooltipPosition}`);
+        classes.push('tooltip');
+        classes.push(`tooltip-${props.tooltipPosition}`);
     }
 
-    return classes.join(" ");
-});
+    return classes.join(' ');
+};
+
+const themeProps = computed(() => extractTheme(props.theme));
+const getClasses = computed(() => buildErrorClasses(themeProps.value, props));
 </script>
 
 <template>
-    <div v-if="props.message" :class="classes">
+    <div v-if="props.message" :class="getClasses">
         {{ props.message }}
     </div>
 </template>

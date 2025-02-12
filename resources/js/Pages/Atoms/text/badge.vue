@@ -10,8 +10,9 @@ Position of the tooltip. Can be '', 'top', 'right', 'bottom', 'left'. Default is
 the badge based on the props. */
 
 <script setup>
-import { computed, defineProps } from "vue";
+import { computed } from "vue";
 import { getColorFromString, adjustColorForContrast } from "@/Utils/Color.js";
+import { extractTheme } from "@/Utils/extractTheme";
 
 const props = defineProps({
     theme: {
@@ -22,101 +23,54 @@ const props = defineProps({
         type: String,
         default: "primary-700",
     },
-    size: {
-        type: String,
-        default: "md",
-        validator: (value) => ["", "xs", "sm", "md", "lg"].includes(value),
-    },
-    outline: {
-        type: Boolean,
-        default: false,
-    },
     tooltip: {
         type: String,
         default: "",
     },
-    tooltipPosition: {
-        type: String,
-        default: "bottom",
-        validator: (value) =>
-            ["", "top", "right", "bottom", "left"].includes(value),
-    },
 });
 
-const getColor = computed(() => {
+const buildBadgeClasses = (themeProps, props) => {
+    const classes = ["badge"];
 
-});
+    // Size
+    const size = themeProps.size || 'md';
+    classes.push(`badge-${size}`);
 
-const getClasses = computed(() => {
-    let classes = ["badge"];
-    let color = "";
-    let match;
-    let is_outline = props.outline;
-
-    if (props.theme) {
-        // SIZE
-        const regexSize = /(?:^|\s)(?<capture>xs|sm|md|lg)(?:\s|$)/;
-        match = regexSize.exec(props.theme);
-        if (match && match?.groups?.capture) {
-            classes.push(`badge-${match.groups.capture}`);
-        } else {
-            classes.push(`badge-${props.size}`);
-        }
-    } else {
-        classes.push(`badge-${props.size}`);
+    // Color handling
+    let color = props.color;
+    if (themeProps.colorAuto) {
+        color = getColorFromString(props.color, 700);
+    } else if (themeProps.color) {
+        color = themeProps.color;
     }
 
-    if (props.theme) {
-        const regexColorAuto = /(?:^|\s)(?<capture>color-auto)(?:\s|$)/;
-        match = regexColorAuto.exec(props.theme);
-        if (match && match?.groups?.capture) {
-            color = getColorFromString(props.color, 700);
-        }
-
-        const regexColor =
-            /(?:^|\s)(?<capture>([a-zA-Z]{3,}-((50)|([1-9]00)))|primary|secondary|success|accent|neutral|info|warning|error)(?:\s|$)/;
-        match = regexColor.exec(props.theme);
-        if (match && match?.groups?.capture) {
-            color = match.groups.capture;
-        }
-    } else if (props.color) {
-        color = props.color;
-    } else {
-        color = "primary-700";
-    }
-
-    if (props.theme) {
-        // OUTLINE
-        const regexOutline = /(?:^|\s)(?<capture>outline)(?:\s|$)/;
-        match = regexOutline.exec(props.theme);
-        if (match && match?.groups?.capture) {
-            is_outline = true;
-        }
-    }
-    if (props.outline) {
-        is_outline = props.outline;
-    }
-
-    if (is_outline) {
-        classes.push(`border-1`);
-        classes.push(`border-solid`);
+    // Style (outline or filled)
+    if (themeProps.styled === 'outline') {
+        classes.push('border-1');
+        classes.push('border-solid');
         classes.push(`text-${adjustColorForContrast(color)}`);
         classes.push(`border-${color}`);
     } else {
         classes.push(`bg-${color}`);
     }
 
+    // Tooltip
     if (props.tooltip) {
-        classes.push("tooltip");
-        classes.push(`tooltip-${props.tooltipPosition}`);
+        classes.push('tooltip');
+        if (themeProps.tooltipPosition) {
+            classes.push(`tooltip-${themeProps.tooltipPosition}`);
+        }
     }
 
     return classes.join(" ");
-});
+};
+
+const themeProps = computed(() => extractTheme(props.theme));
+const getClasses = computed(() => buildBadgeClasses(themeProps.value, props));
 </script>
 
 <template>
-    <span :class="getClasses" v-tooltip="props.tooltip">
+    <span :class="getClasses" :data-tip="tooltip">
         <slot />
     </span>
 </template>

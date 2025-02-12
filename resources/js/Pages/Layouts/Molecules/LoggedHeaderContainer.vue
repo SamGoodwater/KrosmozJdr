@@ -38,12 +38,12 @@ watch(
             <template #list>
                 <li>
                     <Route route="user.dashboard">
-                        <Btn theme="simple link md" label="Mon compte" />
+                        <Btn theme="neutral link md" label="Mon compte" />
                     </Route>
                 </li>
                 <li>
                     <Route route="logout" method="post">
-                        <Btn theme="simple link md" label="Se déconnecter" />
+                        <Btn theme="neutral link md" label="Se déconnecter" />
                     </Route>
                 </li>
             </template>

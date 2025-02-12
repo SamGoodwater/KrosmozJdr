@@ -1,7 +1,12 @@
 <script setup>
-import { ref, computed } from 'vue';
+import { computed } from 'vue';
+import { extractTheme } from "@/Utils/extractTheme";
 
 const props = defineProps({
+    theme: {
+        type: String,
+        default: '',
+    },
     for: {
         type: String,
         required: true,
@@ -9,14 +14,6 @@ const props = defineProps({
     value: {
         type: String,
         required: true,
-    },
-    theme: {
-        type: String,
-        default: '',
-    },
-    size: {
-        type: String,
-        default: '',
     },
     tooltip: {
         type: String,
@@ -28,47 +25,32 @@ const props = defineProps({
     },
 });
 
-const classes = computed(() => {
-    let classes = [];
-    let match;
+const buildLabelClasses = (themeProps, props) => {
+    const classes = [];
 
-    if (props.theme) {
-        // COLOR
-        const regexColor = /(?:^|\s)(?<capture>([a-zA-Z]{3,}-((50)|([1-9]00)))|primary|secondary|success|accent|neutral|info|warning|error)(?:\s|$)/;
-        match = regexColor.exec(props.theme);
-        if (match && match?.groups?.capture) {
-            classes.push(`text-${match.groups.capture}`);
-        } else {
-            classes.push('text-red-600');
-        }
+    // Color
+    let color = themeProps.color || 'primary-500';
+    classes.push(`text-${color}`);
 
-        // SIZE
-        const regexSize = /(?:^|\s)(?<capture>xs|sm|md|lg|xl|2xl|3xl|4xl|5xl|6xl)(?:\s|$)/;
-        match = regexSize.exec(props.theme);
-        if (match && match?.groups?.capture) {
-            classes.push(`text-${match.groups.capture}`);
-        } else {
-            classes.push('text-md');
-        }
-    }
+    // Size
+    const size = themeProps.size || 'md';
+    classes.push(`text-${size}`);
 
-    if (!['xs', 'sm', 'md', 'lg', 'xl', '2xl', '3xl', '4xl', '5xl', '6xl'].some(word => props.theme.includes(word))) {
-        if (props.size) {
-            classes.push(`text-${props.size}`);
-        }
-    }
-
+    // Tooltip
     if (props.tooltip) {
         classes.push('tooltip');
         classes.push(`tooltip-${props.tooltipPosition}`);
     }
 
     return classes.join(' ');
-});
+};
+
+const themeProps = computed(() => extractTheme(props.theme));
+const getClasses = computed(() => buildLabelClasses(themeProps.value, props));
 </script>
 
 <template>
-    <label :for="props.for" :class="classes">
+    <label :for="props.for" :class="getClasses">
         {{ props.value }}
     </label>
 </template>

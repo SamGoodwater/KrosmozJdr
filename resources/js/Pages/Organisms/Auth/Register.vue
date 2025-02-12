@@ -88,7 +88,7 @@ onMounted(() => {
         <div class="mt-4 block text-center">
             <div>
                 <Route route="login">
-                    <Btn theme="link md simple" label="Déjà inscrit ?" />
+                    <Btn theme="link md neutral" label="Déjà inscrit ?" />
                 </Route>
             </div>
 

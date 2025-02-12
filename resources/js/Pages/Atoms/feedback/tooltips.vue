@@ -1,6 +1,44 @@
 <script setup>
 import { useFloating, autoUpdate, flip, shift, offset } from "@floating-ui/vue";
-import { ref } from "vue";
+import { ref, computed } from "vue";
+import { extractTheme } from "@/Utils/extractTheme";
+
+const props = defineProps({
+    theme: {
+        type: String,
+        default: "",
+    },
+    placement: {
+        type: String,
+        default: "bottom-center",
+    },
+});
+
+const referenceRef = ref(null);
+const floatingRef = ref(null);
+const isHidden = ref(true);
+
+const buildTooltipClasses = (themeProps, props) => {
+    const classes = ['w-max', 'absolute', 'p-2', 'px-4', 'z-50', 'left-0', 'top-0', 'rounded-lg', 'text-secondary-300'];
+
+    // Background color and opacity
+    const bgColor = themeProps.bgColor || 'secondary-900';
+    const opacity = themeProps.opacity || '75';
+    classes.push(`bg-${bgColor}/${opacity}`);
+
+    // Blur
+    const blur = themeProps.blur || '3';
+    classes.push(`bg-blur-${blur}`);
+
+    if (isHidden.value) {
+        classes.push('hidden');
+    }
+
+    return classes.join(' ');
+};
+
+const themeProps = computed(() => extractTheme(props.theme));
+const getClasses = computed(() => buildTooltipClasses(themeProps.value, props));
 
 const placementType = [
     "top",
@@ -16,21 +54,6 @@ const placementType = [
     "left-start",
     "left-end",
 ];
-
-const referenceRef = ref(null);
-const floatingRef = ref(null);
-const isHidden = ref(true);
-
-const props = defineProps({
-    placement: {
-        type: String,
-        default: "bottom-center",
-    },
-    bgColor: {
-        type: String,
-        default: "bg-secondary-900/75",
-    },
-});
 
 const { floatingStyles } = useFloating(referenceRef, floatingRef, {
     whileElementsMounted: autoUpdate,
@@ -62,11 +85,7 @@ function showTooltips() {
         <div
             ref="floatingRef"
             :style="floatingStyles"
-            :class="[
-                props.bgColor,
-                'bg-blur-3 w-max absolute p-2 px-4 z-50 left-0 top-0 rounded-lg text-secondary-300',
-                isHidden && 'hidden',
-            ]"
+            :class="getClasses"
         >
             <div>
                 <slot name="content" />

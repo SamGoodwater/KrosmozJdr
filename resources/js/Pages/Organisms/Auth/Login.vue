@@ -75,7 +75,7 @@ onMounted(() => {
             <div class="mt-4 flex flex-col items-center justify-center gap-3">
                 <Route route="password.request">
                     <Btn
-                        theme="link sm simple"
+                        theme="link sm neutral"
                         label="Mot de passe oublié ? "
                     />
                 </Route>
@@ -90,7 +90,7 @@ onMounted(() => {
 
                 <Route route="register">
                     <Btn
-                        theme="link sm simple"
+                        theme="link sm neutral"
                         label="Pas encore de compte ?"
                     />
                 </Route>
