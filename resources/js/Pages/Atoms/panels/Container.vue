@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed, defineProps } from "vue";
+import { ref, computed, defineProps, onMounted } from "vue";
 import { extractTheme } from "@/Utils/extractTheme";
 
 const props = defineProps({

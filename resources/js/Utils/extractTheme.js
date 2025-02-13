@@ -35,10 +35,10 @@ const THEME_PATTERNS = {
 
     // Dimensions
     width: {
-        regex: /(?:^|\s)(?<capture>w-(auto|full|screen|\[?\d+\/\d+\]?))(?:\s|$)/,
+        regex: /(?:^|\s)w-(?<capture>auto|\[?\d+(?:px|rem|em|vh|vw|%)\]?|\d+)(?:\s|$)/,
     },
     height: {
-        regex: /(?:^|\s)(?<capture>h-(auto|full|screen|\[?\d+\/\d+\]?))(?:\s|$)/,
+        regex: /(?:^|\s)h-(?<capture>auto|\[?\d+(?:px|rem|em|vh|vw|%)\]?|\d+)(?:\s|$)/,
     },
     size: {
         regex: /(?:^|\s)(?<capture>xs|sm|md|lg|xl|2xl|3xl|4xl|5xl|6xl)(?:\s|$)/,

@@ -126,12 +126,14 @@ const appStability = ref(convertStability[import.meta.env.VITE_APP_STABILITY]);
 
 <style scoped>
 footer {
-    backdrop-filter: blur(3px);
+    backdrop-filter: blur(5px);
     background: linear-gradient(
         to bottom,
-        rgba(15, 23, 42, 0),
-        rgba(15, 23, 42, 0.5),
-        rgba(15, 23, 42, 1)
+         rgba(10, 12, 20, 0) 0%,
+        rgba(10, 12, 20, 0.3) 20%,
+        rgba(10, 12, 20, 0.5) 50%,
+         rgb(10, 12, 20) 70%,
+         rgb(10, 12, 20) 100%
     );
 }
 </style>

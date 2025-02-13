@@ -1,7 +1,8 @@
 <script setup>
-import { ref, computed, defineProps } from "vue";
+import { ref, computed, defineProps, onMounted } from "vue";
 import { extractTheme } from "@/Utils/extractTheme";
 import { getColorFromString } from "@/Utils/Color.js";
+import VanillaTilt from 'vanilla-tilt';
 
 const props = defineProps({
     theme: {
@@ -18,7 +19,7 @@ const props = defineProps({
     },
     opacity: {
         type: String,
-        default: null,
+        default: 10,
     },
     blur: {
         type: String,
@@ -47,11 +48,11 @@ const props = defineProps({
 });
 
 const buildCardClasses = (themeProps, props) => {
-    const classes = ["card"];
+    const classes = ["card", "border-glass"];
 
     // Shadow
     if (props.shadow) {
-        classes.push(`shadow-${props.shadow}`);
+        classes.push(`border-glass-${props.shadow}`);
     } else if (themeProps.shadow) {
         classes.push(themeProps.shadow);
     }
@@ -101,7 +102,7 @@ const buildCardClasses = (themeProps, props) => {
             classes.push(`w-${props.width}`);
         }
     } else if (themeProps.width) {
-        classes.push(themeProps.width);
+        classes.push(`w-${themeProps.width}`);
     }
 
     // Height
@@ -112,7 +113,7 @@ const buildCardClasses = (themeProps, props) => {
             classes.push(`h-${props.height}`);
         }
     } else if (themeProps.height) {
-        classes.push(themeProps.height);
+        classes.push(`h-${themeProps.height}`);
     }
 
     return classes.join(" ");
@@ -122,25 +123,59 @@ const themeProps = computed(() => extractTheme(props.theme));
 const classes = computed(() => buildCardClasses(themeProps.value, props));
 const isHovering = computed(() => props.hovering || themeProps.value?.hover !== null);
 
+onMounted(() => {
+    VanillaTilt.init(document.querySelectorAll(".card"), {
+        max: 1,
+        speed: 200,
+        glare: true,
+        "max-glare": 0.1,
+    });
+});
 </script>
 
 <template>
     <div :class="classes">
-        <div>
+        <div class="card-content">
             <slot />
         </div>
-        <div v-if="isHovering" class="hover">
+        <div v-if="isHovering" class="hover-content">
             <slot name="hover" />
         </div>
     </div>
 </template>
 
 <style scoped lang="scss">
-.hover {
-    display: none;
+.card {
+    z-index: 10;
+    position: relative;
+    isolation: isolate; // Crée un nouveau contexte d'empilement
 }
 
-.card:hover .hover {
-    display: block;
+.card-content {
+    position: relative;
+    z-index: 11;
+}
+
+.hover-content {
+    position: absolute;
+    top: 100%; // Se positionne juste en dessous de la carte
+    left: 0;
+    width: 100%;
+    background: inherit;
+    z-index: 11; // Même niveau que card-content
+    opacity: 0;
+    transform: translateY(-20px); // Commence légèrement plus haut
+    transition: all 0.3s ease;
+    pointer-events: none;
+    border-bottom-left-radius: inherit; // Hérite du border-radius de la carte
+    border-bottom-right-radius: inherit;
+}
+
+.card:hover {
+    .hover-content {
+        opacity: 1;
+        transform: translateY(0);
+        pointer-events: auto;
+    }
 }
 </style>

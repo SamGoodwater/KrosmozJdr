@@ -199,10 +199,13 @@ header {
     backdrop-filter: blur(5px);
     background: linear-gradient(
         to top,
-        rgba(24, 37, 66, 0),
-        rgba(24, 37, 66, 0.5),
-        rgba(24, 37, 66, 1)
+         rgba(23, 27, 36, 0) 0%,
+        rgba(23, 27, 36, 0.3) 20%,
+        rgba(23, 27, 36, 0.5) 50%,
+         rgb(23, 27, 36) 70%,
+         rgb(23, 27, 36) 100%
     );
+    box-shadow: 0 1px 10px -1px rgba(23, 27, 36, 0.3);
     transition: transform 0.3s ease-in-out;
 
     &:hover.header-off {

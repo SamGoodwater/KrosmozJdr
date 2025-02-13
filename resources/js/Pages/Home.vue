@@ -169,45 +169,5 @@ const form = ref({
             du monde des Douze. Votre destin est entre vos mains !
         </p>
     </section>
-    <!--
------------------------------------- SAFELIST CSS ------------------------------------
-- à supprimer lorsque j'aurai trouvé une solution pour gérer les variables css dynamiques
--->
-<div class="hidden
-bg-fuchsia-700
-border-fuchsia-700
-text-fuchsia-700
-bg-blue-500
-border-blue-500
-text-blue-500
-bg-fuchsia-500
-border-fuchsia-500
-text-fuchsia-500
-bg-blue-700
-border-blue-700
-text-blue-700
-bg-base-900/80
-bg-base-900/40
-bg-primary
-border-primary
-text-primary
-bg-secondary
-border-secondary
-text-secondary
-bg-success
-border-success
-text-success
-bg-error
-border-error
-text-error
-bg-neutral
-border-neutral
-text-neutral
-bg-info
-border-info
-text-info
-bg-warning
-border-warning
-text-warning"
-></div>
+
 </template>

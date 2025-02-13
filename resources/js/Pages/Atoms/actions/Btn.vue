@@ -195,7 +195,7 @@ const getClasses = computed(() => buildButtonClasses(themeProps.value, props));
     &:hover {
         filter: brightness(1.1);
         backdrop-filter: blur(4px);
-           text-shadow: 0px 0px 8px rgba(255, 255, 255, 0.6);
+        text-shadow: 0px 0px 8px rgba(255, 255, 255, 0.6);
         box-shadow:
         0 0 1px 1px rgba(255, 255, 255, 0.50),
         0 0 3px 4px rgba(255, 255, 255, 0.10),
@@ -204,23 +204,41 @@ const getClasses = computed(() => buildButtonClasses(themeProps.value, props));
         inset 0 0 5px 6px rgba(255, 255, 255, 0.05);
     }
 
-    &::after {
-        content: '';
-        position: absolute;
-        top: -50%;
-        left: -50%;
-        width: 200%;
-        height: 200%;
-        background: linear-gradient(
-            45deg,
-            transparent 45%,
-            rgba(255, 255, 255, 0.1) 48%,
-            rgba(255, 255, 255, 0.3) 50%,
-            rgba(255, 255, 255, 0.1) 52%,
-            transparent 55%
-        );
-        transform: translateX(-100%) rotate(45deg);
-        transition: transform 0.5s ease;
+    &:not(.btn-outline) {
+        &::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(
+                45deg,
+                rgba(255, 255, 255, 0.2) 48%,
+                rgba(255, 255, 255, 0.35) 50%,
+                rgba(255, 255, 255, 0.2) 52%,
+            );
+            transform: translateX(-100%) rotate(45deg);
+            transition: transform 0.5s ease;
+        }
+    }
+    &.btn-outline {
+        &::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(
+                45deg,
+                rgba(255, 255, 255, 0.05) 48%,
+                rgba(255, 255, 255, 0.15) 50%,
+                rgba(255, 255, 255, 0.05) 52%,
+            );
+            transform: translateX(-100%) rotate(45deg);
+            transition: transform 0.5s ease;
+        }
     }
 
     &:hover::after {

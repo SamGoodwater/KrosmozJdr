@@ -27,14 +27,26 @@ const props = defineProps({
         type: String,
         default: "",
     },
+    size: {
+        type: String,
+        default: "",
+        validator: (value) => {
+            return ["", "xs", "sm", "md", "lg", "xl", "2xl", "3xl"].includes(value);
+        },
+    },
 });
 
 const buildBadgeClasses = (themeProps, props) => {
     const classes = ["badge"];
 
     // Size
-    const size = themeProps.size || 'md';
-    classes.push(`badge-${size}`);
+    if(props.size) {
+        classes.push(`badge-${props.size}`);
+    } else if(themeProps.size) {
+        classes.push(`badge-${themeProps.size}`);
+    } else {
+        classes.push(`badge-md`);
+    }
 
     // Color handling
     let color = props.color;

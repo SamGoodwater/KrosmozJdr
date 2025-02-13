@@ -31,6 +31,7 @@ const appSlogan = ref(import.meta.env.VITE_APP_SLOGAN);
                 'flex',
                 'flex-col',
                 'justify-between',
+                'backdrop-blur-xl',
             ]"
             aria-label="Sidenav"
         >
@@ -167,7 +168,7 @@ const appSlogan = ref(import.meta.env.VITE_APP_SLOGAN);
 
 <style scoped>
 aside {
-    background-image: linear-gradient(
+    /* background-image: linear-gradient(
         195deg,
         #1e40af 0%,
         #1e3a8a 3%,
@@ -177,7 +178,7 @@ aside {
         #0f172a 62%,
         #020617 81%,
         #020617 100%
-    );
+    ); */
 }
 
 #menuSidebar {
