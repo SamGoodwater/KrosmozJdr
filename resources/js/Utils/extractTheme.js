@@ -41,7 +41,7 @@ const THEME_PATTERNS = {
         regex: /(?:^|\s)h-(?<capture>auto|\[?\d+(?:px|rem|em|vh|vw|%)\]?|\d+)(?:\s|$)/,
     },
     size: {
-        regex: /(?:^|\s)(?<capture>xs|sm|md|lg|xl|2xl|3xl|4xl|5xl|6xl)(?:\s|$)/,
+        regex: /(?:^|\s)(?<capture>xs|sm|md|lg|xl|2xl|3xl|4xl|5xl|6xl|full)(?:\s|$)/,
     },
 
     // Style spécifique
@@ -50,6 +50,9 @@ const THEME_PATTERNS = {
     },
     face: {
         regex: /(?:^|\s)(?<capture>block|wide|square|circle)(?:\s|$)/,
+    },
+    border: {
+        regex: /(?:^|\s)(?<capture>border)(?:\s|$)/,
     },
 
     // Input spécifique
@@ -67,6 +70,11 @@ const THEME_PATTERNS = {
     },
     minLength: {
         regex: /(?:^|\s)min:(?<capture>[0-9]+)(?:\s|$)/,
+    },
+
+    // Filtres
+    filter: {
+        regex: /(?:^|\s)(?<capture>filter-(grayscale|sepia|blur|brightness|contrast|hue-rotate|invert|saturate))(?:\s|$)/,
     },
 };
 

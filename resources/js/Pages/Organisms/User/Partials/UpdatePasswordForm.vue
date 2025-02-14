@@ -1,8 +1,8 @@
 <script setup>
-import InputError from '@/Components/InputError.vue';
-import InputLabel from '@/Components/InputLabel.vue';
-import PrimaryButton from '@/Components/PrimaryButton.vue';
-import TextInput from '@/Components/TextInput.vue';
+import InputError from '@/Pages/Atoms/inputs/InputError².vue';
+import InputLabel from '@/Pages/Atoms/inputs/InputLabel.vue';
+import Btn from '@/Pages/Atoms/actions/Btn.vue';
+import TextInput from '@/Pages/Atoms/inputs/TextInput.vue';
 import { useForm } from '@inertiajs/vue3';
 import { ref } from 'vue';
 
@@ -37,18 +37,17 @@ const updatePassword = () => {
     <section>
         <header>
             <h2 class="text-lg font-medium text-gray-900">
-                Update Password
+                Mettre à jour le mot de passe
             </h2>
 
             <p class="mt-1 text-sm text-gray-600">
-                Ensure your account is using a long, random password to stay
-                secure.
+                Assurez-vous que votre compte utilise un mot de passe long et aléatoire pour rester sécurisé.
             </p>
         </header>
 
         <form @submit.prevent="updatePassword" class="mt-6 space-y-6">
             <div>
-                <InputLabel for="current_password" value="Current Password" />
+                <InputLabel for="current_password" value="Mot de passe actuel" />
 
                 <TextInput
                     id="current_password"
@@ -66,7 +65,7 @@ const updatePassword = () => {
             </div>
 
             <div>
-                <InputLabel for="password" value="New Password" />
+                <InputLabel for="password" value="Nouveau mot de passe" />
 
                 <TextInput
                     id="password"
@@ -83,7 +82,7 @@ const updatePassword = () => {
             <div>
                 <InputLabel
                     for="password_confirmation"
-                    value="Confirm Password"
+                    value="Confirmer le mot de passe"
                 />
 
                 <TextInput
@@ -101,7 +100,7 @@ const updatePassword = () => {
             </div>
 
             <div class="flex items-center gap-4">
-                <PrimaryButton :disabled="form.processing">Save</PrimaryButton>
+                <Btn :disabled="form.processing" label="Enregistrer" />
 
                 <Transition
                     enter-active-class="transition ease-in-out"
@@ -113,7 +112,7 @@ const updatePassword = () => {
                         v-if="form.recentlySuccessful"
                         class="text-sm text-gray-600"
                     >
-                        Saved.
+                        Enregistré.
                     </p>
                 </Transition>
             </div>

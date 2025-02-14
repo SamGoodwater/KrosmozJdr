@@ -80,7 +80,7 @@ function showTooltips() {
             @focus="showTooltips"
             @blur="hideTooltips"
         >
-            <slot name="reference" />
+            <slot />
         </div>
         <div
             ref="floatingRef"

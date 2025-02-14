@@ -9,7 +9,9 @@ import Route from "@/Pages/Atoms/text/Route.vue";
 import BadgeRole from "@/Pages/Organisms/User/Molecules/badgeRole.vue";
 import Container from "@/Pages/Atoms/panels/Container.vue";
 import Badge from "@/Pages/Atoms/text/Badge.vue";
+import ModuleCard from "@/Pages/Molecules/modules/ModuleCard.vue";
 import Card from "@/Pages/Atoms/panels/Card.vue";
+import Tooltip from "@/Pages/Atoms/feedback/Tooltip.vue";
 
 // Récupération des données partagées par Inertia
 const page = usePage();
@@ -95,7 +97,7 @@ const verifiedEmail = ref(page.props.verifiedEmail);
 
             <!-- Mes Campagnes -->
             <div class="flex flex-col items-start gap-4 my-5">
-                <div>
+                <div class="flex justify-between gap-4 items-center w-full">
                     <h3
                         class="text-lg font-bold text-gray-900 dark:text-gray-100"
                     >
@@ -104,80 +106,70 @@ const verifiedEmail = ref(page.props.verifiedEmail);
                             Campagne
                         </Badge>
                     </h3>
-                    <p class="text-gray-600 dark:text-gray-300">
-                        0 campagnes en cours
-                    </p>
                     <div>
-                        <Card theme="w-62" class="m-6">
-                            <Badge size="sm" class="absolute top-[-16px] uppercase left-1 z-[-1]" color="campaign-800">Campagne</Badge>
-                            <div class="flex gap-4 z-2">
-                                <!-- Image à gauche -->
-                                <div class="w-24 bg-gray-200 dark:bg-gray-800 rounded-lg">
-                                    <img src="https://solomonk.fr/img/items/16/53.svg" alt="Campaign image" class="w-full h-full object-cover rounded-lg" />
+                        <Tooltip>
+                            <Route route="">
+                                <div class="indicator">
+                                    <span
+                                    class="indicator-item badge badge-secondary"
+                                    >0</span
+                                >
+                                <Btn
+                                    theme="sm neutral glass"
+                                    label="Voir mes campagnes"
+                                    />
                                 </div>
-
-                                <!-- Contenu à droite -->
-                                <div class="flex flex-col flex-1 justify-between">
-                                    <!-- Ligne 1: Boutons icônes -->
-                                    <div class="flex gap-2">
-                                        <button class="btn btn-circle btn-ghost btn-xs">
-                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-                                            </svg>
-                                        </button>
-                                        <button class="btn btn-circle btn-ghost btn-xs">
-                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                                            </svg>
-                                        </button>
-                                    </div>
-
-                                    <!-- Ligne 2: Titre -->
-                                    <div>
-                                        <h4 class="text-base font-semibold text-gray-900 dark:text-gray-100">Titre de la campagne</h4>
-                                    </div>
-
-                                    <!-- Ligne 3: Propriétés -->
-                                    <div class="flex gap-2 text-sm text-gray-600 dark:text-gray-400">
-                                        <span>4 joueurs</span>
-                                        <span>•</span>
-                                        <span>Niveau 5</span>
-                                        <span>•</span>
-                                        <span>Fantasy</span>
-                                    </div>
-                                </div>
-                            </div>
-                            <!-- Bloc de texte en dessous -->
-                            <div class="mt-4 text-sm text-gray-600 dark:text-gray-400">
-                                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
-                            </div>
-
-                            <template #hover>
-                                <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Iure nulla optio, doloribus a nam magnam quaerat perspiciatis laudantium quod, voluptatem velit est, repellendus voluptate accusamus consequatur saepe repellat! Nam, culpa? Pariatur earum voluptate, beatae error eaque praesentium ut vitae, blanditiis expedita distinctio repellendus ad veniam facere nulla repellat quo corrupti!</p>
+                            </Route>
+                            <template #content>
+                                <p>Aucune campagne en cours</p>
                             </template>
-                        </Card>
+                        </Tooltip>
                     </div>
                 </div>
-                <div class="flex gap-4">
-                    <Route route="">
-                        <Btn
-                            theme="sm primary glass"
-                            label="Créer une campagne"
-                        />
-                    </Route>
-                    <Route route="">
-                        <Btn
-                            theme="sm neutral glass"
-                            label="Voir mes campagnes"
-                        />
-                    </Route>
+                <div
+                    class="grid grid-cols-2 gap-4 max-sm:grid-cols-1 max-sm:gap-2 justify-items-center items-center"
+                >
+                    <ModuleCard
+                        class="my-4"
+                        image="https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fexternal-preview.redd.it%2FgqAwVxC2dXU-5xVfOELCvNRYBotyqQH5I6QoLqQNOdE.jpg%3Fauto%3Dwebp%26s%3Deb300cd46e5373d222ef549427621df6aa44c31a&f=1&nofb=1&ipt=566b85f79c1f044372650b7fd3c0371313b4b9f8c60045bafa2f7773ba1dcb3d&ipo=images"
+                        type="[name: 'campagne', color: 'campaign-800']"
+                        :actions="['pin', 'favorite', 'view', 'edit', 'share']"
+                    >
+                        <template #title>Ma Campagne</template>
+                        <template #properties>
+                            <Badge size="sm" color="primary"> Test </Badge>
+                        </template>
+                        <template #content>
+                            <p>Description de la campagne</p>
+                        </template>
+                        <template #hoverContent>
+                            <p>
+                                Description détaillée de la campagne. Lorem
+                                ipsum dolor sit amet consectetur adipisicing
+                                elit. Quisquam, quos.
+                            </p>
+                        </template>
+                    </ModuleCard>
+                    <Tooltip>
+                        <Card class="my-4" theme="w-18 h-18">
+                            <Route route="">
+                                <div
+                                    class="w-full h-full flex items-center justify-center"
+                                >
+                                    <i
+                                        class="text-4xl text-content-dark/30 text-center fa-solid fa-plus"
+                                    ></i>
+                                </div>
+                            </Route>
+                        </Card>
+                        <template #content> Créer une campagne </template>
+                    </Tooltip>
                 </div>
             </div>
 
             <!-- Mes Scénarios -->
             <div class="flex flex-col items-start gap-4 my-5">
-                <div>
+                <div class="flex justify-between gap-4 items-center w-full">
                     <h3
                         class="text-lg font-bold text-gray-900 dark:text-gray-100"
                     >
@@ -186,51 +178,120 @@ const verifiedEmail = ref(page.props.verifiedEmail);
                             Scénario
                         </Badge>
                     </h3>
-                    <p class="text-gray-600 dark:text-gray-300">
-                        0 scénario en cours
-                    </p>
+                    <div>
+                        <Tooltip>
+                            <Route route="">
+                                <div class="indicator">
+                                    <span class="indicator-item badge badge-secondary">0</span>
+                                    <Btn
+                                        theme="sm neutral glass"
+                                        label="Voir mes scénarios"
+                                    />
+                                </div>
+                            </Route>
+                            <template #content>
+                                <p>Aucun scénario en cours</p>
+                            </template>
+                        </Tooltip>
+                    </div>
                 </div>
-                <div class="flex gap-4">
-                    <Route route="">
-                        <Btn
-                            theme="sm primary glass"
-                            label="Créer un scénario"
-                        />
-                    </Route>
-                    <Route route="">
-                        <Btn
-                            theme="sm neutral glass"
-                            label="Voir mes scénarios"
-                        />
-                    </Route>
+                <div class="grid grid-cols-2 gap-4 max-sm:grid-cols-1 max-sm:gap-2 justify-items-center items-center">
+                    <ModuleCard
+                        class="my-4"
+                        image="https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Ftse1.mm.bing.net%2Fth%3Fid%3DOIP.KsyY2uAKnTa1N6HXbpg5swHaEI%26pid%3DApi&f=1&ipt=4d00f059f254b63c38cc6a12030cfb466843587d98f288fc5a1bfa5fd99a36bd&ipo=images"
+                        type="[name: 'scenario', color: 'scenario-800']"
+                        :actions="['pin', 'favorite', 'view', 'edit', 'share']"
+                    >
+                        <template #title>Mon Scénario</template>
+                        <template #properties>
+                            <Badge size="sm" color="primary">Test</Badge>
+                        </template>
+                        <template #content>
+                            <p>Description du scénario</p>
+                        </template>
+                        <template #hoverContent>
+                            <p>Description détaillée du scénario. Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quos.</p>
+                        </template>
+                    </ModuleCard>
+                    <Tooltip>
+                        <Card class="my-4" theme="w-18 h-18">
+                            <Route route="">
+                                <div class="w-full h-full flex items-center justify-center">
+                                    <i class="text-4xl text-content-dark/30 text-center fa-solid fa-plus"></i>
+                                </div>
+                            </Route>
+                        </Card>
+                        <template #content>Créer un scénario</template>
+                    </Tooltip>
                 </div>
             </div>
 
             <!-- Mes PNJ -->
             <div class="flex flex-col items-start gap-4 my-5">
-                <div>
+                <div class="flex justify-between gap-4 items-center w-full">
                     <h3
                         class="text-lg font-bold text-gray-900 dark:text-gray-100"
                     >
                         Mes PNJ
-                        <Badge class="ml-2 uppercase" color="npc-800"> PNJ </Badge>
+                        <Badge class="ml-2 uppercase" color="npc-800">
+                            PNJ
+                        </Badge>
                     </h3>
-                    <p class="text-gray-600 dark:text-gray-300">0 pnj créé</p>
+                    <div>
+                        <Tooltip>
+                            <Route route="">
+                                <div class="indicator">
+                                    <span class="indicator-item badge badge-secondary">0</span>
+                                    <Btn
+                                        theme="sm neutral glass"
+                                        label="Voir mes PNJ"
+                                    />
+                                </div>
+                            </Route>
+                            <template #content>
+                                <p>Aucun PNJ créé</p>
+                            </template>
+                        </Tooltip>
+                    </div>
                 </div>
-                <div class="flex gap-4">
-                    <Route route="">
-                        <Btn theme="sm primary glass" label="Créer un PNJ" />
-                    </Route>
-                    <Route route="">
-                        <Btn theme="sm neutral glass" label="Voir mes PNJ" />
-                    </Route>
+                <div class="grid grid-cols-2 gap-4 max-sm:grid-cols-1 max-sm:gap-2 justify-items-center items-center">
+                    <ModuleCard
+                        class="my-4"
+                        image="https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fi.pinimg.com%2Foriginals%2Fa7%2F4e%2F83%2Fa74e8393aa3abe1b4fd079e18517724d.jpg&f=1&nofb=1&ipt=61d0e34410ac05733ee0161fb2a1a6d767bc47b37f4b4542e8c5c8748c607d57&ipo=images"
+                        type="[name: 'npc', color: 'npc-800']"
+                        :actions="['pin', 'favorite', 'view', 'edit', 'share']"
+                    >
+                        <template #title>Mon PNJ</template>
+                        <template #properties>
+                            <Badge size="sm" color="primary">Test</Badge>
+                        </template>
+                        <template #content>
+                            <p>Description du PNJ</p>
+                        </template>
+                        <template #hoverContent>
+                            <p>Description détaillée du PNJ. Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quos.</p>
+                        </template>
+                    </ModuleCard>
+                    <Tooltip>
+                        <Card class="my-4" theme="w-18 h-18">
+                            <Route route="">
+                                <div class="w-full h-full flex items-center justify-center">
+                                    <i class="text-4xl text-content-dark/30 text-center fa-solid fa-plus"></i>
+                                </div>
+                            </Route>
+                        </Card>
+                        <template #content>Créer un PNJ</template>
+                    </Tooltip>
                 </div>
             </div>
 
             <div class="flex justify-end gap-4 flex-wrap items-center">
                 <div>
                     <Route route="logout" method="post">
-                        <Btn theme="neutral outline sm" label="Se déconnecter" />
+                        <Btn
+                            theme="neutral outline sm"
+                            label="Se déconnecter"
+                        />
                     </Route>
                 </div>
                 <div>

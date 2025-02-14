@@ -53,37 +53,37 @@ const form = ref({
             </div>
             <div class="flex mt-4 gap-4 justify-content-around flex-wrap">
                 <Btn theme="outline sm primary">
-                    <template #label> Principale </template>
+                     Principale
                 </Btn>
 
                 <Btn theme="outline sm secondary">
-                    <template #label> Mineure </template>
+                     Mineure
                 </Btn>
                 <Btn theme="outline sm success">
-                    <template #label> Valider </template>
+                     Valider
                 </Btn>
                 <Btn theme="outline sm error">
-                    <template #label> Annuler </template>
+                     Annuler
                 </Btn>
                 <Btn theme="outline sm neutral">
-                    <template #label> Simple </template>
+                     Simple
                 </Btn>
             </div>
             <div class="flex mt-4 gap-4 justify-content-around flex-wrap">
                 <Btn theme="link sm primary">
-                    <template #label> Principale </template>
+                     Principale
                 </Btn>
                 <Btn theme="link sm secondary">
-                    <template #label> Mineure </template>
+                     Mineure
                 </Btn>
                 <Btn theme="link sm success">
-                    <template #label> Valider </template>
+                     Valider
                 </Btn>
                 <Btn theme="link sm error">
-                    <template #label> Annuler </template>
+                     Annuler
                 </Btn>
                 <Btn theme="link sm neutral">
-                    <template #label> Simple </template>
+                     Simple
                 </Btn>
             </div>
 

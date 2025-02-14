@@ -2,7 +2,7 @@
 import { computed } from "vue";
 import { isDark } from "@/Utils/Color";
 import { extractTheme } from "@/Utils/extractTheme";
-import Tooltip from "../feedback/tooltips.vue";
+import Tooltip from "../feedback/Tooltip.vue";
 
 const props = defineProps({
     theme: {
@@ -116,7 +116,7 @@ const getClasses = computed(() => buildButtonClasses(themeProps.value, props));
 
 <template>
     <Tooltip v-if="tooltip" :placement="tooltipPosition">
-        <template #reference>
+
             <button
                 :type="type"
                 :class="[
@@ -129,9 +129,9 @@ const getClasses = computed(() => buildButtonClasses(themeProps.value, props));
                 :data-tip="tooltip"
             >
                 <span v-if="label">{{ label }}</span>
-                <slot v-else name="label" />
+                <slot v-else />
             </button>
-        </template>
+
         <template #content>
             <span>{{ tooltip }}</span>
         </template>
@@ -149,7 +149,7 @@ const getClasses = computed(() => buildButtonClasses(themeProps.value, props));
         :data-tip="tooltip"
     >
         <span v-if="label">{{ label }}</span>
-        <slot v-else name="label" />
+        <slot v-else />
     </button>
 </template>
 

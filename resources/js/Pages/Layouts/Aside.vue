@@ -1,7 +1,7 @@
 <script setup>
 import searchInput from "@/Pages/Layouts/Molecules/searchInput.vue";
 import toggleSidebar from "@/Pages/Layouts/Molecules/ToggleSidebar.vue";
-import Tooltips from "@/Pages/Atoms/feedback/tooltips.vue";
+import Tooltips from "@/Pages/Atoms/feedback/Tooltip.vue";
 import { ref } from "vue";
 import Route from "@/Pages/Atoms/text/Route.vue";
 import { useSidebar } from "@/Composables/useSidebar";
@@ -39,20 +39,16 @@ const appSlogan = ref(import.meta.env.VITE_APP_SLOGAN);
 
             <div>
                 <Tooltips placement="bottom-center">
-                    <template #reference>
-                        <Route
-                            class="hover:scale-105 focus:scale-95"
-                            route="home"
-                        >
-                            <figure>
-                                <img
-                                    class="w-auto px-14"
-                                    src="storage/logos/logo.webp"
-                                    alt="Logo de {{ appName }}"
-                                />
-                            </figure>
-                        </Route>
-                    </template>
+                    <Route class="hover:scale-105 focus:scale-95" route="home">
+                        <figure>
+                            <img
+                                class="w-auto px-14"
+                                src="storage/logos/logo.webp"
+                                alt="Logo de {{ appName }}"
+                            />
+                        </figure>
+                    </Route>
+
                     <template #content> Aller à la page d'accueil </template>
                 </Tooltips>
 
@@ -106,21 +102,18 @@ const appSlogan = ref(import.meta.env.VITE_APP_SLOGAN);
                     class="flex gap-1 flex-nowrap justify-around btm-nav bg-transparent px-1 py-2"
                 >
                     <Tooltips placement="top">
-                        <template #reference>
-                            <Route
-                                class="pb-1 text-secondary-400 hover:text-primary-200 relative cursor-pointer before:bg-primary-300 before:absolute before:-bottom-0 before:-left-0 before:block before:h-[1px] before:w-full before:origin-bottom-right before:scale-x-0 before:transition before:duration-300 before:ease-in-out hover:before:origin-bottom-left hover:before:scale-x-100"
-                                route="contribute"
-                            >
-                                <button>
-                                    <i class="fa-solid fa-handshake-angle"></i
-                                    ><br />
-                                    <span class="btm-nav-label"
-                                        >Contribuer</span
-                                    >
-                                </button>
-                            </Route>
-                        </template>
-                        <template #label>
+                        <Route
+                            class="pb-1 text-secondary-400 hover:text-primary-200 relative cursor-pointer before:bg-primary-300 before:absolute before:-bottom-0 before:-left-0 before:block before:h-[1px] before:w-full before:origin-bottom-right before:scale-x-0 before:transition before:duration-300 before:ease-in-out hover:before:origin-bottom-left hover:before:scale-x-100"
+                            route="contribute"
+                        >
+                            <button>
+                                <i class="fa-solid fa-handshake-angle"></i
+                                ><br />
+                                <span class="btm-nav-label">Contribuer</span>
+                            </button>
+                        </Route>
+
+                        <template #content>
                             <span
                                 >Tout les liens pour<br /><b
                                     >contribuer au projet KrosmozJDR</b
@@ -129,34 +122,32 @@ const appSlogan = ref(import.meta.env.VITE_APP_SLOGAN);
                         </template>
                     </Tooltips>
                     <Tooltips placement="top">
-                        <template #reference>
-                            <Route
-                                class="pb-1 text-secondary-400 hover:text-primary-200 relative cursor-pointer before:bg-primary-300 before:absolute before:-bottom-0 before:-left-0 before:block before:h-[1px] before:w-full before:origin-bottom-right before:scale-x-0 before:transition before:duration-300 before:ease-in-out hover:before:origin-bottom-left hover:before:scale-x-100"
-                                route="contribute"
-                            >
-                                <button>
-                                    <i class="fa-solid fa-dice"></i><br />
-                                    <span class="btm-nav-label">Outils</span>
-                                </button>
-                            </Route>
-                        </template>
-                        <template #label>
+                        <Route
+                            class="pb-1 text-secondary-400 hover:text-primary-200 relative cursor-pointer before:bg-primary-300 before:absolute before:-bottom-0 before:-left-0 before:block before:h-[1px] before:w-full before:origin-bottom-right before:scale-x-0 before:transition before:duration-300 before:ease-in-out hover:before:origin-bottom-left hover:before:scale-x-100"
+                            route="contribute"
+                        >
+                            <button>
+                                <i class="fa-solid fa-dice"></i><br />
+                                <span class="btm-nav-label">Outils</span>
+                            </button>
+                        </Route>
+
+                        <template #content>
                             <span>En cours de développement</span>
                         </template>
                     </Tooltips>
                     <Tooltips placement="top">
-                        <template #reference>
-                            <Route
-                                class="pb-1 text-secondary-400 hover:text-primary-200 relative cursor-pointer before:bg-primary-300 before:absolute before:-bottom-0 before:-left-0 before:block before:h-[1px] before:w-full before:origin-bottom-right before:scale-x-0 before:transition before:duration-300 before:ease-in-out hover:before:origin-bottom-left hover:before:scale-x-100"
-                                route="contribute"
-                            >
-                                <button>
-                                    <i class="fa-solid fa-map"></i><br />
-                                    <span class="btm-nav-label">Campagnes</span>
-                                </button>
-                            </Route>
-                        </template>
-                        <template #label>
+                        <Route
+                            class="pb-1 text-secondary-400 hover:text-primary-200 relative cursor-pointer before:bg-primary-300 before:absolute before:-bottom-0 before:-left-0 before:block before:h-[1px] before:w-full before:origin-bottom-right before:scale-x-0 before:transition before:duration-300 before:ease-in-out hover:before:origin-bottom-left hover:before:scale-x-100"
+                            route="contribute"
+                        >
+                            <button>
+                                <i class="fa-solid fa-map"></i><br />
+                                <span class="btm-nav-label">Campagnes</span>
+                            </button>
+                        </Route>
+
+                        <template #content>
                             <span>En cours de développement</span>
                         </template>
                     </Tooltips>

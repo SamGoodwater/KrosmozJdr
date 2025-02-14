@@ -3,7 +3,7 @@ import searchInput from "@/Pages/Layouts/Molecules/searchInput.vue";
 import toggleSidebar from "@/Pages/Layouts/Molecules/ToggleSidebar.vue";
 import LoginHeaderContainer from "@/Pages/Layouts/Molecules/LoginHeaderContainer.vue";
 import LoggedHeaderContainer from "@/Pages/Layouts/Molecules/LoggedHeaderContainer.vue";
-import tooltips from "@/Pages/Atoms/feedback/tooltips.vue";
+import tooltips from "@/Pages/Atoms/feedback/Tooltip.vue";
 import { useHeader } from "@/Composables/useHeader";
 import { ref, onMounted } from "vue";
 import { useSidebar } from "@/Composables/useSidebar";
@@ -56,61 +56,59 @@ function updateTitle() {
 
             <!-- Boutton pour déplier ou replier le header -->
             <tooltips>
-                <template #reference>
-                    <div class="mr-2 swapHeader">
-                        <label class="swap swap-rotate" @click="toggleHeader">
-                            <input type="checkbox" />
+                <div class="mr-2 swapHeader">
+                    <label class="swap swap-rotate" @click="toggleHeader">
+                        <input type="checkbox" />
 
-                            <svg
-                                class="swap-off h-4 w-4 fill-current"
-                                viewBox="0 0 16 16"
-                                fill="none"
-                                xmlns="http://www.w3.org/2000/svg"
-                            >
-                                <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
-                                <g
-                                    id="SVGRepo_tracerCarrier"
-                                    stroke-linecap="round"
-                                    stroke-linejoin="round"
-                                ></g>
-                                <g id="SVGRepo_iconCarrier">
-                                    <path
-                                        d="M3 6L6 6L6 12L10 12L10 6L13 6V5L8 0L3 5L3 6Z"
-                                        fill="#94a3b8"
-                                    ></path>
-                                    <path
-                                        d="M2 16L14 16V14L2 14V16Z"
-                                        fill="#94a3b8"
-                                    ></path>
-                                </g>
-                            </svg>
+                        <svg
+                            class="swap-off h-4 w-4 fill-current"
+                            viewBox="0 0 16 16"
+                            fill="none"
+                            xmlns="http://www.w3.org/2000/svg"
+                        >
+                            <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+                            <g
+                                id="SVGRepo_tracerCarrier"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                            ></g>
+                            <g id="SVGRepo_iconCarrier">
+                                <path
+                                    d="M3 6L6 6L6 12L10 12L10 6L13 6V5L8 0L3 5L3 6Z"
+                                    fill="#94a3b8"
+                                ></path>
+                                <path
+                                    d="M2 16L14 16V14L2 14V16Z"
+                                    fill="#94a3b8"
+                                ></path>
+                            </g>
+                        </svg>
 
-                            <svg
-                                class="swap-on h-4 w-4 fill-current"
-                                viewBox="0 0 16 16"
-                                fill="none"
-                                xmlns="http://www.w3.org/2000/svg"
-                            >
-                                <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
-                                <g
-                                    id="SVGRepo_tracerCarrier"
-                                    stroke-linecap="round"
-                                    stroke-linejoin="round"
-                                ></g>
-                                <g id="SVGRepo_iconCarrier">
-                                    <path
-                                        d="M13 7H10V0H6V7L3 7V8L8 13L13 8V7Z"
-                                        fill="#94a3b8"
-                                    ></path>
-                                    <path
-                                        d="M14 14H2V16H14V14Z"
-                                        fill="#e4e4e7"
-                                    ></path>
-                                </g>
-                            </svg>
-                        </label>
-                    </div>
-                </template>
+                        <svg
+                            class="swap-on h-4 w-4 fill-current"
+                            viewBox="0 0 16 16"
+                            fill="none"
+                            xmlns="http://www.w3.org/2000/svg"
+                        >
+                            <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+                            <g
+                                id="SVGRepo_tracerCarrier"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                            ></g>
+                            <g id="SVGRepo_iconCarrier">
+                                <path
+                                    d="M13 7H10V0H6V7L3 7V8L8 13L13 8V7Z"
+                                    fill="#94a3b8"
+                                ></path>
+                                <path
+                                    d="M14 14H2V16H14V14Z"
+                                    fill="#e4e4e7"
+                                ></path>
+                            </g>
+                        </svg>
+                    </label>
+                </div>
 
                 <template #content>
                     <div
@@ -199,11 +197,11 @@ header {
     backdrop-filter: blur(5px);
     background: linear-gradient(
         to top,
-         rgba(23, 27, 36, 0) 0%,
+        rgba(23, 27, 36, 0) 0%,
         rgba(23, 27, 36, 0.3) 20%,
         rgba(23, 27, 36, 0.5) 50%,
-         rgb(23, 27, 36) 70%,
-         rgb(23, 27, 36) 100%
+        rgb(23, 27, 36) 70%,
+        rgb(23, 27, 36) 100%
     );
     box-shadow: 0 1px 10px -1px rgba(23, 27, 36, 0.3);
     transition: transform 0.3s ease-in-out;

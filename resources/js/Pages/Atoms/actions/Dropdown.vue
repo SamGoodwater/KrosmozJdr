@@ -75,7 +75,7 @@ onUnmounted(() => document.removeEventListener("keydown", closeOnEscape));
             {{ label }}
         </div>
         <div v-else tabindex="0" role="button">
-            <slot name="label" />
+            <slot />
         </div>
         <ul tabindex="0" :class="contentClasses">
             <slot name="list" />

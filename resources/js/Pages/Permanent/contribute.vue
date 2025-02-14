@@ -66,14 +66,12 @@ import Container from "@/Pages/Atoms/panels/Container.vue";
                         y a besoin d'une inscription.
                     </p>
                     <Btn theme="primary glass">
-                        <template #label>
                             <a
                                 href="https://project.krosmoz-jdr.fr"
                                 class="no-underline"
                                 target="_blank"
                                 >Rejoindre Projet Krosmoz JDR</a
                             >
-                        </template>
                     </Btn>
                 </div>
             </section>
@@ -97,14 +95,12 @@ import Container from "@/Pages/Atoms/panels/Container.vue";
                         rendez-vous sur notre serveur Discord.
                     </p>
                     <Btn theme="primary glass">
-                        <template #label>
                             <a
                                 href="https://discord.com/invite/XVu4VWFskj"
                                 class="no-underline"
                                 target="_blank"
                                 >Rejoindre le Discord</a
                             >
-                        </template>
                     </Btn>
                 </div>
             </section>
@@ -145,14 +141,12 @@ import Container from "@/Pages/Atoms/panels/Container.vue";
                         >.
                     </p>
                     <Btn theme="primary glass">
-                        <template #label>
                             <a
                                 href="https://github.com/SamGoodwater/KrosmozJdr"
                                 class="no-underline"
                                 target="_blank"
                                 >Se diriger vers GitHub</a
                             >
-                        </template>
                     </Btn>
                 </div>
             </section>

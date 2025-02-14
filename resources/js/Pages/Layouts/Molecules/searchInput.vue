@@ -1,5 +1,5 @@
 <script setup>
-import tooltips from "@/Pages/Atoms/feedback/tooltips.vue";
+import tooltips from "@/Pages/Atoms/feedback/Tooltip.vue";
 import { ref, onMounted, onUnmounted } from "vue";
 const appName = ref(import.meta.env.VITE_APP_NAME);
 
@@ -21,7 +21,7 @@ onUnmounted(() => {
 <template>
     <div>
         <tooltips bgColor="bg-secondary-900/90">
-            <template #reference>
+
                 <label class="input input-bordered flex items-center gap-2">
                     <input
                         id="searchBar"
@@ -42,7 +42,7 @@ onUnmounted(() => {
                         />
                     </svg>
                 </label>
-            </template>
+
 
             <template #content>
                 <div class="flex flex-nowrap justify-content-between gap-2">

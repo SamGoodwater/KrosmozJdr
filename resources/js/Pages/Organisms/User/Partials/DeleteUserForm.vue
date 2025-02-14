@@ -1,10 +1,9 @@
 <script setup>
-import DangerButton from '@/Components/DangerButton.vue';
-import InputError from '@/Components/InputError.vue';
-import InputLabel from '@/Components/InputLabel.vue';
-import Modal from '@/Components/Modal.vue';
-import SecondaryButton from '@/Components/SecondaryButton.vue';
-import TextInput from '@/Components/TextInput.vue';
+import InputError from '@/Pages/Atoms/inputs/InputError.vue';
+import InputLabel from '@/Pages/Atoms/inputs/InputLabel.vue';
+import Modal from '@/Pages/Atoms/modals/Modal.vue';
+import Btn from '@/Pages/Atoms/actions/Btn.vue';
+import TextInput from '@/Pages/Atoms/inputs/TextInput.vue';
 import { useForm } from '@inertiajs/vue3';
 import { nextTick, ref } from 'vue';
 
@@ -42,7 +41,7 @@ const closeModal = () => {
     <section class="space-y-6">
         <header>
             <h2 class="text-lg font-medium text-gray-900">
-                Delete Account
+                Supprimer le compte
             </h2>
 
             <p class="mt-1 text-sm text-gray-600">
@@ -52,7 +51,7 @@ const closeModal = () => {
             </p>
         </header>
 
-        <DangerButton @click="confirmUserDeletion">Delete Account</DangerButton>
+        <Btn theme="error" @click="confirmUserDeletion" label="Supprimer le compte" />
 
         <Modal :show="confirmingUserDeletion" @close="closeModal">
             <div class="p-6">
@@ -89,18 +88,16 @@ const closeModal = () => {
                 </div>
 
                 <div class="mt-6 flex justify-end">
-                    <SecondaryButton @click="closeModal">
-                        Cancel
-                    </SecondaryButton>
+                    <Btn theme="secondary" @click="closeModal" label="Annuler" />
 
-                    <DangerButton
+                    <Btn
+                        theme="error"
                         class="ms-3"
                         :class="{ 'opacity-25': form.processing }"
                         :disabled="form.processing"
                         @click="deleteUser"
-                    >
-                        Delete Account
-                    </DangerButton>
+                        label="Supprimer le compte"
+                    />
                 </div>
             </div>
         </Modal>

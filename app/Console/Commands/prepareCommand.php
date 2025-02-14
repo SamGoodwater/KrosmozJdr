@@ -46,8 +46,8 @@ class prepareCommand extends Command
         $this->info('Regénération de l\'autoloader de Composer');
         exec('composer dump-autoload');
 
-        $this->info('Installation des dépendances npm');
-        exec('npm install');
+        $this->info('Installation des dépendances pnpm');
+        exec('pnpm install');
 
         $this->info('Exécution des migrations de la base de données');
         $this->call('migrate');

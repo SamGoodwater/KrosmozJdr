@@ -1,8 +1,8 @@
 <script setup>
-import InputError from "@/Pages/Atoms/inputs/InputError";
-import InputLabel from "@/Pages/Atoms/inputs/InputLabel";
-import Btn from "@/Pages/Atoms/actions/Btn";
-import TextInput from "@/Pages/Atoms/inputs/TextInput";
+import InputError from "@/Pages/Atoms/inputs/InputError.vue";
+import InputLabel from "@/Pages/Atoms/inputs/InputLabel.vue";
+import Btn from "@/Pages/Atoms/actions/Btn.vue";
+import TextInput from "@/Pages/Atoms/inputs/TextInput.vue";
 import { Head, useForm } from "@inertiajs/vue3";
 
 const form = useForm({

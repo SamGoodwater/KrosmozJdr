@@ -1,6 +1,6 @@
 <script setup>
 import { ref, computed } from "vue";
-import tooltips from "@/Pages/Atoms/feedback/tooltips.vue";
+import tooltips from "@/Pages/Atoms/feedback/Tooltip.vue";
 import { useSidebar } from "@/Composables/useSidebar";
 
 const { toggleSidebar, isSidebarOpen } = useSidebar();
@@ -37,53 +37,49 @@ const getSize = computed(() => {
 <template>
     <div>
         <tooltips bgColor="bg-secondary-900/70" placement="bottom-start">
-            <template #reference>
-                <button
-                    @click="toggleSidebar"
-                    class="btn btn-circle dark:bg-secondary-800/10 bg-secondary-200/10 backdrop-blur-md border-none"
+            <button
+                @click="toggleSidebar"
+                class="btn btn-circle dark:bg-secondary-800/10 bg-secondary-200/10 backdrop-blur-md border-none"
+            >
+                <svg
+                    v-if="!isSidebarOpen"
+                    :class="[
+                        'fill-current',
+                        'hover:opacity-50',
+                        'tooltip',
+                        'tooltip-bottom',
+                    ]"
+                    :data-tip="
+                        isSidebarOpen ? 'Masquer le menu' : 'Afficher le menu'
+                    "
+                    xmlns="http://www.w3.org/2000/svg"
+                    :width="getSize"
+                    :height="getSize"
+                    viewBox="0 -960 960 960"
                 >
-                    <svg
-                        v-if="!isSidebarOpen"
-                        :class="[
-                            'fill-current',
-                            'hover:opacity-50',
-                            'tooltip',
-                            'tooltip-bottom',
-                        ]"
-                        :data-tip="
-                            isSidebarOpen
-                                ? 'Masquer le menu'
-                                : 'Afficher le menu'
-                        "
-                        xmlns="http://www.w3.org/2000/svg"
-                        :width="getSize"
-                        :height="getSize"
-                        viewBox="0 -960 960 960"
-                    >
-                        <path
-                            d="M120-240v-60h720v60H120Zm0-210v-60h720v60H120Zm0-210v-60h720v60H120Z"
-                        />
-                    </svg>
+                    <path
+                        d="M120-240v-60h720v60H120Zm0-210v-60h720v60H120Zm0-210v-60h720v60H120Z"
+                    />
+                </svg>
 
-                    <svg
-                        v-if="isSidebarOpen"
-                        :class="[
-                            'fill-current',
-                            'hover:opacity-50',
-                            'tooltip',
-                            'tooltip-bottom',
-                        ]"
-                        xmlns="http://www.w3.org/2000/svg"
-                        :width="getSize"
-                        :height="getSize"
-                        viewBox="0 -960 960 960"
-                    >
-                        <path
-                            d="m249-207-42-42 231-231-231-231 42-42 231 231 231-231 42 42-231 231 231 231-42 42-231-231-231 231Z"
-                        />
-                    </svg>
-                </button>
-            </template>
+                <svg
+                    v-if="isSidebarOpen"
+                    :class="[
+                        'fill-current',
+                        'hover:opacity-50',
+                        'tooltip',
+                        'tooltip-bottom',
+                    ]"
+                    xmlns="http://www.w3.org/2000/svg"
+                    :width="getSize"
+                    :height="getSize"
+                    viewBox="0 -960 960 960"
+                >
+                    <path
+                        d="m249-207-42-42 231-231-231-231 42-42 231 231 231-231 42 42-231 231 231 231-42 42-231-231-231 231Z"
+                    />
+                </svg>
+            </button>
             <template #content>
                 <p>
                     Masquer ou afficher le menu
