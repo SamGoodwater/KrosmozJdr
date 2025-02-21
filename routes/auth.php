@@ -73,11 +73,15 @@ Route::middleware('auth')->group(function () {
 // Users
 Route::prefix('user')->name("user.")->middleware('auth')->group(function () use ($uniqidRegex) {
     Route::get('/', [UserController::class, 'dashboard'])->name('dashboard');
-    Route::get('/{user:uniqid}', [UserController::class, 'dashboard'])->name('otherdashboard')->where('user', $uniqidRegex);
+    Route::get('/{user:uniqid}', [UserController::class, 'dashboard'])->name('admindashboard')->where('user', $uniqidRegex);
     Route::get('/create', [UserController::class, 'create'])->name('create');
     Route::post('/', [UserController::class, 'store'])->name('store');
-    Route::patch('/{user:uniqid}', [UserController::class, 'update'])->name('update')->where('user', $uniqidRegex);
-    Route::delete('/{user:uniqid}', [UserController::class, 'delete'])->name('delete')->where('user', $uniqidRegex);
+    Route::patch('/edit', [UserController::class, 'edit'])->name('edit');
+    // Route::patch('/edit/{user:uniqid}', [UserController::class, 'edit'])->name('adminedit')->where('user', $uniqidRegex);
+    Route::patch('/', [UserController::class, 'update'])->name('update');
+    Route::patch('/{user:uniqid}', [UserController::class, 'update'])->name('admibupdate')->where('user', $uniqidRegex);
+    Route::delete('/', [UserController::class, 'delete'])->name('delete');
+    Route::delete('/{user:uniqid}', [UserController::class, 'delete'])->name('admindelete')->where('user', $uniqidRegex);
     Route::post('/{user:uniqid}', [UserController::class, 'restore'])->name('restore')->where('user', $uniqidRegex);
     Route::delete('/forcedDelete/{user:uniqid}', [UserController::class, 'forcedDelete'])->name('forcedDelete')->where('user', $uniqidRegex);
 });

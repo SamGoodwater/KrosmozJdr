@@ -11,15 +11,15 @@ const props = defineProps({
     },
     bgColor: {
         type: String,
-        default: "secondary-300",
+        default: "secondary-700",
     },
     borderColor: {
         type: String,
         default: "secondary-100/10",
     },
     opacity: {
-        type: String,
-        default: 10,
+        type: [String, Number],
+        default: 80,
     },
     blur: {
         type: String,
@@ -28,18 +28,68 @@ const props = defineProps({
     shadow: {
         type: String,
         default: "sm",
+        validator(value) {
+            return [
+                "none",
+                "xs",
+                "sm",
+                "md",
+                "lg",
+                "xl",
+                "2xl",
+                "3xl",
+            ].includes(value);
+        },
     },
     rounded: {
         type: String,
         default: "lg",
+        validator(value) {
+            return [
+                "none",
+                "xs",
+                "sm",
+                "md",
+                "lg",
+                "xl",
+                "2xl",
+                "3xl",
+            ].includes(value);
+        },
     },
     width: {
-        type: String,
+        type: [String, Number],
         default: "auto",
     },
     height: {
-        type: String,
+        type: [String, Number],
         default: "auto",
+    },
+});
+
+const width = computed(() => {
+    // Width
+    if (props.width !== "auto") {
+        if (props.width.includes("[")) {
+            return `w-${props.width}`;
+        } else {
+            return `w-${props.width}`;
+        }
+    } else if (themeProps.width) {
+        return `w-${themeProps.width}`;
+    }
+});
+
+const height = computed(() => {
+    // Height
+    if (props.height !== "auto") {
+        if (props.height.includes("[")) {
+            return `h-${props.height}`;
+        } else {
+            return `h-${props.height}`;
+        }
+    } else if (themeProps.height) {
+        return `h-${themeProps.height}`;
     }
 });
 
@@ -91,26 +141,10 @@ const buildCardClasses = (themeProps, props) => {
     }
 
     // Width
-    if (props.width !== "auto") {
-        if (props.width.includes("[")) {
-            classes.push(`w-${props.width}`);
-        } else {
-            classes.push(`w-${props.width}`);
-        }
-    } else if (themeProps.width) {
-        classes.push(`w-${themeProps.width}`);
-    }
+    classes.push(width);
 
     // Height
-    if (props.height !== "auto") {
-        if (props.height.includes("[")) {
-            classes.push(`h-${props.height}`);
-        } else {
-            classes.push(`h-${props.height}`);
-        }
-    } else if (themeProps.height) {
-        classes.push(`h-${themeProps.height}`);
-    }
+    classes.push(height);
 
     return classes.join(" ");
 };
@@ -129,49 +163,45 @@ onMounted(() => {
 </script>
 
 <template>
-    <div :class="classes">
-        <div class="card-content">
-            <slot />
-        </div>
-        <div v-if="$slots.hover" class="hover-content">
-            <slot name="hover" />
+    <div :class="{ 'card-wrapper': true, width, height }">
+        <div :class="classes">
+            <div class="card-content">
+                <slot />
+            </div>
+            <div v-if="$slots.hover" class="hover-content">
+                <slot name="hover" />
+            </div>
         </div>
     </div>
 </template>
 
 <style scoped lang="scss">
-.card {
-    z-index: 10;
+.card-wrapper {
     position: relative;
-    padding-block: 5px;
-    padding-inline: 5px;
-    backdrop-filter: blur(10px);
+    width: 300px;
+    min-height: 120px;
+    z-index: 10;
 
-    .card-content  {
+    .card {
         position: relative;
-        z-index: 11;
+        padding-block: 5px;
+        padding-inline: 5px;
         backdrop-filter: blur(10px);
-        width: 100%;
-        height: 100%;
-    }
 
-    .hover-content  {
-        position: absolute;
-        top: 100%; // Se positionne juste en dessous de la carte
-        left: 0;
-        width: 100%;
-        background: inherit;
-        backdrop-filter: blur(10px);
-        z-index: 12; // Même niveau que card-content
-        opacity: 0;
-        transform: translateY(-20px); // Commence légèrement plus haut
-        transition: all 0.3s ease-in-out;
-        pointer-events: none;
-        border-bottom-left-radius: inherit; // Hérite du border-radius de la carte
-        border-bottom-right-radius: inherit;
-    }
+        .card-content {
+            width: 100%;
+            height: 100%;
+        }
 
-    &:hover {
+        .hover-content {
+            opacity: 0;
+            display: none;
+            transition: all 0.3s ease-in-out;
+        }
+
+        &:hover {
+            position: absolute;
+            min-height: 100%;
             border-bottom-left-radius: 0;
             border-bottom-right-radius: 0;
             border-bottom: none;
@@ -180,31 +210,9 @@ onMounted(() => {
                 0 -1px 1px 1.5px rgba(255, 255, 255, 0.05),
                 0 -1px 1.75px 2.25px rgba(255, 255, 255, 0.025);
 
-        .hover-content {
-            opacity: 1;
-            transform: translateY(0);
-            pointer-events: auto;
-            border-bottom-left-radius: inherit;
-            border-bottom-right-radius: inherit;
-            border-top: none;
-            border-top-left-radius: 0;
-            border-top-right-radius: 0;
-            backdrop-filter: inherit;
-            box-shadow:
-                0 1px 0.375px 0.375px rgba(255, 255, 255, 0.25),
-                0 1px 1px 1.5px rgba(255, 255, 255, 0.05),
-                0 1px 1.75px 2.25px rgba(255, 255, 255, 0.025);
-
-            &::before {
-                content: "";
-                position: absolute;
-                top: 0;
-                left: 0;
-                width: 100%;
-                height: 100%;
-                background-color: color-mix(in srgb, var(--color-secondary-700) 90%, transparent);
-                backdrop-filter: blur(30px);
-                z-index: -1;
+            .hover-content {
+                opacity: 1;
+                display: block;
             }
         }
     }

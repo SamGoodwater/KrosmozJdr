@@ -11,6 +11,7 @@ use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Support\Facades\Auth;
 use App\Services\DataService;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Request;
 
 class UserController extends Controller
@@ -77,14 +78,17 @@ class UserController extends Controller
         return redirect()->route('user.dashboard', ['user' => $user]);
     }
 
-    public function edit(User $user): \Inertia\Response
+    public function edit(): \Inertia\Response
     {
+        $user = Auth::user();
         $this->authorize('update', $user);
 
-        return Inertia::render('Organisms/Users/Edit', [
+        return Inertia::render('Organisms/User/Edit', [
             'user' => $user,
             'resources' => $user->resources,
             'panoply' => $user->panoply,
+            'mustVerifyEmail' => $user() instanceof MustVerifyEmail,
+            'status' => session('status'),
         ]);
     }
 
@@ -92,6 +96,10 @@ class UserController extends Controller
     {
         $this->authorize('update', $user);
         $old_user = $user;
+
+        if ($request->user()->isDirty('email')) {
+            $request->user()->email_verified_at = null;
+        }
 
         $data = DataService::extractData($request, $user, [
             [

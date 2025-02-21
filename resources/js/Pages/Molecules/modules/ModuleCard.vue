@@ -26,13 +26,12 @@ const props = defineProps({
         type: String,
         default: "",
     },
-    properties: {
-        type: Array,
-        default: () => [],
-    },
     type: {
-        type: Array, // Nom du type de module suivi de la couleur
-        default: () => [],
+        type: Object,
+        default: () => ({
+            name: '',
+            color: ''
+        }),
     },
     actions: {
         type: Array,
@@ -74,7 +73,7 @@ const themeProps = computed(() => extractTheme(props.theme));
         <!-- Badge de type -->
         <Badge
             size="sm"
-            class="absolute top-[-14px] uppercase z-[-1]"
+            class="absolute top-[-16px] left-[7px] uppercase z-10"
             :color="props.type.color"
         >
             {{ props.type.name }}
@@ -109,7 +108,12 @@ const themeProps = computed(() => extractTheme(props.theme));
                 <!-- Ligne 2: Titre -->
                 <div>
                     <h4 class="font-semibold text-title-light dark:text-title-dark">
-                        <slot name="title" />
+                        <span v-if="title">
+                            {{ title }}
+                        </span>
+                        <span v-else>
+                            <slot name="title" />
+                        </span>
                     </h4>
                 </div>
 

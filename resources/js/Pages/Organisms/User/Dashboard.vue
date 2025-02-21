@@ -58,25 +58,13 @@ const verifiedEmail = ref(page.props.verifiedEmail);
                         </div>
                     </div>
                     <div>
-                        <div role="alert" class="alert alert-warning">
-                            <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                class="h-6 w-6 shrink-0 stroke-current"
-                                fill="none"
-                                viewBox="0 0 24 24"
-                            >
-                                <path
-                                    stroke-linecap="round"
-                                    stroke-linejoin="round"
-                                    stroke-width="2"
-                                    d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
-                                />
-                            </svg>
+                        <div role="alert" class="alert alert-warning text-content-light py-2 px-4">
+                            <i class="fa-solid fa-triangle-exclamation"></i>
                             <span>Mail non vérifié.</span>
                             <div>
                                 <Route route="">
                                     <Btn
-                                        theme="sm neutral glass"
+                                        theme="link" class="text-secondary-950"
                                         label="Vérifier mon mail"
                                     />
                                 </Route>
@@ -86,7 +74,7 @@ const verifiedEmail = ref(page.props.verifiedEmail);
                 </div>
 
                 <div>
-                    <Route route="">
+                    <Route route="user.edit">
                         <Btn theme="md primary glass" label="Éditer" />
                     </Route>
                 </div>
@@ -132,10 +120,10 @@ const verifiedEmail = ref(page.props.verifiedEmail);
                     <ModuleCard
                         class="my-4"
                         image="https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fexternal-preview.redd.it%2FgqAwVxC2dXU-5xVfOELCvNRYBotyqQH5I6QoLqQNOdE.jpg%3Fauto%3Dwebp%26s%3Deb300cd46e5373d222ef549427621df6aa44c31a&f=1&nofb=1&ipt=566b85f79c1f044372650b7fd3c0371313b4b9f8c60045bafa2f7773ba1dcb3d&ipo=images"
-                        type="[name: 'campagne', color: 'campaign-800']"
+                        :type="{ name: 'campagne', color: 'campaign-800' }"
                         :actions="['pin', 'favorite', 'view', 'edit', 'share']"
+                        title="Ma Campagne"
                     >
-                        <template #title>Ma Campagne</template>
                         <template #properties>
                             <Badge size="sm" color="primary"> Test </Badge>
                         </template>
@@ -151,17 +139,13 @@ const verifiedEmail = ref(page.props.verifiedEmail);
                         </template>
                     </ModuleCard>
                     <Tooltip>
-                        <Card class="my-4" theme="w-18 h-18">
-                            <Route route="">
-                                <div
-                                    class="w-full h-full flex items-center justify-center"
-                                >
-                                    <i
-                                        class="text-4xl text-content-dark/30 text-center fa-solid fa-plus"
-                                    ></i>
-                                </div>
+                        <Route route="">
+                          <Btn BgColor="secondary-900">
+                                    <div class="w-full h-full flex items-center justify-center">
+                                        <i class="text-4xl text-content-light text-center fa-solid fa-plus"></i>
+                                    </div>
+                            </Btn>
                             </Route>
-                        </Card>
                         <template #content> Créer une campagne </template>
                     </Tooltip>
                 </div>
@@ -199,10 +183,10 @@ const verifiedEmail = ref(page.props.verifiedEmail);
                     <ModuleCard
                         class="my-4"
                         image="https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Ftse1.mm.bing.net%2Fth%3Fid%3DOIP.KsyY2uAKnTa1N6HXbpg5swHaEI%26pid%3DApi&f=1&ipt=4d00f059f254b63c38cc6a12030cfb466843587d98f288fc5a1bfa5fd99a36bd&ipo=images"
-                        type="[name: 'scenario', color: 'scenario-800']"
+                        :type="{ name: 'scenario', color: 'scenario-800' }"
                         :actions="['pin', 'favorite', 'view', 'edit', 'share']"
+                        title="Mon Scénario"
                     >
-                        <template #title>Mon Scénario</template>
                         <template #properties>
                             <Badge size="sm" color="primary">Test</Badge>
                         </template>
@@ -214,13 +198,15 @@ const verifiedEmail = ref(page.props.verifiedEmail);
                         </template>
                     </ModuleCard>
                     <Tooltip>
-                        <Card class="my-4" theme="w-18 h-18">
+
                             <Route route="">
-                                <div class="w-full h-full flex items-center justify-center">
-                                    <i class="text-4xl text-content-dark/30 text-center fa-solid fa-plus"></i>
-                                </div>
+                           <Btn BgColor="secondary-900">
+                                    <div class="w-full h-full flex items-center justify-center">
+                                        <i class="text-4xl text-content-light text-center fa-solid fa-plus"></i>
+                                    </div>
+                            </Btn>
                             </Route>
-                        </Card>
+
                         <template #content>Créer un scénario</template>
                     </Tooltip>
                 </div>
@@ -258,10 +244,10 @@ const verifiedEmail = ref(page.props.verifiedEmail);
                     <ModuleCard
                         class="my-4"
                         image="https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fi.pinimg.com%2Foriginals%2Fa7%2F4e%2F83%2Fa74e8393aa3abe1b4fd079e18517724d.jpg&f=1&nofb=1&ipt=61d0e34410ac05733ee0161fb2a1a6d767bc47b37f4b4542e8c5c8748c607d57&ipo=images"
-                        type="[name: 'npc', color: 'npc-800']"
+                        :type="{ name: 'npc', color: 'npc-800' }"
                         :actions="['pin', 'favorite', 'view', 'edit', 'share']"
+                        title="Mon PNJ"
                     >
-                        <template #title>Mon PNJ</template>
                         <template #properties>
                             <Badge size="sm" color="primary">Test</Badge>
                         </template>
@@ -273,13 +259,13 @@ const verifiedEmail = ref(page.props.verifiedEmail);
                         </template>
                     </ModuleCard>
                     <Tooltip>
-                        <Card class="my-4" theme="w-18 h-18">
-                            <Route route="">
-                                <div class="w-full h-full flex items-center justify-center">
-                                    <i class="text-4xl text-content-dark/30 text-center fa-solid fa-plus"></i>
-                                </div>
-                            </Route>
-                        </Card>
+                        <Route route="">
+                            <Btn BgColor="secondary-900">
+                                    <div class="w-full h-full flex items-center justify-center">
+                                        <i class="text-4xl text-content-light text-center fa-solid fa-plus"></i>
+                                    </div>
+                            </Btn>
+                        </Route>
                         <template #content>Créer un PNJ</template>
                     </Tooltip>
                 </div>
