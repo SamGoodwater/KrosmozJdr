@@ -44,7 +44,6 @@ class UserPolicy
      */
     public function update(User $user, User $model): bool
     {
-        return true;
         return $model->id === $user->id || $user->verifyRole(User::ROLES['admin']);
     }
 

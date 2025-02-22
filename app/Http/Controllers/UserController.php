@@ -87,18 +87,19 @@ class UserController extends Controller
             'user' => $user,
             'resources' => $user->resources,
             'panoply' => $user->panoply,
-            'mustVerifyEmail' => $user() instanceof MustVerifyEmail,
+            'mustVerifyEmail' => $user instanceof MustVerifyEmail,
             'status' => session('status'),
         ]);
     }
 
-    public function update(User $user, UserFilterRequest $request): RedirectResponse
+    public function update(UserFilterRequest $request): RedirectResponse
     {
+        $user = Auth::user();
         $this->authorize('update', $user);
-        $old_user = $user;
+        $old_user = clone $user;
 
-        if ($request->user()->isDirty('email')) {
-            $request->user()->email_verified_at = null;
+        if ($request->email !== $user->email) {
+            $user->email_verified_at = null;
         }
 
         $data = DataService::extractData($request, $user, [
@@ -110,16 +111,16 @@ class UserController extends Controller
                 'compress' => true
             ]
         ]);
+
         if ($data === []) {
             return redirect()->back()->withInput();
         }
+
         $user->update($data);
-        $user->scenarios()->sync($request->input('scenarios'));
-        $user->campaigns()->sync($request->input('campaigns'));
 
         event(new NotificationSuperAdminEvent('user', "update", $user, $old_user));
 
-        return redirect()->route('user.show', ['user' => $user]);
+        return redirect()->route('user.dashboard');
     }
 
     public function delete(UserFilterRequest $request, User $user): RedirectResponse
@@ -162,5 +163,51 @@ class UserController extends Controller
         $user->restore();
 
         return redirect()->route('user.index');
+    }
+
+    public function adminEdit(User $user): \Inertia\Response
+    {
+        $this->authorize('update', $user);
+
+        return Inertia::render('Organisms/User/Edit', [
+            'user' => $user,
+            'resources' => $user->resources,
+            'panoply' => $user->panoply,
+            'mustVerifyEmail' => $user instanceof MustVerifyEmail,
+            'status' => session('status'),
+            'isAdminEdit' => true,
+        ]);
+    }
+
+    public function adminUpdate(User $user, UserFilterRequest $request): RedirectResponse
+    {
+        $this->authorize('update', $user);
+        $old_user = clone $user;
+
+        if ($user->email !== $request->email) {
+            $user->email_verified_at = null;
+        }
+
+        $data = DataService::extractData($request, $user, [
+            [
+                'disk' => 'modules',
+                'path_name' => 'users',
+                'name_bd' => 'image',
+                'is_multiple_files' => false,
+                'compress' => true
+            ]
+        ]);
+
+        if ($data === []) {
+            return redirect()->back()->withInput();
+        }
+
+        $user->update($data);
+        $user->scenarios()->sync($request->input('scenarios'));
+        $user->campaigns()->sync($request->input('campaigns'));
+
+        event(new NotificationSuperAdminEvent('user', "update", $user, $old_user));
+
+        return redirect()->route('user.dashboard', ['user' => $user]);
     }
 }

@@ -6,13 +6,17 @@ import Btn from '@/Pages/Atoms/actions/Btn.vue';
 import TextInput from '@/Pages/Atoms/inputs/TextInput.vue';
 import { Link, useForm, usePage } from '@inertiajs/vue3';
 
-defineProps({
+const props = defineProps({
     mustVerifyEmail: {
         type: Boolean,
     },
     status: {
         type: String,
     },
+    isAdminEdit: {
+        type: Boolean,
+        default: false
+    }
 });
 
 const page = usePage();
@@ -53,13 +57,23 @@ const updatePassword = () => {
     });
 };
 
+const updateProfile = () => {
+    const currentUserId = usePage().props.auth.user.id;
+
+    if (props.isAdminEdit && currentUserId !== user.value.id) {
+        form.patch(route('user.admin.update', user.value.id));
+    } else {
+        form.patch(route('user.update'));
+    }
+};
+
 </script>
 
 <template>
     <section>
         <header>
             <h2 class="text-lg font-medium text-gray-900">
-                Informations du profil
+                {{ isAdminEdit ? `Modification du profil de ${user.name}` : 'Informations du profil' }}
             </h2>
 
             <p class="mt-1 text-sm text-gray-600">
@@ -68,8 +82,9 @@ const updatePassword = () => {
         </header>
 
         <form
-            @submit.prevent="form.patch(route('profile.update'))"
+            @submit.prevent="updateProfile"
             class="mt-6 space-y-6"
+            autocomplete="off"
         >
             <div>
                 <InputLabel for="name" value="Nom" />
@@ -81,7 +96,7 @@ const updatePassword = () => {
                     v-model="form.name"
                     required
                     autofocus
-                    autocomplete="name"
+                    autocomplete="given-name"
                 />
 
                 <InputError class="mt-2" :message="form.errors.name" />
@@ -96,7 +111,7 @@ const updatePassword = () => {
                     class="mt-1 block w-full"
                     v-model="form.email"
                     required
-                    autocomplete="username"
+                    autocomplete="email"
                 />
 
                 <InputError class="mt-2" :message="form.errors.email" />
@@ -124,7 +139,11 @@ const updatePassword = () => {
             </div>
 
             <div class="flex items-center gap-4">
-                <Btn :disabled="form.processing" label="Enregistrer" />
+                <Btn
+                    :disabled="form.processing"
+                    label="Enregistrer"
+                    @click.prevent="updateProfile"
+                />
 
                 <Transition
                     enter-active-class="transition ease-in-out"

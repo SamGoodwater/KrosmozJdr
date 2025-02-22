@@ -72,16 +72,31 @@ Route::middleware('auth')->group(function () {
 
 // Users
 Route::prefix('user')->name("user.")->middleware('auth')->group(function () use ($uniqidRegex) {
+    // Routes accessibles à tous les utilisateurs authentifiés
     Route::get('/', [UserController::class, 'dashboard'])->name('dashboard');
-    Route::get('/{user:uniqid}', [UserController::class, 'dashboard'])->name('admindashboard')->where('user', $uniqidRegex);
-    Route::get('/create', [UserController::class, 'create'])->name('create');
-    Route::post('/', [UserController::class, 'store'])->name('store');
-    Route::patch('/edit', [UserController::class, 'edit'])->name('edit');
-    // Route::patch('/edit/{user:uniqid}', [UserController::class, 'edit'])->name('adminedit')->where('user', $uniqidRegex);
+    Route::get('/edit', [UserController::class, 'edit'])->name('edit');
     Route::patch('/', [UserController::class, 'update'])->name('update');
-    Route::patch('/{user:uniqid}', [UserController::class, 'update'])->name('admibupdate')->where('user', $uniqidRegex);
     Route::delete('/', [UserController::class, 'delete'])->name('delete');
-    Route::delete('/{user:uniqid}', [UserController::class, 'delete'])->name('admindelete')->where('user', $uniqidRegex);
-    Route::post('/{user:uniqid}', [UserController::class, 'restore'])->name('restore')->where('user', $uniqidRegex);
-    Route::delete('/forcedDelete/{user:uniqid}', [UserController::class, 'forcedDelete'])->name('forcedDelete')->where('user', $uniqidRegex);
+
+    // Routes accessibles uniquement aux admins et super_admins
+    Route::middleware('role:admin')->group(function () use ($uniqidRegex) {
+        Route::get('/create', [UserController::class, 'create'])->name('create');
+        Route::post('/', [UserController::class, 'store'])->name('store');
+        Route::get('/{user:uniqid}/edit', [UserController::class, 'adminEdit'])
+        ->name('admin.edit')
+        ->where('user', $uniqidRegex);
+        Route::patch('/{user:uniqid}', [UserController::class, 'adminUpdate'])
+        ->name('admin.update')
+        ->where('user', $uniqidRegex);
+        Route::post('/{user:uniqid}', [UserController::class, 'restore'])
+        ->name('restore')
+        ->where('user', $uniqidRegex);
+    });
+
+    // Routes accessibles uniquement aux super_admins
+    Route::middleware('role:super_admin')->group(function () use ($uniqidRegex) {
+        Route::delete('/forcedDelete/{user:uniqid}', [UserController::class, 'forcedDelete'])
+        ->name('forcedDelete')
+        ->where('user', $uniqidRegex);
+    });
 });
