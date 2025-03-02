@@ -2,11 +2,16 @@
 
 namespace App\Models;
 
-use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use App\Models\Modules\Scenario;
+use App\Models\Modules\Campaign;
+use Laravel\Sanctum\HasApiTokens;
+use Illuminate\Auth\MustVerifyEmail;
+
 
 /**
  *
@@ -45,7 +50,7 @@ use Illuminate\Support\Facades\Storage;
 class User extends Authenticatable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, Notifiable;
+    use HasApiTokens, HasFactory, Notifiable, MustVerifyEmail;
 
 
     const ROLES = [
@@ -70,7 +75,7 @@ class User extends Authenticatable
         'password',
         'role',
         'email_verified_at',
-        'image'
+        'avatar'
     ];
 
     /**
@@ -179,8 +184,18 @@ class User extends Authenticatable
         }
     }
 
-    public function imagePath(): string
+    public function avatarPath(): string
     {
-        return Storage::url($this->image);
+        return $this->avatar ? Storage::url($this->avatar) : 'default-avatar-path';
+    }
+
+    public function scenarios(): BelongsToMany
+    {
+        return $this->belongsToMany(Scenario::class);
+    }
+
+    public function campaigns(): BelongsToMany
+    {
+        return $this->belongsToMany(Campaign::class);
     }
 }

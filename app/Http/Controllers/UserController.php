@@ -11,8 +11,10 @@ use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Support\Facades\Auth;
 use App\Services\DataService;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Auth\MustVerifyEmail;
+
 use Request;
+use Illuminate\Support\Facades\Event;
 
 class UserController extends Controller
 {
@@ -78,9 +80,9 @@ class UserController extends Controller
         return redirect()->route('user.dashboard', ['user' => $user]);
     }
 
-    public function edit(): \Inertia\Response
+    public function edit(User $user = null): \Inertia\Response
     {
-        $user = Auth::user();
+        $user = $user ?? Auth::user();
         $this->authorize('update', $user);
 
         return Inertia::render('Organisms/User/Edit', [
@@ -89,12 +91,13 @@ class UserController extends Controller
             'panoply' => $user->panoply,
             'mustVerifyEmail' => $user instanceof MustVerifyEmail,
             'status' => session('status'),
+            'isAdminEdit' => Auth::user()->id !== $user->id,
         ]);
     }
 
-    public function update(UserFilterRequest $request): RedirectResponse
+    public function update(UserFilterRequest $request, User $user = null): RedirectResponse
     {
-        $user = Auth::user();
+        $user = $user ?? Auth::user();
         $this->authorize('update', $user);
         $old_user = clone $user;
 
@@ -116,11 +119,34 @@ class UserController extends Controller
             return redirect()->back()->withInput();
         }
 
+        if ($request->hasFile('avatar')) {
+            $data['avatar'] = $request->file('avatar')->store('avatars', 'public');
+        }
+
         $user->update($data);
+        $user->scenarios()->sync($request->input('scenarios'));
+        $user->campaigns()->sync($request->input('campaigns'));
 
         event(new NotificationSuperAdminEvent('user', "update", $user, $old_user));
 
         return redirect()->route('user.dashboard');
+    }
+
+    public function updateAvatar(Request $request): RedirectResponse
+    {
+        $user = Auth::user();
+        $this->authorize('update', $user);
+
+        $request->validate([
+            'avatar' => ['required', 'image', 'max:1024'], // 1MB max
+        ]);
+
+        if ($request->hasFile('avatar')) {
+            $user->avatar = $request->file('avatar')->store('avatars', 'public');
+            $user->save();
+        }
+
+        return redirect()->route('profile.edit');
     }
 
     public function delete(UserFilterRequest $request, User $user): RedirectResponse
@@ -163,51 +189,5 @@ class UserController extends Controller
         $user->restore();
 
         return redirect()->route('user.index');
-    }
-
-    public function adminEdit(User $user): \Inertia\Response
-    {
-        $this->authorize('update', $user);
-
-        return Inertia::render('Organisms/User/Edit', [
-            'user' => $user,
-            'resources' => $user->resources,
-            'panoply' => $user->panoply,
-            'mustVerifyEmail' => $user instanceof MustVerifyEmail,
-            'status' => session('status'),
-            'isAdminEdit' => true,
-        ]);
-    }
-
-    public function adminUpdate(User $user, UserFilterRequest $request): RedirectResponse
-    {
-        $this->authorize('update', $user);
-        $old_user = clone $user;
-
-        if ($user->email !== $request->email) {
-            $user->email_verified_at = null;
-        }
-
-        $data = DataService::extractData($request, $user, [
-            [
-                'disk' => 'modules',
-                'path_name' => 'users',
-                'name_bd' => 'image',
-                'is_multiple_files' => false,
-                'compress' => true
-            ]
-        ]);
-
-        if ($data === []) {
-            return redirect()->back()->withInput();
-        }
-
-        $user->update($data);
-        $user->scenarios()->sync($request->input('scenarios'));
-        $user->campaigns()->sync($request->input('campaigns'));
-
-        event(new NotificationSuperAdminEvent('user', "update", $user, $old_user));
-
-        return redirect()->route('user.dashboard', ['user' => $user]);
     }
 }

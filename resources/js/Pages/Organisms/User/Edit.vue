@@ -59,12 +59,25 @@ const updatePassword = () => {
 
 const updateProfile = () => {
     const currentUserId = usePage().props.auth.user.id;
-
-    if (props.isAdminEdit && currentUserId !== user.value.id) {
-        form.patch(route('user.admin.update', user.value.id));
-    } else {
         form.patch(route('user.update'));
-    }
+};
+
+const avatar = ref(null);
+
+const updateAvatar = () => {
+    const formData = new FormData();
+    formData.append('avatar', avatar.value.files[0]);
+
+    axios.post(route('profile.updateAvatar'), formData, {
+        headers: {
+            'Content-Type': 'multipart/form-data'
+        }
+    }).then(() => {
+        avatar.value = null;
+        // Handle success
+    }).catch(() => {
+        // Handle error
+    });
 };
 
 </script>
@@ -158,6 +171,12 @@ const updateProfile = () => {
                         Enregistré.
                     </p>
                 </Transition>
+            </div>
+
+            <div>
+                <InputLabel for="avatar" value="Avatar" />
+                <input type="file" id="avatar" ref="avatar" class="mt-1 block w-full" />
+                <Btn label="Mettre à jour l'avatar" @click.prevent="updateAvatar" />
             </div>
         </form>
 

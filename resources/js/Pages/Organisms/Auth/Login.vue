@@ -15,7 +15,7 @@ defineProps({
 });
 
 const form = useForm({
-    email: "",
+    identifier: "",
     password: "",
     remember: false,
 });
@@ -38,19 +38,19 @@ onMounted(() => {
         </div>
 
         <form @submit.prevent="submit">
-            <div>
-                <InputLabel for="email" value="Email" />
+            <div class="flex flex-col gap-2">
+                <InputLabel for="identifier" value="Email ou Pseudo" />
                 <TextInput
-                    id="email"
-                    theme="secondary autofocus required email"
-                    placeholder="exemple@exemple.fr"
-                    v-model="form.email"
+                    id="identifier"
+                    theme="secondary autofocus required"
+                    placeholder="Email ou Pseudo"
+                    v-model="form.identifier"
                     autocomplete="username"
                 />
-                <InputError class="mt-2" :message="form.errors.email" />
+                <InputError class="mt-2" :message="form.errors.identifier" />
             </div>
 
-            <div class="mt-4">
+            <div class="mt-4 flex flex-col gap-2">
                 <InputLabel for="password" value="Password" />
                 <TextInput
                     id="password"
