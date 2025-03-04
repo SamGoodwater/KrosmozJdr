@@ -5,7 +5,7 @@ import { createInertiaApp, Head, Link } from "@inertiajs/vue3";
 import { resolvePageComponent } from "laravel-vite-plugin/inertia-helpers";
 import { createApp, h } from "vue";
 import { ZiggyVue } from "../../vendor/tightenco/ziggy";
-import { createPinia } from "pinia"; // Import Pinia
+import { createPinia } from "pinia";
 import DefaultLayout from "@/Pages/Layouts/Main.vue";
 
 const appName = import.meta.env.VITE_APP_NAME || "KrosmozJDR";
@@ -22,19 +22,17 @@ createInertiaApp({
             return page;
         }),
     setup({ el, App, props, plugin }) {
-        const pinia = createPinia(); // Créez une instance de Pinia
+        const pinia = createPinia();
         return createApp({ render: () => h(App, props) })
             .use(plugin)
             .use(ZiggyVue)
-            .use(pinia) // Utilisez Pinia
+            .use(pinia)
             .component("Head", Head)
             .component("Link", Link)
             .mount(el);
     },
     progress: {
-        // The color of the progress bar...
-        color: "#155e75", // Cyan 800
-        // Whether to include the default NProgress styles...
+        color: "#155e75",
         showSpinner: true,
     },
 });

@@ -1,12 +1,12 @@
 <script setup>
-import { IconsGetter } from '@/Utils/IconsGetter';
+import { MediaManager } from '@/Utils/MediaManager';
 import { imageExists } from '@/Utils/Images';
-import { computed, ref } from 'vue';
+import { computed, ref, onMounted } from 'vue';
 import { extractTheme } from "@/Utils/extractTheme";
 
 const props = defineProps({
     source: {
-        type: String || Array,
+        type: String,
         default: '',
     },
     alt: {
@@ -25,9 +25,14 @@ const props = defineProps({
 
 const sourceRef = ref('');
 const altRef = ref('');
+const isLoading = ref(true);
 
 const buildIconClasses = (themeProps, props) => {
     const classes = ['icon'];
+
+    if (isLoading.value) {
+        classes.push('animate-pulse');
+    }
 
     // Size
     const size = themeProps.size || 'md';
@@ -50,34 +55,35 @@ const buildIconClasses = (themeProps, props) => {
     return classes.join(' ');
 };
 
-const initializeSource = () => {
-    let source = '';
-    if (props.source) {
-        if (Array.isArray(props.source)) {
-            source = IconsGetter.get(props.source);
+const initializeSource = async () => {
+    isLoading.value = true;
+    try {
+        if (props.source) {
+            sourceRef.value = await MediaManager.get(props.source, 'image');
         } else {
-            source = props.source;
+            sourceRef.value = await MediaManager.get('no_found', 'image');
         }
 
-        if (imageExists(source)) {
-            sourceRef.value = source;
-        } else {
-            sourceRef.value = IconsGetter.get('icons', 'no_icon_found');
+        if (!props.alt && sourceRef.value) {
+            const fileName = sourceRef.value.split('/').pop().split('.').shift();
+            altRef.value = fileName;
         }
-    } else {
-        sourceRef.value = IconsGetter.get('icons', 'no_icon_found');
-    }
-
-    if (!props.alt) {
-        const fileName = source.split('/').pop().split('.').shift();
-        altRef.value = fileName;
+    } catch (error) {
+        console.error('Erreur lors du chargement de l\'icône:', error);
+        sourceRef.value = await MediaManager.get('no_found', 'image');
+    } finally {
+        isLoading.value = false;
     }
 };
 
 const themeProps = computed(() => extractTheme(props.theme));
 const getClasses = computed(() => buildIconClasses(themeProps.value, props));
 
-initializeSource();
+onMounted(() => {
+    initializeSource();
+    // Précharge les icônes pour une utilisation future
+    MediaManager.preload('image');
+});
 </script>
 
 <template>

@@ -40,6 +40,9 @@ Route::get('/', function () {
 // AUTH
 require __DIR__ . '/auth.php';
 
+// FILES
+require __DIR__ . "/files.php";
+
 // PERMANENT
 Route::get('/contribuer', function () {
     return Inertia::render('Permanent/contribute');

@@ -24,13 +24,13 @@ class UserFilterRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => ["string", "min:1", "max:255"],
-            'email' => ["string", "email", "min:1", "max:255"],
-            'password' => ["string", "min:1", "max:255"],
-            'role' => ["string", Rule::in(array_keys(User::ROLES))],
-            'email_verified_at' => ["date", "nullable"],
-            "uniqid" => ["string", "min:1", "max:255", "required", Rule::unique("users", "uniqid")->ignore($this->route()->parameter('user'))],
-            'avatar' => FileRules::rules([FileRules::TYPE_IMAGE]), // 1MB max
+            'name' => ["nullable", "string", "min:1", "max:255"],
+            'email' => ["nullable", "string", "email", "min:1", "max:255"],
+            'password' => ["nullable", "string", "min:1", "max:255"],
+            'role' => ["nullable", "string", Rule::in(array_keys(User::ROLES))],
+            'email_verified_at' => ["nullable", "date"],
+            "uniqid" => ["nullable", "string", "min:1", "max:255", Rule::unique("users", "uniqid")->ignore($this->route()->parameter('user'))],
+            'avatar' => ["nullable", FileRules::rules([FileRules::TYPE_IMAGE])], // 1MB max
         ];
     }
 

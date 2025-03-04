@@ -2,23 +2,24 @@
 import { ref, onMounted } from "vue";
 import { usePage } from "@inertiajs/vue3";
 import Btn from "@/Pages/Atoms/actions/Btn.vue";
-import { IconsGetter } from "@/Utils/IconsGetter";
+import { MediaManager } from "@/Utils/MediaManager";
 import Icons from "@/Pages/Atoms/images/Icon.vue";
-
-const iconPA = ref("");
-const iconPM = ref("");
-const iconPO = ref("");
-const iconTacle = ref("");
-const iconRes_terre = ref("");
 
 const page = usePage();
 
+// Variable pour suivre l'état du cache
+const isCacheInitialized = ref(false);
+
 onMounted(async () => {
-    iconPA.value = await IconsGetter.get("modules", "pa");
-    iconPM.value = await IconsGetter.get("modules", "pm");
-    iconPO.value = await IconsGetter.get("modules", "po");
-    iconTacle.value = await IconsGetter.get("modules", "tacle");
-    iconRes_terre.value = await IconsGetter.get("modules", "res_terre");
+    if (!isCacheInitialized.value) {
+        try {
+            await MediaManager.refreshCache();
+            await MediaManager.preload('image');
+            isCacheInitialized.value = true;
+        } catch (error) {
+            console.error("Erreur lors de l'initialisation du cache:", error);
+        }
+    }
 });
 
 const convertStability = {
@@ -89,16 +90,16 @@ const form = ref({
 
             <!-- Tests icones -->
             <p>
-                <Icons theme="xs" :source="iconPA" /> XS,
-                <Icons theme="sm" :source="iconPM" /> SM,
-                <Icons theme="md" :source="iconPO" /> MD,
-                <Icons theme="lg" :source="iconTacle" /> LG,
-                <Icons theme="xl" :source="iconRes_terre" /> XL
+                <Icons theme="xs" source="icons/modules/pa" /> XS,
+                <Icons theme="sm" source="icons/modules/pm" /> SM,
+                <Icons theme="md" source="icons/modules/po" /> MD,
+                <Icons theme="lg" source="icons/modules/tacle" /> LG,
+                <Icons theme="xl" source="icons/modules/res_terre" /> XL
             </p>
             <p>
-                <Icons theme="md" :source="iconPO" /> MD,
-                <Icons theme="lg" :source="iconTacle" /> LG,
-                <Icons theme="xl" :source="iconRes_terre" /> XL
+                <Icons theme="md" source="icons/modules/po" /> MD,
+                <Icons theme="lg" source="icons/modules/tacle" /> LG,
+                <Icons theme="xl" source="icons/modules/res_terre" /> XL
             </p>
         </div>
 
@@ -106,13 +107,13 @@ const form = ref({
             class="text-title"
             id="bienvenue-dans-krosmozjdr-l-aventure-pique-dans-l-univers-du-monde-des-douze-"
         >
-            Bienvenue dans <strong>KrosmozJDR</strong>, l’aventure épique dans
-            l’univers du monde des Douze !
+            Bienvenue dans <strong>KrosmozJDR</strong>, l'aventure épique dans
+            l'univers du monde des Douze !
         </h3>
         <p>
             Plongez dans le monde des Douze, un univers riche et vibrant issu de
-            l’imaginaire de <em>Dofus</em>, où l’aventure, la stratégie et la
-            magie s’entrelacent pour créer une expérience unique de jeu de rôle.
+            l'imaginaire de <em>Dofus</em>, où l'aventure, la stratégie et la
+            magie s'entrelacent pour créer une expérience unique de jeu de rôle.
             Ici, chaque partie est une porte ouverte vers des terres
             fascinantes, des créatures captivantes et des combats épiques.
         </p>
@@ -120,10 +121,10 @@ const form = ref({
             Explorez des lieux mythiques
         </h4>
         <p>
-            De la cité lumineuse de Bonta aux mystères d’Astrub, en passant par
-            les plaines sauvages des Craqueleurs et les secrets d’Amakna,
+            De la cité lumineuse de Bonta aux mystères d'Astrub, en passant par
+            les plaines sauvages des Craqueleurs et les secrets d'Amakna,
             découvrez un monde vaste et varié où chaque région est le théâtre
-            d’histoires légendaires. Préparez-vous à croiser la route des
+            d'histoires légendaires. Préparez-vous à croiser la route des
             Wabbits malicieux, des Bouftous sauvages, des Chafeurs redoutables,
             et à affronter les puissants maîtres des donjons comme Kardorim,
             Groloum ou encore le Comte Harebourg.
@@ -137,15 +138,15 @@ const form = ref({
             valeureux, un Osamodas lié aux créatures, ou encore un Eliotrope
             maître des portails ? Que vous soyez un soigneur Eniripsa, un
             stratège Roublard ou un manipulateur du temps Xélor, chaque classe
-            offre des mécaniques uniques et des sorts adaptés à l’univers du jeu
+            offre des mécaniques uniques et des sorts adaptés à l'univers du jeu
             de rôle.
         </p>
         <h4 class="text-subtitle" id="d-veloppez-votre-personnage">
             Développez votre personnage
         </h4>
         <p>
-            Grâce à un système de compétences et d’aptitudes inspiré de D&amp;D,
-            personnalisez votre héros pour qu’il reflète votre style de jeu.
+            Grâce à un système de compétences et d'aptitudes inspiré de D&amp;D,
+            personnalisez votre héros pour qu'il reflète votre style de jeu.
             Enrichissez vos stratégies avec des spécialisations uniques,
             inspirées des subtilités des races de D&amp;D, et explorez des
             gameplays toujours plus variés et profonds.
@@ -155,14 +156,14 @@ const form = ref({
         </h4>
         <p>
             Notre jeu de rôle fusionne les règles classiques du JdR avec
-            l’univers riche de Dofus, pour offrir une expérience immersive et
+            l'univers riche de Dofus, pour offrir une expérience immersive et
             accessible à tous, débutants comme vétérans. Préparez-vous à vivre
             des quêtes épiques, à forger des alliances mémorables, et à écrire
             votre légende dans un monde en perpétuelle évolution.
         </p>
         <hr />
         <h3 class="text-title" id="-tes-vous-pr-t-rejoindre-l-aventure-">
-            Êtes-vous prêt à rejoindre l’aventure ?
+            Êtes-vous prêt à rejoindre l'aventure ?
         </h3>
         <p>
             Rassemblez vos compagnons, lancez vos dés et partez à la découverte

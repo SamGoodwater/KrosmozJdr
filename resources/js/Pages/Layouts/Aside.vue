@@ -2,12 +2,28 @@
 import searchInput from "@/Pages/Layouts/Molecules/searchInput.vue";
 import toggleSidebar from "@/Pages/Layouts/Molecules/ToggleSidebar.vue";
 import Tooltips from "@/Pages/Atoms/feedback/Tooltip.vue";
-import { ref } from "vue";
+import { ref, onMounted } from "vue";
 import Route from "@/Pages/Atoms/text/Route.vue";
 import { useSidebar } from "@/Composables/useSidebar";
+import { MediaManager } from "@/Utils/MediaManager";
 
 const { isSidebarOpen } = useSidebar();
 const appSlogan = ref(import.meta.env.VITE_APP_SLOGAN);
+const logo = ref("");
+const isCacheInitialized = ref(false);
+
+onMounted(async () => {
+    try {
+        if (!isCacheInitialized.value) {
+            await MediaManager.refreshCache();
+            await MediaManager.preload('image');
+            isCacheInitialized.value = true;
+        }
+        logo.value = await MediaManager.get('logos/logo', 'image');
+    } catch (error) {
+        console.error("Erreur lors du chargement du logo:", error);
+    }
+});
 </script>
 
 <template>
@@ -43,7 +59,7 @@ const appSlogan = ref(import.meta.env.VITE_APP_SLOGAN);
                         <figure>
                             <img
                                 class="w-auto px-14"
-                                src="storage/logos/logo.webp"
+                                :src="logo"
                                 alt="Logo de {{ appName }}"
                             />
                         </figure>

@@ -1,10 +1,12 @@
 <script setup>
-import { ref, computed } from 'vue';
+import { ref, computed, watch } from 'vue';
 import InputError from '@/Pages/Atoms/inputs/InputError.vue';
 import InputLabel from '@/Pages/Atoms/inputs/InputLabel.vue';
 import Btn from '@/Pages/Atoms/actions/Btn.vue';
 import TextInput from '@/Pages/Atoms/inputs/TextInput.vue';
 import { Link, useForm, usePage } from '@inertiajs/vue3';
+import useEditableField from '@/Composables/useEditableField';
+import { success, error } from '@/Utils/notificationManager';
 
 const props = defineProps({
     mustVerifyEmail: {
@@ -23,13 +25,33 @@ const page = usePage();
 const user = computed(() => page.props.user);
 const verifiedEmail = computed(() => page.props.verifiedEmail);
 
-const name = computed(() => user.value.name);
-const email = computed(() => user.value.email);
-
+// Création du formulaire partagé
 const form = useForm({
-    name: name.value,
-    email: email.value,
+    name: user.value.name,
+    email: user.value.email,
 });
+
+// Création des champs éditables
+const fields = {
+    name: useEditableField(user.value.name, {
+        field: 'name',
+        route: route('user.update'),
+        onSuccess: (response) => {
+            user.value.name = response.data.name;
+            success('Le nom a été mis à jour avec succès');
+        },
+        onError: () => error('Une erreur est survenue lors de la mise à jour du nom')
+    }),
+    email: useEditableField(user.value.email, {
+        field: 'email',
+        route: route('user.update'),
+        onSuccess: (response) => {
+            user.value.email = response.data.email;
+            success('L\'email a été mis à jour avec succès');
+        },
+        onError: () => error('Une erreur est survenue lors de la mise à jour de l\'email')
+    }),
+};
 
 const passwordInput = ref(null);
 const currentPasswordInput = ref(null);
@@ -43,8 +65,12 @@ const formPassword = useForm({
 const updatePassword = () => {
     formPassword.put(route('password.update'), {
         preserveScroll: true,
-        onSuccess: () => formPassword.reset(),
+        onSuccess: () => {
+            formPassword.reset();
+            success('Le mot de passe a été mis à jour avec succès');
+        },
         onError: () => {
+            error('Une erreur est survenue lors de la mise à jour du mot de passe');
             if (formPassword.errors.password) {
                 formPassword.reset('password', 'password_confirmation');
                 passwordInput.value.focus();
@@ -55,11 +81,6 @@ const updatePassword = () => {
             }
         },
     });
-};
-
-const updateProfile = () => {
-    const currentUserId = usePage().props.auth.user.id;
-        form.patch(route('user.update'));
 };
 
 const avatar = ref(null);
@@ -74,9 +95,9 @@ const updateAvatar = () => {
         }
     }).then(() => {
         avatar.value = null;
-        // Handle success
+        success('L\'avatar a été mis à jour avec succès');
     }).catch(() => {
-        // Handle error
+        error('Une erreur est survenue lors de la mise à jour de l\'avatar');
     });
 };
 
@@ -85,48 +106,43 @@ const updateAvatar = () => {
 <template>
     <section>
         <header>
-            <h2 class="text-lg font-medium text-gray-900">
+            <h2 class="text-lg font-medium text-content-300">
                 {{ isAdminEdit ? `Modification du profil de ${user.name}` : 'Informations du profil' }}
             </h2>
 
-            <p class="mt-1 text-sm text-gray-600">
+            <p class="mt-1 text-sm text-content-600">
                 Mettez à jour les informations de votre compte et votre adresse email.
             </p>
         </header>
 
         <form
-            @submit.prevent="updateProfile"
-            class="mt-6 space-y-6"
+            @submit.prevent class="mt-6 space-y-6"
             autocomplete="off"
         >
             <div>
-                <InputLabel for="name" value="Nom" />
-
+                <InputLabel for="name" value="Pseudo" />
                 <TextInput
                     id="name"
                     type="text"
                     class="mt-1 block w-full"
-                    v-model="form.name"
+                    :field="fields.name"
                     required
                     autofocus
-                    autocomplete="given-name"
+                    :useFieldComposable="true"
                 />
-
                 <InputError class="mt-2" :message="form.errors.name" />
             </div>
 
             <div>
-                <InputLabel for="email" value="Adresse email" />
-
+                <InputLabel for="email" value="Adresse mail" />
                 <TextInput
                     id="email"
                     type="email"
                     class="mt-1 block w-full"
-                    v-model="form.email"
+                    :field="fields.email"
                     required
-                    autocomplete="email"
+                    :useFieldComposable="true"
                 />
-
                 <InputError class="mt-2" :message="form.errors.email" />
             </div>
 
@@ -149,28 +165,6 @@ const updateAvatar = () => {
                 >
                     Un nouvel email de vérification a été envoyé à votre adresse email.
                 </div>
-            </div>
-
-            <div class="flex items-center gap-4">
-                <Btn
-                    :disabled="form.processing"
-                    label="Enregistrer"
-                    @click.prevent="updateProfile"
-                />
-
-                <Transition
-                    enter-active-class="transition ease-in-out"
-                    enter-from-class="opacity-0"
-                    leave-active-class="transition ease-in-out"
-                    leave-to-class="opacity-0"
-                >
-                    <p
-                        v-if="form.recentlySuccessful"
-                        class="text-sm text-gray-600"
-                    >
-                        Enregistré.
-                    </p>
-                </Transition>
             </div>
 
             <div>

@@ -36,6 +36,7 @@ onMounted(() => {
                 v-model="form.name"
                 aria-placeholder="Pseudo"
                 autocomplete="pseudo"
+                :useFieldComposable="false"
             />
             <InputError class="mt-2" :message="form.errors.name" />
         </div>
@@ -49,6 +50,7 @@ onMounted(() => {
                 v-model="form.email"
                 aria-placeholder="exemple@exemple.fr"
                 autocomplete="email"
+                :useFieldComposable="false"
             />
             <InputError class="mt-2" :message="form.errors.email" />
         </div>
@@ -62,6 +64,7 @@ onMounted(() => {
                 v-model="form.password"
                 aria-placeholder="Mot de passe"
                 autocomplete="new-password"
+                :useFieldComposable="false"
             />
             <InputError class="mt-2" :message="form.errors.password" />
         </div>
@@ -78,6 +81,7 @@ onMounted(() => {
                 v-model="form.password_confirmation"
                 aria-placeholder="Confirmer le mot de passe"
                 autocomplete="new-password"
+                :useFieldComposable="false"
             />
             <InputError
                 class="mt-2"

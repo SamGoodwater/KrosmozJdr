@@ -32,12 +32,13 @@ class IconsJsonGenerator extends Command
     public function handle()
     {
         $directories = [
-            'storage/app/public/icons/',
-            'storage/app/public/icons/modules/',
-            'storage/app/public/icons/modules/classes',
-            'storage/app/public/icons/modules/dices',
-            'storage/app/public/icons/modules/spell_zone',
-            'storage/app/public/icons/modules/classe_orientations/',
+            'storage/app/public/images/',  // Dossier racine des images
+            'storage/app/public/images/icons/',
+            'storage/app/public/images/icons/modules/',
+            'storage/app/public/images/icons/modules/classes',
+            'storage/app/public/images/icons/modules/dices',
+            'storage/app/public/images/icons/modules/spell_zone',
+            'storage/app/public/images/icons/modules/classe_orientations/',
         ];
 
         $imageLinks = [];
@@ -54,12 +55,19 @@ class IconsJsonGenerator extends Command
                     $fileName = pathinfo($file, PATHINFO_FILENAME);
                     $relativePath = str_replace('storage/app/public/', 'storage/', $file);
                     $this->info('Image trouvée : ' . $file);
-                    $directoryName = basename(rtrim($directory, '/'));
-                    if (!isset($imageLinks[$directoryName])) {
-                        $imageLinks[$directoryName] = [];
+
+                    // Extraire le chemin relatif à partir de storage/app/public/images/
+                    $pathParts = explode('images/', $file);
+                    if (count($pathParts) > 1) {
+                        $directoryPath = dirname($pathParts[1]);
+                        $directoryKey = $directoryPath === '.' ? 'images' : 'images/' . $directoryPath;
+
+                        if (!isset($imageLinks[$directoryKey])) {
+                            $imageLinks[$directoryKey] = [];
+                        }
+                        $imageLinks[$directoryKey][$fileName] = $relativePath;
+                        $this->info('Lien de l\'image : [' . $directoryKey . "] [" . $fileName . '] => ' . $relativePath);
                     }
-                    $imageLinks[$directoryName][$fileName] = $relativePath;
-                    $this->info('Lien de l\'image : [' . $directoryName . "] [" . $fileName . '] => ' . $relativePath);
                 } else {
                     $this->error('Image non trouvée : ' . $file);
                     continue;
