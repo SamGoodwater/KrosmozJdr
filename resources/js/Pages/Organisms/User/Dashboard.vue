@@ -1,6 +1,7 @@
 <script setup>
 import { Head, usePage } from "@inertiajs/vue3";
-import { ref } from "vue";
+import { ref, onMounted } from "vue";
+import { usePageTitle } from "@/Composables/usePageTitle";
 
 // Composants existants
 import Avatar from "@/Pages/Atoms/images/Avatar.vue";
@@ -15,8 +16,13 @@ import Tooltip from "@/Pages/Atoms/feedback/Tooltip.vue";
 
 // Récupération des données partagées par Inertia
 const page = usePage();
-const user = ref(page.props.user);
+const user = ref(page.props.user.data);
 const verifiedEmail = ref(page.props.verifiedEmail);
+const { setPageTitle } = usePageTitle();
+
+onMounted(() => {
+    setPageTitle('Mon Compte');
+});
 </script>
 
 <template>
@@ -32,10 +38,10 @@ const verifiedEmail = ref(page.props.verifiedEmail);
                 <!-- Informations utilisateur -->
                 <div class="flex items-center gap-8 max-md:gap-6 max-sm:gap-2">
                     <div class="flex items-center justify-center space-x-4">
-                        <!-- Avatar : on passe la source (image) et le texte alternatif (nom) -->
+                        <!-- Avatar : on passe la source (avatar) et le texte alternatif (nom) -->
                         <Avatar
                             rounded="full"
-                            :source="user.image"
+                            :source="user.avatar"
                             :altText="user.name"
                             size="xl"
                         />

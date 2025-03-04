@@ -10,15 +10,9 @@ import { MediaManager } from "@/Utils/MediaManager";
 const { isSidebarOpen } = useSidebar();
 const appSlogan = ref(import.meta.env.VITE_APP_SLOGAN);
 const logo = ref("");
-const isCacheInitialized = ref(false);
 
 onMounted(async () => {
     try {
-        if (!isCacheInitialized.value) {
-            await MediaManager.refreshCache();
-            await MediaManager.preload('image');
-            isCacheInitialized.value = true;
-        }
         logo.value = await MediaManager.get('logos/logo', 'image');
     } catch (error) {
         console.error("Erreur lors du chargement du logo:", error);

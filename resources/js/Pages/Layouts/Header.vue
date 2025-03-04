@@ -5,23 +5,16 @@ import LoginHeaderContainer from "@/Pages/Layouts/Molecules/LoginHeaderContainer
 import LoggedHeaderContainer from "@/Pages/Layouts/Molecules/LoggedHeaderContainer.vue";
 import tooltips from "@/Pages/Atoms/feedback/Tooltip.vue";
 import { useHeader } from "@/Composables/useHeader";
-import { ref, onMounted } from "vue";
+import { onMounted } from "vue";
 import { useSidebar } from "@/Composables/useSidebar";
 import { usePage } from "@inertiajs/vue3";
+import { usePageTitle } from "@/Composables/usePageTitle";
 
 const page = usePage();
 const { isSidebarOpen } = useSidebar();
 const { isHeaderOpen, toggleHeader } = useHeader();
-const appTitle = ref(import.meta.env.VITE_APP_NAME);
+const { pageTitle } = usePageTitle();
 
-onMounted(async () => {
-    updateTitle();
-});
-
-function updateTitle() {
-    const pageTitle = document.title;
-    appTitle.value = pageTitle;
-}
 </script>
 
 <template>
@@ -33,12 +26,18 @@ function updateTitle() {
             <toggleSidebar v-if="!isSidebarOpen" />
 
             <div>
-                <h2
-                    id="appTitle"
-                    class="align-items-center text-content hover:text-content/75 text-2xl fw-semibold"
+                <Transition
+                    name="title"
+                    mode="out-in"
                 >
-                    {{ appTitle }}
-                </h2>
+                    <h2
+                        :key="pageTitle"
+                        id="pageTitle"
+                        class="align-items-center text-content hover:text-content/75 text-2xl fw-semibold"
+                    >
+                        {{ pageTitle }}
+                    </h2>
+                </Transition>
             </div>
         </div>
 
@@ -300,5 +299,26 @@ header {
     100% {
         transform: scaleY(1);
     }
+}
+
+.title-enter-active,
+.title-leave-active {
+    transition: all 0.3s ease;
+}
+
+.title-enter-from {
+    opacity: 0;
+    transform: translateY(-20px);
+}
+
+.title-leave-to {
+    opacity: 0;
+    transform: translateY(20px);
+}
+
+.title-enter-to,
+.title-leave-from {
+    opacity: 1;
+    transform: translateY(0);
 }
 </style>

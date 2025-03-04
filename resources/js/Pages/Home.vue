@@ -4,22 +4,13 @@ import { usePage } from "@inertiajs/vue3";
 import Btn from "@/Pages/Atoms/actions/Btn.vue";
 import { MediaManager } from "@/Utils/MediaManager";
 import Icons from "@/Pages/Atoms/images/Icon.vue";
+import { usePageTitle } from "@/Composables/usePageTitle";
 
 const page = usePage();
+const { setPageTitle } = usePageTitle();
 
-// Variable pour suivre l'état du cache
-const isCacheInitialized = ref(false);
-
-onMounted(async () => {
-    if (!isCacheInitialized.value) {
-        try {
-            await MediaManager.refreshCache();
-            await MediaManager.preload('image');
-            isCacheInitialized.value = true;
-        } catch (error) {
-            console.error("Erreur lors de l'initialisation du cache:", error);
-        }
-    }
+onMounted(() => {
+    setPageTitle('Accueil');
 });
 
 const convertStability = {

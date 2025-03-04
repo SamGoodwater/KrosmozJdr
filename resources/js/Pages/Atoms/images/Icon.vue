@@ -81,8 +81,6 @@ const getClasses = computed(() => buildIconClasses(themeProps.value, props));
 
 onMounted(() => {
     initializeSource();
-    // Précharge les icônes pour une utilisation future
-    MediaManager.preload('image');
 });
 </script>
 

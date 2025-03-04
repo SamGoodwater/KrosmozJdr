@@ -142,7 +142,7 @@ export const notify = (message, options = {}) => {
  */
 export const success = (message, options = {}) => {
     return notify(message, {
-        theme: "bgColor:success-500/opacity:75/blur:3",
+        theme: "success",
         ...options,
     });
 };
@@ -154,7 +154,7 @@ export const success = (message, options = {}) => {
  */
 export const error = (message, options = {}) => {
     return notify(message, {
-        theme: "bgColor:error-500/opacity:75/blur:3",
+        theme: "error",
         ...options,
     });
 };
@@ -166,7 +166,7 @@ export const error = (message, options = {}) => {
  */
 export const info = (message, options = {}) => {
     return notify(message, {
-        theme: "bgColor:info-500/opacity:75/blur:3",
+        theme: "info",
         ...options,
     });
 };
@@ -178,7 +178,7 @@ export const info = (message, options = {}) => {
  */
 export const warning = (message, options = {}) => {
     return notify(message, {
-        theme: "bgColor:warning-500/opacity:75/blur:3",
+        theme: "warning",
         ...options,
     });
 };

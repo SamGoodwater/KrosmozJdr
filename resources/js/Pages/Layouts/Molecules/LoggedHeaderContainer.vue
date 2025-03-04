@@ -6,21 +6,23 @@ import Dropdown from "@/Pages/Atoms/actions/Dropdown.vue";
 import Tooltip from "@/Pages/Atoms/feedback/Tooltip.vue";
 import { usePage } from "@inertiajs/vue3";
 
-import { onMounted, ref, watch } from "vue";
+import { ref, watch } from "vue";
 
 const page = usePage();
 const user = ref(page.props.auth.user);
-const image = ref(user.value.image);
+const avatar = ref(user.value.avatar);
 const pseudo = ref(user.value.name);
 
 watch(
     () => page.props.auth.user,
     (newUser) => {
         user.value = newUser;
-        image.value = newUser.image;
+        avatar.value = newUser.avatar;
         pseudo.value = newUser.name;
     },
+    { deep: true }
 );
+
 </script>
 
 <template>
@@ -52,7 +54,7 @@ watch(
             <Dropdown placement="bottom-end">
                 <div class="flex items-center space-x-2">
                     <Avatar
-                        :source="image"
+                        :source="avatar"
                         :altText="pseudo"
                         size="sm"
                         rounded="full"

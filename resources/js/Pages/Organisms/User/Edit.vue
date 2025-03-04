@@ -7,6 +7,8 @@ import TextInput from '@/Pages/Atoms/inputs/TextInput.vue';
 import { Link, useForm, usePage } from '@inertiajs/vue3';
 import useEditableField from '@/Composables/useEditableField';
 import { success, error } from '@/Utils/notificationManager';
+import FileInput from '@/Pages/Atoms/inputs/FileInput.vue';
+import Avatar from '@/Pages/Atoms/images/Avatar.vue';
 
 const props = defineProps({
     mustVerifyEmail: {
@@ -22,8 +24,7 @@ const props = defineProps({
 });
 
 const page = usePage();
-const user = computed(() => page.props.user);
-const verifiedEmail = computed(() => page.props.verifiedEmail);
+const user = computed(() => page.props.user.data);
 
 // Création du formulaire partagé
 const form = useForm({
@@ -37,7 +38,13 @@ const fields = {
         field: 'name',
         route: route('user.update'),
         onSuccess: (response) => {
-            user.value.name = response.data.name;
+            // Mise à jour de l'utilisateur modifié
+            Object.assign(user.value, response.data);
+
+            // Si c'est l'utilisateur connecté qui est modifié (soit un utilisateur normal, soit un admin qui modifie son propre compte)
+            if (!props.isAdminEdit || (props.isAdminEdit && user.value.id === page.props.auth.user.id)) {
+                Object.assign(page.props.auth.user, response.data);
+            }
             success('Le nom a été mis à jour avec succès');
         },
         onError: () => error('Une erreur est survenue lors de la mise à jour du nom')
@@ -46,7 +53,13 @@ const fields = {
         field: 'email',
         route: route('user.update'),
         onSuccess: (response) => {
-            user.value.email = response.data.email;
+            // Mise à jour de l'utilisateur modifié
+            Object.assign(user.value, response.data);
+
+            // Si c'est l'utilisateur connecté qui est modifié (soit un utilisateur normal, soit un admin qui modifie son propre compte)
+            if (!props.isAdminEdit || (props.isAdminEdit && user.value.id === page.props.auth.user.id)) {
+                Object.assign(page.props.auth.user, response.data);
+            }
             success('L\'email a été mis à jour avec succès');
         },
         onError: () => error('Une erreur est survenue lors de la mise à jour de l\'email')
@@ -83,23 +96,40 @@ const updatePassword = () => {
     });
 };
 
-const avatar = ref(null);
+const avatarFile = ref(null);
 
 const updateAvatar = () => {
+    if (!avatarFile.value) return;
+
     const formData = new FormData();
-    formData.append('avatar', avatar.value.files[0]);
+    formData.append('avatar', avatarFile.value);
 
     axios.post(route('profile.updateAvatar'), formData, {
         headers: {
             'Content-Type': 'multipart/form-data'
         }
-    }).then(() => {
-        avatar.value = null;
+    }).then((response) => {
+        // Mise à jour de l'avatar dans l'objet user
+        user.value.avatar_url = response.data.avatar_url;
+
+        // Si c'est l'utilisateur connecté qui est modifié
+        if (!props.isAdminEdit || (props.isAdminEdit && user.value.id === page.props.auth.user.id)) {
+            page.props.auth.user.avatar_url = response.data.avatar_url;
+        }
+
+        avatarFile.value = null;
         success('L\'avatar a été mis à jour avec succès');
     }).catch(() => {
         error('Une erreur est survenue lors de la mise à jour de l\'avatar');
     });
 };
+
+// Ajouter un watcher pour déclencher l'upload automatiquement
+watch(avatarFile, (newFile) => {
+    if (newFile) {
+        updateAvatar();
+    }
+});
 
 </script>
 
@@ -169,8 +199,25 @@ const updateAvatar = () => {
 
             <div>
                 <InputLabel for="avatar" value="Avatar" />
-                <input type="file" id="avatar" ref="avatar" class="mt-1 block w-full" />
-                <Btn label="Mettre à jour l'avatar" @click.prevent="updateAvatar" />
+                <FileInput
+                    ref="avatar"
+                    accept="image/*"
+                    :maxSize="5242880"
+                    tooltip="Cliquez pour changer votre avatar"
+                    helperText="Format accepté : JPG, PNG, GIF, SVG. Taille maximale : 5MB"
+                    @error="(message) => error(message)"
+                    v-model="avatarFile"
+                    class="mt-1"
+                    theme="ghost"
+                >
+                    <!-- On utilise le composant Avatar existant comme zone de dépôt -->
+                    <Avatar
+                        :source="user.avatar_url"
+                        :alt-text="user.name"
+                        size="xl"
+                        theme="rounded-full"
+                    />
+                </FileInput>
             </div>
         </form>
 

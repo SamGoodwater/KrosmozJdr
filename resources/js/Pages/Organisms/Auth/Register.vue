@@ -6,6 +6,7 @@ import Route from "@/Pages/Atoms/text/Route.vue";
 import TextInput from "@/Pages/Atoms/inputs/TextInput.vue";
 import { useForm } from "@inertiajs/vue3";
 import { onMounted } from "vue";
+import { usePageTitle } from "@/Composables/usePageTitle";
 
 const form = useForm({
     name: null,
@@ -14,6 +15,8 @@ const form = useForm({
     password_confirmation: null,
 });
 
+const { setPageTitle } = usePageTitle();
+
 const submit = () => {
     form.post(route("register"), {
         onFinish: () => form.reset("password", "password_confirmation"),
@@ -21,7 +24,7 @@ const submit = () => {
 };
 
 onMounted(() => {
-    document.title = "Inscription";
+    setPageTitle('Inscription');
 });
 </script>
 

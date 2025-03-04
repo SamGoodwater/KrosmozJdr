@@ -52,6 +52,7 @@ class User extends Authenticatable
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasApiTokens, HasFactory, Notifiable, MustVerifyEmail;
 
+    public const DEFAULT_AVATAR = 'storage/images/default-avatar.svg';
 
     const ROLES = [
         'guest' => 'guest',
@@ -186,7 +187,10 @@ class User extends Authenticatable
 
     public function avatarPath(): string
     {
-        return $this->avatar ? Storage::url($this->avatar) : 'default-avatar-path';
+        if (!$this->avatar) {
+            return asset(self::DEFAULT_AVATAR);
+        }
+        return Storage::url($this->avatar);
     }
 
     public function scenarios(): BelongsToMany

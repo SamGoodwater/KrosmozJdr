@@ -7,7 +7,8 @@ import Route from '@/Pages/Atoms/text/Route.vue';
 const props = defineProps({
     theme: {
         type: String,
-        default: "",
+        default: "info",
+        validator: (value) => ['info', 'success', 'error', 'warning', 'primary', 'secondary'].includes(value)
     },
     delay: {
         type: Number,
@@ -28,7 +29,7 @@ const emit = defineEmits(['close']);
 
 const isVisible = ref(true);
 
-const buildNotificationClasses = (themeProps, props) => {
+const buildNotificationClasses = (props) => {
     const classes = ['custom-notification', 'min-w-[200px]', 'max-w-[400px]'];
 
     // Si une route est définie, ajouter le curseur pointer
@@ -39,24 +40,33 @@ const buildNotificationClasses = (themeProps, props) => {
     return classes.join(' ');
 };
 
-const buildAlertClasses = (themeProps) => {
-    const classes = ['alert', 'relative', 'shadow-lg'];
+const buildAlertClasses = () => {
+    const classes = ['alert', 'relative', 'shadow-lg', 'backdrop-blur-3'];
 
-    // Background color and opacity
-    const bgColor = themeProps.bgColor || 'secondary-800';
-    const opacity = themeProps.opacity || '90';
-    classes.push(`bg-${bgColor}/${opacity}`);
-
-    // Blur
-    const blur = themeProps.blur || '3';
-    classes.push(`backdrop-blur-${blur}`);
+    //theme
+    switch (props.theme) {
+        case 'info':
+            classes.push('bg-info-900/90');
+            break;
+        case 'success':
+            classes.push('bg-success-900/90');
+            break;
+        case 'error':
+            classes.push('bg-error-900/90');
+            break;
+        case 'warning':
+            classes.push('bg-warning-900/90');
+            break;
+        default:
+            classes.push('bg-secondary-900/90');
+            break;
+    }
 
     return classes.join(' ');
 };
 
-const themeProps = computed(() => extractTheme(props.theme));
-const notificationClasses = computed(() => buildNotificationClasses(themeProps.value, props));
-const alertClasses = computed(() => buildAlertClasses(themeProps.value));
+const notificationClasses = computed(() => buildNotificationClasses(props));
+const alertClasses = computed(() => buildAlertClasses());
 
 const close = (e) => {
     if (e) {
@@ -96,7 +106,7 @@ onMounted(() => {
                 <Btn
                     @click="close"
                     theme="xs link"
-                    color="slate-600"
+                    color="secondary"
                     class="absolute top-2 right-2"
                 >
                     <i class="fa-solid fa-xmark"></i>

@@ -65,8 +65,19 @@ const { isSidebarOpen } = useSidebar();
 ------------------------------------ SAFELIST CSS ------------------------------------
 - à supprimer lorsque j'aurai trouvé une solution pour gérer les variables css dynamiques
 -->
-    <div
-        class="bg-secondary-800/90 text-slate-600 bg-secondary-300/20 bg-secondary-300/30 bg-secondary-300/40 bg-secondary-300/50 bg-secondary-300/60 bg-secondary-300/70 bg-secondary-300/80 bg-secondary-700/80 hidden badge-xs badge-sm badge-md badge-lg badge-xl badge-2xl bg-fuchsia-700 border-fuchsia-700 text-fuchsia-700 bg-blue-500 border-blue-500 text-blue-500 bg-fuchsia-500 border-fuchsia-500 text-fuchsia-500 bg-blue-700 border-blue-700 text-blue-700 bg-base-900/80 bg-base-900/40 bg-primary border-primary text-primary bg-secondary border-secondary text-secondary bg-success border-success text-success bg-error border-error text-error bg-neutral border-neutral text-neutral bg-info border-info text-info bg-warning border-warning text-warning bg-secondary-300/10 border-secondary-100/10 rounded-full rounded-none rounded-sm rounded-md rounded-lg rounded-xl rounded-2xl rounded-3xl shadow-sm shadow-md shadow-lg shadow-xl shadow-2xl shadow-3xl shadow-4xl shadow-5xl backdrop-blur-sm backdrop-blur-md backdrop-blur-lg backdrop-blur-xl backdrop-blur-2xl backdrop-blur-3xl backdrop-blur-4xl backdrop-blur-5xl w-6 h-6 w-8 h-8 w-10 h-10 w-12 h-12 w-14 h-14 w-16 h-16 w-18 h-18 w-20 h-20 w-22 h-22 w-24 h-24 w-26 h-26 w-28 h-28 w-30 h-30 w-32 h-32 w-34 h-34 w-36 h-36 w-38 h-38 w-40 h-40 w-42 h-42 w-44 h-44 w-46 h-46 w-48 h-48 w-50 h-50 w-52 h-52 w-54 h-54 w-56 h-56 w-58 h-58"
+    <div class="
+       border
+    p-4
+    space-y-2
+    rounded-lg
+    bg-info-900
+    shadow-info-700
+    bg-success-900
+    shadow-success-700
+    bg-error-900
+    shadow-error-700
+    bg-warning-900
+    shadow-warning-700 bg-secondary-800/90 text-slate-600 bg-secondary-300/20 bg-secondary-300/30 bg-secondary-300/40 bg-secondary-300/50 bg-secondary-300/60 bg-secondary-300/70 bg-secondary-300/80 bg-secondary-700/80 hidden badge-xs badge-sm badge-md badge-lg badge-xl badge-2xl bg-fuchsia-700 border-fuchsia-700 text-fuchsia-700 bg-blue-500 border-blue-500 text-blue-500 bg-fuchsia-500 border-fuchsia-500 text-fuchsia-500 bg-blue-700 border-blue-700 text-blue-700 bg-base-900/80 bg-base-900/40 bg-primary border-primary text-primary bg-secondary border-secondary text-secondary bg-success border-success text-success bg-error border-error text-error bg-neutral border-neutral text-neutral bg-info border-info text-info bg-warning border-warning text-warning bg-secondary-300/10 border-secondary-100/10 rounded-full rounded-none rounded-sm rounded-md rounded-lg rounded-xl rounded-2xl rounded-3xl shadow-sm shadow-md shadow-lg shadow-xl shadow-2xl shadow-3xl shadow-4xl shadow-5xl backdrop-blur-sm backdrop-blur-md backdrop-blur-lg backdrop-blur-xl backdrop-blur-2xl backdrop-blur-3xl backdrop-blur-4xl backdrop-blur-5xl w-6 h-6 w-8 h-8 w-10 h-10 w-12 h-12 w-14 h-14 w-16 h-16 w-18 h-18 w-20 h-20 w-22 h-22 w-24 h-24 w-26 h-26 w-28 h-28 w-30 h-30 w-32 h-32 w-34 h-34 w-36 h-36 w-38 h-38 w-40 h-40 w-42 h-42 w-44 h-44 w-46 h-46 w-48 h-48 w-50 h-50 w-52 h-52 w-54 h-54 w-56 h-56 w-58 h-58"
     ></div>
 </template>
 

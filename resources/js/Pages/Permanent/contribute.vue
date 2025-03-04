@@ -1,6 +1,14 @@
 <script setup>
 import Btn from "@/Pages/Atoms/actions/Btn.vue";
 import Container from "@/Pages/Atoms/panels/Container.vue";
+import { usePageTitle } from "@/Composables/usePageTitle";
+import { onMounted } from "vue";
+
+const { setPageTitle } = usePageTitle();
+
+onMounted(() => {
+    setPageTitle('Contribuer');
+});
 </script>
 
 <template>

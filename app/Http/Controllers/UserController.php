@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\UserFilterRequest;
 use App\Events\NotificationSuperAdminEvent;
 use App\Models\User;
+use App\Http\Resources\UserResource;
 use Illuminate\Http\RedirectResponse;
 use Inertia\Inertia;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
@@ -27,10 +28,10 @@ class UserController extends Controller
         // Récupère la valeur de 'paginationMaxDisplay' depuis la requête, avec une valeur par défaut de 25
         $paginationMaxDisplay = max(1, min(500, (int) $request->input('paginationMaxDisplay', 25)));
 
-        $users = User::paginate($paginationMaxDisplay);
+        $users = User::with(['scenarios', 'campaigns'])->paginate($paginationMaxDisplay);
 
         return Inertia::render('Organisms/User/Dashboard.vue', [
-            'users' => $users,
+            'users' => UserResource::collection($users),
         ]);
     }
 
@@ -39,11 +40,10 @@ class UserController extends Controller
         $user = Auth::user();
         $this->authorize('view', $user);
 
+        $user->load(['scenarios', 'campaigns']);
+
         return Inertia::render('Organisms/User/Dashboard', [
-            'verifiedEmail' => $user->hasVerifiedEmail(),
-            'user' => $user,
-            'resources' => $user->resources,
-            'panoplies' => $user->panoply,
+            'user' => new UserResource($user),
         ]);
     }
 
@@ -85,10 +85,10 @@ class UserController extends Controller
         $user = $user ?? Auth::user();
         $this->authorize('update', $user);
 
+        $user->load(['scenarios', 'campaigns']);
+
         return Inertia::render('Organisms/User/Edit', [
-            'user' => $user,
-            'resources' => $user->resources,
-            'panoply' => $user->panoply,
+            'user' => new UserResource($user),
             'mustVerifyEmail' => $user instanceof MustVerifyEmail,
             'status' => session('status'),
             'isAdminEdit' => Auth::user()->id !== $user->id,
@@ -121,7 +121,7 @@ class UserController extends Controller
                 return response()->json([
                     'success' => true,
                     'message' => 'Mise à jour réussie',
-                    'data' => $user
+                    'data' => new UserResource($user)
                 ]);
             }
 

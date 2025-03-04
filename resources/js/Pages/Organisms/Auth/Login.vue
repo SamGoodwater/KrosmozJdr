@@ -8,6 +8,7 @@ import TextInput from "@/Pages/Atoms/inputs/TextInput.vue";
 import PasswordInput from "@/Pages/Atoms/inputs/PasswordInput.vue";
 import { useForm } from "@inertiajs/vue3";
 import { onMounted } from "vue";
+import { usePageTitle } from "@/Composables/usePageTitle";
 
 defineProps({
     status: {
@@ -21,6 +22,8 @@ const form = useForm({
     remember: false,
 });
 
+const { setPageTitle } = usePageTitle();
+
 const submit = () => {
     form.post(route("login"), {
         onFinish: () => form.reset("password"),
@@ -28,7 +31,7 @@ const submit = () => {
 };
 
 onMounted(() => {
-    document.title = "Connexion";
+    setPageTitle('Connexion');
 });
 </script>
 
