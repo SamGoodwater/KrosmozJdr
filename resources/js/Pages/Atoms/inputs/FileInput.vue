@@ -254,9 +254,9 @@ const handleChange = (e) => {
                     <!-- Overlay pendant le drag -->
                     <div
                         v-if="isDragging"
-                        class="absolute inset-0 flex items-center justify-center bg-primary/10 backdrop-blur-sm rounded-lg"
+                        class="absolute inset-0 flex items-center justify-center bg-primary/10 backdrop-blur-sm rounded-lg in-drag"
                     >
-                        <span class="text-primary-700 font-medium">
+                        <span class="text-secondary-200 text-shadow-md font-medium">
                             Déposez vos fichiers ici
                         </span>
                     </div>
@@ -292,9 +292,9 @@ const handleChange = (e) => {
 
                 <div
                     v-if="isDragging"
-                    class="absolute inset-0 flex items-center justify-center bg-primary/10 backdrop-blur-sm rounded-lg"
+                    class="absolute inset-0 flex items-center justify-center bg-primary/10 backdrop-blur-sm rounded-lg in-drag  "
                 >
-                    <span class="text-primary-700 font-medium">
+                    <span class="text-secondary-200 text-shadow-md font-medium">
                         Déposez vos fichiers ici
                     </span>
                 </div>
@@ -332,9 +332,9 @@ const handleChange = (e) => {
 
                     <div
                         v-if="isDragging"
-                        class="absolute inset-0 flex items-center justify-center bg-primary/10 backdrop-blur-sm rounded-lg"
+                        class="absolute inset-0 flex items-center justify-center bg-primary/10 backdrop-blur-sm rounded-lg in-drag"
                     >
-                        <span class="text-primary-700 font-medium">
+                        <span class="text-secondary-200 text-shadow-md font-medium">
                             Déposez vos fichiers ici
                         </span>
                     </div>
@@ -369,9 +369,9 @@ const handleChange = (e) => {
 
                 <div
                     v-if="isDragging"
-                    class="absolute inset-0 flex items-center justify-center bg-primary/10 backdrop-blur-sm rounded-lg"
+                    class="absolute inset-0 flex items-center justify-center bg-primary/10 backdrop-blur-sm rounded-lg in-drag"
                 >
-                    <span class="text-primary-700 font-medium">
+                    <span class="text-secondary-200 text-shadow-md font-medium">
                         Déposez vos fichiers ici
                     </span>
                 </div>
@@ -385,5 +385,30 @@ const handleChange = (e) => {
 </template>
 
 <style scoped>
-
+    .file-input-bordered {
+        border: 1px solid var(--color-secondary-200);
+    }
+    .file-input-bordered:hover {
+        border: 1px solid var(--color-secondary-300);
+    }
+    .file-input-bordered:focus {
+        border: 1px solid var(--color-secondary-400);
+    }
+    .file-input-bordered:focus-within {
+        border: 1px solid var(--color-secondary-400);
+    }
+    .file-input-bordered:active {
+        border: 1px solid var(--color-secondary-500);
+    }
+    .file-input-bordered:disabled {
+        border: 1px solid var(--color-secondary-200);
+    }
+    .in-drag {
+        box-shadow:
+        0 0 1px 1px rgba(255, 255, 255, 0.50),
+        0 0 3px 4px rgba(255, 255, 255, 0.10),
+        0 0 5px 6px rgba(255, 255, 255, 0.05),
+        inset 0 0 3px 4px rgba(255, 255, 255, 0.10),
+        inset 0 0 5px 6px rgba(255, 255, 255, 0.05);
+    }
 </style>

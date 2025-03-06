@@ -9,6 +9,7 @@ import useEditableField from '@/Composables/useEditableField';
 import { success, error } from '@/Utils/notificationManager';
 import FileInput from '@/Pages/Atoms/inputs/FileInput.vue';
 import Avatar from '@/Pages/Atoms/images/Avatar.vue';
+import VerifyMailAlert from '@/Pages/Molecules/auth/VerifyMailAlert.vue';
 
 const props = defineProps({
     mustVerifyEmail: {
@@ -149,78 +150,67 @@ watch(avatarFile, (newFile) => {
             @submit.prevent class="mt-6 space-y-6"
             autocomplete="off"
         >
-            <div>
-                <InputLabel for="name" value="Pseudo" />
-                <TextInput
-                    id="name"
-                    type="text"
-                    class="mt-1 block w-full"
-                    :field="fields.name"
-                    required
-                    autofocus
-                    :useFieldComposable="true"
-                />
-                <InputError class="mt-2" :message="form.errors.name" />
-            </div>
-
-            <div>
-                <InputLabel for="email" value="Adresse mail" />
-                <TextInput
-                    id="email"
-                    type="email"
-                    class="mt-1 block w-full"
-                    :field="fields.email"
-                    required
-                    :useFieldComposable="true"
-                />
-                <InputError class="mt-2" :message="form.errors.email" />
-            </div>
-
-            <div v-if="mustVerifyEmail && user.value.email_verified_at === null">
-                <p class="mt-2 text-sm text-gray-800">
-                    Votre adresse email n'est pas vérifiée.
-                    <Link
-                        :href="route('verification.send')"
-                        method="post"
-                        as="button"
-                        class="rounded-md text-sm text-gray-600 underline hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+            <div class="flex flex-row gap-4">
+                <div class="flex flex-col gap-4 w-1/2">
+                    <InputLabel for="avatar" value="Avatar" />
+                    <FileInput
+                        ref="avatar"
+                        accept="image/*"
+                        :maxSize="5242880"
+                        tooltip="Cliquez pour changer votre avatar"
+                        helperText="Format accepté : JPG, PNG, GIF, SVG. Taille maximale : 5MB"
+                        @error="(message) => error(message)"
+                        v-model="avatarFile"
+                        class="mt-1"
+                        theme="ghost"
                     >
-                        Cliquez ici pour renvoyer l'email de vérification.
-                    </Link>
-                </p>
-
-                <div
-                    v-show="status === 'verification-link-sent'"
-                    class="mt-2 text-sm font-medium text-green-600"
-                >
-                    Un nouvel email de vérification a été envoyé à votre adresse email.
+                        <!-- On utilise le composant Avatar existant comme zone de dépôt -->
+                        <Avatar
+                            :source="user.avatar"
+                            :alt-text="user.name"
+                            size="3xl"
+                            theme="rounded-full"
+                        />
+                    </FileInput>
                 </div>
-            </div>
 
-            <div>
-                <InputLabel for="avatar" value="Avatar" />
-                <FileInput
-                    ref="avatar"
-                    accept="image/*"
-                    :maxSize="5242880"
-                    tooltip="Cliquez pour changer votre avatar"
-                    helperText="Format accepté : JPG, PNG, GIF, SVG. Taille maximale : 5MB"
-                    @error="(message) => error(message)"
-                    v-model="avatarFile"
-                    class="mt-1"
-                    theme="ghost"
-                >
-                    <!-- On utilise le composant Avatar existant comme zone de dépôt -->
-                    <Avatar
-                        :source="user.avatar_url"
-                        :alt-text="user.name"
-                        size="xl"
-                        theme="rounded-full"
-                    />
-                </FileInput>
+                <div class="flex flex-col gap-4 w-1/2">
+                    <div>
+                        <InputLabel for="name" value="Pseudo" />
+                            <TextInput
+                            id="name"
+                            type="text"
+                            class="mt-1 block w-full"
+                            :field="fields.name"
+                            required
+                            autofocus
+                            :useFieldComposable="true"
+                        />
+                        <InputError class="mt-2" :message="form.errors.name" />
+                    </div>
+
+                    <div>
+                        <InputLabel for="email" value="Adresse mail" />
+                        <TextInput
+                            id="email"
+                            type="email"
+                            class="mt-1 block w-full"
+                            :field="fields.email"
+                            required
+                            :useFieldComposable="true"
+                        />
+                        <InputError class="mt-2" :message="form.errors.email" />
+                    </div>
+
+                    <div v-if="!user.is_verified">
+                        <VerifyMailAlert />
+                    </div>
+                </div>
             </div>
         </form>
 
+                    <!-- Trait de séparation -->
+        <hr class="border-gray-300 dark:border-gray-700 my-4" />
 
         <form @submit.prevent="updatePassword" class="mt-6 space-y-6">
             <div>

@@ -20,10 +20,8 @@ class UserLightResource extends JsonResource
             'name' => $this->name,
             'email' => $this->email,
             'role' => $this->role,
-            'avatar' => $this->avatarPath() == User::DEFAULT_AVATAR ? null : $this->avatarPath(),
-            'email_verified_at' => $this->email_verified_at,
+            'avatar' => $this->avatarPath() === asset(User::DEFAULT_AVATAR) ? null : $this->avatarPath(),
             'is_verified' => $this->hasVerifiedEmail(),
-            'light' => 1
         ];
     }
 }

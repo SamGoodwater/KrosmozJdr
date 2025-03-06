@@ -91,6 +91,18 @@ const buildAvatarClasses = (themeProps, props) => {
             classes.push("w-32");
             textSize.value = "text-3xl";
             break;
+        case "2xl":
+            classes.push("w-40");
+            textSize.value = "text-4xl";
+            break;
+        case "3xl":
+            classes.push("w-48");
+            textSize.value = "text-5xl";
+            break;
+        case "full":
+            classes.push("w-full");
+            textSize.value = "text-6xl";
+            break;
     }
 
     // Color
@@ -104,7 +116,7 @@ const buildAvatarClasses = (themeProps, props) => {
     if (bgColor) {
         classes.push(`bg-${bgColor}`);
     } else {
-        classes.push("bg-primary-500");
+        classes.push("bg-primary-300/20");
     }
 
     // Rounded

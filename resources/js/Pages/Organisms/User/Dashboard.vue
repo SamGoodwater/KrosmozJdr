@@ -13,11 +13,11 @@ import Badge from "@/Pages/Atoms/text/Badge.vue";
 import ModuleCard from "@/Pages/Molecules/modules/ModuleCard.vue";
 import Card from "@/Pages/Atoms/panels/Card.vue";
 import Tooltip from "@/Pages/Atoms/feedback/Tooltip.vue";
+import VerifyMailAlert from "@/Pages/Molecules/auth/VerifyMailAlert.vue";
 
 // Récupération des données partagées par Inertia
 const page = usePage();
 const user = ref(page.props.user.data);
-const verifiedEmail = ref(page.props.verifiedEmail);
 const { setPageTitle } = usePageTitle();
 
 onMounted(() => {
@@ -63,19 +63,8 @@ onMounted(() => {
                             </div>
                         </div>
                     </div>
-                    <div>
-                        <div role="alert" class="alert alert-warning text-content-light py-2 px-4">
-                            <i class="fa-solid fa-triangle-exclamation"></i>
-                            <span>Mail non vérifié.</span>
-                            <div>
-                                <Route route="">
-                                    <Btn
-                                        theme="link" class="text-secondary-950"
-                                        label="Vérifier mon mail"
-                                    />
-                                </Route>
-                            </div>
-                        </div>
+                    <div v-if="!user.is_verified">
+                        <VerifyMailAlert />
                     </div>
                 </div>
 

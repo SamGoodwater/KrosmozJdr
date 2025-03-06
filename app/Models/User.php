@@ -52,7 +52,7 @@ class User extends Authenticatable
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasApiTokens, HasFactory, Notifiable, MustVerifyEmail;
 
-    public const DEFAULT_AVATAR = 'storage/images/default-avatar.svg';
+    public const DEFAULT_AVATAR = 'storage/images/default-avatar.webp';
 
     const ROLES = [
         'guest' => 'guest',
