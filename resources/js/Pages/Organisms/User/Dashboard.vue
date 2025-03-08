@@ -4,7 +4,7 @@ import { ref, onMounted } from "vue";
 import { usePageTitle } from "@/Composables/usePageTitle";
 
 // Composants existants
-import Avatar from "@/Pages/Atoms/images/Avatar.vue";
+import Avatar from "@/Pages/Molecules/images/Avatar.vue";
 import Btn from "@/Pages/Atoms/actions/Btn.vue";
 import Route from "@/Pages/Atoms/text/Route.vue";
 import BadgeRole from "@/Pages/Organisms/User/Molecules/badgeRole.vue";

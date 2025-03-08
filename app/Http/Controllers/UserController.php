@@ -13,9 +13,12 @@ use Illuminate\Support\Facades\Auth;
 use App\Services\DataService;
 use Illuminate\Auth\MustVerifyEmail;
 use Illuminate\Http\JsonResponse;
-
-use Request;
+use Illuminate\Support\Facades\Storage;
+use App\Rules\FileRules;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Event;
+use Intervention\Image\ImageManager;
+use Intervention\Image\Drivers\Gd\Driver;
 
 class UserController extends Controller
 {
@@ -139,21 +142,95 @@ class UserController extends Controller
         }
     }
 
-    public function updateAvatar(Request $request): RedirectResponse
+    public function updateAvatar(Request $request, User $user = null)
     {
-        $user = Auth::user();
+        $user = $user ?? Auth::user();
         $this->authorize('update', $user);
 
-        $request->validate([
-            'avatar' => ['required', 'image', 'max:1024'], // 1MB max
-        ]);
+        try {
+            $request->validate([
+                'file' => FileRules::rules(
+                    FileRules::TYPE_IMAGE,
+                    5120,    // 5MB
+                    true,    // Required
+                    false    // Non nullable
+                )['file']
+            ]);
 
-        if ($request->hasFile('avatar')) {
-            $user->avatar = $request->file('avatar')->store('avatars', 'public');
-            $user->save();
+            if ($request->hasFile('file')) {
+                // Supprimer l'ancien avatar s'il existe
+                if ($user->avatar && Storage::disk('public')->exists($user->avatar)) {
+                    Storage::disk('public')->delete($user->avatar);
+                }
+
+                // Stocker le nouveau fichier
+                $file = $request->file('file');
+                $extension = strtolower($file->getClientOriginalExtension());
+                $fileName = $user->uniqid . '_' . time();
+
+                if (in_array($extension, ['svg', 'eps', 'pdf'])) {
+                    // Pour les formats vectoriels, stocker directement
+                    $path = $file->storeAs('users/avatars', $fileName . '.' . $extension, 'public');
+                } else {
+                    // Pour les images bitmap, convertir en WebP
+                    $path = 'users/avatars/' . $fileName . '.webp';
+                    $manager = new ImageManager(new Driver());
+                    $image = $manager->read($file->getRealPath());
+                    $image->scaleDown(width: 800, height: 800);
+                    Storage::disk('public')->put($path, (string) $image->toWebp(70));
+                }
+
+                // Mettre à jour l'utilisateur
+                $user->avatar = $path;
+                $user->save();
+
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Avatar mis à jour avec succès',
+                    'data' => new UserResource($user)
+                ]);
+            }
+
+            throw new \Exception('Erreur lors du traitement du fichier');
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Erreur de validation',
+                'errors' => $e->errors()
+            ], 422);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage()
+            ], 422);
         }
+    }
 
-        return redirect()->route('profile.edit');
+    public function deleteAvatar(User $user = null)
+    {
+        $user = $user ?? Auth::user();
+        $this->authorize('update', $user);
+
+        try {
+            if ($user->avatar && Storage::disk('public')->exists($user->avatar)) {
+                DataService::deleteFile($user, 'avatar');
+                $user->avatar = null;
+                $user->save();
+
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Avatar supprimé avec succès',
+                    'data' => new UserResource($user)
+                ]);
+            }
+
+            throw new \Exception('Aucun avatar à supprimer');
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage()
+            ], 422);
+        }
     }
 
     public function delete(UserFilterRequest $request, User $user): RedirectResponse

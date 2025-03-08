@@ -1,6 +1,6 @@
 <script setup>
 import { MediaManager } from '@/Utils/MediaManager';
-import { imageExists } from '@/Utils/Images';
+import { imageExists } from '@/Utils/files';
 import { computed, ref, onMounted } from 'vue';
 import { extractTheme } from "@/Utils/extractTheme";
 

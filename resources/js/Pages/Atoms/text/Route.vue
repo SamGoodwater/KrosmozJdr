@@ -2,7 +2,7 @@
 import { computed, ref } from "vue";
 import { Link } from "@inertiajs/vue3";
 import { extractTheme } from "@/Utils/extractTheme";
-
+import Tooltip from "@/Pages/Atoms/feedback/Tooltip.vue";
 const props = defineProps({
     theme: {
         type: String,
@@ -21,6 +21,10 @@ const props = defineProps({
         default: "",
     },
     tooltip: {
+        type: String,
+        default: "",
+    },
+    tooltipPosition: {
         type: String,
         default: "",
     },
@@ -52,10 +56,22 @@ if (props.route) {
 </script>
 
 <template>
+    <Tooltip v-if="tooltip" :placement="tooltipPosition">
+        <Link
+            :href="hrefRef"
+            :target="target"
+            :class="getClasses"
+        >
+            <slot />
+        </Link>
+        <template #content>
+            <span>{{ tooltip }}</span>
+        </template>
+    </Tooltip>
     <Link
+        v-else
         :href="hrefRef"
         :target="target"
-        :data-tip="tooltip"
         :class="getClasses"
     >
         <slot />

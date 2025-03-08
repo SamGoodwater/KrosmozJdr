@@ -12,6 +12,7 @@
         "php": "^8.2",
         "calcinai/php-imagick": "^0.1.2",
         "inertiajs/inertia-laravel": "^2.0",
+        "intervention/image": "^3.11",
         "laravel-lang/common": "^6.4",
         "laravel/framework": "^12.00",
         "laravel/sanctum": "^4.0",

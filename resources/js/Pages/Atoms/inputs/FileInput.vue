@@ -1,7 +1,8 @@
 <script setup>
-import { ref, computed } from "vue";
+import { ref, computed, useSlots } from "vue";
 import { extractTheme } from "@/Utils/extractTheme";
 import Tooltip from "../feedback/Tooltip.vue";
+import { imageExists, formatSizeToMB, validateFile, formatFileType } from "@/Utils/files";
 
 const props = defineProps({
     modelValue: {
@@ -14,26 +15,62 @@ const props = defineProps({
     },
     size: {
         type: String,
+        default: "md",
+        validator: (value) => ["xs", "sm", "md", "lg", "xl", "2xl", "3xl", "4xl"].includes(value),
+    },
+    color: {
+        type: String,
+        default: "secondary-800",
+    },
+    rounded: {
+        type: String,
+        default: "lg",
+        validator: (value) => ["", "none", "sm", "md", "lg", "xl", "2xl", "3xl", "full"].includes(value),
+    },
+    blur: {
+        type: String,
+        default: "lg",
+        validator: (value) => ["", "none", "xs", "sm", "md", "lg", "xl", "2xl"].includes(value),
+    },
+    'box-shadow': {
+        type: String,
+        default: "md",
+        validator: (value) => ["", "none", "xs", "sm", "md", "lg", "xl", "2xl", "3xl", "4xl"].includes(value),
+    },
+    opacity: {
+        type: String,
         default: "",
-        validator: (value) => ["", "xs", "sm", "md", "lg", "xl"].includes(value),
+    },
+    bgColor: {
+        type: String,
+        default: "",
+    },
+    textColor: {
+        type: String,
+        default: "",
     },
     styled: {
         type: String,
         default: "",
         validator: (value) => ["", "ghost", "outline", "link"].includes(value),
     },
-    color: {
+    tooltipPosition: {
+        type: String,
+        default: "bottom",
+        validator: (value) => ["top", "right", "bottom", "left", "top-start", "top-end", "right-start", "right-end", "bottom-start", "bottom-end", "left-start", "left-end"].includes(value),
+    },
+    tooltip: {
+        type: String,
+        default: "Cliquez ou déposez un fichier ici",
+    },
+    label: {
         type: String,
         default: "",
     },
-    bordered: {
-        type: Boolean,
-        default: false,
-    },
-    rounded: {
+    helper: {
         type: String,
-        default: "",
-        validator: (value) => ["", "none", "sm", "md", "lg", "xl", "2xl", "3xl", "full"].includes(value),
+        default: "auto",
+        validator: (value) => value === null || value === "" || value === "auto" || typeof value === "string",
     },
     multiple: {
         type: Boolean,
@@ -47,22 +84,13 @@ const props = defineProps({
         type: Number,
         default: 5242880, // 5MB par défaut
     },
-    label: {
+    currentFile: {
         type: String,
-        default: "",
+        default: null,
     },
-    helperText: {
-        type: String,
-        default: "",
-    },
-    tooltip: {
-        type: String,
-        default: "",
-    },
-    tooltipPosition: {
-        type: String,
-        default: "bottom",
-        validator: (value) => ["top", "right", "bottom", "left"].includes(value),
+    showDeleteButton: {
+        type: Boolean,
+        default: true
     },
     error: {
         type: String,
@@ -70,14 +98,22 @@ const props = defineProps({
     },
 });
 
-const emit = defineEmits(["update:modelValue", "error"]);
+const emit = defineEmits([
+    "update:modelValue",
+    "error",
+    "delete"
+]);
+
 const fileInput = ref(null);
 const isDragging = ref(false);
 const dragCounter = ref(0);
+const isHovering = ref(false);
+
+const slots = useSlots();
 
 // Construction des classes CSS
 const buildInputClasses = (themeProps, props) => {
-    const classes = ["file-input", "w-full", "transition-all", "duration-200"];
+    const classes = ["file-input", "w-full", "transition-all", "duration-300"];
 
     // Taille
     const size = props.size || themeProps.size || "md";
@@ -87,31 +123,53 @@ const buildInputClasses = (themeProps, props) => {
     const styled = props.styled || themeProps.styled;
     if (styled) {
         if (styled === "ghost") {
-            classes.push("bg-transparent");
-            classes.push("border-transparent");
-            classes.push("hover:bg-base-100/10");
+            classes.push("file-input-ghost");
         } else if (styled === "outline") {
             classes.push("bg-base-100/10");
         } else {
-            classes.push(`file-input-${styled}`);
+            classes.push(`bg-transparent border-transparent hover:bg-base-100/10`);
         }
     }
 
-    // Bordure
-    const bordered = props.bordered ?? themeProps.bordered ?? false;
-    if (bordered) {
-        classes.push("file-input-bordered");
-    }
-
     // Arrondi
-    const rounded = props.rounded || themeProps.rounded;
+    const rounded = props.rounded || themeProps.rounded || "lg";
     if (rounded && rounded !== "none") {
         classes.push(`rounded-${rounded}`);
     }
 
     // Couleur
-    const color = props.color || themeProps.color || "primary";
+    const color = props.color || themeProps.color || "secondary-800";
     classes.push(`file-input-${color}`);
+
+    // Box Shadow
+    const boxShadow = props['box-shadow'] || themeProps['box-shadow'] || "md";
+    if (boxShadow && boxShadow !== "none") {
+        classes.push(`box-shadow-${boxShadow}`);
+    }
+
+    // Blur
+    const blur = props.blur || themeProps.blur || "lg";
+    if (blur && blur !== "none") {
+        classes.push(`backdrop-blur-${blur}`);
+    }
+
+    // Opacité
+    const opacity = props.opacity || themeProps.opacity;
+    if (opacity) {
+        classes.push(`opacity-${opacity}`);
+    }
+
+    // Couleur de fond
+    const bgColor = props.bgColor || themeProps.bgColor;
+    if (bgColor) {
+        classes.push(`bg-${bgColor}`);
+    }
+
+    // Couleur du texte
+    const textColor = props.textColor || themeProps.textColor;
+    if (textColor) {
+        classes.push(`text-${textColor}`);
+    }
 
     // État d'erreur
     if (props.error) {
@@ -125,25 +183,29 @@ const buildDropZoneClasses = computed(() => {
     const classes = [
         "relative",
         "w-full",
+        "flex",
+        "items-center",
+        "justify-center",
         "transition-all",
         "duration-300",
         "ease-in-out",
     ];
 
     // Arrondi
-    const rounded = props.rounded || themeProps.value.rounded;
+    const rounded = props.rounded || themeProps.value.rounded || "lg";
     if (rounded && rounded !== "none") {
         classes.push(`rounded-${rounded}`);
     }
 
     // Style pendant le drag
     if (isDragging.value) {
-        const color = props.color || themeProps.value.color || "primary";
+        const color = props.color || themeProps.value.color || "secondary-800";
         classes.push(
-            "ring-2",
-            `ring-${color}`,
-            "ring-opacity-50",
-            `bg-${color}/5`
+            `box-shadow-lg`,
+            `backdrop-blur-lg`,
+            `bg-${color}/5`,
+            "scale-102",
+            "animate-pulse"
         );
     }
 
@@ -154,36 +216,24 @@ const themeProps = computed(() => extractTheme(props.theme));
 const getClasses = computed(() => buildInputClasses(themeProps.value, props));
 
 // Gestion des fichiers
-const validateFile = (file) => {
-    if (props.maxSize && file.size > props.maxSize) {
-        emit("error", `Le fichier ${file.name} dépasse la taille maximale autorisée`);
-        return false;
-    }
+const handleFiles = (files) => {
+    const validFiles = Array.from(files).filter(file => {
+        const validation = validateFile(file, {
+            maxSize: props.maxSize,
+            accept: props.accept
+        });
 
-    if (props.accept) {
-        const acceptedTypes = props.accept.split(",").map(type => type.trim());
-        const fileType = file.type;
-        const fileExtension = `.${file.name.split(".").pop()}`;
-
-        if (!acceptedTypes.some(type =>
-            type === fileType ||
-            type === fileExtension ||
-            (type.includes("/*") && fileType.startsWith(type.replace("/*", "")))
-        )) {
-            emit("error", `Le format du fichier ${file.name} n'est pas accepté`);
+        if (!validation.isValid) {
+            emit("error", validation.error);
             return false;
         }
-    }
-
-    return true;
-};
-
-const handleFiles = (files) => {
-    const validFiles = Array.from(files).filter(validateFile);
+        return true;
+    });
 
     if (props.multiple) {
         emit("update:modelValue", validFiles);
     } else if (validFiles.length > 0) {
+        console.log('Emitting file:', validFiles[0]);
         emit("update:modelValue", validFiles[0]);
     }
 };
@@ -218,70 +268,119 @@ const triggerFileInput = () => {
 const handleChange = (e) => {
     handleFiles(e.target.files);
 };
+
+// Fonction pour gérer la suppression
+const handleDelete = (e) => {
+    e.stopPropagation();
+    emit('delete');
+};
+
+// Fonction pour vérifier si on doit afficher l'overlay
+const shouldShowOverlay = computed(() => {
+    return isHovering.value && slots.default;
+});
+
+// Fonction pour vérifier si on doit afficher le bouton de suppression
+const shouldShowDeleteButton = computed(() => {
+    return props.showDeleteButton && props.currentFile && slots.default;
+});
+
+// Nouveau computed pour le message du tooltip
+const tooltipMessage = computed(() => {
+    return props.tooltip || "Cliquez ou déposez un fichier ici";
+});
+
+// Nouveau computed pour les classes de l'overlay
+const overlayClasses = computed(() => {
+    return [
+        "absolute",
+        "inset-0",
+        "flex",
+        "items-center",
+        "justify-center",
+        "rounded-lg",
+        "bg-gradient-to-t",
+        "from-base-800/20",
+        "to-transparent",
+        "backdrop-blur-xs",
+        "hover:backdrop-blur-sm",
+        "transition-all",
+        "duration-500",
+        "opacity-0",
+        "hover:opacity-100"
+    ].join(" ");
+});
+
+// Computed pour le message d'aide automatique
+const helperMessage = computed(() => {
+    if (props.helper === null || props.helper === "") return null;
+    if (props.helper !== "auto") return props.helper;
+
+    const parts = [];
+
+    if (props.accept) {
+        const formats = props.accept.split(",")
+            .map(formatFileType)
+            .join(", ");
+        parts.push(`Formats acceptés : ${formats}`);
+    }
+
+    if (props.maxSize) {
+        const maxSizeMB = formatSizeToMB(props.maxSize);
+        parts.push(`Taille maximale : ${maxSizeMB} Mo`);
+    }
+
+    return parts.length > 0 ? parts.join(" | ") : null;
+});
 </script>
 
 <template>
-    <div>
-        <!-- Fieldset avec label si présent -->
-        <fieldset v-if="label" class="p-4 rounded-lg space-y-2 border">
-            <legend class="px-2 text-base-600">{{ label }}</legend>
+    <div class="w-full">
+        <!-- Label (avec support du slot) -->
+        <div v-if="label || slots.label" class="mb-2 text-center">
+            <slot name="label">
+                <span class="text-base-content dark:text-base-content-dark">{{ label }}</span>
+            </slot>
+        </div>
 
-            <!-- Zone de drop avec Tooltip -->
-            <Tooltip v-if="tooltip" :placement="tooltipPosition">
-                <div
-                    :class="buildDropZoneClasses"
-                    @dragenter="handleDragEnter"
-                    @dragleave="handleDragLeave"
-                    @dragover.prevent
-                    @drop="handleDrop"
-                >
-                    <!-- Slot pour image/avatar -->
-                    <div v-if="$slots.default" @click="triggerFileInput" class="cursor-pointer">
-                        <slot />
-                    </div>
-
-                    <!-- Input file standard si pas de slot -->
-                    <input
-                        v-show="!$slots.default"
-                        ref="fileInput"
-                        type="file"
-                        :class="getClasses"
-                        :multiple="multiple"
-                        :accept="accept"
-                        @change="handleChange"
-                    />
-
-                    <!-- Overlay pendant le drag -->
-                    <div
-                        v-if="isDragging"
-                        class="absolute inset-0 flex items-center justify-center bg-primary/10 backdrop-blur-sm rounded-lg in-drag"
-                    >
-                        <span class="text-secondary-200 text-shadow-md font-medium">
-                            Déposez vos fichiers ici
-                        </span>
-                    </div>
-                </div>
-
-                <template #content>
-                    {{ tooltip }}
-                </template>
-            </Tooltip>
-
-            <!-- Version sans tooltip -->
+        <!-- Zone de drop avec Tooltip -->
+        <Tooltip :text="tooltipMessage" :placement="tooltipPosition">
             <div
-                v-else
                 :class="buildDropZoneClasses"
                 @dragenter="handleDragEnter"
                 @dragleave="handleDragLeave"
                 @dragover.prevent
                 @drop="handleDrop"
+                @mouseenter="isHovering = true"
+                @mouseleave="isHovering = false"
             >
-                <div v-if="$slots.default" @click="triggerFileInput" class="cursor-pointer">
+                <!-- Slot pour contenu personnalisé (image/avatar) -->
+                <div v-if="slots.default" class="relative cursor-pointer w-full flex justify-center" @click="triggerFileInput">
                     <slot />
+
+                    <!-- Overlay au survol -->
+                    <div v-show="isHovering" :class="overlayClasses">
+                        <div class="flex flex-col items-center gap-3">
+                            <span class="text-content-dark text-shadow-md">
+                                {{ currentFile ? 'Modifier le fichier' : 'Ajouter un fichier' }}
+                            </span>
+
+                            <!-- Bouton de suppression -->
+                            <button
+                                v-if="shouldShowDeleteButton"
+                                @click.stop="handleDelete"
+                                class="text-error-800/80 hover:text-error-600 transition-colors duration-300"
+                                title="Supprimer le fichier"
+                            >
+                                <i class="fa-solid fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
                 </div>
 
+                <!-- Input file standard si pas de slot -->
                 <input
-                    v-show="!$slots.default"
+                    v-show="!slots.default"
                     ref="fileInput"
                     type="file"
                     :class="getClasses"
@@ -290,125 +389,89 @@ const handleChange = (e) => {
                     @change="handleChange"
                 />
 
+                <!-- Overlay pendant le drag -->
                 <div
                     v-if="isDragging"
-                    class="absolute inset-0 flex items-center justify-center bg-primary/10 backdrop-blur-sm rounded-lg in-drag  "
+                    class="absolute inset-0 flex items-center justify-center bg-gradient-to-t from-base-800/20 to-transparent backdrop-blur-lg rounded-lg animate-pulse"
                 >
-                    <span class="text-secondary-200 text-shadow-md font-medium">
-                        Déposez vos fichiers ici
+                    <span class="text-content-dark text-shadow-md font-medium">
+                        Déposez votre fichier ici
                     </span>
                 </div>
             </div>
 
-            <!-- Texte d'aide ou d'erreur -->
-            <label v-if="helperText" class="text-sm text-base-500">{{ helperText }}</label>
-            <label v-if="error" class="text-sm text-error">{{ error }}</label>
-        </fieldset>
+            <template #content>
+                {{ tooltipMessage }}
+            </template>
+        </Tooltip>
 
-        <!-- Version sans fieldset -->
-        <div v-else>
-            <!-- Même contenu que précédemment, sans le fieldset -->
-            <Tooltip v-if="tooltip" :placement="tooltipPosition">
-                <div
-                    :class="buildDropZoneClasses"
-                    @dragenter="handleDragEnter"
-                    @dragleave="handleDragLeave"
-                    @dragover.prevent
-                    @drop="handleDrop"
-                >
-                    <div v-if="$slots.default" @click="triggerFileInput" class="cursor-pointer">
-                        <slot />
-                    </div>
+        <!-- Helper text (avec support du slot) -->
+        <div v-if="helperMessage || slots.helper" class="mt-2 text-sm text-base-500">
+            <slot name="helper">
+                {{ helperMessage }}
+            </slot>
+        </div>
 
-                    <input
-                        v-show="!$slots.default"
-                        ref="fileInput"
-                        type="file"
-                        :class="getClasses"
-                        :multiple="multiple"
-                        :accept="accept"
-                        @change="handleChange"
-                    />
-
-                    <div
-                        v-if="isDragging"
-                        class="absolute inset-0 flex items-center justify-center bg-primary/10 backdrop-blur-sm rounded-lg in-drag"
-                    >
-                        <span class="text-secondary-200 text-shadow-md font-medium">
-                            Déposez vos fichiers ici
-                        </span>
-                    </div>
-                </div>
-
-                <template #content>
-                    {{ tooltip }}
-                </template>
-            </Tooltip>
-
-            <div
-                v-else
-                :class="buildDropZoneClasses"
-                @dragenter="handleDragEnter"
-                @dragleave="handleDragLeave"
-                @dragover.prevent
-                @drop="handleDrop"
-            >
-                <div v-if="$slots.default" @click="triggerFileInput" class="cursor-pointer">
-                    <slot />
-                </div>
-
-                <input
-                    v-show="!$slots.default"
-                    ref="fileInput"
-                    type="file"
-                    :class="getClasses"
-                    :multiple="multiple"
-                    :accept="accept"
-                    @change="handleChange"
-                />
-
-                <div
-                    v-if="isDragging"
-                    class="absolute inset-0 flex items-center justify-center bg-primary/10 backdrop-blur-sm rounded-lg in-drag"
-                >
-                    <span class="text-secondary-200 text-shadow-md font-medium">
-                        Déposez vos fichiers ici
-                    </span>
-                </div>
-            </div>
-
-            <!-- Texte d'aide ou d'erreur -->
-            <div v-if="helperText" class="text-sm text-base-500 mt-1">{{ helperText }}</div>
-            <div v-if="error" class="text-sm text-error mt-1">{{ error }}</div>
+        <!-- Message d'erreur -->
+        <div v-if="error" class="mt-2 text-sm text-error">
+            {{ error }}
         </div>
     </div>
 </template>
 
 <style scoped>
-    .file-input-bordered {
-        border: 1px solid var(--color-secondary-200);
+.scale-102 {
+    transform: scale(1.02);
+}
+
+.text-shadow-md {
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+@keyframes pulse {
+    0%, 100% {
+        opacity: 1;
     }
-    .file-input-bordered:hover {
-        border: 1px solid var(--color-secondary-300);
+    50% {
+        opacity: 0.8;
     }
-    .file-input-bordered:focus {
-        border: 1px solid var(--color-secondary-400);
-    }
-    .file-input-bordered:focus-within {
-        border: 1px solid var(--color-secondary-400);
-    }
-    .file-input-bordered:active {
-        border: 1px solid var(--color-secondary-500);
-    }
-    .file-input-bordered:disabled {
-        border: 1px solid var(--color-secondary-200);
-    }
-    .in-drag {
-        box-shadow:
-        0 0 1px 1px rgba(255, 255, 255, 0.50),
-        0 0 3px 4px rgba(255, 255, 255, 0.10),
-        0 0 5px 6px rgba(255, 255, 255, 0.05),
-        inset 0 0 3px 4px rgba(255, 255, 255, 0.10),
-        inset 0 0 5px 6px rgba(255, 255, 255, 0.05);
-    }
+}
+
+.animate-pulse {
+    animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+.file-input-bordered {
+    border: 1px solid var(--color-secondary-200);
+}
+.file-input-bordered:hover {
+    border: 1px solid var(--color-secondary-300);
+}
+.file-input-bordered:focus {
+    border: 1px solid var(--color-secondary-400);
+}
+.file-input-bordered:focus-within {
+    border: 1px solid var(--color-secondary-400);
+}
+.file-input-bordered:active {
+    border: 1px solid var(--color-secondary-500);
+}
+.file-input-bordered:disabled {
+    border: 1px solid var(--color-secondary-200);
+}
+.in-drag {
+    box-shadow:
+    0 0 1px 1px rgba(255, 255, 255, 0.50),
+    0 0 3px 4px rgba(255, 255, 255, 0.10),
+    0 0 5px 6px rgba(255, 255, 255, 0.05),
+    inset 0 0 3px 4px rgba(255, 255, 255, 0.10),
+    inset 0 0 5px 6px rgba(255, 255, 255, 0.05);
+}
+.hover-overlay {
+    opacity: 0;
+    transition: opacity 0.2s ease-in-out;
+}
+.hover-overlay:hover {
+    opacity: 1;
+}
 </style>

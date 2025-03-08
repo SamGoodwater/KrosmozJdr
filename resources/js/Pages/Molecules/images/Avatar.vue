@@ -31,7 +31,7 @@
  */
 <script setup>
 import { defineProps, computed, ref } from "vue";
-import { imageExists } from "@/Utils/Images";
+import { imageExists } from "@/Utils/files";
 import { getColorFromString } from "@/Utils/Color.js";
 import { extractTheme } from "@/Utils/extractTheme";
 

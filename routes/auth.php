@@ -12,6 +12,8 @@ use App\Http\Controllers\Auth\VerifyEmailController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
 use Inertia\Inertia;
+use App\Rules\FileRules;
+use Illuminate\Support\Facades\Storage;
 
 $uniqidRegex = '[A-Za-z0-9]+';
 $slugRegex = '[A-Za-z0-9]+(?:(-|_).[A-Za-z0-9]+)*';
@@ -69,18 +71,26 @@ Route::prefix('user')->name("user.")->middleware('auth')->group(function () use 
     Route::get('/', [UserController::class, 'dashboard'])->name('dashboard');
     Route::get('/edit', [UserController::class, 'edit'])->name('edit');
     Route::patch('/', [UserController::class, 'update'])->name('update');
+    Route::post('/avatar', [UserController::class, 'updateAvatar'])->name('updateAvatar');
+    Route::delete('/avatar', [UserController::class, 'deleteAvatar'])->name('deleteAvatar');
     Route::delete('/', [UserController::class, 'delete'])->name('delete');
 
     // Routes accessibles uniquement aux admins et super_admins
     Route::middleware('role:admin')->group(function () use ($uniqidRegex) {
         Route::get('/create', [UserController::class, 'create'])->name('create');
         Route::post('/', [UserController::class, 'store'])->name('store');
-        Route::get('/{user:uniqid}/edit', [UserController::class, 'adminEdit'])
+        Route::get('/{user:uniqid}/edit', [UserController::class, 'edit'])
         ->name('admin.edit')
         ->where('user', $uniqidRegex);
-        Route::patch('/{user:uniqid}', [UserController::class, 'adminUpdate'])
+        Route::patch('/{user:uniqid}', [UserController::class, 'update'])
         ->name('admin.update')
         ->where('user', $uniqidRegex);
+        Route::post('/{user:uniqid}/avatar', [UserController::class, 'updateAvatar'])
+            ->name('admin.updateAvatar')
+            ->where('user', $uniqidRegex);
+        Route::delete('/{user:uniqid}/avatar', [UserController::class, 'deleteAvatar'])
+            ->name('admin.deleteAvatar')
+            ->where('user', $uniqidRegex);
         Route::post('/{user:uniqid}', [UserController::class, 'restore'])
         ->name('restore')
         ->where('user', $uniqidRegex);

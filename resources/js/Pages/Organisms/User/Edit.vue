@@ -4,12 +4,13 @@ import InputError from '@/Pages/Atoms/inputs/InputError.vue';
 import InputLabel from '@/Pages/Atoms/inputs/InputLabel.vue';
 import Btn from '@/Pages/Atoms/actions/Btn.vue';
 import TextInput from '@/Pages/Atoms/inputs/TextInput.vue';
-import { Link, useForm, usePage } from '@inertiajs/vue3';
+import { Link, useForm, usePage, router } from '@inertiajs/vue3';
 import useEditableField from '@/Composables/useEditableField';
 import { success, error } from '@/Utils/notificationManager';
 import FileInput from '@/Pages/Atoms/inputs/FileInput.vue';
-import Avatar from '@/Pages/Atoms/images/Avatar.vue';
+import Avatar from '@/Pages/Molecules/images/Avatar.vue';
 import VerifyMailAlert from '@/Pages/Molecules/auth/VerifyMailAlert.vue';
+import axios from 'axios';
 
 const props = defineProps({
     mustVerifyEmail: {
@@ -98,31 +99,83 @@ const updatePassword = () => {
 };
 
 const avatarFile = ref(null);
+const isHovering = ref(false);
+const isPending = ref(false);
 
-const updateAvatar = () => {
-    if (!avatarFile.value) return;
+const updateAvatar = async () => {
+    if (!avatarFile.value || isPending.value) return;
 
     const formData = new FormData();
-    formData.append('avatar', avatarFile.value);
+    formData.append('file', avatarFile.value);
 
-    axios.post(route('profile.updateAvatar'), formData, {
-        headers: {
-            'Content-Type': 'multipart/form-data'
+    isPending.value = true;
+    try {
+        const response = await axios.post(
+            props.isAdminEdit
+                ? route('user.admin.updateAvatar', { user: user.value.id })
+                : route('user.updateAvatar'),
+            formData,
+            {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                },
+            }
+        );
+
+        if (response.data.success) {
+            user.value = response.data.data;
+            if (!props.isAdminEdit || (props.isAdminEdit && user.value.id === page.props.auth.user.id)) {
+                page.props.auth.user.avatar = response.data.data.avatar;
+            }
+            avatarFile.value = null;
+            success('L\'avatar a été mis à jour avec succès');
+        } else {
+            error(response.data.message);
         }
-    }).then((response) => {
-        // Mise à jour de l'avatar dans l'objet user
-        user.value.avatar_url = response.data.avatar_url;
-
-        // Si c'est l'utilisateur connecté qui est modifié
-        if (!props.isAdminEdit || (props.isAdminEdit && user.value.id === page.props.auth.user.id)) {
-            page.props.auth.user.avatar_url = response.data.avatar_url;
+    } catch (err) {
+        if (err.response?.data?.errors) {
+            const validationErrors = Object.values(err.response.data.errors).flat();
+            error(validationErrors[0] || 'Erreur de validation');
+        } else {
+            error(err.response?.data?.message || 'Une erreur est survenue lors de la mise à jour de l\'avatar');
         }
+    } finally {
+        isPending.value = false;
+    }
+};
 
-        avatarFile.value = null;
-        success('L\'avatar a été mis à jour avec succès');
-    }).catch(() => {
-        error('Une erreur est survenue lors de la mise à jour de l\'avatar');
-    });
+const deleteAvatar = async () => {
+    if (isPending.value) return;
+
+    isPending.value = true;
+    try {
+        const response = await axios.delete(
+            props.isAdminEdit
+                ? route('user.admin.deleteAvatar', { user: user.value.id })
+                : route('user.deleteAvatar'),
+            {
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'Accept': 'application/json',
+                },
+            }
+        );
+
+        if (response.data.success) {
+            user.value = response.data.data;
+            if (!props.isAdminEdit || (props.isAdminEdit && user.value.id === page.props.auth.user.id)) {
+                page.props.auth.user.avatar = response.data.data.avatar;
+            }
+            success('L\'avatar a été supprimé avec succès');
+        } else {
+            error(response.data.message);
+        }
+    } catch (err) {
+        console.error('Erreur lors de la suppression de l\'avatar:', err);
+        error(err.response?.data?.message || 'Une erreur est survenue lors de la suppression de l\'avatar');
+    } finally {
+        isPending.value = false;
+    }
 };
 
 // Ajouter un watcher pour déclencher l'upload automatiquement
@@ -153,25 +206,28 @@ watch(avatarFile, (newFile) => {
             <div class="flex flex-row gap-4">
                 <div class="flex flex-col gap-4 w-1/2">
                     <InputLabel for="avatar" value="Avatar" />
-                    <FileInput
-                        ref="avatar"
-                        accept="image/*"
-                        :maxSize="5242880"
-                        tooltip="Cliquez pour changer votre avatar"
-                        helperText="Format accepté : JPG, PNG, GIF, SVG. Taille maximale : 5MB"
-                        @error="(message) => error(message)"
-                        v-model="avatarFile"
-                        class="mt-1"
-                        theme="ghost"
-                    >
-                        <!-- On utilise le composant Avatar existant comme zone de dépôt -->
-                        <Avatar
-                            :source="user.avatar"
-                            :alt-text="user.name"
-                            size="3xl"
-                            theme="rounded-full"
-                        />
-                    </FileInput>
+                    <div class="relative group">
+                        <FileInput
+                            ref="avatar"
+                            accept="image/*"
+                            :maxSize="5242880"
+                            tooltip="Déposer ou cliquer pour changer votre avatar"
+                            helper="Format accepté : JPG, PNG, GIF, SVG. Taille maximale : 5MB"
+                            @error="(message) => error(message)"
+                            v-model="avatarFile"
+                            :currentFile="user.avatar"
+                            @delete="deleteAvatar"
+                            class="mt-1"
+                            theme="ghost"
+                        >
+                            <Avatar
+                                :source="user.avatar"
+                                :alt-text="user.name"
+                                size="3xl"
+                                theme="rounded-full"
+                            />
+                        </FileInput>
+                    </div>
                 </div>
 
                 <div class="flex flex-col gap-4 w-1/2">
@@ -286,3 +342,14 @@ watch(avatarFile, (newFile) => {
         </form>
     </section>
 </template>
+
+<style scoped>
+.avatar-overlay {
+    opacity: 0;
+    transition: opacity 0.2s ease-in-out;
+}
+
+.group:hover .avatar-overlay {
+    opacity: 1;
+}
+</style>

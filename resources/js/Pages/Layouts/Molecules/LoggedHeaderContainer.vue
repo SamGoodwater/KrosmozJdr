@@ -1,7 +1,7 @@
 <script setup>
 import Btn from "@/Pages/Atoms/actions/Btn.vue";
 import Route from "@/Pages/Atoms/text/Route.vue";
-import Avatar from "@/Pages/Atoms/images/Avatar.vue";
+import Avatar from "@/Pages/Molecules/images/Avatar.vue";
 import Dropdown from "@/Pages/Atoms/actions/Dropdown.vue";
 import Tooltip from "@/Pages/Atoms/feedback/Tooltip.vue";
 import { usePage } from "@inertiajs/vue3";

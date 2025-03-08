@@ -4,7 +4,7 @@ namespace App\Http\Resources;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
-
+use App\Models\User;
 class UserResource extends JsonResource
 {
     /**
@@ -19,7 +19,7 @@ class UserResource extends JsonResource
             'name' => $this->name,
             'email' => $this->email,
             'role' => $this->role,
-            'avatar' => $this->avatarPath(),
+            'avatar' => $this->avatarPath() === asset(User::DEFAULT_AVATAR) ? null : $this->avatarPath(),
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
 

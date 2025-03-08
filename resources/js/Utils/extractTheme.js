@@ -1,16 +1,22 @@
 const THEME_PATTERNS = {
     // Apparence
     shadow: {
-        regex: /(?:^|\s)(?<capture>shadow-(none|xs|sm|md|lg|xl|2xl))(?:\s|$)/,
+        regex: /(?:^|\s)(?<capture>(box-shadow-|shadow-|boxShadow-)(none|xs|sm|md|lg|xl|2xl|3xl|4xl))(?:\s|$)/,
+    },
+    "box-shadow": {
+        regex: /(?:^|\s)(?<capture>(box-shadow-|shadow-|boxShadow-)(none|xs|sm|md|lg|xl|2xl|3xl|4xl))(?:\s|$)/,
     },
     blur: {
-        regex: /(?:^|\s)(?<capture>blur-(none|xs|sm|md|lg|xl|2xl))(?:\s|$)/,
+        regex: /(?:^|\s)(?<capture>(backdrop-blur-|blur-|backdropBlur-)(none|xs|sm|md|lg|xl|2xl|3xl|4xl))(?:\s|$)/,
+    },
+    "backdrop-blur": {
+        regex: /(?:^|\s)(?<capture>(backdrop-blur-|blur-|backdropBlur-)(none|xs|sm|md|lg|xl|2xl|3xl|4xl))(?:\s|$)/,
     },
     opacity: {
         regex: /(?:^|\s)(?<capture>opacity-(\d{1,2}|100))(?:\s|$)/,
     },
     rounded: {
-        regex: /(?:^|\s)(?<capture>rounded-(none|sm|md|lg|xl|2xl|3xl|full))(?:\s|$)/,
+        regex: /(?:^|\s)(?<capture>rounded-(none|sm|md|lg|xl|2xl|3xl|4xl|full))(?:\s|$)/,
     },
     bordered: {
         regex: /(?:^|\s)(?<capture>border|bordered)(?:\s|$)/,
@@ -23,14 +29,26 @@ const THEME_PATTERNS = {
     bgColor: {
         regex: /(?:^|\s)(?<capture>bg-(([a-zA-Z]{3,}-((50)|([1-9]00)))|primary|secondary|success|accent|neutral|info|warning|error))(?:\s|$)/,
     },
+    "bg-color": {
+        regex: /(?:^|\s)(?<capture>bg-(([a-zA-Z]{3,}-((50)|([1-9]00)))|primary|secondary|success|accent|neutral|info|warning|error))(?:\s|$)/,
+    },
     borderColor: {
+        regex: /(?:^|\s)(?<capture>border-(([a-zA-Z]{3,}-((50)|([1-9]00)))|primary|secondary|success|accent|neutral|info|warning|error))(?:\s|$)/,
+    },
+    "border-color": {
         regex: /(?:^|\s)(?<capture>border-(([a-zA-Z]{3,}-((50)|([1-9]00)))|primary|secondary|success|accent|neutral|info|warning|error))(?:\s|$)/,
     },
     textColor: {
         regex: /(?:^|\s)(?<capture>text-(([a-zA-Z]{3,}-((50)|([1-9]00)))|primary|secondary|success|accent|neutral|info|warning|error))(?:\s|$)/,
     },
+    "text-color": {
+        regex: /(?:^|\s)(?<capture>text-(([a-zA-Z]{3,}-((50)|([1-9]00)))|primary|secondary|success|accent|neutral|info|warning|error))(?:\s|$)/,
+    },
     colorAuto: {
-        regex: /(?:^|\s)(?<capture>color-auto)(?:\s|$)/,
+        regex: /(?:^|\s)(?<capture>color-auto|colorAuto)(?:\s|$)/,
+    },
+    "color-auto": {
+        regex: /(?:^|\s)(?<capture>color-auto|colorAuto)(?:\s|$)/,
     },
 
     // Dimensions
@@ -46,6 +64,9 @@ const THEME_PATTERNS = {
 
     // Style spécifique
     styled: {
+        regex: /(?:^|\s)(?<capture>glass|outline|link|ghost)(?:\s|$)/,
+    },
+    style: {
         regex: /(?:^|\s)(?<capture>glass|outline|link|ghost)(?:\s|$)/,
     },
     face: {
