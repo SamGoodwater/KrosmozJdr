@@ -24,17 +24,20 @@ class PageFilterRequest extends FormRequest
     public function rules(): array
     {
         return [
-            "name" => ["string", "min:4", "max:255", "required", Rule::unique("pages", "name")->ignore($this->route()->parameter('page'))],
+            'name' => ['string', 'max:255'],
+            'slug' => ['string', 'max:255', 'unique:pages,slug,' . $this->route('page')?->id],
+            'is_public' => ['boolean'],
+            'sections' => ['array'],
+            'sections.*.title' => ['string', 'max:255'],
+            'sections.*.content' => ['nullable', 'string'],
+            'sections.*.order_num' => ['integer'],
             "keyword" => ["string", "nullable"],
-            "slug" => ["string", "min:1", "max:255", "required", Rule::unique("pages", "slug")->ignore($this->route()->parameter('page')), "regex:/^[A-Za-z0-9]+(?:(-|_).[A-Za-z0-9]+)*$/"],
             "order_num" => ["integer", "min:0"],
             "is_dropdown" => ["boolean"],
-            "is_public" => ["boolean"],
             "is_visible" => ["boolean"],
             "is_editable" => ["boolean"],
             "page_id" => ["integer", "exists:pages,uniqid", "nullable"],
             "uniqid" => ["string", "min:1", "max:255", "required", Rule::unique("pages", "uniqid")->ignore($this->route()->parameter('page'))],
-            "sections" => ["array", 'exists:sections,uniqid'],
             'created_by' => ["integer", "nullable", "exists:users,id"],
             'image' => ["string", "nullable"],
         ];

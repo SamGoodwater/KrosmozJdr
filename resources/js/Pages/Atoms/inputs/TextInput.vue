@@ -2,6 +2,8 @@
 import { ref, onMounted, defineExpose, computed, onUnmounted } from "vue";
 import { useAttrs } from "vue";
 import { extractTheme } from "@/Utils/extractTheme";
+import InputLabel from '@/Pages/Atoms/inputs/InputLabel.vue';
+import InputError from '@/Pages/Atoms/inputs/InputError.vue';
 
 const props = defineProps({
     modelValue: {
@@ -39,6 +41,22 @@ const props = defineProps({
     debounceTime: {
         type: Number,
         default: 500,
+    },
+    useInputLabel: {
+        type: Boolean,
+        default: true,
+    },
+    useInputError: {
+        type: Boolean,
+        default: true,
+    },
+    inputLabel: {
+        type: String,
+        default: '',
+    },
+    errorMessage: {
+        type: String,
+        default: '',
     },
 });
 
@@ -189,10 +207,13 @@ input:-webkit-autofill {
 
 <template>
     <div class="relative">
-        <label
-            v-if="labelInside"
-            :class="`input border-${themeProps.color || 'primary-500'} text-${themeProps.color || 'primary-500'} input-bordered flex items-center gap-2`"
-        >
+        <InputLabel v-if="useInputLabel" :for="attrs.id" :value="inputLabel || attrs.id">
+            <template v-if="$slots.inputLabel">
+                <slot name="inputLabel" />
+            </template>
+        </InputLabel>
+
+        <label v-if="labelInside" :class="`input border-${themeProps.color || 'primary-500'} text-${themeProps.color || 'primary-500'} input-bordered flex items-center gap-2`">
             <slot v-if="labelInside" name="before" />
             <input
                 v-bind="attrs"
@@ -248,5 +269,6 @@ input:-webkit-autofill {
                 <i class="fa-solid fa-arrow-rotate-left"></i>
             </button>
         </div>
+        <InputError v-if="useInputError" :message="errorMessage" class="mt-2" />
     </div>
 </template>

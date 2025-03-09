@@ -1,7 +1,6 @@
 <script setup>
 import { ref, computed, watch } from 'vue';
-import InputError from '@/Pages/Atoms/inputs/InputError.vue';
-import InputLabel from '@/Pages/Atoms/inputs/InputLabel.vue';
+
 import Btn from '@/Pages/Atoms/actions/Btn.vue';
 import TextInput from '@/Pages/Atoms/inputs/TextInput.vue';
 import { Link, useForm, usePage, router } from '@inertiajs/vue3';
@@ -11,6 +10,10 @@ import FileInput from '@/Pages/Atoms/inputs/FileInput.vue';
 import Avatar from '@/Pages/Molecules/images/Avatar.vue';
 import VerifyMailAlert from '@/Pages/Molecules/auth/VerifyMailAlert.vue';
 import axios from 'axios';
+import PasswordInput from '@/Pages/Atoms/inputs/PasswordInput.vue';
+import Dropdown from '@/Pages/Atoms/actions/Dropdown.vue';
+import BadgeRole from "@/Pages/Organisms/User/Molecules/badgeRole.vue";
+import { verifyRole, ROLES, getRoleTranslation } from '@/Utils/Roles';
 
 const props = defineProps({
     mustVerifyEmail: {
@@ -19,10 +22,6 @@ const props = defineProps({
     status: {
         type: String,
     },
-    isAdminEdit: {
-        type: Boolean,
-        default: false
-    }
 });
 
 const page = usePage();
@@ -44,7 +43,7 @@ const fields = {
             Object.assign(user.value, response.data);
 
             // Si c'est l'utilisateur connecté qui est modifié (soit un utilisateur normal, soit un admin qui modifie son propre compte)
-            if (!props.isAdminEdit || (props.isAdminEdit && user.value.id === page.props.auth.user.id)) {
+            if (!verifyRole(page.props.auth.user.role, ROLES.ADMIN) || (verifyRole(page.props.auth.user.role, ROLES.ADMIN) && user.value.id === page.props.auth.user.id)) {
                 Object.assign(page.props.auth.user, response.data);
             }
             success('Le nom a été mis à jour avec succès');
@@ -59,7 +58,7 @@ const fields = {
             Object.assign(user.value, response.data);
 
             // Si c'est l'utilisateur connecté qui est modifié (soit un utilisateur normal, soit un admin qui modifie son propre compte)
-            if (!props.isAdminEdit || (props.isAdminEdit && user.value.id === page.props.auth.user.id)) {
+            if (!verifyRole(page.props.auth.user.role, ROLES.ADMIN) || (verifyRole(page.props.auth.user.role, ROLES.ADMIN) && user.value.id === page.props.auth.user.id)) {
                 Object.assign(page.props.auth.user, response.data);
             }
             success('L\'email a été mis à jour avec succès');
@@ -84,7 +83,7 @@ const updatePassword = () => {
             formPassword.reset();
             success('Le mot de passe a été mis à jour avec succès');
         },
-        onError: () => {
+        onError: (errors) => {
             error('Une erreur est survenue lors de la mise à jour du mot de passe');
             if (formPassword.errors.password) {
                 formPassword.reset('password', 'password_confirmation');
@@ -108,10 +107,19 @@ const updateAvatar = async () => {
     const formData = new FormData();
     formData.append('file', avatarFile.value);
 
+    // Ajouter un paramètre pour supprimer l'ancien fichier
+    if (user.value.avatar) {
+        formData.append('deleteOldFile', user.value.avatar);
+    }
+
+    // Ajouter un timestamp pour éviter le cache
+    const timestamp = Date.now();
+    formData.append('timestamp', timestamp);
+
     isPending.value = true;
     try {
         const response = await axios.post(
-            props.isAdminEdit
+            verifyRole(page.props.auth.user.role, ROLES.ADMIN)
                 ? route('user.admin.updateAvatar', { user: user.value.id })
                 : route('user.updateAvatar'),
             formData,
@@ -119,13 +127,19 @@ const updateAvatar = async () => {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                 },
+                params: {
+                    timestamp: timestamp // Ajouter le timestamp dans les paramètres
+                }
             }
         );
 
         if (response.data.success) {
-            user.value = response.data.data;
-            if (!props.isAdminEdit || (props.isAdminEdit && user.value.id === page.props.auth.user.id)) {
-                page.props.auth.user.avatar = response.data.data.avatar;
+            // Forcer le rafraîchissement de l'image
+            const newAvatarUrl = response.data.data.avatar + `?timestamp=${timestamp}`;
+            user.value.avatar = newAvatarUrl;
+
+            if (!verifyRole(page.props.auth.user.role, ROLES.ADMIN) || (verifyRole(page.props.auth.user.role, ROLES.ADMIN) && user.value.id === page.props.auth.user.id)) {
+                page.props.auth.user.avatar = newAvatarUrl + `?timestamp=${timestamp}`;
             }
             avatarFile.value = null;
             success('L\'avatar a été mis à jour avec succès');
@@ -150,7 +164,7 @@ const deleteAvatar = async () => {
     isPending.value = true;
     try {
         const response = await axios.delete(
-            props.isAdminEdit
+            verifyRole(page.props.auth.user.role, ROLES.ADMIN)
                 ? route('user.admin.deleteAvatar', { user: user.value.id })
                 : route('user.deleteAvatar'),
             {
@@ -162,9 +176,11 @@ const deleteAvatar = async () => {
         );
 
         if (response.data.success) {
-            user.value = response.data.data;
-            if (!props.isAdminEdit || (props.isAdminEdit && user.value.id === page.props.auth.user.id)) {
-                page.props.auth.user.avatar = response.data.data.avatar;
+            // Mettre explicitement l'avatar à null
+            user.value.avatar = null;
+
+            if (!verifyRole(page.props.auth.user.role, ROLES.ADMIN) || (verifyRole(page.props.auth.user.role, ROLES.ADMIN) && user.value.id === page.props.auth.user.id)) {
+                page.props.auth.user.avatar = null;
             }
             success('L\'avatar a été supprimé avec succès');
         } else {
@@ -185,13 +201,29 @@ watch(avatarFile, (newFile) => {
     }
 });
 
+const formRole = useForm({
+    role: user.value.role,
+});
+
+const updateRole = () => {
+    formRole.patch(route('user.admin.updateRole', { user: user.value.id }), {
+        preserveScroll: true,
+        onSuccess: () => {
+            success('Le rôle a été mis à jour avec succès');
+        },
+        onError: () => {
+            error('Une erreur est survenue lors de la mise à jour du rôle');
+        },
+    });
+};
+
 </script>
 
 <template>
     <section>
         <header>
             <h2 class="text-lg font-medium text-content-300">
-                {{ isAdminEdit ? `Modification du profil de ${user.name}` : 'Informations du profil' }}
+                {{ verifyRole(page.props.auth.user.role, ROLES.ADMIN) ? `Modification du profil de ${user.name}` : 'Informations du profil' }}
             </h2>
 
             <p class="mt-1 text-sm text-content-600">
@@ -199,41 +231,38 @@ watch(avatarFile, (newFile) => {
             </p>
         </header>
 
-        <form
-            @submit.prevent class="mt-6 space-y-6"
-            autocomplete="off"
-        >
+        <form @submit.prevent class="mt-6 space-y-6" autocomplete="off">
             <div class="flex flex-row gap-4">
                 <div class="flex flex-col gap-4 w-1/2">
-                    <InputLabel for="avatar" value="Avatar" />
-                    <div class="relative group">
-                        <FileInput
-                            ref="avatar"
-                            accept="image/*"
-                            :maxSize="5242880"
-                            tooltip="Déposer ou cliquer pour changer votre avatar"
-                            helper="Format accepté : JPG, PNG, GIF, SVG. Taille maximale : 5MB"
-                            @error="(message) => error(message)"
-                            v-model="avatarFile"
-                            :currentFile="user.avatar"
-                            @delete="deleteAvatar"
-                            class="mt-1"
-                            theme="ghost"
-                        >
-                            <Avatar
-                                :source="user.avatar"
-                                :alt-text="user.name"
-                                size="3xl"
-                                theme="rounded-full"
-                            />
-                        </FileInput>
-                    </div>
+                    <FileInput
+                        ref="avatar"
+                        accept="image/*"
+                        :maxSize="5242880"
+                        tooltip="Déposer ou cliquer pour changer votre avatar"
+                        helper="Format accepté : JPG, PNG, GIF, SVG. Taille maximale : 5MB"
+                        @error="(message) => error(message)"
+                        v-model="avatarFile"
+                        :currentFile="user.avatar"
+                        @delete="deleteAvatar"
+                        class="mt-1"
+                        theme="ghost"
+                        inputLabel="Avatar"
+                    >
+                        <Avatar
+                            :source="user.avatar"
+                            :alt-text="user.name"
+                            size="3xl"
+                            theme="rounded-full"
+                        />
+                    </FileInput>
                 </div>
 
                 <div class="flex flex-col gap-4 w-1/2">
+                    <div class="mt-2">
+                        <BadgeRole :role="user.role" />
+                    </div>
                     <div>
-                        <InputLabel for="name" value="Pseudo" />
-                            <TextInput
+                        <TextInput
                             id="name"
                             type="text"
                             class="mt-1 block w-full"
@@ -241,12 +270,11 @@ watch(avatarFile, (newFile) => {
                             required
                             autofocus
                             :useFieldComposable="true"
+                            inputLabel="Pseudo"
                         />
-                        <InputError class="mt-2" :message="form.errors.name" />
                     </div>
 
                     <div>
-                        <InputLabel for="email" value="Adresse mail" />
                         <TextInput
                             id="email"
                             type="email"
@@ -254,8 +282,8 @@ watch(avatarFile, (newFile) => {
                             :field="fields.email"
                             required
                             :useFieldComposable="true"
+                            inputLabel="Adresse mail"
                         />
-                        <InputError class="mt-2" :message="form.errors.email" />
                     </div>
 
                     <div v-if="!user.is_verified">
@@ -265,65 +293,49 @@ watch(avatarFile, (newFile) => {
             </div>
         </form>
 
-                    <!-- Trait de séparation -->
         <hr class="border-gray-300 dark:border-gray-700 my-4" />
 
         <form @submit.prevent="updatePassword" class="mt-6 space-y-6">
             <div>
-                <InputLabel for="current_password" value="Mot de passe actuel" />
-
-                <TextInput
+                <PasswordInput
                     id="current_password"
                     ref="currentPasswordInput"
                     v-model="formPassword.current_password"
-                    type="password"
                     class="mt-1 block w-full"
                     autocomplete="current-password"
-                />
-
-                <InputError
-                    :message="formPassword.errors.current_password"
-                    class="mt-2"
+                    required
+                    inputLabel="Mot de passe actuel"
+                    :errorMessage="formPassword.errors.current_password"
                 />
             </div>
 
             <div>
-                <InputLabel for="password" value="Nouveau mot de passe" />
-
-                <TextInput
+                <PasswordInput
                     id="password"
                     ref="passwordInput"
                     v-model="formPassword.password"
-                    type="password"
                     class="mt-1 block w-full"
                     autocomplete="new-password"
+                    required
+                    inputLabel="Nouveau mot de passe"
+                    :errorMessage="formPassword.errors.password"
                 />
-
-                <InputError :message="formPassword.errors.password" class="mt-2" />
             </div>
 
             <div>
-                <InputLabel
-                    for="password_confirmation"
-                    value="Confirmer le mot de passe"
-                />
-
-                <TextInput
+                <PasswordInput
                     id="password_confirmation"
                     v-model="formPassword.password_confirmation"
-                    type="password"
                     class="mt-1 block w-full"
                     autocomplete="new-password"
-                />
-
-                <InputError
-                    :message="formPassword.errors.password_confirmation"
-                    class="mt-2"
+                    required
+                    inputLabel="Confirmer le mot de passe"
+                    :errorMessage="formPassword.errors.password_confirmation"
                 />
             </div>
 
             <div class="flex items-center gap-4">
-                <Btn :disabled="formPassword.processing" label="Enregistrer" />
+                <Btn type="submit" :disabled="formPassword.processing" label="Enregistrer" />
 
                 <Transition
                     enter-active-class="transition ease-in-out"
@@ -331,15 +343,43 @@ watch(avatarFile, (newFile) => {
                     leave-active-class="transition ease-in-out"
                     leave-to-class="opacity-0"
                 >
-                    <p
-                        v-if="formPassword.recentlySuccessful"
-                        class="text-sm text-gray-600"
-                    >
-                        Enregistré.
+                    <p v-if="formPassword.recentlySuccessful" class="text-sm text-gray-600">
+                        Modifier le mot de passe.
                     </p>
                 </Transition>
             </div>
         </form>
+
+        <div v-if="verifyRole(page.props.auth.user.role, ROLES.ADMIN)" class="mt-6">
+            <hr class="border-gray-300 dark:border-gray-700 my-4" />
+
+            <div class="mt-6">
+                <h3 class="text-lg font-medium text-content-300">
+                    Actions administrateurs
+                </h3>
+            </div>
+
+            <Dropdown
+                :label="formRole.role"
+                placement="bottom-end"
+                color="base-100"
+                inputLabel="Modifier le rôle de l'utilisateur"
+                :errorMessage="formRole.errors.role"
+            >
+                <template #list>
+                    <li v-for="(roleValue, roleKey) in $page.props.roles" :key="roleKey">
+                        <button
+                            type="button"
+                            @click="formRole.role = roleValue; updateRole()"
+                            class="w-full text-left px-4 py-2 hover:bg-base-200"
+                            :class="{ 'bg-base-200': formRole.role === roleValue }"
+                        >
+                            {{ getRoleTranslation(roleValue) }}
+                        </button>
+                    </li>
+                </template>
+            </Dropdown>
+        </div>
     </section>
 </template>
 

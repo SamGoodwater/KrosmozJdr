@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Services\DataService;
 use App\Events\NotificationSuperAdminEvent;
 use Inertia\Inertia;
+use App\Http\Resources\PageResource;
 
 class PageController extends Controller
 {
@@ -17,29 +18,31 @@ class PageController extends Controller
 
     public function index(PageFilterRequest $request): \Inertia\Response
     {
-        $this->authorize('viewAny', Page::class);
-
-        // Récupère la valeur de 'paginationMaxDisplay' depuis la requête, avec une valeur par défaut de 25
+        // Pas besoin d'autorisation pour la liste
         $paginationMaxDisplay = max(1, min(500, (int) $request->input('paginationMaxDisplay', 25)));
 
+        $pages = Page::where('is_public', true)
+            ->with('sections')
+            ->orderBy('order_num')
+            ->paginate($paginationMaxDisplay);
 
-        // Il faut orderBy les sections par order_num
-        $pages = Page::with('page', 'sections')->orderBy('order_num')->paginate($paginationMaxDisplay);
-
-        return Inertia::render('Pages/index', [
-            'pages' => $pages
+        return Inertia::render('Pages/Index', [
+            'pages' => PageResource::collection($pages),
+            'canCreate' => Auth::check() && Auth::user()->can('create', Page::class)
         ]);
     }
 
     public function show(Page $page): \Inertia\Response
     {
-        $this->authorize('view', $page);
+        // Vérifier si la page est publique ou si l'utilisateur a le droit de la voir
+        if (!$page->is_public && !Auth::user()?->can('view', $page)) {
+            abort(403);
+        }
 
         return Inertia::render('Pages/Show', [
-            'page' => $page,
-            "sections" => $page->sections()->orderBy("order_num")->get(),
-            "campaigns" => $page->campaigns()->get(),
-            "scenarios" => $page->scenarios()->get(),
+            'page' => new PageResource($page->load('sections')),
+            'canEdit' => Auth::check() && Auth::user()->can('update', $page),
+            'canDelete' => Auth::check() && Auth::user()->can('delete', $page)
         ]);
     }
 

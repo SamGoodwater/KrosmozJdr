@@ -1,7 +1,9 @@
 <script setup>
-import { computed, ref, onMounted, onUnmounted } from "vue";
+import { computed, ref, onMounted, onUnmounted, useAttrs } from "vue";
 import { extractTheme } from "@/Utils/extractTheme";
 import useEditableField from '@/Composables/useEditableField'; // Import du composable
+import InputLabel from '@/Pages/Atoms/inputs/InputLabel.vue';
+import InputError from '@/Pages/Atoms/inputs/InputError.vue';
 
 const props = defineProps({
     theme: {
@@ -32,11 +34,31 @@ const props = defineProps({
         type: Number,
         default: 500,
     },
+    useInputLabel: {
+        type: Boolean,
+        default: true,
+    },
+    useInputError: {
+        type: Boolean,
+        default: true,
+    },
+    inputLabel: {
+        type: String,
+        default: '',
+    },
+    errorMessage: {
+        type: String,
+        default: '',
+    },
 });
 
 const emit = defineEmits(["update:value"]);
 const input = ref(null);
 const debounceTimeout = ref(null);
+const attrs = useAttrs();
+
+// Générer un ID unique pour le composant
+const componentId = computed(() => attrs.id || `number-input-${Math.random().toString(36).substr(2, 9)}`);
 
 const editableField = useEditableField(props.value); // Utilisation du composable
 
@@ -144,8 +166,15 @@ onUnmounted(() => {
 
 <template>
     <div class="relative">
+        <InputLabel v-if="useInputLabel" :for="componentId" :value="inputLabel || 'Nombre'">
+            <template v-if="$slots.inputLabel">
+                <slot name="inputLabel" />
+            </template>
+        </InputLabel>
+
         <input
             ref="input"
+            :id="componentId"
             type="number"
             :value="displayValue"
             @input="updateValue"
@@ -166,5 +195,6 @@ onUnmounted(() => {
         >
             <i class="fa-solid fa-arrow-rotate-left"></i>
         </button>
+        <InputError v-if="useInputError" :message="errorMessage" class="mt-2" />
     </div>
 </template>

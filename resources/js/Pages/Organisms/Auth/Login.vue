@@ -1,7 +1,5 @@
 <script setup>
 import Checkbox from "@/Pages/Atoms/inputs/Checkbox.vue";
-import InputError from "@/Pages/Atoms/inputs/InputError.vue";
-import InputLabel from "@/Pages/Atoms/inputs/InputLabel.vue";
 import Btn from "@/Pages/Atoms/actions/Btn.vue";
 import Route from "@/Pages/Atoms/text/Route.vue";
 import TextInput from "@/Pages/Atoms/inputs/TextInput.vue";
@@ -43,7 +41,6 @@ onMounted(() => {
 
         <form @submit.prevent="submit" method="POST" autocomplete="on" id="login-form">
             <div class="flex flex-col gap-2">
-                <InputLabel for="identifier" value="Email ou Pseudo" />
                 <TextInput
                     id="identifier"
                     theme="secondary autofocus required"
@@ -52,30 +49,31 @@ onMounted(() => {
                     autocomplete="username"
                     name="identifier"
                     :useFieldComposable="false"
+                    inputLabel="Email ou Pseudo"
+                    :errorMessage="form.errors.identifier"
                 />
-                <InputError class="mt-2" :message="form.errors.identifier" />
             </div>
 
             <div class="mt-4 flex flex-col gap-2">
-                <InputLabel for="password" value="Password" />
                 <PasswordInput
                     id="password"
                     theme="secondary required"
                     v-model="form.password"
                     name="password"
+                    inputLabel="Mot de passe"
+                    :errorMessage="form.errors.password"
                 />
-                <InputError class="mt-2" :message="form.errors.password" />
             </div>
 
             <div class="mt-4">
                 <Checkbox
+                    id="remember"
                     class="ms-2"
                     theme="sm"
-                    id="remember"
                     name="remember"
                     :value="form.remember"
                     @update:value="(val) => form.remember = val"
-                    label="Se rappeler de mes identifiants"
+                    inputLabel="Se rappeler de mes identifiants"
                     :useFieldComposable="false"
                 />
             </div>

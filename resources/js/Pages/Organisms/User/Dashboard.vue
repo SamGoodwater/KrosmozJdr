@@ -11,7 +11,6 @@ import BadgeRole from "@/Pages/Organisms/User/Molecules/badgeRole.vue";
 import Container from "@/Pages/Atoms/panels/Container.vue";
 import Badge from "@/Pages/Atoms/text/Badge.vue";
 import ModuleCard from "@/Pages/Molecules/modules/ModuleCard.vue";
-import Card from "@/Pages/Atoms/panels/Card.vue";
 import Tooltip from "@/Pages/Atoms/feedback/Tooltip.vue";
 import VerifyMailAlert from "@/Pages/Molecules/auth/VerifyMailAlert.vue";
 
@@ -33,10 +32,10 @@ onMounted(() => {
     <Container>
         <div class="flex flex-col space-y-4">
             <div
-                class="flex justify-between gap-6 max-sm:gap-2 flex-wrap ml-20 max-sm:ml-0"
+                class="flex justify-between gap-6 max-sm:gap-3 flex-wrap"
             >
                 <!-- Informations utilisateur -->
-                <div class="flex items-center gap-8 max-md:gap-6 max-sm:gap-2">
+                <div class="flex items-center gap-4 max-md:gap-6 max-sm:gap-2 max-[930px]:flex-wrap justify-between w-full">
                     <div class="flex items-center justify-center space-x-4">
                         <!-- Avatar : on passe la source (avatar) et le texte alternatif (nom) -->
                         <Avatar
@@ -63,15 +62,14 @@ onMounted(() => {
                             </div>
                         </div>
                     </div>
-                    <div v-if="!user.is_verified">
-                        <VerifyMailAlert />
+                    <div class="flex justify-end max-[930px]:w-full">
+                        <Route route="user.edit">
+                            <Btn theme="md primary glass" label="Éditer" />
+                        </Route>
                     </div>
                 </div>
-
-                <div>
-                    <Route route="user.edit">
-                        <Btn theme="md primary glass" label="Éditer" />
-                    </Route>
+                <div v-if="!user.is_verified">
+                    <VerifyMailAlert />
                 </div>
             </div>
 

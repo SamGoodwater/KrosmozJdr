@@ -2,6 +2,8 @@
 import { ref, computed } from "vue";
 import { useAttrs } from "vue";
 import { extractTheme } from "@/Utils/extractTheme";
+import InputLabel from '@/Pages/Atoms/inputs/InputLabel.vue';
+import InputError from '@/Pages/Atoms/inputs/InputError.vue';
 
 const props = defineProps({
     modelValue: {
@@ -15,6 +17,22 @@ const props = defineProps({
     placeholder: {
         type: String,
         default: "*************",
+    },
+    useInputLabel: {
+        type: Boolean,
+        default: true,
+    },
+    useInputError: {
+        type: Boolean,
+        default: true,
+    },
+    inputLabel: {
+        type: String,
+        default: '',
+    },
+    errorMessage: {
+        type: String,
+        default: '',
     },
 });
 
@@ -57,6 +75,12 @@ const updateValue = (event) => {
 
 <template>
     <div class="relative">
+        <InputLabel v-if="useInputLabel" :for="attrs.id" :value="inputLabel || attrs.id">
+            <template v-if="$slots.inputLabel">
+                <slot name="inputLabel" />
+            </template>
+        </InputLabel>
+
         <input
             v-bind="attrs"
             :value="modelValue"
@@ -77,5 +101,6 @@ const updateValue = (event) => {
                 <i v-else class="fa-solid fa-eye-slash"></i>
             </button>
         </div>
+        <InputError v-if="useInputError" :message="errorMessage" class="mt-2" />
     </div>
 </template>

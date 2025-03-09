@@ -1,8 +1,10 @@
 <script setup>
-import { ref, computed, useSlots } from "vue";
+import { ref, computed, useSlots, useAttrs } from "vue";
 import { extractTheme } from "@/Utils/extractTheme";
 import Tooltip from "../feedback/Tooltip.vue";
 import { imageExists, formatSizeToMB, validateFile, formatFileType } from "@/Utils/files";
+import InputLabel from '@/Pages/Atoms/inputs/InputLabel.vue';
+import InputError from '@/Pages/Atoms/inputs/InputError.vue';
 
 const props = defineProps({
     modelValue: {
@@ -96,6 +98,22 @@ const props = defineProps({
         type: String,
         default: "",
     },
+    useInputLabel: {
+        type: Boolean,
+        default: true,
+    },
+    useInputError: {
+        type: Boolean,
+        default: true,
+    },
+    inputLabel: {
+        type: String,
+        default: '',
+    },
+    errorMessage: {
+        type: String,
+        default: '',
+    },
 });
 
 const emit = defineEmits([
@@ -108,10 +126,14 @@ const fileInput = ref(null);
 const isDragging = ref(false);
 const dragCounter = ref(0);
 const isHovering = ref(false);
-
+const attrs = useAttrs();
 const slots = useSlots();
 
-// Construction des classes CSS
+// Générer un ID unique pour le composant
+const componentId = computed(() => attrs.id || `file-input-${Math.random().toString(36).substr(2, 9)}`);
+
+const themeProps = computed(() => extractTheme(props.theme));
+
 const buildInputClasses = (themeProps, props) => {
     const classes = ["file-input", "w-full", "transition-all", "duration-300"];
 
@@ -179,6 +201,8 @@ const buildInputClasses = (themeProps, props) => {
     return classes.join(" ");
 };
 
+const getClasses = computed(() => buildInputClasses(themeProps.value, props));
+
 const buildDropZoneClasses = computed(() => {
     const classes = [
         "relative",
@@ -212,9 +236,6 @@ const buildDropZoneClasses = computed(() => {
     return classes.join(" ");
 });
 
-const themeProps = computed(() => extractTheme(props.theme));
-const getClasses = computed(() => buildInputClasses(themeProps.value, props));
-
 // Gestion des fichiers
 const handleFiles = (files) => {
     const validFiles = Array.from(files).filter(file => {
@@ -233,7 +254,6 @@ const handleFiles = (files) => {
     if (props.multiple) {
         emit("update:modelValue", validFiles);
     } else if (validFiles.length > 0) {
-        console.log('Emitting file:', validFiles[0]);
         emit("update:modelValue", validFiles[0]);
     }
 };
@@ -260,7 +280,6 @@ const handleDrop = (e) => {
     handleFiles(e.dataTransfer.files);
 };
 
-// Gestion du clic sur l'image/avatar
 const triggerFileInput = () => {
     fileInput.value?.click();
 };
@@ -269,28 +288,23 @@ const handleChange = (e) => {
     handleFiles(e.target.files);
 };
 
-// Fonction pour gérer la suppression
 const handleDelete = (e) => {
     e.stopPropagation();
     emit('delete');
 };
 
-// Fonction pour vérifier si on doit afficher l'overlay
 const shouldShowOverlay = computed(() => {
     return isHovering.value && slots.default;
 });
 
-// Fonction pour vérifier si on doit afficher le bouton de suppression
 const shouldShowDeleteButton = computed(() => {
     return props.showDeleteButton && props.currentFile && slots.default;
 });
 
-// Nouveau computed pour le message du tooltip
 const tooltipMessage = computed(() => {
     return props.tooltip || "Cliquez ou déposez un fichier ici";
 });
 
-// Nouveau computed pour les classes de l'overlay
 const overlayClasses = computed(() => {
     return [
         "absolute",
@@ -311,7 +325,6 @@ const overlayClasses = computed(() => {
     ].join(" ");
 });
 
-// Computed pour le message d'aide automatique
 const helperMessage = computed(() => {
     if (props.helper === null || props.helper === "") return null;
     if (props.helper !== "auto") return props.helper;
@@ -336,14 +349,12 @@ const helperMessage = computed(() => {
 
 <template>
     <div class="w-full">
-        <!-- Label (avec support du slot) -->
-        <div v-if="label || slots.label" class="mb-2 text-center">
-            <slot name="label">
-                <span class="text-base-content dark:text-base-content-dark">{{ label }}</span>
-            </slot>
-        </div>
+        <InputLabel v-if="useInputLabel" :for="componentId" :value="inputLabel || label || 'Fichier'">
+            <template v-if="$slots.inputLabel">
+                <slot name="inputLabel" />
+            </template>
+        </InputLabel>
 
-        <!-- Zone de drop avec Tooltip -->
         <Tooltip :text="tooltipMessage" :placement="tooltipPosition">
             <div
                 :class="buildDropZoneClasses"
@@ -361,7 +372,7 @@ const helperMessage = computed(() => {
                     <!-- Overlay au survol -->
                     <div v-show="isHovering" :class="overlayClasses">
                         <div class="flex flex-col items-center gap-3">
-                            <span class="text-content-dark text-shadow-md">
+                            <span class="text-content-dark text-shadow-lg">
                                 {{ currentFile ? 'Modifier le fichier' : 'Ajouter un fichier' }}
                             </span>
 
@@ -369,7 +380,7 @@ const helperMessage = computed(() => {
                             <button
                                 v-if="shouldShowDeleteButton"
                                 @click.stop="handleDelete"
-                                class="text-error-800/80 hover:text-error-600 transition-colors duration-300"
+                                class="text-error-800/80 text-xl text-shadow-lg hover:text-error-600 transition-colors duration-300"
                                 title="Supprimer le fichier"
                             >
                                 <i class="fa-solid fa-trash"></i>
@@ -382,6 +393,7 @@ const helperMessage = computed(() => {
                 <input
                     v-show="!slots.default"
                     ref="fileInput"
+                    :id="componentId"
                     type="file"
                     :class="getClasses"
                     :multiple="multiple"
@@ -405,7 +417,7 @@ const helperMessage = computed(() => {
             </template>
         </Tooltip>
 
-        <!-- Helper text (avec support du slot) -->
+        <!-- Helper text -->
         <div v-if="helperMessage || slots.helper" class="mt-2 text-sm text-base-500">
             <slot name="helper">
                 {{ helperMessage }}
@@ -413,19 +425,13 @@ const helperMessage = computed(() => {
         </div>
 
         <!-- Message d'erreur -->
-        <div v-if="error" class="mt-2 text-sm text-error">
-            {{ error }}
-        </div>
+        <InputError v-if="useInputError" :message="errorMessage || error" class="mt-2" />
     </div>
 </template>
 
 <style scoped>
 .scale-102 {
     transform: scale(1.02);
-}
-
-.text-shadow-md {
-    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 @keyframes pulse {

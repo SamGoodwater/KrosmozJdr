@@ -32,7 +32,7 @@ class Page extends Model
     protected $hidden = ['id', 'created_at', 'updated_at', 'deleted_at'];
 
 
-    public function page(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    public function page(): \Illuminate\Database\Eloquent\Relations\BelongsTo | int
     {
         if ($this->page_id && $this->page_id > 0 && is_int($this->page_id)) {
             return $this->belongsTo(Page::class);
@@ -43,7 +43,7 @@ class Page extends Model
 
     public function sections(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
-        return $this->hasMany(Section::class);
+        return $this->hasMany(Section::class)->orderBy('order_num');
     }
 
     public function campaigns(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
@@ -64,5 +64,10 @@ class Page extends Model
     public function imagePath(): string
     {
         return Storage::url($this->image);
+    }
+
+    public function getRouteKeyName()
+    {
+        return 'slug';
     }
 }

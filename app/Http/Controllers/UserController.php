@@ -94,7 +94,7 @@ class UserController extends Controller
             'user' => new UserResource($user),
             'mustVerifyEmail' => $user instanceof MustVerifyEmail,
             'status' => session('status'),
-            'isAdminEdit' => Auth::user()->id !== $user->id,
+            'roles' => User::ROLES,
         ]);
     }
 
@@ -158,37 +158,27 @@ class UserController extends Controller
             ]);
 
             if ($request->hasFile('file')) {
-                // Supprimer l'ancien avatar s'il existe
-                if ($user->avatar && Storage::disk('public')->exists($user->avatar)) {
-                    Storage::disk('public')->delete($user->avatar);
-                }
-
-                // Stocker le nouveau fichier
-                $file = $request->file('file');
-                $extension = strtolower($file->getClientOriginalExtension());
-                $fileName = $user->uniqid . '_' . time();
-
-                if (in_array($extension, ['svg', 'eps', 'pdf'])) {
-                    // Pour les formats vectoriels, stocker directement
-                    $path = $file->storeAs('users/avatars', $fileName . '.' . $extension, 'public');
-                } else {
-                    // Pour les images bitmap, convertir en WebP
-                    $path = 'users/avatars/' . $fileName . '.webp';
-                    $manager = new ImageManager(new Driver());
-                    $image = $manager->read($file->getRealPath());
-                    $image->scaleDown(width: 800, height: 800);
-                    Storage::disk('public')->put($path, (string) $image->toWebp(70));
-                }
-
-                // Mettre à jour l'utilisateur
-                $user->avatar = $path;
-                $user->save();
-
-                return response()->json([
-                    'success' => true,
-                    'message' => 'Avatar mis à jour avec succès',
-                    'data' => new UserResource($user)
+                $result = DataService::handleFileUpload($request->file('file'), [
+                    'path' => 'users/avatars',
+                    'fileName' => $user->uniqid . '_' . time(),
+                    'replace' => $user->avatar,
+                    'maxWidth' => 800,
+                    'maxHeight' => 800,
+                    'quality' => 70
                 ]);
+
+                if ($result['success']) {
+                    $user->avatar = $result['path'];
+                    $user->save();
+
+                    return response()->json([
+                        'success' => true,
+                        'message' => 'Avatar mis à jour avec succès',
+                        'data' => new UserResource($user)
+                    ]);
+                }
+
+                throw new \Exception($result['message']);
             }
 
             throw new \Exception('Erreur lors du traitement du fichier');
@@ -273,5 +263,33 @@ class UserController extends Controller
         $user->restore();
 
         return redirect()->route('user.index');
+    }
+
+    public function updateRole(Request $request, User $user): JsonResponse
+    {
+        $this->authorize('updateRole', $user);
+
+        try {
+            $request->validate([
+                'role' => ['required', 'string', 'in:' . implode(',', User::ROLES)]
+            ]);
+
+            $oldUser = clone $user;
+            $user->role = $request->role;
+            $user->save();
+
+            event(new NotificationSuperAdminEvent('user', "update_role", $user, $oldUser));
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Rôle mis à jour avec succès',
+                'data' => new UserResource($user)
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage()
+            ], 422);
+        }
     }
 }

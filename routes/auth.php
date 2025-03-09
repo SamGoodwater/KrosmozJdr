@@ -94,6 +94,9 @@ Route::prefix('user')->name("user.")->middleware('auth')->group(function () use 
         Route::post('/{user:uniqid}', [UserController::class, 'restore'])
         ->name('restore')
         ->where('user', $uniqidRegex);
+        Route::patch('/{user:uniqid}/role', [UserController::class, 'updateRole'])
+            ->name('admin.updateRole')
+            ->where('user', $uniqidRegex);
     });
 
     // Routes accessibles uniquement aux super_admins

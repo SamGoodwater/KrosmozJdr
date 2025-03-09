@@ -1,9 +1,9 @@
 <script setup>
 import { computed, ref, onMounted, onUnmounted } from "vue";
 import { extractTheme } from "@/Utils/extractTheme";
-import useEditableField from '@/Composables/useEditableField'; // Import du composable
-
-const emit = defineEmits(["update:value"]);
+import useEditableField from '@/Composables/useEditableField';
+import InputLabel from '@/Pages/Atoms/inputs/InputLabel.vue';
+import InputError from '@/Pages/Atoms/inputs/InputError.vue';
 
 const props = defineProps({
     theme: {
@@ -34,12 +34,33 @@ const props = defineProps({
         type: Number,
         default: 500,
     },
+    useInputLabel: {
+        type: Boolean,
+        default: true,
+    },
+    useInputError: {
+        type: Boolean,
+        default: true,
+    },
+    inputLabel: {
+        type: String,
+        default: '',
+    },
+    errorMessage: {
+        type: String,
+        default: '',
+    },
+    id: {
+        type: String,
+        default: '',
+    },
 });
 
+const emit = defineEmits(["update:value"]);
 const input = ref(null);
 const debounceTimeout = ref(null);
 
-const editableField = useEditableField(props.value); // Utilisation du composable
+const editableField = useEditableField(props.value);
 
 // Computed pour gérer la valeur affichée
 const displayValue = computed(() => {
@@ -143,11 +164,17 @@ onUnmounted(() => {
 </script>
 
 <template>
-    <div class="relative form-control">
-        <label class="label cursor-pointer">
+    <div class="relative">
+        <InputLabel v-if="useInputLabel" :for="props.id" :value="inputLabel || label">
+            <template v-if="$slots.inputLabel">
+                <slot name="inputLabel" />
+            </template>
+        </InputLabel>
+
+        <label :class="getClasses">
             <input
-                :class="getClasses"
                 type="checkbox"
+                :id="props.id"
                 :checked="displayValue"
                 @change="updateValue"
                 @blur="handleBlur"
@@ -156,7 +183,7 @@ onUnmounted(() => {
                 :data-tip="tooltip"
                 ref="input"
             />
-            <span class="label-text">{{ label }}</span>
+            <span>{{ label }}</span>
         </label>
         <button
             v-if="useFieldComposable && isFieldModified"
@@ -165,5 +192,6 @@ onUnmounted(() => {
         >
             <i class="fa-solid fa-arrow-rotate-left"></i>
         </button>
+        <InputError v-if="useInputError" :message="errorMessage" class="mt-2" />
     </div>
 </template>

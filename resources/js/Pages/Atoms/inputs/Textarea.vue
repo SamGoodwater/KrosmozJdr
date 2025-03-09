@@ -1,7 +1,9 @@
 <script setup>
-import { computed, ref, onMounted, onUnmounted } from "vue";
+import { computed, ref, onMounted, onUnmounted, useAttrs } from "vue";
 import { extractTheme } from "@/Utils/extractTheme";
-import useEditableField from '@/Composables/useEditableField'; // Import du composable
+import useEditableField from '@/Composables/useEditableField';
+import InputLabel from '@/Pages/Atoms/inputs/InputLabel.vue';
+import InputError from '@/Pages/Atoms/inputs/InputError.vue';
 
 const props = defineProps({
     theme: {
@@ -32,13 +34,33 @@ const props = defineProps({
         type: Number,
         default: 500,
     },
+    useInputLabel: {
+        type: Boolean,
+        default: true,
+    },
+    useInputError: {
+        type: Boolean,
+        default: true,
+    },
+    inputLabel: {
+        type: String,
+        default: '',
+    },
+    errorMessage: {
+        type: String,
+        default: '',
+    },
 });
 
 const emit = defineEmits(["update:value"]);
 const input = ref(null);
 const debounceTimeout = ref(null);
+const attrs = useAttrs();
 
-const editableField = useEditableField(props.value); // Utilisation du composable
+// Générer un ID unique pour le composant
+const componentId = computed(() => attrs.id || `textarea-${Math.random().toString(36).substr(2, 9)}`);
+
+const editableField = useEditableField(props.value);
 
 const buildTextareaClasses = (themeProps, props) => {
     const classes = ["textarea", "w-full", "max-w-xs"];
@@ -143,8 +165,15 @@ onUnmounted(() => {
 
 <template>
     <div class="relative">
+        <InputLabel v-if="useInputLabel" :for="componentId" :value="inputLabel || 'Texte'">
+            <template v-if="$slots.inputLabel">
+                <slot name="inputLabel" />
+            </template>
+        </InputLabel>
+
         <textarea
             ref="input"
+            :id="componentId"
             :class="getClasses"
             :value="displayValue"
             @input="updateValue"
@@ -158,7 +187,6 @@ onUnmounted(() => {
             :required="themeProps.required"
             :autofocus="themeProps.autofocus"
             :name="themeProps.name"
-            :id="themeProps.id"
             :title="tooltip"
             autocomplete="off"
         ></textarea>
@@ -167,9 +195,8 @@ onUnmounted(() => {
             @click="handleReset"
             class="absolute right-2 top-1/2 transform -translate-y-1/2 text-base-600/80 hover:text-base-600/50"
         >
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99" />
-            </svg>
+            <i class="fa-solid fa-arrow-rotate-left"></i>
         </button>
+        <InputError v-if="useInputError" :message="errorMessage" class="mt-2" />
     </div>
 </template>

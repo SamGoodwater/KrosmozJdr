@@ -3,9 +3,12 @@ import tooltips from "@/Pages/Atoms/feedback/Tooltip.vue";
 import { ref, onMounted, onUnmounted } from "vue";
 const appName = ref(import.meta.env.VITE_APP_NAME);
 
+// Générer un ID unique
+const searchBarId = `searchBar-${Math.random().toString(36).substr(2, 9)}`;
+
 const handleKeydown = (event) => {
     if (event.altKey && event.key === "k") {
-        document.getElementById("searchBar").focus();
+        document.getElementById(searchBarId).focus();
     }
 };
 
@@ -24,7 +27,7 @@ onUnmounted(() => {
 
                 <label class="input input-bordered flex items-center gap-2">
                     <input
-                        id="searchBar"
+                        :id="searchBarId"
                         type="text"
                         class="grow lg:w-64 md:w-32 sm:w-16 max-sm:w-auto"
                         placeholder="Rechercher"

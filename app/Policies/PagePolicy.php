@@ -8,11 +8,12 @@ use Illuminate\Auth\Access\Response;
 
 class PagePolicy
 {
-    public function before(User $user): ?bool
+    public function before(User $user): bool
     {
         if ($user->role === User::ROLES['super_admin']) {
             return true;
         }
+        return false;
     }
 
     /**
@@ -20,7 +21,7 @@ class PagePolicy
      */
     public function viewAny(User $user): bool
     {
-        return true;
+        return $user->verifyRole(User::ROLES['user']);
     }
 
     /**
@@ -28,15 +29,7 @@ class PagePolicy
      */
     public function view(User $user, Page $page): bool
     {
-        if ($page->is_public || $page->is_visible) {
-            return true;
-        } else {
-            if (!$page->is_visible) {
-                return $user->verifyRole(User::ROLES['moderator']);
-            } else {
-                return $user->verifyRole(User::ROLES['user']);
-            }
-        }
+        return $page->is_public || $user->verifyRole(User::ROLES['user']);
     }
 
     /**
@@ -52,17 +45,7 @@ class PagePolicy
      */
     public function update(User $user, Page $page): bool
     {
-        if ($page->is_editable) {
-            if ($page->created_by === $user->id) {
-                return $user->verifyRole(User::ROLES['game_master']);
-            } else {
-                return $user->verifyRole(User::ROLES['contributor']);
-            }
-        } elseif ($user->verifyRole(User::ROLES['admin'])) {
-            return true;
-        } else {
-            false;
-        }
+        return $user->verifyRole(User::ROLES['game_master']);
     }
 
     /**

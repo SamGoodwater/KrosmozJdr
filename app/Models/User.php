@@ -202,4 +202,14 @@ class User extends Authenticatable
     {
         return $this->belongsToMany(Campaign::class);
     }
+
+    public function updateRole(User $user): bool
+    {
+        // Seuls les admins et super_admins peuvent modifier les rôles
+        return $this->verifyRole('admin') &&
+            // Un admin ne peut pas modifier le rôle d'un super_admin
+            $user->role !== self::ROLES['super_admin'] &&
+            // Un admin ne peut pas se modifier lui-même
+            $this->id !== $user->id;
+    }
 }

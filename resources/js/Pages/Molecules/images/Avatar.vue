@@ -30,7 +30,7 @@
  * - If the sourceRef is not available, renders a span element with the computed initials.
  */
 <script setup>
-import { defineProps, computed, ref } from "vue";
+import { defineProps, computed, ref, watch } from "vue";
 import { imageExists } from "@/Utils/files";
 import { getColorFromString } from "@/Utils/Color.js";
 import { extractTheme } from "@/Utils/extractTheme";
@@ -62,7 +62,7 @@ const props = defineProps({
     },
 });
 
-const sourceRef = ref("");
+const sourceRef = ref(props.source);
 const textSize = ref("text-md");
 
 const buildAvatarClasses = (themeProps, props) => {
@@ -157,11 +157,13 @@ const getAltText = computed(() => {
     }
 });
 
-if (props.source && imageExists(props.source)) {
-    sourceRef.value = props.source;
-} else {
-    sourceRef.value = "";
-}
+watch(() => props.source, (newSource) => {
+    if (newSource && imageExists(newSource)) {
+        sourceRef.value = newSource;
+    } else {
+        sourceRef.value = "";
+    }
+}, { immediate: true });
 </script>
 
 <template>
