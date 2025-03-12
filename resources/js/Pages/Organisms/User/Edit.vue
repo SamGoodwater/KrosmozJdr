@@ -13,7 +13,7 @@ import axios from 'axios';
 import PasswordInput from '@/Pages/Atoms/inputs/PasswordInput.vue';
 import Dropdown from '@/Pages/Atoms/actions/Dropdown.vue';
 import BadgeRole from "@/Pages/Organisms/User/Molecules/badgeRole.vue";
-import { verifyRole, ROLES, getRoleTranslation } from '@/Utils/Roles';
+import { verifyRole, ROLES, getRoleTranslation, getRoleColor } from '@/Utils/Roles';
 
 const props = defineProps({
     mustVerifyEmail: {
@@ -260,7 +260,7 @@ const updateRole = () => {
                 <div class="flex flex-col gap-4 w-1/2">
                     <div class="mt-2">
                         <BadgeRole :role="user.role" />
-                    </div>
+                </div>
                     <div>
                         <TextInput
                             id="name"
@@ -292,6 +292,41 @@ const updateRole = () => {
                 </div>
             </div>
         </form>
+
+        <div v-if="verifyRole(page.props.auth.user.role, ROLES.ADMIN)" class="mt-6">
+            <hr class="border-gray-300 dark:border-gray-700 my-4" />
+
+            <div class="mt-6">
+                <h3 class="text-lg font-medium text-content-300">
+                    Actions administrateurs
+                </h3>
+            </div>
+
+            <Dropdown
+                :label="formRole.role"
+                placement="bottom-end"
+                :color="getRoleColor(formRole.role)"
+                inputLabel="Modifier le rôle de l'utilisateur"
+                :errorMessage="formRole.errors.role"
+            >
+                <template #list>
+                    <li v-for="(roleValue, roleKey) in $page.props.roles" :key="roleKey">
+                        <button
+                            type="button"
+                            @click="formRole.role = roleValue; updateRole()"
+                            :class="[
+                                formRole.role === roleValue ? `bg-${getRoleColor(roleValue)}` : '',
+                                `outline-${getRoleColor(roleValue)}`,
+                                formRole.role !== roleValue ? `hover:bg-${getRoleColor(roleValue)}` : '',
+                                'w-full text-left px-4 py-2'
+                            ]"
+                        >
+                            {{ getRoleTranslation(roleValue) }}
+                        </button>
+                    </li>
+                </template>
+            </Dropdown>
+        </div>
 
         <hr class="border-gray-300 dark:border-gray-700 my-4" />
 
@@ -349,37 +384,6 @@ const updateRole = () => {
                 </Transition>
             </div>
         </form>
-
-        <div v-if="verifyRole(page.props.auth.user.role, ROLES.ADMIN)" class="mt-6">
-            <hr class="border-gray-300 dark:border-gray-700 my-4" />
-
-            <div class="mt-6">
-                <h3 class="text-lg font-medium text-content-300">
-                    Actions administrateurs
-                </h3>
-            </div>
-
-            <Dropdown
-                :label="formRole.role"
-                placement="bottom-end"
-                color="base-100"
-                inputLabel="Modifier le rôle de l'utilisateur"
-                :errorMessage="formRole.errors.role"
-            >
-                <template #list>
-                    <li v-for="(roleValue, roleKey) in $page.props.roles" :key="roleKey">
-                        <button
-                            type="button"
-                            @click="formRole.role = roleValue; updateRole()"
-                            class="w-full text-left px-4 py-2 hover:bg-base-200"
-                            :class="{ 'bg-base-200': formRole.role === roleValue }"
-                        >
-                            {{ getRoleTranslation(roleValue) }}
-                        </button>
-                    </li>
-                </template>
-            </Dropdown>
-        </div>
     </section>
 </template>
 

@@ -52,7 +52,8 @@ const buildDropdownContentClasses = (themeProps, props) => {
         color = themeProps.color;
     }
 
-    return `backdrop-blur-2xl dropdown-content menu bg-${color} rounded-box z-[1] w-52 p-2 shadow`;
+    const bgClass = `bg-${color}`;
+    return ['backdrop-blur-2xl', 'dropdown-content', 'menu', bgClass, 'rounded-box', 'z-[1]', 'w-52', 'p-2', 'shadow'].join(' ');
 };
 
 const closeOnEscape = (e) => {

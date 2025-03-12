@@ -2,7 +2,7 @@
 import { defineProps } from "vue";
 import Badge from "@/Pages/Atoms/text/Badge.vue";
 import Tooltip from "@/Pages/Atoms/feedback/Tooltip.vue";
-import { getRoleTranslation } from "@/Utils/Roles";
+import { getRoleTranslation, getRoleColor } from "@/Utils/Roles";
 const props = defineProps({
     role: {
         type: String,
@@ -14,7 +14,7 @@ const props = defineProps({
 <template>
     <Tooltip placement="bottom">
         <div>
-            <Badge theme="color-auto" :color="props.role" size="md">
+            <Badge :color="getRoleColor(props.role)" size="md">
                 {{ getRoleTranslation(props.role)}}
             </Badge>
         </div>

@@ -1,7 +1,7 @@
 <script setup>
 import InputError from '@/Pages/Atoms/inputs/InputError.vue';
 import InputLabel from '@/Pages/Atoms/inputs/InputLabel.vue';
-import Modal from '@/Pages/Atoms/modals/Modal.vue';
+import Modal from '@/Pages/Atoms/panels/Modal.vue';
 import Btn from '@/Pages/Atoms/actions/Btn.vue';
 import TextInput from '@/Pages/Atoms/inputs/TextInput.vue';
 import { useForm } from '@inertiajs/vue3';

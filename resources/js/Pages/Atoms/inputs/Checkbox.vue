@@ -77,7 +77,7 @@ const buildCheckboxClasses = (themeProps, props) => {
     const color = themeProps.color || 'primary-500';
     classes.push(`text-${color}`);
 
-    // Size
+    // Size - Utilisation des classes DaisyUI
     const size = themeProps.size || 'md';
     classes.push(`checkbox-${size}`);
 
@@ -164,14 +164,10 @@ onUnmounted(() => {
 </script>
 
 <template>
-    <div class="relative">
-        <InputLabel v-if="useInputLabel" :for="props.id" :value="inputLabel || label">
-            <template v-if="$slots.inputLabel">
-                <slot name="inputLabel" />
-            </template>
-        </InputLabel>
+    <div class="form-control">
 
-        <label :class="getClasses">
+
+        <label class="label cursor-pointer justify-start gap-2">
             <input
                 type="checkbox"
                 :id="props.id"
@@ -182,16 +178,21 @@ onUnmounted(() => {
                 :required="themeProps.required"
                 :data-tip="tooltip"
                 ref="input"
+                :class="getClasses"
             />
-            <span>{{ label }}</span>
+            <InputLabel v-if="useInputLabel" :for="props.id" :value="inputLabel || label">
+                <template v-if="$slots.inputLabel">
+                    <slot name="inputLabel" />
+                </template>
+            </InputLabel>
+            <button
+                v-if="useFieldComposable && isFieldModified"
+                @click="handleReset"
+                class="ml-auto text-base-600/80 hover:text-base-600/50"
+            >
+                <i class="fa-solid fa-arrow-rotate-left"></i>
+            </button>
         </label>
-        <button
-            v-if="useFieldComposable && isFieldModified"
-            @click="handleReset"
-            class="absolute right-2 top-1/2 transform -translate-y-1/2 text-base-600/80 hover:text-base-600/50"
-        >
-            <i class="fa-solid fa-arrow-rotate-left"></i>
-        </button>
         <InputError v-if="useInputError" :message="errorMessage" class="mt-2" />
     </div>
 </template>

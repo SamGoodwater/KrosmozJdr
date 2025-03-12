@@ -80,18 +80,18 @@ const updateValue = (event) => {
                 <slot name="inputLabel" />
             </template>
         </InputLabel>
-
-        <input
-            v-bind="attrs"
-            :value="modelValue"
-            @input="updateValue"
-            ref="input"
-            :type="showPassword ? 'text' : 'password'"
+        <div class="relative">
+            <input
+                v-bind="attrs"
+                :value="modelValue"
+                @input="updateValue"
+                ref="input"
+                :type="showPassword ? 'text' : 'password'"
             :placeholder="placeholder"
             :class="getClasses"
             :autocomplete="attrs.autocomplete || 'current-password'"
-        />
-        <div class="absolute right-0 top-1/2 -translate-y-1/2 flex gap-1 px-2">
+            />
+            <div class="absolute right-0 top-1/2 -translate-y-1/2 flex gap-1 px-2">
             <button
                 type="button"
                 @click.prevent="togglePassword"
@@ -99,7 +99,8 @@ const updateValue = (event) => {
             >
                 <i v-if="showPassword" class="fa-solid fa-eye"></i>
                 <i v-else class="fa-solid fa-eye-slash"></i>
-            </button>
+                </button>
+            </div>
         </div>
         <InputError v-if="useInputError" :message="errorMessage" class="mt-2" />
     </div>

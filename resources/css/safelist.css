@@ -1,1 +1,172 @@
-@safelist {}
+@safelist {
+    /* Toutes les couleurs Tailwind et du thème avec leurs variations */
+    (bg text border shadow ring outline)-(
+        /* Couleurs Tailwind */
+        slate gray zinc neutral stone
+        red orange amber yellow lime
+        green emerald teal cyan sky
+        blue indigo violet purple
+        fuchsia pink rose
+        /* Couleurs du thème */
+        primary secondary success accent
+        neutral info warning error base
+        attribute campaign capitalize classe
+        condition consumable creature item
+        mob npc resource scenario shop
+        specialization spell user page
+        section force strong terre intel
+        feu agi air chance eau vitality
+        sagesse life level
+        /* Couleurs de statistiques */
+        master_bonus time_before_use_again
+        casting_time dodge_pa dodge_pm po
+        po-editable pa pm cc res_cc
+        cast-per-turn cast-per-target
+        sight-line number-between-two-cast
+        ini invocation touch actif twohands
+        kamas ca fuite tacle neutre shield
+        mastery expertise
+        /* Résistances */
+        res-neutre res-terre res-air
+        res-feu res-eau
+    )-(50 100 200 300 400 500 600 700 800 900 950);
+
+    (bg text border shadow ring outline)-(
+        /* Couleurs Tailwind */
+        slate gray zinc neutral stone
+        red orange amber yellow lime
+        green emerald teal cyan sky
+        blue indigo violet purple
+        fuchsia pink rose
+        /* Couleurs du thème */
+        primary secondary success accent
+        neutral info warning error base
+        attribute campaign capitalize classe
+        condition consumable creature item
+        mob npc resource scenario shop
+        specialization spell user page
+        section force strong terre intel
+        feu agi air chance eau vitality
+        sagesse life level
+        /* Couleurs de statistiques */
+        master_bonus time_before_use_again
+        casting_time dodge_pa dodge_pm po
+        po-editable pa pm cc res_cc
+        cast-per-turn cast-per-target
+        sight-line number-between-two-cast
+        ini invocation touch actif twohands
+        kamas ca fuite tacle neutre shield
+        mastery expertise
+        /* Résistances */
+        res-neutre res-terre res-air
+        res-feu res-eau
+    )-(50 100 200 300 400 500 600 700 800 900 950)/(10 20 30 40 50 60 70 80 90);
+
+    hover:(bg text border shadow ring outline)-(
+        /* Couleurs Tailwind */
+        slate gray zinc neutral stone
+        red orange amber yellow lime
+        green emerald teal cyan sky
+        blue indigo violet purple
+        fuchsia pink rose
+        /* Couleurs du thème */
+        primary secondary success accent
+        neutral info warning error base
+        attribute campaign capitalize classe
+        condition consumable creature item
+        mob npc resource scenario shop
+        specialization spell user page
+        section force strong terre intel
+        feu agi air chance eau vitality
+        sagesse life level
+        /* Couleurs de statistiques */
+        master_bonus time_before_use_again
+        casting_time dodge_pa dodge_pm po
+        po-editable pa pm cc res_cc
+        cast-per-turn cast-per-target
+        sight-line number-between-two-cast
+        ini invocation touch actif twohands
+        kamas ca fuite tacle neutre shield
+        mastery expertise
+        /* Résistances */
+        res-neutre res-terre res-air
+        res-feu res-eau
+    )-(50 100 200 300 400 500 600 700 800 900 950);
+
+    hover:(bg text border shadow ring outline)-(
+        /* Couleurs Tailwind */
+        slate gray zinc neutral stone
+        red orange amber yellow lime
+        green emerald teal cyan sky
+        blue indigo violet purple
+        fuchsia pink rose
+        /* Couleurs du thème */
+        primary secondary success accent
+        neutral info warning error base
+        attribute campaign capitalize classe
+        condition consumable creature item
+        mob npc resource scenario shop
+        specialization spell user page
+        section force strong terre intel
+        feu agi air chance eau vitality
+        sagesse life level
+        /* Couleurs de statistiques */
+        master_bonus time_before_use_again
+        casting_time dodge_pa dodge_pm po
+        po-editable pa pm cc res_cc
+        cast-per-turn cast-per-target
+        sight-line number-between-two-cast
+        ini invocation touch actif twohands
+        kamas ca fuite tacle neutre shield
+        mastery expertise
+        /* Résistances */
+        res-neutre res-terre res-air
+        res-feu res-eau
+    )-(50 100 200 300 400 500 600 700 800 900 950)/(10 20 30 40 50 60 70 80 90);
+
+    /* Composants */
+    (btn badge icon textarea select checkbox toggle)-(xs sm md lg xl 2xl 3xl 4xl 5xl 6xl);
+    (btn badge icon textarea select checkbox toggle)-(block wide square circle);
+    (btn badge icon textarea select checkbox toggle)-(glass outline link ghost);
+    (btn badge icon textarea select checkbox toggle)-bordered;
+
+    /* Apparence */
+    shadow-(none xs sm md lg xl 2xl 3xl 4xl);
+    blur-(none xs sm md lg xl 2xl 3xl 4xl);
+    backdrop-blur-(none xs sm md lg xl 2xl 3xl 4xl);
+    rounded-(none xs sm md lg xl 2xl 3xl 4xl full square);
+    border-(0 1 2 3 4 5 6 7 8);
+    border-solid;
+
+    /* Dimensions */
+    w-(auto full screen);
+    h-(auto full screen);
+    w-[*];
+    h-[*];
+
+    /* Container */
+    container;
+    mx-auto;
+    py-(2 4 6 8);
+    px-(2 6 16 24);
+    max-(sm md lg xl):px-(2 6 16 24);
+    max-(sm md lg xl):py-(2 4 6 8);
+
+    /* Spacing */
+    p-(0 1 2 3 4 5 6 8);
+    space-(x y)-(0 1 2 3 4 5 6 8);
+
+    /* Feedback */
+    tooltip;
+    tooltip-(top right bottom left);
+    animate-pulse;
+
+    /* Layout */
+    relative;
+    absolute;
+    flex;
+    inline-flex;
+    justify-(start center end);
+    items-center;
+    gap-(1 2 3 4);
+}

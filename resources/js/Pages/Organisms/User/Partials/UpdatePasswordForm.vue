@@ -1,5 +1,5 @@
 <script setup>
-import InputError from '@/Pages/Atoms/inputs/InputError².vue';
+import InputError from '@/Pages/Atoms/inputs/InputError.vue';
 import InputLabel from '@/Pages/Atoms/inputs/InputLabel.vue';
 import Btn from '@/Pages/Atoms/actions/Btn.vue';
 import TextInput from '@/Pages/Atoms/inputs/TextInput.vue';

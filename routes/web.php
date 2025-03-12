@@ -106,68 +106,67 @@ Route::get('/contribuer', function () {
     return Inertia::render('Permanent/contribute');
 })->name('contribute');
 
-// Campaigns
-require_once __DIR__ . '/modules/campaign.php';
+// // Campaigns
+// require_once __DIR__ . '/modules/campaign.php';
 
-// Scenarios
-require_once __DIR__ . '/modules/scenario.php';
+// // Scenarios
+// require_once __DIR__ . '/modules/scenario.php';
 
-// Items
-require_once __DIR__ . '/modules/item.php';
+// // Items
+// require_once __DIR__ . '/modules/item.php';
 
-// Itemtypes
-require_once __DIR__ . '/modules/itemtype.php';
+// // Itemtypes
+// require_once __DIR__ . '/modules/itemtype.php';
 
-// Attributes
-require_once __DIR__ . '/modules/attribute.php';
+// // Attributes
+// require_once __DIR__ . '/modules/attribute.php';
 
-// Capabilities
-require_once __DIR__ . '/modules/capability.php';
+// // Capabilities
+// require_once __DIR__ . '/modules/capability.php';
 
-// Classes
-require_once __DIR__ . '/modules/classe.php';
+// // Classes
+// require_once __DIR__ . '/modules/classe.php';
 
-//Conditions
-require_once __DIR__ . '/modules/condition.php';
+// //Conditions
+// require_once __DIR__ . '/modules/condition.php';
 
-// Consumables
-require_once __DIR__ . '/modules/consumable.php';
+// // Consumables
+// require_once __DIR__ . '/modules/consumable.php';
 
-// Cosumabletypes
-require_once __DIR__ . '/modules/consumabletype.php';
+// // Cosumabletypes
+// require_once __DIR__ . '/modules/consumabletype.php';
 
-// Mobs
-require_once __DIR__ . '/modules/mob.php';
+// // Mobs
+// require_once __DIR__ . '/modules/mob.php';
 
-// Mobraces
-require_once __DIR__ . '/modules/mobrace.php';
+// // Mobraces
+// require_once __DIR__ . '/modules/mobrace.php';
 
-// Npcs
-require_once __DIR__ . '/modules/npc.php';
+// // Npcs
+// require_once __DIR__ . '/modules/npc.php';
 
-// Panoplies
-require_once __DIR__ . '/modules/panoply.php';
+// // Panoplies
+// require_once __DIR__ . '/modules/panoply.php';
 
-// Resources
-require_once __DIR__ . '/modules/resource.php';
+// // Resources
+// require_once __DIR__ . '/modules/resource.php';
 
-// ResourceTypes
-require_once __DIR__ . '/modules/resourcetype.php';
+// // ResourceTypes
+// require_once __DIR__ . '/modules/resourcetype.php';
 
-// Shops
-require_once __DIR__ . '/modules/shop.php';
+// // Shops
+// require_once __DIR__ . '/modules/shop.php';
 
-// Specializations
-require_once __DIR__ . '/modules/specialization.php';
+// // Specializations
+// require_once __DIR__ . '/modules/specialization.php';
 
-// Spells
-require_once __DIR__ . '/modules/spell.php';
+// // Spells
+// require_once __DIR__ . '/modules/spell.php';
 
-// Spelltypes
-require_once __DIR__ . '/modules/spelltype.php';
+// // Spelltypes
+// require_once __DIR__ . '/modules/spelltype.php';
 
 
-// Système de gestion des images avec Glyde : https://grafikart.fr/tutoriels/image-resize-glide-php-1358
-// Impossible d'installer glyde
-// Route::get('/image/{path}', [App\Http\Controllers\Utilities\ImageController::class, 'show']);
-
+// // Système de gestion des images avec Glyde : https://grafikart.fr/tutoriels/image-resize-glide-php-1358
+// // Impossible d'installer glyde
+// // Route::get('/image/{path}', [App\Http\Controllers\Utilities\ImageController::class, 'show']);
