@@ -1,6 +1,6 @@
 <script setup>
-import { ref, computed } from "vue";
-import tooltips from "@/Pages/Atoms/feedback/Tooltip.vue";
+import { ref, computed, onMounted, onUnmounted } from "vue";
+import BaseTooltip from "@/Pages/Atoms/feedback/BaseTooltip.vue";
 import { useSidebar } from "@/Composables/useSidebar";
 
 const { toggleSidebar, isSidebarOpen } = useSidebar();
@@ -9,49 +9,52 @@ const props = defineProps({
     size: {
         type: String,
         default: "md",
-        validator: (value) =>
-            ["", "xs", "sm", "md", "lg", "xl", "2xl"].includes(value),
+        validator: (value) => ["xs", "sm", "md", "lg", "xl", "2xl"].includes(value),
     },
+    shortcut: {
+        type: String,
+        default: "alt+g"
+    }
 });
 
 const getSize = computed(() => {
     switch (props.size) {
-        case "xs":
-            return 16;
-        case "sm":
-            return 24;
-        case "md":
-            return 32;
-        case "lg":
-            return 48;
-        case "xl":
-            return 64;
-        case "2xl":
-            return 96;
-        default:
-            return 32;
+        case "xs": return 16;
+        case "sm": return 24;
+        case "md": return 32;
+        case "lg": return 48;
+        case "xl": return 64;
+        case "2xl": return 96;
+        default: return 32;
     }
+});
+
+const handleKeydown = (event) => {
+    const [modifier, key] = props.shortcut.split("+");
+    if (event[`${modifier}Key`] && event.key.toLowerCase() === key.toLowerCase()) {
+        toggleSidebar();
+    }
+};
+
+onMounted(() => {
+    window.addEventListener("keydown", handleKeydown);
+});
+
+onUnmounted(() => {
+    window.removeEventListener("keydown", handleKeydown);
 });
 </script>
 
 <template>
     <div>
-        <tooltips bgColor="bg-secondary-900/70" placement="bottom-start">
+        <BaseTooltip :tooltip="{ custom: true }" tooltip-position="bottom-start">
             <button
                 @click="toggleSidebar"
                 class="btn btn-circle dark:bg-secondary-800/10 bg-secondary-200/10 backdrop-blur-md border-none"
             >
                 <svg
                     v-if="!isSidebarOpen"
-                    :class="[
-                        'fill-current',
-                        'hover:opacity-50',
-                        'tooltip',
-                        'tooltip-bottom',
-                    ]"
-                    :data-tip="
-                        isSidebarOpen ? 'Masquer le menu' : 'Afficher le menu'
-                    "
+                    :class="['fill-current', 'hover:opacity-50']"
                     xmlns="http://www.w3.org/2000/svg"
                     :width="getSize"
                     :height="getSize"
@@ -64,12 +67,7 @@ const getSize = computed(() => {
 
                 <svg
                     v-if="isSidebarOpen"
-                    :class="[
-                        'fill-current',
-                        'hover:opacity-50',
-                        'tooltip',
-                        'tooltip-bottom',
-                    ]"
+                    :class="['fill-current', 'hover:opacity-50']"
                     xmlns="http://www.w3.org/2000/svg"
                     :width="getSize"
                     :height="getSize"
@@ -80,16 +78,18 @@ const getSize = computed(() => {
                     />
                 </svg>
             </button>
-            <template #content>
-                <p>
-                    Masquer ou afficher le menu
-                    <span class="flex flex-nowrap align-items-center"
-                        ><kbd class="kbd kbd-sm">alt</kbd> +
-                        <kbd class="kbd kbd-sm">g</kbd></span
-                    >
-                </p>
+
+            <template #tooltip>
+                <div class="flex flex-col gap-2">
+                    <p>Masquer ou afficher le menu</p>
+                    <div class="flex flex-nowrap align-items-center gap-1">
+                        <kbd class="kbd kbd-sm">{{ props.shortcut.split("+")[0] }}</kbd>
+                        <span>+</span>
+                        <kbd class="kbd kbd-sm">{{ props.shortcut.split("+")[1] }}</kbd>
+                    </div>
+                </div>
             </template>
-        </tooltips>
+        </BaseTooltip>
     </div>
 </template>
 

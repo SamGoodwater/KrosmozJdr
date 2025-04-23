@@ -1,5 +1,6 @@
 /**
  * Avatar component that displays an image or a placeholder with initials.
+ * Utilizes Atoms components for consistent styling and behavior.
  *
  * Props:
  * - theme (String): The theme of the avatar. Default is an empty string.
@@ -7,9 +8,10 @@
  * - rounded (String): The border radius of the avatar. Default is "full".
  *   Valid values are "none", "sm", "md", "lg", "xl", "2xl", "3xl", "full".
  * - size (String): The size of the avatar. Default is "md".
- *   Valid values are "xs", "sm", "md", "lg", "xl".
+ *   Valid values are "xs", "sm", "md", "lg", "xl", "2xl", "3xl", "full".
  * - altText (String): The alternative text to display if the image is not available. Default is an empty string.
  * - color (String): The background color of the placeholder. Default is an empty string.
+ * - showTooltip (Boolean): Whether to show a tooltip when hovering over the avatar. Default is true.
  *
  * Computed:
  * - getClasses: Computes the CSS classes for the avatar based on the size, color, and rounded props.
@@ -30,16 +32,18 @@
  * - If the sourceRef is not available, renders a span element with the computed initials.
  */
 <script setup>
-import { defineProps, computed, ref, watch } from "vue";
+import { computed, ref, watch } from "vue";
 import { imageExists } from "@/Utils/files";
 import { getColorFromString } from "@/Utils/Color.js";
-import { extractTheme } from "@/Utils/extractTheme";
+import { extractTheme, combinePropsWithTheme } from "@/Utils/extractTheme";
+import { commonProps, generateClasses } from "@/Utils/commonProps";
+
+// Composants Atoms
+import BaseTooltip from "@/Pages/Atoms/feedback/BaseTooltip.vue";
+import Icon from "@/Pages/Atoms/images/Icon.vue";
 
 const props = defineProps({
-    theme: {
-        type: String,
-        default: "",
-    },
+    ...commonProps,
     source: {
         type: String,
         default: "",
@@ -47,10 +51,12 @@ const props = defineProps({
     rounded: {
         type: String,
         default: "full",
+        validator: (value) => ["none", "sm", "md", "lg", "xl", "2xl", "3xl", "full"].includes(value),
     },
     size: {
         type: String,
         default: "md",
+        validator: (value) => ["xs", "sm", "md", "lg", "xl", "2xl", "3xl", "full"].includes(value),
     },
     altText: {
         type: String,
@@ -60,57 +66,76 @@ const props = defineProps({
         type: String,
         default: "",
     },
+    showTooltip: {
+        type: Boolean,
+        default: true,
+    },
 });
 
 const sourceRef = ref(props.source);
 const textSize = ref("text-md");
 
-const buildAvatarClasses = (themeProps, props) => {
-    const classes = ['light:text-primary-950', 'dark:text-primary-50', '!flex', 'items-center', 'justify-center'];
+const buildAvatarClasses = (props) => {
+    const classes = [
+        'light:text-primary-950',
+        'dark:text-primary-50',
+        '!flex',
+        'items-center',
+        'justify-center',
+        'overflow-hidden',
+        'transition-all',
+        'duration-200',
+    ];
+
+    // Ajout des classes communes
+    const baseClasses = generateClasses(props);
+    if (baseClasses) {
+        classes.push(baseClasses);
+    }
 
     // Size
-    const size = props.size || themeProps.size || "md";
+    const size = props.size || "md";
     switch (size) {
         case "xs":
-            classes.push("w-6");
-            textSize.value = "text-sm";
+            classes.push("w-6 h-6");
+            textSize.value = "text-xs";
             break;
         case "sm":
-            classes.push("w-10");
-            textSize.value = "text-md";
+            classes.push("w-10 h-10");
+            textSize.value = "text-sm";
             break;
         case "md":
-            classes.push("w-16");
-            textSize.value = "text-lg";
+            classes.push("w-16 h-16");
+            textSize.value = "text-base";
             break;
         case "lg":
-            classes.push("w-20");
-            textSize.value = "text-xl";
+            classes.push("w-20 h-20");
+            textSize.value = "text-lg";
             break;
         case "xl":
-            classes.push("w-32");
-            textSize.value = "text-3xl";
+            classes.push("w-32 h-32");
+            textSize.value = "text-2xl";
             break;
         case "2xl":
-            classes.push("w-40");
-            textSize.value = "text-4xl";
+            classes.push("w-40 h-40");
+            textSize.value = "text-3xl";
             break;
         case "3xl":
-            classes.push("w-48");
-            textSize.value = "text-5xl";
+            classes.push("w-48 h-48");
+            textSize.value = "text-4xl";
             break;
         case "full":
-            classes.push("w-full");
-            textSize.value = "text-6xl";
+            classes.push("w-full h-full");
+            textSize.value = "text-5xl";
             break;
     }
 
     // Color
     let bgColor = props.color;
-    if (themeProps.colorAuto) {
+    if (props.theme?.colorAuto) {
         bgColor = getColorFromString(props.altText);
-    } else if (themeProps.color) {
-        bgColor = themeProps.color;
+    } else if (props.theme?.color) {
+        bgColor = props.theme.color;
     }
 
     if (bgColor) {
@@ -120,7 +145,7 @@ const buildAvatarClasses = (themeProps, props) => {
     }
 
     // Rounded
-    const rounded = props.rounded || themeProps.rounded || "full";
+    const rounded = props.rounded || "full";
     if (rounded && rounded !== "none") {
         classes.push(`rounded-${rounded}`);
     }
@@ -128,10 +153,10 @@ const buildAvatarClasses = (themeProps, props) => {
     return classes.join(" ");
 };
 
-const buildParentClasses = (themeProps, props) => {
-    const classes = ['avatar', 'placeholder'];
+const buildParentClasses = (props) => {
+    const classes = ['avatar', 'placeholder', 'relative'];
 
-    const rounded = props.rounded || themeProps.rounded || "full";
+    const rounded = props.rounded || "full";
     if (rounded && rounded !== "none") {
         classes.push(`rounded-${rounded}`);
     }
@@ -140,8 +165,9 @@ const buildParentClasses = (themeProps, props) => {
 };
 
 const themeProps = computed(() => extractTheme(props.theme));
-const getClasses = computed(() => buildAvatarClasses(themeProps.value, props));
-const getClassParent = computed(() => buildParentClasses(themeProps.value, props));
+const combinedProps = computed(() => combinePropsWithTheme(props, themeProps.value));
+const getClasses = computed(() => buildAvatarClasses(combinedProps.value));
+const getClassParent = computed(() => buildParentClasses(combinedProps.value));
 
 const getAltText = computed(() => {
     const trimmedText = props.altText.trim();
@@ -167,12 +193,34 @@ watch(() => props.source, (newSource) => {
 </script>
 
 <template>
-    <div :class="getClassParent">
+    <BaseTooltip
+        v-if="showTooltip && altText"
+        :tooltip="altText"
+        tooltip-position="bottom"
+    >
+        <div :class="getClassParent">
+            <div v-if="sourceRef" :class="getClasses">
+                <img
+                    :src="sourceRef"
+                    :alt="altText"
+                    class="w-full h-full object-cover"
+                />
+            </div>
+            <div v-else :class="getClasses">
+                <span :class="[textSize, 'font-medium']">{{ getAltText }}</span>
+            </div>
+        </div>
+    </BaseTooltip>
+    <div v-else :class="getClassParent">
         <div v-if="sourceRef" :class="getClasses">
-            <img :src="sourceRef" alt="avatar" />
+            <img
+                :src="sourceRef"
+                :alt="altText"
+                class="w-full h-full object-cover"
+            />
         </div>
         <div v-else :class="getClasses">
-            <span :class="[textSize]">{{ getAltText }}</span>
+            <span :class="[textSize, 'font-medium']">{{ getAltText }}</span>
         </div>
     </div>
 </template>

@@ -1,24 +1,19 @@
 <script setup>
 import { computed, ref, onMounted, onUnmounted } from "vue";
-import { extractTheme } from "@/Utils/extractTheme";
+import { extractTheme, combinePropsWithTheme } from "@/Utils/extractTheme";
+import { commonProps, generateClasses } from "@/Utils/commonProps";
 import useEditableField from '@/Composables/useEditableField';
 import InputLabel from '@/Pages/Atoms/inputs/InputLabel.vue';
 import InputError from '@/Pages/Atoms/inputs/InputError.vue';
+import BaseTooltip from '@/Pages/Atoms/feedback/BaseTooltip.vue';
 
 const props = defineProps({
-    theme: {
-        type: String,
-        default: "",
-    },
+    ...commonProps,
     value: {
         type: [Boolean, Object],
         default: false,
     },
     label: {
-        type: String,
-        default: "",
-    },
-    tooltip: {
         type: String,
         default: "",
     },
@@ -70,27 +65,21 @@ const displayValue = computed(() => {
     return props.value;
 });
 
-const buildCheckboxClasses = (themeProps, props) => {
+const buildCheckboxClasses = (props) => {
     const classes = ["checkbox"];
 
-    // Color
-    const color = themeProps.color || 'primary-500';
-    classes.push(`text-${color}`);
-
-    // Size - Utilisation des classes DaisyUI
-    const size = themeProps.size || 'md';
-    classes.push(`checkbox-${size}`);
-
-    // Border style
-    if (themeProps.bordered) {
-        classes.push("checkbox-bordered");
+    // Ajout des classes communes
+    const baseClasses = generateClasses(props);
+    if (baseClasses) {
+        classes.push(baseClasses);
     }
 
     return classes.join(" ");
 };
 
 const themeProps = computed(() => extractTheme(props.theme));
-const getClasses = computed(() => buildCheckboxClasses(themeProps.value, props));
+const combinedProps = computed(() => combinePropsWithTheme(props, themeProps.value));
+const getClasses = computed(() => buildCheckboxClasses(combinedProps.value));
 
 const updateFieldValue = (newValue) => {
     if (props.useFieldComposable && props.field) {
@@ -165,34 +154,43 @@ onUnmounted(() => {
 
 <template>
     <div class="form-control">
-
-
-        <label class="label cursor-pointer justify-start gap-2">
-            <input
-                type="checkbox"
-                :id="props.id"
-                :checked="displayValue"
-                @change="updateValue"
-                @blur="handleBlur"
-                :autofocus="themeProps.autofocus"
-                :required="themeProps.required"
-                :data-tip="tooltip"
-                ref="input"
-                :class="getClasses"
-            />
-            <InputLabel v-if="useInputLabel" :for="props.id" :value="inputLabel || label">
-                <template v-if="$slots.inputLabel">
-                    <slot name="inputLabel" />
-                </template>
-            </InputLabel>
-            <button
-                v-if="useFieldComposable && isFieldModified"
-                @click="handleReset"
-                class="ml-auto text-base-600/80 hover:text-base-600/50"
-            >
-                <i class="fa-solid fa-arrow-rotate-left"></i>
-            </button>
-        </label>
+        <BaseTooltip
+            :tooltip="tooltip"
+            :tooltip-position="tooltipPosition"
+        >
+            <label class="label cursor-pointer justify-start gap-2">
+                <input
+                    type="checkbox"
+                    :id="props.id"
+                    :checked="displayValue"
+                    @change="updateValue"
+                    @blur="handleBlur"
+                    :autofocus="themeProps.autofocus"
+                    :required="themeProps.required"
+                    ref="input"
+                    :class="getClasses"
+                />
+                <InputLabel v-if="useInputLabel" :for="props.id" :value="inputLabel || label">
+                    <template v-if="$slots.inputLabel">
+                        <slot name="inputLabel" />
+                    </template>
+                </InputLabel>
+                <button
+                    v-if="useFieldComposable && isFieldModified"
+                    @click="handleReset"
+                    class="ml-auto text-base-600/80 hover:text-base-600/50"
+                >
+                    <i class="fa-solid fa-arrow-rotate-left"></i>
+                </button>
+            </label>
+            <template v-if="typeof tooltip === 'object'" #tooltip>
+                <slot name="tooltip" />
+            </template>
+        </BaseTooltip>
         <InputError v-if="useInputError" :message="errorMessage" class="mt-2" />
     </div>
 </template>
+
+<style scoped>
+/* Styles spécifiques au composant Checkbox si nécessaire */
+</style>

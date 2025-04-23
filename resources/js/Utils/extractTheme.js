@@ -99,6 +99,27 @@ const THEME_PATTERNS = {
     },
 };
 
+// Liste des couleurs valides
+const VALID_COLORS = ['primary', 'secondary', 'base', 'neutral', 'success', 'error', 'warning', 'info', 'accent'];
+const VALID_WEIGHTS = ['50', '100', '200', '300', '400', '500', '600', '700', '800', '900', '950'];
+
+// Fonction pour valider une couleur
+function isValidColor(value) {
+    if (!value) return true;
+    const parts = value.split('-');
+    return VALID_COLORS.includes(parts[0]) && VALID_WEIGHTS.includes(parts[1]);
+}
+
+// Fonction pour extraire la valeur d'une couleur
+function extractColorValue(value) {
+    if (!value) return null;
+    const parts = value.split('-');
+    if (parts.length === 2 && VALID_COLORS.includes(parts[0]) && VALID_WEIGHTS.includes(parts[1])) {
+        return value;
+    }
+    return null;
+}
+
 export function extractTheme(theme) {
     const result = {};
 
@@ -107,5 +128,44 @@ export function extractTheme(theme) {
         result[key] = match?.groups?.capture || null;
     });
 
+    // Traitement spécial pour les couleurs
+    if (result.bgColor) {
+        result.bgColor = extractColorValue(result.bgColor.replace("bg-", ""));
+    }
+    if (result.textColor) {
+        result.textColor = extractColorValue(
+            result.textColor.replace("text-", ""),
+        );
+    }
+    if (result.borderColor) {
+        result.borderColor = extractColorValue(
+            result.borderColor.replace("border-", ""),
+        );
+    }
+    if (result.color) {
+        result.color = extractColorValue(result.color);
+    }
+
+    // Traitement spécial pour l'opacité
+    if (result.opacity) {
+        result.opacity = result.opacity.replace("opacity-", "");
+    }
+
     return result;
+}
+
+// Fonction pour combiner les props avec le thème
+export function combinePropsWithTheme(props, themeProps) {
+    return {
+        ...props,
+        bgColor: props.bgColor || themeProps.bgColor,
+        textColor: props.textColor || themeProps.textColor,
+        borderColor: props.borderColor || themeProps.borderColor,
+        color: props.color || themeProps.color,
+        size: props.size || themeProps.size,
+        rounded: props.rounded || themeProps.rounded,
+        blur: props.blur || themeProps.blur,
+        shadow: props.shadow || themeProps.shadow,
+        opacity: props.opacity || themeProps.opacity,
+    };
 }

@@ -65,14 +65,12 @@
 
 <script setup>
 import { ref, computed } from "vue";
-import { extractTheme } from "@/Utils/extractTheme";
-import Tooltip from "@/Pages/Atoms/feedback/Tooltip.vue";
+import { extractTheme, combinePropsWithTheme } from "@/Utils/extractTheme";
+import { commonProps, generateClasses } from "@/Utils/commonProps";
+import BaseTooltip from '@/Pages/Atoms/feedback/BaseTooltip.vue';
 
 const props = defineProps({
-    theme: {
-        type: String,
-        default: "",
-    },
+    ...commonProps,
     src: {
         type: String,
         required: true,
@@ -81,11 +79,6 @@ const props = defineProps({
         type: String,
         default: "",
     },
-    size: {
-        type: String,
-        default: "",
-        validator: (value) => ['', 'xs', 'sm', 'md', 'lg', 'xl', '2xl', '3xl', '4xl', '5xl', '6xl'].includes(value)
-    },
     width: {
         type: String,
         default: "",
@@ -93,31 +86,6 @@ const props = defineProps({
     height: {
         type: String,
         default: "",
-    },
-    bgColor: {
-        type: String,
-        default: "",
-    },
-    rounded: {
-        type: String,
-        default: "",
-        validator: (value) => ['none', 'sm', 'md', 'lg', 'xl', '2xl', '3xl', 'full', 'square'].includes(value)
-    },
-    border: {
-        type: Boolean,
-        default: false,
-    },
-    borderColor: {
-        type: String,
-        default: "",
-    },
-    tooltip: {
-        type: String,
-        default: "",
-    },
-    tooltipPlacement: {
-        type: String,
-        default: "bottom",
     },
     filter: {
         type: String,
@@ -173,52 +141,36 @@ const filterMap = {
     'saturate': 'saturate(200%)'
 };
 
-const buildImageClasses = (themeProps, props) => {
+const buildImageClasses = (props) => {
     const classes = ['object-cover'];
 
     // Size (priorité sur width/height)
-    const size = props.size || themeProps.size;
+    const size = props.size;
     if (size && sizeMap[size]) {
         classes.push(`w-${sizeMap[size].width}`);
         classes.push(`h-${sizeMap[size].height}`);
     } else {
         // Width
-        const width = props.width || themeProps.width;
+        const width = props.width;
         if (width) {
             classes.push(`w-${width}`);
         }
 
         // Height
-        const height = props.height || themeProps.height;
+        const height = props.height;
         if (height) {
             classes.push(`h-${height}`);
         }
     }
 
-    // Background Color
-    const bgColor = props.bgColor ?? themeProps.bgColor ?? 'transparent';
-    if (bgColor) {
-        classes.push(`bg-${bgColor}`);
-    }
-
-    // Rounded
-    const rounded = props.rounded ?? themeProps.rounded ?? 'none';
-    if (rounded === 'square') {
-        classes.push('aspect-square');
-    } else if (rounded) {
-        classes.push(`rounded-${rounded}`);
-    }
-
-    // Border
-    if (props.border !== null ? props.border : themeProps.border) {
-        classes.push('border');
-        if (props.borderColor || themeProps.borderColor) {
-            classes.push(`border-${props.borderColor || themeProps.borderColor}`);
-        }
+    // Ajout des classes communes
+    const baseClasses = generateClasses(props);
+    if (baseClasses) {
+        classes.push(baseClasses);
     }
 
     // Filtre
-    const filter = props.filter || themeProps.filter || '';
+    const filter = props.filter;
     if (filter) {
         classes.push(`filter`);
         classes.push(`filter-${filter}`);
@@ -236,7 +188,8 @@ const buildImageClasses = (themeProps, props) => {
 };
 
 const themeProps = computed(() => extractTheme(props.theme));
-const imageClasses = computed(() => buildImageClasses(themeProps.value, props));
+const combinedProps = computed(() => combinePropsWithTheme(props, themeProps.value));
+const imageClasses = computed(() => buildImageClasses(combinedProps.value));
 
 // Calculer le alt text basé sur le nom de fichier si non fourni
 const altText = computed(() => {
@@ -250,28 +203,22 @@ const containerClasses = computed(() => {
     const classes = ['relative', 'inline-flex', 'justify-center', 'items-center'];
 
     // Size (priorité sur width/height)
-    const size = props.size || themeProps.value.size;
+    const size = props.size;
     if (size && sizeMap[size]) {
         classes.push(`w-${sizeMap[size].width}`);
         classes.push(`h-${sizeMap[size].height}`);
     } else {
         // Width
-        const width = props.width || themeProps.value.width;
+        const width = props.width;
         if (width) {
             classes.push(`w-${width}`);
         }
 
         // Height
-        const height = props.height || themeProps.value.height;
+        const height = props.height;
         if (height) {
             classes.push(`h-${height}`);
         }
-    }
-
-    // Background
-    const bgColor = themeProps.value.bgColor;
-    if (bgColor) {
-        classes.push(`bg-${bgColor}`);
     }
 
     return classes.join(" ");
@@ -280,27 +227,19 @@ const containerClasses = computed(() => {
 
 <template>
     <div :class="containerClasses">
-        <template v-if="tooltip">
-            <Tooltip :placement="tooltipPlacement">
-
-                    <img
-                        :src="src"
-                        :alt="altText"
-                        :class="imageClasses"
-                    />
-
-                <template #content>
-                    {{ tooltip }}
-                </template>
-            </Tooltip>
-        </template>
-
-        <img
-            v-else
-            :src="src"
-            :alt="altText"
-            :class="imageClasses"
-        />
+        <BaseTooltip
+            :tooltip="tooltip"
+            :tooltip-position="tooltipPosition"
+        >
+            <img
+                :src="src"
+                :alt="altText"
+                :class="imageClasses"
+            />
+            <template v-if="typeof tooltip === 'object'" #tooltip>
+                <slot name="tooltip" />
+            </template>
+        </BaseTooltip>
     </div>
 </template>
 

@@ -1,12 +1,11 @@
 <script setup>
-import { computed, defineProps, ref, onMounted, onUnmounted } from "vue";
-import { extractTheme } from "@/Utils/extractTheme";
+import { computed, ref, onMounted, onUnmounted } from "vue";
+import { extractTheme, combinePropsWithTheme } from "@/Utils/extractTheme";
+import { commonProps, generateClasses } from "@/Utils/commonProps";
+import BaseTooltip from "../feedback/BaseTooltip.vue";
 
 const props = defineProps({
-    theme: {
-        type: String,
-        default: "",
-    },
+    ...commonProps,
     placement: {
         type: String,
         default: "",
@@ -20,8 +19,10 @@ const props = defineProps({
     label: {
         type: String,
         default: "",
-    },
+    }
 });
+
+const open = ref(false);
 
 const buildDropdownClasses = (themeProps, props) => {
     const classes = ["dropdown"];
@@ -45,15 +46,19 @@ const buildDropdownClasses = (themeProps, props) => {
 };
 
 const buildDropdownContentClasses = (themeProps, props) => {
-    let color = props.color;
-    if (themeProps.colorAuto) {
-        color = getColorFromString(props.color);
-    } else if (themeProps.color) {
-        color = themeProps.color;
+    const classes = ['backdrop-blur-2xl', 'dropdown-content', 'menu', 'rounded-box', 'z-[1]', 'w-52', 'p-2', 'shadow'];
+
+    // Couleur de fond
+    const color = props.color || themeProps.value.color || 'base-900/80';
+    classes.push(`bg-${color}`);
+
+    // Ajout des classes communes
+    const baseClasses = generateClasses(props);
+    if (baseClasses) {
+        classes.push(baseClasses);
     }
 
-    const bgClass = `bg-${color}`;
-    return ['backdrop-blur-2xl', 'dropdown-content', 'menu', bgClass, 'rounded-box', 'z-[1]', 'w-52', 'p-2', 'shadow'].join(' ');
+    return classes.join(' ');
 };
 
 const closeOnEscape = (e) => {
@@ -63,6 +68,7 @@ const closeOnEscape = (e) => {
 };
 
 const themeProps = computed(() => extractTheme(props.theme));
+const combinedProps = computed(() => combinePropsWithTheme(props, themeProps.value));
 const dropdownClasses = computed(() => buildDropdownClasses(themeProps.value, props));
 const contentClasses = computed(() => buildDropdownContentClasses(themeProps.value, props));
 
@@ -71,15 +77,23 @@ onUnmounted(() => document.removeEventListener("keydown", closeOnEscape));
 </script>
 
 <template>
-    <div :class="dropdownClasses">
-        <div v-if="label" tabindex="0" role="button" class="btn m-1">
-            {{ label }}
+    <BaseTooltip
+        :tooltip="tooltip"
+        :tooltip-position="tooltipPosition"
+    >
+        <div :class="dropdownClasses">
+            <div v-if="label" tabindex="0" role="button" class="btn m-1">
+                {{ label }}
+            </div>
+            <div v-else tabindex="0" role="button">
+                <slot />
+            </div>
+            <ul tabindex="0" :class="contentClasses">
+                <slot name="list" />
+            </ul>
         </div>
-        <div v-else tabindex="0" role="button">
-            <slot />
-        </div>
-        <ul tabindex="0" :class="contentClasses">
-            <slot name="list" />
-        </ul>
-    </div>
+        <template v-if="typeof tooltip === 'object'" #tooltip>
+            <slot name="tooltip" />
+        </template>
+    </BaseTooltip>
 </template>

@@ -1,15 +1,13 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue';
-import { extractTheme } from "@/Utils/extractTheme";
+import { extractTheme, combinePropsWithTheme } from "@/Utils/extractTheme";
+import { commonProps, generateClasses } from "@/Utils/commonProps";
 import Btn from '@/Pages/Atoms/actions/Btn.vue';
 import Route from '@/Pages/Atoms/text/Route.vue';
+import BaseTooltip from './BaseTooltip.vue';
 
 const props = defineProps({
-    theme: {
-        type: String,
-        default: "info",
-        validator: (value) => ['info', 'success', 'error', 'warning', 'primary', 'secondary'].includes(value)
-    },
+    ...commonProps,
     delay: {
         type: Number,
         default: 3000,
@@ -35,6 +33,12 @@ const buildNotificationClasses = (props) => {
     // Si une route est définie, ajouter le curseur pointer
     if (props.route) {
         classes.push('cursor-pointer');
+    }
+
+    // Ajout des classes communes
+    const baseClasses = generateClasses(props);
+    if (baseClasses) {
+        classes.push(baseClasses);
     }
 
     return classes.join(' ');
@@ -65,7 +69,9 @@ const buildAlertClasses = () => {
     return classes.join(' ');
 };
 
-const notificationClasses = computed(() => buildNotificationClasses(props));
+const themeProps = computed(() => extractTheme(props.theme));
+const combinedProps = computed(() => combinePropsWithTheme(props, themeProps.value));
+const notificationClasses = computed(() => buildNotificationClasses(combinedProps.value));
 const alertClasses = computed(() => buildAlertClasses());
 
 const close = (e) => {
@@ -87,32 +93,41 @@ onMounted(() => {
 
 <template>
     <Transition name="fade">
-        <div v-if="isVisible" :class="notificationClasses">
-            <Route v-if="route" :route="route">
-                <div :class="[alertClasses, 'is-link']">
+        <BaseTooltip
+            v-if="isVisible"
+            :tooltip="tooltip"
+            :tooltip-position="tooltipPosition"
+        >
+            <div :class="notificationClasses">
+                <Route v-if="route" :route="route">
+                    <div :class="[alertClasses, 'is-link']">
+                        <span class="flex-1">{{ message }}</span>
+                        <Btn
+                            @click="close"
+                            theme="xs link"
+                            color="slate-600"
+                            class="absolute top-2 right-2"
+                        >
+                            <i class="fa-solid fa-xmark"></i>
+                        </Btn>
+                    </div>
+                </Route>
+                <div v-else :class="alertClasses">
                     <span class="flex-1">{{ message }}</span>
                     <Btn
                         @click="close"
                         theme="xs link"
-                        color="slate-600"
+                        color="secondary"
                         class="absolute top-2 right-2"
                     >
                         <i class="fa-solid fa-xmark"></i>
                     </Btn>
                 </div>
-            </Route>
-            <div v-else :class="alertClasses">
-                <span class="flex-1">{{ message }}</span>
-                <Btn
-                    @click="close"
-                    theme="xs link"
-                    color="secondary"
-                    class="absolute top-2 right-2"
-                >
-                    <i class="fa-solid fa-xmark"></i>
-                </Btn>
             </div>
-        </div>
+            <template v-if="typeof tooltip === 'object'" #tooltip>
+                <slot name="tooltip" />
+            </template>
+        </BaseTooltip>
     </Transition>
 </template>
 

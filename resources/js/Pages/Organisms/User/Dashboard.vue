@@ -1,3 +1,21 @@
+/**
+ * Dashboard component that displays user information and their content modules.
+ * Provides sections for campaigns, scenarios, and NPCs with creation capabilities.
+ *
+ * Features:
+ * - User profile display with avatar and role
+ * - Email verification status
+ * - Content modules display (Campaigns, Scenarios, NPCs)
+ * - Creation buttons for each content type
+ * - Responsive design
+ *
+ * Props:
+ * - theme: Theme configuration for styling
+ *
+ * Events:
+ * - @moduleCreated: Emitted when a new module is created
+ * - @moduleUpdated: Emitted when a module is updated
+ */
 <script setup>
 import { Head, usePage } from "@inertiajs/vue3";
 import { ref, onMounted } from "vue";
@@ -11,7 +29,7 @@ import BadgeRole from "@/Pages/Organisms/User/Molecules/badgeRole.vue";
 import Container from "@/Pages/Atoms/panels/Container.vue";
 import Badge from "@/Pages/Atoms/text/Badge.vue";
 import ModuleCard from "@/Pages/Molecules/modules/ModuleCard.vue";
-import Tooltip from "@/Pages/Atoms/feedback/Tooltip.vue";
+import BaseTooltip from "@/Pages/Atoms/feedback/BaseTooltip.vue";
 import VerifyMailAlert from "@/Pages/Molecules/auth/VerifyMailAlert.vue";
 
 // Récupération des données partagées par Inertia
@@ -25,19 +43,15 @@ onMounted(() => {
 </script>
 
 <template>
-    <!-- Définition du titre de la page -->
     <Head title="Mon Compte" />
 
-    <!-- Container principal -->
-    <Container>
+    <Container class="space-y-6">
+        <!-- En-tête du profil -->
         <div class="flex flex-col space-y-4">
-            <div
-                class="flex justify-between gap-6 max-sm:gap-3 flex-wrap"
-            >
+            <div class="flex justify-between gap-6 max-sm:gap-3 flex-wrap">
                 <!-- Informations utilisateur -->
                 <div class="flex items-center gap-4 max-md:gap-6 max-sm:gap-2 max-[930px]:flex-wrap justify-between w-full">
                     <div class="flex items-center justify-center space-x-4">
-                        <!-- Avatar : on passe la source (avatar) et le texte alternatif (nom) -->
                         <Avatar
                             rounded="full"
                             :source="user.avatar"
@@ -46,17 +60,12 @@ onMounted(() => {
                         />
 
                         <div>
-                            <!-- Nom/Pseudo -->
-                            <h2
-                                class="text-2xl font-bold text-gray-900 dark:text-gray-100"
-                            >
+                            <h2 class="text-2xl font-bold text-primary-100">
                                 {{ user.name }}
                             </h2>
-                            <!-- Adresse mail -->
-                            <p class="text-gray-600 dark:text-gray-300">
+                            <p class="text-primary-200">
                                 {{ user.email }}
                             </p>
-                            <!-- Rôle affiché dans un badge -->
                             <div class="mt-2">
                                 <BadgeRole :role="user.role" />
                             </div>
@@ -64,7 +73,12 @@ onMounted(() => {
                     </div>
                     <div class="flex justify-end max-[930px]:w-full">
                         <Route route="user.edit">
-                            <Btn theme="md primary glass" label="Éditer" />
+                            <Btn
+                                theme="primary"
+                                size="sm"
+                                label="Éditer"
+                                tooltip="Modifier mon profil"
+                            />
                         </Route>
                     </div>
                 </div>
@@ -76,7 +90,7 @@ onMounted(() => {
             <!-- Trait de séparation -->
             <hr class="border-gray-300 dark:border-gray-700 my-4" />
 
-            <!-- Mes Campagnes -->
+            <!-- Section Campagnes -->
             <div class="flex flex-col items-start gap-4 my-5">
                 <div class="flex justify-between gap-4 items-center w-full">
                     <h3
@@ -88,28 +102,22 @@ onMounted(() => {
                         </Badge>
                     </h3>
                     <div>
-                        <Tooltip>
+                        <BaseTooltip tooltip="Aucune campagne en cours">
                             <Route route="">
                                 <div class="indicator">
-                                    <span
-                                    class="indicator-item badge badge-secondary"
-                                    >0</span
-                                >
-                                <Btn
-                                    theme="sm neutral glass"
-                                    label="Voir mes campagnes"
+                                    <span class="indicator-item badge badge-secondary">0</span>
+                                    <Btn
+                                        theme="neutral"
+                                        variant="glass"
+                                        label="Voir mes campagnes"
+                                        tooltip="Afficher toutes mes campagnes"
                                     />
                                 </div>
                             </Route>
-                            <template #content>
-                                <p>Aucune campagne en cours</p>
-                            </template>
-                        </Tooltip>
+                        </BaseTooltip>
                     </div>
                 </div>
-                <div
-                    class="grid grid-cols-2 gap-4 max-sm:grid-cols-1 max-sm:gap-2 justify-items-center items-center"
-                >
+                <div class="grid grid-cols-2 gap-4 max-sm:grid-cols-1 max-sm:gap-2 justify-items-center items-center">
                     <ModuleCard
                         class="my-4"
                         image="https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fexternal-preview.redd.it%2FgqAwVxC2dXU-5xVfOELCvNRYBotyqQH5I6QoLqQNOdE.jpg%3Fauto%3Dwebp%26s%3Deb300cd46e5373d222ef549427621df6aa44c31a&f=1&nofb=1&ipt=566b85f79c1f044372650b7fd3c0371313b4b9f8c60045bafa2f7773ba1dcb3d&ipo=images"
@@ -124,52 +132,47 @@ onMounted(() => {
                             <p>Description de la campagne</p>
                         </template>
                         <template #hoverContent>
-                            <p>
-                                Description détaillée de la campagne. Lorem
-                                ipsum dolor sit amet consectetur adipisicing
-                                elit. Quisquam, quos.
+                            <p class="text-primary-100">
+                                Description détaillée de la campagne. Lorem ipsum dolor sit amet consectetur adipisicing elit.
                             </p>
                         </template>
                     </ModuleCard>
-                    <Tooltip>
+                    <BaseTooltip tooltip="Créer une campagne">
                         <Route route="">
-                          <Btn BgColor="secondary-900">
-                                    <div class="w-full h-full flex items-center justify-center">
-                                        <i class="text-4xl text-content-light text-center fa-solid fa-plus"></i>
-                                    </div>
+                            <Btn theme="secondary-900">
+                                <div class="w-full h-full flex items-center justify-center">
+                                    <i class="text-4xl text-content-light text-center fa-solid fa-plus"></i>
+                                </div>
                             </Btn>
-                            </Route>
-                        <template #content> Créer une campagne </template>
-                    </Tooltip>
+                        </Route>
+                    </BaseTooltip>
                 </div>
             </div>
 
-            <!-- Mes Scénarios -->
+            <!-- Section Scénarios -->
             <div class="flex flex-col items-start gap-4 my-5">
                 <div class="flex justify-between gap-4 items-center w-full">
-                    <h3
-                        class="text-lg font-bold text-gray-900 dark:text-gray-100"
-                    >
+                    <h3 class="text-lg font-bold text-primary-100">
                         Mes Scénarios
                         <Badge class="ml-2 uppercase" color="scenario-800">
                             Scénario
                         </Badge>
                     </h3>
                     <div>
-                        <Tooltip>
+                        <BaseTooltip tooltip="Aucun scénario en cours">
                             <Route route="">
                                 <div class="indicator">
                                     <span class="indicator-item badge badge-secondary">0</span>
                                     <Btn
-                                        theme="sm neutral glass"
+                                        theme="neutral"
+                                        variant="glass"
+                                        size="sm"
                                         label="Voir mes scénarios"
+                                        tooltip="Afficher tous mes scénarios"
                                     />
                                 </div>
                             </Route>
-                            <template #content>
-                                <p>Aucun scénario en cours</p>
-                            </template>
-                        </Tooltip>
+                        </BaseTooltip>
                     </div>
                 </div>
                 <div class="grid grid-cols-2 gap-4 max-sm:grid-cols-1 max-sm:gap-2 justify-items-center items-center">
@@ -179,58 +182,56 @@ onMounted(() => {
                         :type="{ name: 'scenario', color: 'scenario-800' }"
                         :actions="['pin', 'favorite', 'view', 'edit', 'share']"
                         title="Mon Scénario"
+                        theme="primary"
                     >
                         <template #properties>
                             <Badge size="sm" color="primary">Test</Badge>
                         </template>
                         <template #content>
-                            <p>Description du scénario</p>
+                            <p class="text-primary-200">Description du scénario</p>
                         </template>
                         <template #hoverContent>
-                            <p>Description détaillée du scénario. Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quos.</p>
+                            <p class="text-primary-100">
+                                Description détaillée du scénario. Lorem ipsum dolor sit amet consectetur adipisicing elit.
+                            </p>
                         </template>
                     </ModuleCard>
-                    <Tooltip>
-
-                            <Route route="">
-                           <Btn BgColor="secondary-900">
-                                    <div class="w-full h-full flex items-center justify-center">
-                                        <i class="text-4xl text-content-light text-center fa-solid fa-plus"></i>
-                                    </div>
+                    <BaseTooltip tooltip="Créer un scénario">
+                        <Route route="">
+                            <Btn theme="secondary">
+                                <div class="w-full h-full flex items-center justify-center">
+                                    <i class="text-4xl text-content-light text-center fa-solid fa-plus"></i>
+                                </div>
                             </Btn>
-                            </Route>
-
-                        <template #content>Créer un scénario</template>
-                    </Tooltip>
+                        </Route>
+                    </BaseTooltip>
                 </div>
             </div>
 
-            <!-- Mes PNJ -->
+            <!-- Section PNJ -->
             <div class="flex flex-col items-start gap-4 my-5">
                 <div class="flex justify-between gap-4 items-center w-full">
-                    <h3
-                        class="text-lg font-bold text-gray-900 dark:text-gray-100"
-                    >
+                    <h3 class="text-lg font-bold text-primary-100">
                         Mes PNJ
                         <Badge class="ml-2 uppercase" color="npc-800">
                             PNJ
                         </Badge>
                     </h3>
                     <div>
-                        <Tooltip>
+                        <BaseTooltip tooltip="Aucun PNJ créé">
                             <Route route="">
                                 <div class="indicator">
                                     <span class="indicator-item badge badge-secondary">0</span>
                                     <Btn
-                                        theme="sm neutral glass"
+                                        theme="neutral"
+                                        variant="glass"
+                                        size="sm"
                                         label="Voir mes PNJ"
+                                        tooltip="Afficher tous mes PNJ"
                                     />
                                 </div>
                             </Route>
-                            <template #content>
-                                <p>Aucun PNJ créé</p>
-                            </template>
-                        </Tooltip>
+                        </BaseTooltip>
                     </div>
                 </div>
                 <div class="grid grid-cols-2 gap-4 max-sm:grid-cols-1 max-sm:gap-2 justify-items-center items-center">
@@ -245,49 +246,23 @@ onMounted(() => {
                             <Badge size="sm" color="primary">Test</Badge>
                         </template>
                         <template #content>
-                            <p>Description du PNJ</p>
+                            <p class="text-primary-200">Description du PNJ</p>
                         </template>
                         <template #hoverContent>
-                            <p>Description détaillée du PNJ. Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quos.</p>
+                            <p class="text-primary-100">
+                                Description détaillée du PNJ. Lorem ipsum dolor sit amet consectetur adipisicing elit.
+                            </p>
                         </template>
                     </ModuleCard>
-                    <Tooltip>
+                    <BaseTooltip tooltip="Créer un PNJ">
                         <Route route="">
-                            <Btn BgColor="secondary-900">
-                                    <div class="w-full h-full flex items-center justify-center">
-                                        <i class="text-4xl text-content-light text-center fa-solid fa-plus"></i>
-                                    </div>
+                            <Btn theme="secondary">
+                                <div class="w-full h-full flex items-center justify-center">
+                                    <i class="text-4xl text-content-light text-center fa-solid fa-plus"></i>
+                                </div>
                             </Btn>
                         </Route>
-                        <template #content>Créer un PNJ</template>
-                    </Tooltip>
-                </div>
-            </div>
-
-            <div class="flex justify-end gap-4 flex-wrap items-center">
-                <div>
-                    <Route route="logout" method="post">
-                        <Btn
-                            theme="neutral outline sm"
-                            label="Se déconnecter"
-                        />
-                    </Route>
-                </div>
-                <div>
-                    <Route route="">
-                        <Btn
-                            theme="neutral ing outline sm"
-                            label="Obtenir mes informations"
-                        />
-                    </Route>
-                </div>
-                <div>
-                    <Route route="">
-                        <Btn
-                            theme="error outline sm"
-                            label="Supprimer le compte"
-                        />
-                    </Route>
+                    </BaseTooltip>
                 </div>
             </div>
         </div>

@@ -1,19 +1,17 @@
 <script setup>
 import { computed } from "vue";
 import { isDark } from "@/Utils/Color";
-import { extractTheme } from "@/Utils/extractTheme";
-import Tooltip from "../feedback/Tooltip.vue";
+import { extractTheme, combinePropsWithTheme } from "@/Utils/extractTheme";
+import { commonProps, generateClasses } from "@/Utils/commonProps";
+import BaseTooltip from "../feedback/BaseTooltip.vue";
 
 const props = defineProps({
-    theme: {
-        type: String,
-        default: "button",
-    },
+    ...commonProps,
     label: {
         type: String,
         default: "",
     },
-    type: {
+    variant: {
         type: String,
         default: "button",
         validator: (value) =>
@@ -30,29 +28,13 @@ const props = defineProps({
         default: "",
         validator: (value) =>
             ["", "glass", "outline", "link", "ghost"].includes(value),
-    },
-    color: {
-        type: String,
-        default: "primary",
-    },
-    size: {
-        type: String,
-        default: "md",
-        validator: (value) => ["", "xs", "sm", "md", "lg"].includes(value),
-    },
-    tooltip: {
-        type: String,
-        default: "",
-    },
-    tooltipPosition: {
-        type: String,
-        default: "bottom",
-        validator: (value) =>
-            ["", "top", "right", "bottom", "left"].includes(value),
-    },
+    }
 });
 
-const buildButtonClasses = (themeProps, props) => {
+const themeProps = computed(() => extractTheme(props.theme));
+const combinedProps = computed(() => combinePropsWithTheme(props, themeProps.value));
+
+const buildButtonClasses = (props) => {
     const classes = ["btn"];
 
     // Style (glass, outline, link, ghost)
@@ -62,43 +44,44 @@ const buildButtonClasses = (themeProps, props) => {
         } else {
             classes.push("btn-" + props.styled);
         }
-    } else if (themeProps.styled) {
-        if (themeProps.styled === "glass") {
+    } else if (themeProps.value.styled) {
+        if (themeProps.value.styled === "glass") {
             classes.push("glass");
         } else {
-            classes.push("btn-" + themeProps.styled);
+            classes.push("btn-" + themeProps.value.styled);
         }
     }
 
     // Face (block, wide, square, circle)
     if (props.face) {
         classes.push("btn-" + props.face);
-    } else if (themeProps.face) {
-        classes.push("btn-" + themeProps.face);
+    } else if (themeProps.value.face) {
+        classes.push("btn-" + themeProps.value.face);
     }
 
     // Size
     if (props.size) {
         classes.push(`btn-${props.size}`);
-    } else if (themeProps.size) {
-        classes.push(`btn-${themeProps.size}`);
+    } else if (themeProps.value.size) {
+        classes.push(`btn-${themeProps.value.size}`);
     } else {
         classes.push(`btn-md`);
     }
 
-    // Color
-    let color = props.color;
-    if (themeProps.colorAuto) {
-        color = getColorFromString(props.color);
-    } else if (themeProps.color) {
-        color = themeProps.color;
+    // Couleurs
+    const baseClasses = generateClasses(props);
+    if (baseClasses) {
+        classes.push(baseClasses);
     }
-    if (props.styled === "outline" || themeProps.styled === "outline") {
-        classes.push(`border-${color}`);
-        classes.push(`text-${color}`);
-    } else if (props.styled === "link" || themeProps.styled === "link") {
-        classes.push(`text-${color}`);
+
+    // Gestion spéciale des couleurs pour les styles outline et link
+    if (props.styled === "outline" || themeProps.value.styled === "outline") {
+        classes.push(`border-${props.color || themeProps.value.color || 'primary'}`);
+        classes.push(`text-${props.color || themeProps.value.color || 'primary'}`);
+    } else if (props.styled === "link" || themeProps.value.styled === "link") {
+        classes.push(`text-${props.color || themeProps.value.color || 'primary'}`);
     } else {
+        const color = props.color || themeProps.value.color || 'primary';
         classes.push(`bg-${color}`);
         if (isDark(color)) {
             classes.push(`text-content-dark`);
@@ -110,47 +93,25 @@ const buildButtonClasses = (themeProps, props) => {
     return classes.join(" ");
 };
 
-const themeProps = computed(() => extractTheme(props.theme));
-const getClasses = computed(() => buildButtonClasses(themeProps.value, props));
+const getClasses = computed(() => buildButtonClasses(combinedProps.value));
 </script>
 
 <template>
-    <Tooltip v-if="tooltip" :placement="tooltipPosition">
-
-            <button
-                :type="type"
-                :class="[
-                    getClasses,
-                    {
-                        tooltip: tooltip,
-                        [`tooltip-${tooltipPosition}`]: tooltip && tooltipPosition,
-                    }
-                ]"
-                :data-tip="tooltip"
-            >
-                <span v-if="label">{{ label }}</span>
-                <slot v-else />
-            </button>
-
-        <template #content>
-            <span>{{ tooltip }}</span>
-        </template>
-    </Tooltip>
-    <button
-        v-else
-        :type="type"
-        :class="[
-            getClasses,
-            {
-                tooltip: tooltip,
-                [`tooltip-${tooltipPosition}`]: tooltip && tooltipPosition,
-            }
-        ]"
-        :data-tip="tooltip"
+    <BaseTooltip
+        :tooltip="tooltip"
+        :tooltip-position="tooltipPosition"
     >
-        <span v-if="label">{{ label }}</span>
-        <slot v-else />
-    </button>
+        <button
+            :type="variant"
+            :class="getClasses"
+        >difi
+            <span v-if="label">{{ label }}</span>
+            <slot v-else />
+        </button>
+        <template v-if="typeof tooltip === 'object'" #tooltip>
+            <slot name="tooltip" />
+        </template>
+    </BaseTooltip>
 </template>
 
 <style scoped lang="scss">
@@ -189,7 +150,7 @@ const getClasses = computed(() => buildButtonClasses(themeProps.value, props));
     transition: filter 0.2s ease-in-out, backdrop-filter 0.3s ease-in-out,
         box-shadow 0.4s ease-in-out, text-shadow 0.3s ease-in-out;
 
-           position: relative;
+    position: relative;
     overflow: hidden;
 
     &:hover {

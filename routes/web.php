@@ -101,9 +101,9 @@ Route::middleware(['auth', 'verified', 'role:admin'])->group(function () {
 // FILES
 require __DIR__ . "/files.php";
 
-// PERMANENT
+// STATICS
 Route::get('/contribuer', function () {
-    return Inertia::render('Permanent/contribute');
+    return Inertia::render('Statics/contribute');
 })->name('contribute');
 
 // // Campaigns

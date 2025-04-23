@@ -1,8 +1,11 @@
 <script setup>
-import Btn from '@/Pages/Atoms/actions/Btn.vue';
-import { success, error } from '@/Utils/notificationManager';
-import Tooltip from '@/Pages/Atoms/feedback/Tooltip.vue';
 import { useForm } from '@inertiajs/vue3';
+import { success, error } from '@/Utils/notificationManager';
+
+// Composants Atoms
+import Btn from '@/Pages/Atoms/actions/Btn.vue';
+import BaseTooltip from '@/Pages/Atoms/feedback/BaseTooltip.vue';
+import Icon from '@/Pages/Atoms/images/Icon.vue';
 
 const form = useForm({});
 
@@ -20,29 +23,42 @@ const resendVerification = () => {
 </script>
 
 <template>
-    <Tooltip>
-        <template #content>
-            <p class="w-64">
-                Ton adresse email n'est pas vérifiée. Cela peut causer des problèmes lors de l'utilisation de l'application.
-                <br>
-                En cliquant sur le bouton ci-dessous, un mail te sera envoyé.
-                <br>
-                <span class="font-bold">Pour vérifier ton adresse email, clique sur le lien dans le mail.</span>
-            </p>
-        </template>
-
-        <div role="alert" class="alert bg-warning/80 text-content-light py-2 px-4">
-                <i class="fa-solid fa-triangle-exclamation"></i>
-                <span>Mail non vérifié.</span>
-                <div>
-            <Btn
-                theme="link"
-                class="text-secondary-950"
-                label="Vérifier maintenant"
-                @click="resendVerification"
-                :disabled="form.processing"
+    <BaseTooltip
+        :tooltip="{ custom: true }"
+        tooltip-position="bottom"
+    >
+        <div
+            role="alert"
+            class="alert bg-warning/80 text-content-light py-2 px-4 flex items-center gap-2"
+        >
+            <Icon
+                icon="fa-solid fa-triangle-exclamation"
+                class="w-5 h-5"
             />
-                </div>
+            <span>Mail non vérifié.</span>
+            <div class="ml-auto">
+                <Btn
+                    theme="link"
+                    class="text-secondary-950 hover:text-secondary-900 transition-colors"
+                    label="Vérifier maintenant"
+                    @click="resendVerification"
+                    :disabled="form.processing"
+                />
+            </div>
         </div>
-    </Tooltip>
+
+        <template #tooltip>
+            <div class="w-64 p-2">
+                <p class="text-content">
+                    Ton adresse email n'est pas vérifiée. Cela peut causer des problèmes lors de l'utilisation de l'application.
+                </p>
+                <p class="text-content mt-2">
+                    En cliquant sur le bouton ci-dessous, un mail te sera envoyé.
+                </p>
+                <p class="text-content font-bold mt-2">
+                    Pour vérifier ton adresse email, clique sur le lien dans le mail.
+                </p>
+            </div>
+        </template>
+    </BaseTooltip>
 </template>

@@ -1,61 +1,36 @@
 <script setup>
 import { ref, computed, defineProps, onMounted } from "vue";
-import { extractTheme } from "@/Utils/extractTheme";
+import { extractTheme, combinePropsWithTheme } from "@/Utils/extractTheme";
 import { getColorFromString } from "@/Utils/Color.js";
 import VanillaTilt from "vanilla-tilt";
+import { commonProps, generateClasses } from "@/Utils/commonProps";
+import BaseTooltip from '@/Pages/Atoms/feedback/BaseTooltip.vue';
 
 const props = defineProps({
-    theme: {
+    ...commonProps,
+    title: {
         type: String,
         default: "",
     },
-    bgColor: {
+    subtitle: {
         type: String,
-        default: "secondary-700",
+        default: "",
     },
-    borderColor: {
-        type: String,
-        default: "secondary-100/10",
-    },
-    opacity: {
-        type: [String, Number],
-        default: 80,
-    },
-    blur: {
-        type: String,
-        default: "lg",
+    bordered: {
+        type: Boolean,
+        default: true,
     },
     shadow: {
-        type: String,
-        default: "sm",
-        validator(value) {
-            return [
-                "none",
-                "xs",
-                "sm",
-                "md",
-                "lg",
-                "xl",
-                "2xl",
-                "3xl",
-            ].includes(value);
-        },
+        type: Boolean,
+        default: true,
     },
-    rounded: {
-        type: String,
-        default: "lg",
-        validator(value) {
-            return [
-                "none",
-                "xs",
-                "sm",
-                "md",
-                "lg",
-                "xl",
-                "2xl",
-                "3xl",
-            ].includes(value);
-        },
+    hover: {
+        type: Boolean,
+        default: false,
+    },
+    clickable: {
+        type: Boolean,
+        default: false,
     },
     width: {
         type: [String, Number],
@@ -66,6 +41,8 @@ const props = defineProps({
         default: "auto",
     },
 });
+
+const emit = defineEmits(["click"]);
 
 const width = computed(() => {
     // Width
@@ -93,64 +70,41 @@ const height = computed(() => {
     }
 });
 
-const buildCardClasses = (themeProps, props) => {
-    const classes = ["card", "border-glass"];
+const buildCardClasses = (props) => {
+    const classes = ["card"];
 
-    // Shadow
+    // Ajout des classes communes
+    const baseClasses = generateClasses(props);
+    if (baseClasses) {
+        classes.push(baseClasses);
+    }
+
+    // Style de bordure
+    if (props.bordered) {
+        classes.push("card-bordered");
+    }
+
+    // Ombre
     if (props.shadow) {
-        classes.push(`border-glass-${props.shadow}`);
-    } else if (themeProps.shadow) {
-        classes.push(themeProps.shadow);
+        classes.push("shadow-md");
     }
 
-    // Blur
-    if (props.blur) {
-        classes.push(`backdrop-blur-${props.blur}`);
-    } else if (themeProps.blur) {
-        classes.push(themeProps.blur);
+    // Effet de survol
+    if (props.hover) {
+        classes.push("hover:shadow-lg transition-shadow duration-300");
     }
 
-    // Background Color
-    let bgColor = props.bgColor;
-    if (themeProps.colorAuto) {
-        bgColor = getColorFromString(props.bgColor);
-    } else if (themeProps.color) {
-        bgColor = themeProps.color;
+    // Curseur cliquable
+    if (props.clickable) {
+        classes.push("cursor-pointer");
     }
-
-    if (props.opacity || themeProps.opacity) {
-        classes.push(`bg-${bgColor}/${props.opacity || themeProps.opacity}`);
-    } else {
-        classes.push(`bg-${bgColor}`);
-    }
-
-    // Border Color
-    let borderColor = props.borderColor;
-    if (themeProps.colorAuto) {
-        borderColor = getColorFromString(props.borderColor);
-    } else if (themeProps.borderColor) {
-        borderColor = themeProps.borderColor;
-    }
-    classes.push(`border-${borderColor}`);
-
-    // Rounded
-    if (props.rounded) {
-        classes.push(`rounded-${props.rounded}`);
-    } else if (themeProps.rounded) {
-        classes.push(themeProps.rounded);
-    }
-
-    // Width
-    classes.push(width);
-
-    // Height
-    classes.push(height);
 
     return classes.join(" ");
 };
 
 const themeProps = computed(() => extractTheme(props.theme));
-const classes = computed(() => buildCardClasses(themeProps.value, props));
+const combinedProps = computed(() => combinePropsWithTheme(props, themeProps.value));
+const getClasses = computed(() => buildCardClasses(combinedProps.value));
 
 onMounted(() => {
     VanillaTilt.init(document.querySelectorAll(".card"), {
@@ -160,19 +114,42 @@ onMounted(() => {
         "max-glare": 0.1,
     });
 });
+
+const handleClick = () => {
+    if (props.clickable) {
+        emit("click");
+    }
+};
 </script>
 
 <template>
-    <div :class="{ 'card-wrapper': true, width, height }">
-        <div :class="classes">
-            <div class="card-content">
+    <BaseTooltip
+        :tooltip="tooltip"
+        :tooltip-position="tooltipPosition"
+    >
+        <div
+            :class="getClasses"
+            @click="handleClick"
+        >
+            <div v-if="title || subtitle || $slots.header" class="card-header">
+                <slot name="header">
+                    <h3 v-if="title" class="card-title">{{ title }}</h3>
+                    <p v-if="subtitle" class="card-subtitle">{{ subtitle }}</p>
+                </slot>
+            </div>
+
+            <div class="card-body">
                 <slot />
             </div>
-            <div v-if="$slots.hover" class="hover-content">
-                <slot name="hover" />
+
+            <div v-if="$slots.footer" class="card-footer">
+                <slot name="footer" />
             </div>
         </div>
-    </div>
+        <template v-if="typeof tooltip === 'object'" #tooltip>
+            <slot name="tooltip" />
+        </template>
+    </BaseTooltip>
 </template>
 
 <style scoped lang="scss">

@@ -1,25 +1,20 @@
 <script setup>
 import { computed, ref, onMounted, onUnmounted, useAttrs } from "vue";
-import { extractTheme } from "@/Utils/extractTheme";
+import { extractTheme, combinePropsWithTheme } from "@/Utils/extractTheme";
+import { commonProps, generateClasses } from "@/Utils/commonProps";
 import useEditableField from '@/Composables/useEditableField';
 import InputLabel from '@/Pages/Atoms/inputs/InputLabel.vue';
 import InputError from '@/Pages/Atoms/inputs/InputError.vue';
+import BaseTooltip from '@/Pages/Atoms/feedback/BaseTooltip.vue';
 
 const props = defineProps({
-    theme: {
-        type: String,
-        default: "",
-    },
+    ...commonProps,
     placeholder: {
         type: String,
         default: "",
     },
     value: {
         type: [String, Object],
-        default: "",
-    },
-    tooltip: {
-        type: String,
         default: "",
     },
     useFieldComposable: {
@@ -62,20 +57,17 @@ const componentId = computed(() => attrs.id || `textarea-${Math.random().toStrin
 
 const editableField = useEditableField(props.value);
 
-const buildTextareaClasses = (themeProps, props) => {
-    const classes = ["textarea", "w-full", "max-w-xs"];
+const buildTextareaClasses = (props) => {
+    const classes = ["textarea", "w-full"];
 
-    // Color
-    const color = themeProps.color || 'primary-500';
-    classes.push(`text-${color}`);
-    classes.push(`border-${color}`);
+    // Ajout des classes communes
+    const baseClasses = generateClasses(props);
+    if (baseClasses) {
+        classes.push(baseClasses);
+    }
 
-    // Size
-    const size = themeProps.size || 'md';
-    classes.push(`textarea-${size}`);
-
-    // Border style
-    if (themeProps.bordered) {
+    // Style de bordure
+    if (props.bordered) {
         classes.push("textarea-bordered");
     }
 
@@ -83,7 +75,8 @@ const buildTextareaClasses = (themeProps, props) => {
 };
 
 const themeProps = computed(() => extractTheme(props.theme));
-const getClasses = computed(() => buildTextareaClasses(themeProps.value, props));
+const combinedProps = computed(() => combinePropsWithTheme(props, themeProps.value));
+const getClasses = computed(() => buildTextareaClasses(combinedProps.value));
 
 const displayValue = computed(() => {
     if (props.useFieldComposable && props.field) {
@@ -171,32 +164,41 @@ onUnmounted(() => {
             </template>
         </InputLabel>
 
-        <textarea
-            ref="input"
-            :id="componentId"
-            :class="getClasses"
-            :value="displayValue"
-            @input="updateValue"
-            @blur="handleBlur"
-            :placeholder="placeholder"
-            :maxlength="themeProps.maxLength"
-            :rows="themeProps.rows"
-            :cols="themeProps.cols"
-            :disabled="themeProps.disabled"
-            :readonly="themeProps.readonly"
-            :required="themeProps.required"
-            :autofocus="themeProps.autofocus"
-            :name="themeProps.name"
-            :title="tooltip"
-            autocomplete="off"
-        ></textarea>
-        <button
-            v-if="useFieldComposable && isFieldModified"
-            @click="handleReset"
-            class="absolute right-2 top-1/2 transform -translate-y-1/2 text-base-600/80 hover:text-base-600/50"
+        <BaseTooltip
+            :tooltip="tooltip"
+            :tooltip-position="tooltipPosition"
         >
-            <i class="fa-solid fa-arrow-rotate-left"></i>
-        </button>
+            <div class="relative">
+                <textarea
+                    ref="input"
+                    :id="componentId"
+                    :class="getClasses"
+                    :value="displayValue"
+                    @input="updateValue"
+                    @blur="handleBlur"
+                    :placeholder="placeholder"
+                    :maxlength="themeProps.maxLength"
+                    :rows="themeProps.rows"
+                    :cols="themeProps.cols"
+                    :disabled="themeProps.disabled"
+                    :readonly="themeProps.readonly"
+                    :required="themeProps.required"
+                    :autofocus="themeProps.autofocus"
+                    :name="themeProps.name"
+                ></textarea>
+                <button
+                    v-if="useFieldComposable && isFieldModified"
+                    @click="handleReset"
+                    class="absolute right-2 top-1/2 transform -translate-y-1/2 text-base-600/80 hover:text-base-600/50"
+                >
+                    <i class="fa-solid fa-arrow-rotate-left"></i>
+                </button>
+            </div>
+            <template v-if="typeof tooltip === 'object'" #tooltip>
+                <slot name="tooltip" />
+            </template>
+        </BaseTooltip>
+
         <InputError v-if="useInputError" :message="errorMessage" class="mt-2" />
     </div>
 </template>

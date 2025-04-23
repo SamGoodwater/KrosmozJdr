@@ -1,13 +1,12 @@
 <script setup>
 import { computed, ref } from "vue";
 import { Link } from "@inertiajs/vue3";
-import { extractTheme } from "@/Utils/extractTheme";
-import Tooltip from "@/Pages/Atoms/feedback/Tooltip.vue";
+import { extractTheme, combinePropsWithTheme } from "@/Utils/extractTheme";
+import { commonProps, generateClasses } from "@/Utils/commonProps";
+import BaseTooltip from '@/Pages/Atoms/feedback/BaseTooltip.vue';
+
 const props = defineProps({
-    theme: {
-        type: String,
-        default: "",
-    },
+    ...commonProps,
     href: {
         type: String,
         default: "#",
@@ -19,35 +18,26 @@ const props = defineProps({
     target: {
         type: String,
         default: "",
-    },
-    tooltip: {
-        type: String,
-        default: "",
-    },
-    tooltipPosition: {
-        type: String,
-        default: "",
-    },
+    }
 });
 
 const hrefRef = ref(props.href);
 
-const buildRouteClasses = (themeProps, props) => {
+const buildRouteClasses = (props) => {
     const classes = [];
 
-    // Tooltip
-    if (props.tooltip) {
-        classes.push('tooltip');
-        if (themeProps.tooltipPosition) {
-            classes.push(`tooltip-${themeProps.tooltipPosition}`);
-        }
+    // Ajout des classes communes
+    const baseClasses = generateClasses(props);
+    if (baseClasses) {
+        classes.push(baseClasses);
     }
 
     return classes.join(" ");
 };
 
 const themeProps = computed(() => extractTheme(props.theme));
-const getClasses = computed(() => buildRouteClasses(themeProps.value, props));
+const combinedProps = computed(() => combinePropsWithTheme(props, themeProps.value));
+const routeClasses = computed(() => buildRouteClasses(combinedProps.value));
 
 // Update href if route is provided
 if (props.route) {
@@ -56,26 +46,23 @@ if (props.route) {
 </script>
 
 <template>
-    <Tooltip v-if="tooltip" :placement="tooltipPosition">
+    <BaseTooltip
+        :tooltip="tooltip"
+        :tooltip-position="tooltipPosition"
+    >
         <Link
             :href="hrefRef"
             :target="target"
-            :class="getClasses"
+            :class="routeClasses"
         >
             <slot />
         </Link>
-        <template #content>
-            <span>{{ tooltip }}</span>
+        <template v-if="typeof tooltip === 'object'" #tooltip>
+            <slot name="tooltip" />
         </template>
-    </Tooltip>
-    <Link
-        v-else
-        :href="hrefRef"
-        :target="target"
-        :class="getClasses"
-    >
-        <slot />
-    </Link>
+    </BaseTooltip>
 </template>
 
-<style scoped></style>
+<style scoped>
+/* Styles spécifiques au composant Route si nécessaire */
+</style>

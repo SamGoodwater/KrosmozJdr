@@ -1,34 +1,22 @@
 <script setup>
 import { ref, onMounted, defineExpose, computed, onUnmounted } from "vue";
 import { useAttrs } from "vue";
-import { extractTheme } from "@/Utils/extractTheme";
+import { extractTheme, combinePropsWithTheme } from "@/Utils/extractTheme";
+import { commonProps, generateClasses } from "@/Utils/commonProps";
+import useEditableField from '@/Composables/useEditableField';
 import InputLabel from '@/Pages/Atoms/inputs/InputLabel.vue';
 import InputError from '@/Pages/Atoms/inputs/InputError.vue';
+import BaseTooltip from '@/Pages/Atoms/feedback/BaseTooltip.vue';
 
 const props = defineProps({
-    modelValue: {
-        type: [String, Number, Object],
-        default: "",
-    },
-    theme: {
-        type: String,
-        default: "",
-    },
-    type: {
-        type: String,
-        default: "text",
-    },
+    ...commonProps,
     placeholder: {
         type: String,
         default: "",
     },
-    tooltip: {
-        type: String,
+    value: {
+        type: [String, Object],
         default: "",
-    },
-    labelInside: {
-        type: Boolean,
-        default: false,
     },
     useFieldComposable: {
         type: Boolean,
@@ -60,25 +48,27 @@ const props = defineProps({
     },
 });
 
-const emit = defineEmits(["update:modelValue"]);
+const emit = defineEmits(["update:value"]);
 const input = ref(null);
 const attrs = useAttrs();
 const debounceTimeout = ref(null);
 
-const buildInputClasses = (themeProps, props) => {
+// Générer un ID unique pour le composant
+const componentId = computed(() => attrs.id || `text-input-${Math.random().toString(36).substr(2, 9)}`);
+
+const editableField = useEditableField(props.value);
+
+const buildInputClasses = (props) => {
     const classes = ["input", "w-full"];
 
-    // Color
-    const color = themeProps.color || 'primary-500';
-    classes.push(`text-${color}`);
-    classes.push(`border-${color}`);
+    // Ajout des classes communes
+    const baseClasses = generateClasses(props);
+    if (baseClasses) {
+        classes.push(baseClasses);
+    }
 
-    // Size
-    const size = themeProps.size || 'md';
-    classes.push(`input-${size}`);
-
-    // Border style
-    if (themeProps.bordered) {
+    // Style de bordure
+    if (props.bordered) {
         classes.push("input-bordered");
     }
 
@@ -86,14 +76,14 @@ const buildInputClasses = (themeProps, props) => {
 };
 
 const themeProps = computed(() => extractTheme(props.theme));
-const getClasses = computed(() => buildInputClasses(themeProps.value, props));
+const combinedProps = computed(() => combinePropsWithTheme(props, themeProps.value));
+const getClasses = computed(() => buildInputClasses(combinedProps.value));
 
-// Computed pour gérer la valeur affichée
 const displayValue = computed(() => {
     if (props.useFieldComposable && props.field) {
         return props.field.value.value;
     }
-    return props.modelValue;
+    return props.value;
 });
 
 const updateFieldValue = (newValue) => {
@@ -108,7 +98,7 @@ const sendUpdate = (newValue) => {
             props.field.update(newValue);
         }
     } else {
-        emit("update:modelValue", newValue);
+        emit("update:value", newValue);
     }
 };
 
@@ -140,14 +130,6 @@ const handleBlur = () => {
     }
 };
 
-// Ajout d'un gestionnaire pour l'autocomplétion
-const handleAutocomplete = (event) => {
-    const newValue = event.target.value;
-    updateFieldValue(newValue);
-    sendUpdate(newValue);
-};
-
-// Ajout d'un computed pour vérifier si le champ est modifié
 const isFieldModified = computed(() => {
     if (props.useFieldComposable && props.field) {
         return props.field.isModified.value;
@@ -166,27 +148,11 @@ onMounted(() => {
     if (input.value && themeProps.value.autofocus) {
         input.value.focus();
     }
-
-    // Ajouter un écouteur pour l'événement animationstart pour détecter l'autocomplétion
-    if (input.value) {
-        input.value.addEventListener('animationstart', (e) => {
-            if (e.animationName === 'onAutoFillStart') {
-                const newValue = input.value.value;
-                updateFieldValue(newValue);
-                sendUpdate(newValue);
-            }
-        });
-    }
 });
 
-// Nettoyer le timeout lors du démontage du composant
 onUnmounted(() => {
     if (debounceTimeout.value) {
         clearTimeout(debounceTimeout.value);
-    }
-
-    if (input.value) {
-        input.value.removeEventListener('animationstart', () => {});
     }
 });
 
@@ -207,68 +173,46 @@ input:-webkit-autofill {
 
 <template>
     <div class="relative">
-        <InputLabel v-if="useInputLabel" :for="attrs.id" :value="inputLabel || attrs.id">
+        <InputLabel v-if="useInputLabel" :for="componentId" :value="inputLabel || 'Texte'">
             <template v-if="$slots.inputLabel">
                 <slot name="inputLabel" />
             </template>
         </InputLabel>
 
-        <label v-if="labelInside" :class="`input border-${themeProps.color || 'primary-500'} text-${themeProps.color || 'primary-500'} input-bordered flex items-center gap-2`">
-            <slot v-if="labelInside" name="before" />
-            <input
-                v-bind="attrs"
-                :required="themeProps.required"
-                :autofocus="themeProps.autofocus"
-                :value="displayValue"
-                @input="updateValue"
-                @change="handleAutocomplete"
-                @blur="handleBlur"
-                ref="input"
-                :type="props.type"
-                :placeholder="placeholder"
-                :maxlength="themeProps.maxLength"
-                :minlength="themeProps.minLength"
-                :pattern="attrs.pattern"
-                :data-tip="tooltip"
-                :class="[getClasses, { 'pr-8': useFieldComposable && field && isFieldModified }]"
-                :autocomplete="attrs.autocomplete || 'off'"
-            />
-            <slot v-if="labelInside" name="after" />
-            <button
-                v-if="useFieldComposable && field && isFieldModified"
-                @click="handleReset"
-                class="absolute right-2 top-1/2 transform -translate-y-1/2 text-base-600/80 hover:text-base-600/50"
-            >
-                <i class="fa-solid fa-arrow-rotate-left"></i>
-            </button>
-        </label>
-        <div v-else class="relative">
-            <input
-                v-bind="attrs"
-                :required="themeProps.required"
-                :autofocus="themeProps.autofocus"
-                :value="displayValue"
-                @input="updateValue"
-                @change="handleAutocomplete"
-                @blur="handleBlur"
-                ref="input"
-                :type="props.type"
-                :placeholder="placeholder"
-                :maxlength="themeProps.maxLength"
-                :minlength="themeProps.minLength"
-                :pattern="attrs.pattern"
-                :data-tip="tooltip"
-                :class="[getClasses, { 'pr-8': useFieldComposable && field && isFieldModified }]"
-                :autocomplete="attrs.autocomplete || 'off'"
-            />
-            <button
-                v-if="useFieldComposable && field && isFieldModified"
-                @click="handleReset"
-                class="absolute right-2 top-1/2 transform -translate-y-1/2 text-base-600/80 hover:text-base-600/50"
-            >
-                <i class="fa-solid fa-arrow-rotate-left"></i>
-            </button>
-        </div>
+        <BaseTooltip
+            :tooltip="tooltip"
+            :tooltip-position="tooltipPosition"
+        >
+            <div class="relative">
+                <input
+                    ref="input"
+                    type="text"
+                    :id="componentId"
+                    :class="getClasses"
+                    :value="displayValue"
+                    @input="updateValue"
+                    @blur="handleBlur"
+                    :placeholder="placeholder"
+                    :maxlength="themeProps.maxLength"
+                    :disabled="themeProps.disabled"
+                    :readonly="themeProps.readonly"
+                    :required="themeProps.required"
+                    :autofocus="themeProps.autofocus"
+                    :name="themeProps.name"
+                />
+                <button
+                    v-if="useFieldComposable && isFieldModified"
+                    @click="handleReset"
+                    class="absolute right-2 top-1/2 transform -translate-y-1/2 text-base-600/80 hover:text-base-600/50"
+                >
+                    <i class="fa-solid fa-arrow-rotate-left"></i>
+                </button>
+            </div>
+            <template v-if="typeof tooltip === 'object'" #tooltip>
+                <slot name="tooltip" />
+            </template>
+        </BaseTooltip>
+
         <InputError v-if="useInputError" :message="errorMessage" class="mt-2" />
     </div>
 </template>

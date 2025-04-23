@@ -12,77 +12,89 @@ the badge based on the props. */
 <script setup>
 import { computed } from "vue";
 import { getColorFromString, adjustColorForContrast } from "@/Utils/Color.js";
-import { extractTheme } from "@/Utils/extractTheme";
+import { extractTheme, combinePropsWithTheme } from "@/Utils/extractTheme";
+import { commonProps, generateClasses } from "@/Utils/commonProps";
+import BaseTooltip from '@/Pages/Atoms/feedback/BaseTooltip.vue';
 
 const props = defineProps({
-    theme: {
-        type: String,
-        default: "",
-    },
-    color: {
-        type: String,
-        default: "primary-700",
-    },
-    tooltip: {
-        type: String,
-        default: "",
-    },
-    size: {
-        type: String,
-        default: "",
-        validator: (value) => {
-            return ["", "xs", "sm", "md", "lg", "xl", "2xl", "3xl"].includes(value);
-        },
-    },
+    ...commonProps,
+    outline: {
+        type: Boolean,
+        default: false
+    }
 });
 
-const buildBadgeClasses = (themeProps, props) => {
+const buildBadgeClasses = (props) => {
     const classes = ["badge"];
 
-    // Size
-    if(props.size) {
-        classes.push(`badge-${props.size}`);
-    } else if(themeProps.size) {
-        classes.push(`badge-${themeProps.size}`);
-    } else {
-        classes.push(`badge-md`);
-    }
-
-    // Color handling
-    let color = props.color;
-    if (themeProps.colorAuto) {
-        color = getColorFromString(props.color, 700);
-    } else if (themeProps.color) {
-        color = themeProps.color;
+    // Ajout des classes communes
+    const baseClasses = generateClasses(props);
+    if (baseClasses) {
+        classes.push(baseClasses);
     }
 
     // Style (outline or filled)
-    if (themeProps.styled === 'outline') {
+    if (props.outline) {
         classes.push('border-1');
         classes.push('border-solid');
-        classes.push(`text-${adjustColorForContrast(color)}`);
-        classes.push(`border-${color}`);
+        classes.push(`text-${adjustColorForContrast(props.color)}`);
+        classes.push(`border-${props.color}`);
     } else {
-        classes.push(`bg-${color}`);
-    }
-
-    // Tooltip
-    if (props.tooltip) {
-        classes.push('tooltip');
-        if (themeProps.tooltipPosition) {
-            classes.push(`tooltip-${themeProps.tooltipPosition}`);
-        }
+        classes.push(`bg-${props.color}`);
     }
 
     return classes.join(" ");
 };
 
 const themeProps = computed(() => extractTheme(props.theme));
-const getClasses = computed(() => buildBadgeClasses(themeProps.value, props));
+const combinedProps = computed(() => combinePropsWithTheme(props, themeProps.value));
+const badgeClasses = computed(() => buildBadgeClasses(combinedProps.value));
 </script>
 
 <template>
-    <span :class="getClasses" :data-tip="tooltip">
-        <slot />
-    </span>
+    <BaseTooltip
+        :tooltip="tooltip"
+        :tooltip-position="tooltipPosition"
+    >
+        <span :class="badgeClasses">
+            <slot />
+        </span>
+        <template v-if="typeof tooltip === 'object'" #tooltip>
+            <slot name="tooltip" />
+        </template>
+    </BaseTooltip>
 </template>
+
+<style scoped>
+.badge {
+    @apply inline-flex items-center justify-center px-2 py-1 text-xs font-medium rounded-full;
+}
+
+.badge-xs {
+    @apply px-1.5 py-0.5 text-xs;
+}
+
+.badge-sm {
+    @apply px-2 py-0.5 text-sm;
+}
+
+.badge-md {
+    @apply px-2.5 py-1 text-base;
+}
+
+.badge-lg {
+    @apply px-3 py-1.5 text-lg;
+}
+
+.badge-xl {
+    @apply px-4 py-2 text-xl;
+}
+
+.badge-2xl {
+    @apply px-5 py-2.5 text-2xl;
+}
+
+.badge-3xl {
+    @apply px-6 py-3 text-3xl;
+}
+</style>

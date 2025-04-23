@@ -1,53 +1,19 @@
 <script setup>
 import { ref, computed, useSlots, useAttrs } from "vue";
-import { extractTheme } from "@/Utils/extractTheme";
-import Tooltip from "../feedback/Tooltip.vue";
+import { extractTheme, combinePropsWithTheme } from "@/Utils/extractTheme";
+import { commonProps, generateClasses } from "@/Utils/commonProps";
 import { imageExists, formatSizeToMB, validateFile, formatFileType } from "@/Utils/files";
 import InputLabel from '@/Pages/Atoms/inputs/InputLabel.vue';
 import InputError from '@/Pages/Atoms/inputs/InputError.vue';
+import BaseTooltip from '@/Pages/Atoms/feedback/BaseTooltip.vue';
 
 const props = defineProps({
+    ...commonProps,
     modelValue: {
         type: [File, Array],
         default: null,
     },
-    theme: {
-        type: String,
-        default: "",
-    },
-    size: {
-        type: String,
-        default: "md",
-        validator: (value) => ["xs", "sm", "md", "lg", "xl", "2xl", "3xl", "4xl"].includes(value),
-    },
-    color: {
-        type: String,
-        default: "secondary-800",
-    },
-    rounded: {
-        type: String,
-        default: "lg",
-        validator: (value) => ["", "none", "sm", "md", "lg", "xl", "2xl", "3xl", "full"].includes(value),
-    },
-    blur: {
-        type: String,
-        default: "lg",
-        validator: (value) => ["", "none", "xs", "sm", "md", "lg", "xl", "2xl"].includes(value),
-    },
-    'box-shadow': {
-        type: String,
-        default: "md",
-        validator: (value) => ["", "none", "xs", "sm", "md", "lg", "xl", "2xl", "3xl", "4xl"].includes(value),
-    },
-    opacity: {
-        type: String,
-        default: "",
-    },
-    bgColor: {
-        type: String,
-        default: "",
-    },
-    textColor: {
+    label: {
         type: String,
         default: "",
     },
@@ -55,19 +21,6 @@ const props = defineProps({
         type: String,
         default: "",
         validator: (value) => ["", "ghost", "outline", "link"].includes(value),
-    },
-    tooltipPosition: {
-        type: String,
-        default: "bottom",
-        validator: (value) => ["top", "right", "bottom", "left", "top-start", "top-end", "right-start", "right-end", "bottom-start", "bottom-end", "left-start", "left-end"].includes(value),
-    },
-    tooltip: {
-        type: String,
-        default: "Cliquez ou déposez un fichier ici",
-    },
-    label: {
-        type: String,
-        default: "",
     },
     helper: {
         type: String,
@@ -133,64 +86,15 @@ const slots = useSlots();
 const componentId = computed(() => attrs.id || `file-input-${Math.random().toString(36).substr(2, 9)}`);
 
 const themeProps = computed(() => extractTheme(props.theme));
+const combinedProps = computed(() => combinePropsWithTheme(props, themeProps.value));
 
-const buildInputClasses = (themeProps, props) => {
+const buildInputClasses = (props) => {
     const classes = ["file-input", "w-full", "transition-all", "duration-300"];
 
-    // Taille
-    const size = props.size || themeProps.size || "md";
-    classes.push(`file-input-${size}`);
-
-    // Style (ghost, outline, etc.)
-    const styled = props.styled || themeProps.styled;
-    if (styled) {
-        if (styled === "ghost") {
-            classes.push("file-input-ghost");
-        } else if (styled === "outline") {
-            classes.push("bg-base-100/10");
-        } else {
-            classes.push(`bg-transparent border-transparent hover:bg-base-100/10`);
-        }
-    }
-
-    // Arrondi
-    const rounded = props.rounded || themeProps.rounded || "lg";
-    if (rounded && rounded !== "none") {
-        classes.push(`rounded-${rounded}`);
-    }
-
-    // Couleur
-    const color = props.color || themeProps.color || "secondary-800";
-    classes.push(`file-input-${color}`);
-
-    // Box Shadow
-    const boxShadow = props['box-shadow'] || themeProps['box-shadow'] || "md";
-    if (boxShadow && boxShadow !== "none") {
-        classes.push(`box-shadow-${boxShadow}`);
-    }
-
-    // Blur
-    const blur = props.blur || themeProps.blur || "lg";
-    if (blur && blur !== "none") {
-        classes.push(`backdrop-blur-${blur}`);
-    }
-
-    // Opacité
-    const opacity = props.opacity || themeProps.opacity;
-    if (opacity) {
-        classes.push(`opacity-${opacity}`);
-    }
-
-    // Couleur de fond
-    const bgColor = props.bgColor || themeProps.bgColor;
-    if (bgColor) {
-        classes.push(`bg-${bgColor}`);
-    }
-
-    // Couleur du texte
-    const textColor = props.textColor || themeProps.textColor;
-    if (textColor) {
-        classes.push(`text-${textColor}`);
+    // Ajout des classes communes
+    const baseClasses = generateClasses(props);
+    if (baseClasses) {
+        classes.push(baseClasses);
     }
 
     // État d'erreur
@@ -201,7 +105,7 @@ const buildInputClasses = (themeProps, props) => {
     return classes.join(" ");
 };
 
-const getClasses = computed(() => buildInputClasses(themeProps.value, props));
+const getClasses = computed(() => buildInputClasses(combinedProps.value));
 
 const buildDropZoneClasses = computed(() => {
     const classes = [
@@ -355,7 +259,10 @@ const helperMessage = computed(() => {
             </template>
         </InputLabel>
 
-        <Tooltip :text="tooltipMessage" :placement="tooltipPosition">
+        <BaseTooltip
+            :tooltip="tooltip"
+            :tooltip-position="tooltipPosition"
+        >
             <div
                 :class="buildDropZoneClasses"
                 @dragenter="handleDragEnter"
@@ -412,10 +319,10 @@ const helperMessage = computed(() => {
                 </div>
             </div>
 
-            <template #content>
-                {{ tooltipMessage }}
+            <template v-if="typeof tooltip === 'object'" #tooltip>
+                <slot name="tooltip" />
             </template>
-        </Tooltip>
+        </BaseTooltip>
 
         <!-- Helper text -->
         <div v-if="helperMessage || slots.helper" class="mt-2 text-sm text-base-500">

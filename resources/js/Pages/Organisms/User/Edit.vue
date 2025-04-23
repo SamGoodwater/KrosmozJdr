@@ -1,51 +1,69 @@
+/**
+ * Edit component for user profile management.
+ * Provides functionality to update user information, avatar, password, and role.
+ *
+ * Features:
+ * - Profile information editing (name, email)
+ * - Avatar management (upload, delete)
+ * - Password update
+ * - Role management (admin only)
+ * - Email verification status
+ *
+ * Props:
+ * - mustVerifyEmail: Boolean indicating if email verification is required
+ * - status: String containing verification status
+ * - theme: Theme configuration for styling
+ *
+ * Events:
+ * - @profileUpdated: Emitted when profile information is updated
+ * - @passwordUpdated: Emitted when password is updated
+ * - @avatarUpdated: Emitted when avatar is updated
+ * - @roleUpdated: Emitted when role is updated (admin only)
+ */
 <script setup>
 import { ref, computed, watch } from 'vue';
+import { Link, useForm, usePage, router } from '@inertiajs/vue3';
+import axios from 'axios';
+import { extractTheme, combinePropsWithTheme } from '@/Utils/extractTheme';
+import { commonProps } from '@/Utils/commonProps';
+import { success, error } from '@/Utils/notificationManager';
+import { verifyRole, ROLES, getRoleTranslation, getRoleColor } from '@/Utils/Roles';
+import useEditableField from '@/Composables/useEditableField';
 
+// Composants Atoms
 import Btn from '@/Pages/Atoms/actions/Btn.vue';
 import TextInput from '@/Pages/Atoms/inputs/TextInput.vue';
-import { Link, useForm, usePage, router } from '@inertiajs/vue3';
-import useEditableField from '@/Composables/useEditableField';
-import { success, error } from '@/Utils/notificationManager';
 import FileInput from '@/Pages/Atoms/inputs/FileInput.vue';
-import Avatar from '@/Pages/Molecules/images/Avatar.vue';
-import VerifyMailAlert from '@/Pages/Molecules/auth/VerifyMailAlert.vue';
-import axios from 'axios';
 import PasswordInput from '@/Pages/Atoms/inputs/PasswordInput.vue';
 import Dropdown from '@/Pages/Atoms/actions/Dropdown.vue';
+import BaseTooltip from '@/Pages/Atoms/feedback/BaseTooltip.vue';
+
+// Composants Molecules
+import Avatar from '@/Pages/Molecules/images/Avatar.vue';
+import VerifyMailAlert from '@/Pages/Molecules/auth/VerifyMailAlert.vue';
 import BadgeRole from "@/Pages/Organisms/User/Molecules/badgeRole.vue";
-import { verifyRole, ROLES, getRoleTranslation, getRoleColor } from '@/Utils/Roles';
 
 const props = defineProps({
     mustVerifyEmail: {
         type: Boolean,
+        default: false
     },
     status: {
         type: String,
-    },
+        default: null
+    }
 });
 
 const page = usePage();
 const user = computed(() => page.props.user.data);
 
-// Création du formulaire partagé
-const form = useForm({
-    name: user.value.name,
-    email: user.value.email,
-});
-
-// Création des champs éditables
+// Gestion des champs éditables
 const fields = {
     name: useEditableField(user.value.name, {
         field: 'name',
         route: route('user.update'),
         onSuccess: (response) => {
-            // Mise à jour de l'utilisateur modifié
-            Object.assign(user.value, response.data);
-
-            // Si c'est l'utilisateur connecté qui est modifié (soit un utilisateur normal, soit un admin qui modifie son propre compte)
-            if (!verifyRole(page.props.auth.user.role, ROLES.ADMIN) || (verifyRole(page.props.auth.user.role, ROLES.ADMIN) && user.value.id === page.props.auth.user.id)) {
-                Object.assign(page.props.auth.user, response.data);
-            }
+            updateUserData(response.data);
             success('Le nom a été mis à jour avec succès');
         },
         onError: () => error('Une erreur est survenue lors de la mise à jour du nom')
@@ -54,19 +72,23 @@ const fields = {
         field: 'email',
         route: route('user.update'),
         onSuccess: (response) => {
-            // Mise à jour de l'utilisateur modifié
-            Object.assign(user.value, response.data);
-
-            // Si c'est l'utilisateur connecté qui est modifié (soit un utilisateur normal, soit un admin qui modifie son propre compte)
-            if (!verifyRole(page.props.auth.user.role, ROLES.ADMIN) || (verifyRole(page.props.auth.user.role, ROLES.ADMIN) && user.value.id === page.props.auth.user.id)) {
-                Object.assign(page.props.auth.user, response.data);
-            }
+            updateUserData(response.data);
             success('L\'email a été mis à jour avec succès');
         },
         onError: () => error('Une erreur est survenue lors de la mise à jour de l\'email')
     }),
 };
 
+// Fonction utilitaire pour mettre à jour les données utilisateur
+const updateUserData = (data) => {
+    Object.assign(user.value, data);
+    if (!verifyRole(page.props.auth.user.role, ROLES.ADMIN) ||
+        (verifyRole(page.props.auth.user.role, ROLES.ADMIN) && user.value.id === page.props.auth.user.id)) {
+        Object.assign(page.props.auth.user, data);
+    }
+};
+
+// Gestion du mot de passe
 const passwordInput = ref(null);
 const currentPasswordInput = ref(null);
 
@@ -97,6 +119,7 @@ const updatePassword = () => {
     });
 };
 
+// Gestion de l'avatar
 const avatarFile = ref(null);
 const isHovering = ref(false);
 const isPending = ref(false);
@@ -107,12 +130,10 @@ const updateAvatar = async () => {
     const formData = new FormData();
     formData.append('file', avatarFile.value);
 
-    // Ajouter un paramètre pour supprimer l'ancien fichier
     if (user.value.avatar) {
         formData.append('deleteOldFile', user.value.avatar);
     }
 
-    // Ajouter un timestamp pour éviter le cache
     const timestamp = Date.now();
     formData.append('timestamp', timestamp);
 
@@ -124,22 +145,18 @@ const updateAvatar = async () => {
                 : route('user.updateAvatar'),
             formData,
             {
-                headers: {
-                    'Content-Type': 'multipart/form-data',
-                },
-                params: {
-                    timestamp: timestamp // Ajouter le timestamp dans les paramètres
-                }
+                headers: { 'Content-Type': 'multipart/form-data' },
+                params: { timestamp }
             }
         );
 
         if (response.data.success) {
-            // Forcer le rafraîchissement de l'image
             const newAvatarUrl = response.data.data.avatar + `?timestamp=${timestamp}`;
             user.value.avatar = newAvatarUrl;
 
-            if (!verifyRole(page.props.auth.user.role, ROLES.ADMIN) || (verifyRole(page.props.auth.user.role, ROLES.ADMIN) && user.value.id === page.props.auth.user.id)) {
-                page.props.auth.user.avatar = newAvatarUrl + `?timestamp=${timestamp}`;
+            if (!verifyRole(page.props.auth.user.role, ROLES.ADMIN) ||
+                (verifyRole(page.props.auth.user.role, ROLES.ADMIN) && user.value.id === page.props.auth.user.id)) {
+                page.props.auth.user.avatar = newAvatarUrl;
             }
             avatarFile.value = null;
             success('L\'avatar a été mis à jour avec succès');
@@ -147,14 +164,18 @@ const updateAvatar = async () => {
             error(response.data.message);
         }
     } catch (err) {
-        if (err.response?.data?.errors) {
-            const validationErrors = Object.values(err.response.data.errors).flat();
-            error(validationErrors[0] || 'Erreur de validation');
-        } else {
-            error(err.response?.data?.message || 'Une erreur est survenue lors de la mise à jour de l\'avatar');
-        }
+        handleAvatarError(err);
     } finally {
         isPending.value = false;
+    }
+};
+
+const handleAvatarError = (err) => {
+    if (err.response?.data?.errors) {
+        const validationErrors = Object.values(err.response.data.errors).flat();
+        error(validationErrors[0] || 'Erreur de validation');
+    } else {
+        error(err.response?.data?.message || 'Une erreur est survenue lors de la mise à jour de l\'avatar');
     }
 };
 
@@ -176,10 +197,9 @@ const deleteAvatar = async () => {
         );
 
         if (response.data.success) {
-            // Mettre explicitement l'avatar à null
             user.value.avatar = null;
-
-            if (!verifyRole(page.props.auth.user.role, ROLES.ADMIN) || (verifyRole(page.props.auth.user.role, ROLES.ADMIN) && user.value.id === page.props.auth.user.id)) {
+            if (!verifyRole(page.props.auth.user.role, ROLES.ADMIN) ||
+                (verifyRole(page.props.auth.user.role, ROLES.ADMIN) && user.value.id === page.props.auth.user.id)) {
                 page.props.auth.user.avatar = null;
             }
             success('L\'avatar a été supprimé avec succès');
@@ -194,13 +214,14 @@ const deleteAvatar = async () => {
     }
 };
 
-// Ajouter un watcher pour déclencher l'upload automatiquement
+// Watcher pour l'upload automatique de l'avatar
 watch(avatarFile, (newFile) => {
     if (newFile) {
         updateAvatar();
     }
 });
 
+// Gestion du rôle (admin uniquement)
 const formRole = useForm({
     role: user.value.role,
 });
@@ -216,11 +237,10 @@ const updateRole = () => {
         },
     });
 };
-
 </script>
 
 <template>
-    <section>
+    <section class="space-y-6">
         <header>
             <h2 class="text-lg font-medium text-content-300">
                 {{ verifyRole(page.props.auth.user.role, ROLES.ADMIN) ? `Modification du profil de ${user.name}` : 'Informations du profil' }}
@@ -245,7 +265,8 @@ const updateRole = () => {
                         :currentFile="user.avatar"
                         @delete="deleteAvatar"
                         class="mt-1"
-                        theme="ghost"
+                        variant="ghost"
+                        theme="primary"
                         inputLabel="Avatar"
                     >
                         <Avatar
@@ -264,34 +285,31 @@ const updateRole = () => {
                     <div>
                         <TextInput
                             id="name"
-                            type="text"
                             class="mt-1 block w-full"
                             :field="fields.name"
                             required
                             autofocus
                             :useFieldComposable="true"
+
                             inputLabel="Pseudo"
+                            tooltip="Votre pseudo d'utilisateur"
                         />
                     </div>
-
                     <div>
                         <TextInput
                             id="email"
-                            type="email"
+
                             class="mt-1 block w-full"
                             :field="fields.email"
-                            required
                             :useFieldComposable="true"
                             inputLabel="Adresse mail"
                         />
                     </div>
-
                     <div v-if="!user.is_verified">
                         <VerifyMailAlert />
                     </div>
                 </div>
             </div>
-        </form>
 
         <div v-if="verifyRole(page.props.auth.user.role, ROLES.ADMIN)" class="mt-6">
             <hr class="border-gray-300 dark:border-gray-700 my-4" />
@@ -302,86 +320,86 @@ const updateRole = () => {
                 </h3>
             </div>
 
-            <Dropdown
-                :label="formRole.role"
-                placement="bottom-end"
-                :color="getRoleColor(formRole.role)"
-                inputLabel="Modifier le rôle de l'utilisateur"
-                :errorMessage="formRole.errors.role"
-            >
-                <template #list>
-                    <li v-for="(roleValue, roleKey) in $page.props.roles" :key="roleKey">
-                        <button
-                            type="button"
-                            @click="formRole.role = roleValue; updateRole()"
-                            :class="[
-                                formRole.role === roleValue ? `bg-${getRoleColor(roleValue)}` : '',
-                                `outline-${getRoleColor(roleValue)}`,
-                                formRole.role !== roleValue ? `hover:bg-${getRoleColor(roleValue)}` : '',
-                                'w-full text-left px-4 py-2'
-                            ]"
-                        >
-                            {{ getRoleTranslation(roleValue) }}
-                        </button>
-                    </li>
-                </template>
-            </Dropdown>
-        </div>
+                <div class="mt-6 space-y-4">
+                    <PasswordInput
+                        ref="currentPasswordInput"
+                        v-model="formPassword.current_password"
+                        theme="primary"
+                        inputLabel="Mot de passe actuel"
+                        tooltip="Entrez votre mot de passe actuel"
+                        @keyup.enter="updatePassword"
+                    />
 
-        <hr class="border-gray-300 dark:border-gray-700 my-4" />
+                    <PasswordInput
+                        ref="passwordInput"
+                        v-model="formPassword.password"
+                        theme="primary"
+                        inputLabel="Nouveau mot de passe"
+                        tooltip="Entrez votre nouveau mot de passe"
+                        @keyup.enter="updatePassword"
+                    />
 
-        <form @submit.prevent="updatePassword" class="mt-6 space-y-6">
-            <div>
-                <PasswordInput
-                    id="current_password"
-                    ref="currentPasswordInput"
-                    v-model="formPassword.current_password"
-                    class="mt-1 block w-full"
-                    autocomplete="current-password"
-                    required
-                    inputLabel="Mot de passe actuel"
-                    :errorMessage="formPassword.errors.current_password"
-                />
+                    <PasswordInput
+                        v-model="formPassword.password_confirmation"
+                        theme="primary"
+                        inputLabel="Confirmation du mot de passe"
+                        tooltip="Confirmez votre nouveau mot de passe"
+                        @keyup.enter="updatePassword"
+                    />
+
+                    <div class="flex items-center gap-4">
+                        <Btn
+                            theme="primary"
+                            label="Enregistrer"
+                            tooltip="Mettre à jour le mot de passe"
+                            @click="updatePassword"
+                        />
+                        <Btn
+                            theme="neutral"
+                            label="Annuler"
+                            tooltip="Annuler la modification"
+                            @click="formPassword.reset()"
+                        />
+                    </div>
+                </div>
             </div>
 
-            <div>
-                <PasswordInput
-                    id="password"
-                    ref="passwordInput"
-                    v-model="formPassword.password"
-                    class="mt-1 block w-full"
-                    autocomplete="new-password"
-                    required
-                    inputLabel="Nouveau mot de passe"
-                    :errorMessage="formPassword.errors.password"
-                />
-            </div>
+            <!-- Section Rôle (Admin uniquement) -->
+            <div v-if="verifyRole(page.props.auth.user.role, ROLES.ADMIN)" class="mt-6">
+                <h3 class="text-lg font-medium text-primary-100">
+                    Gestion du rôle
+                </h3>
+                <p class="mt-1 text-sm text-primary-200">
+                    Modifiez le rôle de l'utilisateur.
+                </p>
 
-            <div>
-                <PasswordInput
-                    id="password_confirmation"
-                    v-model="formPassword.password_confirmation"
-                    class="mt-1 block w-full"
-                    autocomplete="new-password"
-                    required
-                    inputLabel="Confirmer le mot de passe"
-                    :errorMessage="formPassword.errors.password_confirmation"
-                />
-            </div>
+                <div class="mt-6 space-y-4">
+                    <Dropdown
+                        v-model="formRole.role"
+                        theme="primary"
+                        inputLabel="Rôle"
+                        tooltip="Sélectionnez le rôle de l'utilisateur"
+                    >
+                        <option v-for="role in Object.values(ROLES)" :key="role" :value="role">
+                            {{ getRoleTranslation(role) }}
+                        </option>
+                    </Dropdown>
 
-            <div class="flex items-center gap-4">
-                <Btn type="submit" :disabled="formPassword.processing" label="Enregistrer" />
-
-                <Transition
-                    enter-active-class="transition ease-in-out"
-                    enter-from-class="opacity-0"
-                    leave-active-class="transition ease-in-out"
-                    leave-to-class="opacity-0"
-                >
-                    <p v-if="formPassword.recentlySuccessful" class="text-sm text-gray-600">
-                        Modifier le mot de passe.
-                    </p>
-                </Transition>
+                    <div class="flex items-center gap-4">
+                        <Btn
+                            theme="primary"
+                            label="Enregistrer"
+                            tooltip="Mettre à jour le rôle"
+                            @click="updateRole"
+                        />
+                        <Btn
+                            theme="neutral"
+                            label="Annuler"
+                            tooltip="Annuler la modification"
+                            @click="formRole.reset()"
+                        />
+                    </div>
+                </div>
             </div>
         </form>
     </section>

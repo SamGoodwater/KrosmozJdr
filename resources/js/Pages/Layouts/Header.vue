@@ -1,51 +1,61 @@
 <script setup>
-import searchInput from "@/Pages/Layouts/Molecules/searchInput.vue";
-import toggleSidebar from "@/Pages/Layouts/Molecules/ToggleSidebar.vue";
-import LoginHeaderContainer from "@/Pages/Layouts/Molecules/LoginHeaderContainer.vue";
-import LoggedHeaderContainer from "@/Pages/Layouts/Molecules/LoggedHeaderContainer.vue";
-import tooltips from "@/Pages/Atoms/feedback/Tooltip.vue";
-import { useHeader } from "@/Composables/useHeader";
-import { onMounted } from "vue";
-import { useSidebar } from "@/Composables/useSidebar";
 import { usePage } from "@inertiajs/vue3";
+import { onMounted } from "vue";
+import { useHeader } from "@/Composables/useHeader";
+import { useSidebar } from "@/Composables/useSidebar";
 import { usePageTitle } from "@/Composables/usePageTitle";
 
+// Composants
+import SearchInput from "@/Pages/Layouts/Molecules/SearchInput.vue";
+import ToggleSidebar from "@/Pages/Layouts/Molecules/ToggleSidebar.vue";
+import LoginHeaderContainer from "@/Pages/Layouts/Molecules/LoginHeaderContainer.vue";
+import LoggedHeaderContainer from "@/Pages/Layouts/Molecules/LoggedHeaderContainer.vue";
+import BaseTooltip from "@/Pages/Atoms/feedback/BaseTooltip.vue";
+import Icon from "@/Pages/Atoms/images/Icon.vue";
+
+// Composables
 const page = usePage();
 const { isSidebarOpen } = useSidebar();
 const { isHeaderOpen, toggleHeader } = useHeader();
 const { pageTitle } = usePageTitle();
 
+// Raccourci clavier pour le header
+onMounted(() => {
+    window.addEventListener("keydown", (e) => {
+        if (e.altKey && e.key === "h") {
+            toggleHeader();
+        }
+    });
+});
 </script>
 
 <template>
     <header
-        class="flex justify-between p-2 px-4 gap-2 align-items-center"
+        class="flex justify-between p-2 px-4 gap-2 items-center"
         :class="[isHeaderOpen ? 'header-on' : 'header-off hover:header-on']"
     >
-        <div class="flex justify-content-between gap-3 align-items-center">
-            <toggleSidebar v-if="!isSidebarOpen" />
+        <!-- Section gauche : Toggle Sidebar et Titre -->
+        <div class="flex gap-3 items-center">
+            <ToggleSidebar v-if="!isSidebarOpen" />
 
-            <div>
-                <Transition
-                    name="title"
-                    mode="out-in"
+            <Transition name="title" mode="out-in">
+                <h2
+                    :key="pageTitle"
+                    id="pageTitle"
+                    class="items-center text-content hover:text-content/75 text-2xl font-semibold"
                 >
-                    <h2
-                        :key="pageTitle"
-                        id="pageTitle"
-                        class="align-items-center text-content hover:text-content/75 text-2xl fw-semibold"
-                    >
-                        {{ pageTitle }}
-                    </h2>
-                </Transition>
-            </div>
+                    {{ pageTitle }}
+                </h2>
+            </Transition>
         </div>
 
-        <div>
-            <searchInput class="max-sm:hidden" />
+        <!-- Section centrale : Barre de recherche -->
+        <div class="max-sm:hidden">
+            <SearchInput />
         </div>
 
-        <div class="flex justify-content-between gap-2 align-items-center">
+        <!-- Section droite : Authentification et Toggle Header -->
+        <div class="flex gap-2 items-center">
             <template v-if="page.props.auth.isLogged">
                 <LoggedHeaderContainer />
             </template>
@@ -53,145 +63,55 @@ const { pageTitle } = usePageTitle();
                 <LoginHeaderContainer />
             </template>
 
-            <!-- Boutton pour déplier ou replier le header -->
-            <tooltips>
-                <div class="mr-2 swapHeader">
-                    <label class="swap swap-rotate" @click="toggleHeader">
-                        <input type="checkbox" />
+            <!-- Bouton pour déplier/replier le header -->
+            <BaseTooltip
+                :tooltip="{ custom: true }"
+                tooltip-position="bottom"
+            >
+                <button
+                    class="swap swap-rotate text-content hover:text-content/50 transition-colors"
+                    @click="toggleHeader"
+                >
+                    <Icon
+                        icon="fa-solid fa-chevron-up"
+                        class="swap-off w-4 h-4"
+                    />
+                    <Icon
+                        icon="fa-solid fa-chevron-down"
+                        class="swap-on w-4 h-4"
+                    />
+                </button>
 
-                        <svg
-                            class="swap-off h-4 w-4 fill-current"
-                            viewBox="0 0 16 16"
-                            fill="none"
-                            xmlns="http://www.w3.org/2000/svg"
-                        >
-                            <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
-                            <g
-                                id="SVGRepo_tracerCarrier"
-                                stroke-linecap="round"
-                                stroke-linejoin="round"
-                            ></g>
-                            <g id="SVGRepo_iconCarrier">
-                                <path
-                                    d="M3 6L6 6L6 12L10 12L10 6L13 6V5L8 0L3 5L3 6Z"
-                                    fill="#94a3b8"
-                                ></path>
-                                <path
-                                    d="M2 16L14 16V14L2 14V16Z"
-                                    fill="#94a3b8"
-                                ></path>
-                            </g>
-                        </svg>
-
-                        <svg
-                            class="swap-on h-4 w-4 fill-current"
-                            viewBox="0 0 16 16"
-                            fill="none"
-                            xmlns="http://www.w3.org/2000/svg"
-                        >
-                            <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
-                            <g
-                                id="SVGRepo_tracerCarrier"
-                                stroke-linecap="round"
-                                stroke-linejoin="round"
-                            ></g>
-                            <g id="SVGRepo_iconCarrier">
-                                <path
-                                    d="M13 7H10V0H6V7L3 7V8L8 13L13 8V7Z"
-                                    fill="#94a3b8"
-                                ></path>
-                                <path
-                                    d="M14 14H2V16H14V14Z"
-                                    fill="#e4e4e7"
-                                ></path>
-                            </g>
-                        </svg>
-                    </label>
-                </div>
-
-                <template #content>
-                    <div
-                        class="w-52 bg-secondary-900/75 text-center flex flex-col m-2"
-                    >
-                        <p
-                            class="text-md text-content flex justify-content-between gap-3"
-                        >
-                            <span> Masquer ou afficher l'entête</span>
-                            <span class="flex flex-nowrap align-items-center"
-                                ><kbd class="kbd kbd-sm">alt</kbd> +
-                                <kbd class="kbd kbd-sm">h</kbd></span
-                            >
+                <template #tooltip>
+                    <div class="w-52 bg-secondary-900/75 text-center flex flex-col p-2">
+                        <p class="text-md text-content flex justify-between gap-3">
+                            <span>Masquer ou afficher l'entête</span>
+                            <span class="flex flex-nowrap items-center">
+                                <kbd class="kbd kbd-sm">alt</kbd> +
+                                <kbd class="kbd kbd-sm">h</kbd>
+                            </span>
                         </p>
                         <p class="text-sm text-content/70 my-2">
-                            Déplacer la souris vers le haut du site pour faire
-                            réaparaître l'entête
+                            Déplacer la souris vers le haut du site pour faire réaparaître l'entête
                         </p>
                         <div class="flex justify-center relative">
-                            <div
-                                class="headerVector bg-slate-500 rounded-none"
-                            ></div>
-                            <div
-                                class="h-40 w-40 bg-slate-800 rounded-none"
-                            ></div>
-                            <div class="mouseVector">
-                                <svg
-                                    width="15px"
-                                    height="15px"
-                                    viewBox="0 0 20 20"
-                                    version="1.1"
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    xmlns:xlink="http://www.w3.org/1999/xlink"
-                                    fill="#e4e4e7"
-                                    transform="rotate(270)"
-                                    stroke="#e4e4e7"
-                                >
-                                    <g
-                                        id="SVGRepo_bgCarrier"
-                                        stroke-width="0"
-                                    ></g>
-                                    <g
-                                        id="SVGRepo_tracerCarrier"
-                                        stroke-linecap="round"
-                                        stroke-linejoin="round"
-                                    ></g>
-                                    <g id="SVGRepo_iconCarrier">
-                                        <title>mouse_pointer [#6]</title>
-                                        <desc>Created with Sketch.</desc>
-                                        <defs></defs>
-                                        <g
-                                            id="Page-1"
-                                            stroke-width="0.0002"
-                                            fill="none"
-                                            fill-rule="evenodd"
-                                        >
-                                            <g
-                                                id="Dribbble-Light-Preview"
-                                                transform="translate(-140.000000, -8159.000000)"
-                                                fill="#e4e4e7"
-                                            >
-                                                <g
-                                                    id="icons"
-                                                    transform="translate(56.000000, 160.000000)"
-                                                >
-                                                    <polygon
-                                                        id="mouse_pointer-[#6]"
-                                                        points="104 7999 97.075 8017.824 92.54 8013.289 86.875 8019 84 8016.125 89.711 8010.46 85.176 8005.925"
-                                                    ></polygon>
-                                                </g>
-                                            </g>
-                                        </g>
-                                    </g>
-                                </svg>
+                            <div class="header-vector bg-slate-500"></div>
+                            <div class="h-40 w-40 bg-slate-800"></div>
+                            <div class="mouse-vector">
+                                <Icon
+                                    icon="fa-solid fa-mouse-pointer"
+                                    class="w-4 h-4 text-content rotate-270"
+                                />
                             </div>
                         </div>
                     </div>
                 </template>
-            </tooltips>
+            </BaseTooltip>
         </div>
     </header>
 </template>
 
-<style scoped lang="scss">
+<style scoped>
 header {
     backdrop-filter: blur(5px);
     background: linear-gradient(
@@ -204,11 +124,6 @@ header {
     );
     box-shadow: 0 1px 10px -1px rgba(23, 27, 36, 0.3);
     transition: transform 0.3s ease-in-out;
-
-    &:hover.header-off {
-        transform: translateY(0);
-        opacity: 1;
-    }
 }
 
 .header-on {
@@ -221,18 +136,12 @@ header {
     opacity: 0;
 }
 
-.swapHeader {
-    align-self: center;
+.header-off:hover {
+    transform: translateY(0);
     opacity: 1;
-    transition: opacity 0.3s ease-in-out;
-
-    &:hover {
-        cursor: pointer;
-        opacity: 0.5;
-    }
 }
 
-.mouseVector {
+.mouse-vector {
     position: absolute;
     top: 4rem;
     left: 3rem;
@@ -240,7 +149,7 @@ header {
     animation: moveMouse 4s infinite;
 }
 
-.headerVector {
+.header-vector {
     position: absolute;
     top: 0;
     width: 10rem;
@@ -250,75 +159,20 @@ header {
 }
 
 @keyframes moveMouse {
-    0% {
-        top: 4rem;
-        left: 3rem;
+    0%, 100% {
+        transform: translate(-50%, -50%) translateY(0);
     }
-
-    33% {
-        top: 4rem;
-        left: 3rem;
-    }
-
-    66% {
-        top: 1rem;
-        left: 6rem;
-    }
-
-    100% {
-        top: 4rem;
-        left: 3rem;
+    50% {
+        transform: translate(-50%, -50%) translateY(1rem);
     }
 }
 
 @keyframes moveHeader {
-    0% {
-        transform: scaleY(1);
+    0%, 100% {
+        transform: translateY(0);
     }
-
-    26% {
-        transform: scaleY(1);
+    50% {
+        transform: translateY(1rem);
     }
-
-    33% {
-        transform: scaleY(0);
-    }
-
-    51% {
-        transform: scaleY(0);
-    }
-
-    79% {
-        transform: scaleY(0);
-    }
-
-    90% {
-        transform: scaleY(1);
-    }
-
-    100% {
-        transform: scaleY(1);
-    }
-}
-
-.title-enter-active,
-.title-leave-active {
-    transition: all 0.3s ease;
-}
-
-.title-enter-from {
-    opacity: 0;
-    transform: translateY(-20px);
-}
-
-.title-leave-to {
-    opacity: 0;
-    transform: translateY(20px);
-}
-
-.title-enter-to,
-.title-leave-from {
-    opacity: 1;
-    transform: translateY(0);
 }
 </style>

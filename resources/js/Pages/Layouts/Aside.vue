@@ -1,9 +1,9 @@
 <script setup>
-import searchInput from "@/Pages/Layouts/Molecules/searchInput.vue";
-import toggleSidebar from "@/Pages/Layouts/Molecules/ToggleSidebar.vue";
-import Tooltips from "@/Pages/Atoms/feedback/Tooltip.vue";
-import { ref, onMounted } from "vue";
+import SearchInput from "@/Pages/Layouts/Molecules/SearchInput.vue";
+import ToggleSidebar from "@/Pages/Layouts/Molecules/ToggleSidebar.vue";
+import BaseTooltip from "@/Pages/Atoms/feedback/BaseTooltip.vue";
 import Route from "@/Pages/Atoms/text/Route.vue";
+import { ref, onMounted } from "vue";
 import { useSidebar } from "@/Composables/useSidebar";
 import { MediaManager } from "@/Utils/MediaManager";
 
@@ -18,6 +18,48 @@ onMounted(async () => {
         console.error("Erreur lors du chargement du logo:", error);
     }
 });
+
+const navItems = [
+    {
+        route: "home",
+        label: "Accueil",
+        icon: "fa-solid fa-house",
+        active: (page) => page.component.includes('Home')
+    },
+    {
+        route: "",
+        label: "Pages",
+        icon: "fa-solid fa-file-lines",
+        active: (page) => page.component.includes('/page')
+    },
+    {
+        route: "",
+        label: "Créer une page",
+        icon: "fa-solid fa-plus",
+        active: (page) => page.component.includes('/page/create')
+    }
+];
+
+const footerItems = [
+    {
+        route: "contribute",
+        label: "Contribuer",
+        icon: "fa-solid fa-handshake-angle",
+        tooltip: "Tous les liens pour contribuer au projet KrosmozJDR"
+    },
+    {
+        route: "tools",
+        label: "Outils",
+        icon: "fa-solid fa-dice",
+        tooltip: "En cours de développement"
+    },
+    {
+        route: "campaigns",
+        label: "Campagnes",
+        icon: "fa-solid fa-map",
+        tooltip: "En cours de développement"
+    }
+];
 </script>
 
 <template>
@@ -45,122 +87,67 @@ onMounted(async () => {
             ]"
             aria-label="Sidenav"
         >
-            <toggleSidebar size="xs" class="absolute right-2" />
+            <ToggleSidebar size="xs" class="absolute right-2" />
 
             <div>
-                <Tooltips placement="bottom-center">
+                <BaseTooltip :tooltip="{ custom: true }" tooltip-position="bottom-center">
                     <Route class="hover:scale-105 focus:scale-95" route="home">
                         <figure>
                             <img
                                 class="w-auto px-14"
                                 :src="logo"
-                                alt="Logo de {{ appName }}"
+                                :alt="`Logo de ${appSlogan}`"
                             />
                         </figure>
                     </Route>
 
-                    <template #content> Aller à la page d'accueil </template>
-                </Tooltips>
+                    <template #tooltip>
+                        Aller à la page d'accueil
+                    </template>
+                </BaseTooltip>
 
-                <div id="nav" class="my-10">
+                <nav id="nav" class="my-10">
                     <ul>
-                        <li class="my-2">
+                        <li v-for="item in navItems" :key="item.label" class="my-2">
                             <Route
-                                route="home"
+                                :route="item.route"
                                 class="w-full p-2 ps-8 block rounded hover:bg-primary/25"
                                 :class="[
-                                    $page.component.includes('Home')
-                                        ? 'bg-primary/10'
-                                        : '',
+                                    item.active($page) ? 'bg-primary/10' : ''
                                 ]"
                             >
-                                Accueil
+                                <i :class="item.icon" class="mr-2"></i>
+                                {{ item.label }}
                             </Route>
-                        </li>
-                        <li class="my-2">
-                            <Route
-                                route=""
-                                class="w-full p-2 ps-8 block rounded hover:bg-primary/25"
-                                :class="[
-                                    $page.component.includes('/page')
-                                        ? 'bg-primary/10'
-                                        : '',
-                                ]"
-                                >Pages
-                            </Route>
-                        </li>
-                        <li class="my-2">
-                            <Route
-                                route=""
-                                class="w-full p-2 ps-8 block rounded hover:bg-primary/25"
-                                :class="[
-                                    $page.component.includes('/page/create')
-                                        ? 'bg-primary/10'
-                                        : '',
-                                ]"
-                                >Créer une page</Route
-                            >
                         </li>
                     </ul>
-                </div>
+                </nav>
             </div>
 
             <div id="footer">
-                <searchInput class="max-sm:block hidden" />
+                <SearchInput class="max-sm:block hidden" />
 
-                <div
-                    class="flex gap-1 flex-nowrap justify-around btm-nav bg-transparent px-1 py-2"
-                >
-                    <Tooltips placement="top">
+                <div class="flex gap-1 flex-nowrap justify-around btm-nav bg-transparent px-1 py-2">
+                    <BaseTooltip
+                        v-for="item in footerItems"
+                        :key="item.label"
+                        :tooltip="{ custom: true }"
+                        tooltip-position="top"
+                    >
                         <Route
                             class="pb-1 text-secondary-400 hover:text-primary-200 relative cursor-pointer before:bg-primary-300 before:absolute before:-bottom-0 before:-left-0 before:block before:h-[1px] before:w-full before:origin-bottom-right before:scale-x-0 before:transition before:duration-300 before:ease-in-out hover:before:origin-bottom-left hover:before:scale-x-100"
-                            route="contribute"
+                            :route="item.route"
                         >
                             <button>
-                                <i class="fa-solid fa-handshake-angle"></i
-                                ><br />
-                                <span class="btm-nav-label">Contribuer</span>
+                                <i :class="item.icon"></i><br />
+                                <span class="btm-nav-label">{{ item.label }}</span>
                             </button>
                         </Route>
 
-                        <template #content>
-                            <span
-                                >Tout les liens pour<br /><b
-                                    >contribuer au projet KrosmozJDR</b
-                                ></span
-                            >
+                        <template #tooltip>
+                            <span>{{ item.tooltip }}</span>
                         </template>
-                    </Tooltips>
-                    <Tooltips placement="top">
-                        <Route
-                            class="pb-1 text-secondary-400 hover:text-primary-200 relative cursor-pointer before:bg-primary-300 before:absolute before:-bottom-0 before:-left-0 before:block before:h-[1px] before:w-full before:origin-bottom-right before:scale-x-0 before:transition before:duration-300 before:ease-in-out hover:before:origin-bottom-left hover:before:scale-x-100"
-                            route="contribute"
-                        >
-                            <button>
-                                <i class="fa-solid fa-dice"></i><br />
-                                <span class="btm-nav-label">Outils</span>
-                            </button>
-                        </Route>
-
-                        <template #content>
-                            <span>En cours de développement</span>
-                        </template>
-                    </Tooltips>
-                    <Tooltips placement="top">
-                        <Route
-                            class="pb-1 text-secondary-400 hover:text-primary-200 relative cursor-pointer before:bg-primary-300 before:absolute before:-bottom-0 before:-left-0 before:block before:h-[1px] before:w-full before:origin-bottom-right before:scale-x-0 before:transition before:duration-300 before:ease-in-out hover:before:origin-bottom-left hover:before:scale-x-100"
-                            route="contribute"
-                        >
-                            <button>
-                                <i class="fa-solid fa-map"></i><br />
-                                <span class="btm-nav-label">Campagnes</span>
-                            </button>
-                        </Route>
-
-                        <template #content>
-                            <span>En cours de développement</span>
-                        </template>
-                    </Tooltips>
+                    </BaseTooltip>
                 </div>
             </div>
         </aside>

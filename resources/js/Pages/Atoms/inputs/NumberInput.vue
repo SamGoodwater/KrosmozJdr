@@ -1,15 +1,14 @@
 <script setup>
 import { computed, ref, onMounted, onUnmounted, useAttrs } from "vue";
-import { extractTheme } from "@/Utils/extractTheme";
-import useEditableField from '@/Composables/useEditableField'; // Import du composable
+import { extractTheme, combinePropsWithTheme } from "@/Utils/extractTheme";
+import { commonProps, generateClasses } from "@/Utils/commonProps";
+import useEditableField from '@/Composables/useEditableField';
 import InputLabel from '@/Pages/Atoms/inputs/InputLabel.vue';
 import InputError from '@/Pages/Atoms/inputs/InputError.vue';
+import BaseTooltip from '@/Pages/Atoms/feedback/BaseTooltip.vue';
 
 const props = defineProps({
-    theme: {
-        type: String,
-        default: "",
-    },
+    ...commonProps,
     placeholder: {
         type: Number,
         default: 0,
@@ -17,10 +16,6 @@ const props = defineProps({
     value: {
         type: [Number, Object],
         default: 0,
-    },
-    tooltip: {
-        type: String,
-        default: "",
     },
     useFieldComposable: {
         type: Boolean,
@@ -60,22 +55,19 @@ const attrs = useAttrs();
 // Générer un ID unique pour le composant
 const componentId = computed(() => attrs.id || `number-input-${Math.random().toString(36).substr(2, 9)}`);
 
-const editableField = useEditableField(props.value); // Utilisation du composable
+const editableField = useEditableField(props.value);
 
-const buildInputClasses = (themeProps, props) => {
+const buildInputClasses = (props) => {
     const classes = ["input", "w-full", "max-w-xs"];
 
-    // Color
-    const color = themeProps.color || 'primary-500';
-    classes.push(`text-${color}`);
-    classes.push(`border-${color}`);
+    // Ajout des classes communes
+    const baseClasses = generateClasses(props);
+    if (baseClasses) {
+        classes.push(baseClasses);
+    }
 
-    // Size
-    const size = themeProps.size || 'md';
-    classes.push(`input-${size}`);
-
-    // Border style
-    if (themeProps.bordered) {
+    // Style de bordure
+    if (props.bordered) {
         classes.push("input-bordered");
     }
 
@@ -83,7 +75,8 @@ const buildInputClasses = (themeProps, props) => {
 };
 
 const themeProps = computed(() => extractTheme(props.theme));
-const getClasses = computed(() => buildInputClasses(themeProps.value, props));
+const combinedProps = computed(() => combinePropsWithTheme(props, themeProps.value));
+const getClasses = computed(() => buildInputClasses(combinedProps.value));
 
 // Computed pour gérer la valeur affichée
 const displayValue = computed(() => {
@@ -172,29 +165,37 @@ onUnmounted(() => {
             </template>
         </InputLabel>
 
-        <input
-            ref="input"
-            :id="componentId"
-            type="number"
-            :value="displayValue"
-            @input="updateValue"
-            @blur="handleBlur"
-            :placeholder="placeholder"
-            :max="themeProps.maxLength"
-            :min="themeProps.minLength"
-            :step="attrs?.step || 1"
-            :required="themeProps.required"
-            :autofocus="themeProps.autofocus"
-            :data-tip="tooltip"
-            :class="getClasses"
-        />
-        <button
-            v-if="useFieldComposable && isFieldModified"
-            @click="handleReset"
-            class="absolute right-2 top-1/2 transform -translate-y-1/2 text-base-600/80 hover:text-base-600/50"
+        <BaseTooltip
+            :tooltip="tooltip"
+            :tooltip-position="tooltipPosition"
         >
-            <i class="fa-solid fa-arrow-rotate-left"></i>
-        </button>
+            <input
+                ref="input"
+                :id="componentId"
+                type="number"
+                :value="displayValue"
+                @input="updateValue"
+                @blur="handleBlur"
+                :placeholder="placeholder"
+                :max="themeProps.maxLength"
+                :min="themeProps.minLength"
+                :step="attrs?.step || 1"
+                :required="themeProps.required"
+                :autofocus="themeProps.autofocus"
+                :class="getClasses"
+            />
+            <button
+                v-if="useFieldComposable && isFieldModified"
+                @click="handleReset"
+                class="absolute right-2 top-1/2 transform -translate-y-1/2 text-base-600/80 hover:text-base-600/50"
+            >
+                <i class="fa-solid fa-arrow-rotate-left"></i>
+            </button>
+            <template v-if="typeof tooltip === 'object'" #tooltip>
+                <slot name="tooltip" />
+            </template>
+        </BaseTooltip>
+
         <InputError v-if="useInputError" :message="errorMessage" class="mt-2" />
     </div>
 </template>

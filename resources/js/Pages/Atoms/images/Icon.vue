@@ -2,9 +2,12 @@
 import { MediaManager } from '@/Utils/MediaManager';
 import { imageExists } from '@/Utils/files';
 import { computed, ref, onMounted } from 'vue';
-import { extractTheme } from "@/Utils/extractTheme";
+import { extractTheme, combinePropsWithTheme } from "@/Utils/extractTheme";
+import { commonProps, generateClasses } from "@/Utils/commonProps";
+import BaseTooltip from '@/Pages/Atoms/feedback/BaseTooltip.vue';
 
 const props = defineProps({
+    ...commonProps,
     source: {
         type: String,
         default: '',
@@ -16,40 +19,24 @@ const props = defineProps({
     theme: {
         type: String,
         default: 'button'
-    },
-    tooltip: {
-        type: String,
-        default: '',
-    },
+    }
 });
 
 const sourceRef = ref('');
 const altRef = ref('');
 const isLoading = ref(true);
 
-const buildIconClasses = (themeProps, props) => {
+const buildIconClasses = (props) => {
     const classes = ['icon'];
 
     if (isLoading.value) {
         classes.push('animate-pulse');
     }
 
-    // Size
-    const size = themeProps.size || 'md';
-    classes.push(`icon-${size}`);
-
-    // Rounded
-    const rounded = themeProps.rounded || 'none';
-    if (rounded !== 'none') {
-        classes.push(`rounded-${rounded}`);
-    }
-
-    // Tooltip
-    if (props.tooltip) {
-        classes.push('tooltip');
-        if (themeProps.tooltipPosition) {
-            classes.push(`tooltip-${themeProps.tooltipPosition}`);
-        }
+    // Ajout des classes communes
+    const baseClasses = generateClasses(props);
+    if (baseClasses) {
+        classes.push(baseClasses);
     }
 
     return classes.join(' ');
@@ -77,7 +64,8 @@ const initializeSource = async () => {
 };
 
 const themeProps = computed(() => extractTheme(props.theme));
-const getClasses = computed(() => buildIconClasses(themeProps.value, props));
+const combinedProps = computed(() => combinePropsWithTheme(props, themeProps.value));
+const iconClasses = computed(() => buildIconClasses(combinedProps.value));
 
 onMounted(() => {
     initializeSource();
@@ -85,12 +73,19 @@ onMounted(() => {
 </script>
 
 <template>
-    <img
-        :class="getClasses"
-        :src="sourceRef"
-        :alt="altRef"
-        :data-tip="tooltip"
+    <BaseTooltip
+        :tooltip="tooltip"
+        :tooltip-position="tooltipPosition"
     >
+        <img
+            :class="iconClasses"
+            :src="sourceRef"
+            :alt="altRef"
+        />
+        <template v-if="typeof tooltip === 'object'" #tooltip>
+            <slot name="tooltip" />
+        </template>
+    </BaseTooltip>
 </template>
 
 <style scoped lang="scss">

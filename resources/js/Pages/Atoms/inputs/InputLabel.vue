@@ -1,12 +1,11 @@
 <script setup>
 import { computed } from 'vue';
-import { extractTheme } from "@/Utils/extractTheme";
+import { extractTheme, combinePropsWithTheme } from "@/Utils/extractTheme";
+import { commonProps, generateClasses } from "@/Utils/commonProps";
+import BaseTooltip from '@/Pages/Atoms/feedback/BaseTooltip.vue';
 
 const props = defineProps({
-    theme: {
-        type: String,
-        default: '',
-    },
+    ...commonProps,
     for: {
         type: String,
         required: true,
@@ -15,42 +14,46 @@ const props = defineProps({
         type: String,
         required: true,
     },
-    tooltip: {
-        type: String,
-        default: '',
-    },
-    tooltipPosition: {
-        type: String,
-        default: 'top',
-    },
 });
 
-const buildLabelClasses = (themeProps, props) => {
+const themeProps = computed(() => extractTheme(props.theme));
+const combinedProps = computed(() => combinePropsWithTheme(props, themeProps.value));
+
+const buildLabelClasses = (props) => {
     const classes = [];
 
-    // Color
-    let color = themeProps.color || 'primary-500';
-    classes.push(`text-${color}`);
+    // Ajout des classes communes
+    const baseClasses = generateClasses(props);
+    if (baseClasses) {
+        classes.push(baseClasses);
+    }
 
-    // Size
-    const size = themeProps.size || 'md';
-    classes.push(`text-${size}`);
+    // Couleur par défaut pour les labels
+    if (!props.color) {
+        classes.push('text-base-800');
+    }
 
-    // Tooltip
-    if (props.tooltip) {
-        classes.push('tooltip');
-        classes.push(`tooltip-${props.tooltipPosition}`);
+    // Taille par défaut pour les labels
+    if (!props.size) {
+        classes.push('text-sm');
     }
 
     return classes.join(' ');
 };
 
-const themeProps = computed(() => extractTheme(props.theme));
-const getClasses = computed(() => buildLabelClasses(themeProps.value, props));
+const getClasses = computed(() => buildLabelClasses(combinedProps.value));
 </script>
 
 <template>
-    <label :for="props.for" :class="getClasses">
-        {{ props.value }}
-    </label>
+    <BaseTooltip
+        :tooltip="tooltip"
+        :tooltip-position="tooltipPosition"
+    >
+        <label :for="props.for" :class="getClasses">
+            {{ props.value }}
+        </label>
+        <template v-if="typeof tooltip === 'object'" #tooltip>
+            <slot name="tooltip" />
+        </template>
+    </BaseTooltip>
 </template>

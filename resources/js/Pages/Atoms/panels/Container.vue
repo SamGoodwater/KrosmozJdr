@@ -1,95 +1,86 @@
 <script setup>
-import { ref, computed, defineProps, onMounted } from "vue";
-import { extractTheme } from "@/Utils/extractTheme";
+import { computed } from "vue";
+import { extractTheme, combinePropsWithTheme } from "@/Utils/extractTheme";
+import { commonProps, generateClasses } from "@/Utils/commonProps";
+import BaseTooltip from '@/Pages/Atoms/feedback/BaseTooltip.vue';
 
 const props = defineProps({
-    theme: {
-        type: String,
-        default: "",
+    ...commonProps,
+    fluid: {
+        type: Boolean,
+        default: false,
     },
-    bgColor: {
-        type: String,
-        default: "base-900",
+    centered: {
+        type: Boolean,
+        default: false,
     },
-    opacity: {
-        type: String,
-        default: "40",
+    padded: {
+        type: Boolean,
+        default: true,
     },
-    blur: {
-        type: String,
-        default: "lg",
-    },
-    rounded: {
-        type: String,
-        default: "none",
-    },
-    shadow: {
-        type: String,
-        default: "sm",
+    bordered: {
+        type: Boolean,
+        default: false,
     },
 });
 
-const buildContainerClasses = (themeProps, props) => {
-    const classes = [
-        "container",
-        "mx-auto",
-        "py-6",
-        "max-md:py-6",
-        "max-sm:py-4",
-        "px-24",
-        "max-xl:px-24",
-        "max-lg:px-16",
-        "max-md:px-6",
-        "max-sm:px-2",
-        "w-fit-available",
-        "h-fit-available",
-    ];
+const buildContainerClasses = (props) => {
+    const classes = ["container"];
 
-    // Blur
-    if (props.blur) {
-        classes.push(`backdrop-blur-${props.blur}`);
-    } else if (themeProps.blur) {
-        classes.push(themeProps.blur);
+    // Ajout des classes communes
+    const baseClasses = generateClasses(props);
+    if (baseClasses) {
+        classes.push(baseClasses);
     }
 
-    // Shadow
+    // Container fluide
+    if (props.fluid) {
+        classes.push("container-fluid");
+    }
+
+    // Centrage
+    if (props.centered) {
+        classes.push("mx-auto");
+    }
+
+    // Padding
+    if (props.padded) {
+        classes.push("p-4");
+    }
+
+    // Bordure
+    if (props.bordered) {
+        classes.push("border");
+    }
+
+    // Ombre
     if (props.shadow) {
-        classes.push(`shadow-${props.shadow}`);
-    } else if (themeProps.shadow) {
-        classes.push(themeProps.shadow);
+        classes.push("shadow-md");
     }
 
-    // Rounded
+    // Coins arrondis
     if (props.rounded) {
-        classes.push(`rounded-${props.rounded}`);
-    } else if (themeProps.rounded) {
-        classes.push(themeProps.rounded);
-    }
-
-    // Background Color
-    let bgColor = props.bgColor;
-    if (themeProps.colorAuto) {
-        bgColor = getColorFromString(props.bgColor);
-    } else if (themeProps.color) {
-        bgColor = themeProps.color;
-    }
-
-    // Opacity
-    if (props.opacity || themeProps.opacity) {
-        classes.push(`bg-${bgColor}/${props.opacity || themeProps.opacity}`);
-    } else {
-        classes.push(`bg-${bgColor}`);
+        classes.push("rounded-lg");
     }
 
     return classes.join(" ");
 };
 
 const themeProps = computed(() => extractTheme(props.theme));
-const getClasses = computed(() => buildContainerClasses(themeProps.value, props));
+const combinedProps = computed(() => combinePropsWithTheme(props, themeProps.value));
+const getClasses = computed(() => buildContainerClasses(combinedProps.value));
 </script>
 
 <template>
-    <div :class="getClasses">
-        <slot />
-    </div>
+    <BaseTooltip
+        :tooltip="tooltip"
+        :tooltip-position="tooltipPosition"
+    >
+        <div :class="getClasses">
+            <slot />
+        </div>
+        <template v-if="typeof tooltip === 'object'" #tooltip>
+            <slot name="tooltip" />
+        </template>
+    </BaseTooltip>
 </template>
