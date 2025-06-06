@@ -6,22 +6,23 @@ use App\Models\Page;
 use App\Models\User;
 use Illuminate\Auth\Access\Response;
 
+/**
+ * Policy d'autorisation pour l'entité Page.
+ *
+ * Définit les règles d'accès (lecture, écriture, suppression, restauration, etc.) selon le rôle, l'association et la visibilité.
+ * S'appuie sur la matrice des privilèges du projet.
+ */
 class PagePolicy
 {
-    public function before(User $user): bool
-    {
-        if ($user->role === User::ROLES['super_admin']) {
-            return true;
-        }
-        return false;
-    }
-
     /**
      * Determine whether the user can view any models.
      */
-    public function viewAny(User $user): bool
+    public function viewAny(User $user, Page $page): bool
     {
-        return $user->verifyRole(User::ROLES['user']);
+        if (in_array($user->role, ['admin', 'super_admin'])) {
+            return true;
+        }
+        return $user !== null;
     }
 
     /**
@@ -29,7 +30,13 @@ class PagePolicy
      */
     public function view(User $user, Page $page): bool
     {
-        return $page->is_public || $user->verifyRole(User::ROLES['user']);
+        if (in_array($user->role, ['game_master', 'admin', 'super_admin'])) {
+            return true;
+        }
+        if ($page->users->contains($user->id)) {
+            return true;
+        }
+        return (bool) $page->is_visible;
     }
 
     /**
@@ -37,7 +44,7 @@ class PagePolicy
      */
     public function create(User $user): bool
     {
-        return $user->verifyRole(User::ROLES['contributor']);
+        return in_array($user->role, ['admin', 'super_admin']);
     }
 
     /**
@@ -45,7 +52,10 @@ class PagePolicy
      */
     public function update(User $user, Page $page): bool
     {
-        return $user->verifyRole(User::ROLES['game_master']);
+        if (in_array($user->role, ['game_master', 'admin', 'super_admin'])) {
+            return true;
+        }
+        return $page->users->contains($user->id);
     }
 
     /**
@@ -53,26 +63,25 @@ class PagePolicy
      */
     public function delete(User $user, Page $page): bool
     {
-        if ($page->created_by === $user->id) {
-            return $user->verifyRole(User::ROLES['game_master']);
-        } else {
-            return $user->verifyRole(User::ROLES['moderator']);
+        if (in_array($user->role, ['admin', 'super_admin'])) {
+            return true;
         }
+        return $page->users->contains($user->id);
     }
 
     /**
      * Determine whether the user can restore the model.
      */
-    public function restore(User $user, Page $page): bool
+    public function restore(User $user): bool
     {
-        return $user->verifyRole(User::ROLES['admin']);
+        return in_array($user->role, ['admin', 'super_admin']);
     }
 
     /**
      * Determine whether the user can permanently delete the model.
      */
-    public function forceDelete(User $user, Page $page): bool
+    public function forceDelete(User $user): bool
     {
-        return $user->verifyRole(User::ROLES['admin']);
+        return in_array($user->role, ['admin', 'super_admin']);
     }
 }

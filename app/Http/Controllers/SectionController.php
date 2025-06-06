@@ -2,143 +2,265 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\SectionFilterRequest;
 use App\Models\Section;
-use App\Models\Page;
-use Illuminate\Http\RedirectResponse;
-use Inertia\Inertia;
-use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use App\Http\Requests\StoreSectionRequest;
+use App\Http\Requests\UpdateSectionRequest;
+use App\Http\Requests\StoreFileRequest;
+use App\Http\Requests\UpdateFileRequest;
+use App\Models\File;
+use App\Services\FileProcessionService;
+use Illuminate\Support\Facades\Gate;
+use App\Services\NotificationService;
 use Illuminate\Support\Facades\Auth;
-use App\Events\NotificationSuperAdminEvent;
-use App\Services\DataService;
+use Illuminate\Support\Facades\Storage;
+use Inertia\Inertia;
+use App\Http\Resources\SectionResource;
 
+/**
+ * Contrôleur de gestion des sections dynamiques (CRUD, fichiers, associations, notifications).
+ *
+ * Gère la création, l'affichage, la modification, la suppression, la restauration et la gestion des utilisateurs et fichiers associés aux sections.
+ * Toutes les méthodes respectent les policies et envoient des notifications métier.
+ */
 class SectionController extends Controller
 {
-    use AuthorizesRequests;
 
-    public function index(SectionFilterRequest $request): \Inertia\Response
+    /**
+     * Affiche la liste paginée des sections.
+     * @return \Inertia\Response
+     */
+    public function index()
     {
-        $this->authorize('viewAny', Section::class);
-
-        // Récupère la valeur de 'paginationMaxDisplay' depuis la requête, avec une valeur par défaut de 25
-        $paginationMaxDisplay = max(1, min(500, (int) $request->input('paginationMaxDisplay', 25)));
-
-        $sections = Section::orderBy("order_num")->with('page')->paginate($paginationMaxDisplay);
-
-        return Inertia::render('section.index', [
-            'section' => $sections,
+        $this->authorize('viewAny', \App\Models\Section::class);
+        $sections = \App\Models\Section::with(['page', 'users', 'files', 'createdBy'])->paginate(20);
+        return Inertia::render('Organisms/Section/Index', [
+            'sections' => SectionResource::collection($sections),
         ]);
     }
 
-    public function show(Section $section): \Inertia\Response
+    /**
+     * Affiche le formulaire de création d'une section.
+     * @return \Inertia\Response
+     */
+    public function create()
+    {
+        $this->authorize('create', \App\Models\Section::class);
+        return Inertia::render('Organisms/Section/Create', [
+            // Ajoute ici les données nécessaires au formulaire (ex: pages, types, etc.)
+        ]);
+    }
+
+    /**
+     * Enregistre une nouvelle section.
+     * @param StoreSectionRequest $request
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function store(\App\Http\Requests\StoreSectionRequest $request)
+    {
+        $this->authorize('create', \App\Models\Section::class);
+        $data = $request->validated();
+        $data['created_by'] = $request->user()->id;
+        $section = \App\Models\Section::create($data);
+        $section->load(['page', 'users', 'files', 'createdBy']);
+        \App\Services\NotificationService::notifyEntityCreated($section, $request->user());
+        return redirect()->route('sections.show', $section)->with('success', 'Section créée avec succès.');
+    }
+
+    /**
+     * Affiche une section spécifique.
+     * @param Section $section
+     * @return \Inertia\Response
+     */
+    public function show(\App\Models\Section $section)
     {
         $this->authorize('view', $section);
-
-        return Inertia::render('Organisms/Sections/Show', [
-            'section' => $section,
-            'files' => $section->getPathFiles()
+        $section->load(['page', 'users', 'files', 'createdBy']);
+        return Inertia::render('Organisms/Section/Show', [
+            'section' => new SectionResource($section),
         ]);
     }
 
-    public function create(): \Inertia\Response
-    {
-        $this->authorize('create', Section::class);
-
-        $section = new Section();
-        return Inertia::render('Organisms/Sections/Create', [
-            'section' => $section,
-            'pages' => Page::orderBy('order_num')->pluck("name", "is_editable", "is_public", "is_visible", "is_dropdown", "uniqid",)
-        ]);
-    }
-
-    public function store(SectionFilterRequest $request): RedirectResponse
-    {
-        $this->authorize('create', Section::class);
-
-        $data = DataService::extractData($request, new Section(), [
-            [
-                'disk' => 'modules',
-                'path_name' => 'sections',
-                'name_bd' => 'file',
-                'is_multiple_files' => true, // si true, alors le fichier est un tableau de fichiers
-                'compress' => false
-            ]
-        ]);
-        if ($data === []) {
-            return redirect()->back()->withInput();
-        }
-        $data['created_by'] = Auth::user()?->id ?? "-1";
-        $section = Section::create($data);
-
-        event(new NotificationSuperAdminEvent('section', 'create',  $section));
-
-        return redirect()->route('sections.show', ['section' => $section])->with('success', 'La section a bien été créée');
-    }
-
-    public function edit(Section $section): \Inertia\Response
+    /**
+     * Affiche le formulaire de modification d'une section.
+     * @param Section $section
+     * @return \Inertia\Response
+     */
+    public function edit(\App\Models\Section $section)
     {
         $this->authorize('update', $section);
-
-        return Inertia::render('Organisms/Sections/Edit', [
-            'section' => $section,
-            'pages' => Page::pluck("name", "is_editable", "is_public", "is_visible", "is_dropdown", "uniqid",),
-            'files' => $section->getPathFiles()
+        $section->load(['page', 'users', 'files', 'createdBy']);
+        return Inertia::render('Organisms/Section/Edit', [
+            'section' => new SectionResource($section),
+            // Ajoute ici les données nécessaires au formulaire (ex: pages, types, etc.)
         ]);
     }
 
-    public function update(Section $section, SectionFilterRequest $request): RedirectResponse
+    /**
+     * Met à jour une section existante.
+     * @param UpdateSectionRequest $request
+     * @param Section $section
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function update(\App\Http\Requests\UpdateSectionRequest $request, \App\Models\Section $section)
     {
         $this->authorize('update', $section);
-        $old_section = $section;
-
-        $data = DataService::extractData($request, $section, [
-            [
-                'disk' => 'modules',
-                'path_name' => 'sections',
-                'name_bd' => 'file',
-                'is_multiple_files' => true, // si true, alors le fichier est un tableau de fichiers
-                'compress' => false
-            ]
-        ]);
-        if ($data === []) {
-            return redirect()->back()->withInput();
-        }
+        $old = clone $section;
+        $data = $request->validated();
         $section->update($data);
-
-        event(new NotificationSuperAdminEvent('section', "update", $section, $old_section));
-
-        return redirect()->route('sections.show', ['section' => $section])->with('success', 'La section a bien été modifiée');
+        $section->load(['page', 'users', 'files', 'createdBy']);
+        \App\Services\NotificationService::notifyEntityModified($section, $request->user(), $old);
+        return redirect()->route('sections.show', $section)->with('success', 'Section mise à jour.');
     }
 
-    public function delete(Section $section): RedirectResponse
+    /**
+     * Supprime une section (soft delete).
+     * @param Section $section
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function destroy(\App\Models\Section $section)
     {
         $this->authorize('delete', $section);
-        event(new NotificationSuperAdminEvent('section', "delete", $section));
+        $user = request()->user();
         $section->delete();
-
-        return redirect()->route('sections.index')->with('success', 'La section a bien été supprimée');
+        \App\Services\NotificationService::notifyEntityDeleted($section, $user);
+        return redirect()->route('sections.index')->with('success', 'Section supprimée.');
     }
 
-    public function forcedDelete(Section $section): RedirectResponse
+    /**
+     * Ajoute un fichier à une section.
+     * @param StoreFileRequest $request
+     * @param Section $section
+     * @param FileProcessionService $fileService
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function storeFile(StoreFileRequest $request, Section $section, FileProcessionService $fileService)
     {
-        $this->authorize('forceDelete', $section);
+        // Autorisation (policy sur la section)
+        Gate::authorize('update', $section);
 
-        DataService::deleteFile($section, 'file');
-        event(new NotificationSuperAdminEvent('section', "forced_delete", $section));
-        $section->forceDelete();
+        $uploadedFile = $request->file('file');
+        $path = $uploadedFile->store('sections', FileProcessionService::DISK_DEFAULT);
 
-        return redirect()->route('sections.index')->with('success', 'La section a bien été supprimée définitivement');
+        // Traitement (ex: conversion webp si image)
+        if (FileProcessionService::isImagePath($path)) {
+            $path = $fileService->convertToWebp($path);
+        }
+
+        // Création de l'entrée File
+        $file = File::create([
+            'file' => $path,
+            'title' => $request->input('title'),
+            'comment' => $request->input('comment'),
+            'description' => $request->input('description'),
+        ]);
+
+        // Association à la section (avec ordre si fourni)
+        $section->files()->attach($file->id, [
+            'order' => $request->input('order'),
+        ]);
+
+        return response()->json(['success' => true, 'file' => $file]);
     }
 
-    public function restore(Section $section): RedirectResponse
+    /**
+     * Supprime un fichier lié à une section.
+     * @param Section $section
+     * @param File $file
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function destroyFile(Section $section, File $file)
+    {
+        // Autorisation (policy sur la section)
+        Gate::authorize('update', $section);
+
+        // Détacher le fichier de la section
+        $section->files()->detach($file->id);
+
+        // (Optionnel) Supprimer le fichier physique et l'entrée File si plus utilisé ailleurs
+        if ($file->sections()->count() === 0) {
+            \Storage::disk(\App\Services\FileProcessionService::DISK_DEFAULT)->delete($file->file);
+            $file->delete();
+        }
+
+        return response()->json(['success' => true]);
+    }
+
+    /**
+     * Associe un utilisateur à la section.
+     * @param \Illuminate\Http\Request $request
+     * @param Section $section
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function attachUser(\Illuminate\Http\Request $request, Section $section)
+    {
+        $this->authorize('update', $section);
+        $request->validate(['user_id' => 'required|exists:users,id']);
+        $section->users()->attach($request->user_id);
+        return response()->json(['success' => true]);
+    }
+
+    /**
+     * Dissocie un utilisateur de la section.
+     * @param \Illuminate\Http\Request $request
+     * @param Section $section
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function detachUser(\Illuminate\Http\Request $request, Section $section)
+    {
+        $this->authorize('update', $section);
+        $request->validate(['user_id' => 'required|exists:users,id']);
+        $section->users()->detach($request->user_id);
+        return response()->json(['success' => true]);
+    }
+
+    /**
+     * Synchronise la liste des utilisateurs associés à la section.
+     * @param \Illuminate\Http\Request $request
+     * @param Section $section
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function syncUsers(\Illuminate\Http\Request $request, Section $section)
+    {
+        $this->authorize('update', $section);
+        $request->validate(['user_ids' => 'array', 'user_ids.*' => 'exists:users,id']);
+        $section->users()->sync($request->user_ids);
+        return response()->json(['success' => true]);
+    }
+
+    /**
+     * Liste les utilisateurs associés à la section.
+     * @param Section $section
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function users(Section $section)
+    {
+        $this->authorize('view', $section);
+        return response()->json($section->users);
+    }
+
+    /**
+     * Restaure une section supprimée.
+     * @param Section $section
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function restore(\App\Models\Section $section)
     {
         $this->authorize('restore', $section);
-
-        if (!$section->trashed()) {
-            return redirect()->route('sections.index')->with('error', 'La section n\'est pas dans la corbeille');
-        }
         $section->restore();
+        \App\Services\NotificationService::notifyEntityRestored($section, request()->user());
+        return redirect()->route('sections.index')->with('success', 'Section restaurée.');
+    }
 
-        return redirect()->route('sections.index')->with('success', 'La section a bien été restaurée');
+    /**
+     * Supprime définitivement une section.
+     * @param Section $section
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function forceDelete(\App\Models\Section $section)
+    {
+        $this->authorize('forceDelete', $section);
+        $section->forceDelete();
+        \App\Services\NotificationService::notifyEntityForceDeleted($section, request()->user());
+        return redirect()->route('sections.index')->with('success', 'Section supprimée définitivement.');
     }
 }

@@ -5,15 +5,6 @@
 @source "/storage/framework/views/*.php";
 @source "/resources/views/**/*.blade.php";
 
-@plugin "daisyui" {
-    themes:
-        dark --default,
-        dark --prefersdark,
-        light;
-    root: ":root";
-    logs: true;
-}
-
 @import "./theme.css";
 
 @plugin "daisyui/theme" {

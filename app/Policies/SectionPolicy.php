@@ -6,21 +6,24 @@ use App\Models\Section;
 use App\Models\User;
 use Illuminate\Auth\Access\Response;
 
+/**
+ * Policy d'autorisation pour l'entité Section.
+ *
+ * Définit les règles d'accès (lecture, écriture, suppression, restauration, etc.) selon le rôle, l'association et la visibilité.
+ * Prend en compte les droits sur la page parente pour les actions d'écriture.
+ * S'appuie sur la matrice des privilèges du projet.
+ */
 class SectionPolicy
 {
-    public function before(User $user): ?bool
-    {
-        if ($user->role === User::ROLES['super_admin']) {
-            return true;
-        }
-    }
-
     /**
      * Determine whether the user can view any models.
      */
     public function viewAny(User $user): bool
     {
-        return true;
+        if (in_array($user->role, ['admin', 'super_admin'])) {
+            return true;
+        }
+        return $user !== null;
     }
 
     /**
@@ -28,11 +31,13 @@ class SectionPolicy
      */
     public function view(User $user, Section $section): bool
     {
-        if (!$section->is_visible) {
-            return $user->verifyRole(User::ROLES['moderator']);
-        } else {
+        if (in_array($user->role, ['admin', 'super_admin'])) {
             return true;
         }
+        if ($section->users->contains($user->id)) {
+            return true;
+        }
+        return (bool) $section->is_visible;
     }
 
     /**
@@ -40,7 +45,14 @@ class SectionPolicy
      */
     public function create(User $user): bool
     {
-        return $user->verifyRole(User::ROLES['game_master']);
+        $pageId = request('page_id');
+        if ($pageId) {
+            $page = \App\Models\Page::find($pageId);
+            if ($page && $user->can('update', $page)) {
+                return true;
+            }
+        }
+        return in_array($user->role, ['game_master', 'admin', 'super_admin']);
     }
 
     /**
@@ -48,11 +60,7 @@ class SectionPolicy
      */
     public function update(User $user, Section $section): bool
     {
-        if ($section->created_by === $user->id) {
-            return $user->verifyRole(User::ROLES['game_master']);
-        } else {
-            return $user->verifyRole(User::ROLES['contributor']);
-        }
+        return $user->can('update', $section->page);
     }
 
     /**
@@ -60,11 +68,7 @@ class SectionPolicy
      */
     public function delete(User $user, Section $section): bool
     {
-        if ($section->created_by === $user->id) {
-            return $user->verifyRole(User::ROLES['game_master']);
-        } else {
-            return $user->verifyRole(User::ROLES['moderator']);
-        }
+        return $user->can('update', $section->page);
     }
 
     /**
@@ -72,7 +76,7 @@ class SectionPolicy
      */
     public function restore(User $user, Section $section): bool
     {
-        return $user->verifyRole(User::ROLES['admin']);
+        return $user->can('update', $section->page);
     }
 
     /**
@@ -80,6 +84,6 @@ class SectionPolicy
      */
     public function forceDelete(User $user, Section $section): bool
     {
-        return $user->verifyRole(User::ROLES['admin']);
+        return in_array($user->role, ['admin', 'super_admin']);
     }
 }

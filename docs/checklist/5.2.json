@@ -1,0 +1,517 @@
+{
+  "partie": "5. Tests et Validation",
+  "sous_partie": "5.2. Tests Frontend",
+  "taches": [
+    {
+      "titre": "5.2.1 Tests UI principaux",
+      "sous_taches": [
+        {
+          "titre": "5.2.1.1 Button",
+          "sous_taches": [
+            {
+              "titre": "5.2.1.1.1 Test unitaire",
+              "description": "Tester le rendu, les props, les events, les slots, les variantes, les états (disabled, loading, etc.)."
+            },
+            {
+              "titre": "5.2.1.1.2 Test accessibilité",
+              "description": "Vérifier le focus, l'accessibilité clavier, les rôles ARIA, le contraste."
+            },
+            {
+              "titre": "5.2.1.1.3 Log",
+              "description": "Consigner un log daté des tests réalisés."
+            }
+          ]
+        },
+        {
+          "titre": "5.2.1.2 Input",
+          "sous_taches": [
+            {
+              "titre": "5.2.1.2.1 Test unitaire",
+              "description": "Tester le rendu, les props, les events, les slots, les variantes, les états (disabled, readonly, etc.)."
+            },
+            {
+              "titre": "5.2.1.2.2 Test accessibilité",
+              "description": "Vérifier le focus, l'accessibilité clavier, les rôles ARIA, le contraste."
+            },
+            {
+              "titre": "5.2.1.2.3 Log",
+              "description": "Consigner un log daté des tests réalisés."
+            }
+          ]
+        },
+        {
+          "titre": "5.2.1.3 Checkbox",
+          "sous_taches": [
+            {
+              "titre": "5.2.1.3.1 Test unitaire",
+              "description": "Tester le rendu, les props, les events, les états (checked, indeterminate, disabled, etc.)."
+            },
+            {
+              "titre": "5.2.1.3.2 Test accessibilité",
+              "description": "Vérifier l'accessibilité clavier, les rôles ARIA, le contraste."
+            },
+            {
+              "titre": "5.2.1.3.3 Log",
+              "description": "Consigner un log daté des tests réalisés."
+            }
+          ]
+        },
+        {
+          "titre": "5.2.1.4 Avatar",
+          "sous_taches": [
+            {
+              "titre": "5.2.1.4.1 Test unitaire",
+              "description": "Tester le rendu, les props (src, alt, fallback), les variantes, les slots, les états (fallback, image, etc.)."
+            },
+            {
+              "titre": "5.2.1.4.2 Test accessibilité",
+              "description": "Vérifier l'accessibilité image, les alt, le focus."
+            },
+            {
+              "titre": "5.2.1.4.3 Log",
+              "description": "Consigner un log daté des tests réalisés."
+            }
+          ]
+        },
+        {
+          "titre": "5.2.1.5 Card",
+          "sous_taches": [
+            {
+              "titre": "5.2.1.5.1 Test unitaire",
+              "description": "Tester le rendu, les slots, les variantes, la composition (Header, Footer, etc.)."
+            },
+            {
+              "titre": "5.2.1.5.2 Test accessibilité",
+              "description": "Vérifier l'accessibilité structurelle, les rôles ARIA."
+            },
+            {
+              "titre": "5.2.1.5.3 Log",
+              "description": "Consigner un log daté des tests réalisés."
+            }
+          ]
+        },
+        {
+          "titre": "5.2.1.6 Label",
+          "sous_taches": [
+            {
+              "titre": "5.2.1.6.1 Test unitaire",
+              "description": "Tester le rendu, les props (for), les variantes."
+            },
+            {
+              "titre": "5.2.1.6.2 Test accessibilité",
+              "description": "Vérifier l'association avec les champs de formulaire, les rôles ARIA."
+            },
+            {
+              "titre": "5.2.1.6.3 Log",
+              "description": "Consigner un log daté des tests réalisés."
+            }
+          ]
+        },
+        {
+          "titre": "5.2.1.7 Tooltip",
+          "sous_taches": [
+            {
+              "titre": "5.2.1.7.1 Test unitaire",
+              "description": "Tester le rendu, les props (label, position), l'affichage au focus/survol, les slots."
+            },
+            {
+              "titre": "5.2.1.7.2 Test accessibilité",
+              "description": "Vérifier l'accessibilité ARIA, le focus, le timing d'affichage."
+            },
+            {
+              "titre": "5.2.1.7.3 Log",
+              "description": "Consigner un log daté des tests réalisés."
+            }
+          ]
+        },
+        {
+          "titre": "5.2.1.8 Skeleton",
+          "sous_taches": [
+            {
+              "titre": "5.2.1.8.1 Test unitaire",
+              "description": "Tester le rendu, les props (width, height, shape), les variantes."
+            },
+            {
+              "titre": "5.2.1.8.2 Test accessibilité",
+              "description": "Vérifier l'accessibilité ARIA, le focus."
+            },
+            {
+              "titre": "5.2.1.8.3 Log",
+              "description": "Consigner un log daté des tests réalisés."
+            }
+          ]
+        },
+        {
+          "titre": "5.2.1.9 Sidebar",
+          "sous_taches": [
+            {
+              "titre": "5.2.1.9.1 Test unitaire",
+              "description": "Tester le rendu, les props, les slots, la navigation, les états ouverts/fermés, la composition (groupes, menus, etc.)."
+            },
+            {
+              "titre": "5.2.1.9.2 Test accessibilité",
+              "description": "Vérifier l'accessibilité clavier, les rôles ARIA, le focus."
+            },
+            {
+              "titre": "5.2.1.9.3 Log",
+              "description": "Consigner un log daté des tests réalisés."
+            }
+          ]
+        },
+        {
+          "titre": "5.2.1.10 Breadcrumb",
+          "sous_taches": [
+            {
+              "titre": "5.2.1.10.1 Test unitaire",
+              "description": "Tester le rendu, les props, les slots, la navigation, les états."
+            },
+            {
+              "titre": "5.2.1.10.2 Test accessibilité",
+              "description": "Vérifier la structure ARIA, la navigation clavier, le focus."
+            },
+            {
+              "titre": "5.2.1.10.3 Log",
+              "description": "Consigner un log daté des tests réalisés."
+            }
+          ]
+        },
+        {
+          "titre": "5.2.1.11 Dialog",
+          "sous_taches": [
+            {
+              "titre": "5.2.1.11.1 Test unitaire",
+              "description": "Tester le rendu, les props, les slots, l'ouverture/fermeture, les états."
+            },
+            {
+              "titre": "5.2.1.11.2 Test accessibilité",
+              "description": "Vérifier la structure ARIA, la navigation clavier, le focus, le trap focus."
+            },
+            {
+              "titre": "5.2.1.11.3 Log",
+              "description": "Consigner un log daté des tests réalisés."
+            }
+          ]
+        },
+        {
+          "titre": "5.2.1.12 DropdownMenu",
+          "sous_taches": [
+            {
+              "titre": "5.2.1.12.1 Test unitaire",
+              "description": "Tester le rendu, les props, les slots, l'ouverture/fermeture, les états."
+            },
+            {
+              "titre": "5.2.1.12.2 Test accessibilité",
+              "description": "Vérifier la structure ARIA, la navigation clavier, le focus."
+            },
+            {
+              "titre": "5.2.1.12.3 Log",
+              "description": "Consigner un log daté des tests réalisés."
+            }
+          ]
+        },
+        {
+          "titre": "5.2.1.13 NavigationMenu",
+          "sous_taches": [
+            {
+              "titre": "5.2.1.13.1 Test unitaire",
+              "description": "Tester le rendu, les props, les slots, la navigation, les états."
+            },
+            {
+              "titre": "5.2.1.13.2 Test accessibilité",
+              "description": "Vérifier la structure ARIA, la navigation clavier, le focus."
+            },
+            {
+              "titre": "5.2.1.13.3 Log",
+              "description": "Consigner un log daté des tests réalisés."
+            }
+          ]
+        },
+        {
+          "titre": "5.2.1.14 Separator",
+          "sous_taches": [
+            {
+              "titre": "5.2.1.14.1 Test unitaire",
+              "description": "Tester le rendu, les props, les slots."
+            },
+            {
+              "titre": "5.2.1.14.2 Test accessibilité",
+              "description": "Vérifier la structure ARIA, le focus."
+            },
+            {
+              "titre": "5.2.1.14.3 Log",
+              "description": "Consigner un log daté des tests réalisés."
+            }
+          ]
+        },
+        {
+          "titre": "5.2.1.15 Sheet",
+          "sous_taches": [
+            {
+              "titre": "5.2.1.15.1 Test unitaire",
+              "description": "Tester le rendu, les props, les slots, l'ouverture/fermeture, les états."
+            },
+            {
+              "titre": "5.2.1.15.2 Test accessibilité",
+              "description": "Vérifier la structure ARIA, la navigation clavier, le focus, le trap focus."
+            },
+            {
+              "titre": "5.2.1.15.3 Log",
+              "description": "Consigner un log daté des tests réalisés."
+            }
+          ]
+        },
+        {
+          "titre": "5.2.1.16 Collapsible",
+          "sous_taches": [
+            {
+              "titre": "5.2.1.16.1 Test unitaire",
+              "description": "Tester le rendu, les props, les slots, l'ouverture/fermeture, les états."
+            },
+            {
+              "titre": "5.2.1.16.2 Test accessibilité",
+              "description": "Vérifier la structure ARIA, la navigation clavier, le focus."
+            },
+            {
+              "titre": "5.2.1.16.3 Log",
+              "description": "Consigner un log daté des tests réalisés."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "titre": "5.2.2 Tests Layouts",
+      "sous_taches": [
+        {
+          "titre": "5.2.2.1 AppLayout",
+          "sous_taches": [
+            {
+              "titre": "5.2.2.1.1 Test unitaire",
+              "description": "Tester le rendu, les slots, la composition (Header, Sidebar, Footer), la gestion des layouts enfants."
+            },
+            {
+              "titre": "5.2.2.1.2 Test accessibilité",
+              "description": "Vérifier la structure ARIA, la navigation clavier, le focus."
+            },
+            {
+              "titre": "5.2.2.1.3 Log",
+              "description": "Consigner un log daté des tests réalisés."
+            }
+          ]
+        },
+        {
+          "titre": "5.2.2.2 AuthLayout",
+          "sous_taches": [
+            {
+              "titre": "5.2.2.2.1 Test unitaire",
+              "description": "Tester le rendu, les slots, la composition, la gestion des layouts enfants."
+            },
+            {
+              "titre": "5.2.2.2.2 Test accessibilité",
+              "description": "Vérifier la structure ARIA, la navigation clavier, le focus."
+            },
+            {
+              "titre": "5.2.2.2.3 Log",
+              "description": "Consigner un log daté des tests réalisés."
+            }
+          ]
+        },
+        {
+          "titre": "5.2.2.3 Settings/Layout",
+          "sous_taches": [
+            {
+              "titre": "5.2.2.3.1 Test unitaire",
+              "description": "Tester le rendu, les slots, la composition, la gestion des layouts enfants."
+            },
+            {
+              "titre": "5.2.2.3.2 Test accessibilité",
+              "description": "Vérifier la structure ARIA, la navigation clavier, le focus."
+            },
+            {
+              "titre": "5.2.2.3.3 Log",
+              "description": "Consigner un log daté des tests réalisés."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "titre": "5.2.3 Tests Pages",
+      "sous_taches": [
+        {
+          "titre": "5.2.3.1 Dashboard.vue",
+          "sous_taches": [
+            {
+              "titre": "5.2.3.1.1 Test unitaire",
+              "description": "Tester le rendu, les props, la logique, les slots, la navigation, les erreurs."
+            },
+            {
+              "titre": "5.2.3.1.2 Test accessibilité",
+              "description": "Vérifier la structure ARIA, la navigation clavier, le focus."
+            },
+            {
+              "titre": "5.2.3.1.3 Test E2E",
+              "description": "Tester le parcours utilisateur principal sur Dashboard (Cypress)."
+            },
+            {
+              "titre": "5.2.3.1.4 Log",
+              "description": "Consigner un log daté des tests réalisés."
+            }
+          ]
+        },
+        {
+          "titre": "5.2.3.2 Welcome.vue",
+          "sous_taches": [
+            {
+              "titre": "5.2.3.2.1 Test unitaire",
+              "description": "Tester le rendu, les props, la logique, les slots, la navigation, les erreurs."
+            },
+            {
+              "titre": "5.2.3.2.2 Test accessibilité",
+              "description": "Vérifier la structure ARIA, la navigation clavier, le focus."
+            },
+            {
+              "titre": "5.2.3.2.3 Test E2E",
+              "description": "Tester le parcours utilisateur principal sur Welcome (Cypress)."
+            },
+            {
+              "titre": "5.2.3.2.4 Log",
+              "description": "Consigner un log daté des tests réalisés."
+            }
+          ]
+        },
+        {
+          "titre": "5.2.3.3 Auth pages",
+          "sous_taches": [
+            {
+              "titre": "5.2.3.3.1 Test unitaire Login",
+              "description": "Tester le rendu, la logique, la validation, les erreurs, la navigation."
+            },
+            {
+              "titre": "5.2.3.3.2 Test accessibilité Login",
+              "description": "Vérifier la structure ARIA, la navigation clavier, le focus."
+            },
+            {
+              "titre": "5.2.3.3.3 Test E2E Login",
+              "description": "Tester le parcours utilisateur de connexion (Cypress)."
+            },
+            {
+              "titre": "5.2.3.3.4 Test unitaire Register",
+              "description": "Tester le rendu, la logique, la validation, les erreurs, la navigation."
+            },
+            {
+              "titre": "5.2.3.3.5 Test accessibilité Register",
+              "description": "Vérifier la structure ARIA, la navigation clavier, le focus."
+            },
+            {
+              "titre": "5.2.3.3.6 Test E2E Register",
+              "description": "Tester le parcours utilisateur d'inscription (Cypress)."
+            },
+            {
+              "titre": "5.2.3.3.7 Test unitaire ForgotPassword",
+              "description": "Tester le rendu, la logique, la validation, les erreurs, la navigation."
+            },
+            {
+              "titre": "5.2.3.3.8 Test accessibilité ForgotPassword",
+              "description": "Vérifier la structure ARIA, la navigation clavier, le focus."
+            },
+            {
+              "titre": "5.2.3.3.9 Test E2E ForgotPassword",
+              "description": "Tester le parcours utilisateur de mot de passe oublié (Cypress)."
+            },
+            {
+              "titre": "5.2.3.3.10 Test unitaire ResetPassword",
+              "description": "Tester le rendu, la logique, la validation, les erreurs, la navigation."
+            },
+            {
+              "titre": "5.2.3.3.11 Test accessibilité ResetPassword",
+              "description": "Vérifier la structure ARIA, la navigation clavier, le focus."
+            },
+            {
+              "titre": "5.2.3.3.12 Test E2E ResetPassword",
+              "description": "Tester le parcours utilisateur de réinitialisation de mot de passe (Cypress)."
+            },
+            {
+              "titre": "5.2.3.3.13 Test unitaire VerifyEmail",
+              "description": "Tester le rendu, la logique, la validation, les erreurs, la navigation."
+            },
+            {
+              "titre": "5.2.3.3.14 Test accessibilité VerifyEmail",
+              "description": "Vérifier la structure ARIA, la navigation clavier, le focus."
+            },
+            {
+              "titre": "5.2.3.3.15 Test E2E VerifyEmail",
+              "description": "Tester le parcours utilisateur de vérification d'email (Cypress)."
+            }
+          ]
+        },
+        {
+          "titre": "5.2.3.4 Settings pages",
+          "sous_taches": [
+            {
+              "titre": "5.2.3.4.1 Test unitaire Profile",
+              "description": "Tester le rendu, la logique, la validation, les erreurs, la navigation."
+            },
+            {
+              "titre": "5.2.3.4.2 Test accessibilité Profile",
+              "description": "Vérifier la structure ARIA, la navigation clavier, le focus."
+            },
+            {
+              "titre": "5.2.3.4.3 Test E2E Profile",
+              "description": "Tester le parcours utilisateur de modification de profil (Cypress)."
+            },
+            {
+              "titre": "5.2.3.4.4 Test unitaire Password",
+              "description": "Tester le rendu, la logique, la validation, les erreurs, la navigation."
+            },
+            {
+              "titre": "5.2.3.4.5 Test accessibilité Password",
+              "description": "Vérifier la structure ARIA, la navigation clavier, le focus."
+            },
+            {
+              "titre": "5.2.3.4.6 Test E2E Password",
+              "description": "Tester le parcours utilisateur de modification de mot de passe (Cypress)."
+            },
+            {
+              "titre": "5.2.3.4.7 Test unitaire Appearance",
+              "description": "Tester le rendu, la logique, la validation, les erreurs, la navigation."
+            },
+            {
+              "titre": "5.2.3.4.8 Test accessibilité Appearance",
+              "description": "Vérifier la structure ARIA, la navigation clavier, le focus."
+            },
+            {
+              "titre": "5.2.3.4.9 Test E2E Appearance",
+              "description": "Tester le parcours utilisateur de modification d'apparence (Cypress)."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "titre": "5.2.4 Tests E2E globaux",
+      "sous_taches": [
+        {
+          "titre": "5.2.4.1 Parcours utilisateur principal",
+          "description": "Tester le parcours complet d'un utilisateur (inscription, connexion, navigation, modification de profil, déconnexion, etc.) avec Cypress."
+        },
+        {
+          "titre": "5.2.4.2 Accessibilité globale",
+          "description": "Vérifier l'accessibilité globale de l'application (audit axe, navigation clavier, contrastes, etc.)."
+        },
+        {
+          "titre": "5.2.4.3 Log E2E globaux",
+          "description": "Consigner un log daté des tests E2E globaux réalisés."
+        }
+      ]
+    },
+    {
+      "titre": "5.2.5 Vérification finale de la sous-partie",
+      "description": "Vérifier que tous les tests unitaires, d'intégration, d'accessibilité, E2E sont présents, complets et conformes pour chaque composant, layout et page. Vérifier la couverture de tests globale (pnpm run coverage, pnpm run test:e2e, etc.)."
+    },
+    {
+      "titre": "5.2.6 Log de la sous-partie",
+      "description": "Consigner dans logs.txt un résumé daté de toutes les actions réalisées dans cette sous-partie, en listant les composants/pages, types de tests, et l'état de chaque tâche."
+    }
+  ]
+}

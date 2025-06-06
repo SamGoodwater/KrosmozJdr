@@ -1,11 +1,11 @@
 <script setup>
-import SearchInput from "@/Pages/Layouts/Molecules/SearchInput.vue";
-import ToggleSidebar from "@/Pages/Layouts/Molecules/ToggleSidebar.vue";
+import SearchInput from "@/Pages/Molecules/layout/SearchInput.vue";
+import ToggleSidebar from "@/Pages/Molecules/layout/ToggleSidebar.vue";
 import BaseTooltip from "@/Pages/Atoms/feedback/BaseTooltip.vue";
-import Route from "@/Pages/Atoms/text/Route.vue";
+import Route from "@/Pages/Atoms/action/Route.vue";
 import { ref, onMounted } from "vue";
-import { useSidebar } from "@/Composables/useSidebar";
-import { MediaManager } from "@/Utils/MediaManager";
+import { useSidebar } from "@/Composables/layout/useSidebar";
+import { MediaManager } from "@/Utils/file/MediaManager";
 
 const { isSidebarOpen } = useSidebar();
 const appSlogan = ref(import.meta.env.VITE_APP_SLOGAN);

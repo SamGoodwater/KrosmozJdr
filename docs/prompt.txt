@@ -1,0 +1,5 @@
+Voici le projet Krosmoz JDR. 
+Je suis entrain de m'occuper des artefacts. Les fichiers des artefacts ont tous été créé mais ils ne sont pas complétes. Les modèles et les migrations sont faites.
+Tu as accès à la documentation, base toi sur CONTENT_OVERVIEW et le tableau des droits notamment et ENTITES_OVERVIEW pour les détails des entités. 
+J'aimerai que tu complétes ou corriges les artefacts (requests, controllers, policies, factories et seeders si ils existent) pour : Campaign. 
+Applique directement les corrections.

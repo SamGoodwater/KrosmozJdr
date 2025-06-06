@@ -21,10 +21,10 @@ class UserSeeder extends Seeder
                 'email' => 'contact@jdr.iota21.fr',
                 'role' => User::ROLES['super_admin'],
                 'password' => Hash::make('0000'),
-                'uniqid' => uniqid(),
+                'avatar' => User::DEFAULT_AVATAR,
+                'notifications_enabled' => true,
+                'notification_channels' => [User::NOTIFICATION_CHANNELS[0]],
             ]);
         }
-
-        User::factory(10)->create();
     }
 }

@@ -1,6 +1,6 @@
 <script setup>
 import { useForm } from '@inertiajs/vue3';
-import { success, error } from '@/Utils/notificationManager';
+import { success, error } from '@/Utils/notification/NotificationManager';
 
 // Composants Atoms
 import Btn from '@/Pages/Atoms/actions/Btn.vue';

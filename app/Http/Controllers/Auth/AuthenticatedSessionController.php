@@ -14,13 +14,13 @@ use Inertia\Response;
 class AuthenticatedSessionController extends Controller
 {
     /**
-     * Display the login view.
+     * Show the login page.
      */
-    public function create(): Response
+    public function create(Request $request): Response
     {
-        return Inertia::render('Organisms/Auth/Login', [
+        return Inertia::render('auth/Login', [
             'canResetPassword' => Route::has('password.request'),
-            'status' => session('status'),
+            'status' => $request->session()->get('status'),
         ]);
     }
 
@@ -33,12 +33,6 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerate();
 
-        // Mettre à jour la date de dernière connexion
-        $user = Auth::user();
-        $last_login = $user->updated_at;
-        $user->updated_at = now();
-        $user->save();
-
         return redirect()->intended(route('user.dashboard', absolute: false));
     }
 
@@ -50,7 +44,6 @@ class AuthenticatedSessionController extends Controller
         Auth::guard('web')->logout();
 
         $request->session()->invalidate();
-
         $request->session()->regenerateToken();
 
         return redirect('/');

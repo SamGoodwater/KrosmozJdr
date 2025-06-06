@@ -1,0 +1,545 @@
+{
+  "partie": "2. Génération de la Structure de Code",
+  "sous_partie": "2.3. Génération Frontend (Scaffolding)",
+  "taches": [
+    {
+      "titre": "2.3.1 Créer le dossier atoms",
+      "sous_taches": [
+        {
+          "titre": "2.3.1.1 Créer les sous dossiers resources/js/components/atoms/",
+          "description": "Créer les sous dossiers suivants dans resources/js/components/atoms/ : form/, actions/, data-display/, navigation/, layout/, feedback/, typography/, file/."
+        },
+        {
+          "titre": "2.3.1.2 Créer le fichier d'index atoms",
+          "description": "Créer un fichier index.ts dans resources/js/components/atoms/."
+        }
+      ]
+    },
+    {
+      "titre": "2.3.2 Créer le dossier molecules",
+      "sous_taches": [
+        {
+          "titre": "2.3.2.1 Créer les sous dossiers resources/js/components/molecules/",
+          "description": "Créer les sous dossiers suivants dans resources/js/components/molecules/ : form/, data-display/, navigation/, layout/, feedback/."
+        },
+        {
+          "titre": "2.3.2.2 Créer le fichier d'index molecules",
+          "description": "Créer un fichier index.ts dans resources/js/components/molecules/."
+        }
+      ]
+    },
+    {
+      "titre": "2.3.3 Créer le dossier organisms",
+      "sous_taches": [
+        {
+          "titre": "2.3.3.1 Créer les sous dossiers resources/js/components/organisms/",
+          "description": "Créer les sous dossiers suivants dans resources/js/components/organisms/ : layout/, data-display/, navigation/."
+        },
+        {
+          "titre": "2.3.3.2 Créer le fichier d'index organisms",
+          "description": "Créer un fichier index.ts dans resources/js/components/organisms/."
+        }
+      ]
+    },
+    {
+      "titre": "2.3.4 Créer le dossier templates",
+      "sous_taches": [
+        {
+          "titre": "2.3.4.1 Créer le sous-dossier layouts/ dans resources/js/components/templates/",
+          "description": "Créer le sous-dossier layouts/ dans resources/js/components/templates/."
+        },
+        {
+          "titre": "2.3.4.2 Créer le fichier d'index templates",
+          "description": "Créer un fichier index.ts dans resources/js/components/templates/."
+        }
+      ]
+    },
+    {
+      "titre": "2.3.5 Créer le dossier pages",
+      "sous_taches": [
+        {
+          "titre": "2.3.5.1 Créer les sous dossiers resources/js/components/pages/",
+          "description": "Créer les sous dossiers suivants dans resources/js/components/pages/ : home/, auth/, dashboard/, profile/, error/, static/, section/."
+        },
+        {
+          "titre": "2.3.5.2 Créer le fichier d'index pages",
+          "description": "Créer un fichier index.ts dans resources/js/components/pages/."
+        }
+      ]
+    },
+    {
+      "titre": "2.3.6 Générer les atoms",
+      "sous_taches": [
+        {
+          "titre": "2.3.6.1 Générer l'atom Btn",
+          "description": "Créer Btn.vue dans atoms/actions/. props = tous les props DaisyUI, props d'accessibilité, label (string ou template), href, target, type, disabled, loading, onClick, tooltip, tooltipLocation. Voir https://daisyui.com/components/button/."
+        },
+        {
+          "titre": "2.3.6.2 Générer l'atom Input",
+          "description": "Créer Input.vue dans atoms/form/. props = tous les props DaisyUI, props d'accessibilité, value, placeholder, type, name, disabled, readonly, required, onInput, onChange, max, min, step, maxLength, minLength, pattern, tooltip, tooltipLocation. Voir https://daisyui.com/components/input/."
+        },
+        {
+          "titre": "2.3.6.3 Générer l'atom Checkbox",
+          "description": "Créer Checkbox.vue dans atoms/form/. props = tous les props DaisyUI, props d'accessibilité, label, checked, name, disabled, required, onChange, tooltip, tooltipLocation. Voir https://daisyui.com/components/checkbox/."
+        },
+        {
+          "titre": "2.3.6.4 Générer l'atom Radio",
+          "description": "Créer Radio.vue dans atoms/form/. props = tous les props DaisyUI, props d'accessibilité, label, value, checked, name, disabled, required, onChange, tooltip, tooltipLocation. Voir https://daisyui.com/components/radio/."
+        },
+        {
+          "titre": "2.3.6.5 Générer l'atom Select",
+          "description": "Créer Select.vue dans atoms/form/. props = tous les props DaisyUI, props d'accessibilité, value, options, name, disabled, required, onChange, tooltip, tooltipLocation. Voir https://daisyui.com/components/select/."
+        },
+        {
+          "titre": "2.3.6.6 Générer l'atom Textarea",
+          "description": "Créer Textarea.vue dans atoms/form/. props = tous les props DaisyUI, props d'accessibilité, value, placeholder, name, disabled, readonly, required, rows, onInput, onChange, tooltip, tooltipLocation. Voir https://daisyui.com/components/textarea/."
+        },
+        {
+          "titre": "2.3.6.7 Générer l'atom Range",
+          "description": "Créer Range.vue dans atoms/form/. props = tous les props DaisyUI, props d'accessibilité, value, min, max, step, name, disabled, required, onInput, onChange, tooltip, tooltipLocation. Voir https://daisyui.com/components/range/."
+        },
+        {
+          "titre": "2.3.6.8 Générer l'atom FileInput",
+          "description": "Créer FileInput.vue dans atoms/form/. props = tous les props DaisyUI, props d'accessibilité, value, accept, multiple, name, disabled, required, onChange, tooltip, tooltipLocation. Voir https://daisyui.com/components/file-input/."
+        },
+        {
+          "titre": "2.3.6.9 Générer l'atom Switch",
+          "description": "Créer Switch.vue dans atoms/form/. props = tous les props DaisyUI, props d'accessibilité, checked, name, disabled, required, onChange, tooltip, tooltipLocation. Voir https://daisyui.com/components/toggle/."
+        },
+        {
+          "titre": "2.3.6.10 Générer l'atom Toggle",
+          "description": "Créer Toggle.vue dans atoms/form/. props = tous les props DaisyUI, props d'accessibilité, checked, name, disabled, required, onChange, tooltip, tooltipLocation. Voir https://daisyui.com/components/toggle/."
+        },
+        {
+          "titre": "2.3.6.11 Générer l'atom Rating",
+          "description": "Créer Rating.vue dans atoms/form/. props = tous les props DaisyUI, props d'accessibilité, value, max, name, disabled, required, onChange, tooltip, tooltipLocation. Voir https://daisyui.com/components/rating/."
+        },
+        {
+          "titre": "2.3.6.12 Générer l'atom Label",
+          "description": "Créer Label.vue dans atoms/form/. props = tous les props DaisyUI, props d'accessibilité, for, tooltip, tooltipLocation. Voir https://daisyui.com/components/label/."
+        },
+        {
+          "titre": "2.3.6.13 Générer l'atom Badge",
+          "description": "Créer Badge.vue dans atoms/data-display/. props = tous les props DaisyUI, props d'accessibilité, label, color, icon, tooltip, tooltipLocation. Voir https://daisyui.com/components/badge/."
+        },
+        {
+          "titre": "2.3.6.14 Générer l'atom Avatar",
+          "description": "Créer Avatar.vue dans atoms/data-display/. props = tous les props DaisyUI, props d'accessibilité, src, alt, size, shape, tooltip, tooltipLocation. Voir https://daisyui.com/components/avatar/."
+        },
+        {
+          "titre": "2.3.6.15 Générer l'atom Kbd",
+          "description": "Créer Kbd.vue dans atoms/data-display/. props = tous les props DaisyUI, props d'accessibilité, label, tooltip, tooltipLocation. Voir https://daisyui.com/components/kbd/."
+        },
+        {
+          "titre": "2.3.6.16 Générer l'atom Progress",
+          "description": "Créer Progress.vue dans atoms/data-display/. props = tous les props DaisyUI, props d'accessibilité, value, max, tooltip, tooltipLocation. Voir https://daisyui.com/components/progress/."
+        },
+        {
+          "titre": "2.3.6.17 Générer l'atom Divider",
+          "description": "Créer Divider.vue dans atoms/data-display/. props = tous les props DaisyUI, props d'accessibilité, label, orientation, tooltip, tooltipLocation. Voir https://daisyui.com/components/divider/."
+        },
+        {
+          "titre": "2.3.6.18 Générer l'atom Stat",
+          "description": "Créer Stat.vue dans atoms/data-display/. props = tous les props DaisyUI, props d'accessibilité, value, label, icon, tooltip, tooltipLocation. Voir https://daisyui.com/components/stat/."
+        },
+        {
+          "titre": "2.3.6.19 Générer l'atom Tooltip",
+          "description": "Créer Tooltip.vue dans atoms/data-display/. props = tous les props DaisyUI, props d'accessibilité, label (string ou template), position. Voir https://daisyui.com/components/tooltip/."
+        },
+        {
+          "titre": "2.3.6.20 Générer l'atom Skeleton",
+          "description": "Créer Skeleton.vue dans atoms/data-display/. props = tous les props DaisyUI, props d'accessibilité, width, height, shape, tooltip, tooltipLocation. Voir https://daisyui.com/components/skeleton/."
+        },
+        {
+          "titre": "2.3.6.21 Générer l'atom Alert",
+          "description": "Créer Alert.vue dans atoms/data-display/. props = tous les props DaisyUI, props d'accessibilité, label, color, icon, tooltip, tooltipLocation. Voir https://daisyui.com/components/alert/."
+        },
+        {
+          "titre": "2.3.6.22 Générer l'atom Breadcrumbs",
+          "description": "Créer Breadcrumbs.vue dans atoms/navigation/. props = tous les props DaisyUI, props d'accessibilité, items, label, tooltip, tooltipLocation. Voir https://daisyui.com/components/breadcrumbs/."
+        },
+        {
+          "titre": "2.3.6.23 Générer l'atom Pagination",
+          "description": "Créer Pagination.vue dans atoms/navigation/. props = tous les props DaisyUI, props d'accessibilité, value, pageCount, onChange, tooltip, tooltipLocation. Voir https://daisyui.com/components/pagination/."
+        },
+        {
+          "titre": "2.3.6.24 Générer l'atom Steps",
+          "description": "Créer Steps.vue dans atoms/navigation/. props = tous les props DaisyUI, props d'accessibilité, steps, current, label, tooltip, tooltipLocation. Voir https://daisyui.com/components/steps/."
+        },
+        {
+          "titre": "2.3.6.25 Générer l'atom Tab",
+          "description": "Créer Tab.vue dans atoms/navigation/. props = tous les props DaisyUI, props d'accessibilité, label, value, selected, icon, tooltip, tooltipLocation. Voir https://daisyui.com/components/tab/."
+        },
+        {
+          "titre": "2.3.6.26 Générer l'atom Drawer",
+          "description": "Créer Drawer.vue dans atoms/layout/. props = tous les props DaisyUI, props d'accessibilité, open, side, onClose, tooltip, tooltipLocation. Voir https://daisyui.com/components/drawer/."
+        },
+        {
+          "titre": "2.3.6.27 Générer l'atom Join",
+          "description": "Créer Join.vue dans atoms/layout/. props = tous les props DaisyUI, props d'accessibilité, items, orientation, tooltip, tooltipLocation. Voir https://daisyui.com/components/join/."
+        },
+        {
+          "titre": "2.3.6.28 Générer l'atom Mask",
+          "description": "Créer Mask.vue dans atoms/layout/. props = tous les props DaisyUI, props d'accessibilité, shape, src, alt, tooltip, tooltipLocation. Voir https://daisyui.com/components/mask/."
+        },
+        {
+          "titre": "2.3.6.29 Générer l'atom Stack",
+          "description": "Créer Stack.vue dans atoms/layout/. props = tous les props DaisyUI, props d'accessibilité, items, tooltip, tooltipLocation. Voir https://daisyui.com/components/stack/."
+        },
+        {
+          "titre": "2.3.6.30 Générer l'atom Indicator",
+          "description": "Créer Indicator.vue dans atoms/layout/. props = tous les props DaisyUI, props d'accessibilité, value, label, color, tooltip, tooltipLocation. Voir https://daisyui.com/components/indicator/."
+        },
+        {
+          "titre": "2.3.6.31 Générer l'atom Loading",
+          "description": "Créer Loading.vue dans atoms/feedback/. props = tous les props DaisyUI, props d'accessibilité, label, color, tooltip, tooltipLocation. Voir https://daisyui.com/components/loading/."
+        },
+        {
+          "titre": "2.3.6.32 Générer l'atom Toast",
+          "description": "Créer Toast.vue dans atoms/feedback/. props = tous les props DaisyUI, props d'accessibilité, label, icon, color, tooltip, tooltipLocation. Voir https://daisyui.com/components/toast/."
+        },
+        {
+          "titre": "2.3.6.33 Générer l'atom Collapse",
+          "description": "Créer Collapse.vue dans atoms/feedback/. props = tous les props DaisyUI, props d'accessibilité, open, label, onToggle, tooltip, tooltipLocation. Voir https://daisyui.com/components/collapse/."
+        },
+        {
+          "titre": "2.3.6.34 Générer l'atom Paragraphe",
+          "description": "Créer Paragraphe.vue dans atoms/typography/. props = tous les props DaisyUI, props d'accessibilité, text, tooltip, tooltipLocation. Voir https://daisyui.com/components/typography/."
+        },
+        {
+          "titre": "2.3.6.35 Générer l'atom List",
+          "description": "Créer List.vue dans atoms/typography/. props = tous les props DaisyUI, props d'accessibilité, items, ordered, tooltip, tooltipLocation. Voir https://daisyui.com/components/typography/."
+        },
+        {
+          "titre": "2.3.6.36 Générer l'atom Title",
+          "description": "Créer Title.vue dans atoms/typography/. props = tous les props DaisyUI, props d'accessibilité, text, level, tooltip, tooltipLocation. Voir https://daisyui.com/components/typography/."
+        },
+        {
+          "titre": "2.3.6.37 Générer l'atom Subtitle",
+          "description": "Créer Subtitle.vue dans atoms/typography/. props = tous les props DaisyUI, props d'accessibilité, text, tooltip, tooltipLocation. Voir https://daisyui.com/components/typography/."
+        },
+        {
+          "titre": "2.3.6.38 Générer l'atom Caption",
+          "description": "Créer Caption.vue dans atoms/typography/. props = tous les props DaisyUI, props d'accessibilité, text, tooltip, tooltipLocation. Voir https://daisyui.com/components/typography/."
+        },
+        {
+          "titre": "2.3.6.39 Générer l'atom Code",
+          "description": "Créer Code.vue dans atoms/typography/. props = tous les props DaisyUI, props d'accessibilité, code, tooltip, tooltipLocation. Voir https://daisyui.com/components/typography/."
+        },
+        {
+          "titre": "2.3.6.40 Générer l'atom FileIcon",
+          "description": "Créer FileIcon.vue dans atoms/file/. props = tous les props DaisyUI, props d'accessibilité, src, alt, type, size, tooltip, tooltipLocation. Voir https://daisyui.com/components/file-input/."
+        },
+        {
+          "titre": "2.3.6.41 Générer l'atom FilePreview",
+          "description": "Créer FilePreview.vue dans atoms/file/. props = tous les props DaisyUI, props d'accessibilité, src, alt, type, tooltip, tooltipLocation. Voir https://daisyui.com/components/file-input/."
+        },
+        {
+          "titre": "2.3.6.42 Générer l'atom FileDownload",
+          "description": "Créer FileDownload.vue dans atoms/file/. props = tous les props DaisyUI, props d'accessibilité, href, filename, tooltip, tooltipLocation. Voir https://daisyui.com/components/file-input/."
+        },
+        {
+          "titre": "2.3.6.43 Vérification des fichiers atoms",
+          "description": "Vérifier la présence et la bonne génération de tous les fichiers atoms."
+        },
+        {
+          "titre": "2.3.6.44 Log de la génération atoms",
+          "description": "Consigner dans logs.txt la génération de tous les fichiers atoms, avec date et état."
+        }
+      ]
+    },
+    {
+      "titre": "2.3.7 Générer les molecules",
+      "sous_taches": [
+        {
+          "titre": "2.3.7.1 Générer la molecule InputGroup",
+          "description": "Créer InputGroup.vue dans molecules/form/. Props = composition des atoms Input, Label, etc. Voir DESIGN_GUIDE.md."
+        },
+        {
+          "titre": "2.3.7.2 Générer la molecule FormField",
+          "description": "Créer FormField.vue dans molecules/form/. Props = composition des atoms Input, Label, etc. Voir DESIGN_GUIDE.md."
+        },
+        {
+          "titre": "2.3.7.3 Générer la molecule FileInputGroup",
+          "description": "Créer FileInputGroup.vue dans molecules/form/. Props = composition des atoms FileInput, Label, etc. Voir DESIGN_GUIDE.md."
+        },
+        {
+          "titre": "2.3.7.4 Générer la molecule SearchInput",
+          "description": "Créer SearchInput.vue dans molecules/form/. Props = composition des atoms Input, Button, etc. Voir DESIGN_GUIDE.md."
+        },
+        {
+          "titre": "2.3.7.5 Générer la molecule EntityPreview",
+          "description": "Créer EntityPreview.vue dans molecules/data-display/. Props = composition des atoms Avatar, Badge, etc. Voir DESIGN_GUIDE.md."
+        },
+        {
+          "titre": "2.3.7.6 Générer la molecule StatDisplay",
+          "description": "Créer StatDisplay.vue dans molecules/data-display/. Props = composition des atoms Stat, Icon, etc. Voir https://daisyui.com/components/stat/."
+        },
+        {
+          "titre": "2.3.7.7 Générer la molecule BadgeList",
+          "description": "Créer BadgeList.vue dans molecules/data-display/. Props = composition des atoms Badge. Voir https://daisyui.com/components/badge/."
+        },
+        {
+          "titre": "2.3.7.8 Générer la molecule TableRowActions",
+          "description": "Créer TableRowActions.vue dans molecules/data-display/. Props = composition des atoms Button, IconButton, etc. Voir DESIGN_GUIDE.md."
+        },
+        {
+          "titre": "2.3.7.9 Générer la molecule TabsNav",
+          "description": "Créer TabsNav.vue dans molecules/navigation/. Props = composition des atoms Tab. Voir https://daisyui.com/components/tab/."
+        },
+        {
+          "titre": "2.3.7.10 Générer la molecule PaginationControls",
+          "description": "Créer PaginationControls.vue dans molecules/navigation/. Props = composition des atoms Pagination, Button. Voir https://daisyui.com/components/pagination/."
+        },
+        {
+          "titre": "2.3.7.11 Générer la molecule FilterGroup",
+          "description": "Créer FilterGroup.vue dans molecules/navigation/. Props = composition des atoms Select, Checkbox, etc. Voir DESIGN_GUIDE.md."
+        },
+        {
+          "titre": "2.3.7.12 Générer la molecule BreadcrumbsGroup",
+          "description": "Créer BreadcrumbsGroup.vue dans molecules/navigation/. Props = composition des atoms Breadcrumbs. Voir https://daisyui.com/components/breadcrumbs/."
+        },
+        {
+          "titre": "2.3.7.13 Générer la molecule SectionTitle",
+          "description": "Créer SectionTitle.vue dans molecules/layout/. Props = composition des atoms Title, Icon, etc. Voir DESIGN_GUIDE.md."
+        },
+        {
+          "titre": "2.3.7.14 Générer la molecule SectionActions",
+          "description": "Créer SectionActions.vue dans molecules/layout/. Props = composition des atoms Button, etc. Voir DESIGN_GUIDE.md."
+        },
+        {
+          "titre": "2.3.7.15 Générer la molecule DrawerGroup",
+          "description": "Créer DrawerGroup.vue dans molecules/layout/. Props = composition des atoms Drawer, Button, etc. Voir https://daisyui.com/components/drawer/."
+        },
+        {
+          "titre": "2.3.7.16 Générer la molecule Notification",
+          "description": "Créer Notification.vue dans molecules/feedback/. Props = composition des atoms Alert, Toast, etc. Voir https://daisyui.com/components/alert/."
+        },
+        {
+          "titre": "2.3.7.17 Générer la molecule AlertGroup",
+          "description": "Créer AlertGroup.vue dans molecules/feedback/. Props = composition des atoms Alert. Voir https://daisyui.com/components/alert/."
+        },
+        {
+          "titre": "2.3.7.18 Générer la molecule ToastGroup",
+          "description": "Créer ToastGroup.vue dans molecules/feedback/. Props = composition des atoms Toast. Voir https://daisyui.com/components/toast/."
+        },
+        {
+          "titre": "2.3.7.19 Générer la molecule ThemeSwitcher",
+          "description": "Créer ThemeSwitcher.vue dans molecules/feedback/. Props = composition d'atoms Toggle, etc. Voir https://daisyui.com/components/toggle/."
+        },
+        {
+          "titre": "2.3.7.20 Générer la molecule FileUploader",
+          "description": "Créer FileUploader.vue dans molecules/form/. Props = composition d'atoms FileInput, Progress, etc. Voir https://daisyui.com/components/file-input/."
+        },
+        {
+          "titre": "2.3.7.21 Générer la molecule Tabs",
+          "description": "Créer Tabs.vue dans molecules/navigation/. Props = composition d'atoms Tab. Voir https://daisyui.com/components/tab/."
+        },
+        {
+          "titre": "2.3.7.22 Générer l'organism SearchBar",
+          "description": "Créer SearchBar.vue dans molecules/navigation/. Props = composition d'atoms Input, Button, SearchInput, Card pour les filtres etc. Voir DESIGN_GUIDE.md."
+        },
+        {
+          "titre": "2.3.7.23 Générer la molecule LanguageSwitcher",
+          "description": "Créer LanguageSwitcher.vue dans molecules/navigation/. Props = composition d'atoms Select, etc. Voir https://daisyui.com/components/select/."
+        },
+        {
+          "titre": "2.3.7.24 Générer la molecule Breadcrumbs",
+          "description": "Créer Breadcrumbs.vue dans molecules/navigation/. Props = composition d'atoms Breadcrumbs. Voir https://daisyui.com/components/breadcrumbs/."
+        },
+        {
+          "titre": "2.3.7.25 Vérification des fichiers molecules",
+          "description": "Vérifier la présence et la bonne génération de tous les fichiers molecules."
+        },
+        {
+          "titre": "2.3.7.26 Log de la génération molecules",
+          "description": "Consigner dans logs.txt la génération de tous les fichiers molecules, avec date et état."
+        }
+      ]
+    },
+    {
+      "titre": "2.3.7.27 Générer les molecules principaux",
+      "description": "Pour chaque molecule listée dans le DESIGN_GUIDE.md (InputGroup, SearchInput, FormField, EntityPreview, SectionTitle, SectionActions, FileInput, AvatarWithName, BadgeList, TableRowActions, TabsNav, PaginationControls, FilterGroup, StatDisplay) : créer le fichier .vue, générer le squelette du composant, ajouter un docblock en français."
+    },
+    {
+      "titre": "2.3.7.28 Vérification et log des molecules",
+      "description": "Vérifier la présence de chaque molecule. Consigner dans logs.txt la génération des molecules."
+    },
+    {
+      "titre": "2.3.8 Générer les organisms",
+      "sous_taches": [
+        {
+          "titre": "2.3.8.1 Générer l'organism Header",
+          "description": "Créer Header.vue dans organisms/layout/. Props = composition d'atoms et molecules (Avatar, UserMenu, SearchBar, etc.). Voir DESIGN_GUIDE.md."
+        },
+        {
+          "titre": "2.3.8.2 Générer l'organism Aside",
+          "description": "Créer Aside.vue dans organisms/layout/. Props = composition d'atoms et molecules (Sidebar, Navigation, etc.). Voir DESIGN_GUIDE.md."
+        },
+        {
+          "titre": "2.3.8.3 Générer l'organism Sidebar",
+          "description": "Créer Sidebar.vue dans organisms/layout/. Props = composition d'atoms et molecules (Menu, Navigation, etc.). Voir https://daisyui.com/components/menu/."
+        },
+        {
+          "titre": "2.3.8.4 Générer l'organism Footer",
+          "description": "Créer Footer.vue dans organisms/layout/. Props = composition d'atoms Footer, etc. Voir https://daisyui.com/components/footer/."
+        },
+        {
+          "titre": "2.3.8.5 Générer l'organism EntityTable",
+          "description": "Créer EntityTable.vue dans organisms/data-display/. Props = composition d'atoms Table, Pagination, etc. Voir https://daisyui.com/components/table/."
+        },
+        {
+          "titre": "2.3.8.6 Générer l'organism FormulaireDynamique",
+          "description": "Créer FormulaireDynamique.vue dans organisms/data-display/. Props = composition d'atoms et molecules (Input, Select, etc.). Voir DESIGN_GUIDE.md."
+        },
+        {
+          "titre": "2.3.8.7 Générer l'organism PageSection",
+          "description": "Créer PageSection.vue dans organisms/layout/. Props = composition d'atoms et molecules (SectionTitle, SectionActions, etc.). Voir DESIGN_GUIDE.md."
+        },
+        {
+          "titre": "2.3.8.8 Générer l'organism Modal",
+          "description": "Créer Modal.vue dans organisms/layout/. Props = composition divers. Voir https://daisyui.com/components/modal/."
+        },
+        {
+          "titre": "2.3.8.9 Générer l'organism NotificationList",
+          "description": "Créer NotificationList.vue dans organisms/data-display/. Props = composition d'atoms Notification, Alert, etc. Voir https://daisyui.com/components/alert/."
+        },
+        {
+          "titre": "2.3.8.10 Générer l'organism UserMenu",
+          "description": "Créer UserMenu.vue dans organisms/navigation/. Props = composition d'atoms Menu, Avatar, etc. Voir https://daisyui.com/components/menu/."
+        },
+        {
+          "titre": "2.3.8.11 Générer l'organism EntityDetails",
+          "description": "Créer EntityDetails.vue dans organisms/data-display/. Props = composition d'atoms Card, Tabs, etc. Voir DESIGN_GUIDE.md."
+        },
+        {
+          "titre": "2.3.8.12 Générer l'organism WYSIWYGEditor",
+          "description": "Créer WYSIWYGEditor.vue dans organisms/data-display/. Props = intégration Tiptap, voir DESIGN_GUIDE.md."
+        },
+        {
+          "titre": "2.3.8.13 Générer l'organism Pagination",
+          "description": "Créer Pagination.vue dans organisms/navigation/. Props = composition d'atoms Pagination. Voir https://daisyui.com/components/pagination/."
+        },
+        {
+          "titre": "2.3.8.14 Générer l'organism EntityFilter",
+          "description": "Créer EntityFilter.vue dans organisms/navigation/. Props = composition d'atoms FilterGroup, Select, etc. Voir DESIGN_GUIDE.md."
+        },
+        {
+          "titre": "2.3.8.15 Vérification des fichiers organisms",
+          "description": "Vérifier la présence et la bonne génération de tous les fichiers organisms."
+        },
+        {
+          "titre": "2.3.8.16 Log de la génération organisms",
+          "description": "Consigner dans logs.txt la génération de tous les fichiers organisms, avec date et état."
+        }
+      ]
+    },
+    {
+      "titre": "2.3.8.17 Vérification et log des organisms",
+      "description": "Vérifier la présence de chaque organism. Consigner dans logs.txt la génération des organisms."
+    },
+    {
+      "titre": "2.3.9 Générer les templates",
+      "sous_taches": [
+        {
+          "titre": "2.3.9.1 Générer le template AppLayout",
+          "description": "Créer AppLayout.vue dans templates/layouts/. Assemble les organisms Header, Sidebar, Footer, etc. Structure conforme à DESIGN_GUIDE.md."
+        },
+        {
+          "titre": "2.3.9.2 Générer le template AuthLayout",
+          "description": "Créer AuthLayout.vue dans templates/layouts/. Assemble les organisms Header, Footer, etc. Structure conforme à DESIGN_GUIDE.md."
+        },
+        {
+          "titre": "2.3.9.3 Générer le template ErrorLayout",
+          "description": "Créer ErrorLayout.vue dans templates/layouts/. Assemble les organisms Header, Footer, etc. Structure conforme à DESIGN_GUIDE.md."
+        },
+        {
+          "titre": "2.3.9.4 Vérification des fichiers templates",
+          "description": "Vérifier la présence et la bonne génération de tous les fichiers templates."
+        },
+        {
+          "titre": "2.3.9.5 Log de la génération templates",
+          "description": "Consigner dans logs.txt la génération de tous les fichiers templates, avec date et état."
+        }
+      ]
+    },
+    {
+      "titre": "2.3.10 Générer les pages",
+      "sous_taches": [
+        {
+          "titre": "2.3.10.1 Générer la page Accueil",
+          "description": "Créer Home.vue dans pages/home/. Utilise AppLayout. Structure conforme à DESIGN_GUIDE.md."
+        },
+        {
+          "titre": "2.3.10.2 Générer la page Login",
+          "description": "Créer Login.vue dans pages/auth/. Utilise AuthLayout. Structure conforme à DESIGN_GUIDE.md."
+        },
+        {
+          "titre": "2.3.10.3 Générer la page Register",
+          "description": "Créer Register.vue dans pages/auth/. Utilise AuthLayout. Structure conforme à DESIGN_GUIDE.md."
+        },
+        {
+          "titre": "2.3.10.4 Générer la page Dashboard",
+          "description": "Créer Dashboard.vue dans pages/dashboard/. Utilise AppLayout. Structure conforme à DESIGN_GUIDE.md."
+        },
+        {
+          "titre": "2.3.10.5 Générer la page Profil",
+          "description": "Créer Profile.vue dans pages/profile/. Utilise AppLayout. Structure conforme à DESIGN_GUIDE.md."
+        },
+        {
+          "titre": "2.3.10.6 Générer la page Paramètres",
+          "description": "Créer Settings.vue dans pages/profile/. Utilise AppLayout. Structure conforme à DESIGN_GUIDE.md."
+        },
+        {
+          "titre": "2.3.10.7 Générer la page Erreur 404",
+          "description": "Créer Error404.vue dans pages/error/. Utilise ErrorLayout. Structure conforme à DESIGN_GUIDE.md."
+        },
+        {
+          "titre": "2.3.10.8 Générer la page Erreur 500",
+          "description": "Créer Error500.vue dans pages/error/. Utilise ErrorLayout. Structure conforme à DESIGN_GUIDE.md."
+        },
+        {
+          "titre": "2.3.10.9 Vérification des fichiers pages",
+          "description": "Vérifier la présence et la bonne génération de tous les fichiers pages."
+        },
+        {
+          "titre": "2.3.10.10 Log de la génération pages",
+          "description": "Consigner dans logs.txt la génération de tous les fichiers pages, avec date et état."
+        }
+      ]
+    },
+    {
+      "titre": "2.3.11 Générer les sections dynamiques",
+      "sous_taches": [
+        {
+          "titre": "2.3.11.1 Générer la section TextSection",
+          "description": "Créer TextSection.vue dans pages/section/. Affiche du texte riche. Si l'utilisateur a les droits, permet l'édition via Tiptap. Se conforme à la documentation des sections dynamiques (CONTENT_OVERVIEW.md)."
+        },
+        {
+          "titre": "2.3.11.2 Générer la section FileSection",
+          "description": "Créer FileSection.vue dans pages/section/. Affiche un PDF ou une image. Si l'utilisateur a les droits, permet l'upload/modification du fichier. Se conforme à la documentation des sections dynamiques (CONTENT_OVERVIEW.md)."
+        },
+        {
+          "titre": "2.3.11.3 Générer la section EntityTableSection",
+          "description": "Créer EntityTableSection.vue dans pages/section/. Affiche une table d'entités dynamiquement. Se conforme à la documentation des sections dynamiques (CONTENT_OVERVIEW.md)."
+        },
+        {
+          "titre": "2.3.11.4 Vérification des fichiers sections",
+          "description": "Vérifier la présence et la bonne génération de tous les fichiers sections dynamiques."
+        },
+        {
+          "titre": "2.3.11.5 Log de la génération sections",
+          "description": "Consigner dans logs.txt la génération de tous les fichiers sections, avec date et état."
+        }
+      ]
+    },
+    {
+      "titre": "2.3.12 Vérification et log des layouts globaux",
+      "description": "Vérifier la présence des layouts globaux. Consigner dans logs.txt la génération des layouts."
+    },
+    {
+      "titre": "2.3.13 Vérification finale de la sous-partie",
+      "description": "Vérifier que tous les dossiers, fichiers, composants et layouts attendus sont présents et correctement nommés. Vérifier la conformité à l'Atomic Design et aux conventions du projet. Consigner dans logs.txt un résumé daté de toutes les actions réalisées dans cette sous-partie, avec l'état de chaque tâche."
+    }
+  ]
+}

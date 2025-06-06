@@ -5,7 +5,6 @@ use App\Http\Controllers\Auth\ConfirmablePasswordController;
 use App\Http\Controllers\Auth\EmailVerificationNotificationController;
 use App\Http\Controllers\Auth\EmailVerificationPromptController;
 use App\Http\Controllers\Auth\NewPasswordController;
-use App\Http\Controllers\Auth\PasswordController;
 use App\Http\Controllers\Auth\PasswordResetLinkController;
 use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\Auth\VerifyEmailController;
@@ -59,50 +58,6 @@ Route::middleware('auth')->group(function () {
 
     Route::post('confirm-password', [ConfirmablePasswordController::class, 'store']);
 
-    Route::put('password', [PasswordController::class, 'update'])->name('password.update');
-
     Route::post('logout', [AuthenticatedSessionController::class, 'destroy'])
         ->name('logout');
-});
-
-// Users
-Route::prefix('user')->name("user.")->middleware('auth')->group(function () use ($uniqidRegex) {
-    // Routes accessibles à tous les utilisateurs authentifiés
-    Route::get('/', [UserController::class, 'dashboard'])->name('dashboard');
-    Route::get('/edit', [UserController::class, 'edit'])->name('edit');
-    Route::patch('/', [UserController::class, 'update'])->name('update');
-    Route::post('/avatar', [UserController::class, 'updateAvatar'])->name('updateAvatar');
-    Route::delete('/avatar', [UserController::class, 'deleteAvatar'])->name('deleteAvatar');
-    Route::delete('/', [UserController::class, 'delete'])->name('delete');
-
-    // Routes accessibles uniquement aux admins et super_admins
-    Route::middleware('role:admin')->group(function () use ($uniqidRegex) {
-        Route::get('/create', [UserController::class, 'create'])->name('create');
-        Route::post('/', [UserController::class, 'store'])->name('store');
-        Route::get('/{user:uniqid}/edit', [UserController::class, 'edit'])
-        ->name('admin.edit')
-        ->where('user', $uniqidRegex);
-        Route::patch('/{user:uniqid}', [UserController::class, 'update'])
-        ->name('admin.update')
-        ->where('user', $uniqidRegex);
-        Route::post('/{user:uniqid}/avatar', [UserController::class, 'updateAvatar'])
-            ->name('admin.updateAvatar')
-            ->where('user', $uniqidRegex);
-        Route::delete('/{user:uniqid}/avatar', [UserController::class, 'deleteAvatar'])
-            ->name('admin.deleteAvatar')
-            ->where('user', $uniqidRegex);
-        Route::post('/{user:uniqid}', [UserController::class, 'restore'])
-        ->name('restore')
-        ->where('user', $uniqidRegex);
-        Route::patch('/{user:uniqid}/role', [UserController::class, 'updateRole'])
-            ->name('admin.updateRole')
-            ->where('user', $uniqidRegex);
-    });
-
-    // Routes accessibles uniquement aux super_admins
-    Route::middleware('role:super_admin')->group(function () use ($uniqidRegex) {
-        Route::delete('/forcedDelete/{user:uniqid}', [UserController::class, 'forcedDelete'])
-        ->name('forcedDelete')
-        ->where('user', $uniqidRegex);
-    });
 });

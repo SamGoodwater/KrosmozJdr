@@ -1,5 +1,5 @@
 <script setup>
-import { useSidebar } from "@/Composables/useSidebar";
+import { useSidebar } from "@/Composables/layout/useSidebar";
 
 // Composants
 import Header from "@/Pages/Layouts/Header.vue";

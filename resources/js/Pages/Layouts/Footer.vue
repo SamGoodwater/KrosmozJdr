@@ -1,7 +1,7 @@
 <script setup>
 import { ref } from "vue";
 import Icon from "@/Pages/Atoms/images/Icon.vue";
-import Route from "@/Pages/Atoms/text/Route.vue";
+import Route from "@/Pages/Atoms/action/Route.vue";
 import BaseTooltip from "@/Pages/Atoms/feedback/BaseTooltip.vue";
 
 const convertStability = {

@@ -2,134 +2,166 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\PageFilterRequest;
 use App\Models\Page;
-use Illuminate\Http\RedirectResponse;
-use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use App\Http\Requests\StorePageRequest;
+use App\Http\Requests\UpdatePageRequest;
+use App\Services\NotificationService;
 use Illuminate\Support\Facades\Auth;
-use App\Services\DataService;
-use App\Events\NotificationSuperAdminEvent;
-use Inertia\Inertia;
 use App\Http\Resources\PageResource;
+use Inertia\Inertia;
 
+/**
+ * Contrôleur de gestion des pages dynamiques (CRUD, associations, notifications).
+ *
+ * Gère la création, l'affichage, la modification, la suppression, la restauration et la gestion des utilisateurs associés aux pages.
+ * Toutes les méthodes respectent les policies et envoient des notifications métier.
+ */
 class PageController extends Controller
 {
-    use AuthorizesRequests;
-
-    public function index(PageFilterRequest $request): \Inertia\Response
+    /**
+     * Affiche la liste paginée des pages.
+     * @return \Inertia\Response
+     */
+    public function index()
     {
-        // Pas besoin d'autorisation pour la liste
-        $paginationMaxDisplay = max(1, min(500, (int) $request->input('paginationMaxDisplay', 25)));
-
-        $pages = Page::where('is_public', true)
-            ->with('sections')
-            ->orderBy('order_num')
-            ->paginate($paginationMaxDisplay);
-
-        return Inertia::render('Pages/Index', [
+        $this->authorize('viewAny', \App\Models\Page::class);
+        $pages = \App\Models\Page::with(['sections', 'users', 'parent', 'children', 'campaigns', 'scenarios', 'createdBy'])->paginate(20);
+        return Inertia::render('Organisms/Page/Index', [
             'pages' => PageResource::collection($pages),
-            'canCreate' => Auth::check() && Auth::user()->can('create', Page::class)
         ]);
     }
 
-    public function show(Page $page): \Inertia\Response
+    /**
+     * Show the form for creating a new resource.
+     */
+    public function create()
     {
-        // Vérifier si la page est publique ou si l'utilisateur a le droit de la voir
-        if (!$page->is_public && !Auth::user()?->can('view', $page)) {
-            abort(403);
-        }
-
-        return Inertia::render('Pages/Show', [
-            'page' => new PageResource($page->load('sections')),
-            'canEdit' => Auth::check() && Auth::user()->can('update', $page),
-            'canDelete' => Auth::check() && Auth::user()->can('delete', $page)
+        $this->authorize('create', \App\Models\Page::class);
+        return Inertia::render('Organisms/Page/Create', [
+            // Ajoute ici les données nécessaires au formulaire (ex: états, parents possibles, etc.)
         ]);
     }
 
-    public function create(): \Inertia\Response
+    /**
+     * Store a newly created resource in storage.
+     */
+    public function store(\App\Http\Requests\StorePageRequest $request)
     {
-        $this->authorize('create', Page::class);
+        $this->authorize('create', \App\Models\Page::class);
+        $data = $request->validated();
+        $data['created_by'] = $request->user()->id;
+        $page = \App\Models\Page::create($data);
+        $page->load(['sections', 'users', 'parent', 'children', 'campaigns', 'scenarios', 'createdBy']);
+        \App\Services\NotificationService::notifyEntityCreated($page, $request->user());
+        return redirect()->route('pages.show', $page)->with('success', 'Page créée avec succès.');
+    }
 
-        $page = new Page();
-        return Inertia::render('Pages/Create', [
-            'page' => $page,
-            'pages' => Page::orderBy('order_num')->pluck("name", "is_editable", "is_public", "is_visible", "is_dropdown", "uniqid",)
+    /**
+     * Display the specified resource.
+     */
+    public function show(\App\Models\Page $page)
+    {
+        $this->authorize('view', $page);
+        $page->load(['sections', 'users', 'parent', 'children', 'campaigns', 'scenarios', 'createdBy']);
+        return Inertia::render('Organisms/Page/Show', [
+            'page' => new PageResource($page),
         ]);
     }
 
-    public function store(PageFilterRequest $request): RedirectResponse
-    {
-        $this->authorize('create', Page::class);
-
-        $data = DataService::extractData($request, new Page());
-        if ($data === []) {
-            return redirect()->back()->withInput();
-        }
-        $data['created_by'] = Auth::user()?->id ?? "-1";
-        $page = Page::create($data);
-        $page->sections()?->sync($request->validated('sections'));
-
-        event(new NotificationSuperAdminEvent('page', 'create',  $page));
-
-        return redirect()->route('pages.show', ['page' => $page])->with('success', 'La page a bien été créée');
-    }
-
-    public function edit(Page $page): \Inertia\Response
+    /**
+     * Show the form for editing the specified resource.
+     */
+    public function edit(\App\Models\Page $page)
     {
         $this->authorize('update', $page);
-
-        return Inertia::render('Pages/Edit', [
-            'page' => $page,
-            'pages' => Page::orderBy('order_num')->pluck("name", "is_editable", "is_public", "is_visible", "is_dropdown", "uniqid",)
+        $page->load(['sections', 'users', 'parent', 'children', 'campaigns', 'scenarios', 'createdBy']);
+        return Inertia::render('Organisms/Page/Edit', [
+            'page' => new PageResource($page),
+            // Ajoute ici les données nécessaires au formulaire (ex: états, parents possibles, etc.)
         ]);
     }
 
-    public function update(Page $page, PageFilterRequest $request): RedirectResponse
+    /**
+     * Update the specified resource in storage.
+     */
+    public function update(\App\Http\Requests\UpdatePageRequest $request, \App\Models\Page $page)
     {
         $this->authorize('update', $page);
-        $old_page = clone $page;
-
-        $data = DataService::extractData($request, $page);
-        if ($data === []) {
-            return redirect()->back()->withInput();
-        }
+        $old = clone $page;
+        $data = $request->validated();
         $page->update($data);
-        $page->sections()?->sync($request->validated('sections'));
-
-        event(new NotificationSuperAdminEvent('page', "update", $page, $old_page));
-
-        return redirect()->route('pages.show', ['page' => $page])->with('success', 'La page a bien été modifiée');
+        $page->load(['sections', 'users', 'parent', 'children', 'campaigns', 'scenarios', 'createdBy']);
+        \App\Services\NotificationService::notifyEntityModified($page, $request->user(), $old);
+        return redirect()->route('pages.show', $page)->with('success', 'Page mise à jour.');
     }
 
-    public function delete(Page $page): RedirectResponse
+    /**
+     * Remove the specified resource from storage.
+     */
+    public function destroy(\App\Models\Page $page)
     {
         $this->authorize('delete', $page);
-        event(new NotificationSuperAdminEvent('page', "delete", $page));
+        $user = request()->user();
         $page->delete();
-
-        return redirect()->route('pages.index')->with('success', 'La page a bien été supprimée');
+        \App\Services\NotificationService::notifyEntityDeleted($page, $user);
+        return redirect()->route('pages.index')->with('success', 'Page supprimée.');
     }
 
-    public function forcedDelete(Page $page): RedirectResponse
+    /**
+     * Associe un utilisateur à la page.
+     */
+    public function attachUser(\Illuminate\Http\Request $request, Page $page)
     {
-        $this->authorize('forceDelete', $page);
-
-        $page->sections()->detach();
-        event(new NotificationSuperAdminEvent('page', "forced_delete", $page));
-        $page->forceDelete();
-
-        return redirect()->route('pages.index')->with('success', 'La page a bien été supprimée définitivement');
+        $this->authorize('update', $page);
+        $request->validate(['user_id' => 'required|exists:users,id']);
+        $page->users()->attach($request->user_id);
+        return response()->json(['success' => true]);
     }
 
-    public function restore(Page $page): RedirectResponse
+    /**
+     * Dissocie un utilisateur de la page.
+     */
+    public function detachUser(\Illuminate\Http\Request $request, Page $page)
+    {
+        $this->authorize('update', $page);
+        $request->validate(['user_id' => 'required|exists:users,id']);
+        $page->users()->detach($request->user_id);
+        return response()->json(['success' => true]);
+    }
+
+    /**
+     * Synchronise la liste des utilisateurs associés à la page.
+     */
+    public function syncUsers(\Illuminate\Http\Request $request, Page $page)
+    {
+        $this->authorize('update', $page);
+        $request->validate(['user_ids' => 'array', 'user_ids.*' => 'exists:users,id']);
+        $page->users()->sync($request->user_ids);
+        return response()->json(['success' => true]);
+    }
+
+    /**
+     * Liste les utilisateurs associés à la page.
+     */
+    public function users(Page $page)
+    {
+        $this->authorize('view', $page);
+        return response()->json($page->users);
+    }
+
+    public function restore(\App\Models\Page $page)
     {
         $this->authorize('restore', $page);
-
-        if (!$page->trashed()) {
-            return redirect()->route('pages.index')->with('error', 'La page n\'est pas dans la corbeille');
-        }
         $page->restore();
+        \App\Services\NotificationService::notifyEntityRestored($page, request()->user());
+        return redirect()->route('pages.index')->with('success', 'Page restaurée.');
+    }
 
-        return redirect()->route('pages.index')->with('success', 'La page a bien été restaurée');
+    public function forceDelete(\App\Models\Page $page)
+    {
+        $this->authorize('forceDelete', $page);
+        $page->forceDelete();
+        \App\Services\NotificationService::notifyEntityForceDeleted($page, request()->user());
+        return redirect()->route('pages.index')->with('success', 'Page supprimée définitivement.');
     }
 }

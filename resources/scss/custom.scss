@@ -3,9 +3,8 @@
 }
 
 @layer components {
-    @import "src/display";
     @import "src/font";
     @import "src/layout";
-    @import "src/background";
+    @import "src/backdrop";
     @import "src/boxshadow";
 }

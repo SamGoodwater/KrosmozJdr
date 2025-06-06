@@ -1,0 +1,37 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+# Guide Cursor : Atomic Design
+
+## Définition
+L'Atomic Design est une méthodologie de conception d'interface modulaire, créée par Brad Frost, qui vise à organiser les composants UI en cinq niveaux hiérarchiques : atomes, molécules, organismes, templates et pages. Cette approche favorise la cohérence, la réutilisabilité et l'évolutivité des interfaces.
+
+Source : [usabilis.com/atomic-design](mdc:https:/www.usabilis.com/atomic-design)
+
+## Les 5 niveaux de l'Atomic Design
+
+1. **Atomes** : Éléments de base de l'interface (boutons, champs, labels, icônes, etc.). Ils incarnent l'identité visuelle et sont utilisés seuls ou combinés.
+2. **Molécules** : Groupes d'atomes formant une unité fonctionnelle simple (ex : champ de recherche = label + input + bouton).
+3. **Organismes** : Composants complexes résultant de l'assemblage de molécules et/ou d'atomes (ex : header, liste de produits).
+4. **Templates** : Structures de page définissant la disposition des organismes, sans contenu réel (squelette de la page).
+5. **Pages** : Instances finales des templates, intégrant le contenu réel (textes, images, données dynamiques).
+
+## Avantages
+- Favorise la cohérence et la maintenabilité des interfaces.
+- Permet la réutilisation des composants à tous les niveaux.
+- Facilite la collaboration entre designers et développeurs.
+- S'intègre parfaitement dans une démarche de Design System.
+
+## Bonnes pratiques
+- Concevoir chaque composant comme un bloc indépendant et réutilisable.
+- Documenter chaque niveau (atomes, molécules, etc.) dans le Design System du projet.
+- Appliquer l'Atomic Design quel que soit le framework (Vue, React, Laravel Blade, etc.).
+
+## Ressources complémentaires
+- [Présentation originale de Brad Frost](mdc:http:/bradfrost.com/blog/post/atomic-web-design)
+- [Pattern Lab](mdc:https:/patternlab.io)
+
+> Pour plus de détails, voir l'article de référence : [usabilis.com/atomic-design](mdc:https:/www.usabilis.com/atomic-design)
+

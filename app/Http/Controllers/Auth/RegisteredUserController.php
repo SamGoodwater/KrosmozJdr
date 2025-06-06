@@ -16,11 +16,11 @@ use Inertia\Response;
 class RegisteredUserController extends Controller
 {
     /**
-     * Display the registration view.
+     * Show the registration page.
      */
     public function create(): Response
     {
-        return Inertia::render('Organisms/Auth/Register');
+        return Inertia::render('auth/Register');
     }
 
     /**
@@ -46,6 +46,6 @@ class RegisteredUserController extends Controller
 
         Auth::login($user);
 
-        return redirect(route('user.dashboard', absolute: false));
+        return redirect()->intended(route('user.dashboard', absolute: false));
     }
 }

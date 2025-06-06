@@ -1,0 +1,992 @@
+[
+  {
+    "titre": "4.1.1 Compléter les modèles Eloquent par entité",
+    "sous_taches": [
+      {
+        "titre": "4.1.1.1 User",
+        "sous_taches": [
+          {
+            "titre": "Définir les méthodes de relation User",
+            "description": "Définir les méthodes de relation (hasMany, belongsTo, etc.) pour User selon ENTITIES_OVERVIEW.md."
+          },
+          {
+            "titre": "Compléter les propriétés User",
+            "description": "Compléter $fillable, $casts, $hidden, $dates, etc. pour User."
+          },
+          {
+            "titre": "Définir les scopes/accessors User",
+            "description": "Ajouter les scopes et accessors/mutators utiles pour User."
+          },
+          {
+            "titre": "Ajouter les docblocks User",
+            "description": "Compléter la documentation PHPDoc pour User (relations, propriétés, exemples d'usage)."
+          }
+        ]
+      },
+      {
+        "titre": "4.1.1.2 Classe",
+        "sous_taches": [
+          {
+            "titre": "Définir les méthodes de relation Classe",
+            "description": "Définir les méthodes de relation (hasMany, belongsTo, etc.) pour Classe selon ENTITIES_OVERVIEW.md."
+          },
+          {
+            "titre": "Compléter les propriétés Classe",
+            "description": "Compléter $fillable, $casts, $hidden, $dates, etc. pour Classe."
+          },
+          {
+            "titre": "Définir les scopes/accessors Classe",
+            "description": "Ajouter les scopes et accessors/mutators utiles pour Classe."
+          },
+          {
+            "titre": "Ajouter les docblocks Classe",
+            "description": "Compléter la documentation PHPDoc pour Classe."
+          }
+        ]
+      },
+      {
+        "titre": "4.1.1.3 Monster",
+        "sous_taches": [
+          {
+            "titre": "Définir les méthodes de relation Monster",
+            "description": "Définir les méthodes de relation (hasMany, belongsTo, etc.) pour Monster selon ENTITIES_OVERVIEW.md."
+          },
+          {
+            "titre": "Compléter les propriétés Monster",
+            "description": "Compléter $fillable, $casts, $hidden, $dates, etc. pour Monster."
+          },
+          {
+            "titre": "Définir les scopes/accessors Monster",
+            "description": "Ajouter les scopes et accessors/mutators utiles pour Monster."
+          },
+          {
+            "titre": "Ajouter les docblocks Monster",
+            "description": "Compléter la documentation PHPDoc pour Monster."
+          }
+        ]
+      },
+      {
+        "titre": "4.1.1.4 NPC",
+        "sous_taches": [
+          {
+            "titre": "Définir les méthodes de relation NPC",
+            "description": "Définir les méthodes de relation (hasMany, belongsTo, etc.) pour NPC selon ENTITIES_OVERVIEW.md."
+          },
+          {
+            "titre": "Compléter les propriétés NPC",
+            "description": "Compléter $fillable, $casts, $hidden, $dates, etc. pour NPC."
+          },
+          {
+            "titre": "Définir les scopes/accessors NPC",
+            "description": "Ajouter les scopes et accessors/mutators utiles pour NPC."
+          },
+          {
+            "titre": "Ajouter les docblocks NPC",
+            "description": "Compléter la documentation PHPDoc pour NPC."
+          }
+        ]
+      },
+      {
+        "titre": "4.1.1.5 Item",
+        "sous_taches": [
+          {
+            "titre": "Définir les méthodes de relation Item",
+            "description": "Définir les méthodes de relation (hasMany, belongsTo, etc.) pour Item selon ENTITIES_OVERVIEW.md."
+          },
+          {
+            "titre": "Compléter les propriétés Item",
+            "description": "Compléter $fillable, $casts, $hidden, $dates, etc. pour Item."
+          },
+          {
+            "titre": "Définir les scopes/accessors Item",
+            "description": "Ajouter les scopes et accessors/mutators utiles pour Item."
+          },
+          {
+            "titre": "Ajouter les docblocks Item",
+            "description": "Compléter la documentation PHPDoc pour Item."
+          }
+        ]
+      },
+      {
+        "titre": "4.1.1.6 Resource",
+        "sous_taches": [
+          {
+            "titre": "Définir les méthodes de relation Resource",
+            "description": "Définir les méthodes de relation (hasMany, belongsTo, etc.) pour Resource selon ENTITIES_OVERVIEW.md."
+          },
+          {
+            "titre": "Compléter les propriétés Resource",
+            "description": "Compléter $fillable, $casts, $hidden, $dates, etc. pour Resource."
+          },
+          {
+            "titre": "Définir les scopes/accessors Resource",
+            "description": "Ajouter les scopes et accessors/mutators utiles pour Resource."
+          },
+          {
+            "titre": "Ajouter les docblocks Resource",
+            "description": "Compléter la documentation PHPDoc pour Resource."
+          }
+        ]
+      },
+      {
+        "titre": "4.1.1.7 Spell",
+        "sous_taches": [
+          {
+            "titre": "Définir les méthodes de relation Spell",
+            "description": "Définir les méthodes de relation (hasMany, belongsTo, etc.) pour Spell selon ENTITIES_OVERVIEW.md."
+          },
+          {
+            "titre": "Compléter les propriétés Spell",
+            "description": "Compléter $fillable, $casts, $hidden, $dates, etc. pour Spell."
+          },
+          {
+            "titre": "Définir les scopes/accessors Spell",
+            "description": "Ajouter les scopes et accessors/mutators utiles pour Spell."
+          },
+          {
+            "titre": "Ajouter les docblocks Spell",
+            "description": "Compléter la documentation PHPDoc pour Spell."
+          }
+        ]
+      },
+      {
+        "titre": "4.1.1.8 Capability",
+        "sous_taches": [
+          {
+            "titre": "Définir les méthodes de relation Capability",
+            "description": "Définir les méthodes de relation (hasMany, belongsTo, etc.) pour Capability selon ENTITIES_OVERVIEW.md."
+          },
+          {
+            "titre": "Compléter les propriétés Capability",
+            "description": "Compléter $fillable, $casts, $hidden, $dates, etc. pour Capability."
+          },
+          {
+            "titre": "Définir les scopes/accessors Capability",
+            "description": "Ajouter les scopes et accessors/mutators utiles pour Capability."
+          },
+          {
+            "titre": "Ajouter les docblocks Capability",
+            "description": "Compléter la documentation PHPDoc pour Capability."
+          }
+        ]
+      },
+      {
+        "titre": "4.1.1.9 Attribute",
+        "sous_taches": [
+          {
+            "titre": "Définir les méthodes de relation Attribute",
+            "description": "Définir les méthodes de relation (hasMany, belongsTo, etc.) pour Attribute selon ENTITIES_OVERVIEW.md."
+          },
+          {
+            "titre": "Compléter les propriétés Attribute",
+            "description": "Compléter $fillable, $casts, $hidden, $dates, etc. pour Attribute."
+          },
+          {
+            "titre": "Définir les scopes/accessors Attribute",
+            "description": "Ajouter les scopes et accessors/mutators utiles pour Attribute."
+          },
+          {
+            "titre": "Ajouter les docblocks Attribute",
+            "description": "Compléter la documentation PHPDoc pour Attribute."
+          }
+        ]
+      },
+      {
+        "titre": "4.1.1.10 Consumable",
+        "sous_taches": [
+          {
+            "titre": "Définir les méthodes de relation Consumable",
+            "description": "Définir les méthodes de relation (hasMany, belongsTo, etc.) pour Consumable selon ENTITIES_OVERVIEW.md."
+          },
+          {
+            "titre": "Compléter les propriétés Consumable",
+            "description": "Compléter $fillable, $casts, $hidden, $dates, etc. pour Consumable."
+          },
+          {
+            "titre": "Définir les scopes/accessors Consumable",
+            "description": "Ajouter les scopes et accessors/mutators utiles pour Consumable."
+          },
+          {
+            "titre": "Ajouter les docblocks Consumable",
+            "description": "Compléter la documentation PHPDoc pour Consumable."
+          }
+        ]
+      },
+      {
+        "titre": "4.1.1.11 Shop",
+        "sous_taches": [
+          {
+            "titre": "Définir les méthodes de relation Shop",
+            "description": "Définir les méthodes de relation (hasMany, belongsTo, etc.) pour Shop selon ENTITIES_OVERVIEW.md."
+          },
+          {
+            "titre": "Compléter les propriétés Shop",
+            "description": "Compléter $fillable, $casts, $hidden, $dates, etc. pour Shop."
+          },
+          {
+            "titre": "Définir les scopes/accessors Shop",
+            "description": "Ajouter les scopes et accessors/mutators utiles pour Shop."
+          },
+          {
+            "titre": "Ajouter les docblocks Shop",
+            "description": "Compléter la documentation PHPDoc pour Shop."
+          }
+        ]
+      },
+      {
+        "titre": "4.1.1.12 Specialization",
+        "sous_taches": [
+          {
+            "titre": "Définir les méthodes de relation Specialization",
+            "description": "Définir les méthodes de relation (hasMany, belongsTo, etc.) pour Specialization selon ENTITIES_OVERVIEW.md."
+          },
+          {
+            "titre": "Compléter les propriétés Specialization",
+            "description": "Compléter $fillable, $casts, $hidden, $dates, etc. pour Specialization."
+          },
+          {
+            "titre": "Définir les scopes/accessors Specialization",
+            "description": "Ajouter les scopes et accessors/mutators utiles pour Specialization."
+          },
+          {
+            "titre": "Ajouter les docblocks Specialization",
+            "description": "Compléter la documentation PHPDoc pour Specialization."
+          }
+        ]
+      },
+      {
+        "titre": "4.1.1.13 Scenario",
+        "sous_taches": [
+          {
+            "titre": "Définir les méthodes de relation Scenario",
+            "description": "Définir les méthodes de relation (hasMany, belongsTo, etc.) pour Scenario selon ENTITIES_OVERVIEW.md."
+          },
+          {
+            "titre": "Compléter les propriétés Scenario",
+            "description": "Compléter $fillable, $casts, $hidden, $dates, etc. pour Scenario."
+          },
+          {
+            "titre": "Définir les scopes/accessors Scenario",
+            "description": "Ajouter les scopes et accessors/mutators utiles pour Scenario."
+          },
+          {
+            "titre": "Ajouter les docblocks Scenario",
+            "description": "Compléter la documentation PHPDoc pour Scenario."
+          }
+        ]
+      },
+      {
+        "titre": "4.1.1.14 Campaign",
+        "sous_taches": [
+          {
+            "titre": "Définir les méthodes de relation Campaign",
+            "description": "Définir les méthodes de relation (hasMany, belongsTo, etc.) pour Campaign selon ENTITIES_OVERVIEW.md."
+          },
+          {
+            "titre": "Compléter les propriétés Campaign",
+            "description": "Compléter $fillable, $casts, $hidden, $dates, etc. pour Campaign."
+          },
+          {
+            "titre": "Définir les scopes/accessors Campaign",
+            "description": "Ajouter les scopes et accessors/mutators utiles pour Campaign."
+          },
+          {
+            "titre": "Ajouter les docblocks Campaign",
+            "description": "Compléter la documentation PHPDoc pour Campaign."
+          }
+        ]
+      },
+      {
+        "titre": "4.1.1.15 Panoply",
+        "sous_taches": [
+          {
+            "titre": "Définir les méthodes de relation Panoply",
+            "description": "Définir les méthodes de relation (hasMany, belongsTo, etc.) pour Panoply selon ENTITIES_OVERVIEW.md."
+          },
+          {
+            "titre": "Compléter les propriétés Panoply",
+            "description": "Compléter $fillable, $casts, $hidden, $dates, etc. pour Panoply."
+          },
+          {
+            "titre": "Définir les scopes/accessors Panoply",
+            "description": "Ajouter les scopes et accessors/mutators utiles pour Panoply."
+          },
+          {
+            "titre": "Ajouter les docblocks Panoply",
+            "description": "Compléter la documentation PHPDoc pour Panoply."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "titre": "4.1.2 Compléter les migrations",
+    "sous_taches": [
+      {
+        "titre": "4.1.2.1 Ajouter les champs manquants dans les tables",
+        "description": "Compléter les migrations pour ajouter tous les champs, contraintes, index, soft deletes, timestamps, etc. selon schema.sql."
+      },
+      {
+        "titre": "4.1.2.2 Définir les clés étrangères et les relations",
+        "description": "Ajouter les foreign keys, onDelete('cascade'), et les relations entre tables."
+      },
+      {
+        "titre": "4.1.2.3 Vérifier la cohérence des types et des valeurs par défaut",
+        "description": "S'assurer que les types de champs et les valeurs par défaut sont cohérents avec la documentation métier."
+      },
+      {
+        "titre": "4.1.2.4 Générer et appliquer les migrations",
+        "description": "Lancer les commandes artisan migrate (php artisan migrate) et vérifier la création correcte des tables et relations."
+      }
+    ]
+  },
+  {
+    "titre": "4.1.3 Compléter les seeders et factories par entité",
+    "sous_taches": [
+      {
+        "titre": "4.1.3.1 UserSeeder et UserFactory",
+        "sous_taches": [
+          {
+            "titre": "Compléter UserSeeder",
+            "description": "Ajouter des données de test réalistes pour User dans database/seeders/UserSeeder.php."
+          },
+          {
+            "titre": "Compléter UserFactory",
+            "description": "Compléter la factory User dans database/factories/UserFactory.php pour générer des données cohérentes."
+          },
+          {
+            "titre": "Ajouter des tests pour UserSeeder et UserFactory",
+            "description": "Créer ou compléter les tests pour vérifier l'intégrité des données User seedées et générées."
+          },
+          {
+            "titre": "Ajouter les docblocks",
+            "description": "Compléter la documentation PHPDoc pour UserSeeder et UserFactory."
+          }
+        ]
+      },
+      {
+        "titre": "4.1.3.2 ClasseSeeder et ClasseFactory",
+        "sous_taches": [
+          {
+            "titre": "Compléter ClasseSeeder",
+            "description": "Ajouter des données de test réalistes pour Classe dans database/seeders/ClasseSeeder.php."
+          },
+          {
+            "titre": "Compléter ClasseFactory",
+            "description": "Compléter la factory Classe dans database/factories/ClasseFactory.php pour générer des données cohérentes."
+          },
+          {
+            "titre": "Ajouter des tests pour ClasseSeeder et ClasseFactory",
+            "description": "Créer ou compléter les tests pour vérifier l'intégrité des données Classe seedées et générées."
+          },
+          {
+            "titre": "Ajouter les docblocks",
+            "description": "Compléter la documentation PHPDoc pour ClasseSeeder et ClasseFactory."
+          }
+        ]
+      },
+      {
+        "titre": "4.1.3.3 MonsterSeeder et MonsterFactory",
+        "sous_taches": [
+          {
+            "titre": "Compléter MonsterSeeder",
+            "description": "Ajouter des données de test réalistes pour Monster dans database/seeders/MonsterSeeder.php."
+          },
+          {
+            "titre": "Compléter MonsterFactory",
+            "description": "Compléter la factory Monster dans database/factories/MonsterFactory.php pour générer des données cohérentes."
+          },
+          {
+            "titre": "Ajouter des tests pour MonsterSeeder et MonsterFactory",
+            "description": "Créer ou compléter les tests pour vérifier l'intégrité des données Monster seedées et générées."
+          },
+          {
+            "titre": "Ajouter les docblocks",
+            "description": "Compléter la documentation PHPDoc pour MonsterSeeder et MonsterFactory."
+          }
+        ]
+      },
+      {
+        "titre": "4.1.3.4 NPCSeeder et NPCFactory",
+        "sous_taches": [
+          {
+            "titre": "Compléter NPCSeeder",
+            "description": "Ajouter des données de test réalistes pour NPC dans database/seeders/NPCSeeder.php."
+          },
+          {
+            "titre": "Compléter NPCFactory",
+            "description": "Compléter la factory NPC dans database/factories/NPCFactory.php pour générer des données cohérentes."
+          },
+          {
+            "titre": "Ajouter des tests pour NPCSeeder et NPCFactory",
+            "description": "Créer ou compléter les tests pour vérifier l'intégrité des données NPC seedées et générées."
+          },
+          {
+            "titre": "Ajouter les docblocks",
+            "description": "Compléter la documentation PHPDoc pour NPCSeeder et NPCFactory."
+          }
+        ]
+      },
+      {
+        "titre": "4.1.3.5 ItemSeeder et ItemFactory",
+        "sous_taches": [
+          {
+            "titre": "Compléter ItemSeeder",
+            "description": "Ajouter des données de test réalistes pour Item dans database/seeders/ItemSeeder.php."
+          },
+          {
+            "titre": "Compléter ItemFactory",
+            "description": "Compléter la factory Item dans database/factories/ItemFactory.php pour générer des données cohérentes."
+          },
+          {
+            "titre": "Ajouter des tests pour ItemSeeder et ItemFactory",
+            "description": "Créer ou compléter les tests pour vérifier l'intégrité des données Item seedées et générées."
+          },
+          {
+            "titre": "Ajouter les docblocks",
+            "description": "Compléter la documentation PHPDoc pour ItemSeeder et ItemFactory."
+          }
+        ]
+      },
+      {
+        "titre": "4.1.3.6 ResourceSeeder et ResourceFactory",
+        "sous_taches": [
+          {
+            "titre": "Compléter ResourceSeeder",
+            "description": "Ajouter des données de test réalistes pour Resource dans database/seeders/ResourceSeeder.php."
+          },
+          {
+            "titre": "Compléter ResourceFactory",
+            "description": "Compléter la factory Resource dans database/factories/ResourceFactory.php pour générer des données cohérentes."
+          },
+          {
+            "titre": "Ajouter des tests pour ResourceSeeder et ResourceFactory",
+            "description": "Créer ou compléter les tests pour vérifier l'intégrité des données Resource seedées et générées."
+          },
+          {
+            "titre": "Ajouter les docblocks",
+            "description": "Compléter la documentation PHPDoc pour ResourceSeeder et ResourceFactory."
+          }
+        ]
+      },
+      {
+        "titre": "4.1.3.7 SpellSeeder et SpellFactory",
+        "sous_taches": [
+          {
+            "titre": "Compléter SpellSeeder",
+            "description": "Ajouter des données de test réalistes pour Spell dans database/seeders/SpellSeeder.php."
+          },
+          {
+            "titre": "Compléter SpellFactory",
+            "description": "Compléter la factory Spell dans database/factories/SpellFactory.php pour générer des données cohérentes."
+          },
+          {
+            "titre": "Ajouter des tests pour SpellSeeder et SpellFactory",
+            "description": "Créer ou compléter les tests pour vérifier l'intégrité des données Spell seedées et générées."
+          },
+          {
+            "titre": "Ajouter les docblocks",
+            "description": "Compléter la documentation PHPDoc pour SpellSeeder et SpellFactory."
+          }
+        ]
+      },
+      {
+        "titre": "4.1.3.8 CapabilitySeeder et CapabilityFactory",
+        "sous_taches": [
+          {
+            "titre": "Compléter CapabilitySeeder",
+            "description": "Ajouter des données de test réalistes pour Capability dans database/seeders/CapabilitySeeder.php."
+          },
+          {
+            "titre": "Compléter CapabilityFactory",
+            "description": "Compléter la factory Capability dans database/factories/CapabilityFactory.php pour générer des données cohérentes."
+          },
+          {
+            "titre": "Ajouter des tests pour CapabilitySeeder et CapabilityFactory",
+            "description": "Créer ou compléter les tests pour vérifier l'intégrité des données Capability seedées et générées."
+          },
+          {
+            "titre": "Ajouter les docblocks",
+            "description": "Compléter la documentation PHPDoc pour CapabilitySeeder et CapabilityFactory."
+          }
+        ]
+      },
+      {
+        "titre": "4.1.3.9 AttributeSeeder et AttributeFactory",
+        "sous_taches": [
+          {
+            "titre": "Compléter AttributeSeeder",
+            "description": "Ajouter des données de test réalistes pour Attribute dans database/seeders/AttributeSeeder.php."
+          },
+          {
+            "titre": "Compléter AttributeFactory",
+            "description": "Compléter la factory Attribute dans database/factories/AttributeFactory.php pour générer des données cohérentes."
+          },
+          {
+            "titre": "Ajouter des tests pour AttributeSeeder et AttributeFactory",
+            "description": "Créer ou compléter les tests pour vérifier l'intégrité des données Attribute seedées et générées."
+          },
+          {
+            "titre": "Ajouter les docblocks",
+            "description": "Compléter la documentation PHPDoc pour AttributeSeeder et AttributeFactory."
+          }
+        ]
+      },
+      {
+        "titre": "4.1.3.10 ConsumableSeeder et ConsumableFactory",
+        "sous_taches": [
+          {
+            "titre": "Compléter ConsumableSeeder",
+            "description": "Ajouter des données de test réalistes pour Consumable dans database/seeders/ConsumableSeeder.php."
+          },
+          {
+            "titre": "Compléter ConsumableFactory",
+            "description": "Compléter la factory Consumable dans database/factories/ConsumableFactory.php pour générer des données cohérentes."
+          },
+          {
+            "titre": "Ajouter des tests pour ConsumableSeeder et ConsumableFactory",
+            "description": "Créer ou compléter les tests pour vérifier l'intégrité des données Consumable seedées et générées."
+          },
+          {
+            "titre": "Ajouter les docblocks",
+            "description": "Compléter la documentation PHPDoc pour ConsumableSeeder et ConsumableFactory."
+          }
+        ]
+      },
+      {
+        "titre": "4.1.3.11 ShopSeeder et ShopFactory",
+        "sous_taches": [
+          {
+            "titre": "Compléter ShopSeeder",
+            "description": "Ajouter des données de test réalistes pour Shop dans database/seeders/ShopSeeder.php."
+          },
+          {
+            "titre": "Compléter ShopFactory",
+            "description": "Compléter la factory Shop dans database/factories/ShopFactory.php pour générer des données cohérentes."
+          },
+          {
+            "titre": "Ajouter des tests pour ShopSeeder et ShopFactory",
+            "description": "Créer ou compléter les tests pour vérifier l'intégrité des données Shop seedées et générées."
+          },
+          {
+            "titre": "Ajouter les docblocks",
+            "description": "Compléter la documentation PHPDoc pour ShopSeeder et ShopFactory."
+          }
+        ]
+      },
+      {
+        "titre": "4.1.3.12 SpecializationSeeder et SpecializationFactory",
+        "sous_taches": [
+          {
+            "titre": "Compléter SpecializationSeeder",
+            "description": "Ajouter des données de test réalistes pour Specialization dans database/seeders/SpecializationSeeder.php."
+          },
+          {
+            "titre": "Compléter SpecializationFactory",
+            "description": "Compléter la factory Specialization dans database/factories/SpecializationFactory.php pour générer des données cohérentes."
+          },
+          {
+            "titre": "Ajouter des tests pour SpecializationSeeder et SpecializationFactory",
+            "description": "Créer ou compléter les tests pour vérifier l'intégrité des données Specialization seedées et générées."
+          },
+          {
+            "titre": "Ajouter les docblocks",
+            "description": "Compléter la documentation PHPDoc pour SpecializationSeeder et SpecializationFactory."
+          }
+        ]
+      },
+      {
+        "titre": "4.1.3.13 ScenarioSeeder et ScenarioFactory",
+        "sous_taches": [
+          {
+            "titre": "Compléter ScenarioSeeder",
+            "description": "Ajouter des données de test réalistes pour Scenario dans database/seeders/ScenarioSeeder.php."
+          },
+          {
+            "titre": "Compléter ScenarioFactory",
+            "description": "Compléter la factory Scenario dans database/factories/ScenarioFactory.php pour générer des données cohérentes."
+          },
+          {
+            "titre": "Ajouter des tests pour ScenarioSeeder et ScenarioFactory",
+            "description": "Créer ou compléter les tests pour vérifier l'intégrité des données Scenario seedées et générées."
+          },
+          {
+            "titre": "Ajouter les docblocks",
+            "description": "Compléter la documentation PHPDoc pour ScenarioSeeder et ScenarioFactory."
+          }
+        ]
+      },
+      {
+        "titre": "4.1.3.14 CampaignSeeder et CampaignFactory",
+        "sous_taches": [
+          {
+            "titre": "Compléter CampaignSeeder",
+            "description": "Ajouter des données de test réalistes pour Campaign dans database/seeders/CampaignSeeder.php."
+          },
+          {
+            "titre": "Compléter CampaignFactory",
+            "description": "Compléter la factory Campaign dans database/factories/CampaignFactory.php pour générer des données cohérentes."
+          },
+          {
+            "titre": "Ajouter des tests pour CampaignSeeder et CampaignFactory",
+            "description": "Créer ou compléter les tests pour vérifier l'intégrité des données Campaign seedées et générées."
+          },
+          {
+            "titre": "Ajouter les docblocks",
+            "description": "Compléter la documentation PHPDoc pour CampaignSeeder et CampaignFactory."
+          }
+        ]
+      },
+      {
+        "titre": "4.1.3.15 PanoplySeeder et PanoplyFactory",
+        "sous_taches": [
+          {
+            "titre": "Compléter PanoplySeeder",
+            "description": "Ajouter des données de test réalistes pour Panoply dans database/seeders/PanoplySeeder.php."
+          },
+          {
+            "titre": "Compléter PanoplyFactory",
+            "description": "Compléter la factory Panoply dans database/factories/PanoplyFactory.php pour générer des données cohérentes."
+          },
+          {
+            "titre": "Ajouter des tests pour PanoplySeeder et PanoplyFactory",
+            "description": "Créer ou compléter les tests pour vérifier l'intégrité des données Panoply seedées et générées."
+          },
+          {
+            "titre": "Ajouter les docblocks",
+            "description": "Compléter la documentation PHPDoc pour PanoplySeeder et PanoplyFactory."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "titre": "4.1.4 Vérification des artefacts de base",
+    "sous_taches": [
+      {
+        "titre": "4.1.4.1 Vérifier la complétion des modèles, migrations, seeders et factories",
+        "description": "Vérifier que tous les modèles, migrations, seeders et factories sont complets, testés et conformes à la documentation métier."
+      }
+    ]
+  },
+  {
+    "titre": "4.1.5 Log des artefacts de base",
+    "sous_taches": [
+      {
+        "titre": "4.1.5.1 Consigner le log des artefacts de base",
+        "description": "Consigner dans logs.txt un résumé daté de toutes les actions réalisées sur les modèles, migrations, seeders et factories."
+      }
+    ]
+  },
+  {
+    "titre": "4.1.6 Compléter l'API et la sécurité par entité",
+    "sous_taches": [
+      {
+        "titre": "4.1.6.1 User",
+        "sous_taches": [
+          {
+            "titre": "Compléter UserController",
+            "description": "Compléter UserController avec les méthodes index, show, store, update, destroy (soft delete), et forceDelete (suppression définitive réservée aux admins)."
+          },
+          {
+            "titre": "Définir les droits User dans la policy",
+            "description": "Définir les droits d'accès (view, create, update, delete, forceDelete) dans UserPolicy selon la matrice des privilèges, avec gestion des exceptions (admin, super_admin, game_master)."
+          },
+          {
+            "titre": "Écrire les tests unitaires User",
+            "description": "Écrire ou compléter les tests unitaires pour UserController et UserPolicy (vérification des droits, des exceptions, des retours attendus)."
+          }
+        ]
+      },
+      {
+        "titre": "4.1.6.2 Classe",
+        "sous_taches": [
+          {
+            "titre": "Compléter ClasseController",
+            "description": "Compléter ClasseController avec les méthodes index, show, store, update, destroy (soft delete), et forceDelete (suppression définitive réservée aux admins)."
+          },
+          {
+            "titre": "Définir les droits Classe dans la policy",
+            "description": "Définir les droits d'accès (view, create, update, delete, forceDelete) dans ClassePolicy selon la matrice des privilèges, avec gestion des exceptions (admin, super_admin, game_master)."
+          },
+          {
+            "titre": "Écrire les tests unitaires Classe",
+            "description": "Écrire ou compléter les tests unitaires pour ClasseController et ClassePolicy (vérification des droits, des exceptions, des retours attendus)."
+          }
+        ]
+      },
+      {
+        "titre": "4.1.6.3 Monster",
+        "sous_taches": [
+          {
+            "titre": "Compléter MonsterController",
+            "description": "Compléter MonsterController avec les méthodes index, show, store, update, destroy (soft delete), et forceDelete (suppression définitive réservée aux admins)."
+          },
+          {
+            "titre": "Définir les droits Monster dans la policy",
+            "description": "Définir les droits d'accès (view, create, update, delete, forceDelete) dans MonsterPolicy selon la matrice des privilèges, avec gestion des exceptions (admin, super_admin, game_master)."
+          },
+          {
+            "titre": "Écrire les tests unitaires Monster",
+            "description": "Écrire ou compléter les tests unitaires pour MonsterController et MonsterPolicy (vérification des droits, des exceptions, des retours attendus)."
+          }
+        ]
+      },
+      {
+        "titre": "4.1.6.4 NPC",
+        "sous_taches": [
+          {
+            "titre": "Compléter NPCController",
+            "description": "Compléter NPCController avec les méthodes index, show, store, update, destroy (soft delete), et forceDelete (suppression définitive réservée aux admins)."
+          },
+          {
+            "titre": "Définir les droits NPC dans la policy",
+            "description": "Définir les droits d'accès (view, create, update, delete, forceDelete) dans NPCPolicy selon la matrice des privilèges, avec gestion des exceptions (admin, super_admin, game_master)."
+          },
+          {
+            "titre": "Écrire les tests unitaires NPC",
+            "description": "Écrire ou compléter les tests unitaires pour NPCController et NPCPolicy (vérification des droits, des exceptions, des retours attendus)."
+          }
+        ]
+      },
+      {
+        "titre": "4.1.6.5 Item",
+        "sous_taches": [
+          {
+            "titre": "Compléter ItemController",
+            "description": "Compléter ItemController avec les méthodes index, show, store, update, destroy (soft delete), et forceDelete (suppression définitive réservée aux admins)."
+          },
+          {
+            "titre": "Définir les droits Item dans la policy",
+            "description": "Définir les droits d'accès (view, create, update, delete, forceDelete) dans ItemPolicy selon la matrice des privilèges, avec gestion des exceptions (admin, super_admin, game_master)."
+          },
+          {
+            "titre": "Écrire les tests unitaires Item",
+            "description": "Écrire ou compléter les tests unitaires pour ItemController et ItemPolicy (vérification des droits, des exceptions, des retours attendus)."
+          }
+        ]
+      },
+      {
+        "titre": "4.1.6.6 Resource",
+        "sous_taches": [
+          {
+            "titre": "Compléter ResourceController",
+            "description": "Compléter ResourceController avec les méthodes index, show, store, update, destroy (soft delete), et forceDelete (suppression définitive réservée aux admins)."
+          },
+          {
+            "titre": "Définir les droits Resource dans la policy",
+            "description": "Définir les droits d'accès (view, create, update, delete, forceDelete) dans ResourcePolicy selon la matrice des privilèges, avec gestion des exceptions (admin, super_admin, game_master)."
+          },
+          {
+            "titre": "Écrire les tests unitaires Resource",
+            "description": "Écrire ou compléter les tests unitaires pour ResourceController et ResourcePolicy (vérification des droits, des exceptions, des retours attendus)."
+          }
+        ]
+      },
+      {
+        "titre": "4.1.6.7 Spell",
+        "sous_taches": [
+          {
+            "titre": "Compléter SpellController",
+            "description": "Compléter SpellController avec les méthodes index, show, store, update, destroy (soft delete), et forceDelete (suppression définitive réservée aux admins)."
+          },
+          {
+            "titre": "Définir les droits Spell dans la policy",
+            "description": "Définir les droits d'accès (view, create, update, delete, forceDelete) dans SpellPolicy selon la matrice des privilèges, avec gestion des exceptions (admin, super_admin, game_master)."
+          },
+          {
+            "titre": "Écrire les tests unitaires Spell",
+            "description": "Écrire ou compléter les tests unitaires pour SpellController et SpellPolicy (vérification des droits, des exceptions, des retours attendus)."
+          }
+        ]
+      },
+      {
+        "titre": "4.1.6.8 Capability",
+        "sous_taches": [
+          {
+            "titre": "Compléter CapabilityController",
+            "description": "Compléter CapabilityController avec les méthodes index, show, store, update, destroy (soft delete), et forceDelete (suppression définitive réservée aux admins)."
+          },
+          {
+            "titre": "Définir les droits Capability dans la policy",
+            "description": "Définir les droits d'accès (view, create, update, delete, forceDelete) dans CapabilityPolicy selon la matrice des privilèges, avec gestion des exceptions (admin, super_admin, game_master)."
+          },
+          {
+            "titre": "Écrire les tests unitaires Capability",
+            "description": "Écrire ou compléter les tests unitaires pour CapabilityController et CapabilityPolicy (vérification des droits, des exceptions, des retours attendus)."
+          }
+        ]
+      },
+      {
+        "titre": "4.1.6.9 Attribute",
+        "sous_taches": [
+          {
+            "titre": "Compléter AttributeController",
+            "description": "Compléter AttributeController avec les méthodes index, show, store, update, destroy (soft delete), et forceDelete (suppression définitive réservée aux admins)."
+          },
+          {
+            "titre": "Définir les droits Attribute dans la policy",
+            "description": "Définir les droits d'accès (view, create, update, delete, forceDelete) dans AttributePolicy selon la matrice des privilèges, avec gestion des exceptions (admin, super_admin, game_master)."
+          },
+          {
+            "titre": "Écrire les tests unitaires Attribute",
+            "description": "Écrire ou compléter les tests unitaires pour AttributeController et AttributePolicy (vérification des droits, des exceptions, des retours attendus)."
+          }
+        ]
+      },
+      {
+        "titre": "4.1.6.10 Consumable",
+        "sous_taches": [
+          {
+            "titre": "Compléter ConsumableController",
+            "description": "Compléter ConsumableController avec les méthodes index, show, store, update, destroy (soft delete), et forceDelete (suppression définitive réservée aux admins)."
+          },
+          {
+            "titre": "Définir les droits Consumable dans la policy",
+            "description": "Définir les droits d'accès (view, create, update, delete, forceDelete) dans ConsumablePolicy selon la matrice des privilèges, avec gestion des exceptions (admin, super_admin, game_master)."
+          },
+          {
+            "titre": "Écrire les tests unitaires Consumable",
+            "description": "Écrire ou compléter les tests unitaires pour ConsumableController et ConsumablePolicy (vérification des droits, des exceptions, des retours attendus)."
+          }
+        ]
+      },
+      {
+        "titre": "4.1.6.11 Shop",
+        "sous_taches": [
+          {
+            "titre": "Compléter ShopController",
+            "description": "Compléter ShopController avec les méthodes index, show, store, update, destroy (soft delete), et forceDelete (suppression définitive réservée aux admins)."
+          },
+          {
+            "titre": "Définir les droits Shop dans la policy",
+            "description": "Définir les droits d'accès (view, create, update, delete, forceDelete) dans ShopPolicy selon la matrice des privilèges, avec gestion des exceptions (admin, super_admin, game_master)."
+          },
+          {
+            "titre": "Écrire les tests unitaires Shop",
+            "description": "Écrire ou compléter les tests unitaires pour ShopController et ShopPolicy (vérification des droits, des exceptions, des retours attendus)."
+          }
+        ]
+      },
+      {
+        "titre": "4.1.6.12 Specialization",
+        "sous_taches": [
+          {
+            "titre": "Compléter SpecializationController",
+            "description": "Compléter SpecializationController avec les méthodes index, show, store, update, destroy (soft delete), et forceDelete (suppression définitive réservée aux admins)."
+          },
+          {
+            "titre": "Définir les droits Specialization dans la policy",
+            "description": "Définir les droits d'accès (view, create, update, delete, forceDelete) dans SpecializationPolicy selon la matrice des privilèges, avec gestion des exceptions (admin, super_admin, game_master)."
+          },
+          {
+            "titre": "Écrire les tests unitaires Specialization",
+            "description": "Écrire ou compléter les tests unitaires pour SpecializationController et SpecializationPolicy (vérification des droits, des exceptions, des retours attendus)."
+          }
+        ]
+      },
+      {
+        "titre": "4.1.6.13 Scenario",
+        "sous_taches": [
+          {
+            "titre": "Compléter ScenarioController",
+            "description": "Compléter ScenarioController avec les méthodes index, show, store, update, destroy (soft delete), et forceDelete (suppression définitive réservée aux admins)."
+          },
+          {
+            "titre": "Définir les droits Scenario dans la policy",
+            "description": "Définir les droits d'accès (view, create, update, delete, forceDelete) dans ScenarioPolicy selon la matrice des privilèges, avec gestion des exceptions (admin, super_admin, game_master)."
+          },
+          {
+            "titre": "Écrire les tests unitaires Scenario",
+            "description": "Écrire ou compléter les tests unitaires pour ScenarioController et ScenarioPolicy (vérification des droits, des exceptions, des retours attendus)."
+          }
+        ]
+      },
+      {
+        "titre": "4.1.6.14 Campaign",
+        "sous_taches": [
+          {
+            "titre": "Compléter CampaignController",
+            "description": "Compléter CampaignController avec les méthodes index, show, store, update, destroy (soft delete), et forceDelete (suppression définitive réservée aux admins)."
+          },
+          {
+            "titre": "Définir les droits Campaign dans la policy",
+            "description": "Définir les droits d'accès (view, create, update, delete, forceDelete) dans CampaignPolicy selon la matrice des privilèges, avec gestion des exceptions (admin, super_admin, game_master)."
+          },
+          {
+            "titre": "Écrire les tests unitaires Campaign",
+            "description": "Écrire ou compléter les tests unitaires pour CampaignController et CampaignPolicy (vérification des droits, des exceptions, des retours attendus)."
+          }
+        ]
+      },
+      {
+        "titre": "4.1.6.15 Panoply",
+        "sous_taches": [
+          {
+            "titre": "Compléter PanoplyController",
+            "description": "Compléter PanoplyController avec les méthodes index, show, store, update, destroy (soft delete), et forceDelete (suppression définitive réservée aux admins)."
+          },
+          {
+            "titre": "Définir les droits Panoply dans la policy",
+            "description": "Définir les droits d'accès (view, create, update, delete, forceDelete) dans PanoplyPolicy selon la matrice des privilèges, avec gestion des exceptions (admin, super_admin, game_master)."
+          },
+          {
+            "titre": "Écrire les tests unitaires Panoply",
+            "description": "Écrire ou compléter les tests unitaires pour PanoplyController et PanoplyPolicy (vérification des droits, des exceptions, des retours attendus)."
+          }
+        ]
+      },
+      {
+        "titre": "4.1.6.16 Vérification de l'API et de la sécurité",
+        "description": "Vérifier que toutes les entités sont complétées et testées."
+      },
+      {
+        "titre": "4.1.6.17 Log de l'API et de la sécurité",
+        "description": "Consigner dans logs.txt un résumé daté de toutes les actions réalisées sur l'API et la sécurité, en listant les fichiers créés, modifiés, et l'état des entités et relations."
+      }
+    ]
+  },
+  {
+    "titre": "4.1.7 Tests d'intégrité de la base et des relations",
+    "sous_taches": [
+      {
+        "titre": "4.1.7.1 Vérifier la cohérence des foreign keys",
+        "description": "S'assurer que toutes les clés étrangères sont valides et respectent l'intégrité référentielle (aucun orphelin, ON DELETE CASCADE ou SET NULL selon le besoin)."
+      },
+      {
+        "titre": "4.1.7.2 Vérifier l'absence d'orphelins",
+        "description": "Vérifier qu'aucune entité ne référence une entité supprimée ou inexistante (tests sur les tables pivots et relations)."
+      },
+      {
+        "titre": "4.1.7.3 Vérifier l'unicité des clés et contraintes",
+        "description": "S'assurer que les contraintes d'unicité (index uniques, clés primaires) sont respectées et testées."
+      },
+      {
+        "titre": "4.1.7.4 Vérifier la cohérence des soft deletes",
+        "description": "Tester que la suppression logique (champ deleted_at) fonctionne pour toutes les entités principales et que les relations sont gérées correctement."
+      },
+      {
+        "titre": "4.1.7.5 Vérifier la présence des index critiques",
+        "description": "S'assurer que les colonnes utilisées en recherche, jointure ou foreign key sont bien indexées pour garantir les performances."
+      }
+    ]
+  },
+  {
+    "titre": "4.1.8 Vérification finale de la sous-partie",
+    "sous_taches": [
+      {
+        "titre": "4.1.8.1 Vérifier la complétion de toutes les tâches précédentes",
+        "description": "Vérifier que tous les modèles, migrations, seeders, contrôleurs et policies sont complets, testés et conformes à la documentation métier."
+      }
+    ]
+  },
+  {
+    "titre": "4.1.9 Log final de la sous-partie",
+    "sous_taches": [
+      {
+        "titre": "4.1.9.1 Consigner le log final de la sous-partie",
+        "description": "Consigner dans logs.txt un résumé daté de toutes les actions réalisées dans cette sous-partie, en listant les fichiers créés, modifiés, et l'état des entités et relations."
+      }
+    ]
+  }
+]

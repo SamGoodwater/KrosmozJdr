@@ -1,15 +1,15 @@
 <script setup>
 import { usePage } from "@inertiajs/vue3";
 import { onMounted } from "vue";
-import { useHeader } from "@/Composables/useHeader";
-import { useSidebar } from "@/Composables/useSidebar";
-import { usePageTitle } from "@/Composables/usePageTitle";
+import { useHeader } from "@/Composables/layout/useHeader";
+import { useSidebar } from "@/Composables/layout/useSidebar";
+import { usePageTitle } from "@/Composables/layout/usePageTitle";
 
 // Composants
-import SearchInput from "@/Pages/Layouts/Molecules/SearchInput.vue";
-import ToggleSidebar from "@/Pages/Layouts/Molecules/ToggleSidebar.vue";
-import LoginHeaderContainer from "@/Pages/Layouts/Molecules/LoginHeaderContainer.vue";
-import LoggedHeaderContainer from "@/Pages/Layouts/Molecules/LoggedHeaderContainer.vue";
+import SearchInput from "@/Pages/Molecules/layout/SearchInput.vue";
+import ToggleSidebar from "@/Pages/Molecules/layout/ToggleSidebar.vue";
+import LoginHeaderContainer from "@/Pages/Molecules/layout/LoginHeaderContainer.vue";
+import LoggedHeaderContainer from "@/Pages/Molecules/layout/LoggedHeaderContainer.vue";
 import BaseTooltip from "@/Pages/Atoms/feedback/BaseTooltip.vue";
 import Icon from "@/Pages/Atoms/images/Icon.vue";
 

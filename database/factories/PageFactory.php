@@ -3,7 +3,6 @@
 namespace Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
-use App\Models\Page;
 
 /**
  * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Page>
@@ -17,19 +16,16 @@ class PageFactory extends Factory
      */
     public function definition(): array
     {
-        $name = $this->faker->sentence(3);
+        $states = array_keys(\App\Models\Page::STATES);
         return [
-            "name" => $name,
-            "slug" => \Illuminate\Support\Str::slug($name),
-            "uniqid" => uniqid(),
-            "keyword" => $this->faker->word(),
-            "order_num" => $this->faker->numberBetween(0, 100),
-            "is_dropdown" => $this->faker->boolean(),
-            "is_public" => $this->faker->boolean(),
-            "is_visible" => $this->faker->boolean(),
-            "is_editable" => $this->faker->boolean(),
-            "page_id" => null,
-            'created_by' => \App\Models\User::where('role', 'super_admin')->first()?->id,
+            'title' => $this->faker->sentence(3),
+            'slug' => $this->faker->unique()->slug(),
+            'is_visible' => $this->faker->boolean(90),
+            'in_menu' => $this->faker->boolean(70),
+            'state' => $this->faker->randomElement($states),
+            'parent_id' => null, // Géré dans le seeder pour la hiérarchie
+            'menu_order' => $this->faker->numberBetween(1, 20),
+            'created_by' => null, // Géré dans le seeder
         ];
     }
 }

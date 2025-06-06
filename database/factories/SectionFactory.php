@@ -2,25 +2,33 @@
 
 namespace Database\Factories;
 
-use App\Models\Section;
 use Illuminate\Database\Eloquent\Factories\Factory;
-use Illuminate\Support\Str;
 
+/**
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Section>
+ */
 class SectionFactory extends Factory
 {
-    protected $model = Section::class;
-
+    /**
+     * Define the model's default state.
+     *
+     * @return array<string, mixed>
+     */
     public function definition(): array
     {
+        $states = array_keys(\App\Models\Section::STATES);
+        $types = ['text', 'image', 'gallery', 'video', 'quote', 'custom'];
         return [
-            'uniqid' => Str::uuid()->toString(),
-            'component' => $this->faker->word,
-            'title' => $this->faker->sentence,
-            'content' => $this->faker->paragraph,
-            'order_num' => $this->faker->numberBetween(1, 100),
-            'is_visible' => $this->faker->boolean,
-            'page_id' => null, // ou vous pouvez utiliser un ID de page existant
-            'created_by' => null, // ou vous pouvez utiliser un ID d'utilisateur existant
+            'page_id' => null, // Géré dans le seeder
+            'order' => $this->faker->numberBetween(1, 10),
+            'type' => $this->faker->randomElement($types),
+            'params' => [
+                'content' => $this->faker->paragraph(),
+                'extra' => $this->faker->optional()->word(),
+            ],
+            'is_visible' => $this->faker->boolean(90),
+            'state' => $this->faker->randomElement($states),
+            'created_by' => null, // Géré dans le seeder
         ];
     }
 }

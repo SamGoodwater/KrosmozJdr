@@ -29,8 +29,10 @@ class UserFactory extends Factory
             'email' => fake()->unique()->safeEmail(),
             'email_verified_at' => now(),
             'password' => static::$password ??= Hash::make('password'),
-            'role' => User::ROLES['user'],
-            'image' => null,
+            'role' => fake()->randomElement(array_keys(\App\Models\User::ROLES)),
+            'avatar' => fake()->imageUrl(),
+            'notifications_enabled' => fake()->boolean(),
+            'notification_channels' => [fake()->randomElement(User::NOTIFICATION_CHANNELS)],
             'remember_token' => Str::random(10),
         ];
     }
@@ -42,16 +44,6 @@ class UserFactory extends Factory
     {
         return $this->state(fn(array $attributes) => [
             'email_verified_at' => null,
-        ]);
-    }
-
-    /**
-     * Indicate that the user has an admin role.
-     */
-    public function admin(): static
-    {
-        return $this->state(fn(array $attributes) => [
-            'role' => User::ROLES['admin'],
         ]);
     }
 }

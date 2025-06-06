@@ -17,18 +17,13 @@
 <script setup>
 import { ref, onMounted } from "vue";
 import { usePage } from "@inertiajs/vue3";
-import { extractTheme, combinePropsWithTheme } from '@/Utils/extractTheme';
-import { commonProps } from '@/Utils/commonProps';
-import { usePageTitle } from "@/Composables/usePageTitle";
+import { usePageTitle } from "@/Composables/layout/usePageTitle";
 
 // Composants Atoms
 import Btn from "@/Pages/Atoms/actions/Btn.vue";
 import Icon from "@/Pages/Atoms/images/Icon.vue";
 import Container from "@/Pages/Atoms/panels/Container.vue";
 import BaseTooltip from "@/Pages/Atoms/feedback/BaseTooltip.vue";
-import { size } from "@floating-ui/vue/dist/floating-ui.vue.umd";
-
-
 
 // Récupération des données partagées par Inertia
 const page = usePage();

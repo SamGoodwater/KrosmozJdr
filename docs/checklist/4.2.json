@@ -1,0 +1,742 @@
+{
+  "partie": "4. Développement Progressif des Fonctionnalités",
+  "sous_partie": "4.2. Backend – Systèmes Transverses",
+  "taches": [
+    {
+      "titre": "4.2.1 Implémenter les notifications sur modification d'entité (par entité) https://laravel.com/docs/12.x/notifications",
+      "sous_taches": [
+        {
+          "titre": "4.2.1.1 User",
+          "sous_taches": [
+            {
+              "titre": "4.2.1.1.1 Générer l'observer UserObserver",
+              "description": "php artisan make:observer UserObserver --model=User"
+            },
+            {
+              "titre": "4.2.1.1.2 Notification admin : EntityModifiedNotification",
+              "description": "Notifier tous les admins à chaque modification (created, updated, deleted) d'un User."
+            },
+            {
+              "titre": "4.2.1.1.3 Notification créateur : EntityModifiedByOtherNotification",
+              "description": "Notifier le créateur du User si la modification vient d'un autre utilisateur."
+            },
+            {
+              "titre": "4.2.1.1.4 Enregistrer l'observer dans un ServiceProvider",
+              "description": "Enregistrer UserObserver dans AppServiceProvider ou un provider dédié."
+            },
+            {
+              "titre": "4.2.1.1.5 Créer les tests pour User",
+              "description": "Vérifier que les notifications sont envoyées aux admins et au créateur selon la logique."
+            },
+            {
+              "titre": "4.2.1.1.6 Ajouter les docblocks et exemples d'usage",
+              "description": "Documenter la notification et l'observer avec des docblocks et exemples d'appel."
+            },
+            {
+              "titre": "4.2.1.1.7 Log de la génération notification User",
+              "description": "Consigner dans logs.txt la génération et le test des notifications User, avec date et état."
+            }
+          ]
+        },
+        {
+          "titre": "4.2.1.2 Classe",
+          "sous_taches": [
+            {
+              "titre": "4.2.1.2.1 Générer l'observer ClasseObserver",
+              "description": "php artisan make:observer ClasseObserver --model=Classe"
+            },
+            {
+              "titre": "4.2.1.2.2 Notification admin : EntityModifiedNotification",
+              "description": "Notifier tous les admins à chaque modification (created, updated, deleted) d'une Classe."
+            },
+            {
+              "titre": "4.2.1.2.3 Notification créateur : EntityModifiedByOtherNotification",
+              "description": "Notifier le créateur de la Classe si la modification vient d'un autre utilisateur."
+            },
+            {
+              "titre": "4.2.1.2.4 Enregistrer l'observer dans un ServiceProvider",
+              "description": "Enregistrer ClasseObserver dans AppServiceProvider ou un provider dédié."
+            },
+            {
+              "titre": "4.2.1.2.5 Créer les tests pour Classe",
+              "description": "Vérifier que les notifications sont envoyées aux admins et au créateur selon la logique."
+            },
+            {
+              "titre": "4.2.1.2.6 Ajouter les docblocks et exemples d'usage",
+              "description": "Documenter la notification et l'observer avec des docblocks et exemples d'appel."
+            },
+            {
+              "titre": "4.2.1.2.7 Log de la génération notification Classe",
+              "description": "Consigner dans logs.txt la génération et le test des notifications Classe, avec date et état."
+            }
+          ]
+        },
+        {
+          "titre": "4.2.1.3 Monster",
+          "sous_taches": [
+            {
+              "titre": "4.2.1.3.1 Générer l'observer MonsterObserver",
+              "description": "php artisan make:observer MonsterObserver --model=Monster"
+            },
+            {
+              "titre": "4.2.1.3.2 Notification admin : EntityModifiedNotification",
+              "description": "Notifier tous les admins à chaque modification (created, updated, deleted) d'un Monster."
+            },
+            {
+              "titre": "4.2.1.3.3 Notification créateur : EntityModifiedByOtherNotification",
+              "description": "Notifier le créateur du Monster si la modification vient d'un autre utilisateur."
+            },
+            {
+              "titre": "4.2.1.3.4 Enregistrer l'observer dans un ServiceProvider",
+              "description": "Enregistrer MonsterObserver dans AppServiceProvider ou un provider dédié."
+            },
+            {
+              "titre": "4.2.1.3.5 Créer les tests pour Monster",
+              "description": "Vérifier que les notifications sont envoyées aux admins et au créateur selon la logique."
+            },
+            {
+              "titre": "4.2.1.3.6 Ajouter les docblocks et exemples d'usage",
+              "description": "Documenter la notification et l'observer avec des docblocks et exemples d'appel."
+            },
+            {
+              "titre": "4.2.1.3.7 Log de la génération notification Monster",
+              "description": "Consigner dans logs.txt la génération et le test des notifications Monster, avec date et état."
+            }
+          ]
+        },
+        {
+          "titre": "4.2.1.4 NPC",
+          "sous_taches": [
+            {
+              "titre": "4.2.1.4.1 Générer l'observer NPCObserver",
+              "description": "php artisan make:observer NPCObserver --model=NPC"
+            },
+            {
+              "titre": "4.2.1.4.2 Notification admin : EntityModifiedNotification",
+              "description": "Notifier tous les admins à chaque modification (created, updated, deleted) d'un NPC."
+            },
+            {
+              "titre": "4.2.1.4.3 Notification créateur : EntityModifiedByOtherNotification",
+              "description": "Notifier le créateur du NPC si la modification vient d'un autre utilisateur."
+            },
+            {
+              "titre": "4.2.1.4.4 Enregistrer l'observer dans un ServiceProvider",
+              "description": "Enregistrer NPCObserver dans AppServiceProvider ou un provider dédié."
+            },
+            {
+              "titre": "4.2.1.4.5 Créer les tests pour NPC",
+              "description": "Vérifier que les notifications sont envoyées aux admins et au créateur selon la logique."
+            },
+            {
+              "titre": "4.2.1.4.6 Ajouter les docblocks et exemples d'usage",
+              "description": "Documenter la notification et l'observer avec des docblocks et exemples d'appel."
+            },
+            {
+              "titre": "4.2.1.4.7 Log de la génération notification NPC",
+              "description": "Consigner dans logs.txt la génération et le test des notifications NPC, avec date et état."
+            }
+          ]
+        },
+        {
+          "titre": "4.2.1.5 Item",
+          "sous_taches": [
+            {
+              "titre": "4.2.1.5.1 Générer l'observer ItemObserver",
+              "description": "php artisan make:observer ItemObserver --model=Item"
+            },
+            {
+              "titre": "4.2.1.5.2 Notification admin : EntityModifiedNotification",
+              "description": "Notifier tous les admins à chaque modification (created, updated, deleted) d'un Item."
+            },
+            {
+              "titre": "4.2.1.5.3 Notification créateur : EntityModifiedByOtherNotification",
+              "description": "Notifier le créateur de l'Item si la modification vient d'un autre utilisateur."
+            },
+            {
+              "titre": "4.2.1.5.4 Enregistrer l'observer dans un ServiceProvider",
+              "description": "Enregistrer ItemObserver dans AppServiceProvider ou un provider dédié."
+            },
+            {
+              "titre": "4.2.1.5.5 Créer les tests pour Item",
+              "description": "Vérifier que les notifications sont envoyées aux admins et au créateur selon la logique."
+            },
+            {
+              "titre": "4.2.1.5.6 Ajouter les docblocks et exemples d'usage",
+              "description": "Documenter la notification et l'observer avec des docblocks et exemples d'appel."
+            },
+            {
+              "titre": "4.2.1.5.7 Log de la génération notification Item",
+              "description": "Consigner dans logs.txt la génération et le test des notifications Item, avec date et état."
+            }
+          ]
+        },
+        {
+          "titre": "4.2.1.6 Resource",
+          "sous_taches": [
+            {
+              "titre": "4.2.1.6.1 Générer l'observer ResourceObserver",
+              "description": "php artisan make:observer ResourceObserver --model=Resource"
+            },
+            {
+              "titre": "4.2.1.6.2 Notification admin : EntityModifiedNotification",
+              "description": "Notifier tous les admins à chaque modification (created, updated, deleted) d'une Resource."
+            },
+            {
+              "titre": "4.2.1.6.3 Notification créateur : EntityModifiedByOtherNotification",
+              "description": "Notifier le créateur de la Resource si la modification vient d'un autre utilisateur."
+            },
+            {
+              "titre": "4.2.1.6.4 Enregistrer l'observer dans un ServiceProvider",
+              "description": "Enregistrer ResourceObserver dans AppServiceProvider ou un provider dédié."
+            },
+            {
+              "titre": "4.2.1.6.5 Créer les tests pour Resource",
+              "description": "Vérifier que les notifications sont envoyées aux admins et au créateur selon la logique."
+            },
+            {
+              "titre": "4.2.1.6.6 Ajouter les docblocks et exemples d'usage",
+              "description": "Documenter la notification et l'observer avec des docblocks et exemples d'appel."
+            },
+            {
+              "titre": "4.2.1.6.7 Log de la génération notification Resource",
+              "description": "Consigner dans logs.txt la génération et le test des notifications Resource, avec date et état."
+            }
+          ]
+        },
+        {
+          "titre": "4.2.1.7 Spell",
+          "sous_taches": [
+            {
+              "titre": "4.2.1.7.1 Générer l'observer SpellObserver",
+              "description": "php artisan make:observer SpellObserver --model=Spell"
+            },
+            {
+              "titre": "4.2.1.7.2 Notification admin : EntityModifiedNotification",
+              "description": "Notifier tous les admins à chaque modification (created, updated, deleted) d'un Spell."
+            },
+            {
+              "titre": "4.2.1.7.3 Notification créateur : EntityModifiedByOtherNotification",
+              "description": "Notifier le créateur du Spell si la modification vient d'un autre utilisateur."
+            },
+            {
+              "titre": "4.2.1.7.4 Enregistrer l'observer dans un ServiceProvider",
+              "description": "Enregistrer SpellObserver dans AppServiceProvider ou un provider dédié."
+            },
+            {
+              "titre": "4.2.1.7.5 Créer les tests pour Spell",
+              "description": "Vérifier que les notifications sont envoyées aux admins et au créateur selon la logique."
+            },
+            {
+              "titre": "4.2.1.7.6 Ajouter les docblocks et exemples d'usage",
+              "description": "Documenter la notification et l'observer avec des docblocks et exemples d'appel."
+            },
+            {
+              "titre": "4.2.1.7.7 Log de la génération notification Spell",
+              "description": "Consigner dans logs.txt la génération et le test des notifications Spell, avec date et état."
+            }
+          ]
+        },
+        {
+          "titre": "4.2.1.8 Capability",
+          "sous_taches": [
+            {
+              "titre": "4.2.1.8.1 Générer l'observer CapabilityObserver",
+              "description": "php artisan make:observer CapabilityObserver --model=Capability"
+            },
+            {
+              "titre": "4.2.1.8.2 Notification admin : EntityModifiedNotification",
+              "description": "Notifier tous les admins à chaque modification (created, updated, deleted) d'une Capability."
+            },
+            {
+              "titre": "4.2.1.8.3 Notification créateur : EntityModifiedByOtherNotification",
+              "description": "Notifier le créateur de la Capability si la modification vient d'un autre utilisateur."
+            },
+            {
+              "titre": "4.2.1.8.4 Enregistrer l'observer dans un ServiceProvider",
+              "description": "Enregistrer CapabilityObserver dans AppServiceProvider ou un provider dédié."
+            },
+            {
+              "titre": "4.2.1.8.5 Créer les tests pour Capability",
+              "description": "Vérifier que les notifications sont envoyées aux admins et au créateur selon la logique."
+            },
+            {
+              "titre": "4.2.1.8.6 Ajouter les docblocks et exemples d'usage",
+              "description": "Documenter la notification et l'observer avec des docblocks et exemples d'appel."
+            },
+            {
+              "titre": "4.2.1.8.7 Log de la génération notification Capability",
+              "description": "Consigner dans logs.txt la génération et le test des notifications Capability, avec date et état."
+            }
+          ]
+        },
+        {
+          "titre": "4.2.1.9 Attribute",
+          "sous_taches": [
+            {
+              "titre": "4.2.1.9.1 Générer l'observer AttributeObserver",
+              "description": "php artisan make:observer AttributeObserver --model=Attribute"
+            },
+            {
+              "titre": "4.2.1.9.2 Notification admin : EntityModifiedNotification",
+              "description": "Notifier tous les admins à chaque modification (created, updated, deleted) d'une Attribute."
+            },
+            {
+              "titre": "4.2.1.9.3 Notification créateur : EntityModifiedByOtherNotification",
+              "description": "Notifier le créateur de l'Attribute si la modification vient d'un autre utilisateur."
+            },
+            {
+              "titre": "4.2.1.9.4 Enregistrer l'observer dans un ServiceProvider",
+              "description": "Enregistrer AttributeObserver dans AppServiceProvider ou un provider dédié."
+            },
+            {
+              "titre": "4.2.1.9.5 Créer les tests pour Attribute",
+              "description": "Vérifier que les notifications sont envoyées aux admins et au créateur selon la logique."
+            },
+            {
+              "titre": "4.2.1.9.6 Ajouter les docblocks et exemples d'usage",
+              "description": "Documenter la notification et l'observer avec des docblocks et exemples d'appel."
+            },
+            {
+              "titre": "4.2.1.9.7 Log de la génération notification Attribute",
+              "description": "Consigner dans logs.txt la génération et le test des notifications Attribute, avec date et état."
+            }
+          ]
+        },
+        {
+          "titre": "4.2.1.10 Consumable",
+          "sous_taches": [
+            {
+              "titre": "4.2.1.10.1 Générer l'observer ConsumableObserver",
+              "description": "php artisan make:observer ConsumableObserver --model=Consumable"
+            },
+            {
+              "titre": "4.2.1.10.2 Notification admin : EntityModifiedNotification",
+              "description": "Notifier tous les admins à chaque modification (created, updated, deleted) d'un Consumable."
+            },
+            {
+              "titre": "4.2.1.10.3 Notification créateur : EntityModifiedByOtherNotification",
+              "description": "Notifier le créateur du Consumable si la modification vient d'un autre utilisateur."
+            },
+            {
+              "titre": "4.2.1.10.4 Enregistrer l'observer dans un ServiceProvider",
+              "description": "Enregistrer ConsumableObserver dans AppServiceProvider ou un provider dédié."
+            },
+            {
+              "titre": "4.2.1.10.5 Créer les tests pour Consumable",
+              "description": "Vérifier que les notifications sont envoyées aux admins et au créateur selon la logique."
+            },
+            {
+              "titre": "4.2.1.10.6 Ajouter les docblocks et exemples d'usage",
+              "description": "Documenter la notification et l'observer avec des docblocks et exemples d'appel."
+            },
+            {
+              "titre": "4.2.1.10.7 Log de la génération notification Consumable",
+              "description": "Consigner dans logs.txt la génération et le test des notifications Consumable, avec date et état."
+            }
+          ]
+        },
+        {
+          "titre": "4.2.1.11 Shop",
+          "sous_taches": [
+            {
+              "titre": "4.2.1.11.1 Générer l'observer ShopObserver",
+              "description": "php artisan make:observer ShopObserver --model=Shop"
+            },
+            {
+              "titre": "4.2.1.11.2 Notification admin : EntityModifiedNotification",
+              "description": "Notifier tous les admins à chaque modification (created, updated, deleted) d'un Shop."
+            },
+            {
+              "titre": "4.2.1.11.3 Notification créateur : EntityModifiedByOtherNotification",
+              "description": "Notifier le créateur du Shop si la modification vient d'un autre utilisateur."
+            },
+            {
+              "titre": "4.2.1.11.4 Enregistrer l'observer dans un ServiceProvider",
+              "description": "Enregistrer ShopObserver dans AppServiceProvider ou un provider dédié."
+            },
+            {
+              "titre": "4.2.1.11.5 Créer les tests pour Shop",
+              "description": "Vérifier que les notifications sont envoyées aux admins et au créateur selon la logique."
+            },
+            {
+              "titre": "4.2.1.11.6 Ajouter les docblocks et exemples d'usage",
+              "description": "Documenter la notification et l'observer avec des docblocks et exemples d'appel."
+            },
+            {
+              "titre": "4.2.1.11.7 Log de la génération notification Shop",
+              "description": "Consigner dans logs.txt la génération et le test des notifications Shop, avec date et état."
+            }
+          ]
+        },
+        {
+          "titre": "4.2.1.12 Specialization",
+          "sous_taches": [
+            {
+              "titre": "4.2.1.12.1 Générer l'observer SpecializationObserver",
+              "description": "php artisan make:observer SpecializationObserver --model=Specialization"
+            },
+            {
+              "titre": "4.2.1.12.2 Notification admin : EntityModifiedNotification",
+              "description": "Notifier tous les admins à chaque modification (created, updated, deleted) d'une Specialization."
+            },
+            {
+              "titre": "4.2.1.12.3 Notification créateur : EntityModifiedByOtherNotification",
+              "description": "Notifier le créateur de la Specialization si la modification vient d'un autre utilisateur."
+            },
+            {
+              "titre": "4.2.1.12.4 Enregistrer l'observer dans un ServiceProvider",
+              "description": "Enregistrer SpecializationObserver dans AppServiceProvider ou un provider dédié."
+            },
+            {
+              "titre": "4.2.1.12.5 Créer les tests pour Specialization",
+              "description": "Vérifier que les notifications sont envoyées aux admins et au créateur selon la logique."
+            },
+            {
+              "titre": "4.2.1.12.6 Ajouter les docblocks et exemples d'usage",
+              "description": "Documenter la notification et l'observer avec des docblocks et exemples d'appel."
+            },
+            {
+              "titre": "4.2.1.12.7 Log de la génération notification Specialization",
+              "description": "Consigner dans logs.txt la génération et le test des notifications Specialization, avec date et état."
+            }
+          ]
+        },
+        {
+          "titre": "4.2.1.13 Scenario",
+          "sous_taches": [
+            {
+              "titre": "4.2.1.13.1 Générer l'observer ScenarioObserver",
+              "description": "php artisan make:observer ScenarioObserver --model=Scenario"
+            },
+            {
+              "titre": "4.2.1.13.2 Notification admin : EntityModifiedNotification",
+              "description": "Notifier tous les admins à chaque modification (created, updated, deleted) d'un Scenario."
+            },
+            {
+              "titre": "4.2.1.13.3 Notification créateur : EntityModifiedByOtherNotification",
+              "description": "Notifier le créateur du Scenario si la modification vient d'un autre utilisateur."
+            },
+            {
+              "titre": "4.2.1.13.4 Enregistrer l'observer dans un ServiceProvider",
+              "description": "Enregistrer ScenarioObserver dans AppServiceProvider ou un provider dédié."
+            },
+            {
+              "titre": "4.2.1.13.5 Créer les tests pour Scenario",
+              "description": "Vérifier que les notifications sont envoyées aux admins et au créateur selon la logique."
+            },
+            {
+              "titre": "4.2.1.13.6 Ajouter les docblocks et exemples d'usage",
+              "description": "Documenter la notification et l'observer avec des docblocks et exemples d'appel."
+            },
+            {
+              "titre": "4.2.1.13.7 Log de la génération notification Scenario",
+              "description": "Consigner dans logs.txt la génération et le test des notifications Scenario, avec date et état."
+            }
+          ]
+        },
+        {
+          "titre": "4.2.1.14 Campaign",
+          "sous_taches": [
+            {
+              "titre": "4.2.1.14.1 Générer l'observer CampaignObserver",
+              "description": "php artisan make:observer CampaignObserver --model=Campaign"
+            },
+            {
+              "titre": "4.2.1.14.2 Notification admin : EntityModifiedNotification",
+              "description": "Notifier tous les admins à chaque modification (created, updated, deleted) d'une Campaign."
+            },
+            {
+              "titre": "4.2.1.14.3 Notification créateur : EntityModifiedByOtherNotification",
+              "description": "Notifier le créateur de la Campaign si la modification vient d'un autre utilisateur."
+            },
+            {
+              "titre": "4.2.1.14.4 Enregistrer l'observer dans un ServiceProvider",
+              "description": "Enregistrer CampaignObserver dans AppServiceProvider ou un provider dédié."
+            },
+            {
+              "titre": "4.2.1.14.5 Créer les tests pour Campaign",
+              "description": "Vérifier que les notifications sont envoyées aux admins et au créateur selon la logique."
+            },
+            {
+              "titre": "4.2.1.14.6 Ajouter les docblocks et exemples d'usage",
+              "description": "Documenter la notification et l'observer avec des docblocks et exemples d'appel."
+            },
+            {
+              "titre": "4.2.1.14.7 Log de la génération notification Campaign",
+              "description": "Consigner dans logs.txt la génération et le test des notifications Campaign, avec date et état."
+            }
+          ]
+        },
+        {
+          "titre": "4.2.1.15 Panoply",
+          "sous_taches": [
+            {
+              "titre": "4.2.1.15.1 Générer l'observer PanoplyObserver",
+              "description": "php artisan make:observer PanoplyObserver --model=Panoply"
+            },
+            {
+              "titre": "4.2.1.15.2 Notification admin : EntityModifiedNotification",
+              "description": "Notifier tous les admins à chaque modification (created, updated, deleted) d'un Panoply."
+            },
+            {
+              "titre": "4.2.1.15.3 Notification créateur : EntityModifiedByOtherNotification",
+              "description": "Notifier le créateur du Panoply si la modification vient d'un autre utilisateur."
+            },
+            {
+              "titre": "4.2.1.15.4 Enregistrer l'observer dans un ServiceProvider",
+              "description": "Enregistrer PanoplyObserver dans AppServiceProvider ou un provider dédié."
+            },
+            {
+              "titre": "4.2.1.15.5 Créer les tests pour Panoply",
+              "description": "Vérifier que les notifications sont envoyées aux admins et au créateur selon la logique."
+            },
+            {
+              "titre": "4.2.1.15.6 Ajouter les docblocks et exemples d'usage",
+              "description": "Documenter la notification et l'observer avec des docblocks et exemples d'appel."
+            },
+            {
+              "titre": "4.2.1.15.7 Log de la génération notification Panoply",
+              "description": "Consigner dans logs.txt la génération et le test des notifications Panoply, avec date et état."
+            }
+          ]
+        },
+        {
+          "titre": "4.2.1.16 Page",
+          "sous_taches": [
+            {
+              "titre": "4.2.1.16.1 Générer l'observer PageObserver",
+              "description": "php artisan make:observer PageObserver --model=Page"
+            },
+            {
+              "titre": "4.2.1.16.2 Notification admin : EntityModifiedNotification",
+              "description": "Notifier tous les admins à chaque modification (created, updated, deleted) d'une Page."
+            },
+            {
+              "titre": "4.2.1.16.3 Notification créateur : EntityModifiedByOtherNotification",
+              "description": "Notifier le créateur de la Page si la modification vient d'un autre utilisateur."
+            },
+            {
+              "titre": "4.2.1.16.4 Enregistrer l'observer dans un ServiceProvider",
+              "description": "Enregistrer PageObserver dans AppServiceProvider ou un provider dédié."
+            },
+            {
+              "titre": "4.2.1.16.5 Créer les tests pour Page",
+              "description": "Vérifier que les notifications sont envoyées aux admins et au créateur selon la logique."
+            },
+            {
+              "titre": "4.2.1.16.6 Ajouter les docblocks et exemples d'usage",
+              "description": "Documenter la notification et l'observer avec des docblocks et exemples d'appel."
+            },
+            {
+              "titre": "4.2.1.16.7 Log de la génération notification Page",
+              "description": "Consigner dans logs.txt la génération et le test des notifications Page, avec date et état."
+            }
+          ]
+        },
+        {
+          "titre": "4.2.1.17 Section",
+          "sous_taches": [
+            {
+              "titre": "4.2.1.17.1 Générer l'observer SectionObserver",
+              "description": "php artisan make:observer SectionObserver --model=Section"
+            },
+            {
+              "titre": "4.2.1.17.2 Notification admin : EntityModifiedNotification",
+              "description": "Notifier tous les admins à chaque modification (created, updated, deleted) d'une Section."
+            },
+            {
+              "titre": "4.2.1.17.3 Notification créateur : EntityModifiedByOtherNotification",
+              "description": "Notifier le créateur de la Section si la modification vient d'un autre utilisateur."
+            },
+            {
+              "titre": "4.2.1.17.4 Enregistrer l'observer dans un ServiceProvider",
+              "description": "Enregistrer SectionObserver dans AppServiceProvider ou un provider dédié."
+            },
+            {
+              "titre": "4.2.1.17.5 Créer les tests pour Section",
+              "description": "Vérifier que les notifications sont envoyées aux admins et au créateur selon la logique."
+            },
+            {
+              "titre": "4.2.1.17.6 Ajouter les docblocks et exemples d'usage",
+              "description": "Documenter la notification et l'observer avec des docblocks et exemples d'appel."
+            },
+            {
+              "titre": "4.2.1.17.7 Log de la génération notification Section",
+              "description": "Consigner dans logs.txt la génération et le test des notifications Section, avec date et état."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "titre": "4.2.2 Implémenter le système de jobs/queues",
+      "sous_taches": [
+        {
+          "titre": "4.2.2.1 Vérifier la présence du dossier Jobs",
+          "description": "Vérifier que app/Jobs/ existe."
+        },
+        {
+          "titre": "4.2.2.2 Générer un job de test",
+          "description": "php artisan make:job TestJob"
+        },
+        {
+          "titre": "4.2.2.3 Lancer la migration des jobs si besoin",
+          "description": "php artisan queue:table && php artisan migrate"
+        },
+        {
+          "titre": "4.2.2.4 Implémenter l'exécution du job de test",
+          "description": "Ajouter une méthode handle() qui écrit dans les logs."
+        },
+        {
+          "titre": "4.2.2.5 Créer un test unitaire pour le job",
+          "description": "Vérifier que le job est bien dispatché et exécuté."
+        },
+        {
+          "titre": "4.2.2.6 Ajouter les docblocks et exemples d'usage",
+          "description": "Documenter le job avec un docblock et un exemple d'appel dans un contrôleur."
+        },
+        {
+          "titre": "4.2.2.7 Log de la génération jobs/queues",
+          "description": "Consigner dans logs.txt la génération et le test des jobs/queues, avec date et état."
+        }
+      ]
+    },
+    {
+      "titre": "4.2.3 Jobs utilisateurs (User)",
+      "sous_taches": [
+        {
+          "titre": "4.2.3.1 Créer un job SendWelcomeEmailJob",
+          "description": "php artisan make:job SendWelcomeEmailJob ; envoyer un mail de bienvenue à la création d'un utilisateur (ShouldQueue)."
+        },
+        {
+          "titre": "4.2.3.2 Modifier l'envoi du mail de vérification d'email pour passer par la queue",
+          "description": "Surclasser la notification VerifyEmail pour qu'elle implémente ShouldQueue, ou utiliser Notification::sendNow avec ShouldQueue."
+        },
+        {
+          "titre": "4.2.3.3 Créer un job SendPasswordResetEmailJob",
+          "description": "php artisan make:job SendPasswordResetEmailJob ; envoyer le mail de réinitialisation de mot de passe via la queue."
+        },
+        {
+          "titre": "4.2.3.4 Créer un job SendPasswordChangedEmailJob",
+          "description": "php artisan make:job SendPasswordChangedEmailJob ; envoyer un mail lors du changement de mot de passe via la queue."
+        },
+        {
+          "titre": "4.2.3.5 Modifier les contrôleurs/observers pour dispatcher les jobs au bon moment",
+          "description": "Appeler les jobs dans les contrôleurs ou observers appropriés (création, reset, changement de mot de passe)."
+        },
+        {
+          "titre": "4.2.3.6 Créer les tests pour chaque job d'email utilisateur",
+          "description": "Vérifier que les jobs sont bien dispatchés et que les mails sont envoyés asynchrones."
+        },
+        {
+          "titre": "4.2.3.7 Documenter la logique et les jobs",
+          "description": "Ajouter docblocks, exemples d'usage, et consigner dans logs.txt."
+        }
+      ]
+    },
+    {
+      "titre": "4.2.4 Jobs images (compression/conversion webp)",
+      "sous_taches": [
+        {
+          "titre": "4.2.4.1 Créer un job ProcessImageJob",
+          "description": "php artisan make:job ProcessImageJob ; utiliser Imagick pour compresser et convertir les images uploadées en webp."
+        },
+        {
+          "titre": "4.2.4.2 Modifier l'upload d'image pour dispatcher le job après upload",
+          "description": "Appeler ProcessImageJob après chaque upload d'image (contrôleur, observer, etc.)."
+        },
+        {
+          "titre": "4.2.4.3 Créer les tests pour le job d'image",
+          "description": "Vérifier que les images sont bien compressées et converties en webp."
+        },
+        {
+          "titre": "4.2.4.4 Documenter la logique et le job",
+          "description": "Ajouter docblocks, exemples d'usage, et consigner dans logs.txt."
+        }
+      ]
+    },
+    {
+      "titre": "4.2.5 Implémenter le système de cache",
+      "sous_taches": [
+        {
+          "titre": "4.2.5.1 Demander à configurer le cache dans .env",
+          "description": "Demander à configurer CACHE_DRIVER dans .env (ex: file, redis)."
+        },
+        {
+          "titre": "4.2.5.2 Vérifier la config cache dans config/cache.php",
+          "description": "S'assurer que le driver choisi est bien configuré."
+        },
+        {
+          "titre": "4.2.5.3 Implémenter un exemple de mise en cache dans un contrôleur",
+          "description": "Utiliser Cache::remember() dans un contrôleur pour mettre en cache une requête simple."
+        },
+        {
+          "titre": "4.2.5.4 Créer un test unitaire pour le cache",
+          "description": "Vérifier que la donnée est bien mise en cache et expirée selon la config."
+        },
+        {
+          "titre": "4.2.5.5 Ajouter les docblocks et exemples d'usage",
+          "description": "Documenter l'utilisation du cache dans le contrôleur avec un docblock et un exemple."
+        },
+        {
+          "titre": "4.2.5.6 Log de la génération cache",
+          "description": "Consigner dans logs.txt la configuration et le test du cache, avec date et état."
+        }
+      ]
+    },
+    {
+      "titre": "4.2.6 Implémenter le système de formules dynamiques",
+      "sous_taches": [
+        {
+          "titre": "4.2.6.1 Créer le dossier Formula si absent",
+          "description": "Créer app/Formula/ pour le parser de formules dynamiques."
+        },
+        {
+          "titre": "4.2.6.2 Générer la classe FormulaParser",
+          "description": "Créer FormulaParser.php pour parser la syntaxe métier (voir CONTENT_OVERVIEW.md section 5)."
+        },
+        {
+          "titre": "4.2.6.3 Générer la classe FormulaValidator",
+          "description": "Créer FormulaValidator.php pour valider la syntaxe et la cohérence des formules."
+        },
+        {
+          "titre": "4.2.6.4 Générer la classe FormulaEvaluator",
+          "description": "Créer FormulaEvaluator.php pour évaluer les formules en toute sécurité."
+        },
+        {
+          "titre": "4.2.6.5 Ajouter les tests unitaires pour chaque classe",
+          "description": "Créer des tests PHPUnit pour le parsing, la validation et l'évaluation des formules (cas simples et cas limites)."
+        },
+        {
+          "titre": "4.2.6.6 Ajouter les docblocks et exemples d'usage",
+          "description": "Documenter chaque classe avec un docblock, la syntaxe attendue et des exemples d'appel."
+        },
+        {
+          "titre": "4.2.6.7 Log de la génération formules dynamiques",
+          "description": "Consigner dans logs.txt la génération et le test du parser de formules, avec date et état."
+        }
+      ]
+    },
+    {
+      "titre": "4.2.7 Vérifier les notifications d'authentification Laravel Breeze",
+      "sous_taches": [
+        {
+          "titre": "4.2.7.1 Vérifier l'envoi du mail de vérification d'email à l'inscription",
+          "description": "Vérifier la réception du mail de vérification (VerifyEmail notification)."
+        },
+        {
+          "titre": "4.2.7.2 Vérifier l'envoi du mail de réinitialisation du mot de passe",
+          "description": "Demander un mot de passe oublié, vérifier la réception du mail (ResetPassword notification)."
+        }
+      ]
+    },
+    {
+      "titre": "4.2.8 Vérification de la sous-partie",
+      "description": "Vérifier que toutes les tâches de cette sous-partie ont été réalisées correctement (détail adapté à la sous-partie)."
+    },
+    {
+      "titre": "4.2.9 Log de la sous-partie",
+      "description": "Consigner dans logs.txt un résumé daté de toutes les actions réalisées dans cette sous-partie, avec l'état de chaque tâche."
+    }
+  ]
+}
