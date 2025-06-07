@@ -1,37 +1,73 @@
 ---
-description: 
-globs: 
+description:
+globs:
 alwaysApply: false
 ---
-# Guide Cursor : Atomic Design
+# Règle Cursor : atomic-design (Mise à jour)
 
-## Définition
-L'Atomic Design est une méthodologie de conception d'interface modulaire, créée par Brad Frost, qui vise à organiser les composants UI en cinq niveaux hiérarchiques : atomes, molécules, organismes, templates et pages. Cette approche favorise la cohérence, la réutilisabilité et l'évolutivité des interfaces.
+## Centralisation des helpers
 
-Source : [usabilis.com/atomic-design](mdc:https:/www.usabilis.com/atomic-design)
+- **Tous les helpers universels** (props communes, accessibilité, mergeClasses, utilitaires custom, etc.) sont centralisés dans `uiHelper.js` (`/Utils/atomic-design/`).
+- **Helpers spécifiques aux inputs** (`getInputProps`, `getInputAttrs`) dans `atomManager.js`.
+- **Managers spécifiques** (`moleculeManager.js`, `organismManager.js`) possibles pour des besoins propres à ces niveaux, mais ils doivent réutiliser les helpers de `uiHelper.js`.
+- **Aucune duplication** : tout helper réutilisable à plusieurs niveaux doit être factorisé dans `uiHelper.js`.
 
-## Les 5 niveaux de l'Atomic Design
+## Utilisation dans les composants
 
-1. **Atomes** : Éléments de base de l'interface (boutons, champs, labels, icônes, etc.). Ils incarnent l'identité visuelle et sont utilisés seuls ou combinés.
-2. **Molécules** : Groupes d'atomes formant une unité fonctionnelle simple (ex : champ de recherche = label + input + bouton).
-3. **Organismes** : Composants complexes résultant de l'assemblage de molécules et/ou d'atomes (ex : header, liste de produits).
-4. **Templates** : Structures de page définissant la disposition des organismes, sans contenu réel (squelette de la page).
-5. **Pages** : Instances finales des templates, intégrant le contenu réel (textes, images, données dynamiques).
+- **Atoms** :
+  - Importent `getCommonProps`, `getCommonAttrs`, `mergeClasses`, `getCustomUtilityProps`, `getCustomUtilityClasses` depuis `uiHelper.js`.
+  - Les atoms de type input importent aussi `getInputProps`, `getInputAttrs` depuis `atomManager.js`.
+  - Exemple :
+    ```js
+    import { getCommonProps, getCommonAttrs, mergeClasses, getCustomUtilityProps, getCustomUtilityClasses } from '@/Utils/atomic-design/uiHelper';
+    import { getInputProps, getInputAttrs } from '@/Utils/atomic-design/atomManager';
+    ```
 
-## Avantages
-- Favorise la cohérence et la maintenabilité des interfaces.
-- Permet la réutilisation des composants à tous les niveaux.
-- Facilite la collaboration entre designers et développeurs.
-- S'intègre parfaitement dans une démarche de Design System.
+- **Molecules** :
+  - Importent les helpers de `uiHelper.js`.
+  - Peuvent importer des helpers de `moleculeManager.js` si besoin spécifique.
+  - Certaines molecules sont des composants DaisyUI (Fieldset, FileInput, AvatarGroup, Modal, etc.) et doivent suivre la même rigueur d'API et de documentation que les atoms.
+  - Exemple :
+    ```js
+    import { getCommonProps, getCommonAttrs, mergeClasses } from '@/Utils/atomic-design/uiHelper';
+    ```
 
-## Bonnes pratiques
-- Concevoir chaque composant comme un bloc indépendant et réutilisable.
-- Documenter chaque niveau (atomes, molécules, etc.) dans le Design System du projet.
-- Appliquer l'Atomic Design quel que soit le framework (Vue, React, Laravel Blade, etc.).
+- **Organisms** :
+  - Importent les helpers de `uiHelper.js`.
+  - Peuvent importer des helpers de `organismManager.js` si besoin spécifique.
 
-## Ressources complémentaires
-- [Présentation originale de Brad Frost](mdc:http:/bradfrost.com/blog/post/atomic-web-design)
-- [Pattern Lab](mdc:https:/patternlab.io)
+## Philosophie DRY et factorisation
 
-> Pour plus de détails, voir l'article de référence : [usabilis.com/atomic-design](mdc:https:/www.usabilis.com/atomic-design)
+- **Un helper ne doit jamais être dupliqué** : s'il est utile à plusieurs niveaux, il va dans `uiHelper.js`.
+- **Les managers spécifiques** (atomManager, moleculeManager, organismManager) ne doivent contenir que des helpers propres à leur niveau.
+- **La documentation de chaque composant** doit préciser l'origine des helpers utilisés.
+
+## DaisyUI et molecules
+
+- Certaines molecules sont des wrappers ou des compositions directes de composants DaisyUI (Fieldset, FileInput, AvatarGroup, Modal, etc.).
+- Elles doivent respecter la même rigueur d'API, de slots, de props et de documentation que les atoms.
+- Leur docBlock doit inclure un lien vers la documentation DaisyUI correspondante si applicable.
+
+## Exemple d'import pour chaque niveau
+
+- **Atom** :
+  ```js
+  import { getCommonProps, getCommonAttrs, mergeClasses } from '@/Utils/atomic-design/uiHelper';
+  import { getInputProps, getInputAttrs } from '@/Utils/atomic-design/atomManager';
+  ```
+- **Molecule** :
+  ```js
+  import { getCommonProps, getCommonAttrs, mergeClasses } from '@/Utils/atomic-design/uiHelper';
+  ```
+- **Organism** :
+  ```js
+  import { getCommonProps, getCommonAttrs, mergeClasses } from '@/Utils/atomic-design/uiHelper';
+  ```
+
+---
+
+**Résumé** :
+- Tous les composants UI (atoms, molecules, organisms) partagent les mêmes helpers universels via `uiHelper.js`.
+- Les helpers spécifiques (inputs, contextes, etc.) sont dans des managers dédiés.
+- Les molecules DaisyUI sont documentées et rigoureusement typées comme les atoms.
 

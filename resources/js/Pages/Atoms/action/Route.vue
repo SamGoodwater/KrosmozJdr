@@ -1,4 +1,6 @@
 <script setup>
+defineOptions({ inheritAttrs: false }); // Pour que les événements natifs soient transmis à l'atom
+
 /**
  * Route Atom (Lien Inertia + DaisyUI Link)
  *
@@ -11,6 +13,9 @@
  * - Applique les classes DaisyUI Link explicitement (link, link-primary, etc.)
  * - Accessibilité renforcée (role, aria, etc.)
  * - Tooltip intégré
+ *
+ * @see https://daisyui.com/components/link/
+ * @version DaisyUI v5.x
  *
  * @example
  * <Route href="/home">Accueil</Route>
@@ -30,12 +35,13 @@
  *
  * @note Toutes les classes DaisyUI Link sont explicites, pas de concaténation dynamique non couverte par Tailwind.
  * @note Le composant gère l'accessibilité, l'API Inertia et le tooltip intégré.
+ * @note Ce composant fusionne l'API DaisyUI Link et Inertia Link.
  */
 
 import { computed, ref } from 'vue';
 import { Link } from '@inertiajs/vue3';
 import Tooltip from '@/Pages/Atoms/feedback/Tooltip.vue';
-import { getCommonProps, getCommonAttrs } from '@/Utils/atom/atomManager';
+import { getCommonProps, getCommonAttrs, mergeClasses, getCustomUtilityClasses } from '@/Utils/atomic-design/uiHelper';
 
 const props = defineProps({
     ...getCommonProps(),
@@ -81,28 +87,31 @@ const hrefRef = computed(() => {
     return props.href;
 });
 
-function getAtomClasses(props) {
-    // Classes DaisyUI Link explicites
-    const classes = ['link'];
-    if (props.color === 'neutral') classes.push('link-neutral');
-    if (props.color === 'primary') classes.push('link-primary');
-    if (props.color === 'secondary') classes.push('link-secondary');
-    if (props.color === 'accent') classes.push('link-accent');
-    if (props.color === 'success') classes.push('link-success');
-    if (props.color === 'info') classes.push('link-info');
-    if (props.color === 'warning') classes.push('link-warning');
-    if (props.color === 'error') classes.push('link-error');
-    if (props.hover) classes.push('link-hover');
-    return classes.join(' ');
-}
-const atomClasses = computed(() => getAtomClasses(props));
+const atomClasses = computed(() =>
+    mergeClasses(
+        [
+            'link',
+            props.color === 'neutral' && 'link-neutral',
+            props.color === 'primary' && 'link-primary',
+            props.color === 'secondary' && 'link-secondary',
+            props.color === 'accent' && 'link-accent',
+            props.color === 'success' && 'link-success',
+            props.color === 'info' && 'link-info',
+            props.color === 'warning' && 'link-warning',
+            props.color === 'error' && 'link-error',
+            props.hover && 'link-hover',
+        ].filter(Boolean),
+        getCustomUtilityClasses(props),
+        props.class
+    )
+);
 const attrs = computed(() => getCommonAttrs(props));
 </script>
 
 <template>
     <Tooltip :content="props.tooltip" :placement="props.tooltip_placement">
         <Link :href="hrefRef" :target="target || undefined" :method="method" :replace="replace" :class="atomClasses"
-            v-bind="attrs">
+            v-bind="attrs" v-on="$attrs">
         <slot />
         </Link>
         <template v-if="typeof props.tooltip === 'object'" #tooltip>

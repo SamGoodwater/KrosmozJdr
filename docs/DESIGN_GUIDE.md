@@ -187,15 +187,81 @@ color-scheme: "light";
   - Les paramètres natifs DaisyUI (mêmes noms et valeurs que la doc DaisyUI)
   - Les paramètres d'accessibilité (aria-*, role, etc.)
   - Les paramètres HTML natifs nécessaires (type, href, etc.)
-  - Les paramètres d'action (onClick, etc.) si pertinent
 - **Les classes CSS doivent être écrites en toutes lettres dans le code (pas de calcul dynamique)** pour garantir la détection par Tailwind lors du build.
 - **Chaque atom intègre nativement un composant Tooltip** (voir DaisyUI Tooltip), avec les props :
   - `tooltip` (contenu simple ou complexe)
   - `tooltip_placement` (et non `location`, pour respecter la doc DaisyUI)
 - **Gestion flexible des props/template :**
-  - Pour chaque prop pouvant recevoir du contenu complexe (ex : tooltip, label, icon, etc.), accepter à la fois une valeur simple (string) et un slot/template nommé (ex : `#content`).
-  - Cela permet de passer soit une phrase simple, soit un contenu HTML/Vue complexe, tout en gardant un code lisible et flexible.
-  - Les props commun à tout les atoms sont inclu grâce à commonProps.js
+  - Pour chaque prop pouvant recevoir du contenu complexe (ex : tooltip, label, icon, etc.), accepter à la fois une valeur simple (string) et un slot/template nommé (ex : `#content`, `#label`).
+  - Privilégier les noms logiques pour les slots : `content`, `label`, etc.
+  - Les props communes à tous les atoms sont incluses grâce à commonProps.js
+- **Props de position :**
+  - Privilégier l'utilisation de `vertical` et `horizontal` comme props pour la gestion des positions, quand c'est possible (ex : placement d'un élément, alignement, etc.).
+- **Utilitaires custom :**
+  - N'utiliser `getCustomUtilityProps()` et `getCustomUtilityClasses()` que si l'atom le nécessite (ex : ombre, backdrop, opacity, etc.), **pas systématiquement** (inutile sur un Checkbox, par exemple).
+- **Pattern de composition des classes :**
+  - Utiliser `mergeClasses` pour composer les classes :
+    - 1er argument : toutes les classes DaisyUI explicites (jamais de concaténation dynamique non couverte par Tailwind).
+    - 2e argument : `getCustomUtilityClasses(props)` **si pertinent**.
+    - 3e argument : `props.class` pour la personnalisation utilisateur.
+- **Accessibilité :**
+  - Utiliser `getCommonAttrs(props)` pour générer les attributs HTML/accessibilité à appliquer à l'élément principal.
+- **Événements natifs :**
+  - Toujours utiliser `v-on="$attrs"` sur l'élément principal pour garantir la transmission des événements natifs (`@click`, etc.).
+  - Toujours utiliser `defineOptions({ inheritAttrs: false })` dans le script setup.
+- **Tooltip :**
+  - Tous les atoms (sauf Tooltip lui-même) doivent intégrer le composant `Tooltip` avec les props et slot appropriés.
+- **DocBlock :**
+  - Toujours documenter le composant, ses props, slots, et donner un exemple d'utilisation.
+
+**Exemple de structure d'atom à jour :**
+
+```vue
+<script setup>
+defineOptions({ inheritAttrs: false });
+import Tooltip from '@/Pages/Atoms/feedback/Tooltip.vue';
+import { getCommonProps, getCommonAttrs, mergeClasses } from '@/Utils/atomic-design/uiHelper';
+const props = defineProps({
+  ...getCommonProps(),
+  color: { type: String, default: '', validator: v => ['', 'primary', 'secondary', ...].includes(v) },
+  vertical: { type: String, default: '', validator: v => ['', 'top', 'middle', 'bottom'].includes(v) },
+  horizontal: { type: String, default: '', validator: v => ['', 'start', 'center', 'end'].includes(v) },
+  // ...getCustomUtilityProps() UNIQUEMENT si pertinent
+});
+const atomClasses = computed(() =>
+  mergeClasses(
+    [
+      'btn',
+      props.color === 'primary' && 'btn-primary',
+      // ...autres classes DaisyUI explicites
+    ].filter(Boolean),
+    // getCustomUtilityClasses(props) SI pertinent
+    props.class
+  )
+);
+const attrs = computed(() => getCommonAttrs(props));
+</script>
+<template>
+  <Tooltip :content="props.tooltip" :placement="props.tooltip_placement">
+    <button :class="atomClasses" v-bind="attrs" v-on="$attrs">
+      <slot name="content" />
+    </button>
+    <template v-if="typeof props.tooltip === 'object'" #tooltip>
+      <slot name="tooltip" />
+    </template>
+  </Tooltip>
+</template>
+```
+
+**Checklist des bonnes pratiques (mise à jour) :**
+- Pas de concaténation dynamique de classes DaisyUI/Tailwind non couverte par Tailwind.
+- mergeClasses obligatoire, avec classes DaisyUI explicites, utilitaires custom si pertinent, puis props.class.
+- getCustomUtilityProps() et getCustomUtilityClasses() uniquement si pertinent.
+- Props de position : privilégier vertical/horizontal.
+- Slots : privilégier les noms logiques (content, label, etc.).
+- v-on="$attrs" sur l'élément principal, defineOptions({ inheritAttrs: false }) dans le script setup.
+- Tooltip intégré partout sauf Tooltip lui-même.
+- DocBlock, accessibilité, pattern DRY, etc. toujours présents.
 
 ### Système atomManager, InputLabel et Validator
 
@@ -289,6 +355,102 @@ color-scheme: "light";
 - **Paragraphe** : Permet d'avoir les styles de base du thème DaisyUI.
 
 > Cette liste est évolutive et sera complétée au fil des besoins.
+
+### Pattern de composition des classes : mergeClasses
+
+Tous les composants atomiques (atoms) doivent utiliser la fonction utilitaire `mergeClasses` pour composer leurs classes CSS :
+
+- **Le premier argument** liste explicitement toutes les classes DaisyUI (et variantes) nécessaires, sans aucune génération dynamique de noms de classes (pour garantir la détection par Tailwind).
+- **Le second argument** fusionne les utilitaires custom (shadow, backdrop, opacity, etc.) via `getCustomUtilityClasses(props)`.
+- **Le dernier argument** fusionne les classes personnalisées passées via `props.class` (priorité à l'utilisateur).
+
+**Exemple :**
+```js
+const atomClasses = computed(() =>
+  mergeClasses(
+    [
+      'btn',
+      props.color === 'primary' && 'btn-primary',
+      props.size === 'lg' && 'btn-lg',
+      // ...autres variantes DaisyUI explicites
+    ].filter(Boolean),
+    getCustomUtilityClasses(props),
+    props.class
+  )
+);
+```
+
+> Ce pattern est **obligatoire** pour tous les atoms du design system. Il garantit la compatibilité avec Tailwind (aucune classe manquante au build), la maintenabilité, la cohérence et la prévisibilité du rendu sur l'ensemble du projet.
+
+**Toute nouvelle contribution ou refactorisation d'atom doit suivre ce schéma.**
+
+## Atomic Design – Helpers et organisation des utilitaires
+
+### 1. Centralisation des helpers
+
+- **Tous les helpers universels** (props communes, accessibilité, mergeClasses, utilitaires custom, etc.) sont centralisés dans `uiHelper.js` (dossier `/Utils/atomic-design/`).
+- **Les helpers spécifiques aux inputs** (`getInputProps`, `getInputAttrs`) sont dans `atomManager.js` (même dossier).
+- **Des managers spécifiques** (`moleculeManager.js`, `organismManager.js`) peuvent être créés si des besoins propres à ces niveaux apparaissent, mais ils doivent réutiliser les helpers de `uiHelper.js`.
+- **Aucune duplication** : factoriser tout helper réutilisable dans `uiHelper.js`.
+
+### 2. Utilisation dans les composants
+
+- **Atoms** :
+  - Importent `getCommonProps`, `getCommonAttrs`, `mergeClasses`, `getCustomUtilityProps`, `getCustomUtilityClasses` depuis `uiHelper.js`.
+  - Les atoms de type input importent aussi `getInputProps`, `getInputAttrs` depuis `atomManager.js`.
+  - Exemple :
+    ```js
+    import { getCommonProps, getCommonAttrs, mergeClasses, getCustomUtilityProps, getCustomUtilityClasses } from '@/Utils/atomic-design/uiHelper';
+    import { getInputProps, getInputAttrs } from '@/Utils/atomic-design/atomManager';
+    ```
+
+- **Molecules** :
+  - Importent les helpers de `uiHelper.js`.
+  - Peuvent importer des helpers de `moleculeManager.js` si besoin spécifique.
+  - Certaines molecules sont des composants DaisyUI (ex : Fieldset, FileInput, AvatarGroup, Modal, etc.) et doivent suivre la même rigueur d'API et de documentation que les atoms.
+  - Exemple :
+    ```js
+    import { getCommonProps, getCommonAttrs, mergeClasses } from '@/Utils/atomic-design/uiHelper';
+    ```
+
+- **Organisms** :
+  - Importent les helpers de `uiHelper.js`.
+  - Peuvent importer des helpers de `organismManager.js` si besoin spécifique.
+
+### 3. Philosophie DRY et factorisation
+
+- **Un helper ne doit jamais être dupliqué** : s'il est utile à plusieurs niveaux, il va dans `uiHelper.js`.
+- **Les managers spécifiques** (atomManager, moleculeManager, organismManager) ne doivent contenir que des helpers propres à leur niveau.
+- **La documentation de chaque composant** doit préciser l'origine des helpers utilisés.
+
+### 4. DaisyUI et molecules
+
+- Certaines molecules sont des wrappers ou des compositions directes de composants DaisyUI (ex : Fieldset, FileInput, AvatarGroup, Modal, etc.).
+- Elles doivent respecter la même rigueur d'API, de slots, de props et de documentation que les atoms.
+- Leur docBlock doit inclure un lien vers la documentation DaisyUI correspondante si applicable.
+
+### 5. Exemple d'import pour chaque niveau
+
+- **Atom** :
+  ```js
+  import { getCommonProps, getCommonAttrs, mergeClasses } from '@/Utils/atomic-design/uiHelper';
+  import { getInputProps, getInputAttrs } from '@/Utils/atomic-design/atomManager';
+  ```
+- **Molecule** :
+  ```js
+  import { getCommonProps, getCommonAttrs, mergeClasses } from '@/Utils/atomic-design/uiHelper';
+  ```
+- **Organism** :
+  ```js
+  import { getCommonProps, getCommonAttrs, mergeClasses } from '@/Utils/atomic-design/uiHelper';
+  ```
+
+---
+
+**En résumé** :
+- Tous les composants UI (atoms, molecules, organisms) partagent les mêmes helpers universels via `uiHelper.js`.
+- Les helpers spécifiques (inputs, contextes, etc.) sont dans des managers dédiés.
+- Les molecules DaisyUI sont documentées et rigoureusement typées comme les atoms.
 
 ## 10. Atomic Design – Molecules principaux
 

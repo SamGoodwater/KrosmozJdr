@@ -1,16 +1,22 @@
 <script setup>
+defineOptions({ inheritAttrs: false }); // Pour que les évéments natifs soient transmis à l'atom
+
 /**
  * Badge Atom (DaisyUI)
  *
  * @description
- * Composant atomique Badge conforme DaisyUI et Atomic Design.
+ * Composant atomique Badge conforme DaisyUI (v5.x) et Atomic Design.
  * - Slot par défaut : contenu du badge (texte, nombre, icône, etc.)
  * - Prop content : texte simple à afficher (prioritaire sur slot par défaut)
  * - Slot #content : contenu HTML complexe (prioritaire sur prop content)
  * - Props DaisyUI : color, size, variant (outline, dash, soft, ghost)
+ * - Props utilitaires custom : shadow, backdrop, opacity
  * - Toutes les classes DaisyUI sont écrites en toutes lettres
  * - Accessibilité renforcée (role, aria, etc.)
  * - Tooltip intégré
+ *
+ * @see https://daisyui.com/components/badge/
+ * @version DaisyUI v5.x
  *
  * @example
  * <Badge color="primary" content="Nouveau" />
@@ -24,10 +30,12 @@
  * @props {String|Object} tooltip, tooltip_placement, id, ariaLabel, role, tabindex - hérités de commonProps
  * @slot default - Contenu du badge (fallback)
  * @slot content - Contenu HTML complexe prioritaire
+ *
+ * @note Toutes les classes DaisyUI et utilitaires custom sont explicites, pas de concaténation dynamique non couverte par Tailwind.
  */
 import { computed } from "vue"
 import Tooltip from '@/Pages/Atoms/feedback/Tooltip.vue';
-import { getCommonProps, getCommonAttrs, getCustomUtilityProps, getCustomUtilityClasses } from '@/Utils/atom/atomManager';
+import { getCommonProps, getCommonAttrs, getCustomUtilityProps, getCustomUtilityClasses, mergeClasses } from '@/Utils/atomic-design/uiHelper';
 
 const props = defineProps({
     ...getCommonProps(),
@@ -54,40 +62,38 @@ const props = defineProps({
     }
 });
 
-function getAtomClasses(props) {
-    const classes = ['badge'];
-    // Couleur DaisyUI
-    if (props.color === 'neutral') classes.push('badge-neutral');
-    if (props.color === 'primary') classes.push('badge-primary');
-    if (props.color === 'secondary') classes.push('badge-secondary');
-    if (props.color === 'accent') classes.push('badge-accent');
-    if (props.color === 'info') classes.push('badge-info');
-    if (props.color === 'success') classes.push('badge-success');
-    if (props.color === 'warning') classes.push('badge-warning');
-    if (props.color === 'error') classes.push('badge-error');
-    // Taille DaisyUI
-    if (props.size === 'xs') classes.push('badge-xs');
-    if (props.size === 'sm') classes.push('badge-sm');
-    if (props.size === 'md') classes.push('badge-md');
-    if (props.size === 'lg') classes.push('badge-lg');
-    if (props.size === 'xl') classes.push('badge-xl');
-    // Style DaisyUI
-    if (props.variant === 'outline') classes.push('badge-outline');
-    if (props.variant === 'dash') classes.push('badge-dash');
-    if (props.variant === 'soft') classes.push('badge-soft');
-    if (props.variant === 'ghost') classes.push('badge-ghost');
-    // Utilitaires custom
-    classes.push(...getCustomUtilityClasses(props));
-    return classes.join(' ');
-}
-
-const atomClasses = computed(() => getAtomClasses(props));
+const atomClasses = computed(() =>
+    mergeClasses(
+        [
+            'badge',
+            props.color === 'neutral' && 'badge-neutral',
+            props.color === 'primary' && 'badge-primary',
+            props.color === 'secondary' && 'badge-secondary',
+            props.color === 'accent' && 'badge-accent',
+            props.color === 'info' && 'badge-info',
+            props.color === 'success' && 'badge-success',
+            props.color === 'warning' && 'badge-warning',
+            props.color === 'error' && 'badge-error',
+            props.size === 'xs' && 'badge-xs',
+            props.size === 'sm' && 'badge-sm',
+            props.size === 'md' && 'badge-md',
+            props.size === 'lg' && 'badge-lg',
+            props.size === 'xl' && 'badge-xl',
+            props.variant === 'outline' && 'badge-outline',
+            props.variant === 'dash' && 'badge-dash',
+            props.variant === 'soft' && 'badge-soft',
+            props.variant === 'ghost' && 'badge-ghost',
+        ].filter(Boolean),
+        getCustomUtilityClasses(props),
+        props.class
+    )
+);
 const attrs = computed(() => getCommonAttrs(props));
 </script>
 
 <template>
     <Tooltip :content="props.tooltip" :placement="props.tooltip_placement">
-        <span :class="atomClasses" v-bind="attrs">
+        <span :class="atomClasses" v-bind="attrs" v-on="$attrs">
             <span v-if="content && !$slots.default">{{ content }}</span>
             <slot name="content" v-else />
         </span>

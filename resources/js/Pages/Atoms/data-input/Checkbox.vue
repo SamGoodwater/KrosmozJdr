@@ -1,9 +1,11 @@
 <script setup>
+defineOptions({ inheritAttrs: false }); // Pour que les évéments natifs soient transmis à l'atom
+
 /**
  * Checkbox Atom (DaisyUI)
  *
  * @description
- * Composant atomique Checkbox conforme DaisyUI et Atomic Design.
+ * Composant atomique Checkbox conforme DaisyUI (v5.x) et Atomic Design.
  * - Gère tous les cas d'usage checkbox (simple, indéterminé, aide, validation, etc.)
  * - Props DaisyUI : color, size
  * - Props communes input via getInputProps()
@@ -13,6 +15,9 @@
  * - Toutes les classes DaisyUI sont explicites
  * - Accessibilité renforcée (role, aria, etc.)
  * - Tooltip intégré
+ *
+ * @see https://daisyui.com/components/checkbox/
+ * @version DaisyUI v5.x
  *
  * @example
  * <Checkbox label="Se souvenir de moi" v-model="checked" color="primary" size="md" :validator="form.errors.remember" help="Cochez pour rester connecté" />
@@ -36,12 +41,13 @@
  * @slot help - Message d'aide custom
  * @slot default - Slot pour contenu custom à droite de la checkbox
  *
- * @note La valeur de la checkbox est contrôlée par modelValue (v-model) si défini, sinon par checked.
+ * @note Toutes les classes DaisyUI et utilitaires custom sont explicites, pas de concaténation dynamique non couverte par Tailwind.
  */
 import { computed, ref, watch, onMounted, defineExpose } from 'vue';
 import Tooltip from '@/Pages/Atoms/feedback/Tooltip.vue';
 import Validator from '@/Pages/Atoms/data-input/Validator.vue';
-import { getCommonProps, getCommonAttrs, getInputProps, getCustomUtilityProps, getCustomUtilityClasses } from '@/Utils/atom/atomManager';
+import { getCommonProps, getCommonAttrs, getCustomUtilityProps, getCustomUtilityClasses, mergeClasses } from '@/Utils/atomic-design/uiHelper';
+import { getInputAttrs, getInputProps } from '@/Utils/atomic-design/atomManager';
 import InputLabel from '@/Pages/Atoms/data-input/InputLabel.vue';
 
 const props = defineProps({
@@ -71,38 +77,33 @@ const props = defineProps({
 const emit = defineEmits(['update:modelValue']);
 const checkboxRef = ref(null);
 
-const atomClasses = computed(() => {
-    const classes = ['checkbox'];
-    // Couleur DaisyUI
-    if (props.color === 'neutral') classes.push('checkbox-neutral');
-    if (props.color === 'primary') classes.push('checkbox-primary');
-    if (props.color === 'secondary') classes.push('checkbox-secondary');
-    if (props.color === 'accent') classes.push('checkbox-accent');
-    if (props.color === 'info') classes.push('checkbox-info');
-    if (props.color === 'success') classes.push('checkbox-success');
-    if (props.color === 'warning') classes.push('checkbox-warning');
-    if (props.color === 'error') classes.push('checkbox-error');
-    // Taille DaisyUI
-    if (props.size === 'xs') classes.push('checkbox-xs');
-    if (props.size === 'sm') classes.push('checkbox-sm');
-    if (props.size === 'md') classes.push('checkbox-md');
-    if (props.size === 'lg') classes.push('checkbox-lg');
-    if (props.size === 'xl') classes.push('checkbox-xl');
-    // Utilitaires custom
-    classes.push(...getCustomUtilityClasses(props));
-    // Erreur
-    if (props.errorMessage || props.validator) classes.push('validator checkbox-error');
-    return classes.join(' ');
-});
+const atomClasses = computed(() =>
+    mergeClasses(
+        [
+            'checkbox',
+            props.color === 'neutral' && 'checkbox-neutral',
+            props.color === 'primary' && 'checkbox-primary',
+            props.color === 'secondary' && 'checkbox-secondary',
+            props.color === 'accent' && 'checkbox-accent',
+            props.color === 'info' && 'checkbox-info',
+            props.color === 'success' && 'checkbox-success',
+            props.color === 'warning' && 'checkbox-warning',
+            props.color === 'error' && 'checkbox-error',
+            props.size === 'xs' && 'checkbox-xs',
+            props.size === 'sm' && 'checkbox-sm',
+            props.size === 'md' && 'checkbox-md',
+            props.size === 'lg' && 'checkbox-lg',
+            props.size === 'xl' && 'checkbox-xl',
+            (props.errorMessage || props.validator) && 'validator checkbox-error',
+        ].filter(Boolean),
+        getCustomUtilityClasses(props),
+        props.class
+    )
+);
 
 const attrs = computed(() => ({
     ...getCommonAttrs(props),
-    name: props.name || undefined,
-    required: props.required || undefined,
-    readonly: props.readonly || undefined,
-    disabled: props.disabled || undefined,
-    autofocus: props.autofocus || undefined,
-    id: props.id || undefined,
+    ...getInputAttrs(props),
     'aria-checked': isChecked.value,
 }));
 
@@ -149,7 +150,7 @@ defineExpose({ focus: () => checkboxRef.value && checkboxRef.value.focus() });
                 </template>
             </InputLabel>
             <div class="flex items-center gap-2">
-                <input ref="checkboxRef" type="checkbox" v-bind="attrs" :id="checkboxId"
+                <input ref="checkboxRef" type="checkbox" v-bind="attrs" v-on="$attrs" :id="checkboxId"
                     :class="[atomClasses, isChecked ? bgOn : bgOff]" :checked="isChecked" @input="onInput"
                     :aria-invalid="!!errorMessage || validator" />
                 <slot />

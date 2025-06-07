@@ -1,22 +1,30 @@
 <script setup>
+defineOptions({ inheritAttrs: false }); // Pour que les événements natifs soient transmis à l'atom
+
 /**
  * Tooltip Atom (DaisyUI)
  *
  * @description
- * Composant atomique Tooltip conforme DaisyUI et Atomic Design.
+ * Composant atomique Tooltip conforme DaisyUI (v5.x) et Atomic Design.
  * - Slot par défaut : élément déclencheur (trigger)
- * - Slot #content : contenu complexe du tooltip (optionnel)
- * - Prop content : string simple pour le tooltip (fallback)
- * - Props : placement, color, open, responsive, + commonProps (sauf tooltip/tooltip_placement)
- * - Toutes les classes DaisyUI sont écrites en toutes lettres
+ * - Slot #content : contenu complexe du tooltip (optionnel, sinon prop content)
+ * - Prop content : string simple pour le tooltip (fallback si pas de slot)
+ * - Props DaisyUI : placement, color, open, responsive
+ * - Props utilitaires custom : shadow, backdrop, opacity (via getCustomUtilityProps)
+ * - Props d'accessibilité et HTML natif héritées de commonProps (sauf tooltip/tooltip_placement)
+ * - Toutes les classes DaisyUI sont écrites en toutes lettres (aucune concaténation dynamique)
  * - Accessibilité renforcée (role, aria, etc.)
+ * - Seul atome à ne pas intégrer Tooltip (pas de récursivité)
+ *
+ * @see https://daisyui.com/components/tooltip/
+ * @version DaisyUI v5.x (5.0.43)
  *
  * @example
  * <Tooltip content="Info-bulle simple">
  *   <button>Survois-moi</button>
  * </Tooltip>
  *
- * <Tooltip placement="right">
+ * <Tooltip placement="right" color="primary" open>
  *   <template #default>
  *     <i class="fa fa-info-circle"></i>
  *   </template>
@@ -27,12 +35,27 @@
  *     </div>
  *   </template>
  * </Tooltip>
+ *
+ * @props {String} content - Texte simple du tooltip (optionnel, sinon slot #content)
+ * @props {String} placement - Position du tooltip ('top', 'right', 'bottom', 'left'), défaut 'top'
+ * @props {String} color - Couleur DaisyUI ('', 'neutral', 'primary', 'secondary', 'accent', 'info', 'success', 'warning', 'error')
+ * @props {Boolean} open - Force l'ouverture du tooltip
+ * @props {String} responsive - Breakpoint responsive DaisyUI ('sm', 'md', 'lg', 'xl', '2xl')
+ * @props {String} shadow, backdrop, opacity - utilitaires custom ('' | 'xs' | ...)
+ * @props {String} id, ariaLabel, role, tabindex, class, style, disabled - hérités de commonProps (sauf tooltip/tooltip_placement)
+ * @slot default - Élément déclencheur (trigger)
+ * @slot content - Contenu HTML complexe du tooltip (optionnel, prioritaire sur prop content)
+ *
+ * @note Toutes les classes DaisyUI sont explicites, pas de concaténation dynamique non couverte par Tailwind.
+ * @note Accessibilité : role="tooltip" sur .tooltip-content, aria-label, tabindex, etc. transmis.
+ * @note Seul atome à ne pas intégrer Tooltip (pas de récursivité).
  */
 import { computed } from 'vue';
-import { getCommonProps, getCommonAttrs } from '@/Utils/atom/atomManager';
+import { getCommonProps, getCommonAttrs, getCustomUtilityProps, getCustomUtilityClasses, mergeClasses } from '@/Utils/atomic-design/uiHelper';
 
 const props = defineProps({
     ...getCommonProps({ exclude: ['tooltip', 'tooltip_placement'] }),
+    ...getCustomUtilityProps(),
     // Contenu du tooltip (string simple)
     content: {
         type: String,
@@ -62,45 +85,38 @@ const props = defineProps({
     },
 });
 
-// Fonction qui retourne toutes les classes DaisyUI possibles en toutes lettres
-function getAtomClasses(props) {
-    const classes = [];
-    // Responsive
-    if (props.responsive) {
-        // On liste explicitement toutes les variantes possibles
-        if (props.responsive === 'sm') classes.push('sm:tooltip');
-        if (props.responsive === 'md') classes.push('md:tooltip');
-        if (props.responsive === 'lg') classes.push('lg:tooltip');
-        if (props.responsive === 'xl') classes.push('xl:tooltip');
-        if (props.responsive === '2xl') classes.push('2xl:tooltip');
-    } else {
-        classes.push('tooltip');
-    }
-    // Placement
-    if (props.placement === 'top') classes.push('tooltip-top');
-    if (props.placement === 'right') classes.push('tooltip-right');
-    if (props.placement === 'bottom') classes.push('tooltip-bottom');
-    if (props.placement === 'left') classes.push('tooltip-left');
-    // Couleur
-    if (props.color === 'neutral') classes.push('tooltip-neutral');
-    if (props.color === 'primary') classes.push('tooltip-primary');
-    if (props.color === 'secondary') classes.push('tooltip-secondary');
-    if (props.color === 'accent') classes.push('tooltip-accent');
-    if (props.color === 'info') classes.push('tooltip-info');
-    if (props.color === 'success') classes.push('tooltip-success');
-    if (props.color === 'warning') classes.push('tooltip-warning');
-    if (props.color === 'error') classes.push('tooltip-error');
-    // Ouvert
-    if (props.open) classes.push('tooltip-open');
-    return classes.join(' ');
-}
-
-const atomClasses = computed(() => getAtomClasses(props));
+const atomClasses = computed(() =>
+    mergeClasses(
+        [
+            props.responsive === 'sm' && 'sm:tooltip',
+            props.responsive === 'md' && 'md:tooltip',
+            props.responsive === 'lg' && 'lg:tooltip',
+            props.responsive === 'xl' && 'xl:tooltip',
+            props.responsive === '2xl' && '2xl:tooltip',
+            !props.responsive && 'tooltip',
+            props.placement === 'top' && 'tooltip-top',
+            props.placement === 'right' && 'tooltip-right',
+            props.placement === 'bottom' && 'tooltip-bottom',
+            props.placement === 'left' && 'tooltip-left',
+            props.color === 'neutral' && 'tooltip-neutral',
+            props.color === 'primary' && 'tooltip-primary',
+            props.color === 'secondary' && 'tooltip-secondary',
+            props.color === 'accent' && 'tooltip-accent',
+            props.color === 'info' && 'tooltip-info',
+            props.color === 'success' && 'tooltip-success',
+            props.color === 'warning' && 'tooltip-warning',
+            props.color === 'error' && 'tooltip-error',
+            props.open && 'tooltip-open',
+        ].filter(Boolean),
+        getCustomUtilityClasses(props),
+        props.class
+    )
+);
 const attrs = computed(() => getCommonAttrs(props));
 </script>
 
 <template>
-    <div :class="atomClasses" v-bind="attrs" :data-tip="!$slots.content ? content : undefined">
+    <div :class="atomClasses" v-bind="attrs" v-on="$attrs" :data-tip="!$slots.content ? content : undefined">
         <slot />
         <template v-if="$slots.content">
             <div class="tooltip-content" role="tooltip">

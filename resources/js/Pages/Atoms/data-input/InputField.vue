@@ -1,9 +1,11 @@
 <script setup>
+defineOptions({ inheritAttrs: false }); // Pour que les évéments natifs soient transmis à l'atom
+
 /**
  * InputField Atom (DaisyUI + Custom Utility + Edition réactive)
  *
  * @description
- * Composant atomique InputField conforme DaisyUI et Atomic Design.
+ * Composant atomique InputField conforme DaisyUI (v5.x) et Atomic Design.
  * - Gère tous les types d'input (text, email, password, number, url, tel, search, date, etc.)
  * - Props DaisyUI : color, size, variant, type
  * - Props communes input via getInputProps()
@@ -14,6 +16,11 @@
  * - Toutes les classes DaisyUI sont explicites
  * - Accessibilité renforcée (role, aria, etc.)
  * - Tooltip intégré
+ *
+ * @see https://daisyui.com/components/input/
+ * @version DaisyUI v5.x
+ *
+ * @note Toutes les classes DaisyUI sont explicites, pas de concaténation dynamique non couverte par Tailwind.
  *
  * @example
  * <InputField type="text" color="primary" size="lg" label="Nom" v-model="name" />
@@ -52,7 +59,8 @@
 import { computed, ref, watch, onMounted, onUnmounted, defineExpose } from 'vue';
 import Tooltip from '@/Pages/Atoms/feedback/Tooltip.vue';
 import Validator from '@/Pages/Atoms/data-input/Validator.vue';
-import { getCommonProps, getCommonAttrs, getInputProps, getInputAttrs, getCustomUtilityProps, getCustomUtilityClasses } from '@/Utils/atom/atomManager';
+import { getCommonProps, getCommonAttrs, getCustomUtilityProps, getCustomUtilityClasses, mergeClasses } from '@/Utils/atomic-design/uiHelper';
+import { getInputAttrs, getInputProps } from '@/Utils/atomic-design/atomManager';
 import InputLabel from '@/Pages/Atoms/data-input/InputLabel.vue';
 import useEditableField from '@/Composables/form/useEditableField';
 import Btn from '@/Pages/Atoms/action/Btn.vue';
@@ -147,32 +155,31 @@ onUnmounted(() => {
 defineExpose({ focus: () => inputRef.value && inputRef.value.focus() });
 
 function getAtomClasses(props) {
-    const classes = ['input'];
-    // Couleur DaisyUI
-    if (props.color === 'neutral') classes.push('input-neutral');
-    if (props.color === 'primary') classes.push('input-primary');
-    if (props.color === 'secondary') classes.push('input-secondary');
-    if (props.color === 'accent') classes.push('input-accent');
-    if (props.color === 'info') classes.push('input-info');
-    if (props.color === 'success') classes.push('input-success');
-    if (props.color === 'warning') classes.push('input-warning');
-    if (props.color === 'error') classes.push('input-error');
-    // Taille DaisyUI
-    if (props.size === 'xs') classes.push('input-xs');
-    if (props.size === 'sm') classes.push('input-sm');
-    if (props.size === 'md') classes.push('input-md');
-    if (props.size === 'lg') classes.push('input-lg');
-    if (props.size === 'xl') classes.push('input-xl');
-    // Variant DaisyUI
-    if (props.variant === 'ghost') classes.push('input-ghost');
-    if (props.variant === 'outline') classes.push('input-outline');
-    if (props.variant === 'bordered') classes.push('input-bordered');
-    if (props.variant === 'glass') classes.push('glass');
-    // Utilitaires custom
-    classes.push(...getCustomUtilityClasses(props));
-    // Erreur
-    if (props.errorMessage || props.validator) classes.push('validator input-error');
-    return classes.join(' ');
+    return mergeClasses(
+        [
+            'input',
+            props.color === 'neutral' && 'input-neutral',
+            props.color === 'primary' && 'input-primary',
+            props.color === 'secondary' && 'input-secondary',
+            props.color === 'accent' && 'input-accent',
+            props.color === 'info' && 'input-info',
+            props.color === 'success' && 'input-success',
+            props.color === 'warning' && 'input-warning',
+            props.color === 'error' && 'input-error',
+            props.size === 'xs' && 'input-xs',
+            props.size === 'sm' && 'input-sm',
+            props.size === 'md' && 'input-md',
+            props.size === 'lg' && 'input-lg',
+            props.size === 'xl' && 'input-xl',
+            props.variant === 'ghost' && 'input-ghost',
+            props.variant === 'outline' && 'input-outline',
+            props.variant === 'bordered' && 'input-bordered',
+            props.variant === 'glass' && 'glass',
+            (props.errorMessage || props.validator) && 'validator input-error',
+        ].filter(Boolean),
+        getCustomUtilityClasses(props),
+        props.class
+    );
 }
 
 const atomClasses = computed(() => getAtomClasses(props));
@@ -213,7 +220,7 @@ const inputId = computed(() => props.id || `inputfield-${Math.random().toString(
                             <slot name="leftLabel" />
                         </span>
                         <!-- Input principal -->
-                        <input ref="inputRef" v-bind="attrs" :id="inputId" :class="[
+                        <input ref="inputRef" v-bind="attrs" v-on="$attrs" :id="inputId" :class="[
                             atomClasses,
                             $slots.leftLabel ? 'pl-10' : '',
                             $slots.rightLabel ? 'pr-10' : ''
@@ -257,7 +264,7 @@ const inputId = computed(() => props.id || `inputfield-${Math.random().toString(
                         </template>
                     </InputLabel>
                     <!-- Input principal -->
-                    <input ref="inputRef" v-bind="attrs" :id="inputId" :class="[
+                    <input ref="inputRef" v-bind="attrs" v-on="$attrs" :id="inputId" :class="[
                         atomClasses,
                         $slots.leftLabel ? 'pl-10' : '',
                         $slots.rightLabel ? 'pr-10' : ''

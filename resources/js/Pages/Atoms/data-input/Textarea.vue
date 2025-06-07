@@ -1,9 +1,11 @@
 <script setup>
+defineOptions({ inheritAttrs: false }); // Pour que les évéments natifs soient transmis à l'atom
+
 /**
  * Textarea Atom (DaisyUI + Custom Utility + Edition réactive)
  *
  * @description
- * Composant atomique Textarea conforme DaisyUI et Atomic Design.
+ * Composant atomique Textarea conforme DaisyUI (v5.x) et Atomic Design.
  * - Gère tous les cas d'usage textarea (multiligne, aide, validation, etc.)
  * - Props DaisyUI : color, size, variant
  * - Props communes input via getInputProps()
@@ -14,6 +16,11 @@
  * - Toutes les classes DaisyUI sont explicites
  * - Accessibilité renforcée (role, aria, etc.)
  * - Tooltip intégré
+ *
+ * @see https://daisyui.com/components/textarea/
+ * @version DaisyUI v5.x
+ *
+ * @note Toutes les classes DaisyUI sont explicites, pas de concaténation dynamique non couverte par Tailwind.
  *
  * @example
  * <Textarea label="Bio" v-model="bio" color="primary" size="md" :validator="form.errors.bio" help="Quelques lignes sur vous" useFieldComposable :debounceTime="300" />
@@ -44,7 +51,8 @@
 import { computed, ref, onMounted, onUnmounted, defineExpose } from 'vue';
 import Tooltip from '@/Pages/Atoms/feedback/Tooltip.vue';
 import Validator from '@/Pages/Atoms/data-input/Validator.vue';
-import { getCommonProps, getCommonAttrs, getInputProps, getInputAttrs, getCustomUtilityProps, getCustomUtilityClasses } from '@/Utils/atom/atomManager';
+import { getCommonProps, getCommonAttrs, getCustomUtilityProps, getCustomUtilityClasses, mergeClasses } from '@/Utils/atomic-design/uiHelper';
+import { getInputProps, getInputAttrs } from '@/Utils/atomic-design/atomManager';
 import InputLabel from '@/Pages/Atoms/data-input/InputLabel.vue';
 import useEditableField from '@/Composables/form/useEditableField';
 import Btn from '@/Pages/Atoms/action/Btn.vue';
@@ -130,30 +138,29 @@ onUnmounted(() => {
 defineExpose({ focus: () => textareaRef.value && textareaRef.value.focus() });
 
 function getAtomClasses(props) {
-    const classes = ['textarea'];
-    // Couleur DaisyUI
-    if (props.color === 'neutral') classes.push('textarea-neutral');
-    if (props.color === 'primary') classes.push('textarea-primary');
-    if (props.color === 'secondary') classes.push('textarea-secondary');
-    if (props.color === 'accent') classes.push('textarea-accent');
-    if (props.color === 'info') classes.push('textarea-info');
-    if (props.color === 'success') classes.push('textarea-success');
-    if (props.color === 'warning') classes.push('textarea-warning');
-    if (props.color === 'error') classes.push('textarea-error');
-    // Taille DaisyUI
-    if (props.size === 'xs') classes.push('textarea-xs');
-    if (props.size === 'sm') classes.push('textarea-sm');
-    if (props.size === 'md') classes.push('textarea-md');
-    if (props.size === 'lg') classes.push('textarea-lg');
-    if (props.size === 'xl') classes.push('textarea-xl');
-    // Variant DaisyUI
-    if (props.variant === 'ghost') classes.push('textarea-ghost');
-    if (props.variant === 'bordered') classes.push('textarea-bordered');
-    // Utilitaires custom
-    classes.push(...getCustomUtilityClasses(props));
-    // Erreur
-    if (props.errorMessage || props.validator) classes.push('validator textarea-error');
-    return classes.join(' ');
+    return mergeClasses(
+        [
+            'textarea',
+            props.color === 'neutral' && 'textarea-neutral',
+            props.color === 'primary' && 'textarea-primary',
+            props.color === 'secondary' && 'textarea-secondary',
+            props.color === 'accent' && 'textarea-accent',
+            props.color === 'info' && 'textarea-info',
+            props.color === 'success' && 'textarea-success',
+            props.color === 'warning' && 'textarea-warning',
+            props.color === 'error' && 'textarea-error',
+            props.size === 'xs' && 'textarea-xs',
+            props.size === 'sm' && 'textarea-sm',
+            props.size === 'md' && 'textarea-md',
+            props.size === 'lg' && 'textarea-lg',
+            props.size === 'xl' && 'textarea-xl',
+            props.variant === 'ghost' && 'textarea-ghost',
+            props.variant === 'bordered' && 'textarea-bordered',
+            (props.errorMessage || props.validator) && 'validator textarea-error',
+        ].filter(Boolean),
+        getCustomUtilityClasses(props),
+        props.class
+    );
 }
 
 const atomClasses = computed(() => getAtomClasses(props));
@@ -175,9 +182,9 @@ const textareaId = computed(() => props.id || `textarea-${Math.random().toString
                 </template>
             </InputLabel>
             <div class="relative w-full">
-                <textarea ref="textareaRef" v-bind="attrs" :id="textareaId" :class="atomClasses" :value="displayValue"
-                    @input="onInput" @blur="onBlur" :aria-invalid="!!errorMessage || validator === 'error'" :rows="rows"
-                    :cols="cols" />
+                <textarea ref="textareaRef" v-bind="attrs" v-on="$attrs" :id="textareaId" :class="atomClasses"
+                    :value="displayValue" @input="onInput" @blur="onBlur"
+                    :aria-invalid="!!errorMessage || validator === 'error'" :rows="rows" :cols="cols" />
                 <!-- Bouton reset -->
                 <Btn v-if="props.useFieldComposable && isFieldModified" class="absolute right-2 top-2 z-20" size="xs"
                     variant="ghost" circle @click="handleReset" :aria-label="'Réinitialiser'">

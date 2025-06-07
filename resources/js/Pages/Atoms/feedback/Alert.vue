@@ -1,9 +1,11 @@
 <script setup>
+defineOptions({ inheritAttrs: false }); // Pour que les évéments natifs soient transmis à l'atom
+
 /**
  * Alert Atom (DaisyUI + Custom Utility)
  *
  * @description
- * Composant atomique Alert conforme DaisyUI et Atomic Design.
+ * Composant atomique Alert conforme DaisyUI (v5.x) et Atomic Design.
  * - Slots : #icon (icône SVG ou composant), #content (contenu HTML), #action (boutons)
  * - Prop content : texte simple (prioritaire si pas de slot #content)
  * - Props DaisyUI : color (info, success, warning, error), variant (outline, dash, soft), direction (vertical/horizontal)
@@ -13,6 +15,11 @@
  * - Toutes les classes DaisyUI sont écrites en toutes lettres
  * - Les classes utilitaires custom sont ajoutées dynamiquement
  * - Accessibilité renforcée (role, aria, etc.)
+ *
+ * @see https://daisyui.com/components/alert/
+ * @version DaisyUI v5.x
+ *
+ * @note Toutes les classes DaisyUI et utilitaires custom sont explicites, pas de concaténation dynamique non couverte par Tailwind.
  *
  * @example
  * <Alert color="info" content="Nouvelle mise à jour disponible !" />
@@ -34,7 +41,7 @@
  */
 import { computed } from 'vue';
 import Tooltip from '@/Pages/Atoms/feedback/Tooltip.vue';
-import { getCommonProps, getCommonAttrs, getCustomUtilityProps, getCustomUtilityClasses } from '@/Utils/atom/atomManager';
+import { getCommonProps, getCommonAttrs, getCustomUtilityProps, getCustomUtilityClasses, mergeClasses } from '@/Utils/atomic-design/uiHelper';
 
 const props = defineProps({
     ...getCommonProps(),
@@ -64,34 +71,32 @@ const props = defineProps({
     },
 });
 
-function getAtomClasses(props) {
-    const classes = ['alert'];
-    // Couleur DaisyUI
-    if (props.color === 'info') classes.push('alert-info');
-    if (props.color === 'success') classes.push('alert-success');
-    if (props.color === 'warning') classes.push('alert-warning');
-    if (props.color === 'error') classes.push('alert-error');
-    // Variant DaisyUI
-    if (props.variant === 'outline') classes.push('alert-outline');
-    if (props.variant === 'dash') classes.push('alert-dash');
-    if (props.variant === 'soft') classes.push('alert-soft');
-    // Direction DaisyUI
-    if (props.direction === 'vertical') classes.push('alert-vertical');
-    if (props.direction === 'horizontal') classes.push('alert-horizontal');
-    // Responsive : vertical sur mobile, horizontal sur desktop
-    if (!props.direction) classes.push('alert-vertical', 'sm:alert-horizontal');
-    // Utilitaires custom
-    classes.push(...getCustomUtilityClasses(props));
-    return classes.join(' ');
-}
-
-const atomClasses = computed(() => getAtomClasses(props));
+const atomClasses = computed(() =>
+    mergeClasses(
+        [
+            'alert',
+            props.color === 'info' && 'alert-info',
+            props.color === 'success' && 'alert-success',
+            props.color === 'warning' && 'alert-warning',
+            props.color === 'error' && 'alert-error',
+            props.variant === 'outline' && 'alert-outline',
+            props.variant === 'dash' && 'alert-dash',
+            props.variant === 'soft' && 'alert-soft',
+            props.direction === 'vertical' && 'alert-vertical',
+            props.direction === 'horizontal' && 'alert-horizontal',
+            !props.direction && 'alert-vertical',
+            !props.direction && 'sm:alert-horizontal',
+        ].filter(Boolean),
+        getCustomUtilityClasses(props),
+        props.class
+    )
+);
 const attrs = computed(() => getCommonAttrs(props));
 </script>
 
 <template>
     <Tooltip :content="props.tooltip" :placement="props.tooltip_placement">
-        <div :class="atomClasses" v-bind="attrs" role="alert">
+        <div :class="atomClasses" v-bind="attrs" role="alert" v-on="$attrs">
             <!-- Icone + contenu côte à côte -->
             <div class="flex items-center gap-3 flex-1">
                 <span v-if="$slots.icon && show_icon" class="shrink-0">

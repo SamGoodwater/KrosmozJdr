@@ -1,4 +1,6 @@
 <script setup>
+defineOptions({ inheritAttrs: false }); // Pour que les évéments natifs soient transmis à l'atom
+
 /**
  * Icon Atom (Atomic Design, DaisyUI)
  *
@@ -8,6 +10,8 @@
  * - La taille contrôle la hauteur (height), la largeur est auto
  * - Si disabled=true, l'icône est affichée en noir et blanc (grayscale)
  * - Tooltip intégré via commonProps
+ *
+ * @note Cet atom n'utilise PAS DaisyUI (aucune classe DaisyUI), il est purement utilitaire et basé sur Image.
  *
  * @example
  * <Icon source="icons/modules/pa" alt="PA" size="md" />
@@ -21,7 +25,7 @@
  */
 import { computed } from 'vue';
 import Image from '@/Pages/Atoms/data-display/Image.vue';
-import { getCommonProps } from '@/Utils/atom/atomManager';
+import { getCommonProps } from '@/Utils/atomic-design/uiHelper';
 
 const sizeHeightMap = {
     xs: '0.75rem',
@@ -45,18 +49,24 @@ const props = defineProps({
         default: 'md',
         validator: v => ['xs', 'sm', 'md', 'lg', 'xl', '2xl', '3xl', '4xl', '5xl', '6xl'].includes(v),
     },
+    class: { type: String, default: '' },
 });
 
 const height = computed(() => sizeHeightMap[props.size] || sizeHeightMap.md);
 const grayscale = computed(() => props.disabled ? { filter: 'grayscale(100%)' } : {});
 
+const atomClasses = computed(() => {
+    return mergeClasses(
+        ['icon'],
+        props.class
+    );
+});
 </script>
 
 <template>
-    <Image :source="props.source" :alt="props.alt" :height="height" :size="''" :style="grayscale"
-        :tooltip="props.tooltip" :tooltip_placement="props.tooltip_placement" :id="props.id"
-        :ariaLabel="props.ariaLabel" :role="props.role" :tabindex="props.tabindex" :disabled="props.disabled"
-        class="icon" />
+    <Image :source="props.source" :alt="props.alt" :height="height" :size="''" v-on="$attrs" :style="grayscale"
+        :class="atomClasses" :tooltip="props.tooltip" :tooltip_placement="props.tooltip_placement" :id="props.id"
+        :ariaLabel="props.ariaLabel" :role="props.role" :tabindex="props.tabindex" :disabled="props.disabled" />
 </template>
 
 <style scoped lang="scss">

@@ -1,9 +1,11 @@
 <script setup>
+defineOptions({ inheritAttrs: false }); // Pour que les évéments natifs soient transmis à l'atom
+
 /**
  * Toggle Atom (DaisyUI)
  *
  * @description
- * Composant atomique Toggle conforme DaisyUI et Atomic Design.
+ * Composant atomique Toggle conforme DaisyUI (v5.x) et Atomic Design.
  * - Gère tous les cas d'usage toggle (switch, aide, validation, etc.)
  * - Props DaisyUI : color, size
  * - Props utilitaires custom : shadow, backdrop, opacity
@@ -14,6 +16,11 @@
  * - Toutes les classes DaisyUI sont explicites
  * - Accessibilité renforcée (role, aria, etc.)
  * - Tooltip intégré
+ *
+ * @see https://daisyui.com/components/toggle/
+ * @version DaisyUI v5.x
+ *
+ * @note Toutes les classes DaisyUI sont explicites, pas de concaténation dynamique non couverte par Tailwind.
  *
  * @example
  * <Toggle v-model="enabled" label="Activer la fonctionnalité" color="primary" size="lg" bgOn="bg-green-500" bgOff="bg-gray-300">
@@ -47,7 +54,8 @@
 import { computed, ref, watch, onMounted, defineExpose } from 'vue';
 import Tooltip from '@/Pages/Atoms/feedback/Tooltip.vue';
 import Validator from '@/Pages/Atoms/data-input/Validator.vue';
-import { getCommonProps, getCommonAttrs, getInputProps, getCustomUtilityProps, getCustomUtilityClasses } from '@/Utils/atom/atomManager';
+import { getCommonProps, getCommonAttrs, getCustomUtilityProps, getCustomUtilityClasses, mergeClasses } from '@/Utils/atomic-design/uiHelper';
+import { getInputProps, getInputAttrs } from '@/Utils/atomic-design/atomManager';
 import InputLabel from '@/Pages/Atoms/data-input/InputLabel.vue';
 
 const props = defineProps({
@@ -73,38 +81,33 @@ const props = defineProps({
 const emit = defineEmits(['update:modelValue']);
 const toggleRef = ref(null);
 
-const atomClasses = computed(() => {
-    const classes = ['toggle'];
-    // Couleur DaisyUI
-    if (props.color === 'neutral') classes.push('toggle-neutral');
-    if (props.color === 'primary') classes.push('toggle-primary');
-    if (props.color === 'secondary') classes.push('toggle-secondary');
-    if (props.color === 'accent') classes.push('toggle-accent');
-    if (props.color === 'info') classes.push('toggle-info');
-    if (props.color === 'success') classes.push('toggle-success');
-    if (props.color === 'warning') classes.push('toggle-warning');
-    if (props.color === 'error') classes.push('toggle-error');
-    // Taille DaisyUI
-    if (props.size === 'xs') classes.push('toggle-xs');
-    if (props.size === 'sm') classes.push('toggle-sm');
-    if (props.size === 'md') classes.push('toggle-md');
-    if (props.size === 'lg') classes.push('toggle-lg');
-    if (props.size === 'xl') classes.push('toggle-xl');
-    // Utilitaires custom
-    classes.push(...getCustomUtilityClasses(props));
-    // Erreur
-    if (props.errorMessage || props.validator) classes.push('validator toggle-error');
-    return classes.join(' ');
-});
+const atomClasses = computed(() =>
+    mergeClasses(
+        [
+            'toggle',
+            props.color === 'neutral' && 'toggle-neutral',
+            props.color === 'primary' && 'toggle-primary',
+            props.color === 'secondary' && 'toggle-secondary',
+            props.color === 'accent' && 'toggle-accent',
+            props.color === 'info' && 'toggle-info',
+            props.color === 'success' && 'toggle-success',
+            props.color === 'warning' && 'toggle-warning',
+            props.color === 'error' && 'toggle-error',
+            props.size === 'xs' && 'toggle-xs',
+            props.size === 'sm' && 'toggle-sm',
+            props.size === 'md' && 'toggle-md',
+            props.size === 'lg' && 'toggle-lg',
+            props.size === 'xl' && 'toggle-xl',
+            (props.errorMessage || props.validator) && 'validator toggle-error',
+        ].filter(Boolean),
+        getCustomUtilityClasses(props),
+        props.class
+    )
+);
 
 const attrs = computed(() => ({
     ...getCommonAttrs(props),
-    name: props.name || undefined,
-    required: props.required || undefined,
-    readonly: props.readonly || undefined,
-    disabled: props.disabled || undefined,
-    autofocus: props.autofocus || undefined,
-    id: props.id || undefined,
+    ...getInputAttrs(props),
     'aria-checked': isChecked.value,
 }));
 
@@ -152,8 +155,9 @@ defineExpose({ focus: () => toggleRef.value && toggleRef.value.focus() });
             </InputLabel>
             <div class="flex items-center gap-2">
                 <label :class="[isChecked ? bgOn : bgOff, 'toggle', atomClasses]" :for="toggleId">
-                    <input ref="toggleRef" type="checkbox" v-bind="attrs" :id="toggleId" :checked="isChecked"
-                        @input="onInput" :aria-invalid="!!errorMessage || validator" class="hidden" />
+                    <input ref="toggleRef" type="checkbox" v-bind="attrs" v-on="$attrs" :id="toggleId"
+                        :checked="isChecked" @input="onInput" :aria-invalid="!!errorMessage || validator"
+                        class="hidden" />
                     <span class="flex items-center justify-center w-full h-full">
                         <template v-if="isChecked">
                             <slot name="iconOn" />

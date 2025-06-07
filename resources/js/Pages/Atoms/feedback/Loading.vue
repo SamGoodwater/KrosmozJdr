@@ -1,13 +1,20 @@
 <script setup>
+defineOptions({ inheritAttrs: false }); // Pour que les évéments natifs soient transmis à l'atom
+
 /**
  * Loading Atom (DaisyUI)
  *
  * @description
- * Composant atomique Loading conforme DaisyUI et Atomic Design.
+ * Composant atomique Loading conforme DaisyUI (v5.x) et Atomic Design.
  * - Affiche une animation de chargement (spinner, dots, ring, ball, bars, infinity)
  * - Props DaisyUI : type, size, color
  * - Toutes les classes DaisyUI sont écrites en toutes lettres
  * - Slot par défaut pour accessibilité (ex: "Chargement…")
+ *
+ * @see https://daisyui.com/components/loading/
+ * @version DaisyUI v5.x
+ *
+ * @note Toutes les classes DaisyUI sont explicites, pas de concaténation dynamique non couverte par Tailwind.
  *
  * @example
  * <Loading />
@@ -20,8 +27,11 @@
  * @slot default - Texte d'accessibilité (optionnel)
  */
 import { computed } from 'vue';
+import Tooltip from '@/Pages/Atoms/feedback/Tooltip.vue';
+import { getCommonProps, getCommonAttrs, mergeClasses } from '@/Utils/atomic-design/uiHelper';
 
 const props = defineProps({
+    ...getCommonProps(),
     type: {
         type: String,
         default: 'spinner',
@@ -39,37 +49,44 @@ const props = defineProps({
     },
 });
 
-function getAtomClasses(props) {
-    const classes = ['loading'];
-    if (props.type === 'spinner') classes.push('loading-spinner');
-    if (props.type === 'dots') classes.push('loading-dots');
-    if (props.type === 'ring') classes.push('loading-ring');
-    if (props.type === 'ball') classes.push('loading-ball');
-    if (props.type === 'bars') classes.push('loading-bars');
-    if (props.type === 'infinity') classes.push('loading-infinity');
-    if (props.size === 'xs') classes.push('loading-xs');
-    if (props.size === 'sm') classes.push('loading-sm');
-    if (props.size === 'md') classes.push('loading-md');
-    if (props.size === 'lg') classes.push('loading-lg');
-    if (props.size === 'xl') classes.push('loading-xl');
-    if (props.color === 'primary') classes.push('text-primary');
-    if (props.color === 'secondary') classes.push('text-secondary');
-    if (props.color === 'accent') classes.push('text-accent');
-    if (props.color === 'neutral') classes.push('text-neutral');
-    if (props.color === 'info') classes.push('text-info');
-    if (props.color === 'success') classes.push('text-success');
-    if (props.color === 'warning') classes.push('text-warning');
-    if (props.color === 'error') classes.push('text-error');
-    return classes.join(' ');
-}
-
-const atomClasses = computed(() => getAtomClasses(props));
+const atomClasses = computed(() =>
+    mergeClasses(
+        [
+            'loading',
+            props.type === 'spinner' && 'loading-spinner',
+            props.type === 'dots' && 'loading-dots',
+            props.type === 'ring' && 'loading-ring',
+            props.type === 'ball' && 'loading-ball',
+            props.type === 'bars' && 'loading-bars',
+            props.type === 'infinity' && 'loading-infinity',
+            props.size === 'xs' && 'loading-xs',
+            props.size === 'sm' && 'loading-sm',
+            props.size === 'md' && 'loading-md',
+            props.size === 'lg' && 'loading-lg',
+            props.size === 'xl' && 'loading-xl',
+            props.color === 'primary' && 'text-primary',
+            props.color === 'secondary' && 'text-secondary',
+            props.color === 'accent' && 'text-accent',
+            props.color === 'neutral' && 'text-neutral',
+            props.color === 'info' && 'text-info',
+            props.color === 'success' && 'text-success',
+            props.color === 'warning' && 'text-warning',
+            props.color === 'error' && 'text-error',
+        ].filter(Boolean),
+        props.class
+    )
+);
 </script>
 
 <template>
-    <span :class="atomClasses" role="status" aria-live="polite">
-        <slot>Chargement…</slot>
-    </span>
+    <Tooltip :content="props.tooltip" :placement="props.tooltip_placement">
+        <span :class="atomClasses" role="status" aria-live="polite" v-on="$attrs">
+            <slot>Chargement…</slot>
+        </span>
+        <template v-if="typeof props.tooltip === 'object'" #tooltip>
+            <slot name="tooltip" />
+        </template>
+    </Tooltip>
 </template>
 
 <style scoped>

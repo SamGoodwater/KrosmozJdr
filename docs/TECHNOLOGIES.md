@@ -52,7 +52,6 @@ Le projet utilise les dernières recommandations en matière de sécurité, de q
 ## Organisation du code
 
 - `project/` : code source principal (backend Laravel, API, frontend VueJS intégré)
-- `docs_project/` : documentation, guides, schémas, etc.
 - `storage/` : images, icônes, fichiers uploadés (créé automatiquement par Laravel, voir DESIGN_GUIDE.md pour la gestion des assets)
 
 ## Gestion des assets
@@ -99,10 +98,3 @@ Le projet utilise les dernières recommandations en matière de sécurité, de q
   - Le parser de formules Krosmoz-JDR est développé sur-mesure (solution custom) pour répondre à la syntaxe métier (accolades, crochets, opérateurs, fonctions, conditions, min/max, etc.), en s'inspirant si besoin de `symfony/expression-language` pour l'évaluation sécurisée.
 
 > La documentation technique doit expliquer la syntaxe, l'intégration et l'utilisation des formules dans le projet.
-
-## Checklist projet – Structure technique
-
-- La checklist de génération du projet est organisée en fichiers JSON par sous-partie dans `docs_project/checklist/`.
-- Le fichier `checklist.json` sert d'index et référence tous les fichiers de sous-parties.
-- Pour toute automatisation, génération ou vérification, charger uniquement le fichier de la sous-partie concernée.
-- Cette organisation optimise la gestion du contexte pour l'IA et la maintenabilité du projet.

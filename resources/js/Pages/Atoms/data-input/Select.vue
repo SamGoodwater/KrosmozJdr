@@ -1,9 +1,11 @@
 <script setup>
+defineOptions({ inheritAttrs: false }); // Pour que les évéments natifs soient transmis à l'atom
+
 /**
  * Select Atom (DaisyUI + Custom Utility + Edition réactive)
  *
  * @description
- * Composant atomique Select conforme DaisyUI et Atomic Design.
+ * Composant atomique Select conforme DaisyUI (v5.x) et Atomic Design.
  * - Gère tous les cas d'usage select (simple, multiple, aide, validation, etc.)
  * - Props DaisyUI : color, size, variant
  * - Props communes input via getInputProps()
@@ -14,6 +16,11 @@
  * - Toutes les classes DaisyUI sont explicites
  * - Accessibilité renforcée (role, aria, etc.)
  * - Tooltip intégré
+ *
+ * @see https://daisyui.com/components/select/
+ * @version DaisyUI v5.x
+ *
+ * @note Toutes les classes DaisyUI sont explicites, pas de concaténation dynamique non couverte par Tailwind.
  *
  * @example
  * <Select label="Couleur" v-model="color" :options="[
@@ -47,7 +54,8 @@
 import { computed, ref, onMounted, onUnmounted, defineExpose } from 'vue';
 import Tooltip from '@/Pages/Atoms/feedback/Tooltip.vue';
 import Validator from '@/Pages/Atoms/data-input/Validator.vue';
-import { getCommonProps, getCommonAttrs, getInputProps, getInputAttrs, getCustomUtilityProps, getCustomUtilityClasses } from '@/Utils/atom/atomManager';
+import { getCommonProps, getCommonAttrs, getCustomUtilityProps, getCustomUtilityClasses, mergeClasses } from '@/Utils/atomic-design/uiHelper';
+import { getInputProps, getInputAttrs } from '@/Utils/atomic-design/atomManager';
 import InputLabel from '@/Pages/Atoms/data-input/InputLabel.vue';
 import useEditableField from '@/Composables/form/useEditableField';
 import Btn from '@/Pages/Atoms/action/Btn.vue';
@@ -134,30 +142,29 @@ onUnmounted(() => {
 defineExpose({ focus: () => selectRef.value && selectRef.value.focus() });
 
 function getAtomClasses(props) {
-    const classes = ['select'];
-    // Couleur DaisyUI
-    if (props.color === 'neutral') classes.push('select-neutral');
-    if (props.color === 'primary') classes.push('select-primary');
-    if (props.color === 'secondary') classes.push('select-secondary');
-    if (props.color === 'accent') classes.push('select-accent');
-    if (props.color === 'info') classes.push('select-info');
-    if (props.color === 'success') classes.push('select-success');
-    if (props.color === 'warning') classes.push('select-warning');
-    if (props.color === 'error') classes.push('select-error');
-    // Taille DaisyUI
-    if (props.size === 'xs') classes.push('select-xs');
-    if (props.size === 'sm') classes.push('select-sm');
-    if (props.size === 'md') classes.push('select-md');
-    if (props.size === 'lg') classes.push('select-lg');
-    if (props.size === 'xl') classes.push('select-xl');
-    // Variant DaisyUI
-    if (props.variant === 'ghost') classes.push('select-ghost');
-    if (props.variant === 'bordered') classes.push('select-bordered');
-    // Utilitaires custom
-    classes.push(...getCustomUtilityClasses(props));
-    // Erreur
-    if (props.errorMessage || props.validator) classes.push('validator select-error');
-    return classes.join(' ');
+    return mergeClasses(
+        [
+            'select',
+            props.color === 'neutral' && 'select-neutral',
+            props.color === 'primary' && 'select-primary',
+            props.color === 'secondary' && 'select-secondary',
+            props.color === 'accent' && 'select-accent',
+            props.color === 'info' && 'select-info',
+            props.color === 'success' && 'select-success',
+            props.color === 'warning' && 'select-warning',
+            props.color === 'error' && 'select-error',
+            props.size === 'xs' && 'select-xs',
+            props.size === 'sm' && 'select-sm',
+            props.size === 'md' && 'select-md',
+            props.size === 'lg' && 'select-lg',
+            props.size === 'xl' && 'select-xl',
+            props.variant === 'ghost' && 'select-ghost',
+            props.variant === 'bordered' && 'select-bordered',
+            (props.errorMessage || props.validator) && 'validator select-error',
+        ].filter(Boolean),
+        getCustomUtilityClasses(props),
+        props.class
+    );
 }
 
 const atomClasses = computed(() => getAtomClasses(props));
@@ -180,8 +187,8 @@ const selectId = computed(() => props.id || `select-${Math.random().toString(36)
                 </template>
             </InputLabel>
             <div class="relative w-full">
-                <select ref="selectRef" v-bind="attrs" :id="selectId" :class="atomClasses" :value="displayValue"
-                    @input="onInput" @blur="onBlur" :aria-invalid="!!errorMessage || validator">
+                <select ref="selectRef" v-bind="attrs" v-on="$attrs" :id="selectId" :class="atomClasses"
+                    :value="displayValue" @input="onInput" @blur="onBlur" :aria-invalid="!!errorMessage || validator">
                     <template v-if="options && !$slots.default">
                         <option v-for="opt in options" :key="opt.value" :value="opt.value" :disabled="opt.disabled">{{
                             opt.label }}</option>

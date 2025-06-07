@@ -1,15 +1,20 @@
 <script setup>
+defineOptions({ inheritAttrs: false }); // Pour que les évéments natifs soient transmis à l'atom
+
 /**
  * Swap Atom (DaisyUI)
  *
  * @description
- * Composant atomique Swap conforme DaisyUI et Atomic Design.
+ * Composant atomique Swap conforme DaisyUI (v5.x) et Atomic Design.
  * Permet de basculer entre deux états visuels (on/off, icônes, textes, etc.) avec effet flip/rotate.
  * - Props : modelValue (v-model), active (force l'état), indeterminate, rotate, flip, disabled, + commonProps
  * - Slots : on (swap-on), off (swap-off), indeterminate (swap-indeterminate)
  * - Toutes les classes DaisyUI sont écrites en toutes lettres
  * - Accessibilité renforcée (aria-checked, aria-label, tabindex, etc.)
  * - Mode contrôlé (v-model) ou non contrôlé (interne)
+ *
+ * @see https://daisyui.com/components/swap/
+ * @version DaisyUI v5.x
  *
  * @example
  * <Swap v-model="isDark" rotate>
@@ -34,11 +39,11 @@
  * @slot indeterminate - Contenu affiché quand indéterminé (swap-indeterminate)
  *
  * @note Toutes les classes DaisyUI sont explicites, pas de concaténation dynamique non couverte par Tailwind.
- * @note Le composant gère l'accessibilité et la navigation clavier.
+ * @note Le composant gère l'accessibilité (aria-checked, aria-label, tabindex) et la navigation clavier.
  */
 
 import { ref, computed, watch, toRefs } from 'vue';
-import { getCommonProps, getCommonAttrs } from '@/Utils/atom/atomManager';
+import { getCommonProps, getCommonAttrs, mergeClasses, getCustomUtilityClasses } from '@/Utils/atomic-design/uiHelper';
 
 const emit = defineEmits(['update:modelValue', 'change']);
 
@@ -89,21 +94,24 @@ function toggle() {
 }
 
 // Classes DaisyUI explicites
-function getAtomClasses() {
-    const classes = ['swap'];
-    if (props.rotate) classes.push('swap-rotate');
-    if (props.flip) classes.push('swap-flip');
-    if (isActive.value) classes.push('swap-active');
-    return classes.join(' ');
-}
-
-const atomClasses = computed(getAtomClasses);
+const atomClasses = computed(() =>
+    mergeClasses(
+        [
+            'swap',
+            props.rotate && 'swap-rotate',
+            props.flip && 'swap-flip',
+            isActive.value && 'swap-active',
+        ].filter(Boolean),
+        getCustomUtilityClasses(props),
+        props.class
+    )
+);
 const attrs = computed(() => getCommonAttrs(props));
 
 </script>
 
 <template>
-    <label :class="atomClasses" v-bind="attrs" :aria-checked="isActive" :tabindex="props.tabindex">
+    <label :class="atomClasses" v-bind="attrs" v-on="$attrs" :aria-checked="isActive" :tabindex="props.tabindex">
         <!-- Checkbox caché pour accessibilité et v-model -->
         <input type="checkbox" :checked="isActive" :disabled="props.disabled" @change="toggle" style="display: none;"
             :aria-checked="isActive" :id="props.id" />

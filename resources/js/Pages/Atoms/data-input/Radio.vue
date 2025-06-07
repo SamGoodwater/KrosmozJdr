@@ -1,9 +1,11 @@
 <script setup>
+defineOptions({ inheritAttrs: false }); // Pour que les évéments natifs soient transmis à l'atom
+
 /**
  * Radio Atom (DaisyUI)
  *
  * @description
- * Composant atomique Radio conforme DaisyUI et Atomic Design.
+ * Composant atomique Radio conforme DaisyUI (v5.x) et Atomic Design.
  * - Gère tous les cas d'usage radio (simple, aide, validation, etc.)
  * - Props DaisyUI : color, size
  * - Props communes input via getInputProps()
@@ -14,6 +16,11 @@
  * - Toutes les classes DaisyUI sont explicites
  * - Accessibilité renforcée (role, aria, etc.)
  * - Tooltip intégré
+ *
+ * @see https://daisyui.com/components/radio/
+ * @version DaisyUI v5.x
+ *
+ * @note Toutes les classes DaisyUI sont explicites, pas de concaténation dynamique non couverte par Tailwind.
  *
  * @example
  * <Radio label="Homme" v-model="gender" value="male" color="primary" size="md" bgOn="bg-blue-200 border-blue-600" bgOff="bg-base-200 border-base-300" />
@@ -42,8 +49,9 @@
 import { computed, ref, watch, onMounted, defineExpose } from 'vue';
 import Tooltip from '@/Pages/Atoms/feedback/Tooltip.vue';
 import Validator from '@/Pages/Atoms/data-input/Validator.vue';
-import { getCommonProps, getCommonAttrs, getInputProps, getCustomUtilityProps, getCustomUtilityClasses } from '@/Utils/atom/atomManager';
+import { getCommonProps, getCommonAttrs, getCustomUtilityProps, getCustomUtilityClasses, mergeClasses } from '@/Utils/atomic-design/uiHelper';
 import InputLabel from '@/Pages/Atoms/data-input/InputLabel.vue';
+import { getInputProps, getInputAttrs } from '@/Utils/atomic-design/atomManager';
 
 const props = defineProps({
     ...getCommonProps(),
@@ -78,43 +86,38 @@ const isChecked = computed({
     }
 });
 
-const atomClasses = computed(() => {
-    const classes = ['radio'];
-    // Couleur DaisyUI
-    if (props.color === 'neutral') classes.push('radio-neutral');
-    if (props.color === 'primary') classes.push('radio-primary');
-    if (props.color === 'secondary') classes.push('radio-secondary');
-    if (props.color === 'accent') classes.push('radio-accent');
-    if (props.color === 'info') classes.push('radio-info');
-    if (props.color === 'success') classes.push('radio-success');
-    if (props.color === 'warning') classes.push('radio-warning');
-    if (props.color === 'error') classes.push('radio-error');
-    // Taille DaisyUI
-    if (props.size === 'xs') classes.push('radio-xs');
-    if (props.size === 'sm') classes.push('radio-sm');
-    if (props.size === 'md') classes.push('radio-md');
-    if (props.size === 'lg') classes.push('radio-lg');
-    if (props.size === 'xl') classes.push('radio-xl');
-    // Utilitaires custom
-    classes.push(...getCustomUtilityClasses(props));
-    // Erreur
-    if (props.errorMessage || props.validator) classes.push('validator radio-error');
-    return classes.join(' ');
-});
+const atomClasses = computed(() =>
+    mergeClasses(
+        [
+            'radio',
+            props.color === 'neutral' && 'radio-neutral',
+            props.color === 'primary' && 'radio-primary',
+            props.color === 'secondary' && 'radio-secondary',
+            props.color === 'accent' && 'radio-accent',
+            props.color === 'info' && 'radio-info',
+            props.color === 'success' && 'radio-success',
+            props.color === 'warning' && 'radio-warning',
+            props.color === 'error' && 'radio-error',
+            props.size === 'xs' && 'radio-xs',
+            props.size === 'sm' && 'radio-sm',
+            props.size === 'md' && 'radio-md',
+            props.size === 'lg' && 'radio-lg',
+            props.size === 'xl' && 'radio-xl',
+            (props.errorMessage || props.validator) && 'validator radio-error',
+        ].filter(Boolean),
+        getCustomUtilityClasses(props),
+        props.class
+    )
+);
 
 const attrs = computed(() => ({
     ...getCommonAttrs(props),
-    name: props.name || undefined,
-    required: props.required || undefined,
-    readonly: props.readonly || undefined,
-    disabled: props.disabled || undefined,
-    autofocus: props.autofocus || undefined,
-    id: props.id || undefined,
+    ...getInputAttrs(props),
     'aria-checked': isChecked.value,
-    value: props.value,
 }));
 
 const radioId = computed(() => props.id || `radio-${Math.random().toString(36).substr(2, 9)}`);
+
 
 function onInput(e) {
     if (e.target.checked) {
@@ -140,7 +143,7 @@ defineExpose({ focus: () => radioRef.value && radioRef.value.focus() });
                 </template>
             </InputLabel>
             <div class="flex items-center gap-2">
-                <input ref="radioRef" type="radio" v-bind="attrs" :id="radioId"
+                <input ref="radioRef" type="radio" v-bind="attrs" v-on="$attrs" :id="radioId"
                     :class="[atomClasses, isChecked ? bgOn : bgOff]" :checked="isChecked" @input="onInput"
                     :aria-invalid="!!errorMessage || validator" />
                 <slot />

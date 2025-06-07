@@ -1,16 +1,22 @@
 <script setup>
+defineOptions({ inheritAttrs: false }); // Pour que les évéments natifs soient transmis à l'atom
+
 /**
- * Avatar Atom (DaisyUI + Custom Utility)
+ * Avatar Atom (DaisyUI)
  *
  * @description
- * Composant atomique Avatar conforme DaisyUI et Atomic Design.
+ * Composant atomique Avatar conforme DaisyUI (v5.x) et Atomic Design.
  * - Props DaisyUI : size, rounded, ring, ringColor, ringOffset, ringOffsetColor
- * - Props : src, alt (obligatoire), loader (slot), tooltip, tooltip_placement, id, ariaLabel, role, tabindex, disabled
  * - Props utilitaires custom : shadow, backdrop, opacity (via getCustomUtilityProps)
+ * - Props : src, alt (obligatoire), loader (slot), tooltip, tooltip_placement, id, ariaLabel, role, tabindex, disabled
  * - Toutes les classes DaisyUI et utilitaires custom sont écrites explicitement dans le code
  * - Slot par défaut : fallback (initiales, icône, etc.)
+ * - Slot loader : loader personnalisé (optionnel)
  * - Responsive : width/height explicites selon size
- * - Accessibilité renforcée
+ * - Accessibilité renforcée (alt obligatoire, aria, etc.)
+ *
+ * @see https://daisyui.com/components/avatar/
+ * @version DaisyUI v5.x
  *
  * @example
  * <Avatar src="/img/avatar.jpg" alt="Avatar" size="lg" rounded="full" ring="md" ringColor="primary" />
@@ -28,11 +34,14 @@
  * @props {String|Object} tooltip, tooltip_placement, id, ariaLabel, role, tabindex, disabled - hérités de commonProps
  * @slot default - Fallback (initiales, icône, etc.)
  * @slot loader - Loader personnalisé (optionnel)
+ *
+ * @note Toutes les classes DaisyUI et utilitaires custom sont explicites, pas de concaténation dynamique non couverte par Tailwind.
+ * @note Accessibilité renforcée : alt obligatoire, aria, etc.
  */
 import { computed, ref } from 'vue';
 import Tooltip from '@/Pages/Atoms/feedback/Tooltip.vue';
 import Loading from '@/Pages/Atoms/feedback/Loading.vue';
-import { getCommonProps, getCommonAttrs, getCustomUtilityProps, getCustomUtilityClasses } from '@/Utils/atom/atomManager';
+import { getCommonProps, getCommonAttrs, getCustomUtilityProps, getCustomUtilityClasses, mergeClasses } from '@/Utils/atomic-design/uiHelper';
 
 const sizeMap = {
     xs: 'w-8 h-8',
@@ -43,13 +52,6 @@ const sizeMap = {
     '2xl': 'w-40 h-40',
     '3xl': 'w-48 h-48',
     '4xl': 'w-56 h-56',
-};
-const roundedMap = {
-    sm: 'rounded-sm',
-    md: 'rounded-md',
-    lg: 'rounded-lg',
-    xl: 'rounded-xl',
-    full: 'rounded-full',
 };
 const ringMap = {
     xs: 'ring-1',
@@ -108,11 +110,6 @@ const props = defineProps({
         default: 'md',
         validator: v => Object.keys(sizeMap).includes(v),
     },
-    rounded: {
-        type: String,
-        default: 'full',
-        validator: v => Object.keys(roundedMap).includes(v),
-    },
     ring: {
         type: String,
         default: '',
@@ -138,35 +135,33 @@ const props = defineProps({
 const isLoading = ref(false);
 const imageError = ref(false);
 
-function getAvatarClasses(props) {
-    const classes = ['avatar'];
-    // Utilitaires custom (box-shadow, backdrop, opacity)
-    classes.push(...getCustomUtilityClasses(props));
-    return classes.join(' ');
-}
-function getInnerClasses(props) {
-    const classes = [];
-    // Taille
-    if (props.size && sizeMap[props.size]) classes.push(sizeMap[props.size]);
-    // Arrondi
-    if (props.rounded && roundedMap[props.rounded]) classes.push(roundedMap[props.rounded]);
-    // Ring
-    if (props.ring && ringMap[props.ring]) classes.push('ring', ringMap[props.ring]);
-    // Ring color
-    if (props.ringColor && ringColorMap[props.ringColor]) classes.push(ringColorMap[props.ringColor]);
-    // Ring offset
-    if (props.ringOffset && ringOffsetMap[props.ringOffset]) classes.push(ringOffsetMap[props.ringOffset]);
-    // Ring offset color
-    if (props.ringOffsetColor && ringOffsetColorMap[props.ringOffsetColor]) classes.push(ringOffsetColorMap[props.ringOffsetColor]);
-    // Overflow
-    classes.push('overflow-hidden');
-    // Position
-    classes.push('flex', 'items-center', 'justify-center');
-    return classes.join(' ');
-}
-
-const atomClasses = computed(() => getAvatarClasses(props));
-const innerClasses = computed(() => getInnerClasses(props));
+const atomClasses = computed(() =>
+    mergeClasses(
+        [
+            'avatar',
+            'rounded-full',
+        ],
+        getCustomUtilityClasses(props),
+        props.class
+    )
+);
+const innerClasses = computed(() =>
+    mergeClasses(
+        [
+            props.size && sizeMap[props.size],
+            props.rounded && roundedMap[props.rounded],
+            props.ring && ringMap[props.ring] && 'ring',
+            props.ring && ringMap[props.ring],
+            props.ringColor && ringColorMap[props.ringColor],
+            props.ringOffset && ringOffsetMap[props.ringOffset],
+            props.ringOffsetColor && ringOffsetColorMap[props.ringOffsetColor],
+            'overflow-hidden',
+            'flex',
+            'items-center',
+            'justify-center',
+        ].filter(Boolean)
+    )
+);
 const attrs = computed(() => getCommonAttrs(props));
 
 function onLoad() {
@@ -185,7 +180,7 @@ function onStart() {
 
 <template>
     <Tooltip :content="props.tooltip" :placement="props.tooltip_placement">
-        <div :class="atomClasses" v-bind="attrs">
+        <div :class="atomClasses" v-bind="attrs" v-on="$attrs">
             <div :class="innerClasses">
                 <template v-if="props.src && !imageError">
                     <img :src="props.src" :alt="props.alt" @load="onLoad" @error="onError" @loadstart="onStart"

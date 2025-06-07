@@ -1,9 +1,11 @@
 <script setup>
+defineOptions({ inheritAttrs: false }); // Pour que les événements natifs soient transmis à l'atom
+
 /**
  * Dropdown Atom (DaisyUI)
  *
  * @description
- * Composant atomique Dropdown conforme DaisyUI et Atomic Design.
+ * Composant atomique Dropdown conforme DaisyUI (v5.x) et Atomic Design.
  * - Slot par défaut : trigger (bouton, icône, etc.) ou prop label
  * - Slot #content : contenu déroulant (libre, liste, card, etc.)
  * - Props DaisyUI : placement, open, hover, label, contentClass
@@ -12,6 +14,9 @@
  * - Accessibilité renforcée (aria-haspopup, aria-expanded, tabindex, etc.)
  * - Gestion de l'ouverture/fermeture (clic, hover, esc, clic extérieur)
  * - Tooltip intégré comme pour tous les atoms
+ *
+ * @see https://daisyui.com/components/dropdown/
+ * @version DaisyUI v5.x
  *
  * @example
  * <Dropdown label="Menu" placement="bottom-end" content-class="backdrop-blur-lg opacity-80">
@@ -41,14 +46,15 @@
  * @slot content - Contenu déroulant (libre)
  *
  * @note Toutes les classes DaisyUI sont explicites, pas de concaténation dynamique non couverte par Tailwind.
- * @note Le composant gère l'accessibilité et la navigation clavier.
+ * @note Le composant gère l'accessibilité (aria-haspopup, aria-expanded) et la navigation clavier.
+ * @note Ce composant utilise la méthode CSS classique DaisyUI (pas popover API).
  */
 
 
 import { ref, computed, onMounted, onUnmounted, nextTick } from 'vue';
 import Btn from '@/Pages/Atoms/action/Btn.vue';
 import Tooltip from '@/Pages/Atoms/feedback/Tooltip.vue';
-import { getCommonProps, getCommonAttrs, mergeClasses, getCustomUtilityProps, getCustomUtilityClasses } from '@/Utils/atom/atomManager';
+import { getCommonProps, getCommonAttrs, mergeClasses, getCustomUtilityProps, getCustomUtilityClasses } from '@/Utils/atomic-design/uiHelper';
 
 const props = defineProps({
     ...getCommonProps(),
@@ -122,59 +128,50 @@ onUnmounted(() => {
 const effectiveOpen = computed(() => props.open || isOpen.value);
 
 // Classes DaisyUI explicites
-function getDropdownClasses() {
-    const classes = ['dropdown'];
-    // Placement horizontal
-    if (props.placement === 'start' || props.placement === 'bottom-start' || props.placement === 'top-start' || props.placement === 'left-start' || props.placement === 'right-start') {
-        classes.push('dropdown-start');
-    } else if (props.placement === 'center') {
-        classes.push('dropdown-center');
-    } else if (props.placement === 'end' || props.placement === 'bottom-end' || props.placement === 'top-end' || props.placement === 'left-end' || props.placement === 'right-end') {
-        classes.push('dropdown-end');
-    }
-    // Placement vertical
-    if (props.placement.startsWith('top')) {
-        classes.push('dropdown-top');
-    } else if (props.placement.startsWith('bottom')) {
-        classes.push('dropdown-bottom');
-    } else if (props.placement.startsWith('left')) {
-        classes.push('dropdown-left');
-    } else if (props.placement.startsWith('right')) {
-        classes.push('dropdown-right');
-    }
-    // Hover
-    if (props.hover) classes.push('dropdown-hover');
-    // Open forcé
-    if (effectiveOpen.value) classes.push('dropdown-open');
-    return classes.join(' ');
-}
+const dropdownClasses = computed(() =>
+    mergeClasses(
+        [
+            'dropdown',
+            (props.placement === 'start' || props.placement === 'bottom-start' || props.placement === 'top-start' || props.placement === 'left-start' || props.placement === 'right-start') && 'dropdown-start',
+            props.placement === 'center' && 'dropdown-center',
+            (props.placement === 'end' || props.placement === 'bottom-end' || props.placement === 'top-end' || props.placement === 'left-end' || props.placement === 'right-end') && 'dropdown-end',
+            props.placement.startsWith('top') && 'dropdown-top',
+            props.placement.startsWith('bottom') && 'dropdown-bottom',
+            props.placement.startsWith('left') && 'dropdown-left',
+            props.placement.startsWith('right') && 'dropdown-right',
+            props.hover && 'dropdown-hover',
+            effectiveOpen.value && 'dropdown-open',
+        ].filter(Boolean),
+        getCustomUtilityClasses(props),
+        props.class
+    )
+);
 
-function getContentClasses() {
-    // Classes DaisyUI pour le contenu déroulant
-    const defaultClasses = [
-        'dropdown-content',
-        'rounded-box',
-        'z-[1]',
-        'w-52',
-        'p-2',
-        'shadow-sm',
-        'bg-base-100',
-        'backdrop-blur-2xl',
-        'opacity-90',
-    ];
-    // Ajoute les utilitaires custom au content
-    return mergeClasses([...defaultClasses, ...getCustomUtilityClasses(props)], props.contentClass);
-}
+const contentClasses = computed(() =>
+    mergeClasses(
+        [
+            'dropdown-content',
+            'rounded-box',
+            'z-[1]',
+            'w-52',
+            'p-2',
+            'shadow-sm',
+            'bg-base-100',
+            'backdrop-blur-2xl',
+            'opacity-90',
+        ],
+        getCustomUtilityClasses(props),
+        props.contentClass
+    )
+);
 
-const dropdownClasses = computed(getDropdownClasses);
-const contentClasses = computed(getContentClasses);
 const attrs = computed(() => getCommonAttrs(props));
 
 </script>
 
 <template>
     <Tooltip :content="props.tooltip" :placement="props.tooltip_placement">
-        <div :class="dropdownClasses" v-bind="attrs">
+        <div :class="dropdownClasses" v-bind="attrs" v-on="$attrs">
             <!-- Trigger -->
             <Btn ref="triggerRef" tabindex="0" role="button" :aria-haspopup="true" :aria-expanded="effectiveOpen"
                 @click="props.hover ? undefined : toggleDropdown" @mouseenter="props.hover ? openDropdown() : undefined"

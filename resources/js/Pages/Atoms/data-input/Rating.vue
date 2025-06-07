@@ -1,9 +1,11 @@
 <script setup>
+defineOptions({ inheritAttrs: false }); // Pour que les évéments natifs soient transmis à l'atom
+
 /**
  * Rating Atom (DaisyUI)
  *
  * @description
- * Composant atomique Rating (étoiles, coeurs, etc.) conforme DaisyUI et Atomic Design.
+ * Composant atomique Rating (étoiles, coeurs, etc.) conforme DaisyUI (v5.x) et Atomic Design.
  * - Gère tous les cas d'usage rating (étoiles, coeurs, etc.)
  * - Props DaisyUI : size, color
  * - Prop number : nombre d'étoiles/composants (défaut 5)
@@ -14,6 +16,11 @@
  * - Accessibilité renforcée (aria-label, aria-checked)
  * - Slots : #labelTop, #labelBottom, #validator, #help, default
  * - Affiche un bouton reset si modifié (UX moderne)
+ *
+ * @see https://daisyui.com/components/rating/
+ * @version DaisyUI v5.x
+ *
+ * @note Toutes les classes DaisyUI sont explicites, pas de concaténation dynamique non couverte par Tailwind.
  *
  * @example
  * <Rating v-model="note" :number="5" color="warning" size="lg" />
@@ -47,7 +54,8 @@
 import { computed, ref, onMounted, onUnmounted, defineExpose } from 'vue';
 import Tooltip from '@/Pages/Atoms/feedback/Tooltip.vue';
 import Validator from '@/Pages/Atoms/data-input/Validator.vue';
-import { getCommonProps, getCommonAttrs, getCustomUtilityProps, getCustomUtilityClasses } from '@/Utils/atom/atomManager';
+import { getCommonProps, getCommonAttrs, getCustomUtilityProps, getCustomUtilityClasses, mergeClasses } from '@/Utils/atomic-design/uiHelper';
+import { getInputAttrs } from '@/Utils/atomic-design/atomManager';
 import InputLabel from '@/Pages/Atoms/data-input/InputLabel.vue';
 import useEditableField from '@/Composables/form/useEditableField';
 import Btn from '@/Pages/Atoms/action/Btn.vue';
@@ -132,27 +140,36 @@ onUnmounted(() => {
 defineExpose({ focus: () => ratingRef.value && ratingRef.value.focus() });
 
 function getRatingClasses(props) {
-    const classes = ['rating'];
-    if (props.size === 'xs') classes.push('rating-xs');
-    if (props.size === 'sm') classes.push('rating-sm');
-    if (props.size === 'md') classes.push('rating-md');
-    if (props.size === 'lg') classes.push('rating-lg');
-    if (props.size === 'xl') classes.push('rating-xl');
-    classes.push(...getCustomUtilityClasses(props));
-    return classes.join(' ');
+    return mergeClasses(
+        [
+            'rating',
+            props.size === 'xs' && 'rating-xs',
+            props.size === 'sm' && 'rating-sm',
+            props.size === 'md' && 'rating-md',
+            props.size === 'lg' && 'rating-lg',
+            props.size === 'xl' && 'rating-xl',
+        ].filter(Boolean),
+        getCustomUtilityClasses(props),
+        props.class
+    );
 }
 
 function getMaskClasses(item, idx) {
-    const classes = ['mask'];
-    const mask = item?.mask || props.mask;
-    if (mask) classes.push(mask);
-    const color = item?.color || props.color;
-    if (color && color !== '') classes.push(`bg-${color}`);
-    return classes.join(' ');
+    return mergeClasses(
+        [
+            'mask',
+            (item?.mask || props.mask),
+            (item?.color || props.color) && `bg-${item?.color || props.color}`,
+        ].filter(Boolean)
+    );
 }
 
 const ratingClasses = computed(() => getRatingClasses(props));
-const attrs = computed(() => getCommonAttrs(props));
+const attrs = computed(() => ({
+    ...getCommonAttrs(props),
+    ...getInputAttrs(props),
+    'aria-checked': isChecked.value,
+}));
 const ratingId = computed(() => props.id || `rating-${Math.random().toString(36).substr(2, 9)}`);
 
 // Génération dynamique des items (étoiles, coeurs, etc.)
@@ -188,9 +205,10 @@ const ratingItems = computed(() => {
             <div class="relative flex items-center gap-2 w-full">
                 <div :class="ratingClasses" ref="ratingRef">
                     <template v-for="(item, idx) in ratingItems" :key="idx">
-                        <input type="radio" :name="ratingId" :value="item.value" :class="getMaskClasses(item, idx)"
-                            :checked="displayValue == item.value || item.checked" :aria-label="item.ariaLabel"
-                            :aria-checked="displayValue == item.value" @input="onInput(item.value)" @blur="onBlur" />
+                        <input type="radio" v-bind="attrs" v-on="$attrs" :name="ratingId" :value="item.value"
+                            :class="getMaskClasses(item, idx)" :checked="displayValue == item.value || item.checked"
+                            :aria-label="item.ariaLabel" :aria-checked="displayValue == item.value"
+                            @input="onInput(item.value)" @blur="onBlur" />
                     </template>
                     <!-- Bouton reset -->
                     <Btn v-if="props.useFieldComposable && isFieldModified" class="absolute right-2 top-2 z-20"

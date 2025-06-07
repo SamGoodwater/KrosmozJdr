@@ -1,16 +1,22 @@
 <script setup>
+defineOptions({ inheritAttrs: false }); // Pour que les événements natifs soient transmis à l'atom
+
 /**
  * Btn Atom (DaisyUI)
  *
  * @description
- * Composant atomique Button conforme DaisyUI et Atomic Design.
+ * Composant atomique Button conforme DaisyUI (v5.x) et Atomic Design.
  * - Rend un <button> stylé DaisyUI
- * - Slot par défaut : contenu du bouton (texte, icône, etc.)
+ * - Slot par défaut ou slot nommé 'content' : contenu du bouton (texte, icône, etc.)
  * - Prop content : texte simple du bouton (fallback si pas de slot)
  * - Props DaisyUI : color, variant, size, block, wide, square, circle, type, active, checked
  * - Hérite de commonProps (id, ariaLabel, role, tabindex, tooltip, etc.)
  * - Toutes les classes DaisyUI sont écrites en toutes lettres
  * - Accessibilité renforcée (role, aria, etc.)
+ * - Tooltip intégré (voir slot #tooltip)
+ *
+ * @see https://daisyui.com/components/button/
+ * @version DaisyUI v5.x
  *
  * @example
  * <Btn color="primary" size="lg" content="Valider" />
@@ -30,13 +36,15 @@
  * @props {String} content - Texte du bouton (optionnel, sinon slot)
  * @props {Boolean} disabled - Désactivé (btn-disabled + HTML, hérité de commonProps)
  * @props {String} id, ariaLabel, role, tabindex, tooltip, tooltip_placement - hérités de commonProps
- * @slot default - Contenu du bouton (texte, icône, etc.)
+ * @slot default|content - Contenu du bouton (texte, icône, etc.)
+ * @slot tooltip - Contenu HTML complexe pour le tooltip (optionnel)
  *
- * @note Ce composant ne gère que <button>. Pour les liens ou autres éléments, utiliser un composant dédié.
+ * @note Ce composant ne gère que <button>. Pour les liens ou autres éléments, utiliser un composant dédié (Route).
+ * @note Toutes les classes DaisyUI sont explicites, pas de concaténation dynamique non couverte par Tailwind.
  */
 import { computed } from 'vue';
 import Tooltip from '@/Pages/Atoms/feedback/Tooltip.vue';
-import { getCommonProps, getCommonAttrs, getCustomUtilityProps, getCustomUtilityClasses } from '@/Utils/atom/atomManager';
+import { getCommonProps, getCommonAttrs, getCustomUtilityProps, getCustomUtilityClasses, mergeClasses } from '@/Utils/atomic-design/uiHelper';
 
 const props = defineProps({
     ...getCommonProps(),
@@ -79,52 +87,49 @@ const props = defineProps({
     },
 });
 
-function getAtomClasses(props) {
-    const classes = ['btn'];
-    // Couleur
-    if (props.color === 'neutral') classes.push('btn-neutral');
-    if (props.color === 'primary') classes.push('btn-primary');
-    if (props.color === 'secondary') classes.push('btn-secondary');
-    if (props.color === 'accent') classes.push('btn-accent');
-    if (props.color === 'info') classes.push('btn-info');
-    if (props.color === 'success') classes.push('btn-success');
-    if (props.color === 'warning') classes.push('btn-warning');
-    if (props.color === 'error') classes.push('btn-error');
-    // Variant/style
-    if (props.variant === 'outline') classes.push('btn-outline');
-    if (props.variant === 'ghost') classes.push('btn-ghost');
-    if (props.variant === 'link') classes.push('btn-link');
-    if (props.variant === 'soft') classes.push('btn-soft');
-    if (props.variant === 'dash') classes.push('btn-dash');
-    if (props.variant === 'glass') classes.push('glass');
-    // Taille
-    if (props.size === 'xs') classes.push('btn-xs');
-    if (props.size === 'sm') classes.push('btn-sm');
-    if (props.size === 'md') classes.push('btn-md');
-    if (props.size === 'lg') classes.push('btn-lg');
-    if (props.size === 'xl') classes.push('btn-xl');
-    // Modificateurs
-    if (props.block) classes.push('btn-block');
-    if (props.wide) classes.push('btn-wide');
-    if (props.square) classes.push('btn-square');
-    if (props.circle) classes.push('btn-circle');
-    // État
-    if (props.active) classes.push('btn-active');
-    if (props.disabled) classes.push('btn-disabled');
-    // Utilitaires custom
-    classes.push(...getCustomUtilityClasses(props));
-    return classes.join(' ');
-}
-
-const atomClasses = computed(() => getAtomClasses(props));
+const atomClasses = computed(() =>
+    mergeClasses(
+        [
+            'btn',
+            props.color === 'neutral' && 'btn-neutral',
+            props.color === 'primary' && 'btn-primary',
+            props.color === 'secondary' && 'btn-secondary',
+            props.color === 'accent' && 'btn-accent',
+            props.color === 'info' && 'btn-info',
+            props.color === 'success' && 'btn-success',
+            props.color === 'warning' && 'btn-warning',
+            props.color === 'error' && 'btn-error',
+            props.variant === 'outline' && 'btn-outline',
+            props.variant === 'ghost' && 'btn-ghost',
+            props.variant === 'link' && 'btn-link',
+            props.variant === 'soft' && 'btn-soft',
+            props.variant === 'dash' && 'btn-dash',
+            props.variant === 'glass' && 'glass',
+            props.size === 'xs' && 'btn-xs',
+            props.size === 'sm' && 'btn-sm',
+            props.size === 'md' && 'btn-md',
+            props.size === 'lg' && 'btn-lg',
+            props.size === 'xl' && 'btn-xl',
+            props.block && 'btn-block',
+            props.wide && 'btn-wide',
+            props.square && 'btn-square',
+            props.circle && 'btn-circle',
+            props.active && 'btn-active',
+            props.disabled && 'btn-disabled',
+        ].filter(Boolean),
+        getCustomUtilityClasses(props),
+        props.class
+    )
+);
 const attrs = computed(() => getCommonAttrs(props));
 </script>
 
 <template>
     <Tooltip :content="props.tooltip" :placement="props.tooltip_placement">
-        <button :type="type" :class="atomClasses" v-bind="attrs">
+        <button :type="type" :class="atomClasses" v-bind="attrs" v-on="$attrs">
             <span v-if="content && !$slots.default">{{ content }}</span>
             <slot name="content" v-else />
+            <slot v-if="!$slots.content && $slots.default" />
         </button>
         <template v-if="typeof props.tooltip === 'object'" #tooltip>
             <slot name="tooltip" />

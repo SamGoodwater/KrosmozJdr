@@ -1,33 +1,38 @@
 <script setup>
+defineOptions({ inheritAttrs: false }); // Pour que les évéments natifs soient transmis à l'atom
+
 /**
- * Label Atom (DaisyUI)
+ * InputLabel Atom (DaisyUI)
  *
  * @description
- * Composant atomique Label conforme DaisyUI et Atomic Design.
- * - Props DaisyUI : floating (active le floating label), size, color
- * - Props : for (id du champ), value (texte du label), position (start/end), tooltip, tooltip_placement, id, ariaLabel, role, tabindex, disabled
- * - Slot par défaut : contenu HTML du label (prioritaire sur value)
- * - Toutes les classes DaisyUI sont explicites
- * - Support label avant/après input, floating label, label pour select, etc.
+ * Composant atomique InputLabel conforme DaisyUI (v5.x) et Atomic Design.
+ * - Rend un <label> ou <span class="label"> stylé DaisyUI
+ * - Props DaisyUI : floating-label, label, color, size, placement explicites
+ * - Props custom : for, value, floating, class
+ * - Accessibilité : ariaLabel, role, tabindex, id, for
+ * - Slot par défaut : contenu du label (texte, HTML, etc.)
+ *
+ * @see https://daisyui.com/components/label/
+ * @version DaisyUI v5.x
  *
  * @example
- * <Label for="email" value="Email" />
- * <Label for="password" floating size="lg">Mot de passe</Label>
- * <Label for="url" position="start">https://</Label>
- * <Label for="domain" position="end">.com</Label>
+ * <InputLabel for="email" value="Email" />
+ * <InputLabel floating color="primary">Nom</InputLabel>
  *
- * @props {String} for - id du champ associé (optionnel)
- * @props {String} value - texte du label (optionnel, prioritaire sur slot)
- * @props {Boolean} floating - active le floating label (DaisyUI)
- * @props {String} size - xs, sm, md, lg, xl
- * @props {String} color - primary, secondary, accent, info, success, warning, error, neutral, base-100, base-200, base-300
- * @props {String} position - start (avant input), end (après input), défaut 'start'
- * @props {String|Object} tooltip, tooltip_placement, id, ariaLabel, role, tabindex, disabled - hérités de commonProps
- * @slot default - contenu HTML du label (prioritaire sur value)
+ * @props {String} for - Attribut for du label (id du champ associé)
+ * @props {String} value - Texte du label (optionnel, sinon slot)
+ * @props {Boolean} floating - Active le mode floating-label DaisyUI
+ * @props {String} color - Couleur DaisyUI ('', 'primary', 'secondary', ...)
+ * @props {String} size - Taille DaisyUI ('', 'xs', 'sm', 'md', 'lg', 'xl')
+ * @props {String} class - Classes custom supplémentaires
+ * @props {String} id, ariaLabel, role, tabindex - accessibilité
+ * @slot default - Contenu du label (texte, HTML, etc.)
+ *
+ * @note Toutes les classes DaisyUI et utilitaires custom sont explicites, pas de concaténation dynamique non couverte par Tailwind.
  */
 import { computed } from 'vue';
 import Tooltip from '@/Pages/Atoms/feedback/Tooltip.vue';
-import { getCommonProps, getCommonAttrs } from '@/Utils/atom/atomManager';
+import { getCommonProps, getCommonAttrs } from '@/Utils/atomic-design/uiHelper';
 
 const sizeMap = {
     xs: 'text-xs',
@@ -72,21 +77,23 @@ const props = defineProps({
     },
 });
 
-function getLabelClasses(props) {
-    const classes = ['label'];
-    if (props.floating) classes.push('floating-label');
-    if (props.size && sizeMap[props.size]) classes.push(sizeMap[props.size]);
-    if (props.color && colorMap[props.color]) classes.push(colorMap[props.color]);
-    return classes.join(' ');
+function getAtomClasses(props) {
+    return mergeClasses(
+        ['label',
+            props.floating && 'floating-label',
+            props.size && sizeMap[props.size],
+            props.color && colorMap[props.color],
+        ].filter(Boolean),
+    );
 }
 
-const labelClasses = computed(() => getLabelClasses(props));
+const atomClasses = computed(() => getAtomClasses(props));
 const attrs = computed(() => getCommonAttrs(props));
 </script>
 
 <template>
     <Tooltip :content="props.tooltip" :placement="props.tooltip_placement">
-        <label :for="props.for || undefined" :class="labelClasses" v-bind="attrs">
+        <label :for="props.for || undefined" :class="atomClasses" v-bind="attrs" v-on="$attrs">
             <span class="label-text">
                 <slot>
                     {{ value }}

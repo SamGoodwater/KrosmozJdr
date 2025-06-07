@@ -51,7 +51,6 @@ Les fichiers de dépendances (`composer.json` pour le backend, `package.json` po
 - Tiptap est intégré dans le frontend Vue 3, avec la Composition API et StarterKit.
 - Les images et PDF sont les seuls fichiers autorisés à l'upload via l'éditeur.
 - Les extensions Tiptap peuvent être ajoutées selon les besoins (tableaux, listes, etc.).
-- Voir la checklist pour les étapes d'intégration.
 
 ## Internationalisation (i18n)
 
@@ -99,20 +98,4 @@ function formatDate($date) { /* ... */ }
 - Documenter l'usage des formules dans le code (docblocks, exemples).
 - Ajouter des tests unitaires pour le parsing et l'évaluation des formules.
 - Les formules permettent de rendre les propriétés dynamiques et évolutives (voir la section dédiée dans la documentation technique).
-
-## Checklist projet
-
-- La checklist de génération du projet est découpée en fichiers JSON par sous-partie dans `docs_project/checklist/`.
-- Le fichier `checklist.json` sert d'index et référence tous les fichiers de sous-parties.
-- Pour toute génération, automatisation ou vérification, charger uniquement le fichier de la sous-partie concernée (ex : `1.1.json`, `2.1.json`, etc.).
-- Cette structure permet de limiter la taille du contexte pour l'IA et d'assurer l'exhaustivité des étapes.
-
 ---
-
-# Règle Cursor : checklist-structure
-
-- La checklist projet est découpée en fichiers JSON par sous-partie dans `docs_project/checklist/`.
-- Le fichier `checklist.json` sert d'index et référence tous les fichiers de sous-parties.
-- Pour toute génération, automatisation ou vérification, charger uniquement le fichier de la sous-partie concernée.
-- Ne jamais charger toute la checklist d'un coup : toujours raisonner par sous-partie.
-- Cette structure permet de limiter la taille du contexte pour l'IA et d'assurer l'exhaustivité des étapes.

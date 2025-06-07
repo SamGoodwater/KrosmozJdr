@@ -1,9 +1,11 @@
 <script setup>
+defineOptions({ inheritAttrs: false }); // Pour que les évéments natifs soient transmis à l'atom
+
 /**
  * Range Atom (DaisyUI)
  *
  * @description
- * Composant atomique Range (slider) conforme DaisyUI et Atomic Design.
+ * Composant atomique Range (slider) conforme DaisyUI (v5.x) et Atomic Design.
  * - Gère tous les cas d'usage range (slider simple, aide, validation, etc.)
  * - Props DaisyUI : color, size
  * - Props communes input via getInputProps()
@@ -14,6 +16,11 @@
  * - Toutes les classes DaisyUI sont explicites
  * - Accessibilité renforcée (role, aria, etc.)
  * - Tooltip intégré
+ *
+ * @see https://daisyui.com/components/range/
+ * @version DaisyUI v5.x
+ *
+ * @note Toutes les classes DaisyUI sont explicites, pas de concaténation dynamique non couverte par Tailwind.
  *
  * @example
  * <Range label="Volume" v-model="volume" min="0" max="100" color="primary" size="md" useFieldComposable :debounceTime="300" />
@@ -44,7 +51,8 @@
 import { computed, ref, onMounted, onUnmounted, defineExpose } from 'vue';
 import Tooltip from '@/Pages/Atoms/feedback/Tooltip.vue';
 import Validator from '@/Pages/Atoms/data-input/Validator.vue';
-import { getCommonProps, getCommonAttrs, getInputProps, getCustomUtilityProps, getCustomUtilityClasses } from '@/Utils/atom/atomManager';
+import { getCommonProps, getCommonAttrs, getCustomUtilityProps, getCustomUtilityClasses, mergeClasses } from '@/Utils/atomic-design/uiHelper';
+import { getInputProps, getInputAttrs } from '@/Utils/atomic-design/atomManager';
 import InputLabel from '@/Pages/Atoms/data-input/InputLabel.vue';
 import useEditableField from '@/Composables/form/useEditableField';
 import Btn from '@/Pages/Atoms/action/Btn.vue';
@@ -123,32 +131,33 @@ onUnmounted(() => {
 defineExpose({ focus: () => rangeRef.value && rangeRef.value.focus() });
 
 function getAtomClasses(props) {
-    const classes = ['range'];
-    // Couleur DaisyUI
-    if (props.color === 'neutral') classes.push('range-neutral');
-    if (props.color === 'primary') classes.push('range-primary');
-    if (props.color === 'secondary') classes.push('range-secondary');
-    if (props.color === 'accent') classes.push('range-accent');
-    if (props.color === 'info') classes.push('range-info');
-    if (props.color === 'success') classes.push('range-success');
-    if (props.color === 'warning') classes.push('range-warning');
-    if (props.color === 'error') classes.push('range-error');
-    // Taille DaisyUI
-    if (props.size === 'xs') classes.push('range-xs');
-    if (props.size === 'sm') classes.push('range-sm');
-    if (props.size === 'md') classes.push('range-md');
-    if (props.size === 'lg') classes.push('range-lg');
-    if (props.size === 'xl') classes.push('range-xl');
-    // Utilitaires custom
-    classes.push(...getCustomUtilityClasses(props));
-    // Erreur
-    if (props.errorMessage || props.validator) classes.push('validator range-error');
-    return classes.join(' ');
+    return mergeClasses(
+        [
+            'range',
+            props.color === 'neutral' && 'range-neutral',
+            props.color === 'primary' && 'range-primary',
+            props.color === 'secondary' && 'range-secondary',
+            props.color === 'accent' && 'range-accent',
+            props.color === 'info' && 'range-info',
+            props.color === 'success' && 'range-success',
+            props.color === 'warning' && 'range-warning',
+            props.color === 'error' && 'range-error',
+            props.size === 'xs' && 'range-xs',
+            props.size === 'sm' && 'range-sm',
+            props.size === 'md' && 'range-md',
+            props.size === 'lg' && 'range-lg',
+            props.size === 'xl' && 'range-xl',
+            (props.errorMessage || props.validator) && 'validator range-error',
+        ].filter(Boolean),
+        getCustomUtilityClasses(props),
+        props.class
+    );
 }
 
 const atomClasses = computed(() => getAtomClasses(props));
 const attrs = computed(() => ({
     ...getCommonAttrs(props),
+    ...getInputAttrs(props),
     min: props.min || 0,
     max: props.max || 100,
     step: props.step || 1,
@@ -168,7 +177,7 @@ const rangeId = computed(() => props.id || `range-${Math.random().toString(36).s
                 </template>
             </InputLabel>
             <div class="relative flex items-center gap-2 w-full">
-                <input ref="rangeRef" type="range" v-bind="attrs" :id="rangeId" :class="atomClasses"
+                <input ref="rangeRef" type="range" v-bind="attrs" v-on="$attrs" :id="rangeId" :class="atomClasses"
                     :value="displayValue" @input="onInput" @blur="onBlur" :aria-invalid="!!errorMessage || validator" />
                 <!-- Bouton reset -->
                 <Btn v-if="props.useFieldComposable && isFieldModified" class="absolute right-2 top-2 z-20" size="xs"

@@ -19,7 +19,6 @@ Bienvenue sur la documentation du projet **Krosmoz JDR**.
 - **Détail métier, entités, typages, schéma SQL** : [ENTITIES_OVERVIEW.md](./ENTITIES_OVERVIEW.md)
 - **Design system, thèmes, layouts, atomic design** : [DESIGN_GUIDE.md](./DESIGN_GUIDE.md)
 - **Stack technique, outils, organisation, CI/CD** : [TECHNOLOGIES.md](./TECHNOLOGIES.md)
-- **Checklist projet (étapes détaillées, génération IA)** : [checklist.json](./checklist/checklist.json) (index), puis un fichier par sous-partie dans `docs_project/checklist/`.
 - **Bonnes pratiques (code, tests, sécurité, doc)** : [BEST_PRACTICES.md](./BEST_PRACTICES.md)
 
 ## Philosophie documentaire

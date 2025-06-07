@@ -1,16 +1,21 @@
 <script setup>
+defineOptions({ inheritAttrs: false }); // Pour que les évéments natifs soient transmis à l'atom
+
 /**
- * Container Atom (Tailwind/DaisyUI)
+ * Container Atom (Tailwind)
  *
  * @description
- * Composant atomique Container conforme Tailwind, DaisyUI et Atomic Design.
+ * Composant atomique Container conforme Atomic Design, basé sur Tailwind (pas DaisyUI).
  * - Utilise la classe Tailwind 'container' (et 'mx-auto' par défaut)
  * - Props utilitaires custom : shadow, backdrop, opacity
  * - Prop 'fluid' (bool) : désactive 'container' pour un conteneur full width
  * - Prop 'responsive' (string) : applique 'md:container', 'lg:container', etc.
- * - Prop 'class' : classes custom supplémentaires
+ * - Prop 'color' : couleur de fond (classe Tailwind, ex: bg-base-100)
+ * - Prop 'border' : bordure (classe Tailwind, ex: border-gray-200)
  * - Accessibilité : role, ariaLabel, id, tabindex
  * - Slot par défaut : contenu du container
+ *
+ * @note Ce composant n'utilise PAS DaisyUI (aucune classe DaisyUI), il est purement Tailwind/utilitaire.
  *
  * @example
  * <Container p="4" mx="auto" responsive="lg" shadow="md">Contenu</Container>
@@ -18,13 +23,14 @@
  *
  * @props {Boolean} fluid - Désactive la classe 'container' (full width)
  * @props {String} responsive - Breakpoint responsive (ex: 'md', 'lg', ...), applique 'md:container', etc.
- * @props {String} class - Classes custom supplémentaires
+ * @props {String} color - Couleur de fond (classe Tailwind, ex: bg-base-100)
+ * @props {String} border - Bordure (classe Tailwind, ex: border-gray-200)
  * @props {String} shadow, backdrop, opacity - utilitaires custom
  * @props {String} id, ariaLabel, role, tabindex - accessibilité
  * @slot default - Contenu du container
  */
 import { computed } from 'vue';
-import { getCommonProps, getCommonAttrs, getCustomUtilityProps, getCustomUtilityClasses } from '@/Utils/atom/atomManager';
+import { getCommonProps, getCommonAttrs, getCustomUtilityProps, getCustomUtilityClasses, mergeClasses } from '@/Utils/atomic-design/uiHelper';
 
 const props = defineProps({
     ...getCommonProps(),
@@ -38,31 +44,22 @@ const props = defineProps({
 
 const attrs = computed(() => getCommonAttrs(props));
 
-function getContainerClasses(props) {
-    const classes = ['container'];
-    // Container
-    if (!props.fluid) {
-        if (props.responsive) {
-            classes.push(`${props.responsive}:container`);
-        } else {
-            classes.push('container');
-        }
-        classes.push('mx-auto');
-    }
-    // Utilitaires custom
-    classes.push(...getCustomUtilityClasses(props));
-    // Classes custom
-    if (props.class) classes.push(props.class);
-    if (props.color) classes.push(props.color);
-    if (props.border) classes.push(props.border, 'border-1 border-solid');
-    return classes.join(' ');
-}
-
-const containerClasses = computed(() => getContainerClasses(props));
+const atomClasses = computed(() =>
+    mergeClasses(
+        [
+            !props.fluid && (props.responsive ? `${props.responsive}:container` : 'container'),
+            !props.fluid && 'mx-auto',
+            props.color,
+            props.border && `${props.border} border-1 border-solid`,
+        ].filter(Boolean),
+        getCustomUtilityClasses(props),
+        props.class
+    )
+);
 </script>
 
 <template>
-    <div :class="containerClasses" v-bind="attrs">
+    <div :class="atomClasses" v-bind="attrs" v-on="$attrs">
         <slot />
     </div>
 </template>

@@ -28,7 +28,7 @@
  */
 import { computed, h } from 'vue';
 import Avatar from '@/Pages/Atoms/data-display/Avatar.vue';
-import { getCustomUtilityProps, getCustomUtilityClasses } from '@/Utils/atom/atomManager';
+import { getCustomUtilityProps, getCustomUtilityClasses } from '@/Utils/atomic-design/atomManager';
 
 const props = defineProps({
     avatars: { type: Array, default: null },

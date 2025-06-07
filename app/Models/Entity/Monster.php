@@ -12,7 +12,7 @@ use App\Models\Entity\Campaign;
 use App\Models\Entity\Spell;
 
 /**
- * 
+ *
  *
  * @property int $id
  * @property int|null $creature_id
@@ -82,6 +82,8 @@ class Monster extends Model
         'dofus_version',
         'auto_update',
         'size',
+        'is_boss',
+        'boss_pa',
         'monster_race_id',
     ];
 
