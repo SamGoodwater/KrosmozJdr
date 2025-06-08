@@ -1,8 +1,31 @@
 <script setup>
-import SearchInput from "@/Pages/Molecules/layout/SearchInput.vue";
+/**
+* Aside Layout (Atomic Design, DaisyUI)
+*
+* @description
+* Layout Aside du projet KrosmozJDR, refactorisé pour n'utiliser que des atoms et molecules du design system.
+* - Utilise :
+* - Atom Route pour les liens
+* - Atom Image pour le logo
+* - Molecule Menu + atom MenuItem pour la navigation principale
+* - Molecule Dock + atom DockItem pour le footer
+* - Atom Icon pour toutes les icônes
+* - Molecules ToggleSidebar et SearchInput
+* - Structure layout dans
+<aside>, tout le contenu est atomique/moleculaire
+ * - Accessibilité et props transmises via les helpers du design system
+ *
+ * @see Menu, MenuItem, Dock, DockItem, Route, Image, Icon, ToggleSidebar, SearchInput
+ */
+import SearchInput from "@/Pages/Molecules/data-input/SearchInput.vue";
 import ToggleSidebar from "@/Pages/Molecules/layout/ToggleSidebar.vue";
-import BaseTooltip from "@/Pages/Atoms/feedback/BaseTooltip.vue";
 import Route from "@/Pages/Atoms/action/Route.vue";
+import Image from "@/Pages/Atoms/data-display/Image.vue";
+import Menu from "@/Pages/Molecules/navigation/Menu.vue";
+import MenuItem from "@/Pages/Atoms/navigation/MenuItem.vue";
+import Dock from "@/Pages/Molecules/navigation/Dock.vue";
+import DockItem from "@/Pages/Atoms/navigation/DockItem.vue";
+import Icon from "@/Pages/Atoms/data-display/Icon.vue";
 import { ref, onMounted } from "vue";
 import { useSidebar } from "@/Composables/layout/useSidebar";
 import { MediaManager } from "@/Utils/file/MediaManager";
@@ -63,95 +86,48 @@ const footerItems = [
 </script>
 
 <template>
-    <div>
-        <aside
-            id="menuSidebar"
-            :class="[
-                isSidebarOpen ? 'sidebar-on' : 'sidebar-off',
-                'px-2',
-                'pt-4',
-                'fixed',
-                'top-0',
-                'left-0',
-                'bottom-0',
-                'z-40',
-                'w-64',
-                'transition-transform',
-                '-translate-x-full',
-                'sm:translate-x-0',
-                'bg-base-200',
-                'flex',
-                'flex-col',
-                'justify-between',
-                'backdrop-blur-xl',
-            ]"
-            aria-label="Sidenav"
-        >
-            <ToggleSidebar size="xs" class="absolute right-2" />
+    <aside id="menuSidebar" :class="[
+        isSidebarOpen ? 'sidebar-on' : 'sidebar-off',
+        'px-2',
+        'pt-4',
+        'fixed',
+        'top-0',
+        'left-0',
+        'bottom-0',
+        'z-40',
+        'w-64',
+        'transition-transform',
+        '-translate-x-full',
+        'sm:translate-x-0',
+        'bg-base-200',
+        'flex',
+        'flex-col',
+        'justify-between',
+        'backdrop-blur-xl',
+]" aria-label="Sidenav">
+        <ToggleSidebar size="xs" class="absolute right-2" />
 
-            <div>
-                <BaseTooltip :tooltip="{ custom: true }" tooltip-position="bottom-center">
-                    <Route class="hover:scale-105 focus:scale-95" route="home">
-                        <figure>
-                            <img
-                                class="w-auto px-14"
-                                :src="logo"
-                                :alt="`Logo de ${appSlogan}`"
-                            />
-                        </figure>
-                    </Route>
+        <div>
+            <Route route="home" class="hover:scale-105 focus:scale-95">
+                <Image :src="logo" :alt="`Logo de ${appSlogan}`" size="lg" class="mx-auto" />
+            </Route>
 
-                    <template #tooltip>
-                        Aller à la page d'accueil
-                    </template>
-                </BaseTooltip>
+            <Menu direction="vertical" size="md" class="my-10">
+                <MenuItem v-for="item in navItems" :key="item.label" :route="item.route" :icon="item.icon"
+                    :active="item.active($page)">
+                {{ item.label }}
+                </MenuItem>
+            </Menu>
+        </div>
 
-                <nav id="nav" class="my-10">
-                    <ul>
-                        <li v-for="item in navItems" :key="item.label" class="my-2">
-                            <Route
-                                :route="item.route"
-                                class="w-full p-2 ps-8 block rounded hover:bg-primary/25"
-                                :class="[
-                                    item.active($page) ? 'bg-primary/10' : ''
-                                ]"
-                            >
-                                <i :class="item.icon" class="mr-2"></i>
-                                {{ item.label }}
-                            </Route>
-                        </li>
-                    </ul>
-                </nav>
-            </div>
-
-            <div id="footer">
-                <SearchInput class="max-sm:block hidden" />
-
-                <div class="flex gap-1 flex-nowrap justify-around btm-nav bg-transparent px-1 py-2">
-                    <BaseTooltip
-                        v-for="item in footerItems"
-                        :key="item.label"
-                        :tooltip="{ custom: true }"
-                        tooltip-position="top"
-                    >
-                        <Route
-                            class="pb-1 text-secondary-400 hover:text-primary-200 relative cursor-pointer before:bg-primary-300 before:absolute before:-bottom-0 before:-left-0 before:block before:h-[1px] before:w-full before:origin-bottom-right before:scale-x-0 before:transition before:duration-300 before:ease-in-out hover:before:origin-bottom-left hover:before:scale-x-100"
-                            :route="item.route"
-                        >
-                            <button>
-                                <i :class="item.icon"></i><br />
-                                <span class="btm-nav-label">{{ item.label }}</span>
-                            </button>
-                        </Route>
-
-                        <template #tooltip>
-                            <span>{{ item.tooltip }}</span>
-                        </template>
-                    </BaseTooltip>
-                </div>
-            </div>
-        </aside>
-    </div>
+        <div id="footer">
+            <SearchInput class="max-sm:block hidden" />
+            <Dock size="md" class="px-1 py-2">
+                <DockItem v-for="item in footerItems" :key="item.label" :route="item.route" :icon="item.icon"
+                    :label="item.label" :tooltip="item.tooltip" />
+            </Dock>
+        </div>
+    </aside>
 </template>
 
 <style scoped>

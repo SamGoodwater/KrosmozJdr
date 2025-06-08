@@ -1,10 +1,26 @@
 <script setup>
+/**
+* Main Layout (Atomic Design, DaisyUI)
+*
+* @description
+* Layout principal du projet KrosmozJDR, refactorisé pour respecter l'atomic design.
+* - Utilise l'atom Container pour le contenu principal (main)
+* - Structure : background, Header, Aside, Container (main), Footer, notifications
+* - Responsive, glassmorphism, accessibilité
+* - Notifications centralisées via l'organism NotificationContainer (plus de slots de notifications)
+*
+* @see Container, Header, Aside, Footer, NotificationContainer
+*
+* @slot default - Contenu principal de la page
+*/
 import { useSidebar } from "@/Composables/layout/useSidebar";
 
 // Composants
 import Header from "@/Pages/Layouts/Header.vue";
 import Aside from "@/Pages/Layouts/Aside.vue";
 import Footer from "@/Pages/Layouts/Footer.vue";
+import Container from "@/Pages/Atoms/data-display/Container.vue";
+import NotificationContainer from "@/Pages/Organismes/feedback/NotificationContainer.vue";
 
 const { isSidebarOpen } = useSidebar();
 </script>
@@ -20,53 +36,28 @@ const { isSidebarOpen } = useSidebar();
         </div>
 
         <!-- Header -->
-        <Header
-            :class="[isSidebarOpen ? 'ml-64' : 'ml-0']"
-            class="z-10 fixed max-sm:ml-0 top-0 w-fit-available"
-        />
+        <Header :class="[isSidebarOpen ? 'ml-64' : 'ml-0']" class="z-10 fixed max-sm:ml-0 top-0 w-fit-available" />
 
         <!-- Sidebar -->
         <Aside class="z-20" />
 
         <!-- Contenu principal -->
-        <main
-            :class="[isSidebarOpen ? 'ml-64' : 'ml-0']"
-            class="relative max-sm:ml-0 flex flex-col items-center z-0 w-full h-full overflow-x-hidden"
-        >
-            <div
-                class="mt-20 max-md:mt-18 max-sm:mt-16 mb-26 max-md:mb-24 max-sm:mb-20 mx-16 max-xl:mx-30 max-lg:mx-20 max-md:mx-4 max-sm:mx-1 w-full h-full flex justify-center"
-            >
-                <slot />
-            </div>
+        <main :class="[isSidebarOpen ? 'ml-64' : 'ml-0']"
+            class="relative max-sm:ml-0 flex flex-col items-center z-0 w-full h-full overflow-x-hidden">
+            <Container fluid class="w-full h-full">
+                <div
+                    class="mt-20 max-md:mt-18 max-sm:mt-16 mb-26 max-md:mb-24 max-sm:mb-20 mx-16 max-xl:mx-30 max-lg:mx-20 max-md:mx-4 max-sm:mx-1 w-full h-full flex justify-center">
+                    <slot />
+                </div>
+            </Container>
         </main>
 
         <!-- Footer -->
-        <Footer
-            :class="[isSidebarOpen ? 'ml-64' : 'ml-0']"
-            class="z-10 absolute max-sm:fixed max-sm:ml-0 bottom-0 w-full h-fit"
-        />
+        <Footer :class="[isSidebarOpen ? 'ml-64' : 'ml-0']"
+            class="z-10 absolute max-sm:fixed max-sm:ml-0 bottom-0 w-full h-fit" />
 
-        <!-- Conteneurs de notifications -->
-        <div id="notifications-top-start" class="fixed top-4 left-4 flex flex-col gap-2 z-[9999] pointer-events-none min-w-[200px] max-w-[400px]">
-            <TransitionGroup name="notification-list">
-                <slot name="notifications-top-start" />
-            </TransitionGroup>
-        </div>
-        <div id="notifications-top-end" class="fixed top-4 right-4 flex flex-col gap-2 z-[9999] pointer-events-none min-w-[200px] max-w-[400px]">
-            <TransitionGroup name="notification-list">
-                <slot name="notifications-top-end" />
-            </TransitionGroup>
-        </div>
-        <div id="notifications-bottom-start" class="fixed bottom-4 left-4 flex flex-col gap-2 z-[9999] pointer-events-none min-w-[200px] max-w-[400px]">
-            <TransitionGroup name="notification-list">
-                <slot name="notifications-bottom-start" />
-            </TransitionGroup>
-        </div>
-        <div id="notifications-bottom-end" class="fixed bottom-4 right-4 flex flex-col gap-2 z-[9999] pointer-events-none min-w-[200px] max-w-[400px]">
-            <TransitionGroup name="notification-list">
-                <slot name="notifications-bottom-end" />
-            </TransitionGroup>
-        </div>
+        <!-- Notifications centralisées (organism) -->
+        <NotificationContainer />
     </div>
 </template>
 
@@ -126,22 +117,5 @@ const { isSidebarOpen } = useSidebar();
     width: 100vw;
     height: 70px;
     opacity: 0.4;
-}
-
-/* Animations des notifications */
-.notification-list-move,
-.notification-list-enter-active,
-.notification-list-leave-active {
-    transition: all 0.3s ease;
-}
-
-.notification-list-enter-from,
-.notification-list-leave-to {
-    opacity: 0;
-    transform: translateX(30px);
-}
-
-.notification-list-leave-active {
-    position: absolute;
 }
 </style>

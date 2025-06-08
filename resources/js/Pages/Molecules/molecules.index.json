@@ -1,0 +1,717 @@
+[
+    {
+        "name": "Fieldset",
+        "description": "Fieldset Molecule (DaisyUI + Custom Utility)",
+        "props": [
+            {
+                "name": "legend",
+                "type": "String",
+                "desc": "Titre du fieldset (optionnel, sinon slot #legend)"
+            },
+            {
+                "name": "shadow, backdrop, opacity",
+                "type": "String",
+                "desc": "Utilitaires custom"
+            },
+            {
+                "name": "id, ariaLabel, role, tabindex",
+                "type": "String|Object",
+                "desc": "Accessibilité (hérités de commonProps)"
+            }
+        ],
+        "slots": [
+            {
+                "name": "legend",
+                "desc": "Slot pour le titre du fieldset (prioritaire sur prop legend)"
+            },
+            { "name": "default", "desc": "Contenu du fieldset (inputs, etc.)" }
+        ],
+        "daisyui": "https://daisyui.com/components/fieldset/",
+        "file": "data-input/Fieldset.vue"
+    },
+    {
+        "name": "FileInput",
+        "description": "FileInput Molecule (DaisyUI + KrosmozJDR)",
+        "props": [
+            {
+                "name": "label",
+                "type": "String",
+                "desc": "Label du champ (optionnel)"
+            },
+            {
+                "name": "helper",
+                "type": "String",
+                "desc": "Texte d'aide (optionnel, sinon slot #helper)"
+            },
+            {
+                "name": "multiple",
+                "type": "Boolean",
+                "desc": "Sélection multiple"
+            },
+            {
+                "name": "accept",
+                "type": "String",
+                "desc": "Types MIME acceptés"
+            },
+            {
+                "name": "maxSize",
+                "type": "Number",
+                "desc": "Taille max (en octets)"
+            },
+            {
+                "name": "disabled",
+                "type": "Boolean",
+                "desc": "Désactive l'input"
+            },
+            { "name": "error", "type": "String", "desc": "Message d'erreur" },
+            {
+                "name": "progress",
+                "type": "Number",
+                "desc": "Progression (0-100, optionnel)"
+            },
+            {
+                "name": "tooltip, tooltip_placement, id, ariaLabel, role, tabindex, class",
+                "type": "String|Object",
+                "desc": "Accessibilité (hérités de commonProps)"
+            }
+        ],
+        "slots": [
+            {
+                "name": "default",
+                "desc": "Preview custom du fichier sélectionné"
+            },
+            { "name": "progress", "desc": "Progress bar custom" },
+            { "name": "helper", "desc": "Texte d'aide custom" },
+            {
+                "name": "actions",
+                "desc": "Actions custom (ex: bouton supprimer)"
+            },
+            { "name": "tooltip", "desc": "Tooltip custom" }
+        ],
+        "daisyui": "https://daisyui.com/components/file-input/",
+        "file": "data-input/FileInput.vue"
+    },
+    {
+        "name": "SearchInput",
+        "description": "SearchInput Molecule (Atomic Design, DaisyUI)",
+        "props": [
+            {
+                "name": "placeholder",
+                "type": "String",
+                "desc": "Placeholder du champ (défaut: 'Rechercher')"
+            },
+            {
+                "name": "shortcut",
+                "type": "String",
+                "desc": "Raccourci clavier pour focus (défaut: 'alt+k')"
+            }
+        ],
+        "slots": [],
+        "daisyui": null,
+        "file": "data-input/SearchInput.vue"
+    },
+    {
+        "name": "BadgeRole",
+        "description": "BadgeRole Molecule (Atomic Design, DaisyUI)",
+        "props": [
+            {
+                "name": "role",
+                "type": "String",
+                "desc": "Rôle de l'utilisateur (user, admin, super_admin, player, game_master, guest)"
+            }
+        ],
+        "slots": [],
+        "daisyui": null,
+        "file": "user/BadgeRole.vue"
+    },
+    {
+        "name": "VerifyMailAlert",
+        "description": "VerifyMailAlert Molecule (Atomic Design, DaisyUI)",
+        "props": [],
+        "slots": [],
+        "daisyui": null,
+        "file": "user/VerifyMailAlert.vue"
+    },
+    {
+        "name": "EntityCard",
+        "description": "EntityCard Molecule (Atomic Design, DaisyUI)",
+        "props": [
+            {
+                "name": "title",
+                "type": "String",
+                "desc": "Titre de l'entité (requis)"
+            },
+            {
+                "name": "image",
+                "type": "String",
+                "desc": "URL de l'image (optionnel)"
+            },
+            {
+                "name": "description",
+                "type": "String",
+                "desc": "Description (optionnel)"
+            },
+            {
+                "name": "type",
+                "type": "Object",
+                "desc": "{ name, color } (optionnel)"
+            },
+            {
+                "name": "actions",
+                "type": "Array",
+                "desc": "Actions disponibles (ex: ['pin', 'favorite', 'view', 'edit', 'share'])"
+            }
+        ],
+        "slots": [
+            { "name": "title", "desc": "Titre custom" },
+            { "name": "properties", "desc": "Propriétés custom" },
+            { "name": "content", "desc": "Contenu custom" },
+            { "name": "hoverContent", "desc": "Contenu au survol" }
+        ],
+        "daisyui": null,
+        "file": "entity/EnityCard.vue"
+    },
+    {
+        "name": "AvatarGroup",
+        "description": "AvatarGroup Molecule (DaisyUI + Custom Utility)",
+        "props": [
+            {
+                "name": "avatars",
+                "type": "Array",
+                "desc": "Liste d'avatars à afficher (optionnel si slot)"
+            },
+            {
+                "name": "size",
+                "type": "String",
+                "desc": "Taille des avatars (xs, sm, md, lg, xl, ...)"
+            },
+            {
+                "name": "overlap",
+                "type": "Boolean",
+                "desc": "Chevauchement des avatars (par défaut false)"
+            },
+            {
+                "name": "max",
+                "type": "Number",
+                "desc": "Nombre max d'avatars affichés, le reste en '+N'"
+            },
+            {
+                "name": "ring, ringColor, ringOffset, ringOffsetColor",
+                "type": "String",
+                "desc": "Props DaisyUI pour Avatar"
+            },
+            {
+                "name": "shadow, backdrop, opacity",
+                "type": "String",
+                "desc": "Utilitaires custom"
+            }
+        ],
+        "slots": [
+            {
+                "name": "default",
+                "desc": "Liste d'Avatar (optionnel si avatars fourni)"
+            },
+            {
+                "name": "more",
+                "desc": "Contenu personnalisé pour le '+N' (optionnel)"
+            }
+        ],
+        "daisyui": null,
+        "file": "data-display/AvatarGroup.vue"
+    },
+    {
+        "name": "Modal",
+        "description": "Modal Molecule (DaisyUI + Custom Utility, dialog native)",
+        "props": [
+            {
+                "name": "open",
+                "type": "Boolean",
+                "desc": "Contrôle l'ouverture du modal (optionnel, sinon contrôle JS)"
+            },
+            {
+                "name": "placement",
+                "type": "String",
+                "desc": "Position DaisyUI ('top', 'middle', 'bottom', 'start', 'end'), défaut 'middle'"
+            },
+            {
+                "name": "id",
+                "type": "String",
+                "desc": "Identifiant unique (pour contrôle JS)"
+            },
+            {
+                "name": "animation",
+                "type": "String",
+                "desc": "Animation d'ouverture ('none', 'fade', 'zoom', 'slide'), défaut 'none'"
+            },
+            {
+                "name": "size",
+                "type": "String",
+                "desc": "Taille du modal ('xs', 'sm', 'md', 'lg', 'xl', 'full'), défaut 'md'"
+            },
+            {
+                "name": "shadow, backdrop, opacity, rounded",
+                "type": "String",
+                "desc": "Utilitaires custom"
+            },
+            {
+                "name": "ariaLabel, role, tabindex, class",
+                "type": "String|Object",
+                "desc": "Accessibilité (hérités de commonProps)"
+            }
+        ],
+        "slots": [
+            { "name": "header", "desc": "Titre ou header custom" },
+            { "name": "default", "desc": "Contenu principal du modal" },
+            {
+                "name": "actions",
+                "desc": "Boutons d'action (dans .modal-action)"
+            },
+            {
+                "name": "backdrop",
+                "desc": "Contenu custom du backdrop (optionnel)"
+            }
+        ],
+        "daisyui": "https://daisyui.com/components/modal/",
+        "file": "action/Modal.vue"
+    },
+    {
+        "name": "Dock",
+        "description": "Dock Molecule (DaisyUI + Custom Utility)",
+        "props": [
+            {
+                "name": "size",
+                "type": "String",
+                "desc": "Taille DaisyUI ('', 'xs', 'sm', 'md', 'lg', 'xl')"
+            },
+            {
+                "name": "shadow, backdrop, opacity, rounded",
+                "type": "String",
+                "desc": "Utilitaires custom"
+            },
+            {
+                "name": "id, ariaLabel, role, tabindex, class",
+                "type": "String|Object",
+                "desc": "Accessibilité (hérités de commonProps)"
+            }
+        ],
+        "slots": [
+            {
+                "name": "default",
+                "desc": "Items du dock (DockItem, <li>, etc.)"
+            }
+        ],
+        "daisyui": "https://daisyui.com/components/dock/",
+        "file": "navigation/Dock.vue"
+    },
+    {
+        "name": "Footer",
+        "description": "Footer Molecule (DaisyUI + Custom Utility)",
+        "props": [
+            {
+                "name": "direction",
+                "type": "String",
+                "desc": "Direction du footer ('vertical', 'horizontal'), défaut 'vertical'"
+            },
+            {
+                "name": "center",
+                "type": "Boolean",
+                "desc": "Centre le contenu (footer-center)"
+            },
+            {
+                "name": "color",
+                "type": "String",
+                "desc": "Couleur de fond DaisyUI (bg-neutral, bg-base-200, etc.)"
+            },
+            {
+                "name": "textColor",
+                "type": "String",
+                "desc": "Couleur du texte DaisyUI (text-neutral-content, etc.)"
+            },
+            {
+                "name": "shadow, backdrop, opacity, rounded",
+                "type": "String",
+                "desc": "Utilitaires custom"
+            },
+            {
+                "name": "id, ariaLabel, role, tabindex, class",
+                "type": "String|Object",
+                "desc": "Accessibilité (hérités de commonProps)"
+            }
+        ],
+        "slots": [
+            {
+                "name": "default",
+                "desc": "Contenu custom du footer (remplace tout)"
+            },
+            { "name": "logo", "desc": "Section logo/aside (optionnelle)" },
+            { "name": "section", "desc": "Section nav/colonne (répétable)" },
+            { "name": "copyright", "desc": "Section copyright (optionnelle)" }
+        ],
+        "daisyui": "https://daisyui.com/components/footer/",
+        "file": "navigation/Footer.vue"
+    },
+    {
+        "name": "Hero",
+        "description": "Hero Molecule (DaisyUI + Custom Utility)",
+        "props": [
+            {
+                "name": "bg",
+                "type": "String",
+                "desc": "Couleur de fond DaisyUI (bg-base-200, etc.)"
+            },
+            {
+                "name": "minHeight",
+                "type": "String",
+                "desc": "Hauteur min (min-h-screen, min-h-[400px], etc.)"
+            },
+            {
+                "name": "overlay",
+                "type": "Boolean",
+                "desc": "Affiche un overlay (défaut false)"
+            },
+            {
+                "name": "overlayColor",
+                "type": "String",
+                "desc": "Couleur de l'overlay (bg-black, bg-base-100, etc.)"
+            },
+            {
+                "name": "overlayOpacity",
+                "type": "String",
+                "desc": "Opacité de l'overlay (bg-opacity-50, etc.)"
+            },
+            {
+                "name": "textColor",
+                "type": "String",
+                "desc": "Couleur du texte (text-neutral-content, etc.)"
+            },
+            {
+                "name": "shadow, backdrop, opacity, rounded",
+                "type": "String",
+                "desc": "Utilitaires custom"
+            },
+            {
+                "name": "id, ariaLabel, role, tabindex, class",
+                "type": "String|Object",
+                "desc": "Accessibilité (hérités de commonProps)"
+            }
+        ],
+        "slots": [
+            {
+                "name": "default",
+                "desc": "Contenu custom du hero (remplace tout)"
+            },
+            { "name": "content", "desc": "Contenu principal (hero-content)" },
+            {
+                "name": "overlay",
+                "desc": "Overlay custom (remplace l'overlay par défaut)"
+            },
+            { "name": "figure", "desc": "Image/illustration (optionnelle)" },
+            { "name": "title", "desc": "Titre (optionnel)" },
+            { "name": "description", "desc": "Description (optionnelle)" },
+            { "name": "actions", "desc": "Actions (boutons, etc.)" }
+        ],
+        "daisyui": "https://daisyui.com/components/hero/",
+        "file": "navigation/Hero.vue"
+    },
+    {
+        "name": "Menu",
+        "description": "Menu Molecule (DaisyUI + Custom Utility)",
+        "props": [
+            {
+                "name": "direction",
+                "type": "String",
+                "desc": "Direction du menu ('vertical', 'horizontal'), défaut 'vertical'"
+            },
+            {
+                "name": "size",
+                "type": "String",
+                "desc": "Taille DaisyUI ('', 'xs', 'sm', 'md', 'lg', 'xl')"
+            },
+            {
+                "name": "shadow, backdrop, opacity, rounded",
+                "type": "String",
+                "desc": "Utilitaires custom"
+            },
+            {
+                "name": "id, ariaLabel, role, tabindex, class",
+                "type": "String|Object",
+                "desc": "Accessibilité (hérités de commonProps)"
+            }
+        ],
+        "slots": [
+            {
+                "name": "default",
+                "desc": "Items du menu (MenuItem, <li>, etc.)"
+            }
+        ],
+        "daisyui": "https://daisyui.com/components/menu/",
+        "file": "navigation/Menu.vue"
+    },
+    {
+        "name": "Navbar",
+        "description": "Navbar Molecule (DaisyUI + Custom Utility)",
+        "props": [
+            {
+                "name": "shadow, backdrop, opacity, rounded",
+                "type": "String",
+                "desc": "Utilitaires custom"
+            },
+            {
+                "name": "id, ariaLabel, role, tabindex, class",
+                "type": "String|Object",
+                "desc": "Accessibilité (hérités de commonProps)"
+            }
+        ],
+        "slots": [
+            { "name": "start", "desc": "Contenu à gauche (début)" },
+            { "name": "center", "desc": "Contenu centré" },
+            { "name": "end", "desc": "Contenu à droite (fin)" }
+        ],
+        "daisyui": "https://daisyui.com/components/navbar/",
+        "file": "navigation/Navbar.vue"
+    },
+    {
+        "name": "Steps",
+        "description": "Steps Molecule (DaisyUI + Custom Utility)",
+        "props": [
+            {
+                "name": "direction",
+                "type": "String",
+                "desc": "Direction du steps ('vertical', 'horizontal'), défaut 'vertical'"
+            },
+            {
+                "name": "responsive",
+                "type": "String",
+                "desc": "Responsive DaisyUI (ex: 'vertical lg:horizontal')"
+            },
+            {
+                "name": "shadow, backdrop, opacity, rounded",
+                "type": "String",
+                "desc": "Utilitaires custom"
+            },
+            {
+                "name": "id, ariaLabel, role, tabindex, class",
+                "type": "String|Object",
+                "desc": "Accessibilité (hérités de commonProps)"
+            }
+        ],
+        "slots": [
+            {
+                "name": "default",
+                "desc": "Items du steps (StepItem, <li>, etc.)"
+            }
+        ],
+        "daisyui": "https://daisyui.com/components/steps/",
+        "file": "navigation/Steps.vue"
+    },
+    {
+        "name": "Tab",
+        "description": "Tab Molecule (DaisyUI + Custom Utility)",
+        "props": [
+            {
+                "name": "variant",
+                "type": "String",
+                "desc": "Style DaisyUI ('', 'box', 'border', 'lift')"
+            },
+            {
+                "name": "placement",
+                "type": "String",
+                "desc": "Position des tabs ('top', 'bottom'), défaut 'top'"
+            },
+            {
+                "name": "size",
+                "type": "String",
+                "desc": "Taille DaisyUI ('', 'xs', 'sm', 'md', 'lg', 'xl')"
+            },
+            {
+                "name": "shadow, backdrop, opacity, rounded",
+                "type": "String",
+                "desc": "Utilitaires custom"
+            },
+            {
+                "name": "id, ariaLabel, role, tabindex, class",
+                "type": "String|Object",
+                "desc": "Accessibilité (hérités de commonProps)"
+            }
+        ],
+        "slots": [
+            {
+                "name": "default",
+                "desc": "Items du tabs (TabItem, <a>, <button>, etc.)"
+            }
+        ],
+        "daisyui": "https://daisyui.com/components/tab/",
+        "file": "navigation/Tab.vue"
+    },
+    {
+        "name": "Drawer",
+        "description": "Drawer Molecule (DaisyUI + Custom Utility)",
+        "props": [
+            {
+                "name": "modelValue",
+                "type": "Boolean",
+                "desc": "Contrôle l'ouverture du drawer (v-model)"
+            },
+            {
+                "name": "side",
+                "type": "String",
+                "desc": "Côté du drawer ('start'|'end'), défaut 'start'"
+            },
+            {
+                "name": "overlay",
+                "type": "Boolean",
+                "desc": "Affiche l'overlay (défaut true)"
+            },
+            {
+                "name": "id",
+                "type": "String",
+                "desc": "Identifiant unique (pour l'input/label)"
+            },
+            {
+                "name": "width",
+                "type": "String",
+                "desc": "Largeur custom (ex: 'w-80', 'w-96')"
+            },
+            {
+                "name": "closeOnOverlay",
+                "type": "Boolean",
+                "desc": "Ferme au clic sur l'overlay (défaut true)"
+            },
+            { "name": "ariaLabel", "type": "String", "desc": "Accessibilité" },
+            { "name": "class", "type": "String", "desc": "Classes custom" },
+            {
+                "name": "shadow, backdrop, opacity, rounded",
+                "type": "String",
+                "desc": "Utilitaires custom"
+            }
+        ],
+        "slots": [
+            { "name": "default", "desc": "Contenu principal (drawer-content)" },
+            {
+                "name": "sidebar",
+                "desc": "Contenu du drawer (menu, navigation, etc.)"
+            },
+            { "name": "toggle", "desc": "Bouton d'ouverture custom" }
+        ],
+        "daisyui": "https://daisyui.com/components/drawer/",
+        "file": "layout/Drawer.vue"
+    },
+    {
+        "name": "ToggleSidebar",
+        "description": "ToggleSidebar Molecule (DaisyUI Swap Hamburger)",
+        "props": [
+            {
+                "name": "size",
+                "type": "String",
+                "desc": "Taille de l'icône (xs, sm, md, lg, xl, 2xl)"
+            },
+            {
+                "name": "shortcut",
+                "type": "String",
+                "desc": "Raccourci clavier (ex: alt+g)"
+            }
+        ],
+        "slots": [
+            {
+                "name": "on",
+                "desc": "Contenu affiché quand le menu est ouvert"
+            },
+            { "name": "off", "desc": "Contenu affiché quand le menu est fermé" }
+        ],
+        "daisyui": "https://daisyui.com/components/swap/",
+        "file": "layout/ToggleSidebar.vue"
+    },
+    {
+        "name": "NotificationToast",
+        "description": "NotificationToast Molecule (Toast + Alert)",
+        "props": [
+            {
+                "name": "id",
+                "type": "Number|String",
+                "desc": "Identifiant unique de la notification"
+            },
+            {
+                "name": "message",
+                "type": "String",
+                "desc": "Message à afficher"
+            },
+            {
+                "name": "type",
+                "type": "String",
+                "desc": "Type de notification ('success', 'error', 'info', 'warning', '')"
+            },
+            {
+                "name": "actions",
+                "type": "Array|undefined",
+                "desc": "Actions custom (boutons, etc.)"
+            },
+            {
+                "name": "onClose",
+                "type": "Function|undefined",
+                "desc": "Callback fermeture (optionnel)"
+            },
+            {
+                "name": "placement",
+                "type": "String",
+                "desc": "Placement du toast (optionnel)"
+            },
+            {
+                "name": "delay",
+                "type": "Number",
+                "desc": "Délai avant auto-dismiss (optionnel)"
+            }
+        ],
+        "slots": [
+            {
+                "name": "default",
+                "desc": "Contenu custom (remplace le message)"
+            },
+            { "name": "actions", "desc": "Slot pour actions custom" }
+        ],
+        "daisyui": "https://daisyui.com/components/toast/",
+        "file": "feedback/NotificationToast.vue"
+    },
+    {
+        "name": "LoggedHeaderContainer",
+        "description": "LoggedHeaderContainer Molecule (Header Auth - Utilisateur connecté)",
+        "props": [],
+        "slots": [{ "name": "default", "desc": "(non utilisé)" }],
+        "daisyui": null,
+        "file": "header/LoggedHeaderContainer.vue"
+    },
+    {
+        "name": "LoginHeaderContainer",
+        "description": "LoginHeaderContainer Molecule (Header Auth - Utilisateur non connecté)",
+        "props": [],
+        "slots": [{ "name": "default", "desc": "(non utilisé)" }],
+        "daisyui": null,
+        "file": "header/LoginHeaderContainer.vue"
+    },
+    {
+        "name": "ThemeController",
+        "description": "ThemeController Molecule (DaisyUI Theme Controller + Swap)",
+        "props": [
+            {
+                "name": "value",
+                "type": "String",
+                "desc": "Valeur du thème à activer quand coché ('dark' ou 'light'), défaut 'dark'"
+            },
+            {
+                "name": "modelValue",
+                "type": "Boolean",
+                "desc": "Etat coché (v-model natif)"
+            },
+            {
+                "name": "ariaLabel, id, class",
+                "type": "String",
+                "desc": "Accessibilité (hérités de commonProps)"
+            }
+        ],
+        "slots": [
+            { "name": "off", "desc": "Icône/tooltip pour le mode clair" },
+            { "name": "on", "desc": "Icône/tooltip pour le mode sombre" }
+        ],
+        "daisyui": "https://daisyui.com/components/theme-controller/",
+        "file": "action/ThemeController.vue"
+    }
+]

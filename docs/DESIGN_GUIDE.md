@@ -165,6 +165,14 @@ color-scheme: "light";
 
 - Footer classique, sobre.
 
+### 6.4. Notifications
+
+- Les notifications sont gérées de façon centralisée via l'organism `NotificationContainer`.
+- Il n'y a plus de slots de notifications dans le layout principal (`Main.vue`).
+- `NotificationContainer` gère l'affichage, la pile, la transition, l'accessibilité et le positionnement (top-end, top-start, bottom-end, bottom-start) de toutes les notifications de l'application.
+- Pour afficher une notification, il suffit d'utiliser le store/composable dédié (voir la doc du composable Pinia ou maison).
+- Ce pattern garantit la cohérence, la maintenabilité et l'accessibilité des notifications sur tout le site.
+
 ## 7. Outils et technologies design
 
 - Utilisation de **Tailwindcss** pour la gestion des utilitaires CSS ([doc](https://v3.tailwindcss.com/docs/installation)).
@@ -480,6 +488,7 @@ Voici la liste initiale des organisms, avec une courte description pour chacun :
 - **Header** : Barre supérieure contenant le titre de la page, la barre de recherche (avec filtres), la gestion du compte (avatar, menu utilisateur), le switcher de langue, les notifications. Responsive (fixé en haut sur desktop, en bas sur mobile).
 - **Aside / Sidebar** : Menu latéral dynamique pour la navigation principale, liens statiques, logo, version, gestion du menu rétractable, responsive, sous-menus.
 - **Footer** : Pied de page sobre, liens utiles, copyright, mentions légales.
+- **NotificationContainer** : Organism centralisé pour l'affichage, la pile, la transition et l'accessibilité des notifications (voir section 6.4). À utiliser dans le layout principal.
 - **Card** : Bloc d'affichage d'entité (classe, monstre, objet, sort, etc.), affiche image, titre, description, actions (voir, éditer, supprimer…).
 - **EntityTable** : Tableau dynamique pour lister les entités (tri, filtres, pagination, actions). Colonnes configurables selon l'entité.
 - **Formulaire dynamique** : Formulaire de création/édition d'entité, généré à partir d'un schéma ou d'une config. Gestion des validations, messages d'erreur, champs dynamiques.
@@ -499,3 +508,17 @@ Voici la liste initiale des organisms, avec une courte description pour chacun :
 - **EntityFilter** : Filtres avancés pour les listes d'entités (par type, rareté, etc.).
 
 > Cette liste est évolutive et pourra être complétée selon les besoins du projet.
+
+## 9.1. Référence des atoms (API, props, slots)
+
+> **La liste officielle des atoms, leur API, props, slots, liens DaisyUI et chemin de fichier source est centralisée dans le fichier :**
+>
+>    `resources/js/Pages/Atoms/atoms.index.json`
+>
+> Ce fichier JSON fait foi pour :
+> - Générer la documentation automatique
+> - Construire un styleguide ou une doc interactive
+> - Vérifier la cohérence de l'API des atoms
+> - Lister tous les composants atomiques du design system
+>
+> **À chaque ajout ou modification d'un atom, il faut mettre à jour ce fichier pour garantir la cohérence du design system.**

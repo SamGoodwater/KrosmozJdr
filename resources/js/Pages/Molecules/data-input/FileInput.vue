@@ -1,390 +1,178 @@
 <script setup>
-import { ref, computed, useSlots, useAttrs } from "vue";
-import { extractTheme, combinePropsWithTheme } from "@/Utils/extractTheme";
-import { commonProps, generateClasses } from "@/Utils/commonProps";
-import { imageExists, formatSizeToMB, validateFile, formatFileType } from "@/Utils/file/File";
-import InputLabel from '@/Pages/Atoms/inputs/InputLabel.vue';
-import InputError from '@/Pages/Atoms/inputs/InputError.vue';
-import BaseTooltip from '@/Pages/Atoms/feedback/BaseTooltip.vue';
+defineOptions({ inheritAttrs: false });
+
+/**
+ * FileInput Molecule (DaisyUI + KrosmozJDR)
+ *
+ * @description
+ * Molécule avancée pour l'upload de fichiers, basée sur DaisyUI et Atomic Design.
+ * - Utilise FileInputAtom pour l'input natif stylé DaisyUI
+ * - Gère drag & drop, preview (image, nom, taille), progress (slot ou prop), suppression, helper text
+ * - Props : label, helper, progress, multiple, accept, maxSize, error, disabled, etc.
+ * - Slots : default (preview custom), progress, helper, actions, tooltip
+ * - mergeClasses pour la composition des classes
+ * - getCommonAttrs pour les attributs HTML/accessibilité
+ * - Utilise Btn, Progress, etc. si besoin
+ * - Tooltip intégré
+ * - Pas de logique d'upload (juste UI et gestion du fichier sélectionné)
+ *
+ * @see https://daisyui.com/components/file-input/
+ *
+ * @example
+ * <FileInput label="Avatar" accept="image/*" :maxSize="2*1024*1024" helper="Max 2Mo" />
+ *
+ * @props {String} label - Label du champ (optionnel)
+ * @props {String} helper - Texte d'aide (optionnel, sinon slot #helper)
+ * @props {Boolean} multiple - Sélection multiple
+ * @props {String} accept - Types MIME acceptés
+ * @props {Number} maxSize - Taille max (en octets)
+ * @props {Boolean} disabled - Désactive l'input
+ * @props {String} error - Message d'erreur
+ * @props {Number} progress - Progression (0-100, optionnel)
+ * @props {String|Object} tooltip, tooltip_placement, id, ariaLabel, role, tabindex, class - hérités de commonProps
+ * @slot default - Preview custom du fichier sélectionné
+ * @slot progress - Progress bar custom
+ * @slot helper - Texte d'aide custom
+ * @slot actions - Actions custom (ex: bouton supprimer)
+ * @slot tooltip - Tooltip custom
+ */
+import { ref, computed } from 'vue';
+import FileInputAtom from '@/Pages/Atoms/data-input/FileInputAtom.vue';
+import Btn from '@/Pages/Atoms/action/Btn.vue';
+import Progress from '@/Pages/Atoms/feedback/Progress.vue';
+import Tooltip from '@/Pages/Atoms/feedback/Tooltip.vue';
+import { getCommonProps, getCommonAttrs, mergeClasses } from '@/Utils/atomic-design/uiHelper';
+import { formatSizeToMB } from '@/Utils/file/File';
 
 const props = defineProps({
-    ...commonProps,
-    modelValue: {
-        type: [File, Array],
-        default: null,
-    },
-    label: {
-        type: String,
-        default: "",
-    },
-    styled: {
-        type: String,
-        default: "",
-        validator: (value) => ["", "ghost", "outline", "link"].includes(value),
-    },
-    helper: {
-        type: String,
-        default: "auto",
-        validator: (value) => value === null || value === "" || value === "auto" || typeof value === "string",
-    },
-    multiple: {
-        type: Boolean,
-        default: false,
-    },
-    accept: {
-        type: String,
-        default: "",
-    },
-    maxSize: {
-        type: Number,
-        default: 5242880, // 5MB par défaut
-    },
-    currentFile: {
-        type: String,
-        default: null,
-    },
-    showDeleteButton: {
-        type: Boolean,
-        default: true
-    },
-    error: {
-        type: String,
-        default: "",
-    },
-    useInputLabel: {
-        type: Boolean,
-        default: true,
-    },
-    useInputError: {
-        type: Boolean,
-        default: true,
-    },
-    inputLabel: {
-        type: String,
-        default: '',
-    },
-    errorMessage: {
-        type: String,
-        default: '',
-    },
+    ...getCommonProps(),
+    label: { type: String, default: '' },
+    helper: { type: String, default: '' },
+    multiple: { type: Boolean, default: false },
+    accept: { type: String, default: '' },
+    maxSize: { type: Number, default: 0 },
+    error: { type: String, default: '' },
+    progress: { type: Number, default: null },
+    disabled: { type: Boolean, default: false },
 });
 
-const emit = defineEmits([
-    "update:modelValue",
-    "error",
-    "delete"
-]);
+const emit = defineEmits(['update:modelValue', 'delete', 'error']);
+const fileInputRef = ref(null);
+const dragActive = ref(false);
+const files = ref([]); // tableau de File
 
-const fileInput = ref(null);
-const isDragging = ref(false);
-const dragCounter = ref(0);
-const isHovering = ref(false);
-const attrs = useAttrs();
-const slots = useSlots();
-
-// Générer un ID unique pour le composant
-const componentId = computed(() => attrs.id || `file-input-${Math.random().toString(36).substr(2, 9)}`);
-
-const themeProps = computed(() => extractTheme(props.theme));
-const combinedProps = computed(() => combinePropsWithTheme(props, themeProps.value));
-
-const buildInputClasses = (props) => {
-    const classes = ["file-input", "w-full", "transition-all", "duration-300"];
-
-    // Ajout des classes communes
-    const baseClasses = generateClasses(props);
-    if (baseClasses) {
-        classes.push(baseClasses);
-    }
-
-    // État d'erreur
-    if (props.error) {
-        classes.push("file-input-error");
-    }
-
-    return classes.join(" ");
-};
-
-const getClasses = computed(() => buildInputClasses(combinedProps.value));
-
-const buildDropZoneClasses = computed(() => {
-    const classes = [
-        "relative",
-        "w-full",
-        "flex",
-        "items-center",
-        "justify-center",
-        "transition-all",
-        "duration-300",
-        "ease-in-out",
-    ];
-
-    // Arrondi
-    const rounded = props.rounded || themeProps.value.rounded || "lg";
-    if (rounded && rounded !== "none") {
-        classes.push(`rounded-${rounded}`);
-    }
-
-    // Style pendant le drag
-    if (isDragging.value) {
-        const color = props.color || themeProps.value.color || "secondary-800";
-        classes.push(
-            `box-shadow-lg`,
-            `backdrop-blur-lg`,
-            `bg-${color}/5`,
-            "scale-102",
-            "animate-pulse"
-        );
-    }
-
-    return classes.join(" ");
-});
-
-// Gestion des fichiers
-const handleFiles = (files) => {
-    const validFiles = Array.from(files).filter(file => {
-        const validation = validateFile(file, {
-            maxSize: props.maxSize,
-            accept: props.accept
-        });
-
-        if (!validation.isValid) {
-            emit("error", validation.error);
+function onInput(e) {
+    handleFiles(e.target.files);
+}
+function onDrop(e) {
+    e.preventDefault();
+    dragActive.value = false;
+    handleFiles(e.dataTransfer.files);
+}
+function onDragOver(e) {
+    e.preventDefault();
+    dragActive.value = true;
+}
+function onDragLeave(e) {
+    e.preventDefault();
+    dragActive.value = false;
+}
+function handleFiles(fileList) {
+    const arr = Array.from(fileList);
+    // Validation taille et accept
+    const valid = arr.filter(f => {
+        if (props.maxSize && f.size > props.maxSize) {
+            emit('error', `Le fichier ${f.name} dépasse la taille maximale autorisée.`);
+            return false;
+        }
+        if (props.accept && !f.type.match(props.accept.replace('*', '.*'))) {
+            emit('error', `Le format du fichier ${f.name} n'est pas accepté.`);
             return false;
         }
         return true;
     });
-
+    files.value = props.multiple ? valid : valid.slice(0, 1);
+    emit('update:modelValue', props.multiple ? files.value : files.value[0] || null);
+}
+function onDelete(idx) {
     if (props.multiple) {
-        emit("update:modelValue", validFiles);
-    } else if (validFiles.length > 0) {
-        emit("update:modelValue", validFiles[0]);
+        files.value.splice(idx, 1);
+        emit('update:modelValue', files.value);
+    } else {
+        files.value = [];
+        emit('update:modelValue', null);
     }
-};
-
-// Gestion du drag & drop
-const handleDragEnter = (e) => {
-    e.preventDefault();
-    dragCounter.value++;
-    isDragging.value = true;
-};
-
-const handleDragLeave = (e) => {
-    e.preventDefault();
-    dragCounter.value--;
-    if (dragCounter.value === 0) {
-        isDragging.value = false;
-    }
-};
-
-const handleDrop = (e) => {
-    e.preventDefault();
-    isDragging.value = false;
-    dragCounter.value = 0;
-    handleFiles(e.dataTransfer.files);
-};
-
-const triggerFileInput = () => {
-    fileInput.value?.click();
-};
-
-const handleChange = (e) => {
-    handleFiles(e.target.files);
-};
-
-const handleDelete = (e) => {
-    e.stopPropagation();
     emit('delete');
-};
+}
+function triggerInput() {
+    fileInputRef.value?.click();
+}
 
-const shouldShowOverlay = computed(() => {
-    return isHovering.value && slots.default;
-});
+const rootClasses = computed(() =>
+    mergeClasses([
+        'fileinput-molecule',
+        dragActive.value && 'ring-2 ring-primary/60',
+        props.disabled && 'opacity-60 pointer-events-none',
+        props.class
+    ])
+);
+const attrs = computed(() => getCommonAttrs(props));
 
-const shouldShowDeleteButton = computed(() => {
-    return props.showDeleteButton && props.currentFile && slots.default;
-});
-
-const tooltipMessage = computed(() => {
-    return props.tooltip || "Cliquez ou déposez un fichier ici";
-});
-
-const overlayClasses = computed(() => {
-    return [
-        "absolute",
-        "inset-0",
-        "flex",
-        "items-center",
-        "justify-center",
-        "rounded-lg",
-        "bg-gradient-to-t",
-        "from-base-800/20",
-        "to-transparent",
-        "backdrop-blur-xs",
-        "hover:backdrop-blur-sm",
-        "transition-all",
-        "duration-500",
-        "opacity-0",
-        "hover:opacity-100"
-    ].join(" ");
-});
-
-const helperMessage = computed(() => {
-    if (props.helper === null || props.helper === "") return null;
-    if (props.helper !== "auto") return props.helper;
-
-    const parts = [];
-
-    if (props.accept) {
-        const formats = props.accept.split(",")
-            .map(formatFileType)
-            .join(", ");
-        parts.push(`Formats acceptés : ${formats}`);
-    }
-
-    if (props.maxSize) {
-        const maxSizeMB = formatSizeToMB(props.maxSize);
-        parts.push(`Taille maximale : ${maxSizeMB} Mo`);
-    }
-
-    return parts.length > 0 ? parts.join(" | ") : null;
-});
 </script>
 
 <template>
-    <div class="w-full">
-        <InputLabel v-if="useInputLabel" :for="componentId" :value="inputLabel || label || 'Fichier'">
-            <template v-if="$slots.inputLabel">
-                <slot name="inputLabel" />
-            </template>
-        </InputLabel>
-
-        <BaseTooltip
-            :tooltip="tooltip"
-            :tooltip-position="tooltipPosition"
-        >
-            <div
-                :class="buildDropZoneClasses"
-                @dragenter="handleDragEnter"
-                @dragleave="handleDragLeave"
-                @dragover.prevent
-                @drop="handleDrop"
-                @mouseenter="isHovering = true"
-                @mouseleave="isHovering = false"
-            >
-                <!-- Slot pour contenu personnalisé (image/avatar) -->
-                <div v-if="slots.default" class="relative cursor-pointer w-full flex justify-center" @click="triggerFileInput">
-                    <slot />
-
-                    <!-- Overlay au survol -->
-                    <div v-show="isHovering" :class="overlayClasses">
-                        <div class="flex flex-col items-center gap-3">
-                            <span class="text-content-dark text-shadow-lg">
-                                {{ currentFile ? 'Modifier le fichier' : 'Ajouter un fichier' }}
-                            </span>
-
-                            <!-- Bouton de suppression -->
-                            <button
-                                v-if="shouldShowDeleteButton"
-                                @click.stop="handleDelete"
-                                class="text-error-800/80 text-xl text-shadow-lg hover:text-error-600 transition-colors duration-300"
-                                title="Supprimer le fichier"
-                            >
+    <Tooltip :content="props.tooltip" :placement="props.tooltip_placement">
+        <div :class="rootClasses" v-bind="attrs" v-on="$attrs">
+            <label v-if="label" class="block mb-2 font-semibold">{{ label }}</label>
+            <div class="relative w-full border border-base-300 rounded-box p-4 bg-base-200 transition-all"
+                @dragover="onDragOver" @dragleave="onDragLeave" @drop="onDrop"
+                :class="{ 'ring-2 ring-primary/60': dragActive }" @click="triggerInput" style="cursor:pointer;">
+                <FileInputAtom ref="fileInputRef" :multiple="multiple" :accept="accept" :disabled="disabled"
+                    class="absolute inset-0 opacity-0 w-full h-full cursor-pointer z-10"
+                    style="height:100%;width:100%;top:0;left:0;" @input="onInput" />
+                <div class="flex flex-col items-center justify-center min-h-[60px]">
+                    <slot v-if="files.length && $slots.default" :files="files" />
+                    <template v-else-if="files.length">
+                        <div v-for="(file, idx) in files" :key="file.name" class="flex items-center gap-2 mb-2">
+                            <img v-if="file.type.startsWith('image/')" :src="URL.createObjectURL(file)" alt="preview"
+                                class="w-12 h-12 object-cover rounded" />
+                            <span class="truncate max-w-xs">{{ file.name }}</span>
+                            <span class="text-xs text-base-400">({{ formatSizeToMB(file.size) }} Mo)</span>
+                            <Btn size="xs" variant="ghost" color="error" circle @click.stop="onDelete(idx)"
+                                :aria-label="'Supprimer'">
                                 <i class="fa-solid fa-trash"></i>
-                            </button>
+                            </Btn>
                         </div>
-                    </div>
+                    </template>
+                    <template v-else>
+                        <span class="text-base-400">Glissez-déposez un fichier ou cliquez pour sélectionner</span>
+                    </template>
                 </div>
-
-                <!-- Input file standard si pas de slot -->
-                <input
-                    v-show="!slots.default"
-                    ref="fileInput"
-                    :id="componentId"
-                    type="file"
-                    :class="getClasses"
-                    :multiple="multiple"
-                    :accept="accept"
-                    @change="handleChange"
-                />
-
-                <!-- Overlay pendant le drag -->
-                <div
-                    v-if="isDragging"
-                    class="absolute inset-0 flex items-center justify-center bg-gradient-to-t from-base-800/20 to-transparent backdrop-blur-lg rounded-lg animate-pulse"
-                >
-                    <span class="text-content-dark text-shadow-md font-medium">
-                        Déposez votre fichier ici
-                    </span>
+                <div v-if="progress !== null || $slots.progress" class="mt-2 w-full">
+                    <slot name="progress">
+                        <Progress v-if="progress !== null" :value="progress" color="primary" />
+                    </slot>
+                </div>
+                <div v-if="$slots.actions" class="mt-2">
+                    <slot name="actions" :files="files" />
                 </div>
             </div>
-
-            <template v-if="typeof tooltip === 'object'" #tooltip>
-                <slot name="tooltip" />
-            </template>
-        </BaseTooltip>
-
-        <!-- Helper text -->
-        <div v-if="helperMessage || slots.helper" class="mt-2 text-sm text-base-500">
-            <slot name="helper">
-                {{ helperMessage }}
-            </slot>
+            <div v-if="helper || $slots.helper" class="mt-2 text-sm text-base-500">
+                <slot name="helper">{{ helper }}</slot>
+            </div>
+            <div v-if="error" class="mt-2 text-sm text-error">
+                {{ error }}
+            </div>
         </div>
-
-        <!-- Message d'erreur -->
-        <InputError v-if="useInputError" :message="errorMessage || error" class="mt-2" />
-    </div>
+        <template v-if="typeof props.tooltip === 'object'" #tooltip>
+            <slot name="tooltip" />
+        </template>
+    </Tooltip>
 </template>
 
 <style scoped>
-.scale-102 {
-    transform: scale(1.02);
-}
-
-@keyframes pulse {
-    0%, 100% {
-        opacity: 1;
-    }
-    50% {
-        opacity: 0.8;
-    }
-}
-
-.animate-pulse {
-    animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-}
-
-.file-input-bordered {
-    border: 1px solid var(--color-secondary-200);
-}
-.file-input-bordered:hover {
-    border: 1px solid var(--color-secondary-300);
-}
-.file-input-bordered:focus {
-    border: 1px solid var(--color-secondary-400);
-}
-.file-input-bordered:focus-within {
-    border: 1px solid var(--color-secondary-400);
-}
-.file-input-bordered:active {
-    border: 1px solid var(--color-secondary-500);
-}
-.file-input-bordered:disabled {
-    border: 1px solid var(--color-secondary-200);
-}
-.in-drag {
-    box-shadow:
-    0 0 1px 1px rgba(255, 255, 255, 0.50),
-    0 0 3px 4px rgba(255, 255, 255, 0.10),
-    0 0 5px 6px rgba(255, 255, 255, 0.05),
-    inset 0 0 3px 4px rgba(255, 255, 255, 0.10),
-    inset 0 0 5px 6px rgba(255, 255, 255, 0.05);
-}
-.hover-overlay {
-    opacity: 0;
-    transition: opacity 0.2s ease-in-out;
-}
-.hover-overlay:hover {
-    opacity: 1;
+.fileinput-molecule {
+    width: 100%;
+    max-width: 28rem;
 }
 </style>

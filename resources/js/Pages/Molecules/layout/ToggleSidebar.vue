@@ -1,7 +1,29 @@
 <script setup>
+/**
+* ToggleSidebar Molecule (DaisyUI Swap Hamburger)
+*
+* @description
+* Molecule pour ouvrir/fermer l'aside via un bouton hamburger animé DaisyUI (swap).
+* - Utilise l'atom Swap pour l'animation et l'accessibilité
+* - Icônes FontAwesome (fa-bars, fa-xmark) ou SVG fallback
+* - Tooltip sur chaque état (ouvrir/fermer le menu)
+* - Props : size (xs-xl), shortcut (ex: alt+g)
+* - Gère le raccourci clavier pour ouvrir/fermer le menu
+*
+* @see https://daisyui.com/components/swap/
+*
+* @example
+*
+<ToggleSidebar size="xs" />
+*
+* @props {String} size - Taille de l'icône (xs, sm, md, lg, xl, 2xl)
+* @props {String} shortcut - Raccourci clavier (ex: alt+g)
+*/
 import { ref, computed, onMounted, onUnmounted } from "vue";
-import BaseTooltip from "@/Pages/Atoms/feedback/BaseTooltip.vue";
+import Swap from "@/Pages/Atoms/action/Swap.vue";
+import Tooltip from "@/Pages/Atoms/feedback/Tooltip.vue";
 import { useSidebar } from "@/Composables/layout/useSidebar";
+import Kbd from "@/Pages/Atoms/data-display/Kbd.vue";
 
 const { toggleSidebar, isSidebarOpen } = useSidebar();
 
@@ -17,15 +39,15 @@ const props = defineProps({
     }
 });
 
-const getSize = computed(() => {
+const faSize = computed(() => {
     switch (props.size) {
-        case "xs": return 16;
-        case "sm": return 24;
-        case "md": return 32;
-        case "lg": return 48;
-        case "xl": return 64;
-        case "2xl": return 96;
-        default: return 32;
+        case "xs": return "fa-xs";
+        case "sm": return "fa-sm";
+        case "md": return "fa-lg";
+        case "lg": return "fa-2x";
+        case "xl": return "fa-3x";
+        case "2xl": return "fa-4x";
+        default: return "fa-lg";
     }
 });
 
@@ -46,34 +68,26 @@ onUnmounted(() => {
 </script>
 
 <template>
-    <div>
-        <BaseTooltip :tooltip="{ custom: true }" tooltip-position="bottom-start">
-            <button @click="toggleSidebar"
-                class="btn btn-circle dark:bg-secondary-800/10 bg-secondary-200/10 backdrop-blur-md border-none">
-                <svg v-if="!isSidebarOpen" :class="['fill-current', 'hover:opacity-50']"
-                    xmlns="http://www.w3.org/2000/svg" :width="getSize" :height="getSize" viewBox="0 -960 960 960">
-                    <path d="M120-240v-60h720v60H120Zm0-210v-60h720v60H120Zm0-210v-60h720v60H120Z" />
-                </svg>
-
-                <svg v-if="isSidebarOpen" :class="['fill-current', 'hover:opacity-50']"
-                    xmlns="http://www.w3.org/2000/svg" :width="getSize" :height="getSize" viewBox="0 -960 960 960">
-                    <path
-                        d="m249-207-42-42 231-231-231-231 42-42 231 231 231-231 42 42-231 231 231 231-42 42-231-231-231 231Z" />
-                </svg>
-            </button>
-
-            <template #tooltip>
-                <div class="flex flex-col gap-2">
-                    <p>Masquer ou afficher le menu</p>
-                    <div class="flex flex-nowrap align-items-center gap-1">
-                        <kbd class="kbd kbd-sm">{{ props.shortcut.split("+")[0] }}</kbd>
-                        <span>+</span>
-                        <kbd class="kbd kbd-sm">{{ props.shortcut.split("+")[1] }}</kbd>
-                    </div>
-                </div>
-            </template>
-        </BaseTooltip>
-    </div>
+    <Swap :model-value="isSidebarOpen" rotate @change="toggleSidebar">
+        <template #on>
+            <Tooltip placement="top">
+                <template #content>
+                    <span>Fermer le menu</span>
+                    <Kbd size="xs" class="ml-2">{{ shortcut }}</Kbd>
+                </template>
+                <i :class="['fa-solid', 'fa-xmark', faSize, 'transition-all']" />
+            </Tooltip>
+        </template>
+        <template #off>
+            <Tooltip placement="top">
+                <template #content>
+                    <span>Ouvrir le menu</span>
+                    <Kbd size="xs" class="ml-2">{{ shortcut }}</Kbd>
+                </template>
+                <i :class="['fa-solid', 'fa-bars', faSize, 'transition-all']" />
+            </Tooltip>
+        </template>
+    </Swap>
 </template>
 
 <style scoped></style>

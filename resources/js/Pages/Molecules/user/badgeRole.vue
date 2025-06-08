@@ -1,53 +1,41 @@
-/**
-* BadgeRole component that displays a user's role with a colored badge and tooltip.
-* Utilizes Atoms components for consistent styling and behavior.
-*
-* Props:
-* - role (String): The role of the user. Default is "user".
-* Valid values are defined in the Roles utility.
-*
-* Computed:
-* - roleColor: The color associated with the role.
-* - roleTranslation: The translated name of the role.
-*
-* Methods:
-* - getRoleColor: Gets the color associated with a role.
-* - getRoleTranslation: Gets the translated name of a role.
-*/
 <script setup>
+/**
+* BadgeRole Molecule (Atomic Design, DaisyUI)
+*
+* @description
+* Affiche le rôle d'un utilisateur sous forme de badge coloré avec un tooltip explicatif.
+* - Utilise l'atom Badge pour l'affichage
+* - Utilise l'atom Tooltip pour l'aide contextuelle
+* - Couleur et traduction du rôle via RoleManager
+*
+* @props {String} role - Rôle de l'utilisateur (user, admin, super_admin, player, game_master, guest)
+*
+* @see Badge, Tooltip
+*/
 import { computed } from "vue";
-import { extractTheme, combinePropsWithTheme } from "@/Utils/extractTheme";
-import { commonProps, generateClasses } from "@/Utils/commonProps";
 import Badge from "@/Pages/Atoms/data-display/Badge.vue";
-import BaseTooltip from "@/Pages/Atoms/feedback/BaseTooltip.vue";
+import Tooltip from "@/Pages/Atoms/feedback/Tooltip.vue";
 import { getRoleTranslation, getRoleColor } from "@/Utils/user/RoleManager";
 
 const props = defineProps({
-    ...commonProps,
     role: {
         type: String,
         default: "user",
         validator: (value) => {
-            const validRoles = ['user', 'admin', 'moderator', 'contributor'];
+            const validRoles = ['user', 'admin', 'super_admin', 'player', 'game_master', 'guest'];
             return validRoles.includes(value);
         }
     },
 });
 
-const themeProps = computed(() => extractTheme(props.theme));
-const combinedProps = computed(() => combinePropsWithTheme(props, themeProps.value));
-
 const roleColor = computed(() => getRoleColor(props.role));
 const roleTranslation = computed(() => getRoleTranslation(props.role));
-
 </script>
 
 <template>
-    <BaseTooltip :tooltip="`Rôle de l'utilisateur·trice : ${roleTranslation}`" tooltip-position="bottom">
-        <div class="transition-all duration-200 hover:scale-105 hover:shadow-md">
-            <Badge :color="roleColor" size="md" :theme="theme" class="uppercase">
-                {{ roleTranslation }}
-            </Badge>
-        </div>
-    </BaseTooltip>
+    <Tooltip :content="`Rôle de l'utilisateur·trice : ${roleTranslation}`" placement="bottom">
+        <Badge :color="roleColor" size="md" class="uppercase">
+            {{ roleTranslation }}
+        </Badge>
+    </Tooltip>
 </template>

@@ -40,8 +40,8 @@ import BaseTooltip from '@/Pages/Atoms/feedback/BaseTooltip.vue';
 
 // Composants Molecules
 import Avatar from '@/Pages/Molecules/images/Avatar.vue';
-import VerifyMailAlert from '@/Pages/Molecules/auth/VerifyMailAlert.vue';
-import BadgeRole from "@/Pages/Molecules/user/badgeRole.vue";
+import VerifyMailAlert from '@/Pages/Molecules/user/VerifyMailAlert.vue';
+import BadgeRole from "@/Pages/Molecules/user/BadgeRole.vue";
 
 const props = defineProps({
     mustVerifyEmail: {

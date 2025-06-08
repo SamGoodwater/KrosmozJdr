@@ -22,6 +22,7 @@ alwaysApply: false
     import { getCommonProps, getCommonAttrs, mergeClasses, getCustomUtilityProps, getCustomUtilityClasses } from '@/Utils/atomic-design/uiHelper';
     import { getInputProps, getInputAttrs } from '@/Utils/atomic-design/atomManager';
     ```
+- Liste des atoms : `resources/js/Pages/Atoms/atoms.index.json`
 
 - **Molecules** :
   - Importent les helpers de `uiHelper.js`.

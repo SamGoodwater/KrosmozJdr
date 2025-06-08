@@ -25,12 +25,12 @@ import { usePageTitle } from "@/Composables/layout/usePageTitle";
 import Avatar from "@/Pages/Molecules/images/Avatar.vue";
 import Btn from "@/Pages/Atoms/actions/Btn.vue";
 import Route from "@/Pages/Atoms/action/Route.vue";
-import BadgeRole from "@/Pages/Molecules/user/badgeRole.vue";
+import BadgeRole from "@/Pages/Molecules/user/BadgeRole.vue";
 import Container from "@/Pages/Atoms/panels/Container.vue";
 import Badge from "@/Pages/Atoms/data-display/Badge.vue";
 import ModuleCard from "@/Pages/Molecules/modules/ModuleCard.vue";
 import BaseTooltip from "@/Pages/Atoms/feedback/BaseTooltip.vue";
-import VerifyMailAlert from "@/Pages/Molecules/auth/VerifyMailAlert.vue";
+import VerifyMailAlert from "@/Pages/Molecules/user/VerifyMailAlert.vue";
 
 // Récupération des données partagées par Inertia
 const page = usePage();

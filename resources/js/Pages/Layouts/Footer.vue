@@ -1,8 +1,26 @@
 <script setup>
+/**
+* Footer Layout (Atomic Design, DaisyUI)
+*
+* @description
+* Layout Footer du projet KrosmozJDR, refactorisé pour n'utiliser que la molecule Footer et les atoms du design system.
+* - Utilise :
+* - Molecule Footer comme conteneur principal (slots logo, section, copyright)
+* - Atom Icon pour les icônes
+* - Atom Route pour les liens
+* - Atom Tooltip pour les tooltips
+* - Responsive : version desktop (footer classique), version mobile (dock/btm-nav)
+* - Accessibilité et props transmises via les helpers du design system
+*
+* @see Footer, Icon, Route, Tooltip
+*/
 import { ref } from "vue";
-import Icon from "@/Pages/Atoms/images/Icon.vue";
+import FooterMolecule from "@/Pages/Molecules/navigation/Footer.vue";
+import Icon from "@/Pages/Atoms/data-display/Icon.vue";
 import Route from "@/Pages/Atoms/action/Route.vue";
-import BaseTooltip from "@/Pages/Atoms/feedback/BaseTooltip.vue";
+import Tooltip from "@/Pages/Atoms/feedback/Tooltip.vue";
+import Dock from "@/Pages/Molecules/navigation/Dock.vue";
+import DockItem from "@/Pages/Atoms/navigation/DockItem.vue";
 
 const convertStability = {
     alpha: "α",
@@ -34,47 +52,38 @@ const footerItems = [
 </script>
 
 <template>
-    <footer class="h-14 flex justify-center">
-        <!-- Desktop Footer -->
-        <div class="flex gap-6 max-sm:hidden content-center text-sm">
-            <p class="text-content">
-                {{ appName }} - version {{ appVersion + " " + appStability }} -
-                {{ new Date().getFullYear() }}
-            </p>
-
-            <div v-for="item in footerItems" :key="item.label" class="flex items-center gap-2">
-                <BaseTooltip :tooltip="{ custom: true }" tooltip-position="top">
-                    <Route
-                        :href="item.href"
-                        :target="item.target"
-                        class="flex items-center gap-2 text-content hover:text-primary-200 transition-colors"
-                    >
-                        <Icon :icon="item.icon" class="w-4 h-4" />
-                        <span>{{ item.label }}</span>
-                    </Route>
-
-                    <template #tooltip>
-                        <span>{{ item.tooltip }}</span>
-                    </template>
-                </BaseTooltip>
+    <FooterMolecule direction="horizontal" color="bg-base-200" textColor="text-content">
+        <template #logo>
+            <span class="font-bold">{{ appName }}</span>
+        </template>
+        <template #section>
+            <div class="flex flex-col gap-2">
+                <span>
+                    {{ appName }} - version {{ appVersion + " " + appStability }} - {{ new Date().getFullYear() }}
+                </span>
+                <div class="flex gap-6">
+                    <span v-for="item in footerItems" :key="item.label" class="flex items-center gap-2">
+                        <Tooltip :content="item.tooltip" placement="top">
+                            <Route :href="item.href" :target="item.target" class="flex items-center gap-2">
+                                <Icon :source="item.icon" class="w-4 h-4" />
+                                <span>{{ item.label }}</span>
+                            </Route>
+                        </Tooltip>
+                    </span>
+                </div>
             </div>
-        </div>
-
-        <!-- Mobile Footer -->
-        <div class="hidden max-sm:block w-full">
-            <div class="btm-nav bg-base-200/80 backdrop-blur-lg">
-                <button class="text-content hover:text-primary-200">
-                    <Icon icon="fa-solid fa-bars" class="w-6 h-6" />
-                </button>
-                <button class="active text-content hover:text-primary-200">
-                    <Icon icon="fa-solid fa-home" class="w-6 h-6" />
-                </button>
-                <button class="text-content hover:text-primary-200">
-                    <Icon icon="fa-solid fa-user" class="w-6 h-6" />
-                </button>
-            </div>
-        </div>
-    </footer>
+        </template>
+        <template #copyright>
+            <span class="opacity-70 text-xs">{{ appDescription }}</span>
+        </template>
+    </FooterMolecule>
+    <!-- Mobile Footer (Dock) -->
+    <div class="hidden max-sm:block w-full">
+        <Dock size="md" class="px-1 py-2">
+            <DockItem v-for="item in footerItems" :key="item.label" :icon="item.icon" :label="item.label"
+                :route="item.href" :tooltip="item.tooltip" :target="item.target" />
+        </Dock>
+    </div>
 </template>
 
 <style scoped>

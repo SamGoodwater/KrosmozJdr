@@ -88,7 +88,7 @@ const props = defineProps({
         type: String,
         default: 'text',
         validator: v => [
-            'text', 'email', 'password', 'number', 'url', 'tel', 'search', 'date', 'datetime-local', 'month', 'week', 'time', 'color', 'file', 'checkbox', 'radio', 'range', 'hidden', 'submit', 'reset', 'button'
+            'text', 'email', 'password', 'number', 'url', 'tel', 'search', 'date', 'datetime-local', 'month', 'week', 'time', 'color', 'checkbox', 'radio', 'range', 'hidden', 'submit', 'reset', 'button'
         ].includes(v),
     },
     useFieldComposable: { type: Boolean, default: false },
