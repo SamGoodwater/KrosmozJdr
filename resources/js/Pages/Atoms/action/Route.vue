@@ -42,6 +42,8 @@ import { computed, ref } from 'vue';
 import { Link } from '@inertiajs/vue3';
 import Tooltip from '@/Pages/Atoms/feedback/Tooltip.vue';
 import { getCommonProps, getCommonAttrs, mergeClasses, getCustomUtilityClasses } from '@/Utils/atomic-design/uiHelper';
+import { colorList } from '@/Pages/Atoms/atomMap';
+import { targetList, methodList } from './actionMap';
 
 const props = defineProps({
     ...getCommonProps(),
@@ -56,12 +58,12 @@ const props = defineProps({
     target: {
         type: String,
         default: '',
-        validator: v => ['_blank', '_self', '_parent', '_top'].includes(v),
+        validator: v => targetList.includes(v),
     },
     method: {
         type: String,
         default: 'get',
-        validator: v => ['get', 'post', 'put', 'delete', 'patch', 'options', 'head', 'trace', 'connect', 'link', 'unlink'].includes(v),
+        validator: v => methodList.includes(v),
     },
     replace: {
         type: Boolean,
@@ -71,7 +73,7 @@ const props = defineProps({
     color: {
         type: String,
         default: '',
-        validator: v => ['', 'neutral', 'primary', 'secondary', 'accent', 'success', 'info', 'warning', 'error'].includes(v),
+        validator: v => colorList.includes(v),
     },
     hover: {
         type: Boolean,

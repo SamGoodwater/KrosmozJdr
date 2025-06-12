@@ -50,76 +50,7 @@ import Tooltip from '@/Pages/Atoms/feedback/Tooltip.vue';
 import { getCommonProps, getCommonAttrs, mergeClasses } from '@/Utils/atomic-design/uiHelper';
 import { MediaManager } from '@/Utils/file/MediaManager';
 import Loading from '@/Pages/Atoms/feedback/Loading.vue';
-
-const sizeMap = {
-    xs: ['w-16', 'h-16'],
-    sm: ['w-24', 'h-24'],
-    md: ['w-32', 'h-32'],
-    lg: ['w-48', 'h-48'],
-    xl: ['w-64', 'h-64'],
-    '2xl': ['w-96', 'h-96'],
-    '3xl': ['w-128', 'h-128'],
-    '4xl': ['w-192', 'h-192'],
-    '5xl': ['w-256', 'h-256'],
-    '6xl': ['w-512', 'h-512'],
-};
-const ratioMap = {
-    '1/1': 'aspect-square',
-    'square': 'aspect-square',
-    '16/9': 'aspect-video',
-    'video': 'aspect-video',
-    '4/3': 'aspect-[4/3]',
-    '3/2': 'aspect-[3/2]',
-    '2/1': 'aspect-[2/1]',
-    '3/4': 'aspect-[3/4]',
-    '9/16': 'aspect-[9/16]',
-};
-const roundedMap = {
-    none: '',
-    sm: 'rounded-sm',
-    md: 'rounded-md',
-    lg: 'rounded-lg',
-    xl: 'rounded-xl',
-    '2xl': 'rounded-2xl',
-    '3xl': 'rounded-3xl',
-    full: 'rounded-full',
-    circle: 'rounded-full',
-};
-const fitMap = {
-    cover: 'object-cover',
-    contain: 'object-contain',
-    fill: 'object-fill',
-    none: 'object-none',
-    'scale-down': 'object-scale-down',
-};
-const positionMap = {
-    center: 'object-center',
-    top: 'object-top',
-    right: 'object-right',
-    bottom: 'object-bottom',
-    left: 'object-left',
-    'top-left': 'object-top-left',
-    'top-right': 'object-top-right',
-    'bottom-left': 'object-bottom-left',
-    'bottom-right': 'object-bottom-right',
-};
-const filterClassMap = {
-    grayscale: 'filter grayscale',
-    sepia: 'filter sepia',
-    blur: 'filter blur',
-    brightness: 'filter brightness-150',
-    contrast: 'filter contrast-150',
-    'hue-rotate': 'filter hue-rotate-90',
-    invert: 'filter invert',
-    saturate: 'filter saturate-200',
-};
-const maskList = [
-    '', 'mask', 'mask-squircle', 'mask-heart', 'mask-hexagon', 'mask-hexagon-2', 'mask-decagon', 'mask-pentagon',
-    'mask-diamond', 'mask-square', 'mask-circle', 'mask-star', 'mask-star-2', 'mask-triangle', 'mask-triangle-2',
-    'mask-triangle-3', 'mask-triangle-4', 'mask-half-1', 'mask-half-2'
-];
-
-const breakpoints = ['sm', 'md', 'lg', 'xl', '2xl'];
+import { sizeMap, ratioMap, roundedMap, fitMap, positionMap, filterClassMap, maskList, breakpoints } from '@/Pages/Atoms/data-display/data-displayMap';
 
 const props = defineProps({
     ...getCommonProps(),
@@ -128,12 +59,28 @@ const props = defineProps({
     alt: { type: String, required: true },
     size: { type: String, default: '' },
     sizes: { type: Object, default: null },
-    ratio: { type: String, default: '' },
-    width: { type: String, default: '', validator: v => ['', 'xs', 'sm', 'md', 'lg', 'xl', '2xl', '3xl', '4xl', '5xl', '6xl'].includes(v) },
+    ratio: {
+        type: String,
+        default: '',
+        validator: v => v === '' || Object.keys(ratioMap).includes(v),
+    },
+    width: { type: String, default: '' },
     height: { type: String, default: '' },
-    rounded: { type: String, default: '' },
-    fit: { type: String, default: 'cover', validator: v => Object.keys(fitMap).includes(v) },
-    position: { type: String, default: 'center', validator: v => Object.keys(positionMap).includes(v) },
+    rounded: {
+        type: String,
+        default: '',
+        validator: v => v === '' || Object.keys(roundedMap).includes(v),
+    },
+    fit: {
+        type: String,
+        default: 'cover',
+        validator: v => Object.keys(fitMap).includes(v),
+    },
+    position: {
+        type: String,
+        default: 'center',
+        validator: v => Object.keys(positionMap).includes(v),
+    },
     filter: { type: [String, Object], default: '' },
     mask: {
         type: String,

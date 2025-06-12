@@ -3,9 +3,6 @@ import laravel from "laravel-vite-plugin";
 import vue from "@vitejs/plugin-vue";
 import { resolve } from "path";
 
-   process.env.HOST = "localhost";
-   process.env.VITE_HOST = "localhost";
-
    export default defineConfig({
        plugins: [
            laravel({
@@ -28,8 +25,8 @@ import { resolve } from "path";
            },
        },
        server: {
-           host: process.env.HOST,
-           port: process.env.PORT,
+           host: "localhost",
+           port: 5173,
            strictPort: true,
        },
    });

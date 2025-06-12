@@ -1,3 +1,4 @@
+<script setup>
 /**
 * EntityCard Molecule (Atomic Design, DaisyUI)
 *
@@ -20,7 +21,6 @@
 *
 * @see Card, Image, Badge, Btn, Tooltip, Icon
 */
-<script setup>
 import { computed } from "vue";
 import Card from "@/Pages/Atoms/data-display/Card.vue";
 import Image from "@/Pages/Atoms/data-display/Image.vue";

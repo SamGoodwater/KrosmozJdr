@@ -52,6 +52,7 @@ defineOptions({ inheritAttrs: false }); // Pour que les événements natifs soie
  */
 import { computed } from 'vue';
 import { getCommonProps, getCommonAttrs, getCustomUtilityProps, getCustomUtilityClasses, mergeClasses } from '@/Utils/atomic-design/uiHelper';
+import { colorList } from '@/Pages/Atoms/atomMap';
 
 const props = defineProps({
     ...getCommonProps({ exclude: ['tooltip', 'tooltip_placement'] }),
@@ -71,7 +72,7 @@ const props = defineProps({
     color: {
         type: String,
         default: '',
-        validator: v => ['', 'neutral', 'primary', 'secondary', 'accent', 'info', 'success', 'warning', 'error'].includes(v),
+        validator: v => colorList.includes(v),
     },
     // Forcer l'ouverture
     open: {

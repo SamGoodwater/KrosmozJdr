@@ -37,6 +37,7 @@ import Tooltip from '@/Pages/Atoms/feedback/Tooltip.vue';
 import Icon from '@/Pages/Atoms/data-display/Icon.vue';
 import RouteAtom from '@/Pages/Atoms/action/Route.vue';
 import { getCommonProps, getCommonAttrs, getCustomUtilityProps, getCustomUtilityClasses, mergeClasses } from '@/Utils/atomic-design/uiHelper';
+import { sizeXlList } from '@/Pages/Atoms/atomMap';
 
 const props = defineProps({
     ...getCommonProps(),
@@ -48,7 +49,7 @@ const props = defineProps({
     size: {
         type: String,
         default: '',
-        validator: v => ['', 'xs', 'sm', 'md', 'lg', 'xl'].includes(v),
+        validator: v => sizeXlList.includes(v),
     },
     route: { type: String, default: '' },
 });

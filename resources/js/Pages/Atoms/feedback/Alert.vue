@@ -42,6 +42,7 @@ defineOptions({ inheritAttrs: false }); // Pour que les évéments natifs soient
 import { computed } from 'vue';
 import Tooltip from '@/Pages/Atoms/feedback/Tooltip.vue';
 import { getCommonProps, getCommonAttrs, getCustomUtilityProps, getCustomUtilityClasses, mergeClasses } from '@/Utils/atomic-design/uiHelper';
+import { colorList } from '@/Pages/Atoms/atomMap';
 
 const props = defineProps({
     ...getCommonProps(),
@@ -49,7 +50,7 @@ const props = defineProps({
     color: {
         type: String,
         default: '',
-        validator: v => ['', 'info', 'success', 'warning', 'error'].includes(v),
+        validator: v => colorList.includes(v),
     },
     variant: {
         type: String,

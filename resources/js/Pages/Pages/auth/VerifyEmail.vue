@@ -1,8 +1,9 @@
 <script setup>
 import { computed } from "vue";
 // import GuestLayout from '@/Layouts/GuestLayout.vue';
-import Btn from "@/Pages/Atoms/actions/Btn.vue";
-import { Head, Link, useForm } from "@inertiajs/vue3";
+import Btn from "@/Pages/Atoms/action/Btn.vue";
+import { Head, useForm } from "@inertiajs/vue3";
+import Route from '@/Pages/Atoms/action/Route.vue';
 
 const props = defineProps({
     status: {
@@ -22,39 +23,27 @@ const verificationLinkSent = computed(
 </script>
 
 <template>
-    <Head title="Email Verification" />
+
+    <Head title="Vérification de l'email" />
 
     <div class="mb-4 text-sm text-gray-600">
-        Thanks for signing up! Before getting started, could you verify your
-        email address by clicking on the link we just emailed to you? If you
-        didn't receive the email, we will gladly send you another.
+        Merci pour votre inscription ! Avant de commencer, veuillez vérifier votre adresse email en cliquant sur le lien
+        que nous venons de vous envoyer. Si vous n'avez pas reçu l'email, nous pouvons vous en renvoyer un.
     </div>
 
-    <div
-        class="mb-4 text-sm font-medium text-green-600"
-        v-if="verificationLinkSent"
-    >
-        A new verification link has been sent to the email address you provided
-        during registration.
+    <div class="mb-4 text-sm font-medium text-green-600" v-if="verificationLinkSent">
+        Un nouveau lien de vérification a été envoyé à l'adresse email que vous avez fournie lors de l'inscription.
     </div>
 
     <form @submit.prevent="submit">
         <div class="mt-4 flex items-center justify-between">
-            <Btn
-                :class="{ 'opacity-25': form.processing }"
-                :disabled="form.processing"
-            >
-                Resend Verification Email
+            <Btn :disabled="form.processing" :class="{ 'opacity-25': form.processing }">
+                Renvoyer l'email de vérification
             </Btn>
 
-            <Link
-                :href="route('logout')"
-                method="post"
-                as="button"
-                class="rounded-md text-sm text-gray-600 underline hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-            >
-                Log Out</Link
-            >
+            <Route route="logout" method="post" as="button" color="neutral" variant="link">
+                Se déconnecter
+            </Route>
         </div>
     </form>
 </template>

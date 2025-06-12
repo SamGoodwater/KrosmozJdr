@@ -56,6 +56,7 @@ import { getInputProps, getInputAttrs } from '@/Utils/atomic-design/atomManager'
 import InputLabel from '@/Pages/Atoms/data-input/InputLabel.vue';
 import useEditableField from '@/Composables/form/useEditableField';
 import Btn from '@/Pages/Atoms/action/Btn.vue';
+import { colorList, sizeXlList } from '@/Pages/Atoms/atomMap';
 
 const props = defineProps({
     ...getCommonProps(),
@@ -64,12 +65,12 @@ const props = defineProps({
     color: {
         type: String,
         default: '',
-        validator: v => ['', 'neutral', 'primary', 'secondary', 'accent', 'info', 'success', 'warning', 'error'].includes(v),
+        validator: v => colorList.includes(v),
     },
     size: {
         type: String,
         default: '',
-        validator: v => ['', 'xs', 'sm', 'md', 'lg', 'xl'].includes(v),
+        validator: v => sizeXlList.includes(v),
     },
     useFieldComposable: { type: Boolean, default: false },
     field: { type: Object, default: null },

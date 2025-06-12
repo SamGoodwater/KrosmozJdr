@@ -1,153 +1,120 @@
-/**
- * Home component that serves as the main landing page.
- * Provides an introduction to the KrosmozJDR universe and its features.
- *
- * Features:
- * - Welcome message and introduction
- * - Key features presentation
- * - Call to action
- * - Theme showcase (buttons, icons)
- *
- * Props:
- * - theme: Theme configuration for styling
- *
- * Events:
- * - @ready: Emitted when the component is mounted
- */
 <script setup>
+/**
+* Home component (refonte Atomic Design)
+* Page d'accueil KrosmozJDR : intro, démo composants, présentation projet.
+*
+* - Utilise la molecule Hero pour l'intro
+* - Container pour le contenu principal
+* - Démo boutons/icônes inline (à supprimer plus tard)
+* - Présentation projet en prose
+*
+* @author
+ */
 import { ref, onMounted } from "vue";
 import { usePage } from "@inertiajs/vue3";
 import { usePageTitle } from "@/Composables/layout/usePageTitle";
 
-// Composants Atoms
-import Btn from "@/Pages/Atoms/actions/Btn.vue";
-import Icon from "@/Pages/Atoms/images/Icon.vue";
-import Container from "@/Pages/Atoms/panels/Container.vue";
-import BaseTooltip from "@/Pages/Atoms/feedback/BaseTooltip.vue";
+// Molecules
+import Hero from '@/Pages/Molecules/navigation/Hero.vue';
+// Atoms
+import Container from '@/Pages/Atoms/data-display/Container.vue';
+import Btn from '@/Pages/Atoms/action/Btn.vue';
+import Icon from '@/Pages/Atoms/data-display/Icon.vue';
+import Tooltip from '@/Pages/Atoms/feedback/Tooltip.vue';
 
-// Récupération des données partagées par Inertia
+// Données partagées
 const page = usePage();
 const { setPageTitle } = usePageTitle();
 
-// Configuration de la page
 onMounted(() => {
     setPageTitle('Accueil');
 });
 
-// Constantes et configurations
-const convertStability = {
-    alpha: "α",
-    beta: "β",
-    rc: "rc",
-    stable: "",
-};
-
-const appDescription = ref(import.meta.env.VITE_APP_DESCRIPTION);
-const appKeywords = ref(import.meta.env.VITE_APP_KEYWORDS);
-
-// Liste des boutons de démonstration
+// Démo boutons
 const demoButtons = [
-    { theme: "primary", size: "sm", variant: "glass", label: "Primaire", tooltip: "Bouton principal" },
-    { theme: "secondary", size: "sm", variant: "glass", label: "Secondaire", tooltip: "Bouton secondaire" },
-    { theme: "success", size: "sm", variant: "glass", label: "Succès", tooltip: "Action réussie" },
-    { theme: "error", size: "sm", variant: "glass", label: "Erreur", tooltip: "Action d'erreur" },
-    { theme: "neutral", size: "sm", variant: "glass", label: "Simple", tooltip: "Action neutre" }
+    { color: "primary", size: "sm", variant: "glass", label: "Primaire", tooltip: "Bouton principal" },
+    { color: "secondary", size: "sm", variant: "glass", label: "Secondaire", tooltip: "Bouton secondaire" },
+    { color: "success", size: "sm", variant: "glass", label: "Succès", tooltip: "Action réussie" },
+    { color: "error", size: "sm", variant: "glass", label: "Erreur", tooltip: "Action d'erreur" },
+    { color: "neutral", size: "sm", variant: "glass", label: "Simple", tooltip: "Action neutre" }
 ];
-
 const outlineButtons = [
-    { theme: "primary", size: "sm", variant: "outline", label: "Principale", tooltip: "Bouton principal en contour" },
-    { theme: "secondary", size: "sm", variant: "outline", label: "Mineure", tooltip: "Bouton secondaire en contour" },
-    { theme: "success", size: "sm", variant: "outline", label: "Valider", tooltip: "Bouton de validation en contour" },
-    { theme: "error", size: "sm", variant: "outline", label: "Annuler", tooltip: "Bouton d'annulation en contour" },
-    { theme: "neutral", size: "sm", variant: "outline", label: "Simple", tooltip: "Bouton neutre en contour" }
+    { color: "primary", size: "sm", variant: "outline", label: "Principale", tooltip: "Bouton principal en contour" },
+    { color: "secondary", size: "sm", variant: "outline", label: "Mineure", tooltip: "Bouton secondaire en contour" },
+    { color: "success", size: "sm", variant: "outline", label: "Valider", tooltip: "Bouton de validation en contour" },
+    { color: "error", size: "sm", variant: "outline", label: "Annuler", tooltip: "Bouton d'annulation en contour" },
+    { color: "neutral", size: "sm", variant: "outline", label: "Simple", tooltip: "Bouton neutre en contour" }
 ];
-
 const linkButtons = [
-    { theme: "primary", size: "sm", variant: "link", label: "Principale", tooltip: "Lien principal" },
-    { theme: "secondary", size: "sm", variant: "link", label: "Mineure", tooltip: "Lien secondaire" },
-    { theme: "success", size: "sm", variant: "link", label: "Valider", tooltip: "Lien de validation" },
-    { theme: "error", size: "sm", variant: "link", label: "Annuler", tooltip: "Lien d'annulation" },
-    { theme: "neutral", size: "sm", variant: "link", label: "Simple", tooltip: "Lien neutre" }
+    { color: "primary", size: "sm", variant: "link", label: "Principale", tooltip: "Lien principal" },
+    { color: "secondary", size: "sm", variant: "link", label: "Mineure", tooltip: "Lien secondaire" },
+    { color: "success", size: "sm", variant: "link", label: "Valider", tooltip: "Lien de validation" },
+    { color: "error", size: "sm", variant: "link", label: "Annuler", tooltip: "Lien d'annulation" },
+    { color: "neutral", size: "sm", variant: "link", label: "Simple", tooltip: "Lien neutre" }
 ];
-
-// Liste des icônes de démonstration
+// Démo icônes
 const demoIcons = [
-    { theme: "xs", source: "icons/modules/pa", tooltip: "Icône extra-small" },
-    { theme: "sm", source: "icons/modules/pm", tooltip: "Icône small" },
-    { theme: "md", source: "icons/modules/po", tooltip: "Icône medium" },
-    { theme: "lg", source: "icons/modules/tacle", tooltip: "Icône large" },
-    { theme: "xl", source: "icons/modules/res_terre", tooltip: "Icône extra-large" }
+    { size: "xs", source: "icons/modules/pa", tooltip: "Icône extra-small" },
+    { size: "sm", source: "icons/modules/pm", tooltip: "Icône small" },
+    { size: "md", source: "icons/modules/po", tooltip: "Icône medium" },
+    { size: "lg", source: "icons/modules/tacle", tooltip: "Icône large" },
+    { size: "xl", source: "icons/modules/res_terre", tooltip: "Icône extra-large" }
 ];
 </script>
 
 <template>
-    <Container class="space-y-8">
-        <!-- En-tête -->
-        <header class="text-center">
-            <h1 class="text-amber-800 text-3xl font-bold">Site en construction</h1>
-        </header>
+    <!-- Hero d'intro -->
+    <Hero bg="bg-base-200" minHeight="min-h-[300px]" textColor="text-primary-content">
+        <template #content>
+            <div class="text-center space-y-4">
+                <h1 class="text-amber-800 text-3xl font-bold">Bienvenue sur KrosmozJDR</h1>
+                <p class="text-lg text-primary-content">L'aventure épique dans l'univers du Monde des Douze commence ici
+                    !</p>
+                <Btn color="primary" size="md" variant="glass">Rejoindre l'aventure</Btn>
+            </div>
+        </template>
+    </Hero>
 
-        <!-- Section de démonstration des composants -->
+    <Container class="space-y-8 mt-8">
+        <!-- Section démo boutons (inline, à supprimer plus tard) -->
         <section class="space-y-6">
-            <!-- Boutons de démonstration -->
             <div class="text-center space-y-6">
                 <!-- Boutons glass -->
                 <div class="flex gap-4 justify-center flex-wrap">
-                    <BaseTooltip
-                        v-for="button in demoButtons"
-                        :key="button.theme"
-                        :tooltip="button.tooltip"
-                    >
-                        <Btn :theme="button.theme" :label="button.label" />
-                    </BaseTooltip>
+                    <Tooltip v-for="button in demoButtons" :key="button.color" :content="button.tooltip">
+                        <Btn :color="button.color" :size="button.size" :variant="button.variant">{{ button.label }}
+                        </Btn>
+                    </Tooltip>
                 </div>
-
                 <!-- Boutons outline -->
                 <div class="flex gap-4 justify-center flex-wrap">
-                    <BaseTooltip
-                        v-for="button in outlineButtons"
-                        :key="button.theme"
-                        :tooltip="button.tooltip"
-                    >
-                        <Btn :theme="button.theme">
-                            {{ button.label }}
+                    <Tooltip v-for="button in outlineButtons" :key="button.color" :content="button.tooltip">
+                        <Btn :color="button.color" :size="button.size" :variant="button.variant">{{ button.label }}
                         </Btn>
-                    </BaseTooltip>
+                    </Tooltip>
                 </div>
-
                 <!-- Boutons link -->
                 <div class="flex gap-4 justify-center flex-wrap">
-                    <BaseTooltip
-                        v-for="button in linkButtons"
-                        :key="button.theme"
-                        :tooltip="button.tooltip"
-                    >
-                        <Btn :theme="button.theme">
-                            {{ button.label }}
+                    <Tooltip v-for="button in linkButtons" :key="button.color" :content="button.tooltip">
+                        <Btn :color="button.color" :size="button.size" :variant="button.variant">{{ button.label }}
                         </Btn>
-                    </BaseTooltip>
+                    </Tooltip>
                 </div>
-
                 <!-- Icônes de démonstration -->
                 <div class="flex gap-4 justify-center items-center">
-                    <BaseTooltip
-                        v-for="icon in demoIcons"
-                        :key="icon.source"
-                        :tooltip="icon.tooltip"
-                    >
-                        <Icon :theme="icon.theme" :source="icon.source" />
-                    </BaseTooltip>
+                    <Tooltip v-for="icon in demoIcons" :key="icon.source" :content="icon.tooltip">
+                        <Icon :size="icon.size" :source="icon.source" alt="Icône de démo" />
+                    </Tooltip>
                 </div>
             </div>
         </section>
 
-        <!-- Contenu principal -->
+        <!-- Présentation du projet -->
         <section class="prose prose-state prose-a:text-content max-sm:prose-sm lg:prose-lg">
             <h3 class="text-title">
                 Bienvenue dans <strong>KrosmozJDR</strong>, l'aventure épique dans
                 l'univers du monde des Douze !
             </h3>
-
             <p>
                 Plongez dans le monde des Douze, un univers riche et vibrant issu de
                 l'imaginaire de <em>Dofus</em>, où l'aventure, la stratégie et la
@@ -155,7 +122,6 @@ const demoIcons = [
                 Ici, chaque partie est une porte ouverte vers des terres
                 fascinantes, des créatures captivantes et des combats épiques.
             </p>
-
             <h4 class="text-subtitle">Explorez des lieux mythiques</h4>
             <p>
                 De la cité lumineuse de Bonta aux mystères d'Astrub, en passant par
@@ -166,7 +132,6 @@ const demoIcons = [
                 et à affronter les puissants maîtres des donjons comme Kardorim,
                 Groloum ou encore le Comte Harebourg.
             </p>
-
             <h4 class="text-subtitle">Incarnez une classe iconique</h4>
             <p>
                 Choisissez parmi une grande variété de classes emblématiques :
@@ -177,7 +142,6 @@ const demoIcons = [
                 offre des mécaniques uniques et des sorts adaptés à l'univers du jeu
                 de rôle.
             </p>
-
             <h4 class="text-subtitle">Développez votre personnage</h4>
             <p>
                 Grâce à un système de compétences et d'aptitudes inspiré de D&amp;D,
@@ -186,7 +150,6 @@ const demoIcons = [
                 inspirées des subtilités des races de D&amp;D, et explorez des
                 gameplays toujours plus variés et profonds.
             </p>
-
             <h4 class="text-subtitle">Un gameplay enrichi et immersif</h4>
             <p>
                 Notre jeu de rôle fusionne les règles classiques du JdR avec
@@ -195,9 +158,7 @@ const demoIcons = [
                 des quêtes épiques, à forger des alliances mémorables, et à écrire
                 votre légende dans un monde en perpétuelle évolution.
             </p>
-
             <hr class="border-primary-700/50" />
-
             <h3 class="text-title">Êtes-vous prêt à rejoindre l'aventure ?</h3>
             <p>
                 Rassemblez vos compagnons, lancez vos dés et partez à la découverte

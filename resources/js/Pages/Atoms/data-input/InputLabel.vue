@@ -33,27 +33,8 @@ defineOptions({ inheritAttrs: false }); // Pour que les évéments natifs soient
 import { computed } from 'vue';
 import Tooltip from '@/Pages/Atoms/feedback/Tooltip.vue';
 import { getCommonProps, getCommonAttrs } from '@/Utils/atomic-design/uiHelper';
-
-const sizeMap = {
-    xs: 'text-xs',
-    sm: 'text-sm',
-    md: 'text-base',
-    lg: 'text-lg',
-    xl: 'text-xl',
-};
-const colorMap = {
-    primary: 'text-primary',
-    secondary: 'text-secondary',
-    accent: 'text-accent',
-    info: 'text-info',
-    success: 'text-success',
-    warning: 'text-warning',
-    error: 'text-error',
-    neutral: 'text-neutral',
-    'base-100': 'text-base-100',
-    'base-200': 'text-base-200',
-    'base-300': 'text-base-300',
-};
+import { colorList, sizeXlList } from '@/Pages/Atoms/atomMap';
+import { colorMap, sizeMap } from './data-inputMap';
 
 const props = defineProps({
     ...getCommonProps(),
@@ -63,12 +44,12 @@ const props = defineProps({
     size: {
         type: String,
         default: '',
-        validator: v => ['', 'xs', 'sm', 'md', 'lg', 'xl'].includes(v),
+        validator: v => sizeXlList.includes(v),
     },
     color: {
         type: String,
         default: '',
-        validator: v => ['', 'primary', 'secondary', 'accent', 'info', 'success', 'warning', 'error', 'neutral', 'base-100', 'base-200', 'base-300'].includes(v),
+        validator: v => colorList.includes(v),
     },
     position: {
         type: String,

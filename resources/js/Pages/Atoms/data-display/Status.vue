@@ -31,18 +31,19 @@ defineOptions({ inheritAttrs: false }); // Pour que les événements natifs soie
 import { computed } from 'vue';
 import Tooltip from '@/Pages/Atoms/feedback/Tooltip.vue';
 import { getCommonProps, getCommonAttrs, mergeClasses } from '@/Utils/atomic-design/uiHelper';
+import { colorList, sizeXlList } from '@/Pages/Atoms/atomMap';
 
 const props = defineProps({
     ...getCommonProps(),
     color: {
         type: String,
         default: '',
-        validator: v => ['', 'neutral', 'primary', 'secondary', 'accent', 'info', 'success', 'warning', 'error'].includes(v),
+        validator: v => colorList.includes(v),
     },
     size: {
         type: String,
         default: '',
-        validator: v => ['', 'xs', 'sm', 'md', 'lg', 'xl'].includes(v),
+        validator: v => sizeXlList.includes(v),
     },
     class: { type: String, default: '' },
 });

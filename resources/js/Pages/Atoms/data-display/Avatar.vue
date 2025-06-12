@@ -42,63 +42,8 @@ import { computed, ref } from 'vue';
 import Tooltip from '@/Pages/Atoms/feedback/Tooltip.vue';
 import Loading from '@/Pages/Atoms/feedback/Loading.vue';
 import { getCommonProps, getCommonAttrs, getCustomUtilityProps, getCustomUtilityClasses, mergeClasses } from '@/Utils/atomic-design/uiHelper';
-
-const sizeMap = {
-    xs: 'w-8 h-8',
-    sm: 'w-12 h-12',
-    md: 'w-16 h-16',
-    lg: 'w-24 h-24',
-    xl: 'w-32 h-32',
-    '2xl': 'w-40 h-40',
-    '3xl': 'w-48 h-48',
-    '4xl': 'w-56 h-56',
-};
-const ringMap = {
-    xs: 'ring-1',
-    sm: 'ring-2',
-    md: 'ring-4',
-    lg: 'ring-8',
-    xl: 'ring-12',
-    '2xl': 'ring-[16px]',
-    '3xl': 'ring-[24px]',
-    '4xl': 'ring-[32px]',
-};
-const ringColorMap = {
-    primary: 'ring-primary',
-    secondary: 'ring-secondary',
-    accent: 'ring-accent',
-    info: 'ring-info',
-    success: 'ring-success',
-    warning: 'ring-warning',
-    error: 'ring-error',
-    'base-100': 'ring-base-100',
-    'base-200': 'ring-base-200',
-    'base-300': 'ring-base-300',
-    neutral: 'ring-neutral',
-};
-const ringOffsetMap = {
-    xs: 'ring-offset-1',
-    sm: 'ring-offset-2',
-    md: 'ring-offset-4',
-    lg: 'ring-offset-8',
-    xl: 'ring-offset-12',
-    '2xl': 'ring-offset-[16px]',
-    '3xl': 'ring-offset-[24px]',
-    '4xl': 'ring-offset-[32px]',
-};
-const ringOffsetColorMap = {
-    primary: 'ring-offset-primary',
-    secondary: 'ring-offset-secondary',
-    accent: 'ring-offset-accent',
-    info: 'ring-offset-info',
-    success: 'ring-offset-success',
-    warning: 'ring-offset-warning',
-    error: 'ring-offset-error',
-    'base-100': 'ring-offset-base-100',
-    'base-200': 'ring-offset-base-200',
-    'base-300': 'ring-offset-base-300',
-    neutral: 'ring-offset-neutral',
-};
+import { sizeXlList } from '@/Pages/Atoms/atomMap';
+import { sizeMap, roundedMap, ringMap, ringColorMap, ringOffsetMap, ringOffsetColorMap } from './data-displayMap';
 
 const props = defineProps({
     ...getCommonProps(),
@@ -108,7 +53,7 @@ const props = defineProps({
     size: {
         type: String,
         default: 'md',
-        validator: v => Object.keys(sizeMap).includes(v),
+        validator: v => sizeXlList.includes(v),
     },
     ring: {
         type: String,

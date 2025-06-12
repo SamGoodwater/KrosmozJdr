@@ -45,6 +45,8 @@ defineOptions({ inheritAttrs: false }); // Pour que les événements natifs soie
 import { computed } from 'vue';
 import Tooltip from '@/Pages/Atoms/feedback/Tooltip.vue';
 import { getCommonProps, getCommonAttrs, getCustomUtilityProps, getCustomUtilityClasses, mergeClasses } from '@/Utils/atomic-design/uiHelper';
+import { colorList, variantList, sizeList } from '@/Pages/Atoms/atomMap';
+import { typeList } from './actionMap';
 
 const props = defineProps({
     ...getCommonProps(),
@@ -52,17 +54,17 @@ const props = defineProps({
     color: {
         type: String,
         default: '',
-        validator: v => ['', 'neutral', 'primary', 'secondary', 'accent', 'info', 'success', 'warning', 'error'].includes(v),
+        validator: v => colorList.includes(v),
     },
     variant: {
         type: String,
         default: '',
-        validator: v => ['', 'outline', 'ghost', 'link', 'soft', 'dash', 'glass'].includes(v),
+        validator: v => variantList.includes(v),
     },
     size: {
         type: String,
         default: '',
-        validator: v => ['', 'xs', 'sm', 'md', 'lg', 'xl'].includes(v),
+        validator: v => sizeList.includes(v),
     },
     block: { type: Boolean, default: false },
     wide: { type: Boolean, default: false },
@@ -71,7 +73,7 @@ const props = defineProps({
     type: {
         type: String,
         default: 'button',
-        validator: v => ['button', 'submit', 'reset', 'radio', 'checkbox'].includes(v),
+        validator: v => typeList.includes(v),
     },
     checked: {
         type: Boolean,

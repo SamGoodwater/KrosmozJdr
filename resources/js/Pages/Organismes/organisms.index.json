@@ -1,0 +1,105 @@
+[
+  {
+    "name": "UpdateProfileInformationForm",
+    "description": "",
+    "props": [
+      {
+        "name": "mustVerifyEmail",
+        "type": "Boolean",
+        "desc": "- Indique si la vérification email est requise"
+      },
+      {
+        "name": "status",
+        "type": "String",
+        "desc": "- Statut de la vérification email"
+      }
+    ],
+    "slots": [],
+    "file": "user/UpdateProfileInformationForm.vue"
+  },
+  {
+    "name": "UpdatePasswordForm",
+    "description": "",
+    "props": [],
+    "slots": [],
+    "file": "user/UpdatePasswordForm.vue"
+  },
+  {
+    "name": "DeleteUserForm",
+    "description": "",
+    "props": [],
+    "slots": [],
+    "file": "user/DeleteUserForm.vue"
+  },
+  {
+    "name": "SectionView",
+    "description": "",
+    "props": [
+      {
+        "name": "section",
+        "type": "Object",
+        "desc": "- Objet section à afficher"
+      },
+      {
+        "name": "canEdit",
+        "type": "Boolean",
+        "desc": "- Autorise l'édition"
+      },
+      {
+        "name": "canDelete",
+        "type": "Boolean",
+        "desc": "- Autorise la suppression"
+      }
+    ],
+    "slots": [],
+    "file": "section/SectionView.vue"
+  },
+  {
+    "name": "SectionList",
+    "description": "",
+    "props": [
+      {
+        "name": "sections",
+        "type": "Array",
+        "desc": "- Tableau des sections à afficher"
+      },
+      {
+        "name": "canCreate",
+        "type": "Boolean",
+        "desc": "- Autorise la création de section"
+      }
+    ],
+    "slots": [],
+    "file": "section/SectionList.vue"
+  },
+  {
+    "name": "SectionForm",
+    "description": "",
+    "props": [
+      {
+        "name": "section",
+        "type": "Object",
+        "desc": "- Objet section à éditer (optionnel, défaut : section vide)"
+      },
+      {
+        "name": "isUpdating",
+        "type": "Boolean",
+        "desc": "- Mode édition ou création"
+      },
+      {
+        "name": "pages",
+        "type": "Array",
+        "desc": "- Liste des pages disponibles pour l'association"
+      }
+    ],
+    "slots": [],
+    "file": "section/SectionForm.vue"
+  },
+  {
+    "name": "NotificationContainer",
+    "description": "NotificationContainer Organism",
+    "props": [],
+    "slots": [],
+    "file": "feedback/NotificationContainer.vue"
+  }
+]

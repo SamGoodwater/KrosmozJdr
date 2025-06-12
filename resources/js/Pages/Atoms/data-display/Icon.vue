@@ -25,20 +25,9 @@ defineOptions({ inheritAttrs: false }); // Pour que les évéments natifs soient
  */
 import { computed } from 'vue';
 import Image from '@/Pages/Atoms/data-display/Image.vue';
-import { getCommonProps } from '@/Utils/atomic-design/uiHelper';
-
-const sizeHeightMap = {
-    xs: '0.75rem',
-    sm: '1rem',
-    md: '1.5rem',
-    lg: '2rem',
-    xl: '3rem',
-    '2xl': '4rem',
-    '3xl': '5rem',
-    '4xl': '6rem',
-    '5xl': '7rem',
-    '6xl': '8rem',
-};
+import { getCommonProps, mergeClasses } from '@/Utils/atomic-design/uiHelper';
+import { size6XlList } from '@/Pages/Atoms/atomMap';
+import { sizeHeightMap } from './data-displayMap';
 
 const props = defineProps({
     ...getCommonProps(),
@@ -47,7 +36,7 @@ const props = defineProps({
     size: {
         type: String,
         default: 'md',
-        validator: v => ['xs', 'sm', 'md', 'lg', 'xl', '2xl', '3xl', '4xl', '5xl', '6xl'].includes(v),
+        validator: v => size6XlList.includes(v),
     },
     class: { type: String, default: '' },
 });

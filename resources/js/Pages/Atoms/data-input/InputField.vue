@@ -64,6 +64,8 @@ import { getInputAttrs, getInputProps } from '@/Utils/atomic-design/atomManager'
 import InputLabel from '@/Pages/Atoms/data-input/InputLabel.vue';
 import useEditableField from '@/Composables/form/useEditableField';
 import Btn from '@/Pages/Atoms/action/Btn.vue';
+import { colorList, sizeXlList } from '@/Pages/Atoms/atomMap';
+import { typeList, inputVariantList } from './data-inputMap';
 
 const props = defineProps({
     ...getCommonProps(),
@@ -72,24 +74,22 @@ const props = defineProps({
     color: {
         type: String,
         default: '',
-        validator: v => ['', 'neutral', 'primary', 'secondary', 'accent', 'info', 'success', 'warning', 'error'].includes(v),
+        validator: v => colorList.includes(v),
     },
     size: {
         type: String,
         default: '',
-        validator: v => ['', 'xs', 'sm', 'md', 'lg', 'xl'].includes(v),
+        validator: v => sizeXlList.includes(v),
     },
     variant: {
         type: String,
         default: '',
-        validator: v => ['', 'ghost', 'outline', 'bordered', 'glass'].includes(v),
+        validator: v => inputVariantList.includes(v),
     },
     type: {
         type: String,
         default: 'text',
-        validator: v => [
-            'text', 'email', 'password', 'number', 'url', 'tel', 'search', 'date', 'datetime-local', 'month', 'week', 'time', 'color', 'checkbox', 'radio', 'range', 'hidden', 'submit', 'reset', 'button'
-        ].includes(v),
+        validator: v => typeList.includes(v),
     },
     useFieldComposable: { type: Boolean, default: false },
     field: { type: Object, default: null },

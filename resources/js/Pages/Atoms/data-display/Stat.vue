@@ -56,49 +56,7 @@ import { computed } from 'vue';
 import Tooltip from '@/Pages/Atoms/feedback/Tooltip.vue';
 import Icon from '@/Pages/Atoms/data-display/Icon.vue';
 import { getCommonProps, getCommonAttrs, getCustomUtilityProps, getCustomUtilityClasses, mergeClasses } from '@/Utils/atomic-design/uiHelper';
-
-const colorMap = {
-    neutral: 'text-neutral',
-    primary: 'text-primary',
-    secondary: 'text-secondary',
-    accent: 'text-accent',
-    info: 'text-info',
-    success: 'text-success',
-    warning: 'text-warning',
-    error: 'text-error',
-};
-const sizeTitleMap = {
-    xs: 'text-base',
-    sm: 'text-lg',
-    md: 'text-xl',
-    lg: 'text-2xl',
-    xl: 'text-3xl',
-    '': 'text-xl',
-};
-const sizeValueMap = {
-    xs: 'text-lg',
-    sm: 'text-2xl',
-    md: 'text-3xl',
-    lg: 'text-4xl',
-    xl: 'text-5xl',
-    '': 'text-3xl',
-};
-const sizeDescMap = {
-    xs: 'text-xs',
-    sm: 'text-sm',
-    md: 'text-base',
-    lg: 'text-lg',
-    xl: 'text-xl',
-    '': 'text-base',
-};
-const sizeIconMap = {
-    xs: 'sm',
-    sm: 'md',
-    md: 'lg',
-    lg: 'xl',
-    xl: '2xl',
-    '': 'lg',
-};
+import { colorMap, sizeTitleMap, sizeValueMap, sizeDescMap, sizeIconMap } from './data-displayMap';
 
 const props = defineProps({
     ...getCommonProps(),
@@ -110,27 +68,27 @@ const props = defineProps({
     color: {
         type: String,
         default: '',
-        validator: v => ['', 'neutral', 'primary', 'secondary', 'accent', 'info', 'success', 'warning', 'error'].includes(v),
+        validator: v => ['', ...Object.keys(colorMap)].includes(v),
     },
     colorTitle: {
         type: String,
         default: '',
-        validator: v => ['', 'neutral', 'primary', 'secondary', 'accent', 'info', 'success', 'warning', 'error'].includes(v),
+        validator: v => ['', ...Object.keys(colorMap)].includes(v),
     },
     colorValue: {
         type: String,
         default: '',
-        validator: v => ['', 'neutral', 'primary', 'secondary', 'accent', 'info', 'success', 'warning', 'error'].includes(v),
+        validator: v => ['', ...Object.keys(colorMap)].includes(v),
     },
     colorDescription: {
         type: String,
         default: '',
-        validator: v => ['', 'neutral', 'primary', 'secondary', 'accent', 'info', 'success', 'warning', 'error'].includes(v),
+        validator: v => ['', ...Object.keys(colorMap)].includes(v),
     },
     size: {
         type: String,
         default: '',
-        validator: v => ['', 'xs', 'sm', 'md', 'lg', 'xl'].includes(v),
+        validator: v => [...Object.keys(sizeTitleMap)].includes(v),
     },
     class: { type: String, default: '' },
 });

@@ -55,6 +55,7 @@ import { ref, computed, onMounted, onUnmounted, nextTick } from 'vue';
 import Btn from '@/Pages/Atoms/action/Btn.vue';
 import Tooltip from '@/Pages/Atoms/feedback/Tooltip.vue';
 import { getCommonProps, getCommonAttrs, mergeClasses, getCustomUtilityProps, getCustomUtilityClasses } from '@/Utils/atomic-design/uiHelper';
+import { placementList } from './actionMap';
 
 const props = defineProps({
     ...getCommonProps(),
@@ -62,7 +63,7 @@ const props = defineProps({
     placement: {
         type: String,
         default: 'bottom-end',
-        validator: v => ['start', 'end', 'top', 'bottom', 'left', 'right', 'center', 'bottom-end', 'top-end', 'left-end', 'right-end'].includes(v),
+        validator: v => placementList.includes(v),
     },
     open: {
         type: Boolean,

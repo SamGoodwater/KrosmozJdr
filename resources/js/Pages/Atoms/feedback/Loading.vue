@@ -29,6 +29,7 @@ defineOptions({ inheritAttrs: false }); // Pour que les évéments natifs soient
 import { computed } from 'vue';
 import Tooltip from '@/Pages/Atoms/feedback/Tooltip.vue';
 import { getCommonProps, getCommonAttrs, mergeClasses } from '@/Utils/atomic-design/uiHelper';
+import { sizeXlList } from '@/Pages/Atoms/atomMap';
 
 const props = defineProps({
     ...getCommonProps(),
@@ -40,7 +41,7 @@ const props = defineProps({
     size: {
         type: String,
         default: 'md',
-        validator: v => ['', 'xs', 'sm', 'md', 'lg', 'xl'].includes(v),
+        validator: v => sizeXlList.includes(v),
     },
     color: {
         type: String,
@@ -76,11 +77,13 @@ const atomClasses = computed(() =>
         props.class
     )
 );
+
+const attrs = computed(() => getCommonAttrs(props));
 </script>
 
 <template>
     <Tooltip :content="props.tooltip" :placement="props.tooltip_placement">
-        <span :class="atomClasses" role="status" aria-live="polite" v-on="$attrs">
+        <span :class="atomClasses" role="status" aria-live="polite" v-bind="attrs" v-on="$attrs">
             <slot>Chargement…</slot>
         </span>
         <template v-if="typeof props.tooltip === 'object'" #tooltip>

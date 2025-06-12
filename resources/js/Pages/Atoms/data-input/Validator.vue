@@ -30,21 +30,15 @@ defineOptions({ inheritAttrs: false }); // Pour que les évéments natifs soient
  */
 import { computed } from 'vue';
 import { getCommonProps, getCommonAttrs } from '@/Utils/atomic-design/atomManager';
-
-const stateMap = {
-    error: 'text-error',
-    success: 'text-success',
-    warning: 'text-warning',
-    info: 'text-info',
-    '': '',
-};
+import { stateList, stateMap } from './data-inputMap';
+import { mergeClasses } from '@/Utils/atomic-design/uiHelper';
 
 const props = defineProps({
     ...getCommonProps(),
     state: {
         type: String,
         default: '',
-        validator: v => ['', 'error', 'success', 'warning', 'info'].includes(v),
+        validator: v => stateList.includes(v),
     },
     message: { type: String, default: '' },
     visible: { type: Boolean, default: true },
@@ -55,7 +49,7 @@ function getAtomClasses(props) {
     const classes = ['validator-hint'];
     if (props.state && stateMap[props.state]) classes.push(stateMap[props.state]);
     if (!props.visible) classes.push('hidden');
-    return mergeClasses(classes, getCustomUtilityClasses(props), props.class);
+    return mergeClasses(classes, props.class);
 }
 
 const atomClasses = computed(() => getAtomClasses(props));

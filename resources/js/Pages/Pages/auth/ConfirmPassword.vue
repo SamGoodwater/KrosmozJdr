@@ -1,9 +1,7 @@
 <script setup>
-import InputError from "@/Pages/Atoms/inputs/InputError.vue";
-import InputLabel from "@/Pages/Atoms/inputs/InputLabel.vue";
-import Btn from "@/Pages/Atoms/actions/Btn.vue";
-import TextInput from "@/Pages/Atoms/inputs/TextInput.vue";
 import { Head, useForm } from "@inertiajs/vue3";
+import InputField from '@/Pages/Atoms/data-input/InputField.vue';
+import Btn from '@/Pages/Atoms/action/Btn.vue';
 
 const form = useForm({
     password: "",
@@ -17,35 +15,20 @@ const submit = () => {
 </script>
 
 <template>
-    <Head title="Confirm Password" />
+
+    <Head title="Confirmation du mot de passe" />
 
     <div class="mb-4 text-sm text-gray-600">
-        This is a secure area of the application. Please confirm your password
-        before continuing.
+        Ceci est une zone sécurisée de l'application. Veuillez confirmer votre mot de passe avant de continuer.
     </div>
 
     <form @submit.prevent="submit">
-        <div>
-            <InputLabel for="password" value="Password" />
-            <TextInput
-                id="password"
-                type="password"
-                class="mt-1 block w-full"
-                v-model="form.password"
-                required
-                autocomplete="current-password"
-                autofocus
-            />
-            <InputError class="mt-2" :message="form.errors.password" />
-        </div>
+        <InputField id="password" type="password" class="mt-1 block w-full" v-model="form.password" required
+            autocomplete="current-password" autofocus label="Mot de passe" :validator="form.errors.password" />
 
         <div class="mt-4 flex justify-end">
-            <Btn
-                class="ms-4"
-                :class="{ 'opacity-25': form.processing }"
-                :disabled="form.processing"
-            >
-                Confirm
+            <Btn class="ms-4" :disabled="form.processing" :class="{ 'opacity-25': form.processing }">
+                Confirmer
             </Btn>
         </div>
     </form>

@@ -1,6 +1,12 @@
+<script setup>
 /**
- * UpdatePasswordForm component that handles user password updates.
- * Provides a form for changing the current password with validation.
+ * @description
+ * UpdatePasswordForm Organism. Formulaire de mise à jour du mot de passe utilisateur.
+ * - Vérification du mot de passe actuel
+ * - Confirmation du nouveau mot de passe
+ * - Validation et gestion des erreurs
+ * - Feedback utilisateur (succès/erreur)
+ * - Responsive design
  *
  * Features:
  * - Current password verification
@@ -9,30 +15,20 @@
  * - Success feedback
  * - Responsive design
  *
- * Props:
- * - theme: Theme configuration for styling
- *
  * Events:
  * - @success: Emitted when password is successfully updated
  * - @error: Emitted when an error occurs during update
  */
-<script setup>
 import { ref } from 'vue';
 import { useForm } from '@inertiajs/vue3';
-import { extractTheme, combinePropsWithTheme } from '@/Utils/extractTheme';
-import { commonProps } from '@/Utils/commonProps';
-import InputError from '@/Pages/Atoms/inputs/InputError.vue';
-import InputLabel from '@/Pages/Atoms/inputs/InputLabel.vue';
-import Btn from '@/Pages/Atoms/actions/Btn.vue';
-import TextInput from '@/Pages/Atoms/inputs/TextInput.vue';
-import Container from '@/Pages/Atoms/panels/Container.vue';
+import InputLabel from '@/Pages/Atoms/data-input/InputLabel.vue';
+import InputField from '@/Pages/Atoms/data-input/InputField.vue';
+import Validator from '@/Pages/Atoms/data-input/Validator.vue';
+import Btn from '@/Pages/Atoms/action/Btn.vue';
+import Alert from '@/Pages/Atoms/feedback/Alert.vue';
+import Container from '@/Pages/Atoms/data-display/Container.vue';
 
-const props = defineProps({
-    ...commonProps,
-});
-
-const themeProps = computed(() => extractTheme(props.theme));
-const combinedProps = computed(() => combinePropsWithTheme(props, themeProps.value));
+const emit = defineEmits(['success', 'error']);
 
 const passwordInput = ref(null);
 const currentPasswordInput = ref(null);
@@ -66,108 +62,59 @@ const updatePassword = () => {
 </script>
 
 <template>
-    <section class="space-y-6 transition-all duration-200">
-        <header class="mb-6 p-4 rounded-lg bg-primary-900/20 backdrop-blur-sm">
-            <h2 class="text-lg font-medium text-primary-100">
-                Mettre à jour le mot de passe
-            </h2>
+    <Container class="max-w-xl mx-auto p-4 md:p-8 bg-base-100 rounded-lg shadow-md">
+        <section class="space-y-6 transition-all duration-200">
+            <header class="mb-6 p-4 rounded-lg bg-primary-900/20 backdrop-blur-sm">
+                <h2 class="text-lg font-medium text-primary-100">
+                    Mettre à jour le mot de passe
+                </h2>
+                <p class="mt-1 text-sm text-primary-200">
+                    Assurez-vous que votre compte utilise un mot de passe long et aléatoire pour rester sécurisé.
+                </p>
+            </header>
 
-            <p class="mt-1 text-sm text-primary-200">
-                Assurez-vous que votre compte utilise un mot de passe long et aléatoire pour rester sécurisé.
-            </p>
-        </header>
+            <form @submit.prevent="updatePassword" class="mt-6 space-y-6">
+                <div class="space-y-2">
+                    <InputLabel for="current_password" value="Mot de passe actuel" theme="primary" />
+                    <InputField id="current_password" ref="currentPasswordInput" v-model="form.current_password"
+                        type="password" autocomplete="current-password" theme="primary"
+                        tooltip="Entrez votre mot de passe actuel" aria-label="Mot de passe actuel"
+                        :aria-invalid="!!form.errors.current_password" :class="'mt-1 block w-full'" />
+                    <Validator :message="form.errors.current_password" :visible="!!form.errors.current_password"
+                        class="mt-2" />
+                </div>
 
-        <form @submit.prevent="updatePassword" class="mt-6 space-y-6">
-            <div class="space-y-2">
-                <InputLabel
-                    for="current_password"
-                    value="Mot de passe actuel"
-                    theme="primary"
-                />
+                <div class="space-y-2">
+                    <InputLabel for="password" value="Nouveau mot de passe" theme="primary" />
+                    <InputField id="password" ref="passwordInput" v-model="form.password" type="password"
+                        autocomplete="new-password" theme="primary"
+                        tooltip="Le mot de passe doit contenir au moins 8 caractères" aria-label="Nouveau mot de passe"
+                        :aria-invalid="!!form.errors.password" :class="'mt-1 block w-full'" />
+                    <Validator :message="form.errors.password" :visible="!!form.errors.password" class="mt-2" />
+                </div>
 
-                <TextInput
-                    id="current_password"
-                    ref="currentPasswordInput"
-                    v-model="form.current_password"
-                    type="password"
-                    class="mt-1 block w-full"
-                    autocomplete="current-password"
-                    theme="primary"
-                    tooltip="Entrez votre mot de passe actuel"
-                />
+                <div class="space-y-2">
+                    <InputLabel for="password_confirmation" value="Confirmer le mot de passe" theme="primary" />
+                    <InputField id="password_confirmation" v-model="form.password_confirmation" type="password"
+                        autocomplete="new-password" theme="primary" tooltip="Confirmez votre nouveau mot de passe"
+                        aria-label="Confirmer le mot de passe" :aria-invalid="!!form.errors.password_confirmation"
+                        :class="'mt-1 block w-full'" />
+                    <Validator :message="form.errors.password_confirmation"
+                        :visible="!!form.errors.password_confirmation" class="mt-2" />
+                </div>
 
-                <InputError
-                    :message="form.errors.current_password"
-                    class="mt-2"
-                />
-            </div>
+                <div class="flex items-center gap-4">
+                    <Btn theme="primary" :disabled="form.processing" label="Enregistrer"
+                        tooltip="Mettre à jour le mot de passe" />
 
-            <div class="space-y-2">
-                <InputLabel
-                    for="password"
-                    value="Nouveau mot de passe"
-                    theme="primary"
-                />
-
-                <TextInput
-                    id="password"
-                    ref="passwordInput"
-                    v-model="form.password"
-                    type="password"
-                    class="mt-1 block w-full"
-                    autocomplete="new-password"
-                    theme="primary"
-                    tooltip="Le mot de passe doit contenir au moins 8 caractères"
-                />
-
-                <InputError :message="form.errors.password" class="mt-2" />
-            </div>
-
-            <div class="space-y-2">
-                <InputLabel
-                    for="password_confirmation"
-                    value="Confirmer le mot de passe"
-                    theme="primary"
-                />
-
-                <TextInput
-                    id="password_confirmation"
-                    v-model="form.password_confirmation"
-                    type="password"
-                    class="mt-1 block w-full"
-                    autocomplete="new-password"
-                    theme="primary"
-                    tooltip="Confirmez votre nouveau mot de passe"
-                />
-
-                <InputError
-                    :message="form.errors.password_confirmation"
-                    class="mt-2"
-                />
-            </div>
-
-            <div class="flex items-center gap-4">
-                <Btn
-                    theme="primary"
-                    :disabled="form.processing"
-                    label="Enregistrer"
-                    tooltip="Mettre à jour le mot de passe"
-                />
-
-                <Transition
-                    enter-active-class="transition ease-in-out duration-300"
-                    enter-from-class="opacity-0"
-                    leave-active-class="transition ease-in-out duration-300"
-                    leave-to-class="opacity-0"
-                >
-                    <p
-                        v-if="form.recentlySuccessful"
-                        class="text-sm text-success-500"
-                    >
-                        Mot de passe mis à jour avec succès.
-                    </p>
-                </Transition>
-            </div>
-        </form>
-    </section>
+                    <Transition enter-active-class="transition ease-in-out duration-300" enter-from-class="opacity-0"
+                        leave-active-class="transition ease-in-out duration-300" leave-to-class="opacity-0">
+                        <Alert v-if="form.recentlySuccessful" color="success" variant="soft" class="text-sm">
+                            Mot de passe mis à jour avec succès.
+                        </Alert>
+                    </Transition>
+                </div>
+            </form>
+        </section>
+    </Container>
 </template>

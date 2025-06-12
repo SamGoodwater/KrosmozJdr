@@ -1,2232 +1,2472 @@
 [
-    {
-        "name": "Breadcrumbs",
-        "description": "Breadcrumbs Atom (DaisyUI)",
-        "props": [
-            {
-                "name": "maxWidth",
-                "type": "String",
-                "desc": "- Classe Tailwind max-w-* (optionnel)"
-            },
-            {
-                "name": "small",
-                "type": "Boolean",
-                "desc": "- Applique text-sm (défaut false)"
-            },
-            {
-                "name": "tooltip,",
-                "type": "String|Object",
-                "desc": "tooltip_placement, class, id, ariaLabel, role, tabindex - hérités de commonProps"
-            },
-            {
-                "name": "shadow,",
-                "type": "String",
-                "desc": "backdrop, opacity - utilitaires custom"
-            }
-        ],
-        "slots": [
-            {
-                "name": "default",
-                "desc": "- <li> (l'utilisateur gère les <a> ou <span> DaisyUI)"
-            },
-            {
-                "name": "tooltip",
-                "desc": "- Tooltip custom"
-            }
-        ],
-        "daisyui": null,
-        "file": "navigation/Breadcrumbs.vue"
-    },
-    {
-        "name": "Indicator",
-        "description": "Indicator Atom (DaisyUI)",
-        "props": [
-            {
-                "name": "horizontal",
-                "type": "String",
-                "desc": "- Placement horizontal DaisyUI ('', 'start', 'center', 'end')"
-            },
-            {
-                "name": "vertical",
-                "type": "String",
-                "desc": "- Placement vertical DaisyUI ('', 'top', 'middle', 'bottom')"
-            },
-            {
-                "name": "class",
-                "type": "String",
-                "desc": "- Classes custom supplémentaires"
-            },
-            {
-                "name": "shadow,",
-                "type": "String",
-                "desc": "backdrop, opacity - utilitaires custom ('' | 'xs' | ...)"
-            },
-            {
-                "name": "id,",
-                "type": "String",
-                "desc": "ariaLabel, role, tabindex, tooltip, tooltip_placement - hérités de commonProps"
-            }
-        ],
-        "slots": [
-            {
-                "name": "indicator",
-                "desc": "- Contenu de l'indicateur (badge, status, etc.), positionné selon les props"
-            },
-            {
-                "name": "default",
-                "desc": "- Contenu principal (bouton, avatar, etc.)"
-            }
-        ],
-        "daisyui": "https://daisyui.com/components/indicator/",
-        "file": "Layout/Indicator.vue"
-    },
-    {
-        "name": "Divider",
-        "description": "Divider Atom (DaisyUI + Glassmorphism)",
-        "props": [
-            {
-                "name": "glass",
-                "type": "Boolean",
-                "desc": "- Active le style glassmorphism (défaut: true, extension KrosmozJDR)"
-            },
-            {
-                "name": "color",
-                "type": "String",
-                "desc": "- Couleur DaisyUI ('neutral', 'primary', 'secondary', 'accent', 'info', 'success', 'warning', 'error', 'white', 'black')"
-            },
-            {
-                "name": "direction",
-                "type": "String",
-                "desc": "- Direction DaisyUI ('vertical' [défaut], 'horizontal')"
-            },
-            {
-                "name": "placement",
-                "type": "String",
-                "desc": "- Placement DaisyUI ('', 'start', 'end')"
-            },
-            {
-                "name": "class",
-                "type": "String",
-                "desc": "- Classes custom supplémentaires"
-            },
-            {
-                "name": "id,",
-                "type": "String",
-                "desc": "ariaLabel, role, tabindex, tooltip, tooltip_placement - hérités de commonProps"
-            }
-        ],
-        "slots": [
-            {
-                "name": "default",
-                "desc": "- Contenu du divider (texte, \"OU\", etc.)"
-            }
-        ],
-        "daisyui": "https://daisyui.com/components/divider/",
-        "file": "Layout/Divider.vue"
-    },
-    {
-        "name": "Tooltip",
-        "description": "Tooltip Atom (DaisyUI)",
-        "props": [
-            {
-                "name": "content",
-                "type": "String",
-                "desc": "- Texte simple du tooltip (optionnel, sinon slot #content)"
-            },
-            {
-                "name": "placement",
-                "type": "String",
-                "desc": "- Position du tooltip ('top', 'right', 'bottom', 'left'), défaut 'top'"
-            },
-            {
-                "name": "color",
-                "type": "String",
-                "desc": "- Couleur DaisyUI ('', 'neutral', 'primary', 'secondary', 'accent', 'info', 'success', 'warning', 'error')"
-            },
-            {
-                "name": "open",
-                "type": "Boolean",
-                "desc": "- Force l'ouverture du tooltip"
-            },
-            {
-                "name": "responsive",
-                "type": "String",
-                "desc": "- Breakpoint responsive DaisyUI ('sm', 'md', 'lg', 'xl', '2xl')"
-            },
-            {
-                "name": "shadow,",
-                "type": "String",
-                "desc": "backdrop, opacity - utilitaires custom ('' | 'xs' | ...)"
-            },
-            {
-                "name": "id,",
-                "type": "String",
-                "desc": "ariaLabel, role, tabindex, class, style, disabled - hérités de commonProps (sauf tooltip/tooltip_placement)"
-            }
-        ],
-        "slots": [
-            {
-                "name": "default",
-                "desc": "- Élément déclencheur (trigger)"
-            },
-            {
-                "name": "content",
-                "desc": "- Contenu HTML complexe du tooltip (optionnel, prioritaire sur prop content)"
-            }
-        ],
-        "daisyui": "https://daisyui.com/components/tooltip/",
-        "file": "feedback/Tooltip.vue"
-    },
-    {
-        "name": "Toast",
-        "description": "Toast Atom (DaisyUI)",
-        "props": [
-            {
-                "name": "horizontal",
-                "type": "String",
-                "desc": "- Placement horizontal ('', 'start', 'center', 'end')"
-            },
-            {
-                "name": "vertical",
-                "type": "String",
-                "desc": "- Placement vertical ('', 'top', 'middle', 'bottom')"
-            },
-            {
-                "name": "class",
-                "type": "String",
-                "desc": "- Classes custom supplémentaires"
-            },
-            {
-                "name": "shadow,",
-                "type": "String",
-                "desc": "backdrop, opacity - utilitaires custom"
-            },
-            {
-                "name": "id,",
-                "type": "String",
-                "desc": "ariaLabel, role, tabindex - accessibilité"
-            }
-        ],
-        "slots": [
-            {
-                "name": "default",
-                "desc": "- Contenu du toast (souvent des <Alert>)"
-            }
-        ],
-        "daisyui": "https://daisyui.com/components/toast/",
-        "file": "feedback/Toast.vue"
-    },
-    {
-        "name": "Skeleton",
-        "description": "Skeleton Atom (DaisyUI)",
-        "props": [
-            {
-                "name": "element",
-                "type": "String",
-                "desc": "- Type de skeleton ('', 'image', 'text', 'avatar', 'smalltext', 'longtext')"
-            },
-            {
-                "name": "size",
-                "type": "String",
-                "desc": "- Taille ('', 'xs', 'sm', 'md', 'lg', 'xl', '2xl', '3xl', '4xl')"
-            },
-            {
-                "name": "width",
-                "type": "String",
-                "desc": "- Classe Tailwind w-* (optionnel, prioritaire)"
-            },
-            {
-                "name": "height",
-                "type": "String",
-                "desc": "- Classe Tailwind h-* (optionnel, prioritaire)"
-            },
-            {
-                "name": "class",
-                "type": "String",
-                "desc": "- Classes custom supplémentaires"
-            },
-            {
-                "name": "shadow,",
-                "type": "String",
-                "desc": "backdrop, opacity - utilitaires custom"
-            },
-            {
-                "name": "id,",
-                "type": "String",
-                "desc": "ariaLabel, role, tabindex - accessibilité"
-            }
-        ],
-        "slots": [
-            {
-                "name": "default",
-                "desc": "- Contenu imbriqué (rare)"
-            }
-        ],
-        "daisyui": "https://daisyui.com/components/skeleton/",
-        "file": "feedback/Skeleton.vue"
-    },
-    {
-        "name": "Progress",
-        "description": "Progress Atom (DaisyUI)",
-        "props": [
-            {
-                "name": "radial",
-                "type": "Boolean",
-                "desc": "- Affiche un progress radial si true (défaut false)"
-            },
-            {
-                "name": "value",
-                "type": "Number",
-                "desc": "- Valeur du progress (0-100)"
-            },
-            {
-                "name": "max",
-                "type": "Number",
-                "desc": "- Valeur max (défaut 100, ignoré pour radial)"
-            },
-            {
-                "name": "color",
-                "type": "String",
-                "desc": "- Couleur DaisyUI (progress: 'neutral', 'primary', ... ; radial: 'primary', 'accent', ...)"
-            },
-            {
-                "name": "size",
-                "type": "String",
-                "desc": "- Taille du radial (xs à 4xl, mapping explicite)"
-            },
-            {
-                "name": "width",
-                "type": "String",
-                "desc": "- Largeur du progress linéaire (ex: 'w-56')"
-            },
-            {
-                "name": "thickness",
-                "type": "String",
-                "desc": "- Épaisseur du radial (xs à xl, mapping explicite)"
-            },
-            {
-                "name": "label",
-                "type": "String",
-                "desc": "- Label à afficher (optionnel, sinon slot)"
-            },
-            {
-                "name": "tooltip,",
-                "type": "String|Object",
-                "desc": "tooltip_placement, class, id, ariaLabel, role, tabindex - hérités de commonProps"
-            },
-            {
-                "name": "shadow,",
-                "type": "String",
-                "desc": "backdrop, opacity - utilitaires custom"
-            }
-        ],
-        "slots": [
-            {
-                "name": "default",
-                "desc": "- Label custom (affiché au centre du radial ou à côté du progress)"
-            },
-            {
-                "name": "tooltip",
-                "desc": "- Tooltip custom"
-            }
-        ],
-        "daisyui": "https://daisyui.com/components/progress/",
-        "file": "feedback/Progress.vue"
-    },
-    {
-        "name": "Loading",
-        "description": "Loading Atom (DaisyUI)",
-        "props": [
-            {
-                "name": "type",
-                "type": "String",
-                "desc": "- Type d'animation ('spinner', 'dots', 'ring', 'ball', 'bars', 'infinity'), défaut 'spinner'"
-            },
-            {
-                "name": "size",
-                "type": "String",
-                "desc": "- Taille DaisyUI ('xs', 'sm', 'md', 'lg', 'xl'), défaut 'md'"
-            },
-            {
-                "name": "color",
-                "type": "String",
-                "desc": "- Couleur DaisyUI ('primary', 'secondary', 'accent', 'neutral', 'info', 'success', 'warning', 'error'), défaut ''"
-            }
-        ],
-        "slots": [
-            {
-                "name": "default",
-                "desc": "- Texte d'accessibilité (optionnel)"
-            }
-        ],
-        "daisyui": "https://daisyui.com/components/loading/",
-        "file": "feedback/Loading.vue"
-    },
-    {
-        "name": "Alert",
-        "description": "Alert Atom (DaisyUI + Custom Utility)",
-        "props": [
-            {
-                "name": "color",
-                "type": "String",
-                "desc": "- Couleur DaisyUI ('', 'info', 'success', 'warning', 'error')"
-            },
-            {
-                "name": "variant",
-                "type": "String",
-                "desc": "- Style DaisyUI ('', 'outline', 'dash', 'soft')"
-            },
-            {
-                "name": "direction",
-                "type": "String",
-                "desc": "- Direction ('', 'vertical', 'horizontal'), défaut responsive"
-            },
-            {
-                "name": "content",
-                "type": "String",
-                "desc": "- Texte simple à afficher (optionnel, prioritaire sur slot #content)"
-            },
-            {
-                "name": "shadow,",
-                "type": "String",
-                "desc": "backdrop, opacity - utilitaires custom ('' | 'xs' | ...)"
-            },
-            {
-                "name": "tooltip,",
-                "type": "String|Object",
-                "desc": "tooltip_placement, id, ariaLabel, role, tabindex - hérités de commonProps"
-            }
-        ],
-        "slots": [
-            {
-                "name": "icon",
-                "desc": "- Icône SVG ou composant"
-            },
-            {
-                "name": "content",
-                "desc": "- Contenu HTML complexe"
-            },
-            {
-                "name": "action",
-                "desc": "- Boutons ou actions"
-            }
-        ],
-        "daisyui": "https://daisyui.com/components/alert/",
-        "file": "feedback/Alert.vue"
-    },
-    {
-        "name": "Validator",
-        "description": "Validator Atom (DaisyUI)",
-        "props": [
-            {
-                "name": "state",
-                "type": "String",
-                "desc": "- error, success, warning, info, '' (défaut '')"
-            },
-            {
-                "name": "message",
-                "type": "String",
-                "desc": "- texte du hint (optionnel, prioritaire sur slot)"
-            },
-            {
-                "name": "visible",
-                "type": "Boolean",
-                "desc": "- contrôle l'affichage (défaut true)"
-            },
-            {
-                "name": "class",
-                "type": "String",
-                "desc": "- classes custom (optionnel)"
-            },
-            {
-                "name": "id,",
-                "type": "String",
-                "desc": "ariaLabel, role, tabindex - hérités de commonProps"
-            }
-        ],
-        "slots": [
-            {
-                "name": "default",
-                "desc": "- contenu HTML du hint (prioritaire sur message)"
-            }
-        ],
-        "daisyui": null
-    },
-    {
-        "name": "Toggle",
-        "description": "Toggle Atom (DaisyUI)",
-        "props": [
-            {
-                "name": "modelValue",
-                "type": "Boolean",
-                "desc": "- Valeur du toggle (v-model natif, prioritaire sur checked)"
-            },
-            {
-                "name": "checked",
-                "type": "Boolean",
-                "desc": "- Valeur fallback si modelValue n'est pas utilisé"
-            },
-            {
-                "name": "color",
-                "type": "String",
-                "desc": "- Couleur DaisyUI ('', 'neutral', 'primary', ...)"
-            },
-            {
-                "name": "size",
-                "type": "String",
-                "desc": "- Taille DaisyUI ('', 'xs', 'sm', 'md', 'lg', 'xl')"
-            },
-            {
-                "name": "indeterminate",
-                "type": "Boolean",
-                "desc": "- Etat indéterminé (optionnel)"
-            },
-            {
-                "name": "bgOn",
-                "type": "String",
-                "desc": "- Classes Tailwind pour le fond quand activé (ex: 'bg-green-500')"
-            },
-            {
-                "name": "bgOff",
-                "type": "String",
-                "desc": "- Classes Tailwind pour le fond quand désactivé (ex: 'bg-gray-300')"
-            },
-            {
-                "name": "label",
-                "type": "String",
-                "desc": "- Label du champ (optionnel, sinon slot #labelTop)"
-            },
-            {
-                "name": "validator",
-                "type": "String|Object",
-                "desc": "- Message de validation ou slot #validator"
-            },
-            {
-                "name": "errorMessage",
-                "type": "String",
-                "desc": "- Message d'erreur (optionnel)"
-            },
-            {
-                "name": "help",
-                "type": "String",
-                "desc": "- Message d'aide (optionnel ou slot #help)"
-            },
-            {
-                "name": "shadow,",
-                "type": "String",
-                "desc": "backdrop, opacity - utilitaires custom"
-            },
-            {
-                "name": "tooltip,",
-                "type": "String|Object",
-                "desc": "tooltip_placement, id, ariaLabel, role, tabindex - hérités de commonProps"
-            }
-        ],
-        "slots": [
-            {
-                "name": "labelTop",
-                "desc": "- Label custom au-dessus"
-            },
-            {
-                "name": "labelBottom",
-                "desc": "- Label custom en-dessous"
-            },
-            {
-                "name": "validator",
-                "desc": "- Message de validation custom"
-            },
-            {
-                "name": "help",
-                "desc": "- Message d'aide custom"
-            },
-            {
-                "name": "iconOn",
-                "desc": "- Icône custom pour l'état activé"
-            },
-            {
-                "name": "iconOff",
-                "desc": "- Icône custom pour l'état désactivé"
-            },
-            {
-                "name": "default",
-                "desc": "- Slot pour contenu custom à droite du toggle"
-            }
-        ],
-        "daisyui": null
-    },
-    {
-        "name": "Textarea",
-        "description": "Textarea Atom (DaisyUI + Custom Utility + Edition réactive)",
-        "props": [
-            {
-                "name": "color",
-                "type": "String",
-                "desc": "- Couleur DaisyUI ('', 'neutral', 'primary', ...)"
-            },
-            {
-                "name": "size",
-                "type": "String",
-                "desc": "- Taille DaisyUI ('', 'xs', 'sm', 'md', 'lg', 'xl')"
-            },
-            {
-                "name": "variant",
-                "type": "String",
-                "desc": "- Style DaisyUI ('', 'ghost', 'bordered')"
-            },
-            {
-                "name": "label",
-                "type": "String",
-                "desc": "- Label du champ (optionnel, sinon slot #labelTop)"
-            },
-            {
-                "name": "validator",
-                "type": "String|Object",
-                "desc": "- Message de validation ou slot #validator"
-            },
-            {
-                "name": "errorMessage",
-                "type": "String",
-                "desc": "- Message d'erreur (optionnel)"
-            },
-            {
-                "name": "help",
-                "type": "String",
-                "desc": "- Message d'aide (optionnel ou slot #help)"
-            },
-            {
-                "name": "shadow,",
-                "type": "String",
-                "desc": "backdrop, opacity - utilitaires custom"
-            },
-            {
-                "name": "tooltip,",
-                "type": "String|Object",
-                "desc": "tooltip_placement, id, ariaLabel, role, tabindex - hérités de commonProps"
-            },
-            {
-                "name": "useFieldComposable",
-                "type": "Boolean",
-                "desc": "- Active l'édition réactive (reset, debounce, etc.)"
-            },
-            {
-                "name": "field",
-                "type": "Object",
-                "desc": "- Objet field externe (optionnel, sinon composable interne)"
-            },
-            {
-                "name": "debounceTime",
-                "type": "Number",
-                "desc": "- Délai de debounce (ms, défaut 500)"
-            },
-            {
-                "name": "rows",
-                "type": "Number|String",
-                "desc": "- Nombre de lignes (optionnel, défaut 3)"
-            },
-            {
-                "name": "cols",
-                "type": "Number|String",
-                "desc": "- Nombre de colonnes (optionnel)"
-            }
-        ],
-        "slots": [
-            {
-                "name": "labelTop",
-                "desc": "- Label custom au-dessus"
-            },
-            {
-                "name": "labelBottom",
-                "desc": "- Label custom en-dessous"
-            },
-            {
-                "name": "validator",
-                "desc": "- Message de validation custom"
-            },
-            {
-                "name": "help",
-                "desc": "- Message d'aide custom"
-            },
-            {
-                "name": "default",
-                "desc": "- Contenu custom dans le textarea"
-            }
-        ],
-        "daisyui": null
-    },
-    {
-        "name": "Select",
-        "description": "Select Atom (DaisyUI + Custom Utility + Edition réactive)",
-        "props": [
-            {
-                "name": "options",
-                "type": "Array",
-                "desc": "- Liste des options [{ value, label, disabled? }], sinon slot par défaut"
-            },
-            {
-                "name": "multiple",
-                "type": "Boolean",
-                "desc": "- Mode sélection multiple"
-            },
-            {
-                "name": "color",
-                "type": "String",
-                "desc": "- Couleur DaisyUI ('', 'neutral', 'primary', ...)"
-            },
-            {
-                "name": "size",
-                "type": "String",
-                "desc": "- Taille DaisyUI ('', 'xs', 'sm', 'md', 'lg', 'xl')"
-            },
-            {
-                "name": "variant",
-                "type": "String",
-                "desc": "- Style DaisyUI ('', 'ghost', 'bordered')"
-            },
-            {
-                "name": "label",
-                "type": "String",
-                "desc": "- Label du champ (optionnel, sinon slot #labelTop)"
-            },
-            {
-                "name": "validator",
-                "type": "String|Object",
-                "desc": "- Message de validation ou slot #validator"
-            },
-            {
-                "name": "errorMessage",
-                "type": "String",
-                "desc": "- Message d'erreur (optionnel)"
-            },
-            {
-                "name": "help",
-                "type": "String",
-                "desc": "- Message d'aide (optionnel ou slot #help)"
-            },
-            {
-                "name": "shadow,",
-                "type": "String",
-                "desc": "backdrop, opacity - utilitaires custom"
-            },
-            {
-                "name": "tooltip,",
-                "type": "String|Object",
-                "desc": "tooltip_placement, id, ariaLabel, role, tabindex - hérités de commonProps"
-            },
-            {
-                "name": "useFieldComposable",
-                "type": "Boolean",
-                "desc": "- Active l'édition réactive (reset, debounce, etc.)"
-            },
-            {
-                "name": "field",
-                "type": "Object",
-                "desc": "- Objet field externe (optionnel, sinon composable interne)"
-            },
-            {
-                "name": "debounceTime",
-                "type": "Number",
-                "desc": "- Délai de debounce (ms, défaut 500)"
-            }
-        ],
-        "slots": [
-            {
-                "name": "labelTop",
-                "desc": "- Label custom au-dessus"
-            },
-            {
-                "name": "labelBottom",
-                "desc": "- Label custom en-dessous"
-            },
-            {
-                "name": "validator",
-                "desc": "- Message de validation custom"
-            },
-            {
-                "name": "help",
-                "desc": "- Message d'aide custom"
-            },
-            {
-                "name": "default",
-                "desc": "- Slot pour options custom (remplace la prop options)"
-            }
-        ],
-        "daisyui": null
-    },
-    {
-        "name": "Rating",
-        "description": "Rating Atom (DaisyUI)",
-        "props": [
-            {
-                "name": "modelValue",
-                "type": "Number|String",
-                "desc": "- Valeur sélectionnée (v-model natif)"
-            },
-            {
-                "name": "number",
-                "type": "Number",
-                "desc": "- Nombre d'étoiles/composants (défaut 5)"
-            },
-            {
-                "name": "mask",
-                "type": "String",
-                "desc": "- Nom du mask DaisyUI (ex: 'mask-star', 'mask-heart', défaut 'mask-star')"
-            },
-            {
-                "name": "color",
-                "type": "String",
-                "desc": "- Couleur DaisyUI ('', 'neutral', 'primary', ...)"
-            },
-            {
-                "name": "size",
-                "type": "String",
-                "desc": "- Taille DaisyUI ('', 'xs', 'sm', 'md', 'lg', 'xl')"
-            },
-            {
-                "name": "items",
-                "type": "Array",
-                "desc": "- Tableau d'objets pour personnaliser chaque composant : [{ color, mask, checked, ariaLabel }]"
-            },
-            {
-                "name": "useFieldComposable",
-                "type": "Boolean",
-                "desc": "- Active l'édition réactive (reset, debounce, etc.)"
-            },
-            {
-                "name": "field",
-                "type": "Object",
-                "desc": "- Objet field externe (optionnel, sinon composable interne)"
-            },
-            {
-                "name": "debounceTime",
-                "type": "Number",
-                "desc": "- Délai de debounce (ms, défaut 500)"
-            },
-            {
-                "name": "tooltip,",
-                "type": "String|Object",
-                "desc": "tooltip_placement, id, ariaLabel, role, tabindex - hérités de commonProps"
-            },
-            {
-                "name": "validator",
-                "type": "String|Object",
-                "desc": "- Message de validation ou slot #validator"
-            },
-            {
-                "name": "errorMessage",
-                "type": "String",
-                "desc": "- Message d'erreur (optionnel)"
-            },
-            {
-                "name": "help",
-                "type": "String",
-                "desc": "- Message d'aide (optionnel ou slot #help)"
-            }
-        ],
-        "slots": [
-            {
-                "name": "labelTop",
-                "desc": "- Label custom au-dessus"
-            },
-            {
-                "name": "labelBottom",
-                "desc": "- Label custom en-dessous"
-            },
-            {
-                "name": "validator",
-                "desc": "- Message de validation custom"
-            },
-            {
-                "name": "help",
-                "desc": "- Message d'aide custom"
-            },
-            {
-                "name": "default",
-                "desc": "- Slot pour contenu custom à droite du rating"
-            }
-        ],
-        "daisyui": "https://daisyui.com/components/rating/",
-        "file": "data-input/Rating.vue"
-    },
-    {
-        "name": "Range",
-        "description": "Range Atom (DaisyUI)",
-        "props": [
-            {
-                "name": "modelValue",
-                "type": "Number|String",
-                "desc": "- Valeur du slider (v-model natif)"
-            },
-            {
-                "name": "min",
-                "type": "Number|String",
-                "desc": "- Valeur minimale"
-            },
-            {
-                "name": "max",
-                "type": "Number|String",
-                "desc": "- Valeur maximale"
-            },
-            {
-                "name": "step",
-                "type": "Number|String",
-                "desc": "- Pas"
-            },
-            {
-                "name": "color",
-                "type": "String",
-                "desc": "- Couleur DaisyUI ('', 'neutral', 'primary', ...)"
-            },
-            {
-                "name": "size",
-                "type": "String",
-                "desc": "- Taille DaisyUI ('', 'xs', 'sm', 'md', 'lg', 'xl')"
-            },
-            {
-                "name": "label",
-                "type": "String",
-                "desc": "- Label du champ (optionnel, sinon slot #labelTop)"
-            },
-            {
-                "name": "validator",
-                "type": "String|Object",
-                "desc": "- Message de validation ou slot #validator"
-            },
-            {
-                "name": "errorMessage",
-                "type": "String",
-                "desc": "- Message d'erreur (optionnel)"
-            },
-            {
-                "name": "help",
-                "type": "String",
-                "desc": "- Message d'aide (optionnel ou slot #help)"
-            },
-            {
-                "name": "shadow,",
-                "type": "String",
-                "desc": "backdrop, opacity - utilitaires custom"
-            },
-            {
-                "name": "useFieldComposable",
-                "type": "Boolean",
-                "desc": "- Active l'édition réactive (reset, debounce, etc.)"
-            },
-            {
-                "name": "field",
-                "type": "Object",
-                "desc": "- Objet field externe (optionnel, sinon composable interne)"
-            },
-            {
-                "name": "debounceTime",
-                "type": "Number",
-                "desc": "- Délai de debounce (ms, défaut 500)"
-            },
-            {
-                "name": "tooltip,",
-                "type": "String|Object",
-                "desc": "tooltip_placement, id, ariaLabel, role, tabindex - hérités de commonProps"
-            }
-        ],
-        "slots": [
-            {
-                "name": "labelTop",
-                "desc": "- Label custom au-dessus"
-            },
-            {
-                "name": "labelBottom",
-                "desc": "- Label custom en-dessous"
-            },
-            {
-                "name": "validator",
-                "desc": "- Message de validation custom"
-            },
-            {
-                "name": "help",
-                "desc": "- Message d'aide custom"
-            },
-            {
-                "name": "default",
-                "desc": "- Slot pour contenu custom à droite du slider"
-            }
-        ],
-        "daisyui": "https://daisyui.com/components/range/",
-        "file": "data-input/Range.vue"
-    },
-    {
-        "name": "Radio",
-        "description": "Radio Atom (DaisyUI)",
-        "props": [
-            {
-                "name": "modelValue",
-                "type": "String|Boolean|Number",
-                "desc": "- Valeur du radio (v-model natif, prioritaire sur checked)"
-            },
-            {
-                "name": "value",
-                "type": "String|Boolean|Number",
-                "desc": "- Valeur du radio (obligatoire pour groupe)"
-            },
-            {
-                "name": "checked",
-                "type": "Boolean",
-                "desc": "- Valeur fallback si modelValue n'est pas utilisé"
-            },
-            {
-                "name": "color",
-                "type": "String",
-                "desc": "- Couleur DaisyUI ('', 'neutral', 'primary', ...)"
-            },
-            {
-                "name": "size",
-                "type": "String",
-                "desc": "- Taille DaisyUI ('', 'xs', 'sm', 'md', 'lg', 'xl')"
-            },
-            {
-                "name": "label",
-                "type": "String",
-                "desc": "- Label du champ (optionnel, sinon slot #labelTop)"
-            },
-            {
-                "name": "validator",
-                "type": "String|Object",
-                "desc": "- Message de validation ou slot #validator"
-            },
-            {
-                "name": "errorMessage",
-                "type": "String",
-                "desc": "- Message d'erreur (optionnel)"
-            },
-            {
-                "name": "help",
-                "type": "String",
-                "desc": "- Message d'aide (optionnel ou slot #help)"
-            },
-            {
-                "name": "shadow,",
-                "type": "String",
-                "desc": "backdrop, opacity - utilitaires custom"
-            },
-            {
-                "name": "bgOn",
-                "type": "String",
-                "desc": "- Classes Tailwind appliquées quand le radio est coché (ex: 'bg-blue-200 border-blue-600')"
-            },
-            {
-                "name": "bgOff",
-                "type": "String",
-                "desc": "- Classes Tailwind appliquées quand le radio est décoché (ex: 'bg-base-200 border-base-300')"
-            },
-            {
-                "name": "tooltip,",
-                "type": "String|Object",
-                "desc": "tooltip_placement, id, ariaLabel, role, tabindex - hérités de commonProps"
-            }
-        ],
-        "slots": [
-            {
-                "name": "labelTop",
-                "desc": "- Label custom au-dessus"
-            },
-            {
-                "name": "labelBottom",
-                "desc": "- Label custom en-dessous"
-            },
-            {
-                "name": "validator",
-                "desc": "- Message de validation custom"
-            },
-            {
-                "name": "help",
-                "desc": "- Message d'aide custom"
-            },
-            {
-                "name": "default",
-                "desc": "- Slot pour contenu custom à droite du radio"
-            }
-        ],
-        "daisyui": "https://daisyui.com/components/radio/",
-        "file": "data-input/Radio.vue"
-    },
-    {
-        "name": "InputLabel",
-        "description": "InputLabel Atom (DaisyUI)",
-        "props": [
-            {
-                "name": "for",
-                "type": "String",
-                "desc": "- Attribut for du label (id du champ associé)"
-            },
-            {
-                "name": "value",
-                "type": "String",
-                "desc": "- Texte du label (optionnel, sinon slot)"
-            },
-            {
-                "name": "floating",
-                "type": "Boolean",
-                "desc": "- Active le mode floating-label DaisyUI"
-            },
-            {
-                "name": "color",
-                "type": "String",
-                "desc": "- Couleur DaisyUI ('', 'primary', 'secondary', ...)"
-            },
-            {
-                "name": "size",
-                "type": "String",
-                "desc": "- Taille DaisyUI ('', 'xs', 'sm', 'md', 'lg', 'xl')"
-            },
-            {
-                "name": "class",
-                "type": "String",
-                "desc": "- Classes custom supplémentaires"
-            },
-            {
-                "name": "id,",
-                "type": "String",
-                "desc": "ariaLabel, role, tabindex - accessibilité"
-            }
-        ],
-        "slots": [
-            {
-                "name": "default",
-                "desc": "- Contenu du label (texte, HTML, etc.)"
-            }
-        ],
-        "daisyui": "https://daisyui.com/components/label/",
-        "file": "data-input/InputLabel.vue"
-    },
-    {
-        "name": "InputField",
-        "description": "InputField Atom (DaisyUI + Custom Utility + Edition réactive)",
-        "props": [
-            {
-                "name": "type",
-                "type": "String",
-                "desc": "- Type d'input (text, email, password, number, url, tel, search, date, etc.)"
-            },
-            {
-                "name": "color",
-                "type": "String",
-                "desc": "- Couleur DaisyUI ('', 'neutral', 'primary', ...)"
-            },
-            {
-                "name": "size",
-                "type": "String",
-                "desc": "- Taille DaisyUI ('', 'xs', 'sm', 'md', 'lg', 'xl')"
-            },
-            {
-                "name": "variant",
-                "type": "String",
-                "desc": "- Style DaisyUI ('', 'ghost', 'outline', 'bordered', 'glass')"
-            },
-            {
-                "name": "label",
-                "type": "String",
-                "desc": "- Label du champ (optionnel, sinon slot #label)"
-            },
-            {
-                "name": "validator",
-                "type": "String|Object",
-                "desc": "- Message de validation ou slot #validator"
-            },
-            {
-                "name": "errorMessage",
-                "type": "String",
-                "desc": "- Message d'erreur (optionnel)"
-            },
-            {
-                "name": "help",
-                "type": "String",
-                "desc": "- Message d'aide (optionnel ou slot #help)"
-            },
-            {
-                "name": "shadow,",
-                "type": "String",
-                "desc": "backdrop, opacity - utilitaires custom"
-            },
-            {
-                "name": "tooltip,",
-                "type": "String|Object",
-                "desc": "tooltip_placement, id, ariaLabel, role, tabindex - hérités de commonProps"
-            },
-            {
-                "name": "useFieldComposable",
-                "type": "Boolean",
-                "desc": "- Active l'édition réactive (reset, debounce, etc.)"
-            },
-            {
-                "name": "field",
-                "type": "Object",
-                "desc": "- Objet field externe (optionnel, sinon composable interne)"
-            },
-            {
-                "name": "debounceTime",
-                "type": "Number",
-                "desc": "- Délai de debounce (ms, défaut 500)"
-            },
-            {
-                "name": "showPasswordToggle",
-                "type": "Boolean",
-                "desc": "- Affiche l'icône pour afficher/masquer le mot de passe si type=password (défaut true)"
-            }
-        ],
-        "slots": [
-            {
-                "name": "label",
-                "desc": "- Label custom"
-            },
-            {
-                "name": "icon",
-                "desc": "- Icône à gauche"
-            },
-            {
-                "name": "right",
-                "desc": "- Icône ou bouton à droite"
-            },
-            {
-                "name": "validator",
-                "desc": "- Message de validation custom"
-            },
-            {
-                "name": "help",
-                "desc": "- Message d'aide custom"
-            },
-            {
-                "name": "default",
-                "desc": "- Contenu custom dans l'input"
-            }
-        ],
-        "daisyui": "https://daisyui.com/components/input/",
-        "file": "data-input/InputField.vue"
-    },
-    {
-        "name": "Filter",
-        "description": "Filter Atom (DaisyUI)",
-        "props": [
-            {
-                "name": "form",
-                "type": "Boolean",
-                "desc": "- Utilise <form> si true, sinon <div> (défaut false)"
-            },
-            {
-                "name": "shadow,",
-                "type": "String",
-                "desc": "backdrop, opacity - utilitaires custom"
-            },
-            {
-                "name": "tooltip,",
-                "type": "String|Object",
-                "desc": "tooltip_placement, id, ariaLabel, role, tabindex, class - hérités de commonProps"
-            }
-        ],
-        "slots": [
-            {
-                "name": "default",
-                "desc": "- Radios DaisyUI (input type=\"radio\" ou reset)"
-            }
-        ],
-        "daisyui": "https://daisyui.com/components/filter/",
-        "file": "data-input/Filter.vue"
-    },
-    {
-        "name": "Checkbox",
-        "description": "Checkbox Atom (DaisyUI)",
-        "props": [
-            {
-                "name": "modelValue",
-                "type": "Boolean",
-                "desc": "- Valeur de la checkbox (v-model natif, prioritaire sur checked)"
-            },
-            {
-                "name": "checked",
-                "type": "Boolean",
-                "desc": "- Valeur fallback si modelValue n'est pas utilisé"
-            },
-            {
-                "name": "color",
-                "type": "String",
-                "desc": "- Couleur DaisyUI ('', 'neutral', 'primary', ...)"
-            },
-            {
-                "name": "size",
-                "type": "String",
-                "desc": "- Taille DaisyUI ('', 'xs', 'sm', 'md', 'lg', 'xl')"
-            },
-            {
-                "name": "indeterminate",
-                "type": "Boolean",
-                "desc": "- Etat indéterminé (optionnel)"
-            },
-            {
-                "name": "label",
-                "type": "String",
-                "desc": "- Label du champ (optionnel, sinon slot #labelTop)"
-            },
-            {
-                "name": "validator",
-                "type": "String|Object",
-                "desc": "- Message de validation ou slot #validator"
-            },
-            {
-                "name": "errorMessage",
-                "type": "String",
-                "desc": "- Message d'erreur (optionnel)"
-            },
-            {
-                "name": "help",
-                "type": "String",
-                "desc": "- Message d'aide (optionnel ou slot #help)"
-            },
-            {
-                "name": "shadow,",
-                "type": "String",
-                "desc": "backdrop, opacity - utilitaires custom"
-            },
-            {
-                "name": "bgOn",
-                "type": "String",
-                "desc": "- Classes Tailwind appliquées quand la checkbox est cochée (ex: 'bg-green-500 border-green-600')"
-            },
-            {
-                "name": "bgOff",
-                "type": "String",
-                "desc": "- Classes Tailwind appliquées quand la checkbox est décochée (ex: 'bg-base-200 border-base-300')"
-            },
-            {
-                "name": "tooltip,",
-                "type": "String|Object",
-                "desc": "tooltip_placement, id, ariaLabel, role, tabindex - hérités de commonProps"
-            }
-        ],
-        "slots": [
-            {
-                "name": "labelTop",
-                "desc": "- Label custom au-dessus"
-            },
-            {
-                "name": "labelBottom",
-                "desc": "- Label custom en-dessous"
-            },
-            {
-                "name": "validator",
-                "desc": "- Message de validation custom"
-            },
-            {
-                "name": "help",
-                "desc": "- Message d'aide custom"
-            },
-            {
-                "name": "default",
-                "desc": "- Slot pour contenu custom à droite de la checkbox"
-            }
-        ],
-        "daisyui": "https://daisyui.com/components/checkbox/",
-        "file": "data-input/Checkbox.vue"
-    },
-    {
-        "name": "Status",
-        "description": "Status Atom (DaisyUI)",
-        "props": [
-            {
-                "name": "color",
-                "type": "String",
-                "desc": "- Couleur DaisyUI ('', 'neutral', 'primary', 'secondary', 'accent', 'info', 'success', 'warning', 'error')"
-            },
-            {
-                "name": "size",
-                "type": "String",
-                "desc": "- Taille DaisyUI ('', 'xs', 'sm', 'md', 'lg', 'xl')"
-            },
-            {
-                "name": "tooltip,",
-                "type": "String|Object",
-                "desc": "tooltip_placement, class, id, ariaLabel, role, tabindex - hérités de commonProps"
-            }
-        ],
-        "slots": [
-            {
-                "name": "default",
-                "desc": "- Contenu custom/accessibilité (rare)"
-            }
-        ],
-        "daisyui": "https://daisyui.com/components/status/",
-        "file": "data-display/Status.vue"
-    },
-    {
-        "name": "Stat",
-        "description": "Stat Atom (DaisyUI)",
-        "props": [
-            {
-                "name": "title",
-                "type": "String",
-                "desc": "- Titre du stat (optionnel, sinon slot #title)"
-            },
-            {
-                "name": "value",
-                "type": "String|Number",
-                "desc": "- Valeur principale (optionnel, sinon slot #value)"
-            },
-            {
-                "name": "description",
-                "type": "String",
-                "desc": "- Description (optionnel, sinon slot #description)"
-            },
-            {
-                "name": "icon",
-                "type": "String",
-                "desc": "- Source de l'icône (optionnel, sinon slot #icon)"
-            },
-            {
-                "name": "color",
-                "type": "String",
-                "desc": "- Couleur DaisyUI globale (appliquée à title et value si colorTitle/colorValue non définis)"
-            },
-            {
-                "name": "colorTitle",
-                "type": "String",
-                "desc": "- Couleur DaisyUI du titre (prioritaire sur color)"
-            },
-            {
-                "name": "colorValue",
-                "type": "String",
-                "desc": "- Couleur DaisyUI de la value (prioritaire sur color)"
-            },
-            {
-                "name": "colorDescription",
-                "type": "String",
-                "desc": "- Couleur DaisyUI de la description (prioritaire sur color)"
-            },
-            {
-                "name": "size",
-                "type": "String",
-                "desc": "- Taille DaisyUI ('', 'xs', 'sm', 'md', 'lg', 'xl')"
-            },
-            {
-                "name": "shadow,",
-                "type": "String",
-                "desc": "backdrop, opacity - utilitaires custom"
-            },
-            {
-                "name": "tooltip,",
-                "type": "String|Object",
-                "desc": "tooltip_placement, id, ariaLabel, role, tabindex - hérités de commonProps"
-            }
-        ],
-        "slots": [
-            {
-                "name": "icon",
-                "desc": "- Icône (figure)"
-            },
-            {
-                "name": "title",
-                "desc": "- Titre du stat"
-            },
-            {
-                "name": "value",
-                "desc": "- Valeur principale"
-            },
-            {
-                "name": "description",
-                "desc": "- Description"
-            },
-            {
-                "name": "action",
-                "desc": "- Actions (boutons, etc.)"
-            }
-        ],
-        "daisyui": "https://daisyui.com/components/stat/",
-        "file": "data-display/Stat.vue"
-    },
-    {
-        "name": "Row",
-        "description": "Row Atom (DaisyUI ListRow)",
-        "props": [
-            {
-                "name": "as",
-                "type": "String",
-                "desc": "- Balise racine ('li' ou 'div', défaut 'li')"
-            },
-            {
-                "name": "grow",
-                "type": "Number",
-                "desc": "- Index (1-based) de la colonne à faire grandir (ajoute list-col-grow)"
-            },
-            {
-                "name": "wrap",
-                "type": "Number",
-                "desc": "- Index (1-based) de la colonne à wrap (ajoute list-col-wrap)"
-            },
-            {
-                "name": "class",
-                "type": "String",
-                "desc": "- Classes custom supplémentaires"
-            },
-            {
-                "name": "shadow,",
-                "type": "String",
-                "desc": "rounded, backdrop, opacity - utilitaires custom"
-            },
-            {
-                "name": "id,",
-                "type": "String",
-                "desc": "ariaLabel, role, tabindex - accessibilité"
-            }
-        ],
-        "slots": [
-            {
-                "name": "default",
-                "desc": "- Colonnes de la ligne"
-            }
-        ],
-        "daisyui": "https://daisyui.com/components/list/",
-        "file": "data-display/Row.vue"
-    },
-    {
-        "name": "List",
-        "description": "List Atom (DaisyUI)",
-        "props": [
-            {
-                "name": "as",
-                "type": "String",
-                "desc": "- Balise racine ('ul' ou 'div', défaut 'ul')"
-            },
-            {
-                "name": "class",
-                "type": "String",
-                "desc": "- Classes custom supplémentaires"
-            },
-            {
-                "name": "shadow,",
-                "type": "String",
-                "desc": "rounded, backdrop, opacity - utilitaires custom"
-            },
-            {
-                "name": "id,",
-                "type": "String",
-                "desc": "ariaLabel, role, tabindex, tooltip, tooltip_placement - accessibilité"
-            }
-        ],
-        "slots": [
-            {
-                "name": "header",
-                "desc": "- En-tête de la liste (optionnel)"
-            },
-            {
-                "name": "footer",
-                "desc": "- Pied de la liste (optionnel)"
-            },
-            {
-                "name": "default",
-                "desc": "- Éléments de la liste (ListRow ou <li>/<div>)"
-            }
-        ],
-        "daisyui": "https://daisyui.com/components/list/",
-        "file": "data-display/List.vue"
-    },
-    {
-        "name": "Kbd",
-        "description": "Kbd Atom (DaisyUI)",
-        "props": [
-            {
-                "name": "size",
-                "type": "String",
-                "desc": "- Taille DaisyUI ('', 'xs', 'sm', 'md', 'lg', 'xl')"
-            },
-            {
-                "name": "class",
-                "type": "String",
-                "desc": "- Classes custom supplémentaires"
-            },
-            {
-                "name": "shadow,",
-                "type": "String",
-                "desc": "backdrop, opacity - utilitaires custom"
-            },
-            {
-                "name": "id,",
-                "type": "String",
-                "desc": "ariaLabel, role, tabindex, tooltip, tooltip_placement - accessibilité"
-            }
-        ],
-        "slots": [
-            {
-                "name": "default",
-                "desc": "- Contenu du raccourci clavier"
-            }
-        ],
-        "daisyui": "https://daisyui.com/components/kbd/",
-        "file": "data-display/Kbd.vue"
-    },
-    {
-        "name": "Image",
-        "description": "Image Atom (Atomic Design, Tailwind, DaisyUI Mask)",
-        "props": [
-            {
-                "name": "src",
-                "type": "String",
-                "desc": "- URL de l'image (obligatoire)"
-            },
-            {
-                "name": "alt",
-                "type": "String",
-                "desc": "- Texte alternatif (obligatoire)"
-            },
-            {
-                "name": "size",
-                "type": "String",
-                "desc": "- Taille prédéfinie (xs, sm, md, lg, xl, 2xl, 3xl, 4xl, 5xl, 6xl)"
-            },
-            {
-                "name": "sizes",
-                "type": "Object",
-                "desc": "- Mapping responsive { sm: 'xs', md: 'sm', ... } (prioritaire sur size)"
-            },
-            {
-                "name": "ratio",
-                "type": "String",
-                "desc": "- Ratio d'aspect (square, video, 16/9, 4/3, 3/2, 2/1, etc.)"
-            },
-            {
-                "name": "width",
-                "type": "String",
-                "desc": "- Largeur personnalisée (ex: 64, 128) si size/sizes non défini"
-            },
-            {
-                "name": "height",
-                "type": "String",
-                "desc": "- Hauteur personnalisée (ex: 64, 128) si size/sizes non défini"
-            },
-            {
-                "name": "rounded",
-                "type": "String",
-                "desc": "- Arrondi (none, sm, md, lg, xl, 2xl, 3xl, full, circle)"
-            },
-            {
-                "name": "fit",
-                "type": "String",
-                "desc": "- object-fit (cover, contain, fill, none, scale-down)"
-            },
-            {
-                "name": "position",
-                "type": "String",
-                "desc": "- object-position (center, top, right, bottom, left, top-left, top-right, bottom-left, bottom-right)"
-            },
-            {
-                "name": "filter",
-                "type": "String|Object",
-                "desc": "- Filtre CSS (grayscale, sepia, blur, brightness, contrast, hue-rotate, invert, saturate) ou objet numérique { type, value }"
-            },
-            {
-                "name": "mask",
-                "type": "String",
-                "desc": "- Classe DaisyUI mask-* (mask, mask-squircle, mask-heart, mask-hexagon, mask-hexagon-2, mask-decagon, mask-pentagon, mask-diamond, mask-square, mask-circle, mask-star, mask-star-2, mask-triangle, mask-triangle-2, mask-triangle-3, mask-triangle-4, mask-half-1, mask-half-2)"
-            },
-            {
-                "name": "tooltip",
-                "type": "String|Object",
-                "desc": "- Tooltip (hérité de commonProps)"
-            },
-            {
-                "name": "tooltip_placement",
-                "type": "String",
-                "desc": "- Position du tooltip (hérité de commonProps)"
-            },
-            {
-                "name": "id,",
-                "type": "String",
-                "desc": "ariaLabel, role, tabindex, disabled - hérités de commonProps"
-            }
-        ],
-        "slots": [
-            {
-                "name": "loader",
-                "desc": "- Loader personnalisé (affiché pendant le chargement)"
-            },
-            {
-                "name": "fallback",
-                "desc": "- Fallback personnalisé (affiché si l'image ne se charge pas)"
-            }
-        ],
-        "daisyui": "https://daisyui.com/components/mask/",
-        "file": "data-display/Image.vue"
-    },
-    {
-        "name": "Icon",
-        "description": "Icon Atom (Atomic Design, DaisyUI)",
-        "props": [
-            {
-                "name": "source",
-                "type": "String",
-                "desc": "- Nom logique ou chemin de l'icône (obligatoire)"
-            },
-            {
-                "name": "alt",
-                "type": "String",
-                "desc": "- Texte alternatif (obligatoire)"
-            },
-            {
-                "name": "size",
-                "type": "String",
-                "desc": "- Taille prédéfinie (xs, sm, md, lg, xl, 2xl, 3xl, 4xl, 5xl, 6xl), défaut md"
-            },
-            {
-                "name": "disabled",
-                "type": "Boolean",
-                "desc": "- Affiche l'icône en noir et blanc si true"
-            },
-            {
-                "name": "tooltip,",
-                "type": "String|Object",
-                "desc": "tooltip_placement, id, ariaLabel, role, tabindex - hérités de commonProps"
-            }
-        ],
-        "slots": [],
-        "daisyui": null,
-        "file": "data-display/Icon.vue"
-    },
-    {
-        "name": "Container",
-        "description": "Container Atom (Tailwind)",
-        "props": [
-            {
-                "name": "fluid",
-                "type": "Boolean",
-                "desc": "- Désactive la classe 'container' (full width)"
-            },
-            {
-                "name": "responsive",
-                "type": "String",
-                "desc": "- Breakpoint responsive (ex: 'md', 'lg', ...), applique 'md:container', etc."
-            },
-            {
-                "name": "color",
-                "type": "String",
-                "desc": "- Couleur de fond (classe Tailwind, ex: bg-base-100)"
-            },
-            {
-                "name": "border",
-                "type": "String",
-                "desc": "- Bordure (classe Tailwind, ex: border-gray-200)"
-            },
-            {
-                "name": "shadow,",
-                "type": "String",
-                "desc": "backdrop, opacity - utilitaires custom"
-            },
-            {
-                "name": "id,",
-                "type": "String",
-                "desc": "ariaLabel, role, tabindex - accessibilité"
-            }
-        ],
-        "slots": [
-            {
-                "name": "default",
-                "desc": "- Contenu du container"
-            }
-        ],
-        "daisyui": null,
-        "file": "data-display/Container.vue"
-    },
-    {
-        "name": "Collapse",
-        "description": "Collapse Atom (DaisyUI)",
-        "props": [
-            {
-                "name": "arrow",
-                "type": "Boolean",
-                "desc": "- Affiche la flèche (collapse-arrow)"
-            },
-            {
-                "name": "plus",
-                "type": "Boolean",
-                "desc": "- Affiche le plus/moins (collapse-plus)"
-            },
-            {
-                "name": "bgOff",
-                "type": "String",
-                "desc": "- Couleur de fond fermé (classe DaisyUI/Tailwind)"
-            },
-            {
-                "name": "bgOn",
-                "type": "String",
-                "desc": "- Couleur de fond ouvert (classe DaisyUI/Tailwind)"
-            },
-            {
-                "name": "forcedOpen",
-                "type": "Boolean",
-                "desc": "- Force l'ouverture (ajoute collapse-open)"
-            },
-            {
-                "name": "defaultOpen",
-                "type": "Boolean",
-                "desc": "- Commence ouvert (checkbox checked par défaut)"
-            },
-            {
-                "name": "shadow,",
-                "type": "String",
-                "desc": "backdrop, opacity - utilitaires custom"
-            },
-            {
-                "name": "id,",
-                "type": "String",
-                "desc": "ariaLabel, role, tabindex, tooltip, tooltip_placement - accessibilité"
-            }
-        ],
-        "slots": [
-            {
-                "name": "title",
-                "desc": "- Titre du collapse"
-            },
-            {
-                "name": "content",
-                "desc": "- Contenu du collapse"
-            }
-        ],
-        "daisyui": "https://daisyui.com/components/collapse/",
-        "file": "data-display/Collapse.vue"
-    },
-    {
-        "name": "Card",
-        "description": "Card Atom (DaisyUI)",
-        "props": [
-            {
-                "name": "color",
-                "type": "String",
-                "desc": "- Couleur de fond DaisyUI (bg-base-100, bg-primary, etc.)"
-            },
-            {
-                "name": "size",
-                "type": "String",
-                "desc": "- Taille DaisyUI ('', 'xs', 'sm', 'md', 'lg', 'xl')"
-            },
-            {
-                "name": "bordered",
-                "type": "Boolean",
-                "desc": "- Ajoute une bordure (card-bordered)"
-            },
-            {
-                "name": "dash",
-                "type": "Boolean",
-                "desc": "- Bordure dash (card-dash)"
-            },
-            {
-                "name": "side",
-                "type": "Boolean",
-                "desc": "- Image sur le côté (card-side)"
-            },
-            {
-                "name": "imageFull",
-                "type": "Boolean",
-                "desc": "- Image en fond (image-full)"
-            },
-            {
-                "name": "shadow",
-                "type": "String",
-                "desc": "- Ombre custom ('' | 'xs' | 'sm' | 'md' | 'lg' | 'xl' | '2xl' | '3xl' | '4xl') → .box-shadow-*"
-            },
-            {
-                "name": "backdrop",
-                "type": "String",
-                "desc": "- Flou de fond custom ('' | 'xs' | 'sm' | 'md' | 'lg' | 'xl' | '2xl' | '3xl' | '4xl') → .bd-blur-*"
-            },
-            {
-                "name": "opacity",
-                "type": "String",
-                "desc": "- Opacité custom ('' | 'xs' | 'sm' | 'md' | 'lg' | 'xl' | '2xl' | '3xl' | '4xl') → .bd-opacity-*"
-            },
-            {
-                "name": "tooltip,",
-                "type": "String|Object",
-                "desc": "tooltip_placement, id, ariaLabel, role, tabindex - hérités de commonProps"
-            }
-        ],
-        "slots": [
-            {
-                "name": "figure",
-                "desc": "- Image ou illustration"
-            },
-            {
-                "name": "title",
-                "desc": "- Titre de la carte"
-            },
-            {
-                "name": "subtitle",
-                "desc": "- Sous-titre"
-            },
-            {
-                "name": "default",
-                "desc": "- Contenu principal"
-            },
-            {
-                "name": "actions",
-                "desc": "- Actions (boutons, etc.)"
-            },
-            {
-                "name": "footer",
-                "desc": "- Footer optionnel"
-            }
-        ],
-        "daisyui": "https://daisyui.com/components/card/",
-        "file": "data-display/Card.vue"
-    },
-    {
-        "name": "Badge",
-        "description": "Badge Atom (DaisyUI)",
-        "props": [
-            {
-                "name": "content",
-                "type": "String",
-                "desc": "- Texte simple à afficher dans le badge (optionnel, prioritaire sur slot)"
-            },
-            {
-                "name": "color",
-                "type": "String",
-                "desc": "- Couleur DaisyUI ('', 'neutral', 'primary', 'secondary', 'accent', 'info', 'success', 'warning', 'error')"
-            },
-            {
-                "name": "size",
-                "type": "String",
-                "desc": "- Taille DaisyUI ('', 'xs', 'sm', 'md', 'lg', 'xl'), défaut ''"
-            },
-            {
-                "name": "variant",
-                "type": "String",
-                "desc": "- Style DaisyUI ('', 'outline', 'dash', 'soft', 'ghost'), défaut ''"
-            },
-            {
-                "name": "tooltip,",
-                "type": "String|Object",
-                "desc": "tooltip_placement, id, ariaLabel, role, tabindex - hérités de commonProps"
-            }
-        ],
-        "slots": [
-            {
-                "name": "default",
-                "desc": "- Contenu du badge (fallback)"
-            },
-            {
-                "name": "content",
-                "desc": "- Contenu HTML complexe prioritaire"
-            }
-        ],
-        "daisyui": "https://daisyui.com/components/badge/",
-        "file": "data-display/Badge.vue"
-    },
-    {
-        "name": "Avatar",
-        "description": "Avatar Atom (DaisyUI)",
-        "props": [
-            {
-                "name": "src",
-                "type": "String",
-                "desc": "- URL de l'image (optionnel)"
-            },
-            {
-                "name": "alt",
-                "type": "String",
-                "desc": "- Texte alternatif (obligatoire)"
-            },
-            {
-                "name": "size",
-                "type": "String",
-                "desc": "- Taille prédéfinie (xs, sm, md, lg, xl, 2xl, 3xl, 4xl)"
-            },
-            {
-                "name": "rounded",
-                "type": "String",
-                "desc": "- Arrondi (sm, md, lg, xl, full)"
-            },
-            {
-                "name": "ring",
-                "type": "String",
-                "desc": "- Epaisseur de l'anneau (xs, sm, md, lg, xl, 2xl, 3xl, 4xl)"
-            },
-            {
-                "name": "ringColor",
-                "type": "String",
-                "desc": "- Couleur de l'anneau (primary, secondary, accent, info, success, warning, error, base-100, base-200, base-300, neutral)"
-            },
-            {
-                "name": "ringOffset",
-                "type": "String",
-                "desc": "- Epaisseur du ring-offset (xs, sm, md, lg, xl, 2xl, 3xl, 4xl)"
-            },
-            {
-                "name": "ringOffsetColor",
-                "type": "String",
-                "desc": "- Couleur du ring-offset (idem ringColor)"
-            },
-            {
-                "name": "shadow,",
-                "type": "String",
-                "desc": "backdrop, opacity - utilitaires custom ('' | 'xs' | ...)"
-            },
-            {
-                "name": "tooltip,",
-                "type": "String|Object",
-                "desc": "tooltip_placement, id, ariaLabel, role, tabindex, disabled - hérités de commonProps"
-            }
-        ],
-        "slots": [
-            {
-                "name": "default",
-                "desc": "- Fallback (initiales, icône, etc.)"
-            },
-            {
-                "name": "loader",
-                "desc": "- Loader personnalisé (optionnel)"
-            }
-        ],
-        "daisyui": "https://daisyui.com/components/avatar/",
-        "file": "data-display/Avatar.vue"
-    },
-    {
-        "name": "Swap",
-        "description": "Swap Atom (DaisyUI)",
-        "props": [
-            {
-                "name": "modelValue",
-                "type": "Boolean",
-                "desc": "- Valeur contrôlée (v-model)"
-            },
-            {
-                "name": "active",
-                "type": "Boolean",
-                "desc": "- Force l'état actif (prioritaire sur modelValue)"
-            },
-            {
-                "name": "indeterminate",
-                "type": "Boolean",
-                "desc": "- Affiche le slot indeterminate"
-            },
-            {
-                "name": "rotate",
-                "type": "Boolean",
-                "desc": "- Ajoute l'effet rotate"
-            },
-            {
-                "name": "flip",
-                "type": "Boolean",
-                "desc": "- Ajoute l'effet flip"
-            },
-            {
-                "name": "disabled",
-                "type": "Boolean",
-                "desc": "- Désactive le swap (hérité de commonProps)"
-            },
-            {
-                "name": "id,",
-                "type": "String",
-                "desc": "ariaLabel, role, tabindex, tooltip, tooltip_placement - hérités de commonProps"
-            }
-        ],
-        "slots": [
-            {
-                "name": "on",
-                "desc": "- Contenu affiché quand actif (swap-on)"
-            },
-            {
-                "name": "off",
-                "desc": "- Contenu affiché quand inactif (swap-off)"
-            },
-            {
-                "name": "indeterminate",
-                "desc": "- Contenu affiché quand indéterminé (swap-indeterminate)"
-            }
-        ],
-        "daisyui": "https://daisyui.com/components/swap/",
-        "file": "action/Swap.vue"
-    },
-    {
-        "name": "Route",
-        "description": "Route Atom (Lien Inertia + DaisyUI Link)",
-        "props": [
-            {
-                "name": "href",
-                "type": "String",
-                "desc": "- URL du lien (défaut : #)"
-            },
-            {
-                "name": "route",
-                "type": "String",
-                "desc": "- Nom de la route Laravel (optionnel, prioritaire sur href)"
-            },
-            {
-                "name": "target",
-                "type": "String",
-                "desc": "- Cible du lien (_blank, _self, _parent, _top)"
-            },
-            {
-                "name": "method",
-                "type": "String",
-                "desc": "- Méthode HTTP pour le lien Inertia (get, post, put, delete, etc.), défaut 'get'"
-            },
-            {
-                "name": "replace",
-                "type": "Boolean",
-                "desc": "- Remplace l'historique (Inertia), défaut false"
-            },
-            {
-                "name": "color",
-                "type": "String",
-                "desc": "- Couleur DaisyUI Link ('', 'neutral', 'primary', 'secondary', 'accent', 'success', 'info', 'warning', 'error')"
-            },
-            {
-                "name": "hover",
-                "type": "Boolean",
-                "desc": "- Affiche le soulignement uniquement au survol (link-hover)"
-            },
-            {
-                "name": "id,",
-                "type": "String",
-                "desc": "ariaLabel, role, tabindex, tooltip, tooltip_placement - hérités de commonProps"
-            }
-        ],
-        "slots": [
-            {
-                "name": "default",
-                "desc": "- Contenu du lien (texte, icône, etc.)"
-            }
-        ],
-        "daisyui": "https://daisyui.com/components/link/",
-        "file": "action/Route.vue"
-    },
-    {
-        "name": "Dropdown",
-        "description": "Dropdown Atom (DaisyUI)",
-        "props": [
-            {
-                "name": "placement",
-                "type": "String",
-                "desc": "- Position du menu (start, end, top, bottom, left, right, center)"
-            },
-            {
-                "name": "open",
-                "type": "Boolean",
-                "desc": "- Force l'ouverture du menu (contrôle externe)"
-            },
-            {
-                "name": "hover",
-                "type": "Boolean",
-                "desc": "- Ouvre le menu au survol"
-            },
-            {
-                "name": "label",
-                "type": "String",
-                "desc": "- Texte du trigger (optionnel, sinon slot)"
-            },
-            {
-                "name": "contentClass",
-                "type": "String|Array",
-                "desc": "- Classes custom à ajouter au content (fusionnées sans doublon)"
-            },
-            {
-                "name": "disabled",
-                "type": "Boolean",
-                "desc": "- Désactive le trigger (hérité de commonProps)"
-            },
-            {
-                "name": "id,",
-                "type": "String",
-                "desc": "ariaLabel, role, tabindex, tooltip, tooltip_placement - hérités de commonProps"
-            }
-        ],
-        "slots": [
-            {
-                "name": "default",
-                "desc": "- Trigger du dropdown (bouton, icône, etc.)"
-            },
-            {
-                "name": "content",
-                "desc": "- Contenu déroulant (libre)"
-            }
-        ],
-        "daisyui": "https://daisyui.com/components/dropdown/",
-        "file": "action/Dropdown.vue"
-    },
-    {
-        "name": "Btn",
-        "description": "Btn Atom (DaisyUI)",
-        "props": [
-            {
-                "name": "color",
-                "type": "String",
-                "desc": "- Couleur DaisyUI ('', 'neutral', 'primary', ...)"
-            },
-            {
-                "name": "variant",
-                "type": "String",
-                "desc": "- Style DaisyUI ('', 'outline', 'ghost', 'link', 'soft', 'dash', 'glass')"
-            },
-            {
-                "name": "size",
-                "type": "String",
-                "desc": "- Taille DaisyUI ('', 'xs', 'sm', 'md', 'lg', 'xl')"
-            },
-            {
-                "name": "block",
-                "type": "Boolean",
-                "desc": "- Pleine largeur (btn-block)"
-            },
-            {
-                "name": "wide",
-                "type": "Boolean",
-                "desc": "- Largeur augmentée (btn-wide)"
-            },
-            {
-                "name": "square",
-                "type": "Boolean",
-                "desc": "- Carré (btn-square)"
-            },
-            {
-                "name": "circle",
-                "type": "Boolean",
-                "desc": "- Cercle (btn-circle)"
-            },
-            {
-                "name": "type",
-                "type": "String",
-                "desc": "- Type HTML du bouton ('button', 'submit', 'reset', 'radio', 'checkbox'), défaut 'button'"
-            },
-            {
-                "name": "active",
-                "type": "Boolean",
-                "desc": "- Ajoute la classe btn-active"
-            },
-            {
-                "name": "checked",
-                "type": "Boolean",
-                "desc": "- Pour usage avancé (inutile sur <button>, mais possible pour compatibilité API)"
-            },
-            {
-                "name": "content",
-                "type": "String",
-                "desc": "- Texte du bouton (optionnel, sinon slot)"
-            },
-            {
-                "name": "disabled",
-                "type": "Boolean",
-                "desc": "- Désactivé (btn-disabled + HTML, hérité de commonProps)"
-            },
-            {
-                "name": "id,",
-                "type": "String",
-                "desc": "ariaLabel, role, tabindex, tooltip, tooltip_placement - hérités de commonProps"
-            }
-        ],
-        "slots": [
-            {
-                "name": "default|content",
-                "desc": "- Contenu du bouton (texte, icône, etc.)"
-            },
-            {
-                "name": "tooltip",
-                "desc": "- Contenu HTML complexe pour le tooltip (optionnel)"
-            }
-        ],
-        "daisyui": "https://daisyui.com/components/button/",
-        "file": "action/Btn.vue"
-    }
+  {
+    "name": "TabItem",
+    "description": "TabItem Atom (DaisyUI + Custom Utility)",
+    "props": [
+      {
+        "name": "active",
+        "type": "Boolean",
+        "desc": "- Met l'item en état actif"
+      },
+      {
+        "name": "disabled",
+        "type": "Boolean",
+        "desc": "- Désactive l'item"
+      },
+      {
+        "name": "icon",
+        "type": "String",
+        "desc": "- Nom logique ou chemin de l'icône (optionnel, sinon slot #icon)"
+      },
+      {
+        "name": "label",
+        "type": "String",
+        "desc": "- Label du tab (optionnel, sinon slot #label)"
+      },
+      {
+        "name": "color",
+        "type": "String",
+        "desc": "- Couleur DaisyUI (optionnel)"
+      },
+      {
+        "name": "size",
+        "type": "String",
+        "desc": "- Taille DaisyUI ('', 'xs', 'sm', 'md', 'lg', 'xl')"
+      },
+      {
+        "name": "shadow,",
+        "type": "String",
+        "desc": "backdrop, opacity, rounded - utilitaires custom"
+      },
+      {
+        "name": "id,",
+        "type": "String|Object",
+        "desc": "ariaLabel, role, tabindex, class - hérités de commonProps"
+      }
+    ],
+    "slots": [
+      {
+        "name": "title",
+        "desc": "- Slot pour le titre du tab (icône + label)"
+      },
+      {
+        "name": "icon",
+        "desc": "- Slot pour l'icône (prioritaire sur prop icon)"
+      },
+      {
+        "name": "label",
+        "desc": "- Slot pour le label (prioritaire sur prop label)"
+      },
+      {
+        "name": "default",
+        "desc": "- Contenu du tab (tab-content)"
+      }
+    ],
+    "file": "navigation/TabItem.vue"
+  },
+  {
+    "name": "StepItem",
+    "description": "StepItem Atom (DaisyUI + Custom Utility)",
+    "props": [
+      {
+        "name": "active",
+        "type": "Boolean",
+        "desc": "- Met l'item en état actif (applique la couleur)"
+      },
+      {
+        "name": "color",
+        "type": "String",
+        "desc": "- Couleur DaisyUI ('', 'neutral', 'primary', 'secondary', 'accent', 'info', 'success', 'warning', 'error')"
+      },
+      {
+        "name": "icon",
+        "type": "String",
+        "desc": "- Nom logique ou chemin de l'icône (optionnel, sinon slot #icon)"
+      },
+      {
+        "name": "state",
+        "type": "String",
+        "desc": "- État custom (optionnel, pour variantes avancées)"
+      },
+      {
+        "name": "shadow,",
+        "type": "String",
+        "desc": "backdrop, opacity, rounded - utilitaires custom"
+      },
+      {
+        "name": "id,",
+        "type": "String|Object",
+        "desc": "ariaLabel, role, tabindex, class - hérités de commonProps"
+      }
+    ],
+    "slots": [
+      {
+        "name": "icon",
+        "desc": "- Slot pour l'icône (prioritaire sur prop icon)"
+      },
+      {
+        "name": "default",
+        "desc": "- Label ou contenu du step"
+      }
+    ],
+    "file": "navigation/StepItem.vue"
+  },
+  {
+    "name": "MenuItem",
+    "description": "MenuItem Atom (DaisyUI + Custom Utility + Route)",
+    "props": [
+      {
+        "name": "active",
+        "type": "Boolean",
+        "desc": "- Met l'item en état actif"
+      },
+      {
+        "name": "disabled",
+        "type": "Boolean",
+        "desc": "- Désactive l'item"
+      },
+      {
+        "name": "icon",
+        "type": "String",
+        "desc": "- Nom logique ou chemin de l'icône (optionnel, sinon slot #icon)"
+      },
+      {
+        "name": "color",
+        "type": "String",
+        "desc": "- Couleur DaisyUI (optionnel)"
+      },
+      {
+        "name": "size",
+        "type": "String",
+        "desc": "- Taille DaisyUI ('', 'xs', 'sm', 'md', 'lg', 'xl')"
+      },
+      {
+        "name": "route",
+        "type": "String",
+        "desc": "- Nom de la route Inertia/Laravel (optionnel)"
+      },
+      {
+        "name": "shadow,",
+        "type": "String",
+        "desc": "backdrop, opacity, rounded - utilitaires custom"
+      },
+      {
+        "name": "tooltip,",
+        "type": "String|Object",
+        "desc": "tooltip_placement, id, ariaLabel, role, tabindex, class - hérités de commonProps"
+      }
+    ],
+    "slots": [
+      {
+        "name": "icon",
+        "desc": "- Slot pour l'icône (prioritaire sur prop icon)"
+      },
+      {
+        "name": "default",
+        "desc": "- Contenu du menu"
+      },
+      {
+        "name": "tooltip",
+        "desc": "- Tooltip custom"
+      }
+    ],
+    "file": "navigation/MenuItem.vue"
+  },
+  {
+    "name": "DockItem",
+    "description": "DockItem Atom (DaisyUI + Custom Utility + Route)",
+    "props": [
+      {
+        "name": "active",
+        "type": "Boolean",
+        "desc": "- Met l'item en état actif"
+      },
+      {
+        "name": "disabled",
+        "type": "Boolean",
+        "desc": "- Désactive l'item"
+      },
+      {
+        "name": "icon",
+        "type": "String",
+        "desc": "- Nom logique ou chemin de l'icône (optionnel, sinon slot #icon)"
+      },
+      {
+        "name": "label",
+        "type": "String",
+        "desc": "- Label du dock (optionnel, sinon slot #label)"
+      },
+      {
+        "name": "route",
+        "type": "String",
+        "desc": "- Nom de la route Inertia/Laravel (optionnel)"
+      },
+      {
+        "name": "color",
+        "type": "String",
+        "desc": "- Couleur DaisyUI (optionnel)"
+      },
+      {
+        "name": "size",
+        "type": "String",
+        "desc": "- Taille DaisyUI ('', 'xs', 'sm', 'md', 'lg', 'xl')"
+      },
+      {
+        "name": "shadow,",
+        "type": "String",
+        "desc": "backdrop, opacity, rounded - utilitaires custom"
+      },
+      {
+        "name": "id,",
+        "type": "String|Object",
+        "desc": "ariaLabel, role, tabindex, class - hérités de commonProps"
+      }
+    ],
+    "slots": [
+      {
+        "name": "icon",
+        "desc": "- Slot pour l'icône (prioritaire sur prop icon)"
+      },
+      {
+        "name": "label",
+        "desc": "- Slot pour le label (prioritaire sur prop label)"
+      },
+      {
+        "name": "default",
+        "desc": "- Contenu custom"
+      }
+    ],
+    "file": "navigation/DockItem.vue"
+  },
+  {
+    "name": "Breadcrumbs",
+    "description": "Breadcrumbs Atom (DaisyUI)",
+    "props": [
+      {
+        "name": "maxWidth",
+        "type": "String",
+        "desc": "- Classe Tailwind max-w-* (optionnel)"
+      },
+      {
+        "name": "small",
+        "type": "Boolean",
+        "desc": "- Applique text-sm (défaut false)"
+      },
+      {
+        "name": "tooltip,",
+        "type": "String|Object",
+        "desc": "tooltip_placement, class, id, ariaLabel, role, tabindex - hérités de commonProps"
+      },
+      {
+        "name": "shadow,",
+        "type": "String",
+        "desc": "backdrop, opacity - utilitaires custom"
+      }
+    ],
+    "slots": [
+      {
+        "name": "default",
+        "desc": "- <li> (l'utilisateur gère les <a> ou <span> DaisyUI)"
+      },
+      {
+        "name": "tooltip",
+        "desc": "- Tooltip custom"
+      }
+    ],
+    "file": "navigation/Breadcrumbs.vue"
+  },
+  {
+    "name": "Indicator",
+    "description": "Indicator Atom (DaisyUI)",
+    "props": [
+      {
+        "name": "horizontal",
+        "type": "String",
+        "desc": "- Placement horizontal DaisyUI ('', 'start', 'center', 'end')"
+      },
+      {
+        "name": "vertical",
+        "type": "String",
+        "desc": "- Placement vertical DaisyUI ('', 'top', 'middle', 'bottom')"
+      },
+      {
+        "name": "class",
+        "type": "String",
+        "desc": "- Classes custom supplémentaires"
+      },
+      {
+        "name": "shadow,",
+        "type": "String",
+        "desc": "backdrop, opacity - utilitaires custom ('' | 'xs' | ...)"
+      },
+      {
+        "name": "id,",
+        "type": "String",
+        "desc": "ariaLabel, role, tabindex, tooltip, tooltip_placement - hérités de commonProps"
+      }
+    ],
+    "slots": [
+      {
+        "name": "indicator",
+        "desc": "- Contenu de l'indicateur (badge, status, etc.), positionné selon les props"
+      },
+      {
+        "name": "default",
+        "desc": "- Contenu principal (bouton, avatar, etc.)"
+      }
+    ],
+    "file": "Layout/Indicator.vue"
+  },
+  {
+    "name": "Divider",
+    "description": "Divider Atom (DaisyUI + Glassmorphism)",
+    "props": [
+      {
+        "name": "glass",
+        "type": "Boolean",
+        "desc": "- Active le style glassmorphism (défaut: true, extension KrosmozJDR)"
+      },
+      {
+        "name": "color",
+        "type": "String",
+        "desc": "- Couleur DaisyUI ('neutral', 'primary', 'secondary', 'accent', 'info', 'success', 'warning', 'error', 'white', 'black')"
+      },
+      {
+        "name": "direction",
+        "type": "String",
+        "desc": "- Direction DaisyUI ('vertical' [défaut], 'horizontal')"
+      },
+      {
+        "name": "placement",
+        "type": "String",
+        "desc": "- Placement DaisyUI ('', 'start', 'end')"
+      },
+      {
+        "name": "class",
+        "type": "String",
+        "desc": "- Classes custom supplémentaires"
+      },
+      {
+        "name": "id,",
+        "type": "String",
+        "desc": "ariaLabel, role, tabindex, tooltip, tooltip_placement - hérités de commonProps"
+      }
+    ],
+    "slots": [
+      {
+        "name": "default",
+        "desc": "- Contenu du divider (texte, \"OU\", etc.)"
+      }
+    ],
+    "file": "Layout/Divider.vue"
+  },
+  {
+    "name": "Tooltip",
+    "description": "Tooltip Atom (DaisyUI)",
+    "props": [
+      {
+        "name": "content",
+        "type": "String",
+        "desc": "- Texte simple du tooltip (optionnel, sinon slot #content)"
+      },
+      {
+        "name": "placement",
+        "type": "String",
+        "desc": "- Position du tooltip ('top', 'right', 'bottom', 'left'), défaut 'top'"
+      },
+      {
+        "name": "color",
+        "type": "String",
+        "desc": "- Couleur DaisyUI ('', 'neutral', 'primary', 'secondary', 'accent', 'info', 'success', 'warning', 'error')"
+      },
+      {
+        "name": "open",
+        "type": "Boolean",
+        "desc": "- Force l'ouverture du tooltip"
+      },
+      {
+        "name": "responsive",
+        "type": "String",
+        "desc": "- Breakpoint responsive DaisyUI ('sm', 'md', 'lg', 'xl', '2xl')"
+      },
+      {
+        "name": "shadow,",
+        "type": "String",
+        "desc": "backdrop, opacity - utilitaires custom ('' | 'xs' | ...)"
+      },
+      {
+        "name": "id,",
+        "type": "String",
+        "desc": "ariaLabel, role, tabindex, class, style, disabled - hérités de commonProps (sauf tooltip/tooltip_placement)"
+      }
+    ],
+    "slots": [
+      {
+        "name": "default",
+        "desc": "- Élément déclencheur (trigger)"
+      },
+      {
+        "name": "content",
+        "desc": "- Contenu HTML complexe du tooltip (optionnel, prioritaire sur prop content)"
+      }
+    ],
+    "file": "feedback/Tooltip.vue"
+  },
+  {
+    "name": "Toast",
+    "description": "Toast Atom (DaisyUI)",
+    "props": [
+      {
+        "name": "horizontal",
+        "type": "String",
+        "desc": "- Placement horizontal ('', 'start', 'center', 'end')"
+      },
+      {
+        "name": "vertical",
+        "type": "String",
+        "desc": "- Placement vertical ('', 'top', 'middle', 'bottom')"
+      },
+      {
+        "name": "class",
+        "type": "String",
+        "desc": "- Classes custom supplémentaires"
+      },
+      {
+        "name": "shadow,",
+        "type": "String",
+        "desc": "backdrop, opacity - utilitaires custom"
+      },
+      {
+        "name": "id,",
+        "type": "String",
+        "desc": "ariaLabel, role, tabindex - accessibilité"
+      }
+    ],
+    "slots": [
+      {
+        "name": "default",
+        "desc": "- Contenu du toast (souvent des <Alert>)"
+      }
+    ],
+    "file": "feedback/Toast.vue"
+  },
+  {
+    "name": "Skeleton",
+    "description": "Skeleton Atom (DaisyUI)",
+    "props": [
+      {
+        "name": "element",
+        "type": "String",
+        "desc": "- Type de skeleton ('', 'image', 'text', 'avatar', 'smalltext', 'longtext')"
+      },
+      {
+        "name": "size",
+        "type": "String",
+        "desc": "- Taille ('', 'xs', 'sm', 'md', 'lg', 'xl', '2xl', '3xl', '4xl')"
+      },
+      {
+        "name": "width",
+        "type": "String",
+        "desc": "- Classe Tailwind w-* (optionnel, prioritaire)"
+      },
+      {
+        "name": "height",
+        "type": "String",
+        "desc": "- Classe Tailwind h-* (optionnel, prioritaire)"
+      },
+      {
+        "name": "class",
+        "type": "String",
+        "desc": "- Classes custom supplémentaires"
+      },
+      {
+        "name": "shadow,",
+        "type": "String",
+        "desc": "backdrop, opacity - utilitaires custom"
+      },
+      {
+        "name": "id,",
+        "type": "String",
+        "desc": "ariaLabel, role, tabindex - accessibilité"
+      }
+    ],
+    "slots": [
+      {
+        "name": "default",
+        "desc": "- Contenu imbriqué (rare)"
+      }
+    ],
+    "file": "feedback/Skeleton.vue"
+  },
+  {
+    "name": "Progress",
+    "description": "Progress Atom (DaisyUI)",
+    "props": [
+      {
+        "name": "radial",
+        "type": "Boolean",
+        "desc": "- Affiche un progress radial si true (défaut false)"
+      },
+      {
+        "name": "value",
+        "type": "Number",
+        "desc": "- Valeur du progress (0-100)"
+      },
+      {
+        "name": "max",
+        "type": "Number",
+        "desc": "- Valeur max (défaut 100, ignoré pour radial)"
+      },
+      {
+        "name": "color",
+        "type": "String",
+        "desc": "- Couleur DaisyUI (progress: 'neutral', 'primary', ... ; radial: 'primary', 'accent', ...)"
+      },
+      {
+        "name": "size",
+        "type": "String",
+        "desc": "- Taille du radial (xs à 4xl, mapping explicite)"
+      },
+      {
+        "name": "width",
+        "type": "String",
+        "desc": "- Largeur du progress linéaire (ex: 'w-56')"
+      },
+      {
+        "name": "thickness",
+        "type": "String",
+        "desc": "- Épaisseur du radial (xs à xl, mapping explicite)"
+      },
+      {
+        "name": "label",
+        "type": "String",
+        "desc": "- Label à afficher (optionnel, sinon slot)"
+      },
+      {
+        "name": "tooltip,",
+        "type": "String|Object",
+        "desc": "tooltip_placement, class, id, ariaLabel, role, tabindex - hérités de commonProps"
+      },
+      {
+        "name": "shadow,",
+        "type": "String",
+        "desc": "backdrop, opacity - utilitaires custom"
+      }
+    ],
+    "slots": [
+      {
+        "name": "default",
+        "desc": "- Label custom (affiché au centre du radial ou à côté du progress)"
+      },
+      {
+        "name": "tooltip",
+        "desc": "- Tooltip custom"
+      }
+    ],
+    "file": "feedback/Progress.vue"
+  },
+  {
+    "name": "Loading",
+    "description": "Loading Atom (DaisyUI)",
+    "props": [
+      {
+        "name": "type",
+        "type": "String",
+        "desc": "- Type d'animation ('spinner', 'dots', 'ring', 'ball', 'bars', 'infinity'), défaut 'spinner'"
+      },
+      {
+        "name": "size",
+        "type": "String",
+        "desc": "- Taille DaisyUI ('xs', 'sm', 'md', 'lg', 'xl'), défaut 'md'"
+      },
+      {
+        "name": "color",
+        "type": "String",
+        "desc": "- Couleur DaisyUI ('primary', 'secondary', 'accent', 'neutral', 'info', 'success', 'warning', 'error'), défaut ''"
+      }
+    ],
+    "slots": [
+      {
+        "name": "default",
+        "desc": "- Texte d'accessibilité (optionnel)"
+      }
+    ],
+    "file": "feedback/Loading.vue"
+  },
+  {
+    "name": "Alert",
+    "description": "Alert Atom (DaisyUI + Custom Utility)",
+    "props": [
+      {
+        "name": "color",
+        "type": "String",
+        "desc": "- Couleur DaisyUI ('', 'info', 'success', 'warning', 'error')"
+      },
+      {
+        "name": "variant",
+        "type": "String",
+        "desc": "- Style DaisyUI ('', 'outline', 'dash', 'soft')"
+      },
+      {
+        "name": "direction",
+        "type": "String",
+        "desc": "- Direction ('', 'vertical', 'horizontal'), défaut responsive"
+      },
+      {
+        "name": "content",
+        "type": "String",
+        "desc": "- Texte simple à afficher (optionnel, prioritaire sur slot #content)"
+      },
+      {
+        "name": "shadow,",
+        "type": "String",
+        "desc": "backdrop, opacity - utilitaires custom ('' | 'xs' | ...)"
+      },
+      {
+        "name": "tooltip,",
+        "type": "String|Object",
+        "desc": "tooltip_placement, id, ariaLabel, role, tabindex - hérités de commonProps"
+      }
+    ],
+    "slots": [
+      {
+        "name": "icon",
+        "desc": "- Icône SVG ou composant"
+      },
+      {
+        "name": "content",
+        "desc": "- Contenu HTML complexe"
+      },
+      {
+        "name": "action",
+        "desc": "- Boutons ou actions"
+      }
+    ],
+    "file": "feedback/Alert.vue"
+  },
+  {
+    "name": "Validator",
+    "description": "Validator Atom (DaisyUI)",
+    "props": [
+      {
+        "name": "state",
+        "type": "String",
+        "desc": "- error, success, warning, info, '' (défaut '')"
+      },
+      {
+        "name": "message",
+        "type": "String",
+        "desc": "- texte du hint (optionnel, prioritaire sur slot)"
+      },
+      {
+        "name": "visible",
+        "type": "Boolean",
+        "desc": "- contrôle l'affichage (défaut true)"
+      },
+      {
+        "name": "class",
+        "type": "String",
+        "desc": "- classes custom (optionnel)"
+      },
+      {
+        "name": "id,",
+        "type": "String",
+        "desc": "ariaLabel, role, tabindex - hérités de commonProps"
+      }
+    ],
+    "slots": [
+      {
+        "name": "default",
+        "desc": "- contenu HTML du hint (prioritaire sur message)"
+      }
+    ],
+    "file": "data-input/Validator.vue"
+  },
+  {
+    "name": "Toggle",
+    "description": "Toggle Atom (DaisyUI)",
+    "props": [
+      {
+        "name": "modelValue",
+        "type": "Boolean",
+        "desc": "- Valeur du toggle (v-model natif, prioritaire sur checked)"
+      },
+      {
+        "name": "checked",
+        "type": "Boolean",
+        "desc": "- Valeur fallback si modelValue n'est pas utilisé"
+      },
+      {
+        "name": "color",
+        "type": "String",
+        "desc": "- Couleur DaisyUI ('', 'neutral', 'primary', ...)"
+      },
+      {
+        "name": "size",
+        "type": "String",
+        "desc": "- Taille DaisyUI ('', 'xs', 'sm', 'md', 'lg', 'xl')"
+      },
+      {
+        "name": "indeterminate",
+        "type": "Boolean",
+        "desc": "- Etat indéterminé (optionnel)"
+      },
+      {
+        "name": "bgOn",
+        "type": "String",
+        "desc": "- Classes Tailwind pour le fond quand activé (ex: 'bg-green-500')"
+      },
+      {
+        "name": "bgOff",
+        "type": "String",
+        "desc": "- Classes Tailwind pour le fond quand désactivé (ex: 'bg-gray-300')"
+      },
+      {
+        "name": "label",
+        "type": "String",
+        "desc": "- Label du champ (optionnel, sinon slot #labelTop)"
+      },
+      {
+        "name": "validator",
+        "type": "String|Object",
+        "desc": "- Message de validation ou slot #validator"
+      },
+      {
+        "name": "errorMessage",
+        "type": "String",
+        "desc": "- Message d'erreur (optionnel)"
+      },
+      {
+        "name": "help",
+        "type": "String",
+        "desc": "- Message d'aide (optionnel ou slot #help)"
+      },
+      {
+        "name": "shadow,",
+        "type": "String",
+        "desc": "backdrop, opacity - utilitaires custom"
+      },
+      {
+        "name": "tooltip,",
+        "type": "String|Object",
+        "desc": "tooltip_placement, id, ariaLabel, role, tabindex - hérités de commonProps"
+      }
+    ],
+    "slots": [
+      {
+        "name": "labelTop",
+        "desc": "- Label custom au-dessus"
+      },
+      {
+        "name": "labelBottom",
+        "desc": "- Label custom en-dessous"
+      },
+      {
+        "name": "validator",
+        "desc": "- Message de validation custom"
+      },
+      {
+        "name": "help",
+        "desc": "- Message d'aide custom"
+      },
+      {
+        "name": "iconOn",
+        "desc": "- Icône custom pour l'état activé"
+      },
+      {
+        "name": "iconOff",
+        "desc": "- Icône custom pour l'état désactivé"
+      },
+      {
+        "name": "default",
+        "desc": "- Slot pour contenu custom à droite du toggle"
+      }
+    ],
+    "file": "data-input/Toggle.vue"
+  },
+  {
+    "name": "Textarea",
+    "description": "Textarea Atom (DaisyUI + Custom Utility + Edition réactive)",
+    "props": [
+      {
+        "name": "color",
+        "type": "String",
+        "desc": "- Couleur DaisyUI ('', 'neutral', 'primary', ...)"
+      },
+      {
+        "name": "size",
+        "type": "String",
+        "desc": "- Taille DaisyUI ('', 'xs', 'sm', 'md', 'lg', 'xl')"
+      },
+      {
+        "name": "variant",
+        "type": "String",
+        "desc": "- Style DaisyUI ('', 'ghost', 'bordered')"
+      },
+      {
+        "name": "label",
+        "type": "String",
+        "desc": "- Label du champ (optionnel, sinon slot #labelTop)"
+      },
+      {
+        "name": "validator",
+        "type": "String|Object",
+        "desc": "- Message de validation ou slot #validator"
+      },
+      {
+        "name": "errorMessage",
+        "type": "String",
+        "desc": "- Message d'erreur (optionnel)"
+      },
+      {
+        "name": "help",
+        "type": "String",
+        "desc": "- Message d'aide (optionnel ou slot #help)"
+      },
+      {
+        "name": "shadow,",
+        "type": "String",
+        "desc": "backdrop, opacity - utilitaires custom"
+      },
+      {
+        "name": "tooltip,",
+        "type": "String|Object",
+        "desc": "tooltip_placement, id, ariaLabel, role, tabindex - hérités de commonProps"
+      },
+      {
+        "name": "useFieldComposable",
+        "type": "Boolean",
+        "desc": "- Active l'édition réactive (reset, debounce, etc.)"
+      },
+      {
+        "name": "field",
+        "type": "Object",
+        "desc": "- Objet field externe (optionnel, sinon composable interne)"
+      },
+      {
+        "name": "debounceTime",
+        "type": "Number",
+        "desc": "- Délai de debounce (ms, défaut 500)"
+      },
+      {
+        "name": "rows",
+        "type": "Number|String",
+        "desc": "- Nombre de lignes (optionnel, défaut 3)"
+      },
+      {
+        "name": "cols",
+        "type": "Number|String",
+        "desc": "- Nombre de colonnes (optionnel)"
+      }
+    ],
+    "slots": [
+      {
+        "name": "labelTop",
+        "desc": "- Label custom au-dessus"
+      },
+      {
+        "name": "labelBottom",
+        "desc": "- Label custom en-dessous"
+      },
+      {
+        "name": "validator",
+        "desc": "- Message de validation custom"
+      },
+      {
+        "name": "help",
+        "desc": "- Message d'aide custom"
+      },
+      {
+        "name": "default",
+        "desc": "- Contenu custom dans le textarea"
+      }
+    ],
+    "file": "data-input/Textarea.vue"
+  },
+  {
+    "name": "Select",
+    "description": "Select Atom (DaisyUI + Custom Utility + Edition réactive)",
+    "props": [
+      {
+        "name": "options",
+        "type": "Array",
+        "desc": "- Liste des options [{ value, label, disabled? }], sinon slot par défaut"
+      },
+      {
+        "name": "multiple",
+        "type": "Boolean",
+        "desc": "- Mode sélection multiple"
+      },
+      {
+        "name": "color",
+        "type": "String",
+        "desc": "- Couleur DaisyUI ('', 'neutral', 'primary', ...)"
+      },
+      {
+        "name": "size",
+        "type": "String",
+        "desc": "- Taille DaisyUI ('', 'xs', 'sm', 'md', 'lg', 'xl')"
+      },
+      {
+        "name": "variant",
+        "type": "String",
+        "desc": "- Style DaisyUI ('', 'ghost', 'bordered')"
+      },
+      {
+        "name": "label",
+        "type": "String",
+        "desc": "- Label du champ (optionnel, sinon slot #labelTop)"
+      },
+      {
+        "name": "validator",
+        "type": "String|Object",
+        "desc": "- Message de validation ou slot #validator"
+      },
+      {
+        "name": "errorMessage",
+        "type": "String",
+        "desc": "- Message d'erreur (optionnel)"
+      },
+      {
+        "name": "help",
+        "type": "String",
+        "desc": "- Message d'aide (optionnel ou slot #help)"
+      },
+      {
+        "name": "shadow,",
+        "type": "String",
+        "desc": "backdrop, opacity - utilitaires custom"
+      },
+      {
+        "name": "tooltip,",
+        "type": "String|Object",
+        "desc": "tooltip_placement, id, ariaLabel, role, tabindex - hérités de commonProps"
+      },
+      {
+        "name": "useFieldComposable",
+        "type": "Boolean",
+        "desc": "- Active l'édition réactive (reset, debounce, etc.)"
+      },
+      {
+        "name": "field",
+        "type": "Object",
+        "desc": "- Objet field externe (optionnel, sinon composable interne)"
+      },
+      {
+        "name": "debounceTime",
+        "type": "Number",
+        "desc": "- Délai de debounce (ms, défaut 500)"
+      }
+    ],
+    "slots": [
+      {
+        "name": "labelTop",
+        "desc": "- Label custom au-dessus"
+      },
+      {
+        "name": "labelBottom",
+        "desc": "- Label custom en-dessous"
+      },
+      {
+        "name": "validator",
+        "desc": "- Message de validation custom"
+      },
+      {
+        "name": "help",
+        "desc": "- Message d'aide custom"
+      },
+      {
+        "name": "default",
+        "desc": "- Slot pour options custom (remplace la prop options)"
+      }
+    ],
+    "file": "data-input/Select.vue"
+  },
+  {
+    "name": "Rating",
+    "description": "Rating Atom (DaisyUI)",
+    "props": [
+      {
+        "name": "modelValue",
+        "type": "Number|String",
+        "desc": "- Valeur sélectionnée (v-model natif)"
+      },
+      {
+        "name": "number",
+        "type": "Number",
+        "desc": "- Nombre d'étoiles/composants (défaut 5)"
+      },
+      {
+        "name": "mask",
+        "type": "String",
+        "desc": "- Nom du mask DaisyUI (ex: 'mask-star', 'mask-heart', défaut 'mask-star')"
+      },
+      {
+        "name": "color",
+        "type": "String",
+        "desc": "- Couleur DaisyUI ('', 'neutral', 'primary', ...)"
+      },
+      {
+        "name": "size",
+        "type": "String",
+        "desc": "- Taille DaisyUI ('', 'xs', 'sm', 'md', 'lg', 'xl')"
+      },
+      {
+        "name": "items",
+        "type": "Array",
+        "desc": "- Tableau d'objets pour personnaliser chaque composant : [{ color, mask, checked, ariaLabel }]"
+      },
+      {
+        "name": "useFieldComposable",
+        "type": "Boolean",
+        "desc": "- Active l'édition réactive (reset, debounce, etc.)"
+      },
+      {
+        "name": "field",
+        "type": "Object",
+        "desc": "- Objet field externe (optionnel, sinon composable interne)"
+      },
+      {
+        "name": "debounceTime",
+        "type": "Number",
+        "desc": "- Délai de debounce (ms, défaut 500)"
+      },
+      {
+        "name": "tooltip,",
+        "type": "String|Object",
+        "desc": "tooltip_placement, id, ariaLabel, role, tabindex - hérités de commonProps"
+      },
+      {
+        "name": "validator",
+        "type": "String|Object",
+        "desc": "- Message de validation ou slot #validator"
+      },
+      {
+        "name": "errorMessage",
+        "type": "String",
+        "desc": "- Message d'erreur (optionnel)"
+      },
+      {
+        "name": "help",
+        "type": "String",
+        "desc": "- Message d'aide (optionnel ou slot #help)"
+      }
+    ],
+    "slots": [
+      {
+        "name": "labelTop",
+        "desc": "- Label custom au-dessus"
+      },
+      {
+        "name": "labelBottom",
+        "desc": "- Label custom en-dessous"
+      },
+      {
+        "name": "validator",
+        "desc": "- Message de validation custom"
+      },
+      {
+        "name": "help",
+        "desc": "- Message d'aide custom"
+      },
+      {
+        "name": "default",
+        "desc": "- Slot pour contenu custom à droite du rating"
+      }
+    ],
+    "file": "data-input/Rating.vue"
+  },
+  {
+    "name": "Range",
+    "description": "Range Atom (DaisyUI)",
+    "props": [
+      {
+        "name": "modelValue",
+        "type": "Number|String",
+        "desc": "- Valeur du slider (v-model natif)"
+      },
+      {
+        "name": "min",
+        "type": "Number|String",
+        "desc": "- Valeur minimale"
+      },
+      {
+        "name": "max",
+        "type": "Number|String",
+        "desc": "- Valeur maximale"
+      },
+      {
+        "name": "step",
+        "type": "Number|String",
+        "desc": "- Pas"
+      },
+      {
+        "name": "color",
+        "type": "String",
+        "desc": "- Couleur DaisyUI ('', 'neutral', 'primary', ...)"
+      },
+      {
+        "name": "size",
+        "type": "String",
+        "desc": "- Taille DaisyUI ('', 'xs', 'sm', 'md', 'lg', 'xl')"
+      },
+      {
+        "name": "label",
+        "type": "String",
+        "desc": "- Label du champ (optionnel, sinon slot #labelTop)"
+      },
+      {
+        "name": "validator",
+        "type": "String|Object",
+        "desc": "- Message de validation ou slot #validator"
+      },
+      {
+        "name": "errorMessage",
+        "type": "String",
+        "desc": "- Message d'erreur (optionnel)"
+      },
+      {
+        "name": "help",
+        "type": "String",
+        "desc": "- Message d'aide (optionnel ou slot #help)"
+      },
+      {
+        "name": "shadow,",
+        "type": "String",
+        "desc": "backdrop, opacity - utilitaires custom"
+      },
+      {
+        "name": "useFieldComposable",
+        "type": "Boolean",
+        "desc": "- Active l'édition réactive (reset, debounce, etc.)"
+      },
+      {
+        "name": "field",
+        "type": "Object",
+        "desc": "- Objet field externe (optionnel, sinon composable interne)"
+      },
+      {
+        "name": "debounceTime",
+        "type": "Number",
+        "desc": "- Délai de debounce (ms, défaut 500)"
+      },
+      {
+        "name": "tooltip,",
+        "type": "String|Object",
+        "desc": "tooltip_placement, id, ariaLabel, role, tabindex - hérités de commonProps"
+      }
+    ],
+    "slots": [
+      {
+        "name": "labelTop",
+        "desc": "- Label custom au-dessus"
+      },
+      {
+        "name": "labelBottom",
+        "desc": "- Label custom en-dessous"
+      },
+      {
+        "name": "validator",
+        "desc": "- Message de validation custom"
+      },
+      {
+        "name": "help",
+        "desc": "- Message d'aide custom"
+      },
+      {
+        "name": "default",
+        "desc": "- Slot pour contenu custom à droite du slider"
+      }
+    ],
+    "file": "data-input/Range.vue"
+  },
+  {
+    "name": "Radio",
+    "description": "Radio Atom (DaisyUI)",
+    "props": [
+      {
+        "name": "modelValue",
+        "type": "String|Boolean|Number",
+        "desc": "- Valeur du radio (v-model natif, prioritaire sur checked)"
+      },
+      {
+        "name": "value",
+        "type": "String|Boolean|Number",
+        "desc": "- Valeur du radio (obligatoire pour groupe)"
+      },
+      {
+        "name": "checked",
+        "type": "Boolean",
+        "desc": "- Valeur fallback si modelValue n'est pas utilisé"
+      },
+      {
+        "name": "color",
+        "type": "String",
+        "desc": "- Couleur DaisyUI ('', 'neutral', 'primary', ...)"
+      },
+      {
+        "name": "size",
+        "type": "String",
+        "desc": "- Taille DaisyUI ('', 'xs', 'sm', 'md', 'lg', 'xl')"
+      },
+      {
+        "name": "label",
+        "type": "String",
+        "desc": "- Label du champ (optionnel, sinon slot #labelTop)"
+      },
+      {
+        "name": "validator",
+        "type": "String|Object",
+        "desc": "- Message de validation ou slot #validator"
+      },
+      {
+        "name": "errorMessage",
+        "type": "String",
+        "desc": "- Message d'erreur (optionnel)"
+      },
+      {
+        "name": "help",
+        "type": "String",
+        "desc": "- Message d'aide (optionnel ou slot #help)"
+      },
+      {
+        "name": "shadow,",
+        "type": "String",
+        "desc": "backdrop, opacity - utilitaires custom"
+      },
+      {
+        "name": "bgOn",
+        "type": "String",
+        "desc": "- Classes Tailwind appliquées quand le radio est coché (ex: 'bg-blue-200 border-blue-600')"
+      },
+      {
+        "name": "bgOff",
+        "type": "String",
+        "desc": "- Classes Tailwind appliquées quand le radio est décoché (ex: 'bg-base-200 border-base-300')"
+      },
+      {
+        "name": "tooltip,",
+        "type": "String|Object",
+        "desc": "tooltip_placement, id, ariaLabel, role, tabindex - hérités de commonProps"
+      }
+    ],
+    "slots": [
+      {
+        "name": "labelTop",
+        "desc": "- Label custom au-dessus"
+      },
+      {
+        "name": "labelBottom",
+        "desc": "- Label custom en-dessous"
+      },
+      {
+        "name": "validator",
+        "desc": "- Message de validation custom"
+      },
+      {
+        "name": "help",
+        "desc": "- Message d'aide custom"
+      },
+      {
+        "name": "default",
+        "desc": "- Slot pour contenu custom à droite du radio"
+      }
+    ],
+    "file": "data-input/Radio.vue"
+  },
+  {
+    "name": "InputLabel",
+    "description": "InputLabel Atom (DaisyUI)",
+    "props": [
+      {
+        "name": "for",
+        "type": "String",
+        "desc": "- Attribut for du label (id du champ associé)"
+      },
+      {
+        "name": "value",
+        "type": "String",
+        "desc": "- Texte du label (optionnel, sinon slot)"
+      },
+      {
+        "name": "floating",
+        "type": "Boolean",
+        "desc": "- Active le mode floating-label DaisyUI"
+      },
+      {
+        "name": "color",
+        "type": "String",
+        "desc": "- Couleur DaisyUI ('', 'primary', 'secondary', ...)"
+      },
+      {
+        "name": "size",
+        "type": "String",
+        "desc": "- Taille DaisyUI ('', 'xs', 'sm', 'md', 'lg', 'xl')"
+      },
+      {
+        "name": "class",
+        "type": "String",
+        "desc": "- Classes custom supplémentaires"
+      },
+      {
+        "name": "id,",
+        "type": "String",
+        "desc": "ariaLabel, role, tabindex - accessibilité"
+      }
+    ],
+    "slots": [
+      {
+        "name": "default",
+        "desc": "- Contenu du label (texte, HTML, etc.)"
+      }
+    ],
+    "file": "data-input/InputLabel.vue"
+  },
+  {
+    "name": "InputField",
+    "description": "InputField Atom (DaisyUI + Custom Utility + Edition réactive)",
+    "props": [
+      {
+        "name": "type",
+        "type": "String",
+        "desc": "- Type d'input (text, email, password, number, url, tel, search, date, etc.)"
+      },
+      {
+        "name": "color",
+        "type": "String",
+        "desc": "- Couleur DaisyUI ('', 'neutral', 'primary', ...)"
+      },
+      {
+        "name": "size",
+        "type": "String",
+        "desc": "- Taille DaisyUI ('', 'xs', 'sm', 'md', 'lg', 'xl')"
+      },
+      {
+        "name": "variant",
+        "type": "String",
+        "desc": "- Style DaisyUI ('', 'ghost', 'outline', 'bordered', 'glass')"
+      },
+      {
+        "name": "label",
+        "type": "String",
+        "desc": "- Label du champ (optionnel, sinon slot #label)"
+      },
+      {
+        "name": "validator",
+        "type": "String|Object",
+        "desc": "- Message de validation ou slot #validator"
+      },
+      {
+        "name": "errorMessage",
+        "type": "String",
+        "desc": "- Message d'erreur (optionnel)"
+      },
+      {
+        "name": "help",
+        "type": "String",
+        "desc": "- Message d'aide (optionnel ou slot #help)"
+      },
+      {
+        "name": "shadow,",
+        "type": "String",
+        "desc": "backdrop, opacity - utilitaires custom"
+      },
+      {
+        "name": "tooltip,",
+        "type": "String|Object",
+        "desc": "tooltip_placement, id, ariaLabel, role, tabindex - hérités de commonProps"
+      },
+      {
+        "name": "useFieldComposable",
+        "type": "Boolean",
+        "desc": "- Active l'édition réactive (reset, debounce, etc.)"
+      },
+      {
+        "name": "field",
+        "type": "Object",
+        "desc": "- Objet field externe (optionnel, sinon composable interne)"
+      },
+      {
+        "name": "debounceTime",
+        "type": "Number",
+        "desc": "- Délai de debounce (ms, défaut 500)"
+      },
+      {
+        "name": "showPasswordToggle",
+        "type": "Boolean",
+        "desc": "- Affiche l'icône pour afficher/masquer le mot de passe si type=password (défaut true)"
+      }
+    ],
+    "slots": [
+      {
+        "name": "label",
+        "desc": "- Label custom"
+      },
+      {
+        "name": "icon",
+        "desc": "- Icône à gauche"
+      },
+      {
+        "name": "right",
+        "desc": "- Icône ou bouton à droite"
+      },
+      {
+        "name": "validator",
+        "desc": "- Message de validation custom"
+      },
+      {
+        "name": "help",
+        "desc": "- Message d'aide custom"
+      },
+      {
+        "name": "default",
+        "desc": "- Contenu custom dans l'input"
+      }
+    ],
+    "file": "data-input/InputField.vue"
+  },
+  {
+    "name": "Filter",
+    "description": "Filter Atom (DaisyUI)",
+    "props": [
+      {
+        "name": "form",
+        "type": "Boolean",
+        "desc": "- Utilise <form> si true, sinon <div> (défaut false)"
+      },
+      {
+        "name": "shadow,",
+        "type": "String",
+        "desc": "backdrop, opacity - utilitaires custom"
+      },
+      {
+        "name": "tooltip,",
+        "type": "String|Object",
+        "desc": "tooltip_placement, id, ariaLabel, role, tabindex, class - hérités de commonProps"
+      }
+    ],
+    "slots": [
+      {
+        "name": "default",
+        "desc": "- Radios DaisyUI (input type=\"radio\" ou reset)"
+      }
+    ],
+    "file": "data-input/Filter.vue"
+  },
+  {
+    "name": "FileInputAtom",
+    "description": "FileInputAtom (DaisyUI)",
+    "props": [
+      {
+        "name": "color",
+        "type": "String",
+        "desc": "- Couleur DaisyUI ('', 'neutral', 'primary', 'secondary', 'accent', 'info', 'success', 'warning', 'error')"
+      },
+      {
+        "name": "size",
+        "type": "String",
+        "desc": "- Taille DaisyUI ('', 'xs', 'sm', 'md', 'lg', 'xl')"
+      },
+      {
+        "name": "variant",
+        "type": "String",
+        "desc": "- Style DaisyUI ('', 'ghost')"
+      },
+      {
+        "name": "shadow,",
+        "type": "String",
+        "desc": "backdrop, opacity, rounded - utilitaires custom"
+      },
+      {
+        "name": "id,",
+        "type": "String|Object",
+        "desc": "ariaLabel, role, tabindex, tooltip, tooltip_placement, class, style, disabled - hérités de commonProps"
+      }
+    ],
+    "slots": [],
+    "file": "data-input/FileInputAtom.vue"
+  },
+  {
+    "name": "Checkbox",
+    "description": "Checkbox Atom (DaisyUI)",
+    "props": [
+      {
+        "name": "modelValue",
+        "type": "Boolean",
+        "desc": "- Valeur de la checkbox (v-model natif, prioritaire sur checked)"
+      },
+      {
+        "name": "checked",
+        "type": "Boolean",
+        "desc": "- Valeur fallback si modelValue n'est pas utilisé"
+      },
+      {
+        "name": "color",
+        "type": "String",
+        "desc": "- Couleur DaisyUI ('', 'neutral', 'primary', ...)"
+      },
+      {
+        "name": "size",
+        "type": "String",
+        "desc": "- Taille DaisyUI ('', 'xs', 'sm', 'md', 'lg', 'xl')"
+      },
+      {
+        "name": "indeterminate",
+        "type": "Boolean",
+        "desc": "- Etat indéterminé (optionnel)"
+      },
+      {
+        "name": "label",
+        "type": "String",
+        "desc": "- Label du champ (optionnel, sinon slot #labelTop)"
+      },
+      {
+        "name": "validator",
+        "type": "String|Object",
+        "desc": "- Message de validation ou slot #validator"
+      },
+      {
+        "name": "errorMessage",
+        "type": "String",
+        "desc": "- Message d'erreur (optionnel)"
+      },
+      {
+        "name": "help",
+        "type": "String",
+        "desc": "- Message d'aide (optionnel ou slot #help)"
+      },
+      {
+        "name": "shadow,",
+        "type": "String",
+        "desc": "backdrop, opacity - utilitaires custom"
+      },
+      {
+        "name": "bgOn",
+        "type": "String",
+        "desc": "- Classes Tailwind appliquées quand la checkbox est cochée (ex: 'bg-green-500 border-green-600')"
+      },
+      {
+        "name": "bgOff",
+        "type": "String",
+        "desc": "- Classes Tailwind appliquées quand la checkbox est décochée (ex: 'bg-base-200 border-base-300')"
+      },
+      {
+        "name": "tooltip,",
+        "type": "String|Object",
+        "desc": "tooltip_placement, id, ariaLabel, role, tabindex - hérités de commonProps"
+      }
+    ],
+    "slots": [
+      {
+        "name": "labelTop",
+        "desc": "- Label custom au-dessus"
+      },
+      {
+        "name": "labelBottom",
+        "desc": "- Label custom en-dessous"
+      },
+      {
+        "name": "validator",
+        "desc": "- Message de validation custom"
+      },
+      {
+        "name": "help",
+        "desc": "- Message d'aide custom"
+      },
+      {
+        "name": "default",
+        "desc": "- Slot pour contenu custom à droite de la checkbox"
+      }
+    ],
+    "file": "data-input/Checkbox.vue"
+  },
+  {
+    "name": "Status",
+    "description": "Status Atom (DaisyUI)",
+    "props": [
+      {
+        "name": "color",
+        "type": "String",
+        "desc": "- Couleur DaisyUI ('', 'neutral', 'primary', 'secondary', 'accent', 'info', 'success', 'warning', 'error')"
+      },
+      {
+        "name": "size",
+        "type": "String",
+        "desc": "- Taille DaisyUI ('', 'xs', 'sm', 'md', 'lg', 'xl')"
+      },
+      {
+        "name": "tooltip,",
+        "type": "String|Object",
+        "desc": "tooltip_placement, class, id, ariaLabel, role, tabindex - hérités de commonProps"
+      }
+    ],
+    "slots": [
+      {
+        "name": "default",
+        "desc": "- Contenu custom/accessibilité (rare)"
+      }
+    ],
+    "file": "data-display/Status.vue"
+  },
+  {
+    "name": "Stat",
+    "description": "Stat Atom (DaisyUI)",
+    "props": [
+      {
+        "name": "title",
+        "type": "String",
+        "desc": "- Titre du stat (optionnel, sinon slot #title)"
+      },
+      {
+        "name": "value",
+        "type": "String|Number",
+        "desc": "- Valeur principale (optionnel, sinon slot #value)"
+      },
+      {
+        "name": "description",
+        "type": "String",
+        "desc": "- Description (optionnel, sinon slot #description)"
+      },
+      {
+        "name": "icon",
+        "type": "String",
+        "desc": "- Source de l'icône (optionnel, sinon slot #icon)"
+      },
+      {
+        "name": "color",
+        "type": "String",
+        "desc": "- Couleur DaisyUI globale (appliquée à title et value si colorTitle/colorValue non définis)"
+      },
+      {
+        "name": "colorTitle",
+        "type": "String",
+        "desc": "- Couleur DaisyUI du titre (prioritaire sur color)"
+      },
+      {
+        "name": "colorValue",
+        "type": "String",
+        "desc": "- Couleur DaisyUI de la value (prioritaire sur color)"
+      },
+      {
+        "name": "colorDescription",
+        "type": "String",
+        "desc": "- Couleur DaisyUI de la description (prioritaire sur color)"
+      },
+      {
+        "name": "size",
+        "type": "String",
+        "desc": "- Taille DaisyUI ('', 'xs', 'sm', 'md', 'lg', 'xl')"
+      },
+      {
+        "name": "shadow,",
+        "type": "String",
+        "desc": "backdrop, opacity - utilitaires custom"
+      },
+      {
+        "name": "tooltip,",
+        "type": "String|Object",
+        "desc": "tooltip_placement, id, ariaLabel, role, tabindex - hérités de commonProps"
+      }
+    ],
+    "slots": [
+      {
+        "name": "icon",
+        "desc": "- Icône (figure)"
+      },
+      {
+        "name": "title",
+        "desc": "- Titre du stat"
+      },
+      {
+        "name": "value",
+        "desc": "- Valeur principale"
+      },
+      {
+        "name": "description",
+        "desc": "- Description"
+      },
+      {
+        "name": "action",
+        "desc": "- Actions (boutons, etc.)"
+      }
+    ],
+    "file": "data-display/Stat.vue"
+  },
+  {
+    "name": "Row",
+    "description": "Row Atom (DaisyUI ListRow)",
+    "props": [
+      {
+        "name": "as",
+        "type": "String",
+        "desc": "- Balise racine ('li' ou 'div', défaut 'li')"
+      },
+      {
+        "name": "grow",
+        "type": "Number",
+        "desc": "- Index (1-based) de la colonne à faire grandir (ajoute list-col-grow)"
+      },
+      {
+        "name": "wrap",
+        "type": "Number",
+        "desc": "- Index (1-based) de la colonne à wrap (ajoute list-col-wrap)"
+      },
+      {
+        "name": "class",
+        "type": "String",
+        "desc": "- Classes custom supplémentaires"
+      },
+      {
+        "name": "shadow,",
+        "type": "String",
+        "desc": "rounded, backdrop, opacity - utilitaires custom"
+      },
+      {
+        "name": "id,",
+        "type": "String",
+        "desc": "ariaLabel, role, tabindex - accessibilité"
+      }
+    ],
+    "slots": [
+      {
+        "name": "default",
+        "desc": "- Colonnes de la ligne"
+      }
+    ],
+    "file": "data-display/Row.vue"
+  },
+  {
+    "name": "List",
+    "description": "List Atom (DaisyUI)",
+    "props": [
+      {
+        "name": "as",
+        "type": "String",
+        "desc": "- Balise racine ('ul' ou 'div', défaut 'ul')"
+      },
+      {
+        "name": "class",
+        "type": "String",
+        "desc": "- Classes custom supplémentaires"
+      },
+      {
+        "name": "shadow,",
+        "type": "String",
+        "desc": "rounded, backdrop, opacity - utilitaires custom"
+      },
+      {
+        "name": "id,",
+        "type": "String",
+        "desc": "ariaLabel, role, tabindex, tooltip, tooltip_placement - accessibilité"
+      }
+    ],
+    "slots": [
+      {
+        "name": "header",
+        "desc": "- En-tête de la liste (optionnel)"
+      },
+      {
+        "name": "footer",
+        "desc": "- Pied de la liste (optionnel)"
+      },
+      {
+        "name": "default",
+        "desc": "- Éléments de la liste (ListRow ou <li>/<div>)"
+      }
+    ],
+    "file": "data-display/List.vue"
+  },
+  {
+    "name": "Kbd",
+    "description": "Kbd Atom (DaisyUI)",
+    "props": [
+      {
+        "name": "size",
+        "type": "String",
+        "desc": "- Taille DaisyUI ('', 'xs', 'sm', 'md', 'lg', 'xl')"
+      },
+      {
+        "name": "class",
+        "type": "String",
+        "desc": "- Classes custom supplémentaires"
+      },
+      {
+        "name": "shadow,",
+        "type": "String",
+        "desc": "backdrop, opacity - utilitaires custom"
+      },
+      {
+        "name": "id,",
+        "type": "String",
+        "desc": "ariaLabel, role, tabindex, tooltip, tooltip_placement - accessibilité"
+      }
+    ],
+    "slots": [
+      {
+        "name": "default",
+        "desc": "- Contenu du raccourci clavier"
+      }
+    ],
+    "file": "data-display/Kbd.vue"
+  },
+  {
+    "name": "Image",
+    "description": "Image Atom (Atomic Design, Tailwind, DaisyUI Mask)",
+    "props": [
+      {
+        "name": "src",
+        "type": "String",
+        "desc": "- URL de l'image (obligatoire)"
+      },
+      {
+        "name": "alt",
+        "type": "String",
+        "desc": "- Texte alternatif (obligatoire)"
+      },
+      {
+        "name": "size",
+        "type": "String",
+        "desc": "- Taille prédéfinie (xs, sm, md, lg, xl, 2xl, 3xl, 4xl, 5xl, 6xl)"
+      },
+      {
+        "name": "sizes",
+        "type": "Object",
+        "desc": "- Mapping responsive { sm: 'xs', md: 'sm', ... } (prioritaire sur size)"
+      },
+      {
+        "name": "ratio",
+        "type": "String",
+        "desc": "- Ratio d'aspect (square, video, 16/9, 4/3, 3/2, 2/1, etc.)"
+      },
+      {
+        "name": "width",
+        "type": "String",
+        "desc": "- Largeur personnalisée (ex: 64, 128) si size/sizes non défini"
+      },
+      {
+        "name": "height",
+        "type": "String",
+        "desc": "- Hauteur personnalisée (ex: 64, 128) si size/sizes non défini"
+      },
+      {
+        "name": "rounded",
+        "type": "String",
+        "desc": "- Arrondi (none, sm, md, lg, xl, 2xl, 3xl, full, circle)"
+      },
+      {
+        "name": "fit",
+        "type": "String",
+        "desc": "- object-fit (cover, contain, fill, none, scale-down)"
+      },
+      {
+        "name": "position",
+        "type": "String",
+        "desc": "- object-position (center, top, right, bottom, left, top-left, top-right, bottom-left, bottom-right)"
+      },
+      {
+        "name": "filter",
+        "type": "String|Object",
+        "desc": "- Filtre CSS (grayscale, sepia, blur, brightness, contrast, hue-rotate, invert, saturate) ou objet numérique { type, value }"
+      },
+      {
+        "name": "mask",
+        "type": "String",
+        "desc": "- Classe DaisyUI mask-* (mask, mask-squircle, mask-heart, mask-hexagon, mask-hexagon-2, mask-decagon, mask-pentagon, mask-diamond, mask-square, mask-circle, mask-star, mask-star-2, mask-triangle, mask-triangle-2, mask-triangle-3, mask-triangle-4, mask-half-1, mask-half-2)"
+      },
+      {
+        "name": "tooltip",
+        "type": "String|Object",
+        "desc": "- Tooltip (hérité de commonProps)"
+      },
+      {
+        "name": "tooltip_placement",
+        "type": "String",
+        "desc": "- Position du tooltip (hérité de commonProps)"
+      },
+      {
+        "name": "id,",
+        "type": "String",
+        "desc": "ariaLabel, role, tabindex, disabled - hérités de commonProps"
+      }
+    ],
+    "slots": [
+      {
+        "name": "loader",
+        "desc": "- Loader personnalisé (affiché pendant le chargement)"
+      },
+      {
+        "name": "fallback",
+        "desc": "- Fallback personnalisé (affiché si l'image ne se charge pas)"
+      }
+    ],
+    "file": "data-display/Image.vue"
+  },
+  {
+    "name": "Icon",
+    "description": "Icon Atom (Atomic Design, DaisyUI)",
+    "props": [
+      {
+        "name": "source",
+        "type": "String",
+        "desc": "- Nom logique ou chemin de l'icône (obligatoire)"
+      },
+      {
+        "name": "alt",
+        "type": "String",
+        "desc": "- Texte alternatif (obligatoire)"
+      },
+      {
+        "name": "size",
+        "type": "String",
+        "desc": "- Taille prédéfinie (xs, sm, md, lg, xl, 2xl, 3xl, 4xl, 5xl, 6xl), défaut md"
+      },
+      {
+        "name": "disabled",
+        "type": "Boolean",
+        "desc": "- Affiche l'icône en noir et blanc si true"
+      },
+      {
+        "name": "tooltip,",
+        "type": "String|Object",
+        "desc": "tooltip_placement, id, ariaLabel, role, tabindex - hérités de commonProps"
+      }
+    ],
+    "slots": [],
+    "file": "data-display/Icon.vue"
+  },
+  {
+    "name": "Container",
+    "description": "Container Atom (Tailwind)",
+    "props": [
+      {
+        "name": "fluid",
+        "type": "Boolean",
+        "desc": "- Désactive la classe 'container' (full width)"
+      },
+      {
+        "name": "responsive",
+        "type": "String",
+        "desc": "- Breakpoint responsive (ex: 'md', 'lg', ...), applique 'md:container', etc."
+      },
+      {
+        "name": "color",
+        "type": "String",
+        "desc": "- Couleur de fond (classe Tailwind, ex: bg-base-100)"
+      },
+      {
+        "name": "border",
+        "type": "String",
+        "desc": "- Bordure (classe Tailwind, ex: border-gray-200)"
+      },
+      {
+        "name": "shadow,",
+        "type": "String",
+        "desc": "backdrop, opacity - utilitaires custom"
+      },
+      {
+        "name": "id,",
+        "type": "String",
+        "desc": "ariaLabel, role, tabindex - accessibilité"
+      }
+    ],
+    "slots": [
+      {
+        "name": "default",
+        "desc": "- Contenu du container"
+      }
+    ],
+    "file": "data-display/Container.vue"
+  },
+  {
+    "name": "Collapse",
+    "description": "Collapse Atom (DaisyUI)",
+    "props": [
+      {
+        "name": "arrow",
+        "type": "Boolean",
+        "desc": "- Affiche la flèche (collapse-arrow)"
+      },
+      {
+        "name": "plus",
+        "type": "Boolean",
+        "desc": "- Affiche le plus/moins (collapse-plus)"
+      },
+      {
+        "name": "bgOff",
+        "type": "String",
+        "desc": "- Couleur de fond fermé (classe DaisyUI/Tailwind)"
+      },
+      {
+        "name": "bgOn",
+        "type": "String",
+        "desc": "- Couleur de fond ouvert (classe DaisyUI/Tailwind)"
+      },
+      {
+        "name": "forcedOpen",
+        "type": "Boolean",
+        "desc": "- Force l'ouverture (ajoute collapse-open)"
+      },
+      {
+        "name": "defaultOpen",
+        "type": "Boolean",
+        "desc": "- Commence ouvert (checkbox checked par défaut)"
+      },
+      {
+        "name": "shadow,",
+        "type": "String",
+        "desc": "backdrop, opacity - utilitaires custom"
+      },
+      {
+        "name": "id,",
+        "type": "String",
+        "desc": "ariaLabel, role, tabindex, tooltip, tooltip_placement - accessibilité"
+      }
+    ],
+    "slots": [
+      {
+        "name": "title",
+        "desc": "- Titre du collapse"
+      },
+      {
+        "name": "content",
+        "desc": "- Contenu du collapse"
+      }
+    ],
+    "file": "data-display/Collapse.vue"
+  },
+  {
+    "name": "Card",
+    "description": "Card Atom (DaisyUI)",
+    "props": [
+      {
+        "name": "color",
+        "type": "String",
+        "desc": "- Couleur de fond DaisyUI (bg-base-100, bg-primary, etc.)"
+      },
+      {
+        "name": "size",
+        "type": "String",
+        "desc": "- Taille DaisyUI ('', 'xs', 'sm', 'md', 'lg', 'xl')"
+      },
+      {
+        "name": "bordered",
+        "type": "Boolean",
+        "desc": "- Ajoute une bordure (card-bordered)"
+      },
+      {
+        "name": "dash",
+        "type": "Boolean",
+        "desc": "- Bordure dash (card-dash)"
+      },
+      {
+        "name": "side",
+        "type": "Boolean",
+        "desc": "- Image sur le côté (card-side)"
+      },
+      {
+        "name": "imageFull",
+        "type": "Boolean",
+        "desc": "- Image en fond (image-full)"
+      },
+      {
+        "name": "shadow",
+        "type": "String",
+        "desc": "- Ombre custom ('' | 'xs' | 'sm' | 'md' | 'lg' | 'xl' | '2xl' | '3xl' | '4xl') → .box-shadow-*"
+      },
+      {
+        "name": "backdrop",
+        "type": "String",
+        "desc": "- Flou de fond custom ('' | 'xs' | 'sm' | 'md' | 'lg' | 'xl' | '2xl' | '3xl' | '4xl') → .bd-blur-*"
+      },
+      {
+        "name": "opacity",
+        "type": "String",
+        "desc": "- Opacité custom ('' | 'xs' | 'sm' | 'md' | 'lg' | 'xl' | '2xl' | '3xl' | '4xl') → .bd-opacity-*"
+      },
+      {
+        "name": "tooltip,",
+        "type": "String|Object",
+        "desc": "tooltip_placement, id, ariaLabel, role, tabindex - hérités de commonProps"
+      }
+    ],
+    "slots": [
+      {
+        "name": "figure",
+        "desc": "- Image ou illustration"
+      },
+      {
+        "name": "title",
+        "desc": "- Titre de la carte"
+      },
+      {
+        "name": "subtitle",
+        "desc": "- Sous-titre"
+      },
+      {
+        "name": "default",
+        "desc": "- Contenu principal"
+      },
+      {
+        "name": "actions",
+        "desc": "- Actions (boutons, etc.)"
+      },
+      {
+        "name": "footer",
+        "desc": "- Footer optionnel"
+      }
+    ],
+    "file": "data-display/Card.vue"
+  },
+  {
+    "name": "Badge",
+    "description": "Badge Atom (DaisyUI)",
+    "props": [
+      {
+        "name": "content",
+        "type": "String",
+        "desc": "- Texte simple à afficher dans le badge (optionnel, prioritaire sur slot)"
+      },
+      {
+        "name": "color",
+        "type": "String",
+        "desc": "- Couleur DaisyUI ('', 'neutral', 'primary', 'secondary', 'accent', 'info', 'success', 'warning', 'error')"
+      },
+      {
+        "name": "size",
+        "type": "String",
+        "desc": "- Taille DaisyUI ('', 'xs', 'sm', 'md', 'lg', 'xl'), défaut ''"
+      },
+      {
+        "name": "variant",
+        "type": "String",
+        "desc": "- Style DaisyUI ('', 'outline', 'dash', 'soft', 'ghost'), défaut ''"
+      },
+      {
+        "name": "tooltip,",
+        "type": "String|Object",
+        "desc": "tooltip_placement, id, ariaLabel, role, tabindex - hérités de commonProps"
+      }
+    ],
+    "slots": [
+      {
+        "name": "default",
+        "desc": "- Contenu du badge (fallback)"
+      },
+      {
+        "name": "content",
+        "desc": "- Contenu HTML complexe prioritaire"
+      }
+    ],
+    "file": "data-display/Badge.vue"
+  },
+  {
+    "name": "Avatar",
+    "description": "Avatar Atom (DaisyUI)",
+    "props": [
+      {
+        "name": "src",
+        "type": "String",
+        "desc": "- URL de l'image (optionnel)"
+      },
+      {
+        "name": "alt",
+        "type": "String",
+        "desc": "- Texte alternatif (obligatoire)"
+      },
+      {
+        "name": "size",
+        "type": "String",
+        "desc": "- Taille prédéfinie (xs, sm, md, lg, xl, 2xl, 3xl, 4xl)"
+      },
+      {
+        "name": "rounded",
+        "type": "String",
+        "desc": "- Arrondi (sm, md, lg, xl, full)"
+      },
+      {
+        "name": "ring",
+        "type": "String",
+        "desc": "- Epaisseur de l'anneau (xs, sm, md, lg, xl, 2xl, 3xl, 4xl)"
+      },
+      {
+        "name": "ringColor",
+        "type": "String",
+        "desc": "- Couleur de l'anneau (primary, secondary, accent, info, success, warning, error, base-100, base-200, base-300, neutral)"
+      },
+      {
+        "name": "ringOffset",
+        "type": "String",
+        "desc": "- Epaisseur du ring-offset (xs, sm, md, lg, xl, 2xl, 3xl, 4xl)"
+      },
+      {
+        "name": "ringOffsetColor",
+        "type": "String",
+        "desc": "- Couleur du ring-offset (idem ringColor)"
+      },
+      {
+        "name": "shadow,",
+        "type": "String",
+        "desc": "backdrop, opacity - utilitaires custom ('' | 'xs' | ...)"
+      },
+      {
+        "name": "tooltip,",
+        "type": "String|Object",
+        "desc": "tooltip_placement, id, ariaLabel, role, tabindex, disabled - hérités de commonProps"
+      }
+    ],
+    "slots": [
+      {
+        "name": "default",
+        "desc": "- Fallback (initiales, icône, etc.)"
+      },
+      {
+        "name": "loader",
+        "desc": "- Loader personnalisé (optionnel)"
+      }
+    ],
+    "file": "data-display/Avatar.vue"
+  },
+  {
+    "name": "Swap",
+    "description": "Swap Atom (DaisyUI)",
+    "props": [
+      {
+        "name": "modelValue",
+        "type": "Boolean",
+        "desc": "- Valeur contrôlée (v-model)"
+      },
+      {
+        "name": "active",
+        "type": "Boolean",
+        "desc": "- Force l'état actif (prioritaire sur modelValue)"
+      },
+      {
+        "name": "indeterminate",
+        "type": "Boolean",
+        "desc": "- Affiche le slot indeterminate"
+      },
+      {
+        "name": "rotate",
+        "type": "Boolean",
+        "desc": "- Ajoute l'effet rotate"
+      },
+      {
+        "name": "flip",
+        "type": "Boolean",
+        "desc": "- Ajoute l'effet flip"
+      },
+      {
+        "name": "disabled",
+        "type": "Boolean",
+        "desc": "- Désactive le swap (hérité de commonProps)"
+      },
+      {
+        "name": "id,",
+        "type": "String",
+        "desc": "ariaLabel, role, tabindex, tooltip, tooltip_placement - hérités de commonProps"
+      }
+    ],
+    "slots": [
+      {
+        "name": "on",
+        "desc": "- Contenu affiché quand actif (swap-on)"
+      },
+      {
+        "name": "off",
+        "desc": "- Contenu affiché quand inactif (swap-off)"
+      },
+      {
+        "name": "indeterminate",
+        "desc": "- Contenu affiché quand indéterminé (swap-indeterminate)"
+      }
+    ],
+    "file": "action/Swap.vue"
+  },
+  {
+    "name": "Route",
+    "description": "Route Atom (Lien Inertia + DaisyUI Link)",
+    "props": [
+      {
+        "name": "href",
+        "type": "String",
+        "desc": "- URL du lien (défaut : #)"
+      },
+      {
+        "name": "route",
+        "type": "String",
+        "desc": "- Nom de la route Laravel (optionnel, prioritaire sur href)"
+      },
+      {
+        "name": "target",
+        "type": "String",
+        "desc": "- Cible du lien (_blank, _self, _parent, _top)"
+      },
+      {
+        "name": "method",
+        "type": "String",
+        "desc": "- Méthode HTTP pour le lien Inertia (get, post, put, delete, etc.), défaut 'get'"
+      },
+      {
+        "name": "replace",
+        "type": "Boolean",
+        "desc": "- Remplace l'historique (Inertia), défaut false"
+      },
+      {
+        "name": "color",
+        "type": "String",
+        "desc": "- Couleur DaisyUI Link ('', 'neutral', 'primary', 'secondary', 'accent', 'success', 'info', 'warning', 'error')"
+      },
+      {
+        "name": "hover",
+        "type": "Boolean",
+        "desc": "- Affiche le soulignement uniquement au survol (link-hover)"
+      },
+      {
+        "name": "id,",
+        "type": "String",
+        "desc": "ariaLabel, role, tabindex, tooltip, tooltip_placement - hérités de commonProps"
+      }
+    ],
+    "slots": [
+      {
+        "name": "default",
+        "desc": "- Contenu du lien (texte, icône, etc.)"
+      }
+    ],
+    "file": "action/Route.vue"
+  },
+  {
+    "name": "Dropdown",
+    "description": "Dropdown Atom (DaisyUI)",
+    "props": [
+      {
+        "name": "placement",
+        "type": "String",
+        "desc": "- Position du menu (start, end, top, bottom, left, right, center)"
+      },
+      {
+        "name": "open",
+        "type": "Boolean",
+        "desc": "- Force l'ouverture du menu (contrôle externe)"
+      },
+      {
+        "name": "hover",
+        "type": "Boolean",
+        "desc": "- Ouvre le menu au survol"
+      },
+      {
+        "name": "label",
+        "type": "String",
+        "desc": "- Texte du trigger (optionnel, sinon slot)"
+      },
+      {
+        "name": "contentClass",
+        "type": "String|Array",
+        "desc": "- Classes custom à ajouter au content (fusionnées sans doublon)"
+      },
+      {
+        "name": "disabled",
+        "type": "Boolean",
+        "desc": "- Désactive le trigger (hérité de commonProps)"
+      },
+      {
+        "name": "id,",
+        "type": "String",
+        "desc": "ariaLabel, role, tabindex, tooltip, tooltip_placement - hérités de commonProps"
+      }
+    ],
+    "slots": [
+      {
+        "name": "default",
+        "desc": "- Trigger du dropdown (bouton, icône, etc.)"
+      },
+      {
+        "name": "content",
+        "desc": "- Contenu déroulant (libre)"
+      }
+    ],
+    "file": "action/Dropdown.vue"
+  },
+  {
+    "name": "Btn",
+    "description": "Btn Atom (DaisyUI)",
+    "props": [
+      {
+        "name": "color",
+        "type": "String",
+        "desc": "- Couleur DaisyUI ('', 'neutral', 'primary', ...)"
+      },
+      {
+        "name": "variant",
+        "type": "String",
+        "desc": "- Style DaisyUI ('', 'outline', 'ghost', 'link', 'soft', 'dash', 'glass')"
+      },
+      {
+        "name": "size",
+        "type": "String",
+        "desc": "- Taille DaisyUI ('', 'xs', 'sm', 'md', 'lg', 'xl')"
+      },
+      {
+        "name": "block",
+        "type": "Boolean",
+        "desc": "- Pleine largeur (btn-block)"
+      },
+      {
+        "name": "wide",
+        "type": "Boolean",
+        "desc": "- Largeur augmentée (btn-wide)"
+      },
+      {
+        "name": "square",
+        "type": "Boolean",
+        "desc": "- Carré (btn-square)"
+      },
+      {
+        "name": "circle",
+        "type": "Boolean",
+        "desc": "- Cercle (btn-circle)"
+      },
+      {
+        "name": "type",
+        "type": "String",
+        "desc": "- Type HTML du bouton ('button', 'submit', 'reset', 'radio', 'checkbox'), défaut 'button'"
+      },
+      {
+        "name": "active",
+        "type": "Boolean",
+        "desc": "- Ajoute la classe btn-active"
+      },
+      {
+        "name": "checked",
+        "type": "Boolean",
+        "desc": "- Pour usage avancé (inutile sur <button>, mais possible pour compatibilité API)"
+      },
+      {
+        "name": "content",
+        "type": "String",
+        "desc": "- Texte du bouton (optionnel, sinon slot)"
+      },
+      {
+        "name": "disabled",
+        "type": "Boolean",
+        "desc": "- Désactivé (btn-disabled + HTML, hérité de commonProps)"
+      },
+      {
+        "name": "id,",
+        "type": "String",
+        "desc": "ariaLabel, role, tabindex, tooltip, tooltip_placement - hérités de commonProps"
+      }
+    ],
+    "slots": [
+      {
+        "name": "default|content",
+        "desc": "- Contenu du bouton (texte, icône, etc.)"
+      },
+      {
+        "name": "tooltip",
+        "desc": "- Contenu HTML complexe pour le tooltip (optionnel)"
+      }
+    ],
+    "file": "action/Btn.vue"
+  }
 ]

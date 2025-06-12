@@ -40,44 +40,8 @@ defineOptions({ inheritAttrs: false }); // Pour que les évéments natifs soient
 import { computed } from 'vue';
 import Tooltip from '@/Pages/Atoms/feedback/Tooltip.vue';
 import { getCommonProps, getCommonAttrs, getCustomUtilityProps, getCustomUtilityClasses, mergeClasses } from '@/Utils/atomic-design/uiHelper';
-
-const colorMap = {
-    neutral: 'progress-neutral',
-    primary: 'progress-primary',
-    secondary: 'progress-secondary',
-    accent: 'progress-accent',
-    info: 'progress-info',
-    success: 'progress-success',
-    warning: 'progress-warning',
-    error: 'progress-error',
-};
-const radialColorMap = {
-    neutral: 'text-neutral',
-    primary: 'text-primary',
-    secondary: 'text-secondary',
-    accent: 'text-accent',
-    info: 'text-info',
-    success: 'text-success',
-    warning: 'text-warning',
-    error: 'text-error',
-};
-const sizeMap = {
-    xs: 'w-8 h-8',
-    sm: 'w-12 h-12',
-    md: 'w-16 h-16',
-    lg: 'w-20 h-20',
-    xl: 'w-24 h-24',
-    '2xl': 'w-32 h-32',
-    '3xl': 'w-40 h-40',
-    '4xl': 'w-56 h-56',
-};
-const thicknessMap = {
-    xs: 'border',
-    sm: 'border-2',
-    md: 'border-4',
-    lg: 'border-8',
-    xl: 'border-[10px]',
-};
+import { colorProgressMap, colorRadialMap, sizeRadialMap, thicknessRadialMap } from './feedbackMap.js';
+import { colorList, sizeXlList, size4XlList } from '@/Pages/Atoms/atomMap';
 
 const props = defineProps({
     ...getCommonProps(),
@@ -88,18 +52,18 @@ const props = defineProps({
     color: {
         type: String,
         default: '',
-        validator: v => ['', 'neutral', 'primary', 'secondary', 'accent', 'info', 'success', 'warning', 'error'].includes(v),
+        validator: v => colorList.includes(v),
     },
     size: {
         type: String,
         default: '',
-        validator: v => ['', 'xs', 'sm', 'md', 'lg', 'xl', '2xl', '3xl', '4xl'].includes(v),
+        validator: v => size4XlList.includes(v),
     },
     width: { type: String, default: '' }, // progress: w-56
     thickness: {
         type: String,
         default: '',
-        validator: v => ['', 'xs', 'sm', 'md', 'lg', 'xl'].includes(v),
+        validator: v => sizeXlList.includes(v),
     },
     label: { type: String, default: '' },
     class: { type: String, default: '' },
@@ -109,7 +73,7 @@ const progressClasses = computed(() =>
     mergeClasses(
         [
             'progress',
-            props.color && colorMap[props.color],
+            props.color && colorProgressMap[props.color],
             props.width,
         ].filter(Boolean),
         getCustomUtilityClasses(props),
@@ -121,9 +85,9 @@ const radialClasses = computed(() =>
     mergeClasses(
         [
             'radial-progress',
-            props.color && radialColorMap[props.color],
-            props.size && sizeMap[props.size],
-            props.thickness && thicknessMap[props.thickness],
+            props.color && colorRadialMap[props.color],
+            props.size && sizeRadialMap[props.size],
+            props.thickness && thicknessRadialMap[props.thickness],
         ].filter(Boolean),
         getCustomUtilityClasses(props),
         props.class

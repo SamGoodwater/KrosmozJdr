@@ -59,22 +59,28 @@ import { getInputAttrs } from '@/Utils/atomic-design/atomManager';
 import InputLabel from '@/Pages/Atoms/data-input/InputLabel.vue';
 import useEditableField from '@/Composables/form/useEditableField';
 import Btn from '@/Pages/Atoms/action/Btn.vue';
+import { colorList, sizeXlList } from '@/Pages/Atoms/atomMap';
+import { maskList } from './data-inputMap';
 
 const props = defineProps({
     ...getCommonProps(),
     ...getCustomUtilityProps(),
     modelValue: { type: [Number, String], default: 0 },
     number: { type: Number, default: 5 },
-    mask: { type: String, default: 'mask-star' },
+    mask: {
+        type: String,
+        default: 'mask-star',
+        validator: v => maskList.includes(v),
+    },
     color: {
         type: String,
         default: '',
-        validator: v => ['', 'neutral', 'primary', 'secondary', 'accent', 'info', 'success', 'warning', 'error'].includes(v),
+        validator: v => colorList.includes(v),
     },
     size: {
         type: String,
         default: '',
-        validator: v => ['', 'xs', 'sm', 'md', 'lg', 'xl'].includes(v),
+        validator: v => sizeXlList.includes(v),
     },
     items: { type: Array, default: null },
     useFieldComposable: { type: Boolean, default: false },

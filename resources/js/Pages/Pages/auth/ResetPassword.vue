@@ -1,10 +1,8 @@
 <script setup>
 // import GuestLayout from '@/Layouts/GuestLayout.vue';
-import InputError from "@/Pages/Atoms/inputs/InputError.vue";
-import InputLabel from "@/Pages/Atoms/inputs/InputLabel.vue";
-import Btn from "@/Pages/Atoms/actions/Btn.vue";
-import TextInput from "@/Pages/Atoms/inputs/TextInput.vue";
 import { Head, useForm } from "@inertiajs/vue3";
+import InputField from '@/Pages/Atoms/data-input/InputField.vue';
+import Btn from '@/Pages/Atoms/action/Btn.vue';
 
 const props = defineProps({
     email: {
@@ -32,64 +30,27 @@ const submit = () => {
 </script>
 
 <template>
+
     <Head title="Reset Password" />
 
     <form @submit.prevent="submit">
-        <div>
-            <InputLabel for="email" value="Email" />
+        <InputField id="email" type="email" class="mt-1 block w-full" v-model="form.email" required autofocus
+            autocomplete="username" label="Email" :validator="form.errors.email" />
 
-            <TextInput
-                id="email"
-                type="email"
-                class="mt-1 block w-full"
-                v-model="form.email"
-                required
-                autofocus
-                autocomplete="username"
-            />
-
-            <InputError class="mt-2" :message="form.errors.email" />
+        <div class="mt-4">
+            <InputField id="password" type="password" class="mt-1 block w-full" v-model="form.password" required
+                autocomplete="new-password" label="Mot de passe" :validator="form.errors.password" />
         </div>
 
         <div class="mt-4">
-            <InputLabel for="password" value="Password" />
-
-            <TextInput
-                id="password"
-                type="password"
-                class="mt-1 block w-full"
-                v-model="form.password"
-                required
-                autocomplete="new-password"
-            />
-
-            <InputError class="mt-2" :message="form.errors.password" />
-        </div>
-
-        <div class="mt-4">
-            <InputLabel for="password_confirmation" value="Confirm Password" />
-
-            <TextInput
-                id="password_confirmation"
-                type="password"
-                class="mt-1 block w-full"
-                v-model="form.password_confirmation"
-                required
-                autocomplete="new-password"
-            />
-
-            <InputError
-                class="mt-2"
-                :message="form.errors.password_confirmation"
-            />
+            <InputField id="password_confirmation" type="password" class="mt-1 block w-full"
+                v-model="form.password_confirmation" required autocomplete="new-password"
+                label="Confirmer le mot de passe" :validator="form.errors.password_confirmation" />
         </div>
 
         <div class="mt-4 flex items-center justify-end">
-            <Btn
-                :class="{ 'opacity-25': form.processing }"
-                :disabled="form.processing"
-            >
-                Reset Password
+            <Btn :disabled="form.processing" :class="{ 'opacity-25': form.processing }">
+                Réinitialiser le mot de passe
             </Btn>
         </div>
     </form>

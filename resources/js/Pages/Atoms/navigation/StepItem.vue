@@ -32,6 +32,7 @@ defineOptions({ inheritAttrs: false });
 import { computed } from 'vue';
 import Icon from '@/Pages/Atoms/data-display/Icon.vue';
 import { getCommonProps, getCommonAttrs, getCustomUtilityProps, getCustomUtilityClasses, mergeClasses } from '@/Utils/atomic-design/uiHelper';
+import { colorList } from '@/Pages/Atoms/atomMap';
 
 const props = defineProps({
     ...getCommonProps(),
@@ -40,7 +41,7 @@ const props = defineProps({
     color: {
         type: String,
         default: '',
-        validator: v => ['', 'neutral', 'primary', 'secondary', 'accent', 'info', 'success', 'warning', 'error'].includes(v),
+        validator: v => colorList.includes(v),
     },
     icon: { type: String, default: '' },
     state: { type: String, default: '' },

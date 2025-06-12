@@ -33,25 +33,9 @@ defineOptions({ inheritAttrs: false }); // Pour que les évéments natifs soient
  */
 import { computed } from 'vue';
 import { getCommonProps, getCommonAttrs, getCustomUtilityProps, getCustomUtilityClasses, mergeClasses } from '@/Utils/atomic-design/uiHelper';
+import { elementSkeletonMap, sizeSkeletonMap } from './feedbackMap.js';
+import { size4XlList } from '@/Pages/Atoms/atomMap';
 
-const sizeMap = {
-    xs: { h: 'h-2', w: 'w-8', rounded: 'rounded' },
-    sm: { h: 'h-3', w: 'w-16', rounded: 'rounded' },
-    md: { h: 'h-4', w: 'w-32', rounded: 'rounded' },
-    lg: { h: 'h-6', w: 'w-48', rounded: 'rounded' },
-    xl: { h: 'h-8', w: 'w-64', rounded: 'rounded' },
-    '2xl': { h: 'h-12', w: 'w-80', rounded: 'rounded-lg' },
-    '3xl': { h: 'h-16', w: 'w-96', rounded: 'rounded-lg' },
-    '4xl': { h: 'h-24', w: 'w-128', rounded: 'rounded-xl' },
-};
-
-const elementMap = {
-    avatar: { h: 'h-12', w: 'w-12', rounded: 'rounded-full' },
-    image: { h: 'h-32', w: 'w-32', rounded: 'rounded-lg' },
-    text: { h: 'h-4', w: 'w-20', rounded: 'rounded' },
-    smalltext: { h: 'h-3', w: 'w-16', rounded: 'rounded' },
-    longtext: { h: 'h-4', w: 'w-full', rounded: 'rounded' },
-};
 
 const props = defineProps({
     ...getCommonProps(),
@@ -64,7 +48,7 @@ const props = defineProps({
     size: {
         type: String,
         default: '',
-        validator: v => ['', 'xs', 'sm', 'md', 'lg', 'xl', '2xl', '3xl', '4xl'].includes(v),
+        validator: v => size4XlList.includes(v),
     },
     width: { type: String, default: '' },
     height: { type: String, default: '' },
@@ -74,17 +58,17 @@ const props = defineProps({
 const base = computed(() => {
     // Si element ET size => fusionne les deux (size prioritaire sur h/w, sauf rounded avatar/image)
     let h = '', w = '', rounded = '';
-    if (props.element && elementMap[props.element]) {
-        h = elementMap[props.element].h;
-        w = elementMap[props.element].w;
-        rounded = elementMap[props.element].rounded;
+    if (props.element && elementSkeletonMap[props.element]) {
+        h = elementSkeletonMap[props.element].h;
+        w = elementSkeletonMap[props.element].w;
+        rounded = elementSkeletonMap[props.element].rounded;
     }
-    if (props.size && sizeMap[props.size]) {
-        h = sizeMap[props.size].h;
-        w = sizeMap[props.size].w;
+    if (props.size && sizeSkeletonMap[props.size]) {
+        h = sizeSkeletonMap[props.size].h;
+        w = sizeSkeletonMap[props.size].w;
         // Pour avatar/image, on garde le rounded spécifique
         if (!['avatar', 'image'].includes(props.element)) {
-            rounded = sizeMap[props.size].rounded;
+            rounded = sizeSkeletonMap[props.size].rounded;
         }
     }
     // width/height props écrasent tout

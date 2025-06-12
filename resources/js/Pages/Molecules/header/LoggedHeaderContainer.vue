@@ -1,3 +1,4 @@
+<script setup>
 /**
 * LoggedHeaderContainer Molecule (Header Auth - Utilisateur connecté)
 *
@@ -17,7 +18,6 @@
 * @note Ce composant ne doit être utilisé que dans le header principal.
 * @note Respecte la philosophie Atomic Design (niveau molecule, composition d'atoms).
 */
-<script setup>
 import Btn from "@/Pages/Atoms/action/Btn.vue";
 import Route from "@/Pages/Atoms/action/Route.vue";
 import Avatar from "@/Pages/Atoms/data-display/Avatar.vue";

@@ -1,15 +1,12 @@
 <script setup>
-// import GuestLayout from '@/Layouts/GuestLayout.vue';
-import InputError from "@/Pages/Atoms/inputs/InputError.vue";
-import InputLabel from "@/Pages/Atoms/inputs/InputLabel.vue";
-import Btn from "@/Pages/Atoms/actions/Btn.vue";
-import TextInput from "@/Pages/Atoms/inputs/TextInput.vue";
+// Atomic Design refonte : imports atoms à jour
 import { Head, useForm } from "@inertiajs/vue3";
+import InputField from '@/Pages/Atoms/data-input/InputField.vue';
+import Btn from '@/Pages/Atoms/action/Btn.vue';
+import Validator from '@/Pages/Atoms/data-input/Validator.vue';
 
 defineProps({
-    status: {
-        type: String,
-    },
+    status: String,
 });
 
 const form = useForm({
@@ -22,44 +19,25 @@ const submit = () => {
 </script>
 
 <template>
-    <GuestLayout>
-        <Head title="Forgot Password" />
 
-        <div class="mb-4 text-sm text-gray-600">
-            Forgot your password? No problem. Just let us know your email
-            address and we will email you a password reset link that will allow
-            you to choose a new one.
+    <Head title="Mot de passe oublié" />
+
+    <div class="mb-4 text-sm text-gray-600">
+        Mot de passe oublié ? Indiquez votre adresse email et nous vous enverrons un lien pour réinitialiser votre
+        mot de passe.
+    </div>
+
+    <div v-if="status" class="mb-4 text-sm font-medium text-green-600">
+        {{ status }}
+    </div>
+
+    <form @submit.prevent="submit">
+        <InputField id="email" type="email" class="mt-1 block w-full" v-model="form.email" required autofocus
+            autocomplete="username" label="Email" :validator="form.errors.email" />
+        <div class="mt-4 flex items-center justify-end">
+            <Btn :disabled="form.processing" :class="{ 'opacity-25': form.processing }">
+                Envoyer le lien de réinitialisation
+            </Btn>
         </div>
-
-        <div v-if="status" class="mb-4 text-sm font-medium text-green-600">
-            {{ status }}
-        </div>
-
-        <form @submit.prevent="submit">
-            <div>
-                <InputLabel for="email" value="Email" />
-
-                <TextInput
-                    id="email"
-                    type="email"
-                    class="mt-1 block w-full"
-                    v-model="form.email"
-                    required
-                    autofocus
-                    autocomplete="username"
-                />
-
-                <InputError class="mt-2" :message="form.errors.email" />
-            </div>
-
-            <div class="mt-4 flex items-center justify-end">
-                <Btn
-                    :class="{ 'opacity-25': form.processing }"
-                    :disabled="form.processing"
-                >
-                    Email Password Reset Link
-                </Btn>
-            </div>
-        </form>
-    </GuestLayout>
+    </form>
 </template>
