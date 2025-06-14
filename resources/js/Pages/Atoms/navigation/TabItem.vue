@@ -18,7 +18,7 @@ defineOptions({ inheritAttrs: false });
  *
  * @example
  * <TabItem active icon="fa-user" label="Profil">Contenu du tab</TabItem>
- * <TabItem><template #title><Icon source="fa-cog" /> Paramètres</template>Contenu</TabItem>
+ * <TabItem><template #title><Icon source="fa-cog" pack="solid" /> Paramètres</template>Contenu</TabItem>
  *
  * @props {Boolean} active - Met l'item en état actif
  * @props {Boolean} disabled - Désactive l'item
@@ -32,55 +32,77 @@ defineOptions({ inheritAttrs: false });
  * @slot icon - Slot pour l'icône (prioritaire sur prop icon)
  * @slot label - Slot pour le label (prioritaire sur prop label)
  * @slot default - Contenu du tab (tab-content)
+ * @props {String} id - ID unique de l'onglet
+ * @props {String|Object} tooltip - Tooltip
+ * @props {String} tooltip_placement - Position du tooltip
  */
-import { computed } from 'vue';
-import Icon from '@/Pages/Atoms/data-display/Icon.vue';
-import { getCommonProps, getCommonAttrs, getCustomUtilityProps, getCustomUtilityClasses, mergeClasses } from '@/Utils/atomic-design/uiHelper';
-import { sizeXlList } from '@/Pages/Atoms/atomMap';
+import { computed } from "vue";
+import Icon from "@/Pages/Atoms/data-display/Icon.vue";
+import {
+    getCommonProps,
+    getCommonAttrs,
+    getCustomUtilityProps,
+    getCustomUtilityClasses,
+    mergeClasses,
+} from "@/Utils/atomic-design/uiHelper";
+import { sizeXlList } from "@/Pages/Atoms/atomMap";
 
 const props = defineProps({
     ...getCommonProps(),
     ...getCustomUtilityProps(),
     active: { type: Boolean, default: false },
     disabled: { type: Boolean, default: false },
-    icon: { type: String, default: '' },
-    label: { type: String, default: '' },
-    color: { type: String, default: '' },
+    icon: { type: String, default: "" },
+    label: { type: String, default: "" },
+    color: { type: String, default: "" },
     size: {
         type: String,
-        default: '',
-        validator: v => sizeXlList.includes(v),
+        default: "",
+        validator: (v) => sizeXlList.includes(v),
     },
 });
 
 const atomClasses = computed(() =>
     mergeClasses(
         [
-            'tab',
-            props.active && 'tab-active',
-            props.disabled && 'tab-disabled',
-            props.size === 'xs' && 'tab-xs',
-            props.size === 'sm' && 'tab-sm',
-            props.size === 'md' && 'tab-md',
-            props.size === 'lg' && 'tab-lg',
-            props.size === 'xl' && 'tab-xl',
-            props.class
+            "tab",
+            props.active && "tab-active",
+            props.disabled && "tab-disabled",
+            props.size === "xs" && "tab-xs",
+            props.size === "sm" && "tab-sm",
+            props.size === "md" && "tab-md",
+            props.size === "lg" && "tab-lg",
+            props.size === "xl" && "tab-xl",
+            props.class,
         ],
-        getCustomUtilityClasses(props)
-    )
+        getCustomUtilityClasses(props),
+    ),
 );
 const attrs = computed(() => getCommonAttrs(props));
 </script>
 
 <template>
-    <a role="tab" :class="atomClasses" v-bind="attrs" v-on="$attrs" :aria-selected="active" :aria-disabled="disabled">
+    <a
+        role="tab"
+        :class="atomClasses"
+        v-bind="attrs"
+        v-on="$attrs"
+        :aria-selected="active"
+        :aria-disabled="disabled"
+    >
         <template v-if="$slots.title">
             <slot name="title" />
         </template>
         <template v-else>
             <span v-if="$slots.icon || icon" class="mr-2 flex items-center">
                 <slot name="icon">
-                    <Icon v-if="icon" :source="icon" :alt="'icon'" :size="size || 'md'" :disabled="props.disabled" />
+                    <Icon
+                        v-if="icon"
+                        :source="icon"
+                        :alt="'icon'"
+                        :size="size || 'md'"
+                        :disabled="props.disabled"
+                    />
                 </slot>
             </span>
             <span v-if="$slots.label || label">

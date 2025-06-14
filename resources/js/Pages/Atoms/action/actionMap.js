@@ -19,6 +19,7 @@ export const placementList = [
 ];
 export const targetList = ["_blank", "_self", "_parent", "_top"];
 export const methodList = [
+    "",
     "get",
     "post",
     "put",

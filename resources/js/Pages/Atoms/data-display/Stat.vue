@@ -23,7 +23,7 @@ defineOptions({ inheritAttrs: false }); // Pour que les événements natifs soie
  * <div class="stats">
  *   <Stat title="Total" value="42" description="Nouveaux inscrits" icon="fa-user" color="primary" size="lg" />
  *   <Stat>
- *     <template #icon><Icon source="fa-star" /></template>
+ *     <template #icon><Icon source="fa-star" pack="solid" /></template>
  *     <template #title>Score</template>
  *     <template #value>98%</template>
  *     <template #description>Meilleur score</template>
@@ -52,84 +52,98 @@ defineOptions({ inheritAttrs: false }); // Pour que les événements natifs soie
  * @note Utiliser ce composant dans un conteneur <div class="stats"> pour l'affichage en grille.
  * @note Accessibilité renforcée : aria, role, etc.
  */
-import { computed } from 'vue';
-import Tooltip from '@/Pages/Atoms/feedback/Tooltip.vue';
-import Icon from '@/Pages/Atoms/data-display/Icon.vue';
-import { getCommonProps, getCommonAttrs, getCustomUtilityProps, getCustomUtilityClasses, mergeClasses } from '@/Utils/atomic-design/uiHelper';
-import { colorMap, sizeTitleMap, sizeValueMap, sizeDescMap, sizeIconMap } from './data-displayMap';
+import { computed } from "vue";
+import Tooltip from "@/Pages/Atoms/feedback/Tooltip.vue";
+import Icon from "@/Pages/Atoms/data-display/Icon.vue";
+import {
+    getCommonProps,
+    getCommonAttrs,
+    getCustomUtilityProps,
+    getCustomUtilityClasses,
+    mergeClasses,
+} from "@/Utils/atomic-design/uiHelper";
+import {
+    colorMap,
+    sizeTitleMap,
+    sizeValueMap,
+    sizeDescMap,
+    sizeIconMap,
+} from "./data-displayMap";
 
 const props = defineProps({
     ...getCommonProps(),
     ...getCustomUtilityProps(),
-    title: { type: String, default: '' },
-    value: { type: [String, Number], default: '' },
-    description: { type: String, default: '' },
-    icon: { type: String, default: '' },
+    title: { type: String, default: "" },
+    value: { type: [String, Number], default: "" },
+    description: { type: String, default: "" },
+    icon: { type: String, default: "" },
     color: {
         type: String,
-        default: '',
-        validator: v => ['', ...Object.keys(colorMap)].includes(v),
+        default: "",
+        validator: (v) => ["", ...Object.keys(colorMap)].includes(v),
     },
     colorTitle: {
         type: String,
-        default: '',
-        validator: v => ['', ...Object.keys(colorMap)].includes(v),
+        default: "",
+        validator: (v) => ["", ...Object.keys(colorMap)].includes(v),
     },
     colorValue: {
         type: String,
-        default: '',
-        validator: v => ['', ...Object.keys(colorMap)].includes(v),
+        default: "",
+        validator: (v) => ["", ...Object.keys(colorMap)].includes(v),
     },
     colorDescription: {
         type: String,
-        default: '',
-        validator: v => ['', ...Object.keys(colorMap)].includes(v),
+        default: "",
+        validator: (v) => ["", ...Object.keys(colorMap)].includes(v),
     },
     size: {
         type: String,
-        default: '',
-        validator: v => [...Object.keys(sizeTitleMap)].includes(v),
+        default: "",
+        validator: (v) => [...Object.keys(sizeTitleMap)].includes(v),
     },
-    class: { type: String, default: '' },
+    class: { type: String, default: "" },
 });
 
 const atomClasses = computed(() =>
-    mergeClasses(
-        [
-            'stat',
-        ],
-        getCustomUtilityClasses(props),
-        props.class
-    )
+    mergeClasses(["stat"], getCustomUtilityClasses(props), props.class),
 );
 const attrs = computed(() => getCommonAttrs(props));
 
 const titleClasses = computed(() =>
     mergeClasses(
         [
-            'stat-title',
-            props.colorTitle ? colorMap[props.colorTitle] : props.color ? colorMap[props.color] : '',
+            "stat-title",
+            props.colorTitle
+                ? colorMap[props.colorTitle]
+                : props.color
+                  ? colorMap[props.color]
+                  : "",
             sizeTitleMap[props.size],
-        ].filter(Boolean)
-    )
+        ].filter(Boolean),
+    ),
 );
 const valueClasses = computed(() =>
     mergeClasses(
         [
-            'stat-value',
-            props.colorValue ? colorMap[props.colorValue] : props.color ? colorMap[props.color] : '',
+            "stat-value",
+            props.colorValue
+                ? colorMap[props.colorValue]
+                : props.color
+                  ? colorMap[props.color]
+                  : "",
             sizeValueMap[props.size],
-        ].filter(Boolean)
-    )
+        ].filter(Boolean),
+    ),
 );
 const descClasses = computed(() =>
     mergeClasses(
         [
-            'stat-desc',
-            props.colorDescription ? colorMap[props.colorDescription] : '',
+            "stat-desc",
+            props.colorDescription ? colorMap[props.colorDescription] : "",
             sizeDescMap[props.size],
-        ].filter(Boolean)
-    )
+        ].filter(Boolean),
+    ),
 );
 const iconSize = computed(() => sizeIconMap[props.size]);
 </script>

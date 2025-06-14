@@ -3,7 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
-use App\Services\FileProcessionService;
+use App\Services\FileService;
 
 class UpdateFileRequest extends FormRequest
 {
@@ -14,16 +14,8 @@ class UpdateFileRequest extends FormRequest
 
     public function rules(): array
     {
-        $extensions = array_merge(
-            FileProcessionService::EXTENSIONS_IMAGE,
-            FileProcessionService::EXTENSIONS_VIDEO,
-            FileProcessionService::EXTENSIONS_AUDIO,
-            FileProcessionService::EXTENSIONS_DOCUMENT
-        );
-        $maxSize = FileProcessionService::MAX_SIZE;
-
         return [
-            'file' => 'sometimes|file|mimes:' . implode(',', $extensions) . '|max:' . $maxSize,
+            'file' => 'sometimes|file|mimes:' . implode(',', FileService::getAllowedExtensions()) . '|max:' . FileService::MAX_SIZE,
             'title' => 'sometimes|nullable|string|max:255',
             'comment' => 'sometimes|nullable|string|max:255',
             'description' => 'sometimes|nullable|string',

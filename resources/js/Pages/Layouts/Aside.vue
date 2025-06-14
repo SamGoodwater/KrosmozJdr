@@ -26,96 +26,120 @@ import MenuItem from "@/Pages/Atoms/navigation/MenuItem.vue";
 import Dock from "@/Pages/Molecules/navigation/Dock.vue";
 import DockItem from "@/Pages/Atoms/navigation/DockItem.vue";
 import Icon from "@/Pages/Atoms/data-display/Icon.vue";
-import { ref, onMounted } from "vue";
+import { ref } from "vue";
 import { useSidebar } from "@/Composables/layout/useSidebar";
-import { MediaManager } from "@/Utils/file/MediaManager";
 
 const { isSidebarOpen } = useSidebar();
 const appSlogan = ref(import.meta.env.VITE_APP_SLOGAN);
-const logo = ref("");
-
-onMounted(async () => {
-    try {
-        logo.value = await MediaManager.get('logos/logo', 'image');
-    } catch (error) {
-        console.error("Erreur lors du chargement du logo:", error);
-    }
-});
+const logoError = ref(false);
 
 const navItems = [
     {
         route: "home",
         label: "Accueil",
-        icon: "fa-solid fa-house",
-        active: (page) => page.component.includes('Home')
+        icon: "fa-house",
+        pack: "solid",
+        active: (page) => page.component.includes("Home"),
     },
     {
         route: "",
         label: "Pages",
-        icon: "fa-solid fa-file-lines",
-        active: (page) => page.component.includes('/page')
+        icon: "fa-file-lines",
+        pack: "solid",
+        active: (page) => page.component.includes("/page"),
     },
     {
         route: "",
         label: "Créer une page",
-        icon: "fa-solid fa-plus",
-        active: (page) => page.component.includes('/page/create')
-    }
+        icon: "fa-plus",
+        pack: "solid",
+        active: (page) => page.component.includes("/page/create"),
+    },
 ];
 
 const footerItems = [
     {
         route: "contribute",
         label: "Contribuer",
-        icon: "fa-solid fa-handshake-angle",
-        tooltip: "Tous les liens pour contribuer au projet KrosmozJDR"
+        icon: "fa-handshake-angle",
+        pack: "solid",
+        tooltip: "Tous les liens pour contribuer au projet KrosmozJDR",
     },
     {
-        route: "tools",
+        route: "",
         label: "Outils",
-        icon: "fa-solid fa-dice",
-        tooltip: "En cours de développement"
+        icon: "fa-dice",
+        pack: "solid",
+        tooltip: "En cours de développement",
     },
     {
-        route: "campaigns",
+        route: "",
         label: "Campagnes",
-        icon: "fa-solid fa-map",
-        tooltip: "En cours de développement"
-    }
+        icon: "fa-map",
+        pack: "solid",
+        tooltip: "En cours de développement",
+    },
 ];
 </script>
 
 <template>
-    <aside id="menuSidebar" :class="[
-        isSidebarOpen ? 'sidebar-on' : 'sidebar-off',
-        'px-2',
-        'pt-4',
-        'fixed',
-        'top-0',
-        'left-0',
-        'bottom-0',
-        'z-40',
-        'w-64',
-        'transition-transform',
-        '-translate-x-full',
-        'sm:translate-x-0',
-        'bg-base-200',
-        'flex',
-        'flex-col',
-        'justify-between',
-        'backdrop-blur-xl',
-]" aria-label="Sidenav">
+    <aside
+        id="menuSidebar"
+        :class="[
+            isSidebarOpen ? 'sidebar-on' : 'sidebar-off',
+            'px-2',
+            'pt-4',
+            'fixed',
+            'top-0',
+            'left-0',
+            'bottom-0',
+            'z-40',
+            'w-64',
+            'transition-transform',
+            '-translate-x-full',
+            'sm:translate-x-0',
+            'bg-base-200',
+            'flex',
+            'flex-col',
+            'justify-between',
+            'backdrop-blur-xl',
+        ]"
+        aria-label="Sidenav"
+    >
         <ToggleSidebar size="xs" class="absolute right-2" />
 
         <div>
-            <Route route="home" class="hover:scale-105 focus:scale-95">
-                <Image :src="logo" :alt="`Logo de ${appSlogan}`" size="lg" class="mx-auto" />
+            <Route
+                route="home"
+                target="_self"
+                class="hover:scale-105 focus:scale-95"
+            >
+                <template v-if="!logoError">
+                    <Image
+                        source="logos/logo.webp"
+                        :alt="`Logo de ${appSlogan}`"
+                        size="lg"
+                        class="mx-auto"
+                        @error="logoError = true"
+                    />
+                </template>
+                <template v-else>
+                    <div class="flex items-center justify-center h-16">
+                        <span class="text-xl font-bold">{{ appSlogan }}</span>
+                    </div>
+                </template>
             </Route>
 
             <Menu direction="vertical" size="md" class="my-10">
-                <MenuItem v-for="item in navItems" :key="item.label" :route="item.route" :icon="item.icon"
-                    :active="item.active($page)">
-                {{ item.label }}
+                <MenuItem
+                    v-for="item in navItems"
+                    :key="item.label"
+                    :route="item.route"
+                    :icon="item.icon"
+                    :pack="item.pack"
+                    :active="item.active($page)"
+                >
+                    {{ item.label }}
                 </MenuItem>
             </Menu>
         </div>
@@ -123,8 +147,15 @@ const footerItems = [
         <div id="footer">
             <SearchInput class="max-sm:block hidden" />
             <Dock size="md" class="px-1 py-2">
-                <DockItem v-for="item in footerItems" :key="item.label" :route="item.route" :icon="item.icon"
-                    :label="item.label" :tooltip="item.tooltip" />
+                <DockItem
+                    v-for="item in footerItems"
+                    :key="item.label"
+                    :route="item.route"
+                    :icon="item.icon"
+                    :pack="item.pack"
+                    :label="item.label"
+                    :tooltip="item.tooltip"
+                />
             </Dock>
         </div>
     </aside>

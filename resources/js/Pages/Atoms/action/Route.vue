@@ -38,32 +38,37 @@ defineOptions({ inheritAttrs: false }); // Pour que les événements natifs soie
  * @note Ce composant fusionne l'API DaisyUI Link et Inertia Link.
  */
 
-import { computed, ref } from 'vue';
-import { Link } from '@inertiajs/vue3';
-import Tooltip from '@/Pages/Atoms/feedback/Tooltip.vue';
-import { getCommonProps, getCommonAttrs, mergeClasses, getCustomUtilityClasses } from '@/Utils/atomic-design/uiHelper';
-import { colorList } from '@/Pages/Atoms/atomMap';
-import { targetList, methodList } from './actionMap';
+import { computed, ref } from "vue";
+import { Link, router } from "@inertiajs/vue3";
+import Tooltip from "@/Pages/Atoms/feedback/Tooltip.vue";
+import {
+    getCommonProps,
+    getCommonAttrs,
+    mergeClasses,
+    getCustomUtilityClasses,
+} from "@/Utils/atomic-design/uiHelper";
+import { colorList } from "@/Pages/Atoms/atomMap";
+import { targetList, methodList } from "./actionMap";
 
 const props = defineProps({
     ...getCommonProps(),
     href: {
         type: String,
-        default: '#',
+        default: "#",
     },
     route: {
         type: String,
-        default: '',
+        default: "",
     },
     target: {
         type: String,
-        default: '',
-        validator: v => targetList.includes(v),
+        default: "",
+        validator: (v) => !v || targetList.includes(v),
     },
     method: {
         type: String,
-        default: 'get',
-        validator: v => methodList.includes(v),
+        default: "get",
+        validator: (v) => methodList.includes(v),
     },
     replace: {
         type: Boolean,
@@ -72,8 +77,8 @@ const props = defineProps({
     // DaisyUI Link props
     color: {
         type: String,
-        default: '',
-        validator: v => colorList.includes(v),
+        default: "",
+        validator: (v) => colorList.includes(v),
     },
     hover: {
         type: Boolean,
@@ -81,10 +86,34 @@ const props = defineProps({
     },
 });
 
+// Vérifie si l'URL est une URL directe (mailto:, http://, etc.)
+const isDirectUrl = (url) => {
+    return (
+        url.startsWith("mailto:") ||
+        url.startsWith("http://") ||
+        url.startsWith("https://") ||
+        url.startsWith("tel:") ||
+        url.startsWith("#") ||
+        url.startsWith("/")
+    );
+};
+
 // Calcule le href final
 const hrefRef = computed(() => {
-    if (props.route && typeof route === 'function') {
-        return route(props.route);
+    if (props.route) {
+        // Si c'est une URL directe, on la retourne telle quelle
+        if (isDirectUrl(props.route)) {
+            return props.route;
+        }
+        // Sinon, on essaie de la traiter comme une route nommée
+        try {
+            return route(props.route);
+        } catch (e) {
+            console.warn(
+                `Route "${props.route}" not found, falling back to direct URL`,
+            );
+            return props.route;
+        }
     }
     return props.href;
 });
@@ -92,34 +121,74 @@ const hrefRef = computed(() => {
 const atomClasses = computed(() =>
     mergeClasses(
         [
-            'link',
-            props.color === 'neutral' && 'link-neutral',
-            props.color === 'primary' && 'link-primary',
-            props.color === 'secondary' && 'link-secondary',
-            props.color === 'accent' && 'link-accent',
-            props.color === 'success' && 'link-success',
-            props.color === 'info' && 'link-info',
-            props.color === 'warning' && 'link-warning',
-            props.color === 'error' && 'link-error',
-            props.hover && 'link-hover',
+            "link",
+            props.color === "neutral" && "link-neutral",
+            props.color === "primary" && "link-primary",
+            props.color === "secondary" && "link-secondary",
+            props.color === "accent" && "link-accent",
+            props.color === "success" && "link-success",
+            props.color === "info" && "link-info",
+            props.color === "warning" && "link-warning",
+            props.color === "error" && "link-error",
+            props.hover && "link-hover",
         ].filter(Boolean),
         getCustomUtilityClasses(props),
-        props.class
-    )
+        props.class,
+    ),
 );
+
 const attrs = computed(() => getCommonAttrs(props));
+
+// Gestion des méthodes HTTP
+const handleClick = (e) => {
+    // Si c'est une URL directe ou une méthode GET, on laisse le lien normal fonctionner
+    if (isDirectUrl(hrefRef.value) || props.method === "get") {
+        return;
+    }
+
+    e.preventDefault();
+    router.visit(hrefRef.value, {
+        method: props.method,
+        replace: props.replace,
+    });
+};
 </script>
 
 <template>
-    <Tooltip :content="props.tooltip" :placement="props.tooltip_placement">
-        <Link :href="hrefRef" :target="target || undefined" :method="method" :replace="replace" :class="atomClasses"
-            v-bind="attrs" v-on="$attrs">
-        <slot />
+    <Tooltip
+        v-if="props.tooltip"
+        :content="props.tooltip"
+        :placement="props.tooltip_placement"
+    >
+        <Link
+            :href="hrefRef"
+            :target="target || undefined"
+            :method="method"
+            :replace="replace"
+            :class="atomClasses"
+            v-bind="attrs"
+            v-on="$attrs"
+            @click="handleClick"
+        >
+            <slot />
         </Link>
-        <template v-if="typeof props.tooltip === 'object'" #tooltip>
+        <template v-if="typeof props.tooltip === 'object'" #content>
             <slot name="tooltip" />
         </template>
     </Tooltip>
+    <Link
+        v-else
+        :href="hrefRef"
+        :target="target || undefined"
+        :method="method"
+        :replace="replace"
+        :class="atomClasses"
+        v-bind="attrs"
+        v-on="$attrs"
+        @click="handleClick"
+    >
+        <slot />
+    </Link>
 </template>
 
 <style scoped>

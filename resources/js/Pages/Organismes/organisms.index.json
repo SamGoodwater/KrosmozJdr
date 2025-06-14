@@ -15,21 +15,21 @@
       }
     ],
     "slots": [],
-    "file": "user/UpdateProfileInformationForm.vue"
+    "file": "User/UpdateProfileInformationForm.vue"
   },
   {
     "name": "UpdatePasswordForm",
     "description": "",
     "props": [],
     "slots": [],
-    "file": "user/UpdatePasswordForm.vue"
+    "file": "User/UpdatePasswordForm.vue"
   },
   {
     "name": "DeleteUserForm",
     "description": "",
     "props": [],
     "slots": [],
-    "file": "user/DeleteUserForm.vue"
+    "file": "User/DeleteUserForm.vue"
   },
   {
     "name": "SectionView",

@@ -42,29 +42,35 @@ defineOptions({ inheritAttrs: false }); // Pour que les événements natifs soie
  * @note Ce composant ne gère que <button>. Pour les liens ou autres éléments, utiliser un composant dédié (Route).
  * @note Toutes les classes DaisyUI sont explicites, pas de concaténation dynamique non couverte par Tailwind.
  */
-import { computed } from 'vue';
-import Tooltip from '@/Pages/Atoms/feedback/Tooltip.vue';
-import { getCommonProps, getCommonAttrs, getCustomUtilityProps, getCustomUtilityClasses, mergeClasses } from '@/Utils/atomic-design/uiHelper';
-import { colorList, variantList, sizeList } from '@/Pages/Atoms/atomMap';
-import { typeList } from './actionMap';
+import { computed } from "vue";
+import Tooltip from "@/Pages/Atoms/feedback/Tooltip.vue";
+import {
+    getCommonProps,
+    getCommonAttrs,
+    getCustomUtilityProps,
+    getCustomUtilityClasses,
+    mergeClasses,
+} from "@/Utils/atomic-design/uiHelper";
+import { colorList, variantList, sizeList } from "@/Pages/Atoms/atomMap";
+import { typeList } from "./actionMap";
 
 const props = defineProps({
     ...getCommonProps(),
     ...getCustomUtilityProps(),
     color: {
         type: String,
-        default: '',
-        validator: v => colorList.includes(v),
+        default: "",
+        validator: (v) => colorList.includes(v),
     },
     variant: {
         type: String,
-        default: '',
-        validator: v => variantList.includes(v),
+        default: "",
+        validator: (v) => [...variantList, "link"].includes(v),
     },
     size: {
         type: String,
-        default: '',
-        validator: v => sizeList.includes(v),
+        default: "",
+        validator: (v) => sizeList.includes(v),
     },
     block: { type: Boolean, default: false },
     wide: { type: Boolean, default: false },
@@ -72,8 +78,8 @@ const props = defineProps({
     circle: { type: Boolean, default: false },
     type: {
         type: String,
-        default: 'button',
-        validator: v => typeList.includes(v),
+        default: "button",
+        validator: (v) => typeList.includes(v),
     },
     checked: {
         type: Boolean,
@@ -85,43 +91,43 @@ const props = defineProps({
     },
     content: {
         type: String,
-        default: '',
+        default: "",
     },
 });
 
 const atomClasses = computed(() =>
     mergeClasses(
         [
-            'btn',
-            props.color === 'neutral' && 'btn-neutral',
-            props.color === 'primary' && 'btn-primary',
-            props.color === 'secondary' && 'btn-secondary',
-            props.color === 'accent' && 'btn-accent',
-            props.color === 'info' && 'btn-info',
-            props.color === 'success' && 'btn-success',
-            props.color === 'warning' && 'btn-warning',
-            props.color === 'error' && 'btn-error',
-            props.variant === 'outline' && 'btn-outline',
-            props.variant === 'ghost' && 'btn-ghost',
-            props.variant === 'link' && 'btn-link',
-            props.variant === 'soft' && 'btn-soft',
-            props.variant === 'dash' && 'btn-dash',
-            props.variant === 'glass' && 'glass',
-            props.size === 'xs' && 'btn-xs',
-            props.size === 'sm' && 'btn-sm',
-            props.size === 'md' && 'btn-md',
-            props.size === 'lg' && 'btn-lg',
-            props.size === 'xl' && 'btn-xl',
-            props.block && 'btn-block',
-            props.wide && 'btn-wide',
-            props.square && 'btn-square',
-            props.circle && 'btn-circle',
-            props.active && 'btn-active',
-            props.disabled && 'btn-disabled',
+            "btn",
+            props.color === "neutral" && "btn-neutral",
+            props.color === "primary" && "btn-primary",
+            props.color === "secondary" && "btn-secondary",
+            props.color === "accent" && "btn-accent",
+            props.color === "info" && "btn-info",
+            props.color === "success" && "btn-success",
+            props.color === "warning" && "btn-warning",
+            props.color === "error" && "btn-error",
+            props.variant === "outline" && "btn-outline",
+            props.variant === "ghost" && "btn-ghost",
+            props.variant === "link" && "btn-link",
+            props.variant === "soft" && "btn-soft",
+            props.variant === "dash" && "btn-dash",
+            props.variant === "glass" && "glass",
+            props.size === "xs" && "btn-xs",
+            props.size === "sm" && "btn-sm",
+            props.size === "md" && "btn-md",
+            props.size === "lg" && "btn-lg",
+            props.size === "xl" && "btn-xl",
+            props.block && "btn-block",
+            props.wide && "btn-wide",
+            props.square && "btn-square",
+            props.circle && "btn-circle",
+            props.active && "btn-active",
+            props.disabled && "btn-disabled",
         ].filter(Boolean),
         getCustomUtilityClasses(props),
-        props.class
-    )
+        props.class,
+    ),
 );
 const attrs = computed(() => getCommonAttrs(props));
 </script>
@@ -133,7 +139,7 @@ const attrs = computed(() => getCommonAttrs(props));
             <slot name="content" v-else />
             <slot v-if="!$slots.content && $slots.default" />
         </button>
-        <template v-if="typeof props.tooltip === 'object'" #tooltip>
+        <template v-if="$slots.tooltip" #content>
             <slot name="tooltip" />
         </template>
     </Tooltip>
@@ -149,7 +155,9 @@ const attrs = computed(() => getCommonAttrs(props));
     min-height: auto;
     width: auto;
     min-width: auto;
-    transition: filter 0.2s ease-in-out, backdrop-filter 0.2s ease-in-out,
+    transition:
+        filter 0.2s ease-in-out,
+        backdrop-filter 0.2s ease-in-out,
         text-shadow 0.3s ease-in-out;
 
     &.btn-xs {
@@ -176,8 +184,11 @@ const attrs = computed(() => getCommonAttrs(props));
 }
 
 .btn:not(.btn-link) {
-    transition: filter 0.2s ease-in-out, backdrop-filter 0.3s ease-in-out,
-        box-shadow 0.4s ease-in-out, text-shadow 0.3s ease-in-out;
+    transition:
+        filter 0.2s ease-in-out,
+        backdrop-filter 0.3s ease-in-out,
+        box-shadow 0.4s ease-in-out,
+        text-shadow 0.3s ease-in-out;
 
     position: relative;
     overflow: hidden;
@@ -187,26 +198,27 @@ const attrs = computed(() => getCommonAttrs(props));
         backdrop-filter: blur(4px);
         text-shadow: 0px 0px 8px rgba(255, 255, 255, 0.6);
         box-shadow:
-            0 0 1px 1px rgba(255, 255, 255, 0.50),
-            0 0 3px 4px rgba(255, 255, 255, 0.10),
+            0 0 1px 1px rgba(255, 255, 255, 0.5),
+            0 0 3px 4px rgba(255, 255, 255, 0.1),
             0 0 5px 6px rgba(255, 255, 255, 0.05),
-            inset 0 0 3px 4px rgba(255, 255, 255, 0.10),
+            inset 0 0 3px 4px rgba(255, 255, 255, 0.1),
             inset 0 0 5px 6px rgba(255, 255, 255, 0.05);
     }
 
     &:not(.btn-outline) {
         &::after {
-            content: '';
+            content: "";
             position: absolute;
             top: -50%;
             left: -50%;
             width: 200%;
             height: 200%;
-            background: linear-gradient(45deg,
-                    rgba(255, 255, 255, 0.2) 48%,
-                    rgba(255, 255, 255, 0.35) 50%,
-                    rgba(255, 255, 255, 0.2) 52%,
-                );
+            background: linear-gradient(
+                45deg,
+                rgba(255, 255, 255, 0.2) 48%,
+                rgba(255, 255, 255, 0.35) 50%,
+                rgba(255, 255, 255, 0.2) 52%
+            );
             transform: translateX(-100%) rotate(45deg);
             transition: transform 0.5s ease;
         }
@@ -214,17 +226,18 @@ const attrs = computed(() => getCommonAttrs(props));
 
     &.btn-outline {
         &::after {
-            content: '';
+            content: "";
             position: absolute;
             top: -50%;
             left: -50%;
             width: 200%;
             height: 200%;
-            background: linear-gradient(45deg,
-                    rgba(255, 255, 255, 0.05) 48%,
-                    rgba(255, 255, 255, 0.15) 50%,
-                    rgba(255, 255, 255, 0.05) 52%,
-                );
+            background: linear-gradient(
+                45deg,
+                rgba(255, 255, 255, 0.05) 48%,
+                rgba(255, 255, 255, 0.15) 50%,
+                rgba(255, 255, 255, 0.05) 52%
+            );
             transform: translateX(-100%) rotate(45deg);
             transition: transform 0.5s ease;
         }

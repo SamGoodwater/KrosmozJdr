@@ -30,38 +30,38 @@ defineOptions({ inheritAttrs: false }); // Pour que les évéments natifs soient
  *
  * @note Toutes les classes DaisyUI et utilitaires custom sont explicites, pas de concaténation dynamique non couverte par Tailwind.
  */
-import { computed } from 'vue';
-import Tooltip from '@/Pages/Atoms/feedback/Tooltip.vue';
-import { getCommonProps, getCommonAttrs } from '@/Utils/atomic-design/uiHelper';
-import { colorList, sizeXlList } from '@/Pages/Atoms/atomMap';
-import { colorMap, sizeMap } from './data-inputMap';
+import { computed } from "vue";
+import Tooltip from "@/Pages/Atoms/feedback/Tooltip.vue";
+import {
+    getCommonProps,
+    getCommonAttrs,
+    mergeClasses,
+} from "@/Utils/atomic-design/uiHelper";
+import { colorList, sizeXlList } from "@/Pages/Atoms/atomMap";
+import { colorMap, sizeMap } from "./data-inputMap";
 
 const props = defineProps({
     ...getCommonProps(),
-    for: { type: String, default: '' },
-    value: { type: String, default: '' },
+    for: { type: String, default: "" },
+    value: { type: String, default: "" },
     floating: { type: Boolean, default: false },
     size: {
         type: String,
-        default: '',
-        validator: v => sizeXlList.includes(v),
+        default: "",
+        validator: (v) => sizeXlList.includes(v),
     },
     color: {
         type: String,
-        default: '',
-        validator: v => colorList.includes(v),
-    },
-    position: {
-        type: String,
-        default: 'start',
-        validator: v => ['start', 'end'].includes(v),
+        default: "",
+        validator: (v) => colorList.includes(v),
     },
 });
 
 function getAtomClasses(props) {
     return mergeClasses(
-        ['label',
-            props.floating && 'floating-label',
+        [
+            "label",
+            props.floating && "floating-label",
             props.size && sizeMap[props.size],
             props.color && colorMap[props.color],
         ].filter(Boolean),
@@ -74,7 +74,12 @@ const attrs = computed(() => getCommonAttrs(props));
 
 <template>
     <Tooltip :content="props.tooltip" :placement="props.tooltip_placement">
-        <label :for="props.for || undefined" :class="atomClasses" v-bind="attrs" v-on="$attrs">
+        <label
+            :for="props.for || undefined"
+            :class="atomClasses"
+            v-bind="attrs"
+            v-on="$attrs"
+        >
             <span class="label-text">
                 <slot>
                     {{ value }}

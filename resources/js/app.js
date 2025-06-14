@@ -7,19 +7,17 @@ import { createApp, h } from "vue";
 import { ZiggyVue } from "../../vendor/tightenco/ziggy";
 import { createPinia } from "pinia";
 import DefaultLayout from "@/Pages/Layouts/Main.vue";
+
 const appName = import.meta.env.VITE_APP_NAME || "KrosmozJDR";
 
 createInertiaApp({
     title: (title) => `${title} - ${appName}`,
-    resolve: (name) =>
-        resolvePageComponent(
-            `./Pages/Pages/${name}.vue`,
-            import.meta.glob("./Pages/Pages/**/*.vue"),
-        ).then((module) => {
-            const page = module.default;
-            page.layout = page.layout || DefaultLayout;
-            return page;
-        }),
+    resolve: (name) => {
+        const pages = import.meta.glob("./Pages/**/*.vue", { eager: true });
+        const page = pages[`./Pages/${name}.vue`];
+        page.default.layout = page.default.layout || DefaultLayout;
+        return page;
+    },
     setup({ el, App, props, plugin }) {
         const pinia = createPinia();
         return createApp({ render: () => h(App, props) })

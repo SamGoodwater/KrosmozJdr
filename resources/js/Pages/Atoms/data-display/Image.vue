@@ -1,186 +1,222 @@
 <script setup>
-defineOptions({ inheritAttrs: false }); // Pour que les évéments natifs soient transmis à l'atom
-
 /**
- * Image Atom (Atomic Design, Tailwind, DaisyUI Mask)
+ * Image Atom (Atomic Design, Tailwind, DaisyUI)
  *
  * @description
- * Composant atomique pour afficher une image avec gestion explicite de la taille, du ratio, du border-radius, des filtres, du fit, de la position, du mask DaisyUI, du tooltip et de l'accessibilité.
- * - Mapping explicite des classes Tailwind (pas de concaténation dynamique)
- * - Support explicite de tous les masks DaisyUI (mask, mask-squircle, mask-heart, mask-hexagon, mask-hexagon-2, mask-decagon, mask-pentagon, mask-diamond, mask-square, mask-circle, mask-star, mask-star-2, mask-triangle, mask-triangle-2, mask-triangle-3, mask-triangle-4, mask-half-1, mask-half-2)
- * - Filtres numériques appliqués en style inline, sinon via classes
- * - Ratio géré via un wrapper aspect-*
+ * Composant atomique pour afficher une image avec gestion de la taille, du ratio, des filtres, du fit, de la position, du mask DaisyUI et du tooltip.
+ * - Utilise MediaManager pour la résolution des sources d'images
+ * - Support des tailles prédéfinies via size ou personnalisées via width/height
+ * - Support du ratio d'aspect
+ * - Support des filtres (simple ou multiple)
+ * - Support des masks DaisyUI
+ * - Gestion du chargement et des erreurs
  * - Tooltip intégré
- * - Accessibilité renforcée (alt obligatoire)
- * - Responsive via la prop 'sizes' (voir exemple)
- *
- * @see https://daisyui.com/components/mask/
- * @version DaisyUI v5.x (5.0.43)
  *
  * @example
- * <Image src="/img/avatar.jpg" alt="Avatar" size="lg" ratio="1/1" rounded="full" fit="cover" position="top" mask="mask-squircle" tooltip="Avatar utilisateur" />
- * <Image src="/img/photo.jpg" alt="Photo" :sizes="{ sm: 'xs', md: 'sm', lg: 'md', xl: 'lg' }" ratio="1/1" mask="mask-hexagon" />
+ * <Image source="logos/logo" alt="Logo" size="lg" />
+ * <Image src="/img/avatar.jpg" alt="Avatar" width="64" height="64" ratio="1/1" />
+ * <Image source="photos/landscape" alt="Paysage" size="xl" fit="cover" position="center" />
+ * <Image source="avatars/user" alt="Avatar" size="md" rounded="full" filter="grayscale" />
  *
- * @props {String} src - URL de l'image (obligatoire)
+ * @props {String} src - URL directe de l'image
+ * @props {String} source - Chemin source pour MediaManager
  * @props {String} alt - Texte alternatif (obligatoire)
  * @props {String} size - Taille prédéfinie (xs, sm, md, lg, xl, 2xl, 3xl, 4xl, 5xl, 6xl)
- * @props {Object} sizes - Mapping responsive { sm: 'xs', md: 'sm', ... } (prioritaire sur size)
+ * @props {String} width - Largeur personnalisée
+ * @props {String} height - Hauteur personnalisée
  * @props {String} ratio - Ratio d'aspect (square, video, 16/9, 4/3, 3/2, 2/1, etc.)
- * @props {String} width - Largeur personnalisée (ex: 64, 128) si size/sizes non défini
- * @props {String} height - Hauteur personnalisée (ex: 64, 128) si size/sizes non défini
- * @props {String} rounded - Arrondi (none, sm, md, lg, xl, 2xl, 3xl, full, circle)
  * @props {String} fit - object-fit (cover, contain, fill, none, scale-down)
  * @props {String} position - object-position (center, top, right, bottom, left, top-left, top-right, bottom-left, bottom-right)
- * @props {String|Object} filter - Filtre CSS (grayscale, sepia, blur, brightness, contrast, hue-rotate, invert, saturate) ou objet numérique { type, value }
- * @props {String} mask - Classe DaisyUI mask-* (mask, mask-squircle, mask-heart, mask-hexagon, mask-hexagon-2, mask-decagon, mask-pentagon, mask-diamond, mask-square, mask-circle, mask-star, mask-star-2, mask-triangle, mask-triangle-2, mask-triangle-3, mask-triangle-4, mask-half-1, mask-half-2)
- * @props {String|Object} tooltip - Tooltip (hérité de commonProps)
- * @props {String} tooltip_placement - Position du tooltip (hérité de commonProps)
- * @props {String} id, ariaLabel, role, tabindex, disabled - hérités de commonProps
+ * @props {String|Array} filter - Filtre(s) CSS (grayscale, sepia, blur, brightness, contrast, hue-rotate, invert, saturate)
+ * @props {String} rounded - Arrondi (none, sm, md, lg, xl, 2xl, 3xl, full, circle)
+ * @props {String} mask - Classe DaisyUI mask-* (mask, mask-squircle, mask-heart, etc.)
+ * @props {String|Object} tooltip - Tooltip
+ * @props {String} tooltip_placement - Position du tooltip
+ * @props {Object} transform - Options de transformation pour MediaManager (width, height, fit, quality, format)
  *
- * @slot loader - Loader personnalisé (affiché pendant le chargement)
- * @slot fallback - Fallback personnalisé (affiché si l'image ne se charge pas)
- *
- * @note Les classes Tailwind et DaisyUI sont explicites, pas de concaténation dynamique non couverte par Tailwind.
- * @note Les filtres numériques sont appliqués en style inline.
- * @note La prop 'sizes' permet le responsive (voir exemple ci-dessus).
- * @note La prop 'mask' supporte tous les masks DaisyUI (voir doc officielle DaisyUI).
+ * @slot loader - Loader personnalisé pendant le chargement
+ * @slot fallback - Contenu alternatif en cas d'erreur
+ * @slot tooltip - Contenu personnalisé du tooltip
  */
-import { computed, ref, watch, onMounted } from 'vue';
-import Tooltip from '@/Pages/Atoms/feedback/Tooltip.vue';
-import { getCommonProps, getCommonAttrs, mergeClasses } from '@/Utils/atomic-design/uiHelper';
-import { MediaManager } from '@/Utils/file/MediaManager';
-import Loading from '@/Pages/Atoms/feedback/Loading.vue';
-import { sizeMap, ratioMap, roundedMap, fitMap, positionMap, filterClassMap, maskList, breakpoints } from '@/Pages/Atoms/data-display/data-displayMap';
+
+import { computed, ref, watch, onMounted, useSlots } from "vue";
+import { ImageService } from "@/Utils/file/ImageService";
+import {
+    getCommonProps,
+    getCommonAttrs,
+    mergeClasses,
+} from "@/Utils/atomic-design/uiHelper";
+import Tooltip from "@/Pages/Atoms/feedback/Tooltip.vue";
+import Skeleton from "@/Pages/Atoms/feedback/Skeleton.vue";
+import {
+    sizeMap,
+    ratioMap,
+    roundedMap,
+    fitMap,
+    positionMap,
+    filterClassMap,
+    maskList,
+} from "@/Pages/Atoms/data-display/data-displayMap";
+
+defineOptions({ inheritAttrs: false });
 
 const props = defineProps({
     ...getCommonProps(),
-    src: { type: String, default: '' },
-    source: { type: String, default: '' },
+    src: { type: String, default: "" },
+    source: { type: String, default: "" },
     alt: { type: String, required: true },
-    size: { type: String, default: '' },
-    sizes: { type: Object, default: null },
+    size: { type: String, default: "" },
+    width: { type: String, default: "" },
+    height: { type: String, default: "" },
     ratio: {
         type: String,
-        default: '',
-        validator: v => v === '' || Object.keys(ratioMap).includes(v),
-    },
-    width: { type: String, default: '' },
-    height: { type: String, default: '' },
-    rounded: {
-        type: String,
-        default: '',
-        validator: v => v === '' || Object.keys(roundedMap).includes(v),
+        default: "",
+        validator: (v) => v === "" || Object.keys(ratioMap).includes(v),
     },
     fit: {
         type: String,
-        default: 'cover',
-        validator: v => Object.keys(fitMap).includes(v),
+        default: "cover",
+        validator: (v) => Object.keys(fitMap).includes(v),
     },
     position: {
         type: String,
-        default: 'center',
-        validator: v => Object.keys(positionMap).includes(v),
+        default: "center",
+        validator: (v) => Object.keys(positionMap).includes(v),
     },
-    filter: { type: [String, Object], default: '' },
+    filter: { type: [String, Array], default: "" },
+    rounded: {
+        type: String,
+        default: "",
+        validator: (v) => v === "" || Object.keys(roundedMap).includes(v),
+    },
     mask: {
         type: String,
-        default: '',
-        validator: v => maskList.includes(v),
+        default: "",
+        validator: (v) => v === "" || maskList.includes(v),
+    },
+    transform: {
+        type: Object,
+        default: () => ({}),
     },
 });
 
-const imageUrl = ref('');
+// État
+const imageUrl = ref("");
 const isLoading = ref(false);
+const hasError = ref(false);
+const FALLBACK_IMAGE = "/storage/images/no_found.svg";
+let triedFallback = false;
 
+const slots = useSlots();
+
+// Résolution de l'URL de l'image
 async function resolveImage() {
-    if (props.src) {
-        imageUrl.value = props.src;
-        isLoading.value = false;
-    } else if (props.source) {
-        isLoading.value = true;
-        imageUrl.value = '';
-        try {
-            imageUrl.value = await MediaManager.get(props.source, 'image');
-        } catch (e) {
-            imageUrl.value = '';
-        } finally {
-            isLoading.value = false;
+    if (props.src && props.source) {
+        console.warn(
+            "Image - Les props src et source sont définies, src sera ignoré",
+        );
+    }
+
+    if (!props.src && !props.source) {
+        imageUrl.value = "";
+        return;
+    }
+
+    isLoading.value = true;
+    hasError.value = false;
+    triedFallback = false;
+
+    try {
+        if (props.src) {
+            // URL directe
+            imageUrl.value = props.src.startsWith("/")
+                ? props.src
+                : `/${props.src}`;
+        } else {
+            // Source via ImageService avec transformations
+            if (Object.keys(props.transform).length > 0) {
+                imageUrl.value = await ImageService.getThumbnailUrl(
+                    props.source,
+                    props.transform,
+                );
+            } else {
+                imageUrl.value = await ImageService.getImageUrl(props.source);
+            }
         }
-    } else {
-        imageUrl.value = '';
+    } catch (error) {
+        console.error("Image - Erreur de chargement:", error);
+        hasError.value = true;
+        imageUrl.value = "";
+    } finally {
         isLoading.value = false;
     }
 }
 
-watch(() => [props.src, props.source], resolveImage, { immediate: true });
-onMounted(resolveImage);
-
-// Wrapper classes (ratio, size, responsive sizes)
-const wrapperClasses = computed(() =>
-    mergeClasses(
-        [
-            'relative',
-            'inline-flex',
-            'justify-center',
-            'items-center',
-            props.ratio && ratioMap[props.ratio],
-// Responsive sizes
-            ...(props.sizes
-                ? Object.entries(props.sizes).flatMap(([bp, sizeKey]) =>
-                    breakpoints.includes(bp) && sizeMap[sizeKey]
-                        ? [`${bp}:${sizeMap[sizeKey][0]}`, `${bp}:${sizeMap[sizeKey][1]}`]
-                        : []
-                )
-                : props.size && sizeMap[props.size]
-                    ? sizeMap[props.size]
-                    : []),
-        ].filter(Boolean)
-    )
-);
-
-// Image classes (fit, position, rounded, mask, filtre simple)
-const atomClasses = computed(() =>
-    mergeClasses(
-        [
-            props.fit && fitMap[props.fit],
-            props.position && positionMap[props.position],
-            props.rounded && roundedMap[props.rounded],
-            props.mask,
-            typeof props.filter === 'string' && filterClassMap[props.filter] && filterClassMap[props.filter].split(' '),
-        ].flat().filter(Boolean)
-    )
-);
-
-// Filtre numérique (inline style)
-const imageStyle = computed(() => {
-    if (typeof props.filter === 'object' && props.filter !== null) {
-        // { type: 'blur', value: 8 } => filter: blur(8px)
-        const { type, value } = props.filter;
-        if (type && value !== undefined) {
-            if ([
-                'grayscale', 'sepia', 'invert', 'saturate', 'contrast', 'brightness'
-            ].includes(type)) {
-                return { filter: `${type}(${value}%)` };
-            }
-            if (type === 'blur') {
-                return { filter: `blur(${value}px)` };
-            }
-            if (type === 'hue-rotate') {
-                return { filter: `hue-rotate(${value}deg)` };
-            }
-        }
+function onError() {
+    if (!triedFallback && imageUrl.value !== FALLBACK_IMAGE) {
+        imageUrl.value = FALLBACK_IMAGE;
+        triedFallback = true;
+        hasError.value = false;
+    } else {
+        hasError.value = true;
     }
-    return {};
-});
+}
 
+// Classes du wrapper (ratio, size)
+const wrapperClasses = computed(() =>
+    mergeClasses([
+        "relative",
+        "inline-flex",
+        "justify-center",
+        "items-center",
+        props.ratio && ratioMap[props.ratio],
+        props.size && sizeMap[props.size],
+    ]),
+);
+
+// Classes de l'image (fit, position, rounded, mask, filter)
+const imageClasses = computed(() =>
+    mergeClasses([
+        props.fit && fitMap[props.fit],
+        props.position && positionMap[props.position],
+        props.rounded && roundedMap[props.rounded],
+        props.mask,
+        // Gestion des filtres (simple ou multiple)
+        ...(Array.isArray(props.filter)
+            ? props.filter.map((f) => filterClassMap[f]).filter(Boolean)
+            : props.filter && filterClassMap[props.filter]
+              ? [filterClassMap[props.filter]]
+              : []),
+    ]),
+);
+
+// Style de l'image (dimensions personnalisées)
+const imageStyle = computed(() => ({
+    ...(props.width && !props.size ? { width: props.width } : {}),
+    ...(props.height && !props.size ? { height: props.height } : {}),
+}));
+
+// Attrs communs
 const attrs = computed(() => getCommonAttrs(props));
 
-const imgAttrs = computed(() => {
-    return {
-        ...attrs.value,
-        ...(props.width && !props.size ? { width: props.width } : {}),
-        ...(props.height && !props.size ? { height: props.height } : {}),
-    };
+// Attrs spécifiques à l'image
+const imgAttrs = computed(() => ({
+    ...attrs.value,
+    ...(props.width && !props.size ? { width: props.width } : {}),
+    ...(props.height && !props.size ? { height: props.height } : {}),
+}));
+
+// Watch pour recharger l'image si src, source ou transform change
+watch(
+    [() => props.src, () => props.source, () => props.transform],
+    () => {
+        resolveImage();
+    },
+    { deep: true },
+);
+
+onMounted(() => {
+    resolveImage();
 });
 </script>
 
@@ -189,14 +225,41 @@ const imgAttrs = computed(() => {
         <Tooltip :content="props.tooltip" :placement="props.tooltip_placement">
             <template v-if="isLoading">
                 <slot name="loader">
-                    <Loading type="spinner" size="md" color="secondary" />
+                    <Skeleton
+                        element="image"
+                        :size="props.size"
+                        :width="props.width"
+                        :height="props.height"
+                        :class="imageClasses"
+                    />
                 </slot>
             </template>
-            <img v-else-if="imageUrl" :src="imageUrl" :alt="alt" :class="atomClasses" :style="imageStyle"
-                v-bind="imgAttrs" v-on="$attrs" />
-            <template v-else>
+
+            <img
+                v-else-if="imageUrl && !hasError"
+                :src="imageUrl"
+                :alt="alt"
+                :class="imageClasses"
+                :style="imageStyle"
+                v-bind="imgAttrs"
+                v-on="$attrs"
+                @error="onError"
+            />
+
+            <template v-else-if="slots.fallback">
                 <slot name="fallback" />
             </template>
+
+            <img
+                v-else
+                :src="FALLBACK_IMAGE"
+                alt="Image non disponible"
+                :class="imageClasses"
+                :style="imageStyle"
+                v-bind="imgAttrs"
+                v-on="$attrs"
+            />
+
             <template v-if="typeof props.tooltip === 'object'" #tooltip>
                 <slot name="tooltip" />
             </template>

@@ -14,9 +14,6 @@ use Inertia\Inertia;
 use App\Rules\FileRules;
 use Illuminate\Support\Facades\Storage;
 
-$uniqidRegex = '[A-Za-z0-9]+';
-$slugRegex = '[A-Za-z0-9]+(?:(-|_).[A-Za-z0-9]+)*';
-
 Route::middleware('guest')->group(function () {
     Route::get('register', [RegisteredUserController::class, 'create'])
         ->name('register');

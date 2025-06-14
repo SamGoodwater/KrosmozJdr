@@ -8,14 +8,12 @@ use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\PageController;
 use App\Http\Controllers\SectionController;
 
-const SLUG_REGEX = '[a-z0-9]+(?:-[a-z0-9]+)*';
-
 // --- PAGES ---
 
 Route::prefix('pages')->name('pages.')->group(function () {
     // Lecture publique (slug pour SEO)
     Route::get('/', [PageController::class, 'index'])->name('index');
-    Route::get('/{page:slug}', [PageController::class, 'show'])->name('show')->where('page', SLUG_REGEX);
+    Route::get('/{page:slug}', [PageController::class, 'show'])->name('show')->where('page', '[a-z0-9]+(?:-[a-z0-9]+)*');
 
     // Authentifié uniquement (la policy gère les droits fins)
     Route::middleware('auth')->group(function () {
@@ -38,7 +36,7 @@ Route::prefix('pages')->name('pages.')->group(function () {
 
 Route::prefix('sections')->name('sections.')->middleware('auth')->group(function () {
     // Lecture (section précise via id numérique)
-    Route::get('/{section}', [SectionController::class, 'show'])->name('show');
+    Route::get('/{section}', [SectionController::class, 'show'])->name('show')->where('section', '[a-z0-9]+(?:-[a-z0-9]+)*');
 
     // Edition, update, suppression, création : droits gérés par policy (plus de middleware 'role')
     Route::get('/{section}/edit', [SectionController::class, 'edit'])->name('edit');

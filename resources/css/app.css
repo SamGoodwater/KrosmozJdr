@@ -1,12 +1,17 @@
 @import "tailwindcss";
+
 @plugin "@tailwindcss/typography";
+
+@layer base {
+    @import "./theme.css";
+    @import "./custom.css";
+}
+
 @source "/resources/js/Pages/**/*.vue";
 @source "/resources/js/Pages/**/*.js";
 @source "/vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php";
 @source "/storage/framework/views/*.php";
 @source "/resources/views/**/*.blade.php";
-
-@import "./theme.css";
 
 @plugin "daisyui/theme" {
     name: "dark";
@@ -77,5 +82,3 @@
     --depth: 1;
     --noise: 0;
 }
-
-@import "./custom.css";

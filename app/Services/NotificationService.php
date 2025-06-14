@@ -5,7 +5,6 @@ namespace App\Services;
 use App\Notifications\EntityModifiedNotification;
 use App\Notifications\ProfileModifiedNotification;
 use App\Models\User;
-use App\Services\FileProcessionService;
 use Illuminate\Support\Facades\Storage;
 
 /**
@@ -93,11 +92,11 @@ class NotificationService
         $changes = [];
         foreach ($new->getChanges() as $field => $newValue) {
             if (in_array($field, $ignore)) continue;
-            $isImage = is_string($newValue) && FileProcessionService::isImagePath($newValue);
+            $isImage = is_string($newValue) && FileService::isImagePath($newValue);
             $changes[$field] = [
                 'old' => $old->$field,
                 'new' => $new->$field,
-                'image_url' => $isImage ? \Storage::disk('public')->url($newValue) : null,
+                'image_url' => $isImage ? Storage::disk('public')->url($newValue) : null,
             ];
         }
         return $changes;

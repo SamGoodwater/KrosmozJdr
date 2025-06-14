@@ -50,29 +50,35 @@ defineOptions({ inheritAttrs: false }); // Pour que les événements natifs soie
  * @note Accessibilité : role="tooltip" sur .tooltip-content, aria-label, tabindex, etc. transmis.
  * @note Seul atome à ne pas intégrer Tooltip (pas de récursivité).
  */
-import { computed } from 'vue';
-import { getCommonProps, getCommonAttrs, getCustomUtilityProps, getCustomUtilityClasses, mergeClasses } from '@/Utils/atomic-design/uiHelper';
-import { colorList } from '@/Pages/Atoms/atomMap';
+import { computed } from "vue";
+import {
+    getCommonProps,
+    getCommonAttrs,
+    getCustomUtilityProps,
+    getCustomUtilityClasses,
+    mergeClasses,
+} from "@/Utils/atomic-design/uiHelper";
+import { colorList } from "@/Pages/Atoms/atomMap";
 
 const props = defineProps({
-    ...getCommonProps({ exclude: ['tooltip', 'tooltip_placement'] }),
+    ...getCommonProps({ exclude: ["tooltip", "tooltip_placement"] }),
     ...getCustomUtilityProps(),
     // Contenu du tooltip (string simple)
     content: {
         type: String,
-        default: '',
+        default: "",
     },
     // Placement DaisyUI : top, right, bottom, left
     placement: {
         type: String,
-        default: 'top',
-        validator: v => ['top', 'right', 'bottom', 'left'].includes(v),
+        default: "top",
+        validator: (v) => ["top", "right", "bottom", "left"].includes(v),
     },
     // Couleur DaisyUI : neutral, primary, secondary, accent, info, success, warning, error
     color: {
         type: String,
-        default: '',
-        validator: v => colorList.includes(v),
+        default: "",
+        validator: (v) => colorList.includes(v),
     },
     // Forcer l'ouverture
     open: {
@@ -82,42 +88,47 @@ const props = defineProps({
     // Responsive (ex: lg)
     responsive: {
         type: String,
-        default: '',
+        default: "",
     },
 });
 
 const atomClasses = computed(() =>
     mergeClasses(
         [
-            props.responsive === 'sm' && 'sm:tooltip',
-            props.responsive === 'md' && 'md:tooltip',
-            props.responsive === 'lg' && 'lg:tooltip',
-            props.responsive === 'xl' && 'xl:tooltip',
-            props.responsive === '2xl' && '2xl:tooltip',
-            !props.responsive && 'tooltip',
-            props.placement === 'top' && 'tooltip-top',
-            props.placement === 'right' && 'tooltip-right',
-            props.placement === 'bottom' && 'tooltip-bottom',
-            props.placement === 'left' && 'tooltip-left',
-            props.color === 'neutral' && 'tooltip-neutral',
-            props.color === 'primary' && 'tooltip-primary',
-            props.color === 'secondary' && 'tooltip-secondary',
-            props.color === 'accent' && 'tooltip-accent',
-            props.color === 'info' && 'tooltip-info',
-            props.color === 'success' && 'tooltip-success',
-            props.color === 'warning' && 'tooltip-warning',
-            props.color === 'error' && 'tooltip-error',
-            props.open && 'tooltip-open',
+            props.responsive === "sm" && "sm:tooltip",
+            props.responsive === "md" && "md:tooltip",
+            props.responsive === "lg" && "lg:tooltip",
+            props.responsive === "xl" && "xl:tooltip",
+            props.responsive === "2xl" && "2xl:tooltip",
+            !props.responsive && "tooltip",
+            props.placement === "top" && "tooltip-top",
+            props.placement === "right" && "tooltip-right",
+            props.placement === "bottom" && "tooltip-bottom",
+            props.placement === "left" && "tooltip-left",
+            props.color === "neutral" && "tooltip-neutral",
+            props.color === "primary" && "tooltip-primary",
+            props.color === "secondary" && "tooltip-secondary",
+            props.color === "accent" && "tooltip-accent",
+            props.color === "info" && "tooltip-info",
+            props.color === "success" && "tooltip-success",
+            props.color === "warning" && "tooltip-warning",
+            props.color === "error" && "tooltip-error",
+            props.open && "tooltip-open",
         ].filter(Boolean),
         getCustomUtilityClasses(props),
-        props.class
-    )
+        props.class,
+    ),
 );
 const attrs = computed(() => getCommonAttrs(props));
 </script>
 
 <template>
-    <div :class="atomClasses" v-bind="attrs" v-on="$attrs" :data-tip="!$slots.content ? content : undefined">
+    <div
+        :class="atomClasses"
+        v-bind="attrs"
+        v-on="$attrs"
+        :data-tip="!$slots.content && content ? content : undefined"
+    >
         <slot />
         <template v-if="$slots.content">
             <div class="tooltip-content" role="tooltip">

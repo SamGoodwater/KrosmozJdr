@@ -16,12 +16,13 @@ defineOptions({ inheritAttrs: false });
  * @see https://daisyui.com/components/dock/
  *
  * @example
- * <DockItem icon="fa-home" label="Accueil" active route="home" />
- * <DockItem icon="fa-cog" label="Paramètres" />
+ * <DockItem icon="fa-home" pack="solid" label="Accueil" active route="home" />
+ * <DockItem icon="fa-cog" pack="solid" label="Paramètres" />
  *
  * @props {Boolean} active - Met l'item en état actif
  * @props {Boolean} disabled - Désactive l'item
  * @props {String} icon - Nom logique ou chemin de l'icône (optionnel, sinon slot #icon)
+ * @props {String} pack - Pack FontAwesome (solid, regular, brands, duotone)
  * @props {String} label - Label du dock (optionnel, sinon slot #label)
  * @props {String} route - Nom de la route Inertia/Laravel (optionnel)
  * @props {String} color - Couleur DaisyUI (optionnel)
@@ -32,52 +33,88 @@ defineOptions({ inheritAttrs: false });
  * @slot label - Slot pour le label (prioritaire sur prop label)
  * @slot default - Contenu custom
  */
-import { computed } from 'vue';
-import Icon from '@/Pages/Atoms/data-display/Icon.vue';
-import RouteAtom from '@/Pages/Atoms/action/Route.vue';
-import { getCommonProps, getCommonAttrs, getCustomUtilityProps, getCustomUtilityClasses, mergeClasses } from '@/Utils/atomic-design/uiHelper';
-import { sizeXlList } from '@/Pages/Atoms/atomMap';
+import { computed } from "vue";
+import Icon from "@/Pages/Atoms/data-display/Icon.vue";
+import RouteAtom from "@/Pages/Atoms/action/Route.vue";
+import {
+    getCommonProps,
+    getCommonAttrs,
+    getCustomUtilityProps,
+    getCustomUtilityClasses,
+    mergeClasses,
+} from "@/Utils/atomic-design/uiHelper";
+import { sizeXlList } from "@/Pages/Atoms/atomMap";
 
 const props = defineProps({
     ...getCommonProps(),
     ...getCustomUtilityProps(),
     active: { type: Boolean, default: false },
     disabled: { type: Boolean, default: false },
-    icon: { type: String, default: '' },
-    label: { type: String, default: '' },
-    route: { type: String, default: '' },
-    color: { type: String, default: '' },
+    icon: { type: String, default: "" },
+    pack: {
+        type: String,
+        default: "",
+        validator: (v) => ["solid", "regular", "brands", "duotone"].includes(v),
+    },
+    label: { type: String, default: "" },
+    route: { type: String, default: "" },
+    color: { type: String, default: "" },
     size: {
         type: String,
-        default: '',
-        validator: v => sizeXlList.includes(v),
+        default: "",
+        validator: (v) => sizeXlList.includes(v),
+    },
+    target: {
+        type: String,
+        default: "",
+        validator: (v) =>
+            ["", "_blank", "_self", "_parent", "_top"].includes(v),
     },
 });
 
 const atomClasses = computed(() =>
     mergeClasses(
         [
-            props.active && 'dock-active',
-            props.size === 'xs' && 'dock-xs',
-            props.size === 'sm' && 'dock-sm',
-            props.size === 'md' && 'dock-md',
-            props.size === 'lg' && 'dock-lg',
-            props.size === 'xl' && 'dock-xl',
-            props.class
+            props.active && "dock-active",
+            props.size === "xs" && "dock-xs",
+            props.size === "sm" && "dock-sm",
+            props.size === "md" && "dock-md",
+            props.size === "lg" && "dock-lg",
+            props.size === "xl" && "dock-xl",
+            props.class,
         ],
-        getCustomUtilityClasses(props)
-    )
+        getCustomUtilityClasses(props),
+    ),
 );
 const attrs = computed(() => getCommonAttrs(props));
 </script>
 
 <template>
     <li :class="atomClasses" v-bind="attrs" v-on="$attrs">
-        <RouteAtom v-if="route" :route="route" :disabled="props.disabled" :aria-label="props.ariaLabel"
-            :tabindex="props.tabindex" :role="props.role" :id="props.id" :class="'flex flex-col items-center w-full'">
-            <span v-if="$slots.icon || icon" class="mb-1 flex items-center justify-center">
+        <RouteAtom
+            v-if="route"
+            :route="route"
+            :disabled="props.disabled"
+            :aria-label="props.ariaLabel"
+            :tabindex="props.tabindex"
+            :role="props.role"
+            :id="props.id"
+            :target="props.target"
+            :class="'flex flex-col items-center w-full'"
+        >
+            <span
+                v-if="$slots.icon || icon"
+                class="mb-1 flex items-center justify-center"
+            >
                 <slot name="icon">
-                    <Icon v-if="icon" :source="icon" :alt="'icon'" :size="size || 'md'" :disabled="props.disabled" />
+                    <Icon
+                        v-if="icon"
+                        :source="icon"
+                        :pack="pack"
+                        :alt="'icon'"
+                        :size="size || 'md'"
+                        :disabled="props.disabled"
+                    />
                 </slot>
             </span>
             <span v-if="$slots.label || label" class="dock-label">
@@ -85,11 +122,26 @@ const attrs = computed(() => getCommonAttrs(props));
             </span>
             <slot />
         </RouteAtom>
-        <button v-else :disabled="props.disabled" :tabindex="props.tabindex" :aria-label="props.ariaLabel"
-            :class="'flex flex-col items-center w-full'">
-            <span v-if="$slots.icon || icon" class="mb-1 flex items-center justify-center">
+        <button
+            v-else
+            :disabled="props.disabled"
+            :tabindex="props.tabindex"
+            :aria-label="props.ariaLabel"
+            :class="'flex flex-col items-center w-full'"
+        >
+            <span
+                v-if="$slots.icon || icon"
+                class="mb-1 flex items-center justify-center"
+            >
                 <slot name="icon">
-                    <Icon v-if="icon" :source="icon" :alt="'icon'" :size="size || 'md'" :disabled="props.disabled" />
+                    <Icon
+                        v-if="icon"
+                        :source="icon"
+                        :pack="pack"
+                        :alt="'icon'"
+                        :size="size || 'md'"
+                        :disabled="props.disabled"
+                    />
                 </slot>
             </span>
             <span v-if="$slots.label || label" class="dock-label">

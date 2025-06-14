@@ -28,27 +28,28 @@ defineOptions({ inheritAttrs: false }); // Pour que les évéments natifs soient
  *
  * @note Toutes les classes DaisyUI et utilitaires custom sont explicites, pas de concaténation dynamique non couverte par Tailwind.
  */
-import { computed } from 'vue';
-import { getCommonProps, getCommonAttrs } from '@/Utils/atomic-design/atomManager';
-import { stateList, stateMap } from './data-inputMap';
-import { mergeClasses } from '@/Utils/atomic-design/uiHelper';
+import { computed } from "vue";
+import { getCommonProps, getCommonAttrs } from "@/Utils/atomic-design/uiHelper";
+import { stateList, stateMap } from "./data-inputMap";
+import { mergeClasses } from "@/Utils/atomic-design/uiHelper";
 
 const props = defineProps({
     ...getCommonProps(),
     state: {
         type: String,
-        default: '',
-        validator: v => stateList.includes(v),
+        default: "",
+        validator: (v) => stateList.includes(v),
     },
-    message: { type: String, default: '' },
+    message: { type: String, default: "" },
     visible: { type: Boolean, default: true },
-    class: { type: String, default: '' },
+    class: { type: String, default: "" },
 });
 
 function getAtomClasses(props) {
-    const classes = ['validator-hint'];
-    if (props.state && stateMap[props.state]) classes.push(stateMap[props.state]);
-    if (!props.visible) classes.push('hidden');
+    const classes = ["validator-hint"];
+    if (props.state && stateMap[props.state])
+        classes.push(stateMap[props.state]);
+    if (!props.visible) classes.push("hidden");
     return mergeClasses(classes, props.class);
 }
 

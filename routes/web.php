@@ -6,10 +6,9 @@ use Inertia\Inertia;
 use Illuminate\Support\Fluent;
 use Illuminate\Support\Facades\Auth;
 
-$slugRegex = '[a-z0-9]+(?:-[a-z0-9]+)*';
-
-include_once __DIR__ . '/auth.php';
+require __DIR__ . '/auth.php';
 require __DIR__ . '/user.php';
+require __DIR__ . '/file.php';
 
 // Routes publiques
 Route::get('/', function () {
@@ -25,7 +24,4 @@ Route::get('/contribuer', function () {
 })->name('contribute');
 
 // PAGES ET SECTIONS
-require_once __DIR__ . '/page.php';
-
-// ENTITIES
-// Les routes utilisent désormais l'id numérique pour toutes les entités sauf show page (slug pour SEO).
+require __DIR__ . '/page.php';

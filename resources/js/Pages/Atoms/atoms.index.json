@@ -42,6 +42,21 @@
         "name": "id,",
         "type": "String|Object",
         "desc": "ariaLabel, role, tabindex, class - hérités de commonProps"
+      },
+      {
+        "name": "id",
+        "type": "String",
+        "desc": "- ID unique de l'onglet"
+      },
+      {
+        "name": "tooltip",
+        "type": "String|Object",
+        "desc": "- Tooltip"
+      },
+      {
+        "name": "tooltip_placement",
+        "type": "String",
+        "desc": "- Position du tooltip"
       }
     ],
     "slots": [
@@ -131,6 +146,11 @@
         "desc": "- Nom logique ou chemin de l'icône (optionnel, sinon slot #icon)"
       },
       {
+        "name": "pack",
+        "type": "String",
+        "desc": "- Pack FontAwesome (solid, regular, brands, duotone)"
+      },
+      {
         "name": "color",
         "type": "String",
         "desc": "- Couleur DaisyUI (optionnel)"
@@ -190,6 +210,11 @@
         "name": "icon",
         "type": "String",
         "desc": "- Nom logique ou chemin de l'icône (optionnel, sinon slot #icon)"
+      },
+      {
+        "name": "pack",
+        "type": "String",
+        "desc": "- Pack FontAwesome (solid, regular, brands, duotone)"
       },
       {
         "name": "label",
@@ -1811,12 +1836,17 @@
   },
   {
     "name": "Image",
-    "description": "Image Atom (Atomic Design, Tailwind, DaisyUI Mask)",
+    "description": "Image Atom (Atomic Design, Tailwind, DaisyUI)",
     "props": [
       {
         "name": "src",
         "type": "String",
-        "desc": "- URL de l'image (obligatoire)"
+        "desc": "- URL directe de l'image"
+      },
+      {
+        "name": "source",
+        "type": "String",
+        "desc": "- Chemin source pour MediaManager"
       },
       {
         "name": "alt",
@@ -1829,29 +1859,19 @@
         "desc": "- Taille prédéfinie (xs, sm, md, lg, xl, 2xl, 3xl, 4xl, 5xl, 6xl)"
       },
       {
-        "name": "sizes",
-        "type": "Object",
-        "desc": "- Mapping responsive { sm: 'xs', md: 'sm', ... } (prioritaire sur size)"
+        "name": "width",
+        "type": "String",
+        "desc": "- Largeur personnalisée"
+      },
+      {
+        "name": "height",
+        "type": "String",
+        "desc": "- Hauteur personnalisée"
       },
       {
         "name": "ratio",
         "type": "String",
         "desc": "- Ratio d'aspect (square, video, 16/9, 4/3, 3/2, 2/1, etc.)"
-      },
-      {
-        "name": "width",
-        "type": "String",
-        "desc": "- Largeur personnalisée (ex: 64, 128) si size/sizes non défini"
-      },
-      {
-        "name": "height",
-        "type": "String",
-        "desc": "- Hauteur personnalisée (ex: 64, 128) si size/sizes non défini"
-      },
-      {
-        "name": "rounded",
-        "type": "String",
-        "desc": "- Arrondi (none, sm, md, lg, xl, 2xl, 3xl, full, circle)"
       },
       {
         "name": "fit",
@@ -1865,38 +1885,42 @@
       },
       {
         "name": "filter",
-        "type": "String|Object",
-        "desc": "- Filtre CSS (grayscale, sepia, blur, brightness, contrast, hue-rotate, invert, saturate) ou objet numérique { type, value }"
+        "type": "String|Array",
+        "desc": "- Filtre(s) CSS (grayscale, sepia, blur, brightness, contrast, hue-rotate, invert, saturate)"
+      },
+      {
+        "name": "rounded",
+        "type": "String",
+        "desc": "- Arrondi (none, sm, md, lg, xl, 2xl, 3xl, full, circle)"
       },
       {
         "name": "mask",
         "type": "String",
-        "desc": "- Classe DaisyUI mask-* (mask, mask-squircle, mask-heart, mask-hexagon, mask-hexagon-2, mask-decagon, mask-pentagon, mask-diamond, mask-square, mask-circle, mask-star, mask-star-2, mask-triangle, mask-triangle-2, mask-triangle-3, mask-triangle-4, mask-half-1, mask-half-2)"
+        "desc": "- Classe DaisyUI mask-* (mask, mask-squircle, mask-heart, etc.)"
       },
       {
         "name": "tooltip",
         "type": "String|Object",
-        "desc": "- Tooltip (hérité de commonProps)"
+        "desc": "- Tooltip"
       },
       {
         "name": "tooltip_placement",
         "type": "String",
-        "desc": "- Position du tooltip (hérité de commonProps)"
-      },
-      {
-        "name": "id,",
-        "type": "String",
-        "desc": "ariaLabel, role, tabindex, disabled - hérités de commonProps"
+        "desc": "- Position du tooltip"
       }
     ],
     "slots": [
       {
         "name": "loader",
-        "desc": "- Loader personnalisé (affiché pendant le chargement)"
+        "desc": "- Loader personnalisé pendant le chargement"
       },
       {
         "name": "fallback",
-        "desc": "- Fallback personnalisé (affiché si l'image ne se charge pas)"
+        "desc": "- Contenu alternatif en cas d'erreur"
+      },
+      {
+        "name": "tooltip",
+        "desc": "- Contenu personnalisé du tooltip"
       }
     ],
     "file": "data-display/Image.vue"
@@ -1924,6 +1948,11 @@
         "name": "disabled",
         "type": "Boolean",
         "desc": "- Affiche l'icône en noir et blanc si true"
+      },
+      {
+        "name": "pack",
+        "type": "String",
+        "desc": "- Pack FontAwesome (solid, regular, brands, duotone)"
       },
       {
         "name": "tooltip,",

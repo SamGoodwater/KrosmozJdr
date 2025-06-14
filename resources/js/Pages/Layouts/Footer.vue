@@ -1,19 +1,19 @@
 <script setup>
 /**
-* Footer Layout (Atomic Design, DaisyUI)
-*
-* @description
-* Layout Footer du projet KrosmozJDR, refactorisé pour n'utiliser que la molecule Footer et les atoms du design system.
-* - Utilise :
-* - Molecule Footer comme conteneur principal (slots logo, section, copyright)
-* - Atom Icon pour les icônes
-* - Atom Route pour les liens
-* - Atom Tooltip pour les tooltips
-* - Responsive : version desktop (footer classique), version mobile (dock/btm-nav)
-* - Accessibilité et props transmises via les helpers du design system
-*
-* @see Footer, Icon, Route, Tooltip
-*/
+ * Footer Layout (Atomic Design, DaisyUI)
+ *
+ * @description
+ * Layout Footer du projet KrosmozJDR, refactorisé pour n'utiliser que la molecule Footer et les atoms du design system.
+ * - Utilise :
+ * - Molecule Footer comme conteneur principal (slots logo, section, copyright)
+ * - Atom Icon pour les icônes
+ * - Atom Route pour les liens
+ * - Atom Tooltip pour les tooltips
+ * - Responsive : version desktop (footer classique), version mobile (dock/btm-nav)
+ * - Accessibilité et props transmises via les helpers du design system
+ *
+ * @see Footer, Icon, Route, Tooltip
+ */
 import { ref } from "vue";
 import FooterMolecule from "@/Pages/Molecules/navigation/Footer.vue";
 import Icon from "@/Pages/Atoms/data-display/Icon.vue";
@@ -36,36 +36,58 @@ const appStability = ref(convertStability[import.meta.env.VITE_APP_STABILITY]);
 
 const footerItems = [
     {
-        icon: "fa-solid fa-envelope",
+        icon: "fa-envelope",
+        pack: "solid",
         href: "mailto:contact@krosmoz-jdr.fr",
         label: "contact@krosmoz-jdr.fr",
-        tooltip: "Envoyer un email"
+        tooltip: "Envoyer un email",
     },
     {
-        icon: "fa-brands fa-discord",
+        icon: "fa-discord",
+        pack: "brands",
         href: "https://discord.gg/XVu4VWFskj",
         label: "#XVu4VWFskj",
         tooltip: "Rejoindre notre serveur Discord",
-        target: "_blank"
-    }
+        target: "_blank",
+    },
 ];
 </script>
 
 <template>
-    <FooterMolecule direction="horizontal" color="bg-base-200" textColor="text-content">
+    <FooterMolecule
+        direction="horizontal"
+        color="bg-base-200"
+        textColor="text-content"
+        v-bind="$attrs"
+    >
         <template #logo>
             <span class="font-bold">{{ appName }}</span>
         </template>
         <template #section>
             <div class="flex flex-col gap-2">
                 <span>
-                    {{ appName }} - version {{ appVersion + " " + appStability }} - {{ new Date().getFullYear() }}
+                    {{ appName }} - version
+                    {{ appVersion + " " + appStability }} -
+                    {{ new Date().getFullYear() }}
                 </span>
                 <div class="flex gap-6">
-                    <span v-for="item in footerItems" :key="item.label" class="flex items-center gap-2">
+                    <span
+                        v-for="item in footerItems"
+                        :key="item.label"
+                        class="flex items-center gap-2"
+                    >
                         <Tooltip :content="item.tooltip" placement="top">
-                            <Route :href="item.href" :target="item.target" class="flex items-center gap-2">
-                                <Icon :source="item.icon" class="w-4 h-4" />
+                            <Route
+                                :href="item.href"
+                                :target="item.target"
+                                class="flex items-center gap-2"
+                            >
+                                <Icon
+                                    :source="item.icon"
+                                    :pack="item.pack"
+                                    :alt="item.tooltip"
+                                    class="w-4 h-4"
+                                />
                                 <span>{{ item.label }}</span>
                             </Route>
                         </Tooltip>
@@ -80,8 +102,16 @@ const footerItems = [
     <!-- Mobile Footer (Dock) -->
     <div class="hidden max-sm:block w-full">
         <Dock size="md" class="px-1 py-2">
-            <DockItem v-for="item in footerItems" :key="item.label" :icon="item.icon" :label="item.label"
-                :route="item.href" :tooltip="item.tooltip" :target="item.target" />
+            <DockItem
+                v-for="item in footerItems"
+                :key="item.label"
+                :icon="item.icon"
+                :pack="item.pack"
+                :label="item.label"
+                :route="item.href"
+                :tooltip="item.tooltip"
+                :target="item.target"
+            />
         </Dock>
     </div>
 </template>

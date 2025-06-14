@@ -26,31 +26,35 @@
  * @slot default - Liste d'Avatar (optionnel si avatars fourni)
  * @slot more - Contenu personnalisé pour le "+N" (optionnel)
  */
-import { computed, h } from 'vue';
-import Avatar from '@/Pages/Atoms/data-display/Avatar.vue';
-import { getCustomUtilityProps, getCustomUtilityClasses } from '@/Utils/atomic-design/atomManager';
+import { computed, h } from "vue";
+import Avatar from "@/Pages/Atoms/data-display/Avatar.vue";
+import {
+    getCustomUtilityProps,
+    getCustomUtilityClasses,
+} from "@/Utils/atomic-design/uiHelper";
 
 const props = defineProps({
     avatars: { type: Array, default: null },
     size: {
         type: String,
-        default: '',
-        validator: v => ['', 'xs', 'sm', 'md', 'lg', 'xl', '2xl', '3xl', '4xl'].includes(v),
+        default: "",
+        validator: (v) =>
+            ["", "xs", "sm", "md", "lg", "xl", "2xl", "3xl", "4xl"].includes(v),
     },
     overlap: { type: Boolean, default: false },
     max: { type: Number, default: 0 },
-    ring: { type: String, default: '' },
-    ringColor: { type: String, default: '' },
-    ringOffset: { type: String, default: '' },
-    ringOffsetColor: { type: String, default: '' },
+    ring: { type: String, default: "" },
+    ringColor: { type: String, default: "" },
+    ringOffset: { type: String, default: "" },
+    ringOffsetColor: { type: String, default: "" },
     ...getCustomUtilityProps(),
 });
 
 const groupClasses = computed(() => {
-    const classes = ['avatar-group'];
-    if (props.overlap) classes.push('avatar-group-overlap');
+    const classes = ["avatar-group"];
+    if (props.overlap) classes.push("avatar-group-overlap");
     classes.push(...getCustomUtilityClasses(props));
-    return classes.join(' ');
+    return classes.join(" ");
 });
 
 const avatarsToShow = computed(() => {
@@ -61,7 +65,8 @@ const avatarsToShow = computed(() => {
     return props.avatars;
 });
 const avatarsMore = computed(() => {
-    if (!props.avatars || !props.max || props.avatars.length <= props.max) return 0;
+    if (!props.avatars || !props.max || props.avatars.length <= props.max)
+        return 0;
     return props.avatars.length - props.max;
 });
 </script>
@@ -70,20 +75,28 @@ const avatarsMore = computed(() => {
     <div :class="groupClasses">
         <!-- Si avatars fourni, on les rend -->
         <template v-if="avatars && avatars.length">
-            <Avatar v-for="(avatar, i) in avatarsToShow" :key="avatar.id || avatar.alt || i" v-bind="{
-                ...avatar,
-                size: props.size || avatar.size,
-                ring: props.ring || avatar.ring,
-                ringColor: props.ringColor || avatar.ringColor,
-                ringOffset: props.ringOffset || avatar.ringOffset,
-                ringOffsetColor: props.ringOffsetColor || avatar.ringOffsetColor,
-                shadow: props.shadow || avatar.shadow,
-                backdrop: props.backdrop || avatar.backdrop,
-                opacity: props.opacity || avatar.opacity,
-            }" />
+            <Avatar
+                v-for="(avatar, i) in avatarsToShow"
+                :key="avatar.id || avatar.alt || i"
+                v-bind="{
+                    ...avatar,
+                    size: props.size || avatar.size,
+                    ring: props.ring || avatar.ring,
+                    ringColor: props.ringColor || avatar.ringColor,
+                    ringOffset: props.ringOffset || avatar.ringOffset,
+                    ringOffsetColor:
+                        props.ringOffsetColor || avatar.ringOffsetColor,
+                    shadow: props.shadow || avatar.shadow,
+                    backdrop: props.backdrop || avatar.backdrop,
+                    opacity: props.opacity || avatar.opacity,
+                }"
+            />
             <!-- +N avatar -->
             <span v-if="avatarsMore > 0" class="avatar placeholder select-none">
-                <span class="bg-neutral text-neutral-content" :class="size ? `text-${size}` : 'text-md'">
+                <span
+                    class="bg-neutral text-neutral-content"
+                    :class="size ? `text-${size}` : 'text-md'"
+                >
                     <slot name="more">+{{ avatarsMore }}</slot>
                 </span>
             </span>
@@ -94,7 +107,7 @@ const avatarsMore = computed(() => {
 </template>
 
 <style scoped>
-.avatar-group-overlap>*:not(:first-child) {
+.avatar-group-overlap > *:not(:first-child) {
     margin-left: -1.25rem;
     border: 2px solid var(--color-base-100, #fff);
     z-index: 1;

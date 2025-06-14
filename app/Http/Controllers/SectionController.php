@@ -8,7 +8,8 @@ use App\Http\Requests\UpdateSectionRequest;
 use App\Http\Requests\StoreFileRequest;
 use App\Http\Requests\UpdateFileRequest;
 use App\Models\File;
-use App\Services\FileProcessionService;
+use App\Services\FileService;
+use App\Services\ImageService;
 use Illuminate\Support\Facades\Gate;
 use App\Services\NotificationService;
 use Illuminate\Support\Facades\Auth;
@@ -130,20 +131,20 @@ class SectionController extends Controller
      * Ajoute un fichier à une section.
      * @param StoreFileRequest $request
      * @param Section $section
-     * @param FileProcessionService $fileService
+     * @param ImageService $imageService
      * @return \Illuminate\Http\JsonResponse
      */
-    public function storeFile(StoreFileRequest $request, Section $section, FileProcessionService $fileService)
+    public function storeFile(StoreFileRequest $request, Section $section, ImageService $imageService)
     {
         // Autorisation (policy sur la section)
         Gate::authorize('update', $section);
 
         $uploadedFile = $request->file('file');
-        $path = $uploadedFile->store('sections', FileProcessionService::DISK_DEFAULT);
+        $path = $uploadedFile->store('sections', FileService::DISK_DEFAULT);
 
         // Traitement (ex: conversion webp si image)
-        if (FileProcessionService::isImagePath($path)) {
-            $path = $fileService->convertToWebp($path);
+        if (FileService::isImagePath($path)) {
+            $path = $imageService->convertToWebp($path);
         }
 
         // Création de l'entrée File
@@ -178,7 +179,7 @@ class SectionController extends Controller
 
         // (Optionnel) Supprimer le fichier physique et l'entrée File si plus utilisé ailleurs
         if ($file->sections()->count() === 0) {
-            \Storage::disk(\App\Services\FileProcessionService::DISK_DEFAULT)->delete($file->file);
+            Storage::disk(FileService::DISK_DEFAULT)->delete($file->file);
             $file->delete();
         }
 

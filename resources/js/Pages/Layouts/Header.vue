@@ -23,7 +23,6 @@
 //
 // Voir les docblocks des molecules pour leur API détaillée.
 
-
 import { usePage } from "@inertiajs/vue3";
 import { onMounted } from "vue";
 import { useHeader } from "@/Composables/layout/useHeader";
@@ -61,8 +60,11 @@ onMounted(() => {
         <template #start>
             <ToggleSidebar v-if="!isSidebarOpen" />
             <Transition name="title" mode="out-in">
-                <h2 :key="pageTitle" id="pageTitle"
-                    class="items-center text-content hover:text-content/75 text-2xl font-semibold">
+                <h2
+                    :key="pageTitle"
+                    id="pageTitle"
+                    class="items-center text-content hover:text-content/75 text-2xl font-semibold"
+                >
                     {{ pageTitle }}
                 </h2>
             </Transition>
@@ -81,22 +83,42 @@ onMounted(() => {
                     <LoginHeaderContainer />
                 </template>
                 <ThemeController class="mx-1" />
-                <Tooltip :content="'Masquer ou afficher l\'entête'" placement="bottom">
-                    <Btn variant="ghost" circle
+                <Tooltip
+                    :content="'Masquer ou afficher l\'entête'"
+                    placement="bottom"
+                >
+                    <Btn
+                        variant="ghost"
+                        circle
                         class="swap swap-rotate text-content hover:text-content/50 transition-colors"
-                        @click="toggleHeader">
+                        @click="toggleHeader"
+                    >
                         <Swap :active="!isHeaderOpen" rotate>
                             <template #on>
-                                <Icon source="fa-solid fa-chevron-down" class="w-4 h-4" />
+                                <Icon
+                                    source="fa-chevron-down"
+                                    alt="Menu déroulant"
+                                    size="md"
+                                    pack="solid"
+                                />
                             </template>
                             <template #off>
-                                <Icon source="fa-solid fa-chevron-up" class="w-4 h-4" />
+                                <Icon
+                                    source="fa-chevron-up"
+                                    alt="Menu remonté"
+                                    size="md"
+                                    pack="solid"
+                                />
                             </template>
                         </Swap>
                     </Btn>
                     <template #tooltip>
-                        <div class="w-52 bg-secondary-900/75 text-center flex flex-col p-2">
-                            <p class="text-md text-content flex justify-between gap-3">
+                        <div
+                            class="w-52 bg-secondary-900/75 text-center flex flex-col p-2"
+                        >
+                            <p
+                                class="text-md text-content flex justify-between gap-3"
+                            >
                                 <span>Masquer ou afficher l'entête</span>
                                 <span class="flex flex-nowrap items-center">
                                     <kbd class="kbd kbd-sm">alt</kbd> +
@@ -104,13 +126,19 @@ onMounted(() => {
                                 </span>
                             </p>
                             <p class="text-sm text-content/70 my-2">
-                                Déplacer la souris vers le haut du site pour faire réaparaître l'entête
+                                Déplacer la souris vers le haut du site pour
+                                faire réaparaître l'entête
                             </p>
                             <div class="flex justify-center relative">
                                 <div class="header-vector bg-slate-500"></div>
                                 <div class="h-40 w-40 bg-slate-800"></div>
                                 <div class="mouse-vector">
-                                    <Icon source="fa-solid fa-mouse-pointer" class="w-4 h-4 text-content rotate-270" />
+                                    <Icon
+                                        source="fa-mouse-pointer"
+                                        alt="Cliquer"
+                                        size="md"
+                                        pack="solid"
+                                    />
                                 </div>
                             </div>
                         </div>
@@ -138,7 +166,8 @@ onMounted(() => {
     animation: moveMouse 4s infinite;
 }
 @keyframes moveMouse {
-    0%, 100% {
+    0%,
+    100% {
         transform: translate(-50%, -50%) translateY(0);
     }
     50% {
@@ -146,7 +175,8 @@ onMounted(() => {
     }
 }
 @keyframes moveHeader {
-    0%, 100% {
+    0%,
+    100% {
         transform: translateY(0);
     }
     50% {
@@ -154,5 +184,3 @@ onMounted(() => {
     }
 }
 </style>
-
-

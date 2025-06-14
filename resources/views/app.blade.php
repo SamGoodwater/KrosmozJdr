@@ -21,6 +21,7 @@
     @routes
     @vite(['resources/js/app.js', "resources/js/Pages/{$page['component']}.vue"])
     @inertiaHead
+    @vite('resources/css/app.css')
 </head>
 
 <body class="antialiased w-screen h-screen" style="margin-bottom:0px!important;">

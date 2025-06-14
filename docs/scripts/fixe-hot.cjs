@@ -1,3 +1,5 @@
+// utile sur windows arm
+
 const fs = require("fs");
 const path = require("path");
 const hotFile = path.join(__dirname, "..", "..", "public", "hot"); // Chemin vers le fichier hot
