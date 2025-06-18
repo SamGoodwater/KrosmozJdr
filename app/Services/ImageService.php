@@ -44,6 +44,7 @@ class ImageService
     private const DEFAULT_QUALITY = 80;
     private const MAX_DIMENSION = 2000;
     private const SUPPORTED_FORMATS = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
+    private const CACHE_TAGS = ['images', 'thumbnails'];
 
     private ImageManager $imageManager;
 
@@ -99,20 +100,7 @@ class ImageService
     }
 
     /**
-     * Génère un thumbnail pour une image
-     *
-     * @param string $path Chemin de l'image source
-     * @param array $options Options de transformation
-     * @return string|null Chemin du thumbnail généré ou null si erreur
-     *
-     * @example
-     * $thumbnailPath = $imageService->generateThumbnail('images/photo.jpg', [
-     *     'width' => 300,
-     *     'height' => 300,
-     *     'fit' => 'cover',
-     *     'quality' => 80,
-     *     'format' => 'webp'
-     * ]);
+     * Génère un thumbnail pour une image avec cache optimisé
      */
     public function generateThumbnail(string $path, array $options = []): ?string
     {
@@ -140,8 +128,11 @@ class ImageService
 
             // Générer le nom du fichier de cache
             $cachePath = $this->getCachePath($path, $options);
+            $cacheKey = self::CACHE_PREFIX . md5($cachePath);
 
-            // Vérifier si le thumbnail existe déjà
+            // Vérifier le cache
+            return Cache::tags(self::CACHE_TAGS)->remember($cacheKey, self::CACHE_TTL, function () use ($disk, $path, $options, $cachePath) {
+                // Vérifier si le thumbnail existe déjà sur le disque
             if ($disk->exists($cachePath)) {
                 return $cachePath;
             }
@@ -163,6 +154,7 @@ class ImageService
             $image->toWebp($options['quality'])->save($disk->path($cachePath));
 
             return $cachePath;
+            });
         } catch (\Exception $e) {
             \Log::error('ImageService - Erreur lors de la génération du thumbnail:', [
                 'path' => $path,

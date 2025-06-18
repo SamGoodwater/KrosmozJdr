@@ -1,261 +1,33 @@
-// ================================
-// custom-theme.scss
-// Ce fichier génère l'ensemble des variables de votre thème
-// pour daisyUI dans un unique bloc @theme.
-// ================================
+@use "sass:map";
+@use "themes/_theme-global" as *;
+@use "themes/_theme-entities" as *;
+@use "themes/_theme-caracs" as *;
 
-@theme {
-    /* -------------------------------------
-       Variables statiques de votre thème actuel
-    ------------------------------------- */
-    --color-brown-50: #fdf8f6;
-    --color-brown-100: #f2e8e5;
-    --color-brown-200: #eaddd7;
-    --color-brown-300: #e0cec7;
-    --color-brown-400: #d2bab0;
-    --color-brown-500: #bfa094;
-    --color-brown-600: #a18072;
-    --color-brown-700: #977669;
-    --color-brown-800: #846358;
-    --color-brown-900: #43302b;
-    --color-brown-950: #201512;
+// Fusion de toutes les maps de couleurs
+$ref-colors: map.merge($theme-global, map.merge($theme-entities, $theme-caracs));
 
-    --color-content-light: var(--color-base-800);
-    --color-content-dark: var(--color-base-200);
-    --color-content: var(--color-main-dark);
-    --color-title-light: var(--color-primary-800);
-    --color-title-dark: var(--color-primary-200);
-    --color-title: var(--color-title-dark);
-    --color-subtitle-light: var(--color-secondary-800);
-    --color-subtitle-dark: var(--color-secondary-200);
-    --color-subtitle: var(--color-subtitle-dark);
-    --color-comment-light: var(--color-base-600);
-    --color-comment-dark: var(--color-base-400);
-    --color-comment: var(--color-comment-dark);
+$weights: 50, 100, 200, 300, 400, 500, 600, 700, 800, 900, 950;
 
-    /* -------------------------------------
-       Définition des maps de couleurs
-    ------------------------------------- */
-    $colors: (
-        "primary": (
-            50: oklch(0.97 0.014 254.604),
-            100: oklch(0.932 0.032 255.585),
-            200: oklch(0.882 0.059 254.128),
-            300: oklch(0.809 0.105 251.813),
-            400: oklch(0.707 0.165 254.624),
-            500: oklch(0.623 0.214 259.815),
-            600: oklch(0.546 0.245 262.881),
-            700: oklch(0.488 0.243 264.376),
-            800: oklch(0.424 0.199 265.638),
-            900: oklch(0.379 0.146 265.522),
-            950: oklch(0.282 0.091 267.935),
-        ),
-        "secondary": (
-            50: oklch(0.985 0 0),
-            100: oklch(0.967 0.001 286.375),
-            200: oklch(0.92 0.004 286.32),
-            300: oklch(0.871 0.006 286.286),
-            400: oklch(0.705 0.015 286.067),
-            500: oklch(0.552 0.016 285.938),
-            600: oklch(0.442 0.017 285.786),
-            700: oklch(0.37 0.013 285.805),
-            800: oklch(0.274 0.006 286.033),
-            900: oklch(0.21 0.006 285.885),
-            950: oklch(0.141 0.005 285.823),
-        ),
-        "base": (
-            50: oklch(0.984 0.003 247.858),
-            100: oklch(0.968 0.007 247.896),
-            200: oklch(0.929 0.013 255.508),
-            300: oklch(0.869 0.022 252.894),
-            400: oklch(0.704 0.04 256.788),
-            500: oklch(0.554 0.046 257.417),
-            600: oklch(0.446 0.043 257.281),
-            700: oklch(0.372 0.044 257.287),
-            800: oklch(0.279 0.041 260.031),
-            900: oklch(0.208 0.042 265.755),
-            950: oklch(0.129 0.042 264.695),
-        ),
-        "accent": (
-            50: oklch(0.962 0.018 272.314),
-            100: oklch(0.93 0.034 272.788),
-            200: oklch(0.87 0.065 274.039),
-            300: oklch(0.785 0.115 274.713),
-            400: oklch(0.673 0.182 276.935),
-            500: oklch(0.585 0.233 277.117),
-            600: oklch(0.511 0.262 276.966),
-            700: oklch(0.457 0.24 277.023),
-            800: oklch(0.398 0.195 277.366),
-            900: oklch(0.359 0.144 278.697),
-            950: oklch(0.257 0.09 281.288),
-        ),
-        "success": (
-            50: oklch(0.982 0.018 155.826),
-            100: oklch(0.962 0.044 156.743),
-            200: oklch(0.925 0.084 155.995),
-            300: oklch(0.871 0.15 154.449),
-            400: oklch(0.792 0.209 151.711),
-            500: oklch(0.723 0.219 149.579),
-            600: oklch(0.627 0.194 149.214),
-            700: oklch(0.527 0.154 150.069),
-            800: oklch(0.448 0.119 151.328),
-            900: oklch(0.393 0.095 152.535),
-            950: oklch(0.266 0.065 152.934),
-        ),
-        "error": (
-            50: oklch(0.971 0.013 17.38),
-            100: oklch(0.936 0.032 17.717),
-            200: oklch(0.885 0.062 18.334),
-            300: oklch(0.808 0.114 19.571),
-            400: oklch(0.704 0.191 22.216),
-            500: oklch(0.637 0.237 25.331),
-            600: oklch(0.577 0.245 27.325),
-            700: oklch(0.505 0.213 27.518),
-            800: oklch(0.444 0.177 26.899),
-            900: oklch(0.396 0.141 25.723),
-            950: oklch(0.258 0.092 26.042),
-        ),
-        "info": (
-            50: oklch(0.984 0.019 200.873),
-            100: oklch(0.956 0.045 203.388),
-            200: oklch(0.917 0.08 205.041),
-            300: oklch(0.865 0.127 207.078),
-            400: oklch(0.789 0.154 211.53),
-            500: oklch(0.715 0.143 215.221),
-            600: oklch(0.609 0.126 221.723),
-            700: oklch(0.52 0.105 223.128),
-            800: oklch(0.45 0.085 224.283),
-            900: oklch(0.398 0.07 227.392),
-            950: oklch(0.302 0.056 229.695),
-        ),
-        "warning": (
-            50: oklch(0.987 0.022 95.277),
-            100: oklch(0.962 0.059 95.617),
-            200: oklch(0.924 0.12 95.746),
-            300: oklch(0.879 0.169 91.605),
-            400: oklch(0.828 0.189 84.429),
-            500: oklch(0.769 0.188 70.08),
-            600: oklch(0.666 0.179 58.318),
-            700: oklch(0.555 0.163 48.998),
-            800: oklch(0.473 0.137 46.201),
-            900: oklch(0.414 0.112 45.904),
-            950: oklch(0.279 0.077 45.635),
-        ),
-        "neutral": (
-            50: oklch(0.985 0 0),
-            100: oklch(0.97 0 0),
-            200: oklch(0.922 0 0),
-            300: oklch(0.87 0 0),
-            400: oklch(0.708 0 0),
-            500: oklch(0.556 0 0),
-            600: oklch(0.439 0 0),
-            700: oklch(0.371 0 0),
-            800: oklch(0.269 0 0),
-            900: oklch(0.205 0 0),
-            950: oklch(0.145 0 0),
-        ),
-    );
-
-    /* -------------------------------------
-       Définition des alias de couleurs
-       Chaque alias référence une couleur définie dans $colors.
-    ------------------------------------- */
-    $ref-colors: (
-        "attribute": "yellow",
-        "campaign": "stone",
-        "capitalize": "slate",
-        "classe": "cyan",
-        "condition": "red",
-        "consumable": "orange",
-        "creature": "emerald",
-        "item": "indigo",
-        "mob": "pink",
-        "npc": "green",
-        "resource": "sky",
-        "scenario": "neutral",
-        "shop": "amber",
-        "specialization": "lime",
-        "spell": "violet",
-        "user": "blue",
-        "page": "zinc",
-        "section": "zinc",
-        "force": "brown",
-        "strong": "brown",
-        "terre": "brown",
-        "intel": "red",
-        "feu": "red",
-        "agi": "green",
-        "air": "green",
-        "chance": "blue",
-        "eau": "blue",
-        "vitality": "amber",
-        "sagesse": "violet",
-        "life": "lime",
-        "level": "zinc",
-        "master_bonus": "orange",
-        "time_before_use_again": "slate",
-        "casting_time": "gray",
-        "dodge_pa": "sky",
-        "dodge_pm": "emerald",
-        "po": "cyan",
-        "po-editable": "purple",
-        "pa": "blue",
-        "pm": "green",
-        "cc": "purple",
-        "res_cc": "purple",
-        "cast-per-turn": "purple",
-        "cast-per-target": "indigo",
-        "sight-line": "indigo",
-        "number-between-two-cast": "pink",
-        "ini": "violet",
-        "invocation": "amber",
-        "touch": "gray",
-        "actif": "amber",
-        "twohands": "gray",
-        "kamas": "yellow",
-        "ca": "gray",
-        "fuite": "lime",
-        "tacle": "sky",
-        "neutre": "neutral",
-        "shield": "neutral",
-        "mastery": "teal",
-        "expertise": "rose",
-        "res-neutre": "neutral",
-        "res-terre": "brown",
-        "res-air": "green",
-        "res-feu": "red",
-        "res-eau": "blue",
-    );
-
-    /* -------------------------------------
-       Mixins pour générer les variables CSS
-    ------------------------------------- */
-    @mixin generate-color-vars($name, $map) {
-        @each $weight, $value in $map {
-            --color-#{$name}-#{$weight}: #{$value};
-        }
-        --color-#{$name}: var(--color-#{$name}-500);
+// Bloc pour le thème light
+/*! THEME_VARS_LIGHT_START */
+:root {
+  @each $alias, $ref in $ref-colors {
+    @each $w in $weights {
+      --color-#{$alias}-#{$w}: var(--color-#{$ref}-#{$w});
     }
-
-    @mixin generate-ref-color-vars($alias, $ref-name) {
-        $weights: 50, 100, 200, 300, 400, 500, 600, 700, 800, 900, 950;
-        @each $w in $weights {
-            --color-#{$alias}-#{$w}: var(--color-#{$ref-name}-#{$w});
-        }
-        --color-#{$alias}: var(--color-#{$alias}-500);
-    }
-
-    /* -------------------------------------
-       Génération des variables pour chaque couleur
-    ------------------------------------- */
-    @each $name, $map in $colors {
-        @include generate-color-vars($name, $map);
-    }
-
-    /* -------------------------------------
-       Génération des variables pour chaque alias
-    ------------------------------------- */
-    @each $alias, $ref-name in $ref-colors {
-        @include generate-ref-color-vars($alias, $ref-name);
-    }
+    --color-#{$alias}: var(--color-#{$alias}-500);
+  }
 }
+/*! THEME_VARS_LIGHT_END */
+
+// Bloc pour le thème dark
+/*! THEME_VARS_DARK_START */
+:root {
+  @each $alias, $ref in $ref-colors {
+    @each $w in $weights {
+      --color-#{$alias}-#{$w}: var(--color-#{$ref}-#{$w});
+    }
+    --color-#{$alias}: var(--color-#{$alias}-400);
+  }
+}
+/*! THEME_VARS_DARK_END */ 

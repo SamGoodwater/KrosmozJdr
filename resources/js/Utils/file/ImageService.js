@@ -6,6 +6,8 @@
  * - Récupération des URLs d'images
  * - Génération des URLs de thumbnails
  * - Support des icônes FontAwesome
+ * - Cache côté client
+ * - Gestion des erreurs avec retry
  *
  * @example
  * // Récupérer l'URL d'une image
@@ -20,8 +22,13 @@
  * });
  */
 export class ImageService {
+    static #cache = new Map();
+    static #CACHE_TTL = 3600000; // 1 heure en millisecondes
+    static #MAX_RETRIES = 3;
+    static #RETRY_DELAY = 1000; // 1 seconde
+
     /**
-     * Récupère l'URL d'une image
+     * Récupère l'URL d'une image avec cache
      *
      * @param {string} path - Chemin de l'image
      * @returns {Promise<string>} URL de l'image
@@ -29,17 +36,48 @@ export class ImageService {
     static async getImageUrl(path) {
         if (!path) return "";
 
+        // Vérifier le cache
+        const cacheKey = `image_${path}`;
+        const cached = this.#cache.get(cacheKey);
+        if (cached && Date.now() - cached.timestamp < this.#CACHE_TTL) {
+            return cached.url;
+        }
+
         // Si c'est une icône FontAwesome, retourner le chemin tel quel
         if (path.startsWith("fa-")) {
             return path;
         }
 
-        // Sinon, construire l'URL de l'image
-        return `/storage/images/${path}`;
+        // Sinon, construire l'URL de l'image avec retry
+        let retries = 0;
+        while (retries < this.#MAX_RETRIES) {
+            try {
+                const url = `/storage/images/${path}`;
+                // Vérifier si l'image existe
+                const response = await fetch(url, { method: 'HEAD' });
+                if (response.ok) {
+                    // Mettre en cache
+                    this.#cache.set(cacheKey, {
+                        url,
+                        timestamp: Date.now()
+                    });
+                    return url;
+                }
+                throw new Error('Image not found');
+            } catch (error) {
+                retries++;
+                if (retries === this.#MAX_RETRIES) {
+                    console.error('ImageService - Erreur de chargement:', error);
+                    return "";
+                }
+                await new Promise(resolve => setTimeout(resolve, this.#RETRY_DELAY * retries));
+            }
+        }
+        return "";
     }
 
     /**
-     * Génère l'URL d'un thumbnail
+     * Génère l'URL d'un thumbnail avec cache
      *
      * @param {string} path - Chemin de l'image source
      * @param {Object} options - Options de transformation
@@ -51,6 +89,13 @@ export class ImageService {
      */
     static async getThumbnailUrl(path, options = {}) {
         if (!path) return "";
+
+        // Vérifier le cache
+        const cacheKey = `thumbnail_${path}_${JSON.stringify(options)}`;
+        const cached = this.#cache.get(cacheKey);
+        if (cached && Date.now() - cached.timestamp < this.#CACHE_TTL) {
+            return cached.url;
+        }
 
         // Si c'est une icône FontAwesome, retourner le chemin tel quel
         if (path.startsWith("fa-")) {
@@ -66,7 +111,32 @@ export class ImageService {
         if (options.quality) queryParams.append("quality", options.quality);
 
         const queryString = queryParams.toString();
-        return `/storage/thumbnails/${path}${queryString ? `?${queryString}` : ""}`;
+        const url = `/storage/thumbnails/${path}${queryString ? `?${queryString}` : ""}`;
+
+        // Vérifier si le thumbnail existe avec retry
+        let retries = 0;
+        while (retries < this.#MAX_RETRIES) {
+            try {
+                const response = await fetch(url, { method: 'HEAD' });
+                if (response.ok) {
+                    // Mettre en cache
+                    this.#cache.set(cacheKey, {
+                        url,
+                        timestamp: Date.now()
+                    });
+                    return url;
+                }
+                throw new Error('Thumbnail not found');
+            } catch (error) {
+                retries++;
+                if (retries === this.#MAX_RETRIES) {
+                    console.error('ImageService - Erreur de chargement du thumbnail:', error);
+                    return "";
+                }
+                await new Promise(resolve => setTimeout(resolve, this.#RETRY_DELAY * retries));
+            }
+        }
+        return "";
     }
 
     /**

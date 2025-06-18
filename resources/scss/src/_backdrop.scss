@@ -1,0 +1,49 @@
+// Variables pour le glassmorphisme
+$blur-sizes: (
+    'xs': 4,    // Très léger
+    'sm': 8,    // Léger
+    'md': 12,   // Moyen
+    'lg': 16,   // Fort
+    'xl': 20,   // Très fort
+    '2xl': 24,  // Extrême
+    '3xl': 28,  // Ultra
+    '4xl': 32   // Maximum
+);
+
+$opacity-sizes: (
+    'xs': 0.2,  // Très transparent
+    'sm': 0.3,  // Transparent
+    'md': 0.4,  // Semi-transparent
+    'lg': 0.5,  // Moyen
+    'xl': 0.6,  // Semi-opaque
+    '2xl': 0.7, // Opaque
+    '3xl': 0.8, // Très opaque
+    '4xl': 0.9  // Presque opaque
+);
+
+// Classes pour le glassmorphisme
+// Utilisation : <div class="bd-blur-md bd-opacity-md">...</div>
+
+.bd-blur-none {
+    backdrop-filter: none;
+}
+
+@each $size, $value in $blur-sizes {
+    .bd-blur-#{$size} {
+        backdrop-filter: blur(#{$value}px);
+    }
+}
+
+.bd-opacity-none {
+    opacity: 0;
+}
+
+.bd-opacity-full {
+    opacity: 1;
+}
+
+@each $size, $value in $opacity-sizes {
+    .bd-opacity-#{$size} {
+        opacity: #{$value};
+    }
+}

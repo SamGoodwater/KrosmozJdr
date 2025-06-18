@@ -19,7 +19,7 @@ Le design du site s'appuie sur les principes d'Atomic Design, le glassmorphism e
 - Vérifier la navigation clavier sur tous les layouts et composants.
 - Accessibilité : contraste, adaptation automatique, écriture inclusive.
 
-### 2.3. Glassmorphism
+### 2.3. Glassmorphisme
 
 - Utilisation de panneaux semi-transparents avec un fort flou d'arrière-plan (`backdrop-filter`).
 - Angles arrondis généreux (`border-radius`), ombres subtiles (`box-shadow`).
@@ -27,6 +27,86 @@ Le design du site s'appuie sur les principes d'Atomic Design, le glassmorphism e
 - Le site utilise des panneaux superposés, dont l'arrière-plan est flouté pour recréer un effet de « verre dépoli ».
 - Chacun de ces panneaux présente des angles arrondis et une ombre portée subtile pour renforcer la sensation de profondeur et de flottement.
 - De fins contours semi-opaques délimitent chaque bloc, tout en laissant transparaître le flou d'arrière-plan pour un contraste doux entre les calques.
+
+#### Classes de glassmorphisme
+
+Le design system fournit un ensemble de classes utilitaires pour créer des effets de glassmorphisme :
+
+1. **Backdrop Blur** (`bd-blur-*`) :
+   ```html
+   <div class="bd-blur-md">...</div>
+   ```
+   - `bd-blur-none` : Pas de flou
+   - `bd-blur-xs` : Très léger (4px)
+   - `bd-blur-sm` : Léger (8px)
+   - `bd-blur-md` : Moyen (12px)
+   - `bd-blur-lg` : Fort (16px)
+   - `bd-blur-xl` : Très fort (20px)
+   - `bd-blur-2xl` : Extrême (24px)
+   - `bd-blur-3xl` : Ultra (28px)
+   - `bd-blur-4xl` : Maximum (32px)
+
+2. **Backdrop Opacity** (`bd-opacity-*`) :
+   ```html
+   <div class="bd-opacity-md">...</div>
+   ```
+   - `bd-opacity-none` : Opacité 0
+   - `bd-opacity-full` : Opacité 1
+   - `bd-opacity-xs` : Très transparent (0.2)
+   - `bd-opacity-sm` : Transparent (0.3)
+   - `bd-opacity-md` : Semi-transparent (0.4)
+   - `bd-opacity-lg` : Moyen (0.5)
+   - `bd-opacity-xl` : Semi-opaque (0.6)
+   - `bd-opacity-2xl` : Opaque (0.7)
+   - `bd-opacity-3xl` : Très opaque (0.8)
+   - `bd-opacity-4xl` : Presque opaque (0.9)
+
+3. **Border Glass** (`border-glass-*`) :
+   ```html
+   <div class="border-glass-md">...</div>
+   ```
+   - `border-glass` : Bordure par défaut
+   - `border-glass-xs` à `border-glass-3xl` : Différentes intensités d'effet glass
+
+4. **Background Glass** (`bg-glass-*`) :
+   ```html
+   <div class="bg-glass-md">...</div>
+   ```
+   - `bg-glass-xs` à `bg-glass-3xl` : Différentes intensités d'arrière-plan glass
+
+5. **Text Glass** (`text-glass-*`) :
+   ```html
+   <span class="text-glass-md">...</span>
+   ```
+   - `text-glass-xs` à `text-glass-3xl` : Différentes intensités d'effet glass sur le texte
+
+#### Exemple d'utilisation combinée
+
+```html
+<div class="bd-blur-md bd-opacity-md border-glass-md bg-glass-md">
+  <h2 class="text-glass-md">Titre avec effet glass</h2>
+  <p>Contenu avec effet glassmorphisme</p>
+</div>
+```
+
+#### Bonnes pratiques
+
+1. **Hiérarchie visuelle** :
+   - Utiliser des intensités différentes pour créer une hiérarchie
+   - Exemple : `bd-blur-lg` pour le contenu principal, `bd-blur-sm` pour les éléments secondaires
+
+2. **Accessibilité** :
+   - S'assurer que le contraste reste suffisant
+   - Éviter les combinaisons qui rendraient le texte illisible
+   - Tester avec différents thèmes (clair/sombre)
+
+3. **Performance** :
+   - Limiter l'utilisation du `backdrop-filter` sur les éléments animés
+   - Éviter d'empiler trop d'effets glass sur une même page
+
+4. **Responsive** :
+   - Ajuster les intensités selon la taille d'écran
+   - Exemple : `bd-blur-md` sur desktop, `bd-blur-sm` sur mobile
 
 ### 2.4. Atomic Design – Structure des composants
 

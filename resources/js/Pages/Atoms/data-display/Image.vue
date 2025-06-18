@@ -106,10 +106,12 @@ const isLoading = ref(false);
 const hasError = ref(false);
 const FALLBACK_IMAGE = "/storage/images/no_found.svg";
 let triedFallback = false;
+const maxRetries = 3;
+let retryCount = 0;
 
 const slots = useSlots();
 
-// Résolution de l'URL de l'image
+// Résolution de l'URL de l'image avec système de retry
 async function resolveImage() {
     if (props.src && props.source) {
         console.warn(
@@ -145,6 +147,11 @@ async function resolveImage() {
         }
     } catch (error) {
         console.error("Image - Erreur de chargement:", error);
+        if (retryCount < maxRetries) {
+            retryCount++;
+            await new Promise(resolve => setTimeout(resolve, 1000 * retryCount));
+            return resolveImage();
+        }
         hasError.value = true;
         imageUrl.value = "";
     } finally {
@@ -225,40 +232,20 @@ onMounted(() => {
         <Tooltip :content="props.tooltip" :placement="props.tooltip_placement">
             <template v-if="isLoading">
                 <slot name="loader">
-                    <Skeleton
-                        element="image"
-                        :size="props.size"
-                        :width="props.width"
-                        :height="props.height"
-                        :class="imageClasses"
-                    />
+                    <Skeleton element="image" :size="props.size" :width="props.width" :height="props.height"
+                        :class="imageClasses" />
                 </slot>
             </template>
 
-            <img
-                v-else-if="imageUrl && !hasError"
-                :src="imageUrl"
-                :alt="alt"
-                :class="imageClasses"
-                :style="imageStyle"
-                v-bind="imgAttrs"
-                v-on="$attrs"
-                @error="onError"
-            />
+            <img v-else-if="imageUrl && !hasError" :src="imageUrl" :alt="alt" :class="imageClasses" :style="imageStyle"
+                v-bind="imgAttrs" v-on="$attrs" @error="onError" loading="lazy" decoding="async" />
 
             <template v-else-if="slots.fallback">
                 <slot name="fallback" />
             </template>
 
-            <img
-                v-else
-                :src="FALLBACK_IMAGE"
-                alt="Image non disponible"
-                :class="imageClasses"
-                :style="imageStyle"
-                v-bind="imgAttrs"
-                v-on="$attrs"
-            />
+            <img v-else :src="FALLBACK_IMAGE" alt="Image non disponible" :class="imageClasses" :style="imageStyle"
+                v-bind="imgAttrs" v-on="$attrs" loading="lazy" decoding="async" />
 
             <template v-if="typeof props.tooltip === 'object'" #tooltip>
                 <slot name="tooltip" />

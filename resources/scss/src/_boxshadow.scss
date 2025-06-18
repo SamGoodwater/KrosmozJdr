@@ -1,0 +1,60 @@
+// Variables pour les ombres
+$shadow-colors: (
+    'light': rgba(255, 255, 255, 0.10),
+    'medium': rgba(255, 255, 255, 0.20),
+    'strong': rgba(255, 255, 255, 0.50),
+    'stronger': rgba(255, 255, 255, 0.60),
+    'strongest': rgba(255, 255, 255, 0.70)
+);
+
+$shadow-sizes: (
+    'xs': (
+        'outer': (0 0 1px 1px, 0 0 2px 1px, 0 0 3px 3px),
+        'inner': (0 0 2px 1px, 0 0 3px 3px)
+    ),
+    'sm': (
+        'outer': (0 0 1px 1px, 0 0 2px 1px, 0 0 3px 3px),
+        'inner': (0 0 2px 1px, 0 0 3px 3px)
+    ),
+    'md': (
+        'outer': (0 0 1px 1px, 0 0 3px 4px, 0 0 5px 6px),
+        'inner': (0 0 3px 4px, 0 0 5px 6px)
+    ),
+    'lg': (
+        'outer': (0 0 2px 2px, 0 0 4px 4px, 0 0 6px 6px),
+        'inner': (0 0 4px 4px, 0 0 6px 6px)
+    ),
+    'xl': (
+        'outer': (0 0 2px 3px, 0 0 4px 6px, 0 0 6px 8px),
+        'inner': (0 0 4px 6px, 0 0 6px 8px)
+    ),
+    '2xl': (
+        'outer': (0 0 2px 3px, 0 0 4px 6px, 0 0 6px 8px),
+        'inner': (0 0 4px 6px, 0 0 6px 8px)
+    ),
+    '3xl': (
+        'outer': (0 0 2px 3px, 0 0 4px 6px, 0 0 6px 8px),
+        'inner': (0 0 4px 6px, 0 0 6px 8px)
+    ),
+    '4xl': (
+        'outer': (0 0 4px 5px, 0 0 6px 8px, 0 0 8px 10px),
+        'inner': (0 0 4px 5px, 0 0 6px 8px)
+    )
+);
+
+@each $size, $shadows in $shadow-sizes {
+    .box-shadow-#{$size} {
+        $outer-shadows: ();
+        $inner-shadows: ();
+        
+        @each $shadow in map-get($shadows, 'outer') {
+            $outer-shadows: append($outer-shadows, $shadow map-get($shadow-colors, 'light'), comma);
+        }
+        
+        @each $shadow in map-get($shadows, 'inner') {
+            $inner-shadows: append($inner-shadows, inset $shadow map-get($shadow-colors, 'light'), comma);
+        }
+        
+        box-shadow: $outer-shadows, $inner-shadows;
+    }
+}

@@ -6,6 +6,8 @@ use App\Services\ImageService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Symfony\Component\HttpFoundation\Response;
+use Illuminate\Support\Facades\Storage;
+use App\Services\FileService;
 
 class ImageController extends Controller
 {
@@ -37,12 +39,25 @@ class ImageController extends Controller
                 ], 404);
             }
 
-            // Retourner l'image
+            // Vérifier le type MIME
+            $mimeType = Storage::disk(FileService::DISK_DEFAULT)->mimeType($path);
+            $allowedMimes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/svg+xml'];
+            
+            if (!in_array($mimeType, $allowedMimes)) {
+                return response()->json([
+                    'error' => 'Type de fichier non autorisé',
+                    'mime' => $mimeType
+                ], 400);
+            }
+
+            // Retourner l'image avec les headers de sécurité
             return response()->file(
                 $this->imageService->getFullPath($path),
                 [
-                    'Content-Type' => 'image/' . pathinfo($path, PATHINFO_EXTENSION),
-                    'Cache-Control' => 'public, max-age=31536000'
+                    'Content-Type' => $mimeType,
+                    'Cache-Control' => 'public, max-age=31536000',
+                    'X-Content-Type-Options' => 'nosniff',
+                    'X-Frame-Options' => 'DENY'
                 ]
             );
         } catch (\Exception $e) {

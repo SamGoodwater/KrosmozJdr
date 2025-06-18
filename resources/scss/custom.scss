@@ -1,10 +1,4 @@
-@layer base {
-    @import "src/reset";
-}
-
-@layer components {
-    @import "src/font";
-    @import "src/layout";
-    @import "src/backdrop";
-    @import "src/boxshadow";
-}
+@use "src/_font";
+@use "src/_layout";
+@use "src/_backdrop";
+@use "src/_boxshadow";

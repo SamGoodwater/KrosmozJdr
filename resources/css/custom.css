@@ -1,272 +1,265 @@
-@layer base {
-  * {
-    -webkit-box-sizing: border-box;
-            box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-    margin-inline: 0;
-    margin-block: 0;
-    padding-inline: 0;
-    padding-block: 0;
-  }
-  html,
-  body {
-    min-height: 100vh;
-    width: 100vw;
-    overflow-x: hidden;
-  }
+* {
+  font-family: "Albert Sans", sans-serif;
+  font-weight: 400;
 }
-@layer components {
-  * {
-    font-family: "Albert Sans", sans-serif;
-    font-weight: 400;
-  }
-  .typography {
-    font-size: var(--text-base);
-    color: var(--color-gray-700);
-    font-family: "Albert Sans", sans-serif;
-  }
-  .Albert-Sans {
-    font-family: "Albert Sans", sans-serif;
-  }
-  .Albert-Sans-thin, .Albert-Sans-100 {
-    font-weight: 100;
-  }
-  .Albert-Sans-light, .Albert-Sans-300 {
-    font-weight: 300;
-  }
-  .Albert-Sans-regular, .Albert-Sans-400 {
-    font-weight: 400;
-  }
-  .Albert-Sans-bold, .Albert-Sans-700 {
-    font-weight: 700;
-  }
-  .Albert-Sans-black, .Albert-Sans-900 {
-    font-weight: 900;
-  }
-  .prose {
-    max-width: 100ch;
-  }
-  .text-shadow-xs {
-    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
-  }
-  .text-shadow-sm {
-    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
-  }
-  .text-shadow-md {
-    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  }
-  .text-shadow-lg {
-    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-  }
-  .text-shadow-xl {
-    text-shadow: 0 4px 6px rgba(0, 0, 0, 0.25);
-  }
-  .text-shadow-2xl {
-    text-shadow: 0 6px 8px rgba(0, 0, 0, 0.3);
-  }
-  .text-shadow-3xl {
-    text-shadow: 0 8px 12px rgba(0, 0, 0, 0.35);
-  }
-  .text-shadow-4xl {
-    text-shadow: 0 12px 16px rgba(0, 0, 0, 0.4);
-  }
-  .w-fit-available {
-    width: 100%;
-    width: -moz-available; /* WebKit-based browsers will ignore this. */
-    width: -webkit-fill-available; /* Mozilla-based browsers will ignore this. */
-    width: fill-available;
-  }
-  .h-fit-available {
-    height: 100%;
-    height: -moz-available; /* WebKit-based browsers will ignore this. */
-    height: -webkit-fill-available; /* Mozilla-based browsers will ignore this. */
-    height: fill-available;
-  }
-  .border-glass {
-    -webkit-box-shadow: 0 0 0.5px 0.5px rgba(255, 255, 255, 0.25), 0 0 1.5px 2px rgba(255, 255, 255, 0.05), 0 0 2.5px 3px rgba(255, 255, 255, 0.025), inset 0 0 1.5px 2px rgba(255, 255, 255, 0.05), inset 0 0 2.5px 3px rgba(255, 255, 255, 0.025);
-            box-shadow: 0 0 0.5px 0.5px rgba(255, 255, 255, 0.25), 0 0 1.5px 2px rgba(255, 255, 255, 0.05), 0 0 2.5px 3px rgba(255, 255, 255, 0.025), inset 0 0 1.5px 2px rgba(255, 255, 255, 0.05), inset 0 0 2.5px 3px rgba(255, 255, 255, 0.025);
-  }
-  .border-glass-xs {
-    -webkit-box-shadow: 0 0 0.25px 0.25px rgba(255, 255, 255, 0.25), 0 0 0.75px 1px rgba(255, 255, 255, 0.05), 0 0 1.25px 1.5px rgba(255, 255, 255, 0.025), inset 0 0 0.75px 1px rgba(255, 255, 255, 0.05), inset 0 0 1.25px 1.5px rgba(255, 255, 255, 0.025);
-            box-shadow: 0 0 0.25px 0.25px rgba(255, 255, 255, 0.25), 0 0 0.75px 1px rgba(255, 255, 255, 0.05), 0 0 1.25px 1.5px rgba(255, 255, 255, 0.025), inset 0 0 0.75px 1px rgba(255, 255, 255, 0.05), inset 0 0 1.25px 1.5px rgba(255, 255, 255, 0.025);
-  }
-  .border-glass-sm {
-    -webkit-box-shadow: 0 0 0.375px 0.375px rgba(255, 255, 255, 0.25), 0 0 1px 1.5px rgba(255, 255, 255, 0.05), 0 0 1.75px 2.25px rgba(255, 255, 255, 0.025), inset 0 0 1px 1.5px rgba(255, 255, 255, 0.05), inset 0 0 1.75px 2.25px rgba(255, 255, 255, 0.025);
-            box-shadow: 0 0 0.375px 0.375px rgba(255, 255, 255, 0.25), 0 0 1px 1.5px rgba(255, 255, 255, 0.05), 0 0 1.75px 2.25px rgba(255, 255, 255, 0.025), inset 0 0 1px 1.5px rgba(255, 255, 255, 0.05), inset 0 0 1.75px 2.25px rgba(255, 255, 255, 0.025);
-  }
-  .border-glass-md {
-    -webkit-box-shadow: 0 0 0.5px 0.5px rgba(255, 255, 255, 0.25), 0 0 1.5px 2px rgba(255, 255, 255, 0.05), 0 0 2.5px 3px rgba(255, 255, 255, 0.025), inset 0 0 1.5px 2px rgba(255, 255, 255, 0.05), inset 0 0 2.5px 3px rgba(255, 255, 255, 0.025);
-            box-shadow: 0 0 0.5px 0.5px rgba(255, 255, 255, 0.25), 0 0 1.5px 2px rgba(255, 255, 255, 0.05), 0 0 2.5px 3px rgba(255, 255, 255, 0.025), inset 0 0 1.5px 2px rgba(255, 255, 255, 0.05), inset 0 0 2.5px 3px rgba(255, 255, 255, 0.025);
-  }
-  .border-glass-lg {
-    -webkit-box-shadow: 0 0 0.75px 0.75px rgba(255, 255, 255, 0.25), 0 0 2.25px 3px rgba(255, 255, 255, 0.05), 0 0 3.75px 4.5px rgba(255, 255, 255, 0.025), inset 0 0 2.25px 3px rgba(255, 255, 255, 0.05), inset 0 0 3.75px 4.5px rgba(255, 255, 255, 0.025);
-            box-shadow: 0 0 0.75px 0.75px rgba(255, 255, 255, 0.25), 0 0 2.25px 3px rgba(255, 255, 255, 0.05), 0 0 3.75px 4.5px rgba(255, 255, 255, 0.025), inset 0 0 2.25px 3px rgba(255, 255, 255, 0.05), inset 0 0 3.75px 4.5px rgba(255, 255, 255, 0.025);
-  }
-  .border-glass-xl {
-    -webkit-box-shadow: 0 0 1px 1px rgba(255, 255, 255, 0.25), 0 0 3px 4px rgba(255, 255, 255, 0.05), 0 0 5px 6px rgba(255, 255, 255, 0.025), inset 0 0 3px 4px rgba(255, 255, 255, 0.05), inset 0 0 5px 6px rgba(255, 255, 255, 0.025);
-            box-shadow: 0 0 1px 1px rgba(255, 255, 255, 0.25), 0 0 3px 4px rgba(255, 255, 255, 0.05), 0 0 5px 6px rgba(255, 255, 255, 0.025), inset 0 0 3px 4px rgba(255, 255, 255, 0.05), inset 0 0 5px 6px rgba(255, 255, 255, 0.025);
-  }
-  .border-glass-2xl {
-    -webkit-box-shadow: 0 0 1.5px 1.5px rgba(255, 255, 255, 0.25), 0 0 4.5px 6px rgba(255, 255, 255, 0.05), 0 0 7.5px 9px rgba(255, 255, 255, 0.025), inset 0 0 4.5px 6px rgba(255, 255, 255, 0.05), inset 0 0 7.5px 9px rgba(255, 255, 255, 0.025);
-            box-shadow: 0 0 1.5px 1.5px rgba(255, 255, 255, 0.25), 0 0 4.5px 6px rgba(255, 255, 255, 0.05), 0 0 7.5px 9px rgba(255, 255, 255, 0.025), inset 0 0 4.5px 6px rgba(255, 255, 255, 0.05), inset 0 0 7.5px 9px rgba(255, 255, 255, 0.025);
-  }
-  .border-glass-3xl {
-    -webkit-box-shadow: 0 0 2px 2px rgba(255, 255, 255, 0.25), 0 0 6px 8px rgba(255, 255, 255, 0.05), 0 0 10px 12px rgba(255, 255, 255, 0.025), inset 0 0 6px 8px rgba(255, 255, 255, 0.05), inset 0 0 10px 12px rgba(255, 255, 255, 0.025);
-            box-shadow: 0 0 2px 2px rgba(255, 255, 255, 0.25), 0 0 6px 8px rgba(255, 255, 255, 0.05), 0 0 10px 12px rgba(255, 255, 255, 0.025), inset 0 0 6px 8px rgba(255, 255, 255, 0.05), inset 0 0 10px 12px rgba(255, 255, 255, 0.025);
-  }
-  .bg-glass-xs {
-    -webkit-backdrop-filter: blur(2px);
-            backdrop-filter: blur(2px);
-    background-color: rgba(255, 255, 255, 0.025);
-  }
-  .bg-glass-sm {
-    -webkit-backdrop-filter: blur(3px);
-            backdrop-filter: blur(3px);
-    background-color: rgba(255, 255, 255, 0.035);
-  }
-  .bg-glass-md {
-    -webkit-backdrop-filter: blur(5px);
-            backdrop-filter: blur(5px);
-    background-color: rgba(255, 255, 255, 0.05);
-  }
-  .bg-glass-lg {
-    -webkit-backdrop-filter: blur(7px);
-            backdrop-filter: blur(7px);
-    background-color: rgba(255, 255, 255, 0.065);
-  }
-  .bg-glass-xl {
-    -webkit-backdrop-filter: blur(9px);
-            backdrop-filter: blur(9px);
-    background-color: rgba(255, 255, 255, 0.075);
-  }
-  .bg-glass-2xl {
-    -webkit-backdrop-filter: blur(12px);
-            backdrop-filter: blur(12px);
-    background-color: rgba(255, 255, 255, 0.09);
-  }
-  .bg-glass-3xl {
-    -webkit-backdrop-filter: blur(16px);
-            backdrop-filter: blur(16px);
-    background-color: rgba(255, 255, 255, 0.1);
-  }
-  .text-glass-xs {
-    text-shadow: 0 0 0.25px 0.25px rgba(255, 255, 255, 0.25), 0 0 0.75px 1px rgba(255, 255, 255, 0.05), 0 0 1.25px 1.5px rgba(255, 255, 255, 0.025);
-  }
-  .text-glass-sm {
-    text-shadow: 0 0 0.375px 0.375px rgba(255, 255, 255, 0.25), 0 0 1px 1.5px rgba(255, 255, 255, 0.05), 0 0 1.75px 2.25px rgba(255, 255, 255, 0.025);
-  }
-  .text-glass-md {
-    text-shadow: 0 0 0.5px 0.5px rgba(255, 255, 255, 0.25), 0 0 1.5px 2px rgba(255, 255, 255, 0.05), 0 0 2.5px 3px rgba(255, 255, 255, 0.025);
-  }
-  .text-glass-lg {
-    text-shadow: 0 0 0.75px 0.75px rgba(255, 255, 255, 0.25), 0 0 2.25px 3px rgba(255, 255, 255, 0.05), 0 0 3.75px 4.5px rgba(255, 255, 255, 0.025);
-  }
-  .text-glass-xl {
-    text-shadow: 0 0 1px 1px rgba(255, 255, 255, 0.25), 0 0 3px 4px rgba(255, 255, 255, 0.05), 0 0 5px 6px rgba(255, 255, 255, 0.025);
-  }
-  .text-glass-2xl {
-    text-shadow: 0 0 1.5px 1.5px rgba(255, 255, 255, 0.25), 0 0 4.5px 6px rgba(255, 255, 255, 0.05), 0 0 7.5px 9px rgba(255, 255, 255, 0.025);
-  }
-  .text-glass-3xl {
-    text-shadow: 0 0 2px 2px rgba(255, 255, 255, 0.25), 0 0 6px 8px rgba(255, 255, 255, 0.05), 0 0 10px 12px rgba(255, 255, 255, 0.025);
-  }
-  .bd-blur-none {
-    -webkit-backdrop-filter: none;
-            backdrop-filter: none;
-  }
-  .bd-blur-xs {
-    -webkit-backdrop-filter: blur(4px);
-            backdrop-filter: blur(4px);
-  }
-  .bd-blur-sm {
-    -webkit-backdrop-filter: blur(8px);
-            backdrop-filter: blur(8px);
-  }
-  .bd-blur-md {
-    -webkit-backdrop-filter: blur(12px);
-            backdrop-filter: blur(12px);
-  }
-  .bd-blur-lg {
-    -webkit-backdrop-filter: blur(16px);
-            backdrop-filter: blur(16px);
-  }
-  .bd-blur-xl {
-    -webkit-backdrop-filter: blur(20px);
-            backdrop-filter: blur(20px);
-  }
-  .bd-blur-2xl {
-    -webkit-backdrop-filter: blur(24px);
-            backdrop-filter: blur(24px);
-  }
-  .bd-blur-3xl {
-    -webkit-backdrop-filter: blur(28px);
-            backdrop-filter: blur(28px);
-  }
-  .bd-blur-4xl {
-    -webkit-backdrop-filter: blur(32px);
-            backdrop-filter: blur(32px);
-  }
-  .bd-opacity-none {
-    opacity: 0;
-  }
-  .bd-opacity-full {
-    opacity: 1;
-  }
-  .bd-opacity-xs {
-    opacity: 0.2;
-  }
-  .bd-opacity-sm {
-    opacity: 0.3;
-  }
-  .bd-opacity-md {
-    opacity: 0.4;
-  }
-  .bd-opacity-lg {
-    opacity: 0.5;
-  }
-  .bd-opacity-xl {
-    opacity: 0.6;
-  }
-  .bd-opacity-2xl {
-    opacity: 0.7;
-  }
-  .bd-opacity-3xl {
-    opacity: 0.8;
-  }
-  .bd-opacity-4xl {
-    opacity: 0.9;
-  }
-  .box-shadow-xs {
-    -webkit-box-shadow: 0 0 1px 1px rgba(255, 255, 255, 0.1), 0 0 2px 1px rgba(255, 255, 255, 0.05), 0 0 3px 3px rgba(255, 255, 255, 0.01), inset 0 0 2px 1px rgba(255, 255, 255, 0.05), inset 0 0 3px 3px rgba(255, 255, 255, 0.01);
-            box-shadow: 0 0 1px 1px rgba(255, 255, 255, 0.1), 0 0 2px 1px rgba(255, 255, 255, 0.05), 0 0 3px 3px rgba(255, 255, 255, 0.01), inset 0 0 2px 1px rgba(255, 255, 255, 0.05), inset 0 0 3px 3px rgba(255, 255, 255, 0.01);
-  }
-  .box-shadow-sm {
-    -webkit-box-shadow: 0 0 1px 1px rgba(255, 255, 255, 0.2), 0 0 2px 1px rgba(255, 255, 255, 0.1), 0 0 3px 3px rgba(255, 255, 255, 0.05), inset 0 0 2px 1px rgba(255, 255, 255, 0.1), inset 0 0 3px 3px rgba(255, 255, 255, 0.05);
-            box-shadow: 0 0 1px 1px rgba(255, 255, 255, 0.2), 0 0 2px 1px rgba(255, 255, 255, 0.1), 0 0 3px 3px rgba(255, 255, 255, 0.05), inset 0 0 2px 1px rgba(255, 255, 255, 0.1), inset 0 0 3px 3px rgba(255, 255, 255, 0.05);
-  }
-  .box-shadow-md {
-    -webkit-box-shadow: 0 0 1px 1px rgba(255, 255, 255, 0.5), 0 0 3px 4px rgba(255, 255, 255, 0.1), 0 0 5px 6px rgba(255, 255, 255, 0.05), inset 0 0 3px 4px rgba(255, 255, 255, 0.1), inset 0 0 5px 6px rgba(255, 255, 255, 0.05);
-            box-shadow: 0 0 1px 1px rgba(255, 255, 255, 0.5), 0 0 3px 4px rgba(255, 255, 255, 0.1), 0 0 5px 6px rgba(255, 255, 255, 0.05), inset 0 0 3px 4px rgba(255, 255, 255, 0.1), inset 0 0 5px 6px rgba(255, 255, 255, 0.05);
-  }
-  .box-shadow-lg {
-    -webkit-box-shadow: 0 0 2px 2px rgba(255, 255, 255, 0.5), 0 0 4px 4px rgba(255, 255, 255, 0.1), 0 0 6px 6px rgba(255, 255, 255, 0.05), inset 0 0 4px 4px rgba(255, 255, 255, 0.1), inset 0 0 6px 6px rgba(255, 255, 255, 0.05);
-            box-shadow: 0 0 2px 2px rgba(255, 255, 255, 0.5), 0 0 4px 4px rgba(255, 255, 255, 0.1), 0 0 6px 6px rgba(255, 255, 255, 0.05), inset 0 0 4px 4px rgba(255, 255, 255, 0.1), inset 0 0 6px 6px rgba(255, 255, 255, 0.05);
-  }
-  .box-shadow-xl {
-    -webkit-box-shadow: 0 0 2px 3px rgba(255, 255, 255, 0.5), 0 0 4px 6px rgba(255, 255, 255, 0.1), 0 0 6px 8px rgba(255, 255, 255, 0.05), inset 0 0 4px 6px rgba(255, 255, 255, 0.1), inset 0 0 6px 8px rgba(255, 255, 255, 0.05);
-            box-shadow: 0 0 2px 3px rgba(255, 255, 255, 0.5), 0 0 4px 6px rgba(255, 255, 255, 0.1), 0 0 6px 8px rgba(255, 255, 255, 0.05), inset 0 0 4px 6px rgba(255, 255, 255, 0.1), inset 0 0 6px 8px rgba(255, 255, 255, 0.05);
-  }
-  .box-shadow-2xl {
-    -webkit-box-shadow: 0 0 2px 3px rgba(255, 255, 255, 0.6), 0 0 4px 6px rgba(255, 255, 255, 0.2), 0 0 6px 8px rgba(255, 255, 255, 0.1), inset 0 0 4px 6px rgba(255, 255, 255, 0.2), inset 0 0 6px 8px rgba(255, 255, 255, 0.1);
-            box-shadow: 0 0 2px 3px rgba(255, 255, 255, 0.6), 0 0 4px 6px rgba(255, 255, 255, 0.2), 0 0 6px 8px rgba(255, 255, 255, 0.1), inset 0 0 4px 6px rgba(255, 255, 255, 0.2), inset 0 0 6px 8px rgba(255, 255, 255, 0.1);
-  }
-  .box-shadow-3xl {
-    -webkit-box-shadow: 0 0 2px 3px rgba(255, 255, 255, 0.7), 0 0 4px 6px rgba(255, 255, 255, 0.3), 0 0 6px 8px rgba(255, 255, 255, 0.15), inset 0 0 4px 6px rgba(255, 255, 255, 0.3), inset 0 0 6px 8px rgba(255, 255, 255, 0.15);
-            box-shadow: 0 0 2px 3px rgba(255, 255, 255, 0.7), 0 0 4px 6px rgba(255, 255, 255, 0.3), 0 0 6px 8px rgba(255, 255, 255, 0.15), inset 0 0 4px 6px rgba(255, 255, 255, 0.3), inset 0 0 6px 8px rgba(255, 255, 255, 0.15);
-  }
-  .box-shadow-4xl {
-    -webkit-box-shadow: 0 0 4px 5px rgba(255, 255, 255, 0.7), 0 0 6px 8px rgba(255, 255, 255, 0.3), 0 0 8px 10px rgba(255, 255, 255, 0.15), inset 0 0 4px 5px rgba(255, 255, 255, 0.3), inset 0 0 6px 8px rgba(255, 255, 255, 0.15);
-            box-shadow: 0 0 4px 5px rgba(255, 255, 255, 0.7), 0 0 6px 8px rgba(255, 255, 255, 0.3), 0 0 8px 10px rgba(255, 255, 255, 0.15), inset 0 0 4px 5px rgba(255, 255, 255, 0.3), inset 0 0 6px 8px rgba(255, 255, 255, 0.15);
-  }
+
+.typography {
+  font-size: var(--text-base);
+  color: var(--color-gray-700);
+  font-family: "Albert Sans", sans-serif;
 }
+
+.Albert-Sans {
+  font-family: "Albert Sans", sans-serif;
+}
+.Albert-Sans-thin, .Albert-Sans-100 {
+  font-weight: 100;
+}
+.Albert-Sans-light, .Albert-Sans-300 {
+  font-weight: 300;
+}
+.Albert-Sans-regular, .Albert-Sans-400 {
+  font-weight: 400;
+}
+.Albert-Sans-bold, .Albert-Sans-700 {
+  font-weight: 700;
+}
+.Albert-Sans-black, .Albert-Sans-900 {
+  font-weight: 900;
+}
+
+.prose {
+  max-width: 100ch;
+}
+
+.text-shadow-xs {
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.text-shadow-sm {
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+.text-shadow-md {
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.text-shadow-lg {
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.text-shadow-xl {
+  text-shadow: 0 4px 6px rgba(0, 0, 0, 0.25);
+}
+
+.text-shadow-2xl {
+  text-shadow: 0 6px 8px rgba(0, 0, 0, 0.3);
+}
+
+.text-shadow-3xl {
+  text-shadow: 0 8px 12px rgba(0, 0, 0, 0.35);
+}
+
+.text-shadow-4xl {
+  text-shadow: 0 12px 16px rgba(0, 0, 0, 0.4);
+}
+
+.w-fit-available {
+  width: 100%;
+  width: -moz-available; /* WebKit-based browsers will ignore this. */
+  width: -webkit-fill-available; /* Mozilla-based browsers will ignore this. */
+  width: fill-available;
+}
+
+.h-fit-available {
+  height: 100%;
+  height: -moz-available; /* WebKit-based browsers will ignore this. */
+  height: -webkit-fill-available; /* Mozilla-based browsers will ignore this. */
+  height: fill-available;
+}
+
+.border-glass {
+  box-shadow: 0 0 0.5px 0.5px rgba(255, 255, 255, 0.25), 0 0 1.5px 2px rgba(255, 255, 255, 0.05), 0 0 2.5px 3px rgba(255, 255, 255, 0.025), inset 0 0 1.5px 2px rgba(255, 255, 255, 0.05), inset 0 0 2.5px 3px rgba(255, 255, 255, 0.025);
+}
+.border-glass-xs {
+  box-shadow: 0 0 0.25px 0.25px rgba(255, 255, 255, 0.25), 0 0 0.75px 1px rgba(255, 255, 255, 0.05), 0 0 1.25px 1.5px rgba(255, 255, 255, 0.025), inset 0 0 0.75px 1px rgba(255, 255, 255, 0.05), inset 0 0 1.25px 1.5px rgba(255, 255, 255, 0.025);
+}
+.border-glass-sm {
+  box-shadow: 0 0 0.375px 0.375px rgba(255, 255, 255, 0.25), 0 0 1px 1.5px rgba(255, 255, 255, 0.05), 0 0 1.75px 2.25px rgba(255, 255, 255, 0.025), inset 0 0 1px 1.5px rgba(255, 255, 255, 0.05), inset 0 0 1.75px 2.25px rgba(255, 255, 255, 0.025);
+}
+.border-glass-md {
+  box-shadow: 0 0 0.5px 0.5px rgba(255, 255, 255, 0.25), 0 0 1.5px 2px rgba(255, 255, 255, 0.05), 0 0 2.5px 3px rgba(255, 255, 255, 0.025), inset 0 0 1.5px 2px rgba(255, 255, 255, 0.05), inset 0 0 2.5px 3px rgba(255, 255, 255, 0.025);
+}
+.border-glass-lg {
+  box-shadow: 0 0 0.75px 0.75px rgba(255, 255, 255, 0.25), 0 0 2.25px 3px rgba(255, 255, 255, 0.05), 0 0 3.75px 4.5px rgba(255, 255, 255, 0.025), inset 0 0 2.25px 3px rgba(255, 255, 255, 0.05), inset 0 0 3.75px 4.5px rgba(255, 255, 255, 0.025);
+}
+.border-glass-xl {
+  box-shadow: 0 0 1px 1px rgba(255, 255, 255, 0.25), 0 0 3px 4px rgba(255, 255, 255, 0.05), 0 0 5px 6px rgba(255, 255, 255, 0.025), inset 0 0 3px 4px rgba(255, 255, 255, 0.05), inset 0 0 5px 6px rgba(255, 255, 255, 0.025);
+}
+.border-glass-2xl {
+  box-shadow: 0 0 1.5px 1.5px rgba(255, 255, 255, 0.25), 0 0 4.5px 6px rgba(255, 255, 255, 0.05), 0 0 7.5px 9px rgba(255, 255, 255, 0.025), inset 0 0 4.5px 6px rgba(255, 255, 255, 0.05), inset 0 0 7.5px 9px rgba(255, 255, 255, 0.025);
+}
+.border-glass-3xl {
+  box-shadow: 0 0 2px 2px rgba(255, 255, 255, 0.25), 0 0 6px 8px rgba(255, 255, 255, 0.05), 0 0 10px 12px rgba(255, 255, 255, 0.025), inset 0 0 6px 8px rgba(255, 255, 255, 0.05), inset 0 0 10px 12px rgba(255, 255, 255, 0.025);
+}
+
+.bg-glass-xs {
+  backdrop-filter: blur(2px);
+  background-color: rgba(255, 255, 255, 0.025);
+}
+.bg-glass-sm {
+  backdrop-filter: blur(3px);
+  background-color: rgba(255, 255, 255, 0.035);
+}
+.bg-glass-md {
+  backdrop-filter: blur(5px);
+  background-color: rgba(255, 255, 255, 0.05);
+}
+.bg-glass-lg {
+  backdrop-filter: blur(7px);
+  background-color: rgba(255, 255, 255, 0.065);
+}
+.bg-glass-xl {
+  backdrop-filter: blur(9px);
+  background-color: rgba(255, 255, 255, 0.075);
+}
+.bg-glass-2xl {
+  backdrop-filter: blur(12px);
+  background-color: rgba(255, 255, 255, 0.09);
+}
+.bg-glass-3xl {
+  backdrop-filter: blur(16px);
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.text-glass-xs {
+  text-shadow: 0 0 0.25px 0.25px rgba(255, 255, 255, 0.25), 0 0 0.75px 1px rgba(255, 255, 255, 0.05), 0 0 1.25px 1.5px rgba(255, 255, 255, 0.025);
+}
+.text-glass-sm {
+  text-shadow: 0 0 0.375px 0.375px rgba(255, 255, 255, 0.25), 0 0 1px 1.5px rgba(255, 255, 255, 0.05), 0 0 1.75px 2.25px rgba(255, 255, 255, 0.025);
+}
+.text-glass-md {
+  text-shadow: 0 0 0.5px 0.5px rgba(255, 255, 255, 0.25), 0 0 1.5px 2px rgba(255, 255, 255, 0.05), 0 0 2.5px 3px rgba(255, 255, 255, 0.025);
+}
+.text-glass-lg {
+  text-shadow: 0 0 0.75px 0.75px rgba(255, 255, 255, 0.25), 0 0 2.25px 3px rgba(255, 255, 255, 0.05), 0 0 3.75px 4.5px rgba(255, 255, 255, 0.025);
+}
+.text-glass-xl {
+  text-shadow: 0 0 1px 1px rgba(255, 255, 255, 0.25), 0 0 3px 4px rgba(255, 255, 255, 0.05), 0 0 5px 6px rgba(255, 255, 255, 0.025);
+}
+.text-glass-2xl {
+  text-shadow: 0 0 1.5px 1.5px rgba(255, 255, 255, 0.25), 0 0 4.5px 6px rgba(255, 255, 255, 0.05), 0 0 7.5px 9px rgba(255, 255, 255, 0.025);
+}
+.text-glass-3xl {
+  text-shadow: 0 0 2px 2px rgba(255, 255, 255, 0.25), 0 0 6px 8px rgba(255, 255, 255, 0.05), 0 0 10px 12px rgba(255, 255, 255, 0.025);
+}
+
+.bd-blur-none {
+  backdrop-filter: none;
+}
+
+.bd-blur-xs {
+  backdrop-filter: blur(4px);
+}
+
+.bd-blur-sm {
+  backdrop-filter: blur(8px);
+}
+
+.bd-blur-md {
+  backdrop-filter: blur(12px);
+}
+
+.bd-blur-lg {
+  backdrop-filter: blur(16px);
+}
+
+.bd-blur-xl {
+  backdrop-filter: blur(20px);
+}
+
+.bd-blur-2xl {
+  backdrop-filter: blur(24px);
+}
+
+.bd-blur-3xl {
+  backdrop-filter: blur(28px);
+}
+
+.bd-blur-4xl {
+  backdrop-filter: blur(32px);
+}
+
+.bd-opacity-none {
+  opacity: 0;
+}
+
+.bd-opacity-full {
+  opacity: 1;
+}
+
+.bd-opacity-xs {
+  opacity: 0.2;
+}
+
+.bd-opacity-sm {
+  opacity: 0.3;
+}
+
+.bd-opacity-md {
+  opacity: 0.4;
+}
+
+.bd-opacity-lg {
+  opacity: 0.5;
+}
+
+.bd-opacity-xl {
+  opacity: 0.6;
+}
+
+.bd-opacity-2xl {
+  opacity: 0.7;
+}
+
+.bd-opacity-3xl {
+  opacity: 0.8;
+}
+
+.bd-opacity-4xl {
+  opacity: 0.9;
+}
+
+.box-shadow-xs {
+  box-shadow: 0 0 1px 1px rgba(255, 255, 255, 0.1), 0 0 2px 1px rgba(255, 255, 255, 0.1), 0 0 3px 3px rgba(255, 255, 255, 0.1), inset 0 0 2px 1px rgba(255, 255, 255, 0.1), inset 0 0 3px 3px rgba(255, 255, 255, 0.1);
+}
+
+.box-shadow-sm {
+  box-shadow: 0 0 1px 1px rgba(255, 255, 255, 0.1), 0 0 2px 1px rgba(255, 255, 255, 0.1), 0 0 3px 3px rgba(255, 255, 255, 0.1), inset 0 0 2px 1px rgba(255, 255, 255, 0.1), inset 0 0 3px 3px rgba(255, 255, 255, 0.1);
+}
+
+.box-shadow-md {
+  box-shadow: 0 0 1px 1px rgba(255, 255, 255, 0.1), 0 0 3px 4px rgba(255, 255, 255, 0.1), 0 0 5px 6px rgba(255, 255, 255, 0.1), inset 0 0 3px 4px rgba(255, 255, 255, 0.1), inset 0 0 5px 6px rgba(255, 255, 255, 0.1);
+}
+
+.box-shadow-lg {
+  box-shadow: 0 0 2px 2px rgba(255, 255, 255, 0.1), 0 0 4px 4px rgba(255, 255, 255, 0.1), 0 0 6px 6px rgba(255, 255, 255, 0.1), inset 0 0 4px 4px rgba(255, 255, 255, 0.1), inset 0 0 6px 6px rgba(255, 255, 255, 0.1);
+}
+
+.box-shadow-xl {
+  box-shadow: 0 0 2px 3px rgba(255, 255, 255, 0.1), 0 0 4px 6px rgba(255, 255, 255, 0.1), 0 0 6px 8px rgba(255, 255, 255, 0.1), inset 0 0 4px 6px rgba(255, 255, 255, 0.1), inset 0 0 6px 8px rgba(255, 255, 255, 0.1);
+}
+
+.box-shadow-2xl {
+  box-shadow: 0 0 2px 3px rgba(255, 255, 255, 0.1), 0 0 4px 6px rgba(255, 255, 255, 0.1), 0 0 6px 8px rgba(255, 255, 255, 0.1), inset 0 0 4px 6px rgba(255, 255, 255, 0.1), inset 0 0 6px 8px rgba(255, 255, 255, 0.1);
+}
+
+.box-shadow-3xl {
+  box-shadow: 0 0 2px 3px rgba(255, 255, 255, 0.1), 0 0 4px 6px rgba(255, 255, 255, 0.1), 0 0 6px 8px rgba(255, 255, 255, 0.1), inset 0 0 4px 6px rgba(255, 255, 255, 0.1), inset 0 0 6px 8px rgba(255, 255, 255, 0.1);
+}
+
+.box-shadow-4xl {
+  box-shadow: 0 0 4px 5px rgba(255, 255, 255, 0.1), 0 0 6px 8px rgba(255, 255, 255, 0.1), 0 0 8px 10px rgba(255, 255, 255, 0.1), inset 0 0 4px 5px rgba(255, 255, 255, 0.1), inset 0 0 6px 8px rgba(255, 255, 255, 0.1);
+}
+
+/*# sourceMappingURL=custom.css.map */

@@ -1,0 +1,167 @@
+// Classes pour la compatibilité cross-browser
+.w-fit-available {
+    width: 100%;
+    width: -moz-available; /* WebKit-based browsers will ignore this. */
+    width: -webkit-fill-available; /* Mozilla-based browsers will ignore this. */
+    width: fill-available;
+}
+
+.h-fit-available {
+    height: 100%;
+    height: -moz-available; /* WebKit-based browsers will ignore this. */
+    height: -webkit-fill-available; /* Mozilla-based browsers will ignore this. */
+    height: fill-available;
+}
+
+// Classes pour les bordures glassmorphisme
+// Utilisation : <div class="border-glass-md">...</div>
+.border-glass {
+    box-shadow:
+    0 0 0.5px 0.5px rgba(255, 255, 255, 0.25),
+    0 0 1.5px 2px rgba(255, 255, 255, 0.05),
+    0 0 2.5px 3px rgba(255, 255, 255, 0.025),
+    inset 0 0 1.5px 2px rgba(255, 255, 255, 0.05),
+    inset 0 0 2.5px 3px rgba(255, 255, 255, 0.025);
+    &-xs {
+        box-shadow:
+            0 0 0.25px 0.25px rgba(255, 255, 255, 0.25),
+            0 0 0.75px 1px rgba(255, 255, 255, 0.05),
+            0 0 1.25px 1.5px rgba(255, 255, 255, 0.025),
+            inset 0 0 0.75px 1px rgba(255, 255, 255, 0.05),
+            inset 0 0 1.25px 1.5px rgba(255, 255, 255, 0.025);
+    }
+
+    &-sm {
+        box-shadow:
+            0 0 0.375px 0.375px rgba(255, 255, 255, 0.25),
+            0 0 1px 1.5px rgba(255, 255, 255, 0.05),
+            0 0 1.75px 2.25px rgba(255, 255, 255, 0.025),
+            inset 0 0 1px 1.5px rgba(255, 255, 255, 0.05),
+            inset 0 0 1.75px 2.25px rgba(255, 255, 255, 0.025);
+    }
+
+    &-md {
+        box-shadow:
+            0 0 0.5px 0.5px rgba(255, 255, 255, 0.25),
+            0 0 1.5px 2px rgba(255, 255, 255, 0.05),
+            0 0 2.5px 3px rgba(255, 255, 255, 0.025),
+            inset 0 0 1.5px 2px rgba(255, 255, 255, 0.05),
+            inset 0 0 2.5px 3px rgba(255, 255, 255, 0.025);
+    }
+
+    &-lg {
+        box-shadow:
+            0 0 0.75px 0.75px rgba(255, 255, 255, 0.25),
+            0 0 2.25px 3px rgba(255, 255, 255, 0.05),
+            0 0 3.75px 4.5px rgba(255, 255, 255, 0.025),
+            inset 0 0 2.25px 3px rgba(255, 255, 255, 0.05),
+            inset 0 0 3.75px 4.5px rgba(255, 255, 255, 0.025);
+    }
+
+    &-xl {
+        box-shadow:
+            0 0 1px 1px rgba(255, 255, 255, 0.25),
+            0 0 3px 4px rgba(255, 255, 255, 0.05),
+            0 0 5px 6px rgba(255, 255, 255, 0.025),
+            inset 0 0 3px 4px rgba(255, 255, 255, 0.05),
+            inset 0 0 5px 6px rgba(255, 255, 255, 0.025);
+    }
+
+    &-2xl {
+        box-shadow:
+            0 0 1.5px 1.5px rgba(255, 255, 255, 0.25),
+            0 0 4.5px 6px rgba(255, 255, 255, 0.05),
+            0 0 7.5px 9px rgba(255, 255, 255, 0.025),
+            inset 0 0 4.5px 6px rgba(255, 255, 255, 0.05),
+            inset 0 0 7.5px 9px rgba(255, 255, 255, 0.025);
+    }
+
+    &-3xl {
+        box-shadow:
+            0 0 2px 2px rgba(255, 255, 255, 0.25),
+            0 0 6px 8px rgba(255, 255, 255, 0.05),
+            0 0 10px 12px rgba(255, 255, 255, 0.025),
+            inset 0 0 6px 8px rgba(255, 255, 255, 0.05),
+            inset 0 0 10px 12px rgba(255, 255, 255, 0.025);
+    }
+}
+
+// Classes pour les arrière-plans glassmorphisme
+// Utilisation : <div class="bg-glass-md">...</div>
+.bg-glass {
+    &-xs {
+        backdrop-filter: blur(2px);
+        background-color: rgba(255, 255, 255, 0.025);
+    }
+    &-sm {
+        backdrop-filter: blur(3px);
+        background-color: rgba(255, 255, 255, 0.035);
+    }
+    &-md {
+        backdrop-filter: blur(5px);
+        background-color: rgba(255, 255, 255, 0.05);
+    }
+    &-lg {
+        backdrop-filter: blur(7px);
+        background-color: rgba(255, 255, 255, 0.065);
+    }
+    &-xl {
+        backdrop-filter: blur(9px);
+        background-color: rgba(255, 255, 255, 0.075);
+    }
+    &-2xl {
+        backdrop-filter: blur(12px);
+        background-color: rgba(255, 255, 255, 0.09);
+    }
+    &-3xl {
+        backdrop-filter: blur(16px);
+        background-color: rgba(255, 255, 255, 0.1);
+    }
+}
+
+// Classes pour les textes glassmorphisme
+// Utilisation : <span class="text-glass-md">...</span>
+.text-glass {
+    &-xs {
+        text-shadow:
+            0 0 0.25px 0.25px rgba(255, 255, 255, 0.25),
+            0 0 0.75px 1px rgba(255, 255, 255, 0.05),
+            0 0 1.25px 1.5px rgba(255, 255, 255, 0.025);
+    }
+    &-sm {
+        text-shadow:
+            0 0 0.375px 0.375px rgba(255, 255, 255, 0.25),
+            0 0 1px 1.5px rgba(255, 255, 255, 0.05),
+            0 0 1.75px 2.25px rgba(255, 255, 255, 0.025);
+    }
+    &-md {
+        text-shadow:
+            0 0 0.5px 0.5px rgba(255, 255, 255, 0.25),
+            0 0 1.5px 2px rgba(255, 255, 255, 0.05),
+            0 0 2.5px 3px rgba(255, 255, 255, 0.025);
+    }
+    &-lg {
+        text-shadow:
+            0 0 0.75px 0.75px rgba(255, 255, 255, 0.25),
+            0 0 2.25px 3px rgba(255, 255, 255, 0.05),
+            0 0 3.75px 4.5px rgba(255, 255, 255, 0.025);
+    }
+    &-xl {
+        text-shadow:
+            0 0 1px 1px rgba(255, 255, 255, 0.25),
+            0 0 3px 4px rgba(255, 255, 255, 0.05),
+            0 0 5px 6px rgba(255, 255, 255, 0.025);
+    }
+    &-2xl {
+        text-shadow:
+            0 0 1.5px 1.5px rgba(255, 255, 255, 0.25),
+            0 0 4.5px 6px rgba(255, 255, 255, 0.05),
+            0 0 7.5px 9px rgba(255, 255, 255, 0.025);
+    }
+    &-3xl {
+        text-shadow:
+            0 0 2px 2px rgba(255, 255, 255, 0.25),
+            0 0 6px 8px rgba(255, 255, 255, 0.05),
+            0 0 10px 12px rgba(255, 255, 255, 0.025);
+    }
+}

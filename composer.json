@@ -60,14 +60,12 @@
             "@php -r \"file_exists('database/database.sqlite') || touch('database/database.sqlite');\"",
             "@php artisan migrate --graceful --ansi"
         ],
-        "dev": [
-            "Composer\\Config::disableProcessTimeout",
-            "npx concurrently -c \"#93c5fd,#c4b5fd,#fb7185\" \"php artisan serve\" \"php artisan queue:listen --tries=1\" \"pnpm run dev\" --names=server,queue,vite"
-        ],
+        "dev": "npx concurrently \"php artisan serve\" \"php artisan queue:listen\" \"pnpm run dev\" \"pnpm run scss\" \"pnpm run inject:theme-vars\"",
         "dev:network": [
             "Composer\\Config::disableProcessTimeout",
             "npx concurrently -c \"#93c5fd,#c4b5fd,#fb7185\" \"php artisan serve --host=0.0.0.0\" \"php artisan queue:listen --tries=1\" \"pnpm run dev\" --names=server,queue,vite"
-        ]
+        ],
+        "scss": "sass --watch resources/scss:resources/css"
     },
     "extra": {
         "laravel": {

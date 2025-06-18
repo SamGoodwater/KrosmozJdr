@@ -76,11 +76,6 @@ Le projet utilise les dernières recommandations en matière de sécurité, de q
   - Pour une page : `storage/pages/`
   - Pour les autres fichiers : `storage/files/`
 
-## Plateforme de développement
-
-- Windows 11
-- Processeur ARM (Snapdragon X Elite)
-
 ## Liens et ressources
 
 - [Atomic Design](https://atomicdesign.bradfrost.com/)
