@@ -1,3 +1,10 @@
+@use "sass:map";
+
+.bd-none {
+    backdrop-filter: none;
+    filter: none;
+}
+
 // Variables pour le glassmorphisme
 $blur-sizes: (
     'xs': 4,    // Très léger
@@ -21,11 +28,23 @@ $opacity-sizes: (
     '4xl': 0.9  // Presque opaque
 );
 
+// Génération des classes de brightness pour le glassmorphisme
+$brightness-sizes: (
+    'xs': 1.05,
+    'sm': 1.10,
+    'md': 1.15,
+    'lg': 1.20,
+    'xl': 1.25,
+    '2xl': 1.30,
+    '3xl': 1.35,
+    '4xl': 1.40
+);
+
 // Classes pour le glassmorphisme
 // Utilisation : <div class="bd-blur-md bd-opacity-md">...</div>
 
 .bd-blur-none {
-    backdrop-filter: none;
+    backdrop-filter: blur(0px);
 }
 
 @each $size, $value in $blur-sizes {
@@ -47,3 +66,25 @@ $opacity-sizes: (
         opacity: #{$value};
     }
 }
+
+.bd-brightness-none {
+    backdrop-filter: brightness(1);
+}
+
+@each $size, $value in $brightness-sizes {
+    .bd-brightness-#{$size} {
+        backdrop-filter: brightness(#{$value});
+    }
+}
+
+.bd-glass-none {
+    backdrop-filter: blur(0px) brightness(1);
+}
+
+// Génération des classes combinées blur + brightness pour le glassmorphisme
+@each $size in (xs, sm, md, lg, xl, 2xl, 3xl, 4xl) {
+    .bd-glass-#{$size} {
+        backdrop-filter: blur(map.get($blur-sizes, $size) + px) brightness(map.get($brightness-sizes, $size));
+    }
+}
+        $outer-shadows: ();

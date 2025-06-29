@@ -19,98 +19,119 @@ Le design du site s'appuie sur les principes d'Atomic Design, le glassmorphism e
 - Vérifier la navigation clavier sur tous les layouts et composants.
 - Accessibilité : contraste, adaptation automatique, écriture inclusive.
 
-### 2.3. Glassmorphisme
+### 2.3. Glassmorphisme (Mise à jour 2024)
 
-- Utilisation de panneaux semi-transparents avec un fort flou d'arrière-plan (`backdrop-filter`).
-- Angles arrondis généreux (`border-radius`), ombres subtiles (`box-shadow`).
-- Contours semi-opaques pour un contraste doux.
-- Le site utilise des panneaux superposés, dont l'arrière-plan est flouté pour recréer un effet de « verre dépoli ».
-- Chacun de ces panneaux présente des angles arrondis et une ombre portée subtile pour renforcer la sensation de profondeur et de flottement.
-- De fins contours semi-opaques délimitent chaque bloc, tout en laissant transparaître le flou d'arrière-plan pour un contraste doux entre les calques.
+> **Depuis 2024, le système glassmorphism du projet Krosmoz-JDR est entièrement automatisé et compatible avec Tailwind/DaisyUI. Toutes les variantes de bordure, box-shadow et box-glass sont générées pour chaque couleur de thème (global, caracs, entities) et chaque taille d'intensité. L'utilisation des utilitaires glassmorphism est recommandée pour tous les composants UI, en complément des classes Tailwind.**
 
-#### Classes de glassmorphisme
+#### Utilitaires glassmorphism générés automatiquement
 
-Le design system fournit un ensemble de classes utilitaires pour créer des effets de glassmorphisme :
+- **Bordures glass** : `border-glass-{size}` et toutes ses variantes directionnelles et combinées
+  - Directionnelles simples : `border-glass-l-md`, `border-glass-r-xl`, `border-glass-t-lg`, `border-glass-b-sm`
+  - Combinaisons horizontales/verticales : `border-glass-x-xl`, `border-glass-y-md`
+  - Combinaisons complexes : `border-glass-tl-lg`, `border-glass-tr-xl`, `border-glass-bl-md`, `border-glass-br-sm`
+  - Combinaisons multiples : `border-glass-trl-md`, `border-glass-trb-xl`, `border-glass-tlb-lg`, `border-glass-brl-sm`
+- **Box glass complètes** : `box-glass-{size}` (effet complet bordure + backdrop)
+- **Backdrop glass** : `bd-glass-{size}` (blur+brightness combiné)
 
-1. **Backdrop Blur** (`bd-blur-*`) :
-   ```html
-   <div class="bd-blur-md">...</div>
-   ```
-   - `bd-blur-none` : Pas de flou
-   - `bd-blur-xs` : Très léger (4px)
-   - `bd-blur-sm` : Léger (8px)
-   - `bd-blur-md` : Moyen (12px)
-   - `bd-blur-lg` : Fort (16px)
-   - `bd-blur-xl` : Très fort (20px)
-   - `bd-blur-2xl` : Extrême (24px)
-   - `bd-blur-3xl` : Ultra (28px)
-   - `bd-blur-4xl` : Maximum (32px)
+#### Gestion des couleurs de thème
 
-2. **Backdrop Opacity** (`bd-opacity-*`) :
-   ```html
-   <div class="bd-opacity-md">...</div>
-   ```
-   - `bd-opacity-none` : Opacité 0
-   - `bd-opacity-full` : Opacité 1
-   - `bd-opacity-xs` : Très transparent (0.2)
-   - `bd-opacity-sm` : Transparent (0.3)
-   - `bd-opacity-md` : Semi-transparent (0.4)
-   - `bd-opacity-lg` : Moyen (0.5)
-   - `bd-opacity-xl` : Semi-opaque (0.6)
-   - `bd-opacity-2xl` : Opaque (0.7)
-   - `bd-opacity-3xl` : Très opaque (0.8)
-   - `bd-opacity-4xl` : Presque opaque (0.9)
+Le système génère automatiquement des variantes colorées pour trois thèmes principaux :
 
-3. **Border Glass** (`border-glass-*`) :
-   ```html
-   <div class="border-glass-md">...</div>
-   ```
-   - `border-glass` : Bordure par défaut
-   - `border-glass-xs` à `border-glass-3xl` : Différentes intensités d'effet glass
+- **Thème global** (`$theme-global`) : `primary`, `secondary`, `accent`, `neutral`, `info`, `success`, `warning`, `error`, `base`
+- **Thème caractéristiques** (`$theme-caracs`) : `pa`, `pm`, `fuite`, `tacle`, `cc`, `res_cc`, `ini`, `ca`, `kamas`, `touch`, `mastery`, `expertise`, `res-neutre`, `res-terre`, `res-air`, `res-feu`, `res-eau`, `cast-per-turn`, `cast-per-target`, `sight-line`, `number-between-two-cast`, `time_before_use_again`, `casting_time`, `dodge_pa`, `dodge_pm`, `po`, `po-editable`, `force`, `strong`, `terre`, `intel`, `feu`, `agi`, `air`, `chance`, `eau`, `vitality`, `sagesse`, `life`, `level`, `master_bonus`
+- **Thème entités** (`$theme-entities`) : `section`, `page`, `npc`, `item`, `creature`, `shop`, `campaign`, `resource`, `mob`, `specialization`, `spell`, `user`, `attribute`, `capitalize`, `classe`, `consumable`, `scenario`, `condition`
 
-4. **Background Glass** (`bg-glass-*`) :
-   ```html
-   <div class="bg-glass-md">...</div>
-   ```
-   - `bg-glass-xs` à `bg-glass-3xl` : Différentes intensités d'arrière-plan glass
+#### Tailles d'intensité disponibles
 
-5. **Text Glass** (`text-glass-*`) :
-   ```html
-   <span class="text-glass-md">...</span>
-   ```
-   - `text-glass-xs` à `text-glass-3xl` : Différentes intensités d'effet glass sur le texte
+Le système propose 8 tailles d'intensité croissante :
+- `xs` : Très léger (0.1, 0.1, 0.16)
+- `sm` : Léger (0.15, 0.15, 0.18)
+- `md` : Moyen (0.2, 0.2, 0.2)
+- `lg` : Fort (0.25, 0.25, 0.22)
+- `xl` : Très fort (0.3, 0.3, 0.24)
+- `2xl` : Extrême (0.35, 0.35, 0.26)
+- `3xl` : Ultra (0.4, 0.4, 0.28)
+- `4xl` : Maximum (0.45, 0.45, 0.3)
 
-#### Exemple d'utilisation combinée
+#### Exemples d'utilisation à jour
 
 ```html
-<div class="bd-blur-md bd-opacity-md border-glass-md bg-glass-md">
-  <h2 class="text-glass-md">Titre avec effet glass</h2>
-  <p>Contenu avec effet glassmorphisme</p>
-</div>
+<!-- Bordures glass neutres (blanc) -->
+<div class="border-glass-md">...</div>
+<div class="border-glass-l-xl">...</div>
+<div class="border-glass-x-lg">...</div>
+<div class="border-glass-tl-md">...</div>
+
+<!-- Bordures glass colorées (thème global) -->
+<div class="border-glass-primary-xl">...</div>
+<div class="border-glass-success-md">...</div>
+<div class="border-glass-warning-l-lg">...</div>
+<div class="border-glass-error-x-xl">...</div>
+
+<!-- Bordures glass colorées (thème caractéristiques) -->
+<div class="border-glass-pa-lg">...</div>
+<div class="border-glass-pm-xl">...</div>
+<div class="border-glass-fuite-md">...</div>
+<div class="border-glass-tacle-r-2xl">...</div>
+
+<!-- Bordures glass colorées (thème entités) -->
+<div class="border-glass-npc-md">...</div>
+<div class="border-glass-item-xl">...</div>
+<div class="border-glass-spell-lg">...</div>
+<div class="border-glass-creature-tl-2xl">...</div>
+
+<!-- Box glass complètes -->
+<div class="box-glass-md">...</div>
+<div class="box-glass-primary-xl">...</div>
+<div class="box-glass-pa-lg">...</div>
+<div class="box-glass-npc-2xl">...</div>
+
+<!-- Backdrop glass -->
+<div class="bd-glass-md">...</div>
+<div class="bd-glass-xl">...</div>
 ```
 
-#### Bonnes pratiques
+#### Compatibilité Tailwind
 
-1. **Hiérarchie visuelle** :
-   - Utiliser des intensités différentes pour créer une hiérarchie
-   - Exemple : `bd-blur-lg` pour le contenu principal, `bd-blur-sm` pour les éléments secondaires
+- Les utilitaires glassmorphism sont pensés pour être utilisés en complément des classes Tailwind (`bg-theme-500`, `border-theme-500`, etc.).
+- Les classes glassmorphism n'écrasent pas les couleurs Tailwind, mais les complètent (effet glass, ombre, blur, etc.).
+- Les couleurs sont synchronisées avec les variables CSS générées par Tailwind/DaisyUI (`var(--tw-blue)`, `var(--tw-green)`, etc.).
 
-2. **Accessibilité** :
-   - S'assurer que le contraste reste suffisant
-   - Éviter les combinaisons qui rendraient le texte illisible
-   - Tester avec différents thèmes (clair/sombre)
+#### Bonnes pratiques et recommandations
 
-3. **Performance** :
-   - Limiter l'utilisation du `backdrop-filter` sur les éléments animés
-   - Éviter d'empiler trop d'effets glass sur une même page
+- Toujours utiliser les classes Tailwind pour le fond (`bg-*`) et le texte (`text-*`).
+- Utiliser les utilitaires glassmorphism pour l'effet visuel (bordure, ombre, blur, brightness).
+- Pour les couleurs de bordure/ombre glass, préférer les classes générées (`border-glass-primary-md`, etc.) plutôt que de surcharger via du style inline ou des variables CSS manuelles.
+- Les utilitaires glass sont compatibles avec le dark mode et le theming DaisyUI (puisqu'ils utilisent les variables CSS générées par Tailwind/DaisyUI).
+- Privilégier les combinaisons directionnelles (`x`, `y`, `tl`, `tr`, etc.) pour un effet plus subtil et contrôlé.
 
-4. **Responsive** :
-   - Ajuster les intensités selon la taille d'écran
-   - Exemple : `bd-blur-md` sur desktop, `bd-blur-sm` sur mobile
+#### Performance
+
+- Les utilitaires glassmorphism sont générés en SCSS pour éviter la surcharge du build Tailwind.
+- Les classes combinées (ex : `.box-glass-primary-md`) sont explicitement générées pour garantir la purge CSS.
+- Le système utilise des maps SCSS optimisées pour éviter la duplication de code.
+
+#### Customisation avancée
+
+- Pour créer une variante glass personnalisée, il suffit d'ajouter une nouvelle couleur dans le thème SCSS, elle sera automatiquement prise en compte.
+- Possibilité d'ajouter des variantes d'opacité, de border-radius, etc. en étendant les maps SCSS.
+- Le mixin `border-glass` peut être étendu pour supporter de nouveaux effets ou paramètres.
+
+#### Intégration technique
+
+- Les variables CSS de thème sont injectées dans le CSS final via le script `inject-theme-vars.cjs` pour garantir la cohérence entre SCSS, Tailwind et DaisyUI.
+- Les fichiers SCSS sont importés dans le bon ordre dans `custom.scss` pour garantir la disponibilité des utilitaires.
+- Le système utilise des variables CSS (`var(--tw-*)`) pour garantir la compatibilité avec le theming dynamique de Tailwind/DaisyUI.
+
+#### Atomic Design et glassmorphism
+
+- Les Atoms/Molecules/Organisms peuvent utiliser les utilitaires glassmorphism pour garantir la cohérence visuelle et la personnalisation par thème.
+- Les helpers SCSS sont factorisés pour éviter toute duplication (voir `/Utils/atomic-design/uiHelper.js` pour la logique JS).
+- Le système glassmorphism s'intègre parfaitement dans la philosophie Atomic Design en fournissant des composants visuels cohérents et réutilisables.
 
 ### 2.4. Atomic Design – Structure des composants
 
-Le design system est structuré selon la méthodologie Atomic Design :
+Le design system est structuré selon la méthodologie Atomic Design :
 
 - **Atoms** : éléments UI de base, réutilisables partout.
 - **Molecules** : combinaisons simples d'atoms, unités fonctionnelles.

@@ -1,3 +1,9 @@
+@use "sass:map";
+@use "sass:list";
+@use '../themes/_theme-global.scss' as *;
+@use '../themes/_theme-caracs.scss' as *;
+@use '../themes/_theme-entities.scss' as *;
+
 // Variables pour les ombres
 $shadow-colors: (
     'light': rgba(255, 255, 255, 0.10),
@@ -47,14 +53,35 @@ $shadow-sizes: (
         $outer-shadows: ();
         $inner-shadows: ();
         
-        @each $shadow in map-get($shadows, 'outer') {
-            $outer-shadows: append($outer-shadows, $shadow map-get($shadow-colors, 'light'), comma);
+        @each $shadow in map.get($shadows, 'outer') {
+            $outer-shadows: list.append($outer-shadows, $shadow map.get($shadow-colors, 'light'), comma);
         }
         
-        @each $shadow in map-get($shadows, 'inner') {
-            $inner-shadows: append($inner-shadows, inset $shadow map-get($shadow-colors, 'light'), comma);
+        @each $shadow in map.get($shadows, 'inner') {
+            $inner-shadows: list.append($inner-shadows, inset $shadow map.get($shadow-colors, 'light'), comma);
         }
         
         box-shadow: $outer-shadows, $inner-shadows;
     }
+}
+
+// === Box-shadows colorés pour tous les thèmes ===
+$boxshadow-sizes: (xs, sm, md, lg, xl, 2xl, 3xl, 4xl);
+
+@each $theme-map in ($theme-global, $theme-caracs, $theme-entities) {
+  @each $name, $color in $theme-map {
+    @each $size, $shadows in $shadow-sizes {
+      .box-shadow-#{$name}-#{$size} {
+        $outer-shadows: ();
+        $inner-shadows: ();
+        @each $shadow in map.get($shadows, 'outer') {
+          $outer-shadows: list.append($outer-shadows, $shadow var(--tw-#{$color}), comma);
+        }
+        @each $shadow in map.get($shadows, 'inner') {
+          $inner-shadows: list.append($inner-shadows, inset $shadow var(--tw-#{$color}), comma);
+        }
+        box-shadow: $outer-shadows, $inner-shadows;
+      }
+    }
+  }
 }

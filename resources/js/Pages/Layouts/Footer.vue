@@ -21,6 +21,9 @@ import Route from "@/Pages/Atoms/action/Route.vue";
 import Tooltip from "@/Pages/Atoms/feedback/Tooltip.vue";
 import Dock from "@/Pages/Molecules/navigation/Dock.vue";
 import DockItem from "@/Pages/Atoms/navigation/DockItem.vue";
+import { useSidebar } from "@/Composables/layout/useSidebar";
+
+const { toggleSidebar } = useSidebar();
 
 const convertStability = {
     alpha: "α",
@@ -54,12 +57,7 @@ const footerItems = [
 </script>
 
 <template>
-    <FooterMolecule
-        direction="horizontal"
-        color="bg-base-200"
-        textColor="text-content"
-        v-bind="$attrs"
-    >
+    <FooterMolecule direction="vertical" textColor="text-content" v-bind="$attrs">
         <template #logo>
             <span class="font-bold">{{ appName }}</span>
         </template>
@@ -71,23 +69,10 @@ const footerItems = [
                     {{ new Date().getFullYear() }}
                 </span>
                 <div class="flex gap-6">
-                    <span
-                        v-for="item in footerItems"
-                        :key="item.label"
-                        class="flex items-center gap-2"
-                    >
+                    <span v-for="item in footerItems" :key="item.label" class="flex items-center gap-2">
                         <Tooltip :content="item.tooltip" placement="top">
-                            <Route
-                                :href="item.href"
-                                :target="item.target"
-                                class="flex items-center gap-2"
-                            >
-                                <Icon
-                                    :source="item.icon"
-                                    :pack="item.pack"
-                                    :alt="item.tooltip"
-                                    class="w-4 h-4"
-                                />
+                            <Route :href="item.href" :target="item.target" class="flex items-center gap-2">
+                                <Icon :source="item.icon" :pack="item.pack" :alt="item.tooltip" class="w-4 h-4" />
                                 <span>{{ item.label }}</span>
                             </Route>
                         </Tooltip>
@@ -100,18 +85,17 @@ const footerItems = [
         </template>
     </FooterMolecule>
     <!-- Mobile Footer (Dock) -->
-    <div class="hidden max-sm:block w-full">
-        <Dock size="md" class="px-1 py-2">
-            <DockItem
-                v-for="item in footerItems"
-                :key="item.label"
-                :icon="item.icon"
-                :pack="item.pack"
-                :label="item.label"
-                :route="item.href"
-                :tooltip="item.tooltip"
-                :target="item.target"
-            />
+    <div class="fixed bottom-0 left-0 z-50 max-sm:block hidden">
+        <Dock size="md" class="px-1 py-2 flex justify-between box-glass-md">
+            <!-- Bouton sidebar -->
+            <DockItem icon="fa-bars" pack="solid" label="Menu" @click="toggleSidebar" />
+            <!-- Bouton recherche (placeholder) -->
+            <DockItem icon="fa-magnifying-glass" pack="solid" label="Recherche" />
+            <!-- Bouton compte/utilisateur (placeholder dropdown) -->
+            <DockItem icon="fa-user" pack="solid" label="Compte" />
+            <!-- Items de contact -->
+            <DockItem v-for="item in footerItems" :key="item.label" :icon="item.icon" :pack="item.pack"
+                :label="item.label" :route="item.href" :tooltip="item.tooltip" :target="item.target" />
         </Dock>
     </div>
 </template>

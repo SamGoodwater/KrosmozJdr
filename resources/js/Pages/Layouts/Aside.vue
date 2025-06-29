@@ -18,19 +18,16 @@
  * @see Menu, MenuItem, Dock, DockItem, Route, Image, Icon, ToggleSidebar, SearchInput
  */
 import SearchInput from "@/Pages/Molecules/data-input/SearchInput.vue";
-import ToggleSidebar from "@/Pages/Molecules/layout/ToggleSidebar.vue";
 import Route from "@/Pages/Atoms/action/Route.vue";
 import Image from "@/Pages/Atoms/data-display/Image.vue";
 import Menu from "@/Pages/Molecules/navigation/Menu.vue";
 import MenuItem from "@/Pages/Atoms/navigation/MenuItem.vue";
 import Dock from "@/Pages/Molecules/navigation/Dock.vue";
 import DockItem from "@/Pages/Atoms/navigation/DockItem.vue";
-import Icon from "@/Pages/Atoms/data-display/Icon.vue";
 import { ref } from "vue";
-import { useSidebar } from "@/Composables/layout/useSidebar";
 
-const { isSidebarOpen } = useSidebar();
 const appSlogan = ref(import.meta.env.VITE_APP_SLOGAN);
+const appName = ref(import.meta.env.VITE_APP_NAME);
 const logoError = ref(false);
 
 const navItems = [
@@ -80,90 +77,43 @@ const footerItems = [
         tooltip: "En cours de développement",
     },
 ];
+
 </script>
 
 <template>
-    <aside
-        id="menuSidebar"
-        :class="[
-            isSidebarOpen ? 'sidebar-on' : 'sidebar-off',
-            'px-2',
-            'pt-4',
-            'fixed',
-            'top-0',
-            'left-0',
-            'bottom-0',
-            'z-40',
-            'w-64',
-            'transition-transform',
-            '-translate-x-full',
-            'sm:translate-x-0',
-            'bg-base-200',
-            'flex',
-            'flex-col',
-            'justify-between',
-            'backdrop-blur-xl',
-        ]"
-        aria-label="Sidenav"
-    >
-        <ToggleSidebar size="xs" class="absolute right-2" />
-
-        <div>
-            <Route
-                route="home"
-                target="_self"
-                class="hover:scale-105 focus:scale-95"
-            >
+    <aside class="h-full min-h-full flex flex-col justify-between flex-nowrap glass-box-md">
+        <div class="flex flex-col justify-start flex-nowrap items-center">
+            <Route route="home" target="_self" class="hover:scale-105 focus:scale-95 my-5">
                 <template v-if="!logoError">
-                    <Image
-                        source="logos/logo.webp"
-                        :alt="`Logo de ${appSlogan}`"
-                        size="lg"
-                        class="mx-auto"
-                        @error="logoError = true"
-                    />
+                    <Image source="logos/logo.webp" :alt="`Logo de ${appName}`" size="md" class="mx-auto"
+                        @error="logoError = true" />
                 </template>
                 <template v-else>
                     <div class="flex items-center justify-center h-16">
-                        <span class="text-xl font-bold">{{ appSlogan }}</span>
+                        <span class="text-subtitle/80 text-sm">{{ appName }}</span>
                     </div>
                 </template>
             </Route>
-
-            <Menu direction="vertical" size="md" class="my-10">
-                <MenuItem
-                    v-for="item in navItems"
-                    :key="item.label"
-                    :route="item.route"
-                    :icon="item.icon"
-                    :pack="item.pack"
-                    :active="item.active($page)"
-                >
-                    {{ item.label }}
+            <p class="m-2 text-subtitle/80 text-sm">{{ appSlogan }}</p>
+            <Menu direction="vertical" size="md" class="my-5">
+                <MenuItem v-for="item in navItems" :key="item.label" :route="item.route" :icon="item.icon"
+                    :pack="item.pack" :active="item.active($page)">
+                {{ item.label }}
                 </MenuItem>
             </Menu>
         </div>
-
         <div id="footer">
-            <SearchInput class="max-sm:block hidden" />
-            <Dock size="md" class="px-1 py-2">
-                <DockItem
-                    v-for="item in footerItems"
-                    :key="item.label"
-                    :route="item.route"
-                    :icon="item.icon"
-                    :pack="item.pack"
-                    :label="item.label"
-                    :tooltip="item.tooltip"
-                />
+            <Dock size="md" class="px-1 py-2 relative box-glass-t-xs">
+                <DockItem v-for="item in footerItems" :key="item.label" :route="item.route" :icon="item.icon"
+                    :pack="item.pack" :label="item.label" :tooltip="item.tooltip" />
             </Dock>
         </div>
     </aside>
 </template>
 
 <style scoped>
-aside {
-    /* background-image: linear-gradient(
+/* aside { */
+/* background-image: linear-gradient(
         195deg,
         #1e40af 0%,
         #1e3a8a 3%,
@@ -174,17 +124,10 @@ aside {
         #020617 81%,
         #020617 100%
     ); */
-}
-
-#menuSidebar {
-    transition: transform 0.3s ease-in-out;
-}
-
-.sidebar-on {
-    transform: translateX(0);
-}
-
-.sidebar-off {
-    transform: translateX(-100%);
+/* } */
+    .drawer-side {
+        /* Pour éviter le scroll horizontal sur mobile */
+        overflow-y: auto;
+        overflow-x: hidden;
 }
 </style>

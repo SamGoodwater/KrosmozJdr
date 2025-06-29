@@ -20,7 +20,7 @@ onMounted(() => {
 
 <template>
     <Container>
-        <div class="mx-auto prose prose-state prose-a:text-content max-sm:prose-sm lg:prose-lg">
+        <div class="mx-auto prose max-sm:prose-sm lg:prose-lg">
             <div
                 class="absolute inset-0 bg-[url('/storage/logos/logo_project.png')] bg-no-repeat bg-center opacity-10 blur-lg">
             </div>
@@ -31,7 +31,7 @@ onMounted(() => {
                     <h2 class="text-xl font-bold text-title mb-4">
                         Rejoignez l'aventure collaborative
                     </h2>
-                    <p class="text-content">
+                    <p>
                         Le projet Krosmoz JDR est porté par une communauté de passionnés, et votre contribution peut
                         faire toute la différence. Que vous souhaitiez partager vos idées, participer au développement
                         ou simplement suivre l'évolution du projet, plusieurs options s'offrent à vous.

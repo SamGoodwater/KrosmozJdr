@@ -8,26 +8,12 @@ $ref-colors: map.merge($theme-global, map.merge($theme-entities, $theme-caracs))
 
 $weights: 50, 100, 200, 300, 400, 500, 600, 700, 800, 900, 950;
 
-// Bloc pour le thème light
-/*! THEME_VARS_LIGHT_START */
+/*! THEME_VARS_START */
 :root {
   @each $alias, $ref in $ref-colors {
     @each $w in $weights {
       --color-#{$alias}-#{$w}: var(--color-#{$ref}-#{$w});
     }
-    --color-#{$alias}: var(--color-#{$alias}-500);
   }
 }
-/*! THEME_VARS_LIGHT_END */
-
-// Bloc pour le thème dark
-/*! THEME_VARS_DARK_START */
-:root {
-  @each $alias, $ref in $ref-colors {
-    @each $w in $weights {
-      --color-#{$alias}-#{$w}: var(--color-#{$ref}-#{$w});
-    }
-    --color-#{$alias}: var(--color-#{$alias}-400);
-  }
-}
-/*! THEME_VARS_DARK_END */ 
+/*! THEME_VARS_END */ 

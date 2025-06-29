@@ -13,7 +13,7 @@
 *
 * @slot default - Contenu principal de la page
 */
-import { useSidebar } from "@/Composables/layout/useSidebar";
+import { ref, computed, onMounted, onUnmounted } from 'vue'
 
 // Composants
 import Header from "@/Pages/Layouts/Header.vue";
@@ -21,101 +21,73 @@ import Aside from "@/Pages/Layouts/Aside.vue";
 import Footer from "@/Pages/Layouts/Footer.vue";
 import Container from "@/Pages/Atoms/data-display/Container.vue";
 import NotificationContainer from "@/Pages/Organismes/feedback/NotificationContainer.vue";
+import ToggleSidebar from "@/Pages/Molecules/layout/ToggleSidebar.vue";
+import { useHeader } from "@/Composables/layout/useHeader";
+import { useSidebar } from "@/Composables/layout/useSidebar";
+import { useDevice } from "@/Composables/layout/useDevice";
 
-const { isSidebarOpen } = useSidebar();
+// Centralisation des classes Tailwind pour le layout
+const ASIDE_WIDTH_CLASS = 'w-64'      // 16rem = 256px
+const HEADER_HEIGHT_CLASS = 'h-18'    // 
+const OFFSET_LEFT_CLASS = 'left-64'
+const OFFSET_TOP_CLASS = 'top-18'
+
+const { isHeaderOpen } = useHeader();
+const { isMobile } = useDevice();
+const { isSidebarOpen, toggleSidebar } = useSidebar();
+
+function handleResize() {
+    if (isMobile.value && isSidebarOpen.value) {
+        toggleSidebar();
+    }
+}
+
+onMounted(() => {
+    window.addEventListener('resize', handleResize)
+})
+onUnmounted(() => {
+    window.removeEventListener('resize', handleResize)
+})
 </script>
 
 <template>
-    <div class="relative min-h-screen max-w-screen">
-        <!-- Background avec effet de flou -->
-        <div class="background fixed w-screen h-screen overflow-hidden">
-            <div class="background-square-1"></div>
-            <div class="background-square-2"></div>
-            <div class="background-square-3"></div>
-            <div class="background-square-4"></div>
-        </div>
+    <div class="relative min-h-screen max-w-screen overflow-x-hidden flex flex-col">
+        <!-- Background (image + fallback dégradé) -->
+        <div class="fixed inset-0 z-[-1] bg-gradient-to-br from-primary/80 via-base-200/80 to-base-100/90 brightness-50 blur-xl bg-cover bg-center bg-no-repeat"
+            style="background-image: url('storage/images/backgrounds/background.jpg');" aria-hidden="true"></div>
 
         <!-- Header -->
-        <Header :class="[isSidebarOpen ? 'ml-64' : 'ml-0']" class="z-10 fixed max-sm:ml-0 top-0 w-fit-available" />
+        <Header
+            :class="['fixed top-0 right-0 z-30', HEADER_HEIGHT_CLASS, isSidebarOpen ? OFFSET_LEFT_CLASS : 'left-0']" />
 
-        <!-- Sidebar -->
-        <Aside class="z-20" />
+        <!-- Toggle Aside -->
+        <ToggleSidebar
+            :class="['fixed top-6 z-50', isMobile.value ? 'hidden' : '', isSidebarOpen ? OFFSET_LEFT_CLASS + ' ml-[-3rem]' : 'left-2']" />
 
-        <!-- Contenu principal -->
-        <main :class="[isSidebarOpen ? 'ml-64' : 'ml-0']"
-            class="relative max-sm:ml-0 flex flex-col items-center z-0 w-full h-full overflow-x-hidden">
-            <Container fluid class="w-full h-full">
-                <div
-                    class="mt-20 max-md:mt-18 max-sm:mt-16 mb-26 max-md:mb-24 max-sm:mb-20 mx-16 max-xl:mx-30 max-lg:mx-20 max-md:mx-4 max-sm:mx-1 w-full h-full flex justify-center">
+        <!-- Sidebar (Drawer DaisyUI gère tout) -->
+        <Aside v-show="isSidebarOpen" :class="['z-40 fixed top-0 left-0 bottom-0', ASIDE_WIDTH_CLASS]" />
+
+        <!-- Main content -->
+        <main :class="[
+            isSidebarOpen ? OFFSET_LEFT_CLASS : 'left-0',
+            isHeaderOpen ? OFFSET_TOP_CLASS : 'top-0',
+            'relative min-h-screen max-w-screen-xl transition-all flex-1 w-full px-2 sm:px-4 pt-14 pb-14 mx-auto'
+        ]">
+            <Container fluid>
+                <div class="flex justify-center mx-auto">
                     <slot />
                 </div>
             </Container>
         </main>
 
         <!-- Footer -->
-        <Footer :class="[isSidebarOpen ? 'ml-64' : 'ml-0']"
-            class="z-10 absolute max-sm:fixed max-sm:ml-0 bottom-0 w-full h-fit" />
+        <Footer class="w-full z-30" />
 
-        <!-- Notifications centralisées (organism) -->
+        <!-- Notifications -->
         <NotificationContainer />
     </div>
 </template>
 
 <style scoped>
-.background {
-    filter: blur(100px);
-    z-index: -1;
-    background-image: linear-gradient(
-        195deg,
-        #1e40af 0%,
-        #1e3a8a 3%,
-        #172554 10%,
-        #1e293b 25%,
-        #1e293b 40%,
-        #0f172a 62%,
-        #020617 81%,
-        #020617 100%
-    );
-}
-
-.background-square-1 {
-    position: absolute;
-    background-color: var(--color-stone-900);
-    top: 0%;
-    left: 0%;
-    width: 20rem;
-    height: 100vh;
-    opacity: 0.1;
-}
-
-.background-square-2 {
-    position: absolute;
-    background-color: var(--color-cyan-950);
-    border-radius: 50%;
-    top: 40%;
-    left: 40%;
-    width: 30rem;
-    height: 30rem;
-    opacity: 0.8;
-}
-
-.background-square-3 {
-    position: absolute;
-    background-color: var(--color-stone-950);
-    top: 0vh;
-    left: 0;
-    width: 100vw;
-    height: 70px;
-    opacity: 0.4;
-}
-
-.background-square-4 {
-    position: absolute;
-    background-color: var(--color-stone-950);
-    top: 90vh;
-    left: 0;
-    width: 100vw;
-    height: 70px;
-    opacity: 0.4;
-}
+/* Plus de .background custom, tout est géré par Tailwind dans le template */
 </style>

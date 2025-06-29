@@ -177,7 +177,7 @@ const wrapperClasses = computed(() =>
         "justify-center",
         "items-center",
         props.ratio && ratioMap[props.ratio],
-        props.size && sizeMap[props.size],
+        ...(!props.width && !props.height && props.size ? sizeMap[props.size] : []),
     ]),
 );
 
@@ -198,20 +198,29 @@ const imageClasses = computed(() =>
 );
 
 // Style de l'image (dimensions personnalisées)
-const imageStyle = computed(() => ({
-    ...(props.width && !props.size ? { width: props.width } : {}),
-    ...(props.height && !props.size ? { height: props.height } : {}),
-}));
+const imageStyle = computed(() => {
+    if (props.width && props.height) {
+        return { width: props.width, height: props.height };
+    }
+    if (props.width && !props.height) {
+        return { width: props.width, height: "100%" };
+    }
+    if (!props.width && props.height) {
+        return { width: "100%", height: props.height };
+    }
+    return {};
+});
 
 // Attrs communs
 const attrs = computed(() => getCommonAttrs(props));
 
-// Attrs spécifiques à l'image
-const imgAttrs = computed(() => ({
-    ...attrs.value,
-    ...(props.width && !props.size ? { width: props.width } : {}),
-    ...(props.height && !props.size ? { height: props.height } : {}),
-}));
+// Attrs spécifiques à l'image (width/height HTML)
+const imgAttrs = computed(() => {
+    const attrsObj = { ...attrs.value };
+    if (props.width) attrsObj.width = props.width;
+    if (props.height) attrsObj.height = props.height;
+    return attrsObj;
+});
 
 // Watch pour recharger l'image si src, source ou transform change
 watch(

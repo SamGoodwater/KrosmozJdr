@@ -24,13 +24,10 @@
 // Voir les docblocks des molecules pour leur API détaillée.
 
 import { usePage } from "@inertiajs/vue3";
-import { onMounted } from "vue";
 import { useHeader } from "@/Composables/layout/useHeader";
-import { useSidebar } from "@/Composables/layout/useSidebar";
 import { usePageTitle } from "@/Composables/layout/usePageTitle";
 import Navbar from "@/Pages/Molecules/navigation/Navbar.vue";
 import SearchInput from "@/Pages/Molecules/data-input/SearchInput.vue";
-import ToggleSidebar from "@/Pages/Molecules/layout/ToggleSidebar.vue";
 import LoginHeaderContainer from "@/Pages/Molecules/header/LoginHeaderContainer.vue";
 import LoggedHeaderContainer from "@/Pages/Molecules/header/LoggedHeaderContainer.vue";
 import Btn from "@/Pages/Atoms/action/Btn.vue";
@@ -41,30 +38,15 @@ import ThemeController from "@/Pages/Molecules/action/ThemeController.vue";
 
 // Composables
 const page = usePage();
-const { isSidebarOpen } = useSidebar();
 const { isHeaderOpen, toggleHeader } = useHeader();
 const { pageTitle } = usePageTitle();
-
-// Raccourci clavier pour le header
-onMounted(() => {
-    window.addEventListener("keydown", (e) => {
-        if (e.altKey && e.key === "h") {
-            toggleHeader();
-        }
-    });
-});
 </script>
 
 <template>
-    <Navbar>
+    <Navbar class="max-sm:hidden w-auto">
         <template #start>
-            <ToggleSidebar v-if="!isSidebarOpen" />
-            <Transition name="title" mode="out-in">
-                <h2
-                    :key="pageTitle"
-                    id="pageTitle"
-                    class="items-center text-content hover:text-content/75 text-2xl font-semibold"
-                >
+            <Transition name="title" class="ml-14" mode="out-in">
+                <h2 :key="pageTitle" id="pageTitle" class="items-center text-2xl font-semibold">
                     {{ pageTitle }}
                 </h2>
             </Transition>
@@ -83,49 +65,29 @@ onMounted(() => {
                     <LoginHeaderContainer />
                 </template>
                 <ThemeController class="mx-1" />
-                <Tooltip
-                    :content="'Masquer ou afficher l\'entête'"
-                    placement="bottom"
-                >
-                    <Btn
-                        variant="ghost"
-                        circle
-                        class="swap swap-rotate text-content hover:text-content/50 transition-colors"
-                        @click="toggleHeader"
-                    >
+                <Tooltip :content="'Masquer ou afficher l\'entête'" placement="bottom">
+                    <Btn variant="ghost" circle
+                        class="swap swap-rotate text-base-content hover:text-base-content/50 transition-colors"
+                        @click="toggleHeader">
                         <Swap :active="!isHeaderOpen" rotate>
                             <template #on>
-                                <Icon
-                                    source="fa-chevron-down"
-                                    alt="Menu déroulant"
-                                    size="md"
-                                    pack="solid"
-                                />
+                                <Icon source="fa-chevron-down" alt="Menu déroulant" size="md" pack="solid" />
                             </template>
                             <template #off>
-                                <Icon
-                                    source="fa-chevron-up"
-                                    alt="Menu remonté"
-                                    size="md"
-                                    pack="solid"
-                                />
+                                <Icon source="fa-chevron-up" alt="Menu remonté" size="md" pack="solid" />
                             </template>
                         </Swap>
                     </Btn>
                     <template #tooltip>
-                        <div
-                            class="w-52 bg-secondary-900/75 text-center flex flex-col p-2"
-                        >
-                            <p
-                                class="text-md text-content flex justify-between gap-3"
-                            >
+                        <div class="w-52 bg-secondary-900/75 text-center flex flex-col p-2">
+                            <p class="text-md flex justify-between gap-3">
                                 <span>Masquer ou afficher l'entête</span>
                                 <span class="flex flex-nowrap items-center">
                                     <kbd class="kbd kbd-sm">alt</kbd> +
                                     <kbd class="kbd kbd-sm">h</kbd>
                                 </span>
                             </p>
-                            <p class="text-sm text-content/70 my-2">
+                            <p class="text-sm my-2">
                                 Déplacer la souris vers le haut du site pour
                                 faire réaparaître l'entête
                             </p>
@@ -133,12 +95,7 @@ onMounted(() => {
                                 <div class="header-vector bg-slate-500"></div>
                                 <div class="h-40 w-40 bg-slate-800"></div>
                                 <div class="mouse-vector">
-                                    <Icon
-                                        source="fa-mouse-pointer"
-                                        alt="Cliquer"
-                                        size="md"
-                                        pack="solid"
-                                    />
+                                    <Icon source="fa-mouse-pointer" alt="Cliquer" size="md" pack="solid" />
                                 </div>
                             </div>
                         </div>

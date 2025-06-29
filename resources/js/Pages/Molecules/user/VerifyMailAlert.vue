@@ -38,27 +38,14 @@ const resendVerification = () => {
 </script>
 
 <template>
-    <div
-        role="alert"
-        class="alert bg-warning/80 text-content-light py-2 px-4 flex items-center gap-2"
-    >
-        <Icon
-            source="fa-triangle-exclamation"
-            alt="Attention"
-            size="md"
-            pack="solid"
-            class="w-5 h-5"
-        />
+    <div role="alert" class="alert bg-warning/80 text-content-light py-2 px-4 flex items-center gap-2">
+        <Icon source="fa-triangle-exclamation" alt="Attention" size="md" pack="solid" class="w-5 h-5" />
         <span>Mail non vérifié.</span>
         <div class="ml-auto">
             <Tooltip placement="bottom">
-                <Btn
-                    color="secondary"
-                    variant="link"
-                    class="text-secondary-950 hover:text-secondary-900 transition-colors"
-                    :disabled="form.processing"
-                    @click="resendVerification"
-                >
+                <Btn color="secondary" variant="link"
+                    class="text-secondary-950 hover:text-secondary-900 transition-colors" :disabled="form.processing"
+                    @click="resendVerification">
                     Vérifier maintenant
                 </Btn>
                 <template #content>
@@ -68,11 +55,11 @@ const resendVerification = () => {
                             causer des problèmes lors de l'utilisation de
                             l'application.
                         </p>
-                        <p class="text-content mt-2">
+                        <p class="mt-2">
                             En cliquant sur le bouton ci-dessous, un mail te
                             sera envoyé.
                         </p>
-                        <p class="text-content font-bold mt-2">
+                        <p class="font-bold mt-2">
                             Pour vérifier ton adresse email, clique sur le lien
                             dans le mail.
                         </p>

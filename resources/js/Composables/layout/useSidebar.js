@@ -1,50 +1,41 @@
 import { ref, onMounted, onUnmounted } from "vue";
+import { useDevice } from "@/Composables/layout/useDevice";
 
-const isSidebarOpen = ref(true);
-let waitBeforeToggle = false;
+const isSidebarOpen = ref(true); // Par défaut fermée sur mobile/tablette
 
 export function useSidebar() {
-    const toggleSidebar = () => {
-        if (!waitBeforeToggle) {
-            isSidebarOpen.value = !isSidebarOpen.value;
-            waitBeforeToggle = true;
-            setTimeout(() => {
-                waitBeforeToggle = false;
-            }, 500);
-        }
+    const { isMobile, isTablet, isDesktop } = useDevice();
+    // Ouvre la sidebar (drawer DaisyUI)
+    const openSidebar = () => {
+        isSidebarOpen.value = true;
     };
-
-    const checkIfSidebarIsOpen = () => {
-        const sidebar = document.getElementById("menuSidebar");
-        if (!sidebar) {
-            console.warn("Sidebar element not found");
-            return false;
-        }
-        if (sidebar.classList.contains("sidebar-on")) {
-            isSidebarOpen.value = true;
-            return true;
-        }
+    // Ferme la sidebar (drawer DaisyUI)
+    const closeSidebar = () => {
         isSidebarOpen.value = false;
-        return false;
     };
-
+    // Toggle (mobile/tablette)
+    const toggleSidebar = () => {
+        isSidebarOpen.value = !isSidebarOpen.value;
+    };
+    // Raccourci clavier ALT+G (optionnel)
     const handleKeydown = (event) => {
         if (event.altKey && event.key === "g") {
             toggleSidebar();
         }
     };
-
     onMounted(() => {
         window.addEventListener("keydown", handleKeydown);
     });
-
     onUnmounted(() => {
         window.removeEventListener("keydown", handleKeydown);
     });
-
     return {
         isSidebarOpen,
+        openSidebar,
+        closeSidebar,
         toggleSidebar,
-        checkIfSidebarIsOpen,
+        isDesktop,
+        isTablet,
+        isMobile,
     };
 }

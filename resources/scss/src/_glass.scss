@@ -1,0 +1,61 @@
+// Système DRY pour les glass box : border glass + backdrop glass + border-radius
+@use "./_border.scss" as *;
+@use "./_backdrop.scss" as *;
+
+// === Box-glass colorées pour tous les thèmes ===
+@use '../themes/_theme-global.scss' as *;
+@use '../themes/_theme-caracs.scss' as *;
+@use '../themes/_theme-entities.scss' as *;
+
+$glass-box-sizes: (xs, sm, md, lg, xl, 2xl, 3xl, 4xl);
+
+@mixin box-glass($size, $theme: null, $side: null) {
+  @if $theme == null {
+    @if $side == null {
+      @extend .border-glass-#{$size};
+    } @else {
+      @extend .border-glass-#{$side}-#{$size};
+    }
+  } @else {
+    @if $side == null {
+      @extend .border-glass-#{$theme}-#{$size};
+    } @else {
+      @extend .border-glass-#{$theme}-#{$side}-#{$size};
+    }
+  }
+  @extend .bd-glass-#{$size};
+}
+
+// Version sans thème, tous côtés
+@each $size in $glass-box-sizes {
+  .box-glass-#{$size} {
+    @include box-glass($size);
+  }
+}
+// Version sans thème, directionnelle
+@each $size in $glass-box-sizes {
+  @each $combo, $sides in $border-glass-combos {
+    .box-glass-#{$combo}-#{$size} {
+      @include box-glass($size, null, $combo);
+    }
+  }
+}
+// Version thémée, tous côtés
+@each $theme-map in ($theme-global, $theme-caracs, $theme-entities) {
+  @each $name, $color in $theme-map {
+    @each $size in $glass-box-sizes {
+      .box-glass-#{$name}-#{$size} {
+        @include box-glass($size, $name);
+      }
+      // Version thémée, directionnelle
+      @each $combo, $sides in $border-glass-combos {
+        .box-glass-#{$name}-#{$combo}-#{$size} {
+          @include box-glass($size, $name, $combo);
+        }
+      }
+    }
+  }
+}
+
+// Pour compatibilité, on garde les anciennes classes (optionnel)
+// .glass-xs, .glass-sm, ... déjà générées plus haut si besoin

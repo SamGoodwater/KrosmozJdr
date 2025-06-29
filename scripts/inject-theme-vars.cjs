@@ -5,15 +5,11 @@ const themeCssPath = path.join(__dirname, '../resources/css/theme.css');
 const appCssPath = path.join(__dirname, '../resources/css/app.css');
 const appSaveCssPath = path.join(__dirname, '../resources/css/app.save.css');
 
-const APP_THEME_VARS_LIGHT_START = 'INJECTION_THEME_VARS_LIGHT_START';
-const APP_THEME_VARS_LIGHT_END = 'INJECTION_THEME_VARS_LIGHT_END';
-const APP_THEME_VARS_DARK_START = 'INJECTION_THEME_VARS_DARK_START';
-const APP_THEME_VARS_DARK_END = 'INJECTION_THEME_VARS_DARK_END';
+const APP_THEME_VARS_START = 'INJECTION_THEME_VARS_START';
+const APP_THEME_VARS_END = 'INJECTION_THEME_VARS_END';
 
-const THEME_VARS_LIGHT_START = '/*! THEME_VARS_LIGHT_START */';
-const THEME_VARS_LIGHT_END = '/*! THEME_VARS_LIGHT_END */';
-const THEME_VARS_DARK_START = '/*! THEME_VARS_DARK_START */';
-const THEME_VARS_DARK_END = '/*! THEME_VARS_DARK_END */';
+const THEME_VARS_START = '/*! THEME_VARS_START */';
+const THEME_VARS_END = '/*! THEME_VARS_END */';
 
 // Si app.css n'existe pas, le créer à partir de app.save.css
 if (!fs.existsSync(appCssPath)) {
@@ -39,11 +35,10 @@ function extractVars(themeCss, start, end) {
   return match ? match[1].trim() : block.trim();
 }
 
-const lightVars = extractVars(themeCss, THEME_VARS_LIGHT_START, THEME_VARS_LIGHT_END);
-const darkVars = extractVars(themeCss, THEME_VARS_DARK_START, THEME_VARS_DARK_END);
+const themeVars = extractVars(themeCss, THEME_VARS_START, THEME_VARS_END);
 
 function replaceBetweenMarkers(css, startMarker, endMarker, content) {
-  // RegExp robuste pour matcher /* INJECTION_THEME_VARS_LIGHT_START */ ... /* INJECTION_THEME_VARS_LIGHT_END */
+  // RegExp robuste pour matcher /* INJECTION_THEME_VARS_START */ ... /* INJECTION_THEME_VARS_END */
   const regex = new RegExp(
     `(\/\\*\\s*${startMarker}\\s*\\*\/)([\\s\\S]*?)(\/\\*\\s*${endMarker}\\s*\\*\/)`,
     'm'
@@ -51,8 +46,7 @@ function replaceBetweenMarkers(css, startMarker, endMarker, content) {
   return css.replace(regex, `$1\n${content}\n$3`);
 }
 
-appCss = replaceBetweenMarkers(appCss, APP_THEME_VARS_LIGHT_START, APP_THEME_VARS_LIGHT_END, lightVars);
-appCss = replaceBetweenMarkers(appCss, APP_THEME_VARS_DARK_START, APP_THEME_VARS_DARK_END, darkVars);
+appCss = replaceBetweenMarkers(appCss, APP_THEME_VARS_START, APP_THEME_VARS_END, themeVars);
 
 fs.writeFileSync(appCssPath, appCss, 'utf8');
-console.log('Blocs DaisyUI theme injectés avec succès dans app.css !'); 
+console.log('Blocs de variables de thème injectés avec succès dans app.css !'); 

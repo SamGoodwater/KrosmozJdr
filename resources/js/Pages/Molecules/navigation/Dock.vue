@@ -43,15 +43,12 @@ const props = defineProps({
 const moleculeClasses = computed(() =>
     mergeClasses(
         [
-            'dock',
+            'dock-custom',
             props.size === 'xs' && 'dock-xs',
             props.size === 'sm' && 'dock-sm',
             props.size === 'md' && 'dock-md',
             props.size === 'lg' && 'dock-lg',
             props.size === 'xl' && 'dock-xl',
-            'bg-base-100',
-            'shadow-sm',
-            'backdrop-blur-sm',
             props.class
         ],
         getCustomUtilityClasses(props)
@@ -66,4 +63,35 @@ const attrs = computed(() => getCommonAttrs(props));
     </div>
 </template>
 
-<style scoped></style>
+<style scoped lang="scss">
+.dock-custom {
+    right: calc(0.25rem * 0);
+    bottom: calc(0.25rem * 0);
+    left: calc(0.25rem * 0);
+    z-index: 1;
+    display: flex;
+    width: 100%;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-around;
+    padding: calc(0.25rem * 2);
+
+    &>* {
+        position: relative;
+        margin-bottom: calc(0.25rem * 2);
+        display: flex;
+        height: 100%;
+        max-width: calc(0.25rem * 32);
+        flex-shrink: 1;
+        flex-basis: 100%;
+        cursor: pointer;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 1px;
+        border-radius: var(--radius-box);
+        background-color: transparent;
+        transition: opacity 0.2s ease-out;
+    }
+}
+</style>

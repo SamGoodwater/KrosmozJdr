@@ -47,7 +47,7 @@ import { getCommonProps, getCommonAttrs, getCustomUtilityProps, getCustomUtility
 const props = defineProps({
     ...getCommonProps(),
     ...getCustomUtilityProps(),
-    bg: { type: String, default: 'bg-base-200' },
+    bg: { type: String, default: 'glass-xs' },
     minHeight: { type: String, default: 'min-h-screen' },
     overlay: { type: Boolean, default: false },
     overlayColor: { type: String, default: 'bg-black' },

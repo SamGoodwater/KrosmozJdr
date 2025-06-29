@@ -40,9 +40,8 @@ const moleculeClasses = computed(() =>
     mergeClasses(
         [
             'navbar',
-            'bg-base-100',
             'shadow-sm',
-            'backdrop-blur-sm',
+            'bd-blur-sm',
         ],
         getCustomUtilityClasses(props),
         props.class

@@ -1,6 +1,7 @@
 * {
     font-family: "Albert Sans", sans-serif;
     font-weight: 400;
+    color: var(--color-content);
 }
 
 .typography {
@@ -55,4 +56,28 @@ $text-shadows: (
     .text-shadow-#{$size} {
         text-shadow: $shadow;
     }
+}
+
+.text-title {
+    color: var(--color-title);
+    font-weight: 200;
+    font-size: 2rem;
+}
+
+.text-subtitle {
+    color: var(--color-subtitle);
+    font-weight: 500;
+    font-size: 1.5rem;
+}
+
+.text-content {
+    color: var(--color-content);
+    font-weight: 400;
+    font-size: 1rem;
+}
+
+.text-comment {
+    color: var(--color-comment);
+    font-weight: 300;
+    font-size: 0.875rem;
 }

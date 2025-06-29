@@ -2459,10 +2459,10 @@ namespace PHPSTORM_META {
 'signed','throttle','verified',);
         registerArgumentsSet('routes', 
 'debugbar.openhandler','debugbar.clockwork','debugbar.assets.css','debugbar.assets.js','debugbar.cache.delete',
-'debugbar.queries.explain','sanctum.csrf-cookie','generated::R5LviKdzlf3tIqC7','register','generated::8FXOHqTFfYlwVVFI',
-'login','generated::5UAnfa0iBI6GyVmb','password.request','password.email','password.reset',
+'debugbar.queries.explain','sanctum.csrf-cookie','generated::tuSgKvgfMa0B0Cox','register','generated::congYpVI8KxlluXx',
+'login','generated::t9bWRgYKFe5wa70H','password.request','password.email','password.reset',
 'password.store','verification.notice','verification.verify','verification.send','password.confirm',
-'generated::5SRqegEa7UZ4dWqT','logout','user.dashboard','user.edit','user.update',
+'generated::61kCgFPtEI7Bi7ia','logout','user.dashboard','user.edit','user.update',
 'user.updateAvatar','user.deleteAvatar','user.delete','user.create','user.store',
 'user.admin.edit','user.admin.update','user.admin.updateAvatar','user.admin.deleteAvatar','user.restore',
 'user.admin.updateRole','user.admin.updatePassword','user.forcedDelete','media.show','media.thumbnail',

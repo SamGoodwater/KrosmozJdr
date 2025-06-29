@@ -57,8 +57,6 @@ const moleculeClasses = computed(() =>
             props.size === 'md' && 'menu-md',
             props.size === 'lg' && 'menu-lg',
             props.size === 'xl' && 'menu-xl',
-            'bg-base-200',
-            'rounded-box',
             'w-56',
         ].filter(Boolean),
         getCustomUtilityClasses(props),

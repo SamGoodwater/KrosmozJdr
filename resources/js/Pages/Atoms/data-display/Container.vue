@@ -38,8 +38,8 @@ const props = defineProps({
     fluid: { type: Boolean, default: false },
     responsive: { type: String, default: '' }, // ex: 'md', 'lg', etc.
     class: { type: String, default: '' },
-    color: { type: String, default: 'bg-base-100' },
-    border: { type: String, default: 'border-gray-200' },
+    color: { type: String, default: '' },
+    border: { type: String, default: '' },
 });
 
 const attrs = computed(() => getCommonAttrs(props));

@@ -29,6 +29,22 @@ class ClearAll extends Command
             $this->error('Cette commande ne doit pas être lancée en production !');
             return;
         }
+        exec('lsof -t -i:8000 -i:8001 -i:8002 -i:5173 | xargs -r kill -9', $output, $returnVar);
+        if ($returnVar !== 0) {
+            $this->error('Erreur lors de l\'exécution de la commande pour tuer les processus sur les ports 8000, 8001, 8002, et 5173');
+        } else {
+            $this->info('Processus sur les ports 8000, 8001, 8002, et 5173 terminés avec succès');
+        }
+        $appCssPath = resource_path('css/app.css');
+        if (file_exists($appCssPath)) {
+            if (unlink($appCssPath)) {
+                $this->info('Fichier app.css supprimé avec succès.');
+            } else {
+                $this->error('Erreur lors de la suppression du fichier app.css.');
+            }
+        } else {
+            $this->info('Aucun fichier app.css à supprimer.');
+        }
 
         $this->info('Nettoyage des caches');
         $this->call('cache:clear');

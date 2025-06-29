@@ -127,17 +127,17 @@ onMounted(() => {
 
 // Vérifie si c'est une icône FontAwesome
 const isFontAwesome = computed(() => {
-    return props.source.startsWith("fa-");
+    return typeof props.source === "string" && props.source.startsWith("fa-");
 });
 
 // Extrait le pack à partir de la source
 const extractPack = computed(() => {
     if (!isFontAwesome.value) return props.pack;
 
-    if (props.source.startsWith("fa-solid")) return "solid";
-    if (props.source.startsWith("fa-regular")) return "regular";
-    if (props.source.startsWith("fa-brands")) return "brands";
-    if (props.source.startsWith("fa-duotone")) return "duotone";
+    if (typeof props.source === "string" && props.source.startsWith("fa-solid")) return "solid";
+    if (typeof props.source === "string" && props.source.startsWith("fa-regular")) return "regular";
+    if (typeof props.source === "string" && props.source.startsWith("fa-brands")) return "brands";
+    if (typeof props.source === "string" && props.source.startsWith("fa-duotone")) return "duotone";
 
     return props.pack;
 });
