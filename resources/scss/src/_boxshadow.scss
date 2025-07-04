@@ -3,84 +3,120 @@
 @use '../themes/_theme-global.scss' as *;
 @use '../themes/_theme-caracs.scss' as *;
 @use '../themes/_theme-entities.scss' as *;
+@use '../utils/_functions.scss' as *;
 
-// Variables pour les ombres
-$shadow-colors: (
-    'light': rgba(255, 255, 255, 0.10),
-    'medium': rgba(255, 255, 255, 0.20),
-    'strong': rgba(255, 255, 255, 0.50),
-    'stronger': rgba(255, 255, 255, 0.60),
-    'strongest': rgba(255, 255, 255, 0.70)
+$box-shadow-glass-opacity-base: (
+  'xs': 3%,
+  'sm': 6%,
+  'md': 12%,
+  'lg': 18%,
+  'xl': 24%
 );
 
-$shadow-sizes: (
-    'xs': (
-        'outer': (0 0 1px 1px, 0 0 2px 1px, 0 0 3px 3px),
-        'inner': (0 0 2px 1px, 0 0 3px 3px)
-    ),
-    'sm': (
-        'outer': (0 0 1px 1px, 0 0 2px 1px, 0 0 3px 3px),
-        'inner': (0 0 2px 1px, 0 0 3px 3px)
-    ),
-    'md': (
-        'outer': (0 0 1px 1px, 0 0 3px 4px, 0 0 5px 6px),
-        'inner': (0 0 3px 4px, 0 0 5px 6px)
-    ),
-    'lg': (
-        'outer': (0 0 2px 2px, 0 0 4px 4px, 0 0 6px 6px),
-        'inner': (0 0 4px 4px, 0 0 6px 6px)
-    ),
-    'xl': (
-        'outer': (0 0 2px 3px, 0 0 4px 6px, 0 0 6px 8px),
-        'inner': (0 0 4px 6px, 0 0 6px 8px)
-    ),
-    '2xl': (
-        'outer': (0 0 2px 3px, 0 0 4px 6px, 0 0 6px 8px),
-        'inner': (0 0 4px 6px, 0 0 6px 8px)
-    ),
-    '3xl': (
-        'outer': (0 0 2px 3px, 0 0 4px 6px, 0 0 6px 8px),
-        'inner': (0 0 4px 6px, 0 0 6px 8px)
-    ),
-    '4xl': (
-        'outer': (0 0 4px 5px, 0 0 6px 8px, 0 0 8px 10px),
-        'inner': (0 0 4px 5px, 0 0 6px 8px)
-    )
+$box-shadow-glass-combos: (
+  'l': ('l'),
+  'r': ('r'),
+  't': ('t'),
+  'b': ('b'),
+  'x': ('l', 'r'),              // Horizontal
+  'y': ('t', 'b'),              // Vertical
+  'tl': ('t', 'l'),
+  'tr': ('t', 'r'),
+  'bl': ('b', 'l'),
+  'br': ('b', 'r'),
+  'tb': ('t', 'b'),
+  'lr': ('l', 'r'),
+  'trl': ('t', 'r', 'l'),
+  'trb': ('t', 'r', 'b'),
+  'tlb': ('t', 'l', 'b'),
+  'brl': ('b', 'r', 'l')
 );
 
-@each $size, $shadows in $shadow-sizes {
-    .box-shadow-#{$size} {
-        $outer-shadows: ();
-        $inner-shadows: ();
-        
-        @each $shadow in map.get($shadows, 'outer') {
-            $outer-shadows: list.append($outer-shadows, $shadow map.get($shadow-colors, 'light'), comma);
+@mixin box-shadow-glass($color, $opacity, $sides: 'all', $base-shadow: true) {
+    @if $sides == 'all' {
+      @if $base-shadow {
+        box-shadow: 1px 1px 0 color-mix(in oklch, oklch(0% 0 0) #{$opacity}, transparent),
+        1px 1px 0 color-mix(in oklch, oklch(0% 0 0) #{$opacity}, transparent);
+      } @else {
+        box-shadow: 1px 1px 0 color-mix(in oklch, oklch(0% 0 0) #{$opacity}, transparent);
+      }
+    } @else {
+      $box-shadow: ();
+    
+      @if(is-not-empty($sides)) {
+        @each $side in $sides {
+            @if $side == 't' {
+            $box-shadow: list.append($box-shadow, 0 -1px 0 color-mix(in oklch, #{$color} #{$opacity}, transparent), comma);
+            @if $base-shadow {
+              $box-shadow: list.append($box-shadow, 0 -1px 0 color-mix(in oklch, oklch(0% 0 0) #{$opacity}, transparent), comma);
+            }
+          } @else if $side == 'b' {
+            $box-shadow: list.append($box-shadow, 0 1px 0 color-mix(in oklch, #{$color} #{$opacity}, transparent), comma);
+            @if $base-shadow {
+              $box-shadow: list.append($box-shadow, 0 1px 0 color-mix(in oklch, oklch(0% 0 0) #{$opacity}, transparent), comma);
+            }
+          } @else if $side == 'l' {
+            $box-shadow: list.append($box-shadow, -1px 0 0 color-mix(in oklch, #{$color} #{$opacity}, transparent), comma);
+            @if $base-shadow {
+              $box-shadow: list.append($box-shadow, -1px 0 0 color-mix(in oklch, oklch(0% 0 0) #{$opacity}, transparent), comma);
+            }
+          } @else if $side == 'r' {
+            $box-shadow: list.append($box-shadow, 1px 0 0 color-mix(in oklch, #{$color} #{$opacity}, transparent), comma);
+            @if $base-shadow {
+              $box-shadow: list.append($box-shadow, 1px 0 0 color-mix(in oklch, oklch(0% 0 0) #{$opacity}, transparent), comma);
+            }
+          } @else {
+            @debug "side: #{$side}";
+          }
         }
         
-        @each $shadow in map.get($shadows, 'inner') {
-            $inner-shadows: list.append($inner-shadows, inset $shadow map.get($shadow-colors, 'light'), comma);
+      $box-shadow: filter-list($box-shadow);
+
+      $box-shadow-str: '';
+      @for $i from 1 through list.length($box-shadow) {
+        $box-shadow-str: $box-shadow-str + list.nth($box-shadow, $i);
+
+        @if $i < list.length($box-shadow) {
+          $box-shadow-str: $box-shadow-str + ', ';
         }
-        
-        box-shadow: $outer-shadows, $inner-shadows;
-    }
+      }
+
+      @if list.length($box-shadow) > 0 {
+        box-shadow: #{$box-shadow-str};
+      }
+      }
+  }
 }
 
-// === Box-shadows colorés pour tous les thèmes ===
-$boxshadow-sizes: (xs, sm, md, lg, xl, 2xl, 3xl, 4xl);
+// ===============================
+// 6. Génération automatique des classes utilitaires
+//    - .box-shadow-glass-xs, .box-shadow-glass-tl-md, etc.
+//    - Pour chaque couleur de chaque thème
+// ===============================
 
+// 6.1 Classes neutres (blanc, pour usage générique)
+@each $size, $opacity-base in $box-shadow-glass-opacity-base {
+  .box-shadow-glass-#{$size} {
+    @include box-shadow-glass("var(--color-white)", $opacity-base);
+  }
+  @each $combo, $sides in $box-shadow-glass-combos {
+    .box-shadow-glass-#{$combo}-#{$size} {
+      @include box-shadow-glass("var(--color-white)", $opacity-base, $sides);
+    }
+  }
+}
+
+// 6.2 Classes thémées (couleurs issues des maps de thème)
 @each $theme-map in ($theme-global, $theme-caracs, $theme-entities) {
   @each $name, $color in $theme-map {
-    @each $size, $shadows in $shadow-sizes {
-      .box-shadow-#{$name}-#{$size} {
-        $outer-shadows: ();
-        $inner-shadows: ();
-        @each $shadow in map.get($shadows, 'outer') {
-          $outer-shadows: list.append($outer-shadows, $shadow var(--tw-#{$color}), comma);
+    @each $size, $opacity-base in $box-shadow-glass-opacity-base {
+      .box-shadow-glass-#{$name}-#{$size} {
+        @include box-shadow-glass("var(--color-#{$color}-500)", $opacity-base);
+      }
+      @each $combo, $sides in $box-shadow-glass-combos {
+        .box-shadow-glass-#{$name}-#{$combo}-#{$size} {
+          @include box-shadow-glass("var(--color-#{$color}-500)", $opacity-base, $sides);
         }
-        @each $shadow in map.get($shadows, 'inner') {
-          $inner-shadows: list.append($inner-shadows, inset $shadow var(--tw-#{$color}), comma);
-        }
-        box-shadow: $outer-shadows, $inner-shadows;
       }
     }
   }

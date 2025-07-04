@@ -1,28 +1,46 @@
+// ===============================
+//  BORDURES GLASSMORPHISM CUSTOM
+//  Générateur de classes utilitaires pour bordures glassmorphism
+//  Compatible Tailwind/daisyUI (utilise les variables CSS du thème)
+//  - Système de sides (t, r, b, l, x, y, combos)
+//  - Système d'intensité (xs à xl)
+//  - Couleurs dynamiques via variables CSS
+//  - Effet via ::before + box-shadow
+// ===============================
+
+// Import des maps de couleurs thématiques
 @use '../themes/_theme-global.scss' as *;
 @use '../themes/_theme-caracs.scss' as *;
 @use '../themes/_theme-entities.scss' as *;
+@use '../utils/_functions.scss' as *;
+@use './_boxshadow.scss' as *;
 @use "sass:list";
+@use "sass:string";
+@use 'sass:meta';
 
-// Système DRY pour les bordures glassmorphism avec gestion directionnelle, globale, combinée et alias x/y
-$border-glass-sizes: (
-  'xs': (0.1, 0.1, 0.16),
-  'sm': (0.15, 0.15, 0.18),
-  'md': (0.2, 0.2, 0.2),
-  'lg': (0.25, 0.25, 0.22),
-  'xl': (0.3, 0.3, 0.24),
-  '2xl': (0.35, 0.35, 0.26),
-  '3xl': (0.4, 0.4, 0.28),
-  '4xl': (0.45, 0.45, 0.3)
+// -------------------------------
+// 1. Map des intensités (opacité de l'effet glass)
+//    xs = très subtil, xl = très marqué
+// -------------------------------
+$border-glass-opacity-base: (
+  'xs': 10%,
+  'sm': 20%,
+  'md': 40%,
+  'lg': 60%,
+  'xl': 80%
 );
 
-// Map des combinaisons de côtés (avec alias x/y)
+// -------------------------------
+// 2. Combinaisons de côtés (pour générer toutes les variantes)
+//    Permet d'avoir des classes .border-glass-x, .border-glass-tl, etc.
+// -------------------------------
 $border-glass-combos: (
   'l': ('l'),
   'r': ('r'),
   't': ('t'),
   'b': ('b'),
-  'x': ('l', 'r'),
-  'y': ('t', 'b'),
+  'x': ('l', 'r'),              // Horizontal
+  'y': ('t', 'b'),              // Vertical
   'tl': ('t', 'l'),
   'tr': ('t', 'r'),
   'bl': ('b', 'l'),
@@ -35,76 +53,145 @@ $border-glass-combos: (
   'brl': ('b', 'r', 'l')
 );
 
+// -------------------------------
+// 4. Mixin : ::before pour la bordure glassmorphism
+//    Génère un background linéaire sur chaque côté demandé
+//    Utilise color-mix pour la transparence et le dégradé
+// -------------------------------
+@mixin border-glass-before($color, $sides, $opacity-base) {
+  content: '';
+  position: absolute;
+  pointer-events: none; // Ne gêne pas l'interaction
+  inset: 0;
+  border-radius: inherit;
+  z-index: -1;
 
+  // Construction des backgrounds linéaires pour chaque côté
+  $backgrounds: ();
+  // Position et taille de chaque background selon le côté
+  $positions: ();
+  $sizes: ();
+  // Couleurs du gradient
+  $gradient-colors: 
+        transparent 0%, 
+        color-mix(in oklch, #{$color} #{$opacity-base - 5%}, transparent) 20%, 
+        color-mix(in oklch, #{$color} #{$opacity-base + 5%}, transparent) 50%, 
+        color-mix(in oklch, #{$color} #{$opacity-base - 5%}, transparent) 80%, 
+        transparent 100%;
 
+    @if($sides == 'all') {
+      $sides: ('t', 'r', 'b', 'l');
+    }
 
-// Mixin principal
-@mixin border-glass($color, $sides, $box-shadow-opacity, $border-opacity-start, $border-opacity-end) {
-  @if $sides == 'all' {
-    box-shadow: 0px 0px 1px rgba(#{$color}, #{$box-shadow-opacity}) inset, 0px 0px 1px rgba(#{$color}, #{$box-shadow-opacity});
-    border-image: linear-gradient(90deg, rgba(#{$color}, #{$border-opacity-start}) 0%, rgba(#{$color}, #{$border-opacity-start + 0.2}) 20%, rgba(#{$color}, #{$border-opacity-start}) 40%, rgba(#{$color}, #{$border-opacity-end}) 57%, rgba(#{$color}, #{$border-opacity-end - 0.01}) 100%) 1;
-    border-width: 1px;
-    border-style: solid;
-  } @else {
-    $shadows: ();
+  // Génère un gradient pour chaque côté demandé
     @each $side in $sides {
-      $shadow: null;
-      @if $side == 'l' {
-        $shadow: '-1px 0 1px 0 rgba(#{$color}, #{$box-shadow-opacity}) inset';
-        border-image: linear-gradient(to bottom, rgba(#{$color}, #{$border-opacity-start}), rgba(#{$color}, #{$border-opacity-end})) 1 0 0 0;
-        border-left-width: 1px;
-        border-left-style: solid; 
-      } @else if $side == 'r' {
-        $shadow: '1px 0 1px 0 rgba(#{$color}, #{$box-shadow-opacity}) inset';
-        border-image: linear-gradient(to bottom, rgba(#{$color}, #{$border-opacity-start}), rgba(#{$color}, #{$border-opacity-end})) 0 1 0 0;
-        border-right-width: 1px;
-        border-right-style: solid;
-      } @else if $side == 't' {
-        $shadow: '0 -1px 1px 0 rgba(#{$color}, #{$box-shadow-opacity}) inset';
-        border-image: linear-gradient(to right, rgba(#{$color}, #{$border-opacity-start}), rgba(#{$color}, #{$border-opacity-end})) 0 0 1 0;
-        border-top-width: 1px;
-        border-top-style: solid;
-      } @else if $side == 'b' {
-        $shadow: '0 1px 1px 0 rgba(#{$color}, #{$box-shadow-opacity}) inset';
-        border-image: linear-gradient(to right, rgba(#{$color}, #{$border-opacity-start}), rgba(#{$color}, #{$border-opacity-end})) 0 0 0 1;
-        border-bottom-width: 1px;
-        border-bottom-style: solid;
-      }
-      @if $shadow != null {
-        $shadows: list.append($shadows, $shadow, comma);
+      @if(is-not-empty($side)) {
+        @if $side == 't' {
+          $backgrounds: list.append($backgrounds, linear-gradient(to right, #{$gradient-colors}));
+          $positions: list.append($positions, "top left");
+          $sizes: list.append($sizes, "100% 1px");
+        } @else if $side == 'b' {
+          $backgrounds: list.append($backgrounds, linear-gradient(to right, #{$gradient-colors}));
+          $positions: list.append($positions, "bottom left");
+          $sizes: list.append($sizes, "100% 1px");
+        } @else if $side == 'l' {
+          $backgrounds: list.append($backgrounds, linear-gradient(to bottom, #{$gradient-colors}));
+          $positions: list.append($positions, "top left");
+          $sizes: list.append($sizes, "1px 100%");
+        } @else if $side == 'r' {
+          $backgrounds: list.append($backgrounds, linear-gradient(to bottom, #{$gradient-colors}));
+          $positions: list.append($positions, "top right");
+          $sizes: list.append($sizes, "1px 100%");
+        } @else {
+          @debug "side: #{$side}";
+        }
       }
     }
-    @if list.length($shadows) > 0 {
-      box-shadow: #{list.join($shadows, ', ')};
+
+  // Application des backgrounds multiples, positions et tailles
+    $backgrounds: filter-list($backgrounds);
+    $positions: filter-list($positions);
+    $sizes: filter-list($sizes);
+
+    // Construire chaîne manuellement
+    $bg-str: '';
+    $pos-str: '';
+    $sz-str: '';
+
+    @for $i from 1 through list.length($backgrounds) {
+      $bg-str: $bg-str + list.nth($backgrounds, $i);
+      $pos-str: $pos-str + list.nth($positions, $i);
+      $sz-str: $sz-str + list.nth($sizes, $i);
+
+      @if $i < list.length($backgrounds) {
+        $bg-str: $bg-str + ', ';
+        $pos-str: $pos-str + ', ';
+        $sz-str: $sz-str + ', ';
+      }
     }
-  }
+
+    @if list.length($backgrounds) > 0 {
+      background-image: #{$bg-str};
+      background-position: #{$pos-str};
+      background-size: #{$sz-str};
+      background-repeat: no-repeat;
+    }
 }
 
-// === Génération des classes glassmorphism ===
-// 1. Classes neutres (blanc)
-@each $size, $vals in $border-glass-sizes {
+// -------------------------------
+// 5. Mixin principal : applique l'effet glassmorphism
+//    - position: relative pour le parent
+//    - box-shadow sur l'élément
+//    - ::before pour la bordure glass
+// -------------------------------
+@mixin border-glass($color, $sides, $opacity-base) {
+  position: relative; // Pour positionner le ::before
+  background: transparent;
+  @include box-shadow-glass($color, $opacity-base, $sides);
+
+  &::before {
+    @include border-glass-before($color, $sides, $opacity-base);
+  } 
+}
+
+// ===============================
+// 6. Génération automatique des classes utilitaires
+//    - .border-glass-xs, .border-glass-tl-md, etc.
+//    - Pour chaque couleur de chaque thème
+// ===============================
+
+// 6.1 Classes neutres (blanc, pour usage générique)
+@each $size, $opacity-base in $border-glass-opacity-base {
   .border-glass-#{$size} {
-    @include border-glass("var(--tw-white)", 'all', list.nth($vals, 1), list.nth($vals, 2), list.nth($vals, 3));
+    @include border-glass("var(--color-white)", 'all', $opacity-base);
   }
   @each $combo, $sides in $border-glass-combos {
     .border-glass-#{$combo}-#{$size} {
-      @include border-glass("var(--tw-white)", $sides, list.nth($vals, 1), list.nth($vals, 2), list.nth($vals, 3));
+      @include border-glass("var(--color-white)", $sides, $opacity-base);
     }
   }
 }
 
-// 2. Classes thémées
+// 6.2 Classes thémées (couleurs issues des maps de thème)
 @each $theme-map in ($theme-global, $theme-caracs, $theme-entities) {
   @each $name, $color in $theme-map {
-    @each $size, $vals in $border-glass-sizes {
+    @each $size, $opacity-base in $border-glass-opacity-base {
       .border-glass-#{$name}-#{$size} {
-        @include border-glass("var(--tw-#{$color})", 'all', list.nth($vals, 1), list.nth($vals, 2), list.nth($vals, 3));
+        @include border-glass("var(--color-#{$color}-500)", 'all', $opacity-base);
       }
       @each $combo, $sides in $border-glass-combos {
         .border-glass-#{$name}-#{$combo}-#{$size} {
-          @include border-glass("var(--tw-#{$color})", $sides, list.nth($vals, 1), list.nth($vals, 2), list.nth($vals, 3));
+          @include border-glass("var(--color-#{$color}-500)", $sides, $opacity-base);
         }
       }
     }
   }
 }
+
+// ===============================
+//  FIN DU FICHIER
+//  Pour toute extension :
+//   - Ajouter une couleur dans le thème
+//   - Ajouter une intensité dans $border-glass-opacity-base
+//   - Ajouter un combo dans $border-glass-combos
+// ===============================

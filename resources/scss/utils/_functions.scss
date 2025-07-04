@@ -1,0 +1,22 @@
+@use "sass:meta";
+@use "sass:string";
+@use "sass:list";
+@use "sass:map";
+
+@function is-not-empty($item) {
+    @if ($item == null or $item == '' or $item == ()) { @return false; }
+    @if (meta.type-of($item) == 'string' and string.length($item) == 0) { @return false; }
+    @if (meta.type-of($item) == 'list' and list.length($item) == 0) { @return false; } // TODO: check if list is empty
+    @if (meta.type-of($item) == 'map' and map.length($item) == 0) { @return false; }
+    @return true;
+}
+
+@function filter-list($list) {
+  $res: ();
+  @each $item in $list {
+    @if is-not-empty($item) {
+      $res: list.append($res, $item);
+    }
+  }
+  @return $res;
+}

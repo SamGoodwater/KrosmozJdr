@@ -35,15 +35,27 @@ class ClearAll extends Command
         } else {
             $this->info('Processus sur les ports 8000, 8001, 8002, et 5173 terminés avec succès');
         }
-        $appCssPath = resource_path('css/app.css');
-        if (file_exists($appCssPath)) {
-            if (unlink($appCssPath)) {
-                $this->info('Fichier app.css supprimé avec succès.');
+
+        // Supression des fichiers css (custom, reset et theme)
+        $cssFiles = [
+            resource_path('css/custom.css'),
+            resource_path('css/custom.css.map'),
+            resource_path('css/reset.css'),
+            resource_path('css/reset.css.map'),
+            resource_path('css/theme.css'),
+            resource_path('css/theme.css.map'),
+            resource_path('css/app.css'),
+        ];
+        foreach ($cssFiles as $cssFile) {
+            if (file_exists($cssFile)) {
+                if (unlink($cssFile)) {
+                    $this->info('Fichier ' . basename($cssFile) . ' supprimé avec succès.');
+                } else {
+                    $this->error('Erreur lors de la suppression du fichier ' . basename($cssFile) . '.');
+                }
             } else {
-                $this->error('Erreur lors de la suppression du fichier app.css.');
+                $this->info('Aucun fichier ' . basename($cssFile) . ' à supprimer.');
             }
-        } else {
-            $this->info('Aucun fichier app.css à supprimer.');
         }
 
         $this->info('Nettoyage des caches');

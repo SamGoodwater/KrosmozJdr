@@ -1,18 +1,3 @@
-// Classes pour la compatibilité cross-browser
-.w-fit-available {
-    width: 100%;
-    width: -moz-available; /* WebKit-based browsers will ignore this. */
-    width: -webkit-fill-available; /* Mozilla-based browsers will ignore this. */
-    width: fill-available;
-}
-
-.h-fit-available {
-    height: 100%;
-    height: -moz-available; /* WebKit-based browsers will ignore this. */
-    height: -webkit-fill-available; /* Mozilla-based browsers will ignore this. */
-    height: fill-available;
-}
-
 // Classes pour les bordures glassmorphisme
 // Utilisation : <div class="border-glass-md">...</div>
 .border-glass {

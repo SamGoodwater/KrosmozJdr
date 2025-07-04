@@ -9,23 +9,17 @@
 $blur-sizes: (
     'xs': 4,    // Très léger
     'sm': 8,    // Léger
-    'md': 12,   // Moyen
-    'lg': 16,   // Fort
-    'xl': 20,   // Très fort
-    '2xl': 24,  // Extrême
-    '3xl': 28,  // Ultra
-    '4xl': 32   // Maximum
+    'md': 16,   // Moyen
+    'lg': 20,   // Fort
+    'xl': 32,   // Très fort
 );
 
 $opacity-sizes: (
-    'xs': 0.2,  // Très transparent
+    'xs': 0.15,  // Très transparent
     'sm': 0.3,  // Transparent
-    'md': 0.4,  // Semi-transparent
-    'lg': 0.5,  // Moyen
-    'xl': 0.6,  // Semi-opaque
-    '2xl': 0.7, // Opaque
-    '3xl': 0.8, // Très opaque
-    '4xl': 0.9  // Presque opaque
+    'md': 0.5,  // Semi-transparent
+    'lg': 0.7,  // Moyen
+    'xl': 0.9,  // Semi-opaque
 );
 
 // Génération des classes de brightness pour le glassmorphisme
@@ -35,9 +29,6 @@ $brightness-sizes: (
     'md': 1.15,
     'lg': 1.20,
     'xl': 1.25,
-    '2xl': 1.30,
-    '3xl': 1.35,
-    '4xl': 1.40
 );
 
 // Classes pour le glassmorphisme
@@ -82,9 +73,9 @@ $brightness-sizes: (
 }
 
 // Génération des classes combinées blur + brightness pour le glassmorphisme
-@each $size in (xs, sm, md, lg, xl, 2xl, 3xl, 4xl) {
+@each $size in (xs, sm, md, lg, xl) {
     .bd-glass-#{$size} {
         backdrop-filter: blur(map.get($blur-sizes, $size) + px) brightness(map.get($brightness-sizes, $size));
     }
 }
-        $outer-shadows: ();
+$outer-shadows: ();

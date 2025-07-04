@@ -34,6 +34,7 @@
         "vue": "^3.4.0"
     },
     "dependencies": {
+        "@csstools/postcss-oklab-function": "^4.0.10",
         "@floating-ui/vue": "^1.1.6",
         "@tailwindcss/postcss": "^4.1.8",
         "@tiptap/pm": "^2.12.0",

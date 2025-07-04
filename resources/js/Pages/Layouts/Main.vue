@@ -53,8 +53,14 @@ onUnmounted(() => {
 <template>
     <div class="relative min-h-screen max-w-screen overflow-x-hidden flex flex-col">
         <!-- Background (image + fallback dégradé) -->
-        <div class="fixed inset-0 z-[-1] bg-gradient-to-br from-primary/80 via-base-200/80 to-base-100/90 brightness-50 blur-xl bg-cover bg-center bg-no-repeat"
-            style="background-image: url('storage/images/backgrounds/background.jpg');" aria-hidden="true"></div>
+        <div class="fixed inset-0 z-[-1] brightness-50 blur-2xl">
+            <div class="z-1 bg-cover bg-center bg-no-repeat absolute inset-0"
+                style="background-image: url('storage/images/backgrounds/background.jpg');" aria-hidden="true">
+            </div>
+            <div
+                class="z-2 bg-gradient-to-br from-primary/30 via-base-200/30 to-base-100/30 bg-cover bg-center bg-no-repeat absolute inset-0">
+            </div>
+        </div>
 
         <!-- Header -->
         <Header
@@ -65,7 +71,8 @@ onUnmounted(() => {
             :class="['fixed top-6 z-50', isMobile.value ? 'hidden' : '', isSidebarOpen ? OFFSET_LEFT_CLASS + ' ml-[-3rem]' : 'left-2']" />
 
         <!-- Sidebar (Drawer DaisyUI gère tout) -->
-        <Aside v-show="isSidebarOpen" :class="['z-40 fixed top-0 left-0 bottom-0', ASIDE_WIDTH_CLASS]" />
+        <Aside v-show="isSidebarOpen" :class="['z-40 top-0 left-0 bottom-0', ASIDE_WIDTH_CLASS]"
+            style="position: fixed;" />
 
         <!-- Main content -->
         <main :class="[

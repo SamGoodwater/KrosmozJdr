@@ -175,7 +175,7 @@ const demoIcons = [
 <template>
     <div class="container mx-auto">
         <!-- Hero d'intro -->
-        <Hero minHeight="min-h-[300px]">
+        <Hero minHeight="min-h-[200px] border-glass-primary-xs">
             <template #content>
                 <div class="text-center space-y-4">
                     <h1 class="text-title">

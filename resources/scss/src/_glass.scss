@@ -7,7 +7,7 @@
 @use '../themes/_theme-caracs.scss' as *;
 @use '../themes/_theme-entities.scss' as *;
 
-$glass-box-sizes: (xs, sm, md, lg, xl, 2xl, 3xl, 4xl);
+$glass-box-sizes: (xs, sm, md, lg, xl);
 
 @mixin box-glass($size, $theme: null, $side: null) {
   @if $theme == null {
