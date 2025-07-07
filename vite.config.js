@@ -46,6 +46,33 @@ export default defineConfig({
         strictPort: true,
         hmr: {
             host: 'localhost',
+            overlay: false,
+        },
+        watch: {
+            usePolling: false,
+            interval: 1000,
+            ignored: [
+                '**/node_modules/**',
+                '**/vendor/**',
+                '**/storage/**',
+                '**/public/build/**',
+                '**/resources/css/app.css',
+                '**/resources/css/custom.css',
+                '**/resources/css/theme.css',
+            ]
         },
     },
+    optimizeDeps: {
+        include: ['vue', '@inertiajs/vue3', 'axios']
+    },
+    build: {
+        rollupOptions: {
+            output: {
+                manualChunks: {
+                    vendor: ['vue', '@inertiajs/vue3'],
+                    utils: ['axios']
+                }
+            }
+        }
+    }
 });

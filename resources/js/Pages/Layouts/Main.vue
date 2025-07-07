@@ -51,15 +51,12 @@ onUnmounted(() => {
 </script>
 
 <template>
-    <div class="relative min-h-screen max-w-screen overflow-x-hidden flex flex-col">
+    <div class="relative min-h-screen w-full overflow-x-hidden">
         <!-- Background (image + fallback dégradé) -->
-        <div class="fixed inset-0 z-[-1] brightness-50 blur-2xl">
-            <div class="z-1 bg-cover bg-center bg-no-repeat absolute inset-0"
-                style="background-image: url('storage/images/backgrounds/background.jpg');" aria-hidden="true">
-            </div>
-            <div
-                class="z-2 bg-gradient-to-br from-primary/30 via-base-200/30 to-base-100/30 bg-cover bg-center bg-no-repeat absolute inset-0">
-            </div>
+        <div class="background">
+            <div class="background-image" aria-hidden="true"></div>
+            <div class="background-filter--1" aria-hidden="true"></div>
+            <div class="background-filter--2" aria-hidden="true"></div>
         </div>
 
         <!-- Header -->
@@ -76,25 +73,73 @@ onUnmounted(() => {
 
         <!-- Main content -->
         <main :class="[
+            'fixed',
             isSidebarOpen ? OFFSET_LEFT_CLASS : 'left-0',
             isHeaderOpen ? OFFSET_TOP_CLASS : 'top-0',
-            'relative min-h-screen max-w-screen-xl transition-all flex-1 w-full px-2 sm:px-4 pt-14 pb-14 mx-auto'
+            'right-0 bottom-0 overflow-y-auto'
         ]">
-            <Container fluid>
-                <div class="flex justify-center mx-auto">
-                    <slot />
+            <div class="min-h-full flex flex-col">
+                <!-- Contenu principal centré -->
+                <div class="flex-1 flex items-center justify-center p-4">
+                    <div class="w-full max-w-4xl">
+                        <Container fluid>
+                            <slot />
+                        </Container>
+                    </div>
                 </div>
-            </Container>
+                
+                <!-- Footer -->
+                <Footer :class="['relative z-30']" />
+            </div>
         </main>
-
-        <!-- Footer -->
-        <Footer class="w-full z-30" />
 
         <!-- Notifications -->
         <NotificationContainer />
     </div>
 </template>
 
-<style scoped>
-/* Plus de .background custom, tout est géré par Tailwind dans le template */
+<style scoped lang="scss">
+.background {
+    position: fixed;
+    z-index: -1;
+    inset: 0;
+    filter: blur(24px) brightness(0.5);
+    background-color: var(--color-stone-900);
+
+    &-image {
+        position: absolute;
+        z-index: 1;
+        inset: 0;
+        background-image: url('storage/images/backgrounds/background.jpg');
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+        opacity: 0.8;
+    }
+
+    &-filter--1 {
+        position: absolute;
+        z-index: 2;
+        inset: 0;
+        background-image: linear-gradient(
+            195deg,
+            var(--color-primary-400) 0%,
+            var(--color-primary-500) 3%,
+            var(--color-primary-600) 10%,
+            var(--color-primary-700) 25%,
+            var(--color-primary-800) 40%,
+            var(--color-primary-900) 62%,
+            var(--color-primary-950) 100%
+        );
+        opacity: 0.2;
+    }
+
+    &-filter--2 {
+        position: absolute;
+        z-index: 3;
+        inset: 0;
+        opacity: 0.2;
+        background: radial-gradient(circle, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0) 60%, mix-color(in oklch var(--color-primary-900) 100%));
+    }
+}
 </style>

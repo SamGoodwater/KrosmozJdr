@@ -24,7 +24,7 @@
     @vite('resources/css/app.css')
 </head>
 
-<body class="antialiased w-screen h-screen" style="margin-bottom:0px!important;">
+<body class="antialiased w-screen h-screen">
     @inertia
 </body>
 

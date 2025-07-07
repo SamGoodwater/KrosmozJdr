@@ -4,15 +4,23 @@
     "scripts": {
         "preinstall": "npx only-allow pnpm",
         "build": "vite build",
-        "dev": "vite",
-        "sass:watch": "sass --watch resources/scss/custom.scss:public/css/custom.css resources/scss/theme.scss:public/css/theme.css",
-        "sass:build": "sass resources/scss/custom.scss:public/css/custom.css resources/scss/theme.scss:public/css/theme.css --style expanded",
-        "sass:clean": "rimraf public/css/*.css public/css/*.css.map",
-        "sass:dev": "concurrently \"npm run sass:watch\" \"npm run dev\"",
-        "scss": "sass --watch resources/scss:resources/css",
+
         "preview": "vite preview",
-        "inject:theme-vars": "node scripts/inject-theme-vars.cjs",
-        "build:css": "pnpm run sass:build && pnpm run inject:theme-vars"
+
+        "dev": "vite",
+        "dev:optimized": "vite --mode development --force",
+        "dev:css": "concurrently \"pnpm run css\" \"pnpm run dev\"",
+        "dev:css:optimized": "concurrently \"pnpm run css\" \"pnpm run dev:optimized\"",
+        "dev:css:optimized:watch": "concurrently --kill-others \"pnpm run css:watch\" \"pnpm run dev:optimized\"",
+
+        "sass:watch": "sass --watch --no-source-map resources/scss/custom.scss:resources/css/custom.css resources/scss/theme.scss:resources/css/theme.css",
+        "sass:build": "sass --no-source-map resources/scss/custom.scss:resources/css/custom.css resources/scss/theme.scss:resources/css/theme.css --style expanded",
+        "scss": "sass --watch --no-source-map resources/scss:resources/css",
+        
+        "css": "node scripts/build-css.cjs --clean --minify --inject",
+        "css:watch": "node scripts/build-css.cjs --clean --minify --inject --watch",
+        "css:watch:verbose": "node scripts/build-css.cjs --clean --minify --inject --watch --verbose",
+        "css:verbose": "node scripts/build-css.cjs --clean --minify --inject --verbose"
     },
     "devDependencies": {
         "@inertiajs/vue3": "^1.0.0",
@@ -24,11 +32,12 @@
         "autoprefixer": "^10.4.21",
         "axios": "^1.6.4",
         "concurrently": "^9.1.2",
+        "csso-cli": "^4.0.2",
         "daisyui": "^5.0.43",
         "laravel-vite-plugin": "^1.0.0",
         "postcss": "^8.4.31",
         "rimraf": "^5.0.5",
-        "sass": "^1.89.1",
+        "sass": "^1.89.2",
         "tailwindcss": "^4.1.8",
         "vite": "^5.0.0",
         "vue": "^3.4.0"

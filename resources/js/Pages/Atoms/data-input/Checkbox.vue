@@ -43,7 +43,7 @@ defineOptions({ inheritAttrs: false }); // Pour que les évéments natifs soient
  *
  * @note Toutes les classes DaisyUI et utilitaires custom sont explicites, pas de concaténation dynamique non couverte par Tailwind.
  */
-import { computed, ref, watch, onMounted, defineExpose } from 'vue';
+import { computed, ref, watch, onMounted } from 'vue';
 import Tooltip from '@/Pages/Atoms/feedback/Tooltip.vue';
 import Validator from '@/Pages/Atoms/data-input/Validator.vue';
 import { getCommonProps, getCommonAttrs, getCustomUtilityProps, getCustomUtilityClasses, mergeClasses } from '@/Utils/atomic-design/uiHelper';

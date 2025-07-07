@@ -54,20 +54,20 @@ const props = defineProps({
         validator: v => ['vertical', 'horizontal'].includes(v),
     },
     center: { type: Boolean, default: false },
-    color: { type: String, default: 'bg-neutral' },
+    color: { type: String, default: '' },
     textColor: { type: String, default: 'text-neutral-content' },
 });
 
 const moleculeClasses = computed(() =>
     mergeClasses(
         [
-            'footer',
+            'footer mx-auto',
             props.direction === 'horizontal' && 'footer-horizontal',
             props.direction === 'vertical' && 'footer-vertical',
             props.center && 'footer-center',
             props.color,
             props.textColor,
-            'p-10',
+            'p-10 sm:p-5',
             props.class
         ],
         getCustomUtilityClasses(props)
@@ -82,13 +82,15 @@ const attrs = computed(() => getCommonAttrs(props));
             <slot />
         </template>
         <template v-else>
-            <aside v-if="$slots.logo" class="footer-logo">
-                <slot name="logo" />
-            </aside>
-            <div class="flex flex-wrap gap-8 flex-1">
-                <slot name="section" />
+            <div class="flex gap-8 sm:gap-4">
+                <aside v-if="$slots.logo" class="footer-logo">
+                    <slot name="logo" />
+                </aside>
+                <div class="flex flex-wrap gap-8 flex-1">
+                    <slot name="section" />
+                </div>
             </div>
-            <div v-if="$slots.copyright" class="mt-6 w-full text-center text-xs opacity-70">
+            <div v-if="$slots.copyright" class="text-xs opacity-70">
                 <slot name="copyright" />
             </div>
         </template>

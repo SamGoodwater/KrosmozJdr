@@ -46,7 +46,7 @@ defineOptions({ inheritAttrs: false }); // Pour que les évéments natifs soient
  *
  * @note La valeur du radio est contrôlée par modelValue (v-model) si défini, sinon par checked.
  */
-import { computed, ref, watch, onMounted, defineExpose } from "vue";
+import { computed, ref, watch, onMounted } from "vue";
 import Tooltip from "@/Pages/Atoms/feedback/Tooltip.vue";
 import Validator from "@/Pages/Atoms/data-input/Validator.vue";
 import {

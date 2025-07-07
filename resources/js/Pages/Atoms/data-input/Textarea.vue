@@ -48,7 +48,7 @@ defineOptions({ inheritAttrs: false }); // Pour que les évéments natifs soient
  * @note Pas de floating-label ni de label left/right sur textarea.
  * @note Si useFieldComposable=true, la logique d'édition réactive (valeur, debounce, reset, bouton reset, update) est entièrement gérée par le composable useEditableField. Le bouton reset s'affiche automatiquement si la valeur a été modifiée.
  */
-import { computed, ref, onMounted, onUnmounted, defineExpose } from 'vue';
+import { computed, ref, onMounted, onUnmounted } from 'vue';
 import Tooltip from '@/Pages/Atoms/feedback/Tooltip.vue';
 import Validator from '@/Pages/Atoms/data-input/Validator.vue';
 import { getCommonProps, getCommonAttrs, getCustomUtilityProps, getCustomUtilityClasses, mergeClasses } from '@/Utils/atomic-design/uiHelper';

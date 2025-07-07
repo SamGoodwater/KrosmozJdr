@@ -60,7 +60,9 @@
             "@php -r \"file_exists('database/database.sqlite') || touch('database/database.sqlite');\"",
             "@php artisan migrate --graceful --ansi"
         ],
-        "dev": "npx concurrently \"php artisan serve\" \"php artisan queue:listen\" \"pnpm run dev\" \"pnpm run scss\" \"pnpm run inject:theme-vars\"",
+        "dev": "npx concurrently --kill-others \"php artisan serve\" \"php artisan queue:listen\" \"pnpm run dev:css:optimized\"",
+        "dev:optimized": "npx concurrently --kill-others \"php artisan serve\" \"php artisan queue:listen\" \"pnpm run dev:css:optimized\"",
+        "dev:watch": "npx concurrently --kill-others \"php artisan serve\" \"php artisan queue:listen\" \"pnpm run dev:css:optimized:watch\"",
         "dev:network": [
             "Composer\\Config::disableProcessTimeout",
             "npx concurrently -c \"#93c5fd,#c4b5fd,#fb7185\" \"php artisan serve --host=0.0.0.0\" \"php artisan queue:listen --tries=1\" \"pnpm run dev\" --names=server,queue,vite"
@@ -76,6 +78,7 @@
         "optimize-autoloader": true,
         "preferred-install": "dist",
         "sort-packages": true,
+        "process-timeout": 600,
         "allow-plugins": {
             "pestphp/pest-plugin": true,
             "php-http/discovery": true

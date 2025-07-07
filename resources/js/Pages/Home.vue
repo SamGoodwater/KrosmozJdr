@@ -173,7 +173,7 @@ const demoIcons = [
 </script>
 
 <template>
-    <div class="container mx-auto">
+    <div>
         <!-- Hero d'intro -->
         <Hero minHeight="min-h-[200px] border-glass-primary-xs">
             <template #content>

@@ -62,7 +62,7 @@ import {
     watch,
     onMounted,
     onUnmounted,
-    defineExpose,
+    
 } from "vue";
 import Tooltip from "@/Pages/Atoms/feedback/Tooltip.vue";
 import Validator from "@/Pages/Atoms/data-input/Validator.vue";

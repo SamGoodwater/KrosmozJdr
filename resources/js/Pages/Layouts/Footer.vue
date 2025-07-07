@@ -57,31 +57,30 @@ const footerItems = [
 </script>
 
 <template>
-    <FooterMolecule direction="vertical" textColor="text-content" v-bind="$attrs">
+    <FooterMolecule direction="vertical" textColor="text-content" class="box-glass-t-xs" v-bind="$attrs">
         <template #logo>
-            <span class="font-bold">{{ appName }}</span>
-        </template>
-        <template #section>
-            <div class="flex flex-col gap-2">
-                <span>
-                    {{ appName }} - version
-                    {{ appVersion + " " + appStability }} -
-                    {{ new Date().getFullYear() }}
-                </span>
-                <div class="flex gap-6">
-                    <span v-for="item in footerItems" :key="item.label" class="flex items-center gap-2">
-                        <Tooltip :content="item.tooltip" placement="top">
-                            <Route :href="item.href" :target="item.target" class="flex items-center gap-2">
-                                <Icon :source="item.icon" :pack="item.pack" :alt="item.tooltip" class="w-4 h-4" />
-                                <span>{{ item.label }}</span>
-                            </Route>
-                        </Tooltip>
-                    </span>
-                </div>
+            <div class="flex items-center gap-2">
+                <Image source="logos/logo.webp" :alt="`Logo de ${appName}`" size="xs" @error="logoError = true" />
+                <span class="font-bold">{{ appName }}</span>
             </div>
         </template>
+        <template #section>
+            <span>
+                {{ appName }} - version
+                {{ appVersion + " " + appStability }} -
+                {{ new Date().getFullYear() }}
+            </span>
+            <span v-for="item in footerItems" :key="item.label" class="flex items-center gap-2">
+                <Tooltip :content="item.tooltip" placement="top">
+                    <Route :href="item.href" :target="item.target" class="flex items-center gap-2">
+                        <Icon :source="item.icon" :pack="item.pack" :alt="item.tooltip" class="w-4 h-4" />
+                        <span>{{ item.label }}</span>
+                    </Route>
+                </Tooltip>
+            </span>
+        </template>
         <template #copyright>
-            <span class="opacity-70 text-xs">{{ appDescription }}</span>
+            {{ appDescription }}
         </template>
     </FooterMolecule>
     <!-- Mobile Footer (Dock) -->
@@ -101,15 +100,4 @@ const footerItems = [
 </template>
 
 <style scoped>
-footer {
-    backdrop-filter: blur(5px);
-    background: linear-gradient(
-        to bottom,
-        rgba(10, 12, 20, 0) 0%,
-        rgba(10, 12, 20, 0.3) 20%,
-        rgba(10, 12, 20, 0.5) 50%,
-        rgb(10, 12, 20) 70%,
-        rgb(10, 12, 20) 100%
-    );
-}
 </style>
