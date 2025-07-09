@@ -22,6 +22,7 @@ import Tooltip from "@/Pages/Atoms/feedback/Tooltip.vue";
 import Dock from "@/Pages/Molecules/navigation/Dock.vue";
 import DockItem from "@/Pages/Atoms/navigation/DockItem.vue";
 import { useSidebar } from "@/Composables/layout/useSidebar";
+import Image from "@/Pages/Atoms/data-display/Image.vue";
 
 const { toggleSidebar } = useSidebar();
 
@@ -57,18 +58,15 @@ const footerItems = [
 </script>
 
 <template>
-    <FooterMolecule direction="vertical" textColor="text-content" class="box-glass-t-xs" v-bind="$attrs">
+    <FooterMolecule direction="vertical" center textColor="text-content" class="box-glass-t-xs" v-bind="$attrs">
         <template #logo>
-            <div class="flex items-center gap-2">
-                <Image source="logos/logo.webp" :alt="`Logo de ${appName}`" size="xs" @error="logoError = true" />
-                <span class="font-bold">{{ appName }}</span>
-            </div>
+            <Image source="logos/logo.webp" :alt="`Logo de ${appName}`" height="24px" class="mx-auto" @error="logoError = true" />
         </template>
         <template #section>
             <span>
-                {{ appName }} - version
-                {{ appVersion + " " + appStability }} -
-                {{ new Date().getFullYear() }}
+                {{ appName }}
+                | version {{ appVersion + " " + appStability }}
+                | {{ new Date().getFullYear() }}
             </span>
             <span v-for="item in footerItems" :key="item.label" class="flex items-center gap-2">
                 <Tooltip :content="item.tooltip" placement="top">

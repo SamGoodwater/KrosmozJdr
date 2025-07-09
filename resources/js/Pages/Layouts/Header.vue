@@ -43,7 +43,7 @@ const { pageTitle } = usePageTitle();
 </script>
 
 <template>
-    <Navbar class="max-sm:hidden w-auto">
+    <Navbar class="max-sm:hidden">
         <template #start>
             <Transition name="title" class="ml-14" mode="out-in">
                 <h2 :key="pageTitle" id="pageTitle" class="items-center text-2xl font-semibold">
@@ -64,7 +64,6 @@ const { pageTitle } = usePageTitle();
                 <template v-else>
                     <LoginHeaderContainer />
                 </template>
-                <ThemeController class="mx-1" />
                 <Tooltip :content="'Masquer ou afficher l\'entête'" placement="bottom">
                     <Btn variant="ghost" circle
                         class="swap swap-rotate text-base-content hover:text-base-content/50 transition-colors"

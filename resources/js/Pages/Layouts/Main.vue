@@ -61,7 +61,7 @@ onUnmounted(() => {
 
         <!-- Header -->
         <Header
-            :class="['fixed top-0 right-0 z-30', HEADER_HEIGHT_CLASS, isSidebarOpen ? OFFSET_LEFT_CLASS : 'left-0']" />
+            :class="['!fixed top-0 right-0 z-30', HEADER_HEIGHT_CLASS, isSidebarOpen ? OFFSET_LEFT_CLASS : 'left-0']" />
 
         <!-- Toggle Aside -->
         <ToggleSidebar

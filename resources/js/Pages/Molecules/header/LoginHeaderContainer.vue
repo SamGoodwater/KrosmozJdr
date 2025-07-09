@@ -27,8 +27,7 @@ import Route from "@/Pages/Atoms/action/Route.vue";
         <Route route="login" class="pt-1 px-4" target="_self">
             <Btn
                 color="neutral"
-                variant="ghost"
-                size="md"
+                size="xs"
                 content="Se connecter"
                 tooltip_placement="left"
                 :tooltip="'S\'identifier à l\'aide de son compte'"
@@ -38,8 +37,8 @@ import Route from "@/Pages/Atoms/action/Route.vue";
         <Route route="register" class="pb-1 px-4" target="_self">
             <Btn
                 color="neutral"
-                variant="ghost"
-                size="md"
+                variant="link"
+                size="xs"
                 content="S'inscrire"
                 tooltip_placement="left"
                 :tooltip="'Créer un compte'"

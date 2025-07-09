@@ -39,9 +39,8 @@ const props = defineProps({
 const moleculeClasses = computed(() =>
     mergeClasses(
         [
-            'navbar',
-            'shadow-sm',
-            'bd-blur-sm',
+            'navbar-custom',
+            'box-glass-b-sm',
         ],
         getCustomUtilityClasses(props),
         props.class
@@ -52,10 +51,10 @@ const attrs = computed(() => getCommonAttrs(props));
 
 <template>
     <div :class="moleculeClasses" v-bind="attrs" v-on="$attrs">
-        <div class="navbar-start">
+        <div class="navbar-custom-start">
             <slot name="start" />
         </div>
-        <div class="navbar-center">
+        <div class="navbar-custom-center">
             <slot name="center" />
         </div>
         <div class="navbar-end">
@@ -64,4 +63,34 @@ const attrs = computed(() => getCommonAttrs(props));
     </div>
 </template>
 
-<style scoped></style>
+<style scoped lang="scss">
+.navbar-custom {
+    background-color: transparent!important;
+    background-image: none!important;
+    display: flex;
+    align-items: center;
+    padding: 0.5rem;
+    min-height: 4rem;
+    width:auto;
+
+    &-start {
+        display: inline-flex;
+        align-items: center;
+        width: 50%;
+        justify-content: flex-start;
+    }
+
+    &-center {
+        display: inline-flex;
+        align-items: center;
+        flex-shrink: 0;
+    }
+
+    &-end {
+        display: inline-flex;
+        align-items: center;
+        width: 50%;
+        justify-content: flex-end;
+    }
+}
+</style>

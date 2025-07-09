@@ -146,6 +146,55 @@ const attrs = computed(() => getCommonAttrs(props));
 </template>
 
 <style scoped lang="scss">
+// Primary
+    $primary: var(--color-primary-400);
+    $primary-light: var(--color-primary-50);
+    $primary-dark: var(--color-primary-800);
+    $primary-hover: var(--color-primary-300);
+    $primary-outline-hover: var(--color-primary-950);
+// Secondary
+    $secondary: var(--color-secondary-400);
+    $secondary-light: var(--color-secondary-50);
+    $secondary-dark: var(--color-secondary-800);
+    $secondary-hover: var(--color-secondary-300);
+    $secondary-outline-hover: var(--color-secondary-950);
+// Accent
+    $accent: var(--color-accent-400);
+    $accent-light: var(--color-accent-50);
+    $accent-dark: var(--color-accent-800);
+    $accent-hover: var(--color-accent-300);
+    $accent-outline-hover: var(--color-accent-950);
+// Info
+    $info: var(--color-info-400);
+    $info-light: var(--color-info-50);
+    $info-dark: var(--color-info-800);
+    $info-hover: var(--color-info-300);
+    $info-outline-hover: var(--color-info-950);
+// Success
+    $success: var(--color-success-400);
+    $success-light: var(--color-success-50);
+    $success-dark: var(--color-success-800);
+    $success-hover: var(--color-success-300);
+    $success-outline-hover: var(--color-success-950);
+// Warning
+    $warning: var(--color-warning-400);
+    $warning-light: var(--color-warning-50);
+    $warning-dark: var(--color-warning-800);
+    $warning-hover: var(--color-warning-300);
+    $warning-outline-hover: var(--color-warning-950);
+// Error
+    $error: var(--color-error-400);
+    $error-light: var(--color-error-50);
+    $error-dark: var(--color-error-800);
+    $error-hover: var(--color-error-300);
+    $error-outline-hover: var(--color-error-950);
+// Neutral
+    $neutral: var(--color-neutral-300);
+    $neutral-light: var(--color-neutral-50);
+    $neutral-dark: var(--color-neutral-800);
+    $neutral-hover: var(--color-neutral-200);
+    $neutral-outline-hover: var(--color-neutral-950);
+
 .btn-link {
     background-color: transparent;
     text-decoration: none;
@@ -156,9 +205,10 @@ const attrs = computed(() => getCommonAttrs(props));
     width: auto;
     min-width: auto;
     transition:
-        filter 0.2s ease-in-out,
-        backdrop-filter 0.2s ease-in-out,
+        scale 0.2s ease-in-out,
+        color 0.2s ease-in-out,
         text-shadow 0.3s ease-in-out;
+    scale: 1;
 
     &.btn-xs {
         font-size: 0.75rem;
@@ -177,35 +227,143 @@ const attrs = computed(() => getCommonAttrs(props));
     }
 
     &:hover {
-        filter: brightness(1.1);
-        backdrop-filter: blur(4px);
-        text-shadow: 0px 0px 8px rgba(255, 255, 255, 0.6);
+        text-shadow: 0px 0px 8px rgba(255, 255, 255, 0.15);
+        scale: 1.02;
+    }
+
+    &.btn-primary {
+        color: $primary;
+        &:hover {
+            color: $primary-hover;
+        }
+    }
+    &.btn-secondary {
+        color: $secondary;
+        &:hover {
+            color: $secondary-hover;
+        }
+    }
+    &.btn-accent {
+        color: $accent;
+        &:hover {
+            color: $accent-hover;
+        }
+    }
+    &.btn-info {
+        color: $info;
+        &:hover {
+            color: $info-hover;
+        }
+    }
+    &.btn-success {
+        color: $success;
+        &:hover {
+            color: $success-hover;
+        }
+    }
+    &.btn-warning {
+        color: $warning;
+        &:hover {
+            color: $warning-hover;
+        }
+    }
+    &.btn-error {
+        color: $error;
+        &:hover {
+            color: $error-hover;
+        }
+    }
+    &.btn-neutral {
+        color: $neutral;
+        &:hover {
+            color: $neutral-hover;
+        }
     }
 }
 
-.btn:not(.btn-link) {
+.btn:not(.btn-link){
     transition:
-        filter 0.2s ease-in-out,
-        backdrop-filter 0.3s ease-in-out,
         box-shadow 0.4s ease-in-out,
-        text-shadow 0.3s ease-in-out;
+        border-color 0.2s ease-in-out,
+        color 0.2s ease-in-out;
 
     position: relative;
     overflow: hidden;
 
     &:hover {
-        filter: brightness(1.1);
-        backdrop-filter: blur(4px);
-        text-shadow: 0px 0px 8px rgba(255, 255, 255, 0.6);
         box-shadow:
-            0 0 1px 1px rgba(255, 255, 255, 0.5),
-            0 0 3px 4px rgba(255, 255, 255, 0.1),
-            0 0 5px 6px rgba(255, 255, 255, 0.05),
+            0 0 1px 1px rgba(255, 255, 255, 0.15),
+            0 0 3px 4px rgba(255, 255, 255, 0.05),
+            0 0 5px 6px rgba(255, 255, 255, 0.02),
             inset 0 0 3px 4px rgba(255, 255, 255, 0.1),
             inset 0 0 5px 6px rgba(255, 255, 255, 0.05);
     }
 
     &:not(.btn-outline) {
+        &.btn-primary {
+            background-color: $primary-dark;
+            color: $primary-light;
+            &:hover {
+                background-color: $primary;
+                color: $primary-outline-hover;
+            }
+        }
+        &.btn-secondary {
+            background-color: $secondary-dark;
+            color: $secondary-light;
+            &:hover {
+                background-color: $secondary;
+                color: $secondary-outline-hover;
+            }
+        }
+        &.btn-accent {
+            background-color: $accent-dark; 
+            color: $accent-light;
+            &:hover {
+                background-color: $accent;
+                color: $accent-outline-hover;
+            }
+        }
+        &.btn-info {
+            background-color: $info-dark;
+            color: $info-light;
+            &:hover {
+                background-color: $info;
+                color: $info-outline-hover;
+            }
+        }
+        &.btn-success {
+            background-color: $success-dark;
+            color: $success-light;
+            &:hover {
+                background-color: $success;
+                color: $success-outline-hover;
+            }
+        }
+        &.btn-warning {
+            background-color: $warning-dark;
+            color: $warning-light;
+            &:hover {
+                background-color: $warning;
+                color: $warning-outline-hover;
+            }
+        }
+        &.btn-error {
+            background-color: $error-dark;
+            color: $error-light;
+            &:hover {
+                background-color: $error;
+                color: $error-outline-hover;
+            }
+        }
+        &.btn-neutral {
+            background-color: $neutral-dark;
+            color: $neutral-light;
+            &:hover {
+                background-color: $neutral;
+                color: $neutral-outline-hover;
+            }
+        }
         &::after {
             content: "";
             position: absolute;
@@ -222,29 +380,72 @@ const attrs = computed(() => getCommonAttrs(props));
             transform: translateX(-100%) rotate(45deg);
             transition: transform 0.5s ease;
         }
-    }
 
-    &.btn-outline {
-        &::after {
-            content: "";
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: linear-gradient(
-                45deg,
-                rgba(255, 255, 255, 0.05) 48%,
-                rgba(255, 255, 255, 0.15) 50%,
-                rgba(255, 255, 255, 0.05) 52%
-            );
-            transform: translateX(-100%) rotate(45deg);
-            transition: transform 0.5s ease;
+        &:hover::after {
+            transform: translateX(100%) rotate(45deg);
         }
     }
 
-    &:hover::after {
-        transform: translateX(100%) rotate(45deg);
+    &.btn-outline {
+
+        &.btn-primary {
+            color: $primary;
+            border-color: $primary;
+            &:hover {
+                color: $primary-outline-hover;
+                border-color: $primary-outline-hover;
+            }
+        }
+        &.btn-secondary {
+                color: $secondary;
+            border-color: $secondary;
+            &:hover {
+                color: $secondary-outline-hover;
+                border-color: $secondary-outline-hover;
+            }
+        }
+        &.btn-accent {
+            color: $accent;
+            border-color: $accent;
+            &:hover {
+                color: $accent-outline-hover;
+                border-color: $accent-outline-hover;
+            }
+        }
+        &.btn-info {
+            color: $info;
+            border-color: $info;
+            &:hover {
+                        color: $info-outline-hover;
+                border-color: $info-outline-hover
+            }
+        }
+        &.btn-success {
+            color: $success;
+            border-color: $success;
+            &:hover {
+                color: $success-outline-hover;
+                border-color: $success-outline-hover;
+            }
+        }
+        &.btn-warning {
+            color: $warning;
+            border-color: $warning;
+            &:hover {
+                color: $warning-outline-hover;
+                border-color: $warning-outline-hover;
+            }
+        }
+        &.btn-error {
+            color: $error;
+            border-color: $error;
+            &:hover {
+                color: $error-outline-hover;
+                border-color: $error-outline-hover;
+            }
+        }
     }
+
+
 }
 </style>

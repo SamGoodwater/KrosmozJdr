@@ -147,7 +147,6 @@ $border-glass-combos: (
 @mixin border-glass($color, $sides, $opacity-base) {
   position: relative; // Pour positionner le ::before
   background: transparent;
-  @include box-shadow-glass($color, $opacity-base, $sides);
 
   &::before {
     @include border-glass-before($color, $sides, $opacity-base);
@@ -173,20 +172,20 @@ $border-glass-combos: (
 }
 
 // 6.2 Classes thémées (couleurs issues des maps de thème)
-@each $theme-map in ($theme-global, $theme-caracs, $theme-entities) {
-  @each $name, $color in $theme-map {
-    @each $size, $opacity-base in $border-glass-opacity-base {
-      .border-glass-#{$name}-#{$size} {
-        @include border-glass("var(--color-#{$color}-500)", 'all', $opacity-base);
-      }
-      @each $combo, $sides in $border-glass-combos {
-        .border-glass-#{$name}-#{$combo}-#{$size} {
-          @include border-glass("var(--color-#{$color}-500)", $sides, $opacity-base);
-        }
-      }
-    }
-  }
-}
+// @each $theme-map in ($theme-global, $theme-caracs, $theme-entities) {
+//   @each $name, $color in $theme-map {
+//     @each $size, $opacity-base in $border-glass-opacity-base {
+//       .border-glass-#{$name}-#{$size} {
+//         @include border-glass("var(--color-#{$color}-500)", 'all', $opacity-base);
+//       }
+//       @each $combo, $sides in $border-glass-combos {
+//         .border-glass-#{$name}-#{$combo}-#{$size} {
+//           @include border-glass("var(--color-#{$color}-500)", $sides, $opacity-base);
+//         }
+//       }
+//     }
+//   }
+// }
 
 // ===============================
 //  FIN DU FICHIER

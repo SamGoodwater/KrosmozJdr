@@ -1,29 +1,59 @@
 // Système DRY pour les glass box : border glass + backdrop glass + border-radius
 @use "./_border.scss" as *;
 @use "./_backdrop.scss" as *;
-
+@use "../utils/_functions.scss" as *;
 // === Box-glass colorées pour tous les thèmes ===
 @use '../themes/_theme-global.scss' as *;
 @use '../themes/_theme-caracs.scss' as *;
 @use '../themes/_theme-entities.scss' as *;
+@use 'sass:list';
 
 $glass-box-sizes: (xs, sm, md, lg, xl);
 
-@mixin box-glass($size, $theme: null, $side: null) {
+@mixin box-glass($size, $theme: null, $combo: null, $sides: null) {
   @if $theme == null {
-    @if $side == null {
+    @if $combo == null {
       @extend .border-glass-#{$size};
     } @else {
-      @extend .border-glass-#{$side}-#{$size};
+      @extend .border-glass-#{$combo}-#{$size};
     }
   } @else {
-    @if $side == null {
+    @if $combo == null {
       @extend .border-glass-#{$theme}-#{$size};
     } @else {
-      @extend .border-glass-#{$theme}-#{$side}-#{$size};
+      @extend .border-glass-#{$theme}-#{$combo}-#{$size};
     }
   }
   @extend .bd-glass-#{$size};
+
+  // Box-shadow
+  $box-shadow: ();
+  @if $sides == null {
+    box-shadow: 0 0 0 rgba(0, 0, 0, 0.1);
+  } @else {
+    @each $side in $sides {
+      @if $side == l {
+        $box-shadow: list.append($box-shadow, -1px 0 0 rgba(0, 0, 0, 0.1), comma);
+      } @else if $side == r {
+        $box-shadow: list.append($box-shadow, 1px 0 0 rgba(0, 0, 0, 0.1), comma);
+      } @else if $side == t {
+        $box-shadow: list.append($box-shadow, 0 -1px 0 rgba(0, 0, 0, 0.1), comma);
+      } @else if $side == b {
+        $box-shadow: list.append($box-shadow, 0 1px 0 rgba(0, 0, 0, 0.1), comma);
+      }
+    }
+    $box-shadow: filter-list($box-shadow);
+    $box-shadow-str: '';
+    @for $i from 1 through list.length($box-shadow) {
+      $box-shadow-str: $box-shadow-str + list.nth($box-shadow, $i);
+      @if $i < list.length($box-shadow) {
+        $box-shadow-str: $box-shadow-str + ', ';
+      }
+    }
+    @if list.length($box-shadow) > 0 {
+      box-shadow: #{$box-shadow-str};
+    }
+  }
 }
 
 // Version sans thème, tous côtés
@@ -36,26 +66,26 @@ $glass-box-sizes: (xs, sm, md, lg, xl);
 @each $size in $glass-box-sizes {
   @each $combo, $sides in $border-glass-combos {
     .box-glass-#{$combo}-#{$size} {
-      @include box-glass($size, null, $combo);
+      @include box-glass($size, null, $combo, $sides);
     }
   }
 }
 // Version thémée, tous côtés
-@each $theme-map in ($theme-global, $theme-caracs, $theme-entities) {
-  @each $name, $color in $theme-map {
-    @each $size in $glass-box-sizes {
-      .box-glass-#{$name}-#{$size} {
-        @include box-glass($size, $name);
-      }
-      // Version thémée, directionnelle
-      @each $combo, $sides in $border-glass-combos {
-        .box-glass-#{$name}-#{$combo}-#{$size} {
-          @include box-glass($size, $name, $combo);
-        }
-      }
-    }
-  }
-}
+// @each $theme-map in ($theme-global, $theme-caracs, $theme-entities) {
+//   @each $name, $color in $theme-map {
+//     @each $size in $glass-box-sizes {
+//       .box-glass-#{$name}-#{$size} {
+//         @include box-glass($size, $name);
+//       }
+//       // Version thémée, directionnelle
+//       @each $combo, $sides in $border-glass-combos {
+//         .box-glass-#{$name}-#{$combo}-#{$size} {
+//           @include box-glass($size, $name, $combo, $sides);
+//         }
+//       }
+//     }
+//   }
+// }
 
 // Pour compatibilité, on garde les anciennes classes (optionnel)
 // .glass-xs, .glass-sm, ... déjà générées plus haut si besoin

@@ -182,7 +182,7 @@ const rangeId = computed(() => props.id || `range-${Math.random().toString(36).s
                     :value="displayValue" @input="onInput" @blur="onBlur" :aria-invalid="!!errorMessage || validator" />
                 <!-- Bouton reset -->
                 <Btn v-if="props.useFieldComposable && isFieldModified" class="absolute right-2 top-2 z-20" size="xs"
-                    variant="ghost" circle @click="handleReset" :aria-label="'Réinitialiser'">
+                    variant="glass" circle @click="handleReset" :aria-label="'Réinitialiser'">
                     <i class="fa-solid fa-arrow-rotate-left"></i>
                 </Btn>
                 <slot />

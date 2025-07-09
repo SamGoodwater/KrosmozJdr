@@ -61,13 +61,12 @@ const props = defineProps({
 const moleculeClasses = computed(() =>
     mergeClasses(
         [
-            'footer mx-auto',
-            props.direction === 'horizontal' && 'footer-horizontal',
-            props.direction === 'vertical' && 'footer-vertical',
-            props.center && 'footer-center',
+            'mx-auto flex',
+            props.direction === 'horizontal' ? 'flex-row' : 'flex-col',
+            props.center ? 'items-center justify-center' : '',
             props.color,
             props.textColor,
-            'p-10 sm:p-5',
+            'p-10 sm:p-5 gap-2',
             props.class
         ],
         getCustomUtilityClasses(props)
@@ -82,7 +81,7 @@ const attrs = computed(() => getCommonAttrs(props));
             <slot />
         </template>
         <template v-else>
-            <div class="flex gap-8 sm:gap-4">
+            <div class="flex gap-8 sm:gap-4 items-center justify-center">
                 <aside v-if="$slots.logo" class="footer-logo">
                     <slot name="logo" />
                 </aside>

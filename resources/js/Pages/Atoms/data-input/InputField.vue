@@ -307,7 +307,7 @@ const inputId = computed(
                             v-if="props.useFieldComposable && isFieldModified"
                             class="absolute right-10 z-20"
                             size="xs"
-                            variant="ghost"
+                            variant="glass"
                             circle
                             @click="handleReset"
                             :aria-label="'Réinitialiser'"
