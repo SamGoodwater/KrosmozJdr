@@ -1,6 +1,4 @@
 <script setup>
-defineOptions({ inheritAttrs: false }); // Pour que les évéments natifs soient transmis à l'atom
-
 /**
  * Card Atom (DaisyUI)
  *
@@ -12,7 +10,6 @@ defineOptions({ inheritAttrs: false }); // Pour que les évéments natifs soient
  * - Toutes les classes DaisyUI sont écrites en toutes lettres
  * - Les classes utilitaires custom sont ajoutées dynamiquement
  * - Accessibilité renforcée (role, aria, etc.)
- * - Tooltip intégré
  *
  * @see https://daisyui.com/components/card/
  * @version DaisyUI v5.x
@@ -32,7 +29,7 @@ defineOptions({ inheritAttrs: false }); // Pour que les évéments natifs soient
  * @props {String} shadow - Ombre custom ('' | 'xs' | 'sm' | 'md' | 'lg' | 'xl' | '2xl' | '3xl' | '4xl') → .box-shadow-*
  * @props {String} backdrop - Flou de fond custom ('' | 'xs' | 'sm' | 'md' | 'lg' | 'xl' | '2xl' | '3xl' | '4xl') → .bd-blur-*
  * @props {String} opacity - Opacité custom ('' | 'xs' | 'sm' | 'md' | 'lg' | 'xl' | '2xl' | '3xl' | '4xl') → .bd-opacity-*
- * @props {String|Object} tooltip, tooltip_placement, id, ariaLabel, role, tabindex - hérités de commonProps
+ * @props {String|Object} id, ariaLabel, role, tabindex - hérités de commonProps
  * @slot figure - Image ou illustration
  * @slot title - Titre de la carte
  * @slot subtitle - Sous-titre
@@ -43,7 +40,6 @@ defineOptions({ inheritAttrs: false }); // Pour que les évéments natifs soient
  * @note Toutes les classes DaisyUI et utilitaires custom sont explicites, pas de concaténation dynamique non couverte par Tailwind.
  */
 import { computed } from 'vue';
-import Tooltip from '@/Pages/Atoms/feedback/Tooltip.vue';
 import { getCommonProps, getCommonAttrs, getCustomUtilityProps, getCustomUtilityClasses, mergeClasses } from '@/Utils/atomic-design/uiHelper';
 import { sizeXlList } from '@/Pages/Atoms/atomMap';
 
@@ -80,35 +76,31 @@ const atomClasses = computed(() =>
         props.class
     )
 );
+
 const attrs = computed(() => getCommonAttrs(props));
 </script>
 
 <template>
-    <Tooltip :content="props.tooltip" :placement="props.tooltip_placement">
-        <div :class="atomClasses" v-bind="attrs" v-on="$attrs">
-            <figure v-if="$slots.figure" :class="{ 'image-full': imageFull }">
-                <slot name="figure" />
-            </figure>
-            <div class="card-body">
-                <h2 v-if="$slots.title" class="card-title">
-                    <slot name="title" />
-                </h2>
-                <p v-if="$slots.subtitle" class="card-subtitle">
-                    <slot name="subtitle" />
-                </p>
-                <slot />
-                <div v-if="$slots.actions" class="card-actions justify-end">
-                    <slot name="actions" />
-                </div>
-            </div>
-            <div v-if="$slots.footer" class="card-footer">
-                <slot name="footer" />
+    <div :class="atomClasses" v-bind="attrs" v-on="$attrs">
+        <figure v-if="$slots.figure" :class="{ 'image-full': imageFull }">
+            <slot name="figure" />
+        </figure>
+        <div class="card-body">
+            <h2 v-if="$slots.title" class="card-title">
+                <slot name="title" />
+            </h2>
+            <p v-if="$slots.subtitle" class="card-subtitle">
+                <slot name="subtitle" />
+            </p>
+            <slot />
+            <div v-if="$slots.actions" class="card-actions justify-end">
+                <slot name="actions" />
             </div>
         </div>
-        <template v-if="typeof props.tooltip === 'object'" #tooltip>
-            <slot name="tooltip" />
-        </template>
-    </Tooltip>
+        <div v-if="$slots.footer" class="card-footer">
+            <slot name="footer" />
+        </div>
+    </div>
 </template>
 
 <style scoped></style>

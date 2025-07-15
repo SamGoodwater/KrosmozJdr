@@ -115,10 +115,12 @@ export const customUtilityVariants = [
 
 /**
  * Props à inclure dans chaque composant UI pour les utilitaires custom
+ * @param {Object} [options]
+ * @param {Array} [options.exclude=[]] - Liste des props à exclure
  * @returns {Object} - { shadow, backdrop, opacity, rounded }
  */
-export function getCustomUtilityProps() {
-    return {
+export function getCustomUtilityProps({ exclude = [] } = {}) {
+    const allCustomProps = {
         shadow: {
             type: String,
             default: "",
@@ -140,6 +142,12 @@ export function getCustomUtilityProps() {
             validator: (v) => customUtilityVariants.includes(v),
         },
     };
+    
+    return Object.fromEntries(
+        Object.entries(allCustomProps).filter(
+            ([key]) => !exclude.includes(key),
+        ),
+    );
 }
 
 /**

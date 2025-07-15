@@ -1,7 +1,7 @@
 <script setup>
 // Atomic Design refonte : imports atoms à jour
 import { Head, useForm } from "@inertiajs/vue3";
-import InputField from '@/Pages/Atoms/data-input/InputField.vue';
+import InputField from '@/Pages/Molecules/data-input/InputField.vue';
 import Btn from '@/Pages/Atoms/action/Btn.vue';
 import Validator from '@/Pages/Atoms/data-input/Validator.vue';
 

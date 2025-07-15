@@ -624,11 +624,11 @@ namespace App\Models\Entity{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Monster whereOfficialId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Monster whereSize($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Monster whereUpdatedAt($value)
- * @mixin \Eloquent
  * @property int $is_boss
  * @property string $boss_pa
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Monster whereBossPa($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Monster whereIsBoss($value)
+ * @mixin \Eloquent
  */
 	class Monster extends \Eloquent {}
 }

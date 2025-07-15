@@ -1,6 +1,4 @@
 <script setup>
-defineOptions({ inheritAttrs: false }); // Pour que les évéments natifs soient transmis à l'atom
-
 /**
  * Divider Atom (DaisyUI + Glassmorphism)
  *
@@ -13,7 +11,6 @@ defineOptions({ inheritAttrs: false }); // Pour que les évéments natifs soient
  * - Fallback DaisyUI natif si glass=false
  * - Props utilitaires custom : shadow, backdrop, opacity (via getCustomUtilityClasses)
  * - Accessibilité renforcée (role, aria, etc.)
- * - Tooltip intégré
  *
  * @see https://daisyui.com/components/divider/
  * @version DaisyUI v5.x (5.0.43)
@@ -28,7 +25,7 @@ defineOptions({ inheritAttrs: false }); // Pour que les évéments natifs soient
  * @props {String} direction - Direction DaisyUI ('vertical' [défaut], 'horizontal')
  * @props {String} placement - Placement DaisyUI ('', 'start', 'end')
  * @props {String} class - Classes custom supplémentaires
- * @props {String} id, ariaLabel, role, tabindex, tooltip, tooltip_placement - hérités de commonProps
+ * @props {String} id, ariaLabel, role, tabindex - hérités de commonProps
  * @slot default - Contenu du divider (texte, "OU", etc.)
  *
  * @note Toutes les classes DaisyUI sont explicites, pas de concaténation dynamique non couverte par Tailwind.
@@ -36,7 +33,6 @@ defineOptions({ inheritAttrs: false }); // Pour que les évéments natifs soient
  * @note Extension glassmorphism : applique un dégradé flou et une couleur custom, fallback DaisyUI natif si glass=false.
  */
 import { computed } from 'vue';
-import Tooltip from '@/Pages/Atoms/feedback/Tooltip.vue';
 import { getCommonProps, getCommonAttrs, getCustomUtilityClasses, mergeClasses } from '@/Utils/atomic-design/uiHelper';
 import { colorList } from '@/Pages/Atoms/atomMap';
 
@@ -96,14 +92,9 @@ const attrs = computed(() => getCommonAttrs(props));
 </script>
 
 <template>
-    <Tooltip :content="props.tooltip" :placement="props.tooltip_placement">
-        <div :class="atomClasses" v-bind="attrs" v-on="$attrs">
-            <slot />
-        </div>
-        <template v-if="typeof props.tooltip === 'object'" #tooltip>
-            <slot name="tooltip" />
-        </template>
-    </Tooltip>
+    <div :class="atomClasses" v-bind="attrs" v-on="$attrs">
+        <slot />
+    </div>
 </template>
 
 <style lang="scss" scoped>

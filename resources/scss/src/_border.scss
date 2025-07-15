@@ -58,7 +58,7 @@ $border-glass-combos: (
 //    Génère un background linéaire sur chaque côté demandé
 //    Utilise color-mix pour la transparence et le dégradé
 // -------------------------------
-@mixin border-glass-before($color, $sides, $opacity-base) {
+@mixin border-glass-before($sides, $opacity-base) {
   content: '';
   position: absolute;
   pointer-events: none; // Ne gêne pas l'interaction
@@ -71,12 +71,12 @@ $border-glass-combos: (
   // Position et taille de chaque background selon le côté
   $positions: ();
   $sizes: ();
-  // Couleurs du gradient
+  // Couleurs du gradient - utilise var(--color) au lieu d'un paramètre
   $gradient-colors: 
         transparent 0%, 
-        color-mix(in oklch, #{$color} #{$opacity-base - 5%}, transparent) 20%, 
-        color-mix(in oklch, #{$color} #{$opacity-base + 5%}, transparent) 50%, 
-        color-mix(in oklch, #{$color} #{$opacity-base - 5%}, transparent) 80%, 
+        color-mix(in oklch, var(--color) #{$opacity-base - 5%}, transparent) 20%, 
+        color-mix(in oklch, var(--color) #{$opacity-base + 5%}, transparent) 50%, 
+        color-mix(in oklch, var(--color) #{$opacity-base - 5%}, transparent) 80%, 
         transparent 100%;
 
     @if($sides == 'all') {
@@ -144,53 +144,38 @@ $border-glass-combos: (
 //    - box-shadow sur l'élément
 //    - ::before pour la bordure glass
 // -------------------------------
-@mixin border-glass($color, $sides, $opacity-base) {
+@mixin border-glass($sides, $opacity-base) {
   position: relative; // Pour positionner le ::before
   background: transparent;
+  --color: var(--color-white); // Couleur par défaut
 
   &::before {
-    @include border-glass-before($color, $sides, $opacity-base);
+    @include border-glass-before($sides, $opacity-base);
   } 
 }
 
 // ===============================
 // 6. Génération automatique des classes utilitaires
 //    - .border-glass-xs, .border-glass-tl-md, etc.
-//    - Pour chaque couleur de chaque thème
+//    - Utilise maintenant var(--color) au lieu de couleurs fixes
 // ===============================
 
-// 6.1 Classes neutres (blanc, pour usage générique)
+// 6.1 Classes neutres (utilisent var(--color) par défaut)
 @each $size, $opacity-base in $border-glass-opacity-base {
   .border-glass-#{$size} {
-    @include border-glass("var(--color-white)", 'all', $opacity-base);
+    @include border-glass('all', $opacity-base);
   }
   @each $combo, $sides in $border-glass-combos {
     .border-glass-#{$combo}-#{$size} {
-      @include border-glass("var(--color-white)", $sides, $opacity-base);
+      @include border-glass($sides, $opacity-base);
     }
   }
 }
 
-// 6.2 Classes thémées (couleurs issues des maps de thème)
-// @each $theme-map in ($theme-global, $theme-caracs, $theme-entities) {
-//   @each $name, $color in $theme-map {
-//     @each $size, $opacity-base in $border-glass-opacity-base {
-//       .border-glass-#{$name}-#{$size} {
-//         @include border-glass("var(--color-#{$color}-500)", 'all', $opacity-base);
-//       }
-//       @each $combo, $sides in $border-glass-combos {
-//         .border-glass-#{$name}-#{$combo}-#{$size} {
-//           @include border-glass("var(--color-#{$color}-500)", $sides, $opacity-base);
-//         }
-//       }
-//     }
-//   }
-// }
-
 // ===============================
 //  FIN DU FICHIER
 //  Pour toute extension :
-//   - Ajouter une couleur dans le thème
 //   - Ajouter une intensité dans $border-glass-opacity-base
 //   - Ajouter un combo dans $border-glass-combos
+//   - Utiliser les classes .color-* pour changer la couleur
 // ===============================

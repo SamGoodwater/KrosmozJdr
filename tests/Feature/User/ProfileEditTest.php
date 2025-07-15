@@ -32,7 +32,7 @@ class ProfileEditTest extends TestCase
             'notification_channels' => ['database'],
         ];
         $response = $this->actingAs($user)->patch('/user', $newData);
-        $response->assertRedirect(route('user.dashboard', absolute: false));
+        $response->assertRedirect(route('user.show', $user, absolute: false));
         $this->assertDatabaseHas('users', [
             'id' => $user->id,
             'name' => 'New Name',

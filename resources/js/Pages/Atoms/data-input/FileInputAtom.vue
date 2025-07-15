@@ -1,6 +1,4 @@
 <script setup>
-defineOptions({ inheritAttrs: false });
-
 /**
  * FileInputAtom (DaisyUI)
  *
@@ -9,10 +7,9 @@ defineOptions({ inheritAttrs: false });
  * - Rend un <input type="file"> stylé DaisyUI
  * - Props DaisyUI : color, size, variant (ghost)
  * - Props utilitaires custom : shadow, backdrop, opacity, rounded
- * - Props communes : accessibilité, tooltip, etc.
+ * - Props communes : accessibilité, etc.
  * - mergeClasses pour la composition des classes
  * - getCommonAttrs pour les attributs HTML/accessibilité
- * - Tooltip intégré (hors Tooltip lui-même)
  * - AUCUNE logique de drag&drop, preview, progress, label, etc. (géré par la molécule)
  *
  * @see https://daisyui.com/components/file-input/
@@ -25,17 +22,18 @@ defineOptions({ inheritAttrs: false });
  * @props {String} size - Taille DaisyUI ('', 'xs', 'sm', 'md', 'lg', 'xl')
  * @props {String} variant - Style DaisyUI ('', 'ghost')
  * @props {String} shadow, backdrop, opacity, rounded - utilitaires custom
- * @props {String|Object} id, ariaLabel, role, tabindex, tooltip, tooltip_placement, class, style, disabled - hérités de commonProps
+ * @props {String|Object} id, ariaLabel, role, tabindex, class, style, disabled - hérités de commonProps
  */
-import { computed } from 'vue';
-import Tooltip from '@/Pages/Atoms/feedback/Tooltip.vue';
+import { computed, ref, watch, onMounted, useSlots } from 'vue';
+import Validator from '@/Pages/Atoms/data-input/Validator.vue';
 import { getCommonProps, getCommonAttrs, getCustomUtilityProps, getCustomUtilityClasses, mergeClasses } from '@/Utils/atomic-design/uiHelper';
-import { getInputProps, getInputAttrs } from '@/Utils/atomic-design/atomManager';
+import { getInputAttrs, getInputProps, hasValidation } from '@/Utils/atomic-design/atomManager';
+import InputLabel from '@/Pages/Atoms/data-input/InputLabel.vue';
 import { colorList, sizeXlList } from '@/Pages/Atoms/atomMap';
 
 const props = defineProps({
     ...getCommonProps(),
-    ...getInputProps({ exclude: ['modelValue', 'label', 'errorMessage', 'validator', 'help', 'theme'] }),
+    ...getInputProps({ exclude: ['type', 'placeholder', 'autocomplete', 'min', 'max', 'step', 'inputmode', 'pattern', 'maxlength', 'minlength'] }),
     ...getCustomUtilityProps(),
     color: {
         type: String,
@@ -47,12 +45,13 @@ const props = defineProps({
         default: '',
         validator: v => sizeXlList.includes(v),
     },
-    variant: {
-        type: String,
-        default: '',
-        validator: v => ['', 'ghost'].includes(v),
-    },
+    labelBottom: { type: String, default: '' },
 });
+
+const emit = defineEmits(['update:modelValue']);
+const fileInputRef = ref(null);
+
+const hasValidationState = computed(() => hasValidation(props, useSlots()));
 
 const atomClasses = computed(() =>
     mergeClasses(
@@ -71,26 +70,56 @@ const atomClasses = computed(() =>
             props.size === 'md' && 'file-input-md',
             props.size === 'lg' && 'file-input-lg',
             props.size === 'xl' && 'file-input-xl',
-            props.variant === 'ghost' && 'file-input-ghost',
-            'w-full',
+            hasValidationState.value && 'file-input-error',
         ].filter(Boolean),
         getCustomUtilityClasses(props),
         props.class
     )
 );
-const attrs = computed(() => ({
-    ...getCommonAttrs(props),
-    ...getInputAttrs(props),
-}));
+
+const fileInputId = computed(() => props.id || `file-input-${Math.random().toString(36).substr(2, 9)}`);
+
+const attrs = computed(() => getCommonAttrs(props));
+
+function onInput(e) {
+    emit('update:modelValue', e.target.files);
+}
+
+onMounted(() => {
+    if (fileInputRef.value && props.autofocus) {
+        fileInputRef.value.focus();
+    }
+});
+
+defineExpose({ focus: () => fileInputRef.value && fileInputRef.value.focus() });
 </script>
 
 <template>
-    <Tooltip :content="props.tooltip" :placement="props.tooltip_placement">
-        <input type="file" :class="atomClasses" v-bind="attrs" v-on="$attrs" />
-        <template v-if="typeof props.tooltip === 'object'" #tooltip>
-            <slot name="tooltip" />
-        </template>
-    </Tooltip>
+    <div class="form-control w-full">
+        <InputLabel v-if="props.label || $slots.labelTop" :for="fileInputId" :value="props.label">
+            <template v-if="$slots.labelTop" #default>
+                <slot name="labelTop" />
+            </template>
+        </InputLabel>
+        <div class="flex items-center gap-2">
+            <input ref="fileInputRef" type="file" :class="atomClasses" v-bind="attrs" @input="onInput" v-on="$attrs" />
+        </div>
+        <InputLabel v-if="props.labelBottom || $slots.labelBottom" :for="fileInputId" :value="props.labelBottom" class="mt-1">
+            <template v-if="$slots.labelBottom" #default>
+                <slot name="labelBottom" />
+            </template>
+        </InputLabel>
+        <div v-if="hasValidationState" class="mt-1">
+            <slot name="validator">
+                <Validator v-if="props.validator"
+                    :state="typeof props.validator === 'string' ? 'error' : 'error'"
+                    :message="typeof props.validator === 'string' ? props.validator : props.errorMessage" />
+            </slot>
+        </div>
+        <div v-if="props.helper || $slots.helper" class="mt-1 text-xs text-base-400">
+            <slot name="helper">{{ props.helper }}</slot>
+        </div>
+    </div>
 </template>
 
 <style scoped></style>

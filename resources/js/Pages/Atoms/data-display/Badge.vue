@@ -1,6 +1,4 @@
 <script setup>
-defineOptions({ inheritAttrs: false }); // Pour que les évéments natifs soient transmis à l'atom
-
 /**
  * Badge Atom (DaisyUI)
  *
@@ -13,7 +11,6 @@ defineOptions({ inheritAttrs: false }); // Pour que les évéments natifs soient
  * - Props utilitaires custom : shadow, backdrop, opacity
  * - Toutes les classes DaisyUI sont écrites en toutes lettres
  * - Accessibilité renforcée (role, aria, etc.)
- * - Tooltip intégré
  *
  * @see https://daisyui.com/components/badge/
  * @version DaisyUI v5.x
@@ -27,14 +24,13 @@ defineOptions({ inheritAttrs: false }); // Pour que les évéments natifs soient
  * @props {String} color - Couleur DaisyUI ('', 'neutral', 'primary', 'secondary', 'accent', 'info', 'success', 'warning', 'error')
  * @props {String} size - Taille DaisyUI ('', 'xs', 'sm', 'md', 'lg', 'xl'), défaut ''
  * @props {String} variant - Style DaisyUI ('', 'outline', 'dash', 'soft', 'ghost'), défaut ''
- * @props {String|Object} tooltip, tooltip_placement, id, ariaLabel, role, tabindex - hérités de commonProps
+ * @props {String|Object} id, ariaLabel, role, tabindex - hérités de commonProps
  * @slot default - Contenu du badge (fallback)
  * @slot content - Contenu HTML complexe prioritaire
  *
  * @note Toutes les classes DaisyUI et utilitaires custom sont explicites, pas de concaténation dynamique non couverte par Tailwind.
  */
 import { computed } from "vue"
-import Tooltip from '@/Pages/Atoms/feedback/Tooltip.vue';
 import { getCommonProps, getCommonAttrs, getCustomUtilityProps, getCustomUtilityClasses, mergeClasses } from '@/Utils/atomic-design/uiHelper';
 import { colorList, sizeXlList, variantList } from '@/Pages/Atoms/atomMap';
 
@@ -93,15 +89,10 @@ const attrs = computed(() => getCommonAttrs(props));
 </script>
 
 <template>
-    <Tooltip :content="props.tooltip" :placement="props.tooltip_placement">
-        <span :class="atomClasses" v-bind="attrs" v-on="$attrs">
-            <span v-if="content && !$slots.default">{{ content }}</span>
-            <slot name="content" v-else />
-        </span>
-        <template v-if="typeof props.tooltip === 'object'" #tooltip>
-            <slot name="tooltip" />
-        </template>
-    </Tooltip>
+    <span :class="atomClasses" v-bind="attrs" v-on="$attrs">
+        <span v-if="content && !$slots.default">{{ content }}</span>
+        <slot name="content" v-else />
+    </span>
 </template>
 
 <style scoped></style>

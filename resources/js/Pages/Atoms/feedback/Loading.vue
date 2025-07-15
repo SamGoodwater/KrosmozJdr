@@ -1,6 +1,4 @@
 <script setup>
-defineOptions({ inheritAttrs: false }); // Pour que les évéments natifs soient transmis à l'atom
-
 /**
  * Loading Atom (DaisyUI)
  *
@@ -27,7 +25,6 @@ defineOptions({ inheritAttrs: false }); // Pour que les évéments natifs soient
  * @slot default - Texte d'accessibilité (optionnel)
  */
 import { computed } from 'vue';
-import Tooltip from '@/Pages/Atoms/feedback/Tooltip.vue';
 import { getCommonProps, getCommonAttrs, mergeClasses } from '@/Utils/atomic-design/uiHelper';
 import { sizeXlList } from '@/Pages/Atoms/atomMap';
 
@@ -82,14 +79,9 @@ const attrs = computed(() => getCommonAttrs(props));
 </script>
 
 <template>
-    <Tooltip :content="props.tooltip" :placement="props.tooltip_placement">
-        <span :class="atomClasses" role="status" aria-live="polite" v-bind="attrs" v-on="$attrs">
-            <slot>Chargement…</slot>
-        </span>
-        <template v-if="typeof props.tooltip === 'object'" #tooltip>
-            <slot name="tooltip" />
-        </template>
-    </Tooltip>
+    <span :class="atomClasses" role="status" aria-live="polite" v-bind="attrs" v-on="$attrs">
+        <slot />
+    </span>
 </template>
 
 <style scoped>

@@ -10,19 +10,11 @@
 
 $glass-box-sizes: (xs, sm, md, lg, xl);
 
-@mixin box-glass($size, $theme: null, $combo: null, $sides: null) {
-  @if $theme == null {
-    @if $combo == null {
-      @extend .border-glass-#{$size};
-    } @else {
-      @extend .border-glass-#{$combo}-#{$size};
-    }
+@mixin box-glass($size, $combo: null, $sides: null) {
+  @if $combo == null {
+    @extend .border-glass-#{$size};
   } @else {
-    @if $combo == null {
-      @extend .border-glass-#{$theme}-#{$size};
-    } @else {
-      @extend .border-glass-#{$theme}-#{$combo}-#{$size};
-    }
+    @extend .border-glass-#{$combo}-#{$size};
   }
   @extend .bd-glass-#{$size};
 
@@ -56,9 +48,9 @@ $glass-box-sizes: (xs, sm, md, lg, xl);
   }
 }
 
-// Version sans thème, tous côtés
 @each $size in $glass-box-sizes {
   .box-glass-#{$size} {
+    --color: var(--color-white); // Couleur par défaut
     @include box-glass($size);
   }
 }
@@ -66,26 +58,8 @@ $glass-box-sizes: (xs, sm, md, lg, xl);
 @each $size in $glass-box-sizes {
   @each $combo, $sides in $border-glass-combos {
     .box-glass-#{$combo}-#{$size} {
-      @include box-glass($size, null, $combo, $sides);
+      --color: var(--color-white); // Couleur par défaut
+      @include box-glass($size, $combo, $sides);
     }
   }
 }
-// Version thémée, tous côtés
-// @each $theme-map in ($theme-global, $theme-caracs, $theme-entities) {
-//   @each $name, $color in $theme-map {
-//     @each $size in $glass-box-sizes {
-//       .box-glass-#{$name}-#{$size} {
-//         @include box-glass($size, $name);
-//       }
-//       // Version thémée, directionnelle
-//       @each $combo, $sides in $border-glass-combos {
-//         .box-glass-#{$name}-#{$combo}-#{$size} {
-//           @include box-glass($size, $name, $combo, $sides);
-//         }
-//       }
-//     }
-//   }
-// }
-
-// Pour compatibilité, on garde les anciennes classes (optionnel)
-// .glass-xs, .glass-sm, ... déjà générées plus haut si besoin

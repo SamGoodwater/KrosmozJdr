@@ -1,6 +1,4 @@
 <script setup>
-defineOptions({ inheritAttrs: false }); // Pour que les évéments natifs soient transmis à l'atom
-
 /**
  * Checkbox Atom (DaisyUI)
  *
@@ -10,17 +8,16 @@ defineOptions({ inheritAttrs: false }); // Pour que les évéments natifs soient
  * - Props DaisyUI : color, size
  * - Props communes input via getInputProps()
  * - Props utilitaires custom : shadow, backdrop, opacity
- * - Slots : #labelTop, #labelBottom, #validator, #help, default
+ * - Slots : #labelTop, #labelBottom, #validator, #helper, default
  * - v-model natif (modelValue). Si modelValue n'est pas défini, fallback sur la prop checked.
  * - Toutes les classes DaisyUI sont explicites
  * - Accessibilité renforcée (role, aria, etc.)
- * - Tooltip intégré
  *
  * @see https://daisyui.com/components/checkbox/
  * @version DaisyUI v5.x
  *
  * @example
- * <Checkbox label="Se souvenir de moi" v-model="checked" color="primary" size="md" :validator="form.errors.remember" help="Cochez pour rester connecté" />
+ * <Checkbox label="Se souvenir de moi" v-model="checked" color="primary" size="md" :validator="form.errors.remember" helper="Cochez pour rester connecté" />
  *
  * @props {Boolean} modelValue - Valeur de la checkbox (v-model natif, prioritaire sur checked)
  * @props {Boolean} checked - Valeur fallback si modelValue n'est pas utilisé
@@ -30,24 +27,23 @@ defineOptions({ inheritAttrs: false }); // Pour que les évéments natifs soient
  * @props {String} label - Label du champ (optionnel, sinon slot #labelTop)
  * @props {String|Object} validator - Message de validation ou slot #validator
  * @props {String} errorMessage - Message d'erreur (optionnel)
- * @props {String} help - Message d'aide (optionnel ou slot #help)
+ * @props {String} helper - Message d'aide (optionnel ou slot #helper)
  * @props {String} shadow, backdrop, opacity - utilitaires custom
  * @props {String} bgOn - Classes Tailwind appliquées quand la checkbox est cochée (ex: 'bg-green-500 border-green-600')
  * @props {String} bgOff - Classes Tailwind appliquées quand la checkbox est décochée (ex: 'bg-base-200 border-base-300')
- * @props {String|Object} tooltip, tooltip_placement, id, ariaLabel, role, tabindex - hérités de commonProps
+ * @props {String|Object} id, ariaLabel, role, tabindex - hérités de commonProps
  * @slot labelTop - Label custom au-dessus
  * @slot labelBottom - Label custom en-dessous
  * @slot validator - Message de validation custom
- * @slot help - Message d'aide custom
+ * @slot helper - Message d'aide custom
  * @slot default - Slot pour contenu custom à droite de la checkbox
  *
  * @note Toutes les classes DaisyUI et utilitaires custom sont explicites, pas de concaténation dynamique non couverte par Tailwind.
  */
-import { computed, ref, watch, onMounted } from 'vue';
-import Tooltip from '@/Pages/Atoms/feedback/Tooltip.vue';
+import { computed, ref, watch, onMounted, useSlots } from 'vue';
 import Validator from '@/Pages/Atoms/data-input/Validator.vue';
 import { getCommonProps, getCommonAttrs, getCustomUtilityProps, getCustomUtilityClasses, mergeClasses } from '@/Utils/atomic-design/uiHelper';
-import { getInputAttrs, getInputProps } from '@/Utils/atomic-design/atomManager';
+import { getInputAttrs, getInputProps, hasValidation } from '@/Utils/atomic-design/atomManager';
 import InputLabel from '@/Pages/Atoms/data-input/InputLabel.vue';
 import { colorList, sizeXlList } from '@/Pages/Atoms/atomMap';
 
@@ -67,6 +63,7 @@ const props = defineProps({
     },
     checked: { type: Boolean, default: false },
     indeterminate: { type: Boolean, default: false },
+    labelBottom: { type: String, default: '' },
     /**
      * Classes Tailwind appliquées selon l'état (coché/décoché)
      * bgOn: classes si coché, bgOff: classes si décoché
@@ -77,6 +74,9 @@ const props = defineProps({
 
 const emit = defineEmits(['update:modelValue']);
 const checkboxRef = ref(null);
+
+// Détermine si le composant doit afficher un état de validation
+const hasValidationState = computed(() => hasValidation(props, useSlots()));
 
 const atomClasses = computed(() =>
     mergeClasses(
@@ -95,18 +95,12 @@ const atomClasses = computed(() =>
             props.size === 'md' && 'checkbox-md',
             props.size === 'lg' && 'checkbox-lg',
             props.size === 'xl' && 'checkbox-xl',
-            (props.errorMessage || props.validator) && 'validator checkbox-error',
+            hasValidationState.value && 'checkbox-error',
         ].filter(Boolean),
         getCustomUtilityClasses(props),
         props.class
     )
 );
-
-const attrs = computed(() => ({
-    ...getCommonAttrs(props),
-    ...getInputAttrs(props),
-    'aria-checked': isChecked.value,
-}));
 
 const checkboxId = computed(() => props.id || `checkbox-${Math.random().toString(36).substr(2, 9)}`);
 
@@ -118,6 +112,8 @@ const isChecked = computed({
         emit('update:modelValue', val);
     }
 });
+
+const attrs = computed(() => getCommonAttrs(props));
 
 function onInput(e) {
     isChecked.value = e.target.checked;
@@ -142,43 +138,38 @@ defineExpose({ focus: () => checkboxRef.value && checkboxRef.value.focus() });
 </script>
 
 <template>
-    <Tooltip :content="props.tooltip" :placement="props.tooltip_placement">
-        <div class="form-control w-full">
-            <!-- Label top -->
-            <InputLabel v-if="label || $slots.labelTop" :for="checkboxId" :value="label">
-                <template v-if="$slots.labelTop" #default>
-                    <slot name="labelTop" />
-                </template>
-            </InputLabel>
-            <div class="flex items-center gap-2">
-                <input ref="checkboxRef" type="checkbox" v-bind="attrs" v-on="$attrs" :id="checkboxId"
-                    :class="[atomClasses, isChecked ? bgOn : bgOff]" :checked="isChecked" @input="onInput"
-                    :aria-invalid="!!errorMessage || validator" />
-                <slot />
-            </div>
-            <!-- Label bottom -->
-            <InputLabel v-if="labelBottom || $slots.labelBottom" :for="checkboxId" :value="labelBottom" class="mt-1">
-                <template v-if="$slots.labelBottom" #default>
-                    <slot name="labelBottom" />
-                </template>
-            </InputLabel>
-            <!-- Validator -->
-            <div v-if="validator || $slots.validator" class="mt-1">
-                <slot name="validator">
-                    <Validator v-if="validator"
-                        :state="validator === true ? 'success' : validator === 'error' ? 'error' : validator"
-                        :message="errorMessage" />
-                </slot>
-            </div>
-            <!-- Help -->
-            <div v-if="help || $slots.help" class="mt-1 text-xs text-base-400">
-                <slot name="help">{{ help }}</slot>
-            </div>
+    <div class="form-control w-full">
+        <!-- Label top -->
+        <InputLabel v-if="props.label || $slots.labelTop" :for="checkboxId" :value="props.label">
+            <template v-if="$slots.labelTop" #default>
+                <slot name="labelTop" />
+            </template>
+        </InputLabel>
+        <div class="flex items-center gap-2">
+            <input ref="checkboxRef" type="checkbox" v-bind="attrs" :id="checkboxId"
+                :class="[atomClasses, isChecked ? props.bgOn : props.bgOff]" :checked="isChecked" @input="onInput"
+                :aria-invalid="hasValidationState" v-on="$attrs" />
+            <slot />
         </div>
-        <template v-if="typeof props.tooltip === 'object'" #tooltip>
-            <slot name="tooltip" />
-        </template>
-    </Tooltip>
+        <!-- Label bottom -->
+        <InputLabel v-if="props.labelBottom || $slots.labelBottom" :for="checkboxId" :value="props.labelBottom" class="mt-1">
+            <template v-if="$slots.labelBottom" #default>
+                <slot name="labelBottom" />
+            </template>
+        </InputLabel>
+        <!-- Validator -->
+        <div v-if="hasValidationState" class="mt-1">
+            <slot name="validator">
+                <Validator v-if="props.validator"
+                    :state="typeof props.validator === 'string' ? 'error' : 'error'"
+                    :message="typeof props.validator === 'string' ? props.validator : props.errorMessage" />
+            </slot>
+        </div>
+        <!-- Helper -->
+        <div v-if="props.helper || $slots.helper" class="mt-1 text-xs text-base-400">
+            <slot name="helper">{{ props.helper }}</slot>
+        </div>
+    </div>
 </template>
 
 <style scoped></style>

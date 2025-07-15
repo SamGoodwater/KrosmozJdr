@@ -1,6 +1,4 @@
 <script setup>
-defineOptions({ inheritAttrs: false }); // Pour que les évéments natifs soient transmis à l'atom
-
 /**
  * Range Atom (DaisyUI)
  *
@@ -11,11 +9,10 @@ defineOptions({ inheritAttrs: false }); // Pour que les évéments natifs soient
  * - Props communes input via getInputProps()
  * - Props utilitaires custom : shadow, backdrop, opacity
  * - Edition réactive avancée via useFieldComposable/field/debounceTime (voir ci-dessous)
- * - Slots : #labelTop, #labelBottom, #validator, #help, default
+ * - Slots : #labelTop, #labelBottom, #validator, #helper, default
  * - v-model natif (modelValue)
  * - Toutes les classes DaisyUI sont explicites
  * - Accessibilité renforcée (role, aria, etc.)
- * - Tooltip intégré
  *
  * @see https://daisyui.com/components/range/
  * @version DaisyUI v5.x
@@ -34,33 +31,30 @@ defineOptions({ inheritAttrs: false }); // Pour que les évéments natifs soient
  * @props {String} label - Label du champ (optionnel, sinon slot #labelTop)
  * @props {String|Object} validator - Message de validation ou slot #validator
  * @props {String} errorMessage - Message d'erreur (optionnel)
- * @props {String} help - Message d'aide (optionnel ou slot #help)
+ * @props {String} helper - Message d'aide (optionnel ou slot #helper)
  * @props {String} shadow, backdrop, opacity - utilitaires custom
  * @props {Boolean} useFieldComposable - Active l'édition réactive (reset, debounce, etc.)
  * @props {Object} field - Objet field externe (optionnel, sinon composable interne)
  * @props {Number} debounceTime - Délai de debounce (ms, défaut 500)
- * @props {String|Object} tooltip, tooltip_placement, id, ariaLabel, role, tabindex - hérités de commonProps
+ * @props {String|Object} id, ariaLabel, role, tabindex - hérités de commonProps
  * @slot labelTop - Label custom au-dessus
  * @slot labelBottom - Label custom en-dessous
  * @slot validator - Message de validation custom
- * @slot help - Message d'aide custom
+ * @slot helper - Message d'aide custom
  * @slot default - Slot pour contenu custom à droite du slider
  *
  * @note Si useFieldComposable=true, la logique d'édition réactive (valeur, debounce, reset, bouton reset, update) est entièrement gérée par le composable useEditableField. Le bouton reset s'affiche automatiquement si la valeur a été modifiée.
  */
-import { computed, ref, onMounted, onUnmounted } from 'vue';
-import Tooltip from '@/Pages/Atoms/feedback/Tooltip.vue';
+import { computed, ref, watch, onMounted, onUnmounted, useSlots } from 'vue';
 import Validator from '@/Pages/Atoms/data-input/Validator.vue';
 import { getCommonProps, getCommonAttrs, getCustomUtilityProps, getCustomUtilityClasses, mergeClasses } from '@/Utils/atomic-design/uiHelper';
-import { getInputProps, getInputAttrs } from '@/Utils/atomic-design/atomManager';
+import { getInputAttrs, getInputProps, hasValidation } from '@/Utils/atomic-design/atomManager';
 import InputLabel from '@/Pages/Atoms/data-input/InputLabel.vue';
-import useEditableField from '@/Composables/form/useEditableField';
-import Btn from '@/Pages/Atoms/action/Btn.vue';
 import { colorList, sizeXlList } from '@/Pages/Atoms/atomMap';
 
 const props = defineProps({
     ...getCommonProps(),
-    ...getInputProps(),
+    ...getInputProps({ exclude: ['type', 'placeholder', 'autocomplete', 'min', 'max', 'step', 'inputmode', 'pattern', 'maxlength', 'minlength'] }),
     ...getCustomUtilityProps(),
     color: {
         type: String,
@@ -72,13 +66,14 @@ const props = defineProps({
         default: '',
         validator: v => sizeXlList.includes(v),
     },
-    useFieldComposable: { type: Boolean, default: false },
-    field: { type: Object, default: null },
-    debounceTime: { type: Number, default: 500 },
+    labelBottom: { type: String, default: '' },
 });
 
 const emit = defineEmits(['update:modelValue']);
 const rangeRef = ref(null);
+
+// Détermine si le composant doit afficher un état de validation
+const hasValidationState = computed(() => hasValidation(props, useSlots()));
 
 // Gestion editableField (optionnel)
 const editableField = computed(() => {
@@ -92,7 +87,12 @@ const editableField = computed(() => {
     return null;
 });
 
-const isFieldModified = computed(() => props.useFieldComposable && editableField.value ? editableField.value.isModified.value : false);
+const isFieldModified = computed(() =>
+    props.useFieldComposable && editableField.value
+        ? editableField.value.isModified.value
+        : false,
+);
+
 const displayValue = computed(() => {
     if (props.useFieldComposable && editableField.value) {
         return editableField.value.value.value;
@@ -107,13 +107,19 @@ function onInput(e) {
         emit('update:modelValue', e.target.value);
     }
 }
+
 function onBlur() {
     if (props.useFieldComposable && editableField.value) {
         editableField.value.onBlur();
     }
 }
+
 function handleReset() {
-    if (props.useFieldComposable && editableField.value && typeof editableField.value.reset === 'function') {
+    if (
+        props.useFieldComposable &&
+        editableField.value &&
+        typeof editableField.value.reset === 'function'
+    ) {
         editableField.value.reset();
         editableField.value.onBlur();
     }
@@ -129,10 +135,14 @@ onUnmounted(() => {
         clearTimeout(editableField.value.debounceTimeout);
     }
 });
-defineExpose({ focus: () => rangeRef.value && rangeRef.value.focus() });
+defineExpose({ 
+    focus: () => rangeRef.value && rangeRef.value.focus(),
+    isFieldModified,
+    handleReset,
+});
 
-function getAtomClasses(props) {
-    return mergeClasses(
+const atomClasses = computed(() =>
+    mergeClasses(
         [
             'range',
             props.color === 'neutral' && 'range-neutral',
@@ -148,68 +158,48 @@ function getAtomClasses(props) {
             props.size === 'md' && 'range-md',
             props.size === 'lg' && 'range-lg',
             props.size === 'xl' && 'range-xl',
-            (props.errorMessage || props.validator) && 'validator range-error',
+            hasValidationState.value && 'range-error',
         ].filter(Boolean),
         getCustomUtilityClasses(props),
         props.class
-    );
-}
-
-const atomClasses = computed(() => getAtomClasses(props));
-const attrs = computed(() => ({
-    ...getCommonAttrs(props),
-    ...getInputAttrs(props),
-    min: props.min || 0,
-    max: props.max || 100,
-    step: props.step || 1,
-    id: props.id || undefined,
-}));
+    )
+);
 
 const rangeId = computed(() => props.id || `range-${Math.random().toString(36).substr(2, 9)}`);
+
+const attrs = computed(() => getCommonAttrs(props));
 </script>
 
 <template>
-    <Tooltip :content="props.tooltip" :placement="props.tooltip_placement">
-        <div class="form-control w-full">
-            <!-- Label top -->
-            <InputLabel v-if="label || $slots.labelTop" :for="rangeId" :value="label">
-                <template v-if="$slots.labelTop" #default>
-                    <slot name="labelTop" />
-                </template>
-            </InputLabel>
-            <div class="relative flex items-center gap-2 w-full">
-                <input ref="rangeRef" type="range" v-bind="attrs" v-on="$attrs" :id="rangeId" :class="atomClasses"
-                    :value="displayValue" @input="onInput" @blur="onBlur" :aria-invalid="!!errorMessage || validator" />
-                <!-- Bouton reset -->
-                <Btn v-if="props.useFieldComposable && isFieldModified" class="absolute right-2 top-2 z-20" size="xs"
-                    variant="glass" circle @click="handleReset" :aria-label="'Réinitialiser'">
-                    <i class="fa-solid fa-arrow-rotate-left"></i>
-                </Btn>
-                <slot />
-            </div>
-            <!-- Label bottom -->
-            <InputLabel v-if="labelBottom || $slots.labelBottom" :for="rangeId" :value="labelBottom" class="mt-1">
-                <template v-if="$slots.labelBottom" #default>
-                    <slot name="labelBottom" />
-                </template>
-            </InputLabel>
-            <!-- Validator -->
-            <div v-if="validator || $slots.validator" class="mt-1">
-                <slot name="validator">
-                    <Validator v-if="validator"
-                        :state="validator === true ? 'success' : validator === 'error' ? 'error' : validator"
-                        :message="errorMessage" />
-                </slot>
-            </div>
-            <!-- Help -->
-            <div v-if="help || $slots.help" class="mt-1 text-xs text-base-400">
-                <slot name="help">{{ help }}</slot>
-            </div>
+    <div class="form-control w-full">
+        <!-- Label top -->
+        <InputLabel v-if="props.label || $slots.labelTop" :for="rangeId" :value="props.label">
+            <template v-if="$slots.labelTop" #default>
+                <slot name="labelTop" />
+            </template>
+        </InputLabel>
+        <div class="flex items-center gap-2">
+            <input ref="rangeRef" type="range" v-bind="attrs" :id="rangeId" :class="atomClasses" @input="onInput" v-on="$attrs" />
         </div>
-        <template v-if="typeof props.tooltip === 'object'" #tooltip>
-            <slot name="tooltip" />
-        </template>
-    </Tooltip>
+        <!-- Label bottom -->
+        <InputLabel v-if="props.labelBottom || $slots.labelBottom" :for="rangeId" :value="props.labelBottom" class="mt-1">
+            <template v-if="$slots.labelBottom" #default>
+                <slot name="labelBottom" />
+            </template>
+        </InputLabel>
+        <!-- Validator -->
+        <div v-if="hasValidationState" class="mt-1">
+            <slot name="validator">
+                <Validator v-if="props.validator"
+                    :state="typeof props.validator === 'string' ? 'error' : 'error'"
+                    :message="typeof props.validator === 'string' ? props.validator : props.errorMessage" />
+            </slot>
+        </div>
+        <!-- Helper -->
+        <div v-if="props.helper || $slots.helper" class="mt-1 text-xs text-base-400">
+            <slot name="helper">{{ props.helper }}</slot>
+        </div>
+    </div>
 </template>
 
 <style scoped></style>

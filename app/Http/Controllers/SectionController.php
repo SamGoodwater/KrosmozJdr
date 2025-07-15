@@ -34,7 +34,7 @@ class SectionController extends Controller
     {
         $this->authorize('viewAny', \App\Models\Section::class);
         $sections = \App\Models\Section::with(['page', 'users', 'files', 'createdBy'])->paginate(20);
-        return Inertia::render('Organisms/Section/Index', [
+        return Inertia::render('Pages/section/Index', [
             'sections' => SectionResource::collection($sections),
         ]);
     }
@@ -46,7 +46,7 @@ class SectionController extends Controller
     public function create()
     {
         $this->authorize('create', \App\Models\Section::class);
-        return Inertia::render('Organisms/Section/Create', [
+        return Inertia::render('Pages/section/Create', [
             // Ajoute ici les données nécessaires au formulaire (ex: pages, types, etc.)
         ]);
     }
@@ -76,7 +76,7 @@ class SectionController extends Controller
     {
         $this->authorize('view', $section);
         $section->load(['page', 'users', 'files', 'createdBy']);
-        return Inertia::render('Organisms/Section/Show', [
+        return Inertia::render('Pages/section/Show', [
             'section' => new SectionResource($section),
         ]);
     }
@@ -90,7 +90,7 @@ class SectionController extends Controller
     {
         $this->authorize('update', $section);
         $section->load(['page', 'users', 'files', 'createdBy']);
-        return Inertia::render('Organisms/Section/Edit', [
+        return Inertia::render('Pages/section/Edit', [
             'section' => new SectionResource($section),
             // Ajoute ici les données nécessaires au formulaire (ex: pages, types, etc.)
         ]);

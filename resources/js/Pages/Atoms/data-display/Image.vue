@@ -3,14 +3,13 @@
  * Image Atom (Atomic Design, Tailwind, DaisyUI)
  *
  * @description
- * Composant atomique pour afficher une image avec gestion de la taille, du ratio, des filtres, du fit, de la position, du mask DaisyUI et du tooltip.
+ * Composant atomique pour afficher une image avec gestion de la taille, du ratio, des filtres, du fit, de la position, du mask DaisyUI.
  * - Utilise MediaManager pour la résolution des sources d'images
  * - Support des tailles prédéfinies via size ou personnalisées via width/height
  * - Support du ratio d'aspect
  * - Support des filtres (simple ou multiple)
  * - Support des masks DaisyUI
  * - Gestion du chargement et des erreurs
- * - Tooltip intégré
  *
  * @example
  * <Image source="logos/logo" alt="Logo" size="lg" />
@@ -30,13 +29,10 @@
  * @props {String|Array} filter - Filtre(s) CSS (grayscale, sepia, blur, brightness, contrast, hue-rotate, invert, saturate)
  * @props {String} rounded - Arrondi (none, sm, md, lg, xl, 2xl, 3xl, full, circle)
  * @props {String} mask - Classe DaisyUI mask-* (mask, mask-squircle, mask-heart, etc.)
- * @props {String|Object} tooltip - Tooltip
- * @props {String} tooltip_placement - Position du tooltip
  * @props {Object} transform - Options de transformation pour MediaManager (width, height, fit, quality, format)
  *
  * @slot loader - Loader personnalisé pendant le chargement
  * @slot fallback - Contenu alternatif en cas d'erreur
- * @slot tooltip - Contenu personnalisé du tooltip
  */
 
 import { computed, ref, watch, onMounted, useSlots } from "vue";
@@ -46,7 +42,6 @@ import {
     getCommonAttrs,
     mergeClasses,
 } from "@/Utils/atomic-design/uiHelper";
-import Tooltip from "@/Pages/Atoms/feedback/Tooltip.vue";
 import Skeleton from "@/Pages/Atoms/feedback/Skeleton.vue";
 import {
     sizeMap,
@@ -238,28 +233,22 @@ onMounted(() => {
 
 <template>
     <div :class="wrapperClasses">
-        <Tooltip :content="props.tooltip" :placement="props.tooltip_placement">
-            <template v-if="isLoading">
-                <slot name="loader">
-                    <Skeleton element="image" :size="props.size" :width="props.width" :height="props.height"
-                        :class="imageClasses" />
-                </slot>
-            </template>
+        <template v-if="isLoading">
+            <slot name="loader">
+                <Skeleton element="image" :size="props.size" :width="props.width" :height="props.height"
+                    :class="imageClasses" />
+            </slot>
+        </template>
 
-            <img v-else-if="imageUrl && !hasError" :src="imageUrl" :alt="alt" :class="imageClasses" :style="imageStyle"
-                v-bind="imgAttrs" v-on="$attrs" @error="onError" loading="lazy" decoding="async" />
+        <img v-else-if="imageUrl && !hasError" :src="imageUrl" :alt="alt" :class="imageClasses" :style="imageStyle"
+            v-bind="imgAttrs" v-on="$attrs" @error="onError" loading="lazy" decoding="async" />
 
-            <template v-else-if="slots.fallback">
-                <slot name="fallback" />
-            </template>
+        <template v-else-if="slots.fallback">
+            <slot name="fallback" />
+        </template>
 
-            <img v-else :src="FALLBACK_IMAGE" alt="Image non disponible" :class="imageClasses" :style="imageStyle"
-                v-bind="imgAttrs" v-on="$attrs" loading="lazy" decoding="async" />
-
-            <template v-if="typeof props.tooltip === 'object'" #tooltip>
-                <slot name="tooltip" />
-            </template>
-        </Tooltip>
+        <img v-else :src="FALLBACK_IMAGE" alt="Image non disponible" :class="imageClasses" :style="imageStyle"
+            v-bind="imgAttrs" v-on="$attrs" loading="lazy" decoding="async" />
     </div>
 </template>
 

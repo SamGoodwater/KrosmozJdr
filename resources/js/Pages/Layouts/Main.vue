@@ -61,11 +61,11 @@ onUnmounted(() => {
 
         <!-- Header -->
         <Header
-            :class="['!fixed top-0 right-0 z-30', HEADER_HEIGHT_CLASS, isSidebarOpen ? OFFSET_LEFT_CLASS : 'left-0']" />
+            :class="['!fixed top-0 right-0 z-30 max-sm:hidden', HEADER_HEIGHT_CLASS, isSidebarOpen ? OFFSET_LEFT_CLASS : 'left-0']" />
 
         <!-- Toggle Aside -->
         <ToggleSidebar
-            :class="['fixed top-6 z-50', isMobile.value ? 'hidden' : '', isSidebarOpen ? OFFSET_LEFT_CLASS + ' ml-[-3rem]' : 'left-2']" />
+            :class="['fixed top-6 z-50 max-sm:hidden', isMobile.value ? 'hidden' : '', isSidebarOpen ? OFFSET_LEFT_CLASS + ' ml-[-3rem]' : 'left-2']" />
 
         <!-- Sidebar (Drawer DaisyUI gère tout) -->
         <Aside v-show="isSidebarOpen" :class="['z-40 top-0 left-0 bottom-0', ASIDE_WIDTH_CLASS]"

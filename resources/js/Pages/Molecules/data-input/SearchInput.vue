@@ -18,7 +18,7 @@
  */
 import { ref, onMounted, onUnmounted } from "vue";
 import { getCommonProps } from "@/Utils/atomic-design/uiHelper";
-import InputField from "@/Pages/Atoms/data-input/InputField.vue";
+import InputField from "@/Pages/Molecules/data-input/InputField.vue";
 import Icon from "@/Pages/Atoms/data-display/Icon.vue";
 import Kbd from "@/Pages/Atoms/data-display/Kbd.vue";
 

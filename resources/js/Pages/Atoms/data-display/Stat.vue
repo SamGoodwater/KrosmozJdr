@@ -1,6 +1,4 @@
 <script setup>
-defineOptions({ inheritAttrs: false }); // Pour que les événements natifs soient transmis à l'atom
-
 /**
  * Stat Atom (DaisyUI)
  *
@@ -13,7 +11,6 @@ defineOptions({ inheritAttrs: false }); // Pour que les événements natifs soie
  * - Props DaisyUI : color (appliqué à title et value), colorTitle, colorValue, colorDescription (prioritaires)
  * - Prop size : xs, sm, md, lg, xl (contrôle la taille des textes et de l'icône)
  * - Props utilitaires custom : shadow, backdrop, opacity
- * - Tooltip intégré (hors Tooltip lui-même)
  * - Accessibilité renforcée (aria, role, etc.)
  *
  * @see https://daisyui.com/components/stat/
@@ -41,7 +38,7 @@ defineOptions({ inheritAttrs: false }); // Pour que les événements natifs soie
  * @props {String} colorDescription - Couleur DaisyUI de la description (prioritaire sur color)
  * @props {String} size - Taille DaisyUI ('', 'xs', 'sm', 'md', 'lg', 'xl')
  * @props {String} shadow, backdrop, opacity - utilitaires custom
- * @props {String|Object} tooltip, tooltip_placement, id, ariaLabel, role, tabindex - hérités de commonProps
+ * @props {String|Object} id, ariaLabel, role, tabindex - hérités de commonProps
  * @slot icon - Icône (figure)
  * @slot title - Titre du stat
  * @slot value - Valeur principale
@@ -53,7 +50,6 @@ defineOptions({ inheritAttrs: false }); // Pour que les événements natifs soie
  * @note Accessibilité renforcée : aria, role, etc.
  */
 import { computed } from "vue";
-import Tooltip from "@/Pages/Atoms/feedback/Tooltip.vue";
 import Icon from "@/Pages/Atoms/data-display/Icon.vue";
 import {
     getCommonProps,
@@ -108,6 +104,7 @@ const props = defineProps({
 const atomClasses = computed(() =>
     mergeClasses(["stat"], getCustomUtilityClasses(props), props.class),
 );
+
 const attrs = computed(() => getCommonAttrs(props));
 
 const titleClasses = computed(() =>
@@ -149,30 +146,25 @@ const iconSize = computed(() => sizeIconMap[props.size]);
 </script>
 
 <template>
-    <Tooltip :content="props.tooltip" :placement="props.tooltip_placement">
-        <div :class="atomClasses" v-bind="attrs" v-on="$attrs">
-            <div v-if="icon || $slots.icon" class="stat-figure">
-                <slot name="icon">
-                    <Icon v-if="icon" :source="icon" :size="iconSize" />
-                </slot>
-            </div>
-            <div :class="titleClasses">
-                <slot name="title">{{ title }}</slot>
-            </div>
-            <div :class="valueClasses">
-                <slot name="value">{{ value }}</slot>
-            </div>
-            <div v-if="description || $slots.description" :class="descClasses">
-                <slot name="description">{{ description }}</slot>
-            </div>
-            <div v-if="$slots.action" class="stat-actions">
-                <slot name="action" />
-            </div>
+    <div :class="atomClasses" v-bind="attrs" v-on="$attrs">
+        <div v-if="icon || $slots.icon" class="stat-figure">
+            <slot name="icon">
+                <Icon v-if="icon" :source="icon" :size="iconSize" />
+            </slot>
         </div>
-        <template v-if="typeof props.tooltip === 'object'" #tooltip>
-            <slot name="tooltip" />
-        </template>
-    </Tooltip>
+        <div :class="titleClasses">
+            <slot name="title">{{ title }}</slot>
+        </div>
+        <div :class="valueClasses">
+            <slot name="value">{{ value }}</slot>
+        </div>
+        <div v-if="description || $slots.description" :class="descClasses">
+            <slot name="description">{{ description }}</slot>
+        </div>
+        <div v-if="$slots.action" class="stat-actions">
+            <slot name="action" />
+        </div>
+    </div>
 </template>
 
 <style scoped></style>

@@ -1,6 +1,4 @@
 <script setup>
-defineOptions({ inheritAttrs: false }); // Pour que les événements natifs soient transmis à l'atom
-
 /**
  * Btn Atom (DaisyUI)
  *
@@ -10,10 +8,9 @@ defineOptions({ inheritAttrs: false }); // Pour que les événements natifs soie
  * - Slot par défaut ou slot nommé 'content' : contenu du bouton (texte, icône, etc.)
  * - Prop content : texte simple du bouton (fallback si pas de slot)
  * - Props DaisyUI : color, variant, size, block, wide, square, circle, type, active, checked
- * - Hérite de commonProps (id, ariaLabel, role, tabindex, tooltip, etc.)
+ * - Hérite de commonProps (id, ariaLabel, role, tabindex, etc.)
  * - Toutes les classes DaisyUI sont écrites en toutes lettres
  * - Accessibilité renforcée (role, aria, etc.)
- * - Tooltip intégré (voir slot #tooltip)
  *
  * @see https://daisyui.com/components/button/
  * @version DaisyUI v5.x
@@ -35,15 +32,13 @@ defineOptions({ inheritAttrs: false }); // Pour que les événements natifs soie
  * @props {Boolean} checked - Pour usage avancé (inutile sur <button>, mais possible pour compatibilité API)
  * @props {String} content - Texte du bouton (optionnel, sinon slot)
  * @props {Boolean} disabled - Désactivé (btn-disabled + HTML, hérité de commonProps)
- * @props {String} id, ariaLabel, role, tabindex, tooltip, tooltip_placement - hérités de commonProps
+ * @props {String} id, ariaLabel, role, tabindex - hérités de commonProps
  * @slot default|content - Contenu du bouton (texte, icône, etc.)
- * @slot tooltip - Contenu HTML complexe pour le tooltip (optionnel)
  *
  * @note Ce composant ne gère que <button>. Pour les liens ou autres éléments, utiliser un composant dédié (Route).
  * @note Toutes les classes DaisyUI sont explicites, pas de concaténation dynamique non couverte par Tailwind.
  */
 import { computed } from "vue";
-import Tooltip from "@/Pages/Atoms/feedback/Tooltip.vue";
 import {
     getCommonProps,
     getCommonAttrs,
@@ -64,7 +59,7 @@ const props = defineProps({
     },
     variant: {
         type: String,
-        default: "",
+        default: "glass",
         validator: (v) => [...variantList, "link"].includes(v),
     },
     size: {
@@ -76,6 +71,11 @@ const props = defineProps({
     wide: { type: Boolean, default: false },
     square: { type: Boolean, default: false },
     circle: { type: Boolean, default: false },
+    animation: {
+        type: String,
+        default: "glass",
+        validator: (v) => ["glass", "none"].includes(v),
+    },
     type: {
         type: String,
         default: "button",
@@ -99,20 +99,21 @@ const atomClasses = computed(() =>
     mergeClasses(
         [
             "btn",
-            props.color === "neutral" && "btn-neutral",
-            props.color === "primary" && "btn-primary",
-            props.color === "secondary" && "btn-secondary",
-            props.color === "accent" && "btn-accent",
-            props.color === "info" && "btn-info",
-            props.color === "success" && "btn-success",
-            props.color === "warning" && "btn-warning",
-            props.color === "error" && "btn-error",
-            props.variant === "outline" && "btn-outline",
-            props.variant === "ghost" && "btn-ghost",
+            props.animation === "glass" && "btn-animation-glass",
+            props.color === "primary" && "btn-custom-primary",
+            props.color === "secondary" && "btn-custom-secondary",
+            props.color === "accent" && "btn-custom-accent",
+            props.color === "info" && "btn-custom-info",
+            props.color === "success" && "btn-custom-success",
+            props.color === "warning" && "btn-custom-warning",
+            props.color === "error" && "btn-custom-error",
+            props.color === "neutral" && "btn-custom-neutral",
+            props.variant === "outline" && "btn-outline-custom border-glass-lg hover:border-glass-xl",
+            props.variant === "ghost" && "btn-ghost-custom",
             props.variant === "link" && "btn-link",
             props.variant === "soft" && "btn-soft",
             props.variant === "dash" && "btn-dash",
-            props.variant === "glass" && "glass",
+            props.variant === "glass" && "btn-glass-custom box-glass-sm hover:box-glass-md",
             props.size === "xs" && "btn-xs",
             props.size === "sm" && "btn-sm",
             props.size === "md" && "btn-md",
@@ -129,323 +130,293 @@ const atomClasses = computed(() =>
         props.class,
     ),
 );
+
 const attrs = computed(() => getCommonAttrs(props));
 </script>
 
 <template>
-    <Tooltip :content="props.tooltip" :placement="props.tooltip_placement">
-        <button :type="type" :class="atomClasses" v-bind="attrs" v-on="$attrs">
-            <span v-if="content && !$slots.default">{{ content }}</span>
-            <slot name="content" v-else />
-            <slot v-if="!$slots.content && $slots.default" />
-        </button>
-        <template v-if="$slots.tooltip" #content>
-            <slot name="tooltip" />
-        </template>
-    </Tooltip>
+    <button 
+        :type="type" 
+        :class="atomClasses" 
+        v-bind="attrs"
+        v-on="$attrs"
+    >
+        <span v-if="content && !$slots.default">{{ content }}</span>
+        <slot name="content" v-else />
+        <slot v-if="!$slots.content && $slots.default" />
+    </button>
 </template>
 
 <style scoped lang="scss">
-// Primary
-    $primary: var(--color-primary-400);
-    $primary-light: var(--color-primary-50);
-    $primary-dark: var(--color-primary-800);
-    $primary-hover: var(--color-primary-300);
-    $primary-outline-hover: var(--color-primary-950);
-// Secondary
-    $secondary: var(--color-secondary-400);
-    $secondary-light: var(--color-secondary-50);
-    $secondary-dark: var(--color-secondary-800);
-    $secondary-hover: var(--color-secondary-300);
-    $secondary-outline-hover: var(--color-secondary-950);
-// Accent
-    $accent: var(--color-accent-400);
-    $accent-light: var(--color-accent-50);
-    $accent-dark: var(--color-accent-800);
-    $accent-hover: var(--color-accent-300);
-    $accent-outline-hover: var(--color-accent-950);
-// Info
-    $info: var(--color-info-400);
-    $info-light: var(--color-info-50);
-    $info-dark: var(--color-info-800);
-    $info-hover: var(--color-info-300);
-    $info-outline-hover: var(--color-info-950);
-// Success
-    $success: var(--color-success-400);
-    $success-light: var(--color-success-50);
-    $success-dark: var(--color-success-800);
-    $success-hover: var(--color-success-300);
-    $success-outline-hover: var(--color-success-950);
-// Warning
-    $warning: var(--color-warning-400);
-    $warning-light: var(--color-warning-50);
-    $warning-dark: var(--color-warning-800);
-    $warning-hover: var(--color-warning-300);
-    $warning-outline-hover: var(--color-warning-950);
-// Error
-    $error: var(--color-error-400);
-    $error-light: var(--color-error-50);
-    $error-dark: var(--color-error-800);
-    $error-hover: var(--color-error-300);
-    $error-outline-hover: var(--color-error-950);
-// Neutral
-    $neutral: var(--color-neutral-300);
-    $neutral-light: var(--color-neutral-50);
-    $neutral-dark: var(--color-neutral-800);
-    $neutral-hover: var(--color-neutral-200);
-    $neutral-outline-hover: var(--color-neutral-950);
 
-.btn-link {
-    background-color: transparent;
-    text-decoration: none;
-    margin: 0;
-    padding: 0;
-    height: auto;
-    min-height: auto;
-    width: auto;
-    min-width: auto;
-    transition:
-        scale 0.2s ease-in-out,
-        color 0.2s ease-in-out,
-        text-shadow 0.3s ease-in-out;
-    scale: 1;
+    $color-map:(
+        "primary": (
+            "main": var(--color-primary-500),
+            "semilight": var(--color-primary-300),
+            "light": var(--color-primary-100),
+            "semidark": var(--color-primary-700),
+            "dark": var(--color-primary-900),
+        ),
+        "secondary": (
+            "main": var(--color-secondary-500),
+            "semilight": var(--color-secondary-300),
+            "light": var(--color-secondary-100),
+            "semidark": var(--color-secondary-700),
+            "dark": var(--color-secondary-900),
+        ),
+        "accent": (
+            "main": var(--color-accent-500),
+            "semilight": var(--color-accent-300),
+            "light": var(--color-accent-100),
+            "semidark": var(--color-accent-700),
+            "dark": var(--color-accent-900),
+        ),
+        "info": (
+            "main": var(--color-info-500),
+            "semilight": var(--color-info-300),
+            "light": var(--color-info-100),
+            "semidark": var(--color-info-700),
+            "dark": var(--color-info-900),
+        ),
+        "success": (
+            "main": var(--color-success-500),
+            "semilight": var(--color-success-300),
+            "light": var(--color-success-100),
+            "semidark": var(--color-success-700),
+            "dark": var(--color-success-900),
+        ),
+        "warning": (
+            "main": var(--color-warning-500),
+            "semilight": var(--color-warning-300),
+            "light": var(--color-warning-100),
+            "semidark": var(--color-warning-700),
+            "dark": var(--color-warning-900),
+        ),
+        "error": (
+            "main": var(--color-error-500),
+            "semilight": var(--color-error-300),
+            "light": var(--color-error-100),
+            "semidark": var(--color-error-700),
+            "dark": var(--color-error-900),
+        ),
+        "neutral": (
+            "main": var(--color-neutral-500),
+            "semilight": var(--color-neutral-300),
+            "light": var(--color-neutral-100),
+            "semidark": var(--color-neutral-700),
+            "dark": var(--color-neutral-900),
+        ),
+    );
 
-    &.btn-xs {
-        font-size: 0.75rem;
-    }
+    .btn{
+        outline-color: transparent;
+        transition-property:
+            box-shadow 0.4s ease-in-out,
+            border-color 0.2s ease-in-out,
+            color 0.2s ease-in-out,
+            scale 0.2s ease-in-out;
+        transition-timing-function: cubic-bezier(0, 0, 0.2, 1);
+        transition-duration: 0.2s;
+        position: relative;
+        overflow: hidden;
+        background-color: transparent;
+        border: none;
+        text-shadow: none;
+        box-shadow: none;
 
-    &.btn-sm {
-        font-size: 0.875rem;
-    }
+        // Size
+        &-xs{ font-size: 0.75rem; }
+        &-sm{ font-size: 0.875rem; }
+        &-md{ font-size: 1rem; }
+        &-lg{ font-size: 1.25rem; }
+        &-xl{ font-size: 1.5rem; }
 
-    &.btn-md {
-        font-size: 1rem;
-    }
-
-    &.btn-lg {
-        font-size: 1.25rem;
-    }
-
-    &:hover {
-        text-shadow: 0px 0px 8px rgba(255, 255, 255, 0.15);
-        scale: 1.02;
-    }
-
-    &.btn-primary {
-        color: $primary;
-        &:hover {
-            color: $primary-hover;
-        }
-    }
-    &.btn-secondary {
-        color: $secondary;
-        &:hover {
-            color: $secondary-hover;
-        }
-    }
-    &.btn-accent {
-        color: $accent;
-        &:hover {
-            color: $accent-hover;
-        }
-    }
-    &.btn-info {
-        color: $info;
-        &:hover {
-            color: $info-hover;
-        }
-    }
-    &.btn-success {
-        color: $success;
-        &:hover {
-            color: $success-hover;
-        }
-    }
-    &.btn-warning {
-        color: $warning;
-        &:hover {
-            color: $warning-hover;
-        }
-    }
-    &.btn-error {
-        color: $error;
-        &:hover {
-            color: $error-hover;
-        }
-    }
-    &.btn-neutral {
-        color: $neutral;
-        &:hover {
-            color: $neutral-hover;
-        }
-    }
-}
-
-.btn:not(.btn-link){
-    transition:
-        box-shadow 0.4s ease-in-out,
-        border-color 0.2s ease-in-out,
-        color 0.2s ease-in-out;
-
-    position: relative;
-    overflow: hidden;
-
-    &:hover {
-        box-shadow:
-            0 0 1px 1px rgba(255, 255, 255, 0.15),
-            0 0 3px 4px rgba(255, 255, 255, 0.05),
-            0 0 5px 6px rgba(255, 255, 255, 0.02),
-            inset 0 0 3px 4px rgba(255, 255, 255, 0.1),
-            inset 0 0 5px 6px rgba(255, 255, 255, 0.05);
-    }
-
-    &:not(.btn-outline) {
-        &.btn-primary {
-            background-color: $primary-dark;
-            color: $primary-light;
-            &:hover {
-                background-color: $primary;
-                color: $primary-outline-hover;
-            }
-        }
-        &.btn-secondary {
-            background-color: $secondary-dark;
-            color: $secondary-light;
-            &:hover {
-                background-color: $secondary;
-                color: $secondary-outline-hover;
-            }
-        }
-        &.btn-accent {
-            background-color: $accent-dark; 
-            color: $accent-light;
-            &:hover {
-                background-color: $accent;
-                color: $accent-outline-hover;
-            }
-        }
-        &.btn-info {
-            background-color: $info-dark;
-            color: $info-light;
-            &:hover {
-                background-color: $info;
-                color: $info-outline-hover;
-            }
-        }
-        &.btn-success {
-            background-color: $success-dark;
-            color: $success-light;
-            &:hover {
-                background-color: $success;
-                color: $success-outline-hover;
-            }
-        }
-        &.btn-warning {
-            background-color: $warning-dark;
-            color: $warning-light;
-            &:hover {
-                background-color: $warning;
-                color: $warning-outline-hover;
-            }
-        }
-        &.btn-error {
-            background-color: $error-dark;
-            color: $error-light;
-            &:hover {
-                background-color: $error;
-                color: $error-outline-hover;
-            }
-        }
-        &.btn-neutral {
-            background-color: $neutral-dark;
-            color: $neutral-light;
-            &:hover {
-                background-color: $neutral;
-                color: $neutral-outline-hover;
-            }
-        }
-        &::after {
-            content: "";
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: linear-gradient(
-                45deg,
-                rgba(255, 255, 255, 0.2) 48%,
-                rgba(255, 255, 255, 0.35) 50%,
-                rgba(255, 255, 255, 0.2) 52%
-            );
-            transform: translateX(-100%) rotate(45deg);
-            transition: transform 0.5s ease;
+        // Ghost
+        &-link, &-ghost-custom {
+            background-color: transparent;
+            text-decoration: none;
+            margin: 0;
+            padding: 0;
+            height: auto;
+            scale: 1;
+            border: none;
         }
 
-        &:hover::after {
-            transform: translateX(100%) rotate(45deg);
+        // Ghost
+        &-ghost-custom {
+            transition: box-shadow 0.2s ease-in-out, scale 0.2s ease-in-out;
+            scale: 1;
+            &:hover {
+                border: none;
+                box-shadow: 0px 0px 3px 3px rgba(0,0,0,0.05), 
+                            0px 0px 5px 5px rgba(0,0,0,0.02), 
+                            0px 0px 2px 2px rgba(0,0,0,0.01) inset;
+                scale: 1.05;
+            }
         }
-    }
 
-    &.btn-outline {
+        // Link
+        &-link {
+            transition:
+                scale 0.2s ease-in-out,
+                color 0.2s ease-in-out,
+                text-shadow 0.3s ease-in-out;   
+            scale: 1;
 
-        &.btn-primary {
-            color: $primary;
-            border-color: $primary;
+            @each $color, $value in $color-map {
+                &.btn-custom-#{$color} {
+                    color: map-get($value, "main");
+                }
+            }
+
             &:hover {
-                color: $primary-outline-hover;
-                border-color: $primary-outline-hover;
+                scale: 1.02;
+                text-shadow: 0px 0px 8px rgba(255, 255, 255, 0.15);
+                @each $color, $value in $color-map {
+                    &.btn-custom-#{$color} {
+                        color: map-get($value, "semilight");
+                    }
+                }
             }
         }
-        &.btn-secondary {
-                color: $secondary;
-            border-color: $secondary;
+
+        &-outline-custom, &-soft, &-glass, &-dash {
             &:hover {
-                color: $secondary-outline-hover;
-                border-color: $secondary-outline-hover;
+                box-shadow:
+                    0 0 1px 1px rgba(255, 255, 255, 0.15),
+                    0 0 3px 4px rgba(255, 255, 255, 0.05),
+                    0 0 5px 6px rgba(255, 255, 255, 0.02),
+                    inset 0 0 3px 4px rgba(255, 255, 255, 0.1),
+                    inset 0 0 5px 6px rgba(255, 255, 255, 0.05);
             }
         }
-        &.btn-accent {
-            color: $accent;
-            border-color: $accent;
+
+        &-outline-custom, &-glass-custom {
+            scale: 1;
+            @each $color, $value in $color-map {
+                &.btn-custom-#{$color} {
+                    --color: var(--color-#{$color}-500);
+                }
+            }
             &:hover {
-                color: $accent-outline-hover;
-                border-color: $accent-outline-hover;
+                scale: 1.02;
+                @each $color, $value in $color-map {
+                    &.btn-custom-#{$color} {
+                        color: map-get($value, "semilight");
+                    }
+                }
+            }
+            &::after {
+                content: "";
+                position: absolute;
+                inset: 0;
+                z-index: -1; // Derrière le contenu
+                border-radius: inherit;
             }
         }
-        &.btn-info {
-            color: $info;
-            border-color: $info;
+
+        &-outline-custom {
+            @each $color, $value in $color-map {
+                &.btn-custom-#{$color} {
+                    color: map-get($value, "semilight");
+                }
+            }
+            &::after {
+                background-color: transparent;
+            }
             &:hover {
-                        color: $info-outline-hover;
-                border-color: $info-outline-hover
+                &::after {
+                    background-color: color-mix(in srgb, var(--color) 30%, transparent);
+                }
+                @each $color, $value in $color-map {
+                    &.btn-custom-#{$color} {
+                        color: map-get($value, "light");
+                    }
+                }
             }
         }
-        &.btn-success {
-            color: $success;
-            border-color: $success;
-            &:hover {
-                color: $success-outline-hover;
-                border-color: $success-outline-hover;
+
+        &-glass-custom {
+            @each $color, $value in $color-map {
+                &.btn-custom-#{$color} {
+                    color: map-get($value, "light");
+                }
+            }
+            &::after {
+                background: linear-gradient(
+                    45deg,
+                    color-mix(in srgb, var(--color) 35%, transparent) 20%,
+                    color-mix(in srgb, var(--color) 45%, transparent) 30%,
+                    color-mix(in srgb, var(--color) 55%, transparent) 55%,
+                    color-mix(in srgb, var(--color) 70%, transparent) 65%
+                );
+            }
+            &:hover::after {
+                filter: brightness(1.1);
             }
         }
-        &.btn-warning {
-            color: $warning;
-            border-color: $warning;
+
+        &-soft {
+            padding: 0.25rem 0.5rem;
+            border: none;
+
+            @each $color, $value in $color-map {
+                &.btn-custom-#{$color} {
+                    color: map-get($value, "light");
+                    background-color: color-mix(in srgb, map-get($value, "main") 30%, transparent);
+                }
+            }
             &:hover {
-                color: $warning-outline-hover;
-                border-color: $warning-outline-hover;
+                @each $color, $value in $color-map {
+                    &.btn-custom-#{$color} {
+                        color: map-get($value, "semilight");
+                        background-color: color-mix(in srgb, map-get($value, "main") 60%, transparent);
+                    }
+                }
             }
         }
-        &.btn-error {
-            color: $error;
-            border-color: $error;
+
+        // Dash
+        &-dash {
+            border: none;
+            @each $color, $value in $color-map {
+                &.btn-custom-#{$color} {
+                    color: map-get($value, "light");
+                    background-color: map-get($value, "main");
+                }
+            }
             &:hover {
-                color: $error-outline-hover;
-                border-color: $error-outline-hover;
+                @each $color, $value in $color-map {
+                    &.btn-custom-#{$color} {
+                        color: map-get($value, "semilight");
+                        background-color: map-get($value, "main");
+                    }
+                }
+            }
+        }
+
+        // Effet glass qui glisse via filter et gradient
+        &-animation-glass:not(.btn-link):not(.btn-ghost-custom):not(.btn-outline-custom) {
+            position: relative;
+            overflow: hidden;
+            
+            // Effet de glass qui glisse via ::after avec filter
+            &::after {
+                content: '';
+                position: absolute;
+                inset: 0;
+                background-size: 200% 200%;
+                background-position: -200% -200%;
+                transition: background-position 0.35s ease, backdrop-filter 0.2s ease;
+                pointer-events: none;
+                z-index: 1;
+            }
+            
+            &:hover::after {
+                background-position: 200% 200%;
+                backdrop-filter: blur(24px);
+                mix-blend-mode: overlay;
             }
         }
     }
-
-
-}
 </style>

@@ -24,6 +24,7 @@ import Menu from "@/Pages/Molecules/navigation/Menu.vue";
 import MenuItem from "@/Pages/Atoms/navigation/MenuItem.vue";
 import Dock from "@/Pages/Molecules/navigation/Dock.vue";
 import DockItem from "@/Pages/Atoms/navigation/DockItem.vue";
+import Tooltip from "@/Pages/Atoms/feedback/Tooltip.vue";
 import { ref } from "vue";
 
 const appSlogan = ref(import.meta.env.VITE_APP_SLOGAN);
@@ -104,8 +105,10 @@ const footerItems = [
         </div>
         <div id="footer">
             <Dock size="md" class="px-1 py-2 relative box-glass-t-xs">
-                <DockItem v-for="item in footerItems" :key="item.label" :route="item.route" :icon="item.icon"
-                    :pack="item.pack" :label="item.label" :tooltip="item.tooltip" />
+                <Tooltip v-for="item in footerItems" :key="item.label" :content="item.tooltip" placement="right">
+                    <DockItem :route="item.route" :icon="item.icon"
+                        :pack="item.pack" :label="item.label" />
+                </Tooltip>
             </Dock>
         </div>
     </aside>

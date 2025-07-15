@@ -1,6 +1,4 @@
 <script setup>
-defineOptions({ inheritAttrs: false }); // Pour que les événements natifs soient transmis à l'atom
-
 /**
  * Filter Atom (DaisyUI)
  *
@@ -11,7 +9,6 @@ defineOptions({ inheritAttrs: false }); // Pour que les événements natifs soie
  * - Props utilitaires custom : shadow, backdrop, opacity (via getCustomUtilityProps)
  * - Props d'accessibilité et HTML natif héritées de commonProps
  * - Toutes les classes DaisyUI sont explicites, pas de concaténation dynamique non couverte par Tailwind
- * - Tooltip intégré (hors Tooltip lui-même)
  *
  * @see https://daisyui.com/components/filter/
  * @version DaisyUI v5.x (5.0.43)
@@ -33,45 +30,110 @@ defineOptions({ inheritAttrs: false }); // Pour que les événements natifs soie
  *
  * @props {Boolean} form - Utilise <form> si true, sinon <div> (défaut false)
  * @props {String} shadow, backdrop, opacity - utilitaires custom
- * @props {String|Object} tooltip, tooltip_placement, id, ariaLabel, role, tabindex, class - hérités de commonProps
+ * @props {String|Object} id, ariaLabel, role, tabindex, class - hérités de commonProps
  * @slot default - Radios DaisyUI (input type="radio" ou reset)
  *
  * @note Toutes les classes DaisyUI et utilitaires custom sont explicites, pas de concaténation dynamique non couverte par Tailwind.
  * @note Accessibilité : aria-label, role, tabindex, etc. transmis.
  */
-import { computed, h, resolveDynamicComponent } from 'vue';
-import Tooltip from '@/Pages/Atoms/feedback/Tooltip.vue';
+ import { computed, ref, watch, onMounted, useSlots } from 'vue';
+import Validator from '@/Pages/Atoms/data-input/Validator.vue';
 import { getCommonProps, getCommonAttrs, getCustomUtilityProps, getCustomUtilityClasses, mergeClasses } from '@/Utils/atomic-design/uiHelper';
+import { getInputAttrs, getInputProps, hasValidation } from '@/Utils/atomic-design/atomManager';
+import InputLabel from '@/Pages/Atoms/data-input/InputLabel.vue';
+import { colorList, sizeXlList } from '@/Pages/Atoms/atomMap';
 
 const props = defineProps({
     ...getCommonProps(),
+    ...getInputProps({ exclude: ['type', 'placeholder', 'autocomplete', 'min', 'max', 'step', 'inputmode', 'pattern', 'maxlength', 'minlength'] }),
     ...getCustomUtilityProps(),
-    form: { type: Boolean, default: false },
-    class: { type: String, default: '' },
+    color: {
+        type: String,
+        default: '',
+        validator: v => colorList.includes(v),
+    },
+    size: {
+        type: String,
+        default: '',
+        validator: v => sizeXlList.includes(v),
+    },
+    labelBottom: { type: String, default: '' },
 });
+
+const emit = defineEmits(['update:modelValue']);
+const filterRef = ref(null);
+
+const hasValidationState = computed(() => hasValidation(props, useSlots()));
 
 const atomClasses = computed(() =>
     mergeClasses(
         [
             'filter',
-        ],
+            props.color === 'neutral' && 'filter-neutral',
+            props.color === 'primary' && 'filter-primary',
+            props.color === 'secondary' && 'filter-secondary',
+            props.color === 'accent' && 'filter-accent',
+            props.color === 'info' && 'filter-info',
+            props.color === 'success' && 'filter-success',
+            props.color === 'warning' && 'filter-warning',
+            props.color === 'error' && 'filter-error',
+            props.size === 'xs' && 'filter-xs',
+            props.size === 'sm' && 'filter-sm',
+            props.size === 'md' && 'filter-md',
+            props.size === 'lg' && 'filter-lg',
+            props.size === 'xl' && 'filter-xl',
+            hasValidationState.value && 'filter-error',
+        ].filter(Boolean),
         getCustomUtilityClasses(props),
         props.class
     )
 );
+
+const filterId = computed(() => props.id || `filter-${Math.random().toString(36).substr(2, 9)}`);
+
 const attrs = computed(() => getCommonAttrs(props));
-const tag = computed(() => props.form ? 'form' : 'div');
+
+function onInput(e) {
+    emit('update:modelValue', e.target.value);
+}
+
+onMounted(() => {
+    if (filterRef.value && props.autofocus) {
+        filterRef.value.focus();
+    }
+});
+
+defineExpose({ focus: () => filterRef.value && filterRef.value.focus() });
 </script>
 
 <template>
-    <Tooltip :content="props.tooltip" :placement="props.tooltip_placement">
-        <component :is="tag" :class="atomClasses" v-bind="attrs" v-on="$attrs">
-            <slot />
-        </component>
-        <template v-if="typeof props.tooltip === 'object'" #tooltip>
-            <slot name="tooltip" />
-        </template>
-    </Tooltip>
+    <div class="form-control w-full">
+        <InputLabel v-if="props.label || $slots.labelTop" :for="filterId" :value="props.label">
+            <template v-if="$slots.labelTop" #default>
+                <slot name="labelTop" />
+            </template>
+        </InputLabel>
+        <div class="flex items-center gap-2">
+            <component :is="props.as" :class="atomClasses" v-bind="attrs" v-on="$attrs">
+                <slot />
+            </component>
+        </div>
+        <InputLabel v-if="props.labelBottom || $slots.labelBottom" :for="filterId" :value="props.labelBottom" class="mt-1">
+            <template v-if="$slots.labelBottom" #default>
+                <slot name="labelBottom" />
+            </template>
+        </InputLabel>
+        <div v-if="hasValidationState" class="mt-1">
+            <slot name="validator">
+                <Validator v-if="props.validator"
+                    :state="typeof props.validator === 'string' ? 'error' : 'error'"
+                    :message="typeof props.validator === 'string' ? props.validator : props.errorMessage" />
+            </slot>
+        </div>
+        <div v-if="props.helper || $slots.helper" class="mt-1 text-xs text-base-400">
+            <slot name="helper">{{ props.helper }}</slot>
+        </div>
+    </div>
 </template>
 
 <style scoped></style>

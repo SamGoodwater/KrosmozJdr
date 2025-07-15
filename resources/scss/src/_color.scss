@@ -1,0 +1,29 @@
+@use '../themes/_theme-global.scss' as *;
+@use '../themes/_theme-caracs.scss' as *;
+@use '../themes/_theme-entities.scss' as *;
+
+$intensities: (
+    light: 300,
+    medium: 500,
+    dark: 700,
+);
+
+@mixin colorTheme($theme-map) {
+    @each $intensity, $value in $intensities {
+        @each $name, $color in $theme-map {
+            @if $intensity == "medium" {
+                .color-#{$name} {
+                    --color: var(--color-#{$name}-#{$value});
+                }
+            } @else {
+                .color-#{$name}-#{$intensity} {
+                    --color: var(--color-#{$name}-#{$value});
+                }
+            }
+        }
+    }
+}
+
+@include colorTheme($theme-global);
+@include colorTheme($theme-caracs);
+@include colorTheme($theme-entities);

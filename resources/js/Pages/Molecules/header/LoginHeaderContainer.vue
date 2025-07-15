@@ -20,29 +20,30 @@
  */
 import Btn from "@/Pages/Atoms/action/Btn.vue";
 import Route from "@/Pages/Atoms/action/Route.vue";
+import Tooltip from "@/Pages/Atoms/feedback/Tooltip.vue";
 </script>
 
 <template>
     <div class="flex flex-col text-right">
         <Route route="login" class="pt-1 px-4" target="_self">
-            <Btn
-                color="neutral"
-                size="xs"
-                content="Se connecter"
-                tooltip_placement="left"
-                :tooltip="'S\'identifier à l\'aide de son compte'"
-            />
+            <Tooltip content="S'identifier à l'aide de son compte" placement="left">
+                <Btn
+                    color="neutral"
+                    size="xs"
+                    content="Se connecter"
+                />
+            </Tooltip>
         </Route>
 
         <Route route="register" class="pb-1 px-4" target="_self">
-            <Btn
-                color="neutral"
-                variant="link"
-                size="xs"
-                content="S'inscrire"
-                tooltip_placement="left"
-                :tooltip="'Créer un compte'"
-            />
+            <Tooltip content="Créer un compte" placement="left">
+                <Btn
+                    color="neutral"
+                    variant="link"
+                    size="xs"
+                    content="S'inscrire"
+                />
+            </Tooltip>
         </Route>
     </div>
 </template>

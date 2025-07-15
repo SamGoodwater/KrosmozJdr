@@ -11,7 +11,6 @@ defineOptions({ inheritAttrs: false }); // Pour que les évéments natifs soient
  * - Props ergonomiques : maxWidth (max-w-*), small (text-sm), utilitaires custom, accessibilité
  * - Props d'accessibilité et HTML natif héritées de commonProps
  * - Toutes les classes DaisyUI sont écrites en toutes lettres (aucune concaténation dynamique)
- * - Tooltip intégré (hors Tooltip lui-même)
  *
  * @see https://daisyui.com/components/breadcrumbs/
  * @version DaisyUI v5.x (5.0.43)
@@ -25,16 +24,13 @@ defineOptions({ inheritAttrs: false }); // Pour que les évéments natifs soient
  *
  * @props {String} maxWidth - Classe Tailwind max-w-* (optionnel)
  * @props {Boolean} small - Applique text-sm (défaut false)
- * @props {String|Object} tooltip, tooltip_placement, class, id, ariaLabel, role, tabindex - hérités de commonProps
- * @props {String} shadow, backdrop, opacity - utilitaires custom
+ * @props {String} class, id, ariaLabel, role, tabindex - hérités de commonProps
  * @slot default - <li> (l'utilisateur gère les <a> ou <span> DaisyUI)
- * @slot tooltip - Tooltip custom
  *
  * @note Toutes les classes DaisyUI sont explicites, pas de concaténation dynamique non couverte par Tailwind.
  * @note Accessibilité : aria-label, role, tabindex, etc. transmis.
  */
 import { computed } from 'vue';
-import Tooltip from '@/Pages/Atoms/feedback/Tooltip.vue';
 import { getCommonProps, getCommonAttrs, mergeClasses } from '@/Utils/atomic-design/uiHelper';
 
 const props = defineProps({
@@ -58,16 +54,9 @@ const attrs = computed(() => getCommonAttrs(props));
 </script>
 
 <template>
-    <Tooltip :content="props.tooltip" :placement="props.tooltip_placement">
-        <div :class="atomClasses" v-bind="attrs" v-on="$attrs">
-            <ul>
-                <slot />
-            </ul>
-        </div>
-        <template v-if="typeof props.tooltip === 'object'" #tooltip>
-            <slot name="tooltip" />
-        </template>
-    </Tooltip>
+    <div :class="atomClasses" v-bind="attrs" v-on="$attrs">
+        <slot />
+    </div>
 </template>
 
 <style scoped></style>

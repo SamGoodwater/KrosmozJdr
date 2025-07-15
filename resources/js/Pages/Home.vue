@@ -7,12 +7,14 @@
  * - Container pour le contenu principal
  * - Démo boutons/icônes inline (à supprimer plus tard)
  * - Présentation projet en prose
+ * - Section de test des notifications
  *
  * @author
  */
 import { ref, onMounted } from "vue";
 import { usePage } from "@inertiajs/vue3";
 import { usePageTitle } from "@/Composables/layout/usePageTitle";
+import { useNotificationStore } from '@/Composables/store/useNotificationStore';
 
 // Molecules
 import Hero from "@/Pages/Molecules/navigation/Hero.vue";
@@ -26,9 +28,111 @@ import Tooltip from "@/Pages/Atoms/feedback/Tooltip.vue";
 const page = usePage();
 const { setPageTitle } = usePageTitle();
 
+// Notifications
+const notificationStore = useNotificationStore();
+const { 
+    success, 
+    error, 
+    info, 
+    warning, 
+    primary, 
+    secondary,
+    addNotification 
+} = notificationStore;
+
 onMounted(() => {
     setPageTitle("Accueil");
 });
+
+// Test des notifications
+function testSuccess() {
+    success("Opération réussie ! Votre compte a été créé avec succès.", {
+        duration: 0
+    });
+}
+
+function testError() {
+    error("Erreur lors de la sauvegarde. Veuillez réessayer.", {
+        duration: 10000
+    });
+}
+
+function testInfo() {
+    info("Nouvelle mise à jour disponible. Redémarrez l'application pour l'installer.", {
+        duration: 15000
+    });
+}
+
+function testWarning() {
+    warning("Attention : Votre session expire dans 5 minutes.", {
+        duration: 12000
+    });
+}
+
+function testPrimary() {
+    primary("Nouveau message reçu de l'équipe.", {
+        duration: 6000
+    });
+}
+
+function testSecondary() {
+    secondary("Synchronisation terminée.", {
+        duration: 5000
+    });
+}
+
+function testWithActions() {
+    addNotification({
+        message: "Fichier téléchargé avec succès. Que souhaitez-vous faire ?",
+        type: "success",
+        duration: 20000,
+        actions: [
+            {
+                label: "Ouvrir",
+                onClick: () => {
+                    info("Ouverture du fichier...");
+                },
+                color: "success",
+                size: "xs"
+            },
+            {
+                label: "Annuler",
+                onClick: () => {
+                    warning("Action annulée");
+                },
+                color: "neutral",
+                size: "xs"
+            }
+        ]
+    });
+}
+
+function testCustomIcon() {
+    addNotification({
+        message: "Nouveau commentaire sur votre post",
+        type: "info",
+        icon: "fa-comment",
+        duration: 8000,
+        onClick: () => {
+            console.log("Voir le commentaire");
+            info("Redirection vers le commentaire...");
+        }
+    });
+}
+
+function testAllNotifications() {
+    console.log('Test all notifications');
+    try {
+        success("Succès !");
+        error("Erreur !");
+        info("Information !");
+        warning("Attention !");
+        primary("Primaire !");
+        secondary("Secondaire !");
+    } catch (error) {
+        console.error('Error in testAllNotifications:', error);
+    }
+}
 
 // Démo boutons
 const demoButtons = [
@@ -254,6 +358,79 @@ const demoIcons = [
         </Hero>
 
         <Container class="space-y-8 mt-8">
+            <!-- Section test des notifications -->
+            <section class="space-y-6 mb-8">
+                <div class="text-center">
+                    <h2 class="text-2xl font-bold mb-4">Test du Système de Notifications</h2>
+                    <p class="text-base-content/70 mb-6">Cliquez sur les boutons pour tester les différents types de notifications</p>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 max-w-4xl mx-auto">
+                        <!-- Tests par type -->
+                        <div class="card bg-base-100 shadow-xl">
+                            <div class="card-body">
+                                <h3 class="card-title text-lg">Types de Notifications</h3>
+                                <div class="flex flex-col gap-2">
+                                    <Btn @click="testSuccess" color="success" size="sm">
+                                        Test Success
+                                    </Btn>
+                                    <Btn @click="testError" color="error" size="sm">
+                                        Test Error
+                                    </Btn>
+                                    <Btn @click="testInfo" color="info" size="sm">
+                                        Test Info
+                                    </Btn>
+                                    <Btn @click="testWarning" color="warning" size="sm">
+                                        Test Warning
+                                    </Btn>
+                                    <Btn @click="testPrimary" color="primary" size="sm">
+                                        Test Primary
+                                    </Btn>
+                                    <Btn @click="testSecondary" color="secondary" size="sm">
+                                        Test Secondary
+                                    </Btn>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Tests avancés -->
+                        <div class="card bg-base-100 shadow-xl">
+                            <div class="card-body">
+                                <h3 class="card-title text-lg">Tests Avancés</h3>
+                                <div class="flex flex-col gap-2">
+                                    <Btn @click="testWithActions" color="accent" size="sm">
+                                        Avec Actions
+                                    </Btn>
+                                    <Btn @click="testCustomIcon" color="neutral" size="sm">
+                                        Icône Personnalisée
+                                    </Btn>
+                                    <Btn @click="testAllNotifications" color="primary" size="sm">
+                                        Toutes en même temps
+                                    </Btn>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Informations -->
+                        <div class="card bg-base-100 shadow-xl">
+                            <div class="card-body">
+                                <h3 class="card-title text-lg">Fonctionnalités</h3>
+                                <ul class="text-sm space-y-1 text-left">
+                                    <li>✅ 4 placements (top-left, top-right, bottom-left, bottom-right)</li>
+                                    <li>✅ Limite de 20 notifications par placement</li>
+                                    <li>✅ Cycle full (40%) → contracted (60%)</li>
+                                    <li>✅ Hover pour étendre les notifications contractées</li>
+                                    <li>✅ Barre de progression en bas</li>
+                                    <li>✅ Animations d'entrée/sortie</li>
+                                    <li>✅ Scroll automatique</li>
+                                    <li>✅ Actions personnalisées</li>
+                                    <li>✅ Icônes par défaut selon le type</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
             <!-- Section démo boutons (inline, à supprimer plus tard) -->
             <section class="space-y-6">
                 <div class="text-center space-y-6">

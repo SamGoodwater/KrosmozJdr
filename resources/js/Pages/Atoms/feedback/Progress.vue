@@ -9,7 +9,6 @@ defineOptions({ inheritAttrs: false }); // Pour que les évéments natifs soient
  * - Prop radial : affiche un progress radial si true, sinon progress linéaire
  * - Props ergonomiques : value, max, color, size, width, thickness, label, utilitaires custom
  * - Toutes les classes DaisyUI sont explicites (pas de concaténation dynamique)
- * - Tooltip intégré (hors Tooltip lui-même)
  * - Accessibilité : role, aria-valuenow, aria-valuemax, aria-label
  * - Slot par défaut : label (affiché au centre du radial ou à côté du progress)
  *
@@ -32,13 +31,11 @@ defineOptions({ inheritAttrs: false }); // Pour que les évéments natifs soient
  * @props {String} width - Largeur du progress linéaire (ex: 'w-56')
  * @props {String} thickness - Épaisseur du radial (xs à xl, mapping explicite)
  * @props {String} label - Label à afficher (optionnel, sinon slot)
- * @props {String|Object} tooltip, tooltip_placement, class, id, ariaLabel, role, tabindex - hérités de commonProps
+ * @props {String|Object} class, id, ariaLabel, role, tabindex - hérités de commonProps
  * @props {String} shadow, backdrop, opacity - utilitaires custom
  * @slot default - Label custom (affiché au centre du radial ou à côté du progress)
- * @slot tooltip - Tooltip custom
  */
 import { computed } from 'vue';
-import Tooltip from '@/Pages/Atoms/feedback/Tooltip.vue';
 import { getCommonProps, getCommonAttrs, getCustomUtilityProps, getCustomUtilityClasses, mergeClasses } from '@/Utils/atomic-design/uiHelper';
 import { colorProgressMap, colorRadialMap, sizeRadialMap, thicknessRadialMap } from './feedbackMap.js';
 import { colorList, sizeXlList, size4XlList } from '@/Pages/Atoms/atomMap';
@@ -104,27 +101,10 @@ const attrs = computed(() => ({
 </script>
 
 <template>
-    <Tooltip :content="props.tooltip" :placement="props.tooltip_placement">
-        <template v-if="!props.radial">
-            <div class="flex items-center gap-2">
-                <progress :class="progressClasses" :value="props.value" :max="props.max" v-bind="attrs" v-on="$attrs" />
-                <span v-if="props.label || $slots.default">
-                    <slot>{{ props.label }}</slot>
-                </span>
-            </div>
-        </template>
-        <template v-else>
-            <div :class="radialClasses" :style="`--value:${props.value};`" v-bind="attrs" v-on="$attrs">
-                <span v-if="props.label || $slots.default"
-                    class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-base font-semibold">
-                    <slot>{{ props.label }}</slot>
-                </span>
-            </div>
-        </template>
-        <template v-if="typeof props.tooltip === 'object'" #tooltip>
-            <slot name="tooltip" />
-        </template>
-    </Tooltip>
+    <progress v-if="!radial" :class="progressClasses" :value="props.value" :max="props.max" v-bind="attrs" v-on="$attrs" />
+    <div v-else :class="radialClasses" :style="`--value:${props.value};`" v-bind="attrs" v-on="$attrs">
+        <slot />
+    </div>
 </template>
 
 <style scoped></style>

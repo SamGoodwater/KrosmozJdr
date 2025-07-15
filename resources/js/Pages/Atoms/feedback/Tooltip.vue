@@ -1,5 +1,6 @@
 <script setup>
-defineOptions({ inheritAttrs: false }); // Pour que les événements natifs soient transmis à l'atom
+// Tooltip transparent - ne capture pas les événements natifs
+defineOptions({ inheritAttrs: false });
 
 /**
  * Tooltip Atom (DaisyUI)
@@ -126,7 +127,6 @@ const attrs = computed(() => getCommonAttrs(props));
     <div
         :class="atomClasses"
         v-bind="attrs"
-        v-on="$attrs"
         :data-tip="!$slots.content && content ? content : undefined"
     >
         <slot />

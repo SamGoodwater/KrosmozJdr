@@ -762,9 +762,9 @@
         "desc": "- Message d'erreur (optionnel)"
       },
       {
-        "name": "help",
+        "name": "helper",
         "type": "String",
-        "desc": "- Message d'aide (optionnel ou slot #help)"
+        "desc": "- Message d'aide (optionnel ou slot #helper)"
       },
       {
         "name": "shadow,",
@@ -791,7 +791,7 @@
         "desc": "- Message de validation custom"
       },
       {
-        "name": "help",
+        "name": "helper",
         "desc": "- Message d'aide custom"
       },
       {
@@ -844,9 +844,9 @@
         "desc": "- Message d'erreur (optionnel)"
       },
       {
-        "name": "help",
+        "name": "helper",
         "type": "String",
-        "desc": "- Message d'aide (optionnel ou slot #help)"
+        "desc": "- Message d'aide (optionnel ou slot #helper)"
       },
       {
         "name": "shadow,",
@@ -898,7 +898,7 @@
         "desc": "- Message de validation custom"
       },
       {
-        "name": "help",
+        "name": "helper",
         "desc": "- Message d'aide custom"
       },
       {
@@ -953,9 +953,9 @@
         "desc": "- Message d'erreur (optionnel)"
       },
       {
-        "name": "help",
+        "name": "helper",
         "type": "String",
-        "desc": "- Message d'aide (optionnel ou slot #help)"
+        "desc": "- Message d'aide (optionnel ou slot #helper)"
       },
       {
         "name": "shadow,",
@@ -997,7 +997,7 @@
         "desc": "- Message de validation custom"
       },
       {
-        "name": "help",
+        "name": "helper",
         "desc": "- Message d'aide custom"
       },
       {
@@ -1072,9 +1072,9 @@
         "desc": "- Message d'erreur (optionnel)"
       },
       {
-        "name": "help",
+        "name": "helper",
         "type": "String",
-        "desc": "- Message d'aide (optionnel ou slot #help)"
+        "desc": "- Message d'aide (optionnel ou slot #helper)"
       }
     ],
     "slots": [
@@ -1091,7 +1091,7 @@
         "desc": "- Message de validation custom"
       },
       {
-        "name": "help",
+        "name": "helper",
         "desc": "- Message d'aide custom"
       },
       {
@@ -1151,9 +1151,9 @@
         "desc": "- Message d'erreur (optionnel)"
       },
       {
-        "name": "help",
+        "name": "helper",
         "type": "String",
-        "desc": "- Message d'aide (optionnel ou slot #help)"
+        "desc": "- Message d'aide (optionnel ou slot #helper)"
       },
       {
         "name": "shadow,",
@@ -1195,7 +1195,7 @@
         "desc": "- Message de validation custom"
       },
       {
-        "name": "help",
+        "name": "helper",
         "desc": "- Message d'aide custom"
       },
       {
@@ -1250,9 +1250,9 @@
         "desc": "- Message d'erreur (optionnel)"
       },
       {
-        "name": "help",
+        "name": "helper",
         "type": "String",
-        "desc": "- Message d'aide (optionnel ou slot #help)"
+        "desc": "- Message d'aide (optionnel ou slot #helper)"
       },
       {
         "name": "shadow,",
@@ -1289,7 +1289,7 @@
         "desc": "- Message de validation custom"
       },
       {
-        "name": "help",
+        "name": "helper",
         "desc": "- Message d'aide custom"
       },
       {
@@ -1387,9 +1387,9 @@
         "desc": "- Message d'erreur (optionnel)"
       },
       {
-        "name": "help",
+        "name": "helper",
         "type": "String",
-        "desc": "- Message d'aide (optionnel ou slot #help)"
+        "desc": "- Message d'aide (optionnel ou slot #helper)"
       },
       {
         "name": "shadow,",
@@ -1440,7 +1440,7 @@
         "desc": "- Message de validation custom"
       },
       {
-        "name": "help",
+        "name": "helper",
         "desc": "- Message d'aide custom"
       },
       {
@@ -1556,9 +1556,9 @@
         "desc": "- Message d'erreur (optionnel)"
       },
       {
-        "name": "help",
+        "name": "helper",
         "type": "String",
-        "desc": "- Message d'aide (optionnel ou slot #help)"
+        "desc": "- Message d'aide (optionnel ou slot #helper)"
       },
       {
         "name": "shadow,",
@@ -1595,7 +1595,7 @@
         "desc": "- Message de validation custom"
       },
       {
-        "name": "help",
+        "name": "helper",
         "desc": "- Message d'aide custom"
       },
       {

@@ -33,22 +33,24 @@ class UserController extends Controller
     {
         $this->authorize('viewAny', User::class);
         $users = User::with(['scenarios', 'campaigns', 'pages', 'sections'])->paginate(20);
-        return Inertia::render('Organisms/User/Index', [
+        return Inertia::render('Pages/user/Index', [
             'users' => UserResource::collection($users),
         ]);
     }
 
-    /**
+        /**
      * Affiche le détail d'un utilisateur.
+     * Si aucun utilisateur n'est spécifié, affiche le profil de l'utilisateur connecté.
      *
-     * @param User $user
+     * @param User|null $user
      * @return \Inertia\Response
      */
-    public function show(User $user)
+    public function show(User $user = null)
     {
+        $user = $user ?? Auth::user();
         $this->authorize('view', $user);
         $user->load(['scenarios', 'campaigns', 'pages', 'sections']);
-        return Inertia::render('Organisms/User/Show', [
+        return Inertia::render('Pages/user/Show', [
             'user' => new UserResource($user),
         ]);
     }
@@ -61,7 +63,7 @@ class UserController extends Controller
     public function create()
     {
         $this->authorize('create', User::class);
-        return Inertia::render('Organisms/User/Create', [
+        return Inertia::render('Pages/user/Create', [
             'roles' => User::ROLES,
             'notificationChannels' => User::NOTIFICATION_CHANNELS,
         ]);
@@ -98,7 +100,7 @@ class UserController extends Controller
     {
         $this->authorize('update', $user);
         $user->load(['scenarios', 'campaigns', 'pages', 'sections']);
-        return Inertia::render('Organisms/User/Edit', [
+        return Inertia::render('Pages/user/Edit', [
             'user' => new UserResource($user),
             'roles' => User::ROLES,
             'notificationChannels' => User::NOTIFICATION_CHANNELS,
@@ -129,9 +131,9 @@ class UserController extends Controller
         NotificationService::notifyProfileModified($user, Auth::user(), $old);
         // Redirection selon le contexte
         if ($user->id === Auth::id()) {
-            return redirect()->route('user.dashboard')->with('success', 'Profil mis à jour.');
+            return redirect()->route('user.show', $user)->with('success', 'Profil mis à jour.');
         }
-        return redirect()->route('users.show', $user)->with('success', 'Utilisateur mis à jour.');
+        return redirect()->route('user.show', $user)->with('success', 'Utilisateur mis à jour.');
     }
 
     /**
@@ -144,7 +146,7 @@ class UserController extends Controller
     {
         $this->authorize('delete', $user);
         $user->delete();
-        return redirect()->route('users.index')->with('success', 'Utilisateur supprimé.');
+        return redirect()->route('user.index')->with('success', 'Utilisateur supprimé.');
     }
 
     /**
@@ -162,7 +164,7 @@ class UserController extends Controller
             Storage::disk('public')->delete($user->avatar);
         }
         $user->forceDelete();
-        return redirect()->route('users.index')->with('success', 'Utilisateur supprimé définitivement.');
+        return redirect()->route('user.index')->with('success', 'Utilisateur supprimé définitivement.');
     }
 
     /**
@@ -175,7 +177,7 @@ class UserController extends Controller
     {
         $this->authorize('restore', $user);
         $user->restore();
-        return redirect()->route('users.index')->with('success', 'Utilisateur restauré.');
+        return redirect()->route('user.index')->with('success', 'Utilisateur restauré.');
     }
 
     /**

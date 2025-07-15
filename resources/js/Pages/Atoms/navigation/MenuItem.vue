@@ -11,7 +11,6 @@ defineOptions({ inheritAttrs: false });
  * - Slot par défaut pour le contenu du menu
  * - Slot icon prioritaire sur la prop icon
  * - mergeClasses pour les classes DaisyUI explicites (menu-active, menu-disabled, etc.)
- * - Tooltip intégré (hors Tooltip lui-même)
  * - Utilisation de l'atom Icon pour l'icône (comme Stat)
  *
  * @see https://daisyui.com/components/menu/
@@ -28,13 +27,11 @@ defineOptions({ inheritAttrs: false });
  * @props {String} size - Taille DaisyUI ('', 'xs', 'sm', 'md', 'lg', 'xl')
  * @props {String} route - Nom de la route Inertia/Laravel (optionnel)
  * @props {String} shadow, backdrop, opacity, rounded - utilitaires custom
- * @props {String|Object} tooltip, tooltip_placement, id, ariaLabel, role, tabindex, class - hérités de commonProps
+ * @props {String|Object} id, ariaLabel, role, tabindex, class - hérités de commonProps
  * @slot icon - Slot pour l'icône (prioritaire sur prop icon)
  * @slot default - Contenu du menu
- * @slot tooltip - Tooltip custom
  */
 import { computed } from "vue";
-import Tooltip from "@/Pages/Atoms/feedback/Tooltip.vue";
 import Icon from "@/Pages/Atoms/data-display/Icon.vue";
 import RouteAtom from "@/Pages/Atoms/action/Route.vue";
 import {
@@ -85,60 +82,55 @@ const attrs = computed(() => getCommonAttrs(props));
 </script>
 
 <template>
-    <Tooltip :content="props.tooltip" :placement="props.tooltip_placement">
-        <li :class="atomClasses" v-bind="attrs" v-on="$attrs">
-            <RouteAtom
-                v-if="route"
-                :route="route"
-                :disabled="props.disabled"
-                :aria-label="props.ariaLabel"
-                :tabindex="props.tabindex"
-                :role="props.role"
-                :id="props.id"
-                :class="'flex items-center w-full'"
-            >
-                <span v-if="$slots.icon || icon" class="mr-2 flex items-center">
-                    <slot name="icon">
-                        <Icon
-                            v-if="icon"
-                            :source="icon"
-                            :pack="pack"
-                            :alt="'icon'"
-                            :size="size || 'md'"
-                            :disabled="props.disabled"
-                        />
-                    </slot>
-                </span>
-                <slot />
-            </RouteAtom>
-            <a
-                v-else
-                :tabindex="props.tabindex"
-                :aria-disabled="props.disabled"
-                :class="{
-                    'pointer-events-none': props.disabled,
-                    'flex items-center w-full': true,
-                }"
-            >
-                <span v-if="$slots.icon || icon" class="mr-2 flex items-center">
-                    <slot name="icon">
-                        <Icon
-                            v-if="icon"
-                            :source="icon"
-                            :pack="pack"
-                            :alt="'icon'"
-                            :size="size || 'md'"
-                            :disabled="props.disabled"
-                        />
-                    </slot>
-                </span>
-                <slot />
-            </a>
-        </li>
-        <template v-if="typeof props.tooltip === 'object'" #tooltip>
-            <slot name="tooltip" />
-        </template>
-    </Tooltip>
+    <li :class="atomClasses" v-bind="attrs" v-on="$attrs">
+        <RouteAtom
+            v-if="route"
+            :route="route"
+            :disabled="props.disabled"
+            :aria-label="props.ariaLabel"
+            :tabindex="props.tabindex"
+            :role="props.role"
+            :id="props.id"
+            :class="'flex items-center w-full'"
+        >
+            <span v-if="$slots.icon || icon" class="mr-2 flex items-center">
+                <slot name="icon">
+                    <Icon
+                        v-if="icon"
+                        :source="icon"
+                        :pack="pack"
+                        :alt="'icon'"
+                        :size="size || 'md'"
+                        :disabled="props.disabled"
+                    />
+                </slot>
+            </span>
+            <slot />
+        </RouteAtom>
+        <a
+            v-else
+            :tabindex="props.tabindex"
+            :aria-disabled="props.disabled"
+            :class="{
+                'pointer-events-none': props.disabled,
+                'flex items-center w-full': true,
+            }"
+        >
+            <span v-if="$slots.icon || icon" class="mr-2 flex items-center">
+                <slot name="icon">
+                    <Icon
+                        v-if="icon"
+                        :source="icon"
+                        :pack="pack"
+                        :alt="'icon'"
+                        :size="size || 'md'"
+                        :disabled="props.disabled"
+                    />
+                </slot>
+            </span>
+            <slot />
+        </a>
+    </li>
 </template>
 
 <style scoped></style>

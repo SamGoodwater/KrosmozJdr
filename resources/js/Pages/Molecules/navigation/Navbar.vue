@@ -11,7 +11,6 @@ defineOptions({ inheritAttrs: false });
  * - mergeClasses pour les classes DaisyUI explicites (navbar, bg-base-100, shadow-sm, etc.)
  * - getCommonAttrs pour l'accessibilité
  * - Slots nommés : start, center, end (pour placer du contenu au début, au centre, à la fin)
- * - Pas de Tooltip
  *
  * @see https://daisyui.com/components/navbar/
  *
@@ -40,6 +39,7 @@ const moleculeClasses = computed(() =>
     mergeClasses(
         [
             'navbar-custom',
+            'flex',
             'box-glass-b-sm',
         ],
         getCustomUtilityClasses(props),
@@ -67,7 +67,6 @@ const attrs = computed(() => getCommonAttrs(props));
 .navbar-custom {
     background-color: transparent!important;
     background-image: none!important;
-    display: flex;
     align-items: center;
     padding: 0.5rem;
     min-height: 4rem;

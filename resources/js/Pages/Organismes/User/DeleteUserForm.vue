@@ -17,11 +17,12 @@
 import { ref, nextTick } from 'vue';
 import { useForm } from '@inertiajs/vue3';
 import InputLabel from '@/Pages/Atoms/data-input/InputLabel.vue';
-import InputField from '@/Pages/Atoms/data-input/InputField.vue';
+import InputField from '@/Pages/Molecules/data-input/InputField.vue';
 import Validator from '@/Pages/Atoms/data-input/Validator.vue';
 import Modal from '@/Pages/Molecules/action/Modal.vue';
 import Btn from '@/Pages/Atoms/action/Btn.vue';
 import Container from '@/Pages/Atoms/data-display/Container.vue';
+import Tooltip from '@/Pages/Atoms/feedback/Tooltip.vue';
 
 
 const emit = defineEmits(['success', 'error']);
@@ -74,8 +75,9 @@ const closeModal = () => {
                 </p>
             </header>
 
-            <Btn theme="error" @click="confirmUserDeletion" label="Supprimer le compte"
-                tooltip="Cette action est irréversible" tooltip-position="right" />
+            <Tooltip content="Cette action est irréversible" placement="right">
+                <Btn theme="error" @click="confirmUserDeletion" label="Supprimer le compte" />
+            </Tooltip>
 
             <Modal :show="confirmingUserDeletion" @close="closeModal">
                 <Container class="p-6 space-y-6 bg-base-100 rounded-lg shadow-lg">
@@ -91,18 +93,23 @@ const closeModal = () => {
                     </p>
                     <div class="mt-6">
                         <InputLabel for="password" value="Mot de passe" class="sr-only" />
-                        <InputField id="password" ref="passwordInput" v-model="form.password" type="password"
-                            placeholder="Mot de passe" theme="error"
-                            tooltip="Entrez votre mot de passe pour confirmer la suppression" aria-label="Mot de passe"
-                            :aria-invalid="!!form.errors.password" @keyup.enter="deleteUser"
-                            :class="'mt-1 block w-3/4'" />
+                        <Tooltip content="Entrez votre mot de passe pour confirmer la suppression" placement="top">
+                            <InputField id="password" ref="passwordInput" v-model="form.password" type="password"
+                                placeholder="Mot de passe" theme="error"
+                                aria-label="Mot de passe"
+                                :aria-invalid="!!form.errors.password" @keyup.enter="deleteUser"
+                                :class="'mt-1 block w-3/4'" />
+                        </Tooltip>
                         <Validator :message="form.errors.password" :visible="!!form.errors.password" class="mt-2" />
                     </div>
                     <div class="mt-6 flex justify-end space-x-4">
-                        <Btn theme="secondary" @click="closeModal" label="Annuler" tooltip="Annuler la suppression" />
-                        <Btn theme="error" :class="{ 'opacity-25': form.processing }" :disabled="form.processing"
-                            @click="deleteUser" label="Supprimer le compte"
-                            tooltip="Confirmer la suppression définitive" />
+                        <Tooltip content="Annuler la suppression" placement="top">
+                            <Btn theme="secondary" @click="closeModal" label="Annuler" />
+                        </Tooltip>
+                        <Tooltip content="Confirmer la suppression définitive" placement="top">
+                            <Btn theme="error" :class="{ 'opacity-25': form.processing }" :disabled="form.processing"
+                                @click="deleteUser" label="Supprimer le compte" />
+                        </Tooltip>
                     </div>
                 </Container>
             </Modal>

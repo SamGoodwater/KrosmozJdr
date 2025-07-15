@@ -2,7 +2,7 @@
 import { useForm } from "@inertiajs/vue3";
 import { onMounted } from "vue";
 import { usePageTitle } from "@/Composables/layout/usePageTitle";
-import InputField from "@/Pages/Atoms/data-input/InputField.vue";
+import InputField from "@/Pages/Molecules/data-input/InputField.vue";
 import Btn from "@/Pages/Atoms/action/Btn.vue";
 import Route from "@/Pages/Atoms/action/Route.vue";
 
@@ -27,13 +27,16 @@ onMounted(() => {
 </script>
 
 <template>
+    <div class="flex flex-col items-center justify-center h-full w-full">
+
+        <h2 class="text-title py-8">Inscription</h2>
+
     <form @submit.prevent="submit">
         <InputField
             id="name"
             color="secondary"
             autofocus
-            required
-            class="mt-1 block w-full"
+            require
             v-model="form.name"
             autocomplete="pseudo"
             name="name"
@@ -47,7 +50,6 @@ onMounted(() => {
                 color="secondary"
                 required
                 type="email"
-                class="mt-1 block w-full"
                 v-model="form.email"
                 autocomplete="email"
                 name="email"
@@ -62,7 +64,6 @@ onMounted(() => {
                 color="secondary"
                 required
                 type="password"
-                class="mt-1 block w-full"
                 v-model="form.password"
                 autocomplete="new-password"
                 name="password"
@@ -77,7 +78,6 @@ onMounted(() => {
                 color="secondary"
                 required
                 type="password"
-                class="mt-1 block w-full"
                 v-model="form.password_confirmation"
                 autocomplete="new-password"
                 name="password_confirmation"
@@ -117,7 +117,8 @@ onMounted(() => {
                     statistiques. Aucune autre plateforme n'a accès aux
                     informations que vous sauvegardez ici.</small
                 >
-            </p>
-        </div>
-    </form>
+                </p>
+            </div>
+        </form>
+    </div>
 </template>

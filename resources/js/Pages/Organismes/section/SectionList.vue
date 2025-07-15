@@ -13,6 +13,7 @@
 import { Link } from '@inertiajs/vue3'
 import Btn from '@/Pages/Atoms/action/Btn.vue'
 import Container from '@/Pages/Atoms/data-display/Container.vue'
+import Tooltip from '@/Pages/Atoms/feedback/Tooltip.vue'
 
 const props = defineProps({
     sections: {
@@ -31,7 +32,9 @@ const props = defineProps({
         <div class="space-y-6">
             <div v-if="canCreate" class="flex justify-end">
                 <Link :href="route('sections.create')">
-                <Btn label="Créer une section" tooltip="Ajouter une nouvelle section" aria-label="Créer une section" />
+                    <Tooltip content="Ajouter une nouvelle section" placement="top">
+                        <Btn label="Créer une section" aria-label="Créer une section" />
+                    </Tooltip>
                 </Link>
             </div>
 
@@ -50,8 +53,9 @@ const props = defineProps({
                             <td>{{ section.page?.name }}</td>
                             <td>
                                 <Link :href="route('sections.edit', { section: section.uniqid })">
-                                <Btn label="Éditer" size="sm" tooltip="Modifier cette section"
-                                    aria-label="Éditer la section" />
+                                    <Tooltip content="Modifier cette section" placement="top">
+                                        <Btn label="Éditer" size="sm" aria-label="Éditer la section" />
+                                    </Tooltip>
                                 </Link>
                             </td>
                         </tr>

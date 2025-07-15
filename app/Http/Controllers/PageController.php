@@ -26,7 +26,7 @@ class PageController extends Controller
     {
         $this->authorize('viewAny', \App\Models\Page::class);
         $pages = \App\Models\Page::with(['sections', 'users', 'parent', 'children', 'campaigns', 'scenarios', 'createdBy'])->paginate(20);
-        return Inertia::render('Organisms/Page/Index', [
+        return Inertia::render('Pages/page/Index', [
             'pages' => PageResource::collection($pages),
         ]);
     }
@@ -37,7 +37,7 @@ class PageController extends Controller
     public function create()
     {
         $this->authorize('create', \App\Models\Page::class);
-        return Inertia::render('Organisms/Page/Create', [
+        return Inertia::render('Pages/page/Create', [
             // Ajoute ici les données nécessaires au formulaire (ex: états, parents possibles, etc.)
         ]);
     }
@@ -63,7 +63,7 @@ class PageController extends Controller
     {
         $this->authorize('view', $page);
         $page->load(['sections', 'users', 'parent', 'children', 'campaigns', 'scenarios', 'createdBy']);
-        return Inertia::render('Organisms/Page/Show', [
+        return Inertia::render('Pages/page/Show', [
             'page' => new PageResource($page),
         ]);
     }
@@ -75,7 +75,7 @@ class PageController extends Controller
     {
         $this->authorize('update', $page);
         $page->load(['sections', 'users', 'parent', 'children', 'campaigns', 'scenarios', 'createdBy']);
-        return Inertia::render('Organisms/Page/Edit', [
+        return Inertia::render('Pages/page/Edit', [
             'page' => new PageResource($page),
             // Ajoute ici les données nécessaires au formulaire (ex: états, parents possibles, etc.)
         ]);

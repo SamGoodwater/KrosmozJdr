@@ -28,12 +28,41 @@ export function getInputProps({ exclude = [] } = {}) {
         label: { type: String, default: "" },
         errorMessage: { type: String, default: "" },
         validator: { type: [Boolean, String, Object], default: true },
-        help: { type: String, default: "" },
-        theme: { type: String, default: "" },
+        helper: { type: String, default: "" },
     };
     return Object.fromEntries(
         Object.entries(allInputProps).filter(([key]) => !exclude.includes(key)),
     );
+}
+
+/**
+ * Détermine si un composant doit afficher un état de validation
+ * @param {Object} props - Props du composant
+ * @param {Object} slots - Slots du composant (optionnel)
+ * @returns {Boolean} - True si validation à afficher
+ */
+export function hasValidation(props, slots = {}) {
+    // Si validator est une string non vide (ex: "error", "success")
+    if (typeof props.validator === 'string' && props.validator.trim() !== '') {
+        return true;
+    }
+    
+    // Si errorMessage est une string non vide
+    if (typeof props.errorMessage === 'string' && props.errorMessage.trim() !== '') {
+        return true;
+    }
+    
+    // Si un slot validator est fourni
+    if (slots.validator) {
+        return true;
+    }
+    
+    // Si validator est un objet (cas d'usage avancé)
+    if (typeof props.validator === 'object' && props.validator !== null) {
+        return true;
+    }
+    
+    return false;
 }
 
 /**

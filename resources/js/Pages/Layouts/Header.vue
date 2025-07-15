@@ -43,7 +43,7 @@ const { pageTitle } = usePageTitle();
 </script>
 
 <template>
-    <Navbar class="max-sm:hidden">
+    <Navbar>
         <template #start>
             <Transition name="title" class="ml-14" mode="out-in">
                 <h2 :key="pageTitle" id="pageTitle" class="items-center text-2xl font-semibold">
@@ -52,9 +52,7 @@ const { pageTitle } = usePageTitle();
             </Transition>
         </template>
         <template #center>
-            <div class="max-sm:hidden">
-                <SearchInput />
-            </div>
+            <SearchInput />
         </template>
         <template #end>
             <div class="flex gap-2 items-center">

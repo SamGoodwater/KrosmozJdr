@@ -1,6 +1,4 @@
 <script setup>
-defineOptions({ inheritAttrs: false }); // Pour que les évéments natifs soient transmis à l'atom
-
 /**
  * List Atom (DaisyUI)
  *
@@ -13,8 +11,7 @@ defineOptions({ inheritAttrs: false }); // Pour que les évéments natifs soient
  * - Props DaisyUI : toutes les classes explicites (voir doc DaisyUI)
  * - Utilitaires : shadow, rounded, backdrop, opacity (via customUtility)
  * - Props custom : as, class
- * - Accessibilité : ariaLabel, role, tabindex, id, tooltip, etc.
- * - Tooltip intégré (hors Tooltip lui-même)
+ * - Accessibilité : ariaLabel, role, tabindex, id, etc.
  *
  * @see https://daisyui.com/components/list/
  * @version DaisyUI v5.x
@@ -29,7 +26,7 @@ defineOptions({ inheritAttrs: false }); // Pour que les évéments natifs soient
  * @props {String} as - Balise racine ('ul' ou 'div', défaut 'ul')
  * @props {String} class - Classes custom supplémentaires
  * @props {String} shadow, rounded, backdrop, opacity - utilitaires custom
- * @props {String} id, ariaLabel, role, tabindex, tooltip, tooltip_placement - accessibilité
+ * @props {String} id, ariaLabel, role, tabindex - accessibilité
  * @slot header - En-tête de la liste (optionnel)
  * @slot footer - Pied de la liste (optionnel)
  * @slot default - Éléments de la liste (ListRow ou <li>/<div>)
@@ -37,7 +34,6 @@ defineOptions({ inheritAttrs: false }); // Pour que les évéments natifs soient
  * @note Toutes les classes DaisyUI et utilitaires custom sont explicites, pas de concaténation dynamique non couverte par Tailwind.
  */
 import { computed, h, resolveDynamicComponent } from 'vue';
-import Tooltip from '@/Pages/Atoms/feedback/Tooltip.vue';
 import { getCommonProps, getCommonAttrs, getCustomUtilityProps, getCustomUtilityClasses, mergeClasses } from '@/Utils/atomic-design/uiHelper';
 
 const props = defineProps({
@@ -63,14 +59,9 @@ const attrs = computed(() => getCommonAttrs(props));
 </script>
 
 <template>
-    <Tooltip :content="props.tooltip" :placement="props.tooltip_placement">
-        <component :is="props.as" :class="atomClasses" v-bind="attrs" v-on="$attrs">
-            <slot />
-        </component>
-        <template v-if="typeof props.tooltip === 'object'" #tooltip>
-            <slot name="tooltip" />
-        </template>
-    </Tooltip>
+    <component :is="props.as" :class="atomClasses" v-bind="attrs" v-on="$attrs">
+        <slot />
+    </component>
 </template>
 
 <style scoped></style>

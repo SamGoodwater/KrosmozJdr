@@ -12,7 +12,7 @@ use App\Models\Entity\Campaign;
 use App\Models\Entity\Spell;
 
 /**
- *
+ * 
  *
  * @property int $id
  * @property int|null $creature_id
@@ -46,6 +46,10 @@ use App\Models\Entity\Spell;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Monster whereOfficialId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Monster whereSize($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Monster whereUpdatedAt($value)
+ * @property int $is_boss
+ * @property string $boss_pa
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Monster whereBossPa($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Monster whereIsBoss($value)
  * @mixin \Eloquent
  */
 class Monster extends Model

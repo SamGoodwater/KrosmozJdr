@@ -26,7 +26,7 @@ class RegistrationTest extends TestCase
         ]);
 
         $this->assertAuthenticated();
-        $response->assertRedirect(route('user.dashboard', absolute: false));
+        $response->assertRedirect(route('user.show', $user, absolute: false));
     }
 
     public function test_newly_registered_user_has_user_role(): void

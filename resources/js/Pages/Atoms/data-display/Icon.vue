@@ -1,6 +1,4 @@
 <script setup>
-defineOptions({ inheritAttrs: false }); // Pour que les évéments natifs soient transmis à l'atom
-
 /**
  * Icon Atom (Atomic Design, DaisyUI)
  *
@@ -11,7 +9,6 @@ defineOptions({ inheritAttrs: false }); // Pour que les évéments natifs soient
  * - Props : source (nom logique ou chemin), alt (texte alternatif), size (xs, sm, md, lg, xl, 2xl, 3xl, 4xl, 5xl, 6xl), disabled (hérité de commonProps)
  * - La taille contrôle la hauteur (height), la largeur est auto
  * - Si disabled=true, l'icône est affichée en noir et blanc (grayscale)
- * - Tooltip intégré via commonProps
  *
  * @note Cet atom n'utilise PAS DaisyUI (aucune classe DaisyUI), il est purement utilitaire.
  *
@@ -25,14 +22,13 @@ defineOptions({ inheritAttrs: false }); // Pour que les évéments natifs soient
  * @props {String} size - Taille prédéfinie (xs, sm, md, lg, xl, 2xl, 3xl, 4xl, 5xl, 6xl), défaut md
  * @props {Boolean} disabled - Affiche l'icône en noir et blanc si true
  * @props {String} pack - Pack FontAwesome (solid, regular, brands, duotone)
- * @props {String|Object} tooltip, tooltip_placement, id, ariaLabel, role, tabindex - hérités de commonProps
+ * @props {String|Object} id, ariaLabel, role, tabindex - hérités de commonProps
  */
 import { computed, ref, watch, onMounted } from "vue";
 import Image from "@/Pages/Atoms/data-display/Image.vue";
-import { getCommonProps, mergeClasses } from "@/Utils/atomic-design/uiHelper";
+import { getCommonProps, getCommonAttrs, mergeClasses } from "@/Utils/atomic-design/uiHelper";
 import { size6XlList } from "@/Pages/Atoms/atomMap";
 import { sizeHeightMap, faSizeMap } from "./data-displayMap";
-import Tooltip from "@/Pages/Atoms/feedback/Tooltip.vue";
 import { ImageService } from "@/Utils/file/ImageService";
 
 const props = defineProps({
@@ -156,78 +152,33 @@ const faClasses = computed(() => {
         props.disabled ? "opacity-50" : "",
     ]);
 });
+
+const attrs = computed(() => getCommonAttrs(props));
 </script>
 
 <template>
-    <Tooltip
-        v-if="props.tooltip"
-        :content="props.tooltip"
-        :placement="props.tooltip_placement"
-    >
-        <!-- Icône FontAwesome -->
-        <i
-            v-if="isFontAwesome"
-            :class="faClasses"
-            :style="grayscale"
-            :id="props.id"
-            :aria-label="props.ariaLabel"
-            :role="props.role"
-            :tabindex="props.tabindex"
-            v-on="$attrs"
-        />
+    <!-- Icône FontAwesome -->
+    <i
+        v-if="isFontAwesome"
+        :class="faClasses"
+        :style="grayscale"
+        v-bind="attrs"
+        v-on="$attrs"
+    />
 
-        <!-- Image -->
-        <Image
-            v-else
-            :source="props.source"
-            :alt="props.alt"
-            :height="height"
-            :size="''"
-            v-on="$attrs"
-            :style="grayscale"
-            :class="atomClasses"
-            :id="props.id"
-            :ariaLabel="props.ariaLabel"
-            :role="props.role"
-            :tabindex="props.tabindex"
-            :disabled="props.disabled"
-        />
-
-        <template v-if="typeof props.tooltip === 'object'" #tooltip>
-            <slot name="tooltip" />
-        </template>
-    </Tooltip>
-
-    <template v-else>
-        <!-- Icône FontAwesome -->
-        <i
-            v-if="isFontAwesome"
-            :class="faClasses"
-            :style="grayscale"
-            :id="props.id"
-            :aria-label="props.ariaLabel"
-            :role="props.role"
-            :tabindex="props.tabindex"
-            v-on="$attrs"
-        />
-
-        <!-- Image -->
-        <Image
-            v-else
-            :source="props.source"
-            :alt="props.alt"
-            :height="height"
-            :size="''"
-            v-on="$attrs"
-            :style="grayscale"
-            :class="atomClasses"
-            :id="props.id"
-            :ariaLabel="props.ariaLabel"
-            :role="props.role"
-            :tabindex="props.tabindex"
-            :disabled="props.disabled"
-        />
-    </template>
+    <!-- Image -->
+    <Image
+        v-else
+        :source="props.source"
+        :alt="props.alt"
+        :height="height"
+        :size="''"
+        v-bind="attrs"
+        v-on="$attrs"
+        :style="grayscale"
+        :class="atomClasses"
+        :disabled="props.disabled"
+    />
 </template>
 
 <style scoped lang="scss">

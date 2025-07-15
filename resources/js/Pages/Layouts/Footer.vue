@@ -58,7 +58,7 @@ const footerItems = [
 </script>
 
 <template>
-    <FooterMolecule direction="vertical" center textColor="text-content" class="box-glass-t-xs" v-bind="$attrs">
+    <FooterMolecule direction="vertical" center textColor="text-content" class="box-glass-t-xs max-sm:hidden" v-bind="$attrs">
         <template #logo>
             <Image source="logos/logo.webp" :alt="`Logo de ${appName}`" height="24px" class="mx-auto" @error="logoError = true" />
         </template>
@@ -82,17 +82,14 @@ const footerItems = [
         </template>
     </FooterMolecule>
     <!-- Mobile Footer (Dock) -->
-    <div class="fixed bottom-0 left-0 z-50 max-sm:block hidden">
+    <div class="fixed bottom-0 left-0 right-0 z-50 max-sm:block hidden">
         <Dock size="md" class="px-1 py-2 flex justify-between box-glass-md">
             <!-- Bouton sidebar -->
-            <DockItem icon="fa-bars" pack="solid" label="Menu" @click="toggleSidebar" />
+            <DockItem icon="fa-bars" pack="solid" label="Menu" @click="toggleSidebar()" />
             <!-- Bouton recherche (placeholder) -->
             <DockItem icon="fa-magnifying-glass" pack="solid" label="Recherche" />
             <!-- Bouton compte/utilisateur (placeholder dropdown) -->
             <DockItem icon="fa-user" pack="solid" label="Compte" />
-            <!-- Items de contact -->
-            <DockItem v-for="item in footerItems" :key="item.label" :icon="item.icon" :pack="item.pack"
-                :label="item.label" :route="item.href" :tooltip="item.tooltip" :target="item.target" />
         </Dock>
     </div>
 </template>

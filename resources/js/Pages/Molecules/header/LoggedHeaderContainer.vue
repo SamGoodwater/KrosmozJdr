@@ -47,7 +47,7 @@ watch(
     <div class="flex justify-end">
         <div class="flex items-center mx-6 max-sm:mx-4">
             <Dropdown placement="bottom-end">
-                <Tooltip :tooltip="'Notifications'" tooltip_placement="bottom">
+                <Tooltip content="Notifications" placement="bottom">
                     <div class="indicator">
                         <span
                             class="indicator-item badge bg-secondary/80 badge-xs text-content-light"
@@ -62,7 +62,7 @@ watch(
                             />
                         </Btn>
                     </div>
-                    <template #tooltip>
+                    <template #content>
                         <div>
                             <p>Vous avez 0 notifications</p>
                         </div>

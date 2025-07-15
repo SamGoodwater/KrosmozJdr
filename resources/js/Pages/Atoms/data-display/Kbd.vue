@@ -1,6 +1,4 @@
 <script setup>
-defineOptions({ inheritAttrs: false }); // Pour que les évéments natifs soient transmis à l'atom
-
 /**
  * Kbd Atom (DaisyUI)
  *
@@ -10,26 +8,24 @@ defineOptions({ inheritAttrs: false }); // Pour que les évéments natifs soient
  * - Slot par défaut : contenu du raccourci clavier (texte, icône, etc.)
  * - Props DaisyUI : size (xs, sm, md, lg, xl)
  * - Props custom : class, shadow, backdrop, opacity
- * - Accessibilité : ariaLabel, role, tabindex, id, tooltip, etc.
- * - Tooltip intégré (hors Tooltip lui-même)
+ * - Accessibilité : ariaLabel, role, tabindex, id, etc.
  *
  * @see https://daisyui.com/components/kbd/
  * @version DaisyUI v5.x
  *
  * @example
- * <Kbd size="sm" tooltip="Copier">Ctrl + C</Kbd>
+ * <Kbd size="sm">Ctrl + C</Kbd>
  * <Kbd size="lg">F5</Kbd>
  *
  * @props {String} size - Taille DaisyUI ('', 'xs', 'sm', 'md', 'lg', 'xl')
  * @props {String} class - Classes custom supplémentaires
  * @props {String} shadow, backdrop, opacity - utilitaires custom
- * @props {String} id, ariaLabel, role, tabindex, tooltip, tooltip_placement - accessibilité
+ * @props {String} id, ariaLabel, role, tabindex - accessibilité
  * @slot default - Contenu du raccourci clavier
  *
  * @note Toutes les classes DaisyUI et utilitaires custom sont explicites, pas de concaténation dynamique non couverte par Tailwind.
  */
 import { computed } from 'vue';
-import Tooltip from '@/Pages/Atoms/feedback/Tooltip.vue';
 import { getCommonProps, getCommonAttrs, getCustomUtilityProps, getCustomUtilityClasses, mergeClasses } from '@/Utils/atomic-design/uiHelper';
 import { sizeXlList } from '@/Pages/Atoms/atomMap';
 
@@ -63,14 +59,9 @@ const attrs = computed(() => getCommonAttrs(props));
 </script>
 
 <template>
-    <Tooltip :content="props.tooltip" :placement="props.tooltip_placement">
-        <kbd :class="atomClasses" v-bind="attrs" v-on="$attrs">
-            <slot />
-        </kbd>
-        <template v-if="typeof props.tooltip === 'object'" #tooltip>
-            <slot name="tooltip" />
-        </template>
-    </Tooltip>
+    <kbd :class="atomClasses" v-bind="attrs" v-on="$attrs">
+        <slot />
+    </kbd>
 </template>
 
 <style scoped></style>

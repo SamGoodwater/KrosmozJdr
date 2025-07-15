@@ -1,6 +1,4 @@
 <script setup>
-defineOptions({ inheritAttrs: false }); // Pour que les évéments natifs soient transmis à l'atom
-
 /**
  * Collapse Atom (DaisyUI)
  *
@@ -10,7 +8,7 @@ defineOptions({ inheritAttrs: false }); // Pour que les évéments natifs soient
  * - Props DaisyUI : arrow (flèche), plus (plus/moins), forcedOpen (collapse-open), defaultOpen (état initial)
  * - Props custom : bgOff, bgOn (couleurs de fond DaisyUI/Tailwind)
  * - Utilitaires custom : shadow, backdrop, opacity
- * - Accessibilité : ariaLabel, role, tabindex, id, tooltip, etc.
+ * - Accessibilité : ariaLabel, role, tabindex, id, etc.
  * - Slots : #title (titre), #content (contenu)
  *
  * @see https://daisyui.com/components/collapse/
@@ -29,14 +27,13 @@ defineOptions({ inheritAttrs: false }); // Pour que les évéments natifs soient
  * @props {Boolean} forcedOpen - Force l'ouverture (ajoute collapse-open)
  * @props {Boolean} defaultOpen - Commence ouvert (checkbox checked par défaut)
  * @props {String} shadow, backdrop, opacity - utilitaires custom
- * @props {String} id, ariaLabel, role, tabindex, tooltip, tooltip_placement - accessibilité
+ * @props {String} id, ariaLabel, role, tabindex - accessibilité
  * @slot title - Titre du collapse
  * @slot content - Contenu du collapse
  *
  * @note Toutes les classes DaisyUI et utilitaires custom sont explicites, pas de concaténation dynamique non couverte par Tailwind.
  */
 import { ref, computed } from 'vue';
-import Tooltip from '@/Pages/Atoms/feedback/Tooltip.vue';
 import { getCommonProps, getCommonAttrs, getCustomUtilityProps, getCustomUtilityClasses, mergeClasses } from '@/Utils/atomic-design/uiHelper';
 
 const props = defineProps({
@@ -90,22 +87,17 @@ const attrs = computed(() => getCommonAttrs(props));
 </script>
 
 <template>
-    <Tooltip :content="props.tooltip" :placement="props.tooltip_placement">
-        <div :class="atomClasses" v-bind="attrs" v-on="$attrs">
-            <!-- Mode checkbox pour ouverture/fermeture -->
-            <input v-if="!props.forcedOpen" type="checkbox" class="peer" :checked="isOpen" @change="toggle"
-                tabindex="-1" style="display:none;" />
-            <div :class="titleClasses" @click="toggle" :tabindex="props.tabindex" style="cursor:pointer;">
-                <slot name="title" />
-            </div>
-            <div :class="contentClasses">
-                <slot name="content" />
-            </div>
+    <div :class="atomClasses" v-bind="attrs" v-on="$attrs">
+        <!-- Mode checkbox pour ouverture/fermeture -->
+        <input v-if="!props.forcedOpen" type="checkbox" class="peer" :checked="isOpen" @change="toggle"
+            tabindex="-1" style="display:none;" />
+        <div :class="titleClasses" @click="toggle" :tabindex="props.tabindex" style="cursor:pointer;">
+            <slot name="title" />
         </div>
-        <template v-if="typeof props.tooltip === 'object'" #tooltip>
-            <slot name="tooltip" />
-        </template>
-    </Tooltip>
+        <div :class="contentClasses">
+            <slot name="content" />
+        </div>
+    </div>
 </template>
 
 <style scoped>

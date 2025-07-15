@@ -1,6 +1,4 @@
 <script setup>
-defineOptions({ inheritAttrs: false }); // Pour que les événements natifs soient transmis à l'atom
-
 /**
  * Dropdown Atom (DaisyUI)
  *
@@ -13,7 +11,6 @@ defineOptions({ inheritAttrs: false }); // Pour que les événements natifs soie
  * - Toutes les classes DaisyUI sont écrites en toutes lettres
  * - Accessibilité renforcée (aria-haspopup, aria-expanded, tabindex, etc.)
  * - Gestion de l'ouverture/fermeture (clic, hover, esc, clic extérieur)
- * - Tooltip intégré comme pour tous les atoms
  *
  * @see https://daisyui.com/components/dropdown/
  * @version DaisyUI v5.x
@@ -41,7 +38,7 @@ defineOptions({ inheritAttrs: false }); // Pour que les événements natifs soie
  * @props {String} label - Texte du trigger (optionnel, sinon slot)
  * @props {String|Array} contentClass - Classes custom à ajouter au content (fusionnées sans doublon)
  * @props {Boolean} disabled - Désactive le trigger (hérité de commonProps)
- * @props {String} id, ariaLabel, role, tabindex, tooltip, tooltip_placement - hérités de commonProps
+ * @props {String} id, ariaLabel, role, tabindex - hérités de commonProps
  * @slot default - Trigger du dropdown (bouton, icône, etc.)
  * @slot content - Contenu déroulant (libre)
  *
@@ -53,8 +50,7 @@ defineOptions({ inheritAttrs: false }); // Pour que les événements natifs soie
 
 import { ref, computed, onMounted, onUnmounted, nextTick } from 'vue';
 import Btn from '@/Pages/Atoms/action/Btn.vue';
-import Tooltip from '@/Pages/Atoms/feedback/Tooltip.vue';
-import { getCommonProps, getCommonAttrs, mergeClasses, getCustomUtilityProps, getCustomUtilityClasses } from '@/Utils/atomic-design/uiHelper';
+import { getCommonProps, getCommonAttrs, getCustomUtilityProps, getCustomUtilityClasses, mergeClasses } from '@/Utils/atomic-design/uiHelper';
 import { placementList } from './actionMap';
 
 const props = defineProps({
@@ -171,27 +167,22 @@ const attrs = computed(() => getCommonAttrs(props));
 </script>
 
 <template>
-    <Tooltip :content="props.tooltip" :placement="props.tooltip_placement">
-        <div :class="dropdownClasses" v-bind="attrs" v-on="$attrs">
-            <!-- Trigger -->
-            <Btn ref="triggerRef" tabindex="0" role="button" :aria-haspopup="true" :aria-expanded="effectiveOpen"
-                @click="props.hover ? undefined : toggleDropdown" @mouseenter="props.hover ? openDropdown() : undefined"
-                @mouseleave="props.hover ? closeDropdown() : undefined" :disabled="props.disabled"
-                :class="['btn', { 'btn-disabled': props.disabled }]">
-                <span v-if="props.label && !$slots.default">{{ props.label }}</span>
-                <slot name="label" v-else />
-            </Btn>
-            <!-- Contenu déroulant -->
-            <div v-show="effectiveOpen" ref="contentRef" :class="contentClasses" tabindex="-1"
-                @mouseenter="props.hover ? openDropdown() : undefined"
-                @mouseleave="props.hover ? closeDropdown() : undefined">
-                <slot name="content" />
-            </div>
+    <div :class="dropdownClasses" v-bind="attrs" v-on="$attrs">
+        <!-- Trigger -->
+        <Btn ref="triggerRef" tabindex="0" role="button" :aria-haspopup="true" :aria-expanded="effectiveOpen"
+            @click="props.hover ? undefined : toggleDropdown" @mouseenter="props.hover ? openDropdown() : undefined"
+            @mouseleave="props.hover ? closeDropdown() : undefined" :disabled="props.disabled"
+            :class="['btn', { 'btn-disabled': props.disabled }]">
+            <span v-if="props.label && !$slots.default">{{ props.label }}</span>
+            <slot name="label" v-else />
+        </Btn>
+        <!-- Contenu déroulant -->
+        <div v-show="effectiveOpen" ref="contentRef" :class="contentClasses" tabindex="-1"
+            @mouseenter="props.hover ? openDropdown() : undefined"
+            @mouseleave="props.hover ? closeDropdown() : undefined">
+            <slot name="content" />
         </div>
-        <template v-if="typeof props.tooltip === 'object'" #tooltip>
-            <slot name="tooltip" />
-        </template>
-    </Tooltip>
+    </div>
 </template>
 
 <style scoped>

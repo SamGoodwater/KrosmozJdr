@@ -1,6 +1,4 @@
 <script setup>
-defineOptions({ inheritAttrs: false }); // Pour que les événements natifs soient transmis à l'atom
-
 /**
  * Status Atom (DaisyUI)
  *
@@ -10,7 +8,6 @@ defineOptions({ inheritAttrs: false }); // Pour que les événements natifs soie
  * - Props DaisyUI : color (neutral, primary, secondary, accent, info, success, warning, error), size (xs, sm, md, lg, xl)
  * - Props d'accessibilité et HTML natif héritées de commonProps
  * - Toutes les classes DaisyUI sont écrites en toutes lettres (aucune concaténation dynamique)
- * - Tooltip intégré (hors Tooltip lui-même)
  * - Slot par défaut pour accessibilité ou animation custom (rare)
  *
  * @see https://daisyui.com/components/status/
@@ -22,14 +19,13 @@ defineOptions({ inheritAttrs: false }); // Pour que les événements natifs soie
  *
  * @props {String} color - Couleur DaisyUI ('', 'neutral', 'primary', 'secondary', 'accent', 'info', 'success', 'warning', 'error')
  * @props {String} size - Taille DaisyUI ('', 'xs', 'sm', 'md', 'lg', 'xl')
- * @props {String|Object} tooltip, tooltip_placement, class, id, ariaLabel, role, tabindex - hérités de commonProps
+ * @props {String|Object} class, id, ariaLabel, role, tabindex - hérités de commonProps
  * @slot default - Contenu custom/accessibilité (rare)
  *
  * @note Toutes les classes DaisyUI sont explicites, pas de concaténation dynamique non couverte par Tailwind.
  * @note Accessibilité : aria-label, role, tabindex, etc. transmis.
  */
 import { computed } from 'vue';
-import Tooltip from '@/Pages/Atoms/feedback/Tooltip.vue';
 import { getCommonProps, getCommonAttrs, mergeClasses } from '@/Utils/atomic-design/uiHelper';
 import { colorList, sizeXlList } from '@/Pages/Atoms/atomMap';
 
@@ -73,14 +69,9 @@ const attrs = computed(() => getCommonAttrs(props));
 </script>
 
 <template>
-    <Tooltip :content="props.tooltip" :placement="props.tooltip_placement">
-        <span :class="atomClasses" v-bind="attrs" v-on="$attrs">
-            <slot />
-        </span>
-        <template v-if="typeof props.tooltip === 'object'" #tooltip>
-            <slot name="tooltip" />
-        </template>
-    </Tooltip>
+    <span :class="atomClasses" v-bind="attrs" v-on="$attrs">
+        <slot />
+    </span>
 </template>
 
 <style scoped></style>

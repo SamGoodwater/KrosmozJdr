@@ -1,6 +1,4 @@
 <script setup>
-defineOptions({ inheritAttrs: false }); // Pour que les évéments natifs soient transmis à l'atom
-
 /**
  * Rating Atom (DaisyUI)
  *
@@ -14,7 +12,7 @@ defineOptions({ inheritAttrs: false }); // Pour que les évéments natifs soient
  * - v-model natif (modelValue, number ou string)
  * - Edition réactive avancée via useFieldComposable/field/debounceTime (voir ci-dessous)
  * - Accessibilité renforcée (aria-label, aria-checked)
- * - Slots : #labelTop, #labelBottom, #validator, #help, default
+ * - Slots : #labelTop, #labelBottom, #validator, #helper, default
  * - Affiche un bouton reset si modifié (UX moderne)
  *
  * @see https://daisyui.com/components/rating/
@@ -39,23 +37,22 @@ defineOptions({ inheritAttrs: false }); // Pour que les évéments natifs soient
  * @props {Boolean} useFieldComposable - Active l'édition réactive (reset, debounce, etc.)
  * @props {Object} field - Objet field externe (optionnel, sinon composable interne)
  * @props {Number} debounceTime - Délai de debounce (ms, défaut 500)
- * @props {String|Object} tooltip, tooltip_placement, id, ariaLabel, role, tabindex - hérités de commonProps
+ * @props {String|Object} id, ariaLabel, role, tabindex - hérités de commonProps
  * @props {String|Object} validator - Message de validation ou slot #validator
  * @props {String} errorMessage - Message d'erreur (optionnel)
- * @props {String} help - Message d'aide (optionnel ou slot #help)
+ * @props {String} helper - Message d'aide (optionnel ou slot #helper)
  * @slot labelTop - Label custom au-dessus
  * @slot labelBottom - Label custom en-dessous
  * @slot validator - Message de validation custom
- * @slot help - Message d'aide custom
+ * @slot helper - Message d'aide custom
  * @slot default - Slot pour contenu custom à droite du rating
  *
  * @note Si useFieldComposable=true, la logique d'édition réactive (valeur, debounce, reset, bouton reset, update) est entièrement gérée par le composable useEditableField. Le bouton reset s'affiche automatiquement si la valeur a été modifiée.
  */
-import { computed, ref, onMounted, onUnmounted } from 'vue';
-import Tooltip from '@/Pages/Atoms/feedback/Tooltip.vue';
+import { computed, ref, watch, onMounted, onUnmounted, useSlots } from 'vue';
 import Validator from '@/Pages/Atoms/data-input/Validator.vue';
 import { getCommonProps, getCommonAttrs, getCustomUtilityProps, getCustomUtilityClasses, mergeClasses } from '@/Utils/atomic-design/uiHelper';
-import { getInputAttrs } from '@/Utils/atomic-design/atomManager';
+import { getInputAttrs, getInputProps, hasValidation } from '@/Utils/atomic-design/atomManager';
 import InputLabel from '@/Pages/Atoms/data-input/InputLabel.vue';
 import useEditableField from '@/Composables/form/useEditableField';
 import Btn from '@/Pages/Atoms/action/Btn.vue';
@@ -64,6 +61,7 @@ import { maskList } from './data-inputMap';
 
 const props = defineProps({
     ...getCommonProps(),
+    ...getInputProps({ exclude: ['type', 'placeholder', 'autocomplete', 'min', 'max', 'step', 'inputmode', 'pattern', 'maxlength', 'minlength'] }),
     ...getCustomUtilityProps(),
     modelValue: { type: [Number, String], default: 0 },
     number: { type: Number, default: 5 },
@@ -88,13 +86,17 @@ const props = defineProps({
     debounceTime: { type: Number, default: 500 },
     validator: { type: [Boolean, String, Object], default: true },
     errorMessage: { type: String, default: '' },
-    help: { type: String, default: '' },
+    helper: { type: String, default: '' },
+    labelBottom: { type: String, default: '' },
 });
 
 const emit = defineEmits(['update:modelValue']);
 const ratingRef = ref(null);
 
-// Edition réactive (optionnel)
+// Détermine si le composant doit afficher un état de validation
+const hasValidationState = computed(() => hasValidation(props, useSlots()));
+
+// Gestion editableField (optionnel)
 const editableField = computed(() => {
     if (props.useFieldComposable) {
         return useEditableField(props.modelValue, {
@@ -106,7 +108,12 @@ const editableField = computed(() => {
     return null;
 });
 
-const isFieldModified = computed(() => props.useFieldComposable && editableField.value ? editableField.value.isModified.value : false);
+const isFieldModified = computed(() =>
+    props.useFieldComposable && editableField.value
+        ? editableField.value.isModified.value
+        : false,
+);
+
 const displayValue = computed(() => {
     if (props.useFieldComposable && editableField.value) {
         return editableField.value.value.value;
@@ -114,20 +121,26 @@ const displayValue = computed(() => {
     return props.modelValue;
 });
 
-function onInput(val) {
+function onInput(e) {
     if (props.useFieldComposable && editableField.value) {
-        editableField.value.onInput({ target: { value: val } });
+        editableField.value.onInput(e);
     } else {
-        emit('update:modelValue', val);
+        emit('update:modelValue', e.target.value);
     }
 }
+
 function onBlur() {
     if (props.useFieldComposable && editableField.value) {
         editableField.value.onBlur();
     }
 }
+
 function handleReset() {
-    if (props.useFieldComposable && editableField.value && typeof editableField.value.reset === 'function') {
+    if (
+        props.useFieldComposable &&
+        editableField.value &&
+        typeof editableField.value.reset === 'function'
+    ) {
         editableField.value.reset();
         editableField.value.onBlur();
     }
@@ -143,7 +156,35 @@ onUnmounted(() => {
         clearTimeout(editableField.value.debounceTimeout);
     }
 });
-defineExpose({ focus: () => ratingRef.value && ratingRef.value.focus() });
+defineExpose({ 
+    focus: () => ratingRef.value && ratingRef.value.focus(),
+    isFieldModified,
+    handleReset,
+});
+
+const atomClasses = computed(() =>
+    mergeClasses(
+        [
+            'rating',
+            props.color === 'neutral' && 'rating-neutral',
+            props.color === 'primary' && 'rating-primary',
+            props.color === 'secondary' && 'rating-secondary',
+            props.color === 'accent' && 'rating-accent',
+            props.color === 'info' && 'rating-info',
+            props.color === 'success' && 'rating-success',
+            props.color === 'warning' && 'rating-warning',
+            props.color === 'error' && 'rating-error',
+            props.size === 'xs' && 'rating-xs',
+            props.size === 'sm' && 'rating-sm',
+            props.size === 'md' && 'rating-md',
+            props.size === 'lg' && 'rating-lg',
+            props.size === 'xl' && 'rating-xl',
+            hasValidationState.value && 'rating-error',
+        ].filter(Boolean),
+        getCustomUtilityClasses(props),
+        props.class
+    )
+);
 
 function getRatingClasses(props) {
     return mergeClasses(
@@ -171,12 +212,9 @@ function getMaskClasses(item, idx) {
 }
 
 const ratingClasses = computed(() => getRatingClasses(props));
-const attrs = computed(() => ({
-    ...getCommonAttrs(props),
-    ...getInputAttrs(props),
-    'aria-checked': isChecked.value,
-}));
 const ratingId = computed(() => props.id || `rating-${Math.random().toString(36).substr(2, 9)}`);
+
+const attrs = computed(() => getCommonAttrs(props));
 
 // Génération dynamique des items (étoiles, coeurs, etc.)
 const ratingItems = computed(() => {
@@ -200,53 +238,48 @@ const ratingItems = computed(() => {
 </script>
 
 <template>
-    <Tooltip :content="props.tooltip" :placement="props.tooltip_placement">
-        <div class="form-control w-full">
-            <!-- Label top -->
-            <InputLabel v-if="label || $slots.labelTop" :for="ratingId" :value="label">
-                <template v-if="$slots.labelTop" #default>
-                    <slot name="labelTop" />
+    <div class="form-control w-full">
+        <!-- Label top -->
+        <InputLabel v-if="props.label || $slots.labelTop" :for="ratingId" :value="props.label">
+            <template v-if="$slots.labelTop" #default>
+                <slot name="labelTop" />
+            </template>
+        </InputLabel>
+        <div class="relative flex items-center gap-2 w-full">
+            <div :class="atomClasses" ref="ratingRef">
+                <template v-for="(item, idx) in ratingItems" :key="idx">
+                    <input type="radio" v-bind="attrs" :name="ratingId" :value="item.value"
+                        :class="getMaskClasses(item, idx)" :checked="displayValue == item.value || item.checked"
+                        :aria-label="item.ariaLabel" :aria-checked="displayValue == item.value" :aria-invalid="hasValidationState"
+                        @input="onInput(item.value)" @blur="onBlur" v-on="$attrs" />
                 </template>
-            </InputLabel>
-            <div class="relative flex items-center gap-2 w-full">
-                <div :class="ratingClasses" ref="ratingRef">
-                    <template v-for="(item, idx) in ratingItems" :key="idx">
-                        <input type="radio" v-bind="attrs" v-on="$attrs" :name="ratingId" :value="item.value"
-                            :class="getMaskClasses(item, idx)" :checked="displayValue == item.value || item.checked"
-                            :aria-label="item.ariaLabel" :aria-checked="displayValue == item.value"
-                            @input="onInput(item.value)" @blur="onBlur" />
-                    </template>
-                    <!-- Bouton reset -->
-                    <Btn v-if="props.useFieldComposable && isFieldModified" class="absolute right-2 top-2 z-20"
-                        size="xs" variant="ghost" circle @click="handleReset" :aria-label="'Réinitialiser'">
-                        <i class="fa-solid fa-arrow-rotate-left"></i>
-                    </Btn>
-                    <slot />
-                </div>
-            </div>
-            <!-- Label bottom -->
-            <InputLabel v-if="labelBottom || $slots.labelBottom" :for="ratingId" :value="labelBottom" class="mt-1">
-                <template v-if="$slots.labelBottom" #default>
-                    <slot name="labelBottom" />
-                </template>
-            </InputLabel>
-            <!-- Validator -->
-            <div v-if="validator || $slots.validator" class="mt-1">
-                <slot name="validator">
-                    <Validator v-if="validator"
-                        :state="validator === true ? 'success' : validator === 'error' ? 'error' : validator"
-                        :message="errorMessage" />
-                </slot>
-            </div>
-            <!-- Help -->
-            <div v-if="help || $slots.help" class="mt-1 text-xs text-base-400">
-                <slot name="help">{{ help }}</slot>
+                <!-- Bouton reset -->
+                <Btn v-if="props.useFieldComposable && isFieldModified" class="absolute right-2 top-2 z-20"
+                    size="xs" variant="ghost" circle @click="handleReset" :aria-label="'Réinitialiser'">
+                    <i class="fa-solid fa-arrow-rotate-left"></i>
+                </Btn>
+                <slot />
             </div>
         </div>
-        <template v-if="typeof props.tooltip === 'object'" #tooltip>
-            <slot name="tooltip" />
-        </template>
-    </Tooltip>
+        <!-- Label bottom -->
+        <InputLabel v-if="props.labelBottom || $slots.labelBottom" :for="ratingId" :value="props.labelBottom" class="mt-1">
+            <template v-if="$slots.labelBottom" #default>
+                <slot name="labelBottom" />
+            </template>
+        </InputLabel>
+        <!-- Validator -->
+        <div v-if="hasValidationState" class="mt-1">
+            <slot name="validator">
+                <Validator v-if="props.validator"
+                    :state="typeof props.validator === 'string' ? 'error' : 'error'"
+                    :message="typeof props.validator === 'string' ? props.validator : props.errorMessage" />
+            </slot>
+        </div>
+        <!-- Helper -->
+        <div v-if="props.helper || $slots.helper" class="mt-1 text-xs text-base-400">
+            <slot name="helper">{{ props.helper }}</slot>
+        </div>
+    </div>
 </template>
 
 <style scoped></style>

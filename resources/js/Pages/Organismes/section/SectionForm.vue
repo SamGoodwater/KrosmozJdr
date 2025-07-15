@@ -13,13 +13,14 @@
  */
 import { ref } from 'vue'
 import { useForm } from '@inertiajs/vue3'
-import InputField from '@/Pages/Atoms/data-input/InputField.vue'
+import InputField from '@/Pages/Molecules/data-input/InputField.vue'
 import Textarea from '@/Pages/Atoms/data-input/Textarea.vue'
 import Select from '@/Pages/Atoms/data-input/Select.vue'
 import FileInput from '@/Pages/Molecules/data-input/FileInput.vue'
 import Btn from '@/Pages/Atoms/action/Btn.vue'
 import Container from '@/Pages/Atoms/data-display/Container.vue'
 import Alert from '@/Pages/Atoms/feedback/Alert.vue'
+import Tooltip from '@/Pages/Atoms/feedback/Tooltip.vue'
 
 const props = defineProps({
     section: {
@@ -63,24 +64,33 @@ const submit = () => {
 <template>
     <Container class="max-w-2xl mx-auto p-4 md:p-8 bg-base-100 rounded-lg shadow-md">
         <form @submit.prevent="submit" class="space-y-6">
-            <InputField v-model="form.title" label="Titre" :errorMessage="form.errors.title"
-                aria-label="Titre de la section" tooltip="Titre de la section" class="w-full" />
+            <Tooltip content="Titre de la section" placement="top">
+                <InputField v-model="form.title" label="Titre" :errorMessage="form.errors.title"
+                    aria-label="Titre de la section" class="w-full" />
+            </Tooltip>
 
-            <Textarea v-model="form.content" label="Contenu" :errorMessage="form.errors.content"
-                aria-label="Contenu de la section" tooltip="Contenu de la section" class="w-full" />
+            <Tooltip content="Contenu de la section" placement="top">
+                <Textarea v-model="form.content" label="Contenu" :errorMessage="form.errors.content"
+                    aria-label="Contenu de la section" class="w-full" />
+            </Tooltip>
 
-            <Select v-model="form.page_id" label="Page associée"
-                :options="pages.map(p => ({ value: p.uniqid, label: p.name }))" :errorMessage="form.errors.page_id"
-                aria-label="Page associée" tooltip="Sélectionnez la page associée" class="w-full" />
+            <Tooltip content="Sélectionnez la page associée" placement="top">
+                <Select v-model="form.page_id" label="Page associée"
+                    :options="pages.map(p => ({ value: p.uniqid, label: p.name }))" :errorMessage="form.errors.page_id"
+                    aria-label="Page associée" class="w-full" />
+            </Tooltip>
 
-            <FileInput v-model="form.image" label="Image" :error="form.errors.image" aria-label="Image de la section"
-                tooltip="Image de la section (optionnelle)" class="w-full" />
+            <Tooltip content="Image de la section (optionnelle)" placement="top">
+                <FileInput v-model="form.image" label="Image" :error="form.errors.image" aria-label="Image de la section"
+                    class="w-full" />
+            </Tooltip>
 
-            <Btn type="submit" :disabled="form.processing"
-                :tooltip="isUpdating ? 'Mettre à jour la section' : 'Créer la section'"
-                :aria-label="isUpdating ? 'Mettre à jour la section' : 'Créer la section'">
-                {{ isUpdating ? 'Mettre à jour' : 'Créer' }}
-            </Btn>
+            <Tooltip :content="isUpdating ? 'Mettre à jour la section' : 'Créer la section'" placement="top">
+                <Btn type="submit" :disabled="form.processing"
+                    :aria-label="isUpdating ? 'Mettre à jour la section' : 'Créer la section'">
+                    {{ isUpdating ? 'Mettre à jour' : 'Créer' }}
+                </Btn>
+            </Tooltip>
 
             <Alert v-if="feedback" color="success" variant="soft" class="mt-4">
                 {{ feedback }}

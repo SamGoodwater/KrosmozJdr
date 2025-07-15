@@ -53,9 +53,11 @@ onMounted(() => {
                         </div>
                     </div>
                     <div class="flex justify-end max-[930px]:w-full">
-                        <Route route="user.edit">
-                            <Btn color="primary" size="sm" tooltip="Modifier mon profil">Éditer</Btn>
-                        </Route>
+                        <Tooltip content="Modifier mon profil" placement="top">
+                            <Route route="user.edit">
+                                <Btn color="primary" size="sm">Éditer</Btn>
+                            </Route>
+                        </Tooltip>
                     </div>
                 </div>
                 <div v-if="!user.value.is_verified">

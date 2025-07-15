@@ -1,6 +1,4 @@
 <script setup>
-defineOptions({ inheritAttrs: false }); // Pour que les évéments natifs soient transmis à l'atom
-
 /**
  * Swap Atom (DaisyUI)
  *
@@ -33,7 +31,7 @@ defineOptions({ inheritAttrs: false }); // Pour que les évéments natifs soient
  * @props {Boolean} rotate - Ajoute l'effet rotate
  * @props {Boolean} flip - Ajoute l'effet flip
  * @props {Boolean} disabled - Désactive le swap (hérité de commonProps)
- * @props {String} id, ariaLabel, role, tabindex, tooltip, tooltip_placement - hérités de commonProps
+ * @props {String} id, ariaLabel, role, tabindex - hérités de commonProps
  * @slot on - Contenu affiché quand actif (swap-on)
  * @slot off - Contenu affiché quand inactif (swap-off)
  * @slot indeterminate - Contenu affiché quand indéterminé (swap-indeterminate)
@@ -43,12 +41,13 @@ defineOptions({ inheritAttrs: false }); // Pour que les évéments natifs soient
  */
 
 import { ref, computed, watch, toRefs } from 'vue';
-import { getCommonProps, getCommonAttrs, mergeClasses, getCustomUtilityClasses } from '@/Utils/atomic-design/uiHelper';
+import { getCommonProps, getCommonAttrs, getCustomUtilityProps, getCustomUtilityClasses, mergeClasses } from '@/Utils/atomic-design/uiHelper';
 
 const emit = defineEmits(['update:modelValue', 'change']);
 
 const props = defineProps({
     ...getCommonProps(),
+    ...getCustomUtilityProps(),
     modelValue: {
         type: Boolean,
         default: undefined,
@@ -106,12 +105,13 @@ const atomClasses = computed(() =>
         props.class
     )
 );
+
 const attrs = computed(() => getCommonAttrs(props));
 
 </script>
 
 <template>
-    <label :class="atomClasses" v-bind="attrs" v-on="$attrs" :aria-checked="isActive" :tabindex="props.tabindex">
+    <label :class="atomClasses" v-bind="attrs" v-on="$attrs">
         <!-- Checkbox caché pour accessibilité et v-model -->
         <input type="checkbox" :checked="isActive" :disabled="props.disabled" @change="toggle" style="display: none;"
             :aria-checked="isActive" :id="props.id" />

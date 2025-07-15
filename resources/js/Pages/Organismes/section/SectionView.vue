@@ -17,6 +17,7 @@ import Btn from '@/Pages/Atoms/action/Btn.vue';
 import Container from '@/Pages/Atoms/data-display/Container.vue';
 import Modal from '@/Pages/Molecules/action/Modal.vue';
 import Alert from '@/Pages/Atoms/feedback/Alert.vue';
+import Tooltip from '@/Pages/Atoms/feedback/Tooltip.vue';
 
 const props = defineProps({
     section: {
@@ -64,10 +65,14 @@ function deleteSection() {
 
             <div v-if="canEdit || canDelete" class="flex gap-2">
                 <Link v-if="canEdit" :href="route('sections.edit', { section: section.uniqid })">
-                <Btn label="Éditer" tooltip="Modifier cette section" aria-label="Éditer la section" />
+                    <Tooltip content="Modifier cette section" placement="top">
+                        <Btn label="Éditer" aria-label="Éditer la section" />
+                    </Tooltip>
                 </Link>
-                <Btn v-if="canDelete" label="Supprimer" theme="error" @click="openDeleteModal"
-                    tooltip="Supprimer cette section" aria-label="Supprimer la section" />
+                <Tooltip content="Supprimer cette section" placement="top">
+                    <Btn v-if="canDelete" label="Supprimer" theme="error" @click="openDeleteModal"
+                        aria-label="Supprimer la section" />
+                </Tooltip>
             </div>
 
             <Alert v-if="feedback.message" :color="feedback.type === 'success' ? 'success' : 'error'" variant="soft"
@@ -82,9 +87,12 @@ function deleteSection() {
                         Êtes-vous sûr de vouloir supprimer cette section ? Cette action est irréversible.
                     </p>
                     <div class="flex justify-end gap-4 mt-6">
-                        <Btn theme="secondary" @click="closeDeleteModal" label="Annuler" tooltip="Annuler" />
-                        <Btn theme="error" @click="deleteSection" label="Supprimer"
-                            tooltip="Confirmer la suppression" />
+                        <Tooltip content="Annuler" placement="top">
+                            <Btn theme="secondary" @click="closeDeleteModal" label="Annuler" />
+                        </Tooltip>
+                        <Tooltip content="Confirmer la suppression" placement="top">
+                            <Btn theme="error" @click="deleteSection" label="Supprimer" />
+                        </Tooltip>
                     </div>
                 </Container>
             </Modal>

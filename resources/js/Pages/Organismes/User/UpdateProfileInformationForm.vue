@@ -13,12 +13,13 @@
  */
 import { useForm, usePage } from '@inertiajs/vue3';
 import InputLabel from '@/Pages/Atoms/data-input/InputLabel.vue';
-import InputField from '@/Pages/Atoms/data-input/InputField.vue';
+import InputField from '@/Pages/Molecules/data-input/InputField.vue';
 import Validator from '@/Pages/Atoms/data-input/Validator.vue';
 import Btn from '@/Pages/Atoms/action/Btn.vue';
 import Route from '@/Pages/Atoms/action/Route.vue';
 import Alert from '@/Pages/Atoms/feedback/Alert.vue';
 import Container from '@/Pages/Atoms/data-display/Container.vue';
+import Tooltip from '@/Pages/Atoms/feedback/Tooltip.vue';
 
 const emit = defineEmits(['success', 'error']);
 
@@ -68,17 +69,21 @@ const updateProfile = () => {
             <form @submit.prevent="updateProfile" class="mt-6 space-y-6">
                 <div class="space-y-2">
                     <InputLabel for="name" value="Nom" theme="primary" />
-                    <InputField id="name" v-model="form.name" type="text" required autofocus autocomplete="name"
-                        theme="primary" tooltip="Votre nom d'affichage" aria-label="Nom"
-                        :aria-invalid="!!form.errors.name" :class="'mt-1 block w-full'" />
+                    <Tooltip content="Votre nom d'affichage" placement="top">
+                        <InputField id="name" v-model="form.name" type="text" required autofocus autocomplete="name"
+                            theme="primary" aria-label="Nom"
+                            :aria-invalid="!!form.errors.name" :class="'mt-1 block w-full'" />
+                    </Tooltip>
                     <Validator :message="form.errors.name" :visible="!!form.errors.name" class="mt-2" />
                 </div>
 
                 <div class="space-y-2">
                     <InputLabel for="email" value="Adresse email" theme="primary" />
-                    <InputField id="email" v-model="form.email" type="email" required autocomplete="username"
-                        theme="primary" tooltip="Votre adresse email" aria-label="Adresse email"
-                        :aria-invalid="!!form.errors.email" :class="'mt-1 block w-full'" />
+                    <Tooltip content="Votre adresse email" placement="top">
+                        <InputField id="email" v-model="form.email" type="email" required autocomplete="username"
+                            theme="primary" aria-label="Adresse email"
+                            :aria-invalid="!!form.errors.email" :class="'mt-1 block w-full'" />
+                    </Tooltip>
                     <Validator :message="form.errors.email" :visible="!!form.errors.email" class="mt-2" />
                 </div>
 
@@ -86,11 +91,12 @@ const updateProfile = () => {
                     class="p-4 rounded-lg bg-warning-900/20 backdrop-blur-sm">
                     <p class="text-sm text-warning-100">
                         Votre adresse email n'est pas vérifiée.
-                        <Route route="verification.send" method="post"
-                            class="text-warning-200 hover:text-warning-100 underline"
-                            tooltip="Renvoyer l'email de vérification">
-                            Cliquez ici pour renvoyer l'email de vérification.
-                        </Route>
+                        <Tooltip content="Renvoyer l'email de vérification" placement="top">
+                            <Route route="verification.send" method="post"
+                                class="text-warning-200 hover:text-warning-100 underline">
+                                Cliquez ici pour renvoyer l'email de vérification.
+                            </Route>
+                        </Tooltip>
                     </p>
                     <div v-show="status === 'verification-link-sent'" class="mt-2 text-sm font-medium text-success-500">
                         Un nouvel email de vérification a été envoyé à votre adresse email.
@@ -98,8 +104,9 @@ const updateProfile = () => {
                 </div>
 
                 <div class="flex items-center gap-4">
-                    <Btn theme="primary" :disabled="form.processing" label="Enregistrer"
-                        tooltip="Mettre à jour les informations du profil" />
+                    <Tooltip content="Mettre à jour les informations du profil" placement="top">
+                        <Btn theme="primary" :disabled="form.processing" label="Enregistrer" />
+                    </Tooltip>
 
                     <Transition enter-active-class="transition ease-in-out duration-300" enter-from-class="opacity-0"
                         leave-active-class="transition ease-in-out duration-300" leave-to-class="opacity-0">

@@ -14,7 +14,7 @@ class DeleteAccountTest extends TestCase
     {
         $user = User::factory()->create();
         $response = $this->actingAs($user)->delete('/user');
-        $response->assertRedirect(route('user.dashboard', absolute: false));
+        $response->assertRedirect(route('user.show', $user, absolute: false));
         $this->assertSoftDeleted('users', ['id' => $user->id]);
     }
 
@@ -23,7 +23,7 @@ class DeleteAccountTest extends TestCase
         $admin = User::factory()->create(['role' => User::roleValue('admin')]);
         $user = User::factory()->create();
         $response = $this->actingAs($admin)->delete('/user/' . $user->id);
-        $response->assertRedirect(route('user.dashboard', absolute: false));
+        $response->assertRedirect(route('user.show', $user, absolute: false));
         $this->assertSoftDeleted('users', ['id' => $user->id]);
     }
 

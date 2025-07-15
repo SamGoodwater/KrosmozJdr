@@ -23668,6 +23668,98 @@ namespace App\Http\Requests\Auth {
         }
 
             }
+    /**
+     * 
+     *
+     */
+    class RegisterRequest {
+        /**
+         * 
+         *
+         * @see \Illuminate\Foundation\Providers\FoundationServiceProvider::registerRequestValidation()
+         * @param array $rules
+         * @param mixed $params
+         * @static 
+         */
+        public static function validate($rules, ...$params)
+        {
+            return \App\Http\Requests\Auth\RegisterRequest::validate($rules, ...$params);
+        }
+
+        /**
+         * 
+         *
+         * @see \Illuminate\Foundation\Providers\FoundationServiceProvider::registerRequestValidation()
+         * @param string $errorBag
+         * @param array $rules
+         * @param mixed $params
+         * @static 
+         */
+        public static function validateWithBag($errorBag, $rules, ...$params)
+        {
+            return \App\Http\Requests\Auth\RegisterRequest::validateWithBag($errorBag, $rules, ...$params);
+        }
+
+        /**
+         * 
+         *
+         * @see \Illuminate\Foundation\Providers\FoundationServiceProvider::registerRequestSignatureValidation()
+         * @param mixed $absolute
+         * @static 
+         */
+        public static function hasValidSignature($absolute = true)
+        {
+            return \App\Http\Requests\Auth\RegisterRequest::hasValidSignature($absolute);
+        }
+
+        /**
+         * 
+         *
+         * @see \Illuminate\Foundation\Providers\FoundationServiceProvider::registerRequestSignatureValidation()
+         * @static 
+         */
+        public static function hasValidRelativeSignature()
+        {
+            return \App\Http\Requests\Auth\RegisterRequest::hasValidRelativeSignature();
+        }
+
+        /**
+         * 
+         *
+         * @see \Illuminate\Foundation\Providers\FoundationServiceProvider::registerRequestSignatureValidation()
+         * @param mixed $ignoreQuery
+         * @param mixed $absolute
+         * @static 
+         */
+        public static function hasValidSignatureWhileIgnoring($ignoreQuery = [], $absolute = true)
+        {
+            return \App\Http\Requests\Auth\RegisterRequest::hasValidSignatureWhileIgnoring($ignoreQuery, $absolute);
+        }
+
+        /**
+         * 
+         *
+         * @see \Illuminate\Foundation\Providers\FoundationServiceProvider::registerRequestSignatureValidation()
+         * @param mixed $ignoreQuery
+         * @static 
+         */
+        public static function hasValidRelativeSignatureWhileIgnoring($ignoreQuery = [])
+        {
+            return \App\Http\Requests\Auth\RegisterRequest::hasValidRelativeSignatureWhileIgnoring($ignoreQuery);
+        }
+
+        /**
+         * 
+         *
+         * @see \Inertia\ServiceProvider::registerRequestMacro()
+         * @static 
+         */
+        public static function inertia()
+        {
+            return \App\Http\Requests\Auth\RegisterRequest::inertia();
+        }
+
+            }
     }
 
 namespace Illuminate\Foundation\Http {

@@ -2,7 +2,7 @@
 import { useForm } from "@inertiajs/vue3";
 import { onMounted } from "vue";
 import { usePageTitle } from "@/Composables/layout/usePageTitle";
-import InputField from "@/Pages/Atoms/data-input/InputField.vue";
+import InputField from "@/Pages/Molecules/data-input/InputField.vue";
 import Checkbox from "@/Pages/Atoms/data-input/Checkbox.vue";
 import Btn from "@/Pages/Atoms/action/Btn.vue";
 import Route from "@/Pages/Atoms/action/Route.vue";
@@ -31,7 +31,10 @@ onMounted(() => {
 </script>
 
 <template>
-    <div>
+    <div class="flex flex-col items-center justify-center h-full w-full">
+
+        <h2 class="text-title py-8">Connexion</h2>
+
         <div v-if="status" class="mb-4 text-sm font-medium text-green-600">
             {{ status }}
         </div>
@@ -45,7 +48,7 @@ onMounted(() => {
             <div class="flex flex-col gap-2">
                 <InputField
                     id="identifier"
-                    color="secondary"
+                    color="primary"
                     autofocus
                     required
                     placeholder="Email ou Pseudo"
@@ -61,7 +64,7 @@ onMounted(() => {
                 <InputField
                     id="password"
                     type="password"
-                    color="secondary"
+                    color="primary"
                     required
                     v-model="form.password"
                     name="password"
@@ -73,16 +76,16 @@ onMounted(() => {
             <div class="mt-4">
                 <Checkbox
                     id="remember"
-                    size="sm"
+                    size="md"
                     name="remember"
                     v-model="form.remember"
                     label="Se rappeler de mes identifiants"
                 />
             </div>
 
-            <div class="mt-4 flex flex-col items-center justify-center gap-3">
+            <div class="mt-4 flex flex-col items-center justify-center gap-5">
                 <Route route="password.request">
-                    <Btn color="neutral" variant="ghost" size="sm"
+                    <Btn color="neutral" variant="link" size="md"
                         >Mot de passe oublié ?</Btn
                     >
                 </Route>
@@ -98,7 +101,7 @@ onMounted(() => {
                 </Btn>
 
                 <Route route="register">
-                    <Btn color="neutral" variant="ghost" size="sm"
+                    <Btn color="neutral" variant="link" size="md"
                         >Pas encore de compte ?</Btn
                     >
                 </Route>

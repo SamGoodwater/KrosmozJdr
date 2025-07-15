@@ -22,11 +22,12 @@
 import { ref } from 'vue';
 import { useForm } from '@inertiajs/vue3';
 import InputLabel from '@/Pages/Atoms/data-input/InputLabel.vue';
-import InputField from '@/Pages/Atoms/data-input/InputField.vue';
+import InputField from '@/Pages/Molecules/data-input/InputField.vue';
 import Validator from '@/Pages/Atoms/data-input/Validator.vue';
 import Btn from '@/Pages/Atoms/action/Btn.vue';
 import Alert from '@/Pages/Atoms/feedback/Alert.vue';
 import Container from '@/Pages/Atoms/data-display/Container.vue';
+import Tooltip from '@/Pages/Atoms/feedback/Tooltip.vue';
 
 const emit = defineEmits(['success', 'error']);
 
@@ -76,36 +77,43 @@ const updatePassword = () => {
             <form @submit.prevent="updatePassword" class="mt-6 space-y-6">
                 <div class="space-y-2">
                     <InputLabel for="current_password" value="Mot de passe actuel" theme="primary" />
-                    <InputField id="current_password" ref="currentPasswordInput" v-model="form.current_password"
-                        type="password" autocomplete="current-password" theme="primary"
-                        tooltip="Entrez votre mot de passe actuel" aria-label="Mot de passe actuel"
-                        :aria-invalid="!!form.errors.current_password" :class="'mt-1 block w-full'" />
+                    <Tooltip content="Entrez votre mot de passe actuel" placement="top">
+                        <InputField id="current_password" ref="currentPasswordInput" v-model="form.current_password"
+                            type="password" autocomplete="current-password" theme="primary"
+                            aria-label="Mot de passe actuel"
+                            :aria-invalid="!!form.errors.current_password" :class="'mt-1 block w-full'" />
+                    </Tooltip>
                     <Validator :message="form.errors.current_password" :visible="!!form.errors.current_password"
                         class="mt-2" />
                 </div>
 
                 <div class="space-y-2">
                     <InputLabel for="password" value="Nouveau mot de passe" theme="primary" />
-                    <InputField id="password" ref="passwordInput" v-model="form.password" type="password"
-                        autocomplete="new-password" theme="primary"
-                        tooltip="Le mot de passe doit contenir au moins 8 caractères" aria-label="Nouveau mot de passe"
-                        :aria-invalid="!!form.errors.password" :class="'mt-1 block w-full'" />
+                    <Tooltip content="Le mot de passe doit contenir au moins 8 caractères" placement="top">
+                        <InputField id="password" ref="passwordInput" v-model="form.password" type="password"
+                            autocomplete="new-password" theme="primary"
+                            aria-label="Nouveau mot de passe"
+                            :aria-invalid="!!form.errors.password" :class="'mt-1 block w-full'" />
+                    </Tooltip>
                     <Validator :message="form.errors.password" :visible="!!form.errors.password" class="mt-2" />
                 </div>
 
                 <div class="space-y-2">
                     <InputLabel for="password_confirmation" value="Confirmer le mot de passe" theme="primary" />
-                    <InputField id="password_confirmation" v-model="form.password_confirmation" type="password"
-                        autocomplete="new-password" theme="primary" tooltip="Confirmez votre nouveau mot de passe"
-                        aria-label="Confirmer le mot de passe" :aria-invalid="!!form.errors.password_confirmation"
-                        :class="'mt-1 block w-full'" />
+                    <Tooltip content="Confirmez votre nouveau mot de passe" placement="top">
+                        <InputField id="password_confirmation" v-model="form.password_confirmation" type="password"
+                            autocomplete="new-password" theme="primary"
+                            aria-label="Confirmer le mot de passe" :aria-invalid="!!form.errors.password_confirmation"
+                            :class="'mt-1 block w-full'" />
+                    </Tooltip>
                     <Validator :message="form.errors.password_confirmation"
                         :visible="!!form.errors.password_confirmation" class="mt-2" />
                 </div>
 
                 <div class="flex items-center gap-4">
-                    <Btn theme="primary" :disabled="form.processing" label="Enregistrer"
-                        tooltip="Mettre à jour le mot de passe" />
+                    <Tooltip content="Mettre à jour le mot de passe" placement="top">
+                        <Btn theme="primary" :disabled="form.processing" label="Enregistrer" />
+                    </Tooltip>
 
                     <Transition enter-active-class="transition ease-in-out duration-300" enter-from-class="opacity-0"
                         leave-active-class="transition ease-in-out duration-300" leave-to-class="opacity-0">
