@@ -1,5 +1,5 @@
 <script setup>
-defineOptions({ inheritAttrs: false }); // Pour que les événements natifs soient transmis à l'atom
+defineOptions({ inheritAttrs: false });
 
 /**
  * InputCore Atom (DaisyUI, Atomic Design)
@@ -7,13 +7,12 @@ defineOptions({ inheritAttrs: false }); // Pour que les événements natifs soie
  * @description
  * Atom de base pour les champs input, stylé DaisyUI, sans gestion de label ni de layout.
  * - Props : type, v-model, placeholder, disabled, readonly, color, size, style, etc.
- * - Accessibilité : id, ariaLabel, role, tabindex, etc.
- * - Édition réactive via useEditableField (optionnel)
+ * - Accessibilité : id, ariaLabel, role, tabindex, aria-invalid, etc.
  * - Utilise getInputClasses pour les classes DaisyUI/Tailwind
  * - Slot par défaut : input natif
  * - Gère tous les types d'input : text, email, password, number, url, tel, search, date, etc.
- * - Toggle password automatique (œil) pour type="password" si le navigateur ne l'a pas déjà
  * - Utilise le système de labels inline de DaisyUI pour éviter les divs englobantes
+ * - Support des utilitaires custom (shadow, backdrop, opacity, rounded)
  *
  * @see https://daisyui.com/components/input/
  * @version DaisyUI v5.x
@@ -21,210 +20,125 @@ defineOptions({ inheritAttrs: false }); // Pour que les événements natifs soie
  * @example
  * <InputCore type="text" v-model="name" placeholder="Nom" />
  * <InputCore type="password" v-model="password" placeholder="Mot de passe" />
- * <InputCore type="password" v-model="password" :showPasswordToggle="false" />
  * <InputCore type="email" v-model="email" color="primary" size="lg" />
+ * <InputCore type="text" v-model="search" shadow="lg" rounded="full" />
  *
  * @props {String} type - Type d'input (text, email, password, number, url, tel, search, date, etc.)
  * @props {String} modelValue - v-model
  * @props {String} placeholder
  * @props {Boolean} disabled, readonly
- * @props {String} color, size, style
+ * @props {String} color, size, style, variant
  * @props {String} id, ariaLabel, role, tabindex
- * @props {Boolean} useFieldComposable - active l'édition réactive
- * @props {Object} field - objet field externe (optionnel)
- * @props {Number} debounceTime - délai debounce (ms)
- * @props {Boolean} showPasswordToggle - affiche le toggle œil pour les passwords (défaut true)
- * @props {String} labelLeft - Label inline à gauche (dans la balise label)
- * @props {String} labelRight - Label inline à droite (dans la balise label)
- * @slot labelLeft - Slot pour label inline à gauche
- * @slot labelRight - Slot pour label inline à droite
+ * @props {Boolean|String} aria-invalid - État de validation pour l'accessibilité
+ * @props {String} labelStart - Label inline à gauche (dans la balise label)
+ * @props {String} labelEnd - Label inline à droite (dans la balise label)
+ * @props {Boolean} labelFloating - Active le mode floating label
+ * @props {String} shadow, backdrop, opacity, rounded - utilitaires custom
+ * @slot labelStart - Slot pour label inline à gauche
+ * @slot labelEnd - Slot pour label inline à droite
+ * @slot floatingLabel - Slot pour label flottant
  * @slot default - input natif (optionnel)
  */
-import { ref, computed, onMounted, onUnmounted } from 'vue';
-import { getCommonProps, getCommonAttrs, mergeClasses } from '@/Utils/atomic-design/uiHelper';
-import { getInputAttrs, getInputProps } from '@/Utils/atomic-design/atomManager';
+/**
+ * [MIGRATION 2024-06] Ce composant utilise désormais inputHelper.js pour la gestion factorisée des props/attrs input (voir /Utils/atomic-design/inputHelper.js)
+ */
+import { ref, computed, useAttrs } from 'vue';
+import { getCommonProps, getCommonAttrs, getCustomUtilityProps, getCustomUtilityClasses, mergeClasses } from '@/Utils/atomic-design/uiHelper';
+import { getInputProps, getInputAttrs } from '@/Utils/atomic-design/inputHelper';
 import { getInputClasses } from '@/Composables/form/useInputStyle';
-import useEditableField from '@/Composables/form/useEditableField';
-import usePasswordToggle from '@/Composables/form/usePasswordToggle';
-import { styleInputList, variantInputList } from '@/Pages/Atoms/atomMap';
-import Btn from '@/Pages/Atoms/action/Btn.vue';
 
 const props = defineProps({
     ...getCommonProps(),
-    ...getInputProps(),
-    color: { type: String, default: '' },
-    size: { type: String, default: '' },
-    style: { 
-        type: [String, Object], 
-        default: 'classic', 
-        validator: (v) => {
-            if (typeof v === 'string') {
-                return styleInputList.includes(v);
-            }
-            return true; // Accepte les objets pour compatibilité
-        }
-    },
-    variant: { type: String, default: '', validator: (v) => variantInputList.includes(v) },
-    type: { type: String, default: 'text' },
-    useFieldComposable: { type: Boolean, default: false },
-    field: { type: Object, default: null },
-    debounceTime: { type: Number, default: 500 },
-    showPasswordToggle: { type: Boolean, default: true },
-    labelRight: { type: String, default: '' },
-    labelLeft: { type: String, default: '' },
-    // Override ariaLabel pour s'assurer qu'elle soit une string
-    ariaLabel: { type: String, default: '' },
+    ...getCustomUtilityProps(),
+    ...getInputProps('input', 'core'),
 });
 
 const emit = defineEmits(['update:modelValue']);
 const inputRef = ref(null);
-
-// Utilise le composable pour la gestion du toggle password
-const passwordToggle = usePasswordToggle({
-    type: computed(() => props.type),
-    showToggle: computed(() => props.showPasswordToggle)
-});
-
-// Gestion editableField (optionnel)
-const editableField = computed(() => {
-    if (props.useFieldComposable) {
-        return useEditableField(props.modelValue, {
-            field: props.field,
-            debounce: props.debounceTime,
-            onUpdate: (val) => emit('update:modelValue', val),
-        });
-    }
-    return null;
-});
-
-const isFieldModified = computed(() =>
-    props.useFieldComposable && editableField.value
-        ? editableField.value.isModified.value
-        : false,
-);
-
-const displayValue = computed(() => {
-    if (props.useFieldComposable && editableField.value) {
-        return editableField.value.value.value;
-    }
-    return props.modelValue;
-});
-
-function onInput(e) {
-    if (props.useFieldComposable && editableField.value) {
-        editableField.value.onInput(e);
-    } else {
-        emit('update:modelValue', e.target.value);
-    }
-}
-
-function onBlur() {
-    if (props.useFieldComposable && editableField.value) {
-        editableField.value.onBlur();
-    }
-}
-
-function handleReset() {
-    if (
-        props.useFieldComposable &&
-        editableField.value &&
-        typeof editableField.value.reset === 'function'
-    ) {
-        editableField.value.reset();
-        editableField.value.onBlur();
-    }
-}
-
-onMounted(() => {
-    if (inputRef.value && props.autofocus) {
-        inputRef.value.focus();
-    }
-});
-onUnmounted(() => {
-    if (editableField.value && editableField.value.debounceTimeout) {
-        clearTimeout(editableField.value.debounceTimeout);
-    }
-});
-defineExpose({ 
-    focus: () => inputRef.value && inputRef.value.focus(),
-    isFieldModified,
-    handleReset,
-});
+const $attrs = useAttrs();
 
 const atomClasses = computed(() => {
-    // Extrait la valeur de style (string ou objet)
-    const styleValue = typeof props.style === 'string' ? props.style : 'classic';
-    
-    return getInputClasses({
-        style: styleValue,
-        color: props.color,
-        size: props.size,
-        variant: props.variant,
-        error: false,
-    });
+    const styleValue = typeof props.style === 'string' ? props.style : 'glass';
+    return mergeClasses(
+        getInputClasses({
+            style: styleValue,
+            color: props.color,
+            size: props.size,
+            variant: props.variant,
+            error: false,
+        }),
+        getCustomUtilityClasses(props)
+    );
 });
 
-const attrs = computed(() => {
-    const finalType = props.type === 'password' ? passwordToggle.effectiveType.value : props.type;
-    return {
-        ...getCommonAttrs(props),
-        ...getInputAttrs(props),
-        type: finalType,
-        'aria-label': typeof props.ariaLabel === 'string' ? props.ariaLabel : undefined,
-    };
+const shouldShowInlineLabels = computed(() => {
+    if (props.labelFloating) {
+        return false;
+    }
+    return props.labelEnd || props.labelStart;
 });
+
+const labelClasses = computed(() => {   
+    const baseClasses = atomClasses.value;
+    if (props.labelFloating) {
+        return mergeClasses([baseClasses, 'floating-label']);
+    }
+    return baseClasses;
+});
+
+const attrs = computed(() => ({
+    ...getCommonAttrs(props),
+    ...getInputAttrs('input', 'core'),
+    type: props.type,
+    'aria-label': typeof props.ariaLabel === 'string' ? props.ariaLabel : undefined,
+    'aria-invalid': props['aria-invalid'] !== undefined ? props['aria-invalid'] : undefined,
+    readonly: props.readonly,
+    autofocus: props.autofocus,
+    ref: inputRef,
+    value: props.modelValue,
+}));
+
+function onInput(e) {
+    emit('update:modelValue', e.target.value);
+}
+
 </script>
 
 <template>
-    <label :class="atomClasses" v-if="labelRight || $slots.labelRight || labelLeft || $slots.labelLeft || passwordToggle.shouldShowToggle || (props.useFieldComposable && isFieldModified)">
-        <span v-if="labelLeft || $slots.labelLeft" class="label-text">
-            <slot name="labelLeft">{{ labelLeft }}</slot>
+    <!-- Structure pour labels inline (labelStart/labelEnd) -->
+    <label :class="labelClasses" v-if="shouldShowInlineLabels">
+        <span v-if="labelStart || $slots.labelStart" class="label-text">
+            <slot name="labelStart">{{ labelStart }}</slot>
         </span>
         <input
-            ref="inputRef"
             v-bind="attrs"
             v-on="$attrs"
-            :value="displayValue"
             @input="onInput"
-            @blur="onBlur"
         />
-        <span v-if="labelRight || $slots.labelRight || passwordToggle.shouldShowToggle || (props.useFieldComposable && isFieldModified)" class="label-text">
-            <slot name="labelRight">{{ labelRight }}</slot>
-            <Btn
-                v-if="passwordToggle.shouldShowToggle" 
-                variant="link"
-                circle
-                size="xs"
-                class="text-base-content/60 hover:text-base-content/80 transition-colors"
-                @click.stop="passwordToggle.togglePassword"
-                :aria-label="typeof passwordToggle.ariaLabel === 'string' ? passwordToggle.ariaLabel : ''"
-            >
-                <i 
-                    :class="passwordToggle.iconClass"
-                    class="text-sm"
-                ></i>
-            </Btn>
-            <Btn
-                v-if="props.useFieldComposable && isFieldModified"
-                variant="link"
-                circle
-                size="xs"
-                @click.stop="handleReset"
-                :aria-label="'Réinitialiser'"
-            >
-                <i class="fa-solid fa-arrow-rotate-left"></i>
-            </Btn>
+        <span v-if="labelEnd || $slots.labelEnd" class="label-text">
+            <slot name="labelEnd">{{ labelEnd }}</slot>
         </span>
     </label>
+    
+    <!-- Structure pour floating label -->
+    <label v-else-if="labelFloating" :class="labelClasses">
+        <input
+            v-bind="attrs"
+            v-on="$attrs"
+            @input="onInput"
+        />
+        <span class="label-text">
+            <slot name="floatingLabel">{{ props.placeholder || 'Label' }}</slot>
+        </span>
+    </label>
+    
+    <!-- Input simple sans label -->
     <input
         v-else
-        ref="inputRef"
         v-bind="attrs"
         v-on="$attrs"
         :class="atomClasses"
-        :value="displayValue"
         @input="onInput"
-        @blur="onBlur"
     />
 </template>
 

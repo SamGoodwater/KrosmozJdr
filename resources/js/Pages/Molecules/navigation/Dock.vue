@@ -58,9 +58,9 @@ const attrs = computed(() => getCommonAttrs(props));
 </script>
 
 <template>
-    <div :class="moleculeClasses" v-bind="attrs" v-on="$attrs">
+    <ul :class="moleculeClasses" v-bind="attrs" v-on="$attrs">
         <slot />
-    </div>
+    </ul>
 </template>
 
 <style scoped lang="scss">
@@ -75,8 +75,10 @@ const attrs = computed(() => getCommonAttrs(props));
     align-items: center;
     justify-content: space-around;
     padding: calc(0.25rem * 2);
+    list-style: none;
 
     &>* {
+        text-decoration: none;
         position: relative;
         margin-bottom: calc(0.25rem * 2);
         display: flex;

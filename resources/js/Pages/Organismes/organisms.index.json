@@ -15,21 +15,21 @@
       }
     ],
     "slots": [],
-    "file": "User/UpdateProfileInformationForm.vue"
+    "file": "user/UpdateProfileInformationForm.vue"
   },
   {
     "name": "UpdatePasswordForm",
     "description": "",
     "props": [],
     "slots": [],
-    "file": "User/UpdatePasswordForm.vue"
+    "file": "user/UpdatePasswordForm.vue"
   },
   {
     "name": "DeleteUserForm",
     "description": "",
     "props": [],
     "slots": [],
-    "file": "User/DeleteUserForm.vue"
+    "file": "user/DeleteUserForm.vue"
   },
   {
     "name": "SectionView",
@@ -101,5 +101,37 @@
     "props": [],
     "slots": [],
     "file": "feedback/NotificationContainer.vue"
+  },
+  {
+    "name": "Fieldset",
+    "description": "Fieldset Molecule (DaisyUI + Custom Utility)",
+    "props": [
+      {
+        "name": "legend",
+        "type": "String",
+        "desc": "- Titre du fieldset (optionnel, sinon slot #legend)"
+      },
+      {
+        "name": "shadow,",
+        "type": "String",
+        "desc": "backdrop, opacity - utilitaires custom"
+      },
+      {
+        "name": "id,",
+        "type": "String|Object",
+        "desc": "ariaLabel, role, tabindex - hérités de commonProps"
+      }
+    ],
+    "slots": [
+      {
+        "name": "legend",
+        "desc": "- Slot pour le titre du fieldset (prioritaire sur prop legend)"
+      },
+      {
+        "name": "default",
+        "desc": "- Contenu du fieldset (inputs, etc.)"
+      }
+    ],
+    "file": "data-input/Fieldset.vue"
   }
 ]

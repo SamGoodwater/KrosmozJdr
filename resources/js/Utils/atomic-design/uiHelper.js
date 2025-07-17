@@ -23,20 +23,11 @@
  * @type {Object}
  */
 const allCommonAttrs = {
-    /** Accessibilité */
     ariaLabel: { type: String, default: "" },
     role: { type: String, default: "" },
     tabindex: { type: [String, Number], default: 0 },
     id: { type: String, default: "" },
     disabled: { type: Boolean, default: false },
-    /** Tooltip (obligatoire pour tous les composants UI sauf Tooltip lui-même) */
-    tooltip: { type: [String, Object], default: "" },
-    tooltip_placement: {
-        type: String,
-        default: "top",
-        validator: (v) => ["top", "right", "bottom", "left"].includes(v),
-    },
-    /** Props HTML standards */
     class: { type: String, default: "" },
     style: { type: [String, Object], default: "" },
 };

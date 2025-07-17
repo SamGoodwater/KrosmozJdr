@@ -1,0 +1,18 @@
+---
+description: Fichiers UI, design system, styles, Tailwind/DaisyUI, etc.
+alwaysApply: false
+---
+# Design System UI
+
+- Utiliser Tailwind CSS et DaisyUI pour tous les styles.
+- Respecter les principes d’accessibilité (contraste, navigation clavier, aria-labels).
+- Les thèmes et tokens sont centralisés dans les fichiers CSS/SCSS dédiés.
+- Voir [DESIGN_GUIDE.md](../../docs/30-UI/DESIGN_GUIDE.md) pour les conventions de design, glassmorphism, responsive, etc.
+
+Exemples :
+- Un composant doit toujours être accessible au clavier.
+- Les couleurs et espacements sont définis via les tokens du design system.
+description:
+globs:
+alwaysApply: false
+---

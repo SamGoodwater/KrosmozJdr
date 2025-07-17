@@ -17,7 +17,6 @@
  *
  * @see Menu, MenuItem, Dock, DockItem, Route, Image, Icon, ToggleSidebar, SearchInput
  */
-import SearchInput from "@/Pages/Molecules/data-input/SearchInput.vue";
 import Route from "@/Pages/Atoms/action/Route.vue";
 import Image from "@/Pages/Atoms/data-display/Image.vue";
 import Menu from "@/Pages/Molecules/navigation/Menu.vue";

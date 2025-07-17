@@ -1,90 +1,99 @@
 /**
- * Props communes à tous les inputs (input, select, textarea, checkbox, radio, range, etc.)
- * Utiliser dans chaque atom input :
- *   ...getInputProps()
- * Pour exclure certaines props :
- *   ...getInputProps({ exclude: ['modelValue', ...] })
+ * atomManager.js — Gestionnaire des props et attributs pour les atoms
+ *
+ * @description
+ * Module centralisé pour la gestion des props et attributs communs aux atoms.
+ * Fournit des helpers pour générer les props et attributs HTML des composants atomiques.
+ * 
+ * Les helpers de validation sont dans validationManager.js
+ * Les helpers de labels sont dans labelManager.js
+ *
+ * @example
+ * import { getInputProps, getInputAttrs, hasValidation } from '@/Utils/atomic-design/atomManager';
+ * 
+ * // Props pour un input
+ * const props = defineProps({
+ *   ...getInputProps(),
+ *   // props spécifiques
+ * });
+ * 
+ * // Attributs HTML
+ * const attrs = getInputAttrs(props);
  */
-export function getInputProps({ exclude = [] } = {}) {
-    const allInputProps = {
+
+/**
+ * Props communes à tous les boutons (Btn, Link, etc.)
+ * @param {Object} options - Options de configuration
+ * @param {Array} options.exclude - Props à exclure
+ * @returns {Object} - Props communes pour les boutons
+ */
+export function getButtonProps({ exclude = [] } = {}) {
+    const allButtonProps = {
+        type: { type: String, default: 'button', validator: (v) => ['button', 'submit', 'reset'].includes(v) },
+        disabled: { type: Boolean, default: false },
+        loading: { type: Boolean, default: false },
+        href: { type: String, default: '' },
+        target: { type: String, default: '' },
+        rel: { type: String, default: '' },
+    };
+    
+    return Object.fromEntries(
+        Object.entries(allButtonProps).filter(([key]) => !exclude.includes(key)),
+    );
+}
+
+/**
+ * Attributs HTML pour les boutons
+ * @param {Object} props - Props du composant
+ * @returns {Object} - Attributs HTML pour les boutons
+ */
+export function getButtonAttrs(props) {
+    return {
+        type: props.type || undefined,
+        disabled: props.disabled || undefined,
+        href: props.href || undefined,
+        target: props.target || undefined,
+        rel: props.rel || undefined,
+    };
+}
+
+/**
+ * Props communes à tous les éléments de formulaire (checkbox, radio, select, etc.)
+ * @param {Object} options - Options de configuration
+ * @param {Array} options.exclude - Props à exclure
+ * @returns {Object} - Props communes pour les éléments de formulaire
+ */
+export function getFormElementProps({ exclude = [] } = {}) {
+    const allFormElementProps = {
         modelValue: {
             type: [String, Number, Boolean, Array, Object],
             default: "",
         },
         name: { type: String, default: "" },
-        placeholder: { type: String, default: "" },
         required: { type: Boolean, default: false },
-        readonly: { type: Boolean, default: false },
         disabled: { type: Boolean, default: false },
+        readonly: { type: Boolean, default: false },
         autocomplete: { type: String, default: "" },
         autofocus: { type: Boolean, default: false },
-        min: { type: [String, Number], default: "" },
-        max: { type: [String, Number], default: "" },
-        step: { type: [String, Number], default: "" },
-        inputmode: { type: String, default: "" },
-        pattern: { type: String, default: "" },
-        maxlength: { type: [String, Number], default: "" },
-        minlength: { type: [String, Number], default: "" },
-        label: { type: String, default: "" },
-        errorMessage: { type: String, default: "" },
-        validator: { type: [Boolean, String, Object], default: true },
-        helper: { type: String, default: "" },
     };
+    
     return Object.fromEntries(
-        Object.entries(allInputProps).filter(([key]) => !exclude.includes(key)),
+        Object.entries(allFormElementProps).filter(([key]) => !exclude.includes(key)),
     );
 }
 
 /**
- * Détermine si un composant doit afficher un état de validation
+ * Attributs HTML pour les éléments de formulaire
  * @param {Object} props - Props du composant
- * @param {Object} slots - Slots du composant (optionnel)
- * @returns {Boolean} - True si validation à afficher
+ * @returns {Object} - Attributs HTML pour les éléments de formulaire
  */
-export function hasValidation(props, slots = {}) {
-    // Si validator est une string non vide (ex: "error", "success")
-    if (typeof props.validator === 'string' && props.validator.trim() !== '') {
-        return true;
-    }
-    
-    // Si errorMessage est une string non vide
-    if (typeof props.errorMessage === 'string' && props.errorMessage.trim() !== '') {
-        return true;
-    }
-    
-    // Si un slot validator est fourni
-    if (slots.validator) {
-        return true;
-    }
-    
-    // Si validator est un objet (cas d'usage avancé)
-    if (typeof props.validator === 'object' && props.validator !== null) {
-        return true;
-    }
-    
-    return false;
-}
-
-/**
- * Extrait les attributs HTML natifs pour un input à partir des props
- * @param {Object} props - Props du composant
- * @returns {Object} - Attributs HTML à appliquer sur <input>, <select>, <textarea>, etc.
- */
-export function getInputAttrs(props) {
+export function getFormElementAttrs(props) {
     return {
         name: props.name || undefined,
-        placeholder: props.placeholder || undefined,
         required: props.required || undefined,
-        readonly: props.readonly || undefined,
         disabled: props.disabled || undefined,
+        readonly: props.readonly || undefined,
         autocomplete: props.autocomplete || undefined,
         autofocus: props.autofocus || undefined,
-        min: props.min || undefined,
-        max: props.max || undefined,
-        step: props.step || undefined,
-        inputmode: props.inputmode || undefined,
-        pattern: props.pattern || undefined,
-        maxlength: props.maxlength || undefined,
-        minlength: props.minlength || undefined,
     };
 }

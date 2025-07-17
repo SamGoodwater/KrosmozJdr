@@ -1,0 +1,18 @@
+---
+globs: app/**/*.php,config/**/*.php,database/**/*.php,routes/**/*.php,tests/**/*.php,composer.json,postcss.config.js,vite.config.js,jsconfig.json
+alwaysApply: false
+---
+# Structure Backend Laravel
+
+- Modules internes dans `app/Modules/`, chaque module est autonome et documenté.
+- Respecter les conventions Laravel et PHP 8.4+ ([PROJECT_STRUCTURE.md](../../docs/10-BestPractices/PROJECT_STRUCTURE.md)).
+- Les tests unitaires sont écrits avec PHPUnit, voir [TESTING_PRACTICES.md](../../docs/10-BestPractices/TESTING_PRACTICES.md) (à compléter si besoin).
+- Utiliser Pint pour le formatage, et documenter chaque module avec un README.
+
+Exemples :
+- Un module doit avoir ses propres tests dans `tests/Modules/NomDuModule/`.
+- Les migrations et seeders sont dans le dossier du module.
+description:
+globs:
+alwaysApply: false
+---

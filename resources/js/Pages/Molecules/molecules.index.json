@@ -436,7 +436,7 @@
   },
   {
     "name": "NotificationToast",
-    "description": "NotificationToast Molecule (Toast + Alert)",
+    "description": "NotificationToast Molecule (Toast + Alert + Animations avancées)",
     "props": [
       {
         "name": "id",
@@ -451,7 +451,17 @@
       {
         "name": "type",
         "type": "String",
-        "desc": "- Type de notification ('success', 'error', 'info', 'warning', '')"
+        "desc": "- Type de notification ('success', 'error', 'info', 'warning', 'primary', 'secondary')"
+      },
+      {
+        "name": "icon",
+        "type": "String",
+        "desc": "- Icône personnalisée (optionnel)"
+      },
+      {
+        "name": "onClick",
+        "type": "Function",
+        "desc": "- Action au click (optionnel)"
       },
       {
         "name": "actions",
@@ -469,9 +479,24 @@
         "desc": "- Placement du toast (optionnel)"
       },
       {
-        "name": "delay",
+        "name": "duration",
         "type": "Number",
-        "desc": "- Délai avant auto-dismiss (optionnel)"
+        "desc": "- Durée d'affichage (ms)"
+      },
+      {
+        "name": "createdAt",
+        "type": "Number",
+        "desc": "- Timestamp de création"
+      },
+      {
+        "name": "fullDisplayTime",
+        "type": "Number",
+        "desc": "- Temps en mode full"
+      },
+      {
+        "name": "contractedDisplayTime",
+        "type": "Number",
+        "desc": "- Temps en mode contracted"
       }
     ],
     "slots": [
@@ -537,6 +562,95 @@
     "file": "entity/EnityCard.vue"
   },
   {
+    "name": "TextareaField",
+    "description": "TextareaField Molecule (DaisyUI, Atomic Design)",
+    "props": [
+      {
+        "name": "label",
+        "type": "String|Object",
+        "desc": "- Label simple (string) ou objet avec positions (top, bottom, start, end, inStart, inEnd)"
+      },
+      {
+        "name": "validation",
+        "type": "Object|String|Boolean",
+        "desc": "- Configuration de validation"
+      },
+      {
+        "name": "helper",
+        "type": "String",
+        "desc": ""
+      },
+      {
+        "name": "actions",
+        "type": "Array|Object|String",
+        "desc": "- Actions contextuelles à activer"
+      },
+      {
+        "name": "disabled,",
+        "type": "Boolean",
+        "desc": "readonly, required, etc."
+      }
+    ],
+    "slots": [
+      {
+        "name": "labelTop,",
+        "desc": "labelBottom, labelStart, labelEnd, labelInStart, labelInEnd"
+      },
+      {
+        "name": "overStart,",
+        "desc": "overEnd, helper, validator"
+      }
+    ],
+    "file": "data-input/TextareaField.vue"
+  },
+  {
+    "name": "SelectField",
+    "description": "SelectField Molecule (DaisyUI, Atomic Design)",
+    "props": [
+      {
+        "name": "label",
+        "type": "String|Object",
+        "desc": "- Label simple (string) ou objet avec positions (top, bottom, start, end, inStart, inEnd)"
+      },
+      {
+        "name": "validation",
+        "type": "Object|String|Boolean",
+        "desc": "- Configuration de validation"
+      },
+      {
+        "name": "helper",
+        "type": "String",
+        "desc": ""
+      },
+      {
+        "name": "actions",
+        "type": "Array|Object|String",
+        "desc": "- Actions contextuelles à activer"
+      },
+      {
+        "name": "options",
+        "type": "Array",
+        "desc": "- Options du select (obligatoire)"
+      },
+      {
+        "name": "multiple,",
+        "type": "Boolean",
+        "desc": "disabled, readonly, required, etc."
+      }
+    ],
+    "slots": [
+      {
+        "name": "labelTop,",
+        "desc": "labelBottom, labelStart, labelEnd, labelInStart, labelInEnd"
+      },
+      {
+        "name": "overStart,",
+        "desc": "overEnd, helper, validator"
+      }
+    ],
+    "file": "data-input/SelectField.vue"
+  },
+  {
     "name": "SearchInput",
     "description": "SearchInput Molecule (Atomic Design, DaisyUI)",
     "props": [
@@ -555,7 +669,63 @@
     "file": "data-input/SearchInput.vue"
   },
   {
-    "name": "FileInput",
+    "name": "InputField",
+    "description": "InputField Molecule (DaisyUI, Atomic Design)",
+    "props": [
+      {
+        "name": "label",
+        "type": "String|Object",
+        "desc": "- Label simple (string) ou objet avec positions"
+      },
+      {
+        "name": "defaultLabelPosition",
+        "type": "String",
+        "desc": "- Position par défaut pour les strings ('floating', 'top', 'bottom', 'start', 'end', 'inStart', 'inEnd')"
+      },
+      {
+        "name": "validation",
+        "type": "Object|String|Boolean",
+        "desc": "- Configuration de validation (nouvelle API)"
+      },
+      {
+        "name": "helper,",
+        "type": "String",
+        "desc": "errorMessage"
+      },
+      {
+        "name": "color,",
+        "type": "String",
+        "desc": "size, style, variant"
+      },
+      {
+        "name": "useFieldComposable,",
+        "type": "Boolean",
+        "desc": "showPasswordToggle"
+      },
+      {
+        "name": "shadow,",
+        "type": "String",
+        "desc": "backdrop, opacity, rounded - utilitaires custom"
+      }
+    ],
+    "slots": [
+      {
+        "name": "labelTop,",
+        "desc": "labelBottom, labelStart, labelEnd, labelInStart, labelInEnd, labelFloating - Slots pour chaque position de label"
+      },
+      {
+        "name": "overStart,",
+        "desc": "overEnd - Slots pour éléments positionnés en absolute (toggle, reset, etc.)"
+      },
+      {
+        "name": "helper,",
+        "desc": "validator - Slots pour contenu d'aide et validation"
+      }
+    ],
+    "file": "data-input/InputField.vue"
+  },
+  {
+    "name": "FileInputField",
     "description": "FileInput Molecule (DaisyUI + KrosmozJDR)",
     "props": [
       {
@@ -599,9 +769,9 @@
         "desc": "- Progression (0-100, optionnel)"
       },
       {
-        "name": "tooltip,",
+        "name": "id,",
         "type": "String|Object",
-        "desc": "tooltip_placement, id, ariaLabel, role, tabindex, class - hérités de commonProps"
+        "desc": "ariaLabel, role, tabindex, class - hérités de commonProps"
       }
     ],
     "slots": [
@@ -620,45 +790,51 @@
       {
         "name": "actions",
         "desc": "- Actions custom (ex: bouton supprimer)"
-      },
-      {
-        "name": "tooltip",
-        "desc": "- Tooltip custom"
       }
     ],
-    "file": "data-input/FileInput.vue"
+    "file": "data-input/FileInputField.vue"
   },
   {
-    "name": "Fieldset",
-    "description": "Fieldset Molecule (DaisyUI + Custom Utility)",
+    "name": "CheckboxField",
+    "description": "CheckboxField Molecule (DaisyUI, Atomic Design)",
     "props": [
       {
-        "name": "legend",
-        "type": "String",
-        "desc": "- Titre du fieldset (optionnel, sinon slot #legend)"
-      },
-      {
-        "name": "shadow,",
-        "type": "String",
-        "desc": "backdrop, opacity - utilitaires custom"
-      },
-      {
-        "name": "id,",
+        "name": "label",
         "type": "String|Object",
-        "desc": "ariaLabel, role, tabindex - hérités de commonProps"
+        "desc": "- Label simple (string) ou objet avec positions (top, bottom, start, end)"
+      },
+      {
+        "name": "validation",
+        "type": "Object|String|Boolean",
+        "desc": "- Configuration de validation"
+      },
+      {
+        "name": "helper",
+        "type": "String",
+        "desc": ""
+      },
+      {
+        "name": "actions",
+        "type": "Array|Object|String",
+        "desc": "- Actions contextuelles à activer"
+      },
+      {
+        "name": "disabled,",
+        "type": "Boolean",
+        "desc": "readonly, required, etc."
       }
     ],
     "slots": [
       {
-        "name": "legend",
-        "desc": "- Slot pour le titre du fieldset (prioritaire sur prop legend)"
+        "name": "labelTop,",
+        "desc": "labelBottom, labelStart, labelEnd"
       },
       {
-        "name": "default",
-        "desc": "- Contenu du fieldset (inputs, etc.)"
+        "name": "overStart,",
+        "desc": "overEnd, helper, validator"
       }
     ],
-    "file": "data-input/Fieldset.vue"
+    "file": "data-input/CheckboxField.vue"
   },
   {
     "name": "AvatarGroup",

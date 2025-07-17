@@ -1,6 +1,26 @@
-// Composable utilitaire pour générer dynamiquement les classes d'input selon le style, la couleur, la taille, la variante, etc.
-// Usage : getInputClasses({ style: 'classic', color: 'primary', size: 'md', variant: 'outline', error: false })
-
+/**
+ * useInputStyle — Composable pour la génération des classes d'input
+ *
+ * @description
+ * Composable utilitaire pour générer dynamiquement les classes d'input selon le style, 
+ * la couleur, la taille, la variante, etc.
+ * - Supporte les styles : classic, floating, minimal
+ * - Classes DaisyUI complètes (input, input-primary, input-lg, etc.)
+ * - Gestion des états d'erreur
+ * - Classes Tailwind pour les styles custom
+ *
+ * @example
+ * getInputClasses({ style: 'classic', color: 'primary', size: 'md', variant: 'outline', error: false })
+ * // Retourne : "input input-primary input-md input-outline"
+ *
+ * @param {Object} options - Options de configuration
+ * @param {String} options.style - Style d'input ('classic', 'floating', 'minimal')
+ * @param {String} options.color - Couleur DaisyUI ('', 'primary', 'secondary', etc.)
+ * @param {String} options.size - Taille DaisyUI ('', 'xs', 'sm', 'md', 'lg', 'xl')
+ * @param {String} options.variant - Variante DaisyUI ('', 'ghost', 'outline', 'bordered', 'glass')
+ * @param {Boolean} options.error - Si l'input est en erreur
+ * @returns {String} - Classes CSS à appliquer
+ */
 const styleMap = {
     classic: ({ color, size, variant, error }) => [
         'input',

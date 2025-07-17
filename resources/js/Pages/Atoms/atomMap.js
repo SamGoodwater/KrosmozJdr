@@ -18,7 +18,6 @@ export const colorList = [
 ];
 // Variants DaisyUI (Badge, Card, etc.)
 export const variantList = ["", "outline", "dash", "soft", "ghost", "glass"];
-export const styleInputList = ["", "classic", "floating", "minimal"];
 export const variantInputList = ["", "outline", "bordered", "glass", "ghost", "minimal"];
 // Tailles DaisyUI génériques (Badge, Status, Card, Kbd, etc.)
 export const sizeXlList = ["", "xs", "sm", "md", "lg", "xl"];

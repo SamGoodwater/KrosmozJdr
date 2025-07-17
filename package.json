@@ -4,23 +4,21 @@
     "scripts": {
         "preinstall": "npx only-allow pnpm",
         "build": "vite build",
-
         "preview": "vite preview",
-
         "dev": "vite",
         "dev:optimized": "vite --mode development --force",
         "dev:css": "concurrently \"pnpm run css\" \"pnpm run dev\"",
         "dev:css:optimized": "concurrently \"pnpm run css\" \"pnpm run dev:optimized\"",
         "dev:css:optimized:watch": "concurrently --kill-others \"pnpm run css:watch\" \"pnpm run dev:optimized\"",
-
         "sass:watch": "sass --watch --no-source-map resources/scss/custom.scss:resources/css/custom.css resources/scss/theme.scss:resources/css/theme.css",
         "sass:build": "sass --no-source-map resources/scss/custom.scss:resources/css/custom.css resources/scss/theme.scss:resources/css/theme.css --style expanded",
         "scss": "sass --watch --no-source-map resources/scss:resources/css",
-        
         "css": "node scripts/build-css.cjs --clean --minify --inject",
+        "css:clean": "node scripts/clean-css.cjs --verbose'" ,
         "css:watch": "node scripts/build-css.cjs --clean --minify --inject --watch",
         "css:watch:verbose": "node scripts/build-css.cjs --clean --minify --inject --watch --verbose",
-        "css:verbose": "node scripts/build-css.cjs --clean --minify --inject --verbose"
+        "css:verbose": "node scripts/build-css.cjs --clean --minify --inject --verbose",
+        "update:docs": "node docs/scripts/generate_index_schema_docs.cjs && node docs/scripts/generate_atomic_index.cjs"
     },
     "devDependencies": {
         "@inertiajs/vue3": "^1.0.0",
@@ -50,9 +48,11 @@
         "@tiptap/starter-kit": "^2.12.0",
         "@tiptap/vue-3": "^2.12.0",
         "comment-parser": "^1.4.1",
+        "dotenv": "^17.2.0",
         "font-awesome": "^4.7.0",
         "glob": "^11.0.2",
         "laravel-precognition-vue-inertia": "^0.7.2",
+        "mysql2": "^3.14.2",
         "pinia": "^3.0.2",
         "prettier": "^3.5.3",
         "prettier-plugin-tailwindcss": "^0.6.12",
