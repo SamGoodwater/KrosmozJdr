@@ -15,6 +15,7 @@ import { ref, onMounted } from "vue";
 import { usePage } from "@inertiajs/vue3";
 import { usePageTitle } from "@/Composables/layout/usePageTitle";
 import { useNotificationStore } from '@/Composables/store/useNotificationStore';
+import { useValidation } from '@/Composables/form/useValidation';
 
 // Molecules
 import Hero from "@/Pages/Molecules/navigation/Hero.vue";
@@ -23,6 +24,13 @@ import Container from "@/Pages/Atoms/data-display/Container.vue";
 import Btn from "@/Pages/Atoms/action/Btn.vue";
 import Icon from "@/Pages/Atoms/data-display/Icon.vue";
 import Tooltip from "@/Pages/Atoms/feedback/Tooltip.vue";
+// Molecules d'input
+import InputField from "@/Pages/Molecules/data-input/InputField.vue";
+import SelectField from "@/Pages/Molecules/data-input/SelectField.vue";
+import TextareaField from "@/Pages/Molecules/data-input/TextareaField.vue";
+import FileField from "@/Pages/Molecules/data-input/FileField.vue";
+import ColorField from "@/Pages/Molecules/data-input/ColorField.vue";
+import DateField from "@/Pages/Molecules/data-input/DateField.vue";
 
 // Données partagées
 const page = usePage();
@@ -39,6 +47,97 @@ const {
     secondary,
     addNotification 
 } = notificationStore;
+
+// Validation
+const { validateField, setFieldError, setFieldSuccess } = useValidation();
+
+// Données réactives pour les tests d'inputs
+const testForm = ref({
+    name: '',
+    email: '',
+    password: '',
+    role: '',
+    description: '',
+    avatar: null,
+    favoriteColor: '#3b82f6',
+    birthDate: '',
+    search: '',
+    number: 0,
+    range: 50,
+    rating: 3,
+    checkbox: false,
+    radio: 'option1',
+    toggle: false
+});
+
+// Options pour les selects
+const roleOptions = [
+    { label: 'Sélectionner un rôle', value: '' },
+    { label: 'Administrateur', value: 'admin' },
+    { label: 'Modérateur', value: 'moderator' },
+    { label: 'Utilisateur', value: 'user' },
+    { label: 'Invité', value: 'guest' }
+];
+
+const radioOptions = [
+    { label: 'Option 1', value: 'option1' },
+    { label: 'Option 2', value: 'option2' },
+    { label: 'Option 3', value: 'option3' }
+];
+
+// Tests de validation
+function testNameValidation() {
+    if (testForm.value.name.length < 3) {
+        setFieldError('name', 'Le nom doit contenir au moins 3 caractères');
+    } else {
+        setFieldSuccess('name', 'Nom valide !');
+    }
+}
+
+function testEmailValidation() {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(testForm.value.email)) {
+        setFieldError('email', 'Email invalide');
+    } else {
+        setFieldSuccess('email', 'Email valide !');
+    }
+}
+
+function testPasswordValidation() {
+    if (testForm.value.password.length < 6) {
+        setFieldError('password', 'Le mot de passe doit contenir au moins 6 caractères');
+    } else if (!/\d/.test(testForm.value.password)) {
+        setFieldError('password', 'Le mot de passe doit contenir au moins un chiffre');
+    } else {
+        setFieldSuccess('password', 'Mot de passe sécurisé !');
+    }
+}
+
+function testRoleValidation() {
+    if (!testForm.value.role) {
+        setFieldError('role', 'Veuillez sélectionner un rôle');
+    } else {
+        setFieldSuccess('role', 'Rôle sélectionné !');
+    }
+}
+
+function testDescriptionValidation() {
+    if (testForm.value.description.length < 10) {
+        setFieldError('description', 'La description doit contenir au moins 10 caractères');
+    } else {
+        setFieldSuccess('description', 'Description complète !');
+    }
+}
+
+// Tests d'actions contextuelles
+function testInputActions() {
+    success('Test des actions contextuelles activé !');
+}
+
+// Tests de styles
+function testInputStyles() {
+    info('Test des différents styles d\'inputs');
+}
 
 onMounted(() => {
     setPageTitle("Accueil");
@@ -425,6 +524,297 @@ const demoIcons = [
                                     <li>✅ Actions personnalisées</li>
                                     <li>✅ Icônes par défaut selon le type</li>
                                 </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Section test du système d'inputs -->
+            <section class="space-y-6 mb-8">
+                <div class="text-center">
+                    <h2 class="text-2xl font-bold mb-4">Test du Système d'Inputs Factorisé</h2>
+                    <p class="text-base-content/70 mb-6">Testez toutes les fonctionnalités du nouveau système d'inputs : validation, notifications, actions contextuelles, styles</p>
+                    
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 max-w-6xl mx-auto">
+                        <!-- Tests des inputs de base -->
+                        <div class="card bg-base-100 shadow-xl">
+                            <div class="card-body">
+                                <h3 class="card-title text-lg">Inputs de Base</h3>
+                                <div class="space-y-4">
+                                    <!-- Nom avec validation -->
+                                    <InputField
+                                        label="Nom complet"
+                                        v-model="testForm.name"
+                                        placeholder="Votre nom"
+                                        variant="glass"
+                                        :validation="{ state: '', message: '' }"
+                                        @blur="testNameValidation"
+                                        helper="Minimum 3 caractères"
+                                    />
+                                    
+                                    <!-- Email avec validation -->
+                                    <InputField
+                                        label="Email"
+                                        type="email"
+                                        v-model="testForm.email"
+                                        placeholder="votre@email.com"
+                                        variant="glass"
+                                        :validation="{ state: '', message: '' }"
+                                        @blur="testEmailValidation"
+                                        helper="Format email valide requis"
+                                    />
+                                    
+                                    <!-- Mot de passe avec toggle -->
+                                    <InputField
+                                        label="Mot de passe"
+                                        type="password"
+                                        v-model="testForm.password"
+                                        placeholder="Votre mot de passe"
+                                        variant="glass"
+                                        :validation="{ state: '', message: '' }"
+                                        @blur="testPasswordValidation"
+                                        helper="Minimum 6 caractères avec chiffre"
+                                        :actions="['password']"
+                                    />
+                                    
+                                    <!-- Recherche avec actions -->
+                                    <InputField
+                                        label="Recherche"
+                                        type="search"
+                                        v-model="testForm.search"
+                                        placeholder="Rechercher..."
+                                        variant="glass"
+                                        :actions="['clear', 'copy']"
+                                        helper="Utilisez les actions contextuelles"
+                                    />
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Tests des inputs avancés -->
+                        <div class="card bg-base-100 shadow-xl">
+                            <div class="card-body">
+                                <h3 class="card-title text-lg">Inputs Avancés</h3>
+                                <div class="space-y-4">
+                                    <!-- Select avec validation -->
+                                    <SelectField
+                                        label="Rôle utilisateur"
+                                        v-model="testForm.role"
+                                        :options="roleOptions"
+                                        variant="glass"
+                                        :validation="{ state: '', message: '' }"
+                                        @change="testRoleValidation"
+                                        helper="Sélectionnez votre rôle"
+                                    />
+                                    
+                                    <!-- Textarea avec validation -->
+                                    <TextareaField
+                                        label="Description"
+                                        v-model="testForm.description"
+                                        placeholder="Décrivez-vous..."
+                                        variant="glass"
+                                        :validation="{ state: '', message: '' }"
+                                        @blur="testDescriptionValidation"
+                                        helper="Minimum 10 caractères"
+                                        rows="3"
+                                    />
+                                    
+                                    <!-- File upload -->
+                                    <FileField
+                                        label="Avatar"
+                                        v-model="testForm.avatar"
+                                        variant="glass"
+                                        helper="Formats acceptés : JPG, PNG, GIF"
+                                        accept="image/*"
+                                    />
+                                    
+                                    <!-- Color picker -->
+                                    <ColorField
+                                        label="Couleur préférée"
+                                        v-model="testForm.favoriteColor"
+                                        variant="glass"
+                                        helper="Choisissez votre couleur"
+                                    />
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Tests des inputs spécialisés -->
+                        <div class="card bg-base-100 shadow-xl">
+                            <div class="card-body">
+                                <h3 class="card-title text-lg">Inputs Spécialisés</h3>
+                                <div class="space-y-4">
+                                    <!-- Date picker -->
+                                    <DateField
+                                        label="Date de naissance"
+                                        v-model="testForm.birthDate"
+                                        variant="glass"
+                                        helper="Sélectionnez votre date de naissance"
+                                    />
+                                    
+                                    <!-- Number input -->
+                                    <InputField
+                                        label="Âge"
+                                        type="number"
+                                        v-model="testForm.number"
+                                        placeholder="25"
+                                        variant="glass"
+                                        min="0"
+                                        max="120"
+                                        helper="Votre âge en années"
+                                    />
+                                    
+                                    <!-- Range slider -->
+                                    <InputField
+                                        label="Niveau d'expérience"
+                                        type="range"
+                                        v-model="testForm.range"
+                                        variant="glass"
+                                        min="0"
+                                        max="100"
+                                        helper="Glissez pour ajuster le niveau"
+                                    />
+                                    
+                                    <!-- Rating -->
+                                    <InputField
+                                        label="Note globale"
+                                        type="rating"
+                                        v-model="testForm.rating"
+                                        variant="glass"
+                                        max="5"
+                                        helper="Cliquez pour noter de 1 à 5"
+                                    />
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Tests des inputs de sélection -->
+                        <div class="card bg-base-100 shadow-xl">
+                            <div class="card-body">
+                                <h3 class="card-title text-lg">Inputs de Sélection</h3>
+                                <div class="space-y-4">
+                                    <!-- Checkbox -->
+                                    <InputField
+                                        label="J'accepte les conditions"
+                                        type="checkbox"
+                                        v-model="testForm.checkbox"
+                                        variant="glass"
+                                        helper="Cochez pour accepter"
+                                    />
+                                    
+                                    <!-- Radio buttons -->
+                                    <div class="space-y-2">
+                                        <label class="label">
+                                            <span class="label-text">Option préférée</span>
+                                        </label>
+                                        <div class="flex gap-4">
+                                            <InputField
+                                                v-for="option in radioOptions"
+                                                :key="option.value"
+                                                :label="option.label"
+                                                type="radio"
+                                                :value="option.value"
+                                                v-model="testForm.radio"
+                                                variant="glass"
+                                                name="radio-group"
+                                            />
+                                        </div>
+                                        <div class="text-xs text-base-content/60">Sélectionnez une option</div>
+                                    </div>
+                                    
+                                    <!-- Toggle switch -->
+                                    <InputField
+                                        label="Notifications activées"
+                                        type="toggle"
+                                        v-model="testForm.toggle"
+                                        variant="glass"
+                                        helper="Activez/désactivez les notifications"
+                                    />
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Tests des styles et variants -->
+                        <div class="card bg-base-100 shadow-xl">
+                            <div class="card-body">
+                                <h3 class="card-title text-lg">Tests de Styles</h3>
+                                <div class="space-y-4">
+                                    <Btn @click="testInputStyles" color="primary" size="sm" class="w-full">
+                                        Tester les Styles
+                                    </Btn>
+                                    
+                                    <div class="grid grid-cols-1 gap-3">
+                                        <InputField
+                                            label="Style Glass"
+                                            variant="glass"
+                                            placeholder="Glass style"
+                                            helper="Variant glass par défaut"
+                                        />
+                                        <InputField
+                                            label="Style Outline"
+                                            variant="outline"
+                                            placeholder="Outline style"
+                                            helper="Variant outline"
+                                        />
+                                        <InputField
+                                            label="Style Ghost"
+                                            variant="ghost"
+                                            placeholder="Ghost style"
+                                            helper="Variant ghost"
+                                        />
+                                        <InputField
+                                            label="Style Soft"
+                                            variant="soft"
+                                            placeholder="Soft style"
+                                            helper="Variant soft"
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Tests des actions contextuelles -->
+                        <div class="card bg-base-100 shadow-xl">
+                            <div class="card-body">
+                                <h3 class="card-title text-lg">Actions Contextuelles</h3>
+                                <div class="space-y-4">
+                                    <Btn @click="testInputActions" color="accent" size="sm" class="w-full">
+                                        Activer les Actions
+                                    </Btn>
+                                    
+                                    <InputField
+                                        label="Champ avec Reset"
+                                        placeholder="Tapez quelque chose..."
+                                        variant="glass"
+                                        :actions="['reset']"
+                                        helper="Action reset disponible"
+                                    />
+                                    
+                                    <InputField
+                                        label="Champ avec Copy"
+                                        placeholder="Contenu à copier"
+                                        variant="glass"
+                                        :actions="['copy']"
+                                        helper="Action copy disponible"
+                                    />
+                                    
+                                    <InputField
+                                        label="Champ avec Clear"
+                                        placeholder="Contenu à effacer"
+                                        variant="glass"
+                                        :actions="['clear']"
+                                        helper="Action clear disponible"
+                                    />
+                                    
+                                    <InputField
+                                        label="Champ avec Back"
+                                        placeholder="Modifiez puis revenez en arrière"
+                                        variant="glass"
+                                        :actions="['back']"
+                                        helper="Action back disponible"
+                                    />
+                                </div>
                             </div>
                         </div>
                     </div>

@@ -4,236 +4,440 @@ import { ref, computed, watch, onMounted, onUnmounted } from 'vue';
  * useInputActions — Composable universel pour la gestion des actions contextuelles sur les champs de saisie
  *
  * Centralise la logique des actions : reset, back, clear, password, copy, toggleEdit, etc.
- * Fournit un tableau d’actions à afficher, les handlers, les états, et les props à transmettre à l’input.
+ * Fournit un tableau d'actions à afficher, les handlers, les états, et les props à transmettre à l'input.
  *
  * @param {Object} options
  * @param {any} options.modelValue - Valeur courante (v-model)
- * @param {string} options.type - Type d’input (text, password, etc.)
+ * @param {string} options.type - Type d'input (text, password, etc.)
  * @param {Array|string|Object} options.actions - Actions à activer (array, string, ou objet)
  * @param {boolean} [options.readonly] - Champ en lecture seule
- * @param {number} [options.debounce] - Délai pour l’apparition de certaines actions (ms)
+ * @param {number} [options.delay] - Délai pour l'apparition de certaines actions (ms)
  * @param {boolean} [options.autofocus] - Autofocus sur le champ
+ * @param {Object} [options.actionOptions] - Options personnalisées pour les actions
  * @returns {Object} API du composable
  */
+
+// --- CONFIGURATION DES ACTIONS ---
+const ACTIONS_CONFIGURATION = {
+  reset: {
+    compatibility: ['input', 'textarea', 'select', 'file', 'range', 'rating', 'checkbox', 'radio', 'toggle', 'filter'],
+    options: {
+      delay: 1000, // délai avant de pouvoir refaire l'action
+      autofocus: false, // autofocus sur le champ
+      destroy: false, // détruire l'action après l'utilisation
+      notify: false, // notifier l'utilisateur après l'utilisation
+      confirm: false, // demander confirmation avant l'action
+      confirmMessage: 'Êtes-vous sûr de vouloir réinitialiser ce champ ?',
+    },
+    icon: 'fa-solid fa-arrow-rotate-left',
+    size: 'auto', // dépend de l'input
+    color: "neutral",
+    variant: "ghost",
+    ariaLabel: 'Réinitialiser',
+    tooltip: 'Revenir à la valeur initiale',
+    actionKey: 'reset',
+  },
+  back: {
+    compatibility: ['input', 'textarea', 'select', 'file', 'range', 'rating', 'checkbox', 'radio', 'toggle', 'filter'],
+    options: {
+      delay: 500, // délai avant de pouvoir refaire l'action
+      autofocus: false, // autofocus sur le champ
+      destroy: false, // détruire l'action après l'utilisation
+      notify: false, // notifier l'utilisateur après l'utilisation
+      confirm: false, // demander confirmation avant l'action
+      confirmMessage: 'Êtes-vous sûr de vouloir annuler la dernière modification ?',
+    },
+    icon: 'fa-solid fa-rotate-left',
+    size: 'auto', // dépend de l'input
+    color: "neutral",
+    variant: "ghost",
+    ariaLabel: 'Annuler la dernière modification',
+    tooltip: 'Annuler la dernière modification',
+    actionKey: 'back',
+  },
+  clear: {
+    compatibility: ['input', 'textarea', 'select', 'file', 'range', 'rating'],
+    options: {
+      delay: 1000, // délai avant de pouvoir refaire l'action
+      autofocus: false, // autofocus sur le champ
+      destroy: false, // détruire l'action après l'utilisation
+      notify: false, // notifier l'utilisateur après l'utilisation
+      confirm: false, // demander confirmation avant l'action
+      confirmMessage: 'Êtes-vous sûr de vouloir vider ce champ ?',
+    },
+    icon: 'fa-solid fa-xmark',
+    size: 'auto', // dépend de l'input
+    color: "neutral",
+    variant: "ghost",
+    ariaLabel: 'Vider le champ',
+    tooltip: 'Vider le champ',
+    actionKey: 'clear',
+  },
+  copy: {
+    compatibility: ['input', 'textarea', 'select', 'file', 'range', 'rating'],
+    options: {
+      delay: 1000, // délai avant de pouvoir refaire l'action
+      autofocus: false, // autofocus sur le champ
+      destroy: false, // détruire l'action après l'utilisation
+      notify: {
+        message: 'Le contenu du champ a été copié dans le presse-papiers',
+        type: 'success',
+        icon: 'fa-solid fa-copy',
+        duration: 2000,
+      }, // notifier l'utilisateur après l'utilisation
+      confirm: false, // demander confirmation avant l'action
+      confirmMessage: '',
+    },
+    icon: 'fa-solid fa-copy',
+    size: 'auto', // dépend de l'input
+    color: "neutral",
+    variant: "ghost",
+    ariaLabel: 'Copier le contenu',
+    tooltip: 'Copier le contenu',
+    actionKey: 'copy',
+  },
+  password: {
+    compatibility: ['password'],
+    options: {
+      delay: 100, // délai avant de pouvoir refaire l'action
+      autofocus: false, // autofocus sur le champ
+      destroy: false, // détruire l'action après l'utilisation
+      notify: false, // notifier l'utilisateur après l'utilisation
+      confirm: false, // demander confirmation avant l'action
+      confirmMessage: '',
+    },
+    icon: 'fa-solid fa-eye', // sera dynamique
+    size: 'auto', // dépend de l'input
+    color: "neutral",
+    variant: "ghost",
+    ariaLabel: 'Afficher le mot de passe', // sera dynamique
+    tooltip: 'Afficher le mot de passe', // sera dynamique
+    actionKey: 'password',
+  },
+  edit: {
+    compatibility: ['input', 'textarea', 'select', 'file', 'range', 'rating', 'checkbox', 'radio', 'toggle', 'filter'],
+    options: {
+      delay: 100, // délai avant de pouvoir refaire l'action
+      autofocus: true, // autofocus sur le champ
+      destroy: false, // détruire l'action après l'utilisation
+      notify: false, // notifier l'utilisateur après l'utilisation
+      confirm: false, // demander confirmation avant l'action
+      confirmMessage: '',
+    },
+    icon: 'fa-solid fa-pen', // sera dynamique
+    size: 'auto', // dépend de l'input
+    color: "success",
+    variant: "ghost",
+    ariaLabel: 'Passer en édition', // sera dynamique
+    tooltip: 'Passer en édition', // sera dynamique
+    actionKey: 'edit',
+  },
+  lock: {
+    compatibility: ['input', 'textarea', 'select', 'file', 'range', 'rating', 'checkbox', 'radio', 'toggle', 'filter'],
+    options: {
+      delay: 100, // délai avant de pouvoir refaire l'action
+      autofocus: true, // autofocus sur le champ
+      destroy: false, // détruire l'action après l'utilisation
+      notify: false, // notifier l'utilisateur après l'utilisation
+      confirm: false, // demander confirmation avant l'action
+      confirmMessage: '',
+    },
+    icon: 'fa-solid fa-unlock', // sera dynamique
+    size: 'auto', // dépend de l'input
+    color: "neutral",
+    variant: "ghost",
+    ariaLabel: 'Activer le champ', // sera dynamique
+    tooltip: 'Activer le champ', // sera dynamique
+    actionKey: 'lock',
+  },
+};
+
 export default function useInputActions({
   modelValue,
   type = 'text',
   actions = [],
   readonly = false,
-  debounce = 500,
+  disabled = false,
+  delay = 500,
   autofocus = false,
+  actionOptions = {},
 } = {}) {
-  // --- ÉTATS ---
+  // --- ÉTATS RÉACTIFS ---
   const initialValue = ref(modelValue);
   const currentValue = ref(modelValue);
-  const previousValue = ref(modelValue); // Pour l'action "back"
-  const isModified = computed(() => currentValue.value !== initialValue.value);
+  const previousValue = ref(modelValue);
   const isReadonly = ref(readonly);
+  const isDisabled = ref(disabled);
   const inputRef = ref(null);
+  const showPassword = ref(false);
+  
+  // --- ÉTATS D'AFFICHAGE AVEC DÉBOUNCE ---
   const showReset = ref(false);
   const showBack = ref(false);
-  const showPassword = ref(false); // Pour l'action password
+  
+  // --- TIMERS ---
   let resetTimeout = null;
   let backTimeout = null;
 
-  // --- HISTORIQUE POUR BACK ---
-  watch(currentValue, (newVal, oldVal) => {
-    if (oldVal !== newVal) {
-      previousValue.value = oldVal;
-    }
-  });
+  // --- COMPUTED OPTIMISÉS ---
+  const isModified = computed(() => currentValue.value !== initialValue.value);
+  const hasPreviousValue = computed(() => previousValue.value !== initialValue.value);
 
   // --- SYNC AVEC v-model ---
   watch(
     () => modelValue,
-    (v) => {
-      currentValue.value = v;
-    }
+    (newVal) => {
+      currentValue.value = newVal;
+    },
+    { immediate: true }
   );
+
+  // --- GESTION DE L'HISTORIQUE ---
+  watch(currentValue, (newVal, oldVal) => {
+    if (oldVal !== newVal && oldVal !== undefined) {
+      previousValue.value = oldVal;
+    }
+  });
 
   // --- DÉBOUNCE POUR RESET/BACK ---
   watch(isModified, (val) => {
+    if (resetTimeout) clearTimeout(resetTimeout);
+    
     if (val) {
-      if (resetTimeout) clearTimeout(resetTimeout);
       resetTimeout = setTimeout(() => {
         showReset.value = true;
-      }, debounce);
+      }, delay);
     } else {
       showReset.value = false;
-      if (resetTimeout) clearTimeout(resetTimeout);
     }
   });
 
-  watch(() => previousValue.value, (val) => {
-    if (val !== initialValue.value) {
-      if (backTimeout) clearTimeout(backTimeout);
+  watch(hasPreviousValue, (val) => {
+    if (backTimeout) clearTimeout(backTimeout);
+    
+    if (val) {
       backTimeout = setTimeout(() => {
         showBack.value = true;
-      }, debounce);
+      }, delay);
     } else {
       showBack.value = false;
-      if (backTimeout) clearTimeout(backTimeout);
     }
   });
 
+  // --- NETTOYAGE ---
   onUnmounted(() => {
     if (resetTimeout) clearTimeout(resetTimeout);
     if (backTimeout) clearTimeout(backTimeout);
   });
 
-  // --- LOGIQUE DES ACTIONS ---
+  // --- PARSING DES ACTIONS ---
   function parseActions(actions) {
     if (Array.isArray(actions)) {
-      return actions.reduce((acc, key) => {
-        if (typeof key === 'string') acc[key] = true;
-        else if (typeof key === 'object') Object.assign(acc, key);
+      return actions.reduce((acc, action) => {
+        if (typeof action === 'string') {
+          acc[action] = {};
+        } else if (typeof action === 'object') {
+          const { key, ...options } = action;
+          acc[key] = options;
+        }
         return acc;
       }, {});
     } else if (typeof actions === 'object') {
-      return { ...actions };
+      return actions;
     } else if (typeof actions === 'string') {
-      return { [actions]: true };
+      return { [actions]: {} };
     }
     return {};
   }
+
   const actionsConfig = computed(() => parseActions(actions));
 
   // --- HANDLERS ---
   function reset() {
     currentValue.value = initialValue.value;
   }
+
   function back() {
     currentValue.value = previousValue.value;
   }
+
   function clear() {
     currentValue.value = '';
   }
+
   function togglePassword() {
     showPassword.value = !showPassword.value;
   }
+
   function copy() {
     if (typeof navigator !== 'undefined' && navigator.clipboard) {
       navigator.clipboard.writeText(currentValue.value ?? '');
     }
   }
+
   function toggleEdit() {
     isReadonly.value = !isReadonly.value;
   }
+
+  function toggleDisabled() {
+    isDisabled.value = !isDisabled.value;
+  }
+
   function focus() {
     if (inputRef.value) inputRef.value.focus();
   }
 
-  // --- LOGIQUE D'AFFICHAGE DES ACTIONS ---
-  const canReset = computed(() => actionsConfig.value.reset && isModified.value && showReset.value);
-  const canBack = computed(() => actionsConfig.value.back && previousValue.value !== initialValue.value && showBack.value);
-  const canClear = computed(() => actionsConfig.value.clear && !!currentValue.value);
-  const canPassword = computed(() => actionsConfig.value.password && type === 'password');
-  const canCopy = computed(() => actionsConfig.value.copy && !!currentValue.value);
-  const canToggleEdit = computed(() => actionsConfig.value.toggleEdit);
+  // --- MAPPING DES ACTIONS ---
+  const actionHandlers = {
+    reset,
+    back,
+    clear,
+    copy,
+    password: togglePassword,
+    edit: toggleEdit,
+    lock: toggleDisabled,
+  };
 
-  // --- TABLEAU D’ACTIONS À AFFICHER ---
-  const actionsToDisplay = computed(() => {
-    const arr = [];
-    if (canReset.value) {
-      arr.push({
-        key: 'reset',
-        icon: 'fa-solid fa-arrow-rotate-left',
-        ariaLabel: 'Réinitialiser',
-        tooltip: 'Revenir à la valeur initiale',
-        visible: true,
-        disabled: false,
-        onClick: reset,
-      });
-    }
-    if (canBack.value) {
-      arr.push({
-        key: 'back',
-        icon: 'fa-solid fa-rotate-left',
-        ariaLabel: 'Annuler la dernière modification',
-        tooltip: 'Annuler la dernière modification',
-        visible: true,
-        disabled: false,
-        onClick: back,
-      });
-    }
-    if (canClear.value) {
-      arr.push({
-        key: 'clear',
-        icon: 'fa-solid fa-xmark',
-        ariaLabel: 'Vider le champ',
-        tooltip: 'Vider le champ',
-        visible: true,
-        disabled: false,
-        onClick: clear,
-      });
-    }
-    if (canCopy.value) {
-      arr.push({
-        key: 'copy',
-        icon: 'fa-solid fa-copy',
-        ariaLabel: 'Copier le contenu',
-        tooltip: 'Copier le contenu',
-        visible: true,
-        disabled: false,
-        onClick: copy,
-      });
-    }
-    if (canPassword.value) {
-      arr.push({
-        key: 'password',
+  // --- VÉRIFICATION DE COMPATIBILITÉ ---
+  function isActionCompatible(actionKey, inputType) {
+    const action = ACTIONS_CONFIGURATION[actionKey];
+    if (!action) return false;
+    
+    return action.compatibility.includes(inputType.toLowerCase());
+  }
+
+  // --- FUSION DES OPTIONS ---
+  function mergeActionOptions(actionKey, userOptions = {}) {
+    const defaultOptions = ACTIONS_CONFIGURATION[actionKey]?.options || {};
+    const globalOptions = actionOptions[actionKey] || {};
+    
+    return {
+      ...defaultOptions,
+      ...globalOptions,
+      ...userOptions,
+    };
+  }
+
+  // --- LOGIQUE D'AFFICHAGE OPTIMISÉE ---
+  const actionConditions = computed(() => ({
+    reset: actionsConfig.value.reset && isModified.value && showReset.value,
+    back: actionsConfig.value.back && hasPreviousValue.value && showBack.value,
+    clear: actionsConfig.value.clear && !!currentValue.value,
+    copy: actionsConfig.value.copy && !!currentValue.value,
+    password: actionsConfig.value.password && type === 'password',
+    edit: actionsConfig.value.edit,
+    lock: actionsConfig.value.lock,
+  }));
+
+  // --- GÉNÉRATION DES ACTIONS DYNAMIQUES ---
+  function getDynamicActionProps(actionKey) {
+    const action = ACTIONS_CONFIGURATION[actionKey];
+    if (!action) return null;
+
+    // Propriétés dynamiques selon l'état
+    const dynamicProps = {
+      password: {
         icon: showPassword.value ? 'fa-solid fa-eye-slash' : 'fa-solid fa-eye',
         ariaLabel: showPassword.value ? 'Masquer le mot de passe' : 'Afficher le mot de passe',
         tooltip: showPassword.value ? 'Masquer le mot de passe' : 'Afficher le mot de passe',
-        visible: true,
-        disabled: false,
-        onClick: togglePassword,
-      });
-    }
-    if (canToggleEdit.value) {
-      arr.push({
-        key: 'toggleEdit',
+      },
+      edit: {
         icon: isReadonly.value ? 'fa-solid fa-pen' : 'fa-solid fa-eye',
         ariaLabel: isReadonly.value ? 'Passer en édition' : 'Passer en lecture seule',
         tooltip: isReadonly.value ? 'Passer en édition' : 'Passer en lecture seule',
-        visible: true,
-        disabled: false,
-        onClick: toggleEdit,
-      });
-    }
-    return arr;
+      },
+      lock: {
+        icon: isDisabled.value ? 'fa-solid fa-lock' : 'fa-solid fa-unlock',
+        ariaLabel: isDisabled.value ? 'Activer le champ' : 'Désactiver le champ',
+        tooltip: isDisabled.value ? 'Activer le champ' : 'Désactiver le champ',
+      },
+    };
+
+    return {
+      ...action,
+      ...(dynamicProps[actionKey] || {}),
+    };
+  }
+
+  // --- TABLEAU D'ACTIONS À AFFICHER ---
+  const actionsToDisplay = computed(() => {
+    const conditions = actionConditions.value;
+    const actions = [];
+
+    Object.entries(actionsConfig.value).forEach(([actionKey, userOptions]) => {
+      if (conditions[actionKey] && isActionCompatible(actionKey, type)) {
+        const actionProps = getDynamicActionProps(actionKey);
+        const mergedOptions = mergeActionOptions(actionKey, userOptions);
+        
+        const action = {
+          key: actionKey,
+          icon: actionProps.icon,
+          ariaLabel: actionProps.ariaLabel,
+          tooltip: actionProps.tooltip,
+          color: userOptions.color || actionProps.color,
+          variant: userOptions.variant || actionProps.variant,
+          size: userOptions.size || actionProps.size,
+          visible: true,
+          disabled: false,
+          onClick: actionHandlers[actionKey],
+          options: mergedOptions,
+        };
+        
+        actions.push(action);
+      }
+    });
+
+    return actions;
   });
 
-  // --- PROPS À TRANSMETTRE À L’INPUT ---
+  // --- PROPS À TRANSMETTRE À L'INPUT ---
   const inputProps = computed(() => {
     let effectiveType = type;
     if (type === 'password' && showPassword.value) {
       effectiveType = 'text';
     }
+    
     return {
       type: effectiveType,
       readonly: isReadonly.value,
+      disabled: isDisabled.value,
       value: currentValue.value,
       ref: inputRef,
       autofocus,
     };
   });
 
-  // --- EXPOSE ---
+  // --- API EXPOSÉE ---
   return {
+    // États réactifs
     currentValue,
     initialValue,
     previousValue,
     isModified,
     isReadonly,
+    isDisabled,
     inputRef,
-    focus,
+    showPassword,
+    
+    // Actions à afficher
     actionsToDisplay,
+    
+    // Props pour l'input
     inputProps,
+    
+    // Méthodes
+    focus,
     reset,
     back,
     clear,
     togglePassword,
     copy,
     toggleEdit,
+    toggleDisabled,
+    
+    // Utilitaires
+    isActionCompatible,
+    mergeActionOptions,
+    getDynamicActionProps,
   };
 } 

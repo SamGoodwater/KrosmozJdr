@@ -28,7 +28,19 @@ export const validationStates = ['error', 'success', 'warning', 'info'];
 /**
  * Types de notifications supportés
  */
-export const notificationTypes = ['error', 'success', 'warning', 'info', 'primary', 'secondary'];
+export const notificationTypes = ['error', 'success', 'warning', 'info', 'primary', 'secondary', 'auto'];
+
+/**
+ * Configuration par défaut pour les validations
+ */
+export const defaultValidationConfig = {
+    state: 'error',
+    message: '',
+    showNotification: false,
+    notificationType: 'auto',
+    notificationDuration: 5000,
+    notificationPlacement: null
+};
 
 /**
  * Crée un objet de validation avec une API claire
@@ -38,49 +50,39 @@ export const notificationTypes = ['error', 'success', 'warning', 'info', 'primar
 export function createValidation(config) {
     // Si c'est déjà un objet de validation
     if (typeof config === 'object' && config !== null) {
-        return {
-            state: config.state || 'error',
-            message: config.message || '',
-            showNotification: config.showNotification || false,
-            notificationType: config.notificationType || config.state || 'error',
-            notificationDuration: config.notificationDuration || 5000,
-            notificationPlacement: config.notificationPlacement || 'top-right'
+        const normalized = {
+            ...defaultValidationConfig,
+            ...config,
         };
+        
+        // Logique pour notificationType : auto → state, null/undefined → auto
+        if (!normalized.notificationType || normalized.notificationType === 'auto') {
+            normalized.notificationType = normalized.state || 'error';
+        }
+        
+        return normalized;
     }
     
     // Si c'est une string (message d'erreur)
     if (typeof config === 'string') {
         return {
-            state: 'error',
+            ...defaultValidationConfig,
             message: config,
-            showNotification: false,
-            notificationType: 'error',
-            notificationDuration: 5000,
-            notificationPlacement: 'top-right'
         };
     }
     
     // Si c'est un booléen
     if (typeof config === 'boolean') {
         return {
+            ...defaultValidationConfig,
             state: config ? 'success' : 'error',
             message: config ? 'Champ valide' : 'Champ invalide',
-            showNotification: false,
             notificationType: config ? 'success' : 'error',
-            notificationDuration: 5000,
-            notificationPlacement: 'top-right'
         };
     }
     
     // Par défaut
-    return {
-        state: 'error',
-        message: '',
-        showNotification: false,
-        notificationType: 'error',
-        notificationDuration: 5000,
-        notificationPlacement: 'top-right'
-    };
+    return { ...defaultValidationConfig };
 }
 
 /**
@@ -125,7 +127,7 @@ export function validateValidationObject(validation) {
 /**
  * Traite une validation et déclenche les notifications si nécessaire
  * @param {Object} validation - Objet de validation
- * @param {Function} notificationStore - Store de notifications (useNotificationStore)
+ * @param {Object} notificationStore - Store de notifications (useNotificationStore)
  * @returns {Object} - Validation traitée pour affichage local
  */
 export function processValidation(validation, notificationStore = null) {
@@ -141,7 +143,7 @@ export function processValidation(validation, notificationStore = null) {
         if (methodMap[notificationMethod]) {
             methodMap[notificationMethod](normalizedValidation.message, {
                 duration: normalizedValidation.notificationDuration,
-                placement: normalizedValidation.notificationPlacement
+                placement: normalizedValidation.notificationPlacement || undefined // Laisse le système gérer la position par défaut
             });
         }
     }
@@ -185,15 +187,67 @@ export function mapServerErrors(errors, fieldMapping = {}, options = {}) {
 }
 
 /**
+ * Valide un champ avec une règle spécifique
+ * @param {any} value - Valeur à valider
+ * @param {Function} rule - Fonction de validation
+ * @param {String} errorMessage - Message d'erreur
+ * @returns {Object|null} - Validation ou null si valide
+ */
+export function validateField(value, rule, errorMessage) {
+    if (rule(value)) {
+        return null;
+    }
+    
+    return createValidation({
+        state: 'error',
+        message: errorMessage,
+        showNotification: false
+    });
+}
+
+/**
+ * Valide un champ avec plusieurs règles
+ * @param {any} value - Valeur à valider
+ * @param {Array} rules - Array de règles [{ rule: Function, message: String }]
+ * @returns {Object|null} - Première validation qui échoue ou null si toutes valides
+ */
+export function validateFieldWithRules(value, rules) {
+    for (const { rule, message } of rules) {
+        const validation = validateField(value, rule, message);
+        if (validation) {
+            return validation;
+        }
+    }
+    
+    return null;
+}
+
+/**
  * Crée des validations rapides pour les cas courants
  */
 export const quickValidation = {
     // Validation locale uniquement
     local: {
-        error: (message) => createValidation({ state: 'error', message, showNotification: false }),
-        success: (message) => createValidation({ state: 'success', message, showNotification: false }),
-        warning: (message) => createValidation({ state: 'warning', message, showNotification: false }),
-        info: (message) => createValidation({ state: 'info', message, showNotification: false })
+        error: (message) => createValidation({ 
+            state: 'error', 
+            message, 
+            showNotification: false 
+        }),
+        success: (message) => createValidation({ 
+            state: 'success', 
+            message, 
+            showNotification: false 
+        }),
+        warning: (message) => createValidation({ 
+            state: 'warning', 
+            message, 
+            showNotification: false 
+        }),
+        info: (message) => createValidation({ 
+            state: 'info', 
+            message, 
+            showNotification: false 
+        })
     },
     
     // Validation avec notification
@@ -202,29 +256,154 @@ export const quickValidation = {
             state: 'error', 
             message, 
             showNotification: true,
-            notificationType: 'error',
+            notificationType: 'auto',
             ...options 
         }),
         success: (message, options = {}) => createValidation({ 
             state: 'success', 
             message, 
             showNotification: true,
-            notificationType: 'success',
+            notificationType: 'auto',
             ...options 
         }),
         warning: (message, options = {}) => createValidation({ 
             state: 'warning', 
             message, 
             showNotification: true,
-            notificationType: 'warning',
+            notificationType: 'auto',
             ...options 
         }),
         info: (message, options = {}) => createValidation({ 
             state: 'info', 
             message, 
             showNotification: true,
-            notificationType: 'info',
+            notificationType: 'auto',
             ...options 
         })
+    },
+    
+    // Règles de validation communes
+    rules: {
+        required: (value) => value !== null && value !== undefined && value !== '',
+        email: (value) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value),
+        minLength: (min) => (value) => value && value.length >= min,
+        maxLength: (max) => (value) => value && value.length <= max,
+        pattern: (regex) => (value) => regex.test(value),
+        numeric: (value) => !isNaN(value) && !isNaN(parseFloat(value)),
+        integer: (value) => Number.isInteger(Number(value)),
+        positive: (value) => Number(value) > 0,
+        between: (min, max) => (value) => value && value >= min && value <= max,
+        min: (min) => (value) => value && value >= min,
+        max: (max) => (value) => value && value <= max,
+        sameAs: (otherValue) => (value) => value === otherValue,
+        sameAsField: (otherFieldName) => (value, formData) => {
+            if (!formData || typeof formData !== 'object') return false;
+            return value === formData[otherFieldName];
+        },
+        includeLetter: (value) => /[a-zA-Z]/.test(value),
+        includeNumber: (value) => /[0-9]/.test(value),
+        includeSpecialChar: (value) => /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(value),
+        includeUppercase: (value) => /[A-Z]/.test(value),
+        includeLowercase: (value) => /[a-z]/.test(value),
+        includeSpace: (value) => /\s/.test(value),
+        includeNonPrintable: (value) => /[\x00-\x1F\x7F]/.test(value),
+        url: (value) => {
+            try {
+                new URL(value);
+                return true;
+            } catch {
+                return false;
+            }
+        }
     }
-}; 
+};
+
+// --- HELPERS RAPIDES (Alias pour compatibilité) ---
+
+/**
+ * Crée une validation d'erreur simple
+ * @param {String} message - Message d'erreur
+ * @returns {Object} - Validation d'erreur
+ * @deprecated Utilisez quickValidation.local.error() à la place
+ */
+export function createErrorValidation(message) {
+    return quickValidation.local.error(message);
+}
+
+/**
+ * Crée une validation de succès simple
+ * @param {String} message - Message de succès
+ * @returns {Object} - Validation de succès
+ * @deprecated Utilisez quickValidation.local.success() à la place
+ */
+export function createSuccessValidation(message) {
+    return quickValidation.local.success(message);
+}
+
+/**
+ * Crée une validation d'avertissement simple
+ * @param {String} message - Message d'avertissement
+ * @returns {Object} - Validation d'avertissement
+ * @deprecated Utilisez quickValidation.local.warning() à la place
+ */
+export function createWarningValidation(message) {
+    return quickValidation.local.warning(message);
+}
+
+/**
+ * Crée une validation d'information simple
+ * @param {String} message - Message d'information
+ * @returns {Object} - Validation d'information
+ * @deprecated Utilisez quickValidation.local.info() à la place
+ */
+export function createInfoValidation(message) {
+    return quickValidation.local.info(message);
+}
+
+/**
+ * Crée une validation pour vérifier que deux champs sont identiques
+ * @param {String} fieldName - Nom du champ à comparer
+ * @param {String} message - Message d'erreur
+ * @returns {Object} - Validation sameAs
+ * 
+ * @example
+ * // Dans un formulaire avec password et passwordConfirm
+ * const validation = createSameAsValidation('password', 'Les mots de passe doivent être identiques');
+ * 
+ * // Utilisation avec validateFieldWithRules
+ * const result = validateFieldWithRules(passwordConfirm, [validation]);
+ */
+export function createSameAsValidation(fieldName, message = 'Les champs doivent être identiques') {
+    return {
+        rule: quickValidation.rules.sameAsField(fieldName),
+        message: message,
+        state: 'error',
+        showNotification: false
+    };
+}
+
+/**
+ * Valide que deux champs sont identiques
+ * @param {any} value - Valeur du champ actuel
+ * @param {any} otherValue - Valeur du champ à comparer
+ * @param {String} message - Message d'erreur
+ * @returns {Object|null} - Validation ou null si identiques
+ * 
+ * @example
+ * // Validation directe
+ * const validation = validateSameAs(password, passwordConfirm, 'Mots de passe différents');
+ * if (validation) {
+ *   // Afficher l'erreur
+ * }
+ */
+export function validateSameAs(value, otherValue, message = 'Les champs doivent être identiques') {
+    if (quickValidation.rules.sameAs(otherValue)(value)) {
+        return null;
+    }
+    
+    return createValidation({
+        state: 'error',
+        message: message,
+        showNotification: false
+    });
+} 

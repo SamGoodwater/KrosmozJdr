@@ -103,6 +103,24 @@
     "file": "feedback/NotificationContainer.vue"
   },
   {
+    "name": "SearchInput",
+    "description": "SearchInput Molecule (Atomic Design, DaisyUI)",
+    "props": [
+      {
+        "name": "placeholder",
+        "type": "String",
+        "desc": "- Placeholder du champ (défaut: 'Rechercher')"
+      },
+      {
+        "name": "shortcut",
+        "type": "String",
+        "desc": "- Raccourci clavier pour focus (défaut: 'alt+k')"
+      }
+    ],
+    "slots": [],
+    "file": "data-input/SearchInput.vue"
+  },
+  {
     "name": "Fieldset",
     "description": "Fieldset Molecule (DaisyUI + Custom Utility)",
     "props": [

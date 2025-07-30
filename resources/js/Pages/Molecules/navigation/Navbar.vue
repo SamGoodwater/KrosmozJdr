@@ -40,7 +40,8 @@ const moleculeClasses = computed(() =>
         [
             'navbar-custom',
             'flex',
-            'box-glass-b-sm',
+            'border-glass-b-sm',
+            'bd-blur-md',
         ],
         getCustomUtilityClasses(props),
         props.class

@@ -562,43 +562,156 @@
     "file": "entity/EnityCard.vue"
   },
   {
+    "name": "ToggleField",
+    "description": "ToggleField Molecule (DaisyUI, Atomic Design)",
+    "props": [
+      {
+        "name": "label",
+        "type": "String|Object",
+        "desc": "- Label simple (string) ou objet avec positions"
+      },
+      {
+        "name": "defaultLabelPosition",
+        "type": "String",
+        "desc": "- Position par défaut pour les strings ('floating', 'top', 'bottom', 'start', 'end', 'inStart', 'inEnd')"
+      },
+      {
+        "name": "validation",
+        "type": "Object|String|Boolean",
+        "desc": "- Configuration de validation (nouvelle API)"
+      },
+      {
+        "name": "helper,",
+        "type": "String",
+        "desc": "errorMessage"
+      },
+      {
+        "name": "color,",
+        "type": "String",
+        "desc": "size, variant"
+      },
+      {
+        "name": "inputStyle",
+        "type": "String|Object",
+        "desc": "- Style d'input (string ou objet avec variant, size, color, animation)"
+      },
+      {
+        "name": "animation",
+        "type": "String|Boolean",
+        "desc": "- Animation Tailwind ou booléen"
+      },
+      {
+        "name": "useFieldComposable,",
+        "type": "Boolean",
+        "desc": "showPasswordToggle"
+      },
+      {
+        "name": "shadow,",
+        "type": "String",
+        "desc": "backdrop, opacity, rounded - utilitaires custom"
+      },
+      {
+        "name": "onLabel",
+        "type": "String",
+        "desc": "- Label pour l'état activé"
+      },
+      {
+        "name": "offLabel",
+        "type": "String",
+        "desc": "- Label pour l'état désactivé"
+      },
+      {
+        "name": "placeholder",
+        "type": "String",
+        "desc": "- Placeholder du toggle"
+      }
+    ],
+    "slots": [
+      {
+        "name": "labelTop,",
+        "desc": "labelBottom, labelStart, labelEnd, labelInStart, labelInEnd, labelFloating - Slots pour chaque position de label"
+      },
+      {
+        "name": "overStart,",
+        "desc": "overEnd - Slots pour éléments positionnés en absolute (reset, etc.)"
+      },
+      {
+        "name": "helper,",
+        "desc": "validator - Slots pour contenu d'aide et validation"
+      },
+      {
+        "name": "iconOn,",
+        "desc": "iconOff - Slots pour icônes on/off"
+      },
+      {
+        "name": "default",
+        "desc": "- toggle natif (optionnel)"
+      }
+    ],
+    "file": "data-input/ToggleField.vue"
+  },
+  {
     "name": "TextareaField",
     "description": "TextareaField Molecule (DaisyUI, Atomic Design)",
     "props": [
       {
         "name": "label",
         "type": "String|Object",
-        "desc": "- Label simple (string) ou objet avec positions (top, bottom, start, end, inStart, inEnd)"
+        "desc": "- Label simple (string) ou objet avec positions"
+      },
+      {
+        "name": "defaultLabelPosition",
+        "type": "String",
+        "desc": "- Position par défaut pour les strings ('floating', 'top', 'bottom', 'start', 'end', 'inStart', 'inEnd')"
       },
       {
         "name": "validation",
         "type": "Object|String|Boolean",
-        "desc": "- Configuration de validation"
+        "desc": "- Configuration de validation (nouvelle API)"
       },
       {
-        "name": "helper",
+        "name": "helper,",
         "type": "String",
-        "desc": ""
+        "desc": "errorMessage"
       },
       {
-        "name": "actions",
-        "type": "Array|Object|String",
-        "desc": "- Actions contextuelles à activer"
+        "name": "color,",
+        "type": "String",
+        "desc": "size, variant"
       },
       {
-        "name": "disabled,",
+        "name": "inputStyle",
+        "type": "String|Object",
+        "desc": "- Style d'input (string ou objet avec variant, size, color, animation)"
+      },
+      {
+        "name": "animation",
+        "type": "String|Boolean",
+        "desc": "- Animation Tailwind ou booléen"
+      },
+      {
+        "name": "useFieldComposable,",
         "type": "Boolean",
-        "desc": "readonly, required, etc."
+        "desc": "showPasswordToggle"
+      },
+      {
+        "name": "shadow,",
+        "type": "String",
+        "desc": "backdrop, opacity, rounded - utilitaires custom"
       }
     ],
     "slots": [
       {
         "name": "labelTop,",
-        "desc": "labelBottom, labelStart, labelEnd, labelInStart, labelInEnd"
+        "desc": "labelBottom, labelStart, labelEnd, labelInStart, labelInEnd, labelFloating - Slots pour chaque position de label"
       },
       {
         "name": "overStart,",
-        "desc": "overEnd, helper, validator"
+        "desc": "overEnd - Slots pour éléments positionnés en absolute (reset, etc.)"
+      },
+      {
+        "name": "helper,",
+        "desc": "validator - Slots pour contenu d'aide et validation"
       }
     ],
     "file": "data-input/TextareaField.vue"
@@ -610,63 +723,391 @@
       {
         "name": "label",
         "type": "String|Object",
-        "desc": "- Label simple (string) ou objet avec positions (top, bottom, start, end, inStart, inEnd)"
+        "desc": "- Label simple (string) ou objet avec positions"
+      },
+      {
+        "name": "defaultLabelPosition",
+        "type": "String",
+        "desc": "- Position par défaut pour les strings ('floating', 'top', 'bottom', 'start', 'end', 'inStart', 'inEnd')"
       },
       {
         "name": "validation",
         "type": "Object|String|Boolean",
-        "desc": "- Configuration de validation"
+        "desc": "- Configuration de validation (nouvelle API)"
       },
       {
-        "name": "helper",
+        "name": "helper,",
         "type": "String",
-        "desc": ""
+        "desc": "errorMessage"
       },
       {
-        "name": "actions",
-        "type": "Array|Object|String",
-        "desc": "- Actions contextuelles à activer"
+        "name": "color,",
+        "type": "String",
+        "desc": "size, variant"
+      },
+      {
+        "name": "inputStyle",
+        "type": "String|Object",
+        "desc": "- Style d'input (string ou objet avec variant, size, color, animation)"
+      },
+      {
+        "name": "animation",
+        "type": "String|Boolean",
+        "desc": "- Animation Tailwind ou booléen"
+      },
+      {
+        "name": "useFieldComposable,",
+        "type": "Boolean",
+        "desc": "showPasswordToggle"
+      },
+      {
+        "name": "shadow,",
+        "type": "String",
+        "desc": "backdrop, opacity, rounded - utilitaires custom"
       },
       {
         "name": "options",
         "type": "Array",
-        "desc": "- Options du select (obligatoire)"
+        "desc": "- Options du select (array de strings ou objets {value, label, disabled})"
       },
       {
-        "name": "multiple,",
+        "name": "multiple",
         "type": "Boolean",
-        "desc": "disabled, readonly, required, etc."
+        "desc": "- Sélection multiple"
+      },
+      {
+        "name": "size",
+        "type": "Number",
+        "desc": "- Nombre d'options visibles (pour multiple)"
+      },
+      {
+        "name": "placeholder",
+        "type": "String",
+        "desc": "- Placeholder du select"
       }
     ],
     "slots": [
       {
         "name": "labelTop,",
-        "desc": "labelBottom, labelStart, labelEnd, labelInStart, labelInEnd"
+        "desc": "labelBottom, labelStart, labelEnd, labelInStart, labelInEnd, labelFloating - Slots pour chaque position de label"
       },
       {
         "name": "overStart,",
-        "desc": "overEnd, helper, validator"
+        "desc": "overEnd - Slots pour éléments positionnés en absolute (reset, etc.)"
+      },
+      {
+        "name": "helper,",
+        "desc": "validator - Slots pour contenu d'aide et validation"
+      },
+      {
+        "name": "default",
+        "desc": "- options natives (optionnel)"
       }
     ],
     "file": "data-input/SelectField.vue"
   },
   {
-    "name": "SearchInput",
-    "description": "SearchInput Molecule (Atomic Design, DaisyUI)",
+    "name": "RatingField",
+    "description": "RatingField Molecule (DaisyUI, Atomic Design)",
     "props": [
+      {
+        "name": "label",
+        "type": "String|Object",
+        "desc": "- Label simple (string) ou objet avec positions"
+      },
+      {
+        "name": "defaultLabelPosition",
+        "type": "String",
+        "desc": "- Position par défaut pour les strings ('floating', 'top', 'bottom', 'start', 'end', 'inStart', 'inEnd')"
+      },
+      {
+        "name": "validation",
+        "type": "Object|String|Boolean",
+        "desc": "- Configuration de validation (nouvelle API)"
+      },
+      {
+        "name": "helper,",
+        "type": "String",
+        "desc": "errorMessage"
+      },
+      {
+        "name": "color,",
+        "type": "String",
+        "desc": "size, variant"
+      },
+      {
+        "name": "inputStyle",
+        "type": "String|Object",
+        "desc": "- Style d'input (string ou objet avec variant, size, color, animation)"
+      },
+      {
+        "name": "animation",
+        "type": "String|Boolean",
+        "desc": "- Animation Tailwind ou booléen"
+      },
+      {
+        "name": "useFieldComposable,",
+        "type": "Boolean",
+        "desc": "showPasswordToggle"
+      },
+      {
+        "name": "shadow,",
+        "type": "String",
+        "desc": "backdrop, opacity, rounded - utilitaires custom"
+      },
+      {
+        "name": "max",
+        "type": "Number",
+        "desc": "- Nombre maximum d'étoiles"
+      },
+      {
+        "name": "half",
+        "type": "Boolean",
+        "desc": "- Support des demi-étoiles"
+      },
       {
         "name": "placeholder",
         "type": "String",
-        "desc": "- Placeholder du champ (défaut: 'Rechercher')"
+        "desc": "- Placeholder du rating"
       },
       {
-        "name": "shortcut",
+        "name": "showValue",
+        "type": "Boolean",
+        "desc": "- Afficher la note actuelle"
+      },
+      {
+        "name": "showPercentage",
+        "type": "Boolean",
+        "desc": "- Afficher le pourcentage"
+      },
+      {
+        "name": "valueFormat",
         "type": "String",
-        "desc": "- Raccourci clavier pour focus (défaut: 'alt+k')"
+        "desc": "- Format d'affichage de la valeur"
+      },
+      {
+        "name": "labels",
+        "type": "Array",
+        "desc": "- Labels pour chaque étoile"
       }
     ],
-    "slots": [],
-    "file": "data-input/SearchInput.vue"
+    "slots": [
+      {
+        "name": "labelTop,",
+        "desc": "labelBottom, labelStart, labelEnd, labelInStart, labelInEnd, labelFloating - Slots pour chaque position de label"
+      },
+      {
+        "name": "overStart,",
+        "desc": "overEnd - Slots pour éléments positionnés en absolute (reset, etc.)"
+      },
+      {
+        "name": "helper,",
+        "desc": "validator - Slots pour contenu d'aide et validation"
+      },
+      {
+        "name": "valueDisplay",
+        "desc": "- Slot pour affichage personnalisé de la valeur"
+      },
+      {
+        "name": "default",
+        "desc": "- rating natif (optionnel)"
+      }
+    ],
+    "file": "data-input/RatingField.vue"
+  },
+  {
+    "name": "RangeField",
+    "description": "RangeField Molecule (DaisyUI, Atomic Design)",
+    "props": [
+      {
+        "name": "label",
+        "type": "String|Object",
+        "desc": "- Label simple (string) ou objet avec positions"
+      },
+      {
+        "name": "defaultLabelPosition",
+        "type": "String",
+        "desc": "- Position par défaut pour les strings ('floating', 'top', 'bottom', 'start', 'end', 'inStart', 'inEnd')"
+      },
+      {
+        "name": "validation",
+        "type": "Object|String|Boolean",
+        "desc": "- Configuration de validation (nouvelle API)"
+      },
+      {
+        "name": "helper,",
+        "type": "String",
+        "desc": "errorMessage"
+      },
+      {
+        "name": "color,",
+        "type": "String",
+        "desc": "size, variant"
+      },
+      {
+        "name": "inputStyle",
+        "type": "String|Object",
+        "desc": "- Style d'input (string ou objet avec variant, size, color, animation)"
+      },
+      {
+        "name": "animation",
+        "type": "String|Boolean",
+        "desc": "- Animation Tailwind ou booléen"
+      },
+      {
+        "name": "useFieldComposable,",
+        "type": "Boolean",
+        "desc": "showPasswordToggle"
+      },
+      {
+        "name": "shadow,",
+        "type": "String",
+        "desc": "backdrop, opacity, rounded - utilitaires custom"
+      },
+      {
+        "name": "min",
+        "type": "Number",
+        "desc": "- Valeur minimale"
+      },
+      {
+        "name": "max",
+        "type": "Number",
+        "desc": "- Valeur maximale"
+      },
+      {
+        "name": "step",
+        "type": "Number",
+        "desc": "- Pas d'incrémentation"
+      },
+      {
+        "name": "placeholder",
+        "type": "String",
+        "desc": "- Placeholder du range"
+      },
+      {
+        "name": "showValue",
+        "type": "Boolean",
+        "desc": "- Afficher la valeur actuelle"
+      },
+      {
+        "name": "showPercentage",
+        "type": "Boolean",
+        "desc": "- Afficher le pourcentage"
+      },
+      {
+        "name": "valueFormat",
+        "type": "String",
+        "desc": "- Format d'affichage de la valeur"
+      }
+    ],
+    "slots": [
+      {
+        "name": "labelTop,",
+        "desc": "labelBottom, labelStart, labelEnd, labelInStart, labelInEnd, labelFloating - Slots pour chaque position de label"
+      },
+      {
+        "name": "overStart,",
+        "desc": "overEnd - Slots pour éléments positionnés en absolute (reset, etc.)"
+      },
+      {
+        "name": "helper,",
+        "desc": "validator - Slots pour contenu d'aide et validation"
+      },
+      {
+        "name": "valueDisplay",
+        "desc": "- Slot pour affichage personnalisé de la valeur"
+      },
+      {
+        "name": "default",
+        "desc": "- range natif (optionnel)"
+      }
+    ],
+    "file": "data-input/RangeField.vue"
+  },
+  {
+    "name": "RadioField",
+    "description": "RadioField Molecule (DaisyUI, Atomic Design)",
+    "props": [
+      {
+        "name": "label",
+        "type": "String|Object",
+        "desc": "- Label simple (string) ou objet avec positions"
+      },
+      {
+        "name": "defaultLabelPosition",
+        "type": "String",
+        "desc": "- Position par défaut pour les strings ('floating', 'top', 'bottom', 'start', 'end', 'inStart', 'inEnd')"
+      },
+      {
+        "name": "validation",
+        "type": "Object|String|Boolean",
+        "desc": "- Configuration de validation (nouvelle API)"
+      },
+      {
+        "name": "helper,",
+        "type": "String",
+        "desc": "errorMessage"
+      },
+      {
+        "name": "color,",
+        "type": "String",
+        "desc": "size, variant"
+      },
+      {
+        "name": "inputStyle",
+        "type": "String|Object",
+        "desc": "- Style d'input (string ou objet avec variant, size, color, animation)"
+      },
+      {
+        "name": "animation",
+        "type": "String|Boolean",
+        "desc": "- Animation Tailwind ou booléen"
+      },
+      {
+        "name": "useFieldComposable,",
+        "type": "Boolean",
+        "desc": "showPasswordToggle"
+      },
+      {
+        "name": "shadow,",
+        "type": "String",
+        "desc": "backdrop, opacity, rounded - utilitaires custom"
+      },
+      {
+        "name": "options",
+        "type": "Array",
+        "desc": "- Options du radio (array de strings ou objets {value, label, disabled})"
+      },
+      {
+        "name": "name",
+        "type": "String",
+        "desc": "- Nom du groupe radio (généré automatiquement si non fourni)"
+      },
+      {
+        "name": "placeholder",
+        "type": "String",
+        "desc": "- Placeholder du radio"
+      }
+    ],
+    "slots": [
+      {
+        "name": "labelTop,",
+        "desc": "labelBottom, labelStart, labelEnd, labelInStart, labelInEnd, labelFloating - Slots pour chaque position de label"
+      },
+      {
+        "name": "overStart,",
+        "desc": "overEnd - Slots pour éléments positionnés en absolute (reset, etc.)"
+      },
+      {
+        "name": "helper,",
+        "desc": "validator - Slots pour contenu d'aide et validation"
+      },
+      {
+        "name": "default",
+        "desc": "- radio natif (optionnel)"
+      }
+    ],
+    "file": "data-input/RadioField.vue"
   },
   {
     "name": "InputField",
@@ -695,7 +1136,17 @@
       {
         "name": "color,",
         "type": "String",
-        "desc": "size, style, variant"
+        "desc": "size, variant"
+      },
+      {
+        "name": "inputStyle",
+        "type": "String|Object",
+        "desc": "- Style d'input (string ou objet avec variant, size, color, animation)"
+      },
+      {
+        "name": "animation",
+        "type": "String|Boolean",
+        "desc": "- Animation Tailwind ou booléen"
       },
       {
         "name": "useFieldComposable,",
@@ -725,18 +1176,58 @@
     "file": "data-input/InputField.vue"
   },
   {
-    "name": "FileInputField",
-    "description": "FileInput Molecule (DaisyUI + KrosmozJDR)",
+    "name": "FilterField",
+    "description": "FilterField Molecule (DaisyUI, Atomic Design)",
     "props": [
       {
         "name": "label",
-        "type": "String",
-        "desc": "- Label du champ (optionnel)"
+        "type": "String|Object",
+        "desc": "- Label simple (string) ou objet avec positions"
       },
       {
-        "name": "helper",
+        "name": "defaultLabelPosition",
         "type": "String",
-        "desc": "- Texte d'aide (optionnel, sinon slot #helper)"
+        "desc": "- Position par défaut pour les strings ('floating', 'top', 'bottom', 'start', 'end', 'inStart', 'inEnd')"
+      },
+      {
+        "name": "validation",
+        "type": "Object|String|Boolean",
+        "desc": "- Configuration de validation (nouvelle API)"
+      },
+      {
+        "name": "helper,",
+        "type": "String",
+        "desc": "errorMessage"
+      },
+      {
+        "name": "color,",
+        "type": "String",
+        "desc": "size, variant"
+      },
+      {
+        "name": "inputStyle",
+        "type": "String|Object",
+        "desc": "- Style d'input (string ou objet avec variant, size, color, animation)"
+      },
+      {
+        "name": "animation",
+        "type": "String|Boolean",
+        "desc": "- Animation Tailwind ou booléen"
+      },
+      {
+        "name": "useFieldComposable,",
+        "type": "Boolean",
+        "desc": "showPasswordToggle"
+      },
+      {
+        "name": "shadow,",
+        "type": "String",
+        "desc": "backdrop, opacity, rounded - utilitaires custom"
+      },
+      {
+        "name": "options",
+        "type": "Array",
+        "desc": "- Options du filter (array de strings ou objets {value, label, disabled})"
       },
       {
         "name": "multiple",
@@ -744,55 +1235,372 @@
         "desc": "- Sélection multiple"
       },
       {
-        "name": "accept",
+        "name": "name",
         "type": "String",
-        "desc": "- Types MIME acceptés"
+        "desc": "- Nom du groupe de radio buttons"
       },
       {
-        "name": "maxSize",
-        "type": "Number",
-        "desc": "- Taille max (en octets)"
-      },
-      {
-        "name": "disabled",
-        "type": "Boolean",
-        "desc": "- Désactive l'input"
-      },
-      {
-        "name": "error",
+        "name": "placeholder",
         "type": "String",
-        "desc": "- Message d'erreur"
-      },
-      {
-        "name": "progress",
-        "type": "Number",
-        "desc": "- Progression (0-100, optionnel)"
-      },
-      {
-        "name": "id,",
-        "type": "String|Object",
-        "desc": "ariaLabel, role, tabindex, class - hérités de commonProps"
+        "desc": "- Placeholder du filter"
       }
     ],
     "slots": [
       {
+        "name": "labelTop,",
+        "desc": "labelBottom, labelStart, labelEnd, labelInStart, labelInEnd, labelFloating - Slots pour chaque position de label"
+      },
+      {
+        "name": "overStart,",
+        "desc": "overEnd - Slots pour éléments positionnés en absolute (reset, etc.)"
+      },
+      {
+        "name": "helper,",
+        "desc": "validator - Slots pour contenu d'aide et validation"
+      },
+      {
         "name": "default",
-        "desc": "- Preview custom du fichier sélectionné"
-      },
-      {
-        "name": "progress",
-        "desc": "- Progress bar custom"
-      },
-      {
-        "name": "helper",
-        "desc": "- Texte d'aide custom"
-      },
-      {
-        "name": "actions",
-        "desc": "- Actions custom (ex: bouton supprimer)"
+        "desc": "- radio buttons natives (optionnel)"
       }
     ],
-    "file": "data-input/FileInputField.vue"
+    "file": "data-input/FilterField.vue"
+  },
+  {
+    "name": "FileField",
+    "description": "FileField Molecule (DaisyUI, Atomic Design)",
+    "props": [
+      {
+        "name": "label",
+        "type": "String|Object",
+        "desc": "- Label simple (string) ou objet avec positions"
+      },
+      {
+        "name": "defaultLabelPosition",
+        "type": "String",
+        "desc": "- Position par défaut pour les strings ('floating', 'top', 'bottom', 'start', 'end', 'inStart', 'inEnd')"
+      },
+      {
+        "name": "validation",
+        "type": "Object|String|Boolean",
+        "desc": "- Configuration de validation (nouvelle API)"
+      },
+      {
+        "name": "helper,",
+        "type": "String",
+        "desc": "errorMessage"
+      },
+      {
+        "name": "color,",
+        "type": "String",
+        "desc": "size, variant"
+      },
+      {
+        "name": "inputStyle",
+        "type": "String|Object",
+        "desc": "- Style d'input (string ou objet avec variant, size, color, animation)"
+      },
+      {
+        "name": "animation",
+        "type": "String|Boolean",
+        "desc": "- Animation Tailwind ou booléen"
+      },
+      {
+        "name": "useFieldComposable,",
+        "type": "Boolean",
+        "desc": "showPasswordToggle"
+      },
+      {
+        "name": "shadow,",
+        "type": "String",
+        "desc": "backdrop, opacity, rounded - utilitaires custom"
+      },
+      {
+        "name": "accept",
+        "type": "String",
+        "desc": "- Types MIME acceptés (ex: \"image/*\", \".pdf,.doc\")"
+      },
+      {
+        "name": "multiple",
+        "type": "Boolean",
+        "desc": "- Sélection multiple de fichiers"
+      },
+      {
+        "name": "capture",
+        "type": "String",
+        "desc": "- Capture média (\"user\", \"environment\")"
+      }
+    ],
+    "slots": [
+      {
+        "name": "labelTop,",
+        "desc": "labelBottom, labelStart, labelEnd, labelInStart, labelInEnd, labelFloating - Slots pour chaque position de label"
+      },
+      {
+        "name": "overStart,",
+        "desc": "overEnd - Slots pour éléments positionnés en absolute (reset, etc.)"
+      },
+      {
+        "name": "helper,",
+        "desc": "validator - Slots pour contenu d'aide et validation"
+      },
+      {
+        "name": "preview",
+        "desc": "- Slot pour preview des fichiers sélectionnés"
+      }
+    ],
+    "file": "data-input/FileField.vue"
+  },
+  {
+    "name": "DateField",
+    "description": "DateField Molecule (DaisyUI + Cally, Atomic Design)",
+    "props": [
+      {
+        "name": "label",
+        "type": "String|Object",
+        "desc": "- Label simple (string) ou objet avec positions"
+      },
+      {
+        "name": "defaultLabelPosition",
+        "type": "String",
+        "desc": "- Position par défaut pour les strings ('floating', 'top', 'bottom', 'start', 'end')"
+      },
+      {
+        "name": "validation",
+        "type": "Object|String|Boolean",
+        "desc": "- Configuration de validation (nouvelle API)"
+      },
+      {
+        "name": "helper,",
+        "type": "String",
+        "desc": "errorMessage"
+      },
+      {
+        "name": "color,",
+        "type": "String",
+        "desc": "size, variant"
+      },
+      {
+        "name": "inputStyle",
+        "type": "String|Object",
+        "desc": "- Style d'input (string ou objet avec variant, size, color, animation)"
+      },
+      {
+        "name": "animation",
+        "type": "String|Boolean",
+        "desc": "- Animation Tailwind ou booléen"
+      },
+      {
+        "name": "useFieldComposable,",
+        "type": "Boolean",
+        "desc": "showPasswordToggle"
+      },
+      {
+        "name": "shadow,",
+        "type": "String",
+        "desc": "backdrop, opacity, rounded - utilitaires custom"
+      },
+      {
+        "name": "min",
+        "type": "Date|String",
+        "desc": "- Date minimum"
+      },
+      {
+        "name": "max",
+        "type": "Date|String",
+        "desc": "- Date maximum"
+      },
+      {
+        "name": "format",
+        "type": "String",
+        "desc": "- Format d'affichage (YYYY-MM-DD par défaut)"
+      },
+      {
+        "name": "locale",
+        "type": "String",
+        "desc": "- Locale pour l'affichage (fr par défaut)"
+      },
+      {
+        "name": "placeholder",
+        "type": "String",
+        "desc": "- Placeholder du calendrier"
+      },
+      {
+        "name": "showValue",
+        "type": "Boolean",
+        "desc": "- Afficher la date actuelle"
+      },
+      {
+        "name": "valueFormat",
+        "type": "String",
+        "desc": "- Format d'affichage de la valeur"
+      },
+      {
+        "name": "showToday",
+        "type": "Boolean",
+        "desc": "- Afficher le bouton \"Aujourd'hui\""
+      },
+      {
+        "name": "showClear",
+        "type": "Boolean",
+        "desc": "- Afficher le bouton \"Effacer\""
+      }
+    ],
+    "slots": [
+      {
+        "name": "labelTop,",
+        "desc": "labelBottom, labelStart, labelEnd, labelFloating - Slots pour chaque position de label"
+      },
+      {
+        "name": "overStart,",
+        "desc": "overEnd - Slots pour éléments positionnés en absolute (reset, today, etc.)"
+      },
+      {
+        "name": "helper,",
+        "desc": "validator - Slots pour contenu d'aide et validation"
+      },
+      {
+        "name": "valueDisplay",
+        "desc": "- Slot pour affichage personnalisé de la valeur"
+      },
+      {
+        "name": "previous,",
+        "desc": "next - Slots pour icônes de navigation"
+      },
+      {
+        "name": "default",
+        "desc": "- Contenu personnalisé du calendrier"
+      }
+    ],
+    "file": "data-input/DateField.vue"
+  },
+  {
+    "name": "ColorField",
+    "description": "ColorField Molecule (DaisyUI + vue-color-kit, Atomic Design)",
+    "props": [
+      {
+        "name": "label",
+        "type": "String|Object",
+        "desc": "- Label simple (string) ou objet avec positions"
+      },
+      {
+        "name": "defaultLabelPosition",
+        "type": "String",
+        "desc": "- Position par défaut pour les strings ('floating', 'top', 'bottom', 'start', 'end')"
+      },
+      {
+        "name": "validation",
+        "type": "Object|String|Boolean",
+        "desc": "- Configuration de validation (nouvelle API)"
+      },
+      {
+        "name": "helper,",
+        "type": "String",
+        "desc": "errorMessage"
+      },
+      {
+        "name": "color,",
+        "type": "String",
+        "desc": "size, variant"
+      },
+      {
+        "name": "inputStyle",
+        "type": "String|Object",
+        "desc": "- Style d'input (string ou objet avec variant, size, color, animation)"
+      },
+      {
+        "name": "animation",
+        "type": "String|Boolean",
+        "desc": "- Animation Tailwind ou booléen"
+      },
+      {
+        "name": "useFieldComposable,",
+        "type": "Boolean",
+        "desc": "showPasswordToggle"
+      },
+      {
+        "name": "shadow,",
+        "type": "String",
+        "desc": "backdrop, opacity, rounded - utilitaires custom"
+      },
+      {
+        "name": "format",
+        "type": "String",
+        "desc": "- Format de couleur (hex, rgb, rgba, hsl, hsla)"
+      },
+      {
+        "name": "theme",
+        "type": "String",
+        "desc": "- Thème du color picker (light, dark)"
+      },
+      {
+        "name": "colorsDefault",
+        "type": "Array",
+        "desc": "- Palette de couleurs par défaut"
+      },
+      {
+        "name": "colorsHistoryKey",
+        "type": "String",
+        "desc": "- Clé pour l'historique des couleurs"
+      },
+      {
+        "name": "suckerHide",
+        "type": "Boolean",
+        "desc": "- Masquer le pipette"
+      },
+      {
+        "name": "placeholder",
+        "type": "String",
+        "desc": "- Placeholder du color picker"
+      },
+      {
+        "name": "showValue",
+        "type": "Boolean",
+        "desc": "- Afficher la couleur actuelle"
+      },
+      {
+        "name": "showPreview",
+        "type": "Boolean",
+        "desc": "- Afficher l'aperçu de la couleur"
+      },
+      {
+        "name": "showFormat",
+        "type": "Boolean",
+        "desc": "- Afficher le format de la couleur"
+      },
+      {
+        "name": "showRandom",
+        "type": "Boolean",
+        "desc": "- Afficher le bouton couleur aléatoire"
+      },
+      {
+        "name": "showClear",
+        "type": "Boolean",
+        "desc": "- Afficher le bouton \"Effacer\""
+      }
+    ],
+    "slots": [
+      {
+        "name": "labelTop,",
+        "desc": "labelBottom, labelStart, labelEnd, labelFloating - Slots pour chaque position de label"
+      },
+      {
+        "name": "overStart,",
+        "desc": "overEnd - Slots pour éléments positionnés en absolute (reset, random, etc.)"
+      },
+      {
+        "name": "helper,",
+        "desc": "validator - Slots pour contenu d'aide et validation"
+      },
+      {
+        "name": "valueDisplay",
+        "desc": "- Slot pour affichage personnalisé de la valeur"
+      },
+      {
+        "name": "default",
+        "desc": "- Contenu personnalisé du color picker"
+      }
+    ],
+    "file": "data-input/ColorField.vue"
   },
   {
     "name": "CheckboxField",
@@ -801,37 +1609,85 @@
       {
         "name": "label",
         "type": "String|Object",
-        "desc": "- Label simple (string) ou objet avec positions (top, bottom, start, end)"
+        "desc": "- Label simple (string) ou objet avec positions"
+      },
+      {
+        "name": "defaultLabelPosition",
+        "type": "String",
+        "desc": "- Position par défaut pour les strings ('floating', 'top', 'bottom', 'start', 'end', 'inStart', 'inEnd')"
       },
       {
         "name": "validation",
         "type": "Object|String|Boolean",
-        "desc": "- Configuration de validation"
+        "desc": "- Configuration de validation (nouvelle API)"
       },
       {
-        "name": "helper",
+        "name": "helper,",
         "type": "String",
-        "desc": ""
+        "desc": "errorMessage"
       },
       {
-        "name": "actions",
-        "type": "Array|Object|String",
-        "desc": "- Actions contextuelles à activer"
+        "name": "color,",
+        "type": "String",
+        "desc": "size, variant"
       },
       {
-        "name": "disabled,",
+        "name": "inputStyle",
+        "type": "String|Object",
+        "desc": "- Style d'input (string ou objet avec variant, size, color, animation)"
+      },
+      {
+        "name": "animation",
+        "type": "String|Boolean",
+        "desc": "- Animation Tailwind ou booléen"
+      },
+      {
+        "name": "useFieldComposable,",
         "type": "Boolean",
-        "desc": "readonly, required, etc."
+        "desc": "showPasswordToggle"
+      },
+      {
+        "name": "shadow,",
+        "type": "String",
+        "desc": "backdrop, opacity, rounded - utilitaires custom"
+      },
+      {
+        "name": "options",
+        "type": "Array",
+        "desc": "- Options du checkbox (array de strings ou objets {value, label, disabled})"
+      },
+      {
+        "name": "multiple",
+        "type": "Boolean",
+        "desc": "- Sélection multiple"
+      },
+      {
+        "name": "value",
+        "type": "String",
+        "desc": "- Valeur du checkbox (pour les groupes)"
+      },
+      {
+        "name": "placeholder",
+        "type": "String",
+        "desc": "- Placeholder du checkbox"
       }
     ],
     "slots": [
       {
         "name": "labelTop,",
-        "desc": "labelBottom, labelStart, labelEnd"
+        "desc": "labelBottom, labelStart, labelEnd, labelInStart, labelInEnd, labelFloating - Slots pour chaque position de label"
       },
       {
         "name": "overStart,",
-        "desc": "overEnd, helper, validator"
+        "desc": "overEnd - Slots pour éléments positionnés en absolute (reset, etc.)"
+      },
+      {
+        "name": "helper,",
+        "desc": "validator - Slots pour contenu d'aide et validation"
+      },
+      {
+        "name": "default",
+        "desc": "- checkbox natif (optionnel)"
       }
     ],
     "file": "data-input/CheckboxField.vue"

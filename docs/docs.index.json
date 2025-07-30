@@ -60,6 +60,26 @@
     "description": "- Mettre en place des tests unitaires et d’intégration (backend, frontend)."
   },
   {
+    "path": "100- Done/INPUT_MIGRATION.md",
+    "title": "Migration Input — Nouvelle architecture factorisée",
+    "description": "- **API centralisée** dans `inputHelper.js`"
+  },
+  {
+    "path": "100- Done/README.md",
+    "title": "",
+    "description": "Le dossier `docs/100-Done` a pour objectif de centraliser les fichiers Markdown relatifs aux actions réalisées durant le développement du projet, ainsi qu’aux fonctionnalités finalisées. Il s’agit de l’espace où l’on documente l’évolution concrète du projet (refactorings, jalons atteints, fonctionnalités livrées, etc.), à la différence de la documentation technique pure. Ce dossier permet de garder une trace claire de l’historique des avancées et des décisions prises au fil du temps."
+  },
+  {
+    "path": "100- Done/REFACTORING_INPUTS_PHASE1.md",
+    "title": "Refactoring Inputs - Phase 1 : Composables",
+    "description": "- **Unification des props de validation** : Remplacement de `validator`, `validatorError`, `validatorSuccess`, etc. par une seule prop `validation`"
+  },
+  {
+    "path": "100- Done/REFACTORING_INPUTS_PHASE2.md",
+    "title": "Refactoring Inputs - Phase 2 : Simplification et Tableaux",
+    "description": "Cette phase 2 du refactoring des inputs a consisté à simplifier drastiquement le système en basant entièrement la logique sur les tableaux `SPECIFIC_PROPS` et `COMMON_PROPS`, éliminant ainsi la complexité et les fonctions redondantes."
+  },
+  {
     "path": "20-Content/21-Entities/ENTITIES_OVERVIEW.md",
     "title": "Vue d'ensemble des entités – Krosmoz JDR",
     "description": "Ce document présente en détail toutes les entités du projet Krosmoz JDR, leur structure, leurs relations et leur rôle dans l'architecture globale du jeu. Il sert de référence centrale pour la modélisation des données, la génération des migrations, l'implémentation backend et la compréhension métier."
@@ -205,9 +225,34 @@
     "description": "Krosmoz JDR est un jeu de rôle en ligne inspiré de l'univers de Dofus. Le projet vise à offrir une expérience immersive, évolutive et collaborative, dans le monde des Douze (aventure, stratégie, magie)."
   },
   {
+    "path": "200- Prompts/Input/Check.md",
+    "title": "A Checker",
+    "description": "- gestion des props et des attrs"
+  },
+  {
+    "path": "200- Prompts/Input/Système d'input.md",
+    "title": "",
+    "description": ""
+  },
+  {
     "path": "30-UI/ATOMIC_DESIGN.md",
-    "title": "Documentation UI KrosmozJDR",
-    "description": "Bienvenue dans la documentation des composants UI, validation et notifications du projet."
+    "title": "Atomic Design — KrosmozJDR",
+    "description": "- **Atoms** : Composants de base réutilisables (Core inputs, boutons, etc.)"
+  },
+  {
+    "path": "30-UI/BEST_PRACTICES.md",
+    "title": "Bonnes pratiques UI — KrosmozJDR",
+    "description": "```javascript"
+  },
+  {
+    "path": "30-UI/COLOR_PICKER_INTEGRATION.md",
+    "title": "Intégration Color Picker avec vue-color-kit",
+    "description": "Les composants de couleur utilisent **vue-color-kit** pour fournir une expérience de sélection de couleur moderne et accessible, tout en s'intégrant parfaitement avec DaisyUI et Vue 3."
+  },
+  {
+    "path": "30-UI/DATE_CALENDAR_INTEGRATION.md",
+    "title": "Intégration Date/Calendar avec Cally",
+    "description": "Les composants de date utilisent le **web component Cally** pour fournir une expérience de sélection de date moderne et accessible, tout en s'intégrant parfaitement avec DaisyUI et Vue 3."
   },
   {
     "path": "30-UI/DESIGN_GUIDE.md",
@@ -216,18 +261,33 @@
   },
   {
     "path": "30-UI/INPUTS.md",
-    "title": "Inputs — Guide KrosmozJDR",
-    "description": "- **InputCore (Atom)** : input natif, accessibilité, classes, labels inline/floating. Pas de logique métier. Toutes les props (HTML, layout, actions, etc.) sont héritées automatiquement via `getInputProps('input', 'core')` depuis `inputHelper.js`."
+    "title": "Inputs — Architecture factorisée KrosmozJDR",
+    "description": "- **Core (Atom)** : Input natif avec accessibilité et styles. Props héritées via `getInputProps('type', 'core')`"
   },
   {
     "path": "30-UI/INPUTS_VALIDATION_NOTIFICATIONS.md",
     "title": "Inputs, Validation & Notifications — Guide KrosmozJDR",
-    "description": "- **Atomic Design** : Atoms (InputCore), Molecules (InputField), Composables (useInputActions, useValidation)."
+    "description": "Ce guide présente l'architecture unifiée des inputs, de la validation et des notifications dans le projet KrosmozJDR. Tous ces systèmes sont conçus pour fonctionner ensemble de manière cohérente et factorisée."
+  },
+  {
+    "path": "30-UI/INPUT_ARCHITECTURE.md",
+    "title": "Architecture des Inputs",
+    "description": "Le système d'input fonctionne en duo : **Core** (Atom) + **Field** (Molecule)."
+  },
+  {
+    "path": "30-UI/INPUT_MIGRATION_GUIDE.md",
+    "title": "Guide de Migration - Système d'Inputs",
+    "description": "Ce guide explique comment migrer de l'ancien système d'inputs (basé sur des fonctions génériques) vers le nouveau système (basé entièrement sur les tableaux `SPECIFIC_PROPS` et `COMMON_PROPS`)."
+  },
+  {
+    "path": "30-UI/INPUT_STYLES.md",
+    "title": "Système de Style des Inputs",
+    "description": "Le système de style des inputs est un système unifié qui permet de gérer les styles de tous les types d'input de manière cohérente et extensible."
   },
   {
     "path": "30-UI/INTEGRATION_VALIDATION_NOTIFICATIONS.md",
     "title": "Intégration Validation + Notifications — Guide KrosmozJDR",
-    "description": "- **Validation locale** : feedback immédiat sous le champ (format, aide, erreurs de saisie)"
+    "description": "Ce guide explique comment utiliser ensemble les systèmes de validation et de notifications pour créer une expérience utilisateur cohérente et informative."
   },
   {
     "path": "30-UI/LAYOUT.md",
@@ -237,22 +297,22 @@
   {
     "path": "30-UI/NOTIFICATIONS.md",
     "title": "Notifications — Guide KrosmozJDR",
-    "description": "- **useNotificationStore (Composable)** : centralise la gestion des notifications toast (succès, erreur, info, etc.)."
+    "description": "- **useNotificationStore (Composable)** : Centralise la gestion des notifications toast"
   },
   {
     "path": "30-UI/README.md",
     "title": "UI & Atomic Design — KrosmozJDR",
-    "description": "- Documentation synthétique sur l’UI, atomic design, inputs, validation, notifications."
+    "description": "- **[INPUTS.md](./INPUTS.md)** — Structure factorisée des champs de saisie (Core/Field)"
   },
   {
     "path": "30-UI/VALIDATION.md",
     "title": "Validation — Guide KrosmozJDR",
-    "description": "- **useValidation (Composable)** : centralise la gestion de la validation des champs et du formulaire, expose une API factorisée et réactive."
+    "description": "- **validationManager.js** : Gestionnaire centralisé des validations avec API unifiée"
   },
   {
     "path": "30-UI/VALIDATION_NOTIFICATIONS_INTEGRATION.md",
-    "title": "Intégration Validation + Notifications",
-    "description": "Ce document explique l'intégration complète entre le système de validation des inputs et le système de notifications toast. Cette intégration permet d'avoir **deux niveaux de feedback** pour les utilisateurs :"
+    "title": "Validation & Notifications — Intégration Avancée",
+    "description": "Ce guide couvre les cas d'usage avancés et les patterns d'intégration entre les systèmes de validation et de notifications."
   },
   {
     "path": "40-DevGuides/IMAGE-GENERATE.md",
@@ -262,7 +322,7 @@
   {
     "path": "40-DevGuides/README.md",
     "title": "Guides de développement — KrosmozJDR",
-    "description": "- Scripts, automatisations, déploiement, outils dev."
+    "description": "Ce dossier regroupe les scripts, automatisations et outils pour le développement, la maintenance et le déploiement du projet."
   },
   {
     "path": "DOCUMENTATION_GUIDE.md",

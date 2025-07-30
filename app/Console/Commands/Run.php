@@ -21,6 +21,7 @@ class Run extends Command
         {--install:composer : Installer composer}
         {--reset:composer : Réinitialiser composer (supprimer vendor et composer.lock)}
         {--update:css : Rebuild CSS}
+        {--update:privilege= : Corriger les permissions du projet (spécifier l\'utilisateur)}
         {--update:all : Tout mettre à jour (system, pnpm, composer, css, docs, dump)}
         {--update:base : Mise à jour base (pnpm, css, docs, dump)}
         {--kill : Tuer les serveurs en cours}
@@ -55,6 +56,25 @@ class Run extends Command
 
     public function handle()
     {
+        // === VÉRIFICATIONS DE SÉCURITÉ ===
+        
+        // 1. Empêcher l'exécution en tant que root (sauf pour update:privilege)
+        $currentUser = trim(shell_exec('whoami'));
+        if ($currentUser === 'root' && !$this->option('update:privilege')) {
+            $this->error('⚠️  SÉCURITÉ : Cette commande ne doit pas être exécutée en tant que root !');
+            $this->error('Cela pourrait créer des fichiers avec des permissions root et causer des problèmes.');
+            $this->line('');
+            $this->line('Solutions :');
+            $this->line('1. Utilisez un utilisateur normal (non-root)');
+            $this->line('2. Si vous devez corriger les permissions, utilisez :');
+            $this->line('   php artisan run --update:privilege=nom_utilisateur');
+            $this->line('3. Ou utilisez sudo pour exécuter en tant qu\'utilisateur normal :');
+            $this->line('   sudo -u nom_utilisateur php artisan run [options]');
+            $this->line('');
+            return;
+        }
+        
+        // 2. Vérifier l'environnement de production
         if (app()->environment('production')) {
             $this->error('Cette commande ne doit pas être lancée en production !');
             return;
@@ -141,6 +161,7 @@ class Run extends Command
             if ($this->option('install:composer')) $actions[] = 'installComposer';
             if ($this->option('update:css')) $actions[] = 'updateCss';
             if ($this->option('update:docs')) $actions[] = 'updateDocs';
+            if ($this->option('update:privilege')) $actions[] = 'updatePrivileges';
             if ($this->option('dump')) $actions[] = 'dumpAutoload';
         }
 
@@ -210,11 +231,11 @@ class Run extends Command
     }
     protected function updatePnpm() {
         $this->info('Mise à jour de pnpm...');
-        exec('sudo pnpm install -g pnpm@latest');
+        exec('pnpm install -g pnpm@latest');
     }
     protected function updateComposer() {
         $this->info('Mise à jour de composer...');
-        exec('sudo composer self-update');
+        exec('composer self-update');
 
     }
     protected function updateCss() {
@@ -246,15 +267,19 @@ class Run extends Command
     }
     protected function resetPnpm() {
         $this->info('Suppression de node_modules et pnpm-lock.yaml...');
-        exec('rm -rf node_modules pnpm-lock.yaml');
-        $this->info('Réinstallation des dépendances pnpm...');
-        exec('pnpm install');
+        if (file_exists('node_modules') && file_exists('pnpm-lock.yaml')) {
+            exec('rm -rf node_modules pnpm-lock.yaml');
+        } else {
+            $this->warn('node_modules n’existe pas, suppression ignorée');
+        }
     }
     protected function resetComposer() {
         $this->info('Suppression de vendor et composer.lock...');
-        exec('rm -rf vendor composer.lock');
-        $this->info('Réinstallation des dépendances composer...');
-        exec('composer install');
+        if (file_exists('vendor') && file_exists('composer.lock')) {
+            exec('rm -rf vendor composer.lock');
+        } else {
+            $this->warn('vendor n’existe pas, suppression ignorée');
+        }
     }
     protected function installPnpm() {
         $this->info('Installation des dépendances pnpm...');
@@ -265,12 +290,170 @@ class Run extends Command
         exec('composer install');
     }
     protected function runDev() {
-        $this->info('Lancement du serveur (optimisé)...');
+        $this->info('Lancement des serveurs de développement...');
+        
+        // Démarrer le serveur Laravel en arrière-plan
+        $this->info('Démarrage du serveur Laravel sur le port 8000...');
+        exec('php artisan serve --host=127.0.0.1 --port=8000 > /dev/null 2>&1 &');
+        
+        // Attendre un peu que Laravel démarre
+        sleep(3);
+        
+        // Vérifier que Laravel fonctionne
+        $laravelResponse = @file_get_contents('http://127.0.0.1:8000');
+        if ($laravelResponse !== false) {
+            $this->info('✅ Serveur Laravel démarré sur http://127.0.0.1:8000');
+        } else {
+            $this->warn('⚠️ Serveur Laravel en cours de démarrage...');
+        }
+        
+        // Démarrer Vite
+        $this->info('Démarrage de Vite sur le port 5173...');
         $this->runProcess('pnpm run dev:optimized');
     }
     protected function runDevWatch() {
         $this->info('Lancement du serveur (watch)...');
         $this->runProcess('pnpm run dev:css:optimized:watch');
+    }
+    protected function updatePrivileges() {
+        $user = $this->option('update:privilege');
+        
+        // === VÉRIFICATIONS DE SÉCURITÉ ===
+        
+        // 1. Vérifier que l'utilisateur est spécifié
+        if (empty($user)) {
+            $this->error('Vous devez spécifier un utilisateur avec --update:privilege=nom_utilisateur');
+            return;
+        }
+        
+        // 2. Nettoyer et valider le nom d'utilisateur
+        $user = trim($user);
+        if (!preg_match('/^[a-zA-Z0-9_-]+$/', $user)) {
+            $this->error('Nom d\'utilisateur invalide. Utilisez uniquement des lettres, chiffres, tirets et underscores.');
+            return;
+        }
+        
+        // 3. Vérifier que l'utilisateur existe
+        $this->info("Vérification de l'existence de l'utilisateur : $user");
+        $userExists = shell_exec("id $user 2>/dev/null");
+        if (empty($userExists)) {
+            $this->error("L'utilisateur '$user' n'existe pas sur ce système.");
+            $this->line("Utilisateurs disponibles :");
+            $this->line(shell_exec("cut -d: -f1 /etc/passwd | grep -E '^[a-zA-Z]' | head -10"));
+            return;
+        }
+        
+        // 4. Vérifier que nous sommes dans un environnement de développement
+        if (app()->environment('production')) {
+            $this->error('Cette commande ne doit pas être exécutée en production !');
+            return;
+        }
+        
+        // 5. Vérifier que nous sommes dans le bon répertoire (projet Laravel)
+        if (!file_exists('artisan') || !file_exists('composer.json')) {
+            $this->error('Cette commande doit être exécutée depuis la racine du projet Laravel.');
+            return;
+        }
+        
+        // 6. Demander confirmation si l'utilisateur est différent de l'utilisateur actuel
+        $currentUser = trim(shell_exec('whoami'));
+        if ($user !== $currentUser) {
+            $this->warn("Vous êtes actuellement connecté en tant que '$currentUser'");
+            $this->warn("Vous allez changer les permissions pour l'utilisateur '$user'");
+            
+            // En mode non-interactif, on continue automatiquement
+            if ($this->option('no-interaction')) {
+                $this->info('Mode non-interactif : continuation automatique...');
+            } else {
+                if (!$this->confirm('Êtes-vous sûr de vouloir continuer ?')) {
+                    $this->info('Opération annulée.');
+                    return;
+                }
+            }
+        }
+        
+        // 7. Vérifier les permissions actuelles avant modification
+        $this->info('Analyse des permissions actuelles...');
+        $rootFiles = trim(shell_exec("find . -user root 2>/dev/null"));
+        if (!empty($rootFiles)) {
+            $this->warn('Fichiers appartenant à root détectés :');
+            $this->line($rootFiles);
+        }
+        
+        // === EXÉCUTION SÉCURISÉE ===
+        
+        $this->info("Correction des permissions pour l'utilisateur : $user");
+        
+        try {
+            // 1. Changer le propriétaire de tous les fichiers du projet
+            $this->info('Changement du propriétaire de tous les fichiers...');
+            $result = shell_exec("chown -R $user:$user . 2>&1");
+            if ($result !== null) {
+                $this->warn("Avertissements lors du changement de propriétaire : $result");
+            }
+            
+            // 2. Corriger les permissions des dossiers critiques Laravel
+            $this->info('Correction des permissions des dossiers Laravel...');
+            if (is_dir('storage/')) {
+                shell_exec("chmod -R 775 storage/");
+            }
+            if (is_dir('bootstrap/cache/')) {
+                shell_exec("chmod -R 775 bootstrap/cache/");
+            }
+            if (is_dir('public/')) {
+                shell_exec("chmod -R 775 public/");
+            }
+            
+            // 3. S'assurer que les fichiers exécutables ont les bonnes permissions
+            $this->info('Correction des permissions des fichiers exécutables...');
+            if (file_exists('artisan')) {
+                shell_exec("chmod 755 artisan");
+            }
+            shell_exec("find . -name '*.php' -executable -exec chmod 755 {} \\; 2>/dev/null");
+            
+            // 4. Corriger les permissions de Composer si installé globalement
+            $composerPath = trim(shell_exec('which composer 2>/dev/null'));
+            if (!empty($composerPath) && file_exists($composerPath)) {
+                $this->info('Correction des permissions de Composer...');
+                shell_exec("chown $user:$user $composerPath");
+                shell_exec("chmod 755 $composerPath");
+            }
+            
+            // 5. Vérifier et corriger les permissions de pnpm si installé globalement
+            $pnpmPath = trim(shell_exec('which pnpm 2>/dev/null'));
+            if (!empty($pnpmPath) && file_exists($pnpmPath)) {
+                $this->info('Correction des permissions de pnpm...');
+                shell_exec("chown $user:$user $pnpmPath");
+                shell_exec("chmod 755 $pnpmPath");
+            }
+            
+            // 6. Vérification finale
+            $this->info('Vérification finale des permissions...');
+            $finalRootFiles = trim(shell_exec("find . -user root 2>/dev/null"));
+            if (!empty($finalRootFiles)) {
+                $this->warn('Fichiers appartenant encore à root détectés :');
+                $this->line($finalRootFiles);
+                $this->info('Correction automatique...');
+                shell_exec("find . -user root -exec chown $user:$user {} \\; 2>/dev/null");
+            } else {
+                $this->info('✅ Aucun fichier n\'appartient à root');
+            }
+            
+            // 7. Test de validation
+            $this->info('Test de validation des permissions...');
+            $testResult = shell_exec("su - $user -c 'cd " . getcwd() . " && php artisan --version' 2>&1");
+            if (strpos($testResult, 'Laravel Framework') !== false) {
+                $this->info('✅ Test de validation réussi : Laravel fonctionne correctement');
+            } else {
+                $this->warn('⚠️ Test de validation échoué. Vérifiez manuellement les permissions.');
+            }
+            
+            $this->info('✅ Permissions corrigées avec succès !');
+            
+        } catch (\Exception $e) {
+            $this->error('Erreur lors de la correction des permissions : ' . $e->getMessage());
+            $this->error('Vérifiez manuellement les permissions du projet.');
+        }
     }
     protected function runProcess($command) {
         $descriptorspec = [0 => STDIN, 1 => STDOUT, 2 => STDERR];

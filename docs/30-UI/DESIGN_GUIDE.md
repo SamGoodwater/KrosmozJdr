@@ -516,7 +516,7 @@ const atomClasses = computed(() =>
 - **Molecules** :
   - Importent les helpers de `uiHelper.js`.
   - Peuvent importer des helpers de `moleculeManager.js` si besoin spécifique.
-  - Certaines molecules sont des composants DaisyUI (ex : Fieldset, FileInput, AvatarGroup, Modal, etc.) et doivent suivre la même rigueur d'API et de documentation que les atoms.
+  - Certaines molecules sont des composants DaisyUI (ex : Fieldset, File, AvatarGroup, Modal, etc.) et doivent suivre la même rigueur d'API et de documentation que les atoms.
   - Exemple :
     ```js
     import { getCommonProps, getCommonAttrs, mergeClasses } from '@/Utils/atomic-design/uiHelper';
@@ -534,7 +534,7 @@ const atomClasses = computed(() =>
 
 ### 4. DaisyUI et molecules
 
-- Certaines molecules sont des wrappers ou des compositions directes de composants DaisyUI (ex : Fieldset, FileInput, AvatarGroup, Modal, etc.).
+- Certaines molecules sont des wrappers ou des compositions directes de composants DaisyUI (ex : Fieldset, File, AvatarGroup, Modal, etc.).
 - Elles doivent respecter la même rigueur d'API, de slots, de props et de documentation que les atoms.
 - Leur docBlock doit inclure un lien vers la documentation DaisyUI correspondante si applicable.
 
@@ -571,7 +571,7 @@ La liste des molecules est indicative et sera affinée au fil du développement.
 - **EntityPreview** : Mini-carte ou résumé d'entité (image, titre, actions rapides).
 - **SectionTitle** : Titre de section avec options (icône, actions, aide).
 - **SectionActions** : Groupe de boutons/actions contextuelles pour une section.
-- **FileInput** : Input de fichier avec preview et validation.
+- **File** : Input de fichier avec preview et validation.
 - **AvatarWithName** : Avatar + nom d'utilisateur ou d'entité.
 - **BadgeList** : Liste de badges (ex : tags, statuts).
 - **TableRowActions** : Groupe d'actions pour une ligne de tableau (éditer, supprimer, etc.).

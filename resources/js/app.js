@@ -1,6 +1,9 @@
 import "../css/app.css";
 import "./bootstrap";
 
+// Import Cally web component pour les composants de date
+import "cally";
+
 import { createInertiaApp, Head, Link } from "@inertiajs/vue3";
 import { resolvePageComponent } from "laravel-vite-plugin/inertia-helpers";
 import { createApp, h } from "vue";

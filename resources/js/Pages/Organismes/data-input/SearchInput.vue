@@ -75,7 +75,7 @@ onUnmounted(() => {
             @update:modelValue="(value) => emit('update:modelValue', value)"
             class="w-full"
         >
-            <template #icon>
+            <template #labelInEnd>
                 <Icon
                     source="fa-magnifying-glass"
                     alt="Rechercher"

@@ -15,7 +15,7 @@
  *
  * DRY : tout helper réutilisable à plusieurs niveaux doit être factorisé ici.
  *
- * Certaines molecules sont des wrappers ou compositions de composants DaisyUI (ex : Fieldset, FileInput, AvatarGroup, Modal, etc.) et doivent suivre la même rigueur d'API et de documentation que les atoms.
+ * Certaines molecules sont des wrappers ou compositions de composants DaisyUI (ex : Fieldset, File, AvatarGroup, Modal, etc.) et doivent suivre la même rigueur d'API et de documentation que les atoms.
  */
 
 /**

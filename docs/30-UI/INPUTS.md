@@ -1,65 +1,126 @@
-# Inputs — Guide KrosmozJDR
+# Inputs — Architecture factorisée KrosmozJDR
 
-## 1. Structure
+## Structure
 
-- **InputCore (Atom)** : input natif, accessibilité, classes, labels inline/floating. Pas de logique métier. Toutes les props (HTML, layout, actions, etc.) sont héritées automatiquement via `getInputProps('input', 'core')` depuis `inputHelper.js`.
-- **InputField (Molecule)** : composition de InputCore, InputLabel, Btn, etc. Orchestration des actions contextuelles via useInputActions. Toutes les props (communes, spécifiques, layout, validation, actions, etc.) sont héritées via `getInputProps('input', 'field')`.
-- **useInputActions (Composable)** : centralise la logique des actions contextuelles (reset, back, clear, password, copy, toggleEdit, etc.).
+- **Core (Atom)** : Input natif avec accessibilité et styles. Props héritées via `getInputProps('type', 'core')`
+- **Field (Molecule)** : Composition avec label, validation, actions. Props héritées via `getInputProps('type', 'field')`
+- **Helpers** : API centralisée dans `inputHelper.js` et `useInputStyle.js`
 
-## 2. API et slots
+## API unifiée
 
-### InputCore
-- Props : **toutes les props sont factorisées** dans `inputHelper.js` et héritées via `getInputProps('input', 'core')` :
-  - Exemples : `type`, `modelValue`, `placeholder`, `readonly`, `disabled`, `color`, `size`, `style`, `variant`, `labelFloating`, `labelStart`, `labelEnd`, etc.
-- Slots : `labelStart`, `labelEnd`, `floatingLabel`
+### Props factorisées
+```javascript
+// Toutes les props sont centralisées
+import { getInputProps } from '@/Utils/atomic-design/inputHelper';
 
-### InputField
-- Props : **toutes les props de InputCore + toutes les props métier, layout, validation, actions, etc.** via `getInputProps('input', 'field')` :
-  - Exemples : `label`, `defaultLabelPosition`, `helper`, `validation`, `validator`, `errorMessage`, `actions`, `useFieldComposable`, etc.
-- Slots : `overStart`, `overEnd`, `labelTop`, `labelBottom`, etc.
-- Utilise `actionsToDisplay` pour générer dynamiquement les boutons d’actions contextuelles
+// Core component
+const props = defineProps({ ...getInputProps('input', 'core') });
 
-### useInputActions
-- Expose :
-  - `currentValue`, `isModified`, `isReadonly`, `inputRef`, `focus`
-  - `actionsToDisplay` (tableau d’actions à boucler dans la vue)
-  - Handlers : `reset`, `back`, `clear`, `togglePassword`, `copy`, `toggleEdit`
-  - `inputProps` (props à transmettre à l’input atom)
+// Field component  
+const props = defineProps({ ...getInputProps('input', 'field') });
+```
 
-#### Exemple d’utilisation factorisée
+### Types supportés
+- **Textuels** : `input`, `textarea`, `select`, `file`, `filter`
+- **Numériques** : `number`, `range`, `rating`
+- **Sélection** : `checkbox`, `radio`, `toggle`
+- **Spéciaux** : `date`, `color`
+
+## Architecture Core
+
 ```vue
 <script setup>
-import { getInputProps } from '@/Utils/atomic-design/inputHelper';
-const props = defineProps({
-  ...getInputProps('input', 'field'),
+import { getInputProps, getVBindAttrs, getVOnEvents, getCoreAttrs } from '@/Utils/atomic-design/inputHelper';
+import { useAttrs } from 'vue';
+
+const props = defineProps({ ...getInputProps('input', 'core') });
+const $attrs = useAttrs();
+
+// Bindings optimisés
+const vBindAttrs = computed(() => getVBindAttrs($attrs, 'input', 'core', coreProps.value));
+const vOnEvents = computed(() => getVOnEvents($attrs, 'input', 'core'));
+const inputBindings = computed(() => ({
+    ...getCoreAttrs(props, { ref: inputRef }),
+    ...vBindAttrs.value,
+}));
+</script>
+
+<template>
+  <input v-bind="inputBindings" v-on="vOnEvents" />
+</template>
+```
+
+## Architecture Field
+
+```vue
+<script setup>
+import { generateCoreBindings } from '@/Utils/atomic-design/inputHelper';
+import { useAttrs } from 'vue';
+
+// Bindings transmis au Core
+const coreBindings = computed(() => 
+    generateCoreBindings(props, useAttrs(), 'input')
+);
+</script>
+
+<template>
+  <InputCore v-bind="coreBindings" />
+</template>
+```
+
+## Actions contextuelles
+
+```javascript
+import useInputActions from '@/Composables/form/useInputActions';
+
+const { actionsToDisplay, inputProps } = useInputActions({
+    modelValue: props.modelValue,
+    type: props.type,
+    actions: props.actions,
 });
 ```
 
-## 3. Exemples d’utilisation
+### Actions disponibles
+- `reset` : Revenir à la valeur initiale
+- `back` : Annuler la dernière modification
+- `clear` : Vider le champ
+- `copy` : Copier le contenu
+- `password` : Afficher/masquer le mot de passe
+- `edit` : Basculer édition/lecture seule
 
+## Exemples
+
+### Input basique
 ```vue
 <InputField
   v-model="email"
   label="Email"
-  :actions="['reset', 'clear', 'copy', 'password']"
-  type="password"
+  type="email"
   color="primary"
-  size="md"
 />
 ```
 
-## 4. Bonnes pratiques
-- Toujours utiliser InputField pour bénéficier de toute la puissance du système
-- Factoriser la logique métier dans useInputActions
-- Utiliser les slots pour personnaliser l’UI sans casser la structure
-- **Ne jamais redéclarer localement une prop déjà factorisée dans inputHelper.js**
-- Documenter chaque usage spécifique
+### Avec actions et validation
+```vue
+<InputField
+  v-model="password"
+  label="Mot de passe"
+  type="password"
+  :actions="['password', 'clear']"
+  :validation="{ state: 'error', message: 'Mot de passe trop court' }"
+/>
+```
 
-## 5. DRYness & Maintenabilité
-- **Toute l’API des inputs est centralisée dans `inputHelper.js`** : ajout/suppression/évolution d’une prop = 1 seul endroit à modifier
-- Les composants sont ultra-DRY, évolutifs, et cohérents
-- La migration et l’onboarding sont facilités
+## Bonnes pratiques
 
-## 6. Liens utiles
-- [DaisyUI - Input](https://daisyui.com/components/input/)
-- [Tailwind CSS](https://tailwindcss.com/docs/utility-first) 
+- ✅ Utiliser `getInputProps()` pour hériter toutes les props
+- ✅ Utiliser `generateCoreBindings()` pour transmettre du Field au Core
+- ✅ Utiliser `useInputActions()` pour les actions contextuelles
+- ❌ Ne pas redéclarer les props déjà factorisées
+- ❌ Ne pas utiliser les anciennes fonctions (`getInputAttrs`, etc.)
+
+## Liens utiles
+
+- [inputHelper.js](../../resources/js/Utils/atomic-design/inputHelper.js)
+- [useInputStyle.js](../../resources/js/Composables/form/useInputStyle.js)
+- [useInputActions.js](../../resources/js/Composables/form/useInputActions.js) 

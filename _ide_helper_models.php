@@ -13,8 +13,6 @@
 
 namespace App\Models\Entity{
 /**
- * 
- *
  * @property int $id
  * @property string $name
  * @property string|null $description
@@ -52,8 +50,6 @@ namespace App\Models\Entity{
 
 namespace App\Models\Entity{
 /**
- * 
- *
  * @property int $id
  * @property string $name
  * @property string|null $description
@@ -121,8 +117,6 @@ namespace App\Models\Entity{
 
 namespace App\Models\Entity{
 /**
- * 
- *
  * @property int $id
  * @property string $name
  * @property string|null $description
@@ -186,8 +180,6 @@ namespace App\Models\Entity{
 
 namespace App\Models\Entity{
 /**
- * 
- *
  * @property int $id
  * @property string|null $official_id
  * @property string|null $dofusdb_id
@@ -243,8 +235,6 @@ namespace App\Models\Entity{
 
 namespace App\Models\Entity{
 /**
- * 
- *
  * @property int $id
  * @property string|null $official_id
  * @property string|null $dofusdb_id
@@ -311,8 +301,6 @@ namespace App\Models\Entity{
 
 namespace App\Models\Entity{
 /**
- * 
- *
  * @property int $id
  * @property string $name
  * @property string|null $description
@@ -520,8 +508,6 @@ namespace App\Models\Entity{
 
 namespace App\Models\Entity{
 /**
- * 
- *
  * @property int $id
  * @property string|null $official_id
  * @property string|null $dofusdb_id
@@ -590,8 +576,6 @@ namespace App\Models\Entity{
 
 namespace App\Models\Entity{
 /**
- * 
- *
  * @property int $id
  * @property int|null $creature_id
  * @property string|null $official_id
@@ -635,8 +619,6 @@ namespace App\Models\Entity{
 
 namespace App\Models\Entity{
 /**
- * 
- *
  * @property int $id
  * @property int|null $creature_id
  * @property string|null $story
@@ -678,8 +660,6 @@ namespace App\Models\Entity{
 
 namespace App\Models\Entity{
 /**
- * 
- *
  * @property int $id
  * @property string $name
  * @property string|null $description
@@ -725,8 +705,6 @@ namespace App\Models\Entity{
 
 namespace App\Models\Entity{
 /**
- * 
- *
  * @property int $id
  * @property string|null $dofusdb_id
  * @property int|null $official_id
@@ -791,8 +769,6 @@ namespace App\Models\Entity{
 
 namespace App\Models\Entity{
 /**
- * 
- *
  * @property int $id
  * @property string $name
  * @property string|null $description
@@ -862,8 +838,6 @@ namespace App\Models\Entity{
 
 namespace App\Models\Entity{
 /**
- * 
- *
  * @property int $id
  * @property string $name
  * @property string|null $description
@@ -918,8 +892,6 @@ namespace App\Models\Entity{
 
 namespace App\Models\Entity{
 /**
- * 
- *
  * @property int $id
  * @property string $name
  * @property string|null $description
@@ -959,8 +931,6 @@ namespace App\Models\Entity{
 
 namespace App\Models\Entity{
 /**
- * 
- *
  * @property int $id
  * @property string|null $official_id
  * @property string|null $dofusdb_id
@@ -1042,8 +1012,6 @@ namespace App\Models\Entity{
 
 namespace App\Models{
 /**
- * 
- *
  * @property int $id
  * @property string $file
  * @property string|null $title
@@ -1183,8 +1151,6 @@ namespace App\Models{
 
 namespace App\Models\Type{
 /**
- * 
- *
  * @property int $id
  * @property string $name
  * @property int $usable
@@ -1218,8 +1184,6 @@ namespace App\Models\Type{
 
 namespace App\Models\Type{
 /**
- * 
- *
  * @property int $id
  * @property string $name
  * @property int $usable
@@ -1253,8 +1217,6 @@ namespace App\Models\Type{
 
 namespace App\Models\Type{
 /**
- * 
- *
  * @property int $id
  * @property string $name
  * @property int $usable
@@ -1293,8 +1255,6 @@ namespace App\Models\Type{
 
 namespace App\Models\Type{
 /**
- * 
- *
  * @property int $id
  * @property string $name
  * @property int $usable
@@ -1328,8 +1288,6 @@ namespace App\Models\Type{
 
 namespace App\Models\Type{
 /**
- * 
- *
  * @property int $id
  * @property int $scenario_id
  * @property int $next_scenario_id
@@ -1350,8 +1308,6 @@ namespace App\Models\Type{
 
 namespace App\Models\Type{
 /**
- * 
- *
  * @property int $id
  * @property string $name
  * @property string|null $description

@@ -12,9 +12,9 @@
  * @prop {String} status - Statut de la vérification email
  */
 import { useForm, usePage } from '@inertiajs/vue3';
+import { computed } from 'vue';
 import InputLabel from '@/Pages/Atoms/data-input/InputLabel.vue';
 import InputField from '@/Pages/Molecules/data-input/InputField.vue';
-import Validator from '@/Pages/Atoms/data-input/Validator.vue';
 import Btn from '@/Pages/Atoms/action/Btn.vue';
 import Route from '@/Pages/Atoms/action/Route.vue';
 import Alert from '@/Pages/Atoms/feedback/Alert.vue';
@@ -52,6 +52,25 @@ const updateProfile = () => {
         }
     });
 };
+
+// Validation computed pour chaque champ
+const nameValidation = computed(() => {
+    if (!form.errors.name) return null;
+    return {
+        state: 'error',
+        message: form.errors.name,
+        showNotification: false
+    };
+});
+
+const emailValidation = computed(() => {
+    if (!form.errors.email) return null;
+    return {
+        state: 'error',
+        message: form.errors.email,
+        showNotification: false
+    };
+});
 </script>
 
 <template>
@@ -71,20 +90,20 @@ const updateProfile = () => {
                     <InputLabel for="name" value="Nom" theme="primary" />
                     <Tooltip content="Votre nom d'affichage" placement="top">
                         <InputField id="name" v-model="form.name" type="text" required autofocus autocomplete="name"
-                            theme="primary" aria-label="Nom"
-                            :aria-invalid="!!form.errors.name" :class="'mt-1 block w-full'" />
+                            :validation="nameValidation"
+                            aria-label="Nom"
+                            :class="'mt-1 block w-full'" />
                     </Tooltip>
-                    <Validator :message="form.errors.name" :visible="!!form.errors.name" class="mt-2" />
                 </div>
 
                 <div class="space-y-2">
                     <InputLabel for="email" value="Adresse email" theme="primary" />
                     <Tooltip content="Votre adresse email" placement="top">
                         <InputField id="email" v-model="form.email" type="email" required autocomplete="username"
-                            theme="primary" aria-label="Adresse email"
-                            :aria-invalid="!!form.errors.email" :class="'mt-1 block w-full'" />
+                            :validation="emailValidation"
+                            aria-label="Adresse email"
+                            :class="'mt-1 block w-full'" />
                     </Tooltip>
-                    <Validator :message="form.errors.email" :visible="!!form.errors.email" class="mt-2" />
                 </div>
 
                 <div v-if="mustVerifyEmail && user.email_verified_at === null"

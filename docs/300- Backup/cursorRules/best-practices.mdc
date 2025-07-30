@@ -4,9 +4,12 @@ alwaysApply: true
 # Bonnes pratiques Krosmoz-JDR
 
 - **Documentation code** : utiliser des docBlocks concis (JSDoc pour le front, PHPDoc pour le back), voir [CODE_DOCUMENTATION.md](../../docs/10-BestPractices/CODE_DOCUMENTATION.md).
+-  **Documenation général du projet** : Générer la documentation sur le projet (markdown). La documentation doit s'intégrer à l'ancienne en venant supprimer et modifier ce qui doit l'être et ajouter de nouveau parahraphe si c'est nécessaire. De nouveau fichier peuvent être créer quand aucun fichier déjà existant font état des nouvelles fonctionnalités à ajouter à la doc.
+voir [DOCUMENTATION_GUIDE.md](../../docs/DOCUMENTATION_GUIDE.md), [Index de la documentation](../../docs/docs.index.json).
 - **Sécurité** : toujours valider les entrées utilisateur, respecter les recommandations de [SECURITY_PRACTICES.md](../../docs/10-BestPractices/SECURITY_PRACTICES.md).
 - **Nommage** : suivre les conventions de [NAMING_CONVENTIONS.md](../../docs/10-BestPractices/NAMING_CONVENTIONS.md) (kebab-case fichiers, PascalCase classes, camelCase méthodes, snake_case variables).
 - **Tests** : référencer [TESTING_PRACTICES.md](../../docs/10-BestPractices/TESTING_PRACTICES.md) pour la stratégie de tests.
+- **Documenter les avancées** : Générer de la documentation sur les avencées du projet (non technique) (markdown), voir [Ce qui a été fait](../../docs/100-%20Done/README.md).
 
 Exemples :
 - Un docBloc doit toujours inclure une description, les types, et un exemple minimal.

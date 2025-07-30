@@ -1,261 +1,562 @@
 <script setup>
+defineOptions({ inheritAttrs: false });
+
 /**
- * Rating Atom (DaisyUI)
+ * RatingCore Atom (DaisyUI, Atomic Design)
  *
  * @description
- * Composant atomique Rating (étoiles, coeurs, etc.) conforme DaisyUI (v5.x) et Atomic Design.
- * - Gère tous les cas d'usage rating (étoiles, coeurs, etc.)
- * - Props DaisyUI : size, color
- * - Prop number : nombre d'étoiles/composants (défaut 5)
- * - Prop mask (string) : nom du mask DaisyUI (défaut 'mask-star')
- * - Prop items (array) : [{ color, mask, checked, ariaLabel }], pour personnaliser chaque composant (prioritaire sur color/mask globaux)
- * - v-model natif (modelValue, number ou string)
- * - Edition réactive avancée via useFieldComposable/field/debounceTime (voir ci-dessous)
- * - Accessibilité renforcée (aria-label, aria-checked)
- * - Slots : #labelTop, #labelBottom, #validator, #helper, default
- * - Affiche un bouton reset si modifié (UX moderne)
+ * Atom de base pour les étoiles de notation, stylé DaisyUI, sans gestion de label ni de layout.
+ * - Props : v-model, max, value, disabled, readonly, required, etc.
+ * - Accessibilité : id, ariaLabel, role, tabindex, aria-invalid, etc.
+ * - Utilise getInputStyle pour les classes DaisyUI/Tailwind
+ * - Slot par défaut : rating natif avec étoiles
+ * - Gestion des attributs spécifiques aux ratings : max, value, half-rating
+ * - Support des utilitaires custom (shadow, backdrop, opacity, rounded)
+ * - Support de la prop `style` (objet) et `variant` (string)
+ * - RatingCore ne supporte pas les labels inline (pas de labelFloating, labelInStart, labelInEnd)
  *
  * @see https://daisyui.com/components/rating/
  * @version DaisyUI v5.x
  *
- * @note Toutes les classes DaisyUI sont explicites, pas de concaténation dynamique non couverte par Tailwind.
- *
  * @example
- * <Rating v-model="note" :number="5" color="warning" size="lg" />
- * <Rating v-model="note" :items="[
- *   { color: 'warning', mask: 'mask-star', ariaLabel: '1 étoile' },
- *   { color: 'warning', mask: 'mask-star', ariaLabel: '2 étoiles' },
- *   { color: 'error', mask: 'mask-heart', ariaLabel: '3 coeurs', checked: true },
- * ]" />
+ * <RatingCore v-model="rating" :max="5" />
+ * <RatingCore v-model="rating" :max="5" color="primary" size="lg" />
+ * <RatingCore v-model="rating" :max="5" variant="glass" rounded="lg" />
+ * 
+ * // Avec objet style
+ * <RatingCore 
+ *   v-model="rating" 
+ *   :max="5"
+ *   :inputStyle="{ variant: 'glass', color: 'primary', size: 'md', animation: 'pulse' }" 
+ * />
  *
- * @props {Number|String} modelValue - Valeur sélectionnée (v-model natif)
- * @props {Number} number - Nombre d'étoiles/composants (défaut 5)
- * @props {String} mask - Nom du mask DaisyUI (ex: 'mask-star', 'mask-heart', défaut 'mask-star')
- * @props {String} color - Couleur DaisyUI ('', 'neutral', 'primary', ...)
- * @props {String} size - Taille DaisyUI ('', 'xs', 'sm', 'md', 'lg', 'xl')
- * @props {Array} items - Tableau d'objets pour personnaliser chaque composant : [{ color, mask, checked, ariaLabel }]
- * @props {Boolean} useFieldComposable - Active l'édition réactive (reset, debounce, etc.)
- * @props {Object} field - Objet field externe (optionnel, sinon composable interne)
- * @props {Number} debounceTime - Délai de debounce (ms, défaut 500)
- * @props {String|Object} id, ariaLabel, role, tabindex - hérités de commonProps
- * @props {String|Object} validator - Message de validation ou slot #validator
- * @props {String} errorMessage - Message d'erreur (optionnel)
- * @props {String} helper - Message d'aide (optionnel ou slot #helper)
- * @slot labelTop - Label custom au-dessus
- * @slot labelBottom - Label custom en-dessous
- * @slot validator - Message de validation custom
- * @slot helper - Message d'aide custom
- * @slot default - Slot pour contenu custom à droite du rating
- *
- * @note Si useFieldComposable=true, la logique d'édition réactive (valeur, debounce, reset, bouton reset, update) est entièrement gérée par le composable useEditableField. Le bouton reset s'affiche automatiquement si la valeur a été modifiée.
+ * @props {Number} modelValue - v-model (note actuelle)
+ * @props {Number} max - Nombre maximum d'étoiles
+ * @props {Boolean} half - Support des demi-étoiles
+ * @props {Boolean} disabled, readonly, required
+ * @props {String} color, size, variant
+ * @props {String|Object} inputStyle - Style d'input (string ou objet avec variant, size, color, animation)
+ * @props {String|Boolean} animation - Animation Tailwind ou booléen
+ * @props {String} id, ariaLabel, role, tabindex
+ * @props {Boolean|String} aria-invalid - État de validation pour l'accessibilité
+ * @props {String} shadow, backdrop, opacity, rounded - utilitaires custom
+ * @slot default - rating natif (optionnel)
  */
-import { computed, ref, watch, onMounted, onUnmounted, useSlots } from 'vue';
-import Validator from '@/Pages/Atoms/data-input/Validator.vue';
-import { getCommonProps, getCommonAttrs, getCustomUtilityProps, getCustomUtilityClasses, mergeClasses } from '@/Utils/atomic-design/uiHelper';
-import { getInputProps, getInputAttrs } from '@/Utils/atomic-design/inputHelper';
-import InputLabel from '@/Pages/Atoms/data-input/InputLabel.vue';
-import useEditableField from '@/Composables/form/useEditableField';
-import Btn from '@/Pages/Atoms/action/Btn.vue';
 
-const props = defineProps({
-    ...getCommonProps(),
-    ...getInputProps('rating', 'core'),
-    ...getCustomUtilityProps(),
+// ------------------------------------------
+// 📦 Import des outils
+// ------------------------------------------
+import { computed, ref, useAttrs } from 'vue'
+import { getInputStyle } from '@/Composables/form/useInputStyle'
+import useInputProps from '@/Composables/form/useInputProps'
+import { getInputPropsDefinition } from '@/Utils/atomic-design/inputHelper'
+import { mergeClasses } from '@/Utils/atomic-design/uiHelper'
+
+// ------------------------------------------
+// 🔧 Définition des props + emits
+// ------------------------------------------
+const props = defineProps(getInputPropsDefinition('rating', 'core'))
+const emit = defineEmits(['update:modelValue'])
+const $attrs = useAttrs()
+
+// ------------------------------------------
+// ⚙️ Attributs HTML + événements natifs filtrés
+// ------------------------------------------
+const { inputAttrs, listeners } = useInputProps(props, $attrs, emit, 'rating', 'core')
+
+// ------------------------------------------
+// 🎨 Style dynamique basé sur variant, color, etc.
+// ------------------------------------------
+const atomClasses = computed(() =>
+  mergeClasses(
+        getInputStyle('rating', {
+            variant: props.variant,
+            color: props.color,
+            size: props.size,
+            animation: props.animation,
+      ...(typeof props.inputStyle === 'object' && props.inputStyle !== null ? props.inputStyle : {}),
+      ...(typeof props.inputStyle === 'string' ? { variant: props.inputStyle } : {})
+    }, false)
+  )
+)
+
+// ------------------------------------------
+// ⭐ Gestion du v-model pour rating
+// ------------------------------------------
+const currentRating = computed({
+    get() {
+        return props.modelValue || 0;
+    },
+    set(value) {
+        emit('update:modelValue', value);
+    }
 });
 
-const emit = defineEmits(['update:modelValue']);
+// ------------------------------------------
+// 🌟 Génération des étoiles
+// ------------------------------------------
+const stars = computed(() => {
+    const count = props.number || 5;
+    const rating = currentRating.value;
+    const items = props.items || [];
+    
+    return Array.from({ length: count }, (_, index) => {
+        const starIndex = index + 1;
+        const isActive = starIndex <= rating;
+        const isHalf = props.half && starIndex === Math.ceil(rating) && rating % 1 !== 0;
+        
+        return {
+            index: starIndex,
+            isActive,
+            isHalf,
+            content: items[index] || '★',
+            class: isActive ? 'text-yellow-400' : 'text-gray-300'
+        };
+    });
+});
+
 const ratingRef = ref(null);
 
-// Détermine si le composant doit afficher un état de validation
-const hasValidationState = computed(() => hasValidation(props, useSlots()));
-
-// Gestion editableField (optionnel)
-const editableField = computed(() => {
-    if (props.useFieldComposable) {
-        return useEditableField(props.modelValue, {
-            field: props.field,
-            debounce: props.debounceTime,
-            onUpdate: (val) => emit('update:modelValue', val),
-        });
-    }
-    return null;
-});
-
-const isFieldModified = computed(() =>
-    props.useFieldComposable && editableField.value
-        ? editableField.value.isModified.value
-        : false,
-);
-
-const displayValue = computed(() => {
-    if (props.useFieldComposable && editableField.value) {
-        return editableField.value.value.value;
-    }
-    return props.modelValue;
-});
-
-function onInput(e) {
-    if (props.useFieldComposable && editableField.value) {
-        editableField.value.onInput(e);
-    } else {
-        emit('update:modelValue', e.target.value);
-    }
+// ------------------------------------------
+// 🎯 Gestion des événements
+// ------------------------------------------
+function onStarClick(index) {
+    if (props.disabled || props.readonly) return;
+    currentRating.value = index;
 }
 
-function onBlur() {
-    if (props.useFieldComposable && editableField.value) {
-        editableField.value.onBlur();
-    }
+function onStarHover(index) {
+    if (props.disabled || props.readonly) return;
+    // Optionnel : prévisualisation au survol
 }
 
-function handleReset() {
-    if (
-        props.useFieldComposable &&
-        editableField.value &&
-        typeof editableField.value.reset === 'function'
-    ) {
-        editableField.value.reset();
-        editableField.value.onBlur();
-    }
+function onStarLeave() {
+    if (props.disabled || props.readonly) return;
+    // Optionnel : réinitialisation de la prévisualisation
 }
-
-onMounted(() => {
-    if (ratingRef.value && props.autofocus) {
-        ratingRef.value.focus();
-    }
-});
-onUnmounted(() => {
-    if (editableField.value && editableField.value.debounceTimeout) {
-        clearTimeout(editableField.value.debounceTimeout);
-    }
-});
-defineExpose({ 
-    focus: () => ratingRef.value && ratingRef.value.focus(),
-    isFieldModified,
-    handleReset,
-});
-
-const atomClasses = computed(() =>
-    mergeClasses(
-        [
-            'rating',
-            props.color === 'neutral' && 'rating-neutral',
-            props.color === 'primary' && 'rating-primary',
-            props.color === 'secondary' && 'rating-secondary',
-            props.color === 'accent' && 'rating-accent',
-            props.color === 'info' && 'rating-info',
-            props.color === 'success' && 'rating-success',
-            props.color === 'warning' && 'rating-warning',
-            props.color === 'error' && 'rating-error',
-            props.size === 'xs' && 'rating-xs',
-            props.size === 'sm' && 'rating-sm',
-            props.size === 'md' && 'rating-md',
-            props.size === 'lg' && 'rating-lg',
-            props.size === 'xl' && 'rating-xl',
-            hasValidationState.value && 'rating-error',
-        ].filter(Boolean),
-        getCustomUtilityClasses(props),
-        props.class
-    )
-);
-
-function getRatingClasses(props) {
-    return mergeClasses(
-        [
-            'rating',
-            props.size === 'xs' && 'rating-xs',
-            props.size === 'sm' && 'rating-sm',
-            props.size === 'md' && 'rating-md',
-            props.size === 'lg' && 'rating-lg',
-            props.size === 'xl' && 'rating-xl',
-        ].filter(Boolean),
-        getCustomUtilityClasses(props),
-        props.class
-    );
-}
-
-function getMaskClasses(item, idx) {
-    return mergeClasses(
-        [
-            'mask',
-            (item?.mask || props.mask),
-            (item?.color || props.color) && `bg-${item?.color || props.color}`,
-        ].filter(Boolean)
-    );
-}
-
-const ratingClasses = computed(() => getRatingClasses(props));
-const ratingId = computed(() => props.id || `rating-${Math.random().toString(36).substr(2, 9)}`);
-
-const attrs = computed(() => ({
-    ...getCommonAttrs(props),
-    ...getInputAttrs('rating', 'core'),
-}));
-
-// Génération dynamique des items (étoiles, coeurs, etc.)
-const ratingItems = computed(() => {
-    if (props.items && Array.isArray(props.items) && props.items.length > 0) {
-        return props.items.map((item, idx) => ({
-            ...item,
-            value: item.value !== undefined ? item.value : idx + 1,
-            checked: item.checked !== undefined ? item.checked : false,
-            ariaLabel: item.ariaLabel || `${idx + 1} item`,
-        }));
-    }
-    // Génère un tableau d'items par défaut
-    return Array.from({ length: props.number }, (_, idx) => ({
-        value: idx + 1,
-        mask: props.mask,
-        color: props.color,
-        checked: false,
-        ariaLabel: `${idx + 1} item`,
-    }));
-});
 </script>
 
 <template>
-    <div class="form-control w-full">
-        <!-- Label top -->
-        <InputLabel v-if="props.label || $slots.labelTop" :for="ratingId" :value="props.label">
-            <template v-if="$slots.labelTop" #default>
-                <slot name="labelTop" />
-            </template>
-        </InputLabel>
-        <div class="relative flex items-center gap-2 w-full">
-            <div :class="atomClasses" ref="ratingRef">
-                <template v-for="(item, idx) in ratingItems" :key="idx">
-                    <input type="radio" v-bind="attrs" :name="ratingId" :value="item.value"
-                        :class="getMaskClasses(item, idx)" :checked="displayValue == item.value || item.checked"
-                        :aria-label="item.ariaLabel" :aria-checked="displayValue == item.value" :aria-invalid="hasValidationState"
-                        @input="onInput(item.value)" @blur="onBlur" v-on="$attrs" />
-                </template>
-                <!-- Bouton reset -->
-                <Btn v-if="props.useFieldComposable && isFieldModified" class="absolute right-2 top-2 z-20"
-                    size="xs" variant="ghost" circle @click="handleReset" :aria-label="'Réinitialiser'">
-                    <i class="fa-solid fa-arrow-rotate-left"></i>
-                </Btn>
-                <slot />
-            </div>
-        </div>
-        <!-- Label bottom -->
-        <InputLabel v-if="props.labelBottom || $slots.labelBottom" :for="ratingId" :value="props.labelBottom" class="mt-1">
-            <template v-if="$slots.labelBottom" #default>
-                <slot name="labelBottom" />
-            </template>
-        </InputLabel>
-        <!-- Validator -->
-        <div v-if="hasValidationState" class="mt-1">
-            <slot name="validator">
-                <Validator v-if="props.validator"
-                    :state="typeof props.validator === 'string' ? 'error' : 'error'"
-                    :message="typeof props.validator === 'string' ? props.validator : props.errorMessage" />
-            </slot>
-        </div>
-        <!-- Helper -->
-        <div v-if="props.helper || $slots.helper" class="mt-1 text-xs text-base-400">
-            <slot name="helper">{{ props.helper }}</slot>
-        </div>
+    <!-- ⭐ Rating simple sans label (RatingCore ne supporte pas les labels inline/floating) -->
+    <div 
+        ref="ratingRef"
+        v-bind="inputAttrs"
+        v-on="listeners"
+        :class="atomClasses"
+        role="radiogroup"
+        :aria-label="props.ariaLabel || 'Notation'"
+    >
+        <input
+            v-for="star in stars"
+            :key="star.index"
+            type="radio"
+            :name="props.name || 'rating'"
+            :value="star.index"
+            :checked="star.index === currentRating"
+            :disabled="props.disabled"
+            :readonly="props.readonly"
+            :class="star.class"
+            @click="onStarClick(star.index)"
+            @mouseenter="onStarHover(star.index)"
+            @mouseleave="onStarLeave"
+        />
     </div>
 </template>
 
-<style scoped></style>
+<style scoped lang="scss">
+// Styles spécifiques pour RatingCore
+// Utilisation maximale de Tailwind/DaisyUI, CSS custom minimal
+
+.rating {
+    // Styles de base pour tous les ratings
+    display: inline-flex;
+    gap: 0.125rem;
+    transition: all 0.2s ease-in-out;
+    
+    // États disabled
+    &:has(input:disabled) {
+        opacity: 0.6;
+        cursor: not-allowed;
+    }
+    
+    // Inputs radio (étoiles)
+    input[type="radio"] {
+        appearance: none;
+        cursor: pointer;
+        transition: all 0.2s ease-in-out;
+        
+        &:disabled {
+            cursor: not-allowed;
+        }
+        
+        // Masque d'étoile
+        &.mask-star {
+            background: #e5e7eb;
+            mask: url("data:image/svg+xml,%3csvg width='200' height='200' xmlns='http://www.w3.org/2000/svg'%3e%3cpath d='m9.05 3.86 1.78 5.14H18l-4.84 3.51 1.78 5.15-4.89-3.55-4.89 3.55 1.78-5.15L.05 9H7.27l1.78-5.14z'/%3e%3c/svg%3e") center/contain;
+            -webkit-mask: url("data:image/svg+xml,%3csvg width='200' height='200' xmlns='http://www.w3.org/2000/svg'%3e%3cpath d='m9.05 3.86 1.78 5.14H18l-4.84 3.51 1.78 5.15-4.89-3.55-4.89 3.55 1.78-5.15L.05 9H7.27l1.78-5.14z'/%3e%3c/svg%3e") center/contain;
+            
+            &:checked {
+                background: var(--color-primary, #3b82f6);
+            }
+            
+            &:hover:not(:disabled) {
+                transform: scale(1.1);
+                background: var(--color-primary, #3b82f6);
+            }
+        }
+        
+        // Masque d'étoile pour demi-rating
+        &.mask-star-2 {
+            background: #e5e7eb;
+            mask: url("data:image/svg+xml,%3csvg width='200' height='200' xmlns='http://www.w3.org/2000/svg'%3e%3cpath d='m9.05 3.86 1.78 5.14H18l-4.84 3.51 1.78 5.15-4.89-3.55-4.89 3.55 1.78-5.15L.05 9H7.27l1.78-5.14z'/%3e%3c/svg%3e") center/contain;
+            -webkit-mask: url("data:image/svg+xml,%3csvg width='200' height='200' xmlns='http://www.w3.org/2000/svg'%3e%3cpath d='m9.05 3.86 1.78 5.14H18l-4.84 3.51 1.78 5.15-4.89-3.55-4.89 3.55 1.78-5.15L.05 9H7.27l1.78-5.14z'/%3e%3c/svg%3e") center/contain;
+            
+            &.mask-half-1 {
+                background: var(--color-primary, #3b82f6);
+                mask: url("data:image/svg+xml,%3csvg width='200' height='200' xmlns='http://www.w3.org/2000/svg'%3e%3cpath d='m9.05 3.86 1.78 5.14H18l-4.84 3.51 1.78 5.15-4.89-3.55-4.89 3.55 1.78-5.15L.05 9H7.27l1.78-5.14z'/%3e%3c/svg%3e") center/contain;
+                -webkit-mask: url("data:image/svg+xml,%3csvg width='200' height='200' xmlns='http://www.w3.org/2000/svg'%3e%3cpath d='m9.05 3.86 1.78 5.14H18l-4.84 3.51 1.78 5.15-4.89-3.55-4.89 3.55 1.78-5.15L.05 9H7.27l1.78-5.14z'/%3e%3c/svg%3e") center/contain;
+            }
+            
+            &.mask-half-2 {
+                background: #e5e7eb;
+                mask: url("data:image/svg+xml,%3csvg width='200' height='200' xmlns='http://www.w3.org/2000/svg'%3e%3cpath d='m9.05 3.86 1.78 5.14H18l-4.84 3.51 1.78 5.15-4.89-3.55-4.89 3.55 1.78-5.15L.05 9H7.27l1.78-5.14z'/%3e%3c/svg%3e") center/contain;
+                -webkit-mask: url("data:image/svg+xml,%3csvg width='200' height='200' xmlns='http://www.w3.org/2000/svg'%3e%3cpath d='m9.05 3.86 1.78 5.14H18l-4.84 3.51 1.78 5.15-4.89-3.55-4.89 3.55 1.78-5.15L.05 9H7.27l1.78-5.14z'/%3e%3c/svg%3e") center/contain;
+            }
+            
+            &:hover:not(:disabled) {
+                transform: scale(1.1);
+            }
+        }
+        
+        // Radio caché
+        &.rating-hidden {
+            position: absolute;
+            opacity: 0;
+            pointer-events: none;
+        }
+    }
+    
+    // Variant Glass - Effet de verre
+    &.bg-transparent.border.border-gray-300 {
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(10px);
+        border-color: rgba(255, 255, 255, 0.2);
+        box-shadow: 
+            0 4px 6px -1px rgba(0, 0, 0, 0.1),
+            0 2px 4px -1px rgba(0, 0, 0, 0.06),
+            inset 0 1px 0 rgba(255, 255, 255, 0.1);
+        
+        &:hover {
+            box-shadow: 
+                0 10px 15px -3px rgba(0, 0, 0, 0.1),
+                0 4px 6px -2px rgba(0, 0, 0, 0.05),
+                inset 0 1px 0 rgba(255, 255, 255, 0.2);
+            border-color: rgba(255, 255, 255, 0.3);
+        }
+        
+        input[type="radio"] {
+            &.mask-star, &.mask-star-2 {
+                background: rgba(255, 255, 255, 0.3);
+                
+                &:checked {
+                    background: var(--color-primary, #3b82f6);
+                }
+                
+                &:hover:not(:disabled) {
+                    background: var(--color-primary, #3b82f6);
+                }
+            }
+        }
+    }
+    
+    // Variant Dash - Style pointillé
+    &.border-dashed.border-2 {
+        background: rgba(255, 255, 255, 0.05);
+        
+        &:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+        
+        input[type="radio"] {
+            &.mask-star, &.mask-star-2 {
+                &:checked {
+                    background: var(--color-secondary, #8b5cf6);
+                }
+                
+                &:hover:not(:disabled) {
+                    background: var(--color-secondary, #8b5cf6);
+                }
+            }
+        }
+    }
+    
+    // Variant Outline - Bordure avec effet
+    &.border-2.bg-transparent {
+        &:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+        
+        input[type="radio"] {
+            &.mask-star, &.mask-star-2 {
+                &:checked {
+                    background: var(--color-success, #10b981);
+                }
+                
+                &:hover:not(:disabled) {
+                    background: var(--color-success, #10b981);
+                }
+            }
+        }
+    }
+    
+    // Variant Ghost - Fond invisible
+    &.border.border-transparent.bg-transparent {
+        &:hover {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: rgba(255, 255, 255, 0.1);
+        }
+        
+        input[type="radio"] {
+            &.mask-star, &.mask-star-2 {
+                &:checked {
+                    background: var(--color-neutral, #6b7280);
+                }
+                
+                &:hover:not(:disabled) {
+                    background: var(--color-neutral, #6b7280);
+                }
+            }
+        }
+    }
+    
+    // Variant Soft - Style doux
+    &.border-b-2.border-gray-300.bg-transparent.rounded-none {
+        background: rgba(255, 255, 255, 0.05);
+        border-bottom-width: 2px;
+        
+        &:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+        
+        input[type="radio"] {
+            &.mask-star, &.mask-star-2 {
+                &:checked {
+                    background: var(--color-accent, #f59e0b);
+                }
+                
+                &:hover:not(:disabled) {
+                    background: var(--color-accent, #f59e0b);
+                }
+            }
+        }
+    }
+    
+    // Styles pour les couleurs DaisyUI
+    &.rating-primary {
+        input[type="radio"] {
+            &.mask-star, &.mask-star-2 {
+                &:checked {
+                    background: var(--color-primary, #3b82f6);
+                }
+                
+                &:hover:not(:disabled) {
+                    background: var(--color-primary, #3b82f6);
+                }
+            }
+        }
+    }
+    
+    &.rating-secondary {
+        input[type="radio"] {
+            &.mask-star, &.mask-star-2 {
+                &:checked {
+                    background: var(--color-secondary, #8b5cf6);
+                }
+                
+                &:hover:not(:disabled) {
+                    background: var(--color-secondary, #8b5cf6);
+                }
+            }
+        }
+    }
+    
+    &.rating-accent {
+        input[type="radio"] {
+            &.mask-star, &.mask-star-2 {
+                &:checked {
+                    background: var(--color-accent, #f59e0b);
+                }
+                
+                &:hover:not(:disabled) {
+                    background: var(--color-accent, #f59e0b);
+                }
+            }
+        }
+    }
+    
+    &.rating-info {
+        input[type="radio"] {
+            &.mask-star, &.mask-star-2 {
+                &:checked {
+                    background: var(--color-info, #06b6d4);
+                }
+                
+                &:hover:not(:disabled) {
+                    background: var(--color-info, #06b6d4);
+                }
+            }
+        }
+    }
+    
+    &.rating-success {
+        input[type="radio"] {
+            &.mask-star, &.mask-star-2 {
+                &:checked {
+                    background: var(--color-success, #10b981);
+                }
+                
+                &:hover:not(:disabled) {
+                    background: var(--color-success, #10b981);
+                }
+            }
+        }
+    }
+    
+    &.rating-warning {
+        input[type="radio"] {
+            &.mask-star, &.mask-star-2 {
+                &:checked {
+                    background: var(--color-warning, #f59e0b);
+                }
+                
+                &:hover:not(:disabled) {
+                    background: var(--color-warning, #f59e0b);
+                }
+            }
+        }
+    }
+    
+    &.rating-error {
+        input[type="radio"] {
+            &.mask-star, &.mask-star-2 {
+                &:checked {
+                    background: var(--color-error, #ef4444);
+                }
+                
+                &:hover:not(:disabled) {
+                    background: var(--color-error, #ef4444);
+                }
+            }
+        }
+    }
+    
+    &.rating-neutral {
+        input[type="radio"] {
+            &.mask-star, &.mask-star-2 {
+                &:checked {
+                    background: var(--color-neutral, #6b7280);
+                }
+                
+                &:hover:not(:disabled) {
+                    background: var(--color-neutral, #6b7280);
+                }
+            }
+        }
+    }
+    
+    // Animations
+    &.hover\\:scale-105:hover {
+        transform: scale(1.05);
+    }
+    
+    &.focus\\:scale-105:focus {
+        transform: scale(1.05);
+    }
+    
+    &.transition-transform {
+        transition: transform 0.2s ease-in-out;
+    }
+    
+    &.duration-200 {
+        transition-duration: 200ms;
+    }
+}
+
+// Styles pour les tailles DaisyUI
+.rating-xs {
+    gap: 0.0625rem;
+    
+    input[type="radio"] {
+        width: 1rem;
+        height: 1rem;
+    }
+}
+
+.rating-sm {
+    gap: 0.125rem;
+    
+    input[type="radio"] {
+        width: 1.25rem;
+        height: 1.25rem;
+    }
+}
+
+.rating-md {
+    gap: 0.125rem;
+    
+    input[type="radio"] {
+        width: 1.5rem;
+        height: 1.5rem;
+    }
+}
+
+.rating-lg {
+    gap: 0.25rem;
+    
+    input[type="radio"] {
+        width: 2rem;
+        height: 2rem;
+    }
+}
+
+.rating-xl {
+    gap: 0.25rem;
+    
+    input[type="radio"] {
+        width: 2.5rem;
+        height: 2.5rem;
+    }
+}
+
+// Styles pour les labels inline
+.label-text {
+    // Labels inline pour les ratings
+    transition: all 0.2s ease-in-out;
+    font-weight: 500;
+    
+    &:hover {
+        opacity: 0.8;
+    }
+}
+
+// Styles pour les labels flottants
+.floating-label {
+    // Label flottant pour les ratings
+    position: relative;
+    
+    .label-text {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        pointer-events: none;
+        transition: all 0.2s ease-in-out;
+    }
+}
+
+// Container pour les ratings
+.rating-container {
+    display: inline-flex;
+    align-items: center;
+}
+</style>

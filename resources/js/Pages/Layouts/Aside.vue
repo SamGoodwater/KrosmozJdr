@@ -81,7 +81,7 @@ const footerItems = [
 </script>
 
 <template>
-    <aside class="h-full min-h-full flex flex-col justify-between flex-nowrap border-glass-r-xs bd-blur-sm">
+    <aside class="h-full min-h-full flex flex-col justify-between flex-nowrap border-glass-r-xs bd-blur-md">
         <div class="flex flex-col justify-start flex-nowrap items-center">
             <Route route="home" target="_self" class="hover:scale-105 focus:scale-95 my-5">
                 <template v-if="!logoError">

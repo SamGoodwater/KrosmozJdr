@@ -19,11 +19,10 @@
  * - @success: Emitted when password is successfully updated
  * - @error: Emitted when an error occurs during update
  */
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 import { useForm } from '@inertiajs/vue3';
 import InputLabel from '@/Pages/Atoms/data-input/InputLabel.vue';
 import InputField from '@/Pages/Molecules/data-input/InputField.vue';
-import Validator from '@/Pages/Atoms/data-input/Validator.vue';
 import Btn from '@/Pages/Atoms/action/Btn.vue';
 import Alert from '@/Pages/Atoms/feedback/Alert.vue';
 import Container from '@/Pages/Atoms/data-display/Container.vue';
@@ -60,6 +59,34 @@ const updatePassword = () => {
         },
     });
 };
+
+// Validation computed pour chaque champ
+const currentPasswordValidation = computed(() => {
+    if (!form.errors.current_password) return null;
+    return {
+        state: 'error',
+        message: form.errors.current_password,
+        showNotification: false
+    };
+});
+
+const passwordValidation = computed(() => {
+    if (!form.errors.password) return null;
+    return {
+        state: 'error',
+        message: form.errors.password,
+        showNotification: false
+    };
+});
+
+const passwordConfirmationValidation = computed(() => {
+    if (!form.errors.password_confirmation) return null;
+    return {
+        state: 'error',
+        message: form.errors.password_confirmation,
+        showNotification: false
+    };
+});
 </script>
 
 <template>
@@ -79,35 +106,33 @@ const updatePassword = () => {
                     <InputLabel for="current_password" value="Mot de passe actuel" theme="primary" />
                     <Tooltip content="Entrez votre mot de passe actuel" placement="top">
                         <InputField id="current_password" ref="currentPasswordInput" v-model="form.current_password"
-                            type="password" autocomplete="current-password" theme="primary"
+                            type="password" autocomplete="current-password"
+                            :validation="currentPasswordValidation"
                             aria-label="Mot de passe actuel"
-                            :aria-invalid="!!form.errors.current_password" :class="'mt-1 block w-full'" />
+                            :class="'mt-1 block w-full'" />
                     </Tooltip>
-                    <Validator :message="form.errors.current_password" :visible="!!form.errors.current_password"
-                        class="mt-2" />
                 </div>
 
                 <div class="space-y-2">
                     <InputLabel for="password" value="Nouveau mot de passe" theme="primary" />
                     <Tooltip content="Le mot de passe doit contenir au moins 8 caractères" placement="top">
                         <InputField id="password" ref="passwordInput" v-model="form.password" type="password"
-                            autocomplete="new-password" theme="primary"
+                            autocomplete="new-password"
+                            :validation="passwordValidation"
                             aria-label="Nouveau mot de passe"
-                            :aria-invalid="!!form.errors.password" :class="'mt-1 block w-full'" />
+                            :class="'mt-1 block w-full'" />
                     </Tooltip>
-                    <Validator :message="form.errors.password" :visible="!!form.errors.password" class="mt-2" />
                 </div>
 
                 <div class="space-y-2">
                     <InputLabel for="password_confirmation" value="Confirmer le mot de passe" theme="primary" />
                     <Tooltip content="Confirmez votre nouveau mot de passe" placement="top">
                         <InputField id="password_confirmation" v-model="form.password_confirmation" type="password"
-                            autocomplete="new-password" theme="primary"
-                            aria-label="Confirmer le mot de passe" :aria-invalid="!!form.errors.password_confirmation"
+                            autocomplete="new-password"
+                            :validation="passwordConfirmationValidation"
+                            aria-label="Confirmer le mot de passe"
                             :class="'mt-1 block w-full'" />
                     </Tooltip>
-                    <Validator :message="form.errors.password_confirmation"
-                        :visible="!!form.errors.password_confirmation" class="mt-2" />
                 </div>
 
                 <div class="flex items-center gap-4">

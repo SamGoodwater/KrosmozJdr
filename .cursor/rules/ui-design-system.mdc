@@ -5,6 +5,7 @@ alwaysApply: false
 # Design System UI
 
 - Utiliser Tailwind CSS et DaisyUI pour tous les styles.
+- ***IMPORTANT*** **L'utilisation de Tailwind CSS oblige d'avoir en toute lettre l'ensemble des classes pouvant être utiliser. Il est donc strictement interdit de créer des classes dynamiquement dans les composants**
 - Respecter les principes d’accessibilité (contraste, navigation clavier, aria-labels).
 - Les thèmes et tokens sont centralisés dans les fichiers CSS/SCSS dédiés.
 - Voir [DESIGN_GUIDE.md](../../docs/30-UI/DESIGN_GUIDE.md) pour les conventions de design, glassmorphism, responsive, etc.

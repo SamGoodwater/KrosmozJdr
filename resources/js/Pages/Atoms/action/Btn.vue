@@ -38,7 +38,7 @@
  * @note Ce composant ne gère que <button>. Pour les liens ou autres éléments, utiliser un composant dédié (Route).
  * @note Toutes les classes DaisyUI sont explicites, pas de concaténation dynamique non couverte par Tailwind.
  */
-import { computed } from "vue";
+import { computed, useAttrs } from "vue";
 import {
     getCommonProps,
     getCommonAttrs,
@@ -95,6 +95,8 @@ const props = defineProps({
     },
 });
 
+const $attrs = useAttrs();
+
 const atomClasses = computed(() =>
     mergeClasses(
         [
@@ -131,15 +133,18 @@ const atomClasses = computed(() =>
     ),
 );
 
-const attrs = computed(() => getCommonAttrs(props));
+// Bindings pour le template (simplifié et approprié pour un bouton)
+const buttonBindings = computed(() => ({
+    ...getCommonAttrs(props),
+    ...$attrs,
+}));
 </script>
 
 <template>
     <button 
         :type="type" 
         :class="atomClasses" 
-        v-bind="attrs"
-        v-on="$attrs"
+        v-bind="buttonBindings"
     >
         <span v-if="content && !$slots.default">{{ content }}</span>
         <slot name="content" v-else />
@@ -148,6 +153,7 @@ const attrs = computed(() => getCommonAttrs(props));
 </template>
 
 <style scoped lang="scss">
+@use "sass:map";
 
     $color-map:(
         "primary": (
@@ -263,9 +269,10 @@ const attrs = computed(() => getCommonAttrs(props));
                 text-shadow 0.3s ease-in-out;   
             scale: 1;
 
+  
             @each $color, $value in $color-map {
                 &.btn-custom-#{$color} {
-                    color: map-get($value, "main");
+                    color: map.get($value, "main");
                 }
             }
 
@@ -274,11 +281,11 @@ const attrs = computed(() => getCommonAttrs(props));
                 text-shadow: 0px 0px 8px rgba(255, 255, 255, 0.15);
                 @each $color, $value in $color-map {
                     &.btn-custom-#{$color} {
-                        color: map-get($value, "semilight");
+                        color: map.get($value, "semilight");
                     }
                 }
             }
-        }
+        }   
 
         &-outline-custom, &-soft, &-glass, &-dash {
             &:hover {
@@ -302,7 +309,7 @@ const attrs = computed(() => getCommonAttrs(props));
                 scale: 1.02;
                 @each $color, $value in $color-map {
                     &.btn-custom-#{$color} {
-                        color: map-get($value, "semilight");
+                        color: map.get($value, "semilight");
                     }
                 }
             }
@@ -318,7 +325,7 @@ const attrs = computed(() => getCommonAttrs(props));
         &-outline-custom {
             @each $color, $value in $color-map {
                 &.btn-custom-#{$color} {
-                    color: map-get($value, "semilight");
+                    color: map.get($value, "semilight");
                 }
             }
             &::after {
@@ -330,7 +337,7 @@ const attrs = computed(() => getCommonAttrs(props));
                 }
                 @each $color, $value in $color-map {
                     &.btn-custom-#{$color} {
-                        color: map-get($value, "light");
+                        color: map.get($value, "light");    
                     }
                 }
             }
@@ -339,7 +346,7 @@ const attrs = computed(() => getCommonAttrs(props));
         &-glass-custom {
             @each $color, $value in $color-map {
                 &.btn-custom-#{$color} {
-                    color: map-get($value, "light");
+                    color: map.get($value, "light");
                 }
             }
             &::after {
@@ -362,15 +369,15 @@ const attrs = computed(() => getCommonAttrs(props));
 
             @each $color, $value in $color-map {
                 &.btn-custom-#{$color} {
-                    color: map-get($value, "light");
-                    background-color: color-mix(in srgb, map-get($value, "main") 30%, transparent);
+                    color: map.get($value, "light");
+                    background-color: color-mix(in srgb, map.get($value, "main") 30%, transparent);
                 }
             }
             &:hover {
                 @each $color, $value in $color-map {
                     &.btn-custom-#{$color} {
-                        color: map-get($value, "semilight");
-                        background-color: color-mix(in srgb, map-get($value, "main") 60%, transparent);
+                        color: map.get($value, "semilight");
+                        background-color: color-mix(in srgb, map.get($value, "main") 60%, transparent);
                     }
                 }
             }
@@ -381,15 +388,15 @@ const attrs = computed(() => getCommonAttrs(props));
             border: none;
             @each $color, $value in $color-map {
                 &.btn-custom-#{$color} {
-                    color: map-get($value, "light");
-                    background-color: map-get($value, "main");
+                    color: map.get($value, "light");
+                    background-color: map.get($value, "main");
                 }
             }
             &:hover {
                 @each $color, $value in $color-map {
                     &.btn-custom-#{$color} {
-                        color: map-get($value, "semilight");
-                        background-color: map-get($value, "main");
+                        color: map.get($value, "semilight");
+                        background-color: map.get($value, "main");
                     }
                 }
             }

@@ -14,11 +14,10 @@
  * - @success: Emitted when account is successfully deleted
  * - @error: Emitted when an error occurs during deletion
  */
-import { ref, nextTick } from 'vue';
+import { ref, nextTick, computed } from 'vue';
 import { useForm } from '@inertiajs/vue3';
 import InputLabel from '@/Pages/Atoms/data-input/InputLabel.vue';
 import InputField from '@/Pages/Molecules/data-input/InputField.vue';
-import Validator from '@/Pages/Atoms/data-input/Validator.vue';
 import Modal from '@/Pages/Molecules/action/Modal.vue';
 import Btn from '@/Pages/Atoms/action/Btn.vue';
 import Container from '@/Pages/Atoms/data-display/Container.vue';
@@ -59,6 +58,16 @@ const closeModal = () => {
     form.clearErrors();
     form.reset();
 };
+
+// Validation computed pour le mot de passe
+const passwordValidation = computed(() => {
+    if (!form.errors.password) return null;
+    return {
+        state: 'error',
+        message: form.errors.password,
+        showNotification: false
+    };
+});
 </script>
 
 <template>
@@ -95,12 +104,12 @@ const closeModal = () => {
                         <InputLabel for="password" value="Mot de passe" class="sr-only" />
                         <Tooltip content="Entrez votre mot de passe pour confirmer la suppression" placement="top">
                             <InputField id="password" ref="passwordInput" v-model="form.password" type="password"
-                                placeholder="Mot de passe" theme="error"
+                                placeholder="Mot de passe" 
+                                :validation="passwordValidation"
                                 aria-label="Mot de passe"
-                                :aria-invalid="!!form.errors.password" @keyup.enter="deleteUser"
+                                @keyup.enter="deleteUser"
                                 :class="'mt-1 block w-3/4'" />
                         </Tooltip>
-                        <Validator :message="form.errors.password" :visible="!!form.errors.password" class="mt-2" />
                     </div>
                     <div class="mt-6 flex justify-end space-x-4">
                         <Tooltip content="Annuler la suppression" placement="top">

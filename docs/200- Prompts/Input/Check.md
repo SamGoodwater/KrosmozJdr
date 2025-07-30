@@ -1,0 +1,25 @@
+# A Checker
+- gestion des props et des attrs
+    - LLes props et attrs sont bien présents dans inputHelper.
+    - Field transmet bien les bons props et attrs à Core
+- Validation de la donnée locale
+    - transmission de la validation par slot ou props au Validator
+    - possibilité de paramétrer la validation
+    - possibilité de créer des notifications
+- Helper : présence du slot helper et de la props avec le bon paramètrage
+- Gestion des labels :
+	- props label dans Fiels qui peut prendre string ou objet complexe
+	- Pour Fields : présence de slots : labelTop, labelBottom; labelStart, labelEnd (tout le temps) et des labelFloating, labelInStart et labelInEnd qui seront transmis au Core (seulement lorsque c'est pertinent)
+	- Pour les Cores : lorsque c'est pertinent présence des slots et props, labelInStart, labelInEnd et labelFloating
+- Gestion des actions :
+    - Présence de slots overStart et overEnd dans tout les Fields
+    - props actions (objet) dans tout les Fields
+    - Créations automatiques des boutons pour les actions dans overEnd
+    - Action togglePassxord automatique lorsque le type input est password et que le navigateur ne gère pas cette fonctionnalité
+    - Possibilité de passer des options aux actions
+- Système de notification actifs si besoin
+- Gestion des styles des inputs.
+    - Props inputStyle dans tout les Fields et les Cores
+    - Props variant, size, color et animation dans tout les Fields et les Cores
+    - Traitement des styles si l'envoi est incomplet pour générer un style utilisable
+    - Envoi du style aux labels, aux validator et aux helpers (color et size)

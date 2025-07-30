@@ -23,6 +23,9 @@ export default defineConfig({
                     base: null,
                     includeAbsolute: false,
                 },
+                compilerOptions: {
+                    isCustomElement: (tag) => tag.startsWith('calendar-') || tag.startsWith('color-')
+                }
             },
         }),
         tailwindcss(),
@@ -36,7 +39,8 @@ export default defineConfig({
     css: {
         preprocessorOptions: {
             scss: {
-                includePaths: ['resources/scss']
+                includePaths: ['resources/scss'],
+                api: 'modern-compiler'
             }
         }
     },

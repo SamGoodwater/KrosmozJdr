@@ -6,13 +6,13 @@
  * - Actions administrateurs (mot de passe, rôle)
  * - Structure DRY, accessibilité, tooltips, etc.
  */
-import { ref, watch } from 'vue';
+import { ref, watch, computed } from 'vue';
 import { useForm, usePage } from '@inertiajs/vue3';
 import { useNotificationStore } from '@/Composables/store/useNotificationStore';
 import { verifyRole, getRoleTranslation, ROLES } from '@/Utils/user/RoleManager';
 import InputField from '@/Pages/Molecules/data-input/InputField.vue';
-import FileInput from '@/Pages/Molecules/data-input/FileInputField.vue';
-import Select from '@/Pages/Atoms/data-input/SelectCore.vue';
+import File from '@/Pages/Molecules/data-input/FileField.vue';
+import SelectField from '@/Pages/Molecules/data-input/SelectField.vue';
 import Btn from '@/Pages/Atoms/action/Btn.vue';
 import Avatar from '@/Pages/Atoms/data-display/Avatar.vue';
 import BadgeRole from '@/Pages/Molecules/user/BadgeRole.vue';
@@ -63,6 +63,44 @@ const formRole = useForm({ role: user.value.role });
 const updateRole = () => {
     /* ... logique update role ... */
 };
+
+// Validation computed pour les champs de mot de passe
+const currentPasswordValidation = computed(() => {
+    if (!formPassword.errors.current_password) return null;
+    return {
+        state: 'error',
+        message: formPassword.errors.current_password,
+        showNotification: false
+    };
+});
+
+const passwordValidation = computed(() => {
+    if (!formPassword.errors.password) return null;
+    return {
+        state: 'error',
+        message: formPassword.errors.password,
+        showNotification: false
+    };
+});
+
+const passwordConfirmationValidation = computed(() => {
+    if (!formPassword.errors.password_confirmation) return null;
+    return {
+        state: 'error',
+        message: formPassword.errors.password_confirmation,
+        showNotification: false
+    };
+});
+
+// Validation computed pour le rôle
+const roleValidation = computed(() => {
+    if (!formRole.errors.role) return null;
+    return {
+        state: 'error',
+        message: formRole.errors.role,
+        showNotification: false
+    };
+});
 </script>
 
 <template>
@@ -84,7 +122,7 @@ const updateRole = () => {
             <div class="flex flex-row gap-4">
                 <div class="flex flex-col gap-4 w-1/2">
                     <Tooltip content="Déposer ou cliquer pour changer votre avatar" placement="top">
-                        <FileInput
+                        <File
                             v-model="avatarFile"
                             :currentFile="user.value.avatar"
                             accept="image/*"
@@ -106,7 +144,7 @@ const updateRole = () => {
                                     rounded="full"
                                 />
                             </template>
-                        </FileInput>
+                        </File>
                     </Tooltip>
                 </div>
                 <div class="flex flex-col gap-4 w-1/2">
@@ -152,8 +190,10 @@ const updateRole = () => {
                         <InputField
                             v-model="formPassword.current_password"
                             type="password"
+                            variant="glass"
                             color="primary"
                             label="Mot de passe actuel"
+                            :validation="currentPasswordValidation"
                             @keyup.enter="updatePassword"
                         />
                     </Tooltip>
@@ -161,8 +201,10 @@ const updateRole = () => {
                         <InputField
                             v-model="formPassword.password"
                             type="password"
+                            variant="glass"
                             color="primary"
                             label="Nouveau mot de passe"
+                            :validation="passwordValidation"
                             @keyup.enter="updatePassword"
                         />
                     </Tooltip>
@@ -170,8 +212,10 @@ const updateRole = () => {
                         <InputField
                             v-model="formPassword.password_confirmation"
                             type="password"
+                            variant="glass"
                             color="primary"
                             label="Confirmation du mot de passe"
+                            :validation="passwordConfirmationValidation"
                             @keyup.enter="updatePassword"
                         />
                     </Tooltip>
@@ -206,19 +250,17 @@ const updateRole = () => {
                 </p>
                 <div class="mt-6 space-y-4">
                     <Tooltip content="Sélectionnez le rôle de l'utilisateur" placement="top">
-                        <Select
+                        <SelectField
                             v-model="formRole.role"
+                            variant="glass"
                             color="primary"
                             label="Rôle"
-                        >
-                            <option
-                                v-for="role in Object.values(ROLES)"
-                                :key="role"
-                                :value="role"
-                            >
-                                {{ getRoleTranslation(role) }}
-                            </option>
-                        </Select>
+                            :options="Object.values(ROLES).map(role => ({ 
+                                value: role, 
+                                label: getRoleTranslation(role) 
+                            }))"
+                            :validation="roleValidation"
+                        />
                     </Tooltip>
                     <div class="flex items-center gap-4">
                         <Tooltip content="Mettre à jour le rôle" placement="top">

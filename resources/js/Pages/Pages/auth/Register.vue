@@ -1,6 +1,6 @@
 <script setup>
 import { useForm } from "@inertiajs/vue3";
-import { onMounted } from "vue";
+import { onMounted, computed } from "vue";
 import { usePageTitle } from "@/Composables/layout/usePageTitle";
 import InputField from "@/Pages/Molecules/data-input/InputField.vue";
 import Btn from "@/Pages/Atoms/action/Btn.vue";
@@ -14,6 +14,43 @@ const form = useForm({
 });
 
 const { setPageTitle } = usePageTitle();
+
+// Validation computed pour chaque champ
+const nameValidation = computed(() => {
+    if (!form.errors.name) return null;
+    return {
+        state: 'error',
+        message: form.errors.name,
+        showNotification: false
+    };
+});
+
+const emailValidation = computed(() => {
+    if (!form.errors.email) return null;
+    return {
+        state: 'error',
+        message: form.errors.email,
+        showNotification: false
+    };
+});
+
+const passwordValidation = computed(() => {
+    if (!form.errors.password) return null;
+    return {
+        state: 'error',
+        message: form.errors.password,
+        showNotification: false
+    };
+});
+
+const passwordConfirmationValidation = computed(() => {
+    if (!form.errors.password_confirmation) return null;
+    return {
+        state: 'error',
+        message: form.errors.password_confirmation,
+        showNotification: false
+    };
+});
 
 const submit = () => {
     form.post(route("register"), {
@@ -34,19 +71,21 @@ onMounted(() => {
     <form @submit.prevent="submit">
         <InputField
             id="name"
+            variant="glass"
             color="secondary"
             autofocus
-            require
+            required
             v-model="form.name"
             autocomplete="pseudo"
             name="name"
             label="Pseudo"
-            :validator="form.errors.name"
+            :validation="nameValidation"
         />
 
         <div class="mt-4">
             <InputField
                 id="email"
+                variant="glass"
                 color="secondary"
                 required
                 type="email"
@@ -54,13 +93,14 @@ onMounted(() => {
                 autocomplete="email"
                 name="email"
                 label="Email"
-                :validator="form.errors.email"
+                :validation="emailValidation"
             />
         </div>
 
         <div class="mt-4">
             <InputField
                 id="password"
+                variant="glass"
                 color="secondary"
                 required
                 type="password"
@@ -68,13 +108,14 @@ onMounted(() => {
                 autocomplete="new-password"
                 name="password"
                 label="Mot de passe"
-                :validator="form.errors.password"
+                :validation="passwordValidation"
             />
         </div>
 
         <div class="mt-4">
             <InputField
                 id="password_confirmation"
+                variant="glass"
                 color="secondary"
                 required
                 type="password"
@@ -82,7 +123,7 @@ onMounted(() => {
                 autocomplete="new-password"
                 name="password_confirmation"
                 label="Confirmer le mot de passe"
-                :validator="form.errors.password_confirmation"
+                :validation="passwordConfirmationValidation"
             />
         </div>
 

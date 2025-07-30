@@ -14,7 +14,7 @@
         "sass:build": "sass --no-source-map resources/scss/custom.scss:resources/css/custom.css resources/scss/theme.scss:resources/css/theme.css --style expanded",
         "scss": "sass --watch --no-source-map resources/scss:resources/css",
         "css": "node scripts/build-css.cjs --clean --minify --inject",
-        "css:clean": "node scripts/clean-css.cjs --verbose'" ,
+        "css:clean": "node scripts/clean-css.cjs --verbose'",
         "css:watch": "node scripts/build-css.cjs --clean --minify --inject --watch",
         "css:watch:verbose": "node scripts/build-css.cjs --clean --minify --inject --watch --verbose",
         "css:verbose": "node scripts/build-css.cjs --clean --minify --inject --verbose",
@@ -47,17 +47,20 @@
         "@tiptap/pm": "^2.12.0",
         "@tiptap/starter-kit": "^2.12.0",
         "@tiptap/vue-3": "^2.12.0",
+        "cally": "^0.8.0",
         "comment-parser": "^1.4.1",
         "dotenv": "^17.2.0",
         "font-awesome": "^4.7.0",
         "glob": "^11.0.2",
         "laravel-precognition-vue-inertia": "^0.7.2",
         "mysql2": "^3.14.2",
+        "pikaday": "^1.8.2",
         "pinia": "^3.0.2",
         "prettier": "^3.5.3",
         "prettier-plugin-tailwindcss": "^0.6.12",
         "puppeteer": "^24.10.0",
-        "vanilla-tilt": "^1.8.1"
+        "vanilla-tilt": "^1.8.1",
+        "vue-color-kit": "^1.0.6"
     },
     "pnpm": {
         "onlyBuiltDependencies": [

@@ -12,6 +12,7 @@
  * - Support des utilitaires custom (shadow, backdrop, opacity, rounded)
  * - Validation intégrée avec états visuels et messages d'erreur
  * - Intégration automatique avec le système de notifications
+ * - Support de la prop `style` (objet) et `variant` (string)
  *
  * @see https://daisyui.com/components/input/
  * @version DaisyUI v5.x
@@ -71,11 +72,20 @@
  *   }"
  * />
  *
+ * // Avec objet style
+ * <InputField 
+ *   label="Nom" 
+ *   v-model="name"
+ *   :inputStyle="{ variant: 'glass', color: 'primary', size: 'md', animation: 'pulse' }"
+ * />
+ *
  * @props {String|Object} label - Label simple (string) ou objet avec positions
  * @props {String} defaultLabelPosition - Position par défaut pour les strings ('floating', 'top', 'bottom', 'start', 'end', 'inStart', 'inEnd')
  * @props {Object|String|Boolean} validation - Configuration de validation (nouvelle API)
  * @props {String} helper, errorMessage
- * @props {String} color, size, style, variant
+ * @props {String} color, size, variant
+ * @props {String|Object} inputStyle - Style d'input (string ou objet avec variant, size, color, animation)
+ * @props {String|Boolean} animation - Animation Tailwind ou booléen
  * @props {Boolean} useFieldComposable, showPasswordToggle
  * @props {String} shadow, backdrop, opacity, rounded - utilitaires custom
  * @slot labelTop, labelBottom, labelStart, labelEnd, labelInStart, labelInEnd, labelFloating - Slots pour chaque position de label
@@ -85,50 +95,40 @@
 /**
  * [MIGRATION 2024-06] Ce composant utilise désormais inputHelper.js pour la gestion factorisée des props/attrs input (voir /Utils/atomic-design/inputHelper.js)
  */
-import { computed, ref, useSlots, inject, watch } from 'vue';
-import InputCore from '@/Pages/Atoms/data-input/InputCore.vue';
-import InputLabel from '@/Pages/Atoms/data-input/InputLabel.vue';
-import Validator from '@/Pages/Atoms/data-input/Validator.vue';
-import Btn from '@/Pages/Atoms/action/Btn.vue';
-import useInputActions from '@/Composables/form/useInputActions';
-import { styleInputList, variantInputList } from '@/Pages/Atoms/atomMap';
-import { 
-    getCommonProps, 
-    getCommonAttrs, 
-    getCustomUtilityProps, 
-    getCustomUtilityClasses,
-    mergeClasses 
-} from '@/Utils/atomic-design/uiHelper';
-import { 
-    getInputProps, 
-    getInputAttrs, 
-    hasValidation
-} from '@/Utils/atomic-design/inputHelper';
-import { 
-    validateLabel,
-    processLabelConfig 
-} from '@/Utils/atomic-design/labelManager';
-import { 
-    createValidation,
-    validateValidationObject,
-    processValidation
-} from '@/Utils/atomic-design/validationManager';
 
-const props = defineProps({
-    ...getCommonProps(),
-    ...getCustomUtilityProps(),
-    ...getInputProps('input', 'field'),
-});
+// ------------------------------------------
+// 🧩 Importation des dépendances
+// ------------------------------------------
+import { computed, watch, inject, useSlots, useAttrs } from 'vue'
+import InputCore from '@/Pages/Atoms/data-input/InputCore.vue'
+import InputLabel from '@/Pages/Atoms/data-input/InputLabel.vue'
+import Validator from '@/Pages/Atoms/data-input/Validator.vue'
+import Helper from '@/Pages/Atoms/data-input/Helper.vue'
+import Btn from '@/Pages/Atoms/action/Btn.vue'
 
-const slots = useSlots();
-const notificationStore = inject('notificationStore', null);
-const labelConfig = computed(() => processLabelConfig(props.label, props.defaultLabelPosition));
+import useInputActions from '@/Composables/form/useInputActions'
+import useInputProps from '@/Composables/form/useInputProps'
+import { getInputStyleProperties } from '@/Composables/form/useInputStyle'
+import { getCustomUtilityClasses, mergeClasses } from '@/Utils/atomic-design/uiHelper'
+import { processLabelConfig } from '@/Utils/atomic-design/labelManager'
+import { processValidation } from '@/Utils/atomic-design/validationManager'
+import { getInputPropsDefinition } from '@/Utils/atomic-design/inputHelper'
 
-// --- Utilisation du composable universel pour les actions contextuelles ---
+// ------------------------------------------
+// 🔧 Définition des props et des events
+// ------------------------------------------
+const props = defineProps(getInputPropsDefinition('input', 'field'))
+const emit = defineEmits(['update:modelValue'])
+const slots = useSlots()
+const $attrs = useAttrs()
+
+// ------------------------------------------
+// 🔁 Synchronisation v-model avec useInputActions
+// ------------------------------------------
 const {
   currentValue,
   actionsToDisplay,
-  inputProps,
+  inputRef,
   focus,
   isModified,
   isReadonly,
@@ -138,183 +138,297 @@ const {
   togglePassword,
   copy,
   toggleEdit,
-  showPassword,
-  inputRef,
+  showPassword
 } = useInputActions({
   modelValue: props.modelValue,
   type: props.type,
   actions: props.actions,
   readonly: props.readonly,
   debounce: props.debounceTime,
-  autofocus: props.autofocus,
-});
+  autofocus: props.autofocus
+})
 
-// --- v-model : émettre update:modelValue quand la valeur change ---
-const emit = defineEmits(['update:modelValue']);
+// Synchronisation du modèle
 watch(currentValue, (val) => {
-  emit('update:modelValue', val);
-});
+  emit('update:modelValue', val)
+})
 
-// --- Validation et autres logiques existantes (inchangées) ---
-const notificationStoreInjected = notificationStore;
-const processedValidation = computed(() => {
-    const validationConfig = props.validation || props.validator;
-    if (!validationConfig) {
-        return null;
-    }
-    return processValidation(validationConfig, notificationStoreInjected);
-});
-const hasValidationState = computed(() => {
-    return processedValidation.value !== null || 
-           props.errorMessage || 
-           slots.validator;
-});
-const coreProps = computed(() => ({
-    ...getCommonAttrs(props),
-    ...getInputAttrs(props),
-    type: inputProps.value.type,
+// ------------------------------------------
+// ⚙️ Traitement des attributs HTML & événements à transmettre au Core
+// ------------------------------------------
+const { inputAttrs, listeners } = useInputProps(props, $attrs, emit, 'input', 'field')
+
+// ------------------------------------------
+// 🎨 Gestion du style et des classes
+// ------------------------------------------
+const styleProperties = computed(() =>
+  getInputStyleProperties(props.type || 'text', {
+    variant: props.variant,
     color: props.color,
     size: props.size,
-    style: props.style,
-    variant: props.variant,
-    modelValue: currentValue.value,
-    readonly: inputProps.value.readonly,
-    autofocus: inputProps.value.autofocus,
-    // Props pour labels inline
-    labelFloating: !!labelConfig.value.floating,
-    labelStart: labelConfig.value.inStart || '',
-    labelEnd: labelConfig.value.inEnd || '',
-    'aria-invalid': hasValidationState.value && processedValidation.value?.state === 'error',
-    ref: inputRef,
-}));
-const inputId = computed(
-    () => props.id || `inputfield-${Math.random().toString(36).substr(2, 9)}`,
-);
-const containerClasses = computed(() => 
-    mergeClasses(
-        'form-control w-full',
-        getCustomUtilityClasses(props)
-    )
-);
-function getValidatorState() {
-    if (!processedValidation.value) return '';
-    return processedValidation.value.state;
-}
-function getValidatorMessage() {
-    if (props.errorMessage) return props.errorMessage;
-    if (!processedValidation.value) return '';
-    return processedValidation.value.message;
-}
+    animation: props.animation,
+          ...(typeof props.inputStyle === 'object' && props.inputStyle !== null ? props.inputStyle : {}),
+      ...(typeof props.inputStyle === 'string' ? { variant: props.inputStyle } : {})
+  })
+)
+
+const containerClasses = computed(() =>
+  mergeClasses('form-control w-full', getCustomUtilityClasses(props))
+)
+
+// ------------------------------------------
+// 🏷️ Gestion des labels (top, start, end, bottom, floating, inline)
+// ------------------------------------------
+const labelConfig = computed(() =>
+  processLabelConfig(props.label, props.defaultLabelPosition)
+)
+
+// ------------------------------------------
+// ✅ Validation des données
+// ------------------------------------------
+const notificationStore = inject('notificationStore', null)
+
+const processedValidation = computed(() =>
+  props.validation ? processValidation(props.validation, notificationStore) : null
+)
+
+const hasValidationState = computed(() =>
+  processedValidation.value !== null || slots.validator
+)
+
+const getValidatorState = () => processedValidation.value?.state || ''
+const getValidatorMessage = () => processedValidation.value?.message || ''
 </script>
 
 <template>
-    <div :class="containerClasses">
-        <!-- Label top -->
-        <InputLabel
-            v-if="labelConfig.top || slots.labelTop"
-            :value="labelConfig.top"
-            :for="inputId"
-            :color="props.color"
-            :size="props.size"
-        >
-            <slot name="labelTop" />
-        </InputLabel>
-        
-        <div class="relative flex items-center w-full">
-            <!-- Label start -->
-            <InputLabel
-                v-if="labelConfig.start || slots.labelStart"
-                :value="labelConfig.start"
-                :for="inputId"
-                :color="props.color"
-                :size="props.size"
-                class="mr-2"
-            >
-                <slot name="labelStart" />
-            </InputLabel>
-            
-            <!-- Container relatif pour l'input et les éléments over -->
-            <div class="relative flex-1">
-                <!-- Input principal -->
-                <InputCore 
-                    v-bind="coreProps" 
-                    v-on="$attrs"
-                >
-                    <template v-if="slots.labelInStart" #labelStart>
-                        <slot name="labelInStart" />
-                    </template>
-                    <template v-if="slots.labelInEnd" #labelEnd>
-                        <slot name="labelInEnd" />
-                    </template>
-                    <template v-if="labelConfig.floating && (labelConfig.floating || slots.labelFloating)" #floatingLabel>
-                        <slot name="labelFloating">{{ labelConfig.floating }}</slot>
-                    </template>
-                </InputCore>
+  <div :class="containerClasses">
+    <!-- 🔼 Label au-dessus -->
+    <InputLabel
+      v-if="labelConfig.top || slots.labelTop"
+      :value="labelConfig.top"
+      :for="inputAttrs.id"
+      :color="styleProperties.labelColor"
+      :size="styleProperties.labelSize"
+    >
+      <slot name="labelTop" />
+    </InputLabel>
 
-                <!-- Slot overStart (positionné en absolute à gauche) -->
-                <div v-if="slots.overStart" class="absolute left-2 top-1/2 transform -translate-y-1/2 z-10 flex gap-1">
-                    <slot name="overStart" />
-                </div>
-                <!-- Slot overEnd (positionné en absolute à droite) + actions contextuelles -->
-                <div v-if="slots.overEnd || actionsToDisplay.length" class="absolute right-2 top-1/2 transform -translate-y-1/2 z-10 flex gap-1">
-                    <slot name="overEnd" />
-                    <Btn
-                        v-for="action in actionsToDisplay"
-                        :key="action.key"
-                        variant="link"
-                        circle
-                        size="xs"
-                        :aria-label="action.ariaLabel"
-                        :title="action.tooltip"
-                        :disabled="action.disabled"
-                        @click.stop="action.onClick"
-                    >
-                        <i :class="action.icon" class="text-sm"></i>
-                    </Btn>
-                </div>
-            </div>
+    <div class="relative flex items-center w-full">
+      <!-- ⬅️ Label à gauche -->
+      <InputLabel
+        v-if="labelConfig.start || slots.labelStart"
+        :value="labelConfig.start"
+        :for="inputAttrs.id"
+        :color="styleProperties.labelColor"
+        :size="styleProperties.labelSize"
+        class="mr-2"
+      >
+        <slot name="labelStart" />
+      </InputLabel>
 
-            <!-- Label end -->
-            <InputLabel
-                v-if="labelConfig.end || slots.labelEnd"
-                :value="labelConfig.end"
-                :for="inputId"
-                :color="props.color"
-                :size="props.size"
-                class="ml-2"
-            >
-                <slot name="labelEnd" />
-            </InputLabel>
-        </div>
-        
-        <!-- Label bottom -->
-        <InputLabel
-            v-if="labelConfig.bottom || slots.labelBottom"
-            :value="labelConfig.bottom"
-            :for="inputId"
-            :color="props.color"
-            :size="props.size"
-            class="mt-1"
+      <!-- 🧱 Bloc principal : input + actions -->
+      <div class="relative flex-1">
+        <InputCore
+          v-bind="inputAttrs"
+          v-on="listeners"
+          ref="inputRef"
         >
-            <slot name="labelBottom" />
-        </InputLabel>
-        
-        <!-- Validator -->
-        <div v-if="hasValidationState" class="mt-1">
-            <slot name="validator">
-                <Validator
-                    v-if="processedValidation"
-                    :state="getValidatorState()"
-                    :message="getValidatorMessage()"
-                />
-            </slot>
+          <!-- 🔤 Labels inline start/end -->
+          <template v-if="slots.labelInStart" #labelInStart>
+            <slot name="labelInStart" />
+          </template>
+          <template v-if="slots.labelInEnd" #labelInEnd>
+            <slot name="labelInEnd" />
+          </template>
+          <!-- 💬 Label flottant -->
+          <template v-if="labelConfig.floating || slots.labelFloating" #floatingLabel>
+            <slot name="labelFloating">{{ labelConfig.floating }}</slot>
+          </template>
+        </InputCore>
+
+        <!-- 🎯 Actions overStart -->
+        <div
+          v-if="slots.overStart"
+          class="absolute left-2 top-1/2 transform -translate-y-1/2 z-10 flex gap-1"
+        >
+          <slot name="overStart" />
         </div>
-        
-        <!-- Helper -->
-        <div v-if="helper || slots.helper" class="mt-1 text-xs text-base-400">
-            <slot name="helper">{{ helper }}</slot>
+
+        <!-- 🎯 Actions overEnd + contextuelles -->
+        <div
+          v-if="slots.overEnd || actionsToDisplay.length"
+          class="absolute right-2 top-1/2 transform -translate-y-1/2 z-10 flex items-center gap-1"
+        >
+          <slot name="overEnd" />
+          <Btn
+            v-for="action in actionsToDisplay"
+            :key="action.key"
+            :variant="action.variant"
+            :color="action.color"
+            :size="action.size"
+            circle
+            :aria-label="action.ariaLabel"
+            :title="action.tooltip"
+            :disabled="action.disabled"
+            @click.stop="action.onClick"
+          >
+            <i :class="action.icon" class="text-sm"></i>
+          </Btn>
         </div>
+      </div>
+
+      <!-- ➡️ Label à droite -->
+      <InputLabel
+        v-if="labelConfig.end || slots.labelEnd"
+        :value="labelConfig.end"
+        :for="inputAttrs.id"
+        :color="styleProperties.labelColor"
+        :size="styleProperties.labelSize"
+        class="ml-2"
+      >
+        <slot name="labelEnd" />
+      </InputLabel>
     </div>
+
+    <!-- 🔽 Label en-dessous -->
+    <InputLabel
+      v-if="labelConfig.bottom || slots.labelBottom"
+      :value="labelConfig.bottom"
+      :for="inputAttrs.id"
+      :color="styleProperties.labelColor"
+      :size="styleProperties.labelSize"
+      class="mt-1"
+    >
+      <slot name="labelBottom" />
+    </InputLabel>
+
+    <!-- ⚠️ Validation -->
+    <div v-if="hasValidationState" class="mt-1">
+      <slot name="validator">
+        <Validator
+          v-if="processedValidation"
+          :state="getValidatorState()"
+          :message="getValidatorMessage()"
+        />
+      </slot>
+    </div>
+
+    <!-- ℹ️ Helper -->
+    <div v-if="props.helper || slots.helper" class="mt-1">
+      <slot name="helper">
+        <Helper
+          :helper="props.helper"
+          :color="styleProperties.helperColor"
+          :size="styleProperties.helperSize"
+        />
+      </slot>
+    </div>
+  </div>
 </template>
 
-<style scoped></style> 
+
+<style scoped lang="scss">
+// Styles spécifiques pour InputField
+// Utilisation maximale de Tailwind/DaisyUI, CSS custom minimal
+
+// Styles pour les labels
+.label {
+    transition: all 0.2s ease-in-out;
+    font-weight: 500;
+    
+    // Tailles
+    &.label-xs { font-size: 0.75rem; }
+    &.label-sm { font-size: 0.875rem; }
+    &.label-md { font-size: 1rem; }
+    &.label-lg { font-size: 1.125rem; }
+    &.label-xl { font-size: 1.25rem; }
+    
+    // Couleurs
+    &.label-primary { color: var(--color-primary, #3b82f6); }
+    &.label-secondary { color: var(--color-secondary, #8b5cf6); }
+    &.label-accent { color: var(--color-accent, #f59e0b); }
+    &.label-info { color: var(--color-info, #06b6d4); }
+    &.label-success { color: var(--color-success, #10b981); }
+    &.label-warning { color: var(--color-warning, #f59e0b); }
+    &.label-error { color: var(--color-error, #ef4444); }
+    &.label-neutral { color: var(--color-neutral, #6b7280); }
+    
+    // Effet hover subtil
+    &:hover {
+        opacity: 0.8;
+    }
+}
+
+// Styles pour les helpers
+.helper {
+    transition: all 0.2s ease-in-out;
+    font-size: 0.875rem;
+    opacity: 0.8;
+    
+    // Tailles
+    &.helper-xs { font-size: 0.75rem; }
+    &.helper-sm { font-size: 0.875rem; }
+    &.helper-md { font-size: 1rem; }
+    &.helper-lg { font-size: 1.125rem; }
+    &.helper-xl { font-size: 1.25rem; }
+    
+    // Couleurs
+    &.helper-primary { color: var(--color-primary, #3b82f6); }
+    &.helper-secondary { color: var(--color-secondary, #8b5cf6); }
+    &.helper-accent { color: var(--color-accent, #f59e0b); }
+    &.helper-info { color: var(--color-info, #06b6d4); }
+    &.helper-success { color: var(--color-success, #10b981); }
+    &.helper-warning { color: var(--color-warning, #f59e0b); }
+    &.helper-error { color: var(--color-error, #ef4444); }
+    &.helper-neutral { color: var(--color-neutral, #6b7280); }
+}
+
+// Styles pour les actions contextuelles
+.btn {
+    // Boutons d'action dans les inputs
+    &.btn-link {
+        transition: all 0.2s ease-in-out;
+        
+        &:hover {
+            transform: scale(1.1);
+        }
+    }
+}
+
+// Styles pour les slots overStart/overEnd
+.absolute {
+    // Positionnement des éléments absolus
+    z-index: 10;
+    
+    .btn {
+        // Boutons dans les slots over
+        transition: all 0.2s ease-in-out;
+        
+        &:hover {
+            transform: scale(1.05);
+        }
+    }
+}
+
+// Styles pour les validations
+.validator {
+    // Messages de validation
+    transition: all 0.2s ease-in-out;
+    
+    &.error {
+        color: var(--color-error, #ef4444);
+    }
+    
+    &.success {
+        color: var(--color-success, #10b981);
+    }
+    
+    &.warning {
+        color: var(--color-warning, #f59e0b);
+    }
+    
+    &.info {
+        color: var(--color-info, #06b6d4);
+    }
+}
+</style> 

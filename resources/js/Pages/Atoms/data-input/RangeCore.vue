@@ -1,195 +1,474 @@
 <script setup>
+defineOptions({ inheritAttrs: false });
+
 /**
- * Range Atom (DaisyUI)
+ * RangeCore Atom (DaisyUI, Atomic Design)
  *
  * @description
- * Composant atomique Range (slider) conforme DaisyUI (v5.x) et Atomic Design.
- * - Gère tous les cas d'usage range (slider simple, aide, validation, etc.)
- * - Props DaisyUI : color, size
- * - Props communes input via getInputProps()
- * - Props utilitaires custom : shadow, backdrop, opacity
- * - Edition réactive avancée via useFieldComposable/field/debounceTime (voir ci-dessous)
- * - Slots : #labelTop, #labelBottom, #validator, #helper, default
- * - v-model natif (modelValue)
- * - Toutes les classes DaisyUI sont explicites
- * - Accessibilité renforcée (role, aria, etc.)
+ * Atom de base pour les sliders range, stylé DaisyUI, sans gestion de label ni de layout.
+ * - Props : v-model, min, max, step, disabled, readonly, required, etc.
+ * - Accessibilité : id, ariaLabel, role, tabindex, aria-invalid, etc.
+ * - Utilise getInputStyle pour les classes DaisyUI/Tailwind
+ * - Slot par défaut : range natif
+ * - Gestion des attributs spécifiques aux ranges : min, max, step, value
+ * - Support des utilitaires custom (shadow, backdrop, opacity, rounded)
+ * - Support de la prop `style` (objet) et `variant` (string)
+ * - RangeCore ne supporte pas les labels inline (pas de labelFloating, labelInStart, labelInEnd)
  *
  * @see https://daisyui.com/components/range/
  * @version DaisyUI v5.x
  *
- * @note Toutes les classes DaisyUI sont explicites, pas de concaténation dynamique non couverte par Tailwind.
- *
  * @example
- * <Range label="Volume" v-model="volume" min="0" max="100" color="primary" size="md" useFieldComposable :debounceTime="300" />
+ * <RangeCore v-model="value" min="0" max="100" />
+ * <RangeCore v-model="value" min="0" max="100" color="primary" size="lg" />
+ * <RangeCore v-model="value" min="0" max="100" variant="glass" rounded="lg" />
+ * 
+ * // Avec objet style
+ * <RangeCore 
+ *   v-model="value" 
+ *   min="0" 
+ *   max="100"
+ *   :inputStyle="{ variant: 'glass', color: 'primary', size: 'md', animation: 'pulse' }" 
+ * />
  *
- * @props {Number|String} modelValue - Valeur du slider (v-model natif)
- * @props {Number|String} min - Valeur minimale
- * @props {Number|String} max - Valeur maximale
- * @props {Number|String} step - Pas
- * @props {String} color - Couleur DaisyUI ('', 'neutral', 'primary', ...)
- * @props {String} size - Taille DaisyUI ('', 'xs', 'sm', 'md', 'lg', 'xl')
- * @props {String} label - Label du champ (optionnel, sinon slot #labelTop)
- * @props {String|Object} validator - Message de validation ou slot #validator
- * @props {String} errorMessage - Message d'erreur (optionnel)
- * @props {String} helper - Message d'aide (optionnel ou slot #helper)
- * @props {String} shadow, backdrop, opacity - utilitaires custom
- * @props {Boolean} useFieldComposable - Active l'édition réactive (reset, debounce, etc.)
- * @props {Object} field - Objet field externe (optionnel, sinon composable interne)
- * @props {Number} debounceTime - Délai de debounce (ms, défaut 500)
- * @props {String|Object} id, ariaLabel, role, tabindex - hérités de commonProps
- * @slot labelTop - Label custom au-dessus
- * @slot labelBottom - Label custom en-dessous
- * @slot validator - Message de validation custom
- * @slot helper - Message d'aide custom
- * @slot default - Slot pour contenu custom à droite du slider
- *
- * @note Si useFieldComposable=true, la logique d'édition réactive (valeur, debounce, reset, bouton reset, update) est entièrement gérée par le composable useEditableField. Le bouton reset s'affiche automatiquement si la valeur a été modifiée.
+ * @props {Number} modelValue - v-model (valeur numérique)
+ * @props {Number} min - Valeur minimale
+ * @props {Number} max - Valeur maximale
+ * @props {Number} step - Pas d'incrémentation
+ * @props {Boolean} disabled, readonly, required
+ * @props {String} color, size, variant
+ * @props {String|Object} inputStyle - Style d'input (string ou objet avec variant, size, color, animation)
+ * @props {String|Boolean} animation - Animation Tailwind ou booléen
+ * @props {String} id, ariaLabel, role, tabindex
+ * @props {Boolean|String} aria-invalid - État de validation pour l'accessibilité
+ * @props {String} shadow, backdrop, opacity, rounded - utilitaires custom
+ * @slot default - range natif (optionnel)
  */
-import { computed, ref, watch, onMounted, onUnmounted, useSlots } from 'vue';
-import Validator from '@/Pages/Atoms/data-input/Validator.vue';
-import { getCommonProps, getCommonAttrs, getCustomUtilityProps, getCustomUtilityClasses, mergeClasses } from '@/Utils/atomic-design/uiHelper';
-import { getInputProps, getInputAttrs } from '@/Utils/atomic-design/inputHelper';
+/**
+ * [MIGRATION 2024-06] Ce composant utilise désormais inputHelper.js pour la gestion factorisée des props/attrs input (voir /Utils/atomic-design/inputHelper.js)
+ */
+import { computed, useAttrs } from 'vue'
+import { getInputStyle } from '@/Composables/form/useInputStyle'
+import useInputProps from '@/Composables/form/useInputProps'
+import { getInputPropsDefinition } from '@/Utils/atomic-design/inputHelper'
+import { mergeClasses } from '@/Utils/atomic-design/uiHelper'
 
-const props = defineProps({
-    ...getCommonProps(),
-    ...getInputProps('range', 'core'),
-    ...getCustomUtilityProps(),
-});
+const props = defineProps(getInputPropsDefinition('range', 'core'))
+const emit = defineEmits(['update:modelValue'])
+const $attrs = useAttrs()
 
-const emit = defineEmits(['update:modelValue']);
-const rangeRef = ref(null);
-
-// Détermine si le composant doit afficher un état de validation
-const hasValidationState = computed(() => hasValidation(props, useSlots()));
-
-// Gestion editableField (optionnel)
-const editableField = computed(() => {
-    if (props.useFieldComposable) {
-        return useEditableField(props.modelValue, {
-            field: props.field,
-            debounce: props.debounceTime,
-            onUpdate: (val) => emit('update:modelValue', val),
-        });
-    }
-    return null;
-});
-
-const isFieldModified = computed(() =>
-    props.useFieldComposable && editableField.value
-        ? editableField.value.isModified.value
-        : false,
-);
-
-const displayValue = computed(() => {
-    if (props.useFieldComposable && editableField.value) {
-        return editableField.value.value.value;
-    }
-    return props.modelValue;
-});
-
-function onInput(e) {
-    if (props.useFieldComposable && editableField.value) {
-        editableField.value.onInput(e);
-    } else {
-        emit('update:modelValue', e.target.value);
-    }
-}
-
-function onBlur() {
-    if (props.useFieldComposable && editableField.value) {
-        editableField.value.onBlur();
-    }
-}
-
-function handleReset() {
-    if (
-        props.useFieldComposable &&
-        editableField.value &&
-        typeof editableField.value.reset === 'function'
-    ) {
-        editableField.value.reset();
-        editableField.value.onBlur();
-    }
-}
-
-onMounted(() => {
-    if (rangeRef.value && props.autofocus) {
-        rangeRef.value.focus();
-    }
-});
-onUnmounted(() => {
-    if (editableField.value && editableField.value.debounceTimeout) {
-        clearTimeout(editableField.value.debounceTimeout);
-    }
-});
-defineExpose({ 
-    focus: () => rangeRef.value && rangeRef.value.focus(),
-    isFieldModified,
-    handleReset,
-});
+const { inputAttrs, listeners } = useInputProps(props, $attrs, emit, 'range', 'core')
 
 const atomClasses = computed(() =>
-    mergeClasses(
-        [
-            'range',
-            props.color === 'neutral' && 'range-neutral',
-            props.color === 'primary' && 'range-primary',
-            props.color === 'secondary' && 'range-secondary',
-            props.color === 'accent' && 'range-accent',
-            props.color === 'info' && 'range-info',
-            props.color === 'success' && 'range-success',
-            props.color === 'warning' && 'range-warning',
-            props.color === 'error' && 'range-error',
-            props.size === 'xs' && 'range-xs',
-            props.size === 'sm' && 'range-sm',
-            props.size === 'md' && 'range-md',
-            props.size === 'lg' && 'range-lg',
-            props.size === 'xl' && 'range-xl',
-            hasValidationState.value && 'range-error',
-        ].filter(Boolean),
-        getCustomUtilityClasses(props),
-        props.class
-    )
-);
+  mergeClasses(
+        getInputStyle('range', {
+            variant: props.variant,
+            color: props.color,
+            size: props.size,
+            animation: props.animation,
+      ...(typeof props.inputStyle === 'object' && props.inputStyle !== null ? props.inputStyle : {}),
+      ...(typeof props.inputStyle === 'string' ? { variant: props.inputStyle } : {})
+    }, false)
+  )
+)
 
-const rangeId = computed(() => props.id || `range-${Math.random().toString(36).substr(2, 9)}`);
-
-const attrs = computed(() => ({
-    ...getCommonAttrs(props),
-    ...getInputAttrs('range', 'core'),
-}));
+function onInput(e) {
+    emit('update:modelValue', parseFloat(e.target.value));
+}
 </script>
 
 <template>
-    <div class="form-control w-full">
-        <!-- Label top -->
-        <InputLabel v-if="props.label || $slots.labelTop" :for="rangeId" :value="props.label">
-            <template v-if="$slots.labelTop" #default>
-                <slot name="labelTop" />
-            </template>
-        </InputLabel>
-        <div class="flex items-center gap-2">
-            <input ref="rangeRef" type="range" v-bind="attrs" :id="rangeId" :class="atomClasses" @input="onInput" v-on="$attrs" />
-        </div>
-        <!-- Label bottom -->
-        <InputLabel v-if="props.labelBottom || $slots.labelBottom" :for="rangeId" :value="props.labelBottom" class="mt-1">
-            <template v-if="$slots.labelBottom" #default>
-                <slot name="labelBottom" />
-            </template>
-        </InputLabel>
-        <!-- Validator -->
-        <div v-if="hasValidationState" class="mt-1">
-            <slot name="validator">
-                <Validator v-if="props.validator"
-                    :state="typeof props.validator === 'string' ? 'error' : 'error'"
-                    :message="typeof props.validator === 'string' ? props.validator : props.errorMessage" />
-            </slot>
-        </div>
-        <!-- Helper -->
-        <div v-if="props.helper || $slots.helper" class="mt-1 text-xs text-base-400">
-            <slot name="helper">{{ props.helper }}</slot>
-        </div>
-    </div>
+    <!-- 🧱 Range simple sans label (RangeCore ne supporte pas les labels inline/floating) -->
+    <input
+        type="range"
+        v-bind="inputAttrs"
+        v-on="listeners"
+        :class="atomClasses"
+        @input="onInput"
+    />
 </template>
 
-<style scoped></style>
+<style scoped lang="scss">
+// Styles spécifiques pour RangeCore
+// Utilisation maximale de Tailwind/DaisyUI, CSS custom minimal
+
+input[type="range"].range {
+    // Styles de base pour tous les ranges
+    outline: none;
+    transition: all 0.2s ease-in-out;
+    cursor: pointer;
+    appearance: none;
+    width: 100%;
+    height: 6px;
+    background: #e5e7eb;
+    border-radius: 3px;
+    border: none;
+    
+    // États de focus
+    &:focus {
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    }
+    
+    // États disabled
+    &:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+    }
+    
+    // Thumb (curseur)
+    &::-webkit-slider-thumb {
+        appearance: none;
+        width: 20px;
+        height: 20px;
+        background: var(--color-primary, #3b82f6);
+        border-radius: 50%;
+        cursor: pointer;
+        border: 2px solid white;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        transition: all 0.2s ease-in-out;
+        
+        &:hover {
+            transform: scale(1.1);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+        }
+        
+        &:active {
+            transform: scale(1.05);
+        }
+    }
+    
+    &::-moz-range-thumb {
+        appearance: none;
+        width: 20px;
+        height: 20px;
+        background: var(--color-primary, #3b82f6);
+        border-radius: 50%;
+        cursor: pointer;
+        border: 2px solid white;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        transition: all 0.2s ease-in-out;
+        
+        &:hover {
+            transform: scale(1.1);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+        }
+        
+        &:active {
+            transform: scale(1.05);
+        }
+    }
+    
+    // Track (piste)
+    &::-webkit-slider-track {
+        background: #e5e7eb;
+        border-radius: 3px;
+        height: 6px;
+    }
+    
+    &::-moz-range-track {
+        background: #e5e7eb;
+        border-radius: 3px;
+        height: 6px;
+        border: none;
+    }
+    
+    // Variant Glass - Effet de verre
+    &.bg-transparent.border.border-gray-300 {
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(10px);
+        border-color: rgba(255, 255, 255, 0.2);
+        box-shadow: 
+            0 4px 6px -1px rgba(0, 0, 0, 0.1),
+            0 2px 4px -1px rgba(0, 0, 0, 0.06),
+            inset 0 1px 0 rgba(255, 255, 255, 0.1);
+        
+        &:hover {
+            box-shadow: 
+                0 10px 15px -3px rgba(0, 0, 0, 0.1),
+                0 4px 6px -2px rgba(0, 0, 0, 0.05),
+                inset 0 1px 0 rgba(255, 255, 255, 0.2);
+            border-color: rgba(255, 255, 255, 0.3);
+        }
+        
+        &::-webkit-slider-thumb {
+            background: var(--color-primary, #3b82f6);
+            border-color: rgba(255, 255, 255, 0.8);
+            box-shadow: 
+                0 2px 4px rgba(0, 0, 0, 0.1),
+                inset 0 1px 0 rgba(255, 255, 255, 0.2);
+        }
+        
+        &::-moz-range-thumb {
+            background: var(--color-primary, #3b82f6);
+            border-color: rgba(255, 255, 255, 0.8);
+            box-shadow: 
+                0 2px 4px rgba(0, 0, 0, 0.1),
+                inset 0 1px 0 rgba(255, 255, 255, 0.2);
+        }
+    }
+    
+    // Variant Dash - Style pointillé
+    &.border-dashed.border-2 {
+        background: rgba(255, 255, 255, 0.05);
+        
+        &:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+        
+        &::-webkit-slider-thumb {
+            background: var(--color-secondary, #8b5cf6);
+        }
+        
+        &::-moz-range-thumb {
+            background: var(--color-secondary, #8b5cf6);
+        }
+    }
+    
+    // Variant Outline - Bordure avec effet
+    &.border-2.bg-transparent {
+        &:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+        
+        &::-webkit-slider-thumb {
+            background: var(--color-success, #10b981);
+            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+        }
+        
+        &::-moz-range-thumb {
+            background: var(--color-success, #10b981);
+            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+        }
+    }
+    
+    // Variant Ghost - Fond invisible
+    &.border.border-transparent.bg-transparent {
+        &:hover {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: rgba(255, 255, 255, 0.1);
+        }
+        
+        &::-webkit-slider-thumb {
+            background: var(--color-neutral, #6b7280);
+        }
+        
+        &::-moz-range-thumb {
+            background: var(--color-neutral, #6b7280);
+        }
+    }
+    
+    // Variant Soft - Style doux
+    &.border-b-2.border-gray-300.bg-transparent.rounded-none {
+        background: rgba(255, 255, 255, 0.05);
+        border-bottom-width: 2px;
+        
+        &:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+        
+        &::-webkit-slider-thumb {
+            background: var(--color-accent, #f59e0b);
+        }
+        
+        &::-moz-range-thumb {
+            background: var(--color-accent, #f59e0b);
+        }
+    }
+    
+    // Styles pour les couleurs DaisyUI
+    &.range-primary {
+        &::-webkit-slider-thumb {
+            background: var(--color-primary, #3b82f6);
+        }
+        
+        &::-moz-range-thumb {
+            background: var(--color-primary, #3b82f6);
+        }
+    }
+    
+    &.range-secondary {
+        &::-webkit-slider-thumb {
+            background: var(--color-secondary, #8b5cf6);
+        }
+        
+        &::-moz-range-thumb {
+            background: var(--color-secondary, #8b5cf6);
+        }
+    }
+    
+    &.range-accent {
+        &::-webkit-slider-thumb {
+            background: var(--color-accent, #f59e0b);
+        }
+        
+        &::-moz-range-thumb {
+            background: var(--color-accent, #f59e0b);
+        }
+    }
+    
+    &.range-info {
+        &::-webkit-slider-thumb {
+            background: var(--color-info, #06b6d4);
+        }
+        
+        &::-moz-range-thumb {
+            background: var(--color-info, #06b6d4);
+        }
+    }
+    
+    &.range-success {
+        &::-webkit-slider-thumb {
+            background: var(--color-success, #10b981);
+        }
+        
+        &::-moz-range-thumb {
+            background: var(--color-success, #10b981);
+        }
+    }
+    
+    &.range-warning {
+        &::-webkit-slider-thumb {
+            background: var(--color-warning, #f59e0b);
+        }
+        
+        &::-moz-range-thumb {
+            background: var(--color-warning, #f59e0b);
+        }
+    }
+    
+    &.range-error {
+        &::-webkit-slider-thumb {
+            background: var(--color-error, #ef4444);
+        }
+        
+        &::-moz-range-thumb {
+            background: var(--color-error, #ef4444);
+        }
+    }
+    
+    &.range-neutral {
+        &::-webkit-slider-thumb {
+            background: var(--color-neutral, #6b7280);
+        }
+        
+        &::-moz-range-thumb {
+            background: var(--color-neutral, #6b7280);
+        }
+    }
+    
+    // Animations
+    &.hover\\:scale-105:hover {
+        transform: scale(1.05);
+    }
+    
+    &.focus\\:scale-105:focus {
+        transform: scale(1.05);
+    }
+    
+    &.transition-transform {
+        transition: transform 0.2s ease-in-out;
+    }
+    
+    &.duration-200 {
+        transition-duration: 200ms;
+    }
+}
+
+// Styles pour les tailles DaisyUI
+.range-xs {
+    height: 4px;
+    
+    &::-webkit-slider-thumb {
+        width: 16px;
+        height: 16px;
+    }
+    
+    &::-moz-range-thumb {
+        width: 16px;
+        height: 16px;
+    }
+}
+
+.range-sm {
+    height: 5px;
+    
+    &::-webkit-slider-thumb {
+        width: 18px;
+        height: 18px;
+    }
+    
+    &::-moz-range-thumb {
+        width: 18px;
+        height: 18px;
+    }
+}
+
+.range-md {
+    height: 6px;
+    
+    &::-webkit-slider-thumb {
+        width: 20px;
+        height: 20px;
+    }
+    
+    &::-moz-range-thumb {
+        width: 20px;
+        height: 20px;
+    }
+}
+
+.range-lg {
+    height: 8px;
+    
+    &::-webkit-slider-thumb {
+        width: 24px;
+        height: 24px;
+    }
+    
+    &::-moz-range-thumb {
+        width: 24px;
+        height: 24px;
+    }
+}
+
+.range-xl {
+    height: 10px;
+    
+    &::-webkit-slider-thumb {
+        width: 28px;
+        height: 28px;
+    }
+    
+    &::-moz-range-thumb {
+        width: 28px;
+        height: 28px;
+    }
+}
+
+// Styles pour les labels inline
+.label-text {
+    // Labels inline pour les ranges
+    transition: all 0.2s ease-in-out;
+    font-weight: 500;
+    
+    &:hover {
+        opacity: 0.8;
+    }
+}
+
+// Styles pour les labels flottants
+.floating-label {
+    // Label flottant pour les ranges
+    position: relative;
+    
+    .label-text {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        pointer-events: none;
+        transition: all 0.2s ease-in-out;
+    }
+}
+</style>

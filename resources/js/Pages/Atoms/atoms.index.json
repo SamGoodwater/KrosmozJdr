@@ -587,6 +587,11 @@
         "desc": "- texte du hint (optionnel, prioritaire sur slot)"
       },
       {
+        "name": "validation",
+        "type": "Object",
+        "desc": "- objet de validation { state, message } (prioritaire sur state/message)"
+      },
+      {
         "name": "visible",
         "type": "Boolean",
         "desc": "- contrôle l'affichage (défaut true)"
@@ -612,119 +617,12 @@
   },
   {
     "name": "ToggleCore",
-    "description": "Toggle Atom (DaisyUI)",
+    "description": "ToggleCore Atom (DaisyUI, Atomic Design)",
     "props": [
       {
         "name": "modelValue",
         "type": "Boolean",
-        "desc": "- Valeur du toggle (v-model natif, prioritaire sur checked)"
-      },
-      {
-        "name": "checked",
-        "type": "Boolean",
-        "desc": "- Valeur fallback si modelValue n'est pas utilisé"
-      },
-      {
-        "name": "color",
-        "type": "String",
-        "desc": "- Couleur DaisyUI ('', 'neutral', 'primary', ...)"
-      },
-      {
-        "name": "size",
-        "type": "String",
-        "desc": "- Taille DaisyUI ('', 'xs', 'sm', 'md', 'lg', 'xl')"
-      },
-      {
-        "name": "indeterminate",
-        "type": "Boolean",
-        "desc": "- Etat indéterminé (optionnel)"
-      },
-      {
-        "name": "bgOn",
-        "type": "String",
-        "desc": "- Classes Tailwind pour le fond quand activé (ex: 'bg-green-500')"
-      },
-      {
-        "name": "bgOff",
-        "type": "String",
-        "desc": "- Classes Tailwind pour le fond quand désactivé (ex: 'bg-gray-300')"
-      },
-      {
-        "name": "label",
-        "type": "String",
-        "desc": "- Label du champ (optionnel, sinon slot #labelTop)"
-      },
-      {
-        "name": "validator",
-        "type": "String|Object",
-        "desc": "- Message de validation ou slot #validator"
-      },
-      {
-        "name": "errorMessage",
-        "type": "String",
-        "desc": "- Message d'erreur (optionnel)"
-      },
-      {
-        "name": "helper",
-        "type": "String",
-        "desc": "- Message d'aide (optionnel ou slot #helper)"
-      },
-      {
-        "name": "shadow,",
-        "type": "String",
-        "desc": "backdrop, opacity - utilitaires custom"
-      },
-      {
-        "name": "id,",
-        "type": "String|Object",
-        "desc": "ariaLabel, role, tabindex - hérités de commonProps"
-      }
-    ],
-    "slots": [
-      {
-        "name": "labelTop",
-        "desc": "- Label custom au-dessus"
-      },
-      {
-        "name": "labelBottom",
-        "desc": "- Label custom en-dessous"
-      },
-      {
-        "name": "validator",
-        "desc": "- Message de validation custom"
-      },
-      {
-        "name": "helper",
-        "desc": "- Message d'aide custom"
-      },
-      {
-        "name": "iconOn",
-        "desc": "- Icône custom pour l'état activé"
-      },
-      {
-        "name": "iconOff",
-        "desc": "- Icône custom pour l'état désactivé"
-      },
-      {
-        "name": "default",
-        "desc": "- Slot pour contenu custom à droite du toggle"
-      }
-    ],
-    "file": "data-input/ToggleCore.vue"
-  },
-  {
-    "name": "TextareaCore",
-    "description": "TextareaCore Atom (DaisyUI, Atomic Design)",
-    "props": [
-      {
-        "name": "modelValue",
-        "type": "String|Number",
-        "desc": "- v-model"
-      },
-      {
-        "name": "placeholder",
-        "type": "String",
-        "desc": ""
+        "desc": "- v-model (état activé/désactivé)"
       },
       {
         "name": "disabled,",
@@ -737,6 +635,16 @@
         "desc": "size, variant"
       },
       {
+        "name": "inputStyle",
+        "type": "String|Object",
+        "desc": "- Style d'input (string ou objet avec variant, size, color, animation)"
+      },
+      {
+        "name": "animation",
+        "type": "String|Boolean",
+        "desc": "- Animation Tailwind ou booléen"
+      },
+      {
         "name": "id,",
         "type": "String",
         "desc": "ariaLabel, role, tabindex"
@@ -744,7 +652,70 @@
       {
         "name": "aria-invalid",
         "type": "Boolean|String",
+        "desc": "- État de validation pour l'accessibilité"
+      },
+      {
+        "name": "shadow,",
+        "type": "String",
+        "desc": "backdrop, opacity, rounded - utilitaires custom"
+      }
+    ],
+    "slots": [
+      {
+        "name": "default",
+        "desc": "- toggle natif (optionnel)"
+      }
+    ],
+    "file": "data-input/ToggleCore.vue"
+  },
+  {
+    "name": "TextareaCore",
+    "description": "TextareaCore Atom (DaisyUI, Atomic Design)",
+    "props": [
+      {
+        "name": "modelValue",
+        "type": "String",
+        "desc": "- v-model"
+      },
+      {
+        "name": "placeholder",
+        "type": "String",
         "desc": ""
+      },
+      {
+        "name": "rows,",
+        "type": "Number",
+        "desc": "cols, maxlength, minlength"
+      },
+      {
+        "name": "disabled,",
+        "type": "Boolean",
+        "desc": "readonly, required"
+      },
+      {
+        "name": "color,",
+        "type": "String",
+        "desc": "size, variant"
+      },
+      {
+        "name": "inputStyle",
+        "type": "String|Object",
+        "desc": "- Style d'input (string ou objet avec variant, size, color, animation)"
+      },
+      {
+        "name": "animation",
+        "type": "String|Boolean",
+        "desc": "- Animation Tailwind ou booléen"
+      },
+      {
+        "name": "id,",
+        "type": "String",
+        "desc": "ariaLabel, role, tabindex"
+      },
+      {
+        "name": "aria-invalid",
+        "type": "Boolean|String",
+        "desc": "- État de validation pour l'accessibilité"
       },
       {
         "name": "labelInStart",
@@ -755,6 +726,16 @@
         "name": "labelInEnd",
         "type": "String",
         "desc": "- Label inline à droite (dans la balise label)"
+      },
+      {
+        "name": "labelFloating",
+        "type": "Boolean",
+        "desc": "- Active le mode floating label"
+      },
+      {
+        "name": "shadow,",
+        "type": "String",
+        "desc": "backdrop, opacity, rounded - utilitaires custom"
       }
     ],
     "slots": [
@@ -767,8 +748,12 @@
         "desc": "- Slot pour label inline à droite"
       },
       {
+        "name": "floatingLabel",
+        "desc": "- Slot pour label flottant"
+      },
+      {
         "name": "default",
-        "desc": "- Contenu du textarea (optionnel)"
+        "desc": "- textarea natif (optionnel)"
       }
     ],
     "file": "data-input/TextareaCore.vue"
@@ -778,24 +763,44 @@
     "description": "SelectCore Atom (DaisyUI, Atomic Design)",
     "props": [
       {
+        "name": "modelValue",
+        "type": "String|Array|Number",
+        "desc": "- v-model (string, array pour multiple, ou number)"
+      },
+      {
         "name": "options",
         "type": "Array",
-        "desc": "- Options du select (obligatoire)"
+        "desc": "- Options du select (array de strings ou objets {value, label, disabled})"
       },
       {
-        "name": "modelValue",
-        "type": "String|Number|Array",
-        "desc": "- v-model"
-      },
-      {
-        "name": "multiple,",
+        "name": "multiple",
         "type": "Boolean",
-        "desc": "disabled, readonly, required"
+        "desc": "- Sélection multiple"
+      },
+      {
+        "name": "size",
+        "type": "Number",
+        "desc": "- Nombre d'options visibles (pour multiple)"
+      },
+      {
+        "name": "disabled,",
+        "type": "Boolean",
+        "desc": "readonly, required"
       },
       {
         "name": "color,",
         "type": "String",
         "desc": "size, variant"
+      },
+      {
+        "name": "inputStyle",
+        "type": "String|Object",
+        "desc": "- Style d'input (string ou objet avec variant, size, color, animation)"
+      },
+      {
+        "name": "animation",
+        "type": "String|Boolean",
+        "desc": "- Animation Tailwind ou booléen"
       },
       {
         "name": "id,",
@@ -805,323 +810,212 @@
       {
         "name": "aria-invalid",
         "type": "Boolean|String",
-        "desc": ""
+        "desc": "- État de validation pour l'accessibilité"
       },
       {
-        "name": "labelInStart",
+        "name": "shadow,",
         "type": "String",
-        "desc": "- Label inline à gauche (dans la balise label)"
-      },
-      {
-        "name": "labelInEnd",
-        "type": "String",
-        "desc": "- Label inline à droite (dans la balise label)"
+        "desc": "backdrop, opacity, rounded - utilitaires custom"
       }
     ],
     "slots": [
       {
-        "name": "labelInStart",
-        "desc": "- Slot pour label inline à gauche"
-      },
-      {
-        "name": "labelInEnd",
-        "desc": "- Slot pour label inline à droite"
-      },
-      {
         "name": "default",
-        "desc": "- <option> personnalisées"
+        "desc": "- options natives (optionnel)"
       }
     ],
     "file": "data-input/SelectCore.vue"
   },
   {
     "name": "RatingCore",
-    "description": "Rating Atom (DaisyUI)",
+    "description": "RatingCore Atom (DaisyUI, Atomic Design)",
     "props": [
       {
         "name": "modelValue",
-        "type": "Number|String",
-        "desc": "- Valeur sélectionnée (v-model natif)"
-      },
-      {
-        "name": "number",
         "type": "Number",
-        "desc": "- Nombre d'étoiles/composants (défaut 5)"
+        "desc": "- v-model (note actuelle)"
       },
       {
-        "name": "mask",
-        "type": "String",
-        "desc": "- Nom du mask DaisyUI (ex: 'mask-star', 'mask-heart', défaut 'mask-star')"
+        "name": "max",
+        "type": "Number",
+        "desc": "- Nombre maximum d'étoiles"
       },
       {
-        "name": "color",
-        "type": "String",
-        "desc": "- Couleur DaisyUI ('', 'neutral', 'primary', ...)"
-      },
-      {
-        "name": "size",
-        "type": "String",
-        "desc": "- Taille DaisyUI ('', 'xs', 'sm', 'md', 'lg', 'xl')"
-      },
-      {
-        "name": "items",
-        "type": "Array",
-        "desc": "- Tableau d'objets pour personnaliser chaque composant : [{ color, mask, checked, ariaLabel }]"
-      },
-      {
-        "name": "useFieldComposable",
+        "name": "half",
         "type": "Boolean",
-        "desc": "- Active l'édition réactive (reset, debounce, etc.)"
+        "desc": "- Support des demi-étoiles"
       },
       {
-        "name": "field",
-        "type": "Object",
-        "desc": "- Objet field externe (optionnel, sinon composable interne)"
+        "name": "disabled,",
+        "type": "Boolean",
+        "desc": "readonly, required"
       },
       {
-        "name": "debounceTime",
-        "type": "Number",
-        "desc": "- Délai de debounce (ms, défaut 500)"
+        "name": "color,",
+        "type": "String",
+        "desc": "size, variant"
+      },
+      {
+        "name": "inputStyle",
+        "type": "String|Object",
+        "desc": "- Style d'input (string ou objet avec variant, size, color, animation)"
+      },
+      {
+        "name": "animation",
+        "type": "String|Boolean",
+        "desc": "- Animation Tailwind ou booléen"
       },
       {
         "name": "id,",
-        "type": "String|Object",
-        "desc": "ariaLabel, role, tabindex - hérités de commonProps"
-      },
-      {
-        "name": "validator",
-        "type": "String|Object",
-        "desc": "- Message de validation ou slot #validator"
-      },
-      {
-        "name": "errorMessage",
         "type": "String",
-        "desc": "- Message d'erreur (optionnel)"
+        "desc": "ariaLabel, role, tabindex"
       },
       {
-        "name": "helper",
+        "name": "aria-invalid",
+        "type": "Boolean|String",
+        "desc": "- État de validation pour l'accessibilité"
+      },
+      {
+        "name": "shadow,",
         "type": "String",
-        "desc": "- Message d'aide (optionnel ou slot #helper)"
+        "desc": "backdrop, opacity, rounded - utilitaires custom"
       }
     ],
     "slots": [
       {
-        "name": "labelTop",
-        "desc": "- Label custom au-dessus"
-      },
-      {
-        "name": "labelBottom",
-        "desc": "- Label custom en-dessous"
-      },
-      {
-        "name": "validator",
-        "desc": "- Message de validation custom"
-      },
-      {
-        "name": "helper",
-        "desc": "- Message d'aide custom"
-      },
-      {
         "name": "default",
-        "desc": "- Slot pour contenu custom à droite du rating"
+        "desc": "- rating natif (optionnel)"
       }
     ],
     "file": "data-input/RatingCore.vue"
   },
   {
     "name": "RangeCore",
-    "description": "Range Atom (DaisyUI)",
+    "description": "RangeCore Atom (DaisyUI, Atomic Design)",
     "props": [
       {
         "name": "modelValue",
-        "type": "Number|String",
-        "desc": "- Valeur du slider (v-model natif)"
+        "type": "Number",
+        "desc": "- v-model (valeur numérique)"
       },
       {
         "name": "min",
-        "type": "Number|String",
+        "type": "Number",
         "desc": "- Valeur minimale"
       },
       {
         "name": "max",
-        "type": "Number|String",
+        "type": "Number",
         "desc": "- Valeur maximale"
       },
       {
         "name": "step",
-        "type": "Number|String",
-        "desc": "- Pas"
+        "type": "Number",
+        "desc": "- Pas d'incrémentation"
       },
       {
-        "name": "color",
+        "name": "disabled,",
+        "type": "Boolean",
+        "desc": "readonly, required"
+      },
+      {
+        "name": "color,",
         "type": "String",
-        "desc": "- Couleur DaisyUI ('', 'neutral', 'primary', ...)"
+        "desc": "size, variant"
       },
       {
-        "name": "size",
-        "type": "String",
-        "desc": "- Taille DaisyUI ('', 'xs', 'sm', 'md', 'lg', 'xl')"
-      },
-      {
-        "name": "label",
-        "type": "String",
-        "desc": "- Label du champ (optionnel, sinon slot #labelTop)"
-      },
-      {
-        "name": "validator",
+        "name": "inputStyle",
         "type": "String|Object",
-        "desc": "- Message de validation ou slot #validator"
+        "desc": "- Style d'input (string ou objet avec variant, size, color, animation)"
       },
       {
-        "name": "errorMessage",
-        "type": "String",
-        "desc": "- Message d'erreur (optionnel)"
+        "name": "animation",
+        "type": "String|Boolean",
+        "desc": "- Animation Tailwind ou booléen"
       },
       {
-        "name": "helper",
+        "name": "id,",
         "type": "String",
-        "desc": "- Message d'aide (optionnel ou slot #helper)"
+        "desc": "ariaLabel, role, tabindex"
+      },
+      {
+        "name": "aria-invalid",
+        "type": "Boolean|String",
+        "desc": "- État de validation pour l'accessibilité"
       },
       {
         "name": "shadow,",
         "type": "String",
-        "desc": "backdrop, opacity - utilitaires custom"
-      },
-      {
-        "name": "useFieldComposable",
-        "type": "Boolean",
-        "desc": "- Active l'édition réactive (reset, debounce, etc.)"
-      },
-      {
-        "name": "field",
-        "type": "Object",
-        "desc": "- Objet field externe (optionnel, sinon composable interne)"
-      },
-      {
-        "name": "debounceTime",
-        "type": "Number",
-        "desc": "- Délai de debounce (ms, défaut 500)"
-      },
-      {
-        "name": "id,",
-        "type": "String|Object",
-        "desc": "ariaLabel, role, tabindex - hérités de commonProps"
+        "desc": "backdrop, opacity, rounded - utilitaires custom"
       }
     ],
     "slots": [
       {
-        "name": "labelTop",
-        "desc": "- Label custom au-dessus"
-      },
-      {
-        "name": "labelBottom",
-        "desc": "- Label custom en-dessous"
-      },
-      {
-        "name": "validator",
-        "desc": "- Message de validation custom"
-      },
-      {
-        "name": "helper",
-        "desc": "- Message d'aide custom"
-      },
-      {
         "name": "default",
-        "desc": "- Slot pour contenu custom à droite du slider"
+        "desc": "- range natif (optionnel)"
       }
     ],
     "file": "data-input/RangeCore.vue"
   },
   {
     "name": "RadioCore",
-    "description": "Radio Atom (DaisyUI)",
+    "description": "RadioCore Atom (DaisyUI, Atomic Design)",
     "props": [
       {
         "name": "modelValue",
-        "type": "String|Boolean|Number",
-        "desc": "- Valeur du radio (v-model natif, prioritaire sur checked)"
+        "type": "String",
+        "desc": "- v-model (valeur sélectionnée du groupe)"
+      },
+      {
+        "name": "name",
+        "type": "String",
+        "desc": "- Nom du groupe radio (obligatoire)"
       },
       {
         "name": "value",
-        "type": "String|Boolean|Number",
-        "desc": "- Valeur du radio (obligatoire pour groupe)"
+        "type": "String",
+        "desc": "- Valeur de ce bouton radio"
       },
       {
-        "name": "checked",
+        "name": "disabled,",
         "type": "Boolean",
-        "desc": "- Valeur fallback si modelValue n'est pas utilisé"
+        "desc": "readonly, required"
       },
       {
-        "name": "color",
+        "name": "color,",
         "type": "String",
-        "desc": "- Couleur DaisyUI ('', 'neutral', 'primary', ...)"
+        "desc": "size, variant"
       },
       {
-        "name": "size",
-        "type": "String",
-        "desc": "- Taille DaisyUI ('', 'xs', 'sm', 'md', 'lg', 'xl')"
-      },
-      {
-        "name": "label",
-        "type": "String",
-        "desc": "- Label du champ (optionnel, sinon slot #labelTop)"
-      },
-      {
-        "name": "validator",
+        "name": "inputStyle",
         "type": "String|Object",
-        "desc": "- Message de validation ou slot #validator"
+        "desc": "- Style d'input (string ou objet avec variant, size, color, animation)"
       },
       {
-        "name": "errorMessage",
-        "type": "String",
-        "desc": "- Message d'erreur (optionnel)"
+        "name": "animation",
+        "type": "String|Boolean",
+        "desc": "- Animation Tailwind ou booléen"
       },
       {
-        "name": "helper",
+        "name": "id,",
         "type": "String",
-        "desc": "- Message d'aide (optionnel ou slot #helper)"
+        "desc": "ariaLabel, role, tabindex"
+      },
+      {
+        "name": "aria-invalid",
+        "type": "Boolean|String",
+        "desc": "- État de validation pour l'accessibilité"
       },
       {
         "name": "shadow,",
         "type": "String",
-        "desc": "backdrop, opacity - utilitaires custom"
-      },
-      {
-        "name": "bgOn",
-        "type": "String",
-        "desc": "- Classes Tailwind appliquées quand le radio est coché (ex: 'bg-blue-200 border-blue-600')"
-      },
-      {
-        "name": "bgOff",
-        "type": "String",
-        "desc": "- Classes Tailwind appliquées quand le radio est décoché (ex: 'bg-base-200 border-base-300')"
-      },
-      {
-        "name": "id,",
-        "type": "String|Object",
-        "desc": "ariaLabel, role, tabindex - hérités de commonProps"
+        "desc": "backdrop, opacity, rounded - utilitaires custom"
       }
     ],
     "slots": [
       {
-        "name": "labelTop",
-        "desc": "- Label custom au-dessus"
-      },
-      {
-        "name": "labelBottom",
-        "desc": "- Label custom en-dessous"
-      },
-      {
-        "name": "validator",
-        "desc": "- Message de validation custom"
-      },
-      {
-        "name": "helper",
-        "desc": "- Message d'aide custom"
-      },
-      {
         "name": "default",
-        "desc": "- Slot pour contenu custom à droite du radio"
+        "desc": "- radio natif (optionnel)"
       }
     ],
     "file": "data-input/RadioCore.vue"
@@ -1196,7 +1090,17 @@
       {
         "name": "color,",
         "type": "String",
-        "desc": "size, style, variant"
+        "desc": "size, variant"
+      },
+      {
+        "name": "inputStyle",
+        "type": "String|Object",
+        "desc": "- Style d'input (string ou objet avec variant, size, color, animation)"
+      },
+      {
+        "name": "animation",
+        "type": "String|Boolean",
+        "desc": "- Animation Tailwind ou booléen"
       },
       {
         "name": "id,",
@@ -1209,12 +1113,12 @@
         "desc": "- État de validation pour l'accessibilité"
       },
       {
-        "name": "labelStart",
+        "name": "labelInStart",
         "type": "String",
         "desc": "- Label inline à gauche (dans la balise label)"
       },
       {
-        "name": "labelEnd",
+        "name": "labelInEnd",
         "type": "String",
         "desc": "- Label inline à droite (dans la balise label)"
       },
@@ -1231,11 +1135,11 @@
     ],
     "slots": [
       {
-        "name": "labelStart",
+        "name": "labelInStart",
         "desc": "- Slot pour label inline à gauche"
       },
       {
-        "name": "labelEnd",
+        "name": "labelInEnd",
         "desc": "- Slot pour label inline à droite"
       },
       {
@@ -1250,37 +1154,19 @@
     "file": "data-input/InputCore.vue"
   },
   {
-    "name": "FilterCore",
-    "description": "Filter Atom (DaisyUI)",
+    "name": "Helper",
+    "description": "Helper Atom (DaisyUI universel)",
     "props": [
       {
-        "name": "form",
-        "type": "Boolean",
-        "desc": "- Utilise <form> si true, sinon <div> (défaut false)"
-      },
-      {
-        "name": "shadow,",
+        "name": "value",
         "type": "String",
-        "desc": "backdrop, opacity - utilitaires custom"
+        "desc": "- Texte du helper (optionnel, sinon slot)"
       },
       {
-        "name": "id,",
+        "name": "helper",
         "type": "String|Object",
-        "desc": "ariaLabel, role, tabindex, class - hérités de commonProps"
-      }
-    ],
-    "slots": [
-      {
-        "name": "default",
-        "desc": "- Radios DaisyUI (input type=\"radio\" ou reset)"
-      }
-    ],
-    "file": "data-input/FilterCore.vue"
-  },
-  {
-    "name": "FileInputCore",
-    "description": "FileInputAtom (DaisyUI)",
-    "props": [
+        "desc": "- Message d'aide (string ou objet avec message, icon)"
+      },
       {
         "name": "color",
         "type": "String",
@@ -1292,52 +1178,52 @@
         "desc": "- Taille DaisyUI ('', 'xs', 'sm', 'md', 'lg', 'xl')"
       },
       {
-        "name": "variant",
+        "name": "icon",
         "type": "String",
-        "desc": "- Style DaisyUI ('', 'ghost')"
+        "desc": "- Icône FontAwesome (optionnel)"
+      },
+      {
+        "name": "id,",
+        "type": "String",
+        "desc": "ariaLabel, role, tabindex - accessibilité"
       },
       {
         "name": "shadow,",
         "type": "String",
         "desc": "backdrop, opacity, rounded - utilitaires custom"
-      },
-      {
-        "name": "id,",
-        "type": "String|Object",
-        "desc": "ariaLabel, role, tabindex, class, style, disabled - hérités de commonProps"
       }
     ],
-    "slots": [],
-    "file": "data-input/FileInputCore.vue"
+    "slots": [
+      {
+        "name": "default",
+        "desc": "- Contenu du helper (texte, HTML, etc.)"
+      }
+    ],
+    "file": "data-input/Helper.vue"
   },
   {
-    "name": "CheckboxCore",
-    "description": "CheckboxCore Atom (DaisyUI, Atomic Design)",
+    "name": "FilterCore",
+    "description": "FilterCore Atom (DaisyUI, Atomic Design)",
     "props": [
       {
         "name": "modelValue",
+        "type": "String|Array|Number",
+        "desc": "- v-model (string, array pour multiple, ou number)"
+      },
+      {
+        "name": "options",
+        "type": "Array",
+        "desc": "- Options du filter (array de strings ou objets {value, label, disabled})"
+      },
+      {
+        "name": "multiple",
         "type": "Boolean",
-        "desc": "- v-model (checked)"
+        "desc": "- Sélection multiple"
       },
       {
-        "name": "indeterminate",
-        "type": "Boolean",
-        "desc": "- État indéterminé"
-      },
-      {
-        "name": "bgOn",
+        "name": "name",
         "type": "String",
-        "desc": "- Classe bg-* à appliquer quand coché"
-      },
-      {
-        "name": "bgOff",
-        "type": "String",
-        "desc": "- Classe bg-* à appliquer quand décoché"
-      },
-      {
-        "name": "color,",
-        "type": "String",
-        "desc": "size"
+        "desc": "- Nom du groupe de radio buttons"
       },
       {
         "name": "disabled,",
@@ -1345,15 +1231,379 @@
         "desc": "readonly, required"
       },
       {
+        "name": "color,",
+        "type": "String",
+        "desc": "size, variant"
+      },
+      {
+        "name": "inputStyle",
+        "type": "String|Object",
+        "desc": "- Style d'input (string ou objet avec variant, size, color, animation)"
+      },
+      {
+        "name": "animation",
+        "type": "String|Boolean",
+        "desc": "- Animation Tailwind ou booléen"
+      },
+      {
         "name": "id,",
         "type": "String",
         "desc": "ariaLabel, role, tabindex"
+      },
+      {
+        "name": "aria-invalid",
+        "type": "Boolean|String",
+        "desc": "- État de validation pour l'accessibilité"
+      },
+      {
+        "name": "labelInStart",
+        "type": "String",
+        "desc": "- Label inline à gauche (dans la balise label)"
+      },
+      {
+        "name": "labelInEnd",
+        "type": "String",
+        "desc": "- Label inline à droite (dans la balise label)"
+      },
+      {
+        "name": "labelFloating",
+        "type": "Boolean",
+        "desc": "- Active le mode floating label"
+      },
+      {
+        "name": "shadow,",
+        "type": "String",
+        "desc": "backdrop, opacity, rounded - utilitaires custom"
+      }
+    ],
+    "slots": [
+      {
+        "name": "labelInStart",
+        "desc": "- Slot pour label inline à gauche"
+      },
+      {
+        "name": "labelInEnd",
+        "desc": "- Slot pour label inline à droite"
+      },
+      {
+        "name": "floatingLabel",
+        "desc": "- Slot pour label flottant"
+      },
+      {
+        "name": "default",
+        "desc": "- radio buttons natives (optionnel)"
+      }
+    ],
+    "file": "data-input/FilterCore.vue"
+  },
+  {
+    "name": "FileCore",
+    "description": "FileCore Atom (DaisyUI, Atomic Design)",
+    "props": [
+      {
+        "name": "modelValue",
+        "type": "FileList|Array",
+        "desc": "- v-model (FileList ou Array de File)"
+      },
+      {
+        "name": "accept",
+        "type": "String",
+        "desc": "- Types MIME acceptés (ex: \"image/*\", \".pdf,.doc\")"
+      },
+      {
+        "name": "multiple",
+        "type": "Boolean",
+        "desc": "- Sélection multiple de fichiers"
+      },
+      {
+        "name": "capture",
+        "type": "String",
+        "desc": "- Capture média (\"user\", \"environment\")"
+      },
+      {
+        "name": "disabled,",
+        "type": "Boolean",
+        "desc": "readonly, required"
+      },
+      {
+        "name": "color,",
+        "type": "String",
+        "desc": "size, variant"
+      },
+      {
+        "name": "inputStyle",
+        "type": "String|Object",
+        "desc": "- Style d'input (string ou objet avec variant, size, color, animation)"
+      },
+      {
+        "name": "animation",
+        "type": "String|Boolean",
+        "desc": "- Animation Tailwind ou booléen"
+      },
+      {
+        "name": "id,",
+        "type": "String",
+        "desc": "ariaLabel, role, tabindex"
+      },
+      {
+        "name": "aria-invalid",
+        "type": "Boolean|String",
+        "desc": "- État de validation pour l'accessibilité"
+      },
+      {
+        "name": "labelInStart",
+        "type": "String",
+        "desc": "- Label inline à gauche (dans la balise label)"
+      },
+      {
+        "name": "labelInEnd",
+        "type": "String",
+        "desc": "- Label inline à droite (dans la balise label)"
+      },
+      {
+        "name": "labelFloating",
+        "type": "Boolean",
+        "desc": "- Active le mode floating label"
+      },
+      {
+        "name": "shadow,",
+        "type": "String",
+        "desc": "backdrop, opacity, rounded - utilitaires custom"
+      }
+    ],
+    "slots": [
+      {
+        "name": "labelInStart",
+        "desc": "- Slot pour label inline à gauche"
+      },
+      {
+        "name": "labelInEnd",
+        "desc": "- Slot pour label inline à droite"
+      },
+      {
+        "name": "floatingLabel",
+        "desc": "- Slot pour label flottant"
+      },
+      {
+        "name": "default",
+        "desc": "- input file natif (optionnel)"
+      }
+    ],
+    "file": "data-input/FileCore.vue"
+  },
+  {
+    "name": "DateCore",
+    "description": "DateCore Atom (DaisyUI + Cally, Atomic Design)",
+    "props": [
+      {
+        "name": "modelValue",
+        "type": "Date|String",
+        "desc": "- v-model (date actuelle)"
+      },
+      {
+        "name": "min",
+        "type": "Date|String",
+        "desc": "- Date minimum"
+      },
+      {
+        "name": "max",
+        "type": "Date|String",
+        "desc": "- Date maximum"
+      },
+      {
+        "name": "format",
+        "type": "String",
+        "desc": "- Format d'affichage (YYYY-MM-DD par défaut)"
+      },
+      {
+        "name": "locale",
+        "type": "String",
+        "desc": "- Locale pour l'affichage (fr par défaut)"
+      },
+      {
+        "name": "disabled,",
+        "type": "Boolean",
+        "desc": "readonly, required"
+      },
+      {
+        "name": "color,",
+        "type": "String",
+        "desc": "size, variant"
+      },
+      {
+        "name": "inputStyle",
+        "type": "String|Object",
+        "desc": "- Style d'input (string ou objet avec variant, size, color, animation)"
+      },
+      {
+        "name": "animation",
+        "type": "String|Boolean",
+        "desc": "- Animation Tailwind ou booléen"
+      },
+      {
+        "name": "id,",
+        "type": "String",
+        "desc": "ariaLabel, role, tabindex"
+      },
+      {
+        "name": "aria-invalid",
+        "type": "Boolean|String",
+        "desc": "- État de validation pour l'accessibilité"
+      },
+      {
+        "name": "shadow,",
+        "type": "String",
+        "desc": "backdrop, opacity, rounded - utilitaires custom"
+      }
+    ],
+    "slots": [
+      {
+        "name": "previous",
+        "desc": "- Icône pour le bouton précédent"
+      },
+      {
+        "name": "next",
+        "desc": "- Icône pour le bouton suivant"
+      },
+      {
+        "name": "default",
+        "desc": "- Contenu personnalisé du calendrier"
+      }
+    ],
+    "file": "data-input/DateCore.vue"
+  },
+  {
+    "name": "ColorCore",
+    "description": "ColorCore Atom (DaisyUI + vue-color-kit, Atomic Design)",
+    "props": [
+      {
+        "name": "modelValue",
+        "type": "String",
+        "desc": "- v-model (couleur actuelle)"
+      },
+      {
+        "name": "format",
+        "type": "String",
+        "desc": "- Format de couleur (hex, rgb, rgba, hsl, hsla)"
+      },
+      {
+        "name": "theme",
+        "type": "String",
+        "desc": "- Thème du color picker (light, dark)"
+      },
+      {
+        "name": "colorsDefault",
+        "type": "Array",
+        "desc": "- Palette de couleurs par défaut"
+      },
+      {
+        "name": "colorsHistoryKey",
+        "type": "String",
+        "desc": "- Clé pour l'historique des couleurs"
+      },
+      {
+        "name": "suckerHide",
+        "type": "Boolean",
+        "desc": "- Masquer le pipette"
+      },
+      {
+        "name": "disabled,",
+        "type": "Boolean",
+        "desc": "readonly, required"
+      },
+      {
+        "name": "color,",
+        "type": "String",
+        "desc": "size, variant"
+      },
+      {
+        "name": "inputStyle",
+        "type": "String|Object",
+        "desc": "- Style d'input (string ou objet avec variant, size, color, animation)"
+      },
+      {
+        "name": "animation",
+        "type": "String|Boolean",
+        "desc": "- Animation Tailwind ou booléen"
+      },
+      {
+        "name": "id,",
+        "type": "String",
+        "desc": "ariaLabel, role, tabindex"
+      },
+      {
+        "name": "aria-invalid",
+        "type": "Boolean|String",
+        "desc": "- État de validation pour l'accessibilité"
+      },
+      {
+        "name": "shadow,",
+        "type": "String",
+        "desc": "backdrop, opacity, rounded - utilitaires custom"
       }
     ],
     "slots": [
       {
         "name": "default",
-        "desc": "- Label externe (texte ou HTML)"
+        "desc": "- Contenu personnalisé du color picker"
+      }
+    ],
+    "file": "data-input/ColorCore.vue"
+  },
+  {
+    "name": "CheckboxCore",
+    "description": "CheckboxCore Atom (DaisyUI, Atomic Design)",
+    "props": [
+      {
+        "name": "modelValue",
+        "type": "Boolean|Array",
+        "desc": "- v-model (boolean pour single, array pour multiple)"
+      },
+      {
+        "name": "value",
+        "type": "String",
+        "desc": "- Valeur du checkbox (pour les groupes)"
+      },
+      {
+        "name": "disabled,",
+        "type": "Boolean",
+        "desc": "readonly, required"
+      },
+      {
+        "name": "color,",
+        "type": "String",
+        "desc": "size, variant"
+      },
+      {
+        "name": "inputStyle",
+        "type": "String|Object",
+        "desc": "- Style d'input (string ou objet avec variant, size, color, animation)"
+      },
+      {
+        "name": "animation",
+        "type": "String|Boolean",
+        "desc": "- Animation Tailwind ou booléen"
+      },
+      {
+        "name": "id,",
+        "type": "String",
+        "desc": "ariaLabel, role, tabindex"
+      },
+      {
+        "name": "aria-invalid",
+        "type": "Boolean|String",
+        "desc": "- État de validation pour l'accessibilité"
+      },
+      {
+        "name": "shadow,",
+        "type": "String",
+        "desc": "backdrop, opacity, rounded - utilitaires custom"
+      }
+    ],
+    "slots": [
+      {
+        "name": "default",
+        "desc": "- checkbox natif (optionnel)"
       }
     ],
     "file": "data-input/CheckboxCore.vue"

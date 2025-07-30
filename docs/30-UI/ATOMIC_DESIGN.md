@@ -1,33 +1,42 @@
-# Documentation UI KrosmozJDR
-
-Bienvenue dans la documentation des composants UI, validation et notifications du projet.
+# Atomic Design — KrosmozJDR
 
 ## Philosophie
-- **Atomic Design** : séparation claire entre Atoms, Molecules, Organisms, Composables
-- **Factorisation** : toute la logique métier et toutes les props (HTML, layout, validation, actions, etc.) sont centralisées dans des composables et dans `inputHelper.js` (API DRY)
-- **API déclarative** : toutes les fonctionnalités sont activables via des props ou des hooks
-- **Extensibilité** : facile d'ajouter de nouvelles actions, règles de validation, ou types de notifications
 
-## Sommaire
+- **Atoms** : Composants de base réutilisables (Core inputs, boutons, etc.)
+- **Molecules** : Compositions avec logique métier (Field inputs, formulaires, etc.)
+- **Organisms** : Sections complètes (pages, modales, etc.)
+- **Composables** : Logique réutilisable (useInputActions, useValidation, etc.)
 
-- [Inputs](./INPUTS.md) : Structure, API, slots, actions contextuelles, bonnes pratiques
-- [Validation](./VALIDATION.md) : useValidation, Validator, helpers, gestion des erreurs serveur
-- [Notifications](./NOTIFICATIONS.md) : useNotificationStore, NotificationContainer, API, exemples
-- [Intégration Validation + Notifications](./INTEGRATION_VALIDATION_NOTIFICATIONS.md) : Cas d’usage croisés, migration, FAQ, patterns avancés
+## Structure factorisée
 
-## Chemin de lecture conseillé
-1. **Commencez par [Inputs](./INPUTS.md)** pour comprendre la structure factorisée (toutes les props sont héritées via `getInputProps`)
-2. **Poursuivez avec [Validation](./VALIDATION.md)** pour la gestion des erreurs et du feedback utilisateur
-3. **Consultez [Notifications](./NOTIFICATIONS.md)** pour l'intégration des toasts et feedback globaux
-4. **Terminez par [Intégration Validation + Notifications](./INTEGRATION_VALIDATION_NOTIFICATIONS.md)** pour les cas d'usage avancés et la migration
-
----
-
-**Pour toute question, commencez par le fichier correspondant à votre besoin, ou consultez ce README pour naviguer.**
-
-<!-- Exemple factorisé -->
-```vue
-<script setup>
+### Pattern unifié
+```javascript
+// Toutes les props sont centralisées
 import { getInputProps } from '@/Utils/atomic-design/inputHelper';
 const props = defineProps({ ...getInputProps('input', 'field') });
-``` 
+```
+
+### Architecture Core → Field
+```vue
+<!-- Core (Atom) -->
+<InputCore v-bind="inputBindings" v-on="vOnEvents" />
+
+<!-- Field (Molecule) -->
+<InputField v-bind="fieldBindings">
+  <InputCore v-bind="coreBindings" />
+</InputField>
+```
+
+## Navigation
+
+- **[INPUTS.md](./INPUTS.md)** — Architecture des champs de saisie
+- **[INPUT_ARCHITECTURE.md](./INPUT_ARCHITECTURE.md)** — Factorisation et patterns
+- **[VALIDATION.md](./VALIDATION.md)** — Système de validation
+- **[NOTIFICATIONS.md](./NOTIFICATIONS.md)** — Feedback utilisateur
+
+## Avantages
+
+- ✅ **DRY** : API centralisée, 0 duplication
+- ✅ **Cohérence** : Pattern unique pour tous les composants
+- ✅ **Maintenabilité** : 1 seul endroit pour modifier l'API
+- ✅ **Extensibilité** : Facile d'ajouter de nouveaux composants 

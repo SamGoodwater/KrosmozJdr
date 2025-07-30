@@ -11,12 +11,12 @@
  * @prop {Boolean} isUpdating - Mode édition ou création
  * @prop {Array} pages - Liste des pages disponibles pour l'association
  */
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import { useForm } from '@inertiajs/vue3'
 import InputField from '@/Pages/Molecules/data-input/InputField.vue'
-import Textarea from '@/Pages/Atoms/data-input/TextareaCore.vue'
-import Select from '@/Pages/Atoms/data-input/SelectCore.vue'
-import FileInput from '@/Pages/Molecules/data-input/FileInputField.vue'
+import TextareaField from '@/Pages/Molecules/data-input/TextareaField.vue'
+import SelectField from '@/Pages/Molecules/data-input/SelectField.vue'
+import FileField from '@/Pages/Molecules/data-input/FileField.vue'
 import Btn from '@/Pages/Atoms/action/Btn.vue'
 import Container from '@/Pages/Atoms/data-display/Container.vue'
 import Alert from '@/Pages/Atoms/feedback/Alert.vue'
@@ -46,6 +46,43 @@ const form = useForm({
 
 const feedback = ref('')
 
+// Validation computed pour chaque champ
+const titleValidation = computed(() => {
+    if (!form.errors.title) return null;
+    return {
+        state: 'error',
+        message: form.errors.title,
+        showNotification: false
+    };
+});
+
+const contentValidation = computed(() => {
+    if (!form.errors.content) return null;
+    return {
+        state: 'error',
+        message: form.errors.content,
+        showNotification: false
+    };
+});
+
+const pageIdValidation = computed(() => {
+    if (!form.errors.page_id) return null;
+    return {
+        state: 'error',
+        message: form.errors.page_id,
+        showNotification: false
+    };
+});
+
+const imageValidation = computed(() => {
+    if (!form.errors.image) return null;
+    return {
+        state: 'error',
+        message: form.errors.image,
+        showNotification: false
+    };
+});
+
 const submit = () => {
     if (props.isUpdating) {
         form.put(route('sections.update', { section: props.section.uniqid }), {
@@ -65,24 +102,44 @@ const submit = () => {
     <Container class="max-w-2xl mx-auto p-4 md:p-8 bg-base-100 rounded-lg shadow-md">
         <form @submit.prevent="submit" class="space-y-6">
             <Tooltip content="Titre de la section" placement="top">
-                <InputField v-model="form.title" label="Titre" :errorMessage="form.errors.title"
-                    aria-label="Titre de la section" class="w-full" />
+                <InputField 
+                    v-model="form.title" 
+                    label="Titre" 
+                    :validation="titleValidation"
+                    aria-label="Titre de la section" 
+                    class="w-full" 
+                />
             </Tooltip>
 
             <Tooltip content="Contenu de la section" placement="top">
-                <Textarea v-model="form.content" label="Contenu" :errorMessage="form.errors.content"
-                    aria-label="Contenu de la section" class="w-full" />
+                <TextareaField 
+                    v-model="form.content" 
+                    label="Contenu" 
+                    :validation="contentValidation"
+                    aria-label="Contenu de la section" 
+                    class="w-full" 
+                />
             </Tooltip>
 
             <Tooltip content="Sélectionnez la page associée" placement="top">
-                <Select v-model="form.page_id" label="Page associée"
-                    :options="pages.map(p => ({ value: p.uniqid, label: p.name }))" :errorMessage="form.errors.page_id"
-                    aria-label="Page associée" class="w-full" />
+                <SelectField 
+                    v-model="form.page_id" 
+                    label="Page associée"
+                    :options="pages.map(p => ({ value: p.uniqid, label: p.name }))" 
+                    :validation="pageIdValidation"
+                    aria-label="Page associée" 
+                    class="w-full" 
+                />
             </Tooltip>
 
             <Tooltip content="Image de la section (optionnelle)" placement="top">
-                <FileInput v-model="form.image" label="Image" :error="form.errors.image" aria-label="Image de la section"
-                    class="w-full" />
+                <FileField 
+                    v-model="form.image" 
+                    label="Image" 
+                    :validation="imageValidation"
+                    aria-label="Image de la section"
+                    class="w-full" 
+                />
             </Tooltip>
 
             <Tooltip :content="isUpdating ? 'Mettre à jour la section' : 'Créer la section'" placement="top">

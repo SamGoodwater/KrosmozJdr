@@ -73,7 +73,7 @@ const props = defineProps({
     placement: {
         type: String,
         default: "top",
-        validator: (v) => ["top", "right", "bottom", "left"].includes(v),
+        validator: (v) => ["top", "right", "bottom", "left", "end", "start"].includes(v),
     },
     // Couleur DaisyUI : neutral, primary, secondary, accent, info, success, warning, error
     color: {
@@ -102,6 +102,8 @@ const atomClasses = computed(() =>
             props.responsive === "xl" && "xl:tooltip",
             props.responsive === "2xl" && "2xl:tooltip",
             !props.responsive && "tooltip",
+            props.placement === "end" && "tooltip-end",
+            props.placement === "start" && "tooltip-start",
             props.placement === "top" && "tooltip-top",
             props.placement === "right" && "tooltip-right",
             props.placement === "bottom" && "tooltip-bottom",
@@ -113,7 +115,7 @@ const atomClasses = computed(() =>
             props.color === "info" && "tooltip-info",
             props.color === "success" && "tooltip-success",
             props.color === "warning" && "tooltip-warning",
-            props.color === "error" && "tooltip-error",
+            props.color === "error" && "tooltip-error", 
             props.open && "tooltip-open",
         ].filter(Boolean),
         getCustomUtilityClasses(props),
