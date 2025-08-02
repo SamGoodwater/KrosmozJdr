@@ -320,10 +320,6 @@ input[type="checkbox"].toggle {
     }
     
     // Animations
-    &.hover\\:scale-105:hover {
-        transform: scale(1.05);
-    }
-    
     &.checked\\:translate-x-6:checked {
         &::before {
             transform: translateX(1.5rem);

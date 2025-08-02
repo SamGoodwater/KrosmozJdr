@@ -235,10 +235,6 @@ const labelClasses = computed(() =>
     // Checkbox et Radio
     &.checkbox-primary, &.radio-primary {
         transition: all 0.2s ease-in-out;
-        
-        &:checked {
-            transform: scale(1.1);
-        }
     }
 }
 

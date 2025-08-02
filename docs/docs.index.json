@@ -80,6 +80,21 @@
     "description": "Cette phase 2 du refactoring des inputs a consisté à simplifier drastiquement le système en basant entièrement la logique sur les tableaux `SPECIFIC_PROPS` et `COMMON_PROPS`, éliminant ainsi la complexité et les fonctions redondantes."
   },
   {
+    "path": "100- Done/REFACTORING_INPUTS_PHASE3.md",
+    "title": "Refactoring Inputs - Phase 3 : Système Unifié",
+    "description": "La **Phase 3** du refactoring a consisté à unifier complètement le système d'input en créant un composable centralisé `useInputField` et un template standardisé `FieldTemplate`. Cette phase a permis d'éliminer la duplication de code et d'offrir une API transparente et cohérente."
+  },
+  {
+    "path": "100- Done/TESTS_AUTHENTIFICATION.md",
+    "title": "Tests d'authentification - Documentation",
+    "description": "Cette documentation décrit les tests d'authentification mis en place pour le projet Krosmoz-JDR. Les tests couvrent les fonctionnalités principales d'authentification : inscription, connexion, déconnexion, validation des formulaires et middlewares."
+  },
+  {
+    "path": "100- Done/VALIDATION_REFACTORING.md",
+    "title": "Refactoring du Système de Validation — KrosmozJDR",
+    "description": "Le système de validation a été entièrement refactorisé pour répondre aux besoins de simplicité et de transparence. L'objectif était de créer une API qui évite les conflits avec les vues tout en restant puissante et flexible."
+  },
+  {
     "path": "20-Content/21-Entities/ENTITIES_OVERVIEW.md",
     "title": "Vue d'ensemble des entités – Krosmoz JDR",
     "description": "Ce document présente en détail toutes les entités du projet Krosmoz JDR, leur structure, leurs relations et leur rôle dans l'architecture globale du jeu. Il sert de référence centrale pour la modélisation des données, la génération des migrations, l'implémentation backend et la compréhension métier."
@@ -261,8 +276,8 @@
   },
   {
     "path": "30-UI/INPUTS.md",
-    "title": "Inputs — Architecture factorisée KrosmozJDR",
-    "description": "- **Core (Atom)** : Input natif avec accessibilité et styles. Props héritées via `getInputProps('type', 'core')`"
+    "title": "Inputs — Système Unifié KrosmozJDR",
+    "description": "Le système d'input a été entièrement refactorisé pour offrir une API unifiée et transparente :"
   },
   {
     "path": "30-UI/INPUTS_VALIDATION_NOTIFICATIONS.md",
@@ -271,8 +286,8 @@
   },
   {
     "path": "30-UI/INPUT_ARCHITECTURE.md",
-    "title": "Architecture des Inputs",
-    "description": "Le système d'input fonctionne en duo : **Core** (Atom) + **Field** (Molecule)."
+    "title": "Architecture des Inputs - Système Unifié",
+    "description": "Le système d'input fonctionne en trio : **Core** (Atom) + **Field** (Molecule) + **FieldTemplate** (Template)."
   },
   {
     "path": "30-UI/INPUT_MIGRATION_GUIDE.md",
@@ -307,7 +322,12 @@
   {
     "path": "30-UI/VALIDATION.md",
     "title": "Validation — Guide KrosmozJDR",
-    "description": "- **validationManager.js** : Gestionnaire centralisé des validations avec API unifiée"
+    "description": "- **useValidation (Composable)** : Interface réactive simplifiée pour la gestion des validations"
+  },
+  {
+    "path": "30-UI/VALIDATION_EXAMPLES.md",
+    "title": "Exemples de Validation — KrosmozJDR",
+    "description": "Ce fichier contient des exemples pratiques d'utilisation de la nouvelle API de validation simplifiée."
   },
   {
     "path": "30-UI/VALIDATION_NOTIFICATIONS_INTEGRATION.md",

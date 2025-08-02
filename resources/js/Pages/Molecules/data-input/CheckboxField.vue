@@ -1,393 +1,116 @@
 <script setup>
 /**
  * CheckboxField Molecule (DaisyUI, Atomic Design)
- *
+ * 
  * @description
- * Molecule pour champ de sélection checkbox complet, orchestrant CheckboxCore et InputLabel.
- * - API simplifiée : prop `label` peut être une string (floating par défaut) ou un objet avec positions
- * - 7 positions de labels : top, bottom, start, end, inStart, inEnd, floating
- * - Slots pour chaque position pour du contenu complexe
- * - Gestion automatique des combinaisons interdites (floating vs inStart/inEnd)
- * - Styles DaisyUI, accessibilité, édition réactive, etc.
- * - Support des utilitaires custom (shadow, backdrop, opacity, rounded)
- * - Validation intégrée avec états visuels et messages d'erreur
- * - Intégration automatique avec le système de notifications
- * - Support de la prop `style` (objet) et `variant` (string)
- * - Fonctionnalités spécifiques aux checkboxes : indeterminate, multiple, compteurs
- *
- * @see https://daisyui.com/components/checkbox/
- * @version DaisyUI v5.x
- *
+ * Molecule pour checkbox complet, utilisant le système unifié useInputField.
+ * 
  * @example
- * // Label simple (floating par défaut)
- * <CheckboxField label="Se souvenir de moi" v-model="rememberMe" />
+ * // Label simple
+ * <CheckboxField label="J'accepte les conditions" v-model="accepted" />
  * 
- * // Label simple avec position par défaut différente
- * <CheckboxField label="Accepter les conditions" v-model="accepted" defaultLabelPosition="start" />
- * 
- * // Label avec positions spécifiques
- * <CheckboxField :label="{ start: 'Notifications', end: 'par email' }" v-model="notifications" />
- * 
- * // Label complexe avec slots
- * <CheckboxField :label="{ start: 'Options' }" v-model="selected" :options="options">
- *   <template #labelStart>
- *     <span class="flex items-center gap-2">
- *       <i class="fa-solid fa-check-square"></i>
- *       Sélectionner les options
- *     </span>
- *   </template>
- * </CheckboxField>
- * 
- * // Avec actions automatiques (reset dans overEnd si useFieldComposable)
- * <CheckboxField label="Préférences" v-model="preferences" :options="prefOptions" useFieldComposable />
- * 
- * // Avec actions personnalisées dans les slots overStart/overEnd
- * <CheckboxField label="Permissions" v-model="permissions" :options="permOptions">
- *   <template #overStart>
- *     <Btn variant="ghost" size="xs">
- *       <i class="fa-solid fa-lock"></i>
- *     </Btn>
- *   </template>
- *   <template #overEnd>
- *     <Btn variant="ghost" size="xs" @click="selectAll">
- *       <i class="fa-solid fa-check-double"></i>
- *     </Btn>
- *   </template>
- * </CheckboxField>
- *
- * // Validation locale uniquement
+ * // Avec validation
  * <CheckboxField 
- *   label="Conditions" 
+ *   label="J'accepte les conditions" 
  *   v-model="accepted"
  *   :validation="{ state: 'error', message: 'Vous devez accepter les conditions' }"
  * />
- *
- * // Validation avec notification
+ * 
+ * // Avec helper
  * <CheckboxField 
  *   label="Newsletter" 
  *   v-model="newsletter"
- *   :validation="{ 
- *     state: 'success', 
- *     message: 'Inscription réussie !',
- *     showNotification: true 
- *   }"
+ *   helper="Recevez nos dernières actualités"
  * />
- *
- * // Avec objet style
- * <CheckboxField 
- *   label="Option" 
- *   v-model="option"
- *   :inputStyle="{ variant: 'glass', color: 'primary', size: 'md', animation: 'pulse' }"
- * />
- *
- * @props {String|Object} label - Label simple (string) ou objet avec positions
- * @props {String} defaultLabelPosition - Position par défaut pour les strings ('floating', 'top', 'bottom', 'start', 'end', 'inStart', 'inEnd')
- * @props {Object|String|Boolean} validation - Configuration de validation (nouvelle API)
- * @props {String} helper, errorMessage
- * @props {String} color, size, variant
- * @props {String|Object} inputStyle - Style d'input (string ou objet avec variant, size, color, animation)
- * @props {String|Boolean} animation - Animation Tailwind ou booléen
- * @props {Boolean} useFieldComposable, showPasswordToggle
- * @props {String} shadow, backdrop, opacity, rounded - utilitaires custom
- * @props {Array} options - Options du checkbox (array de strings ou objets {value, label, disabled})
- * @props {Boolean} multiple - Sélection multiple
- * @props {String} value - Valeur du checkbox (pour les groupes)
- * @props {String} placeholder - Placeholder du checkbox
- * @slot labelTop, labelBottom, labelStart, labelEnd, labelInStart, labelInEnd, labelFloating - Slots pour chaque position de label
- * @slot overStart, overEnd - Slots pour éléments positionnés en absolute (reset, etc.)
- * @slot helper, validator - Slots pour contenu d'aide et validation
- * @slot default - checkbox natif (optionnel)
  */
+import { useSlots, useAttrs } from 'vue'
+import CheckboxCore from '@/Pages/Atoms/data-input/CheckboxCore.vue'
+import FieldTemplate from '@/Pages/Molecules/data-input/FieldTemplate.vue'
+import useInputField from '@/Composables/form/useInputField'
+import { getInputPropsDefinition } from '@/Utils/atomic-design/inputHelper'
 
 // ------------------------------------------
-// 📦 Import des outils
+// 🔧 Définition des props et des events
 // ------------------------------------------
-import { computed, ref, useSlots, inject, watch, useAttrs } from 'vue';
-import CheckboxCore from '@/Pages/Atoms/data-input/CheckboxCore.vue';
-import InputLabel from '@/Pages/Atoms/data-input/InputLabel.vue';
-import Validator from '@/Pages/Atoms/data-input/Validator.vue';
-import Helper from '@/Pages/Atoms/data-input/Helper.vue';
-import Btn from '@/Pages/Atoms/action/Btn.vue';
-import useInputActions from '@/Composables/form/useInputActions';
-import { 
-    getCustomUtilityClasses,
-    mergeClasses 
-} from '@/Utils/atomic-design/uiHelper';
-import { 
-    getInputPropsDefinition, 
-} from '@/Utils/atomic-design/inputHelper';
-import { 
-    processLabelConfig 
-} from '@/Utils/atomic-design/labelManager';
-import { 
-    processValidation
-} from '@/Utils/atomic-design/validationManager';
-import { 
-    getInputStyleProperties
-} from '@/Composables/form/useInputStyle';
+const props = defineProps(getInputPropsDefinition('checkbox', 'field'))
+const emit = defineEmits(['update:modelValue'])
+const $attrs = useAttrs()
 
 // ------------------------------------------
-// 🔧 Définition des props
-// ------------------------------------------
-const props = defineProps(getInputPropsDefinition('checkbox', 'field'));
-
-const $attrs = useAttrs();
-const slots = useSlots();
-const notificationStore = inject('notificationStore', null);
-const labelConfig = computed(() => processLabelConfig(props.label, props.defaultLabelPosition));
-
-// ------------------------------------------
-// ⚙️ Utilisation du composable universel pour les actions contextuelles
+// 🎯 Utilisation du composable unifié
 // ------------------------------------------
 const {
+  // V-model et actions
   currentValue,
   actionsToDisplay,
-  inputProps,
+  inputRef,
   focus,
   isModified,
   isReadonly,
-  reset,
-  back,
-  clear,
-  copy,
-  toggleEdit,
-  inputRef,
-} = useInputActions({
+  showPassword,
+  
+  // Attributs et événements
+  inputAttrs,
+  listeners,
+  
+  // Labels
+  labelConfig,
+  
+  // Validation
+  validationState,
+  validationMessage,
+  hasInteracted,
+  validate,
+  setInteracted,
+  resetValidation,
+  isValid,
+  hasError,
+  hasWarning,
+  hasSuccess,
+  
+  // Style
+  styleProperties,
+  containerClasses,
+  
+  // Helpers
+  handleAction
+} = useInputField({
   modelValue: props.modelValue,
-  type: 'checkbox', // Type spécifique pour les checkboxes
-  actions: props.actions,
-  readonly: props.readonly,
-  debounce: props.debounceTime,
-  autofocus: props.autofocus,
-});
-
-// ------------------------------------------
-// 🔄 v-model : émettre update:modelValue quand la valeur change
-// ------------------------------------------
-const emit = defineEmits(['update:modelValue']);
-watch(currentValue, (val) => {
-  emit('update:modelValue', val);
-});
-
-// ------------------------------------------
-// ✅ Validation et autres logiques existantes
-// ------------------------------------------
-const notificationStoreInjected = notificationStore;
-const processedValidation = computed(() => {
-    if (!props.validation) {
-        return null;
-    }
-    return processValidation(props.validation, notificationStoreInjected);
-});
-
-const hasValidationState = computed(() => {
-    return processedValidation.value !== null || slots.validator;
-});
-
-const checkboxFieldId = computed(
-    () => props.id || `checkboxfield-${Math.random().toString(36).substr(2, 9)}`,
-);
-
-// ------------------------------------------
-// 🎨 Configuration de style pour transmission aux labels et helpers
-// ------------------------------------------
-const styleProperties = computed(() => 
-    getInputStyleProperties('checkbox', {
-        variant: props.variant,
-        color: props.color,
-        size: props.size,
-        animation: props.animation,
-              ...(typeof props.inputStyle === 'object' && props.inputStyle !== null ? props.inputStyle : {}),
-      ...(typeof props.inputStyle === 'string' ? { variant: props.inputStyle } : {})
-    })
-);
-
-const containerClasses = computed(() => 
-    mergeClasses(
-        'form-control w-full',
-        getCustomUtilityClasses(props)
-    )
-);
-
-function getValidatorState() {
-    if (!processedValidation.value) return '';
-    return processedValidation.value.state;
-}
-
-function getValidatorMessage() {
-    if (!processedValidation.value) return '';
-    return processedValidation.value.message;
-}
-
-// ------------------------------------------
-// 📋 Fonctionnalités spécifiques aux checkboxes
-// ------------------------------------------
-
-// Traitement des options pour l'affichage
-const processedOptions = computed(() => {
-    if (!props.options || !Array.isArray(props.options)) return [];
-    
-    return props.options.map(option => {
-        if (typeof option === 'string') {
-            return { value: option, label: option, disabled: false };
-        } else if (typeof option === 'object' && option !== null) {
-            return {
-                value: option.value ?? option,
-                label: option.label ?? option.value ?? option,
-                disabled: option.disabled ?? false
-            };
-        }
-        return { value: option, label: String(option), disabled: false };
-    });
-});
-
-// Récupération du label de l'option sélectionnée
-const selectedOptionLabel = computed(() => {
-    if (!currentValue.value) return props.placeholder || 'Non sélectionné';
-    
-    if (props.multiple && Array.isArray(currentValue.value)) {
-        // Pour multiple, on affiche le nombre d'éléments sélectionnés
-        const count = currentValue.value.length;
-        if (count === 0) return props.placeholder || 'Non sélectionné';
-        if (count === 1) {
-            const option = processedOptions.value.find(opt => opt.value === currentValue.value[0]);
-            return option ? option.label : currentValue.value[0];
-        }
-        return `${count} élément(s) sélectionné(s)`;
-    } else {
-        // Pour single, on affiche le label de l'option
-        const option = processedOptions.value.find(opt => opt.value === currentValue.value);
-        return option ? option.label : currentValue.value;
-    }
-});
-
-// Vérification si une option est sélectionnée
-const hasSelection = computed(() => {
-    if (!currentValue.value) return false;
-    
-    if (props.multiple && Array.isArray(currentValue.value)) {
-        return currentValue.value.length > 0;
-    }
-    
-    return currentValue.value !== '' && currentValue.value !== null && currentValue.value !== undefined;
-});
+  type: 'checkbox',
+  mode: 'field',
+  props,
+  attrs: $attrs,
+  emit
+})
 </script>
 
 <template>
-    <div :class="containerClasses">
-        <!-- Label top -->
-        <InputLabel
-            v-if="labelConfig.top || slots.labelTop"
-            :value="labelConfig.top"
-            :for="checkboxFieldId"
-            :color="styleProperties.labelColor"
-            :size="styleProperties.labelSize"
-        >
-            <slot name="labelTop" />
-        </InputLabel>
-        
-        <div class="relative flex items-center w-full">
-            <!-- Label start -->
-            <InputLabel
-                v-if="labelConfig.start || slots.labelStart"
-                :value="labelConfig.start"
-                :for="checkboxFieldId"
-                :color="styleProperties.labelColor"
-                :size="styleProperties.labelSize"
-                class="mr-2"
-            >
-                <slot name="labelStart" />
-            </InputLabel>
-            
-            <!-- Container relatif pour le checkbox et les éléments over -->
-            <div class="relative flex-1">
-                <!-- Checkbox principal -->
-                <CheckboxCore 
-                    v-bind="inputProps"
-                    v-model="currentValue"
-                    :aria-invalid="processedValidation?.state === 'error'"
-                >
-                    <template v-if="slots.default" #default>
-                        <slot />
-                    </template>
-                </CheckboxCore>
-
-                <!-- Slot overStart (positionné en absolute à gauche) -->
-                <div v-if="slots.overStart" class="absolute left-2 top-1/2 transform -translate-y-1/2 z-10 flex gap-1">
-                    <slot name="overStart" />
-                </div>
-                <!-- Slot overEnd (positionné en absolute à droite) + actions contextuelles -->
-                <div v-if="slots.overEnd || actionsToDisplay.length" class="absolute right-2 top-1/2 transform -translate-y-1/2 z-10 flex items-center gap-1">
-                    <slot name="overEnd" />
-                    <Btn
-                        v-for="action in actionsToDisplay"
-                        :key="action.key"
-                        :variant="action.variant"
-                        :color="action.color"
-                        :size="action.size"
-                        circle
-                        :aria-label="action.ariaLabel"
-                        :title="action.tooltip"
-                        :disabled="action.disabled"
-                        @click.stop="action.onClick"
-                    >
-                        <i :class="action.icon" class="text-sm"></i>
-                    </Btn>
-                </div>
-            </div>
-
-            <!-- Label end -->
-            <InputLabel
-                v-if="labelConfig.end || slots.labelEnd"
-                :value="labelConfig.end"
-                :for="checkboxFieldId"
-                :color="styleProperties.labelColor"
-                :size="styleProperties.labelSize"
-                class="ml-2"
-            >
-                <slot name="labelEnd" />
-            </InputLabel>
-        </div>
-        
-        <!-- Label bottom -->
-        <InputLabel
-            v-if="labelConfig.bottom || slots.labelBottom"
-            :value="labelConfig.bottom"
-            :for="checkboxFieldId"
-            :color="styleProperties.labelColor"
-            :size="styleProperties.labelSize"
-            class="mt-1"
-        >
-            <slot name="labelBottom" />
-        </InputLabel>
-        
-        <!-- Affichage de la sélection (optionnel) -->
-        <div v-if="hasSelection && !props.multiple" class="mt-1 text-sm text-base-content/70">
-            <span class="font-medium">Sélectionné :</span> {{ selectedOptionLabel }}
-        </div>
-        
-        <!-- Validator -->
-        <div v-if="hasValidationState" class="mt-1">
-            <slot name="validator">
-                <Validator
-                    v-if="processedValidation"
-                    :state="getValidatorState()"
-                    :message="getValidatorMessage()"
-                />
-            </slot>
-        </div>
-        
-        <!-- Helper -->
-        <div v-if="helper || slots.helper" class="mt-1">
-            <slot name="helper">
-                <Helper 
-                    :helper="helper" 
-                    :color="styleProperties.helperColor" 
-                    :size="styleProperties.helperSize" 
-                />
-            </slot>
-        </div>
-    </div>
+  <FieldTemplate
+    :container-classes="containerClasses"
+    :label-config="labelConfig"
+    :input-attrs="inputAttrs"
+    :listeners="listeners"
+    :input-ref="inputRef"
+    :actions-to-display="actionsToDisplay"
+    :style-properties="styleProperties"
+    :validation-state="validationState"
+    :validation-message="validationMessage"
+    :helper="props.helper"
+  >
+    <!-- Slot core spécifique pour CheckboxCore -->
+    <template #core="{ inputAttrs, listeners, inputRef }">
+      <CheckboxCore
+        v-bind="inputAttrs"
+        v-on="listeners"
+        ref="inputRef"
+      />
+    </template>
+    
+    <!-- Slots personnalisés -->
+    <template #helper>
+      <slot name="helper" />
+    </template>
+  </FieldTemplate>
 </template>
 
 <style scoped lang="scss">

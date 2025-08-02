@@ -277,14 +277,6 @@ input[type="radio"] {
     }
     
     // Animations
-    &.hover\\:scale-110:checked {
-        transform: scale(1.1);
-    }
-    
-    &.checked\\:scale-110:checked {
-        transform: scale(1.1);
-    }
-    
     &.transition-transform {
         transition: transform 0.2s ease-in-out;
     }

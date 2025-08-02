@@ -185,6 +185,9 @@ const attrs = computed(() => getCommonAttrs(props));
     </component>
 </template>
 
-<style scoped>
-/* Ajoute ici des styles spécifiques si besoin */
+<style scoped lang="scss">
+    .link {
+        cursor: pointer;
+        text-decoration: none;
+    }
 </style>

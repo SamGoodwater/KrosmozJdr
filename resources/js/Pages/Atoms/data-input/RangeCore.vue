@@ -129,12 +129,7 @@ input[type="range"].range {
         transition: all 0.2s ease-in-out;
         
         &:hover {
-            transform: scale(1.1);
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
-        }
-        
-        &:active {
-            transform: scale(1.05);
         }
     }
     
@@ -150,12 +145,7 @@ input[type="range"].range {
         transition: all 0.2s ease-in-out;
         
         &:hover {
-            transform: scale(1.1);
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
-        }
-        
-        &:active {
-            transform: scale(1.05);
         }
     }
     
@@ -358,14 +348,6 @@ input[type="range"].range {
     }
     
     // Animations
-    &.hover\\:scale-105:hover {
-        transform: scale(1.05);
-    }
-    
-    &.focus\\:scale-105:focus {
-        transform: scale(1.05);
-    }
-    
     &.transition-transform {
         transition: transform 0.2s ease-in-out;
     }

@@ -5,6 +5,8 @@ import { usePageTitle } from "@/Composables/layout/usePageTitle";
 import InputField from "@/Pages/Molecules/data-input/InputField.vue";
 import Btn from "@/Pages/Atoms/action/Btn.vue";
 import Route from "@/Pages/Atoms/action/Route.vue";
+import Icon from "@/Pages/Atoms/data-display/Icon.vue";
+import Tooltip from "@/Pages/Atoms/feedback/Tooltip.vue";
 
 const form = useForm({
     name: null,
@@ -79,7 +81,9 @@ onMounted(() => {
             autocomplete="pseudo"
             name="name"
             label="Pseudo"
+            placeholder="Pseudo"
             :validation="nameValidation"
+            tabindex="1"
         />
 
         <div class="mt-4">
@@ -93,7 +97,9 @@ onMounted(() => {
                 autocomplete="email"
                 name="email"
                 label="Email"
+                placeholder="Email"
                 :validation="emailValidation"
+                tabindex="2"
             />
         </div>
 
@@ -108,8 +114,29 @@ onMounted(() => {
                 autocomplete="new-password"
                 name="password"
                 label="Mot de passe"
+                placeholder="Mot de passe"
                 :validation="passwordValidation"
-            />
+                tabindex="3"
+            >
+                <template #helper>
+                    <div class="flex items-center gap-2">
+                        <span>Privilégiez une passphrase ou un mot de passe fort</span>
+                        <Tooltip placement="top" color="info">
+                            <Icon source="fa-question-circle" alt="Aide passphrase" size="sm" class="text-info cursor-help" />
+                            <template #content>
+                                <div class="max-w-xs">
+                                    <strong>Qu'est-ce qu'une passphrase ?</strong>
+                                    <p class="text-sm mt-1">
+                                        Une passphrase est une phrase complète (ex: "Mon chat s'appelle Whiskers 2024!") 
+                                        plutôt qu'un mot de passe court. Elle est plus longue mais plus facile à retenir 
+                                        et plus sécurisée grâce à sa complexité naturelle.
+                                    </p>
+                                </div>
+                            </template>
+                        </Tooltip>
+                    </div>
+                </template>
+            </InputField>
         </div>
 
         <div class="mt-4">
@@ -123,14 +150,16 @@ onMounted(() => {
                 autocomplete="new-password"
                 name="password_confirmation"
                 label="Confirmer le mot de passe"
+                placeholder="Confirmer le mot de passe"
                 :validation="passwordConfirmationValidation"
+                tabindex="4"
             />
         </div>
 
         <div class="mt-4 block text-center">
             <div>
                 <Route route="login">
-                    <Btn color="neutral" variant="ghost" size="md"
+                    <Btn color="neutral" variant="ghost" size="md" tabindex="5"
                         >Déjà inscrit ?</Btn
                     >
                 </Route>
@@ -143,6 +172,7 @@ onMounted(() => {
                     variant="glass"
                     class="my-4"
                     :disabled="form.processing"
+                    tabindex="6"
                 >
                     S'enregistrer
                 </Btn>

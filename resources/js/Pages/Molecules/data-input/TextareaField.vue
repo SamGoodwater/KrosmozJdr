@@ -1,328 +1,121 @@
 <script setup>
 /**
  * TextareaField Molecule (DaisyUI, Atomic Design)
- *
+ * 
  * @description
- * Molecule pour zone de texte complète, orchestrant TextareaCore et InputLabel.
- * - API simplifiée : prop `label` peut être une string (floating par défaut) ou un objet avec positions
- * - 7 positions de labels : top, bottom, start, end, inStart, inEnd, floating
- * - Slots pour chaque position pour du contenu complexe
- * - Gestion automatique des combinaisons interdites (floating vs inStart/inEnd)
- * - Styles DaisyUI, accessibilité, édition réactive, etc.
- * - Support des utilitaires custom (shadow, backdrop, opacity, rounded)
- * - Validation intégrée avec états visuels et messages d'erreur
- * - Intégration automatique avec le système de notifications
- * - Support de la prop `style` (objet) et `variant` (string)
- *
- * @see https://daisyui.com/components/textarea/
- * @version DaisyUI v5.x
- *
+ * Molecule pour zone de texte complète, utilisant le système unifié useInputField.
+ * 
  * @example
  * // Label simple (floating par défaut)
  * <TextareaField label="Description" v-model="description" rows="4" />
  * 
- * // Label simple avec position par défaut différente
- * <TextareaField label="Bio" v-model="bio" defaultLabelPosition="top" />
- * 
- * // Label avec positions spécifiques
- * <TextareaField :label="{ top: 'Commentaire', inStart: '💬' }" v-model="comment" />
- * 
- * // Label complexe avec slots
- * <TextareaField :label="{ top: 'Notes' }" v-model="notes">
- *   <template #labelTop>
- *     <span class="flex items-center gap-2">
- *       <i class="fa-solid fa-sticky-note"></i>
- *       Notes importantes
- *     </span>
- *   </template>
- * </TextareaField>
- * 
- * // Avec actions automatiques (reset dans overEnd si useFieldComposable)
- * <TextareaField label="Contenu" v-model="content" useFieldComposable />
- * 
- * // Avec actions personnalisées dans les slots overStart/overEnd
- * <TextareaField label="Code" v-model="code">
- *   <template #overStart>
- *     <Btn variant="ghost" size="xs">
- *       <i class="fa-solid fa-code"></i>
- *     </Btn>
- *   </template>
- *   <template #overEnd>
- *     <Btn variant="ghost" size="xs" @click="formatCode">
- *       <i class="fa-solid fa-magic"></i>
- *     </Btn>
- *   </template>
- * </TextareaField>
- *
- * // Validation locale uniquement
+ * // Avec validation
  * <TextareaField 
  *   label="Description" 
  *   v-model="description"
  *   :validation="{ state: 'error', message: 'Description trop courte' }"
  * />
- *
- * // Validation avec notification
- * <TextareaField 
- *   label="Bio" 
- *   v-model="bio"
- *   :validation="{ 
- *     state: 'success', 
- *     message: 'Bio valide !',
- *     showNotification: true 
- *   }"
- * />
- *
- * // Avec objet style
- * <TextareaField 
- *   label="Notes" 
- *   v-model="notes"
- *   :inputStyle="{ variant: 'glass', color: 'primary', size: 'md', animation: 'pulse' }"
- * />
- *
- * @props {String|Object} label - Label simple (string) ou objet avec positions
- * @props {String} defaultLabelPosition - Position par défaut pour les strings ('floating', 'top', 'bottom', 'start', 'end', 'inStart', 'inEnd')
- * @props {Object|String|Boolean} validation - Configuration de validation (nouvelle API)
- * @props {String} helper, errorMessage
- * @props {String} color, size, variant
- * @props {String|Object} inputStyle - Style d'input (string ou objet avec variant, size, color, animation)
- * @props {String|Boolean} animation - Animation Tailwind ou booléen
- * @props {Boolean} useFieldComposable, showPasswordToggle
- * @props {String} shadow, backdrop, opacity, rounded - utilitaires custom
- * @slot labelTop, labelBottom, labelStart, labelEnd, labelInStart, labelInEnd, labelFloating - Slots pour chaque position de label
- * @slot overStart, overEnd - Slots pour éléments positionnés en absolute (reset, etc.)
- * @slot helper, validator - Slots pour contenu d'aide et validation
  */
-/**
- * [MIGRATION 2024-06] Ce composant utilise désormais inputHelper.js pour la gestion factorisée des props/attrs input (voir /Utils/atomic-design/inputHelper.js)
- */
-import { computed, ref, useSlots, inject, watch, useAttrs } from 'vue';
-import TextareaCore from '@/Pages/Atoms/data-input/TextareaCore.vue';
-import InputLabel from '@/Pages/Atoms/data-input/InputLabel.vue';
-import Validator from '@/Pages/Atoms/data-input/Validator.vue';
-import Helper from '@/Pages/Atoms/data-input/Helper.vue';
-import Btn from '@/Pages/Atoms/action/Btn.vue';
-import useInputActions from '@/Composables/form/useInputActions';
-import { 
-    getCustomUtilityClasses,
-    mergeClasses 
-} from '@/Utils/atomic-design/uiHelper';
-import { 
-    getInputPropsDefinition, 
-} from '@/Utils/atomic-design/inputHelper';
-import { 
-    processLabelConfig 
-} from '@/Utils/atomic-design/labelManager';
-import { 
-    processValidation
-} from '@/Utils/atomic-design/validationManager';
-import { 
-    getInputStyleProperties
-} from '@/Composables/form/useInputStyle';
+import { useSlots, useAttrs } from 'vue'
+import TextareaCore from '@/Pages/Atoms/data-input/TextareaCore.vue'
+import FieldTemplate from '@/Pages/Molecules/data-input/FieldTemplate.vue'
+import useInputField from '@/Composables/form/useInputField'
+import { getInputPropsDefinition } from '@/Utils/atomic-design/inputHelper'
 
-const props = defineProps(getInputPropsDefinition('textarea', 'field'));
+// ------------------------------------------
+// 🔧 Définition des props et des events
+// ------------------------------------------
+const props = defineProps(getInputPropsDefinition('textarea', 'field'))
+const emit = defineEmits(['update:modelValue'])
+const $attrs = useAttrs()
 
-const $attrs = useAttrs();
-const slots = useSlots();
-const notificationStore = inject('notificationStore', null);
-const labelConfig = computed(() => processLabelConfig(props.label, props.defaultLabelPosition));
-
-// --- Utilisation du composable universel pour les actions contextuelles ---
+// ------------------------------------------
+// 🎯 Utilisation du composable unifié
+// ------------------------------------------
 const {
+  // V-model et actions
   currentValue,
   actionsToDisplay,
-  inputProps,
+  inputRef,
   focus,
   isModified,
   isReadonly,
-  reset,
-  back,
-  clear,
-  copy,
-  toggleEdit,
-  inputRef,
-} = useInputActions({
+  showPassword,
+  
+  // Attributs et événements
+  inputAttrs,
+  listeners,
+  
+  // Labels
+  labelConfig,
+  
+  // Validation
+  validationState,
+  validationMessage,
+  hasInteracted,
+  validate,
+  setInteracted,
+  resetValidation,
+  isValid,
+  hasError,
+  hasWarning,
+  hasSuccess,
+  
+  // Style
+  styleProperties,
+  containerClasses,
+  
+  // Helpers
+  handleAction
+} = useInputField({
   modelValue: props.modelValue,
-  type: 'textarea', // Textarea n'a pas de type spécifique
-  actions: props.actions,
-  readonly: props.readonly,
-  debounce: props.debounceTime,
-  autofocus: props.autofocus,
-});
-
-// --- v-model : émettre update:modelValue quand la valeur change ---
-const emit = defineEmits(['update:modelValue']);
-watch(currentValue, (val) => {
-  emit('update:modelValue', val);
-});
-
-// --- Validation et autres logiques existantes (inchangées) ---
-const notificationStoreInjected = notificationStore;
-const processedValidation = computed(() => {
-    if (!props.validation) {
-        return null;
-    }
-    return processValidation(props.validation, notificationStoreInjected);
-});
-
-const hasValidationState = computed(() => {
-    return processedValidation.value !== null || slots.validator;
-});
-
-const textareaId = computed(
-    () => props.id || `textareafield-${Math.random().toString(36).substr(2, 9)}`,
-);
-
-// Configuration de style pour transmission aux labels et helpers
-const styleProperties = computed(() => 
-    getInputStyleProperties('textarea', {
-        variant: props.variant,
-        color: props.color,
-        size: props.size,
-        animation: props.animation,
-              ...(typeof props.inputStyle === 'object' && props.inputStyle !== null ? props.inputStyle : {}),
-      ...(typeof props.inputStyle === 'string' ? { variant: props.inputStyle } : {})
-    })
-);
-
-const containerClasses = computed(() => 
-    mergeClasses(
-        'form-control w-full',
-        getCustomUtilityClasses(props)
-    )
-);
-
-function getValidatorState() {
-    if (!processedValidation.value) return '';
-    return processedValidation.value.state;
-}
-
-function getValidatorMessage() {
-    if (!processedValidation.value) return '';
-    return processedValidation.value.message;
-}
-
-// Props à transmettre au Core
-const coreProps = computed(() => ({
-    ...inputProps.value,
-    modelValue: currentValue.value,
-    ref: inputRef
-}));
+  type: 'textarea',
+  mode: 'field',
+  props,
+  attrs: $attrs,
+  emit
+})
 </script>
 
 <template>
-    <div :class="containerClasses">
-        <!-- Label top -->
-        <InputLabel
-            v-if="labelConfig.top || slots.labelTop"
-            :value="labelConfig.top"
-            :for="textareaId"
-            :color="styleProperties.labelColor"
-            :size="styleProperties.labelSize"
-        >
-            <slot name="labelTop" />
-        </InputLabel>
-        
-        <div class="relative flex items-start w-full">
-            <!-- Label start -->
-            <InputLabel
-                v-if="labelConfig.start || slots.labelStart"
-                :value="labelConfig.start"
-                :for="textareaId"
-                :color="styleProperties.labelColor"
-                :size="styleProperties.labelSize"
-                class="mr-2 mt-2"
-            >
-                <slot name="labelStart" />
-            </InputLabel>
-            
-            <!-- Container relatif pour le textarea et les éléments over -->
-            <div class="relative flex-1">
-                <!-- Textarea principal -->
-                <TextareaCore 
-                    v-bind="coreProps"
-                >
-                    <template v-if="slots.labelInStart" #labelInStart>
-                        <slot name="labelInStart" />
-                    </template>
-                    <template v-if="slots.labelInEnd" #labelInEnd>
-                        <slot name="labelInEnd" />
-                    </template>
-                    <template v-if="labelConfig.floating && (labelConfig.floating || slots.labelFloating)" #floatingLabel>
-                        <slot name="labelFloating">{{ labelConfig.floating }}</slot>
-                    </template>
-                </TextareaCore>
-
-                <!-- Slot overStart (positionné en absolute à gauche) -->
-                <div v-if="slots.overStart" class="absolute left-2 top-2 z-10 flex gap-1">
-                    <slot name="overStart" />
-                </div>
-                <!-- Slot overEnd (positionné en absolute à droite) + actions contextuelles -->
-                <div v-if="slots.overEnd || actionsToDisplay.length" class="absolute right-2 top-2 z-10 flex items-center gap-1">
-                    <slot name="overEnd" />
-                    <Btn
-                        v-for="action in actionsToDisplay"
-                        :key="action.key"
-                        :variant="action.variant"
-                        :color="action.color"
-                        :size="action.size"
-                        circle
-                        :aria-label="action.ariaLabel"
-                        :title="action.tooltip"
-                        :disabled="action.disabled"
-                        @click.stop="action.onClick"
-                    >
-                        <i :class="action.icon" class="text-sm"></i>
-                    </Btn>
-                </div>
-            </div>
-
-            <!-- Label end -->
-            <InputLabel
-                v-if="labelConfig.end || slots.labelEnd"
-                :value="labelConfig.end"
-                :for="textareaId"
-                :color="styleProperties.labelColor"
-                :size="styleProperties.labelSize"
-                class="ml-2 mt-2"
-            >
-                <slot name="labelEnd" />
-            </InputLabel>
-        </div>
-        
-        <!-- Label bottom -->
-        <InputLabel
-            v-if="labelConfig.bottom || slots.labelBottom"
-            :value="labelConfig.bottom"
-            :for="textareaId"
-            :color="styleProperties.labelColor"
-            :size="styleProperties.labelSize"
-            class="mt-1"
-        >
-            <slot name="labelBottom" />
-        </InputLabel>
-        
-        <!-- Validator -->
-        <div v-if="hasValidationState" class="mt-1">
-            <slot name="validator">
-                <Validator
-                    v-if="processedValidation"
-                    :state="getValidatorState()"
-                    :message="getValidatorMessage()"
-                />
-            </slot>
-        </div>
-        
-        <!-- Helper -->
-        <div v-if="helper || slots.helper" class="mt-1">
-            <slot name="helper">
-                <Helper 
-                    :helper="helper" 
-                    :color="styleProperties.helperColor" 
-                    :size="styleProperties.helperSize" 
-                />
-            </slot>
-        </div>
-    </div>
+  <FieldTemplate
+    :container-classes="containerClasses"
+    :label-config="labelConfig"
+    :input-attrs="inputAttrs"
+    :listeners="listeners"
+    :input-ref="inputRef"
+    :actions-to-display="actionsToDisplay"
+    :style-properties="styleProperties"
+    :validation-state="validationState"
+    :validation-message="validationMessage"
+    :helper="props.helper"
+  >
+    <!-- Slot core spécifique pour TextareaCore -->
+    <template #core="{ inputAttrs, listeners, inputRef }">
+      <TextareaCore
+        v-bind="inputAttrs"
+        v-on="listeners"
+        ref="inputRef"
+      >
+        <!-- 🔤 Labels inline start/end -->
+        <template v-if="$slots.labelInStart" #labelInStart>
+          <slot name="labelInStart" />
+        </template>
+        <template v-if="$slots.labelInEnd" #labelInEnd>
+          <slot name="labelInEnd" />
+        </template>
+        <!-- 💬 Label flottant -->
+        <template v-if="labelConfig.floating || $slots.labelFloating" #floatingLabel>
+          <slot name="labelFloating">{{ labelConfig.floating }}</slot>
+        </template>
+      </TextareaCore>
+    </template>
+    
+    <!-- Slots personnalisés -->
+    <template #helper>
+      <slot name="helper" />
+    </template>
+  </FieldTemplate>
 </template>
 
 <style scoped lang="scss">

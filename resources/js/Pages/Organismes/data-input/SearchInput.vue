@@ -46,7 +46,8 @@ const props = defineProps({
 });
 
 const emit = defineEmits(["update:modelValue"]);
-const searchBarId = ref(`searchBar-${Math.random().toString(36).substr(2, 9)}`);
+// Génération d'un ID unique et robuste
+const searchBarId = ref(`searchBar-${Date.now()}-${Math.random().toString(36).substring(2, 11)}`);
 
 const handleKeydown = (event) => {
     const [modifier, key] = props.shortcut.split("+");

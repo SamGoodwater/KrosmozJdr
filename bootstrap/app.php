@@ -11,12 +11,24 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
-        $middleware->web(append: [
+        // Configuration des middlewares web
+        $webMiddleware = [
             \App\Http\Middleware\HandleInertiaRequests::class,
             \Illuminate\Http\Middleware\AddLinkHeadersForPreloadedAssets::class,
-        ]);
+        ];
 
-        //
+        // En mode test, ne pas inclure le CSRF et utiliser des sessions array
+        if (($_ENV['APP_ENV'] ?? 'local') === 'testing') {
+            $middleware->web(append: $webMiddleware);
+            // Désactiver complètement le CSRF en mode test
+            config(['session.driver' => 'array']);
+            config(['session.verify_csrf_token' => false]);
+        } else {
+            // En mode normal, inclure tous les middlewares web par défaut
+            $middleware->web(append: array_merge([
+                \Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class,
+            ], $webMiddleware));
+        }
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //

@@ -44,7 +44,7 @@ defineProps({
 </script>
 
 <template>
-    <Navbar :class="['header-animated', { 'header-open': isOpen }]">
+    <Navbar :class="['header-animated', { 'header-open': isOpen  }]">
         <template #start>
             <Transition name="title" class="ml-14" mode="out-in">
                 <h2 :key="pageTitle" id="pageTitle" class="items-center text-2xl font-semibold">
@@ -56,7 +56,7 @@ defineProps({
             <SearchInput />
         </template>
         <template #end>
-            <div class="flex gap-2 items-center">
+            <div class="flex gap-2 items-center mr-6">
                 <template v-if="page.props.auth.isLogged">
                     <LoggedHeaderContainer />
                 </template>

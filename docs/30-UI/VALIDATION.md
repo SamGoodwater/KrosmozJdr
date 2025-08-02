@@ -3,68 +3,55 @@
 ## 1. Architecture du système
 
 ### Composants principaux
-- **validationManager.js** : Gestionnaire centralisé des validations avec API unifiée
-- **useValidation (Composable)** : Interface réactive pour la gestion des validations
+- **useValidation (Composable)** : Interface réactive simplifiée pour la gestion des validations
 - **Validator (Atom)** : Affichage des messages de validation avec classes DaisyUI
 - **InputField (Molecule)** : Intégration automatique via la prop `validation`
 
-### API unifiée
-Toutes les validations utilisent maintenant une seule prop `validation` avec une structure claire :
+### API simplifiée
+Le système de validation utilise maintenant une API simple et transparente :
 ```javascript
 {
-  state: 'error' | 'success' | 'warning' | 'info',
-  message: 'Message à afficher',
-  showNotification: true | false,
-  notificationType: 'auto' | 'error' | 'success' | 'warning' | 'info' | 'primary' | 'secondary',
-  notificationDuration: 5000, // ms
-  notificationPlacement: null // null = position par défaut du système
+  condition: Function|RegExp|String,  // Condition de validation
+  messages: {                         // Messages par état avec contrôle des notifications
+    success: { text: 'Valide', notified: false },
+    error: { text: 'Erreur', notified: true },
+    warning: { text: 'Attention', notified: false },
+    info: { text: 'Info', notified: false }
+  }
 }
 ```
 
 ## 2. API complète
 
-### validationManager.js
-```javascript
-import { 
-  createValidation, 
-  processValidation, 
-  quickValidation,
-  validateSameAs,
-  createSameAsValidation 
-} from '@/Utils/atomic-design/validationManager';
-
-// Créer une validation
-const validation = createValidation({ state: 'error', message: 'Erreur' });
-
-// Helpers rapides
-const error = quickValidation.local.error('Message');
-const success = quickValidation.withNotification.success('Succès !');
-
-// Validation sameAs
-const sameAsValidation = validateSameAs(password, passwordConfirm, 'Mots de passe différents');
-```
-
 ### useValidation (Composable)
 ```javascript
 import { useValidation } from '@/Composables/form/useValidation';
 
-const { 
-  validateField, 
-  validateForm, 
-  handleServerErrors,
-  clearFieldValidation,
-  clearAllValidations,
-  errorCount,
-  successCount,
-  isValid,
-  errors,
-  successes,
-  // Helpers rapides
-  setFieldError,
-  setFieldSuccess,
-  setFieldErrorWithNotification,
-  setFieldSuccessWithNotification
-} = useValidation();
+const validation = useValidation({
+  value: currentValue,
+  condition: (val) => val.length >= 8,
+  messages: {
+    success: { text: 'Mot de passe sécurisé', notified: false },
+    error: { text: 'Minimum 8 caractères', notified: true }
+  },
+  validateOnChange: false,
+  validateOnBlur: true
+});
+
+// API retournée
+const {
+  state,           // État actuel (success, error, warning, info, '')
+  message,         // Message actuel
+  hasInteracted,   // L'utilisateur a-t-il interagi ?
+  validate,        // Fonction de validation
+  setInteracted,   // Marquer comme interagi
+  reset,           // Réinitialiser
+  isValid,         // Helper boolean
+  hasError,        // Helper boolean
+  hasWarning,      // Helper boolean
+  hasSuccess,      // Helper boolean
+  hasInfo          // Helper boolean
+} = validation;
 ```
 
 ### Validator (Atom)
@@ -73,12 +60,51 @@ const {
 
 ## 3. Exemples d'utilisation
 
-### Validation simple
+### Validation simple avec condition
 ```vue
 <InputField
   v-model="email"
   label="Email"
-  :validation="{ state: 'error', message: 'Email invalide' }"
+  :validation="'email'"
+/>
+```
+
+### Validation avec condition personnalisée
+```vue
+<InputField
+  v-model="password"
+  label="Mot de passe"
+  :validation="(val) => val.length >= 8"
+/>
+```
+
+### Validation avec messages personnalisés
+```vue
+<InputField
+  v-model="username"
+  label="Nom d'utilisateur"
+  :validation="{
+    condition: (val) => val.length >= 3,
+    messages: {
+      success: { text: 'Nom valide', notified: false },
+      error: { text: 'Minimum 3 caractères', notified: true }
+    }
+  }"
+/>
+```
+
+### Validation avec regex
+```vue
+<InputField
+  v-model="phone"
+  label="Téléphone"
+  :validation="{
+    condition: /^[0-9]{10}$/,
+    messages: {
+      success: { text: 'Format valide', notified: false },
+      error: { text: 'Format invalide (10 chiffres)', notified: true }
+    }
+  }"
 />
 ```
 
@@ -87,11 +113,12 @@ const {
 <InputField
   v-model="email"
   label="Email"
-  :validation="{ 
-    state: 'success', 
-    message: 'Email valide !',
-    showNotification: true,
-    notificationType: 'auto' // Utilise automatiquement 'success'
+  :validation="{
+    condition: 'email',
+    messages: {
+      success: { text: 'Email valide !', notified: true },
+      error: { text: 'Format d\'email invalide', notified: true }
+    }
   }"
 />
 ```
@@ -107,78 +134,63 @@ const {
   v-model="passwordConfirm"
   label="Confirmer le mot de passe"
   type="password"
-  :validation="passwordConfirmationValidation"
+  :validation="{
+    condition: (val) => val === password,
+    messages: {
+      success: { text: 'Mots de passe identiques', notified: false },
+      error: { text: 'Les mots de passe ne correspondent pas', notified: true }
+    }
+  }"
 />
+```
 
-<script setup>
-const passwordConfirmationValidation = computed(() => {
-  if (!passwordConfirm.value) return null;
-  
-  if (password.value !== passwordConfirm.value) {
-    return { 
-      state: 'error', 
-      message: 'Les mots de passe ne correspondent pas' 
-    };
+### Utilisation directe du composable
+```javascript
+// Dans un composant
+const emailValidation = useValidation({
+  value: email,
+  condition: 'email',
+  messages: {
+    success: { text: 'Email valide', notified: false },
+    error: { text: 'Email invalide', notified: true }
   }
-  
-  return { 
-    state: 'success', 
-    message: 'Mots de passe identiques' 
-  };
-});
-</script>
-```
-
-### Utilisation du composable
-```javascript
-// Validation d'un champ
-validateField('email', { state: 'error', message: 'Email invalide' });
-
-// Validation de formulaire
-validateForm({
-  email: { state: 'error', message: 'Email requis' },
-  password: { state: 'error', message: 'Mot de passe requis' }
 });
 
-// Helpers rapides
-setFieldError('email', 'Email invalide');
-setFieldSuccess('email', 'Email valide !');
-setFieldErrorWithNotification('email', 'Erreur importante !');
+// Validation manuelle
+const state = emailValidation.validate(email.value);
 
-// Gestion des erreurs serveur
-handleServerErrors(form.errors, {
-  showNotifications: true,
-  notificationDuration: 8000
+// Écouter l'état
+watch(emailValidation.state, (newState) => {
+  console.log('État de validation:', newState);
 });
 ```
 
-## 4. Règles de validation communes
+## 4. Conditions de validation prêtes à l'emploi
 
-Le système inclut des règles prêtes à l'emploi :
-
+### Conditions string
 ```javascript
-import { quickValidation } from '@/Utils/atomic-design/validationManager';
+// Conditions disponibles
+'required'    // Champ requis
+'email'       // Format email
+'password'    // Validation mot de passe (warning si faible)
+```
 
-// Règles disponibles
-quickValidation.rules.required(value)
-quickValidation.rules.email(value)
-quickValidation.rules.minLength(8)(value)
-quickValidation.rules.maxLength(50)(value)
-quickValidation.rules.pattern(/^[a-zA-Z]+$/)(value)
-quickValidation.rules.numeric(value)
-quickValidation.rules.integer(value)
-quickValidation.rules.positive(value)
-quickValidation.rules.between(1, 100)(value)
-quickValidation.rules.min(0)(value)
-quickValidation.rules.max(100)(value)
-quickValidation.rules.sameAs(otherValue)(value)
-quickValidation.rules.sameAsField('password')(value, formData)
-quickValidation.rules.includeLetter(value)
-quickValidation.rules.includeNumber(value)
-quickValidation.rules.includeSpecialChar(value)
-quickValidation.rules.includeUppercase(value)
-quickValidation.rules.includeLowercase(value)
-quickValidation.rules.url(value)
+### Conditions regex
+```javascript
+// Exemples de regex
+/^[0-9]{10}$/           // 10 chiffres
+/^[a-zA-Z]+$/           // Lettres uniquement
+/^[a-zA-Z0-9]{3,20}$/   // Alphanumérique 3-20 caractères
+```
+
+### Conditions fonction
+```javascript
+// Fonctions personnalisées
+(val) => val.length >= 8                    // Longueur minimale
+(val) => /[A-Z]/.test(val)                  // Contient majuscule
+(val) => val === otherValue                 // Égalité
+(val) => val >= 0 && val <= 100             // Plage de valeurs
+(val) => val && val.trim().length > 0       // Non vide après trim
 ```
 
 ## 5. Migration depuis l'ancienne API
@@ -191,36 +203,61 @@ quickValidation.rules.url(value)
   :errorMessage="'Erreur'"
   :validatorError="'Email invalide'"
   :validatorSuccess="'Email valide'"
+  :validation="{ state: 'error', message: 'Erreur' }"
 />
 ```
 
 ### Nouvelle API (recommandée)
 ```vue
+<!-- Condition simple -->
+<InputField :validation="'email'" />
+
+<!-- Condition avec messages -->
 <InputField 
-  :validation="{ state: 'error', message: 'Erreur' }"
-  :validation="{ state: 'success', message: 'Champ valide' }"
-  :validation="{ 
-    state: 'error', 
-    message: 'Email invalide',
-    showNotification: true,
-    notificationType: 'auto'
+  :validation="{
+    condition: 'email',
+    messages: {
+      success: { text: 'Email valide', notified: false },
+      error: { text: 'Email invalide', notified: true }
+    }
   }"
+/>
+
+<!-- Compatibilité avec l'ancienne API -->
+<InputField 
+  :validation="{ state: 'error', message: 'Erreur', showNotification: true }"
 />
 ```
 
 ## 6. Bonnes pratiques
 
-### Configuration des notifications
-- **`notificationType: 'auto'`** : Utilise automatiquement le type correspondant au state
-- **`notificationPlacement: null`** : Laisse le système gérer la position par défaut
-- **`showNotification: false`** : Pour les validations en temps réel (évite le spam)
+### Structure des messages
+```javascript
+// Structure recommandée
+messages: {
+  success: { text: 'Message de succès', notified: false },
+  error: { text: 'Message d\'erreur', notified: true },
+  warning: { text: 'Message d\'avertissement', notified: false },
+  info: { text: 'Message d\'information', notified: false }
+}
+```
+
+### Contrôle des notifications
+- **`notified: false`** : Pour les validations en temps réel (évite le spam)
+- **`notified: true`** : Pour les erreurs importantes ou confirmations
+- **Notifications automatiques** : Le système utilise le type correspondant à l'état
 
 ### Performance
 - Utiliser `computed` pour les validations réactives
-- Éviter les validations inutiles avec `showNotification: false`
-- Utiliser `clearAllValidations()` pour nettoyer l'état
+- Éviter les validations inutiles avec `notified: false`
+- Utiliser `reset()` pour nettoyer l'état
+
+### Transparence
+- Le validateur lit le contenu sans bloquer le v-model
+- Compatible avec toutes les logiques existantes
+- Aucun conflit avec les vues ou autres composables
 
 ### Cohérence
 - Toujours utiliser la prop `validation` unifiée
-- Préférer les helpers rapides (`quickValidation.local`, `quickValidation.withNotification`)
+- Préférer les conditions simples (string, regex, fonction)
 - Documenter les validations complexes avec des exemples 

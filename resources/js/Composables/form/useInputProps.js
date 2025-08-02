@@ -40,7 +40,10 @@ export default function useInputProps(props, attrs, emit, type = 'input', mode =
         if (key === 'type' && ELEMENTS_WITHOUT_TYPE.includes(type)) {
           return
         }
-        result[attrKey] = props[key]
+        // Exclure les attributs vides ou null (sauf pour certains attributs booléens)
+        if (props[key] !== null && props[key] !== '' && props[key] !== undefined) {
+          result[attrKey] = props[key]
+        }
       }
     })
 
@@ -51,11 +54,18 @@ export default function useInputProps(props, attrs, emit, type = 'input', mode =
         if (key === 'type' && ELEMENTS_WITHOUT_TYPE.includes(type)) {
           return
         }
-        result[key] = val
+        // Exclure les attributs vides ou null (sauf pour certains attributs booléens)
+        if (val !== null && val !== '' && val !== undefined) {
+          result[key] = val
+        }
       }
     })
 
-    result.value = props.modelValue
+    // NE PAS gérer la valeur ici - laisser useInputActions s'en charger
+    // if (props.modelValue !== undefined && props.modelValue !== null) {
+    //   result.value = props.modelValue
+    // }
+    
     return result
   })
 
@@ -66,9 +76,6 @@ export default function useInputProps(props, attrs, emit, type = 'input', mode =
       listeners[eventName] = attrs[key]
     }
   }
-
-  // Ajoute gestion automatique de v-model
-  listeners.input = e => emit('update:modelValue', e.target.value)
 
   return {
     inputAttrs,

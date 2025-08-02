@@ -70,7 +70,7 @@ export const COMMON_PROPS = [
 export const COMMON_FIELD_PROPS = [
     { key: 'label', type: [String, Object], default: '', validator: validateLabel },
     { key: 'helper', type: [String, Object], default: '', validator: validateHelper },
-    { key: 'defaultLabelPosition', type: String, default: 'floating', validator: v => ['top', 'bottom', 'start', 'end', 'inStart', 'inEnd', 'floating'].includes(v) },
+    { key: 'defaultLabelPosition', type: String, default: 'top', validator: v => ['top', 'bottom', 'start', 'end', 'inStart', 'inEnd', 'floating'].includes(v) },
     { key: 'validation', type: [String, Boolean, Object, Number], default: undefined },
     { key: 'actions', type: [Array, Object, String], default: undefined },
     { key: 'debounceTime', type: Number, default: 500 },    

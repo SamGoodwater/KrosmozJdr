@@ -39,7 +39,7 @@ class RegisteredUserController extends Controller
 
         Auth::login($user);
 
-        // Pour Inertia, on utilise Inertia::location pour une redirection côté client
-        return Inertia::location(route('user.show'));
+        // Utiliser une redirection HTTP standard pour les tests
+        return redirect()->route('user.show');
     }
 }

@@ -161,6 +161,7 @@ export default function useInputActions({
   delay = 500,
   autofocus = false,
   actionOptions = {},
+  emit = null, // Ajout du paramètre emit
 } = {}) {
   // --- ÉTATS RÉACTIFS ---
   const initialValue = ref(modelValue);
@@ -187,10 +188,19 @@ export default function useInputActions({
   watch(
     () => modelValue,
     (newVal) => {
-      currentValue.value = newVal;
+      if (newVal !== currentValue.value) {
+        currentValue.value = newVal;
+      }
     },
     { immediate: true }
   );
+
+  // --- ÉMISSION DES CHANGEMENTS (NOUVEAU) ---
+  watch(currentValue, (newVal, oldVal) => {
+    if (oldVal !== newVal && emit && typeof emit === 'function') {
+      emit('update:modelValue', newVal);
+    }
+  });
 
   // --- GESTION DE L'HISTORIQUE ---
   watch(currentValue, (newVal, oldVal) => {
@@ -252,51 +262,62 @@ export default function useInputActions({
 
   const actionsConfig = computed(() => parseActions(actions));
 
-  // --- HANDLERS ---
-  function reset() {
-    currentValue.value = initialValue.value;
-  }
-
-  function back() {
-    currentValue.value = previousValue.value;
-  }
-
-  function clear() {
-    currentValue.value = '';
-  }
-
-  function togglePassword() {
-    showPassword.value = !showPassword.value;
-  }
-
-  function copy() {
-    if (typeof navigator !== 'undefined' && navigator.clipboard) {
-      navigator.clipboard.writeText(currentValue.value ?? '');
-    }
-  }
-
-  function toggleEdit() {
-    isReadonly.value = !isReadonly.value;
-  }
-
-  function toggleDisabled() {
-    isDisabled.value = !isDisabled.value;
-  }
-
+  // --- FONCTIONS UTILITAIRES ---
   function focus() {
-    if (inputRef.value) inputRef.value.focus();
+    if (inputRef.value) inputRef.value.focus()
   }
 
   // --- MAPPING DES ACTIONS ---
   const actionHandlers = {
-    reset,
-    back,
-    clear,
-    copy,
-    password: togglePassword,
-    edit: toggleEdit,
-    lock: toggleDisabled,
-  };
+    reset: () => {
+      if (emit && typeof emit === 'function') {
+        emit('action:reset', initialValue.value)
+      }
+      currentValue.value = initialValue.value
+      showReset.value = false
+    },
+    back: () => {
+      if (emit && typeof emit === 'function') {
+        emit('action:back', previousValue.value)
+      }
+      currentValue.value = previousValue.value
+      showBack.value = false
+    },
+    clear: () => {
+      if (emit && typeof emit === 'function') {
+        emit('action:clear')
+      }
+      currentValue.value = ''
+    },
+    password: () => {
+      showPassword.value = !showPassword.value
+      if (emit && typeof emit === 'function') {
+        emit('action:togglePassword', showPassword.value)
+      }
+    },
+    copy: async () => {
+      try {
+        await navigator.clipboard.writeText(currentValue.value)
+        if (emit && typeof emit === 'function') {
+          emit('action:copy', currentValue.value)
+        }
+      } catch (err) {
+        console.error('Erreur lors de la copie:', err)
+      }
+    },
+    edit: () => {
+      isReadonly.value = !isReadonly.value
+      if (emit && typeof emit === 'function') {
+        emit('action:toggleEdit', isReadonly.value)
+      }
+    },
+    lock: () => {
+      isDisabled.value = !isDisabled.value
+      if (emit && typeof emit === 'function') {
+        emit('action:toggleDisabled', isDisabled.value)
+      }
+    }
+  }
 
   // --- VÉRIFICATION DE COMPATIBILITÉ ---
   function isActionCompatible(actionKey, inputType) {
@@ -407,6 +428,12 @@ export default function useInputActions({
     };
   });
 
+  // --- GESTIONNAIRE D'ÉVÉNEMENT INPUT ---
+  const handleInput = (event) => {
+    const newValue = event.target.value;
+    currentValue.value = newValue;
+  };
+
   // --- API EXPOSÉE ---
   return {
     // États réactifs
@@ -425,15 +452,11 @@ export default function useInputActions({
     // Props pour l'input
     inputProps,
     
+    // Gestionnaire d'événement
+    handleInput,
+    
     // Méthodes
     focus,
-    reset,
-    back,
-    clear,
-    togglePassword,
-    copy,
-    toggleEdit,
-    toggleDisabled,
     
     // Utilitaires
     isActionCompatible,

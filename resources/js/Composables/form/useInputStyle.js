@@ -438,6 +438,7 @@ const SPECIAL_COMPONENT_CONFIG = {
  */
 export const STYLE_CONFIG = {
     // Inputs textuels (utilisent la même configuration de base)
+    input: TEXTUAL_INPUT_CONFIG, // Ajout du type 'input' pour corriger le warning
     text: TEXTUAL_INPUT_CONFIG,
     email: TEXTUAL_INPUT_CONFIG,
     password: TEXTUAL_INPUT_CONFIG,

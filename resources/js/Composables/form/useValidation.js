@@ -1,272 +1,155 @@
-import { ref, computed } from 'vue';
-import { useNotificationStore } from '@/Composables/store/useNotificationStore';
-import { 
-    createValidation, 
-    processValidation, 
-    mapServerErrors,
-    quickValidation 
-} from '@/Utils/atomic-design/validationManager';
+import { ref, computed, watch } from 'vue'
+import { inject } from 'vue'
 
 /**
- * useValidation — Composable pour l'intégration validation + notifications
- *
- * @description
- * Composable qui facilite la gestion des validations avec intégration automatique
- * du système de notifications. Fournit des helpers pour les cas d'usage courants.
- *
- * @example
- * const { validateField, validateForm, handleServerErrors } = useValidation();
+ * useValidation — Système de validation transparent et simplifié
  * 
- * // Validation locale
- * validateField('email', { state: 'error', message: 'Email invalide' });
+ * Ce composable gère la validation sans interférer avec le v-model.
+ * Il accepte une condition et un objet de messages, et retourne uniquement l'état.
  * 
- * // Validation avec notification
- * validateField('email', { 
- *   state: 'success', 
- *   message: 'Email valide !',
- *   showNotification: true 
- * });
- * 
- * // Gestion des erreurs serveur
- * handleServerErrors(form.errors);
- *
- * @returns {Object} API du composable
+ * @param {Object} options
+ * @param {any} options.value - Valeur à valider (lecture seule)
+ * @param {Function|RegExp|String} options.condition - Condition de validation
+ * @param {Object} options.messages - Messages par état avec contrôle des notifications
+ * @param {boolean} options.validateOnChange - Valider à chaque changement
+ * @param {boolean} options.validateOnBlur - Valider au blur
+ * @returns {Object} API de validation simplifiée
  */
-export function useValidation() {
-    const notificationStore = useNotificationStore();
-    const fieldValidations = ref({});
-    
-    /**
-     * Valide un champ spécifique
-     * @param {String} fieldName - Nom du champ
-     * @param {Object|String|Boolean} validation - Configuration de validation
-     * @returns {Object} - Validation traitée
-     */
-    function validateField(fieldName, validation) {
-        const processed = processValidation(validation, notificationStore);
-        fieldValidations.value[fieldName] = processed;
-        return processed;
+export function useValidation({
+  value,
+  condition = null,
+  messages = {},
+  validateOnChange = false,
+  validateOnBlur = true
+} = {}) {
+  const notificationStore = inject('notificationStore', null)
+  
+  // État de validation
+  const validationState = ref('')
+  const validationMessage = ref('')
+  const hasInteracted = ref(false)
+  
+  // Structure par défaut des messages
+  const defaultMessages = {
+    success: { text: 'Valide', notified: false },
+    error: { text: 'Invalide', notified: false },
+    warning: { text: 'Attention', notified: false },
+    info: { text: 'Information', notified: false }
+  }
+  
+  // Fusion des messages avec les valeurs par défaut
+  const mergedMessages = computed(() => ({
+    ...defaultMessages,
+    ...messages
+  }))
+  
+  // Fonction de validation simplifiée
+  const validate = (val = value) => {
+    if (!condition) {
+      validationState.value = ''
+      validationMessage.value = ''
+      return ''
     }
     
-    /**
-     * Valide plusieurs champs d'un coup
-     * @param {Object} validations - Objet { fieldName: validation }
-     * @returns {Object} - Validations traitées
-     */
-    function validateForm(validations) {
-        const results = {};
-        Object.entries(validations).forEach(([field, validation]) => {
-            results[field] = validateField(field, validation);
-        });
-        return results;
+    let isValid = true
+    let state = 'success'
+    
+    // Validation selon le type de condition
+    if (typeof condition === 'function') {
+      const result = condition(val)
+      if (typeof result === 'boolean') {
+        isValid = result
+        state = result ? 'success' : 'error'
+      } else if (typeof result === 'object' && result.state) {
+        state = result.state
+        isValid = state !== 'error'
+      } else if (typeof result === 'string') {
+        state = result
+        isValid = result !== 'error'
+      }
+    } else if (condition instanceof RegExp) {
+      isValid = condition.test(val)
+      state = isValid ? 'success' : 'error'
+    } else if (typeof condition === 'string') {
+      // Validation par pattern (email, required, etc.)
+      switch (condition) {
+        case 'required':
+          isValid = val && val.toString().trim().length > 0
+          state = isValid ? 'success' : 'error'
+          break
+        case 'email':
+          const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+          isValid = emailRegex.test(val)
+          state = isValid ? 'success' : 'error'
+          break
+        case 'password':
+          const hasUpperCase = /[A-Z]/.test(val)
+          const hasLowerCase = /[a-z]/.test(val)
+          const hasNumbers = /\d/.test(val)
+          const hasMinLength = val && val.length >= 8
+          
+          if (hasUpperCase && hasLowerCase && hasNumbers && hasMinLength) {
+            state = 'success'
+          } else {
+            state = 'warning'
+          }
+          break
+        default:
+          state = 'success'
+      }
     }
     
-    /**
-     * Gère les erreurs serveur (Laravel/Inertia)
-     * @param {Object} errors - Erreurs du serveur
-     * @param {Object} options - Options de configuration
-     * @returns {Object} - Mapping des erreurs par champ
-     */
-    function handleServerErrors(errors, options = {}) {
-        const mappedErrors = mapServerErrors(errors, {}, options);
-        Object.entries(mappedErrors).forEach(([field, validation]) => {
-            validateField(field, validation);
-        });
-        return mappedErrors;
+    // Mise à jour de l'état
+    validationState.value = state
+    validationMessage.value = mergedMessages.value[state]?.text || ''
+    
+    // Notification si demandée
+    const messageConfig = mergedMessages.value[state]
+    if (messageConfig?.notified && notificationStore && messageConfig.text) {
+      if (state === 'error') {
+        notificationStore.error(messageConfig.text)
+      } else if (state === 'success') {
+        notificationStore.success(messageConfig.text)
+      } else if (state === 'warning') {
+        notificationStore.warning(messageConfig.text)
+      } else if (state === 'info') {
+        notificationStore.info(messageConfig.text)
+      }
     }
     
-    /**
-     * Efface la validation d'un champ
-     * @param {String} fieldName - Nom du champ
-     */
-    function clearFieldValidation(fieldName) {
-        delete fieldValidations.value[fieldName];
-    }
+    return state
+  }
+  
+  // Validation au changement si activée
+  if (validateOnChange) {
+    watch(value, (newVal) => {
+      if (hasInteracted.value) {
+        validate(newVal)
+      }
+    })
+  }
+  
+  // API simplifiée
+  return {
+    // État de validation (lecture seule)
+    state: computed(() => validationState.value),
+    message: computed(() => validationMessage.value),
+    hasInteracted: computed(() => hasInteracted.value),
     
-    /**
-     * Efface toutes les validations
-     */
-    function clearAllValidations() {
-        fieldValidations.value = {};
-    }
+    // Méthodes
+    validate,
+    setInteracted: () => { hasInteracted.value = true },
+    reset: () => {
+      validationState.value = ''
+      validationMessage.value = ''
+      hasInteracted.value = false
+    },
     
-    /**
-     * Récupère la validation d'un champ
-     * @param {String} fieldName - Nom du champ
-     * @returns {Object|null} - Validation du champ
-     */
-    function getFieldValidation(fieldName) {
-        return fieldValidations.value[fieldName] || null;
-    }
-    
-    /**
-     * Vérifie si un champ a une validation
-     * @param {String} fieldName - Nom du champ
-     * @returns {Boolean} - True si le champ a une validation
-     */
-    function hasFieldValidation(fieldName) {
-        return fieldName in fieldValidations.value;
-    }
-    
-    /**
-     * Vérifie si un champ est en erreur
-     * @param {String} fieldName - Nom du champ
-     * @returns {Boolean} - True si le champ est en erreur
-     */
-    function isFieldInError(fieldName) {
-        const validation = fieldValidations.value[fieldName];
-        return validation && validation.state === 'error';
-    }
-    
-    /**
-     * Vérifie si un champ est valide
-     * @param {String} fieldName - Nom du champ
-     * @returns {Boolean} - True si le champ est valide
-     */
-    function isFieldValid(fieldName) {
-        const validation = fieldValidations.value[fieldName];
-        return validation && validation.state === 'success';
-    }
-    
-    // --- COMPUTED PROPERTIES ---
-    
-    /**
-     * Compte le nombre de champs avec des erreurs
-     * @returns {Number} - Nombre d'erreurs
-     */
-    const errorCount = computed(() => {
-        return Object.values(fieldValidations.value)
-            .filter(validation => validation.state === 'error')
-            .length;
-    });
-    
-    /**
-     * Compte le nombre de champs valides
-     * @returns {Number} - Nombre de champs valides
-     */
-    const successCount = computed(() => {
-        return Object.values(fieldValidations.value)
-            .filter(validation => validation.state === 'success')
-            .length;
-    });
-    
-    /**
-     * Vérifie si le formulaire est valide (aucune erreur)
-     * @returns {Boolean} - True si aucune erreur
-     */
-    const isValid = computed(() => errorCount.value === 0);
-    
-    /**
-     * Vérifie si le formulaire a des validations
-     * @returns {Boolean} - True si au moins une validation
-     */
-    const hasValidations = computed(() => Object.keys(fieldValidations.value).length > 0);
-    
-    /**
-     * Récupère toutes les validations
-     * @returns {Object} - Toutes les validations
-     */
-    const allValidations = computed(() => fieldValidations.value);
-    
-    /**
-     * Récupère seulement les erreurs
-     * @returns {Object} - Erreurs par champ
-     */
-    const errors = computed(() => {
-        const result = {};
-        for (const [field, validation] of Object.entries(fieldValidations.value)) {
-            if (validation.state === 'error') {
-                result[field] = validation;
-            }
-        }
-        return result;
-    });
-    
-    /**
-     * Récupère seulement les succès
-     * @returns {Object} - Succès par champ
-     */
-    const successes = computed(() => {
-        const result = {};
-        for (const [field, validation] of Object.entries(fieldValidations.value)) {
-            if (validation.state === 'success') {
-                result[field] = validation;
-            }
-        }
-        return result;
-    });
-    
-    // --- HELPERS RAPIDES ---
-    
-    /**
-     * Valide un champ avec une erreur locale
-     * @param {String} fieldName - Nom du champ
-     * @param {String} message - Message d'erreur
-     */
-    function setFieldError(fieldName, message) {
-        validateField(fieldName, quickValidation.local.error(message));
-    }
-    
-    /**
-     * Valide un champ avec un succès local
-     * @param {String} fieldName - Nom du champ
-     * @param {String} message - Message de succès
-     */
-    function setFieldSuccess(fieldName, message) {
-        validateField(fieldName, quickValidation.local.success(message));
-    }
-    
-    /**
-     * Valide un champ avec une erreur et notification
-     * @param {String} fieldName - Nom du champ
-     * @param {String} message - Message d'erreur
-     * @param {Object} options - Options de notification
-     */
-    function setFieldErrorWithNotification(fieldName, message, options = {}) {
-        validateField(fieldName, quickValidation.withNotification.error(message, options));
-    }
-    
-    /**
-     * Valide un champ avec un succès et notification
-     * @param {String} fieldName - Nom du champ
-     * @param {String} message - Message de succès
-     * @param {Object} options - Options de notification
-     */
-    function setFieldSuccessWithNotification(fieldName, message, options = {}) {
-        validateField(fieldName, quickValidation.withNotification.success(message, options));
-    }
-    
-    return {
-        // Méthodes principales
-        validateField,
-        validateForm,
-        handleServerErrors,
-        clearFieldValidation,
-        clearAllValidations,
-        getFieldValidation,
-        hasFieldValidation,
-        isFieldInError,
-        isFieldValid,
-        
-        // Helpers rapides
-        setFieldError,
-        setFieldSuccess,
-        setFieldErrorWithNotification,
-        setFieldSuccessWithNotification,
-        
-        // Computed
-        errorCount,
-        successCount,
-        isValid,
-        hasValidations,
-        allValidations,
-        errors,
-        successes,
-        
-        // Store de notifications (pour usage avancé)
-        notificationStore,
-        
-        // Helpers rapides (pour compatibilité)
-        quickValidation
-    };
+    // Helpers de lecture
+    isValid: computed(() => validationState.value !== 'error'),
+    hasError: computed(() => validationState.value === 'error'),
+    hasWarning: computed(() => validationState.value === 'warning'),
+    hasSuccess: computed(() => validationState.value === 'success'),
+    hasInfo: computed(() => validationState.value === 'info')
+  }
 } 

@@ -1,0 +1,9 @@
+{
+    "mcpServers": {
+      "browser-tools": {
+        "command": "npx",
+        "args": ["-y", "@agentdeskai/browser-tools-mcp@latest"],
+        "autoRun": true
+      }
+    }
+  }

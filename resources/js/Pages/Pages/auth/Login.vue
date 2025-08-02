@@ -3,10 +3,10 @@ import { ref, computed } from 'vue';
 import { Head, Link, useForm } from '@inertiajs/vue3';
 import InputField from '@/Pages/Molecules/data-input/InputField.vue';
 import Btn from '@/Pages/Atoms/action/Btn.vue';
-import { useValidation } from '@/Composables/form/useValidation';
-import { quickValidation } from '@/Utils/atomic-design/validationManager';
 import Checkbox from '@/Pages/Molecules/data-input/CheckboxField.vue';
 import Route from '@/Pages/Atoms/action/Route.vue';
+import Icon from '@/Pages/Atoms/data-display/Icon.vue';
+import Tooltip from '@/Pages/Atoms/feedback/Tooltip.vue';
 
 defineProps({
     canResetPassword: {
@@ -23,117 +23,119 @@ const form = useForm({
     remember: false,
 });
 
-// Utilisation du nouveau composable de validation
-const { validateField, handleServerErrors } = useValidation();
+// Refs pour accéder aux composants InputField
+const identifierFieldRef = ref(null);
+const passwordFieldRef = ref(null);
 
-// Validation en temps réel
-const identifierValidation = ref(null);
-const passwordValidation = ref(null);
-
-// Validation de l'identifiant (email ou pseudo)
-function validateIdentifier() {
+// Validation de l'identifiant (email ou pseudo) avec la nouvelle API
+const identifierValidation = computed(() => {
     const identifier = form.identifier;
     
     if (!identifier) {
-        identifierValidation.value = quickValidation.local.error('Email ou pseudo requis');
-        return false;
+        return {
+            condition: false,
+            messages: {
+                error: { text: 'Email ou pseudo requis', notified: false }
+            }
+        };
     }
     
     // Si ça ressemble à un email, on valide le format
     if (identifier.includes('@')) {
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        if (!emailRegex.test(identifier)) {
-            identifierValidation.value = quickValidation.local.error('Format d\'email invalide');
-            return false;
+        return {
+            condition: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+            messages: {
+                success: { text: 'Email valide', notified: false },
+                error: { text: 'Format d\'email invalide', notified: false }
+            }
+        };
+    }
+    
+    // Pour un pseudo, validation simple
+    return {
+        condition: (val) => val.length >= 3,
+        messages: {
+            success: { text: 'Pseudo valide', notified: false },
+            error: { text: 'Pseudo trop court (minimum 3 caractères)', notified: false }
         }
-    }
-    
-    // Si l'identifiant est valide, on peut afficher un succès avec notification
-    if (identifier.length > 2) {
-        identifierValidation.value = quickValidation.withNotification.success('Identifiant valide !', {
-            notificationDuration: 2000
-        });
-    }
-    
-    return true;
-}
+    };
+});
 
-// Validation du mot de passe
-function validatePassword() {
+// Validation du mot de passe avec la nouvelle API
+const passwordValidation = computed(() => {
     const password = form.password;
     
     if (!password) {
-        passwordValidation.value = quickValidation.local.error('Le mot de passe est requis');
-        return false;
+        return {
+            condition: false,
+            messages: {
+                error: { text: 'Le mot de passe est requis', notified: false }
+            }
+        };
     }
     
-    if (password.length < 8) {
-        passwordValidation.value = quickValidation.local.error('Le mot de passe doit contenir au moins 8 caractères');
-        return false;
-    }
-    
-    // Vérification de la complexité
-    const hasUpperCase = /[A-Z]/.test(password);
-    const hasLowerCase = /[a-z]/.test(password);
-    const hasNumbers = /\d/.test(password);
-    
-    if (!hasUpperCase || !hasLowerCase || !hasNumbers) {
-        passwordValidation.value = quickValidation.local.warning('Le mot de passe pourrait être plus sécurisé');
-        return false;
-    }
-    
-    // Mot de passe fort
-    passwordValidation.value = quickValidation.withNotification.success('Mot de passe sécurisé !', {
-        notificationDuration: 2000
-    });
-    
-    return true;
-}
+    return {
+        condition: (val) => {
+            if (val.length < 8) return 'error';
+            
+            // Vérification de la complexité
+            const hasUpperCase = /[A-Z]/.test(val);
+            const hasLowerCase = /[a-z]/.test(val);
+            const hasNumbers = /\d/.test(val);
+            
+            if (!hasUpperCase || !hasLowerCase || !hasNumbers) {
+                return 'warning';
+            }
+            
+            return 'success';
+        },
+        messages: {
+            success: { text: 'Mot de passe sécurisé !', notified: false },
+            warning: { text: 'Le mot de passe pourrait être plus sécurisé', notified: false },
+            error: { text: 'Le mot de passe doit contenir au moins 8 caractères', notified: false }
+        }
+    };
+});
 
 // Soumission du formulaire
 function submit() {
     // Validation avant soumission
-    const isIdentifierValid = validateIdentifier();
-    const isPasswordValid = validatePassword();
+    const isIdentifierValid = form.identifier && form.identifier.trim().length > 0;
+    const isPasswordValid = form.password && form.password.length >= 8;
     
     if (!isIdentifierValid || !isPasswordValid) {
         // Afficher une notification d'erreur générale
-        validateField('form', quickValidation.withNotification.error('Veuillez corriger les erreurs dans le formulaire'));
+        // Note: Ici on pourrait utiliser un système de notification global
+        console.error('Formulaire invalide');
         return;
     }
     
     // Soumission avec gestion des erreurs serveur
     form.post(route('login'), {
         onError: (errors) => {
-            // Gestion automatique des erreurs serveur avec notifications
-            handleServerErrors(errors, {
-                showNotifications: true,
-                notificationDuration: 8000
-            });
+            // Gestion des erreurs serveur
+            console.error('Erreurs serveur:', errors);
             
-            // Mise à jour des validations locales
-            if (errors.identifier) {
-                identifierValidation.value = quickValidation.local.error(errors.identifier);
-            }
-            if (errors.password) {
-                passwordValidation.value = quickValidation.local.error(errors.password);
-            }
+            // Note: Ici on pourrait utiliser un système de notification global
+            // pour afficher les erreurs serveur
         },
         onSuccess: () => {
             // Notification de succès
-            validateField('login', quickValidation.withNotification.success('Connexion réussie !', {
-                notificationDuration: 3000
-            }));
+            console.log('Connexion réussie !');
         }
     });
 }
 
 // Computed pour l'état du bouton
 const isFormValid = computed(() => {
-    return form.identifier && form.password && 
-           identifierValidation.value?.state !== 'error' && 
-           passwordValidation.value?.state !== 'error';
+    // Validation simple : les champs doivent avoir une valeur
+    const hasIdentifier = !!form.identifier && form.identifier.trim().length > 0;
+    const hasPassword = !!form.password && form.password.length >= 8;
+    
+    return hasIdentifier && hasPassword;
 });
+
+
 </script>
 
 <template>
@@ -149,7 +151,9 @@ const isFormValid = computed(() => {
             <form @submit.prevent="submit">
                 <div class="flex flex-col gap-8">
                     <InputField
+                        ref="identifierFieldRef"
                         label="Email ou pseudo"
+                        placeholder="Email ou pseudo"
                         v-model="form.identifier"
                         type="text"
                         name="identifier"
@@ -157,20 +161,21 @@ const isFormValid = computed(() => {
                         autofocus
                         autocomplete="username"
                         :validation="identifierValidation"
-                        @blur="validateIdentifier"
-                    >
-                    </InputField>
+                        tabindex="1"
+                    />
 
                     <InputField
+                        ref="passwordFieldRef"
                         label="Mot de passe sécurisé"
+                        placeholder="Mot de passe"
                         v-model="form.password"
                         type="password"
                         name="password"
                         required
                         autocomplete="current-password"
                         :validation="passwordValidation"
-                        @blur="validatePassword"
                         class="mt-4"
+                        tabindex="2"
                     >
                         <template #helper>
                             Ne partagez jamais votre mot de passe avec quelqu'un d'autre.
@@ -183,9 +188,12 @@ const isFormValid = computed(() => {
                         color="primary"
                         size="md"
                         label="Se souvenir de moi"
+                        tabindex="3"
                     />
         
                 </div>
+
+
 
                 <div class="flex flex-col gap-4 justify-center items-center mt-4">
                     <Btn
@@ -194,6 +202,7 @@ const isFormValid = computed(() => {
                         color="neutral"
                         size="md"
                         variant="link"
+                        tabindex="4"
                     >
                         <Route route='password.request'>
                             <i class="fa-solid fa-lock mr-2"></i>
@@ -205,6 +214,7 @@ const isFormValid = computed(() => {
                         type="submit"
                         :disabled="form.processing || !isFormValid"
                         color="primary"
+                        tabindex="5"
                     >
                         <i class="fa-solid fa-sign-in-alt mr-2"></i>
                         {{ form.processing ? 'Connexion...' : 'Se connecter' }}
@@ -216,6 +226,7 @@ const isFormValid = computed(() => {
                         color="primary"
                         size="sm"
                         variant="outline"
+                        tabindex="6"
                     >
                         <Route route='register'>
                             <i class="fa-solid fa-user-plus mr-2"></i>

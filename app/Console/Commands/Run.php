@@ -43,7 +43,7 @@ class Run extends Command
         {--migrate : Exécuter les migrations}
         {--dev : Lancer le serveur en mode optimisé}
         {--dev:watch : Lancer le serveur en mode watch}
-        {--clean : Nettoyage complet (clear:all, kill, update:base, optimise:all)}
+        {--regenerate : Nettoyage complet (clear:all, kill, update:base, optimise:all)}
         {--all : Faire tout (kill, clear, update, optimise, migrate, dev)}
     ';
 
@@ -98,10 +98,10 @@ class Run extends Command
         if ($this->option('reset:composer')) $actions[] = 'resetComposer';
 
         // 1. KILL
-        if ($this->option('kill') || $this->option('clean') || $this->option('all')) $actions[] = 'killServers';
+        if ($this->option('kill') || $this->option('regenerate') || $this->option('all')) $actions[] = 'killServers';
 
         // 2. CLEAR
-        if ($this->option('clear:all') || $this->option('clean') || $this->option('all')) {
+        if ($this->option('clear:all') || $this->option('regenerate') || $this->option('all')) {
             $actions = array_merge($actions, 
                     [
                         'clearCss',
@@ -143,7 +143,7 @@ class Run extends Command
                             'dumpAutoload',
                         ]
                     );
-        } elseif ($this->option('update:base') || $this->option('clean')) {
+        } elseif ($this->option('update:base') || $this->option('regenerate')) {
             $actions = array_merge($actions, 
                         [
                             'installPnpm',
@@ -166,7 +166,7 @@ class Run extends Command
         }
 
         // 4. OPTIMISE
-        if ($this->option('optimise:all') || $this->option('clean') || $this->option('all')) {
+        if ($this->option('optimise:all') || $this->option('regenerate') || $this->option('all')) {
             $actions = array_merge($actions, 
                         [
                             'optimiseIde',
@@ -179,7 +179,7 @@ class Run extends Command
         }
 
         // 5. MIGRATE
-        if ($this->option('migrate') || $this->option('update:all') || $this->option('update:base') || $this->option('clean') || $this->option('all')) $actions[] = 'runMigrate';
+        if ($this->option('migrate') || $this->option('update:all') || $this->option('update:base') || $this->option('regenerate') || $this->option('all')) $actions[] = 'runMigrate';
 
         // 6. DEV
         if ($this->option('dev') || $this->option('all')) $actions[] = 'runDev';

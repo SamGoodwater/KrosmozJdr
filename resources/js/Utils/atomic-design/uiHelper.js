@@ -57,13 +57,20 @@ export function getCommonProps({ exclude = [] } = {}) {
  * @returns {Object} - Attributs HTML/accessibilité
  */
 export function getCommonAttrs(props) {
-    return {
+    const attrs = {
         role: props.role || undefined,
         "aria-label": props.ariaLabel || undefined,
         tabindex: props.tabindex ?? undefined,
         disabled: props.disabled ?? undefined,
         id: props.id || undefined,
     };
+    
+    // Filtrer les attributs vides, null ou undefined
+    return Object.fromEntries(
+        Object.entries(attrs).filter(([key, value]) => 
+            value !== null && value !== undefined && value !== ''
+        )
+    );
 }
 
 /**

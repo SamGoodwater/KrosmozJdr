@@ -126,7 +126,6 @@ const atomClasses = computed(() =>
             props.square && "btn-square",
             props.circle && "btn-circle",
             props.active && "btn-active",
-            props.disabled && "btn-disabled",
         ].filter(Boolean),
         getCustomUtilityClasses(props),
         props.class,
@@ -229,6 +228,9 @@ const buttonBindings = computed(() => ({
         border: none;
         text-shadow: none;
         box-shadow: none;
+        cursor: pointer;
+        text-decoration: none;
+        
 
         // Size
         &-xs{ font-size: 0.75rem; }
@@ -240,7 +242,6 @@ const buttonBindings = computed(() => ({
         // Ghost
         &-link, &-ghost-custom {
             background-color: transparent;
-            text-decoration: none;
             margin: 0;
             padding: 0;
             height: auto;
@@ -423,6 +424,18 @@ const buttonBindings = computed(() => ({
                 background-position: 200% 200%;
                 backdrop-filter: blur(24px);
                 mix-blend-mode: overlay;
+            }
+        }
+
+        &-disabled, &[disabled] {
+            filter: grayscale(50%);
+            opacity: 0.7;
+            cursor: not-allowed;
+            pointer-events: none;
+            &:hover {
+                scale: 1;
+                box-shadow: none;
+                border: none;
             }
         }
     }

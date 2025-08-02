@@ -25,6 +25,7 @@ import ToggleSidebar from "@/Pages/Molecules/layout/ToggleSidebar.vue";
 import { useHeader } from "@/Composables/layout/useHeader";
 import { useSidebar } from "@/Composables/layout/useSidebar";
 import { useDevice } from "@/Composables/layout/useDevice";
+import ToggleHeader from "@/Pages/Molecules/layout/ToggleHeader.vue";
 
 // Centralisation des classes Tailwind pour le layout
 const ASIDE_WIDTH_CLASS = 'w-64'      // 16rem = 256px
@@ -99,17 +100,17 @@ const toggleClasses = computed(() => {
 });
 
 const headerToggleClasses = computed(() => {
-    const baseClasses = ['fixed top-6 z-50 max-sm:hidden'];
+    const baseClasses = ['fixed top-5 right-4 z-50 max-sm:hidden'];
     
     if (isDesktopMode.value) {
         if (isHeaderOpen.value) {
-            return [...baseClasses, 'right-4 opacity-50'];
+            return [...baseClasses, 'opacity-50'];
         } else {
-            return [...baseClasses, 'right-4 opacity-70'];
+            return [...baseClasses, 'opacity-70'];
         }
     } else {
         // Mobile/Tablette : toujours visible en haut à droite
-        return [...baseClasses, 'right-4'];
+        return [...baseClasses];
     }
 });
 
@@ -193,21 +194,7 @@ onUnmounted(() => {
         <ToggleSidebar :class="toggleClasses" data-toggle-sidebar />
 
         <!-- Toggle Header -->
-        <button 
-            v-if="!isMobile"
-            :class="headerToggleClasses"
-            @click="toggleHeader"
-            class="header-toggle-btn transition-all duration-300 ease-in-out hover:scale-110 focus:scale-95"
-            :aria-label="isHeaderOpen ? 'Masquer l\'entête' : 'Afficher l\'entête'"
-            data-toggle-header
-        >
-            <i 
-                :class="[
-                    'fa-solid transition-all duration-300 ease-in-out',
-                    isHeaderOpen ? 'fa-chevron-down' : 'fa-chevron-up'
-                ]" 
-            />
-        </button>
+        <ToggleHeader :class="headerToggleClasses" data-toggle-header />
 
         <!-- Overlay pour mobile/tablette (seulement quand Aside est ouvert) -->
         <div 

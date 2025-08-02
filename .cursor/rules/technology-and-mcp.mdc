@@ -1,0 +1,40 @@
+---
+name: technology-and-mcp
+description: >
+  Guide Cursor sur l’usage des MCP tools (browser‑tools, database, etc.) et sur la stack
+  (Laravel 12, PHP 8.4, Vue 3, Tailwind CSS, DaisyUI, Tiptap, esbuild/rollup),
+  plus bonnes pratiques frontend/backend.
+globs:
+  - "**/*.php"
+  - "**/*.js"
+  - "**/*.vue"
+alwaysApply: true
+---
+
+## 📦 Stack & Technologies Krosmoz-JDR
+
+- Backend : Laravel 12 (PHP 8.4), MySQL (krosmozDB), `.env` pour les secrets — ne jamais versionner les identifiants sensibles.
+- Frontend : Vue 3, SCSS, Tailwind CSS + DaisyUI, Tiptap, esbuild, rollup, vue‑i18n selon les conventions du projet.
+- Tests : PHPUnit pour Laravel, Vitest ou Jest pour le frontend, Cypress pour E2E.
+- CI/CD : pipelines GitHub/GitLab Actions avec lint, tests, build et déploiement.
+
+## 🛠 Utilisation des MCP Tools
+
+- Avant tout debug front‑end, **inviter Cursor à utiliser l’outil `browser-tools`** pour récupérer les logs console, réseau et DOM.
+- Pour les modifications backend, **utiliser un MCP tool base de données** (ex. MCP server Laravel) pour interroger le schéma ou accéder aux données directement.
+- Exemple de prompt :
+  > “Utilise `browser-tools` pour afficher les erreurs JavaScript de la page, puis propose une correction front‑end.”
+
+## ✅ Workflow recommandé
+
+- Tu peux écrire dans la console Cursor :  
+  > “Check les logs console via MCP.browser-tools avant toute correction React.”
+- L’IA doit automatiquement invoquer le tool `browser-tools`.
+- Si le tool n’est pas activé, demander à l’utilisateur de le démarrer via `.cursor/mcp.json`.
+
+## 📁 Références documentation
+
+- Pour structure, folder système, tests : consulter `docs/index.json` et `/docs/00-Project/TECHNOLOGIES.md`.
+- Bonnes pratiques front-end/backend et design système sont dans `docs/10-BestPractices/PROJECT_STRUCTURE.md`.
+
+---

@@ -86,11 +86,52 @@ const props = defineProps({
         type: Boolean,
         default: false,
     },
+    glass: {
+        type: Boolean,
+        default: true,
+    },
     // Responsive (ex: lg)
     responsive: {
         type: String,
         default: "",
     },
+});
+
+const contentClasses = computed(() => {
+    let classes = "tooltip-content";
+    if (props.glass) {
+        classes += " tooltip-glass";
+    }
+    switch (props.color) {
+        case "neutral":
+            classes += " color-neutral";
+            break;
+        case "primary":
+            classes += " color-primary";
+            break;
+        case "secondary":
+            classes += " color-secondary";
+            break;
+        case "accent":
+            classes += " color-accent";
+            break;
+        case "info":
+            classes += " color-info";
+            break;
+        case "success":
+            classes += " color-success";
+            break;
+        case "warning":
+            classes += " color-warning";
+            break;
+        case "error":
+            classes += " color-error";
+            break;
+        default:
+            classes += " color-neutral";
+            break;
+    }
+    return classes;
 });
 
 const atomClasses = computed(() =>
@@ -117,6 +158,7 @@ const atomClasses = computed(() =>
             props.color === "warning" && "tooltip-warning",
             props.color === "error" && "tooltip-error", 
             props.open && "tooltip-open",
+            props.glass && "tooltip-glass-tip",
         ].filter(Boolean),
         getCustomUtilityClasses(props),
         props.class,
@@ -133,16 +175,31 @@ const attrs = computed(() => getCommonAttrs(props));
     >
         <slot />
         <template v-if="$slots.content">
-            <div class="tooltip-content" role="tooltip">
+            <div :class="contentClasses" role="tooltip">
                 <slot name="content" />
             </div>
         </template>
     </div>
 </template>
 
-<style scoped>
-.tooltip-content {
-    position: relative;
-    z-index: 1;
+<style scoped lang="scss">
+.tooltip-content, [data-tip]::before {
+    z-index: 1000 !important;
+    backdrop-filter: blur(24px);
+}
+.tooltip-glass {
+    background-color: color-mix(in oklch, var(--color) 5%, transparent);
+    border: 1px solid color-mix(in oklch, var(--color) 15%, transparent);
+    box-shadow: 0 0 10px 0 color-mix(in oklch, var(--color) 20%, transparent) inset,
+                1px 2px 3px 0 rgba(0, 0, 0, 0.1) inset;
+}
+
+// Appliquer le style glass aussi au contenu généré par data-tip (tooltip natif DaisyUI)
+[data-tip][class*="tooltip-glass-tip"]::before,
+[data-tip][class~="tooltip-glass-tip"]::before {
+    background-color: color-mix(in oklch, var(--color) 20%, transparent) !important;
+    border: 1px solid color-mix(in oklch, var(--color) 30%, transparent) !important;
+    box-shadow: 0 0 30px 5px color-mix(in oklch, var(--color) 20%, transparent) inset,
+                1px 2px 3px 0 rgba(0, 0, 0, 0.1) inset !important;
 }
 </style>

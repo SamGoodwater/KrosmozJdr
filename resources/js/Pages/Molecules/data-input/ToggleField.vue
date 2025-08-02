@@ -1,387 +1,116 @@
 <script setup>
 /**
  * ToggleField Molecule (DaisyUI, Atomic Design)
- *
+ * 
  * @description
- * Molecule pour switch toggle complet, orchestrant ToggleCore et InputLabel.
- * - API simplifiée : prop `label` peut être une string (floating par défaut) ou un objet avec positions
- * - 7 positions de labels : top, bottom, start, end, inStart, inEnd, floating
- * - Slots pour chaque position pour du contenu complexe
- * - Gestion automatique des combinaisons interdites (floating vs inStart/inEnd)
- * - Styles DaisyUI, accessibilité, édition réactive, etc.
- * - Support des utilitaires custom (shadow, backdrop, opacity, rounded)
- * - Validation intégrée avec états visuels et messages d'erreur
- * - Intégration automatique avec le système de notifications
- * - Support de la prop `style` (objet) et `variant` (string)
- * - Fonctionnalités spécifiques aux toggles : on/off states, icônes, animations
- *
- * @see https://daisyui.com/components/toggle/
- * @version DaisyUI v5.x
- *
+ * Molecule pour toggle/switch complet, utilisant le système unifié useInputField.
+ * 
  * @example
- * // Label simple (floating par défaut)
- * <ToggleField label="Activer les notifications" v-model="notifications" />
+ * // Label simple
+ * <ToggleField label="Notifications" v-model="notifications" />
  * 
- * // Label simple avec position par défaut différente
- * <ToggleField label="Mode sombre" v-model="darkMode" defaultLabelPosition="start" />
- * 
- * // Label avec positions spécifiques
- * <ToggleField :label="{ start: 'Fonctionnalité', end: 'avancée' }" v-model="advanced" />
- * 
- * // Label complexe avec slots
- * <ToggleField :label="{ start: 'Options' }" v-model="enabled">
- *   <template #labelStart>
- *     <span class="flex items-center gap-2">
- *       <i class="fa-solid fa-toggle-on"></i>
- *       Activer les options
- *     </span>
- *   </template>
- * </ToggleField>
- * 
- * // Avec actions automatiques (reset dans overEnd si useFieldComposable)
- * <ToggleField label="Préférences" v-model="preferences" useFieldComposable />
- * 
- * // Avec actions personnalisées dans les slots overStart/overEnd
- * <ToggleField label="Permissions" v-model="permissions">
- *   <template #overStart>
- *     <Btn variant="ghost" size="xs">
- *       <i class="fa-solid fa-lock"></i>
- *     </Btn>
- *   </template>
- *   <template #overEnd>
- *     <Btn variant="ghost" size="xs" @click="resetToDefault">
- *       <i class="fa-solid fa-undo"></i>
- *     </Btn>
- *   </template>
- * </ToggleField>
- *
- * // Validation locale uniquement
+ * // Avec validation
  * <ToggleField 
- *   label="Conditions" 
- *   v-model="accepted"
- *   :validation="{ state: 'error', message: 'Vous devez accepter les conditions' }"
+ *   label="Notifications" 
+ *   v-model="notifications"
+ *   :validation="{ state: 'error', message: 'Veuillez activer les notifications' }"
  * />
- *
- * // Validation avec notification
+ * 
+ * // Avec helper
  * <ToggleField 
- *   label="Newsletter" 
- *   v-model="newsletter"
- *   :validation="{ 
- *     state: 'success', 
- *     message: 'Inscription réussie !',
- *     showNotification: true 
- *   }"
+ *   label="Mode sombre" 
+ *   v-model="darkMode"
+ *   helper="Activez le thème sombre pour une meilleure expérience"
  * />
- *
- * // Avec objet style
- * <ToggleField 
- *   label="Option" 
- *   v-model="option"
- *   :inputStyle="{ variant: 'glass', color: 'primary', size: 'md', animation: 'pulse' }"
- * />
- *
- * @props {String|Object} label - Label simple (string) ou objet avec positions
- * @props {String} defaultLabelPosition - Position par défaut pour les strings ('floating', 'top', 'bottom', 'start', 'end', 'inStart', 'inEnd')
- * @props {Object|String|Boolean} validation - Configuration de validation (nouvelle API)
- * @props {String} helper, errorMessage
- * @props {String} color, size, variant
- * @props {String|Object} inputStyle - Style d'input (string ou objet avec variant, size, color, animation)
- * @props {String|Boolean} animation - Animation Tailwind ou booléen
- * @props {Boolean} useFieldComposable, showPasswordToggle
- * @props {String} shadow, backdrop, opacity, rounded - utilitaires custom
- * @props {String} onLabel - Label pour l'état activé
- * @props {String} offLabel - Label pour l'état désactivé
- * @props {String} placeholder - Placeholder du toggle
- * @slot labelTop, labelBottom, labelStart, labelEnd, labelInStart, labelInEnd, labelFloating - Slots pour chaque position de label
- * @slot overStart, overEnd - Slots pour éléments positionnés en absolute (reset, etc.)
- * @slot helper, validator - Slots pour contenu d'aide et validation
- * @slot iconOn, iconOff - Slots pour icônes on/off
- * @slot default - toggle natif (optionnel)
  */
-// ------------------------------------------
-// 📦 Import des outils
-// ------------------------------------------
-import { computed, ref, useSlots, inject, watch, useAttrs } from 'vue';
-import ToggleCore from '@/Pages/Atoms/data-input/ToggleCore.vue';
-import InputLabel from '@/Pages/Atoms/data-input/InputLabel.vue';
-import Validator from '@/Pages/Atoms/data-input/Validator.vue';
-import Helper from '@/Pages/Atoms/data-input/Helper.vue';
-import Btn from '@/Pages/Atoms/action/Btn.vue';
-import useInputActions from '@/Composables/form/useInputActions';
-import { 
-    getCustomUtilityClasses,
-    mergeClasses 
-} from '@/Utils/atomic-design/uiHelper';
-import { 
-    getInputPropsDefinition, 
-} from '@/Utils/atomic-design/inputHelper';
-import { 
-    processLabelConfig 
-} from '@/Utils/atomic-design/labelManager';
-import { 
-    processValidation
-} from '@/Utils/atomic-design/validationManager';
-import { 
-    getInputStyleProperties
-} from '@/Composables/form/useInputStyle';
+import { useSlots, useAttrs } from 'vue'
+import ToggleCore from '@/Pages/Atoms/data-input/ToggleCore.vue'
+import FieldTemplate from '@/Pages/Molecules/data-input/FieldTemplate.vue'
+import useInputField from '@/Composables/form/useInputField'
+import { getInputPropsDefinition } from '@/Utils/atomic-design/inputHelper'
 
 // ------------------------------------------
-// 🔧 Définition des props
+// 🔧 Définition des props et des events
 // ------------------------------------------
-const props = defineProps(getInputPropsDefinition('toggle', 'field'));
-
-const $attrs = useAttrs();
-const slots = useSlots();
-const notificationStore = inject('notificationStore', null);
-const labelConfig = computed(() => processLabelConfig(props.label, props.defaultLabelPosition));
+const props = defineProps(getInputPropsDefinition('toggle', 'field'))
+const emit = defineEmits(['update:modelValue'])
+const $attrs = useAttrs()
 
 // ------------------------------------------
-// ⚙️ Utilisation du composable universel pour les actions contextuelles
+// 🎯 Utilisation du composable unifié
 // ------------------------------------------
 const {
+  // V-model et actions
   currentValue,
   actionsToDisplay,
-  inputProps,
+  inputRef,
   focus,
   isModified,
   isReadonly,
-  reset,
-  back,
-  clear,
-  copy,
-  toggleEdit,
-  inputRef,
-} = useInputActions({
+  showPassword,
+  
+  // Attributs et événements
+  inputAttrs,
+  listeners,
+  
+  // Labels
+  labelConfig,
+  
+  // Validation
+  validationState,
+  validationMessage,
+  hasInteracted,
+  validate,
+  setInteracted,
+  resetValidation,
+  isValid,
+  hasError,
+  hasWarning,
+  hasSuccess,
+  
+  // Style
+  styleProperties,
+  containerClasses,
+  
+  // Helpers
+  handleAction
+} = useInputField({
   modelValue: props.modelValue,
-  type: 'toggle', // Type spécifique pour les toggles
-  actions: props.actions,
-  readonly: props.readonly,
-  debounce: props.debounceTime,
-  autofocus: props.autofocus,
-});
-
-// ------------------------------------------
-// 🔄 v-model : émettre update:modelValue quand la valeur change
-// ------------------------------------------
-const emit = defineEmits(['update:modelValue']);
-watch(currentValue, (val) => {
-  emit('update:modelValue', val);
-});
-
-// ------------------------------------------
-// ✅ Validation et autres logiques existantes
-// ------------------------------------------
-const notificationStoreInjected = notificationStore;
-const processedValidation = computed(() => {
-    if (!props.validation) {
-        return null;
-    }
-    return processValidation(props.validation, notificationStoreInjected);
-});
-
-const hasValidationState = computed(() => {
-    return processedValidation.value !== null || slots.validator;
-});
-
-const toggleFieldId = computed(
-    () => props.id || `togglefield-${Math.random().toString(36).substr(2, 9)}`,
-);
-
-// Configuration de style pour transmission aux labels et helpers
-const styleProperties = computed(() => 
-    getInputStyleProperties('toggle', {
-        variant: props.variant,
-        color: props.color,
-        size: props.size,
-        animation: props.animation,
-              ...(typeof props.inputStyle === 'object' && props.inputStyle !== null ? props.inputStyle : {}),
-      ...(typeof props.inputStyle === 'string' ? { variant: props.inputStyle } : {})
-    })
-);
-
-const containerClasses = computed(() => 
-    mergeClasses(
-        'form-control w-full',
-        getCustomUtilityClasses(props)
-    )
-);
-
-function getValidatorState() {
-    if (!processedValidation.value) return '';
-    return processedValidation.value.state;
-}
-
-function getValidatorMessage() {
-    if (!processedValidation.value) return '';
-    return processedValidation.value.message;
-}
-
-// --- Fonctionnalités spécifiques aux toggles ---
-
-// Vérification si le toggle est activé
-const isEnabled = computed(() => {
-    return !!currentValue.value;
-});
-
-// Récupération du label de l'état actuel
-const currentStateLabel = computed(() => {
-    if (isEnabled.value) {
-        return props.onLabel || 'Activé';
-    } else {
-        return props.offLabel || 'Désactivé';
-    }
-});
-
-// Icône de l'état actuel
-const currentStateIcon = computed(() => {
-    if (isEnabled.value) {
-        return 'fa-solid fa-toggle-on';
-    } else {
-        return 'fa-solid fa-toggle-off';
-    }
-});
-
-// Couleur de l'état actuel
-const currentStateColor = computed(() => {
-    if (isEnabled.value) {
-        return 'success';
-    } else {
-        return 'neutral';
-    }
-});
-
-// Classe CSS pour l'état actuel
-const currentStateClass = computed(() => {
-    if (isEnabled.value) {
-        return 'text-success';
-    } else {
-        return 'text-neutral';
-    }
-});
+  type: 'toggle',
+  mode: 'field',
+  props,
+  attrs: $attrs,
+  emit
+})
 </script>
 
 <template>
-    <div :class="containerClasses">
-        <!-- Label top -->
-        <InputLabel
-            v-if="labelConfig.top || slots.labelTop"
-            :value="labelConfig.top"
-            :for="toggleFieldId"
-            :color="styleProperties.labelColor"
-            :size="styleProperties.labelSize"
-        >
-            <slot name="labelTop" />
-        </InputLabel>
-        
-        <div class="relative flex items-center w-full">
-            <!-- Label start -->
-            <InputLabel
-                v-if="labelConfig.start || slots.labelStart"
-                :value="labelConfig.start"
-                :for="toggleFieldId"
-                :color="styleProperties.labelColor"
-                :size="styleProperties.labelSize"
-                class="mr-2"
-            >
-                <slot name="labelStart" />
-            </InputLabel>
-            
-            <!-- Container relatif pour le toggle et les éléments over -->
-            <div class="relative flex-1">
-                <!-- Toggle principal -->
-                <ToggleCore 
-                    v-bind="inputProps"
-                    v-model="currentValue"
-                    :aria-invalid="processedValidation?.state === 'error'"
-                >
-                    <template v-if="slots.default" #default>
-                        <slot />
-                    </template>
-                </ToggleCore>
-
-                <!-- Slot overStart (positionné en absolute à gauche) -->
-                <div v-if="slots.overStart" class="absolute left-2 top-1/2 transform -translate-y-1/2 z-10 flex gap-1">
-                    <slot name="overStart" />
-                </div>
-                <!-- Slot overEnd (positionné en absolute à droite) + actions contextuelles -->
-                <div v-if="slots.overEnd || actionsToDisplay.length" class="absolute right-2 top-1/2 transform -translate-y-1/2 z-10 flex items-center gap-1">
-                    <slot name="overEnd" />
-                    <Btn
-                        v-for="action in actionsToDisplay"
-                        :key="action.key"
-                        :variant="action.variant"
-                        :color="action.color"
-                        :size="action.size"
-                        circle
-                        :aria-label="action.ariaLabel"
-                        :title="action.tooltip"
-                        :disabled="action.disabled"
-                        @click.stop="action.onClick"
-                    >
-                        <i :class="action.icon" class="text-sm"></i>
-                    </Btn>
-                </div>
-            </div>
-
-            <!-- Label end -->
-            <InputLabel
-                v-if="labelConfig.end || slots.labelEnd"
-                :value="labelConfig.end"
-                :for="toggleFieldId"
-                :color="styleProperties.labelColor"
-                :size="styleProperties.labelSize"
-                class="ml-2"
-            >
-                <slot name="labelEnd" />
-            </InputLabel>
-        </div>
-        
-        <!-- Label bottom -->
-        <InputLabel
-            v-if="labelConfig.bottom || slots.labelBottom"
-            :value="labelConfig.bottom"
-            :for="toggleFieldId"
-            :color="styleProperties.labelColor"
-            :size="styleProperties.labelSize"
-            class="mt-1"
-        >
-            <slot name="labelBottom" />
-        </InputLabel>
-        
-        <!-- Affichage de l'état (optionnel) -->
-        <div v-if="isEnabled !== null" class="mt-1 text-sm text-base-content/70">
-            <span class="font-medium">État :</span> 
-            <span :class="currentStateClass" class="flex items-center gap-1">
-                <i :class="currentStateIcon"></i>
-                {{ currentStateLabel }}
-            </span>
-            <span :class="`ml-2 badge badge-${currentStateColor} badge-xs`">
-                {{ isEnabled ? 'ON' : 'OFF' }}
-            </span>
-        </div>
-        
-        <!-- Validator -->
-        <div v-if="hasValidationState" class="mt-1">
-            <slot name="validator">
-                <Validator
-                    v-if="processedValidation"
-                    :state="getValidatorState()"
-                    :message="getValidatorMessage()"
-                />
-            </slot>
-        </div>
-        
-        <!-- Helper -->
-        <div v-if="helper || slots.helper" class="mt-1">
-            <slot name="helper">
-                <Helper 
-                    :helper="helper" 
-                    :color="styleProperties.helperColor" 
-                    :size="styleProperties.helperSize" 
-                />
-            </slot>
-        </div>
-    </div>
+  <FieldTemplate
+    :container-classes="containerClasses"
+    :label-config="labelConfig"
+    :input-attrs="inputAttrs"
+    :listeners="listeners"
+    :input-ref="inputRef"
+    :actions-to-display="actionsToDisplay"
+    :style-properties="styleProperties"
+    :validation-state="validationState"
+    :validation-message="validationMessage"
+    :helper="props.helper"
+  >
+    <!-- Slot core spécifique pour ToggleCore -->
+    <template #core="{ inputAttrs, listeners, inputRef }">
+      <ToggleCore
+        v-bind="inputAttrs"
+        v-on="listeners"
+        ref="inputRef"
+      />
+    </template>
+    
+    <!-- Slots personnalisés -->
+    <template #helper>
+      <slot name="helper" />
+    </template>
+  </FieldTemplate>
 </template>
 
 <style scoped lang="scss">

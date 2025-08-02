@@ -1,0 +1,133 @@
+<template>
+  <div :class="containerClasses">
+    <!-- 🔼 Label au-dessus -->
+    <InputLabel
+      v-if="labelConfig.top || $slots.labelTop"
+      :value="labelConfig.top"
+      :for="inputAttrs.id"
+      :color="styleProperties.labelColor"
+      :size="styleProperties.labelSize"
+    >
+      <slot name="labelTop" />
+    </InputLabel>
+
+    <div class="relative flex items-center w-full">
+      <!-- ⬅️ Label à gauche -->
+      <InputLabel
+        v-if="labelConfig.start || $slots.labelStart"
+        :value="labelConfig.start"
+        :for="inputAttrs.id"
+        :color="styleProperties.labelColor"
+        :size="styleProperties.labelSize"
+        class="mr-2"
+      >
+        <slot name="labelStart" />
+      </InputLabel>
+
+      <!-- 🧱 Bloc principal : input + actions -->
+      <div class="relative flex-1">
+        <!-- Slot pour le composant Core spécifique -->
+        <slot 
+          name="core" 
+          :input-attrs="inputAttrs"
+          :listeners="listeners"
+          :input-ref="inputRef"
+        />
+
+        <!-- 🎯 Actions overStart -->
+        <div
+          v-if="$slots.overStart"
+          class="absolute left-2 top-1/2 transform -translate-y-1/2 z-10 flex gap-1"
+        >
+          <slot name="overStart" />
+        </div>
+
+        <!-- 🎯 Actions overEnd + contextuelles -->
+        <div
+          v-if="$slots.overEnd || actionsToDisplay.length"
+          class="absolute right-2 top-1/2 transform -translate-y-1/2 z-10 flex items-center gap-1"
+        >
+          <slot name="overEnd" />
+          <Btn
+            v-for="action in actionsToDisplay"
+            :key="action.key"
+            :variant="action.variant"
+            :color="action.color"
+            :size="action.size"
+            circle
+            :aria-label="action.ariaLabel"
+            :title="action.tooltip"
+            :disabled="action.disabled"
+            tabindex="0"
+            @click.stop="action.onClick"
+          >
+            <i :class="action.icon" class="text-sm"></i>
+          </Btn>
+        </div>
+      </div>
+
+      <!-- ➡️ Label à droite -->
+      <InputLabel
+        v-if="labelConfig.end || $slots.labelEnd"
+        :value="labelConfig.end"
+        :for="inputAttrs.id"
+        :color="styleProperties.labelColor"
+        :size="styleProperties.labelSize"
+        class="ml-2"
+      >
+        <slot name="labelEnd" />
+      </InputLabel>
+    </div>
+
+    <!-- 🔽 Label en-dessous -->
+    <InputLabel
+      v-if="labelConfig.bottom || $slots.labelBottom"
+      :value="labelConfig.bottom"
+      :for="inputAttrs.id"
+      :color="styleProperties.labelColor"
+      :size="styleProperties.labelSize"
+      class="mt-1"
+    >
+      <slot name="labelBottom" />
+    </InputLabel>
+
+    <!-- ⚠️ Validation -->
+    <div v-if="validationState && validationState.trim()" class="mt-1">
+      <slot name="validator">
+        <Validator
+          :state="validationState"
+          :message="validationMessage"
+          :color="styleProperties.validationColor"
+        />
+      </slot>
+    </div>
+
+    <!-- 💡 Helper -->
+    <div v-if="helper || $slots.helper" class="mt-1">
+      <slot name="helper">
+        <Helper :value="helper" :color="styleProperties.helperColor" />
+      </slot>
+    </div>
+  </div>
+</template>
+
+<script setup>
+import InputLabel from '@/Pages/Atoms/data-input/InputLabel.vue'
+import Validator from '@/Pages/Atoms/data-input/Validator.vue'
+import Helper from '@/Pages/Atoms/data-input/Helper.vue'
+import Btn from '@/Pages/Atoms/action/Btn.vue'
+
+defineProps({
+  // API du composable useInputField
+  containerClasses: { type: String, required: true },
+  labelConfig: { type: Object, required: true },
+  inputAttrs: { type: Object, required: true },
+  listeners: { type: Object, required: true },
+  inputRef: { type: [Object, null], default: null }, // Accept ref or null
+  actionsToDisplay: { type: Array, required: true },
+  styleProperties: { type: Object, required: true },
+  validationState: { type: String, default: '' }, // Accept String with empty default
+  validationMessage: { type: String, default: '' }, // Accept String with empty default
+  helper: { type: [String, Object], default: '' }
+})
+</script> 

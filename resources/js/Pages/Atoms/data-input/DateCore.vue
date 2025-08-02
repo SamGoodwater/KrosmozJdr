@@ -401,14 +401,6 @@ const dateRef = ref(null);
     }
     
     // Animations
-    &.hover-scale-105:hover {
-        transform: scale(1.05);
-    }
-    
-    &.focus-scale-105:focus {
-        transform: scale(1.05);
-    }
-    
     &.transition-transform {
         transition: transform 0.2s ease-in-out;
     }

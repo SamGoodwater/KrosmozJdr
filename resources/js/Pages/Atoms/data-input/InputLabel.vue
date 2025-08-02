@@ -77,7 +77,7 @@ const attrs = computed(() => getCommonAttrs(props));
 </script>
 
 <template>
-    <label :for="props.for" :class="atomClasses" v-bind="attrs" v-on="$attrs">
+    <label :for="props.for" :class="atomClasses" v-bind="attrs" tabindex="-1" v-on="$attrs">
         <slot>{{ props.value }}</slot>
     </label>
 </template>

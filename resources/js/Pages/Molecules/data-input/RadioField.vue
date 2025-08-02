@@ -1,400 +1,137 @@
 <script setup>
 /**
  * RadioField Molecule (DaisyUI, Atomic Design)
- *
+ * 
  * @description
- * Molecule pour groupe de boutons radio complet, orchestrant RadioCore et InputLabel.
- * - API simplifiée : prop `label` peut être une string (floating par défaut) ou un objet avec positions
- * - 7 positions de labels : top, bottom, start, end, inStart, inEnd, floating
- * - Slots pour chaque position pour du contenu complexe
- * - Gestion automatique des combinaisons interdites (floating vs inStart/inEnd)
- * - Styles DaisyUI, accessibilité, édition réactive, etc.
- * - Support des utilitaires custom (shadow, backdrop, opacity, rounded)
- * - Validation intégrée avec états visuels et messages d'erreur
- * - Intégration automatique avec le système de notifications
- * - Support de la prop `style` (objet) et `variant` (string)
- * - Fonctionnalités spécifiques aux radios : groupe, sélection exclusive, options
- *
- * @see https://daisyui.com/components/radio/
- * @version DaisyUI v5.x
- *
+ * Molecule pour radio button complet, utilisant le système unifié useInputField.
+ * 
  * @example
- * // Label simple (floating par défaut)
- * <RadioField label="Genre" v-model="gender" :options="genderOptions" />
+ * // Label simple
+ * <RadioField label="Genre" v-model="gender" :options="['Homme', 'Femme', 'Autre']" />
  * 
- * // Label simple avec position par défaut différente
- * <RadioField label="Thème" v-model="theme" :options="themeOptions" defaultLabelPosition="start" />
- * 
- * // Label avec positions spécifiques
- * <RadioField :label="{ start: 'Préférence', end: 'de contact' }" v-model="contact" :options="contactOptions" />
- * 
- * // Label complexe avec slots
- * <RadioField :label="{ start: 'Options' }" v-model="selected" :options="options">
- *   <template #labelStart>
- *     <span class="flex items-center gap-2">
- *       <i class="fa-solid fa-circle-dot"></i>
- *       Choisir une option
- *     </span>
- *   </template>
- * </RadioField>
- * 
- * // Avec actions automatiques (reset dans overEnd si useFieldComposable)
- * <RadioField label="Préférences" v-model="preferences" :options="prefOptions" useFieldComposable />
- * 
- * // Avec actions personnalisées dans les slots overStart/overEnd
- * <RadioField label="Permissions" v-model="permissions" :options="permOptions">
- *   <template #overStart>
- *     <Btn variant="ghost" size="xs">
- *       <i class="fa-solid fa-lock"></i>
- *     </Btn>
- *   </template>
- *   <template #overEnd>
- *     <Btn variant="ghost" size="xs" @click="selectDefault">
- *       <i class="fa-solid fa-undo"></i>
- *     </Btn>
- *   </template>
- * </RadioField>
- *
- * // Validation locale uniquement
+ * // Avec validation
  * <RadioField 
  *   label="Genre" 
  *   v-model="gender"
  *   :validation="{ state: 'error', message: 'Veuillez sélectionner un genre' }"
  * />
- *
- * // Validation avec notification
+ * 
+ * // Avec options complexes
  * <RadioField 
- *   label="Thème" 
- *   v-model="theme"
- *   :validation="{ 
- *     state: 'success', 
- *     message: 'Thème appliqué !',
- *     showNotification: true 
- *   }"
+ *   label="Préférence" 
+ *   v-model="preference"
+ *   :options="[
+ *     { value: 'light', label: 'Thème clair' },
+ *     { value: 'dark', label: 'Thème sombre' }
+ *   ]"
  * />
- *
- * // Avec objet style
- * <RadioField 
- *   label="Option" 
- *   v-model="option"
- *   :inputStyle="{ variant: 'glass', color: 'primary', size: 'md', animation: 'pulse' }"
- * />
- *
- * @props {String|Object} label - Label simple (string) ou objet avec positions
- * @props {String} defaultLabelPosition - Position par défaut pour les strings ('floating', 'top', 'bottom', 'start', 'end', 'inStart', 'inEnd')
- * @props {Object|String|Boolean} validation - Configuration de validation (nouvelle API)
- * @props {String} helper, errorMessage
- * @props {String} color, size, variant
- * @props {String|Object} inputStyle - Style d'input (string ou objet avec variant, size, color, animation)
- * @props {String|Boolean} animation - Animation Tailwind ou booléen
- * @props {Boolean} useFieldComposable, showPasswordToggle
- * @props {String} shadow, backdrop, opacity, rounded - utilitaires custom
- * @props {Array} options - Options du radio (array de strings ou objets {value, label, disabled})
- * @props {String} name - Nom du groupe radio (généré automatiquement si non fourni)
- * @props {String} placeholder - Placeholder du radio
- * @slot labelTop, labelBottom, labelStart, labelEnd, labelInStart, labelInEnd, labelFloating - Slots pour chaque position de label
- * @slot overStart, overEnd - Slots pour éléments positionnés en absolute (reset, etc.)
- * @slot helper, validator - Slots pour contenu d'aide et validation
- * @slot default - radio natif (optionnel)
  */
-// ------------------------------------------
-// 📦 Import des outils
-// ------------------------------------------
-import { computed, ref, useSlots, inject, watch, useAttrs } from 'vue';
-import RadioCore from '@/Pages/Atoms/data-input/RadioCore.vue';
-import InputLabel from '@/Pages/Atoms/data-input/InputLabel.vue';
-import Validator from '@/Pages/Atoms/data-input/Validator.vue';
-import Helper from '@/Pages/Atoms/data-input/Helper.vue';
-import Btn from '@/Pages/Atoms/action/Btn.vue';
-import useInputActions from '@/Composables/form/useInputActions';
-import { 
-    getCustomUtilityClasses,
-    mergeClasses 
-} from '@/Utils/atomic-design/uiHelper';
-import { 
-    getInputPropsDefinition, 
-} from '@/Utils/atomic-design/inputHelper';
-import { 
-    processLabelConfig 
-} from '@/Utils/atomic-design/labelManager';
-import { 
-    processValidation
-} from '@/Utils/atomic-design/validationManager';
-import { 
-    getInputStyleProperties
-} from '@/Composables/form/useInputStyle';
+import { useSlots, useAttrs } from 'vue'
+import RadioCore from '@/Pages/Atoms/data-input/RadioCore.vue'
+import FieldTemplate from '@/Pages/Molecules/data-input/FieldTemplate.vue'
+import useInputField from '@/Composables/form/useInputField'
+import { getInputPropsDefinition } from '@/Utils/atomic-design/inputHelper'
 
 // ------------------------------------------
-// 🔧 Définition des props
+// 🔧 Définition des props et des events
 // ------------------------------------------
-const props = defineProps(getInputPropsDefinition('radio', 'field'));
-
-const $attrs = useAttrs();
-const slots = useSlots();
-const notificationStore = inject('notificationStore', null);
-const labelConfig = computed(() => processLabelConfig(props.label, props.defaultLabelPosition));
+const props = defineProps(getInputPropsDefinition('radio', 'field'))
+const emit = defineEmits(['update:modelValue'])
+const $attrs = useAttrs()
 
 // ------------------------------------------
-// ⚙️ Utilisation du composable universel pour les actions contextuelles
+// 🎯 Utilisation du composable unifié
 // ------------------------------------------
 const {
+  // V-model et actions
   currentValue,
   actionsToDisplay,
-  inputProps,
+  inputRef,
   focus,
   isModified,
   isReadonly,
-  reset,
-  back,
-  clear,
-  copy,
-  toggleEdit,
-  inputRef,
-} = useInputActions({
+  showPassword,
+  
+  // Attributs et événements
+  inputAttrs,
+  listeners,
+  
+  // Labels
+  labelConfig,
+  
+  // Validation
+  validationState,
+  validationMessage,
+  hasInteracted,
+  validate,
+  setInteracted,
+  resetValidation,
+  isValid,
+  hasError,
+  hasWarning,
+  hasSuccess,
+  
+  // Style
+  styleProperties,
+  containerClasses,
+  
+  // Helpers
+  handleAction
+} = useInputField({
   modelValue: props.modelValue,
-  type: 'radio', // Type spécifique pour les radios
-  actions: props.actions,
-  readonly: props.readonly,
-  debounce: props.debounceTime,
-  autofocus: props.autofocus,
-});
-
-// ------------------------------------------
-// 🔄 v-model : émettre update:modelValue quand la valeur change
-// ------------------------------------------
-const emit = defineEmits(['update:modelValue']);
-watch(currentValue, (val) => {
-  emit('update:modelValue', val);
-});
-
-// ------------------------------------------
-// ✅ Validation et autres logiques existantes
-// ------------------------------------------
-const notificationStoreInjected = notificationStore;
-const processedValidation = computed(() => {
-    if (!props.validation) {
-        return null;
-    }
-    return processValidation(props.validation, notificationStoreInjected);
-});
-
-const hasValidationState = computed(() => {
-    return processedValidation.value !== null || slots.validator;
-});
-
-const radioFieldId = computed(
-    () => props.id || `radiofield-${Math.random().toString(36).substr(2, 9)}`,
-);
-
-// Nom du groupe radio (généré automatiquement si non fourni)
-const radioGroupName = computed(() => 
-    props.name || `radio-group-${Math.random().toString(36).substr(2, 9)}`
-);
-
-// Configuration de style pour transmission aux labels et helpers
-const styleProperties = computed(() => 
-    getInputStyleProperties('radio', {
-        variant: props.variant,
-        color: props.color,
-        size: props.size,
-        animation: props.animation,
-              ...(typeof props.inputStyle === 'object' && props.inputStyle !== null ? props.inputStyle : {}),
-      ...(typeof props.inputStyle === 'string' ? { variant: props.inputStyle } : {})
-    })
-);
-
-const containerClasses = computed(() => 
-    mergeClasses(
-        'form-control w-full',
-        getCustomUtilityClasses(props)
-    )
-);
-
-function getValidatorState() {
-    if (!processedValidation.value) return '';
-    return processedValidation.value.state;
-}
-
-function getValidatorMessage() {
-    if (!processedValidation.value) return '';
-    return processedValidation.value.message;
-}
-
-// --- Fonctionnalités spécifiques aux radios ---
-
-// Traitement des options pour l'affichage
-const processedOptions = computed(() => {
-    if (!props.options || !Array.isArray(props.options)) return [];
-    
-    return props.options.map(option => {
-        if (typeof option === 'string') {
-            return { value: option, label: option, disabled: false };
-        } else if (typeof option === 'object' && option !== null) {
-            return {
-                value: option.value ?? option,
-                label: option.label ?? option.value ?? option,
-                disabled: option.disabled ?? false
-            };
-        }
-        return { value: option, label: String(option), disabled: false };
-    });
-});
-
-// Vérification si une option est sélectionnée
-const hasSelection = computed(() => {
-    return !!currentValue.value;
-});
-
-// Récupération du label de l'option sélectionnée
-const selectedOptionLabel = computed(() => {
-    if (!hasSelection.value) return props.placeholder || 'Non sélectionné';
-    
-    const option = processedOptions.value.find(opt => opt.value === currentValue.value);
-    return option ? option.label : currentValue.value;
-});
-
-// Nombre total d'options
-const totalOptions = computed(() => processedOptions.value.length);
-
-// Nombre d'options désactivées
-const disabledOptions = computed(() => 
-    processedOptions.value.filter(opt => opt.disabled).length
-);
-
-// Nombre d'options disponibles
-const availableOptions = computed(() => 
-    totalOptions.value - disabledOptions.value
-);
+  type: 'radio',
+  mode: 'field',
+  props,
+  attrs: $attrs,
+  emit
+})
 </script>
 
 <template>
-    <div :class="containerClasses">
-        <!-- Label top -->
-        <InputLabel
-            v-if="labelConfig.top || slots.labelTop"
-            :value="labelConfig.top"
-            :for="radioFieldId"
-            :color="styleProperties.labelColor"
-            :size="styleProperties.labelSize"
-        >
-            <slot name="labelTop" />
-        </InputLabel>
-        
-        <div class="relative flex items-center w-full">
-            <!-- Label start -->
-            <InputLabel
-                v-if="labelConfig.start || slots.labelStart"
-                :value="labelConfig.start"
-                :for="radioFieldId"
-                :color="styleProperties.labelColor"
-                :size="styleProperties.labelSize"
-                class="mr-2"
-            >
-                <slot name="labelStart" />
-            </InputLabel>
-            
-            <!-- Container relatif pour les radios et les éléments over -->
-            <div class="relative flex-1">
-                <!-- Groupe de radios -->
-                <div class="flex flex-wrap gap-2">
-                    <RadioCore 
-                        v-for="option in processedOptions"
-                        :key="option.value"
-                        v-bind="inputProps"
-                        :value="option.value"
-                        :name="radioGroupName"
-                        :id="`${radioFieldId}-${option.value}`"
-                        :aria-label="option.label"
-                        :aria-invalid="processedValidation?.state === 'error'"
-                    >
-                        <template v-if="slots.default" #default>
-                            <slot />
-                        </template>
-                    </RadioCore>
-                </div>
-
-                <!-- Slot overStart (positionné en absolute à gauche) -->
-                <div v-if="slots.overStart" class="absolute left-2 top-1/2 transform -translate-y-1/2 z-10 flex gap-1">
-                    <slot name="overStart" />
-                </div>
-                <!-- Slot overEnd (positionné en absolute à droite) + actions contextuelles -->
-                <div v-if="slots.overEnd || actionsToDisplay.length" class="absolute right-2 top-1/2 transform -translate-y-1/2 z-10 flex items-center gap-1">
-                    <slot name="overEnd" />
-                    <Btn
-                        v-for="action in actionsToDisplay"
-                        :key="action.key"
-                        :variant="action.variant"
-                        :color="action.color"
-                        :size="action.size"
-                        circle
-                        :aria-label="action.ariaLabel"
-                        :title="action.tooltip"
-                        :disabled="action.disabled"
-                        @click.stop="action.onClick"
-                    >
-                        <i :class="action.icon" class="text-sm"></i>
-                    </Btn>
-                </div>
-            </div>
-
-            <!-- Label end -->
-            <InputLabel
-                v-if="labelConfig.end || slots.labelEnd"
-                :value="labelConfig.end"
-                :for="radioFieldId"
-                :color="styleProperties.labelColor"
-                :size="styleProperties.labelSize"
-                class="ml-2"
-            >
-                <slot name="labelEnd" />
-            </InputLabel>
-        </div>
-        
-        <!-- Label bottom -->
-        <InputLabel
-            v-if="labelConfig.bottom || slots.labelBottom"
-            :value="labelConfig.bottom"
-            :for="radioFieldId"
-            :color="styleProperties.labelColor"
-            :size="styleProperties.labelSize"
-            class="mt-1"
-        >
-            <slot name="labelBottom" />
-        </InputLabel>
-        
-        <!-- Affichage de la sélection (optionnel) -->
-        <div v-if="hasSelection" class="mt-1 text-sm text-base-content/70">
-            <span class="font-medium">Sélectionné :</span> {{ selectedOptionLabel }}
-            <span class="ml-2 badge badge-primary badge-xs">
-                {{ totalOptions }} option(s)
-            </span>
-            <span v-if="disabledOptions > 0" class="ml-2 badge badge-neutral badge-xs">
-                {{ disabledOptions }} désactivée(s)
-            </span>
-        </div>
-        
-        <!-- Validator -->
-        <div v-if="hasValidationState" class="mt-1">
-            <slot name="validator">
-                <Validator
-                    v-if="processedValidation"
-                    :state="getValidatorState()"
-                    :message="getValidatorMessage()"
-                />
-            </slot>
-        </div>
-        
-        <!-- Helper -->
-        <div v-if="helper || slots.helper" class="mt-1">
-            <slot name="helper">
-                <Helper 
-                    :helper="helper" 
-                    :color="styleProperties.helperColor" 
-                    :size="styleProperties.helperSize" 
-                />
-            </slot>
-        </div>
-    </div>
+  <FieldTemplate
+    :container-classes="containerClasses"
+    :label-config="labelConfig"
+    :input-attrs="inputAttrs"
+    :listeners="listeners"
+    :input-ref="inputRef"
+    :actions-to-display="actionsToDisplay"
+    :style-properties="styleProperties"
+    :validation-state="validationState"
+    :validation-message="validationMessage"
+    :helper="props.helper"
+  >
+    <!-- Slot core spécifique pour RadioCore -->
+    <template #core="{ inputAttrs, listeners, inputRef }">
+      <RadioCore
+        v-bind="inputAttrs"
+        v-on="listeners"
+        ref="inputRef"
+      >
+        <!-- Options par défaut -->
+        <slot>
+          <label
+            v-for="option in props.options"
+            :key="option.value || option"
+            class="flex items-center gap-2 cursor-pointer"
+          >
+            <input
+              type="radio"
+              :value="option.value || option"
+              :disabled="option.disabled"
+              :checked="currentValue === (option.value || option)"
+              @change="listeners.change"
+            />
+            <span>{{ option.label || option }}</span>
+          </label>
+        </slot>
+      </RadioCore>
+    </template>
+    
+    <!-- Slots personnalisés -->
+    <template #helper>
+      <slot name="helper" />
+    </template>
+  </FieldTemplate>
 </template>
 
 <style scoped lang="scss">
