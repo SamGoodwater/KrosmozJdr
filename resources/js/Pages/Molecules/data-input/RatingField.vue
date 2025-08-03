@@ -99,6 +99,7 @@ const {
     :validation-state="validationState"
     :validation-message="validationMessage"
     :helper="props.helper"
+    input-type="rating"
   >
     <!-- Slot core spécifique pour RatingCore -->
     <template #core="{ inputAttrs, listeners, inputRef }">

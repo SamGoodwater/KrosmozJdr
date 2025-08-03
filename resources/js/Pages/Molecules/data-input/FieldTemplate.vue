@@ -25,7 +25,7 @@
       </InputLabel>
 
       <!-- 🧱 Bloc principal : input + actions -->
-      <div class="relative flex-1">
+      <div :class="mainBlockClasses">
         <!-- Slot pour le composant Core spécifique -->
         <slot 
           name="core" 
@@ -112,12 +112,13 @@
 </template>
 
 <script setup>
+import { computed } from 'vue'
 import InputLabel from '@/Pages/Atoms/data-input/InputLabel.vue'
 import Validator from '@/Pages/Atoms/data-input/Validator.vue'
 import Helper from '@/Pages/Atoms/data-input/Helper.vue'
 import Btn from '@/Pages/Atoms/action/Btn.vue'
 
-defineProps({
+const props = defineProps({
   // API du composable useInputField
   containerClasses: { type: String, required: true },
   labelConfig: { type: Object, required: true },
@@ -128,6 +129,23 @@ defineProps({
   styleProperties: { type: Object, required: true },
   validationState: { type: String, default: '' }, // Accept String with empty default
   validationMessage: { type: String, default: '' }, // Accept String with empty default
-  helper: { type: [String, Object], default: '' }
+  helper: { type: [String, Object], default: '' },
+  // Nouvelle prop pour détecter le type d'input
+  inputType: { type: String, default: 'input' }
+})
+
+// Classes dynamiques pour le bloc principal selon le type d'input
+const mainBlockClasses = computed(() => {
+  const baseClasses = 'relative'
+  
+  // Types d'inputs avec taille fixe (pas de flex-1)
+  const fixedSizeTypes = ['checkbox', 'radio', 'toggle', 'rating']
+  
+  if (fixedSizeTypes.includes(props.inputType)) {
+    return baseClasses
+  }
+  
+  // Types d'inputs avec taille dynamique (avec flex-1)
+  return `${baseClasses} flex-1`
 })
 </script> 

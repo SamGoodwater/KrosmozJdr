@@ -1,12 +1,10 @@
 <script setup>
-import { ref, computed } from 'vue';
-import { Head, Link, useForm } from '@inertiajs/vue3';
+import { computed } from 'vue';
+import { Head, useForm } from '@inertiajs/vue3';
 import InputField from '@/Pages/Molecules/data-input/InputField.vue';
 import Btn from '@/Pages/Atoms/action/Btn.vue';
 import Checkbox from '@/Pages/Molecules/data-input/CheckboxField.vue';
 import Route from '@/Pages/Atoms/action/Route.vue';
-import Icon from '@/Pages/Atoms/data-display/Icon.vue';
-import Tooltip from '@/Pages/Atoms/feedback/Tooltip.vue';
 
 defineProps({
     canResetPassword: {
@@ -22,10 +20,6 @@ const form = useForm({
     password: '',
     remember: false,
 });
-
-// Refs pour accéder aux composants InputField
-const identifierFieldRef = ref(null);
-const passwordFieldRef = ref(null);
 
 // Validation de l'identifiant (email ou pseudo) avec la nouvelle API
 const identifierValidation = computed(() => {
@@ -151,7 +145,6 @@ const isFormValid = computed(() => {
             <form @submit.prevent="submit">
                 <div class="flex flex-col gap-8">
                     <InputField
-                        ref="identifierFieldRef"
                         label="Email ou pseudo"
                         placeholder="Email ou pseudo"
                         v-model="form.identifier"
@@ -165,7 +158,6 @@ const isFormValid = computed(() => {
                     />
 
                     <InputField
-                        ref="passwordFieldRef"
                         label="Mot de passe sécurisé"
                         placeholder="Mot de passe"
                         v-model="form.password"
@@ -188,6 +180,7 @@ const isFormValid = computed(() => {
                         color="primary"
                         size="md"
                         label="Se souvenir de moi"
+                        defaultLabelPosition="end"
                         tabindex="3"
                     />
         

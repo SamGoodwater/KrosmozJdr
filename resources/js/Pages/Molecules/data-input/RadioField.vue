@@ -99,6 +99,7 @@ const {
     :validation-state="validationState"
     :validation-message="validationMessage"
     :helper="props.helper"
+    input-type="radio"
   >
     <!-- Slot core spécifique pour RadioCore -->
     <template #core="{ inputAttrs, listeners, inputRef }">

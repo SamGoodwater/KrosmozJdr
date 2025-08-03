@@ -62,6 +62,7 @@ const {
     :get-validator-state="getValidatorState"
     :get-validator-message="getValidatorMessage"
     :helper="props.helper"
+    input-type="checkbox" <!-- Prop pour gérer les classes CSS dynamiques -->
   >
     <!-- Slot core spécifique -->
     <template #core="{ inputAttrs, listeners, inputRef }">
@@ -74,6 +75,65 @@ const {
     </template>
   </FieldTemplate>
 </template>
+```
+
+#### 3. **Gestion des classes CSS dynamiques**
+
+Le `FieldTemplate` gère automatiquement les classes CSS du bloc principal selon le type d'input :
+
+```javascript
+// Classes dynamiques pour le bloc principal selon le type d'input
+const mainBlockClasses = computed(() => {
+  const baseClasses = 'relative'
+  
+  // Types d'inputs avec taille fixe (pas de flex-1)
+  const fixedSizeTypes = ['checkbox', 'radio', 'toggle', 'rating']
+  
+  if (fixedSizeTypes.includes(props.inputType)) {
+    return baseClasses // "relative"
+  }
+  
+  // Types d'inputs avec taille dynamique (avec flex-1)
+  return `${baseClasses} flex-1` // "relative flex-1"
+})
+```
+
+**Types d'inputs classifiés :**
+
+- **Taille fixe** (pas de `flex-1`) : `checkbox`, `radio`, `toggle`, `rating`
+- **Taille dynamique** (avec `flex-1`) : `input`, `textarea`, `select`, `range`, `filter`, `file`, `color`, `date`
+
+Cette classification permet d'éviter les problèmes de mise en page avec les inputs ayant une taille fixe.
+
+#### 4. **Bonnes pratiques pour les classes CSS dynamiques**
+
+**Pour les composants Field existants :**
+- ✅ **Types avec taille fixe** : Ajouter `input-type="[type]"` au `FieldTemplate`
+- ✅ **Types avec taille dynamique** : Aucune modification nécessaire (utilise le type par défaut `'input'`)
+
+**Pour les nouveaux composants Field :**
+1. **Identifier le type d'input** dans `inputHelper.js`
+2. **Déterminer la classification** :
+   - Taille fixe → Ajouter `input-type="[type]"`
+   - Taille dynamique → Pas de modification
+3. **Tester le comportement** avec différents layouts
+
+**Exemples d'utilisation :**
+
+```vue
+<!-- Checkbox avec taille fixe -->
+<FieldTemplate input-type="checkbox">
+  <template #core="{ inputAttrs, listeners, inputRef }">
+    <CheckboxCore v-bind="inputAttrs" v-on="listeners" ref="inputRef" />
+  </template>
+</FieldTemplate>
+
+<!-- Input avec taille dynamique (par défaut) -->
+<FieldTemplate>
+  <template #core="{ inputAttrs, listeners, inputRef }">
+    <InputCore v-bind="inputAttrs" v-on="listeners" ref="inputRef" />
+  </template>
+</FieldTemplate>
 ```
 
 ## Pattern Field Unifié
@@ -342,20 +402,24 @@ getInputPropsDefinition() // Définition des props
 
 ## Types d'input supportés
 
-| Type | Core | Field | Description |
-|------|------|-------|-------------|
-| `input` | ✅ | ✅ | Input textuel standard |
-| `select` | ✅ | ✅ | Liste déroulante |
-| `textarea` | ✅ | ✅ | Zone de texte |
-| `checkbox` | ✅ | ✅ | Case à cocher |
-| `radio` | ✅ | ✅ | Bouton radio |
-| `toggle` | ✅ | ✅ | Interrupteur |
-| `range` | ✅ | ✅ | Curseur |
-| `rating` | ✅ | ✅ | Évaluation |
-| `file` | ✅ | ✅ | Sélection de fichier |
-| `date` | ✅ | ✅ | Sélecteur de date |
-| `color` | ✅ | ✅ | Sélecteur de couleur |
-| `filter` | ✅ | ✅ | Filtre de recherche |
+| Type | Core | Field | Description | Taille CSS |
+|------|------|-------|-------------|------------|
+| `input` | ✅ | ✅ | Input textuel standard | Dynamique |
+| `select` | ✅ | ✅ | Liste déroulante | Dynamique |
+| `textarea` | ✅ | ✅ | Zone de texte | Dynamique |
+| `checkbox` | ✅ | ✅ | Case à cocher | Fixe |
+| `radio` | ✅ | ✅ | Bouton radio | Fixe |
+| `toggle` | ✅ | ✅ | Interrupteur | Fixe |
+| `range` | ✅ | ✅ | Curseur | Dynamique |
+| `rating` | ✅ | ✅ | Évaluation | Fixe |
+| `file` | ✅ | ✅ | Sélection de fichier | Dynamique |
+| `date` | ✅ | ✅ | Sélecteur de date | Dynamique |
+| `color` | ✅ | ✅ | Sélecteur de couleur | Dynamique |
+| `filter` | ✅ | ✅ | Filtre de recherche | Dynamique |
+
+**Légende :**
+- **Dynamique** : Utilise `flex-1` pour occuper l'espace disponible
+- **Fixe** : Taille fixe, pas de `flex-1` pour éviter les problèmes de mise en page
 
 ## Liens utiles
 

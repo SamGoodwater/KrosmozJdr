@@ -195,6 +195,7 @@ export const SPECIFIC_PROPS = {
             { key: 'styleState', type: Object, default: null },
             { key: 'value', type: [String, Number, Boolean], default: '' },
             { key: 'options', type: Array, default: () => [] },
+            { key: 'defaultLabelPosition', type: String, default: 'end', validator: v => ['top', 'bottom', 'start', 'end', 'inStart', 'inEnd', 'floating'].includes(v) },
         ],
         field: [],
         events: [...COMMON_EVENTS, 'onChange'],

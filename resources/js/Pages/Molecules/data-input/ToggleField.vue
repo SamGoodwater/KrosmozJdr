@@ -96,6 +96,7 @@ const {
     :validation-state="validationState"
     :validation-message="validationMessage"
     :helper="props.helper"
+    input-type="toggle"
   >
     <!-- Slot core spécifique pour ToggleCore -->
     <template #core="{ inputAttrs, listeners, inputRef }">

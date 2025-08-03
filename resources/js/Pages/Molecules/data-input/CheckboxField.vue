@@ -96,6 +96,7 @@ const {
     :validation-state="validationState"
     :validation-message="validationMessage"
     :helper="props.helper"
+    input-type="checkbox"
   >
     <!-- Slot core spécifique pour CheckboxCore -->
     <template #core="{ inputAttrs, listeners, inputRef }">

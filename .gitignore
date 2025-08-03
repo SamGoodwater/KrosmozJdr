@@ -29,3 +29,6 @@ desktop.ini
 # Fichiers SCSS compilés
 /public/css/*.css
 /public/css/*.css.map
+
+# Fichiers avec noms corrompus (caractères spéciaux)
+*[^a-zA-Z0-9._-]*

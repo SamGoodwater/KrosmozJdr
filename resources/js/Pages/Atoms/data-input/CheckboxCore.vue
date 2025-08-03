@@ -353,32 +353,6 @@ input[type="checkbox"] {
     }
 }
 
-// Styles pour les tailles DaisyUI
-.checkbox-xs {
-    width: 1rem;
-    height: 1rem;
-}
-
-.checkbox-sm {
-    width: 1.25rem;
-    height: 1.25rem;
-}
-
-.checkbox-md {
-    width: 1.5rem;
-    height: 1.5rem;
-}
-
-.checkbox-lg {
-    width: 1.75rem;
-    height: 1.75rem;
-}
-
-.checkbox-xl {
-    width: 2rem;
-    height: 2rem;
-}
-
 // Styles pour les labels inline
 .label-text {
     // Labels inline pour les checkboxes
@@ -402,6 +376,29 @@ input[type="checkbox"] {
         transform: translate(-50%, -50%);
         pointer-events: none;
         transition: all 0.2s ease-in-out;
+    }
+}
+
+.input-{
+    &xs {
+        width: 0.5rem;
+        height: 0.5rem;
+    }
+    &sm {
+        width: 0.75rem;
+        height: 0.75rem;
+    }
+    &md {
+        width: 1rem;
+        height: 1rem;
+    }
+    &lg {
+        width: 1.25rem;
+        height: 1.25rem;
+    }
+    &xl {
+        width: 1.5rem;
+        height: 1.5rem;
     }
 }
 </style>

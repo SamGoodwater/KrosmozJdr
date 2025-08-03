@@ -43,13 +43,16 @@ export default function useInputField({
     focus,
     isModified,
     isReadonly,
+    showPassword,
+    handleInput,
+    // Handlers d'actions
     reset,
     back,
     clear,
     togglePassword,
     copy,
     toggleEdit,
-    showPassword
+    toggleLock
   } = useInputActions({
     modelValue,
     type: props.type || type,
@@ -72,6 +75,8 @@ export default function useInputField({
   // --- FUSION DES LISTENERS (transparente) ---
   const mergedListeners = computed(() => ({
     ...listeners,
+    // Ajouter le gestionnaire d'événement input pour le v-model
+    input: handleInput,
     // Les événements personnalisés passés via $attrs sont préservés
     // useInputActions gère le v-model en interne
   }))
@@ -185,6 +190,15 @@ export default function useInputField({
     // Style
     styleProperties,
     containerClasses,
+    
+    // Handlers d'actions (exposés pour compatibilité)
+    reset,
+    back,
+    clear,
+    togglePassword,
+    copy,
+    toggleEdit,
+    toggleLock,
     
     // Helpers
     handleAction

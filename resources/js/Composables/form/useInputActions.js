@@ -431,7 +431,12 @@ export default function useInputActions({
   // --- GESTIONNAIRE D'ÉVÉNEMENT INPUT ---
   const handleInput = (event) => {
     const newValue = event.target.value;
+    // Mettre à jour la valeur interne
     currentValue.value = newValue;
+    // Émettre l'événement pour le v-model parent
+    if (emit && typeof emit === 'function') {
+      emit('update:modelValue', newValue);
+    }
   };
 
   // --- API EXPOSÉE ---
@@ -454,6 +459,15 @@ export default function useInputActions({
     
     // Gestionnaire d'événement
     handleInput,
+    
+    // Handlers d'actions (exposés pour compatibilité)
+    reset: actionHandlers.reset,
+    back: actionHandlers.back,
+    clear: actionHandlers.clear,
+    togglePassword: actionHandlers.password,
+    copy: actionHandlers.copy,
+    toggleEdit: actionHandlers.edit,
+    toggleLock: actionHandlers.lock,
     
     // Méthodes
     focus,
