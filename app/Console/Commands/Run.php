@@ -13,13 +13,15 @@ class Run extends Command
      */
     protected $signature = 'run
         {--update:system : Mise à jour du système (apt update/upgrade)}
-        {--update:docs : Générer l’index et le schéma de la doc}
+        {--update:docs : Générer l\'index et le schéma de la doc}
         {--update:pnpm : Mettre à jour pnpm}
         {--install:pnpm : Installer pnpm}
         {--reset:pnpm : Réinitialiser pnpm (supprimer node_modules et pnpm-lock.yaml)}
         {--update:composer : Mettre à jour composer}
         {--install:composer : Installer composer}
         {--reset:composer : Réinitialiser composer (supprimer vendor et composer.lock)}
+        {--reset:all : Réinitialiser tout (pnpm, composer, css, docs, dump)}
+        {--reset:full : Reset complet (reset:all + base de données)}
         {--update:css : Rebuild CSS}
         {--update:privilege= : Corriger les permissions du projet (spécifier l\'utilisateur)}
         {--update:all : Tout mettre à jour (system, pnpm, composer, css, docs, dump)}
@@ -96,7 +98,8 @@ class Run extends Command
         // 0. RESET (jamais inclus dans --all ou autres options englobantes)
         if ($this->option('reset:pnpm')) $actions[] = 'resetPnpm';
         if ($this->option('reset:composer')) $actions[] = 'resetComposer';
-
+        if ($this->option('reset:all')) $actions[] = 'resetAll';
+        if ($this->option('reset:full')) $actions[] = 'resetFull';
         // 1. KILL
         if ($this->option('kill') || $this->option('regenerate') || $this->option('all')) $actions[] = 'killServers';
 
@@ -210,7 +213,10 @@ class Run extends Command
     }
     protected function clearCss() {
         $this->info('Suppression des fichiers CSS générés...');
-        exec('pnpm run css:clean');
+        $result = shell_exec('pnpm run css:clean 2>&1');
+        if ($result !== null) {
+            $this->info($result);
+        }
     }
     protected function clearCache() { $this->call('cache:clear'); }
     protected function clearConfig() { $this->call('config:clear'); }
@@ -240,7 +246,10 @@ class Run extends Command
     }
     protected function updateCss() {
         $this->info('Rebuild CSS...');
-        exec('pnpm run css');
+        $result = shell_exec('pnpm run css 2>&1');
+        if ($result !== null) {
+            $this->info($result);
+        }
     }
     protected function updateDocs() {
         $this->info('Génération de l’index et du schéma de la doc...');
@@ -267,27 +276,201 @@ class Run extends Command
     }
     protected function resetPnpm() {
         $this->info('Suppression de node_modules et pnpm-lock.yaml...');
-        if (file_exists('node_modules') && file_exists('pnpm-lock.yaml')) {
-            exec('rm -rf node_modules pnpm-lock.yaml');
+        
+        $errors = [];
+        
+        // Supprimer node_modules
+        if (is_dir('node_modules')) {
+            $result = shell_exec('rm -rf node_modules 2>&1');
+            if ($result !== null && !empty(trim($result))) {
+                $errors[] = "Erreur lors de la suppression de node_modules: $result";
+            } else {
+                $this->info('✅ node_modules supprimé');
+            }
         } else {
-            $this->warn('node_modules n’existe pas, suppression ignorée');
+            $this->warn('node_modules n\'existe pas, suppression ignorée');
+        }
+        
+        // Supprimer pnpm-lock.yaml
+        if (file_exists('pnpm-lock.yaml')) {
+            $result = shell_exec('rm -f pnpm-lock.yaml 2>&1');
+            if ($result !== null && !empty(trim($result))) {
+                $errors[] = "Erreur lors de la suppression de pnpm-lock.yaml: $result";
+            } else {
+                $this->info('✅ pnpm-lock.yaml supprimé');
+            }
+        } else {
+            $this->warn('pnpm-lock.yaml n\'existe pas, suppression ignorée');
+        }
+        
+        if (!empty($errors)) {
+            foreach ($errors as $error) {
+                $this->error($error);
+            }
         }
     }
+    
     protected function resetComposer() {
         $this->info('Suppression de vendor et composer.lock...');
-        if (file_exists('vendor') && file_exists('composer.lock')) {
-            exec('rm -rf vendor composer.lock');
+        
+        $errors = [];
+        
+        // Supprimer vendor
+        if (is_dir('vendor')) {
+            $result = shell_exec('rm -rf vendor 2>&1');
+            if ($result !== null && !empty(trim($result))) {
+                $errors[] = "Erreur lors de la suppression de vendor: $result";
+            } else {
+                $this->info('✅ vendor supprimé');
+            }
         } else {
-            $this->warn('vendor n’existe pas, suppression ignorée');
+            $this->warn('vendor n\'existe pas, suppression ignorée');
+        }
+        
+        // Supprimer composer.lock
+        if (file_exists('composer.lock')) {
+            $result = shell_exec('rm -f composer.lock 2>&1');
+            if ($result !== null && !empty(trim($result))) {
+                $errors[] = "Erreur lors de la suppression de composer.lock: $result";
+            } else {
+                $this->info('✅ composer.lock supprimé');
+            }
+        } else {
+            $this->warn('composer.lock n\'existe pas, suppression ignorée');
+        }
+        
+        if (!empty($errors)) {
+            foreach ($errors as $error) {
+                $this->error($error);
+            }
         }
     }
+    protected function resetAll() {
+        $this->info('Réinitialisation de tout (pnpm, composer, css, docs, dump)...');
+        
+        // 1. Arrêter les serveurs en cours
+        $this->killServers();
+        
+        // 2. Nettoyer les caches Laravel
+        $this->clearCss();
+        $this->clearCache();
+        $this->clearConfig();   
+        $this->clearRoute();
+        $this->clearView();
+        $this->clearDebugbar();
+        $this->clearQueue();
+        $this->clearSchedule();
+        $this->clearEvent();
+        $this->clearOptimize();
+        
+        // 3. Supprimer les dépendances
+        $this->resetPnpm();
+        $this->resetComposer();
+        
+        // 4. Réinstaller les dépendances
+        $this->info('Réinstallation des dépendances...');
+        $this->installComposer();
+        $this->installPnpm();
+        
+        // 5. Reconstruire les assets et optimiser
+        $this->updateCss();
+        $this->updateDocs();
+        $this->dumpAutoload();
+        $this->optimiseIde();
+        $this->optimiseLaravel();
+        
+        $this->info('✅ Réinitialisation complète terminée !');
+    }
+    
+    protected function resetFull() {
+        $this->info('🔄 Reset complet (reset:all + base de données)...');
+        
+        // Demander confirmation pour le reset complet
+        if (!$this->confirm('⚠️  ATTENTION : Cette opération va supprimer toutes les données de la base de données. Continuer ?')) {
+            $this->info('Reset complet annulé.');
+            return;
+        }
+        
+        // 1. Exécuter le reset:all
+        $this->resetAll();
+        
+        // 2. Reset de la base de données
+        $this->info('🔄 Reset de la base de données...');
+        
+        // Vider toutes les tables
+        $this->info('Suppression de toutes les données...');
+        $this->call('migrate:fresh');
+        
+        // Exécuter les seeders si ils existent
+        if (file_exists('database/seeders/DatabaseSeeder.php')) {
+            $this->info('Exécution des seeders...');
+            $this->call('db:seed');
+        }
+        
+        $this->info('✅ Reset complet terminé !');
+        $this->warn('⚠️  Toutes les données ont été supprimées et la base a été réinitialisée.');
+    }
+    
     protected function installPnpm() {
         $this->info('Installation des dépendances pnpm...');
-        exec('pnpm install');
+        
+        // Vérifier que pnpm est installé
+        $pnpmPath = trim(shell_exec('which pnpm 2>/dev/null'));
+        if (empty($pnpmPath)) {
+            $this->error('pnpm n\'est pas installé. Veuillez l\'installer d\'abord.');
+            return false;
+        }
+        
+        // Vérifier que package.json existe
+        if (!file_exists('package.json')) {
+            $this->error('package.json n\'existe pas. Impossible d\'installer les dépendances pnpm.');
+            return false;
+        }
+        
+        $result = shell_exec('pnpm install 2>&1');
+        if ($result !== null) {
+            $this->info($result);
+        }
+        
+        // Vérifier si l'installation a réussi
+        if (is_dir('node_modules')) {
+            $this->info('✅ Dépendances pnpm installées avec succès');
+            return true;
+        } else {
+            $this->error('❌ Échec de l\'installation des dépendances pnpm');
+            return false;
+        }
     }
+    
     protected function installComposer() {
         $this->info('Installation des dépendances composer...');
-        exec('composer install');
+        
+        // Vérifier que composer est installé
+        $composerPath = trim(shell_exec('which composer 2>/dev/null'));
+        if (empty($composerPath)) {
+            $this->error('Composer n\'est pas installé. Veuillez l\'installer d\'abord.');
+            return false;
+        }
+        
+        // Vérifier que composer.json existe
+        if (!file_exists('composer.json')) {
+            $this->error('composer.json n\'existe pas. Impossible d\'installer les dépendances composer.');
+            return false;
+        }
+        
+        $result = shell_exec('composer install 2>&1');
+        if ($result !== null) {
+            $this->info($result);
+        }
+        
+        // Vérifier si l'installation a réussi
+        if (is_dir('vendor')) {
+            $this->info('✅ Dépendances composer installées avec succès');
+            return true;
+        } else {
+            $this->error('❌ Échec de l\'installation des dépendances composer');
+            return false;
+        }
     }
     protected function runDev() {
         $this->info('Lancement des serveurs de développement...');

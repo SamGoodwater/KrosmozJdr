@@ -1,0 +1,75 @@
+{
+  "partie": "3. Configuration et Intégration des Systèmes",
+  "sous_partie": "3.2. Internationalisation (i18n)",
+  "taches": [
+    {
+      "titre": "3.2.1 Générer les fichiers de langue (backend Laravel)",
+      "sous_taches": [
+        {
+          "titre": "3.2.1.1 Créer le dossier project/lang/ s'il n'existe pas",
+          "description": "Créer le dossier project/lang/ à la racine du backend Laravel si absent."
+        },
+        {
+          "titre": "3.2.1.2 Créer les fichiers de langue par défaut",
+          "description": "Créer fr/, en/, es/ dans project/lang/ avec les clés de base (Accueil, Connexion, Déconnexion, etc.)."
+        }
+      ]
+    },
+    {
+      "titre": "3.2.2 Configurer la locale Laravel",
+      "sous_taches": [
+        {
+          "titre": "3.2.2.1 Vérifier la configuration de la locale par défaut dans config/app.php",
+          "description": "Vérifier que 'locale' et 'fallback_locale' sont bien définis dans config/app.php (fr par défaut)."
+        },
+        {
+          "titre": "3.2.2.2 (Optionnel) Publier les fichiers de langue Laravel natifs",
+          "description": "Lancer 'php artisan lang:publish' si besoin pour publier les fichiers natifs dans project/lang/."
+        }
+      ]
+    },
+    {
+      "titre": "3.2.3 Exposer les traductions au frontend",
+      "sous_taches": [
+        {
+          "titre": "3.2.3.1 Créer une route API pour exposer les fichiers de langue au frontend",
+          "description": "Créer une route (/api/lang/{locale}) qui retourne les traductions au format JSON pour vue-i18n."
+        },
+        {
+          "titre": "3.2.3.2 Configurer vue-i18n pour charger dynamiquement les traductions",
+          "description": "Configurer le frontend pour charger les traductions depuis l'API Laravel."
+        }
+      ]
+    },
+    {
+      "titre": "3.2.4 Ajouter le switcher de langue (frontend)",
+      "sous_taches": [
+        {
+          "titre": "3.2.4.2 Vérifier le composant LanguageSwitcher.vue",
+          "description": "Vérifier que le composant LanguageSwitcher.vue est présent dans le dossier molecules/navigation/ et que ses props sont correctes sinon le corriger."
+        },
+        {
+          "titre": "3.2.4.3 Intégrer le composant dans AppLayout",
+          "description": "Intégrer LanguageSwitcher dans le layout principal (AppLayout) si ce n'est pas déjà fait."
+        },
+        {
+          "titre": "3.2.4.4 Vérifier le fonctionnement du switcher",
+          "description": "Vérifier le changement de langue en temps réel via le composant."
+        }
+      ]
+    },
+    {
+      "titre": "3.2.5 Vérification et log de la sous-partie",
+      "sous_taches": [
+        {
+          "titre": "3.2.5.1 Vérifier la complétion de toutes les tâches précédentes",
+          "description": "Vérifier que toutes les tâches précédentes sont réalisées et fonctionnelles (backend et frontend)."
+        },
+        {
+          "titre": "3.2.5.2 Consigner le log de la sous-partie",
+          "description": "Consigner dans logs.txt un résumé daté de toutes les actions réalisées dans cette sous-partie, en listant les fichiers créés, modifiés, et l'état du multilingue."
+        }
+      ]
+    }
+  ]
+}
