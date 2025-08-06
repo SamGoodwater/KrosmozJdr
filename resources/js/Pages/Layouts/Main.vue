@@ -26,6 +26,7 @@ import { useHeader } from "@/Composables/layout/useHeader";
 import { useSidebar } from "@/Composables/layout/useSidebar";
 import { useDevice } from "@/Composables/layout/useDevice";
 import ToggleHeader from "@/Pages/Molecules/layout/ToggleHeader.vue";
+import { useNotificationProvider } from "@/Composables/providers/useNotificationProvider";
 
 // Centralisation des classes Tailwind pour le layout
 const ASIDE_WIDTH_CLASS = 'w-64'      // 16rem = 256px
@@ -37,6 +38,9 @@ const PADDING_TOP_CLASS = 'pt-18'
 const { isHeaderOpen, toggleHeader } = useHeader();
 const { isMobile, isTablet, isDesktop } = useDevice();
 const { isSidebarOpen, toggleSidebar, closeSidebar } = useSidebar();
+
+// Provider de notifications pour toute l'application
+useNotificationProvider();
 
 // Computed pour déterminer le comportement responsive
 const isDesktopMode = computed(() => isDesktop.value);

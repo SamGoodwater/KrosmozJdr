@@ -19,7 +19,7 @@
  * @returns {Object} API unifiée
  */
 
-import { computed, inject } from 'vue'
+import { computed, inject, watch } from 'vue'
 import useInputActions from './useInputActions'
 import useInputProps from './useInputProps'
 import { useValidation } from './useValidation'
@@ -89,7 +89,7 @@ export default function useInputField({
   // --- GESTION DE LA VALIDATION ---
   // Extraction de la condition et des messages depuis la prop validation
   const validationConfig = computed(() => {
-    if (!props.validation) return { condition: null, messages: {} }
+    if (!props.validation) return { condition: null, messages: {}, directState: null }
     
     // Si c'est une string, regex ou fonction, c'est la condition
     if (typeof props.validation === 'string' || 
@@ -97,7 +97,8 @@ export default function useInputField({
         typeof props.validation === 'function') {
       return {
         condition: props.validation,
-        messages: {}
+        messages: {},
+        directState: null
       }
     }
     
@@ -108,21 +109,21 @@ export default function useInputField({
       // Support de l'ancienne API pour compatibilité
       if (state && message) {
         return {
-          condition: () => state,
-          messages: {
-            [state]: { text: message, notified: otherProps.showNotification || false }
-          }
+          condition: null,
+          messages: {},
+          directState: { state, message }
         }
       }
       
       // Nouvelle API
       return {
         condition: condition || null,
-        messages: messages || {}
+        messages: messages || {},
+        directState: null
       }
     }
     
-    return { condition: null, messages: {} }
+    return { condition: null, messages: {}, directState: null }
   })
 
   const validation = useValidation({
@@ -130,8 +131,32 @@ export default function useInputField({
     condition: validationConfig.value.condition,
     messages: validationConfig.value.messages,
     validateOnChange: false,
-    validateOnBlur: true
+    validateOnBlur: true,
+    directState: validationConfig.value.directState,
+    enabled: props.validationEnabled || false // Nouvelle prop
   })
+
+  // Watch pour forcer la validation quand la prop validation change
+  watch(() => props.validation, (newValidation) => {
+    if (newValidation && typeof newValidation === 'object') {
+      // Forcer la validation dans tous les cas
+      validation.validate();
+    }
+  }, { immediate: true, deep: true })
+
+  // Watch pour forcer la validation quand validationConfig change
+  watch(() => validationConfig.value, (newConfig) => {
+    validation.validate();
+  }, { deep: true, immediate: true })
+
+  // Watch pour la prop validationEnabled
+  watch(() => props.validationEnabled, (enabled) => {
+    if (enabled) {
+      validation.enableValidation();
+    } else {
+      validation.disableValidation();
+    }
+  }, { immediate: true })
 
   // --- ÉCOUTE DES ACTIONS POUR RÉINITIALISER LA VALIDATION ---
   const handleAction = (action, value) => {
@@ -186,6 +211,11 @@ export default function useInputField({
     hasWarning: validation.hasWarning,
     hasSuccess: validation.hasSuccess,
     hasInfo: validation.hasInfo,
+    isValidationEnabled: validation.isEnabled,
+    
+    // Méthodes de contrôle de validation
+    enableValidation: validation.enableValidation,
+    disableValidation: validation.disableValidation,
     
     // Style
     styleProperties,

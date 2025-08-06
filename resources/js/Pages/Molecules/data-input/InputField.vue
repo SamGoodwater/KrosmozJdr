@@ -145,6 +145,11 @@ const {
   hasError,
   hasWarning,
   hasSuccess,
+  isValidationEnabled,
+  
+  // Méthodes de contrôle de validation
+  enableValidation,
+  disableValidation,
   
   // Style
   styleProperties,
@@ -159,6 +164,15 @@ const {
   props,
   attrs: $attrs,
   emit
+})
+
+// Exposer les méthodes pour contrôle externe
+defineExpose({
+  enableValidation,
+  disableValidation,
+  resetValidation,
+  focus,
+  validate
 })
 </script>
 

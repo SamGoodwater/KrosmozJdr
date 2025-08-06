@@ -1,0 +1,14 @@
+{
+    "mcpServers": {
+        "playwright": {
+            "command": "npx",
+            "args": ["@playwright/mcp@latest"],
+            "env": {
+                "PLAYWRIGHT_DEFAULT_BROWSER": "webkit",
+                "BROWSER": "webkit",
+                "PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD": "0"
+            },
+            "autorun": true
+        }
+    }
+}

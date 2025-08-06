@@ -20,7 +20,9 @@ export function useValidation({
   condition = null,
   messages = {},
   validateOnChange = false,
-  validateOnBlur = true
+  validateOnBlur = true,
+  directState = null, // Nouvelle option pour traiter directement un état
+  enabled = false // Nouvelle prop pour contrôler l'affichage
 } = {}) {
   const notificationStore = inject('notificationStore', null)
   
@@ -28,6 +30,7 @@ export function useValidation({
   const validationState = ref('')
   const validationMessage = ref('')
   const hasInteracted = ref(false)
+  const isEnabled = ref(enabled) // État local pour enabled
   
   // Structure par défaut des messages
   const defaultMessages = {
@@ -45,6 +48,20 @@ export function useValidation({
   
   // Fonction de validation simplifiée
   const validate = (val = value) => {
+    // Si la validation n'est pas activée, ne pas afficher d'erreurs
+    if (!isEnabled.value) {
+      validationState.value = ''
+      validationMessage.value = ''
+      return ''
+    }
+    
+    // Si on a un état direct, l'utiliser
+    if (directState) {
+      validationState.value = directState.state || ''
+      validationMessage.value = directState.message || ''
+      return directState.state || ''
+    }
+    
     if (!condition) {
       validationState.value = ''
       validationMessage.value = ''
@@ -64,6 +81,7 @@ export function useValidation({
         state = result.state
         isValid = state !== 'error'
       } else if (typeof result === 'string') {
+        // Si la condition retourne directement un état (error, success, warning, info)
         state = result
         isValid = result !== 'error'
       }
@@ -129,12 +147,25 @@ export function useValidation({
     })
   }
   
+  // Méthodes pour contrôler l'affichage
+  const enableValidation = () => {
+    isEnabled.value = true
+    validate() // Re-valider avec l'état activé
+  }
+  
+  const disableValidation = () => {
+    isEnabled.value = false
+    validationState.value = ''
+    validationMessage.value = ''
+  }
+  
   // API simplifiée
   return {
     // État de validation (lecture seule)
     state: computed(() => validationState.value),
     message: computed(() => validationMessage.value),
     hasInteracted: computed(() => hasInteracted.value),
+    isEnabled: computed(() => isEnabled.value),
     
     // Méthodes
     validate,
@@ -144,6 +175,8 @@ export function useValidation({
       validationMessage.value = ''
       hasInteracted.value = false
     },
+    enableValidation,
+    disableValidation,
     
     // Helpers de lecture
     isValid: computed(() => validationState.value !== 'error'),

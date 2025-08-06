@@ -75,6 +75,15 @@ const {
   attrs: $attrs,
   emit
 })
+
+// Exposer les méthodes pour contrôle externe
+defineExpose({
+  enableValidation,
+  disableValidation,
+  resetValidation,
+  focus,
+  validate
+})
 </script>
 
 <template>

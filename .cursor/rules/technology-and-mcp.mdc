@@ -1,0 +1,177 @@
+---
+name: technology-and-mcp
+description: >
+  Intègre la **stack Krosmoz‑JDR** (Laravel 12, PHP 8.4, Vue 3, Tailwind CSS, DaisyUI, Tiptap, esbuild/rollup)
+  et les normes CI/CD/tests. Guide l’usage des MCP tools :
+    - `playwright` pour interagir automatiquement avec l’UI (clics, formulaires, capture écran, logs).
+globs:
+  - "**/*.php"
+  - "**/*.js"
+  - "**/*.vue"
+alwaysApply: true
+---
+
+## 📦 Stack & Technologies Krosmoz‑JDR
+
+- **Backend** : Laravel 12 (PHP 8.4), MySQL (`krosmozDB`), secrets gérés via `.env` (ne **jamais** versionner ce fichier).
+- **Frontend** : Vue 3, SCSS, Tailwind CSS + DaisyUI, Tiptap comme éditeur WYSIWYG, outil de build esbuild/rollup, multi-langues via vue-i18n.
+- **Tests** : PHPUnit (backend), Vitest ou Jest (frontend), Cypress en end-to-end.
+- **CI/CD** : pipelines GitHub ou GitLab CI automatisant le lint, les tests, le build et le déploiement.
+- Docs projet à jour dans `/docs/` (notamment `TECHNOLOGIES.md`, `PROJECT_STRUCTURE.md`).
+
+## 🎭 Outils Playwright locaux
+
+### ✅ Scripts Playwright (installés et configurés)
+- **Localisation** : Dossier `playwright/` à la racine du projet
+- **Navigateur** : WebKit (compatible WSL2 ARM64)
+- **Utilisation** : Scripts Node.js locaux pour l'automatisation des tests et du développement
+- **Fonctionnalités** : navigation, clics, remplissage de formulaires, capture d'écran, tests de connexion
+
+### 🚀 Utilisation rapide
+```bash
+# Navigation rapide vers localhost:8000
+node playwright/run.js nav
+
+# Capture d'écran rapide
+node playwright/run.js ss ma-capture.png
+
+# Test de connexion
+node playwright/run.js login http://localhost:8000 user@test.com password123
+
+# Afficher l'aide
+node playwright/run.js help
+```
+
+### 📁 Structure des outils
+```
+playwright/
+├── README.md                 # Documentation complète
+├── playwright-universal.js   # Classe universelle Playwright
+├── playwright-cli.js         # Interface CLI complète
+├── run.js                   # Script de raccourci simplifié
+├── tasks/                   # Scripts de tâches spécifiques
+│   ├── test-login.js
+│   └── test-navigation.js
+└── screenshots/             # Captures d'écran générées
+```
+
+---
+
+## 🔄 Workflow recommandé de l'IA
+
+1. **Avant toute modification front-end** : Utiliser les scripts Playwright pour reproduire le workflow sur le site local
+2. **Pour du debug interactif** : Utiliser `node playwright/run.js nav` pour analyser l'interface
+3. **Pour les tests de formulaires** : Utiliser `node playwright/run.js login` ou créer des scripts personnalisés
+4. **Pour la capture d'écrans** : Utiliser `node playwright/run.js ss` pour documenter les interfaces
+5. **Les modifications backend** passent par l'analyse du code Laravel et des migrations existantes
+
+---
+
+## 📁 Références documentation
+
+- `/docs/docs.index.json`, `/docs/00-Project/TECHNOLOGIES.md`, `/docs/10-BestPractices/PROJECT_STRUCTURE.md`
+- `playwright/README.md` - Documentation complète des outils Playwright
+- [Documentation Playwright officielle](https://playwright.dev/docs/)
+
+---
+
+## 💬 Conseils de rédaction des prompts
+
+- **Mentionner explicitement** l'utilisation des scripts Playwright locaux
+- **Décrire les actions** de manière directive et séquencée
+- **Utiliser les raccourcis** quand possible (`nav`, `ss`, etc.)
+
+### Exemples de prompts :
+> "Utilise les scripts Playwright pour naviguer vers localhost:8000 et capturer une capture d'écran de la page de connexion"
+> "Teste le formulaire de connexion avec les scripts Playwright et capture les erreurs éventuelles"
+> "Utilise `node playwright/run.js nav` pour analyser l'interface utilisateur"
+
+---
+
+## ⚠️ Points de vigilance
+
+### Problèmes connus avec le serveur MCP Playwright
+- **WSL2 ARM64** : Le serveur MCP Playwright pose des problèmes sur cette architecture
+- **Chrome non supporté** : Chrome n'est pas disponible pour WSL2 ARM64
+- **Configuration complexe** : Le serveur MCP nécessite des configurations spécifiques qui ne fonctionnent pas toujours
+
+### Solution adoptée
+- **Scripts locaux** : Utilisation de scripts Node.js Playwright locaux
+- **WebKit** : Navigateur compatible avec WSL2 ARM64
+- **Organisation propre** : Scripts isolés dans le dossier `playwright/`
+
+### Avantages de l'approche locale
+- **Fiabilité** : Pas de dépendance au serveur MCP
+- **Flexibilité** : Scripts personnalisables selon les besoins
+- **Performance** : Exécution directe sans latence réseau
+- **Debugging** : Logs détaillés et contrôle total
+
+---
+
+## 🚀 Installation et configuration
+
+### Prérequis
+```bash
+# Installation des navigateurs Playwright
+npx playwright install webkit
+
+# Vérification de l'installation
+node playwright/run.js help
+```
+
+### Configuration WebKit (recommandée pour WSL2 ARM64)
+- **Navigateur** : WebKit (compatible ARM64)
+- **Architecture** : Support complet WSL2 ARM64
+- **Performance** : Optimisé pour les tests automatisés
+
+---
+
+## 🎯 Cas d'usage typiques pour KrosmozJdr
+
+### Tests E2E automatisés
+- Test de création d'un personnage : `node playwright/run.js test-form`
+- Test de navigation entre les pages de campagne : `node playwright/run.js nav`
+- Test des formulaires de création d'entités (sorts, objets, etc.)
+- Validation de l'interface utilisateur responsive
+
+### Génération de documentation
+- Capture d'écrans automatiques des pages principales : `node playwright/run.js ss`
+- Documentation des workflows utilisateur
+- Validation visuelle des composants UI
+
+### Debug et développement
+- Analyse des erreurs console en temps réel
+- Test des interactions utilisateur complexes
+- Validation des performances de l'application
+
+---
+
+## 🔧 Création de scripts personnalisés
+
+### Utiliser la classe PlaywrightUniversal
+```javascript
+import { runPlaywrightTask } from './playwright/playwright-universal.js';
+
+runPlaywrightTask('Ma tâche personnalisée', async (pw) => {
+  await pw.navigate('http://localhost:8000');
+  await pw.click('#mon-bouton');
+  await pw.screenshot('resultat.png');
+});
+```
+
+### Ajouter de nouvelles commandes CLI
+Modifier `playwright/playwright-cli.js` pour ajouter de nouvelles tâches.
+
+---
+
+### ✅ Pourquoi cette rule est pertinente
+
+- **AlwaysApply = true** : L'IA a en permanence un contexte clair sur la stack et les outils disponibles
+- **Instruction explicite** sur l'utilisation des scripts Playwright locaux
+- **Solution robuste** pour WSL2 ARM64 sans dépendance au serveur MCP
+- **Organisation propre** avec documentation complète
+- **Flexibilité maximale** pour les tests et l'automatisation
+
+---
+
+> 💡 **Note** : Cette approche remplace efficacement le serveur MCP Playwright tout en étant plus fiable et adaptée à l'environnement WSL2 ARM64.

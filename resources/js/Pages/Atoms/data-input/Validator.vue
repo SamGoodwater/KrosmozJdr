@@ -67,11 +67,19 @@ const validationConfig = computed(() => {
 });
 
 function getAtomClasses() {
-    const classes = ["validator-hint"];
+    const classes = [];
     const state = validationConfig.value.state;
+    const message = validationConfig.value.message;
     
-    if (state && stateMap[state]) {
-        classes.push(stateMap[state]);
+    // Si il y a un message et un état, on affiche le message
+    if (state && message) {
+        // On ne met PAS validator-hint car on veut afficher le message
+        if (stateMap[state]) {
+            classes.push(stateMap[state]);
+        }
+    } else {
+        // Si pas de message, on met validator-hint pour cacher l'élément
+        classes.push("validator-hint");
     }
     
     if (!props.visible) {
@@ -93,4 +101,8 @@ const attrs = computed(() => getCommonAttrs(props));
     </div>
 </template>
 
-<style scoped></style>
+<style scoped lang="scss">
+.validator-hint {
+    display: none;
+}
+</style>

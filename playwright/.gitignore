@@ -1,0 +1,10 @@
+# Captures d'écran générées
+screenshots/
+
+# Fichiers temporaires
+*.tmp
+*.log
+
+# Fichiers de test locaux
+test-*.js
+temp-*.js 

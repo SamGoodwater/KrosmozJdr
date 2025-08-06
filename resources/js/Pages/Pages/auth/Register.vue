@@ -1,7 +1,8 @@
 <script setup>
 import { useForm } from "@inertiajs/vue3";
-import { onMounted, computed } from "vue";
+import { onMounted, computed, ref } from "vue";
 import { usePageTitle } from "@/Composables/layout/usePageTitle";
+import { useNotificationStore } from "@/Composables/stores/useNotificationStore";
 import InputField from "@/Pages/Molecules/data-input/InputField.vue";
 import Btn from "@/Pages/Atoms/action/Btn.vue";
 import Route from "@/Pages/Atoms/action/Route.vue";
@@ -16,46 +17,128 @@ const form = useForm({
 });
 
 const { setPageTitle } = usePageTitle();
+const notificationStore = useNotificationStore();
 
-// Validation computed pour chaque champ
+// Refs pour contrôler la validation des champs
+const nameField = ref(null);
+const emailField = ref(null);
+const passwordField = ref(null);
+const passwordConfirmationField = ref(null);
+
+// Validation computed pour chaque champ (validation locale + serveur)
 const nameValidation = computed(() => {
-    if (!form.errors.name) return null;
-    return {
-        state: 'error',
-        message: form.errors.name,
-        showNotification: false
-    };
+    const name = form.name;
+    
+    // Validation locale
+    if (!name) {
+        return { state: 'error', message: 'Le pseudo est requis', showNotification: false };
+    }
+    if (name.length < 3) {
+        return { state: 'error', message: 'Le pseudo doit contenir au moins 3 caractères', showNotification: false };
+    }
+    
+    // Validation serveur
+    if (form.errors.name) {
+        return { state: 'error', message: form.errors.name, showNotification: false };
+    }
+    
+    return null;
 });
 
 const emailValidation = computed(() => {
-    if (!form.errors.email) return null;
-    return {
-        state: 'error',
-        message: form.errors.email,
-        showNotification: false
-    };
+    const email = form.email;
+    
+    // Validation locale
+    if (!email) {
+        return { state: 'error', message: 'L\'email est requis', showNotification: false };
+    }
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+        return { state: 'error', message: 'Format d\'email invalide', showNotification: false };
+    }
+    
+    // Validation serveur
+    if (form.errors.email) {
+        return { state: 'error', message: form.errors.email, showNotification: false };
+    }
+    
+    return null;
 });
 
 const passwordValidation = computed(() => {
-    if (!form.errors.password) return null;
-    return {
-        state: 'error',
-        message: form.errors.password,
-        showNotification: false
-    };
+    const password = form.password;
+    
+    // Validation locale
+    if (!password) {
+        return { state: 'error', message: 'Le mot de passe est requis', showNotification: false };
+    }
+    if (password.length < 8) {
+        return { state: 'error', message: 'Le mot de passe doit contenir au moins 8 caractères', showNotification: false };
+    }
+    
+    // Validation serveur
+    if (form.errors.password) {
+        return { state: 'error', message: form.errors.password, showNotification: false };
+    }
+    
+    return null;
 });
 
 const passwordConfirmationValidation = computed(() => {
-    if (!form.errors.password_confirmation) return null;
-    return {
-        state: 'error',
-        message: form.errors.password_confirmation,
-        showNotification: false
-    };
+    const password = form.password;
+    const passwordConfirmation = form.password_confirmation;
+    
+    // Validation locale
+    if (!passwordConfirmation) {
+        return { state: 'error', message: 'La confirmation du mot de passe est requise', showNotification: false };
+    }
+    if (password && passwordConfirmation && password !== passwordConfirmation) {
+        return { state: 'error', message: 'Les mots de passe ne correspondent pas', showNotification: false };
+    }
+    
+    // Validation serveur
+    if (form.errors.password_confirmation) {
+        return { state: 'error', message: form.errors.password_confirmation, showNotification: false };
+    }
+    
+    return null;
 });
 
 const submit = () => {
+    // Activer la validation sur tous les champs
+    nameField.value?.enableValidation();
+    emailField.value?.enableValidation();
+    passwordField.value?.enableValidation();
+    passwordConfirmationField.value?.enableValidation();
+    
+    // Validation locale avant envoi
+    const isNameValid = !nameValidation.value;
+    const isEmailValid = !emailValidation.value;
+    const isPasswordValid = !passwordValidation.value;
+    const isPasswordConfirmationValid = !passwordConfirmationValidation.value;
+    
+    if (!isNameValid || !isEmailValid || !isPasswordValid || !isPasswordConfirmationValid) {
+        if (notificationStore) {
+            notificationStore.error('Veuillez corriger les erreurs dans le formulaire', { duration: 5000, placement: 'top-center' });
+        }
+        console.error('Formulaire invalide');
+        return;
+    }
+    
     form.post(route("register"), {
+        onError: (errors) => {
+            if (notificationStore) {
+                const errorMessages = Object.values(errors).join(', ');
+                notificationStore.error('Erreur lors de l\'inscription : ' + errorMessages, { duration: 8000, placement: 'top-center' });
+            }
+            console.error('Erreurs serveur:', errors);
+        },
+        onSuccess: () => {
+            if (notificationStore) {
+                notificationStore.success('Inscription réussie ! Bienvenue !', { duration: 3000, placement: 'top-center' });
+            }
+            console.log('Inscription réussie !');
+        },
         onFinish: () => form.reset("password", "password_confirmation"),
     });
 };
@@ -72,6 +155,7 @@ onMounted(() => {
 
     <form @submit.prevent="submit">
         <InputField
+            ref="nameField"
             id="name"
             variant="glass"
             color="secondary"
@@ -83,11 +167,13 @@ onMounted(() => {
             label="Pseudo"
             placeholder="Pseudo"
             :validation="nameValidation"
+            :validation-enabled="false"
             tabindex="1"
         />
 
         <div class="mt-4">
             <InputField
+                ref="emailField"
                 id="email"
                 variant="glass"
                 color="secondary"
@@ -99,12 +185,14 @@ onMounted(() => {
                 label="Email"
                 placeholder="Email"
                 :validation="emailValidation"
+                :validation-enabled="false"
                 tabindex="2"
             />
         </div>
 
         <div class="mt-4">
             <InputField
+                ref="passwordField"
                 id="password"
                 variant="glass"
                 color="secondary"
@@ -116,6 +204,7 @@ onMounted(() => {
                 label="Mot de passe"
                 placeholder="Mot de passe"
                 :validation="passwordValidation"
+                :validation-enabled="false"
                 tabindex="3"
             >
                 <template #helper>
@@ -141,6 +230,7 @@ onMounted(() => {
 
         <div class="mt-4">
             <InputField
+                ref="passwordConfirmationField"
                 id="password_confirmation"
                 variant="glass"
                 color="secondary"
@@ -152,6 +242,7 @@ onMounted(() => {
                 label="Confirmer le mot de passe"
                 placeholder="Confirmer le mot de passe"
                 :validation="passwordConfirmationValidation"
+                :validation-enabled="false"
                 tabindex="4"
             />
         </div>

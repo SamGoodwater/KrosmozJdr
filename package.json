@@ -43,6 +43,8 @@
     "dependencies": {
         "@csstools/postcss-oklab-function": "^4.0.10",
         "@floating-ui/vue": "^1.1.8",
+        "@playwright/mcp": "0.0.32",
+        "@playwright/test": "^1.54.2",
         "@tailwindcss/postcss": "^4.1.11",
         "@tiptap/pm": "^2.26.1",
         "@tiptap/starter-kit": "^2.26.1",
@@ -56,6 +58,7 @@
         "mysql2": "^3.14.3",
         "pikaday": "^1.8.2",
         "pinia": "^3.0.3",
+        "playwright": "^1.54.2",
         "prettier": "^3.6.2",
         "prettier-plugin-tailwindcss": "^0.6.14",
         "puppeteer": "^24.15.0",

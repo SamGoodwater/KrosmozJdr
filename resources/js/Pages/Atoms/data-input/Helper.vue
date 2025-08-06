@@ -45,14 +45,14 @@
 import { getCommonProps, getCommonAttrs, getCustomUtilityProps, getCustomUtilityClasses, mergeClasses } from '@/Utils/atomic-design/uiHelper';
 
 const colorMap = {
-    neutral: 'text-neutral',
-    primary: 'text-primary',
-    secondary: 'text-secondary',
-    accent: 'text-accent',
-    info: 'text-info',
-    success: 'text-success',
-    warning: 'text-warning',
-    error: 'text-error',
+    neutral: 'color-neutral',
+    primary: 'color-primary',
+    secondary: 'color-secondary',
+    accent: 'color-accent',
+    info: 'color-info',
+    success: 'color-success',
+    warning: 'color-warning',
+    error: 'color-error',
 };
 
 const sizeMap = {
@@ -100,7 +100,7 @@ const effectiveSize = computed(() => {
 const atomClasses = computed(() =>
     mergeClasses(
         [
-            'text-base-content/70',
+            props.value || props.helper ? 'helper' : 'helper-hint',
             effectiveColor.value && colorMap[effectiveColor.value],
             effectiveSize.value && sizeMap[effectiveSize.value],
         ].filter(Boolean),
@@ -119,4 +119,11 @@ const attrs = computed(() => getCommonAttrs(props));
     </div>
 </template>
 
-<style scoped></style> 
+<style scoped lang="scss">
+.helper-hint {
+    display: none;
+}
+.helper {
+    color: color-mix(in oklab, var(--color) 40%, rgba(255, 255, 255, 0.8));
+}
+</style> 
