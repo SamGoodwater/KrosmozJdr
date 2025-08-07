@@ -2,7 +2,7 @@
 import { useForm } from "@inertiajs/vue3";
 import { onMounted, computed, ref } from "vue";
 import { usePageTitle } from "@/Composables/layout/usePageTitle";
-import { useNotificationStore } from "@/Composables/stores/useNotificationStore";
+import { useNotificationStore } from "@/Composables/store/useNotificationStore";
 import InputField from "@/Pages/Molecules/data-input/InputField.vue";
 import Btn from "@/Pages/Atoms/action/Btn.vue";
 import Route from "@/Pages/Atoms/action/Route.vue";

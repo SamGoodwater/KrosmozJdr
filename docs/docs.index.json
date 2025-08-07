@@ -60,9 +60,39 @@
     "description": "- Mettre en place des tests unitaires et d’intégration (backend, frontend)."
   },
   {
+    "path": "100- Done/AUTHENTICATION_ANALYSIS_SYNTHESIS.md",
+    "title": "🔐 Synthèse de l'Analyse - Système d'Authentification KrosmozJDR",
+    "description": "J'ai effectué une **analyse complète et approfondie** du système d'authentification KrosmozJDR. Voici les résultats de cette évaluation :"
+  },
+  {
+    "path": "100- Done/AUTHENTICATION_EXECUTIVE_SUMMARY.md",
+    "title": "📊 Résumé Exécutif - Système d'Authentification KrosmozJDR",
+    "description": "**Note : 9/10** - Système d'authentification de niveau professionnel"
+  },
+  {
+    "path": "100- Done/AUTHENTICATION_SYSTEM_ANALYSIS.md",
+    "title": "🔐 Analyse du Système d'Authentification KrosmozJDR",
+    "description": "Le système d'authentification de KrosmozJDR est un système **moderne et robuste** basé sur Laravel 12 avec Vue 3, utilisant Inertia.js pour la communication frontend-backend. Il intègre des fonctionnalités avancées de validation, de notifications et de gestion d'état."
+  },
+  {
+    "path": "100- Done/COMPLETE_SYSTEMS_ANALYSIS.md",
+    "title": "🔍 Analyse Complète des Systèmes KrosmozJDR",
+    "description": "J'ai effectué une **analyse complète et approfondie** des deux systèmes principaux de KrosmozJDR :"
+  },
+  {
     "path": "100- Done/INPUT_MIGRATION.md",
     "title": "Migration Input — Nouvelle architecture factorisée",
     "description": "- **API centralisée** dans `inputHelper.js`"
+  },
+  {
+    "path": "100- Done/INPUT_SYSTEM_ANALYSIS.md",
+    "title": "🔧 Analyse du Système d'Input KrosmozJDR",
+    "description": "Le système d'input de KrosmozJDR est un **système complexe et sophistiqué** basé sur l'Atomic Design, utilisant Vue 3 avec Composition API. Il intègre des fonctionnalités avancées de validation, d'actions contextuelles, de gestion d'état et de personnalisation."
+  },
+  {
+    "path": "100- Done/INPUT_SYSTEM_EXECUTIVE_SUMMARY.md",
+    "title": "📊 Résumé Exécutif - Système d'Input KrosmozJDR",
+    "description": "**Note : 9/10** - Système d'input de niveau professionnel"
   },
   {
     "path": "100- Done/README.md",
@@ -260,54 +290,64 @@
     "description": "```javascript"
   },
   {
-    "path": "30-UI/COLOR_PICKER_INTEGRATION.md",
-    "title": "Intégration Color Picker avec vue-color-kit",
-    "description": "Les composants de couleur utilisent **vue-color-kit** pour fournir une expérience de sélection de couleur moderne et accessible, tout en s'intégrant parfaitement avec DaisyUI et Vue 3."
-  },
-  {
-    "path": "30-UI/DATE_CALENDAR_INTEGRATION.md",
-    "title": "Intégration Date/Calendar avec Cally",
-    "description": "Les composants de date utilisent le **web component Cally** pour fournir une expérience de sélection de date moderne et accessible, tout en s'intégrant parfaitement avec DaisyUI et Vue 3."
-  },
-  {
     "path": "30-UI/DESIGN_GUIDE.md",
     "title": "Guide de Design Krosmoz-JDR",
     "description": "Le design du site s'appuie sur les principes d'Atomic Design, le glassmorphism et une forte accessibilité. L'interface est responsive et moderne."
   },
   {
-    "path": "30-UI/INPUTS.md",
-    "title": "Inputs — Système Unifié KrosmozJDR",
-    "description": "Le système d'input a été entièrement refactorisé pour offrir une API unifiée et transparente :"
+    "path": "30-UI/INPUT SYSTEM/ACTIONS.md",
+    "title": "🎯 Actions Contextuelles",
+    "description": "Le système d'actions contextuelles permet d'ajouter des **boutons d'action** directement dans les champs de saisie. Ces actions sont **intégrées et non bloquantes**, offrant une UX moderne et intuitive."
   },
   {
-    "path": "30-UI/INPUTS_VALIDATION_NOTIFICATIONS.md",
-    "title": "Inputs, Validation & Notifications — Guide KrosmozJDR",
-    "description": "Ce guide présente l'architecture unifiée des inputs, de la validation et des notifications dans le projet KrosmozJDR. Tous ces systèmes sont conçus pour fonctionner ensemble de manière cohérente et factorisée."
+    "path": "30-UI/INPUT SYSTEM/API_REFERENCE.md",
+    "title": "📚 Référence API - Système d'Input",
+    "description": "Cette référence documente l'**API complète** du système d'input KrosmozJDR. Tous les composants Field partagent la même interface unifiée."
   },
   {
-    "path": "30-UI/INPUT_ARCHITECTURE.md",
-    "title": "Architecture des Inputs - Système Unifié",
-    "description": "Le système d'input fonctionne en trio : **Core** (Atom) + **Field** (Molecule) + **FieldTemplate** (Template)."
+    "path": "30-UI/INPUT SYSTEM/ARCHITECTURE.md",
+    "title": "🏗️ Architecture du Système d'Input",
+    "description": "Le système d'input de KrosmozJDR repose sur une **architecture modulaire et factorisée** basée sur l'Atomic Design, utilisant Vue 3 avec Composition API et DaisyUI."
   },
   {
-    "path": "30-UI/INPUT_MIGRATION_GUIDE.md",
-    "title": "Guide de Migration - Système d'Inputs",
-    "description": "Ce guide explique comment migrer de l'ancien système d'inputs (basé sur des fonctions génériques) vers le nouveau système (basé entièrement sur les tableaux `SPECIFIC_PROPS` et `COMMON_PROPS`)."
+    "path": "30-UI/INPUT SYSTEM/COMPONENTS.md",
+    "title": "🧩 Composants du Système d'Input",
+    "description": "Le système d'input de KrosmozJDR est organisé selon l'Atomic Design avec des **Atoms (Core)** et des **Molecules (Field)**. Chaque type d'input dispose d'un composant Core pour la saisie et d'un composant Field pour l'interface complète."
   },
   {
-    "path": "30-UI/INPUT_STYLES.md",
-    "title": "Système de Style des Inputs",
-    "description": "Le système de style des inputs est un système unifié qui permet de gérer les styles de tous les types d'input de manière cohérente et extensible."
+    "path": "30-UI/INPUT SYSTEM/INSTALLATION.md",
+    "title": "📦 Guide d'Installation",
+    "description": "Ce guide explique comment installer et configurer les **dépendances optionnelles** pour les composants spécialisés Date et Color du système d'input KrosmozJDR."
   },
   {
-    "path": "30-UI/INTEGRATION_VALIDATION_NOTIFICATIONS.md",
-    "title": "Intégration Validation + Notifications — Guide KrosmozJDR",
-    "description": "Ce guide explique comment utiliser ensemble les systèmes de validation et de notifications pour créer une expérience utilisateur cohérente et informative."
+    "path": "30-UI/INPUT SYSTEM/LABELS.md",
+    "title": "🏷️ Système de Labels",
+    "description": "Le système de labels de KrosmozJDR est **complexe et flexible**, offrant 7 positions différentes avec des règles d'exclusion intelligentes. Il distingue les labels **externes** (gérés par les Fields) et **internes** (gérés par les Cores)."
   },
   {
-    "path": "30-UI/LAYOUT.md",
-    "title": "Structure du layout",
-    "description": "- Layout composé d’un aside, header, footer, responsive."
+    "path": "30-UI/INPUT SYSTEM/README.md",
+    "title": "🔧 Système d'Input KrosmozJDR",
+    "description": "Le système d'input de KrosmozJDR est un **système unifié et sophistiqué** basé sur l'Atomic Design, utilisant Vue 3 avec Composition API. Il intègre des fonctionnalités avancées de validation, d'actions contextuelles, de gestion d'état et de personnalisation."
+  },
+  {
+    "path": "30-UI/INPUT SYSTEM/SPECIALIZED_COMPONENTS.md",
+    "title": "🎯 Composants Spécialisés",
+    "description": "Les composants **Date** et **Color** sont des composants spécialisés qui utilisent des librairies externes avec des **systèmes de fallback intelligents**. Ils basculent automatiquement vers les inputs HTML natifs si les librairies ne sont pas disponibles."
+  },
+  {
+    "path": "30-UI/INPUT SYSTEM/STYLING.md",
+    "title": "🎨 Styles et Personnalisation",
+    "description": "Le système d'input de KrosmozJDR utilise **DaisyUI** comme base de styles avec un système de personnalisation flexible. Tous les composants partagent la même API de styles pour une cohérence parfaite."
+  },
+  {
+    "path": "30-UI/INPUT SYSTEM/USAGE_EXAMPLES.md",
+    "title": "💡 Exemples d'Utilisation",
+    "description": "Cette page présente des **exemples pratiques** d'utilisation du système d'input KrosmozJDR dans différents contextes réels."
+  },
+  {
+    "path": "30-UI/INPUT SYSTEM/VALIDATION.md",
+    "title": "✅ Système de Validation Unifié",
+    "description": "Le système de validation du projet KrosmozJDR est **unifié et transparent**. Une seule prop `validation` gère tous les états de validation, avec intégration automatique des notifications."
   },
   {
     "path": "30-UI/NOTIFICATIONS.md",
@@ -317,22 +357,7 @@
   {
     "path": "30-UI/README.md",
     "title": "UI & Atomic Design — KrosmozJDR",
-    "description": "- **[INPUTS.md](./INPUTS.md)** — Structure factorisée des champs de saisie (Core/Field)"
-  },
-  {
-    "path": "30-UI/VALIDATION.md",
-    "title": "Validation — Guide KrosmozJDR",
-    "description": "- **useValidation (Composable)** : Interface réactive simplifiée pour la gestion des validations"
-  },
-  {
-    "path": "30-UI/VALIDATION_EXAMPLES.md",
-    "title": "Exemples de Validation — KrosmozJDR",
-    "description": "Ce fichier contient des exemples pratiques d'utilisation de la nouvelle API de validation simplifiée."
-  },
-  {
-    "path": "30-UI/VALIDATION_NOTIFICATIONS_INTEGRATION.md",
-    "title": "Validation & Notifications — Intégration Avancée",
-    "description": "Ce guide couvre les cas d'usage avancés et les patterns d'intégration entre les systèmes de validation et de notifications."
+    "description": "- **[INPUT SYSTEM/](./INPUT%20SYSTEM/)** — Système d'input complet et organisé"
   },
   {
     "path": "40-DevGuides/IMAGE-GENERATE.md",

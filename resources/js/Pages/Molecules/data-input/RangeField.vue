@@ -73,6 +73,10 @@ const {
   hasWarning,
   hasSuccess,
   
+  // Méthodes de contrôle de validation
+  enableValidation,
+  disableValidation,
+
   // Style
   styleProperties,
   containerClasses,

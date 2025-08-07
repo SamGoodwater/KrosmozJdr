@@ -21,10 +21,11 @@ yarn-error.log
 /.fleet
 /.idea
 /.nova
-/.vscode
+/.vscodes
 /.zed
 /database/*.sqlite
 desktop.ini
+/screenshots
 
 # Fichiers SCSS compilés
 /public/css/*.css

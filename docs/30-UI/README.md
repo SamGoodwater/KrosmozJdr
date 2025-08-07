@@ -2,13 +2,10 @@
 
 ## Navigation rapide
 
-- **[INPUTS.md](./INPUTS.md)** — Structure factorisée des champs de saisie (Core/Field)
-- **[INPUT_ARCHITECTURE.md](./INPUT_ARCHITECTURE.md)** — Factorisation et patterns unifiés
-- **[INPUT_MIGRATION.md](./INPUT_MIGRATION.md)** — Migration vers la nouvelle architecture
+- **[INPUT SYSTEM/](./INPUT%20SYSTEM/)** — Système d'input complet et organisé
 - **[BEST_PRACTICES.md](./BEST_PRACTICES.md)** — Bonnes pratiques et patterns
-- **[VALIDATION.md](./VALIDATION.md)** — Système de validation unifié avec notifications
+- **[ATOMIC_DESIGN.md](./ATOMIC_DESIGN.md)** — Principes Atomic Design
 - **[NOTIFICATIONS.md](./NOTIFICATIONS.md)** — Toasts et feedback utilisateur
-- **[INPUT_STYLES.md](./INPUT_STYLES.md)** — Styles et variants des inputs
 - **[DESIGN_GUIDE.md](./DESIGN_GUIDE.md)** — Guide complet du design system
 
 ## Architecture
@@ -18,12 +15,19 @@
 - **Composables** : Logique réutilisable (`useInputActions`, `useValidation`, etc.)
 - **Helpers** : API centralisée (`inputHelper.js`, `useInputStyle.js`)
 
-## Pattern unifié
+## Documentation organisée
 
-```javascript
-// Toutes les props sont factorisées
-import { getInputProps } from '@/Utils/atomic-design/inputHelper';
-const props = defineProps({ ...getInputProps('input', 'field') });
-```
+Le système d'input dispose d'une documentation complète et organisée dans le dossier **[INPUT SYSTEM/](./INPUT%20SYSTEM/)** :
+
+- **Architecture technique** détaillée
+- **Guide des composants** Core et Field
+- **Système de validation** unifié
+- **Actions contextuelles** intégrées
+- **Styles et personnalisation** avancés
+- **Système de labels** complexe
+- **Composants spécialisés** (Date, Color)
+- **Guide d'installation** des dépendances
+- **Référence API** complète
+- **Exemples d'utilisation** pratiques
 
 **Pour toute question UI, commencez par le fichier correspondant à votre besoin.** 
