@@ -96,6 +96,16 @@ class PlaywrightUniversal {
     return this;
   }
 
+  async evaluate(fn) {
+    console.log(`🔍 Évaluation de script dans la page`);
+    return await this.page.evaluate(fn);
+  }
+
+  async route(pattern, handler) {
+    console.log(`🌐 Configuration de route pour: ${pattern}`);
+    await this.page.route(pattern, handler);
+  }
+
   async close() {
     if (this.browser) {
       console.log('🔒 Fermeture du navigateur');

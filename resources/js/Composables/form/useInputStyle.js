@@ -102,31 +102,31 @@ const COMMON_CLASSES = {
         base: ['bg-transparent', 'border', 'border-gray-300'],
         focus: ['focus:border-primary', 'focus:ring-2', 'focus:ring-primary/20'],
         hover: ['hover:border-primary/60'],
-        animation: ['hover:scale-105', 'focus:scale-102', 'transition-all', 'duration-200']
+        animation: ['hover:scale-101', 'focus:scale-101', 'transition-all', 'duration-200']
     },
     dash: {
         base: ['border-dashed', 'border-2', 'bg-gray-50'],
         focus: ['focus:bg-white'],
         hover: ['hover:bg-gray-100'],
-        animation: ['hover:scale-105', 'focus:scale-102', 'transition-all', 'duration-200']
+        animation: ['hover:scale-101', 'focus:scale-101', 'transition-all', 'duration-200']
     },
     outline: {
         base: ['border-2', 'bg-transparent'],
         focus: ['focus:border-primary', 'focus:ring-2', 'focus:ring-primary/20'],
         hover: ['hover:border-primary/60'],
-        animation: ['hover:scale-105', 'focus:scale-102', 'transition-all', 'duration-200']
+        animation: ['hover:scale-101', 'focus:scale-101', 'transition-all', 'duration-200']
     },
     ghost: {
         base: ['border', 'border-transparent', 'bg-transparent'],
         focus: ['focus:bg-white', 'focus:border-gray-300'],
         hover: ['hover:bg-gray-50'],
-        animation: ['hover:scale-105', 'focus:scale-102', 'transition-all', 'duration-200']
+        animation: ['hover:scale-101', 'focus:scale-101', 'transition-all', 'duration-200']
     },
     soft: {
         base: ['border-b-2', 'border-gray-300', 'bg-transparent', 'rounded-none'],
         focus: ['focus:border-primary', 'focus:ring-0'],
         hover: ['hover:border-primary/60'],
-        animation: ['hover:scale-105', 'focus:scale-102', 'transition-all', 'duration-200']
+        animation: ['hover:scale-101', 'focus:scale-101', 'transition-all', 'duration-200']
     }
 };
 
@@ -162,23 +162,23 @@ const TEXTUAL_INPUT_CONFIG = {
 const NUMERICAL_INPUT_CONFIG = {
     glass: {
         classes: ['range', 'range-primary', 'bg-transparent'],
-        animations: ['hover:scale-105', 'focus:scale-105', 'transition-transform', 'duration-200']
+        animations: ['hover:scale-101', 'focus:scale-101', 'transition-transform', 'duration-200']
     },
     dash: {
         classes: ['range', 'range-primary', 'bg-gray-50'],
-        animations: ['hover:scale-105', 'focus:scale-105', 'transition-transform', 'duration-200']
+        animations: ['hover:scale-101', 'focus:scale-101', 'transition-transform', 'duration-200']
     },
     outline: {
         classes: ['range', 'range-primary', 'bg-transparent'],
-        animations: ['hover:scale-105', 'focus:scale-105', 'transition-transform', 'duration-200']
+        animations: ['hover:scale-101', 'focus:scale-101', 'transition-transform', 'duration-200']
     },
     ghost: {
         classes: ['range', 'range-primary', 'bg-transparent'],
-        animations: ['hover:scale-105', 'focus:scale-105', 'transition-transform', 'duration-200']
+        animations: ['hover:scale-101', 'focus:scale-101', 'transition-transform', 'duration-200']
     },
     soft: {
         classes: ['range', 'range-primary', 'bg-transparent'],
-        animations: ['hover:scale-105', 'focus:scale-105', 'transition-transform', 'duration-200']
+        animations: ['hover:scale-101', 'focus:scale-101', 'transition-transform', 'duration-200']
     }
 };
 
@@ -216,23 +216,23 @@ const SPECIAL_COMPONENT_CONFIG = {
     textarea: {
         glass: {
             classes: ['textarea', 'textarea-primary', 'bg-transparent'],
-            animations: ['hover:scale-105', 'focus:scale-105', 'transition-transform', 'duration-200']
+            animations: ['hover:scale-101', 'focus:scale-101', 'transition-transform', 'duration-200']
         },
         dash: {
             classes: ['textarea', 'textarea-primary', 'bg-gray-50'],
-            animations: ['hover:scale-105', 'focus:scale-105', 'transition-transform', 'duration-200']
+            animations: ['hover:scale-101', 'focus:scale-101', 'transition-transform', 'duration-200']
         },
         outline: {
             classes: ['textarea', 'textarea-primary', 'bg-transparent'], 
-            animations: ['hover:scale-105', 'focus:scale-105', 'transition-transform', 'duration-200']
+            animations: ['hover:scale-101', 'focus:scale-101', 'transition-transform', 'duration-200']
         },
         ghost: {
             classes: ['textarea', 'textarea-primary', 'bg-transparent'],
-            animations: ['hover:scale-105', 'focus:scale-105', 'transition-transform', 'duration-200']
+            animations: ['hover:scale-101', 'focus:scale-101', 'transition-transform', 'duration-200']
         }, 
         soft: {
             classes: ['textarea', 'textarea-primary', 'bg-transparent'],
-            animations: ['hover:scale-105', 'focus:scale-105', 'transition-transform', 'duration-200']
+            animations: ['hover:scale-101', 'focus:scale-101', 'transition-transform', 'duration-200']
         }
     },
     
@@ -240,23 +240,23 @@ const SPECIAL_COMPONENT_CONFIG = {
     select: {
         glass: {
             classes: ['select', 'select-primary', 'bg-transparent'],
-            animations: ['hover:scale-105', 'focus:scale-105', 'transition-transform', 'duration-200']
+            animations: ['hover:scale-101', 'focus:scale-101', 'transition-transform', 'duration-200']
         },
         dash: {
             classes: ['select', 'select-primary', 'bg-gray-50'],
-            animations: ['hover:scale-105', 'focus:scale-105', 'transition-transform', 'duration-200']
+            animations: ['hover:scale-101', 'focus:scale-101', 'transition-transform', 'duration-200']
         },
         outline: {
             classes: ['select', 'select-primary', 'bg-transparent'],
-            animations: ['hover:scale-105', 'focus:scale-105', 'transition-transform', 'duration-200']
+            animations: ['hover:scale-101', 'focus:scale-101', 'transition-transform', 'duration-200']
         },
         ghost: {
             classes: ['select', 'select-primary', 'bg-transparent'],
-            animations: ['hover:scale-105', 'focus:scale-105', 'transition-transform', 'duration-200']
+            animations: ['hover:scale-101', 'focus:scale-101', 'transition-transform', 'duration-200']
         },
         soft: {
             classes: ['select', 'select-primary', 'bg-transparent'],
-            animations: ['hover:scale-105', 'focus:scale-105', 'transition-transform', 'duration-200']
+            animations: ['hover:scale-101', 'focus:scale-101', 'transition-transform', 'duration-200']
         }
     },
     
@@ -264,23 +264,23 @@ const SPECIAL_COMPONENT_CONFIG = {
     file: {
         glass: {
             classes: ['file-input', 'file-input-primary', 'bg-transparent'],
-            animations: ['hover:scale-105', 'focus:scale-105', 'transition-transform', 'duration-200']
+            animations: ['hover:scale-101', 'focus:scale-101', 'transition-transform', 'duration-200']
         },
         dash: {
             classes: ['file-input', 'file-input-primary', 'bg-gray-50'],
-            animations: ['hover:scale-105', 'focus:scale-105', 'transition-transform', 'duration-200']
+            animations: ['hover:scale-101', 'focus:scale-101', 'transition-transform', 'duration-200']
         },
         outline: {
             classes: ['file-input', 'file-input-primary', 'bg-transparent'],
-            animations: ['hover:scale-105', 'focus:scale-105', 'transition-transform', 'duration-200']
+            animations: ['hover:scale-101', 'focus:scale-101', 'transition-transform', 'duration-200']
         },
         ghost: {
             classes: ['file-input', 'file-input-primary', 'bg-transparent'],
-            animations: ['hover:scale-105', 'focus:scale-105', 'transition-transform', 'duration-200']
+            animations: ['hover:scale-101', 'focus:scale-101', 'transition-transform', 'duration-200']
         },
         soft: {
             classes: ['file-input', 'file-input-primary', 'bg-transparent'],
-            animations: ['hover:scale-105', 'focus:scale-105', 'transition-transform', 'duration-200']
+            animations: ['hover:scale-101', 'focus:scale-101', 'transition-transform', 'duration-200']
         }
     },
     
@@ -288,23 +288,23 @@ const SPECIAL_COMPONENT_CONFIG = {
     filter: {
         glass: {
             classes: ['filter', 'filter-primary', 'bg-transparent'],
-            animations: ['hover:scale-105', 'focus:scale-105', 'transition-transform', 'duration-200']
+            animations: ['hover:scale-101', 'focus:scale-101', 'transition-transform', 'duration-200']
         }, 
         dash: {
             classes: ['filter', 'filter-primary', 'bg-gray-50'],
-            animations: ['hover:scale-105', 'focus:scale-105', 'transition-transform', 'duration-200']
+            animations: ['hover:scale-101', 'focus:scale-101', 'transition-transform', 'duration-200']
         },
         outline: {
             classes: ['filter', 'filter-primary', 'bg-transparent'],
-            animations: ['hover:scale-105', 'focus:scale-105', 'transition-transform', 'duration-200']
+            animations: ['hover:scale-101', 'focus:scale-101', 'transition-transform', 'duration-200']
         }, 
         ghost: {
             classes: ['filter', 'filter-primary', 'bg-transparent'],
-            animations: ['hover:scale-105', 'focus:scale-105', 'transition-transform', 'duration-200']
+            animations: ['hover:scale-101', 'focus:scale-101', 'transition-transform', 'duration-200']
         }, 
         soft: {
             classes: ['filter', 'filter-primary', 'bg-transparent'], 
-            animations: ['hover:scale-105', 'focus:scale-105', 'transition-transform', 'duration-200']
+            animations: ['hover:scale-101', 'focus:scale-101', 'transition-transform', 'duration-200']
         }
     },
     
@@ -312,23 +312,23 @@ const SPECIAL_COMPONENT_CONFIG = {
     date: {
         glass: {
             classes: ['cally', 'bg-transparent', 'border', 'border-gray-300'],
-            animations: ['hover-scale-105', 'focus-scale-105', 'transition-transform', 'duration-200']
+            animations: ['hover-scale-101', 'focus-scale-101', 'transition-transform', 'duration-200']
         },
         dash: {
             classes: ['cally', 'border-dashed', 'border-2', 'bg-gray-50'],
-            animations: ['hover-scale-105', 'focus-scale-105', 'transition-transform', 'duration-200']
+            animations: ['hover-scale-101', 'focus-scale-101', 'transition-transform', 'duration-200']
         },
         outline: {
             classes: ['cally', 'border-2', 'bg-transparent'],
-            animations: ['hover-scale-105', 'focus-scale-105', 'transition-transform', 'duration-200']
+            animations: ['hover-scale-101', 'focus-scale-101', 'transition-transform', 'duration-200']
         },
         ghost: {
             classes: ['cally', 'border', 'border-transparent', 'bg-transparent'],
-            animations: ['hover-scale-105', 'focus-scale-105', 'transition-transform', 'duration-200']
+            animations: ['hover-scale-101', 'focus-scale-101', 'transition-transform', 'duration-200']
         },
         soft: {
             classes: ['cally', 'border-b-2', 'border-gray-300', 'bg-transparent', 'rounded-none'],
-            animations: ['hover-scale-105', 'focus-scale-105', 'transition-transform', 'duration-200']
+            animations: ['hover-scale-101', 'focus-scale-101', 'transition-transform', 'duration-200']
         }
     },
     
@@ -336,23 +336,23 @@ const SPECIAL_COMPONENT_CONFIG = {
     color: {
         glass: {
             classes: ['color-picker-container', 'bg-transparent', 'border', 'border-gray-300'],
-            animations: ['hover-scale-105', 'focus-scale-105', 'transition-transform', 'duration-200']
+            animations: ['hover-scale-101', 'focus-scale-101', 'transition-transform', 'duration-200']
         },
         dash: {
             classes: ['color-picker-container', 'border-dashed', 'border-2', 'bg-gray-50'],
-            animations: ['hover-scale-105', 'focus-scale-105', 'transition-transform', 'duration-200']
+            animations: ['hover-scale-101', 'focus-scale-101', 'transition-transform', 'duration-200']
         },
         outline: {
             classes: ['color-picker-container', 'border-2', 'bg-transparent'],
-            animations: ['hover-scale-105', 'focus-scale-105', 'transition-transform', 'duration-200']
+            animations: ['hover-scale-101', 'focus-scale-101', 'transition-transform', 'duration-200']
         },
         ghost: {
             classes: ['color-picker-container', 'border', 'border-transparent', 'bg-transparent'],
-            animations: ['hover-scale-105', 'focus-scale-105', 'transition-transform', 'duration-200']
+            animations: ['hover-scale-101', 'focus-scale-101', 'transition-transform', 'duration-200']
         },
         soft: {
             classes: ['color-picker-container', 'border-b-2', 'border-gray-300', 'bg-transparent', 'rounded-none'],
-            animations: ['hover-scale-105', 'focus-scale-105', 'transition-transform', 'duration-200']
+            animations: ['hover-scale-101', 'focus-scale-101', 'transition-transform', 'duration-200']
         }
     },
     
@@ -363,23 +363,23 @@ const SPECIAL_COMPONENT_CONFIG = {
     rating: {
         glass: {
             classes: ['rating', 'rating-primary', 'bg-transparent'],
-            animations: ['hover:scale-105', 'focus:scale-105', 'transition-transform', 'duration-200']
+            animations: ['hover:scale-101', 'focus:scale-101', 'transition-transform', 'duration-200']
         },
         dash: {
             classes: ['rating', 'rating-primary', 'bg-gray-50'],
-            animations: ['hover:scale-105', 'focus:scale-105', 'transition-transform', 'duration-200']
+            animations: ['hover:scale-101', 'focus:scale-101', 'transition-transform', 'duration-200']
         },
         outline: {
             classes: ['rating', 'rating-primary', 'bg-transparent'],
-            animations: ['hover:scale-105', 'focus:scale-105', 'transition-transform', 'duration-200']
+            animations: ['hover:scale-101', 'focus:scale-101', 'transition-transform', 'duration-200']
         },
         ghost: {
             classes: ['rating', 'rating-primary', 'bg-transparent'],
-            animations: ['hover:scale-105', 'focus:scale-105', 'transition-transform', 'duration-200']
+            animations: ['hover:scale-101', 'focus:scale-101', 'transition-transform', 'duration-200']
         },
         soft: {
             classes: ['rating', 'rating-primary', 'bg-transparent'], 
-            animations: ['hover:scale-105', 'focus:scale-105', 'transition-transform', 'duration-200']
+            animations: ['hover:scale-101', 'focus:scale-101', 'transition-transform', 'duration-200']
         }  
     },
     
@@ -411,23 +411,23 @@ const SPECIAL_COMPONENT_CONFIG = {
     toggle: {
         glass: {
             classes: ['toggle', 'toggle-primary', 'bg-transparent'],
-            animations: ['hover:scale-105', 'checked:translate-x-6', 'transition-all', 'duration-300']
+            animations: ['hover:scale-101', 'checked:translate-x-6', 'transition-all', 'duration-300']
         },
         dash: {
             classes: ['toggle', 'toggle-primary', 'bg-gray-50'],
-            animations: ['hover:scale-105', 'checked:translate-x-6', 'transition-all', 'duration-300']
+            animations: ['hover:scale-101', 'checked:translate-x-6', 'transition-all', 'duration-300']
         },
         outline: {
             classes: ['toggle', 'toggle-primary', 'bg-transparent'],
-            animations: ['hover:scale-105', 'checked:translate-x-6', 'transition-all', 'duration-300']
+            animations: ['hover:scale-101', 'checked:translate-x-6', 'transition-all', 'duration-300']
         },
         ghost: {
             classes: ['toggle', 'toggle-primary', 'bg-transparent'],
-            animations: ['hover:scale-105', 'checked:translate-x-6', 'transition-all', 'duration-300']
+            animations: ['hover:scale-101', 'checked:translate-x-6', 'transition-all', 'duration-300']
         },
         soft: {
             classes: ['toggle', 'toggle-primary', 'bg-transparent'],
-            animations: ['hover:scale-105', 'checked:translate-x-6', 'transition-all', 'duration-300']
+            animations: ['hover:scale-101', 'checked:translate-x-6', 'transition-all', 'duration-300']
         }
     }
 };

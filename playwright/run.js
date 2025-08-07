@@ -27,14 +27,21 @@ Usage: node playwright/run.js <commande> [paramètres...]
   login [url] [email] [password] - Test de connexion
   screenshot [url] [filename] - Capture d'écran
   test-form [url]         - Test de formulaire
+  console [url] [options] - Monitoring de la console
+  network [url] [options] - Monitoring des requêtes réseau
   nav                     - Navigation rapide vers localhost:8000
   ss                      - Capture d'écran rapide de localhost:8000
+  monitor                 - Monitoring console rapide de localhost:8000
+  net                     - Monitoring réseau rapide de localhost:8000
 
 📝 Exemples:
   node playwright/run.js nav
   node playwright/run.js ss ma-capture.png
   node playwright/run.js navigate http://localhost:8000
   node playwright/run.js help
+  node playwright/run.js console http://localhost:8000 --output=console.log --timeout=60000
+  node playwright/run.js network http://localhost:8000 --filter=GET,POST --output=network.log --timeout=60000
+  node playwright/run.js network http://localhost:8000 --status=200,404 --output=network.log --timeout=60000
   `);
   process.exit(0);
 }
@@ -42,7 +49,9 @@ Usage: node playwright/run.js <commande> [paramètres...]
 // Commandes de raccourci
 const shortcuts = {
   'nav': ['navigate', 'http://localhost:8000'],
-  'ss': ['screenshot', 'http://localhost:8000']
+  'ss': ['screenshot', 'http://localhost:8000'],
+  'monitor': ['console', 'http://localhost:8000'],
+  'net': ['network', 'http://localhost:8000']
 };
 
 const command = args[0];

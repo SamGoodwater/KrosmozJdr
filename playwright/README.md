@@ -67,13 +67,15 @@ await pw.close();
 
 ## 📋 Commandes disponibles
 
-| Commande | Description | Exemple |
-|----------|-------------|---------|
-| `navigate` | Navigation vers une URL | `navigate http://localhost:8000` |
-| `login` | Test de connexion | `login http://localhost:8000 user@test.com pass123` |
-| `screenshot` | Capture d'écran | `screenshot http://localhost:8000 capture.png` |
-| `test-form` | Test de formulaire | `test-form http://localhost:8000` |
-| `help` | Afficher l'aide | `help` |
+| Commande      | Description                        | Exemple                                         |
+|---------------|------------------------------------|-------------------------------------------------|
+| `navigate`    | Navigation vers une URL            | `navigate http://localhost:8000`                |
+| `login`       | Test de connexion                  | `login http://localhost:8000 user@test.com pass123` |
+| `screenshot`  | Capture d'écran                    | `screenshot http://localhost:8000 capture.png`  |
+| `test-form`   | Test de formulaire                 | `test-form http://localhost:8000`               |
+| `console`     | Monitoring de la console navigateur| `console http://localhost:8000 --output=console.log --timeout=60000` |
+| `network`     | Monitoring du réseau (requêtes)    | `network http://localhost:8000 --filter=GET,POST --output=network.log` |
+| `help`        | Afficher l'aide                    | `help`                                          |
 
 ## 🔧 Configuration
 
