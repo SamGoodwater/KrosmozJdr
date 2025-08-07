@@ -11,11 +11,11 @@
  *
  * @author
  */
-import { ref, onMounted } from "vue";
+import { ref, onMounted, computed } from "vue";
 import { usePage } from "@inertiajs/vue3";
 import { usePageTitle } from "@/Composables/layout/usePageTitle";
 import { useNotificationStore } from '@/Composables/store/useNotificationStore';
-import { useValidation } from '@/Composables/form/useValidation';
+
 
 // Molecules
 import Hero from "@/Pages/Molecules/navigation/Hero.vue";
@@ -48,8 +48,7 @@ const {
     addNotification 
 } = notificationStore;
 
-// Validation
-const { validateField, setFieldError, setFieldSuccess } = useValidation();
+
 
 // Données réactives pour les tests d'inputs
 const testForm = ref({
@@ -85,49 +84,87 @@ const radioOptions = [
     { label: 'Option 3', value: 'option3' }
 ];
 
-// Tests de validation
-function testNameValidation() {
-    if (testForm.value.name.length < 3) {
-        setFieldError('name', 'Le nom doit contenir au moins 3 caractères');
-    } else {
-        setFieldSuccess('name', 'Nom valide !');
+// Tests de validation avec le nouveau système granulaire
+const nameValidationRules = computed(() => [
+    {
+        rule: (value) => value && value.length >= 3,
+        message: 'Le nom doit contenir au moins 3 caractères',
+        state: 'error',
+        trigger: 'blur'
+    },
+    {
+        rule: (value) => value && value.length >= 5,
+        message: 'Nom valide !',
+        state: 'success',
+        trigger: 'change'
     }
-}
+]);
 
-function testEmailValidation() {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(testForm.value.email)) {
-        setFieldError('email', 'Email invalide');
-    } else {
-        setFieldSuccess('email', 'Email valide !');
+const emailValidationRules = computed(() => [
+    {
+        rule: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+        message: 'Email invalide',
+        state: 'error',
+        trigger: 'blur'
+    },
+    {
+        rule: (value) => value && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value),
+        message: 'Email valide !',
+        state: 'success',
+        trigger: 'change'
     }
-}
+]);
 
-function testPasswordValidation() {
-    if (testForm.value.password.length < 6) {
-        setFieldError('password', 'Le mot de passe doit contenir au moins 6 caractères');
-    } else if (!/\d/.test(testForm.value.password)) {
-        setFieldError('password', 'Le mot de passe doit contenir au moins un chiffre');
-    } else {
-        setFieldSuccess('password', 'Mot de passe sécurisé !');
+const passwordValidationRules = computed(() => [
+    {
+        rule: (value) => value && value.length >= 6,
+        message: 'Le mot de passe doit contenir au moins 6 caractères',
+        state: 'error',
+        trigger: 'blur'
+    },
+    {
+        rule: (value) => value && /\d/.test(value),
+        message: 'Le mot de passe doit contenir au moins un chiffre',
+        state: 'warning',
+        trigger: 'change'
+    },
+    {
+        rule: (value) => value && value.length >= 6 && /\d/.test(value),
+        message: 'Mot de passe sécurisé !',
+        state: 'success',
+        trigger: 'change'
     }
-}
+]);
 
-function testRoleValidation() {
-    if (!testForm.value.role) {
-        setFieldError('role', 'Veuillez sélectionner un rôle');
-    } else {
-        setFieldSuccess('role', 'Rôle sélectionné !');
+const roleValidationRules = computed(() => [
+    {
+        rule: (value) => value && value !== '',
+        message: 'Veuillez sélectionner un rôle',
+        state: 'error',
+        trigger: 'blur'
+    },
+    {
+        rule: (value) => value && value !== '',
+        message: 'Rôle sélectionné !',
+        state: 'success',
+        trigger: 'change'
     }
-}
+]);
 
-function testDescriptionValidation() {
-    if (testForm.value.description.length < 10) {
-        setFieldError('description', 'La description doit contenir au moins 10 caractères');
-    } else {
-        setFieldSuccess('description', 'Description complète !');
+const descriptionValidationRules = computed(() => [
+    {
+        rule: (value) => value && value.length >= 10,
+        message: 'La description doit contenir au moins 10 caractères',
+        state: 'error',
+        trigger: 'blur'
+    },
+    {
+        rule: (value) => value && value.length >= 10,
+        message: 'Description complète !',
+        state: 'success',
+        trigger: 'change'
     }
-}
+]);
 
 // Tests d'actions contextuelles
 function testInputActions() {
@@ -548,8 +585,7 @@ const demoIcons = [
                                         v-model="testForm.name"
                                         placeholder="Votre nom"
                                         variant="glass"
-                                        :validation="{ state: '', message: '' }"
-                                        @blur="testNameValidation"
+                                        :validation-rules="nameValidationRules"
                                         helper="Minimum 3 caractères"
                                     />
                                     
@@ -560,8 +596,7 @@ const demoIcons = [
                                         v-model="testForm.email"
                                         placeholder="votre@email.com"
                                         variant="glass"
-                                        :validation="{ state: '', message: '' }"
-                                        @blur="testEmailValidation"
+                                        :validation-rules="emailValidationRules"
                                         helper="Format email valide requis"
                                     />
                                     
@@ -572,8 +607,7 @@ const demoIcons = [
                                         v-model="testForm.password"
                                         placeholder="Votre mot de passe"
                                         variant="glass"
-                                        :validation="{ state: '', message: '' }"
-                                        @blur="testPasswordValidation"
+                                        :validation-rules="passwordValidationRules"
                                         helper="Minimum 6 caractères avec chiffre"
                                         :actions="['password']"
                                     />
@@ -603,8 +637,7 @@ const demoIcons = [
                                         v-model="testForm.role"
                                         :options="roleOptions"
                                         variant="glass"
-                                        :validation="{ state: '', message: '' }"
-                                        @change="testRoleValidation"
+                                        :validation-rules="roleValidationRules"
                                         helper="Sélectionnez votre rôle"
                                     />
                                     
@@ -614,8 +647,7 @@ const demoIcons = [
                                         v-model="testForm.description"
                                         placeholder="Décrivez-vous..."
                                         variant="glass"
-                                        :validation="{ state: '', message: '' }"
-                                        @blur="testDescriptionValidation"
+                                        :validation-rules="descriptionValidationRules"
                                         helper="Minimum 10 caractères"
                                         rows="3"
                                     />

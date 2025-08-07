@@ -25,7 +25,7 @@ export const maskList = [
     "mask-half-2",
 ];
 // stateList : pour Validator.vue (état de validation)
-export const stateList = ["", "error", "success", "warning", "info"];
+export const stateList = [null, "", "error", "success", "warning", "info"];
 // typeList : pour InputField.vue (types d'input HTML supportés)
 export const typeList = [
     "text",

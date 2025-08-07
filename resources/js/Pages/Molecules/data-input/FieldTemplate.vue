@@ -1,3 +1,42 @@
+<script setup>
+import { computed } from 'vue'
+import InputLabel from '@/Pages/Atoms/data-input/InputLabel.vue'
+import Validator from '@/Pages/Atoms/data-input/Validator.vue'
+import Helper from '@/Pages/Atoms/data-input/Helper.vue'
+import Btn from '@/Pages/Atoms/action/Btn.vue'
+
+const props = defineProps({
+  // API du composable useInputField
+  containerClasses: { type: String, required: true },
+  labelConfig: { type: Object, required: true },
+  inputAttrs: { type: Object, required: true },
+  listeners: { type: Object, required: true },
+  inputRef: { type: [Object, null], default: null }, // Accept ref or null
+  actionsToDisplay: { type: Array, required: true },
+  styleProperties: { type: Object, required: true },
+  validationState: { type: [String, null], default: null }, // Accept String or null
+  validationMessage: { type: [String, null], default: null }, // Accept String or null
+  helper: { type: [String, Object], default: '' },
+  // Nouvelle prop pour détecter le type d'input
+  inputType: { type: String, default: 'input' }
+})
+
+// Classes dynamiques pour le bloc principal selon le type d'input
+const mainBlockClasses = computed(() => {
+  const baseClasses = 'relative'
+  
+  // Types d'inputs avec taille fixe (pas de flex-1)
+  const fixedSizeTypes = ['checkbox', 'radio', 'toggle', 'rating']
+  
+  if (fixedSizeTypes.includes(props.inputType)) {
+    return baseClasses
+  }
+  
+  // Types d'inputs avec taille dynamique (avec flex-1)
+  return `${baseClasses} flex-1`
+})
+</script> 
+
 <template>
   <div :class="containerClasses">
     <!-- 🔼 Label au-dessus -->
@@ -92,7 +131,7 @@
     </InputLabel>
 
     <!-- ⚠️ Validation -->
-    <div v-if="validationState && validationState.trim()" class="mt-1">
+    <div v-if="validationState && validationMessage" class="mt-1">
       <slot name="validator">
         <Validator
           :state="validationState"
@@ -110,42 +149,3 @@
     </div>
   </div>
 </template>
-
-<script setup>
-import { computed } from 'vue'
-import InputLabel from '@/Pages/Atoms/data-input/InputLabel.vue'
-import Validator from '@/Pages/Atoms/data-input/Validator.vue'
-import Helper from '@/Pages/Atoms/data-input/Helper.vue'
-import Btn from '@/Pages/Atoms/action/Btn.vue'
-
-const props = defineProps({
-  // API du composable useInputField
-  containerClasses: { type: String, required: true },
-  labelConfig: { type: Object, required: true },
-  inputAttrs: { type: Object, required: true },
-  listeners: { type: Object, required: true },
-  inputRef: { type: [Object, null], default: null }, // Accept ref or null
-  actionsToDisplay: { type: Array, required: true },
-  styleProperties: { type: Object, required: true },
-  validationState: { type: String, default: '' }, // Accept String with empty default
-  validationMessage: { type: String, default: '' }, // Accept String with empty default
-  helper: { type: [String, Object], default: '' },
-  // Nouvelle prop pour détecter le type d'input
-  inputType: { type: String, default: 'input' }
-})
-
-// Classes dynamiques pour le bloc principal selon le type d'input
-const mainBlockClasses = computed(() => {
-  const baseClasses = 'relative'
-  
-  // Types d'inputs avec taille fixe (pas de flex-1)
-  const fixedSizeTypes = ['checkbox', 'radio', 'toggle', 'rating']
-  
-  if (fixedSizeTypes.includes(props.inputType)) {
-    return baseClasses
-  }
-  
-  // Types d'inputs avec taille dynamique (avec flex-1)
-  return `${baseClasses} flex-1`
-})
-</script> 

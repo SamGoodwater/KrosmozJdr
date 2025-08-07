@@ -47,7 +47,7 @@
       --color-success-content: var(--color-content-dark);
       --color-warning: var(--color-teal-500);
       --color-warning-content: var(--color-content-dark);
-      --color-error: var(--color-pink-500);
+      --color-error: var(--color-red-500);
       --color-error-content: var(--color-content-dark);
   /* Variables de style */
   --radius-selector: 0.125rem;
@@ -92,7 +92,7 @@
     --color-success-content: var(--color-content-light);
     --color-warning: var(--color-teal-400);
     --color-warning-content: var(--color-content-light);
-    --color-error: var(--color-pink-400);
+    --color-error: var(--color-red-400);
     --color-error-content: var(--color-content-light);
 
   /* Variables de style */

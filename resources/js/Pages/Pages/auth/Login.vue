@@ -28,7 +28,27 @@ const notificationStore = inject('notificationStore', null);
 const identifierField = ref(null);
 const passwordField = ref(null);
 
-// Validation basée sur les erreurs serveur (comme Register.vue)
+// Règles de validation granulaire pour l'identifiant
+const identifierValidationRules = computed(() => [
+    {
+        rule: 'required',
+        message: 'Email ou pseudo requis',
+        state: 'error',
+        trigger: 'blur'
+    }
+]);
+
+// Règles de validation granulaire pour le mot de passe
+const passwordValidationRules = computed(() => [
+    {
+        rule: 'required',
+        message: 'Mot de passe requis',
+        state: 'error',
+        trigger: 'blur'
+    }
+]);
+
+// Validation basée sur les erreurs serveur
 const identifierValidation = computed(() => {
     if (form.errors.identifier) {
         return {
@@ -37,17 +57,6 @@ const identifierValidation = computed(() => {
             showNotification: false
         };
     }
-    
-    // Si pas d'erreur serveur, validation locale
-    if (!form.identifier || form.identifier.trim().length === 0) {
-        return {
-            state: 'error',
-            message: 'Email ou pseudo requis',
-            showNotification: false
-        };
-    }
-    
-    // Pas d'erreur - retourner null pour ne pas afficher de validation
     return null;
 });
 
@@ -59,26 +68,11 @@ const passwordValidation = computed(() => {
             showNotification: false
         };
     }
-    
-    // Si pas d'erreur serveur, validation locale
-    if (!form.password || form.password.length === 0) {
-        return {
-            state: 'error',
-            message: 'Mot de passe requis',
-            showNotification: false
-        };
-    }
-    
-    // Pas d'erreur - retourner null pour ne pas afficher de validation
     return null;
 });
 
 // Soumission du formulaire
 function submit() {
-    // Activer la validation pour tous les champs
-    identifierField.value?.enableValidation();
-    passwordField.value?.enableValidation();
-    
     // Validation avant soumission
     const isIdentifierValid = form.identifier && form.identifier.trim().length > 0;
     const isPasswordValid = form.password && form.password.length > 0;
@@ -152,8 +146,9 @@ const isFormValid = computed(() => {
                         required
                         autofocus
                         autocomplete="username"
+                        :validation-rules="identifierValidationRules"
                         :validation="identifierValidation"
-                        :validation-enabled="false"
+                        :parent-control="true"
                         tabindex="1"
                     />
 
@@ -166,8 +161,9 @@ const isFormValid = computed(() => {
                         name="password"
                         required
                         autocomplete="current-password"
+                        :validation-rules="passwordValidationRules"
                         :validation="passwordValidation"
-                        :validation-enabled="false"
+                        :parent-control="true"
                         class="mt-4"
                         tabindex="2"
                         helper="Ne partagez jamais votre mot de passe avec quelqu'un d'autre."

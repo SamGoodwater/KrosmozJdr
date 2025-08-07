@@ -30,13 +30,21 @@ const props = defineProps({
   },
   
   // === VALIDATION ===
+  validationRules: {
+    type: Array,
+    default: () => []
+  },
   validation: {
     type: [Object, String, Boolean],
     default: null
   },
-  validationEnabled: {
+  autoValidate: {
     type: Boolean,
     default: true
+  },
+  parentControl: {
+    type: Boolean,
+    default: false
   },
   
   // === ACTIONS ===
@@ -415,7 +423,69 @@ const dateProps = {
 
 ## 🎯 **API de Validation**
 
-### **Structure de l'objet validation**
+### **Structure des règles de validation**
+```javascript
+const validationRule = {
+  // Règle de validation (fonction, RegExp, ou string)
+  rule: {
+    type: [Function, RegExp, String],
+    required: true
+  },
+  
+  // Message à afficher
+  message: {
+    type: String,
+    required: true
+  },
+  
+  // État de validation
+  state: {
+    type: String,
+    default: 'error',
+    validator: (value) => ['error', 'success', 'warning', 'info'].includes(value)
+  },
+  
+  // Déclencheur de validation
+  trigger: {
+    type: String,
+    default: 'auto',
+    validator: (value) => ['auto', 'manual', 'blur', 'change'].includes(value)
+  },
+  
+  // Priorité de la règle (plus bas = plus prioritaire)
+  priority: {
+    type: Number,
+    default: 1
+  },
+  
+  // Afficher une notification
+  showNotification: {
+    type: Boolean,
+    default: false
+  },
+  
+  // Type de notification
+  notificationType: {
+    type: String,
+    default: 'auto',
+    validator: (value) => ['auto', 'error', 'success', 'warning', 'info'].includes(value)
+  },
+  
+  // Durée de la notification (ms)
+  notificationDuration: {
+    type: Number,
+    default: 5000
+  },
+  
+  // Position de la notification
+  notificationPlacement: {
+    type: String,
+    default: null
+  }
+}
+```
+
+### **Structure de l'objet validation (pour compatibilité)**
 ```javascript
 const validation = {
   // État de validation
@@ -670,12 +740,6 @@ const exposedMethods = {
   },
   clear: () => {
     // Vide le champ
-  },
-  enableValidation: () => {
-    // Active la validation
-  },
-  disableValidation: () => {
-    // Désactive la validation
   }
 }
 ```
@@ -691,8 +755,10 @@ interface InputFieldProps {
   modelValue?: string | number | boolean | Array<any> | Object | File
   label?: string | LabelConfig
   labelPosition?: 'top' | 'bottom' | 'start' | 'end' | 'floating' | 'inside' | 'none'
+  validationRules?: ValidationRule[]
   validation?: ValidationConfig
-  validationEnabled?: boolean
+  autoValidate?: boolean
+  parentControl?: boolean
   actions?: ActionConfig[]
   variant?: 'glass' | 'bordered' | 'filled' | 'ghost'
   color?: 'primary' | 'secondary' | 'accent' | 'success' | 'warning' | 'error' | 'info' | 'neutral' | 'base'
@@ -713,6 +779,18 @@ interface InputFieldProps {
 }
 
 // Types pour la validation
+interface ValidationRule {
+  rule: ((value: any) => boolean) | RegExp | string
+  message: string
+  state?: 'error' | 'success' | 'warning' | 'info'
+  trigger?: 'auto' | 'manual' | 'blur' | 'change'
+  priority?: number
+  showNotification?: boolean
+  notificationType?: 'auto' | 'error' | 'success' | 'warning' | 'info'
+  notificationDuration?: number
+  notificationPlacement?: string
+}
+
 interface ValidationConfig {
   state: 'error' | 'success' | 'warning' | 'info'
   message: string

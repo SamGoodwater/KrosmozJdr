@@ -72,69 +72,62 @@ export default function useInputField({
     value: currentValue.value // Ajouter la valeur actuelle
   }))
 
-  // --- FUSION DES LISTENERS (transparente) ---
-  const mergedListeners = computed(() => ({
-    ...listeners,
-    // Ajouter le gestionnaire d'événement input pour le v-model
-    input: handleInput,
-    // Les événements personnalisés passés via $attrs sont préservés
-    // useInputActions gère le v-model en interne
-  }))
-
-  // --- GESTION DES LABELS ---
-  const labelConfig = computed(() =>
-    processLabelConfig(props.label, props.defaultLabelPosition)
-  )
-
   // --- GESTION DE LA VALIDATION ---
-  // Extraction de la condition et des messages depuis la prop validation
-  const validationConfig = computed(() => {
-    if (!props.validation) return { condition: null, messages: {}, directState: null }
-    
-    // Si c'est une string, regex ou fonction, c'est la condition
-    if (typeof props.validation === 'string' || 
-        props.validation instanceof RegExp || 
-        typeof props.validation === 'function') {
-      return {
-        condition: props.validation,
-        messages: {},
-        directState: null
-      }
-    }
-    
-    // Si c'est un objet avec condition et messages
-    if (typeof props.validation === 'object') {
-      const { condition, messages, state, message, ...otherProps } = props.validation
-      
-      // Support de l'ancienne API pour compatibilité
-      if (state && message) {
-        return {
-          condition: null,
-          messages: {},
-          directState: { state, message }
-        }
-      }
-      
-      // Nouvelle API
-      return {
-        condition: condition || null,
-        messages: messages || {},
-        directState: null
-      }
-    }
-    
-    return { condition: null, messages: {}, directState: null }
-  })
-
+  // Nouveau système de validation granulaire
   const validation = useValidation({
     value: currentValue,
-    condition: validationConfig.value.condition,
-    messages: validationConfig.value.messages,
-    validateOnChange: false,
-    validateOnBlur: true,
-    directState: validationConfig.value.directState,
-    enabled: props.validationEnabled || false // Nouvelle prop
+    rules: props.validationRules || [],
+    externalState: computed(() => props.validation),
+    autoValidate: props.autoValidate !== false,
+    parentControl: props.parentControl || false
   })
+
+  // Gestion des événements pour la validation
+  const handleFocus = (event) => {
+    // Marquer comme interagi dès que l'utilisateur clique sur le champ
+    validation.setInteracted()
+    
+    // Émettre l'événement focus original
+    if (listeners.focus) {
+      listeners.focus(event)
+    }
+  }
+
+  const handleBlur = (event) => {
+    // Marquer comme interagi AVANT la validation
+    validation.setInteracted()
+    
+    // Validation au blur si activée
+    if (props.autoValidate !== false) {
+      validation.validateOnBlur()
+    }
+
+    // Émettre l'événement blur original
+    if (listeners.blur) {
+      listeners.blur(event)
+    }
+  }
+
+  const handleInputEvent = (event) => {
+    // Marquer comme interagi AVANT la validation
+    validation.setInteracted()
+    
+    // Validation au changement si activée
+    if (props.autoValidate !== false) {
+      validation.validateOnChange()
+    }
+
+    // Logique v-model existante
+    handleInput(event)
+  }
+
+  // Fusion des listeners avec validation
+  const mergedListeners = computed(() => ({
+    ...listeners,
+    focus: handleFocus,
+    blur: handleBlur,
+    input: handleInputEvent
+  }))
 
   // Watch pour forcer la validation quand la prop validation change
   watch(() => props.validation, (newValidation) => {
@@ -144,19 +137,8 @@ export default function useInputField({
     }
   }, { immediate: true, deep: true })
 
-  // Watch pour forcer la validation quand validationConfig change
-  watch(() => validationConfig.value, (newConfig) => {
-    validation.validate();
-  }, { deep: true, immediate: true })
-
-  // Watch pour la prop validationEnabled
-  watch(() => props.validationEnabled, (enabled) => {
-    if (enabled) {
-      validation.enableValidation();
-    } else {
-      validation.disableValidation();
-    }
-  }, { immediate: true })
+  // Watch pour l'activation/désactivation de la validation
+  // Plus besoin de watch sur validationEnabled car la logique est maintenant dans useValidation
 
   // --- ÉCOUTE DES ACTIONS POUR RÉINITIALISER LA VALIDATION ---
   const handleAction = (action, value) => {
@@ -164,6 +146,11 @@ export default function useInputField({
       validation.reset()
     }
   }
+
+  // --- GESTION DES LABELS ---
+  const labelConfig = computed(() =>
+    processLabelConfig(props.label, props.defaultLabelPosition)
+  )
 
   // --- GESTION DU STYLE ---
   const styleProperties = computed(() =>
@@ -202,6 +189,7 @@ export default function useInputField({
     // Validation (nouvelle API simplifiée)
     validationState: validation.state,
     validationMessage: validation.message,
+    validationResults: validation.allResults,
     hasInteracted: validation.hasInteracted,
     validate: validation.validate,
     setInteracted: validation.setInteracted,
@@ -213,9 +201,7 @@ export default function useInputField({
     hasInfo: validation.hasInfo,
     isValidationEnabled: validation.isEnabled,
     
-    // Méthodes de contrôle de validation
-    enableValidation: validation.enableValidation,
-    disableValidation: validation.disableValidation,
+    // Méthodes de contrôle de validation - Supprimées car non nécessaires avec le nouveau système
     
     // Style
     styleProperties,

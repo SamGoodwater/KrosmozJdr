@@ -8,6 +8,7 @@ Le système d'input de KrosmozJDR est un **système unifié et sophistiqué** ba
 
 - **Atomic Design** : Séparation claire entre Atoms (Core) et Molecules (Field)
 - **DRY (Don't Repeat Yourself)** : API centralisée, 0 duplication
+- **Validation granulaire** : Règles multiples par champ avec déclencheurs flexibles
 - **Transparence** : Le système ne bloque jamais la logique métier des vues
 - **Unification** : Une seule API pour tous les types d'input
 - **Accessibilité** : Standards WCAG respectés nativement
@@ -77,12 +78,19 @@ Tous les composants sont disponibles automatiquement dans le projet.
     type="email" 
   />
   
-  <!-- Avec validation -->
+  <!-- Avec validation granulaire -->
   <InputField 
     v-model="password" 
     label="Mot de passe" 
     type="password"
-    :validation="{ state: 'error', message: 'Mot de passe trop court' }"
+    :validation-rules="[
+      {
+        rule: (value) => value && value.length >= 8,
+        message: 'Minimum 8 caractères',
+        state: 'error',
+        trigger: 'blur'
+      }
+    ]"
   />
   
   <!-- Avec actions -->
@@ -97,7 +105,7 @@ Tous les composants sont disponibles automatiquement dans le projet.
 ### API unifiée
 Tous les composants Field partagent la même API :
 - **Props** : Héritées automatiquement via `getInputPropsDefinition()`
-- **Validation** : Une seule prop `validation` pour tous les états
+- **Validation** : Règles granulaire via `validationRules` ou validation simple via `validation`
 - **Actions** : Actions contextuelles intégrées
 - **Styles** : Personnalisation via `variant`, `color`, `size`
 
@@ -111,11 +119,12 @@ Tous les composants Field partagent la même API :
 - Template unifié (FieldTemplate)
 - Props dynamiques
 
-### ✅ **Validation robuste**
-- Validation hybride (client + serveur)
+### ✅ **Validation granulaire**
+- Règles multiples par champ
+- Déclencheurs flexibles (auto, manual, blur, change)
 - États multiples (error, success, warning, info)
 - Intégration notifications
-- Contrôle d'affichage
+- Contrôle parent et automatique
 
 ### ✅ **Actions contextuelles**
 - 8 actions intégrées (reset, clear, copy, etc.)

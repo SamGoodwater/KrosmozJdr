@@ -42,11 +42,11 @@ import { mergeClasses } from "@/Utils/atomic-design/uiHelper";
 const props = defineProps({
     ...getCommonProps(),
     state: {
-        type: String,
-        default: "",
-        validator: (v) => stateList.includes(v),
+        type: [String, null],
+        default: null,
+        validator: (v) => v === null || stateList.includes(v),
     },
-    message: { type: String, default: "" },
+    message: { type: [String, null], default: null },
     validation: { type: Object, default: null },
     visible: { type: Boolean, default: true },
     class: { type: String, default: "" },
@@ -71,14 +71,14 @@ function getAtomClasses() {
     const state = validationConfig.value.state;
     const message = validationConfig.value.message;
     
-    // Si il y a un message et un état, on affiche le message
-    if (state && message) {
+    // Si il y a un message et un état valide, on affiche le message
+    if (state && message && state !== '') {
         // On ne met PAS validator-hint car on veut afficher le message
         if (stateMap[state]) {
             classes.push(stateMap[state]);
         }
     } else {
-        // Si pas de message, on met validator-hint pour cacher l'élément
+        // Si pas de message ou pas d'état, on met validator-hint pour cacher l'élément
         classes.push("validator-hint");
     }
     

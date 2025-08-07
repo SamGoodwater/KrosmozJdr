@@ -1,6 +1,6 @@
 <script setup>
 import { useForm } from "@inertiajs/vue3";
-import { onMounted, computed, ref } from "vue";
+import { onMounted } from "vue";
 import { usePageTitle } from "@/Composables/layout/usePageTitle";
 import { useNotificationStore } from "@/Composables/store/useNotificationStore";
 import InputField from "@/Pages/Molecules/data-input/InputField.vue";
@@ -19,157 +19,102 @@ const form = useForm({
 const { setPageTitle } = usePageTitle();
 const notificationStore = useNotificationStore();
 
-// Refs pour contrôler la validation des champs
-const nameField = ref(null);
-const emailField = ref(null);
-const passwordField = ref(null);
-const passwordConfirmationField = ref(null);
-
-// État de validation pour contrôler quand afficher les erreurs locales
-const validationState = ref({
-    name: false,
-    email: false,
-    password: false,
-    password_confirmation: false
-});
-
-// Validation computed pour chaque champ (validation locale + serveur)
-const nameValidation = computed(() => {
-    const name = form.name;
-    
-    // Validation serveur (toujours affichée)
-    if (form.errors.name) {
-        return { state: 'error', message: form.errors.name, showNotification: false };
-    }
-    
-    // Validation locale (seulement si le champ a été touché ET qu'il y a une erreur)
-    if (validationState.value.name) {
-        if (!name) {
-            return { state: 'error', message: 'Le pseudo est requis', showNotification: false };
+// Règles de validation granulaire
+const validationRules = {
+    name: [
+        {
+            rule: 'required',
+            message: 'Le pseudo est requis',
+            state: 'error',
+            trigger: 'blur',
+            priority: 10
+        },
+        {
+            rule: (value) => value && value.length >= 3,
+            message: 'Le pseudo doit contenir au moins 3 caractères',
+            state: 'error',
+            trigger: 'blur',
+            priority: 8
         }
-        if (name.length < 3) {
-            return { state: 'error', message: 'Le pseudo doit contenir au moins 3 caractères', showNotification: false };
+    ],
+    
+    email: [
+        {
+            rule: 'required',
+            message: 'L\'email est requis',
+            state: 'error',
+            trigger: 'blur',
+            priority: 10
+        },
+        {
+            rule: 'email',
+            message: 'Format d\'email invalide',
+            state: 'error',
+            trigger: 'blur',
+            priority: 8
+        },
+        {
+            rule: (value) => value && !value.includes('temp'),
+            message: 'Évitez les emails temporaires',
+            state: 'warning',
+            trigger: 'blur',
+            priority: 5,
+            showNotification: false
         }
-    }
+    ],
     
-    return null;
-});
-
-const emailValidation = computed(() => {
-    const email = form.email;
-    
-    // Validation serveur (toujours affichée)
-    if (form.errors.email) {
-        return { state: 'error', message: form.errors.email, showNotification: false };
-    }
-    
-    // Validation locale (seulement si le champ a été touché ET qu'il y a une erreur)
-    if (validationState.value.email) {
-        if (!email) {
-            return { state: 'error', message: 'L\'email est requis', showNotification: false };
+    password: [
+        {
+            rule: 'required',
+            message: 'Le mot de passe est requis',
+            state: 'error',
+            trigger: 'blur',
+            priority: 10
+        },
+        {
+            rule: (value) => value && value.length >= 8,
+            message: 'Le mot de passe doit contenir au moins 8 caractères',
+            state: 'error',
+            trigger: 'blur',
+            priority: 8
+        },
+        {
+            rule: (value) => /[A-Z]/.test(value),
+            message: 'Ajoutez au moins une majuscule',
+            state: 'warning',
+            trigger: 'change',
+            priority: 5,
+            showNotification: false
+        },
+        {
+            rule: (value) => /\d/.test(value),
+            message: 'Ajoutez des chiffres',
+            state: 'info',
+            trigger: 'change',
+            priority: 3,
+            showNotification: false
         }
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        if (!emailRegex.test(email)) {
-            return { state: 'error', message: 'Format d\'email invalide', showNotification: false };
+    ],
+    
+    password_confirmation: [
+        {
+            rule: 'required',
+            message: 'La confirmation est requise',
+            state: 'error',
+            trigger: 'blur',
+            priority: 10
+        },
+        {
+            rule: (value) => value && value === form.password,
+            message: 'Les mots de passe ne correspondent pas',
+            state: 'error',
+            trigger: 'change',
+            priority: 8
         }
-    }
-    
-    return null;
-});
-
-const passwordValidation = computed(() => {
-    const password = form.password;
-    
-    // Validation serveur (toujours affichée)
-    if (form.errors.password) {
-        return { state: 'error', message: form.errors.password, showNotification: false };
-    }
-    
-    // Validation locale (seulement si le champ a été touché ET qu'il y a une erreur)
-    if (validationState.value.password) {
-        if (!password) {
-            return { state: 'error', message: 'Le mot de passe est requis', showNotification: false };
-        }
-        if (password.length < 8) {
-            return { state: 'error', message: 'Le mot de passe doit contenir au moins 8 caractères', showNotification: false };
-        }
-    }
-    
-    return null;
-});
-
-const passwordConfirmationValidation = computed(() => {
-    const password = form.password;
-    const passwordConfirmation = form.password_confirmation;
-    
-    // Validation serveur (toujours affichée)
-    if (form.errors.password_confirmation) {
-        return { state: 'error', message: form.errors.password_confirmation, showNotification: false };
-    }
-    
-    // Validation locale (seulement si le champ a été touché ET qu'il y a une erreur)
-    if (validationState.value.password_confirmation) {
-        if (!passwordConfirmation) {
-            return { state: 'error', message: 'La confirmation du mot de passe est requise', showNotification: false };
-        }
-        if (password && passwordConfirmation && password !== passwordConfirmation) {
-            return { state: 'error', message: 'Les mots de passe ne correspondent pas', showNotification: false };
-        }
-    }
-    
-    return null;
-});
+    ]
+};
 
 const submit = () => {
-    // Activer la validation sur tous les champs
-    validationState.value = {
-        name: true,
-        email: true,
-        password: true,
-        password_confirmation: true
-    };
-    
-    // Validation locale avant envoi (vérifier directement les valeurs)
-    const name = form.name;
-    const email = form.email;
-    const password = form.password;
-    const passwordConfirmation = form.password_confirmation;
-    
-    let hasErrors = false;
-    
-    // Validation du nom
-    if (!name || name.length < 3) {
-        hasErrors = true;
-    }
-    
-    // Validation de l'email
-    if (!email) {
-        hasErrors = true;
-    } else {
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        if (!emailRegex.test(email)) {
-            hasErrors = true;
-        }
-    }
-    
-    // Validation du mot de passe
-    if (!password || password.length < 8) {
-        hasErrors = true;
-    }
-    
-    // Validation de la confirmation
-    if (!passwordConfirmation || password !== passwordConfirmation) {
-        hasErrors = true;
-    }
-    
-    if (hasErrors) {
-        if (notificationStore) {
-            notificationStore.error('Veuillez corriger les erreurs dans le formulaire', { duration: 5000, placement: 'top-center' });
-        }
-        console.error('Formulaire invalide');
-        return;
-    }
-    
     form.post(route("register"), {
         onError: (errors) => {
             if (notificationStore) {
@@ -188,11 +133,6 @@ const submit = () => {
     });
 };
 
-// Gestionnaires d'événements pour activer la validation
-const handleFieldBlur = (fieldName) => {
-    validationState.value[fieldName] = true;
-};
-
 onMounted(() => {
     setPageTitle("Inscription");
 });
@@ -205,60 +145,54 @@ onMounted(() => {
 
     <form @submit.prevent="submit">
         <InputField
-            ref="nameField"
             id="name"
             variant="glass"
             color="secondary"
             autofocus
-            required
             v-model="form.name"
             autocomplete="pseudo"
             name="name"
             label="Pseudo"
             placeholder="Pseudo"
-            :validation="nameValidation"
-            :validation-enabled="true"
+            :validation-rules="validationRules.name"
+            :validation="form.errors.name ? { state: 'error', message: form.errors.name } : null"
+            :parent-control="false"
             tabindex="1"
-            @blur="handleFieldBlur('name')"
         />
 
         <div class="mt-4">
             <InputField
-                ref="emailField"
                 id="email"
                 variant="glass"
                 color="secondary"
-                required
                 type="email"
                 v-model="form.email"
                 autocomplete="email"
                 name="email"
                 label="Email"
                 placeholder="Email"
-                :validation="emailValidation"
-                :validation-enabled="true"
+                :validation-rules="validationRules.email"
+                :validation="form.errors.email ? { state: 'error', message: form.errors.email } : null"
+                :parent-control="false"
                 tabindex="2"
-                @blur="handleFieldBlur('email')"
             />
         </div>
 
         <div class="mt-4">
             <InputField
-                ref="passwordField"
                 id="password"
                 variant="glass"
                 color="secondary"
-                required
                 type="password"
                 v-model="form.password"
                 autocomplete="new-password"
                 name="password"
                 label="Mot de passe"
                 placeholder="Mot de passe"
-                :validation="passwordValidation"
-                :validation-enabled="true"
+                :validation-rules="validationRules.password"
+                :validation="form.errors.password ? { state: 'error', message: form.errors.password } : null"
+                :parent-control="false"
                 tabindex="3"
-                @blur="handleFieldBlur('password')"
             >
                 <template #helper>
                     <div class="flex items-center gap-2">
@@ -283,21 +217,19 @@ onMounted(() => {
 
         <div class="mt-4">
             <InputField
-                ref="passwordConfirmationField"
                 id="password_confirmation"
                 variant="glass"
                 color="secondary"
-                required
                 type="password"
                 v-model="form.password_confirmation"
                 autocomplete="new-password"
                 name="password_confirmation"
                 label="Confirmer le mot de passe"
                 placeholder="Confirmer le mot de passe"
-                :validation="passwordConfirmationValidation"
-                :validation-enabled="true"
+                :validation-rules="validationRules.password_confirmation"
+                :validation="form.errors.password_confirmation ? { state: 'error', message: form.errors.password_confirmation } : null"
+                :parent-control="false"
                 tabindex="4"
-                @blur="handleFieldBlur('password_confirmation')"
             />
         </div>
 

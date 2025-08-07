@@ -6,7 +6,7 @@ class PlaywrightUniversal {
   constructor(options = {}) {
     this.options = {
       headless: false,
-      screenshotPath: './screenshots',
+      screenshotPath: 'playwright/screenshots',
       timeout: 30000,
       ...options
     };

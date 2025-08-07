@@ -138,31 +138,31 @@ export default function useInputActions({
 }
 ```
 
-### **useValidation.js** - Système de validation
+### **useValidation.js** - Système de validation granulaire
 ```javascript
-// Système de validation transparent et simplifié
+// Système de validation granulaire avec règles multiples
 export function useValidation({
   value,
-  condition = null,
-  messages = {},
-  validateOnChange = false,
-  validateOnBlur = true,
-  directState = null,
-  enabled = false
+  rules = [],
+  externalState = null,
+  autoValidate = true,
+  parentControl = false
 }) {
   // États de validation
-  const validationState = ref('')
-  const validationMessage = ref('')
+  const validationState = ref(null)
+  const validationMessage = ref(null)
   const hasInteracted = ref(false)
   
-  // Fonction de validation
-  const validate = (val = value) => {
-    // Logique de validation selon le type de condition
+  // Fonction de validation granulaire
+  const validate = (trigger = 'auto') => {
+    // Évaluation des règles selon le déclencheur
+    // Tri par priorité et détermination de l'état final
   }
   
   return {
     validationState, validationMessage, hasInteracted,
-    validate, enableValidation, disableValidation
+    validate, validateOnBlur, validateOnChange,
+    setInteracted, reset, isEnabled
   }
 }
 ```
@@ -278,7 +278,7 @@ watch(() => props.validation, (newValidation) => {
 - **Nouveaux types** : Facile d'ajouter de nouveaux inputs
 - **Nouvelles actions** : Système d'actions extensible
 - **Nouveaux styles** : Système de styles flexible
-- **Nouvelles validations** : Système de validation extensible
+- **Nouvelles règles de validation** : Système de validation granulaire extensible
 
 ---
 
@@ -308,15 +308,15 @@ const styleProperties = computed(() =>
 )
 ```
 
-### **Validation personnalisée**
+### **Validation granulaire**
 ```javascript
-// Validation flexible
+// Validation granulaire avec règles multiples
 const validation = useValidation({
   value: currentValue,
-  condition: props.validation?.condition,
-  messages: props.validation?.messages,
-  directState: props.validation?.directState,
-  enabled: props.validationEnabled
+  rules: props.validationRules,
+  externalState: props.validation,
+  autoValidate: props.autoValidate,
+  parentControl: props.parentControl
 })
 ```
 

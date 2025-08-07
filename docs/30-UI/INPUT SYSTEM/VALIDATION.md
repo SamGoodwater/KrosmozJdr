@@ -1,479 +1,408 @@
-# ✅ Système de Validation Unifié
+# ✅ Système de Validation Granulaire
 
 ## 📋 Vue d'ensemble
 
-Le système de validation du projet KrosmozJDR est **unifié et transparent**. Une seule prop `validation` gère tous les états de validation, avec intégration automatique des notifications.
+Le système de validation de KrosmozJDR utilise une **approche granulaire et flexible** permettant de définir plusieurs règles de validation par champ, chacune avec son propre déclencheur, message et état.
 
 ---
 
-## 🎯 **API de Validation Unifiée**
+## 🎯 **API de Validation Granulaire**
 
-### **Prop validation unique**
+### **Prop validationRules**
 ```javascript
-// Une seule prop pour tous les états
-const validation = {
-  state: 'error' | 'success' | 'warning' | 'info',
-  message: 'Message à afficher',
-  showNotification: true | false,
-  notificationType: 'auto' | 'error' | 'success' | 'warning' | 'info',
-  notificationDuration: 5000, // ms
-  notificationPlacement: null // null = position par défaut
-};
+// Règles de validation granulaire
+const validationRules = [
+  {
+    rule: (value) => value.length >= 3,
+    message: 'Minimum 3 caractères',
+    state: 'error',
+    trigger: 'blur', // 'auto', 'manual', 'blur', 'change'
+    priority: 1,
+    showNotification: false
+  },
+  {
+    rule: /^[a-zA-Z\s]+$/,
+    message: 'Lettres et espaces uniquement',
+    state: 'warning',
+    trigger: 'change',
+    priority: 2
+  }
+]
 ```
 
 ### **Utilisation simple**
 ```vue
 <InputField 
-  v-model="email"
-  label="Email"
-  :validation="{ 
-    state: 'error', 
-    message: 'Email invalide',
-    showNotification: true 
-  }"
+  v-model="name"
+  label="Nom"
+  :validation-rules="[
+    {
+      rule: (value) => value.length >= 2,
+      message: 'Nom trop court',
+      state: 'error',
+      trigger: 'blur'
+    }
+  ]"
 />
+```
+
+---
+
+## 🔧 **Types de Règles**
+
+### **Fonction de validation**
+```javascript
+{
+  rule: (value) => {
+    return value.length >= 8 && /[A-Z]/.test(value)
+  },
+  message: 'Minimum 8 caractères avec une majuscule',
+  state: 'error',
+  trigger: 'blur'
+}
+```
+
+### **Expression régulière**
+```javascript
+{
+  rule: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+  message: 'Format d\'email invalide',
+  state: 'error',
+  trigger: 'blur'
+}
+```
+
+### **Pattern de validation**
+```javascript
+{
+  rule: 'required',
+  message: 'Ce champ est requis',
+  state: 'error',
+  trigger: 'blur'
+}
 ```
 
 ---
 
 ## 🎨 **États de Validation**
 
-### **error** - Erreur
-```vue
-<InputField 
-  v-model="password"
-  label="Mot de passe"
-  :validation="{ 
-    state: 'error', 
-    message: 'Mot de passe trop court',
-    showNotification: true 
-  }"
-/>
+### **error** - Erreur critique
+```javascript
+{
+  rule: (value) => !value || value.length < 3,
+  message: 'Champ requis (minimum 3 caractères)',
+  state: 'error',
+  trigger: 'blur'
+}
+```
+
+### **warning** - Avertissement
+```javascript
+{
+  rule: (value) => value && value.length < 8,
+  message: 'Considérez un mot de passe plus long',
+  state: 'warning',
+  trigger: 'change'
+}
+```
+
+### **info** - Information
+```javascript
+{
+  rule: (value) => value && value.length > 0,
+  message: 'Champ rempli correctement',
+  state: 'info',
+  trigger: 'change'
+}
 ```
 
 ### **success** - Succès
+```javascript
+{
+  rule: (value) => value && value.length >= 12,
+  message: 'Mot de passe fort !',
+  state: 'success',
+  trigger: 'change'
+}
+```
+
+---
+
+## ⏰ **Déclencheurs de Validation**
+
+### **auto** - Validation automatique
+```javascript
+{
+  rule: (value) => value.length >= 3,
+  message: 'Minimum 3 caractères',
+  state: 'error',
+  trigger: 'auto' // Se déclenche automatiquement
+}
+```
+
+### **manual** - Validation manuelle
+```javascript
+{
+  rule: (value) => value.length >= 3,
+  message: 'Minimum 3 caractères',
+  state: 'error',
+  trigger: 'manual' // Se déclenche uniquement manuellement
+}
+```
+
+### **blur** - Validation à la perte de focus
+```javascript
+{
+  rule: (value) => value.length >= 3,
+  message: 'Minimum 3 caractères',
+  state: 'error',
+  trigger: 'blur' // Se déclenche quand l'utilisateur quitte le champ
+}
+```
+
+### **change** - Validation au changement
+```javascript
+{
+  rule: (value) => value.length >= 3,
+  message: 'Minimum 3 caractères',
+  state: 'error',
+  trigger: 'change' // Se déclenche à chaque modification
+}
+```
+
+---
+
+## 🎯 **Exemples d'Utilisation**
+
+### **Validation d'email**
 ```vue
 <InputField 
   v-model="email"
   label="Email"
-  :validation="{ 
-    state: 'success', 
-    message: 'Email valide !',
-    showNotification: true 
-  }"
+  :validation-rules="[
+    {
+      rule: 'required',
+      message: 'Email requis',
+      state: 'error',
+      trigger: 'blur'
+    },
+    {
+      rule: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+      message: 'Format d\'email invalide',
+      state: 'error',
+      trigger: 'blur'
+    },
+    {
+      rule: (value) => !value.includes('test'),
+      message: 'Évitez les emails de test',
+      state: 'warning',
+      trigger: 'change'
+    }
+  ]"
 />
 ```
 
-### **warning** - Avertissement
+### **Validation de mot de passe**
 ```vue
 <InputField 
-  v-model="description"
-  label="Description"
-  :validation="{ 
-    state: 'warning', 
-    message: 'Description un peu courte',
-    showNotification: false 
-  }"
+  v-model="password"
+  label="Mot de passe"
+  type="password"
+  :validation-rules="[
+    {
+      rule: 'required',
+      message: 'Mot de passe requis',
+      state: 'error',
+      trigger: 'blur'
+    },
+    {
+      rule: (value) => value && value.length >= 8,
+      message: 'Minimum 8 caractères',
+      state: 'error',
+      trigger: 'blur'
+    },
+    {
+      rule: (value) => value && /[A-Z]/.test(value),
+      message: 'Au moins une majuscule',
+      state: 'warning',
+      trigger: 'change'
+    },
+    {
+      rule: (value) => value && /\d/.test(value),
+      message: 'Au moins un chiffre',
+      state: 'warning',
+      trigger: 'change'
+    },
+    {
+      rule: (value) => value && value.length >= 12,
+      message: 'Mot de passe fort !',
+      state: 'success',
+      trigger: 'change'
+    }
+  ]"
 />
 ```
 
-### **info** - Information
+### **Validation de nom d'utilisateur**
 ```vue
 <InputField 
   v-model="username"
   label="Nom d'utilisateur"
-  :validation="{ 
-    state: 'info', 
-    message: 'Nom d\'utilisateur disponible',
-    showNotification: false 
-  }"
+  :validation-rules="[
+    {
+      rule: 'required',
+      message: 'Nom d\'utilisateur requis',
+      state: 'error',
+      trigger: 'blur'
+    },
+    {
+      rule: (value) => value && value.length >= 3,
+      message: 'Minimum 3 caractères',
+      state: 'error',
+      trigger: 'blur'
+    },
+    {
+      rule: /^[a-zA-Z0-9_]+$/,
+      message: 'Lettres, chiffres et underscore uniquement',
+      state: 'error',
+      trigger: 'blur'
+    },
+    {
+      rule: (value) => value && value.length <= 20,
+      message: 'Maximum 20 caractères',
+      state: 'warning',
+      trigger: 'change'
+    }
+  ]"
 />
 ```
 
 ---
 
-## 🔄 **Validation Locale vs Notifications**
+## 🔄 **Contrôle Parent**
 
-### **Validation locale uniquement**
+### **Désactiver la validation automatique**
 ```vue
 <InputField 
   v-model="name"
   label="Nom"
-  :validation="{ 
-    state: 'error', 
-    message: 'Nom requis' 
-  }"
+  :validation-rules="nameValidationRules"
+  :parent-control="true"
+  :auto-validate="false"
 />
 ```
 
-### **Validation avec notification**
-```vue
-<InputField 
-  v-model="email"
-  label="Email"
-  :validation="{ 
-    state: 'success', 
-    message: 'Email valide !',
-    showNotification: true 
-  }"
-/>
-```
-
-### **Combinaison des deux**
-```vue
-<InputField 
-  v-model="password"
-  label="Mot de passe"
-  :validation="{ 
-    state: 'error', 
-    message: 'Mot de passe trop court',
-    showNotification: true,
-    notificationType: 'error',
-    notificationDuration: 3000
-  }"
-/>
-```
-
----
-
-## 🧠 **Validation Conditionnelle**
-
-### **Validation réactive**
-```vue
-<template>
-  <InputField 
-    v-model="password"
-    label="Mot de passe"
-    :validation="passwordValidation"
-  />
-</template>
-
-<script setup>
-const password = ref('')
-const passwordValidation = computed(() => {
-  if (!password.value) return null
-  
-  if (password.value.length < 8) {
-    return {
-      state: 'error',
-      message: 'Mot de passe trop court',
-      showNotification: true
-    }
-  }
-  
-  if (password.value.length < 12) {
-    return {
-      state: 'warning',
-      message: 'Mot de passe moyen',
-      showNotification: false
-    }
-  }
-  
-  return {
-    state: 'success',
-    message: 'Mot de passe fort !',
-    showNotification: true
-  }
-})
-</script>
-```
-
-### **Validation avec conditions complexes**
+### **Validation manuelle**
 ```vue
 <template>
   <InputField 
     v-model="email"
     label="Email"
-    :validation="emailValidation"
+    :validation-rules="emailValidationRules"
+    :parent-control="true"
+    ref="emailField"
   />
+  <button @click="validateEmail">Valider Email</button>
 </template>
 
 <script setup>
-const email = ref('')
-const emailValidation = computed(() => {
-  if (!email.value) return null
-  
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-  
-  if (!emailRegex.test(email.value)) {
-    return {
-      state: 'error',
-      message: 'Format d\'email invalide',
-      showNotification: true
-    }
-  }
-  
-  // Vérification de domaine spécifique
-  if (email.value.endsWith('@example.com')) {
-    return {
-      state: 'warning',
-      message: 'Évitez les emails de test',
-      showNotification: false
-    }
-  }
-  
-  return {
-    state: 'success',
-    message: 'Email valide',
-    showNotification: true
-  }
-})
+const emailField = ref(null)
+
+function validateEmail() {
+  emailField.value?.validate()
+}
 </script>
 ```
+
+> **Note :** La validation est automatiquement activée dès qu'il y a des règles de validation. Il n'est plus nécessaire d'activer/désactiver manuellement le système.
 
 ---
 
-## 🔧 **Validation Avancée**
-
-### **Validation avec délai**
-```vue
-<template>
-  <InputField 
-    v-model="username"
-    label="Nom d'utilisateur"
-    :validation="usernameValidation"
-  />
-</template>
-
-<script setup>
-const username = ref('')
-const usernameValidation = ref(null)
-
-// Validation avec délai pour éviter trop de requêtes
-watch(username, async (newValue) => {
-  if (!newValue) {
-    usernameValidation.value = null
-    return
-  }
-  
-  // Délai de 500ms
-  await new Promise(resolve => setTimeout(resolve, 500))
-  
-  // Vérification de disponibilité
-  const isAvailable = await checkUsernameAvailability(newValue)
-  
-  usernameValidation.value = {
-    state: isAvailable ? 'success' : 'error',
-    message: isAvailable ? 'Nom disponible' : 'Nom déjà pris',
-    showNotification: true
-  }
-})
-</script>
-```
-
-### **Validation avec règles personnalisées**
-```vue
-<template>
-  <InputField 
-    v-model="phone"
-    label="Téléphone"
-    :validation="phoneValidation"
-  />
-</template>
-
-<script setup>
-const phone = ref('')
-const phoneValidation = computed(() => {
-  if (!phone.value) return null
-  
-  // Règles personnalisées
-  const rules = [
-    { test: /^[0-9+\-\s()]+$/, message: 'Caractères autorisés uniquement' },
-    { test: /^.{10,}$/, message: 'Minimum 10 caractères' },
-    { test: /^.{0,15}$/, message: 'Maximum 15 caractères' }
-  ]
-  
-  for (const rule of rules) {
-    if (!rule.test.test(phone.value)) {
-      return {
-        state: 'error',
-        message: rule.message,
-        showNotification: false
-      }
-    }
-  }
-  
-  return {
-    state: 'success',
-    message: 'Numéro valide',
-    showNotification: true
-  }
-})
-</script>
-```
-
----
-
-## 🎯 **Intégration avec les Notifications**
+## 🎨 **Intégration avec les Notifications**
 
 ### **Notifications automatiques**
-```vue
-<InputField 
-  v-model="email"
-  label="Email"
-  :validation="{ 
-    state: 'success', 
-    message: 'Email valide !',
-    showNotification: true,
-    notificationType: 'success',
-    notificationDuration: 3000
-  }"
-/>
+```javascript
+{
+  rule: (value) => value && value.length >= 8,
+  message: 'Mot de passe sécurisé !',
+  state: 'success',
+  trigger: 'change',
+  showNotification: true,
+  notificationType: 'success',
+  notificationDuration: 3000
+}
 ```
 
 ### **Notifications personnalisées**
-```vue
-<InputField 
-  v-model="password"
-  label="Mot de passe"
-  :validation="{ 
-    state: 'error', 
-    message: 'Mot de passe trop court',
-    showNotification: true,
-    notificationType: 'error',
-    notificationDuration: 5000,
-    notificationPlacement: 'top-end'
-  }"
-/>
-```
-
----
-
-## 🔄 **Validation Transparente**
-
-### **Préservation de la logique métier**
-```vue
-<template>
-  <InputField 
-    v-model="form.identifier"
-    label="Email ou pseudo"
-    :validation="identifierValidation"
-    @blur="validateIdentifier"
-    @input="handleIdentifierInput"
-  />
-</template>
-
-<script setup>
-// Logique spécifique à la vue
-const identifierValidation = ref(null)
-
-function validateIdentifier() {
-  const identifier = form.identifier
-  
-  if (!identifier) {
-    identifierValidation.value = { 
-      state: 'error', 
-      message: 'Champ requis' 
-    }
-    return false
-  }
-  
-  // Validation spécifique email OU pseudo
-  if (identifier.includes('@')) {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-    if (!emailRegex.test(identifier)) {
-      identifierValidation.value = { 
-        state: 'error', 
-        message: 'Email invalide' 
-      }
-      return false
-    }
-  }
-  
-  identifierValidation.value = { 
-    state: 'success', 
-    message: 'Format valide' 
-  }
-  return true
+```javascript
+{
+  rule: (value) => !value || value.length < 3,
+  message: 'Nom trop court',
+  state: 'error',
+  trigger: 'blur',
+  showNotification: true,
+  notificationType: 'error',
+  notificationDuration: 5000,
+  notificationPlacement: 'top-end'
 }
-
-function handleIdentifierInput() {
-  // Logique spécifique lors de la saisie
-  console.log('Identifiant modifié:', form.identifier)
-}
-</script>
-```
-
----
-
-## 🎨 **Styles de Validation**
-
-### **Couleurs automatiques**
-- **error** : Rouge (DaisyUI error)
-- **success** : Vert (DaisyUI success)
-- **warning** : Orange (DaisyUI warning)
-- **info** : Bleu (DaisyUI info)
-
-### **Personnalisation des couleurs**
-```vue
-<InputField 
-  v-model="value"
-  label="Champ"
-  :validation="{ 
-    state: 'error', 
-    message: 'Erreur personnalisée',
-    color: 'secondary' // Couleur personnalisée
-  }"
-/>
 ```
 
 ---
 
 ## 🔧 **Configuration Avancée**
 
-### **Validation avec contrôle d'affichage**
-```vue
-<InputField 
-  v-model="email"
-  label="Email"
-  :validation="emailValidation"
-  :validation-enabled="showValidation"
-/>
+### **Priorité des règles**
+```javascript
+const validationRules = [
+  {
+    rule: 'required',
+    message: 'Champ requis',
+    state: 'error',
+    trigger: 'blur',
+    priority: 1 // Priorité élevée
+  },
+  {
+    rule: (value) => value && value.length < 8,
+    message: 'Considérez une valeur plus longue',
+    state: 'warning',
+    trigger: 'change',
+    priority: 2 // Priorité moyenne
+  }
+]
 ```
 
-### **Validation avec messages dynamiques**
+### **Validation conditionnelle**
 ```vue
 <template>
   <InputField 
     v-model="password"
     label="Mot de passe"
-    :validation="passwordValidation"
+    :validation-rules="passwordValidationRules"
   />
 </template>
 
 <script setup>
 const password = ref('')
-const passwordValidation = computed(() => {
-  if (!password.value) return null
+const passwordValidationRules = computed(() => {
+  const rules = [
+    {
+      rule: 'required',
+      message: 'Mot de passe requis',
+      state: 'error',
+      trigger: 'blur'
+    }
+  ]
   
-  const length = password.value.length
-  const hasNumber = /\d/.test(password.value)
-  const hasLetter = /[a-zA-Z]/.test(password.value)
-  const hasSpecial = /[!@#$%^&*]/.test(password.value)
-  
-  const score = [length >= 8, hasNumber, hasLetter, hasSpecial].filter(Boolean).length
-  
-  const messages = {
-    0: 'Très faible',
-    1: 'Faible',
-    2: 'Moyen',
-    3: 'Bon',
-    4: 'Excellent'
+  if (password.value && password.value.length > 0) {
+    rules.push({
+      rule: (value) => value.length >= 8,
+      message: 'Minimum 8 caractères',
+      state: 'error',
+      trigger: 'blur'
+    })
   }
   
-  const states = {
-    0: 'error',
-    1: 'error',
-    2: 'warning',
-    3: 'success',
-    4: 'success'
-  }
-  
-  return {
-    state: states[score],
-    message: `Force du mot de passe : ${messages[score]}`,
-    showNotification: score >= 3
-  }
+  return rules
 })
 </script>
 ```
@@ -483,16 +412,16 @@ const passwordValidation = computed(() => {
 ## 🚀 **Bonnes Pratiques**
 
 ### ✅ **À faire**
-- Utiliser la prop `validation` unique
-- Combiner validation locale et notifications selon le contexte
-- Créer des validations réactives avec `computed`
-- Préserver la logique métier des vues
-- Utiliser des messages clairs et utiles
+- Utiliser des règles spécifiques et claires
+- Choisir le bon déclencheur selon le contexte
+- Prioriser les règles importantes
+- Utiliser des messages utiles pour l'utilisateur
+- Combiner validation locale et serveur
 
 ### ❌ **À éviter**
-- Ne pas dupliquer la logique de validation
-- Ne pas bloquer la logique métier avec la validation
-- Ne pas utiliser d'anciennes APIs de validation
+- Ne pas surcharger avec trop de règles
+- Ne pas utiliser des règles trop complexes
+- Ne pas ignorer l'expérience utilisateur
 - Ne pas oublier l'accessibilité
 
 ---
@@ -507,4 +436,4 @@ const passwordValidation = computed(() => {
 ---
 
 *Documentation générée le : {{ date('Y-m-d H:i:s') }}*
-*Système de Validation KrosmozJDR v2.0*
+*Système de Validation Granulaire KrosmozJDR v2.0*

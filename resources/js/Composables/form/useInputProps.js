@@ -16,7 +16,7 @@ const NON_HTML_PROPS = [
   'shadow', 'backdrop', 'opacity', 'rounded',
   'labelFloating', 'labelInStart', 'labelInEnd',
   'modelValue', 'field', 'label', 'helper', 'defaultLabelPosition',
-  'validation', 'actions', 'debounceTime', 'options', 'checked',
+  'validation', 'validationRules', 'autoValidate', 'parentControl', 'validationEnabled', 'actions', 'debounceTime', 'options', 'checked',
   'value', 'rows', 'cols', 'number', 'items', 'half', 'format',
   'theme', 'colorsDefault', 'colorsHistoryKey', 'suckerHide',
   'showValue', 'showPreview', 'showFormat', 'showRandom', 'showClear',

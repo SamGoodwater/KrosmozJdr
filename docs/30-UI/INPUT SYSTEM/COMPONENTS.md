@@ -219,7 +219,14 @@ const {
   label="Email"
   type="email"
   placeholder="votre@email.com"
-  :validation="{ state: 'error', message: 'Email invalide' }"
+  :validation-rules="[
+    {
+      rule: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+      message: 'Format d\'email invalide',
+      state: 'error',
+      trigger: 'blur'
+    }
+  ]"
   :actions="['clear', 'copy']"
   helper="Format: nom@domaine.com"
 />
@@ -231,7 +238,14 @@ const {
   v-model="description"
   label="Description"
   placeholder="Décrivez votre projet..."
-  :validation="{ state: 'warning', message: 'Description trop courte' }"
+  :validation-rules="[
+    {
+      rule: (value) => value && value.length >= 50,
+      message: 'Description trop courte',
+      state: 'warning',
+      trigger: 'blur'
+    }
+  ]"
   :actions="['clear']"
   helper="Minimum 50 caractères"
 />
@@ -246,7 +260,14 @@ const {
     { value: 'tech', label: 'Technologie' },
     { value: 'design', label: 'Design' }
   ]"
-  :validation="{ state: 'error', message: 'Catégorie requise' }"
+  :validation-rules="[
+    {
+      rule: 'required',
+      message: 'Catégorie requise',
+      state: 'error',
+      trigger: 'blur'
+    }
+  ]"
   :actions="['reset']"
 />
 ```
@@ -256,7 +277,14 @@ const {
 <CheckboxField 
   v-model="accepted"
   label="J'accepte les conditions"
-  :validation="{ state: 'error', message: 'Vous devez accepter les conditions' }"
+  :validation-rules="[
+    {
+      rule: (value) => value === true,
+      message: 'Vous devez accepter les conditions',
+      state: 'error',
+      trigger: 'blur'
+    }
+  ]"
 />
 ```
 
@@ -269,7 +297,14 @@ const {
     { value: 'male', label: 'Homme' },
     { value: 'female', label: 'Femme' }
   ]"
-  :validation="{ state: 'error', message: 'Genre requis' }"
+  :validation-rules="[
+    {
+      rule: 'required',
+      message: 'Genre requis',
+      state: 'error',
+      trigger: 'blur'
+    }
+  ]"
 />
 ```
 
@@ -326,7 +361,14 @@ const {
   accept=".pdf,.doc,.docx"
   multiple
   helper="Formats acceptés: PDF, DOC, DOCX"
-  :validation="{ state: 'error', message: 'Fichier trop volumineux' }"
+  :validation-rules="[
+    {
+      rule: (value) => value && value.size <= 5 * 1024 * 1024, // 5MB
+      message: 'Fichier trop volumineux',
+      state: 'error',
+      trigger: 'change'
+    }
+  ]"
 />
 ```
 
@@ -351,7 +393,14 @@ const {
   :min="'1900-01-01'"
   :max="'2024-12-31'"
   helper="Format: AAAA-MM-JJ"
-  :validation="{ state: 'error', message: 'Date invalide' }"
+  :validation-rules="[
+    {
+      rule: (value) => value && new Date(value) > new Date('1900-01-01'),
+      message: 'Date invalide',
+      state: 'error',
+      trigger: 'blur'
+    }
+  ]"
 />
 ```
 

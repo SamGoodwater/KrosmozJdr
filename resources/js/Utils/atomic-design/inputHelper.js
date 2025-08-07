@@ -73,6 +73,10 @@ export const COMMON_FIELD_PROPS = [
     { key: 'defaultLabelPosition', type: String, default: 'top', validator: v => ['top', 'bottom', 'start', 'end', 'inStart', 'inEnd', 'floating'].includes(v) },
     { key: 'validation', type: [String, Boolean, Object, Number], default: undefined },
     { key: 'validationEnabled', type: Boolean, default: false }, // Nouvelle prop pour contrôler l'affichage de la validation
+    // Nouvelles props de validation granulaire
+    { key: 'validationRules', type: Array, default: () => [] },
+    { key: 'autoValidate', type: Boolean, default: true },
+    { key: 'parentControl', type: Boolean, default: false },
     { key: 'actions', type: [Array, Object, String], default: undefined },
     { key: 'debounceTime', type: Number, default: 500 },    
 ];

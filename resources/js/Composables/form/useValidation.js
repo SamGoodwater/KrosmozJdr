@@ -2,104 +2,54 @@ import { ref, computed, watch } from 'vue'
 import { inject } from 'vue'
 
 /**
- * useValidation — Système de validation transparent et simplifié
+ * useValidation — Système de validation granulaire et flexible
  * 
- * Ce composable gère la validation sans interférer avec le v-model.
- * Il accepte une condition et un objet de messages, et retourne uniquement l'état.
+ * Ce composable gère la validation avec support de règles multiples,
+ * états différents (error, warning, info, success), et contrôle flexible
+ * du déclenchement.
  * 
  * @param {Object} options
  * @param {any} options.value - Valeur à valider (lecture seule)
- * @param {Function|RegExp|String} options.condition - Condition de validation
- * @param {Object} options.messages - Messages par état avec contrôle des notifications
- * @param {boolean} options.validateOnChange - Valider à chaque changement
- * @param {boolean} options.validateOnBlur - Valider au blur
+ * @param {Array} options.rules - Règles de validation granulaire
+ * @param {Object} options.externalState - État externe (serveur)
+ * @param {boolean} options.autoValidate - Auto-validation au blur/change
+ * @param {boolean} options.parentControl - Le parent peut-il surcharger ?
  * @returns {Object} API de validation simplifiée
  */
 export function useValidation({
   value,
-  condition = null,
-  messages = {},
-  validateOnChange = false,
-  validateOnBlur = true,
-  directState = null, // Nouvelle option pour traiter directement un état
-  enabled = false // Nouvelle prop pour contrôler l'affichage
+  rules = [],
+  externalState = null,
+  autoValidate = true,
+  parentControl = false
 } = {}) {
   const notificationStore = inject('notificationStore', null)
   
   // État de validation
-  const validationState = ref('')
-  const validationMessage = ref('')
+  const validationState = ref(null)
+  const validationMessage = ref(null)
+  const validationResults = ref([]) // Tous les résultats de validation
   const hasInteracted = ref(false)
-  const isEnabled = ref(enabled) // État local pour enabled
-  
-  // Structure par défaut des messages
-  const defaultMessages = {
-    success: { text: 'Valide', notified: false },
-    error: { text: 'Invalide', notified: false },
-    warning: { text: 'Attention', notified: false },
-    info: { text: 'Information', notified: false }
-  }
-  
-  // Fusion des messages avec les valeurs par défaut
-  const mergedMessages = computed(() => ({
-    ...defaultMessages,
-    ...messages
-  }))
-  
-  // Fonction de validation simplifiée
-  const validate = (val = value) => {
-    // Si la validation n'est pas activée, ne pas afficher d'erreurs
-    if (!isEnabled.value) {
-      validationState.value = ''
-      validationMessage.value = ''
-      return ''
-    }
-    
-    // Si on a un état direct, l'utiliser
-    if (directState) {
-      validationState.value = directState.state || ''
-      validationMessage.value = directState.message || ''
-      return directState.state || ''
-    }
-    
-    if (!condition) {
-      validationState.value = ''
-      validationMessage.value = ''
-      return ''
-    }
-    
-    let isValid = true
-    let state = 'success'
-    
-    // Validation selon le type de condition
-    if (typeof condition === 'function') {
-      const result = condition(val)
-      if (typeof result === 'boolean') {
-        isValid = result
-        state = result ? 'success' : 'error'
-      } else if (typeof result === 'object' && result.state) {
-        state = result.state
-        isValid = state !== 'error'
-      } else if (typeof result === 'string') {
-        // Si la condition retourne directement un état (error, success, warning, info)
-        state = result
-        isValid = result !== 'error'
-      }
-    } else if (condition instanceof RegExp) {
-      isValid = condition.test(val)
-      state = isValid ? 'success' : 'error'
-    } else if (typeof condition === 'string') {
-      // Validation par pattern (email, required, etc.)
-      switch (condition) {
+  // Validation activée automatiquement si des règles sont présentes
+  const isEnabled = computed(() => rules.length > 0)
+
+  // Évaluation d'une règle
+  const evaluateRule = (rule, val) => {
+    if (typeof rule.rule === 'function') {
+      return rule.rule(val)
+    } else if (rule.rule instanceof RegExp) {
+      return rule.rule.test(val)
+    } else if (typeof rule.rule === 'string') {
+      // Patterns prédéfinis
+      switch (rule.rule) {
         case 'required':
-          isValid = val && val.toString().trim().length > 0
-          state = isValid ? 'success' : 'error'
-          break
+          return val && val.toString().trim().length > 0
         case 'email':
-          const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-          isValid = emailRegex.test(val)
-          state = isValid ? 'success' : 'error'
-          break
+          return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val)
+        case 'minLength':
+          return val && val.length >= (rule.minLength || 0)
+        case 'maxLength':
+          return val && val.length <= (rule.maxLength || Infinity)
         case 'password':
           const hasUpperCase = /[A-Z]/.test(val)
           const hasLowerCase = /[a-z]/.test(val)
@@ -107,76 +57,131 @@ export function useValidation({
           const hasMinLength = val && val.length >= 8
           
           if (hasUpperCase && hasLowerCase && hasNumbers && hasMinLength) {
-            state = 'success'
+            return true
           } else {
-            state = 'warning'
+            return false
           }
-          break
         default:
-          state = 'success'
+          return true
       }
     }
-    
-    // Mise à jour de l'état
-    validationState.value = state
-    validationMessage.value = mergedMessages.value[state]?.text || ''
-    
-    // Notification si demandée
-    const messageConfig = mergedMessages.value[state]
-    if (messageConfig?.notified && notificationStore && messageConfig.text) {
-      if (state === 'error') {
-        notificationStore.error(messageConfig.text)
-      } else if (state === 'success') {
-        notificationStore.success(messageConfig.text)
-      } else if (state === 'warning') {
-        notificationStore.warning(messageConfig.text)
-      } else if (state === 'info') {
-        notificationStore.info(messageConfig.text)
-      }
-    }
-    
-    return state
+    return true
   }
-  
+
+  // Validation complète
+  const validate = (trigger = 'auto') => {
+    if (!isEnabled.value) {
+      return null;
+    }
+
+    // Ne valider que si l'utilisateur a interagi avec le champ
+    // (évite l'affichage d'erreurs au chargement avec autofocus)
+    if (!hasInteracted.value && trigger !== 'manual') {
+      return null;
+    }
+
+    // Si état externe et parent a le contrôle, l'utiliser
+    if (externalState && parentControl) {
+      validationState.value = externalState.state
+      validationMessage.value = externalState.message
+      validationResults.value = [externalState]
+      return externalState
+    }
+
+    const results = []
+    
+    // Évaluer toutes les règles applicables
+    for (const rule of rules) {
+      if (rule.trigger === trigger || rule.trigger === 'auto') {
+        const isValid = evaluateRule(rule, value.value)
+        if (!isValid) {
+          results.push({
+            ...rule,
+            isValid: false,
+            priority: rule.priority || 0
+          })
+        }
+      }
+    }
+
+    // Trier par priorité et prendre le plus critique
+    if (results.length > 0) {
+      results.sort((a, b) => b.priority - a.priority)
+      const topResult = results[0]
+      
+      validationState.value = topResult.state
+      validationMessage.value = topResult.message
+      validationResults.value = results
+      
+      // Notification si demandée
+      if (topResult.showNotification && notificationStore) {
+        const config = topResult.notificationConfig || {}
+        if (topResult.state === 'error') {
+          notificationStore.error(topResult.message, config)
+        } else if (topResult.state === 'warning') {
+          notificationStore.warning(topResult.message, config)
+        } else if (topResult.state === 'info') {
+          notificationStore.info(topResult.message, config)
+        } else if (topResult.state === 'success') {
+          notificationStore.success(topResult.message, config)
+        }
+      }
+      
+      return {
+        state: topResult.state,
+        message: topResult.message,
+        allResults: results
+      }
+    }
+
+    // Aucune erreur
+    validationState.value = null
+    validationMessage.value = null
+    validationResults.value = []
+    return null
+  }
+
   // Validation au changement si activée
-  if (validateOnChange) {
+  if (autoValidate) {
     watch(value, (newVal) => {
       if (hasInteracted.value) {
-        validate(newVal)
+        validate('change')
       }
     })
   }
-  
-  // Méthodes pour contrôler l'affichage
-  const enableValidation = () => {
-    isEnabled.value = true
-    validate() // Re-valider avec l'état activé
-  }
-  
-  const disableValidation = () => {
-    isEnabled.value = false
-    validationState.value = ''
-    validationMessage.value = ''
-  }
-  
-  // API simplifiée
+
+  // API publique
   return {
-    // État de validation (lecture seule)
+    // État (lecture seule)
     state: computed(() => validationState.value),
     message: computed(() => validationMessage.value),
-    hasInteracted: computed(() => hasInteracted.value),
-    isEnabled: computed(() => isEnabled.value),
+    allResults: computed(() => validationResults.value),
     
-    // Méthodes
+    // Contrôle
+    setState: (newState, newMessage) => {
+      validationState.value = newState
+      validationMessage.value = newMessage
+    },
+    
+    // Validation
     validate,
+    validateOnBlur: () => validate('blur'),
+    validateOnChange: () => validate('change'),
+    
+    // Gestion de l'interaction
     setInteracted: () => { hasInteracted.value = true },
+    hasInteracted: computed(() => hasInteracted.value),
+    
+    // Reset
     reset: () => {
-      validationState.value = ''
-      validationMessage.value = ''
+      validationState.value = null
+      validationMessage.value = null
+      validationResults.value = []
       hasInteracted.value = false
     },
-    enableValidation,
-    disableValidation,
+    
+    // Status
+    isEnabled: computed(() => isEnabled.value),
     
     // Helpers de lecture
     isValid: computed(() => validationState.value !== 'error'),

@@ -55,7 +55,7 @@ async function handleLogin() {
 </script>
 ```
 
-### **Formulaire d'inscription avec validation**
+### **Formulaire d'inscription avec validation granulaire**
 ```vue
 <template>
   <form @submit.prevent="handleRegister" class="space-y-4">
@@ -63,7 +63,20 @@ async function handleLogin() {
       v-model="form.name"
       label="Nom complet"
       placeholder="Votre nom complet"
-      :validation="nameValidation"
+      :validation-rules="[
+        {
+          rule: 'required',
+          message: 'Nom requis',
+          state: 'error',
+          trigger: 'blur'
+        },
+        {
+          rule: (value) => value && value.length >= 2,
+          message: 'Minimum 2 caractères',
+          state: 'error',
+          trigger: 'blur'
+        }
+      ]"
       required
     />
     
@@ -72,7 +85,20 @@ async function handleLogin() {
       label="Email"
       type="email"
       placeholder="votre@email.com"
-      :validation="emailValidation"
+      :validation-rules="[
+        {
+          rule: 'required',
+          message: 'Email requis',
+          state: 'error',
+          trigger: 'blur'
+        },
+        {
+          rule: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+          message: 'Format d\'email invalide',
+          state: 'error',
+          trigger: 'blur'
+        }
+      ]"
       required
     />
     
@@ -81,7 +107,32 @@ async function handleLogin() {
       label="Mot de passe"
       type="password"
       placeholder="Créez un mot de passe"
-      :validation="passwordValidation"
+      :validation-rules="[
+        {
+          rule: 'required',
+          message: 'Mot de passe requis',
+          state: 'error',
+          trigger: 'blur'
+        },
+        {
+          rule: (value) => value && value.length >= 8,
+          message: 'Minimum 8 caractères',
+          state: 'error',
+          trigger: 'blur'
+        },
+        {
+          rule: (value) => value && /[A-Z]/.test(value),
+          message: 'Au moins une majuscule',
+          state: 'warning',
+          trigger: 'change'
+        },
+        {
+          rule: (value) => value && /\d/.test(value),
+          message: 'Au moins un chiffre',
+          state: 'warning',
+          trigger: 'change'
+        }
+      ]"
       :actions="['password']"
       required
     />
@@ -91,7 +142,20 @@ async function handleLogin() {
       label="Confirmer le mot de passe"
       type="password"
       placeholder="Confirmez votre mot de passe"
-      :validation="passwordConfirmationValidation"
+      :validation-rules="[
+        {
+          rule: 'required',
+          message: 'Confirmation requise',
+          state: 'error',
+          trigger: 'blur'
+        },
+        {
+          rule: (value) => value === form.password,
+          message: 'Les mots de passe ne correspondent pas',
+          state: 'error',
+          trigger: 'change'
+        }
+      ]"
       :actions="['password']"
       required
     />
@@ -348,6 +412,172 @@ async function handleProfileUpdate() {
     await updateProfile(profile.value)
   } finally {
     loading.value = false
+  }
+}
+</script>
+```
+
+---
+
+## 🎯 **Validation Granulaire**
+
+### **Validation de mot de passe progressive**
+```vue
+<template>
+  <InputField 
+    v-model="password"
+    label="Mot de passe"
+    type="password"
+    :validation-rules="passwordValidationRules"
+    :actions="['password']"
+  />
+</template>
+
+<script setup>
+const password = ref('')
+
+const passwordValidationRules = computed(() => [
+  {
+    rule: 'required',
+    message: 'Mot de passe requis',
+    state: 'error',
+    trigger: 'blur',
+    priority: 1
+  },
+  {
+    rule: (value) => value && value.length >= 8,
+    message: 'Minimum 8 caractères',
+    state: 'error',
+    trigger: 'blur',
+    priority: 2
+  },
+  {
+    rule: (value) => value && /[A-Z]/.test(value),
+    message: 'Au moins une majuscule',
+    state: 'warning',
+    trigger: 'change',
+    priority: 3
+  },
+  {
+    rule: (value) => value && /\d/.test(value),
+    message: 'Au moins un chiffre',
+    state: 'warning',
+    trigger: 'change',
+    priority: 4
+  },
+  {
+    rule: (value) => value && /[!@#$%^&*]/.test(value),
+    message: 'Au moins un caractère spécial',
+    state: 'warning',
+    trigger: 'change',
+    priority: 5
+  },
+  {
+    rule: (value) => value && value.length >= 12 && /[A-Z]/.test(value) && /\d/.test(value) && /[!@#$%^&*]/.test(value),
+    message: 'Mot de passe fort !',
+    state: 'success',
+    trigger: 'change',
+    priority: 6,
+    showNotification: true
+  }
+])
+</script>
+```
+
+### **Validation d'email avec vérification de domaine**
+```vue
+<template>
+  <InputField 
+    v-model="email"
+    label="Email professionnel"
+    type="email"
+    :validation-rules="emailValidationRules"
+  />
+</template>
+
+<script setup>
+const email = ref('')
+
+const emailValidationRules = computed(() => [
+  {
+    rule: 'required',
+    message: 'Email requis',
+    state: 'error',
+    trigger: 'blur'
+  },
+  {
+    rule: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+    message: 'Format d\'email invalide',
+    state: 'error',
+    trigger: 'blur'
+  },
+  {
+    rule: (value) => !value || !value.includes('test'),
+    message: 'Évitez les emails de test',
+    state: 'warning',
+    trigger: 'change'
+  },
+  {
+    rule: (value) => !value || !value.includes('gmail.com'),
+    message: 'Utilisez votre email professionnel',
+    state: 'info',
+    trigger: 'blur'
+  }
+])
+</script>
+```
+
+### **Validation de nom d'utilisateur avec disponibilité**
+```vue
+<template>
+  <InputField 
+    v-model="username"
+    label="Nom d'utilisateur"
+    :validation-rules="usernameValidationRules"
+    :parent-control="true"
+    ref="usernameField"
+  />
+</template>
+
+<script setup>
+const username = ref('')
+const usernameField = ref(null)
+
+const usernameValidationRules = computed(() => [
+  {
+    rule: 'required',
+    message: 'Nom d\'utilisateur requis',
+    state: 'error',
+    trigger: 'blur'
+  },
+  {
+    rule: (value) => value && value.length >= 3,
+    message: 'Minimum 3 caractères',
+    state: 'error',
+    trigger: 'blur'
+  },
+  {
+    rule: /^[a-zA-Z0-9_]+$/,
+    message: 'Lettres, chiffres et underscore uniquement',
+    state: 'error',
+    trigger: 'blur'
+  },
+  {
+    rule: (value) => value && value.length <= 20,
+    message: 'Maximum 20 caractères',
+    state: 'warning',
+    trigger: 'change'
+  }
+])
+
+// Validation manuelle pour la disponibilité
+async function checkUsernameAvailability() {
+  if (username.value && username.value.length >= 3) {
+    const isAvailable = await api.checkUsername(username.value)
+    if (!isAvailable) {
+      // Ajouter une règle dynamique
+      usernameField.value?.validate()
+    }
   }
 }
 </script>
