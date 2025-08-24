@@ -25,7 +25,7 @@ class UserPolicy
      */
     public function before(User $user): ?bool
     {
-        if ($user->role === User::ROLES['super_admin']) {
+        if ($user->role === User::ROLE_SUPER_ADMIN) { // super_admin = 5
             return true;
         }
         return null; // Important de retourner null pour ne pas court-circuiter les autres méthodes
@@ -74,7 +74,7 @@ class UserPolicy
      */
     public function update(User $user, User $model): bool
     {
-        return $model->id === $user->id || $user->verifyRole(User::ROLES['admin']);
+        return $model->id === $user->id || $user->verifyRole(User::ROLE_ADMIN); // admin = 4
     }
 
     /**
@@ -86,7 +86,7 @@ class UserPolicy
      */
     public function delete(User $user, User $model): bool
     {
-        return $model->id === $user->id || $user->verifyRole(User::ROLES['admin']);
+        return $model->id === $user->id || $user->verifyRole(User::ROLE_ADMIN); // admin = 4
     }
 
     /**
@@ -98,7 +98,7 @@ class UserPolicy
      */
     public function restore(User $user, User $model): bool
     {
-        return $user->verifyRole(User::ROLES['admin']);
+        return $user->verifyRole(User::ROLE_ADMIN); // admin = 4
     }
 
     /**
@@ -110,7 +110,7 @@ class UserPolicy
      */
     public function forceDelete(User $user, User $model): bool
     {
-        return $user->verifyRole(User::ROLES['super_admin']);
+        return $user->verifyRole(User::ROLE_SUPER_ADMIN); // super_admin = 5
     }
 
     /**
@@ -124,13 +124,13 @@ class UserPolicy
     public function updateRole(User $user, User $target): bool
     {
         // Le super_admin peut tout faire (déjà géré par before)
-        if ($user->role === User::ROLES['super_admin']) {
+        if ($user->role === User::ROLE_SUPER_ADMIN) { // super_admin = 5
             return true;
         }
 
         // Un admin peut modifier le rôle de tout le monde sauf des admins et super_admins
-        if ($user->role === User::ROLES['admin']) {
-            return !in_array($target->role, [User::ROLES['admin'], User::ROLES['super_admin']]);
+        if ($user->role === User::ROLE_ADMIN) { // admin = 4
+            return !in_array($target->role, [User::ROLE_ADMIN, User::ROLE_SUPER_ADMIN]); // admin = 4, super_admin = 5
         }
 
         // Les autres rôles ne peuvent rien faire

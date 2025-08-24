@@ -14,7 +14,7 @@ alwaysApply: true
 ## 📦 Stack & Technologies Krosmoz‑JDR
 
 - **Backend** : Laravel 12 (PHP 8.4), MySQL (`krosmozDB`), secrets gérés via `.env` (ne **jamais** versionner ce fichier).
-- **Frontend** : Vue 3, SCSS, Tailwind CSS + DaisyUI, Tiptap comme éditeur WYSIWYG, outil de build esbuild/rollup, multi-langues via vue-i18n.
+- **Frontend** : Vue 3, SCSS, Tailwind CSS + DaisyUI, Tiptap comme éditeur WYSIWYG, outil de build esbuild/rollup, multi-langues via vue-i18n, pnpm.
 - **Tests** : PHPUnit (backend), Vitest ou Jest (frontend), Cypress en end-to-end.
 - **CI/CD** : pipelines GitHub ou GitLab CI automatisant le lint, les tests, le build et le déploiement.
 - Docs projet à jour dans `/docs/` (notamment `TECHNOLOGIES.md`, `PROJECT_STRUCTURE.md`).
@@ -32,13 +32,17 @@ alwaysApply: true
 # Navigation rapide vers localhost:8000
 node playwright/run.js nav
 
+# Connexion automatique
+node playwright/run.js login-admin
+node playwright/run.js login-test
+
 # Capture d'écran rapide
 node playwright/run.js ss ma-capture.png
 
 # Accès à la console
 node playwright/run.js console http://localhost:8000 --output=console.log --timeout=60000
 
-# Accès auw requêtes réseaux
+# Accès aux requêtes réseau
 node playwright/run.js network http://localhost:8000 --filter=GET,POST --output=network.log --timeout=60000
 
 # Afficher l'aide
@@ -52,10 +56,20 @@ playwright/
 ├── playwright-universal.js   # Classe universelle Playwright
 ├── playwright-cli.js         # Interface CLI complète
 ├── run.js                   # Script de raccourci simplifié
+├── tools/                   # Outils de base
+│   ├── auto-login.js        # Connexion automatique
+│   ├── console-monitor.js   # Monitoring de la console
+│   └── network-monitor.js   # Monitoring du réseau
 ├── tasks/                   # Scripts de tâches spécifiques
-│   ├── test-login.js
-│   └── test-navigation.js
-└── screenshots/             # Captures d'écran générées
+│   ├── test-login.js        # Test de connexion
+│   ├── test-navigation.js   # Test de navigation
+│   └── test-authenticated-workflow.js # Tests de workflow authentifié
+├── config/                  # Configuration
+│   └── test-users.js        # Configuration des utilisateurs de test
+├── docs/                    # Documentation
+│   └── AUTO_LOGIN_GUIDE.md  # Guide de connexion automatique
+├── screenshots/             # Captures d'écran générées
+└── temp/                   # Fichiers temporaires (logs, scripts temporaires, screenshots temporaires)
 ```
 
 ---
@@ -132,10 +146,12 @@ node playwright/run.js help
 ## 🎯 Cas d'usage typiques pour KrosmozJdr
 
 ### Tests E2E automatisés
+- Test de connexion automatique : `node playwright/run.js login-admin`
 - Test de création d'un personnage : `node playwright/run.js test-form`
 - Test de navigation entre les pages de campagne : `node playwright/run.js nav`
 - Test des formulaires de création d'entités (sorts, objets, etc.)
 - Validation de l'interface utilisateur responsive
+- Tests de workflow authentifiés : `node playwright/tasks/test-authenticated-workflow.js`
 
 ### Génération de documentation
 - Capture d'écrans automatiques des pages principales : `node playwright/run.js ss`
@@ -150,6 +166,10 @@ node playwright/run.js help
 ---
 
 ## 🔧 Création de scripts personnalisés
+Les scripts personnalisés doivent être organisés selon leur usage :
+- **`playwright/temp/`** : Scripts temporaires, logs, screenshots temporaires
+- **`playwright/tasks/`** : Scripts de tâches spécifiques qui peuvent servir de temps en temps
+- **`playwright/tools/`** : Outils de base réutilisables (connexion, monitoring, etc.)
 
 ### Utiliser la classe PlaywrightUniversal
 ```javascript

@@ -15,14 +15,19 @@ const tasks = {
   },
   
   'login': async (pw) => {
-    const email = args[2] || 'test@example.com';
-    const password = args[3] || 'password123';
+    const userType = args[2] || 'test-user';
+    const { autoLogin } = await import('./tools/auto-login.js');
     
-    await pw.navigate(`${url}/login`);
-    await pw.screenshot('login-page.png');
-    await pw.login(email, password);
-    await pw.waitForNavigation();
-    await pw.screenshot('after-login.png');
+    const config = {
+      url: url,
+      userType: userType,
+      screenshot: true,
+      wait: 2000,
+      verify: true,
+      headless: false
+    };
+    
+    await autoLogin(config);
   },
   
   'screenshot': async (pw) => {
@@ -45,6 +50,74 @@ const tasks = {
     } catch (error) {
       console.log('Formulaire non trouvé ou déjà rempli');
     }
+  },
+  
+  'test-validation': async (pw) => {
+    // Importer et exécuter le test de validation
+    const { runPlaywrightTask: runValidationTest } = await import('./tasks/test-validation-register.js');
+    await runValidationTest('Test validation Register', async (pw) => {
+      // Navigation vers la page register
+      await pw.navigate('http://localhost:8000/register');
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      console.log('📄 Page chargée:', await pw.page.title());
+      
+      // Capture initiale
+      await pw.screenshot('register-initial.png');
+      
+      // Test 1: Focus sur le champ name (ne doit PAS déclencher de validation)
+      console.log('🔍 Test 1: Focus sur le champ name (pas de validation immédiate)');
+      await pw.click('input[name="name"]');
+      await new Promise(resolve => setTimeout(resolve, 500));
+      
+      // Vérifier qu'il n'y a pas de message d'erreur visible
+      const hasErrorAfterFocus = await pw.page.locator('.text-error, .validator, [class*="error"]').count();
+      console.log('❌ Messages d\'erreur après focus:', hasErrorAfterFocus);
+      
+      // Test 2: Blur sur le champ name vide (doit déclencher la validation)
+      console.log('🔍 Test 2: Blur sur le champ name vide');
+      await pw.click('input[name="email"]'); // Déplacer le focus
+      await new Promise(resolve => setTimeout(resolve, 500));
+      
+      // Vérifier qu'il y a maintenant un message d'erreur
+      const hasErrorAfterBlur = await pw.page.locator('.text-error, .validator, [class*="error"]').count();
+      console.log('❌ Messages d\'erreur après blur:', hasErrorAfterBlur);
+      
+      // Test 3: Saisie d'un nom valide
+      console.log('🔍 Test 3: Saisie d\'un nom valide');
+      await pw.click('input[name="name"]');
+      await pw.type('input[name="name"]', 'John');
+      await new Promise(resolve => setTimeout(resolve, 500));
+      
+      // Vérifier que l'erreur a disparu
+      const hasErrorAfterValidInput = await pw.page.locator('.text-error, .validator, [class*="error"]').count();
+      console.log('❌ Messages d\'erreur après saisie valide:', hasErrorAfterValidInput);
+      
+      // Test 4: Test du champ email
+      console.log('🔍 Test 4: Test du champ email');
+      await pw.click('input[name="email"]');
+      await pw.type('input[name="email"]', 'invalid-email');
+      await pw.click('input[name="password"]'); // Blur
+      await new Promise(resolve => setTimeout(resolve, 500));
+      
+      const emailErrors = await pw.page.locator('.text-error, .validator, [class*="error"]').count();
+      console.log('❌ Messages d\'erreur email:', emailErrors);
+      
+      // Test 5: Test du mot de passe
+      console.log('🔍 Test 5: Test du mot de passe');
+      await pw.click('input[name="password"]');
+      await pw.type('input[name="password"]', '123');
+      await pw.click('input[name="password_confirmation"]'); // Blur
+      await new Promise(resolve => setTimeout(resolve, 500));
+      
+      const passwordErrors = await pw.page.locator('.text-error, .validator, [class*="error"]').count();
+      console.log('❌ Messages d\'erreur mot de passe:', passwordErrors);
+      
+      // Capture finale
+      await pw.screenshot('register-validation-test.png');
+      
+      console.log('✅ Tests de validation terminés');
+    });
   },
   
   'console': async () => {
@@ -116,17 +189,26 @@ const tasks = {
 📋 Commandes disponibles:
 
   navigate [url]                    - Navigation vers une URL
-  login [url] [email] [password]    - Test de connexion
+  login [url] [user-type]           - Connexion automatique avec différents types d'utilisateurs
   screenshot [url] [filename]       - Capture d'écran
   test-form [url]                   - Test de formulaire
+  test-validation [url]             - Test du système de validation
   console [url] [options]           - Monitoring de la console
   network [url] [options]           - Monitoring des requêtes réseau
   help                              - Afficher cette aide
 
+👤 Types d'utilisateurs pour login:
+  super-admin                       - contact@jdr.iota21.fr / 0000
+  test-user                         - test@example.com / password
+  admin                             - admin@test.com / password
+  game-master                       - gm@test.com / password
+  player                            - player@test.com / password
+
 📝 Exemples:
 
   node playwright-cli.js navigate http://localhost:8000
-  node playwright-cli.js login http://localhost:8000 user@test.com pass123
+  node playwright-cli.js login http://localhost:8000 super-admin
+  node playwright-cli.js login http://localhost:8000 test-user
   node playwright-cli.js screenshot http://localhost:8000 ma-capture.png
   node playwright-cli.js test-form http://localhost:8000
   node playwright-cli.js console http://localhost:8000 --filter=error,warn

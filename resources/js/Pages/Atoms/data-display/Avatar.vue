@@ -83,8 +83,16 @@ const atomClasses = computed(() =>
     mergeClasses(
         [
             'avatar',
-            'rounded-full',
-        ],
+            // Classes de taille DaisyUI pour l'avatar
+            props.size === 'xs' && 'avatar-xs',
+            props.size === 'sm' && 'avatar-sm',
+            props.size === 'md' && 'avatar-md',
+            props.size === 'lg' && 'avatar-lg',
+            props.size === 'xl' && 'avatar-xl',
+            props.size === '2xl' && 'avatar-2xl',
+            props.size === '3xl' && 'avatar-3xl',
+            props.size === '4xl' && 'avatar-4xl',
+        ].filter(Boolean),
         getCustomUtilityClasses(props),
         props.class
     )
@@ -92,7 +100,6 @@ const atomClasses = computed(() =>
 const innerClasses = computed(() =>
     mergeClasses(
         [
-            props.size && sizeMap[props.size],
             props.rounded && roundedMap[props.rounded],
             props.ring && ringMap[props.ring] && 'ring',
             props.ring && ringMap[props.ring],
@@ -127,8 +134,14 @@ function onStart() {
     <div :class="atomClasses" v-bind="attrs" v-on="$attrs">
         <div :class="innerClasses">
             <template v-if="props.src && !imageError">
-                <img :src="props.src" :alt="props.alt" @load="onLoad" @error="onError" @loadstart="onStart"
-                    class="w-full h-full object-cover" />
+                <img 
+                    :src="props.src" 
+                    :alt="props.alt" 
+                    @load="onLoad" 
+                    @error="onError" 
+                    @loadstart="onStart"
+                    class="w-full h-full object-cover rounded-full" 
+                />
                 <template v-if="isLoading">
                     <slot name="loader">
                         <Loading type="spinner" size="sm" color="primary" />
@@ -144,4 +157,60 @@ function onStart() {
     </div>
 </template>
 
-<style scoped></style>
+<style scoped>
+/* Classes de taille pour l'avatar si DaisyUI ne les fournit pas */
+.avatar-xs {
+    width: 0.875rem;
+    height: 0.875rem;
+    font-size: 0.875rem;
+}
+
+.avatar-sm {
+    width: 1rem;
+    height: 1rem;
+    font-size: 1rem;
+}
+
+.avatar-md {
+    width: 1.5rem;
+    height: 1.5rem;
+    font-size: 1.5rem;
+}
+
+.avatar-lg {
+    width: 2rem;
+    height: 2rem;
+    font-size: 2rem;
+}
+
+.avatar-xl {
+    width: 2.5rem;
+    height: 2.5rem;
+    font-size: 2.5rem;
+}
+
+.avatar-2xl {
+    width: 4rem;
+    height: 4rem;
+    font-size: 4rem;
+}
+
+.avatar-3xl {
+    width: 6rem;
+    height: 6rem;
+    font-size: 6rem;
+}
+
+.avatar-4xl {
+    width: 8rem;
+    height: 8rem;
+    font-size: 8rem;
+}
+
+/* Style de base pour l'avatar */
+.avatar {
+    position: relative;
+    display: inline-block;
+    border-radius: 50%;
+}
+</style>

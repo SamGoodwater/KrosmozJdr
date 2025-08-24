@@ -24,18 +24,22 @@ Usage: node playwright/run.js <commande> [paramètres...]
 📋 Commandes disponibles:
   help                    - Afficher l'aide complète
   navigate [url]          - Navigation vers une URL
-  login [url] [email] [password] - Test de connexion
+  login [url] [user-type] - Connexion automatique avec différents types d'utilisateurs
   screenshot [url] [filename] - Capture d'écran
   test-form [url]         - Test de formulaire
   console [url] [options] - Monitoring de la console
   network [url] [options] - Monitoring des requêtes réseau
   nav                     - Navigation rapide vers localhost:8000
+  login-admin             - Connexion rapide en tant que super admin
+  login-test              - Connexion rapide en tant qu'utilisateur de test
   ss                      - Capture d'écran rapide de localhost:8000
   monitor                 - Monitoring console rapide de localhost:8000
   net                     - Monitoring réseau rapide de localhost:8000
 
 📝 Exemples:
   node playwright/run.js nav
+  node playwright/run.js login-admin
+  node playwright/run.js login-test
   node playwright/run.js ss ma-capture.png
   node playwright/run.js navigate http://localhost:8000
   node playwright/run.js help
@@ -51,7 +55,9 @@ const shortcuts = {
   'nav': ['navigate', 'http://localhost:8000'],
   'ss': ['screenshot', 'http://localhost:8000'],
   'monitor': ['console', 'http://localhost:8000'],
-  'net': ['network', 'http://localhost:8000']
+  'net': ['network', 'http://localhost:8000'],
+  'login-admin': ['login', 'http://localhost:8000', 'super-admin'],
+  'login-test': ['login', 'http://localhost:8000', 'test-user']
 };
 
 const command = args[0];

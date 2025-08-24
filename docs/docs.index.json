@@ -75,6 +75,11 @@
     "description": "Le système d'authentification de KrosmozJDR est un système **moderne et robuste** basé sur Laravel 12 avec Vue 3, utilisant Inertia.js pour la communication frontend-backend. Il intègre des fonctionnalités avancées de validation, de notifications et de gestion d'état."
   },
   {
+    "path": "100- Done/AUTO_LOGIN_PLAYWRIGHT_IMPLEMENTATION.md",
+    "title": "🔐 Implémentation du Système de Connexion Automatique Playwright",
+    "description": "Cette documentation décrit l'implémentation complète du système de connexion automatique Playwright pour le projet KrosmozJDR. Ce système permet de se connecter automatiquement avec différents types d'utilisateurs pour faciliter les tests E2E et le développement."
+  },
+  {
     "path": "100- Done/COMPLETE_SYSTEMS_ANALYSIS.md",
     "title": "🔍 Analyse Complète des Systèmes KrosmozJDR",
     "description": "J'ai effectué une **analyse complète et approfondie** des deux systèmes principaux de KrosmozJDR :"
@@ -346,8 +351,8 @@
   },
   {
     "path": "30-UI/INPUT SYSTEM/VALIDATION.md",
-    "title": "✅ Système de Validation Unifié",
-    "description": "Le système de validation du projet KrosmozJDR est **unifié et transparent**. Une seule prop `validation` gère tous les états de validation, avec intégration automatique des notifications."
+    "title": "✅ Système de Validation Granulaire",
+    "description": "Le système de validation de KrosmozJDR utilise une **approche granulaire et flexible** permettant de définir plusieurs règles de validation par champ, chacune avec son propre déclencheur, message et état."
   },
   {
     "path": "30-UI/NOTIFICATIONS.md",

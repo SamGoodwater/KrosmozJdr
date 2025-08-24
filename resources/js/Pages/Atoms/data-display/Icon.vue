@@ -153,7 +153,19 @@ const faClasses = computed(() => {
     ]);
 });
 
-const attrs = computed(() => getCommonAttrs(props));
+// Gestion des attributs d'accessibilité pour éviter les conflits
+const attrs = computed(() => {
+    const commonAttrs = getCommonAttrs(props);
+    
+    // Si l'icône est dans un contexte interactif (bouton, lien), 
+    // on retire tabindex pour éviter les conflits d'accessibilité
+    if (commonAttrs.tabindex !== undefined) {
+        const { tabindex, ...rest } = commonAttrs;
+        return rest;
+    }
+    
+    return commonAttrs;
+});
 </script>
 
 <template>
