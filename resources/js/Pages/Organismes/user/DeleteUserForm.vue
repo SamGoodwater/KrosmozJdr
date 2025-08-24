@@ -39,7 +39,7 @@ const confirmUserDeletion = () => {
 };
 
 const deleteUser = () => {
-    form.delete(route('profile.destroy'), {
+    form.delete(route('profile.delete'), {
         preserveScroll: true,
         onSuccess: () => {
             closeModal();

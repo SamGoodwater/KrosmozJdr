@@ -2197,6 +2197,16 @@
         "desc": "- Texte alternatif (obligatoire)"
       },
       {
+        "name": "label",
+        "type": "String",
+        "desc": "- Texte pour générer les initiales (optionnel, utilise alt si non fourni)"
+      },
+      {
+        "name": "defaultAvatar",
+        "type": "String",
+        "desc": "- URL de l'image par défaut (optionnel)"
+      },
+      {
         "name": "size",
         "type": "String",
         "desc": "- Taille prédéfinie (xs, sm, md, lg, xl, 2xl, 3xl, 4xl)"
@@ -2360,52 +2370,67 @@
   },
   {
     "name": "Dropdown",
-    "description": "Dropdown Atom (DaisyUI)",
+    "description": "Dropdown Atom (Custom)",
     "props": [
+      {
+        "name": "trigger",
+        "type": "String",
+        "desc": "- Texte du trigger (optionnel si slot #trigger)"
+      },
+      {
+        "name": "variant",
+        "type": "String",
+        "desc": "- Variant du trigger (glass, ghost, outline, etc.)"
+      },
+      {
+        "name": "color",
+        "type": "String",
+        "desc": "- Couleur du trigger (primary, secondary, neutral, etc.)"
+      },
+      {
+        "name": "size",
+        "type": "String",
+        "desc": "- Taille du trigger (xs, sm, md, lg, xl)"
+      },
       {
         "name": "placement",
         "type": "String",
-        "desc": "- Position du menu (start, end, top, bottom, left, right, center)"
+        "desc": "- Position (bottom-end, top-start, etc.)"
       },
       {
-        "name": "open",
-        "type": "Boolean",
-        "desc": "- Force l'ouverture du menu (contrôle externe)"
+        "name": "offset",
+        "type": "Number",
+        "desc": "- Distance entre trigger et contenu"
       },
       {
         "name": "hover",
         "type": "Boolean",
-        "desc": "- Ouvre le menu au survol"
+        "desc": "- Ouverture au survol"
       },
       {
-        "name": "label",
-        "type": "String",
-        "desc": "- Texte du trigger (optionnel, sinon slot)"
-      },
-      {
-        "name": "contentClass",
-        "type": "String|Array",
-        "desc": "- Classes custom à ajouter au content (fusionnées sans doublon)"
+        "name": "closeOnContentClick",
+        "type": "Boolean",
+        "desc": "- Fermer le dropdown lors d'un clic sur le contenu (défaut: true)"
       },
       {
         "name": "disabled",
         "type": "Boolean",
-        "desc": "- Désactive le trigger (hérité de commonProps)"
+        "desc": "- Désactiver le dropdown"
       },
       {
-        "name": "id,",
+        "name": "ariaLabel",
         "type": "String",
-        "desc": "ariaLabel, role, tabindex - hérités de commonProps"
+        "desc": "- Label d'accessibilité"
       }
     ],
     "slots": [
       {
-        "name": "default",
-        "desc": "- Trigger du dropdown (bouton, icône, etc.)"
+        "name": "trigger",
+        "desc": "- Trigger personnalisé"
       },
       {
         "name": "content",
-        "desc": "- Contenu déroulant (libre)"
+        "desc": "- Contenu du dropdown"
       }
     ],
     "file": "action/Dropdown.vue"

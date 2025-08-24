@@ -24,7 +24,7 @@ import Tooltip from '@/Pages/Atoms/feedback/Tooltip.vue';
 import VerifyMailAlert from '@/Pages/Molecules/user/VerifyMailAlert.vue';
 
 const page = usePage();
-const user = ref(page.props.user?.data || {});
+const user = ref(page.props.user?.data || page.props.auth?.user || {});
 const { setPageTitle } = usePageTitle();
 
 onMounted(() => {
@@ -43,12 +43,18 @@ onMounted(() => {
                 <div
                     class="flex items-center gap-4 max-md:gap-6 max-sm:gap-2 max-[930px]:flex-wrap justify-between w-full">
                     <div class="flex items-center justify-center space-x-4">
-                        <Avatar :src="user.value.avatar" :alt="user.value.name" size="xl" rounded="full" />
+                        <Avatar 
+                            :src="user.value?.avatar || ''" 
+                            :label="user.value?.name || 'Utilisateur'" 
+                            :alt="user.value?.name || 'Utilisateur'" 
+                            size="xl" 
+                            rounded="full" 
+                        />
                         <div>
-                            <h2 class="text-2xl font-bold text-primary-100">{{ user.value.name }}</h2>
-                            <p class="text-primary-200">{{ user.value.email }}</p>
+                            <h2 class="text-2xl font-bold text-primary-100">{{ user.value?.name || 'Utilisateur' }}</h2>
+                            <p class="text-primary-200">{{ user.value?.email || 'email@example.com' }}</p>
                             <div class="mt-2">
-                                <BadgeRole :role="user.value.role" />
+                                <BadgeRole :role="user.value?.role || 'user'" />
                             </div>
                         </div>
                     </div>
@@ -60,7 +66,7 @@ onMounted(() => {
                         </Tooltip>
                     </div>
                 </div>
-                <div v-if="!user.value.is_verified">
+                <div v-if="user.value && !user.value.is_verified">
                     <VerifyMailAlert />
                 </div>
             </div>

@@ -24,7 +24,7 @@ import Avatar from "@/Pages/Atoms/data-display/Avatar.vue";
 import Dropdown from "@/Pages/Atoms/action/Dropdown.vue";
 import Tooltip from "@/Pages/Atoms/feedback/Tooltip.vue";
 import Icon from "@/Pages/Atoms/data-display/Icon.vue";
-import { usePage } from "@inertiajs/vue3";
+import { usePage, router } from "@inertiajs/vue3";
 import { ref, watch } from "vue";
 
 const page = usePage();
@@ -35,80 +35,78 @@ const pseudo = ref(user.value.name);
 watch(
     () => page.props.auth.user,
     (newUser) => {
-        user.value = newUser;
-        avatar.value = newUser.avatar;
-        pseudo.value = newUser.name;
+        if (newUser) {
+            user.value = newUser;
+            avatar.value = newUser.avatar;
+            pseudo.value = newUser.name;
+        }
     },
     { deep: true },
 );
-</script>
 
+// Fonction de déconnexion
+const logout = () => {
+    router.post(route('logout'));
+};
+</script>
 <template>
     <div class="flex justify-end">
-        <div class="flex items-center mx-6 max-sm:mx-4">
-            <Dropdown placement="bottom-end">
-                <Tooltip content="Notifications" placement="bottom">
-                    <div class="indicator">
-                        <span
-                            class="indicator-item badge bg-secondary/80 badge-xs text-content-light"
-                            >0</span
-                        >
-                        <Btn color="neutral" variant="link">
-                            <Icon
-                                source="fa-bell"
-                                alt="Notifications"
+        <!-- Mon compte -->
+        <div class="flex flex-col text-right">
+            <Dropdown :close-on-content-click="false">
+                <template #trigger>
+                    <Btn color="neutral" variant="ghost">
+                        <div class="flex items-center gap-2">
+                            <Avatar
+                                :src="user.avatar"
+                                :label="user.name"
+                                :alt="user.name"
                                 size="md"
-                                pack="regular"
                             />
-                        </Btn>
-                    </div>
-                    <template #content>
-                        <div>
-                            <p>Vous avez 0 notifications</p>
+                            <span>{{ user.name.charAt(0).toUpperCase() + user.name.slice(1) }}</span>
                         </div>
-                    </template>
-                </Tooltip>
+                    </Btn>
+                </template>
                 <template #content>
-                    <div
-                        id="notifications-panel"
-                        class="flex flex-col items-center justify-center min-h-32 max-h-96 overflow-y-auto text-content-dark bg-base-100/80 p-2"
-                    >
-                        <p>Vous avez 0 notifications</p>
+                    <div class="flex flex-col items-start gap-2">
+                        <Btn
+                            variant="ghost"
+                            size="md"
+                            content="Mon compte"
+                        />
+                        <span class="border-glass-b-sm w-full h-px"></span>
+                        <Btn
+                            variant="ghost"
+                            size="sm"
+                            content="Se déconnecter"
+                            @click="logout"
+                        />
                     </div>
                 </template>
             </Dropdown>
         </div>
-        <div class="flex flex-col text-right">
-            <Btn color="neutral" variant="ghost">
-                <Dropdown>
-                    <template #trigger>
-                        <div class="flex items-center gap-2">
-                            <Avatar
-                                :src="user.avatar"
-                                :alt="user.name"
-                                size="sm"
-                            />
-                            <span>{{ user.name }}</span>
-                        </div>
-                    </template>
-                    <template #content>
-                        <div class="flex flex-col gap-2">
-                            <Btn
-                                color="neutral"
-                                variant="ghost"
-                                size="md"
-                                content="Mon compte"
-                            />
-                            <Btn
-                                color="neutral"
-                                variant="ghost"
-                                size="md"
-                                content="Se déconnecter"
-                            />
-                        </div>
-                    </template>
-                </Dropdown>
-            </Btn>
+        <!-- Notifications -->
+        <div class="flex items-center mx-6 max-sm:mx-4">
+            <Dropdown placement="bottom-end">
+                <template #trigger>
+                    <div class="indicator">
+                        <span class="indicator-item badge bg-primary/20 badge-xs rounded-full text-primary">0</span>
+                        <Btn variant="link" color="neutral" circle>   
+                            <Icon
+                                    source="fa-bell"
+                                    alt="Notifications"
+                                    size="lg"
+                                    pack="regular"
+                                />
+                        </Btn>
+                    </div>
+                </template>
+                <template #content>
+                    <div class="flex flex-col items-center justify-center min-h-32 max-h-96 overflow-y-auto p-2">
+                        <p>Vous avez 0 notifications</p>
+                    </div>
+                </template>
+            </Dropdown>
         </div>
     </div>
 </template>

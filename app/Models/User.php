@@ -142,9 +142,16 @@ class User extends Authenticatable
         5 => 'super_admin', // Administrateur suprême (unique)
     ];
 
+    const ROLE_GUEST = 0; // Visiteur non connecté
+    const ROLE_USER = 1; // Utilisateur inscrit
+    const ROLE_PLAYER = 2; // Joueur participant à une campagne/scénario
+    const ROLE_GAME_MASTER = 3; // Meneur de jeu
+    const ROLE_ADMIN = 4; // Administrateur
+    const ROLE_SUPER_ADMIN = 5; // Administrateur suprême (unique)
+
     const NOTIFICATION_CHANNELS = ['database', 'email'];
 
-    public const DEFAULT_AVATAR = 'storage/images/default-avatar.webp';
+    public const DEFAULT_AVATAR = 'storage/images/avatar/default_avatar_head.webp';
 
     /**
      * The attributes that are mass assignable.
@@ -274,9 +281,9 @@ class User extends Authenticatable
     public function updateRole(User $user): bool
     {
         // Seuls les admins et super_admins peuvent modifier les rôles
-        return $this->verifyRole('admin') &&
+        return $this->verifyRole(User::ROLE_ADMIN) && // admin = 4
             // Un admin ne peut pas modifier le rôle d'un super_admin
-            $user->role !== self::ROLES['super_admin'] &&
+            $user->role !== User::ROLE_SUPER_ADMIN && // super_admin = 5
             // Un admin ne peut pas se modifier lui-même
             $this->id !== $user->id;
     }

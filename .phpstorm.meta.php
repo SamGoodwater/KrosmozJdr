@@ -2518,10 +2518,10 @@ namespace PHPSTORM_META {
 'signed','throttle','verified',);
         registerArgumentsSet('routes', 
 'debugbar.openhandler','debugbar.clockwork','debugbar.assets.css','debugbar.assets.js','debugbar.cache.delete',
-'debugbar.queries.explain','sanctum.csrf-cookie','generated::Ci5ILozqIkf9DZtX','register','generated::oGxvvFPup4GX5cd3',
-'login','generated::HT6smrEF84GuogJg','password.request','password.email','password.reset',
+'debugbar.queries.explain','sanctum.csrf-cookie','generated::wBev88NmNGGdSDjj','register','generated::oeOkNhOMWL4iJRrJ',
+'login','generated::ZzTmdO1NpboZrrMF','password.request','password.email','password.reset',
 'password.store','verification.notice','verification.verify','verification.send','password.confirm',
-'generated::qICX1UKXmwraXUB4','logout','user.show','user.edit','user.update',
+'generated::kx6Eo8NPngRk5DR4','logout','user.show','user.edit','user.update',
 'user.updateAvatar','user.deleteAvatar','user.delete','user.index','user.create',
 'user.store','user.admin.edit','user.admin.update','user.admin.updateAvatar','user.admin.deleteAvatar',
 'user.restore','user.admin.updateRole','user.admin.updatePassword','user.forceDelete','media.show',
@@ -2529,7 +2529,7 @@ namespace PHPSTORM_META {
 'pages.show','pages.edit','pages.update','pages.create','pages.store',
 'pages.delete','pages.restore','pages.forceDelete','sections.show','sections.edit',
 'sections.update','sections.create','sections.store','sections.delete','sections.restore',
-'sections.forceDelete','sections.files.store','sections.files.destroy','storage.local',);
+'sections.forceDelete','sections.files.store','sections.files.delete','storage.local',);
         registerArgumentsSet('views', 
 'app','laravel-exceptions-renderer::components.card','laravel-exceptions-renderer::components.context','laravel-exceptions-renderer::components.editor','laravel-exceptions-renderer::components.header',
 'laravel-exceptions-renderer::components.icons.chevron-down','laravel-exceptions-renderer::components.icons.chevron-up','laravel-exceptions-renderer::components.icons.computer-desktop','laravel-exceptions-renderer::components.icons.moon','laravel-exceptions-renderer::components.icons.sun',

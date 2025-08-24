@@ -98,7 +98,7 @@ class PageController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(\App\Models\Page $page)
+    public function delete(\App\Models\Page $page)
     {
         $this->authorize('delete', $page);
         $user = request()->user();

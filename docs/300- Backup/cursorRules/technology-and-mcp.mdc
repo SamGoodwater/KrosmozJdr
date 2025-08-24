@@ -14,7 +14,7 @@ alwaysApply: true
 ## 📦 Stack & Technologies Krosmoz‑JDR
 
 - **Backend** : Laravel 12 (PHP 8.4), MySQL (`krosmozDB`), secrets gérés via `.env` (ne **jamais** versionner ce fichier).
-- **Frontend** : Vue 3, SCSS, Tailwind CSS + DaisyUI, Tiptap comme éditeur WYSIWYG, outil de build esbuild/rollup, multi-langues via vue-i18n.
+- **Frontend** : Vue 3, SCSS, Tailwind CSS + DaisyUI, Tiptap comme éditeur WYSIWYG, outil de build esbuild/rollup, multi-langues via vue-i18n, pnpm.
 - **Tests** : PHPUnit (backend), Vitest ou Jest (frontend), Cypress en end-to-end.
 - **CI/CD** : pipelines GitHub ou GitLab CI automatisant le lint, les tests, le build et le déploiement.
 - Docs projet à jour dans `/docs/` (notamment `TECHNOLOGIES.md`, `PROJECT_STRUCTURE.md`).
@@ -55,7 +55,8 @@ playwright/
 ├── tasks/                   # Scripts de tâches spécifiques
 │   ├── test-login.js
 │   └── test-navigation.js
-└── screenshots/             # Captures d'écran générées
+├── screenshots/             # Captures d'écran générées
+└── temp/                    # Fichiers temporaires (pour les logs, les scripts temporaires ou les screenshots 
 ```
 
 ---
@@ -150,6 +151,7 @@ node playwright/run.js help
 ---
 
 ## 🔧 Création de scripts personnalisés
+Les scripts personnalisés doivent créer dans playwright/temp/ (pour les temporaires) ou playwright/tasks si il est pertinent de le garder.
 
 ### Utiliser la classe PlaywrightUniversal
 ```javascript

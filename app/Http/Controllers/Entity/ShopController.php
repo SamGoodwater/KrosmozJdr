@@ -60,7 +60,7 @@ class ShopController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Shop $shop)
+    public function delete(Shop $shop)
     {
         //
     }

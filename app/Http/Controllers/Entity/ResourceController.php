@@ -60,7 +60,7 @@ class ResourceController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Resource $resource)
+    public function delete(Resource $resource)
     {
         //
     }

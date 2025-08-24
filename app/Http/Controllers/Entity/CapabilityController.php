@@ -60,7 +60,7 @@ class CapabilityController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Capability $capability)
+    public function delete(Capability $capability)
     {
         //
     }

@@ -31,6 +31,7 @@ import TextareaField from "@/Pages/Molecules/data-input/TextareaField.vue";
 import FileField from "@/Pages/Molecules/data-input/FileField.vue";
 import ColorField from "@/Pages/Molecules/data-input/ColorField.vue";
 import DateField from "@/Pages/Molecules/data-input/DateField.vue";
+import Avatar from "@/Pages/Atoms/data-display/Avatar.vue";
 
 // Données partagées
 const page = usePage();
@@ -668,6 +669,65 @@ const demoIcons = [
                                         variant="glass"
                                         helper="Choisissez votre couleur"
                                     />
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Tests du système d'avatar -->
+                        <div class="card bg-base-100 shadow-xl">
+                            <div class="card-body">
+                                <h3 class="card-title text-lg">Système d'Avatar</h3>
+                                <div class="space-y-6">
+                                    <div>
+                                        <h4 class="text-md font-semibold mb-3">Avatars avec images</h4>
+                                        <div class="flex gap-4 items-center">
+                                            <Avatar src="https://picsum.photos/200/200?random=1" alt="Avatar test" size="lg" />
+                                            <Avatar src="https://picsum.photos/200/200?random=2" alt="Avatar test" size="md" />
+                                            <Avatar src="https://picsum.photos/200/200?random=3" alt="Avatar test" size="sm" />
+                                        </div>
+                                    </div>
+                                    
+                                    <div>
+                                        <h4 class="text-md font-semibold mb-3">Avatars avec initiales (1 mot)</h4>
+                                        <div class="flex gap-4 items-center">
+                                            <Avatar label="John" alt="John" size="lg" />
+                                            <Avatar label="Marie" alt="Marie" size="md" />
+                                            <Avatar label="Pierre" alt="Pierre" size="sm" />
+                                        </div>
+                                    </div>
+                                    
+                                    <div>
+                                        <h4 class="text-md font-semibold mb-3">Avatars avec initiales (2+ mots)</h4>
+                                        <div class="flex gap-4 items-center">
+                                            <Avatar label="John Doe" alt="John Doe" size="lg" />
+                                            <Avatar label="Marie Dupont" alt="Marie Dupont" size="md" />
+                                            <Avatar label="Pierre Martin" alt="Pierre Martin" size="sm" />
+                                        </div>
+                                    </div>
+                                    
+                                    <div>
+                                        <h4 class="text-md font-semibold mb-3">Avatars avec image par défaut</h4>
+                                        <div class="flex gap-4 items-center">
+                                            <Avatar 
+                                                defaultAvatar="https://picsum.photos/200/200?random=4" 
+                                                alt="Utilisateur" 
+                                                size="lg" 
+                                            />
+                                            <Avatar 
+                                                defaultAvatar="https://picsum.photos/200/200?random=5" 
+                                                alt="Test" 
+                                                size="md" 
+                                            />
+                                        </div>
+                                    </div>
+                                    
+                                    <div>
+                                        <h4 class="text-md font-semibold mb-3">Avatars avec fallback avatar par défaut</h4>
+                                        <div class="flex gap-4 items-center">
+                                            <Avatar alt="Sans label ni image" size="lg" />
+                                            <Avatar alt="Sans label ni image" size="md" />
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>

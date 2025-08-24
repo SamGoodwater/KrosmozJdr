@@ -68,7 +68,7 @@ class AttributeController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Attribute $attribute)
+    public function delete(Attribute $attribute)
     {
         $this->authorize('delete', $attribute);
         $attribute->delete();

@@ -60,7 +60,7 @@ class PanoplyController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Panoply $panoply)
+    public function delete(Panoply $panoply)
     {
         //
     }

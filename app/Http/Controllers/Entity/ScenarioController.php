@@ -60,7 +60,7 @@ class ScenarioController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Scenario $scenario)
+    public function delete(Scenario $scenario)
     {
         //
     }

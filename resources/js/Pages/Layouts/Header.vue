@@ -56,7 +56,7 @@ defineProps({
             <SearchInput />
         </template>
         <template #end>
-            <div class="flex gap-2 items-center mr-6">
+            <div class="flex gap-2 items-center mr-12">
                 <template v-if="page.props.auth.isLogged">
                     <LoggedHeaderContainer />
                 </template>

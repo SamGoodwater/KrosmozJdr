@@ -22,7 +22,7 @@ Route::prefix('pages')->name('pages.')->group(function () {
         Route::patch('/{page}', [PageController::class, 'update'])->name('update');
         Route::get('/create', [PageController::class, 'create'])->name('create');
         Route::post('/', [PageController::class, 'store'])->name('store');
-        Route::delete('/{page}', [PageController::class, 'destroy'])->name('delete');
+        Route::delete('/{page}', [PageController::class, 'delete'])->name('delete');
         Route::post('/{page}/restore', [PageController::class, 'restore'])->name('restore');
 
         // Suppression (admin, super_admin)
@@ -43,7 +43,7 @@ Route::prefix('sections')->name('sections.')->middleware('auth')->group(function
     Route::patch('/{section}', [SectionController::class, 'update'])->name('update');
     Route::get('/create', [SectionController::class, 'create'])->name('create');
     Route::post('/', [SectionController::class, 'store'])->name('store');
-    Route::delete('/{section}', [SectionController::class, 'destroy'])->name('delete');
+    Route::delete('/{section}', [SectionController::class, 'delete'])->name('delete');
     Route::post('/{section}/restore', [SectionController::class, 'restore'])->name('restore');
 
     // Suppression (admin, super_admin)
@@ -53,6 +53,6 @@ Route::prefix('sections')->name('sections.')->middleware('auth')->group(function
 
     // Fichiers liés à une section (toujours auth, policy gère le droit)
     Route::post('/{section}/files', [SectionController::class, 'storeFile'])->name('files.store');
-    Route::delete('/{section}/files/{file}', [SectionController::class, 'destroyFile'])->name('files.destroy');
+    Route::delete('/{section}/files/{file}', [SectionController::class, 'deleteFile'])->name('files.delete');
 });
 // Les droits d'accès fins sont désormais gérés uniquement par les policies (plus de middleware 'role').

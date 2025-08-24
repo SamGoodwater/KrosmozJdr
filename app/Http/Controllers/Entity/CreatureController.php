@@ -60,7 +60,7 @@ class CreatureController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Creature $creature)
+    public function delete(Creature $creature)
     {
         //
     }

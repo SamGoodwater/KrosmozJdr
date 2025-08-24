@@ -44,7 +44,7 @@ function closeDeleteModal() {
     showDeleteModal.value = false;
 }
 function deleteSection() {
-    router.delete(route('sections.destroy', { section: props.section.uniqid }), {
+    router.delete(route('sections.delete', { section: props.section.uniqid }), {
         onSuccess: () => {
             feedback.value = { type: 'success', message: 'Section supprimée avec succès.' };
             closeDeleteModal();

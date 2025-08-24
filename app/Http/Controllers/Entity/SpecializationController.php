@@ -60,7 +60,7 @@ class SpecializationController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Specialization $specialization)
+    public function delete(Specialization $specialization)
     {
         //
     }

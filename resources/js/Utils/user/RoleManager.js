@@ -34,6 +34,11 @@ export function verifyRole(userRole, requiredRole) {
 }
 
 export function getRoleTranslation(role) {
+    // Protection contre les valeurs undefined/null
+    if (!role || !ROLES_TRANSLATION[role]) {
+        return "Utilisateur·trice";
+    }
+    
     return (
         ROLES_TRANSLATION[role].charAt(0).toUpperCase() +
         ROLES_TRANSLATION[role].slice(1)
@@ -41,5 +46,10 @@ export function getRoleTranslation(role) {
 }
 
 export function getRoleColor(role) {
+    // Protection contre les valeurs undefined/null
+    if (!role || !ROLES_COLORS[role]) {
+        return "blue-700"; // Couleur par défaut pour user
+    }
+    
     return ROLES_COLORS[role];
 }

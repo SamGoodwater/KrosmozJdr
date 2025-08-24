@@ -137,8 +137,8 @@ const roleValidation = computed(() => {
                         >
                             <template #default>
                                 <Avatar
-                                    v-if="user.value.avatar"
                                     :src="user.value.avatar"
+                                    :label="user.value.name"
                                     :alt="user.value.name"
                                     size="3xl"
                                     rounded="full"

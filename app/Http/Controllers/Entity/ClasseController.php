@@ -60,7 +60,7 @@ class ClasseController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Classe $classe)
+    public function delete(Classe $classe)
     {
         //
     }

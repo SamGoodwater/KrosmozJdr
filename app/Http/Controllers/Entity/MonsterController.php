@@ -60,7 +60,7 @@ class MonsterController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Monster $monster)
+    public function delete(Monster $monster)
     {
         //
     }

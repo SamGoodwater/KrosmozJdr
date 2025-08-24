@@ -22,6 +22,9 @@ const props = defineProps({
         type: String,
         default: "user",
         validator: (value) => {
+            // Si la valeur est undefined/null, on accepte (sera géré par RoleManager)
+            if (!value) return true;
+            
             const validRoles = ['user', 'admin', 'super_admin', 'player', 'game_master', 'guest'];
             return validRoles.includes(value);
         }
@@ -35,7 +38,7 @@ const roleTranslation = computed(() => getRoleTranslation(props.role));
 <template>
     <Tooltip :content="`Rôle de l'utilisateur·trice : ${roleTranslation}`" placement="bottom">
         <Badge :color="roleColor" size="md" class="uppercase">
-            {{ roleTranslation }}
+            {{ roleTranslation || 'Utilisateur·trice' }}
         </Badge>
     </Tooltip>
 </template>

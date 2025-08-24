@@ -60,7 +60,7 @@ class NpcController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Npc $npc)
+    public function delete(Npc $npc)
     {
         //
     }

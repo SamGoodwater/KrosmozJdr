@@ -118,7 +118,7 @@ class SectionController extends Controller
      * @param Section $section
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function destroy(\App\Models\Section $section)
+    public function delete(\App\Models\Section $section)
     {
         $this->authorize('delete', $section);
         $user = request()->user();
@@ -169,7 +169,7 @@ class SectionController extends Controller
      * @param File $file
      * @return \Illuminate\Http\JsonResponse
      */
-    public function destroyFile(Section $section, File $file)
+    public function deleteFile(Section $section, File $file)
     {
         // Autorisation (policy sur la section)
         Gate::authorize('update', $section);

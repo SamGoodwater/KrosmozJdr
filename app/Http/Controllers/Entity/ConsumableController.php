@@ -60,7 +60,7 @@ class ConsumableController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Consumable $consumable)
+    public function delete(Consumable $consumable)
     {
         //
     }

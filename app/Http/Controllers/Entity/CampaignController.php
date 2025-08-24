@@ -69,7 +69,7 @@ class CampaignController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Campaign $campaign)
+    public function delete(Campaign $campaign)
     {
         $this->authorize('delete', $campaign);
         $campaign->delete();
