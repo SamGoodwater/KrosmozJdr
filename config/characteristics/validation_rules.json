@@ -1,0 +1,146 @@
+{
+  "metadata": {
+    "version": "1.0.0",
+    "description": "Règles de validation pour la data-conversion",
+    "last_updated": "2025-01-27",
+    "author": "KrosmozJDR Team"
+  },
+  "validation_rules": {
+    "positive": {
+      "type": "min_value",
+      "description": "Vérifie que la valeur est positive ou nulle",
+      "value": 0,
+      "message": "La valeur doit être positive ou nulle",
+      "severity": "error"
+    },
+    "within_bounds": {
+      "type": "range_check",
+      "description": "Vérifie que la valeur est dans les limites définies",
+      "message": "La valeur doit être dans les limites définies pour le niveau et le type d'entité",
+      "severity": "error",
+      "dynamic": true
+    },
+    "required": {
+      "type": "required_field",
+      "description": "Champ obligatoire",
+      "message": "Ce champ est obligatoire",
+      "severity": "error"
+    },
+    "optional": {
+      "type": "optional_field",
+      "description": "Champ optionnel",
+      "message": "Ce champ est optionnel et peut être ignoré",
+      "severity": "info"
+    },
+    "ignored": {
+      "type": "ignored_field",
+      "description": "Champ ignoré lors de la conversion",
+      "message": "Ce champ est ignoré lors de la conversion vers KrosmozJDR",
+      "severity": "warning"
+    },
+    "calculated": {
+      "type": "calculated_field",
+      "description": "Champ calculé à partir d'autres caractéristiques",
+      "message": "Ce champ est calculé automatiquement",
+      "severity": "info"
+    },
+    "integer_type": {
+      "type": "data_type",
+      "description": "Vérifie que la valeur est un entier",
+      "expected_type": "integer",
+      "message": "La valeur doit être un nombre entier",
+      "severity": "error"
+    },
+    "string_type": {
+      "type": "data_type",
+      "description": "Vérifie que la valeur est une chaîne",
+      "expected_type": "string",
+      "message": "La valeur doit être une chaîne de caractères",
+      "severity": "error"
+    },
+    "boolean_type": {
+      "type": "data_type",
+      "description": "Vérifie que la valeur est un booléen",
+      "expected_type": "boolean",
+      "message": "La valeur doit être un booléen",
+      "severity": "error"
+    },
+    "decimal_type": {
+      "type": "data_type",
+      "description": "Vérifie que la valeur est un nombre décimal",
+      "expected_type": "decimal",
+      "message": "La valeur doit être un nombre décimal",
+      "severity": "error"
+    },
+    "max_length": {
+      "type": "string_length",
+      "description": "Vérifie la longueur maximale d'une chaîne",
+      "max_length": 255,
+      "message": "La chaîne ne doit pas dépasser {max_length} caractères",
+      "severity": "error"
+    },
+    "valid_format": {
+      "type": "format_check",
+      "description": "Vérifie le format de la valeur",
+      "pattern": null,
+      "message": "Le format de la valeur n'est pas valide",
+      "severity": "error"
+    },
+    "coherence_check": {
+      "type": "business_rule",
+      "description": "Vérifie la cohérence avec d'autres caractéristiques",
+      "message": "La valeur n'est pas cohérente avec les autres caractéristiques",
+      "severity": "warning"
+    }
+  },
+  "rule_groups": {
+    "basic_validation": [
+      "required",
+      "data_type_check"
+    ],
+    "constraint_validation": [
+      "positive",
+      "within_bounds"
+    ],
+    "optional_validation": [
+      "optional",
+      "ignored"
+    ],
+    "calculated_validation": [
+      "calculated",
+      "coherence_check"
+    ]
+  },
+  "severity_levels": {
+    "error": {
+      "description": "Erreur critique - empêche la conversion",
+      "action": "reject",
+      "log_level": "error"
+    },
+    "warning": {
+      "description": "Avertissement - conversion possible avec correction",
+      "action": "correct",
+      "log_level": "warning"
+    },
+    "info": {
+      "description": "Information - conversion normale",
+      "action": "continue",
+      "log_level": "info"
+    }
+  },
+  "default_rules": {
+    "convertible_characteristics": [
+      "required",
+      "positive",
+      "within_bounds"
+    ],
+    "non_convertible_characteristics": [
+      "optional",
+      "ignored"
+    ],
+    "calculated_characteristics": [
+      "calculated",
+      "within_bounds"
+    ]
+  }
+}

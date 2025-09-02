@@ -1,0 +1,377 @@
+{
+  "metadata": {
+    "version": "1.0.0",
+    "description": "Mappings des entités KrosmozJDR",
+    "last_updated": "2025-01-27",
+    "author": "KrosmozJDR Team"
+  },
+  "entity_mappings": {
+    "classes": {
+      "target_model": "Classe",
+      "description": "Mapping des classes KrosmozJDR",
+      "mapping": {
+        "name": {
+          "source": "name",
+          "type": "string",
+          "required": true,
+          "processing": "extractMultilingualName"
+        },
+        "level": {
+          "source": "level",
+          "type": "integer",
+          "required": true
+        },
+        "health_points": {
+          "source": "health_points",
+          "type": "integer",
+          "required": true
+        },
+        "action_points": {
+          "source": "action_points",
+          "type": "integer",
+          "required": true
+        },
+        "movement_points": {
+          "source": "movement_points",
+          "type": "integer",
+          "required": true
+        },
+        "strength": {
+          "source": "strength",
+          "type": "integer"
+        },
+        "intelligence": {
+          "source": "intelligence",
+          "type": "integer"
+        },
+        "chance": {
+          "source": "chance",
+          "type": "integer"
+        },
+        "agility": {
+          "source": "agility",
+          "type": "integer"
+        },
+        "vitality": {
+          "source": "vitality",
+          "type": "integer"
+        },
+        "wisdom": {
+          "source": "wisdom",
+          "type": "integer"
+        },
+        "invocations": {
+          "source": "invocations",
+          "type": "integer"
+        },
+        "initiative": {
+          "source": "initiative",
+          "type": "integer"
+        }
+      }
+    },
+    "monsters": {
+      "target_model": "Monster",
+      "description": "Mapping des monstres KrosmozJDR",
+      "mapping": {
+        "name": {
+          "source": "name",
+          "type": "string",
+          "required": true,
+          "processing": "extractMultilingualName"
+        },
+        "level": {
+          "source": "level",
+          "type": "integer",
+          "required": true
+        },
+        "health_points": {
+          "source": "health_points",
+          "type": "integer",
+          "required": true
+        },
+        "action_points": {
+          "source": "action_points",
+          "type": "integer",
+          "required": true
+        },
+        "movement_points": {
+          "source": "movement_points",
+          "type": "integer",
+          "required": true
+        },
+        "strength": {
+          "source": "strength",
+          "type": "integer"
+        },
+        "intelligence": {
+          "source": "intelligence",
+          "type": "integer"
+        },
+        "chance": {
+          "source": "chance",
+          "type": "integer"
+        },
+        "agility": {
+          "source": "agility",
+          "type": "integer"
+        },
+        "vitality": {
+          "source": "vitality",
+          "type": "integer"
+        },
+        "wisdom": {
+          "source": "wisdom",
+          "type": "integer"
+        },
+        "initiative": {
+          "source": "initiative",
+          "type": "integer"
+        },
+        "pa_dodge": {
+          "source": "pa_dodge",
+          "type": "integer"
+        },
+        "pm_dodge": {
+          "source": "pm_dodge",
+          "type": "integer"
+        },
+        "tackle": {
+          "source": "tackle",
+          "type": "integer"
+        },
+        "escape": {
+          "source": "escape",
+          "type": "integer"
+        }
+      }
+    },
+    "npcs": {
+      "target_model": "Npc",
+      "description": "Mapping des PNJ KrosmozJDR",
+      "mapping": {
+        "name": {
+          "source": "name",
+          "type": "string",
+          "required": true,
+          "processing": "extractMultilingualName"
+        },
+        "level": {
+          "source": "level",
+          "type": "integer",
+          "required": true
+        },
+        "health_points": {
+          "source": "health_points",
+          "type": "integer",
+          "required": true
+        },
+        "action_points": {
+          "source": "action_points",
+          "type": "integer",
+          "required": true
+        },
+        "movement_points": {
+          "source": "movement_points",
+          "type": "integer",
+          "required": true
+        },
+        "strength": {
+          "source": "strength",
+          "type": "integer"
+        },
+        "intelligence": {
+          "source": "intelligence",
+          "type": "integer"
+        },
+        "chance": {
+          "source": "chance",
+          "type": "integer"
+        },
+        "agility": {
+          "source": "agility",
+          "type": "integer"
+        },
+        "vitality": {
+          "source": "vitality",
+          "type": "integer"
+        },
+        "wisdom": {
+          "source": "wisdom",
+          "type": "integer"
+        },
+        "initiative": {
+          "source": "initiative",
+          "type": "integer"
+        }
+      }
+    },
+    "items": {
+      "target_model": "Item",
+      "description": "Mapping des objets KrosmozJDR",
+      "mapping": {
+        "name": {
+          "source": "name",
+          "type": "string",
+          "required": true,
+          "processing": "extractMultilingualName"
+        },
+        "description": {
+          "source": "description",
+          "type": "text",
+          "processing": "extractHtmlDescription"
+        },
+        "level": {
+          "source": "level",
+          "type": "integer"
+        },
+        "price": {
+          "source": "price",
+          "type": "integer",
+          "processing": "extractPrice"
+        },
+        "rarity": {
+          "source": "rarity",
+          "type": "integer",
+          "processing": "extractRarity"
+        },
+        "type_id": {
+          "source": "type_id",
+          "type": "integer",
+          "processing": "extractTypeId"
+        },
+        "icon_id": {
+          "source": "icon_id",
+          "type": "integer",
+          "processing": "extractIconId"
+        },
+        "effects": {
+          "source": "effects",
+          "type": "json",
+          "processing": "extractEffects"
+        }
+      }
+    },
+    "spells": {
+      "target_model": "Spell",
+      "description": "Mapping des sorts KrosmozJDR",
+      "mapping": {
+        "name": {
+          "source": "name",
+          "type": "string",
+          "required": true,
+          "processing": "extractMultilingualName"
+        },
+        "description": {
+          "source": "description",
+          "type": "text",
+          "processing": "extractHtmlDescription"
+        },
+        "level": {
+          "source": "level",
+          "type": "integer"
+        },
+        "ap_cost": {
+          "source": "ap_cost",
+          "type": "integer",
+          "processing": "extractApCost"
+        },
+        "range": {
+          "source": "range",
+          "type": "integer",
+          "processing": "extractRange"
+        },
+        "critical_hit_probability": {
+          "source": "critical_hit_probability",
+          "type": "integer",
+          "processing": "extractCriticalHitProbability"
+        },
+        "effects": {
+          "source": "effects",
+          "type": "json",
+          "processing": "extractEffects"
+        }
+      }
+    }
+  },
+  "processing_functions": {
+    "extractMultilingualName": {
+      "description": "Extrait le nom dans la langue par défaut",
+      "function": "extractMultilingualName",
+      "parameters": {
+        "default_language": "fr"
+      }
+    },
+    "extractHtmlDescription": {
+      "description": "Extrait la description HTML",
+      "function": "extractHtmlDescription",
+      "parameters": {
+        "default_language": "fr",
+        "sanitize": true
+      }
+    },
+    "extractImageUrl": {
+      "description": "Extrait l'URL de l'image",
+      "function": "extractImageUrl",
+      "parameters": {
+        "base_url": null
+      }
+    },
+    "extractPrice": {
+      "description": "Extrait le prix de l'objet",
+      "function": "extractPrice",
+      "parameters": {
+        "default": 0
+      }
+    },
+    "extractRarity": {
+      "description": "Extrait la rareté de l'objet",
+      "function": "extractRarity",
+      "parameters": {
+        "default": 1
+      }
+    },
+    "extractTypeId": {
+      "description": "Extrait l'ID du type",
+      "function": "extractTypeId",
+      "parameters": {
+        "default": null
+      }
+    },
+    "extractIconId": {
+      "description": "Extrait l'ID de l'icône",
+      "function": "extractIconId",
+      "parameters": {
+        "default": null
+      }
+    },
+    "extractEffects": {
+      "description": "Extrait les effets de l'objet/sort",
+      "function": "extractEffects",
+      "parameters": {
+        "default": []
+      }
+    },
+    "extractApCost": {
+      "description": "Extrait le coût en PA",
+      "function": "extractApCost",
+      "parameters": {
+        "default": 0
+      }
+    },
+    "extractRange": {
+      "description": "Extrait la portée",
+      "function": "extractRange",
+      "parameters": {
+        "default": 1
+      }
+    },
+    "extractCriticalHitProbability": {
+      "description": "Extrait la probabilité de coup critique",
+      "function": "extractCriticalHitProbability",
+      "parameters": {
+        "default": 0
+      }
+    }
+  }
+}

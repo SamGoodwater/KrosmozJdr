@@ -249,7 +249,7 @@ onUnmounted(() => {
         position: absolute;
         z-index: 1;
         inset: 0;
-        background-image: url('storage/images/backgrounds/background.jpg');
+        background-image: url('storage/images/backgrounds/background.webp');
         background-size: cover;
         background-position: center;
         background-repeat: no-repeat;

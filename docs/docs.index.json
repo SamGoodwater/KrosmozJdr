@@ -380,6 +380,66 @@
     "description": "Ce dossier regroupe les scripts, automatisations et outils pour le développement, la maintenance et le déploiement du projet."
   },
   {
+    "path": "50-Fonctionnalités/Scrapping/Collect/API.md",
+    "title": "",
+    "description": ""
+  },
+  {
+    "path": "50-Fonctionnalités/Scrapping/Collect/DEFINITIONS.md",
+    "title": "Définitions des données DofusDB - Service Collect",
+    "description": "Ce document définit les structures de données et les endpoints de l'API DofusDB que le service Collect doit récupérer. Il décrit le format exact des données brutes sans aucune transformation, pour permettre une compréhension complète de la source de données."
+  },
+  {
+    "path": "50-Fonctionnalités/Scrapping/Collect/README.md",
+    "title": "Service Collect DofusDB",
+    "description": "Le service **Collect** a pour mission de récupérer les données brutes depuis le site [DofusDB](https://dofusdb.fr/fr/database/objects) et de les rendre accessibles via une interface unifiée. Ce service ne fait **aucune conversion** ni **intégration** - il se contente de récupérer et d'exposer les données dans leur format d'origine."
+  },
+  {
+    "path": "50-Fonctionnalités/Scrapping/Collect/SPECIFICATIONS.md",
+    "title": "",
+    "description": ""
+  },
+  {
+    "path": "50-Fonctionnalités/Scrapping/Conversion/API.md",
+    "title": "",
+    "description": ""
+  },
+  {
+    "path": "50-Fonctionnalités/Scrapping/Conversion/DEFINITIONS.md",
+    "title": "",
+    "description": ""
+  },
+  {
+    "path": "50-Fonctionnalités/Scrapping/Conversion/README.md",
+    "title": "Service de conversion des données de Dofus vers KrosmozJDR",
+    "description": "- **Mission** : Serice permettant de convertir les données issus de Dofus en données exploitables par le projet KrosmozJDR"
+  },
+  {
+    "path": "50-Fonctionnalités/Scrapping/Conversion/SPECIFICATIONS.md",
+    "title": "",
+    "description": ""
+  },
+  {
+    "path": "50-Fonctionnalités/Scrapping/Integration/API.md",
+    "title": "",
+    "description": ""
+  },
+  {
+    "path": "50-Fonctionnalités/Scrapping/Integration/DEFINITIONS.md",
+    "title": "",
+    "description": ""
+  },
+  {
+    "path": "50-Fonctionnalités/Scrapping/Integration/README.md",
+    "title": "",
+    "description": ""
+  },
+  {
+    "path": "50-Fonctionnalités/Scrapping/Integration/SPECIFICATIONS.md",
+    "title": "",
+    "description": ""
+  },
+  {
     "path": "DOCUMENTATION_GUIDE.md",
     "title": "Guide de documentation — KrosmozJDR",
     "description": "- **Synthétique** : chaque fichier va à l’essentiel, pas de pavés, pas de redites."
