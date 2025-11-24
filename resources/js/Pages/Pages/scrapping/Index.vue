@@ -35,6 +35,8 @@ import Tooltip from '@/Pages/Atoms/feedback/Tooltip.vue';
 
 const page = usePage();
 const { setPageTitle } = usePageTitle();
+
+// Store de notifications
 const notificationStore = useNotificationStore();
 const { success, error, info } = notificationStore;
 
@@ -110,11 +112,17 @@ const importIndividual = async () => {
         // Récupérer le token CSRF depuis le meta tag
         const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
         
+        if (!csrfToken) {
+            error('Token CSRF introuvable. Veuillez recharger la page.');
+            loading.value = false;
+            return;
+        }
+        
         const response = await fetch(`/api/scrapping/import/${individualForm.value.entityType}/${individualForm.value.entityId}`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': csrfToken || '',
+                'X-CSRF-TOKEN': csrfToken,
                 'Accept': 'application/json',
             },
             body: JSON.stringify(options),
@@ -184,11 +192,17 @@ const importBatch = async () => {
         // Récupérer le token CSRF depuis le meta tag
         const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
         
+        if (!csrfToken) {
+            error('Token CSRF introuvable. Veuillez recharger la page.');
+            loading.value = false;
+            return;
+        }
+        
         const response = await fetch('/api/scrapping/import/batch', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': csrfToken || '',
+                'X-CSRF-TOKEN': csrfToken,
                 'Accept': 'application/json',
             },
             body: JSON.stringify({

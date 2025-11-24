@@ -3465,7 +3465,7 @@ namespace PHPSTORM_META {
 'pages.edit','pages.update','pages.create','pages.store','pages.delete',
 'pages.restore','pages.forceDelete','sections.show','sections.edit','sections.update',
 'sections.create','sections.store','sections.delete','sections.restore','sections.forceDelete',
-'sections.files.store','sections.files.delete','storage.local',);
+'sections.files.store','sections.files.delete','scrapping.index','storage.local',);
         registerArgumentsSet('views', 
 'app','laravel-exceptions-renderer::components.card','laravel-exceptions-renderer::components.context','laravel-exceptions-renderer::components.editor','laravel-exceptions-renderer::components.header',
 'laravel-exceptions-renderer::components.icons.chevron-down','laravel-exceptions-renderer::components.icons.chevron-up','laravel-exceptions-renderer::components.icons.computer-desktop','laravel-exceptions-renderer::components.icons.moon','laravel-exceptions-renderer::components.icons.sun',
