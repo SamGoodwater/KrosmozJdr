@@ -234,17 +234,26 @@ class UserController extends Controller
             'role' => ['required', \Illuminate\Validation\Rule::in(array_keys(\App\Models\User::ROLES))],
         ]);
 
+        // Convertir le rôle en entier si c'est une string (pour compatibilité)
+        $roleValue = is_numeric($request->input('role')) 
+            ? (int) $request->input('role') 
+            : array_search($request->input('role'), User::ROLES, true);
+        
+        if ($roleValue === false) {
+            return back()->withErrors(['role' => 'Rôle invalide.']);
+        }
+
         // Interdit de promouvoir en super_admin
-        if ($request->input('role') === 'super_admin') {
+        if ($roleValue === User::ROLE_SUPER_ADMIN) { // super_admin = 5
             return back()->withErrors(['role' => 'Impossible de promouvoir un utilisateur en super_admin.']);
         }
 
         // Seul le super_admin peut promouvoir en admin
-        if ($request->input('role') === 'admin' && $request->user()->role !== User::ROLE_SUPER_ADMIN) { // super_admin = 5
+        if ($roleValue === User::ROLE_ADMIN && $request->user()->role !== User::ROLE_SUPER_ADMIN) { // admin = 4, super_admin = 5
             return back()->withErrors(['role' => 'Seul le super_admin peut promouvoir un utilisateur en admin.']);
         }
 
-        $user->role = $request->input('role');
+        $user->role = $roleValue;
         $user->save();
 
         return redirect()->back()->with('success', 'Rôle mis à jour.');

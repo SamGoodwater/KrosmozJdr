@@ -42,11 +42,19 @@ class DataConversionService
      */
     public function convertClass(array $rawData): array
     {
-        Log::info('Conversion de classe', ['class_name' => $rawData['name'] ?? 'Unknown']);
+        // Les classes DofusDB n'ont pas de champ 'name' direct
+        // On extrait le nom depuis la description multilingue ou on utilise l'ID
+        $name = $this->extractMultilingualValue($rawData['name'] ?? null, 'Classe ' . ($rawData['id'] ?? 'Unknown'));
+        $description = $this->extractMultilingualValue($rawData['description'] ?? null, '');
+        
+        // Tronquer la description à 255 caractères (limite de la colonne VARCHAR)
+        $description = mb_substr($description, 0, 255);
+        
+        Log::info('Conversion de classe', ['class_id' => $rawData['id'] ?? 'Unknown', 'class_name' => $name]);
         
         $converted = [
-            'name' => $rawData['name'] ?? '',
-            'description' => $rawData['description'] ?? '',
+            'name' => $name,
+            'description' => $description,
             'life' => $this->convertLife($rawData['life'] ?? 0, 'class'),
             'life_dice' => $rawData['life_dice'] ?? '',
             'specificity' => $rawData['specificity'] ?? ''
@@ -68,23 +76,29 @@ class DataConversionService
      */
     public function convertMonster(array $rawData): array
     {
-        Log::info('Conversion de monstre', ['monster_name' => $rawData['name'] ?? 'Unknown']);
+        // Extraction du nom multilingue
+        $name = $this->extractMultilingualValue($rawData['name'] ?? null, 'Monstre ' . ($rawData['id'] ?? 'Unknown'));
+        
+        // Extraction des caractéristiques depuis les grades ou les champs directs
+        $grade = $this->extractMonsterGrade($rawData);
+        
+        Log::info('Conversion de monstre', ['monster_id' => $rawData['id'] ?? 'Unknown', 'monster_name' => $name]);
         
         $converted = [
             'creatures' => [
-                'name' => $rawData['name'] ?? '',
-                'level' => $this->convertLevel($rawData['level'] ?? 1, 'monster'),
-                'life' => $this->convertLife($rawData['life'] ?? 0, 'monster'),
-                'strength' => $this->convertAttribute($rawData['strength'] ?? 0, 'strength', 'monster'),
-                'intelligence' => $this->convertAttribute($rawData['intelligence'] ?? 0, 'intelligence', 'monster'),
-                'agility' => $this->convertAttribute($rawData['agility'] ?? 0, 'agility', 'monster'),
-                'luck' => $this->convertAttribute($rawData['luck'] ?? 0, 'luck', 'monster'),
-                'wisdom' => $this->convertAttribute($rawData['wisdom'] ?? 0, 'wisdom', 'monster'),
-                'chance' => $this->convertAttribute($rawData['chance'] ?? 0, 'chance', 'monster')
+                'name' => $name,
+                'level' => $this->convertLevel($grade['level'] ?? $rawData['level'] ?? 1, 'monster'),
+                'life' => $this->convertLife($grade['lifePoints'] ?? $rawData['lifePoints'] ?? 0, 'monster'),
+                'strength' => $this->convertAttribute($grade['strength'] ?? 0, 'strength', 'monster'),
+                'intelligence' => $this->convertAttribute($grade['intelligence'] ?? 0, 'intelligence', 'monster'),
+                'agility' => $this->convertAttribute($grade['agility'] ?? 0, 'agility', 'monster'),
+                'luck' => $this->convertAttribute($grade['luck'] ?? 0, 'luck', 'monster'),
+                'wisdom' => $this->convertAttribute($grade['wisdom'] ?? 0, 'wisdom', 'monster'),
+                'chance' => $this->convertAttribute($grade['chance'] ?? 0, 'chance', 'monster')
             ],
             'monsters' => [
                 'size' => $this->convertSize($rawData['size'] ?? 'medium'),
-                'monster_race_id' => $rawData['monster_race_id'] ?? null
+                'monster_race_id' => $rawData['race'] ?? $rawData['monster_race_id'] ?? null
             ]
         ];
         
@@ -95,6 +109,33 @@ class DataConversionService
         
         return $converted;
     }
+    
+    /**
+     * Extrait les caractéristiques depuis les grades d'un monstre
+     * 
+     * @param array $rawData Données brutes du monstre
+     * @return array Caractéristiques extraites
+     */
+    private function extractMonsterGrade(array $rawData): array
+    {
+        // Si des grades sont présents, on prend le premier (grade 1)
+        if (isset($rawData['grades']) && is_array($rawData['grades']) && !empty($rawData['grades'])) {
+            $grade = $rawData['grades'][0];
+            return [
+                'level' => $grade['level'] ?? null,
+                'lifePoints' => $grade['lifePoints'] ?? null,
+                'strength' => $grade['strength'] ?? null,
+                'intelligence' => $grade['intelligence'] ?? null,
+                'agility' => $grade['agility'] ?? null,
+                'wisdom' => $grade['wisdom'] ?? null,
+                'chance' => $grade['chance'] ?? null,
+                'luck' => null, // Pas de luck dans les grades
+            ];
+        }
+        
+        // Sinon, on retourne un tableau vide pour utiliser les valeurs par défaut
+        return [];
+    }
 
     /**
      * Conversion d'un objet selon les caractéristiques KrosmozJDR
@@ -104,14 +145,32 @@ class DataConversionService
      */
     public function convertItem(array $rawData): array
     {
-        Log::info('Conversion d\'objet', ['item_name' => $rawData['name'] ?? 'Unknown']);
+        // Extraction du nom et de la description depuis les objets multilingues
+        $name = $this->extractMultilingualValue($rawData['name'] ?? null, 'Objet ' . ($rawData['id'] ?? 'Unknown'));
+        $description = $this->extractMultilingualValue($rawData['description'] ?? null, '');
+        
+        // Tronquer la description à 255 caractères si nécessaire
+        $description = mb_substr($description, 0, 255);
+        
+        // Extraction et mapping du type depuis typeId
+        $typeId = $rawData['typeId'] ?? null;
+        $typeMapping = $this->mapItemTypeId($typeId);
+        
+        Log::info('Conversion d\'objet', [
+            'item_id' => $rawData['id'] ?? 'Unknown',
+            'item_name' => $name,
+            'type_id' => $typeId,
+            'mapped_type' => $typeMapping['type'],
+            'mapped_category' => $typeMapping['category']
+        ]);
         
         $converted = [
-            'name' => $rawData['name'] ?? '',
+            'name' => $name,
             'level' => $this->convertLevel($rawData['level'] ?? 1, 'item'),
-            'description' => $rawData['description'] ?? '',
-            'type' => $rawData['type'] ?? 'equipment',
-            'category' => $rawData['category'] ?? 'equipment',
+            'description' => $description,
+            'type' => $typeMapping['type'],
+            'category' => $typeMapping['category'],
+            'type_id' => $typeId, // Conserver le typeId pour référence
             'rarity' => $this->convertRarity($rawData['rarity'] ?? 'common'),
             'price' => $this->convertPrice($rawData['price'] ?? 0)
         ];
@@ -123,6 +182,50 @@ class DataConversionService
         
         return $converted;
     }
+    
+    /**
+     * Mappe un typeId DofusDB vers un type et catégorie KrosmozJDR
+     * 
+     * @param int|null $typeId Type ID depuis DofusDB
+     * @return array ['type' => string, 'category' => string]
+     */
+    private function mapItemTypeId(?int $typeId): array
+    {
+        // Mapping basé sur la configuration de DataIntegration
+        $typeMapping = [
+            1 => ['type' => 'weapon', 'category' => 'weapon'],
+            2 => ['type' => 'weapon', 'category' => 'weapon'], // Arc
+            3 => ['type' => 'weapon', 'category' => 'weapon'], // Bouclier
+            4 => ['type' => 'weapon', 'category' => 'weapon'], // Bâton
+            5 => ['type' => 'weapon', 'category' => 'weapon'], // Dague
+            6 => ['type' => 'weapon', 'category' => 'weapon'], // Épée
+            7 => ['type' => 'weapon', 'category' => 'weapon'], // Marteau
+            8 => ['type' => 'weapon', 'category' => 'weapon'], // Pelle
+            9 => ['type' => 'ring', 'category' => 'accessory'],
+            10 => ['type' => 'amulet', 'category' => 'accessory'],
+            11 => ['type' => 'belt', 'category' => 'accessory'],
+            12 => ['type' => 'potion', 'category' => 'potion'],
+            13 => ['type' => 'boots', 'category' => 'accessory'],
+            14 => ['type' => 'hat', 'category' => 'accessory'],
+            15 => ['type' => 'resource', 'category' => 'resource'],
+            16 => ['type' => 'equipment', 'category' => 'equipment'],
+            17 => ['type' => 'equipment', 'category' => 'equipment'], // Cape
+            18 => ['type' => 'equipment', 'category' => 'equipment'], // Familier
+            19 => ['type' => 'weapon', 'category' => 'weapon'], // Hache
+            20 => ['type' => 'weapon', 'category' => 'weapon'], // Outil
+            35 => ['type' => 'flower', 'category' => 'flower'],
+            203 => ['type' => 'cosmetic', 'category' => 'cosmetic'],
+            205 => ['type' => 'mount', 'category' => 'mount'],
+        ];
+        
+        if ($typeId !== null && isset($typeMapping[$typeId])) {
+            return $typeMapping[$typeId];
+        }
+        
+        // Par défaut, utiliser equipment
+        Log::warning('TypeId non mappé, utilisation de la valeur par défaut', ['type_id' => $typeId]);
+        return ['type' => 'equipment', 'category' => 'equipment'];
+    }
 
     /**
      * Conversion d'un sort selon les caractéristiques KrosmozJDR
@@ -132,11 +235,18 @@ class DataConversionService
      */
     public function convertSpell(array $rawData): array
     {
-        Log::info('Conversion de sort', ['spell_name' => $rawData['name'] ?? 'Unknown']);
+        // Extraction du nom et de la description depuis les objets multilingues
+        $name = $this->extractMultilingualValue($rawData['name'] ?? null, 'Sort ' . ($rawData['id'] ?? 'Unknown'));
+        $description = $this->extractMultilingualValue($rawData['description'] ?? null, '');
+        
+        // Tronquer la description à 255 caractères si nécessaire
+        $description = mb_substr($description, 0, 255);
+        
+        Log::info('Conversion de sort', ['spell_id' => $rawData['id'] ?? 'Unknown', 'spell_name' => $name]);
         
         $converted = [
-            'name' => $rawData['name'] ?? '',
-            'description' => $rawData['description'] ?? '',
+            'name' => $name,
+            'description' => $description,
             'class' => $rawData['class'] ?? '',
             'cost' => $this->convertCost($rawData['cost'] ?? 0),
             'range' => $this->convertRange($rawData['range'] ?? 1),
@@ -432,6 +542,46 @@ class DataConversionService
     }
 
     /**
+     * Extraction d'une valeur multilingue depuis les données DofusDB
+     * 
+     * @param mixed $multilingualData Données multilingues (peut être string, array ou null)
+     * @param string $defaultValue Valeur par défaut si non trouvée
+     * @return string Valeur extraite selon la langue configurée
+     */
+    private function extractMultilingualValue($multilingualData, string $defaultValue = ''): string
+    {
+        // Si c'est déjà une chaîne, on la retourne directement
+        if (is_string($multilingualData)) {
+            return $multilingualData;
+        }
+        
+        // Si c'est null ou vide, on retourne la valeur par défaut
+        if (empty($multilingualData) || !is_array($multilingualData)) {
+            return $defaultValue;
+        }
+        
+        // Récupération de la langue configurée
+        $language = config('scrapping.data_collect.dofusdb.default_language', 'fr');
+        
+        // Extraction de la valeur selon la langue
+        if (isset($multilingualData[$language])) {
+            return (string) $multilingualData[$language];
+        }
+        
+        // Fallback sur 'fr' si la langue configurée n'existe pas
+        if (isset($multilingualData['fr'])) {
+            return (string) $multilingualData['fr'];
+        }
+        
+        // Fallback sur la première valeur disponible
+        if (!empty($multilingualData)) {
+            return (string) reset($multilingualData);
+        }
+        
+        return $defaultValue;
+    }
+
+    /**
      * Validation des valeurs converties
      * 
      * @param array $data Données à valider
@@ -443,8 +593,15 @@ class DataConversionService
         $requiredFields = $this->characteristics['required_fields'][$entityType] ?? [];
         
         foreach ($requiredFields as $field) {
-            if (!isset($data[$field]) || empty($data[$field])) {
+            // Utiliser array_key_exists au lieu de isset pour détecter les valeurs null explicites
+            // Ne pas utiliser empty() car cela rejette les valeurs 0 légitimes
+            if (!array_key_exists($field, $data)) {
                 throw new \Exception("Champ requis manquant : {$field} pour l'entité {$entityType}");
+            }
+            
+            // Vérifier que la valeur n'est pas null (mais 0 est valide)
+            if ($data[$field] === null) {
+                throw new \Exception("Champ requis null : {$field} pour l'entité {$entityType}");
             }
         }
         

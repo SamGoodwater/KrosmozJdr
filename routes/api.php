@@ -66,3 +66,39 @@ Route::prefix('scrapping/test')->group(function () {
     Route::post('/clear-cache', [App\Http\Controllers\Scrapping\DataCollectController::class, 'testClearCache'])
         ->name('scrapping.test.clear-cache');
 });
+
+/*
+|--------------------------------------------------------------------------
+| Routes de production pour le système de Scrapping
+|--------------------------------------------------------------------------
+|
+| Ces routes utilisent l'orchestrateur complet pour effectuer les imports
+| (collecte → conversion → intégration) depuis DofusDB vers KrosmozJDR.
+|
+*/
+
+Route::prefix('scrapping/import')->group(function () {
+    // Import d'une classe
+    Route::post('/class/{id}', [App\Http\Controllers\Scrapping\ScrappingController::class, 'importClass'])
+        ->name('scrapping.import.class')
+        ->where('id', '[1-9]|1[0-9]'); // 1-19
+    
+    // Import d'un monstre
+    Route::post('/monster/{id}', [App\Http\Controllers\Scrapping\ScrappingController::class, 'importMonster'])
+        ->name('scrapping.import.monster')
+        ->where('id', '[1-9]|[1-9][0-9]|[1-9][0-9][0-9]|[1-4][0-9][0-9][0-9]|5000'); // 1-5000
+    
+    // Import d'un objet
+    Route::post('/item/{id}', [App\Http\Controllers\Scrapping\ScrappingController::class, 'importItem'])
+        ->name('scrapping.import.item')
+        ->where('id', '[1-9]|[1-9][0-9]|[1-9][0-9][0-9]|[1-9][0-9][0-9][0-9]|[1-2][0-9][0-9][0-9][0-9]|30000'); // 1-30000
+    
+    // Import d'un sort
+    Route::post('/spell/{id}', [App\Http\Controllers\Scrapping\ScrappingController::class, 'importSpell'])
+        ->name('scrapping.import.spell')
+        ->where('id', '[1-9]|[1-9][0-9]|[1-9][0-9][0-9]|[1-9][0-9][0-9][0-9]|[1-9][0-9][0-9][0-9][0-9]|20000'); // 1-20000
+    
+    // Import en lot
+    Route::post('/batch', [App\Http\Controllers\Scrapping\ScrappingController::class, 'importBatch'])
+        ->name('scrapping.import.batch');
+});

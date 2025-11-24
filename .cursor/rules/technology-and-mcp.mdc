@@ -1,16 +1,6 @@
 ---
-name: technology-and-mcp
-description: >
-  Intègre la **stack Krosmoz‑JDR** (Laravel 12, PHP 8.4, Vue 3, Tailwind CSS, DaisyUI, Tiptap, esbuild/rollup)
-  et les normes CI/CD/tests. Guide l’usage des MCP tools :
-    - `playwright` pour interagir automatiquement avec l’UI (clics, formulaires, capture écran, logs).
-globs:
-  - "**/*.php"
-  - "**/*.js"
-  - "**/*.vue"
-alwaysApply: true
+alwaysApply: false
 ---
-
 ## 📦 Stack & Technologies Krosmoz‑JDR
 
 - **Backend** : Laravel 12 (PHP 8.4), MySQL (`krosmozDB`), secrets gérés via `.env` (ne **jamais** versionner ce fichier).

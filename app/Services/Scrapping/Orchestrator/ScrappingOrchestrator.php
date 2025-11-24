@@ -218,6 +218,9 @@ class ScrappingOrchestrator
                 $method = 'import' . ucfirst($entity['type']);
                 $result = $this->$method($entity['id'], $options);
                 
+                // Ajouter l'entité au résultat pour l'affichage
+                $result['entity'] = $entity;
+                
                 if ($result['success']) {
                     $successCount++;
                 } else {

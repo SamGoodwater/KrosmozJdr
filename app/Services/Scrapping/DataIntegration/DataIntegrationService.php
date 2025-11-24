@@ -4,6 +4,7 @@ namespace App\Services\Scrapping\DataIntegration;
 
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\DB;
+use App\Models\User;
 use App\Models\Entity\Classe;
 use App\Models\Entity\Creature;
 use App\Models\Entity\Monster;
@@ -34,7 +35,8 @@ class DataIntegrationService
      */
     public function __construct()
     {
-        $this->config = config('scrapping.data_integration', []);
+        // Charger la configuration depuis le fichier de config du service
+        $this->config = require __DIR__ . '/config.php';
     }
 
     /**
@@ -121,34 +123,28 @@ class DataIntegrationService
             // Recherche d'une créature existante
             $existingCreature = Creature::where('name', $creatureData['name'])->first();
             
+            // Mapping des noms de colonnes vers la structure de la base
+            $creatureAttributes = [
+                'name' => $creatureData['name'],
+                'level' => (string) $creatureData['level'],
+                'life' => (string) $creatureData['life'],
+                'strong' => (string) $creatureData['strength'],
+                'intel' => (string) $creatureData['intelligence'],
+                'agi' => (string) $creatureData['agility'],
+                'sagesse' => (string) $creatureData['wisdom'],
+                'chance' => (string) $creatureData['chance'],
+                'created_by' => $this->getSystemUserId() // Utilisateur système pour imports automatiques
+            ];
+            
             if ($existingCreature) {
                 // Mise à jour de la créature existante
-                $existingCreature->update([
-                    'level' => $creatureData['level'],
-                    'life' => $creatureData['life'],
-                    'strength' => $creatureData['strength'],
-                    'intelligence' => $creatureData['intelligence'],
-                    'agility' => $creatureData['agility'],
-                    'luck' => $creatureData['luck'],
-                    'wisdom' => $creatureData['wisdom'],
-                    'chance' => $creatureData['chance']
-                ]);
+                $existingCreature->update($creatureAttributes);
                 
                 $creature = $existingCreature;
                 $creatureAction = 'updated';
             } else {
                 // Création d'une nouvelle créature
-                $creature = Creature::create([
-                    'name' => $creatureData['name'],
-                    'level' => $creatureData['level'],
-                    'life' => $creatureData['life'],
-                    'strength' => $creatureData['strength'],
-                    'intelligence' => $creatureData['intelligence'],
-                    'agility' => $creatureData['agility'],
-                    'luck' => $creatureData['luck'],
-                    'wisdom' => $creatureData['wisdom'],
-                    'chance' => $creatureData['chance']
-                ]);
+                $creature = Creature::create($creatureAttributes);
                 
                 $creatureAction = 'created';
             }
@@ -156,11 +152,24 @@ class DataIntegrationService
             // Gestion du monstre
             $existingMonster = Monster::where('creature_id', $creature->id)->first();
             
+            // Conversion de la taille string en integer
+            $sizeInt = $this->convertSizeToInt($monsterData['size'] ?? 'medium');
+            
+            // Vérifier que la race de monstre existe, sinon mettre à null
+            $monsterRaceId = $monsterData['monster_race_id'];
+            if ($monsterRaceId !== null) {
+                $raceExists = DB::table('monster_races')->where('id', $monsterRaceId)->exists();
+                if (!$raceExists) {
+                    Log::warning('Race de monstre inexistante, utilisation de null', ['race_id' => $monsterRaceId]);
+                    $monsterRaceId = null;
+                }
+            }
+            
             if ($existingMonster) {
                 // Mise à jour du monstre existant
                 $existingMonster->update([
-                    'size' => $monsterData['size'],
-                    'monster_race_id' => $monsterData['monster_race_id']
+                    'size' => $sizeInt,
+                    'monster_race_id' => $monsterRaceId
                 ]);
                 
                 $monster = $existingMonster;
@@ -169,8 +178,8 @@ class DataIntegrationService
                 // Création d'un nouveau monstre
                 $monster = Monster::create([
                     'creature_id' => $creature->id,
-                    'size' => $monsterData['size'],
-                    'monster_race_id' => $monsterData['monster_race_id']
+                    'size' => $sizeInt,
+                    'monster_race_id' => $monsterRaceId
                 ]);
                 
                 $monsterAction = 'created';
@@ -224,6 +233,9 @@ class DataIntegrationService
             // Détermination du type d'objet et de la table cible
             $targetTable = $this->determineItemTargetTable($convertedData['type'], $convertedData['category']);
             
+            // Nettoyage des doublons dans les autres tables avant intégration
+            $this->cleanupDuplicateItems($convertedData['name'], $targetTable);
+            
             $result = $this->integrateItemByType($convertedData, $targetTable);
             
             DB::commit();
@@ -247,6 +259,49 @@ class DataIntegrationService
             throw $e;
         }
     }
+    
+    /**
+     * Nettoie les doublons d'un objet dans les tables autres que la table cible
+     * 
+     * @param string $itemName Nom de l'objet à nettoyer
+     * @param string $targetTable Table cible (où l'objet doit être)
+     */
+    private function cleanupDuplicateItems(string $itemName, string $targetTable): void
+    {
+        $tablesToCheck = ['items', 'consumables', 'resources'];
+        
+        foreach ($tablesToCheck as $table) {
+            // Ne pas vérifier la table cible
+            if ($table === $targetTable) {
+                continue;
+            }
+            
+            $duplicate = null;
+            
+            switch ($table) {
+                case 'items':
+                    $duplicate = Item::where('name', $itemName)->first();
+                    break;
+                case 'consumables':
+                    $duplicate = Consumable::where('name', $itemName)->first();
+                    break;
+                case 'resources':
+                    $duplicate = Resource::where('name', $itemName)->first();
+                    break;
+            }
+            
+            if ($duplicate) {
+                Log::warning('Doublon détecté et supprimé', [
+                    'item_name' => $itemName,
+                    'duplicate_table' => $table,
+                    'duplicate_id' => $duplicate->id,
+                    'target_table' => $targetTable
+                ]);
+                
+                $duplicate->delete();
+            }
+        }
+    }
 
     /**
      * Intégration d'un sort dans la base KrosmozJDR
@@ -261,36 +316,30 @@ class DataIntegrationService
         try {
             DB::beginTransaction();
             
+            // Mapping des données converties vers les colonnes de la table spells
+            // cost -> pa (points d'action)
+            // range -> po (portée)
+            // area -> area (zone)
+            $spellData = [
+                'name' => $convertedData['name'],
+                'description' => $convertedData['description'],
+                'pa' => (string) ($convertedData['cost'] ?? '3'), // Points d'action
+                'po' => (string) ($convertedData['range'] ?? '1'), // Portée
+                'area' => (int) ($convertedData['area'] ?? 0), // Zone
+                'created_by' => $this->getSystemUserId(),
+            ];
+            
             // Recherche d'un sort existant
             $existingSpell = Spell::where('name', $convertedData['name'])->first();
             
             if ($existingSpell) {
                 // Mise à jour du sort existant
-                $existingSpell->update([
-                    'description' => $convertedData['description'],
-                    'class' => $convertedData['class'],
-                    'cost' => $convertedData['cost'],
-                    'range' => $convertedData['range'],
-                    'area' => $convertedData['area'],
-                    'critical_hit' => $convertedData['critical_hit'],
-                    'failure' => $convertedData['failure']
-                ]);
-                
+                $existingSpell->update($spellData);
                 $spell = $existingSpell;
                 $action = 'updated';
             } else {
                 // Création d'un nouveau sort
-                $spell = Spell::create([
-                    'name' => $convertedData['name'],
-                    'description' => $convertedData['description'],
-                    'class' => $convertedData['class'],
-                    'cost' => $convertedData['cost'],
-                    'range' => $convertedData['range'],
-                    'area' => $convertedData['area'],
-                    'critical_hit' => $convertedData['critical_hit'],
-                    'failure' => $convertedData['failure']
-                ]);
-                
+                $spell = Spell::create($spellData);
                 $action = 'created';
             }
             
@@ -333,15 +382,27 @@ class DataIntegrationService
      */
     private function determineItemTargetTable(string $type, string $category): string
     {
-        $mapping = $this->config['items_type_mapping'] ?? [];
+        $mapping = $this->config['dofusdb_mapping']['items_type_mapping'] ?? [];
         
+        // Chercher d'abord par type, puis par catégorie
         foreach ($mapping as $itemType => $config) {
-            if ($type === $itemType || $category === $itemType) {
+            if ($type === $itemType) {
+                return $config['target_table'];
+            }
+        }
+        
+        // Si pas trouvé par type, chercher par catégorie
+        foreach ($mapping as $itemType => $config) {
+            if ($category === $itemType || (isset($config['category']) && $category === $config['category'])) {
                 return $config['target_table'];
             }
         }
         
         // Par défaut, utiliser la table items
+        Log::warning('Type d\'objet non mappé, utilisation de la table items par défaut', [
+            'type' => $type,
+            'category' => $category
+        ]);
         return 'items';
     }
 
@@ -354,45 +415,45 @@ class DataIntegrationService
      */
     private function integrateItemByType(array $convertedData, string $targetTable): array
     {
-        $itemData = [
-            'name' => $convertedData['name'],
-            'level' => $convertedData['level'],
-            'description' => $convertedData['description'],
-            'type' => $convertedData['type'],
-            'category' => $convertedData['category'],
-            'rarity' => $convertedData['rarity'],
-            'price' => $convertedData['price']
-        ];
-        
         switch ($targetTable) {
             case 'consumables':
-                return $this->integrateConsumable($itemData);
+                return $this->integrateConsumable($convertedData);
                 
             case 'resources':
-                return $this->integrateResource($itemData);
+                return $this->integrateResource($convertedData);
                 
             case 'items':
             default:
-                return $this->integrateGenericItem($itemData);
+                return $this->integrateGenericItem($convertedData);
         }
     }
 
     /**
      * Intègre un consommable
      * 
-     * @param array $itemData Données de l'objet
+     * @param array $convertedData Données converties de l'objet
      * @return array Résultat de l'intégration
      */
-    private function integrateConsumable(array $itemData): array
+    private function integrateConsumable(array $convertedData): array
     {
-        $existingConsumable = Consumable::where('name', $itemData['name'])->first();
+        // Mapping des données vers les colonnes de la table consumables
+        $consumableData = [
+            'name' => $convertedData['name'],
+            'description' => $convertedData['description'],
+            'level' => (string) $convertedData['level'],
+            'price' => (string) $convertedData['price'],
+            'rarity' => $this->convertRarityToInt($convertedData['rarity']),
+            'created_by' => $this->getSystemUserId(),
+        ];
+        
+        $existingConsumable = Consumable::where('name', $consumableData['name'])->first();
         
         if ($existingConsumable) {
-            $existingConsumable->update($itemData);
+            $existingConsumable->update($consumableData);
             $consumable = $existingConsumable;
             $action = 'updated';
         } else {
-            $consumable = Consumable::create($itemData);
+            $consumable = Consumable::create($consumableData);
             $action = 'created';
         }
         
@@ -407,19 +468,29 @@ class DataIntegrationService
     /**
      * Intègre une ressource
      * 
-     * @param array $itemData Données de l'objet
+     * @param array $convertedData Données converties de l'objet
      * @return array Résultat de l'intégration
      */
-    private function integrateResource(array $itemData): array
+    private function integrateResource(array $convertedData): array
     {
-        $existingResource = Resource::where('name', $itemData['name'])->first();
+        // Mapping des données vers les colonnes de la table resources
+        $resourceData = [
+            'name' => $convertedData['name'],
+            'description' => $convertedData['description'],
+            'level' => (string) $convertedData['level'],
+            'price' => (string) $convertedData['price'],
+            'rarity' => $this->convertRarityToInt($convertedData['rarity']),
+            'created_by' => $this->getSystemUserId(),
+        ];
+        
+        $existingResource = Resource::where('name', $resourceData['name'])->first();
         
         if ($existingResource) {
-            $existingResource->update($itemData);
+            $existingResource->update($resourceData);
             $resource = $existingResource;
             $action = 'updated';
         } else {
-            $resource = Resource::create($itemData);
+            $resource = Resource::create($resourceData);
             $action = 'created';
         }
         
@@ -434,11 +505,21 @@ class DataIntegrationService
     /**
      * Intègre un objet générique
      * 
-     * @param array $itemData Données de l'objet
+     * @param array $convertedData Données converties de l'objet
      * @return array Résultat de l'intégration
      */
-    private function integrateGenericItem(array $itemData): array
+    private function integrateGenericItem(array $convertedData): array
     {
+        // Mapping des données vers les colonnes de la table items
+        $itemData = [
+            'name' => $convertedData['name'],
+            'description' => $convertedData['description'],
+            'level' => (string) $convertedData['level'],
+            'price' => (string) $convertedData['price'],
+            'rarity' => $this->convertRarityToInt($convertedData['rarity']),
+            'created_by' => $this->getSystemUserId(),
+        ];
+        
         $existingItem = Item::where('name', $itemData['name'])->first();
         
         if ($existingItem) {
@@ -514,5 +595,71 @@ class DataIntegrationService
         Log::info('Nettoyage des données temporaires', ['entity_type' => $entityType]);
         
         return 0; // À implémenter selon vos besoins
+    }
+
+    /**
+     * Convertit une taille string en integer pour la base de données
+     * 
+     * @param string $sizeString Taille en string (tiny, small, medium, large, huge)
+     * @return int Taille en integer (0-4)
+     */
+    private function convertSizeToInt(string $sizeString): int
+    {
+        $sizeMap = [
+            'tiny' => 0,
+            'small' => 1,
+            'medium' => 2,
+            'large' => 3,
+            'huge' => 4,
+        ];
+        
+        return $sizeMap[$sizeString] ?? 2; // Default to medium (2)
+    }
+
+    /**
+     * Convertit une rareté string en integer pour la base de données
+     * 
+     * @param string $rarityString Rareté en string (common, uncommon, rare, epic, legendary)
+     * @return int Rareté en integer (0-4)
+     */
+    private function convertRarityToInt(string $rarityString): int
+    {
+        $rarityMap = [
+            'common' => 0,
+            'uncommon' => 1,
+            'rare' => 2,
+            'epic' => 3,
+            'legendary' => 4,
+        ];
+        
+        return $rarityMap[$rarityString] ?? 0; // Default to common (0)
+    }
+
+    /**
+     * Récupère l'ID d'un utilisateur système pour les imports automatiques
+     * 
+     * @return int ID de l'utilisateur système
+     */
+    private function getSystemUserId(): int
+    {
+        // Utiliser l'utilisateur connecté si disponible
+        if (auth()->check()) {
+            return auth()->id();
+        }
+        
+        // Sinon, utiliser le premier utilisateur admin disponible
+        $admin = User::where('role', User::ROLE_ADMIN)->first();
+        if ($admin) {
+            return $admin->id;
+        }
+        
+        // En dernier recours, utiliser le premier utilisateur disponible
+        $user = User::first();
+        if ($user) {
+            return $user->id;
+        }
+        
+        // Si aucun utilisateur n'existe, on lance une exception
+        throw new \Exception('Aucun utilisateur disponible pour les imports automatiques');
     }
 }

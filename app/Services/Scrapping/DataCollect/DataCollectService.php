@@ -43,7 +43,8 @@ class DataCollectService
         $url = $this->buildDofusDbUrl('breeds', $dofusdbId);
         $data = $this->fetchFromDofusDb($url);
         
-        if (empty($data)) {
+        // Vérifier que les données sont valides (pas vide et contient au moins un ID)
+        if (empty($data) || !isset($data['id'])) {
             throw new \Exception("Impossible de récupérer les données de la classe ID {$dofusdbId}");
         }
         
@@ -66,7 +67,8 @@ class DataCollectService
         $url = $this->buildDofusDbUrl('monsters', $dofusdbId);
         $data = $this->fetchFromDofusDb($url);
         
-        if (empty($data)) {
+        // Vérifier que les données sont valides (pas vide et contient au moins un ID)
+        if (empty($data) || !isset($data['id'])) {
             throw new \Exception("Impossible de récupérer les données du monstre ID {$dofusdbId}");
         }
         
@@ -89,7 +91,8 @@ class DataCollectService
         $url = $this->buildDofusDbUrl('items', $dofusdbId);
         $data = $this->fetchFromDofusDb($url);
         
-        if (empty($data)) {
+        // Vérifier que les données sont valides (pas vide et contient au moins un ID)
+        if (empty($data) || !isset($data['id'])) {
             throw new \Exception("Impossible de récupérer les données de l'objet ID {$dofusdbId}");
         }
         
@@ -109,21 +112,64 @@ class DataCollectService
     {
         Log::info('Collecte sort depuis DofusDB', ['dofusdb_id' => $dofusdbId]);
         
-        // Collecte du sort principal
-        $spellUrl = $this->buildDofusDbUrl('spells', $dofusdbId);
-        $spellData = $this->fetchFromDofusDb($spellUrl);
+        // L'API DofusDB ne supporte pas /spells/{id} ni $filter
+        // Il faut récupérer les sorts par pagination et trouver celui avec l'ID correspondant
+        $baseUrl = $this->config['dofusdb']['base_url'] ?? 'https://api.dofusdb.fr';
+        $lang = $this->config['dofusdb']['default_language'] ?? 'fr';
+        $limit = 100; // Récupérer par lots de 100
+        $skip = 0;
+        $spellData = null;
         
-        if (empty($spellData)) {
+        // Recherche du sort par pagination
+        while ($spellData === null) {
+            $spellUrl = "{$baseUrl}/spells?lang={$lang}&\$limit={$limit}&\$skip={$skip}";
+            $response = $this->fetchFromDofusDb($spellUrl);
+            
+            if (!isset($response['data']) || !is_array($response['data'])) {
+                break;
+            }
+            
+            // Chercher le sort avec l'ID correspondant
+            foreach ($response['data'] as $spell) {
+                if (isset($spell['id']) && $spell['id'] == $dofusdbId) {
+                    $spellData = $spell;
+                    break;
+                }
+            }
+            
+            // Si on a trouvé le sort, arrêter la boucle
+            if ($spellData !== null) {
+                break;
+            }
+            
+            // Si on a récupéré moins de résultats que la limite, on a atteint la fin
+            if (count($response['data']) < $limit) {
+                break;
+            }
+            
+            $skip += $limit;
+        }
+        
+        if ($spellData === null) {
             throw new \Exception("Impossible de récupérer les données du sort ID {$dofusdbId}");
         }
         
-        // Collecte des niveaux du sort
-        $levelsUrl = $this->buildDofusDbUrl('spell-levels', $dofusdbId);
-        $levelsData = $this->fetchFromDofusDb($levelsUrl);
+        // Collecte des niveaux du sort (même approche par pagination)
+        $levelsUrl = "{$baseUrl}/spell-levels?lang={$lang}&\$limit={$limit}&\$skip=0";
+        $levelsResponse = $this->fetchFromDofusDb($levelsUrl);
+        $levels = [];
+        
+        if (isset($levelsResponse['data']) && is_array($levelsResponse['data'])) {
+            foreach ($levelsResponse['data'] as $level) {
+                if (isset($level['spellId']) && $level['spellId'] == $dofusdbId) {
+                    $levels[] = $level;
+                }
+            }
+        }
         
         $data = $spellData;
-        if (!empty($levelsData)) {
-            $data['levels'] = $levelsData;
+        if (!empty($levels)) {
+            $data['levels'] = $levels;
         }
         
         Log::info('Sort collecté avec succès', ['dofusdb_id' => $dofusdbId]);
@@ -163,7 +209,9 @@ class DataCollectService
      */
     private function buildDofusDbUrl(string $entityType, int $entityId): string
     {
-        $baseUrl = $this->config['dofusdb_base_url'] ?? 'https://api.dofusdb.fr';
+        $baseUrl = $this->config['dofusdb']['base_url'] 
+            ?? $this->config['dofusdb_base_url'] 
+            ?? 'https://api.dofusdb.fr';
         return "{$baseUrl}/{$entityType}/{$entityId}";
     }
 
@@ -192,6 +240,11 @@ class DataCollectService
             
             if ($response->successful()) {
                 $data = $response->json();
+                
+                // S'assurer que $data est un tableau
+                if (!is_array($data)) {
+                    $data = [];
+                }
                 
                 // Mise en cache des données
                 Cache::put($cacheKey, $data, $cacheTtl);
@@ -238,21 +291,61 @@ class DataCollectService
     /**
      * Nettoie le cache des données collectées
      * 
+     * Utilise les tags de cache si disponibles, sinon utilise le préfixe
+     * pour identifier et supprimer les clés de cache DofusDB.
+     * 
      * @return int Nombre d'éléments supprimés du cache
      */
     public function clearCache(): int
     {
-        $pattern = 'dofusdb_*';
-        $deleted = 0;
+        $cacheConfig = $this->config['cache'] ?? [];
+        $tags = $cacheConfig['tags'] ?? [];
+        $prefix = $cacheConfig['prefix'] ?? 'dofusdb:';
         
-        foreach (Cache::getStore()->many([$pattern]) as $key => $value) {
-            if (Cache::forget($key)) {
-                $deleted++;
+        try {
+            // Si le driver supporte les tags (Redis, Memcached), utilise-les
+            if (!empty($tags) && method_exists(Cache::getStore(), 'tags')) {
+                Cache::tags($tags)->flush();
+                Log::info('Cache des données collectées nettoyé via tags', ['tags' => $tags]);
+                return 1; // Tags flush retourne un bool, on retourne 1 pour indiquer le succès
             }
+            
+            // Sinon, on essaie de supprimer par préfixe (nécessite Redis ou un driver qui supporte les patterns)
+            $store = Cache::getStore();
+            
+            // Pour Redis, on peut utiliser la commande KEYS avec pattern
+            if (method_exists($store, 'connection') && method_exists($store->connection(), 'keys')) {
+                $connection = $store->connection();
+                $keys = $connection->keys($prefix . '*');
+                $deleted = 0;
+                
+                foreach ($keys as $key) {
+                    // Retirer le préfixe Redis si présent
+                    $cleanKey = str_replace(config('cache.prefix', ''), '', $key);
+                    if (Cache::forget($cleanKey)) {
+                        $deleted++;
+                    }
+                }
+                
+                Log::info('Cache des données collectées nettoyé via préfixe', [
+                    'prefix' => $prefix,
+                    'deleted_count' => $deleted
+                ]);
+                
+                return $deleted;
+            }
+            
+            // Fallback : flush complet du cache (à utiliser avec précaution)
+            Log::warning('Impossible de nettoyer le cache par pattern, flush complet effectué');
+            Cache::flush();
+            return 1;
+            
+        } catch (\Exception $e) {
+            Log::error('Erreur lors du nettoyage du cache', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            throw $e;
         }
-        
-        Log::info('Cache des données collectées nettoyé', ['deleted_count' => $deleted]);
-        
-        return $deleted;
     }
 }

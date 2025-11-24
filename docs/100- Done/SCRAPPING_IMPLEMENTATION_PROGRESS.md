@@ -73,6 +73,24 @@ Implémenter un système complet de scrapping pour récupérer des données depu
 - [x] **Configuration mise à jour** : `config.php` adapté aux vraies données
 - [x] **Documentation mise à jour** : `DEFINITIONS.md` avec structure réelle
 
+### 9. **Interfaces de test** ✅ **NOUVEAU (2025-01-27)**
+- [x] **DataCollectController** : Contrôleur HTTP pour tester le service DataCollect
+  - Endpoints pour chaque type d'entité (class, monster, item, spell, effect)
+  - Endpoint pour tester la disponibilité de l'API
+  - Endpoint pour nettoyer le cache
+  - Endpoint pour collecter des objets par type
+- [x] **TestDataCollectCommand** : Commande Artisan pour tester le service DataCollect
+  - Options pour tester chaque type d'entité
+  - Option pour tester avec un ID spécifique
+  - Option pour tester par type d'objet
+  - Option pour nettoyer le cache
+  - Affichage détaillé des données collectées
+- [x] **Routes API de test** : Routes `/api/scrapping/test/*` dans `routes/api.php`
+- [x] **Tests validés** :
+  - ✅ Test classe ID 1 : Collecte réussie
+  - ✅ Test monstre ID 31 : Collecte réussie (Larve Bleue)
+  - ✅ Test objet ID 15 : Collecte réussie
+
 ## 🔍 Analyse de l'API DofusDB
 
 ### **Tests effectués** ✅
@@ -117,10 +135,13 @@ Implémenter un système complet de scrapping pour récupérer des données depu
 - [x] **Tests unitaires** : À créer
 - [x] **Validation des données** : À tester avec des entités réelles
 
-### **Phase 2 : Contrôleurs et commandes** (Priorité : MOYENNE)
-- [ ] **Contrôleurs HTTP** : API REST pour chaque service
-- [ ] **Commandes Artisan** : Interface CLI pour les opérations
-- [ ] **Routes** : Définition des endpoints de l'API
+### **Phase 2 : Contrôleurs et commandes** (Priorité : MOYENNE) ⚠️ **EN COURS**
+- [x] **Contrôleurs HTTP de test** : `DataCollectController` créé ✅
+- [x] **Commandes Artisan de test** : `TestDataCollectCommand` créée ✅
+- [x] **Routes de test** : Routes `/api/scrapping/test/*` créées ✅
+- [ ] **Intégration orchestrateur** : Mise à jour des contrôleurs/commandes pour utiliser l'orchestrateur
+- [ ] **Contrôleurs de production** : `ScrappingController` à créer
+- [ ] **Commandes de production** : `ScrappingImportCommand` à créer
 - [ ] **Middleware** : Authentification et autorisation
 
 ### **Phase 3 : Interface utilisateur** (Priorité : BASSE)
@@ -158,23 +179,37 @@ Implémenter un système complet de scrapping pour récupérer des données depu
 - Hiérarchie des types : 100%
 - Configuration adaptée : 100%
 
-### **Tests et validation** : 0% ❌
+### **Tests et validation** : 30% ⚠️ **NOUVEAU**
 - Tests unitaires : 0%
 - Tests d'intégration : 0%
-- Validation des données : 0%
+- Validation des données : 30% (Tests manuels réussis : classe, monstre, objet) ✅
+
+### **Interface de test** : 100% ✅ **NOUVEAU**
+- Contrôleurs de test : 100% ✅ (`DataCollectController`)
+- Commandes de test : 100% ✅ (`TestDataCollectCommand`)
+- Routes de test : 100% ✅ (`/api/scrapping/test/*`)
+- Tests manuels : 100% ✅ (Classe, monstre, objet testés avec succès)
+
+### **Interface de production** : 0% ❌
+- Contrôleurs de production : 0%
+- Commandes de production : 0%
+- Routes de production : 0%
+- Intégration orchestrateur : 0%
 
 ### **Interface utilisateur** : 0% ❌
-- Contrôleurs : 0%
-- Commandes : 0%
-- Routes : 0%
 - Vues : 0%
 
 ## 🎯 Prochaines étapes recommandées
 
-### **Immédiat (Cette semaine)**
-1. **Créer les contrôleurs HTTP** : API REST pour DataCollect
-2. **Créer les commandes Artisan** : Interface CLI pour les tests
-3. **Tests de base** : Valider la collecte avec quelques entités
+### **Immédiat (Cette semaine)** ✅ **FAIT**
+1. ✅ **Créer les contrôleurs HTTP de test** : `DataCollectController` créé
+2. ✅ **Créer les commandes Artisan de test** : `TestDataCollectCommand` créée
+3. ✅ **Tests de base** : Validation réussie avec classe (ID 1), monstre (ID 31), objet (ID 15)
+
+### **Immédiat (Prochaine étape)**
+1. **Intégrer l'orchestrateur** : Mettre à jour les contrôleurs/commandes pour utiliser l'orchestrateur
+2. **Créer les contrôleurs de production** : `ScrappingController` pour les imports complets
+3. **Créer les commandes de production** : `ScrappingImportCommand` pour les imports via orchestrateur
 
 ### **Court terme (2-3 semaines)**
 1. **Tests unitaires** : Couvrir tous les services

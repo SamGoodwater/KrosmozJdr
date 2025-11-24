@@ -25,3 +25,6 @@ Route::get('/contribuer', function () {
 
 // PAGES ET SECTIONS
 require __DIR__ . '/page.php';
+
+// SERVICES
+require __DIR__ . '/services/scrapping.php';

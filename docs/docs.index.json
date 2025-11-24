@@ -120,6 +120,16 @@
     "description": "La **Phase 3** du refactoring a consisté à unifier complètement le système d'input en créant un composable centralisé `useInputField` et un template standardisé `FieldTemplate`. Cette phase a permis d'éliminer la duplication de code et d'offrir une API transparente et cohérente."
   },
   {
+    "path": "100- Done/SCRAPPING_IMPLEMENTATION_PROGRESS.md",
+    "title": "Progression de l'implémentation du système de Scrapping",
+    "description": "**2025-01-27**"
+  },
+  {
+    "path": "100- Done/SCRAPPING_STATUS_SUMMARY.md",
+    "title": "📊 Résumé de l'état du système de Scrapping - KrosmozJDR",
+    "description": "**Date de mise à jour** : 2025-01-27"
+  },
+  {
     "path": "100- Done/TESTS_AUTHENTIFICATION.md",
     "title": "Tests d'authentification - Documentation",
     "description": "Cette documentation décrit les tests d'authentification mis en place pour le projet Krosmoz-JDR. Les tests couvrent les fonctionnalités principales d'authentification : inscription, connexion, déconnexion, validation des formulaires et middlewares."
@@ -128,11 +138,6 @@
     "path": "100- Done/VALIDATION_REFACTORING.md",
     "title": "Refactoring du Système de Validation — KrosmozJDR",
     "description": "Le système de validation a été entièrement refactorisé pour répondre aux besoins de simplicité et de transparence. L'objectif était de créer une API qui évite les conflits avec les vues tout en restant puissante et flexible."
-  },
-  {
-    "path": "100-%20Done/SCRAPPING_IMPLEMENTATION_PROGRESS.md",
-    "title": "Progression de l'implémentation du système de Scrapping",
-    "description": "**2025-01-27**"
   },
   {
     "path": "20-Content/21-Entities/ENTITIES_OVERVIEW.md",
@@ -443,6 +448,11 @@
     "path": "50-Fonctionnalités/Scrapping/Data-integration/SPECIFICATIONS.md",
     "title": "Cahier des Charges - Service Data-integration",
     "description": "Le service Data-integration est un composant central de l'architecture KrosmozJDR qui assure l'intégration des données converties par le service Data-conversion dans la base de données KrosmozJDR. Il gère la cohérence des données, les relations entre entités et maintient l'intégrité de la base de données."
+  },
+  {
+    "path": "50-Fonctionnalités/Scrapping/ETAT_ACTUEL.md",
+    "title": "📊 État actuel des services de Scrapping - KrosmozJDR",
+    "description": "**Date de mise à jour** : 2025-11-24"
   },
   {
     "path": "50-Fonctionnalités/Scrapping/IMPLEMENTATION_SUMMARY.md",
