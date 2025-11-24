@@ -352,11 +352,11 @@ const buttonBindings = computed(() => ({
             }
             &::after {
                 background: linear-gradient(
-                    45deg,
+                    90deg,
                     color-mix(in srgb, var(--color) 35%, transparent) 20%,
                     color-mix(in srgb, var(--color) 45%, transparent) 30%,
-                    color-mix(in srgb, var(--color) 55%, transparent) 55%,
-                    color-mix(in srgb, var(--color) 70%, transparent) 65%
+                    color-mix(in srgb, var(--color) 60%, transparent) 55%,
+                    color-mix(in srgb, var(--color) 35%, transparent) 65%
                 );
             }
             &:hover::after {
@@ -414,12 +414,12 @@ const buttonBindings = computed(() => ({
                 position: absolute;
                 inset: 0;
                 background-size: 200% 200%;
-                background-position: -200% -200%;
-                transition: background-position 0.35s ease, backdrop-filter 0.2s ease;
+                background-position: 200% -200%;
+                transition: background-position 0.45s ease, backdrop-filter 0.2s ease;
                 pointer-events: none;
                 z-index: 1;
             }
-            
+
             &:hover::after {
                 background-position: 200% 200%;
                 backdrop-filter: blur(24px);

@@ -106,6 +106,7 @@ const attrs = computed(() => getCommonAttrs(props));
 /* Styles personnalisés pour le toast (basés sur DaisyUI mais sans positionnement absolu) */
 .toast-custom {
     /* Styles de base du toast DaisyUI sans positionnement */
+    position: relative; /* Nécessaire pour positionner la barre de progression */
     display: flex;
     align-items: center;
     justify-content: center;

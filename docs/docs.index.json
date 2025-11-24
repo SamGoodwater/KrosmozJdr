@@ -130,6 +130,11 @@
     "description": "Le système de validation a été entièrement refactorisé pour répondre aux besoins de simplicité et de transparence. L'objectif était de créer une API qui évite les conflits avec les vues tout en restant puissante et flexible."
   },
   {
+    "path": "100-%20Done/SCRAPPING_IMPLEMENTATION_PROGRESS.md",
+    "title": "Progression de l'implémentation du système de Scrapping",
+    "description": "**2025-01-27**"
+  },
+  {
     "path": "20-Content/21-Entities/ENTITIES_OVERVIEW.md",
     "title": "Vue d'ensemble des entités – Krosmoz JDR",
     "description": "Ce document présente en détail toutes les entités du projet Krosmoz JDR, leur structure, leurs relations et leur rôle dans l'architecture globale du jeu. Il sert de référence centrale pour la modélisation des données, la génération des migrations, l'implémentation backend et la compréhension métier."
@@ -380,64 +385,94 @@
     "description": "Ce dossier regroupe les scripts, automatisations et outils pour le développement, la maintenance et le déploiement du projet."
   },
   {
-    "path": "50-Fonctionnalités/Scrapping/Collect/API.md",
+    "path": "50-Fonctionnalités/Scrapping/Data-collect/API.md",
     "title": "",
     "description": ""
   },
   {
-    "path": "50-Fonctionnalités/Scrapping/Collect/DEFINITIONS.md",
-    "title": "Définitions des données DofusDB - Service Collect",
-    "description": "Ce document définit les structures de données et les endpoints de l'API DofusDB que le service Collect doit récupérer. Il décrit le format exact des données brutes sans aucune transformation, pour permettre une compréhension complète de la source de données."
+    "path": "50-Fonctionnalités/Scrapping/Data-collect/DEFINITIONS.md",
+    "title": "Définitions - Service DataCollect",
+    "description": "Le service `DataCollect` est responsable de la récupération de données brutes depuis l'API DofusDB. Il gère la collecte, le cache, la limitation de débit et la gestion des erreurs pour tous les types d'entités."
   },
   {
-    "path": "50-Fonctionnalités/Scrapping/Collect/README.md",
-    "title": "Service Collect DofusDB",
-    "description": "Le service **Collect** a pour mission de récupérer les données brutes depuis le site [DofusDB](https://dofusdb.fr/fr/database/objects) et de les rendre accessibles via une interface unifiée. Ce service ne fait **aucune conversion** ni **intégration** - il se contente de récupérer et d'exposer les données dans leur format d'origine."
+    "path": "50-Fonctionnalités/Scrapping/Data-collect/README.md",
+    "title": "Service Data-collect",
+    "description": "Le service **Data-collect** a pour mission de récupérer les données brutes depuis des sites externes (comme DofusDB) et de les rendre accessibles via une interface unifiée. Ce service ne fait **aucune conversion** ni **intégration** - il se contente de récupérer et d'exposer les données dans leur format d'origine."
   },
   {
-    "path": "50-Fonctionnalités/Scrapping/Collect/SPECIFICATIONS.md",
+    "path": "50-Fonctionnalités/Scrapping/Data-collect/SPECIFICATIONS.md",
     "title": "",
     "description": ""
   },
   {
-    "path": "50-Fonctionnalités/Scrapping/Conversion/API.md",
+    "path": "50-Fonctionnalités/Scrapping/Data-conversion/API.md",
     "title": "",
     "description": ""
   },
   {
-    "path": "50-Fonctionnalités/Scrapping/Conversion/DEFINITIONS.md",
+    "path": "50-Fonctionnalités/Scrapping/Data-conversion/DEFINITIONS.md",
+    "title": "Définitions des Conversions Dofus vers KrosmozJDR",
+    "description": "Ce document détaille les règles de conversion des caractéristiques de jeu de Dofus vers KrosmozJDR. Il fournit des formules de conversion pour chaque caractéristique selon le type d'entité (créature, PNJ, joueur) et le niveau."
+  },
+  {
+    "path": "50-Fonctionnalités/Scrapping/Data-conversion/README.md",
+    "title": "Service Data-conversion Dofus vers KrosmozJDR",
+    "description": "Le service **Data-conversion** est responsable de la transformation des données issues du jeu Dofus (récupérées via le service Data-collect) en données exploitables par le système KrosmozJDR. Il assure la cohérence et la validité des données converties selon les règles définies dans la configuration des caractéristiques."
+  },
+  {
+    "path": "50-Fonctionnalités/Scrapping/Data-conversion/SPECIFICATIONS.md",
+    "title": "Cahier des Charges - Service Data-conversion Dofus vers KrosmozJDR",
+    "description": "Le service Data-conversion Dofus vers KrosmozJDR est un composant central de l'architecture KrosmozJDR qui transforme les données brutes de Dofus en données exploitables par le système KrosmozJDR. Il assure la cohérence et la validité des données converties selon les règles définies dans la configuration des caractéristiques."
+  },
+  {
+    "path": "50-Fonctionnalités/Scrapping/Data-integration/API.md",
     "title": "",
     "description": ""
   },
   {
-    "path": "50-Fonctionnalités/Scrapping/Conversion/README.md",
-    "title": "Service de conversion des données de Dofus vers KrosmozJDR",
-    "description": "- **Mission** : Serice permettant de convertir les données issus de Dofus en données exploitables par le projet KrosmozJDR"
+    "path": "50-Fonctionnalités/Scrapping/Data-integration/DEFINITIONS.md",
+    "title": "Définitions du Service Data-integration",
+    "description": "Ce document définit les structures de données, les règles d'intégration et les stratégies de gestion des conflits que le service Data-integration utilise pour intégrer les données converties dans la base de données KrosmozJDR."
   },
   {
-    "path": "50-Fonctionnalités/Scrapping/Conversion/SPECIFICATIONS.md",
-    "title": "",
-    "description": ""
+    "path": "50-Fonctionnalités/Scrapping/Data-integration/README.md",
+    "title": "Service Data-integration",
+    "description": "Le service **Data-integration** est responsable de l'intégration des données converties par le service Data-conversion dans la base de données KrosmozJDR. Il assure la cohérence des données, gère les relations entre entités et maintient l'intégrité de la base de données."
   },
   {
-    "path": "50-Fonctionnalités/Scrapping/Integration/API.md",
-    "title": "",
-    "description": ""
+    "path": "50-Fonctionnalités/Scrapping/Data-integration/SPECIFICATIONS.md",
+    "title": "Cahier des Charges - Service Data-integration",
+    "description": "Le service Data-integration est un composant central de l'architecture KrosmozJDR qui assure l'intégration des données converties par le service Data-conversion dans la base de données KrosmozJDR. Il gère la cohérence des données, les relations entre entités et maintient l'intégrité de la base de données."
   },
   {
-    "path": "50-Fonctionnalités/Scrapping/Integration/DEFINITIONS.md",
-    "title": "",
-    "description": ""
+    "path": "50-Fonctionnalités/Scrapping/IMPLEMENTATION_SUMMARY.md",
+    "title": "📋 Résumé de l'implémentation - Fonctionnalité de Scrapping",
+    "description": "La fonctionnalité de scrapping a été entièrement implémentée avec une architecture modulaire et extensible, permettant de récupérer, convertir et intégrer des données depuis des sites externes (notamment DofusDB) vers KrosmozJDR."
   },
   {
-    "path": "50-Fonctionnalités/Scrapping/Integration/README.md",
-    "title": "",
-    "description": ""
+    "path": "50-Fonctionnalités/Scrapping/Orchestrateur/API.md",
+    "title": "API de l'Orchestrateur de Scrapping",
+    "description": "L'API de l'Orchestrateur de Scrapping fournit une interface REST complète pour gérer l'ensemble du processus de scrapping depuis des sites externes (comme DofusDB) vers KrosmozJDR. Cette API permet d'importer des entités individuelles, en lot, ou par catégorie, avec un suivi complet des processus et des métriques de performance."
   },
   {
-    "path": "50-Fonctionnalités/Scrapping/Integration/SPECIFICATIONS.md",
-    "title": "",
-    "description": ""
+    "path": "50-Fonctionnalités/Scrapping/Orchestrateur/DEFINITIONS.md",
+    "title": "Définitions de l'Orchestrateur de Scrapping",
+    "description": "Ce document définit les structures de données, les règles d'orchestration et les processus de coordination que l'orchestrateur utilise pour gérer le flux de données entre les services de scrapping."
+  },
+  {
+    "path": "50-Fonctionnalités/Scrapping/Orchestrateur/README.md",
+    "title": "Orchestrateur de Scrapping",
+    "description": "L'**Orchestrateur de Scrapping** est le composant central qui coordonne l'ensemble du processus de récupération, conversion et intégration des données depuis des sites externes (comme DofusDB) vers KrosmozJDR. Il agit comme un chef d'orchestre qui appelle les services dans le bon ordre et gère le flux de données global."
+  },
+  {
+    "path": "50-Fonctionnalités/Scrapping/Orchestrateur/SPECIFICATIONS.md",
+    "title": "Cahier des Charges - Orchestrateur de Scrapping",
+    "description": "L'Orchestrateur de Scrapping est un composant central de l'architecture KrosmozJDR qui coordonne l'ensemble du processus de récupération, conversion et intégration des données depuis des sites externes (comme DofusDB) vers la base de données KrosmozJDR. Il agit comme un chef d'orchestre qui assure la coordination entre les services Data-collect, Data-conversion et Data-integration."
+  },
+  {
+    "path": "50-Fonctionnalités/Scrapping/README.md",
+    "title": "🚀 Fonctionnalité de Scrapping - KrosmozJDR",
+    "description": "Cette fonctionnalité permet de récupérer, convertir et intégrer des données depuis des sites externes (comme DofusDB) vers KrosmozJDR. Les données qui sont récupérées depuis des sites externes ne sont pas structurées comme ce dont a besoin KrosmozJDR. De plus, ces sites utilisent les données du jeu Dofus alors que KrosmozJDR se base sur le jeu Dofus mais avec des données simplifiées. Il y a donc besoin de convertir."
   },
   {
     "path": "DOCUMENTATION_GUIDE.md",

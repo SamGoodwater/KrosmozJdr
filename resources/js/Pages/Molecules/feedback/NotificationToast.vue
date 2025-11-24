@@ -63,6 +63,8 @@ const { getProgressPercentage, getNotificationState } = useNotificationStore();
 const isHovered = ref(false);
 const isExpanded = ref(false);
 const progressInterval = ref(null);
+// Ref réactive pour forcer la mise à jour des computed basés sur le temps
+const currentTime = ref(Date.now());
 
 // Icône par défaut selon le type (FontAwesome)
 const defaultIconMap = {
@@ -80,13 +82,19 @@ const iconSource = computed(() => {
 });
 
 // État de la notification (full/contracted)
+// Utilise currentTime pour forcer la réactivité
 const notificationState = computed(() => {
+    // Force la dépendance réactive
+    currentTime.value; // eslint-disable-line no-unused-expressions
     if (isHovered.value && isExpanded.value) return 'expanded';
     return getNotificationState(props);
 });
 
 // Barre de progression
+// Utilise currentTime pour forcer la réactivité
 const progressPercentage = computed(() => {
+    // Force la dépendance réactive
+    currentTime.value; // eslint-disable-line no-unused-expressions
     return getProgressPercentage(props);
 });
 
@@ -147,10 +155,11 @@ function handleClose(e) {
     }
 }
 
-// Mise à jour de la barre de progression
+// Mise à jour de la barre de progression et de l'état
 function startProgressUpdate() {
     progressInterval.value = setInterval(() => {
-        // La barre de progression se met à jour automatiquement via computed
+        // Mettre à jour currentTime pour forcer le recalcul des computed
+        currentTime.value = Date.now();
     }, 100);
 }
 
@@ -274,8 +283,17 @@ onUnmounted(() => {
     margin-bottom: 0;
 }
 
+.notification-toast.w-12 .toast-custom {
+    min-height: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+}
+
 .notification-toast.w-12 .flex {
     justify-content: center;
+    padding: 0;
+    gap: 0;
 }
 
 .notification-toast.w-12 .flex-1 {
