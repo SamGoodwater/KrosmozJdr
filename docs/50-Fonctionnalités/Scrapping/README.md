@@ -152,6 +152,20 @@ SCRAPPING_RATE_LIMIT_REQUESTS=60
 
 ## 🚀 Utilisation
 
+### 🖥️ Interface d'administration (Vue 3)
+
+Une interface dédiée est disponible pour les administrateurs (`/scrapping`, route `scrapping.index`). Elle est responsive (mobile → desktop) et propose quatre onglets :
+
+- **Entité** : import unitaire avec formulaires d’options (skip cache, force update, dry-run, validation). Un bouton *Prévisualiser* lance un fetch `GET /api/scrapping/preview/{type}/{id}` afin d’afficher :
+  - Les données brutes converties.
+  - L’éventuelle version déjà présente en base.
+  - Un tableau de diff (champ, valeur actuelle, valeur importée) pour décider de conserver ou d’écraser l’entrée.
+- **Plage d’ID** : import d’un intervalle (`start_id`, `end_id`). Le formulaire calcule le nombre d’entités concernées et vérifie la limite autorisée (classes 1‑19, monstres 1‑5000, etc.). Le bouton envoie `POST /api/scrapping/import/range`.
+- **Import complet** : exécute `POST /api/scrapping/import/all` pour scrapper tout un type d’un coup (utile après un wipe). Un `Alert` rappelle que l’opération est longue.
+- **Résultats** : historique horodaté de toutes les actions (entité, plage, import complet). Chaque entrée conserve la réponse JSON et les erreurs éventuelles pour audit.
+
+Chaque action enregistre son résultat localement (pas besoin de recharger) et bascule automatiquement sur l’onglet *Résultats*. Le panneau de prévisualisation reste disponible tant qu’on ne le ferme pas ou qu’on n’importe pas la nouvelle version.
+
 ### **Via l'Orchestrateur (Recommandé)**
 ```php
 use App\Services\Scrapping\Orchestrator\ScrappingOrchestrator;

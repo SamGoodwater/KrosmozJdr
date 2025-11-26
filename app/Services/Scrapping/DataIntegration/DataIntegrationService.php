@@ -79,6 +79,37 @@ class DataIntegrationService
                 $action = 'created';
             }
             
+            // Intégration des relations : sorts de la classe via class_spell
+            if (isset($convertedData['spells']) && is_array($convertedData['spells'])) {
+                $spellIds = [];
+                foreach ($convertedData['spells'] as $spellData) {
+                    $spellId = is_array($spellData) ? ($spellData['id'] ?? null) : $spellData;
+                    if ($spellId) {
+                        // Chercher le sort dans la base par son dofusdb_id ou son nom
+                        $spell = Spell::where('dofusdb_id', $spellId)
+                            ->orWhere(function($query) use ($spellData) {
+                                if (is_array($spellData) && isset($spellData['name'])) {
+                                    $query->where('name', $spellData['name']);
+                                }
+                            })
+                            ->first();
+                        
+                        if ($spell) {
+                            $spellIds[] = $spell->id;
+                        }
+                    }
+                }
+                
+                // Synchroniser les sorts de la classe
+                if (!empty($spellIds)) {
+                    $class->spells()->sync($spellIds);
+                    Log::info('Sorts associés à la classe', [
+                        'class_id' => $class->id,
+                        'spell_count' => count($spellIds)
+                    ]);
+                }
+            }
+            
             DB::commit();
             
             Log::info('Classe intégrée avec succès', [
@@ -185,6 +216,69 @@ class DataIntegrationService
                 $monsterAction = 'created';
             }
             
+            // Intégration des relations : sorts et ressources du monstre
+            // Sorts via creature_spell
+            if (isset($convertedData['spells']) && is_array($convertedData['spells'])) {
+                $spellIds = [];
+                foreach ($convertedData['spells'] as $spellData) {
+                    $spellId = is_array($spellData) ? ($spellData['id'] ?? null) : $spellData;
+                    if ($spellId) {
+                        $spell = Spell::where('dofusdb_id', $spellId)
+                            ->orWhere(function($query) use ($spellData) {
+                                if (is_array($spellData) && isset($spellData['name'])) {
+                                    $query->where('name', $spellData['name']);
+                                }
+                            })
+                            ->first();
+                        
+                        if ($spell) {
+                            $spellIds[] = $spell->id;
+                        }
+                    }
+                }
+                
+                // Synchroniser les sorts de la créature
+                if (!empty($spellIds)) {
+                    $creature->spells()->sync($spellIds);
+                    Log::info('Sorts associés au monstre', [
+                        'creature_id' => $creature->id,
+                        'spell_count' => count($spellIds)
+                    ]);
+                }
+            }
+            
+            // Ressources (drops) via creature_resource
+            if (isset($convertedData['drops']) && is_array($convertedData['drops'])) {
+                $resourceData = [];
+                foreach ($convertedData['drops'] as $resourceItem) {
+                    $resourceId = is_array($resourceItem) ? ($resourceItem['id'] ?? null) : $resourceItem;
+                    $quantity = is_array($resourceItem) ? ($resourceItem['quantity'] ?? 1) : 1;
+                    
+                    if ($resourceId) {
+                        $resource = Resource::where('dofusdb_id', $resourceId)
+                            ->orWhere(function($query) use ($resourceItem) {
+                                if (is_array($resourceItem) && isset($resourceItem['name'])) {
+                                    $query->where('name', $resourceItem['name']);
+                                }
+                            })
+                            ->first();
+                        
+                        if ($resource) {
+                            $resourceData[$resource->id] = ['quantity' => (string) $quantity];
+                        }
+                    }
+                }
+                
+                // Synchroniser les ressources de la créature
+                if (!empty($resourceData)) {
+                    $creature->resources()->sync($resourceData);
+                    Log::info('Ressources associées au monstre', [
+                        'creature_id' => $creature->id,
+                        'resource_count' => count($resourceData)
+                    ]);
+                }
+            }
+            
             DB::commit();
             
             Log::info('Monstre intégré avec succès', [
@@ -237,6 +331,44 @@ class DataIntegrationService
             $this->cleanupDuplicateItems($convertedData['name'], $targetTable);
             
             $result = $this->integrateItemByType($convertedData, $targetTable);
+            
+            // Intégration des relations : recette (ressources) via item_resource
+            // Note: La recette s'applique uniquement aux items (pas aux consumables ni resources)
+            if ($targetTable === 'items' && isset($convertedData['recipe']) && is_array($convertedData['recipe'])) {
+                $item = Item::find($result['id']);
+                
+                if ($item) {
+                    $resourceData = [];
+                    foreach ($convertedData['recipe'] as $recipeItem) {
+                        $resourceItem = $recipeItem['resource'] ?? $recipeItem;
+                        $resourceId = is_array($resourceItem) ? ($resourceItem['id'] ?? null) : $resourceItem;
+                        $quantity = is_array($recipeItem) ? ($recipeItem['quantity'] ?? 1) : 1;
+                        
+                        if ($resourceId) {
+                            $resource = Resource::where('dofusdb_id', $resourceId)
+                                ->orWhere(function($query) use ($resourceItem) {
+                                    if (is_array($resourceItem) && isset($resourceItem['name'])) {
+                                        $query->where('name', $resourceItem['name']);
+                                    }
+                                })
+                                ->first();
+                            
+                            if ($resource) {
+                                $resourceData[$resource->id] = ['quantity' => (string) $quantity];
+                            }
+                        }
+                    }
+                    
+                    // Synchroniser les ressources de la recette
+                    if (!empty($resourceData)) {
+                        $item->resources()->sync($resourceData);
+                        Log::info('Recette associée à l\'objet', [
+                            'item_id' => $item->id,
+                            'resource_count' => count($resourceData)
+                        ]);
+                    }
+                }
+            }
             
             DB::commit();
             
@@ -348,6 +480,47 @@ class DataIntegrationService
                 $this->integrateSpellLevels($spell, $convertedData['levels']);
             }
             
+            // Intégration des relations : monstre invoqué via spell_invocation
+            if (isset($convertedData['summon']) && is_array($convertedData['summon'])) {
+                $summonData = $convertedData['summon'];
+                $summonId = $summonData['id'] ?? null;
+                $summonName = is_array($summonData) && isset($summonData['name']) 
+                    ? (is_array($summonData['name']) ? ($summonData['name']['fr'] ?? $summonData['name']) : $summonData['name'])
+                    : null;
+                
+                if ($summonId || $summonName) {
+                    // Chercher le monstre par son dofusdb_id ou son nom
+                    $monster = null;
+                    
+                    if ($summonId) {
+                        $monster = Monster::where('dofusdb_id', $summonId)->first();
+                    }
+                    
+                    if (!$monster && $summonName) {
+                        // Chercher par le nom de la créature associée
+                        $creature = Creature::where('name', $summonName)->first();
+                        if ($creature) {
+                            $monster = Monster::where('creature_id', $creature->id)->first();
+                        }
+                    }
+                    
+                    if ($monster) {
+                        // Synchroniser le monstre invoqué
+                        $spell->monsters()->sync([$monster->id]);
+                        Log::info('Monstre invoqué associé au sort', [
+                            'spell_id' => $spell->id,
+                            'monster_id' => $monster->id
+                        ]);
+                    } else {
+                        Log::warning('Monstre invoqué non trouvé pour le sort', [
+                            'spell_id' => $spell->id,
+                            'summon_dofusdb_id' => $summonId,
+                            'summon_name' => $summonName
+                        ]);
+                    }
+                }
+            }
+            
             DB::commit();
             
             Log::info('Sort intégré avec succès', [
@@ -404,6 +577,95 @@ class DataIntegrationService
             'category' => $category
         ]);
         return 'items';
+    }
+
+    /**
+     * Recherche l'entité existante correspondante avant import
+     *
+     * @param string $type Type d'entité (class, monster, item, spell)
+     * @param array $convertedData Données converties
+     * @return array|null
+     */
+    public function findExistingEntity(string $type, array $convertedData): ?array
+    {
+        return match ($type) {
+            'class' => $this->wrapExistingRecord('classes', Classe::where('name', $convertedData['name'] ?? null)->first()),
+            'monster' => $this->findExistingMonster($convertedData),
+            'item' => $this->findExistingItem($convertedData),
+            'spell' => $this->wrapExistingRecord('spells', Spell::where('name', $convertedData['name'] ?? null)->first()),
+            default => null,
+        };
+    }
+
+    /**
+     * Encapsule un enregistrement existant sous un format standard
+     */
+    private function wrapExistingRecord(string $table, $model): ?array
+    {
+        if (!$model) {
+            return null;
+        }
+
+        return [
+            'table' => $table,
+            'record' => $model->toArray(),
+        ];
+    }
+
+    /**
+     * Recherche d'un monstre/creature existant
+     */
+    private function findExistingMonster(array $convertedData): ?array
+    {
+        $creatureName = $convertedData['creatures']['name'] ?? null;
+
+        if (!$creatureName) {
+            return null;
+        }
+
+        $creature = Creature::where('name', $creatureName)->first();
+
+        if (!$creature) {
+            return null;
+        }
+
+        $monster = Monster::where('creature_id', $creature->id)->first();
+
+        return [
+            'table' => 'creatures',
+            'record' => [
+                'creature' => $creature->toArray(),
+                'monster' => $monster?->toArray(),
+            ],
+        ];
+    }
+
+    /**
+     * Recherche d'un objet/consommable/ressource existant
+     */
+    private function findExistingItem(array $convertedData): ?array
+    {
+        if (!isset($convertedData['name'], $convertedData['type'], $convertedData['category'])) {
+            return null;
+        }
+
+        $targetTable = $this->determineItemTargetTable($convertedData['type'], $convertedData['category']);
+
+        $model = match ($targetTable) {
+            'items' => Item::where('name', $convertedData['name'])->first(),
+            'consumables' => Consumable::where('name', $convertedData['name'])->first(),
+            'resources' => Resource::where('name', $convertedData['name'])->first(),
+            default => null,
+        };
+
+        if (!$model) {
+            return null;
+        }
+
+        return [
+            'table' => $targetTable,
+            'record' => $model->toArray(),
+        ];
     }
 
     /**

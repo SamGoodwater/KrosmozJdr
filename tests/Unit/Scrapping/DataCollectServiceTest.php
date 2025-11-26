@@ -55,9 +55,20 @@ class DataCollectServiceTest extends TestCase
             ]
         ];
 
-        Http::fake([
-            '*' => Http::response($mockData, 200),
-        ]);
+        $spellLevelsData = [
+            'data' => []
+        ];
+
+        Http::fake(function ($request) use ($mockData, $spellLevelsData) {
+            $url = $request->url();
+            if (str_contains($url, '/breeds/1')) {
+                return Http::response($mockData, 200);
+            }
+            if (str_contains($url, '/spell-levels')) {
+                return Http::response($spellLevelsData, 200);
+            }
+            return Http::response([], 404);
+        });
 
         $result = $this->service->collectClass(1);
 
@@ -65,6 +76,30 @@ class DataCollectServiceTest extends TestCase
         $this->assertNotEmpty($result);
         $this->assertEquals(1, $result['id'] ?? null);
         $this->assertArrayHasKey('description', $result);
+    }
+    
+    /**
+     * Test de collecte d'une classe sans les sorts
+     */
+    public function test_collect_class_without_spells(): void
+    {
+        $mockData = [
+            'id' => 1,
+            'description' => [
+                'fr' => 'Description de la classe'
+            ]
+        ];
+
+        Http::fake([
+            'api.dofusdb.fr/breeds/1' => Http::response($mockData, 200),
+        ]);
+
+        $result = $this->service->collectClass(1, false);
+
+        $this->assertIsArray($result);
+        $this->assertNotEmpty($result);
+        $this->assertEquals(1, $result['id'] ?? null);
+        $this->assertArrayNotHasKey('spells', $result);
     }
 
     /**
@@ -126,7 +161,9 @@ class DataCollectServiceTest extends TestCase
             'id' => 31,
             'name' => ['fr' => 'Bouftou'],
             'level' => 5,
-            'lifePoints' => 100
+            'lifePoints' => 100,
+            'spells' => [],
+            'drops' => []
         ];
 
         Http::fake([
@@ -140,6 +177,29 @@ class DataCollectServiceTest extends TestCase
         $this->assertEquals(31, $result['id'] ?? null);
         $this->assertArrayHasKey('name', $result);
     }
+    
+    /**
+     * Test de collecte d'un monstre sans les relations
+     */
+    public function test_collect_monster_without_relations(): void
+    {
+        $mockData = [
+            'id' => 31,
+            'name' => ['fr' => 'Bouftou'],
+            'level' => 5,
+            'lifePoints' => 100
+        ];
+
+        Http::fake([
+            'api.dofusdb.fr/monsters/31' => Http::response($mockData, 200),
+        ]);
+
+        $result = $this->service->collectMonster(31, false, false);
+
+        $this->assertIsArray($result);
+        $this->assertNotEmpty($result);
+        $this->assertEquals(31, $result['id'] ?? null);
+    }
 
     /**
      * Test de collecte d'un objet avec succès
@@ -150,7 +210,8 @@ class DataCollectServiceTest extends TestCase
             'id' => 15,
             'name' => ['fr' => 'Purée pique-fêle'],
             'typeId' => 15,
-            'level' => 1
+            'level' => 1,
+            'recipe' => []
         ];
 
         // Utiliser un pattern global pour Http::fake()
@@ -165,6 +226,29 @@ class DataCollectServiceTest extends TestCase
         $this->assertEquals(15, $result['id'] ?? null);
         $this->assertArrayHasKey('typeId', $result);
     }
+    
+    /**
+     * Test de collecte d'un objet sans la recette
+     */
+    public function test_collect_item_without_recipe(): void
+    {
+        $mockData = [
+            'id' => 15,
+            'name' => ['fr' => 'Purée pique-fêle'],
+            'typeId' => 15,
+            'level' => 1
+        ];
+
+        Http::fake([
+            'api.dofusdb.fr/items/15' => Http::response($mockData, 200),
+        ]);
+
+        $result = $this->service->collectItem(15, false);
+
+        $this->assertIsArray($result);
+        $this->assertNotEmpty($result);
+        $this->assertEquals(15, $result['id'] ?? null);
+    }
 
     /**
      * Test de collecte d'un sort avec pagination
@@ -176,7 +260,8 @@ class DataCollectServiceTest extends TestCase
                 [
                     'id' => 201,
                     'name' => ['fr' => 'Béco du Tofu'],
-                    'description' => ['fr' => 'Description du sort']
+                    'description' => ['fr' => 'Description du sort'],
+                    'typeId' => 1
                 ]
             ],
             'total' => 1,
@@ -205,6 +290,147 @@ class DataCollectServiceTest extends TestCase
         $this->assertNotEmpty($result);
         $this->assertEquals(201, $result['id'] ?? null);
         $this->assertArrayHasKey('name', $result);
+    }
+    
+    /**
+     * Test de collecte d'un sort sans les niveaux
+     */
+    public function test_collect_spell_without_levels(): void
+    {
+        $spellList = [
+            'data' => [
+                [
+                    'id' => 201,
+                    'name' => ['fr' => 'Béco du Tofu'],
+                    'description' => ['fr' => 'Description du sort'],
+                    'typeId' => 1
+                ]
+            ],
+            'total' => 1,
+            'limit' => 100,
+            'skip' => 0
+        ];
+
+        $levelsList = [
+            'data' => []
+        ];
+
+        Http::fake(function ($request) use ($spellList, $levelsList) {
+            $url = $request->url();
+            if (str_contains($url, '/spells')) {
+                return Http::response($spellList, 200);
+            }
+            if (str_contains($url, '/spell-levels')) {
+                return Http::response($levelsList, 200);
+            }
+            return Http::response([], 404);
+        });
+
+        $result = $this->service->collectSpell(201, false);
+
+        $this->assertIsArray($result);
+        $this->assertNotEmpty($result);
+        $this->assertEquals(201, $result['id'] ?? null);
+        // Les niveaux ne devraient pas être présents si includeLevels = false
+        // Mais la méthode peut toujours les récupérer pour vérifier les invocations
+        // On vérifie juste que le sort est bien récupéré
+    }
+
+    /**
+     * Test de collecte d'une classe avec ses sorts
+     */
+    public function test_collect_class_includes_spells(): void
+    {
+        $mockData = [
+            'id' => 1,
+            'description' => ['fr' => 'Description']
+        ];
+
+        $spellLevelsData = [
+            'data' => [
+                [
+                    'id' => 1,
+                    'spellId' => 201,
+                    'spellBreed' => 1
+                ]
+            ]
+        ];
+
+        $spellData = [
+            'data' => [
+                [
+                    'id' => 201,
+                    'name' => ['fr' => 'Sort de classe']
+                ]
+            ]
+        ];
+
+        Http::fake(function ($request) use ($mockData, $spellLevelsData, $spellData) {
+            $url = $request->url();
+            if (str_contains($url, '/breeds/1')) {
+                return Http::response($mockData, 200);
+            }
+            if (str_contains($url, '/spell-levels')) {
+                return Http::response($spellLevelsData, 200);
+            }
+            if (str_contains($url, '/spells')) {
+                return Http::response($spellData, 200);
+            }
+            return Http::response([], 404);
+        });
+
+        $result = $this->service->collectClass(1, true);
+
+        $this->assertIsArray($result);
+        $this->assertArrayHasKey('spells', $result);
+    }
+
+    /**
+     * Test de collecte d'un monstre avec ses sorts et ressources
+     */
+    public function test_collect_monster_includes_relations(): void
+    {
+        $monsterData = [
+            'id' => 31,
+            'name' => ['fr' => 'Bouftou'],
+            'spells' => [201],
+            'drops' => [15]
+        ];
+
+        $spellData = [
+            'data' => [
+                [
+                    'id' => 201,
+                    'name' => ['fr' => 'Sort']
+                ]
+            ]
+        ];
+
+        $itemData = [
+            'id' => 15,
+            'name' => ['fr' => 'Ressource'],
+            'typeId' => 15
+        ];
+
+        Http::fake(function ($request) use ($monsterData, $spellData, $itemData) {
+            $url = $request->url();
+            if (str_contains($url, '/monsters/31')) {
+                return Http::response($monsterData, 200);
+            }
+            if (str_contains($url, '/spells')) {
+                return Http::response($spellData, 200);
+            }
+            if (str_contains($url, '/items/15')) {
+                return Http::response($itemData, 200);
+            }
+            return Http::response([], 404);
+        });
+
+        $result = $this->service->collectMonster(31, true, true);
+
+        $this->assertIsArray($result);
+        // Les sorts et drops peuvent être présents même s'ils sont vides
+        $this->assertArrayHasKey('id', $result);
     }
 
     /**

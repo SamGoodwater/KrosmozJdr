@@ -30,15 +30,16 @@ class DataCollectService
     }
 
     /**
-     * Collecte d'une classe depuis DofusDB
+     * Collecte d'une classe depuis DofusDB avec ses sorts associés
      * 
      * @param int $dofusdbId ID de la classe dans DofusDB
-     * @return array Données brutes de la classe
+     * @param bool $includeSpells Si true, collecte également les sorts de la classe
+     * @return array Données brutes de la classe avec ses sorts si demandé
      * @throws \Exception En cas d'erreur de collecte
      */
-    public function collectClass(int $dofusdbId): array
+    public function collectClass(int $dofusdbId, bool $includeSpells = true): array
     {
-        Log::info('Collecte classe depuis DofusDB', ['dofusdb_id' => $dofusdbId]);
+        Log::info('Collecte classe depuis DofusDB', ['dofusdb_id' => $dofusdbId, 'include_spells' => $includeSpells]);
         
         $url = $this->buildDofusDbUrl('breeds', $dofusdbId);
         $data = $this->fetchFromDofusDb($url);
@@ -48,21 +49,85 @@ class DataCollectService
             throw new \Exception("Impossible de récupérer les données de la classe ID {$dofusdbId}");
         }
         
-        Log::info('Classe collectée avec succès', ['dofusdb_id' => $dofusdbId]);
+        // Collecte des sorts associés à cette classe
+        if ($includeSpells) {
+            $data['spells'] = $this->collectClassSpells($dofusdbId);
+        }
+        
+        Log::info('Classe collectée avec succès', ['dofusdb_id' => $dofusdbId, 'spells_count' => count($data['spells'] ?? [])]);
         
         return $data;
     }
+    
+    /**
+     * Collecte les sorts associés à une classe
+     * 
+     * @param int $breedId ID de la classe dans DofusDB
+     * @return array Liste des sorts de la classe
+     */
+    private function collectClassSpells(int $breedId): array
+    {
+        $baseUrl = $this->config['dofusdb']['base_url'] ?? 'https://api.dofusdb.fr';
+        $lang = $this->config['dofusdb']['default_language'] ?? 'fr';
+        $limit = 100;
+        $skip = 0;
+        $spells = [];
+        $spellIds = [];
+        
+        // Récupérer les spell-levels associés à cette classe (spellBreed)
+        while (true) {
+            $levelsUrl = "{$baseUrl}/spell-levels?lang={$lang}&\$limit={$limit}&\$skip={$skip}";
+            $response = $this->fetchFromDofusDb($levelsUrl);
+            
+            if (!isset($response['data']) || !is_array($response['data'])) {
+                break;
+            }
+            
+            foreach ($response['data'] as $level) {
+                if (isset($level['spellBreed']) && $level['spellBreed'] == $breedId) {
+                    $spellId = $level['spellId'] ?? null;
+                    if ($spellId && !in_array($spellId, $spellIds)) {
+                        $spellIds[] = $spellId;
+                    }
+                }
+            }
+            
+            if (count($response['data']) < $limit) {
+                break;
+            }
+            
+            $skip += $limit;
+        }
+        
+        // Collecter les données complètes de chaque sort
+        foreach ($spellIds as $spellId) {
+            try {
+                $spellData = $this->collectSpell($spellId, false); // false = ne pas inclure les niveaux (déjà récupérés)
+                $spells[] = $spellData;
+            } catch (\Exception $e) {
+                Log::warning('Impossible de collecter le sort associé à la classe', [
+                    'breed_id' => $breedId,
+                    'spell_id' => $spellId,
+                    'error' => $e->getMessage()
+                ]);
+            }
+        }
+        
+        return $spells;
+    }
 
     /**
-     * Collecte d'un monstre depuis DofusDB
+     * Collecte d'un monstre depuis DofusDB avec ses sorts et ressources associées
      * 
      * @param int $dofusdbId ID du monstre dans DofusDB
-     * @return array Données brutes du monstre
+     * @param bool $includeSpells Si true, collecte également les sorts du monstre
+     * @param bool $includeDrops Si true, collecte également les ressources droppées
+     * @return array Données brutes du monstre avec ses relations si demandées
      * @throws \Exception En cas d'erreur de collecte
      */
-    public function collectMonster(int $dofusdbId): array
+    public function collectMonster(int $dofusdbId, bool $includeSpells = true, bool $includeDrops = true): array
     {
-        Log::info('Collecte monstre depuis DofusDB', ['dofusdb_id' => $dofusdbId]);
+        Log::info('Collecte monstre depuis DofusDB', ['dofusdb_id' => $dofusdbId, 'include_spells' => $includeSpells, 'include_drops' => $includeDrops]);
         
         $url = $this->buildDofusDbUrl('monsters', $dofusdbId);
         $data = $this->fetchFromDofusDb($url);
@@ -72,21 +137,72 @@ class DataCollectService
             throw new \Exception("Impossible de récupérer les données du monstre ID {$dofusdbId}");
         }
         
-        Log::info('Monstre collecté avec succès', ['dofusdb_id' => $dofusdbId]);
+        // Collecte des sorts du monstre
+        if ($includeSpells && isset($data['spells']) && is_array($data['spells'])) {
+            $spells = [];
+            foreach ($data['spells'] as $spellRef) {
+                $spellId = is_array($spellRef) ? ($spellRef['id'] ?? $spellRef) : $spellRef;
+                if ($spellId) {
+                    try {
+                        $spellData = $this->collectSpell($spellId, false);
+                        $spells[] = $spellData;
+                    } catch (\Exception $e) {
+                        Log::warning('Impossible de collecter le sort associé au monstre', [
+                            'monster_id' => $dofusdbId,
+                            'spell_id' => $spellId,
+                            'error' => $e->getMessage()
+                        ]);
+                    }
+                }
+            }
+            $data['spells'] = $spells;
+        }
+        
+        // Collecte des ressources droppées (drops)
+        if ($includeDrops && isset($data['drops']) && is_array($data['drops'])) {
+            $resources = [];
+            foreach ($data['drops'] as $drop) {
+                $itemId = is_array($drop) ? ($drop['itemId'] ?? $drop['id'] ?? null) : $drop;
+                if ($itemId) {
+                    try {
+                        $itemData = $this->collectItem($itemId);
+                        // Vérifier si c'est une ressource (typeId dans TYPES_RESOURCES)
+                        $typeId = $itemData['typeId'] ?? null;
+                        if ($typeId && $this->isResourceType($typeId)) {
+                            $resources[] = $itemData;
+                        }
+                    } catch (\Exception $e) {
+                        Log::warning('Impossible de collecter la ressource associée au monstre', [
+                            'monster_id' => $dofusdbId,
+                            'item_id' => $itemId,
+                            'error' => $e->getMessage()
+                        ]);
+                    }
+                }
+            }
+            $data['drops'] = $resources;
+        }
+        
+        Log::info('Monstre collecté avec succès', [
+            'dofusdb_id' => $dofusdbId,
+            'spells_count' => count($data['spells'] ?? []),
+            'resources_count' => count($data['drops'] ?? [])
+        ]);
         
         return $data;
     }
 
     /**
-     * Collecte d'un objet depuis DofusDB
+     * Collecte d'un objet depuis DofusDB avec sa recette si applicable
      * 
      * @param int $dofusdbId ID de l'objet dans DofusDB
-     * @return array Données brutes de l'objet
+     * @param bool $includeRecipe Si true, collecte également les ressources de la recette
+     * @return array Données brutes de l'objet avec sa recette si demandée
      * @throws \Exception En cas d'erreur de collecte
      */
-    public function collectItem(int $dofusdbId): array
+    public function collectItem(int $dofusdbId, bool $includeRecipe = true): array
     {
-        Log::info('Collecte objet depuis DofusDB', ['dofusdb_id' => $dofusdbId]);
+        Log::info('Collecte objet depuis DofusDB', ['dofusdb_id' => $dofusdbId, 'include_recipe' => $includeRecipe]);
         
         $url = $this->buildDofusDbUrl('items', $dofusdbId);
         $data = $this->fetchFromDofusDb($url);
@@ -96,19 +212,75 @@ class DataCollectService
             throw new \Exception("Impossible de récupérer les données de l'objet ID {$dofusdbId}");
         }
         
-        Log::info('Objet collecté avec succès', ['dofusdb_id' => $dofusdbId]);
+        // Collecte de la recette (ressources nécessaires pour la fabrication)
+        if ($includeRecipe && isset($data['recipe']) && is_array($data['recipe'])) {
+            $recipeResources = [];
+            foreach ($data['recipe'] as $recipeItem) {
+                $itemId = is_array($recipeItem) ? ($recipeItem['itemId'] ?? $recipeItem['id'] ?? null) : $recipeItem;
+                $quantity = is_array($recipeItem) ? ($recipeItem['quantity'] ?? 1) : 1;
+                
+                if ($itemId) {
+                    try {
+                        $itemData = $this->collectItem($itemId, false); // Ne pas inclure la recette pour éviter la récursion infinie
+                        // Vérifier si c'est une ressource
+                        $typeId = $itemData['typeId'] ?? null;
+                        if ($typeId && $this->isResourceType($typeId)) {
+                            $recipeResources[] = [
+                                'resource' => $itemData,
+                                'quantity' => $quantity
+                            ];
+                        }
+                    } catch (\Exception $e) {
+                        Log::warning('Impossible de collecter la ressource de la recette', [
+                            'item_id' => $dofusdbId,
+                            'recipe_item_id' => $itemId,
+                            'error' => $e->getMessage()
+                        ]);
+                    }
+                }
+            }
+            $data['recipe'] = $recipeResources;
+        }
+        
+        Log::info('Objet collecté avec succès', [
+            'dofusdb_id' => $dofusdbId,
+            'recipe_resources_count' => count($data['recipe'] ?? [])
+        ]);
         
         return $data;
     }
+    
+    /**
+     * Vérifie si un typeId correspond à une ressource
+     * 
+     * @param int $typeId Type ID de l'objet
+     * @return bool True si c'est une ressource
+     */
+    private function isResourceType(int $typeId): bool
+    {
+        // Types de ressources selon la configuration DofusDB
+        // Basé sur les types définis dans fields_config.php
+        // Les ressources sont généralement les types 15 (ressources) et 35 (fleurs)
+        // et d'autres types dans la plage des ressources
+        $resourceTypes = [
+            15, // resources
+            35, // flowers
+            // Ajouter d'autres types de ressources si nécessaire
+        ];
+        
+        return in_array($typeId, $resourceTypes);
+    }
 
     /**
-     * Collecte d'un sort depuis DofusDB
+     * Collecte d'un sort depuis DofusDB avec son monstre invoqué si applicable
      * 
      * @param int $dofusdbId ID du sort dans DofusDB
-     * @return array Données brutes du sort
+     * @param bool $includeLevels Si true, collecte également les niveaux du sort
+     * @param bool $includeSummon Si true, collecte le monstre invoqué pour les sorts d'invocation
+     * @return array Données brutes du sort avec ses relations si demandées
      * @throws \Exception En cas d'erreur de collecte
      */
-    public function collectSpell(int $dofusdbId): array
+    public function collectSpell(int $dofusdbId, bool $includeLevels = true, bool $includeSummon = true): array
     {
         Log::info('Collecte sort depuis DofusDB', ['dofusdb_id' => $dofusdbId]);
         
@@ -154,22 +326,30 @@ class DataCollectService
             throw new \Exception("Impossible de récupérer les données du sort ID {$dofusdbId}");
         }
         
-        // Collecte des niveaux du sort (même approche par pagination)
-        $levelsUrl = "{$baseUrl}/spell-levels?lang={$lang}&\$limit={$limit}&\$skip=0";
-        $levelsResponse = $this->fetchFromDofusDb($levelsUrl);
-        $levels = [];
+        $data = $spellData;
         
-        if (isset($levelsResponse['data']) && is_array($levelsResponse['data'])) {
-            foreach ($levelsResponse['data'] as $level) {
-                if (isset($level['spellId']) && $level['spellId'] == $dofusdbId) {
-                    $levels[] = $level;
+        // Collecte des niveaux du sort si demandé (nécessaire pour les invocations aussi)
+        if ($includeLevels || $includeSummon) {
+            $levelsUrl = "{$baseUrl}/spell-levels?lang={$lang}&\$limit={$limit}&\$skip=0";
+            $levelsResponse = $this->fetchFromDofusDb($levelsUrl);
+            $levels = [];
+            
+            if (isset($levelsResponse['data']) && is_array($levelsResponse['data'])) {
+                foreach ($levelsResponse['data'] as $level) {
+                    if (isset($level['spellId']) && $level['spellId'] == $dofusdbId) {
+                        $levels[] = $level;
+                    }
                 }
             }
-        }
-        
-        $data = $spellData;
-        if (!empty($levels)) {
-            $data['levels'] = $levels;
+            
+            if ($includeLevels && !empty($levels)) {
+                $data['levels'] = $levels;
+            }
+            
+            // Les niveaux sont stockés temporairement pour vérifier les invocations
+            if ($includeSummon && !empty($levels)) {
+                $data['_levels_for_summon'] = $levels;
+            }
         }
         
         Log::info('Sort collecté avec succès', ['dofusdb_id' => $dofusdbId]);

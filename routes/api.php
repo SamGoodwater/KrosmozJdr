@@ -77,28 +77,47 @@ Route::prefix('scrapping/test')->group(function () {
 |
 */
 
-Route::prefix('scrapping/import')->group(function () {
-    // Import d'une classe
-    Route::post('/class/{id}', [App\Http\Controllers\Scrapping\ScrappingController::class, 'importClass'])
-        ->name('scrapping.import.class')
-        ->where('id', '[1-9]|1[0-9]'); // 1-19
-    
-    // Import d'un monstre
-    Route::post('/monster/{id}', [App\Http\Controllers\Scrapping\ScrappingController::class, 'importMonster'])
-        ->name('scrapping.import.monster')
-        ->where('id', '[1-9]|[1-9][0-9]|[1-9][0-9][0-9]|[1-4][0-9][0-9][0-9]|5000'); // 1-5000
-    
-    // Import d'un objet
-    Route::post('/item/{id}', [App\Http\Controllers\Scrapping\ScrappingController::class, 'importItem'])
-        ->name('scrapping.import.item')
-        ->where('id', '[1-9]|[1-9][0-9]|[1-9][0-9][0-9]|[1-9][0-9][0-9][0-9]|[1-2][0-9][0-9][0-9][0-9]|30000'); // 1-30000
-    
-    // Import d'un sort
-    Route::post('/spell/{id}', [App\Http\Controllers\Scrapping\ScrappingController::class, 'importSpell'])
-        ->name('scrapping.import.spell')
-        ->where('id', '[1-9]|[1-9][0-9]|[1-9][0-9][0-9]|[1-9][0-9][0-9][0-9]|[1-9][0-9][0-9][0-9][0-9]|20000'); // 1-20000
-    
-    // Import en lot
-    Route::post('/batch', [App\Http\Controllers\Scrapping\ScrappingController::class, 'importBatch'])
-        ->name('scrapping.import.batch');
+Route::prefix('scrapping')->group(function () {
+    // Métadonnées des types d'entités
+    Route::get('/meta', [App\Http\Controllers\Scrapping\ScrappingController::class, 'meta'])
+        ->name('scrapping.meta');
+
+    Route::get('/preview/{type}/{id}', [App\Http\Controllers\Scrapping\ScrappingController::class, 'preview'])
+        ->name('scrapping.preview')
+        ->where('type', 'class|monster|item|spell')
+        ->whereNumber('id');
+
+    Route::prefix('import')->group(function () {
+        // Import d'une classe
+        Route::post('/class/{id}', [App\Http\Controllers\Scrapping\ScrappingController::class, 'importClass'])
+            ->name('scrapping.import.class')
+            ->where('id', '[1-9]|1[0-9]'); // 1-19
+        
+        // Import d'un monstre
+        Route::post('/monster/{id}', [App\Http\Controllers\Scrapping\ScrappingController::class, 'importMonster'])
+            ->name('scrapping.import.monster')
+            ->where('id', '[1-9]|[1-9][0-9]|[1-9][0-9][0-9]|[1-4][0-9][0-9][0-9]|5000'); // 1-5000
+        
+        // Import d'un objet
+        Route::post('/item/{id}', [App\Http\Controllers\Scrapping\ScrappingController::class, 'importItem'])
+            ->name('scrapping.import.item')
+            ->where('id', '[1-9]|[1-9][0-9]|[1-9][0-9][0-9]|[1-9][0-9][0-9][0-9]|[1-2][0-9][0-9][0-9][0-9]|30000'); // 1-30000
+        
+        // Import d'un sort
+        Route::post('/spell/{id}', [App\Http\Controllers\Scrapping\ScrappingController::class, 'importSpell'])
+            ->name('scrapping.import.spell')
+            ->where('id', '[1-9]|[1-9][0-9]|[1-9][0-9][0-9]|[1-9][0-9][0-9][0-9]|[1-9][0-9][0-9][0-9][0-9]|20000'); // 1-20000
+        
+        // Import en lot
+        Route::post('/batch', [App\Http\Controllers\Scrapping\ScrappingController::class, 'importBatch'])
+            ->name('scrapping.import.batch');
+
+        // Import d'une plage d'ID
+        Route::post('/range', [App\Http\Controllers\Scrapping\ScrappingController::class, 'importRange'])
+            ->name('scrapping.import.range');
+
+        // Import complet
+        Route::post('/all', [App\Http\Controllers\Scrapping\ScrappingController::class, 'importAll'])
+            ->name('scrapping.import.all');
+    });
 });

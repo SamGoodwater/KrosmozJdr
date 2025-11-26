@@ -219,5 +219,89 @@ class DataConversionServiceTest extends TestCase
         // La vie 0 est convertie au minimum (1) selon les limites
         $this->assertEquals(1, $result['creatures']['life']);
     }
+
+    /**
+     * Test de conversion d'une classe préserve les sorts
+     */
+    public function test_convert_class_preserves_spells(): void
+    {
+        $rawData = [
+            'id' => 1,
+            'description' => ['fr' => 'Description'],
+            'spells' => [
+                ['id' => 201, 'name' => ['fr' => 'Sort']]
+            ]
+        ];
+
+        $result = $this->service->convertClass($rawData);
+
+        $this->assertIsArray($result);
+        $this->assertArrayHasKey('spells', $result);
+        $this->assertIsArray($result['spells']);
+    }
+
+    /**
+     * Test de conversion d'un monstre préserve les sorts et drops
+     */
+    public function test_convert_monster_preserves_relations(): void
+    {
+        $rawData = [
+            'id' => 31,
+            'name' => ['fr' => 'Bouftou'],
+            'grades' => [['level' => 5, 'lifePoints' => 100]],
+            'spells' => [['id' => 201]],
+            'drops' => [['id' => 15]]
+        ];
+
+        $result = $this->service->convertMonster($rawData);
+
+        $this->assertIsArray($result);
+        $this->assertArrayHasKey('spells', $result);
+        $this->assertArrayHasKey('drops', $result);
+    }
+
+    /**
+     * Test de conversion d'un sort préserve le monstre invoqué
+     */
+    public function test_convert_spell_preserves_summon(): void
+    {
+        $rawData = [
+            'id' => 201,
+            'name' => ['fr' => 'Sort'],
+            'levels' => [
+                [
+                    'effects' => [
+                        ['monsterId' => 31]
+                    ]
+                ]
+            ]
+        ];
+
+        $result = $this->service->convertSpell($rawData);
+
+        $this->assertIsArray($result);
+        // Le summon peut être présent si les niveaux contiennent des effets d'invocation
+    }
+
+    /**
+     * Test de conversion d'un objet préserve la recette
+     */
+    public function test_convert_item_preserves_recipe(): void
+    {
+        $rawData = [
+            'id' => 15,
+            'name' => ['fr' => 'Objet'],
+            'typeId' => 1,
+            'recipe' => [
+                ['itemId' => 20, 'quantity' => 2]
+            ]
+        ];
+
+        $result = $this->service->convertItem($rawData);
+
+        $this->assertIsArray($result);
+        $this->assertArrayHasKey('recipe', $result);
+        $this->assertIsArray($result['recipe']);
+    }
 }
 

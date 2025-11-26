@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Models\User;
 use App\Models\Entity\Npc;
+use App\Models\Entity\Spell;
 
 /**
  * 
@@ -113,5 +114,13 @@ class Classe extends Model
     public function npcs()
     {
         return $this->hasMany(Npc::class, 'classe_id');
+    }
+
+    /**
+     * Les sorts associés à cette classe.
+     */
+    public function spells()
+    {
+        return $this->belongsToMany(Spell::class, 'class_spell', 'classe_id', 'spell_id');
     }
 }

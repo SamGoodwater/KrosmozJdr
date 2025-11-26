@@ -109,7 +109,9 @@ export const SPECIFIC_PROPS = {
             { key: 'multiple', type: Boolean, default: false },
             { key: 'options', type: Array, default: () => [] },
         ],
-        field: [],
+        field: [
+            { key: 'options', type: Array, default: () => [] },
+        ],
         events: [...COMMON_EVENTS, 'onChange'],
     },
     textarea: {

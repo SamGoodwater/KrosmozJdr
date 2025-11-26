@@ -268,8 +268,8 @@ GET /spell-levels?lang=fr&$limit=10
       "minRange": 1,
       "range": 2,
       "criticalHitProbability": 10,
-      "effects": [
-        {
+  "effects": [
+    {
           "effectUid": 2776,
           "effectId": 98,
           "order": 0,
@@ -338,7 +338,7 @@ GET /effects?lang=fr&$limit=10
       "textIconReferenceId": 0,
       "effectTriggerDuration": 0,
       "actionFiltersId": [],
-      "description": {
+  "description": {
         "id": "1098969",
         "fr": "Téléporte sur la map ciblée",
         "en": "Teleports to the targeted map",

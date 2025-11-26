@@ -278,7 +278,7 @@ return [
             'validation_rules' => ['name', 'class'],
             'unique_fields' => ['name'],
             'update_fields' => ['description', 'class', 'cost', 'range', 'area', 'critical_hit', 'failure'],
-        ],
+    ],
         'effect' => [
             'conflict_strategy' => 'update',
             'duplicate_handling' => 'update',

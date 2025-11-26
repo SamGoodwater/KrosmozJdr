@@ -26,5 +26,11 @@ Route::get('/contribuer', function () {
 // PAGES ET SECTIONS
 require __DIR__ . '/page.php';
 
+// ENTITIES
+// require __DIR__ . '/entities/class.php';
+// require __DIR__ . '/entities/monster.php';
+// require __DIR__ . '/entities/item.php';
+// require __DIR__ . '/entities/spell.php';
+
 // SERVICES
 require __DIR__ . '/services/scrapping.php';

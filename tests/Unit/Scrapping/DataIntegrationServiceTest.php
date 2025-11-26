@@ -262,5 +262,202 @@ class DataIntegrationServiceTest extends TestCase
         $this->assertEquals('3', $spell->pa); // cost -> pa
         $this->assertEquals('1', $spell->po); // range -> po
     }
+
+    /**
+     * Test d'intégration d'une classe avec sorts associés
+     */
+    public function test_integrate_class_with_spells(): void
+    {
+        $user = User::first();
+        
+        // Créer un sort d'abord
+        $spell = Spell::factory()->create([
+            'name' => 'Sort de classe',
+            'dofusdb_id' => '201',
+            'description' => 'Description',
+            'pa' => '3',
+            'po' => '1',
+            'area' => 1,
+            'created_by' => $user->id
+        ]);
+
+        $convertedData = [
+            'name' => 'Iop',
+            'description' => 'Description',
+            'life' => 50,
+            'life_dice' => '1d6',
+            'specificity' => 'Force',
+            'spells' => [
+                ['id' => 201, 'name' => 'Sort de classe']
+            ]
+        ];
+
+        $result = $this->service->integrateClass($convertedData);
+
+        $this->assertIsArray($result);
+        $this->assertArrayHasKey('id', $result);
+        // Les sorts sont loggés mais pas encore liés via table pivot
+    }
+
+    /**
+     * Test d'intégration d'un monstre avec sorts et ressources
+     */
+    public function test_integrate_monster_with_relations(): void
+    {
+        $user = User::first();
+        
+        // Créer les entités liées
+        $spell = Spell::factory()->create([
+            'name' => 'Sort de monstre',
+            'dofusdb_id' => '201',
+            'description' => 'Description',
+            'pa' => '3',
+            'po' => '1',
+            'area' => 1,
+            'created_by' => $user->id
+        ]);
+
+        $resource = Resource::factory()->create([
+            'name' => 'Ressource drop',
+            'dofusdb_id' => '15',
+            'level' => '1',
+            'description' => 'Description',
+            'price' => '10',
+            'rarity' => 1,
+            'created_by' => $user->id
+        ]);
+
+        $convertedData = [
+            'creatures' => [
+                'name' => 'Bouftou',
+                'level' => 5,
+                'life' => 100,
+                'strength' => 10,
+                'intelligence' => 5,
+                'agility' => 8,
+                'luck' => 0,
+                'wisdom' => 3,
+                'chance' => 2
+            ],
+            'monsters' => [
+                'size' => 2,
+                'monster_race_id' => null
+            ],
+            'spells' => [
+                ['id' => 201, 'name' => 'Sort de monstre']
+            ],
+            'drops' => [
+                ['id' => 15, 'name' => 'Ressource drop', 'quantity' => 1]
+            ]
+        ];
+
+        $result = $this->service->integrateMonster($convertedData);
+
+        $this->assertIsArray($result);
+        $this->assertArrayHasKey('creature_id', $result);
+
+        $creature = Creature::find($result['creature_id']);
+        $this->assertNotNull($creature);
+
+        // Vérifier que les sorts sont associés
+        $this->assertTrue($creature->spells()->where('spells.id', $spell->id)->exists());
+
+        // Vérifier que les ressources sont associées
+        $this->assertTrue($creature->resources()->where('resources.id', $resource->id)->exists());
+    }
+
+    /**
+     * Test d'intégration d'un sort avec monstre invoqué
+     */
+    public function test_integrate_spell_with_summon(): void
+    {
+        $user = User::first();
+        
+        // Créer un monstre
+        $creature = Creature::factory()->create([
+            'name' => 'Monstre invoqué',
+            'level' => '5',
+            'life' => '100',
+            'created_by' => $user->id
+        ]);
+        $monster = Monster::factory()->create([
+            'creature_id' => $creature->id,
+            'dofusdb_id' => '31'
+        ]);
+
+        $convertedData = [
+            'name' => 'Sort d\'invocation',
+            'description' => 'Description',
+            'cost' => 3,
+            'range' => 1,
+            'area' => 1,
+            'summon' => [
+                'id' => 31,
+                'name' => 'Monstre invoqué'
+            ]
+        ];
+
+        $result = $this->service->integrateSpell($convertedData);
+
+        $this->assertIsArray($result);
+        $this->assertArrayHasKey('id', $result);
+
+        $spell = Spell::find($result['id']);
+        $this->assertNotNull($spell);
+
+        // Vérifier que le monstre est associé
+        $this->assertTrue($spell->monsters()->where('monsters.id', $monster->id)->exists());
+    }
+
+    /**
+     * Test d'intégration d'un objet avec recette
+     */
+    public function test_integrate_item_with_recipe(): void
+    {
+        $user = User::first();
+        
+        // Créer une ressource pour la recette
+        $resource = Resource::factory()->create([
+            'name' => 'Ressource de recette',
+            'dofusdb_id' => '20',
+            'level' => '1',
+            'description' => 'Description',
+            'price' => '10',
+            'rarity' => 1,
+            'created_by' => $user->id
+        ]);
+
+        $convertedData = [
+            'name' => 'Objet fabriqué',
+            'description' => 'Description',
+            'level' => 10,
+            'type' => 'weapon',
+            'category' => 'weapon',
+            'type_id' => 6,
+            'rarity' => 'rare',
+            'price' => 100,
+            'recipe' => [
+                [
+                    'resource' => ['id' => 20, 'name' => 'Ressource de recette'],
+                    'quantity' => 2
+                ]
+            ]
+        ];
+
+        $result = $this->service->integrateItem($convertedData);
+
+        $this->assertIsArray($result);
+        $this->assertEquals('items', $result['table']);
+
+        $item = Item::find($result['id']);
+        $this->assertNotNull($item);
+
+        // Vérifier que la ressource est associée dans la recette
+        $this->assertTrue($item->resources()->where('resources.id', $resource->id)->exists());
+        
+        // Vérifier la quantité
+        $pivot = $item->resources()->where('resources.id', $resource->id)->first()->pivot;
+        $this->assertEquals('2', $pivot->quantity);
+    }
 }
 

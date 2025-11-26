@@ -155,15 +155,15 @@ class ExampleController extends Controller
     {
         // Récupération d'un objet spécifique
         $item = $dataCollectService->getItem(12345);
-        
-        // Recherche d'objets avec filtres
+
+// Recherche d'objets avec filtres
         $weapons = $dataCollectService->searchItems([
-            'category' => 'weapon',
-            'level_min' => 50,
-            'level_max' => 100,
-        ]);
-        
-        // Récupération des sorts d'une classe
+    'category' => 'weapon',
+    'level_min' => 50,
+    'level_max' => 100,
+]);
+
+// Récupération des sorts d'une classe
         $spells = $dataCollectService->getBreedSpells('feca');
         
         // Récupération d'items par type

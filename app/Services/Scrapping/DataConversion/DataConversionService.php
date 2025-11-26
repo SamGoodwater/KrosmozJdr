@@ -60,6 +60,11 @@ class DataConversionService
             'specificity' => $rawData['specificity'] ?? ''
         ];
         
+        // Préserver les sorts associés (si présents dans rawData)
+        if (isset($rawData['spells']) && is_array($rawData['spells'])) {
+            $converted['spells'] = $rawData['spells'];
+        }
+        
         // Validation des valeurs converties
         $this->validateConvertedValues($converted, 'class');
         
@@ -101,6 +106,16 @@ class DataConversionService
                 'monster_race_id' => $rawData['race'] ?? $rawData['monster_race_id'] ?? null
             ]
         ];
+        
+        // Préserver les sorts associés (si présents dans rawData)
+        if (isset($rawData['spells']) && is_array($rawData['spells'])) {
+            $converted['spells'] = $rawData['spells'];
+        }
+        
+        // Préserver les ressources (drops) associées (si présents dans rawData)
+        if (isset($rawData['drops']) && is_array($rawData['drops'])) {
+            $converted['drops'] = $rawData['drops'];
+        }
         
         // Validation des valeurs converties
         $this->validateConvertedValues($converted['creatures'], 'monster');
@@ -174,6 +189,11 @@ class DataConversionService
             'rarity' => $this->convertRarity($rawData['rarity'] ?? 'common'),
             'price' => $this->convertPrice($rawData['price'] ?? 0)
         ];
+        
+        // Préserver la recette (ressources) si présente dans rawData
+        if (isset($rawData['recipe']) && is_array($rawData['recipe'])) {
+            $converted['recipe'] = $rawData['recipe'];
+        }
         
         // Validation des valeurs converties
         $this->validateConvertedValues($converted, 'item');
@@ -258,6 +278,11 @@ class DataConversionService
         // Gestion des niveaux si présents
         if (isset($rawData['levels']) && is_array($rawData['levels'])) {
             $converted['levels'] = $this->convertSpellLevels($rawData['levels']);
+        }
+        
+        // Préserver le monstre invoqué (si présent dans rawData)
+        if (isset($rawData['summon']) && is_array($rawData['summon'])) {
+            $converted['summon'] = $rawData['summon'];
         }
         
         // Validation des valeurs converties

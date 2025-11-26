@@ -254,5 +254,165 @@ class ScrappingOrchestratorTest extends TestCase
         $this->assertFalse($result['success']);
         $this->assertArrayHasKey('error', $result);
     }
+
+    /**
+     * Test d'import d'une classe avec sorts associés
+     */
+    public function test_import_class_with_spells(): void
+    {
+        $classData = [
+            'id' => 1,
+            'description' => ['fr' => 'Description'],
+            'life' => 50,
+            'life_dice' => '1d6',
+            'specificity' => 'Force'
+        ];
+
+        $spellLevelsData = [
+            'data' => [
+                [
+                    'id' => 1,
+                    'spellId' => 201,
+                    'spellBreed' => 1
+                ]
+            ]
+        ];
+
+        $spellData = [
+            'data' => [
+                [
+                    'id' => 201,
+                    'name' => ['fr' => 'Sort de classe'],
+                    'description' => ['fr' => 'Description'],
+                    'cost' => 3,
+                    'range' => 1,
+                    'area' => 1
+                ]
+            ]
+        ];
+
+        $levelsList = [
+            'data' => []
+        ];
+
+        Http::fake(function ($request) use ($classData, $spellLevelsData, $spellData, $levelsList) {
+            $url = $request->url();
+            if (str_contains($url, '/breeds/1')) {
+                return Http::response($classData, 200);
+            }
+            if (str_contains($url, '/spell-levels')) {
+                return Http::response($spellLevelsData, 200);
+            }
+            if (str_contains($url, '/spells')) {
+                return Http::response($spellData, 200);
+            }
+            return Http::response([], 404);
+        });
+
+        $result = $this->orchestrator->importClass(1);
+
+        $this->assertIsArray($result);
+        $this->assertTrue($result['success']);
+        $this->assertArrayHasKey('related', $result);
+    }
+
+    /**
+     * Test d'import d'un monstre avec relations
+     */
+    public function test_import_monster_with_relations(): void
+    {
+        $monsterData = [
+            'id' => 31,
+            'name' => ['fr' => 'Bouftou'],
+            'level' => 5,
+            'lifePoints' => 100,
+            'grades' => [
+                [
+                    'level' => 5,
+                    'lifePoints' => 100,
+                    'strength' => 10,
+                    'intelligence' => 5,
+                    'agility' => 8,
+                    'wisdom' => 3,
+                    'chance' => 2
+                ]
+            ],
+            'size' => 'medium',
+            'spells' => [201],
+            'drops' => [15]
+        ];
+
+        $spellData = [
+            'data' => [
+                [
+                    'id' => 201,
+                    'name' => ['fr' => 'Sort'],
+                    'description' => ['fr' => 'Description'],
+                    'cost' => 3,
+                    'range' => 1,
+                    'area' => 1
+                ]
+            ]
+        ];
+
+        $levelsList = [
+            'data' => []
+        ];
+
+        $itemData = [
+            'id' => 15,
+            'name' => ['fr' => 'Ressource'],
+            'typeId' => 15,
+            'level' => 1,
+            'rarity' => 'common',
+            'price' => 10
+        ];
+
+        Http::fake(function ($request) use ($monsterData, $spellData, $levelsList, $itemData) {
+            $url = $request->url();
+            if (str_contains($url, '/monsters/31')) {
+                return Http::response($monsterData, 200);
+            }
+            if (str_contains($url, '/spells')) {
+                return Http::response($spellData, 200);
+            }
+            if (str_contains($url, '/spell-levels')) {
+                return Http::response($levelsList, 200);
+            }
+            if (str_contains($url, '/items/15')) {
+                return Http::response($itemData, 200);
+            }
+            return Http::response([], 404);
+        });
+
+        $result = $this->orchestrator->importMonster(31);
+
+        $this->assertIsArray($result);
+        $this->assertTrue($result['success']);
+        $this->assertArrayHasKey('related', $result);
+    }
+
+    /**
+     * Test d'import sans relations
+     */
+    public function test_import_without_relations(): void
+    {
+        $mockData = [
+            'id' => 1,
+            'description' => ['fr' => 'Description'],
+            'life' => 50,
+            'life_dice' => '1d6',
+            'specificity' => 'Force'
+        ];
+
+        Http::fake([
+            'api.dofusdb.fr/breeds/1' => Http::response($mockData, 200),
+        ]);
+
+        $result = $this->orchestrator->importClass(1, ['include_relations' => false]);
+
+        $this->assertTrue($result['success']);
+        // Les relations ne devraient pas être importées
+    }
 }
 

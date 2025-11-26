@@ -18,6 +18,31 @@ use Illuminate\Support\Facades\Log;
 class ScrappingOrchestrator
 {
     /**
+     * Mapping des méthodes par type d'entité
+     */
+    private const ENTITY_METHODS = [
+        'class' => [
+            'collect' => 'collectClass',
+            'convert' => 'convertClass',
+            'import' => 'importClass',
+        ],
+        'monster' => [
+            'collect' => 'collectMonster',
+            'convert' => 'convertMonster',
+            'import' => 'importMonster',
+        ],
+        'item' => [
+            'collect' => 'collectItem',
+            'convert' => 'convertItem',
+            'import' => 'importItem',
+        ],
+        'spell' => [
+            'collect' => 'collectSpell',
+            'convert' => 'convertSpell',
+            'import' => 'importSpell',
+        ],
+    ];
+    /**
      * Constructeur du service d'orchestration
      */
     public function __construct(
@@ -27,19 +52,21 @@ class ScrappingOrchestrator
     ) {}
 
     /**
-     * Import d'une classe depuis DofusDB
+     * Import d'une classe depuis DofusDB avec ses sorts associés
      * 
      * @param int $dofusdbId ID de la classe dans DofusDB
-     * @param array $options Options d'import
+     * @param array $options Options d'import (include_relations: bool pour activer l'import des relations)
      * @return array Résultat de l'import
      */
     public function importClass(int $dofusdbId, array $options = []): array
     {
         Log::info('Début import classe', ['dofusdb_id' => $dofusdbId, 'options' => $options]);
         
+        $includeRelations = $options['include_relations'] ?? true;
+        
         try {
-            // 1. Collecte des données depuis DofusDB
-            $rawData = $this->dataCollectService->collectClass($dofusdbId);
+            // 1. Collecte des données depuis DofusDB (avec sorts si demandé)
+            $rawData = $this->dataCollectService->collectClass($dofusdbId, $includeRelations);
             
             // 2. Conversion des valeurs selon les caractéristiques KrosmozJDR
             $convertedData = $this->dataConversionService->convertClass($rawData);
@@ -47,11 +74,45 @@ class ScrappingOrchestrator
             // 3. Intégration dans la base KrosmozJDR
             $result = $this->dataIntegrationService->integrateClass($convertedData);
             
-            Log::info('Import classe terminé avec succès', ['dofusdb_id' => $dofusdbId]);
+            // 4. Import en cascade des sorts associés
+            $relatedResults = [];
+            if ($includeRelations && isset($rawData['spells']) && is_array($rawData['spells'])) {
+                foreach ($rawData['spells'] as $spellData) {
+                    $spellId = $spellData['id'] ?? null;
+                    if ($spellId) {
+                        try {
+                            $spellResult = $this->importSpell($spellId, ['include_relations' => false]); // Ne pas importer le monstre invoqué pour éviter la récursion
+                            $relatedResults[] = [
+                                'type' => 'spell',
+                                'id' => $spellId,
+                                'result' => $spellResult
+                            ];
+                        } catch (\Exception $e) {
+                            Log::warning('Erreur lors de l\'import du sort associé à la classe', [
+                                'class_id' => $dofusdbId,
+                                'spell_id' => $spellId,
+                                'error' => $e->getMessage()
+                            ]);
+                            $relatedResults[] = [
+                                'type' => 'spell',
+                                'id' => $spellId,
+                                'success' => false,
+                                'error' => $e->getMessage()
+                            ];
+                        }
+                    }
+                }
+            }
+            
+            Log::info('Import classe terminé avec succès', [
+                'dofusdb_id' => $dofusdbId,
+                'related_count' => count($relatedResults)
+            ]);
             
             return [
                 'success' => true,
                 'data' => $result,
+                'related' => $relatedResults,
                 'message' => 'Classe importée avec succès'
             ];
             
@@ -70,19 +131,21 @@ class ScrappingOrchestrator
     }
 
     /**
-     * Import d'un monstre depuis DofusDB
+     * Import d'un monstre depuis DofusDB avec ses sorts et ressources associés
      * 
      * @param int $dofusdbId ID du monstre dans DofusDB
-     * @param array $options Options d'import
+     * @param array $options Options d'import (include_relations: bool pour activer l'import des relations)
      * @return array Résultat de l'import
      */
     public function importMonster(int $dofusdbId, array $options = []): array
     {
         Log::info('Début import monstre', ['dofusdb_id' => $dofusdbId, 'options' => $options]);
         
+        $includeRelations = $options['include_relations'] ?? true;
+        
         try {
-            // 1. Collecte des données depuis DofusDB
-            $rawData = $this->dataCollectService->collectMonster($dofusdbId);
+            // 1. Collecte des données depuis DofusDB (avec sorts et drops si demandé)
+            $rawData = $this->dataCollectService->collectMonster($dofusdbId, $includeRelations, $includeRelations);
             
             // 2. Conversion des valeurs selon les caractéristiques KrosmozJDR
             $convertedData = $this->dataConversionService->convertMonster($rawData);
@@ -90,11 +153,64 @@ class ScrappingOrchestrator
             // 3. Intégration dans la base KrosmozJDR
             $result = $this->dataIntegrationService->integrateMonster($convertedData);
             
-            Log::info('Import monstre terminé avec succès', ['dofusdb_id' => $dofusdbId]);
+            // 4. Import en cascade des sorts et ressources associés
+            $relatedResults = [];
+            
+            // Import des sorts
+            if ($includeRelations && isset($rawData['spells']) && is_array($rawData['spells'])) {
+                foreach ($rawData['spells'] as $spellData) {
+                    $spellId = $spellData['id'] ?? null;
+                    if ($spellId) {
+                        try {
+                            $spellResult = $this->importSpell($spellId, ['include_relations' => false]);
+                            $relatedResults[] = [
+                                'type' => 'spell',
+                                'id' => $spellId,
+                                'result' => $spellResult
+                            ];
+                        } catch (\Exception $e) {
+                            Log::warning('Erreur lors de l\'import du sort associé au monstre', [
+                                'monster_id' => $dofusdbId,
+                                'spell_id' => $spellId,
+                                'error' => $e->getMessage()
+                            ]);
+                        }
+                    }
+                }
+            }
+            
+            // Import des ressources (drops)
+            if ($includeRelations && isset($rawData['drops']) && is_array($rawData['drops'])) {
+                foreach ($rawData['drops'] as $resourceData) {
+                    $resourceId = $resourceData['id'] ?? null;
+                    if ($resourceId) {
+                        try {
+                            $resourceResult = $this->importItem($resourceId, ['include_relations' => false]);
+                            $relatedResults[] = [
+                                'type' => 'resource',
+                                'id' => $resourceId,
+                                'result' => $resourceResult
+                            ];
+                        } catch (\Exception $e) {
+                            Log::warning('Erreur lors de l\'import de la ressource associée au monstre', [
+                                'monster_id' => $dofusdbId,
+                                'resource_id' => $resourceId,
+                                'error' => $e->getMessage()
+                            ]);
+                        }
+                    }
+                }
+            }
+            
+            Log::info('Import monstre terminé avec succès', [
+                'dofusdb_id' => $dofusdbId,
+                'related_count' => count($relatedResults)
+            ]);
             
             return [
                 'success' => true,
                 'data' => $result,
+                'related' => $relatedResults,
                 'message' => 'Monstre importé avec succès'
             ];
             
@@ -113,19 +229,21 @@ class ScrappingOrchestrator
     }
 
     /**
-     * Import d'un objet depuis DofusDB
+     * Import d'un objet depuis DofusDB avec sa recette associée
      * 
      * @param int $dofusdbId ID de l'objet dans DofusDB
-     * @param array $options Options d'import
+     * @param array $options Options d'import (include_relations: bool pour activer l'import des relations)
      * @return array Résultat de l'import
      */
     public function importItem(int $dofusdbId, array $options = []): array
     {
         Log::info('Début import objet', ['dofusdb_id' => $dofusdbId, 'options' => $options]);
         
+        $includeRelations = $options['include_relations'] ?? true;
+        
         try {
-            // 1. Collecte des données depuis DofusDB
-            $rawData = $this->dataCollectService->collectItem($dofusdbId);
+            // 1. Collecte des données depuis DofusDB (avec recette si demandé)
+            $rawData = $this->dataCollectService->collectItem($dofusdbId, $includeRelations);
             
             // 2. Conversion des valeurs selon les caractéristiques KrosmozJDR
             $convertedData = $this->dataConversionService->convertItem($rawData);
@@ -133,11 +251,41 @@ class ScrappingOrchestrator
             // 3. Intégration dans la base KrosmozJDR
             $result = $this->dataIntegrationService->integrateItem($convertedData);
             
-            Log::info('Import objet terminé avec succès', ['dofusdb_id' => $dofusdbId]);
+            // 4. Import en cascade des ressources de la recette
+            $relatedResults = [];
+            if ($includeRelations && isset($rawData['recipe']) && is_array($rawData['recipe'])) {
+                foreach ($rawData['recipe'] as $recipeItem) {
+                    $resourceData = $recipeItem['resource'] ?? $recipeItem;
+                    $resourceId = $resourceData['id'] ?? null;
+                    if ($resourceId) {
+                        try {
+                            $resourceResult = $this->importItem($resourceId, ['include_relations' => false]); // Ne pas inclure la recette pour éviter la récursion infinie
+                            $relatedResults[] = [
+                                'type' => 'resource',
+                                'id' => $resourceId,
+                                'quantity' => $recipeItem['quantity'] ?? 1,
+                                'result' => $resourceResult
+                            ];
+                        } catch (\Exception $e) {
+                            Log::warning('Erreur lors de l\'import de la ressource de la recette', [
+                                'item_id' => $dofusdbId,
+                                'resource_id' => $resourceId,
+                                'error' => $e->getMessage()
+                            ]);
+                        }
+                    }
+                }
+            }
+            
+            Log::info('Import objet terminé avec succès', [
+                'dofusdb_id' => $dofusdbId,
+                'related_count' => count($relatedResults)
+            ]);
             
             return [
                 'success' => true,
                 'data' => $result,
+                'related' => $relatedResults,
                 'message' => 'Objet importé avec succès'
             ];
             
@@ -156,19 +304,21 @@ class ScrappingOrchestrator
     }
 
     /**
-     * Import d'un sort depuis DofusDB
+     * Import d'un sort depuis DofusDB avec son monstre invoqué si applicable
      * 
      * @param int $dofusdbId ID du sort dans DofusDB
-     * @param array $options Options d'import
+     * @param array $options Options d'import (include_relations: bool pour activer l'import des relations)
      * @return array Résultat de l'import
      */
     public function importSpell(int $dofusdbId, array $options = []): array
     {
         Log::info('Début import sort', ['dofusdb_id' => $dofusdbId, 'options' => $options]);
         
+        $includeRelations = $options['include_relations'] ?? true;
+        
         try {
-            // 1. Collecte des données depuis DofusDB
-            $rawData = $this->dataCollectService->collectSpell($dofusdbId);
+            // 1. Collecte des données depuis DofusDB (avec monstre invoqué si demandé)
+            $rawData = $this->dataCollectService->collectSpell($dofusdbId, true, $includeRelations);
             
             // 2. Conversion des valeurs selon les caractéristiques KrosmozJDR
             $convertedData = $this->dataConversionService->convertSpell($rawData);
@@ -176,11 +326,37 @@ class ScrappingOrchestrator
             // 3. Intégration dans la base KrosmozJDR
             $result = $this->dataIntegrationService->integrateSpell($convertedData);
             
-            Log::info('Import sort terminé avec succès', ['dofusdb_id' => $dofusdbId]);
+            // 4. Import en cascade du monstre invoqué (si c'est un sort d'invocation)
+            $relatedResults = [];
+            if ($includeRelations && isset($rawData['summon']) && is_array($rawData['summon'])) {
+                $summonId = $rawData['summon']['id'] ?? null;
+                if ($summonId) {
+                    try {
+                        $summonResult = $this->importMonster($summonId, ['include_relations' => false]); // Ne pas inclure les sorts/drops pour éviter la récursion
+                        $relatedResults[] = [
+                            'type' => 'monster',
+                            'id' => $summonId,
+                            'result' => $summonResult
+                        ];
+                    } catch (\Exception $e) {
+                        Log::warning('Erreur lors de l\'import du monstre invoqué', [
+                            'spell_id' => $dofusdbId,
+                            'monster_id' => $summonId,
+                            'error' => $e->getMessage()
+                        ]);
+                    }
+                }
+            }
+            
+            Log::info('Import sort terminé avec succès', [
+                'dofusdb_id' => $dofusdbId,
+                'related_count' => count($relatedResults)
+            ]);
             
             return [
                 'success' => true,
                 'data' => $result,
+                'related' => $relatedResults,
                 'message' => 'Sort importé avec succès'
             ];
             
@@ -254,5 +430,75 @@ class ScrappingOrchestrator
                 'errors' => $errorCount
             ]
         ];
+    }
+
+    /**
+     * Import d'une plage d'identifiants (inclusifs)
+     */
+    public function importRange(string $type, int $startId, int $endId, array $options = []): array
+    {
+        $normalizedType = strtolower($type);
+        $this->getEntityMethods($normalizedType); // Validation du type
+
+        $entities = [];
+
+        for ($id = $startId; $id <= $endId; $id++) {
+            $entities[] = [
+                'type' => $normalizedType,
+                'id' => $id,
+            ];
+        }
+
+        return $this->importBatch($entities, $options);
+    }
+
+    /**
+     * Prévisualisation d'une entité avant import
+     */
+    public function previewEntity(string $type, int $dofusdbId): array
+    {
+        $normalizedType = strtolower($type);
+        $methods = $this->getEntityMethods($normalizedType);
+
+        try {
+            $rawData = $this->dataCollectService->{$methods['collect']}($dofusdbId);
+            $convertedData = $this->dataConversionService->{$methods['convert']}($rawData);
+            $existing = $this->dataIntegrationService->findExistingEntity($normalizedType, $convertedData);
+
+            return [
+                'success' => true,
+                'raw' => $rawData,
+                'converted' => $convertedData,
+                'existing' => $existing,
+            ];
+        } catch (\Exception $e) {
+            Log::error('Erreur lors de la prévisualisation', [
+                'type' => $normalizedType,
+                'dofusdb_id' => $dofusdbId,
+                'error' => $e->getMessage(),
+            ]);
+
+            return [
+                'success' => false,
+                'message' => 'Impossible de prévisualiser cette entité',
+                'error' => $e->getMessage(),
+            ];
+        }
+    }
+
+    /**
+     * Récupère les méthodes associées à un type d'entité
+     *
+     * @throws \InvalidArgumentException
+     */
+    private function getEntityMethods(string $type): array
+    {
+        $normalized = strtolower($type);
+
+        if (!isset(self::ENTITY_METHODS[$normalized])) {
+            throw new \InvalidArgumentException("Type d'entité non supporté : {$type}");
+        }
+
+        return self::ENTITY_METHODS[$normalized];
     }
 }

@@ -118,6 +118,7 @@ defineExpose({
       <SelectCore
         v-bind="inputAttrs"
         v-on="listeners"
+        :options="props.options"
         ref="inputRef"
       >
         <!-- Options par défaut -->

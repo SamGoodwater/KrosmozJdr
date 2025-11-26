@@ -96,9 +96,9 @@ GET /api/data-conversion/rules/{entityType}
 
 #### 4.2 Interface de conversion
 ```php
-public function convert(array $sourceData, ConversionContext $context): ConversionResult;
+    public function convert(array $sourceData, ConversionContext $context): ConversionResult;
 public function convertBatch(array $entities, array $options): BatchConversionResult;
-public function validate(array $data, ValidationContext $context): ValidationResult;
+    public function validate(array $data, ValidationContext $context): ValidationResult;
 ```
 
 ### 5. Configuration et règles
