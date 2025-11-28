@@ -5,6 +5,7 @@ namespace Tests\Feature\Entity;
 use App\Models\User;
 use App\Models\Entity\Item;
 use App\Models\Entity\Resource;
+use App\Models\Entity\Panoply;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -66,6 +67,31 @@ class ItemModelTest extends TestCase
         
         $pivot2 = $item->resources->where('id', $resource2->id)->first()->pivot;
         $this->assertEquals('3', $pivot2->quantity);
+    }
+
+    /**
+     * Test de la relation avec les panoplies
+     */
+    public function test_item_has_panoplies_relation(): void
+    {
+        $user = User::factory()->create();
+        $item = Item::factory()->create([
+            'created_by' => $user->id,
+        ]);
+
+        $panoply1 = Panoply::factory()->create([
+            'created_by' => $user->id,
+        ]);
+        $panoply2 = Panoply::factory()->create([
+            'created_by' => $user->id,
+        ]);
+
+        $item->panoplies()->sync([$panoply1->id, $panoply2->id]);
+
+        $item->refresh();
+        $this->assertCount(2, $item->panoplies);
+        $this->assertTrue($item->panoplies->contains($panoply1));
+        $this->assertTrue($item->panoplies->contains($panoply2));
     }
 }
 
