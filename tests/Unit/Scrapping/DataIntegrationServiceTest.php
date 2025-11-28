@@ -13,6 +13,7 @@ use App\Models\Entity\Spell;
 use App\Services\Scrapping\DataIntegration\DataIntegrationService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
+use Tests\CreatesSystemUser;
 
 /**
  * Tests unitaires pour le service DataIntegration
@@ -21,7 +22,7 @@ use Tests\TestCase;
  */
 class DataIntegrationServiceTest extends TestCase
 {
-    use RefreshDatabase;
+    use RefreshDatabase, CreatesSystemUser;
 
     private DataIntegrationService $service;
 
@@ -30,8 +31,8 @@ class DataIntegrationServiceTest extends TestCase
         parent::setUp();
         $this->service = new DataIntegrationService();
         
-        // Créer un utilisateur système pour les tests
-        User::factory()->create();
+        // Créer l'utilisateur système pour les tests
+        $this->createSystemUser();
     }
 
     /**

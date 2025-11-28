@@ -20,7 +20,7 @@ class ScrappingImportCommand extends Command
      * The name and signature of the console command.
      */
     protected $signature = 'scrapping:import 
-                            {entity? : Type d\'entité à importer (class, monster, item, spell)}
+                            {entity? : Type d\'entité à importer (class, monster, item, spell, panoply)}
                             {id? : ID de l\'entité dans DofusDB}
                             {--batch= : Fichier JSON contenant une liste d\'entités à importer}
                             {--skip-cache : Ignorer le cache lors de la collecte}
@@ -84,7 +84,7 @@ class ScrappingImportCommand extends Command
             
             if (!method_exists($orchestrator, $method)) {
                 $this->error("❌ Type d'entité invalide : {$entity}");
-                $this->info('Types valides : class, monster, item, spell');
+                $this->info('Types valides : class, monster, item, spell, panoply');
                 return Command::FAILURE;
             }
 

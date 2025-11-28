@@ -16,8 +16,13 @@ class MonsterRaceFactory extends Factory
      */
     public function definition(): array
     {
+        $monsterRaces = ['Bouftou', 'Tofu', 'Gobelin', 'Bwork', 'Champ Champ', 'Piou', 'Arakne', 'Cochon de Lait'];
         return [
-            //
+            'name' => fake()->unique()->randomElement($monsterRaces),
+            'usable' => fake()->numberBetween(0, 1),
+            'is_visible' => fake()->randomElement(['guest', 'user', 'player', 'game_master', 'admin', 'super_admin']),
+            'created_by' => null,
+            'id_super_race' => null,
         ];
     }
 }

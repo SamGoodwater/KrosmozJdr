@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Entity\StoreScenarioRequest;
 use App\Http\Requests\Entity\UpdateScenarioRequest;
 use App\Models\Entity\Scenario;
+use App\Http\Resources\Entity\ScenarioResource;
+use Inertia\Inertia;
 
 class ScenarioController extends Controller
 {
@@ -14,7 +16,35 @@ class ScenarioController extends Controller
      */
     public function index()
     {
-        //
+        $this->authorizeForUser(auth()->user(), 'viewAny', Scenario::class);
+        
+        $query = Scenario::with(['createdBy', 'users', 'campaigns']);
+        
+        // Recherche
+        if (request()->has('search') && request()->search) {
+            $search = request()->search;
+            $query->where(function($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                  ->orWhere('description', 'like', "%{$search}%");
+            });
+        }
+        
+        // Tri
+        $sortColumn = request()->get('sort', 'id');
+        $sortOrder = request()->get('order', 'desc');
+        
+        if (in_array($sortColumn, ['id', 'name', 'created_at'])) {
+            $query->orderBy($sortColumn, $sortOrder);
+        } else {
+            $query->latest();
+        }
+        
+        $scenarios = $query->paginate(20)->withQueryString();
+        
+        return Inertia::render('Pages/entity/scenario/Index', [
+            'scenarios' => ScenarioResource::collection($scenarios),
+            'filters' => request()->only(['search']),
+        ]);
     }
 
     /**
@@ -103,7 +133,7 @@ class ScenarioController extends Controller
      */
     public function users(Scenario $scenario)
     {
-        $this->authorize('view', $scenario);
+        $this->authorizeForUser(auth()->user(), 'view', $scenario);
         return response()->json($scenario->users);
     }
 }

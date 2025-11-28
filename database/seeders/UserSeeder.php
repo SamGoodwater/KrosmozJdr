@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 use App\Models\User;
 use Database\Factories\UserFactory;
 
@@ -15,6 +16,23 @@ class UserSeeder extends Seeder
      */
     public function run(): void
     {
+        // Utilisateur système (pour les imports automatiques, ne peut pas se connecter)
+        if (!User::where('email', User::SYSTEM_USER_EMAIL)->exists()) {
+            // Créer l'utilisateur système
+            // Note: On ne peut pas forcer l'ID à 0 avec auto-increment, mais on utilise l'email pour l'identifier
+            $systemUser = User::create([
+                'name' => 'Système',
+                'email' => User::SYSTEM_USER_EMAIL,
+                'role' => User::ROLE_SUPER_ADMIN,
+                'password' => Hash::make(Str::random(128)), // Mot de passe aléatoire très long (impossible à deviner)
+                'avatar' => User::DEFAULT_AVATAR,
+                'notifications_enabled' => false,
+                'notification_channels' => [],
+                'is_system' => true,
+            ]);
+            $this->command->info('✅ Utilisateur système créé (ID: ' . $systemUser->id . ', ne peut pas se connecter)');
+        }
+
         // Super Admin
         if (!User::where('email', 'super-admin@test.fr')->exists()) {
             User::factory()->create([

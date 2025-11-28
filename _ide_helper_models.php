@@ -229,6 +229,8 @@ namespace App\Models\Entity{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Classe withTrashed()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Classe withoutTrashed()
  * @mixin \Eloquent
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Entity\Spell> $spells
+ * @property-read int|null $spells_count
  */
 	class Classe extends \Eloquent {}
 }
@@ -699,6 +701,8 @@ namespace App\Models\Entity{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Panoply withTrashed()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Panoply withoutTrashed()
  * @mixin \Eloquent
+ * @property string|null $dofusdb_id
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Panoply whereDofusdbId($value)
  */
 	class Panoply extends \Eloquent {}
 }
@@ -1006,6 +1010,8 @@ namespace App\Models\Entity{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Spell withTrashed()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Spell withoutTrashed()
  * @mixin \Eloquent
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Entity\Classe> $classes
+ * @property-read int|null $classes_count
  */
 	class Spell extends \Eloquent {}
 }
@@ -1445,6 +1451,8 @@ namespace App\Models{
  * @property-read int|null $scenarios_count
  * @property-read string $role_name
  * @mixin \Eloquent
+ * @property bool $is_system
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereIsSystem($value)
  */
 	class User extends \Eloquent {}
 }

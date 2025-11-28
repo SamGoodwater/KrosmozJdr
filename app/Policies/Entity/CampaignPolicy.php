@@ -11,16 +11,18 @@ class CampaignPolicy
     /**
      * Determine whether the user can view any models.
      */
-    public function viewAny(User $user): bool
+    public function viewAny(?User $user): bool
     {
+        // Accessible à tous, même sans authentification
         return true;
     }
 
     /**
      * Determine whether the user can view the model.
      */
-    public function view(User $user, Campaign $campaign): bool
+    public function view(?User $user, Campaign $campaign): bool
     {
+        // Accessible à tous, même sans authentification
         return true;
     }
 

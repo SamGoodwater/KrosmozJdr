@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Entity\StoreShopRequest;
 use App\Http\Requests\Entity\UpdateShopRequest;
 use App\Models\Entity\Shop;
+use App\Http\Resources\Entity\ShopResource;
+use Inertia\Inertia;
 
 class ShopController extends Controller
 {
@@ -14,7 +16,35 @@ class ShopController extends Controller
      */
     public function index()
     {
-        //
+        $this->authorizeForUser(auth()->user(), 'viewAny', Shop::class);
+        
+        $query = Shop::with(['createdBy', 'npc', 'items']);
+        
+        // Recherche
+        if (request()->has('search') && request()->search) {
+            $search = request()->search;
+            $query->where(function($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                  ->orWhere('description', 'like', "%{$search}%");
+            });
+        }
+        
+        // Tri
+        $sortColumn = request()->get('sort', 'id');
+        $sortOrder = request()->get('order', 'desc');
+        
+        if (in_array($sortColumn, ['id', 'name', 'created_at'])) {
+            $query->orderBy($sortColumn, $sortOrder);
+        } else {
+            $query->latest();
+        }
+        
+        $shops = $query->paginate(20)->withQueryString();
+        
+        return Inertia::render('Pages/entity/shop/Index', [
+            'shops' => ShopResource::collection($shops),
+            'filters' => request()->only(['search']),
+        ]);
     }
 
     /**

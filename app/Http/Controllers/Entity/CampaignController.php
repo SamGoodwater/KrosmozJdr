@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Entity\StoreCampaignRequest;
 use App\Http\Requests\Entity\UpdateCampaignRequest;
 use App\Models\Entity\Campaign;
+use App\Http\Resources\Entity\CampaignResource;
+use Inertia\Inertia;
 
 class CampaignController extends Controller
 {
@@ -14,9 +16,45 @@ class CampaignController extends Controller
      */
     public function index()
     {
-        $this->authorize('viewAny', Campaign::class);
-        $campaigns = Campaign::query()->latest()->paginate(20);
-        return response()->json($campaigns);
+        $this->authorizeForUser(auth()->user(), 'viewAny', Campaign::class);
+        
+        $query = Campaign::with(['createdBy', 'users', 'scenarios']);
+        
+        // Recherche
+        if (request()->has('search') && request()->search) {
+            $search = request()->search;
+            $query->where(function($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                  ->orWhere('slug', 'like', "%{$search}%")
+                  ->orWhere('description', 'like', "%{$search}%");
+            });
+        }
+        
+        // Filtres
+        if (request()->has('state') && request()->state !== '') {
+            $query->where('state', request()->state);
+        }
+        
+        if (request()->has('is_public') && request()->is_public !== '') {
+            $query->where('is_public', request()->is_public);
+        }
+        
+        // Tri
+        $sortColumn = request()->get('sort', 'id');
+        $sortOrder = request()->get('order', 'desc');
+        
+        if (in_array($sortColumn, ['id', 'name', 'slug', 'state', 'is_public', 'created_at'])) {
+            $query->orderBy($sortColumn, $sortOrder);
+        } else {
+            $query->latest();
+        }
+        
+        $campaigns = $query->paginate(20)->withQueryString();
+        
+        return Inertia::render('Pages/entity/campaign/Index', [
+            'campaigns' => CampaignResource::collection($campaigns),
+            'filters' => request()->only(['search', 'state', 'is_public']),
+        ]);
     }
 
     /**
@@ -43,7 +81,7 @@ class CampaignController extends Controller
      */
     public function show(Campaign $campaign)
     {
-        $this->authorize('view', $campaign);
+        $this->authorizeForUser(auth()->user(), 'view', $campaign);
         return response()->json($campaign);
     }
 
@@ -114,7 +152,7 @@ class CampaignController extends Controller
      */
     public function users(Campaign $campaign)
     {
-        $this->authorize('view', $campaign);
+        $this->authorizeForUser(auth()->user(), 'view', $campaign);
         return response()->json($campaign->users);
     }
 }

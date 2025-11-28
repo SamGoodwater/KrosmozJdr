@@ -24,6 +24,7 @@ class ScrappingController extends Controller
         'monster' => 5000,
         'item' => 30000,
         'spell' => 20000,
+        'panoply' => 1000, // Estimation, à ajuster selon les données réelles
     ];
     public function __construct(
         private ScrappingOrchestrator $orchestrator
@@ -62,6 +63,7 @@ class ScrappingController extends Controller
             'monster' => 'Monstre',
             'item' => 'Objet',
             'spell' => 'Sort',
+            'panoply' => 'Panoplie',
             default => ucfirst($type),
         };
     }
@@ -285,7 +287,7 @@ class ScrappingController extends Controller
         try {
             $request->validate([
                 'entities' => ['required', 'array', 'min:1'],
-                'entities.*.type' => ['required', 'string', 'in:class,monster,item,spell'],
+                'entities.*.type' => ['required', 'string', 'in:class,monster,item,spell,panoply'],
                 'entities.*.id' => ['required', 'integer', 'min:1'],
             ]);
             

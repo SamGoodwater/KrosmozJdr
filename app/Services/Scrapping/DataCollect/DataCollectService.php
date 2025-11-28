@@ -251,6 +251,52 @@ class DataCollectService
     }
     
     /**
+     * Collecte d'une panoplie depuis DofusDB avec ses items associés
+     * 
+     * @param int $dofusdbId ID de la panoplie dans DofusDB
+     * @param bool $includeItems Si true, collecte également les items de la panoplie
+     * @return array Données brutes de la panoplie avec ses items si demandé
+     * @throws \Exception En cas d'erreur de collecte
+     */
+    public function collectPanoply(int $dofusdbId, bool $includeItems = true): array
+    {
+        Log::info('Collecte panoplie depuis DofusDB', ['dofusdb_id' => $dofusdbId, 'include_items' => $includeItems]);
+        
+        // L'endpoint pour les panoplies est item-sets
+        $baseUrl = $this->config['dofusdb']['base_url'] 
+            ?? $this->config['dofusdb_base_url'] 
+            ?? 'https://api.dofusdb.fr';
+        $url = "{$baseUrl}/item-sets/{$dofusdbId}";
+        $data = $this->fetchFromDofusDb($url);
+        
+        // Vérifier que les données sont valides (pas vide et contient au moins un ID)
+        if (empty($data) || !isset($data['id'])) {
+            throw new \Exception("Impossible de récupérer les données de la panoplie ID {$dofusdbId}");
+        }
+        
+        // Les items sont déjà dans la réponse, mais on peut les enrichir si nécessaire
+        if ($includeItems && isset($data['items']) && is_array($data['items'])) {
+            // Les items sont déjà complets dans la réponse, on les préserve tels quels
+            // Mais on peut extraire juste les IDs pour faciliter le traitement
+            $itemIds = [];
+            foreach ($data['items'] as $item) {
+                $itemId = is_array($item) ? ($item['id'] ?? null) : $item;
+                if ($itemId) {
+                    $itemIds[] = $itemId;
+                }
+            }
+            $data['item_ids'] = $itemIds;
+        }
+        
+        Log::info('Panoplie collectée avec succès', [
+            'dofusdb_id' => $dofusdbId,
+            'items_count' => count($data['items'] ?? [])
+        ]);
+        
+        return $data;
+    }
+
+    /**
      * Vérifie si un typeId correspond à une ressource
      * 
      * @param int $typeId Type ID de l'objet
@@ -383,7 +429,7 @@ class DataCollectService
     /**
      * Construit l'URL DofusDB pour une entité donnée
      * 
-     * @param string $entityType Type d'entité (breeds, monsters, items, etc.)
+     * @param string $entityType Type d'entité (breeds, monsters, items, item-sets, etc.)
      * @param int $entityId ID de l'entité
      * @return string URL complète
      */
@@ -392,6 +438,12 @@ class DataCollectService
         $baseUrl = $this->config['dofusdb']['base_url'] 
             ?? $this->config['dofusdb_base_url'] 
             ?? 'https://api.dofusdb.fr';
+        
+        // Gérer les cas spéciaux d'endpoints
+        if ($entityType === 'item-sets') {
+            return "{$baseUrl}/item-sets/{$entityId}";
+        }
+        
         return "{$baseUrl}/{$entityType}/{$entityId}";
     }
 

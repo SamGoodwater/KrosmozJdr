@@ -11,18 +11,18 @@ class AttributePolicy
     /**
      * Determine whether the user can view any models.
      */
-    public function viewAny(User $user): bool
+    public function viewAny(?User $user): bool
     {
-        // Tous les rôles peuvent voir la liste des attributs
+        // Accessible à tous, même sans authentification
         return true;
     }
 
     /**
      * Determine whether the user can view the model.
      */
-    public function view(User $user, Attribute $attribute): bool
+    public function view(?User $user, Attribute $attribute): bool
     {
-        // Tous les rôles peuvent voir un attribut
+        // Accessible à tous, même sans authentification
         return true;
     }
 

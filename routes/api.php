@@ -84,7 +84,7 @@ Route::prefix('scrapping')->group(function () {
 
     Route::get('/preview/{type}/{id}', [App\Http\Controllers\Scrapping\ScrappingController::class, 'preview'])
         ->name('scrapping.preview')
-        ->where('type', 'class|monster|item|spell')
+        ->where('type', 'class|monster|item|spell|panoply')
         ->whereNumber('id');
 
     Route::prefix('import')->group(function () {
@@ -107,6 +107,11 @@ Route::prefix('scrapping')->group(function () {
         Route::post('/spell/{id}', [App\Http\Controllers\Scrapping\ScrappingController::class, 'importSpell'])
             ->name('scrapping.import.spell')
             ->where('id', '[1-9]|[1-9][0-9]|[1-9][0-9][0-9]|[1-9][0-9][0-9][0-9]|[1-9][0-9][0-9][0-9][0-9]|20000'); // 1-20000
+        
+        // Import d'une panoplie
+        Route::post('/panoply/{id}', [App\Http\Controllers\Scrapping\ScrappingController::class, 'importPanoply'])
+            ->name('scrapping.import.panoply')
+            ->where('id', '[1-9]|[1-9][0-9]|[1-9][0-9][0-9]|1000'); // 1-1000
         
         // Import en lot
         Route::post('/batch', [App\Http\Controllers\Scrapping\ScrappingController::class, 'importBatch'])

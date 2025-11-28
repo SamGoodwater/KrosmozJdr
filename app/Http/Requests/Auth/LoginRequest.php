@@ -66,6 +66,17 @@ class LoginRequest extends FormRequest
             ]);
         }
 
+        // Vérifier que l'utilisateur peut se connecter (les utilisateurs système ne peuvent pas)
+        $user = Auth::user();
+        if ($user && !$user->canLogin()) {
+            Auth::logout();
+            RateLimiter::hit($this->throttleKey());
+
+            throw ValidationException::withMessages([
+                'identifier' => trans('auth.failed'),
+            ]);
+        }
+
         RateLimiter::clear($this->throttleKey());
     }
 

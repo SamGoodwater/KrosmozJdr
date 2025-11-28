@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Entity\StoreResourceRequest;
 use App\Http\Requests\Entity\UpdateResourceRequest;
 use App\Models\Entity\Resource;
+use App\Http\Resources\Entity\ResourceResource;
+use Inertia\Inertia;
 
 class ResourceController extends Controller
 {
@@ -14,7 +16,44 @@ class ResourceController extends Controller
      */
     public function index()
     {
-        //
+        $this->authorizeForUser(auth()->user(), 'viewAny', Resource::class);
+        
+        $query = Resource::with(['createdBy', 'resourceType', 'consumables']);
+        
+        // Recherche
+        if (request()->has('search') && request()->search) {
+            $search = request()->search;
+            $query->where(function($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                  ->orWhere('description', 'like', "%{$search}%");
+            });
+        }
+        
+        // Filtres
+        if (request()->has('level') && request()->level !== '') {
+            $query->where('level', request()->level);
+        }
+        
+        if (request()->has('resource_type_id') && request()->resource_type_id !== '') {
+            $query->where('resource_type_id', request()->resource_type_id);
+        }
+        
+        // Tri
+        $sortColumn = request()->get('sort', 'id');
+        $sortOrder = request()->get('order', 'desc');
+        
+        if (in_array($sortColumn, ['id', 'name', 'level', 'dofusdb_id', 'created_at'])) {
+            $query->orderBy($sortColumn, $sortOrder);
+        } else {
+            $query->latest();
+        }
+        
+        $resources = $query->paginate(20)->withQueryString();
+        
+        return Inertia::render('Pages/entity/resource/Index', [
+            'resources' => ResourceResource::collection($resources),
+            'filters' => request()->only(['search', 'level', 'resource_type_id']),
+        ]);
     }
 
     /**

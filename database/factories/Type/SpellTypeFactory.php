@@ -16,8 +16,15 @@ class SpellTypeFactory extends Factory
      */
     public function definition(): array
     {
+        $spellTypes = ['Offensif', 'Défensif', 'Soin', 'Buff', 'Debuff', 'Invocation', 'Téléportation', 'Transformation'];
         return [
-            //
+            'name' => fake()->unique()->randomElement($spellTypes),
+            'description' => fake()->optional()->sentence(),
+            'color' => fake()->hexColor(),
+            'icon' => fake()->optional()->word(),
+            'usable' => fake()->numberBetween(0, 1),
+            'is_visible' => fake()->randomElement(['guest', 'user', 'player', 'game_master', 'admin', 'super_admin']),
+            'created_by' => null,
         ];
     }
 }

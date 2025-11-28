@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Entity\StoreNpcRequest;
 use App\Http\Requests\Entity\UpdateNpcRequest;
 use App\Models\Entity\Npc;
+use App\Http\Resources\Entity\NpcResource;
+use Inertia\Inertia;
 
 class NpcController extends Controller
 {
@@ -14,7 +16,43 @@ class NpcController extends Controller
      */
     public function index()
     {
-        //
+        $this->authorizeForUser(auth()->user(), 'viewAny', Npc::class);
+        
+        $query = Npc::with(['creature', 'classe', 'specialization']);
+        
+        // Recherche
+        if (request()->has('search') && request()->search) {
+            $search = request()->search;
+            $query->whereHas('creature', function($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%");
+            });
+        }
+        
+        // Filtres
+        if (request()->has('classe_id') && request()->classe_id !== '') {
+            $query->where('classe_id', request()->classe_id);
+        }
+        
+        if (request()->has('specialization_id') && request()->specialization_id !== '') {
+            $query->where('specialization_id', request()->specialization_id);
+        }
+        
+        // Tri
+        $sortColumn = request()->get('sort', 'id');
+        $sortOrder = request()->get('order', 'desc');
+        
+        if (in_array($sortColumn, ['id', 'created_at'])) {
+            $query->orderBy($sortColumn, $sortOrder);
+        } else {
+            $query->latest();
+        }
+        
+        $npcs = $query->paginate(20)->withQueryString();
+        
+        return Inertia::render('Pages/entity/npc/Index', [
+            'npcs' => NpcResource::collection($npcs),
+            'filters' => request()->only(['search', 'classe_id', 'specialization_id']),
+        ]);
     }
 
     /**

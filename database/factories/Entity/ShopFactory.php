@@ -17,7 +17,15 @@ class ShopFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            'name' => fake()->unique()->words(2, true) . ' Shop',
+            'description' => fake()->optional()->sentence(),
+            'location' => fake()->optional()->city(),
+            'price' => fake()->numberBetween(0, 100),
+            'usable' => fake()->numberBetween(0, 1),
+            'is_visible' => fake()->randomElement(['guest', 'user', 'player', 'game_master', 'admin', 'super_admin']),
+            'image' => fake()->optional()->imageUrl(128, 128, 'abstract', true),
+            'created_by' => null,
+            'npc_id' => null,
         ];
     }
 }

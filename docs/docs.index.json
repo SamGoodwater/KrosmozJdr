@@ -390,6 +390,31 @@
     "description": "Ce dossier regroupe les scripts, automatisations et outils pour le développement, la maintenance et le déploiement du projet."
   },
   {
+    "path": "50-Fonctionnalités/Scrapping/AUDIT_COMPLET_ENTITES.md",
+    "title": "Audit complet des entités KrosmozJDR",
+    "description": "**Date** : 2025-11-27"
+  },
+  {
+    "path": "50-Fonctionnalités/Scrapping/AUDIT_COMPLET_INFRASTRUCTURE.md",
+    "title": "Audit complet de l'infrastructure du système de scrapping",
+    "description": "Les entités suivantes sont utilisées par le système de scrapping :"
+  },
+  {
+    "path": "50-Fonctionnalités/Scrapping/AUDIT_ENTITES.md",
+    "title": "Audit des entités pour le système de scrapping",
+    "description": "Vérifier que toutes les entités nécessaires sont supportées par le système de scrapping. Le but est de récupérer les données depuis DofusDB pour les transformer en entités KrosmozJDR."
+  },
+  {
+    "path": "50-Fonctionnalités/Scrapping/AUDIT_INFRASTRUCTURE.md",
+    "title": "Audit de l'infrastructure du système de scrapping",
+    "description": "Les entités suivantes sont utilisées par le système de scrapping :"
+  },
+  {
+    "path": "50-Fonctionnalités/Scrapping/AUDIT_PANOPLIES.md",
+    "title": "Audit complet des Panoplies",
+    "description": "Les panoplies sont des **ensembles d'équipement qui apportent un bonus** lorsqu'ils sont réunis. Cette documentation vérifie que tous les fichiers liés aux panoplies sont complets et cohérents."
+  },
+  {
     "path": "50-Fonctionnalités/Scrapping/Data-collect/API.md",
     "title": "",
     "description": ""
@@ -460,6 +485,11 @@
     "description": "La fonctionnalité de scrapping a été entièrement implémentée avec une architecture modulaire et extensible, permettant de récupérer, convertir et intégrer des données depuis des sites externes (notamment DofusDB) vers KrosmozJDR."
   },
   {
+    "path": "50-Fonctionnalités/Scrapping/IMPORT_RELATIONS_COMPLET.md",
+    "title": "Import des relations - Implémentation complète ✅",
+    "description": "L'import des relations est maintenant **complètement fonctionnel** pour tous les types d'entités :"
+  },
+  {
     "path": "50-Fonctionnalités/Scrapping/Orchestrateur/API.md",
     "title": "API de l'Orchestrateur de Scrapping",
     "description": "L'API de l'Orchestrateur de Scrapping fournit une interface REST complète pour gérer l'ensemble du processus de scrapping depuis des sites externes (comme DofusDB) vers KrosmozJDR. Cette API permet d'importer des entités individuelles, en lot, ou par catégorie, avec un suivi complet des processus et des métriques de performance."
@@ -480,9 +510,34 @@
     "description": "L'Orchestrateur de Scrapping est un composant central de l'architecture KrosmozJDR qui coordonne l'ensemble du processus de récupération, conversion et intégration des données depuis des sites externes (comme DofusDB) vers la base de données KrosmozJDR. Il agit comme un chef d'orchestre qui assure la coordination entre les services Data-collect, Data-conversion et Data-integration."
   },
   {
+    "path": "50-Fonctionnalités/Scrapping/PANOPLIES_IMPLEMENTATION.md",
+    "title": "Implémentation de l'import des Panoplies",
+    "description": "**Date de complétion** : 2025-11-27"
+  },
+  {
     "path": "50-Fonctionnalités/Scrapping/README.md",
     "title": "🚀 Fonctionnalité de Scrapping - KrosmozJDR",
     "description": "Cette fonctionnalité permet de récupérer, convertir et intégrer des données depuis des sites externes (comme DofusDB) vers KrosmozJDR. Les données qui sont récupérées depuis des sites externes ne sont pas structurées comme ce dont a besoin KrosmozJDR. De plus, ces sites utilisent les données du jeu Dofus alors que KrosmozJDR se base sur le jeu Dofus mais avec des données simplifiées. Il y a donc besoin de convertir."
+  },
+  {
+    "path": "50-Fonctionnalités/Scrapping/RESUME_UTILISATEUR_SYSTEME.md",
+    "title": "Résumé : Utilisateur système pour les imports automatiques",
+    "description": "- ✅ **Fichier** : `database/migrations/2025_11_27_145006_add_is_system_to_users_table.php`"
+  },
+  {
+    "path": "50-Fonctionnalités/Scrapping/TEST_RELATIONS_IMPORT.md",
+    "title": "Tests d'import des relations",
+    "description": "Un nouveau fichier de tests a été créé : `tests/Feature/Scrapping/ScrappingRelationsTest.php`"
+  },
+  {
+    "path": "50-Fonctionnalités/Scrapping/TODO_RESTANT.md",
+    "title": "TODO : Ce qui reste à faire pour finaliser le système de scrapping",
+    "description": "1. ✅ **Infrastructure complète** : Models, factories, migrations, relations Eloquent"
+  },
+  {
+    "path": "50-Fonctionnalités/Scrapping/UTILISATEUR_SYSTEME.md",
+    "title": "Utilisateur système pour les imports automatiques",
+    "description": "Un utilisateur système a été créé pour gérer les imports automatiques du système de scrapping. Cet utilisateur ne peut **pas se connecter** pour des raisons de sécurité."
   },
   {
     "path": "DOCUMENTATION_GUIDE.md",

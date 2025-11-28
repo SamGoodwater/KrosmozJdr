@@ -16,8 +16,12 @@ class ItemTypeFactory extends Factory
      */
     public function definition(): array
     {
+        $itemTypes = ['Épée', 'Bouclier', 'Arc', 'Dague', 'Bâton', 'Hache', 'Marteau', 'Pelle', 'Pioche', 'Baguette'];
         return [
-            //
+            'name' => fake()->unique()->randomElement($itemTypes),
+            'usable' => fake()->numberBetween(0, 1),
+            'is_visible' => fake()->randomElement(['guest', 'user', 'player', 'game_master', 'admin', 'super_admin']),
+            'created_by' => null,
         ];
     }
 }

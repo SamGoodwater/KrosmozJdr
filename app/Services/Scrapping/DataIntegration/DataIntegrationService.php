@@ -14,6 +14,11 @@ use App\Models\Entity\Resource;
 use App\Models\Entity\Spell;
 use App\Models\Entity\Attribute;
 use App\Models\Entity\Capability;
+use App\Models\Entity\Panoply;
+use App\Models\Type\ItemType;
+use App\Models\Type\ConsumableType;
+use App\Models\Type\ResourceType;
+use App\Models\Type\SpellType;
 
 /**
  * Service d'intégration des données dans la structure KrosmozJDR
@@ -58,6 +63,7 @@ class DataIntegrationService
             if ($existingClass) {
                 // Mise à jour de la classe existante
                 $existingClass->update([
+                    'dofusdb_id' => $convertedData['dofusdb_id'] ?? $existingClass->dofusdb_id,
                     'description' => $convertedData['description'],
                     'life' => $convertedData['life'],
                     'life_dice' => $convertedData['life_dice'],
@@ -69,11 +75,13 @@ class DataIntegrationService
             } else {
                 // Création d'une nouvelle classe
                 $class = Classe::create([
+                    'dofusdb_id' => $convertedData['dofusdb_id'] ?? null,
                     'name' => $convertedData['name'],
                     'description' => $convertedData['description'],
                     'life' => $convertedData['life'],
                     'life_dice' => $convertedData['life_dice'],
-                    'specificity' => $convertedData['specificity']
+                    'specificity' => $convertedData['specificity'],
+                    'created_by' => $this->getSystemUserId(),
                 ]);
                 
                 $action = 'created';
@@ -453,11 +461,15 @@ class DataIntegrationService
             // range -> po (portée)
             // area -> area (zone)
             $spellData = [
+                'dofusdb_id' => $convertedData['dofusdb_id'] ?? null,
                 'name' => $convertedData['name'],
                 'description' => $convertedData['description'],
                 'pa' => (string) ($convertedData['cost'] ?? '3'), // Points d'action
                 'po' => (string) ($convertedData['range'] ?? '1'), // Portée
                 'area' => (int) ($convertedData['area'] ?? 0), // Zone
+                'image' => $convertedData['image'] ?? null,
+                'effect' => $convertedData['effect'] ?? null,
+                'level' => $convertedData['level'] ?? null,
                 'created_by' => $this->getSystemUserId(),
             ];
             
@@ -547,6 +559,78 @@ class DataIntegrationService
     }
 
     /**
+     * Intégration d'une panoplie dans la base KrosmozJDR
+     * 
+     * @param array $convertedData Données converties de la panoplie
+     * @return array Résultat de l'intégration
+     */
+    public function integratePanoply(array $convertedData): array
+    {
+        Log::info('Intégration de panoplie', ['panoply_name' => $convertedData['name']]);
+        
+        try {
+            DB::beginTransaction();
+            
+            // Recherche d'une panoplie existante par dofusdb_id ou name
+            $existingPanoply = null;
+            if (!empty($convertedData['dofusdb_id'])) {
+                $existingPanoply = Panoply::where('dofusdb_id', $convertedData['dofusdb_id'])->first();
+            }
+            if (!$existingPanoply) {
+                $existingPanoply = Panoply::where('name', $convertedData['name'])->first();
+            }
+            
+            if ($existingPanoply) {
+                // Mise à jour de la panoplie existante
+                $existingPanoply->update([
+                    'dofusdb_id' => $convertedData['dofusdb_id'] ?? $existingPanoply->dofusdb_id,
+                    'description' => $convertedData['description'],
+                    'bonus' => $convertedData['bonus'],
+                    'usable' => $convertedData['usable'] ?? 0,
+                    'is_visible' => $convertedData['is_visible'] ?? 'guest',
+                ]);
+                $panoply = $existingPanoply;
+                $action = 'updated';
+            } else {
+                // Création d'une nouvelle panoplie
+                $panoply = Panoply::create([
+                    'dofusdb_id' => $convertedData['dofusdb_id'] ?? null,
+                    'name' => $convertedData['name'],
+                    'description' => $convertedData['description'],
+                    'bonus' => $convertedData['bonus'],
+                    'usable' => $convertedData['usable'] ?? 0,
+                    'is_visible' => $convertedData['is_visible'] ?? 'guest',
+                    'created_by' => $this->getSystemUserId(),
+                ]);
+                $action = 'created';
+            }
+            
+            DB::commit();
+            
+            Log::info('Panoplie intégrée avec succès', [
+                'panoply_id' => $panoply->id,
+                'action' => $action
+            ]);
+            
+            return [
+                'id' => $panoply->id,
+                'action' => $action,
+                'data' => [
+                    'panoply' => $panoply->toArray()
+                ]
+            ];
+            
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Erreur lors de l\'intégration de panoplie', [
+                'panoply_name' => $convertedData['name'] ?? 'Unknown',
+                'error' => $e->getMessage()
+            ]);
+            throw $e;
+        }
+    }
+
+    /**
      * Détermine la table cible pour un objet selon son type et sa catégorie
      * 
      * @param string $type Type de l'objet
@@ -593,6 +677,7 @@ class DataIntegrationService
             'monster' => $this->findExistingMonster($convertedData),
             'item' => $this->findExistingItem($convertedData),
             'spell' => $this->wrapExistingRecord('spells', Spell::where('name', $convertedData['name'] ?? null)->first()),
+            'panoply' => $this->wrapExistingRecord('panoplies', Panoply::where('name', $convertedData['name'] ?? null)->orWhere('dofusdb_id', $convertedData['dofusdb_id'] ?? null)->first()),
             default => null,
         };
     }
@@ -700,13 +785,24 @@ class DataIntegrationService
     {
         // Mapping des données vers les colonnes de la table consumables
         $consumableData = [
+            'dofusdb_id' => $convertedData['dofusdb_id'] ?? null,
             'name' => $convertedData['name'],
             'description' => $convertedData['description'],
             'level' => (string) $convertedData['level'],
             'price' => (string) $convertedData['price'],
             'rarity' => $this->convertRarityToInt($convertedData['rarity']),
+            'image' => $convertedData['image'] ?? null,
+            'effect' => $convertedData['effect'] ?? null,
             'created_by' => $this->getSystemUserId(),
         ];
+        
+        // Assigner le type de consommable si disponible
+        if (isset($convertedData['type_id'])) {
+            $consumableType = $this->getConsumableTypeFromDofusdbTypeId($convertedData['type_id']);
+            if ($consumableType) {
+                $consumableData['consumable_type_id'] = $consumableType->id;
+            }
+        }
         
         $existingConsumable = Consumable::where('name', $consumableData['name'])->first();
         
@@ -737,13 +833,24 @@ class DataIntegrationService
     {
         // Mapping des données vers les colonnes de la table resources
         $resourceData = [
+            'dofusdb_id' => $convertedData['dofusdb_id'] ?? null,
             'name' => $convertedData['name'],
             'description' => $convertedData['description'],
             'level' => (string) $convertedData['level'],
             'price' => (string) $convertedData['price'],
             'rarity' => $this->convertRarityToInt($convertedData['rarity']),
+            'image' => $convertedData['image'] ?? null,
+            'weight' => $convertedData['weight'] ?? null,
             'created_by' => $this->getSystemUserId(),
         ];
+        
+        // Assigner le type de ressource si disponible
+        if (isset($convertedData['type_id'])) {
+            $resourceType = $this->getResourceTypeFromDofusdbTypeId($convertedData['type_id']);
+            if ($resourceType) {
+                $resourceData['resource_type_id'] = $resourceType->id;
+            }
+        }
         
         $existingResource = Resource::where('name', $resourceData['name'])->first();
         
@@ -774,13 +881,25 @@ class DataIntegrationService
     {
         // Mapping des données vers les colonnes de la table items
         $itemData = [
+            'dofusdb_id' => $convertedData['dofusdb_id'] ?? null,
             'name' => $convertedData['name'],
             'description' => $convertedData['description'],
             'level' => (string) $convertedData['level'],
             'price' => (string) $convertedData['price'],
             'rarity' => $this->convertRarityToInt($convertedData['rarity']),
+            'image' => $convertedData['image'] ?? null,
+            'effect' => $convertedData['effect'] ?? null,
+            'bonus' => $convertedData['bonus'] ?? null,
             'created_by' => $this->getSystemUserId(),
         ];
+        
+        // Assigner le type d'item si disponible
+        if (isset($convertedData['type_id'])) {
+            $itemType = $this->getItemTypeFromDofusdbTypeId($convertedData['type_id']);
+            if ($itemType) {
+                $itemData['item_type_id'] = $itemType->id;
+            }
+        }
         
         $existingItem = Item::where('name', $itemData['name'])->first();
         
@@ -802,25 +921,124 @@ class DataIntegrationService
     }
 
     /**
-     * Intègre les niveaux d'un sort
+     * Intègre les niveaux d'un sort et assigne les types de sort
      * 
      * @param Spell $spell Sort parent
      * @param array $levels Niveaux à intégrer
      */
     private function integrateSpellLevels(Spell $spell, array $levels): void
     {
-        // Suppression des anciens niveaux
+        // Détacher les anciens types de sort
         $spell->spellTypes()->detach();
         
-        // Intégration des nouveaux niveaux
-        foreach ($levels as $levelData) {
-            // Ici, vous devriez créer ou mettre à jour les types de sort
-            // selon votre logique métier
-            Log::info('Niveau de sort intégré', [
+        // Analyser les niveaux pour déterminer les types de sort
+        $spellTypeIds = $this->determineSpellTypes($spell, $levels);
+        
+        // Assigner les types de sort
+        if (!empty($spellTypeIds)) {
+            $spell->spellTypes()->sync($spellTypeIds);
+            Log::info('Types de sort assignés', [
                 'spell_id' => $spell->id,
-                'level' => $levelData['level']
+                'spell_type_ids' => $spellTypeIds
             ]);
         }
+        
+        // Log des niveaux intégrés
+        foreach ($levels as $levelData) {
+            Log::info('Niveau de sort intégré', [
+                'spell_id' => $spell->id,
+                'level' => $levelData['level'] ?? 'unknown'
+            ]);
+        }
+    }
+    
+    /**
+     * Détermine les types de sort basés sur les effets et caractéristiques
+     * 
+     * @param Spell $spell Sort à analyser
+     * @param array $levels Niveaux du sort
+     * @return array IDs des types de sort
+     */
+    private function determineSpellTypes(Spell $spell, array $levels): array
+    {
+        $spellTypeIds = [];
+        
+        // Si le sort a un monstre invoqué, c'est un sort d'invocation
+        if ($spell->monsters()->exists()) {
+            $invocationType = SpellType::where('name', 'Invocation')->first();
+            if ($invocationType) {
+                $spellTypeIds[] = $invocationType->id;
+            }
+        }
+        
+        // Analyser les effets des niveaux pour déterminer le type
+        // Note: Cette logique est basique et peut être améliorée
+        $hasHealing = false;
+        $hasDamage = false;
+        $hasBuff = false;
+        $hasDebuff = false;
+        
+        foreach ($levels as $level) {
+            $effects = $level['effects'] ?? [];
+            if (is_array($effects)) {
+                foreach ($effects as $effect) {
+                    $characteristic = $effect['characteristic'] ?? null;
+                    
+                    // Détection basique des types d'effets
+                    if (in_array($characteristic, ['HP', 'Heal'])) {
+                        $hasHealing = true;
+                    }
+                    if (in_array($characteristic, ['Damage', 'CriticalHit'])) {
+                        $hasDamage = true;
+                    }
+                    if (in_array($characteristic, ['Strength', 'Intelligence', 'Agility', 'Wisdom', 'Chance'])) {
+                        $hasBuff = true;
+                    }
+                    if (in_array($characteristic, ['Weakness', 'Reduction'])) {
+                        $hasDebuff = true;
+                    }
+                }
+            }
+        }
+        
+        // Assigner les types selon les effets détectés
+        if ($hasHealing) {
+            $healingType = SpellType::where('name', 'Soin')->first();
+            if ($healingType) {
+                $spellTypeIds[] = $healingType->id;
+            }
+        }
+        
+        if ($hasDamage) {
+            $offensiveType = SpellType::where('name', 'Offensif')->first();
+            if ($offensiveType) {
+                $spellTypeIds[] = $offensiveType->id;
+            }
+        }
+        
+        if ($hasBuff) {
+            $buffType = SpellType::where('name', 'Buff')->first();
+            if ($buffType) {
+                $spellTypeIds[] = $buffType->id;
+            }
+        }
+        
+        if ($hasDebuff) {
+            $debuffType = SpellType::where('name', 'Debuff')->first();
+            if ($debuffType) {
+                $spellTypeIds[] = $debuffType->id;
+            }
+        }
+        
+        // Si aucun type n'a été détecté, assigner "Défensif" par défaut
+        if (empty($spellTypeIds)) {
+            $defensiveType = SpellType::where('name', 'Défensif')->first();
+            if ($defensiveType) {
+                $spellTypeIds[] = $defensiveType->id;
+            }
+        }
+        
+        return array_unique($spellTypeIds);
     }
 
     /**
@@ -909,7 +1127,13 @@ class DataIntegrationService
             return auth()->id();
         }
         
-        // Sinon, utiliser le premier utilisateur admin disponible
+        // Utiliser l'utilisateur système (créé par le seeder)
+        $systemUser = User::getSystemUser();
+        if ($systemUser) {
+            return $systemUser->id;
+        }
+        
+        // Si l'utilisateur système n'existe pas, utiliser le premier admin disponible
         $admin = User::where('role', User::ROLE_ADMIN)->first();
         if ($admin) {
             return $admin->id;
@@ -922,6 +1146,105 @@ class DataIntegrationService
         }
         
         // Si aucun utilisateur n'existe, on lance une exception
-        throw new \Exception('Aucun utilisateur disponible pour les imports automatiques');
+        throw new \Exception('Aucun utilisateur disponible pour les imports automatiques. Veuillez exécuter le seeder pour créer l\'utilisateur système.');
+    }
+
+    /**
+     * Récupère un ItemType depuis un typeId DofusDB
+     * 
+     * @param int|null $typeId Type ID depuis DofusDB
+     * @return ItemType|null
+     */
+    private function getItemTypeFromDofusdbTypeId(?int $typeId): ?ItemType
+    {
+        if ($typeId === null) {
+            return null;
+        }
+
+        // Mapping typeId DofusDB -> ItemType name
+        $typeMapping = [
+            1 => 'Arc',
+            2 => 'Bouclier',
+            3 => 'Bouclier', // Bouclier aussi
+            4 => 'Bâton',
+            5 => 'Dague',
+            6 => 'Épée',
+            7 => 'Marteau',
+            8 => 'Pelle',
+            9 => 'Anneau',
+            10 => 'Amulette',
+            11 => 'Ceinture',
+            13 => 'Bottes',
+            14 => 'Chapeau',
+            16 => 'Cape',
+            17 => 'Cape', // Cape aussi
+            18 => 'Familier',
+            19 => 'Hache',
+            20 => 'Outil',
+        ];
+
+        $typeName = $typeMapping[$typeId] ?? null;
+        if ($typeName === null) {
+            Log::warning('TypeId DofusDB non mappé pour ItemType', ['type_id' => $typeId]);
+            return null;
+        }
+
+        return ItemType::where('name', $typeName)->first();
+    }
+
+    /**
+     * Récupère un ConsumableType depuis un typeId DofusDB
+     * 
+     * @param int|null $typeId Type ID depuis DofusDB
+     * @return ConsumableType|null
+     */
+    private function getConsumableTypeFromDofusdbTypeId(?int $typeId): ?ConsumableType
+    {
+        if ($typeId === null) {
+            return null;
+        }
+
+        // Mapping typeId DofusDB -> ConsumableType name
+        $typeMapping = [
+            12 => 'Potion', // Potions
+            13 => 'Parchemin d\'expérience', // Parchemins d'expérience
+            14 => 'Objet de dons', // Objets de dons
+        ];
+
+        $typeName = $typeMapping[$typeId] ?? null;
+        if ($typeName === null) {
+            Log::warning('TypeId DofusDB non mappé pour ConsumableType', ['type_id' => $typeId]);
+            return null;
+        }
+
+        return ConsumableType::where('name', $typeName)->first();
+    }
+
+    /**
+     * Récupère un ResourceType depuis un typeId DofusDB
+     * 
+     * @param int|null $typeId Type ID depuis DofusDB
+     * @return ResourceType|null
+     */
+    private function getResourceTypeFromDofusdbTypeId(?int $typeId): ?ResourceType
+    {
+        if ($typeId === null) {
+            return null;
+        }
+
+        // Mapping typeId DofusDB -> ResourceType name
+        // Note: Le mapping est approximatif car DofusDB ne fournit pas directement le type de ressource
+        $typeMapping = [
+            15 => 'Minerai', // Ressources de base (minerais, fragments, etc.)
+            35 => 'Fleur', // Fleurs
+        ];
+
+        $typeName = $typeMapping[$typeId] ?? null;
+        if ($typeName === null) {
+            Log::warning('TypeId DofusDB non mappé pour ResourceType', ['type_id' => $typeId]);
+            return null;
+        }
+
+        return ResourceType::where('name', $typeName)->first();
     }
 }

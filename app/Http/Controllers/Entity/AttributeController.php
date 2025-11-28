@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Entity\StoreAttributeRequest;
 use App\Http\Requests\Entity\UpdateAttributeRequest;
 use App\Models\Entity\Attribute;
+use App\Http\Resources\Entity\AttributeResource;
+use Inertia\Inertia;
 
 class AttributeController extends Controller
 {
@@ -14,9 +16,44 @@ class AttributeController extends Controller
      */
     public function index()
     {
-        $this->authorize('viewAny', Attribute::class);
-        $attributes = Attribute::query()->latest()->paginate(20);
-        return response()->json($attributes);
+        $this->authorizeForUser(auth()->user(), 'viewAny', Attribute::class);
+        
+        $query = Attribute::with(['createdBy', 'creatures']);
+        
+        // Recherche
+        if (request()->has('search') && request()->search) {
+            $search = request()->search;
+            $query->where(function($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                  ->orWhere('description', 'like', "%{$search}%");
+            });
+        }
+        
+        // Filtres
+        if (request()->has('usable') && request()->usable !== '') {
+            $query->where('usable', request()->usable);
+        }
+        
+        if (request()->has('is_visible') && request()->is_visible !== '') {
+            $query->where('is_visible', request()->is_visible);
+        }
+        
+        // Tri
+        $sortColumn = request()->get('sort', 'id');
+        $sortOrder = request()->get('order', 'desc');
+        
+        if (in_array($sortColumn, ['id', 'name', 'usable', 'is_visible', 'created_at'])) {
+            $query->orderBy($sortColumn, $sortOrder);
+        } else {
+            $query->latest();
+        }
+        
+        $attributes = $query->paginate(20)->withQueryString();
+        
+        return Inertia::render('Pages/entity/attribute/Index', [
+            'attributes' => AttributeResource::collection($attributes),
+            'filters' => request()->only(['search', 'usable', 'is_visible']),
+        ]);
     }
 
     /**
@@ -43,7 +80,7 @@ class AttributeController extends Controller
      */
     public function show(Attribute $attribute)
     {
-        $this->authorize('view', $attribute);
+        $this->authorizeForUser(auth()->user(), 'view', $attribute);
         return response()->json($attribute);
     }
 

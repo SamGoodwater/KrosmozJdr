@@ -101,6 +101,10 @@ erDiagram
     capability_id : bigint(20) unsigned
     specialization_id : bigint(20) unsigned
   }
+  CLASS_SPELL {
+    classe_id : bigint(20) unsigned
+    spell_id : bigint(20) unsigned
+  }
   CLASSES {
     id : bigint(20) unsigned
     official_id : varchar(255)
@@ -478,6 +482,7 @@ erDiagram
   }
   PANOPLIES {
     id : bigint(20) unsigned
+    dofusdb_id : varchar(255)
     name : varchar(255)
     description : varchar(255)
     bonus : varchar(255)
@@ -696,6 +701,7 @@ erDiagram
     password : varchar(255)
     remember_token : varchar(100)
     role : int(11)
+    is_system : tinyint(1)
     avatar : varchar(255)
     notifications_enabled : tinyint(1)
     notification_channels : longtext
@@ -724,6 +730,8 @@ erDiagram
   CAPABILITY_CREATURE }o--|| CREATURES : "FK creature_id"
   CAPABILITY_SPECIALIZATION }o--|| CAPABILITIES : "FK capability_id"
   CAPABILITY_SPECIALIZATION }o--|| SPECIALIZATIONS : "FK specialization_id"
+  CLASS_SPELL }o--|| CLASSES : "FK classe_id"
+  CLASS_SPELL }o--|| SPELLS : "FK spell_id"
   CLASSES }o--|| USERS : "FK created_by"
   CONSUMABLE_CAMPAIGN }o--|| CAMPAIGNS : "FK campaign_id"
   CONSUMABLE_CAMPAIGN }o--|| CONSUMABLES : "FK consumable_id"

@@ -11,17 +11,19 @@ class CapabilityPolicy
     /**
      * Determine whether the user can view any models.
      */
-    public function viewAny(User $user): bool
+    public function viewAny(?User $user): bool
     {
-        return false;
+        // Accessible à tous, même sans authentification
+        return true;
     }
 
     /**
      * Determine whether the user can view the model.
      */
-    public function view(User $user, Capability $capability): bool
+    public function view(?User $user, Capability $capability): bool
     {
-        return false;
+        // Accessible à tous, même sans authentification
+        return true;
     }
 
     /**
@@ -29,7 +31,7 @@ class CapabilityPolicy
      */
     public function create(User $user): bool
     {
-        return false;
+        return in_array($user->role, ['admin', 'super_admin']);
     }
 
     /**
@@ -37,7 +39,7 @@ class CapabilityPolicy
      */
     public function update(User $user, Capability $capability): bool
     {
-        return false;
+        return in_array($user->role, ['admin', 'super_admin']);
     }
 
     /**
@@ -45,7 +47,7 @@ class CapabilityPolicy
      */
     public function delete(User $user, Capability $capability): bool
     {
-        return false;
+        return in_array($user->role, ['admin', 'super_admin']);
     }
 
     /**

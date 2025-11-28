@@ -27,10 +27,21 @@ Route::get('/contribuer', function () {
 require __DIR__ . '/page.php';
 
 // ENTITIES
-// require __DIR__ . '/entities/class.php';
-// require __DIR__ . '/entities/monster.php';
-// require __DIR__ . '/entities/item.php';
-// require __DIR__ . '/entities/spell.php';
+require __DIR__ . '/entities/attribute.php';
+require __DIR__ . '/entities/campaign.php';
+require __DIR__ . '/entities/capability.php';
+require __DIR__ . '/entities/classe.php';
+require __DIR__ . '/entities/consumable.php';
+require __DIR__ . '/entities/creature.php';
+require __DIR__ . '/entities/item.php';
+require __DIR__ . '/entities/monster.php';
+require __DIR__ . '/entities/npc.php';
+require __DIR__ . '/entities/panoply.php';
+require __DIR__ . '/entities/resource.php';
+require __DIR__ . '/entities/scenario.php';
+require __DIR__ . '/entities/shop.php';
+require __DIR__ . '/entities/specialization.php';
+require __DIR__ . '/entities/spell.php';
 
 // SERVICES
 require __DIR__ . '/services/scrapping.php';

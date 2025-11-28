@@ -16,6 +16,7 @@ class DatabaseSeeder extends Seeder
             UserSeeder::class,
             PageSeeder::class,
             SectionSeeder::class,
+            \Database\Seeders\Type\TypeSeeder::class,
         ]);
     }
 }

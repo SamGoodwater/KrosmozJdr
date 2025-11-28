@@ -120,6 +120,7 @@ const getIconForType = (type) => {
         monster: 'fa-dragon',
         item: 'fa-box',
         spell: 'fa-wand-magic-sparkles',
+        panoply: 'fa-layer-group',
     };
     return icons[type] || 'fa-question';
 };

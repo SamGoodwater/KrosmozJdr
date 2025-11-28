@@ -24,11 +24,33 @@ import MenuItem from "@/Pages/Atoms/navigation/MenuItem.vue";
 import Dock from "@/Pages/Molecules/navigation/Dock.vue";
 import DockItem from "@/Pages/Atoms/navigation/DockItem.vue";
 import Tooltip from "@/Pages/Atoms/feedback/Tooltip.vue";
-import { ref } from "vue";
+import Icon from "@/Pages/Atoms/data-display/Icon.vue";
+import { ref, computed } from "vue";
+import { usePage } from "@inertiajs/vue3";
 
+const page = usePage();
 const appSlogan = ref(import.meta.env.VITE_APP_SLOGAN);
 const appName = ref(import.meta.env.VITE_APP_NAME);
 const logoError = ref(false);
+
+// Configuration des entités avec leurs icônes et routes
+const entityItems = [
+    { key: 'attribute', label: 'Attributs', icon: 'fa-list', route: 'entities.attributes.index' },
+    { key: 'campaign', label: 'Campagnes', icon: 'fa-book', route: 'entities.campaigns.index' },
+    { key: 'capability', label: 'Capacités', icon: 'fa-star', route: 'entities.capabilities.index' },
+    { key: 'classe', label: 'Classes', icon: 'fa-user', route: 'entities.classes.index' },
+    { key: 'consumable', label: 'Consommables', icon: 'fa-flask', route: 'entities.consumables.index' },
+    { key: 'creature', label: 'Créatures', icon: 'fa-paw', route: 'entities.creatures.index' },
+    { key: 'item', label: 'Objets', icon: 'fa-box', route: 'entities.items.index' },
+    { key: 'monster', label: 'Monstres', icon: 'fa-dragon', route: 'entities.monsters.index' },
+    { key: 'npc', label: 'NPCs', icon: 'fa-user-tie', route: 'entities.npcs.index' },
+    { key: 'panoply', label: 'Panoplies', icon: 'fa-layer-group', route: 'entities.panoplies.index' },
+    { key: 'resource', label: 'Ressources', icon: 'fa-gem', route: 'entities.resources.index' },
+    { key: 'scenario', label: 'Scénarios', icon: 'fa-scroll', route: 'entities.scenarios.index' },
+    { key: 'shop', label: 'Boutiques', icon: 'fa-store', route: 'entities.shops.index' },
+    { key: 'specialization', label: 'Spécialisations', icon: 'fa-graduation-cap', route: 'entities.specializations.index' },
+    { key: 'spell', label: 'Sorts', icon: 'fa-wand-magic-sparkles', route: 'entities.spells.index' },
+];
 
 const navItems = [
     {
@@ -53,6 +75,16 @@ const navItems = [
         active: (page) => page.component.includes("/page/create"),
     },
 ];
+
+// Vérifier si une entité est active
+const isEntityActive = (entityKey) => {
+    return page.component.includes(`/entity/${entityKey}`);
+};
+
+// Vérifier si le menu Entités est ouvert (si une entité est active)
+const isEntitiesMenuOpen = computed(() => {
+    return entityItems.some(item => isEntityActive(item.key));
+});
 
 const footerItems = [
     {
@@ -100,6 +132,27 @@ const footerItems = [
                     :pack="item.pack" :active="item.active($page)">
                 {{ item.label }}
                 </MenuItem>
+                
+                <!-- Menu Entités avec sous-menu -->
+                <li>
+                    <details :open="isEntitiesMenuOpen">
+                        <summary class="flex items-center">
+                            <Icon source="fa-solid fa-database" alt="Entités" size="md" class="mr-2" />
+                            <span>Entités</span>
+                        </summary>
+                        <ul class="ml-4">
+                            <MenuItem 
+                                v-for="entity in entityItems" 
+                                :key="entity.key"
+                                :route="entity.route"
+                                :icon="`fa-solid ${entity.icon}`"
+                                pack="solid"
+                                :active="isEntityActive(entity.key)">
+                                {{ entity.label }}
+                            </MenuItem>
+                        </ul>
+                    </details>
+                </li>
             </Menu>
         </div>
         <div id="footer">

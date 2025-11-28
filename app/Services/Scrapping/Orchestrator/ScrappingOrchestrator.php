@@ -5,6 +5,7 @@ namespace App\Services\Scrapping\Orchestrator;
 use App\Services\Scrapping\DataCollect\DataCollectService;
 use App\Services\Scrapping\DataConversion\DataConversionService;
 use App\Services\Scrapping\DataIntegration\DataIntegrationService;
+use App\Models\Entity\Panoply;
 use Illuminate\Support\Facades\Log;
 
 /**
@@ -41,6 +42,11 @@ class ScrappingOrchestrator
             'convert' => 'convertSpell',
             'import' => 'importSpell',
         ],
+        'panoply' => [
+            'collect' => 'collectPanoply',
+            'convert' => 'convertPanoply',
+            'import' => 'importPanoply',
+        ],
     ];
     /**
      * Constructeur du service d'orchestration
@@ -76,12 +82,14 @@ class ScrappingOrchestrator
             
             // 4. Import en cascade des sorts associés
             $relatedResults = [];
+            $importedSpellIds = [];
             if ($includeRelations && isset($rawData['spells']) && is_array($rawData['spells'])) {
                 foreach ($rawData['spells'] as $spellData) {
                     $spellId = $spellData['id'] ?? null;
                     if ($spellId) {
                         try {
                             $spellResult = $this->importSpell($spellId, ['include_relations' => false]); // Ne pas importer le monstre invoqué pour éviter la récursion
+                            $importedSpellIds[] = $spellResult['data']['id'] ?? null;
                             $relatedResults[] = [
                                 'type' => 'spell',
                                 'id' => $spellId,
@@ -100,6 +108,22 @@ class ScrappingOrchestrator
                                 'error' => $e->getMessage()
                             ];
                         }
+                    }
+                }
+            }
+            
+            // 5. Créer les relations après l'import en cascade
+            if ($includeRelations && !empty($importedSpellIds)) {
+                $class = Classe::find($result['id']);
+                if ($class) {
+                    // Filtrer les IDs valides
+                    $validSpellIds = array_filter($importedSpellIds);
+                    if (!empty($validSpellIds)) {
+                        $class->spells()->sync($validSpellIds);
+                        Log::info('Relations créées après import en cascade', [
+                            'class_id' => $class->id,
+                            'spell_count' => count($validSpellIds)
+                        ]);
                     }
                 }
             }
@@ -155,6 +179,8 @@ class ScrappingOrchestrator
             
             // 4. Import en cascade des sorts et ressources associés
             $relatedResults = [];
+            $importedSpellIds = [];
+            $importedResourceIds = [];
             
             // Import des sorts
             if ($includeRelations && isset($rawData['spells']) && is_array($rawData['spells'])) {
@@ -163,6 +189,7 @@ class ScrappingOrchestrator
                     if ($spellId) {
                         try {
                             $spellResult = $this->importSpell($spellId, ['include_relations' => false]);
+                            $importedSpellIds[] = $spellResult['data']['id'] ?? null;
                             $relatedResults[] = [
                                 'type' => 'spell',
                                 'id' => $spellId,
@@ -186,6 +213,7 @@ class ScrappingOrchestrator
                     if ($resourceId) {
                         try {
                             $resourceResult = $this->importItem($resourceId, ['include_relations' => false]);
+                            $importedResourceIds[] = $resourceResult['data']['id'] ?? null;
                             $relatedResults[] = [
                                 'type' => 'resource',
                                 'id' => $resourceId,
@@ -202,6 +230,36 @@ class ScrappingOrchestrator
                 }
             }
             
+            // 5. Créer les relations après l'import en cascade
+            if ($includeRelations) {
+                $creature = \App\Models\Entity\Creature::find($result['creature_id'] ?? null);
+                if ($creature) {
+                    // Synchroniser les sorts
+                    $validSpellIds = array_filter($importedSpellIds);
+                    if (!empty($validSpellIds)) {
+                        $creature->spells()->sync($validSpellIds);
+                        Log::info('Relations sorts créées après import en cascade', [
+                            'creature_id' => $creature->id,
+                            'spell_count' => count($validSpellIds)
+                        ]);
+                    }
+                    
+                    // Synchroniser les ressources (avec quantités si disponibles)
+                    $validResourceIds = array_filter($importedResourceIds);
+                    if (!empty($validResourceIds)) {
+                        $resourceData = [];
+                        foreach ($validResourceIds as $resourceId) {
+                            $resourceData[$resourceId] = ['quantity' => '1']; // Quantité par défaut
+                        }
+                        $creature->resources()->sync($resourceData);
+                        Log::info('Relations ressources créées après import en cascade', [
+                            'creature_id' => $creature->id,
+                            'resource_count' => count($resourceData)
+                        ]);
+                    }
+                }
+            }
+            
             Log::info('Import monstre terminé avec succès', [
                 'dofusdb_id' => $dofusdbId,
                 'related_count' => count($relatedResults)
@@ -209,7 +267,12 @@ class ScrappingOrchestrator
             
             return [
                 'success' => true,
-                'data' => $result,
+                'data' => [
+                    'creature_id' => $result['creature_id'] ?? null,
+                    'monster_id' => $result['monster_id'] ?? null,
+                    'creature_action' => $result['creature_action'] ?? null,
+                    'monster_action' => $result['monster_action'] ?? null,
+                ],
                 'related' => $relatedResults,
                 'message' => 'Monstre importé avec succès'
             ];
@@ -328,11 +391,14 @@ class ScrappingOrchestrator
             
             // 4. Import en cascade du monstre invoqué (si c'est un sort d'invocation)
             $relatedResults = [];
+            $importedMonsterId = null;
+            
             if ($includeRelations && isset($rawData['summon']) && is_array($rawData['summon'])) {
                 $summonId = $rawData['summon']['id'] ?? null;
                 if ($summonId) {
                     try {
                         $summonResult = $this->importMonster($summonId, ['include_relations' => false]); // Ne pas inclure les sorts/drops pour éviter la récursion
+                        $importedMonsterId = $summonResult['data']['monster_id'] ?? null;
                         $relatedResults[] = [
                             'type' => 'monster',
                             'id' => $summonId,
@@ -345,6 +411,20 @@ class ScrappingOrchestrator
                             'error' => $e->getMessage()
                         ]);
                     }
+                }
+            }
+            
+            // 5. Créer les relations après l'import en cascade
+            if ($includeRelations && $importedMonsterId) {
+                $spell = \App\Models\Entity\Spell::find($result['id'] ?? null);
+                $monster = \App\Models\Entity\Monster::find($importedMonsterId);
+                
+                if ($spell && $monster) {
+                    $spell->monsters()->sync([$monster->id]);
+                    Log::info('Relation invocation créée après import en cascade', [
+                        'spell_id' => $spell->id,
+                        'monster_id' => $monster->id
+                    ]);
                 }
             }
             
@@ -482,6 +562,101 @@ class ScrappingOrchestrator
                 'success' => false,
                 'message' => 'Impossible de prévisualiser cette entité',
                 'error' => $e->getMessage(),
+            ];
+        }
+    }
+
+    /**
+     * Import d'une panoplie depuis DofusDB avec ses items associés
+     * 
+     * @param int $dofusdbId ID de la panoplie dans DofusDB
+     * @param array $options Options d'import (include_relations: bool pour activer l'import des relations)
+     * @return array Résultat de l'import
+     */
+    public function importPanoply(int $dofusdbId, array $options = []): array
+    {
+        Log::info('Début import panoplie', ['dofusdb_id' => $dofusdbId, 'options' => $options]);
+        
+        $includeRelations = $options['include_relations'] ?? true;
+        
+        try {
+            // 1. Collecte des données depuis DofusDB (avec items si demandé)
+            $rawData = $this->dataCollectService->collectPanoply($dofusdbId, $includeRelations);
+            
+            // 2. Conversion des valeurs selon les caractéristiques KrosmozJDR
+            $convertedData = $this->dataConversionService->convertPanoply($rawData);
+            
+            // 3. Intégration dans la base KrosmozJDR
+            $result = $this->dataIntegrationService->integratePanoply($convertedData);
+            
+            // 4. Import en cascade des items associés
+            $relatedResults = [];
+            $importedItemIds = [];
+            
+            if ($includeRelations && isset($rawData['items']) && is_array($rawData['items'])) {
+                foreach ($rawData['items'] as $itemData) {
+                    $itemId = is_array($itemData) ? ($itemData['id'] ?? null) : $itemData;
+                    if ($itemId) {
+                        try {
+                            $itemResult = $this->importItem($itemId, ['include_relations' => false]); // Ne pas inclure la recette pour éviter la récursion
+                            $importedItemIds[] = $itemResult['data']['id'] ?? null;
+                            $relatedResults[] = [
+                                'type' => 'item',
+                                'id' => $itemId,
+                                'result' => $itemResult
+                            ];
+                        } catch (\Exception $e) {
+                            Log::warning('Erreur lors de l\'import de l\'item associé à la panoplie', [
+                                'panoply_id' => $dofusdbId,
+                                'item_id' => $itemId,
+                                'error' => $e->getMessage()
+                            ]);
+                        }
+                    }
+                }
+            }
+            
+            // 5. Créer les relations après l'import en cascade
+            if ($includeRelations && !empty($importedItemIds)) {
+                $panoply = Panoply::find($result['id'] ?? null);
+                if ($panoply) {
+                    // Filtrer les IDs valides
+                    $validItemIds = array_filter($importedItemIds);
+                    if (!empty($validItemIds)) {
+                        $panoply->items()->sync($validItemIds);
+                        Log::info('Relations items créées après import en cascade', [
+                            'panoply_id' => $panoply->id,
+                            'item_count' => count($validItemIds)
+                        ]);
+                    }
+                }
+            }
+            
+            Log::info('Import panoplie terminé avec succès', [
+                'dofusdb_id' => $dofusdbId,
+                'related_count' => count($relatedResults)
+            ]);
+            
+            return [
+                'success' => true,
+                'data' => [
+                    'id' => $result['id'] ?? null,
+                    'action' => $result['action'] ?? null,
+                ],
+                'related' => $relatedResults,
+                'message' => 'Panoplie importée avec succès'
+            ];
+            
+        } catch (\Exception $e) {
+            Log::error('Erreur lors de l\'import de panoplie', [
+                'dofusdb_id' => $dofusdbId,
+                'error' => $e->getMessage()
+            ]);
+            
+            return [
+                'success' => false,
+                'error' => $e->getMessage(),
+                'message' => 'Erreur lors de l\'import de la panoplie'
             ];
         }
     }

@@ -13,6 +13,7 @@ use App\Services\Scrapping\Orchestrator\ScrappingOrchestrator;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Http;
 use Tests\TestCase;
+use Tests\CreatesSystemUser;
 
 /**
  * Tests d'intégration pour l'orchestrateur de scrapping
@@ -21,7 +22,7 @@ use Tests\TestCase;
  */
 class ScrappingOrchestratorTest extends TestCase
 {
-    use RefreshDatabase;
+    use RefreshDatabase, CreatesSystemUser;
 
     private ScrappingOrchestrator $orchestrator;
 
@@ -30,8 +31,8 @@ class ScrappingOrchestratorTest extends TestCase
         parent::setUp();
         $this->orchestrator = app(ScrappingOrchestrator::class);
         
-        // Créer un utilisateur système
-        User::factory()->create();
+        // Créer l'utilisateur système pour les imports automatiques
+        $this->createSystemUser();
     }
 
     /**

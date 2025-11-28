@@ -11,17 +11,19 @@ class ScenarioPolicy
     /**
      * Determine whether the user can view any models.
      */
-    public function viewAny(User $user): bool
+    public function viewAny(?User $user): bool
     {
-        return false;
+        // Accessible à tous, même sans authentification
+        return true;
     }
 
     /**
      * Determine whether the user can view the model.
      */
-    public function view(User $user, Scenario $scenario): bool
+    public function view(?User $user, Scenario $scenario): bool
     {
-        return false;
+        // Accessible à tous, même sans authentification
+        return true;
     }
 
     /**

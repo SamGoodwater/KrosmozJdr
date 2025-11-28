@@ -152,6 +152,13 @@ class User extends Authenticatable
     const NOTIFICATION_CHANNELS = ['database', 'email'];
 
     public const DEFAULT_AVATAR = 'storage/images/avatar/default_avatar_head.webp';
+    
+    /**
+     * ID de l'utilisateur système (pour les imports automatiques)
+     * Note: L'ID réel peut varier, on utilise l'email pour l'identifier
+     */
+    const SYSTEM_USER_ID = 0; // ID théorique (peut ne pas être utilisé si auto-increment)
+    const SYSTEM_USER_EMAIL = 'system@krosmozjdr.local'; // Email unique pour identifier l'utilisateur système
 
     /**
      * The attributes that are mass assignable.
@@ -166,6 +173,7 @@ class User extends Authenticatable
         'avatar',
         'notifications_enabled',
         'notification_channels',
+        'is_system',
     ];
 
     /**
@@ -188,6 +196,7 @@ class User extends Authenticatable
         'password' => 'hashed',
         'notifications_enabled' => 'boolean',
         'notification_channels' => 'array',
+        'is_system' => 'boolean',
     ];
 
     /**
@@ -399,5 +408,26 @@ class User extends Authenticatable
     public function sections()
     {
         return $this->belongsToMany(Section::class, 'section_user');
+    }
+
+    /**
+     * Vérifie si l'utilisateur peut se connecter
+     * Les utilisateurs système ne peuvent pas se connecter
+     * 
+     * @return bool
+     */
+    public function canLogin(): bool
+    {
+        return !$this->is_system;
+    }
+
+    /**
+     * Récupère l'utilisateur système (pour les imports automatiques)
+     * 
+     * @return User|null
+     */
+    public static function getSystemUser(): ?User
+    {
+        return static::where('email', self::SYSTEM_USER_EMAIL)->first();
     }
 }

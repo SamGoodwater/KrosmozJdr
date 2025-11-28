@@ -53,6 +53,7 @@ class DataConversionService
         Log::info('Conversion de classe', ['class_id' => $rawData['id'] ?? 'Unknown', 'class_name' => $name]);
         
         $converted = [
+            'dofusdb_id' => (string) ($rawData['id'] ?? ''),
             'name' => $name,
             'description' => $description,
             'life' => $this->convertLife($rawData['life'] ?? 0, 'class'),
@@ -180,6 +181,7 @@ class DataConversionService
         ]);
         
         $converted = [
+            'dofusdb_id' => (string) ($rawData['id'] ?? ''),
             'name' => $name,
             'level' => $this->convertLevel($rawData['level'] ?? 1, 'item'),
             'description' => $description,
@@ -187,7 +189,10 @@ class DataConversionService
             'category' => $typeMapping['category'],
             'type_id' => $typeId, // Conserver le typeId pour référence
             'rarity' => $this->convertRarity($rawData['rarity'] ?? 'common'),
-            'price' => $this->convertPrice($rawData['price'] ?? 0)
+            'price' => $this->convertPrice($rawData['price'] ?? 0),
+            'image' => $rawData['img'] ?? null,
+            'effect' => $this->convertEffects($rawData['effects'] ?? []),
+            'bonus' => $this->convertBonus($rawData['effects'] ?? []),
         ];
         
         // Préserver la recette (ressources) si présente dans rawData
@@ -201,6 +206,103 @@ class DataConversionService
         Log::info('Objet converti avec succès', ['item_name' => $converted['name']]);
         
         return $converted;
+    }
+
+    /**
+     * Conversion d'une panoplie selon les caractéristiques KrosmozJDR
+     * 
+     * @param array $rawData Données brutes de la panoplie
+     * @return array Données converties
+     */
+    public function convertPanoply(array $rawData): array
+    {
+        $name = $this->extractMultilingualValue($rawData['name'] ?? null, 'Panoplie ' . ($rawData['id'] ?? 'Unknown'));
+        $description = $this->extractMultilingualValue($rawData['description'] ?? null, '');
+        
+        // Tronquer la description à 255 caractères si nécessaire
+        $description = mb_substr($description, 0, 255);
+        
+        // Convertir les effets en bonus (format texte)
+        $bonus = $this->convertPanoplyEffects($rawData['effects'] ?? []);
+        
+        // Tronquer le bonus à 255 caractères (limite VARCHAR)
+        $bonus = mb_substr($bonus, 0, 255);
+        
+        Log::info('Conversion de panoplie', [
+            'panoply_id' => $rawData['id'] ?? 'Unknown',
+            'panoply_name' => $name
+        ]);
+        
+        $converted = [
+            'dofusdb_id' => (string) ($rawData['id'] ?? ''),
+            'name' => $name,
+            'description' => $description,
+            'bonus' => $bonus,
+            'usable' => $rawData['usable'] ?? 0,
+            'is_visible' => $rawData['is_visible'] ?? 'guest',
+        ];
+        
+        // Préserver les items associés (si présents dans rawData)
+        if (isset($rawData['items']) && is_array($rawData['items'])) {
+            $converted['items'] = $rawData['items'];
+        }
+        if (isset($rawData['item_ids']) && is_array($rawData['item_ids'])) {
+            $converted['item_ids'] = $rawData['item_ids'];
+        }
+        
+        // Validation des valeurs converties
+        $this->validateConvertedValues($converted, 'panoply');
+        
+        Log::info('Panoplie convertie avec succès', ['panoply_name' => $converted['name']]);
+        
+        return $converted;
+    }
+
+    /**
+     * Convertit les effets de panoplie en texte de bonus
+     * 
+     * @param array $effects Tableau de tableaux d'effets (par nombre d'items)
+     * @return string Description textuelle des bonus
+     */
+    private function convertPanoplyEffects(array $effects): string
+    {
+        if (empty($effects)) {
+            return '';
+        }
+        
+        $bonusDescriptions = [];
+        foreach ($effects as $index => $effectGroup) {
+            if (empty($effectGroup) || !is_array($effectGroup)) {
+                continue;
+            }
+            
+            $itemCount = $index + 1; // Le premier groupe (index 0) = 1 item, etc.
+            $effectTexts = [];
+            
+            foreach ($effectGroup as $effect) {
+                if (!is_array($effect)) {
+                    continue;
+                }
+                
+                // Extraire les informations de l'effet
+                $effectId = $effect['effectId'] ?? null;
+                $from = $effect['from'] ?? 0;
+                $to = $effect['to'] ?? 0;
+                $characteristic = $effect['characteristic'] ?? null;
+                
+                // Construire une description basique
+                if ($from > 0 || $to > 0) {
+                    $range = $from === $to ? (string)$from : "{$from}-{$to}";
+                    $effectTexts[] = "+{$range}";
+                }
+            }
+            
+            if (!empty($effectTexts)) {
+                $bonusDescriptions[] = "{$itemCount} pièce(s): " . implode(', ', $effectTexts);
+            }
+        }
+        
+        return implode(' | ', $bonusDescriptions);
     }
     
     /**
@@ -265,6 +367,7 @@ class DataConversionService
         Log::info('Conversion de sort', ['spell_id' => $rawData['id'] ?? 'Unknown', 'spell_name' => $name]);
         
         $converted = [
+            'dofusdb_id' => (string) ($rawData['id'] ?? ''),
             'name' => $name,
             'description' => $description,
             'class' => $rawData['class'] ?? '',
@@ -272,7 +375,10 @@ class DataConversionService
             'range' => $this->convertRange($rawData['range'] ?? 1),
             'area' => $this->convertArea($rawData['area'] ?? 1),
             'critical_hit' => $this->convertCriticalHit($rawData['critical_hit'] ?? 0),
-            'failure' => $this->convertFailure($rawData['failure'] ?? 0)
+            'failure' => $this->convertFailure($rawData['failure'] ?? 0),
+            'image' => $rawData['img'] ?? null,
+            'effect' => $this->convertEffects($rawData['effects'] ?? []),
+            'level' => $rawData['level'] ?? null,
         ];
         
         // Gestion des niveaux si présents
@@ -526,7 +632,8 @@ class DataConversionService
                 'level' => $this->convertLevel($level['level'] ?? 1, 'spell'),
                 'cost' => $this->convertCost($level['cost'] ?? 0),
                 'range' => $this->convertRange($level['range'] ?? 1),
-                'area' => $this->convertArea($level['area'] ?? 1)
+                'area' => $this->convertArea($level['area'] ?? 1),
+                'effects' => $level['effects'] ?? [], // Préserver les effets pour l'analyse des types
             ];
         }
         
@@ -631,5 +738,69 @@ class DataConversionService
         }
         
         Log::info("Validation des valeurs converties réussie", ['entity_type' => $entityType]);
+    }
+
+    /**
+     * Convertit les effets en texte lisible
+     * 
+     * @param array $effects Tableau d'effets
+     * @return string|null Description textuelle des effets
+     */
+    private function convertEffects(array $effects): ?string
+    {
+        if (empty($effects)) {
+            return null;
+        }
+
+        $effectDescriptions = [];
+        foreach ($effects as $effect) {
+            if (!is_array($effect)) {
+                continue;
+            }
+
+            $characteristic = $effect['characteristic'] ?? null;
+            $from = $effect['from'] ?? 0;
+            $to = $effect['to'] ?? 0;
+            $description = $effect['description'] ?? null;
+
+            if ($description) {
+                $effectDescriptions[] = $description;
+            } elseif ($characteristic && ($from > 0 || $to > 0)) {
+                $range = $from === $to ? (string)$from : "{$from}-{$to}";
+                $effectDescriptions[] = "{$characteristic}: +{$range}";
+            }
+        }
+
+        return !empty($effectDescriptions) ? implode(', ', $effectDescriptions) : null;
+    }
+
+    /**
+     * Convertit les effets en bonus textuel
+     * 
+     * @param array $effects Tableau d'effets
+     * @return string|null Description textuelle du bonus
+     */
+    private function convertBonus(array $effects): ?string
+    {
+        if (empty($effects)) {
+            return null;
+        }
+
+        $bonusDescriptions = [];
+        foreach ($effects as $effect) {
+            if (!is_array($effect)) {
+                continue;
+            }
+
+            $from = $effect['from'] ?? 0;
+            $to = $effect['to'] ?? 0;
+
+            if ($from > 0 || $to > 0) {
+                $range = $from === $to ? (string)$from : "{$from}-{$to}";
+                $bonusDescriptions[] = "+{$range}";
+            }
+        }
+
+        return !empty($bonusDescriptions) ? implode(', ', $bonusDescriptions) : null;
     }
 }

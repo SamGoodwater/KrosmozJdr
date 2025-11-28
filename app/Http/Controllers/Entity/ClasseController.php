@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Entity\StoreClasseRequest;
 use App\Http\Requests\Entity\UpdateClasseRequest;
 use App\Models\Entity\Classe;
+use App\Http\Resources\Entity\ClasseResource;
+use Inertia\Inertia;
 
 class ClasseController extends Controller
 {
@@ -14,7 +16,40 @@ class ClasseController extends Controller
      */
     public function index()
     {
-        //
+        $this->authorizeForUser(auth()->user(), 'viewAny', Classe::class);
+        
+        $query = Classe::with(['createdBy', 'npcs', 'spells']);
+        
+        // Recherche
+        if (request()->has('search') && request()->search) {
+            $search = request()->search;
+            $query->where(function($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                  ->orWhere('specificity', 'like', "%{$search}%");
+            });
+        }
+        
+        // Filtres
+        if (request()->has('life') && request()->life !== '') {
+            $query->where('life', request()->life);
+        }
+        
+        // Tri
+        $sortColumn = request()->get('sort', 'id');
+        $sortOrder = request()->get('order', 'desc');
+        
+        if (in_array($sortColumn, ['id', 'name', 'life', 'life_dice', 'dofusdb_id', 'created_at'])) {
+            $query->orderBy($sortColumn, $sortOrder);
+        } else {
+            $query->latest();
+        }
+        
+        $classes = $query->paginate(20)->withQueryString();
+        
+        return Inertia::render('Pages/entity/classe/Index', [
+            'classes' => ClasseResource::collection($classes),
+            'filters' => request()->only(['search', 'life']),
+        ]);
     }
 
     /**

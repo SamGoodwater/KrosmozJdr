@@ -72,6 +72,7 @@ class Panoply extends Model
         'usable',
         'is_visible',
         'created_by',
+        'dofusdb_id',
     ];
 
     /**

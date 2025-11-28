@@ -19,7 +19,7 @@ class CreatureFactory extends Factory
     {
         return [
             'name' => fake()->unique()->words(2, true),
-            'description' => fake()->optional()->paragraph(),
+            'description' => fake()->optional()->sentence(),
             'hostility' => fake()->numberBetween(0, 4),
             'location' => fake()->optional()->city(),
             'level' => (string) fake()->numberBetween(1, 200),

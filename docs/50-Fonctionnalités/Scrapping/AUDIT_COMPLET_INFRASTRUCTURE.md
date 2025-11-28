@@ -9,6 +9,7 @@ Les entités suivantes sont utilisées par le système de scrapping :
 - **Consumable** (`consumables`)
 - **Resource** (`resources`)
 - **Spell** (`spells`)
+- **Panoply** (`panoplies`) ✅ **AJOUTÉE**
 
 ## ✅ Éléments existants et complets
 
@@ -16,10 +17,11 @@ Les entités suivantes sont utilisées par le système de scrapping :
 - ✅ `App\Models\Entity\Classe` - Complet avec `HasFactory`, relations `spells()`, `npcs()`, `createdBy()`
 - ✅ `App\Models\Entity\Creature` - Complet avec `HasFactory`, relations `spells()`, `resources()`, `consumables()`, `monster()`
 - ✅ `App\Models\Entity\Monster` - Complet avec `HasFactory`, relation `creature()`
-- ✅ `App\Models\Entity\Item` - Complet avec `HasFactory`, relation `resources()`
+- ✅ `App\Models\Entity\Item` - Complet avec `HasFactory`, relations `resources()`, `panoplies()`
 - ✅ `App\Models\Entity\Consumable` - Complet avec `HasFactory`, relation `resources()`
 - ✅ `App\Models\Entity\Resource` - Complet avec `HasFactory`, relation `creatures()`
 - ✅ `App\Models\Entity\Spell` - Complet avec `HasFactory`, relations `classes()`, `creatures()`, `monsters()`
+- ✅ `App\Models\Entity\Panoply` - Complet avec `HasFactory`, relations `items()`, `campaigns()`, `scenarios()`, `shops()`, `npcs()`, `createdBy()`, `dofusdb_id` ✅ **AJOUTÉE**
 
 ### Factories ✅
 - ✅ `Database\Factories\Entity\ClasseFactory` - **COMPLÈTE** avec tous les champs
@@ -29,6 +31,7 @@ Les entités suivantes sont utilisées par le système de scrapping :
 - ✅ `Database\Factories\Entity\ConsumableFactory` - **COMPLÈTE** avec tous les champs
 - ✅ `Database\Factories\Entity\ResourceFactory` - **COMPLÈTE** avec tous les champs
 - ✅ `Database\Factories\Entity\SpellFactory` - **COMPLÈTE** avec tous les champs
+- ✅ `Database\Factories\Entity\PanoplyFactory` - **COMPLÈTE** avec tous les champs ✅ **AJOUTÉE**
 
 ### Migrations ✅
 - ✅ `2025_06_01_100110_entity_classes_table.php`
@@ -44,6 +47,8 @@ Les entités suivantes sont utilisées par le système de scrapping :
 - ✅ `2025_06_01_100310_pivot_item_resource_table.php`
 - ✅ `2025_06_01_100650_pivot_spell_invocation_table.php`
 - ✅ `2025_06_01_100300_pivot_consumable_resource_table.php`
+- ✅ `2025_06_01_100320_pivot_item_panoply_table.php` - Relation panoplies-items ✅ **AJOUTÉE**
+- ✅ `2025_11_27_153036_add_dofusdb_id_to_panoplies_table.php` - Ajout de `dofusdb_id` ✅ **AJOUTÉE**
 
 ### Policies ✅
 - ✅ `App\Policies\Entity\ClassePolicy`
@@ -144,7 +149,8 @@ Tous les seeders sont des stubs vides :
 - ✅ `Tests\Feature\Entity\ClasseModelTest` - 5 tests passent
 - ✅ `Tests\Feature\Entity\SpellModelTest` - 5 tests passent
 - ✅ `Tests\Feature\Entity\CreatureModelTest` - 4 tests passent
-- ✅ `Tests\Feature\Entity\ItemModelTest` - 2 tests passent
+- ✅ `Tests\Feature\Entity\ItemModelTest` - 3 tests passent (incluant test panoplies)
+- ✅ `Tests\Feature\Entity\PanoplyModelTest` - 6 tests passent ✅ **AJOUTÉE**
 
 ## 📝 Résumé
 

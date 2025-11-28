@@ -114,11 +114,14 @@ Les panoplies sont des **ensembles d'équipement qui apportent un bonus** lorsqu
 
 **Pour le scrapping** : L'implémentation est **complète et fonctionnelle**. Tous les services nécessaires sont en place et testés.
 
-**Pour l'application générale** : Certains fichiers (Factory, Seeder, Requests, Policy, Tests) sont incomplets mais ne sont pas critiques pour le scrapping. Ils peuvent être complétés ultérieurement selon les besoins.
+**Pour l'application générale** : Certains fichiers (Seeder, Requests, Policy) sont incomplets mais ne sont pas critiques pour le scrapping. Ils peuvent être complétés ultérieurement selon les besoins.
 
 ## 📝 Recommandations
 
 1. ✅ **Terminé** : Factory complétée
-2. ✅ **Terminé** : Tests créés pour le modèle Panoply et ses relations
-3. **Priorité basse** : Compléter les Requests et Policy si l'API de gestion est utilisée (non critique pour le scrapping)
+2. ✅ **Terminé** : Tests créés pour le modèle Panoply et ses relations (7 tests passent)
+3. ✅ **Terminé** : Migration `dofusdb_id` créée et appliquée
+4. ✅ **Terminé** : Tous les services de scrapping implémentés et fonctionnels
+5. **Priorité basse** : Compléter les Requests et Policy si l'API de gestion est utilisée (non critique pour le scrapping)
+6. **Priorité basse** : Compléter le Seeder si nécessaire pour les données de test/développement
 
