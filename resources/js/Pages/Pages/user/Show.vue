@@ -9,7 +9,7 @@
 * - Pas de logique métier complexe, juste du design
 */
 import { Head, usePage } from "@inertiajs/vue3";
-import { ref, onMounted } from "vue";
+import { computed, onMounted } from "vue";
 import { usePageTitle } from "@/Composables/layout/usePageTitle";
 
 // Atoms & Molecules (nouveaux chemins)
@@ -24,7 +24,17 @@ import Tooltip from '@/Pages/Atoms/feedback/Tooltip.vue';
 import VerifyMailAlert from '@/Pages/Molecules/user/VerifyMailAlert.vue';
 
 const page = usePage();
-const user = ref(page.props.user?.data || page.props.auth?.user || {});
+// Le user est passé via page.props.user (UserResource)
+// On utilise computed pour réactivité
+// Note: Si les données sont dans user.data (pagination), on les extrait
+const user = computed(() => {
+    const userData = page.props.user || {};
+    // Si les données sont dans user.data (cas de pagination), on les extrait
+    if (userData.data && typeof userData.data === 'object') {
+        return userData.data;
+    }
+    return userData;
+});
 const { setPageTitle } = usePageTitle();
 
 onMounted(() => {
@@ -44,17 +54,17 @@ onMounted(() => {
                     class="flex items-center gap-4 max-md:gap-6 max-sm:gap-2 max-[930px]:flex-wrap justify-between w-full">
                     <div class="flex items-center justify-center space-x-4">
                         <Avatar 
-                            :src="user.value?.avatar || ''" 
-                            :label="user.value?.name || 'Utilisateur'" 
-                            :alt="user.value?.name || 'Utilisateur'" 
+                            :src="user?.avatar || ''" 
+                            :label="user?.name || 'Utilisateur'" 
+                            :alt="user?.name || 'Utilisateur'" 
                             size="xl" 
                             rounded="full" 
                         />
                         <div>
-                            <h2 class="text-2xl font-bold text-primary-100">{{ user.value?.name || 'Utilisateur' }}</h2>
-                            <p class="text-primary-200">{{ user.value?.email || 'email@example.com' }}</p>
+                            <h2 class="text-2xl font-bold text-primary-100">{{ user?.name || 'Utilisateur' }}</h2>
+                            <p class="text-primary-200">{{ user?.email || 'email@example.com' }}</p>
                             <div class="mt-2">
-                                <BadgeRole :role="user.value?.role || 'user'" />
+                                <BadgeRole :role="user?.role_name || 'user'" />
                             </div>
                         </div>
                     </div>
@@ -66,7 +76,7 @@ onMounted(() => {
                         </Tooltip>
                     </div>
                 </div>
-                <div v-if="user.value && !user.value.is_verified">
+                <div v-if="user && !user.is_verified">
                     <VerifyMailAlert />
                 </div>
             </div>

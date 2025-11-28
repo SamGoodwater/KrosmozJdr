@@ -9,6 +9,7 @@ Route::prefix('user')->name('user.')->middleware('auth')->group(function () {
     Route::get('/', [UserController::class, 'show'])->name('show');
     Route::get('/edit', [UserController::class, 'edit'])->name('edit');
     Route::patch('/', [UserController::class, 'update'])->name('update');
+    Route::patch('/password', [UserController::class, 'updatePassword'])->name('updatePassword');
     Route::post('/avatar', [UserController::class, 'updateAvatar'])->name('updateAvatar');
     Route::delete('/avatar', [UserController::class, 'deleteAvatar'])->name('deleteAvatar');
     Route::delete('/', [UserController::class, 'delete'])->name('delete');

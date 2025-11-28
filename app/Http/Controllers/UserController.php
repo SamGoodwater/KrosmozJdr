@@ -92,12 +92,14 @@ class UserController extends Controller
 
     /**
      * Affiche le formulaire d'édition d'utilisateur.
+     * Si aucun utilisateur n'est spécifié, affiche le formulaire pour l'utilisateur connecté.
      *
-     * @param User $user
+     * @param User|null $user
      * @return \Inertia\Response
      */
-    public function edit(User $user)
+    public function edit(User $user = null)
     {
+        $user = $user ?? Auth::user();
         $this->authorize('update', $user);
         $user->load(['scenarios', 'campaigns', 'pages', 'sections']);
         return Inertia::render('Pages/user/Edit', [
@@ -261,20 +263,32 @@ class UserController extends Controller
 
     /**
      * Met à jour le mot de passe de l'utilisateur.
-     * Accessible par l'utilisateur lui-même ou un admin.
+     * - Si l'utilisateur modifie son propre mot de passe : current_password requis
+     * - Si un admin modifie le mot de passe d'un autre utilisateur : current_password non requis
      *
      * @param \Illuminate\Http\Request $request
-     * @param \App\Models\User $user
+     * @param User|null $user Utilisateur dont on modifie le mot de passe (null = utilisateur connecté)
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function updatePassword(\Illuminate\Http\Request $request, User $user)
+    public function updatePassword(\Illuminate\Http\Request $request, User $user = null)
     {
+        $user = $user ?? Auth::user();
         $this->authorize('update', $user);
 
-        $validated = $request->validate([
-            'current_password' => ['required', 'current_password'],
+        $isSelfUpdate = $user->id === Auth::id();
+        $isAdmin = Auth::user()->verifyRole(User::ROLE_ADMIN);
+
+        // Si l'utilisateur modifie son propre mot de passe, current_password est requis
+        // Si un admin modifie le mot de passe d'un autre utilisateur, current_password n'est pas requis
+        $rules = [
             'password' => ['required', 'confirmed', \Illuminate\Validation\Rules\Password::defaults()],
-        ]);
+        ];
+
+        if ($isSelfUpdate && !$isAdmin) {
+            $rules['current_password'] = ['required', 'current_password'];
+        }
+
+        $validated = $request->validate($rules);
 
         $user->update([
             'password' => \Hash::make($validated['password']),

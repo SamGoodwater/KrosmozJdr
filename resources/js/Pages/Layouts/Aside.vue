@@ -60,20 +60,6 @@ const navItems = [
         pack: "solid",
         active: (page) => page.component.includes("Home"),
     },
-    {
-        route: "",
-        label: "Pages",
-        icon: "fa-file-lines",
-        pack: "solid",
-        active: (page) => page.component.includes("/page"),
-    },
-    {
-        route: "",
-        label: "Créer une page",
-        icon: "fa-plus",
-        pack: "solid",
-        active: (page) => page.component.includes("/page/create"),
-    },
 ];
 
 // Vérifier si une entité est active
@@ -114,8 +100,8 @@ const footerItems = [
 
 <template>
     <aside class="h-full min-h-full flex flex-col justify-between flex-nowrap border-glass-r-xs bd-blur-md">
-        <div class="flex flex-col justify-start flex-nowrap items-center">
-            <Route route="home" target="_self" class="hover:scale-105 focus:scale-95 my-5">
+        <div class="flex flex-col justify-start flex-nowrap items-center flex-1 min-h-0 overflow-hidden">
+            <Route route="home" target="_self" class="hover:scale-105 focus:scale-95 my-5 flex-shrink-0">
                 <template v-if="!logoError">
                     <Image source="logos/logo.webp" :alt="`Logo de ${appName}`" size="md" class="mx-auto"
                         @error="logoError = true" />
@@ -126,34 +112,36 @@ const footerItems = [
                     </div>
                 </template>
             </Route>
-            <p class="m-2 text-subtitle/80 text-sm">{{ appSlogan }}</p>
-            <Menu direction="vertical" size="md" class="my-5">
-                <MenuItem v-for="item in navItems" :key="item.label" :route="item.route" :icon="item.icon"
-                    :pack="item.pack" :active="item.active($page)">
-                {{ item.label }}
-                </MenuItem>
-                
-                <!-- Menu Entités avec sous-menu -->
-                <li>
-                    <details :open="isEntitiesMenuOpen">
-                        <summary class="flex items-center">
-                            <Icon source="fa-solid fa-database" alt="Entités" size="md" class="mr-2" />
-                            <span>Entités</span>
-                        </summary>
-                        <ul class="ml-4">
-                            <MenuItem 
-                                v-for="entity in entityItems" 
-                                :key="entity.key"
-                                :route="entity.route"
-                                :icon="`fa-solid ${entity.icon}`"
-                                pack="solid"
-                                :active="isEntityActive(entity.key)">
-                                {{ entity.label }}
-                            </MenuItem>
-                        </ul>
-                    </details>
-                </li>
-            </Menu>
+            <p class="m-2 text-subtitle/80 text-sm flex-shrink-0">{{ appSlogan }}</p>
+            <div class="flex-1 min-h-0 w-full overflow-y-auto scrollbar-hide">
+                <Menu direction="vertical" size="md" class="my-5">
+                    <MenuItem v-for="item in navItems" :key="item.label" :route="item.route" :icon="item.icon"
+                        :pack="item.pack" :active="item.active($page)">
+                    {{ item.label }}
+                    </MenuItem>
+                    
+                    <!-- Menu Entités avec sous-menu -->
+                    <li>
+                        <details :open="isEntitiesMenuOpen">
+                            <summary class="flex items-center">
+                                <Icon source="fa-solid fa-database" alt="Entités" size="md" class="mr-2" />
+                                <span>Entités</span>
+                            </summary>
+                            <ul class="ml-4">
+                                <MenuItem 
+                                    v-for="entity in entityItems" 
+                                    :key="entity.key"
+                                    :route="entity.route"
+                                    :icon="`fa-solid ${entity.icon}`"
+                                    pack="solid"
+                                    :active="isEntityActive(entity.key)">
+                                    {{ entity.label }}
+                                </MenuItem>
+                            </ul>
+                        </details>
+                    </li>
+                </Menu>
+            </div>
         </div>
         <div id="footer">
             <Dock size="md" class="px-1 py-2 relative box-glass-t-xs">
@@ -184,5 +172,15 @@ const footerItems = [
         /* Pour éviter le scroll horizontal sur mobile */
         overflow-y: auto;
         overflow-x: hidden;
-}
+    }
+    
+    /* Masquer la scrollbar tout en gardant le scroll fonctionnel */
+    .scrollbar-hide {
+        -ms-overflow-style: none;  /* IE et Edge */
+        scrollbar-width: none;  /* Firefox */
+    }
+    
+    .scrollbar-hide::-webkit-scrollbar {
+        display: none;  /* Chrome, Safari et Opera */
+    }
 </style>

@@ -103,6 +103,34 @@
     "file": "feedback/NotificationContainer.vue"
   },
   {
+    "name": "EntityModal",
+    "description": "EntityModal Organism",
+    "props": [
+      {
+        "name": "entity",
+        "type": "Object",
+        "desc": "- Données de l'entité"
+      },
+      {
+        "name": "entityType",
+        "type": "String",
+        "desc": "- Type d'entité"
+      },
+      {
+        "name": "view",
+        "type": "String",
+        "desc": "- Vue à afficher ('large', 'compact', 'minimal', 'text'), défaut 'large'"
+      },
+      {
+        "name": "open",
+        "type": "Boolean",
+        "desc": "- Contrôle l'ouverture du modal"
+      }
+    ],
+    "slots": [],
+    "file": "entity/EntityModal.vue"
+  },
+  {
     "name": "SearchInput",
     "description": "SearchInput Molecule (Atomic Design, DaisyUI)",
     "props": [

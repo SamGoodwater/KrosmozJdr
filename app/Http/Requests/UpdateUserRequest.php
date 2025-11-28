@@ -60,7 +60,7 @@ class UpdateUserRequest extends FormRequest
         }
         if (!isset($data['role'])) {
             $this->merge([
-                'role' => User::ROLES['user'],
+                'role' => User::ROLE_USER, // Utiliser la constante au lieu de l'array
             ]);
         }
     }

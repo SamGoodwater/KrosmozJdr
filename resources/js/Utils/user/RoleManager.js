@@ -33,23 +33,58 @@ export function verifyRole(userRole, requiredRole) {
     return userRole >= requiredRole;
 }
 
+/**
+ * Normalise un rôle (chaîne ou entier) en entier
+ * @param {string|number} role - Rôle sous forme de chaîne ('admin', 'user') ou entier (4, 1)
+ * @returns {number|null} - Rôle normalisé en entier ou null si invalide
+ */
+function normalizeRole(role) {
+    if (role === null || role === undefined) {
+        return null;
+    }
+    
+    // Si c'est déjà un entier, on le retourne tel quel
+    if (typeof role === 'number') {
+        return role;
+    }
+    
+    // Si c'est une chaîne, on la convertit en entier
+    if (typeof role === 'string') {
+        const roleMap = {
+            'guest': ROLES.GUEST,
+            'user': ROLES.USER,
+            'player': ROLES.PLAYER,
+            'game_master': ROLES.GAME_MASTER,
+            'admin': ROLES.ADMIN,
+            'super_admin': ROLES.SUPER_ADMIN,
+        };
+        return roleMap[role] !== undefined ? roleMap[role] : null;
+    }
+    
+    return null;
+}
+
 export function getRoleTranslation(role) {
+    const normalizedRole = normalizeRole(role);
+    
     // Protection contre les valeurs undefined/null
-    if (!role || !ROLES_TRANSLATION[role]) {
+    if (normalizedRole === null || !ROLES_TRANSLATION[normalizedRole]) {
         return "Utilisateur·trice";
     }
     
     return (
-        ROLES_TRANSLATION[role].charAt(0).toUpperCase() +
-        ROLES_TRANSLATION[role].slice(1)
+        ROLES_TRANSLATION[normalizedRole].charAt(0).toUpperCase() +
+        ROLES_TRANSLATION[normalizedRole].slice(1)
     );
 }
 
 export function getRoleColor(role) {
+    const normalizedRole = normalizeRole(role);
+    
     // Protection contre les valeurs undefined/null
-    if (!role || !ROLES_COLORS[role]) {
+    if (normalizedRole === null || !ROLES_COLORS[normalizedRole]) {
         return "blue-700"; // Couleur par défaut pour user
     }
     
-    return ROLES_COLORS[role];
+    return ROLES_COLORS[normalizedRole];
 }

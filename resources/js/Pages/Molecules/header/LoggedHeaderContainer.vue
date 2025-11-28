@@ -25,7 +25,7 @@ import Dropdown from "@/Pages/Atoms/action/Dropdown.vue";
 import Tooltip from "@/Pages/Atoms/feedback/Tooltip.vue";
 import Icon from "@/Pages/Atoms/data-display/Icon.vue";
 import { usePage, router } from "@inertiajs/vue3";
-import { ref, watch } from "vue";
+import { ref, watch, computed } from "vue";
 
 const page = usePage();
 const user = ref(page.props.auth.user);
@@ -43,6 +43,14 @@ watch(
     },
     { deep: true },
 );
+
+// Vérifier si l'utilisateur est admin ou super_admin
+// Le rôle est stocké comme un entier : 4 = admin, 5 = super_admin
+const isAdmin = computed(() => {
+    if (!user.value) return false;
+    // Vérifier par valeur entière (4 = admin, 5 = super_admin)
+    return user.value.role === 4 || user.value.role === 5;
+});
 
 // Fonction de déconnexion
 const logout = () => {
@@ -69,12 +77,38 @@ const logout = () => {
                 </template>
                 <template #content>
                     <div class="flex flex-col items-start gap-2">
-                        <Btn
-                            variant="ghost"
-                            size="md"
-                            content="Mon compte"
-                        />
+                        <Route route="user.show" class="w-full">
+                            <Btn
+                                variant="ghost"
+                                size="md"
+                                content="Mon compte"
+                            />
+                        </Route>
                         <span class="border-glass-b-sm w-full h-px"></span>
+                        <template v-if="isAdmin">
+                            <div class="w-full">
+                                <p class="text-xs text-subtitle/60 px-2 py-1 font-semibold text-center">Administration</p>
+                                <Route route="scrapping.index" class="w-full">
+                                    <div class="flex items-center gap-2 px-2 py-1.5 text-sm hover:bg-base-200 rounded cursor-pointer w-full">
+                                        <Icon source="fa-magnifying-glass" pack="solid" size="sm"/>
+                                        <span>Scrapping</span>
+                                    </div>
+                                </Route>
+                                <Route route="user.index" class="w-full">
+                                    <div class="flex items-center gap-2 px-2 py-1.5 text-sm hover:bg-base-200 rounded cursor-pointer w-full">
+                                        <Icon source="fa-users" pack="solid" size="sm"/>
+                                        <span>Utilisateurs</span>
+                                    </div>
+                                </Route>
+                                <Route route="pages.index" class="w-full">
+                                    <div class="flex items-center gap-2 px-2 py-1.5 text-sm hover:bg-base-200 rounded cursor-pointer w-full">
+                                        <Icon source="fa-file-lines" pack="solid" size="sm"/>
+                                        <span>Pages</span>
+                                    </div>
+                                </Route>
+                            </div>
+                            <span class="border-glass-b-sm w-full h-px"></span>
+                        </template>
                         <Btn
                             variant="ghost"
                             size="sm"

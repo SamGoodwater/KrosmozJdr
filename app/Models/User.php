@@ -240,6 +240,11 @@ class User extends Authenticatable
         if (!$this->avatar) {
             return asset(self::DEFAULT_AVATAR);
         }
+        // Si le chemin commence déjà par 'storage/', utiliser asset() directement
+        // Sinon, utiliser Storage::url() qui ajoute '/storage/'
+        if (str_starts_with($this->avatar, 'storage/')) {
+            return asset($this->avatar);
+        }
         return Storage::url($this->avatar);
     }
 

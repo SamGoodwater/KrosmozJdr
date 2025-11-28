@@ -1,10 +1,11 @@
 <script setup>
-import { computed, inject, ref } from 'vue';
+import { computed, ref } from 'vue';
 import { Head, useForm } from '@inertiajs/vue3';
 import InputField from '@/Pages/Molecules/data-input/InputField.vue';
 import Btn from '@/Pages/Atoms/action/Btn.vue';
 import Checkbox from '@/Pages/Molecules/data-input/CheckboxField.vue';
 import Route from '@/Pages/Atoms/action/Route.vue';
+import { useNotificationStore } from '@/Composables/store/useNotificationStore';
 
 defineProps({
     canResetPassword: {
@@ -21,8 +22,8 @@ const form = useForm({
     remember: false,
 });
 
-// Injection du store de notifications
-const notificationStore = inject('notificationStore', null);
+// Utilisation directe du store de notifications
+const notificationStore = useNotificationStore();
 
 // Références aux InputField pour contrôler la validation
 const identifierField = ref(null);
@@ -50,10 +51,12 @@ const passwordValidationRules = computed(() => [
 
 // Validation basée sur les erreurs serveur
 const identifierValidation = computed(() => {
-    if (form.errors.identifier) {
+    // Les erreurs peuvent venir sur 'identifier' ou 'email' (rate limiting)
+    const error = form.errors.identifier || form.errors.email;
+    if (error) {
         return {
             state: 'error',
-            message: form.errors.identifier,
+            message: error,
             showNotification: false
         };
     }
@@ -78,12 +81,10 @@ function submit() {
     const isPasswordValid = form.password && form.password.length > 0;
     
     if (!isIdentifierValid || !isPasswordValid) {
-        if (notificationStore) {
-            notificationStore.error('Veuillez remplir tous les champs requis', {
-                duration: 5000,
-                placement: 'top-center'
-            });
-        }
+        notificationStore.error('Veuillez remplir tous les champs requis', {
+            duration: 5000,
+            placement: 'top-center'
+        });
         return;
     }
     
@@ -91,20 +92,21 @@ function submit() {
     form.post(route('login'), {
         onError: (errors) => {
             // Notification globale pour les erreurs d'authentification
-            if (errors.identifier && notificationStore) {
-                notificationStore.error('Erreur de connexion : ' + errors.identifier, {
-                    duration: 8000,
-                    placement: 'top-center'
-                });
-            }
+            // Les erreurs peuvent venir sur 'identifier', 'email' (rate limiting), ou 'password'
+            const errorMessage = errors.identifier || errors.email || errors.password || Object.values(errors)[0] || 'Erreur de connexion';
+            notificationStore.error('Erreur de connexion : ' + errorMessage, {
+                duration: 8000,
+                placement: 'top-center'
+            });
+            
+            // Afficher les erreurs dans la console pour le débogage
+            console.error('Erreurs de connexion:', errors);
         },
         onSuccess: () => {
-            if (notificationStore) {
-                notificationStore.success('Connexion réussie !', {
-                    duration: 3000,
-                    placement: 'top-center'
-                });
-            }
+            notificationStore.success('Connexion réussie !', {
+                duration: 3000,
+                placement: 'top-center'
+            });
         }
     });
 }
@@ -171,7 +173,6 @@ const isFormValid = computed(() => {
 
                     <Checkbox
                         v-model="form.remember"
-                        class="rounded border-gray-300 text-indigo-600 shadow-sm focus:ring-indigo-500"
                         color="primary"
                         size="md"
                         label="Se souvenir de moi"

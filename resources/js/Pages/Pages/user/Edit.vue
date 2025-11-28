@@ -6,7 +6,7 @@
  * - Actions administrateurs (mot de passe, rôle)
  * - Structure DRY, accessibilité, tooltips, etc.
  */
-import { ref, watch, computed } from 'vue';
+import { ref, watch, computed, onMounted, nextTick } from 'vue';
 import { useForm, usePage } from '@inertiajs/vue3';
 import { useNotificationStore } from '@/Composables/store/useNotificationStore';
 import { verifyRole, getRoleTranslation, ROLES } from '@/Utils/user/RoleManager';
@@ -23,16 +23,81 @@ const page = usePage();
 const { success, error } = useNotificationStore();
 
 // Utilisateur à éditer
-const user = ref(page.props.user);
+// Le user est passé via page.props.user (UserResource)
+// Note: Les données peuvent être dans user.data (structure Inertia/Resource)
+const user = computed(() => {
+    const userData = page.props.user || {};
+    // Si les données sont dans user.data, on les extrait
+    if (userData.data && typeof userData.data === 'object' && userData.data.id) {
+        return userData.data;
+    }
+    // Sinon, on retourne directement userData
+    return userData;
+});
 
-// Champs de base
-const fields = {
-    name: useForm({ name: user.value.name }),
-    email: useForm({ email: user.value.email }),
+// Formulaire unifié pour le profil (nom + email)
+// Initialiser avec des valeurs vides, puis remplir via watch
+const formProfile = useForm({
+    name: '',
+    email: '',
+});
+
+// Rôle (admin)
+const formRole = useForm({ role: 1 });
+
+// Fonction pour initialiser/mettre à jour les formulaires
+const initializeForms = (userData) => {
+    // Extraire les données si elles sont dans userData.data
+    const data = (userData?.data && typeof userData.data === 'object' && userData.data.id) 
+        ? userData.data 
+        : userData;
+    
+    if (!data || Object.keys(data).length === 0 || !data.id) {
+        console.log('Edit.vue - initializeForms: userData is empty or invalid', data);
+        return;
+    }
+    
+    // Mettre à jour directement les propriétés du formulaire
+    // Cela fonctionne mieux avec v-model dans les composants
+    if (data.name !== undefined) {
+        formProfile.name = data.name;
+    }
+    if (data.email !== undefined) {
+        formProfile.email = data.email;
+    }
+    if (data.role !== undefined) {
+        formRole.role = data.role;
+    }
 };
 
+// Surveiller le computed user pour initialiser les formulaires dès que les données sont disponibles
+watch(user, (newUser) => {
+    // Le computed user devrait maintenant retourner directement les données (sans data)
+    if (newUser && newUser.id) {
+        initializeForms(newUser);
+    }
+}, { immediate: true, deep: true });
+
+// Initialiser aussi après le montage pour être sûr
+onMounted(() => {
+    nextTick(() => {
+        const currentUser = user.value;
+        if (currentUser && Object.keys(currentUser).length > 0 && currentUser.id) {
+            initializeForms(currentUser);
+        }
+    });
+});
+
 const updateProfile = () => {
-    fields.name.patch(route('profile.update'), {
+    // Déterminer la route selon le contexte (profil courant ou admin modifiant un autre utilisateur)
+    const userId = user.value?.id;
+    const currentUserId = page.props.auth?.user?.id;
+    const routeName = (userId && userId !== currentUserId) 
+        ? 'user.admin.update' 
+        : 'user.update';
+    const routeParams = (userId && userId !== currentUserId) ? [userId] : [];
+    
+    formProfile.patch(route(routeName, ...routeParams), {
         preserveScroll: true,
         onSuccess: () => success('Profil mis à jour avec succès.'),
         onError: () => error('Erreur lors de la mise à jour du profil.'),
@@ -54,15 +119,65 @@ const formPassword = useForm({
     password: "",
     password_confirmation: "",
 });
+
+// Computed pour déterminer si on modifie son propre profil
+const isSelfUpdate = computed(() => {
+    const userId = user.value?.id;
+    const currentUserId = page.props.auth?.user?.id;
+    return userId && userId === currentUserId;
+});
+
+// Computed pour déterminer si l'utilisateur est admin
+const isAdmin = computed(() => {
+    const userRole = page.props.auth?.user?.role;
+    return userRole === 4 || userRole === 5; // admin = 4, super_admin = 5
+});
+
 const updatePassword = () => {
-    /* ... logique update password ... */
+    // Déterminer la route selon le contexte (profil courant ou admin modifiant un autre utilisateur)
+    const userId = user.value?.id;
+    const currentUserId = page.props.auth?.user?.id;
+    const routeName = (userId && userId !== currentUserId) 
+        ? 'user.admin.updatePassword' 
+        : 'user.updatePassword';
+    const routeParams = (userId && userId !== currentUserId) ? [userId] : [];
+    
+    formPassword.patch(route(routeName, ...routeParams), {
+        preserveScroll: true,
+        onSuccess: () => {
+            success('Mot de passe mis à jour avec succès.');
+            formPassword.reset();
+        },
+        onError: () => error('Erreur lors de la mise à jour du mot de passe.'),
+    });
 };
 
-// Rôle (admin)
-const formRole = useForm({ role: user.value.role });
 const updateRole = () => {
-    /* ... logique update role ... */
+    formRole.patch(route('user.admin.updateRole', user.value?.id || page.props.auth?.user?.id), {
+        preserveScroll: true,
+        onSuccess: () => success('Rôle mis à jour avec succès.'),
+        onError: () => error('Erreur lors de la mise à jour du rôle.'),
+    });
 };
+
+// Validation computed pour les champs du profil
+const nameValidation = computed(() => {
+    if (!formProfile.errors.name) return null;
+    return {
+        state: 'error',
+        message: formProfile.errors.name,
+        showNotification: false
+    };
+});
+
+const emailValidation = computed(() => {
+    if (!formProfile.errors.email) return null;
+    return {
+        state: 'error',
+        message: formProfile.errors.email,
+        showNotification: false
+    };
+});
 
 // Validation computed pour les champs de mot de passe
 const currentPasswordValidation = computed(() => {
@@ -108,8 +223,8 @@ const roleValidation = computed(() => {
         <header>
             <h2 class="text-lg font-medium text-content-300">
                 {{
-                    verifyRole(page.props.auth.user.role, ROLES.ADMIN)
-                        ? `Modification du profil de ${user.value.name}`
+                    verifyRole(page.props.auth?.user?.role || 1, ROLES.ADMIN)
+                        ? `Modification du profil de ${user?.name || 'Utilisateur'}`
                         : "Informations du profil"
                 }}
             </h2>
@@ -124,10 +239,10 @@ const roleValidation = computed(() => {
                     <Tooltip content="Déposer ou cliquer pour changer votre avatar" placement="top">
                         <File
                             v-model="avatarFile"
-                            :currentFile="user.value.avatar"
+                            :currentFile="user?.avatar"
                             accept="image/*"
                             :maxSize="5242880"
-                            helper="Format accepté : JPG, PNG, GIF, SVG. Taille maximale : 5MB"
+                            helper="Format accepté : JPG, PNG, GIF, SVG, WEBP. Taille maximale : 5MB"
                             @error="(message) => error(message)"
                             @delete="deleteAvatar"
                             class="mt-1"
@@ -137,9 +252,9 @@ const roleValidation = computed(() => {
                         >
                             <template #default>
                                 <Avatar
-                                    :src="user.value.avatar"
-                                    :label="user.value.name"
-                                    :alt="user.value.name"
+                                    :src="user?.avatar"
+                                    :label="user?.name"
+                                    :alt="user?.name"
                                     size="3xl"
                                     rounded="full"
                                 />
@@ -149,44 +264,73 @@ const roleValidation = computed(() => {
                 </div>
                 <div class="flex flex-col gap-4 w-1/2">
                     <div class="mt-2">
-                        <BadgeRole :role="user.value.role" />
+                        <BadgeRole :role="user?.role_name || 'user'" />
                     </div>
                     <Tooltip content="Votre pseudo d'utilisateur" placement="top">
                         <InputField
                             id="name"
                             class="mt-1 block w-full"
-                            :field="fields.name"
+                            v-model="formProfile.name"
                             required
                             autofocus
-                            :useFieldComposable="true"
                             label="Pseudo"
+                            :validation="nameValidation"
                         />
                     </Tooltip>
-                    <InputField
-                        id="email"
-                        class="mt-1 block w-full"
-                        :field="fields.email"
-                        :useFieldComposable="true"
-                        label="Adresse mail"
-                    />
-                    <div v-if="!user.value.is_verified">
+                    <Tooltip content="Votre adresse email" placement="top">
+                        <InputField
+                            id="email"
+                            class="mt-1 block w-full"
+                            v-model="formProfile.email"
+                            type="email"
+                            label="Adresse mail"
+                            :validation="emailValidation"
+                        />
+                    </Tooltip>
+                    <div v-if="user && !user.is_verified">
                         <VerifyMailAlert />
                     </div>
                 </div>
             </div>
-            <!-- Section admin : mot de passe -->
-            <div
-                v-if="verifyRole(page.props.auth.user.role, ROLES.ADMIN)"
-                class="mt-6"
-            >
+            
+            <!-- Bouton de sauvegarde pour le profil -->
+            <div class="flex items-center gap-4 mt-6">
+                <Tooltip content="Enregistrer les modifications du profil" placement="top">
+                    <Btn
+                        color="primary"
+                        @click="updateProfile"
+                    >
+                        Enregistrer le profil
+                    </Btn>
+                </Tooltip>
+                <Tooltip content="Annuler les modifications" placement="top">
+                    <Btn
+                        color="neutral"
+                        @click="formProfile.reset()"
+                    >
+                        Annuler
+                    </Btn>
+                </Tooltip>
+            </div>
+            
+            <!-- Section mot de passe -->
+            <div class="mt-6">
                 <hr class="border-gray-300 dark:border-gray-700 my-4" />
                 <div class="mt-6">
                     <h3 class="text-lg font-medium text-content-300">
-                        Actions administrateurs
+                        {{ isAdmin && !isSelfUpdate ? 'Actions administrateurs - Mot de passe' : 'Modifier le mot de passe' }}
                     </h3>
+                    <p class="mt-1 text-sm text-content-600">
+                        {{ isAdmin && !isSelfUpdate ? 'Modifiez le mot de passe de l\'utilisateur.' : 'Modifiez votre mot de passe.' }}
+                    </p>
                 </div>
                 <div class="mt-6 space-y-4">
-                    <Tooltip content="Entrez votre mot de passe actuel" placement="top">
+                    <!-- Champ current_password seulement si l'utilisateur modifie son propre mot de passe -->
+                    <Tooltip 
+                        v-if="isSelfUpdate" 
+                        content="Entrez votre mot de passe actuel" 
+                        placement="top"
+                    >
                         <InputField
                             v-model="formPassword.current_password"
                             type="password"
@@ -237,17 +381,20 @@ const roleValidation = computed(() => {
                     </div>
                 </div>
             </div>
-            <!-- Section admin : rôle -->
+            <!-- Section admin : rôle (uniquement pour les admins modifiant un autre utilisateur) -->
             <div
-                v-if="verifyRole(page.props.auth.user.role, ROLES.ADMIN)"
+                v-if="isAdmin && !isSelfUpdate"
                 class="mt-6"
             >
-                <h3 class="text-lg font-medium text-primary-100">
-                    Gestion du rôle
-                </h3>
-                <p class="mt-1 text-sm text-primary-200">
-                    Modifiez le rôle de l'utilisateur.
-                </p>
+                <hr class="border-gray-300 dark:border-gray-700 my-4" />
+                <div class="mt-6">
+                    <h3 class="text-lg font-medium text-content-300">
+                        Actions administrateurs - Rôle
+                    </h3>
+                    <p class="mt-1 text-sm text-content-600">
+                        Modifiez le rôle de l'utilisateur.
+                    </p>
+                </div>
                 <div class="mt-6 space-y-4">
                     <Tooltip content="Sélectionnez le rôle de l'utilisateur" placement="top">
                         <SelectField

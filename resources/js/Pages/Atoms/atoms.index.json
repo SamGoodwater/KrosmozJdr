@@ -2142,7 +2142,7 @@
   },
   {
     "name": "Badge",
-    "description": "Badge Atom (DaisyUI)",
+    "description": "Badge Atom (DaisyUI + Tailwind)",
     "props": [
       {
         "name": "content",
@@ -2152,7 +2152,7 @@
       {
         "name": "color",
         "type": "String",
-        "desc": "- Couleur DaisyUI ('', 'neutral', 'primary', 'secondary', 'accent', 'info', 'success', 'warning', 'error')"
+        "desc": "- Couleur DaisyUI ('', 'neutral', 'primary', 'secondary', 'accent', 'info', 'success', 'warning', 'error') ou Tailwind (format 'color-shade', ex: 'blue-700')"
       },
       {
         "name": "size",

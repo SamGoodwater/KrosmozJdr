@@ -86,7 +86,7 @@ class UserSeeder extends Seeder
                 'notifications_enabled' => true,
                 'notification_channels' => [User::NOTIFICATION_CHANNELS[0]],
             ]);
-            $this->command->info('✅ Game Master créé: gm@test.fr / password');
+            $this->command->info('✅ Game Master créé : gm@test.fr / password');
         }
 
         // Player

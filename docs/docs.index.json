@@ -415,6 +415,11 @@
     "description": "Les panoplies sont des **ensembles d'équipement qui apportent un bonus** lorsqu'ils sont réunis. Cette documentation vérifie que tous les fichiers liés aux panoplies sont complets et cohérents."
   },
   {
+    "path": "50-Fonctionnalités/Scrapping/AUDIT_UTILISATION_ENTITES.md",
+    "title": "Audit : Utilisation des entités et fonctionnalités dans le scrapping",
+    "description": "**Date** : 2025-01-27"
+  },
+  {
     "path": "50-Fonctionnalités/Scrapping/Data-collect/API.md",
     "title": "",
     "description": ""
@@ -525,9 +530,19 @@
     "description": "- ✅ **Fichier** : `database/migrations/2025_11_27_145006_add_is_system_to_users_table.php`"
   },
   {
+    "path": "50-Fonctionnalités/Scrapping/TEMPLATE_INDEX_UPDATE.md",
+    "title": "Template pour mettre à jour les pages Index.vue",
+    "description": "1. Ajouter `onBeforeUnmount` dans les imports"
+  },
+  {
     "path": "50-Fonctionnalités/Scrapping/TEST_RELATIONS_IMPORT.md",
     "title": "Tests d'import des relations",
     "description": "Un nouveau fichier de tests a été créé : `tests/Feature/Scrapping/ScrappingRelationsTest.php`"
+  },
+  {
+    "path": "50-Fonctionnalités/Scrapping/TODO_INTERFACE_ENTITES.md",
+    "title": "TODO : Interface tableau pour chaque entité",
+    "description": "**Objectif** : Créer une interface en format tableau pour chaque entité avec un lien vers la page de détail au centre."
   },
   {
     "path": "50-Fonctionnalités/Scrapping/TODO_RESTANT.md",
@@ -538,6 +553,11 @@
     "path": "50-Fonctionnalités/Scrapping/UTILISATEUR_SYSTEME.md",
     "title": "Utilisateur système pour les imports automatiques",
     "description": "Un utilisateur système a été créé pour gérer les imports automatiques du système de scrapping. Cet utilisateur ne peut **pas se connecter** pour des raisons de sécurité."
+  },
+  {
+    "path": "50-Fonctionnalités/Scrapping/VERIFICATION_FRONTEND.md",
+    "title": "Vérification Frontend - Interface Entités",
+    "description": "2025-01-27"
   },
   {
     "path": "DOCUMENTATION_GUIDE.md",

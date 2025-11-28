@@ -37,6 +37,7 @@ class UserResource extends JsonResource
             'name' => $this->name,
             'email' => $this->email,
             'role' => $this->role,
+            'role_name' => $this->role_name, // Nom du rôle (chaîne)
             'avatar' => $this->avatarPath(), // Toujours une URL
             'notifications_enabled' => $this->notifications_enabled,
             'notification_channels' => $this->notification_channels,

@@ -530,6 +530,83 @@
     "file": "feedback/NotificationToast.vue"
   },
   {
+    "name": "EntityViewText",
+    "description": "EntityViewText Molecule",
+    "props": [
+      {
+        "name": "entity",
+        "type": "Object",
+        "desc": "- Données de l'entité"
+      },
+      {
+        "name": "entityType",
+        "type": "String",
+        "desc": "- Type d'entité"
+      }
+    ],
+    "slots": [],
+    "file": "entity/EntityViewText.vue"
+  },
+  {
+    "name": "EntityViewMinimal",
+    "description": "EntityViewMinimal Molecule",
+    "props": [
+      {
+        "name": "entity",
+        "type": "Object",
+        "desc": "- Données de l'entité"
+      },
+      {
+        "name": "entityType",
+        "type": "String",
+        "desc": "- Type d'entité"
+      },
+      {
+        "name": "importantFields",
+        "type": "Array",
+        "desc": "- Liste des champs importants à afficher"
+      }
+    ],
+    "slots": [],
+    "file": "entity/EntityViewMinimal.vue"
+  },
+  {
+    "name": "EntityViewLarge",
+    "description": "EntityViewLarge Molecule",
+    "props": [
+      {
+        "name": "entity",
+        "type": "Object",
+        "desc": "- Données de l'entité"
+      },
+      {
+        "name": "entityType",
+        "type": "String",
+        "desc": "- Type d'entité"
+      }
+    ],
+    "slots": [],
+    "file": "entity/EntityViewLarge.vue"
+  },
+  {
+    "name": "EntityViewCompact",
+    "description": "EntityViewCompact Molecule",
+    "props": [
+      {
+        "name": "entity",
+        "type": "Object",
+        "desc": "- Données de l'entité"
+      },
+      {
+        "name": "entityType",
+        "type": "String",
+        "desc": "- Type d'entité"
+      }
+    ],
+    "slots": [],
+    "file": "entity/EntityViewCompact.vue"
+  },
+  {
     "name": "EnityCard",
     "description": "EntityCard Molecule (Atomic Design, DaisyUI)",
     "props": [
@@ -721,6 +798,133 @@
     "props": [],
     "slots": [],
     "file": "data-input/CheckboxField.vue"
+  },
+  {
+    "name": "EntityTableRow",
+    "description": "EntityTableRow Molecule",
+    "props": [
+      {
+        "name": "entity",
+        "type": "Object",
+        "desc": "- Données de l'entité"
+      },
+      {
+        "name": "columns",
+        "type": "Array",
+        "desc": "- Configuration des colonnes"
+      },
+      {
+        "name": "entityType",
+        "type": "String",
+        "desc": "- Type d'entité (pour générer les routes)"
+      },
+      {
+        "name": "formatCell",
+        "type": "Function",
+        "desc": "- Fonction optionnelle pour formater les cellules"
+      }
+    ],
+    "slots": [],
+    "file": "data-display/EntityTableRow.vue"
+  },
+  {
+    "name": "EntityTableHeader",
+    "description": "EntityTableHeader Molecule",
+    "props": [
+      {
+        "name": "columns",
+        "type": "Array",
+        "desc": "- Configuration des colonnes [{ key, label, sortable }]"
+      },
+      {
+        "name": "sortBy",
+        "type": "String",
+        "desc": "- Colonne actuellement triée"
+      },
+      {
+        "name": "sortOrder",
+        "type": "String",
+        "desc": "- Ordre de tri ('asc' | 'desc')"
+      }
+    ],
+    "slots": [],
+    "file": "data-display/EntityTableHeader.vue"
+  },
+  {
+    "name": "EntityTableFilters",
+    "description": "EntityTableFilters Molecule",
+    "props": [
+      {
+        "name": "search",
+        "type": "String",
+        "desc": "- Valeur de recherche"
+      },
+      {
+        "name": "filters",
+        "type": "Object",
+        "desc": "- Objet avec les filtres par colonne"
+      },
+      {
+        "name": "filterableColumns",
+        "type": "Array",
+        "desc": "- Colonnes filtrables avec leurs options"
+      }
+    ],
+    "slots": [],
+    "file": "data-display/EntityTableFilters.vue"
+  },
+  {
+    "name": "EntityTable",
+    "description": "EntityTable Molecule",
+    "props": [
+      {
+        "name": "entities",
+        "type": "Array",
+        "desc": "- Liste des entités à afficher"
+      },
+      {
+        "name": "columns",
+        "type": "Array",
+        "desc": "- Configuration des colonnes"
+      },
+      {
+        "name": "entityType",
+        "type": "String",
+        "desc": "- Type d'entité"
+      },
+      {
+        "name": "pagination",
+        "type": "Object",
+        "desc": "- Données de pagination Laravel"
+      },
+      {
+        "name": "loading",
+        "type": "Boolean",
+        "desc": "- État de chargement"
+      },
+      {
+        "name": "showFilters",
+        "type": "Boolean",
+        "desc": "- Afficher les filtres (défaut: false)"
+      },
+      {
+        "name": "search",
+        "type": "String",
+        "desc": "- Valeur de recherche"
+      },
+      {
+        "name": "filters",
+        "type": "Object",
+        "desc": "- Filtres actifs"
+      },
+      {
+        "name": "filterableColumns",
+        "type": "Array",
+        "desc": "- Colonnes filtrables"
+      }
+    ],
+    "slots": [],
+    "file": "data-display/EntityTable.vue"
   },
   {
     "name": "AvatarGroup",
