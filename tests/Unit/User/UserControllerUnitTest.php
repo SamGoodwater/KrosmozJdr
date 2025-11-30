@@ -64,11 +64,15 @@ class UserControllerUnitTest extends TestCase
             'password_confirmation' => 'newpassword123',
         ]);
         $request->setUserResolver(fn() => $user);
+        
+        // S'assurer que Auth::id() retourne bien l'ID de l'utilisateur
+        $this->assertEquals($user->id, Auth::id());
 
         $controller = new UserController();
         
         try {
-            $response = $controller->updatePassword($request, $user);
+            // Ne pas passer $user en paramètre pour que la méthode utilise Auth::user()
+            $response = $controller->updatePassword($request);
             $this->fail('Expected validation exception');
         } catch (\Illuminate\Validation\ValidationException $e) {
             $this->assertArrayHasKey('current_password', $e->errors());

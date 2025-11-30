@@ -150,6 +150,27 @@ export function useValidation({
     })
   }
 
+  // Watch sur l'état externe pour mettre à jour l'affichage quand il change
+  // (important pour les erreurs serveur qui arrivent après la soumission)
+  if (externalState && parentControl) {
+    watch(externalState, (newState) => {
+      if (newState && typeof newState === 'object') {
+        // Mettre à jour directement l'état de validation sans vérifier hasInteracted
+        // car les erreurs serveur doivent toujours s'afficher
+        validationState.value = newState.state
+        validationMessage.value = newState.message
+        validationResults.value = [newState]
+        // Marquer comme interagi pour que l'affichage soit visible
+        hasInteracted.value = true
+      } else if (!newState) {
+        // Si l'état externe est null, réinitialiser
+        validationState.value = null
+        validationMessage.value = null
+        validationResults.value = []
+      }
+    }, { deep: true, immediate: true })
+  }
+
   // API publique
   return {
     // État (lecture seule)

@@ -76,7 +76,35 @@ class ShopController extends Controller
      */
     public function edit(Shop $shop)
     {
-        //
+        $this->authorize('update', $shop);
+        
+        $shop->load([
+            'createdBy', 
+            'npc',
+            'items', 
+            'consumables', 
+            'resources'
+        ]);
+        
+        // Charger toutes les entités disponibles pour la recherche
+        $availableItems = \App\Models\Entity\Item::select('id', 'name', 'description', 'level')
+            ->orderBy('name')
+            ->get();
+        
+        $availableConsumables = \App\Models\Entity\Consumable::select('id', 'name', 'description', 'level')
+            ->orderBy('name')
+            ->get();
+        
+        $availableResources = \App\Models\Entity\Resource::select('id', 'name', 'description', 'level')
+            ->orderBy('name')
+            ->get();
+        
+        return Inertia::render('Pages/entity/shop/Edit', [
+            'shop' => new ShopResource($shop),
+            'availableItems' => $availableItems,
+            'availableConsumables' => $availableConsumables,
+            'availableResources' => $availableResources,
+        ]);
     }
 
     /**
@@ -93,5 +121,156 @@ class ShopController extends Controller
     public function delete(Shop $shop)
     {
         //
+    }
+
+    /**
+     * Update the items of a shop (avec prix/quantité/commentaire).
+     */
+    public function updateItems(\Illuminate\Http\Request $request, Shop $shop)
+    {
+        $this->authorize('update', $shop);
+        
+        $request->validate([
+            'items' => 'array',
+        ]);
+        
+        $syncData = [];
+        foreach ($request->items as $itemId => $pivotData) {
+            $itemId = (int)$itemId; // S'assurer que l'ID est un entier
+            if (is_array($pivotData)) {
+                $pivot = [];
+                // La quantité est obligatoire et doit être > 0 pour ajouter un item
+                if (isset($pivotData['quantity']) && $pivotData['quantity'] > 0) {
+                    $pivot['quantity'] = (int)$pivotData['quantity'];
+                } else {
+                    // Si la quantité est 0 ou négative, on ignore cet item
+                    continue;
+                }
+                if (isset($pivotData['price'])) {
+                    $pivot['price'] = $pivotData['price'] !== '' ? (float)$pivotData['price'] : null;
+                }
+                if (isset($pivotData['comment'])) {
+                    $pivot['comment'] = $pivotData['comment'] ?? null;
+                }
+                $syncData[$itemId] = $pivot;
+            }
+        }
+        
+        if (!empty($syncData)) {
+            $itemIds = array_keys($syncData);
+            $existingItems = \App\Models\Entity\Item::whereIn('id', $itemIds)->pluck('id')->toArray();
+            $invalidIds = array_diff($itemIds, $existingItems);
+            
+            if (!empty($invalidIds)) {
+                return redirect()->back()
+                    ->withErrors(['items' => 'Certains objets n\'existent pas.'])
+                    ->withInput();
+            }
+        }
+        
+        $shop->items()->sync($syncData);
+        
+        return redirect()->back()
+            ->with('success', 'Objets de la boutique mis à jour avec succès.');
+    }
+
+    /**
+     * Update the consumables of a shop (avec prix/quantité/commentaire).
+     */
+    public function updateConsumables(\Illuminate\Http\Request $request, Shop $shop)
+    {
+        $this->authorize('update', $shop);
+        
+        $request->validate([
+            'consumables' => 'array',
+        ]);
+        
+        $syncData = [];
+        foreach ($request->consumables as $consumableId => $pivotData) {
+            if (is_array($pivotData)) {
+                $pivot = [];
+                // La quantité est obligatoire et doit être > 0 pour ajouter un consumable
+                if (isset($pivotData['quantity']) && $pivotData['quantity'] > 0) {
+                    $pivot['quantity'] = (int)$pivotData['quantity'];
+                } else {
+                    // Si la quantité est 0 ou négative, on ignore ce consumable
+                    continue;
+                }
+                if (isset($pivotData['price'])) {
+                    $pivot['price'] = $pivotData['price'] !== '' ? (float)$pivotData['price'] : null;
+                }
+                if (isset($pivotData['comment'])) {
+                    $pivot['comment'] = $pivotData['comment'] ?? null;
+                }
+                $syncData[$consumableId] = $pivot;
+            }
+        }
+        
+        if (!empty($syncData)) {
+            $consumableIds = array_keys($syncData);
+            $existingConsumables = \App\Models\Entity\Consumable::whereIn('id', $consumableIds)->pluck('id')->toArray();
+            $invalidIds = array_diff($consumableIds, $existingConsumables);
+            
+            if (!empty($invalidIds)) {
+                return redirect()->back()
+                    ->withErrors(['consumables' => 'Certains consommables n\'existent pas.'])
+                    ->withInput();
+            }
+        }
+        
+        $shop->consumables()->sync($syncData);
+        
+        return redirect()->back()
+            ->with('success', 'Consommables de la boutique mis à jour avec succès.');
+    }
+
+    /**
+     * Update the resources of a shop (avec prix/quantité/commentaire).
+     */
+    public function updateResources(\Illuminate\Http\Request $request, Shop $shop)
+    {
+        $this->authorize('update', $shop);
+        
+        $request->validate([
+            'resources' => 'array',
+        ]);
+        
+        $syncData = [];
+        foreach ($request->resources as $resourceId => $pivotData) {
+            if (is_array($pivotData)) {
+                $pivot = [];
+                // La quantité est obligatoire et doit être > 0 pour ajouter une ressource
+                if (isset($pivotData['quantity']) && $pivotData['quantity'] > 0) {
+                    $pivot['quantity'] = (int)$pivotData['quantity'];
+                } else {
+                    // Si la quantité est 0 ou négative, on ignore cette ressource
+                    continue;
+                }
+                if (isset($pivotData['price'])) {
+                    $pivot['price'] = $pivotData['price'] !== '' ? (float)$pivotData['price'] : null;
+                }
+                if (isset($pivotData['comment'])) {
+                    $pivot['comment'] = $pivotData['comment'] ?? null;
+                }
+                $syncData[$resourceId] = $pivot;
+            }
+        }
+        
+        if (!empty($syncData)) {
+            $resourceIds = array_keys($syncData);
+            $existingResources = \App\Models\Entity\Resource::whereIn('id', $resourceIds)->pluck('id')->toArray();
+            $invalidIds = array_diff($resourceIds, $existingResources);
+            
+            if (!empty($invalidIds)) {
+                return redirect()->back()
+                    ->withErrors(['resources' => 'Certaines ressources n\'existent pas.'])
+                    ->withInput();
+            }
+        }
+        
+        $shop->resources()->sync($syncData);
+        
+        return redirect()->back()
+            ->with('success', 'Ressources de la boutique mises à jour avec succès.');
     }
 }

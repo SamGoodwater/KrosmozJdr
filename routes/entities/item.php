@@ -14,6 +14,8 @@ Route::prefix('entities/items')->name('entities.items.')->middleware('auth')->gr
     Route::get('/create', [ItemController::class, 'create'])->name('create');
     Route::post('/', [ItemController::class, 'store'])->name('store');
     Route::get('/{item}/edit', [ItemController::class, 'edit'])->name('edit');
+    // Routes spécifiques pour les relations (doivent être avant la route update générique)
+    Route::patch('/{item}/resources', [ItemController::class, 'updateResources'])->name('updateResources');
     Route::patch('/{item}', [ItemController::class, 'update'])->name('update');
     Route::delete('/{item}', [ItemController::class, 'delete'])->name('delete');
 });

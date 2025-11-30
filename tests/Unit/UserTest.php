@@ -37,7 +37,7 @@ class UserTest extends TestCase
     public function test_avatar_path_returns_default_if_none()
     {
         $user = User::factory()->create(['avatar' => null]);
-        $this->assertStringContainsString('default-avatar.webp', $user->avatarPath());
+        $this->assertStringContainsString('default_avatar_head.webp', $user->avatarPath());
     }
 
     public function test_it_returns_true_for_wants_profile_notification()

@@ -22,10 +22,41 @@ class VerifyCsrfToken extends Middleware
      * @param  \Closure  $next
      * @return mixed
      */
+    /**
+     * Determine if the request should be excluded from CSRF verification.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return bool
+     */
+    protected function inExceptArray($request)
+    {
+        // En environnement de test, toutes les routes sont exclues
+        if (app()->environment('testing') || config('app.env') === 'testing') {
+            return true;
+        }
+
+        return parent::inExceptArray($request);
+    }
+
+    /**
+     * Determine if the session and input CSRF tokens match.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return bool
+     */
+    protected function tokensMatch($request)
+    {
+        // Désactiver CSRF en environnement de test
+        if (app()->environment('testing') || config('app.env') === 'testing') {
+            return true;
+        }
+
+        return parent::tokensMatch($request);
+    }
+
     public function handle($request, \Closure $next)
     {
         // Désactiver complètement le CSRF en environnement de test
-        // En Laravel 11, l'environnement de test est défini dans phpunit.xml via APP_ENV=testing
         if (app()->environment('testing') || config('app.env') === 'testing') {
             return $next($request);
         }

@@ -82,7 +82,19 @@ class PanoplyController extends Controller
      */
     public function edit(Panoply $panoply)
     {
-        //
+        $this->authorize('update', $panoply);
+        
+        $panoply->load(['createdBy', 'items']);
+        
+        // Charger tous les items disponibles pour la recherche
+        $availableItems = \App\Models\Entity\Item::select('id', 'name', 'description', 'level')
+            ->orderBy('name')
+            ->get();
+        
+        return Inertia::render('Pages/entity/panoply/Edit', [
+            'panoply' => new PanoplyResource($panoply),
+            'availableItems' => $availableItems,
+        ]);
     }
 
     /**
@@ -90,7 +102,34 @@ class PanoplyController extends Controller
      */
     public function update(UpdatePanoplyRequest $request, Panoply $panoply)
     {
-        //
+        $this->authorize('update', $panoply);
+        
+        $panoply->update($request->validated());
+        
+        $panoply->load(['createdBy', 'items']);
+        
+        return redirect()->route('entities.panoplies.show', $panoply)
+            ->with('success', 'Panoplie mise à jour avec succès.');
+    }
+
+    /**
+     * Update the items of a panoply.
+     */
+    public function updateItems(\Illuminate\Http\Request $request, Panoply $panoply)
+    {
+        $this->authorize('update', $panoply);
+        
+        $request->validate([
+            'items' => 'present|array',
+            'items.*' => 'exists:items,id',
+        ]);
+        
+        $panoply->items()->sync($request->items);
+        
+        $panoply->load(['createdBy', 'items']);
+        
+        return redirect()->back()
+            ->with('success', 'Items de la panoplie mis à jour avec succès.');
     }
 
     /**

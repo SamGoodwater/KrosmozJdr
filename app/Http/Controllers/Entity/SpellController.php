@@ -85,7 +85,25 @@ class SpellController extends Controller
      */
     public function edit(Spell $spell)
     {
-        //
+        $this->authorize('update', $spell);
+        
+        $spell->load(['createdBy', 'creatures', 'classes', 'spellTypes']);
+        
+        // Charger toutes les classes disponibles pour la recherche
+        $availableClasses = \App\Models\Entity\Classe::select('id', 'name', 'description')
+            ->orderBy('name')
+            ->get();
+        
+        // Charger tous les types de sorts disponibles pour la recherche
+        $availableSpellTypes = \App\Models\Type\SpellType::select('id', 'name', 'description', 'color')
+            ->orderBy('name')
+            ->get();
+        
+        return Inertia::render('Pages/entity/spell/Edit', [
+            'spell' => new SpellResource($spell),
+            'availableClasses' => $availableClasses,
+            'availableSpellTypes' => $availableSpellTypes,
+        ]);
     }
 
     /**
@@ -93,7 +111,54 @@ class SpellController extends Controller
      */
     public function update(UpdateSpellRequest $request, Spell $spell)
     {
-        //
+        $this->authorize('update', $spell);
+        
+        $spell->update($request->validated());
+        
+        $spell->load(['createdBy', 'creatures', 'classes', 'spellTypes']);
+        
+        return redirect()->route('entities.spells.show', $spell)
+            ->with('success', 'Sort mis à jour avec succès.');
+    }
+
+    /**
+     * Update the classes of a spell.
+     */
+    public function updateClasses(\Illuminate\Http\Request $request, Spell $spell)
+    {
+        $this->authorize('update', $spell);
+        
+        $request->validate([
+            'classes' => 'present|array',
+            'classes.*' => 'exists:classes,id',
+        ]);
+        
+        $spell->classes()->sync($request->classes);
+        
+        $spell->load(['createdBy', 'creatures', 'classes', 'spellTypes']);
+        
+        return redirect()->back()
+            ->with('success', 'Classes du sort mises à jour avec succès.');
+    }
+
+    /**
+     * Update the spell types of a spell.
+     */
+    public function updateSpellTypes(\Illuminate\Http\Request $request, Spell $spell)
+    {
+        $this->authorize('update', $spell);
+        
+        $request->validate([
+            'spellTypes' => 'present|array',
+            'spellTypes.*' => 'exists:spell_types,id',
+        ]);
+        
+        $spell->spellTypes()->sync($request->spellTypes);
+        
+        $spell->load(['createdBy', 'creatures', 'classes', 'spellTypes']);
+        
+        return redirect()->back()
+            ->with('success', 'Types de sort mis à jour avec succès.');
     }
 
     /**

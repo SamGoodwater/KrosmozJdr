@@ -20,7 +20,7 @@ class ScenarioFactory extends Factory
         $slug = \Illuminate\Support\Str::slug($name . '-' . fake()->unique()->randomNumber(3));
         return [
             'name' => $name,
-            'description' => fake()->optional()->paragraph(),
+            'description' => fake()->optional()->text(200), // Limité à 200 caractères pour éviter les erreurs de troncature
             'slug' => $slug,
             'keyword' => fake()->optional()->word(),
             'is_public' => fake()->boolean(),

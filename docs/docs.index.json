@@ -105,6 +105,11 @@
     "description": "Le dossier `docs/100-Done` a pour objectif de centraliser les fichiers Markdown relatifs aux actions réalisées durant le développement du projet, ainsi qu’aux fonctionnalités finalisées. Il s’agit de l’espace où l’on documente l’évolution concrète du projet (refactorings, jalons atteints, fonctionnalités livrées, etc.), à la différence de la documentation technique pure. Ce dossier permet de garder une trace claire de l’historique des avancées et des décisions prises au fil du temps."
   },
   {
+    "path": "100- Done/RECAPITULATIF_COMPLET.md",
+    "title": "📋 Récapitulatif complet des fonctionnalités créées",
+    "description": "**Date de mise à jour** : 2025-11-30"
+  },
+  {
     "path": "100- Done/REFACTORING_INPUTS_PHASE1.md",
     "title": "Refactoring Inputs - Phase 1 : Composables",
     "description": "- **Unification des props de validation** : Remplacement de `validator`, `validatorError`, `validatorSuccess`, etc. par une seule prop `validation`"
@@ -138,6 +143,11 @@
     "path": "100- Done/VALIDATION_REFACTORING.md",
     "title": "Refactoring du Système de Validation — KrosmozJDR",
     "description": "Le système de validation a été entièrement refactorisé pour répondre aux besoins de simplicité et de transparence. L'objectif était de créer une API qui évite les conflits avec les vues tout en restant puissante et flexible."
+  },
+  {
+    "path": "100-%20Done/ETAT_ACTUEL_PROJET.md",
+    "title": "État actuel du projet KrosmozJDR",
+    "description": "**Date de mise à jour** : 2025-01-27"
   },
   {
     "path": "20-Content/21-Entities/ENTITIES_OVERVIEW.md",
@@ -390,6 +400,21 @@
     "description": "Ce dossier regroupe les scripts, automatisations et outils pour le développement, la maintenance et le déploiement du projet."
   },
   {
+    "path": "50-Fonctionnalités/EntityEditForm/README.md",
+    "title": "EntityEditForm - Formulaire d'édition générique",
+    "description": "`EntityEditForm` est un composant générique Vue 3 permettant de créer des formulaires d'édition pour n'importe quelle entité. Il supporte deux modes d'affichage (large et compact) et génère dynamiquement les champs selon une configuration."
+  },
+  {
+    "path": "50-Fonctionnalités/EntityRelationsManager/ANALYSE_ENTITES.md",
+    "title": "Analyse des entités pour EntityRelationsManager",
+    "description": "**Relations many-to-many :**"
+  },
+  {
+    "path": "50-Fonctionnalités/EntityRelationsManager/README.md",
+    "title": "EntityRelationsManager - Gestion des relations many-to-many",
+    "description": "`EntityRelationsManager` est un composant générique Vue 3 permettant de gérer les relations many-to-many entre entités. Il supporte les relations simples (sans pivot) et les relations avec données pivot (quantité, prix, commentaire, etc.)."
+  },
+  {
     "path": "50-Fonctionnalités/Scrapping/AUDIT_COMPLET_ENTITES.md",
     "title": "Audit complet des entités KrosmozJDR",
     "description": "**Date** : 2025-11-27"
@@ -538,16 +563,6 @@
     "path": "50-Fonctionnalités/Scrapping/TEST_RELATIONS_IMPORT.md",
     "title": "Tests d'import des relations",
     "description": "Un nouveau fichier de tests a été créé : `tests/Feature/Scrapping/ScrappingRelationsTest.php`"
-  },
-  {
-    "path": "50-Fonctionnalités/Scrapping/TODO_INTERFACE_ENTITES.md",
-    "title": "TODO : Interface tableau pour chaque entité",
-    "description": "**Objectif** : Créer une interface en format tableau pour chaque entité avec un lien vers la page de détail au centre."
-  },
-  {
-    "path": "50-Fonctionnalités/Scrapping/TODO_RESTANT.md",
-    "title": "TODO : Ce qui reste à faire pour finaliser le système de scrapping",
-    "description": "1. ✅ **Infrastructure complète** : Models, factories, migrations, relations Eloquent"
   },
   {
     "path": "50-Fonctionnalités/Scrapping/UTILISATEUR_SYSTEME.md",

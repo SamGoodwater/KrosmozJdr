@@ -51,10 +51,22 @@ class SpellResource extends JsonResource
             // Relations
             'createdBy' => $this->whenLoaded('createdBy'),
             'creatures' => $this->whenLoaded('creatures'),
-            'classes' => $this->whenLoaded('classes'),
+            'classes' => ($this->relationLoaded('classes') || isset($this->classes)) ? $this->classes->map(function ($classe) {
+                return [
+                    'id' => $classe->id,
+                    'name' => $classe->name,
+                    'description' => $classe->description,
+                ];
+            })->values()->all() : [],
             'scenarios' => $this->whenLoaded('scenarios'),
             'campaigns' => $this->whenLoaded('campaigns'),
-            'spellTypes' => $this->whenLoaded('spellTypes'),
+            'spellTypes' => ($this->relationLoaded('spellTypes') || isset($this->spellTypes)) ? $this->spellTypes->map(function ($spellType) {
+                return [
+                    'id' => $spellType->id,
+                    'name' => $spellType->name,
+                    'description' => $spellType->description,
+                ];
+            })->values()->all() : [],
             'monsters' => $this->whenLoaded('monsters'),
 
             // Droits d'accès

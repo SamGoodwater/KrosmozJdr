@@ -31,7 +31,7 @@ class SpellPolicy
      */
     public function create(User $user): bool
     {
-        return in_array($user->role, ['admin', 'super_admin']);
+        return in_array($user->role, [User::ROLE_ADMIN, User::ROLE_SUPER_ADMIN, 4, 5, 'admin', 'super_admin']);
     }
 
     /**
@@ -39,7 +39,8 @@ class SpellPolicy
      */
     public function update(User $user, Spell $spell): bool
     {
-        return in_array($user->role, ['admin', 'super_admin']);
+        // Un utilisateur peut modifier son propre sort, ou un admin peut modifier n'importe quel sort
+        return $user->id === $spell->created_by || in_array($user->role, [User::ROLE_ADMIN, User::ROLE_SUPER_ADMIN, 4, 5, 'admin', 'super_admin']);
     }
 
     /**
@@ -47,7 +48,7 @@ class SpellPolicy
      */
     public function delete(User $user, Spell $spell): bool
     {
-        return in_array($user->role, ['admin', 'super_admin']);
+        return in_array($user->role, [User::ROLE_ADMIN, User::ROLE_SUPER_ADMIN, 4, 5, 'admin', 'super_admin']);
     }
 
     /**

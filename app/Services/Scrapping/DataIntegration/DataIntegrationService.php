@@ -469,7 +469,7 @@ class DataIntegrationService
                 'area' => (int) ($convertedData['area'] ?? 0), // Zone
                 'image' => $convertedData['image'] ?? null,
                 'effect' => $convertedData['effect'] ?? null,
-                'level' => $convertedData['level'] ?? null,
+                'level' => $convertedData['level'] ?? 1, // Niveau par défaut si non fourni
                 'created_by' => $this->getSystemUserId(),
             ];
             

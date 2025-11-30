@@ -14,6 +14,11 @@ Route::prefix('entities/creatures')->name('entities.creatures.')->middleware('au
     Route::get('/create', [CreatureController::class, 'create'])->name('create');
     Route::post('/', [CreatureController::class, 'store'])->name('store');
     Route::get('/{creature}/edit', [CreatureController::class, 'edit'])->name('edit');
+    // Routes spécifiques pour les relations (doivent être avant la route update générique)
+    Route::patch('/{creature}/items', [CreatureController::class, 'updateItems'])->name('updateItems');
+    Route::patch('/{creature}/resources', [CreatureController::class, 'updateResources'])->name('updateResources');
+    Route::patch('/{creature}/consumables', [CreatureController::class, 'updateConsumables'])->name('updateConsumables');
+    Route::patch('/{creature}/spells', [CreatureController::class, 'updateSpells'])->name('updateSpells');
     Route::patch('/{creature}', [CreatureController::class, 'update'])->name('update');
     Route::delete('/{creature}', [CreatureController::class, 'delete'])->name('delete');
 });

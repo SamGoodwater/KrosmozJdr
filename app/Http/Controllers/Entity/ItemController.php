@@ -89,7 +89,19 @@ class ItemController extends Controller
      */
     public function edit(Item $item)
     {
-        //
+        $this->authorize('update', $item);
+        
+        $item->load(['itemType', 'createdBy', 'resources']);
+        
+        // Charger toutes les ressources disponibles pour la recherche
+        $availableResources = \App\Models\Entity\Resource::select('id', 'name', 'description', 'level')
+            ->orderBy('name')
+            ->get();
+        
+        return Inertia::render('Pages/entity/item/Edit', [
+            'item' => new ItemResource($item),
+            'availableResources' => $availableResources,
+        ]);
     }
 
     /**
@@ -97,7 +109,14 @@ class ItemController extends Controller
      */
     public function update(UpdateItemRequest $request, Item $item)
     {
-        //
+        $this->authorize('update', $item);
+        
+        $item->update($request->validated());
+        
+        $item->load(['itemType', 'createdBy']);
+        
+        return redirect()->route('entities.items.show', $item)
+            ->with('success', 'Item mis à jour avec succès.');
     }
 
     /**
@@ -106,5 +125,44 @@ class ItemController extends Controller
     public function delete(Item $item)
     {
         //
+    }
+
+    /**
+     * Update the resources of an item (recette de craft avec quantités).
+     */
+    public function updateResources(\Illuminate\Http\Request $request, Item $item)
+    {
+        $this->authorize('update', $item);
+        
+        $request->validate([
+            'resources' => 'array',
+        ]);
+        
+        // Format attendu : { resource_id: { quantity: value } }
+        $syncData = [];
+        foreach ($request->resources as $resourceId => $pivotData) {
+            $resourceId = (int)$resourceId; // S'assurer que l'ID est un entier
+            if (is_array($pivotData) && isset($pivotData['quantity']) && $pivotData['quantity'] > 0) {
+                $syncData[$resourceId] = ['quantity' => (int)$pivotData['quantity']];
+            }
+        }
+        
+        // Valider que les IDs de ressources existent
+        if (!empty($syncData)) {
+            $resourceIds = array_keys($syncData);
+            $existingResources = \App\Models\Entity\Resource::whereIn('id', $resourceIds)->pluck('id')->toArray();
+            $invalidIds = array_diff($resourceIds, $existingResources);
+            
+            if (!empty($invalidIds)) {
+                return redirect()->back()
+                    ->withErrors(['resources' => 'Certaines ressources n\'existent pas.'])
+                    ->withInput();
+            }
+        }
+        
+        $item->resources()->sync($syncData);
+        
+        return redirect()->back()
+            ->with('success', 'Ressources de l\'objet mises à jour avec succès.');
     }
 }

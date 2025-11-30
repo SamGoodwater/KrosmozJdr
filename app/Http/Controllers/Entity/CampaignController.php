@@ -90,7 +90,58 @@ class CampaignController extends Controller
      */
     public function edit(Campaign $campaign)
     {
-        //
+        $this->authorize('update', $campaign);
+        
+        $campaign->load([
+            'createdBy', 
+            'users',
+            'scenarios',
+            'items', 
+            'consumables', 
+            'resources', 
+            'spells', 
+            'panoplies'
+        ]);
+        
+        // Charger toutes les entités disponibles pour la recherche
+        $availableUsers = \App\Models\User::select('id', 'name', 'email')
+            ->orderBy('name')
+            ->get();
+        
+        $availableScenarios = \App\Models\Entity\Scenario::select('id', 'name', 'description')
+            ->orderBy('name')
+            ->get();
+        
+        $availableItems = \App\Models\Entity\Item::select('id', 'name', 'description', 'level')
+            ->orderBy('name')
+            ->get();
+        
+        $availableConsumables = \App\Models\Entity\Consumable::select('id', 'name', 'description', 'level')
+            ->orderBy('name')
+            ->get();
+        
+        $availableResources = \App\Models\Entity\Resource::select('id', 'name', 'description', 'level')
+            ->orderBy('name')
+            ->get();
+        
+        $availableSpells = \App\Models\Entity\Spell::select('id', 'name', 'description', 'level')
+            ->orderBy('name')
+            ->get();
+        
+        $availablePanoplies = \App\Models\Entity\Panoply::select('id', 'name', 'description')
+            ->orderBy('name')
+            ->get();
+        
+        return Inertia::render('Pages/entity/campaign/Edit', [
+            'campaign' => new CampaignResource($campaign),
+            'availableUsers' => $availableUsers,
+            'availableScenarios' => $availableScenarios,
+            'availableItems' => $availableItems,
+            'availableConsumables' => $availableConsumables,
+            'availableResources' => $availableResources,
+            'availableSpells' => $availableSpells,
+            'availablePanoplies' => $availablePanoplies,
+        ]);
     }
 
     /**
@@ -154,5 +205,131 @@ class CampaignController extends Controller
     {
         $this->authorizeForUser(auth()->user(), 'view', $campaign);
         return response()->json($campaign->users);
+    }
+
+    /**
+     * Update the users of a campaign.
+     */
+    public function updateUsers(\Illuminate\Http\Request $request, Campaign $campaign)
+    {
+        $this->authorize('update', $campaign);
+        
+        $request->validate([
+            'users' => 'required|array',
+            'users.*' => 'exists:users,id',
+        ]);
+        
+        $campaign->users()->sync($request->users);
+        
+        return redirect()->back()
+            ->with('success', 'Utilisateurs de la campagne mis à jour avec succès.');
+    }
+
+    /**
+     * Update the scenarios of a campaign.
+     */
+    public function updateScenarios(\Illuminate\Http\Request $request, Campaign $campaign)
+    {
+        $this->authorize('update', $campaign);
+        
+        $request->validate([
+            'scenarios' => 'required|array',
+            'scenarios.*' => 'exists:scenarios,id',
+        ]);
+        
+        $campaign->scenarios()->sync($request->scenarios);
+        
+        return redirect()->back()
+            ->with('success', 'Scénarios de la campagne mis à jour avec succès.');
+    }
+
+    /**
+     * Update the items of a campaign.
+     */
+    public function updateItems(\Illuminate\Http\Request $request, Campaign $campaign)
+    {
+        $this->authorize('update', $campaign);
+        
+        $request->validate([
+            'items' => 'required|array',
+            'items.*' => 'exists:items,id',
+        ]);
+        
+        $campaign->items()->sync($request->items);
+        
+        return redirect()->back()
+            ->with('success', 'Objets de la campagne mis à jour avec succès.');
+    }
+
+    /**
+     * Update the consumables of a campaign.
+     */
+    public function updateConsumables(\Illuminate\Http\Request $request, Campaign $campaign)
+    {
+        $this->authorize('update', $campaign);
+        
+        $request->validate([
+            'consumables' => 'required|array',
+            'consumables.*' => 'exists:consumables,id',
+        ]);
+        
+        $campaign->consumables()->sync($request->consumables);
+        
+        return redirect()->back()
+            ->with('success', 'Consommables de la campagne mis à jour avec succès.');
+    }
+
+    /**
+     * Update the resources of a campaign.
+     */
+    public function updateResources(\Illuminate\Http\Request $request, Campaign $campaign)
+    {
+        $this->authorize('update', $campaign);
+        
+        $request->validate([
+            'resources' => 'required|array',
+            'resources.*' => 'exists:resources,id',
+        ]);
+        
+        $campaign->resources()->sync($request->resources);
+        
+        return redirect()->back()
+            ->with('success', 'Ressources de la campagne mises à jour avec succès.');
+    }
+
+    /**
+     * Update the spells of a campaign.
+     */
+    public function updateSpells(\Illuminate\Http\Request $request, Campaign $campaign)
+    {
+        $this->authorize('update', $campaign);
+        
+        $request->validate([
+            'spells' => 'required|array',
+            'spells.*' => 'exists:spells,id',
+        ]);
+        
+        $campaign->spells()->sync($request->spells);
+        
+        return redirect()->back()
+            ->with('success', 'Sorts de la campagne mis à jour avec succès.');
+    }
+
+    /**
+     * Update the panoplies of a campaign.
+     */
+    public function updatePanoplies(\Illuminate\Http\Request $request, Campaign $campaign)
+    {
+        $this->authorize('update', $campaign);
+        
+        $request->validate([
+            'panoplies' => 'required|array',
+            'panoplies.*' => 'exists:panoplies,id',
+        ]);
+        
+        $campaign->panoplies()->sync($request->panoplies);
+        
+        return redirect()->back()
+            ->with('success', 'Panoplies de la campagne mises à jour avec succès.');
     }
 }

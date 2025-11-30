@@ -76,7 +76,46 @@ class ScenarioController extends Controller
      */
     public function edit(Scenario $scenario)
     {
-        //
+        $this->authorize('update', $scenario);
+        
+        $scenario->load([
+            'createdBy', 
+            'items', 
+            'consumables', 
+            'resources', 
+            'spells', 
+            'panoplies'
+        ]);
+        
+        // Charger toutes les entités disponibles pour la recherche
+        $availableItems = \App\Models\Entity\Item::select('id', 'name', 'description', 'level')
+            ->orderBy('name')
+            ->get();
+        
+        $availableConsumables = \App\Models\Entity\Consumable::select('id', 'name', 'description', 'level')
+            ->orderBy('name')
+            ->get();
+        
+        $availableResources = \App\Models\Entity\Resource::select('id', 'name', 'description', 'level')
+            ->orderBy('name')
+            ->get();
+        
+        $availableSpells = \App\Models\Entity\Spell::select('id', 'name', 'description', 'level')
+            ->orderBy('name')
+            ->get();
+        
+        $availablePanoplies = \App\Models\Entity\Panoply::select('id', 'name', 'description')
+            ->orderBy('name')
+            ->get();
+        
+        return Inertia::render('Pages/entity/scenario/Edit', [
+            'scenario' => new ScenarioResource($scenario),
+            'availableItems' => $availableItems,
+            'availableConsumables' => $availableConsumables,
+            'availableResources' => $availableResources,
+            'availableSpells' => $availableSpells,
+            'availablePanoplies' => $availablePanoplies,
+        ]);
     }
 
     /**
@@ -135,5 +174,95 @@ class ScenarioController extends Controller
     {
         $this->authorizeForUser(auth()->user(), 'view', $scenario);
         return response()->json($scenario->users);
+    }
+
+    /**
+     * Update the items of a scenario.
+     */
+    public function updateItems(\Illuminate\Http\Request $request, Scenario $scenario)
+    {
+        $this->authorize('update', $scenario);
+        
+        $request->validate([
+            'items' => 'required|array',
+            'items.*' => 'exists:items,id',
+        ]);
+        
+        $scenario->items()->sync($request->items);
+        
+        return redirect()->back()
+            ->with('success', 'Objets du scénario mis à jour avec succès.');
+    }
+
+    /**
+     * Update the consumables of a scenario.
+     */
+    public function updateConsumables(\Illuminate\Http\Request $request, Scenario $scenario)
+    {
+        $this->authorize('update', $scenario);
+        
+        $request->validate([
+            'consumables' => 'required|array',
+            'consumables.*' => 'exists:consumables,id',
+        ]);
+        
+        $scenario->consumables()->sync($request->consumables);
+        
+        return redirect()->back()
+            ->with('success', 'Consommables du scénario mis à jour avec succès.');
+    }
+
+    /**
+     * Update the resources of a scenario.
+     */
+    public function updateResources(\Illuminate\Http\Request $request, Scenario $scenario)
+    {
+        $this->authorize('update', $scenario);
+        
+        $request->validate([
+            'resources' => 'required|array',
+            'resources.*' => 'exists:resources,id',
+        ]);
+        
+        $scenario->resources()->sync($request->resources);
+        
+        return redirect()->back()
+            ->with('success', 'Ressources du scénario mises à jour avec succès.');
+    }
+
+    /**
+     * Update the spells of a scenario.
+     */
+    public function updateSpells(\Illuminate\Http\Request $request, Scenario $scenario)
+    {
+        $this->authorize('update', $scenario);
+        
+        $request->validate([
+            'spells' => 'required|array',
+            'spells.*' => 'exists:spells,id',
+        ]);
+        
+        $scenario->spells()->sync($request->spells);
+        
+        return redirect()->back()
+            ->with('success', 'Sorts du scénario mis à jour avec succès.');
+    }
+
+    /**
+     * Update the panoplies of a scenario.
+     */
+    public function updatePanoplies(\Illuminate\Http\Request $request, Scenario $scenario)
+    {
+        $this->authorize('update', $scenario);
+        
+        $request->validate([
+            'panoplies' => 'required|array',
+            'panoplies.*' => 'exists:panoplies,id',
+        ]);
+        
+        $scenario->panoplies()->sync($request->panoplies);
+        
+        return redirect()->back()
+            ->with('success', 'Panoplies du scénario mises à jour avec succès.');
     }
 }

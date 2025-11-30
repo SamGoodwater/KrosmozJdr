@@ -17,7 +17,12 @@ abstract class TestCase extends BaseTestCase
         parent::setUp();
         
         // Désactiver complètement le CSRF pour tous les tests
-        $this->withoutMiddleware(\Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class);
+        // En Laravel 11, le middleware CSRF est automatiquement inclus dans le groupe 'web'
+        // On doit le désactiver explicitement pour les tests
+        $this->withoutMiddleware([
+            \Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class,
+            \App\Http\Middleware\VerifyCsrfToken::class,
+        ]);
         
         // Désactiver d'autres middlewares non essentiels pour l'auth
         $this->withoutMiddleware([
@@ -34,5 +39,10 @@ abstract class TestCase extends BaseTestCase
         // Désactiver le CSRF dans la configuration de l'application
         app('config')->set('session.verify_csrf_token', false);
         app('config')->set('app.debug', true);
+        
+        // Forcer l'environnement de test
+        app()->detectEnvironment(function () {
+            return 'testing';
+        });
     }
 }

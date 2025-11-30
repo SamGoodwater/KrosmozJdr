@@ -530,6 +530,24 @@
     "file": "feedback/NotificationToast.vue"
   },
   {
+    "name": "PanoplyItemsManager",
+    "description": "PanoplyItemsManager Molecule",
+    "props": [
+      {
+        "name": "items",
+        "type": "Array",
+        "desc": "- Liste des items actuellement dans la panoplie"
+      },
+      {
+        "name": "availableItems",
+        "type": "Array",
+        "desc": "- Liste de tous les items disponibles (optionnel, pour recherche)"
+      }
+    ],
+    "slots": [],
+    "file": "entity/PanoplyItemsManager.vue"
+  },
+  {
     "name": "EntityViewText",
     "description": "EntityViewText Molecule",
     "props": [

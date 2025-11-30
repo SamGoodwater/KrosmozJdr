@@ -1,5 +1,5 @@
 <script setup>
-import { computed, ref } from 'vue';
+import { computed, ref, watch, nextTick } from 'vue';
 import { Head, useForm } from '@inertiajs/vue3';
 import InputField from '@/Pages/Molecules/data-input/InputField.vue';
 import Btn from '@/Pages/Atoms/action/Btn.vue';
@@ -54,9 +54,11 @@ const identifierValidation = computed(() => {
     // Les erreurs peuvent venir sur 'identifier' ou 'email' (rate limiting)
     const error = form.errors.identifier || form.errors.email;
     if (error) {
+        // Extraire le message si c'est un tableau
+        const errorMessage = Array.isArray(error) ? error[0] : error;
         return {
             state: 'error',
-            message: error,
+            message: errorMessage,
             showNotification: false
         };
     }
@@ -65,14 +67,47 @@ const identifierValidation = computed(() => {
 
 const passwordValidation = computed(() => {
     if (form.errors.password) {
+        // Extraire le message si c'est un tableau
+        const errorMessage = Array.isArray(form.errors.password) 
+            ? form.errors.password[0] 
+            : form.errors.password;
         return {
             state: 'error',
-            message: form.errors.password,
+            message: errorMessage,
             showNotification: false
         };
     }
     return null;
 });
+
+// Watch pour forcer la mise à jour de la validation quand les erreurs changent
+watch(() => form.errors, (newErrors, oldErrors) => {
+    // Ne traiter que si les erreurs ont réellement changé
+    const hasIdentifierError = !!(newErrors.identifier || newErrors.email);
+    const hasPasswordError = !!newErrors.password;
+    
+    if (hasIdentifierError || hasPasswordError) {
+        // Attendre le prochain tick pour s'assurer que les refs sont disponibles
+        nextTick(() => {
+            // Forcer la validation de l'identifiant si erreur
+            if (hasIdentifierError) {
+                if (identifierField.value) {
+                    identifierField.value.setInteracted?.();
+                    // Forcer la validation manuelle pour afficher l'erreur
+                    identifierField.value.validate?.('manual');
+                }
+            }
+            // Forcer la validation du mot de passe si erreur
+            if (hasPasswordError) {
+                if (passwordField.value) {
+                    passwordField.value.setInteracted?.();
+                    // Forcer la validation manuelle pour afficher l'erreur
+                    passwordField.value.validate?.('manual');
+                }
+            }
+        });
+    }
+}, { deep: true, immediate: false });
 
 // Soumission du formulaire
 function submit() {
@@ -83,30 +118,96 @@ function submit() {
     if (!isIdentifierValid || !isPasswordValid) {
         notificationStore.error('Veuillez remplir tous les champs requis', {
             duration: 5000,
-            placement: 'top-center'
+            placement: 'top-right'
         });
         return;
     }
     
     // Soumission avec gestion des erreurs serveur
     form.post(route('login'), {
+        preserveScroll: true,
         onError: (errors) => {
-            // Notification globale pour les erreurs d'authentification
-            // Les erreurs peuvent venir sur 'identifier', 'email' (rate limiting), ou 'password'
-            const errorMessage = errors.identifier || errors.email || errors.password || Object.values(errors)[0] || 'Erreur de connexion';
-            notificationStore.error('Erreur de connexion : ' + errorMessage, {
-                duration: 8000,
-                placement: 'top-center'
-            });
-            
             // Afficher les erreurs dans la console pour le débogage
             console.error('Erreurs de connexion:', errors);
+            console.error('Type des erreurs:', typeof errors);
+            console.error('Clés des erreurs:', Object.keys(errors || {}));
+            
+            // Déterminer le message d'erreur approprié
+            let errorMessage = 'Ces identifiants ne correspondent pas à nos enregistrements.';
+            
+            // Vérifier si errors existe et n'est pas vide
+            if (errors && typeof errors === 'object' && Object.keys(errors).length > 0) {
+                // Priorité 1 : Erreur d'identifiant (mauvais email/pseudo ou mot de passe)
+                if (errors.identifier) {
+                    const identifierError = Array.isArray(errors.identifier) 
+                        ? errors.identifier[0] 
+                        : errors.identifier;
+                    errorMessage = identifierError || errorMessage;
+                }
+                // Priorité 2 : Rate limiting (erreur sur 'email')
+                else if (errors.email) {
+                    const emailError = Array.isArray(errors.email) 
+                        ? errors.email[0] 
+                        : errors.email;
+                    errorMessage = emailError || errorMessage;
+                }
+                // Priorité 3 : Erreur de mot de passe
+                else if (errors.password) {
+                    const passwordError = Array.isArray(errors.password) 
+                        ? errors.password[0] 
+                        : errors.password;
+                    errorMessage = passwordError || errorMessage;
+                }
+                // Priorité 4 : Première erreur disponible
+                else {
+                    const firstErrorKey = Object.keys(errors)[0];
+                    const firstError = errors[firstErrorKey];
+                    errorMessage = Array.isArray(firstError) 
+                        ? firstError[0] 
+                        : (firstError || errorMessage);
+                }
+            }
+            
+            // Toujours afficher une notification d'erreur, même si les erreurs ne sont pas dans le format attendu
+            try {
+                notificationStore.error(errorMessage, {
+                    duration: 8000,
+                    placement: 'top-right'
+                });
+                console.log('Notification d\'erreur affichée:', errorMessage);
+            } catch (error) {
+                console.error('Erreur lors de l\'affichage de la notification:', error);
+                // Fallback : afficher une alerte si la notification échoue
+                alert(errorMessage);
+            }
+            
+            // Forcer la validation des champs après l'erreur pour afficher les erreurs dans le DOM
+            nextTick(() => {
+                // Forcer la validation de l'identifiant
+                if (errors.identifier || errors.email) {
+                    if (identifierField.value) {
+                        identifierField.value.setInteracted?.();
+                        identifierField.value.validate?.();
+                    }
+                }
+                // Forcer la validation du mot de passe
+                if (errors.password) {
+                    if (passwordField.value) {
+                        passwordField.value.setInteracted?.();
+                        passwordField.value.validate?.();
+                    }
+                }
+            });
         },
         onSuccess: () => {
             notificationStore.success('Connexion réussie !', {
                 duration: 3000,
-                placement: 'top-center'
+                placement: 'top-right'
             });
+        },
+        onFinish: () => {
+            // Cette fonction est appelée après onSuccess ou onError
+            // Utile pour réinitialiser l'état du formulaire si nécessaire
         }
     });
 }

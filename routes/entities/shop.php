@@ -14,6 +14,10 @@ Route::prefix('entities/shops')->name('entities.shops.')->middleware('auth')->gr
     Route::get('/create', [ShopController::class, 'create'])->name('create');
     Route::post('/', [ShopController::class, 'store'])->name('store');
     Route::get('/{shop}/edit', [ShopController::class, 'edit'])->name('edit');
+    // Routes spécifiques pour les relations (doivent être avant la route update générique)
+    Route::patch('/{shop}/items', [ShopController::class, 'updateItems'])->name('updateItems');
+    Route::patch('/{shop}/consumables', [ShopController::class, 'updateConsumables'])->name('updateConsumables');
+    Route::patch('/{shop}/resources', [ShopController::class, 'updateResources'])->name('updateResources');
     Route::patch('/{shop}', [ShopController::class, 'update'])->name('update');
     Route::delete('/{shop}', [ShopController::class, 'delete'])->name('delete');
 });

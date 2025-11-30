@@ -33,7 +33,7 @@ class PanoplyFactory extends Factory
         return [
             'dofusdb_id' => fake()->optional()->numerify('####'),
             'name' => fake()->unique()->randomElement($panoplyNames),
-            'description' => fake()->optional()->paragraph(),
+            'description' => fake()->optional()->text(200), // Limité à 200 caractères pour éviter les erreurs de troncature
             'bonus' => fake()->optional()->sentence(),
             'usable' => fake()->numberBetween(0, 1),
             'is_visible' => fake()->randomElement(['guest', 'user', 'player', 'game_master']),

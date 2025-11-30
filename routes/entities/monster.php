@@ -14,6 +14,10 @@ Route::prefix('entities/monsters')->name('entities.monsters.')->middleware('auth
     Route::get('/create', [MonsterController::class, 'create'])->name('create');
     Route::post('/', [MonsterController::class, 'store'])->name('store');
     Route::get('/{monster}/edit', [MonsterController::class, 'edit'])->name('edit');
+    // Routes spécifiques pour les relations (doivent être avant la route update générique)
+    Route::patch('/{monster}/scenarios', [MonsterController::class, 'updateScenarios'])->name('updateScenarios');
+    Route::patch('/{monster}/campaigns', [MonsterController::class, 'updateCampaigns'])->name('updateCampaigns');
+    Route::patch('/{monster}/spell-invocations', [MonsterController::class, 'updateSpellInvocations'])->name('updateSpellInvocations');
     Route::patch('/{monster}', [MonsterController::class, 'update'])->name('update');
     Route::delete('/{monster}', [MonsterController::class, 'delete'])->name('delete');
 });

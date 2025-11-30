@@ -14,6 +14,10 @@ Route::prefix('entities/npcs')->name('entities.npcs.')->middleware('auth')->grou
     Route::get('/create', [NpcController::class, 'create'])->name('create');
     Route::post('/', [NpcController::class, 'store'])->name('store');
     Route::get('/{npc}/edit', [NpcController::class, 'edit'])->name('edit');
+    // Routes spécifiques pour les relations (doivent être avant la route update générique)
+    Route::patch('/{npc}/panoplies', [NpcController::class, 'updatePanoplies'])->name('updatePanoplies');
+    Route::patch('/{npc}/scenarios', [NpcController::class, 'updateScenarios'])->name('updateScenarios');
+    Route::patch('/{npc}/campaigns', [NpcController::class, 'updateCampaigns'])->name('updateCampaigns');
     Route::patch('/{npc}', [NpcController::class, 'update'])->name('update');
     Route::delete('/{npc}', [NpcController::class, 'delete'])->name('delete');
 });

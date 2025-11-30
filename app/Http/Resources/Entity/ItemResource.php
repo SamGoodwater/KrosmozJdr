@@ -44,7 +44,7 @@ class ItemResource extends JsonResource
             // Relations
             'createdBy' => $this->whenLoaded('createdBy'),
             'itemType' => $this->whenLoaded('itemType'),
-            'resources' => $this->whenLoaded('resources'),
+            'resources' => $this->getResourcesArray(),
             'panoplies' => $this->whenLoaded('panoplies'),
             'scenarios' => $this->whenLoaded('scenarios'),
             'campaigns' => $this->whenLoaded('campaigns'),
@@ -57,6 +57,33 @@ class ItemResource extends JsonResource
                 'view' => $user ? $user->can('view', $this->resource) : false,
             ],
         ];
+    }
+
+    /**
+     * Retourne toujours un tableau pour les ressources, même si la relation n'est pas chargée.
+     *
+     * @return array
+     */
+    protected function getResourcesArray(): array
+    {
+        try {
+            if ($this->relationLoaded('resources')) {
+                return $this->resources->map(function ($resource) {
+                    return [
+                        'id' => $resource->id,
+                        'name' => $resource->name,
+                        'description' => $resource->description,
+                        'level' => $resource->level,
+                        'pivot' => $resource->pivot ? [
+                            'quantity' => $resource->pivot->quantity ?? null,
+                        ] : null,
+                    ];
+                })->values()->all();
+            }
+        } catch (\Exception $e) {
+            // Si la relation n'existe pas ou n'est pas chargée, retourner un tableau vide
+        }
+        return [];
     }
 }
 

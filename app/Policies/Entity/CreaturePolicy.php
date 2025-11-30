@@ -31,7 +31,7 @@ class CreaturePolicy
      */
     public function create(User $user): bool
     {
-        return in_array($user->role, ['admin', 'super_admin']);
+        return in_array($user->role, [User::ROLE_ADMIN, User::ROLE_SUPER_ADMIN, 4, 5, 'admin', 'super_admin']);
     }
 
     /**
@@ -39,7 +39,7 @@ class CreaturePolicy
      */
     public function update(User $user, Creature $creature): bool
     {
-        return in_array($user->role, ['admin', 'super_admin']);
+        return in_array($user->role, [User::ROLE_ADMIN, User::ROLE_SUPER_ADMIN, 4, 5, 'admin', 'super_admin']);
     }
 
     /**
@@ -47,7 +47,7 @@ class CreaturePolicy
      */
     public function delete(User $user, Creature $creature): bool
     {
-        return in_array($user->role, ['admin', 'super_admin']);
+        return in_array($user->role, [User::ROLE_ADMIN, User::ROLE_SUPER_ADMIN, 4, 5, 'admin', 'super_admin']);
     }
 
     /**

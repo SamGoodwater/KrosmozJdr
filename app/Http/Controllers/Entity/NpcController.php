@@ -84,7 +84,29 @@ class NpcController extends Controller
      */
     public function edit(Npc $npc)
     {
-        //
+        $this->authorize('update', $npc);
+        
+        $npc->load(['creature', 'classe', 'specialization', 'panoplies', 'scenarios', 'campaigns']);
+        
+        // Charger toutes les entités disponibles pour la recherche
+        $availablePanoplies = \App\Models\Entity\Panoply::select('id', 'name', 'description')
+            ->orderBy('name')
+            ->get();
+        
+        $availableScenarios = \App\Models\Entity\Scenario::select('id', 'name', 'description')
+            ->orderBy('name')
+            ->get();
+        
+        $availableCampaigns = \App\Models\Entity\Campaign::select('id', 'name', 'description')
+            ->orderBy('name')
+            ->get();
+        
+        return Inertia::render('Pages/entity/npc/Edit', [
+            'npc' => new NpcResource($npc),
+            'availablePanoplies' => $availablePanoplies,
+            'availableScenarios' => $availableScenarios,
+            'availableCampaigns' => $availableCampaigns,
+        ]);
     }
 
     /**
@@ -101,5 +123,59 @@ class NpcController extends Controller
     public function delete(Npc $npc)
     {
         //
+    }
+
+    /**
+     * Update the panoplies of an NPC.
+     */
+    public function updatePanoplies(\Illuminate\Http\Request $request, Npc $npc)
+    {
+        $this->authorize('update', $npc);
+        
+        $request->validate([
+            'panoplies' => 'required|array',
+            'panoplies.*' => 'exists:panoplies,id',
+        ]);
+        
+        $npc->panoplies()->sync($request->panoplies);
+        
+        return redirect()->back()
+            ->with('success', 'Panoplies du PNJ mises à jour avec succès.');
+    }
+
+    /**
+     * Update the scenarios of an NPC.
+     */
+    public function updateScenarios(\Illuminate\Http\Request $request, Npc $npc)
+    {
+        $this->authorize('update', $npc);
+        
+        $request->validate([
+            'scenarios' => 'required|array',
+            'scenarios.*' => 'exists:scenarios,id',
+        ]);
+        
+        $npc->scenarios()->sync($request->scenarios);
+        
+        return redirect()->back()
+            ->with('success', 'Scénarios du PNJ mis à jour avec succès.');
+    }
+
+    /**
+     * Update the campaigns of an NPC.
+     */
+    public function updateCampaigns(\Illuminate\Http\Request $request, Npc $npc)
+    {
+        $this->authorize('update', $npc);
+        
+        $request->validate([
+            'campaigns' => 'required|array',
+            'campaigns.*' => 'exists:campaigns,id',
+        ]);
+        
+        $npc->campaigns()->sync($request->campaigns);
+        
+        return redirect()->back()
+            ->with('success', 'Campagnes du PNJ mises à jour avec succès.');
     }
 }

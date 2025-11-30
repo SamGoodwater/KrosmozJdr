@@ -24,7 +24,7 @@ class ClasseFactory extends Factory
             'dofusdb_id' => fake()->optional()->numerify('####'),
             'name' => fake()->unique()->randomElement($classes),
             'description_fast' => fake()->optional()->sentence(),
-            'description' => fake()->optional()->paragraph(),
+            'description' => fake()->optional()->text(200), // Limité à 200 caractères pour éviter les erreurs de troncature
             'life' => (string) fake()->numberBetween(30, 100),
             'life_dice' => fake()->randomElement(['1d6', '1d8', '1d10', '1d12']),
             'specificity' => fake()->randomElement(['Force', 'Intelligence', 'Agilité', 'Chance', 'Sagesse']),

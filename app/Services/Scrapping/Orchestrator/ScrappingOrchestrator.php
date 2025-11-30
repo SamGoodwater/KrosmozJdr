@@ -114,7 +114,7 @@ class ScrappingOrchestrator
             
             // 5. Créer les relations après l'import en cascade
             if ($includeRelations && !empty($importedSpellIds)) {
-                $class = Classe::find($result['id']);
+                $class = \App\Models\Entity\Classe::find($result['id']);
                 if ($class) {
                     // Filtrer les IDs valides
                     $validSpellIds = array_filter($importedSpellIds);

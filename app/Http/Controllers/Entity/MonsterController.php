@@ -88,7 +88,29 @@ class MonsterController extends Controller
      */
     public function edit(Monster $monster)
     {
-        //
+        $this->authorize('update', $monster);
+        
+        $monster->load(['creature', 'monsterRace', 'scenarios', 'campaigns', 'spellInvocations']);
+        
+        // Charger toutes les entités disponibles pour la recherche
+        $availableScenarios = \App\Models\Entity\Scenario::select('id', 'name', 'description')
+            ->orderBy('name')
+            ->get();
+        
+        $availableCampaigns = \App\Models\Entity\Campaign::select('id', 'name', 'description')
+            ->orderBy('name')
+            ->get();
+        
+        $availableSpells = \App\Models\Entity\Spell::select('id', 'name', 'description', 'level')
+            ->orderBy('name')
+            ->get();
+        
+        return Inertia::render('Pages/entity/monster/Edit', [
+            'monster' => new MonsterResource($monster),
+            'availableScenarios' => $availableScenarios,
+            'availableCampaigns' => $availableCampaigns,
+            'availableSpells' => $availableSpells,
+        ]);
     }
 
     /**
@@ -96,7 +118,14 @@ class MonsterController extends Controller
      */
     public function update(UpdateMonsterRequest $request, Monster $monster)
     {
-        //
+        $this->authorize('update', $monster);
+        
+        $monster->update($request->validated());
+        
+        $monster->load(['creature', 'monsterRace']);
+        
+        return redirect()->route('entities.monsters.show', $monster)
+            ->with('success', 'Monstre mis à jour avec succès.');
     }
 
     /**
@@ -105,5 +134,59 @@ class MonsterController extends Controller
     public function delete(Monster $monster)
     {
         //
+    }
+
+    /**
+     * Update the scenarios of a monster.
+     */
+    public function updateScenarios(\Illuminate\Http\Request $request, Monster $monster)
+    {
+        $this->authorize('update', $monster);
+        
+        $request->validate([
+            'scenarios' => 'required|array',
+            'scenarios.*' => 'exists:scenarios,id',
+        ]);
+        
+        $monster->scenarios()->sync($request->scenarios);
+        
+        return redirect()->back()
+            ->with('success', 'Scénarios du monstre mis à jour avec succès.');
+    }
+
+    /**
+     * Update the campaigns of a monster.
+     */
+    public function updateCampaigns(\Illuminate\Http\Request $request, Monster $monster)
+    {
+        $this->authorize('update', $monster);
+        
+        $request->validate([
+            'campaigns' => 'required|array',
+            'campaigns.*' => 'exists:campaigns,id',
+        ]);
+        
+        $monster->campaigns()->sync($request->campaigns);
+        
+        return redirect()->back()
+            ->with('success', 'Campagnes du monstre mises à jour avec succès.');
+    }
+
+    /**
+     * Update the spell invocations of a monster.
+     */
+    public function updateSpellInvocations(\Illuminate\Http\Request $request, Monster $monster)
+    {
+        $this->authorize('update', $monster);
+        
+        $request->validate([
+            'spellInvocations' => 'required|array',
+            'spellInvocations.*' => 'exists:spells,id',
+        ]);
+        
+        $monster->spellInvocations()->sync($request->spellInvocations);
+        
+        return redirect()->back()
+            ->with('success', 'Sorts d\'invocation du monstre mis à jour avec succès.');
     }
 }

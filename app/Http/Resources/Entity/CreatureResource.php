@@ -35,10 +35,40 @@ class CreatureResource extends JsonResource
             'createdBy' => $this->whenLoaded('createdBy'),
             'attributes' => $this->whenLoaded('attributes'),
             'capabilities' => $this->whenLoaded('capabilities'),
-            'items' => $this->whenLoaded('items'),
-            'resources' => $this->whenLoaded('resources'),
+            'items' => ($this->relationLoaded('items') || isset($this->items)) ? $this->items->map(function ($item) {
+                return [
+                    'id' => $item->id,
+                    'name' => $item->name,
+                    'description' => $item->description,
+                    'level' => $item->level,
+                    'pivot' => $item->pivot ? [
+                        'quantity' => $item->pivot->quantity ?? null,
+                    ] : null,
+                ];
+            })->values()->all() : [],
+            'resources' => ($this->relationLoaded('resources') || isset($this->resources)) ? $this->resources->map(function ($resource) {
+                return [
+                    'id' => $resource->id,
+                    'name' => $resource->name,
+                    'description' => $resource->description,
+                    'level' => $resource->level,
+                    'pivot' => $resource->pivot ? [
+                        'quantity' => $resource->pivot->quantity ?? null,
+                    ] : null,
+                ];
+            })->values()->all() : [],
             'spells' => $this->whenLoaded('spells'),
-            'consumables' => $this->whenLoaded('consumables'),
+            'consumables' => ($this->relationLoaded('consumables') || isset($this->consumables)) ? $this->consumables->map(function ($consumable) {
+                return [
+                    'id' => $consumable->id,
+                    'name' => $consumable->name,
+                    'description' => $consumable->description,
+                    'level' => $consumable->level,
+                    'pivot' => $consumable->pivot ? [
+                        'quantity' => $consumable->pivot->quantity ?? null,
+                    ] : null,
+                ];
+            })->values()->all() : [],
             'npc' => $this->whenLoaded('npc'),
             'monster' => $this->whenLoaded('monster'),
 

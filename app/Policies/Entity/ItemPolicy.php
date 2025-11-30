@@ -31,7 +31,8 @@ class ItemPolicy
      */
     public function create(User $user): bool
     {
-        return in_array($user->role, ['admin', 'super_admin']);
+        // Vérifier les rôles avec les constantes (entiers) ou les noms (strings)
+        return in_array($user->role, [User::ROLE_ADMIN, User::ROLE_SUPER_ADMIN, 4, 5, 'admin', 'super_admin']);
     }
 
     /**
@@ -39,7 +40,8 @@ class ItemPolicy
      */
     public function update(User $user, Item $item): bool
     {
-        return in_array($user->role, ['admin', 'super_admin']);
+        // Vérifier les rôles avec les constantes (entiers) ou les noms (strings)
+        return in_array($user->role, [User::ROLE_ADMIN, User::ROLE_SUPER_ADMIN, 4, 5, 'admin', 'super_admin']);
     }
 
     /**
@@ -47,7 +49,8 @@ class ItemPolicy
      */
     public function delete(User $user, Item $item): bool
     {
-        return in_array($user->role, ['admin', 'super_admin']);
+        // Vérifier les rôles avec les constantes (entiers) ou les noms (strings)
+        return in_array($user->role, [User::ROLE_ADMIN, User::ROLE_SUPER_ADMIN, 4, 5, 'admin', 'super_admin']);
     }
 
     /**

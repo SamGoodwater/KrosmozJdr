@@ -33,7 +33,14 @@ class PanoplyResource extends JsonResource
 
             // Relations
             'createdBy' => $this->whenLoaded('createdBy'),
-            'items' => $this->whenLoaded('items'),
+            'items' => $this->relationLoaded('items') ? $this->items->map(function ($item) {
+                return [
+                    'id' => $item->id,
+                    'name' => $item->name,
+                    'description' => $item->description,
+                    'level' => $item->level,
+                ];
+            })->values()->all() : [],
             'npcs' => $this->whenLoaded('npcs'),
             'scenarios' => $this->whenLoaded('scenarios'),
             'campaigns' => $this->whenLoaded('campaigns'),
