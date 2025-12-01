@@ -7,7 +7,7 @@
  * - Structure DRY, accessibilité, tooltips, etc.
  */
 import { ref, watch, computed, onMounted, nextTick } from 'vue';
-import { useForm, usePage } from '@inertiajs/vue3';
+import { useForm, usePage, router } from '@inertiajs/vue3';
 import { useNotificationStore } from '@/Composables/store/useNotificationStore';
 import { verifyRole, getRoleTranslation, ROLES } from '@/Utils/user/RoleManager';
 import InputField from '@/Pages/Molecules/data-input/InputField.vue';
@@ -106,11 +106,110 @@ const updateProfile = () => {
 
 // Avatar
 const avatarFile = ref(null);
-const updateAvatar = () => {
-    /* ... logique suppression avatar ... */
+const avatarFileField = ref(null);
+
+// Fonction pour vérifier si une valeur est un File object (sans utiliser instanceof)
+const isFileObject = (value) => {
+    return value && 
+           typeof value === 'object' && 
+           value.name !== undefined && 
+           value.size !== undefined && 
+           value.type !== undefined && 
+           value.lastModified !== undefined;
 };
+
+// Fonction pour mettre à jour l'avatar (appelée manuellement, pas automatiquement)
+const handleAvatarUpdate = () => {
+    if (!avatarFile.value) return;
+    
+    // Vérifier que c'est bien un File object
+    if (!isFileObject(avatarFile.value)) {
+        console.warn('[Edit.vue] avatarFile.value is not a File:', avatarFile.value);
+        return;
+    }
+    
+    // Déterminer la route selon le contexte (profil courant ou admin modifiant un autre utilisateur)
+    const userId = user.value?.id;
+    const currentUserId = page.props.auth?.user?.id;
+    const routeName = (userId && userId !== currentUserId) 
+        ? 'user.admin.updateAvatar' 
+        : 'user.updateAvatar';
+    const routeParams = (userId && userId !== currentUserId) ? [userId] : [];
+    
+    // Créer un formulaire avec le fichier
+    const uploadForm = useForm({
+        avatar: avatarFile.value,
+    });
+    
+    uploadForm.post(route(routeName, ...routeParams), {
+        preserveScroll: true,
+        forceFormData: true,
+        onSuccess: () => {
+            success('Avatar mis à jour avec succès.');
+            // Réinitialiser avatarFile pour que la preview utilise le nouveau currentPath
+            avatarFile.value = null;
+            uploadForm.reset();
+            
+            // Forcer le rechargement des props user pour mettre à jour l'avatar
+            // Le backend fait déjà un redirect()->back(), mais on force le reload pour être sûr
+            router.reload({ 
+                only: ['user'],
+                preserveScroll: true 
+            });
+        },
+        onError: (errors) => {
+            if (errors.avatar) {
+                error(Array.isArray(errors.avatar) ? errors.avatar[0] : errors.avatar);
+            } else {
+                error('Erreur lors de la mise à jour de l\'avatar.');
+            }
+        },
+    });
+};
+
+// Fonction pour supprimer l'avatar
+const deleteAvatar = () => {
+    // Déterminer la route selon le contexte (profil courant ou admin modifiant un autre utilisateur)
+    const userId = user.value?.id;
+    const currentUserId = page.props.auth?.user?.id;
+    const routeName = (userId && userId !== currentUserId) 
+        ? 'user.admin.deleteAvatar' 
+        : 'user.deleteAvatar';
+    const routeParams = (userId && userId !== currentUserId) ? [userId] : [];
+    
+    const deleteForm = useForm({});
+    deleteForm.delete(route(routeName, ...routeParams), {
+        preserveScroll: true,
+        onSuccess: () => {
+            success('Avatar supprimé avec succès.');
+        },
+        onError: () => error('Erreur lors de la suppression de l\'avatar.'),
+    });
+};
+
+// Surveiller avatarFile pour déclencher l'upload automatiquement
 watch(avatarFile, (newFile) => {
-    if (newFile) updateAvatar();
+    if (newFile) {
+        // Extraire le fichier si c'est un FileList ou un tableau
+        let file = newFile;
+        if (file && typeof file === 'object' && 'length' in file && file.length > 0 && file[0]) {
+            file = file[0];
+        } else if (Array.isArray(file) && file.length > 0) {
+            file = file[0];
+        }
+        
+        // Vérifier que c'est bien un File
+        const isFile = file && 
+                       typeof file === 'object' && 
+                       file.name !== undefined && 
+                       file.size !== undefined && 
+                       file.type !== undefined &&
+                       file.lastModified !== undefined;
+        
+        if (isFile) {
+            handleAvatarUpdate(file);
+        }
+    }
 });
 
 // Mot de passe
@@ -238,8 +337,11 @@ const roleValidation = computed(() => {
                 <div class="flex flex-col gap-4 w-1/2">
                     <Tooltip content="Déposer ou cliquer pour changer votre avatar" placement="top">
                         <File
+                            ref="avatarFileField"
                             v-model="avatarFile"
-                            :currentFile="user?.avatar"
+                            :currentPath="user?.avatar"
+                            defaultPath="/storage/images/avatar/default_avatar_head.webp"
+                            :canDelete="true"
                             accept="image/*"
                             :maxSize="5242880"
                             helper="Format accepté : JPG, PNG, GIF, SVG, WEBP. Taille maximale : 5MB"
@@ -250,9 +352,9 @@ const roleValidation = computed(() => {
                             color="primary"
                             inputLabel="Avatar"
                         >
-                            <template #default>
+                            <template #default="{ url, source }">
                                 <Avatar
-                                    :src="user?.avatar"
+                                    :src="url || user?.avatar || '/storage/images/avatar/default_avatar_head.webp'"
                                     :label="user?.name"
                                     :alt="user?.name"
                                     size="3xl"

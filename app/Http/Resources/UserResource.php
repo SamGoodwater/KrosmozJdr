@@ -39,6 +39,7 @@ class UserResource extends JsonResource
             'role' => $this->role,
             'role_name' => $this->role_name, // Nom du rôle (chaîne)
             'avatar' => $this->avatarPath(), // Toujours une URL
+            'avatar_is_default' => $this->avatar === null, // Indique si l'avatar est par défaut
             'notifications_enabled' => $this->notifications_enabled,
             'notification_channels' => $this->notification_channels,
             'created_at' => $this->created_at?->toISOString(),

@@ -196,11 +196,15 @@ export default function useInputActions({
   );
 
   // --- ÉMISSION DES CHANGEMENTS (NOUVEAU) ---
-  watch(currentValue, (newVal, oldVal) => {
-    if (oldVal !== newVal && emit && typeof emit === 'function') {
-      emit('update:modelValue', newVal);
-    }
-  });
+  // Pour les inputs de type 'file', ne pas émettre automatiquement car FileCore le fait déjà
+  // Cela évite les conflits et les réinitialisations intempestives
+  if (type !== 'file') {
+    watch(currentValue, (newVal, oldVal) => {
+      if (oldVal !== newVal && emit && typeof emit === 'function') {
+        emit('update:modelValue', newVal);
+      }
+    });
+  }
 
   // --- GESTION DE L'HISTORIQUE ---
   watch(currentValue, (newVal, oldVal) => {

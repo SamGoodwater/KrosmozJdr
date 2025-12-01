@@ -67,10 +67,17 @@ export default function useInputField({
   const { inputAttrs, listeners } = useInputProps(props, attrs, emit, type, mode)
 
   // --- FUSION DES ATTRIBUTS AVEC LA VALEUR ---
-  const mergedInputAttrs = computed(() => ({
-    ...inputAttrs.value,
-    value: currentValue.value // Ajouter la valeur actuelle
-  }))
+  // Note: Pour les inputs de type 'file', on ne peut pas définir la propriété 'value'
+  // (sauf pour la chaîne vide) pour des raisons de sécurité du navigateur
+  const mergedInputAttrs = computed(() => {
+    const attrs = { ...inputAttrs.value };
+    const inputType = props.type || type;
+    // Ne pas ajouter 'value' pour les inputs de type 'file'
+    if (inputType !== 'file') {
+      attrs.value = currentValue.value;
+    }
+    return attrs;
+  })
 
   // --- GESTION DE LA VALIDATION ---
   // Nouveau système de validation granulaire

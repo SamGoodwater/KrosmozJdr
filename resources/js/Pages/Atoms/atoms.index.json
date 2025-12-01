@@ -1958,6 +1958,13 @@
     "file": "data-display/Icon.vue"
   },
   {
+    "name": "FilePreview",
+    "description": "FilePreview Atom (DaisyUI, Atomic Design)",
+    "props": [],
+    "slots": [],
+    "file": "data-display/FilePreview.vue"
+  },
+  {
     "name": "Container",
     "description": "Container Atom (Tailwind)",
     "props": [

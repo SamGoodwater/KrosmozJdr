@@ -125,10 +125,15 @@ async function resolveImage() {
 
     try {
         if (props.src) {
-            // URL directe
-            imageUrl.value = props.src.startsWith("/")
-                ? props.src
-                : `/${props.src}`;
+            // URL directe - si c'est déjà une URL complète (http:// ou https://), l'utiliser telle quelle
+            if (props.src.startsWith('http://') || props.src.startsWith('https://')) {
+                imageUrl.value = props.src
+            } else {
+                // Sinon, traiter comme un chemin relatif
+                imageUrl.value = props.src.startsWith("/")
+                    ? props.src
+                    : `/${props.src}`;
+            }
         } else {
             // Source via ImageService avec transformations
             if (Object.keys(props.transform).length > 0) {

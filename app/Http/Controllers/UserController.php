@@ -184,34 +184,50 @@ class UserController extends Controller
 
     /**
      * Met à jour uniquement l'avatar de l'utilisateur (endpoint dédié, UX moderne).
+     * Si aucun utilisateur n'est spécifié, utilise l'utilisateur connecté.
      *
      * @param Request $request
-     * @param User $user
+     * @param User|null $user
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function updateAvatar(Request $request, User $user)
+    public function updateAvatar(Request $request, User $user = null)
     {
+        $user = $user ?? Auth::user();
         $this->authorize('update', $user);
+        
+        // Vérifier que le fichier est présent
+        if (!$request->hasFile('avatar')) {
+            return redirect()->back()->withErrors(['avatar' => 'Aucun fichier n\'a été téléchargé.']);
+        }
+        
         $request->validate([
-            'avatar' => ['required', 'image', 'max:5120'], // 5MB max
+            'avatar' => ['required', 'image', 'mimes:jpeg,jpg,png,gif,webp,svg', 'max:5120'], // 5MB max
         ]);
+        
         // Supprimer l'ancien avatar si présent
         if ($user->avatar && Storage::disk('public')->exists($user->avatar)) {
             Storage::disk('public')->delete($user->avatar);
         }
+        
         $user->avatar = $request->file('avatar')->store('avatars', 'public');
         $user->save();
+        
+        // Recharger l'utilisateur avec les relations pour retourner les données complètes
+        $user->refresh();
+        
         return redirect()->back()->with('success', 'Avatar mis à jour.');
     }
 
     /**
      * Supprime uniquement l'avatar de l'utilisateur (endpoint dédié, UX moderne).
+     * Si aucun utilisateur n'est spécifié, utilise l'utilisateur connecté.
      *
-     * @param User $user
+     * @param User|null $user
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function deleteAvatar(User $user)
+    public function deleteAvatar(User $user = null)
     {
+        $user = $user ?? Auth::user();
         $this->authorize('update', $user);
         if ($user->avatar && Storage::disk('public')->exists($user->avatar)) {
             Storage::disk('public')->delete($user->avatar);
