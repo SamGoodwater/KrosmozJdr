@@ -40,6 +40,10 @@ export default function useInputProps(props, attrs, emit, type = 'input', mode =
         if (key === 'type' && ELEMENTS_WITHOUT_TYPE.includes(type)) {
           return
         }
+        // Exclure 'value' pour les inputs de type 'file' (sécurité navigateur)
+        if (key === 'value' && (type === 'file' || props.type === 'file')) {
+          return
+        }
         // Exclure les attributs vides ou null (sauf pour certains attributs booléens)
         if (props[key] !== null && props[key] !== '' && props[key] !== undefined) {
           result[attrKey] = props[key]
@@ -52,6 +56,10 @@ export default function useInputProps(props, attrs, emit, type = 'input', mode =
       if (!key.startsWith('on') && HTML_ATTRS.includes(key)) {
         // Exclure 'type' pour les éléments qui n'en ont pas
         if (key === 'type' && ELEMENTS_WITHOUT_TYPE.includes(type)) {
+          return
+        }
+        // Exclure 'value' pour les inputs de type 'file' (sécurité navigateur)
+        if (key === 'value' && (type === 'file' || props.type === 'file')) {
           return
         }
         // Exclure les attributs vides ou null (sauf pour certains attributs booléens)
