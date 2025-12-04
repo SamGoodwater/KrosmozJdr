@@ -16,7 +16,7 @@ class ClasseController extends Controller
      */
     public function index()
     {
-        $this->authorizeForUser(auth()->user(), 'viewAny', Classe::class);
+        $this->authorize('viewAny', Classe::class);
         
         $query = Classe::with(['createdBy', 'npcs', 'spells']);
         

@@ -37,6 +37,28 @@ export default function useFileUpload({
   const displayedFile = ref(null) // Fichier actuellement affiché (File object ou URL string)
 
   // ============================================
+  // 🔧 UTILITAIRES
+  // ============================================
+  /**
+   * Normalise un chemin de fichier pour la comparaison
+   * Extrait le pathname d'une URL complète ou retourne le chemin tel quel
+   * @param {String} path - Chemin à normaliser
+   * @returns {String} Chemin normalisé
+   */
+  const normalizePath = (path) => {
+    if (!path || typeof path !== 'string') return ''
+    try {
+      if (path.startsWith('http://') || path.startsWith('https://')) {
+        const url = new URL(path)
+        return url.pathname
+      }
+      return path
+    } catch (e) {
+      return path.split('/').pop() || path
+    }
+  }
+
+  // ============================================
   // 🔍 DÉTECTION DU TYPE DE FICHIER
   // ============================================
   /**
@@ -194,8 +216,30 @@ export default function useFileUpload({
   }
 
   // ============================================
+  // 🔧 HELPERS POUR EXTRACTION DE VALEURS
+  // ============================================
+  /**
+   * Extrait la valeur d'un computed, ref, fonction ou valeur directe
+   * @param {*} value - Valeur à extraire
+   * @returns {*} Valeur extraite
+   */
+  const extractValue = (value) => {
+    if (!value) return null
+    if (typeof value === 'function') return value()
+    if (typeof value === 'object' && value !== null && 'value' in value) return value.value
+    if (typeof value === 'string') return value
+    return value
+  }
+
+  // ============================================
   // 📊 COMPUTED PROPERTIES
   // ============================================
+  /**
+   * Valeurs réactives de currentPath et defaultPath
+   */
+  const currentPathValue = computed(() => extractValue(currentPath))
+  const defaultPathValue = computed(() => extractValue(defaultPath))
+
   /**
    * Détermine quel fichier doit être affiché
    * Priorité : nouveau fichier > currentPath > defaultPath
@@ -214,77 +258,30 @@ export default function useFileUpload({
       }
     }
     
-    // Récupérer les valeurs de currentPath et defaultPath (peuvent être des computed/ref)
-    // Forcer la réactivité en accédant à la valeur
-    let currentPathValue = null
-    if (currentPath) {
-      if (typeof currentPath === 'function') {
-        currentPathValue = currentPath()
-      } else if (typeof currentPath === 'object' && currentPath !== null) {
-        // Gérer les computed, ref, ou objets avec .value
-        if ('value' in currentPath) {
-          currentPathValue = currentPath.value
-        } else if (typeof currentPath === 'string') {
-          currentPathValue = currentPath
-        }
-      } else {
-        currentPathValue = currentPath
-      }
-    }
-    
-    let defaultPathValue = null
-    if (defaultPath) {
-      if (typeof defaultPath === 'function') {
-        defaultPathValue = defaultPath()
-      } else if (typeof defaultPath === 'object' && defaultPath !== null) {
-        // Gérer les computed, ref, ou objets avec .value
-        if ('value' in defaultPath) {
-          defaultPathValue = defaultPath.value
-        } else if (typeof defaultPath === 'string') {
-          defaultPathValue = defaultPath
-        }
-      } else {
-        defaultPathValue = defaultPath
-      }
-    }
-    
-    // Normaliser les chemins pour la comparaison (enlever le domaine et les paramètres)
-    const normalizePath = (path) => {
-      if (!path || typeof path !== 'string') return ''
-      try {
-        // Si c'est une URL complète, extraire le chemin
-        if (path.startsWith('http://') || path.startsWith('https://')) {
-          const url = new URL(path)
-          return url.pathname
-        }
-        // Sinon, retourner le chemin tel quel
-        return path
-      } catch (e) {
-        // Si l'URL est invalide, extraire juste le nom du fichier
-        return path.split('/').pop() || path
-      }
-    }
+    // Récupérer les valeurs normalisées
+    const current = currentPathValue.value
+    const defaultVal = defaultPathValue.value
     
     // Afficher currentPath s'il existe et qu'il n'est pas le defaultPath
-    if (currentPathValue && typeof currentPathValue === 'string' && currentPathValue.trim() !== '') {
-      const normalizedCurrent = normalizePath(currentPathValue)
-      const normalizedDefault = defaultPathValue ? normalizePath(defaultPathValue) : ''
+    if (current && typeof current === 'string' && current.trim() !== '') {
+      const normalizedCurrent = normalizePath(current)
+      const normalizedDefault = defaultVal ? normalizePath(defaultVal) : ''
       
       // Vérifier si currentPath correspond à defaultPath (pour éviter d'afficher le default comme current)
-      const isDefault = defaultPathValue && (
+      const isDefault = defaultVal && (
         normalizedCurrent === normalizedDefault ||
         normalizedCurrent.endsWith('default_avatar_head.webp') ||
-        currentPathValue.includes('default_avatar_head.webp')
+        current.includes('default_avatar_head.webp')
       )
       
       // Si ce n'est pas le fichier par défaut, l'afficher
       if (!isDefault) {
         return {
           source: 'current',
-          file: currentPathValue,
-          url: currentPathValue,
-          type: getFileType(currentPathValue),
-          name: currentPathValue.split('/').pop() || null,
+          file: current,
+          url: current,
+          type: getFileType(current),
+          name: current.split('/').pop() || null,
           size: null
         }
       }
@@ -292,13 +289,13 @@ export default function useFileUpload({
     }
     
     // Sinon, afficher defaultPath s'il existe
-    if (defaultPathValue && typeof defaultPathValue === 'string' && defaultPathValue.trim() !== '') {
+    if (defaultVal && typeof defaultVal === 'string' && defaultVal.trim() !== '') {
       return {
         source: 'default',
-        file: defaultPathValue,
-        url: defaultPathValue,
-        type: getFileType(defaultPathValue),
-        name: defaultPathValue.split('/').pop() || null,
+        file: defaultVal,
+        url: defaultVal,
+        type: getFileType(defaultVal),
+        name: defaultVal.split('/').pop() || null,
         size: null
       }
     }
@@ -317,15 +314,26 @@ export default function useFileUpload({
     // Si c'est le fichier par défaut, on ne peut pas le supprimer
     if (fileToDisplay.value.source === 'default') return false
     
-    // Si c'est currentPath et qu'il correspond à defaultPath, on ne peut pas le supprimer
-    if (fileToDisplay.value.source === 'current' && defaultPath) {
-      const current = typeof currentPath === 'string' ? currentPath : ''
-      const defaultPathStr = typeof defaultPath === 'string' ? defaultPath : ''
-      if (current.includes(defaultPathStr) || current.endsWith('default_avatar_head.webp')) {
+    // Si c'est currentPath, vérifier s'il correspond au defaultPath
+    if (fileToDisplay.value.source === 'current') {
+      const current = currentPathValue.value
+      const defaultVal = defaultPathValue.value
+      
+      const normalizedCurrent = normalizePath(current || '')
+      const normalizedDefault = normalizePath(defaultVal || '')
+      
+      // Si currentPath correspond à defaultPath, on ne peut pas le supprimer
+      if (normalizedCurrent === normalizedDefault || 
+          normalizedCurrent.endsWith('default_avatar_head.webp') ||
+          (current && current.includes('default_avatar_head.webp'))) {
         return false
       }
     }
     
+    // Si c'est un nouveau fichier (preview), on peut le supprimer
+    if (fileToDisplay.value.source === 'new') return true
+    
+    // Sinon, c'est un currentPath qui n'est pas le default, on peut le supprimer
     return true
   })
 

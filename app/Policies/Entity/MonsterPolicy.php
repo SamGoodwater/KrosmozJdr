@@ -31,7 +31,7 @@ class MonsterPolicy
      */
     public function create(User $user): bool
     {
-        return in_array($user->role, ['admin', 'super_admin']);
+        return $user->isAdmin();
     }
 
     /**
@@ -39,7 +39,7 @@ class MonsterPolicy
      */
     public function update(User $user, Monster $monster): bool
     {
-        return in_array($user->role, ['admin', 'super_admin']);
+        return $user->isAdmin();
     }
 
     /**
@@ -47,7 +47,7 @@ class MonsterPolicy
      */
     public function delete(User $user, Monster $monster): bool
     {
-        return in_array($user->role, ['admin', 'super_admin']);
+        return $user->isAdmin();
     }
 
     /**

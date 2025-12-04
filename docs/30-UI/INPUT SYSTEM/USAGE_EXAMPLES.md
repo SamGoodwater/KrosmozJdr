@@ -658,7 +658,7 @@ async function checkUsernameAvailability() {
       v-model="article.cover"
       label="Image de couverture"
       accept="image/*"
-      :max-size="2 * 1024 * 1024" // 2MB
+      :maxSize="2 * 1024 * 1024"
       helper="Formats acceptés: JPG, PNG (max 2MB)"
       :validation="coverValidation"
     />

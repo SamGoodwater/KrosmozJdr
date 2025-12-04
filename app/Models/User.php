@@ -303,6 +303,36 @@ class User extends Authenticatable
     }
 
     /**
+     * Vérifie si l'utilisateur est un administrateur (admin ou super_admin).
+     *
+     * @return bool
+     */
+    public function isAdmin(): bool
+    {
+        return $this->role >= self::ROLE_ADMIN;
+    }
+
+    /**
+     * Vérifie si l'utilisateur est un super administrateur.
+     *
+     * @return bool
+     */
+    public function isSuperAdmin(): bool
+    {
+        return $this->role === self::ROLE_SUPER_ADMIN;
+    }
+
+    /**
+     * Vérifie si l'utilisateur est un game master ou supérieur.
+     *
+     * @return bool
+     */
+    public function isGameMaster(): bool
+    {
+        return $this->role >= self::ROLE_GAME_MASTER;
+    }
+
+    /**
      * Relations: entités créées par l'utilisateur (hasMany)
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */

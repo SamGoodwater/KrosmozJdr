@@ -19,10 +19,6 @@ export class Page extends BaseModel {
     // PROPRIÉTÉS DE BASE
     // ============================================
 
-    get id() {
-        return this._data.id;
-    }
-
     get title() {
         return this._data.title || '';
     }

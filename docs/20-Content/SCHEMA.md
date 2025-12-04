@@ -471,6 +471,7 @@ erDiagram
     title : varchar(255)
     slug : varchar(255)
     is_visible : varchar(255)
+    can_edit_role : varchar(255)
     in_menu : tinyint(1)
     state : varchar(255)
     parent_id : bigint(20) unsigned

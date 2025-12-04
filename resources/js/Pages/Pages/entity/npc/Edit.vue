@@ -8,6 +8,7 @@
 import { ref, computed } from 'vue';
 import { Head, usePage } from '@inertiajs/vue3';
 import { usePageTitle } from '@/Composables/layout/usePageTitle';
+import { Npc } from '@/Models/Entity/Npc';
 import EntityEditForm from '@/Pages/Organismes/entity/EntityEditForm.vue';
 import EntityRelationsManager from '@/Pages/Organismes/entity/EntityRelationsManager.vue';
 import Container from '@/Pages/Atoms/data-display/Container.vue';
@@ -63,17 +64,15 @@ const fieldsConfig = {
     }
 };
 
+// Créer une instance de modèle Npc
 const npc = computed(() => {
     const npcData = props.npc || page.props.npc || {};
-    if (npcData.data && typeof npcData.data === 'object' && npcData.data.id) {
-        return npcData.data;
-    }
-    return npcData;
+    return new Npc(npcData);
 });
 
 // Nom du PNJ depuis la relation creature
 const npcName = computed(() => {
-    return npc.value?.creature?.name || 'Nouveau PNJ';
+    return npc.value.creature?.name || 'Nouveau PNJ';
 });
 
 setPageTitle(`Modifier le PNJ : ${npcName.value}`);
@@ -88,7 +87,7 @@ setPageTitle(`Modifier le PNJ : ${npcName.value}`);
                 <strong>Note :</strong> Le nom du PNJ est géré via la relation Creature. 
                 Pour modifier le nom, éditez la créature associée.
             </p>
-            <p v-if="npc?.creature" class="mt-2">
+            <p v-if="npc.creature" class="mt-2">
                 <strong>Créature associée :</strong> {{ npc.creature.name }}
             </p>
         </div>
@@ -104,9 +103,9 @@ setPageTitle(`Modifier le PNJ : ${npcName.value}`);
         
         <!-- Gestion des panoplies du PNJ -->
         <EntityRelationsManager
-            :relations="npc?.panoplies || []"
+            :relations="npc.panoplies || []"
             :available-items="availablePanoplies"
-            :entity-id="npc?.id"
+            :entity-id="npc.id"
             entity-type="npcs"
             relation-type="panoplies"
             relation-name="Panoplies du PNJ"
@@ -120,9 +119,9 @@ setPageTitle(`Modifier le PNJ : ${npcName.value}`);
         
         <!-- Gestion des scénarios du PNJ -->
         <EntityRelationsManager
-            :relations="npc?.scenarios || []"
+            :relations="npc.scenarios || []"
             :available-items="availableScenarios"
-            :entity-id="npc?.id"
+            :entity-id="npc.id"
             entity-type="npcs"
             relation-type="scenarios"
             relation-name="Scénarios du PNJ"
@@ -136,9 +135,9 @@ setPageTitle(`Modifier le PNJ : ${npcName.value}`);
         
         <!-- Gestion des campagnes du PNJ -->
         <EntityRelationsManager
-            :relations="npc?.campaigns || []"
+            :relations="npc.campaigns || []"
             :available-items="availableCampaigns"
-            :entity-id="npc?.id"
+            :entity-id="npc.id"
             entity-type="npcs"
             relation-type="campaigns"
             relation-name="Campagnes du PNJ"

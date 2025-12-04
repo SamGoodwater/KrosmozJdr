@@ -10,6 +10,7 @@
 import { Head, router } from "@inertiajs/vue3";
 import { ref, computed, onBeforeUnmount } from "vue";
 import { usePageTitle } from "@/Composables/layout/usePageTitle";
+import { Spell } from "@/Models/Entity/Spell";
 
 import Container from '@/Pages/Atoms/data-display/Container.vue';
 import Btn from '@/Pages/Atoms/action/Btn.vue';
@@ -29,6 +30,11 @@ const props = defineProps({
 
 const { setPageTitle } = usePageTitle();
 setPageTitle('Liste des Sorts');
+
+// Transformation des entités en instances de modèles
+const spells = computed(() => {
+    return Spell.fromArray(props.spells.data || []);
+});
 
 // État
 const selectedEntity = ref(null);
@@ -63,8 +69,10 @@ const handleEdit = (entity) => {
 };
 
 const handleDelete = (entity) => {
-    if (confirm(`Êtes-vous sûr de vouloir supprimer "${entity.name}" ?`)) {
-        router.delete(route(`entities.spells.delete`, { spell: entity.id }));
+    // entity peut être une instance de modèle ou un objet brut
+    const spellModel = entity instanceof Spell ? entity : new Spell(entity);
+    if (confirm(`Êtes-vous sûr de vouloir supprimer "${spellModel.name}" ?`)) {
+        router.delete(route(`entities.spells.delete`, { spell: spellModel.id }));
     }
 };
 
@@ -189,10 +197,10 @@ const closeModal = () => {
 
         <!-- Tableau -->
         <EntityTable
-            :entities="spells.data || []"
+            :entities="spells"
             :columns="columns"
             entity-type="spells"
-            :pagination="spells"
+            :pagination="props.spells"
             :show-filters="true"
             :search="search"
             :filters="filters"

@@ -16,7 +16,7 @@ class ConsumableController extends Controller
      */
     public function index()
     {
-        $this->authorizeForUser(auth()->user(), 'viewAny', Consumable::class);
+        $this->authorize('viewAny', Consumable::class);
         
         $query = Consumable::with(['createdBy', 'consumableType', 'resources']);
         

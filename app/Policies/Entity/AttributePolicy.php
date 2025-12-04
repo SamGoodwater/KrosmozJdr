@@ -31,7 +31,7 @@ class AttributePolicy
      */
     public function create(User $user): bool
     {
-        return in_array($user->role, ['admin', 'super_admin']);
+        return $user->isAdmin();
     }
 
     /**
@@ -39,7 +39,7 @@ class AttributePolicy
      */
     public function update(User $user, Attribute $attribute): bool
     {
-        return in_array($user->role, ['admin', 'super_admin']);
+        return $user->isAdmin();
     }
 
     /**
@@ -47,7 +47,7 @@ class AttributePolicy
      */
     public function delete(User $user, Attribute $attribute): bool
     {
-        return in_array($user->role, ['admin', 'super_admin']);
+        return $user->isAdmin();
     }
 
     /**
@@ -55,7 +55,7 @@ class AttributePolicy
      */
     public function restore(User $user, Attribute $attribute): bool
     {
-        return in_array($user->role, ['admin', 'super_admin']);
+        return $user->isAdmin();
     }
 
     /**
@@ -63,6 +63,6 @@ class AttributePolicy
      */
     public function forceDelete(User $user, Attribute $attribute): bool
     {
-        return in_array($user->role, ['admin', 'super_admin']);
+        return $user->isAdmin();
     }
 }

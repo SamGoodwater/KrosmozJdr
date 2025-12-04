@@ -3,23 +3,58 @@
  * Page Show Component
  * 
  * @description
- * Page d'affichage d'une page
+ * Page d'affichage d'une page dynamique avec ses sections.
+ * Utilise PageRenderer pour afficher la page et ses sections.
  * 
- * @props {Object} page - Données de la page
+ * @props {Object} page - Données de la page (avec sections)
  */
-</script>
-<template>
-    <div class="container mx-auto p-4">
-        <h1 class="text-2xl font-bold mb-6">Détail de la page</h1>
-        <div class="card bg-base-100 shadow-xl">
-            <div class="card-body">
-                <p class="text-center text-gray-500">
-                    Affichage de la page en cours de développement...
-                </p>
-            </div>
-        </div>
-    </div>
-</template>
-<style scoped lang="scss">
+import { Head, usePage } from '@inertiajs/vue3';
+import { computed } from 'vue';
+import PageRenderer from '@/Pages/Organismes/section/PageRenderer.vue';
+import { usePageTitle } from '@/Composables/layout/usePageTitle';
 
+const page = usePage();
+const { setPageTitle } = usePageTitle();
+
+const props = defineProps({
+    page: {
+        type: Object,
+        required: true
+    },
+    pages: {
+        type: Array,
+        default: () => []
+    }
+});
+
+/**
+ * Utilisateur connecté
+ */
+const user = computed(() => {
+    return page.props.auth?.user || null;
+});
+
+/**
+ * Titre de la page
+ */
+const pageTitle = computed(() => {
+    return props.page.title || 'Page';
+});
+
+// Mettre à jour le titre de la page
+setPageTitle(pageTitle.value);
+</script>
+
+<template>
+    <Head :title="pageTitle" />
+    
+    <PageRenderer 
+        :page="page"
+        :user="user"
+        :pages="pages"
+    />
+</template>
+
+<style scoped lang="scss">
+// Styles spécifiques à la page si nécessaire
 </style>

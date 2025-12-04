@@ -13,6 +13,7 @@ use App\Http\Controllers\SectionController;
 Route::prefix('pages')->name('pages.')->group(function () {
     // Lecture publique (slug pour SEO)
     Route::get('/', [PageController::class, 'index'])->name('index');
+    Route::get('/menu', [PageController::class, 'menu'])->name('menu');
     Route::get('/{page:slug}', [PageController::class, 'show'])->name('show')->where('page', '[a-z0-9]+(?:-[a-z0-9]+)*');
 
     // Authentifié uniquement (la policy gère les droits fins)
@@ -35,14 +36,22 @@ Route::prefix('pages')->name('pages.')->group(function () {
 // --- SECTIONS ---
 
 Route::prefix('sections')->name('sections.')->middleware('auth')->group(function () {
+    // Liste des sections
+    Route::get('/', [SectionController::class, 'index'])->name('index');
+    
+    // Réorganisation des sections (drag & drop) - doit être avant les routes avec paramètres
+    Route::patch('/reorder', [SectionController::class, 'reorder'])->name('reorder');
+    
+    // Création (doit être avant les routes avec paramètres)
+    Route::get('/create', [SectionController::class, 'create'])->name('create');
+    Route::post('/', [SectionController::class, 'store'])->name('store');
+    
     // Lecture (section précise via id numérique)
     Route::get('/{section}', [SectionController::class, 'show'])->name('show')->where('section', '[a-z0-9]+(?:-[a-z0-9]+)*');
 
-    // Edition, update, suppression, création : droits gérés par policy (plus de middleware 'role')
+    // Edition, update, suppression : droits gérés par policy (plus de middleware 'role')
     Route::get('/{section}/edit', [SectionController::class, 'edit'])->name('edit');
     Route::patch('/{section}', [SectionController::class, 'update'])->name('update');
-    Route::get('/create', [SectionController::class, 'create'])->name('create');
-    Route::post('/', [SectionController::class, 'store'])->name('store');
     Route::delete('/{section}', [SectionController::class, 'delete'])->name('delete');
     Route::post('/{section}/restore', [SectionController::class, 'restore'])->name('restore');
 

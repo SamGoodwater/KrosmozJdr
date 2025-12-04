@@ -112,6 +112,20 @@ const visibleFields = computed(() => {
 
 // Initialisation du formulaire avec les données de l'entité
 const initializeForm = () => {
+    // Si l'entité est une instance de modèle avec toFormData(), l'utiliser
+    if (props.entity && typeof props.entity.toFormData === 'function') {
+        const modelFormData = props.entity.toFormData();
+        const formData = {};
+        Object.keys(fieldsConfig.value).forEach(key => {
+            // Utiliser les données du modèle si disponibles, sinon valeur par défaut
+            formData[key] = modelFormData[key] !== undefined 
+                ? modelFormData[key] 
+                : (props.entity[key] || getDefaultValue(fieldsConfig.value[key].type));
+        });
+        return formData;
+    }
+    
+    // Sinon, utiliser l'accès direct aux propriétés (compatibilité avec objets bruts)
     const formData = {};
     Object.keys(fieldsConfig.value).forEach(key => {
         formData[key] = props.entity[key] || getDefaultValue(fieldsConfig.value[key].type);
@@ -158,8 +172,10 @@ const submit = () => {
         : `entities.${entityTypePlural}.store`;
     
     // Paramètres de route selon le type d'entité
+    // Gérer les instances de modèles et les objets bruts
+    const entityId = props.entity?.id ?? null;
     const routeParams = props.isUpdating 
-        ? { [props.entityType]: props.entity.id }
+        ? { [props.entityType]: entityId }
         : {};
 
     form[props.isUpdating ? 'patch' : 'post'](route(routeName, routeParams), {
@@ -184,8 +200,10 @@ const submit = () => {
 const cancel = () => {
     emit('cancel');
     const entityTypePlural = props.entityType === 'panoply' ? 'panoplies' : `${props.entityType}s`;
+    // Gérer les instances de modèles et les objets bruts
+    const entityId = props.entity?.id ?? null;
     if (props.isUpdating) {
-        router.visit(route(`entities.${entityTypePlural}.show`, { [props.entityType]: props.entity.id }));
+        router.visit(route(`entities.${entityTypePlural}.show`, { [props.entityType]: entityId }));
     } else {
         router.visit(route(`entities.${entityTypePlural}.index`));
     }

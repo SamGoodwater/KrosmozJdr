@@ -1101,6 +1101,13 @@ namespace App\Models{
  * @property-read \Illuminate\Database\Eloquent\Collection<int, Scenario> $scenarios
  * @property-read int|null $scenarios_count
  * @mixin \Eloquent
+ * @property \App\Enums\Visibility $can_edit_role
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Page forMenu(?\App\Models\User $user = null)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Page inMenu()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Page ordered()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Page published()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Page visibleFor(?\App\Models\User $user = null)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Page whereCanEditRole($value)
  */
 	class Page extends \Eloquent {}
 }
@@ -1151,6 +1158,10 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Section withTrashed()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Section withoutTrashed()
  * @mixin \Eloquent
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Section displayable(?\App\Models\User $user = null)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Section ordered()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Section published()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Section visibleFor(?\App\Models\User $user = null)
  */
 	class Section extends \Eloquent {}
 }

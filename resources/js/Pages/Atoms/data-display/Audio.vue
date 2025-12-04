@@ -77,10 +77,11 @@ const handleDelete = () => {
           <button
             type="button"
             @click="handleDelete"
-            class="btn btn-sm btn-error btn-circle"
+            class="btn btn-sm btn-error btn-circle shadow-lg hover:shadow-xl transition-all"
             aria-label="Supprimer le fichier"
+            title="Supprimer le fichier"
           >
-            <i class="fa-solid fa-times"></i>
+            <i class="fa-solid fa-trash-can"></i>
           </button>
         </div>
       </div>

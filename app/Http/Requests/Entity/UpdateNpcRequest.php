@@ -4,6 +4,11 @@ namespace App\Http\Requests\Entity;
 
 use Illuminate\Foundation\Http\FormRequest;
 
+/**
+ * FormRequest pour la mise à jour d'un Npc.
+ *
+ * Valide les champs principaux d'un NPC.
+ */
 class UpdateNpcRequest extends FormRequest
 {
     /**
@@ -11,7 +16,7 @@ class UpdateNpcRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return $this->user()?->isAdmin() ?? false;
     }
 
     /**
@@ -22,7 +27,13 @@ class UpdateNpcRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'creature_id' => ['sometimes', 'required', 'integer', 'exists:creatures,id'],
+            'story' => ['nullable', 'string'],
+            'historical' => ['nullable', 'string'],
+            'age' => ['nullable', 'string', 'max:255'],
+            'size' => ['nullable', 'string', 'max:255'],
+            'classe_id' => ['nullable', 'integer', 'exists:classes,id'],
+            'specialization_id' => ['nullable', 'integer', 'exists:specializations,id'],
         ];
     }
 }

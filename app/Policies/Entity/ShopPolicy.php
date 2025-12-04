@@ -31,7 +31,7 @@ class ShopPolicy
      */
     public function create(User $user): bool
     {
-        return in_array($user->role, [User::ROLE_ADMIN, User::ROLE_SUPER_ADMIN, 4, 5, 'admin', 'super_admin']);
+        return $user->isAdmin();
     }
 
     /**
@@ -39,7 +39,7 @@ class ShopPolicy
      */
     public function update(User $user, Shop $shop): bool
     {
-        return in_array($user->role, [User::ROLE_ADMIN, User::ROLE_SUPER_ADMIN, 4, 5, 'admin', 'super_admin']);
+        return $user->isAdmin();
     }
 
     /**
@@ -47,7 +47,7 @@ class ShopPolicy
      */
     public function delete(User $user, Shop $shop): bool
     {
-        return in_array($user->role, [User::ROLE_ADMIN, User::ROLE_SUPER_ADMIN, 4, 5, 'admin', 'super_admin']);
+        return $user->isAdmin();
     }
 
     /**

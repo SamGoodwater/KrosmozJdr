@@ -16,12 +16,19 @@ class PagePolicy
 {
     /**
      * Determine whether the user can view any models.
+     *
+     * Signature Laravel : Gate::allows('viewAny', Page::class)
+     * → un seul paramètre : l'utilisateur.
      */
-    public function viewAny(User $user, Page $page): bool
+    public function viewAny(?User $user): bool
     {
-        if (in_array($user->role, ['admin', 'super_admin'])) {
+        // Les admins/super_admin peuvent toujours lister les pages
+        if ($user && in_array($user->role, [User::ROLE_ADMIN, User::ROLE_SUPER_ADMIN, 4, 5, 'admin', 'super_admin'])) {
             return true;
         }
+
+        // Par défaut, on autorise l'accès à la liste pour les utilisateurs connectés
+        // (la policy/les scopes limiteront ensuite ce qu'ils voient réellement)
         return $user !== null;
     }
 
@@ -30,8 +37,12 @@ class PagePolicy
      */
     public function view(User $user, Page $page): bool
     {
-        if (in_array($user->role, ['game_master', 'admin', 'super_admin'])) {
+        if (in_array($user->role, [User::ROLE_GAME_MASTER, User::ROLE_ADMIN, User::ROLE_SUPER_ADMIN, 3, 4, 5, 'game_master', 'admin', 'super_admin'])) {
             return true;
+        }
+        // Charger la relation users si elle n'est pas déjà chargée
+        if (!$page->relationLoaded('users')) {
+            $page->load('users');
         }
         if ($page->users->contains($user->id)) {
             return true;
@@ -44,7 +55,8 @@ class PagePolicy
      */
     public function create(User $user): bool
     {
-        return in_array($user->role, ['admin', 'super_admin']);
+        // Vérifier les rôles avec les constantes (entiers) ou les noms (strings)
+        return in_array($user->role, [User::ROLE_ADMIN, User::ROLE_SUPER_ADMIN, 4, 5, 'admin', 'super_admin']);
     }
 
     /**
@@ -52,10 +64,13 @@ class PagePolicy
      */
     public function update(User $user, Page $page): bool
     {
-        if (in_array($user->role, ['game_master', 'admin', 'super_admin'])) {
+        // Les super_admin peuvent toujours modifier
+        if (in_array($user->role, [User::ROLE_SUPER_ADMIN, 5, 'super_admin'])) {
             return true;
         }
-        return $page->users->contains($user->id);
+
+        // Utiliser la méthode canBeEditedBy du modèle qui prend en compte can_edit_role
+        return $page->canBeEditedBy($user);
     }
 
     /**
@@ -63,7 +78,7 @@ class PagePolicy
      */
     public function delete(User $user, Page $page): bool
     {
-        if (in_array($user->role, ['admin', 'super_admin'])) {
+        if (in_array($user->role, [User::ROLE_ADMIN, User::ROLE_SUPER_ADMIN, 4, 5, 'admin', 'super_admin'])) {
             return true;
         }
         return $page->users->contains($user->id);
@@ -72,16 +87,16 @@ class PagePolicy
     /**
      * Determine whether the user can restore the model.
      */
-    public function restore(User $user): bool
+    public function restore(User $user, Page $page): bool
     {
-        return in_array($user->role, ['admin', 'super_admin']);
+        return in_array($user->role, [User::ROLE_ADMIN, User::ROLE_SUPER_ADMIN, 4, 5, 'admin', 'super_admin']);
     }
 
     /**
      * Determine whether the user can permanently delete the model.
      */
-    public function forceDelete(User $user): bool
+    public function forceDelete(User $user, Page $page): bool
     {
-        return in_array($user->role, ['admin', 'super_admin']);
+        return in_array($user->role, [User::ROLE_ADMIN, User::ROLE_SUPER_ADMIN, 4, 5, 'admin', 'super_admin']);
     }
 }

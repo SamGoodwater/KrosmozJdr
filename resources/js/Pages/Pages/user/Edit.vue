@@ -53,7 +53,6 @@ const initializeForms = (userData) => {
         : userData;
     
     if (!data || Object.keys(data).length === 0 || !data.id) {
-        console.log('Edit.vue - initializeForms: userData is empty or invalid', data);
         return;
     }
     
@@ -124,7 +123,6 @@ const handleAvatarUpdate = () => {
     
     // Vérifier que c'est bien un File object
     if (!isFileObject(avatarFile.value)) {
-        console.warn('[Edit.vue] avatarFile.value is not a File:', avatarFile.value);
         return;
     }
     
@@ -352,14 +350,27 @@ const roleValidation = computed(() => {
                             color="primary"
                             inputLabel="Avatar"
                         >
-                            <template #default="{ url, source }">
-                                <Avatar
-                                    :src="url || user?.avatar || '/storage/images/avatar/default_avatar_head.webp'"
-                                    :label="user?.name"
-                                    :alt="user?.name"
-                                    size="3xl"
-                                    rounded="full"
-                                />
+                            <template #default="{ url, source, canDelete }">
+                                <div class="relative inline-block group">
+                                    <Avatar
+                                        :src="url || user?.avatar || '/storage/images/avatar/default_avatar_head.webp'"
+                                        :label="user?.name"
+                                        :alt="user?.name"
+                                        size="3xl"
+                                        rounded="full"
+                                    />
+                                    <!-- Bouton de suppression -->
+                                    <button
+                                        v-if="canDelete"
+                                        type="button"
+                                        @click="deleteAvatar"
+                                        class="absolute top-0 right-0 opacity-0 group-hover:opacity-100 transition-opacity btn btn-sm btn-error btn-circle z-10 shadow-lg hover:shadow-xl transition-all"
+                                        aria-label="Supprimer l'avatar"
+                                        title="Supprimer l'avatar"
+                                    >
+                                        <i class="fa-solid fa-trash-can"></i>
+                                    </button>
+                                </div>
                             </template>
                         </File>
                     </Tooltip>

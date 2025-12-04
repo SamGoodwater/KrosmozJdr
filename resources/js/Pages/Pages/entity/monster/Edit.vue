@@ -10,6 +10,7 @@
 import { ref, computed } from 'vue';
 import { Head, usePage } from '@inertiajs/vue3';
 import { usePageTitle } from '@/Composables/layout/usePageTitle';
+import { Monster } from '@/Models/Entity/Monster';
 import EntityEditForm from '@/Pages/Organismes/entity/EntityEditForm.vue';
 import EntityRelationsManager from '@/Pages/Organismes/entity/EntityRelationsManager.vue';
 import Container from '@/Pages/Atoms/data-display/Container.vue';
@@ -62,18 +63,15 @@ const fieldsConfig = {
     }
 };
 
-// Extraire les données du monstre (gérer la structure Resource)
+// Créer une instance de modèle Monster
 const monster = computed(() => {
     const monsterData = props.monster || page.props.monster || {};
-    if (monsterData.data && typeof monsterData.data === 'object' && monsterData.data.id) {
-        return monsterData.data;
-    }
-    return monsterData;
+    return new Monster(monsterData);
 });
 
 // Nom du monstre depuis la relation creature
 const monsterName = computed(() => {
-    return monster.value?.creature?.name || 'Nouveau monstre';
+    return monster.value.creature?.name || 'Nouveau monstre';
 });
 
 setPageTitle(`Modifier le monstre : ${monsterName.value}`);
@@ -88,7 +86,7 @@ setPageTitle(`Modifier le monstre : ${monsterName.value}`);
                 <strong>Note :</strong> Le nom du monstre est géré via la relation Creature. 
                 Pour modifier le nom, éditez la créature associée.
             </p>
-            <p v-if="monster?.creature" class="mt-2">
+            <p v-if="monster.creature" class="mt-2">
                 <strong>Créature associée :</strong> {{ monster.creature.name }}
             </p>
         </div>
@@ -104,9 +102,9 @@ setPageTitle(`Modifier le monstre : ${monsterName.value}`);
         
         <!-- Gestion des scénarios du monstre -->
         <EntityRelationsManager
-            :relations="monster?.scenarios || []"
+            :relations="monster.scenarios || []"
             :available-items="availableScenarios"
-            :entity-id="monster?.id"
+            :entity-id="monster.id"
             entity-type="monsters"
             relation-type="scenarios"
             relation-name="Scénarios du monstre"
@@ -120,9 +118,9 @@ setPageTitle(`Modifier le monstre : ${monsterName.value}`);
         
         <!-- Gestion des campagnes du monstre -->
         <EntityRelationsManager
-            :relations="monster?.campaigns || []"
+            :relations="monster.campaigns || []"
             :available-items="availableCampaigns"
-            :entity-id="monster?.id"
+            :entity-id="monster.id"
             entity-type="monsters"
             relation-type="campaigns"
             relation-name="Campagnes du monstre"
@@ -136,9 +134,9 @@ setPageTitle(`Modifier le monstre : ${monsterName.value}`);
         
         <!-- Gestion des sorts d'invocation du monstre -->
         <EntityRelationsManager
-            :relations="monster?.spellInvocations || []"
+            :relations="monster.spellInvocations || []"
             :available-items="availableSpells"
-            :entity-id="monster?.id"
+            :entity-id="monster.id"
             entity-type="monsters"
             relation-type="spellInvocations"
             relation-name="Sorts d'invocation du monstre"

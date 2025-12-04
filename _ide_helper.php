@@ -23725,54 +23725,106 @@ namespace App\Http\Requests\Entity {
     class StoreCampaignRequest extends \Illuminate\Foundation\Http\FormRequest {
             }
     /**
+     * FormRequest pour la création d'une Capability.
+     * 
+     * Valide les champs principaux d'une capacité.
+     *
      */
     class StoreCapabilityRequest extends \Illuminate\Foundation\Http\FormRequest {
             }
     /**
+     * FormRequest pour la création d'une Classe.
+     * 
+     * Valide les champs principaux d'une classe.
+     *
      */
     class StoreClasseRequest extends \Illuminate\Foundation\Http\FormRequest {
             }
     /**
+     * FormRequest pour la création d'un Consumable.
+     * 
+     * Valide les champs principaux d'un consommable.
+     *
      */
     class StoreConsumableRequest extends \Illuminate\Foundation\Http\FormRequest {
             }
     /**
+     * FormRequest pour la création d'une Creature.
+     * 
+     * Valide les champs principaux d'une créature.
+     *
      */
     class StoreCreatureRequest extends \Illuminate\Foundation\Http\FormRequest {
             }
     /**
+     * FormRequest pour la création d'un Item.
+     * 
+     * Valide les champs principaux d'un objet/équipement.
+     *
      */
     class StoreItemRequest extends \Illuminate\Foundation\Http\FormRequest {
             }
     /**
+     * FormRequest pour la création d'un Monster.
+     * 
+     * Valide les champs principaux d'un monstre.
+     *
      */
     class StoreMonsterRequest extends \Illuminate\Foundation\Http\FormRequest {
             }
     /**
+     * FormRequest pour la création d'un Npc.
+     * 
+     * Valide les champs principaux d'un NPC.
+     *
      */
     class StoreNpcRequest extends \Illuminate\Foundation\Http\FormRequest {
             }
     /**
+     * FormRequest pour la création d'une Panoply.
+     * 
+     * Valide les champs principaux d'une panoplie.
+     *
      */
     class StorePanoplyRequest extends \Illuminate\Foundation\Http\FormRequest {
             }
     /**
+     * FormRequest pour la création d'une Resource.
+     * 
+     * Valide les champs principaux d'une ressource.
+     *
      */
     class StoreResourceRequest extends \Illuminate\Foundation\Http\FormRequest {
             }
     /**
+     * FormRequest pour la création d'un Scenario.
+     * 
+     * Valide les champs principaux d'un scénario.
+     *
      */
     class StoreScenarioRequest extends \Illuminate\Foundation\Http\FormRequest {
             }
     /**
+     * FormRequest pour la création d'un Shop.
+     * 
+     * Valide les champs principaux d'une boutique.
+     *
      */
     class StoreShopRequest extends \Illuminate\Foundation\Http\FormRequest {
             }
     /**
+     * FormRequest pour la création d'une Specialization.
+     * 
+     * Valide les champs principaux d'une spécialisation.
+     *
      */
     class StoreSpecializationRequest extends \Illuminate\Foundation\Http\FormRequest {
             }
     /**
+     * FormRequest pour la création d'un Spell.
+     * 
+     * Valide les champs principaux d'un sort.
+     *
      */
     class StoreSpellRequest extends \Illuminate\Foundation\Http\FormRequest {
             }
@@ -23785,18 +23837,34 @@ namespace App\Http\Requests\Entity {
     class UpdateCampaignRequest extends \Illuminate\Foundation\Http\FormRequest {
             }
     /**
+     * FormRequest pour la mise à jour d'une Capability.
+     * 
+     * Valide les champs principaux d'une capacité.
+     *
      */
     class UpdateCapabilityRequest extends \Illuminate\Foundation\Http\FormRequest {
             }
     /**
+     * FormRequest pour la mise à jour d'une Classe.
+     * 
+     * Valide les champs principaux d'une classe.
+     *
      */
     class UpdateClasseRequest extends \Illuminate\Foundation\Http\FormRequest {
             }
     /**
+     * FormRequest pour la mise à jour d'un Consumable.
+     * 
+     * Valide les champs principaux d'un consommable.
+     *
      */
     class UpdateConsumableRequest extends \Illuminate\Foundation\Http\FormRequest {
             }
     /**
+     * FormRequest pour la mise à jour d'une Creature.
+     * 
+     * Valide les champs principaux d'une créature.
+     *
      */
     class UpdateCreatureRequest extends \Illuminate\Foundation\Http\FormRequest {
             }
@@ -23805,10 +23873,22 @@ namespace App\Http\Requests\Entity {
     class UpdateItemRequest extends \Illuminate\Foundation\Http\FormRequest {
             }
     /**
+     * FormRequest pour la mise à jour des ressources d'un Item.
+     * 
+     * Valide les relations many-to-many entre items et resources avec quantités.
+     *
+     */
+    class UpdateItemResourcesRequest extends \Illuminate\Foundation\Http\FormRequest {
+            }
+    /**
      */
     class UpdateMonsterRequest extends \Illuminate\Foundation\Http\FormRequest {
             }
     /**
+     * FormRequest pour la mise à jour d'un Npc.
+     * 
+     * Valide les champs principaux d'un NPC.
+     *
      */
     class UpdateNpcRequest extends \Illuminate\Foundation\Http\FormRequest {
             }
@@ -23817,18 +23897,34 @@ namespace App\Http\Requests\Entity {
     class UpdatePanoplyRequest extends \Illuminate\Foundation\Http\FormRequest {
             }
     /**
+     * FormRequest pour la mise à jour d'une Resource.
+     * 
+     * Valide les champs principaux d'une ressource.
+     *
      */
     class UpdateResourceRequest extends \Illuminate\Foundation\Http\FormRequest {
             }
     /**
+     * FormRequest pour la mise à jour d'un Scenario.
+     * 
+     * Valide les champs principaux d'un scénario.
+     *
      */
     class UpdateScenarioRequest extends \Illuminate\Foundation\Http\FormRequest {
             }
     /**
+     * FormRequest pour la mise à jour d'un Shop.
+     * 
+     * Valide les champs principaux d'une boutique.
+     *
      */
     class UpdateShopRequest extends \Illuminate\Foundation\Http\FormRequest {
             }
     /**
+     * FormRequest pour la mise à jour d'une Specialization.
+     * 
+     * Valide les champs principaux d'une spécialisation.
+     *
      */
     class UpdateSpecializationRequest extends \Illuminate\Foundation\Http\FormRequest {
             }

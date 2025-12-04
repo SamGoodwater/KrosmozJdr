@@ -1609,6 +1609,13 @@
     "file": "data-input/CheckboxCore.vue"
   },
   {
+    "name": "Video",
+    "description": "Video Atom (DaisyUI, Atomic Design)",
+    "props": [],
+    "slots": [],
+    "file": "data-display/Video.vue"
+  },
+  {
     "name": "Status",
     "description": "Status Atom (DaisyUI)",
     "props": [
@@ -1965,6 +1972,13 @@
     "file": "data-display/FilePreview.vue"
   },
   {
+    "name": "Document",
+    "description": "Document Atom (DaisyUI, Atomic Design)",
+    "props": [],
+    "slots": [],
+    "file": "data-display/Document.vue"
+  },
+  {
     "name": "Container",
     "description": "Container Atom (Tailwind)",
     "props": [
@@ -2265,6 +2279,13 @@
       }
     ],
     "file": "data-display/Avatar.vue"
+  },
+  {
+    "name": "Audio",
+    "description": "Audio Atom (DaisyUI, Atomic Design)",
+    "props": [],
+    "slots": [],
+    "file": "data-display/Audio.vue"
   },
   {
     "name": "Swap",

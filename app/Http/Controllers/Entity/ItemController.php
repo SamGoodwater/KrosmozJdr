@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Entity;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Entity\StoreItemRequest;
 use App\Http\Requests\Entity\UpdateItemRequest;
+use App\Http\Requests\Entity\UpdateItemResourcesRequest;
 use App\Models\Entity\Item;
 use App\Http\Resources\Entity\ItemResource;
 use Inertia\Inertia;
@@ -16,7 +17,7 @@ class ItemController extends Controller
      */
     public function index()
     {
-        $this->authorizeForUser(auth()->user(), 'viewAny', Item::class);
+        $this->authorize('viewAny', Item::class);
         
         $query = Item::with(['createdBy', 'itemType', 'resources']);
         
@@ -130,34 +131,16 @@ class ItemController extends Controller
     /**
      * Update the resources of an item (recette de craft avec quantités).
      */
-    public function updateResources(\Illuminate\Http\Request $request, Item $item)
+    public function updateResources(UpdateItemResourcesRequest $request, Item $item)
     {
         $this->authorize('update', $item);
         
-        $request->validate([
-            'resources' => 'array',
-        ]);
-        
-        // Format attendu : { resource_id: { quantity: value } }
+        // Les données sont déjà normalisées et validées par la FormRequest
+        $resources = $request->input('resources', []);
         $syncData = [];
-        foreach ($request->resources as $resourceId => $pivotData) {
-            $resourceId = (int)$resourceId; // S'assurer que l'ID est un entier
-            if (is_array($pivotData) && isset($pivotData['quantity']) && $pivotData['quantity'] > 0) {
-                $syncData[$resourceId] = ['quantity' => (int)$pivotData['quantity']];
-            }
-        }
         
-        // Valider que les IDs de ressources existent
-        if (!empty($syncData)) {
-            $resourceIds = array_keys($syncData);
-            $existingResources = \App\Models\Entity\Resource::whereIn('id', $resourceIds)->pluck('id')->toArray();
-            $invalidIds = array_diff($resourceIds, $existingResources);
-            
-            if (!empty($invalidIds)) {
-                return redirect()->back()
-                    ->withErrors(['resources' => 'Certaines ressources n\'existent pas.'])
-                    ->withInput();
-            }
+        foreach ($resources as $resourceId => $pivotData) {
+            $syncData[$resourceId] = ['quantity' => $pivotData['quantity']];
         }
         
         $item->resources()->sync($syncData);

@@ -16,7 +16,7 @@ class ScenarioController extends Controller
      */
     public function index()
     {
-        $this->authorizeForUser(auth()->user(), 'viewAny', Scenario::class);
+        $this->authorize('viewAny', Scenario::class);
         
         $query = Scenario::with(['createdBy', 'users', 'campaigns']);
         
@@ -172,7 +172,7 @@ class ScenarioController extends Controller
      */
     public function users(Scenario $scenario)
     {
-        $this->authorizeForUser(auth()->user(), 'view', $scenario);
+        $this->authorize('view', $scenario);
         return response()->json($scenario->users);
     }
 

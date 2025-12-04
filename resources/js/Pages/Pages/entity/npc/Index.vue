@@ -10,6 +10,7 @@
 import { Head, router } from "@inertiajs/vue3";
 import { ref, computed, onBeforeUnmount } from "vue";
 import { usePageTitle } from "@/Composables/layout/usePageTitle";
+import { Npc } from "@/Models/Entity/Npc";
 
 import Container from '@/Pages/Atoms/data-display/Container.vue';
 import Btn from '@/Pages/Atoms/action/Btn.vue';
@@ -29,6 +30,11 @@ const props = defineProps({
 
 const { setPageTitle } = usePageTitle();
 setPageTitle('Liste des NPCs');
+
+// Transformation des entités en instances de modèles
+const npcs = computed(() => {
+    return Npc.fromArray(props.npcs.data || []);
+});
 
 // État
 const selectedEntity = ref(null);
@@ -158,10 +164,10 @@ const closeModal = () => {
 
         <!-- Tableau -->
         <EntityTable
-            :entities="npcs.data || []"
+            :entities="npcs"
             :columns="columns"
             entity-type="npcs"
-            :pagination="npcs"
+            :pagination="props.npcs"
             :show-filters="true"
             :search="search"
             :filters="filters"

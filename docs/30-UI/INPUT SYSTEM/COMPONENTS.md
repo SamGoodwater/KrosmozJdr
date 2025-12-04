@@ -129,6 +129,12 @@ Les composants Core sont les **atomes de base** qui gèrent uniquement la saisie
 />
 ```
 
+**Props principales :**
+- `accept` : Types MIME acceptés (ex: "image/*", ".pdf,.doc")
+- `multiple` : Sélection multiple de fichiers
+- `capture` : Capture média ("user", "environment")
+- `variant`, `color`, `size` : Styles DaisyUI
+
 ### **ColorCore.vue** - Sélecteur de couleur
 ```vue
 <ColorCore 

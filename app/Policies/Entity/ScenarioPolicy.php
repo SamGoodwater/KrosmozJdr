@@ -39,7 +39,7 @@ class ScenarioPolicy
      */
     public function update(User $user, Scenario $scenario): bool
     {
-        if (in_array($user->role, ['admin', 'super_admin'])) {
+        if ($user->isAdmin()) {
             return true;
         }
         return $scenario->users->contains($user->id);
@@ -50,7 +50,7 @@ class ScenarioPolicy
      */
     public function delete(User $user, Scenario $scenario): bool
     {
-        if (in_array($user->role, ['admin', 'super_admin'])) {
+        if ($user->isAdmin()) {
             return true;
         }
         return $scenario->users->contains($user->id);

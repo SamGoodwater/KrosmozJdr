@@ -25,6 +25,7 @@ import Dock from "@/Pages/Molecules/navigation/Dock.vue";
 import DockItem from "@/Pages/Atoms/navigation/DockItem.vue";
 import Tooltip from "@/Pages/Atoms/feedback/Tooltip.vue";
 import Icon from "@/Pages/Atoms/data-display/Icon.vue";
+import DynamicMenu from "@/Pages/Organismes/section/DynamicMenu.vue";
 import { ref, computed } from "vue";
 import { usePage } from "@inertiajs/vue3";
 
@@ -140,6 +141,9 @@ const footerItems = [
                             </ul>
                         </details>
                     </li>
+                    
+                    <!-- Menu dynamique des pages -->
+                    <DynamicMenu :current-route="page.url" />
                 </Menu>
             </div>
         </div>

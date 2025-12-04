@@ -4,6 +4,11 @@ namespace App\Http\Requests\Entity;
 
 use Illuminate\Foundation\Http\FormRequest;
 
+/**
+ * FormRequest pour la création d'un Spell.
+ *
+ * Valide les champs principaux d'un sort.
+ */
 class StoreSpellRequest extends FormRequest
 {
     /**
@@ -11,7 +16,7 @@ class StoreSpellRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return $this->user()?->isAdmin() ?? false;
     }
 
     /**
@@ -22,7 +27,29 @@ class StoreSpellRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'name' => ['required', 'string', 'max:255'],
+            'description' => ['required', 'string'],
+            'effect' => ['nullable', 'string'],
+            'area' => ['nullable', 'integer', 'min:0'],
+            'level' => ['nullable', 'string', 'max:255'],
+            'po' => ['nullable', 'string', 'max:255'],
+            'po_editable' => ['nullable', 'boolean'],
+            'pa' => ['nullable', 'string', 'max:255'],
+            'cast_per_turn' => ['nullable', 'string', 'max:255'],
+            'cast_per_target' => ['nullable', 'string', 'max:255'],
+            'sight_line' => ['nullable', 'boolean'],
+            'number_between_two_cast' => ['nullable', 'string', 'max:255'],
+            'number_between_two_cast_editable' => ['nullable', 'boolean'],
+            'element' => ['nullable', 'integer', 'min:0', 'max:19'],
+            'category' => ['nullable', 'integer'],
+            'is_magic' => ['nullable', 'boolean'],
+            'powerful' => ['nullable', 'integer'],
+            'usable' => ['nullable', 'integer', 'in:0,1'],
+            'is_visible' => ['nullable', 'string', 'max:255'],
+            'image' => ['nullable', 'string', 'max:255'],
+            'auto_update' => ['nullable', 'boolean'],
+            'official_id' => ['nullable', 'string', 'max:255'],
+            'dofusdb_id' => ['nullable', 'string', 'max:255'],
         ];
     }
 }

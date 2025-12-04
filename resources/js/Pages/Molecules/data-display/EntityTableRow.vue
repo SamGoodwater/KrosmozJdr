@@ -39,8 +39,27 @@ const props = defineProps({
 
 const emit = defineEmits(['view', 'edit', 'delete']);
 
+/**
+ * Récupère la valeur d'une cellule en gérant les instances de modèles et les objets bruts
+ */
 const getCellValue = (column) => {
-    const value = props.entity[column.key];
+    let value;
+    
+    // Si l'entité est une instance de modèle (BaseModel), utiliser les getters
+    if (props.entity && typeof props.entity._data !== 'undefined') {
+        // C'est une instance de modèle, accéder via les getters ou _data
+        const getterName = column.key;
+        // Essayer d'abord le getter direct (pour les propriétés comme name, id, etc.)
+        if (typeof props.entity[getterName] !== 'undefined') {
+            value = props.entity[getterName];
+        } else {
+            // Sinon, accéder via _data
+            value = props.entity._data?.[column.key];
+        }
+    } else {
+        // Objet brut, accès direct
+        value = props.entity[column.key];
+    }
     
     // Format personnalisé depuis la colonne
     if (column.format && typeof column.format === 'function') {
@@ -89,7 +108,37 @@ const getEntityRoute = () => {
 };
 
 const getEntityRouteParams = () => {
-    return { [props.entityType]: props.entity.id };
+    // Gérer les instances de modèles et les objets bruts
+    const entityId = props.entity?.id ?? props.entity?.id ?? null;
+    return { [props.entityType]: entityId };
+};
+
+/**
+ * Récupère les permissions en gérant les modèles et objets bruts
+ * Les modèles BaseModel ont des getters canView, canUpdate, canDelete
+ */
+const getCanView = () => {
+    if (props.entity && typeof props.entity.canView !== 'undefined') {
+        // C'est un getter (modèle) ou une propriété
+        return props.entity.canView ?? false;
+    }
+    return props.entity?.can?.view ?? false;
+};
+
+const getCanUpdate = () => {
+    if (props.entity && typeof props.entity.canUpdate !== 'undefined') {
+        // C'est un getter (modèle) ou une propriété
+        return props.entity.canUpdate ?? false;
+    }
+    return props.entity?.can?.update ?? false;
+};
+
+const getCanDelete = () => {
+    if (props.entity && typeof props.entity.canDelete !== 'undefined') {
+        // C'est un getter (modèle) ou une propriété
+        return props.entity.canDelete ?? false;
+    }
+    return props.entity?.can?.delete ?? false;
 };
 </script>
 
@@ -109,17 +158,18 @@ const getEntityRouteParams = () => {
             <!-- Colonnes d'actions -->
             <template v-else-if="column.key === 'actions'">
                 <div class="flex gap-2 justify-end">
-                    <Tooltip v-if="entity.can?.view" content="Voir" placement="top">
+                    <!-- Gérer les permissions pour les modèles et objets bruts -->
+                    <Tooltip v-if="getCanView()" content="Voir" placement="top">
                         <Btn size="sm" variant="ghost" @click="handleView">
                             <i class="fa-solid fa-eye"></i>
                         </Btn>
                     </Tooltip>
-                    <Tooltip v-if="entity.can?.update" content="Éditer" placement="top">
+                    <Tooltip v-if="getCanUpdate()" content="Éditer" placement="top">
                         <Btn size="sm" variant="ghost" @click="handleEdit">
                             <i class="fa-solid fa-pen"></i>
                         </Btn>
                     </Tooltip>
-                    <Tooltip v-if="entity.can?.delete" content="Supprimer" placement="top">
+                    <Tooltip v-if="getCanDelete()" content="Supprimer" placement="top">
                         <Btn size="sm" variant="ghost" color="error" @click="handleDelete">
                             <i class="fa-solid fa-trash"></i>
                         </Btn>

@@ -93,9 +93,29 @@ class NotificationService
         foreach ($new->getChanges() as $field => $newValue) {
             if (in_array($field, $ignore)) continue;
             $isImage = is_string($newValue) && FileService::isImagePath($newValue);
+            
+            // Récupérer l'ancienne valeur de manière sécurisée
+            $oldValue = null;
+            if (is_object($old) && method_exists($old, 'getAttribute')) {
+                $oldValue = $old->getAttribute($field);
+            } elseif (is_object($old) && isset($old->$field)) {
+                $oldValue = $old->$field;
+            } elseif (is_array($old) && isset($old[$field])) {
+                $oldValue = $old[$field];
+            }
+            
+            // Convertir les enums en valeurs si nécessaire
+            if ($oldValue instanceof \BackedEnum) {
+                $oldValue = $oldValue->value;
+            }
+            $newValueForChange = $new->getAttribute($field);
+            if ($newValueForChange instanceof \BackedEnum) {
+                $newValueForChange = $newValueForChange->value;
+            }
+            
             $changes[$field] = [
-                'old' => $old->$field,
-                'new' => $new->$field,
+                'old' => $oldValue,
+                'new' => $newValueForChange,
                 'image_url' => $isImage ? Storage::disk('public')->url($newValue) : null,
             ];
         }

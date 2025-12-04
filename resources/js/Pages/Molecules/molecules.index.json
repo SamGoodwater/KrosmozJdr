@@ -696,6 +696,13 @@
     "file": "data-input/SelectField.vue"
   },
   {
+    "name": "RichTextEditorField",
+    "description": "RichTextEditorField Molecule (TipTap, DaisyUI, Atomic Design)",
+    "props": [],
+    "slots": [],
+    "file": "data-input/RichTextEditorField.vue"
+  },
+  {
     "name": "RatingField",
     "description": "RatingField Molecule (DaisyUI, Atomic Design)",
     "props": [],

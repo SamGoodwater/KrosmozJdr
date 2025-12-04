@@ -16,7 +16,7 @@ class MonsterController extends Controller
      */
     public function index()
     {
-        $this->authorizeForUser(auth()->user(), 'viewAny', Monster::class);
+        $this->authorize('viewAny', Monster::class);
         
         $query = Monster::with(['creature', 'monsterRace']);
         

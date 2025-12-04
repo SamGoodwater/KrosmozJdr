@@ -54,6 +54,18 @@ const modalSize = computed(() => {
 const handleClose = () => {
     emit('close');
 };
+
+/**
+ * Récupère le nom de l'entité en gérant les modèles et objets bruts
+ */
+const getEntityName = () => {
+    // Si c'est une instance de modèle, utiliser le getter name
+    if (props.entity && typeof props.entity._data !== 'undefined') {
+        return props.entity.name || props.entity.title || 'Entité';
+    }
+    // Sinon, accès direct
+    return props.entity?.name || props.entity?.title || 'Entité';
+};
 </script>
 
 <template>
@@ -66,7 +78,7 @@ const handleClose = () => {
         
         <template #header>
             <h3 class="text-lg font-bold text-primary-100">
-                {{ entity.name || entity.title }}
+                {{ getEntityName() }}
             </h3>
         </template>
 

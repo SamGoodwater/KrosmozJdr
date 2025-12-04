@@ -16,7 +16,7 @@ class ShopController extends Controller
      */
     public function index()
     {
-        $this->authorizeForUser(auth()->user(), 'viewAny', Shop::class);
+        $this->authorize('viewAny', Shop::class);
         
         $query = Shop::with(['createdBy', 'npc', 'items']);
         

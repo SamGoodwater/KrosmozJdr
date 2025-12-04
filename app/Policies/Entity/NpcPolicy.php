@@ -31,7 +31,7 @@ class NpcPolicy
      */
     public function create(User $user): bool
     {
-        return in_array($user->role, ['admin', 'super_admin']);
+        return $user->isAdmin();
     }
 
     /**
@@ -39,7 +39,7 @@ class NpcPolicy
      */
     public function update(User $user, Npc $npc): bool
     {
-        return in_array($user->role, ['admin', 'super_admin']);
+        return $user->isAdmin();
     }
 
     /**
@@ -47,7 +47,7 @@ class NpcPolicy
      */
     public function delete(User $user, Npc $npc): bool
     {
-        return in_array($user->role, ['admin', 'super_admin']);
+        return $user->isAdmin();
     }
 
     /**

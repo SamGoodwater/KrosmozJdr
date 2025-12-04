@@ -4,6 +4,11 @@ namespace App\Http\Requests\Entity;
 
 use Illuminate\Foundation\Http\FormRequest;
 
+/**
+ * FormRequest pour la mise à jour d'un Shop.
+ *
+ * Valide les champs principaux d'une boutique.
+ */
 class UpdateShopRequest extends FormRequest
 {
     /**
@@ -11,7 +16,7 @@ class UpdateShopRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return $this->user()?->isAdmin() ?? false;
     }
 
     /**
@@ -22,7 +27,14 @@ class UpdateShopRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'name' => ['sometimes', 'required', 'string', 'max:255'],
+            'description' => ['nullable', 'string'],
+            'location' => ['nullable', 'string', 'max:255'],
+            'price' => ['nullable', 'integer', 'min:0'],
+            'usable' => ['nullable', 'integer', 'in:0,1'],
+            'is_visible' => ['nullable', 'string', 'max:255'],
+            'image' => ['nullable', 'string', 'max:255'],
+            'npc_id' => ['nullable', 'integer', 'exists:npcs,id'],
         ];
     }
 }

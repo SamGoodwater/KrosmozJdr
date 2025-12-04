@@ -3,6 +3,7 @@
 ## Navigation rapide
 
 - **[INPUT SYSTEM/](./INPUT%20SYSTEM/)** — Système d'input complet et organisé
+- **[FRONTEND_MODELS.md](./FRONTEND_MODELS.md)** — Guide d'utilisation des modèles JS dans les vues
 - **[BEST_PRACTICES.md](./BEST_PRACTICES.md)** — Bonnes pratiques et patterns
 - **[ATOMIC_DESIGN.md](./ATOMIC_DESIGN.md)** — Principes Atomic Design
 - **[NOTIFICATIONS.md](./NOTIFICATIONS.md)** — Toasts et feedback utilisateur

@@ -8,6 +8,7 @@
 import { ref, computed } from 'vue';
 import { Head, usePage } from '@inertiajs/vue3';
 import { usePageTitle } from '@/Composables/layout/usePageTitle';
+import { Creature } from '@/Models/Entity/Creature';
 import EntityEditForm from '@/Pages/Organismes/entity/EntityEditForm.vue';
 import EntityRelationsManager from '@/Pages/Organismes/entity/EntityRelationsManager.vue';
 import Container from '@/Pages/Atoms/data-display/Container.vue';
@@ -85,15 +86,13 @@ const fieldsConfig = {
     }
 };
 
+// Créer une instance de modèle Creature
 const creature = computed(() => {
     const creatureData = props.creature || page.props.creature || {};
-    if (creatureData.data && typeof creatureData.data === 'object' && creatureData.data.id) {
-        return creatureData.data;
-    }
-    return creatureData;
+    return new Creature(creatureData);
 });
 
-setPageTitle(`Modifier la créature : ${creature.value?.name || 'Nouvelle créature'}`);
+setPageTitle(`Modifier la créature : ${creature.value.name || 'Nouvelle créature'}`);
 </script>
 
 <template>
@@ -111,9 +110,9 @@ setPageTitle(`Modifier la créature : ${creature.value?.name || 'Nouvelle créat
         
         <!-- Gestion des objets de la créature (avec quantités) -->
         <EntityRelationsManager
-            :relations="creature?.items || []"
+            :relations="creature.items || []"
             :available-items="availableItems"
-            :entity-id="creature?.id"
+            :entity-id="creature.id"
             entity-type="creatures"
             relation-type="items"
             relation-name="Objets de la créature"
@@ -128,9 +127,9 @@ setPageTitle(`Modifier la créature : ${creature.value?.name || 'Nouvelle créat
         
         <!-- Gestion des ressources de la créature (avec quantités) -->
         <EntityRelationsManager
-            :relations="creature?.resources || []"
+            :relations="creature.resources || []"
             :available-items="availableResources"
-            :entity-id="creature?.id"
+            :entity-id="creature.id"
             entity-type="creatures"
             relation-type="resources"
             relation-name="Ressources de la créature"
@@ -145,9 +144,9 @@ setPageTitle(`Modifier la créature : ${creature.value?.name || 'Nouvelle créat
         
         <!-- Gestion des consommables de la créature (avec quantités) -->
         <EntityRelationsManager
-            :relations="creature?.consumables || []"
+            :relations="creature.consumables || []"
             :available-items="availableConsumables"
-            :entity-id="creature?.id"
+            :entity-id="creature.id"
             entity-type="creatures"
             relation-type="consumables"
             relation-name="Consommables de la créature"
@@ -162,9 +161,9 @@ setPageTitle(`Modifier la créature : ${creature.value?.name || 'Nouvelle créat
         
         <!-- Gestion des sorts de la créature (sans quantité) -->
         <EntityRelationsManager
-            :relations="creature?.spells || []"
+            :relations="creature.spells || []"
             :available-items="availableSpells"
-            :entity-id="creature?.id"
+            :entity-id="creature.id"
             entity-type="creatures"
             relation-type="spells"
             relation-name="Sorts de la créature"

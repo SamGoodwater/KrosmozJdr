@@ -10,6 +10,7 @@
 import { ref, computed } from 'vue';
 import { Head, usePage } from '@inertiajs/vue3';
 import { usePageTitle } from '@/Composables/layout/usePageTitle';
+import { Scenario } from '@/Models/Entity/Scenario';
 import EntityEditForm from '@/Pages/Organismes/entity/EntityEditForm.vue';
 import EntityRelationsManager from '@/Pages/Organismes/entity/EntityRelationsManager.vue';
 import Container from '@/Pages/Atoms/data-display/Container.vue';
@@ -93,16 +94,13 @@ const fieldsConfig = {
     }
 };
 
-// Extraire les données du scénario (gérer la structure Resource)
+// Créer une instance de modèle Scenario
 const scenario = computed(() => {
     const scenarioData = props.scenario || page.props.scenario || {};
-    if (scenarioData.data && typeof scenarioData.data === 'object' && scenarioData.data.id) {
-        return scenarioData.data;
-    }
-    return scenarioData;
+    return new Scenario(scenarioData);
 });
 
-setPageTitle(`Modifier le scénario : ${scenario.value?.name || 'Nouveau scénario'}`);
+setPageTitle(`Modifier le scénario : ${scenario.value.name || 'Nouveau scénario'}`);
 </script>
 
 <template>
@@ -120,9 +118,9 @@ setPageTitle(`Modifier le scénario : ${scenario.value?.name || 'Nouveau scénar
         
         <!-- Gestion des objets du scénario -->
         <EntityRelationsManager
-            :relations="scenario?.items || []"
+            :relations="scenario.items || []"
             :available-items="availableItems"
-            :entity-id="scenario?.id"
+            :entity-id="scenario.id"
             entity-type="scenarios"
             relation-type="items"
             relation-name="Objets du scénario"
@@ -136,9 +134,9 @@ setPageTitle(`Modifier le scénario : ${scenario.value?.name || 'Nouveau scénar
         
         <!-- Gestion des consommables du scénario -->
         <EntityRelationsManager
-            :relations="scenario?.consumables || []"
+            :relations="scenario.consumables || []"
             :available-items="availableConsumables"
-            :entity-id="scenario?.id"
+            :entity-id="scenario.id"
             entity-type="scenarios"
             relation-type="consumables"
             relation-name="Consommables du scénario"
@@ -152,9 +150,9 @@ setPageTitle(`Modifier le scénario : ${scenario.value?.name || 'Nouveau scénar
         
         <!-- Gestion des ressources du scénario -->
         <EntityRelationsManager
-            :relations="scenario?.resources || []"
+            :relations="scenario.resources || []"
             :available-items="availableResources"
-            :entity-id="scenario?.id"
+            :entity-id="scenario.id"
             entity-type="scenarios"
             relation-type="resources"
             relation-name="Ressources du scénario"
@@ -168,9 +166,9 @@ setPageTitle(`Modifier le scénario : ${scenario.value?.name || 'Nouveau scénar
         
         <!-- Gestion des sorts du scénario -->
         <EntityRelationsManager
-            :relations="scenario?.spells || []"
+            :relations="scenario.spells || []"
             :available-items="availableSpells"
-            :entity-id="scenario?.id"
+            :entity-id="scenario.id"
             entity-type="scenarios"
             relation-type="spells"
             relation-name="Sorts du scénario"
@@ -184,9 +182,9 @@ setPageTitle(`Modifier le scénario : ${scenario.value?.name || 'Nouveau scénar
         
         <!-- Gestion des panoplies du scénario -->
         <EntityRelationsManager
-            :relations="scenario?.panoplies || []"
+            :relations="scenario.panoplies || []"
             :available-items="availablePanoplies"
-            :entity-id="scenario?.id"
+            :entity-id="scenario.id"
             entity-type="scenarios"
             relation-type="panoplies"
             relation-name="Panoplies du scénario"

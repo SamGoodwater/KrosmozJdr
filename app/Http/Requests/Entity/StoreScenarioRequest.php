@@ -4,6 +4,11 @@ namespace App\Http\Requests\Entity;
 
 use Illuminate\Foundation\Http\FormRequest;
 
+/**
+ * FormRequest pour la création d'un Scenario.
+ *
+ * Valide les champs principaux d'un scénario.
+ */
 class StoreScenarioRequest extends FormRequest
 {
     /**
@@ -11,7 +16,7 @@ class StoreScenarioRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return $this->user()?->isAdmin() ?? false;
     }
 
     /**
@@ -22,7 +27,15 @@ class StoreScenarioRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'name' => ['required', 'string', 'max:255'],
+            'description' => ['nullable', 'string', 'max:1000'],
+            'slug' => ['required', 'string', 'max:255', 'unique:scenarios,slug'],
+            'keyword' => ['nullable', 'string', 'max:255'],
+            'is_public' => ['required', 'boolean'],
+            'state' => ['required', 'integer', 'in:0,1,2,3'],
+            'usable' => ['nullable', 'integer', 'min:0', 'max:1'],
+            'is_visible' => ['nullable', 'string', 'in:guest,user,player,game_master,admin,super_admin'],
+            'image' => ['nullable', 'string', 'max:255'],
         ];
     }
 }

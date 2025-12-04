@@ -10,6 +10,7 @@
 import { Head, router } from "@inertiajs/vue3";
 import { ref, computed, onBeforeUnmount } from "vue";
 import { usePageTitle } from "@/Composables/layout/usePageTitle";
+import { Campaign } from "@/Models/Entity/Campaign";
 
 import Container from '@/Pages/Atoms/data-display/Container.vue';
 import Btn from '@/Pages/Atoms/action/Btn.vue';
@@ -29,6 +30,11 @@ const props = defineProps({
 
 const { setPageTitle } = usePageTitle();
 setPageTitle('Liste des Campagnes');
+
+// Transformation des entités en instances de modèles
+const campaigns = computed(() => {
+    return Campaign.fromArray(props.campaigns.data || []);
+});
 
 // État
 const selectedEntity = ref(null);
@@ -60,8 +66,10 @@ const handleEdit = (entity) => {
 };
 
 const handleDelete = (entity) => {
-    if (confirm(`Êtes-vous sûr de vouloir supprimer "${entity.name}" ?`)) {
-        router.delete(route(`entities.campaigns.delete`, { campaign: entity.id }));
+    // entity peut être une instance de modèle ou un objet brut
+    const campaignModel = entity instanceof Campaign ? entity : new Campaign(entity);
+    if (confirm(`Êtes-vous sûr de vouloir supprimer "${campaignModel.name}" ?`)) {
+        router.delete(route(`entities.campaigns.delete`, { campaign: campaignModel.id }));
     }
 };
 
@@ -181,10 +189,10 @@ const closeModal = () => {
 
         <!-- Tableau -->
         <EntityTable
-            :entities="campaigns.data || []"
+            :entities="campaigns"
             :columns="columns"
             entity-type="campaigns"
-            :pagination="campaigns"
+            :pagination="props.campaigns"
             :show-filters="true"
             :search="search"
             :filters="filters"

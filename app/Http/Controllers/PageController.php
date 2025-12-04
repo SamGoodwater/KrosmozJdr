@@ -27,8 +27,15 @@ class PageController extends Controller
     {
         $this->authorize('viewAny', \App\Models\Page::class);
         $pages = \App\Models\Page::with(['sections', 'users', 'parent', 'children', 'campaigns', 'scenarios', 'createdBy'])->paginate(20);
+        
+        // Récupérer toutes les pages pour le select parent_id dans le modal
+        $allPages = Page::select('id', 'title', 'slug')
+            ->orderBy('title')
+            ->get();
+        
         return Inertia::render('Pages/page/Index', [
             'pages' => PageResource::collection($pages),
+            'allPages' => $allPages,
         ]);
     }
 
@@ -38,8 +45,14 @@ class PageController extends Controller
     public function create()
     {
         $this->authorize('create', \App\Models\Page::class);
+        
+        // Récupérer toutes les pages pour le select parent_id
+        $pages = Page::select('id', 'title', 'slug')
+            ->orderBy('title')
+            ->get();
+        
         return Inertia::render('Pages/page/Create', [
-            // Ajoute ici les données nécessaires au formulaire (ex: états, parents possibles, etc.)
+            'pages' => $pages,
         ]);
     }
 
@@ -66,12 +79,21 @@ class PageController extends Controller
         $this->authorize('view', $page);
         
         // Charger les sections affichables selon l'utilisateur
-        $sections = PageService::getPublishedSections($page, $request->user());
+        $user = auth()->user();
+        $sections = PageService::getPublishedSections($page, $user);
         $page->setRelation('sections', $sections);
         
         $page->load(['users', 'parent', 'children', 'campaigns', 'scenarios', 'createdBy']);
+        
+        // Récupérer toutes les pages pour le select parent_id dans le modal d'édition
+        $pages = Page::select('id', 'title', 'slug')
+            ->where('id', '!=', $page->id)
+            ->orderBy('title')
+            ->get();
+        
         return Inertia::render('Pages/page/Show', [
             'page' => new PageResource($page),
+            'pages' => $pages,
         ]);
     }
 
@@ -82,9 +104,16 @@ class PageController extends Controller
     {
         $this->authorize('update', $page);
         $page->load(['sections', 'users', 'parent', 'children', 'campaigns', 'scenarios', 'createdBy']);
+        
+        // Récupérer toutes les pages pour le select parent_id (exclure la page courante)
+        $pages = Page::select('id', 'title', 'slug')
+            ->where('id', '!=', $page->id)
+            ->orderBy('title')
+            ->get();
+        
         return Inertia::render('Pages/page/Edit', [
             'page' => new PageResource($page),
-            // Ajoute ici les données nécessaires au formulaire (ex: états, parents possibles, etc.)
+            'pages' => $pages,
         ]);
     }
 
@@ -94,11 +123,22 @@ class PageController extends Controller
     public function update(\App\Http\Requests\UpdatePageRequest $request, \App\Models\Page $page)
     {
         $this->authorize('update', $page);
-        $old = clone $page;
+        // Créer une copie des attributs avant la mise à jour pour les notifications
+        $oldAttributes = $page->getAttributes();
         $data = $request->validated();
         $page->update($data);
         $page->load(['sections', 'users', 'parent', 'children', 'campaigns', 'scenarios', 'createdBy']);
-        \App\Services\NotificationService::notifyEntityModified($page, $request->user(), $old);
+        // Créer un modèle temporaire avec les anciens attributs pour les notifications
+        $old = new \App\Models\Page();
+        $old->setRawAttributes($oldAttributes);
+        $old->exists = true;
+        $old->id = $page->id;
+        try {
+            \App\Services\NotificationService::notifyEntityModified($page, $request->user(), $old);
+        } catch (\Exception $e) {
+            // Si les notifications échouent, on continue quand même
+            \Log::warning('Erreur lors de l\'envoi des notifications pour la page ' . $page->id . ': ' . $e->getMessage());
+        }
         PageService::clearMenuCache();
         return redirect()->route('pages.show', $page)->with('success', 'Page mise à jour.');
     }

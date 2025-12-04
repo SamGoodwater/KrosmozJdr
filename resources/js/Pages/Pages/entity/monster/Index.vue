@@ -10,6 +10,7 @@
 import { Head, router } from "@inertiajs/vue3";
 import { ref, computed, onBeforeUnmount } from "vue";
 import { usePageTitle } from "@/Composables/layout/usePageTitle";
+import { Monster } from "@/Models/Entity/Monster";
 
 import Container from '@/Pages/Atoms/data-display/Container.vue';
 import Btn from '@/Pages/Atoms/action/Btn.vue';
@@ -29,6 +30,11 @@ const props = defineProps({
 
 const { setPageTitle } = usePageTitle();
 setPageTitle('Liste des Monstres');
+
+// Transformation des entités en instances de modèles
+const monsters = computed(() => {
+    return Monster.fromArray(props.monsters.data || []);
+});
 
 // État
 const selectedEntity = ref(null);
@@ -181,10 +187,10 @@ const closeModal = () => {
 
         <!-- Tableau -->
         <EntityTable
-            :entities="monsters.data || []"
+            :entities="monsters"
             :columns="columns"
             entity-type="monsters"
-            :pagination="monsters"
+            :pagination="props.monsters"
             :show-filters="true"
             :search="search"
             :filters="filters"

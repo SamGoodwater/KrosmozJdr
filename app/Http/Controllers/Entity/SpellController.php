@@ -16,7 +16,7 @@ class SpellController extends Controller
      */
     public function index()
     {
-        $this->authorizeForUser(auth()->user(), 'viewAny', Spell::class);
+        $this->authorize('viewAny', Spell::class);
         
         $query = Spell::with(['createdBy', 'creatures', 'classes', 'spellTypes']);
         

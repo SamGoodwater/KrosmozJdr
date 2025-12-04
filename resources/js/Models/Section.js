@@ -47,17 +47,6 @@ export class Section extends BaseModel {
         return this._data.state;
     }
 
-    get createdBy() {
-        return this._data.created_by;
-    }
-
-    get createdAt() {
-        return this._data.created_at;
-    }
-
-    get updatedAt() {
-        return this._data.updated_at;
-    }
 
     // ============================================
     // RELATIONS

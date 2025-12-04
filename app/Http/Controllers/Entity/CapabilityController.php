@@ -16,7 +16,7 @@ class CapabilityController extends Controller
      */
     public function index()
     {
-        $this->authorizeForUser(auth()->user(), 'viewAny', Capability::class);
+        $this->authorize('viewAny', Capability::class);
         
         $query = Capability::with(['createdBy', 'specializations', 'creatures']);
         

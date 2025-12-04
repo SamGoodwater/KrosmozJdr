@@ -52,6 +52,13 @@ const isAdmin = computed(() => {
     return user.value.role === 4 || user.value.role === 5;
 });
 
+// Vérifier si l'utilisateur est game_master, admin ou super_admin
+// Le rôle est stocké comme un entier : 3 = game_master, 4 = admin, 5 = super_admin
+const canManagePages = computed(() => {
+    if (!user.value) return false;
+    return user.value.role === 3 || user.value.role === 4 || user.value.role === 5;
+});
+
 // Fonction de déconnexion
 const logout = () => {
     router.post(route('logout'));
@@ -100,6 +107,12 @@ const logout = () => {
                                         <span>Utilisateurs</span>
                                     </div>
                                 </Route>
+                            </div>
+                            <span class="border-glass-b-sm w-full h-px"></span>
+                        </template>
+                        <template v-if="canManagePages">
+                            <div class="w-full">
+                                <p v-if="!isAdmin" class="text-xs text-subtitle/60 px-2 py-1 font-semibold text-center">Gestion</p>
                                 <Route route="pages.index" class="w-full">
                                     <div class="flex items-center gap-2 px-2 py-1.5 text-sm hover:bg-base-200 rounded cursor-pointer w-full">
                                         <Icon source="fa-file-lines" pack="solid" size="sm"/>
@@ -107,7 +120,7 @@ const logout = () => {
                                     </div>
                                 </Route>
                             </div>
-                            <span class="border-glass-b-sm w-full h-px"></span>
+                            <span v-if="!isAdmin" class="border-glass-b-sm w-full h-px"></span>
                         </template>
                         <Btn
                             variant="ghost"

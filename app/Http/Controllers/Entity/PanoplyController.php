@@ -16,7 +16,7 @@ class PanoplyController extends Controller
      */
     public function index()
     {
-        $this->authorizeForUser(auth()->user(), 'viewAny', Panoply::class);
+        $this->authorize('viewAny', Panoply::class);
         
         $query = Panoply::with(['createdBy', 'items']);
         

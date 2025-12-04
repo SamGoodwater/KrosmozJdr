@@ -11,7 +11,7 @@ class StoreCampaignRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return $this->user() && in_array($this->user()->role, ['admin', 'super_admin']);
+        return $this->user()?->isAdmin() ?? false;
     }
 
     /**

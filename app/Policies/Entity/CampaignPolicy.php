@@ -31,7 +31,7 @@ class CampaignPolicy
      */
     public function create(User $user): bool
     {
-        return in_array($user->role, ['admin', 'super_admin']);
+        return $user->isAdmin();
     }
 
     /**
@@ -39,7 +39,7 @@ class CampaignPolicy
      */
     public function update(User $user, Campaign $campaign): bool
     {
-        if (in_array($user->role, ['admin', 'super_admin'])) {
+        if ($user->isAdmin()) {
             return true;
         }
         return $campaign->users->contains($user->id);
@@ -50,7 +50,7 @@ class CampaignPolicy
      */
     public function delete(User $user, Campaign $campaign): bool
     {
-        if (in_array($user->role, ['admin', 'super_admin'])) {
+        if ($user->isAdmin()) {
             return true;
         }
         return $campaign->users->contains($user->id);
@@ -61,7 +61,7 @@ class CampaignPolicy
      */
     public function restore(User $user, Campaign $campaign): bool
     {
-        return in_array($user->role, ['admin', 'super_admin']);
+        return $user->isAdmin();
     }
 
     /**
@@ -69,6 +69,6 @@ class CampaignPolicy
      */
     public function forceDelete(User $user, Campaign $campaign): bool
     {
-        return in_array($user->role, ['admin', 'super_admin']);
+        return $user->isAdmin();
     }
 }

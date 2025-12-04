@@ -10,6 +10,7 @@
 import { Head, router } from "@inertiajs/vue3";
 import { ref, computed, onBeforeUnmount } from "vue";
 import { usePageTitle } from "@/Composables/layout/usePageTitle";
+import { Panoply } from "@/Models/Entity/Panoply";
 
 import Container from '@/Pages/Atoms/data-display/Container.vue';
 import Btn from '@/Pages/Atoms/action/Btn.vue';
@@ -29,6 +30,11 @@ const props = defineProps({
 
 const { setPageTitle } = usePageTitle();
 setPageTitle('Liste des Panoplies');
+
+// Transformation des entités en instances de modèles
+const panoplies = computed(() => {
+    return Panoply.fromArray(props.panoplies.data || []);
+});
 
 // État
 const selectedEntity = ref(null);
@@ -60,8 +66,10 @@ const handleEdit = (entity) => {
 };
 
 const handleDelete = (entity) => {
-    if (confirm(`Êtes-vous sûr de vouloir supprimer "${entity.name}" ?`)) {
-        router.delete(route(`entities.panoplies.delete`, { panoply: entity.id }));
+    // entity peut être une instance de modèle ou un objet brut
+    const panoplyModel = entity instanceof Panoply ? entity : new Panoply(entity);
+    if (confirm(`Êtes-vous sûr de vouloir supprimer "${panoplyModel.name}" ?`)) {
+        router.delete(route(`entities.panoplies.delete`, { panoply: panoplyModel.id }));
     }
 };
 
@@ -170,10 +178,10 @@ const closeModal = () => {
 
         <!-- Tableau -->
         <EntityTable
-            :entities="panoplies.data || []"
+            :entities="panoplies"
             :columns="columns"
             entity-type="panoplies"
-            :pagination="panoplies"
+            :pagination="props.panoplies"
             :show-filters="true"
             :search="search"
             :filters="filters"

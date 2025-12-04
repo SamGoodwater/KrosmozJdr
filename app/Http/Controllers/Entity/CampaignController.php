@@ -16,7 +16,7 @@ class CampaignController extends Controller
      */
     public function index()
     {
-        $this->authorizeForUser(auth()->user(), 'viewAny', Campaign::class);
+        $this->authorize('viewAny', Campaign::class);
         
         $query = Campaign::with(['createdBy', 'users', 'scenarios']);
         
@@ -81,7 +81,7 @@ class CampaignController extends Controller
      */
     public function show(Campaign $campaign)
     {
-        $this->authorizeForUser(auth()->user(), 'view', $campaign);
+        $this->authorize('view', $campaign);
         return response()->json($campaign);
     }
 
@@ -203,7 +203,7 @@ class CampaignController extends Controller
      */
     public function users(Campaign $campaign)
     {
-        $this->authorizeForUser(auth()->user(), 'view', $campaign);
+        $this->authorize('view', $campaign);
         return response()->json($campaign->users);
     }
 

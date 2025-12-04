@@ -61,6 +61,7 @@ const props = defineProps({
         validator: (v) => sizeXlList.includes(v),
     },
     route: { type: String, default: "" },
+    href: { type: String, default: "" },
 });
 
 const atomClasses = computed(() =>
@@ -84,8 +85,9 @@ const attrs = computed(() => getCommonAttrs(props));
 <template>
     <li :class="atomClasses" v-bind="attrs" v-on="$attrs">
         <RouteAtom
-            v-if="route"
+            v-if="route || href"
             :route="route"
+            :href="href"
             :disabled="props.disabled"
             :aria-label="props.ariaLabel"
             :tabindex="props.tabindex"

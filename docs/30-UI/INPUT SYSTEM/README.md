@@ -59,6 +59,7 @@ InputField (Molecule)
 
 ### 💡 **Pratique**
 - **[USAGE_EXAMPLES.md](./USAGE_EXAMPLES.md)** - Exemples d'utilisation pratiques
+- **[FILE_UPLOAD.md](./FILE_UPLOAD.md)** - Système complet d'upload de fichiers
 - **[INSTALLATION.md](./INSTALLATION.md)** - Guide d'installation des dépendances
 
 ---

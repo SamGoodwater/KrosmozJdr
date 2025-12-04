@@ -16,7 +16,7 @@ class ResourceController extends Controller
      */
     public function index()
     {
-        $this->authorizeForUser(auth()->user(), 'viewAny', Resource::class);
+        $this->authorize('viewAny', Resource::class);
         
         $query = Resource::with(['createdBy', 'resourceType', 'consumables']);
         

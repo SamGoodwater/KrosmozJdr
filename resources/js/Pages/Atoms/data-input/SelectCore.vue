@@ -59,7 +59,13 @@ import { mergeClasses } from '@/Utils/atomic-design/uiHelper'
 // ------------------------------------------
 // 🔧 Définition des props + emits
 // ------------------------------------------
-const props = defineProps(getInputPropsDefinition('select', 'core'))
+const props = defineProps({
+    ...getInputPropsDefinition('select', 'core'),
+    modelValue: {
+        type: [String, Number, Array],
+        default: null
+    }
+})
 const emit = defineEmits(['update:modelValue'])
 const $attrs = useAttrs()
 
@@ -126,10 +132,11 @@ function onInput(e) {
         v-bind="inputAttrs"
         v-on="listeners"
         :class="atomClasses"
+        :value="props.modelValue"
         @input="onInput"
     >
         <slot>
-            <option v-if="!multiple" value="" disabled selected>
+            <option v-if="!multiple && !props.modelValue" value="" disabled>
                 {{ props.placeholder || 'Choisir...' }}
             </option>
             <option

@@ -31,7 +31,7 @@ class PanoplyPolicy
      */
     public function create(User $user): bool
     {
-        return in_array($user->role, [4, 5]); // ROLE_ADMIN = 4, ROLE_SUPER_ADMIN = 5
+        return $user->isAdmin();
     }
 
     /**
@@ -39,8 +39,8 @@ class PanoplyPolicy
      */
     public function update(User $user, Panoply $panoply): bool
     {
-        // Un utilisateur peut modifier sa propre panoplie, ou un admin/super_admin peut modifier n'importe quelle panoplie
-        return $panoply->created_by === $user->id || in_array($user->role, [4, 5]); // ROLE_ADMIN = 4, ROLE_SUPER_ADMIN = 5
+        // Un utilisateur peut modifier sa propre panoplie, ou un admin peut modifier n'importe quelle panoplie
+        return $panoply->created_by === $user->id || $user->isAdmin();
     }
 
     /**
@@ -48,8 +48,8 @@ class PanoplyPolicy
      */
     public function delete(User $user, Panoply $panoply): bool
     {
-        // Un utilisateur peut supprimer sa propre panoplie, ou un admin/super_admin peut supprimer n'importe quelle panoplie
-        return $panoply->created_by === $user->id || in_array($user->role, [4, 5]); // ROLE_ADMIN = 4, ROLE_SUPER_ADMIN = 5
+        // Un utilisateur peut supprimer sa propre panoplie, ou un admin peut supprimer n'importe quelle panoplie
+        return $panoply->created_by === $user->id || $user->isAdmin();
     }
 
     /**

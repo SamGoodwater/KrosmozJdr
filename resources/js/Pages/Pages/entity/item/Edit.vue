@@ -10,6 +10,7 @@
 import { ref, computed } from 'vue';
 import { Head, usePage } from '@inertiajs/vue3';
 import { usePageTitle } from '@/Composables/layout/usePageTitle';
+import { Item } from '@/Models/Entity/Item';
 import EntityEditForm from '@/Pages/Organismes/entity/EntityEditForm.vue';
 import EntityRelationsManager from '@/Pages/Organismes/entity/EntityRelationsManager.vue';
 import Container from '@/Pages/Atoms/data-display/Container.vue';
@@ -72,16 +73,13 @@ const fieldsConfig = {
     }
 };
 
-// Extraire les données de l'item (gérer la structure Resource)
+// Créer une instance de modèle Item
 const item = computed(() => {
     const itemData = props.item || page.props.item || {};
-    if (itemData.data && typeof itemData.data === 'object' && itemData.data.id) {
-        return itemData.data;
-    }
-    return itemData;
+    return new Item(itemData);
 });
 
-setPageTitle(`Modifier l'item : ${item.value?.name || 'Nouvel item'}`);
+setPageTitle(`Modifier l'item : ${item.value.name || 'Nouvel item'}`);
 </script>
 
 <template>
@@ -99,9 +97,9 @@ setPageTitle(`Modifier l'item : ${item.value?.name || 'Nouvel item'}`);
         
         <!-- Gestion des ressources de l'item (recette de craft avec quantités) -->
         <EntityRelationsManager
-            :relations="item?.resources || []"
+            :relations="item.resources || []"
             :available-items="availableResources"
-            :entity-id="item?.id"
+            :entity-id="item.id"
             entity-type="items"
             relation-type="resources"
             relation-name="Ressources nécessaires (recette de craft)"

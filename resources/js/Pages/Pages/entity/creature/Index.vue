@@ -10,6 +10,7 @@
 import { Head, router } from "@inertiajs/vue3";
 import { ref, computed, onBeforeUnmount } from "vue";
 import { usePageTitle } from "@/Composables/layout/usePageTitle";
+import { Creature } from "@/Models/Entity/Creature";
 
 import Container from '@/Pages/Atoms/data-display/Container.vue';
 import Btn from '@/Pages/Atoms/action/Btn.vue';
@@ -29,6 +30,11 @@ const props = defineProps({
 
 const { setPageTitle } = usePageTitle();
 setPageTitle('Liste des Créatures');
+
+// Transformation des entités en instances de modèles
+const creatures = computed(() => {
+    return Creature.fromArray(props.creatures.data || []);
+});
 
 // État
 const selectedEntity = ref(null);
@@ -60,8 +66,10 @@ const handleEdit = (entity) => {
 };
 
 const handleDelete = (entity) => {
-    if (confirm(`Êtes-vous sûr de vouloir supprimer "${entity.name}" ?`)) {
-        router.delete(route(`entities.creatures.delete`, { creature: entity.id }));
+    // entity peut être une instance de modèle ou un objet brut
+    const creatureModel = entity instanceof Creature ? entity : new Creature(entity);
+    if (confirm(`Êtes-vous sûr de vouloir supprimer "${creatureModel.name}" ?`)) {
+        router.delete(route(`entities.creatures.delete`, { creature: creatureModel.id }));
     }
 };
 
@@ -160,10 +168,10 @@ const closeModal = () => {
 
         <!-- Tableau -->
         <EntityTable
-            :entities="creatures.data || []"
+            :entities="creatures"
             :columns="columns"
             entity-type="creatures"
-            :pagination="creatures"
+            :pagination="props.creatures"
             :show-filters="true"
             :search="search"
             :filters="filters"

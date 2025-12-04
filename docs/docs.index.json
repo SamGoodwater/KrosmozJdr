@@ -15,6 +15,21 @@
     "description": "Le projet utilise les dernières recommandations en matière de sécurité, de qualité de code et d'organisation. Le code est en anglais, les commentaires en français. L'architecture suit le principe Atomic Design pour le frontend."
   },
   {
+    "path": "10-BestPractices/AUDIT_FINDINGS.md",
+    "title": "Résultats de l'audit initial - KrosmozJDR",
+    "description": "**Date** : 2025-01-27"
+  },
+  {
+    "path": "10-BestPractices/AUDIT_FORMREQUESTS_SUMMARY.md",
+    "title": "Résumé de l'audit des FormRequests - KrosmozJDR",
+    "description": "**Date** : 2025-01-27"
+  },
+  {
+    "path": "10-BestPractices/AUDIT_PLAN.md",
+    "title": "Plan d'audit du code - KrosmozJDR",
+    "description": "**Date de création** : 2025-01-27"
+  },
+  {
     "path": "10-BestPractices/CODE_DOCUMENTATION.md",
     "title": "Documentation du code (docbloc) — KrosmozJDR",
     "description": "- Toujours documenter les composants, fonctions, classes, méthodes publiques."
@@ -85,6 +100,11 @@
     "description": "J'ai effectué une **analyse complète et approfondie** des deux systèmes principaux de KrosmozJDR :"
   },
   {
+    "path": "100- Done/FRONTEND_MODELS_IMPLEMENTATION.md",
+    "title": "Implémentation des Modèles Frontend JS — KrosmozJDR",
+    "description": "**Date de complétion** : 2025-01-27"
+  },
+  {
     "path": "100- Done/INPUT_MIGRATION.md",
     "title": "Migration Input — Nouvelle architecture factorisée",
     "description": "- **API centralisée** dans `inputHelper.js`"
@@ -145,9 +165,9 @@
     "description": "Le système de validation a été entièrement refactorisé pour répondre aux besoins de simplicité et de transparence. L'objectif était de créer une API qui évite les conflits avec les vues tout en restant puissante et flexible."
   },
   {
-    "path": "100-%20Done/ETAT_ACTUEL_PROJET.md",
-    "title": "État actuel du projet KrosmozJDR",
-    "description": "**Date de mise à jour** : 2025-01-27"
+    "path": "110- To Do/To Do.md",
+    "title": "",
+    "description": "État :  #afaire  #encours #fini"
   },
   {
     "path": "20-Content/21-Entities/ENTITIES_OVERVIEW.md",
@@ -275,6 +295,11 @@
     "description": "- Toute formule est encadrée par des accolades `{ ... }`."
   },
   {
+    "path": "20-Content/PAGES_SECTIONS_IMPLEMENTATION_PLAN.md",
+    "title": "🚀 Plan d'Implémentation - Système Pages/Sections",
+    "description": "Ce document détaille le plan d'implémentation complet du système de pages et sections modulaire pour KrosmozJDR."
+  },
+  {
     "path": "20-Content/README.md",
     "title": "Contenu — Sommaire",
     "description": "Ce dossier regroupe toute la documentation sur le contenu du projet :"
@@ -325,6 +350,11 @@
     "description": "Le design du site s'appuie sur les principes d'Atomic Design, le glassmorphism et une forte accessibilité. L'interface est responsive et moderne."
   },
   {
+    "path": "30-UI/FRONTEND_MODELS.md",
+    "title": "Modèles Frontend JS — KrosmozJDR",
+    "description": "Les modèles frontend JS sont des classes qui normalisent et encapsulent les données des entités côté client. Ils fournissent une interface cohérente pour accéder aux propriétés, relations et méthodes utilitaires, indépendamment de la structure des données brutes (Proxies Vue, objets Inertia, etc.)."
+  },
+  {
     "path": "30-UI/INPUT SYSTEM/ACTIONS.md",
     "title": "🎯 Actions Contextuelles",
     "description": "Le système d'actions contextuelles permet d'ajouter des **boutons d'action** directement dans les champs de saisie. Ces actions sont **intégrées et non bloquantes**, offrant une UX moderne et intuitive."
@@ -343,6 +373,11 @@
     "path": "30-UI/INPUT SYSTEM/COMPONENTS.md",
     "title": "🧩 Composants du Système d'Input",
     "description": "Le système d'input de KrosmozJDR est organisé selon l'Atomic Design avec des **Atoms (Core)** et des **Molecules (Field)**. Chaque type d'input dispose d'un composant Core pour la saisie et d'un composant Field pour l'interface complète."
+  },
+  {
+    "path": "30-UI/INPUT SYSTEM/FILE_UPLOAD.md",
+    "title": "📁 Système d'Upload de Fichiers",
+    "description": "Le système d'upload de fichiers de KrosmozJDR est un système complet et robuste qui gère l'upload, la prévisualisation, la validation et la suppression de fichiers. Il utilise les composants `FileCore` (Atom) et `FileField` (Molecule), ainsi que les composables `useFileUpload` et `useDragAndDrop`."
   },
   {
     "path": "30-UI/INPUT SYSTEM/INSTALLATION.md",
@@ -388,6 +423,11 @@
     "path": "30-UI/README.md",
     "title": "UI & Atomic Design — KrosmozJDR",
     "description": "- **[INPUT SYSTEM/](./INPUT%20SYSTEM/)** — Système d'input complet et organisé"
+  },
+  {
+    "path": "30-UI/WYSIWYG_EDITORS_REVIEW.md",
+    "title": "📝 Revue des Éditeurs WYSIWYG pour Vue 3",
+    "description": "Ce document présente une revue complète des éditeurs WYSIWYG disponibles pour Vue 3, avec un focus particulier sur **TipTap** qui est déjà installé dans le projet KrosmozJDR."
   },
   {
     "path": "40-DevGuides/IMAGE-GENERATE.md",

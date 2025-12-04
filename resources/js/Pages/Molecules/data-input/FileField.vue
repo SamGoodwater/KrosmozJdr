@@ -214,17 +214,17 @@ defineExpose({
     <Transition name="drag-overlay">
       <div 
         v-if="isDragging" 
-        class="drag-overlay absolute inset-0 z-[100] flex items-center justify-center bg-primary/30 backdrop-blur-md rounded-lg border-4 border-dashed border-primary shadow-2xl"
+        class="drag-overlay absolute inset-0 z-[100] flex items-center justify-center rounded-lg"
         @dragenter.prevent
         @dragover.prevent
         @drop.prevent
       >
-        <div class="text-center p-8 bg-base-100/90 rounded-xl shadow-xl">
+        <div class="drag-overlay-content text-center p-8 rounded-xl">
           <div class="mb-4">
             <i class="fa-solid fa-cloud-arrow-up text-6xl text-primary animate-bounce"></i>
           </div>
           <p class="text-lg font-semibold text-primary">Déposez votre fichier ici</p>
-          <p class="text-sm text-content-600 mt-2">Relâchez pour téléverser</p>
+          <p class="text-sm text-base-content/70 mt-2">Relâchez pour téléverser</p>
         </div>
       </div>
     </Transition>
@@ -356,23 +356,41 @@ defineExpose({
 
 .drag-overlay {
   pointer-events: none;
+  background: rgba(96, 165, 250, 0.15); /* primary/15 */
+  backdrop-filter: blur(12px);
+  border: 3px dashed rgba(96, 165, 250, 0.5); /* primary/50 */
+  box-shadow: 
+    0 20px 25px -5px rgba(0, 0, 0, 0.3),
+    0 10px 10px -5px rgba(0, 0, 0, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+.drag-overlay-content {
+  background: rgba(31, 41, 55, 0.85); /* base-100/85 */
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(96, 165, 250, 0.3); /* primary/30 */
+  box-shadow: 
+    0 25px 50px -12px rgba(0, 0, 0, 0.5),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
 }
 
 .drag-overlay-enter-active,
 .drag-overlay-leave-active {
-  transition: all 0.3s ease;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .drag-overlay-enter-from,
 .drag-overlay-leave-to {
   opacity: 0;
   transform: scale(0.95);
+  backdrop-filter: blur(0px);
 }
 
 .drag-overlay-enter-to,
 .drag-overlay-leave-from {
   opacity: 1;
   transform: scale(1);
+  backdrop-filter: blur(12px);
 }
 
 @keyframes slideIn {

@@ -5,10 +5,14 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Storage;
 use App\Models\User;
 use App\Models\Page;
 use App\Models\File;
+use App\Enums\PageState;
+use App\Enums\Visibility;
+use App\Enums\SectionType;
 
 /**
  * Modèle Eloquent Section
@@ -63,6 +67,7 @@ class Section extends Model
 
     /**
      * Les états possibles pour une section.
+     * @deprecated Utiliser PageState enum à la place (les sections utilisent les mêmes états que les pages)
      */
     const STATES = [
         'brouillon' => 0,
@@ -94,6 +99,9 @@ class Section extends Model
     protected $casts = [
         'order' => 'integer',
         'params' => 'array',
+        'state' => PageState::class,
+        'is_visible' => Visibility::class,
+        'type' => SectionType::class,
     ];
 
     /**
@@ -128,5 +136,127 @@ class Section extends Model
         return $this->belongsToMany(File::class, 'file_section')
             ->withPivot('order')
             ->orderBy('file_section.order');
+    }
+
+    // ============================================
+    // 🔍 SCOPES
+    // ============================================
+
+    /**
+     * Scope pour filtrer les sections publiées.
+     */
+    public function scopePublished(Builder $query): Builder
+    {
+        return $query->where('state', PageState::PUBLISHED->value);
+    }
+
+    /**
+     * Scope pour filtrer les sections visibles pour un utilisateur.
+     */
+    public function scopeVisibleFor(Builder $query, ?User $user = null): Builder
+    {
+        return $query->where(function ($q) use ($user) {
+            // Toujours visible pour les invités
+            $q->where('is_visible', Visibility::GUEST->value);
+
+            if ($user) {
+                // Visible pour les utilisateurs connectés
+                $q->orWhere('is_visible', Visibility::USER->value);
+
+                // Visible selon le rôle
+                if (in_array($user->role, [User::ROLE_GAME_MASTER, User::ROLE_ADMIN, User::ROLE_SUPER_ADMIN, 3, 4, 5, 'game_master', 'admin', 'super_admin'])) {
+                    $q->orWhere('is_visible', Visibility::GAME_MASTER->value);
+                }
+
+                if (in_array($user->role, [User::ROLE_ADMIN, User::ROLE_SUPER_ADMIN, 4, 5, 'admin', 'super_admin'])) {
+                    $q->orWhere('is_visible', Visibility::ADMIN->value);
+                }
+
+                // Visible si l'utilisateur est associé à la section
+                $q->orWhereHas('users', function ($userQuery) use ($user) {
+                    $userQuery->where('users.id', $user->id);
+                });
+            }
+        });
+    }
+
+    /**
+     * Scope pour trier par ordre.
+     */
+    public function scopeOrdered(Builder $query): Builder
+    {
+        return $query->orderBy('order');
+    }
+
+    /**
+     * Scope pour récupérer les sections affichables (publiées, visibles, ordonnées).
+     */
+    public function scopeDisplayable(Builder $query, ?User $user = null): Builder
+    {
+        return $query->published()
+            ->visibleFor($user)
+            ->ordered();
+    }
+
+    // ============================================
+    // 🔧 MÉTHODES HELPER
+    // ============================================
+
+    /**
+     * Vérifie si la section est publiée.
+     */
+    public function isPublished(): bool
+    {
+        return $this->state === PageState::PUBLISHED;
+    }
+
+    /**
+     * Vérifie si la section est visible pour un utilisateur.
+     */
+    public function isVisibleFor(?User $user = null): bool
+    {
+        // is_visible est déjà un enum Visibility grâce au cast, donc on peut l'utiliser directement
+        $visibility = $this->is_visible instanceof Visibility 
+            ? $this->is_visible 
+            : Visibility::tryFrom($this->is_visible);
+        if (!$visibility) {
+            return false;
+        }
+
+        return $visibility->isAccessibleBy($user);
+    }
+
+    /**
+     * Vérifie si la section peut être vue par un utilisateur (état + visibilité).
+     */
+    public function canBeViewedBy(?User $user = null): bool
+    {
+        // Les admins peuvent toujours voir
+        if ($user && in_array($user->role, ['admin', 'super_admin'])) {
+            return true;
+        }
+
+        // Doit être publiée (ou en preview pour les auteurs)
+        if (!$this->isPublished() && !($user && $this->created_by === $user->id)) {
+            return false;
+        }
+
+        return $this->isVisibleFor($user);
+    }
+
+    /**
+     * Publie la section.
+     */
+    public function publish(): void
+    {
+        $this->update(['state' => PageState::PUBLISHED->value]);
+    }
+
+    /**
+     * Archive la section.
+     */
+    public function archive(): void
+    {
+        $this->update(['state' => PageState::ARCHIVED->value]);
     }
 }

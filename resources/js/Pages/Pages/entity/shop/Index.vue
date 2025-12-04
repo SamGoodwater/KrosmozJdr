@@ -10,6 +10,7 @@
 import { Head, router } from "@inertiajs/vue3";
 import { ref, computed, onBeforeUnmount } from "vue";
 import { usePageTitle } from "@/Composables/layout/usePageTitle";
+import { Shop } from "@/Models/Entity/Shop";
 
 import Container from '@/Pages/Atoms/data-display/Container.vue';
 import Btn from '@/Pages/Atoms/action/Btn.vue';
@@ -29,6 +30,11 @@ const props = defineProps({
 
 const { setPageTitle } = usePageTitle();
 setPageTitle('Liste des Boutiques');
+
+// Transformation des entités en instances de modèles
+const shops = computed(() => {
+    return Shop.fromArray(props.shops.data || []);
+});
 
 // État
 const selectedEntity = ref(null);
@@ -60,8 +66,10 @@ const handleEdit = (entity) => {
 };
 
 const handleDelete = (entity) => {
-    if (confirm(`Êtes-vous sûr de vouloir supprimer "${entity.name}" ?`)) {
-        router.delete(route(`entities.shops.delete`, { shop: entity.id }));
+    // entity peut être une instance de modèle ou un objet brut
+    const shopModel = entity instanceof Shop ? entity : new Shop(entity);
+    if (confirm(`Êtes-vous sûr de vouloir supprimer "${shopModel.name}" ?`)) {
+        router.delete(route(`entities.shops.delete`, { shop: shopModel.id }));
     }
 };
 
@@ -160,10 +168,10 @@ const closeModal = () => {
 
         <!-- Tableau -->
         <EntityTable
-            :entities="shops.data || []"
+            :entities="shops"
             :columns="columns"
             entity-type="shops"
-            :pagination="shops"
+            :pagination="props.shops"
             :show-filters="true"
             :search="search"
             :filters="filters"

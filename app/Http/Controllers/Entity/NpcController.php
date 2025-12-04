@@ -16,7 +16,7 @@ class NpcController extends Controller
      */
     public function index()
     {
-        $this->authorizeForUser(auth()->user(), 'viewAny', Npc::class);
+        $this->authorize('viewAny', Npc::class);
         
         $query = Npc::with(['creature', 'classe', 'specialization']);
         

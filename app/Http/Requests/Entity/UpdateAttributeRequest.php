@@ -11,8 +11,7 @@ class UpdateAttributeRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        // Seuls les admins ou super_admin peuvent modifier un attribut
-        return $this->user() && in_array($this->user()->role, ['admin', 'super_admin']);
+        return $this->user()?->isAdmin() ?? false;
     }
 
     /**

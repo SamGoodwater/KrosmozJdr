@@ -10,6 +10,7 @@
 import { Head, router } from "@inertiajs/vue3";
 import { ref, computed, onBeforeUnmount } from "vue";
 import { usePageTitle } from "@/Composables/layout/usePageTitle";
+import { Item } from "@/Models/Entity/Item";
 
 import Container from '@/Pages/Atoms/data-display/Container.vue';
 import Btn from '@/Pages/Atoms/action/Btn.vue';
@@ -29,6 +30,11 @@ const props = defineProps({
 
 const { setPageTitle } = usePageTitle();
 setPageTitle('Liste des Objets');
+
+// Transformation des entités en instances de modèles
+const items = computed(() => {
+    return Item.fromArray(props.items.data || []);
+});
 
 // État
 const selectedEntity = ref(null);
@@ -61,8 +67,10 @@ const handleEdit = (entity) => {
 };
 
 const handleDelete = (entity) => {
-    if (confirm(`Êtes-vous sûr de vouloir supprimer "${entity.name}" ?`)) {
-        router.delete(route(`entities.items.delete`, { item: entity.id }));
+    // entity peut être une instance de modèle ou un objet brut
+    const itemModel = entity instanceof Item ? entity : new Item(entity);
+    if (confirm(`Êtes-vous sûr de vouloir supprimer "${itemModel.name}" ?`)) {
+        router.delete(route(`entities.items.delete`, { item: itemModel.id }));
     }
 };
 
@@ -186,10 +194,10 @@ const closeModal = () => {
 
         <!-- Tableau -->
         <EntityTable
-            :entities="items.data || []"
+            :entities="items"
             :columns="columns"
             entity-type="items"
-            :pagination="items"
+            :pagination="props.items"
             :show-filters="true"
             :search="search"
             :filters="filters"

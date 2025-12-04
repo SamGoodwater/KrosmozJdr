@@ -8,6 +8,7 @@
 import { ref, computed } from 'vue';
 import { Head, usePage } from '@inertiajs/vue3';
 import { usePageTitle } from '@/Composables/layout/usePageTitle';
+import { Campaign } from '@/Models/Entity/Campaign';
 import EntityEditForm from '@/Pages/Organismes/entity/EntityEditForm.vue';
 import EntityRelationsManager from '@/Pages/Organismes/entity/EntityRelationsManager.vue';
 import Container from '@/Pages/Atoms/data-display/Container.vue';
@@ -97,15 +98,13 @@ const fieldsConfig = {
     }
 };
 
+// Créer une instance de modèle Campaign
 const campaign = computed(() => {
     const campaignData = props.campaign || page.props.campaign || {};
-    if (campaignData.data && typeof campaignData.data === 'object' && campaignData.data.id) {
-        return campaignData.data;
-    }
-    return campaignData;
+    return new Campaign(campaignData);
 });
 
-setPageTitle(`Modifier la campagne : ${campaign.value?.name || 'Nouvelle campagne'}`);
+setPageTitle(`Modifier la campagne : ${campaign.value.name || 'Nouvelle campagne'}`);
 </script>
 
 <template>
@@ -123,9 +122,9 @@ setPageTitle(`Modifier la campagne : ${campaign.value?.name || 'Nouvelle campagn
         
         <!-- Gestion des utilisateurs de la campagne -->
         <EntityRelationsManager
-            :relations="campaign?.users || []"
+            :relations="campaign.users || []"
             :available-items="availableUsers"
-            :entity-id="campaign?.id"
+            :entity-id="campaign.id"
             entity-type="campaigns"
             relation-type="users"
             relation-name="Utilisateurs de la campagne"
@@ -139,9 +138,9 @@ setPageTitle(`Modifier la campagne : ${campaign.value?.name || 'Nouvelle campagn
         
         <!-- Gestion des scénarios de la campagne -->
         <EntityRelationsManager
-            :relations="campaign?.scenarios || []"
+            :relations="campaign.scenarios || []"
             :available-items="availableScenarios"
-            :entity-id="campaign?.id"
+            :entity-id="campaign.id"
             entity-type="campaigns"
             relation-type="scenarios"
             relation-name="Scénarios de la campagne"
@@ -155,9 +154,9 @@ setPageTitle(`Modifier la campagne : ${campaign.value?.name || 'Nouvelle campagn
         
         <!-- Gestion des objets de la campagne -->
         <EntityRelationsManager
-            :relations="campaign?.items || []"
+            :relations="campaign.items || []"
             :available-items="availableItems"
-            :entity-id="campaign?.id"
+            :entity-id="campaign.id"
             entity-type="campaigns"
             relation-type="items"
             relation-name="Objets de la campagne"
@@ -171,9 +170,9 @@ setPageTitle(`Modifier la campagne : ${campaign.value?.name || 'Nouvelle campagn
         
         <!-- Gestion des consommables de la campagne -->
         <EntityRelationsManager
-            :relations="campaign?.consumables || []"
+            :relations="campaign.consumables || []"
             :available-items="availableConsumables"
-            :entity-id="campaign?.id"
+            :entity-id="campaign.id"
             entity-type="campaigns"
             relation-type="consumables"
             relation-name="Consommables de la campagne"
@@ -187,9 +186,9 @@ setPageTitle(`Modifier la campagne : ${campaign.value?.name || 'Nouvelle campagn
         
         <!-- Gestion des ressources de la campagne -->
         <EntityRelationsManager
-            :relations="campaign?.resources || []"
+            :relations="campaign.resources || []"
             :available-items="availableResources"
-            :entity-id="campaign?.id"
+            :entity-id="campaign.id"
             entity-type="campaigns"
             relation-type="resources"
             relation-name="Ressources de la campagne"
@@ -203,9 +202,9 @@ setPageTitle(`Modifier la campagne : ${campaign.value?.name || 'Nouvelle campagn
         
         <!-- Gestion des sorts de la campagne -->
         <EntityRelationsManager
-            :relations="campaign?.spells || []"
+            :relations="campaign.spells || []"
             :available-items="availableSpells"
-            :entity-id="campaign?.id"
+            :entity-id="campaign.id"
             entity-type="campaigns"
             relation-type="spells"
             relation-name="Sorts de la campagne"
@@ -219,9 +218,9 @@ setPageTitle(`Modifier la campagne : ${campaign.value?.name || 'Nouvelle campagn
         
         <!-- Gestion des panoplies de la campagne -->
         <EntityRelationsManager
-            :relations="campaign?.panoplies || []"
+            :relations="campaign.panoplies || []"
             :available-items="availablePanoplies"
-            :entity-id="campaign?.id"
+            :entity-id="campaign.id"
             entity-type="campaigns"
             relation-type="panoplies"
             relation-name="Panoplies de la campagne"

@@ -16,7 +16,7 @@ class CreatureController extends Controller
      */
     public function index()
     {
-        $this->authorizeForUser(auth()->user(), 'viewAny', Creature::class);
+        $this->authorize('viewAny', Creature::class);
         
         $query = Creature::with(['createdBy', 'npc', 'monster']);
         

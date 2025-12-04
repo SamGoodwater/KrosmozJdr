@@ -10,6 +10,7 @@
 import { ref, computed } from 'vue';
 import { Head, usePage } from '@inertiajs/vue3';
 import { usePageTitle } from '@/Composables/layout/usePageTitle';
+import { Spell } from '@/Models/Entity/Spell';
 import EntityEditForm from '@/Pages/Organismes/entity/EntityEditForm.vue';
 import EntityRelationsManager from '@/Pages/Organismes/entity/EntityRelationsManager.vue';
 import Container from '@/Pages/Atoms/data-display/Container.vue';
@@ -106,16 +107,13 @@ const fieldsConfig = {
     }
 };
 
-// Extraire les données du sort (gérer la structure Resource)
+// Créer une instance de modèle Spell
 const spell = computed(() => {
     const spellData = props.spell || page.props.spell || {};
-    if (spellData.data && typeof spellData.data === 'object' && spellData.data.id) {
-        return spellData.data;
-    }
-    return spellData;
+    return new Spell(spellData);
 });
 
-setPageTitle(`Modifier le sort : ${spell.value?.name || 'Nouveau sort'}`);
+setPageTitle(`Modifier le sort : ${spell.value.name || 'Nouveau sort'}`);
 </script>
 
 <template>
@@ -133,9 +131,9 @@ setPageTitle(`Modifier le sort : ${spell.value?.name || 'Nouveau sort'}`);
         
         <!-- Gestion des classes du sort -->
         <EntityRelationsManager
-            :relations="spell?.classes || []"
+            :relations="spell.classes || []"
             :available-items="availableClasses"
-            :entity-id="spell?.id"
+            :entity-id="spell.id"
             entity-type="spells"
             relation-type="classes"
             relation-name="Classes pouvant utiliser ce sort"
@@ -149,9 +147,9 @@ setPageTitle(`Modifier le sort : ${spell.value?.name || 'Nouveau sort'}`);
         
         <!-- Gestion des types de sort -->
         <EntityRelationsManager
-            :relations="spell?.spellTypes || []"
+            :relations="spell.spellTypes || []"
             :available-items="availableSpellTypes"
-            :entity-id="spell?.id"
+            :entity-id="spell.id"
             entity-type="spells"
             relation-type="spellTypes"
             relation-name="Types de sort"

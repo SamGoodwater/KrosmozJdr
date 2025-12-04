@@ -5,10 +5,13 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Builder;
 use App\Models\User;
 use App\Models\Section;
 use App\Models\Entity\Campaign;
 use App\Models\Entity\Scenario;
+use App\Enums\PageState;
+use App\Enums\Visibility;
 
 /**
  * Modèle Eloquent Page
@@ -71,6 +74,7 @@ class Page extends Model
 
     /**
      * Les états possibles pour une page.
+     * @deprecated Utiliser PageState enum à la place
      */
     const STATES = [
         'brouillon' => 0,
@@ -88,6 +92,7 @@ class Page extends Model
         'title',
         'slug',
         'is_visible',
+        'can_edit_role',
         'in_menu',
         'state',
         'parent_id',
@@ -102,6 +107,9 @@ class Page extends Model
      */
     protected $casts = [
         'in_menu' => 'boolean',
+        'state' => PageState::class,
+        'is_visible' => Visibility::class,
+        'can_edit_role' => Visibility::class,
     ];
 
     /**
@@ -156,5 +164,196 @@ class Page extends Model
     public function scenarios()
     {
         return $this->belongsToMany(Scenario::class, 'scenario_page');
+    }
+
+    // ============================================
+    // 🔍 SCOPES
+    // ============================================
+
+    /**
+     * Scope pour filtrer les pages publiées.
+     */
+    public function scopePublished(Builder $query): Builder
+    {
+        return $query->where('state', PageState::PUBLISHED->value);
+    }
+
+    /**
+     * Scope pour filtrer les pages dans le menu.
+     */
+    public function scopeInMenu(Builder $query): Builder
+    {
+        return $query->where('in_menu', true);
+    }
+
+    /**
+     * Scope pour filtrer les pages visibles pour un utilisateur.
+     */
+    public function scopeVisibleFor(Builder $query, ?User $user = null): Builder
+    {
+        return $query->where(function ($q) use ($user) {
+            // Toujours visible pour les invités
+            $q->where('is_visible', Visibility::GUEST->value);
+
+            if ($user) {
+                // Visible pour les utilisateurs connectés
+                $q->orWhere('is_visible', Visibility::USER->value);
+
+                // Visible selon le rôle
+                if (in_array($user->role, [User::ROLE_GAME_MASTER, User::ROLE_ADMIN, User::ROLE_SUPER_ADMIN, 3, 4, 5, 'game_master', 'admin', 'super_admin'])) {
+                    $q->orWhere('is_visible', Visibility::GAME_MASTER->value);
+                }
+
+                if (in_array($user->role, [User::ROLE_ADMIN, User::ROLE_SUPER_ADMIN, 4, 5, 'admin', 'super_admin'])) {
+                    $q->orWhere('is_visible', Visibility::ADMIN->value);
+                }
+
+                // Visible si l'utilisateur est associé à la page
+                $q->orWhereHas('users', function ($userQuery) use ($user) {
+                    $userQuery->where('users.id', $user->id);
+                });
+            }
+        });
+    }
+
+    /**
+     * Scope pour trier par ordre de menu.
+     */
+    public function scopeOrdered(Builder $query): Builder
+    {
+        return $query->orderBy('menu_order');
+    }
+
+    /**
+     * Scope pour récupérer les pages du menu (publiées, dans le menu, visibles, ordonnées).
+     */
+    public function scopeForMenu(Builder $query, ?User $user = null): Builder
+    {
+        return $query->published()
+            ->inMenu()
+            ->visibleFor($user)
+            ->ordered();
+    }
+
+    // ============================================
+    // 🔧 MÉTHODES HELPER
+    // ============================================
+
+    /**
+     * Vérifie si la page est publiée.
+     */
+    public function isPublished(): bool
+    {
+        return $this->state === PageState::PUBLISHED;
+    }
+
+    /**
+     * Vérifie si la page est visible pour un utilisateur.
+     */
+    public function isVisibleFor(?User $user = null): bool
+    {
+        // is_visible est déjà un enum Visibility grâce au cast, donc on peut l'utiliser directement
+        $visibility = $this->is_visible instanceof Visibility 
+            ? $this->is_visible 
+            : Visibility::tryFrom($this->is_visible);
+        if (!$visibility) {
+            return false;
+        }
+
+        return $visibility->isAccessibleBy($user);
+    }
+
+    /**
+     * Vérifie si la page peut être vue par un utilisateur (état + visibilité).
+     */
+    public function canBeViewedBy(?User $user = null): bool
+    {
+        // Les admins peuvent toujours voir
+        if ($user && in_array($user->role, [User::ROLE_ADMIN, User::ROLE_SUPER_ADMIN, 4, 5, 'admin', 'super_admin'])) {
+            return true;
+        }
+
+        // Doit être publiée (ou en preview pour les auteurs)
+        if (!$this->isPublished() && !($user && $this->created_by === $user->id)) {
+            return false;
+        }
+
+        return $this->isVisibleFor($user);
+    }
+
+    /**
+     * Vérifie si la page peut être modifiée par un utilisateur selon can_edit_role.
+     */
+    public function canBeEditedBy(?User $user = null): bool
+    {
+        // Les super_admin peuvent toujours modifier
+        if ($user && in_array($user->role, [User::ROLE_SUPER_ADMIN, 5, 'super_admin'])) {
+            return true;
+        }
+
+        if (!$user) {
+            return false;
+        }
+
+        // Si l'utilisateur est l'auteur de la page, il peut la modifier
+        if ($this->created_by === $user->id) {
+            return true;
+        }
+
+        // Si l'utilisateur est associé à la page via la relation users, il peut la modifier
+        // Charger la relation si elle n'est pas déjà chargée
+        if (!$this->relationLoaded('users')) {
+            try {
+                $this->load('users');
+            } catch (\Exception $e) {
+                // Si la relation ne peut pas être chargée, continuer avec les autres vérifications
+            }
+        }
+        if ($this->relationLoaded('users') && $this->users->contains($user->id)) {
+            return true;
+        }
+
+        // Vérifier selon can_edit_role
+        // can_edit_role est déjà un enum Visibility grâce au cast, donc on peut l'utiliser directement
+        $editRole = $this->can_edit_role instanceof Visibility 
+            ? $this->can_edit_role 
+            : Visibility::tryFrom($this->can_edit_role ?? 'admin');
+        if (!$editRole) {
+            return false;
+        }
+
+        return $editRole->isAccessibleBy($user);
+    }
+
+    /**
+     * Publie la page.
+     */
+    public function publish(): void
+    {
+        $this->update(['state' => PageState::PUBLISHED->value]);
+    }
+
+    /**
+     * Archive la page.
+     */
+    public function archive(): void
+    {
+        $this->update(['state' => PageState::ARCHIVED->value]);
+    }
+
+    /**
+     * Met la page en prévisualisation.
+     */
+    public function setPreview(): void
+    {
+        $this->update(['state' => PageState::PREVIEW->value]);
+    }
+
+    /**
+     * Remet la page en brouillon.
+     */
+    public function setDraft(): void
+    {
+        $this->update(['state' => PageState::DRAFT->value]);
     }
 }

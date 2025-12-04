@@ -112,7 +112,7 @@ const notificationClasses = computed(() => {
     if (notificationState.value === 'full' || notificationState.value === 'expanded') {
         baseClasses.push('w-80 max-w-sm');
     } else {
-        baseClasses.push('w-12 h-12 rounded-full');
+        baseClasses.push('w-12 h-12');
         // Justification selon le placement pour les notifications contractées
         if (props.placement?.includes('right')) {
             baseClasses.push('justify-self-end');

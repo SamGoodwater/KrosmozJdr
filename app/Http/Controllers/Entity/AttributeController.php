@@ -16,7 +16,7 @@ class AttributeController extends Controller
      */
     public function index()
     {
-        $this->authorizeForUser(auth()->user(), 'viewAny', Attribute::class);
+        $this->authorize('viewAny', Attribute::class);
         
         $query = Attribute::with(['createdBy', 'creatures']);
         
@@ -80,7 +80,7 @@ class AttributeController extends Controller
      */
     public function show(Attribute $attribute)
     {
-        $this->authorizeForUser(auth()->user(), 'view', $attribute);
+        $this->authorize('view', $attribute);
         return response()->json($attribute);
     }
 

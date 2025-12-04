@@ -4,6 +4,11 @@ namespace App\Http\Requests\Entity;
 
 use Illuminate\Foundation\Http\FormRequest;
 
+/**
+ * FormRequest pour la création d'une Panoply.
+ *
+ * Valide les champs principaux d'une panoplie.
+ */
 class StorePanoplyRequest extends FormRequest
 {
     /**
@@ -11,7 +16,7 @@ class StorePanoplyRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return $this->user()?->isAdmin() ?? false;
     }
 
     /**
@@ -22,7 +27,12 @@ class StorePanoplyRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'name' => ['required', 'string', 'max:255'],
+            'description' => ['nullable', 'string'],
+            'bonus' => ['nullable', 'string'],
+            'usable' => ['nullable', 'integer', 'in:0,1'],
+            'is_visible' => ['nullable', 'string', 'max:255'],
+            'dofusdb_id' => ['nullable', 'string', 'max:255'],
         ];
     }
 }

@@ -5,6 +5,9 @@ namespace App\Http\Requests;
 use Illuminate\Foundation\Http\FormRequest;
 use App\Models\Section;
 use Illuminate\Validation\Rule;
+use App\Enums\PageState;
+use App\Enums\Visibility;
+use App\Enums\SectionType;
 
 /**
  * FormRequest pour la création d'une section dynamique.
@@ -28,32 +31,93 @@ class StoreSectionRequest extends FormRequest
      */
     public function rules(): array
     {
-        return [
+        $type = $this->input('type');
+        
+        $rules = [
             'page_id' => ['required', 'exists:pages,id'],
-            'order' => ['required', 'integer'],
-            'type' => ['required', 'string', 'max:100'],
-            'params' => ['sometimes', 'array'],
-            'is_visible' => ['sometimes', 'boolean'],
-            'state' => ['sometimes', 'string', Rule::in(Section::STATES)],
+            'order' => ['required', 'integer', 'min:0'],
+            'type' => ['required', Rule::enum(SectionType::class)],
+            'params' => ['required', 'array'],
+            'is_visible' => ['sometimes', Rule::enum(Visibility::class)],
+            'state' => ['sometimes', Rule::enum(PageState::class)],
         ];
+
+        // Validation dynamique des params selon le type
+        if ($type && $sectionType = SectionType::tryFrom($type)) {
+            $paramsRules = $this->getParamsValidationRules($sectionType);
+            if (!empty($paramsRules)) {
+                // Fusionner les règles de params avec les règles existantes
+                $rules = array_merge($rules, $paramsRules);
+            }
+        }
+
+        return $rules;
+    }
+
+    /**
+     * Retourne les règles de validation pour les params selon le type de section.
+     * 
+     * @param SectionType $type Type de section
+     * @return array<string, mixed> Règles de validation
+     */
+    protected function getParamsValidationRules(SectionType $type): array
+    {
+        return match($type) {
+            SectionType::TEXT => [
+                'params.content' => ['required', 'string'],
+                'params.align' => ['sometimes', 'string', Rule::in(['left', 'center', 'right'])],
+                'params.size' => ['sometimes', 'string', Rule::in(['sm', 'md', 'lg', 'xl'])],
+            ],
+            SectionType::IMAGE => [
+                'params.src' => ['required', 'string'],
+                'params.alt' => ['required', 'string'],
+                'params.caption' => ['sometimes', 'string', 'nullable'],
+                'params.align' => ['sometimes', 'string', Rule::in(['left', 'center', 'right'])],
+                'params.size' => ['sometimes', 'string', Rule::in(['sm', 'md', 'lg', 'xl', 'full'])],
+            ],
+            SectionType::GALLERY => [
+                'params.images' => ['required', 'array', 'min:1'],
+                'params.images.*.src' => ['required', 'string'],
+                'params.images.*.alt' => ['required', 'string'],
+                'params.images.*.caption' => ['sometimes', 'string', 'nullable'],
+                'params.columns' => ['sometimes', 'integer', Rule::in([2, 3, 4])],
+                'params.gap' => ['sometimes', 'string', Rule::in(['sm', 'md', 'lg'])],
+            ],
+            SectionType::VIDEO => [
+                'params.src' => ['required', 'string'],
+                'params.type' => ['required', 'string', Rule::in(['youtube', 'vimeo', 'direct'])],
+                'params.autoplay' => ['sometimes', 'boolean'],
+                'params.controls' => ['sometimes', 'boolean'],
+            ],
+            SectionType::ENTITY_TABLE => [
+                'params.entity' => ['required', 'string'],
+                'params.filters' => ['sometimes', 'array'],
+                'params.columns' => ['sometimes', 'array'],
+            ],
+        };
     }
 
     protected function prepareForValidation()
     {
         $data = $this->all();
-        if (isset($data['is_visible'])) {
+        
+        if (!isset($data['is_visible'])) {
             $this->merge([
-                'is_visible' => filter_var($data['is_visible'], FILTER_VALIDATE_BOOLEAN),
+                'is_visible' => Visibility::GUEST->value,
             ]);
         }
-        if (!isset($data['params'])) {
-            $this->merge([
-                'params' => [],
-            ]);
-        }
+        
+        // Ne pas définir params à un tableau vide si il n'est pas présent
+        // Cela permet à la validation de détecter si params est manquant
+        // if (!isset($data['params'])) {
+        //     $this->merge([
+        //         'params' => [],
+        //     ]);
+        // }
+        
         if (!isset($data['state'])) {
             $this->merge([
-                'state' => Section::STATES['brouillon'],
+                'state' => PageState::DRAFT->value,
             ]);
         }
     }

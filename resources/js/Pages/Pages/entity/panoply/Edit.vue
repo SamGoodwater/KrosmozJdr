@@ -10,6 +10,7 @@
 import { ref, computed } from 'vue';
 import { Head, usePage } from '@inertiajs/vue3';
 import { usePageTitle } from '@/Composables/layout/usePageTitle';
+import { Panoply } from '@/Models/Entity/Panoply';
 import EntityEditForm from '@/Pages/Organismes/entity/EntityEditForm.vue';
 import EntityRelationsManager from '@/Pages/Organismes/entity/EntityRelationsManager.vue';
 import Container from '@/Pages/Atoms/data-display/Container.vue';
@@ -65,16 +66,13 @@ const fieldsConfig = {
     }
 };
 
-// Extraire les données de la panoplie (gérer la structure Resource)
+// Créer une instance de modèle Panoply
 const panoply = computed(() => {
     const panoplyData = props.panoply || page.props.panoply || {};
-    if (panoplyData.data && typeof panoplyData.data === 'object' && panoplyData.data.id) {
-        return panoplyData.data;
-    }
-    return panoplyData;
+    return new Panoply(panoplyData);
 });
 
-setPageTitle(`Modifier la panoplie : ${panoply.value?.name || 'Nouvelle panoplie'}`);
+setPageTitle(`Modifier la panoplie : ${panoply.value.name || 'Nouvelle panoplie'}`);
 </script>
 
 <template>
@@ -92,9 +90,9 @@ setPageTitle(`Modifier la panoplie : ${panoply.value?.name || 'Nouvelle panoplie
         
         <!-- Gestion des items de la panoplie -->
         <EntityRelationsManager
-            :relations="panoply?.items || []"
+            :relations="panoply.items || []"
             :available-items="availableItems"
-            :entity-id="panoply?.id"
+            :entity-id="panoply.id"
             entity-type="panoplies"
             relation-type="items"
             relation-name="Items de la panoplie"

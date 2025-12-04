@@ -8,6 +8,7 @@
 import { ref, computed } from 'vue';
 import { Head, usePage } from '@inertiajs/vue3';
 import { usePageTitle } from '@/Composables/layout/usePageTitle';
+import { Shop } from '@/Models/Entity/Shop';
 import EntityEditForm from '@/Pages/Organismes/entity/EntityEditForm.vue';
 import EntityRelationsManager from '@/Pages/Organismes/entity/EntityRelationsManager.vue';
 import Container from '@/Pages/Atoms/data-display/Container.vue';
@@ -75,15 +76,13 @@ const fieldsConfig = {
     }
 };
 
+// Créer une instance de modèle Shop
 const shop = computed(() => {
     const shopData = props.shop || page.props.shop || {};
-    if (shopData.data && typeof shopData.data === 'object' && shopData.data.id) {
-        return shopData.data;
-    }
-    return shopData;
+    return new Shop(shopData);
 });
 
-setPageTitle(`Modifier la boutique : ${shop.value?.name || 'Nouvelle boutique'}`);
+setPageTitle(`Modifier la boutique : ${shop.value.name || 'Nouvelle boutique'}`);
 </script>
 
 <template>
@@ -101,9 +100,9 @@ setPageTitle(`Modifier la boutique : ${shop.value?.name || 'Nouvelle boutique'}`
         
         <!-- Gestion des objets de la boutique (avec prix/quantité/commentaire) -->
         <EntityRelationsManager
-            :relations="shop?.items || []"
+            :relations="shop.items || []"
             :available-items="availableItems"
-            :entity-id="shop?.id"
+            :entity-id="shop.id"
             entity-type="shops"
             relation-type="items"
             relation-name="Objets vendus dans la boutique"
@@ -118,9 +117,9 @@ setPageTitle(`Modifier la boutique : ${shop.value?.name || 'Nouvelle boutique'}`
         
         <!-- Gestion des consommables de la boutique (avec prix/quantité/commentaire) -->
         <EntityRelationsManager
-            :relations="shop?.consumables || []"
+            :relations="shop.consumables || []"
             :available-items="availableConsumables"
-            :entity-id="shop?.id"
+            :entity-id="shop.id"
             entity-type="shops"
             relation-type="consumables"
             relation-name="Consommables vendus dans la boutique"
@@ -135,9 +134,9 @@ setPageTitle(`Modifier la boutique : ${shop.value?.name || 'Nouvelle boutique'}`
         
         <!-- Gestion des ressources de la boutique (avec prix/quantité/commentaire) -->
         <EntityRelationsManager
-            :relations="shop?.resources || []"
+            :relations="shop.resources || []"
             :available-items="availableResources"
-            :entity-id="shop?.id"
+            :entity-id="shop.id"
             entity-type="shops"
             relation-type="resources"
             relation-name="Ressources vendues dans la boutique"

@@ -62,14 +62,15 @@ const handleDelete = () => {
       >
         Votre navigateur ne supporte pas la lecture de vidéos.
       </video>
-      <div v-if="canDelete" class="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
+      <div v-if="canDelete" class="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity z-10">
         <button
           type="button"
           @click="handleDelete"
-          class="btn btn-sm btn-error btn-circle"
+          class="btn btn-sm btn-error btn-circle shadow-lg hover:shadow-xl transition-all"
           aria-label="Supprimer le fichier"
+          title="Supprimer le fichier"
         >
-          <i class="fa-solid fa-times"></i>
+          <i class="fa-solid fa-trash-can"></i>
         </button>
       </div>
       <div v-if="name || fileSizeFormatted" class="mt-1 text-xs text-content-600">

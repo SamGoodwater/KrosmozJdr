@@ -20,7 +20,7 @@ class SectionPolicy
      */
     public function viewAny(User $user): bool
     {
-        if (in_array($user->role, ['admin', 'super_admin'])) {
+        if (in_array($user->role, [User::ROLE_ADMIN, User::ROLE_SUPER_ADMIN, 4, 5, 'admin', 'super_admin'])) {
             return true;
         }
         return $user !== null;
@@ -31,13 +31,28 @@ class SectionPolicy
      */
     public function view(User $user, Section $section): bool
     {
-        if (in_array($user->role, ['admin', 'super_admin'])) {
+        if (in_array($user->role, [User::ROLE_ADMIN, User::ROLE_SUPER_ADMIN, 4, 5, 'admin', 'super_admin'])) {
             return true;
         }
-        if ($section->users->contains($user->id)) {
+        // Charger la relation users si elle n'est pas déjà chargée
+        if (!$section->relationLoaded('users')) {
+            try {
+                $section->load('users');
+            } catch (\Exception $e) {
+                // Si la relation ne peut pas être chargée, continuer avec les autres vérifications
+            }
+        }
+        if ($section->relationLoaded('users') && $section->users->contains($user->id)) {
             return true;
         }
-        return (bool) $section->is_visible;
+        // is_visible est déjà un enum Visibility grâce au cast
+        $visibility = $section->is_visible instanceof \App\Enums\Visibility 
+            ? $section->is_visible 
+            : \App\Enums\Visibility::tryFrom($section->is_visible);
+        if (!$visibility) {
+            return false;
+        }
+        return $visibility->isAccessibleBy($user);
     }
 
     /**
@@ -52,7 +67,7 @@ class SectionPolicy
                 return true;
             }
         }
-        return in_array($user->role, ['game_master', 'admin', 'super_admin']);
+        return in_array($user->role, [User::ROLE_GAME_MASTER, User::ROLE_ADMIN, User::ROLE_SUPER_ADMIN, 3, 4, 5, 'game_master', 'admin', 'super_admin']);
     }
 
     /**
@@ -84,6 +99,6 @@ class SectionPolicy
      */
     public function forceDelete(User $user, Section $section): bool
     {
-        return in_array($user->role, ['admin', 'super_admin']);
+        return in_array($user->role, [User::ROLE_ADMIN, User::ROLE_SUPER_ADMIN, 4, 5, 'admin', 'super_admin']);
     }
 }

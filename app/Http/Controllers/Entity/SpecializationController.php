@@ -16,7 +16,7 @@ class SpecializationController extends Controller
      */
     public function index()
     {
-        $this->authorizeForUser(auth()->user(), 'viewAny', Specialization::class);
+        $this->authorize('viewAny', Specialization::class);
         
         $query = Specialization::with(['createdBy', 'capabilities', 'npcs']);
         

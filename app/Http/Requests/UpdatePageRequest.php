@@ -5,6 +5,8 @@ namespace App\Http\Requests;
 use Illuminate\Foundation\Http\FormRequest;
 use App\Models\Page;
 use Illuminate\Validation\Rule;
+use App\Enums\PageState;
+use App\Enums\Visibility;
 
 /**
  * FormRequest pour la mise à jour d'une page dynamique.
@@ -33,9 +35,10 @@ class UpdatePageRequest extends FormRequest
         return [
             'title' => ['sometimes', 'string', 'max:255'],
             'slug' => ['sometimes', 'string', 'max:255', 'unique:pages,slug,' . $pageId, 'regex:/^[a-z0-9]+(?:-[a-z0-9]+)*$/'],
-            'is_visible' => ['sometimes', 'boolean'],
+            'is_visible' => ['sometimes', Rule::enum(Visibility::class)],
+            'can_edit_role' => ['sometimes', Rule::enum(Visibility::class)],
             'in_menu' => ['sometimes', 'boolean'],
-            'state' => ['sometimes', 'string', Rule::in(Page::STATES)],
+            'state' => ['sometimes', Rule::enum(PageState::class)],
             'parent_id' => ['nullable', 'exists:pages,id'],
             'menu_order' => ['sometimes', 'integer'],
         ];
@@ -47,11 +50,6 @@ class UpdatePageRequest extends FormRequest
         if (isset($data['title']) && !isset($data['slug'])) {
             $this->merge([
                 'slug' => \Str::slug($data['title']),
-            ]);
-        }
-        if (isset($data['is_visible'])) {
-            $this->merge([
-                'is_visible' => filter_var($data['is_visible'], FILTER_VALIDATE_BOOLEAN),
             ]);
         }
         if (isset($data['in_menu'])) {

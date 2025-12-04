@@ -34,6 +34,7 @@ class StorePageRequest extends FormRequest
             'title' => ['required', 'string', 'max:255'],
             'slug' => ['required', 'string', 'max:255', 'unique:pages,slug', 'regex:/^[a-z0-9]+(?:-[a-z0-9]+)*$/'],
             'is_visible' => ['sometimes', Rule::enum(Visibility::class)],
+            'can_edit_role' => ['sometimes', Rule::enum(Visibility::class)],
             'in_menu' => ['sometimes', 'boolean'],
             'state' => ['sometimes', Rule::enum(PageState::class)],
             'parent_id' => ['nullable', 'exists:pages,id'],
@@ -49,11 +50,7 @@ class StorePageRequest extends FormRequest
                 'slug' => \Str::slug($data['title']),
             ]);
         }
-        if (isset($data['is_visible'])) {
-            $this->merge([
-                'is_visible' => filter_var($data['is_visible'], FILTER_VALIDATE_BOOLEAN),
-            ]);
-        }
+        // Ne pas convertir is_visible en booléen, c'est un enum string
         if (isset($data['in_menu'])) {
             $this->merge([
                 'in_menu' => filter_var($data['in_menu'], FILTER_VALIDATE_BOOLEAN),
@@ -61,7 +58,17 @@ class StorePageRequest extends FormRequest
         }
         if (!isset($data['state'])) {
             $this->merge([
-                'state' => Page::STATES['brouillon'],
+                'state' => PageState::DRAFT->value,
+            ]);
+        }
+        if (!isset($data['can_edit_role'])) {
+            $this->merge([
+                'can_edit_role' => Visibility::ADMIN->value,
+            ]);
+        }
+        if (!isset($data['is_visible'])) {
+            $this->merge([
+                'is_visible' => Visibility::GUEST->value,
             ]);
         }
     }

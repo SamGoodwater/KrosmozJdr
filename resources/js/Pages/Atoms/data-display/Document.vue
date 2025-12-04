@@ -61,10 +61,11 @@ const handleDelete = () => {
         v-if="canDelete"
         type="button"
         @click="handleDelete"
-        class="btn btn-sm btn-error btn-circle opacity-0 group-hover:opacity-100 transition-opacity"
+        class="btn btn-sm btn-error btn-circle opacity-0 group-hover:opacity-100 transition-opacity shadow-lg hover:shadow-xl transition-all"
         aria-label="Supprimer le fichier"
+        title="Supprimer le fichier"
       >
-        <i class="fa-solid fa-times"></i>
+        <i class="fa-solid fa-trash-can"></i>
       </button>
     </div>
   </div>

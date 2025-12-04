@@ -10,6 +10,7 @@ use App\Http\Requests\UpdateFileRequest;
 use App\Models\File;
 use App\Services\FileService;
 use App\Services\ImageService;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 use App\Services\NotificationService;
 use Illuminate\Support\Facades\Auth;
@@ -46,8 +47,14 @@ class SectionController extends Controller
     public function create()
     {
         $this->authorize('create', \App\Models\Section::class);
+        
+        // Récupérer toutes les pages pour le select
+        $pages = \App\Models\Page::select('id', 'title', 'slug')
+            ->orderBy('title')
+            ->get();
+        
         return Inertia::render('Pages/section/Create', [
-            // Ajoute ici les données nécessaires au formulaire (ex: pages, types, etc.)
+            'pages' => $pages,
         ]);
     }
 
@@ -90,9 +97,15 @@ class SectionController extends Controller
     {
         $this->authorize('update', $section);
         $section->load(['page', 'users', 'files', 'createdBy']);
+        
+        // Récupérer toutes les pages pour le select
+        $pages = \App\Models\Page::select('id', 'title', 'slug')
+            ->orderBy('title')
+            ->get();
+        
         return Inertia::render('Pages/section/Edit', [
             'section' => new SectionResource($section),
-            // Ajoute ici les données nécessaires au formulaire (ex: pages, types, etc.)
+            'pages' => $pages,
         ]);
     }
 
@@ -105,11 +118,22 @@ class SectionController extends Controller
     public function update(\App\Http\Requests\UpdateSectionRequest $request, \App\Models\Section $section)
     {
         $this->authorize('update', $section);
-        $old = clone $section;
+        // Créer une copie des attributs avant la mise à jour pour les notifications
+        $oldAttributes = $section->getAttributes();
         $data = $request->validated();
         $section->update($data);
         $section->load(['page', 'users', 'files', 'createdBy']);
-        \App\Services\NotificationService::notifyEntityModified($section, $request->user(), $old);
+        // Créer un modèle temporaire avec les anciens attributs pour les notifications
+        $old = new \App\Models\Section();
+        $old->setRawAttributes($oldAttributes);
+        $old->exists = true;
+        $old->id = $section->id;
+        try {
+            \App\Services\NotificationService::notifyEntityModified($section, $request->user(), $old);
+        } catch (\Exception $e) {
+            // Si les notifications échouent, on continue quand même
+            \Log::warning('Erreur lors de l\'envoi des notifications pour la section ' . $section->id . ': ' . $e->getMessage());
+        }
         return redirect()->route('sections.show', $section)->with('success', 'Section mise à jour.');
     }
 
@@ -263,5 +287,40 @@ class SectionController extends Controller
         $section->forceDelete();
         \App\Services\NotificationService::notifyEntityForceDeleted($section, request()->user());
         return redirect()->route('sections.index')->with('success', 'Section supprimée définitivement.');
+    }
+
+    /**
+     * Réorganise l'ordre des sections (drag & drop).
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function reorder(Request $request)
+    {
+        $this->authorize('viewAny', \App\Models\Section::class);
+
+        $data = $request->validate([
+            'sections' => ['required', 'array'],
+            'sections.*.id' => ['required', 'integer', 'exists:sections,id'],
+            'sections.*.order' => ['required', 'integer', 'min:0'],
+        ]);
+
+        $sections = Section::whereIn('id', collect($data['sections'])->pluck('id'))->get();
+
+        foreach ($data['sections'] as $item) {
+            $section = $sections->firstWhere('id', $item['id']);
+            if (!$section) {
+                continue;
+            }
+
+            // Vérifier l'autorisation de mise à jour pour chaque section
+            $this->authorize('update', $section);
+
+            $section->update([
+                'order' => $item['order'],
+            ]);
+        }
+
+        return response()->json(['success' => true]);
     }
 }

@@ -4,6 +4,11 @@ namespace App\Http\Requests\Entity;
 
 use Illuminate\Foundation\Http\FormRequest;
 
+/**
+ * FormRequest pour la mise à jour d'une Specialization.
+ *
+ * Valide les champs principaux d'une spécialisation.
+ */
 class UpdateSpecializationRequest extends FormRequest
 {
     /**
@@ -11,7 +16,7 @@ class UpdateSpecializationRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return $this->user()?->isAdmin() ?? false;
     }
 
     /**
@@ -22,7 +27,11 @@ class UpdateSpecializationRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'name' => ['sometimes', 'required', 'string', 'max:255'],
+            'description' => ['nullable', 'string'],
+            'usable' => ['nullable', 'integer', 'in:0,1'],
+            'is_visible' => ['nullable', 'string', 'max:255'],
+            'image' => ['nullable', 'string', 'max:255'],
         ];
     }
 }
