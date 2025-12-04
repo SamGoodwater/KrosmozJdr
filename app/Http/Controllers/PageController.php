@@ -6,6 +6,7 @@ use App\Models\Page;
 use App\Http\Requests\StorePageRequest;
 use App\Http\Requests\UpdatePageRequest;
 use App\Services\NotificationService;
+use App\Services\PageService;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Resources\PageResource;
 use Inertia\Inertia;
@@ -53,6 +54,7 @@ class PageController extends Controller
         $page = \App\Models\Page::create($data);
         $page->load(['sections', 'users', 'parent', 'children', 'campaigns', 'scenarios', 'createdBy']);
         \App\Services\NotificationService::notifyEntityCreated($page, $request->user());
+        PageService::clearMenuCache();
         return redirect()->route('pages.show', $page)->with('success', 'Page créée avec succès.');
     }
 
@@ -62,7 +64,12 @@ class PageController extends Controller
     public function show(\App\Models\Page $page)
     {
         $this->authorize('view', $page);
-        $page->load(['sections', 'users', 'parent', 'children', 'campaigns', 'scenarios', 'createdBy']);
+        
+        // Charger les sections affichables selon l'utilisateur
+        $sections = PageService::getPublishedSections($page, $request->user());
+        $page->setRelation('sections', $sections);
+        
+        $page->load(['users', 'parent', 'children', 'campaigns', 'scenarios', 'createdBy']);
         return Inertia::render('Pages/page/Show', [
             'page' => new PageResource($page),
         ]);
@@ -92,6 +99,7 @@ class PageController extends Controller
         $page->update($data);
         $page->load(['sections', 'users', 'parent', 'children', 'campaigns', 'scenarios', 'createdBy']);
         \App\Services\NotificationService::notifyEntityModified($page, $request->user(), $old);
+        PageService::clearMenuCache();
         return redirect()->route('pages.show', $page)->with('success', 'Page mise à jour.');
     }
 
@@ -104,6 +112,7 @@ class PageController extends Controller
         $user = request()->user();
         $page->delete();
         \App\Services\NotificationService::notifyEntityDeleted($page, $user);
+        PageService::clearMenuCache();
         return redirect()->route('pages.index')->with('success', 'Page supprimée.');
     }
 
@@ -154,6 +163,7 @@ class PageController extends Controller
         $this->authorize('restore', $page);
         $page->restore();
         \App\Services\NotificationService::notifyEntityRestored($page, request()->user());
+        PageService::clearMenuCache();
         return redirect()->route('pages.index')->with('success', 'Page restaurée.');
     }
 
@@ -162,6 +172,23 @@ class PageController extends Controller
         $this->authorize('forceDelete', $page);
         $page->forceDelete();
         \App\Services\NotificationService::notifyEntityForceDeleted($page, request()->user());
+        PageService::clearMenuCache();
         return redirect()->route('pages.index')->with('success', 'Page supprimée définitivement.');
+    }
+
+    /**
+     * Récupère les pages du menu pour un utilisateur.
+     * 
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function menu()
+    {
+        $user = auth()->user();
+        $pages = PageService::getMenuPages($user);
+        $menuTree = PageService::buildMenuTree($pages);
+        
+        return response()->json([
+            'menu' => $menuTree,
+        ]);
     }
 }

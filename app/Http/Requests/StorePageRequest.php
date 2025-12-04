@@ -5,6 +5,8 @@ namespace App\Http\Requests;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 use App\Models\Page;
+use App\Enums\PageState;
+use App\Enums\Visibility;
 
 /**
  * FormRequest pour la création d'une page dynamique.
@@ -31,9 +33,9 @@ class StorePageRequest extends FormRequest
         return [
             'title' => ['required', 'string', 'max:255'],
             'slug' => ['required', 'string', 'max:255', 'unique:pages,slug', 'regex:/^[a-z0-9]+(?:-[a-z0-9]+)*$/'],
-            'is_visible' => ['sometimes', 'boolean'],
+            'is_visible' => ['sometimes', Rule::enum(Visibility::class)],
             'in_menu' => ['sometimes', 'boolean'],
-            'state' => ['sometimes', 'string', Rule::in(Page::STATES)],
+            'state' => ['sometimes', Rule::enum(PageState::class)],
             'parent_id' => ['nullable', 'exists:pages,id'],
             'menu_order' => ['sometimes', 'integer'],
         ];
