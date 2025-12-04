@@ -84,7 +84,7 @@ if (isDev) {
         </div>
 
         <div v-if="selectedEntity" class="flex items-center gap-2 text-sm flex-shrink-0">
-            <Icon :icon="selectedEntity.icon" pack="solid" class="text-primary-300" />
+            <Icon :source="`fa-solid ${selectedEntity.icon}`" :alt="selectedEntity.label" pack="solid" class="text-primary-300" />
             <span class="text-primary-200 font-medium">{{ selectedEntity.label }}</span>
             <Badge color="info" size="sm" :content="`${selectedEntity.maxId} max`" />
         </div>

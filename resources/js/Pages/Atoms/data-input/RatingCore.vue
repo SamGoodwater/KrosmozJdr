@@ -165,13 +165,14 @@ function onStarLeave() {
 
 <style scoped lang="scss">
 // Styles spécifiques pour RatingCore
-// Utilisation maximale de Tailwind/DaisyUI, CSS custom minimal
+// Utilisation des classes utilitaires glassmorphisme et var(--color) pour les couleurs
 
 .rating {
     // Styles de base pour tous les ratings
     display: inline-flex;
     gap: 0.125rem;
     transition: all 0.2s ease-in-out;
+    --color: var(--color-primary-500); // Couleur par défaut (sera surchargée par color-{name})
     
     // États disabled
     &:has(input:disabled) {
@@ -179,7 +180,7 @@ function onStarLeave() {
         cursor: not-allowed;
     }
     
-    // Inputs radio (étoiles)
+    // Inputs radio (étoiles) - utilise var(--color)
     input[type="radio"] {
         appearance: none;
         cursor: pointer;
@@ -191,36 +192,32 @@ function onStarLeave() {
         
         // Masque d'étoile
         &.mask-star {
-            background: #e5e7eb;
+            background-color: color-mix(in srgb, var(--color) 20%, transparent);
             mask: url("data:image/svg+xml,%3csvg width='200' height='200' xmlns='http://www.w3.org/2000/svg'%3e%3cpath d='m9.05 3.86 1.78 5.14H18l-4.84 3.51 1.78 5.15-4.89-3.55-4.89 3.55 1.78-5.15L.05 9H7.27l1.78-5.14z'/%3e%3c/svg%3e") center/contain;
             -webkit-mask: url("data:image/svg+xml,%3csvg width='200' height='200' xmlns='http://www.w3.org/2000/svg'%3e%3cpath d='m9.05 3.86 1.78 5.14H18l-4.84 3.51 1.78 5.15-4.89-3.55-4.89 3.55 1.78-5.15L.05 9H7.27l1.78-5.14z'/%3e%3c/svg%3e") center/contain;
             
             &:checked {
-                background: var(--color-primary, #3b82f6);
+                background-color: var(--color);
             }
             
             &:hover:not(:disabled) {
                 transform: scale(1.1);
-                background: var(--color-primary, #3b82f6);
+                background-color: color-mix(in srgb, var(--color) 80%, transparent);
             }
         }
         
         // Masque d'étoile pour demi-rating
         &.mask-star-2 {
-            background: #e5e7eb;
+            background-color: color-mix(in srgb, var(--color) 20%, transparent);
             mask: url("data:image/svg+xml,%3csvg width='200' height='200' xmlns='http://www.w3.org/2000/svg'%3e%3cpath d='m9.05 3.86 1.78 5.14H18l-4.84 3.51 1.78 5.15-4.89-3.55-4.89 3.55 1.78-5.15L.05 9H7.27l1.78-5.14z'/%3e%3c/svg%3e") center/contain;
             -webkit-mask: url("data:image/svg+xml,%3csvg width='200' height='200' xmlns='http://www.w3.org/2000/svg'%3e%3cpath d='m9.05 3.86 1.78 5.14H18l-4.84 3.51 1.78 5.15-4.89-3.55-4.89 3.55 1.78-5.15L.05 9H7.27l1.78-5.14z'/%3e%3c/svg%3e") center/contain;
             
             &.mask-half-1 {
-                background: var(--color-primary, #3b82f6);
-                mask: url("data:image/svg+xml,%3csvg width='200' height='200' xmlns='http://www.w3.org/2000/svg'%3e%3cpath d='m9.05 3.86 1.78 5.14H18l-4.84 3.51 1.78 5.15-4.89-3.55-4.89 3.55 1.78-5.15L.05 9H7.27l1.78-5.14z'/%3e%3c/svg%3e") center/contain;
-                -webkit-mask: url("data:image/svg+xml,%3csvg width='200' height='200' xmlns='http://www.w3.org/2000/svg'%3e%3cpath d='m9.05 3.86 1.78 5.14H18l-4.84 3.51 1.78 5.15-4.89-3.55-4.89 3.55 1.78-5.15L.05 9H7.27l1.78-5.14z'/%3e%3c/svg%3e") center/contain;
+                background-color: var(--color);
             }
             
             &.mask-half-2 {
-                background: #e5e7eb;
-                mask: url("data:image/svg+xml,%3csvg width='200' height='200' xmlns='http://www.w3.org/2000/svg'%3e%3cpath d='m9.05 3.86 1.78 5.14H18l-4.84 3.51 1.78 5.15-4.89-3.55-4.89 3.55 1.78-5.15L.05 9H7.27l1.78-5.14z'/%3e%3c/svg%3e") center/contain;
-                -webkit-mask: url("data:image/svg+xml,%3csvg width='200' height='200' xmlns='http://www.w3.org/2000/svg'%3e%3cpath d='m9.05 3.86 1.78 5.14H18l-4.84 3.51 1.78 5.15-4.89-3.55-4.89 3.55 1.78-5.15L.05 9H7.27l1.78-5.14z'/%3e%3c/svg%3e") center/contain;
+                background-color: color-mix(in srgb, var(--color) 20%, transparent);
             }
             
             &:hover:not(:disabled) {
@@ -236,229 +233,125 @@ function onStarLeave() {
         }
     }
     
-    // Variant Glass - Effet de verre
-    &.bg-transparent.border.border-gray-300 {
-        background: rgba(255, 255, 255, 0.1);
-        backdrop-filter: blur(10px);
-        border-color: rgba(255, 255, 255, 0.2);
-        box-shadow: 
-            0 4px 6px -1px rgba(0, 0, 0, 0.1),
-            0 2px 4px -1px rgba(0, 0, 0, 0.06),
-            inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    // Variant Glass - Effet glassmorphisme
+    &.bg-transparent.border {
+        @apply border-glass-md box-glass-md;
+        border-color: color-mix(in srgb, var(--color) 30%, transparent);
+        background-color: color-mix(in srgb, var(--color) 10%, transparent);
         
         &:hover {
-            box-shadow: 
-                0 10px 15px -3px rgba(0, 0, 0, 0.1),
-                0 4px 6px -2px rgba(0, 0, 0, 0.05),
-                inset 0 1px 0 rgba(255, 255, 255, 0.2);
-            border-color: rgba(255, 255, 255, 0.3);
+            @apply border-glass-lg box-glass-lg;
+            border-color: color-mix(in srgb, var(--color) 50%, transparent);
+            background-color: color-mix(in srgb, var(--color) 15%, transparent);
         }
         
         input[type="radio"] {
             &.mask-star, &.mask-star-2 {
-                background: rgba(255, 255, 255, 0.3);
+                background-color: color-mix(in srgb, var(--color) 30%, transparent);
                 
                 &:checked {
-                    background: var(--color-primary, #3b82f6);
+                    background-color: var(--color);
                 }
                 
                 &:hover:not(:disabled) {
-                    background: var(--color-primary, #3b82f6);
+                    background-color: color-mix(in srgb, var(--color) 80%, transparent);
                 }
             }
         }
     }
     
     // Variant Dash - Style pointillé
-    &.border-dashed.border-2 {
-        background: rgba(255, 255, 255, 0.05);
+    &.border-dashed {
+        @apply border-glass-sm;
+        border-style: dashed;
+        border-width: 2px;
+        background-color: color-mix(in srgb, var(--color) 5%, transparent);
         
         &:hover {
-            background: rgba(255, 255, 255, 0.1);
+            @apply border-glass-md;
+            background-color: color-mix(in srgb, var(--color) 10%, transparent);
         }
         
         input[type="radio"] {
             &.mask-star, &.mask-star-2 {
                 &:checked {
-                    background: var(--color-secondary, #8b5cf6);
+                    background-color: var(--color);
                 }
                 
                 &:hover:not(:disabled) {
-                    background: var(--color-secondary, #8b5cf6);
+                    background-color: color-mix(in srgb, var(--color) 80%, transparent);
                 }
             }
         }
     }
     
-    // Variant Outline - Bordure avec effet
+    // Variant Outline - Bordure visible
     &.border-2.bg-transparent {
+        @apply border-glass-md;
+        border-width: 2px;
+        background-color: transparent;
+        
         &:hover {
-            background: rgba(255, 255, 255, 0.05);
+            @apply border-glass-lg;
+            background-color: color-mix(in srgb, var(--color) 5%, transparent);
         }
         
         input[type="radio"] {
             &.mask-star, &.mask-star-2 {
                 &:checked {
-                    background: var(--color-success, #10b981);
+                    background-color: var(--color);
                 }
                 
                 &:hover:not(:disabled) {
-                    background: var(--color-success, #10b981);
+                    background-color: color-mix(in srgb, var(--color) 80%, transparent);
                 }
             }
         }
     }
     
-    // Variant Ghost - Fond invisible
+    // Variant Ghost - Transparent
     &.border.border-transparent.bg-transparent {
+        background-color: transparent;
+        border-color: transparent;
+        
         &:hover {
-            background: rgba(255, 255, 255, 0.05);
-            border-color: rgba(255, 255, 255, 0.1);
+            background-color: color-mix(in srgb, var(--color) 5%, transparent);
+            border-color: color-mix(in srgb, var(--color) 10%, transparent);
         }
         
         input[type="radio"] {
             &.mask-star, &.mask-star-2 {
                 &:checked {
-                    background: var(--color-neutral, #6b7280);
+                    background-color: var(--color);
                 }
                 
                 &:hover:not(:disabled) {
-                    background: var(--color-neutral, #6b7280);
+                    background-color: color-mix(in srgb, var(--color) 80%, transparent);
                 }
             }
         }
     }
     
-    // Variant Soft - Style doux
-    &.border-b-2.border-gray-300.bg-transparent.rounded-none {
-        background: rgba(255, 255, 255, 0.05);
+    // Variant Soft - Bordure inférieure uniquement
+    &.border-b-2.bg-transparent.rounded-none {
+        @apply border-glass-b-md;
         border-bottom-width: 2px;
+        border-radius: 0;
+        background-color: transparent;
         
         &:hover {
-            background: rgba(255, 255, 255, 0.1);
+            @apply border-glass-b-lg;
+            background-color: color-mix(in srgb, var(--color) 5%, transparent);
         }
         
         input[type="radio"] {
             &.mask-star, &.mask-star-2 {
                 &:checked {
-                    background: var(--color-accent, #f59e0b);
+                    background-color: var(--color);
                 }
                 
                 &:hover:not(:disabled) {
-                    background: var(--color-accent, #f59e0b);
-                }
-            }
-        }
-    }
-    
-    // Styles pour les couleurs DaisyUI
-    &.rating-primary {
-        input[type="radio"] {
-            &.mask-star, &.mask-star-2 {
-                &:checked {
-                    background: var(--color-primary, #3b82f6);
-                }
-                
-                &:hover:not(:disabled) {
-                    background: var(--color-primary, #3b82f6);
-                }
-            }
-        }
-    }
-    
-    &.rating-secondary {
-        input[type="radio"] {
-            &.mask-star, &.mask-star-2 {
-                &:checked {
-                    background: var(--color-secondary, #8b5cf6);
-                }
-                
-                &:hover:not(:disabled) {
-                    background: var(--color-secondary, #8b5cf6);
-                }
-            }
-        }
-    }
-    
-    &.rating-accent {
-        input[type="radio"] {
-            &.mask-star, &.mask-star-2 {
-                &:checked {
-                    background: var(--color-accent, #f59e0b);
-                }
-                
-                &:hover:not(:disabled) {
-                    background: var(--color-accent, #f59e0b);
-                }
-            }
-        }
-    }
-    
-    &.rating-info {
-        input[type="radio"] {
-            &.mask-star, &.mask-star-2 {
-                &:checked {
-                    background: var(--color-info, #06b6d4);
-                }
-                
-                &:hover:not(:disabled) {
-                    background: var(--color-info, #06b6d4);
-                }
-            }
-        }
-    }
-    
-    &.rating-success {
-        input[type="radio"] {
-            &.mask-star, &.mask-star-2 {
-                &:checked {
-                    background: var(--color-success, #10b981);
-                }
-                
-                &:hover:not(:disabled) {
-                    background: var(--color-success, #10b981);
-                }
-            }
-        }
-    }
-    
-    &.rating-warning {
-        input[type="radio"] {
-            &.mask-star, &.mask-star-2 {
-                &:checked {
-                    background: var(--color-warning, #f59e0b);
-                }
-                
-                &:hover:not(:disabled) {
-                    background: var(--color-warning, #f59e0b);
-                }
-            }
-        }
-    }
-    
-    &.rating-error {
-        input[type="radio"] {
-            &.mask-star, &.mask-star-2 {
-                &:checked {
-                    background: var(--color-error, #ef4444);
-                }
-                
-                &:hover:not(:disabled) {
-                    background: var(--color-error, #ef4444);
-                }
-            }
-        }
-    }
-    
-    &.rating-neutral {
-        input[type="radio"] {
-            &.mask-star, &.mask-star-2 {
-                &:checked {
-                    background: var(--color-neutral, #6b7280);
-                }
-                
-                &:hover:not(:disabled) {
-                    background: var(--color-neutral, #6b7280);
+                    background-color: color-mix(in srgb, var(--color) 80%, transparent);
                 }
             }
         }
@@ -482,7 +375,7 @@ function onStarLeave() {
     }
 }
 
-// Styles pour les tailles DaisyUI
+// Styles pour les tailles DaisyUI (conservés car spécifiques au rating)
 .rating-xs {
     gap: 0.0625rem;
     
@@ -528,35 +421,13 @@ function onStarLeave() {
     }
 }
 
-// Styles pour les labels inline
-.label-text {
-    // Labels inline pour les ratings
-    transition: all 0.2s ease-in-out;
-    font-weight: 500;
-    
-    &:hover {
-        opacity: 0.8;
-    }
-}
-
-// Styles pour les labels flottants
-.floating-label {
-    // Label flottant pour les ratings
-    position: relative;
-    
-    .label-text {
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        pointer-events: none;
-        transition: all 0.2s ease-in-out;
-    }
-}
-
-// Container pour les ratings
-.rating-container {
-    display: inline-flex;
-    align-items: center;
-}
+// Application des classes color-* pour définir --color
+.color-primary { --color: var(--color-primary-500); }
+.color-secondary { --color: var(--color-secondary-500); }
+.color-accent { --color: var(--color-accent-500); }
+.color-info { --color: var(--color-info-500); }
+.color-success { --color: var(--color-success-500); }
+.color-warning { --color: var(--color-warning-500); }
+.color-error { --color: var(--color-error-500); }
+.color-neutral { --color: var(--color-neutral-500); }
 </style>

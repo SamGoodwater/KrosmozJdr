@@ -60,6 +60,8 @@ export const INPUT_TYPES = {
 
 /**
  * Tailles DaisyUI supportées
+ * Note: Les classes sont génériques (input-*) mais fonctionnent pour tous les types
+ * Les composants Core appliquent les styles spécifiques via SCSS
  */
 export const SIZES = {
     xs: 'input-xs',
@@ -70,7 +72,31 @@ export const SIZES = {
 };
 
 /**
+ * Mapping des tailles par type d'input (pour compatibilité)
+ */
+export const SIZE_MAP = {
+    select: {
+        xs: 'select-xs',
+        sm: 'select-sm',
+        md: 'select-md',
+        lg: 'select-lg',
+        xl: 'select-xl'
+    },
+    textarea: {
+        xs: 'textarea-xs',
+        sm: 'textarea-sm',
+        md: 'textarea-md',
+        lg: 'textarea-lg',
+        xl: 'textarea-xl'
+    },
+    // Par défaut, utilise les classes input-*
+    default: SIZES
+};
+
+/**
  * Couleurs DaisyUI supportées + personnalisées
+ * Note: Les classes sont génériques (input-*) mais fonctionnent pour tous les types
+ * Les composants Core appliquent les styles spécifiques via SCSS
  */
 export const COLORS = {
     neutral: 'input-neutral',
@@ -81,6 +107,34 @@ export const COLORS = {
     success: 'input-success',
     warning: 'input-warning',
     error: 'input-error'
+};
+
+/**
+ * Mapping des couleurs par type d'input (pour compatibilité)
+ */
+export const COLOR_MAP = {
+    select: {
+        neutral: 'select-neutral',
+        primary: 'select-primary',
+        secondary: 'select-secondary',
+        accent: 'select-accent',
+        info: 'select-info',
+        success: 'select-success',
+        warning: 'select-warning',
+        error: 'select-error'
+    },
+    textarea: {
+        neutral: 'textarea-neutral',
+        primary: 'textarea-primary',
+        secondary: 'textarea-secondary',
+        accent: 'textarea-accent',
+        info: 'textarea-info',
+        success: 'textarea-success',
+        warning: 'textarea-warning',
+        error: 'textarea-error'
+    },
+    // Par défaut, utilise les classes input-*
+    default: COLORS
 };
 
 /**
@@ -215,71 +269,72 @@ const SPECIAL_COMPONENT_CONFIG = {
     // Textarea utilise la configuration textuelle mais avec la classe textarea
     textarea: {
         glass: {
-            classes: ['textarea', 'textarea-primary', 'bg-transparent'],
+            classes: ['textarea'],
             animations: ['hover:scale-101', 'focus:scale-101', 'transition-transform', 'duration-200']
         },
         dash: {
-            classes: ['textarea', 'textarea-primary', 'bg-gray-50'],
+            classes: ['textarea'],
             animations: ['hover:scale-101', 'focus:scale-101', 'transition-transform', 'duration-200']
         },
         outline: {
-            classes: ['textarea', 'textarea-primary', 'bg-transparent'], 
+            classes: ['textarea'], 
             animations: ['hover:scale-101', 'focus:scale-101', 'transition-transform', 'duration-200']
         },
         ghost: {
-            classes: ['textarea', 'textarea-primary', 'bg-transparent'],
+            classes: ['textarea'],
             animations: ['hover:scale-101', 'focus:scale-101', 'transition-transform', 'duration-200']
         }, 
         soft: {
-            classes: ['textarea', 'textarea-primary', 'bg-transparent'],
+            classes: ['textarea'],
             animations: ['hover:scale-101', 'focus:scale-101', 'transition-transform', 'duration-200']
         }
     },
     
     // Select utilise la configuration textuelle mais avec la classe select
+    // La couleur sera ajoutée dynamiquement par getInputStyle
     select: {
         glass: {
-            classes: ['select', 'select-primary', 'bg-transparent'],
-            animations: ['hover:scale-101', 'focus:scale-101', 'transition-transform', 'duration-200']
+            classes: ['select', 'select-variant-glass'],
+            animations: COMMON_CLASSES.glass.animation
         },
         dash: {
-            classes: ['select', 'select-primary', 'bg-gray-50'],
-            animations: ['hover:scale-101', 'focus:scale-101', 'transition-transform', 'duration-200']
+            classes: ['select', 'select-variant-dash'],
+            animations: COMMON_CLASSES.dash.animation
         },
         outline: {
-            classes: ['select', 'select-primary', 'bg-transparent'],
-            animations: ['hover:scale-101', 'focus:scale-101', 'transition-transform', 'duration-200']
+            classes: ['select', 'select-variant-outline'],
+            animations: COMMON_CLASSES.outline.animation
         },
         ghost: {
-            classes: ['select', 'select-primary', 'bg-transparent'],
-            animations: ['hover:scale-101', 'focus:scale-101', 'transition-transform', 'duration-200']
+            classes: ['select', 'select-variant-ghost'],
+            animations: COMMON_CLASSES.ghost.animation
         },
         soft: {
-            classes: ['select', 'select-primary', 'bg-transparent'],
-            animations: ['hover:scale-101', 'focus:scale-101', 'transition-transform', 'duration-200']
+            classes: ['select', 'select-variant-soft'],
+            animations: COMMON_CLASSES.soft.animation
         }
     },
     
     // File utilise la configuration textuelle mais avec la classe file-input
     file: {
         glass: {
-            classes: ['file-input', 'file-input-primary', 'bg-transparent'],
+            classes: ['file-input'],
             animations: ['hover:scale-101', 'focus:scale-101', 'transition-transform', 'duration-200']
         },
         dash: {
-            classes: ['file-input', 'file-input-primary', 'bg-gray-50'],
+            classes: ['file-input'],
             animations: ['hover:scale-101', 'focus:scale-101', 'transition-transform', 'duration-200']
         },
         outline: {
-            classes: ['file-input', 'file-input-primary', 'bg-transparent'],
+            classes: ['file-input'],
             animations: ['hover:scale-101', 'focus:scale-101', 'transition-transform', 'duration-200']
         },
         ghost: {
-            classes: ['file-input', 'file-input-primary', 'bg-transparent'],
+            classes: ['file-input'],
             animations: ['hover:scale-101', 'focus:scale-101', 'transition-transform', 'duration-200']
         },
         soft: {
-            classes: ['file-input', 'file-input-primary', 'bg-transparent'],
+            classes: ['file-input'],
             animations: ['hover:scale-101', 'focus:scale-101', 'transition-transform', 'duration-200']
         }
     },
@@ -287,23 +342,23 @@ const SPECIAL_COMPONENT_CONFIG = {
     // Filter utilise la configuration textuelle mais avec la classe filter
     filter: {
         glass: {
-            classes: ['filter', 'filter-primary', 'bg-transparent'],
+            classes: ['filter'],
             animations: ['hover:scale-101', 'focus:scale-101', 'transition-transform', 'duration-200']
         }, 
         dash: {
-            classes: ['filter', 'filter-primary', 'bg-gray-50'],
+            classes: ['filter'],
             animations: ['hover:scale-101', 'focus:scale-101', 'transition-transform', 'duration-200']
         },
         outline: {
-            classes: ['filter', 'filter-primary', 'bg-transparent'],
+            classes: ['filter'],
             animations: ['hover:scale-101', 'focus:scale-101', 'transition-transform', 'duration-200']
         }, 
         ghost: {
-            classes: ['filter', 'filter-primary', 'bg-transparent'],
+            classes: ['filter'],
             animations: ['hover:scale-101', 'focus:scale-101', 'transition-transform', 'duration-200']
         }, 
         soft: {
-            classes: ['filter', 'filter-primary', 'bg-transparent'], 
+            classes: ['filter'], 
             animations: ['hover:scale-101', 'focus:scale-101', 'transition-transform', 'duration-200']
         }
     },
@@ -311,23 +366,23 @@ const SPECIAL_COMPONENT_CONFIG = {
     // Date utilise la configuration textuelle mais avec la classe cally
     date: {
         glass: {
-            classes: ['cally', 'bg-transparent', 'border', 'border-gray-300'],
+            classes: ['cally'],
             animations: ['hover-scale-101', 'focus-scale-101', 'transition-transform', 'duration-200']
         },
         dash: {
-            classes: ['cally', 'border-dashed', 'border-2', 'bg-gray-50'],
+            classes: ['cally'],
             animations: ['hover-scale-101', 'focus-scale-101', 'transition-transform', 'duration-200']
         },
         outline: {
-            classes: ['cally', 'border-2', 'bg-transparent'],
+            classes: ['cally'],
             animations: ['hover-scale-101', 'focus-scale-101', 'transition-transform', 'duration-200']
         },
         ghost: {
-            classes: ['cally', 'border', 'border-transparent', 'bg-transparent'],
+            classes: ['cally'],
             animations: ['hover-scale-101', 'focus-scale-101', 'transition-transform', 'duration-200']
         },
         soft: {
-            classes: ['cally', 'border-b-2', 'border-gray-300', 'bg-transparent', 'rounded-none'],
+            classes: ['cally'],
             animations: ['hover-scale-101', 'focus-scale-101', 'transition-transform', 'duration-200']
         }
     },
@@ -335,23 +390,23 @@ const SPECIAL_COMPONENT_CONFIG = {
     // Color utilise la configuration textuelle mais avec la classe color-picker-container
     color: {
         glass: {
-            classes: ['color-picker-container', 'bg-transparent', 'border', 'border-gray-300'],
+            classes: ['color-picker-container'],
             animations: ['hover-scale-101', 'focus-scale-101', 'transition-transform', 'duration-200']
         },
         dash: {
-            classes: ['color-picker-container', 'border-dashed', 'border-2', 'bg-gray-50'],
+            classes: ['color-picker-container'],
             animations: ['hover-scale-101', 'focus-scale-101', 'transition-transform', 'duration-200']
         },
         outline: {
-            classes: ['color-picker-container', 'border-2', 'bg-transparent'],
+            classes: ['color-picker-container'],
             animations: ['hover-scale-101', 'focus-scale-101', 'transition-transform', 'duration-200']
         },
         ghost: {
-            classes: ['color-picker-container', 'border', 'border-transparent', 'bg-transparent'],
+            classes: ['color-picker-container'],
             animations: ['hover-scale-101', 'focus-scale-101', 'transition-transform', 'duration-200']
         },
         soft: {
-            classes: ['color-picker-container', 'border-b-2', 'border-gray-300', 'bg-transparent', 'rounded-none'],
+            classes: ['color-picker-container'],
             animations: ['hover-scale-101', 'focus-scale-101', 'transition-transform', 'duration-200']
         }
     },
@@ -362,23 +417,23 @@ const SPECIAL_COMPONENT_CONFIG = {
     // Rating utilise la configuration numérique mais avec la classe rating
     rating: {
         glass: {
-            classes: ['rating', 'rating-primary', 'bg-transparent'],
+            classes: ['rating'],
             animations: ['hover:scale-101', 'focus:scale-101', 'transition-transform', 'duration-200']
         },
         dash: {
-            classes: ['rating', 'rating-primary', 'bg-gray-50'],
+            classes: ['rating'],
             animations: ['hover:scale-101', 'focus:scale-101', 'transition-transform', 'duration-200']
         },
         outline: {
-            classes: ['rating', 'rating-primary', 'bg-transparent'],
+            classes: ['rating'],
             animations: ['hover:scale-101', 'focus:scale-101', 'transition-transform', 'duration-200']
         },
         ghost: {
-            classes: ['rating', 'rating-primary', 'bg-transparent'],
+            classes: ['rating'],
             animations: ['hover:scale-101', 'focus:scale-101', 'transition-transform', 'duration-200']
         },
         soft: {
-            classes: ['rating', 'rating-primary', 'bg-transparent'], 
+            classes: ['rating'], 
             animations: ['hover:scale-101', 'focus:scale-101', 'transition-transform', 'duration-200']
         }  
     },
@@ -386,23 +441,23 @@ const SPECIAL_COMPONENT_CONFIG = {
     // Radio utilise la configuration de sélection mais avec la classe radio
     radio: {
         glass: {
-            classes: ['radio', 'radio-primary', 'bg-transparent'],
+            classes: ['radio'],
             animations: ['hover:scale-110', 'checked:scale-110', 'transition-transform', 'duration-200']
         },
         dash: {
-            classes: ['radio', 'radio-primary', 'bg-gray-50'],
+            classes: ['radio'],
             animations: ['hover:scale-110', 'checked:scale-110', 'transition-transform', 'duration-200']
         },
         outline: {
-            classes: ['radio', 'radio-primary', 'bg-transparent'],
+            classes: ['radio'],
             animations: ['hover:scale-110', 'checked:scale-110', 'transition-transform', 'duration-200']
         },
         ghost: {
-            classes: ['radio', 'radio-primary', 'bg-transparent'],
+            classes: ['radio'],
             animations: ['hover:scale-110', 'checked:scale-110', 'transition-transform', 'duration-200']
         },
         soft: {
-            classes: ['radio', 'radio-primary', 'bg-transparent'],
+            classes: ['radio'],
             animations: ['hover:scale-110', 'checked:scale-110', 'transition-transform', 'duration-200']
         }
     },
@@ -410,23 +465,23 @@ const SPECIAL_COMPONENT_CONFIG = {
     // Toggle utilise la configuration de sélection mais avec la classe toggle
     toggle: {
         glass: {
-            classes: ['toggle', 'toggle-primary', 'bg-transparent'],
+            classes: ['toggle'],
             animations: ['hover:scale-101', 'checked:translate-x-6', 'transition-all', 'duration-300']
         },
         dash: {
-            classes: ['toggle', 'toggle-primary', 'bg-gray-50'],
+            classes: ['toggle'],
             animations: ['hover:scale-101', 'checked:translate-x-6', 'transition-all', 'duration-300']
         },
         outline: {
-            classes: ['toggle', 'toggle-primary', 'bg-transparent'],
+            classes: ['toggle'],
             animations: ['hover:scale-101', 'checked:translate-x-6', 'transition-all', 'duration-300']
         },
         ghost: {
-            classes: ['toggle', 'toggle-primary', 'bg-transparent'],
+            classes: ['toggle'],
             animations: ['hover:scale-101', 'checked:translate-x-6', 'transition-all', 'duration-300']
         },
         soft: {
-            classes: ['toggle', 'toggle-primary', 'bg-transparent'],
+                classes: ['toggle'],
             animations: ['hover:scale-101', 'checked:translate-x-6', 'transition-all', 'duration-300']
         }
     }
@@ -544,16 +599,26 @@ export function getInputStyle(inputType, styleConfig = {}, error = false) {
     // Classes de base
     const classes = [...styleData.classes];
     
-    // Classe de taille
-    classes.push(SIZES[size]);
+    // Classe de taille (utilise le mapping spécifique si disponible)
+    const sizeClass = SIZE_MAP[inputType]?.[size] || SIZE_MAP.default[size] || SIZES[size];
+    classes.push(sizeClass);
     
-    // Classe de couleur
+    // Classe de couleur (utilise le mapping spécifique si disponible)
+    // On génère à la fois la classe spécifique (input-primary, select-primary, etc.)
+    // et la classe générique (color-primary) pour définir --color
     if (color) {
-        if (COLORS[color]) {
-            classes.push(COLORS[color]);
-        } else {
+        const colorClass = COLOR_MAP[inputType]?.[color] || COLOR_MAP.default[color];
+        if (colorClass) {
+            classes.push(colorClass);
+        } else if (color.startsWith('color-') || color.startsWith('bg-')) {
             // Couleur personnalisée
             classes.push(color);
+        }
+        
+        // Ajouter la classe générique color-{name} pour définir --color
+        // Cette classe sera utilisée dans les styles SCSS via var(--color)
+        if (COLORS[color] || ['primary', 'secondary', 'accent', 'info', 'success', 'warning', 'error', 'neutral'].includes(color)) {
+            classes.push(`color-${color}`);
         }
     }
     

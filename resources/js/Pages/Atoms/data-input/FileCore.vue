@@ -86,6 +86,36 @@ const atomClasses = computed(() =>
   )
 )
 
+// Classes de style basées sur Btn pour harmonisation
+const variantBtnFileClasses = computed(() =>
+  mergeClasses(
+    [
+        // Variants (même logique que Btn)
+        props.variant === "outline" && "btn-outline-custom border-glass-lg hover:border-glass-xl",
+        props.variant === "ghost" && "btn-ghost-custom",
+        props.variant === "link" && "btn-link",
+        props.variant === "soft" && "btn-soft",
+        props.variant === "dash" && "btn-dash",
+        props.variant === "glass" && "btn-glass-custom box-glass-sm hover:box-glass-md",
+        // Couleurs (même logique que Btn)
+        props.color === "primary" && "btn-custom-primary color-primary",
+        props.color === "secondary" && "btn-custom-secondary color-secondary",
+        props.color === "accent" && "btn-custom-accent color-accent",
+        props.color === "info" && "btn-custom-info color-info",
+        props.color === "success" && "btn-custom-success color-success",
+        props.color === "warning" && "btn-custom-warning color-warning",
+        props.color === "error" && "btn-custom-error color-error",
+        props.color === "neutral" && "btn-custom-neutral color-neutral",
+        // Tailles (même logique que Btn)
+        props.size === "xs" && "btn-xs",
+        props.size === "sm" && "btn-sm",
+        props.size === "md" && "btn-md",
+        props.size === "lg" && "btn-lg",
+        props.size === "xl" && "btn-xl",
+    ].filter(Boolean),
+  )
+)
+
 // ------------------------------------------
 // 🏷️ Détection de labels inline (inStart / inEnd)
 // ------------------------------------------
@@ -143,11 +173,11 @@ function onKeydown(e) {
 
     <!-- 📁 Input file principal -->
         <input
-      ref="fileRef"
+            ref="fileRef"
             type="file"
-      v-bind="inputAttrs"
-      v-on="listeners"
-            :class="atomClasses"
+            v-bind="inputAttrs"
+            v-on="listeners"
+            :class="atomClasses + ' ' + variantBtnFileClasses"
             @input="onInput"
       @keydown="onKeydown"
         />
@@ -161,11 +191,11 @@ function onKeydown(e) {
   <!-- 💬 Floating label -->
   <label v-else-if="props.labelFloating" :class="labelClasses">
         <input
-      ref="fileRef"
+            ref="fileRef"
             type="file"
-      v-bind="inputAttrs"
-      v-on="listeners"
-      :class="atomClasses"
+            v-bind="inputAttrs"
+            v-on="listeners"
+            :class="atomClasses + ' ' + variantBtnFileClasses"
             @input="onInput"
       @keydown="onKeydown"
         />
@@ -177,11 +207,11 @@ function onKeydown(e) {
   <!-- 📁 Input file simple sans label -->
     <input
         v-else
-    ref="fileRef"
+        ref="fileRef"
         type="file"
-    v-bind="inputAttrs"
-    v-on="listeners"
-        :class="atomClasses"
+        v-bind="inputAttrs"
+        v-on="listeners"
+        :class="atomClasses + ' ' + variantBtnFileClasses"
         @input="onInput"
     @keydown="onKeydown"
     />
@@ -189,13 +219,15 @@ function onKeydown(e) {
 
 <style scoped lang="scss">
 // Styles spécifiques pour FileCore
-// Utilisation maximale de Tailwind/DaisyUI, CSS custom minimal
+// Utilisation des classes de Btn et des classes utilitaires glassmorphisme
+// Utilisation de var(--color) pour les couleurs
 
-.file-input {
+input[type="file"] {
     // Styles de base pour tous les inputs file
     outline: none;
     transition: all 0.2s ease-in-out;
     cursor: pointer;
+    --color: var(--color-primary-500); // Couleur par défaut (sera surchargée par color-{name})
     
     // États de focus
     &:focus {
@@ -208,168 +240,153 @@ function onKeydown(e) {
         cursor: not-allowed;
     }
     
-    // Personnalisation du bouton de sélection de fichier
+    // Personnalisation du bouton de sélection de fichier (utilise les styles de Btn)
     &::file-selector-button {
+        @apply btn;
         transition: all 0.2s ease-in-out;
         font-weight: 500;
-        border-radius: 0.375rem;
-        padding: 0.5rem 1rem;
         margin-right: 0.5rem;
+        cursor: pointer;
+        background-color: var(--color);
+        color: white;
+        border: 1px solid color-mix(in srgb, var(--color) 30%, transparent);
         
         &:hover {
             transform: translateY(-1px);
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            background-color: color-mix(in srgb, var(--color) 90%, transparent);
+            box-shadow: 0 4px 6px -1px color-mix(in srgb, var(--color) 20%, transparent);
+        }
+        
+        &:active {
+            transform: translateY(0);
         }
     }
     
-    // Variant Glass - Effet de verre
-    &.bg-transparent.border.border-gray-300 {
-        background: rgba(255, 255, 255, 0.1);
-        backdrop-filter: blur(10px);
-        border-color: rgba(255, 255, 255, 0.2);
-        box-shadow: 
-            0 4px 6px -1px rgba(0, 0, 0, 0.1),
-            0 2px 4px -1px rgba(0, 0, 0, 0.06),
-            inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    // Variant Glass - Effet glassmorphisme (utilise les classes de Btn)
+    &.btn-glass-custom {
+        @apply border-glass-md box-glass-md;
+        border-color: color-mix(in srgb, var(--color) 30%, transparent);
+        background-color: color-mix(in srgb, var(--color) 10%, transparent);
         
         &:hover {
-            box-shadow: 
-                0 10px 15px -3px rgba(0, 0, 0, 0.1),
-                0 4px 6px -2px rgba(0, 0, 0, 0.05),
-                inset 0 1px 0 rgba(255, 255, 255, 0.2);
-            border-color: rgba(255, 255, 255, 0.3);
+            @apply border-glass-lg box-glass-lg;
+            border-color: color-mix(in srgb, var(--color) 50%, transparent);
+            background-color: color-mix(in srgb, var(--color) 15%, transparent);
         }
         
         &::file-selector-button {
-            background: rgba(59, 130, 246, 0.8);
-            color: white;
-            border: 1px solid rgba(59, 130, 246, 0.3);
+            @apply box-glass-sm;
+            background-color: color-mix(in srgb, var(--color) 80%, transparent);
+            border-color: color-mix(in srgb, var(--color) 40%, transparent);
+            
+            &:hover {
+                @apply box-glass-md;
+                background-color: color-mix(in srgb, var(--color) 90%, transparent);
+            }
         }
     }
     
     // Variant Dash - Style pointillé
-    &.border-dashed.border-2 {
-        background: rgba(255, 255, 255, 0.05);
+    &.btn-dash {
+        @apply border-glass-sm;
+        border-style: dashed;
+        border-width: 2px;
+        background-color: color-mix(in srgb, var(--color) 5%, transparent);
         
         &:hover {
-            background: rgba(255, 255, 255, 0.1);
+            @apply border-glass-md;
+            background-color: color-mix(in srgb, var(--color) 10%, transparent);
         }
         
         &::file-selector-button {
-            background: rgba(139, 92, 246, 0.8);
-            color: white;
-            border: 1px solid rgba(139, 92, 246, 0.3);
+            background-color: color-mix(in srgb, var(--color) 80%, transparent);
+            border-style: dashed;
+            border-color: color-mix(in srgb, var(--color) 40%, transparent);
         }
     }
     
-    // Variant Outline - Bordure avec effet
-    &.border-2.bg-transparent {
+    // Variant Outline - Bordure visible
+    &.btn-outline-custom {
+        @apply border-glass-md;
+        border-width: 2px;
+        background-color: transparent;
+        
         &:hover {
-            background: rgba(255, 255, 255, 0.05);
+            @apply border-glass-lg;
+            background-color: color-mix(in srgb, var(--color) 5%, transparent);
         }
         
         &::file-selector-button {
-            background: rgba(16, 185, 129, 0.8);
-            color: white;
-            border: 1px solid rgba(16, 185, 129, 0.3);
+            background-color: var(--color);
+            border-color: var(--color);
         }
     }
     
-    // Variant Ghost - Fond invisible
-    &.border.border-transparent.bg-transparent {
+    // Variant Ghost - Transparent
+    &.btn-ghost-custom {
+        background-color: transparent;
+        border-color: transparent;
+        
         &:hover {
-            background: rgba(255, 255, 255, 0.05);
-            border-color: rgba(255, 255, 255, 0.1);
+            background-color: color-mix(in srgb, var(--color) 5%, transparent);
+            border-color: color-mix(in srgb, var(--color) 10%, transparent);
         }
         
         &::file-selector-button {
-            background: rgba(107, 114, 128, 0.8);
-            color: white;
-            border: 1px solid rgba(107, 114, 128, 0.3);
+            background-color: color-mix(in srgb, var(--color) 80%, transparent);
+            border-color: color-mix(in srgb, var(--color) 30%, transparent);
         }
     }
     
-    // Variant Soft - Style doux
-    &.border-b-2.border-gray-300.bg-transparent.rounded-none {
-        background: rgba(255, 255, 255, 0.05);
+    // Variant Soft - Bordure inférieure uniquement
+    &.btn-soft {
+        @apply border-glass-b-md;
         border-bottom-width: 2px;
+        border-radius: 0;
+        background-color: transparent;
         
         &:hover {
-            background: rgba(255, 255, 255, 0.1);
+            @apply border-glass-b-lg;
+            background-color: color-mix(in srgb, var(--color) 5%, transparent);
         }
         
         &::file-selector-button {
-            background: rgba(245, 158, 11, 0.8);
-            color: white;
-            border: 1px solid rgba(245, 158, 11, 0.3);
+            background-color: var(--color);
+            border-bottom-color: var(--color);
         }
     }
     
-    // Styles pour les couleurs DaisyUI
-    &.file-input-primary::file-selector-button {
-        background: var(--color-primary, #3b82f6);
-        color: white;
-    }
-    
-    &.file-input-secondary::file-selector-button {
-        background: var(--color-secondary, #8b5cf6);
-        color: white;
-    }
-    
-    &.file-input-accent::file-selector-button {
-        background: var(--color-accent, #f59e0b);
-        color: white;
-    }
-    
-    &.file-input-info::file-selector-button {
-        background: var(--color-info, #06b6d4);
-        color: white;
-    }
-    
-    &.file-input-success::file-selector-button {
-        background: var(--color-success, #10b981);
-        color: white;
-    }
-    
-    &.file-input-warning::file-selector-button {
-        background: var(--color-warning, #f59e0b);
-        color: white;
-    }
-    
-    &.file-input-error::file-selector-button {
-        background: var(--color-error, #ef4444);
-        color: white;
-    }
-    
-    &.file-input-neutral::file-selector-button {
-        background: var(--color-neutral, #6b7280);
-        color: white;
+    // Variant Link - Style lien
+    &.btn-link {
+        background-color: transparent;
+        border-color: transparent;
+        text-decoration: underline;
+        
+        &:hover {
+            text-decoration: none;
+        }
+        
+        &::file-selector-button {
+            background-color: transparent;
+            border-color: transparent;
+            color: var(--color);
+            text-decoration: underline;
+            
+            &:hover {
+                text-decoration: none;
+            }
+        }
     }
 }
 
-// Styles pour les tailles DaisyUI
-.file-input-xs::file-selector-button {
-    padding: 0.25rem 0.5rem;
-    font-size: 0.75rem;
-}
-
-.file-input-sm::file-selector-button {
-    padding: 0.375rem 0.75rem;
-    font-size: 0.875rem;
-}
-
-.file-input-md::file-selector-button {
-    padding: 0.5rem 1rem;
-    font-size: 1rem;
-}
-
-.file-input-lg::file-selector-button {
-    padding: 0.75rem 1.5rem;
-    font-size: 1.125rem;
-}
-
-.file-input-xl::file-selector-button {
-    padding: 1rem 2rem;
-    font-size: 1.25rem;
-}
+// Application des classes color-* pour définir --color
+// Ces classes sont générées par useInputStyle via getInputStyle
+.color-primary { --color: var(--color-primary-500); }
+.color-secondary { --color: var(--color-secondary-500); }
+.color-accent { --color: var(--color-accent-500); }
+.color-info { --color: var(--color-info-500); }
+.color-success { --color: var(--color-success-500); }
+.color-warning { --color: var(--color-warning-500); }
+.color-error { --color: var(--color-error-500); }
+.color-neutral { --color: var(--color-neutral-500); }
 </style>

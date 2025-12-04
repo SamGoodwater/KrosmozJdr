@@ -61,17 +61,17 @@ const clearHistory = () => {
             <h2 class="text-xl font-bold text-primary-100">Historique des imports</h2>
             <Btn
                 v-if="results.length > 0"
-                color="ghost"
+                variant="ghost"
                 size="sm"
                 @click="clearHistory"
             >
-                <Icon icon="fa-trash" pack="solid" class="mr-2" />
+                <Icon source="fa-solid fa-trash" alt="Effacer" pack="solid" class="mr-2" />
                 Effacer
             </Btn>
         </div>
 
         <div v-if="results.length === 0" class="text-center py-8 text-primary-300">
-            <Icon icon="fa-inbox" pack="solid" size="3xl" class="mb-4 opacity-50" />
+            <Icon source="fa-solid fa-inbox" alt="Aucun import" pack="solid" size="3xl" class="mb-4 opacity-50" />
             <p>Aucun import effectué</p>
         </div>
 
@@ -104,7 +104,7 @@ const clearHistory = () => {
                         <!-- Affichage des relations importées -->
                         <div v-if="result.result.related && result.result.related.length > 0" class="mt-3 p-2 bg-info/10 border border-info/30 rounded">
                             <p class="text-xs font-semibold text-info mb-2 flex items-center gap-2">
-                                <Icon icon="fa-link" pack="solid" class="text-xs" />
+                                <Icon source="fa-solid fa-link" alt="Entités liées" pack="solid" class="text-xs" />
                                 Entités liées importées ({{ result.result.related.length }})
                             </p>
                             <div class="space-y-1">
@@ -113,7 +113,7 @@ const clearHistory = () => {
                                     :key="idx"
                                     class="text-xs text-primary-200 flex items-center gap-2"
                                 >
-                                    <Icon :icon="getIconForRelatedType(related.type)" pack="solid" class="text-xs" />
+                                    <Icon :source="`fa-solid ${getIconForRelatedType(related.type)}`" :alt="getEntityTypeLabel(related.type)" pack="solid" class="text-xs" />
                                     <span>{{ getEntityTypeLabel(related.type) }} #{{ related.id }}</span>
                                     <Badge
                                         v-if="related.result"

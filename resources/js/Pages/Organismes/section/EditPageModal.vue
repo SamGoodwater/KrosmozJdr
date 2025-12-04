@@ -28,6 +28,7 @@ import Icon from '@/Pages/Atoms/data-display/Icon.vue';
 import { getPageStateOptions } from '@/Utils/enums/PageState';
 import { getVisibilityOptions } from '@/Utils/enums/Visibility';
 import { Page } from '@/Models';
+import { useCopyToClipboard } from '@/Composables/utils/useCopyToClipboard';
 
 const props = defineProps({
     open: {
@@ -152,14 +153,10 @@ const pageUrl = computed(() => {
 });
 
 // Copier l'URL dans le presse-papiers
+const { copyToClipboard } = useCopyToClipboard();
 const copyUrl = async () => {
-    try {
-        await navigator.clipboard.writeText(pageUrl.value);
-        // Optionnel : afficher une notification de succès
-        // Vous pouvez utiliser un système de notification si disponible
-    } catch (err) {
-        console.error('Erreur lors de la copie de l\'URL:', err);
-    }
+    if (!pageUrl.value) return;
+    await copyToClipboard(pageUrl.value, 'URL de la page copiée !');
 };
 
 // Soumettre le formulaire

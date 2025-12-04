@@ -165,7 +165,7 @@ onBeforeUnmount(() => {
                 <slot name="actions" />
             </footer>
         </div>
-        <form method="dialog" class="modal-backdrop">
+        <form method="dialog" class="modal-backdrop bd-glass-lg bg-base-900/30">
             <slot name="backdrop">
                 <button>close</button>
             </slot>
@@ -199,5 +199,20 @@ onBeforeUnmount(() => {
 
 .modal-open .modal-slide {
     transform: translateY(0);
+}
+
+/* Glassmorphism pour le backdrop */
+.modal-backdrop {
+    background-color: rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(16px) brightness(1.2);
+    -webkit-backdrop-filter: blur(16px) brightness(1.2);
+    transition: backdrop-filter 0.3s ease, background-color 0.3s ease;
+}
+
+/* Amélioration du glassmorphism quand le modal est ouvert */
+.modal-open .modal-backdrop {
+    background-color: rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(20px) brightness(1.25);
+    -webkit-backdrop-filter: blur(20px) brightness(1.25);
 }
 </style>

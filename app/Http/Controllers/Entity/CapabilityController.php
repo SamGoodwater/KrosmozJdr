@@ -7,6 +7,7 @@ use App\Http\Requests\Entity\StoreCapabilityRequest;
 use App\Http\Requests\Entity\UpdateCapabilityRequest;
 use App\Models\Entity\Capability;
 use App\Http\Resources\Entity\CapabilityResource;
+use App\Services\PdfService;
 use Inertia\Inertia;
 
 class CapabilityController extends Controller
@@ -93,5 +94,43 @@ class CapabilityController extends Controller
     public function delete(Capability $capability)
     {
         //
+    }
+
+    /**
+     * Télécharge un PDF pour un ou plusieurs capabilities.
+     * 
+     * @param Capability|null $capability La capability unique (si une seule)
+     * @return \Illuminate\Http\Response
+     */
+    public function downloadPdf(?Capability $capability = null)
+    {
+        $ids = request()->get('ids');
+        
+        if (!empty($ids)) {
+            if (is_string($ids)) {
+                $ids = explode(',', $ids);
+            }
+            
+            if (is_array($ids) && count($ids) > 0) {
+                $capabilities = Capability::whereIn('id', $ids)->get();
+                $this->authorize('viewAny', Capability::class);
+                
+                $pdf = PdfService::generateForEntities($capabilities, 'capability');
+                $filename = 'capabilities-' . now()->format('Y-m-d-His') . '.pdf';
+                
+                return $pdf->download($filename);
+            }
+        }
+        
+        if (!$capability) {
+            abort(404);
+        }
+        
+        $this->authorize('view', $capability);
+        
+        $pdf = PdfService::generateForEntity($capability, 'capability');
+        $filename = 'capability-' . $capability->id . '-' . now()->format('Y-m-d-His') . '.pdf';
+        
+        return $pdf->download($filename);
     }
 }

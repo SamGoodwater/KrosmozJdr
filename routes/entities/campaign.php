@@ -22,6 +22,7 @@ Route::prefix('entities/campaigns')->name('entities.campaigns.')->middleware('au
     Route::patch('/{campaign}/resources', [CampaignController::class, 'updateResources'])->name('updateResources');
     Route::patch('/{campaign}/spells', [CampaignController::class, 'updateSpells'])->name('updateSpells');
     Route::patch('/{campaign}/panoplies', [CampaignController::class, 'updatePanoplies'])->name('updatePanoplies');
+    Route::get('/{campaign}/pdf', [CampaignController::class, 'downloadPdf'])->name('pdf');
     Route::patch('/{campaign}', [CampaignController::class, 'update'])->name('update');
     Route::delete('/{campaign}', [CampaignController::class, 'delete'])->name('delete');
 });

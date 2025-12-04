@@ -7,6 +7,7 @@ use App\Http\Requests\Entity\StoreCampaignRequest;
 use App\Http\Requests\Entity\UpdateCampaignRequest;
 use App\Models\Entity\Campaign;
 use App\Http\Resources\Entity\CampaignResource;
+use App\Services\PdfService;
 use Inertia\Inertia;
 
 class CampaignController extends Controller
@@ -331,5 +332,43 @@ class CampaignController extends Controller
         
         return redirect()->back()
             ->with('success', 'Panoplies de la campagne mises à jour avec succès.');
+    }
+
+    /**
+     * Télécharge un PDF pour un ou plusieurs campaigns.
+     * 
+     * @param Campaign|null $campaign Le campaign unique (si un seul)
+     * @return \Illuminate\Http\Response
+     */
+    public function downloadPdf(?Campaign $campaign = null)
+    {
+        $ids = request()->get('ids');
+        
+        if (!empty($ids)) {
+            if (is_string($ids)) {
+                $ids = explode(',', $ids);
+            }
+            
+            if (is_array($ids) && count($ids) > 0) {
+                $campaigns = Campaign::whereIn('id', $ids)->get();
+                $this->authorize('viewAny', Campaign::class);
+                
+                $pdf = PdfService::generateForEntities($campaigns, 'campaign');
+                $filename = 'campaigns-' . now()->format('Y-m-d-His') . '.pdf';
+                
+                return $pdf->download($filename);
+            }
+        }
+        
+        if (!$campaign) {
+            abort(404);
+        }
+        
+        $this->authorize('view', $campaign);
+        
+        $pdf = PdfService::generateForEntity($campaign, 'campaign');
+        $filename = 'campaign-' . $campaign->id . '-' . now()->format('Y-m-d-His') . '.pdf';
+        
+        return $pdf->download($filename);
     }
 }

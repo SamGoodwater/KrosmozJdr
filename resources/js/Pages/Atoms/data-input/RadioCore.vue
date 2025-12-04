@@ -118,13 +118,14 @@ function onKeydown(e) {
 
 <style scoped lang="scss">
 // Styles spécifiques pour RadioCore
-// Utilisation maximale de Tailwind/DaisyUI, CSS custom minimal
+// Utilisation des classes utilitaires glassmorphisme et var(--color) pour les couleurs
 
 input[type="radio"] {
     // Styles de base pour tous les radios
     outline: none;
     transition: all 0.2s ease-in-out;
     cursor: pointer;
+    --color: var(--color-primary-500); // Couleur par défaut (sera surchargée par color-{name})
     
     // États de focus
     &:focus {
@@ -137,142 +138,93 @@ input[type="radio"] {
         cursor: not-allowed;
     }
     
-    // Variant Glass - Effet de verre
-    &.bg-transparent.border.border-gray-300 {
-        background: rgba(255, 255, 255, 0.1);
-        backdrop-filter: blur(10px);
-        border-color: rgba(255, 255, 255, 0.2);
-        box-shadow: 
-            0 4px 6px -1px rgba(0, 0, 0, 0.1),
-            0 2px 4px -1px rgba(0, 0, 0, 0.06),
-            inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    // Variant Glass - Effet glassmorphisme
+    &.bg-transparent.border {
+        @apply border-glass-md box-glass-md;
+        border-color: color-mix(in srgb, var(--color) 30%, transparent);
+        background-color: color-mix(in srgb, var(--color) 10%, transparent);
         
         &:hover {
-            box-shadow: 
-                0 10px 15px -3px rgba(0, 0, 0, 0.1),
-                0 4px 6px -2px rgba(0, 0, 0, 0.05),
-                inset 0 1px 0 rgba(255, 255, 255, 0.2);
-            border-color: rgba(255, 255, 255, 0.3);
+            @apply border-glass-lg box-glass-lg;
+            border-color: color-mix(in srgb, var(--color) 50%, transparent);
+            background-color: color-mix(in srgb, var(--color) 15%, transparent);
         }
         
         &:checked {
-            background-color: var(--color-primary, #3b82f6);
-            border-color: var(--color-primary, #3b82f6);
+            background-color: var(--color);
+            border-color: var(--color);
             box-shadow: 
-                0 0 0 3px rgba(59, 130, 246, 0.1),
+                0 0 0 3px color-mix(in srgb, var(--color) 20%, transparent),
                 inset 0 1px 0 rgba(255, 255, 255, 0.2);
         }
     }
     
     // Variant Dash - Style pointillé
     &.border-dashed.border-2 {
-        background: rgba(255, 255, 255, 0.05);
+        @apply border-glass-sm;
+        border-style: dashed;
+        background-color: color-mix(in srgb, var(--color) 5%, transparent);
         
         &:hover {
-            background: rgba(255, 255, 255, 0.1);
+            @apply border-glass-md;
+            background-color: color-mix(in srgb, var(--color) 10%, transparent);
         }
         
         &:checked {
-            background-color: var(--color-secondary, #8b5cf6);
-            border-color: var(--color-secondary, #8b5cf6);
+            background-color: var(--color);
+            border-color: var(--color);
         }
     }
     
-    // Variant Outline - Bordure avec effet
+    // Variant Outline - Bordure visible
     &.border-2.bg-transparent {
+        @apply border-glass-md;
+        border-width: 2px;
+        background-color: transparent;
+        
         &:hover {
-            background: rgba(255, 255, 255, 0.05);
+            @apply border-glass-lg;
+            background-color: color-mix(in srgb, var(--color) 5%, transparent);
         }
         
         &:checked {
-            background-color: var(--color-success, #10b981);
-            border-color: var(--color-success, #10b981);
-            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+            background-color: var(--color);
+            border-color: var(--color);
+            box-shadow: 0 0 0 3px color-mix(in srgb, var(--color) 20%, transparent);
         }
     }
     
-    // Variant Ghost - Fond invisible
+    // Variant Ghost - Transparent
     &.border.border-transparent.bg-transparent {
+        background-color: transparent;
+        border-color: transparent;
+        
         &:hover {
-            background: rgba(255, 255, 255, 0.05);
-            border-color: rgba(255, 255, 255, 0.1);
+            background-color: color-mix(in srgb, var(--color) 5%, transparent);
+            border-color: color-mix(in srgb, var(--color) 10%, transparent);
         }
         
         &:checked {
-            background-color: var(--color-neutral, #6b7280);
-            border-color: var(--color-neutral, #6b7280);
+            background-color: var(--color);
+            border-color: var(--color);
         }
     }
     
-    // Variant Soft - Style doux
-    &.border-b-2.border-gray-300.bg-transparent.rounded-none {
-        background: rgba(255, 255, 255, 0.05);
+    // Variant Soft - Bordure inférieure uniquement
+    &.border-b-2.bg-transparent.rounded-none {
+        @apply border-glass-b-md;
         border-bottom-width: 2px;
+        border-radius: 0;
+        background-color: transparent;
         
         &:hover {
-            background: rgba(255, 255, 255, 0.1);
+            @apply border-glass-b-lg;
+            background-color: color-mix(in srgb, var(--color) 5%, transparent);
         }
         
         &:checked {
-            background-color: var(--color-accent, #f59e0b);
-            border-bottom-color: var(--color-accent, #f59e0b);
-        }
-    }
-    
-    // Styles pour les couleurs DaisyUI
-    &.radio-primary {
-        &:checked {
-            background-color: var(--color-primary, #3b82f6);
-            border-color: var(--color-primary, #3b82f6);
-        }
-    }
-    
-    &.radio-secondary {
-        &:checked {
-            background-color: var(--color-secondary, #8b5cf6);
-            border-color: var(--color-secondary, #8b5cf6);
-        }
-    }
-    
-    &.radio-accent {
-        &:checked {
-            background-color: var(--color-accent, #f59e0b);
-            border-color: var(--color-accent, #f59e0b);
-        }
-    }
-    
-    &.radio-info {
-        &:checked {
-            background-color: var(--color-info, #06b6d4);
-            border-color: var(--color-info, #06b6d4);
-        }
-    }
-    
-    &.radio-success {
-        &:checked {
-            background-color: var(--color-success, #10b981);
-            border-color: var(--color-success, #10b981);
-        }
-    }
-    
-    &.radio-warning {
-        &:checked {
-            background-color: var(--color-warning, #f59e0b);
-            border-color: var(--color-warning, #f59e0b);
-        }
-    }
-    
-    &.radio-error {
-        &:checked {
-            background-color: var(--color-error, #ef4444);
-            border-color: var(--color-error, #ef4444);
-        }
-    }
-    
-    &.radio-neutral {
-        &:checked {
-            background-color: var(--color-neutral, #6b7280);
-            border-color: var(--color-neutral, #6b7280);
+            background-color: var(--color);
+            border-bottom-color: var(--color);
         }
     }
     
@@ -286,7 +238,7 @@ input[type="radio"] {
     }
 }
 
-// Styles pour les tailles DaisyUI
+// Styles pour les tailles DaisyUI (conservés car spécifiques au radio)
 .radio-xs {
     width: 1rem;
     height: 1rem;
@@ -312,29 +264,13 @@ input[type="radio"] {
     height: 2rem;
 }
 
-// Styles pour les labels inline
-.label-text {
-    // Labels inline pour les radios
-    transition: all 0.2s ease-in-out;
-    font-weight: 500;
-    
-    &:hover {
-        opacity: 0.8;
-    }
-}
-
-// Styles pour les labels flottants
-.floating-label {
-    // Label flottant pour les radios
-    position: relative;
-    
-    .label-text {
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        pointer-events: none;
-        transition: all 0.2s ease-in-out;
-    }
-}
+// Application des classes color-* pour définir --color
+.color-primary { --color: var(--color-primary-500); }
+.color-secondary { --color: var(--color-secondary-500); }
+.color-accent { --color: var(--color-accent-500); }
+.color-info { --color: var(--color-info-500); }
+.color-success { --color: var(--color-success-500); }
+.color-warning { --color: var(--color-warning-500); }
+.color-error { --color: var(--color-error-500); }
+.color-neutral { --color: var(--color-neutral-500); }
 </style>

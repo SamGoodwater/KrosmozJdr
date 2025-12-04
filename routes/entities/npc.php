@@ -18,6 +18,7 @@ Route::prefix('entities/npcs')->name('entities.npcs.')->middleware('auth')->grou
     Route::patch('/{npc}/panoplies', [NpcController::class, 'updatePanoplies'])->name('updatePanoplies');
     Route::patch('/{npc}/scenarios', [NpcController::class, 'updateScenarios'])->name('updateScenarios');
     Route::patch('/{npc}/campaigns', [NpcController::class, 'updateCampaigns'])->name('updateCampaigns');
+    Route::get('/{npc}/pdf', [NpcController::class, 'downloadPdf'])->name('pdf');
     Route::patch('/{npc}', [NpcController::class, 'update'])->name('update');
     Route::delete('/{npc}', [NpcController::class, 'delete'])->name('delete');
 });

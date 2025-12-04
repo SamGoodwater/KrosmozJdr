@@ -14,6 +14,7 @@ Route::prefix('entities/attributes')->name('entities.attributes.')->middleware('
     Route::get('/create', [AttributeController::class, 'create'])->name('create');
     Route::post('/', [AttributeController::class, 'store'])->name('store');
     Route::get('/{attribute}/edit', [AttributeController::class, 'edit'])->name('edit');
+    Route::get('/{attribute}/pdf', [AttributeController::class, 'downloadPdf'])->name('pdf');
     Route::patch('/{attribute}', [AttributeController::class, 'update'])->name('update');
     Route::delete('/{attribute}', [AttributeController::class, 'delete'])->name('delete');
 });

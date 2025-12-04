@@ -73,6 +73,29 @@
     "file": "section/SectionRenderer.vue"
   },
   {
+    "name": "SectionParamsModal",
+    "description": "SectionParamsModal Component",
+    "props": [
+      {
+        "name": "open",
+        "type": "Boolean",
+        "desc": "- Contrôle l'ouverture du modal"
+      },
+      {
+        "name": "sectionType",
+        "type": "String",
+        "desc": "- Type de section (text, image, gallery, video, entity_table)"
+      },
+      {
+        "name": "initialParams",
+        "type": "Object",
+        "desc": "- Paramètres initiaux (optionnel)"
+      }
+    ],
+    "slots": [],
+    "file": "section/SectionParamsModal.vue"
+  },
+  {
     "name": "SectionList",
     "description": "",
     "props": [
@@ -194,6 +217,24 @@
     ],
     "slots": [],
     "file": "section/DynamicMenu.vue"
+  },
+  {
+    "name": "CreateSectionModal",
+    "description": "CreateSectionModal Component",
+    "props": [
+      {
+        "name": "open",
+        "type": "Boolean",
+        "desc": "- Contrôle l'ouverture du modal"
+      },
+      {
+        "name": "pageId",
+        "type": "Number",
+        "desc": "- ID de la page sur laquelle créer la section"
+      }
+    ],
+    "slots": [],
+    "file": "section/CreateSectionModal.vue"
   },
   {
     "name": "CreatePageModal",
@@ -491,6 +532,11 @@
         "name": "open",
         "type": "Boolean",
         "desc": "- Contrôle l'ouverture du modal"
+      },
+      {
+        "name": "useStoredFormat",
+        "type": "Boolean",
+        "desc": "- Utiliser le format stocké dans localStorage (défaut: true)"
       }
     ],
     "slots": [],
@@ -528,6 +574,72 @@
     ],
     "slots": [],
     "file": "entity/EntityEditForm.vue"
+  },
+  {
+    "name": "EntityActionsMenu",
+    "description": "EntityActionsMenu Organism",
+    "props": [
+      {
+        "name": "entity",
+        "type": "Object",
+        "desc": "- Données de l'entité"
+      },
+      {
+        "name": "entityType",
+        "type": "String",
+        "desc": "- Type d'entité (pour générer les routes)"
+      },
+      {
+        "name": "canView",
+        "type": "Boolean",
+        "desc": "- Permission de voir l'entité"
+      },
+      {
+        "name": "canUpdate",
+        "type": "Boolean",
+        "desc": "- Permission de modifier l'entité"
+      },
+      {
+        "name": "canDelete",
+        "type": "Boolean",
+        "desc": "- Permission de supprimer l'entité"
+      },
+      {
+        "name": "disableQuickActions",
+        "type": "Boolean",
+        "desc": "- Désactiver les actions rapides (si plusieurs entités sélectionnées)"
+      }
+    ],
+    "slots": [],
+    "file": "entity/EntityActionsMenu.vue"
+  },
+  {
+    "name": "CreateEntityModal",
+    "description": "CreateEntityModal Organism",
+    "props": [
+      {
+        "name": "open",
+        "type": "Boolean",
+        "desc": "- Contrôle l'ouverture du modal"
+      },
+      {
+        "name": "entityType",
+        "type": "String",
+        "desc": "- Type d'entité (item, spell, monster, etc.)"
+      },
+      {
+        "name": "fieldsConfig",
+        "type": "Object",
+        "desc": "- Configuration des champs à afficher (optionnel)"
+      },
+      {
+        "name": "defaultEntity",
+        "type": "Object",
+        "desc": "- Entité par défaut avec valeurs initiales (optionnel)"
+      }
+    ],
+    "slots": [],
+    "file": "entity/CreateEntityModal.vue"
   },
   {
     "name": "SearchInput",

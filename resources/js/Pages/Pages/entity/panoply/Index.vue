@@ -10,12 +10,15 @@
 import { Head, router } from "@inertiajs/vue3";
 import { ref, computed, onBeforeUnmount } from "vue";
 import { usePageTitle } from "@/Composables/layout/usePageTitle";
+import { useEntityPermissions } from "@/Composables/permissions/useEntityPermissions";
+import { useNotificationStore } from "@/Composables/store/useNotificationStore";
 import { Panoply } from "@/Models/Entity/Panoply";
 
 import Container from '@/Pages/Atoms/data-display/Container.vue';
 import Btn from '@/Pages/Atoms/action/Btn.vue';
 import EntityTable from '@/Pages/Molecules/data-display/EntityTable.vue';
 import EntityModal from '@/Pages/Organismes/entity/EntityModal.vue';
+import CreateEntityModal from '@/Pages/Organismes/entity/CreateEntityModal.vue';
 
 const props = defineProps({
     panoplies: {
@@ -29,7 +32,14 @@ const props = defineProps({
 });
 
 const { setPageTitle } = usePageTitle();
+
+// Notifications
+const notificationStore = useNotificationStore();
 setPageTitle('Liste des Panoplies');
+
+// Permissions
+const { canCreateEntity } = useEntityPermissions();
+const canCreate = computed(() => canCreateEntity('panoply'));
 
 // Transformation des entités en instances de modèles
 const panoplies = computed(() => {
@@ -40,6 +50,7 @@ const panoplies = computed(() => {
 const selectedEntity = ref(null);
 const modalOpen = ref(false);
 const modalView = ref('large');
+const createModalOpen = ref(false);
 const search = ref(props.filters.search || '');
 const filters = ref(props.filters || {});
 
@@ -170,7 +181,7 @@ const closeModal = () => {
                 <h1 class="text-3xl font-bold text-primary-100">Liste des Panoplies</h1>
                 <p class="text-primary-200 mt-2">Gérez les panoplies (ensembles d'équipements)</p>
             </div>
-            <Btn @click="handleCreate" color="primary">
+            <Btn v-if="canCreate" @click="handleCreate" color="primary">
                 <i class="fa-solid fa-plus mr-2"></i>
                 Créer une panoplie
             </Btn>
@@ -195,7 +206,16 @@ const closeModal = () => {
             @update:filters="handleFiltersUpdate"
         />
 
-        <!-- Modal -->
+        <!-- Modal de création -->
+        <CreateEntityModal
+            :open="createModalOpen"
+            entity-type="panoply"
+            @close="handleCloseCreateModal"
+            @created="handleEntityCreated"
+                    @refresh-all="handleRefreshAll"
+        />
+
+        <!-- Modal de visualisation -->
         <EntityModal
             v-if="selectedEntity"
             :entity="selectedEntity"

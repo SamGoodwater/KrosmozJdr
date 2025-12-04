@@ -46,6 +46,10 @@ const props = defineProps({
     isUpdating: {
         type: Boolean,
         default: true
+    },
+    differentFields: {
+        type: Array,
+        default: () => []
     }
 });
 
@@ -112,6 +116,18 @@ const visibleFields = computed(() => {
 
 // Initialisation du formulaire avec les données de l'entité
 const initializeForm = () => {
+    // Si c'est une création (pas d'ID), utiliser les valeurs par défaut
+    if (!props.isUpdating || !props.entity?.id) {
+        const formData = {};
+        Object.keys(fieldsConfig.value).forEach(key => {
+            // Utiliser la valeur de l'entité si fournie, sinon valeur par défaut
+            formData[key] = props.entity[key] !== undefined 
+                ? props.entity[key] 
+                : getDefaultValue(fieldsConfig.value[key].type);
+        });
+        return formData;
+    }
+    
     // Si l'entité est une instance de modèle avec toFormData(), l'utiliser
     if (props.entity && typeof props.entity.toFormData === 'function') {
         const modelFormData = props.entity.toFormData();
@@ -120,15 +136,18 @@ const initializeForm = () => {
             // Utiliser les données du modèle si disponibles, sinon valeur par défaut
             formData[key] = modelFormData[key] !== undefined 
                 ? modelFormData[key] 
-                : (props.entity[key] || getDefaultValue(fieldsConfig.value[key].type));
+                : (props.entity[key] !== undefined ? props.entity[key] : getDefaultValue(fieldsConfig.value[key].type));
         });
         return formData;
     }
     
     // Sinon, utiliser l'accès direct aux propriétés (compatibilité avec objets bruts)
+    // Pour l'édition multiple, l'entité peut être un objet simple avec les valeurs communes
     const formData = {};
     Object.keys(fieldsConfig.value).forEach(key => {
-        formData[key] = props.entity[key] || getDefaultValue(fieldsConfig.value[key].type);
+        formData[key] = props.entity[key] !== undefined 
+            ? props.entity[key] 
+            : getDefaultValue(fieldsConfig.value[key].type);
     });
     return formData;
 };
@@ -164,6 +183,14 @@ const getFieldValidation = (fieldKey) => {
 
 // Soumission du formulaire
 const submit = () => {
+    // Si l'entité n'a pas d'ID (édition multiple), émettre directement les données
+    const entityId = props.entity?.id ?? null;
+    if (!entityId && props.isUpdating) {
+        // Mode édition multiple : émettre les données sans faire de requête
+        emit('submit', form.data());
+        return;
+    }
+
     // Construction du nom de route selon le type d'entité
     // Note: Les routes utilisent le pluriel (items, spells, monsters, panoplies)
     const entityTypePlural = props.entityType === 'panoply' ? 'panoplies' : `${props.entityType}s`;
@@ -172,13 +199,14 @@ const submit = () => {
         : `entities.${entityTypePlural}.store`;
     
     // Paramètres de route selon le type d'entité
-    // Gérer les instances de modèles et les objets bruts
-    const entityId = props.entity?.id ?? null;
     const routeParams = props.isUpdating 
         ? { [props.entityType]: entityId }
         : {};
 
-    form[props.isUpdating ? 'patch' : 'post'](route(routeName, routeParams), {
+    const method = props.isUpdating ? 'patch' : 'post';
+    
+    form[method](route(routeName, routeParams), {
+        preserveScroll: true,
         onSuccess: () => {
             notificationStore.success(
                 props.isUpdating ? 'Entité mise à jour avec succès' : 'Entité créée avec succès',
@@ -199,13 +227,14 @@ const submit = () => {
 // Annulation
 const cancel = () => {
     emit('cancel');
-    const entityTypePlural = props.entityType === 'panoply' ? 'panoplies' : `${props.entityType}s`;
-    // Gérer les instances de modèles et les objets bruts
-    const entityId = props.entity?.id ?? null;
+    // Ne pas rediriger si c'est dans un modal (le modal gère la fermeture)
+    // Seulement rediriger si c'est une page d'édition
     if (props.isUpdating) {
-        router.visit(route(`entities.${entityTypePlural}.show`, { [props.entityType]: entityId }));
-    } else {
-        router.visit(route(`entities.${entityTypePlural}.index`));
+        const entityTypePlural = props.entityType === 'panoply' ? 'panoplies' : `${props.entityType}s`;
+        const entityId = props.entity?.id ?? null;
+        if (entityId) {
+            router.visit(route(`entities.${entityTypePlural}.show`, { [props.entityType]: entityId }));
+        }
     }
 };
 
@@ -247,64 +276,72 @@ const toggleViewMode = () => {
                 localViewMode === 'compact' ? 'grid-cols-1 md:grid-cols-2' : 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3'
             ]">
                 <template v-for="[fieldKey, fieldConfig] in visibleFields" :key="fieldKey">
-                    <Tooltip :content="fieldConfig.label" placement="top">
-                        <!-- InputField -->
-                        <InputField
-                            v-if="fieldConfig.type === 'text' || !['textarea', 'select', 'file', 'number', 'checkbox'].includes(fieldConfig.type)"
-                            v-model="form[fieldKey]"
-                            :label="fieldConfig.label"
-                            :type="fieldConfig.type || 'text'"
-                            :required="fieldConfig.required"
-                            :validation="getFieldValidation(fieldKey)"
-                        />
-                        
-                        <!-- TextareaField -->
-                        <TextareaField
-                            v-else-if="fieldConfig.type === 'textarea'"
-                            v-model="form[fieldKey]"
-                            :label="fieldConfig.label"
-                            :required="fieldConfig.required"
-                            :validation="getFieldValidation(fieldKey)"
-                        />
-                        
-                        <!-- SelectField -->
-                        <SelectField
-                            v-else-if="fieldConfig.type === 'select'"
-                            v-model="form[fieldKey]"
-                            :label="fieldConfig.label"
-                            :options="fieldConfig.options || []"
-                            :required="fieldConfig.required"
-                            :validation="getFieldValidation(fieldKey)"
-                        />
-                        
-                        <!-- FileField -->
-                        <FileField
-                            v-else-if="fieldConfig.type === 'file'"
-                            v-model="form[fieldKey]"
-                            :label="fieldConfig.label"
-                            :required="fieldConfig.required"
-                            :validation="getFieldValidation(fieldKey)"
-                        />
-                        
-                        <!-- NumberField (using InputField with type number) -->
-                        <InputField
-                            v-else-if="fieldConfig.type === 'number'"
-                            v-model="form[fieldKey]"
-                            :label="fieldConfig.label"
-                            type="number"
-                            :required="fieldConfig.required"
-                            :validation="getFieldValidation(fieldKey)"
-                        />
-                        
-                        <!-- CheckboxField -->
-                        <CheckboxField
-                            v-else-if="fieldConfig.type === 'checkbox'"
-                            v-model="form[fieldKey]"
-                            :label="fieldConfig.label"
-                            :required="fieldConfig.required"
-                            :validation="getFieldValidation(fieldKey)"
-                        />
-                    </Tooltip>
+                    <div :class="{ 'opacity-60': props.differentFields.includes(fieldKey) }">
+                        <Tooltip 
+                            :content="props.differentFields.includes(fieldKey) ? `${fieldConfig.label} (valeurs différentes)` : fieldConfig.label" 
+                            placement="top"
+                        >
+                            <!-- InputField -->
+                            <InputField
+                                v-if="fieldConfig.type === 'text' || !['textarea', 'select', 'file', 'number', 'checkbox'].includes(fieldConfig.type)"
+                                v-model="form[fieldKey]"
+                                :label="fieldConfig.label"
+                                :type="fieldConfig.type || 'text'"
+                                :required="fieldConfig.required"
+                                :validation="getFieldValidation(fieldKey)"
+                                :placeholder="props.differentFields.includes(fieldKey) ? 'Valeurs différentes' : undefined"
+                            />
+                            
+                            <!-- TextareaField -->
+                            <TextareaField
+                                v-else-if="fieldConfig.type === 'textarea'"
+                                v-model="form[fieldKey]"
+                                :label="fieldConfig.label"
+                                :required="fieldConfig.required"
+                                :validation="getFieldValidation(fieldKey)"
+                                :placeholder="props.differentFields.includes(fieldKey) ? 'Valeurs différentes' : undefined"
+                            />
+                            
+                            <!-- SelectField -->
+                            <SelectField
+                                v-else-if="fieldConfig.type === 'select'"
+                                v-model="form[fieldKey]"
+                                :label="fieldConfig.label"
+                                :options="fieldConfig.options || []"
+                                :required="fieldConfig.required"
+                                :validation="getFieldValidation(fieldKey)"
+                            />
+                            
+                            <!-- FileField -->
+                            <FileField
+                                v-else-if="fieldConfig.type === 'file'"
+                                v-model="form[fieldKey]"
+                                :label="fieldConfig.label"
+                                :required="fieldConfig.required"
+                                :validation="getFieldValidation(fieldKey)"
+                            />
+                            
+                            <!-- NumberField (using InputField with type number) -->
+                            <InputField
+                                v-else-if="fieldConfig.type === 'number'"
+                                v-model="form[fieldKey]"
+                                :label="fieldConfig.label"
+                                type="number"
+                                :required="fieldConfig.required"
+                                :validation="getFieldValidation(fieldKey)"
+                                :placeholder="props.differentFields.includes(fieldKey) ? 'Valeurs différentes' : undefined"
+                            />
+                            
+                            <!-- CheckboxField -->
+                            <CheckboxField
+                                v-else-if="fieldConfig.type === 'checkbox'"
+                                v-model="form[fieldKey]"
+                                :label="fieldConfig.label"
+                                :required="fieldConfig.required"
+                                :validation="getFieldValidation(fieldKey)"
+                            />
+                        </Tooltip>
+                    </div>
                 </template>
             </div>
 

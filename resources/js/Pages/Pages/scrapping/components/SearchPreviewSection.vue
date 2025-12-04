@@ -162,21 +162,24 @@ const handleImport = () => {
         <div class="space-y-4">
             <div class="flex gap-2">
                 <Btn
-                    :color="searchMode === 'single' ? 'primary' : 'ghost'"
+                    :color="searchMode === 'single' ? 'primary' : undefined"
+                    :variant="searchMode === 'single' ? undefined : 'ghost'"
                     size="sm"
                     @click="searchMode = 'single'"
                 >
                     ID unique
                 </Btn>
                 <Btn
-                    :color="searchMode === 'range' ? 'primary' : 'ghost'"
+                    :color="searchMode === 'range' ? 'primary' : undefined"
+                    :variant="searchMode === 'range' ? undefined : 'ghost'"
                     size="sm"
                     @click="searchMode = 'range'"
                 >
                     Plage d'ID
                 </Btn>
                 <Btn
-                    :color="searchMode === 'all' ? 'primary' : 'ghost'"
+                    :color="searchMode === 'all' ? 'primary' : undefined"
+                    :variant="searchMode === 'all' ? undefined : 'ghost'"
                     size="sm"
                     @click="searchMode = 'all'"
                 >
@@ -201,7 +204,7 @@ const handleImport = () => {
                         @click="handlePreview"
                     >
                         <Loading v-if="previewLoading" class="mr-2" />
-                        <Icon v-else icon="fa-eye" pack="solid" class="mr-2" />
+                        <Icon v-else source="fa-solid fa-eye" alt="Prévisualiser" pack="solid" class="mr-2" />
                         Prévisualiser
                     </Btn>
                     <Btn
@@ -209,7 +212,7 @@ const handleImport = () => {
                         :disabled="!isValidSingleId || loading"
                         @click="handleSimulate"
                     >
-                        <Icon icon="fa-flask" pack="solid" class="mr-2" />
+                        <Icon source="fa-solid fa-flask" alt="Simuler" pack="solid" class="mr-2" />
                         Simuler
                     </Btn>
                     <Btn
@@ -217,7 +220,7 @@ const handleImport = () => {
                         :disabled="!isValidSingleId || loading"
                         @click="handleImport"
                     >
-                        <Icon icon="fa-download" pack="solid" class="mr-2" />
+                        <Icon source="fa-solid fa-download" alt="Importer" pack="solid" class="mr-2" />
                         Importer
                     </Btn>
                 </div>
@@ -252,7 +255,7 @@ const handleImport = () => {
                         :disabled="!isValidRange || loading"
                         @click="handleSimulate"
                     >
-                        <Icon icon="fa-flask" pack="solid" class="mr-2" />
+                        <Icon source="fa-solid fa-flask" alt="Simuler" pack="solid" class="mr-2" />
                         Simuler
                     </Btn>
                     <Btn
@@ -260,7 +263,7 @@ const handleImport = () => {
                         :disabled="!isValidRange || loading"
                         @click="handleImport"
                     >
-                        <Icon icon="fa-download" pack="solid" class="mr-2" />
+                        <Icon source="fa-solid fa-download" alt="Importer" pack="solid" class="mr-2" />
                         Importer la plage
                     </Btn>
                 </div>
@@ -278,7 +281,7 @@ const handleImport = () => {
                         :disabled="loading"
                         @click="handleSimulate"
                     >
-                        <Icon icon="fa-flask" pack="solid" class="mr-2" />
+                        <Icon source="fa-solid fa-flask" alt="Simuler" pack="solid" class="mr-2" />
                         Simuler l'import complet
                     </Btn>
                     <Btn
@@ -286,7 +289,7 @@ const handleImport = () => {
                         :disabled="loading"
                         @click="handleImport"
                     >
-                        <Icon icon="fa-database" pack="solid" class="mr-2" />
+                        <Icon source="fa-solid fa-database" alt="Importer toutes les entités" pack="solid" class="mr-2" />
                         Importer toutes les entités
                     </Btn>
                 </div>
@@ -300,24 +303,24 @@ const handleImport = () => {
             <!-- Informations sur les relations -->
             <div v-if="previewData.raw" class="mb-4 p-3 bg-info/10 border border-info/30 rounded text-sm">
                 <p class="font-semibold text-info mb-2 flex items-center gap-2">
-                    <Icon icon="fa-info-circle" pack="solid" class="text-xs" />
+                    <Icon source="fa-solid fa-info-circle" alt="Informations" pack="solid" class="text-xs" />
                     Relations détectées
                 </p>
                 <div class="space-y-1 text-xs text-primary-200">
                     <div v-if="previewData.raw.spells && previewData.raw.spells.length > 0" class="flex items-center gap-2">
-                        <Icon icon="fa-wand-magic-sparkles" pack="solid" class="text-xs" />
+                        <Icon source="fa-solid fa-wand-magic-sparkles" alt="Sorts" pack="solid" class="text-xs" />
                         <span>{{ previewData.raw.spells.length }} sort(s) associé(s)</span>
                     </div>
                     <div v-if="previewData.raw.drops && previewData.raw.drops.length > 0" class="flex items-center gap-2">
-                        <Icon icon="fa-gem" pack="solid" class="text-xs" />
+                        <Icon source="fa-solid fa-gem" alt="Ressources droppées" pack="solid" class="text-xs" />
                         <span>{{ previewData.raw.drops.length }} ressource(s) droppée(s)</span>
                     </div>
                     <div v-if="previewData.raw.recipe && previewData.raw.recipe.length > 0" class="flex items-center gap-2">
-                        <Icon icon="fa-book" pack="solid" class="text-xs" />
+                        <Icon source="fa-solid fa-book" alt="Recette" pack="solid" class="text-xs" />
                         <span>{{ previewData.raw.recipe.length }} ressource(s) dans la recette</span>
                     </div>
                     <div v-if="previewData.raw.summon" class="flex items-center gap-2">
-                        <Icon icon="fa-dragon" pack="solid" class="text-xs" />
+                        <Icon source="fa-solid fa-dragon" alt="Monstre invoqué" pack="solid" class="text-xs" />
                         <span>Monstre invoqué (ID: {{ previewData.raw.summon.id }})</span>
                     </div>
                     <p v-if="!previewData.raw.spells?.length && !previewData.raw.drops?.length && !previewData.raw.recipe?.length && !previewData.raw.summon" class="text-primary-300 italic">
@@ -358,7 +361,7 @@ const handleImport = () => {
                     :disabled="loading"
                     @click="handleImport"
                 >
-                    <Icon icon="fa-arrow-rotate-right" pack="solid" class="mr-2" />
+                    <Icon source="fa-solid fa-arrow-rotate-right" alt="Importer cette version" pack="solid" class="mr-2" />
                     Importer cette version
                 </Btn>
             </div>

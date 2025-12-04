@@ -300,12 +300,101 @@ const dateRef = ref(null);
 
 <style scoped lang="scss">
 // Styles spécifiques pour DateCore
-// Utilisation maximale de Tailwind/DaisyUI, CSS custom minimal
+// Utilisation des classes utilitaires glassmorphisme et var(--color) pour les couleurs
+
+input[type="date"].input {
+    // Styles pour le fallback input date HTML natif
+    outline: none;
+    transition: all 0.2s ease-in-out;
+    --color: var(--color-primary-500); // Couleur par défaut (sera surchargée par color-{name})
+    
+    // États de focus
+    &:focus {
+        outline: none;
+        border-color: color-mix(in srgb, var(--color) 80%, transparent);
+        box-shadow: 0 0 0 3px color-mix(in srgb, var(--color) 20%, transparent);
+    }
+    
+    // États disabled
+    &:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+    }
+    
+    // Variant Glass - Effet glassmorphisme
+    &.bg-transparent.border {
+        @apply border-glass-md box-glass-md;
+        border-color: color-mix(in srgb, var(--color) 30%, transparent);
+        background-color: color-mix(in srgb, var(--color) 10%, transparent);
+        
+        &:hover {
+            @apply border-glass-lg box-glass-lg;
+            border-color: color-mix(in srgb, var(--color) 50%, transparent);
+            background-color: color-mix(in srgb, var(--color) 15%, transparent);
+        }
+        
+        &:focus {
+            border-color: color-mix(in srgb, var(--color) 80%, transparent);
+            box-shadow: 0 0 0 3px color-mix(in srgb, var(--color) 20%, transparent);
+        }
+    }
+    
+    // Variant Dash - Style pointillé
+    &.border-dashed {
+        @apply border-glass-sm;
+        border-style: dashed;
+        border-width: 2px;
+        background-color: color-mix(in srgb, var(--color) 5%, transparent);
+        
+        &:hover {
+            @apply border-glass-md;
+            background-color: color-mix(in srgb, var(--color) 10%, transparent);
+        }
+    }
+    
+    // Variant Outline - Bordure visible
+    &.border-2.bg-transparent {
+        @apply border-glass-md;
+        border-width: 2px;
+        background-color: transparent;
+        
+        &:hover {
+            @apply border-glass-lg;
+            background-color: color-mix(in srgb, var(--color) 5%, transparent);
+        }
+    }
+    
+    // Variant Ghost - Transparent
+    &.border.border-transparent.bg-transparent {
+        background-color: transparent;
+        border-color: transparent;
+        
+        &:hover {
+            background-color: color-mix(in srgb, var(--color) 5%, transparent);
+            border-color: color-mix(in srgb, var(--color) 10%, transparent);
+        }
+    }
+    
+    // Variant Soft - Bordure inférieure uniquement
+    &.border-b-2.bg-transparent.rounded-none {
+        @apply border-glass-b-md;
+        border-bottom-width: 2px;
+        border-radius: 0;
+        background-color: transparent;
+        
+        &:hover {
+            @apply border-glass-b-lg;
+            background-color: color-mix(in srgb, var(--color) 5%, transparent);
+        }
+    }
+}
 
 .cally {
     // Styles de base pour tous les calendriers Cally
     display: inline-block;
     transition: all 0.2s ease-in-out;
+    --color: var(--color-primary-500); // Couleur par défaut (sera surchargée par color-{name})
+    --cally-color: var(--color); // Utilise --color pour Cally
     
     // États disabled
     &:has([disabled]) {
@@ -313,91 +402,66 @@ const dateRef = ref(null);
         cursor: not-allowed;
     }
     
-    // Variant Glass - Effet de verre
-    &.bg-transparent.border.border-gray-300 {
-        background: rgba(255, 255, 255, 0.1);
-        backdrop-filter: blur(10px);
-        border-color: rgba(255, 255, 255, 0.2);
-        box-shadow: 
-            0 4px 6px -1px rgba(0, 0, 0, 0.1),
-            0 2px 4px -1px rgba(0, 0, 0, 0.06),
-            inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    // Variant Glass - Effet glassmorphisme
+    &.bg-transparent.border {
+        @apply border-glass-md box-glass-md;
+        border-color: color-mix(in srgb, var(--color) 30%, transparent);
+        background-color: color-mix(in srgb, var(--color) 10%, transparent);
         
         &:hover {
-            box-shadow: 
-                0 10px 15px -3px rgba(0, 0, 0, 0.1),
-                0 4px 6px -2px rgba(0, 0, 0, 0.05),
-                inset 0 1px 0 rgba(255, 255, 255, 0.2);
-            border-color: rgba(255, 255, 255, 0.3);
+            @apply border-glass-lg box-glass-lg;
+            border-color: color-mix(in srgb, var(--color) 50%, transparent);
+            background-color: color-mix(in srgb, var(--color) 15%, transparent);
         }
     }
     
     // Variant Dash - Style pointillé
-    &.border-dashed.border-2 {
-        background: rgba(255, 255, 255, 0.05);
+    &.border-dashed {
+        @apply border-glass-sm;
+        border-style: dashed;
+        border-width: 2px;
+        background-color: color-mix(in srgb, var(--color) 5%, transparent);
         
         &:hover {
-            background: rgba(255, 255, 255, 0.1);
+            @apply border-glass-md;
+            background-color: color-mix(in srgb, var(--color) 10%, transparent);
         }
     }
     
-    // Variant Outline - Bordure avec effet
+    // Variant Outline - Bordure visible
     &.border-2.bg-transparent {
-        &:hover {
-            background: rgba(255, 255, 255, 0.05);
-        }
-    }
-    
-    // Variant Ghost - Fond invisible
-    &.border.border-transparent.bg-transparent {
-        &:hover {
-            background: rgba(255, 255, 255, 0.05);
-            border-color: rgba(255, 255, 255, 0.1);
-        }
-    }
-    
-    // Variant Soft - Style doux
-    &.border-b-2.border-gray-300.bg-transparent.rounded-none {
-        background: rgba(255, 255, 255, 0.05);
-        border-bottom-width: 2px;
+        @apply border-glass-md;
+        border-width: 2px;
+        background-color: transparent;
         
         &:hover {
-            background: rgba(255, 255, 255, 0.1);
+            @apply border-glass-lg;
+            background-color: color-mix(in srgb, var(--color) 5%, transparent);
         }
     }
     
-    // Styles pour les couleurs DaisyUI
-    &.cally-primary {
-        // Couleur primaire pour le calendrier
-        --cally-color: var(--color-primary, #3b82f6);
+    // Variant Ghost - Transparent
+    &.border.border-transparent.bg-transparent {
+        background-color: transparent;
+        border-color: transparent;
+        
+        &:hover {
+            background-color: color-mix(in srgb, var(--color) 5%, transparent);
+            border-color: color-mix(in srgb, var(--color) 10%, transparent);
+        }
     }
     
-    &.cally-secondary {
-        --cally-color: var(--color-secondary, #8b5cf6);
-    }
-    
-    &.cally-accent {
-        --cally-color: var(--color-accent, #f59e0b);
-    }
-    
-    &.cally-info {
-        --cally-color: var(--color-info, #06b6d4);
-    }
-    
-    &.cally-success {
-        --cally-color: var(--color-success, #10b981);
-    }
-    
-    &.cally-warning {
-        --cally-color: var(--color-warning, #f59e0b);
-    }
-    
-    &.cally-error {
-        --cally-color: var(--color-error, #ef4444);
-    }
-    
-    &.cally-neutral {
-        --cally-color: var(--color-neutral, #6b7280);
+    // Variant Soft - Bordure inférieure uniquement
+    &.border-b-2.bg-transparent.rounded-none {
+        @apply border-glass-b-md;
+        border-bottom-width: 2px;
+        border-radius: 0;
+        background-color: transparent;
+        
+        &:hover {
+            @apply border-glass-b-lg;
+            background-color: color-mix(in srgb, var(--color) 5%, transparent);
+        }
     }
     
     // Animations
@@ -470,16 +534,16 @@ calendar-month {
     // Styles pour le mois du calendrier
     display: block;
     
-    // Jours sélectionnés
+    // Jours sélectionnés - utilise var(--color)
     [selected] {
-        background-color: var(--cally-color, var(--color-primary, #3b82f6));
+        background-color: var(--cally-color);
         color: white;
         border-radius: 0.375rem;
     }
     
-    // Jours hover
+    // Jours hover - utilise var(--color) avec transparence
     [hover] {
-        background-color: rgba(var(--cally-color, var(--color-primary, #3b82f6)), 0.1);
+        background-color: color-mix(in srgb, var(--cally-color) 20%, transparent);
         border-radius: 0.375rem;
     }
     
@@ -496,7 +560,7 @@ calendar-month {
     color: var(--color-base-content, #374151);
 }
 
-// Styles pour les boutons de navigation
+// Styles pour les boutons de navigation - utilise var(--color)
 [slot="previous"], [slot="next"] {
     cursor: pointer;
     padding: 0.5rem;
@@ -504,7 +568,7 @@ calendar-month {
     transition: all 0.2s ease-in-out;
     
     &:hover:not([disabled]) {
-        background-color: rgba(var(--cally-color, var(--color-primary, #3b82f6)), 0.1);
+        background-color: color-mix(in srgb, var(--cally-color) 20%, transparent);
     }
     
     &:disabled {
@@ -521,7 +585,7 @@ calendar-month {
     padding: 0.5rem;
 }
 
-// Styles pour les cellules de jours
+// Styles pour les cellules de jours - utilise var(--color)
 [role="gridcell"] {
     text-align: center;
     padding: 0.5rem;
@@ -530,11 +594,11 @@ calendar-month {
     transition: all 0.2s ease-in-out;
     
     &:hover:not([disabled]) {
-        background-color: rgba(var(--cally-color, var(--color-primary, #3b82f6)), 0.1);
+        background-color: color-mix(in srgb, var(--cally-color) 20%, transparent);
     }
     
     &[aria-selected="true"] {
-        background-color: var(--cally-color, var(--color-primary, #3b82f6));
+        background-color: var(--cally-color);
         color: white;
     }
     
@@ -543,4 +607,14 @@ calendar-month {
         cursor: not-allowed;
     }
 }
+
+// Application des classes color-* pour définir --color
+.color-primary { --color: var(--color-primary-500); --cally-color: var(--color-primary-500); }
+.color-secondary { --color: var(--color-secondary-500); --cally-color: var(--color-secondary-500); }
+.color-accent { --color: var(--color-accent-500); --cally-color: var(--color-accent-500); }
+.color-info { --color: var(--color-info-500); --cally-color: var(--color-info-500); }
+.color-success { --color: var(--color-success-500); --cally-color: var(--color-success-500); }
+.color-warning { --color: var(--color-warning-500); --cally-color: var(--color-warning-500); }
+.color-error { --color: var(--color-error-500); --cally-color: var(--color-error-500); }
+.color-neutral { --color: var(--color-neutral-500); --cally-color: var(--color-neutral-500); }
 </style> 

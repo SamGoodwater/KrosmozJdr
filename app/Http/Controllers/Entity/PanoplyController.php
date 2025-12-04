@@ -7,6 +7,7 @@ use App\Http\Requests\Entity\StorePanoplyRequest;
 use App\Http\Requests\Entity\UpdatePanoplyRequest;
 use App\Models\Entity\Panoply;
 use App\Http\Resources\Entity\PanoplyResource;
+use App\Services\PdfService;
 use Inertia\Inertia;
 
 class PanoplyController extends Controller
@@ -138,5 +139,43 @@ class PanoplyController extends Controller
     public function delete(Panoply $panoply)
     {
         //
+    }
+
+    /**
+     * Télécharge un PDF pour un ou plusieurs panoplies.
+     * 
+     * @param Panoply|null $panoply La panoply unique (si une seule)
+     * @return \Illuminate\Http\Response
+     */
+    public function downloadPdf(?Panoply $panoply = null)
+    {
+        $ids = request()->get('ids');
+        
+        if (!empty($ids)) {
+            if (is_string($ids)) {
+                $ids = explode(',', $ids);
+            }
+            
+            if (is_array($ids) && count($ids) > 0) {
+                $panoplies = Panoply::whereIn('id', $ids)->get();
+                $this->authorize('viewAny', Panoply::class);
+                
+                $pdf = PdfService::generateForEntities($panoplies, 'panoply');
+                $filename = 'panoplies-' . now()->format('Y-m-d-His') . '.pdf';
+                
+                return $pdf->download($filename);
+            }
+        }
+        
+        if (!$panoply) {
+            abort(404);
+        }
+        
+        $this->authorize('view', $panoply);
+        
+        $pdf = PdfService::generateForEntity($panoply, 'panoply');
+        $filename = 'panoply-' . $panoply->id . '-' . now()->format('Y-m-d-His') . '.pdf';
+        
+        return $pdf->download($filename);
     }
 }

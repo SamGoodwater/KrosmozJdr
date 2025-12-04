@@ -7,6 +7,7 @@ use App\Http\Requests\Entity\StoreClasseRequest;
 use App\Http\Requests\Entity\UpdateClasseRequest;
 use App\Models\Entity\Classe;
 use App\Http\Resources\Entity\ClasseResource;
+use App\Services\PdfService;
 use Inertia\Inertia;
 
 class ClasseController extends Controller
@@ -98,5 +99,43 @@ class ClasseController extends Controller
     public function delete(Classe $classe)
     {
         //
+    }
+
+    /**
+     * Télécharge un PDF pour un ou plusieurs classes.
+     * 
+     * @param Classe|null $classe La classe unique (si une seule)
+     * @return \Illuminate\Http\Response
+     */
+    public function downloadPdf(?Classe $classe = null)
+    {
+        $ids = request()->get('ids');
+        
+        if (!empty($ids)) {
+            if (is_string($ids)) {
+                $ids = explode(',', $ids);
+            }
+            
+            if (is_array($ids) && count($ids) > 0) {
+                $classes = Classe::whereIn('id', $ids)->get();
+                $this->authorize('viewAny', Classe::class);
+                
+                $pdf = PdfService::generateForEntities($classes, 'classe');
+                $filename = 'classes-' . now()->format('Y-m-d-His') . '.pdf';
+                
+                return $pdf->download($filename);
+            }
+        }
+        
+        if (!$classe) {
+            abort(404);
+        }
+        
+        $this->authorize('view', $classe);
+        
+        $pdf = PdfService::generateForEntity($classe, 'classe');
+        $filename = 'classe-' . $classe->id . '-' . now()->format('Y-m-d-His') . '.pdf';
+        
+        return $pdf->download($filename);
     }
 }

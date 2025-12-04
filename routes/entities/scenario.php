@@ -20,6 +20,7 @@ Route::prefix('entities/scenarios')->name('entities.scenarios.')->middleware('au
     Route::patch('/{scenario}/resources', [ScenarioController::class, 'updateResources'])->name('updateResources');
     Route::patch('/{scenario}/spells', [ScenarioController::class, 'updateSpells'])->name('updateSpells');
     Route::patch('/{scenario}/panoplies', [ScenarioController::class, 'updatePanoplies'])->name('updatePanoplies');
+    Route::get('/{scenario}/pdf', [ScenarioController::class, 'downloadPdf'])->name('pdf');
     Route::patch('/{scenario}', [ScenarioController::class, 'update'])->name('update');
     Route::delete('/{scenario}', [ScenarioController::class, 'delete'])->name('delete');
 });

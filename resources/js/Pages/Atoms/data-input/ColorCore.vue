@@ -189,12 +189,96 @@ const colorRef = ref(null);
 
 <style scoped lang="scss">
 // Styles spécifiques pour ColorCore
-// Utilisation maximale de Tailwind/DaisyUI, CSS custom minimal
+// Utilisation des classes utilitaires glassmorphisme et var(--color) pour les couleurs
+
+input[type="color"].input {
+    // Styles pour le fallback input color HTML natif
+    outline: none;
+    transition: all 0.2s ease-in-out;
+    --color: var(--color-primary-500); // Couleur par défaut (sera surchargée par color-{name})
+    
+    // États de focus
+    &:focus {
+        outline: none;
+        border-color: color-mix(in srgb, var(--color) 80%, transparent);
+        box-shadow: 0 0 0 3px color-mix(in srgb, var(--color) 20%, transparent);
+    }
+    
+    // États disabled
+    &:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+    }
+    
+    // Variant Glass - Effet glassmorphisme
+    &.bg-transparent.border {
+        @apply border-glass-md box-glass-md;
+        border-color: color-mix(in srgb, var(--color) 30%, transparent);
+        background-color: color-mix(in srgb, var(--color) 10%, transparent);
+        
+        &:hover {
+            @apply border-glass-lg box-glass-lg;
+            border-color: color-mix(in srgb, var(--color) 50%, transparent);
+            background-color: color-mix(in srgb, var(--color) 15%, transparent);
+        }
+    }
+    
+    // Variant Dash - Style pointillé
+    &.border-dashed {
+        @apply border-glass-sm;
+        border-style: dashed;
+        border-width: 2px;
+        background-color: color-mix(in srgb, var(--color) 5%, transparent);
+        
+        &:hover {
+            @apply border-glass-md;
+            background-color: color-mix(in srgb, var(--color) 10%, transparent);
+        }
+    }
+    
+    // Variant Outline - Bordure visible
+    &.border-2.bg-transparent {
+        @apply border-glass-md;
+        border-width: 2px;
+        background-color: transparent;
+        
+        &:hover {
+            @apply border-glass-lg;
+            background-color: color-mix(in srgb, var(--color) 5%, transparent);
+        }
+    }
+    
+    // Variant Ghost - Transparent
+    &.border.border-transparent.bg-transparent {
+        background-color: transparent;
+        border-color: transparent;
+        
+        &:hover {
+            background-color: color-mix(in srgb, var(--color) 5%, transparent);
+            border-color: color-mix(in srgb, var(--color) 10%, transparent);
+        }
+    }
+    
+    // Variant Soft - Bordure inférieure uniquement
+    &.border-b-2.bg-transparent.rounded-none {
+        @apply border-glass-b-md;
+        border-bottom-width: 2px;
+        border-radius: 0;
+        background-color: transparent;
+        
+        &:hover {
+            @apply border-glass-b-lg;
+            background-color: color-mix(in srgb, var(--color) 5%, transparent);
+        }
+    }
+}
 
 .color-picker-container {
     // Styles de base pour tous les color pickers
     display: inline-block;
     transition: all 0.2s ease-in-out;
+    --color: var(--color-primary-500); // Couleur par défaut (sera surchargée par color-{name})
+    --color-picker-primary: var(--color); // Utilise --color pour le color picker
     
     // États disabled
     &:has([disabled]) {
@@ -202,56 +286,65 @@ const colorRef = ref(null);
         cursor: not-allowed;
     }
     
-    // Variant Glass - Effet de verre
-    &.bg-transparent.border.border-gray-300 {
-        background: rgba(255, 255, 255, 0.1);
-        backdrop-filter: blur(10px);
-        border-color: rgba(255, 255, 255, 0.2);
-        box-shadow: 
-            0 4px 6px -1px rgba(0, 0, 0, 0.1),
-            0 2px 4px -1px rgba(0, 0, 0, 0.06),
-            inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    // Variant Glass - Effet glassmorphisme
+    &.bg-transparent.border {
+        @apply border-glass-md box-glass-md;
+        border-color: color-mix(in srgb, var(--color) 30%, transparent);
+        background-color: color-mix(in srgb, var(--color) 10%, transparent);
         
         &:hover {
-            box-shadow: 
-                0 10px 15px -3px rgba(0, 0, 0, 0.1),
-                0 4px 6px -2px rgba(0, 0, 0, 0.05),
-                inset 0 1px 0 rgba(255, 255, 255, 0.2);
-            border-color: rgba(255, 255, 255, 0.3);
+            @apply border-glass-lg box-glass-lg;
+            border-color: color-mix(in srgb, var(--color) 50%, transparent);
+            background-color: color-mix(in srgb, var(--color) 15%, transparent);
         }
     }
     
     // Variant Dash - Style pointillé
-    &.border-dashed.border-2 {
-        background: rgba(255, 255, 255, 0.05);
+    &.border-dashed {
+        @apply border-glass-sm;
+        border-style: dashed;
+        border-width: 2px;
+        background-color: color-mix(in srgb, var(--color) 5%, transparent);
         
         &:hover {
-            background: rgba(255, 255, 255, 0.1);
+            @apply border-glass-md;
+            background-color: color-mix(in srgb, var(--color) 10%, transparent);
         }
     }
     
-    // Variant Outline - Bordure avec effet
+    // Variant Outline - Bordure visible
     &.border-2.bg-transparent {
-        &:hover {
-            background: rgba(255, 255, 255, 0.05);
-        }
-    }
-    
-    // Variant Ghost - Fond invisible
-    &.border.border-transparent.bg-transparent {
-        &:hover {
-            background: rgba(255, 255, 255, 0.05);
-            border-color: rgba(255, 255, 255, 0.1);
-        }
-    }
-    
-    // Variant Soft - Style doux
-    &.border-b-2.border-gray-300.bg-transparent.rounded-none {
-        background: rgba(255, 255, 255, 0.05);
-        border-bottom-width: 2px;
+        @apply border-glass-md;
+        border-width: 2px;
+        background-color: transparent;
         
         &:hover {
-            background: rgba(255, 255, 255, 0.1);
+            @apply border-glass-lg;
+            background-color: color-mix(in srgb, var(--color) 5%, transparent);
+        }
+    }
+    
+    // Variant Ghost - Transparent
+    &.border.border-transparent.bg-transparent {
+        background-color: transparent;
+        border-color: transparent;
+        
+        &:hover {
+            background-color: color-mix(in srgb, var(--color) 5%, transparent);
+            border-color: color-mix(in srgb, var(--color) 10%, transparent);
+        }
+    }
+    
+    // Variant Soft - Bordure inférieure uniquement
+    &.border-b-2.bg-transparent.rounded-none {
+        @apply border-glass-b-md;
+        border-bottom-width: 2px;
+        border-radius: 0;
+        background-color: transparent;
+        
+        &:hover {
+            @apply border-glass-b-lg;
+            background-color: color-mix(in srgb, var(--color) 5%, transparent);
         }
     }
     
@@ -311,38 +404,15 @@ const colorRef = ref(null);
     }
 }
 
-// Styles pour les couleurs DaisyUI
-.color-picker-container-primary {
-    --color-picker-primary: var(--color-primary, #3b82f6);
-}
-
-.color-picker-container-secondary {
-    --color-picker-primary: var(--color-secondary, #8b5cf6);
-}
-
-.color-picker-container-accent {
-    --color-picker-primary: var(--color-accent, #f59e0b);
-}
-
-.color-picker-container-info {
-    --color-picker-primary: var(--color-info, #06b6d4);
-}
-
-.color-picker-container-success {
-    --color-picker-primary: var(--color-success, #10b981);
-}
-
-.color-picker-container-warning {
-    --color-picker-primary: var(--color-warning, #f59e0b);
-}
-
-.color-picker-container-error {
-    --color-picker-primary: var(--color-error, #ef4444);
-}
-
-.color-picker-container-neutral {
-    --color-picker-primary: var(--color-neutral, #6b7280);
-}
+// Application des classes color-* pour définir --color
+.color-primary { --color: var(--color-primary-500); --color-picker-primary: var(--color-primary-500); }
+.color-secondary { --color: var(--color-secondary-500); --color-picker-primary: var(--color-secondary-500); }
+.color-accent { --color: var(--color-accent-500); --color-picker-primary: var(--color-accent-500); }
+.color-info { --color: var(--color-info-500); --color-picker-primary: var(--color-info-500); }
+.color-success { --color: var(--color-success-500); --color-picker-primary: var(--color-success-500); }
+.color-warning { --color: var(--color-warning-500); --color-picker-primary: var(--color-warning-500); }
+.color-error { --color: var(--color-error-500); --color-picker-primary: var(--color-error-500); }
+.color-neutral { --color: var(--color-neutral-500); --color-picker-primary: var(--color-neutral-500); }
 
 // Styles pour le composant ColorPicker intégré
 :deep(.color-picker) {
@@ -369,8 +439,8 @@ const colorRef = ref(null);
         
         &:focus {
             outline: none;
-            border-color: var(--color-picker-primary, var(--color-primary, #3b82f6));
-            box-shadow: 0 0 0 2px rgba(var(--color-picker-primary, var(--color-primary, #3b82f6)), 0.2);
+            border-color: var(--color-picker-primary);
+            box-shadow: 0 0 0 2px color-mix(in srgb, var(--color-picker-primary) 20%, transparent);
         }
     }
     
@@ -391,12 +461,12 @@ const colorRef = ref(null);
             
             &:hover {
                 transform: scale(1.1);
-                border-color: var(--color-picker-primary, var(--color-primary, #3b82f6));
+                border-color: var(--color-picker-primary);
             }
             
             &.active {
-                border-color: var(--color-picker-primary, var(--color-primary, #3b82f6));
-                box-shadow: 0 0 0 2px rgba(var(--color-picker-primary, var(--color-primary, #3b82f6)), 0.3);
+                border-color: var(--color-picker-primary);
+                box-shadow: 0 0 0 2px color-mix(in srgb, var(--color-picker-primary) 30%, transparent);
             }
         }
     }
@@ -418,7 +488,7 @@ const colorRef = ref(null);
         
         input[type="range"] {
             border-radius: 0.375rem;
-            background: linear-gradient(to right, transparent, var(--color-picker-primary, var(--color-primary, #3b82f6)));
+            background: linear-gradient(to right, transparent, var(--color-picker-primary));
             
             &::-webkit-slider-thumb {
                 border-radius: 50%;

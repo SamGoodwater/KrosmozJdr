@@ -16,8 +16,16 @@ import axios from 'axios';
 const menuItems = ref([]);
 const loading = ref(false);
 const error = ref(null);
-const cacheKey = 'dynamic_menu_cache';
 const cacheTTL = 3600000; // 1 heure en millisecondes
+
+/**
+ * Génère la clé de cache selon l'utilisateur
+ * @param {number|null} userId - ID de l'utilisateur (null pour invité)
+ * @returns {string}
+ */
+const getCacheKey = (userId) => {
+    return `dynamic_menu_cache_${userId || 'guest'}`;
+};
 
 /**
  * Récupère les pages du menu depuis l'API
@@ -27,30 +35,16 @@ const fetchMenuPages = async () => {
     error.value = null;
     
     try {
-        // Vérifier le cache
-        const cached = localStorage.getItem(cacheKey);
-        if (cached) {
-            const { data, timestamp } = JSON.parse(cached);
-            const now = Date.now();
-            
-            if (now - timestamp < cacheTTL) {
-                menuItems.value = data;
-                loading.value = false;
-                return;
-            }
-        }
+        // Récupérer l'ID utilisateur depuis les props Inertia
+        // On doit utiliser usePage() mais on ne peut pas l'utiliser ici car c'est en dehors du composable
+        // On va donc récupérer depuis window.__inertia ou faire l'appel sans cache côté client
+        // Le backend gère déjà le cache par utilisateur
         
-        // Récupérer depuis l'API
+        // Récupérer depuis l'API (le backend gère le cache par utilisateur)
         const response = await axios.get(route('pages.menu'));
         
         if (response.data && response.data.menu) {
             menuItems.value = response.data.menu;
-            
-            // Mettre en cache
-            localStorage.setItem(cacheKey, JSON.stringify({
-                data: response.data.menu,
-                timestamp: Date.now()
-            }));
         }
     } catch (err) {
         console.error('[useDynamicMenu] Erreur lors de la récupération du menu:', err);
@@ -61,10 +55,17 @@ const fetchMenuPages = async () => {
 };
 
 /**
- * Invalide le cache du menu
+ * Invalide le cache du menu pour tous les utilisateurs
  */
 const clearCache = () => {
-    localStorage.removeItem(cacheKey);
+    // Supprimer tous les caches de menu (le backend gère le cache)
+    // On peut aussi appeler une route backend pour invalider le cache si nécessaire
+    const keys = Object.keys(localStorage);
+    keys.forEach(key => {
+        if (key.startsWith('dynamic_menu_cache_')) {
+            localStorage.removeItem(key);
+        }
+    });
 };
 
 /**

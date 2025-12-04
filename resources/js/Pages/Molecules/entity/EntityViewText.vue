@@ -4,14 +4,16 @@
  * 
  * @description
  * Vue texte d'une entité : juste le nom avec une icône/image à la même taille
- * Au hover, affiche la vue minimale
+ * Au hover, affiche la vue minimale en tooltip
+ * Au clic, affiche la vue minimale de manière persistante
  * Utilisée dans les listes simples
  * 
  * @props {Object} entity - Données de l'entité
  * @props {String} entityType - Type d'entité
  */
-import { ref } from 'vue';
+import { ref, watch, onMounted, onUnmounted } from 'vue';
 import Icon from '@/Pages/Atoms/data-display/Icon.vue';
+import Image from '@/Pages/Atoms/data-display/Image.vue';
 import EntityViewMinimal from './EntityViewMinimal.vue';
 
 const props = defineProps({
@@ -26,6 +28,8 @@ const props = defineProps({
 });
 
 const showHover = ref(false);
+const showPersistent = ref(false);
+const textRef = ref(null);
 
 const getEntityIcon = (type) => {
     const icons = {
@@ -47,28 +51,100 @@ const getEntityIcon = (type) => {
     };
     return icons[type] || 'fa-solid fa-circle';
 };
+
+// Gérer le clic pour afficher/masquer la vue persistante
+const handleClick = (event) => {
+    event.stopPropagation();
+    showPersistent.value = !showPersistent.value;
+};
+
+// Fermer la vue persistante au clic extérieur ou ESC
+const handleClickOutside = (event) => {
+    if (textRef.value && !textRef.value.contains(event.target)) {
+        showPersistent.value = false;
+    }
+};
+
+const handleEscape = (event) => {
+    if (event.key === 'Escape') {
+        showPersistent.value = false;
+    }
+};
+
+// Gérer l'ajout/suppression des event listeners selon l'état
+watch(showPersistent, (isVisible) => {
+    if (isVisible) {
+        // Attendre que le DOM soit mis à jour
+        setTimeout(() => {
+            document.addEventListener('click', handleClickOutside);
+            document.addEventListener('keydown', handleEscape);
+        }, 0);
+    } else {
+        document.removeEventListener('click', handleClickOutside);
+        document.removeEventListener('keydown', handleEscape);
+    }
+});
+
+onUnmounted(() => {
+    document.removeEventListener('click', handleClickOutside);
+    document.removeEventListener('keydown', handleEscape);
+});
 </script>
 
 <template>
     <div 
-        class="relative inline-flex items-center gap-2 cursor-pointer"
+        ref="textRef"
+        class="relative inline-flex items-center gap-2 cursor-pointer group"
         @mouseenter="showHover = true"
-        @mouseleave="showHover = false">
+        @mouseleave="showHover = false"
+        @click="handleClick">
         
-        <!-- Vue texte -->
-        <Icon :source="getEntityIcon(entityType)" :alt="entity.name" size="sm" />
-        <span class="text-primary-100">{{ entity.name || entity.title }}</span>
+        <!-- Icône/image à la même taille que le texte -->
+        <div class="flex-shrink-0" :class="entity.image ? 'w-4 h-4' : ''">
+            <Image 
+                v-if="entity.image" 
+                :source="entity.image" 
+                :alt="entity.name || 'Image'" 
+                size="xs"
+                class="w-4 h-4 object-cover rounded"
+            />
+            <Icon 
+                v-else 
+                :source="getEntityIcon(entityType)" 
+                :alt="entity.name" 
+                size="sm"
+                class="text-primary-300 group-hover:text-primary-100 transition-colors"
+            />
+        </div>
+        
+        <!-- Nom -->
+        <span class="text-primary-100 group-hover:text-primary-50 transition-colors">{{ entity.name || entity.title }}</span>
 
-        <!-- Tooltip avec vue minimale au hover -->
+        <!-- Tooltip avec vue minimale au hover (non persistant) -->
         <div 
-            v-if="showHover"
-            class="absolute left-0 top-full mt-2 z-50 w-64"
+            v-if="showHover && !showPersistent"
+            class="absolute left-0 top-full mt-2 z-50 w-64 pointer-events-none"
             @mouseenter="showHover = true"
             @mouseleave="showHover = false">
+            <div class="pointer-events-auto">
+                <EntityViewMinimal 
+                    :entity="entity" 
+                    :entity-type="entityType"
+                    :show-actions="false"
+                    class="shadow-xl border-2 border-primary/20" />
+            </div>
+        </div>
+
+        <!-- Vue minimale persistante au clic -->
+        <div 
+            v-if="showPersistent"
+            class="absolute left-0 top-full mt-2 z-[100] w-64"
+            @click.stop>
             <EntityViewMinimal 
                 :entity="entity" 
                 :entity-type="entityType"
-                class="shadow-lg" />
+                :show-actions="true"
+                class="shadow-xl border-2 border-primary/30" />
         </div>
     </div>
 </template>

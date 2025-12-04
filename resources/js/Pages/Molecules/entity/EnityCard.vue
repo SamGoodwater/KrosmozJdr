@@ -64,28 +64,23 @@ const emit = defineEmits(['action']);
 const actionIcons = {
     pin: {
         icon: "fa-solid fa-thumbtack",
-        label: "Épingler",
-        color: "ghost"
+        label: "Épingler"
     },
     favorite: {
         icon: "fa-regular fa-heart",
-        label: "Favoris",
-        color: "ghost"
+        label: "Favoris"
     },
     view: {
         icon: "fa-regular fa-eye",
-        label: "Voir",
-        color: "ghost"
+        label: "Voir"
     },
     edit: {
         icon: "fa-regular fa-pen-to-square",
-        label: "Éditer",
-        color: "ghost"
+        label: "Éditer"
     },
     share: {
         icon: "fa-solid fa-link",
-        label: "Partager",
-        color: "ghost"
+        label: "Partager"
     }
 };
 
@@ -120,7 +115,7 @@ const buildCardClasses = () => [
                 <div class="flex gap-2 justify-end">
                     <Tooltip v-for="action in actions" :key="action" :content="actionIcons[action].label"
                         placement="bottom">
-                        <Btn :color="actionIcons[action].color" variant="ghost" size="xs" circle
+                        <Btn variant="ghost" size="xs" circle
                             @click="handleAction(action)">
                             <Icon :source="actionIcons[action].icon" :alt="actionIcons[action].label" size="sm" />
                         </Btn>

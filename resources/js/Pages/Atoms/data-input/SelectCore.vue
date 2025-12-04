@@ -76,19 +76,51 @@ const { inputAttrs, listeners } = useInputProps(props, $attrs, emit, 'select', '
 
 // ------------------------------------------
 // 🎨 Style dynamique basé sur variant, color, etc.
+// Combine les classes DaisyUI natives (select-ghost, select-primary, etc.)
+// avec les variants personnalisés (glass, dash, outline, soft) via getInputStyle
+// https://daisyui.com/components/select/
 // ------------------------------------------
-const atomClasses = computed(() =>
-  mergeClasses(
-        getInputStyle('select', {
-            variant: props.variant,
-            color: props.color,
-            size: props.size,
-            animation: props.animation,
-      ...(typeof props.inputStyle === 'object' && props.inputStyle !== null ? props.inputStyle : {}),
-      ...(typeof props.inputStyle === 'string' ? { variant: props.inputStyle } : {})
-    }, false)
-  )
-)
+const atomClasses = computed(() => {
+    // Pour les variants personnalisés (glass, dash, outline, soft), utiliser getInputStyle
+    // Pour ghost, utiliser directement select-ghost de DaisyUI
+    const variant = props.variant || (typeof props.inputStyle === 'object' && props.inputStyle?.variant) || (typeof props.inputStyle === 'string' ? props.inputStyle : null);
+    
+    // Si c'est un variant personnalisé (non-ghost), utiliser getInputStyle
+    if (variant && variant !== 'ghost' && ['glass', 'dash', 'outline', 'soft'].includes(variant)) {
+        return mergeClasses(
+            getInputStyle('select', {
+                variant: variant,
+                color: props.color,
+                size: props.size,
+                animation: props.animation,
+                ...(typeof props.inputStyle === 'object' && props.inputStyle !== null ? props.inputStyle : {}),
+                ...(typeof props.inputStyle === 'string' ? { variant: props.inputStyle } : {})
+            }, false)
+        );
+    }
+    
+    // Sinon, utiliser directement les classes DaisyUI
+    const classes = ['select'];
+    
+    // Variant ghost (seul variant natif DaisyUI pour select)
+    if (variant === 'ghost') {
+        classes.push('select-ghost');
+    }
+    
+    // Couleur (primary, secondary, accent, etc.) - classes DaisyUI natives
+    const color = props.color || (typeof props.inputStyle === 'object' && props.inputStyle?.color);
+    if (color) {
+        classes.push(`select-${color}`);
+    }
+    
+    // Taille (xs, sm, md, lg, xl) - classes DaisyUI natives
+    const size = props.size || (typeof props.inputStyle === 'object' && props.inputStyle?.size) || 'md';
+    if (size !== 'md') {
+        classes.push(`select-${size}`);
+    }
+    
+    return mergeClasses(classes);
+})
 
 // ------------------------------------------
 // 📋 Traitement des options pour l'affichage
@@ -153,13 +185,28 @@ function onInput(e) {
 
 <style scoped lang="scss">
 // Styles spécifiques pour SelectCore
-// Utilisation maximale de Tailwind/DaisyUI, CSS custom minimal
+// Utilisation des classes utilitaires glassmorphisme et var(--color) pour les couleurs
 
-.select {
+select.select {
     // Styles de base pour tous les selects
     outline: none;
     transition: all 0.2s ease-in-out;
     cursor: pointer;
+    --color: var(--color-primary-500); // Couleur par défaut (sera surchargée par color-{name})
+    
+    // IMPORTANT: Couleur de texte pour que la valeur sélectionnée soit visible
+    color: hsl(var(--bc)); // Base-content (texte principal, s'adapte au thème)
+    
+    // Personnalisation de la flèche (appliquée à tous les variants)
+    $arrow-svg: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
+    background-image: $arrow-svg;
+    background-position: right 0.5rem center;
+    background-repeat: no-repeat;
+    background-size: 1.5em 1.5em;
+    padding-right: 2.5rem;
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
     
     // États de focus
     &:focus {
@@ -172,196 +219,152 @@ function onInput(e) {
         cursor: not-allowed;
     }
     
-    // Personnalisation de la flèche
-    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
-    background-position: right 0.5rem center;
-    background-repeat: no-repeat;
-    background-size: 1.5em 1.5em;
-    padding-right: 2.5rem;
-    
-    // Variant Glass - Effet de verre
-    &.bg-transparent.border.border-gray-300 {
-        background-color: rgba(255, 255, 255, 0.1);
-        backdrop-filter: blur(10px);
-        border-color: rgba(255, 255, 255, 0.2);
-        box-shadow: 
-            0 4px 6px -1px rgba(0, 0, 0, 0.1),
-            0 2px 4px -1px rgba(0, 0, 0, 0.06),
-            inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    // Variant Glass - Effet glassmorphisme
+    &.select-variant-glass {
+        @apply border-glass-md box-glass-md;
+        border-color: color-mix(in srgb, var(--color) 30%, transparent);
+        background-color: color-mix(in srgb, var(--color) 10%, transparent);
+        background-image: $arrow-svg; // Réappliquer la flèche
         
         &:hover {
-            box-shadow: 
-                0 10px 15px -3px rgba(0, 0, 0, 0.1),
-                0 4px 6px -2px rgba(0, 0, 0, 0.05),
-                inset 0 1px 0 rgba(255, 255, 255, 0.2);
-            border-color: rgba(255, 255, 255, 0.3);
+            @apply border-glass-lg box-glass-lg;
+            border-color: color-mix(in srgb, var(--color) 50%, transparent);
+            background-color: color-mix(in srgb, var(--color) 15%, transparent);
+            background-image: $arrow-svg;
         }
         
         &:focus {
-            border-color: var(--color-primary, #3b82f6);
-            box-shadow: 
-                0 0 0 3px rgba(59, 130, 246, 0.1),
-                inset 0 1px 0 rgba(255, 255, 255, 0.2);
+            border-color: color-mix(in srgb, var(--color) 80%, transparent);
+            box-shadow: 0 0 0 3px color-mix(in srgb, var(--color) 20%, transparent);
+            background-image: $arrow-svg;
         }
     }
     
     // Variant Dash - Style pointillé
-    &.border-dashed.border-2 {
-        background-color: rgba(255, 255, 255, 0.05);
+    &.select-variant-dash {
+        @apply border-glass-sm;
+        border-style: dashed;
+        border-width: 2px;
+        background-color: color-mix(in srgb, var(--color) 5%, transparent);
+        background-image: $arrow-svg;
         
         &:hover {
-            background-color: rgba(255, 255, 255, 0.1);
+            @apply border-glass-md;
+            background-color: color-mix(in srgb, var(--color) 10%, transparent);
+            background-image: $arrow-svg;
         }
         
         &:focus {
-            background-color: white;
-            border-color: var(--color-secondary, #8b5cf6);
+            border-color: color-mix(in srgb, var(--color) 60%, transparent);
+            box-shadow: 0 0 0 3px color-mix(in srgb, var(--color) 15%, transparent);
+            background-image: $arrow-svg;
         }
     }
     
-    // Variant Outline - Bordure avec effet
-    &.border-2.bg-transparent {
+    // Variant Outline - Bordure visible
+    &.select-variant-outline {
+        @apply border-glass-md;
+        border-width: 2px;
+        background-color: transparent;
+        background-image: $arrow-svg;
+        
         &:hover {
-            background-color: rgba(255, 255, 255, 0.05);
+            @apply border-glass-lg;
+            background-color: color-mix(in srgb, var(--color) 5%, transparent);
+            background-image: $arrow-svg;
         }
         
         &:focus {
-            border-color: var(--color-success, #10b981);
-            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+            border-color: color-mix(in srgb, var(--color) 80%, transparent);
+            box-shadow: 0 0 0 3px color-mix(in srgb, var(--color) 20%, transparent);
+            background-image: $arrow-svg;
         }
     }
     
-    // Variant Ghost - Fond invisible
-    &.border.border-transparent.bg-transparent {
+    // Variant Ghost - Transparent
+    &.select-variant-ghost {
+        background-color: transparent;
+        border-color: transparent;
+        background-image: $arrow-svg;
+        
         &:hover {
-            background-color: rgba(255, 255, 255, 0.05);
-            border-color: rgba(255, 255, 255, 0.1);
+            background-color: color-mix(in srgb, var(--color) 5%, transparent);
+            border-color: color-mix(in srgb, var(--color) 10%, transparent);
+            background-image: $arrow-svg;
         }
         
         &:focus {
-            background-color: white;
-            border-color: var(--color-neutral, #6b7280);
+            background-color: color-mix(in srgb, var(--color) 10%, transparent);
+            border-color: color-mix(in srgb, var(--color) 30%, transparent);
+            background-image: $arrow-svg;
         }
     }
     
-    // Variant Soft - Style doux
-    &.border-b-2.border-gray-300.bg-transparent.rounded-none {
-        background-color: rgba(255, 255, 255, 0.05);
+    // Variant Soft - Bordure inférieure uniquement
+    &.select-variant-soft {
+        @apply border-glass-b-md;
         border-bottom-width: 2px;
+        border-radius: 0;
+        background-color: transparent;
+        background-image: $arrow-svg;
         
         &:hover {
-            background-color: rgba(255, 255, 255, 0.1);
+            @apply border-glass-b-lg;
+            background-color: color-mix(in srgb, var(--color) 5%, transparent);
+            background-image: $arrow-svg;
         }
         
         &:focus {
-            border-bottom-color: var(--color-accent, #f59e0b);
+            border-bottom-color: color-mix(in srgb, var(--color) 80%, transparent);
             box-shadow: none;
-        }
-    }
-    
-    // Styles pour les couleurs DaisyUI
-    &.select-primary {
-        &:focus {
-            border-color: var(--color-primary, #3b82f6);
-            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-        }
-    }
-    
-    &.select-secondary {
-        &:focus {
-            border-color: var(--color-secondary, #8b5cf6);
-            box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
-        }
-    }
-    
-    &.select-accent {
-        &:focus {
-            border-color: var(--color-accent, #f59e0b);
-            box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.1);
-        }
-    }
-    
-    &.select-info {
-        &:focus {
-            border-color: var(--color-info, #06b6d4);
-            box-shadow: 0 0 0 3px rgba(6, 182, 212, 0.1);
-        }
-    }
-    
-    &.select-success {
-        &:focus {
-            border-color: var(--color-success, #10b981);
-            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
-        }
-    }
-    
-    &.select-warning {
-        &:focus {
-            border-color: var(--color-warning, #f59e0b);
-            box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.1);
-        }
-    }
-    
-    &.select-error {
-        &:focus {
-            border-color: var(--color-error, #ef4444);
-            box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
-        }
-    }
-    
-    &.select-neutral {
-        &:focus {
-            border-color: var(--color-neutral, #6b7280);
-            box-shadow: 0 0 0 3px rgba(107, 114, 128, 0.1);
+            background-image: $arrow-svg;
         }
     }
 }
 
-// Styles pour les options
-option {
-    // Options du select
-    padding: 0.5rem;
-    transition: all 0.2s ease-in-out;
+// Styles pour les options dans la liste déroulante
+select {
+    color-scheme: dark; // Force un thème sombre pour le menu déroulant
     
-    &:disabled {
-        opacity: 0.5;
+    option {
+        padding: 0.75rem 1rem;
+        background-color: hsl(var(--b1)); // Base-100 (fond principal du thème)
+        color: hsl(var(--bc)); // Base-content (texte qui contraste avec le fond)
+        transition: all 0.2s ease-in-out;
+        min-height: 2.5rem;
+        
+        &:disabled {
+            opacity: 0.5;
+            font-style: italic;
+            color: hsl(var(--bc) / 0.5);
+            background-color: hsl(var(--b2)); // Base-200 (fond secondaire)
+        }
+        
+        &:checked {
+            background-color: hsl(var(--p));
+            color: hsl(var(--pc));
+            font-weight: 500;
+        }
+    }
+    
+    option[disabled] {
+        color: hsl(var(--bc) / 0.5);
         font-style: italic;
+        background-color: hsl(var(--b2));
     }
     
-    &:checked {
-        background-color: var(--color-primary, #3b82f6);
-        color: white;
+    &::-ms-expand {
+        display: none; // Cache la flèche par défaut sur IE/Edge
     }
 }
 
-// Styles pour les tailles DaisyUI
-.select-xs {
-    font-size: 0.75rem;
-    padding: 0.25rem 0.5rem;
-    padding-right: 2rem;
-}
-
-.select-sm {
-    font-size: 0.875rem;
-    padding: 0.375rem 0.75rem;
-    padding-right: 2.25rem;
-}
-
-.select-md {
-    font-size: 1rem;
-    padding: 0.5rem 1rem;
-    padding-right: 2.5rem;
-}
-
-.select-lg {
-    font-size: 1.125rem;
-    padding: 0.75rem 1.5rem;
-    padding-right: 3rem;
-}
-
-.select-xl {
-    font-size: 1.25rem;
-    padding: 1rem 2rem;
-    padding-right: 3.5rem;
-}
+// Application des classes color-* pour définir --color
+.color-primary { --color: var(--color-primary-500); }
+.color-secondary { --color: var(--color-secondary-500); }
+.color-accent { --color: var(--color-accent-500); }
+.color-info { --color: var(--color-info-500); }
+.color-success { --color: var(--color-success-500); }
+.color-warning { --color: var(--color-warning-500); }
+.color-error { --color: var(--color-error-500); }
+.color-neutral { --color: var(--color-neutral-500); }
 </style>

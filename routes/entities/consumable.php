@@ -14,6 +14,7 @@ Route::prefix('entities/consumables')->name('entities.consumables.')->middleware
     Route::get('/create', [ConsumableController::class, 'create'])->name('create');
     Route::post('/', [ConsumableController::class, 'store'])->name('store');
     Route::get('/{consumable}/edit', [ConsumableController::class, 'edit'])->name('edit');
+    Route::get('/{consumable}/pdf', [ConsumableController::class, 'downloadPdf'])->name('pdf');
     Route::patch('/{consumable}', [ConsumableController::class, 'update'])->name('update');
     Route::delete('/{consumable}', [ConsumableController::class, 'delete'])->name('delete');
 });

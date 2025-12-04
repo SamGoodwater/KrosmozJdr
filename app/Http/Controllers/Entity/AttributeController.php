@@ -7,6 +7,7 @@ use App\Http\Requests\Entity\StoreAttributeRequest;
 use App\Http\Requests\Entity\UpdateAttributeRequest;
 use App\Models\Entity\Attribute;
 use App\Http\Resources\Entity\AttributeResource;
+use App\Services\PdfService;
 use Inertia\Inertia;
 
 class AttributeController extends Controller
@@ -110,5 +111,43 @@ class AttributeController extends Controller
         $this->authorize('delete', $attribute);
         $attribute->delete();
         return response()->json(['message' => 'Deleted'], 204);
+    }
+
+    /**
+     * Télécharge un PDF pour un ou plusieurs attributes.
+     * 
+     * @param Attribute|null $attribute L'attribute unique (si un seul)
+     * @return \Illuminate\Http\Response
+     */
+    public function downloadPdf(?Attribute $attribute = null)
+    {
+        $ids = request()->get('ids');
+        
+        if (!empty($ids)) {
+            if (is_string($ids)) {
+                $ids = explode(',', $ids);
+            }
+            
+            if (is_array($ids) && count($ids) > 0) {
+                $attributes = Attribute::whereIn('id', $ids)->get();
+                $this->authorize('viewAny', Attribute::class);
+                
+                $pdf = PdfService::generateForEntities($attributes, 'attribute');
+                $filename = 'attributes-' . now()->format('Y-m-d-His') . '.pdf';
+                
+                return $pdf->download($filename);
+            }
+        }
+        
+        if (!$attribute) {
+            abort(404);
+        }
+        
+        $this->authorize('view', $attribute);
+        
+        $pdf = PdfService::generateForEntity($attribute, 'attribute');
+        $filename = 'attribute-' . $attribute->id . '-' . now()->format('Y-m-d-His') . '.pdf';
+        
+        return $pdf->download($filename);
     }
 }

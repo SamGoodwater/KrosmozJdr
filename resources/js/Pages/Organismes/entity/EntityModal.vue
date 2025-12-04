@@ -9,6 +9,7 @@
  * @props {String} entityType - Type d'entité
  * @props {String} view - Vue à afficher ('large', 'compact', 'minimal', 'text'), défaut 'large'
  * @props {Boolean} open - Contrôle l'ouverture du modal
+ * @props {Boolean} useStoredFormat - Utiliser le format stocké dans localStorage (défaut: true)
  * @emit close - Événement émis lors de la fermeture
  */
 import { computed } from 'vue';
@@ -18,6 +19,7 @@ import EntityViewLarge from '@/Pages/Molecules/entity/EntityViewLarge.vue';
 import EntityViewCompact from '@/Pages/Molecules/entity/EntityViewCompact.vue';
 import EntityViewMinimal from '@/Pages/Molecules/entity/EntityViewMinimal.vue';
 import EntityViewText from '@/Pages/Molecules/entity/EntityViewText.vue';
+import { useEntityViewFormat } from '@/Composables/store/useEntityViewFormat';
 
 const props = defineProps({
     entity: {
@@ -30,16 +32,32 @@ const props = defineProps({
     },
     view: {
         type: String,
-        default: 'large',
-        validator: (v) => ['large', 'compact', 'minimal', 'text'].includes(v)
+        default: null,
+        validator: (v) => !v || ['large', 'compact', 'minimal', 'text'].includes(v)
     },
     open: {
         type: Boolean,
         default: false
+    },
+    useStoredFormat: {
+        type: Boolean,
+        default: true
     }
 });
 
 const emit = defineEmits(['close']);
+
+// Utiliser le format stocké si useStoredFormat est true et que view n'est pas fourni
+const { viewFormat } = useEntityViewFormat(props.entityType);
+const currentView = computed(() => {
+    if (props.view) {
+        return props.view;
+    }
+    if (props.useStoredFormat) {
+        return viewFormat.value;
+    }
+    return 'large';
+});
 
 const modalSize = computed(() => {
     const sizes = {
@@ -48,7 +66,7 @@ const modalSize = computed(() => {
         minimal: 'md',
         text: 'sm'
     };
-    return sizes[props.view] || 'xl';
+    return sizes[currentView.value] || 'xl';
 });
 
 const handleClose = () => {
@@ -84,17 +102,17 @@ const getEntityName = () => {
 
         <div>
             <EntityViewLarge 
-                v-if="view === 'large'"
+                v-if="currentView === 'large'"
                 :entity="entity"
                 :entity-type="entityType" />
             
             <EntityViewCompact 
-                v-else-if="view === 'compact'"
+                v-else-if="currentView === 'compact'"
                 :entity="entity"
                 :entity-type="entityType" />
             
             <EntityViewMinimal 
-                v-else-if="view === 'minimal'"
+                v-else-if="currentView === 'minimal'"
                 :entity="entity"
                 :entity-type="entityType" />
             

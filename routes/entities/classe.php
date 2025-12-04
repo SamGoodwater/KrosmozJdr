@@ -14,6 +14,7 @@ Route::prefix('entities/classes')->name('entities.classes.')->middleware('auth')
     Route::get('/create', [ClasseController::class, 'create'])->name('create');
     Route::post('/', [ClasseController::class, 'store'])->name('store');
     Route::get('/{classe}/edit', [ClasseController::class, 'edit'])->name('edit');
+    Route::get('/{classe}/pdf', [ClasseController::class, 'downloadPdf'])->name('pdf');
     Route::patch('/{classe}', [ClasseController::class, 'update'])->name('update');
     Route::delete('/{classe}', [ClasseController::class, 'delete'])->name('delete');
 });

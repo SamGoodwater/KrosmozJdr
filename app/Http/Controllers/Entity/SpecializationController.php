@@ -7,6 +7,7 @@ use App\Http\Requests\Entity\StoreSpecializationRequest;
 use App\Http\Requests\Entity\UpdateSpecializationRequest;
 use App\Models\Entity\Specialization;
 use App\Http\Resources\Entity\SpecializationResource;
+use App\Services\PdfService;
 use Inertia\Inertia;
 
 class SpecializationController extends Controller
@@ -93,5 +94,43 @@ class SpecializationController extends Controller
     public function delete(Specialization $specialization)
     {
         //
+    }
+
+    /**
+     * Télécharge un PDF pour un ou plusieurs specializations.
+     * 
+     * @param Specialization|null $specialization La specialization unique (si une seule)
+     * @return \Illuminate\Http\Response
+     */
+    public function downloadPdf(?Specialization $specialization = null)
+    {
+        $ids = request()->get('ids');
+        
+        if (!empty($ids)) {
+            if (is_string($ids)) {
+                $ids = explode(',', $ids);
+            }
+            
+            if (is_array($ids) && count($ids) > 0) {
+                $specializations = Specialization::whereIn('id', $ids)->get();
+                $this->authorize('viewAny', Specialization::class);
+                
+                $pdf = PdfService::generateForEntities($specializations, 'specialization');
+                $filename = 'specializations-' . now()->format('Y-m-d-His') . '.pdf';
+                
+                return $pdf->download($filename);
+            }
+        }
+        
+        if (!$specialization) {
+            abort(404);
+        }
+        
+        $this->authorize('view', $specialization);
+        
+        $pdf = PdfService::generateForEntity($specialization, 'specialization');
+        $filename = 'specialization-' . $specialization->id . '-' . now()->format('Y-m-d-His') . '.pdf';
+        
+        return $pdf->download($filename);
     }
 }

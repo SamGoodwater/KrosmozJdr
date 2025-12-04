@@ -12,10 +12,10 @@ Le système d'input de KrosmozJDR utilise **DaisyUI** comme base de styles avec 
 ```javascript
 // API unifiée pour tous les composants
 const styleProps = {
-  variant: 'glass' | 'bordered' | 'filled' | 'ghost',
-  color: 'primary' | 'secondary' | 'accent' | 'success' | 'warning' | 'error' | 'info',
+  variant: 'glass' | 'dash' | 'outline' | 'ghost' | 'soft',
+  color: 'primary' | 'secondary' | 'accent' | 'info' | 'success' | 'warning' | 'error' | 'neutral',
   size: 'xs' | 'sm' | 'md' | 'lg' | 'xl',
-  animation: 'none' | 'fade' | 'slide' | 'bounce',
+  animation: boolean | string, // Booléen par défaut, ou string pour animation spécifique
   rounded: true | false,
   shadow: 'none' | 'sm' | 'md' | 'lg' | 'xl'
 }
@@ -36,7 +36,8 @@ const styleProps = {
 
 ## 🎨 **Variants de Style**
 
-### **glass** - Effet de verre (par défaut)
+### **glass** - Effet glassmorphisme (par défaut)
+Effet de verre avec transparence, blur et bordures glassmorphisme.
 ```vue
 <InputField 
   v-model="text"
@@ -46,33 +47,47 @@ const styleProps = {
 />
 ```
 
-### **bordered** - Bordure visible
+### **dash** - Bordure pointillée
+Bordure pointillée avec fond semi-transparent, style discret.
 ```vue
 <InputField 
   v-model="text"
   label="Texte"
-  variant="bordered"
+  variant="dash"
   color="secondary"
 />
 ```
 
-### **filled** - Rempli
+### **outline** - Bordure visible
+Bordure visible avec fond transparent, met en avant le contour.
 ```vue
 <InputField 
   v-model="text"
   label="Texte"
-  variant="filled"
+  variant="outline"
   color="accent"
 />
 ```
 
 ### **ghost** - Transparent
+Fond transparent, bordure invisible, style minimaliste.
 ```vue
 <InputField 
   v-model="text"
   label="Texte"
   variant="ghost"
   color="info"
+/>
+```
+
+### **soft** - Style discret
+Bordure inférieure uniquement, fond transparent, style élégant.
+```vue
+<InputField 
+  v-model="text"
+  label="Texte"
+  variant="soft"
+  color="success"
 />
 ```
 
@@ -98,8 +113,21 @@ const styleProps = {
 ### **Couleurs neutres**
 ```vue
 <InputField v-model="text" label="Neutral" color="neutral" />
-<InputField v-model="text" label="Base" color="base" />
 ```
+
+### **Système de couleurs avec variable CSS**
+
+Tous les composants utilisent la variable CSS `--color` définie via les classes :
+- `color-primary` : `--color: var(--color-primary-500)`
+- `color-secondary` : `--color: var(--color-secondary-500)`
+- `color-accent` : `--color: var(--color-accent-500)`
+- `color-info` : `--color: var(--color-info-500)`
+- `color-success` : `--color: var(--color-success-500)`
+- `color-warning` : `--color: var(--color-warning-500)`
+- `color-error` : `--color: var(--color-error-500)`
+- `color-neutral` : `--color: var(--color-neutral-500)`
+
+Les styles utilisent ensuite `var(--color)` pour les couleurs dynamiques avec `color-mix()` pour les transparences.
 
 ---
 
@@ -128,11 +156,16 @@ const styleProps = {
 ## ✨ **Animations**
 
 ### **Animations disponibles**
+Par défaut, `animation` est un booléen qui active/désactive les animations de transition.
 ```vue
-<InputField v-model="text" label="Fade" animation="fade" />
-<InputField v-model="text" label="Slide" animation="slide" />
-<InputField v-model="text" label="Bounce" animation="bounce" />
-<InputField v-model="text" label="None" animation="none" />
+<InputField v-model="text" label="Avec animation" :animation="true" />
+<InputField v-model="text" label="Sans animation" :animation="false" />
+```
+
+### **Animations spécifiques**
+Certains composants supportent des animations spécifiques via une string.
+```vue
+<InputField v-model="text" label="Animation personnalisée" animation="pulse" />
 ```
 
 ### **Animations conditionnelles**
@@ -140,7 +173,7 @@ const styleProps = {
 <InputField 
   v-model="text"
   label="Animé"
-  :animation="isFocused ? 'bounce' : 'fade'"
+  :animation="isFocused"
 />
 ```
 
@@ -205,7 +238,7 @@ const styleProps = {
 <TextareaField 
   v-model="description"
   label="Textarea"
-  variant="bordered"
+  variant="outline"
   color="secondary"
   size="lg"
 />
@@ -216,7 +249,7 @@ const styleProps = {
 <SelectField 
   v-model="category"
   label="Select"
-  variant="filled"
+  variant="glass"
   color="accent"
   size="md"
 />
@@ -277,7 +310,7 @@ const styleProps = {
 <FileField 
   v-model="file"
   label="File"
-  variant="bordered"
+  variant="outline"
   color="info"
   size="md"
 />
@@ -299,7 +332,7 @@ const styleProps = {
 <DateField 
   v-model="date"
   label="Date"
-  variant="filled"
+  variant="glass"
   color="secondary"
   size="md"
 />
@@ -429,25 +462,52 @@ const styleProps = {
 
 ---
 
+## 🎨 **Classes Utilitaires Glassmorphisme**
+
+### **Bordures Glass**
+Classes pour les bordures glassmorphisme avec différentes intensités :
+```vue
+<div class="border-glass-md">Contenu avec bordure glass</div>
+<div class="border-glass-tl-lg">Bordure glass top-left</div>
+<div class="border-glass-x-xl">Bordure glass horizontale</div>
+```
+
+**Tailles disponibles** : `xs`, `sm`, `md`, `lg`, `xl`  
+**Directions** : `t` (top), `r` (right), `b` (bottom), `l` (left), `x` (horizontal), `y` (vertical), et combinaisons (`tl`, `tr`, `bl`, `br`, etc.)
+
+### **Box Glass**
+Classes pour les box glass complètes (bordure + backdrop) :
+```vue
+<div class="box-glass-md">Contenu avec box glass</div>
+<div class="box-glass-tl-lg">Box glass top-left</div>
+```
+
+**Tailles disponibles** : `xs`, `sm`, `md`, `lg`, `xl`  
+**Directions** : Mêmes directions que `border-glass-*`
+
+### **Backdrop Glass**
+Classes pour le backdrop blur uniquement :
+```vue
+<div class="bd-glass-md">Contenu avec backdrop blur</div>
+```
+
+**Tailles disponibles** : `xs`, `sm`, `md`, `lg`, `xl`
+
 ## 🎨 **Personnalisation CSS**
 
 ### **Variables CSS personnalisées**
 ```css
 /* Dans votre CSS */
 :root {
-  --input-primary-color: #3b82f6;
-  --input-secondary-color: #64748b;
-  --input-accent-color: #8b5cf6;
-  --input-success-color: #10b981;
-  --input-warning-color: #f59e0b;
-  --input-error-color: #ef4444;
-  --input-info-color: #06b6d4;
+  /* Les couleurs sont définies via les classes color-* */
+  /* Utilisez var(--color) dans vos styles personnalisés */
 }
 
 .input-custom {
-  --tw-bg-opacity: 0.1;
-  --tw-border-opacity: 0.2;
-  --tw-text-opacity: 0.9;
+  --color: var(--color-primary-500); /* Définir la couleur */
+  color: var(--color);
+  border-color: color-mix(in srgb, var(--color) 50%, transparent);
+  background-color: color-mix(in srgb, var(--color) 10%, transparent);
 }
 ```
 

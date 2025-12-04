@@ -16,6 +16,7 @@ Route::prefix('entities/panoplies')->name('entities.panoplies.')->middleware('au
     Route::get('/{panoply}/edit', [PanoplyController::class, 'edit'])->name('edit');
     // Route spécifique pour les items (doit être avant la route update générique)
     Route::patch('/{panoply}/items', [PanoplyController::class, 'updateItems'])->name('updateItems');
+    Route::get('/{panoply}/pdf', [PanoplyController::class, 'downloadPdf'])->name('pdf');
     Route::patch('/{panoply}', [PanoplyController::class, 'update'])->name('update');
     Route::delete('/{panoply}', [PanoplyController::class, 'delete'])->name('delete');
 });

@@ -166,7 +166,7 @@ function onRadioChange(e) {
 
 <style scoped lang="scss">
 // Styles spécifiques pour FilterCore
-// Utilisation maximale de Tailwind/DaisyUI, CSS custom minimal
+// Utilisation des classes utilitaires glassmorphisme et var(--color) pour les couleurs
 
 .filter-container {
     // Container pour les filtres
@@ -178,6 +178,7 @@ function onRadioChange(e) {
     // Styles de base pour tous les filtres
     outline: none;
     transition: all 0.2s ease-in-out;
+    --color: var(--color-primary-500); // Couleur par défaut (sera surchargée par color-{name})
     
     // États de focus
     &:focus-within {
@@ -190,94 +191,99 @@ function onRadioChange(e) {
         pointer-events: none;
     }
     
-    // Variant Glass - Effet de verre
-    &.bg-transparent.border.border-gray-300 {
-        background: rgba(255, 255, 255, 0.1);
-        backdrop-filter: blur(10px);
-        border-color: rgba(255, 255, 255, 0.2);
-        box-shadow: 
-            0 4px 6px -1px rgba(0, 0, 0, 0.1),
-            0 2px 4px -1px rgba(0, 0, 0, 0.06),
-            inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    // Variant Glass - Effet glassmorphisme
+    &.bg-transparent.border {
+        @apply border-glass-md box-glass-md;
+        border-color: color-mix(in srgb, var(--color) 30%, transparent);
+        background-color: color-mix(in srgb, var(--color) 10%, transparent);
         border-radius: 0.5rem;
         padding: 0.5rem;
         
         &:hover {
-            box-shadow: 
-                0 10px 15px -3px rgba(0, 0, 0, 0.1),
-                0 4px 6px -2px rgba(0, 0, 0, 0.05),
-                inset 0 1px 0 rgba(255, 255, 255, 0.2);
-            border-color: rgba(255, 255, 255, 0.3);
+            @apply border-glass-lg box-glass-lg;
+            border-color: color-mix(in srgb, var(--color) 50%, transparent);
+            background-color: color-mix(in srgb, var(--color) 15%, transparent);
         }
         
         &:focus-within {
-            border-color: var(--color-primary, #3b82f6);
+            border-color: color-mix(in srgb, var(--color) 80%, transparent);
             box-shadow: 
-                0 0 0 3px rgba(59, 130, 246, 0.1),
+                0 0 0 3px color-mix(in srgb, var(--color) 20%, transparent),
                 inset 0 1px 0 rgba(255, 255, 255, 0.2);
         }
     }
     
     // Variant Dash - Style pointillé
-    &.border-dashed.border-2 {
-        background: rgba(255, 255, 255, 0.05);
+    &.border-dashed {
+        @apply border-glass-sm;
+        border-style: dashed;
+        border-width: 2px;
+        background-color: color-mix(in srgb, var(--color) 5%, transparent);
         border-radius: 0.5rem;
         padding: 0.5rem;
         
         &:hover {
-            background: rgba(255, 255, 255, 0.1);
+            @apply border-glass-md;
+            background-color: color-mix(in srgb, var(--color) 10%, transparent);
         }
         
         &:focus-within {
-            background: white;
-            border-color: var(--color-secondary, #8b5cf6);
+            border-color: color-mix(in srgb, var(--color) 60%, transparent);
         }
     }
     
-    // Variant Outline - Bordure avec effet
+    // Variant Outline - Bordure visible
     &.border-2.bg-transparent {
+        @apply border-glass-md;
+        border-width: 2px;
+        background-color: transparent;
         border-radius: 0.5rem;
         padding: 0.5rem;
         
         &:hover {
-            background: rgba(255, 255, 255, 0.05);
+            @apply border-glass-lg;
+            background-color: color-mix(in srgb, var(--color) 5%, transparent);
         }
         
         &:focus-within {
-            border-color: var(--color-success, #10b981);
-            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+            border-color: color-mix(in srgb, var(--color) 80%, transparent);
+            box-shadow: 0 0 0 3px color-mix(in srgb, var(--color) 20%, transparent);
         }
     }
     
-    // Variant Ghost - Fond invisible
+    // Variant Ghost - Transparent
     &.border.border-transparent.bg-transparent {
+        background-color: transparent;
+        border-color: transparent;
         border-radius: 0.5rem;
         padding: 0.5rem;
         
         &:hover {
-            background: rgba(255, 255, 255, 0.05);
-            border-color: rgba(255, 255, 255, 0.1);
+            background-color: color-mix(in srgb, var(--color) 5%, transparent);
+            border-color: color-mix(in srgb, var(--color) 10%, transparent);
         }
         
         &:focus-within {
-            background: white;
-            border-color: var(--color-neutral, #6b7280);
+            background-color: color-mix(in srgb, var(--color) 10%, transparent);
+            border-color: color-mix(in srgb, var(--color) 30%, transparent);
         }
     }
     
-    // Variant Soft - Style doux
-    &.border-b-2.border-gray-300.bg-transparent.rounded-none {
-        background: rgba(255, 255, 255, 0.05);
+    // Variant Soft - Bordure inférieure uniquement
+    &.border-b-2.bg-transparent.rounded-none {
+        @apply border-glass-b-md;
         border-bottom-width: 2px;
         border-radius: 0;
+        background-color: transparent;
         padding: 0.5rem;
         
         &:hover {
-            background: rgba(255, 255, 255, 0.1);
+            @apply border-glass-b-lg;
+            background-color: color-mix(in srgb, var(--color) 5%, transparent);
         }
         
         &:focus-within {
-            border-bottom-color: var(--color-accent, #f59e0b);
+            border-bottom-color: color-mix(in srgb, var(--color) 80%, transparent);
             box-shadow: none;
         }
     }
@@ -290,44 +296,45 @@ function onRadioChange(e) {
     border-radius: 0.375rem;
     font-weight: 500;
     
-    // Bouton reset
+    // Bouton reset - utilise var(--color-error)
     &.filter-reset {
-        background-color: var(--color-error, #ef4444);
+        --color: var(--color-error-500);
+        background-color: var(--color);
         color: white;
-        border: 1px solid var(--color-error, #ef4444);
+        border: 1px solid var(--color);
         
         &:hover {
-            background-color: var(--color-error, #dc2626);
-            border-color: var(--color-error, #dc2626);
+            background-color: color-mix(in srgb, var(--color) 90%, transparent);
+            border-color: color-mix(in srgb, var(--color) 90%, transparent);
             transform: scale(1.05);
         }
         
         &:focus {
-            box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+            box-shadow: 0 0 0 3px color-mix(in srgb, var(--color) 20%, transparent);
         }
     }
     
-    // Boutons radio normaux
+    // Boutons radio normaux - utilise var(--color)
     &:not(.filter-reset) {
-        background-color: rgba(255, 255, 255, 0.1);
-        border: 1px solid rgba(255, 255, 255, 0.2);
+        background-color: color-mix(in srgb, var(--color) 10%, transparent);
+        border: 1px solid color-mix(in srgb, var(--color) 30%, transparent);
         color: var(--color-base-content, #374151);
         
         &:hover {
-            background-color: rgba(255, 255, 255, 0.2);
-            border-color: rgba(255, 255, 255, 0.3);
+            background-color: color-mix(in srgb, var(--color) 20%, transparent);
+            border-color: color-mix(in srgb, var(--color) 50%, transparent);
             transform: translateY(-1px);
         }
         
         &:checked {
-            background-color: var(--color-primary, #3b82f6);
-            border-color: var(--color-primary, #3b82f6);
+            background-color: var(--color);
+            border-color: var(--color);
             color: white;
             transform: scale(1.05);
         }
         
         &:focus {
-            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+            box-shadow: 0 0 0 3px color-mix(in srgb, var(--color) 20%, transparent);
         }
         
         &:disabled {
@@ -341,62 +348,15 @@ function onRadioChange(e) {
     }
 }
 
-// Styles pour les couleurs DaisyUI
-.filter-primary {
-    .btn:not(.filter-reset):checked {
-        background-color: var(--color-primary, #3b82f6);
-        border-color: var(--color-primary, #3b82f6);
-    }
-}
-
-.filter-secondary {
-    .btn:not(.filter-reset):checked {
-        background-color: var(--color-secondary, #8b5cf6);
-        border-color: var(--color-secondary, #8b5cf6);
-    }
-}
-
-.filter-accent {
-    .btn:not(.filter-reset):checked {
-        background-color: var(--color-accent, #f59e0b);
-        border-color: var(--color-accent, #f59e0b);
-    }
-}
-
-.filter-info {
-    .btn:not(.filter-reset):checked {
-        background-color: var(--color-info, #06b6d4);
-        border-color: var(--color-info, #06b6d4);
-    }
-}
-
-.filter-success {
-    .btn:not(.filter-reset):checked {
-        background-color: var(--color-success, #10b981);
-        border-color: var(--color-success, #10b981);
-    }
-}
-
-.filter-warning {
-    .btn:not(.filter-reset):checked {
-        background-color: var(--color-warning, #f59e0b);
-        border-color: var(--color-warning, #f59e0b);
-    }
-}
-
-.filter-error {
-    .btn:not(.filter-reset):checked {
-        background-color: var(--color-error, #ef4444);
-        border-color: var(--color-error, #ef4444);
-    }
-}
-
-.filter-neutral {
-    .btn:not(.filter-reset):checked {
-        background-color: var(--color-neutral, #6b7280);
-        border-color: var(--color-neutral, #6b7280);
-    }
-}
+// Application des classes color-* pour définir --color
+.color-primary { --color: var(--color-primary-500); }
+.color-secondary { --color: var(--color-secondary-500); }
+.color-accent { --color: var(--color-accent-500); }
+.color-info { --color: var(--color-info-500); }
+.color-success { --color: var(--color-success-500); }
+.color-warning { --color: var(--color-warning-500); }
+.color-error { --color: var(--color-error-500); }
+.color-neutral { --color: var(--color-neutral-500); }
 
 // Styles pour les tailles DaisyUI
 .filter-xs .btn {

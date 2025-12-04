@@ -90,7 +90,7 @@ function onInput(e) {
 
 <style scoped lang="scss">
 // Styles spécifiques pour RangeCore
-// Utilisation maximale de Tailwind/DaisyUI, CSS custom minimal
+// Utilisation des classes utilitaires glassmorphisme et var(--color) pour les couleurs
 
 input[type="range"].range {
     // Styles de base pour tous les ranges
@@ -100,14 +100,15 @@ input[type="range"].range {
     appearance: none;
     width: 100%;
     height: 6px;
-    background: #e5e7eb;
     border-radius: 3px;
     border: none;
+    --color: var(--color-primary-500); // Couleur par défaut (sera surchargée par color-{name})
+    background-color: color-mix(in srgb, var(--color) 10%, transparent);
     
     // États de focus
     &:focus {
         outline: none;
-        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        box-shadow: 0 0 0 3px color-mix(in srgb, var(--color) 20%, transparent);
     }
     
     // États disabled
@@ -116,20 +117,21 @@ input[type="range"].range {
         cursor: not-allowed;
     }
     
-    // Thumb (curseur)
+    // Thumb (curseur) - utilise var(--color)
     &::-webkit-slider-thumb {
         appearance: none;
         width: 20px;
         height: 20px;
-        background: var(--color-primary, #3b82f6);
+        background: var(--color);
         border-radius: 50%;
         cursor: pointer;
         border: 2px solid white;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        box-shadow: 0 2px 4px color-mix(in srgb, var(--color) 30%, transparent);
         transition: all 0.2s ease-in-out;
         
         &:hover {
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+            box-shadow: 0 4px 8px color-mix(in srgb, var(--color) 40%, transparent);
+            transform: scale(1.1);
         }
     }
     
@@ -137,213 +139,150 @@ input[type="range"].range {
         appearance: none;
         width: 20px;
         height: 20px;
-        background: var(--color-primary, #3b82f6);
+        background: var(--color);
         border-radius: 50%;
         cursor: pointer;
         border: 2px solid white;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        box-shadow: 0 2px 4px color-mix(in srgb, var(--color) 30%, transparent);
         transition: all 0.2s ease-in-out;
         
         &:hover {
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+            box-shadow: 0 4px 8px color-mix(in srgb, var(--color) 40%, transparent);
+            transform: scale(1.1);
         }
     }
     
-    // Track (piste)
+    // Track (piste) - utilise var(--color) avec transparence
     &::-webkit-slider-track {
-        background: #e5e7eb;
+        background-color: color-mix(in srgb, var(--color) 10%, transparent);
         border-radius: 3px;
         height: 6px;
     }
     
     &::-moz-range-track {
-        background: #e5e7eb;
+        background-color: color-mix(in srgb, var(--color) 10%, transparent);
         border-radius: 3px;
         height: 6px;
         border: none;
     }
     
-    // Variant Glass - Effet de verre
-    &.bg-transparent.border.border-gray-300 {
-        background: rgba(255, 255, 255, 0.1);
-        backdrop-filter: blur(10px);
-        border-color: rgba(255, 255, 255, 0.2);
-        box-shadow: 
-            0 4px 6px -1px rgba(0, 0, 0, 0.1),
-            0 2px 4px -1px rgba(0, 0, 0, 0.06),
-            inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    // Variant Glass - Effet glassmorphisme
+    &.bg-transparent.border {
+        @apply border-glass-md box-glass-md;
+        border-color: color-mix(in srgb, var(--color) 30%, transparent);
+        background-color: color-mix(in srgb, var(--color) 10%, transparent);
         
         &:hover {
-            box-shadow: 
-                0 10px 15px -3px rgba(0, 0, 0, 0.1),
-                0 4px 6px -2px rgba(0, 0, 0, 0.05),
-                inset 0 1px 0 rgba(255, 255, 255, 0.2);
-            border-color: rgba(255, 255, 255, 0.3);
+            @apply border-glass-lg box-glass-lg;
+            border-color: color-mix(in srgb, var(--color) 50%, transparent);
+            background-color: color-mix(in srgb, var(--color) 15%, transparent);
         }
         
         &::-webkit-slider-thumb {
-            background: var(--color-primary, #3b82f6);
-            border-color: rgba(255, 255, 255, 0.8);
+            background: var(--color);
+            border-color: color-mix(in srgb, white 80%, transparent);
             box-shadow: 
-                0 2px 4px rgba(0, 0, 0, 0.1),
-                inset 0 1px 0 rgba(255, 255, 255, 0.2);
+                0 2px 4px color-mix(in srgb, var(--color) 30%, transparent),
+                inset 0 1px 0 color-mix(in srgb, white 20%, transparent);
         }
         
         &::-moz-range-thumb {
-            background: var(--color-primary, #3b82f6);
-            border-color: rgba(255, 255, 255, 0.8);
+            background: var(--color);
+            border-color: color-mix(in srgb, white 80%, transparent);
             box-shadow: 
-                0 2px 4px rgba(0, 0, 0, 0.1),
-                inset 0 1px 0 rgba(255, 255, 255, 0.2);
+                0 2px 4px color-mix(in srgb, var(--color) 30%, transparent),
+                inset 0 1px 0 color-mix(in srgb, white 20%, transparent);
+        }
+        
+        &::-webkit-slider-track {
+            background-color: color-mix(in srgb, var(--color) 10%, transparent);
+        }
+        
+        &::-moz-range-track {
+            background-color: color-mix(in srgb, var(--color) 10%, transparent);
         }
     }
     
     // Variant Dash - Style pointillé
-    &.border-dashed.border-2 {
-        background: rgba(255, 255, 255, 0.05);
+    &.border-dashed {
+        @apply border-glass-sm;
+        border-style: dashed;
+        border-width: 2px;
+        background-color: color-mix(in srgb, var(--color) 5%, transparent);
         
         &:hover {
-            background: rgba(255, 255, 255, 0.1);
+            @apply border-glass-md;
+            background-color: color-mix(in srgb, var(--color) 10%, transparent);
         }
         
         &::-webkit-slider-thumb {
-            background: var(--color-secondary, #8b5cf6);
+            background: var(--color);
         }
         
         &::-moz-range-thumb {
-            background: var(--color-secondary, #8b5cf6);
+            background: var(--color);
         }
     }
     
-    // Variant Outline - Bordure avec effet
+    // Variant Outline - Bordure visible
     &.border-2.bg-transparent {
+        @apply border-glass-md;
+        border-width: 2px;
+        background-color: transparent;
+        
         &:hover {
-            background: rgba(255, 255, 255, 0.05);
+            @apply border-glass-lg;
+            background-color: color-mix(in srgb, var(--color) 5%, transparent);
         }
         
         &::-webkit-slider-thumb {
-            background: var(--color-success, #10b981);
-            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+            background: var(--color);
+            box-shadow: 0 0 0 3px color-mix(in srgb, var(--color) 20%, transparent);
         }
         
         &::-moz-range-thumb {
-            background: var(--color-success, #10b981);
-            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+            background: var(--color);
+            box-shadow: 0 0 0 3px color-mix(in srgb, var(--color) 20%, transparent);
         }
     }
     
-    // Variant Ghost - Fond invisible
+    // Variant Ghost - Transparent
     &.border.border-transparent.bg-transparent {
+        background-color: transparent;
+        border-color: transparent;
+        
         &:hover {
-            background: rgba(255, 255, 255, 0.05);
-            border-color: rgba(255, 255, 255, 0.1);
+            background-color: color-mix(in srgb, var(--color) 5%, transparent);
+            border-color: color-mix(in srgb, var(--color) 10%, transparent);
         }
         
         &::-webkit-slider-thumb {
-            background: var(--color-neutral, #6b7280);
+            background: var(--color);
         }
         
         &::-moz-range-thumb {
-            background: var(--color-neutral, #6b7280);
+            background: var(--color);
         }
     }
     
-    // Variant Soft - Style doux
-    &.border-b-2.border-gray-300.bg-transparent.rounded-none {
-        background: rgba(255, 255, 255, 0.05);
+    // Variant Soft - Bordure inférieure uniquement
+    &.border-b-2.bg-transparent.rounded-none {
+        @apply border-glass-b-md;
         border-bottom-width: 2px;
+        border-radius: 0;
+        background-color: transparent;
         
         &:hover {
-            background: rgba(255, 255, 255, 0.1);
+            @apply border-glass-b-lg;
+            background-color: color-mix(in srgb, var(--color) 5%, transparent);
         }
         
         &::-webkit-slider-thumb {
-            background: var(--color-accent, #f59e0b);
+            background: var(--color);
         }
         
         &::-moz-range-thumb {
-            background: var(--color-accent, #f59e0b);
-        }
-    }
-    
-    // Styles pour les couleurs DaisyUI
-    &.range-primary {
-        &::-webkit-slider-thumb {
-            background: var(--color-primary, #3b82f6);
-        }
-        
-        &::-moz-range-thumb {
-            background: var(--color-primary, #3b82f6);
-        }
-    }
-    
-    &.range-secondary {
-        &::-webkit-slider-thumb {
-            background: var(--color-secondary, #8b5cf6);
-        }
-        
-        &::-moz-range-thumb {
-            background: var(--color-secondary, #8b5cf6);
-        }
-    }
-    
-    &.range-accent {
-        &::-webkit-slider-thumb {
-            background: var(--color-accent, #f59e0b);
-        }
-        
-        &::-moz-range-thumb {
-            background: var(--color-accent, #f59e0b);
-        }
-    }
-    
-    &.range-info {
-        &::-webkit-slider-thumb {
-            background: var(--color-info, #06b6d4);
-        }
-        
-        &::-moz-range-thumb {
-            background: var(--color-info, #06b6d4);
-        }
-    }
-    
-    &.range-success {
-        &::-webkit-slider-thumb {
-            background: var(--color-success, #10b981);
-        }
-        
-        &::-moz-range-thumb {
-            background: var(--color-success, #10b981);
-        }
-    }
-    
-    &.range-warning {
-        &::-webkit-slider-thumb {
-            background: var(--color-warning, #f59e0b);
-        }
-        
-        &::-moz-range-thumb {
-            background: var(--color-warning, #f59e0b);
-        }
-    }
-    
-    &.range-error {
-        &::-webkit-slider-thumb {
-            background: var(--color-error, #ef4444);
-        }
-        
-        &::-moz-range-thumb {
-            background: var(--color-error, #ef4444);
-        }
-    }
-    
-    &.range-neutral {
-        &::-webkit-slider-thumb {
-            background: var(--color-neutral, #6b7280);
-        }
-        
-        &::-moz-range-thumb {
-            background: var(--color-neutral, #6b7280);
+            background: var(--color);
         }
     }
     
@@ -357,7 +296,7 @@ input[type="range"].range {
     }
 }
 
-// Styles pour les tailles DaisyUI
+// Styles pour les tailles DaisyUI (conservés car spécifiques au range)
 .range-xs {
     height: 4px;
     
@@ -428,29 +367,13 @@ input[type="range"].range {
     }
 }
 
-// Styles pour les labels inline
-.label-text {
-    // Labels inline pour les ranges
-    transition: all 0.2s ease-in-out;
-    font-weight: 500;
-    
-    &:hover {
-        opacity: 0.8;
-    }
-}
-
-// Styles pour les labels flottants
-.floating-label {
-    // Label flottant pour les ranges
-    position: relative;
-    
-    .label-text {
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        pointer-events: none;
-        transition: all 0.2s ease-in-out;
-    }
-}
+// Application des classes color-* pour définir --color
+.color-primary { --color: var(--color-primary-500); }
+.color-secondary { --color: var(--color-secondary-500); }
+.color-accent { --color: var(--color-accent-500); }
+.color-info { --color: var(--color-info-500); }
+.color-success { --color: var(--color-success-500); }
+.color-warning { --color: var(--color-warning-500); }
+.color-error { --color: var(--color-error-500); }
+.color-neutral { --color: var(--color-neutral-500); }
 </style>

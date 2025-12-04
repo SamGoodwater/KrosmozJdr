@@ -43,8 +43,9 @@ const props = defineProps({
     }
 });
 
-// Modal d'édition
+// Modals
 const editModalOpen = ref(false);
+const createSectionModalOpen = ref(false);
 
 // Utiliser le modèle Page pour normaliser l'accès aux données
 const pageModel = computed(() => {
@@ -69,6 +70,20 @@ const handleCloseEditModal = () => {
 const handlePageDeleted = () => {
     // Rediriger vers la liste des pages après suppression
     window.location.href = route('pages.index');
+};
+
+const handleOpenCreateSectionModal = () => {
+    createSectionModalOpen.value = true;
+};
+
+const handleCloseCreateSectionModal = () => {
+    createSectionModalOpen.value = false;
+};
+
+const handleSectionCreated = () => {
+    createSectionModalOpen.value = false;
+    // Recharger la page pour afficher la nouvelle section
+    window.location.reload();
 };
 
 /**
@@ -123,6 +138,28 @@ const sortedSections = computed(() => {
         <!-- Message si aucune section -->
         <div v-else class="text-center py-12 text-base-content/50">
             <p>Aucune section disponible pour cette page.</p>
+            <Btn 
+                v-if="canEdit" 
+                @click="handleOpenCreateSectionModal" 
+                color="primary" 
+                variant="outline"
+                class="mt-4"
+            >
+                <i class="fa-solid fa-plus mr-2"></i>
+                Ajouter une section
+            </Btn>
+        </div>
+
+        <!-- Bouton d'ajout de section (visible si sections existent) -->
+        <div v-if="sortedSections.length > 0 && canEdit" class="flex justify-center mt-8">
+            <Btn 
+                @click="handleOpenCreateSectionModal" 
+                color="primary" 
+                variant="outline"
+            >
+                <i class="fa-solid fa-plus mr-2"></i>
+                Ajouter une section
+            </Btn>
         </div>
 
         <!-- Modal d'édition -->
@@ -133,6 +170,14 @@ const sortedSections = computed(() => {
             :pages="pages"
             @close="handleCloseEditModal"
             @deleted="handlePageDeleted"
+        />
+
+        <!-- Modal de création de section -->
+        <CreateSectionModal
+            :open="createSectionModalOpen"
+            :page-id="pageModel?.id"
+            @close="handleCloseCreateSectionModal"
+            @created="handleSectionCreated"
         />
     </Container>
 </template>

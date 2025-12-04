@@ -450,6 +450,7 @@ const roleValidation = computed(() => {
                             variant="glass"
                             color="primary"
                             label="Mot de passe actuel"
+                            autocomplete="current-password"
                             :validation="currentPasswordValidation"
                             @keyup.enter="updatePassword"
                         />
@@ -461,6 +462,7 @@ const roleValidation = computed(() => {
                             variant="glass"
                             color="primary"
                             label="Nouveau mot de passe"
+                            autocomplete="new-password"
                             :validation="passwordValidation"
                             @keyup.enter="updatePassword"
                         />
@@ -472,6 +474,7 @@ const roleValidation = computed(() => {
                             variant="glass"
                             color="primary"
                             label="Confirmation du mot de passe"
+                            autocomplete="new-password"
                             :validation="passwordConfirmationValidation"
                             @keyup.enter="updatePassword"
                         />

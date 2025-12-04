@@ -7,6 +7,7 @@ use App\Http\Requests\Entity\StoreScenarioRequest;
 use App\Http\Requests\Entity\UpdateScenarioRequest;
 use App\Models\Entity\Scenario;
 use App\Http\Resources\Entity\ScenarioResource;
+use App\Services\PdfService;
 use Inertia\Inertia;
 
 class ScenarioController extends Controller
@@ -264,5 +265,43 @@ class ScenarioController extends Controller
         
         return redirect()->back()
             ->with('success', 'Panoplies du scénario mises à jour avec succès.');
+    }
+
+    /**
+     * Télécharge un PDF pour un ou plusieurs scenarios.
+     * 
+     * @param Scenario|null $scenario Le scenario unique (si un seul)
+     * @return \Illuminate\Http\Response
+     */
+    public function downloadPdf(?Scenario $scenario = null)
+    {
+        $ids = request()->get('ids');
+        
+        if (!empty($ids)) {
+            if (is_string($ids)) {
+                $ids = explode(',', $ids);
+            }
+            
+            if (is_array($ids) && count($ids) > 0) {
+                $scenarios = Scenario::whereIn('id', $ids)->get();
+                $this->authorize('viewAny', Scenario::class);
+                
+                $pdf = PdfService::generateForEntities($scenarios, 'scenario');
+                $filename = 'scenarios-' . now()->format('Y-m-d-His') . '.pdf';
+                
+                return $pdf->download($filename);
+            }
+        }
+        
+        if (!$scenario) {
+            abort(404);
+        }
+        
+        $this->authorize('view', $scenario);
+        
+        $pdf = PdfService::generateForEntity($scenario, 'scenario');
+        $filename = 'scenario-' . $scenario->id . '-' . now()->format('Y-m-d-His') . '.pdf';
+        
+        return $pdf->download($filename);
     }
 }

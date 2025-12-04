@@ -246,7 +246,7 @@ onUnmounted(() => {
                     :aria-label="'Fermer la notification'"
                 >
                     <template #content>
-                        <Icon source="fa-xmark" size="xs" />
+                        <Icon source="fa-xmark" alt="Fermer" size="xs" />
                         </template>
                     </Btn>
             </Tooltip>

@@ -268,7 +268,16 @@ export default function useInputActions({
 
   // --- FONCTIONS UTILITAIRES ---
   function focus() {
-    if (inputRef.value) inputRef.value.focus()
+    if (inputRef.value) {
+      // inputRef.value peut être un composant Vue ou un élément DOM
+      if (typeof inputRef.value.focus === 'function') {
+        inputRef.value.focus();
+      } else if (inputRef.value.$el && typeof inputRef.value.$el.focus === 'function') {
+        inputRef.value.$el.focus();
+      } else if (inputRef.value instanceof HTMLElement && typeof inputRef.value.focus === 'function') {
+        inputRef.value.focus();
+      }
+    }
   }
 
   // --- MAPPING DES ACTIONS ---

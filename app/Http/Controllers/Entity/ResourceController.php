@@ -7,6 +7,7 @@ use App\Http\Requests\Entity\StoreResourceRequest;
 use App\Http\Requests\Entity\UpdateResourceRequest;
 use App\Models\Entity\Resource;
 use App\Http\Resources\Entity\ResourceResource;
+use App\Services\PdfService;
 use Inertia\Inertia;
 
 class ResourceController extends Controller
@@ -102,5 +103,43 @@ class ResourceController extends Controller
     public function delete(Resource $resource)
     {
         //
+    }
+
+    /**
+     * Télécharge un PDF pour un ou plusieurs resources.
+     * 
+     * @param Resource|null $resource La resource unique (si une seule)
+     * @return \Illuminate\Http\Response
+     */
+    public function downloadPdf(?Resource $resource = null)
+    {
+        $ids = request()->get('ids');
+        
+        if (!empty($ids)) {
+            if (is_string($ids)) {
+                $ids = explode(',', $ids);
+            }
+            
+            if (is_array($ids) && count($ids) > 0) {
+                $resources = Resource::whereIn('id', $ids)->get();
+                $this->authorize('viewAny', Resource::class);
+                
+                $pdf = PdfService::generateForEntities($resources, 'resource');
+                $filename = 'resources-' . now()->format('Y-m-d-His') . '.pdf';
+                
+                return $pdf->download($filename);
+            }
+        }
+        
+        if (!$resource) {
+            abort(404);
+        }
+        
+        $this->authorize('view', $resource);
+        
+        $pdf = PdfService::generateForEntity($resource, 'resource');
+        $filename = 'resource-' . $resource->id . '-' . now()->format('Y-m-d-His') . '.pdf';
+        
+        return $pdf->download($filename);
     }
 }

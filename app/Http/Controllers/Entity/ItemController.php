@@ -8,6 +8,7 @@ use App\Http\Requests\Entity\UpdateItemRequest;
 use App\Http\Requests\Entity\UpdateItemResourcesRequest;
 use App\Models\Entity\Item;
 use App\Http\Resources\Entity\ItemResource;
+use App\Services\PdfService;
 use Inertia\Inertia;
 
 class ItemController extends Controller
@@ -147,5 +148,47 @@ class ItemController extends Controller
         
         return redirect()->back()
             ->with('success', 'Ressources de l\'objet mises à jour avec succès.');
+    }
+
+    /**
+     * Télécharge un PDF pour un ou plusieurs items.
+     * 
+     * @param Item|null $item L'item unique (si un seul)
+     * @return \Illuminate\Http\Response
+     */
+    public function downloadPdf(?Item $item = null)
+    {
+        // Si des IDs sont fournis dans la query string, on peut télécharger plusieurs items
+        $ids = request()->get('ids');
+        
+        if (!empty($ids)) {
+            // Convertir en tableau si c'est une chaîne
+            if (is_string($ids)) {
+                $ids = explode(',', $ids);
+            }
+            
+            if (is_array($ids) && count($ids) > 0) {
+                // Génération pour plusieurs items
+                $items = Item::whereIn('id', $ids)->get();
+                $this->authorize('viewAny', Item::class);
+                
+                $pdf = PdfService::generateForEntities($items, 'item');
+                $filename = 'items-' . now()->format('Y-m-d-His') . '.pdf';
+                
+                return $pdf->download($filename);
+            }
+        }
+        
+        // Génération pour un seul item
+        if (!$item) {
+            abort(404);
+        }
+        
+        $this->authorize('view', $item);
+        
+        $pdf = PdfService::generateForEntity($item, 'item');
+        $filename = 'item-' . $item->id . '-' . now()->format('Y-m-d-His') . '.pdf';
+        
+        return $pdf->download($filename);
     }
 }

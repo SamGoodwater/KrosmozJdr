@@ -17,6 +17,8 @@ import Route from '@/Pages/Atoms/action/Route.vue';
 import Btn from '@/Pages/Atoms/action/Btn.vue';
 import Tooltip from '@/Pages/Atoms/feedback/Tooltip.vue';
 import Badge from '@/Pages/Atoms/data-display/Badge.vue';
+import EntityActionsMenu from '@/Pages/Organismes/entity/EntityActionsMenu.vue';
+import { useCopyToClipboard } from '@/Composables/utils/useCopyToClipboard';
 
 const props = defineProps({
     entity: {
@@ -34,10 +36,33 @@ const props = defineProps({
     formatCell: {
         type: Function,
         default: null
+    },
+    showSelection: {
+        type: Boolean,
+        default: false
+    },
+    isSelected: {
+        type: Boolean,
+        default: false
+    },
+    showActionsMenu: {
+        type: Boolean,
+        default: false
+    },
+    disableQuickActions: {
+        type: Boolean,
+        default: false
+    },
+    isAdmin: {
+        type: Boolean,
+        default: false
     }
 });
 
-const emit = defineEmits(['view', 'edit', 'delete']);
+const emit = defineEmits(['view', 'edit', 'delete', 'select', 'deselect', 'quick-view', 'quick-edit', 'copy-link', 'download-pdf', 'refresh']);
+
+// Copie d'URL
+const { copyToClipboard } = useCopyToClipboard();
 
 /**
  * Récupère la valeur d'une cellule en gérant les instances de modèles et les objets bruts
@@ -103,6 +128,45 @@ const handleDelete = () => {
     emit('delete', props.entity);
 };
 
+/**
+ * Copie l'URL de l'entité dans le presse-papier
+ */
+const handleCopyLink = async () => {
+    const entityId = props.entity?.id ?? props.entity?.id ?? null;
+    if (!entityId) return;
+    
+    // Générer l'URL selon le type d'entité
+    const routeName = `entities.${props.entityType}.show`;
+    const routeParams = { [props.entityType]: entityId };
+    const url = `${window.location.origin}${route(routeName, routeParams)}`;
+    
+    await copyToClipboard(url, `Lien de l'entité copié !`);
+};
+
+const handleSelectionChange = (event) => {
+    if (event.target.checked) {
+        emit('select', props.entity);
+    } else {
+        emit('deselect', props.entity);
+    }
+};
+
+const handleQuickView = () => {
+    emit('quick-view', props.entity);
+};
+
+const handleQuickEdit = () => {
+    emit('quick-edit', props.entity);
+};
+
+const handleRefresh = () => {
+    emit('refresh', props.entity);
+};
+
+const handleDownloadPdf = () => {
+    emit('download-pdf', props.entity);
+};
+
 const getEntityRoute = () => {
     return `entities.${props.entityType}.show`;
 };
@@ -143,7 +207,16 @@ const getCanDelete = () => {
 </script>
 
 <template>
-    <tr class="hover:bg-base-200 transition-colors">
+    <tr class="hover:bg-base-200 transition-colors" :class="{ 'bg-primary/10': isSelected }">
+        <!-- Checkbox de sélection -->
+        <td v-if="showSelection" class="w-12">
+            <input
+                type="checkbox"
+                :checked="isSelected"
+                @change="handleSelectionChange"
+                class="checkbox checkbox-sm"
+            />
+        </td>
         <td v-for="column in columns" :key="column.key" 
             :class="{ 'text-center font-semibold': column.isMain }">
             <!-- Colonne principale (nom avec lien) -->
@@ -167,6 +240,11 @@ const getCanDelete = () => {
                     <Tooltip v-if="getCanUpdate()" content="Éditer" placement="top">
                         <Btn size="sm" variant="ghost" @click="handleEdit">
                             <i class="fa-solid fa-pen"></i>
+                        </Btn>
+                    </Tooltip>
+                    <Tooltip content="Copier le lien" placement="top">
+                        <Btn size="sm" variant="ghost" @click="handleCopyLink">
+                            <i class="fa-solid fa-link"></i>
                         </Btn>
                     </Tooltip>
                     <Tooltip v-if="getCanDelete()" content="Supprimer" placement="top">

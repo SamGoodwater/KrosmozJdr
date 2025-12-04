@@ -19,6 +19,7 @@ Route::prefix('entities/creatures')->name('entities.creatures.')->middleware('au
     Route::patch('/{creature}/resources', [CreatureController::class, 'updateResources'])->name('updateResources');
     Route::patch('/{creature}/consumables', [CreatureController::class, 'updateConsumables'])->name('updateConsumables');
     Route::patch('/{creature}/spells', [CreatureController::class, 'updateSpells'])->name('updateSpells');
+    Route::get('/{creature}/pdf', [CreatureController::class, 'downloadPdf'])->name('pdf');
     Route::patch('/{creature}', [CreatureController::class, 'update'])->name('update');
     Route::delete('/{creature}', [CreatureController::class, 'delete'])->name('delete');
 });

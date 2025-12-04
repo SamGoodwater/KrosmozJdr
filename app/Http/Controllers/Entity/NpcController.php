@@ -7,6 +7,7 @@ use App\Http\Requests\Entity\StoreNpcRequest;
 use App\Http\Requests\Entity\UpdateNpcRequest;
 use App\Models\Entity\Npc;
 use App\Http\Resources\Entity\NpcResource;
+use App\Services\PdfService;
 use Inertia\Inertia;
 
 class NpcController extends Controller
@@ -177,5 +178,43 @@ class NpcController extends Controller
         
         return redirect()->back()
             ->with('success', 'Campagnes du PNJ mises à jour avec succès.');
+    }
+
+    /**
+     * Télécharge un PDF pour un ou plusieurs npcs.
+     * 
+     * @param Npc|null $npc Le npc unique (si un seul)
+     * @return \Illuminate\Http\Response
+     */
+    public function downloadPdf(?Npc $npc = null)
+    {
+        $ids = request()->get('ids');
+        
+        if (!empty($ids)) {
+            if (is_string($ids)) {
+                $ids = explode(',', $ids);
+            }
+            
+            if (is_array($ids) && count($ids) > 0) {
+                $npcs = Npc::whereIn('id', $ids)->get();
+                $this->authorize('viewAny', Npc::class);
+                
+                $pdf = PdfService::generateForEntities($npcs, 'npc');
+                $filename = 'npcs-' . now()->format('Y-m-d-His') . '.pdf';
+                
+                return $pdf->download($filename);
+            }
+        }
+        
+        if (!$npc) {
+            abort(404);
+        }
+        
+        $this->authorize('view', $npc);
+        
+        $pdf = PdfService::generateForEntity($npc, 'npc');
+        $filename = 'npc-' . $npc->id . '-' . now()->format('Y-m-d-His') . '.pdf';
+        
+        return $pdf->download($filename);
     }
 }

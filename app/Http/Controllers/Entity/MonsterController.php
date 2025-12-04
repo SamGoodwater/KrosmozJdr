@@ -7,6 +7,7 @@ use App\Http\Requests\Entity\StoreMonsterRequest;
 use App\Http\Requests\Entity\UpdateMonsterRequest;
 use App\Models\Entity\Monster;
 use App\Http\Resources\Entity\MonsterResource;
+use App\Services\PdfService;
 use Inertia\Inertia;
 
 class MonsterController extends Controller
@@ -188,5 +189,43 @@ class MonsterController extends Controller
         
         return redirect()->back()
             ->with('success', 'Sorts d\'invocation du monstre mis à jour avec succès.');
+    }
+
+    /**
+     * Télécharge un PDF pour un ou plusieurs monsters.
+     * 
+     * @param Monster|null $monster Le monster unique (si un seul)
+     * @return \Illuminate\Http\Response
+     */
+    public function downloadPdf(?Monster $monster = null)
+    {
+        $ids = request()->get('ids');
+        
+        if (!empty($ids)) {
+            if (is_string($ids)) {
+                $ids = explode(',', $ids);
+            }
+            
+            if (is_array($ids) && count($ids) > 0) {
+                $monsters = Monster::whereIn('id', $ids)->get();
+                $this->authorize('viewAny', Monster::class);
+                
+                $pdf = PdfService::generateForEntities($monsters, 'monster');
+                $filename = 'monsters-' . now()->format('Y-m-d-His') . '.pdf';
+                
+                return $pdf->download($filename);
+            }
+        }
+        
+        if (!$monster) {
+            abort(404);
+        }
+        
+        $this->authorize('view', $monster);
+        
+        $pdf = PdfService::generateForEntity($monster, 'monster');
+        $filename = 'monster-' . $monster->id . '-' . now()->format('Y-m-d-His') . '.pdf';
+        
+        return $pdf->download($filename);
     }
 }

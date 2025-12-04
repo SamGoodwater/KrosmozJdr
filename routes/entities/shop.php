@@ -18,6 +18,7 @@ Route::prefix('entities/shops')->name('entities.shops.')->middleware('auth')->gr
     Route::patch('/{shop}/items', [ShopController::class, 'updateItems'])->name('updateItems');
     Route::patch('/{shop}/consumables', [ShopController::class, 'updateConsumables'])->name('updateConsumables');
     Route::patch('/{shop}/resources', [ShopController::class, 'updateResources'])->name('updateResources');
+    Route::get('/{shop}/pdf', [ShopController::class, 'downloadPdf'])->name('pdf');
     Route::patch('/{shop}', [ShopController::class, 'update'])->name('update');
     Route::delete('/{shop}', [ShopController::class, 'delete'])->name('delete');
 });

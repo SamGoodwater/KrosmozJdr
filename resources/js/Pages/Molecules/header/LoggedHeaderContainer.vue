@@ -96,16 +96,16 @@ const logout = () => {
                             <div class="w-full">
                                 <p class="text-xs text-subtitle/60 px-2 py-1 font-semibold text-center">Administration</p>
                                 <Route route="scrapping.index" class="w-full">
-                                    <div class="flex items-center gap-2 px-2 py-1.5 text-sm hover:bg-base-200 rounded cursor-pointer w-full">
-                                        <Icon source="fa-magnifying-glass" pack="solid" size="sm"/>
+                                    <Btn variant="ghost" size="md" class="w-full justify-start">
+                                        <Icon source="fa-magnifying-glass" pack="solid" size="sm" alt="Scrapping" class="mr-2"/>
                                         <span>Scrapping</span>
-                                    </div>
+                                    </Btn>
                                 </Route>
                                 <Route route="user.index" class="w-full">
-                                    <div class="flex items-center gap-2 px-2 py-1.5 text-sm hover:bg-base-200 rounded cursor-pointer w-full">
-                                        <Icon source="fa-users" pack="solid" size="sm"/>
+                                    <Btn variant="ghost" size="md" class="w-full justify-start">
+                                        <Icon source="fa-users" pack="solid" size="sm" alt="Utilisateurs" class="mr-2"/>
                                         <span>Utilisateurs</span>
-                                    </div>
+                                    </Btn>
                                 </Route>
                             </div>
                             <span class="border-glass-b-sm w-full h-px"></span>
@@ -114,10 +114,10 @@ const logout = () => {
                             <div class="w-full">
                                 <p v-if="!isAdmin" class="text-xs text-subtitle/60 px-2 py-1 font-semibold text-center">Gestion</p>
                                 <Route route="pages.index" class="w-full">
-                                    <div class="flex items-center gap-2 px-2 py-1.5 text-sm hover:bg-base-200 rounded cursor-pointer w-full">
-                                        <Icon source="fa-file-lines" pack="solid" size="sm"/>
+                                    <Btn variant="ghost" size="md" class="w-full justify-start">
+                                        <Icon source="fa-file-lines" pack="solid" size="sm" alt="Pages" class="mr-2"/>
                                         <span>Pages</span>
-                                    </div>
+                                    </Btn>
                                 </Route>
                             </div>
                             <span v-if="!isAdmin" class="border-glass-b-sm w-full h-px"></span>

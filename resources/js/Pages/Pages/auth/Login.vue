@@ -1,5 +1,5 @@
 <script setup>
-import { computed, ref, watch, nextTick } from 'vue';
+import { computed, ref, watch, nextTick, onMounted } from 'vue';
 import { Head, useForm } from '@inertiajs/vue3';
 import InputField from '@/Pages/Molecules/data-input/InputField.vue';
 import Btn from '@/Pages/Atoms/action/Btn.vue';
@@ -127,11 +127,6 @@ function submit() {
     form.post(route('login'), {
         preserveScroll: true,
         onError: (errors) => {
-            // Afficher les erreurs dans la console pour le débogage
-            console.error('Erreurs de connexion:', errors);
-            console.error('Type des erreurs:', typeof errors);
-            console.error('Clés des erreurs:', Object.keys(errors || {}));
-            
             // Déterminer le message d'erreur approprié
             let errorMessage = 'Ces identifiants ne correspondent pas à nos enregistrements.';
             
@@ -174,9 +169,7 @@ function submit() {
                     duration: 8000,
                     placement: 'top-right'
                 });
-                console.log('Notification d\'erreur affichée:', errorMessage);
             } catch (error) {
-                console.error('Erreur lors de l\'affichage de la notification:', error);
                 // Fallback : afficher une alerte si la notification échoue
                 alert(errorMessage);
             }
@@ -220,6 +213,15 @@ const isFormValid = computed(() => {
     return hasIdentifier && hasPassword;
 });
 
+// Focus programmatique sur le champ identifier au montage pour éviter le warning autofocus
+onMounted(() => {
+    nextTick(() => {
+        if (identifierField.value) {
+            identifierField.value.focus?.();
+        }
+    });
+});
+
 </script>
 
 <template>
@@ -247,7 +249,6 @@ const isFormValid = computed(() => {
                         type="text"
                         name="identifier"
                         required
-                        autofocus
                         autocomplete="username"
                         :validation-rules="identifierValidationRules"
                         :validation="identifierValidation"

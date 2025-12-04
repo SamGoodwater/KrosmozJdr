@@ -7,6 +7,7 @@ use App\Http\Requests\Entity\StoreConsumableRequest;
 use App\Http\Requests\Entity\UpdateConsumableRequest;
 use App\Models\Entity\Consumable;
 use App\Http\Resources\Entity\ConsumableResource;
+use App\Services\PdfService;
 use Inertia\Inertia;
 
 class ConsumableController extends Controller
@@ -102,5 +103,43 @@ class ConsumableController extends Controller
     public function delete(Consumable $consumable)
     {
         //
+    }
+
+    /**
+     * Télécharge un PDF pour un ou plusieurs consumables.
+     * 
+     * @param Consumable|null $consumable Le consumable unique (si un seul)
+     * @return \Illuminate\Http\Response
+     */
+    public function downloadPdf(?Consumable $consumable = null)
+    {
+        $ids = request()->get('ids');
+        
+        if (!empty($ids)) {
+            if (is_string($ids)) {
+                $ids = explode(',', $ids);
+            }
+            
+            if (is_array($ids) && count($ids) > 0) {
+                $consumables = Consumable::whereIn('id', $ids)->get();
+                $this->authorize('viewAny', Consumable::class);
+                
+                $pdf = PdfService::generateForEntities($consumables, 'consumable');
+                $filename = 'consumables-' . now()->format('Y-m-d-His') . '.pdf';
+                
+                return $pdf->download($filename);
+            }
+        }
+        
+        if (!$consumable) {
+            abort(404);
+        }
+        
+        $this->authorize('view', $consumable);
+        
+        $pdf = PdfService::generateForEntity($consumable, 'consumable');
+        $filename = 'consumable-' . $consumable->id . '-' . now()->format('Y-m-d-His') . '.pdf';
+        
+        return $pdf->download($filename);
     }
 }

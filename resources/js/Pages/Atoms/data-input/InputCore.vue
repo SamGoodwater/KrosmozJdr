@@ -145,12 +145,13 @@ const labelClasses = computed(() =>
 
 <style scoped lang="scss">
 // Styles spécifiques pour InputCore
-// Utilisation maximale de Tailwind/DaisyUI, CSS custom minimal
+// Utilisation des classes utilitaires glassmorphisme et var(--color) pour les couleurs
 
 .input {
     // Styles de base pour tous les inputs
     outline: none;
     transition: all 0.2s ease-in-out;
+    --color: var(--color-primary-500); // Couleur par défaut (sera surchargée par color-{name})
     
     // États de focus
     &:focus {
@@ -163,89 +164,105 @@ const labelClasses = computed(() =>
         cursor: not-allowed;
     }
     
-    // Variant Glass - Effet de verre
-    &.bg-transparent.border.border-gray-300 {
-        background: rgba(255, 255, 255, 0.1);
-        backdrop-filter: blur(10px);
-        border-color: rgba(255, 255, 255, 0.2);
-        box-shadow: 
-            0 4px 6px -1px rgba(0, 0, 0, 0.1),
-            0 2px 4px -1px rgba(0, 0, 0, 0.06),
-            inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    // Variant Glass - Effet glassmorphisme
+    // Utilise les classes utilitaires border-glass-* et box-glass-*
+    &.bg-transparent.border {
+        @apply border-glass-md box-glass-md;
+        
+        // Utilise var(--color) pour les couleurs dynamiques
+        border-color: color-mix(in srgb, var(--color) 30%, transparent);
+        background-color: color-mix(in srgb, var(--color) 10%, transparent);
         
         &:hover {
-            box-shadow: 
-                0 10px 15px -3px rgba(0, 0, 0, 0.1),
-                0 4px 6px -2px rgba(0, 0, 0, 0.05),
-                inset 0 1px 0 rgba(255, 255, 255, 0.2);
-            border-color: rgba(255, 255, 255, 0.3);
+            @apply border-glass-lg box-glass-lg;
+            border-color: color-mix(in srgb, var(--color) 50%, transparent);
+            background-color: color-mix(in srgb, var(--color) 15%, transparent);
+        }
+        
+        &:focus {
+            border-color: color-mix(in srgb, var(--color) 80%, transparent);
+            box-shadow: 0 0 0 3px color-mix(in srgb, var(--color) 20%, transparent);
         }
     }
     
     // Variant Dash - Style pointillé
-    &.border-dashed.border-2 {
-        background: rgba(255, 255, 255, 0.05);
+    &.border-dashed {
+        @apply border-glass-sm;
+        border-style: dashed;
+        border-width: 2px;
+        background-color: color-mix(in srgb, var(--color) 5%, transparent);
         
         &:hover {
-            background: rgba(255, 255, 255, 0.1);
+            @apply border-glass-md;
+            background-color: color-mix(in srgb, var(--color) 10%, transparent);
+        }
+        
+        &:focus {
+            border-color: color-mix(in srgb, var(--color) 60%, transparent);
+            box-shadow: 0 0 0 3px color-mix(in srgb, var(--color) 15%, transparent);
         }
     }
     
-    // Variant Outline - Bordure avec effet
+    // Variant Outline - Bordure visible
     &.border-2.bg-transparent {
+        @apply border-glass-md;
+        border-width: 2px;
+        background-color: transparent;
+        
         &:hover {
-            background: rgba(255, 255, 255, 0.05);
+            @apply border-glass-lg;
+            background-color: color-mix(in srgb, var(--color) 5%, transparent);
+        }
+        
+        &:focus {
+            border-color: color-mix(in srgb, var(--color) 80%, transparent);
+            box-shadow: 0 0 0 3px color-mix(in srgb, var(--color) 20%, transparent);
         }
     }
     
-    // Variant Ghost - Fond invisible
+    // Variant Ghost - Transparent
     &.border.border-transparent.bg-transparent {
+        background-color: transparent;
+        border-color: transparent;
+        
         &:hover {
-            background: rgba(255, 255, 255, 0.05);
-            border-color: rgba(255, 255, 255, 0.1);
+            background-color: color-mix(in srgb, var(--color) 5%, transparent);
+            border-color: color-mix(in srgb, var(--color) 10%, transparent);
+        }
+        
+        &:focus {
+            background-color: color-mix(in srgb, var(--color) 10%, transparent);
+            border-color: color-mix(in srgb, var(--color) 30%, transparent);
         }
     }
     
-    // Variant Soft - Style doux
-    &.border-b-2.border-gray-300.bg-transparent.rounded-none {
-        background: rgba(255, 255, 255, 0.05);
+    // Variant Soft - Bordure inférieure uniquement
+    &.border-b-2.bg-transparent.rounded-none {
+        @apply border-glass-b-md;
         border-bottom-width: 2px;
+        border-radius: 0;
+        background-color: transparent;
         
         &:hover {
-            background: rgba(255, 255, 255, 0.1);
-        }
-    }
-}
-
-// Styles spécifiques pour les types d'input spéciaux
-.range {
-    // Range inputs
-    &.range-primary {
-        &::-webkit-slider-thumb {
-            transition: all 0.2s ease-in-out;
+            @apply border-glass-b-lg;
+            background-color: color-mix(in srgb, var(--color) 5%, transparent);
         }
         
-        &::-moz-range-thumb {
-            transition: all 0.2s ease-in-out;
+        &:focus {
+            border-bottom-color: color-mix(in srgb, var(--color) 80%, transparent);
+            box-shadow: none;
         }
     }
 }
 
-.checkbox, .radio {
-    // Checkbox et Radio
-    &.checkbox-primary, &.radio-primary {
-        transition: all 0.2s ease-in-out;
-    }
-}
-
-.toggle {
-    // Toggle switches
-    &.toggle-primary {
-        transition: all 0.3s ease-in-out;
-        
-        &:checked {
-            transform: translateX(1.5rem);
-        }
-    }
-}
+// Application des classes color-* pour définir --color
+// Ces classes sont générées par useInputStyle via getInputStyle
+.color-primary { --color: var(--color-primary-500); }
+.color-secondary { --color: var(--color-secondary-500); }
+.color-accent { --color: var(--color-accent-500); }
+.color-info { --color: var(--color-info-500); }
+.color-success { --color: var(--color-success-500); }
+.color-warning { --color: var(--color-warning-500); }
+.color-error { --color: var(--color-error-500); }
+.color-neutral { --color: var(--color-neutral-500); }
 </style> 

@@ -583,6 +583,11 @@
         "name": "importantFields",
         "type": "Array",
         "desc": "- Liste des champs importants à afficher"
+      },
+      {
+        "name": "showActions",
+        "type": "Boolean",
+        "desc": "- Afficher les actions (défaut: true)"
       }
     ],
     "slots": [],
@@ -601,6 +606,11 @@
         "name": "entityType",
         "type": "String",
         "desc": "- Type d'entité"
+      },
+      {
+        "name": "showActions",
+        "type": "Boolean",
+        "desc": "- Afficher les actions (défaut: true)"
       }
     ],
     "slots": [],
@@ -619,6 +629,11 @@
         "name": "entityType",
         "type": "String",
         "desc": "- Type d'entité"
+      },
+      {
+        "name": "showActions",
+        "type": "Boolean",
+        "desc": "- Afficher les actions (défaut: true)"
       }
     ],
     "slots": [],
@@ -870,6 +885,16 @@
         "name": "sortOrder",
         "type": "String",
         "desc": "- Ordre de tri ('asc' | 'desc')"
+      },
+      {
+        "name": "visibleColumns",
+        "type": "Object",
+        "desc": "- Objet avec les colonnes visibles { key: boolean }"
+      },
+      {
+        "name": "showColumnToggle",
+        "type": "Boolean",
+        "desc": "- Afficher le menu de sélection des colonnes"
       }
     ],
     "slots": [],

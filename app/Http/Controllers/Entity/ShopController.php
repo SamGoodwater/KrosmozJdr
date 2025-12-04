@@ -7,6 +7,7 @@ use App\Http\Requests\Entity\StoreShopRequest;
 use App\Http\Requests\Entity\UpdateShopRequest;
 use App\Models\Entity\Shop;
 use App\Http\Resources\Entity\ShopResource;
+use App\Services\PdfService;
 use Inertia\Inertia;
 
 class ShopController extends Controller
@@ -272,5 +273,43 @@ class ShopController extends Controller
         
         return redirect()->back()
             ->with('success', 'Ressources de la boutique mises à jour avec succès.');
+    }
+
+    /**
+     * Télécharge un PDF pour un ou plusieurs shops.
+     * 
+     * @param Shop|null $shop Le shop unique (si un seul)
+     * @return \Illuminate\Http\Response
+     */
+    public function downloadPdf(?Shop $shop = null)
+    {
+        $ids = request()->get('ids');
+        
+        if (!empty($ids)) {
+            if (is_string($ids)) {
+                $ids = explode(',', $ids);
+            }
+            
+            if (is_array($ids) && count($ids) > 0) {
+                $shops = Shop::whereIn('id', $ids)->get();
+                $this->authorize('viewAny', Shop::class);
+                
+                $pdf = PdfService::generateForEntities($shops, 'shop');
+                $filename = 'shops-' . now()->format('Y-m-d-His') . '.pdf';
+                
+                return $pdf->download($filename);
+            }
+        }
+        
+        if (!$shop) {
+            abort(404);
+        }
+        
+        $this->authorize('view', $shop);
+        
+        $pdf = PdfService::generateForEntity($shop, 'shop');
+        $filename = 'shop-' . $shop->id . '-' . now()->format('Y-m-d-His') . '.pdf';
+        
+        return $pdf->download($filename);
     }
 }

@@ -35,7 +35,7 @@ const updateOption = (key, value) => {
     <details class="collapse collapse-arrow border border-base-300 bg-base-200/40">
         <summary class="collapse-title text-sm font-medium text-primary-100 py-2 px-4 min-h-0">
             <div class="flex items-center gap-2">
-                <Icon icon="fa-gear" pack="solid" class="text-primary-300 text-xs" />
+                <Icon source="fa-solid fa-gear" alt="Options" pack="solid" class="text-primary-300 text-xs" />
                 <span>Options d'import</span>
             </div>
         </summary>
@@ -48,7 +48,7 @@ const updateOption = (key, value) => {
                 >
                     <template #helper>
                         <Tooltip content="Force la récupération depuis DofusDB sans utiliser le cache">
-                            <Icon icon="fa-circle-question" pack="solid" class="text-primary-300 text-xs" />
+                            <Icon source="fa-solid fa-circle-question" alt="Aide" pack="solid" class="text-primary-300 text-xs" />
                         </Tooltip>
                     </template>
                 </CheckboxField>
@@ -60,7 +60,7 @@ const updateOption = (key, value) => {
                 >
                     <template #helper>
                         <Tooltip content="Met à jour l'entité même si elle existe déjà">
-                            <Icon icon="fa-circle-question" pack="solid" class="text-primary-300 text-xs" />
+                            <Icon source="fa-solid fa-circle-question" alt="Aide" pack="solid" class="text-primary-300 text-xs" />
                         </Tooltip>
                     </template>
                 </CheckboxField>
@@ -72,7 +72,7 @@ const updateOption = (key, value) => {
                 >
                     <template #helper>
                         <Tooltip content="Simule l'import sans sauvegarder en base de données">
-                            <Icon icon="fa-circle-question" pack="solid" class="text-primary-300 text-xs" />
+                            <Icon source="fa-solid fa-circle-question" alt="Aide" pack="solid" class="text-primary-300 text-xs" />
                         </Tooltip>
                     </template>
                 </CheckboxField>
@@ -84,7 +84,7 @@ const updateOption = (key, value) => {
                 >
                     <template #helper>
                         <Tooltip content="Valide les données sans les importer">
-                            <Icon icon="fa-circle-question" pack="solid" class="text-primary-300 text-xs" />
+                            <Icon source="fa-solid fa-circle-question" alt="Aide" pack="solid" class="text-primary-300 text-xs" />
                         </Tooltip>
                     </template>
                 </CheckboxField>
@@ -96,7 +96,7 @@ const updateOption = (key, value) => {
                 >
                     <template #helper>
                         <Tooltip content="Importe automatiquement les entités liées (sorts d'une classe, ressources d'un monstre, recettes d'un objet, etc.)">
-                            <Icon icon="fa-circle-question" pack="solid" class="text-primary-300 text-xs" />
+                            <Icon source="fa-solid fa-circle-question" alt="Aide" pack="solid" class="text-primary-300 text-xs" />
                         </Tooltip>
                     </template>
                 </CheckboxField>

@@ -7,6 +7,7 @@ use App\Http\Requests\Entity\StoreSpellRequest;
 use App\Http\Requests\Entity\UpdateSpellRequest;
 use App\Models\Entity\Spell;
 use App\Http\Resources\Entity\SpellResource;
+use App\Services\PdfService;
 use Inertia\Inertia;
 
 class SpellController extends Controller
@@ -167,5 +168,43 @@ class SpellController extends Controller
     public function delete(Spell $spell)
     {
         //
+    }
+
+    /**
+     * Télécharge un PDF pour un ou plusieurs spells.
+     * 
+     * @param Spell|null $spell Le spell unique (si un seul)
+     * @return \Illuminate\Http\Response
+     */
+    public function downloadPdf(?Spell $spell = null)
+    {
+        $ids = request()->get('ids');
+        
+        if (!empty($ids)) {
+            if (is_string($ids)) {
+                $ids = explode(',', $ids);
+            }
+            
+            if (is_array($ids) && count($ids) > 0) {
+                $spells = Spell::whereIn('id', $ids)->get();
+                $this->authorize('viewAny', Spell::class);
+                
+                $pdf = PdfService::generateForEntities($spells, 'spell');
+                $filename = 'spells-' . now()->format('Y-m-d-His') . '.pdf';
+                
+                return $pdf->download($filename);
+            }
+        }
+        
+        if (!$spell) {
+            abort(404);
+        }
+        
+        $this->authorize('view', $spell);
+        
+        $pdf = PdfService::generateForEntity($spell, 'spell');
+        $filename = 'spell-' . $spell->id . '-' . now()->format('Y-m-d-His') . '.pdf';
+        
+        return $pdf->download($filename);
     }
 }

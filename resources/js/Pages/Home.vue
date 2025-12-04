@@ -579,51 +579,54 @@ const demoIcons = [
                         <div class="card bg-base-100 shadow-xl">
                             <div class="card-body">
                                 <h3 class="card-title text-lg">Inputs de Base</h3>
-                                <div class="space-y-4">
-                                    <!-- Nom avec validation -->
-                                    <InputField
-                                        label="Nom complet"
-                                        v-model="testForm.name"
-                                        placeholder="Votre nom"
-                                        variant="glass"
-                                        :validation-rules="nameValidationRules"
-                                        helper="Minimum 3 caractères"
-                                    />
-                                    
-                                    <!-- Email avec validation -->
-                                    <InputField
-                                        label="Email"
-                                        type="email"
-                                        v-model="testForm.email"
-                                        placeholder="votre@email.com"
-                                        variant="glass"
-                                        :validation-rules="emailValidationRules"
-                                        helper="Format email valide requis"
-                                    />
-                                    
-                                    <!-- Mot de passe avec toggle -->
-                                    <InputField
-                                        label="Mot de passe"
-                                        type="password"
-                                        v-model="testForm.password"
-                                        placeholder="Votre mot de passe"
-                                        variant="glass"
-                                        :validation-rules="passwordValidationRules"
-                                        helper="Minimum 6 caractères avec chiffre"
-                                        :actions="['password']"
-                                    />
-                                    
-                                    <!-- Recherche avec actions -->
-                                    <InputField
-                                        label="Recherche"
-                                        type="search"
-                                        v-model="testForm.search"
-                                        placeholder="Rechercher..."
-                                        variant="glass"
-                                        :actions="['clear', 'copy']"
-                                        helper="Utilisez les actions contextuelles"
-                                    />
-                                </div>
+                                <form @submit.prevent>
+                                    <div class="space-y-4">
+                                        <!-- Nom avec validation -->
+                                        <InputField
+                                            label="Nom complet"
+                                            v-model="testForm.name"
+                                            placeholder="Votre nom"
+                                            variant="glass"
+                                            :validation-rules="nameValidationRules"
+                                            helper="Minimum 3 caractères"
+                                        />
+                                        
+                                        <!-- Email avec validation -->
+                                        <InputField
+                                            label="Email"
+                                            type="email"
+                                            v-model="testForm.email"
+                                            placeholder="votre@email.com"
+                                            variant="glass"
+                                            :validation-rules="emailValidationRules"
+                                            helper="Format email valide requis"
+                                        />
+                                        
+                                        <!-- Mot de passe avec toggle -->
+                                        <InputField
+                                            label="Mot de passe"
+                                            type="password"
+                                            v-model="testForm.password"
+                                            placeholder="Votre mot de passe"
+                                            variant="glass"
+                                            :validation-rules="passwordValidationRules"
+                                            helper="Minimum 6 caractères avec chiffre"
+                                            :actions="['password']"
+                                            autocomplete="new-password"
+                                        />
+                                        
+                                        <!-- Recherche avec actions -->
+                                        <InputField
+                                            label="Recherche"
+                                            type="search"
+                                            v-model="testForm.search"
+                                            placeholder="Rechercher..."
+                                            variant="glass"
+                                            :actions="['clear', 'copy']"
+                                            helper="Utilisez les actions contextuelles"
+                                        />
+                                    </div>
+                                </form>
                             </div>
                         </div>
 

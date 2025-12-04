@@ -7,6 +7,7 @@ use App\Http\Requests\Entity\StoreCreatureRequest;
 use App\Http\Requests\Entity\UpdateCreatureRequest;
 use App\Models\Entity\Creature;
 use App\Http\Resources\Entity\CreatureResource;
+use App\Services\PdfService;
 use Inertia\Inertia;
 
 class CreatureController extends Controller
@@ -255,5 +256,43 @@ class CreatureController extends Controller
         
         return redirect()->back()
             ->with('success', 'Sorts de la créature mis à jour avec succès.');
+    }
+
+    /**
+     * Télécharge un PDF pour un ou plusieurs creatures.
+     * 
+     * @param Creature|null $creature La creature unique (si une seule)
+     * @return \Illuminate\Http\Response
+     */
+    public function downloadPdf(?Creature $creature = null)
+    {
+        $ids = request()->get('ids');
+        
+        if (!empty($ids)) {
+            if (is_string($ids)) {
+                $ids = explode(',', $ids);
+            }
+            
+            if (is_array($ids) && count($ids) > 0) {
+                $creatures = Creature::whereIn('id', $ids)->get();
+                $this->authorize('viewAny', Creature::class);
+                
+                $pdf = PdfService::generateForEntities($creatures, 'creature');
+                $filename = 'creatures-' . now()->format('Y-m-d-His') . '.pdf';
+                
+                return $pdf->download($filename);
+            }
+        }
+        
+        if (!$creature) {
+            abort(404);
+        }
+        
+        $this->authorize('view', $creature);
+        
+        $pdf = PdfService::generateForEntity($creature, 'creature');
+        $filename = 'creature-' . $creature->id . '-' . now()->format('Y-m-d-His') . '.pdf';
+        
+        return $pdf->download($filename);
     }
 }
