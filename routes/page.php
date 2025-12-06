@@ -18,6 +18,9 @@ Route::prefix('pages')->name('pages.')->group(function () {
 
     // Authentifié uniquement (la policy gère les droits fins)
     Route::middleware('auth')->group(function () {
+        // Réorganisation des pages (drag & drop) - doit être avant les routes avec paramètres
+        Route::patch('/reorder', [PageController::class, 'reorder'])->name('reorder');
+        
         // Edition, update, suppression, création : droits gérés par policy (plus de middleware 'role')
         Route::get('/{page}/edit', [PageController::class, 'edit'])->name('edit');
         Route::patch('/{page}', [PageController::class, 'update'])->name('update');

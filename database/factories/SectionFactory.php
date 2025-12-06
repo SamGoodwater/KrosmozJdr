@@ -19,7 +19,7 @@ class SectionFactory extends Factory
      */
     public function definition(): array
     {
-        $type = $this->faker->randomElement([
+        $template = $this->faker->randomElement([
             SectionType::TEXT->value,
             SectionType::IMAGE->value,
             SectionType::GALLERY->value,
@@ -27,45 +27,46 @@ class SectionFactory extends Factory
             SectionType::ENTITY_TABLE->value,
         ]);
 
-        // Générer des params selon le type
-        $params = match($type) {
+        // Générer des settings et data selon le template
+        [$settings, $data] = match($template) {
             SectionType::TEXT->value => [
-                'content' => $this->faker->paragraph(),
-                'align' => $this->faker->randomElement(['left', 'center', 'right']),
-                'size' => $this->faker->randomElement(['sm', 'md', 'lg', 'xl']),
+                ['align' => $this->faker->randomElement(['left', 'center', 'right']), 'size' => $this->faker->randomElement(['sm', 'md', 'lg', 'xl'])],
+                ['content' => $this->faker->paragraph()],
             ],
             SectionType::IMAGE->value => [
-                'src' => $this->faker->imageUrl(),
-                'alt' => $this->faker->sentence(3),
-                'caption' => $this->faker->optional()->sentence(),
-                'align' => $this->faker->randomElement(['left', 'center', 'right']),
-                'size' => $this->faker->randomElement(['sm', 'md', 'lg', 'xl', 'full']),
+                ['align' => $this->faker->randomElement(['left', 'center', 'right']), 'size' => $this->faker->randomElement(['sm', 'md', 'lg', 'xl', 'full'])],
+                ['src' => $this->faker->imageUrl(), 'alt' => $this->faker->sentence(3), 'caption' => $this->faker->optional()->sentence()],
             ],
             SectionType::GALLERY->value => [
-                'images' => [],
-                'columns' => $this->faker->randomElement([2, 3, 4]),
-                'gap' => $this->faker->randomElement(['sm', 'md', 'lg']),
+                ['columns' => $this->faker->randomElement([2, 3, 4]), 'gap' => $this->faker->randomElement(['sm', 'md', 'lg'])],
+                ['images' => []],
             ],
             SectionType::VIDEO->value => [
-                'src' => $this->faker->url(),
-                'type' => $this->faker->randomElement(['youtube', 'vimeo', 'direct']),
-                'autoplay' => $this->faker->boolean(20),
-                'controls' => $this->faker->boolean(80),
+                ['autoplay' => $this->faker->boolean(20), 'controls' => $this->faker->boolean(80)],
+                ['src' => $this->faker->url(), 'type' => $this->faker->randomElement(['youtube', 'vimeo', 'direct'])],
             ],
             SectionType::ENTITY_TABLE->value => [
-                'entity' => $this->faker->randomElement(['item', 'creature', 'spell']),
-                'filters' => [],
-                'columns' => [],
+                [],
+                ['entity' => $this->faker->randomElement(['item', 'creature', 'spell']), 'filters' => [], 'columns' => []],
             ],
-            default => ['content' => $this->faker->paragraph()],
+            default => [[], ['content' => $this->faker->paragraph()]],
         };
 
         return [
             'page_id' => null, // Géré dans le seeder
+            'title' => $this->faker->optional()->sentence(3),
+            'slug' => $this->faker->optional()->slug(),
             'order' => $this->faker->numberBetween(1, 10),
-            'type' => $type,
-            'params' => $params,
+            'template' => $template,
+            'settings' => $settings,
+            'data' => $data,
             'is_visible' => $this->faker->randomElement([
+                Visibility::GUEST->value,
+                Visibility::USER->value,
+                Visibility::GAME_MASTER->value,
+                Visibility::ADMIN->value,
+            ]),
+            'can_edit_role' => $this->faker->randomElement([
                 Visibility::GUEST->value,
                 Visibility::USER->value,
                 Visibility::GAME_MASTER->value,

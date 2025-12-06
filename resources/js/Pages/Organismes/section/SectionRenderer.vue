@@ -4,9 +4,10 @@
  * 
  * @description
  * Composant organisme pour rendre dynamiquement une section selon son type.
- * - Route vers le bon template de section selon le type
- * - Passe les params de la section au template
- * - Gère les erreurs si le type n'existe pas
+ * - Gère le header réutilisable (SectionHeader)
+ * - Bascule entre mode lecture et écriture
+ * - Charge dynamiquement les templates read/edit
+ * - Gère les actions : copier lien, basculer mode, paramètres
  * 
  * @props {Object} section - Données de la section
  * @props {Object|null} user - Utilisateur connecté (optionnel)
@@ -14,16 +15,14 @@
  * @example
  * <SectionRenderer :section="section" :user="user" />
  */
-import { computed, ref } from 'vue';
+import { computed, ref, watch, shallowRef } from 'vue';
 import { router } from '@inertiajs/vue3';
-import SectionText from './templates/SectionText.vue';
-import SectionImage from './templates/SectionImage.vue';
-import SectionGallery from './templates/SectionGallery.vue';
-import SectionVideo from './templates/SectionVideo.vue';
-import SectionEntityTable from './templates/SectionEntityTable.vue';
-import Icon from '@/Pages/Atoms/data-display/Icon.vue';
+import SectionHeader from '@/Pages/Molecules/section/SectionHeader.vue';
+import SectionParamsModal from './modals/SectionParamsModal.vue';
 import { Section } from '@/Models';
-import SectionParamsModal from './SectionParamsModal.vue';
+import { useSectionMode } from './composables/useSectionMode';
+import { useSectionSave } from './composables/useSectionSave';
+import { useSectionTemplates } from './composables/useSectionTemplates';
 import { useCopyToClipboard } from '@/Composables/utils/useCopyToClipboard';
 
 const props = defineProps({
@@ -31,38 +30,13 @@ const props = defineProps({
         type: Object,
         required: true,
         validator: (value) => {
-            return value && typeof value === 'object' && 'id' in value && 'type' in value;
+            return value && typeof value === 'object' && 'id' in value && ('template' in value || 'type' in value);
         }
     },
     user: {
         type: Object,
         default: null
     }
-});
-
-/**
- * Composant template à charger selon le type
- */
-const templateComponent = computed(() => {
-    const type = props.section.type;
-    
-    // Mapping des types vers les composants
-    const typeMap = {
-        'text': SectionText,
-        'image': SectionImage,
-        'gallery': SectionGallery,
-        'video': SectionVideo,
-        'entity_table': SectionEntityTable
-    };
-    
-    return typeMap[type] || null;
-});
-
-/**
- * Params de la section (avec valeurs par défaut)
- */
-const sectionParams = computed(() => {
-    return props.section.params || {};
 });
 
 /**
@@ -81,16 +55,94 @@ const canEdit = computed(() => {
     return sectionModel.value.canUpdate;
 });
 
-// États pour les modals et hover
+// États
 const isHovered = ref(false);
 const paramsModalOpen = ref(false);
+const templateComponent = shallowRef(null);
+const isLoadingTemplate = ref(false);
+
+// Composables
+const sectionId = computed(() => sectionModel.value?.id);
+const { isEditing, toggleEditMode } = useSectionMode(sectionId);
+const { saveSectionImmediate } = useSectionSave();
+const { getTemplateComponent } = useSectionTemplates();
+const { copyToClipboard } = useCopyToClipboard();
 
 /**
- * Gère l'ouverture du modal d'édition
+ * Template de la section
  */
-const handleEdit = () => {
+const templateValue = computed(() => {
+  return props.section.template || props.section.type || 'text';
+});
+
+/**
+ * Données de la section
+ */
+const sectionData = computed(() => {
+  return props.section.data || {};
+});
+
+/**
+ * Paramètres de la section
+ */
+const sectionSettings = computed(() => {
+  return props.section.settings || {};
+});
+
+/**
+ * Charge le composant template selon le mode
+ */
+const loadTemplateComponent = async () => {
+  if (!templateValue.value) return;
+  
+  isLoadingTemplate.value = true;
+  try {
+    const mode = isEditing.value ? 'edit' : 'read';
+    const component = await getTemplateComponent(templateValue.value, mode);
+    templateComponent.value = component;
+  } catch (error) {
+    console.error('Erreur lors du chargement du template:', error);
+    templateComponent.value = null;
+  } finally {
+    isLoadingTemplate.value = false;
+  }
+};
+
+// Charger le template initial
+loadTemplateComponent();
+
+// Recharger le template quand le mode change
+watch(isEditing, () => {
+  loadTemplateComponent();
+});
+
+// Recharger le template si le type change
+watch(templateValue, () => {
+  loadTemplateComponent();
+});
+
+/**
+ * Gère la mise à jour du titre
+ */
+const handleTitleUpdate = (newTitle) => {
     if (!sectionModel.value) return;
-    router.visit(route('sections.edit', sectionModel.value.id));
+  
+  saveSectionImmediate(sectionModel.value.id, {
+    title: newTitle
+  });
+};
+
+/**
+ * Gère la copie du lien de la section
+ */
+const handleCopyLink = async () => {
+  if (!sectionModel.value || !sectionModel.value.page) return;
+  
+  const pageSlug = sectionModel.value.page.slug || sectionModel.value.pageId;
+  const sectionSlug = sectionModel.value.slug || sectionModel.value.id;
+  const url = `${window.location.origin}${route('pages.show', pageSlug)}#${sectionSlug}`;
+  
+  await copyToClipboard(url, 'Lien de la section copié !');
 };
 
 /**
@@ -113,14 +165,13 @@ const handleCloseParamsModal = () => {
 const handleParamsUpdated = (updatedParams) => {
     if (!sectionModel.value) return;
     
-    // Mettre à jour la section via API
+  // Mettre à jour la section
     router.patch(route('sections.update', sectionModel.value.id), {
-        params: updatedParams
+    ...updatedParams
     }, {
         preserveScroll: true,
         onSuccess: () => {
             paramsModalOpen.value = false;
-            // Recharger la page pour afficher les changements
             router.reload({ only: ['page'] });
         },
         onError: (errors) => {
@@ -130,18 +181,11 @@ const handleParamsUpdated = (updatedParams) => {
 };
 
 /**
- * Gère la copie du lien de la section
+ * Gère la mise à jour des données depuis le template
  */
-const { copyToClipboard } = useCopyToClipboard();
-
-const handleCopyLink = async () => {
-    if (!sectionModel.value || !sectionModel.value.page) return;
-    
-    const pageSlug = sectionModel.value.page.slug || sectionModel.value.pageId;
-    const sectionId = sectionModel.value.id;
-    const url = `${window.location.origin}${route('pages.show', pageSlug)}#section-${sectionId}`;
-    
-    await copyToClipboard(url, 'Lien de la section copié !');
+const handleDataUpdate = (newData) => {
+  // Les templates compatibles auto-save gèrent déjà la sauvegarde
+  // Cette fonction est appelée pour informer le parent si nécessaire
 };
 </script>
 
@@ -149,63 +193,44 @@ const handleCopyLink = async () => {
     <div 
         class="section-renderer group relative" 
         :data-section-id="section.id" 
-        :data-section-type="section.type"
+    :data-section-template="templateValue"
         @mouseenter="isHovered = true"
         @mouseleave="isHovered = false"
     >
-        <!-- Icônes d'action (visibles au hover) -->
-        <div 
-            v-if="canEdit && isHovered" 
-            class="absolute top-2 right-2 flex gap-2 z-10"
-        >
-            <!-- Icône de modification -->
-            <button
-                @click="handleEdit"
-                class="p-2 rounded-lg bg-base-100/90 backdrop-blur-sm border border-base-300 hover:bg-base-200 transition-all shadow-lg"
-                title="Modifier la section"
-                type="button"
-            >
-                <Icon source="fa-solid fa-edit" size="sm" />
-            </button>
-            
-            <!-- Icône de paramétrage -->
-            <button
-                @click="handleOpenParamsModal"
-                class="p-2 rounded-lg bg-base-100/90 backdrop-blur-sm border border-base-300 hover:bg-base-200 transition-all shadow-lg"
-                title="Paramètres de la section"
-                type="button"
-            >
-                <Icon source="fa-solid fa-gear" size="sm" />
-            </button>
+    <!-- Header toujours visible -->
+    <SectionHeader
+      :title="section.title || sectionModel?.title"
+      :is-editing="isEditing"
+      :can-edit="canEdit"
+      :is-hovered="isHovered"
+      @update:title="handleTitleUpdate"
+      @toggle-edit="toggleEditMode"
+      @open-params="handleOpenParamsModal"
+      @copy-link="handleCopyLink"
+    />
+    
+    <!-- Contenu selon le mode -->
+    <div v-if="isLoadingTemplate" class="section-loading">
+      <span class="loading loading-spinner"></span>
+      <p class="mt-2 text-sm text-base-content/70">Chargement...</p>
         </div>
 
-        <!-- Icône de copie de lien (en haut à gauche, visible au hover) -->
-        <button
-            v-if="isHovered"
-            @click="handleCopyLink"
-            class="absolute top-2 left-2 p-2 rounded-lg bg-base-100/90 backdrop-blur-sm border border-base-300 hover:bg-base-200 transition-all shadow-lg z-10"
-            title="Copier le lien de la section"
-            type="button"
-        >
-            <Icon source="fa-solid fa-link" size="sm" />
-        </button>
-
-        <!-- Rendu dynamique du template -->
         <component
-            v-if="templateComponent"
+      v-else-if="templateComponent"
             :is="templateComponent"
-            :params="sectionParams"
             :section="section"
-            :user="user"
+      :data="sectionData"
+      :settings="sectionSettings"
+      @data-updated="handleDataUpdate"
         />
 
-        <!-- Erreur si le type n'existe pas -->
+    <!-- Erreur si le template n'existe pas -->
         <div v-else class="section-error alert alert-warning">
             <i class="fa-solid fa-triangle-exclamation"></i>
             <div>
-                <h3 class="font-bold">Type de section inconnu</h3>
+        <h3 class="font-bold">Template non trouvé</h3>
                 <p class="text-sm">
-                    Le type "{{ section.type }}" n'est pas reconnu.
+          Le template "{{ templateValue }}" n'est pas disponible.
                     Veuillez contacter un administrateur.
                 </p>
             </div>
@@ -216,16 +241,25 @@ const handleCopyLink = async () => {
     <SectionParamsModal
         v-if="sectionModel"
         :open="paramsModalOpen"
-        :section-type="sectionModel.type"
-        :initial-params="sectionModel.params"
+    :section-template="templateValue"
+    :initial-settings="sectionSettings"
+    :initial-data="sectionData"
+    :section-id="sectionModel.id"
+    :section-title="sectionModel.title || section.title"
         @close="handleCloseParamsModal"
         @validated="handleParamsUpdated"
+    @deleted="() => router.reload({ only: ['page'] })"
     />
 </template>
 
 <style scoped lang="scss">
 .section-renderer {
     position: relative;
+  margin-bottom: 2rem;
+  
+  &:last-child {
+    margin-bottom: 0;
+  }
 }
 
 .section-loading {
@@ -241,4 +275,3 @@ const handleCopyLink = async () => {
     margin: 1rem 0;
 }
 </style>
-

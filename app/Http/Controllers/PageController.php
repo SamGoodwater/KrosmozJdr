@@ -231,4 +231,40 @@ class PageController extends Controller
             'menu' => $menuTree,
         ]);
     }
+
+    /**
+     * Réorganise l'ordre des pages (drag & drop).
+     *
+     * @param \Illuminate\Http\Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function reorder(\Illuminate\Http\Request $request)
+    {
+        $this->authorize('viewAny', \App\Models\Page::class);
+
+        $data = $request->validate([
+            'pages' => ['required', 'array'],
+            'pages.*.id' => ['required', 'integer', 'exists:pages,id'],
+            'pages.*.menu_order' => ['required', 'integer', 'min:0'],
+        ]);
+
+        $pages = Page::whereIn('id', collect($data['pages'])->pluck('id'))->get();
+
+        foreach ($data['pages'] as $item) {
+            $page = $pages->firstWhere('id', $item['id']);
+            if (!$page) {
+                continue;
+            }
+
+            // Vérifier l'autorisation de mise à jour pour chaque page
+            $this->authorize('update', $page);
+
+            $page->update([
+                'menu_order' => $item['menu_order'],
+            ]);
+        }
+
+        PageService::clearMenuCache();
+        return response()->json(['success' => true]);
+    }
 }

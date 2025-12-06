@@ -598,10 +598,14 @@ erDiagram
   SECTIONS {
     id : bigint(20) unsigned
     page_id : bigint(20) unsigned
+    title : varchar(255)
+    slug : varchar(255)
     order : int(11)
-    type : varchar(255)
-    params : longtext
+    template : varchar(255)
+    settings : longtext
+    data : longtext
     is_visible : varchar(255)
+    can_edit_role : varchar(255)
     state : varchar(255)
     created_by : bigint(20) unsigned
     created_at : timestamp

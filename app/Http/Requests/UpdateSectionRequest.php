@@ -32,22 +32,33 @@ class UpdateSectionRequest extends FormRequest
      */
     public function rules(): array
     {
-        $type = $this->input('type') ?? $this->route('section')?->type;
+        $template = $this->input('template') ?? $this->route('section')?->template;
         
         $rules = [
             'page_id' => ['sometimes', 'exists:pages,id'],
+            'title' => ['sometimes', 'nullable', 'string', 'max:255'],
+            'slug' => ['sometimes', 'nullable', 'string', 'max:255'],
             'order' => ['sometimes', 'integer', 'min:0'],
-            'type' => ['sometimes', Rule::enum(SectionType::class)],
-            'params' => ['sometimes', 'array'],
+            'template' => ['sometimes', Rule::enum(SectionType::class)],
+            'settings' => ['sometimes', 'nullable', 'array'],
+            'data' => ['sometimes', 'array'],
             'is_visible' => ['sometimes', Rule::enum(Visibility::class)],
+            'can_edit_role' => ['sometimes', Rule::enum(Visibility::class)],
             'state' => ['sometimes', Rule::enum(PageState::class)],
         ];
 
-        // Validation dynamique des params selon le type
-        if ($type && $sectionType = SectionType::tryFrom($type)) {
-            $paramsRules = $this->getParamsValidationRules($sectionType);
-            if (!empty($paramsRules)) {
-                $rules['params'] = array_merge(['sometimes', 'array'], $paramsRules);
+        // Validation dynamique des settings et data selon le template
+        if ($template && $sectionType = SectionType::tryFrom($template)) {
+            $validationRules = $this->getTemplateValidationRules($sectionType);
+            if (!empty($validationRules)) {
+                // Rendre les règles conditionnelles pour l'update
+                foreach ($validationRules as $key => $rule) {
+                    if (str_starts_with($key, 'data.')) {
+                        $rules[$key] = array_merge(['sometimes'], $rule);
+                    } else {
+                        $rules[$key] = $rule;
+                    }
+                }
             }
         }
 
@@ -55,44 +66,44 @@ class UpdateSectionRequest extends FormRequest
     }
 
     /**
-     * Retourne les règles de validation pour les params selon le type de section.
+     * Retourne les règles de validation pour les settings et data selon le template de section.
      * 
-     * @param SectionType $type Type de section
+     * @param SectionType $template Template de section
      * @return array<string, mixed> Règles de validation
      */
-    protected function getParamsValidationRules(SectionType $type): array
+    protected function getTemplateValidationRules(SectionType $template): array
     {
-        return match($type) {
+        return match($template) {
             SectionType::TEXT => [
-                'params.content' => ['required', 'string'],
-                'params.align' => ['sometimes', 'string', Rule::in(['left', 'center', 'right'])],
-                'params.size' => ['sometimes', 'string', Rule::in(['sm', 'md', 'lg', 'xl'])],
+                'data.content' => ['required', 'string'],
+                'settings.align' => ['sometimes', 'string', Rule::in(['left', 'center', 'right'])],
+                'settings.size' => ['sometimes', 'string', Rule::in(['sm', 'md', 'lg', 'xl'])],
             ],
             SectionType::IMAGE => [
-                'params.src' => ['required', 'string'],
-                'params.alt' => ['required', 'string'],
-                'params.caption' => ['sometimes', 'string', 'nullable'],
-                'params.align' => ['sometimes', 'string', Rule::in(['left', 'center', 'right'])],
-                'params.size' => ['sometimes', 'string', Rule::in(['sm', 'md', 'lg', 'xl', 'full'])],
+                'data.src' => ['required', 'string'],
+                'data.alt' => ['required', 'string'],
+                'data.caption' => ['sometimes', 'string', 'nullable'],
+                'settings.align' => ['sometimes', 'string', Rule::in(['left', 'center', 'right'])],
+                'settings.size' => ['sometimes', 'string', Rule::in(['sm', 'md', 'lg', 'xl', 'full'])],
             ],
             SectionType::GALLERY => [
-                'params.images' => ['required', 'array', 'min:1'],
-                'params.images.*.src' => ['required', 'string'],
-                'params.images.*.alt' => ['required', 'string'],
-                'params.images.*.caption' => ['sometimes', 'string', 'nullable'],
-                'params.columns' => ['sometimes', 'integer', Rule::in([2, 3, 4])],
-                'params.gap' => ['sometimes', 'string', Rule::in(['sm', 'md', 'lg'])],
+                'data.images' => ['required', 'array', 'min:1'],
+                'data.images.*.src' => ['required', 'string'],
+                'data.images.*.alt' => ['required', 'string'],
+                'data.images.*.caption' => ['sometimes', 'string', 'nullable'],
+                'settings.columns' => ['sometimes', 'integer', Rule::in([2, 3, 4])],
+                'settings.gap' => ['sometimes', 'string', Rule::in(['sm', 'md', 'lg'])],
             ],
             SectionType::VIDEO => [
-                'params.src' => ['required', 'string'],
-                'params.type' => ['required', 'string', Rule::in(['youtube', 'vimeo', 'direct'])],
-                'params.autoplay' => ['sometimes', 'boolean'],
-                'params.controls' => ['sometimes', 'boolean'],
+                'data.src' => ['required', 'string'],
+                'data.type' => ['required', 'string', Rule::in(['youtube', 'vimeo', 'direct'])],
+                'settings.autoplay' => ['sometimes', 'boolean'],
+                'settings.controls' => ['sometimes', 'boolean'],
             ],
             SectionType::ENTITY_TABLE => [
-                'params.entity' => ['required', 'string'],
-                'params.filters' => ['sometimes', 'array'],
-                'params.columns' => ['sometimes', 'array'],
+                'data.entity' => ['required', 'string'],
+                'data.filters' => ['sometimes', 'array'],
+                'data.columns' => ['sometimes', 'array'],
             ],
         };
     }

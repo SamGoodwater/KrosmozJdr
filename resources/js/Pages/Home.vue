@@ -19,6 +19,7 @@ import { useNotificationStore } from '@/Composables/store/useNotificationStore';
 
 // Molecules
 import Hero from "@/Pages/Molecules/navigation/Hero.vue";
+import Modal from "@/Pages/Molecules/action/Modal.vue";
 // Atoms
 import Container from "@/Pages/Atoms/data-display/Container.vue";
 import Btn from "@/Pages/Atoms/action/Btn.vue";
@@ -474,6 +475,65 @@ const demoIcons = [
         tooltip: "Icône extra-large",
     },
 ];
+
+// États pour les modals de démonstration
+const modalStates = ref({
+    // Tailles
+    sizeXs: false,
+    sizeSm: false,
+    sizeMd: false,
+    sizeLg: false,
+    sizeXl: false,
+    sizeFull: false,
+    sizeAuto: false,
+    
+    // Variants
+    variantGlass: false,
+    variantDash: false,
+    variantOutline: false,
+    variantSoft: false,
+    variantGhost: false,
+    
+    // Couleurs
+    colorPrimary: false,
+    colorSecondary: false,
+    colorAccent: false,
+    colorInfo: false,
+    colorSuccess: false,
+    colorWarning: false,
+    colorError: false,
+    colorNeutral: false,
+    
+    // Animations
+    animationNone: false,
+    animationFade: false,
+    animationZoom: false,
+    animationSlide: false,
+    
+    // Placements
+    placementTopStart: false,
+    placementTopCenter: false,
+    placementTopEnd: false,
+    placementMiddleStart: false,
+    placementMiddleCenter: false,
+    placementMiddleEnd: false,
+    placementBottomStart: false,
+    placementBottomCenter: false,
+    placementBottomEnd: false,
+    
+    // Options
+    noOverlay: false,
+    noCloseOnOutsideClick: false,
+    closeOnEsc: false,
+    noCloseOnButton: false,
+    resizable: false,
+    notDraggable: false,
+    
+    // Combinaisons
+    combo1: false,
+    combo2: false,
+    combo3: false,
+});
 </script>
 
 <template>
@@ -916,6 +976,121 @@ const demoIcons = [
                 </div>
             </section>
 
+            <!-- Section test des modals -->
+            <section class="space-y-6 mb-8">
+                <div class="text-center">
+                    <h2 class="text-2xl font-bold mb-4">Test du Système de Modals</h2>
+                    <p class="text-base-content/70 mb-6">Testez toutes les fonctionnalités et variantes des modals : tailles, variants, couleurs, animations, placements, options</p>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
+                        <!-- Tailles -->
+                        <div class="card bg-base-100 shadow-xl">
+                            <div class="card-body">
+                                <h3 class="card-title text-lg">Tailles</h3>
+                                <div class="flex flex-col gap-2">
+                                    <Btn @click="modalStates.sizeXs = true" color="primary" size="sm">XS</Btn>
+                                    <Btn @click="modalStates.sizeSm = true" color="primary" size="sm">SM</Btn>
+                                    <Btn @click="modalStates.sizeMd = true" color="primary" size="sm">MD</Btn>
+                                    <Btn @click="modalStates.sizeLg = true" color="primary" size="sm">LG</Btn>
+                                    <Btn @click="modalStates.sizeXl = true" color="primary" size="sm">XL</Btn>
+                                    <Btn @click="modalStates.sizeFull = true" color="primary" size="sm">Full</Btn>
+                                    <Btn @click="modalStates.sizeAuto = true" color="primary" size="sm">Auto</Btn>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Variants -->
+                        <div class="card bg-base-100 shadow-xl">
+                            <div class="card-body">
+                                <h3 class="card-title text-lg">Variants</h3>
+                                <div class="flex flex-col gap-2">
+                                    <Btn @click="modalStates.variantGlass = true" color="primary" size="sm">Glass</Btn>
+                                    <Btn @click="modalStates.variantDash = true" color="primary" size="sm">Dash</Btn>
+                                    <Btn @click="modalStates.variantOutline = true" color="primary" size="sm">Outline</Btn>
+                                    <Btn @click="modalStates.variantSoft = true" color="primary" size="sm">Soft</Btn>
+                                    <Btn @click="modalStates.variantGhost = true" color="primary" size="sm">Ghost</Btn>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Couleurs -->
+                        <div class="card bg-base-100 shadow-xl">
+                            <div class="card-body">
+                                <h3 class="card-title text-lg">Couleurs</h3>
+                                <div class="flex flex-col gap-2">
+                                    <Btn @click="modalStates.colorPrimary = true" color="primary" size="sm">Primary</Btn>
+                                    <Btn @click="modalStates.colorSecondary = true" color="secondary" size="sm">Secondary</Btn>
+                                    <Btn @click="modalStates.colorAccent = true" color="accent" size="sm">Accent</Btn>
+                                    <Btn @click="modalStates.colorInfo = true" color="info" size="sm">Info</Btn>
+                                    <Btn @click="modalStates.colorSuccess = true" color="success" size="sm">Success</Btn>
+                                    <Btn @click="modalStates.colorWarning = true" color="warning" size="sm">Warning</Btn>
+                                    <Btn @click="modalStates.colorError = true" color="error" size="sm">Error</Btn>
+                                    <Btn @click="modalStates.colorNeutral = true" color="neutral" size="sm">Neutral</Btn>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Animations -->
+                        <div class="card bg-base-100 shadow-xl">
+                            <div class="card-body">
+                                <h3 class="card-title text-lg">Animations</h3>
+                                <div class="flex flex-col gap-2">
+                                    <Btn @click="modalStates.animationNone = true" color="primary" size="sm">None</Btn>
+                                    <Btn @click="modalStates.animationFade = true" color="primary" size="sm">Fade</Btn>
+                                    <Btn @click="modalStates.animationZoom = true" color="primary" size="sm">Zoom</Btn>
+                                    <Btn @click="modalStates.animationSlide = true" color="primary" size="sm">Slide</Btn>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Placements -->
+                        <div class="card bg-base-100 shadow-xl">
+                            <div class="card-body">
+                                <h3 class="card-title text-lg">Placements</h3>
+                                <div class="grid grid-cols-3 gap-2">
+                                    <Btn @click="modalStates.placementTopStart = true" color="primary" size="xs">Top-Start</Btn>
+                                    <Btn @click="modalStates.placementTopCenter = true" color="primary" size="xs">Top-Center</Btn>
+                                    <Btn @click="modalStates.placementTopEnd = true" color="primary" size="xs">Top-End</Btn>
+                                    <Btn @click="modalStates.placementMiddleStart = true" color="primary" size="xs">Mid-Start</Btn>
+                                    <Btn @click="modalStates.placementMiddleCenter = true" color="primary" size="xs">Mid-Center</Btn>
+                                    <Btn @click="modalStates.placementMiddleEnd = true" color="primary" size="xs">Mid-End</Btn>
+                                    <Btn @click="modalStates.placementBottomStart = true" color="primary" size="xs">Bot-Start</Btn>
+                                    <Btn @click="modalStates.placementBottomCenter = true" color="primary" size="xs">Bot-Center</Btn>
+                                    <Btn @click="modalStates.placementBottomEnd = true" color="primary" size="xs">Bot-End</Btn>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Options -->
+                        <div class="card bg-base-100 shadow-xl">
+                            <div class="card-body">
+                                <h3 class="card-title text-lg">Options</h3>
+                                <div class="flex flex-col gap-2">
+                                    <Btn @click="modalStates.noOverlay = true" color="primary" size="sm">Sans Overlay</Btn>
+                                    <Btn @click="modalStates.noCloseOnOutsideClick = true" color="primary" size="sm">Pas de fermeture extérieure</Btn>
+                                    <Btn @click="modalStates.closeOnEsc = true" color="primary" size="sm">Fermeture ESC</Btn>
+                                    <Btn @click="modalStates.noCloseOnButton = true" color="primary" size="sm">Sans bouton fermer</Btn>
+                                    <Btn @click="modalStates.resizable = true" color="primary" size="sm">Redimensionnable</Btn>
+                                    <Btn @click="modalStates.notDraggable = true" color="primary" size="sm">Non déplaçable</Btn>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Combinaisons -->
+                        <div class="card bg-base-100 shadow-xl">
+                            <div class="card-body">
+                                <h3 class="card-title text-lg">Combinaisons</h3>
+                                <div class="flex flex-col gap-2">
+                                    <Btn @click="modalStates.combo1 = true" color="accent" size="sm">Combo 1</Btn>
+                                    <Btn @click="modalStates.combo2 = true" color="accent" size="sm">Combo 2</Btn>
+                                    <Btn @click="modalStates.combo3 = true" color="accent" size="sm">Combo 3</Btn>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
             <!-- Section démo boutons (inline, à supprimer plus tard) -->
             <section class="space-y-6">
                 <div class="text-center space-y-6">
@@ -1009,6 +1184,493 @@ const demoIcons = [
                 </p>
             </section>
         </Container>
+
+        <!-- Modals de démonstration -->
+        <!-- Tailles -->
+        <Modal :open="modalStates.sizeXs" size="xs" @close="modalStates.sizeXs = false">
+            <template #header>
+                <h3 class="text-lg font-bold">Modal XS</h3>
+            </template>
+            <p>Ceci est un modal de taille XS (extra-small).</p>
+            <template #actions>
+                <Btn @click="modalStates.sizeXs = false" color="primary" size="sm">Fermer</Btn>
+            </template>
+        </Modal>
+
+        <Modal :open="modalStates.sizeSm" size="sm" @close="modalStates.sizeSm = false">
+            <template #header>
+                <h3 class="text-lg font-bold">Modal SM</h3>
+            </template>
+            <p>Ceci est un modal de taille SM (small).</p>
+            <template #actions>
+                <Btn @click="modalStates.sizeSm = false" color="primary" size="sm">Fermer</Btn>
+            </template>
+        </Modal>
+
+        <Modal :open="modalStates.sizeMd" size="md" @close="modalStates.sizeMd = false">
+            <template #header>
+                <h3 class="text-lg font-bold">Modal MD</h3>
+            </template>
+            <p>Ceci est un modal de taille MD (medium).</p>
+            <template #actions>
+                <Btn @click="modalStates.sizeMd = false" color="primary" size="sm">Fermer</Btn>
+            </template>
+        </Modal>
+
+        <Modal :open="modalStates.sizeLg" size="lg" @close="modalStates.sizeLg = false">
+            <template #header>
+                <h3 class="text-lg font-bold">Modal LG</h3>
+            </template>
+            <p>Ceci est un modal de taille LG (large).</p>
+            <template #actions>
+                <Btn @click="modalStates.sizeLg = false" color="primary" size="sm">Fermer</Btn>
+            </template>
+        </Modal>
+
+        <Modal :open="modalStates.sizeXl" size="xl" @close="modalStates.sizeXl = false">
+            <template #header>
+                <h3 class="text-lg font-bold">Modal XL</h3>
+            </template>
+            <p>Ceci est un modal de taille XL (extra-large).</p>
+            <template #actions>
+                <Btn @click="modalStates.sizeXl = false" color="primary" size="sm">Fermer</Btn>
+            </template>
+        </Modal>
+
+        <Modal :open="modalStates.sizeFull" size="full" @close="modalStates.sizeFull = false">
+            <template #header>
+                <h3 class="text-lg font-bold">Modal Full</h3>
+            </template>
+            <p>Ceci est un modal de taille Full (plein écran).</p>
+            <template #actions>
+                <Btn @click="modalStates.sizeFull = false" color="primary" size="sm">Fermer</Btn>
+            </template>
+        </Modal>
+
+        <Modal :open="modalStates.sizeAuto" size="auto" @close="modalStates.sizeAuto = false">
+            <template #header>
+                <h3 class="text-lg font-bold">Modal Auto</h3>
+            </template>
+            <p>Ceci est un modal de taille Auto (s'adapte au contenu).</p>
+            <template #actions>
+                <Btn @click="modalStates.sizeAuto = false" color="primary" size="sm">Fermer</Btn>
+            </template>
+        </Modal>
+
+        <!-- Variants -->
+        <Modal :open="modalStates.variantGlass" variant="glass" @close="modalStates.variantGlass = false">
+            <template #header>
+                <h3 class="text-lg font-bold">Variant Glass</h3>
+            </template>
+            <p>Modal avec variant glass (effet glassmorphisme).</p>
+            <template #actions>
+                <Btn @click="modalStates.variantGlass = false" color="primary" size="sm">Fermer</Btn>
+            </template>
+        </Modal>
+
+        <Modal :open="modalStates.variantDash" variant="dash" @close="modalStates.variantDash = false">
+            <template #header>
+                <h3 class="text-lg font-bold">Variant Dash</h3>
+            </template>
+            <p>Modal avec variant dash (bordure pointillée).</p>
+            <template #actions>
+                <Btn @click="modalStates.variantDash = false" color="primary" size="sm">Fermer</Btn>
+            </template>
+        </Modal>
+
+        <Modal :open="modalStates.variantOutline" variant="outline" @close="modalStates.variantOutline = false">
+            <template #header>
+                <h3 class="text-lg font-bold">Variant Outline</h3>
+            </template>
+            <p>Modal avec variant outline (bordure visible).</p>
+            <template #actions>
+                <Btn @click="modalStates.variantOutline = false" color="primary" size="sm">Fermer</Btn>
+            </template>
+        </Modal>
+
+        <Modal :open="modalStates.variantSoft" variant="soft" @close="modalStates.variantSoft = false">
+            <template #header>
+                <h3 class="text-lg font-bold">Variant Soft</h3>
+            </template>
+            <p>Modal avec variant soft (fond doux).</p>
+            <template #actions>
+                <Btn @click="modalStates.variantSoft = false" color="primary" size="sm">Fermer</Btn>
+            </template>
+        </Modal>
+
+        <Modal :open="modalStates.variantGhost" variant="ghost" @close="modalStates.variantGhost = false">
+            <template #header>
+                <h3 class="text-lg font-bold">Variant Ghost</h3>
+            </template>
+            <p>Modal avec variant ghost (fond transparent).</p>
+            <template #actions>
+                <Btn @click="modalStates.variantGhost = false" color="primary" size="sm">Fermer</Btn>
+            </template>
+        </Modal>
+
+        <!-- Couleurs -->
+        <Modal :open="modalStates.colorPrimary" color="primary" @close="modalStates.colorPrimary = false">
+            <template #header>
+                <h3 class="text-lg font-bold">Couleur Primary</h3>
+            </template>
+            <p>Modal avec couleur primary.</p>
+            <template #actions>
+                <Btn @click="modalStates.colorPrimary = false" color="primary" size="sm">Fermer</Btn>
+            </template>
+        </Modal>
+
+        <Modal :open="modalStates.colorSecondary" color="secondary" @close="modalStates.colorSecondary = false">
+            <template #header>
+                <h3 class="text-lg font-bold">Couleur Secondary</h3>
+            </template>
+            <p>Modal avec couleur secondary.</p>
+            <template #actions>
+                <Btn @click="modalStates.colorSecondary = false" color="secondary" size="sm">Fermer</Btn>
+            </template>
+        </Modal>
+
+        <Modal :open="modalStates.colorAccent" color="accent" @close="modalStates.colorAccent = false">
+            <template #header>
+                <h3 class="text-lg font-bold">Couleur Accent</h3>
+            </template>
+            <p>Modal avec couleur accent.</p>
+            <template #actions>
+                <Btn @click="modalStates.colorAccent = false" color="accent" size="sm">Fermer</Btn>
+            </template>
+        </Modal>
+
+        <Modal :open="modalStates.colorInfo" color="info" @close="modalStates.colorInfo = false">
+            <template #header>
+                <h3 class="text-lg font-bold">Couleur Info</h3>
+            </template>
+            <p>Modal avec couleur info.</p>
+            <template #actions>
+                <Btn @click="modalStates.colorInfo = false" color="info" size="sm">Fermer</Btn>
+            </template>
+        </Modal>
+
+        <Modal :open="modalStates.colorSuccess" color="success" @close="modalStates.colorSuccess = false">
+            <template #header>
+                <h3 class="text-lg font-bold">Couleur Success</h3>
+            </template>
+            <p>Modal avec couleur success.</p>
+            <template #actions>
+                <Btn @click="modalStates.colorSuccess = false" color="success" size="sm">Fermer</Btn>
+            </template>
+        </Modal>
+
+        <Modal :open="modalStates.colorWarning" color="warning" @close="modalStates.colorWarning = false">
+            <template #header>
+                <h3 class="text-lg font-bold">Couleur Warning</h3>
+            </template>
+            <p>Modal avec couleur warning.</p>
+            <template #actions>
+                <Btn @click="modalStates.colorWarning = false" color="warning" size="sm">Fermer</Btn>
+            </template>
+        </Modal>
+
+        <Modal :open="modalStates.colorError" color="error" @close="modalStates.colorError = false">
+            <template #header>
+                <h3 class="text-lg font-bold">Couleur Error</h3>
+            </template>
+            <p>Modal avec couleur error.</p>
+            <template #actions>
+                <Btn @click="modalStates.colorError = false" color="error" size="sm">Fermer</Btn>
+            </template>
+        </Modal>
+
+        <Modal :open="modalStates.colorNeutral" color="neutral" @close="modalStates.colorNeutral = false">
+            <template #header>
+                <h3 class="text-lg font-bold">Couleur Neutral</h3>
+            </template>
+            <p>Modal avec couleur neutral.</p>
+            <template #actions>
+                <Btn @click="modalStates.colorNeutral = false" color="neutral" size="sm">Fermer</Btn>
+            </template>
+        </Modal>
+
+        <!-- Animations -->
+        <Modal :open="modalStates.animationNone" animation="none" @close="modalStates.animationNone = false">
+            <template #header>
+                <h3 class="text-lg font-bold">Animation None</h3>
+            </template>
+            <p>Modal sans animation.</p>
+            <template #actions>
+                <Btn @click="modalStates.animationNone = false" color="primary" size="sm">Fermer</Btn>
+            </template>
+        </Modal>
+
+        <Modal :open="modalStates.animationFade" animation="fade" @close="modalStates.animationFade = false">
+            <template #header>
+                <h3 class="text-lg font-bold">Animation Fade</h3>
+            </template>
+            <p>Modal avec animation fade (par défaut).</p>
+            <template #actions>
+                <Btn @click="modalStates.animationFade = false" color="primary" size="sm">Fermer</Btn>
+            </template>
+        </Modal>
+
+        <Modal :open="modalStates.animationZoom" animation="zoom" @close="modalStates.animationZoom = false">
+            <template #header>
+                <h3 class="text-lg font-bold">Animation Zoom</h3>
+            </template>
+            <p>Modal avec animation zoom.</p>
+            <template #actions>
+                <Btn @click="modalStates.animationZoom = false" color="primary" size="sm">Fermer</Btn>
+            </template>
+        </Modal>
+
+        <Modal :open="modalStates.animationSlide" animation="slide" @close="modalStates.animationSlide = false">
+            <template #header>
+                <h3 class="text-lg font-bold">Animation Slide</h3>
+            </template>
+            <p>Modal avec animation slide.</p>
+            <template #actions>
+                <Btn @click="modalStates.animationSlide = false" color="primary" size="sm">Fermer</Btn>
+            </template>
+        </Modal>
+
+        <!-- Placements -->
+        <Modal :open="modalStates.placementTopStart" placement="top-start" @close="modalStates.placementTopStart = false">
+            <template #header>
+                <h3 class="text-lg font-bold">Placement Top-Start</h3>
+            </template>
+            <p>Modal positionné en haut à gauche.</p>
+            <template #actions>
+                <Btn @click="modalStates.placementTopStart = false" color="primary" size="sm">Fermer</Btn>
+            </template>
+        </Modal>
+
+        <Modal :open="modalStates.placementTopCenter" placement="top-center" @close="modalStates.placementTopCenter = false">
+            <template #header>
+                <h3 class="text-lg font-bold">Placement Top-Center</h3>
+            </template>
+            <p>Modal positionné en haut au centre.</p>
+            <template #actions>
+                <Btn @click="modalStates.placementTopCenter = false" color="primary" size="sm">Fermer</Btn>
+            </template>
+        </Modal>
+
+        <Modal :open="modalStates.placementTopEnd" placement="top-end" @close="modalStates.placementTopEnd = false">
+            <template #header>
+                <h3 class="text-lg font-bold">Placement Top-End</h3>
+            </template>
+            <p>Modal positionné en haut à droite.</p>
+            <template #actions>
+                <Btn @click="modalStates.placementTopEnd = false" color="primary" size="sm">Fermer</Btn>
+            </template>
+        </Modal>
+
+        <Modal :open="modalStates.placementMiddleStart" placement="middle-start" @close="modalStates.placementMiddleStart = false">
+            <template #header>
+                <h3 class="text-lg font-bold">Placement Middle-Start</h3>
+            </template>
+            <p>Modal positionné au milieu à gauche.</p>
+            <template #actions>
+                <Btn @click="modalStates.placementMiddleStart = false" color="primary" size="sm">Fermer</Btn>
+            </template>
+        </Modal>
+
+        <Modal :open="modalStates.placementMiddleCenter" placement="middle-center" @close="modalStates.placementMiddleCenter = false">
+            <template #header>
+                <h3 class="text-lg font-bold">Placement Middle-Center</h3>
+            </template>
+            <p>Modal positionné au centre (par défaut).</p>
+            <template #actions>
+                <Btn @click="modalStates.placementMiddleCenter = false" color="primary" size="sm">Fermer</Btn>
+            </template>
+        </Modal>
+
+        <Modal :open="modalStates.placementMiddleEnd" placement="middle-end" @close="modalStates.placementMiddleEnd = false">
+            <template #header>
+                <h3 class="text-lg font-bold">Placement Middle-End</h3>
+            </template>
+            <p>Modal positionné au milieu à droite.</p>
+            <template #actions>
+                <Btn @click="modalStates.placementMiddleEnd = false" color="primary" size="sm">Fermer</Btn>
+            </template>
+        </Modal>
+
+        <Modal :open="modalStates.placementBottomStart" placement="bottom-start" @close="modalStates.placementBottomStart = false">
+            <template #header>
+                <h3 class="text-lg font-bold">Placement Bottom-Start</h3>
+            </template>
+            <p>Modal positionné en bas à gauche.</p>
+            <template #actions>
+                <Btn @click="modalStates.placementBottomStart = false" color="primary" size="sm">Fermer</Btn>
+            </template>
+        </Modal>
+
+        <Modal :open="modalStates.placementBottomCenter" placement="bottom-center" @close="modalStates.placementBottomCenter = false">
+            <template #header>
+                <h3 class="text-lg font-bold">Placement Bottom-Center</h3>
+            </template>
+            <p>Modal positionné en bas au centre.</p>
+            <template #actions>
+                <Btn @click="modalStates.placementBottomCenter = false" color="primary" size="sm">Fermer</Btn>
+            </template>
+        </Modal>
+
+        <Modal :open="modalStates.placementBottomEnd" placement="bottom-end" @close="modalStates.placementBottomEnd = false">
+            <template #header>
+                <h3 class="text-lg font-bold">Placement Bottom-End</h3>
+            </template>
+            <p>Modal positionné en bas à droite.</p>
+            <template #actions>
+                <Btn @click="modalStates.placementBottomEnd = false" color="primary" size="sm">Fermer</Btn>
+            </template>
+        </Modal>
+
+        <!-- Options -->
+        <Modal :open="modalStates.noOverlay" :overlay="false" @close="modalStates.noOverlay = false">
+            <template #header>
+                <h3 class="text-lg font-bold">Sans Overlay</h3>
+            </template>
+            <p>Modal sans overlay (arrière-plan).</p>
+            <template #actions>
+                <Btn @click="modalStates.noOverlay = false" color="primary" size="sm">Fermer</Btn>
+            </template>
+        </Modal>
+
+        <Modal :open="modalStates.noCloseOnOutsideClick" :close-on-outside-click="false" @close="modalStates.noCloseOnOutsideClick = false">
+            <template #header>
+                <h3 class="text-lg font-bold">Pas de Fermeture Extérieure</h3>
+            </template>
+            <p>Ce modal ne se ferme pas en cliquant à l'extérieur. Utilisez le bouton de fermeture ou ESC.</p>
+            <template #actions>
+                <Btn @click="modalStates.noCloseOnOutsideClick = false" color="primary" size="sm">Fermer</Btn>
+            </template>
+        </Modal>
+
+        <Modal :open="modalStates.closeOnEsc" close-on-esc @close="modalStates.closeOnEsc = false">
+            <template #header>
+                <h3 class="text-lg font-bold">Fermeture ESC</h3>
+            </template>
+            <p>Ce modal se ferme avec la touche ESC. Appuyez sur ESC pour tester.</p>
+            <template #actions>
+                <Btn @click="modalStates.closeOnEsc = false" color="primary" size="sm">Fermer</Btn>
+            </template>
+        </Modal>
+
+        <Modal :open="modalStates.noCloseOnButton" :close-on-button="false" @close="modalStates.noCloseOnButton = false">
+            <template #header>
+                <h3 class="text-lg font-bold">Sans Bouton Fermer</h3>
+            </template>
+            <p>Ce modal n'a pas de bouton de fermeture en haut à droite. Utilisez le bouton ci-dessous ou cliquez à l'extérieur.</p>
+            <template #actions>
+                <Btn @click="modalStates.noCloseOnButton = false" color="primary" size="sm">Fermer</Btn>
+            </template>
+        </Modal>
+
+        <Modal :open="modalStates.resizable" :resizable="true" @close="modalStates.resizable = false">
+            <template #header>
+                <h3 class="text-lg font-bold">Modal Redimensionnable</h3>
+            </template>
+            <p>Ce modal peut être redimensionné. Glissez depuis le coin inférieur droit pour redimensionner.</p>
+            <template #actions>
+                <Btn @click="modalStates.resizable = false" color="primary" size="sm">Fermer</Btn>
+            </template>
+        </Modal>
+
+        <Modal :open="modalStates.notDraggable" :draggable="false" @close="modalStates.notDraggable = false">
+            <template #header>
+                <h3 class="text-lg font-bold">Modal Non Déplaçable</h3>
+            </template>
+            <p>Ce modal ne peut pas être déplacé. Le curseur reste normal sur le header.</p>
+            <template #actions>
+                <Btn @click="modalStates.notDraggable = false" color="primary" size="sm">Fermer</Btn>
+            </template>
+        </Modal>
+
+        <!-- Combinaisons -->
+        <Modal 
+            :open="modalStates.combo1" 
+            size="lg" 
+            color="primary" 
+            variant="glass" 
+            animation="zoom"
+            placement="middle-center"
+            close-on-esc
+            @close="modalStates.combo1 = false"
+        >
+            <template #header>
+                <h3 class="text-lg font-bold">Combo 1 : Glass + Primary + Zoom</h3>
+            </template>
+            <div class="space-y-4">
+                <p>Modal avec plusieurs options combinées :</p>
+                <ul class="list-disc list-inside space-y-2">
+                    <li>Taille : LG</li>
+                    <li>Couleur : Primary</li>
+                    <li>Variant : Glass</li>
+                    <li>Animation : Zoom</li>
+                    <li>Placement : Middle-Center</li>
+                    <li>Fermeture ESC activée</li>
+                </ul>
+            </div>
+            <template #actions>
+                <Btn @click="modalStates.combo1 = false" color="primary" size="sm">Fermer</Btn>
+            </template>
+        </Modal>
+
+        <Modal 
+            :open="modalStates.combo2" 
+            size="xl" 
+            color="success" 
+            variant="outline" 
+            animation="slide"
+            placement="top-center"
+            :resizable="true"
+            @close="modalStates.combo2 = false"
+        >
+            <template #header>
+                <h3 class="text-lg font-bold">Combo 2 : Outline + Success + Slide + Redimensionnable</h3>
+            </template>
+            <div class="space-y-4">
+                <p>Modal avec plusieurs options combinées :</p>
+                <ul class="list-disc list-inside space-y-2">
+                    <li>Taille : XL</li>
+                    <li>Couleur : Success</li>
+                    <li>Variant : Outline</li>
+                    <li>Animation : Slide</li>
+                    <li>Placement : Top-Center</li>
+                    <li>Redimensionnable activé</li>
+                </ul>
+            </div>
+            <template #actions>
+                <Btn @click="modalStates.combo2 = false" color="success" size="sm">Fermer</Btn>
+            </template>
+        </Modal>
+
+        <Modal 
+            :open="modalStates.combo3" 
+            size="md" 
+            color="error" 
+            variant="dash" 
+            animation="fade"
+            placement="bottom-end"
+            :close-on-outside-click="false"
+            close-on-esc
+            @close="modalStates.combo3 = false"
+        >
+            <template #header>
+                <h3 class="text-lg font-bold">Combo 3 : Dash + Error + Fade + Options</h3>
+            </template>
+            <div class="space-y-4">
+                <p>Modal avec plusieurs options combinées :</p>
+                <ul class="list-disc list-inside space-y-2">
+                    <li>Taille : MD</li>
+                    <li>Couleur : Error</li>
+                    <li>Variant : Dash</li>
+                    <li>Animation : Fade</li>
+                    <li>Placement : Bottom-End</li>
+                    <li>Pas de fermeture extérieure</li>
+                    <li>Fermeture ESC activée</li>
+                </ul>
+            </div>
+            <template #actions>
+                <Btn @click="modalStates.combo3 = false" color="error" size="sm">Fermer</Btn>
+            </template>
+        </Modal>
     </div>
 
 </template>

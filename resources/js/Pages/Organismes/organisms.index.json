@@ -32,29 +32,6 @@
     "file": "user/DeleteUserForm.vue"
   },
   {
-    "name": "SectionView",
-    "description": "",
-    "props": [
-      {
-        "name": "section",
-        "type": "Object",
-        "desc": "- Objet section à afficher"
-      },
-      {
-        "name": "canEdit",
-        "type": "Boolean",
-        "desc": "- Autorise l'édition"
-      },
-      {
-        "name": "canDelete",
-        "type": "Boolean",
-        "desc": "- Autorise la suppression"
-      }
-    ],
-    "slots": [],
-    "file": "section/SectionView.vue"
-  },
-  {
     "name": "SectionRenderer",
     "description": "SectionRenderer Organism",
     "props": [
@@ -71,70 +48,6 @@
     ],
     "slots": [],
     "file": "section/SectionRenderer.vue"
-  },
-  {
-    "name": "SectionParamsModal",
-    "description": "SectionParamsModal Component",
-    "props": [
-      {
-        "name": "open",
-        "type": "Boolean",
-        "desc": "- Contrôle l'ouverture du modal"
-      },
-      {
-        "name": "sectionType",
-        "type": "String",
-        "desc": "- Type de section (text, image, gallery, video, entity_table)"
-      },
-      {
-        "name": "initialParams",
-        "type": "Object",
-        "desc": "- Paramètres initiaux (optionnel)"
-      }
-    ],
-    "slots": [],
-    "file": "section/SectionParamsModal.vue"
-  },
-  {
-    "name": "SectionList",
-    "description": "",
-    "props": [
-      {
-        "name": "sections",
-        "type": "Array",
-        "desc": "- Tableau des sections à afficher"
-      },
-      {
-        "name": "canCreate",
-        "type": "Boolean",
-        "desc": "- Autorise la création de section"
-      }
-    ],
-    "slots": [],
-    "file": "section/SectionList.vue"
-  },
-  {
-    "name": "SectionForm",
-    "description": "",
-    "props": [
-      {
-        "name": "section",
-        "type": "Object",
-        "desc": "- Objet section à éditer (optionnel, défaut : section vide)"
-      },
-      {
-        "name": "isUpdating",
-        "type": "Boolean",
-        "desc": "- Mode édition ou création"
-      },
-      {
-        "name": "pages",
-        "type": "Array",
-        "desc": "- Liste des pages disponibles pour l'association"
-      }
-    ],
-    "slots": [],
-    "file": "section/SectionForm.vue"
   },
   {
     "name": "PageSectionEditor",
@@ -183,6 +96,149 @@
     "file": "section/PageRenderer.vue"
   },
   {
+    "name": "DynamicMenu",
+    "description": "DynamicMenu Organism",
+    "props": [
+      {
+        "name": "currentRoute",
+        "type": "String",
+        "desc": "- Route actuelle (optionnel, pour déterminer l'item actif)"
+      }
+    ],
+    "slots": [],
+    "file": "section/DynamicMenu.vue"
+  },
+  {
+    "name": "SectionVideoRead",
+    "description": "SectionVideoRead Template",
+    "props": [],
+    "slots": [],
+    "file": "section/templates/video/SectionVideoRead.vue"
+  },
+  {
+    "name": "SectionVideoEdit",
+    "description": "SectionVideoEdit Template",
+    "props": [],
+    "slots": [],
+    "file": "section/templates/video/SectionVideoEdit.vue"
+  },
+  {
+    "name": "SectionTextRead",
+    "description": "SectionTextRead Template",
+    "props": [
+      {
+        "name": "section",
+        "type": "Object",
+        "desc": "- Données complètes de la section"
+      },
+      {
+        "name": "data",
+        "type": "Object",
+        "desc": "- Données de contenu (section.data)"
+      },
+      {
+        "name": "settings",
+        "type": "Object",
+        "desc": "- Paramètres (section.settings)"
+      }
+    ],
+    "slots": [],
+    "file": "section/templates/text/SectionTextRead.vue"
+  },
+  {
+    "name": "SectionTextEdit",
+    "description": "SectionTextEdit Template",
+    "props": [
+      {
+        "name": "section",
+        "type": "Object",
+        "desc": "- Données complètes de la section"
+      },
+      {
+        "name": "data",
+        "type": "Object",
+        "desc": "- Données de contenu (section.data)"
+      },
+      {
+        "name": "settings",
+        "type": "Object",
+        "desc": "- Paramètres (section.settings)"
+      }
+    ],
+    "slots": [],
+    "file": "section/templates/text/SectionTextEdit.vue"
+  },
+  {
+    "name": "SectionImageRead",
+    "description": "SectionImageRead Template",
+    "props": [],
+    "slots": [],
+    "file": "section/templates/image/SectionImageRead.vue"
+  },
+  {
+    "name": "SectionImageEdit",
+    "description": "SectionImageEdit Template",
+    "props": [],
+    "slots": [],
+    "file": "section/templates/image/SectionImageEdit.vue"
+  },
+  {
+    "name": "SectionGalleryRead",
+    "description": "SectionGalleryRead Template",
+    "props": [],
+    "slots": [],
+    "file": "section/templates/gallery/SectionGalleryRead.vue"
+  },
+  {
+    "name": "SectionGalleryEdit",
+    "description": "SectionGalleryEdit Template",
+    "props": [],
+    "slots": [],
+    "file": "section/templates/gallery/SectionGalleryEdit.vue"
+  },
+  {
+    "name": "SectionEntityTableRead",
+    "description": "SectionEntityTableRead Template",
+    "props": [],
+    "slots": [],
+    "file": "section/templates/entity_table/SectionEntityTableRead.vue"
+  },
+  {
+    "name": "SectionEntityTableEdit",
+    "description": "SectionEntityTableEdit Template",
+    "props": [],
+    "slots": [],
+    "file": "section/templates/entity_table/SectionEntityTableEdit.vue"
+  },
+  {
+    "name": "SectionParamsModal",
+    "description": "SectionParamsModal Component",
+    "props": [
+      {
+        "name": "open",
+        "type": "Boolean",
+        "desc": "- Contrôle l'ouverture du modal"
+      },
+      {
+        "name": "sectionTemplate",
+        "type": "String",
+        "desc": "- Template de section (text, image, gallery, video, entity_table)"
+      },
+      {
+        "name": "initialSettings",
+        "type": "Object",
+        "desc": "- Settings initiaux (optionnel)"
+      },
+      {
+        "name": "initialData",
+        "type": "Object",
+        "desc": "- Data initiaux (optionnel)"
+      }
+    ],
+    "slots": [],
+    "file": "section/modals/SectionParamsModal.vue"
+  },
+  {
     "name": "EditPageModal",
     "description": "EditPageModal Component",
     "props": [
@@ -203,20 +259,7 @@
       }
     ],
     "slots": [],
-    "file": "section/EditPageModal.vue"
-  },
-  {
-    "name": "DynamicMenu",
-    "description": "DynamicMenu Organism",
-    "props": [
-      {
-        "name": "currentRoute",
-        "type": "String",
-        "desc": "- Route actuelle (optionnel, pour déterminer l'item actif)"
-      }
-    ],
-    "slots": [],
-    "file": "section/DynamicMenu.vue"
+    "file": "section/modals/EditPageModal.vue"
   },
   {
     "name": "CreateSectionModal",
@@ -234,7 +277,7 @@
       }
     ],
     "slots": [],
-    "file": "section/CreateSectionModal.vue"
+    "file": "section/modals/CreateSectionModal.vue"
   },
   {
     "name": "CreatePageModal",
@@ -252,212 +295,7 @@
       }
     ],
     "slots": [],
-    "file": "section/CreatePageModal.vue"
-  },
-  {
-    "name": "SectionVideo",
-    "description": "SectionVideo Template",
-    "props": [
-      {
-        "name": "params",
-        "type": "Object",
-        "desc": "- Paramètres de la section"
-      },
-      {
-        "name": "params.src",
-        "type": "String",
-        "desc": "- URL de la vidéo (requis)"
-      },
-      {
-        "name": "params.type",
-        "type": "String",
-        "desc": "- Type de vidéo (youtube|vimeo|direct, requis)"
-      },
-      {
-        "name": "params.autoplay",
-        "type": "Boolean",
-        "desc": "- Lecture automatique (optionnel)"
-      },
-      {
-        "name": "params.controls",
-        "type": "Boolean",
-        "desc": "- Afficher les contrôles (optionnel, défaut: true)"
-      },
-      {
-        "name": "section",
-        "type": "Object",
-        "desc": "- Données complètes de la section"
-      },
-      {
-        "name": "user",
-        "type": "Object|null",
-        "desc": "- Utilisateur connecté (optionnel)"
-      }
-    ],
-    "slots": [],
-    "file": "section/templates/SectionVideo.vue"
-  },
-  {
-    "name": "SectionText",
-    "description": "SectionText Template",
-    "props": [
-      {
-        "name": "params",
-        "type": "Object",
-        "desc": "- Paramètres de la section"
-      },
-      {
-        "name": "params.content",
-        "type": "String",
-        "desc": "- Contenu HTML de la section (requis)"
-      },
-      {
-        "name": "params.align",
-        "type": "String",
-        "desc": "- Alignement du texte (left|center|right, optionnel)"
-      },
-      {
-        "name": "params.size",
-        "type": "String",
-        "desc": "- Taille du texte (sm|md|lg|xl, optionnel)"
-      },
-      {
-        "name": "section",
-        "type": "Object",
-        "desc": "- Données complètes de la section"
-      },
-      {
-        "name": "user",
-        "type": "Object|null",
-        "desc": "- Utilisateur connecté (optionnel)"
-      }
-    ],
-    "slots": [],
-    "file": "section/templates/SectionText.vue"
-  },
-  {
-    "name": "SectionImage",
-    "description": "SectionImage Template",
-    "props": [
-      {
-        "name": "params",
-        "type": "Object",
-        "desc": "- Paramètres de la section"
-      },
-      {
-        "name": "params.src",
-        "type": "String",
-        "desc": "- URL de l'image (requis)"
-      },
-      {
-        "name": "params.alt",
-        "type": "String",
-        "desc": "- Texte alternatif (requis)"
-      },
-      {
-        "name": "params.caption",
-        "type": "String",
-        "desc": "- Légende de l'image (optionnel)"
-      },
-      {
-        "name": "params.align",
-        "type": "String",
-        "desc": "- Alignement (left|center|right, optionnel)"
-      },
-      {
-        "name": "params.size",
-        "type": "String",
-        "desc": "- Taille (sm|md|lg|xl|full, optionnel)"
-      },
-      {
-        "name": "section",
-        "type": "Object",
-        "desc": "- Données complètes de la section"
-      },
-      {
-        "name": "user",
-        "type": "Object|null",
-        "desc": "- Utilisateur connecté (optionnel)"
-      }
-    ],
-    "slots": [],
-    "file": "section/templates/SectionImage.vue"
-  },
-  {
-    "name": "SectionGallery",
-    "description": "SectionGallery Template",
-    "props": [
-      {
-        "name": "params",
-        "type": "Object",
-        "desc": "- Paramètres de la section"
-      },
-      {
-        "name": "params.images",
-        "type": "Array",
-        "desc": "- Tableau d'images (requis)"
-      },
-      {
-        "name": "params.columns",
-        "type": "Number",
-        "desc": "- Nombre de colonnes (2|3|4, optionnel, défaut: 3)"
-      },
-      {
-        "name": "params.gap",
-        "type": "String",
-        "desc": "- Espacement entre les images (sm|md|lg, optionnel, défaut: md)"
-      },
-      {
-        "name": "section",
-        "type": "Object",
-        "desc": "- Données complètes de la section"
-      },
-      {
-        "name": "user",
-        "type": "Object|null",
-        "desc": "- Utilisateur connecté (optionnel)"
-      }
-    ],
-    "slots": [],
-    "file": "section/templates/SectionGallery.vue"
-  },
-  {
-    "name": "SectionEntityTable",
-    "description": "SectionEntityTable Template",
-    "props": [
-      {
-        "name": "params",
-        "type": "Object",
-        "desc": "- Paramètres de la section"
-      },
-      {
-        "name": "params.entity",
-        "type": "String",
-        "desc": "- Type d'entité à afficher (requis)"
-      },
-      {
-        "name": "params.filters",
-        "type": "Object",
-        "desc": "- Filtres à appliquer (optionnel)"
-      },
-      {
-        "name": "params.columns",
-        "type": "Array",
-        "desc": "- Colonnes à afficher (optionnel)"
-      },
-      {
-        "name": "section",
-        "type": "Object",
-        "desc": "- Données complètes de la section"
-      },
-      {
-        "name": "user",
-        "type": "Object|null",
-        "desc": "- Utilisateur connecté (optionnel)"
-      }
-    ],
-    "slots": [],
-    "file": "section/templates/SectionEntityTable.vue"
+    "file": "section/modals/CreatePageModal.vue"
   },
   {
     "name": "NotificationContainer",

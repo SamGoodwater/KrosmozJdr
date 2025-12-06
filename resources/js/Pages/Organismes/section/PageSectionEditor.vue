@@ -20,6 +20,7 @@ import Btn from '@/Pages/Atoms/action/Btn.vue'
 import Icon from '@/Pages/Atoms/data-display/Icon.vue'
 import Alert from '@/Pages/Atoms/feedback/Alert.vue'
 import Tooltip from '@/Pages/Atoms/feedback/Tooltip.vue'
+import CreateSectionModal from './modals/CreateSectionModal.vue'
 
 const props = defineProps({
     sections: {
@@ -55,6 +56,7 @@ const draggingIndex = ref(null)
 const saving = ref(false)
 const saveError = ref('')
 const saveSuccess = ref('')
+const createSectionModalOpen = ref(false)
 
 const hasChanges = computed(() => {
     if (localSections.value.length !== props.sections.length) return true
@@ -87,7 +89,7 @@ function onDragEnd() {
 }
 
 function sectionTypeLabel(section) {
-    return section.type || 'text'
+    return section.template || section.type || 'text' // Compatibilité
 }
 
 function saveOrder() {
@@ -117,6 +119,20 @@ function saveOrder() {
         }
     })
 }
+
+function handleOpenCreateSectionModal() {
+    createSectionModalOpen.value = true
+}
+
+function handleCloseCreateSectionModal() {
+    createSectionModalOpen.value = false
+}
+
+function handleSectionCreated(data) {
+    createSectionModalOpen.value = false
+    // Recharger les sections après création
+    router.reload({ only: ['page'] })
+}
 </script>
 
 <template>
@@ -126,21 +142,16 @@ function saveOrder() {
                 Sections de la page
             </h2>
             <div class="flex gap-2">
-                <Link
-                    :href="route('sections.create') + `?page_id=${pageId}`"
+                <Btn
                     v-if="canEdit"
+                    size="sm"
+                    variant="primary"
+                    @click="handleOpenCreateSectionModal"
+                    aria-label="Ajouter une section"
                 >
-                    <Tooltip content="Ajouter une nouvelle section" placement="top">
-                        <Btn
-                            size="sm"
-                            variant="primary"
-                            aria-label="Ajouter une section"
-                        >
-                            <i class="fa-solid fa-plus mr-2"></i>
-                            Ajouter une section
-                        </Btn>
-                    </Tooltip>
-                </Link>
+                    <Icon source="fa-solid fa-plus" class="mr-2" />
+                    Ajouter une section
+                </Btn>
             </div>
         </div>
 
@@ -175,7 +186,7 @@ function saveOrder() {
                             #{{ index }}
                         </span>
                         <h3 class="font-semibold truncate">
-                            {{ section.title || `Section ${index + 1}` }}
+                            {{ section.title || 'Sans titre' }}
                         </h3>
                     </div>
                     <div class="text-xs text-base-content/60 mt-1 flex flex-wrap gap-2">
@@ -194,22 +205,7 @@ function saveOrder() {
                     </div>
                 </div>
 
-                <div class="flex items-center gap-2">
-                    <Link
-                        :href="route('sections.edit', { section: section.id })"
-                        v-if="canEdit"
-                    >
-                        <Tooltip content="Modifier la section" placement="top">
-                            <Btn
-                                size="sm"
-                                variant="ghost"
-                                aria-label="Modifier la section"
-                            >
-                                <i class="fa-solid fa-pen"></i>
-                            </Btn>
-                        </Tooltip>
-                    </Link>
-                </div>
+                <!-- L'édition se fait maintenant via le modal SectionParamsModal depuis SectionRenderer -->
             </div>
         </div>
 
@@ -254,6 +250,14 @@ function saveOrder() {
                 {{ saveError }}
             </Alert>
         </div>
+
+        <!-- Modal de création de section -->
+        <CreateSectionModal
+            :open="createSectionModalOpen"
+            :page-id="pageId"
+            @close="handleCloseCreateSectionModal"
+            @created="handleSectionCreated"
+        />
     </Container>
 </template>
 

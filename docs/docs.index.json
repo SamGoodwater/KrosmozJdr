@@ -165,9 +165,9 @@
     "description": "Le système de validation a été entièrement refactorisé pour répondre aux besoins de simplicité et de transparence. L'objectif était de créer une API qui évite les conflits avec les vues tout en restant puissante et flexible."
   },
   {
-    "path": "110- To Do/To Do.md",
-    "title": "",
-    "description": "État :  #afaire  #encours #fini"
+    "path": "110- To Do/To Do2.md",
+    "title": "Template",
+    "description": "````col"
   },
   {
     "path": "20-Content/21-Entities/ENTITIES_OVERVIEW.md",
@@ -285,19 +285,24 @@
     "description": "Ce document a été découpé pour plus de clarté et de synthèse. Retrouvez chaque section dans les fichiers dédiés :"
   },
   {
-    "path": "20-Content/DYNAMIC_PAGES.md",
-    "title": "Pages dynamiques et sections",
-    "description": "- `pages` : titre, slug, visibilité, menu, état, parent, ordre, créateur, timestamps, soft delete"
-  },
-  {
     "path": "20-Content/FORMULAS.md",
     "title": "Syntaxe des formules (Krosmoz JDR)",
     "description": "- Toute formule est encadrée par des accolades `{ ... }`."
   },
   {
-    "path": "20-Content/PAGES_SECTIONS_IMPLEMENTATION_PLAN.md",
-    "title": "🚀 Plan d'Implémentation - Système Pages/Sections",
-    "description": "Ce document détaille le plan d'implémentation complet du système de pages et sections modulaire pour KrosmozJDR."
+    "path": "20-Content/PAGES_SECTIONS.md",
+    "title": "Système de Pages et Sections - KrosmozJDR",
+    "description": "Le système de pages et sections permet de créer des pages dynamiques modulaires composées de blocs de contenu réutilisables. Chaque page peut contenir plusieurs sections ordonnées, chaque section utilisant un template spécifique pour afficher son contenu."
+  },
+  {
+    "path": "20-Content/PAGES_SECTIONS_COMPLIANCE.md",
+    "title": "📋 Conformité Code vs To-Do List - Pages/Sections",
+    "description": "**Date** : 2025-01-27"
+  },
+  {
+    "path": "20-Content/PAGES_SECTIONS_REFACTORING_PLAN.md",
+    "title": "🔄 Plan de Refactorisation - Pages et Sections",
+    "description": "**Date** : 2025-01-27"
   },
   {
     "path": "20-Content/README.md",
@@ -388,6 +393,11 @@
     "path": "30-UI/INPUT SYSTEM/LABELS.md",
     "title": "🏷️ Système de Labels",
     "description": "Le système de labels de KrosmozJDR est **complexe et flexible**, offrant 7 positions différentes avec des règles d'exclusion intelligentes. Il distingue les labels **externes** (gérés par les Fields) et **internes** (gérés par les Cores)."
+  },
+  {
+    "path": "30-UI/INPUT SYSTEM/RAPPORT_STYLING_SYSTEM.md",
+    "title": "📊 Rapport d'Analyse - Système de Style Unifié",
+    "description": "**Date** : 2025-01-XX"
   },
   {
     "path": "30-UI/INPUT SYSTEM/README.md",

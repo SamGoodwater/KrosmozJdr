@@ -34,6 +34,14 @@ $brightness-sizes: (
 // Classes pour le glassmorphisme
 // Utilisation : <div class="bd-blur-md bd-opacity-md">...</div>
 
+// Mixin pour utiliser dans d'autres fichiers SCSS
+@mixin bd-blur($size) {
+    $value: map.get($blur-sizes, $size);
+    @if $value {
+        backdrop-filter: blur(#{$value}px);
+    }
+}
+
 .bd-blur-none {
     backdrop-filter: blur(0px);
 }

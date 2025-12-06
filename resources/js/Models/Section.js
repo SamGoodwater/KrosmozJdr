@@ -31,12 +31,34 @@ export class Section extends BaseModel {
         return this._data.order || 0;
     }
 
+    get title() {
+        return this._data.title || null;
+    }
+
+    get slug() {
+        return this._data.slug || null;
+    }
+
+    get template() {
+        return this._data.template;
+    }
+
+    get settings() {
+        return this._data.settings || {};
+    }
+
+    get data() {
+        return this._data.data || {};
+    }
+
+    // Compatibilité avec l'ancien code (type/params)
     get type() {
-        return this._data.type;
+        return this.template;
     }
 
     get params() {
-        return this._data.params || {};
+        // Fusionner settings et data pour la compatibilité
+        return { ...this.settings, ...this.data };
     }
 
     get isVisible() {
@@ -101,21 +123,21 @@ export class Section extends BaseModel {
     // ============================================
 
     /**
-     * Retourne le contenu de la section selon son type
+     * Retourne le contenu de la section selon son template
      * @returns {*}
      */
     get content() {
-        switch (this.type) {
+        switch (this.template) {
             case 'text':
-                return this.params.content || '';
+                return this.data.content || '';
             case 'image':
-                return this.params.src || '';
+                return this.data.src || '';
             case 'gallery':
-                return this.params.images || [];
+                return this.data.images || [];
             case 'video':
-                return this.params.src || '';
+                return this.data.src || '';
             default:
-                return this.params;
+                return this.data;
         }
     }
 
@@ -142,10 +164,14 @@ export class Section extends BaseModel {
     toFormData() {
         return {
             page_id: this.pageId,
+            title: this.title,
+            slug: this.slug,
             order: this.order,
-            type: this.type,
-            params: this.params,
+            template: this.template,
+            settings: this.settings,
+            data: this.data,
             is_visible: this.isVisible,
+            can_edit_role: this._data.can_edit_role,
             state: this.state
         };
     }

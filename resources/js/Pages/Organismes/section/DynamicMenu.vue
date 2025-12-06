@@ -96,7 +96,8 @@ const formattedMenuItems = computed(() => {
                     <details :open="menuItem.isOpen">
                         <summary class="flex items-center">
                             <Icon 
-                                source="fa-solid fa-file" 
+                                source="fa-file" 
+                                pack="solid"
                                 alt="Page" 
                                 size="md" 
                                 class="mr-2" 
@@ -121,7 +122,8 @@ const formattedMenuItems = computed(() => {
                     v-else
                     :href="menuItem.item.url"
                     :active="menuItem.isActive"
-                    icon="fa-solid fa-file"
+                    icon="fa-file"
+                    pack="solid"
                 >
                     {{ menuItem.item.title }}
                 </MenuItem>

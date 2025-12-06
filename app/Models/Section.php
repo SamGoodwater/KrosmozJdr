@@ -25,10 +25,14 @@ use App\Enums\SectionType;
  *
  * @property int $id
  * @property int $page_id
+ * @property string|null $title
+ * @property string|null $slug
  * @property int $order
- * @property string $type
- * @property array<array-key, mixed> $params
+ * @property string $template
+ * @property array<array-key, mixed>|null $settings
+ * @property array<array-key, mixed>|null $data
  * @property string $is_visible
+ * @property string $can_edit_role
  * @property string $state
  * @property int|null $created_by
  * @property \Illuminate\Support\Carbon|null $created_at
@@ -52,9 +56,12 @@ use App\Enums\SectionType;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Section whereIsVisible($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Section whereOrder($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Section wherePageId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Section whereParams($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Section whereTitle($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Section whereSlug($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Section whereTemplate($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Section whereSettings($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Section whereData($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Section whereState($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Section whereType($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Section whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Section withTrashed()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Section withoutTrashed()
@@ -83,10 +90,14 @@ class Section extends Model
      */
     protected $fillable = [
         'page_id',
+        'title',
+        'slug',
         'order',
-        'type',
-        'params',
+        'template',
+        'settings',
+        'data',
         'is_visible',
+        'can_edit_role',
         'state',
         'created_by',
     ];
@@ -98,10 +109,12 @@ class Section extends Model
      */
     protected $casts = [
         'order' => 'integer',
-        'params' => 'array',
+        'template' => SectionType::class,
+        'settings' => 'array',
+        'data' => 'array',
         'state' => PageState::class,
         'is_visible' => Visibility::class,
-        'type' => SectionType::class,
+        'can_edit_role' => Visibility::class,
     ];
 
     /**
@@ -258,5 +271,49 @@ class Section extends Model
     public function archive(): void
     {
         $this->update(['state' => PageState::ARCHIVED->value]);
+    }
+
+    /**
+     * Vérifie si la section peut être modifiée par un utilisateur selon can_edit_role.
+     */
+    public function canBeEditedBy(?User $user = null): bool
+    {
+        // Les super_admin peuvent toujours modifier
+        if ($user && in_array($user->role, [User::ROLE_SUPER_ADMIN, 5, 'super_admin'])) {
+            return true;
+        }
+
+        if (!$user) {
+            return false;
+        }
+
+        // Si l'utilisateur est l'auteur de la section, il peut la modifier
+        if ($this->created_by === $user->id) {
+            return true;
+        }
+
+        // Si l'utilisateur est associé à la section via la relation users, il peut la modifier
+        // Charger la relation si elle n'est pas déjà chargée
+        if (!$this->relationLoaded('users')) {
+            try {
+                $this->load('users');
+            } catch (\Exception $e) {
+                // Si la relation ne peut pas être chargée, continuer avec les autres vérifications
+            }
+        }
+        if ($this->relationLoaded('users') && $this->users->contains($user->id)) {
+            return true;
+        }
+
+        // Vérifier selon can_edit_role
+        // can_edit_role est déjà un enum Visibility grâce au cast, donc on peut l'utiliser directement
+        $editRole = $this->can_edit_role instanceof Visibility 
+            ? $this->can_edit_role 
+            : Visibility::tryFrom($this->can_edit_role ?? 'admin');
+        if (!$editRole) {
+            return false;
+        }
+
+        return $editRole->isAccessibleBy($user);
     }
 }

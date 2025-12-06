@@ -15,5 +15,6 @@ Les pages représentent les contenus dynamiques du site ou du jeu : pages de c
 - Ajout de sections dynamiques à une page.
 
 ## Liens utiles
+- [Système de Pages et Sections](../PAGES_SECTIONS.md) - Documentation complète du système
 - [ENTITY_CAMPAIGNS.md](ENTITY_CAMPAIGNS.md)
 - [ENTITY_SECTIONS.md](ENTITY_SECTIONS.md) 

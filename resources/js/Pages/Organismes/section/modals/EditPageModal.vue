@@ -25,10 +25,13 @@ import ToggleField from '@/Pages/Molecules/data-input/ToggleField.vue';
 import Btn from '@/Pages/Atoms/action/Btn.vue';
 import Alert from '@/Pages/Atoms/feedback/Alert.vue';
 import Icon from '@/Pages/Atoms/data-display/Icon.vue';
+import Tab from '@/Pages/Molecules/navigation/Tab.vue';
+import TabItem from '@/Pages/Atoms/navigation/TabItem.vue';
 import { getPageStateOptions } from '@/Utils/enums/PageState';
 import { getVisibilityOptions } from '@/Utils/enums/Visibility';
 import { Page } from '@/Models';
 import { useCopyToClipboard } from '@/Composables/utils/useCopyToClipboard';
+import PageSectionEditor from '../PageSectionEditor.vue';
 
 const props = defineProps({
     open: {
@@ -47,10 +50,27 @@ const props = defineProps({
 
 const emit = defineEmits(['close', 'deleted']);
 
+// Onglet actif
+const activeTab = ref('general');
+
+// Extraire les données de la page (gérer la structure Resource qui peut être dans data)
+// Le modèle Page gère déjà l'extraction, donc on peut simplifier
+const pageData = computed(() => {
+    if (!props.page) return {};
+    
+    // Si props.page a une propriété data, utiliser data (structure Resource)
+    if (props.page.data && typeof props.page.data === 'object') {
+        return props.page.data;
+    }
+    
+    // Sinon, utiliser props.page directement
+    return props.page;
+});
+
 // Utiliser le modèle Page pour normaliser l'accès aux données
 const pageModel = computed(() => {
-    if (!props.page) return null;
-    return new Page(props.page);
+    if (!pageData.value) return null;
+    return new Page(pageData.value);
 });
 
 // Options pour les selects
@@ -89,19 +109,36 @@ const form = useForm({
 });
 
 // Réinitialiser le formulaire quand le modal s'ouvre ou que la page change
-watch([() => props.open, () => props.page], ([isOpen, page]) => {
-    if (isOpen && pageModel.value) {
-        const page = pageModel.value;
+watch([() => props.open, () => pageModel.value], ([isOpen, model]) => {
+    if (isOpen && model) {
+        // Utiliser le modèle Page qui normalise déjà les données
+        form.title = model.title || '';
+        form.slug = model.slug || '';
+        form.is_visible = model.isVisible || 'guest';
+        form.can_edit_role = model.canEditRole || 'admin';
+        form.in_menu = model.inMenu ?? true;
+        form.state = model.state || 'draft';
+        form.parent_id = model.parentId || null;
+        form.menu_order = model.menuOrder || 0;
         
-        // Utiliser les méthodes du modèle pour extraire les données
-        form.title = page.title || '';
-        form.slug = page.slug || '';
-        form.is_visible = page.isVisible || 'guest';
-        form.can_edit_role = page.canEditRole || 'admin';
-        form.in_menu = page.inMenu ?? true;
-        form.state = page.state || 'draft';
-        form.parent_id = page.parentId || null;
-        form.menu_order = page.menuOrder || 0;
+        // Debug en développement
+        if (import.meta.env.DEV) {
+            console.log('EditPageModal - Form initialization:', {
+                raw: pageData.value,
+                model,
+                pageData: pageData.value,
+                formValues: {
+                    title: form.title,
+                    slug: form.slug,
+                    is_visible: form.is_visible,
+                    can_edit_role: form.can_edit_role,
+                    in_menu: form.in_menu,
+                    state: form.state,
+                    parent_id: form.parent_id,
+                    menu_order: form.menu_order
+                }
+            });
+        }
         
         form.clearErrors();
     }
@@ -220,8 +257,8 @@ const handleClose = () => {
     <Modal 
         :open="open" 
         size="xl" 
-        placement="middle"
-        animation="fade"
+        placement="middle-center"
+        close-on-esc
         @close="handleClose"
     >
         <template #header>
@@ -236,23 +273,44 @@ const handleClose = () => {
                         @click="copyUrl"
                         title="Copier l'URL de la page"
                     >
-                        <Icon source="fa-solid fa-link" pack="solid" size="sm" />
+                        <Icon source="fa-link" pack="solid" alt="Copier l'URL" size="sm" />
                     </Btn>
                     <!-- Bouton supprimer -->
                     <Btn
                         v-if="pageModel?.canDelete"
-                        variant="error"
+                        color="error"
                         size="sm"
                         @click="deletePage"
                         title="Supprimer la page"
                     >
-                        <Icon source="fa-solid fa-trash-can" pack="solid" size="sm" />
+                        <Icon source="fa-trash-can" pack="solid" alt="Supprimer" size="sm" />
                     </Btn>
                 </div>
             </div>
         </template>
 
-        <form @submit.prevent="submit" class="space-y-4 max-h-[70vh] overflow-y-auto pr-2">
+        <!-- Onglets -->
+        <div class="tabs tabs-lifted mb-4">
+            <button
+                :class="['tab', activeTab === 'general' && 'tab-active']"
+                @click="activeTab = 'general'"
+                type="button"
+            >
+                <Icon source="fa-gear" pack="solid" alt="Général" class="mr-2" />
+                Général
+            </button>
+            <button
+                :class="['tab', activeTab === 'sections' && 'tab-active']"
+                @click="activeTab = 'sections'"
+                type="button"
+            >
+                <Icon source="fa-list" pack="solid" alt="Sections" class="mr-2" />
+                Sections
+            </button>
+        </div>
+
+        <!-- Contenu de l'onglet Général -->
+        <form v-if="activeTab === 'general'" @submit.prevent="submit" class="space-y-4 max-h-[70vh] overflow-y-auto pr-2">
             <!-- Message d'erreur global -->
             <Alert
                 v-if="Object.keys(form.errors).length > 0"
@@ -348,7 +406,7 @@ const handleClose = () => {
                 </Btn>
                 <Btn
                     type="submit"
-                    variant="primary"
+                    color="primary"
                     :disabled="form.processing"
                 >
                     <span v-if="form.processing">Enregistrement...</span>
@@ -356,6 +414,19 @@ const handleClose = () => {
                 </Btn>
             </div>
         </form>
+
+        <!-- Contenu de l'onglet Sections -->
+        <div v-if="activeTab === 'sections'" class="max-h-[70vh] overflow-y-auto pr-2">
+            <PageSectionEditor
+                v-if="pageModel && pageModel.sections && Array.isArray(pageModel.sections)"
+                :sections="pageModel.sections"
+                :page-id="pageModel.id"
+                :can-edit="pageModel.canUpdate"
+            />
+            <div v-else class="text-center py-8 text-base-content/50">
+                <p>Aucune section disponible pour cette page.</p>
+            </div>
+        </div>
     </Modal>
 </template>
 

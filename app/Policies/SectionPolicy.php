@@ -75,7 +75,8 @@ class SectionPolicy
      */
     public function update(User $user, Section $section): bool
     {
-        return $user->can('update', $section->page);
+        // Utiliser la méthode canBeEditedBy du modèle qui prend en compte can_edit_role
+        return $section->canBeEditedBy($user);
     }
 
     /**

@@ -139,8 +139,8 @@ const submit = () => {
     <Modal 
         :open="open" 
         size="xl" 
-        placement="middle"
-        animation="fade"
+        placement="middle-center"
+        close-on-esc
         @close="handleClose"
     >
         <template #header>

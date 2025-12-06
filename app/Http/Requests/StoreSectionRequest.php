@@ -31,23 +31,26 @@ class StoreSectionRequest extends FormRequest
      */
     public function rules(): array
     {
-        $type = $this->input('type');
+        $template = $this->input('template');
         
         $rules = [
             'page_id' => ['required', 'exists:pages,id'],
+            'title' => ['sometimes', 'nullable', 'string', 'max:255'],
+            'slug' => ['sometimes', 'nullable', 'string', 'max:255'],
             'order' => ['required', 'integer', 'min:0'],
-            'type' => ['required', Rule::enum(SectionType::class)],
-            'params' => ['required', 'array'],
+            'template' => ['required', Rule::enum(SectionType::class)],
+            'settings' => ['sometimes', 'nullable', 'array'],
+            'data' => ['required', 'array'],
             'is_visible' => ['sometimes', Rule::enum(Visibility::class)],
+            'can_edit_role' => ['sometimes', Rule::enum(Visibility::class)],
             'state' => ['sometimes', Rule::enum(PageState::class)],
         ];
 
-        // Validation dynamique des params selon le type
-        if ($type && $sectionType = SectionType::tryFrom($type)) {
-            $paramsRules = $this->getParamsValidationRules($sectionType);
-            if (!empty($paramsRules)) {
-                // Fusionner les règles de params avec les règles existantes
-                $rules = array_merge($rules, $paramsRules);
+        // Validation dynamique des settings et data selon le template
+        if ($template && $sectionType = SectionType::tryFrom($template)) {
+            $validationRules = $this->getTemplateValidationRules($sectionType);
+            if (!empty($validationRules)) {
+                $rules = array_merge($rules, $validationRules);
             }
         }
 
@@ -55,44 +58,44 @@ class StoreSectionRequest extends FormRequest
     }
 
     /**
-     * Retourne les règles de validation pour les params selon le type de section.
+     * Retourne les règles de validation pour les settings et data selon le template de section.
      * 
-     * @param SectionType $type Type de section
+     * @param SectionType $template Template de section
      * @return array<string, mixed> Règles de validation
      */
-    protected function getParamsValidationRules(SectionType $type): array
+    protected function getTemplateValidationRules(SectionType $template): array
     {
-        return match($type) {
+        return match($template) {
             SectionType::TEXT => [
-                'params.content' => ['required', 'string'],
-                'params.align' => ['sometimes', 'string', Rule::in(['left', 'center', 'right'])],
-                'params.size' => ['sometimes', 'string', Rule::in(['sm', 'md', 'lg', 'xl'])],
+                'data.content' => ['required', 'string'],
+                'settings.align' => ['sometimes', 'string', Rule::in(['left', 'center', 'right'])],
+                'settings.size' => ['sometimes', 'string', Rule::in(['sm', 'md', 'lg', 'xl'])],
             ],
             SectionType::IMAGE => [
-                'params.src' => ['required', 'string'],
-                'params.alt' => ['required', 'string'],
-                'params.caption' => ['sometimes', 'string', 'nullable'],
-                'params.align' => ['sometimes', 'string', Rule::in(['left', 'center', 'right'])],
-                'params.size' => ['sometimes', 'string', Rule::in(['sm', 'md', 'lg', 'xl', 'full'])],
+                'data.src' => ['required', 'string'],
+                'data.alt' => ['required', 'string'],
+                'data.caption' => ['sometimes', 'string', 'nullable'],
+                'settings.align' => ['sometimes', 'string', Rule::in(['left', 'center', 'right'])],
+                'settings.size' => ['sometimes', 'string', Rule::in(['sm', 'md', 'lg', 'xl', 'full'])],
             ],
             SectionType::GALLERY => [
-                'params.images' => ['required', 'array', 'min:1'],
-                'params.images.*.src' => ['required', 'string'],
-                'params.images.*.alt' => ['required', 'string'],
-                'params.images.*.caption' => ['sometimes', 'string', 'nullable'],
-                'params.columns' => ['sometimes', 'integer', Rule::in([2, 3, 4])],
-                'params.gap' => ['sometimes', 'string', Rule::in(['sm', 'md', 'lg'])],
+                'data.images' => ['required', 'array', 'min:1'],
+                'data.images.*.src' => ['required', 'string'],
+                'data.images.*.alt' => ['required', 'string'],
+                'data.images.*.caption' => ['sometimes', 'string', 'nullable'],
+                'settings.columns' => ['sometimes', 'integer', Rule::in([2, 3, 4])],
+                'settings.gap' => ['sometimes', 'string', Rule::in(['sm', 'md', 'lg'])],
             ],
             SectionType::VIDEO => [
-                'params.src' => ['required', 'string'],
-                'params.type' => ['required', 'string', Rule::in(['youtube', 'vimeo', 'direct'])],
-                'params.autoplay' => ['sometimes', 'boolean'],
-                'params.controls' => ['sometimes', 'boolean'],
+                'data.src' => ['required', 'string'],
+                'data.type' => ['required', 'string', Rule::in(['youtube', 'vimeo', 'direct'])],
+                'settings.autoplay' => ['sometimes', 'boolean'],
+                'settings.controls' => ['sometimes', 'boolean'],
             ],
             SectionType::ENTITY_TABLE => [
-                'params.entity' => ['required', 'string'],
-                'params.filters' => ['sometimes', 'array'],
-                'params.columns' => ['sometimes', 'array'],
+                'data.entity' => ['required', 'string'],
+                'data.filters' => ['sometimes', 'array'],
+                'data.columns' => ['sometimes', 'array'],
             ],
         };
     }
@@ -104,6 +107,12 @@ class StoreSectionRequest extends FormRequest
         if (!isset($data['is_visible'])) {
             $this->merge([
                 'is_visible' => Visibility::GUEST->value,
+            ]);
+        }
+        
+        if (!isset($data['can_edit_role'])) {
+            $this->merge([
+                'can_edit_role' => Visibility::ADMIN->value,
             ]);
         }
         

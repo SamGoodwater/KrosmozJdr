@@ -18,9 +18,11 @@
  * <PageRenderer :page="page" :user="user" :pages="pages" />
  */
 import { computed, ref } from 'vue';
+import { router } from '@inertiajs/vue3';
 import SectionRenderer from './SectionRenderer.vue';
 import Container from '@/Pages/Atoms/data-display/Container.vue';
-import EditPageModal from './EditPageModal.vue';
+import EditPageModal from './modals/EditPageModal.vue';
+import CreateSectionModal from './modals/CreateSectionModal.vue';
 import Btn from '@/Pages/Atoms/action/Btn.vue';
 import Icon from '@/Pages/Atoms/data-display/Icon.vue';
 import { Page } from '@/Models';
@@ -30,7 +32,20 @@ const props = defineProps({
         type: Object,
         required: true,
         validator: (value) => {
-            return value && typeof value === 'object' && 'id' in value && 'title' in value;
+            if (!value || typeof value !== 'object') return false;
+            // Accepter les objets Inertia (peuvent avoir des ComputedRefImpl)
+            // Accepter aussi les objets directs avec id ou title
+            try {
+                const pageData = value?.data || value;
+                // Si c'est un ComputedRef, on accepte (sera résolu dans le computed)
+                if (pageData && typeof pageData === 'object') {
+                    return true;
+                }
+                return false;
+            } catch {
+                // Si l'accès échoue, on accepte quand même (peut être un ComputedRef)
+                return true;
+            }
         }
     },
     user: {
@@ -55,8 +70,42 @@ const pageModel = computed(() => {
 
 // Vérifier si l'utilisateur peut modifier la page
 const canEdit = computed(() => {
-    if (!pageModel.value) return false;
-    return pageModel.value.canUpdate;
+    if (!props.page) return false;
+    
+    // Vérifier directement depuis props.page (plus fiable)
+    // Le PageResource inclut 'can' => ['update' => ...]
+    // Mais les données peuvent être dans props.page.data si c'est une Resource
+    const pageData = props.page?.data || props.page;
+    let canUpdate = pageData?.can?.update || props.page?.can?.update || false;
+    
+    // Fallback sur le modèle si nécessaire
+    if (!canUpdate && pageModel.value) {
+        canUpdate = pageModel.value.canUpdate || false;
+    }
+    
+    // Fallback final : vérifier le rôle utilisateur directement
+    // Si l'utilisateur est admin ou super_admin, il peut toujours modifier
+    if (!canUpdate && props.user) {
+        const userRole = props.user.role || props.user.role_name;
+        // Rôles admin : 4 = admin, 5 = super_admin
+        const adminRoles = [4, 5, 'admin', 'super_admin'];
+        if (adminRoles.includes(userRole)) {
+            canUpdate = true;
+        }
+    }
+    
+    // Debug en développement
+    if (import.meta.env.DEV) {
+        console.log('PageRenderer - canEdit:', {
+            canUpdate,
+            pageData: pageData?.can,
+            propsPageCan: props.page?.can,
+            userRole: props.user?.role,
+            pageModelCan: pageModel.value?.canUpdate
+        });
+    }
+    
+    return canUpdate;
 });
 
 const handleOpenEditModal = () => {
@@ -80,10 +129,18 @@ const handleCloseCreateSectionModal = () => {
     createSectionModalOpen.value = false;
 };
 
-const handleSectionCreated = () => {
+const handleSectionCreated = (data) => {
     createSectionModalOpen.value = false;
-    // Recharger la page pour afficher la nouvelle section
-    window.location.reload();
+    
+    // Si la section doit être ouverte en mode édition, on recharge la page
+    // Sinon, on recharge simplement pour afficher la nouvelle section
+    if (data?.openEdit) {
+        // Recharger la page pour afficher la section en mode édition
+        router.reload({ only: ['page'] });
+    } else {
+        // Recharger la page pour afficher la nouvelle section
+        router.reload({ only: ['page'] });
+    }
 };
 
 /**
@@ -106,19 +163,19 @@ const sortedSections = computed(() => {
         <header class="mb-8">
             <div class="flex items-center gap-3 mb-2">
                 <h1 class="text-4xl font-bold text-primary">
-                    {{ pageModel?.title || 'Page' }}
+                    {{ pageModel?.title || props.page?.title || 'Page' }}
                 </h1>
-                <!-- Icône discrète pour modifier à côté du titre -->
-                <!-- Forcer l'affichage temporairement pour debug -->
-                <button
+                <!-- Bouton pour modifier la page à côté du titre (seulement si droits d'écriture) -->
+                <Btn
+                    v-if="canEdit"
                     @click="handleOpenEditModal"
-                    class="opacity-40 hover:opacity-100 transition-opacity p-2 rounded hover:bg-base-200 inline-flex items-center justify-center text-base-content"
-                    title="Modifier la page"
-                    type="button"
-                    style="min-width: 32px; min-height: 32px;"
+                    variant="ghost"
+                    size="sm"
+                    title="Modifier les options de la page"
+                    class="ml-2"
                 >
-                    <i class="fa-solid fa-edit text-sm"></i>
-                </button>
+                    <Icon source="fa-edit" pack="solid" alt="Modifier la page" size="sm" />
+                </Btn>
             </div>
             <div v-if="pageModel?.createdByUser" class="text-sm text-base-content/70">
                 Par {{ pageModel.createdByUser?.name || pageModel.createdByUser?.email }}
@@ -141,24 +198,24 @@ const sortedSections = computed(() => {
             <Btn 
                 v-if="canEdit" 
                 @click="handleOpenCreateSectionModal" 
-                color="primary" 
-                variant="outline"
+                color="primary"
                 class="mt-4"
             >
-                <i class="fa-solid fa-plus mr-2"></i>
+                <Icon source="fa-plus" pack="solid" alt="Ajouter" class="mr-2" />
                 Ajouter une section
             </Btn>
         </div>
 
-        <!-- Bouton d'ajout de section (visible si sections existent) -->
-        <div v-if="sortedSections.length > 0 && canEdit" class="flex justify-center mt-8">
-            <Btn 
-                @click="handleOpenCreateSectionModal" 
-                color="primary" 
-                variant="outline"
+        <!-- Bouton d'ajout de section (visible si sections existent, en mode glass, carré, à droite) -->
+        <div v-if="sortedSections.length > 0 && canEdit" class="flex justify-end mt-8">
+            <Btn
+                @click="handleOpenCreateSectionModal"
+                variant="glass"
+                size="lg"
+                square
+                title="Ajouter une section"
             >
-                <i class="fa-solid fa-plus mr-2"></i>
-                Ajouter une section
+                <Icon source="fa-plus" pack="solid" alt="Ajouter une section" />
             </Btn>
         </div>
 
@@ -174,8 +231,9 @@ const sortedSections = computed(() => {
 
         <!-- Modal de création de section -->
         <CreateSectionModal
+            v-if="pageModel?.id"
             :open="createSectionModalOpen"
-            :page-id="pageModel?.id"
+            :page-id="pageModel.id"
             @close="handleCloseCreateSectionModal"
             @created="handleSectionCreated"
         />

@@ -13,5 +13,6 @@ Les sections représentent les blocs de contenu qui composent une page (texte, i
 - Gestion des droits d’accès à une section.
 
 ## Liens utiles
+- [Système de Pages et Sections](../PAGES_SECTIONS.md) - Documentation complète du système
 - [ENTITY_PAGES.md](ENTITY_PAGES.md)
 - [ENTITY_FILES.md](ENTITY_FILES.md) 

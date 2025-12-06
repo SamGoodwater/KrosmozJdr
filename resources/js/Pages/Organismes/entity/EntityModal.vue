@@ -90,8 +90,8 @@ const getEntityName = () => {
     <Modal 
         :open="open" 
         :size="modalSize"
-        placement="middle"
-        animation="fade"
+        placement="middle-center"
+        close-on-esc
         @close="handleClose">
         
         <template #header>

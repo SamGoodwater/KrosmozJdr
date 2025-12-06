@@ -1,6 +1,7 @@
 // Système DRY pour les glass box : border glass + backdrop glass + border-radius
 @use "./_border.scss" as *;
 @use "./_backdrop.scss" as *;
+@use "./_background.scss" as *;
 @use "../utils/_functions.scss" as *;
 // === Box-glass colorées pour tous les thèmes ===
 @use '../themes/_theme-global.scss' as *;
@@ -8,13 +9,13 @@
 @use '../themes/_theme-entities.scss' as *;
 @use 'sass:list';
 
-$glass-box-sizes: (xs, sm, md, lg, xl);
+$box-sizes: (xs, sm, md, lg, xl);
 
 @mixin box-glass($size, $combo: null, $sides: null) {
   @if $combo == null {
     @extend .border-glass-#{$size};
   } @else {
-    @extend .border-glass-#{$combo}-#{$size};
+    @extend .border-glass-#{$combo}-#{$size}; 
   }
   @extend .bd-glass-#{$size};
 
@@ -48,18 +49,43 @@ $glass-box-sizes: (xs, sm, md, lg, xl);
   }
 }
 
-@each $size in $glass-box-sizes {
-  .box-glass-#{$size} {
-    --color: var(--color-white); // Couleur par défaut
-    @include box-glass($size);
-  }
-}
-// Version sans thème, directionnelle
-@each $size in $glass-box-sizes {
-  @each $combo, $sides in $border-glass-combos {
-    .box-glass-#{$combo}-#{$size} {
-      --color: var(--color-white); // Couleur par défaut
-      @include box-glass($size, $combo, $sides);
+.box {
+  --color: var(--color-white); // Couleur par défaut
+  --bg-color: var(--color-neutral-950);
+
+  @each $size in $box-sizes {
+    &-glass-#{$size} {
+      @include box-glass($size);
+    }
+
+    @each $combo, $sides in $border-glass-combos {
+      &-glass-#{$combo}-#{$size} {
+        @include box-glass($size, $combo, $sides);
+        @include backgroundIntensity($size);
+      }
+    }
+
+    &-dash-#{$size} {
+      @include backgroundIntensity($size);
+      border: 1px dashed color-mix(in srgb, var(--color) 80%, transparent);
+      @include bd-blur($size);
+    }
+
+    &-outline-#{$size} {
+      @include backgroundIntensity($size);
+      @extend .border-glass-#{$size};
+      @include bd-blur($size);
+    }
+
+    &-soft-#{$size} {
+      @include backgroundIntensity($size);
+      border: 1px solid color-mix(in srgb, var(--color) 60%, transparent);
+      @include bd-blur($size);
+    }
+
+    &-ghost-#{$size} {
+      @include backgroundIntensity($size);
+      @include bd-blur($size);
     }
   }
 }

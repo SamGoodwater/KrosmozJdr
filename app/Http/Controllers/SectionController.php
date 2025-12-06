@@ -43,25 +43,20 @@ class SectionController extends Controller
     /**
      * Affiche le formulaire de création d'une section.
      * @return \Inertia\Response
+     * @deprecated Utiliser le modal CreateSectionModal depuis la page
      */
     public function create()
     {
         $this->authorize('create', \App\Models\Section::class);
         
-        // Récupérer toutes les pages pour le select
-        $pages = \App\Models\Page::select('id', 'title', 'slug')
-            ->orderBy('title')
-            ->get();
-        
-        return Inertia::render('Pages/section/Create', [
-            'pages' => $pages,
-        ]);
+        // Rediriger vers la liste des pages
+        return redirect()->route('pages.index');
     }
 
     /**
      * Enregistre une nouvelle section.
      * @param StoreSectionRequest $request
-     * @return \Illuminate\Http\RedirectResponse
+     * @return \Illuminate\Http\RedirectResponse|\Illuminate\Http\JsonResponse
      */
     public function store(\App\Http\Requests\StoreSectionRequest $request)
     {
@@ -71,42 +66,55 @@ class SectionController extends Controller
         $section = \App\Models\Section::create($data);
         $section->load(['page', 'users', 'files', 'createdBy']);
         \App\Services\NotificationService::notifyEntityCreated($section, $request->user());
-        return redirect()->route('sections.show', $section)->with('success', 'Section créée avec succès.');
+        
+        // Si c'est une requête AJAX (depuis le modal), retourner JSON
+        if ($request->wantsJson() || $request->ajax()) {
+            return response()->json([
+                'success' => true,
+                'section' => new SectionResource($section),
+                'message' => 'Section créée avec succès.'
+            ]);
+        }
+        
+        // Sinon, rediriger vers la page parente
+        $page = $section->page;
+        if ($page) {
+            return redirect()->route('pages.show', $page->slug)->with('success', 'Section créée avec succès.');
+        }
+        
+        return redirect()->route('pages.index')->with('success', 'Section créée avec succès.');
     }
 
     /**
      * Affiche une section spécifique.
      * @param Section $section
-     * @return \Inertia\Response
+     * @return \Illuminate\Http\RedirectResponse
+     * @deprecated Les sections sont affichées dans leur page parente
      */
     public function show(\App\Models\Section $section)
     {
         $this->authorize('view', $section);
-        $section->load(['page', 'users', 'files', 'createdBy']);
-        return Inertia::render('Pages/section/Show', [
-            'section' => new SectionResource($section),
-        ]);
+        $page = $section->page;
+        if ($page) {
+            return redirect()->route('pages.show', $page->slug)->withFragment('section-' . $section->id);
+        }
+        return redirect()->route('pages.index');
     }
 
     /**
      * Affiche le formulaire de modification d'une section.
      * @param Section $section
-     * @return \Inertia\Response
+     * @return \Illuminate\Http\RedirectResponse
+     * @deprecated Utiliser le modal SectionParamsModal depuis la page
      */
     public function edit(\App\Models\Section $section)
     {
         $this->authorize('update', $section);
-        $section->load(['page', 'users', 'files', 'createdBy']);
-        
-        // Récupérer toutes les pages pour le select
-        $pages = \App\Models\Page::select('id', 'title', 'slug')
-            ->orderBy('title')
-            ->get();
-        
-        return Inertia::render('Pages/section/Edit', [
-            'section' => new SectionResource($section),
-            'pages' => $pages,
-        ]);
+        $page = $section->page;
+        if ($page) {
+            return redirect()->route('pages.show', $page->slug)->withFragment('section-' . $section->id);
+        }
+        return redirect()->route('pages.index');
     }
 
     /**
@@ -134,7 +142,22 @@ class SectionController extends Controller
             // Si les notifications échouent, on continue quand même
             \Log::warning('Erreur lors de l\'envoi des notifications pour la section ' . $section->id . ': ' . $e->getMessage());
         }
-        return redirect()->route('sections.show', $section)->with('success', 'Section mise à jour.');
+        // Si c'est une requête AJAX (depuis le modal), retourner JSON
+        if ($request->wantsJson() || $request->ajax()) {
+            return response()->json([
+                'success' => true,
+                'section' => new SectionResource($section),
+                'message' => 'Section mise à jour.'
+            ]);
+        }
+        
+        // Sinon, rediriger vers la page parente
+        $page = $section->page;
+        if ($page) {
+            return redirect()->route('pages.show', $page->slug)->with('success', 'Section mise à jour.');
+        }
+        
+        return redirect()->route('pages.index')->with('success', 'Section mise à jour.');
     }
 
     /**

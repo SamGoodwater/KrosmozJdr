@@ -49,9 +49,9 @@ setPageTitle(pageTitle.value);
     <Head :title="pageTitle" />
     
     <PageRenderer 
-        :page="page"
+        :page="props.page"
         :user="user"
-        :pages="pages"
+        :pages="props.pages"
     />
 </template>
 

@@ -88,7 +88,12 @@ const passwordValidation = computed(() => {
                 <Btn theme="error" @click="confirmUserDeletion" label="Supprimer le compte" />
             </Tooltip>
 
-            <Modal :show="confirmingUserDeletion" @close="closeModal">
+            <Modal 
+                :open="confirmingUserDeletion" 
+                placement="middle-center"
+                close-on-esc
+                @close="closeModal"
+            >
                 <Container class="p-6 space-y-6 bg-base-100 rounded-lg shadow-lg">
                     <h2 class="text-lg font-medium text-error-100">
                         Êtes-vous sûr de vouloir supprimer votre compte ?

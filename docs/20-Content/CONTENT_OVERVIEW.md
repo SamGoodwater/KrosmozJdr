@@ -6,6 +6,6 @@ Ce document a été découpé pour plus de clarté et de synthèse. Retrouvez ch
 - [Rôles, droits et visibilité](./ROLES_AND_RIGHTS.md)
 - [Entités métier](./21-Entities/ENTITIES_OVERVIEW.md)
 - [Syntaxe des formules](./FORMULAS.md)
-- [Pages dynamiques et sections](./DYNAMIC_PAGES.md)
+- [Pages dynamiques et sections](./PAGES_SECTIONS.md)
 - [Structure du layout](./LAYOUT.md)
 - [Annexes et liens](./ANNEXES.md)

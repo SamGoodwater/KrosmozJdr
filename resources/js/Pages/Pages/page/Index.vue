@@ -9,14 +9,15 @@
  * @props {Array} allPages - Liste de toutes les pages (pour le select parent_id dans le modal)
  */
 import { Head, router, usePage } from '@inertiajs/vue3';
-import { ref, computed } from 'vue';
+import { ref, computed, watch } from 'vue';
 import { usePageTitle } from '@/Composables/layout/usePageTitle';
 import Container from '@/Pages/Atoms/data-display/Container.vue';
 import Btn from '@/Pages/Atoms/action/Btn.vue';
-import CreatePageModal from '@/Pages/Organismes/section/CreatePageModal.vue';
-import EditPageModal from '@/Pages/Organismes/section/EditPageModal.vue';
+import CreatePageModal from '@/Pages/Organismes/section/modals/CreatePageModal.vue';
+import EditPageModal from '@/Pages/Organismes/section/modals/EditPageModal.vue';
 import Icon from '@/Pages/Atoms/data-display/Icon.vue';
 import Route from '@/Pages/Atoms/action/Route.vue';
+import Alert from '@/Pages/Atoms/feedback/Alert.vue';
 
 const props = defineProps({
     pages: {
@@ -36,6 +37,34 @@ const page = usePage();
 const modalOpen = ref(false);
 const editModalOpen = ref(false);
 const selectedPage = ref(null);
+
+// État pour le drag & drop des pages
+const localPages = ref(
+    [...props.pages.data].sort((a, b) => (a.menu_order || 0) - (b.menu_order || 0))
+);
+
+// Mettre à jour localPages quand props.pages change
+watch(
+    () => props.pages.data,
+    (newPages) => {
+        localPages.value = [...newPages].sort((a, b) => (a.menu_order || 0) - (b.menu_order || 0));
+    },
+    { deep: true }
+);
+
+const draggingIndex = ref(null);
+const saving = ref(false);
+const saveError = ref('');
+const saveSuccess = ref('');
+
+// Vérifier s'il y a des changements
+const hasChanges = computed(() => {
+    if (localPages.value.length !== props.pages.data.length) return true;
+    return localPages.value.some((pageItem, index) => {
+        const original = props.pages.data.find((p) => p.id === pageItem.id);
+        return !original || (original.menu_order || 0) !== index;
+    });
+});
 
 // Vérifier si l'utilisateur peut créer des pages (admin ou super_admin selon PagePolicy)
 const canCreate = computed(() => {
@@ -104,6 +133,59 @@ const formatVisibility = (visibility) => {
     };
     return visibilities[visibility] || visibility;
 };
+
+// Handlers pour le drag & drop
+function onDragStart(index) {
+    draggingIndex.value = index;
+}
+
+function onDragOver(event, index) {
+    event.preventDefault();
+    if (draggingIndex.value === null || draggingIndex.value === index) return;
+
+    const items = [...localPages.value];
+    const draggedItem = items[draggingIndex.value];
+    items.splice(draggingIndex.value, 1);
+    items.splice(index, 0, draggedItem);
+    localPages.value = items;
+    draggingIndex.value = index;
+}
+
+function onDragEnd() {
+    draggingIndex.value = null;
+}
+
+// Sauvegarder l'ordre des pages
+function saveOrder() {
+    if (!hasChanges.value) return;
+
+    saving.value = true;
+    saveError.value = '';
+    saveSuccess.value = '';
+
+    const payload = {
+        pages: localPages.value.map((pageItem, index) => ({
+            id: pageItem.id,
+            menu_order: index
+        }))
+    };
+
+    router.patch(route('pages.reorder'), payload, {
+        preserveScroll: true,
+        onSuccess: () => {
+            saving.value = false;
+            saveSuccess.value = 'Ordre des pages enregistré avec succès.';
+            // Recharger les pages après un court délai pour afficher le message
+            setTimeout(() => {
+                router.reload({ only: ['pages'] });
+            }, 1500);
+        },
+        onError: () => {
+            saving.value = false;
+            saveError.value = "Une erreur est survenue lors de l'enregistrement de l'ordre des pages.";
+        }
+    });
+}
 </script>
 
 <template>
@@ -129,10 +211,51 @@ const formatVisibility = (visibility) => {
         <!-- Tableau des pages -->
         <div class="card bg-base-100 shadow-xl">
             <div class="card-body">
+                <!-- Messages de succès/erreur pour le drag & drop -->
+                <div v-if="saveSuccess || saveError" class="mb-4">
+                    <Alert
+                        v-if="saveSuccess"
+                        type="success"
+                        variant="soft"
+                        class="text-sm"
+                    >
+                        {{ saveSuccess }}
+                    </Alert>
+                    <Alert
+                        v-if="saveError"
+                        type="error"
+                        variant="soft"
+                        class="text-sm"
+                    >
+                        {{ saveError }}
+                    </Alert>
+                </div>
+
+                <!-- Bouton pour sauvegarder l'ordre (si changements) -->
+                <div v-if="hasChanges && localPages.length > 0" class="mb-4 flex items-center gap-3">
+                    <Btn
+                        type="button"
+                        variant="primary"
+                        size="sm"
+                        :disabled="saving"
+                        @click="saveOrder"
+                    >
+                        <span v-if="saving">
+                            <span class="loading loading-spinner loading-xs mr-2" />
+                            Enregistrement...
+                        </span>
+                        <span v-else>Enregistrer l'ordre des pages</span>
+                    </Btn>
+                    <span class="text-xs text-warning/80">
+                        Des modifications d'ordre ne sont pas encore enregistrées.
+                    </span>
+                </div>
+
                 <div v-if="pages.data && pages.data.length > 0" class="overflow-x-auto">
                     <table class="table table-zebra w-full">
                         <thead>
                             <tr>
+                                <th style="width: 40px;"></th>
                                 <th>ID</th>
                                 <th>Titre</th>
                                 <th>Slug</th>
@@ -144,7 +267,26 @@ const formatVisibility = (visibility) => {
                             </tr>
                         </thead>
                         <tbody>
-                            <tr v-for="pageItem in pages.data" :key="pageItem.id">
+                            <tr 
+                                v-for="(pageItem, index) in localPages" 
+                                :key="pageItem.id"
+                                draggable="true"
+                                @dragstart="onDragStart(index)"
+                                @dragover="onDragOver($event, index)"
+                                @dragend="onDragEnd"
+                                :class="{
+                                    'opacity-50': draggingIndex === index,
+                                    'cursor-move': true
+                                }"
+                            >
+                                <td>
+                                    <div 
+                                        class="cursor-grab active:cursor-grabbing text-base-content/60 hover:text-primary transition-colors"
+                                        title="Glisser pour réordonner"
+                                    >
+                                        <Icon source="fa-solid fa-grip-vertical" size="sm" />
+                                    </div>
+                                </td>
                                 <td>{{ pageItem.id }}</td>
                                 <td>
                                     <Route 

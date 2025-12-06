@@ -1124,10 +1124,14 @@ namespace App\Models{
  *
  * @property int $id
  * @property int $page_id
+ * @property string|null $title
+ * @property string|null $slug
  * @property int $order
- * @property string $type
- * @property array<array-key, mixed> $params
+ * @property string $template
+ * @property array<array-key, mixed>|null $settings
+ * @property array<array-key, mixed>|null $data
  * @property string $is_visible
+ * @property string $can_edit_role
  * @property string $state
  * @property int|null $created_by
  * @property \Illuminate\Support\Carbon|null $created_at
@@ -1151,9 +1155,12 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Section whereIsVisible($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Section whereOrder($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Section wherePageId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Section whereParams($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Section whereTitle($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Section whereSlug($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Section whereTemplate($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Section whereSettings($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Section whereData($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Section whereState($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Section whereType($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Section whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Section withTrashed()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Section withoutTrashed()
@@ -1162,6 +1169,7 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Section ordered()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Section published()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Section visibleFor(?\App\Models\User $user = null)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Section whereCanEditRole($value)
  */
 	class Section extends \Eloquent {}
 }

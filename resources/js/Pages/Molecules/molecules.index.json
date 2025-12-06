@@ -20,6 +20,34 @@
     "file": "user/BadgeRole.vue"
   },
   {
+    "name": "SectionHeader",
+    "description": "SectionHeader Molecule",
+    "props": [
+      {
+        "name": "title",
+        "type": "String",
+        "desc": "- Titre de la section"
+      },
+      {
+        "name": "isEditing",
+        "type": "Boolean",
+        "desc": "- Mode édition actif"
+      },
+      {
+        "name": "canEdit",
+        "type": "Boolean",
+        "desc": "- Droits d'écriture"
+      },
+      {
+        "name": "isHovered",
+        "type": "Boolean",
+        "desc": "- Hover actif sur la section"
+      }
+    ],
+    "slots": [],
+    "file": "section/SectionHeader.vue"
+  },
+  {
     "name": "Tab",
     "description": "Tab Molecule (DaisyUI + Custom Utility)",
     "props": [
@@ -1053,43 +1081,68 @@
       {
         "name": "open",
         "type": "Boolean",
-        "desc": "- Contrôle l'ouverture du modal (optionnel, sinon contrôle JS)"
-      },
-      {
-        "name": "placement",
-        "type": "String",
-        "desc": "- Position DaisyUI ('top', 'middle', 'bottom', 'start', 'end'), défaut 'middle'"
-      },
-      {
-        "name": "id",
-        "type": "String",
-        "desc": "- Identifiant unique (pour contrôle JS)"
-      },
-      {
-        "name": "animation",
-        "type": "String",
-        "desc": "- Animation d'ouverture ('none', 'fade', 'zoom', 'slide'), défaut 'none'"
+        "desc": "- Ouvre le modal à sa création (défaut: false)"
       },
       {
         "name": "size",
         "type": "String",
-        "desc": "- Taille du modal ('xs', 'sm', 'md', 'lg', 'xl', 'full'), défaut 'md'"
+        "desc": "- Taille du modal ('xs', 'sm', 'md', 'lg', 'xl', 'full', 'auto'), défaut 'auto'"
       },
       {
-        "name": "shadow,",
+        "name": "closeOnOutsideClick",
+        "type": "Boolean",
+        "desc": "- Permet de fermer en cliquant en dehors (défaut: true)"
+      },
+      {
+        "name": "closeOnEsc",
+        "type": "Boolean",
+        "desc": "- Active la fermeture via Échap (défaut: false)"
+      },
+      {
+        "name": "closeOnButton",
+        "type": "Boolean",
+        "desc": "- Affiche une icône de fermeture en haut à droite (défaut: true)"
+      },
+      {
+        "name": "color",
         "type": "String",
-        "desc": "backdrop, opacity, rounded - utilitaires custom"
+        "desc": "- Couleur du modal ('', 'neutral', 'primary', 'secondary', 'accent', 'info', 'success', 'warning', 'error'), défaut ''"
       },
       {
-        "name": "ariaLabel,",
-        "type": "String|Object",
-        "desc": "role, tabindex, class - hérités de commonProps"
+        "name": "variant",
+        "type": "String",
+        "desc": "- Style visuel ('glass', 'dash', 'outline', 'soft', 'ghost'), défaut 'glass'"
+      },
+      {
+        "name": "overlay",
+        "type": "Boolean",
+        "desc": "- Affiche l'arrière-plan (défaut: true)"
+      },
+      {
+        "name": "resizable",
+        "type": "Boolean",
+        "desc": "- Permet de redimensionner le modal (défaut: false)"
+      },
+      {
+        "name": "draggable",
+        "type": "Boolean",
+        "desc": "- Permet de déplacer le modal via son header (défaut: true)"
+      },
+      {
+        "name": "animation",
+        "type": "String",
+        "desc": "- Type d'animation ('none', 'fade', 'zoom', 'slide'), défaut 'fade'"
+      },
+      {
+        "name": "placement",
+        "type": "String",
+        "desc": "- Placement du modal (format Y-X, ex: 'middle-center'), défaut 'middle-center'"
       }
     ],
     "slots": [
       {
         "name": "header",
-        "desc": "- Titre ou header custom"
+        "desc": "- Titre ou header custom (utilisé pour le drag)"
       },
       {
         "name": "default",

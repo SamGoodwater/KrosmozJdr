@@ -51,8 +51,8 @@ const props = defineProps({
     icon: { type: String, default: "" },
     pack: {
         type: String,
-        default: "",
-        validator: (v) => ["solid", "regular", "brands", "duotone"].includes(v),
+        default: "solid",
+        validator: (v) => !v || ["solid", "regular", "brands", "duotone"].includes(v),
     },
     color: { type: String, default: "" },
     size: {
