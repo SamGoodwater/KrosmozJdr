@@ -1,15 +1,23 @@
 // Système DRY pour les glass box : border glass + backdrop glass + border-radius
 @use "./_border.scss" as *;
 @use "./_backdrop.scss" as *;
-@use "./_background.scss" as *;
 @use "../utils/_functions.scss" as *;
 // === Box-glass colorées pour tous les thèmes ===
 @use '../themes/_theme-global.scss' as *;
 @use '../themes/_theme-caracs.scss' as *;
 @use '../themes/_theme-entities.scss' as *;
 @use 'sass:list';
+@use 'sass:map';
 
 $box-sizes: (xs, sm, md, lg, xl);
+
+$intensity: (
+  'xs': 30%,
+  'sm': 40%,
+  'md': 50%,
+  'lg': 60%,
+  'xl': 70%
+);
 
 @mixin box-glass($size, $combo: null, $sides: null) {
   @if $combo == null {
@@ -51,40 +59,60 @@ $box-sizes: (xs, sm, md, lg, xl);
 
 .box {
   --color: var(--color-white); // Couleur par défaut
-  --bg-color: var(--color-neutral-950);
+  --bg-color: transparent;
 
   @each $size in $box-sizes {
     &-glass-#{$size} {
       @include box-glass($size);
+      &::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        z-index: -1;
+        border-radius: inherit;
+        $intensity-value: map.get($intensity, $size);
+        background: linear-gradient(
+              90deg,
+              color-mix(in srgb, var(--bg-color) $intensity-value * 0.75, transparent) 20%,
+              color-mix(in srgb, var(--bg-color) $intensity-value * 0.9, transparent) 30%,
+              color-mix(in srgb, var(--bg-color) $intensity-value * 1.1, transparent) 55%,
+              color-mix(in srgb, var(--bg-color) $intensity-value * 0.75, transparent) 65%
+          );
+      }
     }
 
     @each $combo, $sides in $border-glass-combos {
       &-glass-#{$combo}-#{$size} {
         @include box-glass($size, $combo, $sides);
-        @include backgroundIntensity($size);
+        $intensity-value: map.get($intensity, $size);
+        background-color: color-mix(in srgb, var(--bg-color) $intensity-value, transparent);
       }
     }
 
     &-dash-#{$size} {
-      @include backgroundIntensity($size);
+      $intensity-value: map.get($intensity, $size) * 1.1;
+      background-color: color-mix(in srgb, var(--bg-color) $intensity-value, transparent);
       border: 1px dashed color-mix(in srgb, var(--color) 80%, transparent);
       @include bd-blur($size);
     }
 
     &-outline-#{$size} {
-      @include backgroundIntensity($size);
+      $intensity-value: map.get($intensity, $size) * 0.8;
+      background-color: color-mix(in srgb, var(--bg-color) $intensity-value, transparent);
       @extend .border-glass-#{$size};
       @include bd-blur($size);
     }
 
     &-soft-#{$size} {
-      @include backgroundIntensity($size);
+      $intensity-value: map.get($intensity, $size) * 0.5;
+      background-color: color-mix(in srgb, var(--bg-color) $intensity-value, transparent);
       border: 1px solid color-mix(in srgb, var(--color) 60%, transparent);
       @include bd-blur($size);
     }
 
     &-ghost-#{$size} {
-      @include backgroundIntensity($size);
+      $intensity-value: map.get($intensity, $size) * 0.2;
+      background-color: color-mix(in srgb, var(--bg-color) $intensity-value, transparent);
       @include bd-blur($size);
     }
   }

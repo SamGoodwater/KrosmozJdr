@@ -162,8 +162,8 @@ const variantClasses = computed(() => {
 // Classes pour la couleur
 // Utilise la classe color-{name} qui définit la variable CSS --color pour influencer le background
 const colorClasses = computed(() => {
-    if (!props.color) return 'color-neutral bg-color-neutral-950 light:bg-color-neutral-50';
-    return `color-${props.color} bg-color-${props.color}-950 light:bg-color-${props.color}-50`;
+    if (!props.color) return 'color-neutral bg-color-neutral light:bg-color-neutral-50';
+    return `color-${props.color} bg-color-${props.color} light:bg-color-${props.color}-50`;
 });
 
 // Classes pour l'overlay
@@ -177,6 +177,7 @@ const moleculeClasses = computed(() =>
         [
             'modal',
             props.open && 'modal-open',
+            !props.overlay && 'no-overlay',
             ...placementClasses.value,
             props.class
         ],
@@ -186,13 +187,13 @@ const moleculeClasses = computed(() =>
 
 const attrs = computed(() => getCommonAttrs(props));
 
-// Mapping des tailles
+// Mapping des tailles avec valeurs personnalisées
 const sizeClassMap = {
-    xs: 'w-xs',
-    sm: 'w-sm',
-    md: 'w-md',
-    lg: 'w-lg',
-    xl: 'w-xl',
+    xs: 'modal-size-xs',
+    sm: 'modal-size-sm',
+    md: 'modal-size-md',
+    lg: 'modal-size-lg',
+    xl: 'modal-size-xl',
     full: 'w-full h-full max-w-full max-h-full',
     auto: '', // Pas de contrainte de taille
 };
@@ -541,34 +542,84 @@ onBeforeUnmount(() => {
         transform: translateY(0);
     }
 
-    // Placement
-    &-top {
-        top: 0;
-    }
-    &-middle {
-        top: 50%;
-        transform: translateY(-50%);
-    }
-    &-bottom {
-        bottom: 0;
-    }
-    &-start {
-        left: 0;
-    }
-    &-center {
-        left: 50%;
-        transform: translateX(-50%);
-    }
-    &-end {
-        right: 0;
-    }
-
 }
 
-/* Placement X géré via flexbox inline sur le dialog */
+/* Placement géré via flexbox sur le dialog */
 dialog.modal {
     display: flex;
     align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    
+    // Masquer le backdrop natif du dialog HTML5 quand overlay est false
+    &::backdrop {
+        background-color: rgba(0, 0, 0, 0.5);
+    }
+    
+    // Classe pour masquer le backdrop quand overlay est false
+    &.no-overlay::backdrop {
+        display: none;
+    }
+    
+    // Placement vertical (Y)
+    &.modal-top {
+        align-items: flex-start;
+        padding-top: 2rem;
+    }
+    
+    &.modal-middle {
+        align-items: center;
+    }
+    
+    &.modal-bottom {
+        align-items: flex-end;
+        padding-bottom: 2rem;
+    }
+    
+    // Placement horizontal (X)
+    &.modal-start {
+        justify-content: flex-start;
+        padding-left: 2rem;
+    }
+    
+    &.modal-end {
+        justify-content: flex-end;
+        padding-right: 2rem;
+    }
+    
+    // Combinaisons pour éviter les conflits
+    &.modal-top.modal-start {
+        align-items: flex-start;
+        justify-content: flex-start;
+        padding: 2rem;
+    }
+    
+    &.modal-top.modal-end {
+        align-items: flex-start;
+        justify-content: flex-end;
+        padding: 2rem;
+    }
+    
+    &.modal-bottom.modal-start {
+        align-items: flex-end;
+        justify-content: flex-start;
+        padding: 2rem;
+    }
+    
+    &.modal-bottom.modal-end {
+        align-items: flex-end;
+        justify-content: flex-end;
+        padding: 2rem;
+    }
+    
+    // Center par défaut (pas besoin de classe)
+    &:not(.modal-start):not(.modal-end) {
+        justify-content: center;
+    }
+    
+    &:not(.modal-top):not(.modal-bottom) {
+        align-items: center;
+    }
 }
 
 /* S'assurer que le contenu du modal a un curseur normal */
@@ -589,5 +640,33 @@ dialog.modal {
 /* Le bouton de fermeture garde son curseur pointer */
 .modal-box header button {
     cursor: pointer !important;
+}
+
+/* Tailles personnalisées pour les modals */
+.modal-box {
+    &.modal-size-xs {
+        width: 20rem; /* 320px - inchangé */
+        max-width: 20rem;
+    }
+    
+    &.modal-size-sm {
+        width: 24rem; /* 384px - inchangé */
+        max-width: 24rem;
+    }
+    
+    &.modal-size-md {
+        width: 32rem; /* 512px - valeur de lg actuel */
+        max-width: 32rem;
+    }
+    
+    &.modal-size-lg {
+        width: 40rem; /* 640px - un peu plus grand que xl actuel */
+        max-width: 40rem;
+    }
+    
+    &.modal-size-xl {
+        width: 54rem; /* 864px - 50% plus grand que xl actuel (36rem * 1.5) */
+        max-width: 54rem;
+    }
 }
 </style>
