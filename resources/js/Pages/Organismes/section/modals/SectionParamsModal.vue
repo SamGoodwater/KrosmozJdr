@@ -3,27 +3,22 @@
  * SectionParamsModal Component
  * 
  * @description
- * Modal pour configurer les paramètres d'une section selon son template.
- * - Génère dynamiquement les champs selon SectionType::expectedParams()
- * - Valide les paramètres avant de les retourner
- * - Gère tous les templates de sections (text, image, gallery, video, entity_table)
- * - Sépare settings (configuration) et data (contenu)
+ * Modal pour configurer les paramètres (settings) d'une section.
+ * - Ne modifie QUE les settings, pas les data (contenu)
+ * - Gère uniquement le template text pour l'instant
+ * - Les data sont modifiées directement dans le template d'édition
  * 
  * @props {Boolean} open - Contrôle l'ouverture du modal
- * @props {String} sectionTemplate - Template de section (text, image, gallery, video, entity_table)
- * @props {Object} initialSettings - Settings initiaux (optionnel)
- * @props {Object} initialData - Data initiaux (optionnel)
+ * @props {String} sectionTemplate - Template de section (text uniquement pour l'instant)
+ * @props {Object} initialSettings - Settings initiaux
  * @emits close - Événement émis quand le modal se ferme
- * @emits validated - Événement émis avec { settings, data } validés
+ * @emits validated - Événement émis avec { settings } validés
  */
 import { ref, computed, watch } from 'vue';
 import { router } from '@inertiajs/vue3';
 import Modal from '@/Pages/Molecules/action/Modal.vue';
 import InputField from '@/Pages/Molecules/data-input/InputField.vue';
-import TextareaField from '@/Pages/Molecules/data-input/TextareaField.vue';
 import SelectField from '@/Pages/Molecules/data-input/SelectField.vue';
-import ToggleField from '@/Pages/Molecules/data-input/ToggleField.vue';
-import RichTextEditorField from '@/Pages/Molecules/data-input/RichTextEditorField.vue';
 import Btn from '@/Pages/Atoms/action/Btn.vue';
 import Icon from '@/Pages/Atoms/data-display/Icon.vue';
 import { useSectionAPI } from '../composables/useSectionAPI';
@@ -44,10 +39,6 @@ const props = defineProps({
         type: Object,
         default: () => ({})
     },
-    initialData: {
-        type: Object,
-        default: () => ({})
-    },
     sectionId: {
         type: [Number, String],
         default: null
@@ -64,38 +55,36 @@ const emit = defineEmits(['close', 'validated', 'deleted']);
 const { deleteSection } = useSectionAPI();
 const { getDefaults } = useSectionDefaults();
 
-// Settings et data du formulaire
+// Settings du formulaire (uniquement les settings, pas les data)
 const settings = ref({ ...props.initialSettings });
-const data = ref({ ...props.initialData });
 
 // État pour le modal de confirmation de suppression
 const showDeleteConfirm = ref(false);
 
-// Réinitialiser settings et data quand le template change
+// Réinitialiser settings quand le template change
 watch(() => props.sectionTemplate, (newTemplate) => {
     const defaults = getDefaultSettingsForTemplate(newTemplate);
-    settings.value = defaults.settings;
-    data.value = defaults.data;
+    settings.value = { ...defaults.settings, ...props.initialSettings };
 }, { immediate: true });
 
-// Réinitialiser settings et data quand initialSettings/initialData changent
-watch(() => [props.initialSettings, props.initialData], ([newSettings, newData]) => {
-    if (Object.keys(newSettings).length > 0 || Object.keys(newData).length > 0) {
+// Réinitialiser settings quand initialSettings change
+watch(() => props.initialSettings, (newSettings) => {
+    if (newSettings && Object.keys(newSettings).length > 0) {
         settings.value = { ...newSettings };
-        data.value = { ...newData };
     } else {
         const defaults = getDefaultSettingsForTemplate(props.sectionTemplate);
-        settings.value = defaults.settings;
-        data.value = defaults.data;
+        settings.value = { ...defaults.settings };
     }
 }, { deep: true });
 
 /**
- * Retourne les settings et data par défaut selon le template
- * Utilise le composable useSectionDefaults pour éviter la duplication
+ * Retourne les settings par défaut selon le template
  */
 function getDefaultSettingsForTemplate(template) {
-    return getDefaults(template);
+    const defaults = getDefaults(template);
+    return {
+        settings: defaults.settings || {}
+    };
 }
 
 /**
@@ -114,83 +103,27 @@ const sizeOptions = computed(() => [
     { value: 'xl', label: 'Très grand' }
 ]);
 
-const imageSizeOptions = computed(() => [
-    ...sizeOptions.value,
-    { value: 'full', label: 'Plein écran' }
-]);
-
-const columnsOptions = computed(() => [
-    { value: 2, label: '2 colonnes' },
-    { value: 3, label: '3 colonnes' },
-    { value: 4, label: '4 colonnes' }
-]);
-
-const gapOptions = computed(() => [
-    { value: 'sm', label: 'Petit' },
-    { value: 'md', label: 'Moyen' },
-    { value: 'lg', label: 'Grand' }
-]);
-
-const videoTypeOptions = computed(() => [
-    { value: 'youtube', label: 'YouTube' },
-    { value: 'vimeo', label: 'Vimeo' },
-    { value: 'direct', label: 'Lien direct' }
-]);
-
 /**
  * Validation des paramètres
  * 
- * Utilise une logique générique basée sur les données.
- * Pour des validations spécifiques par template, celles-ci pourraient être
- * définies dans les configs des templates à l'avenir.
+ * Pour les settings, la validation est toujours valide car on ne modifie que la configuration,
+ * pas le contenu. Les settings peuvent être vides ou partiels.
  */
 const isValid = computed(() => {
-    const dataObj = data.value || {};
-    
-    // Validation générique : vérifier que les données ne sont pas complètement vides
-    if (!dataObj || Object.keys(dataObj).length === 0) {
-        return false;
-    }
-    
-    // Vérifier si au moins une valeur non-null/non-empty existe
-    for (const key in dataObj) {
-        const value = dataObj[key];
-        if (value !== null && value !== undefined && value !== '') {
-            // Si c'est un tableau, vérifier qu'il n'est pas vide
-            if (Array.isArray(value)) {
-                if (value.length > 0) {
-                    return true;
-                }
-            } else if (typeof value === 'string') {
-                // Si c'est une chaîne, vérifier qu'elle n'est pas vide après trim
-                if (value.trim().length > 0) {
-                    return true;
-                }
-            } else if (typeof value === 'object') {
-                // Si c'est un objet, vérifier qu'il n'est pas vide
-                if (Object.keys(value).length > 0) {
-                    return true;
-                }
-            } else {
-                // Autres types (number, boolean, etc.)
-                return true;
-            }
-        }
-    }
-    
-    return false;
+    // Les settings sont toujours valides (même vides)
+    // On ne valide pas le contenu ici car les data sont modifiées dans le template d'édition
+    return true;
 });
 
 /**
  * Gère la validation et l'émission des paramètres
+ * 
+ * Émet uniquement les settings, pas les data.
+ * Les data sont modifiées directement dans le template d'édition de la section.
  */
 const handleValidate = () => {
-    if (!isValid.value) {
-        return;
-    }
     emit('validated', { 
-        settings: { ...settings.value },
-        data: { ...data.value }
+        settings: { ...settings.value }
     });
 };
 
@@ -285,121 +218,41 @@ const modalTitle = computed(() => {
         </template>
 
         <div class="space-y-4">
-            <!-- Classes CSS personnalisées (settings) -->
-            <InputField
-                v-model="settings.classes"
-                label="Classes CSS (optionnel)"
-                placeholder="ex: my-custom-class another-class"
-                helper="Classes CSS à ajouter au conteneur de la section"
-            />
-
-            <!-- Template TEXT -->
+            <!-- Template TEXT uniquement -->
             <template v-if="sectionTemplate === 'text'">
-                <RichTextEditorField
-                    v-model="data.content"
-                    label="Contenu"
-                    required
-                    helper="Contenu de la section (formatage riche disponible)"
+                <!-- Classes CSS personnalisées -->
+                <InputField
+                    v-model="settings.classes"
+                    label="Classes CSS (optionnel)"
+                    placeholder="ex: my-custom-class another-class"
+                    helper="Classes CSS à ajouter au conteneur de la section"
                 />
+                
+                <!-- Alignement du texte -->
                 <SelectField
                     v-model="settings.align"
                     label="Alignement"
                     :options="alignOptions"
+                    helper="Alignement du texte dans la section"
                 />
+                
+                <!-- Taille du texte -->
                 <SelectField
                     v-model="settings.size"
                     label="Taille du texte"
                     :options="sizeOptions"
+                    helper="Taille d'affichage du texte"
                 />
             </template>
 
-            <!-- Template IMAGE -->
-            <template v-if="sectionTemplate === 'image'">
-                <InputField
-                    v-model="data.src"
-                    label="URL de l'image"
-                    type="url"
-                    required
-                    placeholder="https://example.com/image.jpg"
-                />
-                <InputField
-                    v-model="data.alt"
-                    label="Texte alternatif"
-                    required
-                    placeholder="Description de l'image"
-                />
-                <TextareaField
-                    v-model="data.caption"
-                    label="Légende (optionnel)"
-                    placeholder="Légende de l'image"
-                />
-                <SelectField
-                    v-model="settings.align"
-                    label="Alignement"
-                    :options="alignOptions"
-                />
-                <SelectField
-                    v-model="settings.size"
-                    label="Taille"
-                    :options="imageSizeOptions"
-                />
-            </template>
-
-            <!-- Template GALLERY -->
-            <template v-if="sectionTemplate === 'gallery'">
+            <!-- Autres templates : non supportés pour l'instant -->
+            <template v-else>
                 <div class="alert alert-info">
                     <i class="fa-solid fa-info-circle"></i>
-                    <span class="text-sm">La gestion des images de la galerie sera implémentée prochainement.</span>
-                </div>
-                <SelectField
-                    v-model="settings.columns"
-                    label="Nombre de colonnes"
-                    :options="columnsOptions"
-                />
-                <SelectField
-                    v-model="settings.gap"
-                    label="Espacement"
-                    :options="gapOptions"
-                />
-            </template>
-
-            <!-- Template VIDEO -->
-            <template v-if="sectionTemplate === 'video'">
-                <SelectField
-                    v-model="data.type"
-                    label="Type de vidéo"
-                    :options="videoTypeOptions"
-                    required
-                />
-                <InputField
-                    v-model="data.src"
-                    label="URL de la vidéo"
-                    type="url"
-                    required
-                    placeholder="https://www.youtube.com/watch?v=..."
-                />
-                <ToggleField
-                    v-model="settings.autoplay"
-                    label="Lecture automatique"
-                />
-                <ToggleField
-                    v-model="settings.controls"
-                    label="Afficher les contrôles"
-                />
-            </template>
-
-            <!-- Template ENTITY_TABLE -->
-            <template v-if="sectionTemplate === 'entity_table'">
-                <InputField
-                    v-model="data.entity"
-                    label="Type d'entité"
-                    required
-                    placeholder="item, spell, npc, etc."
-                    helper="Type d'entité à afficher dans le tableau"
-                />
-                <div class="alert alert-info">
-                    <i class="fa-solid fa-info-circle"></i>
-                    <span class="text-sm">Les filtres et colonnes personnalisées seront configurables prochainement.</span>
+                    <span class="text-sm">
+                        La configuration des paramètres pour le template "{{ sectionTemplate }}" n'est pas encore disponible.
+                        Seul le template "text" est supporté pour l'instant.
+                    </span>
                 </div>
             </template>
         </div>

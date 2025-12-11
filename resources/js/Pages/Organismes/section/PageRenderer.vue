@@ -81,22 +81,13 @@ const sections = computed(() => {
 // Watcher pour détecter quand une nouvelle section est ajoutée
 // On surveille props.page directement car c'est ce qui change après la redirection Inertia
 watch(() => props.page?.sections, (newSections, oldSections) => {
-    console.log('PageRenderer - Sections watcher triggered');
-    console.log('PageRenderer - pendingSectionTemplate:', pendingSectionTemplate.value);
-    console.log('PageRenderer - New sections:', newSections);
-    console.log('PageRenderer - Old sections:', oldSections);
-    
     // Si on attend une section avec un template spécifique
     if (pendingSectionTemplate.value && newSections && Array.isArray(newSections)) {
         const oldLength = oldSections?.length || 0;
         const newLength = newSections.length;
         
-        console.log('PageRenderer - Comparing lengths:', { oldLength, newLength });
-        
         // Si le nombre de sections a augmenté OU si on n'avait pas de sections avant
         if (newLength > oldLength || (oldLength === 0 && newLength > 0)) {
-            console.log('PageRenderer - Sections count increased, looking for template:', pendingSectionTemplate.value);
-            
             // Trouver la nouvelle section avec le bon template
             const newSection = newSections
                 .filter(s => s.template === pendingSectionTemplate.value)
@@ -105,10 +96,7 @@ watch(() => props.page?.sections, (newSections, oldSections) => {
                     return (b.id || 0) - (a.id || 0);
                 })[0];
             
-            console.log('PageRenderer - Found section with template:', newSection);
-            
             if (newSection?.id) {
-                console.log('PageRenderer - Found new section:', newSection);
                 sectionToEdit.value = newSection.id;
                 pendingSectionTemplate.value = null; // Réinitialiser
                 
@@ -149,17 +137,6 @@ const canEdit = computed(() => {
         }
     }
     
-    // Debug en développement
-    if (import.meta.env.DEV) {
-        console.log('PageRenderer - canEdit:', {
-            canUpdate,
-            pageData: pageData?.can,
-            propsPageCan: props.page?.can,
-            userRole: props.user?.role,
-            pageModelCan: pageModel.value?.canUpdate
-        });
-    }
-    
     return canUpdate;
 });
 
@@ -185,13 +162,11 @@ const handleCloseCreateSectionModal = () => {
 };
 
 const handleSectionCreated = (data) => {
-    console.log('PageRenderer - handleSectionCreated called with data:', data);
     createSectionModalOpen.value = false;
     
     // Le backend redirige déjà vers la page, donc les données seront rechargées
     // Si on a un sectionId, on l'utilise directement
     if (data?.openEdit && data?.sectionId) {
-        console.log('PageRenderer - Using provided sectionId:', data.sectionId);
         sectionToEdit.value = data.sectionId;
         
         // Réinitialiser après un court délai pour permettre le rendu
@@ -201,12 +176,10 @@ const handleSectionCreated = (data) => {
     } else if (data?.openEdit && data?.template) {
         // Si pas d'ID mais un template, on attend que les sections soient mises à jour
         // Le watcher sur `props.page.sections` détectera la nouvelle section
-        console.log('PageRenderer - Setting pendingSectionTemplate to:', data.template);
         pendingSectionTemplate.value = data.template;
         
         // Vérifier immédiatement si les sections sont déjà disponibles
         const currentSections = sections.value;
-        console.log('PageRenderer - Current sections count:', currentSections.length);
         
         if (currentSections.length > 0) {
             const newSection = currentSections
@@ -216,18 +189,13 @@ const handleSectionCreated = (data) => {
                 })[0];
             
             if (newSection?.id) {
-                console.log('PageRenderer - Found new section immediately:', newSection);
                 sectionToEdit.value = newSection.id;
                 pendingSectionTemplate.value = null;
                 
                 setTimeout(() => {
                     sectionToEdit.value = null;
                 }, 1000);
-            } else {
-                console.log('PageRenderer - No section found immediately, waiting for watcher...');
             }
-        } else {
-            console.log('PageRenderer - No sections yet, waiting for watcher...');
         }
         
         // Fallback : vérifier périodiquement si les sections sont disponibles
@@ -246,7 +214,6 @@ const handleSectionCreated = (data) => {
                     })[0];
                 
                 if (newSection?.id) {
-                    console.log('PageRenderer - Found new section via polling:', newSection);
                     sectionToEdit.value = newSection.id;
                     pendingSectionTemplate.value = null;
                     clearInterval(checkInterval);
@@ -255,12 +222,10 @@ const handleSectionCreated = (data) => {
                         sectionToEdit.value = null;
                     }, 1000);
                 } else if (attempts >= maxAttempts) {
-                    console.warn('PageRenderer - Max attempts reached, clearing pending template');
                     pendingSectionTemplate.value = null;
                     clearInterval(checkInterval);
                 }
             } else if (attempts >= maxAttempts) {
-                console.warn('PageRenderer - Max attempts reached, no sections found');
                 pendingSectionTemplate.value = null;
                 clearInterval(checkInterval);
             }
@@ -275,39 +240,6 @@ const sortedSections = computed(() => {
     // Extraire les sections depuis props.page ou pageModel
     // IMPORTANT: Utiliser props.page.sections directement car pageModel.sections peut ne pas avoir les permissions can
     const sections = props.page?.sections || pageModel.value?.sections || [];
-    
-    // Debug en développement
-    if (import.meta.env.DEV && sections.length > 0) {
-        // Extraire les données brutes pour inspection
-        const firstSection = sections[0];
-        const rawData = firstSection?._data || firstSection;
-        
-        console.log('PageRenderer - sortedSections computed:', {
-            hasPageModel: !!pageModel.value,
-            pageModelSections: pageModel.value?.sections?.length || 0,
-            propsPageSections: props.page?.sections?.length || 0,
-            usingPropsPage: !!props.page?.sections,
-            sectionsCount: Array.isArray(sections) ? sections.length : 0,
-            firstSectionRaw: rawData,
-            firstSectionCan: rawData?.can,
-            firstSectionCanUpdate: rawData?.can?.update,
-            propsPageFirstSection: props.page?.sections?.[0],
-            propsPageFirstSectionCan: props.page?.sections?.[0]?.can,
-            sections: Array.isArray(sections) ? sections.map(s => {
-                const sectionData = s._data || s;
-                return {
-                    id: sectionData.id,
-                    template: sectionData.template || sectionData.type,
-                    order: sectionData.order,
-                    state: sectionData.state,
-                    hasCan: !!sectionData.can,
-                    can: sectionData.can,
-                    canUpdate: sectionData.can?.update,
-                    rawSection: sectionData
-                };
-            }) : []
-        });
-    }
     
     if (!Array.isArray(sections) || sections.length === 0) {
         return [];

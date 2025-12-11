@@ -6,7 +6,8 @@
  * Chaque section peut être indépendamment en mode lecture ou écriture.
  * 
  * **État global :**
- * - Utilise un `Set` global pour stocker les IDs des sections en mode édition
+ * - Utilise un objet réactif pour stocker les IDs des sections en mode édition
+ * - Les clés sont les IDs des sections, les valeurs sont des booléens (true = en édition)
  * - Permet à plusieurs composants d'accéder au même état
  * - L'état est perdu au rechargement de la page (frontend uniquement)
  * 
@@ -28,10 +29,14 @@
  *   {{ isEditing ? 'Voir' : 'Éditer' }}
  * </button>
  */
-import { computed } from 'vue';
+import { computed, reactive, ref } from 'vue';
 
-// État global des sections en mode édition (Set de section IDs)
-const editingSections = new Set();
+// État global des sections en mode édition (objet réactif)
+// Structure : { [sectionId]: true } pour les sections en mode édition
+const editingSections = reactive({});
+
+// Compteur de version pour forcer la réactivité
+const version = ref(0);
 
 /**
  * Composable pour gérer le mode d'édition d'une section
@@ -49,8 +54,12 @@ export function useSectionMode(sectionId) {
   };
   
   const isEditing = computed(() => {
+    // Lire version.value pour créer une dépendance réactive
+    version.value; // Force la réactivité
     const id = getSectionId();
-    return id ? editingSections.has(id) : false;
+    if (!id) return false;
+    // Convertir l'ID en string pour être sûr que la clé est cohérente
+    return !!editingSections[String(id)];
   });
   
   /**
@@ -60,11 +69,15 @@ export function useSectionMode(sectionId) {
     const id = getSectionId();
     if (!id) return;
     
-    if (editingSections.has(id)) {
-      editingSections.delete(id);
+    const idStr = String(id);
+    // Utiliser Vue.delete pour supprimer proprement une propriété réactive
+    if (editingSections[idStr]) {
+      delete editingSections[idStr];
     } else {
-      editingSections.add(id);
+      editingSections[idStr] = true;
     }
+    // Incrémenter le compteur pour forcer la réactivité
+    version.value++;
   };
   
   /**
@@ -76,11 +89,14 @@ export function useSectionMode(sectionId) {
     const id = getSectionId();
     if (!id) return;
     
+    const idStr = String(id);
     if (value) {
-      editingSections.add(id);
+      editingSections[idStr] = true;
     } else {
-      editingSections.delete(id);
+      delete editingSections[idStr];
     }
+    // Incrémenter le compteur pour forcer la réactivité
+    version.value++;
   };
   
   return {

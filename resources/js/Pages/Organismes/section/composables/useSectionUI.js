@@ -45,9 +45,21 @@ import { getTemplateConfig } from '../templates';
 export function useSectionUI(rawSection) {
   // Section normalisée (Model)
   const sectionModel = computed(() => {
-    const sectionValue = typeof rawSection === 'object' && 'value' in rawSection 
-      ? rawSection.value 
-      : rawSection;
+    let sectionValue;
+    
+    // Gérer différents types d'entrée :
+    // 1. ComputedRef (avec .value)
+    if (typeof rawSection === 'object' && rawSection !== null && 'value' in rawSection) {
+      sectionValue = rawSection.value;
+    }
+    // 2. Fonction (getter) - appeler la fonction pour obtenir la valeur
+    else if (typeof rawSection === 'function') {
+      sectionValue = rawSection();
+    }
+    // 3. Valeur directe
+    else {
+      sectionValue = rawSection;
+    }
     
     return mapToSectionModel(sectionValue);
   });
@@ -74,21 +86,7 @@ export function useSectionUI(rawSection) {
   // 5. Section Model expose canUpdate via getter
   // 6. useSectionUI expose canEdit qui utilise sectionModel.canUpdate
   const canEdit = computed(() => {
-    const canUpdate = sectionModel.value?.canUpdate || false;
-    // Debug en développement
-    if (import.meta.env.DEV && sectionModel.value) {
-      console.log('useSectionUI - canEdit computed', {
-        sectionId: sectionModel.value.id,
-        canUpdate,
-        sectionCan: sectionModel.value.can,
-        sectionCanUpdate: sectionModel.value.canUpdate,
-        sectionCanEditRole: sectionModel.value.canEditRole,
-        pageCanEditRole: sectionModel.value.page?.canEditRole,
-        rawSection: typeof rawSection === 'object' && 'value' in rawSection ? rawSection.value : rawSection,
-        rawSectionCan: typeof rawSection === 'object' && 'value' in rawSection ? rawSection.value?.can : rawSection?.can
-      });
-    }
-    return canUpdate;
+    return sectionModel.value?.canUpdate || false;
   });
 
   const canDelete = computed(() => {

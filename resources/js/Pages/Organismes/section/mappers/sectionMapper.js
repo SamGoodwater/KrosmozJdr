@@ -135,24 +135,6 @@ function normalizeSectionData(rawData) {
     };
   }
   
-  // Debug en développement
-  if (import.meta.env.DEV) {
-    const rawCan = extractValue(unwrappedRawData, 'can');
-    const dataCan = extractValue(unwrappedData, 'can');
-    console.log('sectionMapper - normalizeSectionData', {
-      hasRawData: !!rawData,
-      hasUnwrappedRawData: !!unwrappedRawData,
-      hasData: !!unwrappedRawData.data,
-      rawCan: rawCan,
-      dataCan: dataCan,
-      rawCanUpdate: rawCan?.update,
-      dataCanUpdate: dataCan?.update,
-      rawDataId: extractValue(unwrappedRawData, 'id'),
-      dataId: extractValue(unwrappedData, 'id'),
-      finalCanPermissions: canPermissions,
-    });
-  }
-  
   return {
     id: extractValue(unwrappedData, 'id') || extractValue(unwrappedRawData, 'id'),
     page_id: extractValue(unwrappedData, 'page_id') || extractValue(unwrappedRawData, 'page_id'),

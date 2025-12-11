@@ -54,19 +54,6 @@ const {
     uiData 
 } = useSectionUI(() => props.section);
 
-// Debug des permissions - toujours afficher pour diagnostiquer
-watch(() => [canEdit.value, sectionModel.value, props.section], ([canEditVal, sectionModelVal, rawSection]) => {
-    console.log('SectionRenderer - Permissions debug', {
-        canEdit: canEditVal,
-        sectionId: sectionModelVal?.id,
-        sectionCan: sectionModelVal?.can,
-        sectionCanUpdate: sectionModelVal?.canUpdate,
-        rawSection: rawSection,
-        rawSectionCan: rawSection?.can,
-        rawSectionData: rawSection?.data?.can
-    });
-}, { immediate: true, deep: true });
-
 // États
 const isHovered = ref(false);
 const paramsModalOpen = ref(false);
@@ -132,14 +119,25 @@ const loadTemplateComponent = async () => {
 loadTemplateComponent();
 
 // Recharger le template quand le mode change
-watch(isEditing, () => {
+watch(isEditing, (newValue, oldValue) => {
+  // S'assurer que le mode a vraiment changé
+  if (newValue !== oldValue) {
+    loadTemplateComponent();
+  }
+}, { immediate: false });
+
+// Également écouter les changements de sectionId pour recharger si nécessaire
+watch(sectionId, () => {
   loadTemplateComponent();
 });
 
 // Recharger le template si le type change
-watch(templateValue, () => {
-  loadTemplateComponent();
-});
+watch(templateValue, (newValue, oldValue) => {
+  // S'assurer que le type a vraiment changé
+  if (newValue !== oldValue) {
+    loadTemplateComponent();
+  }
+}, { immediate: false });
 
 /**
  * Gère la mise à jour du titre
@@ -169,12 +167,6 @@ const handleCopyLink = async () => {
  * Gère l'ouverture du modal de paramètres
  */
 const handleOpenParamsModal = () => {
-    console.log('SectionRenderer - Opening params modal', {
-        canEdit: canEdit.value,
-        sectionModel: sectionModel.value,
-        sectionCan: sectionModel.value?.can,
-        sectionCanUpdate: sectionModel.value?.canUpdate
-    });
     paramsModalOpen.value = true;
 };
 
@@ -267,14 +259,13 @@ const handleDataUpdate = (newData) => {
     <SectionParamsModal
         v-if="sectionModel"
         :open="paramsModalOpen"
-    :section-template="templateValue"
-    :initial-settings="sectionSettings"
-    :initial-data="sectionData"
-    :section-id="sectionModel.id"
-    :section-title="sectionModel.title || section.title"
+        :section-template="templateValue"
+        :initial-settings="sectionSettings"
+        :section-id="sectionModel.id"
+        :section-title="sectionModel.title || section.title"
         @close="handleCloseParamsModal"
         @validated="handleParamsUpdated"
-    @deleted="() => router.reload({ only: ['page'] })"
+        @deleted="() => router.reload({ only: ['page'] })"
     />
 </template>
 
