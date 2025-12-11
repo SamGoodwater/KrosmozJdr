@@ -67,33 +67,38 @@ class StoreSectionRequest extends FormRequest
     {
         return match($template) {
             SectionType::TEXT => [
-                'data.content' => ['required', 'string'],
+                // Lors de la création, content peut être null (sera rempli après)
+                'data.content' => ['nullable', 'string'],
                 'settings.align' => ['sometimes', 'string', Rule::in(['left', 'center', 'right'])],
                 'settings.size' => ['sometimes', 'string', Rule::in(['sm', 'md', 'lg', 'xl'])],
             ],
             SectionType::IMAGE => [
-                'data.src' => ['required', 'string'],
-                'data.alt' => ['required', 'string'],
+                // Lors de la création, src et alt peuvent être null (seront remplis après)
+                'data.src' => ['nullable', 'string'],
+                'data.alt' => ['nullable', 'string'],
                 'data.caption' => ['sometimes', 'string', 'nullable'],
                 'settings.align' => ['sometimes', 'string', Rule::in(['left', 'center', 'right'])],
                 'settings.size' => ['sometimes', 'string', Rule::in(['sm', 'md', 'lg', 'xl', 'full'])],
             ],
             SectionType::GALLERY => [
-                'data.images' => ['required', 'array', 'min:1'],
-                'data.images.*.src' => ['required', 'string'],
-                'data.images.*.alt' => ['required', 'string'],
+                // Lors de la création, images peut être un tableau vide
+                'data.images' => ['sometimes', 'array'],
+                'data.images.*.src' => ['required_with:data.images.*', 'string'],
+                'data.images.*.alt' => ['required_with:data.images.*', 'string'],
                 'data.images.*.caption' => ['sometimes', 'string', 'nullable'],
                 'settings.columns' => ['sometimes', 'integer', Rule::in([2, 3, 4])],
                 'settings.gap' => ['sometimes', 'string', Rule::in(['sm', 'md', 'lg'])],
             ],
             SectionType::VIDEO => [
-                'data.src' => ['required', 'string'],
+                // Lors de la création, src peut être null (sera rempli après)
+                'data.src' => ['nullable', 'string'],
                 'data.type' => ['required', 'string', Rule::in(['youtube', 'vimeo', 'direct'])],
                 'settings.autoplay' => ['sometimes', 'boolean'],
                 'settings.controls' => ['sometimes', 'boolean'],
             ],
             SectionType::ENTITY_TABLE => [
-                'data.entity' => ['required', 'string'],
+                // Lors de la création, entity peut être null (sera rempli après)
+                'data.entity' => ['nullable', 'string'],
                 'data.filters' => ['sometimes', 'array'],
                 'data.columns' => ['sometimes', 'array'],
             ],

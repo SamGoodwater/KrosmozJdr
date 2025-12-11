@@ -28,31 +28,20 @@ class SectionPolicy
 
     /**
      * Determine whether the user can view the model.
+     * 
+     * @param \App\Models\User|null $user L'utilisateur (null pour les invités)
+     * @param \App\Models\Section $section La section à vérifier
+     * @return bool
      */
-    public function view(User $user, Section $section): bool
+    public function view(?User $user, Section $section): bool
     {
-        if (in_array($user->role, [User::ROLE_ADMIN, User::ROLE_SUPER_ADMIN, 4, 5, 'admin', 'super_admin'])) {
+        // Les admins peuvent toujours voir
+        if ($user && in_array($user->role, [User::ROLE_ADMIN, User::ROLE_SUPER_ADMIN, 4, 5, 'admin', 'super_admin'])) {
             return true;
         }
-        // Charger la relation users si elle n'est pas déjà chargée
-        if (!$section->relationLoaded('users')) {
-            try {
-                $section->load('users');
-            } catch (\Exception $e) {
-                // Si la relation ne peut pas être chargée, continuer avec les autres vérifications
-            }
-        }
-        if ($section->relationLoaded('users') && $section->users->contains($user->id)) {
-            return true;
-        }
-        // is_visible est déjà un enum Visibility grâce au cast
-        $visibility = $section->is_visible instanceof \App\Enums\Visibility 
-            ? $section->is_visible 
-            : \App\Enums\Visibility::tryFrom($section->is_visible);
-        if (!$visibility) {
-            return false;
-        }
-        return $visibility->isAccessibleBy($user);
+        
+        // Utiliser la méthode du modèle qui gère correctement les invités et la visibilité
+        return $section->canBeViewedBy($user);
     }
 
     /**

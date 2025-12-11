@@ -7,5 +7,11 @@ export default {
   icon: 'fa-solid fa-file-lines',
   value: 'text',
   supportsAutoSave: true,
+  // Valeurs par défaut pour les settings (paramètres d'affichage)
+  defaultSettings: {},
+  // Valeurs par défaut pour les data (contenu)
+  defaultData: {
+    content: null, // null au lieu de '' pour éviter les problèmes de validation
+  },
 };
 

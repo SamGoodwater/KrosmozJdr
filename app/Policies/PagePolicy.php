@@ -34,20 +34,20 @@ class PagePolicy
 
     /**
      * Determine whether the user can view the model.
+     * 
+     * @param \App\Models\User|null $user L'utilisateur (null pour les invités)
+     * @param \App\Models\Page $page La page à vérifier
+     * @return bool
      */
-    public function view(User $user, Page $page): bool
+    public function view(?User $user, Page $page): bool
     {
-        if (in_array($user->role, [User::ROLE_GAME_MASTER, User::ROLE_ADMIN, User::ROLE_SUPER_ADMIN, 3, 4, 5, 'game_master', 'admin', 'super_admin'])) {
+        // Les admins peuvent toujours voir
+        if ($user && in_array($user->role, [User::ROLE_GAME_MASTER, User::ROLE_ADMIN, User::ROLE_SUPER_ADMIN, 3, 4, 5, 'game_master', 'admin', 'super_admin'])) {
             return true;
         }
-        // Charger la relation users si elle n'est pas déjà chargée
-        if (!$page->relationLoaded('users')) {
-            $page->load('users');
-        }
-        if ($page->users->contains($user->id)) {
-            return true;
-        }
-        return (bool) $page->is_visible;
+        
+        // Utiliser la méthode du modèle qui gère correctement les invités et la visibilité
+        return $page->canBeViewedBy($user);
     }
 
     /**

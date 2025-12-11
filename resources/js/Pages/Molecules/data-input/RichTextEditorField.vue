@@ -101,7 +101,7 @@ const containerClasses = computed(() => {
   return [
     'form-control w-full',
     props.class
-  ]
+  ].filter(Boolean).join(' ')
 })
 
 const labelConfig = computed(() => {

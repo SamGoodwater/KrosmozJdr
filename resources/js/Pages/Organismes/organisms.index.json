@@ -118,7 +118,23 @@
   {
     "name": "SectionVideoEdit",
     "description": "SectionVideoEdit Template",
-    "props": [],
+    "props": [
+      {
+        "name": "section",
+        "type": "Object",
+        "desc": "- Données complètes de la section"
+      },
+      {
+        "name": "data",
+        "type": "Object",
+        "desc": "- Données de contenu (section.data)"
+      },
+      {
+        "name": "settings",
+        "type": "Object",
+        "desc": "- Paramètres (section.settings)"
+      }
+    ],
     "slots": [],
     "file": "section/templates/video/SectionVideoEdit.vue"
   },
@@ -178,7 +194,23 @@
   {
     "name": "SectionImageEdit",
     "description": "SectionImageEdit Template",
-    "props": [],
+    "props": [
+      {
+        "name": "section",
+        "type": "Object",
+        "desc": "- Données complètes de la section"
+      },
+      {
+        "name": "data",
+        "type": "Object",
+        "desc": "- Données de contenu (section.data)"
+      },
+      {
+        "name": "settings",
+        "type": "Object",
+        "desc": "- Paramètres (section.settings)"
+      }
+    ],
     "slots": [],
     "file": "section/templates/image/SectionImageEdit.vue"
   },
@@ -206,7 +238,23 @@
   {
     "name": "SectionEntityTableEdit",
     "description": "SectionEntityTableEdit Template",
-    "props": [],
+    "props": [
+      {
+        "name": "section",
+        "type": "Object",
+        "desc": "- Données complètes de la section"
+      },
+      {
+        "name": "data",
+        "type": "Object",
+        "desc": "- Données de contenu (section.data)"
+      },
+      {
+        "name": "settings",
+        "type": "Object",
+        "desc": "- Paramètres (section.settings)"
+      }
+    ],
     "slots": [],
     "file": "section/templates/entity_table/SectionEntityTableEdit.vue"
   },

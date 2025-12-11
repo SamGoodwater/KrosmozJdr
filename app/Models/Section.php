@@ -275,6 +275,17 @@ class Section extends Model
 
     /**
      * Vérifie si la section peut être modifiée par un utilisateur selon can_edit_role.
+     * 
+     * **Logique de vérification :**
+     * - Les super_admin peuvent toujours modifier
+     * - L'auteur de la section peut modifier sa section (même sans niveau de permission)
+     *   → Il ne peut modifier que sa propre section, pas les autres sections de la page
+     * - Les utilisateurs associés à la section peuvent modifier (mais doivent avoir les droits sur la page)
+     * - Sinon : l'utilisateur doit avoir des droits supérieurs ou égaux au `can_edit_role` de la section
+     *   ET des droits supérieurs ou égaux au `can_edit_role` de la page parente
+     * 
+     * @param User|null $user Utilisateur (null pour invité)
+     * @return bool True si l'utilisateur peut modifier la section
      */
     public function canBeEditedBy(?User $user = null): bool
     {
@@ -288,12 +299,16 @@ class Section extends Model
         }
 
         // Si l'utilisateur est l'auteur de la section, il peut la modifier
+        // (même sans avoir le niveau de permission requis sur la section ou la page)
+        // L'auteur peut modifier uniquement sa propre section, pas les autres sections de la page
         if ($this->created_by === $user->id) {
             return true;
         }
 
         // Si l'utilisateur est associé à la section via la relation users, il peut la modifier
-        // Charger la relation si elle n'est pas déjà chargée
+        // (même sans avoir le niveau de permission requis)
+        // MAIS il faut vérifier les droits sur la page parente
+        // car l'utilisateur associé peut modifier cette section, mais doit pouvoir modifier la page
         if (!$this->relationLoaded('users')) {
             try {
                 $this->load('users');
@@ -302,18 +317,54 @@ class Section extends Model
             }
         }
         if ($this->relationLoaded('users') && $this->users->contains($user->id)) {
+            // Charger la page si nécessaire pour vérifier les droits
+            if (!$this->relationLoaded('page')) {
+                try {
+                    $this->load('page');
+                } catch (\Exception $e) {
+                    // Si la page ne peut pas être chargée, on considère que l'utilisateur associé peut modifier
+                    return true;
+                }
+            }
+            
+            // Vérifier les droits sur la page
+            if ($this->relationLoaded('page') && $this->page) {
+                return $this->page->canBeEditedBy($user);
+            }
+            
             return true;
         }
 
-        // Vérifier selon can_edit_role
-        // can_edit_role est déjà un enum Visibility grâce au cast, donc on peut l'utiliser directement
-        $editRole = $this->can_edit_role instanceof Visibility 
+        // Vérifier selon can_edit_role de la section
+        $sectionEditRole = $this->can_edit_role instanceof Visibility 
             ? $this->can_edit_role 
             : Visibility::tryFrom($this->can_edit_role ?? 'admin');
-        if (!$editRole) {
+        if (!$sectionEditRole) {
             return false;
         }
 
-        return $editRole->isAccessibleBy($user);
+        // L'utilisateur doit avoir les droits sur la section
+        if (!$sectionEditRole->isAccessibleBy($user)) {
+            return false;
+        }
+
+        // Vérifier AUSSI les droits sur la page parente
+        // Charger la page si nécessaire
+        if (!$this->relationLoaded('page')) {
+            try {
+                $this->load('page');
+            } catch (\Exception $e) {
+                // Si la page ne peut pas être chargée, on considère que c'est OK si les droits sur la section sont OK
+                return true;
+            }
+        }
+        
+        // Si la page est chargée, vérifier les droits sur la page
+        if ($this->relationLoaded('page') && $this->page) {
+            return $this->page->canBeEditedBy($user);
+        }
+        
+        // Si la page n'est pas chargée, on retourne true car les droits sur la section sont OK
+        return true;
     }
 }

@@ -2,11 +2,31 @@
  * Composable pour gérer les modes lecture/écriture des sections
  * 
  * @description
- * Gère l'état des sections en mode édition (frontend uniquement).
+ * Gère l'état des sections en mode édition (frontend uniquement, pas de persistance).
  * Chaque section peut être indépendamment en mode lecture ou écriture.
  * 
+ * **État global :**
+ * - Utilise un `Set` global pour stocker les IDs des sections en mode édition
+ * - Permet à plusieurs composants d'accéder au même état
+ * - L'état est perdu au rechargement de la page (frontend uniquement)
+ * 
+ * **Fonctionnalités :**
+ * - `isEditing` : Computed qui indique si la section est en mode édition
+ * - `toggleEditMode()` : Bascule entre lecture et écriture
+ * - `setEditMode(value)` : Définit explicitement le mode (true = édition, false = lecture)
+ * 
+ * @param {Number|String|ComputedRef} sectionId - ID de la section (peut être réactif)
+ * @returns {Object} { isEditing, toggleEditMode, setEditMode }
+ * 
  * @example
- * const { isEditing, toggleEditMode, setEditMode } = useSectionMode(sectionId);
+ * // Dans un composant Vue
+ * const sectionId = computed(() => props.section.id);
+ * const { isEditing, toggleEditMode } = useSectionMode(sectionId);
+ * 
+ * // Basculement au clic
+ * <button @click="toggleEditMode">
+ *   {{ isEditing ? 'Voir' : 'Éditer' }}
+ * </button>
  */
 import { computed } from 'vue';
 

@@ -17,7 +17,7 @@
  * @emits deleted - Événement émis quand la page est supprimée
  */
 import { useForm, router } from '@inertiajs/vue3';
-import { computed, watch, ref } from 'vue';
+import { computed, watch, ref, nextTick } from 'vue';
 import Modal from '@/Pages/Molecules/action/Modal.vue';
 import InputField from '@/Pages/Molecules/data-input/InputField.vue';
 import SelectField from '@/Pages/Molecules/data-input/SelectField.vue';
@@ -108,9 +108,21 @@ const form = useForm({
     menu_order: 0
 });
 
-// Réinitialiser le formulaire quand le modal s'ouvre ou que la page change
-watch([() => props.open, () => pageModel.value], ([isOpen, model]) => {
-    if (isOpen && model) {
+// Fonction pour initialiser le formulaire
+const initializeForm = () => {
+    const model = pageModel.value;
+    const data = pageData.value;
+    
+    console.log('EditPageModal - initializeForm called:', { 
+        hasModel: !!model, 
+        modelId: model?.id,
+        hasPageData: !!data,
+        pageDataKeys: data ? Object.keys(data) : [],
+        propsPage: props.page,
+        propsPageKeys: props.page ? Object.keys(props.page) : []
+    });
+    
+    if (model && model.id) {
         // Utiliser le modèle Page qui normalise déjà les données
         form.title = model.title || '';
         form.slug = model.slug || '';
@@ -123,7 +135,7 @@ watch([() => props.open, () => pageModel.value], ([isOpen, model]) => {
         
         // Debug en développement
         if (import.meta.env.DEV) {
-            console.log('EditPageModal - Form initialization:', {
+            console.log('EditPageModal - Form initialized successfully:', {
                 raw: pageData.value,
                 model,
                 pageData: pageData.value,
@@ -141,8 +153,53 @@ watch([() => props.open, () => pageModel.value], ([isOpen, model]) => {
         }
         
         form.clearErrors();
+        return true;
+    } else {
+        console.warn('EditPageModal - Model not available:', { 
+            hasModel: !!model, 
+            modelId: model?.id,
+            hasPageData: !!data,
+            pageData: data,
+            propsPage: props.page
+        });
+        return false;
     }
-}, { immediate: true });
+};
+
+// Réinitialiser le formulaire quand le modal s'ouvre
+watch(() => props.open, (isOpen) => {
+    console.log('EditPageModal - Open watcher triggered:', { isOpen, hasPage: !!props.page });
+    
+    if (isOpen) {
+        // Utiliser nextTick pour s'assurer que les computed sont à jour
+        nextTick(() => {
+            const initialized = initializeForm();
+            
+            // Si l'initialisation a échoué, réessayer après un court délai
+            if (!initialized) {
+                console.log('EditPageModal - Retrying form initialization in 100ms...');
+                setTimeout(() => {
+                    initializeForm();
+                }, 100);
+            }
+        });
+    } else {
+        // Réinitialiser le formulaire quand le modal se ferme
+        form.reset();
+        form.clearErrors();
+    }
+}, { immediate: false });
+
+// Surveiller aussi les changements de props.page pour réinitialiser le formulaire si nécessaire
+watch(() => props.page, (newPage) => {
+    console.log('EditPageModal - Page prop watcher triggered:', { hasPage: !!newPage, isOpen: props.open });
+    
+    if (props.open && newPage) {
+        nextTick(() => {
+            initializeForm();
+        });
+    }
+}, { deep: true });
 
 // Réinitialiser le formulaire quand le modal se ferme
 watch(() => props.open, (isOpen) => {

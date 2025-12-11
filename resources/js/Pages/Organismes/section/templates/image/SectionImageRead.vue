@@ -7,6 +7,7 @@
  */
 import { computed } from 'vue';
 import Image from '@/Pages/Atoms/data-display/Image.vue';
+import { useSectionStyles } from '../../composables/useSectionStyles';
 
 const props = defineProps({
   section: { type: Object, required: true },
@@ -18,7 +19,11 @@ const src = computed(() => props.data?.src || '');
 const alt = computed(() => props.data?.alt || 'Image');
 const caption = computed(() => props.data?.caption || '');
 
-const alignClasses = computed(() => {
+// Utiliser le composable pour les styles
+const { alignClasses, imageSizeClasses } = useSectionStyles(() => props.settings);
+
+// Adapter les classes d'alignement pour flexbox
+const flexAlignClasses = computed(() => {
   const align = props.settings?.align || 'center';
   return {
     'left': 'justify-start',
@@ -26,23 +31,12 @@ const alignClasses = computed(() => {
     'right': 'justify-end'
   }[align] || 'justify-center';
 });
-
-const sizeClasses = computed(() => {
-  const size = props.settings?.size || 'md';
-  return {
-    'sm': 'max-w-sm',
-    'md': 'max-w-md',
-    'lg': 'max-w-lg',
-    'xl': 'max-w-xl',
-    'full': 'max-w-full'
-  }[size] || 'max-w-md';
-});
 </script>
 
 <template>
   <div class="section-image-content">
-    <div class="flex" :class="alignClasses">
-      <figure class="w-full" :class="sizeClasses">
+    <div class="flex" :class="flexAlignClasses">
+      <figure class="w-full" :class="imageSizeClasses">
         <Image
           v-if="src"
           :src="src"

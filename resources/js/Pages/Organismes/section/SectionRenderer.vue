@@ -19,10 +19,11 @@ import { computed, ref, watch, shallowRef } from 'vue';
 import { router } from '@inertiajs/vue3';
 import SectionHeader from '@/Pages/Molecules/section/SectionHeader.vue';
 import SectionParamsModal from './modals/SectionParamsModal.vue';
-import { Section } from '@/Models';
 import { useSectionMode } from './composables/useSectionMode';
 import { useSectionSave } from './composables/useSectionSave';
 import { useSectionTemplates } from './composables/useSectionTemplates';
+import { useSectionAPI } from './composables/useSectionAPI';
+import { useSectionUI } from './composables/useSectionUI';
 import { useCopyToClipboard } from '@/Composables/utils/useCopyToClipboard';
 
 const props = defineProps({
@@ -36,24 +37,35 @@ const props = defineProps({
     user: {
         type: Object,
         default: null
+    },
+    autoEdit: {
+        type: Boolean,
+        default: false
     }
 });
 
-/**
- * Modèle Section normalisé
- */
-const sectionModel = computed(() => {
-    if (!props.section) return null;
-    return new Section(props.section);
-});
+// Utiliser le composable UI unifié
+const { 
+    sectionModel, 
+    canEdit, 
+    canDelete,
+    templateInfo,
+    stateInfo,
+    uiData 
+} = useSectionUI(() => props.section);
 
-/**
- * Vérifie si l'utilisateur peut modifier la section
- */
-const canEdit = computed(() => {
-    if (!sectionModel.value) return false;
-    return sectionModel.value.canUpdate;
-});
+// Debug des permissions - toujours afficher pour diagnostiquer
+watch(() => [canEdit.value, sectionModel.value, props.section], ([canEditVal, sectionModelVal, rawSection]) => {
+    console.log('SectionRenderer - Permissions debug', {
+        canEdit: canEditVal,
+        sectionId: sectionModelVal?.id,
+        sectionCan: sectionModelVal?.can,
+        sectionCanUpdate: sectionModelVal?.canUpdate,
+        rawSection: rawSection,
+        rawSectionCan: rawSection?.can,
+        rawSectionData: rawSection?.data?.can
+    });
+}, { immediate: true, deep: true });
 
 // États
 const isHovered = ref(false);
@@ -63,16 +75,24 @@ const isLoadingTemplate = ref(false);
 
 // Composables
 const sectionId = computed(() => sectionModel.value?.id);
-const { isEditing, toggleEditMode } = useSectionMode(sectionId);
+const { isEditing, toggleEditMode, setEditMode } = useSectionMode(sectionId);
 const { saveSectionImmediate } = useSectionSave();
 const { getTemplateComponent } = useSectionTemplates();
+const { updateSection } = useSectionAPI();
 const { copyToClipboard } = useCopyToClipboard();
 
+// Activer automatiquement le mode édition si autoEdit est true
+watch(() => props.autoEdit, (shouldEdit) => {
+    if (shouldEdit && sectionId.value && canEdit.value) {
+        setEditMode(true);
+    }
+}, { immediate: true });
+
 /**
- * Template de la section
+ * Template de la section (utilise templateInfo du composable UI)
  */
 const templateValue = computed(() => {
-  return props.section.template || props.section.type || 'text';
+  return templateInfo.value.value;
 });
 
 /**
@@ -149,6 +169,12 @@ const handleCopyLink = async () => {
  * Gère l'ouverture du modal de paramètres
  */
 const handleOpenParamsModal = () => {
+    console.log('SectionRenderer - Opening params modal', {
+        canEdit: canEdit.value,
+        sectionModel: sectionModel.value,
+        sectionCan: sectionModel.value?.can,
+        sectionCanUpdate: sectionModel.value?.canUpdate
+    });
     paramsModalOpen.value = true;
 };
 
@@ -162,22 +188,19 @@ const handleCloseParamsModal = () => {
 /**
  * Gère la mise à jour des paramètres
  */
-const handleParamsUpdated = (updatedParams) => {
+const handleParamsUpdated = async (updatedParams) => {
     if (!sectionModel.value) return;
     
-  // Mettre à jour la section
-    router.patch(route('sections.update', sectionModel.value.id), {
-    ...updatedParams
-    }, {
-        preserveScroll: true,
-        onSuccess: () => {
-            paramsModalOpen.value = false;
-            router.reload({ only: ['page'] });
-        },
-        onError: (errors) => {
-            console.error('Erreur lors de la mise à jour de la section:', errors);
-        }
-    });
+    try {
+        await updateSection(sectionModel.value.id, updatedParams, {
+            onSuccess: () => {
+                paramsModalOpen.value = false;
+                router.reload({ only: ['page'] });
+            }
+        });
+    } catch (errors) {
+        console.error('Erreur lors de la mise à jour de la section:', errors);
+    }
 };
 
 /**
@@ -192,17 +215,19 @@ const handleDataUpdate = (newData) => {
 <template>
     <div 
         class="section-renderer group relative" 
-        :data-section-id="section.id" 
-    :data-section-template="templateValue"
+        :class="uiData.containerClass"
+        :data-section-id="sectionModel?.id" 
+        :data-section-template="templateValue"
+        :data-section-state="stateInfo.value"
         @mouseenter="isHovered = true"
         @mouseleave="isHovered = false"
     >
     <!-- Header toujours visible -->
     <SectionHeader
       :title="section.title || sectionModel?.title"
-      :is-editing="isEditing"
-      :can-edit="canEdit"
-      :is-hovered="isHovered"
+      :isEditing="isEditing"
+      :canEdit="canEdit"
+      :isHovered="isHovered"
       @update:title="handleTitleUpdate"
       @toggle-edit="toggleEditMode"
       @open-params="handleOpenParamsModal"
@@ -221,6 +246,7 @@ const handleDataUpdate = (newData) => {
             :section="section"
       :data="sectionData"
       :settings="sectionSettings"
+      :editing="isEditing"
       @data-updated="handleDataUpdate"
         />
 

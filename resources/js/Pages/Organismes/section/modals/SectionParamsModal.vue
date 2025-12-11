@@ -26,6 +26,9 @@ import ToggleField from '@/Pages/Molecules/data-input/ToggleField.vue';
 import RichTextEditorField from '@/Pages/Molecules/data-input/RichTextEditorField.vue';
 import Btn from '@/Pages/Atoms/action/Btn.vue';
 import Icon from '@/Pages/Atoms/data-display/Icon.vue';
+import { useSectionAPI } from '../composables/useSectionAPI';
+import { useSectionDefaults } from '../composables/useSectionDefaults';
+import { getTemplateConfig } from '../templates';
 
 const props = defineProps({
     open: {
@@ -57,9 +60,16 @@ const props = defineProps({
 
 const emit = defineEmits(['close', 'validated', 'deleted']);
 
+// Composables
+const { deleteSection } = useSectionAPI();
+const { getDefaults } = useSectionDefaults();
+
 // Settings et data du formulaire
 const settings = ref({ ...props.initialSettings });
 const data = ref({ ...props.initialData });
+
+// État pour le modal de confirmation de suppression
+const showDeleteConfirm = ref(false);
 
 // Réinitialiser settings et data quand le template change
 watch(() => props.sectionTemplate, (newTemplate) => {
@@ -82,22 +92,10 @@ watch(() => [props.initialSettings, props.initialData], ([newSettings, newData])
 
 /**
  * Retourne les settings et data par défaut selon le template
+ * Utilise le composable useSectionDefaults pour éviter la duplication
  */
 function getDefaultSettingsForTemplate(template) {
-    switch (template) {
-        case 'text':
-            return { settings: { align: 'left', size: 'md' }, data: { content: '' } };
-        case 'image':
-            return { settings: { align: 'center', size: 'md' }, data: { src: '', alt: '', caption: '' } };
-        case 'gallery':
-            return { settings: { columns: 3, gap: 'md' }, data: { images: [] } };
-        case 'video':
-            return { settings: { autoplay: false, controls: true }, data: { src: '', type: 'youtube' } };
-        case 'entity_table':
-            return { settings: {}, data: { entity: '', filters: {}, columns: [] } };
-        default:
-            return { settings: {}, data: {} };
-    }
+    return getDefaults(template);
 }
 
 /**
@@ -141,22 +139,46 @@ const videoTypeOptions = computed(() => [
 
 /**
  * Validation des paramètres
+ * 
+ * Utilise une logique générique basée sur les données.
+ * Pour des validations spécifiques par template, celles-ci pourraient être
+ * définies dans les configs des templates à l'avenir.
  */
 const isValid = computed(() => {
-    switch (props.sectionTemplate) {
-        case 'text':
-            return !!data.value.content;
-        case 'image':
-            return !!data.value.src && !!data.value.alt;
-        case 'gallery':
-            return Array.isArray(data.value.images) && data.value.images.length > 0;
-        case 'video':
-            return !!data.value.src && !!data.value.type;
-        case 'entity_table':
-            return !!data.value.entity;
-        default:
-            return false;
+    const dataObj = data.value || {};
+    
+    // Validation générique : vérifier que les données ne sont pas complètement vides
+    if (!dataObj || Object.keys(dataObj).length === 0) {
+        return false;
     }
+    
+    // Vérifier si au moins une valeur non-null/non-empty existe
+    for (const key in dataObj) {
+        const value = dataObj[key];
+        if (value !== null && value !== undefined && value !== '') {
+            // Si c'est un tableau, vérifier qu'il n'est pas vide
+            if (Array.isArray(value)) {
+                if (value.length > 0) {
+                    return true;
+                }
+            } else if (typeof value === 'string') {
+                // Si c'est une chaîne, vérifier qu'elle n'est pas vide après trim
+                if (value.trim().length > 0) {
+                    return true;
+                }
+            } else if (typeof value === 'object') {
+                // Si c'est un objet, vérifier qu'il n'est pas vide
+                if (Object.keys(value).length > 0) {
+                    return true;
+                }
+            } else {
+                // Autres types (number, boolean, etc.)
+                return true;
+            }
+        }
+    }
+    
+    return false;
 });
 
 /**
@@ -180,41 +202,59 @@ const handleClose = () => {
 };
 
 /**
- * Gère la suppression de la section
+ * Ouvre le modal de confirmation de suppression
  */
-const handleDelete = () => {
+const openDeleteConfirm = () => {
+    showDeleteConfirm.value = true;
+};
+
+/**
+ * Ferme le modal de confirmation de suppression
+ */
+const closeDeleteConfirm = () => {
+    showDeleteConfirm.value = false;
+};
+
+/**
+ * Gère la suppression de la section (après confirmation)
+ */
+const handleDelete = async () => {
     if (!props.sectionId) return;
     
-    const sectionTitle = props.sectionTitle || 'cette section';
-    if (!confirm(`Êtes-vous sûr de vouloir supprimer la section "${sectionTitle}" ?`)) {
-        return;
-    }
+    closeDeleteConfirm();
     
-    router.delete(route('sections.delete', props.sectionId), {
-        preserveScroll: true,
-        onSuccess: () => {
-            emit('deleted');
-            emit('close');
-            router.reload({ only: ['page'] });
-        },
-        onError: (errors) => {
-            console.error('Erreur lors de la suppression de la section:', errors);
-        }
-    });
+    try {
+        await deleteSection(props.sectionId, {
+            onSuccess: () => {
+                emit('deleted');
+                emit('close');
+                // Recharger la page pour mettre à jour l'affichage
+                router.reload({ only: ['page'] });
+            }
+        });
+    } catch (errors) {
+        console.error('Erreur lors de la suppression de la section:', errors);
+        // Afficher une notification d'erreur si nécessaire
+    }
 };
 
 /**
  * Titre du modal selon le template
  */
+/**
+ * Titre du modal selon le template
+ * Utilise la configuration du template pour récupérer le nom.
+ */
 const modalTitle = computed(() => {
-    const titles = {
-        text: 'Paramètres de la section texte',
-        image: 'Paramètres de l\'image',
-        gallery: 'Paramètres de la galerie',
-        video: 'Paramètres de la vidéo',
-        entity_table: 'Paramètres du tableau d\'entités'
-    };
-    return titles[props.sectionTemplate] || 'Paramètres de la section';
+    try {
+        const config = getTemplateConfig(props.sectionTemplate);
+        if (config && config.name) {
+            return `Paramètres de la section ${config.name.toLowerCase()}`;
+        }
+    } catch (e) {
+        console.warn(`Impossible de charger la config du template "${props.sectionTemplate}"`, e);
+    }
+    return 'Paramètres de la section';
 });
 </script>
 
@@ -235,10 +275,11 @@ const modalTitle = computed(() => {
                     v-if="sectionId"
                     color="error"
                     size="sm"
-                    @click="handleDelete"
+                    variant="ghost"
+                    @click="openDeleteConfirm"
                     title="Supprimer la section"
                 >
-                    <Icon source="fa-solid fa-trash-can" size="sm" />
+                    <Icon source="fa-trash-can" pack="solid" alt="Supprimer la section" size="sm" />
                 </Btn>
             </div>
         </template>
@@ -371,6 +412,56 @@ const modalTitle = computed(() => {
                 :disabled="!isValid"
             >
                 Valider
+            </Btn>
+        </template>
+    </Modal>
+
+    <!-- Modal de confirmation de suppression -->
+    <Modal
+        :open="showDeleteConfirm"
+        size="sm"
+        placement="middle-center"
+        variant="outline"
+        color="error"
+        @close="closeDeleteConfirm"
+    >
+        <template #header>
+            <h3 class="text-lg font-bold">Confirmer la suppression</h3>
+        </template>
+
+        <div class="space-y-4">
+            <div class="flex items-start gap-3">
+                <Icon 
+                    source="fa-triangle-exclamation" 
+                    pack="solid"
+                    alt="Avertissement"
+                    class="text-error mt-1"
+                    size="lg"
+                />
+                <div>
+                    <p class="font-semibold mb-2">
+                        Êtes-vous sûr de vouloir supprimer cette section ?
+                    </p>
+                    <p v-if="sectionTitle" class="text-sm text-base-content/70">
+                        Section : <strong>{{ sectionTitle }}</strong>
+                    </p>
+                    <p class="text-sm text-base-content/70 mt-2">
+                        Cette action est irréversible. La section sera supprimée de la page.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <template #actions>
+            <Btn variant="ghost" @click="closeDeleteConfirm">
+                Annuler
+            </Btn>
+            <Btn 
+                color="error" 
+                @click="handleDelete"
+            >
+                <Icon source="fa-trash-can" pack="solid" alt="Supprimer" size="sm" class="mr-2" />
+                Supprimer
             </Btn>
         </template>
     </Modal>

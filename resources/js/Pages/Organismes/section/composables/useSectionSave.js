@@ -2,14 +2,31 @@
  * Composable pour gérer la sauvegarde des sections
  * 
  * @description
- * Gère l'auto-save des sections avec debounce.
- * Les templates peuvent utiliser ce composable pour sauvegarder leurs données.
+ * Gère l'auto-save des sections avec debounce pour éviter les appels API trop fréquents.
+ * Utilise `useSectionAPI` en interne pour centraliser les appels backend.
+ * 
+ * **Fonctionnalités :**
+ * - `saveSection()` : Sauvegarde avec debounce (500ms par défaut) - idéal pour l'auto-save
+ * - `saveSectionImmediate()` : Sauvegarde immédiate sans debounce - pour les actions utilisateur
+ * 
+ * **Gestion du debounce :**
+ * - Chaque section a sa propre fonction debounced
+ * - Si une nouvelle sauvegarde est déclenchée avant la fin du délai, la précédente est annulée
+ * - Les fonctions debounced sont nettoyées après succès ou erreur
  * 
  * @example
- * const { saveSection, saveSectionImmediate } = useSectionSave();
- * saveSection(sectionId, { data: { content: '...' } });
+ * // Auto-save avec debounce (recommandé pour les modifications en temps réel)
+ * const { saveSection } = useSectionSave();
+ * watch(content, (newContent) => {
+ *   saveSection(sectionId, { data: { content: newContent } });
+ * });
+ * 
+ * // Sauvegarde immédiate (pour les actions utilisateur comme "Enregistrer")
+ * const { saveSectionImmediate } = useSectionSave();
+ * saveSectionImmediate(sectionId, { title: 'Nouveau titre' });
  */
 import { router } from '@inertiajs/vue3';
+import { useSectionAPI } from './useSectionAPI';
 
 /**
  * Fonction debounce simple avec cancel
@@ -35,6 +52,9 @@ function debounce(func, wait) {
 // Map pour stocker les fonctions debounced par section ID
 const debouncedSaves = new Map();
 
+// Instance partagée de useSectionAPI
+const sectionAPI = useSectionAPI();
+
 /**
  * Sauvegarde une section avec debounce (auto-save)
  * 
@@ -50,9 +70,7 @@ const saveSection = (sectionId, updates, delay = 500) => {
   
   // Créer une nouvelle fonction debounced
   const debouncedFn = debounce(() => {
-    router.patch(route('sections.update', sectionId), updates, {
-      preserveScroll: true,
-      only: ['page'], // Recharger uniquement la page
+    sectionAPI.updateSection(sectionId, updates, {
       onSuccess: () => {
         // Nettoyer après sauvegarde réussie
         debouncedSaves.delete(sectionId);
@@ -61,6 +79,9 @@ const saveSection = (sectionId, updates, delay = 500) => {
         console.error('Erreur lors de la sauvegarde de la section:', errors);
         debouncedSaves.delete(sectionId);
       }
+    }).catch(() => {
+      // Erreur déjà gérée dans onError
+      debouncedSaves.delete(sectionId);
     });
   }, delay);
   
@@ -84,10 +105,7 @@ const saveSectionImmediate = (sectionId, updates) => {
     debouncedSaves.delete(sectionId);
   }
   
-  router.patch(route('sections.update', sectionId), updates, {
-    preserveScroll: true,
-    only: ['page'],
-  });
+  sectionAPI.updateSection(sectionId, updates);
 };
 
 /**

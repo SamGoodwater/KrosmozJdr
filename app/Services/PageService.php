@@ -56,10 +56,24 @@ class PageService
     /**
      * Construit l'arborescence du menu à partir d'une collection de pages.
      * 
-     * Organise les pages en structure hiérarchique (parent/children).
+     * Organise les pages en structure hiérarchique (parent/children) pour l'affichage
+     * dans le menu de navigation. Les pages sont triées par `menu_order`.
      * 
-     * @param Collection<Page> $pages Collection de pages
-     * @return array<int, array<string, mixed>> Arborescence du menu
+     * **Structure retournée :**
+     * ```php
+     * [
+     *   ['id' => 1, 'title' => 'Page 1', 'url' => '/pages/page-1', 'children' => [...]],
+     *   ['id' => 2, 'title' => 'Page 2', 'url' => '/pages/page-2', 'children' => []],
+     * ]
+     * ```
+     * 
+     * @param Collection<Page> $pages Collection de pages (doit contenir parent/children chargés)
+     * @return array<int, array<string, mixed>> Arborescence du menu (pages racines avec enfants imbriqués)
+     * 
+     * @example
+     * $pages = PageService::getMenuPages($user);
+     * $menuTree = PageService::buildMenuTree($pages);
+     * // Utilisé pour afficher le menu hiérarchique dans le frontend
      */
     public static function buildMenuTree(Collection $pages): array
     {
@@ -132,18 +146,33 @@ class PageService
      */
     public static function getPublishedSections(Page $page, ?User $user = null): Collection
     {
-        return $page->sections()
-            ->displayable($user)
-            ->get();
+        return \App\Services\SectionService::getDisplayableSections($page, $user);
     }
 
     /**
      * Invalide le cache des pages du menu.
      * 
-     * À appeler après modification d'une page (création, mise à jour, suppression).
+     * **Quand l'appeler :**
+     * - Après création d'une page
+     * - Après mise à jour d'une page (titre, slug, in_menu, parent_id, menu_order, etc.)
+     * - Après suppression/restauration d'une page
+     * - Après modification de la visibilité ou de l'état d'une page
+     * 
+     * **Gestion du cache :**
+     * - Le cache est séparé par utilisateur (chaque utilisateur a son propre cache)
+     * - Si `$user` est null, invalide pour TOUS les utilisateurs (utilise `Cache::flush()`)
+     * - Toujours invalide le cache des invités
      * 
      * @param User|null $user Utilisateur spécifique (null pour tous les utilisateurs)
      * @return void
+     * 
+     * @example
+     * // Après modification d'une page
+     * $page->update(['title' => 'Nouveau titre']);
+     * PageService::clearMenuCache(); // Invalide pour tous
+     * 
+     * // Après modification pour un utilisateur spécifique
+     * PageService::clearMenuCache($user); // Invalide seulement pour cet utilisateur
      */
     public static function clearMenuCache(?User $user = null): void
     {
@@ -151,7 +180,9 @@ class PageService
             Cache::forget('menu_pages_' . $user->id);
         } else {
             // Invalider pour tous les utilisateurs (pattern matching)
-            Cache::flush(); // Ou utiliser un système de tags si disponible
+            // Note: Cache::flush() vide TOUT le cache, pas seulement les pages
+            // Pour une meilleure performance, on pourrait utiliser un système de tags si disponible
+            Cache::flush();
         }
         
         // Toujours invalider pour les invités
@@ -173,10 +204,9 @@ class PageService
             return null;
         }
 
-        // Charger les sections affichables
-        $page->load(['sections' => function ($query) use ($user) {
-            $query->displayable($user);
-        }]);
+        // Charger les sections affichables via SectionService
+        $sections = \App\Services\SectionService::getDisplayableSections($page, $user);
+        $page->setRelation('sections', $sections);
 
         return $page;
     }

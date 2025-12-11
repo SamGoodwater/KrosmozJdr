@@ -21,6 +21,9 @@ import Icon from '@/Pages/Atoms/data-display/Icon.vue'
 import Alert from '@/Pages/Atoms/feedback/Alert.vue'
 import Tooltip from '@/Pages/Atoms/feedback/Tooltip.vue'
 import CreateSectionModal from './modals/CreateSectionModal.vue'
+import { useSectionAPI } from './composables/useSectionAPI'
+import { mapToSectionModels } from './mappers/sectionMapper'
+import { useSectionUI } from './composables/useSectionUI'
 
 const props = defineProps({
     sections: {
@@ -37,6 +40,9 @@ const props = defineProps({
     }
 })
 
+// Mapper les sections en modèles normalisés
+const sectionModels = computed(() => mapToSectionModels(props.sections))
+
 // Copie locale modifiable des sections, triée par ordre
 const localSections = ref(
     [...props.sections].sort((a, b) => (a.order || 0) - (b.order || 0))
@@ -52,11 +58,21 @@ watch(
     { deep: true }
 )
 
+// Helper pour obtenir les infos UI d'une section
+function getSectionUI(section) {
+    const sectionModel = sectionModels.value.find(s => s.id === section.id)
+    if (!sectionModel) return null
+    return useSectionUI(sectionModel)
+}
+
 const draggingIndex = ref(null)
 const saving = ref(false)
 const saveError = ref('')
 const saveSuccess = ref('')
 const createSectionModalOpen = ref(false)
+
+// Composable pour les appels API
+const { reorderSections } = useSectionAPI()
 
 const hasChanges = computed(() => {
     if (localSections.value.length !== props.sections.length) return true
@@ -84,40 +100,74 @@ function onDragOver(event, index) {
     draggingIndex.value = index
 }
 
+// Debounce pour la sauvegarde automatique après drag & drop
+let saveOrderDebounce = null;
+
 function onDragEnd() {
-    draggingIndex.value = null
+    draggingIndex.value = null;
+    
+    // Auto-save après le drop avec debounce (500ms)
+    if (hasChanges.value && props.canEdit) {
+        // Annuler le debounce précédent si existe
+        if (saveOrderDebounce) {
+            clearTimeout(saveOrderDebounce);
+        }
+        
+        // Créer un nouveau debounce
+        saveOrderDebounce = setTimeout(() => {
+            saveOrder();
+        }, 500);
+    }
 }
 
 function sectionTypeLabel(section) {
     return section.template || section.type || 'text' // Compatibilité
 }
 
-function saveOrder() {
+// Helper pour obtenir l'icône du template
+function getTemplateIcon(section) {
+    const sectionModel = sectionModels.value.find(s => s.id === section.id)
+    if (!sectionModel) return 'fa-file'
+    const { templateInfo } = useSectionUI(sectionModel)
+    return templateInfo.value.icon
+}
+
+// Helper pour obtenir le badge d'état
+function getStateBadge(section) {
+    const sectionModel = sectionModels.value.find(s => s.id === section.id)
+    if (!sectionModel) return null
+    const { stateInfo } = useSectionUI(sectionModel)
+    return stateInfo.value.badge
+}
+
+async function saveOrder() {
     if (!props.canEdit || !hasChanges.value) return
 
     saving.value = true
     saveError.value = ''
     saveSuccess.value = ''
 
-    const payload = {
-        sections: localSections.value.map((section, index) => ({
-            id: section.id,
-            order: index
-        }))
-    }
+    const sections = localSections.value.map((section, index) => ({
+        id: section.id,
+        order: index
+    }))
 
-    router.patch(route('sections.reorder'), payload, {
-        preserveScroll: true,
-        onSuccess: () => {
-            saving.value = false
-            saveSuccess.value = 'Ordre des sections enregistré avec succès.'
-        },
-        onError: () => {
-            saving.value = false
-            saveError.value =
-                "Une erreur est survenue lors de l'enregistrement de l'ordre des sections."
-        }
-    })
+    try {
+        await reorderSections(sections, {
+            onSuccess: () => {
+                saving.value = false
+                saveSuccess.value = 'Ordre des sections enregistré avec succès.'
+                // Masquer le message de succès après 3 secondes
+                setTimeout(() => {
+                    saveSuccess.value = ''
+                }, 3000)
+            }
+        })
+    } catch (errors) {
+        saving.value = false
+        saveError.value =
+            "Une erreur est survenue lors de l'enregistrement de l'ordre des sections."
+    }
 }
 
 function handleOpenCreateSectionModal() {
@@ -131,7 +181,17 @@ function handleCloseCreateSectionModal() {
 function handleSectionCreated(data) {
     createSectionModalOpen.value = false
     // Recharger les sections après création
-    router.reload({ only: ['page'] })
+    router.reload({ 
+        only: ['page'],
+        onSuccess: () => {
+            // Si la section doit être ouverte en mode édition, on l'active
+            if (data?.openEdit && data?.sectionId) {
+                // Le mode édition sera géré par useSectionMode dans SectionRenderer
+                // On peut passer l'ID via un query param ou un état global
+                // Pour l'instant, on laisse SectionRenderer gérer automatiquement
+            }
+        }
+    })
 }
 </script>
 
@@ -145,11 +205,11 @@ function handleSectionCreated(data) {
                 <Btn
                     v-if="canEdit"
                     size="sm"
-                    variant="primary"
+                    color="primary"
                     @click="handleOpenCreateSectionModal"
                     aria-label="Ajouter une section"
                 >
-                    <Icon source="fa-solid fa-plus" class="mr-2" />
+                    <Icon source="fa-plus" pack="solid" alt="Ajouter une section" class="mr-2" />
                     Ajouter une section
                 </Btn>
             </div>
@@ -182,12 +242,27 @@ function handleSectionCreated(data) {
 
                 <div class="flex-1 min-w-0">
                     <div class="flex items-center gap-2">
+                        <Icon 
+                            :source="getTemplateIcon(section)" 
+                            size="sm"
+                            class="text-base-content/60"
+                        />
                         <span class="text-sm font-mono text-base-content/60">
                             #{{ index }}
                         </span>
                         <h3 class="font-semibold truncate">
                             {{ section.title || 'Sans titre' }}
                         </h3>
+                        <span 
+                            v-if="getStateBadge(section)"
+                            :class="[
+                                'badge badge-xs',
+                                `badge-${getStateBadge(section).color}`,
+                                `badge-${getStateBadge(section).variant}`
+                            ]"
+                        >
+                            {{ getStateBadge(section).text }}
+                        </span>
                     </div>
                     <div class="text-xs text-base-content/60 mt-1 flex flex-wrap gap-2">
                         <span class="badge badge-xs badge-outline">

@@ -12,6 +12,7 @@
  * @props {Object} settings - Paramètres (section.settings)
  */
 import { computed } from 'vue';
+import { useSectionStyles } from '../../composables/useSectionStyles';
 
 const props = defineProps({
   section: {
@@ -36,42 +37,13 @@ const content = computed(() => {
 });
 
 /**
- * Classes d'alignement depuis settings
+ * Classes CSS depuis les settings (utilise le composable)
  */
-const alignClasses = computed(() => {
-  const align = props.settings?.align || 'left';
-  const alignMap = {
-    'left': 'text-left',
-    'center': 'text-center',
-    'right': 'text-right'
-  };
-  return alignMap[align] || 'text-left';
-});
-
-/**
- * Classes de taille depuis settings
- */
-const sizeClasses = computed(() => {
-  const size = props.settings?.size || 'md';
-  const sizeMap = {
-    'sm': 'text-sm',
-    'md': 'text-base',
-    'lg': 'text-lg',
-    'xl': 'text-xl'
-  };
-  return sizeMap[size] || 'text-base';
-});
-
-/**
- * Classes CSS personnalisées depuis settings
- */
-const customClasses = computed(() => {
-  return props.settings?.classes || '';
-});
+const { containerClasses } = useSectionStyles(() => props.settings);
 </script>
 
 <template>
-  <div class="section-text-content" :class="[alignClasses, sizeClasses, customClasses]">
+  <div class="section-text-content" :class="containerClasses">
     <div 
       v-if="content"
       class="prose prose-invert max-w-none"

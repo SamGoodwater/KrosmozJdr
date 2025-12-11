@@ -8,6 +8,7 @@ use App\Http\Requests\UpdatePageRequest;
 use App\Services\NotificationService;
 use App\Services\PageService;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Gate;
 use App\Http\Resources\PageResource;
 use Inertia\Inertia;
 
@@ -72,15 +73,57 @@ class PageController extends Controller
     }
 
     /**
-     * Display the specified resource.
+     * Affiche une page avec ses sections.
+     * 
+     * **Logique de chargement des sections :**
+     * - Si l'utilisateur peut modifier la page : charge TOUTES les sections (drafts inclus)
+     *   → Permet d'éditer toutes les sections, même non publiées
+     * - Sinon : charge uniquement les sections affichables (publiées + visibles)
+     *   → Respecte la visibilité et l'état pour les utilisateurs sans droits d'édition
+     * 
+     * **Permissions :**
+     * - Utilise la policy `PagePolicy::view()` pour vérifier les droits
+     * - Autorise les invités si la page est visible pour eux
+     * 
+     * @param \App\Models\Page $page Page à afficher (résolue par route model binding via slug)
+     * @return \Inertia\Response Vue Inertia avec la page et ses sections
      */
     public function show(\App\Models\Page $page)
     {
-        $this->authorize('view', $page);
-        
-        // Charger les sections affichables selon l'utilisateur
+        // Vérifier les permissions (autoriser les invités si la page est visible pour eux)
         $user = auth()->user();
-        $sections = PageService::getPublishedSections($page, $user);
+        if (!Gate::forUser($user)->allows('view', $page)) {
+            abort(403);
+        }
+        
+        // Charger les sections selon l'utilisateur
+        // Si l'utilisateur peut modifier la page, inclure toutes les sections (y compris les drafts)
+        // Sinon, inclure uniquement les sections affichables (publiées)
+        $sections = \App\Services\SectionService::getSectionsForPage($page, $user);
+        
+        // IMPORTANT : Charger la page dans chaque section pour que les permissions puissent être vérifiées
+        // La méthode canBeEditedBy() de Section a besoin de la page pour vérifier les droits sur la page ET la section
+        $sections->load('page');
+        
+        // Debug en développement
+        if (config('app.debug')) {
+            \Log::debug('PageController::show - Sections loaded', [
+                'page_id' => $page->id,
+                'user_id' => $user?->id,
+                'can_update_page' => $user ? $user->can('update', $page) : false,
+                'sections_count' => $sections->count(),
+                'sections' => $sections->map(fn($s) => [
+                    'id' => $s->id,
+                    'template' => $s->template->value ?? $s->template,
+                    'state' => $s->state->value ?? $s->state,
+                    'is_visible' => $s->is_visible->value ?? $s->is_visible,
+                    'can_edit_role_section' => $s->can_edit_role->value ?? $s->can_edit_role,
+                    'can_edit_role_page' => $s->page ? ($s->page->can_edit_role->value ?? $s->page->can_edit_role) : null,
+                    'can_be_edited_by' => $user ? $s->canBeEditedBy($user) : false,
+                ])->toArray(),
+            ]);
+        }
+        
         $page->setRelation('sections', $sections);
         
         $page->load(['users', 'parent', 'children', 'campaigns', 'scenarios', 'createdBy']);
@@ -233,10 +276,28 @@ class PageController extends Controller
     }
 
     /**
-     * Réorganise l'ordre des pages (drag & drop).
-     *
-     * @param \Illuminate\Http\Request $request
-     * @return \Illuminate\Http\JsonResponse
+     * Réorganise l'ordre des pages dans le menu (drag & drop).
+     * 
+     * **Fonctionnement :**
+     * - Reçoit un tableau de pages avec leur nouvel ordre
+     * - Met à jour le champ `menu_order` de chaque page
+     * - Vérifie les permissions pour chaque page individuellement
+     * - Invalide le cache du menu après modification
+     * 
+     * **Format de la requête :**
+     * ```json
+     * {
+     *   "pages": [
+     *     {"id": 1, "menu_order": 1},
+     *     {"id": 2, "menu_order": 2},
+     *     {"id": 3, "menu_order": 3}
+     *   ]
+     * }
+     * ```
+     * 
+     * @param \Illuminate\Http\Request $request Requête contenant le tableau de pages
+     * @return \Illuminate\Http\JsonResponse Réponse JSON avec success: true
+     * @throws \Illuminate\Auth\Access\AuthorizationException Si l'utilisateur n'a pas les droits
      */
     public function reorder(\Illuminate\Http\Request $request)
     {
@@ -248,6 +309,7 @@ class PageController extends Controller
             'pages.*.menu_order' => ['required', 'integer', 'min:0'],
         ]);
 
+        // Récupérer toutes les pages en une seule requête pour optimiser
         $pages = Page::whereIn('id', collect($data['pages'])->pluck('id'))->get();
 
         foreach ($data['pages'] as $item) {
@@ -256,7 +318,7 @@ class PageController extends Controller
                 continue;
             }
 
-            // Vérifier l'autorisation de mise à jour pour chaque page
+            // Vérifier l'autorisation de mise à jour pour chaque page individuellement
             $this->authorize('update', $page);
 
             $page->update([
@@ -264,6 +326,7 @@ class PageController extends Controller
             ]);
         }
 
+        // Invalider le cache du menu après modification
         PageService::clearMenuCache();
         return response()->json(['success' => true]);
     }

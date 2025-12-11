@@ -13,14 +13,15 @@
  * @emits close - Événement émis quand le modal se ferme
  * @emits created - Événement émis quand la section est créée
  */
-import { ref, computed } from 'vue';
-import { useForm, router } from '@inertiajs/vue3';
+import { ref, computed, nextTick } from 'vue';
+import { useForm, router, usePage } from '@inertiajs/vue3';
 import Modal from '@/Pages/Molecules/action/Modal.vue';
 import InputField from '@/Pages/Molecules/data-input/InputField.vue';
 import Btn from '@/Pages/Atoms/action/Btn.vue';
 import Icon from '@/Pages/Atoms/data-display/Icon.vue';
 import { getTemplateOptions, getTemplateByValue } from '../templates';
-import SectionParamsModal from './SectionParamsModal.vue';
+import { useSectionAPI } from '../composables/useSectionAPI';
+import { useSectionDefaults } from '../composables/useSectionDefaults';
 
 const props = defineProps({
     open: {
@@ -70,51 +71,30 @@ const form = useForm({
     template: null,
 });
 
-// Settings et data gérés séparément
-const sectionSettings = ref({});
-const sectionData = ref({});
-
-// Modal de paramètres
-const paramsModalOpen = ref(false);
-const selectedSectionType = ref(null);
-
-/**
- * Vérifie si un type de section nécessite des paramètres
- */
-const needsParams = (type) => {
-    // Tous les types nécessitent des paramètres selon SectionType::expectedParams()
-    return true;
-};
-
-/**
- * Obtient les paramètres requis pour un type
- */
-const getRequiredParams = (type) => {
-    // Cette logique sera dans SectionParamsModal
-    return [];
-};
+// Composables
+const { createSection } = useSectionAPI();
+const { getDefaults } = useSectionDefaults();
 
 /**
  * Gère la sélection d'un template de section
+ * Crée directement la section avec des valeurs par défaut
  */
-const handleSelectType = (type) => {
+const handleSelectType = async (type) => {
     form.template = type.value;
-    selectedSectionType.value = type;
     
-    // Si le template nécessite des paramètres, ouvrir le modal de paramètres
-    if (needsParams(type.value)) {
-        paramsModalOpen.value = true;
-    } else {
-        // Sinon, créer directement la section
-        handleCreateSection();
-    }
+    // Créer directement la section avec des valeurs par défaut
+    await handleCreateSection(type.value);
 };
 
 /**
  * Gère la création de la section
+ * 
+ * @param {String} template - Type de template (optionnel, utilise form.template si non fourni)
  */
-const handleCreateSection = () => {
-    if (!form.template) {
+const handleCreateSection = async (template = null) => {
+    const sectionTemplate = template || form.template;
+    
+    if (!sectionTemplate) {
         return;
     }
     
@@ -124,47 +104,53 @@ const handleCreateSection = () => {
         return;
     }
 
-    // L'ordre sera calculé automatiquement côté backend (dernière section + 1)
-    // On peut laisser 0 ou ne pas l'envoyer, le backend s'en chargera
-    if (!form.order) {
-        form.order = 0;
-    }
+    // Obtenir les valeurs par défaut pour ce template
+    const defaults = getDefaults(sectionTemplate);
 
-    // Le backend retourne JSON pour les requêtes AJAX
-    // Ajouter settings et data aux données du formulaire via transform
-    form.transform((formData) => ({
-        ...formData,
-        settings: sectionSettings.value,
-        data: sectionData.value
-    })).post(route('sections.store'), {
-        preserveScroll: true,
-        headers: {
-            'Accept': 'application/json',
-            'X-Requested-With': 'XMLHttpRequest'
-        },
-        onSuccess: () => {
-            // Pour les requêtes JSON, Inertia ne recharge pas la page
-            // On doit recharger manuellement pour obtenir la nouvelle section
-            router.reload({ 
-                only: ['page'],
-                onSuccess: () => {
-                    // Après le rechargement, la section devrait être dans les sections de la page
-                    // On émet l'événement created pour que le parent gère l'affichage
-                    const template = form.template;
-                    const templateConfig = getTemplateByValue(template);
-                    
-                    emit('created', { 
-                        openEdit: templateConfig?.supportsAutoSave || false 
+    // Préparer les données de la section avec les valeurs par défaut
+    const sectionPayload = {
+        page_id: form.page_id,
+        title: form.title || null,
+        slug: form.slug || null,
+        order: 0, // Sera calculé automatiquement côté backend
+        template: sectionTemplate,
+        settings: defaults.settings,
+        data: defaults.data
+    };
+
+    console.log('CreateSectionModal - Creating section with payload:', sectionPayload);
+    
+    try {
+        await createSection(sectionPayload, {
+            onSuccess: (page) => {
+                console.log('CreateSectionModal - Section created successfully, page response:', page);
+                
+                // Après la redirection, les props sont mises à jour via usePage()
+                // Mais onSuccess est appelé avant que les props soient mises à jour
+                // On utilise un petit délai pour attendre que les props soient disponibles
+                // OU on émet simplement le template et le parent attendra que les sections soient disponibles
+                console.log('CreateSectionModal - Emitting created event with template:', sectionTemplate);
+                emit('created', { 
+                    template: sectionTemplate,
+                    openEdit: true // Toujours ouvrir en mode édition
+                });
+                
+                console.log('CreateSectionModal - Closing modal');
+                handleClose();
+            },
+            onError: (errors) => {
+                console.error('CreateSectionModal - Erreur lors de la création de la section:', errors);
+                // Afficher les erreurs dans le formulaire
+                if (errors) {
+                    Object.keys(errors).forEach(key => {
+                        form.setError(key, errors[key]);
                     });
-                    
-                    handleClose();
                 }
-            });
-        },
-        onError: (errors) => {
-            console.error('Erreur lors de la création de la section:', errors);
-        }
-    });
+            }
+        });
+    } catch (errors) {
+        console.error('CreateSectionModal - Exception lors de la création de la section:', errors);
+    }
 };
 
 /**
@@ -178,36 +164,7 @@ const handleClose = () => {
     form.order = 0;
     form.template = null;
     form.clearErrors();
-    // Réinitialiser settings et data
-    sectionSettings.value = {};
-    sectionData.value = {};
-    selectedSectionType.value = null;
-    paramsModalOpen.value = false;
     emit('close');
-};
-
-/**
- * Gère la fermeture du modal de paramètres
- */
-const handleCloseParamsModal = () => {
-    paramsModalOpen.value = false;
-    // Réinitialiser le template si l'utilisateur annule
-    if ((!sectionSettings.value || Object.keys(sectionSettings.value).length === 0) && 
-        (!sectionData.value || Object.keys(sectionData.value).length === 0)) {
-        form.template = null;
-        selectedSectionType.value = null;
-    }
-};
-
-/**
- * Gère la validation des paramètres (settings et data)
- */
-const handleParamsValidated = ({ settings, data }) => {
-    sectionSettings.value = settings || {};
-    sectionData.value = data || {};
-    paramsModalOpen.value = false;
-    // Créer la section avec les paramètres
-    handleCreateSection();
 };
 </script>
 
@@ -279,16 +236,5 @@ const handleParamsValidated = ({ settings, data }) => {
             <Btn variant="ghost" @click="handleClose">Annuler</Btn>
         </template>
     </Modal>
-
-    <!-- Modal de paramètres -->
-    <SectionParamsModal
-        v-if="selectedSectionType"
-        :open="paramsModalOpen"
-        :section-template="selectedSectionType.value"
-        :initial-settings="sectionSettings"
-        :initial-data="sectionData"
-        @close="handleCloseParamsModal"
-        @validated="handleParamsValidated"
-    />
 </template>
 

@@ -39,7 +39,11 @@ class PageResource extends JsonResource
             'parent' => $this->whenLoaded('parent'),
             'children' => $this->whenLoaded('children'),
             'users' => $this->whenLoaded('users'),
-            'sections' => $this->whenLoaded('sections'),
+            'sections' => $this->when($this->relationLoaded('sections') || $this->sections, function () use ($request) {
+                return $this->sections->map(function ($section) use ($request) {
+                    return (new SectionResource($section))->toArray($request);
+                });
+            }),
             'campaigns' => $this->whenLoaded('campaigns'),
             'scenarios' => $this->whenLoaded('scenarios'),
             'createdBy' => $this->whenLoaded('createdBy'),

@@ -21,6 +21,17 @@ class SectionResource extends JsonResource
     public function toArray(Request $request): array
     {
         $user = $request->user();
+        
+        // IMPORTANT : S'assurer que la page est chargée pour que canBeEditedBy() puisse vérifier les droits
+        // La méthode canBeEditedBy() de Section vérifie les droits sur la section ET sur la page
+        if (!$this->relationLoaded('page') && $this->page_id) {
+            try {
+                $this->load('page');
+            } catch (\Exception $e) {
+                // Si la page ne peut pas être chargée, continuer quand même
+            }
+        }
+        
         return [
             'id' => $this->id,
             'page_id' => $this->page_id,
@@ -44,6 +55,8 @@ class SectionResource extends JsonResource
             'createdBy' => $this->whenLoaded('createdBy'),
 
             // Droits d'accès pour l'utilisateur courant
+            // Utilise SectionPolicy::update() qui appelle Section::canBeEditedBy()
+            // qui vérifie maintenant les droits sur la section ET sur la page
             'can' => [
                 'update' => $user ? $user->can('update', $this->resource) : false,
                 'delete' => $user ? $user->can('delete', $this->resource) : false,

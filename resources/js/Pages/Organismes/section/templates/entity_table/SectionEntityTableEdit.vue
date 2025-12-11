@@ -4,11 +4,19 @@
  * 
  * @description
  * Template de section pour éditer un tableau d'entités en mode écriture.
- * Formulaire d'édition pour les tableaux d'entités (non compatible auto-save pour l'instant).
+ * - Formulaire d'édition pour les tableaux d'entités
+ * - Auto-save avec debounce
+ * 
+ * @props {Object} section - Données complètes de la section
+ * @props {Object} data - Données de contenu (section.data)
+ * @props {Object} settings - Paramètres (section.settings)
+ * 
+ * @emits data-updated - Émis quand les données sont mises à jour
  */
 import { ref, watch } from 'vue';
 import SelectField from '@/Pages/Molecules/data-input/SelectField.vue';
 import InputField from '@/Pages/Molecules/data-input/InputField.vue';
+import { useSectionSave } from '../../composables/useSectionSave';
 
 const props = defineProps({
   section: { type: Object, required: true },
@@ -16,24 +24,39 @@ const props = defineProps({
   settings: { type: Object, default: () => ({}) }
 });
 
-const emit = defineEmits(['update:data']);
+const emit = defineEmits(['data-updated']);
+
+const { saveSection } = useSectionSave();
 
 const localData = ref({
-  entity: props.data.entity || '',
-  filters: props.data.filters || {},
-  columns: props.data.columns || []
+  entity: props.data?.entity || '',
+  filters: props.data?.filters || {},
+  columns: props.data?.columns || []
 });
 
+// Synchroniser avec les props
 watch(() => props.data, (newData) => {
-  localData.value = {
-    entity: newData.entity || '',
-    filters: newData.filters || {},
-    columns: newData.columns || []
-  };
+  if (newData) {
+    localData.value = {
+      entity: newData.entity || '',
+      filters: newData.filters || {},
+      columns: newData.columns || []
+    };
+  }
 }, { deep: true });
 
+// Auto-save avec debounce
 watch(localData, (newVal) => {
-  emit('update:data', { ...props.data, ...newVal });
+  const newData = {
+    ...props.data,
+    ...newVal
+  };
+  
+  // Sauvegarder via le composable
+  saveSection(props.section.id, { data: newData });
+  
+  // Émettre l'événement pour mettre à jour le parent
+  emit('data-updated', newData);
 }, { deep: true });
 </script>
 

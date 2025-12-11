@@ -10,6 +10,7 @@ use App\Http\Requests\UpdateFileRequest;
 use App\Models\File;
 use App\Services\FileService;
 use App\Services\ImageService;
+use App\Services\SectionService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 use App\Services\NotificationService;
@@ -55,28 +56,35 @@ class SectionController extends Controller
 
     /**
      * Enregistre une nouvelle section.
-     * @param StoreSectionRequest $request
-     * @return \Illuminate\Http\RedirectResponse|\Illuminate\Http\JsonResponse
+     * 
+     * **Flux :**
+     * 1. Validation des données via `StoreSectionRequest`
+     * 2. Création de la section via `SectionService::create()` (avec valeurs par défaut)
+     * 3. Envoi d'une notification de création
+     * 4. Redirection vers la page parente (pour afficher la nouvelle section)
+     * 
+     * **Valeurs par défaut :**
+     * - L'ordre est calculé automatiquement (dernière position)
+     * - Les valeurs par défaut du template sont appliquées
+     * - État initial : `draft`
+     * - Visibilité initiale : `guest`
+     * 
+     * @param StoreSectionRequest $request Requête validée contenant les données de la section
+     * @return \Illuminate\Http\RedirectResponse Redirection vers la page parente
+     * @throws \Illuminate\Auth\Access\AuthorizationException Si l'utilisateur n'a pas les droits
      */
     public function store(\App\Http\Requests\StoreSectionRequest $request)
     {
         $this->authorize('create', \App\Models\Section::class);
-        $data = $request->validated();
-        $data['created_by'] = $request->user()->id;
-        $section = \App\Models\Section::create($data);
-        $section->load(['page', 'users', 'files', 'createdBy']);
-        \App\Services\NotificationService::notifyEntityCreated($section, $request->user());
         
-        // Si c'est une requête AJAX (depuis le modal), retourner JSON
-        if ($request->wantsJson() || $request->ajax()) {
-            return response()->json([
-                'success' => true,
-                'section' => new SectionResource($section),
-                'message' => 'Section créée avec succès.'
-            ]);
-        }
+        // Création via le service (gère les valeurs par défaut et la transaction)
+        $section = SectionService::create($request->validated(), $request->user());
         
-        // Sinon, rediriger vers la page parente
+        // Notification de création
+        NotificationService::notifyEntityCreated($section, $request->user());
+        
+        // Toujours rediriger vers la page parente avec Inertia
+        // Inertia gère automatiquement les requêtes AJAX
         $page = $section->page;
         if ($page) {
             return redirect()->route('pages.show', $page->slug)->with('success', 'Section créée avec succès.');
@@ -93,7 +101,12 @@ class SectionController extends Controller
      */
     public function show(\App\Models\Section $section)
     {
-        $this->authorize('view', $section);
+        // Vérifier les permissions (autoriser les invités si la section est visible pour eux)
+        $user = auth()->user();
+        if (!Gate::forUser($user)->allows('view', $section)) {
+            abort(403);
+        }
+        
         $page = $section->page;
         if ($page) {
             return redirect()->route('pages.show', $page->slug)->withFragment('section-' . $section->id);
@@ -119,39 +132,47 @@ class SectionController extends Controller
 
     /**
      * Met à jour une section existante.
-     * @param UpdateSectionRequest $request
-     * @param Section $section
-     * @return \Illuminate\Http\RedirectResponse
+     * 
+     * **Flux :**
+     * 1. Validation des données via `UpdateSectionRequest`
+     * 2. Sauvegarde des anciens attributs pour les notifications
+     * 3. Mise à jour via `SectionService::update()` (fusion des settings/data)
+     * 4. Envoi d'une notification de modification (avec anciens/nouveaux attributs)
+     * 5. Redirection vers la page parente
+     * 
+     * **Fusion des données :**
+     * - Les `settings` et `data` sont fusionnés avec les valeurs existantes
+     * - Permet de mettre à jour seulement une partie des données sans perdre le reste
+     * 
+     * @param UpdateSectionRequest $request Requête validée contenant les données à mettre à jour
+     * @param Section $section Section à mettre à jour (résolue par route model binding)
+     * @return \Illuminate\Http\RedirectResponse Redirection vers la page parente
+     * @throws \Illuminate\Auth\Access\AuthorizationException Si l'utilisateur n'a pas les droits
      */
     public function update(\App\Http\Requests\UpdateSectionRequest $request, \App\Models\Section $section)
     {
         $this->authorize('update', $section);
+        
         // Créer une copie des attributs avant la mise à jour pour les notifications
         $oldAttributes = $section->getAttributes();
-        $data = $request->validated();
-        $section->update($data);
-        $section->load(['page', 'users', 'files', 'createdBy']);
+        
+        // Mise à jour via le service (gère la fusion et la transaction)
+        $section = SectionService::update($section, $request->validated(), $request->user());
+        
         // Créer un modèle temporaire avec les anciens attributs pour les notifications
         $old = new \App\Models\Section();
         $old->setRawAttributes($oldAttributes);
         $old->exists = true;
         $old->id = $section->id;
+        
         try {
-            \App\Services\NotificationService::notifyEntityModified($section, $request->user(), $old);
+            NotificationService::notifyEntityModified($section, $request->user(), $old);
         } catch (\Exception $e) {
-            // Si les notifications échouent, on continue quand même
+            // Si les notifications échouent, on continue quand même (non bloquant)
             \Log::warning('Erreur lors de l\'envoi des notifications pour la section ' . $section->id . ': ' . $e->getMessage());
         }
-        // Si c'est une requête AJAX (depuis le modal), retourner JSON
-        if ($request->wantsJson() || $request->ajax()) {
-            return response()->json([
-                'success' => true,
-                'section' => new SectionResource($section),
-                'message' => 'Section mise à jour.'
-            ]);
-        }
         
-        // Sinon, rediriger vers la page parente
+        // Toujours rediriger vers la page parente avec Inertia
         $page = $section->page;
         if ($page) {
             return redirect()->route('pages.show', $page->slug)->with('success', 'Section mise à jour.');
@@ -168,9 +189,10 @@ class SectionController extends Controller
     public function delete(\App\Models\Section $section)
     {
         $this->authorize('delete', $section);
-        $user = request()->user();
-        $section->delete();
-        \App\Services\NotificationService::notifyEntityDeleted($section, $user);
+        
+        SectionService::delete($section, request()->user());
+        NotificationService::notifyEntityDeleted($section, request()->user());
+        
         return redirect()->route('sections.index')->with('success', 'Section supprimée.');
     }
 
@@ -314,9 +336,27 @@ class SectionController extends Controller
 
     /**
      * Réorganise l'ordre des sections (drag & drop).
-     *
-     * @param Request $request
-     * @return \Illuminate\Http\JsonResponse
+     * 
+     * **Fonctionnement :**
+     * - Reçoit un tableau de sections avec leur nouvel ordre
+     * - Met à jour le champ `order` de chaque section
+     * - Vérifie les permissions pour chaque section individuellement
+     * - Utilise une transaction pour garantir la cohérence
+     * 
+     * **Format de la requête :**
+     * ```json
+     * {
+     *   "sections": [
+     *     {"id": 1, "order": 1},
+     *     {"id": 2, "order": 2},
+     *     {"id": 3, "order": 3}
+     *   ]
+     * }
+     * ```
+     * 
+     * @param Request $request Requête contenant le tableau de sections
+     * @return \Illuminate\Http\JsonResponse Réponse JSON avec success: true
+     * @throws \Illuminate\Auth\Access\AuthorizationException Si l'utilisateur n'a pas les droits
      */
     public function reorder(Request $request)
     {
@@ -328,21 +368,16 @@ class SectionController extends Controller
             'sections.*.order' => ['required', 'integer', 'min:0'],
         ]);
 
+        // Récupérer toutes les sections en une seule requête pour optimiser
         $sections = Section::whereIn('id', collect($data['sections'])->pluck('id'))->get();
-
-        foreach ($data['sections'] as $item) {
-            $section = $sections->firstWhere('id', $item['id']);
-            if (!$section) {
-                continue;
-            }
-
-            // Vérifier l'autorisation de mise à jour pour chaque section
+        
+        // Vérifier les autorisations pour chaque section individuellement
+        foreach ($sections as $section) {
             $this->authorize('update', $section);
-
-            $section->update([
-                'order' => $item['order'],
-            ]);
         }
+
+        // Réorganisation via le service (gère la transaction)
+        SectionService::reorder($data['sections'], $request->user());
 
         return response()->json(['success' => true]);
     }

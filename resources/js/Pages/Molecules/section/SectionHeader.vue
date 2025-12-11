@@ -88,7 +88,7 @@ const handleTitleKeydown = (event) => {
     </div>
     
     <!-- Icônes à droite (hover) -->
-    <div v-if="isHovered" class="section-header__actions flex items-center gap-2">
+    <div class="section-header__actions flex items-center gap-2" :class="{ 'section-header__actions--visible': isHovered }">
       <!-- Copier lien (toujours visible) -->
       <button
         @click="$emit('copy-link')"
@@ -96,7 +96,7 @@ const handleTitleKeydown = (event) => {
         title="Copier le lien de la section"
         type="button"
       >
-        <Icon source="fa-solid fa-link" size="sm" />
+        <Icon source="fa-link" pack="solid" alt="Copier le lien" size="sm" />
       </button>
       
       <!-- Basculer mode (si droits d'écriture) -->
@@ -108,7 +108,9 @@ const handleTitleKeydown = (event) => {
         type="button"
       >
         <Icon 
-          :source="isEditing ? 'fa-solid fa-eye' : 'fa-solid fa-edit'" 
+          :source="isEditing ? 'fa-eye' : 'fa-edit'" 
+          pack="solid"
+          :alt="isEditing ? 'Passer en mode lecture' : 'Passer en mode édition'"
           size="sm" 
         />
       </button>
@@ -121,7 +123,7 @@ const handleTitleKeydown = (event) => {
         title="Paramètres de la section"
         type="button"
       >
-        <Icon source="fa-solid fa-gear" size="sm" />
+        <Icon source="fa-gear" pack="solid" alt="Paramètres" size="sm" />
       </button>
     </div>
   </div>
@@ -139,9 +141,20 @@ const handleTitleKeydown = (event) => {
     // Styles pour les actions
     opacity: 0;
     transition: opacity 0.2s ease;
+    pointer-events: none;
+    
+    &--visible {
+      opacity: 1;
+      pointer-events: auto;
+    }
   }
 }
 
 // Afficher les actions au hover du parent (géré par SectionRenderer)
+// Utiliser aussi group-hover comme fallback
+:deep(.group:hover) .section-header__actions {
+  opacity: 1;
+  pointer-events: auto;
+}
 </style>
 

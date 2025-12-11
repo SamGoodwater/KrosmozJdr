@@ -40,6 +40,11 @@
     "description": "- Toujours utiliser la syntaxe définie dans [CONTENT_OVERVIEW.md – section 5](../30-Content/CONTENT_OVERVIEW.md#5-syntaxe-des-formules-krosmoz-jdr)."
   },
   {
+    "path": "10-BestPractices/FRONTEND_TESTING.md",
+    "title": "Tests Frontend - Guide complet",
+    "description": "Les tests frontend utilisent **Vitest** comme framework de test, qui est l'outil recommandé pour Vue 3 + Vite. Vitest est rapide, compatible avec Vite, et supporte nativement les composants Vue et les composables."
+  },
+  {
     "path": "10-BestPractices/HELPERS_CONVENTIONS.md",
     "title": "Helpers — Bonnes pratiques",
     "description": "- Nom explicite, en anglais, en camelCase (ex : `formatDate`, `getUserRole`)."
@@ -295,14 +300,39 @@
     "description": "Le système de pages et sections permet de créer des pages dynamiques modulaires composées de blocs de contenu réutilisables. Chaque page peut contenir plusieurs sections ordonnées, chaque section utilisant un template spécifique pour afficher son contenu."
   },
   {
+    "path": "20-Content/PAGES_SECTIONS_ARCHITECTURE.md",
+    "title": "Architecture Sections et Pages - Flux de données",
+    "description": "L'architecture des sections et pages suit un flux de données structuré qui sépare clairement les responsabilités :"
+  },
+  {
     "path": "20-Content/PAGES_SECTIONS_COMPLIANCE.md",
     "title": "📋 Conformité Code vs To-Do List - Pages/Sections",
     "description": "**Date** : 2025-01-27"
   },
   {
+    "path": "20-Content/PAGES_SECTIONS_COMPOSABLES.md",
+    "title": "Composables pour les Sections",
+    "description": "Les composables pour les sections fournissent une interface unifiée et réutilisable pour gérer les sections dans l'application. Ils suivent le pattern de composition de Vue 3 et centralisent la logique métier."
+  },
+  {
+    "path": "20-Content/PAGES_SECTIONS_MIGRATION.md",
+    "title": "Guide de migration vers la nouvelle architecture",
+    "description": "Ce guide explique comment migrer les composants existants vers la nouvelle architecture avec les mappers, adapters et composables UI."
+  },
+  {
     "path": "20-Content/PAGES_SECTIONS_REFACTORING_PLAN.md",
     "title": "🔄 Plan de Refactorisation - Pages et Sections",
     "description": "**Date** : 2025-01-27"
+  },
+  {
+    "path": "20-Content/PAGES_SECTIONS_STATUS.md",
+    "title": "État d'avancement - Architecture Sections et Pages",
+    "description": "**Status** : Guide de test créé"
+  },
+  {
+    "path": "20-Content/PAGES_SECTIONS_TESTING.md",
+    "title": "Guide de test pour les composants migrés",
+    "description": "Ce guide liste les tests à effectuer pour vérifier que tous les composants migrés fonctionnent correctement avec la nouvelle architecture."
   },
   {
     "path": "20-Content/README.md",

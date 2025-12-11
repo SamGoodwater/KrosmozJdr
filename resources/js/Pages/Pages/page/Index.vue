@@ -201,9 +201,9 @@ function saveOrder() {
             <Btn 
                 v-if="canCreate"
                 @click="handleCreate" 
-                variant="primary"
+                color="primary"
             >
-                <Icon source="fa-solid fa-plus" class="mr-2" />
+                <Icon source="fa-plus" pack="solid" alt="Créer une page" class="mr-2" />
                 Créer une page
             </Btn>
         </div>
@@ -351,10 +351,10 @@ function saveOrder() {
                     <Btn 
                         v-if="canCreate"
                         @click="handleCreate" 
-                        variant="primary"
+                        color="primary"
                         class="mt-4"
                     >
-                        <Icon source="fa-solid fa-plus" class="mr-2" />
+                        <Icon source="fa-plus" pack="solid" alt="Créer la première page" class="mr-2" />
                         Créer la première page
                     </Btn>
                 </div>
