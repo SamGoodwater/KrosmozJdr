@@ -22,8 +22,9 @@ export class BaseModel {
 
     /**
      * Extrait les données normalisées depuis différentes structures possibles
+     * Gère les Proxies Vue/Inertia en désenveloppant si nécessaire
      * @protected
-     * @param {*} raw - Données brutes
+     * @param {*} raw - Données brutes (peut être un Proxy Vue/Inertia)
      * @returns {Object} Données normalisées
      */
     _extractData(raw) {
@@ -34,13 +35,35 @@ export class BaseModel {
             return raw._data;
         }
         
-        // Si les données sont dans .data (structure Inertia Resource)
-        if (raw.data && typeof raw.data === 'object') {
-            return raw.data;
+        // Désenvelopper les Proxies Vue/Inertia si nécessaire
+        // Les Proxies peuvent masquer certaines propriétés comme 'can' au niveau racine
+        let unwrapped = raw;
+        try {
+            // Vérifier si c'est un Proxy en essayant d'accéder à une propriété clé
+            // Si 'can' existe au niveau racine, on doit préserver cette structure
+            const hasCanAtRoot = 'can' in raw || raw.can !== undefined;
+            const hasDataProperty = raw.data && typeof raw.data === 'object';
+            
+            // Si 'can' est au niveau racine ET qu'il y a une propriété .data,
+            // on doit fusionner les deux pour ne pas perdre 'can'
+            if (hasCanAtRoot && hasDataProperty) {
+                // Fusionner : données de .data + propriétés au niveau racine (comme 'can')
+                return {
+                    ...raw.data,
+                    can: raw.can, // Préserver 'can' au niveau racine
+                };
+            }
+            
+            // Si les données sont dans .data (structure Inertia Resource)
+            if (hasDataProperty && !hasCanAtRoot) {
+                return raw.data;
+            }
+        } catch (e) {
+            // En cas d'erreur avec les Proxies, continuer avec raw
         }
         
         // Sinon, utiliser raw directement
-        return raw;
+        return unwrapped;
     }
 
     // ============================================

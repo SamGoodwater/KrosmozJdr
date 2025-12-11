@@ -10,7 +10,7 @@
  * // Section normalisée avec toutes les propriétés accessibles
  */
 import { Section } from '@/Models';
-import { computed } from 'vue';
+import { computed, toRaw } from 'vue';
 
 /**
  * Mappe les données brutes en modèle Section
@@ -44,36 +44,56 @@ function normalizeSectionData(rawData) {
     return null;
   }
   
+  // IMPORTANT : Désenvelopper les Proxies Vue/Inertia avec toRaw()
+  // Cela permet d'accéder directement aux propriétés sans passer par le Proxy
+  // On perd la réactivité mais on gagne en fiabilité pour la normalisation
+  let unwrappedRawData;
+  try {
+    // toRaw() désenveloppe les Proxies Vue réactifs
+    // Si ce n'est pas un Proxy, toRaw() retourne l'objet tel quel
+    unwrappedRawData = toRaw(rawData);
+  } catch (e) {
+    // Si toRaw() échoue, utiliser rawData directement
+    unwrappedRawData = rawData;
+  }
+  
   // Extraire les données si elles sont dans .data (Resource)
   // Les sections peuvent venir directement ou être dans .data
-  // Pour les objets Inertia/Vue réactifs (Proxies), les données sont directement sur l'objet
-  const data = rawData.data || rawData;
+  const unwrappedData = unwrappedRawData.data || unwrappedRawData;
   
-  // Fonction helper pour extraire une valeur d'un objet (gère les Proxies Vue/Inertia)
-  // Les Proxies Vue/Inertia permettent d'accéder directement aux propriétés
+  // Fonction helper pour extraire une valeur d'un objet
+  // Maintenant que les données sont désenveloppées, l'accès est direct
   const extractValue = (obj, key) => {
     if (!obj) return undefined;
     try {
-      // Accéder directement à la propriété (fonctionne avec les Proxies)
       return obj[key];
     } catch (e) {
       return undefined;
     }
   };
   
-  // Extraire les permissions - les Proxies Vue/Inertia permettent l'accès direct
-  // Essayer d'abord depuis rawData, puis depuis data
+  // Extraire les permissions
+  // Les permissions peuvent être au niveau racine (rawData.can) ou dans .data (data.can)
+  // Priorité : rawData.can > data.can
   let canPermissions = null;
   
   try {
-    const rawCan = extractValue(rawData, 'can');
+    // Essayer d'abord depuis rawData (niveau racine)
+    const rawCan = extractValue(unwrappedRawData, 'can');
     if (rawCan && typeof rawCan === 'object') {
-      // Les Proxies permettent l'accès direct aux propriétés
+      // Désenvelopper si c'est encore un Proxy
+      let unwrappedCan = rawCan;
+      try {
+        unwrappedCan = toRaw(rawCan);
+      } catch (e) {
+        // Ignorer si ce n'est pas un Proxy
+      }
+      
       canPermissions = {
-        update: rawCan.update === true || rawCan.update === 1,
-        delete: rawCan.delete === true || rawCan.delete === 1,
-        forceDelete: rawCan.forceDelete === true || rawCan.forceDelete === 1,
-        restore: rawCan.restore === true || rawCan.restore === 1,
+        update: unwrappedCan.update === true || unwrappedCan.update === 1,
+        delete: unwrappedCan.delete === true || unwrappedCan.delete === 1,
+        forceDelete: unwrappedCan.forceDelete === true || unwrappedCan.forceDelete === 1,
+        restore: unwrappedCan.restore === true || unwrappedCan.restore === 1,
       };
     }
   } catch (e) {
@@ -83,13 +103,21 @@ function normalizeSectionData(rawData) {
   // Si pas trouvé dans rawData, essayer dans data
   if (!canPermissions) {
     try {
-      const dataCan = extractValue(data, 'can');
+      const dataCan = extractValue(unwrappedData, 'can');
       if (dataCan && typeof dataCan === 'object') {
+        // Désenvelopper si c'est encore un Proxy
+        let unwrappedDataCan = dataCan;
+        try {
+          unwrappedDataCan = toRaw(dataCan);
+        } catch (e) {
+          // Ignorer si ce n'est pas un Proxy
+        }
+        
         canPermissions = {
-          update: dataCan.update === true || dataCan.update === 1,
-          delete: dataCan.delete === true || dataCan.delete === 1,
-          forceDelete: dataCan.forceDelete === true || dataCan.forceDelete === 1,
-          restore: dataCan.restore === true || dataCan.restore === 1,
+          update: unwrappedDataCan.update === true || unwrappedDataCan.update === 1,
+          delete: unwrappedDataCan.delete === true || unwrappedDataCan.delete === 1,
+          forceDelete: unwrappedDataCan.forceDelete === true || unwrappedDataCan.forceDelete === 1,
+          restore: unwrappedDataCan.restore === true || unwrappedDataCan.restore === 1,
         };
       }
     } catch (e) {
@@ -109,45 +137,46 @@ function normalizeSectionData(rawData) {
   
   // Debug en développement
   if (import.meta.env.DEV) {
-    const rawCan = extractValue(rawData, 'can');
-    const dataCan = extractValue(data, 'can');
+    const rawCan = extractValue(unwrappedRawData, 'can');
+    const dataCan = extractValue(unwrappedData, 'can');
     console.log('sectionMapper - normalizeSectionData', {
       hasRawData: !!rawData,
-      hasData: !!rawData.data,
+      hasUnwrappedRawData: !!unwrappedRawData,
+      hasData: !!unwrappedRawData.data,
       rawCan: rawCan,
       dataCan: dataCan,
       rawCanUpdate: rawCan?.update,
       dataCanUpdate: dataCan?.update,
-      rawDataId: extractValue(rawData, 'id'),
-      dataId: extractValue(data, 'id'),
+      rawDataId: extractValue(unwrappedRawData, 'id'),
+      dataId: extractValue(unwrappedData, 'id'),
       finalCanPermissions: canPermissions,
     });
   }
   
   return {
-    id: extractValue(data, 'id') || extractValue(rawData, 'id'),
-    page_id: extractValue(data, 'page_id') || extractValue(rawData, 'page_id'),
-    title: extractValue(data, 'title') || extractValue(rawData, 'title') || null,
-    slug: extractValue(data, 'slug') || extractValue(rawData, 'slug') || null,
-    order: extractValue(data, 'order') || extractValue(rawData, 'order') || 0,
-    template: extractValue(data, 'template') || extractValue(data, 'type') || extractValue(rawData, 'template') || extractValue(rawData, 'type') || 'text',
-    settings: extractValue(data, 'settings') || extractValue(rawData, 'settings') || {},
-    data: extractValue(data, 'data') || extractValue(rawData, 'data') || {},
-    is_visible: extractValue(data, 'is_visible') || extractValue(rawData, 'is_visible') || 'guest',
-    can_edit_role: extractValue(data, 'can_edit_role') || extractValue(rawData, 'can_edit_role') || 'admin',
-    state: extractValue(data, 'state') || extractValue(rawData, 'state') || 'draft',
-    created_by: extractValue(data, 'created_by') || extractValue(rawData, 'created_by') || null,
-    created_at: extractValue(data, 'created_at') || extractValue(rawData, 'created_at') || null,
-    updated_at: extractValue(data, 'updated_at') || extractValue(rawData, 'updated_at') || null,
-    deleted_at: extractValue(data, 'deleted_at') || extractValue(rawData, 'deleted_at') || null,
+    id: extractValue(unwrappedData, 'id') || extractValue(unwrappedRawData, 'id'),
+    page_id: extractValue(unwrappedData, 'page_id') || extractValue(unwrappedRawData, 'page_id'),
+    title: extractValue(unwrappedData, 'title') || extractValue(unwrappedRawData, 'title') || null,
+    slug: extractValue(unwrappedData, 'slug') || extractValue(unwrappedRawData, 'slug') || null,
+    order: extractValue(unwrappedData, 'order') || extractValue(unwrappedRawData, 'order') || 0,
+    template: extractValue(unwrappedData, 'template') || extractValue(unwrappedData, 'type') || extractValue(unwrappedRawData, 'template') || extractValue(unwrappedRawData, 'type') || 'text',
+    settings: extractValue(unwrappedData, 'settings') || extractValue(unwrappedRawData, 'settings') || {},
+    data: extractValue(unwrappedData, 'data') || extractValue(unwrappedRawData, 'data') || {},
+    is_visible: extractValue(unwrappedData, 'is_visible') || extractValue(unwrappedRawData, 'is_visible') || 'guest',
+    can_edit_role: extractValue(unwrappedData, 'can_edit_role') || extractValue(unwrappedRawData, 'can_edit_role') || 'admin',
+    state: extractValue(unwrappedData, 'state') || extractValue(unwrappedRawData, 'state') || 'draft',
+    created_by: extractValue(unwrappedData, 'created_by') || extractValue(unwrappedRawData, 'created_by') || null,
+    created_at: extractValue(unwrappedData, 'created_at') || extractValue(unwrappedRawData, 'created_at') || null,
+    updated_at: extractValue(unwrappedData, 'updated_at') || extractValue(unwrappedRawData, 'updated_at') || null,
+    deleted_at: extractValue(unwrappedData, 'deleted_at') || extractValue(unwrappedRawData, 'deleted_at') || null,
     
     // Relations (si chargées)
-    page: (extractValue(data, 'page') || extractValue(rawData, 'page')) ? normalizePageData(extractValue(data, 'page') || extractValue(rawData, 'page')) : null,
-    users: extractValue(data, 'users') || extractValue(rawData, 'users') || [],
-    files: extractValue(data, 'files') || extractValue(rawData, 'files') || [],
-    createdBy: extractValue(data, 'createdBy') || extractValue(data, 'created_by_user') || extractValue(rawData, 'createdBy') || extractValue(rawData, 'created_by_user') || null,
+    page: (extractValue(unwrappedData, 'page') || extractValue(unwrappedRawData, 'page')) ? normalizePageData(extractValue(unwrappedData, 'page') || extractValue(unwrappedRawData, 'page')) : null,
+    users: extractValue(unwrappedData, 'users') || extractValue(unwrappedRawData, 'users') || [],
+    files: extractValue(unwrappedData, 'files') || extractValue(unwrappedRawData, 'files') || [],
+    createdBy: extractValue(unwrappedData, 'createdBy') || extractValue(unwrappedData, 'created_by_user') || extractValue(unwrappedRawData, 'createdBy') || extractValue(unwrappedRawData, 'created_by_user') || null,
     
-    // Permissions - extraites correctement depuis rawData ou data
+    // Permissions - extraites correctement depuis rawData ou data (désenveloppées)
     can: canPermissions,
   };
 }
@@ -155,11 +184,21 @@ function normalizeSectionData(rawData) {
 /**
  * Normalise les données brutes d'une page (relation)
  * 
- * @param {Object} rawData - Données brutes de la page
+ * @param {Object} rawData - Données brutes de la page (peut être un Proxy)
  * @returns {Object} Données normalisées
  */
 function normalizePageData(rawData) {
-  const data = rawData.data || rawData;
+  if (!rawData) return null;
+  
+  // Désenvelopper les Proxies Vue/Inertia si nécessaire
+  let unwrappedRawData;
+  try {
+    unwrappedRawData = toRaw(rawData);
+  } catch (e) {
+    unwrappedRawData = rawData;
+  }
+  
+  const data = unwrappedRawData.data || unwrappedRawData;
   
   return {
     id: data.id,
