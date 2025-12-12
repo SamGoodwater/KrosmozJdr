@@ -12,6 +12,8 @@
  * console.log(section.canUpdate); // Méthode utilitaire
  */
 import { BaseModel } from './BaseModel';
+import { TransformService } from '@/Utils/Services';
+import { Page } from './Page';
 
 export class Section extends BaseModel {
 
@@ -76,8 +78,6 @@ export class Section extends BaseModel {
 
     get page() {
         if (!this._data.page) return null;
-        // Import dynamique pour éviter les dépendances circulaires
-        const { Page } = require('./Page');
         return new Page(this._data.page);
     }
 
@@ -174,6 +174,29 @@ export class Section extends BaseModel {
             can_edit_role: this._data.can_edit_role,
             state: this.state
         };
+    }
+
+    /**
+     * Génère un slug depuis le titre ou l'ID
+     * 
+     * @param {Object} options - Options de génération
+     * @returns {String} Slug généré
+     */
+    generateSlug(options = {}) {
+        return TransformService.generateSlug(this.title, this.id, {
+            prefix: 'section',
+            ...options
+        });
+    }
+
+    /**
+     * Retourne le slug de la section, ou en génère un si vide
+     * 
+     * @param {Object} options - Options de génération
+     * @returns {String} Slug (existant ou généré)
+     */
+    getSlugOrGenerate(options = {}) {
+        return this.slug || this.generateSlug(options);
     }
 
     /**

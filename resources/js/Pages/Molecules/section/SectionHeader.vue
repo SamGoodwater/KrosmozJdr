@@ -133,10 +133,6 @@ const handleTitleKeydown = (event) => {
 .section-header {
   transition: all 0.2s ease;
   
-  &__title {
-    // Styles pour le titre
-  }
-  
   &__actions {
     // Styles pour les actions
     opacity: 0;

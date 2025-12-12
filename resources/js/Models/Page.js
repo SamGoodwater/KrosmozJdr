@@ -12,6 +12,7 @@
  * console.log(page.url); // URL de la page
  */
 import { BaseModel } from './BaseModel';
+import { TransformService } from '@/Utils/Services';
 
 export class Page extends BaseModel {
 
@@ -146,6 +147,29 @@ export class Page extends BaseModel {
             parent_id: this.parentId,
             menu_order: this.menuOrder
         };
+    }
+
+    /**
+     * Génère un slug depuis le titre ou l'ID
+     * 
+     * @param {Object} options - Options de génération
+     * @returns {String} Slug généré
+     */
+    generateSlug(options = {}) {
+        return TransformService.generateSlug(this.title, this.id, {
+            prefix: 'page',
+            ...options
+        });
+    }
+
+    /**
+     * Retourne le slug de la page, ou en génère un si vide
+     * 
+     * @param {Object} options - Options de génération
+     * @returns {String} Slug (existant ou généré)
+     */
+    getSlugOrGenerate(options = {}) {
+        return this.slug || this.generateSlug(options);
     }
 
     /**

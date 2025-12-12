@@ -84,6 +84,26 @@ describe('Section Model', () => {
       expect(visibleSection.isVisible).toBe('guest');
       expect(hiddenSection.isVisible).toBe('admin');
     });
+
+    it('devrait générer un slug depuis le titre', () => {
+      const section = new Section(createMockSection({ title: 'Mon Super Titre', id: 123 }));
+      const slug = section.generateSlug();
+      expect(slug).toBe('mon-super-titre');
+    });
+
+    it('devrait générer un slug depuis l\'ID si pas de titre', () => {
+      const section = new Section(createMockSection({ title: null, id: 123 }));
+      const slug = section.generateSlug();
+      expect(slug).toMatch(/^section-123-/);
+    });
+
+    it('devrait retourner le slug existant ou en générer un', () => {
+      const sectionWithSlug = new Section(createMockSection({ slug: 'existing-slug', id: 123 }));
+      expect(sectionWithSlug.getSlugOrGenerate()).toBe('existing-slug');
+
+      const sectionWithoutSlug = new Section(createMockSection({ slug: null, title: 'Test', id: 123 }));
+      expect(sectionWithoutSlug.getSlugOrGenerate()).toBe('test');
+    });
   });
 });
 

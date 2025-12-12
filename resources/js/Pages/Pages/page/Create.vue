@@ -21,6 +21,7 @@ import Container from '@/Pages/Atoms/data-display/Container.vue';
 import Alert from '@/Pages/Atoms/feedback/Alert.vue';
 import { PageState, getPageStateOptions } from '@/Utils/enums/PageState';
 import { Visibility, getVisibilityOptions } from '@/Utils/enums/Visibility';
+import { TransformService } from '@/Utils/Services';
 
 const { setPageTitle } = usePageTitle();
 setPageTitle('Créer une page');
@@ -61,12 +62,7 @@ const form = useForm({
 // Génération automatique du slug depuis le titre
 watch(() => form.title, (newTitle) => {
     if (newTitle && !form.slug) {
-        form.slug = newTitle
-            .toLowerCase()
-            .normalize('NFD')
-            .replace(/[\u0300-\u036f]/g, '')
-            .replace(/[^a-z0-9]+/g, '-')
-            .replace(/^-+|-+$/g, '');
+        form.slug = TransformService.generateSlugFromTitle(newTitle);
     }
 });
 

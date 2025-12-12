@@ -22,7 +22,7 @@ import Alert from '@/Pages/Atoms/feedback/Alert.vue'
 import Tooltip from '@/Pages/Atoms/feedback/Tooltip.vue'
 import CreateSectionModal from './modals/CreateSectionModal.vue'
 import { useSectionAPI } from './composables/useSectionAPI'
-import { mapToSectionModels } from './mappers/sectionMapper'
+import { SectionMapper } from '@/Utils/Services/Mappers'
 import { useSectionUI } from './composables/useSectionUI'
 
 const props = defineProps({
@@ -41,7 +41,7 @@ const props = defineProps({
 })
 
 // Mapper les sections en modèles normalisés
-const sectionModels = computed(() => mapToSectionModels(props.sections))
+const sectionModels = computed(() => SectionMapper.mapToModels(props.sections))
 
 // Copie locale modifiable des sections, triée par ordre
 const localSections = ref(

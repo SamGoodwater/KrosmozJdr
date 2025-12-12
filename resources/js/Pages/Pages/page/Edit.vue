@@ -23,6 +23,7 @@ import Alert from '@/Pages/Atoms/feedback/Alert.vue';
 import { getPageStateOptions } from '@/Utils/enums/PageState';
 import { getVisibilityOptions } from '@/Utils/enums/Visibility';
 import PageSectionEditor from '@/Pages/Organismes/section/PageSectionEditor.vue';
+import { TransformService } from '@/Utils/Services';
 
 const props = defineProps({
     page: {
@@ -75,12 +76,7 @@ const form = useForm({
 // Génération automatique du slug depuis le titre (seulement si le slug est vide)
 watch(() => form.title, (newTitle) => {
     if (newTitle && !form.slug) {
-        form.slug = newTitle
-            .toLowerCase()
-            .normalize('NFD')
-            .replace(/[\u0300-\u036f]/g, '')
-            .replace(/[^a-z0-9]+/g, '-')
-            .replace(/^-+|-+$/g, '');
+        form.slug = TransformService.generateSlugFromTitle(newTitle);
     }
 });
 

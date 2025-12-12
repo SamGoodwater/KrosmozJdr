@@ -32,7 +32,7 @@
  */
 import { computed } from 'vue';
 import { Section } from '@/Models';
-import { mapToSectionModel } from '../mappers/sectionMapper';
+import { SectionMapper } from '@/Utils/Services/Mappers';
 import { adaptSectionToUI } from '../adapters/sectionUIAdapter';
 import { getTemplateConfig } from '../templates';
 
@@ -61,7 +61,7 @@ export function useSectionUI(rawSection) {
       sectionValue = rawSection;
     }
     
-    return mapToSectionModel(sectionValue);
+    return SectionMapper.mapToModel(sectionValue);
   });
 
   // Données UI adaptées
@@ -82,7 +82,7 @@ export function useSectionUI(rawSection) {
   // 3. Section::canBeEditedBy() vérifie :
   //    - Les droits sur la section (can_edit_role de la section)
   //    - ET les droits sur la page (can_edit_role de la page parente)
-  // 4. Frontend : sectionMapper extrait 'can.update' depuis les données
+  // 4. Frontend : SectionMapper extrait 'can.update' depuis les données
   // 5. Section Model expose canUpdate via getter
   // 6. useSectionUI expose canEdit qui utilise sectionModel.canUpdate
   const canEdit = computed(() => {

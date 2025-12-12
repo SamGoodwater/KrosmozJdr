@@ -1,15 +1,20 @@
 /**
- * Tests unitaires pour sectionMapper
+ * Tests unitaires pour SectionMapper (nouveau)
+ * 
+ * @description
+ * Tests pour le nouveau SectionMapper qui hérite de BaseMapper.
+ * 
+ * @deprecated Ce fichier teste l'ancien mapper. Les nouveaux tests sont dans tests/unit/services/Mappers/SectionMapper.test.js
  */
 import { describe, it, expect } from 'vitest';
-import { mapToSectionModel, mapToSectionModels, mapToFormData } from '@/Pages/Organismes/section/mappers/sectionMapper';
+import { SectionMapper } from '@/Utils/Services/Mappers/SectionMapper';
 import { createMockSection } from '../../setup.js';
 
-describe('sectionMapper', () => {
-  describe('mapToSectionModel', () => {
+describe('SectionMapper (nouveau)', () => {
+  describe('mapToModel', () => {
     it('devrait mapper des données brutes en modèle Section', () => {
       const rawData = createMockSection();
-      const sectionModel = mapToSectionModel(rawData);
+      const sectionModel = SectionMapper.mapToModel(rawData);
 
       expect(sectionModel).toBeDefined();
       expect(sectionModel.id).toBe(1);
@@ -20,27 +25,28 @@ describe('sectionMapper', () => {
     it('devrait gérer les données dans .data (Resource)', () => {
       const rawData = {
         data: createMockSection(),
+        can: { update: true }
       };
-      const sectionModel = mapToSectionModel(rawData);
+      const sectionModel = SectionMapper.mapToModel(rawData);
 
       expect(sectionModel).toBeDefined();
       expect(sectionModel.id).toBe(1);
     });
 
     it('devrait retourner null si les données sont null', () => {
-      const sectionModel = mapToSectionModel(null);
+      const sectionModel = SectionMapper.mapToModel(null);
       expect(sectionModel).toBeNull();
     });
   });
 
-  describe('mapToSectionModels', () => {
+  describe('mapToModels', () => {
     it('devrait mapper un tableau de sections', () => {
       const rawSections = [
         createMockSection({ id: 1, template: 'text' }),
         createMockSection({ id: 2, template: 'image' }),
       ];
 
-      const sectionModels = mapToSectionModels(rawSections);
+      const sectionModels = SectionMapper.mapToModels(rawSections);
 
       expect(sectionModels).toHaveLength(2);
       expect(sectionModels[0].id).toBe(1);
@@ -48,7 +54,7 @@ describe('sectionMapper', () => {
     });
 
     it('devrait retourner un tableau vide si le paramètre n\'est pas un tableau', () => {
-      const sectionModels = mapToSectionModels(null);
+      const sectionModels = SectionMapper.mapToModels(null);
       expect(sectionModels).toEqual([]);
     });
   });
@@ -56,20 +62,36 @@ describe('sectionMapper', () => {
   describe('mapToFormData', () => {
     it('devrait mapper une section en données de formulaire', () => {
       const section = createMockSection();
-      const formData = mapToFormData(section);
+      const formData = SectionMapper.mapToFormData(section);
 
-      expect(formData).toEqual({
-        page_id: 1,
-        title: 'Test Section',
-        slug: 'test-section',
+      expect(formData).toHaveProperty('page_id', 1);
+      expect(formData).toHaveProperty('title', 'Test Section');
+      expect(formData).toHaveProperty('slug', 'test-section');
+      expect(formData).toHaveProperty('template', 'text');
+      expect(formData).toHaveProperty('settings');
+      expect(formData).toHaveProperty('data');
+      expect(formData).toHaveProperty('is_visible', 'guest');
+      expect(formData).toHaveProperty('can_edit_role', 'admin');
+      expect(formData).toHaveProperty('state', 'published');
+    });
+  });
+
+  describe('mapFromFormData', () => {
+    it('devrait nettoyer les valeurs vides', () => {
+      const formData = {
+        title: '',
+        slug: null,
         order: 0,
         template: 'text',
-        settings: { align: 'left', size: 'md' },
-        data: { content: 'Test content' },
-        is_visible: 'guest',
-        can_edit_role: 'admin',
-        state: 'published',
-      });
+        settings: {},
+        data: {}
+      };
+      const cleaned = SectionMapper.mapFromFormData(formData);
+
+      expect(cleaned).toHaveProperty('title', null);
+      expect(cleaned).toHaveProperty('slug', null);
+      expect(cleaned).not.toHaveProperty('settings');
+      expect(cleaned).not.toHaveProperty('data');
     });
   });
 });

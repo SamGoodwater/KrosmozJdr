@@ -8,10 +8,15 @@
  * - Paramètres spécifiques au template : générés automatiquement depuis config.parameters
  * - Les data (contenu) sont modifiées directement dans le template d'édition
  * 
+ * **Flux de données :**
+ * - La section est déjà chargée depuis le backend (via PageController)
+ * - Elle est normalisée en modèle Section via useSectionUI
+ * - Le modal reçoit sectionModel (instance Section) avec tous les getters disponibles
+ * - Pas de requête supplémentaire au backend à l'ouverture
+ * 
  * @props {Boolean} open - Contrôle l'ouverture du modal
  * @props {String} sectionTemplate - Template de section
- * @props {Object} section - Section complète (pour récupérer title, slug, etc.)
- * @props {Object} initialSettings - Settings initiaux
+ * @props {Object} section - Instance Section normalisée (depuis useSectionUI)
  * @emits close - Événement émis quand le modal se ferme
  * @emits validated - Événement émis avec { title, slug, order, is_visible, can_edit_role, state, settings } validés
  */
@@ -28,6 +33,7 @@ import Icon from '@/Pages/Atoms/data-display/Icon.vue';
 import { useSectionAPI } from '../composables/useSectionAPI';
 import { useSectionParameters } from '../composables/useSectionParameters';
 import { getTemplateConfig } from '../templates';
+import { TransformService } from '@/Utils/Services';
 
 const props = defineProps({
     open: {
@@ -37,23 +43,14 @@ const props = defineProps({
     sectionTemplate: {
         type: String,
         required: true,
-        validator: (v) => ['text', 'image', 'gallery', 'video', 'entity_table'].includes(v)
     },
     section: {
         type: Object,
-        default: () => ({})
-    },
-    initialSettings: {
-        type: Object,
-        default: () => ({})
-    },
-    sectionId: {
-        type: [Number, String],
-        default: null
-    },
-    sectionTitle: {
-        type: String,
-        default: ''
+        required: true,
+        validator: (value) => {
+            // Vérifier que c'est bien une instance Section (avec _data)
+            return value && (value._data || value.id);
+        }
     }
 });
 
@@ -61,7 +58,7 @@ const emit = defineEmits(['close', 'validated', 'deleted']);
 
 // Composables
 const { deleteSection } = useSectionAPI();
-const { getCommonFields, getParameterFields } = useSectionParameters();
+const { getCommonFields, getParameterFields, getVisibilityOptions, getStateOptions } = useSectionParameters();
 
 // Configuration du template
 const templateConfig = computed(() => {
@@ -82,52 +79,90 @@ const templateParameters = computed(() => {
     return getParameterFields(templateConfig.value.parameters);
 });
 
+// Options pour les selects
+const visibilityOptions = computed(() => getVisibilityOptions());
+const stateOptions = computed(() => getStateOptions());
+
 /**
- * Extrait une valeur depuis la section (gère les modèles et les objets bruts)
+ * Extrait une valeur depuis la section (utilise les getters du modèle Section)
  */
 const getSectionValue = (key) => {
     if (!props.section) return null;
     
-    // Si c'est un modèle Section, utiliser _data
+    // Si c'est une instance Section (avec _data), utiliser les getters
     if (props.section._data) {
+        // Mapping des clés vers les getters du modèle Section
+        const getterMap = {
+            'id': () => props.section.id,
+            'title': () => props.section.title,
+            'slug': () => props.section.slug,
+            'order': () => props.section.order,
+            'is_visible': () => props.section.isVisible,
+            'can_edit_role': () => props.section._data.can_edit_role,
+            'state': () => props.section.state,
+            'settings': () => props.section.settings,
+            'data': () => props.section.data,
+            'template': () => props.section.template,
+        };
+        
+        // Si un getter existe pour cette clé, l'utiliser
+        if (getterMap[key]) {
+            try {
+                return getterMap[key]();
+            } catch (e) {
+                console.warn(`Erreur lors de l'accès au getter pour "${key}":`, e);
+                // Fallback sur _data
+                return props.section._data[key] ?? null;
+            }
+        }
+        
+        // Sinon, accéder directement à _data
         return props.section._data[key] ?? null;
     }
     
-    // Sinon, accès direct
+    // Si c'est un objet brut, accès direct
     return props.section[key] ?? null;
 };
 
 /**
  * Génère un slug depuis le titre ou l'ID
+ * Utilise TransformService pour la génération
  */
 const generateSlug = (title, sectionId) => {
-    if (title) {
-        return title
-            .toLowerCase()
-            .normalize('NFD')
-            .replace(/[\u0300-\u036f]/g, '')
-            .replace(/[^a-z0-9]+/g, '-')
-            .replace(/^-+|-+$/g, '');
-    }
-    // Si pas de titre, utiliser l'ID
-    if (sectionId) {
-        return `section-${sectionId}`;
-    }
-    return '';
+    return TransformService.generateSlug(title, sectionId, {
+        prefix: 'section'
+    });
 };
 
 /**
- * Initialise les données du formulaire depuis les props
+ * Initialise les données du formulaire depuis la section
  */
 const initializeFormData = () => {
     const sectionId = getSectionValue('id');
     const title = getSectionValue('title') || '';
     const existingSlug = getSectionValue('slug') || '';
+    const sectionSettings = getSectionValue('settings') || {};
     
     // Générer le slug si vide (depuis le titre ou l'ID)
     const slug = existingSlug || generateSlug(title, sectionId);
     
-    return {
+    // Debug en développement
+    if (import.meta.env.DEV) {
+        console.log('SectionParamsModal - initializeFormData:', {
+            sectionId,
+            title,
+            existingSlug,
+            slug,
+            section: props.section,
+            sectionSettings,
+            isVisible: getSectionValue('is_visible'),
+            canEditRole: getSectionValue('can_edit_role'),
+            state: getSectionValue('state'),
+            order: getSectionValue('order'),
+        });
+    }
+    
+    const formData = {
         // Paramètres communs
         title: title,
         slug: slug,
@@ -137,61 +172,66 @@ const initializeFormData = () => {
         state: getSectionValue('state') || 'draft',
         // Settings (inclut classes et customCss)
         settings: {
-            classes: props.initialSettings?.classes || '',
-            customCss: props.initialSettings?.customCss || '',
-            ...props.initialSettings,
+            classes: sectionSettings.classes || '',
+            customCss: sectionSettings.customCss || '',
+            // Inclure tous les autres settings de la section
+            ...sectionSettings,
         },
     };
+    
+    // Appliquer les valeurs par défaut des paramètres du template
+    if (templateConfig.value?.parameters) {
+        templateConfig.value.parameters.forEach(param => {
+            if (formData.settings[param.key] === undefined && param.default !== undefined) {
+                formData.settings[param.key] = param.default;
+            }
+        });
+    }
+    
+    return formData;
 };
 
 // Données du formulaire
 const formData = ref(initializeFormData());
 
-// Réinitialiser les données quand les props changent
-watch(() => [props.section, props.initialSettings, props.sectionTemplate], () => {
-    const newData = initializeFormData();
-    
-    // Appliquer les valeurs par défaut des paramètres du template
-    if (templateConfig.value?.parameters) {
-        templateConfig.value.parameters.forEach(param => {
-            if (newData.settings[param.key] === undefined && param.default !== undefined) {
-                newData.settings[param.key] = param.default;
-            }
-        });
+// Flag pour savoir si le slug a été modifié manuellement
+const slugManuallyEdited = ref(false);
+
+// Réinitialiser les données quand le modal s'ouvre ou quand la section change
+watch(() => [props.open, props.section], () => {
+    if (props.open && props.section) {
+        const newData = initializeFormData();
+        formData.value = newData;
+        slugManuallyEdited.value = false;
     }
-    
-    formData.value = newData;
-    
-    // Appliquer les valeurs par défaut des paramètres du template
-    if (templateConfig.value?.parameters) {
-        templateConfig.value.parameters.forEach(param => {
-            if (formData.value.settings[param.key] === undefined && param.default !== undefined) {
-                formData.value.settings[param.key] = param.default;
-            }
-        });
+}, { immediate: true });
+
+// Watcher pour générer automatiquement le slug depuis le titre
+watch(() => formData.value.title, (newTitle) => {
+    if (!slugManuallyEdited.value) {
+        const sectionId = getSectionValue('id');
+        const currentSlug = formData.value.slug || '';
+        const generatedSlug = generateSlug(newTitle, sectionId);
+        
+        // Si le slug actuel est vide ou correspond au slug généré précédemment, le mettre à jour
+        if (!currentSlug || currentSlug === `section-${sectionId}` || currentSlug.startsWith('section-')) {
+            formData.value.slug = generatedSlug;
+        }
     }
-}, { immediate: true, deep: true });
+});
 
 // État pour le modal de confirmation de suppression
 const showDeleteConfirm = ref(false);
 
 /**
  * Validation des paramètres
- * 
- * Pour les settings, la validation est toujours valide car on ne modifie que la configuration,
- * pas le contenu. Les settings peuvent être vides ou partiels.
  */
 const isValid = computed(() => {
-    // Les settings sont toujours valides (même vides)
-    // On ne valide pas le contenu ici car les data sont modifiées dans le template d'édition
-    return true;
+    return true; // Les settings sont toujours valides
 });
 
 /**
  * Gère la validation et l'émission des paramètres
- * 
- * Émet tous les paramètres modifiables (communs + settings).
- * Les data sont modifiées directement dans le template d'édition de la section.
  */
 const handleValidate = () => {
     const sectionId = getSectionValue('id');
@@ -214,7 +254,7 @@ const handleValidate = () => {
     
     emit('validated', {
         title: formData.value.title || null,
-        slug: slug || null, // Toujours envoyer un slug (généré si nécessaire)
+        slug: slug || null,
         order: formData.value.order,
         is_visible: formData.value.is_visible,
         can_edit_role: formData.value.can_edit_role,
@@ -248,31 +288,26 @@ const closeDeleteConfirm = () => {
  * Gère la suppression de la section (après confirmation)
  */
 const handleDelete = async () => {
-    if (!props.sectionId) return;
+    const sectionId = getSectionValue('id');
+    if (!sectionId) return;
     
     closeDeleteConfirm();
     
     try {
-        await deleteSection(props.sectionId, {
+        await deleteSection(sectionId, {
             onSuccess: () => {
                 emit('deleted');
                 emit('close');
-                // Recharger la page pour mettre à jour l'affichage
                 router.reload({ only: ['page'] });
             }
         });
     } catch (errors) {
         console.error('Erreur lors de la suppression de la section:', errors);
-        // Afficher une notification d'erreur si nécessaire
     }
 };
 
 /**
  * Titre du modal selon le template
- */
-/**
- * Titre du modal selon le template
- * Utilise la configuration du template pour récupérer le nom.
  */
 const modalTitle = computed(() => {
     try {
@@ -285,6 +320,10 @@ const modalTitle = computed(() => {
     }
     return 'Paramètres de la section';
 });
+
+// ID et titre de la section pour l'affichage
+const sectionId = computed(() => getSectionValue('id'));
+const sectionTitle = computed(() => getSectionValue('title') || '');
 </script>
 
 <template>
@@ -352,7 +391,7 @@ const modalTitle = computed(() => {
                     v-model="formData.is_visible"
                     label="Visibilité"
                     helper="Niveau de visibilité minimum pour voir la section"
-                    :options="commonFields.find(f => f.key === 'is_visible')?.options || []"
+                    :options="visibilityOptions"
                 />
                 
                 <!-- Rôle d'édition -->
@@ -360,7 +399,7 @@ const modalTitle = computed(() => {
                     v-model="formData.can_edit_role"
                     label="Rôle d'édition"
                     helper="Rôle minimum requis pour modifier la section"
-                    :options="commonFields.find(f => f.key === 'can_edit_role')?.options || []"
+                    :options="visibilityOptions"
                 />
                 
                 <!-- État -->
@@ -368,7 +407,7 @@ const modalTitle = computed(() => {
                     v-model="formData.state"
                     label="État"
                     helper="État de publication de la section"
-                    :options="commonFields.find(f => f.key === 'state')?.options || []"
+                    :options="stateOptions"
                 />
             </div>
             
@@ -531,4 +570,3 @@ const modalTitle = computed(() => {
         </template>
     </Modal>
 </template>
-

@@ -74,6 +74,26 @@ describe('Page Model', () => {
       expect(menuPage.inMenu).toBe(true);
       expect(noMenuPage.inMenu).toBe(false);
     });
+
+    it('devrait générer un slug depuis le titre', () => {
+      const page = new Page(createMockPage({ title: 'Ma Page', id: 456 }));
+      const slug = page.generateSlug();
+      expect(slug).toBe('ma-page');
+    });
+
+    it('devrait générer un slug depuis l\'ID si pas de titre', () => {
+      const page = new Page(createMockPage({ title: null, id: 456 }));
+      const slug = page.generateSlug();
+      expect(slug).toMatch(/^page-456-/);
+    });
+
+    it('devrait retourner le slug existant ou en générer un', () => {
+      const pageWithSlug = new Page(createMockPage({ slug: 'existing-slug', id: 456 }));
+      expect(pageWithSlug.getSlugOrGenerate()).toBe('existing-slug');
+
+      const pageWithoutSlug = new Page(createMockPage({ slug: null, title: 'Test', id: 456 }));
+      expect(pageWithoutSlug.getSlugOrGenerate()).toBe('test');
+    });
   });
 });
 

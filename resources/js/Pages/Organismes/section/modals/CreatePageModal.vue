@@ -23,6 +23,7 @@ import Alert from '@/Pages/Atoms/feedback/Alert.vue';
 import { PageState, getPageStateOptions } from '@/Utils/enums/PageState';
 import { Visibility, getVisibilityOptions } from '@/Utils/enums/Visibility';
 import { router } from '@inertiajs/vue3';
+import { TransformService } from '@/Utils/Services';
 
 const props = defineProps({
     open: {
@@ -68,13 +69,7 @@ const slugManuallyEdited = ref(false);
 
 // Fonction pour générer le slug depuis le titre
 const generateSlug = (title) => {
-    if (!title) return '';
-    return title
-        .toLowerCase()
-        .normalize('NFD')
-        .replace(/[\u0300-\u036f]/g, '')
-        .replace(/[^a-z0-9]+/g, '-')
-        .replace(/^-+|-+$/g, '');
+    return TransformService.generateSlugFromTitle(title);
 };
 
 // Génération automatique du slug depuis le titre (seulement si pas modifié manuellement)
