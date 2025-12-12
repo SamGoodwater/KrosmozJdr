@@ -40,7 +40,7 @@ class RegisteredUserController extends Controller
 
         Auth::login($user);
 
-        // Utiliser une redirection HTTP standard pour les tests
-        return redirect()->route('user.show');
+        // Rediriger vers la page initialement demandée (si elle existe), sinon profil
+        return redirect()->intended(route('user.show', absolute: false));
     }
 }

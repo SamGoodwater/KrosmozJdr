@@ -59,6 +59,44 @@ class LoginRequest extends FormRequest
         }
 
         if (! Auth::attempt($credentials, $remember)) {
+            /**
+             * Diagnostic : différencier un "mauvais mot de passe" d'un compte supprimé / non autorisé.
+             *
+             * @description
+             * `Auth::attempt` retourne false si :
+             * - aucun utilisateur ne correspond aux critères (email/pseudo),
+             * - ou si le mot de passe ne correspond pas,
+             * - ou si l'utilisateur est soft-deleted (global scope SoftDeletes).
+             *
+             * Dans la pratique, un compte soft-deleted donne l'impression d'un bug "aléatoire"
+             * (on a les bons identifiants) et pousse à réinitialiser la DB.
+             * On détecte ce cas pour retourner un message explicite.
+             *
+             * @example
+             * - Compte supprimé -> "Ce compte a été supprimé..."
+             */
+            $query = \App\Models\User::withTrashed();
+            if (filter_var($identifier, FILTER_VALIDATE_EMAIL)) {
+                $query->where('email', $identifier);
+            } else {
+                $query->where('name', $identifier);
+            }
+            $matchingUser = $query->first();
+            if ($matchingUser?->deleted_at) {
+                RateLimiter::hit($this->throttleKey());
+
+                throw ValidationException::withMessages([
+                    'identifier' => 'Ce compte a été supprimé. Contactez un administrateur pour le restaurer.',
+                ]);
+            }
+            if ($matchingUser && ! $matchingUser->canLogin()) {
+                RateLimiter::hit($this->throttleKey());
+
+                throw ValidationException::withMessages([
+                    'identifier' => 'Ce compte ne peut pas se connecter.',
+                ]);
+            }
+
             RateLimiter::hit($this->throttleKey());
 
             throw ValidationException::withMessages([

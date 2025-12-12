@@ -241,11 +241,12 @@ class PageController extends Controller
         return response()->json($page->users);
     }
 
-    public function restore(\App\Models\Page $page)
+    public function restore(int $page)
     {
-        $this->authorize('restore', $page);
-        $page->restore();
-        \App\Services\NotificationService::notifyEntityRestored($page, request()->user());
+        $model = \App\Models\Page::withTrashed()->findOrFail($page);
+        $this->authorize('restore', $model);
+        $model->restore();
+        \App\Services\NotificationService::notifyEntityRestored($model, request()->user());
         PageService::clearMenuCache();
         return redirect()->route('pages.index')->with('success', 'Page restaurée.');
     }

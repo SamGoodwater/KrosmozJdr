@@ -175,10 +175,11 @@ class UserController extends Controller
      * @param User $user
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function restore(User $user)
+    public function restore(int $user)
     {
-        $this->authorize('restore', $user);
-        $user->restore();
+        $model = User::withTrashed()->findOrFail($user);
+        $this->authorize('restore', $model);
+        $model->restore();
         return redirect()->route('user.index')->with('success', 'Utilisateur restauré.');
     }
 

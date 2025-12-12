@@ -53,6 +53,7 @@ resources/js/Composables/           # Logique métier frontend
 - **Connexion par email OU pseudo** : Le système accepte soit l'email soit le nom d'utilisateur
 - **Rate limiting** : Protection contre les attaques par force brute (5 tentatives max)
 - **Remember me** : Sessions persistantes
+- **Redirection "intended"** : retour automatique vers la page initialement demandée après login/register
 - **Validation robuste** : Double validation client + serveur
 
 ### 2. **Système d'Inscription**
@@ -155,6 +156,47 @@ import { useNotificationStore } from "@/Composables/store/useNotificationStore";
 **Solution** : Correction du chemin d'import vers le bon dossier
 
 ---
+
+### ⚠️ **Déconnexion régulière après ~1–2h (SESSION_LIFETIME=120)**
+
+#### Symptôme
+- Après 1 à 2 heures d’inactivité (ou lors d’actions POST/XHR), l’application peut donner l’impression que l’utilisateur doit “se reconnecter”, même si l’option **“Se souvenir de moi”** a été cochée.
+
+#### Cause la plus probable
+- La session Laravel expire par défaut au bout de **120 minutes** (`config/session.php` → `SESSION_LIFETIME=120`).
+- En contexte SPA/Inertia, quand la session expire, le token CSRF côté client devient obsolète, ce qui peut provoquer un **419 Page Expired (TokenMismatchException)** sur une requête Inertia/XHR.
+- Sans gestion spécifique, l’utilisateur se retrouve bloqué/renvoyé vers un écran de connexion au lieu d’un simple “reload” qui permettrait à Laravel de **ré-authentifier automatiquement via le cookie “remember me”**.
+
+#### Correctifs implémentés
+- **Backend (Laravel 11/12)** : interception de `TokenMismatchException` et renvoi de `Inertia::location()` pour forcer un rechargement complet (permet de recréer la session + régénérer un token CSRF valide).
+  - Fichier : `bootstrap/app.php`
+- **Frontend (fallback)** : interceptor global axios qui déclenche un `window.location.reload()` en cas de 419.
+  - Fichier : `resources/js/bootstrap.js`
+
+#### Recommandation de configuration (production)
+- Augmenter la durée de session via `.env` (non versionné) :
+  - `SESSION_LIFETIME=1440` (24h) ou `SESSION_LIFETIME=10080` (7 jours) selon le niveau de sécurité souhaité.
+  - Garder `SESSION_EXPIRE_ON_CLOSE=false` pour ne pas invalider la session à la fermeture du navigateur.
+
+---
+
+## 🔁 Gestion des redirections (login/register/flows intermédiaires)
+
+### Objectif
+- Si un utilisateur tente d'accéder à une route protégée (middleware `auth`) :
+  1. Il est redirigé vers `login`
+  2. Après login **ou** inscription, il revient automatiquement vers l'URL initiale
+
+### Implémentation
+- **Stockage de l'URL demandée** : `url.intended` est défini lors d'une `AuthenticationException` sur une navigation (GET).
+  - Fichier : `bootstrap/app.php`
+- **Fallback axios (AJAX)** : en cas de `401 Unauthenticated` sur une requête XHR, l'application redirige vers `/login` et tente de mémoriser la page courante via le header `Referer`.
+  - Backend : `bootstrap/app.php`
+  - Frontend : `resources/js/bootstrap.js`
+- **Redirection après login** : `AuthenticatedSessionController@store` utilise `redirect()->intended(...)`.
+  - Fichier : `app/Http/Controllers/Auth/AuthenticatedSessionController.php`
+- **Redirection après inscription** : `RegisteredUserController@store` utilise aussi `redirect()->intended(...)`.
+  - Fichier : `app/Http/Controllers/Auth/RegisteredUserController.php`
 
 ## 📊 Métriques de Qualité
 

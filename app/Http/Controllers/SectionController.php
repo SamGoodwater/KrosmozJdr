@@ -313,11 +313,12 @@ class SectionController extends Controller
      * @param Section $section
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function restore(\App\Models\Section $section)
+    public function restore(int $section)
     {
-        $this->authorize('restore', $section);
-        $section->restore();
-        \App\Services\NotificationService::notifyEntityRestored($section, request()->user());
+        $model = \App\Models\Section::withTrashed()->findOrFail($section);
+        $this->authorize('restore', $model);
+        $model->restore();
+        \App\Services\NotificationService::notifyEntityRestored($model, request()->user());
         return redirect()->route('sections.index')->with('success', 'Section restaurée.');
     }
 
