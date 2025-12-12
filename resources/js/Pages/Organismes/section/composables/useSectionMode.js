@@ -46,32 +46,68 @@ const version = ref(0);
  */
 export function useSectionMode(sectionId) {
   // Extraire la valeur réactive si c'est un computed/ref
+  // Amélioration : mieux détecter les ComputedRef et Ref
   const getSectionId = () => {
-    if (typeof sectionId === 'object' && 'value' in sectionId) {
-      return sectionId.value;
+    // Si c'est un objet avec une propriété 'value', c'est probablement un Ref ou ComputedRef
+    if (sectionId && typeof sectionId === 'object' && 'value' in sectionId) {
+      const value = sectionId.value;
+      // Retourner la valeur même si elle est undefined/null pour le moment
+      // (elle peut être définie plus tard)
+      return value;
     }
+    // Sinon, c'est une valeur directe
     return sectionId;
   };
   
+  // Computed qui dépend directement de sectionId pour la réactivité
   const isEditing = computed(() => {
     // Lire version.value pour créer une dépendance réactive
     version.value; // Force la réactivité
-    const id = getSectionId();
+    
+    // Lire directement sectionId.value si c'est un computed/ref pour créer la dépendance
+    let id;
+    if (sectionId && typeof sectionId === 'object' && 'value' in sectionId) {
+      id = sectionId.value; // Vue track cette dépendance
+    } else {
+      id = sectionId;
+    }
+    
     if (!id) return false;
     // Convertir l'ID en string pour être sûr que la clé est cohérente
-    return !!editingSections[String(id)];
+    const idStr = String(id);
+    return !!editingSections[idStr];
   });
   
   /**
    * Bascule le mode édition (lecture ↔ écriture)
    */
   const toggleEditMode = () => {
-    const id = getSectionId();
-    if (!id) return;
+    let id;
+    
+    // Extraire l'ID de manière plus robuste
+    if (sectionId && typeof sectionId === 'object' && 'value' in sectionId) {
+      id = sectionId.value;
+    } else {
+      id = sectionId;
+    }
+    
+    // Vérifier que l'ID est valide (pas undefined, null, ou chaîne vide)
+    // Note: 0 est un ID valide, donc on ne le rejette pas
+    if (id === undefined || id === null || id === '') {
+      console.warn('useSectionMode: toggleEditMode appelé sans sectionId valide', { 
+        sectionId, 
+        sectionIdType: typeof sectionId,
+        hasValue: sectionId && 'value' in sectionId,
+        extractedValue: sectionId && 'value' in sectionId ? sectionId.value : 'N/A'
+      });
+      return;
+    }
     
     const idStr = String(id);
+    const currentState = !!editingSections[idStr];
+    
     // Utiliser Vue.delete pour supprimer proprement une propriété réactive
-    if (editingSections[idStr]) {
+    if (currentState) {
       delete editingSections[idStr];
     } else {
       editingSections[idStr] = true;
@@ -86,8 +122,27 @@ export function useSectionMode(sectionId) {
    * @param {Boolean} value - true pour mode édition, false pour mode lecture
    */
   const setEditMode = (value) => {
-    const id = getSectionId();
-    if (!id) return;
+    let id;
+    
+    // Extraire l'ID de manière plus robuste
+    if (sectionId && typeof sectionId === 'object' && 'value' in sectionId) {
+      id = sectionId.value;
+    } else {
+      id = sectionId;
+    }
+    
+    // Vérifier que l'ID est valide (pas undefined, null, ou chaîne vide)
+    // Note: 0 est un ID valide, donc on ne le rejette pas
+    if (id === undefined || id === null || id === '') {
+      console.warn('useSectionMode: setEditMode appelé sans sectionId valide', { 
+        sectionId, 
+        value,
+        sectionIdType: typeof sectionId,
+        hasValue: sectionId && 'value' in sectionId,
+        extractedValue: sectionId && 'value' in sectionId ? sectionId.value : 'N/A'
+      });
+      return;
+    }
     
     const idStr = String(id);
     if (value) {

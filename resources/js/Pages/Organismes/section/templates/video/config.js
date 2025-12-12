@@ -12,6 +12,23 @@ export default {
     autoplay: false,
     controls: true,
   },
+  // Paramètres configurables dans le modal
+  parameters: [
+    {
+      key: 'autoplay',
+      type: 'toggle',
+      label: 'Lecture automatique',
+      description: 'Démarrer la vidéo automatiquement au chargement',
+      default: false,
+    },
+    {
+      key: 'controls',
+      type: 'toggle',
+      label: 'Afficher les contrôles',
+      description: 'Afficher les contrôles de lecture (play, pause, volume, etc.)',
+      default: true,
+    },
+  ],
   // Valeurs par défaut pour les data (contenu)
   defaultData: {
     src: null,

@@ -15,7 +15,7 @@
  * @example
  * <SectionRenderer :section="section" :user="user" />
  */
-import { computed, ref, watch, shallowRef } from 'vue';
+import { computed, ref, watch, shallowRef, nextTick } from 'vue';
 import { router } from '@inertiajs/vue3';
 import SectionHeader from '@/Pages/Molecules/section/SectionHeader.vue';
 import SectionParamsModal from './modals/SectionParamsModal.vue';
@@ -61,7 +61,12 @@ const templateComponent = shallowRef(null);
 const isLoadingTemplate = ref(false);
 
 // Composables
-const sectionId = computed(() => sectionModel.value?.id);
+// Utiliser directement props.section.id car le validator garantit qu'il existe
+// On peut aussi utiliser sectionModel.value?.id comme fallback
+const sectionId = computed(() => {
+  // Priorité à props.section.id (toujours disponible grâce au validator)
+  return props.section?.id || sectionModel.value?.id;
+});
 const { isEditing, toggleEditMode, setEditMode } = useSectionMode(sectionId);
 const { saveSectionImmediate } = useSectionSave();
 const { getTemplateComponent } = useSectionTemplates();
@@ -124,12 +129,12 @@ watch(isEditing, (newValue, oldValue) => {
   if (newValue !== oldValue) {
     loadTemplateComponent();
   }
-}, { immediate: false });
+}, { immediate: false, flush: 'sync' });
 
 // Également écouter les changements de sectionId pour recharger si nécessaire
 watch(sectionId, () => {
   loadTemplateComponent();
-});
+}, { immediate: false });
 
 // Recharger le template si le type change
 watch(templateValue, (newValue, oldValue) => {
@@ -140,14 +145,35 @@ watch(templateValue, (newValue, oldValue) => {
 }, { immediate: false });
 
 /**
+ * Gère le basculement du mode édition avec rechargement forcé
+ */
+const handleToggleEdit = async () => {
+  toggleEditMode();
+  // Attendre que Vue ait mis à jour la réactivité
+  await nextTick();
+  // Forcer le rechargement du template
+  loadTemplateComponent();
+};
+
+/**
  * Gère la mise à jour du titre
  */
 const handleTitleUpdate = (newTitle) => {
-    if (!sectionModel.value) return;
+    const id = sectionId.value;
+    
+    if (!id) {
+        console.error('SectionRenderer: Impossible de mettre à jour le titre, sectionId manquant', { 
+            sectionId: id,
+            sectionModel: sectionModel.value,
+            propsSection: props.section,
+            newTitle 
+        });
+        return;
+    }
   
-  saveSectionImmediate(sectionModel.value.id, {
-    title: newTitle
-  });
+    saveSectionImmediate(id, {
+        title: newTitle
+    });
 };
 
 /**
@@ -179,12 +205,19 @@ const handleCloseParamsModal = () => {
 
 /**
  * Gère la mise à jour des paramètres
+ * 
+ * @param {Object} updatedParams - Paramètres mis à jour (title, slug, order, is_visible, can_edit_role, state, settings)
  */
 const handleParamsUpdated = async (updatedParams) => {
-    if (!sectionModel.value) return;
+    if (!sectionModel.value || !sectionModel.value.id) {
+        console.error('SectionRenderer: Impossible de mettre à jour la section, ID manquant', { sectionModel: sectionModel.value });
+        return;
+    }
+    
+    const sectionId = sectionModel.value.id;
     
     try {
-        await updateSection(sectionModel.value.id, updatedParams, {
+        await updateSection(sectionId, updatedParams, {
             onSuccess: () => {
                 paramsModalOpen.value = false;
                 router.reload({ only: ['page'] });
@@ -221,7 +254,7 @@ const handleDataUpdate = (newData) => {
       :canEdit="canEdit"
       :isHovered="isHovered"
       @update:title="handleTitleUpdate"
-      @toggle-edit="toggleEditMode"
+      @toggle-edit="handleToggleEdit"
       @open-params="handleOpenParamsModal"
       @copy-link="handleCopyLink"
     />
@@ -260,6 +293,7 @@ const handleDataUpdate = (newData) => {
         v-if="sectionModel"
         :open="paramsModalOpen"
         :section-template="templateValue"
+        :section="sectionModel"
         :initial-settings="sectionSettings"
         :section-id="sectionModel.id"
         :section-title="sectionModel.title || section.title"

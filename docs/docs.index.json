@@ -350,6 +350,11 @@
     "description": "```mermaid"
   },
   {
+    "path": "20-Content/SECTION_PARAMETERS.md",
+    "title": "Paramètres des Sections",
+    "description": "Toutes les sections partagent les paramètres suivants, stockés directement dans la table `sections` :"
+  },
+  {
     "path": "20-Content/UNIVERSE.md",
     "title": "Univers et contexte",
     "description": "Krosmoz JDR est un jeu de rôle en ligne inspiré de l'univers de Dofus. Le projet vise à offrir une expérience immersive, évolutive et collaborative, dans le monde des Douze (aventure, stratégie, magie)."

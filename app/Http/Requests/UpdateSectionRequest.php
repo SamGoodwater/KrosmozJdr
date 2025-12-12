@@ -34,6 +34,12 @@ class UpdateSectionRequest extends FormRequest
     {
         $template = $this->input('template') ?? $this->route('section')?->template;
         
+        // Convertir le template en string si c'est un enum
+        // Si c'est déjà un SectionType, extraire sa valeur
+        if ($template instanceof SectionType) {
+            $template = $template->value;
+        }
+        
         $rules = [
             'page_id' => ['sometimes', 'exists:pages,id'],
             'title' => ['sometimes', 'nullable', 'string', 'max:255'],
@@ -48,6 +54,7 @@ class UpdateSectionRequest extends FormRequest
         ];
 
         // Validation dynamique des settings et data selon le template
+        // $template est maintenant garanti d'être une string ou null
         if ($template && $sectionType = SectionType::tryFrom($template)) {
             $validationRules = $this->getTemplateValidationRules($sectionType);
             if (!empty($validationRules)) {

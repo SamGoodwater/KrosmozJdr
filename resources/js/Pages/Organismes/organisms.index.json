@@ -270,17 +270,17 @@
       {
         "name": "sectionTemplate",
         "type": "String",
-        "desc": "- Template de section (text, image, gallery, video, entity_table)"
+        "desc": "- Template de section"
+      },
+      {
+        "name": "section",
+        "type": "Object",
+        "desc": "- Section complète (pour récupérer title, slug, etc.)"
       },
       {
         "name": "initialSettings",
         "type": "Object",
-        "desc": "- Settings initiaux (optionnel)"
-      },
-      {
-        "name": "initialData",
-        "type": "Object",
-        "desc": "- Data initiaux (optionnel)"
+        "desc": "- Settings initiaux"
       }
     ],
     "slots": [],

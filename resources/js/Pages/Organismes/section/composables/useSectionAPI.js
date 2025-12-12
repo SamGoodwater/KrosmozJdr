@@ -61,7 +61,16 @@ export function useSectionAPI() {
    */
   const updateSection = (sectionId, updates, options = {}) => {
     return new Promise((resolve, reject) => {
-      router.patch(route('sections.update', sectionId), updates, {
+      // Vérifier que sectionId est valide
+      if (!sectionId || (typeof sectionId !== 'number' && typeof sectionId !== 'string')) {
+        console.error('useSectionAPI: updateSection appelé avec un sectionId invalide', { sectionId, updates });
+        reject(new Error('Section ID invalide'));
+        return;
+      }
+      
+      // Ziggy attend un objet avec la clé correspondant au paramètre de la route
+      const routeParams = { section: sectionId };
+      router.patch(route('sections.update', routeParams), updates, {
         preserveScroll: true,
         only: ['page'],
         onSuccess: (page) => {
@@ -85,7 +94,7 @@ export function useSectionAPI() {
    */
   const deleteSection = (sectionId, options = {}) => {
     return new Promise((resolve, reject) => {
-      router.delete(route('sections.delete', sectionId), {
+      router.delete(route('sections.delete', { section: sectionId }), {
         preserveScroll: true,
         only: ['page'],
         onSuccess: (page) => {
@@ -133,7 +142,7 @@ export function useSectionAPI() {
    */
   const getSection = (sectionId, options = {}) => {
     return new Promise((resolve, reject) => {
-      router.get(route('sections.show', sectionId), {}, {
+      router.get(route('sections.show', { section: sectionId }), {}, {
         preserveScroll: true,
         onSuccess: (page) => {
           // Extraire la section depuis la réponse
@@ -162,7 +171,7 @@ export function useSectionAPI() {
    */
   const restoreSection = (sectionId, options = {}) => {
     return new Promise((resolve, reject) => {
-      router.post(route('sections.restore', sectionId), {}, {
+      router.post(route('sections.restore', { section: sectionId }), {}, {
         preserveScroll: true,
         only: ['page'],
         onSuccess: (page) => {
@@ -186,7 +195,7 @@ export function useSectionAPI() {
    */
   const forceDeleteSection = (sectionId, options = {}) => {
     return new Promise((resolve, reject) => {
-      router.delete(route('sections.forceDelete', sectionId), {
+      router.delete(route('sections.forceDelete', { section: sectionId }), {
         preserveScroll: true,
         only: ['page'],
         onSuccess: (page) => {
