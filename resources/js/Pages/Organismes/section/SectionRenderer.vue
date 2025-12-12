@@ -209,15 +209,21 @@ const handleCloseParamsModal = () => {
  * @param {Object} updatedParams - Paramètres mis à jour (title, slug, order, is_visible, can_edit_role, state, settings)
  */
 const handleParamsUpdated = async (updatedParams) => {
-    if (!sectionModel.value || !sectionModel.value.id) {
-        console.error('SectionRenderer: Impossible de mettre à jour la section, ID manquant', { sectionModel: sectionModel.value });
+    const id = sectionId.value; // Utiliser le computed sectionId (avec fallback)
+    
+    if (!id) {
+        console.error('SectionRenderer: Impossible de mettre à jour la section, ID manquant', { 
+            sectionId: id,
+            sectionModel: sectionModel.value,
+            sectionModelId: sectionModel.value?.id,
+            propsSection: props.section,
+            propsSectionId: props.section?.id
+        });
         return;
     }
     
-    const sectionId = sectionModel.value.id;
-    
     try {
-        await updateSection(sectionId, updatedParams, {
+        await updateSection(id, updatedParams, {
             onSuccess: () => {
                 paramsModalOpen.value = false;
                 router.reload({ only: ['page'] });

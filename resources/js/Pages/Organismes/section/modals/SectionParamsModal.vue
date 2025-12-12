@@ -20,7 +20,7 @@
  * @emits close - Événement émis quand le modal se ferme
  * @emits validated - Événement émis avec { title, slug, order, is_visible, can_edit_role, state, settings } validés
  */
-import { ref, computed, watch } from 'vue';
+import { ref, computed, watch, nextTick } from 'vue';
 import { router } from '@inertiajs/vue3';
 import Modal from '@/Pages/Molecules/action/Modal.vue';
 import InputField from '@/Pages/Molecules/data-input/InputField.vue';
@@ -31,9 +31,9 @@ import ColorField from '@/Pages/Molecules/data-input/ColorField.vue';
 import Btn from '@/Pages/Atoms/action/Btn.vue';
 import Icon from '@/Pages/Atoms/data-display/Icon.vue';
 import { useSectionAPI } from '../composables/useSectionAPI';
-import { useSectionParameters } from '../composables/useSectionParameters';
 import { getTemplateConfig } from '../templates';
-import { TransformService } from '@/Utils/Services';
+import { TransformService, SectionParameterService, SectionMapper } from '@/Utils/Services';
+import { Section } from '@/Models';
 
 const props = defineProps({
     open: {
@@ -58,7 +58,6 @@ const emit = defineEmits(['close', 'validated', 'deleted']);
 
 // Composables
 const { deleteSection } = useSectionAPI();
-const { getCommonFields, getParameterFields, getVisibilityOptions, getStateOptions } = useSectionParameters();
 
 // Configuration du template
 const templateConfig = computed(() => {
@@ -71,57 +70,67 @@ const templateConfig = computed(() => {
 });
 
 // Champs communs et paramètres du template
-const commonFields = computed(() => getCommonFields());
+const commonFields = computed(() => SectionParameterService.getCommonFields());
 const templateParameters = computed(() => {
     if (!templateConfig.value || !templateConfig.value.parameters) {
         return [];
     }
-    return getParameterFields(templateConfig.value.parameters);
+    return SectionParameterService.getParameterFields(templateConfig.value.parameters);
 });
 
 // Options pour les selects
-const visibilityOptions = computed(() => getVisibilityOptions());
-const stateOptions = computed(() => getStateOptions());
+const visibilityOptions = computed(() => SectionParameterService.getVisibilityOptions());
+const stateOptions = computed(() => SectionParameterService.getStateOptions());
 
 /**
- * Extrait une valeur depuis la section (utilise les getters du modèle Section)
+ * Normalise la section en utilisant SectionMapper pour garantir un accès correct
  */
-const getSectionValue = (key) => {
+const sectionModel = computed(() => {
     if (!props.section) return null;
     
-    // Si c'est une instance Section (avec _data), utiliser les getters
-    if (props.section._data) {
-        // Mapping des clés vers les getters du modèle Section
-        const getterMap = {
-            'id': () => props.section.id,
-            'title': () => props.section.title,
-            'slug': () => props.section.slug,
-            'order': () => props.section.order,
-            'is_visible': () => props.section.isVisible,
-            'can_edit_role': () => props.section._data.can_edit_role,
-            'state': () => props.section.state,
-            'settings': () => props.section.settings,
-            'data': () => props.section.data,
-            'template': () => props.section.template,
-        };
-        
-        // Si un getter existe pour cette clé, l'utiliser
-        if (getterMap[key]) {
-            try {
-                return getterMap[key]();
-            } catch (e) {
-                console.warn(`Erreur lors de l'accès au getter pour "${key}":`, e);
-                // Fallback sur _data
-                return props.section._data[key] ?? null;
-            }
-        }
-        
-        // Sinon, accéder directement à _data
-        return props.section._data[key] ?? null;
+    // Si c'est déjà une instance Section, la retourner
+    if (props.section instanceof Section) {
+        return props.section;
     }
     
-    // Si c'est un objet brut, accès direct
-    return props.section[key] ?? null;
+    // Sinon, utiliser le mapper pour normaliser
+    return SectionMapper.mapToModel(props.section);
+});
+
+/**
+ * Extrait une valeur depuis la section normalisée (utilise les getters du modèle Section)
+ */
+const getSectionValue = (key) => {
+    const model = sectionModel.value;
+    if (!model) return null;
+    
+    // Mapping des clés vers les getters du modèle Section
+    const getterMap = {
+        'id': () => model.id,
+        'title': () => model.title,
+        'slug': () => model.slug,
+        'order': () => model.order,
+        'is_visible': () => model.isVisible,
+        'can_edit_role': () => model.canEditRole || 'admin',
+        'state': () => model.state,
+        'settings': () => model.settings,
+        'data': () => model.data,
+        'template': () => model.template,
+    };
+    
+    // Si un getter existe pour cette clé, l'utiliser
+    if (getterMap[key]) {
+        try {
+            return getterMap[key]();
+        } catch (e) {
+            console.warn(`Erreur lors de l'accès au getter pour "${key}":`, e);
+            // Fallback sur _data
+            return model._data?.[key] ?? null;
+        }
+    }
+    
+    // Sinon, accéder directement à _data
+    return model._data?.[key] ?? null;
 };
 
 /**
@@ -191,31 +200,116 @@ const initializeFormData = () => {
     return formData;
 };
 
-// Données du formulaire
-const formData = ref(initializeFormData());
+// Données du formulaire - initialisées vides au départ
+const formData = ref({
+    title: '',
+    slug: '',
+    order: 0,
+    is_visible: 'guest',
+    can_edit_role: 'admin',
+    state: 'draft',
+    settings: {
+        classes: '',
+        customCss: ''
+    }
+});
+
+// Compteur de version pour forcer la réactivité des champs
+const formDataVersion = ref(0);
+
+// Computed réactifs pour les champs title et slug (comme pour les selects dans EditPageModal)
+const formTitle = computed({
+    get: () => {
+        formDataVersion.value; // Toucher pour forcer la réactivité
+        return formData.value.title || '';
+    },
+    set: (value) => {
+        formData.value.title = value;
+        formDataVersion.value++;
+    }
+});
+
+const formSlug = computed({
+    get: () => {
+        formDataVersion.value; // Toucher pour forcer la réactivité
+        return formData.value.slug || '';
+    },
+    set: (value) => {
+        formData.value.slug = value;
+        formDataVersion.value++;
+        slugManuallyEdited.value = true;
+    }
+});
 
 // Flag pour savoir si le slug a été modifié manuellement
 const slugManuallyEdited = ref(false);
 
 // Réinitialiser les données quand le modal s'ouvre ou quand la section change
-watch(() => [props.open, props.section], () => {
-    if (props.open && props.section) {
-        const newData = initializeFormData();
-        formData.value = newData;
-        slugManuallyEdited.value = false;
+watch(() => [props.open, props.section], ([isOpen, section]) => {
+    if (isOpen && sectionModel.value && sectionModel.value.id) {
+        // Utiliser double nextTick pour s'assurer que le DOM est rendu
+        nextTick(() => {
+            nextTick(() => {
+                const newData = initializeFormData();
+                
+                if (import.meta.env.DEV) {
+                    console.log('SectionParamsModal - FormData initialized:', {
+                        newData,
+                        title: newData.title,
+                        slug: newData.slug,
+                        sectionModel: sectionModel.value,
+                        sectionId: sectionModel.value?.id,
+                        formDataBefore: formData.value
+                    });
+                }
+                
+                // Mettre à jour formData de manière réactive
+                // Réassigner complètement l'objet pour forcer la réactivité
+                formData.value = { ...newData };
+                slugManuallyEdited.value = false;
+                
+                // Attendre un peu pour que Vue traite la mise à jour
+                nextTick(() => {
+                    // Incrémenter le compteur de version pour forcer la réactivité des computed
+                    // Cela déclenchera la réévaluation de formTitle et formSlug
+                    formDataVersion.value++;
+                    
+                    // Forcer la mise à jour des computed en les touchant
+                    // Cela garantit que les InputField reçoivent les nouvelles valeurs
+                    if (import.meta.env.DEV) {
+                        console.log('SectionParamsModal - Computed values after update:', {
+                            formTitleValue: formTitle.value,
+                            formSlugValue: formSlug.value,
+                            formDataTitle: formData.value.title,
+                            formDataSlug: formData.value.slug,
+                            formDataVersion: formDataVersion.value
+                        });
+                    }
+                });
+                
+                if (import.meta.env.DEV) {
+                    console.log('SectionParamsModal - FormData after update:', {
+                        formDataAfter: formData.value,
+                        title: formData.value.title,
+                        slug: formData.value.slug
+                    });
+                }
+            });
+        });
     }
-}, { immediate: true });
+}, { immediate: true, deep: true });
 
 // Watcher pour générer automatiquement le slug depuis le titre
-watch(() => formData.value.title, (newTitle) => {
+watch(() => formTitle.value, (newTitle) => {
     if (!slugManuallyEdited.value) {
         const sectionId = getSectionValue('id');
-        const currentSlug = formData.value.slug || '';
+        const currentSlug = formSlug.value || '';
         const generatedSlug = generateSlug(newTitle, sectionId);
         
         // Si le slug actuel est vide ou correspond au slug généré précédemment, le mettre à jour
         if (!currentSlug || currentSlug === `section-${sectionId}` || currentSlug.startsWith('section-')) {
-            formData.value.slug = generatedSlug;
+            formSlug.value = generatedSlug;
+            slugManuallyEdited.value = false; // Réinitialiser car c'est auto-généré
         }
     }
 });
@@ -361,7 +455,7 @@ const sectionTitle = computed(() => getSectionValue('title') || '');
                 
                 <!-- Titre -->
                 <InputField
-                    v-model="formData.title"
+                    v-model="formTitle"
                     label="Titre"
                     helper="Titre de la section (optionnel)"
                     placeholder="Titre de la section"
@@ -369,11 +463,10 @@ const sectionTitle = computed(() => getSectionValue('title') || '');
                 
                 <!-- Slug -->
                 <InputField
-                    v-model="formData.slug"
+                    v-model="formSlug"
                     label="Slug"
                     helper="Identifiant unique pour l'ancre de la section (généré automatiquement si vide)"
                     placeholder="mon-ancre"
-                    @input="slugManuallyEdited = true"
                 />
                 
                 <!-- Ordre -->

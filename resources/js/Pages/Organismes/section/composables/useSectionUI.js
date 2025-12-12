@@ -33,7 +33,6 @@
 import { computed } from 'vue';
 import { Section } from '@/Models';
 import { SectionMapper } from '@/Utils/Services/Mappers';
-import { adaptSectionToUI } from '../adapters/sectionUIAdapter';
 import { getTemplateConfig } from '../templates';
 
 /**
@@ -64,9 +63,41 @@ export function useSectionUI(rawSection) {
     return SectionMapper.mapToModel(sectionValue);
   });
 
-  // Données UI adaptées
+  // Données UI adaptées (logique intégrée, plus besoin d'adapter séparé)
   const uiData = computed(() => {
-    return adaptSectionToUI(sectionModel.value);
+    const section = sectionModel.value;
+    if (!section) {
+      return getEmptyUIData();
+    }
+    
+    return {
+      // Couleur selon l'état
+      color: getStateColor(section.state),
+      
+      // Icône selon le template
+      icon: getTemplateIcon(section.template || section.type),
+      
+      // Badge pour l'état
+      badge: getStateBadge(section.state),
+      
+      // Label pour la visibilité
+      visibilityLabel: getVisibilityLabel(section.isVisible),
+      
+      // Label pour le rôle d'édition
+      editRoleLabel: getEditRoleLabel(section.canEditRole),
+      
+      // Statut combiné (pour affichage)
+      status: getCombinedStatus(section),
+      
+      // Classe CSS pour le conteneur
+      containerClass: getContainerClass(section),
+      
+      // URL de la section (pour les liens)
+      url: getSectionUrl(section),
+      
+      // Métadonnées pour l'affichage
+      metadata: getMetadata(section),
+    };
   });
 
   // Statut combiné
@@ -228,6 +259,199 @@ function getEditRoleIcon(editRole) {
   };
   
   return iconMap[editRole] || 'fa-lock';
+}
+
+// ============================================
+// FONCTIONS UTILITAIRES (intégrées depuis l'adapter)
+// ============================================
+
+/**
+ * Retourne la couleur selon l'état
+ */
+function getStateColor(state) {
+  const colorMap = {
+    'draft': 'warning',
+    'preview': 'info',
+    'published': 'success',
+    'archived': 'neutral',
+  };
+  return colorMap[state] || 'neutral';
+}
+
+/**
+ * Retourne l'icône selon le template
+ */
+function getTemplateIcon(template) {
+  if (!template) return 'fa-file';
+  
+  try {
+    const config = getTemplateConfig(template);
+    if (config && config.icon) {
+      return config.icon;
+    }
+  } catch (e) {
+    console.warn(`Impossible de charger la config du template "${template}"`, e);
+  }
+  
+  return 'fa-file';
+}
+
+/**
+ * Retourne le badge selon l'état
+ */
+function getStateBadge(state) {
+  const badgeMap = {
+    'draft': { text: 'Brouillon', color: 'warning', variant: 'soft' },
+    'preview': { text: 'Prévisualisation', color: 'info', variant: 'soft' },
+    'published': { text: 'Publié', color: 'success', variant: 'soft' },
+    'archived': { text: 'Archivé', color: 'neutral', variant: 'soft' },
+  };
+  return badgeMap[state] || { text: 'Inconnu', color: 'neutral', variant: 'soft' };
+}
+
+/**
+ * Retourne le label pour la visibilité
+ */
+function getVisibilityLabel(visibility) {
+  const labelMap = {
+    'guest': 'Public',
+    'user': 'Utilisateurs',
+    'game_master': 'Maîtres de jeu',
+    'admin': 'Administrateurs',
+  };
+  return labelMap[visibility] || 'Inconnu';
+}
+
+/**
+ * Retourne le label pour le rôle d'édition
+ */
+function getEditRoleLabel(editRole) {
+  const labelMap = {
+    'guest': 'Tous',
+    'user': 'Utilisateurs',
+    'game_master': 'Maîtres de jeu',
+    'admin': 'Administrateurs uniquement',
+  };
+  return labelMap[editRole] || 'Inconnu';
+}
+
+/**
+ * Retourne le statut combiné
+ */
+function getCombinedStatus(section) {
+  const state = section?.state || 'draft';
+  const badge = getStateBadge(state);
+  
+  return {
+    text: badge.text,
+    color: badge.color,
+    icon: getTemplateIcon(section?.template || section?.type),
+    visibility: getVisibilityLabel(section?.isVisible),
+    editRole: getEditRoleLabel(section?.canEditRole),
+  };
+}
+
+/**
+ * Retourne la classe CSS pour le conteneur
+ */
+function getContainerClass(section) {
+  const classes = ['section-container'];
+  classes.push(`section-state-${section?.state || 'draft'}`);
+  classes.push(`section-template-${section?.template || section?.type || 'text'}`);
+  classes.push(`section-visibility-${section?.isVisible || 'guest'}`);
+  return classes.join(' ');
+}
+
+/**
+ * Retourne l'URL de la section
+ */
+function getSectionUrl(section) {
+  if (!section?.id || !section?.page) return '';
+  
+  const pageSlug = section.page.slug || section.pageId;
+  const sectionSlug = section.slug || section.id;
+  
+  try {
+    if (typeof route !== 'undefined') {
+      return `${route('pages.show', pageSlug)}#section-${sectionSlug}`;
+    }
+    return `/pages/${pageSlug}#section-${sectionSlug}`;
+  } catch (e) {
+    return `/pages/${pageSlug}#section-${sectionSlug}`;
+  }
+}
+
+/**
+ * Retourne les métadonnées
+ */
+function getMetadata(section) {
+  return {
+    createdAt: section?.created_at || null,
+    updatedAt: section?.updated_at || null,
+    createdBy: section?.createdBy || section?.created_by_user || null,
+    order: section?.order || 0,
+    hasContent: hasContent(section),
+    isEmpty: isEmpty(section),
+  };
+}
+
+/**
+ * Vérifie si la section a du contenu
+ */
+function hasContent(section) {
+  const data = section?.data || {};
+  
+  if (!data || Object.keys(data).length === 0) {
+    return false;
+  }
+  
+  for (const key in data) {
+    const value = data[key];
+    if (value !== null && value !== undefined && value !== '') {
+      if (Array.isArray(value)) {
+        if (value.length > 0) return true;
+      } else if (typeof value === 'string') {
+        if (value.trim().length > 0) return true;
+      } else if (typeof value === 'object') {
+        if (Object.keys(value).length > 0) return true;
+      } else {
+        return true;
+      }
+    }
+  }
+  
+  return false;
+}
+
+/**
+ * Vérifie si la section est vide
+ */
+function isEmpty(section) {
+  return !hasContent(section);
+}
+
+/**
+ * Retourne des données UI vides (fallback)
+ */
+function getEmptyUIData() {
+  return {
+    color: 'neutral',
+    icon: 'fa-file',
+    badge: { text: 'Inconnu', color: 'neutral', variant: 'soft' },
+    visibilityLabel: 'Inconnu',
+    editRoleLabel: 'Inconnu',
+    status: { text: 'Inconnu', color: 'neutral', icon: 'fa-file' },
+    containerClass: 'section-container',
+    url: '',
+    metadata: {
+      createdAt: null,
+      updatedAt: null,
+      createdBy: null,
+      order: 0,
+      hasContent: false,
+      isEmpty: true,
+    },
+  };
 }
 
 export default useSectionUI;

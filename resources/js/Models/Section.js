@@ -67,6 +67,10 @@ export class Section extends BaseModel {
         return this._data.is_visible;
     }
 
+    get canEditRole() {
+        return this._data.can_edit_role;
+    }
+
     get state() {
         return this._data.state;
     }

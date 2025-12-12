@@ -6,7 +6,7 @@
  * Template de section pour afficher une galerie en mode lecture.
  */
 import { computed } from 'vue';
-import { useSectionStyles } from '../../composables/useSectionStyles';
+import { SectionStyleService } from '@/Utils/Services';
 
 const props = defineProps({
   section: { type: Object, required: true },
@@ -16,8 +16,10 @@ const props = defineProps({
 
 const images = computed(() => props.data?.images || []);
 
-// Utiliser le composable pour les styles de galerie
-const { galleryClasses } = useSectionStyles(() => props.settings);
+// Utiliser le service pour les styles de galerie
+const galleryClasses = computed(() => {
+  return SectionStyleService.getGalleryClasses(props.settings || {});
+});
 </script>
 
 <template>

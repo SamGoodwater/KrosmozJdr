@@ -12,7 +12,7 @@
  * @props {Object} settings - Paramètres (section.settings)
  */
 import { computed } from 'vue';
-import { useSectionStyles } from '../../composables/useSectionStyles';
+import { SectionStyleService } from '@/Utils/Services';
 
 const props = defineProps({
   section: {
@@ -37,9 +37,11 @@ const content = computed(() => {
 });
 
 /**
- * Classes CSS depuis les settings (utilise le composable)
+ * Classes CSS depuis les settings (utilise le service)
  */
-const { containerClasses } = useSectionStyles(() => props.settings);
+const containerClasses = computed(() => {
+  return SectionStyleService.getContainerClasses(props.settings || {});
+});
 </script>
 
 <template>

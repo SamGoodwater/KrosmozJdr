@@ -320,6 +320,11 @@
     "description": "Ce guide explique comment migrer les composants existants vers la nouvelle architecture avec les mappers, adapters et composables UI."
   },
   {
+    "path": "20-Content/PAGES_SECTIONS_OPTIMIZATION_PLAN.md",
+    "title": "Plan d'optimisation - Système Pages et Sections",
+    "description": "- **29+ fichiers** dans `resources/js/Pages/Organismes/section/`"
+  },
+  {
     "path": "20-Content/PAGES_SECTIONS_REFACTORING_PLAN.md",
     "title": "🔄 Plan de Refactorisation - Pages et Sections",
     "description": "**Date** : 2025-01-27"

@@ -275,12 +275,7 @@
       {
         "name": "section",
         "type": "Object",
-        "desc": "- Section complète (pour récupérer title, slug, etc.)"
-      },
-      {
-        "name": "initialSettings",
-        "type": "Object",
-        "desc": "- Settings initiaux"
+        "desc": "- Instance Section normalisée (depuis useSectionUI)"
       }
     ],
     "slots": [],

@@ -164,11 +164,10 @@ function onInput(e) {
         v-bind="inputAttrs"
         v-on="listeners"
         :class="atomClasses"
-        :value="props.modelValue"
         @input="onInput"
     >
         <slot>
-            <option v-if="!multiple && !props.modelValue" value="" disabled>
+            <option v-if="!multiple && !inputAttrs.value" value="" disabled>
                 {{ props.placeholder || 'Choisir...' }}
             </option>
             <option

@@ -7,7 +7,7 @@
  */
 import { computed } from 'vue';
 import Image from '@/Pages/Atoms/data-display/Image.vue';
-import { useSectionStyles } from '../../composables/useSectionStyles';
+import { SectionStyleService } from '@/Utils/Services';
 
 const props = defineProps({
   section: { type: Object, required: true },
@@ -19,8 +19,10 @@ const src = computed(() => props.data?.src || '');
 const alt = computed(() => props.data?.alt || 'Image');
 const caption = computed(() => props.data?.caption || '');
 
-// Utiliser le composable pour les styles
-const { alignClasses, imageSizeClasses } = useSectionStyles(() => props.settings);
+// Utiliser le service pour les styles
+const imageSizeClasses = computed(() => {
+  return SectionStyleService.getImageSizeClasses(props.settings || {});
+});
 
 // Adapter les classes d'alignement pour flexbox
 const flexAlignClasses = computed(() => {

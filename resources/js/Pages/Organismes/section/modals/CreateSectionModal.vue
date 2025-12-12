@@ -19,9 +19,8 @@ import Modal from '@/Pages/Molecules/action/Modal.vue';
 import InputField from '@/Pages/Molecules/data-input/InputField.vue';
 import Btn from '@/Pages/Atoms/action/Btn.vue';
 import Icon from '@/Pages/Atoms/data-display/Icon.vue';
-import { getTemplateOptions, getTemplateByValue } from '../templates';
+import { getTemplateOptions, getTemplateByValue, getTemplateDefaults } from '../templates';
 import { useSectionAPI } from '../composables/useSectionAPI';
-import { useSectionDefaults } from '../composables/useSectionDefaults';
 
 const props = defineProps({
     open: {
@@ -73,7 +72,7 @@ const form = useForm({
 
 // Composables
 const { createSection } = useSectionAPI();
-const { getDefaults } = useSectionDefaults();
+// Utiliser directement getTemplateDefaults depuis templates/index.js
 
 /**
  * Gère la sélection d'un template de section
@@ -105,7 +104,7 @@ const handleCreateSection = async (template = null) => {
     }
 
     // Obtenir les valeurs par défaut pour ce template
-    const defaults = getDefaults(sectionTemplate);
+    const defaults = getTemplateDefaults(sectionTemplate);
 
     // Préparer les données de la section avec les valeurs par défaut
     const sectionPayload = {
