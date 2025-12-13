@@ -309,14 +309,23 @@ export function useTemplateRegistry() {
  */
 export async function preloadCommonTemplates() {
   const registry = useTemplateRegistry();
-  const commonTemplates = ['text', 'image', 'divider'];
+  
+  // CORRECTION : Ne précharger que les templates qui existent réellement
+  // SectionType disponibles : text, image, gallery, video, entity_table
+  const commonTemplates = ['text', 'image', 'gallery'];
   
   console.log('🚀 Préchargement des templates courants...');
   
-  await Promise.all(
-    commonTemplates.map(template => registry.preload(template, 'both'))
-  );
+  // Filtrer uniquement les templates valides avant de précharger
+  const validTemplates = commonTemplates.filter(t => registry.isValidTemplate(t));
   
-  console.log('✅ Templates courants préchargés');
+  if (validTemplates.length > 0) {
+    await Promise.all(
+      validTemplates.map(template => registry.preload(template, 'both'))
+    );
+    console.log(`✅ ${validTemplates.length} templates préchargés:`, validTemplates);
+  } else {
+    console.warn('⚠️ Aucun template valide à précharger');
+  }
 }
 

@@ -50,6 +50,39 @@
     "file": "section/SectionRenderer.vue"
   },
   {
+    "name": "SectionCommonFields",
+    "description": "SectionCommonFields Component",
+    "props": [
+      {
+        "name": "form",
+        "type": "Object",
+        "desc": "- Objet formulaire Inertia"
+      },
+      {
+        "name": "showOrder",
+        "type": "Boolean",
+        "desc": "- Afficher le champ ordre"
+      },
+      {
+        "name": "showAdvanced",
+        "type": "Boolean",
+        "desc": "- Afficher les champs avancés (can_edit_role, state)"
+      },
+      {
+        "name": "visibilityOptions",
+        "type": "Array",
+        "desc": "- Options pour le select de visibilité"
+      },
+      {
+        "name": "stateOptions",
+        "type": "Array",
+        "desc": "- Options pour le select d'état"
+      }
+    ],
+    "slots": [],
+    "file": "section/SectionCommonFields.vue"
+  },
+  {
     "name": "PageSectionEditor",
     "description": "PageSectionEditor Organism",
     "props": [

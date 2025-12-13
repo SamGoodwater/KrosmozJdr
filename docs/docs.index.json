@@ -15,9 +15,24 @@
     "description": "Le projet utilise les dernières recommandations en matière de sécurité, de qualité de code et d'organisation. Le code est en anglais, les commentaires en français. L'architecture suit le principe Atomic Design pour le frontend."
   },
   {
+    "path": "10-BestPractices/AUDIT_FINAL_REPORT.md",
+    "title": "🎯 Rapport d'audit final — Pages/Sections (DRY + Sécurité + Bonnes pratiques)",
+    "description": "**Date** : 2025-01-13"
+  },
+  {
     "path": "10-BestPractices/AUDIT_FINDINGS.md",
     "title": "Résultats de l'audit initial - KrosmozJDR",
     "description": "**Date** : 2025-01-27"
+  },
+  {
+    "path": "10-BestPractices/AUDIT_FINDINGS_DRY_MODALS.md",
+    "title": "Rapport d'audit — DRY & Duplications (Modals/Renderer/Templates)",
+    "description": "**Date** : 2025-01-13"
+  },
+  {
+    "path": "10-BestPractices/AUDIT_FINDINGS_VALIDATION_XSS.md",
+    "title": "Rapport d'audit —",
+    "description": "Validation & XSS (Pages/Sections)"
   },
   {
     "path": "10-BestPractices/AUDIT_FORMREQUESTS_SUMMARY.md",
@@ -28,6 +43,16 @@
     "path": "10-BestPractices/AUDIT_PLAN.md",
     "title": "Plan d'audit du code - KrosmozJDR",
     "description": "**Date de création** : 2025-01-27"
+  },
+  {
+    "path": "10-BestPractices/AUDIT_TEST_PLAN.md",
+    "title": "Plan de tests — Pages/Sections (Non-régression)",
+    "description": "**Date** : 2025-01-13"
+  },
+  {
+    "path": "10-BestPractices/AUDIT_TOOLING_QUALITY.md",
+    "title": "Rapport d'audit — Outillage qualité (PHPStan + ESLint)",
+    "description": "**Date** : 2025-01-13"
   },
   {
     "path": "10-BestPractices/CODE_DOCUMENTATION.md",
@@ -83,6 +108,11 @@
     "path": "10-BestPractices/TESTING_PRACTICES.md",
     "title": "Tests — Bonnes pratiques",
     "description": "- Mettre en place des tests unitaires et d’intégration (backend, frontend)."
+  },
+  {
+    "path": "100- Done/AUDIT_PAGES_SECTIONS_2025_01_13.md",
+    "title": "✅ Audit DRY/Sécurité Pages/Sections — Terminé (2025-01-13)",
+    "description": "**Durée** : ~6h (cartographie + analyse + recommandations + plan tests)"
   },
   {
     "path": "100- Done/AUTHENTICATION_ANALYSIS_SYNTHESIS.md",
@@ -165,9 +195,24 @@
     "description": "**Date de mise à jour** : 2025-01-27"
   },
   {
+    "path": "100- Done/SECTION_REFACTORING_REPORT.md",
+    "title": "Rapport de refactoring - Sections (Modals & Forms)",
+    "description": "**Date** : 13 Décembre 2024"
+  },
+  {
+    "path": "100- Done/SESSION_OPTIMISATION_COMPLETE_REPORT.md",
+    "title": "Rapport de Session d'Optimisation Complète - Krosmoz-JDR",
+    "description": "**Date** : 13 Décembre 2024"
+  },
+  {
     "path": "100- Done/TESTS_AUTHENTIFICATION.md",
     "title": "Tests d'authentification - Documentation",
     "description": "Cette documentation décrit les tests d'authentification mis en place pour le projet Krosmoz-JDR. Les tests couvrent les fonctionnalités principales d'authentification : inscription, connexion, déconnexion, validation des formulaires et middlewares."
+  },
+  {
+    "path": "100- Done/TESTS_IMPLEMENTATION_REPORT.md",
+    "title": "Rapport d'implémentation des tests - Pages/Sections",
+    "description": "**Date** : 13 Décembre 2024"
   },
   {
     "path": "100- Done/VALIDATION_REFACTORING.md",
@@ -483,6 +528,11 @@
     "path": "30-UI/README.md",
     "title": "UI & Atomic Design — KrosmozJDR",
     "description": "- **[INPUT SYSTEM/](./INPUT%20SYSTEM/)** — Système d'input complet et organisé"
+  },
+  {
+    "path": "30-UI/TEMPLATE_REGISTRY_GUIDE.md",
+    "title": "Guide du Template Registry",
+    "description": "Le **Template Registry** est un système centralisé de gestion des templates de sections pour Krosmoz-JDR. Il fournit :"
   },
   {
     "path": "30-UI/WYSIWYG_EDITORS_REVIEW.md",
