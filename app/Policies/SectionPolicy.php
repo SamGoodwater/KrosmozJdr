@@ -18,11 +18,8 @@ class SectionPolicy
     /**
      * Determine whether the user can view any models.
      */
-    public function viewAny(User $user): bool
+    public function viewAny(?User $user): bool
     {
-        if (in_array($user->role, [User::ROLE_ADMIN, User::ROLE_SUPER_ADMIN, 4, 5, 'admin', 'super_admin'])) {
-            return true;
-        }
         return $user !== null;
     }
 
@@ -36,7 +33,7 @@ class SectionPolicy
     public function view(?User $user, Section $section): bool
     {
         // Les admins peuvent toujours voir
-        if ($user && in_array($user->role, [User::ROLE_ADMIN, User::ROLE_SUPER_ADMIN, 4, 5, 'admin', 'super_admin'])) {
+        if ($user && $user->isAdmin()) {
             return true;
         }
         
@@ -47,16 +44,15 @@ class SectionPolicy
     /**
      * Determine whether the user can create models.
      */
-    public function create(User $user): bool
+    public function create(User $user, ?\App\Models\Page $page = null): bool
     {
-        $pageId = request('page_id');
-        if ($pageId) {
-            $page = \App\Models\Page::find($pageId);
-            if ($page && $user->can('update', $page)) {
-                return true;
-            }
+        // Par défaut, la création d'une section nécessite un contexte de page.
+        // (On autorise explicitement via `authorize('create', [Section::class, $page])`.)
+        if (!$page) {
+            return false;
         }
-        return in_array($user->role, [User::ROLE_GAME_MASTER, User::ROLE_ADMIN, User::ROLE_SUPER_ADMIN, 3, 4, 5, 'game_master', 'admin', 'super_admin']);
+
+        return $user->can('update', $page);
     }
 
     /**
@@ -89,6 +85,6 @@ class SectionPolicy
      */
     public function forceDelete(User $user, Section $section): bool
     {
-        return in_array($user->role, [User::ROLE_ADMIN, User::ROLE_SUPER_ADMIN, 4, 5, 'admin', 'super_admin']);
+        return $user->isAdmin();
     }
 }

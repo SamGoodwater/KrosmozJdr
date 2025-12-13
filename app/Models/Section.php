@@ -7,6 +7,8 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use App\Models\User;
 use App\Models\Page;
 use App\Models\File;
@@ -28,12 +30,12 @@ use App\Enums\SectionType;
  * @property string|null $title
  * @property string|null $slug
  * @property int $order
- * @property string $template
+ * @property \App\Enums\SectionType $template
  * @property array<array-key, mixed>|null $settings
  * @property array<array-key, mixed>|null $data
- * @property string $is_visible
- * @property string $can_edit_role
- * @property string $state
+ * @property \App\Enums\Visibility $is_visible
+ * @property \App\Enums\Visibility $can_edit_role
+ * @property \App\Enums\PageState $state
  * @property int|null $created_by
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
@@ -69,7 +71,7 @@ use App\Enums\SectionType;
  */
 class Section extends Model
 {
-    /** @use HasFactory<\\Database\\Factories\\SectionFactory> */
+    /** @use HasFactory<\Database\Factories\SectionFactory> */
     use HasFactory, SoftDeletes;
 
     /**
@@ -120,7 +122,7 @@ class Section extends Model
     /**
      * Get the user that created the section.
      */
-    public function createdBy()
+    public function createdBy(): BelongsTo
     {
         return $this->belongsTo(User::class, 'created_by');
     }
@@ -128,7 +130,7 @@ class Section extends Model
     /**
      * Get the page that owns the section.
      */
-    public function page()
+    public function page(): BelongsTo
     {
         return $this->belongsTo(Page::class, 'page_id');
     }
@@ -136,7 +138,7 @@ class Section extends Model
     /**
      * Les utilisateurs associés à cette section.
      */
-    public function users()
+    public function users(): BelongsToMany
     {
         return $this->belongsToMany(User::class, 'section_user');
     }
@@ -144,7 +146,7 @@ class Section extends Model
     /**
      * Les fichiers liés à la section, triés par ordre.
      */
-    public function files()
+    public function files(): BelongsToMany
     {
         return $this->belongsToMany(File::class, 'file_section')
             ->withPivot('order')
@@ -158,6 +160,7 @@ class Section extends Model
     /**
      * Scope pour filtrer les sections publiées.
      */
+    /** @param Builder<Section> $query @return Builder<Section> */
     public function scopePublished(Builder $query): Builder
     {
         return $query->where('state', PageState::PUBLISHED->value);
@@ -166,25 +169,29 @@ class Section extends Model
     /**
      * Scope pour filtrer les sections visibles pour un utilisateur.
      */
+    /** @param Builder<Section> $query @return Builder<Section> */
     public function scopeVisibleFor(Builder $query, ?User $user = null): Builder
     {
-        return $query->where(function ($q) use ($user) {
-            // Toujours visible pour les invités
-            $q->where('is_visible', Visibility::GUEST->value);
+        $allowedVisibilities = [Visibility::GUEST->value];
+
+        if ($user) {
+            $allowedVisibilities[] = Visibility::USER->value;
+
+            if ($user->isGameMaster()) {
+                $allowedVisibilities[] = Visibility::GAME_MASTER->value;
+            }
+
+            if ($user->isAdmin()) {
+                $allowedVisibilities[] = Visibility::ADMIN->value;
+            }
+        }
+
+        $allowedVisibilities = array_values(array_unique($allowedVisibilities));
+
+        return $query->where(function ($q) use ($user, $allowedVisibilities) {
+            $q->whereIn('is_visible', $allowedVisibilities);
 
             if ($user) {
-                // Visible pour les utilisateurs connectés
-                $q->orWhere('is_visible', Visibility::USER->value);
-
-                // Visible selon le rôle
-                if (in_array($user->role, [User::ROLE_GAME_MASTER, User::ROLE_ADMIN, User::ROLE_SUPER_ADMIN, 3, 4, 5, 'game_master', 'admin', 'super_admin'])) {
-                    $q->orWhere('is_visible', Visibility::GAME_MASTER->value);
-                }
-
-                if (in_array($user->role, [User::ROLE_ADMIN, User::ROLE_SUPER_ADMIN, 4, 5, 'admin', 'super_admin'])) {
-                    $q->orWhere('is_visible', Visibility::ADMIN->value);
-                }
-
                 // Visible si l'utilisateur est associé à la section
                 $q->orWhereHas('users', function ($userQuery) use ($user) {
                     $userQuery->where('users.id', $user->id);
@@ -196,6 +203,7 @@ class Section extends Model
     /**
      * Scope pour trier par ordre.
      */
+    /** @param Builder<Section> $query @return Builder<Section> */
     public function scopeOrdered(Builder $query): Builder
     {
         return $query->orderBy('order');
@@ -204,6 +212,7 @@ class Section extends Model
     /**
      * Scope pour récupérer les sections affichables (publiées, visibles, ordonnées).
      */
+    /** @param Builder<Section> $query @return Builder<Section> */
     public function scopeDisplayable(Builder $query, ?User $user = null): Builder
     {
         return $query->published()
@@ -228,15 +237,7 @@ class Section extends Model
      */
     public function isVisibleFor(?User $user = null): bool
     {
-        // is_visible est déjà un enum Visibility grâce au cast, donc on peut l'utiliser directement
-        $visibility = $this->is_visible instanceof Visibility 
-            ? $this->is_visible 
-            : Visibility::tryFrom($this->is_visible);
-        if (!$visibility) {
-            return false;
-        }
-
-        return $visibility->isAccessibleBy($user);
+        return $this->is_visible->isAccessibleBy($user);
     }
 
     /**
@@ -245,7 +246,7 @@ class Section extends Model
     public function canBeViewedBy(?User $user = null): bool
     {
         // Les admins peuvent toujours voir
-        if ($user && in_array($user->role, ['admin', 'super_admin'])) {
+        if ($user && $user->isAdmin()) {
             return true;
         }
 
@@ -290,7 +291,7 @@ class Section extends Model
     public function canBeEditedBy(?User $user = null): bool
     {
         // Les super_admin peuvent toujours modifier
-        if ($user && in_array($user->role, [User::ROLE_SUPER_ADMIN, 5, 'super_admin'])) {
+        if ($user && $user->isSuperAdmin()) {
             return true;
         }
 
@@ -336,12 +337,7 @@ class Section extends Model
         }
 
         // Vérifier selon can_edit_role de la section
-        $sectionEditRole = $this->can_edit_role instanceof Visibility 
-            ? $this->can_edit_role 
-            : Visibility::tryFrom($this->can_edit_role ?? 'admin');
-        if (!$sectionEditRole) {
-            return false;
-        }
+        $sectionEditRole = $this->can_edit_role;
 
         // L'utilisateur doit avoir les droits sur la section
         if (!$sectionEditRole->isAccessibleBy($user)) {

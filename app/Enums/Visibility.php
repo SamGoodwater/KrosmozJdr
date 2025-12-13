@@ -49,24 +49,9 @@ enum Visibility: string
         }
 
         return match($this) {
-            self::GUEST => true,
             self::USER => true, // Tous les utilisateurs connectés
-            self::GAME_MASTER => in_array($user->role, [
-                \App\Models\User::ROLE_GAME_MASTER, 
-                \App\Models\User::ROLE_ADMIN, 
-                \App\Models\User::ROLE_SUPER_ADMIN,
-                3, 4, 5,
-                'game_master', 
-                'admin', 
-                'super_admin'
-            ]),
-            self::ADMIN => in_array($user->role, [
-                \App\Models\User::ROLE_ADMIN, 
-                \App\Models\User::ROLE_SUPER_ADMIN,
-                4, 5,
-                'admin', 
-                'super_admin'
-            ]),
+            self::GAME_MASTER => $user->isGameMaster(),
+            self::ADMIN => $user->isAdmin(),
         };
     }
 

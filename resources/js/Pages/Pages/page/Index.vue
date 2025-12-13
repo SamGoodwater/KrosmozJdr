@@ -68,10 +68,8 @@ const hasChanges = computed(() => {
 
 // Vérifier si l'utilisateur peut créer des pages (admin ou super_admin selon PagePolicy)
 const canCreate = computed(() => {
-    const user = page.props.auth?.user;
-    if (!user) return false;
-    // Les admins et super_admin peuvent créer des pages
-    return user.role === 4 || user.role === 5; // 4 = admin, 5 = super_admin
+    // Source of truth : backend (Inertia props)
+    return page.props.can?.create ?? false;
 });
 
 const handleCreate = () => {
@@ -363,17 +361,10 @@ function saveOrder() {
                 <div v-if="pages.links && pages.links.length > 3" class="flex justify-center mt-4">
                     <div class="join">
                         <template v-for="(link, index) in pages.links" :key="index">
-                            <button
-                                v-if="link.url"
-                                :class="['join-item btn', link.active ? 'btn-active' : 'btn-ghost']"
-                                v-html="link.label"
-                                @click="router.visit(link.url)"
-                            ></button>
-                            <span
-                                v-else
-                                :class="['join-item btn btn-disabled']"
-                                v-html="link.label"
-                            ></span>
+                            <!-- eslint-disable-next-line vue/no-v-html -- pagination Inertia/Laravel (label HTML contrôlé) -->
+                            <button v-if="link.url" :class="['join-item btn', link.active ? 'btn-active' : 'btn-ghost']" v-html="link.label" @click="router.visit(link.url)"></button>
+                            <!-- eslint-disable-next-line vue/no-v-html -- pagination Inertia/Laravel (label HTML contrôlé) -->
+                            <span v-else :class="['join-item btn btn-disabled']" v-html="link.label"></span>
                         </template>
                     </div>
                 </div>

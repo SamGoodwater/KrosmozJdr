@@ -18,12 +18,14 @@
         "laravel/framework": "^12.00",
         "laravel/sanctum": "^4.0",
         "laravel/tinker": "^2.9",
+        "mews/purifier": "^3.4",
         "tightenco/ziggy": "^2.0"
     },
     "require-dev": {
         "barryvdh/laravel-debugbar": "^3.14",
         "barryvdh/laravel-ide-helper": "^3.5",
         "fakerphp/faker": "^1.23",
+        "larastan/larastan": "^3.0",
         "laravel-lang/lang": "*",
         "laravel/breeze": "^2.3",
         "laravel/pail": "^1.1",
@@ -68,7 +70,8 @@
             "Composer\\Config::disableProcessTimeout",
             "npx concurrently -c \"#93c5fd,#c4b5fd,#fb7185\" \"php artisan serve --host=0.0.0.0\" \"php artisan queue:listen --tries=1\" \"pnpm run dev\" --names=server,queue,vite"
         ],
-        "scss": "sass --watch resources/scss:resources/css"
+        "scss": "sass --watch resources/scss:resources/css",
+        "phpstan": "php -d memory_limit=1G ./vendor/bin/phpstan analyse --configuration=phpstan.neon"
     },
     "extra": {
         "laravel": {

@@ -11,6 +11,7 @@ use App\Enums\Visibility;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Mews\Purifier\Facades\Purifier;
 
 /**
  * Service pour la gestion des sections.
@@ -29,9 +30,33 @@ use Illuminate\Support\Facades\Log;
 class SectionService
 {
     /**
+     * Nettoie les champs HTML potentiellement dangereux selon le template.
+     *
+     * @param string $template Template (ex: 'text')
+     * @param array<string, mixed> $data Données de section (tableau complet contenant potentiellement 'data')
+     * @return array<string, mixed> Données nettoyées
+     */
+    private static function sanitizeSectionPayload(string $template, array $data): array
+    {
+        if (!isset($data['data']) || !is_array($data['data'])) {
+            return $data;
+        }
+
+        // Sections texte : content = HTML issu d'un éditeur riche (TipTap)
+        if ($template === SectionType::TEXT->value) {
+            $content = $data['data']['content'] ?? null;
+            if (is_string($content) && $content !== '') {
+                $data['data']['content'] = Purifier::clean($content, 'section_text');
+            }
+        }
+
+        return $data;
+    }
+
+    /**
      * Crée une nouvelle section avec des valeurs par défaut.
      * 
-     * @param array $data Données de la section
+     * @param array<string, mixed> $data Données de la section
      * @param User $user Utilisateur créateur
      * @return Section Section créée
      * @throws \Exception Si la création échoue
@@ -51,6 +76,9 @@ class SectionService
             
             $data['settings'] = array_merge($defaults['settings'], $data['settings'] ?? []);
             $data['data'] = array_merge($defaults['data'], $data['data'] ?? []);
+
+            // Sanitization (anti-XSS) sur les champs HTML
+            $data = self::sanitizeSectionPayload($template, $data);
             
             // Valeurs par défaut pour les autres champs
             $data['created_by'] = $user->id;
@@ -82,7 +110,7 @@ class SectionService
      * - Les autres champs sont remplacés directement
      * 
      * @param Section $section Section à mettre à jour
-     * @param array $data Données à mettre à jour (peut contenir settings, data, title, etc.)
+     * @param array<string, mixed> $data Données à mettre à jour (peut contenir settings, data, title, etc.)
      * @param User $user Utilisateur effectuant la mise à jour
      * @return Section Section mise à jour avec relations chargées
      * @throws \Exception Si la mise à jour échoue (transaction rollback)
@@ -105,6 +133,12 @@ class SectionService
             }
             if (isset($data['data'])) {
                 $data['data'] = array_merge($section->data ?? [], $data['data']);
+            }
+
+            // Sanitization (anti-XSS) : utiliser le template effectif (nouveau si fourni, sinon existant)
+            $effectiveTemplate = $data['template'] ?? ($section->template instanceof SectionType ? $section->template->value : (string) $section->template);
+            if ($effectiveTemplate) {
+                $data = self::sanitizeSectionPayload((string) $effectiveTemplate, $data);
             }
 
             $section->update($data);
@@ -197,7 +231,7 @@ class SectionService
      * 
      * @param Page $page Page concernée
      * @param User|null $user Utilisateur (null pour invité)
-     * @return Collection<Section> Collection de sections affichables
+     * @return \Illuminate\Database\Eloquent\Collection<int, Section> Collection de sections affichables
      */
     public static function getDisplayableSections(Page $page, ?User $user = null): Collection
     {
@@ -218,7 +252,7 @@ class SectionService
      * 
      * @param Page $page Page concernée
      * @param User|null $user Utilisateur (null pour invité)
-     * @return Collection<Section> Collection de sections (toutes ou affichables selon permissions)
+     * @return \Illuminate\Database\Eloquent\Collection<int, Section> Collection de sections (toutes ou affichables selon permissions)
      * 
      * @example
      * // Pour un éditeur : toutes les sections

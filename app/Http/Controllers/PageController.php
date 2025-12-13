@@ -7,6 +7,7 @@ use App\Http\Requests\StorePageRequest;
 use App\Http\Requests\UpdatePageRequest;
 use App\Services\NotificationService;
 use App\Services\PageService;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 use App\Http\Resources\PageResource;
@@ -24,7 +25,7 @@ class PageController extends Controller
      * Affiche la liste paginée des pages.
      * @return \Inertia\Response
      */
-    public function index()
+    public function index(Request $request): \Inertia\Response
     {
         $this->authorize('viewAny', \App\Models\Page::class);
         $pages = \App\Models\Page::with(['sections', 'users', 'parent', 'children', 'campaigns', 'scenarios', 'createdBy'])->paginate(20);
@@ -37,13 +38,16 @@ class PageController extends Controller
         return Inertia::render('Pages/page/Index', [
             'pages' => PageResource::collection($pages),
             'allPages' => $allPages,
+            'can' => [
+                'create' => $request->user()?->can('create', \App\Models\Page::class) ?? false,
+            ],
         ]);
     }
 
     /**
      * Show the form for creating a new resource.
      */
-    public function create()
+    public function create(): \Inertia\Response
     {
         $this->authorize('create', \App\Models\Page::class);
         
@@ -60,7 +64,7 @@ class PageController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(\App\Http\Requests\StorePageRequest $request)
+    public function store(\App\Http\Requests\StorePageRequest $request): \Illuminate\Http\RedirectResponse
     {
         $this->authorize('create', \App\Models\Page::class);
         $data = $request->validated();
@@ -69,7 +73,8 @@ class PageController extends Controller
         $page->load(['sections', 'users', 'parent', 'children', 'campaigns', 'scenarios', 'createdBy']);
         \App\Services\NotificationService::notifyEntityCreated($page, $request->user());
         PageService::clearMenuCache();
-        return redirect()->route('pages.show', $page)->with('success', 'Page créée avec succès.');
+        // Route `pages.show` utilise `{page:slug}` : on redirige explicitement avec le slug.
+        return redirect()->route('pages.show', $page->slug)->with('success', 'Page créée avec succès.');
     }
 
     /**
@@ -88,13 +93,12 @@ class PageController extends Controller
      * @param \App\Models\Page $page Page à afficher (résolue par route model binding via slug)
      * @return \Inertia\Response Vue Inertia avec la page et ses sections
      */
-    public function show(\App\Models\Page $page)
+    public function show(\App\Models\Page $page): \Inertia\Response
     {
-        // Vérifier les permissions (autoriser les invités si la page est visible pour eux)
+        // Autoriser les invités si la page est visible pour eux (policy accepte ?User)
+        $this->authorize('view', $page);
+
         $user = auth()->user();
-        if (!Gate::forUser($user)->allows('view', $page)) {
-            abort(403);
-        }
         
         // Charger les sections selon l'utilisateur
         // Si l'utilisateur peut modifier la page, inclure toutes les sections (y compris les drafts)
@@ -143,7 +147,7 @@ class PageController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(\App\Models\Page $page)
+    public function edit(\App\Models\Page $page): \Inertia\Response
     {
         $this->authorize('update', $page);
         $page->load(['sections', 'users', 'parent', 'children', 'campaigns', 'scenarios', 'createdBy']);
@@ -163,7 +167,7 @@ class PageController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(\App\Http\Requests\UpdatePageRequest $request, \App\Models\Page $page)
+    public function update(\App\Http\Requests\UpdatePageRequest $request, \App\Models\Page $page): \Illuminate\Http\RedirectResponse
     {
         $this->authorize('update', $page);
         // Créer une copie des attributs avant la mise à jour pour les notifications
@@ -183,13 +187,14 @@ class PageController extends Controller
             \Log::warning('Erreur lors de l\'envoi des notifications pour la page ' . $page->id . ': ' . $e->getMessage());
         }
         PageService::clearMenuCache();
-        return redirect()->route('pages.show', $page)->with('success', 'Page mise à jour.');
+        // Route `pages.show` utilise `{page:slug}` : on redirige explicitement avec le slug.
+        return redirect()->route('pages.show', $page->slug)->with('success', 'Page mise à jour.');
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function delete(\App\Models\Page $page)
+    public function delete(\App\Models\Page $page): \Illuminate\Http\RedirectResponse
     {
         $this->authorize('delete', $page);
         $user = request()->user();
@@ -202,7 +207,7 @@ class PageController extends Controller
     /**
      * Associe un utilisateur à la page.
      */
-    public function attachUser(\Illuminate\Http\Request $request, Page $page)
+    public function attachUser(\Illuminate\Http\Request $request, Page $page): \Illuminate\Http\JsonResponse
     {
         $this->authorize('update', $page);
         $request->validate(['user_id' => 'required|exists:users,id']);
@@ -213,7 +218,7 @@ class PageController extends Controller
     /**
      * Dissocie un utilisateur de la page.
      */
-    public function detachUser(\Illuminate\Http\Request $request, Page $page)
+    public function detachUser(\Illuminate\Http\Request $request, Page $page): \Illuminate\Http\JsonResponse
     {
         $this->authorize('update', $page);
         $request->validate(['user_id' => 'required|exists:users,id']);
@@ -224,7 +229,7 @@ class PageController extends Controller
     /**
      * Synchronise la liste des utilisateurs associés à la page.
      */
-    public function syncUsers(\Illuminate\Http\Request $request, Page $page)
+    public function syncUsers(\Illuminate\Http\Request $request, Page $page): \Illuminate\Http\JsonResponse
     {
         $this->authorize('update', $page);
         $request->validate(['user_ids' => 'array', 'user_ids.*' => 'exists:users,id']);
@@ -235,13 +240,13 @@ class PageController extends Controller
     /**
      * Liste les utilisateurs associés à la page.
      */
-    public function users(Page $page)
+    public function users(Page $page): \Illuminate\Http\JsonResponse
     {
         $this->authorize('view', $page);
         return response()->json($page->users);
     }
 
-    public function restore(int $page)
+    public function restore(int $page): \Illuminate\Http\RedirectResponse
     {
         $model = \App\Models\Page::withTrashed()->findOrFail($page);
         $this->authorize('restore', $model);
@@ -251,7 +256,7 @@ class PageController extends Controller
         return redirect()->route('pages.index')->with('success', 'Page restaurée.');
     }
 
-    public function forceDelete(\App\Models\Page $page)
+    public function forceDelete(\App\Models\Page $page): \Illuminate\Http\RedirectResponse
     {
         $this->authorize('forceDelete', $page);
         $page->forceDelete();
@@ -265,7 +270,7 @@ class PageController extends Controller
      * 
      * @return \Illuminate\Http\JsonResponse
      */
-    public function menu()
+    public function menu(): \Illuminate\Http\JsonResponse
     {
         $user = auth()->user();
         $pages = PageService::getMenuPages($user);
@@ -300,7 +305,7 @@ class PageController extends Controller
      * @return \Illuminate\Http\JsonResponse Réponse JSON avec success: true
      * @throws \Illuminate\Auth\Access\AuthorizationException Si l'utilisateur n'a pas les droits
      */
-    public function reorder(\Illuminate\Http\Request $request)
+    public function reorder(\Illuminate\Http\Request $request): \Illuminate\Http\JsonResponse
     {
         $this->authorize('viewAny', \App\Models\Page::class);
 
@@ -310,10 +315,15 @@ class PageController extends Controller
             'pages.*.menu_order' => ['required', 'integer', 'min:0'],
         ]);
 
-        // Récupérer toutes les pages en une seule requête pour optimiser
-        $pages = Page::whereIn('id', collect($data['pages'])->pluck('id'))->get();
+        /** @var array<int, array{id:int, menu_order:int}> $items */
+        $items = $data['pages'];
 
-        foreach ($data['pages'] as $item) {
+        $pageIds = array_map(static fn (array $item): int => (int) $item['id'], $items);
+
+        // Récupérer toutes les pages en une seule requête pour optimiser
+        $pages = Page::whereIn('id', $pageIds)->get();
+
+        foreach ($items as $item) {
             $page = $pages->firstWhere('id', $item['id']);
             if (!$page) {
                 continue;

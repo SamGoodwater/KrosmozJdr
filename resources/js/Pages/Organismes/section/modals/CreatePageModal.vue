@@ -20,10 +20,11 @@ import SelectField from '@/Pages/Molecules/data-input/SelectField.vue';
 import ToggleField from '@/Pages/Molecules/data-input/ToggleField.vue';
 import Btn from '@/Pages/Atoms/action/Btn.vue';
 import Alert from '@/Pages/Atoms/feedback/Alert.vue';
-import { PageState, getPageStateOptions } from '@/Utils/enums/PageState';
-import { Visibility, getVisibilityOptions } from '@/Utils/enums/Visibility';
+import { PageState } from '@/Utils/enums/PageState';
+import { Visibility } from '@/Utils/enums/Visibility';
 import { router } from '@inertiajs/vue3';
 import { TransformService } from '@/Utils/Services';
+import { usePageFormOptions } from '@/Composables/pages/usePageFormOptions';
 
 const props = defineProps({
     open: {
@@ -39,18 +40,7 @@ const props = defineProps({
 const emit = defineEmits(['close']);
 
 // Options pour les selects
-const stateOptions = computed(() => getPageStateOptions());
-const visibilityOptions = computed(() => getVisibilityOptions());
-
-const parentPageOptions = computed(() => {
-    return [
-        { value: null, label: 'Aucune (page racine)' },
-        ...props.pages.map(page => ({
-            value: page.id,
-            label: page.title
-        }))
-    ];
-});
+const { stateOptions, visibilityOptions, parentPageOptions } = usePageFormOptions(() => props.pages);
 
 // Formulaire
 const form = useForm({

@@ -58,7 +58,8 @@ const canUpdate = computed(() => {
 });
 
 const isAdmin = computed(() => {
-    return page.props.auth?.user?.role >= 4;
+    // Source of truth: backend (UserLightResource)
+    return page.props.auth?.user?.is_admin ?? false;
 });
 
 const getEntityIcon = (type) => {

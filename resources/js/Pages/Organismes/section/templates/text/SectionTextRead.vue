@@ -13,6 +13,7 @@
  */
 import { computed } from 'vue';
 import { SectionStyleService } from '@/Utils/Services';
+import { sanitizeHtml } from '@/Utils/security/sanitizeHtml';
 
 const props = defineProps({
   section: {
@@ -33,7 +34,7 @@ const props = defineProps({
  * Contenu HTML
  */
 const content = computed(() => {
-  return props.data?.content || '';
+  return sanitizeHtml(props.data?.content || '');
 });
 
 /**
@@ -46,11 +47,8 @@ const containerClasses = computed(() => {
 
 <template>
   <div class="section-text-content" :class="containerClasses">
-    <div 
-      v-if="content"
-      class="prose prose-invert max-w-none"
-      v-html="content"
-    />
+    <!-- eslint-disable-next-line vue/no-v-html -- contenu sanitizé (DOMPurify) via `sanitizeHtml()` -->
+    <div v-if="content" class="prose prose-invert max-w-none" v-html="content" />
     <p v-else class="text-base-content/50 italic">
       Aucun contenu disponible.
     </p>

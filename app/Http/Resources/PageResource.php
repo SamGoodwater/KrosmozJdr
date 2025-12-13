@@ -13,6 +13,7 @@ use Illuminate\Http\Resources\Json\JsonResource;
  */
 class PageResource extends JsonResource
 {
+    /** @mixin \App\Models\Page */
     /**
      * Transform the resource into an array.
      *
@@ -21,26 +22,28 @@ class PageResource extends JsonResource
     public function toArray(Request $request): array
     {
         $user = $request->user();
+        /** @var \App\Models\Page $page */
+        $page = $this->resource;
         return [
-            'id' => $this->id,
-            'title' => $this->title,
-            'slug' => $this->slug,
-            'is_visible' => $this->is_visible instanceof \App\Enums\Visibility ? $this->is_visible->value : $this->is_visible,
-            'can_edit_role' => $this->can_edit_role instanceof \App\Enums\Visibility ? $this->can_edit_role->value : $this->can_edit_role,
-            'in_menu' => $this->in_menu,
-            'state' => $this->state instanceof \App\Enums\PageState ? $this->state->value : $this->state,
-            'parent_id' => $this->parent_id,
-            'menu_order' => $this->menu_order,
-            'created_by' => $this->created_by,
-            'created_at' => $this->created_at?->toISOString(),
-            'updated_at' => $this->updated_at?->toISOString(),
+            'id' => $page->id,
+            'title' => $page->title,
+            'slug' => $page->slug,
+            'is_visible' => $page->is_visible instanceof \App\Enums\Visibility ? $page->is_visible->value : $page->is_visible,
+            'can_edit_role' => $page->can_edit_role instanceof \App\Enums\Visibility ? $page->can_edit_role->value : $page->can_edit_role,
+            'in_menu' => $page->in_menu,
+            'state' => $page->state instanceof \App\Enums\PageState ? $page->state->value : $page->state,
+            'parent_id' => $page->parent_id,
+            'menu_order' => $page->menu_order,
+            'created_by' => $page->created_by,
+            'created_at' => $page->created_at?->toISOString(),
+            'updated_at' => $page->updated_at?->toISOString(),
 
             // Relations (chargées uniquement si incluses)
             'parent' => $this->whenLoaded('parent'),
             'children' => $this->whenLoaded('children'),
             'users' => $this->whenLoaded('users'),
-            'sections' => $this->when($this->relationLoaded('sections') || $this->sections, function () use ($request) {
-                return $this->sections->map(function ($section) use ($request) {
+            'sections' => $this->when($page->relationLoaded('sections') || $page->sections, function () use ($request, $page) {
+                return $page->sections->map(function ($section) use ($request) {
                     return (new SectionResource($section))->toArray($request);
                 });
             }),
@@ -50,10 +53,10 @@ class PageResource extends JsonResource
 
             // Droits d'accès pour l'utilisateur courant
             'can' => [
-                'update' => $user ? $user->can('update', $this->resource) : false,
-                'delete' => $user ? $user->can('delete', $this->resource) : false,
-                'forceDelete' => $user ? $user->can('forceDelete', $this->resource) : false,
-                'restore' => $user ? $user->can('restore', $this->resource) : false,
+                'update' => $user ? $user->can('update', $page) : false,
+                'delete' => $user ? $user->can('delete', $page) : false,
+                'forceDelete' => $user ? $user->can('forceDelete', $page) : false,
+                'restore' => $user ? $user->can('restore', $page) : false,
             ],
         ];
     }

@@ -29,10 +29,8 @@ Route::prefix('pages')->name('pages.')->group(function () {
         Route::delete('/{page}', [PageController::class, 'delete'])->name('delete');
         Route::post('/{page}/restore', [PageController::class, 'restore'])->name('restore');
 
-        // Suppression (admin, super_admin)
-        Route::middleware('role:admin')->group(function () {
-            Route::delete('/{page}/force', [PageController::class, 'forceDelete'])->name('forceDelete');
-        });
+        // Suppression définitive : protégée par la policy (forceDelete)
+        Route::delete('/{page}/force', [PageController::class, 'forceDelete'])->name('forceDelete');
     });
 });
 
@@ -58,10 +56,8 @@ Route::prefix('sections')->name('sections.')->middleware('auth')->group(function
     Route::delete('/{section}', [SectionController::class, 'delete'])->name('delete');
     Route::post('/{section}/restore', [SectionController::class, 'restore'])->name('restore');
 
-    // Suppression (admin, super_admin)
-    Route::middleware('role:admin')->group(function () {
-        Route::delete('/{section}/force', [SectionController::class, 'forceDelete'])->name('forceDelete');
-    });
+    // Suppression définitive : protégée par la policy (forceDelete)
+    Route::delete('/{section}/force', [SectionController::class, 'forceDelete'])->name('forceDelete');
 
     // Fichiers liés à une section (toujours auth, policy gère le droit)
     Route::post('/{section}/files', [SectionController::class, 'storeFile'])->name('files.store');

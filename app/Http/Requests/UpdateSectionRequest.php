@@ -43,8 +43,8 @@ class UpdateSectionRequest extends FormRequest
         $rules = [
             'page_id' => ['sometimes', 'exists:pages,id'],
             'title' => ['sometimes', 'nullable', 'string', 'max:255'],
-            'slug' => ['sometimes', 'nullable', 'string', 'max:255'],
-            'order' => ['sometimes', 'integer', 'min:0'],
+            'slug' => ['sometimes', 'nullable', 'string', 'max:255', 'regex:/^[a-z0-9]+(?:-[a-z0-9]+)*$/'],
+            'order' => ['sometimes', 'nullable', 'integer', 'min:0'],
             'template' => ['sometimes', Rule::enum(SectionType::class)],
             'settings' => ['sometimes', 'nullable', 'array'],
             'data' => ['sometimes', 'array'],

@@ -1,0 +1,35 @@
+includes:
+  - vendor/larastan/larastan/extension.neon
+
+parameters:
+  level: 6
+
+  # Réduit les faux positifs liés aux PHPDoc historiques (types pas toujours à jour)
+  treatPhpDocTypesAsCertain: false
+
+  paths:
+    # Scope initial : Pages/Sections (audit profond ciblé)
+    - app/Enums/Visibility.php
+    - app/Http/Controllers/PageController.php
+    - app/Http/Controllers/SectionController.php
+    - app/Http/Requests/StorePageRequest.php
+    - app/Http/Requests/UpdatePageRequest.php
+    - app/Http/Requests/StoreSectionRequest.php
+    - app/Http/Requests/UpdateSectionRequest.php
+    - app/Http/Requests/StoreFileRequest.php
+    - app/Http/Resources/PageResource.php
+    - app/Http/Resources/SectionResource.php
+    - app/Http/Resources/UserLightResource.php
+    - app/Models/Page.php
+    - app/Models/Section.php
+    - app/Policies/PagePolicy.php
+    - app/Policies/SectionPolicy.php
+    - app/Services/SectionService.php
+
+  tmpDir: storage/phpstan
+
+  ignoreErrors:
+    # Itération initiale : on tolère la non-annotation complète des generics/iterables.
+    - identifier: missingType.generics
+    - identifier: missingType.iterableValue
+

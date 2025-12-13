@@ -6,6 +6,9 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use App\Models\User;
 use App\Models\Section;
 use App\Models\Entity\Campaign;
@@ -25,9 +28,10 @@ use App\Enums\Visibility;
  * @property int $id
  * @property string $title
  * @property string $slug
- * @property string $is_visible
+ * @property \App\Enums\Visibility $is_visible
  * @property bool $in_menu
- * @property string $state
+ * @property \App\Enums\Visibility $can_edit_role
+ * @property \App\Enums\PageState $state
  * @property int|null $parent_id
  * @property int $menu_order
  * @property int|null $created_by
@@ -115,7 +119,7 @@ class Page extends Model
     /**
      * Get the user that created the page.
      */
-    public function createdBy()
+    public function createdBy(): BelongsTo
     {
         return $this->belongsTo(User::class, 'created_by');
     }
@@ -123,7 +127,7 @@ class Page extends Model
     /**
      * Les sections de cette page.
      */
-    public function sections()
+    public function sections(): HasMany
     {
         return $this->hasMany(Section::class, 'page_id')->orderBy('order');
     }
@@ -131,21 +135,21 @@ class Page extends Model
     /**
      * La page parente.
      */
-    public function parent()
+    public function parent(): BelongsTo
     {
         return $this->belongsTo(Page::class, 'parent_id');
     }
     /**
      * Les pages enfants.
      */
-    public function children()
+    public function children(): HasMany
     {
         return $this->hasMany(Page::class, 'parent_id');
     }
     /**
      * Les campagnes associées à cette page.
      */
-    public function campaigns()
+    public function campaigns(): BelongsToMany
     {
         return $this->belongsToMany(Campaign::class, 'campaign_page');
     }
@@ -153,7 +157,7 @@ class Page extends Model
     /**
      * Les utilisateurs associés à cette page.
      */
-    public function users()
+    public function users(): BelongsToMany
     {
         return $this->belongsToMany(User::class, 'page_user');
     }
@@ -161,7 +165,7 @@ class Page extends Model
     /**
      * Les scénarios associés à cette page.
      */
-    public function scenarios()
+    public function scenarios(): BelongsToMany
     {
         return $this->belongsToMany(Scenario::class, 'scenario_page');
     }
@@ -173,6 +177,7 @@ class Page extends Model
     /**
      * Scope pour filtrer les pages publiées.
      */
+    /** @param Builder<Page> $query @return Builder<Page> */
     public function scopePublished(Builder $query): Builder
     {
         return $query->where('state', PageState::PUBLISHED->value);
@@ -181,6 +186,7 @@ class Page extends Model
     /**
      * Scope pour filtrer les pages dans le menu.
      */
+    /** @param Builder<Page> $query @return Builder<Page> */
     public function scopeInMenu(Builder $query): Builder
     {
         return $query->where('in_menu', true);
@@ -189,25 +195,29 @@ class Page extends Model
     /**
      * Scope pour filtrer les pages visibles pour un utilisateur.
      */
+    /** @param Builder<Page> $query @return Builder<Page> */
     public function scopeVisibleFor(Builder $query, ?User $user = null): Builder
     {
-        return $query->where(function ($q) use ($user) {
-            // Toujours visible pour les invités
-            $q->where('is_visible', Visibility::GUEST->value);
+        $allowedVisibilities = [Visibility::GUEST->value];
+
+        if ($user) {
+            $allowedVisibilities[] = Visibility::USER->value;
+
+            if ($user->isGameMaster()) {
+                $allowedVisibilities[] = Visibility::GAME_MASTER->value;
+            }
+
+            if ($user->isAdmin()) {
+                $allowedVisibilities[] = Visibility::ADMIN->value;
+            }
+        }
+
+        $allowedVisibilities = array_values(array_unique($allowedVisibilities));
+
+        return $query->where(function ($q) use ($user, $allowedVisibilities) {
+            $q->whereIn('is_visible', $allowedVisibilities);
 
             if ($user) {
-                // Visible pour les utilisateurs connectés
-                $q->orWhere('is_visible', Visibility::USER->value);
-
-                // Visible selon le rôle
-                if (in_array($user->role, [User::ROLE_GAME_MASTER, User::ROLE_ADMIN, User::ROLE_SUPER_ADMIN, 3, 4, 5, 'game_master', 'admin', 'super_admin'])) {
-                    $q->orWhere('is_visible', Visibility::GAME_MASTER->value);
-                }
-
-                if (in_array($user->role, [User::ROLE_ADMIN, User::ROLE_SUPER_ADMIN, 4, 5, 'admin', 'super_admin'])) {
-                    $q->orWhere('is_visible', Visibility::ADMIN->value);
-                }
-
                 // Visible si l'utilisateur est associé à la page
                 $q->orWhereHas('users', function ($userQuery) use ($user) {
                     $userQuery->where('users.id', $user->id);
@@ -219,6 +229,7 @@ class Page extends Model
     /**
      * Scope pour trier par ordre de menu.
      */
+    /** @param Builder<Page> $query @return Builder<Page> */
     public function scopeOrdered(Builder $query): Builder
     {
         return $query->orderBy('menu_order');
@@ -227,6 +238,7 @@ class Page extends Model
     /**
      * Scope pour récupérer les pages du menu (publiées, dans le menu, visibles, ordonnées).
      */
+    /** @param Builder<Page> $query @return Builder<Page> */
     public function scopeForMenu(Builder $query, ?User $user = null): Builder
     {
         return $query->published()
@@ -252,15 +264,7 @@ class Page extends Model
      */
     public function isVisibleFor(?User $user = null): bool
     {
-        // is_visible est déjà un enum Visibility grâce au cast, donc on peut l'utiliser directement
-        $visibility = $this->is_visible instanceof Visibility 
-            ? $this->is_visible 
-            : Visibility::tryFrom($this->is_visible);
-        if (!$visibility) {
-            return false;
-        }
-
-        return $visibility->isAccessibleBy($user);
+        return $this->is_visible->isAccessibleBy($user);
     }
 
     /**
@@ -269,7 +273,7 @@ class Page extends Model
     public function canBeViewedBy(?User $user = null): bool
     {
         // Les admins peuvent toujours voir
-        if ($user && in_array($user->role, [User::ROLE_ADMIN, User::ROLE_SUPER_ADMIN, 4, 5, 'admin', 'super_admin'])) {
+        if ($user && $user->isAdmin()) {
             return true;
         }
 
@@ -287,7 +291,7 @@ class Page extends Model
     public function canBeEditedBy(?User $user = null): bool
     {
         // Les super_admin peuvent toujours modifier
-        if ($user && in_array($user->role, [User::ROLE_SUPER_ADMIN, 5, 'super_admin'])) {
+        if ($user && $user->isSuperAdmin()) {
             return true;
         }
 
@@ -313,16 +317,7 @@ class Page extends Model
             return true;
         }
 
-        // Vérifier selon can_edit_role
-        // can_edit_role est déjà un enum Visibility grâce au cast, donc on peut l'utiliser directement
-        $editRole = $this->can_edit_role instanceof Visibility 
-            ? $this->can_edit_role 
-            : Visibility::tryFrom($this->can_edit_role ?? 'admin');
-        if (!$editRole) {
-            return false;
-        }
-
-        return $editRole->isAccessibleBy($user);
+        return $this->can_edit_role->isAccessibleBy($user);
     }
 
     /**

@@ -27,11 +27,10 @@ import Alert from '@/Pages/Atoms/feedback/Alert.vue';
 import Icon from '@/Pages/Atoms/data-display/Icon.vue';
 import Tab from '@/Pages/Molecules/navigation/Tab.vue';
 import TabItem from '@/Pages/Atoms/navigation/TabItem.vue';
-import { getPageStateOptions } from '@/Utils/enums/PageState';
-import { getVisibilityOptions } from '@/Utils/enums/Visibility';
 import { Page } from '@/Models';
 import { useCopyToClipboard } from '@/Composables/utils/useCopyToClipboard';
 import PageSectionEditor from '../PageSectionEditor.vue';
+import { usePageFormOptions } from '@/Composables/pages/usePageFormOptions';
 
 const props = defineProps({
     open: {
@@ -85,8 +84,10 @@ const originalModelData = ref(null);
 const workingModelData = ref(null);
 
 // Options pour les selects
-const stateOptions = computed(() => getPageStateOptions());
-const visibilityOptions = computed(() => getVisibilityOptions());
+const { stateOptions, visibilityOptions, parentPageOptions } = usePageFormOptions(
+    () => props.pages,
+    computed(() => pageModel.value?.id ?? null)
+);
 
 // ============================================
 // COMPUTED POUR FORCER LA RÉACTIVITÉ DES SELECTS
@@ -147,25 +148,6 @@ const formParentId = computed({
             formInstanceVersion.value++;
         }
     }
-});
-
-const parentPageOptions = computed(() => {
-    const currentPageId = pageModel.value?.id;
-    return [
-        { value: null, label: 'Aucune (page racine)' },
-        ...props.pages
-            .filter(p => {
-                const page = new Page(p);
-                return page.id !== currentPageId;
-            })
-            .map(page => {
-                const pageModel = new Page(page);
-                return {
-                    value: pageModel.id,
-                    label: pageModel.title
-                };
-            })
-    ];
 });
 
 // ============================================

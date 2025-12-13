@@ -33,8 +33,8 @@ export function useEntityPermissions() {
 
     /**
      * Vérifie si l'utilisateur peut créer une entité
-     * Par défaut, seuls les admins (role >= 4) peuvent créer des entités
-     * selon BaseEntityPolicy::create()
+     * Par défaut, seuls les admins peuvent créer des entités selon BaseEntityPolicy::create()
+     * Source of truth: backend (UserLightResource + User model helpers)
      * 
      * @param {string} entityType - Type d'entité
      * @returns {boolean}

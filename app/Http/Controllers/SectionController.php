@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Section;
+use App\Models\Page;
 use App\Http\Requests\StoreSectionRequest;
 use App\Http\Requests\UpdateSectionRequest;
 use App\Http\Requests\StoreFileRequest;
@@ -32,7 +33,7 @@ class SectionController extends Controller
      * Affiche la liste paginée des sections.
      * @return \Inertia\Response
      */
-    public function index()
+    public function index(): \Inertia\Response
     {
         $this->authorize('viewAny', \App\Models\Section::class);
         $sections = \App\Models\Section::with(['page', 'users', 'files', 'createdBy'])->paginate(20);
@@ -43,13 +44,11 @@ class SectionController extends Controller
 
     /**
      * Affiche le formulaire de création d'une section.
-     * @return \Inertia\Response
+     * @return \Illuminate\Http\RedirectResponse
      * @deprecated Utiliser le modal CreateSectionModal depuis la page
      */
-    public function create()
+    public function create(): \Illuminate\Http\RedirectResponse
     {
-        $this->authorize('create', \App\Models\Section::class);
-        
         // Rediriger vers la liste des pages
         return redirect()->route('pages.index');
     }
@@ -73,12 +72,15 @@ class SectionController extends Controller
      * @return \Illuminate\Http\RedirectResponse Redirection vers la page parente
      * @throws \Illuminate\Auth\Access\AuthorizationException Si l'utilisateur n'a pas les droits
      */
-    public function store(\App\Http\Requests\StoreSectionRequest $request)
+    public function store(\App\Http\Requests\StoreSectionRequest $request): \Illuminate\Http\RedirectResponse
     {
-        $this->authorize('create', \App\Models\Section::class);
+        $data = $request->validated();
+
+        $page = Page::findOrFail($data['page_id']);
+        $this->authorize('create', [\App\Models\Section::class, $page]);
         
         // Création via le service (gère les valeurs par défaut et la transaction)
-        $section = SectionService::create($request->validated(), $request->user());
+        $section = SectionService::create($data, $request->user());
         
         // Notification de création
         NotificationService::notifyEntityCreated($section, $request->user());
@@ -86,11 +88,7 @@ class SectionController extends Controller
         // Toujours rediriger vers la page parente avec Inertia
         // Inertia gère automatiquement les requêtes AJAX
         $page = $section->page;
-        if ($page) {
-            return redirect()->route('pages.show', $page->slug)->with('success', 'Section créée avec succès.');
-        }
-        
-        return redirect()->route('pages.index')->with('success', 'Section créée avec succès.');
+        return redirect()->route('pages.show', $page->slug)->with('success', 'Section créée avec succès.');
     }
 
     /**
@@ -99,19 +97,12 @@ class SectionController extends Controller
      * @return \Illuminate\Http\RedirectResponse
      * @deprecated Les sections sont affichées dans leur page parente
      */
-    public function show(\App\Models\Section $section)
+    public function show(\App\Models\Section $section): \Illuminate\Http\RedirectResponse
     {
-        // Vérifier les permissions (autoriser les invités si la section est visible pour eux)
-        $user = auth()->user();
-        if (!Gate::forUser($user)->allows('view', $section)) {
-            abort(403);
-        }
+        $this->authorize('view', $section);
         
         $page = $section->page;
-        if ($page) {
-            return redirect()->route('pages.show', $page->slug)->withFragment('section-' . $section->id);
-        }
-        return redirect()->route('pages.index');
+        return redirect()->route('pages.show', $page->slug)->withFragment('section-' . $section->id);
     }
 
     /**
@@ -120,14 +111,11 @@ class SectionController extends Controller
      * @return \Illuminate\Http\RedirectResponse
      * @deprecated Utiliser le modal SectionParamsModal depuis la page
      */
-    public function edit(\App\Models\Section $section)
+    public function edit(\App\Models\Section $section): \Illuminate\Http\RedirectResponse
     {
         $this->authorize('update', $section);
         $page = $section->page;
-        if ($page) {
-            return redirect()->route('pages.show', $page->slug)->withFragment('section-' . $section->id);
-        }
-        return redirect()->route('pages.index');
+        return redirect()->route('pages.show', $page->slug)->withFragment('section-' . $section->id);
     }
 
     /**
@@ -149,7 +137,7 @@ class SectionController extends Controller
      * @return \Illuminate\Http\RedirectResponse Redirection vers la page parente
      * @throws \Illuminate\Auth\Access\AuthorizationException Si l'utilisateur n'a pas les droits
      */
-    public function update(\App\Http\Requests\UpdateSectionRequest $request, \App\Models\Section $section)
+    public function update(\App\Http\Requests\UpdateSectionRequest $request, \App\Models\Section $section): \Illuminate\Http\RedirectResponse
     {
         $this->authorize('update', $section);
         
@@ -174,11 +162,7 @@ class SectionController extends Controller
         
         // Toujours rediriger vers la page parente avec Inertia
         $page = $section->page;
-        if ($page) {
-            return redirect()->route('pages.show', $page->slug)->with('success', 'Section mise à jour.');
-        }
-        
-        return redirect()->route('pages.index')->with('success', 'Section mise à jour.');
+        return redirect()->route('pages.show', $page->slug)->with('success', 'Section mise à jour.');
     }
 
     /**
@@ -186,7 +170,7 @@ class SectionController extends Controller
      * @param Section $section
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function delete(\App\Models\Section $section)
+    public function delete(\App\Models\Section $section): \Illuminate\Http\RedirectResponse
     {
         $this->authorize('delete', $section);
         
@@ -203,10 +187,10 @@ class SectionController extends Controller
      * @param ImageService $imageService
      * @return \Illuminate\Http\JsonResponse
      */
-    public function storeFile(StoreFileRequest $request, Section $section, ImageService $imageService)
+    public function storeFile(StoreFileRequest $request, Section $section, ImageService $imageService): \Illuminate\Http\JsonResponse
     {
         // Autorisation (policy sur la section)
-        Gate::authorize('update', $section);
+        $this->authorize('update', $section);
 
         $uploadedFile = $request->file('file');
         $path = $uploadedFile->store('sections', FileService::DISK_DEFAULT);
@@ -238,10 +222,10 @@ class SectionController extends Controller
      * @param File $file
      * @return \Illuminate\Http\JsonResponse
      */
-    public function deleteFile(Section $section, File $file)
+    public function deleteFile(Section $section, File $file): \Illuminate\Http\JsonResponse
     {
         // Autorisation (policy sur la section)
-        Gate::authorize('update', $section);
+        $this->authorize('update', $section);
 
         // Détacher le fichier de la section
         $section->files()->detach($file->id);
@@ -261,7 +245,7 @@ class SectionController extends Controller
      * @param Section $section
      * @return \Illuminate\Http\JsonResponse
      */
-    public function attachUser(\Illuminate\Http\Request $request, Section $section)
+    public function attachUser(\Illuminate\Http\Request $request, Section $section): \Illuminate\Http\JsonResponse
     {
         $this->authorize('update', $section);
         $request->validate(['user_id' => 'required|exists:users,id']);
@@ -275,7 +259,7 @@ class SectionController extends Controller
      * @param Section $section
      * @return \Illuminate\Http\JsonResponse
      */
-    public function detachUser(\Illuminate\Http\Request $request, Section $section)
+    public function detachUser(\Illuminate\Http\Request $request, Section $section): \Illuminate\Http\JsonResponse
     {
         $this->authorize('update', $section);
         $request->validate(['user_id' => 'required|exists:users,id']);
@@ -289,7 +273,7 @@ class SectionController extends Controller
      * @param Section $section
      * @return \Illuminate\Http\JsonResponse
      */
-    public function syncUsers(\Illuminate\Http\Request $request, Section $section)
+    public function syncUsers(\Illuminate\Http\Request $request, Section $section): \Illuminate\Http\JsonResponse
     {
         $this->authorize('update', $section);
         $request->validate(['user_ids' => 'array', 'user_ids.*' => 'exists:users,id']);
@@ -302,7 +286,7 @@ class SectionController extends Controller
      * @param Section $section
      * @return \Illuminate\Http\JsonResponse
      */
-    public function users(Section $section)
+    public function users(Section $section): \Illuminate\Http\JsonResponse
     {
         $this->authorize('view', $section);
         return response()->json($section->users);
@@ -310,10 +294,10 @@ class SectionController extends Controller
 
     /**
      * Restaure une section supprimée.
-     * @param Section $section
+     * @param int $section ID de la section (soft-deleted)
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function restore(int $section)
+    public function restore(int $section): \Illuminate\Http\RedirectResponse
     {
         $model = \App\Models\Section::withTrashed()->findOrFail($section);
         $this->authorize('restore', $model);
@@ -327,7 +311,7 @@ class SectionController extends Controller
      * @param Section $section
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function forceDelete(\App\Models\Section $section)
+    public function forceDelete(\App\Models\Section $section): \Illuminate\Http\RedirectResponse
     {
         $this->authorize('forceDelete', $section);
         $section->forceDelete();
@@ -359,7 +343,7 @@ class SectionController extends Controller
      * @return \Illuminate\Http\JsonResponse Réponse JSON avec success: true
      * @throws \Illuminate\Auth\Access\AuthorizationException Si l'utilisateur n'a pas les droits
      */
-    public function reorder(Request $request)
+    public function reorder(Request $request): \Illuminate\Http\JsonResponse
     {
         $this->authorize('viewAny', \App\Models\Section::class);
 
@@ -369,8 +353,13 @@ class SectionController extends Controller
             'sections.*.order' => ['required', 'integer', 'min:0'],
         ]);
 
+        /** @var array<int, array{id:int, order:int}> $items */
+        $items = $data['sections'];
+
+        $sectionIds = array_map(static fn (array $item): int => (int) $item['id'], $items);
+
         // Récupérer toutes les sections en une seule requête pour optimiser
-        $sections = Section::whereIn('id', collect($data['sections'])->pluck('id'))->get();
+        $sections = Section::whereIn('id', $sectionIds)->get();
         
         // Vérifier les autorisations pour chaque section individuellement
         foreach ($sections as $section) {
@@ -378,7 +367,7 @@ class SectionController extends Controller
         }
 
         // Réorganisation via le service (gère la transaction)
-        SectionService::reorder($data['sections'], $request->user());
+        SectionService::reorder($items, $request->user());
 
         return response()->json(['success' => true]);
     }

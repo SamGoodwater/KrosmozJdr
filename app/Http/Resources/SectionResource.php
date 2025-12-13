@@ -13,6 +13,7 @@ use Illuminate\Http\Resources\Json\JsonResource;
  */
 class SectionResource extends JsonResource
 {
+    /** @mixin \App\Models\Section */
     /**
      * Transform the resource into an array.
      *
@@ -21,32 +22,34 @@ class SectionResource extends JsonResource
     public function toArray(Request $request): array
     {
         $user = $request->user();
+        /** @var \App\Models\Section $section */
+        $section = $this->resource;
         
         // IMPORTANT : S'assurer que la page est chargée pour que canBeEditedBy() puisse vérifier les droits
         // La méthode canBeEditedBy() de Section vérifie les droits sur la section ET sur la page
-        if (!$this->relationLoaded('page') && $this->page_id) {
+        if (!$section->relationLoaded('page') && $section->page_id) {
             try {
-                $this->load('page');
+                $section->load('page');
             } catch (\Exception $e) {
                 // Si la page ne peut pas être chargée, continuer quand même
             }
         }
         
         return [
-            'id' => $this->id,
-            'page_id' => $this->page_id,
-            'title' => $this->title,
-            'slug' => $this->slug,
-            'order' => $this->order,
-            'template' => $this->template instanceof \App\Enums\SectionType ? $this->template->value : $this->template,
-            'settings' => $this->settings,
-            'data' => $this->data,
-            'is_visible' => $this->is_visible instanceof \App\Enums\Visibility ? $this->is_visible->value : $this->is_visible,
-            'can_edit_role' => $this->can_edit_role instanceof \App\Enums\Visibility ? $this->can_edit_role->value : $this->can_edit_role,
-            'state' => $this->state,
-            'created_by' => $this->created_by,
-            'created_at' => $this->created_at?->toISOString(),
-            'updated_at' => $this->updated_at?->toISOString(),
+            'id' => $section->id,
+            'page_id' => $section->page_id,
+            'title' => $section->title,
+            'slug' => $section->slug,
+            'order' => $section->order,
+            'template' => $section->template instanceof \App\Enums\SectionType ? $section->template->value : $section->template,
+            'settings' => $section->settings,
+            'data' => $section->data,
+            'is_visible' => $section->is_visible instanceof \App\Enums\Visibility ? $section->is_visible->value : $section->is_visible,
+            'can_edit_role' => $section->can_edit_role instanceof \App\Enums\Visibility ? $section->can_edit_role->value : $section->can_edit_role,
+            'state' => $section->state,
+            'created_by' => $section->created_by,
+            'created_at' => $section->created_at?->toISOString(),
+            'updated_at' => $section->updated_at?->toISOString(),
 
             // Relations (chargées uniquement si incluses)
             'page' => $this->whenLoaded('page'),
@@ -58,10 +61,10 @@ class SectionResource extends JsonResource
             // Utilise SectionPolicy::update() qui appelle Section::canBeEditedBy()
             // qui vérifie maintenant les droits sur la section ET sur la page
             'can' => [
-                'update' => $user ? $user->can('update', $this->resource) : false,
-                'delete' => $user ? $user->can('delete', $this->resource) : false,
-                'forceDelete' => $user ? $user->can('forceDelete', $this->resource) : false,
-                'restore' => $user ? $user->can('restore', $this->resource) : false,
+                'update' => $user ? $user->can('update', $section) : false,
+                'delete' => $user ? $user->can('delete', $section) : false,
+                'forceDelete' => $user ? $user->can('forceDelete', $section) : false,
+                'restore' => $user ? $user->can('restore', $section) : false,
             ],
         ];
     }

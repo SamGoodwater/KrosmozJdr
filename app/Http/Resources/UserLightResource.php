@@ -14,7 +14,7 @@ use Illuminate\Http\Resources\Json\JsonResource;
  * @property int $role
  * @property string|null $avatar
  * @property bool $notifications_enabled
- * @property array $notification_channels
+ * @property array<int, string> $notification_channels
  */
 class UserLightResource extends JsonResource
 {
@@ -25,15 +25,21 @@ class UserLightResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
+        /** @var \App\Models\User $user */
+        $user = $this->resource;
+
         return [
-            'id' => $this->id,
-            'name' => $this->name,
-            'email' => $this->email,
-            'role' => $this->role,
-            'role_name' => $this->role_name,
-            'avatar' => $this->avatarPath(),
-            'notifications_enabled' => $this->notifications_enabled,
-            'notification_channels' => $this->notification_channels,
+            'id' => $user->id,
+            'name' => $user->name,
+            'email' => $user->email,
+            'role' => $user->role,
+            'role_name' => $user->role_name,
+            'is_admin' => $user->isAdmin(),
+            'is_super_admin' => $user->isSuperAdmin(),
+            'is_game_master' => $user->isGameMaster(),
+            'avatar' => $user->avatarPath(),
+            'notifications_enabled' => $user->notifications_enabled,
+            'notification_channels' => $user->notification_channels,
         ];
     }
 }

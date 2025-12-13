@@ -45,18 +45,17 @@ watch(
 );
 
 // Vérifier si l'utilisateur est admin ou super_admin
-// Le rôle est stocké comme un entier : 4 = admin, 5 = super_admin
 const isAdmin = computed(() => {
     if (!user.value) return false;
-    // Vérifier par valeur entière (4 = admin, 5 = super_admin)
-    return user.value.role === 4 || user.value.role === 5;
+    // Source of truth: backend (UserLightResource)
+    return user.value.is_admin ?? false;
 });
 
 // Vérifier si l'utilisateur est game_master, admin ou super_admin
-// Le rôle est stocké comme un entier : 3 = game_master, 4 = admin, 5 = super_admin
 const canManagePages = computed(() => {
     if (!user.value) return false;
-    return user.value.role === 3 || user.value.role === 4 || user.value.role === 5;
+    // Source of truth: backend (UserLightResource)
+    return user.value.is_game_master ?? false;
 });
 
 // Fonction de déconnexion

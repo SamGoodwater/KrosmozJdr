@@ -314,6 +314,7 @@ const disableQuickActions = computed(() => {
                 :variant="link.active ? 'outline' : 'ghost'"
                 size="sm"
                 @click="handlePageChange(link.url)">
+                <!-- eslint-disable-next-line vue/no-v-html -- pagination Inertia/Laravel (label HTML contrôlé) -->
                 <span v-html="link.label"></span>
             </Btn>
         </div>

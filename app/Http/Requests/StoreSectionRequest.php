@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use App\Models\Page;
 use App\Models\Section;
 use Illuminate\Validation\Rule;
 use App\Enums\PageState;
@@ -21,7 +22,22 @@ class StoreSectionRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return $this->user()?->can('create', \App\Models\Section::class) ?? false;
+        $user = $this->user();
+        if (!$user) {
+            return false;
+        }
+
+        $pageId = $this->input('page_id');
+        if (!$pageId) {
+            return false;
+        }
+
+        $page = Page::find($pageId);
+        if (!$page) {
+            return false;
+        }
+
+        return $user->can('create', [\App\Models\Section::class, $page]);
     }
 
     /**
@@ -36,8 +52,9 @@ class StoreSectionRequest extends FormRequest
         $rules = [
             'page_id' => ['required', 'exists:pages,id'],
             'title' => ['sometimes', 'nullable', 'string', 'max:255'],
-            'slug' => ['sometimes', 'nullable', 'string', 'max:255'],
-            'order' => ['required', 'integer', 'min:0'],
+            'slug' => ['sometimes', 'nullable', 'string', 'max:255', 'regex:/^[a-z0-9]+(?:-[a-z0-9]+)*$/'],
+            // Optionnel : si absent ou à 0, le service calcule automatiquement la prochaine position
+            'order' => ['sometimes', 'nullable', 'integer', 'min:0'],
             'template' => ['required', Rule::enum(SectionType::class)],
             'settings' => ['sometimes', 'nullable', 'array'],
             'data' => ['required', 'array'],

@@ -283,11 +283,13 @@ const dateRef = ref(null);
     >
         <!-- Bouton précédent -->
         <template #previous>
+            <!-- eslint-disable-next-line vue/no-v-html -- icône interne (HTML statique) -->
             <slot name="previous" v-html="defaultPreviousIcon"></slot>
         </template>
         
         <!-- Bouton suivant -->
         <template #next>
+            <!-- eslint-disable-next-line vue/no-v-html -- icône interne (HTML statique) -->
             <slot name="next" v-html="defaultNextIcon"></slot>
         </template>
         

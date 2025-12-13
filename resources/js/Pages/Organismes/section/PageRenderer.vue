@@ -125,18 +125,7 @@ const canEdit = computed(() => {
     if (!canUpdate && pageModel.value) {
         canUpdate = pageModel.value.canUpdate || false;
     }
-    
-    // Fallback final : vérifier le rôle utilisateur directement
-    // Si l'utilisateur est admin ou super_admin, il peut toujours modifier
-    if (!canUpdate && props.user) {
-        const userRole = props.user.role || props.user.role_name;
-        // Rôles admin : 4 = admin, 5 = super_admin
-        const adminRoles = [4, 5, 'admin', 'super_admin'];
-        if (adminRoles.includes(userRole)) {
-            canUpdate = true;
-        }
-    }
-    
+
     return canUpdate;
 });
 
