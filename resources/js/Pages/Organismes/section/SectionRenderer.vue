@@ -21,7 +21,7 @@ import SectionHeader from '@/Pages/Molecules/section/SectionHeader.vue';
 import SectionParamsModal from './modals/SectionParamsModal.vue';
 import { useSectionMode } from './composables/useSectionMode';
 import { useSectionSave } from './composables/useSectionSave';
-import { useSectionTemplates } from './composables/useSectionTemplates';
+import { useTemplateRegistry } from './composables/useTemplateRegistry';
 import { useSectionAPI } from './composables/useSectionAPI';
 import { useSectionUI } from './composables/useSectionUI';
 import { useCopyToClipboard } from '@/Composables/utils/useCopyToClipboard';
@@ -47,8 +47,7 @@ const props = defineProps({
 // Utiliser le composable UI unifié
 const { 
     sectionModel, 
-    canEdit, 
-    canDelete,
+    canEdit,
     templateInfo,
     stateInfo,
     uiData 
@@ -69,7 +68,7 @@ const sectionId = computed(() => {
 });
 const { isEditing, toggleEditMode, setEditMode } = useSectionMode(sectionId);
 const { saveSectionImmediate } = useSectionSave();
-const { getTemplateComponent } = useSectionTemplates();
+const registry = useTemplateRegistry();
 const { updateSection } = useSectionAPI();
 const { copyToClipboard } = useCopyToClipboard();
 
@@ -102,7 +101,7 @@ const sectionSettings = computed(() => {
 });
 
 /**
- * Charge le composant template selon le mode
+ * Charge le composant template selon le mode (via registry)
  */
 const loadTemplateComponent = async () => {
   if (!templateValue.value) return;
@@ -110,8 +109,13 @@ const loadTemplateComponent = async () => {
   isLoadingTemplate.value = true;
   try {
     const mode = isEditing.value ? 'edit' : 'read';
-    const component = await getTemplateComponent(templateValue.value, mode);
+    const component = await registry.loadComponent(templateValue.value, mode);
     templateComponent.value = component;
+    
+    // Si le composant n'est pas trouvé, logger l'erreur du registry
+    if (!component && registry.lastError.value) {
+      console.error('Registry error:', registry.lastError.value);
+    }
   } catch (error) {
     console.error('Erreur lors du chargement du template:', error);
     templateComponent.value = null;
@@ -237,7 +241,7 @@ const handleParamsUpdated = async (updatedParams) => {
 /**
  * Gère la mise à jour des données depuis le template
  */
-const handleDataUpdate = (newData) => {
+const handleDataUpdate = () => {
   // Les templates compatibles auto-save gèrent déjà la sauvegarde
   // Cette fonction est appelée pour informer le parent si nécessaire
 };

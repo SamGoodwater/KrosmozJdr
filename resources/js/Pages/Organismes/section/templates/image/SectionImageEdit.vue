@@ -15,7 +15,6 @@
  */
 import { ref, watch } from 'vue';
 import InputField from '@/Pages/Molecules/data-input/InputField.vue';
-import FileField from '@/Pages/Molecules/data-input/FileField.vue';
 import { useSectionSave } from '../../composables/useSectionSave';
 
 const props = defineProps({

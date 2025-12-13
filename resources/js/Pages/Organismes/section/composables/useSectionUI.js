@@ -31,9 +31,11 @@
  * <button v-if="canEdit" @click="edit">Éditer</button>
  */
 import { computed } from 'vue';
-import { Section } from '@/Models';
 import { SectionMapper } from '@/Utils/Services/Mappers';
-import { getTemplateConfig } from '../templates';
+import { useTemplateRegistry } from './useTemplateRegistry';
+
+// Registry de templates (singleton, au niveau module)
+const registry = useTemplateRegistry();
 
 /**
  * Composable pour gérer l'UI d'une section
@@ -214,17 +216,9 @@ function getTemplateLabel(template) {
     return 'Inconnu';
   }
   
-  try {
-    const config = getTemplateConfig(template);
-    if (config && config.name) {
-      return config.name;
-    }
-  } catch (e) {
-    // Si l'import échoue, utiliser un label par défaut
-    console.warn(`Impossible de charger la config du template "${template}"`, e);
-  }
+  const config = registry.getConfig(template);
   
-  return 'Inconnu';
+  return config?.name || 'Inconnu';
 }
 
 /**
@@ -284,16 +278,9 @@ function getStateColor(state) {
 function getTemplateIcon(template) {
   if (!template) return 'fa-file';
   
-  try {
-    const config = getTemplateConfig(template);
-    if (config && config.icon) {
-      return config.icon;
-    }
-  } catch (e) {
-    console.warn(`Impossible de charger la config du template "${template}"`, e);
-  }
+  const config = registry.getConfig(template);
   
-  return 'fa-file';
+  return config?.icon || 'fa-file';
 }
 
 /**
@@ -376,7 +363,7 @@ function getSectionUrl(section) {
       return `${route('pages.show', pageSlug)}#section-${sectionSlug}`;
     }
     return `/pages/${pageSlug}#section-${sectionSlug}`;
-  } catch (e) {
+  } catch {
     return `/pages/${pageSlug}#section-${sectionSlug}`;
   }
 }

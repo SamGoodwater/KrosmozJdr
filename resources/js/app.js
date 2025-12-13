@@ -10,8 +10,12 @@ import { createApp, h } from "vue";
 import { ZiggyVue } from "../../vendor/tightenco/ziggy";
 import { createPinia } from "pinia";
 import DefaultLayout from "@/Pages/Layouts/Main.vue";
+import { preloadCommonTemplates } from "@/Pages/Organismes/section/composables/useTemplateRegistry";
 
 const appName = import.meta.env.VITE_APP_NAME || "KrosmozJDR";
+
+// Précharger les templates courants au démarrage (performance)
+preloadCommonTemplates().catch(err => console.warn('Template preload failed:', err));
 
 createInertiaApp({
     title: (title) => `${title} - ${appName}`,

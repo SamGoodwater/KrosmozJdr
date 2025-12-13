@@ -14,7 +14,6 @@
  * @emits data-updated - Émis quand les données sont mises à jour
  */
 import { ref, watch } from 'vue';
-import SelectField from '@/Pages/Molecules/data-input/SelectField.vue';
 import InputField from '@/Pages/Molecules/data-input/InputField.vue';
 import { useSectionSave } from '../../composables/useSectionSave';
 

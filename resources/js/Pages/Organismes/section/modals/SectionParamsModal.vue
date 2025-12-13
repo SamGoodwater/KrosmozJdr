@@ -31,7 +31,7 @@ import ColorField from '@/Pages/Molecules/data-input/ColorField.vue';
 import Btn from '@/Pages/Atoms/action/Btn.vue';
 import Icon from '@/Pages/Atoms/data-display/Icon.vue';
 import { useSectionAPI } from '../composables/useSectionAPI';
-import { getTemplateConfig } from '../templates';
+import { useTemplateRegistry } from '../composables/useTemplateRegistry';
 import { TransformService, SectionParameterService, SectionMapper } from '@/Utils/Services';
 import { Section } from '@/Models';
 
@@ -59,18 +59,15 @@ const emit = defineEmits(['close', 'validated', 'deleted']);
 // Composables
 const { deleteSection } = useSectionAPI();
 
-// Configuration du template
+// Registry de templates
+const registry = useTemplateRegistry();
+
+// Configuration du template (depuis le registry)
 const templateConfig = computed(() => {
-    try {
-        return getTemplateConfig(props.sectionTemplate);
-    } catch (e) {
-        console.warn(`Impossible de charger la config du template "${props.sectionTemplate}"`, e);
-        return null;
-    }
+    return registry.getConfig(props.sectionTemplate);
 });
 
-// Champs communs et paramètres du template
-const commonFields = computed(() => SectionParameterService.getCommonFields());
+// Paramètres du template
 const templateParameters = computed(() => {
     if (!templateConfig.value || !templateConfig.value.parameters) {
         return [];
@@ -245,7 +242,7 @@ const formSlug = computed({
 const slugManuallyEdited = ref(false);
 
 // Réinitialiser les données quand le modal s'ouvre ou quand la section change
-watch(() => [props.open, props.section], ([isOpen, section]) => {
+watch(() => [props.open, props.section], ([isOpen]) => {
     if (isOpen && sectionModel.value && sectionModel.value.id) {
         // Utiliser double nextTick pour s'assurer que le DOM est rendu
         nextTick(() => {
@@ -404,14 +401,11 @@ const handleDelete = async () => {
  * Titre du modal selon le template
  */
 const modalTitle = computed(() => {
-    try {
-        const config = getTemplateConfig(props.sectionTemplate);
-        if (config && config.name) {
-            return `Paramètres de la section ${config.name.toLowerCase()}`;
-        }
-    } catch (e) {
-        console.warn(`Impossible de charger la config du template "${props.sectionTemplate}"`, e);
+    const config = templateConfig.value;
+    if (config && config.name) {
+        return `Paramètres de la section ${config.name.toLowerCase()}`;
     }
+    
     return 'Paramètres de la section';
 });
 

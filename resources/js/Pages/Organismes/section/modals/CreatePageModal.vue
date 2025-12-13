@@ -4,27 +4,22 @@
  * 
  * @description
  * Modal pour créer une nouvelle page dynamique.
- * - Formulaire complet pour créer une nouvelle page
- * - Validation des champs
- * - Gestion des erreurs
+ * Utilise le composable usePageForm pour réduire la duplication avec EditPageModal.
  * 
  * @props {Boolean} open - Contrôle l'ouverture du modal
  * @props {Array} pages - Liste des pages disponibles (pour parent_id)
  * @emits close - Événement émis quand le modal se ferme
  */
-import { useForm } from '@inertiajs/vue3';
-import { computed, watch, ref } from 'vue';
+import { watch } from 'vue';
 import Modal from '@/Pages/Molecules/action/Modal.vue';
 import InputField from '@/Pages/Molecules/data-input/InputField.vue';
 import SelectField from '@/Pages/Molecules/data-input/SelectField.vue';
 import ToggleField from '@/Pages/Molecules/data-input/ToggleField.vue';
 import Btn from '@/Pages/Atoms/action/Btn.vue';
 import Alert from '@/Pages/Atoms/feedback/Alert.vue';
-import { PageState } from '@/Utils/enums/PageState';
-import { Visibility } from '@/Utils/enums/Visibility';
 import { router } from '@inertiajs/vue3';
-import { TransformService } from '@/Utils/Services';
 import { usePageFormOptions } from '@/Composables/pages/usePageFormOptions';
+import { usePageForm } from '@/Composables/pages/usePageForm';
 
 const props = defineProps({
     open: {
@@ -42,64 +37,20 @@ const emit = defineEmits(['close']);
 // Options pour les selects
 const { stateOptions, visibilityOptions, parentPageOptions } = usePageFormOptions(() => props.pages);
 
-// Formulaire
-const form = useForm({
-    title: '',
-    slug: '',
-    is_visible: Visibility.GUEST.value,
-    can_edit_role: Visibility.ADMIN.value,
-    in_menu: true,
-    state: PageState.DRAFT.value,
-    parent_id: null,
-    menu_order: 0
-});
-
-// Flag pour savoir si l'utilisateur a modifié manuellement le slug
-const slugManuallyEdited = ref(false);
-
-// Fonction pour générer le slug depuis le titre
-const generateSlug = (title) => {
-    return TransformService.generateSlugFromTitle(title);
-};
-
-// Génération automatique du slug depuis le titre (seulement si pas modifié manuellement)
-watch(() => form.title, (newTitle) => {
-    if (newTitle && !slugManuallyEdited.value) {
-        form.slug = generateSlug(newTitle);
-    }
-});
-
-// Détecter si l'utilisateur modifie manuellement le slug
-const handleSlugInput = () => {
-    slugManuallyEdited.value = true;
-};
+// Formulaire via composable (mode création)
+const {
+    form,
+    handleSlugInput,
+    titleValidation,
+    slugValidation,
+    resetForm
+} = usePageForm(null, { mode: 'create' });
 
 // Réinitialiser le formulaire quand le modal se ferme
 watch(() => props.open, (isOpen) => {
     if (!isOpen) {
-        form.reset();
-        form.clearErrors();
-        slugManuallyEdited.value = false; // Réinitialiser le flag
+        resetForm();
     }
-});
-
-// Validation computed pour chaque champ
-const titleValidation = computed(() => {
-    if (!form.errors.title) return null;
-    return {
-        state: 'error',
-        message: form.errors.title,
-        showNotification: false
-    };
-});
-
-const slugValidation = computed(() => {
-    if (!form.errors.slug) return null;
-    return {
-        state: 'error',
-        message: form.errors.slug,
-        showNotification: false
-    };
 });
 
 const handleClose = () => {
@@ -112,9 +63,6 @@ const submit = () => {
         onSuccess: () => {
             emit('close');
             router.reload({ only: ['pages'] });
-        },
-        onError: () => {
-            // Les erreurs sont gérées automatiquement par Inertia
         }
     });
 };
@@ -242,4 +190,3 @@ const submit = () => {
 <style scoped lang="scss">
 // Styles spécifiques si nécessaire
 </style>
-

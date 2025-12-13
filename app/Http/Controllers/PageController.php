@@ -28,12 +28,24 @@ class PageController extends Controller
     public function index(Request $request): \Inertia\Response
     {
         $this->authorize('viewAny', \App\Models\Page::class);
-        $pages = \App\Models\Page::with(['sections', 'users', 'parent', 'children', 'campaigns', 'scenarios', 'createdBy'])->paginate(20);
         
-        // Récupérer toutes les pages pour le select parent_id dans le modal
-        $allPages = Page::select('id', 'title', 'slug')
-            ->orderBy('title')
-            ->get();
+        // OPTIMISATION : Eager loading avec select pour réduire les données
+        $pages = \App\Models\Page::with([
+            'sections:id,page_id,title,template,state',
+            'users:id,name,email',
+            'parent:id,title,slug',
+            'children:id,parent_id,title,slug',
+            'campaigns:id,title',
+            'scenarios:id,title',
+            'createdBy:id,name,email'
+        ])->paginate(20);
+        
+        // OPTIMISATION : Utiliser le cache pour la liste des pages (utilisée dans plusieurs endroits)
+        $allPages = \Illuminate\Support\Facades\Cache::remember('pages_select_list', 3600, function () {
+            return Page::select('id', 'title', 'slug')
+                ->orderBy('title')
+                ->get();
+        });
         
         return Inertia::render('Pages/page/Index', [
             'pages' => PageResource::collection($pages),
@@ -100,14 +112,26 @@ class PageController extends Controller
 
         $user = auth()->user();
         
+        // OPTIMISATION : Charger toutes les relations en une seule requête
+        $page->load([
+            'users',
+            'parent',
+            'children',
+            'campaigns',
+            'scenarios',
+            'createdBy'
+        ]);
+        
         // Charger les sections selon l'utilisateur
         // Si l'utilisateur peut modifier la page, inclure toutes les sections (y compris les drafts)
         // Sinon, inclure uniquement les sections affichables (publiées)
         $sections = \App\Services\SectionService::getSectionsForPage($page, $user);
         
-        // IMPORTANT : Charger la page dans chaque section pour que les permissions puissent être vérifiées
-        // La méthode canBeEditedBy() de Section a besoin de la page pour vérifier les droits sur la page ET la section
-        $sections->load('page');
+        // OPTIMISATION : Éviter le N+1 - la page est déjà chargée
+        // On utilise setRelation pour associer la page à chaque section sans requête supplémentaire
+        $sections->each(function ($section) use ($page) {
+            $section->setRelation('page', $page);
+        });
         
         // Debug en développement
         if (config('app.debug')) {
@@ -130,17 +154,19 @@ class PageController extends Controller
         
         $page->setRelation('sections', $sections);
         
-        $page->load(['users', 'parent', 'children', 'campaigns', 'scenarios', 'createdBy']);
+        // OPTIMISATION : Charger toutes les pages en cache (utilisé pour le menu ET le modal)
+        $pages = \Illuminate\Support\Facades\Cache::remember('pages_select_list', 3600, function () {
+            return Page::select('id', 'title', 'slug')
+                ->orderBy('title')
+                ->get();
+        });
         
-        // Récupérer toutes les pages pour le select parent_id dans le modal d'édition
-        $pages = Page::select('id', 'title', 'slug')
-            ->where('id', '!=', $page->id)
-            ->orderBy('title')
-            ->get();
+        // Filtrer la page courante côté PHP (plus rapide que requête SQL)
+        $pagesFiltered = $pages->where('id', '!=', $page->id)->values();
         
         return Inertia::render('Pages/page/Show', [
             'page' => new PageResource($page),
-            'pages' => $pages,
+            'pages' => $pagesFiltered,
         ]);
     }
 

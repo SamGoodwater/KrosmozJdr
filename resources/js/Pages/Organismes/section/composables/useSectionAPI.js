@@ -11,7 +11,6 @@
  */
 import { router } from '@inertiajs/vue3';
 import { Section } from '@/Models';
-import { Page } from '@/Models';
 
 /**
  * Composable pour gérer les appels API des sections

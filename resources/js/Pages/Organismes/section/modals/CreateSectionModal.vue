@@ -13,13 +13,13 @@
  * @emits close - Événement émis quand le modal se ferme
  * @emits created - Événement émis quand la section est créée
  */
-import { ref, computed, nextTick } from 'vue';
-import { useForm, router, usePage } from '@inertiajs/vue3';
+import { computed } from 'vue';
+import { useForm } from '@inertiajs/vue3';
 import Modal from '@/Pages/Molecules/action/Modal.vue';
 import InputField from '@/Pages/Molecules/data-input/InputField.vue';
 import Btn from '@/Pages/Atoms/action/Btn.vue';
 import Icon from '@/Pages/Atoms/data-display/Icon.vue';
-import { getTemplateOptions, getTemplateByValue, getTemplateDefaults } from '../templates';
+import { useTemplateRegistry } from '../composables/useTemplateRegistry';
 import { useSectionAPI } from '../composables/useSectionAPI';
 
 const props = defineProps({
@@ -35,8 +35,11 @@ const props = defineProps({
 
 const emit = defineEmits(['close', 'created']);
 
-// Options des types de sections (auto-discovery)
-const sectionTypes = computed(() => getTemplateOptions());
+// Registry de templates
+const registry = useTemplateRegistry();
+
+// Options des types de sections (depuis le registry)
+const sectionTypes = computed(() => registry.getOptions());
 
 /**
  * Parse une icône au format "fa-solid fa-xxx" ou "fa-xxx" et retourne { source, pack }
@@ -72,7 +75,6 @@ const form = useForm({
 
 // Composables
 const { createSection } = useSectionAPI();
-// Utiliser directement getTemplateDefaults depuis templates/index.js
 
 /**
  * Gère la sélection d'un template de section
@@ -103,8 +105,8 @@ const handleCreateSection = async (template = null) => {
         return;
     }
 
-    // Obtenir les valeurs par défaut pour ce template
-    const defaults = getTemplateDefaults(sectionTemplate);
+    // Obtenir les valeurs par défaut pour ce template (depuis le registry)
+    const defaults = registry.getDefaults(sectionTemplate);
 
     // Préparer les données de la section avec les valeurs par défaut
     const sectionPayload = {

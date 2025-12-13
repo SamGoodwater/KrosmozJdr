@@ -103,10 +103,10 @@ if (typeof window !== 'undefined') {
         if (!isCallyAvailable.value) {
             console.warn('DateCore: Cally n\'est pas disponible, utilisation du fallback input date HTML natif');
         }
-    } catch (error) {
-        console.warn('DateCore: Erreur lors de la vérification de Cally, utilisation du fallback:', error);
-        isCallyAvailable.value = false;
-    }
+        } catch {
+            console.warn('DateCore: Erreur lors de la vérification de Cally, utilisation du fallback');
+            isCallyAvailable.value = false;
+        }
 }
 
 onMounted(() => {
@@ -124,7 +124,7 @@ onMounted(() => {
             } else if (!isAvailable && isCallyAvailable.value) {
                 isCallyAvailable.value = false;
             }
-        } catch (error) {
+        } catch {
             isCallyAvailable.value = false;
         }
     };
@@ -157,7 +157,7 @@ const formattedDate = computed(() => {
         if (isNaN(date.getTime())) return '';
         
         return date.toISOString().split('T')[0]; // Format YYYY-MM-DD
-    } catch (error) {
+    } catch {
         return '';
     }
 });
@@ -171,7 +171,7 @@ const formattedMinDate = computed(() => {
         const date = new Date(props.min);
         if (isNaN(date.getTime())) return '';
         return date.toISOString().split('T')[0];
-    } catch (error) {
+    } catch {
         return '';
     }
 });
@@ -182,7 +182,7 @@ const formattedMaxDate = computed(() => {
         const date = new Date(props.max);
         if (isNaN(date.getTime())) return '';
         return date.toISOString().split('T')[0];
-    } catch (error) {
+    } catch {
         return '';
     }
 });

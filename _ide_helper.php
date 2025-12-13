@@ -23901,6 +23901,39 @@ namespace Barryvdh\DomPDF\Facade {
             }
     }
 
+namespace Mews\Purifier\Facades {
+    /**
+     * @see \Mews\Purifier
+     */
+    class Purifier {
+        /**
+         * @param $dirty
+         * @param array<string, mixed>|string|null $config
+         * @param \Closure|null $postCreateConfigHook
+         * @return mixed
+         * @static
+         */
+        public static function clean($dirty, $config = null, $postCreateConfigHook = null)
+        {
+            /** @var \Mews\Purifier\Purifier $instance */
+            return $instance->clean($dirty, $config, $postCreateConfigHook);
+        }
+
+        /**
+         * Get HTMLPurifier instance.
+         *
+         * @return \HTMLPurifier
+         * @static
+         */
+        public static function getInstance()
+        {
+            /** @var \Mews\Purifier\Purifier $instance */
+            return $instance->getInstance();
+        }
+
+            }
+    }
+
 namespace Illuminate\Support {
     /**
      * @template TKey of array-key
@@ -29247,6 +29280,7 @@ namespace  {
     class Debugbar extends \Barryvdh\Debugbar\Facades\Debugbar {}
     class PDF extends \Barryvdh\DomPDF\Facade\Pdf {}
     class Pdf extends \Barryvdh\DomPDF\Facade\Pdf {}
+    class Purifier extends \Mews\Purifier\Facades\Purifier {}
 }
 
 

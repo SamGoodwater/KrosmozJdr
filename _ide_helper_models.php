@@ -1060,9 +1060,10 @@ namespace App\Models{
  * @property int $id
  * @property string $title
  * @property string $slug
- * @property string $is_visible
+ * @property \App\Enums\Visibility $is_visible
  * @property bool $in_menu
- * @property string $state
+ * @property \App\Enums\Visibility $can_edit_role
+ * @property \App\Enums\PageState $state
  * @property int|null $parent_id
  * @property int $menu_order
  * @property int|null $created_by
@@ -1101,7 +1102,6 @@ namespace App\Models{
  * @property-read \Illuminate\Database\Eloquent\Collection<int, Scenario> $scenarios
  * @property-read int|null $scenarios_count
  * @mixin \Eloquent
- * @property \App\Enums\Visibility $can_edit_role
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Page forMenu(?\App\Models\User $user = null)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Page inMenu()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Page ordered()
@@ -1127,12 +1127,12 @@ namespace App\Models{
  * @property string|null $title
  * @property string|null $slug
  * @property int $order
- * @property string $template
+ * @property \App\Enums\SectionType $template
  * @property array<array-key, mixed>|null $settings
  * @property array<array-key, mixed>|null $data
- * @property string $is_visible
- * @property string $can_edit_role
- * @property string $state
+ * @property \App\Enums\Visibility $is_visible
+ * @property \App\Enums\Visibility $can_edit_role
+ * @property \App\Enums\PageState $state
  * @property int|null $created_by
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at

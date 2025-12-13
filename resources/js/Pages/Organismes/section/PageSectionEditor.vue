@@ -14,12 +14,11 @@
  * @prop {Boolean} canEdit - Autorise l'édition/réorganisation
  */
 import { ref, computed, watch } from 'vue'
-import { Link, router } from '@inertiajs/vue3'
+import { router } from '@inertiajs/vue3'
 import Container from '@/Pages/Atoms/data-display/Container.vue'
 import Btn from '@/Pages/Atoms/action/Btn.vue'
 import Icon from '@/Pages/Atoms/data-display/Icon.vue'
 import Alert from '@/Pages/Atoms/feedback/Alert.vue'
-import Tooltip from '@/Pages/Atoms/feedback/Tooltip.vue'
 import CreateSectionModal from './modals/CreateSectionModal.vue'
 import { useSectionAPI } from './composables/useSectionAPI'
 import { SectionMapper } from '@/Utils/Services/Mappers'
@@ -57,13 +56,6 @@ watch(
     },
     { deep: true }
 )
-
-// Helper pour obtenir les infos UI d'une section
-function getSectionUI(section) {
-    const sectionModel = sectionModels.value.find(s => s.id === section.id)
-    if (!sectionModel) return null
-    return useSectionUI(sectionModel)
-}
 
 const draggingIndex = ref(null)
 const saving = ref(false)
@@ -163,7 +155,7 @@ async function saveOrder() {
                 }, 3000)
             }
         })
-    } catch (errors) {
+    } catch {
         saving.value = false
         saveError.value =
             "Une erreur est survenue lors de l'enregistrement de l'ordre des sections."

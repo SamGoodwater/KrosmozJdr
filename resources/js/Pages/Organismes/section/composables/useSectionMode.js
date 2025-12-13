@@ -45,20 +45,6 @@ const version = ref(0);
  * @returns {Object} { isEditing, toggleEditMode, setEditMode }
  */
 export function useSectionMode(sectionId) {
-  // Extraire la valeur réactive si c'est un computed/ref
-  // Amélioration : mieux détecter les ComputedRef et Ref
-  const getSectionId = () => {
-    // Si c'est un objet avec une propriété 'value', c'est probablement un Ref ou ComputedRef
-    if (sectionId && typeof sectionId === 'object' && 'value' in sectionId) {
-      const value = sectionId.value;
-      // Retourner la valeur même si elle est undefined/null pour le moment
-      // (elle peut être définie plus tard)
-      return value;
-    }
-    // Sinon, c'est une valeur directe
-    return sectionId;
-  };
-  
   // Computed qui dépend directement de sectionId pour la réactivité
   const isEditing = computed(() => {
     // Lire version.value pour créer une dépendance réactive

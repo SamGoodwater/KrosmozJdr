@@ -14,7 +14,6 @@ const props = defineProps({
 });
 
 const entities = computed(() => props.data?.entities || []);
-const entityType = computed(() => props.data?.entity_type || '');
 </script>
 
 <template>

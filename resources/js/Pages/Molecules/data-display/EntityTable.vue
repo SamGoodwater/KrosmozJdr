@@ -23,7 +23,6 @@
  * @emit update:filters - Événement émis lors du changement de filtres
  */
 import { ref, computed } from 'vue';
-import Container from '@/Pages/Atoms/data-display/Container.vue';
 import Loading from '@/Pages/Atoms/feedback/Loading.vue';
 import EntityTableHeader from './EntityTableHeader.vue';
 import EntityTableRow from './EntityTableRow.vue';

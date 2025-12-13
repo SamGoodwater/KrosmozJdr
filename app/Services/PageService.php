@@ -162,6 +162,7 @@ class PageService
      * - Le cache est séparé par utilisateur (chaque utilisateur a son propre cache)
      * - Si `$user` est null, invalide pour TOUS les utilisateurs (utilise `Cache::flush()`)
      * - Toujours invalide le cache des invités
+     * - OPTIMISATION : Invalide aussi le cache de la liste des pages (select)
      * 
      * @param User|null $user Utilisateur spécifique (null pour tous les utilisateurs)
      * @return void
@@ -187,6 +188,9 @@ class PageService
         
         // Toujours invalider pour les invités
         Cache::forget('menu_pages_guest');
+        
+        // OPTIMISATION : Invalider le cache de la liste des pages (utilisé dans les selects)
+        Cache::forget('pages_select_list');
     }
 
     /**

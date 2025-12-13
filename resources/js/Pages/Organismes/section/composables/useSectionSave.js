@@ -25,7 +25,6 @@
  * const { saveSectionImmediate } = useSectionSave();
  * saveSectionImmediate(sectionId, { title: 'Nouveau titre' });
  */
-import { router } from '@inertiajs/vue3';
 import { useSectionAPI } from './useSectionAPI';
 
 /**

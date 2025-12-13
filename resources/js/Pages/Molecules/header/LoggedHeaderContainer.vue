@@ -22,7 +22,6 @@ import Btn from "@/Pages/Atoms/action/Btn.vue";
 import Route from "@/Pages/Atoms/action/Route.vue";
 import Avatar from "@/Pages/Atoms/data-display/Avatar.vue";
 import Dropdown from "@/Pages/Atoms/action/Dropdown.vue";
-import Tooltip from "@/Pages/Atoms/feedback/Tooltip.vue";
 import Icon from "@/Pages/Atoms/data-display/Icon.vue";
 import { usePage, router } from "@inertiajs/vue3";
 import { ref, watch, computed } from "vue";

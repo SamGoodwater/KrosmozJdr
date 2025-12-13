@@ -4,11 +4,8 @@
  * 
  * @description
  * Modal pour modifier une page dynamique existante.
- * - Formulaire complet pour modifier une page
- * - Validation des champs
- * - Gestion des erreurs
- * - Bouton pour supprimer la page
- * - Bouton pour copier l'URL
+ * Utilise le composable usePageForm pour réduire la duplication.
+ * Conserve les fonctionnalités spécifiques : onglets, suppression, copie URL.
  * 
  * @props {Boolean} open - Contrôle l'ouverture du modal
  * @props {Object} page - Données de la page à modifier
@@ -16,7 +13,7 @@
  * @emits close - Événement émis quand le modal se ferme
  * @emits deleted - Événement émis quand la page est supprimée
  */
-import { useForm, router } from '@inertiajs/vue3';
+import { router } from '@inertiajs/vue3';
 import { computed, watch, ref, nextTick } from 'vue';
 import Modal from '@/Pages/Molecules/action/Modal.vue';
 import InputField from '@/Pages/Molecules/data-input/InputField.vue';
@@ -25,12 +22,11 @@ import ToggleField from '@/Pages/Molecules/data-input/ToggleField.vue';
 import Btn from '@/Pages/Atoms/action/Btn.vue';
 import Alert from '@/Pages/Atoms/feedback/Alert.vue';
 import Icon from '@/Pages/Atoms/data-display/Icon.vue';
-import Tab from '@/Pages/Molecules/navigation/Tab.vue';
-import TabItem from '@/Pages/Atoms/navigation/TabItem.vue';
 import { Page } from '@/Models';
 import { useCopyToClipboard } from '@/Composables/utils/useCopyToClipboard';
 import PageSectionEditor from '../PageSectionEditor.vue';
 import { usePageFormOptions } from '@/Composables/pages/usePageFormOptions';
+import { usePageForm } from '@/Composables/pages/usePageForm';
 
 const props = defineProps({
     open: {
@@ -52,36 +48,20 @@ const emit = defineEmits(['close', 'deleted']);
 // Onglet actif
 const activeTab = ref('general');
 
-// ============================================
-// 1. CHARGEMENT DU MODÈLE PAGE
-// ============================================
-// Extraire les données de la page (gérer la structure Resource qui peut être dans data)
+// Extraire les données de la page (gérer la structure Resource)
 const pageData = computed(() => {
     if (!props.page) return {};
-    
-    // Si props.page a une propriété data, utiliser data (structure Resource)
     if (props.page.data && typeof props.page.data === 'object') {
         return props.page.data;
     }
-    
-    // Sinon, utiliser props.page directement
     return props.page;
 });
 
-// Utiliser le modèle Page pour normaliser l'accès aux données
+// Modèle Page normalisé
 const pageModel = computed(() => {
     if (!pageData.value) return null;
     return new Page(pageData.value);
 });
-
-// ============================================
-// 2. COPIE DU MODÈLE POUR POUVOIR REVENIR EN ARRIÈRE
-// ============================================
-// Copie originale du modèle (pour annulation)
-const originalModelData = ref(null);
-
-// Copie de travail du modèle (modifiable)
-const workingModelData = ref(null);
 
 // Options pour les selects
 const { stateOptions, visibilityOptions, parentPageOptions } = usePageFormOptions(
@@ -89,86 +69,25 @@ const { stateOptions, visibilityOptions, parentPageOptions } = usePageFormOption
     computed(() => pageModel.value?.id ?? null)
 );
 
-// ============================================
-// COMPUTED POUR FORCER LA RÉACTIVITÉ DES SELECTS
-// ============================================
-// Computed pour forcer la réactivité des valeurs des selects depuis formInstance
-// Computed réactifs pour les selects - incluent formInstanceVersion pour forcer la réactivité
-const formIsVisible = computed({
-    get: () => {
-        // Toucher formInstanceVersion pour forcer la réactivité
-        formInstanceVersion.value;
-        return formInstance.value?.is_visible || 'guest';
-    },
-    set: (value) => {
-        if (formInstance.value) {
-            formInstance.value.is_visible = value;
-            formInstanceVersion.value++;
-        }
-    }
-});
+// Formulaire via composable (sera initialisé dans le watcher)
+let formControls = null;
 
-const formCanEditRole = computed({
-    get: () => {
-        // Toucher formInstanceVersion pour forcer la réactivité
-        formInstanceVersion.value;
-        return formInstance.value?.can_edit_role || 'admin';
-    },
-    set: (value) => {
-        if (formInstance.value) {
-            formInstance.value.can_edit_role = value;
-            formInstanceVersion.value++;
-        }
-    }
-});
+// Instance du formulaire (réactive)
+const formInstance = ref(null);
 
-const formState = computed({
-    get: () => {
-        // Toucher formInstanceVersion pour forcer la réactivité
-        formInstanceVersion.value;
-        return formInstance.value?.state || 'draft';
-    },
-    set: (value) => {
-        if (formInstance.value) {
-            formInstance.value.state = value;
-            formInstanceVersion.value++;
-        }
-    }
-});
-
-const formParentId = computed({
-    get: () => {
-        // Toucher formInstanceVersion pour forcer la réactivité
-        formInstanceVersion.value;
-        return formInstance.value?.parent_id ?? null;
-    },
-    set: (value) => {
-        if (formInstance.value) {
-            formInstance.value.parent_id = value;
-            formInstanceVersion.value++;
-        }
-    }
-});
-
-// ============================================
-// 3. INITIALISATION DU MODÈLE (COPIE)
-// ============================================
 /**
- * Initialise les copies du modèle depuis le modèle Page
+ * Initialise le formulaire depuis les données de la page
  */
-const initializeModel = () => {
+const initializeForm = () => {
     const model = pageModel.value;
     
     if (!model || !model.id) {
-        if (import.meta.env.DEV) {
-            console.warn('EditPageModal - Model not available for initialization');
-        }
+        console.warn('EditPageModal - Model not available for initialization');
         return false;
     }
     
-    // Créer une copie profonde des données du modèle
-    const modelData = {
-        id: model.id,
+    // Préparer les données initiales
+    const initialData = {
         title: model.title || '',
         slug: model.slug || '',
         is_visible: model.isVisible || 'guest',
@@ -179,261 +98,48 @@ const initializeModel = () => {
         menu_order: model.menuOrder || 0
     };
     
-    // Sauvegarder la copie originale
-    originalModelData.value = JSON.parse(JSON.stringify(modelData));
-    
-    // Créer la copie de travail
-    workingModelData.value = JSON.parse(JSON.stringify(modelData));
-    
-    // Créer formInstance immédiatement après avoir créé workingModelData
-    // pour éviter les problèmes de timing
-    const formData = {
-        title: workingModelData.value.title || '',
-        slug: workingModelData.value.slug || '',
-        is_visible: workingModelData.value.is_visible || 'guest',
-        can_edit_role: workingModelData.value.can_edit_role || 'admin',
-        in_menu: workingModelData.value.in_menu ?? true,
-        state: workingModelData.value.state || 'draft',
-        parent_id: workingModelData.value.parent_id !== undefined ? workingModelData.value.parent_id : null,
-        menu_order: workingModelData.value.menu_order || 0
-    };
-    
-    formInstance.value = useForm(formData);
-    
-    // Incrémenter formInstanceVersion pour forcer la réactivité des computed
-    formInstanceVersion.value++;
-    
-    if (import.meta.env.DEV) {
-        console.log('EditPageModal - Model initialized:', {
-            original: originalModelData.value,
-            working: workingModelData.value,
-            formData,
-            formInstanceValues: {
-                is_visible: formInstance.value.is_visible,
-                can_edit_role: formInstance.value.can_edit_role,
-                state: formInstance.value.state,
-                parent_id: formInstance.value.parent_id
-            }
-        });
-    }
+    // Créer le formulaire via le composable
+    formControls = usePageForm(initialData, { mode: 'edit' });
+    formInstance.value = formControls.form;
     
     return true;
 };
 
-// ============================================
-// 4. FORMULAIRE INERTIA (LIÉ AU MODÈLE DE TRAVAIL)
-// ============================================
-// Formulaire Inertia - initialisé depuis workingModelData
-const form = computed(() => {
-    if (!workingModelData.value) {
-        return useForm({
-            title: '',
-            slug: '',
-            is_visible: 'guest',
-            can_edit_role: 'admin',
-            in_menu: true,
-            state: 'draft',
-            parent_id: null,
-            menu_order: 0
-        });
-    }
-    
-    return useForm({
-        title: workingModelData.value.title,
-        slug: workingModelData.value.slug,
-        is_visible: workingModelData.value.is_visible,
-        can_edit_role: workingModelData.value.can_edit_role,
-        in_menu: workingModelData.value.in_menu,
-        state: workingModelData.value.state,
-        parent_id: workingModelData.value.parent_id,
-        menu_order: workingModelData.value.menu_order
-    });
-});
-
-// Instance réactive du formulaire
-const formInstance = ref(null);
-
-// Compteur de version pour forcer la réactivité des selects
-const formInstanceVersion = ref(0);
-
-/**
- * Crée ou met à jour formInstance depuis workingModelData
- */
-const createFormInstance = () => {
-    if (!workingModelData.value) {
-        formInstance.value = null;
-        return;
-    }
-    
-    // Créer un nouveau formulaire avec les données actuelles
-    // Utiliser des valeurs explicites pour garantir la réactivité
-    const formData = {
-        title: workingModelData.value.title || '',
-        slug: workingModelData.value.slug || '',
-        is_visible: workingModelData.value.is_visible || 'guest',
-        can_edit_role: workingModelData.value.can_edit_role || 'admin',
-        in_menu: workingModelData.value.in_menu ?? true,
-        state: workingModelData.value.state || 'draft',
-        parent_id: workingModelData.value.parent_id !== undefined ? workingModelData.value.parent_id : null,
-        menu_order: workingModelData.value.menu_order || 0
-    };
-    
-    formInstance.value = useForm(formData);
-    
-    if (import.meta.env.DEV) {
-        console.log('EditPageModal - FormInstance created:', {
-            formData,
-            formInstanceValues: {
-                is_visible: formInstance.value.is_visible,
-                can_edit_role: formInstance.value.can_edit_role,
-                state: formInstance.value.state,
-                parent_id: formInstance.value.parent_id
-            }
-        });
-    }
-};
-
-// Initialiser formInstance quand workingModelData change
-// Note: formInstance est maintenant créé directement dans initializeModel()
-// Ce watcher ne sert que de fallback si workingModelData change sans passer par initializeModel()
-watch(() => workingModelData.value, (newData) => {
-    // Ne créer formInstance que s'il n'existe pas encore
-    // (pour éviter de le recréer inutilement si initializeModel() l'a déjà créé)
-    if (newData && !formInstance.value) {
-        createFormInstance();
-    }
-}, { immediate: false, deep: true });
-
-// ============================================
-// 5. LIAISON DES CHAMPS AU MODÈLE DE TRAVAIL
-// ============================================
-// Watchers pour synchroniser les modifications du formulaire avec workingModelData
-watch(() => formInstance.value?.title, (newValue) => {
-    if (workingModelData.value && newValue !== undefined) {
-        workingModelData.value.title = newValue;
-    }
-});
-
-watch(() => formInstance.value?.slug, (newValue) => {
-    if (workingModelData.value && newValue !== undefined) {
-        workingModelData.value.slug = newValue;
-    }
-});
-
-// Utiliser les computed pour la synchronisation des selects
-watch(() => formIsVisible.value, (newValue) => {
-    if (workingModelData.value && newValue !== undefined) {
-        workingModelData.value.is_visible = newValue;
-    }
-});
-
-watch(() => formCanEditRole.value, (newValue) => {
-    if (workingModelData.value && newValue !== undefined) {
-        workingModelData.value.can_edit_role = newValue;
-    }
-});
-
-watch(() => formState.value, (newValue) => {
-    if (workingModelData.value && newValue !== undefined) {
-        workingModelData.value.state = newValue;
-    }
-});
-
-watch(() => formParentId.value, (newValue) => {
-    if (workingModelData.value && newValue !== undefined) {
-        workingModelData.value.parent_id = newValue;
-    }
-});
-
-watch(() => formInstance.value?.in_menu, (newValue) => {
-    if (workingModelData.value && newValue !== undefined) {
-        workingModelData.value.in_menu = newValue;
-    }
-});
-
-watch(() => formInstance.value?.menu_order, (newValue) => {
-    if (workingModelData.value && newValue !== undefined) {
-        workingModelData.value.menu_order = newValue;
-    }
-});
-
-// Réinitialiser le formulaire quand le modal s'ouvre ou quand la page change
+// Initialiser le formulaire quand le modal s'ouvre
 watch(() => [props.open, props.page], ([isOpen, page]) => {
-    if (import.meta.env.DEV) {
-        console.log('EditPageModal - Watcher triggered:', { isOpen, hasPage: !!page, hasModel: !!pageModel.value });
-    }
-    
-    if (isOpen && pageModel.value && pageModel.value.id) {
-        // Utiliser nextTick pour s'assurer que les computed sont à jour et que le modal est rendu
+    if (isOpen && page) {
         nextTick(() => {
-            // Double nextTick pour garantir que le DOM du modal est complètement rendu
             nextTick(() => {
-                const initialized = initializeModel();
+                const initialized = initializeForm();
                 
-                // Si l'initialisation a échoué, réessayer après un court délai
                 if (!initialized) {
-                    if (import.meta.env.DEV) {
-                        console.log('EditPageModal - Retrying model initialization in 100ms...');
-                    }
+                    // Réessayer après un court délai
                     setTimeout(() => {
-                        initializeModel();
+                        initializeForm();
                     }, 100);
-                } else {
-                    // formInstance est maintenant créé directement dans initializeModel()
-                    // donc il devrait être disponible immédiatement
-                    if (import.meta.env.DEV) {
-                        nextTick(() => {
-                            console.log('EditPageModal - Form values after init:', {
-                                hasFormInstance: !!formInstance.value,
-                                title: formInstance.value?.title,
-                                slug: formInstance.value?.slug,
-                                is_visible: formInstance.value?.is_visible,
-                                can_edit_role: formInstance.value?.can_edit_role,
-                                state: formInstance.value?.state,
-                                parent_id: formInstance.value?.parent_id
-                            });
-                        });
-                    }
                 }
             });
         });
     }
-    // Ne pas réinitialiser le formulaire quand le modal se ferme
-    // pour éviter de perdre les données si l'utilisateur rouvre le modal
 }, { immediate: true, deep: true });
 
-// Le watcher ci-dessus surveille déjà props.open et props.page, donc pas besoin d'autres watchers
-
-// Génération automatique du slug depuis le titre (seulement si le slug est vide)
-watch(() => formInstance.value?.title, (newTitle) => {
-    if (newTitle && formInstance.value && !formInstance.value.slug) {
-        formInstance.value.slug = newTitle
-            .toLowerCase()
-            .normalize('NFD')
-            .replace(/[\u0300-\u036f]/g, '')
-            .replace(/[^a-z0-9]+/g, '-')
-            .replace(/^-+|-+$/g, '');
-    }
-});
-
-// Validation computed pour chaque champ
+// Validation computed (via composable si disponible)
 const titleValidation = computed(() => {
-    if (!formInstance.value?.errors?.title) return null;
-    return {
-        state: 'error',
-        message: formInstance.value.errors.title,
-        showNotification: false
-    };
+    if (!formControls) return null;
+    return formControls.titleValidation.value;
 });
 
 const slugValidation = computed(() => {
-    if (!formInstance.value?.errors?.slug) return null;
-    return {
-        state: 'error',
-        message: formInstance.value.errors.slug,
-        showNotification: false
-    };
+    if (!formControls) return null;
+    return formControls.slugValidation.value;
 });
+
+// Gestion du slug manuel
+const handleSlugInput = () => {
+    if (formControls) {
+        formControls.handleSlugInput();
+    }
+};
 
 // URL de la page
 const pageUrl = computed(() => {
@@ -448,35 +154,20 @@ const copyUrl = async () => {
     await copyToClipboard(pageUrl.value, 'URL de la page copiée !');
 };
 
-// ============================================
-// 6. ENREGISTREMENT (ENVOI AU BACKEND)
-// ============================================
-/**
- * Soumet le formulaire avec les données du modèle de travail
- */
+// Soumettre le formulaire
 const submit = () => {
-    if (!formInstance.value || !workingModelData.value) {
-        console.error('EditPageModal - Form or working model is missing');
+    if (!formInstance.value || !pageModel.value) {
+        console.error('EditPageModal - Form or model is missing');
         return;
     }
     
-    const pageId = workingModelData.value.id;
-    if (!pageId) {
-        console.error('EditPageModal - Page ID is missing', workingModelData.value);
-        return;
-    }
+    const pageId = pageModel.value.id;
     
-    // Utiliser formInstance pour envoyer les données
     formInstance.value.patch(route('pages.update', { page: pageId }), {
         preserveScroll: true,
         onSuccess: () => {
-            // Mettre à jour la copie originale avec les nouvelles données
-            originalModelData.value = JSON.parse(JSON.stringify(workingModelData.value));
             emit('close');
             router.reload({ only: ['page', 'pages'] });
-        },
-        onError: () => {
-            // Les erreurs sont gérées automatiquement par Inertia
         }
     });
 };
@@ -490,11 +181,6 @@ const deletePage = () => {
     
     const pageId = pageModel.value.id;
     const pageTitle = pageModel.value.title || 'cette page';
-    
-    if (!pageId) {
-        console.error('Page ID is missing', pageModel.value);
-        return;
-    }
     
     if (confirm(`Êtes-vous sûr de vouloir supprimer la page "${pageTitle}" ?`)) {
         router.delete(route('pages.delete', pageId), {
@@ -570,7 +256,7 @@ const handleClose = () => {
         </div>
 
         <!-- Contenu de l'onglet Général -->
-        <form v-if="activeTab === 'general'" :key="`form-${pageModel?.id || 'new'}`" @submit.prevent="submit" class="space-y-4 max-h-[70vh] overflow-y-auto pr-2">
+        <form v-if="activeTab === 'general' && formInstance" @submit.prevent="submit" class="space-y-4 max-h-[70vh] overflow-y-auto pr-2">
             <!-- Message d'erreur global -->
             <Alert
                 v-if="formInstance && Object.keys(formInstance.errors || {}).length > 0"
@@ -585,7 +271,6 @@ const handleClose = () => {
             
             <!-- Titre -->
             <InputField
-                v-if="formInstance"
                 v-model="formInstance.title"
                 label="Titre"
                 type="text"
@@ -596,7 +281,6 @@ const handleClose = () => {
             
             <!-- Slug -->
             <InputField
-                v-if="formInstance"
                 v-model="formInstance.slug"
                 label="Slug"
                 type="text"
@@ -604,13 +288,12 @@ const handleClose = () => {
                 :validation="slugValidation"
                 placeholder="url-de-la-page"
                 helper="L'URL de la page (généré automatiquement depuis le titre)"
+                @input="handleSlugInput"
             />
             
             <!-- Visibilité -->
             <SelectField
-                v-if="formInstance"
-                :key="`is_visible-${formInstance.is_visible || 'none'}-${pageModel?.id || 'new'}`"
-                v-model="formIsVisible"
+                v-model="formInstance.is_visible"
                 label="Visibilité"
                 :options="visibilityOptions"
                 required
@@ -619,9 +302,7 @@ const handleClose = () => {
             
             <!-- Rôle requis pour modifier -->
             <SelectField
-                v-if="formInstance"
-                :key="`can_edit_role-${formInstance.can_edit_role || 'none'}-${pageModel?.id || 'new'}`"
-                v-model="formCanEditRole"
+                v-model="formInstance.can_edit_role"
                 label="Rôle requis pour modifier"
                 :options="visibilityOptions"
                 required
@@ -630,9 +311,7 @@ const handleClose = () => {
             
             <!-- État -->
             <SelectField
-                v-if="formInstance"
-                :key="`state-${formInstance.state || 'none'}-${pageModel?.id || 'new'}`"
-                v-model="formState"
+                v-model="formInstance.state"
                 label="État"
                 :options="stateOptions"
                 required
@@ -641,9 +320,7 @@ const handleClose = () => {
             
             <!-- Page parente -->
             <SelectField
-                v-if="formInstance"
-                :key="`parent_id-${formInstance.parent_id || 'null'}-${pageModel?.id || 'new'}`"
-                v-model="formParentId"
+                v-model="formInstance.parent_id"
                 label="Page parente"
                 :options="parentPageOptions"
                 helper="Page parente pour créer un menu hiérarchique (optionnel)"
@@ -651,7 +328,6 @@ const handleClose = () => {
             
             <!-- Dans le menu -->
             <ToggleField
-                v-if="formInstance"
                 v-model="formInstance.in_menu"
                 label="Afficher dans le menu"
                 helper="Si activé, la page apparaîtra dans le menu de navigation"
@@ -659,7 +335,6 @@ const handleClose = () => {
             
             <!-- Ordre dans le menu -->
             <InputField
-                v-if="formInstance"
                 v-model="formInstance.menu_order"
                 label="Ordre dans le menu"
                 type="number"
@@ -679,9 +354,9 @@ const handleClose = () => {
                 <Btn
                     type="submit"
                     color="primary"
-                    :disabled="form.processing"
+                    :disabled="formInstance.processing"
                 >
-                    <span v-if="form.processing">Enregistrement...</span>
+                    <span v-if="formInstance.processing">Enregistrement...</span>
                     <span v-else>Enregistrer les modifications</span>
                 </Btn>
             </div>
@@ -705,4 +380,3 @@ const handleClose = () => {
 <style scoped lang="scss">
 // Styles spécifiques si nécessaire
 </style>
-

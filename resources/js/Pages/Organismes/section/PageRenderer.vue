@@ -17,8 +17,7 @@
  * @example
  * <PageRenderer :page="page" :user="user" :pages="pages" />
  */
-import { computed, ref, onMounted, watch } from 'vue';
-import { router, usePage } from '@inertiajs/vue3';
+import { computed, ref, watch } from 'vue';
 import SectionRenderer from './SectionRenderer.vue';
 import Container from '@/Pages/Atoms/data-display/Container.vue';
 import EditPageModal from './modals/EditPageModal.vue';
@@ -26,7 +25,6 @@ import CreateSectionModal from './modals/CreateSectionModal.vue';
 import Btn from '@/Pages/Atoms/action/Btn.vue';
 import Icon from '@/Pages/Atoms/data-display/Icon.vue';
 import { Page } from '@/Models';
-import { useSectionMode } from './composables/useSectionMode';
 
 const props = defineProps({
     page: {

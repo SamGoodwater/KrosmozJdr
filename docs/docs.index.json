@@ -60,6 +60,11 @@
     "description": "- Fichiers : kebab-case (ex : `my-class-file.php`)"
   },
   {
+    "path": "10-BestPractices/PERMISSIONS_SOURCE_OF_TRUTH.md",
+    "title": "Permissions — Source of Truth (KrosmozJDR)",
+    "description": "- **Backend = vérité** : toutes les décisions d’autorisation (lecture/écriture) sont prises via **Policies/Gates** Laravel."
+  },
+  {
     "path": "10-BestPractices/PROJECT_STRUCTURE.md",
     "title": "Structure du projet",
     "description": "- Respect strict des conventions Laravel 12 (backend) et Vue 3 + Atomic Design (frontend)."
@@ -333,6 +338,11 @@
     "path": "20-Content/PAGES_SECTIONS_STATUS.md",
     "title": "État d'avancement - Architecture Sections et Pages",
     "description": "**Status** : Guide de test créé"
+  },
+  {
+    "path": "20-Content/PAGES_SECTIONS_SURFACE_MAP.md",
+    "title": "Cartographie Pages/Sections — Surface technique (Backend + Frontend)",
+    "description": "**Objectif** : lister tous les points d’entrée du système Pages/Sections, les actions mutantes, et leur protection (authn/authz/validation)."
   },
   {
     "path": "20-Content/PAGES_SECTIONS_TESTING.md",
