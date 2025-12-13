@@ -32,27 +32,28 @@ export class Resource extends BaseModel {
     }
 
     get level() {
-        return this._data.level || null;
+        return this._data.level ?? null;
     }
 
     get price() {
-        return this._data.price || null;
+        return this._data.price ?? null;
     }
 
     get weight() {
-        return this._data.weight || null;
+        return this._data.weight ?? null;
     }
 
     get rarity() {
-        return this._data.rarity || null;
+        // La colonne est NOT NULL en base : on garantit un int.
+        return this._data.rarity ?? 0;
     }
 
     get dofusVersion() {
-        return this._data.dofus_version || null;
+        return this._data.dofus_version ?? null;
     }
 
     get usable() {
-        return this._data.usable ?? false;
+        return Boolean(this._data.usable);
     }
 
     get image() {
@@ -60,7 +61,7 @@ export class Resource extends BaseModel {
     }
 
     get autoUpdate() {
-        return this._data.auto_update ?? false;
+        return Boolean(this._data.auto_update);
     }
 
     get resourceTypeId() {
@@ -76,7 +77,7 @@ export class Resource extends BaseModel {
     }
 
     get resourceType() {
-        return this._data.resourceType || [];
+        return this._data.resourceType || null;
     }
 
     get consumables() {
@@ -93,6 +94,10 @@ export class Resource extends BaseModel {
 
     get scenarios() {
         return this._data.scenarios || [];
+    }
+
+    get campaigns() {
+        return this._data.campaigns || [];
     }
 
     get shops() {
@@ -119,6 +124,7 @@ export class Resource extends BaseModel {
             rarity: this.rarity,
             dofus_version: this.dofusVersion,
             usable: this.usable,
+            is_visible: this._data.is_visible ?? null,
             image: this.image,
             auto_update: this.autoUpdate,
             resource_type_id: this.resourceTypeId

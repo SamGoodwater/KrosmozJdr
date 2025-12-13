@@ -62,6 +62,26 @@ const $attrs = useAttrs()
 // ------------------------------------------
 const { inputAttrs, listeners } = useInputProps(props, $attrs, emit, 'checkbox', 'core')
 
+/**
+ * Important: CheckboxCore gère lui-même l'événement `input` pour émettre un booléen
+ * via `e.target.checked`.
+ *
+ * Le système unifié `useInputField` attache aussi un listener `input` générique
+ * (basé sur `e.target.value`) pour les inputs texte, ce qui provoque une double
+ * émission (ex: "on") et casse la validation backend `boolean`.
+ *
+ * On filtre donc `input` (et `change` au besoin) des listeners reçus.
+ */
+const safeListeners = computed(() => {
+    const l = (listeners && typeof listeners === 'object' && 'value' in listeners)
+        ? (listeners.value || {})
+        : (listeners || {});
+
+    // eslint-disable-next-line no-unused-vars
+    const { input, change, ...rest } = l;
+    return rest;
+});
+
 // ------------------------------------------
 // 🎨 Style dynamique basé sur variant, color, etc.
 // ------------------------------------------
@@ -156,7 +176,7 @@ function onKeydown(e) {
         ref="checkboxRef"
         type="checkbox"
         v-bind="inputAttrs"
-        v-on="listeners"
+        v-on="safeListeners"
         :class="atomClasses"
         :checked="isChecked"
         :indeterminate="isIndeterminate"

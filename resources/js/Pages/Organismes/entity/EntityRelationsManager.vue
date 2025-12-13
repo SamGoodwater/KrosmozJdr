@@ -140,10 +140,12 @@ const routeName = computed(() => {
         relationTypeCamel = relationTypeCamel.charAt(0).toUpperCase() + relationTypeCamel.slice(1);
     }
     
-    // Pluraliser le type d'entité si nécessaire (panoply -> panoplies)
-    const entityTypePlural = props.entityType.endsWith('y') 
-        ? props.entityType.slice(0, -1) + 'ies' 
-        : props.entityType + 's';
+    // Par convention dans ce projet, `entityType` est déjà au pluriel dans les usages
+    // (ex: shops, scenarios, campaigns). On garde un fallback si quelqu'un passe le singulier.
+    const entityTypePlural = props.entityType.endsWith('s')
+        ? props.entityType
+        : (props.entityType.endsWith('y') ? props.entityType.slice(0, -1) + 'ies' : props.entityType + 's');
+
     return `entities.${entityTypePlural}.update${relationTypeCamel}`;
 });
 

@@ -313,6 +313,13 @@ class DataConversionService
      */
     private function mapItemTypeId(?int $typeId): array
     {
+        // Source of truth DB: si l'utilisateur a autorisé ce typeId comme "ressource",
+        // on le force en "resource" pour garantir l'intégration dans la table `resources`
+        // sans modification de code lors de nouveaux typeId.
+        if ($typeId !== null && \App\Models\Type\ResourceType::isDofusdbTypeAllowed($typeId)) {
+            return ['type' => 'resource', 'category' => 'resource'];
+        }
+
         // Mapping basé sur la configuration de DataIntegration
         $typeMapping = [
             1 => ['type' => 'weapon', 'category' => 'weapon'],

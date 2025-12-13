@@ -17,6 +17,7 @@ import EntityTypeSelector from './components/EntityTypeSelector.vue';
 import SearchPreviewSection from './components/SearchPreviewSection.vue';
 import ImportOptionsSection from './components/ImportOptionsSection.vue';
 import HistorySection from './components/HistorySection.vue';
+import ResourceTypeReviewSection from './components/ResourceTypeReviewSection.vue';
 
 const { setPageTitle } = usePageTitle();
 const notificationStore = useNotificationStore();
@@ -340,6 +341,9 @@ onMounted(async () => {
                     v-model="importOptions"
                 />
             </div>
+
+            <!-- Revue des nouveaux typeId DofusDB détectés (Ressources) -->
+            <ResourceTypeReviewSection />
 
             <!-- Section recherche et prévisualisation -->
             <SearchPreviewSection

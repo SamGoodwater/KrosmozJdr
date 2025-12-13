@@ -126,3 +126,23 @@ Route::prefix('scrapping')->group(function () {
             ->name('scrapping.import.all');
     });
 });
+
+/*
+|--------------------------------------------------------------------------
+| Registry des typeId DofusDB (Ressources)
+|--------------------------------------------------------------------------
+|
+| Endpoints pour valider/blacklister les nouveaux typeId détectés
+| sans modifier le code.
+|
+*/
+Route::middleware(['auth'])->prefix('scrapping/resource-types')->group(function () {
+    Route::get('/', [App\Http\Controllers\Scrapping\ResourceTypeRegistryController::class, 'index'])
+        ->name('scrapping.resource-types.index');
+    Route::get('/pending', [App\Http\Controllers\Scrapping\ResourceTypeRegistryController::class, 'pending'])
+        ->name('scrapping.resource-types.pending');
+    Route::patch('/{resourceType}/decision', [App\Http\Controllers\Scrapping\ResourceTypeRegistryController::class, 'updateDecision'])
+        ->name('scrapping.resource-types.decision');
+    Route::post('/{resourceType}/replay', [App\Http\Controllers\Scrapping\ResourceTypeRegistryController::class, 'replayPending'])
+        ->name('scrapping.resource-types.replay');
+});

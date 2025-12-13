@@ -27,6 +27,10 @@ const props = defineProps({
     filters: {
         type: Object,
         default: () => ({})
+    },
+    resourceTypes: {
+        type: Array,
+        default: () => []
     }
 });
 
@@ -145,8 +149,52 @@ const filterableColumns = computed(() => [
             { value: '150', label: '150' },
             { value: '200', label: '200' }
         ]
+    },
+    {
+        key: 'resource_type_id',
+        label: 'Type',
+        options: [
+            { value: '', label: 'Tous' },
+            ...props.resourceTypes.map(t => ({ value: String(t.id), label: t.name }))
+        ]
     }
 ]);
+
+// Configuration des champs pour la création/édition via modal
+const fieldsConfig = computed(() => ({
+    name: { type: 'text', label: 'Nom', required: true, showInCompact: true },
+    description: { type: 'textarea', label: 'Description', required: false, showInCompact: false },
+    level: { type: 'text', label: 'Niveau', required: false, showInCompact: true },
+    rarity: {
+        type: 'select',
+        label: 'Rareté',
+        required: false,
+        showInCompact: true,
+        options: [
+            { value: 0, label: 'Commun' },
+            { value: 1, label: 'Peu commun' },
+            { value: 2, label: 'Rare' },
+            { value: 3, label: 'Très rare' },
+            { value: 4, label: 'Légendaire' },
+            { value: 5, label: 'Unique' },
+        ]
+    },
+    resource_type_id: {
+        type: 'select',
+        label: 'Type de ressource',
+        required: false,
+        showInCompact: true,
+        options: [
+            { value: '', label: '—' },
+            ...props.resourceTypes.map(t => ({ value: t.id, label: t.name }))
+        ]
+    },
+    usable: { type: 'checkbox', label: 'Utilisable', required: false, showInCompact: true },
+    auto_update: { type: 'checkbox', label: 'Auto-update', required: false, showInCompact: true },
+    price: { type: 'text', label: 'Prix', required: false, showInCompact: true },
+    weight: { type: 'text', label: 'Poids', required: false, showInCompact: true },
+    image: { type: 'text', label: 'Image (URL)', required: false, showInCompact: false },
+}));
 
 const handlePageChange = (url) => {
     if (url) {
@@ -214,9 +262,10 @@ const closeModal = () => {
         <CreateEntityModal
             :open="createModalOpen"
             entity-type="resource"
+            :fields-config="fieldsConfig"
+            :default-entity="{ rarity: 0, usable: false, auto_update: false }"
             @close="handleCloseCreateModal"
             @created="handleEntityCreated"
-                    @refresh-all="handleRefreshAll"
         />
 
         <!-- Modal de visualisation -->

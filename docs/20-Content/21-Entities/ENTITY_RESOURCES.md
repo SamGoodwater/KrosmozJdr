@@ -19,6 +19,25 @@ Les ressources regroupent tous les matériaux de base du jeu : minerais, plant
 Chaque ressource possède un type (`resource_type_id`) qui permet de regrouper les ressources par famille (minerai, plante, peau, bois, etc.).
 Exemples de types : minerai, plante, peau, bois, poisson, tissu, etc.
 
+## Implémentation (niveau 1)
+- **Backend**
+  - CRUD complet via `ResourceController` (index/show/create/store/edit/update/delete).
+  - Gestion des relations (pivots) via endpoints dédiés :
+    - `updateItems` (pivot `quantity`)
+    - `updateConsumables` (pivot `quantity`)
+    - `updateCreatures` (pivot `quantity`)
+    - `updateShops` (pivots `quantity`, `price`, `comment`)
+    - `updateScenarios` (sans pivot)
+    - `updateCampaigns` (sans pivot)
+- **Frontend**
+  - Liste: tableau avec recherche/tri/filtres (niveau + type).
+  - Pages: `Show` (lecture) et `Edit` (édition) avec affichage des pivots au minimum (quantités).
+  - Modale de création: utilise le composant générique `CreateEntityModal` + configuration des champs Ressource.
+- **Scrapping**
+  - Les ressources sont importées via le flux “item” (DofusDB `/items`).
+  - Les `typeId` DofusDB sont gérés via un registre en base (`resource_types` + décision allow/blocked/pending)
+    et une UI de revue dans le dashboard scrapping.
+
 ## Liens utiles
 - [ENTITY_ITEMS.md](ENTITY_ITEMS.md)
 - [ENTITY_CONSUMABLES.md](ENTITY_CONSUMABLES.md)

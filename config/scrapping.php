@@ -52,6 +52,36 @@ return [
             'requests_per_minute' => env('SCRAPPING_RATE_LIMIT_REQUESTS', 60),
             'delay_between_requests' => env('SCRAPPING_RATE_LIMIT_DELAY', 1000),
         ],
+        /*
+        |--------------------------------------------------------------------------
+        | Détection des "ressources" dans les items DofusDB
+        |--------------------------------------------------------------------------
+        |
+        | Le système de scrapping récupère certaines données via l'endpoint /items.
+        | Pour distinguer les "resources" (matériaux) des autres items, on se base
+        | sur le champ `typeId` renvoyé par DofusDB.
+        |
+        | - allowlist: types explicitement considérés comme "resource"
+        | - denylist: types explicitement exclus (blacklist), même s'ils sont dans l'allowlist
+        | - log_unknown_type_ids: log une alerte quand un typeId non connu apparaît
+        |
+        | Par défaut, DofusDB utilise au moins :
+        | - 15 : resources
+        | - 35 : flowers
+        |
+        | Vous pouvez étendre l'allowlist au fur et à mesure des détections.
+        */
+        'resources' => [
+            // Si true, utilise la table `resource_types` (dofusdb_type_id + decision) comme source de vérité.
+            // Si false, utilise la allowlist/denylist de config (fallback historique).
+            'use_database_registry' => true,
+            // Liste blanche par défaut (peut être surchargée par config/env si besoin)
+            'type_ids_allowlist' => [15, 35],
+            // Blacklist (prioritaire sur l'allowlist)
+            'type_ids_denylist' => [],
+            // Log des typeId inconnus rencontrés dans des contextes "ressource" (drops/recipe)
+            'log_unknown_type_ids' => true,
+        ],
     ],
 
     /*

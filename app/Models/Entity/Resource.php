@@ -12,6 +12,7 @@ use App\Models\Entity\Creature;
 use App\Models\Entity\Item;
 use App\Models\Entity\Scenario;
 use App\Models\Entity\Shop;
+use App\Models\Entity\Campaign;
 
 /**
  * 
@@ -166,6 +167,14 @@ class Resource extends Model
     public function scenarios()
     {
         return $this->belongsToMany(Scenario::class, 'resource_scenario');
+    }
+
+    /**
+     * Les campagnes associées à cette ressource.
+     */
+    public function campaigns()
+    {
+        return $this->belongsToMany(Campaign::class, 'resource_campaign');
     }
     /**
      * Les boutiques associées à cette ressource.

@@ -1232,19 +1232,16 @@ class DataIntegrationService
             return null;
         }
 
-        // Mapping typeId DofusDB -> ResourceType name
-        // Note: Le mapping est approximatif car DofusDB ne fournit pas directement le type de ressource
-        $typeMapping = [
-            15 => 'Minerai', // Ressources de base (minerais, fragments, etc.)
-            35 => 'Fleur', // Fleurs
-        ];
+        // Source of truth DB: resource_types.dofusdb_type_id + decision
+        // On enregistre/actualise le type détecté pour la revue UX.
+        $resourceType = ResourceType::touchDofusdbType($typeId);
 
-        $typeName = $typeMapping[$typeId] ?? null;
-        if ($typeName === null) {
-            Log::warning('TypeId DofusDB non mappé pour ResourceType', ['type_id' => $typeId]);
+        // Si pas autorisé, on ne force pas l'assignation (mais la ressource peut quand même exister
+        // si elle a été importée via un autre chemin). On laisse null pour éviter d'associer à un type bloqué.
+        if ($resourceType->decision !== 'allowed') {
             return null;
         }
 
-        return ResourceType::where('name', $typeName)->first();
+        return $resourceType;
     }
 }

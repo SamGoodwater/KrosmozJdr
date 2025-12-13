@@ -34,13 +34,13 @@ class StoreResourceRequest extends FormRequest
             'weight' => ['nullable', 'string', 'max:255'],
             'rarity' => ['nullable', 'integer', 'min:0', 'max:5'],
             'dofus_version' => ['nullable', 'string', 'max:255'],
-            'usable' => ['nullable', 'integer', 'in:0,1'],
+            'usable' => ['nullable', 'boolean'],
             'is_visible' => ['nullable', 'string', 'max:255'],
             'image' => ['nullable', 'string', 'max:255'],
             'auto_update' => ['nullable', 'boolean'],
             'dofusdb_id' => ['nullable', 'string', 'max:255'],
             'official_id' => ['nullable', 'integer'],
-            'resource_type_id' => ['nullable', 'integer', 'exists:type_resource_types,id'],
+            'resource_type_id' => ['nullable', 'integer', 'exists:resource_types,id'],
         ];
     }
 }

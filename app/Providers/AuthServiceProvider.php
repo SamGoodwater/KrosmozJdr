@@ -3,10 +3,12 @@
 namespace App\Providers;
 
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
+use App\Models\Type\ResourceType;
 use App\Models\Page;
 use App\Models\Section;
 use App\Policies\PagePolicy;
 use App\Policies\SectionPolicy;
+use App\Policies\Type\ResourceTypePolicy;
 
 class AuthServiceProvider extends ServiceProvider
 {
@@ -18,6 +20,7 @@ class AuthServiceProvider extends ServiceProvider
     protected $policies = [
         Page::class => PagePolicy::class,
         Section::class => SectionPolicy::class,
+        ResourceType::class => ResourceTypePolicy::class,
     ];
 
     /**

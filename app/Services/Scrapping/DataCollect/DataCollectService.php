@@ -5,6 +5,7 @@ namespace App\Services\Scrapping\DataCollect;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Cache;
+use App\Models\Scrapping\PendingResourceTypeItem;
 
 /**
  * Service de collecte de données depuis des sites externes
@@ -168,8 +169,20 @@ class DataCollectService
                         $itemData = $this->collectItem($itemId);
                         // Vérifier si c'est une ressource (typeId dans TYPES_RESOURCES)
                         $typeId = $itemData['typeId'] ?? null;
-                        if ($typeId && $this->isResourceType($typeId)) {
-                            $resources[] = $itemData;
+                        if ($typeId) {
+                            if ($this->isResourceType((int) $typeId)) {
+                                $resources[] = $itemData;
+                            } else {
+                                // Mémoriser l'item rencontré pour réimport futur si le type est autorisé
+                                $this->rememberPendingResourceCandidate(
+                                    (int) $typeId,
+                                    (int) $itemId,
+                                    'drops',
+                                    'monster',
+                                    $dofusdbId,
+                                    null
+                                );
+                            }
                         }
                     } catch (\Exception $e) {
                         Log::warning('Impossible de collecter la ressource associée au monstre', [
@@ -224,11 +237,22 @@ class DataCollectService
                         $itemData = $this->collectItem($itemId, false); // Ne pas inclure la recette pour éviter la récursion infinie
                         // Vérifier si c'est une ressource
                         $typeId = $itemData['typeId'] ?? null;
-                        if ($typeId && $this->isResourceType($typeId)) {
-                            $recipeResources[] = [
-                                'resource' => $itemData,
-                                'quantity' => $quantity
-                            ];
+                        if ($typeId) {
+                            if ($this->isResourceType((int) $typeId)) {
+                                $recipeResources[] = [
+                                    'resource' => $itemData,
+                                    'quantity' => $quantity
+                                ];
+                            } else {
+                                $this->rememberPendingResourceCandidate(
+                                    (int) $typeId,
+                                    (int) $itemId,
+                                    'recipe',
+                                    'item',
+                                    $dofusdbId,
+                                    (int) $quantity
+                                );
+                            }
                         }
                     } catch (\Exception $e) {
                         Log::warning('Impossible de collecter la ressource de la recette', [
@@ -248,6 +272,42 @@ class DataCollectService
         ]);
         
         return $data;
+    }
+
+    /**
+     * Mémorise un item DofusDB rencontré dans un contexte "ressource" (recette/drops)
+     * lorsque son typeId n'est pas encore autorisé.
+     */
+    private function rememberPendingResourceCandidate(
+        int $typeId,
+        int $itemId,
+        string $context,
+        ?string $sourceEntityType,
+        ?int $sourceEntityDofusdbId,
+        ?int $quantity
+    ): void {
+        try {
+            PendingResourceTypeItem::firstOrCreate(
+                [
+                    'dofusdb_type_id' => $typeId,
+                    'dofusdb_item_id' => $itemId,
+                    'context' => $context,
+                    'source_entity_type' => $sourceEntityType,
+                    'source_entity_dofusdb_id' => $sourceEntityDofusdbId,
+                ],
+                [
+                    'quantity' => $quantity,
+                ]
+            );
+        } catch (\Throwable $e) {
+            // On ne casse pas l'import pour un souci de log/mémoire
+            Log::warning('Impossible d\'enregistrer un item en attente (typeId non autorisé)', [
+                'type_id' => $typeId,
+                'item_id' => $itemId,
+                'context' => $context,
+                'error' => $e->getMessage(),
+            ]);
+        }
     }
     
     /**
@@ -304,17 +364,49 @@ class DataCollectService
      */
     private function isResourceType(int $typeId): bool
     {
-        // Types de ressources selon la configuration DofusDB
-        // Basé sur les types définis dans fields_config.php
-        // Les ressources sont généralement les types 15 (ressources) et 35 (fleurs)
-        // et d'autres types dans la plage des ressources
-        $resourceTypes = [
-            15, // resources
-            35, // flowers
-            // Ajouter d'autres types de ressources si nécessaire
-        ];
-        
-        return in_array($typeId, $resourceTypes);
+        $resourcesConfig = $this->config['resources'] ?? [];
+        $useDatabaseRegistry = (bool) ($resourcesConfig['use_database_registry'] ?? false);
+
+        // Source of truth DB (recommandé) : resource_types.dofusdb_type_id + decision
+        if ($useDatabaseRegistry) {
+            $type = \App\Models\Type\ResourceType::touchDofusdbType($typeId);
+
+            // pending => refus par défaut (l'utilisateur doit valider via UX)
+            if ($type->decision === 'allowed') {
+                return true;
+            }
+            if ($type->decision === 'blocked' || $type->decision === 'pending') {
+                return false;
+            }
+
+            // Valeur inattendue => refus par défaut
+            return false;
+        }
+
+        $allowlist = $resourcesConfig['type_ids_allowlist'] ?? [15, 35];
+        $denylist = $resourcesConfig['type_ids_denylist'] ?? [];
+
+        // Blacklist prioritaire
+        if (in_array($typeId, $denylist, true)) {
+            return false;
+        }
+
+        // Par défaut: allowlist stricte (on étend au fur et à mesure)
+        $isAllowed = in_array($typeId, $allowlist, true);
+
+        // Log des typeId inconnus pour faciliter l'extension de la liste
+        if (!$isAllowed && ($resourcesConfig['log_unknown_type_ids'] ?? true)) {
+            static $alreadyLogged = [];
+            if (!isset($alreadyLogged[$typeId])) {
+                $alreadyLogged[$typeId] = true;
+                Log::warning('TypeId DofusDB inconnu pour les ressources (à ajouter à la allowlist ou denylist)', [
+                    'type_id' => $typeId,
+                    'hint' => 'config(scrapping.data_collect.resources.type_ids_allowlist|type_ids_denylist)',
+                ]);
+            }
+        }
+
+        return $isAllowed;
     }
 
     /**

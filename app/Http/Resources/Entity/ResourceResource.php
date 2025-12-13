@@ -46,6 +46,7 @@ class ResourceResource extends JsonResource
             'creatures' => $this->whenLoaded('creatures'),
             'items' => $this->whenLoaded('items'),
             'scenarios' => $this->whenLoaded('scenarios'),
+            'campaigns' => $this->whenLoaded('campaigns'),
             'shops' => $this->whenLoaded('shops'),
 
             // Droits d'accès
