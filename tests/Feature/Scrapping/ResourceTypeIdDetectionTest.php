@@ -19,6 +19,8 @@ class ResourceTypeIdDetectionTest extends TestCase
 
     public function test_allowlist_allows_known_resource_type_ids(): void
     {
+        // Forcer le mode "config allow/deny lists" (sinon la source de vérité est la DB)
+        config()->set('scrapping.data_collect.resources.use_database_registry', false);
         config()->set('scrapping.data_collect.resources.type_ids_allowlist', [15, 35]);
         config()->set('scrapping.data_collect.resources.type_ids_denylist', []);
 
@@ -34,6 +36,8 @@ class ResourceTypeIdDetectionTest extends TestCase
 
     public function test_denylist_is_prioritary_over_allowlist(): void
     {
+        // Forcer le mode "config allow/deny lists" (sinon la source de vérité est la DB)
+        config()->set('scrapping.data_collect.resources.use_database_registry', false);
         config()->set('scrapping.data_collect.resources.type_ids_allowlist', [15, 35]);
         config()->set('scrapping.data_collect.resources.type_ids_denylist', [15]);
 

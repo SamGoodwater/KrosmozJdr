@@ -79,9 +79,17 @@ export default function useInputProps(props, attrs, emit, type = 'input', mode =
 
   const listeners = {}
   for (const key in attrs) {
-    if (key.startsWith('on') && typeof attrs[key] === 'function') {
+    if (key.startsWith('on')) {
+      const handler = attrs[key]
       const eventName = key.slice(2).toLowerCase()
-      listeners[eventName] = attrs[key]
+      // Vue peut fournir un handler unique (function) ou une liste de handlers (array)
+      if (typeof handler === 'function') {
+        listeners[eventName] = handler
+      } else if (Array.isArray(handler) && handler.every(h => typeof h === 'function')) {
+        listeners[eventName] = (event, ...rest) => {
+          handler.forEach((h) => h(event, ...rest))
+        }
+      }
     }
   }
 

@@ -164,6 +164,7 @@ class DataCollectService
             $resources = [];
             foreach ($data['drops'] as $drop) {
                 $itemId = is_array($drop) ? ($drop['itemId'] ?? $drop['id'] ?? null) : $drop;
+                $quantity = is_array($drop) ? ($drop['quantity'] ?? null) : null;
                 if ($itemId) {
                     try {
                         $itemData = $this->collectItem($itemId);
@@ -180,7 +181,7 @@ class DataCollectService
                                     'drops',
                                     'monster',
                                     $dofusdbId,
-                                    null
+                                    $quantity !== null ? (int) $quantity : null
                                 );
                             }
                         }
@@ -272,6 +273,55 @@ class DataCollectService
         ]);
         
         return $data;
+    }
+
+    /**
+     * Collecte une page d'items depuis DofusDB (endpoint /items)
+     *
+     * @param int $skip Décalage (pagination)
+     * @param int $limit Taille de page
+     * @param array<string, mixed> $extraQuery Paramètres additionnels (ex: filtres)
+     * @return array Données brutes DofusDB (souvent {total, limit, skip, data})
+     *
+     * @example
+     * $page = $service->collectItemsPage(0, 100);
+     * $items = $page['data'] ?? [];
+     */
+    public function collectItemsPage(int $skip = 0, int $limit = 100, array $extraQuery = []): array
+    {
+        $baseUrl = $this->config['dofusdb']['base_url']
+            ?? $this->config['dofusdb_base_url']
+            ?? 'https://api.dofusdb.fr';
+        $lang = $this->config['dofusdb']['default_language'] ?? 'fr';
+
+        // DofusDB attend des paramètres "$limit" et "$skip" (Feathers)
+        $url = "{$baseUrl}/items?lang={$lang}&\$limit={$limit}&\$skip={$skip}";
+        foreach ($extraQuery as $key => $value) {
+            // Support des paramètres multiples (ex: typeId[$in][]=15, typeId[$in][]=35)
+            if (is_array($value)) {
+                foreach ($value as $v) {
+                    $url .= '&' . $key . '=' . rawurlencode((string) $v);
+                }
+                continue;
+            }
+            $url .= '&' . $key . '=' . rawurlencode((string) $value);
+        }
+
+        return $this->fetchFromDofusDb($url);
+    }
+
+    /**
+     * Indique si un typeId DofusDB est actuellement autorisé comme "ressource".
+     *
+     * @param int $typeId
+     * @return bool
+     *
+     * @example
+     * if ($service->isAllowedResourceTypeId(15)) { ... }
+     */
+    public function isAllowedResourceTypeId(int $typeId): bool
+    {
+        return $this->isResourceType($typeId);
     }
 
     /**

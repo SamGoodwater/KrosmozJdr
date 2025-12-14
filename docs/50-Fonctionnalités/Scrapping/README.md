@@ -208,6 +208,57 @@ $convertedData = $conversionService->convertClass($rawData);
 $result = $integrationService->integrateClass($convertedData);
 ```
 
+### 🖼️ Backfill des images locales (entités déjà importées)
+
+Quand des entités existent déjà en base avec une image distante (ou sans image), vous pouvez **télécharger et stocker localement** les images DofusDB, sans relancer un scrapping complet.
+
+Variables utiles (voir `config/scrapping.php`) :
+
+```bash
+# Active/désactive le téléchargement et stockage des images
+SCRAPPING_IMAGES_ENABLED=true
+
+# Répertoire et disk (Laravel)
+SCRAPPING_IMAGES_DISK=public
+SCRAPPING_IMAGES_BASE_DIR="scrapping/images"
+
+# Limite de sécurité
+SCRAPPING_IMAGES_MAX_BYTES=5242880
+SCRAPPING_IMAGES_TIMEOUT=15
+```
+
+Commandes :
+
+```bash
+# Prévisualisation (ne télécharge rien, n'écrit rien)
+php artisan scrapping:backfill-images --limit=50 --dry-run
+
+# Backfill sur toutes les entités (resources/items/consumables/spells/monsters)
+php artisan scrapping:backfill-images --limit=500
+
+# Backfill ciblé
+php artisan scrapping:backfill-images resource --limit=200
+
+# Re-télécharge même si l'image locale existe déjà
+php artisan scrapping:backfill-images resource --force --limit=200
+```
+
+### 📊 Tables “hybrides” (serveur + client) avec TanStack Table
+
+Certaines pages d’administration utilisent une table centralisée (`EntityTable.vue`) capable de fonctionner en **2 modes** :
+
+- **Mode serveur** (par défaut) : la pagination/filtrage/tri passe par Inertia + backend (stable pour très gros volumes).
+- **Mode client** : on charge un lot important via API **à partir des filtres serveur courants** (baseline), puis **tri/filtre/recherche/pagination** se font instantanément côté navigateur (TanStack Table), avec **export CSV**. Les filtres UI deviennent alors une **couche additionnelle client** (ils ne peuvent pas élargir au-delà du sous-ensemble chargé).
+
+Endpoints utilisés (chargement “mode client”) :
+
+- `GET /api/entity-table/resources?limit=5000`
+- `GET /api/entity-table/resource-types?limit=5000`
+
+Notes :
+- Le `limit` est **borné** côté backend (par défaut 5000, max 20000) pour éviter les charges excessives.
+- Pour de très gros volumes, gardez le **mode serveur** et utilisez le mode client sur des lots ciblés (ex: après un filtre serveur).
+
 ## 📈 Monitoring et métriques
 
 ### **Métriques collectées**

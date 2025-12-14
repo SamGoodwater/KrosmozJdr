@@ -28,12 +28,16 @@ class ScrappingResourceConversionTest extends TestCase
         $this->actingAs($admin);
 
         // Registry DB: typeId 15 doit exister et être autorisé pour être assigné à resource_type_id
-        $resourceType = ResourceType::factory()->create([
-            'name' => 'Minerai',
-            'dofusdb_type_id' => 15,
-            'decision' => 'allowed',
-            'created_by' => $admin->id,
-        ]);
+        $resourceType = ResourceType::query()->updateOrCreate(
+            ['dofusdb_type_id' => 15],
+            [
+                'name' => 'Minerai',
+                'decision' => ResourceType::DECISION_ALLOWED,
+                'usable' => 1,
+                'is_visible' => 'guest',
+                'created_by' => $admin->id,
+            ]
+        );
 
         $rawItem = [
             'id' => 123,

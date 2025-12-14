@@ -47,12 +47,24 @@ class ResourceController extends Controller
         if (request()->has('resource_type_id') && request()->resource_type_id !== '') {
             $query->where('resource_type_id', request()->resource_type_id);
         }
+
+        if (request()->has('rarity') && request()->rarity !== '') {
+            $query->where('rarity', (int) request()->rarity);
+        }
+
+        if (request()->has('usable') && request()->usable !== '') {
+            $query->where('usable', (int) request()->usable);
+        }
+
+        if (request()->has('auto_update') && request()->auto_update !== '') {
+            $query->where('auto_update', (int) request()->auto_update);
+        }
         
         // Tri
         $sortColumn = request()->get('sort', 'id');
         $sortOrder = request()->get('order', 'desc');
         
-        if (in_array($sortColumn, ['id', 'name', 'level', 'dofusdb_id', 'created_at'])) {
+        if (in_array($sortColumn, ['id', 'name', 'level', 'rarity', 'price', 'weight', 'usable', 'auto_update', 'dofusdb_id', 'created_at'], true)) {
             $query->orderBy($sortColumn, $sortOrder);
         } else {
             $query->latest();
@@ -62,7 +74,7 @@ class ResourceController extends Controller
         
         return Inertia::render('Pages/entity/resource/Index', [
             'resources' => ResourceResource::collection($resources),
-            'filters' => request()->only(['search', 'level', 'resource_type_id']),
+            'filters' => request()->only(['search', 'level', 'resource_type_id', 'rarity', 'usable', 'auto_update']),
             'resourceTypes' => ResourceType::query()->select('id', 'name')->orderBy('name')->get(),
         ]);
     }

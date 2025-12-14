@@ -185,6 +185,11 @@
     "description": "La **Phase 3** du refactoring a consisté à unifier complètement le système d'input en créant un composable centralisé `useInputField` et un template standardisé `FieldTemplate`. Cette phase a permis d'éliminer la duplication de code et d'offrir une API transparente et cohérente."
   },
   {
+    "path": "100- Done/RESOURCE_ENTITY_LEVEL1.md",
+    "title": "Ressource — Chaîne Niveau 1 (CRUD + pivots essentiels + scrapping types)",
+    "description": "L’objectif était de livrer une première chaîne complète autour de l’entité **Ressource** afin de valider le “pattern” du projet (scrapping → base → backend → frontend), tout en évitant de devoir finaliser toutes les autres entités en même temps."
+  },
+  {
     "path": "100- Done/SCRAPPING_IMPLEMENTATION_PROGRESS.md",
     "title": "Progression de l'implémentation du système de Scrapping",
     "description": "**2025-01-27**"

@@ -38,6 +38,7 @@ require __DIR__ . '/entities/monster.php';
 require __DIR__ . '/entities/npc.php';
 require __DIR__ . '/entities/panoply.php';
 require __DIR__ . '/entities/resource.php';
+require __DIR__ . '/entities/resource-type.php';
 require __DIR__ . '/entities/scenario.php';
 require __DIR__ . '/entities/shop.php';
 require __DIR__ . '/entities/specialization.php';

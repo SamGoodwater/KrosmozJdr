@@ -44,6 +44,10 @@ class ResourceType extends Model
     /** @use HasFactory<\Database\Factories\ResourceTypeFactory> */
     use HasFactory, SoftDeletes;
 
+    public const DECISION_PENDING = 'pending';
+    public const DECISION_ALLOWED = 'allowed';
+    public const DECISION_BLOCKED = 'blocked';
+
     /**
      * The attributes that are mass assignable.
      *
@@ -73,6 +77,42 @@ class ResourceType extends Model
     ];
 
     /**
+     * Scope: types explicitement autorisés (whitelist).
+     *
+     * @param \Illuminate\Database\Eloquent\Builder $query
+     * @return \Illuminate\Database\Eloquent\Builder
+     *
+     * @example
+     * ResourceType::query()->allowed()->get();
+     */
+    public function scopeAllowed($query)
+    {
+        return $query->where('decision', self::DECISION_ALLOWED);
+    }
+
+    /**
+     * Scope: types bloqués (blacklist).
+     *
+     * @param \Illuminate\Database\Eloquent\Builder $query
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeBlocked($query)
+    {
+        return $query->where('decision', self::DECISION_BLOCKED);
+    }
+
+    /**
+     * Scope: types en attente de validation UX.
+     *
+     * @param \Illuminate\Database\Eloquent\Builder $query
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopePending($query)
+    {
+        return $query->where('decision', self::DECISION_PENDING);
+    }
+
+    /**
      * Indique si un typeId DofusDB est explicitement autorisé en base.
      *
      * Comportement:
@@ -96,7 +136,7 @@ class ResourceType extends Model
             return false;
         }
 
-        return $type->decision === 'allowed';
+        return $type->decision === self::DECISION_ALLOWED;
     }
 
     /**
@@ -121,7 +161,7 @@ class ResourceType extends Model
                 'name' => $name,
                 'usable' => 1,
                 'is_visible' => 'guest',
-                'decision' => 'pending',
+                'decision' => self::DECISION_PENDING,
                 'seen_count' => 0,
                 'created_by' => User::getSystemUser()?->id,
             ]

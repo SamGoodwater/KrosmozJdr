@@ -4,6 +4,9 @@
  * 
  * @description
  * Tableau complet pour afficher des entités avec pagination, tri et actions
+ * Supporte un mode hybride :
+ * - server: tri/filtre/recherche/pagination via Inertia (backend)
+ * - client: tri/filtre/recherche/pagination côté navigateur (TanStack Table) sur un dataset chargé
  * 
  * @props {Array} entities - Liste des entités à afficher
  * @props {Array} columns - Configuration des colonnes
@@ -32,6 +35,7 @@ import Icon from '@/Pages/Atoms/data-display/Icon.vue';
 import Dropdown from '@/Pages/Atoms/action/Dropdown.vue';
 import { useEntityTableSettings } from '@/Composables/store/useEntityTableSettings';
 import { useEntityViewFormat } from '@/Composables/store/useEntityViewFormat';
+import { getCoreRowModel, getPaginationRowModel, getSortedRowModel, useVueTable } from '@tanstack/vue-table';
 
 const props = defineProps({
     entities: {
@@ -87,6 +91,27 @@ const props = defineProps({
     isAdmin: {
         type: Boolean,
         default: false
+    },
+    /**
+     * Mode de table:
+     * - server: utilise `pagination`/Inertia pour tri/filtre/recherche/pagination
+     * - client: utilise TanStack Table sur `entities`
+     */
+    mode: {
+        type: String,
+        default: 'server',
+        validator: (v) => ['server', 'client'].includes(v)
+    },
+    /**
+     * Activer l'export CSV (côté client, depuis le dataset courant).
+     */
+    enableExportCsv: {
+        type: Boolean,
+        default: true
+    },
+    exportFilename: {
+        type: String,
+        default: null
     }
 });
 
@@ -102,6 +127,17 @@ const sortBy = ref('');
 const sortOrder = ref('asc');
 
 const handleSort = (columnKey) => {
+    // Mode client: tri local (ne pas déclencher le backend)
+    if (props.mode === 'client') {
+        if (sortBy.value === columnKey) {
+            sortOrder.value = sortOrder.value === 'asc' ? 'desc' : 'asc';
+        } else {
+            sortBy.value = columnKey;
+            sortOrder.value = 'asc';
+        }
+        return;
+    }
+
     if (sortBy.value === columnKey) {
         sortOrder.value = sortOrder.value === 'asc' ? 'desc' : 'asc';
     } else {
@@ -189,6 +225,165 @@ const handleRefreshAll = () => {
 const disableQuickActions = computed(() => {
     return props.selectedEntities.length > 1;
 });
+
+/**
+ * Récupère une valeur "raw" pour un champ (support BaseModel ou objet brut).
+ */
+const getEntityFieldValue = (entity, key) => {
+    if (!entity) return null;
+    if (typeof entity._data !== 'undefined') {
+        if (typeof entity[key] !== 'undefined') return entity[key];
+        return entity._data?.[key] ?? null;
+    }
+    return entity[key] ?? null;
+};
+
+/**
+ * Applique les filtres "select" (égalité) côté client sur le dataset.
+ * NB: on garde les mêmes clés que celles envoyées au backend (ex: resource_type_id).
+ */
+const clientFilteredEntities = computed(() => {
+    if (props.mode !== 'client') return props.entities || [];
+    const activeFilters = props.filters || {};
+    const searchValue = (props.search || '').trim().toLowerCase();
+
+    const searchableColumns = (filteredColumns.value || []).filter((c) => c.key !== 'actions');
+
+    return (props.entities || []).filter((entity) => {
+        // Filtres "select"
+        for (const [k, v] of Object.entries(activeFilters)) {
+            if (v === '' || v === null || typeof v === 'undefined') continue;
+            const raw = getEntityFieldValue(entity, k);
+
+            // bool/int filter (0/1) ou string
+            if (raw === null || typeof raw === 'undefined') return false;
+
+            const rawStr = String(raw);
+            if (rawStr !== String(v)) {
+                return false;
+            }
+        }
+
+        // Recherche globale (sur colonnes visibles)
+        if (!searchValue) return true;
+        for (const col of searchableColumns) {
+            const raw = getEntityFieldValue(entity, col.key);
+            const text = raw === null || typeof raw === 'undefined' ? '' : String(raw);
+            if (text.toLowerCase().includes(searchValue)) return true;
+        }
+        return false;
+    });
+});
+
+/**
+ * TanStack Table: tri + pagination côté client.
+ * (On conserve l'UI existante: header/rows, mais le dataset est transformé par TanStack.)
+ */
+const sorting = computed(() => {
+    if (!sortBy.value) return [];
+    return [{ id: sortBy.value, desc: sortOrder.value === 'desc' }];
+});
+
+const paginationState = ref({ pageIndex: 0, pageSize: 25 });
+
+const tanstackColumns = computed(() => {
+    // Pour le tri, on expose toutes les colonnes "data" sauf actions.
+    return (props.columns || [])
+        .filter((c) => c.key && c.key !== 'actions')
+        .map((c) => ({
+            id: c.key,
+            accessorFn: (row) => getEntityFieldValue(row, c.key),
+            enableSorting: c.sortable !== false,
+        }));
+});
+
+const table = useVueTable({
+    get data() {
+        return clientFilteredEntities.value;
+    },
+    get columns() {
+        return tanstackColumns.value;
+    },
+    getCoreRowModel: getCoreRowModel(),
+    getSortedRowModel: getSortedRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
+    state: {
+        get sorting() {
+            return sorting.value;
+        },
+        get pagination() {
+            return paginationState.value;
+        },
+    },
+    onPaginationChange: (updater) => {
+        const next = typeof updater === 'function' ? updater(paginationState.value) : updater;
+        paginationState.value = next;
+    },
+});
+
+const entitiesToRender = computed(() => {
+    if (props.mode !== 'client') return props.entities || [];
+    return table.getRowModel().rows.map((r) => r.original);
+});
+
+const clientTotal = computed(() => clientFilteredEntities.value.length);
+
+const clientPageCount = computed(() => table.getPageCount());
+
+const handleClientPrev = () => {
+    if (table.getCanPreviousPage()) table.previousPage();
+};
+
+const handleClientNext = () => {
+    if (table.getCanNextPage()) table.nextPage();
+};
+
+const toCsvCell = (value) => {
+    const v = value === null || typeof value === 'undefined' ? '' : String(value);
+    // RFC4180-ish: quote if needed, escape quotes by doubling
+    if (/[",\n]/.test(v)) {
+        return `"${v.replaceAll('"', '""')}"`;
+    }
+    return v;
+};
+
+const downloadCsv = (filename, csvText) => {
+    const blob = new Blob([csvText], { type: 'text/csv;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+};
+
+const handleExportCsv = () => {
+    if (!props.enableExportCsv) return;
+
+    const cols = (filteredColumns.value || []).filter((c) => c.key !== 'actions');
+    const headers = cols.map((c) => toCsvCell(c.label ?? c.key)).join(',');
+
+    // Si sélection active -> on exporte la sélection, sinon toutes les lignes "filtrées" (client) ou affichées (server)
+    const rows = props.selectedEntities?.length
+        ? props.selectedEntities
+        : props.mode === 'client'
+            ? table.getPrePaginationRowModel().rows.map((r) => r.original)
+            : (props.entities || []);
+
+    const lines = rows.map((entity) => {
+        return cols.map((col) => {
+            const raw = getEntityFieldValue(entity, col.key);
+            const formatted = typeof col.format === 'function' ? col.format(raw, entity) : raw;
+            return toCsvCell(formatted);
+        }).join(',');
+    });
+
+    const csv = [headers, ...lines].join('\n');
+    const filename = props.exportFilename || `${props.entityType}.csv`;
+    downloadCsv(filename, csv);
+};
 </script>
 
 <template>
@@ -220,6 +415,19 @@ const disableQuickActions = computed(() => {
                 >
                     <Icon source="fa-solid fa-arrow-rotate-right" alt="Rafraîchir" size="sm" />
                     <span class="hidden md:inline">Rafraîchir</span>
+                </Btn>
+
+                <!-- Export CSV -->
+                <Btn
+                    v-if="enableExportCsv"
+                    size="sm"
+                    variant="ghost"
+                    class="gap-2"
+                    @click="handleExportCsv"
+                    :title="selectedEntities.length ? 'Exporter la sélection en CSV' : (mode === 'client' ? 'Exporter le dataset filtré en CSV' : 'Exporter les lignes affichées en CSV')"
+                >
+                    <Icon source="fa-solid fa-file-csv" alt="Exporter CSV" size="sm" />
+                    <span class="hidden md:inline">Exporter</span>
                 </Btn>
                 
                 <!-- Sélecteur de format d'affichage -->
@@ -270,9 +478,9 @@ const disableQuickActions = computed(() => {
                             <Loading />
                         </td>
                     </tr>
-                    <template v-else-if="entities.length > 0">
+                    <template v-else-if="entitiesToRender.length > 0">
                         <EntityTableRow
-                            v-for="entity in entities"
+                            v-for="entity in entitiesToRender"
                             :key="entity.id"
                             :entity="entity"
                             :columns="filteredColumns"
@@ -303,8 +511,8 @@ const disableQuickActions = computed(() => {
             </table>
         </div>
 
-        <!-- Pagination -->
-        <div v-if="pagination && pagination.links && pagination.links.length > 3" 
+        <!-- Pagination (server) -->
+        <div v-if="mode !== 'client' && pagination && pagination.links && pagination.links.length > 3" 
              class="flex justify-center gap-2">
             <Btn
                 v-for="link in pagination.links"
@@ -316,6 +524,24 @@ const disableQuickActions = computed(() => {
                 <!-- eslint-disable-next-line vue/no-v-html -- pagination Inertia/Laravel (label HTML contrôlé) -->
                 <span v-html="link.label"></span>
             </Btn>
+        </div>
+
+        <!-- Pagination (client) -->
+        <div v-else-if="mode === 'client'" class="flex items-center justify-between gap-3">
+            <div class="text-sm text-base-content/70">
+                {{ clientTotal }} lignes (filtrées)
+            </div>
+            <div class="flex items-center gap-2">
+                <Btn size="sm" variant="ghost" :disabled="!table.getCanPreviousPage()" @click="handleClientPrev">
+                    Précédent
+                </Btn>
+                <span class="text-sm">
+                    Page {{ paginationState.pageIndex + 1 }} / {{ clientPageCount || 1 }}
+                </span>
+                <Btn size="sm" variant="ghost" :disabled="!table.getCanNextPage()" @click="handleClientNext">
+                    Suivant
+                </Btn>
+            </div>
         </div>
     </div>
 </template>

@@ -47,6 +47,13 @@ class ScrappingOrchestrator
             'convert' => 'convertPanoply',
             'import' => 'importPanoply',
         ],
+        // "resource" est techniquement un item DofusDB (endpoint /items),
+        // mais on le traite séparément pour éviter d'importer des IDs non-ressources.
+        'resource' => [
+            'collect' => 'collectResource',
+            'convert' => 'convertResource',
+            'import' => 'importResource',
+        ],
     ];
     /**
      * Constructeur du service d'orchestration
@@ -362,6 +369,68 @@ class ScrappingOrchestrator
                 'success' => false,
                 'error' => $e->getMessage(),
                 'message' => 'Erreur lors de l\'import de l\'objet'
+            ];
+        }
+    }
+
+    /**
+     * Collecte une ressource depuis DofusDB (via /items/{id}) et valide son type.
+     */
+    public function collectResource(int $dofusdbId): array
+    {
+        $raw = $this->dataCollectService->collectItem($dofusdbId, false);
+        $typeId = (int) ($raw['typeId'] ?? 0);
+
+        if (!$typeId || !$this->dataCollectService->isAllowedResourceTypeId($typeId)) {
+            throw new \Exception("L'item DofusDB #{$dofusdbId} n'est pas une ressource autorisée (typeId={$typeId}).");
+        }
+
+        return $raw;
+    }
+
+    /**
+     * Conversion d'une ressource (même pipeline que convertItem).
+     */
+    public function convertResource(array $rawData): array
+    {
+        return $this->dataConversionService->convertItem($rawData);
+    }
+
+    /**
+     * Import d'une ressource (collecte → conversion → intégration).
+     */
+    public function importResource(int $dofusdbId, array $options = []): array
+    {
+        Log::info('Début import ressource', ['dofusdb_id' => $dofusdbId, 'options' => $options]);
+
+        try {
+            $rawData = $this->collectResource($dofusdbId);
+            $convertedData = $this->convertResource($rawData);
+
+            // Safety: on s'assure qu'on va bien dans la table resources
+            if (($convertedData['type'] ?? null) !== 'resource') {
+                return [
+                    'success' => false,
+                    'message' => "Import ignoré : l'item #{$dofusdbId} n'est pas mappé en ressource.",
+                    'error' => 'not_a_resource',
+                    'data' => ['dofusdb_id' => $dofusdbId],
+                ];
+            }
+
+            $result = $this->dataIntegrationService->integrateItem($convertedData);
+
+            return [
+                'success' => true,
+                'message' => 'Ressource importée avec succès',
+                'data' => $result,
+            ];
+        } catch (\Throwable $e) {
+            Log::error('Erreur import ressource', ['dofusdb_id' => $dofusdbId, 'error' => $e->getMessage()]);
+            return [
+                'success' => false,
+                'message' => 'Erreur lors de l\'import de la ressource',
+                'error' => $e->getMessage(),
+                'data' => ['dofusdb_id' => $dofusdbId],
             ];
         }
     }

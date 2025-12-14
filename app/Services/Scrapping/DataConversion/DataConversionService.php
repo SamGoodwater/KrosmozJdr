@@ -100,9 +100,11 @@ class DataConversionService
                 'agility' => $this->convertAttribute($grade['agility'] ?? 0, 'agility', 'monster'),
                 'luck' => $this->convertAttribute($grade['luck'] ?? 0, 'luck', 'monster'),
                 'wisdom' => $this->convertAttribute($grade['wisdom'] ?? 0, 'wisdom', 'monster'),
-                'chance' => $this->convertAttribute($grade['chance'] ?? 0, 'chance', 'monster')
+                'chance' => $this->convertAttribute($grade['chance'] ?? 0, 'chance', 'monster'),
+                'image' => $rawData['img'] ?? null,
             ],
             'monsters' => [
+                'dofusdb_id' => (string) ($rawData['id'] ?? ''),
                 'size' => $this->convertSize($rawData['size'] ?? 'medium'),
                 'monster_race_id' => $rawData['race'] ?? $rawData['monster_race_id'] ?? null
             ]

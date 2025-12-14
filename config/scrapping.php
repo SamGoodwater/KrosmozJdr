@@ -86,6 +86,34 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Téléchargement / stockage local des images (scrapping)
+    |--------------------------------------------------------------------------
+    |
+    | Lors du scrapping, certaines entités disposent d'une image (champ `img` côté DofusDB).
+    | Cette section permet de télécharger l'image et de la ranger dans le projet
+    | pour éviter la dépendance à une URL externe et garder une arborescence propre.
+    |
+    | Chemin final (disk public) :
+    |   scrapping/images/{entity}/{bucket}/{dofusdb_id}.{ext}
+    |
+    */
+    'images' => [
+        'enabled' => env('SCRAPPING_IMAGES_ENABLED', true),
+        'disk' => env('SCRAPPING_IMAGES_DISK', 'public'),
+        'base_dir' => env('SCRAPPING_IMAGES_BASE_DIR', 'scrapping/images'),
+        // Sécurité: liste blanche des hosts autorisés pour le téléchargement d'images
+        'allowed_hosts' => [
+            'api.dofusdb.fr',
+        ],
+        // Taille max (bytes) pour éviter les abus
+        'max_bytes' => (int) env('SCRAPPING_IMAGES_MAX_BYTES', 5 * 1024 * 1024), // 5 Mo
+        'timeout' => (int) env('SCRAPPING_IMAGES_TIMEOUT', 15),
+        // Si true, réécrit l'image même si on a déjà une image locale
+        'force_update' => (bool) env('SCRAPPING_IMAGES_FORCE_UPDATE', false),
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
     | Configuration de la conversion de données
     |--------------------------------------------------------------------------
     |

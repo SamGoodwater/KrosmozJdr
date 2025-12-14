@@ -24,6 +24,16 @@ class Kernel extends ConsoleKernel
     {
         // $schedule->command('inspire')->hourly();
         $schedule->command('media:clean-thumbnails')->daily();
+
+        // Sync automatique du catalogue de ressources depuis DofusDB
+        // Activable via env: SCRAPPING_RESOURCES_AUTO_SYNC=true (par défaut: false)
+        if ((bool) env('SCRAPPING_RESOURCES_AUTO_SYNC', false)) {
+            $at = env('SCRAPPING_RESOURCES_AUTO_SYNC_AT', '03:00');
+            $limit = (int) env('SCRAPPING_RESOURCES_AUTO_SYNC_LIMIT', 100);
+            $schedule
+                ->command("scrapping:sync-resources --limit={$limit}")
+                ->dailyAt($at);
+        }
     }
 
     /**

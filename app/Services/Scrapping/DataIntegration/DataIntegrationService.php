@@ -19,6 +19,7 @@ use App\Models\Type\ItemType;
 use App\Models\Type\ConsumableType;
 use App\Models\Type\ResourceType;
 use App\Models\Type\SpellType;
+use App\Services\Scrapping\Media\ScrappingImageStorageService;
 
 /**
  * Service d'intégration des données dans la structure KrosmozJDR
@@ -42,6 +43,39 @@ class DataIntegrationService
     {
         // Charger la configuration depuis le fichier de config du service
         $this->config = require __DIR__ . '/config.php';
+    }
+
+    /**
+     * Télécharge et remplace l'image par une URL locale si possible.
+     *
+     * @param string|null $remoteUrl
+     * @param string $entityFolder Ex: items|consumables|resources|spells|monsters
+     * @param string|null $dofusdbId
+     * @param string|null $currentImage
+     * @return string|null
+     */
+    private function resolveScrappedImage(?string $remoteUrl, string $entityFolder, ?string $dofusdbId, ?string $currentImage): ?string
+    {
+        $cfg = config('scrapping.images', []);
+        if (!(bool) ($cfg['enabled'] ?? false)) {
+            return $remoteUrl ?? $currentImage;
+        }
+
+        $force = (bool) ($cfg['force_update'] ?? false);
+        if (!$force && $currentImage && str_contains($currentImage, '/storage/scrapping/images/')) {
+            return $currentImage;
+        }
+
+        // Si pas d'URL distante, garder l'actuelle
+        if (!$remoteUrl) {
+            return $currentImage;
+        }
+
+        /** @var ScrappingImageStorageService $svc */
+        $svc = app(ScrappingImageStorageService::class);
+        $stored = $svc->storeFromUrl($remoteUrl, $entityFolder, $dofusdbId);
+
+        return $stored ?: $remoteUrl;
     }
 
     /**
@@ -163,6 +197,13 @@ class DataIntegrationService
             $existingCreature = Creature::where('name', $creatureData['name'])->first();
             
             // Mapping des noms de colonnes vers la structure de la base
+            $existingMonsterImage = null;
+            // Si une créature existe déjà, on garde potentiellement son image locale
+            // (sinon on peut la remplacer via scrapping).
+            if ($existingCreature) {
+                $existingMonsterImage = $existingCreature->image ?? null;
+            }
+
             $creatureAttributes = [
                 'name' => $creatureData['name'],
                 'level' => (string) $creatureData['level'],
@@ -172,6 +213,12 @@ class DataIntegrationService
                 'agi' => (string) $creatureData['agility'],
                 'sagesse' => (string) $creatureData['wisdom'],
                 'chance' => (string) $creatureData['chance'],
+                'image' => $this->resolveScrappedImage(
+                    $creatureData['image'] ?? null,
+                    'monsters',
+                    $monsterData['dofusdb_id'] ?? null,
+                    $existingMonsterImage
+                ),
                 'created_by' => $this->getSystemUserId() // Utilisateur système pour imports automatiques
             ];
             
@@ -207,6 +254,7 @@ class DataIntegrationService
             if ($existingMonster) {
                 // Mise à jour du monstre existant
                 $existingMonster->update([
+                    'dofusdb_id' => $monsterData['dofusdb_id'] ?? $existingMonster->dofusdb_id,
                     'size' => $sizeInt,
                     'monster_race_id' => $monsterRaceId
                 ]);
@@ -217,6 +265,7 @@ class DataIntegrationService
                 // Création d'un nouveau monstre
                 $monster = Monster::create([
                     'creature_id' => $creature->id,
+                    'dofusdb_id' => $monsterData['dofusdb_id'] ?? null,
                     'size' => $sizeInt,
                     'monster_race_id' => $monsterRaceId
                 ]);
@@ -455,6 +504,14 @@ class DataIntegrationService
         
         try {
             DB::beginTransaction();
+
+            $existingSpell = Spell::where('name', $convertedData['name'])->first();
+            $image = $this->resolveScrappedImage(
+                $convertedData['image'] ?? null,
+                'spells',
+                $convertedData['dofusdb_id'] ?? null,
+                $existingSpell?->image
+            );
             
             // Mapping des données converties vers les colonnes de la table spells
             // cost -> pa (points d'action)
@@ -467,14 +524,11 @@ class DataIntegrationService
                 'pa' => (string) ($convertedData['cost'] ?? '3'), // Points d'action
                 'po' => (string) ($convertedData['range'] ?? '1'), // Portée
                 'area' => (int) ($convertedData['area'] ?? 0), // Zone
-                'image' => $convertedData['image'] ?? null,
+                'image' => $image,
                 'effect' => $convertedData['effect'] ?? null,
                 'level' => $convertedData['level'] ?? 1, // Niveau par défaut si non fourni
                 'created_by' => $this->getSystemUserId(),
             ];
-            
-            // Recherche d'un sort existant
-            $existingSpell = Spell::where('name', $convertedData['name'])->first();
             
             if ($existingSpell) {
                 // Mise à jour du sort existant
@@ -783,6 +837,15 @@ class DataIntegrationService
      */
     private function integrateConsumable(array $convertedData): array
     {
+        $existingConsumable = Consumable::where('name', $convertedData['name'])->first();
+
+        $image = $this->resolveScrappedImage(
+            $convertedData['image'] ?? null,
+            'consumables',
+            $convertedData['dofusdb_id'] ?? null,
+            $existingConsumable?->image
+        );
+
         // Mapping des données vers les colonnes de la table consumables
         $consumableData = [
             'dofusdb_id' => $convertedData['dofusdb_id'] ?? null,
@@ -791,7 +854,7 @@ class DataIntegrationService
             'level' => (string) $convertedData['level'],
             'price' => (string) $convertedData['price'],
             'rarity' => $this->convertRarityToInt($convertedData['rarity']),
-            'image' => $convertedData['image'] ?? null,
+            'image' => $image,
             'effect' => $convertedData['effect'] ?? null,
             'created_by' => $this->getSystemUserId(),
         ];
@@ -803,8 +866,6 @@ class DataIntegrationService
                 $consumableData['consumable_type_id'] = $consumableType->id;
             }
         }
-        
-        $existingConsumable = Consumable::where('name', $consumableData['name'])->first();
         
         if ($existingConsumable) {
             $existingConsumable->update($consumableData);
@@ -831,6 +892,15 @@ class DataIntegrationService
      */
     private function integrateResource(array $convertedData): array
     {
+        $existingResource = Resource::where('name', $convertedData['name'])->first();
+
+        $image = $this->resolveScrappedImage(
+            $convertedData['image'] ?? null,
+            'resources',
+            $convertedData['dofusdb_id'] ?? null,
+            $existingResource?->image
+        );
+
         // Mapping des données vers les colonnes de la table resources
         $resourceData = [
             'dofusdb_id' => $convertedData['dofusdb_id'] ?? null,
@@ -839,7 +909,7 @@ class DataIntegrationService
             'level' => (string) $convertedData['level'],
             'price' => (string) $convertedData['price'],
             'rarity' => $this->convertRarityToInt($convertedData['rarity']),
-            'image' => $convertedData['image'] ?? null,
+            'image' => $image,
             'weight' => $convertedData['weight'] ?? null,
             'created_by' => $this->getSystemUserId(),
         ];
@@ -851,8 +921,6 @@ class DataIntegrationService
                 $resourceData['resource_type_id'] = $resourceType->id;
             }
         }
-        
-        $existingResource = Resource::where('name', $resourceData['name'])->first();
         
         if ($existingResource) {
             $existingResource->update($resourceData);
@@ -879,6 +947,15 @@ class DataIntegrationService
      */
     private function integrateGenericItem(array $convertedData): array
     {
+        $existingItem = Item::where('name', $convertedData['name'])->first();
+
+        $image = $this->resolveScrappedImage(
+            $convertedData['image'] ?? null,
+            'items',
+            $convertedData['dofusdb_id'] ?? null,
+            $existingItem?->image
+        );
+
         // Mapping des données vers les colonnes de la table items
         $itemData = [
             'dofusdb_id' => $convertedData['dofusdb_id'] ?? null,
@@ -887,7 +964,7 @@ class DataIntegrationService
             'level' => (string) $convertedData['level'],
             'price' => (string) $convertedData['price'],
             'rarity' => $this->convertRarityToInt($convertedData['rarity']),
-            'image' => $convertedData['image'] ?? null,
+            'image' => $image,
             'effect' => $convertedData['effect'] ?? null,
             'bonus' => $convertedData['bonus'] ?? null,
             'created_by' => $this->getSystemUserId(),
@@ -900,8 +977,6 @@ class DataIntegrationService
                 $itemData['item_type_id'] = $itemType->id;
             }
         }
-        
-        $existingItem = Item::where('name', $itemData['name'])->first();
         
         if ($existingItem) {
             $existingItem->update($itemData);

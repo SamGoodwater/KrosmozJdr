@@ -143,6 +143,24 @@ Route::middleware(['auth'])->prefix('scrapping/resource-types')->group(function 
         ->name('scrapping.resource-types.pending');
     Route::patch('/{resourceType}/decision', [App\Http\Controllers\Scrapping\ResourceTypeRegistryController::class, 'updateDecision'])
         ->name('scrapping.resource-types.decision');
+    Route::get('/{resourceType}/pending-items', [App\Http\Controllers\Scrapping\ResourceTypeRegistryController::class, 'pendingItems'])
+        ->name('scrapping.resource-types.pending-items');
     Route::post('/{resourceType}/replay', [App\Http\Controllers\Scrapping\ResourceTypeRegistryController::class, 'replayPending'])
         ->name('scrapping.resource-types.replay');
+});
+
+/*
+|--------------------------------------------------------------------------
+| Datasets pour tables (TanStack Table - mode client)
+|--------------------------------------------------------------------------
+|
+| Endpoints limités destinés à charger un gros lot d'entités afin de permettre
+| tri/filtre/recherche/pagination côté frontend.
+|
+*/
+Route::middleware(['auth'])->prefix('entity-table')->group(function () {
+    Route::get('/resources', [App\Http\Controllers\Api\EntityTableDataController::class, 'resources'])
+        ->name('api.entity-table.resources');
+    Route::get('/resource-types', [App\Http\Controllers\Api\EntityTableDataController::class, 'resourceTypes'])
+        ->name('api.entity-table.resource-types');
 });

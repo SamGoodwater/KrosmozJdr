@@ -521,8 +521,12 @@ erDiagram
   RESOURCE_TYPES {
     id : bigint(20) unsigned
     name : varchar(255)
+    dofusdb_type_id : int(10) unsigned
     usable : tinyint(4)
     is_visible : varchar(255)
+    decision : varchar(255)
+    seen_count : int(10) unsigned
+    last_seen_at : timestamp
     created_at : timestamp
     updated_at : timestamp
     deleted_at : timestamp
@@ -590,6 +594,17 @@ erDiagram
     updated_at : timestamp
     deleted_at : timestamp
     created_by : bigint(20) unsigned
+  }
+  SCRAPPING_PENDING_RESOURCE_TYPE_ITEMS {
+    id : bigint(20) unsigned
+    dofusdb_type_id : int(10) unsigned
+    dofusdb_item_id : int(10) unsigned
+    context : varchar(255)
+    source_entity_type : varchar(255)
+    source_entity_dofusdb_id : int(10) unsigned
+    quantity : int(10) unsigned
+    created_at : timestamp
+    updated_at : timestamp
   }
   SECTION_USER {
     section_id : bigint(20) unsigned

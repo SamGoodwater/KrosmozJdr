@@ -35,6 +35,18 @@ const props = defineProps({
     defaultEntity: {
         type: Object,
         default: () => ({})
+    },
+    /**
+     * Override optionnel des routes utilisées par EntityEditForm.
+     * Utile pour des entités dont les routes ne suivent pas le pattern `entities.{plural}.{store|update}`.
+     */
+    routeNameBase: {
+        type: String,
+        default: null
+    },
+    routeParamKey: {
+        type: String,
+        default: null
     }
 });
 
@@ -69,6 +81,7 @@ const entityTypeLabel = computed(() => {
         capability: 'capacité',
         specialization: 'spécialisation',
         shop: 'boutique'
+        ,resourceType: 'type de ressource'
     };
     return labels[props.entityType] || props.entityType;
 });
@@ -126,6 +139,8 @@ watch(() => props.open, (isOpen) => {
                 :entity-type="entityType"
                 :view-mode="viewMode"
                 :fields-config="fieldsConfig"
+                :route-name-base="routeNameBase"
+                :route-param-key="routeParamKey"
                 :is-updating="false"
                 @submit="handleSubmit"
                 @cancel="handleCancel"

@@ -135,12 +135,16 @@ const handleCopyLink = async () => {
     const entityId = props.entity?.id ?? props.entity?.id ?? null;
     if (!entityId) return;
     
-    // Générer l'URL selon le type d'entité
-    const routeName = `entities.${props.entityType}.show`;
-    const routeParams = { [props.entityType]: entityId };
-    const url = `${window.location.origin}${route(routeName, routeParams)}`;
-    
-    await copyToClipboard(url, `Lien de l'entité copié !`);
+    // Générer l'URL selon le type d'entité.
+    // IMPORTANT: on passe l'ID en paramètre scalaire pour éviter les soucis de nom de paramètre (item vs items, resourceType vs resource-types, etc.)
+    try {
+        const routeName = `entities.${props.entityType}.show`;
+        const url = `${window.location.origin}${route(routeName, entityId)}`;
+        await copyToClipboard(url, `Lien de l'entité copié !`);
+    } catch (e) {
+        // Route inexistante (ex: entité sans page show) => on ignore sans casser l'UI.
+        console.warn('Impossible de copier le lien (route show manquante ?)', e);
+    }
 };
 
 const handleSelectionChange = (event) => {

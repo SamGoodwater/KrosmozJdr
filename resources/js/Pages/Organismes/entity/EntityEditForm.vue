@@ -50,6 +50,21 @@ const props = defineProps({
     differentFields: {
         type: Array,
         default: () => []
+    },
+    /**
+     * Override optionnel pour les routes (utile pour les "types" ou routes non standards).
+     *
+     * @example
+     * routeNameBase="entities.resource-types"
+     * routeParamKey="resourceType"
+     */
+    routeNameBase: {
+        type: String,
+        default: null
+    },
+    routeParamKey: {
+        type: String,
+        default: null
     }
 });
 
@@ -192,16 +207,14 @@ const submit = () => {
     }
 
     // Construction du nom de route selon le type d'entité
-    // Note: Les routes utilisent le pluriel (items, spells, monsters, panoplies)
+    // Note: Par défaut, les routes utilisent le pluriel (items, spells, monsters, panoplies)
     const entityTypePlural = props.entityType === 'panoply' ? 'panoplies' : `${props.entityType}s`;
-    const routeName = props.isUpdating 
-        ? `entities.${entityTypePlural}.update`
-        : `entities.${entityTypePlural}.store`;
+    const base = props.routeNameBase || `entities.${entityTypePlural}`;
+    const routeName = props.isUpdating ? `${base}.update` : `${base}.store`;
     
     // Paramètres de route selon le type d'entité
-    const routeParams = props.isUpdating 
-        ? { [props.entityType]: entityId }
-        : {};
+    const routeParamKey = props.routeParamKey || props.entityType;
+    const routeParams = props.isUpdating ? { [routeParamKey]: entityId } : {};
 
     const method = props.isUpdating ? 'patch' : 'post';
     

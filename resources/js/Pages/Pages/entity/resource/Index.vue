@@ -9,12 +9,15 @@
  */
 import { Head, router } from "@inertiajs/vue3";
 import { ref, computed, onBeforeUnmount } from "vue";
+import axios from "axios";
 import { usePageTitle } from "@/Composables/layout/usePageTitle";
 import { useEntityPermissions } from "@/Composables/permissions/useEntityPermissions";
 import { useNotificationStore } from "@/Composables/store/useNotificationStore";
+import { Resource } from "@/Models/Entity/Resource";
 
 import Container from '@/Pages/Atoms/data-display/Container.vue';
 import Btn from '@/Pages/Atoms/action/Btn.vue';
+import Alert from "@/Pages/Atoms/feedback/Alert.vue";
 import EntityTable from '@/Pages/Molecules/data-display/EntityTable.vue';
 import EntityModal from '@/Pages/Organismes/entity/EntityModal.vue';
 import CreateEntityModal from '@/Pages/Organismes/entity/CreateEntityModal.vue';
@@ -51,6 +54,42 @@ const modalView = ref('large');
 const createModalOpen = ref(false);
 const search = ref(props.filters.search || '');
 const filters = ref(props.filters || {});
+const tableMode = ref('server'); // server | client
+const allResources = ref([]);
+const loadingAll = ref(false);
+const baseServerQuery = ref(null); // snapshot { search, filters, sort, order }
+
+// Garder trace du tri serveur courant (utile pour charger un dataset client cohérent)
+const serverSort = ref('');
+const serverOrder = ref('desc');
+
+try {
+    const qs = new URLSearchParams(window.location.search);
+    serverSort.value = qs.get('sort') || '';
+    serverOrder.value = qs.get('order') || 'desc';
+} catch (e) {
+    // SSR / tests -> ignore
+}
+
+// Normaliser en modèles (cohérence avec Item/Consumable)
+const resources = computed(() => {
+    const rows = tableMode.value === 'client' ? allResources.value : (props.resources.data || []);
+    return Resource.fromArray(rows);
+});
+
+const rarityLabel = (value) => {
+    const v = Number(value ?? 0);
+    return [
+        'Commun',
+        'Peu commun',
+        'Rare',
+        'Très rare',
+        'Légendaire',
+        'Unique',
+    ][v] ?? String(v);
+};
+
+const yesNoLabel = (v) => (v ? 'Oui' : 'Non');
 
 // Configuration des colonnes selon la documentation : ID (optionnel), Nom (lien), Niveau, Type, Rareté (badge), dofusdb_id, Créé par, Actions
 const columns = computed(() => [
@@ -58,7 +97,11 @@ const columns = computed(() => [
     { key: 'name', label: 'Nom', sortable: true, isMain: true },
     { key: 'level', label: 'Niveau', sortable: true },
     { key: 'resourceType', label: 'Type', sortable: false, format: (value) => value?.name || '-' },
-    { key: 'rarity', label: 'Rareté', sortable: true, type: 'badge', badgeColor: 'primary' },
+    { key: 'rarity', label: 'Rareté', sortable: true, type: 'badge', badgeColor: 'primary', format: rarityLabel },
+    { key: 'price', label: 'Prix', sortable: true, format: (v) => v ?? '-' },
+    { key: 'weight', label: 'Poids', sortable: true, format: (v) => v ?? '-' },
+    { key: 'usable', label: 'Utilisable', sortable: true, type: 'badge', badgeColor: 'secondary', format: yesNoLabel },
+    { key: 'auto_update', label: 'Auto-update', sortable: true, type: 'badge', badgeColor: 'accent', format: yesNoLabel },
     { key: 'dofusdb_id', label: 'DofusDB ID', sortable: true },
     { key: 'createdBy', label: 'Créé par', sortable: false, format: (value) => value?.name || value?.email || '-' },
     { key: 'actions', label: 'Actions', sortable: false }
@@ -82,6 +125,9 @@ const handleDelete = (entity) => {
 };
 
 const handleSort = ({ column, order }) => {
+    if (tableMode.value === 'client') return;
+    serverSort.value = column;
+    serverOrder.value = order;
     router.get(route('entities.resources.index'), {
         sort: column,
         order: order,
@@ -97,6 +143,7 @@ let searchTimeout = null;
 
 const handleSearchUpdate = (value) => {
     search.value = value;
+    if (tableMode.value === 'client') return;
     if (searchTimeout) {
         clearTimeout(searchTimeout);
     }
@@ -119,6 +166,7 @@ onBeforeUnmount(() => {
 
 const handleFiltersUpdate = (newFilters) => {
     filters.value = newFilters;
+    if (tableMode.value === 'client') return;
     router.get(route('entities.resources.index'), {
         search: search.value,
         ...newFilters
@@ -131,6 +179,7 @@ const handleFiltersUpdate = (newFilters) => {
 const handleFiltersReset = () => {
     search.value = '';
     filters.value = {};
+    if (tableMode.value === 'client') return;
     router.get(route('entities.resources.index'), {}, {
         preserveState: true,
         preserveScroll: true
@@ -156,6 +205,37 @@ const filterableColumns = computed(() => [
         options: [
             { value: '', label: 'Tous' },
             ...props.resourceTypes.map(t => ({ value: String(t.id), label: t.name }))
+        ]
+    },
+    {
+        key: 'rarity',
+        label: 'Rareté',
+        options: [
+            { value: '', label: 'Toutes' },
+            { value: '0', label: 'Commun' },
+            { value: '1', label: 'Peu commun' },
+            { value: '2', label: 'Rare' },
+            { value: '3', label: 'Très rare' },
+            { value: '4', label: 'Légendaire' },
+            { value: '5', label: 'Unique' },
+        ]
+    },
+    {
+        key: 'usable',
+        label: 'Utilisable',
+        options: [
+            { value: '', label: 'Tous' },
+            { value: '1', label: 'Oui' },
+            { value: '0', label: 'Non' },
+        ]
+    },
+    {
+        key: 'auto_update',
+        label: 'Auto-update',
+        options: [
+            { value: '', label: 'Tous' },
+            { value: '1', label: 'Oui' },
+            { value: '0', label: 'Non' },
         ]
     }
 ]);
@@ -198,6 +278,7 @@ const fieldsConfig = computed(() => ({
 
 const handlePageChange = (url) => {
     if (url) {
+        if (tableMode.value === 'client') return;
         router.visit(url, {
             preserveState: true,
             preserveScroll: true
@@ -221,6 +302,100 @@ const closeModal = () => {
     modalOpen.value = false;
     selectedEntity.value = null;
 };
+
+const handleRefreshAll = () => {
+    router.reload({ preserveState: true, preserveScroll: true });
+};
+
+const handleLoadAllForClientMode = async () => {
+    if (loadingAll.value) return;
+    loadingAll.value = true;
+    try {
+        // Snapshot du sous-ensemble "serveur" (baseline)
+        baseServerQuery.value = {
+            search: search.value,
+            filters: { ...(filters.value || {}) },
+            sort: serverSort.value || null,
+            order: serverOrder.value || null,
+        };
+
+        // On charge un lot conséquent pour permettre le filtrage/tri côté navigateur.
+        // NB: limite backend (par défaut 5000, max 20000)
+        const params = {
+            limit: 5000,
+            search: baseServerQuery.value.search || '',
+            ...baseServerQuery.value.filters,
+        };
+        if (baseServerQuery.value.sort) params.sort = baseServerQuery.value.sort;
+        if (baseServerQuery.value.order) params.order = baseServerQuery.value.order;
+
+        const response = await axios.get('/api/entity-table/resources', { params });
+        // Réponse: { data: ResourceResource::collection(...) }
+        allResources.value = response.data?.data?.data ?? [];
+        tableMode.value = 'client';
+
+        // Réinitialiser les filtres UI : ils deviennent une couche "client" additionnelle
+        search.value = '';
+        filters.value = {};
+
+        notificationStore.addNotification({
+            type: 'success',
+            message: `Mode client activé (${allResources.value.length} ressources chargées).`
+        });
+    } catch (e) {
+        console.error(e);
+        notificationStore.addNotification({
+            type: 'error',
+            message: 'Impossible de charger le dataset pour le mode client (API).'
+        });
+    } finally {
+        loadingAll.value = false;
+    }
+};
+
+const handleReloadClientDataset = async () => {
+    if (loadingAll.value) return;
+    if (tableMode.value !== 'client' || !baseServerQuery.value) return;
+
+    const clientSearch = search.value;
+    const clientFilters = { ...(filters.value || {}) };
+
+    loadingAll.value = true;
+    try {
+        const params = {
+            limit: 5000,
+            search: baseServerQuery.value.search || '',
+            ...(baseServerQuery.value.filters || {}),
+        };
+        if (baseServerQuery.value.sort) params.sort = baseServerQuery.value.sort;
+        if (baseServerQuery.value.order) params.order = baseServerQuery.value.order;
+
+        const response = await axios.get('/api/entity-table/resources', { params });
+        allResources.value = response.data?.data?.data ?? [];
+
+        // Conserver les filtres client en place
+        search.value = clientSearch;
+        filters.value = clientFilters;
+
+        notificationStore.addNotification({
+            type: 'success',
+            message: `Dataset rechargé (${allResources.value.length} ressources).`
+        });
+    } catch (e) {
+        console.error(e);
+        notificationStore.addNotification({
+            type: 'error',
+            message: 'Impossible de recharger le dataset client.'
+        });
+    } finally {
+        loadingAll.value = false;
+    }
+};
+
+const handleSwitchToServerMode = () => {
+    tableMode.value = 'server';
+    baseServerQuery.value = null;
+};
 </script>
 
 <template>
@@ -233,22 +408,83 @@ const closeModal = () => {
                 <h1 class="text-3xl font-bold text-primary-100">Liste des Ressources</h1>
                 <p class="text-primary-200 mt-2">Gérez les ressources (matériaux, composants, etc.)</p>
             </div>
-            <Btn v-if="canCreate" @click="handleCreate" color="primary">
-                <i class="fa-solid fa-plus mr-2"></i>
-                Créer une ressource
-            </Btn>
+            <div class="flex gap-2">
+                <Btn
+                    v-if="tableMode === 'server'"
+                    variant="ghost"
+                    :loading="loadingAll"
+                    @click="handleLoadAllForClientMode"
+                    :title="'Charge un lot (limité) et active tri/filtre/pagination côté client'"
+                >
+                    <i class="fa-solid fa-bolt mr-2"></i>
+                    Mode client (charger tout)
+                </Btn>
+                <Btn
+                    v-else
+                    variant="ghost"
+                    :loading="loadingAll"
+                    @click="handleReloadClientDataset"
+                    :disabled="!baseServerQuery"
+                    :title="'Recharge le dataset (même sous-ensemble serveur) et conserve tes filtres client'"
+                >
+                    <i class="fa-solid fa-arrow-rotate-right mr-2"></i>
+                    Recharger dataset
+                </Btn>
+                <Btn
+                    v-else
+                    variant="ghost"
+                    @click="handleSwitchToServerMode"
+                    :title="'Revient au mode serveur (pagination/filtrage backend)'"
+                >
+                    <i class="fa-solid fa-server mr-2"></i>
+                    Mode serveur
+                </Btn>
+                <Btn variant="ghost" @click="router.visit(route('entities.resource-types.index'))">
+                    <i class="fa-solid fa-tags mr-2"></i>
+                    Types de ressources
+                </Btn>
+                <Btn v-if="canCreate" @click="handleCreate" color="primary">
+                    <i class="fa-solid fa-plus mr-2"></i>
+                    Créer une ressource
+                </Btn>
+            </div>
         </div>
+
+        <!-- Baseline serveur (quand le mode client est activé) -->
+        <Alert
+            v-if="tableMode === 'client' && baseServerQuery"
+            color="info"
+            variant="soft"
+        >
+            <template #content>
+                <div class="space-y-1">
+                    <div class="font-semibold">Sous-ensemble chargé depuis le serveur</div>
+                    <div class="text-sm opacity-80">
+                        <span v-if="baseServerQuery.search">Recherche: "<b>{{ baseServerQuery.search }}</b>"</span>
+                        <span v-else>Recherche: —</span>
+                        <span class="mx-2">•</span>
+                        <span>Filtres: {{ Object.keys(baseServerQuery.filters || {}).length || 0 }}</span>
+                        <span class="mx-2">•</span>
+                        <span>Tri: {{ baseServerQuery.sort ? `${baseServerQuery.sort} (${baseServerQuery.order || 'desc'})` : '—' }}</span>
+                    </div>
+                    <div class="text-sm opacity-80">
+                        Tu peux maintenant appliquer des filtres/tri supplémentaires côté client (sans requête serveur).
+                    </div>
+                </div>
+            </template>
+        </Alert>
 
         <!-- Tableau -->
         <EntityTable
-            :entities="resources.data || []"
+            :entities="resources || []"
             :columns="columns"
             entity-type="resources"
-            :pagination="resources"
+            :pagination="props.resources"
             :show-filters="true"
             :search="search"
             :filters="filters"
             :filterable-columns="filterableColumns"
+            :mode="tableMode"
             @view="handleView"
             @edit="handleEdit"
             @delete="handleDelete"
@@ -256,6 +492,7 @@ const closeModal = () => {
             @page-change="handlePageChange"
             @update:search="handleSearchUpdate"
             @update:filters="handleFiltersUpdate"
+            @refresh-all="handleRefreshAll"
         />
 
         <!-- Modal de création -->

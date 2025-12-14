@@ -767,6 +767,8 @@ namespace App\Models\Entity{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Resource withTrashed()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Resource withoutTrashed()
  * @mixin \Eloquent
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Entity\Campaign> $campaigns
+ * @property-read int|null $campaigns_count
  */
 	class Resource extends \Eloquent {}
 }
@@ -1112,6 +1114,40 @@ namespace App\Models{
 	class Page extends \Eloquent {}
 }
 
+namespace App\Models\Scrapping{
+/**
+ * Modèle de stockage des items DofusDB "en attente" pour un typeId non encore autorisé.
+ *
+ * @example PendingResourceTypeItem::create([
+ *   'dofusdb_type_id' => 99,
+ *   'dofusdb_item_id' => 12345,
+ *   'context' => 'recipe',
+ * ]);
+ * @property int $id
+ * @property int $dofusdb_type_id
+ * @property int $dofusdb_item_id
+ * @property string $context
+ * @property string|null $source_entity_type
+ * @property int|null $source_entity_dofusdb_id
+ * @property int|null $quantity
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PendingResourceTypeItem newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PendingResourceTypeItem newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PendingResourceTypeItem query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PendingResourceTypeItem whereContext($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PendingResourceTypeItem whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PendingResourceTypeItem whereDofusdbItemId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PendingResourceTypeItem whereDofusdbTypeId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PendingResourceTypeItem whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PendingResourceTypeItem whereQuantity($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PendingResourceTypeItem whereSourceEntityDofusdbId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PendingResourceTypeItem whereSourceEntityType($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PendingResourceTypeItem whereUpdatedAt($value)
+ */
+	class PendingResourceTypeItem extends \Eloquent {}
+}
+
 namespace App\Models{
 /**
  * Modèle Eloquent Section
@@ -1307,6 +1343,14 @@ namespace App\Models\Type{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ResourceType withTrashed()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ResourceType withoutTrashed()
  * @mixin \Eloquent
+ * @property int|null $dofusdb_type_id
+ * @property string $decision
+ * @property int $seen_count
+ * @property \Illuminate\Support\Carbon|null $last_seen_at
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ResourceType whereDecision($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ResourceType whereDofusdbTypeId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ResourceType whereLastSeenAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ResourceType whereSeenCount($value)
  */
 	class ResourceType extends \Eloquent {}
 }

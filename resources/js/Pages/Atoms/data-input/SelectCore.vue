@@ -153,7 +153,8 @@ function onInput(e) {
         emit('update:modelValue', selectedOptions);
     } else {
         // Pour single, on émet la valeur directement
-        emit('update:modelValue', value);
+        // - "" => null pour que Laravel "nullable" ignore correctement la règle integer
+        emit('update:modelValue', value === '' ? null : value);
     }
 }
 </script>
@@ -167,7 +168,11 @@ function onInput(e) {
         @input="onInput"
     >
         <slot>
-            <option v-if="!multiple && !inputAttrs.value" value="" disabled>
+            <option
+                v-if="!multiple && (inputAttrs.value === null || inputAttrs.value === undefined || inputAttrs.value === '')"
+                value=""
+                disabled
+            >
                 {{ props.placeholder || 'Choisir...' }}
             </option>
             <option

@@ -2,7 +2,7 @@
 /**
  * Section UX: revue des nouveaux typeId DofusDB détectés pour les ressources.
  *
- * Permet de décider "allowed / blocked / pending" sans changer le code.
+ * Permet de décider "utiliser / ne pas utiliser / en attente" sans changer le code.
  */
 import { ref, onMounted } from 'vue';
 import Card from '@/Pages/Atoms/data-display/Card.vue';
@@ -17,6 +17,9 @@ const { success, error: showError, info } = notificationStore;
 
 const loading = ref(false);
 const items = ref([]);
+const examplesByTypeId = ref({});
+const examplesLoading = ref({});
+const expanded = ref({});
 
 const getCsrfToken = () => {
     return document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
@@ -56,12 +59,21 @@ const updateDecision = async (resourceTypeId, decision) => {
                 'X-CSRF-TOKEN': csrfToken,
                 'Accept': 'application/json',
             },
-            body: JSON.stringify({ decision }),
+            body: JSON.stringify({
+                decision,
+                // UX: quand on "Utilise", on rejoue automatiquement les items mémorisés
+                replay_pending: decision === 'used',
+                replay_limit: 500,
+            }),
         });
         const data = await response.json();
 
         if (response.ok && data.success) {
-            success('Décision enregistrée', { duration: 2500 });
+            success('Statut enregistré', { duration: 2500 });
+            if (decision === 'used' && data.replay?.summary) {
+                const s = data.replay.summary;
+                success(`Réimport auto: ${s.imported} importés, ${s.pivots_applied} pivots, ${s.errors} erreurs`, { duration: 4500 });
+            }
             // Retirer de la liste si ce n’est plus pending
             if (decision !== 'pending') {
                 items.value = items.value.filter(i => i.id !== resourceTypeId);
@@ -103,6 +115,43 @@ const replayPending = async (resourceTypeId) => {
     }
 };
 
+const toggleExamples = async (resourceTypeId) => {
+    expanded.value[resourceTypeId] = !expanded.value[resourceTypeId];
+    if (expanded.value[resourceTypeId]) {
+        await loadExamples(resourceTypeId);
+    }
+};
+
+const loadExamples = async (resourceTypeId) => {
+    if (examplesLoading.value[resourceTypeId]) return;
+    examplesLoading.value[resourceTypeId] = true;
+    try {
+        const response = await fetch(`/api/scrapping/resource-types/${resourceTypeId}/pending-items?limit=5&with_preview=1`, {
+            headers: { 'Accept': 'application/json' },
+        });
+        const data = await response.json();
+        if (response.ok && data.success) {
+            examplesByTypeId.value[resourceTypeId] = data.data?.items || [];
+        } else {
+            showError(data.message || 'Impossible de charger les exemples');
+        }
+    } catch (e) {
+        showError('Erreur lors du chargement des exemples : ' + e.message);
+    } finally {
+        examplesLoading.value[resourceTypeId] = false;
+    }
+};
+
+const formatExampleLine = (ex) => {
+    const parts = [];
+    if (ex.context) parts.push(ex.context);
+    if (ex.source_entity_type && ex.source_entity_dofusdb_id) {
+        parts.push(`${ex.source_entity_type}#${ex.source_entity_dofusdb_id}`);
+    }
+    if (ex.quantity) parts.push(`x${ex.quantity}`);
+    return parts.length ? parts.join(' · ') : '—';
+};
+
 const formatDate = (iso) => {
     if (!iso) return '-';
     try {
@@ -123,7 +172,7 @@ onMounted(async () => {
             <div>
                 <h2 class="text-xl font-bold text-primary-100">Types DofusDB détectés (Ressources)</h2>
                 <p class="text-sm text-primary-300 mt-1">
-                    Ces typeId ont été détectés pendant le scrapping dans des recettes/drops. Choisis une action.
+                    Ces typeId ont été détectés pendant le scrapping dans des recettes/drops. Indique si on les utilise.
                 </p>
             </div>
             <div class="flex items-center gap-2">
@@ -160,25 +209,63 @@ onMounted(async () => {
                 <tbody>
                     <tr v-for="t in items" :key="t.id">
                         <td class="font-mono">{{ t.dofusdb_type_id }}</td>
-                        <td>{{ t.name }}</td>
+                        <td>
+                            <div class="flex items-center gap-2">
+                                <span>{{ t.name }}</span>
+                                <Btn
+                                    size="xs"
+                                    variant="ghost"
+                                    @click="toggleExamples(t.id)"
+                                    :disabled="examplesLoading[t.id]"
+                                    :title="expanded[t.id] ? 'Masquer les exemples' : 'Voir des exemples d’items détectés'"
+                                >
+                                    <Loading v-if="examplesLoading[t.id]" class="mr-2" />
+                                    <span v-else class="text-xs underline opacity-80">
+                                        {{ expanded[t.id] ? 'Masquer' : 'Exemples' }}
+                                    </span>
+                                </Btn>
+                            </div>
+                            <div v-if="expanded[t.id]" class="mt-2 text-xs text-primary-300 space-y-1">
+                                <div v-if="(examplesByTypeId[t.id] || []).length === 0" class="opacity-70">
+                                    Aucun exemple disponible.
+                                </div>
+                                <div v-else>
+                                    <div
+                                        v-for="it in examplesByTypeId[t.id]"
+                                        :key="it.dofusdb_item_id"
+                                        class="font-mono"
+                                    >
+                                        #{{ it.dofusdb_item_id }}
+                                        <span v-if="it.preview?.name" class="not-italic font-sans opacity-90">
+                                            — {{ it.preview.name }}
+                                        </span>
+                                        <div class="ml-4 opacity-80" v-if="(it.examples || []).length">
+                                            <div v-for="(ex, idx) in it.examples.slice(0, 2)" :key="idx">
+                                                {{ formatExampleLine(ex) }}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
                         <td>{{ t.seen_count }}</td>
                         <td>{{ formatDate(t.last_seen_at) }}</td>
                         <td class="text-right">
                             <div class="flex justify-end gap-2">
-                                <Btn size="sm" color="success" @click="updateDecision(t.id, 'allowed')">
-                                    Autoriser
+                                <Btn size="sm" color="success" @click="updateDecision(t.id, 'used')">
+                                    Utiliser
                                 </Btn>
-                                <Btn size="sm" color="error" @click="updateDecision(t.id, 'blocked')">
-                                    Blacklister
+                                <Btn size="sm" color="error" @click="updateDecision(t.id, 'unused')">
+                                    Ne pas utiliser
                                 </Btn>
                                 <Btn size="sm" variant="ghost" @click="updateDecision(t.id, 'pending')">
-                                    Annuler
+                                    Laisser en attente
                                 </Btn>
                                 <Btn
                                     size="sm"
                                     variant="outline"
                                     @click="replayPending(t.id)"
-                                    :title="'Réimport des items mémorisés pour ce typeId (si autorisé)'"
+                                    :title="'Réimport des items mémorisés pour ce typeId (si utilisé)'"
                                 >
                                     Réimport
                                 </Btn>
