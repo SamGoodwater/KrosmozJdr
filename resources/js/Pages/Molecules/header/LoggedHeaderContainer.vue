@@ -25,6 +25,7 @@ import Dropdown from "@/Pages/Atoms/action/Dropdown.vue";
 import Icon from "@/Pages/Atoms/data-display/Icon.vue";
 import { usePage, router } from "@inertiajs/vue3";
 import { ref, watch, computed } from "vue";
+import { usePermissions } from "@/Composables/permissions/usePermissions";
 
 const page = usePage();
 const user = ref(page.props.auth.user);
@@ -44,18 +45,10 @@ watch(
 );
 
 // Vérifier si l'utilisateur est admin ou super_admin
-const isAdmin = computed(() => {
-    if (!user.value) return false;
-    // Source of truth: backend (UserLightResource)
-    return user.value.is_admin ?? false;
-});
+const { canAccess } = usePermissions();
 
 // Vérifier si l'utilisateur est game_master, admin ou super_admin
-const canManagePages = computed(() => {
-    if (!user.value) return false;
-    // Source of truth: backend (UserLightResource)
-    return user.value.is_game_master ?? false;
-});
+const canManagePages = computed(() => canAccess('pagesManager'));
 
 // Fonction de déconnexion
 const logout = () => {
@@ -90,10 +83,10 @@ const logout = () => {
                             />
                         </Route>
                         <span class="border-glass-b-sm w-full h-px"></span>
-                        <template v-if="isAdmin">
+                        <template v-if="canAccess('adminPanel')">
                             <div class="w-full">
                                 <p class="text-xs text-subtitle/60 px-2 py-1 font-semibold text-center">Administration</p>
-                                <Route route="scrapping.index" class="w-full">
+                                <Route v-if="canAccess('scrapping')" route="scrapping.index" class="w-full">
                                     <Btn variant="ghost" size="md" class="w-full justify-start">
                                         <Icon source="fa-magnifying-glass" pack="solid" size="sm" alt="Scrapping" class="mr-2"/>
                                         <span>Scrapping</span>
@@ -110,7 +103,7 @@ const logout = () => {
                         </template>
                         <template v-if="canManagePages">
                             <div class="w-full">
-                                <p v-if="!isAdmin" class="text-xs text-subtitle/60 px-2 py-1 font-semibold text-center">Gestion</p>
+                                <p v-if="!canAccess('adminPanel')" class="text-xs text-subtitle/60 px-2 py-1 font-semibold text-center">Gestion</p>
                                 <Route route="pages.index" class="w-full">
                                     <Btn variant="ghost" size="md" class="w-full justify-start">
                                         <Icon source="fa-file-lines" pack="solid" size="sm" alt="Pages" class="mr-2"/>
@@ -118,7 +111,7 @@ const logout = () => {
                                     </Btn>
                                 </Route>
                             </div>
-                            <span v-if="!isAdmin" class="border-glass-b-sm w-full h-px"></span>
+                            <span v-if="!canAccess('adminPanel')" class="border-glass-b-sm w-full h-px"></span>
                         </template>
                         <Btn
                             variant="ghost"

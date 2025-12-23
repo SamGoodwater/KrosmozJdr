@@ -6,7 +6,7 @@
  */
 import { ref, onMounted, computed } from 'vue';
 import { usePage } from '@inertiajs/vue3';
-import { User } from '@/Models';
+import { usePermissions } from '@/Composables/permissions/usePermissions';
 import Card from '@/Pages/Atoms/data-display/Card.vue';
 import Btn from '@/Pages/Atoms/action/Btn.vue';
 import Icon from '@/Pages/Atoms/data-display/Icon.vue';
@@ -23,9 +23,7 @@ const examplesByTypeId = ref({});
 const examplesLoading = ref({});
 const expanded = ref({});
 
-const page = usePage();
-const currentUser = computed(() => (page.props.auth?.user ? new User(page.props.auth.user) : null));
-const isAdmin = computed(() => currentUser.value?.isAdmin ?? false);
+const { isAdmin } = usePermissions();
 
 const getCsrfToken = () => {
     return document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');

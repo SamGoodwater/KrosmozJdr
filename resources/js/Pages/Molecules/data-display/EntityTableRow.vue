@@ -13,12 +13,14 @@
  * @emit edit - Événement émis lors du clic sur éditer
  * @emit delete - Événement émis lors du clic sur supprimer
  */
+import { computed } from 'vue';
 import Route from '@/Pages/Atoms/action/Route.vue';
 import Btn from '@/Pages/Atoms/action/Btn.vue';
 import Tooltip from '@/Pages/Atoms/feedback/Tooltip.vue';
 import Badge from '@/Pages/Atoms/data-display/Badge.vue';
 import EntityActionsMenu from '@/Pages/Organismes/entity/EntityActionsMenu.vue';
 import { useCopyToClipboard } from '@/Composables/utils/useCopyToClipboard';
+import { resolveEntityRouteUrl } from '@/Composables/entity/entityRouteRegistry';
 
 const props = defineProps({
     entity: {
@@ -63,10 +65,30 @@ const props = defineProps({
     isAdmin: {
         type: Boolean,
         default: false
+    },
+    /**
+     * Permission "gestion" (ex: actions d'admin/maintenance).
+     * Backward compatible: si null/undefined, fallback sur isAdmin.
+     */
+    canManage: {
+        type: Boolean,
+        default: null
+    },
+    /**
+     * Configuration des routes Ziggy pour l'entité.
+     * @example { show: { name: 'entities.resources.show', paramsMode: 'scalar' } }
+     */
+    routeConfig: {
+        type: Object,
+        default: null
     }
 });
 
 const emit = defineEmits(['view', 'edit', 'delete', 'select', 'deselect', 'quick-view', 'quick-edit', 'copy-link', 'download-pdf', 'refresh', 'cell-update']);
+
+const canManageEffective = computed(() => {
+    return props.canManage === null ? props.isAdmin : props.canManage;
+});
 
 // Copie d'URL
 const { copyToClipboard } = useCopyToClipboard();
@@ -148,11 +170,9 @@ const handleCopyLink = async () => {
     const entityId = props.entity?.id ?? props.entity?.id ?? null;
     if (!entityId) return;
     
-    // Générer l'URL selon le type d'entité.
-    // IMPORTANT: on passe l'ID en paramètre scalaire pour éviter les soucis de nom de paramètre (item vs items, resourceType vs resource-types, etc.)
     try {
-        const routeName = `entities.${props.entityType}.show`;
-        const url = `${window.location.origin}${route(routeName, entityId)}`;
+        const url = resolveEntityRouteUrl(props.entityType, 'show', entityId, props.routeConfig);
+        if (!url) return;
         await copyToClipboard(url, `Lien de l'entité copié !`);
     } catch (e) {
         // Route inexistante (ex: entité sans page show) => on ignore sans casser l'UI.
@@ -220,7 +240,8 @@ const handleDownloadPdf = () => {
 };
 
 const getEntityRoute = () => {
-    return `entities.${props.entityType}.show`;
+    // Gardé pour compat, mais la résolution se fait via routeConfig (si fourni).
+    return props.routeConfig?.show?.name || `entities.${props.entityType}.show`;
 };
 
 const getEntityRouteParams = () => {
@@ -279,10 +300,11 @@ const getCanDelete = () => {
             :class="{ 'text-center font-semibold': column.isMain }">
             <!-- Colonne principale (nom avec lien) -->
             <template v-if="column.isMain">
-                <button 
+                <button
                     @click.stop="handleView"
                     @dblclick.stop
-                    class="link link-primary link-hover font-semibold text-left">
+                    class="link link-primary link-hover font-semibold text-left"
+                >
                     {{ getCellValue(column) }}
                 </button>
             </template>

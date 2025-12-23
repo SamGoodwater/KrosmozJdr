@@ -15,8 +15,9 @@
  * @emit applied - quand la MAJ a réussi (le parent peut refresh/clear sélection).
  * @emit clear - demander au parent de vider la sélection.
  */
-import { computed, reactive, ref, watch } from "vue";
+import { computed } from "vue";
 import Btn from "@/Pages/Atoms/action/Btn.vue";
+import { useBulkEditPanel } from "@/Composables/entity/useBulkEditPanel";
 
 const props = defineProps({
   selectedEntities: { type: Array, default: () => [] },
@@ -25,134 +26,44 @@ const props = defineProps({
 
 const emit = defineEmits(["applied", "clear"]);
 
-const getId = (e) => (e && typeof e.id !== "undefined" ? Number(e.id) : null);
-const getName = (e) => {
-  if (!e) return "";
-  if (typeof e?._data !== "undefined") return String(e.name ?? e._data?.name ?? "");
-  return String(e?.name ?? "");
+const FIELD_META = {
+  decision: { label: "Statut", nullable: false, build: (v) => v },
+  usable: { label: "Utilisable", nullable: false, build: (v) => v === "1" },
+  is_visible: { label: "Visibilité", nullable: false, build: (v) => v },
 };
 
-const showList = ref(false);
-
-const valuesOf = (key) => {
-  return (props.selectedEntities || [])
-    .map((e) => (typeof e?._data !== "undefined" ? e[key] ?? e._data?.[key] : e?.[key]))
-    .map((v) => (typeof v === "boolean" ? (v ? 1 : 0) : v));
-};
-
-const allSame = (arr) => {
-  if (!arr.length) return { same: true, value: null };
-  const first = arr[0];
-  for (const v of arr) {
-    // Comparaison stricte (string/number)
-    if (String(v ?? "") !== String(first ?? "")) return { same: false, value: null };
-  }
-  return { same: true, value: first ?? null };
-};
-
-const aggregate = computed(() => {
-  const decision = allSame(valuesOf("decision"));
-  const usable = allSame(valuesOf("usable"));
-  const isVisible = allSame(valuesOf("is_visible"));
-  return {
-    decision,
-    usable,
-    isVisible,
-  };
-});
-
-const form = reactive({
-  decision: "",
-  usable: "",
-  is_visible: "",
-});
-
-const dirty = reactive({
-  decision: false,
-  usable: false,
-  is_visible: false,
-});
-
-const resetFromSelection = () => {
-  form.decision = aggregate.value.decision.same ? String(aggregate.value.decision.value ?? "") : "";
-  form.usable = aggregate.value.usable.same ? String(aggregate.value.usable.value ?? "") : "";
-  form.is_visible = aggregate.value.isVisible.same ? String(aggregate.value.isVisible.value ?? "") : "";
-  dirty.decision = false;
-  dirty.usable = false;
-  dirty.is_visible = false;
-};
-
-watch(
-  () => props.selectedEntities.map(getId).join(","),
-  () => resetFromSelection(),
-  { immediate: true }
-);
-
-const placeholderDecision = computed(() =>
-  aggregate.value.decision.same ? "Choisir…" : "Valeurs différentes"
-);
-const placeholderUsable = computed(() =>
-  aggregate.value.usable.same ? "Choisir…" : "Valeurs différentes"
-);
-const placeholderVisible = computed(() =>
-  aggregate.value.isVisible.same ? "Choisir…" : "Valeurs différentes"
-);
-
-const canApply = computed(() => {
-  if (!props.isAdmin) return false;
-  const anyDirty = dirty.decision || dirty.usable || dirty.is_visible;
-  if (!anyDirty) return false;
-
-  // Si dirty, une valeur doit être choisie
-  if (dirty.decision && !form.decision) return false;
-  if (dirty.usable && !form.usable) return false;
-  if (dirty.is_visible && !form.is_visible) return false;
-  return true;
-});
-
-const ids = computed(() => (props.selectedEntities || []).map(getId).filter(Boolean));
-
-const selectedList = computed(() => {
-  return (props.selectedEntities || [])
-    .map((e) => ({ id: getId(e), name: getName(e) }))
-    .filter((x) => x.id);
+const {
+  showList,
+  ids,
+  selectedList,
+  aggregate,
+  form,
+  dirty,
+  placeholder,
+  onChange,
+  canApply,
+  resetFromSelection,
+  buildPayload,
+} = useBulkEditPanel({
+  selectedEntities: props.selectedEntities,
+  isAdmin: props.isAdmin,
+  fieldMeta: FIELD_META,
+  mode: "server",
+  filteredIds: [],
 });
 
 const panelTitle = computed(() => {
   return ids.value.length <= 1 ? "Édition" : "Édition en masse";
 });
 
-const onChangeDecision = (e) => {
-  dirty.decision = true;
-  form.decision = e?.target?.value ?? "";
-};
-const onChangeUsable = (e) => {
-  dirty.usable = true;
-  form.usable = e?.target?.value ?? "";
-};
-const onChangeVisible = (e) => {
-  dirty.is_visible = true;
-  form.is_visible = e?.target?.value ?? "";
-};
-
-const getCsrfToken = () => document.querySelector("meta[name=\"csrf-token\"]")?.getAttribute("content");
-
 const applyBulk = async () => {
   if (!canApply.value) return;
-  const csrf = getCsrfToken();
-  if (!csrf) return;
-
-  const payload = { ids: ids.value };
-  if (dirty.decision) payload.decision = form.decision;
-  if (dirty.usable) payload.usable = form.usable === "1";
-  if (dirty.is_visible) payload.is_visible = form.is_visible;
-
-  emit("applied", payload);
+  emit("applied", buildPayload());
 };
 </script>
 
 <template>
-  <div class="rounded-lg border border-base-300 bg-base-200 p-4 space-y-4">
+  <div class="rounded-lg border border-base-300 bg-base-200 p-4 space-y-4 max-h-[calc(100vh-7rem)] overflow-y-auto">
     <div class="flex items-start justify-between gap-3">
       <div>
         <div class="text-lg font-bold text-primary-100">{{ panelTitle }}</div>
@@ -190,8 +101,8 @@ const applyBulk = async () => {
     <div class="space-y-3">
       <div class="form-control">
         <label class="label"><span class="label-text">Statut</span></label>
-        <select class="select select-bordered" :value="form.decision" :disabled="!isAdmin" @change="onChangeDecision">
-          <option value="" disabled hidden>{{ placeholderDecision }}</option>
+        <select class="select select-bordered" :value="form.decision" :disabled="!isAdmin" @change="(e) => onChange('decision', e)">
+          <option value="" disabled hidden>{{ placeholder(aggregate.decision?.same) }}</option>
           <option value="pending">En attente</option>
           <option value="allowed">Utilisé</option>
           <option value="blocked">Non utilisé</option>
@@ -200,8 +111,8 @@ const applyBulk = async () => {
 
       <div class="form-control">
         <label class="label"><span class="label-text">Utilisable</span></label>
-        <select class="select select-bordered" :value="form.usable" :disabled="!isAdmin" @change="onChangeUsable">
-          <option value="" disabled hidden>{{ placeholderUsable }}</option>
+        <select class="select select-bordered" :value="form.usable" :disabled="!isAdmin" @change="(e) => onChange('usable', e)">
+          <option value="" disabled hidden>{{ placeholder(aggregate.usable?.same) }}</option>
           <option value="1">Oui</option>
           <option value="0">Non</option>
         </select>
@@ -209,8 +120,8 @@ const applyBulk = async () => {
 
       <div class="form-control">
         <label class="label"><span class="label-text">Visibilité</span></label>
-        <select class="select select-bordered" :value="form.is_visible" :disabled="!isAdmin" @change="onChangeVisible">
-          <option value="" disabled hidden>{{ placeholderVisible }}</option>
+        <select class="select select-bordered" :value="form.is_visible" :disabled="!isAdmin" @change="(e) => onChange('is_visible', e)">
+          <option value="" disabled hidden>{{ placeholder(aggregate.is_visible?.same) }}</option>
           <option value="guest">Invité</option>
           <option value="user">Utilisateur</option>
           <option value="game_master">Maître de jeu</option>

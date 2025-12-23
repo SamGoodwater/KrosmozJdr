@@ -19,7 +19,6 @@
  */
 import { ref, computed } from 'vue';
 import { router } from '@inertiajs/vue3';
-import { usePage } from '@inertiajs/vue3';
 import Badge from '@/Pages/Atoms/data-display/Badge.vue';
 import Tooltip from '@/Pages/Atoms/feedback/Tooltip.vue';
 import Icon from '@/Pages/Atoms/data-display/Icon.vue';
@@ -27,6 +26,7 @@ import Btn from '@/Pages/Atoms/action/Btn.vue';
 import Dropdown from '@/Pages/Atoms/action/Dropdown.vue';
 import { useCopyToClipboard } from '@/Composables/utils/useCopyToClipboard';
 import { useDownloadPdf } from '@/Composables/utils/useDownloadPdf';
+import { usePermissions } from '@/Composables/permissions/usePermissions';
 
 const props = defineProps({
     entity: {
@@ -52,7 +52,7 @@ const emit = defineEmits(['edit', 'copy-link', 'download-pdf', 'refresh']);
 const isHovered = ref(false);
 const { copyToClipboard } = useCopyToClipboard();
 const { downloadPdf, isDownloading } = useDownloadPdf(props.entityType);
-const page = usePage();
+const { isAdmin } = usePermissions();
 
 // Permissions
 const canUpdate = computed(() => {
@@ -60,11 +60,6 @@ const canUpdate = computed(() => {
         return props.entity.canUpdate ?? false;
     }
     return props.entity?.can?.update ?? false;
-});
-
-const isAdmin = computed(() => {
-    // Source of truth: backend (UserLightResource)
-    return page.props.auth?.user?.is_admin ?? false;
 });
 
 const getEntityIcon = (type) => {

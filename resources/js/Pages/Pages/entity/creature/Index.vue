@@ -10,7 +10,7 @@
 import { Head, router } from "@inertiajs/vue3";
 import { ref, computed, onBeforeUnmount } from "vue";
 import { usePageTitle } from "@/Composables/layout/usePageTitle";
-import { useEntityPermissions } from "@/Composables/permissions/useEntityPermissions";
+import { usePermissions } from "@/Composables/permissions/usePermissions";
 import { useNotificationStore } from "@/Composables/store/useNotificationStore";
 import { Creature } from "@/Models/Entity/Creature";
 
@@ -38,8 +38,8 @@ const notificationStore = useNotificationStore();
 setPageTitle('Liste des Créatures');
 
 // Permissions
-const { canCreateEntity } = useEntityPermissions();
-const canCreate = computed(() => canCreateEntity('creature'));
+const { canCreate: canCreatePermission } = usePermissions();
+const canCreate = computed(() => canCreatePermission('creatures'));
 
 // Transformation des entités en instances de modèles
 const creatures = computed(() => {

@@ -21,12 +21,13 @@
  * @emit delete - Événement émis pour supprimer l'entité
  * @emit refresh - Événement émis pour rafraîchir les données (admin)
  */
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 import { router } from '@inertiajs/vue3';
 import Btn from '@/Pages/Atoms/action/Btn.vue';
 import Icon from '@/Pages/Atoms/data-display/Icon.vue';
 import { useCopyToClipboard } from '@/Composables/utils/useCopyToClipboard';
 import { useDownloadPdf } from '@/Composables/utils/useDownloadPdf';
+import { getEntityRouteConfig, resolveEntityRouteUrl } from '@/Composables/entity/entityRouteRegistry';
 
 const props = defineProps({
     entity: {
@@ -56,6 +57,22 @@ const props = defineProps({
     isAdmin: {
         type: Boolean,
         default: false
+    },
+    /**
+     * Permission "gestion" (ex: actions d'admin/maintenance).
+     * Backward compatible: si null/undefined, fallback sur isAdmin.
+     */
+    canManage: {
+        type: Boolean,
+        default: null
+    },
+    /**
+     * Configuration des routes Ziggy pour l'entité (optionnel).
+     * Permet de gérer les exceptions de param keys (ex: resourceType).
+     */
+    routeConfig: {
+        type: Object,
+        default: null
     }
 });
 
@@ -64,6 +81,7 @@ const emit = defineEmits(['view', 'quick-view', 'edit', 'quick-edit', 'copy-link
 const menuOpen = ref(false);
 const { copyToClipboard } = useCopyToClipboard();
 const { downloadPdf, isDownloading } = useDownloadPdf(props.entityType);
+const canManageEffective = computed(() => (props.canManage === null ? props.isAdmin : props.canManage));
 
 /**
  * Génère l'URL de l'entité
@@ -71,10 +89,9 @@ const { downloadPdf, isDownloading } = useDownloadPdf(props.entityType);
 const getEntityUrl = () => {
     const entityId = props.entity?.id ?? props.entity?.id ?? null;
     if (!entityId) return '';
-    
-    const routeName = `entities.${props.entityType}.show`;
-    const routeParams = { [props.entityType]: entityId };
-    return `${window.location.origin}${route(routeName, routeParams)}`;
+
+    const cfg = props.routeConfig || getEntityRouteConfig(props.entityType);
+    return resolveEntityRouteUrl(props.entityType, 'show', entityId, cfg);
 };
 
 /**
@@ -207,7 +224,7 @@ const handleRefresh = () => {
             </li>
             
             <!-- Rafraîchir (admin) -->
-            <li v-if="isAdmin">
+            <li v-if="canManageEffective">
                 <button @click="handleRefresh" class="flex items-center gap-2">
                     <Icon source="fa-solid fa-arrow-rotate-right" size="sm" />
                     <span>Rafraîchir</span>

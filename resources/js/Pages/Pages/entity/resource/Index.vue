@@ -9,13 +9,12 @@
  */
 import { Head, router } from "@inertiajs/vue3";
 import { ref, computed, onBeforeUnmount } from "vue";
-import axios from "axios";
 import { usePageTitle } from "@/Composables/layout/usePageTitle";
-import { useEntityPermissions } from "@/Composables/permissions/useEntityPermissions";
 import { useNotificationStore } from "@/Composables/store/useNotificationStore";
-import { usePage } from "@inertiajs/vue3";
-import { User } from "@/Models";
 import { Resource } from "@/Models/Entity/Resource";
+import { useHybridEntityTable } from "@/Composables/entity/useHybridEntityTable";
+import { applyPatchToDataset } from "@/Composables/entity/applyPatchToDataset";
+import { usePermissions } from "@/Composables/permissions/usePermissions";
 
 import Container from '@/Pages/Atoms/data-display/Container.vue';
 import Btn from '@/Pages/Atoms/action/Btn.vue';
@@ -37,6 +36,10 @@ const props = defineProps({
     resourceTypes: {
         type: Array,
         default: () => []
+    },
+    can: {
+        type: Object,
+        default: () => ({})
     }
 });
 
@@ -47,11 +50,10 @@ const notificationStore = useNotificationStore();
 setPageTitle('Liste des Ressources');
 
 // Permissions
-const { canCreateEntity } = useEntityPermissions();
-const canCreate = computed(() => canCreateEntity('resource'));
-const page = usePage();
-const currentUser = computed(() => (page.props.auth?.user ? new User(page.props.auth.user) : null));
-const isAdmin = computed(() => currentUser.value?.isAdmin ?? false);
+const { canUpdateAny, canCreate: canCreatePermission, canManageAny } = usePermissions();
+const canCreate = computed(() => Boolean(props.can?.create ?? canCreatePermission('resources')));
+const canModify = computed(() => Boolean(props.can?.updateAny ?? canUpdateAny('resources')));
+const canManage = computed(() => Boolean(props.can?.manageAny ?? canManageAny('resources')));
 
 // État
 const selectedEntity = ref(null);
@@ -62,10 +64,6 @@ const selectedEntities = ref([]);
 const filteredIds = ref([]);
 const search = ref(props.filters.search || '');
 const filters = ref(props.filters || {});
-const tableMode = ref('server'); // server | client
-const allResources = ref([]);
-const loadingAll = ref(false);
-const baseServerQuery = ref(null); // snapshot { search, filters, sort, order }
 
 // Garder trace du tri serveur courant (utile pour charger un dataset client cohérent)
 const serverSort = ref('');
@@ -78,6 +76,18 @@ try {
 } catch (e) {
     // SSR / tests -> ignore
 }
+
+const { tableMode, allRows: allResources, loadingAll, baseServerQuery, loadClientMode, reloadClientDataset, switchToServerMode } =
+    useHybridEntityTable({
+        entityKey: "resources",
+        search,
+        filters,
+        serverSort,
+        serverOrder,
+        notifySuccess: (msg) => notificationStore.addNotification({ type: "success", message: msg }),
+        notifyError: (msg) => notificationStore.addNotification({ type: "error", message: msg }),
+        limit: 5000,
+    });
 
 // Normaliser en modèles (cohérence avec Item/Consumable)
 const resources = computed(() => {
@@ -358,27 +368,23 @@ const handleBulkApplied = async (payload) => {
 
         // Mode client: mise à jour locale
         if (tableMode.value === 'client') {
-            const ids = new Set((payload.ids || []).map((v) => String(v)));
-            allResources.value = (allResources.value || []).map((r) => {
-                if (!ids.has(String(r.id))) return r;
-                const next = { ...r };
-                if (typeof payload.resource_type_id !== 'undefined') {
-                    next.resource_type_id = payload.resource_type_id;
-                    const rt = (props.resourceTypes || []).find((t) => Number(t.id) === Number(payload.resource_type_id));
-                    if (rt) next.resourceType = rt;
-                    if (payload.resource_type_id === null) next.resourceType = null;
-                }
-                if (typeof payload.usable !== 'undefined') next.usable = payload.usable ? 1 : 0;
-                if (typeof payload.auto_update !== 'undefined') next.auto_update = payload.auto_update ? 1 : 0;
-                if (typeof payload.is_visible !== 'undefined') next.is_visible = payload.is_visible;
-                if (typeof payload.rarity !== 'undefined') next.rarity = payload.rarity;
-                if (typeof payload.level !== 'undefined') next.level = payload.level;
-                if (typeof payload.price !== 'undefined') next.price = payload.price;
-                if (typeof payload.weight !== 'undefined') next.weight = payload.weight;
-                if (typeof payload.description !== 'undefined') next.description = payload.description;
-                if (typeof payload.image !== 'undefined') next.image = payload.image;
-                if (typeof payload.dofus_version !== 'undefined') next.dofus_version = payload.dofus_version;
-                return next;
+            allResources.value = applyPatchToDataset(allResources.value, payload, {
+                normalize: {
+                    usable: (v) => (v ? 1 : 0),
+                    auto_update: (v) => (v ? 1 : 0),
+                },
+                afterPatch: (next, { patch }) => {
+                    // Met à jour la relation resourceType si le type change (utile pour l'affichage)
+                    if (Object.prototype.hasOwnProperty.call(patch, "resource_type_id")) {
+                        const typeId = patch.resource_type_id;
+                        if (typeId === null) {
+                            return { ...next, resourceType: null };
+                        }
+                        const rt = (props.resourceTypes || []).find((t) => Number(t.id) === Number(typeId));
+                        if (rt) return { ...next, resourceType: rt };
+                    }
+                    return next;
+                },
             });
         } else {
             router.reload({ preserveState: true, preserveScroll: true });
@@ -390,95 +396,9 @@ const handleBulkApplied = async (payload) => {
     }
 };
 
-const handleLoadAllForClientMode = async () => {
-    if (loadingAll.value) return;
-    loadingAll.value = true;
-    try {
-        // Snapshot du sous-ensemble "serveur" (baseline)
-        baseServerQuery.value = {
-            search: search.value,
-            filters: { ...(filters.value || {}) },
-            sort: serverSort.value || null,
-            order: serverOrder.value || null,
-        };
-
-        // On charge un lot conséquent pour permettre le filtrage/tri côté navigateur.
-        // NB: limite backend (par défaut 5000, max 20000)
-        const params = {
-            limit: 5000,
-            search: baseServerQuery.value.search || '',
-            ...baseServerQuery.value.filters,
-        };
-        if (baseServerQuery.value.sort) params.sort = baseServerQuery.value.sort;
-        if (baseServerQuery.value.order) params.order = baseServerQuery.value.order;
-
-        const response = await axios.get('/api/entity-table/resources', { params });
-        // Réponse: { data: ResourceResource::collection(...) }
-        allResources.value = response.data?.data?.data ?? [];
-        tableMode.value = 'client';
-
-        // Réinitialiser les filtres UI : ils deviennent une couche "client" additionnelle
-        search.value = '';
-        filters.value = {};
-
-        notificationStore.addNotification({
-            type: 'success',
-            message: `Mode client activé (${allResources.value.length} ressources chargées).`
-        });
-    } catch (e) {
-        console.error(e);
-        notificationStore.addNotification({
-            type: 'error',
-            message: 'Impossible de charger le dataset pour le mode client (API).'
-        });
-    } finally {
-        loadingAll.value = false;
-    }
-};
-
-const handleReloadClientDataset = async () => {
-    if (loadingAll.value) return;
-    if (tableMode.value !== 'client' || !baseServerQuery.value) return;
-
-    const clientSearch = search.value;
-    const clientFilters = { ...(filters.value || {}) };
-
-    loadingAll.value = true;
-    try {
-        const params = {
-            limit: 5000,
-            search: baseServerQuery.value.search || '',
-            ...(baseServerQuery.value.filters || {}),
-        };
-        if (baseServerQuery.value.sort) params.sort = baseServerQuery.value.sort;
-        if (baseServerQuery.value.order) params.order = baseServerQuery.value.order;
-
-        const response = await axios.get('/api/entity-table/resources', { params });
-        allResources.value = response.data?.data?.data ?? [];
-
-        // Conserver les filtres client en place
-        search.value = clientSearch;
-        filters.value = clientFilters;
-
-        notificationStore.addNotification({
-            type: 'success',
-            message: `Dataset rechargé (${allResources.value.length} ressources).`
-        });
-    } catch (e) {
-        console.error(e);
-        notificationStore.addNotification({
-            type: 'error',
-            message: 'Impossible de recharger le dataset client.'
-        });
-    } finally {
-        loadingAll.value = false;
-    }
-};
-
-const handleSwitchToServerMode = () => {
-    tableMode.value = 'server';
-    baseServerQuery.value = null;
-};
+const handleLoadAllForClientMode = async () => loadClientMode();
+const handleReloadClientDataset = async () => reloadClientDataset();
+const handleSwitchToServerMode = () => switchToServerMode();
 </script>
 
 <template>
@@ -569,7 +489,8 @@ const handleSwitchToServerMode = () => {
                     entity-type="resources"
                     :pagination="props.resources"
                     :show-filters="true"
-                    :show-selection="true"
+                    :show-selection="canModify"
+                    :can-manage="canManage"
                     :search="search"
                     :filters="filters"
                     :filterable-columns="filterableColumns"
@@ -587,10 +508,10 @@ const handleSwitchToServerMode = () => {
                 />
             </div>
 
-            <div v-if="selectedEntities.length >= 1" class="sticky top-4 self-start">
+            <div v-if="canModify && selectedEntities.length >= 1" class="sticky top-4 self-start">
                 <ResourceBulkEditPanel
                     :selected-entities="selectedEntities"
-                    :is-admin="isAdmin"
+                    :is-admin="canModify"
                     :resource-types="props.resourceTypes || []"
                     :filtered-ids="filteredIds"
                     :mode="tableMode"

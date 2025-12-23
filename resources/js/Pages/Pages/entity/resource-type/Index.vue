@@ -7,10 +7,11 @@
  */
 import { Head, router, usePage } from "@inertiajs/vue3";
 import { ref, computed, onBeforeUnmount } from "vue";
-import axios from "axios";
 import { usePageTitle } from "@/Composables/layout/usePageTitle";
 import { useNotificationStore } from "@/Composables/store/useNotificationStore";
-import { User } from "@/Models";
+import { useHybridEntityTable } from "@/Composables/entity/useHybridEntityTable";
+import { applyPatchToDataset } from "@/Composables/entity/applyPatchToDataset";
+import { usePermissions } from "@/Composables/permissions/usePermissions";
 
 import Container from "@/Pages/Atoms/data-display/Container.vue";
 import Btn from "@/Pages/Atoms/action/Btn.vue";
@@ -24,14 +25,17 @@ import ResourceTypeBulkEditPanel from "./components/ResourceTypeBulkEditPanel.vu
 const props = defineProps({
     resourceTypes: { type: Object, required: true },
     filters: { type: Object, default: () => ({}) },
+    can: { type: Object, default: () => ({}) },
 });
 
 const { setPageTitle } = usePageTitle();
 setPageTitle("Types de ressources");
 
-const page = usePage();
-const currentUser = computed(() => (page.props.auth?.user ? new User(page.props.auth.user) : null));
-const isAdmin = computed(() => currentUser.value?.isAdmin ?? false);
+const canModify = computed(() => Boolean(props.can?.updateAny));
+const { canUpdateAny, canCreate, canManageAny } = usePermissions();
+const canModifyResolved = computed(() => Boolean(props.can?.updateAny ?? canUpdateAny('resource-types')));
+const canCreateResolved = computed(() => Boolean(props.can?.create ?? canCreate('resource-types')));
+const canManage = computed(() => Boolean(props.can?.manageAny ?? canManageAny('resource-types')));
 
 const notificationStore = useNotificationStore();
 const { success: notifySuccess, error: notifyError } = notificationStore;
@@ -47,10 +51,6 @@ const selectedEntities = ref([]);
 
 const search = ref(props.filters.search || "");
 const filters = ref(props.filters || {});
-const tableMode = ref("server"); // server | client
-const allResourceTypes = ref([]);
-const loadingAll = ref(false);
-const baseServerQuery = ref(null); // snapshot { search, filters, sort, order }
 
 const serverSort = ref("");
 const serverOrder = ref("desc");
@@ -61,6 +61,18 @@ try {
 } catch (e) {
     // ignore
 }
+
+const { tableMode, allRows: allResourceTypes, loadingAll, baseServerQuery, loadClientMode, reloadClientDataset, switchToServerMode } =
+    useHybridEntityTable({
+        entityKey: "resource-types",
+        search,
+        filters,
+        serverSort,
+        serverOrder,
+        notifySuccess: (msg) => notifySuccess(msg),
+        notifyError: (msg) => notifyError(msg),
+        limit: 5000,
+    });
 
 const decisionLabel = (decision) => {
     return decision === "allowed"
@@ -78,10 +90,10 @@ const columns = computed(() => [
         key: "decision",
         label: "Statut",
         sortable: true,
-        type: isAdmin.value ? "inline-select" : "badge",
+        type: canModifyResolved.value ? "inline-select" : "badge",
         badgeColor: "primary",
         format: decisionLabel,
-        disabled: !isAdmin.value,
+        disabled: !canModifyResolved.value,
         options: [
             { value: "pending", label: "En attente" },
             { value: "allowed", label: "Utilisé" },
@@ -144,75 +156,9 @@ const handleRefreshAll = () => {
     router.reload({ preserveState: true, preserveScroll: true });
 };
 
-const handleLoadAllForClientMode = async () => {
-    if (loadingAll.value) return;
-    loadingAll.value = true;
-    try {
-        baseServerQuery.value = {
-            search: search.value,
-            filters: { ...(filters.value || {}) },
-            sort: serverSort.value || null,
-            order: serverOrder.value || null,
-        };
-
-        const params = {
-            limit: 5000,
-            search: baseServerQuery.value.search || "",
-            ...baseServerQuery.value.filters,
-        };
-        if (baseServerQuery.value.sort) params.sort = baseServerQuery.value.sort;
-        if (baseServerQuery.value.order) params.order = baseServerQuery.value.order;
-
-        const response = await axios.get("/api/entity-table/resource-types", { params });
-        allResourceTypes.value = response.data?.data?.data ?? [];
-        tableMode.value = "client";
-
-        // Les filtres UI deviennent une couche additionnelle côté client
-        search.value = "";
-        filters.value = {};
-    } catch (e) {
-        console.error(e);
-        alert("Impossible de charger le dataset pour le mode client (API).");
-    } finally {
-        loadingAll.value = false;
-    }
-};
-
-const handleReloadClientDataset = async () => {
-    if (loadingAll.value) return;
-    if (tableMode.value !== "client" || !baseServerQuery.value) return;
-
-    const clientSearch = search.value;
-    const clientFilters = { ...(filters.value || {}) };
-
-    loadingAll.value = true;
-    try {
-        const params = {
-            limit: 5000,
-            search: baseServerQuery.value.search || "",
-            ...(baseServerQuery.value.filters || {}),
-        };
-        if (baseServerQuery.value.sort) params.sort = baseServerQuery.value.sort;
-        if (baseServerQuery.value.order) params.order = baseServerQuery.value.order;
-
-        const response = await axios.get("/api/entity-table/resource-types", { params });
-        allResourceTypes.value = response.data?.data?.data ?? [];
-
-        // Conserver les filtres client
-        search.value = clientSearch;
-        filters.value = clientFilters;
-    } catch (e) {
-        console.error(e);
-        alert("Impossible de recharger le dataset client (API).");
-    } finally {
-        loadingAll.value = false;
-    }
-};
-
-const handleSwitchToServerMode = () => {
-    tableMode.value = "server";
-    baseServerQuery.value = null;
-};
+const handleLoadAllForClientMode = async () => loadClientMode();
+const handleReloadClientDataset = async () => reloadClientDataset();
+const handleSwitchToServerMode = () => switchToServerMode();
 
 const handleEdit = (entity) => {
     selectedEntity.value = entity;
@@ -232,7 +178,7 @@ const handleDelete = (entity) => {
 const handleCellUpdate = async ({ entity, key, value }) => {
     // Inline edit: decision
     if (key !== "decision") return;
-    if (!isAdmin.value) return;
+    if (!canModifyResolved.value) return;
 
     const csrfToken = getCsrfToken();
     if (!csrfToken) {
@@ -304,14 +250,10 @@ const handleBulkApplied = async (payload) => {
 
         // Mise à jour locale (mode client) ou reload (mode serveur)
         if (tableMode.value === "client") {
-            const ids = new Set((payload.ids || []).map((v) => String(v)));
-            allResourceTypes.value = (allResourceTypes.value || []).map((r) => {
-                if (!ids.has(String(r.id))) return r;
-                const next = { ...r };
-                if (typeof payload.decision !== "undefined") next.decision = payload.decision;
-                if (typeof payload.usable !== "undefined") next.usable = payload.usable ? 1 : 0;
-                if (typeof payload.is_visible !== "undefined") next.is_visible = payload.is_visible;
-                return next;
+            allResourceTypes.value = applyPatchToDataset(allResourceTypes.value, payload, {
+                normalize: {
+                    usable: (v) => (v ? 1 : 0),
+                },
             });
         } else {
             router.reload({ preserveState: true, preserveScroll: true });
@@ -404,7 +346,7 @@ const fieldsConfig = computed(() => ({
                     Mode serveur
                 </Btn>
 
-                <Btn v-if="isAdmin" @click="createOpen = true" color="primary">
+                <Btn v-if="canCreateResolved" @click="createOpen = true" color="primary">
                     <i class="fa-solid fa-plus mr-2"></i>
                     Créer un type
                 </Btn>
@@ -446,7 +388,8 @@ const fieldsConfig = computed(() => ({
                     entity-type="resource-types"
                     :pagination="resourceTypes"
                     :show-filters="true"
-                    :show-selection="true"
+                    :show-selection="canModifyResolved"
+                    :can-manage="canManage"
                     :search="search"
                     :filters="filters"
                     :filterable-columns="filterableColumns"
@@ -464,10 +407,10 @@ const fieldsConfig = computed(() => ({
                 />
             </div>
 
-            <div v-if="selectedEntities.length >= 1" class="sticky top-4 self-start">
+            <div v-if="canModifyResolved && selectedEntities.length >= 1" class="sticky top-4 self-start">
                 <ResourceTypeBulkEditPanel
                     :selected-entities="selectedEntities"
-                    :is-admin="isAdmin"
+                    :is-admin="canModifyResolved"
                     @applied="handleBulkApplied"
                     @clear="clearSelection"
                 />

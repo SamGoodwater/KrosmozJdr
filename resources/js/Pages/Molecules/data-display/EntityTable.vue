@@ -25,7 +25,7 @@
  * @emit update:search - Événement émis lors du changement de recherche
  * @emit update:filters - Événement émis lors du changement de filtres
  */
-import { ref, computed, watch } from 'vue';
+import { ref, computed, watch, useAttrs } from 'vue';
 import Loading from '@/Pages/Atoms/feedback/Loading.vue';
 import EntityTableHeader from './EntityTableHeader.vue';
 import EntityTableRow from './EntityTableRow.vue';
@@ -36,6 +36,9 @@ import Dropdown from '@/Pages/Atoms/action/Dropdown.vue';
 import { useEntityTableSettings } from '@/Composables/store/useEntityTableSettings';
 import { useEntityViewFormat } from '@/Composables/store/useEntityViewFormat';
 import { getCoreRowModel, getPaginationRowModel, getSortedRowModel, useVueTable } from '@tanstack/vue-table';
+import { getEntityRouteConfig } from '@/Composables/entity/entityRouteRegistry';
+import { router } from '@inertiajs/vue3';
+import { resolveEntityRouteHref } from '@/Composables/entity/entityRouteRegistry';
 
 const props = defineProps({
     entities: {
@@ -93,6 +96,17 @@ const props = defineProps({
         default: false
     },
     /**
+     * Permission "gestion" (ex: actions d'admin/maintenance).
+     *
+     * @description
+     * Remplace progressivement `isAdmin` par une permission métier (peut être calculée via Policies).
+     * Backward compatible: si null/undefined, fallback sur `isAdmin`.
+     */
+    canManage: {
+        type: Boolean,
+        default: null
+    },
+    /**
      * Mode de table:
      * - server: utilise `pagination`/Inertia pour tri/filtre/recherche/pagination
      * - client: utilise TanStack Table sur `entities`
@@ -111,6 +125,14 @@ const props = defineProps({
     },
     exportFilename: {
         type: String,
+        default: null
+    },
+    /**
+     * Configuration des routes Ziggy (show/edit/delete) pour l'entité.
+     * Si non fourni, on utilise `getEntityRouteConfig(entityType)`.
+     */
+    routeConfig: {
+        type: Object,
         default: null
     }
 });
@@ -149,14 +171,45 @@ const handleSort = (columnKey) => {
 
 const handleView = (entity) => {
     emit('view', entity);
+    // Fallback DRY: si aucun handler externe n'est fourni, on navigue via la registry de routes.
+    if (!hasExternalViewHandler.value) {
+        const id = getEntityId(entity);
+        if (!id) return;
+        const href = resolveEntityRouteHref(props.entityType, 'show', id, resolvedRouteConfig.value);
+        if (href) router.visit(href);
+    }
 };
 
 const handleEdit = (entity) => {
     emit('edit', entity);
+    if (!hasExternalEditHandler.value) {
+        const id = getEntityId(entity);
+        if (!id) return;
+        const href = resolveEntityRouteHref(props.entityType, 'edit', id, resolvedRouteConfig.value);
+        if (href) router.visit(href);
+    }
 };
 
 const handleDelete = (entity) => {
     emit('delete', entity);
+    if (!hasExternalDeleteHandler.value) {
+        const id = getEntityId(entity);
+        if (!id) return;
+
+        const label = (() => {
+            try {
+                return String(getEntityFieldValue(entity, 'name') ?? getEntityFieldValue(entity, 'title') ?? `#${id}`);
+            } catch {
+                return `#${id}`;
+            }
+        })();
+
+        if (!confirm(`Supprimer ${label} ?`)) return;
+
+        const href = resolveEntityRouteHref(props.entityType, 'delete', id, resolvedRouteConfig.value);
+        if (!href) return;
+        router.delete(href, { preserveScroll: true });
+    }
 };
 
 const handlePageChange = (url) => {
@@ -263,6 +316,19 @@ const handleRefreshAll = () => {
 const handleCellUpdate = (payload) => {
     emit('cell-update', payload);
 };
+
+const resolvedRouteConfig = computed(() => {
+    return props.routeConfig || getEntityRouteConfig(props.entityType);
+});
+
+const canManageEffective = computed(() => {
+    return props.canManage === null ? props.isAdmin : props.canManage;
+});
+
+const attrs = useAttrs();
+const hasExternalViewHandler = computed(() => typeof attrs.onView === 'function');
+const hasExternalEditHandler = computed(() => typeof attrs.onEdit === 'function');
+const hasExternalDeleteHandler = computed(() => typeof attrs.onDelete === 'function');
 
 const disableQuickActions = computed(() => {
     return selectedEntitiesEffective.value.length > 1;
@@ -642,12 +708,14 @@ const extraHeaderCellsCount = computed(() => {
                             :entity="entity"
                             :columns="filteredColumns"
                             :entity-type="entityType"
+                            :route-config="resolvedRouteConfig"
                             :enable-selection="showSelection"
                             :show-selection="showSelectionCheckboxes"
                             :is-selected="isEntitySelected(entity)"
                             :show-actions-menu="showActionsMenu"
                             :disable-quick-actions="disableQuickActions"
                             :is-admin="isAdmin"
+                            :can-manage="canManageEffective"
                             @view="handleView"
                             @edit="handleEdit"
                             @delete="handleDelete"

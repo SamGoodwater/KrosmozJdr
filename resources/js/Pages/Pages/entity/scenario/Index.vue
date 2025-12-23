@@ -10,7 +10,7 @@
 import { Head, router } from "@inertiajs/vue3";
 import { ref, computed, onBeforeUnmount } from "vue";
 import { usePageTitle } from "@/Composables/layout/usePageTitle";
-import { useEntityPermissions } from "@/Composables/permissions/useEntityPermissions";
+import { usePermissions } from "@/Composables/permissions/usePermissions";
 import { useNotificationStore } from "@/Composables/store/useNotificationStore";
 import { Scenario } from "@/Models/Entity/Scenario";
 
@@ -38,8 +38,8 @@ const notificationStore = useNotificationStore();
 setPageTitle('Liste des Scénarios');
 
 // Permissions
-const { canCreateEntity } = useEntityPermissions();
-const canCreate = computed(() => canCreateEntity('scenario'));
+const { canCreate: canCreatePermission } = usePermissions();
+const canCreate = computed(() => canCreatePermission('scenarios'));
 
 // Transformation des entités en instances de modèles
 const scenarios = computed(() => {

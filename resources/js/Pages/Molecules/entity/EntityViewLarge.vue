@@ -23,7 +23,7 @@ import Btn from '@/Pages/Atoms/action/Btn.vue';
 import Tooltip from '@/Pages/Atoms/feedback/Tooltip.vue';
 import { useCopyToClipboard } from '@/Composables/utils/useCopyToClipboard';
 import { useDownloadPdf } from '@/Composables/utils/useDownloadPdf';
-import { usePage } from '@inertiajs/vue3';
+import { usePermissions } from '@/Composables/permissions/usePermissions';
 
 const props = defineProps({
     entity: {
@@ -44,7 +44,7 @@ const emit = defineEmits(['edit', 'copy-link', 'download-pdf', 'refresh']);
 
 const { copyToClipboard } = useCopyToClipboard();
 const { downloadPdf, isDownloading } = useDownloadPdf(props.entityType);
-const page = usePage();
+const { isAdmin } = usePermissions();
 
 // Permissions
 const canUpdate = computed(() => {
@@ -59,11 +59,6 @@ const canView = computed(() => {
         return props.entity.canView ?? false;
     }
     return props.entity?.can?.view ?? false;
-});
-
-const isAdmin = computed(() => {
-    // Source of truth: backend (UserLightResource)
-    return page.props.auth?.user?.is_admin ?? false;
 });
 
 // Fonction pour obtenir l'icône selon le type d'entité

@@ -27,6 +27,8 @@ class ResourceController extends Controller
     public function index()
     {
         $this->authorize('viewAny', Resource::class);
+
+        $user = request()->user();
         
         $query = Resource::with(['createdBy', 'resourceType', 'consumables']);
         
@@ -76,6 +78,11 @@ class ResourceController extends Controller
             'resources' => ResourceResource::collection($resources),
             'filters' => request()->only(['search', 'level', 'resource_type_id', 'rarity', 'usable', 'auto_update']),
             'resourceTypes' => ResourceType::query()->select('id', 'name')->orderBy('name')->get(),
+            'can' => [
+                'create' => $user ? $user->can('create', Resource::class) : false,
+                'updateAny' => $user ? $user->can('updateAny', Resource::class) : false,
+                'deleteAny' => $user ? $user->can('deleteAny', Resource::class) : false,
+            ],
         ]);
     }
 

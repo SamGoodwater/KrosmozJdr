@@ -24,6 +24,8 @@ class ResourceTypeController extends Controller
     {
         $this->authorize('viewAny', ResourceType::class);
 
+        $user = request()->user();
+
         $query = ResourceType::query()->withCount('resources');
 
         if (request()->filled('search')) {
@@ -55,6 +57,11 @@ class ResourceTypeController extends Controller
         return Inertia::render('Pages/entity/resource-type/Index', [
             'resourceTypes' => ResourceTypeResource::collection($resourceTypes),
             'filters' => request()->only(['search', 'decision']),
+            'can' => [
+                'create' => $user ? $user->can('create', ResourceType::class) : false,
+                'updateAny' => $user ? $user->can('updateAny', ResourceType::class) : false,
+                'deleteAny' => $user ? $user->can('deleteAny', ResourceType::class) : false,
+            ],
         ]);
     }
 

@@ -10,7 +10,7 @@
 import { Head, router } from "@inertiajs/vue3";
 import { ref, computed, onBeforeUnmount } from "vue";
 import { usePageTitle } from "@/Composables/layout/usePageTitle";
-import { useEntityPermissions } from "@/Composables/permissions/useEntityPermissions";
+import { usePermissions } from "@/Composables/permissions/usePermissions";
 import { useNotificationStore } from "@/Composables/store/useNotificationStore";
 
 import Container from '@/Pages/Atoms/data-display/Container.vue';
@@ -37,8 +37,8 @@ const notificationStore = useNotificationStore();
 setPageTitle('Liste des Consommables');
 
 // Permissions
-const { canCreateEntity } = useEntityPermissions();
-const canCreate = computed(() => canCreateEntity('consumable'));
+const { canCreate: canCreatePermission } = usePermissions();
+const canCreate = computed(() => canCreatePermission('consumables'));
 
 // État
 const selectedEntity = ref(null);

@@ -66,6 +66,28 @@ class UserPolicy
     }
 
     /**
+     * Capacité "globale" : créer des utilisateurs de manière administrative (ex: bulk, maintenance).
+     *
+     * @param User $user Utilisateur courant
+     * @return bool
+     */
+    public function createAny(User $user): bool
+    {
+        return $user->isAdmin();
+    }
+
+    /**
+     * Capacité "globale" : modifier des utilisateurs (ex: bulk, actions admin).
+     *
+     * @param User $user Utilisateur courant
+     * @return bool
+     */
+    public function updateAny(User $user): bool
+    {
+        return $user->isAdmin();
+    }
+
+    /**
      * Détermine si l'utilisateur peut modifier un utilisateur donné.
      *
      * @param User $user Utilisateur courant
@@ -87,6 +109,28 @@ class UserPolicy
     public function delete(User $user, User $model): bool
     {
         return $model->id === $user->id || $user->verifyRole(User::ROLE_ADMIN); // admin = 4
+    }
+
+    /**
+     * Capacité "globale" : supprimer des utilisateurs (ex: bulk, maintenance).
+     *
+     * @param User $user Utilisateur courant
+     * @return bool
+     */
+    public function deleteAny(User $user): bool
+    {
+        return $user->isAdmin();
+    }
+
+    /**
+     * Capacité "globale" : actions de maintenance / administration (ex: refresh, outils).
+     *
+     * @param User $user Utilisateur courant
+     * @return bool
+     */
+    public function manageAny(User $user): bool
+    {
+        return $user->isAdmin();
     }
 
     /**

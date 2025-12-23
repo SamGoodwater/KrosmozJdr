@@ -10,6 +10,7 @@ import { ref, watch, computed, onMounted, nextTick } from 'vue';
 import { useForm, usePage, router } from '@inertiajs/vue3';
 import { useNotificationStore } from '@/Composables/store/useNotificationStore';
 import { verifyRole, getRoleTranslation, ROLES } from '@/Utils/user/RoleManager';
+import { usePermissions } from '@/Composables/permissions/usePermissions';
 import InputField from '@/Pages/Molecules/data-input/InputField.vue';
 import File from '@/Pages/Molecules/data-input/FileField.vue';
 import SelectField from '@/Pages/Molecules/data-input/SelectField.vue';
@@ -21,6 +22,7 @@ import Tooltip from '@/Pages/Atoms/feedback/Tooltip.vue';
 
 const page = usePage();
 const { success, error } = useNotificationStore();
+const { isAdmin } = usePermissions();
 
 // Utilisateur à éditer
 // Le user est passé via page.props.user (UserResource)
@@ -224,11 +226,7 @@ const isSelfUpdate = computed(() => {
     return userId && userId === currentUserId;
 });
 
-// Computed pour déterminer si l'utilisateur est admin
-const isAdmin = computed(() => {
-    const userRole = page.props.auth?.user?.role;
-    return userRole === 4 || userRole === 5; // admin = 4, super_admin = 5
-});
+// `isAdmin` est centralisé dans usePermissions()
 
 const updatePassword = () => {
     // Déterminer la route selon le contexte (profil courant ou admin modifiant un autre utilisateur)

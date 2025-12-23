@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Inertia\Middleware;
 use Tighten\Ziggy\Ziggy;
 use App\Http\Resources\UserLightResource;
+use App\Support\EntityPermissions\EntityPermissionService;
 
 class HandleInertiaRequests extends Middleware
 {
@@ -31,6 +32,7 @@ class HandleInertiaRequests extends Middleware
      */
     public function share(Request $request): array
     {
+        $permissionService = new EntityPermissionService();
         return [
             ...parent::share($request),
             'auth' => [
@@ -42,6 +44,18 @@ class HandleInertiaRequests extends Middleware
                 },
                 'isLogged' => fn() => $request->user() !== null,
             ],
+            /**
+             * Permissions globales (par entité) exposées au frontend.
+             *
+             * Structure:
+             * permissions: {
+             *   entities: {
+             *     resources: { viewAny, create, createAny, updateAny, deleteAny },
+             *     items: { ... },
+             *   }
+             * }
+             */
+            'permissions' => fn() => $permissionService->forUser($request->user()),
             'ziggy' => fn() => [
                 ...(new Ziggy)->toArray(),
                 'location' => $request->url(),

@@ -8,13 +8,12 @@
  * @props {Object} items - Collection paginée des items
  */
 import { Head, router, usePage } from "@inertiajs/vue3";
-import { ref, computed, onBeforeUnmount } from "vue";
+import { ref, computed, onBeforeUnmount, watch } from "vue";
 import { usePageTitle } from "@/Composables/layout/usePageTitle";
-import { useEntityPermissions } from "@/Composables/permissions/useEntityPermissions";
 import { useEntityComparison } from "@/Composables/utils/useEntityComparison";
 import { useNotificationStore } from "@/Composables/store/useNotificationStore";
+import { usePermissions } from "@/Composables/permissions/usePermissions";
 import { Item } from "@/Models/Entity/Item";
-import { User } from "@/Models";
 
 import Container from '@/Pages/Atoms/data-display/Container.vue';
 import Btn from '@/Pages/Atoms/action/Btn.vue';
@@ -42,17 +41,12 @@ setPageTitle('Liste des Objets');
 const notificationStore = useNotificationStore();
 
 // Permissions
-const { canCreateEntity } = useEntityPermissions();
-const canCreate = computed(() => canCreateEntity('item'));
+const { canCreate: canCreatePermission, canUpdateAny, canManageAny } = usePermissions();
+const canCreate = computed(() => canCreatePermission('items'));
+const canModify = computed(() => canUpdateAny('items'));
+const canManage = computed(() => canManageAny('items'));
 
-// Vérifier si l'utilisateur est admin
-const page = usePage();
-const currentUser = computed(() => {
-    return page.props.auth?.user ? new User(page.props.auth.user) : null;
-});
-const isAdmin = computed(() => {
-    return currentUser.value?.isAdmin ?? false;
-});
+const { isAdmin } = usePermissions();
 
 // Transformation des entités en instances de modèles
 const items = computed(() => {
@@ -75,6 +69,19 @@ const quickEditViewMode = ref('compact');
 // Sélection multiple
 const selectedEntities = ref([]);
 const multiEditMode = ref(false);
+
+// Sécurité UX: si l'utilisateur perd le droit de modifier, on coupe les modes d'édition.
+watch(
+    () => canModify.value,
+    (allowed) => {
+        if (allowed) return;
+        quickEditMode.value = false;
+        multiEditMode.value = false;
+        quickEditEntity.value = null;
+        selectedEntities.value = [];
+    },
+    { immediate: true }
+);
 
 // Configuration des colonnes selon la documentation : ID (optionnel), Nom (lien), Niveau, Rareté (badge), Type, dofusdb_id, Créé par, Actions
 const columns = computed(() => [
@@ -385,11 +392,12 @@ const handleDownloadPdf = async (entity) => {
                 <!-- Toggle édition rapide -->
                 <div class="flex items-center gap-2">
                     <ToggleField
+                        v-if="canModify"
                         v-model="quickEditMode"
                         label="Édition rapide"
                     />
                     <ToggleField
-                        v-if="quickEditMode"
+                        v-if="canModify && quickEditMode"
                         v-model="multiEditMode"
                         label="Sélection multiple"
                     />
@@ -414,10 +422,11 @@ const handleDownloadPdf = async (entity) => {
                     :search="search"
                     :filters="filters"
                     :filterable-columns="filterableColumns"
-                    :show-selection="true"
+                    :show-selection="canModify"
                     :selected-entities="multiEditMode ? selectedEntities : (quickEditEntity ? [quickEditEntity] : [])"
                     :show-actions-menu="true"
                     :is-admin="isAdmin"
+                    :can-manage="canManage"
                     @view="handleView"
                     @edit="handleEdit"
                     @delete="handleDelete"
@@ -509,6 +518,7 @@ const handleDownloadPdf = async (entity) => {
             :filterable-columns="filterableColumns"
             :show-actions-menu="true"
             :is-admin="isAdmin"
+            :can-manage="canManage"
             @view="handleView"
             @edit="handleEdit"
             @delete="handleDelete"

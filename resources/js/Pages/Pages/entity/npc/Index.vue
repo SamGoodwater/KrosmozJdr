@@ -10,7 +10,7 @@
 import { Head, router } from "@inertiajs/vue3";
 import { ref, computed, onBeforeUnmount } from "vue";
 import { usePageTitle } from "@/Composables/layout/usePageTitle";
-import { useEntityPermissions } from "@/Composables/permissions/useEntityPermissions";
+import { usePermissions } from "@/Composables/permissions/usePermissions";
 import { useNotificationStore } from "@/Composables/store/useNotificationStore";
 import { Npc } from "@/Models/Entity/Npc";
 
@@ -38,8 +38,8 @@ const notificationStore = useNotificationStore();
 setPageTitle('Liste des NPCs');
 
 // Permissions
-const { canCreateEntity } = useEntityPermissions();
-const canCreate = computed(() => canCreateEntity('npc'));
+const { canCreate: canCreatePermission } = usePermissions();
+const canCreate = computed(() => canCreatePermission('npcs'));
 
 // Transformation des entités en instances de modèles
 const npcs = computed(() => {

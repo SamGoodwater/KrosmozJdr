@@ -94,6 +94,8 @@ class ResourceTypeRegistryController extends Controller
      */
     public function bulkUpdate(Request $request): JsonResponse
     {
+        $this->authorize('updateAny', ResourceType::class);
+
         $validated = $request->validate([
             'ids' => ['required', 'array', 'min:1'],
             'ids.*' => ['integer', 'min:1'],
