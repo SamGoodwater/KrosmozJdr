@@ -136,11 +136,16 @@ Route::prefix('scrapping')->group(function () {
 | sans modifier le code.
 |
 */
-Route::middleware(['auth'])->prefix('scrapping/resource-types')->group(function () {
+// IMPORTANT:
+// Ces endpoints sont consommés depuis l'UI Inertia (session/cookies).
+// On applique donc le middleware `web` pour activer la session + CSRF, puis `auth`.
+Route::middleware(['web', 'auth'])->prefix('scrapping/resource-types')->group(function () {
     Route::get('/', [App\Http\Controllers\Scrapping\ResourceTypeRegistryController::class, 'index'])
         ->name('scrapping.resource-types.index');
     Route::get('/pending', [App\Http\Controllers\Scrapping\ResourceTypeRegistryController::class, 'pending'])
         ->name('scrapping.resource-types.pending');
+    Route::patch('/bulk', [App\Http\Controllers\Scrapping\ResourceTypeRegistryController::class, 'bulkUpdate'])
+        ->name('scrapping.resource-types.bulk');
     Route::patch('/{resourceType}/decision', [App\Http\Controllers\Scrapping\ResourceTypeRegistryController::class, 'updateDecision'])
         ->name('scrapping.resource-types.decision');
     Route::get('/{resourceType}/pending-items', [App\Http\Controllers\Scrapping\ResourceTypeRegistryController::class, 'pendingItems'])
@@ -158,9 +163,20 @@ Route::middleware(['auth'])->prefix('scrapping/resource-types')->group(function 
 | tri/filtre/recherche/pagination côté frontend.
 |
 */
-Route::middleware(['auth'])->prefix('entity-table')->group(function () {
+// Même raison : endpoints utilisés par l'UI Inertia (axios) via session.
+Route::middleware(['web', 'auth'])->prefix('entity-table')->group(function () {
     Route::get('/resources', [App\Http\Controllers\Api\EntityTableDataController::class, 'resources'])
         ->name('api.entity-table.resources');
     Route::get('/resource-types', [App\Http\Controllers\Api\EntityTableDataController::class, 'resourceTypes'])
         ->name('api.entity-table.resource-types');
+});
+
+/*
+|--------------------------------------------------------------------------
+| Bulk update (UI tables)
+|--------------------------------------------------------------------------
+*/
+Route::middleware(['web', 'auth'])->prefix('entities')->group(function () {
+    Route::patch('/resources/bulk', [App\Http\Controllers\Api\ResourceBulkController::class, 'bulkUpdate'])
+        ->name('api.entities.resources.bulk');
 });

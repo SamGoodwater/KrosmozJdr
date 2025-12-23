@@ -10,6 +10,7 @@ use App\Models\Scrapping\PendingResourceTypeItem;
 use App\Models\Type\ResourceType;
 use App\Services\Scrapping\DataCollect\DataCollectService;
 use App\Services\Scrapping\Orchestrator\ScrappingOrchestrator;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -79,6 +80,102 @@ class ResourceTypeRegistryController extends Controller
     {
         $request->merge(['decision' => 'pending']);
         return $this->index($request);
+    }
+
+    /**
+     * Mise à jour en masse des ResourceType (registry DofusDB).
+     *
+     * @description
+     * Applique les champs fournis à une liste d'IDs. Seuls les champs envoyés sont modifiés.
+     *
+     * @example
+     * PATCH /api/scrapping/resource-types/bulk
+     * { "ids":[1,2,3], "decision":"allowed", "usable":1, "is_visible":"guest" }
+     */
+    public function bulkUpdate(Request $request): JsonResponse
+    {
+        $validated = $request->validate([
+            'ids' => ['required', 'array', 'min:1'],
+            'ids.*' => ['integer', 'min:1'],
+            'decision' => ['nullable', 'string', 'in:pending,allowed,blocked,used,unused'],
+            'usable' => ['nullable', 'boolean'],
+            'is_visible' => ['nullable', 'string', 'in:guest,user,game_master,admin'],
+        ]);
+
+        $ids = array_values(array_unique(array_map('intval', $validated['ids'])));
+        if (count($ids) < 1) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Sélection invalide.',
+            ], 422);
+        }
+
+        $patch = [];
+        if (array_key_exists('decision', $validated) && $validated['decision'] !== null) {
+            $patch['decision'] = $this->normalizeDecision($validated['decision']);
+        }
+        if (array_key_exists('usable', $validated) && $validated['usable'] !== null) {
+            $patch['usable'] = $validated['usable'] ? 1 : 0;
+        }
+        if (array_key_exists('is_visible', $validated) && $validated['is_visible'] !== null) {
+            $patch['is_visible'] = $validated['is_visible'];
+        }
+
+        if (empty($patch)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Aucun champ à mettre à jour.',
+            ], 422);
+        }
+
+        $updated = 0;
+        $errors = [];
+
+        DB::beginTransaction();
+        try {
+            $models = ResourceType::query()->whereIn('id', $ids)->get();
+
+            foreach ($ids as $id) {
+                $model = $models->firstWhere('id', $id);
+                if (!$model) {
+                    $errors[] = ['id' => $id, 'error' => 'Not found'];
+                    continue;
+                }
+
+                try {
+                    $this->authorize('update', $model);
+
+                    // On n’applique la registry qu’aux types liés DofusDB, mais on laisse la MAJ possible
+                    // (ex: usable/is_visible) même si dofusdb_type_id est null.
+                    foreach ($patch as $k => $v) {
+                        $model->{$k} = $v;
+                    }
+                    $model->save();
+                    $updated++;
+                } catch (\Throwable $e) {
+                    $errors[] = ['id' => $id, 'error' => $e->getMessage()];
+                }
+            }
+
+            DB::commit();
+        } catch (\Throwable $e) {
+            DB::rollBack();
+            return response()->json([
+                'success' => false,
+                'message' => 'Erreur lors de la mise à jour en masse.',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+
+        return response()->json([
+            'success' => count($errors) === 0,
+            'summary' => [
+                'requested' => count($ids),
+                'updated' => $updated,
+                'errors' => count($errors),
+            ],
+            'errors' => $errors,
+        ]);
     }
 
     /**

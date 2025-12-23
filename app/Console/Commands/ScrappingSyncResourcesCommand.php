@@ -31,6 +31,7 @@ class ScrappingSyncResourcesCommand extends Command
                             {--start-skip=0 : Skip initial (pour reprendre une pagination)}
                             {--max-pages=0 : Nombre max de pages (0 = illimité)}
                             {--use-server-filter=1 : Tente de filtrer côté DofusDB (typeId[$in])}
+                            {--per-type=1 : Parcourt DofusDB typeId par typeId (recommandé pour importer des catégories variées)}
                             {--dry-run : N\'écrit rien en base, affiche uniquement le résumé}
                             {--force-update : Passe l\'option force_update aux imports}
                             {--verbose-ids : Affiche les IDs importés/ignorés}';
@@ -48,6 +49,7 @@ class ScrappingSyncResourcesCommand extends Command
         $skip = max(0, (int) $this->option('start-skip'));
         $maxPages = max(0, (int) $this->option('max-pages'));
         $useServerFilter = (bool) ((int) $this->option('use-server-filter'));
+        $perType = (bool) ((int) $this->option('per-type'));
         $dryRun = (bool) $this->option('dry-run');
         $forceUpdate = (bool) $this->option('force-update');
         $verboseIds = (bool) $this->option('verbose-ids');
@@ -68,7 +70,7 @@ class ScrappingSyncResourcesCommand extends Command
 
         $this->info('🚀 Sync ressources depuis DofusDB');
         $this->line('Types autorisés: ' . implode(', ', $typeIds));
-        $this->line("Params: limit={$limit}, start-skip={$skip}, max-pages=" . ($maxPages ?: '∞') . ', dry-run=' . ($dryRun ? 'yes' : 'no'));
+        $this->line("Params: limit={$limit}, start-skip={$skip}, max-pages=" . ($maxPages ?: '∞') . ', per-type=' . ($perType ? 'yes' : 'no') . ', dry-run=' . ($dryRun ? 'yes' : 'no'));
         $this->newLine();
 
         $options = [
@@ -77,7 +79,6 @@ class ScrappingSyncResourcesCommand extends Command
             'dry_run' => $dryRun,
         ];
 
-        $page = 0;
         $stats = [
             'seen' => 0,
             'candidates' => 0,
@@ -86,83 +87,96 @@ class ScrappingSyncResourcesCommand extends Command
             'errors' => 0,
         ];
 
-        while (true) {
-            $page++;
-            if ($maxPages > 0 && $page > $maxPages) {
-                break;
-            }
+        // Mode recommandé: itérer par typeId pour importer des catégories variées.
+        // Cela évite qu'un typeId très fréquent "mange" les premières pages.
+        $typeIdPages = $perType ? $typeIds : [null];
 
-            $extraQuery = [];
-            if ($useServerFilter) {
-                // Feathers/Mongo style: typeId[$in][]=15&typeId[$in][]=35
-                $extraQuery['typeId[$in][]'] = $typeIds;
-            }
+        foreach ($typeIdPages as $onlyTypeId) {
+            $page = 0;
+            $skipForThisType = $skip;
 
-            try {
-                $response = $collector->collectItemsPage($skip, $limit, $extraQuery);
-            } catch (\Throwable $e) {
-                // Fallback: si le filtre côté serveur n'est pas supporté, on retombe en mode "scan" local.
-                if ($useServerFilter) {
-                    $this->warn("Filtre serveur non supporté (ou erreur réseau). Fallback en scan local sans filtre.");
-                    Log::warning('scrapping:sync-resources server-filter failed, fallback to local scan', [
-                        'error' => $e->getMessage(),
-                    ]);
-                    $useServerFilter = false;
-                    continue;
-                }
-                $this->error('Erreur DofusDB: ' . $e->getMessage());
-                return Command::FAILURE;
-            }
-
-            $items = $response['data'] ?? null;
-            if (!is_array($items)) {
-                $this->warn('Réponse inattendue de DofusDB (clé data manquante).');
-                return Command::FAILURE;
-            }
-
-            if (count($items) === 0) {
-                break;
-            }
-
-            foreach ($items as $item) {
-                $stats['seen']++;
-                $id = isset($item['id']) ? (int) $item['id'] : null;
-                $typeId = isset($item['typeId']) ? (int) $item['typeId'] : null;
-                if (!$id || !$typeId) {
-                    $stats['skipped']++;
-                    continue;
+            while (true) {
+                $page++;
+                if ($maxPages > 0 && $page > $maxPages) {
+                    break;
                 }
 
-                // En fallback (scan local), on filtre côté app
-                if (!$useServerFilter && !in_array($typeId, $typeIds, true)) {
-                    $stats['skipped']++;
-                    continue;
+                $extraQuery = [];
+                if ($onlyTypeId !== null) {
+                    // Filtre simple: typeId=38
+                    $extraQuery['typeId'] = (int) $onlyTypeId;
+                } elseif ($useServerFilter) {
+                    // Feathers/Mongo style: typeId[$in][]=15&typeId[$in][]=35
+                    $extraQuery['typeId[$in][]'] = $typeIds;
                 }
 
-                $stats['candidates']++;
-
-                $result = $orchestrator->importResource($id, $options);
-                if (($result['success'] ?? false) === true) {
-                    $stats['imported']++;
-                    if ($verboseIds) {
-                        $this->line("✅ Imported resource dofusdb#{$id}");
+                try {
+                    $response = $collector->collectItemsPage($skipForThisType, $limit, $extraQuery);
+                } catch (\Throwable $e) {
+                    if ($onlyTypeId === null && $useServerFilter) {
+                        // Fallback: si le filtre côté serveur n'est pas supporté, on retombe en mode "scan" local.
+                        $this->warn("Filtre serveur non supporté (ou erreur réseau). Fallback en scan local sans filtre.");
+                        Log::warning('scrapping:sync-resources server-filter failed, fallback to local scan', [
+                            'error' => $e->getMessage(),
+                        ]);
+                        $useServerFilter = false;
+                        continue;
                     }
-                } else {
-                    $stats['errors']++;
-                    if ($verboseIds) {
-                        $this->line("❌ Error dofusdb#{$id}: " . ($result['error'] ?? 'unknown'));
+                    $this->error('Erreur DofusDB: ' . $e->getMessage());
+                    return Command::FAILURE;
+                }
+
+                $items = $response['data'] ?? null;
+                if (!is_array($items)) {
+                    $this->warn('Réponse inattendue de DofusDB (clé data manquante).');
+                    return Command::FAILURE;
+                }
+
+                if (count($items) === 0) {
+                    break;
+                }
+
+                foreach ($items as $item) {
+                    $stats['seen']++;
+                    $id = isset($item['id']) ? (int) $item['id'] : null;
+                    $itemTypeId = isset($item['typeId']) ? (int) $item['typeId'] : null;
+                    if (!$id || !$itemTypeId) {
+                        $stats['skipped']++;
+                        continue;
+                    }
+
+                    // En fallback (scan local), on filtre côté app
+                    if ($onlyTypeId === null && !$useServerFilter && !in_array($itemTypeId, $typeIds, true)) {
+                        $stats['skipped']++;
+                        continue;
+                    }
+
+                    $stats['candidates']++;
+
+                    $result = $orchestrator->importResource($id, $options);
+                    if (($result['success'] ?? false) === true) {
+                        $stats['imported']++;
+                        if ($verboseIds) {
+                            $this->line("✅ Imported resource dofusdb#{$id}");
+                        }
+                    } else {
+                        $stats['errors']++;
+                        if ($verboseIds) {
+                            $this->line("❌ Error dofusdb#{$id}: " . ($result['error'] ?? 'unknown'));
+                        }
                     }
                 }
-            }
 
-            $this->line("Page {$page} OK (skip={$skip}) | candidates={$stats['candidates']} imported={$stats['imported']} errors={$stats['errors']}");
+                $label = $onlyTypeId !== null ? "typeId={$onlyTypeId}" : 'mixed';
+                $this->line("{$label} | page {$page} OK (skip={$skipForThisType}) | candidates={$stats['candidates']} imported={$stats['imported']} errors={$stats['errors']}");
 
-            // Pagination
-            $skip += $limit;
+                // Pagination
+                $skipForThisType += $limit;
 
-            // Si l'API renvoie moins que la limite, fin
-            if (count($items) < $limit) {
-                break;
+                // Si l'API renvoie moins que la limite, fin
+                if (count($items) < $limit) {
+                    break;
+                }
             }
         }
 

@@ -13,6 +13,8 @@ import axios from "axios";
 import { usePageTitle } from "@/Composables/layout/usePageTitle";
 import { useEntityPermissions } from "@/Composables/permissions/useEntityPermissions";
 import { useNotificationStore } from "@/Composables/store/useNotificationStore";
+import { usePage } from "@inertiajs/vue3";
+import { User } from "@/Models";
 import { Resource } from "@/Models/Entity/Resource";
 
 import Container from '@/Pages/Atoms/data-display/Container.vue';
@@ -21,6 +23,7 @@ import Alert from "@/Pages/Atoms/feedback/Alert.vue";
 import EntityTable from '@/Pages/Molecules/data-display/EntityTable.vue';
 import EntityModal from '@/Pages/Organismes/entity/EntityModal.vue';
 import CreateEntityModal from '@/Pages/Organismes/entity/CreateEntityModal.vue';
+import ResourceBulkEditPanel from './components/ResourceBulkEditPanel.vue';
 
 const props = defineProps({
     resources: {
@@ -46,12 +49,17 @@ setPageTitle('Liste des Ressources');
 // Permissions
 const { canCreateEntity } = useEntityPermissions();
 const canCreate = computed(() => canCreateEntity('resource'));
+const page = usePage();
+const currentUser = computed(() => (page.props.auth?.user ? new User(page.props.auth.user) : null));
+const isAdmin = computed(() => currentUser.value?.isAdmin ?? false);
 
 // État
 const selectedEntity = ref(null);
 const modalOpen = ref(false);
 const modalView = ref('large');
 const createModalOpen = ref(false);
+const selectedEntities = ref([]);
+const filteredIds = ref([]);
 const search = ref(props.filters.search || '');
 const filters = ref(props.filters || {});
 const tableMode = ref('server'); // server | client
@@ -94,6 +102,7 @@ const yesNoLabel = (v) => (v ? 'Oui' : 'Non');
 // Configuration des colonnes selon la documentation : ID (optionnel), Nom (lien), Niveau, Type, Rareté (badge), dofusdb_id, Créé par, Actions
 const columns = computed(() => [
     { key: 'id', label: 'ID', sortable: true },
+    { key: 'image', label: 'Image', sortable: false, type: 'image' },
     { key: 'name', label: 'Nom', sortable: true, isMain: true },
     { key: 'level', label: 'Niveau', sortable: true },
     { key: 'resourceType', label: 'Type', sortable: false, format: (value) => value?.name || '-' },
@@ -108,14 +117,22 @@ const columns = computed(() => [
 ]);
 
 // Handlers
-const handleView = (entity) => {
+const openModal = (entity) => {
     selectedEntity.value = entity;
     modalView.value = 'large';
     modalOpen.value = true;
 };
 
+const handleViewPage = (entity) => {
+    router.visit(route('entities.resources.show', entity.id));
+};
+
 const handleEdit = (entity) => {
     router.visit(route(`entities.resources.edit`, { resource: entity.id }));
+};
+
+const clearSelection = () => {
+    selectedEntities.value = [];
 };
 
 const handleDelete = (entity) => {
@@ -307,6 +324,72 @@ const handleRefreshAll = () => {
     router.reload({ preserveState: true, preserveScroll: true });
 };
 
+const getCsrfToken = () => {
+    return document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+};
+
+const handleBulkApplied = async (payload) => {
+    const csrfToken = getCsrfToken();
+    if (!csrfToken) {
+        notificationStore.addNotification({ type: 'error', message: 'Token CSRF introuvable. Recharge la page.' });
+        return;
+    }
+
+    try {
+        const response = await fetch('/api/entities/resources/bulk', {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': csrfToken,
+                'Accept': 'application/json',
+            },
+            body: JSON.stringify(payload),
+        });
+        const data = await response.json();
+        if (!response.ok || !data.success) {
+            notificationStore.addNotification({ type: 'error', message: data.message || 'Bulk update: erreur' });
+            return;
+        }
+
+        notificationStore.addNotification({
+            type: 'success',
+            message: `Mis à jour: ${data.summary.updated}/${data.summary.requested}`,
+        });
+
+        // Mode client: mise à jour locale
+        if (tableMode.value === 'client') {
+            const ids = new Set((payload.ids || []).map((v) => String(v)));
+            allResources.value = (allResources.value || []).map((r) => {
+                if (!ids.has(String(r.id))) return r;
+                const next = { ...r };
+                if (typeof payload.resource_type_id !== 'undefined') {
+                    next.resource_type_id = payload.resource_type_id;
+                    const rt = (props.resourceTypes || []).find((t) => Number(t.id) === Number(payload.resource_type_id));
+                    if (rt) next.resourceType = rt;
+                    if (payload.resource_type_id === null) next.resourceType = null;
+                }
+                if (typeof payload.usable !== 'undefined') next.usable = payload.usable ? 1 : 0;
+                if (typeof payload.auto_update !== 'undefined') next.auto_update = payload.auto_update ? 1 : 0;
+                if (typeof payload.is_visible !== 'undefined') next.is_visible = payload.is_visible;
+                if (typeof payload.rarity !== 'undefined') next.rarity = payload.rarity;
+                if (typeof payload.level !== 'undefined') next.level = payload.level;
+                if (typeof payload.price !== 'undefined') next.price = payload.price;
+                if (typeof payload.weight !== 'undefined') next.weight = payload.weight;
+                if (typeof payload.description !== 'undefined') next.description = payload.description;
+                if (typeof payload.image !== 'undefined') next.image = payload.image;
+                if (typeof payload.dofus_version !== 'undefined') next.dofus_version = payload.dofus_version;
+                return next;
+            });
+        } else {
+            router.reload({ preserveState: true, preserveScroll: true });
+        }
+
+        clearSelection();
+    } catch (e) {
+        notificationStore.addNotification({ type: 'error', message: 'Erreur bulk: ' + (e?.message || 'unknown') });
+    }
+};
+
 const handleLoadAllForClientMode = async () => {
     if (loadingAll.value) return;
     loadingAll.value = true;
@@ -431,7 +514,7 @@ const handleSwitchToServerMode = () => {
                     Recharger dataset
                 </Btn>
                 <Btn
-                    v-else
+                    v-if="tableMode === 'client'"
                     variant="ghost"
                     @click="handleSwitchToServerMode"
                     :title="'Revient au mode serveur (pagination/filtrage backend)'"
@@ -443,11 +526,11 @@ const handleSwitchToServerMode = () => {
                     <i class="fa-solid fa-tags mr-2"></i>
                     Types de ressources
                 </Btn>
-                <Btn v-if="canCreate" @click="handleCreate" color="primary">
-                    <i class="fa-solid fa-plus mr-2"></i>
-                    Créer une ressource
-                </Btn>
-            </div>
+            <Btn v-if="canCreate" @click="handleCreate" color="primary">
+                <i class="fa-solid fa-plus mr-2"></i>
+                Créer une ressource
+            </Btn>
+        </div>
         </div>
 
         <!-- Baseline serveur (quand le mode client est activé) -->
@@ -474,26 +557,48 @@ const handleSwitchToServerMode = () => {
             </template>
         </Alert>
 
-        <!-- Tableau -->
-        <EntityTable
-            :entities="resources || []"
-            :columns="columns"
-            entity-type="resources"
-            :pagination="props.resources"
-            :show-filters="true"
-            :search="search"
-            :filters="filters"
-            :filterable-columns="filterableColumns"
-            :mode="tableMode"
-            @view="handleView"
-            @edit="handleEdit"
-            @delete="handleDelete"
-            @sort="handleSort"
-            @page-change="handlePageChange"
-            @update:search="handleSearchUpdate"
-            @update:filters="handleFiltersUpdate"
-            @refresh-all="handleRefreshAll"
-        />
+        <div
+            class="grid grid-cols-1 gap-4"
+            :class="{ 'xl:grid-cols-[1fr_380px]': selectedEntities.length >= 1 }"
+        >
+            <div>
+                <EntityTable
+                    v-model:selected-entities="selectedEntities"
+                    :entities="resources || []"
+                    :columns="columns"
+                    entity-type="resources"
+                    :pagination="props.resources"
+                    :show-filters="true"
+                    :show-selection="true"
+                    :search="search"
+                    :filters="filters"
+                    :filterable-columns="filterableColumns"
+                    :mode="tableMode"
+                    @view="handleViewPage"
+                    @edit="handleEdit"
+                    @quick-edit="openModal"
+                    @delete="handleDelete"
+                    @sort="handleSort"
+                    @page-change="handlePageChange"
+                    @update:search="handleSearchUpdate"
+                    @update:filters="handleFiltersUpdate"
+                    @refresh-all="handleRefreshAll"
+                    @filtered-ids="(ids) => { filteredIds.value = ids }"
+                />
+            </div>
+
+            <div v-if="selectedEntities.length >= 1" class="sticky top-4 self-start">
+                <ResourceBulkEditPanel
+                    :selected-entities="selectedEntities"
+                    :is-admin="isAdmin"
+                    :resource-types="props.resourceTypes || []"
+                    :filtered-ids="filteredIds"
+                    :mode="tableMode"
+                    @applied="handleBulkApplied"
+                    @clear="clearSelection"
+                />
+            </div>
+        </div>
 
         <!-- Modal de création -->
         <CreateEntityModal

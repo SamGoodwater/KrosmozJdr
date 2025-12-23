@@ -78,6 +78,12 @@ export function useEntityTableSettings(entityType, columns) {
      * @param {string} columnKey - Clé de la colonne
      */
     const toggleColumn = (columnKey) => {
+        // Colonne principale toujours visible
+        const mainColumn = columns.find((c) => c?.isMain);
+        if (mainColumn?.key && columnKey === mainColumn.key) {
+            visibleColumns.value[columnKey] = true;
+            return;
+        }
         visibleColumns.value[columnKey] = !visibleColumns.value[columnKey];
     };
 
@@ -87,6 +93,12 @@ export function useEntityTableSettings(entityType, columns) {
      * @param {boolean} visible - Visibilité
      */
     const setColumnVisibility = (columnKey, visible) => {
+        // Colonne principale toujours visible
+        const mainColumn = columns.find((c) => c?.isMain);
+        if (mainColumn?.key && columnKey === mainColumn.key) {
+            visibleColumns.value[columnKey] = true;
+            return;
+        }
         visibleColumns.value[columnKey] = visible;
     };
 

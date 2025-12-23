@@ -25,7 +25,7 @@
  * @emit update:search - Événement émis lors du changement de recherche
  * @emit update:filters - Événement émis lors du changement de filtres
  */
-import { ref, computed } from 'vue';
+import { ref, computed, watch } from 'vue';
 import Loading from '@/Pages/Atoms/feedback/Loading.vue';
 import EntityTableHeader from './EntityTableHeader.vue';
 import EntityTableRow from './EntityTableRow.vue';
@@ -115,7 +115,7 @@ const props = defineProps({
     }
 });
 
-const emit = defineEmits(['view', 'edit', 'delete', 'sort', 'page-change', 'update:search', 'update:filters', 'select', 'deselect', 'quick-view', 'quick-edit', 'copy-link', 'download-pdf', 'refresh', 'refresh-all']);
+const emit = defineEmits(['view', 'edit', 'delete', 'sort', 'page-change', 'update:search', 'update:filters', 'select', 'deselect', 'quick-view', 'quick-edit', 'copy-link', 'download-pdf', 'refresh', 'refresh-all', 'update:selectedEntities', 'cell-update', 'filtered-ids']);
 
 // Gestion des colonnes visibles
 const { visibleColumns, filteredColumns, toggleColumn } = useEntityTableSettings(props.entityType, props.columns);
@@ -183,19 +183,57 @@ const handleToggleColumn = (columnKey) => {
 };
 
 const handleSelect = (entity) => {
+    addToSelection(entity);
     emit('select', entity);
 };
 
 const handleDeselect = (entity) => {
+    removeFromSelection(entity);
     emit('deselect', entity);
 };
 
+const internalSelected = ref([]);
+
+// Si le parent fournit une sélection, on la reflète en interne (utile pour l'export CSV / UI)
+watch(
+    () => props.selectedEntities,
+    (next) => {
+        if (Array.isArray(next) && next.length) {
+            internalSelected.value = [...next];
+        }
+        if (Array.isArray(next) && next.length === 0) {
+            // Si le parent vide explicitement, on suit.
+            internalSelected.value = [];
+        }
+    },
+    { deep: true, immediate: true }
+);
+
+const selectedEntitiesEffective = computed(() => {
+    return (props.selectedEntities && props.selectedEntities.length) ? props.selectedEntities : internalSelected.value;
+});
+
+const getEntityId = (e) => (e && typeof e.id !== 'undefined') ? e.id : null;
+
 const isEntitySelected = (entity) => {
-    return props.selectedEntities.some(selected => {
-        const selectedId = selected?.id ?? selected?.id;
-        const entityId = entity?.id ?? entity?.id;
-        return selectedId === entityId;
-    });
+    const entityId = getEntityId(entity);
+    if (!entityId) return false;
+    return selectedEntitiesEffective.value.some((selected) => getEntityId(selected) === entityId);
+};
+
+const addToSelection = (entity) => {
+    const entityId = getEntityId(entity);
+    if (!entityId) return;
+    if (isEntitySelected(entity)) return;
+    internalSelected.value = [...selectedEntitiesEffective.value, entity];
+    emit('update:selectedEntities', internalSelected.value);
+};
+
+const removeFromSelection = (entity) => {
+    const entityId = getEntityId(entity);
+    if (!entityId) return;
+    internalSelected.value = selectedEntitiesEffective.value.filter((e) => getEntityId(e) !== entityId);
+    emit('update:selectedEntities', internalSelected.value);
 };
 
 const handleQuickView = (entity) => {
@@ -222,8 +260,12 @@ const handleRefreshAll = () => {
     emit('refresh-all');
 };
 
+const handleCellUpdate = (payload) => {
+    emit('cell-update', payload);
+};
+
 const disableQuickActions = computed(() => {
-    return props.selectedEntities.length > 1;
+    return selectedEntitiesEffective.value.length > 1;
 });
 
 /**
@@ -274,6 +316,29 @@ const clientFilteredEntities = computed(() => {
         return false;
     });
 });
+
+/**
+ * Expose au parent les IDs "filtrés" (utile pour bulk actions).
+ * - mode client: filtre local (search + filtres select)
+ * - mode server: IDs de la page courante uniquement (pas un vrai "filtre global")
+ */
+const filteredIds = computed(() => {
+    const rows = props.mode === 'client'
+        ? (clientFilteredEntities.value || [])
+        : (props.entities || []);
+
+    return rows
+        .map((e) => getEntityId(e))
+        .filter((v) => v !== null && typeof v !== 'undefined');
+});
+
+watch(
+    () => filteredIds.value.join(','),
+    () => {
+        emit('filtered-ids', filteredIds.value);
+    },
+    { immediate: true }
+);
 
 /**
  * TanStack Table: tri + pagination côté client.
@@ -338,6 +403,12 @@ const handleClientNext = () => {
     if (table.getCanNextPage()) table.nextPage();
 };
 
+const handleClientPageSizeChange = (event) => {
+    const size = Number(event?.target?.value ?? 25);
+    if (!Number.isFinite(size) || size <= 0) return;
+    table.setPageSize(size);
+};
+
 const toCsvCell = (value) => {
     const v = value === null || typeof value === 'undefined' ? '' : String(value);
     // RFC4180-ish: quote if needed, escape quotes by doubling
@@ -366,8 +437,8 @@ const handleExportCsv = () => {
     const headers = cols.map((c) => toCsvCell(c.label ?? c.key)).join(',');
 
     // Si sélection active -> on exporte la sélection, sinon toutes les lignes "filtrées" (client) ou affichées (server)
-    const rows = props.selectedEntities?.length
-        ? props.selectedEntities
+    const rows = selectedEntitiesEffective.value?.length
+        ? selectedEntitiesEffective.value
         : props.mode === 'client'
             ? table.getPrePaginationRowModel().rows.map((r) => r.original)
             : (props.entities || []);
@@ -384,6 +455,58 @@ const handleExportCsv = () => {
     const filename = props.exportFilename || `${props.entityType}.csv`;
     downloadCsv(filename, csv);
 };
+
+/**
+ * Sélectionner / désélectionner toutes les lignes affichées (page courante).
+ */
+const canToggleAll = computed(() => props.showSelection);
+
+// UX: masquer les checkboxes par défaut, les afficher seulement quand une sélection existe.
+const showSelectionCheckboxes = computed(() => {
+    return props.showSelection && selectedEntitiesEffective.value.length > 0;
+});
+
+const pageEntities = computed(() => entitiesToRender.value || []);
+
+const allSelectedOnPage = computed(() => {
+    if (!canToggleAll.value) return false;
+    const rows = pageEntities.value;
+    if (!rows.length) return false;
+    return rows.every((e) => isEntitySelected(e));
+});
+
+const someSelectedOnPage = computed(() => {
+    if (!canToggleAll.value) return false;
+    const rows = pageEntities.value;
+    if (!rows.length) return false;
+    const selectedCount = rows.filter((e) => isEntitySelected(e)).length;
+    return selectedCount > 0 && selectedCount < rows.length;
+});
+
+const handleToggleAll = (checked) => {
+    if (!canToggleAll.value) return;
+    const rows = pageEntities.value;
+    if (!rows.length) return;
+
+    if (checked) {
+        const next = [...selectedEntitiesEffective.value];
+        const existingIds = new Set(next.map((e) => getEntityId(e)));
+        for (const e of rows) {
+            const id = getEntityId(e);
+            if (id && !existingIds.has(id)) next.push(e);
+        }
+        internalSelected.value = next;
+        emit('update:selectedEntities', internalSelected.value);
+    } else {
+        const pageIds = new Set(rows.map((e) => getEntityId(e)));
+        internalSelected.value = selectedEntitiesEffective.value.filter((e) => !pageIds.has(getEntityId(e)));
+        emit('update:selectedEntities', internalSelected.value);
+    }
+};
+
+const extraHeaderCellsCount = computed(() => {
+    return (showSelectionCheckboxes.value ? 1 : 0) + (props.showActionsMenu ? 1 : 0);
+});
 </script>
 
 <template>
@@ -424,11 +547,43 @@ const handleExportCsv = () => {
                     variant="ghost"
                     class="gap-2"
                     @click="handleExportCsv"
-                    :title="selectedEntities.length ? 'Exporter la sélection en CSV' : (mode === 'client' ? 'Exporter le dataset filtré en CSV' : 'Exporter les lignes affichées en CSV')"
+                    :title="selectedEntitiesEffective.length ? 'Exporter la sélection en CSV' : (mode === 'client' ? 'Exporter le dataset filtré en CSV' : 'Exporter les lignes affichées en CSV')"
                 >
                     <Icon source="fa-solid fa-file-csv" alt="Exporter CSV" size="sm" />
                     <span class="hidden md:inline">Exporter</span>
                 </Btn>
+
+                <!-- Colonnes visibles (déplacé hors du header pour éviter le décalage visuel) -->
+                <Dropdown placement="bottom-end" :close-on-content-click="false">
+                    <template #trigger>
+                        <Btn size="sm" variant="ghost" class="gap-2" title="Colonnes visibles">
+                            <Icon source="fa-solid fa-columns" alt="Colonnes visibles" size="sm" />
+                            <span class="hidden md:inline">Colonnes</span>
+                        </Btn>
+                    </template>
+                    <template #content>
+                        <div class="p-3 w-60">
+                            <div class="text-sm font-semibold mb-2">Colonnes visibles</div>
+                            <div class="space-y-2 max-h-64 overflow-y-auto pr-1">
+                                <label
+                                    v-for="column in (columns || [])"
+                                    :key="column.key"
+                                    class="flex items-center gap-2 cursor-pointer"
+                                    :class="{ 'opacity-60 cursor-not-allowed': column?.isMain }"
+                                >
+                                    <input
+                                        type="checkbox"
+                                        class="checkbox checkbox-sm"
+                                        :checked="visibleColumns[column.key] !== false"
+                                        :disabled="column?.isMain"
+                                        @change="handleToggleColumn(column.key)"
+                                    />
+                                    <span class="text-sm">{{ column.label }}</span>
+                                </label>
+                            </div>
+                        </div>
+                    </template>
+                </Dropdown>
                 
                 <!-- Sélecteur de format d'affichage -->
                 <Dropdown placement="bottom-end">
@@ -467,14 +622,16 @@ const handleExportCsv = () => {
                     :sort-by="sortBy"
                     :sort-order="sortOrder"
                     :visible-columns="visibleColumns"
-                    :show-column-toggle="true"
-                    :show-selection="showSelection"
+                    :show-selection="showSelectionCheckboxes"
+                    :all-selected="allSelectedOnPage"
+                    :some-selected="someSelectedOnPage"
+                    @toggle-all="handleToggleAll"
                     @sort="handleSort"
                     @toggle-column="handleToggleColumn"
                 />
                 <tbody>
                     <tr v-if="loading">
-                        <td :colspan="filteredColumns.length + (showSelection ? 1 : 0) + (showActionsMenu ? 1 : 0) + 1" class="text-center py-8">
+                        <td :colspan="filteredColumns.length + extraHeaderCellsCount" class="text-center py-8">
                             <Loading />
                         </td>
                     </tr>
@@ -485,7 +642,8 @@ const handleExportCsv = () => {
                             :entity="entity"
                             :columns="filteredColumns"
                             :entity-type="entityType"
-                            :show-selection="showSelection"
+                            :enable-selection="showSelection"
+                            :show-selection="showSelectionCheckboxes"
                             :is-selected="isEntitySelected(entity)"
                             :show-actions-menu="showActionsMenu"
                             :disable-quick-actions="disableQuickActions"
@@ -500,10 +658,11 @@ const handleExportCsv = () => {
                             @copy-link="handleCopyLink"
                             @download-pdf="handleDownloadPdf"
                             @refresh="handleRefresh"
+                            @cell-update="handleCellUpdate"
                         />
                     </template>
                     <tr v-else>
-                        <td :colspan="filteredColumns.length + (showSelection ? 1 : 0) + (showActionsMenu ? 1 : 0)" class="text-center py-8 text-primary-300">
+                        <td :colspan="filteredColumns.length + extraHeaderCellsCount" class="text-center py-8 text-primary-300">
                             Aucune entité trouvée
                         </td>
                     </tr>
@@ -532,6 +691,20 @@ const handleExportCsv = () => {
                 {{ clientTotal }} lignes (filtrées)
             </div>
             <div class="flex items-center gap-2">
+                <label class="flex items-center gap-2 text-sm text-base-content/70">
+                    <span class="hidden sm:inline">Lignes</span>
+                    <select
+                        class="select select-bordered select-sm"
+                        :value="paginationState.pageSize"
+                        @change="handleClientPageSizeChange"
+                        title="Lignes par page"
+                    >
+                        <option :value="10">10</option>
+                        <option :value="25">25</option>
+                        <option :value="50">50</option>
+                        <option :value="100">100</option>
+                    </select>
+                </label>
                 <Btn size="sm" variant="ghost" :disabled="!table.getCanPreviousPage()" @click="handleClientPrev">
                     Précédent
                 </Btn>

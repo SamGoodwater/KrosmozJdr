@@ -4,7 +4,9 @@
  *
  * Permet de décider "utiliser / ne pas utiliser / en attente" sans changer le code.
  */
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, computed } from 'vue';
+import { usePage } from '@inertiajs/vue3';
+import { User } from '@/Models';
 import Card from '@/Pages/Atoms/data-display/Card.vue';
 import Btn from '@/Pages/Atoms/action/Btn.vue';
 import Icon from '@/Pages/Atoms/data-display/Icon.vue';
@@ -20,6 +22,10 @@ const items = ref([]);
 const examplesByTypeId = ref({});
 const examplesLoading = ref({});
 const expanded = ref({});
+
+const page = usePage();
+const currentUser = computed(() => (page.props.auth?.user ? new User(page.props.auth.user) : null));
+const isAdmin = computed(() => currentUser.value?.isAdmin ?? false);
 
 const getCsrfToken = () => {
     return document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
@@ -84,6 +90,12 @@ const updateDecision = async (resourceTypeId, decision) => {
     } catch (e) {
         showError('Erreur lors de la mise à jour : ' + e.message);
     }
+};
+
+const decisionToUx = (decision) => {
+    if (decision === 'allowed') return 'used';
+    if (decision === 'blocked') return 'unused';
+    return 'pending';
 };
 
 const replayPending = async (resourceTypeId) => {
@@ -252,20 +264,23 @@ onMounted(async () => {
                         <td>{{ formatDate(t.last_seen_at) }}</td>
                         <td class="text-right">
                             <div class="flex justify-end gap-2">
-                                <Btn size="sm" color="success" @click="updateDecision(t.id, 'used')">
-                                    Utiliser
-                                </Btn>
-                                <Btn size="sm" color="error" @click="updateDecision(t.id, 'unused')">
-                                    Ne pas utiliser
-                                </Btn>
-                                <Btn size="sm" variant="ghost" @click="updateDecision(t.id, 'pending')">
-                                    Laisser en attente
-                                </Btn>
+                                <select
+                                    class="select select-bordered select-sm"
+                                    :value="decisionToUx(t.decision)"
+                                    :disabled="!isAdmin"
+                                    title="Statut"
+                                    @change="(e) => updateDecision(t.id, e.target.value)"
+                                >
+                                    <option value="pending">En attente</option>
+                                    <option value="used">Utiliser</option>
+                                    <option value="unused">Ne pas utiliser</option>
+                                </select>
                                 <Btn
                                     size="sm"
                                     variant="outline"
                                     @click="replayPending(t.id)"
                                     :title="'Réimport des items mémorisés pour ce typeId (si utilisé)'"
+                                    :disabled="t.decision !== 'allowed'"
                                 >
                                     Réimport
                                 </Btn>

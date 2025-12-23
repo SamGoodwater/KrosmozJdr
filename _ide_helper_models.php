@@ -1347,6 +1347,9 @@ namespace App\Models\Type{
  * @property string $decision
  * @property int $seen_count
  * @property \Illuminate\Support\Carbon|null $last_seen_at
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ResourceType allowed()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ResourceType blocked()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ResourceType pending()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ResourceType whereDecision($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ResourceType whereDofusdbTypeId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ResourceType whereLastSeenAt($value)

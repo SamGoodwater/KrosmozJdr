@@ -13,7 +13,6 @@
  * @emit sort - Événement émis lors du clic sur une colonne triable
  * @emit toggle-column - Événement émis lors du toggle d'une colonne
  */
-import { ref } from 'vue';
 import Icon from '@/Pages/Atoms/data-display/Icon.vue';
 
 const props = defineProps({
@@ -35,11 +34,21 @@ const props = defineProps({
         type: Object,
         default: () => ({})
     },
-    showColumnToggle: {
+    showSelection: {
         type: Boolean,
         default: false
     },
-    showSelection: {
+    /**
+     * État du checkbox "tout sélectionner" (géré par le parent).
+     */
+    allSelected: {
+        type: Boolean,
+        default: false
+    },
+    /**
+     * Indéterminé (une partie sélectionnée).
+     */
+    someSelected: {
         type: Boolean,
         default: false
     },
@@ -49,10 +58,7 @@ const props = defineProps({
     }
 });
 
-const emit = defineEmits(['sort', 'toggle-column']);
-
-// Menu de sélection des colonnes
-const showColumnMenu = ref(false);
+const emit = defineEmits(['sort', 'toggle-column', 'toggle-all']);
 
 const handleSort = (column) => {
     if (column.sortable) {
@@ -63,6 +69,10 @@ const handleSort = (column) => {
 const handleToggleColumn = (columnKey) => {
     emit('toggle-column', columnKey);
 };
+
+const handleToggleAll = (event) => {
+    emit('toggle-all', Boolean(event.target.checked));
+};
 </script>
 
 <template>
@@ -71,30 +81,15 @@ const handleToggleColumn = (columnKey) => {
             <!-- Menu d'actions -->
             <th v-if="showActionsMenu" class="w-12"></th>
             <!-- Colonne de sélection -->
-            <th v-if="showSelection" class="w-12"></th>
-            <!-- Bouton de menu pour sélectionner les colonnes -->
-            <th v-if="showColumnToggle" class="w-12">
-                <div class="dropdown dropdown-end">
-                    <label tabindex="0" class="btn btn-ghost btn-sm">
-                        <Icon source="fa-solid fa-columns" alt="Colonnes visibles" size="sm" />
-                    </label>
-                    <ul tabindex="0" class="dropdown-content menu bg-base-100 rounded-box z-[1] w-52 p-2 shadow-lg border border-base-300">
-                        <li class="menu-title">
-                            <span>Colonnes visibles</span>
-                        </li>
-                        <li v-for="column in columns" :key="column.key">
-                            <label class="cursor-pointer flex items-center gap-2">
-                                <input
-                                    type="checkbox"
-                                    :checked="visibleColumns[column.key] !== false"
-                                    @change="handleToggleColumn(column.key)"
-                                    class="checkbox checkbox-sm"
-                                />
-                                <span>{{ column.label }}</span>
-                            </label>
-                        </li>
-                    </ul>
-                </div>
+            <th v-if="showSelection" class="w-12">
+                <input
+                    type="checkbox"
+                    class="checkbox checkbox-sm"
+                    :checked="allSelected"
+                    :indeterminate.prop="someSelected && !allSelected"
+                    @change="handleToggleAll"
+                    title="Sélectionner/désélectionner tout"
+                />
             </th>
             
             <!-- Colonnes du tableau -->

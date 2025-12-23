@@ -37,6 +37,13 @@ const props = defineProps({
         type: Function,
         default: null
     },
+    /**
+     * Active la sélection au clic sur la ligne (même si les checkboxes sont masquées).
+     */
+    enableSelection: {
+        type: Boolean,
+        default: false
+    },
     showSelection: {
         type: Boolean,
         default: false
@@ -59,7 +66,7 @@ const props = defineProps({
     }
 });
 
-const emit = defineEmits(['view', 'edit', 'delete', 'select', 'deselect', 'quick-view', 'quick-edit', 'copy-link', 'download-pdf', 'refresh']);
+const emit = defineEmits(['view', 'edit', 'delete', 'select', 'deselect', 'quick-view', 'quick-edit', 'copy-link', 'download-pdf', 'refresh', 'cell-update']);
 
 // Copie d'URL
 const { copyToClipboard } = useCopyToClipboard();
@@ -67,7 +74,7 @@ const { copyToClipboard } = useCopyToClipboard();
 /**
  * Récupère la valeur d'une cellule en gérant les instances de modèles et les objets bruts
  */
-const getCellValue = (column) => {
+const getRawCellValue = (column) => {
     let value;
     
     // Si l'entité est une instance de modèle (BaseModel), utiliser les getters
@@ -85,6 +92,12 @@ const getCellValue = (column) => {
         // Objet brut, accès direct
         value = props.entity[column.key];
     }
+
+    return value;
+};
+
+const getCellValue = (column) => {
+    const value = getRawCellValue(column);
     
     // Format personnalisé depuis la colonne
     if (column.format && typeof column.format === 'function') {
@@ -155,6 +168,41 @@ const handleSelectionChange = (event) => {
     }
 };
 
+const isInteractiveTarget = (event) => {
+    const el = event?.target;
+    if (!el || typeof el.closest !== 'function') return false;
+    return Boolean(el.closest('a,button,input,select,textarea,[role="button"],[data-no-row-select]'));
+};
+
+const handleRowClick = (event) => {
+    if (!props.enableSelection) return;
+    if (isInteractiveTarget(event)) return;
+
+    // Toggle sélection
+    if (props.isSelected) {
+        emit('deselect', props.entity);
+    } else {
+        emit('select', props.entity);
+    }
+};
+
+const handleRowDoubleClick = (event) => {
+    if (isInteractiveTarget(event)) return;
+
+    // Ouvre "le modal" (côté parent: quick-edit/quick-view)
+    // Par défaut: on privilégie quick-edit (souvent modal d'édition), sinon quick-view.
+    emit('quick-edit', props.entity);
+};
+
+const handleInlineSelectChange = (column, event) => {
+    const value = event?.target?.value ?? null;
+    emit('cell-update', {
+        entity: props.entity,
+        key: column.key,
+        value,
+    });
+};
+
 const handleQuickView = () => {
     emit('quick-view', props.entity);
 };
@@ -211,13 +259,19 @@ const getCanDelete = () => {
 </script>
 
 <template>
-    <tr class="hover:bg-base-200 transition-colors" :class="{ 'bg-primary/10': isSelected }">
+    <tr
+        class="hover:bg-base-200 transition-colors"
+        :class="{ 'bg-primary/10': isSelected }"
+        @click="handleRowClick"
+        @dblclick="handleRowDoubleClick"
+    >
         <!-- Checkbox de sélection -->
         <td v-if="showSelection" class="w-12">
             <input
                 type="checkbox"
                 :checked="isSelected"
                 @change="handleSelectionChange"
+                @click.stop
                 class="checkbox checkbox-sm"
             />
         </td>
@@ -226,7 +280,8 @@ const getCanDelete = () => {
             <!-- Colonne principale (nom avec lien) -->
             <template v-if="column.isMain">
                 <button 
-                    @click="handleView"
+                    @click.stop="handleView"
+                    @dblclick.stop
                     class="link link-primary link-hover font-semibold text-left">
                     {{ getCellValue(column) }}
                 </button>
@@ -237,22 +292,22 @@ const getCanDelete = () => {
                 <div class="flex gap-2 justify-end">
                     <!-- Gérer les permissions pour les modèles et objets bruts -->
                     <Tooltip v-if="getCanView()" content="Voir" placement="top">
-                        <Btn size="sm" variant="ghost" @click="handleView">
+                        <Btn size="sm" variant="ghost" @click.stop="handleView" @dblclick.stop>
                             <i class="fa-solid fa-eye"></i>
                         </Btn>
                     </Tooltip>
                     <Tooltip v-if="getCanUpdate()" content="Éditer" placement="top">
-                        <Btn size="sm" variant="ghost" @click="handleEdit">
+                        <Btn size="sm" variant="ghost" @click.stop="handleEdit" @dblclick.stop>
                             <i class="fa-solid fa-pen"></i>
                         </Btn>
                     </Tooltip>
                     <Tooltip content="Copier le lien" placement="top">
-                        <Btn size="sm" variant="ghost" @click="handleCopyLink">
+                        <Btn size="sm" variant="ghost" @click.stop="handleCopyLink" @dblclick.stop>
                             <i class="fa-solid fa-link"></i>
                         </Btn>
                     </Tooltip>
                     <Tooltip v-if="getCanDelete()" content="Supprimer" placement="top">
-                        <Btn size="sm" variant="ghost" color="error" @click="handleDelete">
+                        <Btn size="sm" variant="ghost" color="error" @click.stop="handleDelete" @dblclick.stop>
                             <i class="fa-solid fa-trash"></i>
                         </Btn>
                     </Tooltip>
@@ -265,6 +320,43 @@ const getCanDelete = () => {
                     <Badge :color="column.badgeColor || 'primary'" size="sm">
                         {{ getCellValue(column) }}
                     </Badge>
+                </span>
+                <span v-else-if="column.type === 'inline-select'">
+                    <select
+                        class="select select-bordered select-sm"
+                        :value="String(getRawCellValue(column) ?? '')"
+                        :disabled="column.disabled === true"
+                        @change="(e) => handleInlineSelectChange(column, e)"
+                        @click.stop
+                        @dblclick.stop
+                        title="Modifier"
+                    >
+                        <option
+                            v-for="opt in (column.options || [])"
+                            :key="String(opt.value)"
+                            :value="String(opt.value)"
+                        >
+                            {{ opt.label }}
+                        </option>
+                    </select>
+                </span>
+                <span v-else-if="column.type === 'image'">
+                    <div class="flex items-center justify-center">
+                        <img
+                            v-if="getRawCellValue(column)"
+                            :src="getRawCellValue(column)"
+                            :alt="`${entityType} #${props.entity?.id ?? ''}`"
+                            class="h-8 w-8 rounded object-contain bg-base-200"
+                            loading="lazy"
+                        />
+                        <div
+                            v-else
+                            class="h-8 w-8 rounded bg-base-200 flex items-center justify-center text-base-content/40"
+                            title="Aucune image"
+                        >
+                            <i class="fa-regular fa-image"></i>
+                        </div>
+                    </div>
                 </span>
                 <span v-else-if="column.type === 'truncate'" 
                       :title="getCellValue(column)"

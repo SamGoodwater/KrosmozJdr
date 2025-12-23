@@ -24397,6 +24397,21 @@ namespace App\Http\Requests {
             }
     }
 
+namespace App\Http\Requests\Type {
+    /**
+     * Validation création ResourceType.
+     *
+     */
+    class StoreResourceTypeRequest extends \Illuminate\Foundation\Http\FormRequest {
+            }
+    /**
+     * Validation mise à jour ResourceType.
+     *
+     */
+    class UpdateResourceTypeRequest extends \Illuminate\Foundation\Http\FormRequest {
+            }
+    }
+
 namespace Illuminate\Database\Eloquent {
     /**
      * @template TKey of array-key
