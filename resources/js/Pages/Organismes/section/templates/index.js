@@ -23,7 +23,7 @@ export const availableTemplates = computed(() => {
     const templateName = path.split('/').slice(-2, -1)[0]; // Nom du dossier (ex: "text")
     
     // Convertir le nom du template en PascalCase pour les noms de fichiers
-    // text -> Text, entity_table -> EntityTable
+    // text -> Text, entity_table -> EntityTable (nom de template historique, pas lié à l'ancien composant EntityTable)
     const capitalizedName = templateName
       .split('_')
       .map(word => word.charAt(0).toUpperCase() + word.slice(1))

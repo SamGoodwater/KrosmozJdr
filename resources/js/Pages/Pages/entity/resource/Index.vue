@@ -8,21 +8,19 @@
  * @props {Object} resources - Collection paginée des ressources
  */
 import { Head, router } from "@inertiajs/vue3";
-import { ref, computed, onBeforeUnmount } from "vue";
+import { ref, computed } from "vue";
 import { usePageTitle } from "@/Composables/layout/usePageTitle";
 import { useNotificationStore } from "@/Composables/store/useNotificationStore";
 import { Resource } from "@/Models/Entity/Resource";
-import { useHybridEntityTable } from "@/Composables/entity/useHybridEntityTable";
-import { applyPatchToDataset } from "@/Composables/entity/applyPatchToDataset";
 import { usePermissions } from "@/Composables/permissions/usePermissions";
 
 import Container from '@/Pages/Atoms/data-display/Container.vue';
 import Btn from '@/Pages/Atoms/action/Btn.vue';
-import Alert from "@/Pages/Atoms/feedback/Alert.vue";
-import EntityTable from '@/Pages/Molecules/data-display/EntityTable.vue';
+import EntityTanStackTable from '@/Pages/Organismes/table/EntityTanStackTable.vue';
 import EntityModal from '@/Pages/Organismes/entity/EntityModal.vue';
 import CreateEntityModal from '@/Pages/Organismes/entity/CreateEntityModal.vue';
 import ResourceBulkEditPanel from './components/ResourceBulkEditPanel.vue';
+import { createResourcesTanStackTableConfig } from './resources-tanstack-table-config';
 
 const props = defineProps({
     resources: {
@@ -50,81 +48,40 @@ const notificationStore = useNotificationStore();
 setPageTitle('Liste des Ressources');
 
 // Permissions
-const { canUpdateAny, canCreate: canCreatePermission, canManageAny } = usePermissions();
+const permissionsApi = usePermissions();
+const { canUpdateAny, canCreate: canCreatePermission } = permissionsApi;
 const canCreate = computed(() => Boolean(props.can?.create ?? canCreatePermission('resources')));
 const canModify = computed(() => Boolean(props.can?.updateAny ?? canUpdateAny('resources')));
-const canManage = computed(() => Boolean(props.can?.manageAny ?? canManageAny('resources')));
+// canManageAny gardé pour plus tard (actions de maintenance)
+// const canManage = computed(() => Boolean(props.can?.manageAny ?? canManageAny('resources')));
 
 // État
 const selectedEntity = ref(null);
 const modalOpen = ref(false);
 const modalView = ref('large');
 const createModalOpen = ref(false);
-const selectedEntities = ref([]);
-const filteredIds = ref([]);
-const search = ref(props.filters.search || '');
-const filters = ref(props.filters || {});
+const selectedIds = ref([]);
+const tableRows = ref([]);
+const refreshToken = ref(0);
 
-// Garder trace du tri serveur courant (utile pour charger un dataset client cohérent)
-const serverSort = ref('');
-const serverOrder = ref('desc');
+const tableConfig = computed(() => createResourcesTanStackTableConfig());
 
-try {
-    const qs = new URLSearchParams(window.location.search);
-    serverSort.value = qs.get('sort') || '';
-    serverOrder.value = qs.get('order') || 'desc';
-} catch (e) {
-    // SSR / tests -> ignore
-}
-
-const { tableMode, allRows: allResources, loadingAll, baseServerQuery, loadClientMode, reloadClientDataset, switchToServerMode } =
-    useHybridEntityTable({
-        entityKey: "resources",
-        search,
-        filters,
-        serverSort,
-        serverOrder,
-        notifySuccess: (msg) => notificationStore.addNotification({ type: "success", message: msg }),
-        notifyError: (msg) => notificationStore.addNotification({ type: "error", message: msg }),
-        limit: 5000,
-    });
-
-// Normaliser en modèles (cohérence avec Item/Consumable)
-const resources = computed(() => {
-    const rows = tableMode.value === 'client' ? allResources.value : (props.resources.data || []);
-    return Resource.fromArray(rows);
+const serverUrl = computed(() => {
+    const base = route('api.tables.resources');
+    return `${base}?limit=5000&_t=${refreshToken.value}`;
 });
 
-const rarityLabel = (value) => {
-    const v = Number(value ?? 0);
-    return [
-        'Commun',
-        'Peu commun',
-        'Rare',
-        'Très rare',
-        'Légendaire',
-        'Unique',
-    ][v] ?? String(v);
-};
+const selectedEntities = computed(() => {
+    if (!Array.isArray(selectedIds.value) || !selectedIds.value.length) return [];
+    const idSet = new Set(selectedIds.value);
+    const raw = (tableRows.value || [])
+        .filter((r) => idSet.has(r?.id))
+        .map((r) => r?.rowParams?.entity)
+        .filter(Boolean);
+    return Resource.fromArray(raw);
+});
 
-const yesNoLabel = (v) => (v ? 'Oui' : 'Non');
-
-// Configuration des colonnes selon la documentation : ID (optionnel), Nom (lien), Niveau, Type, Rareté (badge), dofusdb_id, Créé par, Actions
-const columns = computed(() => [
-    { key: 'id', label: 'ID', sortable: true },
-    { key: 'image', label: 'Image', sortable: false, type: 'image' },
-    { key: 'name', label: 'Nom', sortable: true, isMain: true },
-    { key: 'level', label: 'Niveau', sortable: true },
-    { key: 'resourceType', label: 'Type', sortable: false, format: (value) => value?.name || '-' },
-    { key: 'rarity', label: 'Rareté', sortable: true, type: 'badge', badgeColor: 'primary', format: rarityLabel },
-    { key: 'price', label: 'Prix', sortable: true, format: (v) => v ?? '-' },
-    { key: 'weight', label: 'Poids', sortable: true, format: (v) => v ?? '-' },
-    { key: 'usable', label: 'Utilisable', sortable: true, type: 'badge', badgeColor: 'secondary', format: yesNoLabel },
-    { key: 'auto_update', label: 'Auto-update', sortable: true, type: 'badge', badgeColor: 'accent', format: yesNoLabel },
-    { key: 'dofusdb_id', label: 'DofusDB ID', sortable: true },
-    { key: 'createdBy', label: 'Créé par', sortable: false, format: (value) => value?.name || value?.email || '-' },
-    { key: 'actions', label: 'Actions', sortable: false }
-]);
+const filteredIds = computed(() => selectedIds.value || []);
 
 // Handlers
 const openModal = (entity) => {
@@ -133,139 +90,21 @@ const openModal = (entity) => {
     modalOpen.value = true;
 };
 
-const handleViewPage = (entity) => {
-    router.visit(route('entities.resources.show', entity.id));
-};
-
-const handleEdit = (entity) => {
-    router.visit(route(`entities.resources.edit`, { resource: entity.id }));
-};
-
 const clearSelection = () => {
-    selectedEntities.value = [];
+    selectedIds.value = [];
 };
 
-const handleDelete = (entity) => {
-    if (confirm(`Êtes-vous sûr de vouloir supprimer "${entity.name}" ?`)) {
-        router.delete(route(`entities.resources.delete`, { resource: entity.id }));
-    }
+const handleTableLoaded = ({ rows }) => {
+    tableRows.value = Array.isArray(rows) ? rows : [];
 };
 
-const handleSort = ({ column, order }) => {
-    if (tableMode.value === 'client') return;
-    serverSort.value = column;
-    serverOrder.value = order;
-    router.get(route('entities.resources.index'), {
-        sort: column,
-        order: order,
-        search: search.value,
-        ...filters.value
-    }, {
-        preserveState: true,
-        preserveScroll: true
-    });
+const handleRowDoubleClick = (row) => {
+    const raw = row?.rowParams?.entity;
+    if (!raw) return;
+    const model = Resource.fromArray([raw])[0] || null;
+    if (!model) return;
+    openModal(model);
 };
-
-let searchTimeout = null;
-
-const handleSearchUpdate = (value) => {
-    search.value = value;
-    if (tableMode.value === 'client') return;
-    if (searchTimeout) {
-        clearTimeout(searchTimeout);
-    }
-    searchTimeout = setTimeout(() => {
-        router.get(route('entities.resources.index'), {
-            search: value,
-            ...filters.value
-        }, {
-            preserveState: true,
-            preserveScroll: true
-        });
-    }, 300);
-};
-
-onBeforeUnmount(() => {
-    if (searchTimeout) {
-        clearTimeout(searchTimeout);
-    }
-});
-
-const handleFiltersUpdate = (newFilters) => {
-    filters.value = newFilters;
-    if (tableMode.value === 'client') return;
-    router.get(route('entities.resources.index'), {
-        search: search.value,
-        ...newFilters
-    }, {
-        preserveState: true,
-        preserveScroll: true
-    });
-};
-
-const handleFiltersReset = () => {
-    search.value = '';
-    filters.value = {};
-    if (tableMode.value === 'client') return;
-    router.get(route('entities.resources.index'), {}, {
-        preserveState: true,
-        preserveScroll: true
-    });
-};
-
-const filterableColumns = computed(() => [
-    {
-        key: 'level',
-        label: 'Niveau',
-        options: [
-            { value: '', label: 'Tous' },
-            { value: '1', label: '1' },
-            { value: '50', label: '50' },
-            { value: '100', label: '100' },
-            { value: '150', label: '150' },
-            { value: '200', label: '200' }
-        ]
-    },
-    {
-        key: 'resource_type_id',
-        label: 'Type',
-        options: [
-            { value: '', label: 'Tous' },
-            ...props.resourceTypes.map(t => ({ value: String(t.id), label: t.name }))
-        ]
-    },
-    {
-        key: 'rarity',
-        label: 'Rareté',
-        options: [
-            { value: '', label: 'Toutes' },
-            { value: '0', label: 'Commun' },
-            { value: '1', label: 'Peu commun' },
-            { value: '2', label: 'Rare' },
-            { value: '3', label: 'Très rare' },
-            { value: '4', label: 'Légendaire' },
-            { value: '5', label: 'Unique' },
-        ]
-    },
-    {
-        key: 'usable',
-        label: 'Utilisable',
-        options: [
-            { value: '', label: 'Tous' },
-            { value: '1', label: 'Oui' },
-            { value: '0', label: 'Non' },
-        ]
-    },
-    {
-        key: 'auto_update',
-        label: 'Auto-update',
-        options: [
-            { value: '', label: 'Tous' },
-            { value: '1', label: 'Oui' },
-            { value: '0', label: 'Non' },
-        ]
-    }
-]);
 
 // Configuration des champs pour la création/édition via modal
 const fieldsConfig = computed(() => ({
@@ -303,16 +142,6 @@ const fieldsConfig = computed(() => ({
     image: { type: 'text', label: 'Image (URL)', required: false, showInCompact: false },
 }));
 
-const handlePageChange = (url) => {
-    if (url) {
-        if (tableMode.value === 'client') return;
-        router.visit(url, {
-            preserveState: true,
-            preserveScroll: true
-        });
-    }
-};
-
 const handleCreate = () => {
     createModalOpen.value = true;
 };
@@ -331,7 +160,7 @@ const closeModal = () => {
 };
 
 const handleRefreshAll = () => {
-    router.reload({ preserveState: true, preserveScroll: true });
+    refreshToken.value++;
 };
 
 const getCsrfToken = () => {
@@ -366,39 +195,13 @@ const handleBulkApplied = async (payload) => {
             message: `Mis à jour: ${data.summary.updated}/${data.summary.requested}`,
         });
 
-        // Mode client: mise à jour locale
-        if (tableMode.value === 'client') {
-            allResources.value = applyPatchToDataset(allResources.value, payload, {
-                normalize: {
-                    usable: (v) => (v ? 1 : 0),
-                    auto_update: (v) => (v ? 1 : 0),
-                },
-                afterPatch: (next, { patch }) => {
-                    // Met à jour la relation resourceType si le type change (utile pour l'affichage)
-                    if (Object.prototype.hasOwnProperty.call(patch, "resource_type_id")) {
-                        const typeId = patch.resource_type_id;
-                        if (typeId === null) {
-                            return { ...next, resourceType: null };
-                        }
-                        const rt = (props.resourceTypes || []).find((t) => Number(t.id) === Number(typeId));
-                        if (rt) return { ...next, resourceType: rt };
-                    }
-                    return next;
-                },
-            });
-        } else {
-            router.reload({ preserveState: true, preserveScroll: true });
-        }
-
+        // Table v2: recharger le dataset serveur (client-first sur le dataset)
+        refreshToken.value++;
         clearSelection();
     } catch (e) {
         notificationStore.addNotification({ type: 'error', message: 'Erreur bulk: ' + (e?.message || 'unknown') });
     }
 };
-
-const handleLoadAllForClientMode = async () => loadClientMode();
-const handleReloadClientDataset = async () => reloadClientDataset();
-const handleSwitchToServerMode = () => switchToServerMode();
 </script>
 
 <template>
@@ -412,35 +215,9 @@ const handleSwitchToServerMode = () => switchToServerMode();
                 <p class="text-primary-200 mt-2">Gérez les ressources (matériaux, composants, etc.)</p>
             </div>
             <div class="flex gap-2">
-                <Btn
-                    v-if="tableMode === 'server'"
-                    variant="ghost"
-                    :loading="loadingAll"
-                    @click="handleLoadAllForClientMode"
-                    :title="'Charge un lot (limité) et active tri/filtre/pagination côté client'"
-                >
-                    <i class="fa-solid fa-bolt mr-2"></i>
-                    Mode client (charger tout)
-                </Btn>
-                <Btn
-                    v-else
-                    variant="ghost"
-                    :loading="loadingAll"
-                    @click="handleReloadClientDataset"
-                    :disabled="!baseServerQuery"
-                    :title="'Recharge le dataset (même sous-ensemble serveur) et conserve tes filtres client'"
-                >
+                <Btn variant="ghost" @click="handleRefreshAll" title="Recharger le dataset">
                     <i class="fa-solid fa-arrow-rotate-right mr-2"></i>
-                    Recharger dataset
-                </Btn>
-                <Btn
-                    v-if="tableMode === 'client'"
-                    variant="ghost"
-                    @click="handleSwitchToServerMode"
-                    :title="'Revient au mode serveur (pagination/filtrage backend)'"
-                >
-                    <i class="fa-solid fa-server mr-2"></i>
-                    Mode serveur
+                    Recharger
                 </Btn>
                 <Btn variant="ghost" @click="router.visit(route('entities.resource-types.index'))">
                     <i class="fa-solid fa-tags mr-2"></i>
@@ -453,58 +230,18 @@ const handleSwitchToServerMode = () => switchToServerMode();
         </div>
         </div>
 
-        <!-- Baseline serveur (quand le mode client est activé) -->
-        <Alert
-            v-if="tableMode === 'client' && baseServerQuery"
-            color="info"
-            variant="soft"
-        >
-            <template #content>
-                <div class="space-y-1">
-                    <div class="font-semibold">Sous-ensemble chargé depuis le serveur</div>
-                    <div class="text-sm opacity-80">
-                        <span v-if="baseServerQuery.search">Recherche: "<b>{{ baseServerQuery.search }}</b>"</span>
-                        <span v-else>Recherche: —</span>
-                        <span class="mx-2">•</span>
-                        <span>Filtres: {{ Object.keys(baseServerQuery.filters || {}).length || 0 }}</span>
-                        <span class="mx-2">•</span>
-                        <span>Tri: {{ baseServerQuery.sort ? `${baseServerQuery.sort} (${baseServerQuery.order || 'desc'})` : '—' }}</span>
-                    </div>
-                    <div class="text-sm opacity-80">
-                        Tu peux maintenant appliquer des filtres/tri supplémentaires côté client (sans requête serveur).
-                    </div>
-                </div>
-            </template>
-        </Alert>
-
         <div
             class="grid grid-cols-1 gap-4"
             :class="{ 'xl:grid-cols-[1fr_380px]': selectedEntities.length >= 1 }"
         >
             <div>
-                <EntityTable
-                    v-model:selected-entities="selectedEntities"
-                    :entities="resources || []"
-                    :columns="columns"
+                <EntityTanStackTable
                     entity-type="resources"
-                    :pagination="props.resources"
-                    :show-filters="true"
-                    :show-selection="canModify"
-                    :can-manage="canManage"
-                    :search="search"
-                    :filters="filters"
-                    :filterable-columns="filterableColumns"
-                    :mode="tableMode"
-                    @view="handleViewPage"
-                    @edit="handleEdit"
-                    @quick-edit="openModal"
-                    @delete="handleDelete"
-                    @sort="handleSort"
-                    @page-change="handlePageChange"
-                    @update:search="handleSearchUpdate"
-                    @update:filters="handleFiltersUpdate"
-                    @refresh-all="handleRefreshAll"
-                    @filtered-ids="(ids) => { filteredIds.value = ids }"
+                    :config="tableConfig"
+                    :server-url="serverUrl"
+                    v-model:selected-ids="selectedIds"
+                    @loaded="handleTableLoaded"
+                    @row-dblclick="handleRowDoubleClick"
                 />
             </div>
 
@@ -514,7 +251,7 @@ const handleSwitchToServerMode = () => switchToServerMode();
                     :is-admin="canModify"
                     :resource-types="props.resourceTypes || []"
                     :filtered-ids="filteredIds"
-                    :mode="tableMode"
+                    mode="client"
                     @applied="handleBulkApplied"
                     @clear="clearSelection"
                 />

@@ -123,7 +123,9 @@ export function usePermissions() {
   };
 
   // Helpers courants
-  const canReadAny = (entityType) => can(entityType, "viewAny");
+  const canViewAny = (entityType) => can(entityType, "viewAny");
+  // Backward compatible (ancien naming)
+  const canReadAny = canViewAny;
   const canCreate = (entityType) => can(entityType, "create");
   const canCreateAny = (entityType) => can(entityType, "createAny");
   const canUpdateAny = (entityType) => can(entityType, "updateAny");
@@ -134,6 +136,7 @@ export function usePermissions() {
     permissions,
     can,
     canAccess,
+    canViewAny,
     canReadAny,
     canCreate,
     canCreateAny,

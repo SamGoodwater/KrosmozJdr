@@ -65,6 +65,20 @@ class SectionService
     {
         DB::beginTransaction();
         try {
+            // Compat legacy: type/params -> template/data (+ sync inverse)
+            if (!isset($data['template']) && isset($data['type'])) {
+                $data['template'] = $data['type'];
+            }
+            if (!isset($data['type']) && isset($data['template'])) {
+                $data['type'] = $data['template'];
+            }
+            if (!isset($data['data']) && isset($data['params']) && is_array($data['params'])) {
+                $data['data'] = $data['params'];
+            }
+            if (!isset($data['params']) && isset($data['data']) && is_array($data['data'])) {
+                $data['params'] = $data['data'];
+            }
+
             // Calculer l'ordre automatiquement si non fourni
             if (!isset($data['order']) || $data['order'] === 0) {
                 $data['order'] = self::calculateNextOrder($data['page_id']);
@@ -76,6 +90,8 @@ class SectionService
             
             $data['settings'] = array_merge($defaults['settings'], $data['settings'] ?? []);
             $data['data'] = array_merge($defaults['data'], $data['data'] ?? []);
+            // Garder params en sync avec data (legacy)
+            $data['params'] = array_merge($defaults['data'], (is_array($data['params'] ?? null) ? $data['params'] : []));
 
             // Sanitization (anti-XSS) sur les champs HTML
             $data = self::sanitizeSectionPayload($template, $data);
@@ -126,6 +142,20 @@ class SectionService
     {
         DB::beginTransaction();
         try {
+            // Compat legacy: type/params -> template/data (+ sync inverse)
+            if (!isset($data['template']) && isset($data['type'])) {
+                $data['template'] = $data['type'];
+            }
+            if (!isset($data['type']) && isset($data['template'])) {
+                $data['type'] = $data['template'];
+            }
+            if (!isset($data['data']) && isset($data['params']) && is_array($data['params'])) {
+                $data['data'] = $data['params'];
+            }
+            if (!isset($data['params']) && isset($data['data']) && is_array($data['data'])) {
+                $data['params'] = $data['data'];
+            }
+
             // Fusionner les settings et data existants avec les nouveaux
             // Cela permet de mettre à jour seulement une partie des données sans perdre le reste
             if (isset($data['settings'])) {
@@ -133,6 +163,10 @@ class SectionService
             }
             if (isset($data['data'])) {
                 $data['data'] = array_merge($section->data ?? [], $data['data']);
+            }
+            // Legacy: fusionner params aussi (en mirror de data)
+            if (isset($data['params'])) {
+                $data['params'] = array_merge($section->params ?? [], $data['params']);
             }
 
             // Sanitization (anti-XSS) : utiliser le template effectif (nouveau si fourni, sinon existant)

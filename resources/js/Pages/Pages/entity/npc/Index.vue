@@ -11,14 +11,14 @@ import { Head, router } from "@inertiajs/vue3";
 import { ref, computed, onBeforeUnmount } from "vue";
 import { usePageTitle } from "@/Composables/layout/usePageTitle";
 import { usePermissions } from "@/Composables/permissions/usePermissions";
-import { useNotificationStore } from "@/Composables/store/useNotificationStore";
 import { Npc } from "@/Models/Entity/Npc";
 
 import Container from '@/Pages/Atoms/data-display/Container.vue';
 import Btn from '@/Pages/Atoms/action/Btn.vue';
-import EntityTable from '@/Pages/Molecules/data-display/EntityTable.vue';
+import EntityTanStackTable from '@/Pages/Organismes/table/EntityTanStackTable.vue';
 import EntityModal from '@/Pages/Organismes/entity/EntityModal.vue';
 import CreateEntityModal from '@/Pages/Organismes/entity/CreateEntityModal.vue';
+import { createNpcsTanStackTableConfig } from './npcs-tanstack-table-config';
 
 const props = defineProps({
     npcs: {
@@ -33,118 +33,36 @@ const props = defineProps({
 
 const { setPageTitle } = usePageTitle();
 
-// Notifications
-const notificationStore = useNotificationStore();
 setPageTitle('Liste des NPCs');
 
 // Permissions
 const { canCreate: canCreatePermission } = usePermissions();
 const canCreate = computed(() => canCreatePermission('npcs'));
 
-// Transformation des entités en instances de modèles
-const npcs = computed(() => {
-    return Npc.fromArray(props.npcs.data || []);
-});
-
 // État
 const selectedEntity = ref(null);
 const modalOpen = ref(false);
 const modalView = ref('large');
 const createModalOpen = ref(false);
-const search = ref(props.filters.search || '');
-const filters = ref(props.filters || {});
+const selectedIds = ref([]);
+const tableRows = ref([]);
+const refreshToken = ref(0);
 
-// Configuration des colonnes selon la documentation : ID (optionnel), Nom (via Creature, lien), Classe, Spécialisation, Actions
-const columns = computed(() => [
-    { key: 'id', label: 'ID', sortable: true },
-    { key: 'creature', label: 'Nom', sortable: false, isMain: true, format: (value) => value?.name || '-' },
-    { key: 'classe', label: 'Classe', sortable: false, format: (value) => value?.name || '-' },
-    { key: 'specialization', label: 'Spécialisation', sortable: false, format: (value) => value?.name || '-' },
-    { key: 'actions', label: 'Actions', sortable: false }
-]);
+const tableConfig = computed(() => createNpcsTanStackTableConfig());
+const serverUrl = computed(() => `${route('api.tables.npcs')}?limit=5000&_t=${refreshToken.value}`);
 
-// Handlers
-const handleView = (entity) => {
-    selectedEntity.value = entity;
+const handleTableLoaded = ({ rows }) => {
+    tableRows.value = Array.isArray(rows) ? rows : [];
+};
+
+const handleRowDoubleClick = (row) => {
+    const raw = row?.rowParams?.entity;
+    if (!raw) return;
+    const model = Npc.fromArray([raw])[0] || null;
+    if (!model) return;
+    selectedEntity.value = model;
     modalView.value = 'large';
     modalOpen.value = true;
-};
-
-const handleEdit = (entity) => {
-    router.visit(route(`entities.npcs.edit`, { npc: entity.id }));
-};
-
-const handleDelete = (entity) => {
-    if (confirm(`Êtes-vous sûr de vouloir supprimer ce NPC ?`)) {
-        router.delete(route(`entities.npcs.delete`, { npc: entity.id }));
-    }
-};
-
-const handleSort = ({ column, order }) => {
-    router.get(route('entities.npcs.index'), {
-        sort: column,
-        order: order,
-        search: search.value,
-        ...filters.value
-    }, {
-        preserveState: true,
-        preserveScroll: true
-    });
-};
-
-let searchTimeout = null;
-
-const handleSearchUpdate = (value) => {
-    search.value = value;
-    if (searchTimeout) {
-        clearTimeout(searchTimeout);
-    }
-    searchTimeout = setTimeout(() => {
-        router.get(route('entities.npcs.index'), {
-            search: value,
-            ...filters.value
-        }, {
-            preserveState: true,
-            preserveScroll: true
-        });
-    }, 300);
-};
-
-onBeforeUnmount(() => {
-    if (searchTimeout) {
-        clearTimeout(searchTimeout);
-    }
-});
-
-const handleFiltersUpdate = (newFilters) => {
-    filters.value = newFilters;
-    router.get(route('entities.npcs.index'), {
-        search: search.value,
-        ...newFilters
-    }, {
-        preserveState: true,
-        preserveScroll: true
-    });
-};
-
-const handleFiltersReset = () => {
-    search.value = '';
-    filters.value = {};
-    router.get(route('entities.npcs.index'), {}, {
-        preserveState: true,
-        preserveScroll: true
-    });
-};
-
-const filterableColumns = computed(() => []);
-
-const handlePageChange = (url) => {
-    if (url) {
-        router.visit(url, {
-            preserveState: true,
-            preserveScroll: true
-        });
-    }
 };
 
 const handleCreate = () => {
@@ -181,23 +99,13 @@ const closeModal = () => {
             </Btn>
         </div>
 
-        <!-- Tableau -->
-        <EntityTable
-            :entities="npcs"
-            :columns="columns"
+        <EntityTanStackTable
             entity-type="npcs"
-            :pagination="props.npcs"
-            :show-filters="true"
-            :search="search"
-            :filters="filters"
-            :filterable-columns="filterableColumns"
-            @view="handleView"
-            @edit="handleEdit"
-            @delete="handleDelete"
-            @sort="handleSort"
-            @page-change="handlePageChange"
-            @update:search="handleSearchUpdate"
-            @update:filters="handleFiltersUpdate"
+            :config="tableConfig"
+            :server-url="serverUrl"
+            v-model:selected-ids="selectedIds"
+            @loaded="handleTableLoaded"
+            @row-dblclick="handleRowDoubleClick"
         />
 
         <!-- Modal de création -->
@@ -206,7 +114,6 @@ const closeModal = () => {
             entity-type="npc"
             @close="handleCloseCreateModal"
             @created="handleEntityCreated"
-                    @refresh-all="handleRefreshAll"
         />
 
         <!-- Modal de visualisation -->

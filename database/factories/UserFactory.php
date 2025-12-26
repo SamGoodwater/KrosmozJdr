@@ -29,10 +29,12 @@ class UserFactory extends Factory
             'email' => fake()->unique()->safeEmail(),
             'email_verified_at' => now(),
             'password' => static::$password ??= Hash::make('password'),
-            'role' => fake()->randomElement(array_keys(\App\Models\User::ROLES)),
-            'avatar' => fake()->imageUrl(),
-            'notifications_enabled' => fake()->boolean(),
-            'notification_channels' => [fake()->randomElement(User::NOTIFICATION_CHANNELS)],
+            // Défaults déterministes pour éviter des tests non reproductibles.
+            // Les tests surchargent explicitement `role` quand ils veulent admin/super_admin/etc.
+            'role' => User::ROLE_USER,
+            'avatar' => null,
+            'notifications_enabled' => true,
+            'notification_channels' => ['database'],
             'remember_token' => Str::random(10),
         ];
     }

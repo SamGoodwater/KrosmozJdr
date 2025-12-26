@@ -35,8 +35,9 @@ class PageController extends Controller
             'users:id,name,email',
             'parent:id,title,slug',
             'children:id,parent_id,title,slug',
-            'campaigns:id,title',
-            'scenarios:id,title',
+            // campaigns/scenarios utilisent `name` (pas `title`)
+            'campaigns:id,name,slug',
+            'scenarios:id,name,slug',
             'createdBy:id,name,email'
         ])->paginate(20);
         

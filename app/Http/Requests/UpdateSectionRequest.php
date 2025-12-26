@@ -32,7 +32,7 @@ class UpdateSectionRequest extends FormRequest
      */
     public function rules(): array
     {
-        $template = $this->input('template') ?? $this->route('section')?->template;
+        $template = $this->input('template') ?? $this->input('type') ?? $this->route('section')?->template;
         
         // Convertir le template en string si c'est un enum
         // Si c'est déjà un SectionType, extraire sa valeur
@@ -46,8 +46,10 @@ class UpdateSectionRequest extends FormRequest
             'slug' => ['sometimes', 'nullable', 'string', 'max:255', 'regex:/^[a-z0-9]+(?:-[a-z0-9]+)*$/'],
             'order' => ['sometimes', 'nullable', 'integer', 'min:0'],
             'template' => ['sometimes', Rule::enum(SectionType::class)],
+            'type' => ['sometimes', Rule::enum(SectionType::class)],
             'settings' => ['sometimes', 'nullable', 'array'],
             'data' => ['sometimes', 'array'],
+            'params' => ['sometimes', 'array'],
             'is_visible' => ['sometimes', Rule::enum(Visibility::class)],
             'can_edit_role' => ['sometimes', Rule::enum(Visibility::class)],
             'state' => ['sometimes', Rule::enum(PageState::class)],
@@ -82,13 +84,16 @@ class UpdateSectionRequest extends FormRequest
     {
         return match($template) {
             SectionType::TEXT => [
-                'data.content' => ['required', 'string'],
+                'data.content' => ['required_without:params.content', 'string'],
+                'params.content' => ['required_without:data.content', 'string'],
                 'settings.align' => ['sometimes', 'string', Rule::in(['left', 'center', 'right'])],
                 'settings.size' => ['sometimes', 'string', Rule::in(['sm', 'md', 'lg', 'xl'])],
             ],
             SectionType::IMAGE => [
-                'data.src' => ['required', 'string'],
-                'data.alt' => ['required', 'string'],
+                'data.src' => ['required_without:params.src', 'string'],
+                'data.alt' => ['required_without:params.alt', 'string'],
+                'params.src' => ['required_without:data.src', 'string'],
+                'params.alt' => ['required_without:data.alt', 'string'],
                 'data.caption' => ['sometimes', 'string', 'nullable'],
                 'settings.align' => ['sometimes', 'string', Rule::in(['left', 'center', 'right'])],
                 'settings.size' => ['sometimes', 'string', Rule::in(['sm', 'md', 'lg', 'xl', 'full'])],
@@ -102,22 +107,38 @@ class UpdateSectionRequest extends FormRequest
                 'settings.gap' => ['sometimes', 'string', Rule::in(['sm', 'md', 'lg'])],
             ],
             SectionType::VIDEO => [
-                'data.src' => ['required', 'string'],
-                'data.type' => ['required', 'string', Rule::in(['youtube', 'vimeo', 'direct'])],
+                'data.src' => ['required_without:params.src', 'string'],
+                'data.type' => ['required_without:params.type', 'string', Rule::in(['youtube', 'vimeo', 'direct'])],
+                'params.src' => ['required_without:data.src', 'string'],
+                'params.type' => ['required_without:data.type', 'string', Rule::in(['youtube', 'vimeo', 'direct'])],
                 'settings.autoplay' => ['sometimes', 'boolean'],
                 'settings.controls' => ['sometimes', 'boolean'],
             ],
             SectionType::ENTITY_TABLE => [
-                'data.entity' => ['required', 'string'],
+                'data.entity' => ['required_without:params.entity', 'string'],
+                'params.entity' => ['required_without:data.entity', 'string'],
                 'data.filters' => ['sometimes', 'array'],
                 'data.columns' => ['sometimes', 'array'],
             ],
         };
     }
 
-    protected function prepareForValidation()
+    /**
+     * @description
+     * Normalise les payloads legacy {type, params} vers le format moderne {template, data}.
+     */
+    protected function passedValidation(): void
     {
-        // Pas de préparation nécessaire pour l'update
-        // Les valeurs par défaut sont gérées par le modèle
+        $type = $this->input('type');
+        $template = $this->input('template');
+        $params = $this->input('params');
+        $data = $this->input('data');
+
+        $this->merge([
+            'template' => $template ?? $type,
+            'type' => $type ?? $template,
+            'data' => $data ?? $params,
+            'params' => $params ?? $data,
+        ]);
     }
 }

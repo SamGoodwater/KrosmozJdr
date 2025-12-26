@@ -94,15 +94,19 @@ class SectionController extends Controller
     /**
      * Affiche une section spécifique.
      * @param Section $section
-     * @return \Illuminate\Http\RedirectResponse
-     * @deprecated Les sections sont affichées dans leur page parente
+     * @return \Inertia\Response
      */
-    public function show(\App\Models\Section $section): \Illuminate\Http\RedirectResponse
+    public function show(\App\Models\Section $section): \Inertia\Response
     {
         $this->authorize('view', $section);
-        
-        $page = $section->page;
-        return redirect()->route('pages.show', $page->slug)->withFragment('section-' . $section->id);
+
+        // Les sections sont généralement affichées dans leur page parente,
+        // mais on conserve une vue dédiée (utile pour les tests et liens directs).
+        $section->load(['page', 'users', 'files', 'createdBy']);
+
+        return Inertia::render('Pages/section/Show', [
+            'section' => new SectionResource($section),
+        ]);
     }
 
     /**

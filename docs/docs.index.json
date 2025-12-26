@@ -530,6 +530,11 @@
     "description": "- **useNotificationStore (Composable)** : Centralise la gestion des notifications toast"
   },
   {
+    "path": "30-UI/TANSTACK_TABLE.md",
+    "title": "TanStack Table — Architecture & Contrats (Table v2)",
+    "description": "Refonte complète du système de tableau : `TanStackTable` (Organism) + `EntityTanStackTable` (wrapper), hybride \"client-first\" avec serveur opt‑in via `serverUrl`, et contrats de données `Cell{type,value,params}`."
+  },
+  {
     "path": "30-UI/README.md",
     "title": "UI & Atomic Design — KrosmozJDR",
     "description": "- **[INPUT SYSTEM/](./INPUT%20SYSTEM/)** — Système d'input complet et organisé"

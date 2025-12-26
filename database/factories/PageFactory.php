@@ -21,25 +21,13 @@ class PageFactory extends Factory
         return [
             'title' => $this->faker->sentence(3),
             'slug' => $this->faker->unique()->slug(),
-            'is_visible' => $this->faker->randomElement([
-                Visibility::GUEST->value,
-                Visibility::USER->value,
-                Visibility::GAME_MASTER->value,
-                Visibility::ADMIN->value,
-            ]),
-            'can_edit_role' => $this->faker->randomElement([
-                Visibility::ADMIN->value,
-                Visibility::GAME_MASTER->value,
-            ]),
-            'in_menu' => $this->faker->boolean(70),
-            'state' => $this->faker->randomElement([
-                PageState::DRAFT->value,
-                PageState::PREVIEW->value,
-                PageState::PUBLISHED->value,
-                PageState::ARCHIVED->value,
-            ]),
+            // Défaults déterministes pour éviter des tests non reproductibles.
+            'is_visible' => Visibility::GUEST->value,
+            'can_edit_role' => Visibility::ADMIN->value,
+            'in_menu' => true,
+            'state' => PageState::DRAFT->value,
             'parent_id' => null, // Géré dans le seeder pour la hiérarchie
-            'menu_order' => $this->faker->numberBetween(1, 20),
+            'menu_order' => 0,
             'created_by' => null, // Géré dans le seeder
         ];
     }

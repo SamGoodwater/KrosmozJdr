@@ -7,8 +7,8 @@
  * 
  * @props {Object} items - Collection paginée des items
  */
-import { Head, router, usePage } from "@inertiajs/vue3";
-import { ref, computed, onBeforeUnmount, watch } from "vue";
+import { Head, router } from "@inertiajs/vue3";
+import { ref, computed, watch } from "vue";
 import { usePageTitle } from "@/Composables/layout/usePageTitle";
 import { useEntityComparison } from "@/Composables/utils/useEntityComparison";
 import { useNotificationStore } from "@/Composables/store/useNotificationStore";
@@ -18,10 +18,11 @@ import { Item } from "@/Models/Entity/Item";
 import Container from '@/Pages/Atoms/data-display/Container.vue';
 import Btn from '@/Pages/Atoms/action/Btn.vue';
 import ToggleField from '@/Pages/Molecules/data-input/ToggleField.vue';
-import EntityTable from '@/Pages/Molecules/data-display/EntityTable.vue';
+import EntityTanStackTable from '@/Pages/Organismes/table/EntityTanStackTable.vue';
 import EntityModal from '@/Pages/Organismes/entity/EntityModal.vue';
 import EntityEditForm from '@/Pages/Organismes/entity/EntityEditForm.vue';
 import CreateEntityModal from '@/Pages/Organismes/entity/CreateEntityModal.vue';
+import { createItemsTanStackTableConfig } from './items-tanstack-table-config';
 
 const props = defineProps({
     items: {
@@ -46,28 +47,48 @@ const canCreate = computed(() => canCreatePermission('items'));
 const canModify = computed(() => canUpdateAny('items'));
 const canManage = computed(() => canManageAny('items'));
 
-const { isAdmin } = usePermissions();
+// Table v2 state (client-first)
+const selectedIds = ref([]);
+const tableRows = ref([]);
+const refreshToken = ref(0);
 
-// Transformation des entités en instances de modèles
-const items = computed(() => {
-    return Item.fromArray(props.items.data || []);
+const serverUrl = computed(() => `${route('api.tables.items')}?limit=5000&_t=${refreshToken.value}`);
+
+const selectedEntities = computed(() => {
+    if (!Array.isArray(selectedIds.value) || !selectedIds.value.length) return [];
+    const idSet = new Set(selectedIds.value);
+    const raw = (tableRows.value || [])
+        .filter((r) => idSet.has(r?.id))
+        .map((r) => r?.rowParams?.entity)
+        .filter(Boolean);
+    return Item.fromArray(raw);
 });
+
+const handleTableLoaded = ({ rows }) => {
+    tableRows.value = Array.isArray(rows) ? rows : [];
+};
+
+// UX: en édition rapide simple, on force un seul élément sélectionné.
+watch(
+    () => selectedIds.value,
+    (ids) => {
+        if (!quickEditMode.value) return;
+        if (multiEditMode.value) return;
+        if (!Array.isArray(ids) || ids.length <= 1) return;
+        selectedIds.value = [ids[ids.length - 1]];
+    },
+    { deep: true },
+);
 
 // État
 const selectedEntity = ref(null);
 const modalOpen = ref(false);
 const modalView = ref('large');
 const createModalOpen = ref(false);
-const search = ref(props.filters.search || '');
-const filters = ref(props.filters || {});
-
 // Mode édition rapide
 const quickEditMode = ref(false);
-const quickEditEntity = ref(null);
 const quickEditViewMode = ref('compact');
 
-// Sélection multiple
-const selectedEntities = ref([]);
 const multiEditMode = ref(false);
 
 // Sécurité UX: si l'utilisateur perd le droit de modifier, on coupe les modes d'édition.
@@ -77,23 +98,15 @@ watch(
         if (allowed) return;
         quickEditMode.value = false;
         multiEditMode.value = false;
-        quickEditEntity.value = null;
-        selectedEntities.value = [];
+        selectedIds.value = [];
     },
     { immediate: true }
 );
 
-// Configuration des colonnes selon la documentation : ID (optionnel), Nom (lien), Niveau, Rareté (badge), Type, dofusdb_id, Créé par, Actions
-const columns = computed(() => [
-    { key: 'id', label: 'ID', sortable: true },
-    { key: 'name', label: 'Nom', sortable: true, isMain: true },
-    { key: 'level', label: 'Niveau', sortable: true },
-    { key: 'rarity', label: 'Rareté', sortable: true, type: 'badge', badgeColor: 'primary' },
-    { key: 'itemType', label: 'Type', sortable: false, format: (value) => value?.name || '-' },
-    { key: 'dofusdb_id', label: 'DofusDB ID', sortable: true },
-    { key: 'createdBy', label: 'Créé par', sortable: false, format: (value) => value?.name || value?.email || '-' },
-    { key: 'actions', label: 'Actions', sortable: false }
-]);
+const tableConfig = computed(() => {
+    // Sélection active uniquement en mode édition rapide (et sera aussi gated par updateAny via wrapper).
+    return createItemsTanStackTableConfig({ selectionEnabled: canModify.value && quickEditMode.value });
+});
 
 // Handlers
 const handleView = (entity) => {
@@ -102,108 +115,12 @@ const handleView = (entity) => {
     modalOpen.value = true;
 };
 
-const handleEdit = (entity) => {
-    router.visit(route(`entities.items.edit`, { item: entity.id }));
-};
-
-const handleDelete = (entity) => {
-    // entity peut être une instance de modèle ou un objet brut
-    const itemModel = entity instanceof Item ? entity : new Item(entity);
-    if (confirm(`Êtes-vous sûr de vouloir supprimer "${itemModel.name}" ?`)) {
-        router.delete(route(`entities.items.delete`, { item: itemModel.id }));
-    }
-};
-
-const handleSort = ({ column, order }) => {
-    router.get(route('entities.items.index'), {
-        sort: column,
-        order: order,
-        search: search.value,
-        ...filters.value
-    }, {
-        preserveState: true,
-        preserveScroll: true
-    });
-};
-
-let searchTimeout = null;
-
-const handleSearchUpdate = (value) => {
-    search.value = value;
-    if (searchTimeout) {
-        clearTimeout(searchTimeout);
-    }
-    searchTimeout = setTimeout(() => {
-        router.get(route('entities.items.index'), {
-            search: value,
-            ...filters.value
-        }, {
-            preserveState: true,
-            preserveScroll: true
-        });
-    }, 300);
-};
-
-onBeforeUnmount(() => {
-    if (searchTimeout) {
-        clearTimeout(searchTimeout);
-    }
-});
-
-const handleFiltersUpdate = (newFilters) => {
-    filters.value = newFilters;
-    router.get(route('entities.items.index'), {
-        search: search.value,
-        ...newFilters
-    }, {
-        preserveState: true,
-        preserveScroll: true
-    });
-};
-
-const handleFiltersReset = () => {
-    search.value = '';
-    filters.value = {};
-    router.get(route('entities.items.index'), {}, {
-        preserveState: true,
-        preserveScroll: true
-    });
-};
-
-const filterableColumns = computed(() => [
-    {
-        key: 'level',
-        label: 'Niveau',
-        options: [
-            { value: '', label: 'Tous' },
-            { value: '1', label: '1' },
-            { value: '50', label: '50' },
-            { value: '100', label: '100' },
-            { value: '150', label: '150' },
-            { value: '200', label: '200' }
-        ]
-    },
-    {
-        key: 'rarity',
-        label: 'Rareté',
-        options: [
-            { value: '', label: 'Tous' },
-            { value: 'common', label: 'Commun' },
-            { value: 'uncommon', label: 'Peu commun' },
-            { value: 'rare', label: 'Rare' },
-            { value: 'epic', label: 'Épique' },
-            { value: 'legendary', label: 'Légendaire' }
-        ]
-    }
-]);
-
-const handlePageChange = (url) => {
-    if (url) {
-        router.visit(url, {
-            preserveState: true,
-            preserveScroll: true
-        });
-    }
+const handleRowDoubleClick = (row) => {
+    const raw = row?.rowParams?.entity;
+    if (!raw) return;
+    const model = Item.fromArray([raw])[0] || null;
+    if (!model) return;
+    handleView(model);
 };
 
 const handleCreate = () => {
@@ -265,40 +182,6 @@ const fieldsConfig = {
     }
 };
 
-// Handlers pour l'édition rapide
-const handleSelect = (entity) => {
-    if (quickEditMode.value && !multiEditMode.value) {
-        // Mode édition rapide simple : une seule entité
-        quickEditEntity.value = entity;
-        selectedEntities.value = [entity];
-    } else if (multiEditMode.value) {
-        // Mode sélection multiple
-        if (!selectedEntities.value.some(e => {
-            const eId = e?.id ?? e?.id;
-            const entityId = entity?.id ?? entity?.id;
-            return eId === entityId;
-        })) {
-            selectedEntities.value.push(entity);
-        }
-    }
-};
-
-const handleDeselect = (entity) => {
-    if (quickEditMode.value && !multiEditMode.value) {
-        // Mode édition rapide simple
-        if (quickEditEntity.value?.id === entity?.id) {
-            quickEditEntity.value = null;
-        }
-    }
-    
-    // Retirer de la sélection multiple
-    selectedEntities.value = selectedEntities.value.filter(e => {
-        const eId = e?.id ?? e?.id;
-        const entityId = entity?.id ?? entity?.id;
-        return eId !== entityId;
-    });
-};
-
 // Comparaison des entités sélectionnées pour l'édition multiple
 const comparison = computed(() => {
     if (multiEditMode.value && selectedEntities.value.length > 0) {
@@ -313,19 +196,13 @@ const comparison = computed(() => {
 
 const handleQuickEditSubmit = () => {
     // Recharger les données après sauvegarde
-    router.reload({
-        only: ['items'],
-        preserveState: true,
-        preserveScroll: true
-    });
+    refreshToken.value++;
     // Réinitialiser la sélection après sauvegarde
-    quickEditEntity.value = null;
-    selectedEntities.value = [];
+    selectedIds.value = [];
 };
 
 const handleQuickEditCancel = () => {
-    quickEditEntity.value = null;
-    selectedEntities.value = [];
+    selectedIds.value = [];
     if (multiEditMode.value) {
         multiEditMode.value = false;
     }
@@ -340,35 +217,16 @@ const handleQuickEditAction = (entity) => {
     if (!quickEditMode.value) {
         quickEditMode.value = true;
     }
-    quickEditEntity.value = entity;
-    selectedEntities.value = [entity];
+    selectedIds.value = [entity.id];
     multiEditMode.value = false; // Désactiver le mode multiple si on passe en édition simple
 };
 
 const handleRefresh = (entity) => {
-    // Recharger les données d'une entité spécifique (depuis le menu d'actions)
-    router.reload({
-        only: ['items'],
-        preserveState: true,
-        preserveScroll: true
-    });
+    refreshToken.value++;
 };
 
 const handleRefreshAll = () => {
-    // Recharger toutes les données depuis le backend
-    // Utiliser router.reload() avec preserveState: false pour forcer un rechargement complet
-    notificationStore.info('Rafraîchissement des données en cours...', { duration: 2000 });
-    router.reload({
-        only: ['items'],
-        preserveState: false, // Ne pas préserver l'état pour forcer le rechargement complet depuis le serveur
-        preserveScroll: true,
-        onSuccess: () => {
-            notificationStore.success('Données rafraîchies avec succès', { duration: 3000 });
-        },
-        onError: () => {
-            notificationStore.error('Erreur lors du rafraîchissement des données', { duration: 5000 });
-        }
-    });
+    refreshToken.value++;
 };
 
 const handleDownloadPdf = async (entity) => {
@@ -413,34 +271,13 @@ const handleDownloadPdf = async (entity) => {
         <div v-if="quickEditMode" class="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <!-- Colonne gauche : Tableau -->
             <div>
-                <EntityTable
-                    :entities="items"
-                    :columns="columns"
+                <EntityTanStackTable
                     entity-type="items"
-                    :pagination="props.items"
-                    :show-filters="true"
-                    :search="search"
-                    :filters="filters"
-                    :filterable-columns="filterableColumns"
-                    :show-selection="canModify"
-                    :selected-entities="multiEditMode ? selectedEntities : (quickEditEntity ? [quickEditEntity] : [])"
-                    :show-actions-menu="true"
-                    :is-admin="isAdmin"
-                    :can-manage="canManage"
-                    @view="handleView"
-                    @edit="handleEdit"
-                    @delete="handleDelete"
-                    @sort="handleSort"
-                    @page-change="handlePageChange"
-                    @update:search="handleSearchUpdate"
-                    @update:filters="handleFiltersUpdate"
-                    @select="handleSelect"
-                    @deselect="handleDeselect"
-                    @quick-view="handleQuickView"
-                    @quick-edit="handleQuickEditAction"
-                    @refresh="handleRefresh"
-                    @refresh-all="handleRefreshAll"
-                    @download-pdf="handleDownloadPdf"
+                    :config="tableConfig"
+                    :server-url="serverUrl"
+                    v-model:selected-ids="selectedIds"
+                    @loaded="handleTableLoaded"
+                    @row-dblclick="handleRowDoubleClick"
                 />
             </div>
 
@@ -506,31 +343,14 @@ const handleDownloadPdf = async (entity) => {
         </div>
 
         <!-- Vue normale (tableau seul) si édition rapide désactivée -->
-        <EntityTable
+        <EntityTanStackTable
             v-else
-            :entities="items"
-            :columns="columns"
             entity-type="items"
-            :pagination="props.items"
-            :show-filters="true"
-            :search="search"
-            :filters="filters"
-            :filterable-columns="filterableColumns"
-            :show-actions-menu="true"
-            :is-admin="isAdmin"
-            :can-manage="canManage"
-            @view="handleView"
-            @edit="handleEdit"
-            @delete="handleDelete"
-            @sort="handleSort"
-            @page-change="handlePageChange"
-            @update:search="handleSearchUpdate"
-            @update:filters="handleFiltersUpdate"
-            @quick-view="handleQuickView"
-            @quick-edit="handleQuickEditAction"
-            @refresh="handleRefresh"
-            @refresh-all="handleRefreshAll"
-            @download-pdf="handleDownloadPdf"
+            :config="tableConfig"
+            :server-url="serverUrl"
+            v-model:selected-ids="selectedIds"
+            @loaded="handleTableLoaded"
+            @row-dblclick="handleRowDoubleClick"
         />
 
         <!-- Modal de création -->

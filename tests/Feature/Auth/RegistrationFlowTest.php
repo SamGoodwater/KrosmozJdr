@@ -95,6 +95,8 @@ class RegistrationFlowTest extends TestCase
      */
     public function test_registration_fails_without_email(): void
     {
+        $beforeCount = User::count();
+
         $userData = [
             'name' => 'Test User',
             'password' => 'Password123!',
@@ -104,9 +106,9 @@ class RegistrationFlowTest extends TestCase
         $response = $this->post(route('register'), $userData);
 
         $response->assertSessionHasErrors('email');
-        $this->assertDatabaseMissing('users', [
-            'name' => 'Test User',
-        ]);
+        // On vérifie qu'aucun utilisateur supplémentaire n'a été créé
+        // (ne pas dépendre d'un nom unique dans la DB de test).
+        $this->assertSame($beforeCount, User::count());
     }
 
     /**

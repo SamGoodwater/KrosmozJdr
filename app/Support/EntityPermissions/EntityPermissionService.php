@@ -4,6 +4,7 @@ namespace App\Support\EntityPermissions;
 
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\Gate;
 use App\Models\User;
 
 /**
@@ -37,11 +38,51 @@ class EntityPermissionService
      */
     public function forUser(?User $user): array
     {
-        // Non connecté : on expose une structure vide (le front s'appuie aussi sur `auth.isLogged`)
+        // Non connecté :
+        // - on expose au minimum `viewAny` par entité (utile pour masquer/afficher des colonnes côté front)
+        // - les autres permissions restent à false
         if (!$user) {
+            /** @var array<string, class-string> $registry */
+            $registry = (array) Config::get('entity-permissions', []);
+            /** @var array<string, array<int, array{entity?: string, ability?: string}>> $accessRegistry */
+            $accessRegistry = (array) Config::get('access-permissions', []);
+
+            $entities = [];
+            foreach ($registry as $entityType => $modelClass) {
+                $entities[$entityType] = [
+                    'viewAny' => Gate::allows('viewAny', $modelClass),
+                    'create' => false,
+                    'createAny' => false,
+                    'updateAny' => false,
+                    'deleteAny' => false,
+                    'manageAny' => false,
+                ];
+            }
+
+            $access = [];
+            foreach ($accessRegistry as $accessKey => $rules) {
+                $allowed = false;
+                foreach ((array) $rules as $rule) {
+                    $entityType = (string) ($rule['entity'] ?? '');
+                    $ability = (string) ($rule['ability'] ?? '');
+                    if (!$entityType || !$ability) {
+                        continue;
+                    }
+                    $modelClass = $registry[$entityType] ?? null;
+                    if (!$modelClass) {
+                        continue;
+                    }
+                    if (Gate::allows($ability, $modelClass)) {
+                        $allowed = true;
+                        break;
+                    }
+                }
+                $access[$accessKey] = $allowed;
+            }
+
             return [
-                'entities' => [],
-                'access' => [],
+                'entities' => $entities,
+                'access' => $access,
             ];
         }
 

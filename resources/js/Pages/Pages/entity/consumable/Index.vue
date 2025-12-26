@@ -7,17 +7,18 @@
  * 
  * @props {Object} consumables - Collection paginée des consommables
  */
-import { Head, router } from "@inertiajs/vue3";
-import { ref, computed, onBeforeUnmount } from "vue";
+import { Head } from "@inertiajs/vue3";
+import { ref, computed } from "vue";
 import { usePageTitle } from "@/Composables/layout/usePageTitle";
 import { usePermissions } from "@/Composables/permissions/usePermissions";
-import { useNotificationStore } from "@/Composables/store/useNotificationStore";
+import { Consumable } from "@/Models/Entity/Consumable";
 
 import Container from '@/Pages/Atoms/data-display/Container.vue';
 import Btn from '@/Pages/Atoms/action/Btn.vue';
-import EntityTable from '@/Pages/Molecules/data-display/EntityTable.vue';
+import EntityTanStackTable from '@/Pages/Organismes/table/EntityTanStackTable.vue';
 import EntityModal from '@/Pages/Organismes/entity/EntityModal.vue';
 import CreateEntityModal from '@/Pages/Organismes/entity/CreateEntityModal.vue';
+import { createConsumablesTanStackTableConfig } from './consumables-tanstack-table-config';
 
 const props = defineProps({
     consumables: {
@@ -32,8 +33,6 @@ const props = defineProps({
 
 const { setPageTitle } = usePageTitle();
 
-// Notifications
-const notificationStore = useNotificationStore();
 setPageTitle('Liste des Consommables');
 
 // Permissions
@@ -45,115 +44,27 @@ const selectedEntity = ref(null);
 const modalOpen = ref(false);
 const modalView = ref('large');
 const createModalOpen = ref(false);
-const search = ref(props.filters.search || '');
-const filters = ref(props.filters || {});
 
-// Configuration des colonnes selon la documentation : ID (optionnel), Nom (lien), Niveau, Rareté (badge), Type, Créé par, Actions
-const columns = computed(() => [
-    { key: 'id', label: 'ID', sortable: true },
-    { key: 'name', label: 'Nom', sortable: true, isMain: true },
-    { key: 'level', label: 'Niveau', sortable: true },
-    { key: 'rarity', label: 'Rareté', sortable: true, type: 'badge', badgeColor: 'primary' },
-    { key: 'consumableType', label: 'Type', sortable: false, format: (value) => value?.name || '-' },
-    { key: 'createdBy', label: 'Créé par', sortable: false, format: (value) => value?.name || value?.email || '-' },
-    { key: 'actions', label: 'Actions', sortable: false }
-]);
+// Table v2
+const selectedIds = ref([]);
+const tableRows = ref([]);
+const refreshToken = ref(0);
 
-// Handlers
-const handleView = (entity) => {
-    selectedEntity.value = entity;
+const tableConfig = computed(() => createConsumablesTanStackTableConfig());
+const serverUrl = computed(() => `${route('api.tables.consumables')}?limit=5000&_t=${refreshToken.value}`);
+
+const handleTableLoaded = ({ rows }) => {
+    tableRows.value = Array.isArray(rows) ? rows : [];
+};
+
+const handleRowDoubleClick = (row) => {
+    const raw = row?.rowParams?.entity;
+    if (!raw) return;
+    const model = Consumable.fromArray([raw])[0] || null;
+    if (!model) return;
+    selectedEntity.value = model;
     modalView.value = 'large';
     modalOpen.value = true;
-};
-
-const handleEdit = (entity) => {
-    router.visit(route(`entities.consumables.edit`, { consumable: entity.id }));
-};
-
-const handleDelete = (entity) => {
-    if (confirm(`Êtes-vous sûr de vouloir supprimer "${entity.name}" ?`)) {
-        router.delete(route(`entities.consumables.delete`, { consumable: entity.id }));
-    }
-};
-
-const handleSort = ({ column, order }) => {
-    router.get(route('entities.consumables.index'), {
-        sort: column,
-        order: order,
-        search: search.value,
-        ...filters.value
-    }, {
-        preserveState: true,
-        preserveScroll: true
-    });
-};
-
-let searchTimeout = null;
-
-const handleSearchUpdate = (value) => {
-    search.value = value;
-    if (searchTimeout) {
-        clearTimeout(searchTimeout);
-    }
-    searchTimeout = setTimeout(() => {
-        router.get(route('entities.consumables.index'), {
-            search: value,
-            ...filters.value
-        }, {
-            preserveState: true,
-            preserveScroll: true
-        });
-    }, 300);
-};
-
-onBeforeUnmount(() => {
-    if (searchTimeout) {
-        clearTimeout(searchTimeout);
-    }
-});
-
-const handleFiltersUpdate = (newFilters) => {
-    filters.value = newFilters;
-    router.get(route('entities.consumables.index'), {
-        search: search.value,
-        ...newFilters
-    }, {
-        preserveState: true,
-        preserveScroll: true
-    });
-};
-
-const handleFiltersReset = () => {
-    search.value = '';
-    filters.value = {};
-    router.get(route('entities.consumables.index'), {}, {
-        preserveState: true,
-        preserveScroll: true
-    });
-};
-
-const filterableColumns = computed(() => [
-    {
-        key: 'level',
-        label: 'Niveau',
-        options: [
-            { value: '', label: 'Tous' },
-            { value: '1', label: '1' },
-            { value: '50', label: '50' },
-            { value: '100', label: '100' },
-            { value: '150', label: '150' },
-            { value: '200', label: '200' }
-        ]
-    }
-]);
-
-const handlePageChange = (url) => {
-    if (url) {
-        router.visit(url, {
-            preserveState: true,
-            preserveScroll: true
-        });
-    }
 };
 
 const handleCreate = () => {
@@ -190,23 +101,13 @@ const closeModal = () => {
             </Btn>
         </div>
 
-        <!-- Tableau -->
-        <EntityTable
-            :entities="consumables.data || []"
-            :columns="columns"
+        <EntityTanStackTable
             entity-type="consumables"
-            :pagination="consumables"
-            :show-filters="true"
-            :search="search"
-            :filters="filters"
-            :filterable-columns="filterableColumns"
-            @view="handleView"
-            @edit="handleEdit"
-            @delete="handleDelete"
-            @sort="handleSort"
-            @page-change="handlePageChange"
-            @update:search="handleSearchUpdate"
-            @update:filters="handleFiltersUpdate"
+            :config="tableConfig"
+            :server-url="serverUrl"
+            v-model:selected-ids="selectedIds"
+            @loaded="handleTableLoaded"
+            @row-dblclick="handleRowDoubleClick"
         />
 
         <!-- Modal de création -->
@@ -215,7 +116,6 @@ const closeModal = () => {
             entity-type="consumable"
             @close="handleCloseCreateModal"
             @created="handleEntityCreated"
-                    @refresh-all="handleRefreshAll"
         />
 
         <!-- Modal de visualisation -->

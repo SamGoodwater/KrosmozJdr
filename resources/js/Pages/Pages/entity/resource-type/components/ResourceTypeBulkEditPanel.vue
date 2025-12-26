@@ -22,6 +22,8 @@ import { useBulkEditPanel } from "@/Composables/entity/useBulkEditPanel";
 const props = defineProps({
   selectedEntities: { type: Array, default: () => [] },
   isAdmin: { type: Boolean, default: false },
+  mode: { type: String, default: "client" },
+  filteredIds: { type: Array, default: () => [] },
 });
 
 const emit = defineEmits(["applied", "clear"]);
@@ -48,8 +50,8 @@ const {
   selectedEntities: props.selectedEntities,
   isAdmin: props.isAdmin,
   fieldMeta: FIELD_META,
-  mode: "server",
-  filteredIds: [],
+  mode: props.mode,
+  filteredIds: props.filteredIds,
 });
 
 const panelTitle = computed(() => {

@@ -96,8 +96,12 @@ class Section extends Model
         'slug',
         'order',
         'template',
+        // Legacy (toujours supporté: tests + vieux code)
+        'type',
         'settings',
         'data',
+        // Legacy (toujours supporté: tests + vieux code)
+        'params',
         'is_visible',
         'can_edit_role',
         'state',
@@ -112,8 +116,12 @@ class Section extends Model
     protected $casts = [
         'order' => 'integer',
         'template' => SectionType::class,
+        // Legacy
+        'type' => SectionType::class,
         'settings' => 'array',
         'data' => 'array',
+        // Legacy
+        'params' => 'array',
         'state' => PageState::class,
         'is_visible' => Visibility::class,
         'can_edit_role' => Visibility::class,

@@ -11,7 +11,11 @@ class UpdatePanoplyRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return $this->user()?->isAdmin() ?? false;
+        $user = $this->user();
+        $panoply = $this->route('panoply');
+        if (!$user || !$panoply) return false;
+
+        return $user->can('update', $panoply);
     }
 
     /**

@@ -4,6 +4,7 @@ namespace App\Http\Requests\Entity;
 
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
+use App\Models\Entity\Resource;
 
 /**
  * FormRequest pour la mise à jour des ressources d'un Item.
@@ -28,7 +29,20 @@ class UpdateItemResourcesRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'resources' => ['required', 'array'],
+            // `present` pour supporter le cas "vider toutes les ressources" (array vide).
+            'resources' => [
+                'present',
+                'array',
+                function (string $attribute, mixed $value, \Closure $fail) {
+                    if (!is_array($value)) return;
+                    foreach ($value as $resourceId => $pivotData) {
+                        $id = is_numeric((string) $resourceId) ? (int) $resourceId : null;
+                        if (!$id || !Resource::whereKey($id)->exists()) {
+                            $fail("La ressource {$resourceId} n'existe pas.");
+                        }
+                    }
+                },
+            ],
             'resources.*' => ['array'],
             'resources.*.quantity' => ['required', 'integer', 'min:1'],
         ];
@@ -41,17 +55,23 @@ class UpdateItemResourcesRequest extends FormRequest
     {
         // Normaliser le format des ressources
         // Format attendu : { resource_id: { quantity: value } }
-        $resources = $this->input('resources', []);
+        $resources = $this->input('resources');
+        if ($resources === null) {
+            // Le "resources => []" en form-data peut être envoyé comme champ absent.
+            // On force la présence pour permettre le "clear all".
+            $this->merge(['resources' => []]);
+            return;
+        }
+        if (!is_array($resources)) {
+            // Laisser la validation `array` produire une erreur au lieu de throw.
+            return;
+        }
+
         $normalized = [];
 
         foreach ($resources as $resourceId => $pivotData) {
             $resourceId = (int) $resourceId;
             
-            // Valider que l'ID de ressource existe
-            if (!\App\Models\Entity\Resource::where('id', $resourceId)->exists()) {
-                continue;
-            }
-
             if (is_array($pivotData) && isset($pivotData['quantity']) && $pivotData['quantity'] > 0) {
                 $normalized[$resourceId] = [
                     'quantity' => (int) $pivotData['quantity']

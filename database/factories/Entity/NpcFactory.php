@@ -18,8 +18,9 @@ class NpcFactory extends Factory
     {
         return [
             'creature_id' => null, // Doit être fourni lors de la création
-            'story' => fake()->optional()->paragraph(),
-            'historical' => fake()->optional()->paragraph(),
+            // Colonnes SQL en `string` (255) => borner la longueur pour éviter les tests non déterministes.
+            'story' => fake()->optional()->text(200),
+            'historical' => fake()->optional()->text(200),
             'age' => fake()->optional()->numberBetween(18, 200),
             'size' => fake()->optional()->numberBetween(100, 250),
             'classe_id' => null,
