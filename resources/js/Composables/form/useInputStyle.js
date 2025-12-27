@@ -466,23 +466,25 @@ const SPECIAL_COMPONENT_CONFIG = {
     toggle: {
         glass: {
             classes: ['toggle'],
-            animations: ['hover:scale-101', 'checked:translate-x-6', 'transition-all', 'duration-300']
+            // NOTE: ne pas translater le toggle entier en :checked (ça décale le layout).
+            // La "bille" est gérée via le ::before dans ToggleCore.
+            animations: ['hover:scale-101', 'transition-all', 'duration-300']
         },
         dash: {
             classes: ['toggle'],
-            animations: ['hover:scale-101', 'checked:translate-x-6', 'transition-all', 'duration-300']
+            animations: ['hover:scale-101', 'transition-all', 'duration-300']
         },
         outline: {
             classes: ['toggle'],
-            animations: ['hover:scale-101', 'checked:translate-x-6', 'transition-all', 'duration-300']
+            animations: ['hover:scale-101', 'transition-all', 'duration-300']
         },
         ghost: {
             classes: ['toggle'],
-            animations: ['hover:scale-101', 'checked:translate-x-6', 'transition-all', 'duration-300']
+            animations: ['hover:scale-101', 'transition-all', 'duration-300']
         },
         soft: {
                 classes: ['toggle'],
-            animations: ['hover:scale-101', 'checked:translate-x-6', 'transition-all', 'duration-300']
+            animations: ['hover:scale-101', 'transition-all', 'duration-300']
         }
     }
 };

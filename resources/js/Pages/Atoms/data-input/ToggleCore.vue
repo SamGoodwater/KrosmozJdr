@@ -145,6 +145,7 @@ input[type="checkbox"].toggle {
     transition: all 0.3s ease-in-out;
     cursor: pointer;
     appearance: none;
+    box-sizing: border-box;
     position: relative;
     display: inline-block;
     width: 3rem;
@@ -172,6 +173,7 @@ input[type="checkbox"].toggle {
         position: absolute;
         top: 2px;
         left: 2px;
+        box-sizing: border-box;
         width: calc(1.5rem - 4px);
         height: calc(1.5rem - 4px);
         background-color: white;
@@ -187,6 +189,14 @@ input[type="checkbox"].toggle {
         &::before {
             transform: translateX(1.5rem);
             box-shadow: 0 2px 4px color-mix(in srgb, var(--color) 30%, transparent);
+        }
+    }
+
+    // État indéterminé (ex: "Tous") => bille centrée
+    // NOTE: l'état indeterminate n'est pas un attribut HTML standard ; il est appliqué via JS (watch dans ce composant).
+    &:indeterminate {
+        &::before {
+            transform: translateX(0.75rem);
         }
     }
     
@@ -280,13 +290,6 @@ input[type="checkbox"].toggle {
         }
     }
     
-    // Animations
-    &.checked\\:translate-x-6:checked {
-        &::before {
-            transform: translateX(1.5rem);
-        }
-    }
-    
     &.transition-all {
         transition: all 0.3s ease-in-out;
     }
@@ -309,6 +312,10 @@ input[type="checkbox"].toggle {
     &:checked::before {
         transform: translateX(1rem);
     }
+
+    &:indeterminate::before {
+        transform: translateX(0.5rem);
+    }
 }
 
 .toggle-sm {
@@ -322,6 +329,10 @@ input[type="checkbox"].toggle {
     
     &:checked::before {
         transform: translateX(1.25rem);
+    }
+
+    &:indeterminate::before {
+        transform: translateX(0.625rem);
     }
 }
 
@@ -337,6 +348,10 @@ input[type="checkbox"].toggle {
     &:checked::before {
         transform: translateX(1.5rem);
     }
+
+    &:indeterminate::before {
+        transform: translateX(0.75rem);
+    }
 }
 
 .toggle-lg {
@@ -351,6 +366,10 @@ input[type="checkbox"].toggle {
     &:checked::before {
         transform: translateX(1.75rem);
     }
+
+    &:indeterminate::before {
+        transform: translateX(0.875rem);
+    }
 }
 
 .toggle-xl {
@@ -364,6 +383,10 @@ input[type="checkbox"].toggle {
     
     &:checked::before {
         transform: translateX(2rem);
+    }
+
+    &:indeterminate::before {
+        transform: translateX(1rem);
     }
 }
 

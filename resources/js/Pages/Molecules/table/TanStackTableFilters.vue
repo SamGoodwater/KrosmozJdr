@@ -61,6 +61,8 @@ const clearBooleanFilter = (filterId) => {
 };
 
 const hasBooleanFilter = (filterId) => getRawFilterValue(filterId) !== "";
+
+const isBooleanIndeterminate = (raw) => raw === "";
 </script>
 
 <template>
@@ -83,16 +85,20 @@ const hasBooleanFilter = (filterId) => getRawFilterValue(filterId) !== "";
                 >
                     <div class="flex items-center gap-3">
                         <!-- wrapper fixe pour éviter tout micro-shift de layout -->
-                        <div class="w-10 flex items-center justify-center shrink-0">
+                        <div class="w-12 flex items-center justify-center shrink-0">
                             <ToggleCore
                                 :model-value="isBooleanChecked(getRawFilterValue(col.filter.id))"
+                                :indeterminate="isBooleanIndeterminate(getRawFilterValue(col.filter.id))"
                                 size="sm"
                                 color="primary"
                                 @update:model-value="(v) => toggleBooleanFilter(col.filter.id, v)"
                             />
                         </div>
 
-                        <span class="text-sm min-w-10" :class="{ 'opacity-70': !hasBooleanFilter(col.filter.id) }">
+                        <span
+                            class="text-sm min-w-10"
+                            :class="{ 'opacity-70 italic': !hasBooleanFilter(col.filter.id) }"
+                        >
                             {{ booleanStateLabel(getRawFilterValue(col.filter.id)) }}
                         </span>
                     </div>
