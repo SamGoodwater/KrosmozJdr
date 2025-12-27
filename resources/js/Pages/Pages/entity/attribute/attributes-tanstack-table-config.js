@@ -24,7 +24,7 @@ export function createAttributesTanStackTableConfig() {
             { id: "updated_at", label: "Modifié le", hideable: true, defaultHidden: true, sort: { enabled: true }, cell: { type: "text" }, permissions: { ability: "createAny" } },
             { id: "name", label: "Nom", isMain: true, hideable: false, sort: { enabled: true }, search: { enabled: true }, cell: { type: "route" } },
             { id: "description", label: "Description", hideable: true, sort: { enabled: true }, search: { enabled: true }, cell: { type: "text" } },
-            { id: "usable", label: "Utilisable", hideable: true, defaultHidden: true, sort: { enabled: true }, filter: { id: "usable", type: "select" }, cell: { type: "badge" } },
+            { id: "usable", label: "Utilisable", hideable: true, defaultHidden: true, sort: { enabled: true }, filter: { id: "usable", type: "boolean" }, cell: { type: "badge" } },
             { id: "is_visible", label: "Visible", sort: { enabled: true }, filter: { id: "is_visible", type: "select" }, cell: { type: "badge" } },
             { id: "created_by", label: "Créé par", hideable: true, defaultHidden: true, sort: { enabled: true }, search: { enabled: true }, cell: { type: "text" }, permissions: { ability: "createAny" } },
         ],

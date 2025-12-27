@@ -278,7 +278,17 @@ const passesFilter = (row, col) => {
 
     if (f.type === "boolean") {
         const want = String(raw) === "1" || String(raw).toLowerCase() === "true";
-        return Boolean(rowValue) === want;
+
+        // Important: éviter Boolean("0") === true
+        const rowBool = (() => {
+            if (typeof rowValue === "boolean") return rowValue;
+            const s = String(rowValue ?? "").toLowerCase();
+            if (s === "1" || s === "true" || s === "yes" || s === "oui") return true;
+            if (s === "0" || s === "false" || s === "no" || s === "non") return false;
+            return Boolean(rowValue);
+        })();
+
+        return rowBool === want;
     }
 
     if (f.type === "text") {
@@ -592,7 +602,7 @@ const handleExport = () => {
         >
             <TanStackTableFilters
                 :columns="filteredColumnsConfig"
-                :filter-values="activeFilters"
+                :filter-values="activeFilters.value"
                 :filter-options="filterOptions"
                 @update:filters="(v) => { activeFilters.value = v; }"
                 @reset="() => { activeFilters.value = {}; }"

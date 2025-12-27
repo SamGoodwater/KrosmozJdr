@@ -101,7 +101,7 @@ export function createResourcesTanStackTableConfig() {
                 hideable: true,
                 defaultHidden: true,
                 sort: { enabled: true },
-                filter: { id: "usable", type: "select" },
+                filter: { id: "usable", type: "boolean" },
                 cell: { type: "badge" },
             },
             {
