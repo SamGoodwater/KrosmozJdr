@@ -32,6 +32,20 @@
     "file": "user/DeleteUserForm.vue"
   },
   {
+    "name": "TanStackTable",
+    "description": "TanStackTable Organism",
+    "props": [],
+    "slots": [],
+    "file": "table/TanStackTable.vue"
+  },
+  {
+    "name": "EntityTanStackTable",
+    "description": "EntityTanStackTable (Wrapper)",
+    "props": [],
+    "slots": [],
+    "file": "table/EntityTanStackTable.vue"
+  },
+  {
     "name": "SectionRenderer",
     "description": "SectionRenderer Organism",
     "props": [

@@ -1,0 +1,58 @@
+// Système DRY pour les glass box : border glass + backdrop glass + border-radius
+@use "./_backdrop.scss" as *;
+@use "../utils/_functions.scss" as *;
+@use 'sass:list';
+@use 'sass:map';
+
+$bg-sizes: (xs, sm, md, lg, xl);
+
+$intensity: (
+  'xs': 30%,
+  'sm': 40%,
+  'md': 50%,
+  'lg': 60%,
+  'xl': 70%
+);
+
+.bg {
+  --bg-color: transparent;
+
+  @each $size in $bg-sizes {
+    &-glass-#{$size} {
+      border-radius: inherit;
+      $intensity-value: map.get($intensity, $size);
+      
+      background: linear-gradient(
+            90deg,
+            color-mix(in srgb, var(--bg-color) $intensity-value * 0.75, transparent) 20%,
+            color-mix(in srgb, var(--bg-color) $intensity-value * 0.9, transparent) 30%,
+            color-mix(in srgb, var(--bg-color) $intensity-value * 1.1, transparent) 55%,
+            color-mix(in srgb, var(--bg-color) $intensity-value * 0.75, transparent) 65%
+        );
+    }
+
+    &-dash-#{$size} {
+      $intensity-value: map.get($intensity, $size) * 1.1;
+      background-color: color-mix(in srgb, var(--bg-color) $intensity-value, transparent);
+      @include bd-blur($size);
+    }
+
+    &-outline-#{$size} {
+      $intensity-value: map.get($intensity, $size) * 0.8;
+      background-color: color-mix(in srgb, var(--bg-color) $intensity-value, transparent);
+      @include bd-blur($size);
+    }
+
+    &-soft-#{$size} {
+      $intensity-value: map.get($intensity, $size) * 0.5;
+      background-color: color-mix(in srgb, var(--bg-color) $intensity-value, transparent);
+      @include bd-blur($size);
+    }
+
+    &-ghost-#{$size} {
+      $intensity-value: map.get($intensity, $size) * 0.2;
+      background-color: color-mix(in srgb, var(--bg-color) $intensity-value, transparent);
+      @include bd-blur($size);
+    }
+  }
+}

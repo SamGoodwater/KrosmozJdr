@@ -438,6 +438,16 @@ erDiagram
     created_at : timestamp
     updated_at : timestamp
   }
+  NOTIFICATIONS {
+    id : char(36)
+    type : varchar(255)
+    notifiable_type : varchar(255)
+    notifiable_id : bigint(20) unsigned
+    data : text
+    read_at : timestamp
+    created_at : timestamp
+    updated_at : timestamp
+  }
   NPC_CAMPAIGN {
     npc_id : bigint(20) unsigned
     campaign_id : bigint(20) unsigned
@@ -617,8 +627,10 @@ erDiagram
     slug : varchar(255)
     order : int(11)
     template : varchar(255)
+    type : varchar(255)
     settings : longtext
     data : longtext
+    params : longtext
     is_visible : varchar(255)
     can_edit_role : varchar(255)
     state : varchar(255)

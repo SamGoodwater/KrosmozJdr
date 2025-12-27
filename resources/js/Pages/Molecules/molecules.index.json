@@ -20,6 +20,48 @@
     "file": "user/BadgeRole.vue"
   },
   {
+    "name": "TanStackTableToolbar",
+    "description": "TanStackTableToolbar Molecule",
+    "props": [],
+    "slots": [],
+    "file": "table/TanStackTableToolbar.vue"
+  },
+  {
+    "name": "TanStackTableSkeletonBody",
+    "description": "TanStackTableSkeletonBody Molecule",
+    "props": [],
+    "slots": [],
+    "file": "table/TanStackTableSkeletonBody.vue"
+  },
+  {
+    "name": "TanStackTableRow",
+    "description": "TanStackTableRow Molecule",
+    "props": [],
+    "slots": [],
+    "file": "table/TanStackTableRow.vue"
+  },
+  {
+    "name": "TanStackTablePagination",
+    "description": "TanStackTablePagination Molecule",
+    "props": [],
+    "slots": [],
+    "file": "table/TanStackTablePagination.vue"
+  },
+  {
+    "name": "TanStackTableHeader",
+    "description": "TanStackTableHeader Molecule",
+    "props": [],
+    "slots": [],
+    "file": "table/TanStackTableHeader.vue"
+  },
+  {
+    "name": "TanStackTableFilters",
+    "description": "TanStackTableFilters Molecule",
+    "props": [],
+    "slots": [],
+    "file": "table/TanStackTableFilters.vue"
+  },
+  {
     "name": "SectionHeader",
     "description": "SectionHeader Molecule",
     "props": [

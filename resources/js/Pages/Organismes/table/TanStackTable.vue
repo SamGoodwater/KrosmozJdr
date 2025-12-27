@@ -53,14 +53,58 @@ const columnsConfig = computed(() => Array.isArray(props.config?.columns) ? prop
  * UI (style global du tableau).
  * @see docs/30-UI/TANSTACK_TABLE.md
  */
-const uiVariant = computed(() => String(props.config?.ui?.variant || "zebra"));
 const uiSize = computed(() => String(props.config?.ui?.size || "md"));
 const uiColor = computed(() => String(props.config?.ui?.color || "primary"));
 
+// Table variant (stripes)
+const uiTableVariant = computed(() => {
+    const v = props.config?.ui?.tableVariant ?? props.config?.ui?.variant ?? "zebra";
+    return String(v || "zebra");
+});
+
+// Background variant (bg-glass-md, bg-soft-md, ...)
+const normalizeBgVariant = (v) => {
+    if (!v) return { variant: "glass", size: "md" };
+    const raw = String(v);
+
+    // Support: "outline-md" / "glass-xl" etc.
+    const parts = raw.split("-");
+    if (parts.length >= 2) {
+        const maybeVariant = parts[0];
+        const maybeSize = parts[1];
+        return { variant: maybeVariant, size: maybeSize };
+    }
+
+    return { variant: raw, size: String(props.config?.ui?.bgSize ?? "md") };
+};
+
+const bgSettings = computed(() => {
+    // Priorité: bgVariant explicite, sinon variant (compat)
+    const v = props.config?.ui?.bgVariant ?? props.config?.ui?.variant ?? "glass";
+    const { variant, size } = normalizeBgVariant(v);
+
+    // si variant est un mode table (zebra/plain), fallback background glass
+    if (["zebra", "striped", "plain", "default"].includes(variant)) {
+        return { variant: "glass", size: String(props.config?.ui?.bgSize ?? "md") };
+    }
+
+    return { variant, size };
+});
+
+const bgVariant = computed(() => bgSettings.value.variant);
+const bgSize = computed(() => {
+    const s = String(bgSettings.value.size || "md");
+    if (s === "xs") return "xs";
+    if (s === "sm") return "sm";
+    if (s === "lg") return "lg";
+    if (s === "xl") return "xl";
+    return "md";
+});
+
 const tableVariantClass = computed(() => {
     // DaisyUI: `table-zebra` (stripes) est la variante principale utilisée ici.
-    if (uiVariant.value === "zebra" || uiVariant.value === "striped") return "table-zebra";
-    if (uiVariant.value === "plain" || uiVariant.value === "default") return "";
+    if (uiTableVariant.value === "zebra" || uiTableVariant.value === "striped") return "table-zebra";
+    if (uiTableVariant.value === "plain" || uiTableVariant.value === "default") return "";
     return "table-zebra";
 });
 
@@ -72,18 +116,34 @@ const tableSizeClass = computed(() => {
     return "table-md";
 });
 
-const containerBorderClass = computed(() => {
-    // Classes explicites (pas de concat dynamique) pour compat Tailwind.
-    const c = uiColor.value;
-    if (c === "primary") return "border-primary/30";
-    if (c === "secondary") return "border-secondary/30";
-    if (c === "accent") return "border-accent/30";
-    if (c === "info") return "border-info/30";
-    if (c === "success") return "border-success/30";
-    if (c === "warning") return "border-warning/30";
-    if (c === "error") return "border-error/30";
-    if (c === "neutral") return "border-neutral/30";
-    return "border-base-300";
+const bgClass = computed(() => {
+    // Classes SCSS (resources/scss/src/_bg.scss) : explicites
+
+    let bg = "bg-";
+    switch (bgVariant.value) {
+        case "glass":
+            bg += "glass-";
+            break;
+        case "ghost":
+            bg += "ghost-";
+            break;
+        case "soft":
+            bg += "soft-";
+            break;
+        case "outline":
+            bg += "outline-";
+            break;
+        case "dash":
+            bg += "dash-";
+            break;
+        default:
+            bg += "glass-";
+            break;
+    }
+
+    bg += bgSize.value;
+
+    return bg + " " + "bg-color-" + uiColor.value;
 });
 
 const rowSelectedBgClass = computed(() => {
@@ -504,34 +564,45 @@ const handleExport = () => {
 </script>
 
 <template>
-    <div class="space-y-3">
-        <TanStackTableToolbar
-            :search-enabled="searchEnabled"
-            :search-value="searchText"
-            :search-placeholder="searchPlaceholder"
-            :ui-size="uiSize"
-            :column-visibility-enabled="Boolean(props.config?.features?.columnVisibility?.enabled)"
-            :columns="columnsConfig"
-            :visible-columns="visibleColumns"
-            :export-enabled="exportEnabled"
-            :selection-count="selectedCount"
-            @update:search="updateSearch"
-            @toggle-column="toggleColumnVisibility"
-            @export="handleExport"
-            @clear-selection="clearSelection"
-        />
+    <div class="space-y-2">
+        <!-- Toolbar (Header) -->
+        <div class="relative px-3 py-2" :class="[bgClass]">
+            <TanStackTableToolbar
+                :search-enabled="searchEnabled"
+                :search-value="searchText"
+                :search-placeholder="searchPlaceholder"
+                :ui-size="uiSize"
+                :column-visibility-enabled="Boolean(props.config?.features?.columnVisibility?.enabled)"
+                :columns="columnsConfig"
+                :visible-columns="visibleColumns"
+                :export-enabled="exportEnabled"
+                :selection-count="selectedCount"
+                @update:search="updateSearch"
+                @toggle-column="toggleColumnVisibility"
+                @export="handleExport"
+                @clear-selection="clearSelection"
+            />
+        </div>
 
-        <TanStackTableFilters
+        <!-- Filters -->
+        <div
             v-if="filtersEnabled && hasFilterableColumns"
-            :columns="filteredColumnsConfig"
-            :filter-values="activeFilters"
-            :filter-options="filterOptions"
-            @update:filters="(v) => { activeFilters.value = v; }"
-            @reset="() => { activeFilters.value = {}; }"
-        />
+            class="relative px-3 py-2"
+            :class="[bgClass]"
+        >
+            <TanStackTableFilters
+                :columns="filteredColumnsConfig"
+                :filter-values="activeFilters"
+                :filter-options="filterOptions"
+                @update:filters="(v) => { activeFilters.value = v; }"
+                @reset="() => { activeFilters.value = {}; }"
+            />
+        </div>
 
-        <div class="overflow-x-auto rounded-lg border" :class="containerBorderClass">
-            <table class="table w-full" :class="[tableVariantClass, tableSizeClass]">
+        <!-- Table -->
+        <div class="relative overflow-hidden p-1" :class="[bgClass]">
+            <div class="overflow-x-auto">
+                <table class="table w-full" :class="[tableVariantClass, tableSizeClass]">
                 <TanStackTableHeader
                     :columns="filteredColumnsConfig"
                     :sort-by="sortBy"
@@ -572,23 +643,26 @@ const handleExport = () => {
                         </td>
                     </tr>
                 </tbody>
-            </table>
+                </table>
+            </div>
         </div>
 
-        <TanStackTablePagination
-            v-if="paginationEnabled"
-            :page-index="paginationState.pageIndex"
-            :page-count="table.getPageCount()"
-            :page-size="paginationState.pageSize"
-            :total-rows="filteredRows.length"
-            :per-page-options="perPageOptions"
-            :can-prev="table.getCanPreviousPage()"
-            :can-next="table.getCanNextPage()"
-            :ui-size="uiSize"
-            @prev="() => table.previousPage()"
-            @next="() => table.nextPage()"
-            @set-page-size="(n) => table.setPageSize(Number(n))"
-        />
+        <!-- Pagination -->
+        <div v-if="paginationEnabled" class="relative px-2 py-1 " :class="[bgClass]">
+            <TanStackTablePagination
+                :page-index="paginationState.pageIndex"
+                :page-count="table.getPageCount()"
+                :page-size="paginationState.pageSize"
+                :total-rows="filteredRows.length"
+                :per-page-options="perPageOptions"
+                :can-prev="table.getCanPreviousPage()"
+                :can-next="table.getCanNextPage()"
+                :ui-size="uiSize"
+                @prev="() => table.previousPage()"
+                @next="() => table.nextPage()"
+                @set-page-size="(n) => table.setPageSize(Number(n))"
+            />
+        </div>
     </div>
 </template>
 

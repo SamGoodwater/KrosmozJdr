@@ -2079,6 +2079,20 @@
     "file": "data-display/Collapse.vue"
   },
   {
+    "name": "CellSkeleton",
+    "description": "CellSkeleton Atom",
+    "props": [],
+    "slots": [],
+    "file": "data-display/CellSkeleton.vue"
+  },
+  {
+    "name": "CellRenderer",
+    "description": "CellRenderer Atom",
+    "props": [],
+    "slots": [],
+    "file": "data-display/CellRenderer.vue"
+  },
+  {
     "name": "Card",
     "description": "Card Atom (DaisyUI)",
     "props": [

@@ -1201,11 +1201,15 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Section withTrashed()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Section withoutTrashed()
  * @mixin \Eloquent
+ * @property \App\Enums\SectionType|null $type
+ * @property array<array-key, mixed>|null $params
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Section displayable(?\App\Models\User $user = null)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Section ordered()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Section published()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Section visibleFor(?\App\Models\User $user = null)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Section whereCanEditRole($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Section whereParams($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Section whereType($value)
  */
 	class Section extends \Eloquent {}
 }

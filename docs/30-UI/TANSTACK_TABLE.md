@@ -132,11 +132,16 @@ Le skeleton peut être configuré via `config.ui` :
 ### `TanStackTableConfig` (générique)
 
 - **`id`**: string (unique)
-- **`ui`**: `{ variant?, size?, color?, density? }`
-  - **`variant`**: `"zebra"|"plain"` (alias `"striped"` → zebra)
+- **`ui`**: `{ variant?, size?, color?, density?, tableVariant?, bgVariant?, bgSize? }`
   - **`size`**: `"xs"|"sm"|"md"|"lg"` (taille DaisyUI appliquée au tableau + toolbar + pagination)
   - **`color`**: `"primary"|"secondary"|"accent"|"info"|"success"|"warning"|"error"|"neutral"|...`
-    - utilisé pour **la bordure** du tableau et **le surlignage** des lignes sélectionnées
+    - utilisé pour le **background** (CSS vars `--bg-color/--color`) + **surlignage** des lignes sélectionnées
+  - **`tableVariant`**: `"zebra"|"plain"` (alias `"striped"` → zebra)
+  - **`bgVariant`**: `"glass"|"ghost"|"soft"|"outline"|"dash"` (classes `.bg-*` via `resources/scss/src/_bg.scss`)
+  - **`bgSize`**: `"xs"|"sm"|"md"|"lg"|"xl"` (par défaut `md`)
+  - **Compat**:
+    - `ui.variant` peut être un `tableVariant` (zebra/plain) **ou** un `bgVariant` (glass/ghost/soft/outline/dash)
+    - `ui.bgVariant` accepte aussi une forme `"outline-md"` / `"glass-xl"` (parse auto)
   - **`density`**: réservé (alias futur pour `size`)
 - **`features`**
   - search: `{ enabled, placeholder?, debounceMs? }`
