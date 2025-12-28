@@ -55,6 +55,24 @@ const columnsConfig = computed(() => Array.isArray(props.config?.columns) ? prop
  */
 const uiSize = computed(() => String(props.config?.ui?.size || "md"));
 const uiColor = computed(() => String(props.config?.ui?.color || "primary"));
+const debug = computed(() => Boolean(props.config?.ui?.debug));
+
+/**
+ * Debug global (pratique quand la config n'est pas facile à éditer).
+ * Active via:
+ * - localStorage.setItem('tanstack_table_debug','1')
+ * - window.__TANSTACK_TABLE_DEBUG__ = true
+ */
+const debugEnabled = computed(() => {
+    if (debug.value) return true;
+    try {
+        if (typeof window !== "undefined" && window.__TANSTACK_TABLE_DEBUG__ === true) return true;
+        if (typeof window !== "undefined" && window.localStorage?.getItem("tanstack_table_debug") === "1") return true;
+    } catch {
+        // ignore
+    }
+    return false;
+});
 
 // Table variant (stripes)
 const uiTableVariant = computed(() => {
@@ -224,6 +242,34 @@ const filterOptions = computed(() => {
     return props.config?.filterOptions || {};
 });
 const activeFilters = ref({});
+let _filterDebugCount = 0;
+
+const debugSample = computed(() => {
+    if (!debugEnabled.value) return null;
+    const sampleRow = (props.rows || [])[0] || null;
+    const items = (filteredColumnsConfig.value || [])
+        .filter((c) => c?.filter?.id && c?.filter?.type)
+        .map((col) => {
+            const f = col.filter;
+            const raw = activeFilters.value?.[f.id];
+            const rowValue = sampleRow ? getFilterValueFor(sampleRow, col) : null;
+            return {
+                columnId: col.id,
+                filterId: f.id,
+                filterType: f.type,
+                raw: raw ?? null,
+                rowValue: rowValue ?? null,
+            };
+        });
+
+    return {
+        rowsTotal: (props.rows || []).length,
+        rowsFiltered: filteredRows.value.length,
+        activeFilters: activeFilters.value || {},
+        sampleRowId: sampleRow?.id ?? null,
+        sample: items,
+    };
+});
 
 let _searchTimeout = null;
 const searchText = ref("");
@@ -265,6 +311,17 @@ const getFilterValueFor = (row, col) => {
     }
     const cell = getCellFor(row, col);
     if (typeof cell?.params?.filterValue !== "undefined") return cell.params.filterValue;
+
+    // Fallback important: certains filtres portent sur un champ "technique" (ex: *_id)
+    // alors que la cellule affiche un label (ex: "Type"). Dans ce cas on utilise
+    // la valeur brute du backend quand elle est disponible dans rowParams.entity.
+    const filterId = col?.filter?.id;
+    const entity = row?.rowParams?.entity;
+    if (filterId && entity && Object.prototype.hasOwnProperty.call(entity, filterId)) {
+        const v = entity?.[filterId];
+        if (typeof v !== "undefined") return v;
+    }
+
     return cell?.value ?? null;
 };
 
@@ -273,8 +330,21 @@ const passesFilter = (row, col) => {
     if (!f?.id || !f?.type) return true;
     const raw = activeFilters.value?.[f.id];
     if (raw === null || typeof raw === "undefined" || raw === "") return true;
+    if (Array.isArray(raw) && raw.length === 0) return true;
 
     const rowValue = getFilterValueFor(row, col);
+
+    if (debugEnabled.value && _filterDebugCount < 25) {
+        _filterDebugCount++;
+        console.log("[TanStackTable] passesFilter", {
+            columnId: col?.id,
+            filterId: f.id,
+            filterType: f.type,
+            raw,
+            rowValue,
+            rowId: row?.id,
+        });
+    }
 
     if (f.type === "boolean") {
         const want = String(raw) === "1" || String(raw).toLowerCase() === "true";
@@ -293,6 +363,11 @@ const passesFilter = (row, col) => {
 
     if (f.type === "text") {
         return normalize(rowValue).includes(normalize(raw));
+    }
+
+    // multi
+    if (Array.isArray(raw)) {
+        return raw.map((v) => String(v)).includes(String(rowValue ?? ""));
     }
 
     // select (default)
@@ -336,6 +411,14 @@ const filteredRows = computed(() => {
     });
 });
 
+watch(
+    () => JSON.stringify(activeFilters.value),
+    (v) => {
+        if (!debugEnabled.value) return;
+        console.log("[TanStackTable] activeFilters changed", v);
+    },
+);
+
 const sortBy = ref("");
 const sortOrder = ref("asc");
 
@@ -355,7 +438,7 @@ const tanstackColumns = computed(() => {
     return filteredColumnsConfig.value.map((col) => {
         const canSort = Boolean(col?.sort?.enabled);
 
-        return {
+        const def = {
             id: col.id,
             accessorFn: (row) => {
                 if (typeof col?.sort?.sortValue === "function") {
@@ -368,10 +451,26 @@ const tanstackColumns = computed(() => {
                 return getSortValue(row, col);
             },
             enableSorting: canSort,
-            sortingFn: col?.sort?.sortingFn || undefined,
         };
+        // IMPORTANT: ne pas passer sortingFn si ce n'est pas une fonction.
+        // Sinon TanStack peut tenter de l'appeler directement et crasher (sortingFn is not a function).
+        if (typeof col?.sort?.sortingFn === "function") {
+            def.sortingFn = col.sort.sortingFn;
+        }
+        return def;
     });
 });
+
+const setFilters = (v) => {
+    if (debugEnabled.value) console.log("[TanStackTable] update:filters", v);
+    activeFilters.value = v || {};
+};
+const resetFilters = () => {
+    activeFilters.value = {};
+};
+const applyFilters = () => {
+    paginationState.value = { ...paginationState.value, pageIndex: 0 };
+};
 
 const sortingState = computed(() => {
     if (!sortBy.value) return [];
@@ -582,6 +681,7 @@ const handleExport = () => {
                 :search-value="searchText"
                 :search-placeholder="searchPlaceholder"
                 :ui-size="uiSize"
+                :ui-color="uiColor"
                 :column-visibility-enabled="Boolean(props.config?.features?.columnVisibility?.enabled)"
                 :columns="columnsConfig"
                 :visible-columns="visibleColumns"
@@ -602,10 +702,13 @@ const handleExport = () => {
         >
             <TanStackTableFilters
                 :columns="filteredColumnsConfig"
-                :filter-values="activeFilters.value"
+                :filter-values="activeFilters"
                 :filter-options="filterOptions"
-                @update:filters="(v) => { activeFilters.value = v; }"
-                @reset="() => { activeFilters.value = {}; }"
+                :ui-color="uiColor"
+                :debug="debugEnabled"
+                @update:filters="setFilters"
+                @apply="applyFilters"
+                @reset="resetFilters"
             />
         </div>
 
@@ -621,6 +724,7 @@ const handleExport = () => {
                     :show-selection="showSelectionCheckboxes"
                     :all-selected="allSelectedOnPage"
                     :some-selected="someSelectedOnPage"
+                    :ui-color="uiColor"
                     @toggle-all="toggleAllOnPage"
                 />
 
@@ -640,6 +744,7 @@ const handleExport = () => {
                         :show-selection="showSelectionCheckboxes"
                         :is-selected="isSelected(row)"
                         :selected-bg-class="rowSelectedBgClass"
+                        :ui-color="uiColor"
                         @toggle-select="(r, checked) => toggleRow(r, checked)"
                         @row-click="handleRowClick"
                         @row-dblclick="(r) => emit('row-dblclick', r)"
@@ -668,10 +773,25 @@ const handleExport = () => {
                 :can-prev="table.getCanPreviousPage()"
                 :can-next="table.getCanNextPage()"
                 :ui-size="uiSize"
+                :ui-color="uiColor"
+                @first="() => table.setPageIndex(0)"
                 @prev="() => table.previousPage()"
+                @go="(i) => table.setPageIndex(Number(i))"
                 @next="() => table.nextPage()"
+                @last="() => table.setPageIndex(Math.max(0, table.getPageCount() - 1))"
                 @set-page-size="(n) => table.setPageSize(Number(n))"
             />
+        </div>
+
+        <!-- Debug panel (opt-in) -->
+        <div v-if="debugEnabled" class="text-xs text-base-content/70">
+            <div class="relative p-3 rounded-lg border border-base-300" :class="[bgClass]">
+                <div class="font-semibold mb-2">Debug Table (filters)</div>
+                <pre class="whitespace-pre-wrap break-words">{{ JSON.stringify(debugSample, null, 2) }}</pre>
+                <div class="mt-2 opacity-70">
+                    Activer/désactiver: <code>localStorage.tanstack_table_debug = "1"</code> / removeItem
+                </div>
+            </div>
         </div>
     </div>
 </template>

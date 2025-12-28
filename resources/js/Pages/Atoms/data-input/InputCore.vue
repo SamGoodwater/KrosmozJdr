@@ -63,13 +63,41 @@ import { mergeClasses } from '@/Utils/atomic-design/uiHelper'
 // 🔧 Définition des props + emits
 // ------------------------------------------
 const props = defineProps(getInputPropsDefinition('input', 'core'))
-const emit = defineEmits(['update:modelValue'])
+const emit = defineEmits(['update:modelValue', 'update:model-value'])
 const $attrs = useAttrs()
 
 // ------------------------------------------
 // ⚙️ Attributs HTML + événements natifs filtrés
 // ------------------------------------------
 const { inputAttrs, listeners } = useInputProps(props, $attrs, emit, 'input', 'core')
+
+/**
+ * Listener safe pour éviter de gérer deux fois `input` (nous l'utilisons pour v-model).
+ */
+const safeListeners = computed(() => {
+  const l = (listeners && typeof listeners === 'object' && 'value' in listeners)
+    ? (listeners.value || {})
+    : (listeners || {});
+
+  // eslint-disable-next-line no-unused-vars
+  const { input, ...rest } = l;
+  return rest;
+});
+
+function onInput(e) {
+  const next = e?.target?.value ?? '';
+  emit('update:modelValue', next);
+  // Compat template kebab-case (lint): permet @update:model-value
+  emit('update:model-value', next);
+
+  // relayer un éventuel listener `input` passé via $attrs (sans double-binding)
+  const l = (listeners && typeof listeners === 'object' && 'value' in listeners)
+    ? (listeners.value || {})
+    : (listeners || {});
+  if (typeof l?.input === 'function') {
+    l.input(e);
+  }
+}
 
 // ------------------------------------------
 // 🎨 Style dynamique basé sur variant, color, etc.
@@ -112,8 +140,10 @@ const labelClasses = computed(() =>
     <!-- 🧱 Input principal -->
     <input
       v-bind="inputAttrs"
-      v-on="listeners"
+      v-on="safeListeners"
       :class="atomClasses"
+      :value="props.modelValue ?? ''"
+      @input="onInput"
     />
 
     <!-- ➡️ Label inEnd -->
@@ -126,8 +156,10 @@ const labelClasses = computed(() =>
   <label v-else-if="props.labelFloating" :class="labelClasses">
     <input
       v-bind="inputAttrs"
-      v-on="listeners"
+      v-on="safeListeners"
       :class="atomClasses"
+      :value="props.modelValue ?? ''"
+      @input="onInput"
     />
     <span class="label-text">
       <slot name="floatingLabel">{{ props.placeholder || 'Label' }}</slot>
@@ -138,8 +170,10 @@ const labelClasses = computed(() =>
   <input
     v-else
     v-bind="inputAttrs"
-    v-on="listeners"
+    v-on="safeListeners"
     :class="atomClasses"
+    :value="props.modelValue ?? ''"
+    @input="onInput"
   />
 </template>
 

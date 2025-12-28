@@ -64,7 +64,7 @@ export function createResourceTypesTanStackTableConfig() {
                 id: "decision",
                 label: "Statut",
                 sort: { enabled: true },
-                filter: { id: "decision", type: "select" },
+                filter: { id: "decision", type: "multi" },
                 cell: { type: "badge" },
             },
             {

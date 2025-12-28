@@ -25,7 +25,7 @@ export function createScenariosTanStackTableConfig() {
             { id: "name", label: "Nom", isMain: true, hideable: false, sort: { enabled: true }, search: { enabled: true }, cell: { type: "route" } },
             { id: "slug", label: "Slug", sort: { enabled: true }, search: { enabled: true }, cell: { type: "text" } },
             { id: "state", label: "État", sort: { enabled: true }, filter: { id: "state", type: "select" }, cell: { type: "badge" } },
-            { id: "is_public", label: "Public", sort: { enabled: true }, filter: { id: "is_public", type: "select" }, cell: { type: "badge" } },
+            { id: "is_public", label: "Public", sort: { enabled: true }, filter: { id: "is_public", type: "boolean" }, cell: { type: "badge" } },
             { id: "created_by", label: "Créé par", hideable: true, defaultHidden: true, sort: { enabled: true }, search: { enabled: true }, cell: { type: "text" }, permissions: { ability: "createAny" } },
         ],
     };

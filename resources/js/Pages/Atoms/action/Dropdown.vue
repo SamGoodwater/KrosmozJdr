@@ -372,6 +372,7 @@ onUnmounted(() => {
       <div
         v-show="isOpen"
         ref="contentRef"
+        :data-dropdown-id="dropdownId"
         :class="contentClasses"
         :style="contentStyle"
         tabindex="-1"

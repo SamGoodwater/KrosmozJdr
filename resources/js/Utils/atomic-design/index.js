@@ -24,3 +24,6 @@ export * from './labelManager';
 
 // validationManager.js - Gestion de la validation
 export * from './validationManager'; 
+
+// size-utils.js - Helpers tailles (xs/sm/md/lg/xl)
+export * from './size-utils';

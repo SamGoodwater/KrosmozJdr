@@ -10,6 +10,9 @@ import { computed } from "vue";
 import Dropdown from "@/Pages/Atoms/action/Dropdown.vue";
 import Btn from "@/Pages/Atoms/action/Btn.vue";
 import Icon from "@/Pages/Atoms/data-display/Icon.vue";
+import InputCore from "@/Pages/Atoms/data-input/InputCore.vue";
+import CheckboxCore from "@/Pages/Atoms/data-input/CheckboxCore.vue";
+import { shiftUiSize } from "@/Utils/atomic-design";
 
 const props = defineProps({
     searchEnabled: { type: Boolean, default: false },
@@ -20,6 +23,11 @@ const props = defineProps({
      * Valeurs attendues: xs|sm|md|lg (fallback md).
      */
     uiSize: { type: String, default: "md" },
+    /**
+     * Couleur UI (Design System) appliquée aux contrôles (inputs/checkbox).
+     * Valeurs attendues: primary|secondary|accent|info|success|warning|error|neutral (fallback primary).
+     */
+    uiColor: { type: String, default: "primary" },
 
     columnVisibilityEnabled: { type: Boolean, default: false },
     columns: { type: Array, default: () => [] },
@@ -52,19 +60,27 @@ const btnSize = computed(() => {
     if (props.uiSize === "md") return "md";
     return "sm";
 });
+
+/**
+ * Boutons "actions" (Exporter / Colonnes) plus discrets :
+ * on prend la taille UI du tableau et on applique SIZE - 1 (clampé).
+ */
+const actionBtnSize = computed(() => shiftUiSize(props.uiSize, -1));
 </script>
 
 <template>
     <div class="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
         <div class="flex-1">
-            <input
+            <InputCore
                 v-if="searchEnabled"
-                class="input input-bordered w-full"
-                :class="inputSizeClass"
                 type="search"
+                class="w-full"
+                variant="glass"
+                :color="uiColor"
+                :size="uiSize"
                 :placeholder="searchPlaceholder"
-                :value="searchValue"
-                @input="emit('update:search', $event.target.value)"
+                :model-value="searchValue"
+                @update:model-value="(v) => emit('update:search', String(v ?? ''))"
             />
         </div>
 
@@ -83,9 +99,12 @@ const btnSize = computed(() => {
 
             <Btn
                 v-if="exportEnabled"
-                :size="btnSize"
-                variant="ghost"
+                :size="actionBtnSize"
+                variant="outline"
+                :color="uiColor"
                 class="gap-2"
+                opacity="sm"
+                backdrop="sm"
                 @click="emit('export')"
                 title="Exporter en CSV"
             >
@@ -99,7 +118,15 @@ const btnSize = computed(() => {
                 :close-on-content-click="false"
             >
                 <template #trigger>
-                    <Btn :size="btnSize" variant="ghost" class="gap-2" title="Colonnes visibles">
+                    <Btn
+                        :size="actionBtnSize"
+                        variant="outline"
+                        :color="uiColor"
+                        class="gap-2"
+                        opacity="sm"
+                        backdrop="sm"
+                        title="Colonnes visibles"
+                    >
                         <Icon source="fa-solid fa-columns" alt="Colonnes" size="sm" />
                         <span class="hidden md:inline">Colonnes</span>
                     </Btn>
@@ -117,12 +144,12 @@ const btnSize = computed(() => {
                                     'cursor-pointer': canToggleColumn(col),
                                 }"
                             >
-                                <input
-                                    type="checkbox"
-                                    class="checkbox checkbox-sm"
-                                    :checked="visibleColumns[col.id] !== false"
+                                <CheckboxCore
+                                    :model-value="visibleColumns[col.id] !== false"
+                                    size="sm"
+                                    :color="uiColor"
                                     :disabled="!canToggleColumn(col)"
-                                    @change="emit('toggle-column', col)"
+                                    @update:model-value="() => emit('toggle-column', col)"
                                 />
                                 <span class="text-sm">{{ col.label }}</span>
                             </label>

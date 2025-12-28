@@ -54,7 +54,7 @@ import { mergeClasses } from '@/Utils/atomic-design/uiHelper'
 // 🔧 Définition des props + emits
 // ------------------------------------------
 const props = defineProps(getInputPropsDefinition('checkbox', 'core'))
-const emit = defineEmits(['update:modelValue'])
+const emit = defineEmits(['update:modelValue', 'update:model-value'])
 const $attrs = useAttrs()
 
 // ------------------------------------------
@@ -126,9 +126,11 @@ const isChecked = computed({
                 }
             }
             emit('update:modelValue', newValue);
+            emit('update:model-value', newValue);
         } else {
             // Mode single : émettre la valeur booléenne
             emit('update:modelValue', value);
+            emit('update:model-value', value);
         }
     }
 });
@@ -136,7 +138,7 @@ const isChecked = computed({
 // ------------------------------------------
 // 🔄 Gestion de l'état indeterminate
 // ------------------------------------------
-const isIndeterminate = computed(() => {
+const computedIndeterminate = computed(() => {
     if (Array.isArray(props.modelValue)) {
         // Pour les arrays, indeterminate si certains éléments sont sélectionnés mais pas tous
         const allValues = props.options || [];
@@ -146,10 +148,19 @@ const isIndeterminate = computed(() => {
     return false;
 });
 
+/**
+ * Indeterminate effectif:
+ * - support du mode "array" (calculé)
+ * - support d'un override explicite via la prop `indeterminate` (utile pour des checkboxes contrôlées)
+ */
+const effectiveIndeterminate = computed(() => {
+    return Boolean(props.indeterminate) || Boolean(computedIndeterminate.value);
+});
+
 const checkboxRef = ref(null);
 
 // Mise à jour de l'état indeterminate sur le DOM
-watch(isIndeterminate, (value) => {
+watch(effectiveIndeterminate, (value) => {
     if (checkboxRef.value) {
         checkboxRef.value.indeterminate = value;
     }
@@ -179,7 +190,7 @@ function onKeydown(e) {
         v-on="safeListeners"
         :class="atomClasses"
         :checked="isChecked"
-        :indeterminate="isIndeterminate"
+        :indeterminate="effectiveIndeterminate"
         @input="onInput"
         @keydown="onKeydown"
     />

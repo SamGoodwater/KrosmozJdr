@@ -7,6 +7,7 @@
  */
 
 import CellRenderer from "@/Pages/Atoms/data-display/CellRenderer.vue";
+import CheckboxCore from "@/Pages/Atoms/data-input/CheckboxCore.vue";
 
 const props = defineProps({
     row: { type: Object, required: true },
@@ -18,6 +19,10 @@ const props = defineProps({
      * Ex: "bg-primary/10"
      */
     selectedBgClass: { type: String, default: "bg-primary/10" },
+    /**
+     * Couleur UI (Design System) appliquée aux contrôles de sélection et aux fallback cells.
+     */
+    uiColor: { type: String, default: "primary" },
 });
 
 const emit = defineEmits(["row-click", "row-dblclick", "toggle-select"]);
@@ -42,16 +47,16 @@ const isInteractiveTarget = (event) => {
         @dblclick="(e) => { if (!isInteractiveTarget(e)) emit('row-dblclick', row); }"
     >
         <td v-if="showSelection" class="w-12">
-            <input
-                type="checkbox"
-                class="checkbox checkbox-sm"
-                :checked="isSelected"
-                @change="emit('toggle-select', row, $event.target.checked)"
+            <CheckboxCore
+                :model-value="isSelected"
+                size="sm"
+                :color="uiColor"
                 @click.stop
+                @update:model-value="(v) => emit('toggle-select', row, Boolean(v))"
             />
         </td>
         <td v-for="col in columns" :key="col.id">
-            <CellRenderer :cell="getCell(col)" />
+            <CellRenderer :cell="getCell(col)" :ui-color="uiColor" />
         </td>
     </tr>
 </template>

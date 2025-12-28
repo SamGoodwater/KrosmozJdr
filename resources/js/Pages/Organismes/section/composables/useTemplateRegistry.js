@@ -311,7 +311,7 @@ export async function preloadCommonTemplates() {
   const registry = useTemplateRegistry();
   
   // CORRECTION : Ne précharger que les templates qui existent réellement
-  // SectionType disponibles : text, image, gallery, video, entity_table
+  // NOTE : `entity_table` est un template legacy (caché côté UI).
   const commonTemplates = ['text', 'image', 'gallery'];
   
   console.log('🚀 Préchargement des templates courants...');

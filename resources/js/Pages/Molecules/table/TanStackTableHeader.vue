@@ -7,6 +7,8 @@
  * La mécanique de tri est gérée par `TanStackTable` (Organism).
  */
 
+import CheckboxCore from "@/Pages/Atoms/data-input/CheckboxCore.vue";
+
 const props = defineProps({
     columns: { type: Array, required: true },
     sortBy: { type: String, default: "" },
@@ -14,6 +16,10 @@ const props = defineProps({
     showSelection: { type: Boolean, default: false },
     allSelected: { type: Boolean, default: false },
     someSelected: { type: Boolean, default: false },
+    /**
+     * Couleur UI (Design System) appliquée aux checkboxes de sélection.
+     */
+    uiColor: { type: String, default: "primary" },
 });
 
 const emit = defineEmits(["sort", "toggle-all"]);
@@ -25,13 +31,13 @@ const isSortable = (col) => Boolean(col?.sort?.enabled);
     <thead>
         <tr>
             <th v-if="showSelection" class="w-12">
-                <input
-                    type="checkbox"
-                    class="checkbox checkbox-sm"
-                    :checked="allSelected"
-                    :indeterminate.prop="someSelected"
-                    @change="emit('toggle-all', $event.target.checked)"
+                <CheckboxCore
+                    :model-value="allSelected"
+                    :indeterminate="someSelected"
+                    size="sm"
+                    :color="uiColor"
                     aria-label="Tout sélectionner"
+                    @update:model-value="(v) => emit('toggle-all', Boolean(v))"
                 />
             </th>
             <th

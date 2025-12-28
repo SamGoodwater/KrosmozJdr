@@ -57,7 +57,7 @@ import { mergeClasses } from '@/Utils/atomic-design/uiHelper'
 // 🔧 Définition des props + emits
 // ------------------------------------------
 const props = defineProps(getInputPropsDefinition('radio', 'core'))
-const emit = defineEmits(['update:modelValue'])
+const emit = defineEmits(['update:modelValue', 'update:model-value'])
 const $attrs = useAttrs()
 
 // ------------------------------------------
@@ -93,12 +93,14 @@ const isChecked = computed(() => {
 // ------------------------------------------
 function onInput(e) {
     emit('update:modelValue', e.target.value);
+    emit('update:model-value', e.target.value);
 }
 
 function onKeydown(e) {
     if (e.key === 'Enter' || e.key === ' ') {
         e.preventDefault();
         emit('update:modelValue', props.value);
+        emit('update:model-value', props.value);
     }
 }
 </script>

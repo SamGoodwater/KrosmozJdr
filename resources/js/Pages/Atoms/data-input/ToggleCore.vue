@@ -53,7 +53,7 @@ import { mergeClasses } from '@/Utils/atomic-design/uiHelper'
 // 🔧 Définition des props + emits
 // ------------------------------------------
 const props = defineProps(getInputPropsDefinition('toggle', 'core'))
-const emit = defineEmits(['update:modelValue'])
+const emit = defineEmits(['update:modelValue', 'update:model-value'])
 const $attrs = useAttrs()
 
 // ------------------------------------------
@@ -86,6 +86,7 @@ const isChecked = computed({
     },
     set(value) {
         emit('update:modelValue', value);
+        emit('update:model-value', value);
     }
 });
 

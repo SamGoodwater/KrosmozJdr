@@ -20,6 +20,14 @@ const props = defineProps({
         type: Object,
         required: true,
     },
+    /**
+     * Couleur UI par défaut (Design System) utilisée pour les fallbacks (badge/route)
+     * quand le backend ne fournit pas de `params.color`.
+     */
+    uiColor: {
+        type: String,
+        default: "primary",
+    },
 });
 
 const type = computed(() => String(props.cell?.type || "text"));
@@ -35,7 +43,7 @@ const text = computed(() => {
 
 <template>
     <span v-if="type === 'badge'">
-        <Badge :color="params.color || 'primary'" size="sm">
+        <Badge :color="params.color || uiColor" size="sm">
             {{ text }}
         </Badge>
     </span>
@@ -66,7 +74,7 @@ const text = computed(() => {
             v-if="params.href"
             :href="String(params.href)"
             :target="params.target || undefined"
-            color="primary"
+            :color="uiColor"
             hover
         >
             {{ text }}

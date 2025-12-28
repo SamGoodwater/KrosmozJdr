@@ -32,10 +32,9 @@ Ne fait **pas** :
 
 Responsabilités :
 
-- Brancher `usePermissions()` pour activer/masquer features, colonnes et actions.
-- Brancher `entityRouteRegistry` pour show/edit/delete/create.
-- Gérer les actions entité (view/edit/delete, bulk edit, quick edit).
-- Optionnel : fournir `serverUrl` + adapter la réponse serveur vers `TableResponse`.
+- Brancher `usePermissions()` + `meta.capabilities` (serveur) pour activer/masquer **features** et **colonnes**.
+- Fournir (si besoin) une `serverUrl` et adapter la réponse serveur vers `TableResponse`.
+- Appliquer un gating minimal policy-driven (ex: masquer la sélection si pas `updateAny`, désactiver export si pas `viewAny`).
 
 ## Mode hybride “client-first” (règles)
 
@@ -145,10 +144,10 @@ Le skeleton peut être configuré via `config.ui` :
   - **`density`**: réservé (alias futur pour `size`)
 - **`features`**
   - search: `{ enabled, placeholder?, debounceMs? }`
-  - filters: `{ enabled, layout?: "inline"|"drawer", persist?: boolean }`
+  - filters: `{ enabled }`
   - pagination: `{ enabled, perPage: { default, options } }`
   - selection: `{ enabled, checkboxMode: "none"|"always"|"auto", clickToSelect: boolean }`
-  - columnVisibility: `{ enabled, persist: boolean, storageKey? }`
+  - columnVisibility: `{ enabled }`
   - export: `{ csv?: boolean, filename?: string }`
 - **`columns[]`**: `ColumnConfig[]`
 
@@ -164,19 +163,21 @@ Le skeleton peut être configuré via `config.ui` :
   - `sort?: { enabled: boolean, mode?: "client"|"server"|"both", sortKey?: string, sortValue?: (row)=>any, sortingFn?: (aRow,bRow,columnId)=>number }`
   - `search?: { enabled: boolean, searchValue?: (row)=>string }`
   - `filter?: { id: string, type: "select"|"multi"|"boolean"|"text"|"range", filterValue?: (row)=>any, filterFn?: (row, columnId, value)=>boolean }`
+- **Implémenté (Phase actuelle)** :
+  - `type: "select"|"boolean"|"text"`
+  - `multi` / `range` sont **réservés** (non implémentés à ce stade) — le UI affiche “Filtre non supporté”.
+  - **UI boolean**: rendu sous forme de switch **3 états** : “Tous” (indéterminé, bille centrée) / “Non” / “Oui”, avec un bouton de reset.
 - **Rendu**
   - `cell`: `{ type: "text"|"badge"|"icon"|"image"|"route"|"custom", component? }`
 
 ### `EntityTableConfig` (wrapper entité)
 
 - `entityType`
-- `routes` (via registry)
-- `permissions` (gating des features/colonnes/actions)
+- `permissions` (gating des features/colonnes via `usePermissions()` + `meta.capabilities`)
 - `server` (opt‑in)
   - `serverUrl?: string` (**Option A** : URL complète fournie par la page)
   - `responseAdapter(payload) -> TableResponse`
-- `actions`
-  - `rowActions[]`, `bulkActions[]`, `toolbarActions[]` (avec permissions + responsive inline/menu)
+ - (réservé) `routes` / `actions` (row/bulk/toolbar) — non implémenté dans la phase actuelle.
 
 ## Permissions (source de vérité)
 
@@ -203,7 +204,7 @@ Le skeleton peut être configuré via `config.ui` :
 ### Phase 1 — Spec + skeleton
 
 - Créer `TanStackTable` + molecules (toolbar/filters/header/row/pagination/selection) + atoms cellules.
-- Créer `EntityTanStackTable` (permissions/routes/actions + support `serverUrl`).
+- Créer `EntityTanStackTable` (permissions + support `serverUrl`).
 
 ### Phase 2 — Pilote “resources”
 
@@ -221,7 +222,7 @@ Le skeleton peut être configuré via `config.ui` :
 - **UI** : loading/empty/error, responsive, accessibilité clavier + `aria-sort`.
 - **Colonnes** : hideable/defaultHidden, main column, group, responsive.
 - **Search** : debounce, custom `searchValue`, normalisation (case/accents) si besoin.
-- **Filtres** : options depuis `meta.filterOptions`, filtres select/multi/boolean/text/range.
+- **Filtres** : options depuis `meta.filterOptions`, filtres select/boolean/text (multi/range à faire si besoin).
 - **Tri** : `sortValue`/`sortingFn`, tri stable, gestion des nulls.
 - **Pagination** : perPage options, page reset quand filtre/search change.
 - **Sélection** : click-to-select, checkboxMode (none/always/auto), bulk actions.

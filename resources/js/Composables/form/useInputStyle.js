@@ -75,6 +75,23 @@ export const SIZES = {
  * Mapping des tailles par type d'input (pour compatibilité)
  */
 export const SIZE_MAP = {
+    // IMPORTANT: tailles DaisyUI spécifiques aux composants "selection"
+    // Note: `md` de checkbox/toggle est jugé trop grand dans le design system du projet :
+    // on gère l'ajustement dans `getInputStyle()` (mapping md->sm, lg->md, xl->lg).
+    checkbox: {
+        xs: 'checkbox-xs',
+        sm: 'checkbox-sm',
+        md: 'checkbox-md',
+        lg: 'checkbox-lg',
+        xl: 'checkbox-lg',
+    },
+    toggle: {
+        xs: 'toggle-xs',
+        sm: 'toggle-sm',
+        md: 'toggle-md',
+        lg: 'toggle-lg',
+        xl: 'toggle-xl',
+    },
     select: {
         xs: 'select-xs',
         sm: 'select-sm',
@@ -602,7 +619,21 @@ export function getInputStyle(inputType, styleConfig = {}, error = false) {
     const classes = [...styleData.classes];
     
     // Classe de taille (utilise le mapping spécifique si disponible)
-    const sizeClass = SIZE_MAP[inputType]?.[size] || SIZE_MAP.default[size] || SIZES[size];
+    // Ajustement design system: checkbox/toggle -> tailles plus compactes (md trop grand)
+    const effectiveSize = (() => {
+        if (inputType !== 'checkbox' && inputType !== 'toggle') return size;
+
+        // garder sm fixe (notamment pour les checkboxes de tableaux), mais rendre md plus compact.
+        const s = String(size || 'md');
+        if (s === 'xs') return 'xs';
+        if (s === 'sm') return 'sm';
+        if (s === 'md') return 'sm';
+        if (s === 'lg') return 'md';
+        if (s === 'xl') return 'lg';
+        return 'sm';
+    })();
+
+    const sizeClass = SIZE_MAP[inputType]?.[effectiveSize] || SIZE_MAP.default[effectiveSize] || SIZES[effectiveSize];
     classes.push(sizeClass);
     
     // Classe de couleur (utilise le mapping spécifique si disponible)

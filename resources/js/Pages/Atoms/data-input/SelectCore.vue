@@ -66,13 +66,26 @@ const props = defineProps({
         default: null
     }
 })
-const emit = defineEmits(['update:modelValue'])
+const emit = defineEmits(['update:modelValue', 'update:model-value'])
 const $attrs = useAttrs()
 
 // ------------------------------------------
 // ⚙️ Attributs HTML + événements natifs filtrés
 // ------------------------------------------
 const { inputAttrs, listeners } = useInputProps(props, $attrs, emit, 'select', 'core')
+
+/**
+ * Listener safe pour éviter de gérer deux fois `input` (nous l'utilisons pour v-model).
+ */
+const safeListeners = computed(() => {
+    const l = (listeners && typeof listeners === 'object' && 'value' in listeners)
+        ? (listeners.value || {})
+        : (listeners || {});
+
+    // eslint-disable-next-line no-unused-vars
+    const { input, ...rest } = l;
+    return rest;
+});
 
 // ------------------------------------------
 // 🎨 Style dynamique basé sur variant, color, etc.
@@ -151,10 +164,13 @@ function onInput(e) {
         // Pour multiple, on gère un array
         const selectedOptions = Array.from(e.target.selectedOptions).map(option => option.value);
         emit('update:modelValue', selectedOptions);
+        emit('update:model-value', selectedOptions);
     } else {
         // Pour single, on émet la valeur directement
         // - "" => null pour que Laravel "nullable" ignore correctement la règle integer
-        emit('update:modelValue', value === '' ? null : value);
+        const next = value === '' ? null : value;
+        emit('update:modelValue', next);
+        emit('update:model-value', next);
     }
 }
 </script>
@@ -163,8 +179,10 @@ function onInput(e) {
     <!-- 🧱 Select simple sans label (SelectCore ne supporte pas les labels inline/floating) -->
     <select
         v-bind="inputAttrs"
-        v-on="listeners"
+        v-on="safeListeners"
         :class="atomClasses"
+        :value="props.multiple ? undefined : (props.modelValue ?? '')"
+        @change="onInput"
         @input="onInput"
     >
         <slot>

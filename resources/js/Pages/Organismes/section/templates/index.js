@@ -54,7 +54,9 @@ export function getTemplateByValue(value) {
  * @returns {Array} Liste des templates avec value, label, icon, description
  */
 export function getTemplateOptions() {
-  return availableTemplates.value.map(template => ({
+  return availableTemplates.value
+    .filter(template => !template?.hidden)
+    .map(template => ({
     value: template.value,
     label: template.name,
     icon: template.icon,
