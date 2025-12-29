@@ -15,7 +15,7 @@
  *   useBulkEditPanel({ selectedEntities, isAdmin, fieldMeta, mode, filteredIds });
  */
 
-import { computed, reactive, ref, watch } from "vue";
+import { computed, reactive, ref, watch, unref } from "vue";
 
 const getId = (e) => (e && typeof e.id !== "undefined" ? Number(e.id) : null);
 const getName = (e) => {
@@ -52,11 +52,20 @@ const allSame = (arr) => {
  * @param {Array<number|string>} [opts.filteredIds]
  */
 export function useBulkEditPanel(opts) {
-  const selectedEntities = computed(() => opts?.selectedEntities || []);
-  const isAdmin = computed(() => Boolean(opts?.isAdmin));
-  const fieldMeta = computed(() => opts?.fieldMeta || {});
+  // Support: selectedEntities peut être un array, un Ref/Computed, ou une fonction qui retourne l'array.
+  const selectedEntities = computed(() => {
+    const src = opts?.selectedEntities;
+    if (typeof src === "function") return src() || [];
+    return unref(src) || [];
+  });
+  const isAdmin = computed(() => Boolean(unref(opts?.isAdmin)));
+  const fieldMeta = computed(() => unref(opts?.fieldMeta) || {});
   const mode = computed(() => (opts?.mode ? String(opts.mode) : "server"));
-  const filteredIds = computed(() => (opts?.filteredIds || []).map((v) => Number(v)).filter(Boolean));
+  const filteredIds = computed(() => {
+    const src = opts?.filteredIds;
+    const arr = typeof src === "function" ? (src() || []) : (unref(src) || []);
+    return (arr || []).map((v) => Number(v)).filter(Boolean);
+  });
 
   const showList = ref(false);
   const scope = ref("selected"); // selected | filtered

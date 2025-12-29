@@ -12,9 +12,15 @@
  * - valeurs différentes -> champ vide + placeholder "Valeurs différentes"
  * - à la validation, on applique uniquement les champs modifiés.
  */
-import { computed } from "vue";
+import { computed, toRef } from "vue";
 import Btn from "@/Pages/Atoms/action/Btn.vue";
+import SelectCore from "@/Pages/Atoms/data-input/SelectCore.vue";
+import InputCore from "@/Pages/Atoms/data-input/InputCore.vue";
+import TextareaCore from "@/Pages/Atoms/data-input/TextareaCore.vue";
+import RadioCore from "@/Pages/Atoms/data-input/RadioCore.vue";
 import { useBulkEditPanel } from "@/Composables/entity/useBulkEditPanel";
+import { createBulkFieldMetaFromSchema } from "@/Utils/entity/field-schema";
+import createResourceFieldSchema from "../resource-field-schema";
 
 const props = defineProps({
   selectedEntities: { type: Array, default: () => [] },
@@ -25,22 +31,9 @@ const props = defineProps({
 });
 
 const emit = defineEmits(["applied", "clear"]);
+const uiColor = computed(() => "primary");
 
-const FIELD_META = {
-  resource_type_id: { label: "Type de ressource", nullable: true, build: (v) => (v === "" ? null : Number(v)) },
-  usable: { label: "Utilisable", nullable: false, build: (v) => v === "1" },
-  auto_update: { label: "Auto-update", nullable: false, build: (v) => v === "1" },
-  is_visible: { label: "Visibilité", nullable: false, build: (v) => v },
-  rarity: { label: "Rareté", nullable: false, build: (v) => Number(v) },
-
-  // Champs additionnels (bulk)
-  level: { label: "Niveau", nullable: true, build: (v) => (v === "" ? null : String(v)) },
-  price: { label: "Prix", nullable: true, build: (v) => (v === "" ? null : String(v)) },
-  weight: { label: "Poids", nullable: true, build: (v) => (v === "" ? null : String(v)) },
-  dofus_version: { label: "Version Dofus", nullable: true, build: (v) => (v === "" ? null : String(v)) },
-  image: { label: "Image (URL)", nullable: true, build: (v) => (v === "" ? null : String(v)) },
-  description: { label: "Description", nullable: true, build: (v) => (v === "" ? null : String(v)) },
-};
+const FIELD_META = createBulkFieldMetaFromSchema(createResourceFieldSchema());
 
 const {
   showList,
@@ -57,11 +50,11 @@ const {
   canApply,
   buildPayload,
 } = useBulkEditPanel({
-  selectedEntities: props.selectedEntities,
+  selectedEntities: toRef(props, "selectedEntities"),
   isAdmin: props.isAdmin,
   fieldMeta: FIELD_META,
   mode: props.mode,
-  filteredIds: props.filteredIds,
+  filteredIds: toRef(props, "filteredIds"),
 });
 
 const panelTitle = computed(() => (ids.value.length <= 1 ? "Édition" : "Édition en masse"));
@@ -102,7 +95,7 @@ const applyBulk = () => {
       <div class="text-sm font-semibold">Cible</div>
       <div class="flex flex-col gap-2">
         <label class="flex items-center gap-2 cursor-pointer">
-          <input type="radio" class="radio radio-sm" value="selected" v-model="scope" />
+          <RadioCore v-model="scope" name="bulk-scope" value="selected" size="sm" :color="uiColor" />
           <span class="text-sm">Appliquer à la sélection ({{ ids.length }})</span>
         </label>
         <label
@@ -110,13 +103,7 @@ const applyBulk = () => {
           :class="{ 'opacity-60 cursor-not-allowed': mode !== 'client' }"
           :title="mode !== 'client' ? 'Disponible en mode client uniquement (dataset chargé)' : ''"
         >
-          <input
-            type="radio"
-            class="radio radio-sm"
-            value="filtered"
-            v-model="scope"
-            :disabled="mode !== 'client'"
-          />
+          <RadioCore v-model="scope" name="bulk-scope" value="filtered" size="sm" :color="uiColor" :disabled="mode !== 'client'" />
           <span class="text-sm">Appliquer à tous les résultats filtrés ({{ filteredIdsEffective.length }})</span>
         </label>
       </div>
@@ -129,51 +116,86 @@ const applyBulk = () => {
     <div class="space-y-3">
       <div class="form-control">
         <label class="label"><span class="label-text">Type de ressource</span></label>
-        <select
-          class="select select-bordered"
-          :value="form.resource_type_id"
+        <SelectCore
+          class="w-full"
+          variant="glass"
+          size="sm"
+          :color="uiColor"
           :disabled="!isAdmin"
-          @change="(e) => onChange('resource_type_id', e)"
+          :model-value="form.resource_type_id"
+          @update:model-value="(v) => onChange('resource_type_id', v)"
         >
           <option value="" disabled hidden>{{ placeholder(aggregate.resource_type_id?.same) }}</option>
           <option value="">—</option>
           <option v-for="t in resourceTypes" :key="t.id" :value="String(t.id)">{{ t.name }}</option>
-        </select>
+        </SelectCore>
       </div>
 
       <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
         <div class="form-control">
           <label class="label"><span class="label-text">Utilisable</span></label>
-          <select class="select select-bordered" :value="form.usable" :disabled="!isAdmin" @change="(e) => onChange('usable', e)">
+          <SelectCore
+            class="w-full"
+            variant="glass"
+            size="sm"
+            :color="uiColor"
+            :disabled="!isAdmin"
+            :model-value="form.usable"
+            @update:model-value="(v) => onChange('usable', v)"
+          >
             <option value="" disabled hidden>{{ placeholder(aggregate.usable?.same) }}</option>
             <option value="1">Oui</option>
             <option value="0">Non</option>
-          </select>
+          </SelectCore>
         </div>
         <div class="form-control">
           <label class="label"><span class="label-text">Auto-update</span></label>
-          <select class="select select-bordered" :value="form.auto_update" :disabled="!isAdmin" @change="(e) => onChange('auto_update', e)">
+          <SelectCore
+            class="w-full"
+            variant="glass"
+            size="sm"
+            :color="uiColor"
+            :disabled="!isAdmin"
+            :model-value="form.auto_update"
+            @update:model-value="(v) => onChange('auto_update', v)"
+          >
             <option value="" disabled hidden>{{ placeholder(aggregate.auto_update?.same) }}</option>
             <option value="1">Oui</option>
             <option value="0">Non</option>
-          </select>
+          </SelectCore>
         </div>
       </div>
 
       <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
         <div class="form-control">
           <label class="label"><span class="label-text">Visibilité</span></label>
-          <select class="select select-bordered" :value="form.is_visible" :disabled="!isAdmin" @change="(e) => onChange('is_visible', e)">
+          <SelectCore
+            class="w-full"
+            variant="glass"
+            size="sm"
+            :color="uiColor"
+            :disabled="!isAdmin"
+            :model-value="form.is_visible"
+            @update:model-value="(v) => onChange('is_visible', v)"
+          >
             <option value="" disabled hidden>{{ placeholder(aggregate.is_visible?.same) }}</option>
             <option value="guest">Invité</option>
             <option value="user">Utilisateur</option>
             <option value="game_master">Maître de jeu</option>
             <option value="admin">Administrateur</option>
-          </select>
+          </SelectCore>
         </div>
         <div class="form-control">
           <label class="label"><span class="label-text">Rareté</span></label>
-          <select class="select select-bordered" :value="form.rarity" :disabled="!isAdmin" @change="(e) => onChange('rarity', e)">
+          <SelectCore
+            class="w-full"
+            variant="glass"
+            size="sm"
+            :color="uiColor"
+            :disabled="!isAdmin"
+            :model-value="form.rarity"
+            @update:model-value="(v) => onChange('rarity', v)"
+          >
             <option value="" disabled hidden>{{ placeholder(aggregate.rarity?.same) }}</option>
             <option value="0">Commun</option>
             <option value="1">Peu commun</option>
@@ -181,7 +203,7 @@ const applyBulk = () => {
             <option value="3">Très rare</option>
             <option value="4">Légendaire</option>
             <option value="5">Unique</option>
-          </select>
+          </SelectCore>
         </div>
       </div>
 
@@ -190,24 +212,30 @@ const applyBulk = () => {
       <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
         <div class="form-control">
           <label class="label"><span class="label-text">Niveau</span></label>
-          <input
-            class="input input-bordered"
+          <InputCore
+            class="w-full"
             type="text"
+            variant="glass"
+            size="sm"
+            :color="uiColor"
             :disabled="!isAdmin"
-            :value="form.level"
             :placeholder="aggregate.level?.same ? '—' : 'Valeurs différentes'"
-            @input="(e) => onChange('level', e)"
+            :model-value="form.level"
+            @update:model-value="(v) => onChange('level', v)"
           />
         </div>
         <div class="form-control">
           <label class="label"><span class="label-text">Version Dofus</span></label>
-          <input
-            class="input input-bordered"
+          <InputCore
+            class="w-full"
             type="text"
+            variant="glass"
+            size="sm"
+            :color="uiColor"
             :disabled="!isAdmin"
-            :value="form.dofus_version"
             :placeholder="aggregate.dofus_version?.same ? '—' : 'Valeurs différentes'"
-            @input="(e) => onChange('dofus_version', e)"
+            :model-value="form.dofus_version"
+            @update:model-value="(v) => onChange('dofus_version', v)"
           />
         </div>
       </div>
@@ -215,48 +243,60 @@ const applyBulk = () => {
       <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
         <div class="form-control">
           <label class="label"><span class="label-text">Prix</span></label>
-          <input
-            class="input input-bordered"
+          <InputCore
+            class="w-full"
             type="text"
+            variant="glass"
+            size="sm"
+            :color="uiColor"
             :disabled="!isAdmin"
-            :value="form.price"
             :placeholder="aggregate.price?.same ? '—' : 'Valeurs différentes'"
-            @input="(e) => onChange('price', e)"
+            :model-value="form.price"
+            @update:model-value="(v) => onChange('price', v)"
           />
         </div>
         <div class="form-control">
           <label class="label"><span class="label-text">Poids</span></label>
-          <input
-            class="input input-bordered"
+          <InputCore
+            class="w-full"
             type="text"
+            variant="glass"
+            size="sm"
+            :color="uiColor"
             :disabled="!isAdmin"
-            :value="form.weight"
             :placeholder="aggregate.weight?.same ? '—' : 'Valeurs différentes'"
-            @input="(e) => onChange('weight', e)"
+            :model-value="form.weight"
+            @update:model-value="(v) => onChange('weight', v)"
           />
         </div>
       </div>
 
       <div class="form-control">
         <label class="label"><span class="label-text">Image (URL)</span></label>
-        <input
-          class="input input-bordered"
+        <InputCore
+          class="w-full"
           type="text"
+          variant="glass"
+          size="sm"
+          :color="uiColor"
           :disabled="!isAdmin"
-          :value="form.image"
           :placeholder="aggregate.image?.same ? '—' : 'Valeurs différentes'"
-          @input="(e) => onChange('image', e)"
+          :model-value="form.image"
+          @update:model-value="(v) => onChange('image', v)"
         />
       </div>
 
       <div class="form-control">
         <label class="label"><span class="label-text">Description</span></label>
-        <textarea
-          class="textarea textarea-bordered min-h-24"
+        <TextareaCore
+          class="w-full min-h-24"
+          variant="glass"
+          size="sm"
+          :color="uiColor"
           :disabled="!isAdmin"
-          :value="form.description"
           :placeholder="aggregate.description?.same ? '—' : 'Valeurs différentes'"
-          @input="(e) => onChange('description', e)"
+          :model-value="form.description"
+          @update:model-value="(v) => onChange('description', v)"
         />
         <div class="mt-1 text-xs opacity-70">
           Astuce : si tu modifies un champ et le laisses vide, la valeur sera vidée (mise à null) pour la cible choisie.

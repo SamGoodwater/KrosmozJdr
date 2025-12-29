@@ -24,9 +24,12 @@ import Tooltip from '@/Pages/Atoms/feedback/Tooltip.vue';
 import Icon from '@/Pages/Atoms/data-display/Icon.vue';
 import Btn from '@/Pages/Atoms/action/Btn.vue';
 import Dropdown from '@/Pages/Atoms/action/Dropdown.vue';
+import CellRenderer from "@/Pages/Atoms/data-display/CellRenderer.vue";
 import { useCopyToClipboard } from '@/Composables/utils/useCopyToClipboard';
 import { useDownloadPdf } from '@/Composables/utils/useDownloadPdf';
 import { usePermissions } from '@/Composables/permissions/usePermissions';
+import { getResourceFieldDescriptors, RESOURCE_VIEW_FIELDS } from "@/Entities/resource/resource-descriptors";
+import { buildResourceCell } from "@/Entities/resource/resource-adapter";
 
 const props = defineProps({
     entity: {
@@ -52,7 +55,8 @@ const emit = defineEmits(['edit', 'copy-link', 'download-pdf', 'refresh']);
 const isHovered = ref(false);
 const { copyToClipboard } = useCopyToClipboard();
 const { downloadPdf, isDownloading } = useDownloadPdf(props.entityType);
-const { isAdmin } = usePermissions();
+const permissionsApi = usePermissions();
+const { isAdmin, canCreateAny, canUpdateAny, canManageAny, canDeleteAny, canViewAny } = permissionsApi;
 
 // Permissions
 const canUpdate = computed(() => {
@@ -61,6 +65,77 @@ const canUpdate = computed(() => {
     }
     return props.entity?.can?.update ?? false;
 });
+
+const isResource = computed(() => props.entityType === "resource");
+
+const resourceCapabilities = computed(() => {
+    return {
+        viewAny: canViewAny("resource"),
+        createAny: canCreateAny("resource"),
+        updateAny: canUpdateAny("resource"),
+        deleteAny: canDeleteAny("resource"),
+        manageAny: canManageAny("resource"),
+    };
+});
+
+const resourceCtx = computed(() => {
+    return {
+        capabilities: resourceCapabilities.value,
+        meta: { capabilities: resourceCapabilities.value },
+    };
+});
+
+const resourceDescriptors = computed(() => getResourceFieldDescriptors(resourceCtx.value));
+
+const rawEntity = computed(() => {
+    if (props.entity && typeof props.entity.toRaw === "function") return props.entity.toRaw();
+    if (props.entity && typeof props.entity._data !== "undefined") return props.entity._data;
+    return props.entity || {};
+});
+
+const minimalFields = computed(() => {
+    // Ressource: defaults demandés (level, resource_type, rarity) si non fourni par le parent.
+    const defaultForResource = ["level", "resource_type", "rarity"];
+    const list = Array.isArray(props.importantFields) && props.importantFields.length
+        ? props.importantFields
+        : (isResource.value ? defaultForResource : (Array.isArray(props.importantFields) ? props.importantFields : []));
+    return list.filter((key) => {
+        const d = resourceDescriptors.value?.[key];
+        if (!d) return true;
+        if (typeof d.visibleIf === "function") return Boolean(d.visibleIf(resourceCtx.value));
+        return true;
+    });
+});
+
+const expandedFields = computed(() => {
+    // "Dépliage" : on affiche le reste des champs (ordre "extended") en mode détaillé.
+    const all = RESOURCE_VIEW_FIELDS.extended || [];
+    const important = new Set(minimalFields.value || []);
+    return all
+        .filter((k) => !important.has(k))
+        .filter((k) => {
+            const d = resourceDescriptors.value?.[k];
+            if (!d) return true;
+            if (typeof d.visibleIf === "function") return Boolean(d.visibleIf(resourceCtx.value));
+            return true;
+        });
+});
+
+const tooltipForResourceField = (key, cell) => {
+    const d = resourceDescriptors.value?.[key];
+    const label = d?.label || key;
+
+    let v = cell?.value;
+    if (cell?.type === "icon") {
+        const b = cell?.params?.booleanValue;
+        const s = String(b ?? "").toLowerCase();
+        if (s === "1" || s === "true") v = "Oui";
+        else if (s === "0" || s === "false") v = "Non";
+        else v = cell?.params?.alt || "—";
+    }
+    const text = v === null || typeof v === "undefined" || v === "" ? "—" : String(v);
+    return `${label} : ${text}`;
+};
 
 const getEntityIcon = (type) => {
     const icons = {
@@ -209,6 +284,33 @@ const handleRefresh = () => {
 
             <!-- Infos importantes en icônes avec tooltips -->
             <div class="flex gap-2 flex-wrap">
+                <!-- Ressource (Option B) : small = icône + valeur -->
+                <template v-if="isResource">
+                    <template v-for="field in minimalFields" :key="field">
+                        <Tooltip
+                            :content="tooltipForResourceField(field, buildResourceCell(field, rawEntity, resourceCtx, { context: 'minimal' }))"
+                            placement="top"
+                        >
+                            <div class="flex items-center gap-1 px-2 py-1 bg-base-200 rounded">
+                                <Icon
+                                    :source="resourceDescriptors?.[field]?.icon || getFieldIcon(field)"
+                                    :alt="resourceDescriptors?.[field]?.label || field"
+                                    size="xs"
+                                    class="text-primary-400"
+                                />
+                                <span class="text-xs text-primary-300 font-medium">
+                                    <CellRenderer
+                                        :cell="buildResourceCell(field, rawEntity, resourceCtx, { context: 'minimal' })"
+                                        ui-color="primary"
+                                    />
+                                </span>
+                            </div>
+                        </Tooltip>
+                    </template>
+                </template>
+
+                <!-- Fallback historique -->
+                <template v-else>
                 <template v-for="field in importantFields" :key="field">
                     <Tooltip 
                         v-if="entity[field] !== null && entity[field] !== undefined"
@@ -219,6 +321,7 @@ const handleRefresh = () => {
                             <span class="text-xs text-primary-300 font-medium">{{ entity[field] }}</span>
                         </div>
                     </Tooltip>
+                    </template>
                 </template>
             </div>
 
@@ -226,6 +329,42 @@ const handleRefresh = () => {
             <div 
                 v-if="isHovered" 
                 class="mt-2 pt-2 border-t border-base-300 space-y-1 text-xs text-primary-300 animate-fade-in">
+                <!-- Ressource (Option B) : dépliage détaillé (extended) -->
+                <template v-if="isResource">
+                    <div
+                        v-for="key in expandedFields"
+                        :key="key"
+                        class="flex items-start gap-2"
+                    >
+                        <Tooltip
+                            :content="tooltipForResourceField(key, buildResourceCell(key, rawEntity, resourceCtx, { context: 'extended' }))"
+                            placement="left"
+                        >
+                            <div class="flex items-start gap-2 w-full">
+                                <Icon
+                                    :source="resourceDescriptors?.[key]?.icon || getFieldIcon(key)"
+                                    :alt="resourceDescriptors?.[key]?.label || key"
+                                    size="xs"
+                                    class="text-primary-400 flex-shrink-0 mt-0.5"
+                                />
+                                <div class="flex-1 min-w-0">
+                                    <div class="font-semibold text-primary-400">
+                                        {{ resourceDescriptors?.[key]?.label || key }}:
+                                    </div>
+                                    <div class="text-primary-200 truncate">
+                                        <CellRenderer
+                                            :cell="buildResourceCell(key, rawEntity, resourceCtx, { context: 'extended' })"
+                                            ui-color="primary"
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+                        </Tooltip>
+                    </div>
+                </template>
+
+                <!-- Fallback historique -->
+                <template v-else>
                 <template v-for="(value, key) in entity" :key="key">
                     <div v-if="!importantFields.includes(key) && !['id', 'name', 'title', 'image', 'created_at', 'updated_at', 'deleted_at', 'can'].includes(key) && value !== null && value !== undefined"
                          class="flex items-start gap-1">
@@ -238,6 +377,7 @@ const handleRefresh = () => {
                             </div>
                         </Tooltip>
                     </div>
+                    </template>
                 </template>
             </div>
         </div>

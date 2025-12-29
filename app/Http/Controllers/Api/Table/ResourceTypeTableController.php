@@ -75,8 +75,8 @@ class ResourceTypeTableController extends Controller
             : ($decision === ResourceType::DECISION_BLOCKED ? 'Non utilisé' : 'En attente');
 
         $decisionColor = fn (string $decision) => $decision === ResourceType::DECISION_ALLOWED
-            ? 'success'
-            : ($decision === ResourceType::DECISION_BLOCKED ? 'error' : 'warning');
+            ? 'green-700'
+            : ($decision === ResourceType::DECISION_BLOCKED ? 'red-700' : 'gray-700');
 
         $tableRows = $rows->map(function (ResourceType $rt) use ($decisionLabel, $decisionColor) {
             $showHref = route('entities.resource-types.show', $rt->id);

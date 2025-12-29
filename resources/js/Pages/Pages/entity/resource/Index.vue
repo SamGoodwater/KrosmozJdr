@@ -21,6 +21,9 @@ import EntityModal from '@/Pages/Organismes/entity/EntityModal.vue';
 import CreateEntityModal from '@/Pages/Organismes/entity/CreateEntityModal.vue';
 import ResourceBulkEditPanel from './components/ResourceBulkEditPanel.vue';
 import { createResourcesTanStackTableConfig } from './resources-tanstack-table-config';
+import { createFieldsConfigFromSchema, createDefaultEntityFromSchema } from "@/Utils/entity/field-schema";
+import createResourceFieldSchema from "./resource-field-schema";
+import { adaptResourceEntitiesTableResponse } from "@/Entities/resource/resource-adapter";
 
 const props = defineProps({
     resources: {
@@ -68,14 +71,16 @@ const tableConfig = computed(() => createResourcesTanStackTableConfig());
 
 const serverUrl = computed(() => {
     const base = route('api.tables.resources');
-    return `${base}?limit=5000&_t=${refreshToken.value}`;
+    // Option B (migration): le backend renvoie des entités brutes, le front génère les `cells`.
+    return `${base}?limit=5000&format=entities&_t=${refreshToken.value}`;
 });
 
 const selectedEntities = computed(() => {
     if (!Array.isArray(selectedIds.value) || !selectedIds.value.length) return [];
-    const idSet = new Set(selectedIds.value);
+    // Normaliser pour éviter les mismatch string vs number (Set.has est strict)
+    const idSet = new Set(selectedIds.value.map((v) => Number(v)).filter((n) => Number.isFinite(n)));
     const raw = (tableRows.value || [])
-        .filter((r) => idSet.has(r?.id))
+        .filter((r) => idSet.has(Number(r?.id)))
         .map((r) => r?.rowParams?.entity)
         .filter(Boolean);
     return Resource.fromArray(raw);
@@ -106,41 +111,10 @@ const handleRowDoubleClick = (row) => {
     openModal(model);
 };
 
-// Configuration des champs pour la création/édition via modal
-const fieldsConfig = computed(() => ({
-    name: { type: 'text', label: 'Nom', required: true, showInCompact: true },
-    description: { type: 'textarea', label: 'Description', required: false, showInCompact: false },
-    level: { type: 'text', label: 'Niveau', required: false, showInCompact: true },
-    rarity: {
-        type: 'select',
-        label: 'Rareté',
-        required: false,
-        showInCompact: true,
-        options: [
-            { value: 0, label: 'Commun' },
-            { value: 1, label: 'Peu commun' },
-            { value: 2, label: 'Rare' },
-            { value: 3, label: 'Très rare' },
-            { value: 4, label: 'Légendaire' },
-            { value: 5, label: 'Unique' },
-        ]
-    },
-    resource_type_id: {
-        type: 'select',
-        label: 'Type de ressource',
-        required: false,
-        showInCompact: true,
-        options: [
-            { value: '', label: '—' },
-            ...props.resourceTypes.map(t => ({ value: t.id, label: t.name }))
-        ]
-    },
-    usable: { type: 'checkbox', label: 'Utilisable', required: false, showInCompact: true },
-    auto_update: { type: 'checkbox', label: 'Auto-update', required: false, showInCompact: true },
-    price: { type: 'text', label: 'Prix', required: false, showInCompact: true },
-    weight: { type: 'text', label: 'Poids', required: false, showInCompact: true },
-    image: { type: 'text', label: 'Image (URL)', required: false, showInCompact: false },
-}));
+// Schema -> fieldsConfig (source de vérité unique)
+const resourceSchema = computed(() => createResourceFieldSchema({ resourceTypes: props.resourceTypes || [] }));
+const fieldsConfig = computed(() => createFieldsConfigFromSchema(resourceSchema.value, { resourceTypes: props.resourceTypes || [] }));
+const defaultEntity = computed(() => createDefaultEntityFromSchema(resourceSchema.value));
 
 const handleCreate = () => {
     createModalOpen.value = true;
@@ -239,6 +213,7 @@ const handleBulkApplied = async (payload) => {
                     entity-type="resources"
                     :config="tableConfig"
                     :server-url="serverUrl"
+                    :response-adapter="adaptResourceEntitiesTableResponse"
                     v-model:selected-ids="selectedIds"
                     @loaded="handleTableLoaded"
                     @row-dblclick="handleRowDoubleClick"
@@ -263,7 +238,7 @@ const handleBulkApplied = async (payload) => {
             :open="createModalOpen"
             entity-type="resource"
             :fields-config="fieldsConfig"
-            :default-entity="{ rarity: 0, usable: false, auto_update: false }"
+            :default-entity="defaultEntity"
             @close="handleCloseCreateModal"
             @created="handleEntityCreated"
         />

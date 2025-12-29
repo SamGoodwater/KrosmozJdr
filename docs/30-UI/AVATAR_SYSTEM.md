@@ -30,6 +30,26 @@ Nouvel utilitaire complet basé sur `colord` offrant :
 - **Contraste WCAG** et ajustements automatiques
 - **Support Tailwind** avec conversion automatique
 
+#### Mapping “label → Tailwind token”
+
+Le projet expose aussi un helper pour associer une **couleur Tailwind** (token `color-shade`, ex: `blue-500`) à :
+- une lettre / un mot / une phrase,
+- ou un nombre (support jusqu’à **20** pour des progressions “niveau 1..20”).
+
+Fonction :
+
+- `getTailwindTokenFromLabel(input, options)`
+
+Exemples :
+
+```js
+import { getTailwindTokenFromLabel } from "@/Utils/color/Color";
+
+getTailwindTokenFromLabel("Alice") // ex: "emerald-500" (stable)
+getTailwindTokenFromLabel("Niveau 12", { mode: "numericProgression", baseColor: "violet" }) // ex: "violet-700"
+getTailwindTokenFromLabel("Bob", { mode: "alphabetical", tone: "light" }) // ex: "amber-200"
+```
+
 ## API du Composant Avatar
 
 ### Props

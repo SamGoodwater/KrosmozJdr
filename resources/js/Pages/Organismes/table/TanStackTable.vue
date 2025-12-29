@@ -24,6 +24,7 @@ import TanStackTableToolbar from "@/Pages/Molecules/table/TanStackTableToolbar.v
 import TanStackTableFilters from "@/Pages/Molecules/table/TanStackTableFilters.vue";
 import TanStackTablePagination from "@/Pages/Molecules/table/TanStackTablePagination.vue";
 import { useTanStackTablePreferences } from "@/Composables/table/useTanStackTablePreferences";
+import Btn from "@/Pages/Atoms/action/Btn.vue";
 
 const props = defineProps({
     /**
@@ -45,7 +46,14 @@ const props = defineProps({
     selectedIds: { type: Array, default: null },
 });
 
-const emit = defineEmits(["row-click", "row-dblclick", "sort-change", "update:selectedIds"]);
+const emit = defineEmits([
+    "row-click",
+    "row-dblclick",
+    "sort-change",
+    // Compat: selon les listeners (template) on peut avoir besoin de la forme kebab-case
+    "update:selectedIds",
+    "update:selected-ids",
+]);
 
 const columnsConfig = computed(() => Array.isArray(props.config?.columns) ? props.config.columns : []);
 
@@ -67,12 +75,26 @@ const debugEnabled = computed(() => {
     if (debug.value) return true;
     try {
         if (typeof window !== "undefined" && window.__TANSTACK_TABLE_DEBUG__ === true) return true;
+        // Support URL param: ?tanstack_table_debug=1 (pratique sans console)
+        if (typeof window !== "undefined") {
+            const params = new URLSearchParams(window.location?.search || "");
+            if (params.get("tanstack_table_debug") === "1") return true;
+        }
         if (typeof window !== "undefined" && window.localStorage?.getItem("tanstack_table_debug") === "1") return true;
     } catch {
         // ignore
     }
     return false;
 });
+
+const enableDebug = () => {
+    try {
+        window.localStorage?.setItem("tanstack_table_debug", "1");
+        window.location?.reload();
+    } catch {
+        // ignore
+    }
+};
 
 // Table variant (stripes)
 const uiTableVariant = computed(() => {
@@ -266,6 +288,8 @@ const debugSample = computed(() => {
         rowsTotal: (props.rows || []).length,
         rowsFiltered: filteredRows.value.length,
         activeFilters: activeFilters.value || {},
+        selectionInternal: Array.from(selectedIds.value || []),
+        selectionProp: Array.isArray(props.selectedIds) ? props.selectedIds : null,
         sampleRowId: sampleRow?.id ?? null,
         sample: items,
     };
@@ -557,8 +581,9 @@ watch(
 );
 
 const emitSelection = () => {
-    if (!Array.isArray(props.selectedIds)) return; // mode non contrôlé: pas d'emit obligatoire
-    emit("update:selectedIds", Array.from(selectedIds.value));
+    const next = Array.from(selectedIds.value);
+    emit("update:selectedIds", next);
+    emit("update:selected-ids", next);
 };
 
 const selectedCount = computed(() => selectedIds.value.size);
@@ -587,8 +612,11 @@ const someSelectedOnPage = computed(() => {
 });
 
 const toggleRow = (row, checked) => {
-    const id = row?.id;
+    // Normaliser l'id (certains JSON peuvent être string, mais tout le système attend des IDs numériques)
+    const idRaw = row?.id;
+    const id = typeof idRaw === "string" ? Number(idRaw) : idRaw;
     if (id === null || typeof id === "undefined") return;
+    if (typeof id === "number" && !Number.isFinite(id)) return;
     const next = new Set(selectedIds.value);
     if (checked) next.add(id);
     else next.delete(id);
@@ -600,8 +628,12 @@ const toggleAllOnPage = (checked) => {
     const rows = pageRows.value || [];
     const next = new Set(selectedIds.value);
     for (const r of rows) {
-        if (checked) next.add(r.id);
-        else next.delete(r.id);
+        const idRaw = r?.id;
+        const id = typeof idRaw === "string" ? Number(idRaw) : idRaw;
+        if (id === null || typeof id === "undefined") continue;
+        if (typeof id === "number" && !Number.isFinite(id)) continue;
+        if (checked) next.add(id);
+        else next.delete(id);
     }
     selectedIds.value = next;
     emitSelection();
@@ -784,7 +816,19 @@ const handleExport = () => {
         </div>
 
         <!-- Debug panel (opt-in) -->
-        <div v-if="debugEnabled" class="text-xs text-base-content/70">
+        <div v-if="!debugEnabled" class="text-xs text-base-content/60">
+            <div class="relative p-3 rounded-lg border border-base-300 flex items-center justify-between gap-3" :class="[bgClass]">
+                <div>
+                    <div class="font-semibold">Debug Table</div>
+                    <div class="opacity-70">Clique pour activer (recharge la page)</div>
+                </div>
+                <Btn size="xs" variant="outline" :color="uiColor" opacity="sm" backdrop="sm" type="button" @click="enableDebug">
+                    Activer debug
+                </Btn>
+            </div>
+        </div>
+
+        <div v-else class="text-xs text-base-content/70">
             <div class="relative p-3 rounded-lg border border-base-300" :class="[bgClass]">
                 <div class="font-semibold mb-2">Debug Table (filters)</div>
                 <pre class="whitespace-pre-wrap break-words">{{ JSON.stringify(debugSample, null, 2) }}</pre>

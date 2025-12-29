@@ -7,11 +7,10 @@
  * 
  * @props {Object} items - Collection paginée des items
  */
-import { Head, router } from "@inertiajs/vue3";
+import { Head } from "@inertiajs/vue3";
 import { ref, computed, watch } from "vue";
 import { usePageTitle } from "@/Composables/layout/usePageTitle";
 import { useEntityComparison } from "@/Composables/utils/useEntityComparison";
-import { useNotificationStore } from "@/Composables/store/useNotificationStore";
 import { usePermissions } from "@/Composables/permissions/usePermissions";
 import { Item } from "@/Models/Entity/Item";
 
@@ -23,8 +22,11 @@ import EntityModal from '@/Pages/Organismes/entity/EntityModal.vue';
 import EntityEditForm from '@/Pages/Organismes/entity/EntityEditForm.vue';
 import CreateEntityModal from '@/Pages/Organismes/entity/CreateEntityModal.vue';
 import { createItemsTanStackTableConfig } from './items-tanstack-table-config';
+import { createFieldsConfigFromSchema, createDefaultEntityFromSchema } from "@/Utils/entity/field-schema";
+import createItemFieldSchema from "./item-field-schema";
 
-const props = defineProps({
+// Props Inertia (gardées à titre documentaire, même si non utilisées directement ici)
+defineProps({
     items: {
         type: Object,
         required: true
@@ -38,14 +40,11 @@ const props = defineProps({
 const { setPageTitle } = usePageTitle();
 setPageTitle('Liste des Objets');
 
-// Notifications
-const notificationStore = useNotificationStore();
-
 // Permissions
-const { canCreate: canCreatePermission, canUpdateAny, canManageAny } = usePermissions();
+const { canCreate: canCreatePermission, canUpdateAny } = usePermissions();
 const canCreate = computed(() => canCreatePermission('items'));
 const canModify = computed(() => canUpdateAny('items'));
-const canManage = computed(() => canManageAny('items'));
+// const canManage = computed(() => canManageAny('items'));
 
 // Table v2 state (client-first)
 const selectedIds = ref([]);
@@ -56,9 +55,10 @@ const serverUrl = computed(() => `${route('api.tables.items')}?limit=5000&_t=${r
 
 const selectedEntities = computed(() => {
     if (!Array.isArray(selectedIds.value) || !selectedIds.value.length) return [];
-    const idSet = new Set(selectedIds.value);
+    // Normaliser pour éviter les mismatch string vs number (Set.has est strict)
+    const idSet = new Set(selectedIds.value.map((v) => Number(v)).filter((n) => Number.isFinite(n)));
     const raw = (tableRows.value || [])
-        .filter((r) => idSet.has(r?.id))
+        .filter((r) => idSet.has(Number(r?.id)))
         .map((r) => r?.rowParams?.entity)
         .filter(Boolean);
     return Item.fromArray(raw);
@@ -141,51 +141,15 @@ const closeModal = () => {
     selectedEntity.value = null;
 };
 
-// Configuration des champs pour les items (identique à Edit.vue)
-const fieldsConfig = {
-    name: { 
-        type: 'text', 
-        label: 'Nom', 
-        required: true, 
-        showInCompact: true 
-    },
-    description: { 
-        type: 'textarea', 
-        label: 'Description', 
-        required: false, 
-        showInCompact: false 
-    },
-    level: { 
-        type: 'number', 
-        label: 'Niveau', 
-        required: false, 
-        showInCompact: true 
-    },
-    rarity: { 
-        type: 'select', 
-        label: 'Rareté', 
-        required: false, 
-        showInCompact: true,
-        options: [
-            { value: 'common', label: 'Commun' },
-            { value: 'uncommon', label: 'Peu commun' },
-            { value: 'rare', label: 'Rare' },
-            { value: 'epic', label: 'Épique' },
-            { value: 'legendary', label: 'Légendaire' }
-        ]
-    },
-    image: { 
-        type: 'file', 
-        label: 'Image', 
-        required: false, 
-        showInCompact: false 
-    }
-};
+// Schema -> fieldsConfig (source de vérité unique)
+const itemSchema = computed(() => createItemFieldSchema());
+const fieldsConfig = computed(() => createFieldsConfigFromSchema(itemSchema.value));
+const defaultEntity = computed(() => createDefaultEntityFromSchema(itemSchema.value));
 
 // Comparaison des entités sélectionnées pour l'édition multiple
 const comparison = computed(() => {
     if (multiEditMode.value && selectedEntities.value.length > 0) {
-        return useEntityComparison(selectedEntities.value, fieldsConfig);
+        return useEntityComparison(selectedEntities.value, fieldsConfig.value);
     }
     return {
         commonValues: {},
@@ -208,32 +172,7 @@ const handleQuickEditCancel = () => {
     }
 };
 
-// Handlers pour les actions du menu
-const handleQuickView = (entity) => {
-    handleView(entity);
-};
-
-const handleQuickEditAction = (entity) => {
-    if (!quickEditMode.value) {
-        quickEditMode.value = true;
-    }
-    selectedIds.value = [entity.id];
-    multiEditMode.value = false; // Désactiver le mode multiple si on passe en édition simple
-};
-
-const handleRefresh = (entity) => {
-    refreshToken.value++;
-};
-
-const handleRefreshAll = () => {
-    refreshToken.value++;
-};
-
-const handleDownloadPdf = async (entity) => {
-    // Le téléchargement est géré directement par EntityActionsMenu via useDownloadPdf
-    // Cette méthode peut être utilisée pour des actions supplémentaires si nécessaire
-    console.log('Téléchargement PDF pour:', entity);
-};
+// const handleRefreshAll = () => refreshToken.value++;
 </script>
 
 <template>
@@ -358,6 +297,7 @@ const handleDownloadPdf = async (entity) => {
             :open="createModalOpen"
             entity-type="item"
             :fields-config="fieldsConfig"
+            :default-entity="defaultEntity"
             @close="handleCloseCreateModal"
             @created="handleEntityCreated"
         />

@@ -6,3 +6,6 @@ Le dossier `docs/100-Done` a pour objectif de centraliser les fichiers Markdown 
 - **Hybride “client-first”** : tri/recherche/filtres/pagination côté client par défaut, serveur **opt‑in** via `serverUrl` complet (Option A).
 - **Contrats figés** : `TableConfig` (front) + `TableResponse`/`Cell{type,value,params}` (backend → front).
 - **Doc technique** : `docs/30-UI/TANSTACK_TABLE.md`.
+- **Fix sélection bulk/édition rapide** : normalisation des IDs + `useBulkEditPanel` rendu compatible `ref/computed` pour que la sélection multi soit bien prise en compte.
+- **Design System** : bulk panels (Ressources / Types) migrés vers les Atoms (`SelectCore/InputCore/TextareaCore/RadioCore`).
+- **Qualité UX** : debug panel activable sans console (bouton UI + param URL).

@@ -43,7 +43,14 @@ const props = defineProps({
     selectedIds: { type: Array, default: null },
 });
 
-const emit = defineEmits(["row-click", "row-dblclick", "update:selectedIds", "loaded"]);
+const emit = defineEmits([
+    "row-click",
+    "row-dblclick",
+    // Compat: remonter aussi la forme kebab-case si certains parents l’écoutent
+    "update:selectedIds",
+    "update:selected-ids",
+    "loaded",
+]);
 
 const permissions = usePermissions();
 
@@ -198,7 +205,8 @@ const handleRowClick = (row) => {
         :loading="loading"
         :filter-options="activeFilterOptions"
         :selected-ids="selectedIds"
-        @update:selected-ids="(ids) => emit('update:selectedIds', ids)"
+        @update:selectedIds="(ids) => { emit('update:selectedIds', ids); emit('update:selected-ids', ids); }"
+        @update:selected-ids="(ids) => { emit('update:selectedIds', ids); emit('update:selected-ids', ids); }"
         @row-click="handleRowClick"
         @row-dblclick="(row) => emit('row-dblclick', row)"
     />

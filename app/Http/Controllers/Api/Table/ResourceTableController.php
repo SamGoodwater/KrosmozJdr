@@ -30,6 +30,12 @@ class ResourceTableController extends Controller
     {
         $this->authorize('viewAny', Resource::class);
 
+        // Mode de réponse:
+        // - (default) "cells" : `rows[]` contient `cells` déjà prêtes à rendre.
+        // - "entities" : renvoie `entities[]` (données brutes + meta) pour laisser le frontend générer les `cells`.
+        //   Objectif : supporter une architecture "field descriptors" (Option B).
+        $format = $request->filled('format') ? (string) $request->get('format') : 'cells';
+
         $filters = (array) ($request->input('filters', $request->input('filter', [])) ?? []);
 
         // Compat: accepter des filtres "flat" (rarity=2) en plus de filters[rarity]=2
@@ -121,6 +127,60 @@ class ResourceTableController extends Controller
                 ['value' => '200', 'label' => '200'],
             ],
         ];
+
+        // Option B: renvoyer des entités brutes (le front génère `cells`).
+        if ($format === 'entities') {
+            $entities = $rows->map(function (Resource $r) {
+                $createdBy = $r->createdBy;
+                $resourceType = $r->resourceType;
+
+                return [
+                    'id' => $r->id,
+                    'dofusdb_id' => $r->dofusdb_id,
+                    'official_id' => $r->official_id,
+                    'name' => $r->name,
+                    'description' => $r->description,
+                    'level' => $r->level,
+                    'price' => $r->price,
+                    'weight' => $r->weight,
+                    'rarity' => $r->rarity,
+                    'dofus_version' => $r->dofus_version,
+                    'usable' => (int) ($r->usable ?? 0),
+                    'is_visible' => $r->is_visible,
+                    'image' => $r->image,
+                    'auto_update' => (bool) $r->auto_update,
+                    'resource_type_id' => $r->resource_type_id,
+                    'resourceType' => $resourceType ? [
+                        'id' => $resourceType->id,
+                        'name' => $resourceType->name,
+                    ] : null,
+                    'createdBy' => $createdBy ? [
+                        'id' => $createdBy->id,
+                        'name' => $createdBy->name,
+                        'email' => $createdBy->email,
+                    ] : null,
+                    'created_at' => $r->created_at?->toISOString(),
+                    'updated_at' => $r->updated_at?->toISOString(),
+                ];
+            })->values()->all();
+
+            return response()->json([
+                'meta' => [
+                    'entityType' => 'resources',
+                    'query' => [
+                        'search' => $search,
+                        'filters' => $filters,
+                        'sort' => $sort,
+                        'order' => $order,
+                        'limit' => $limit,
+                    ],
+                    'capabilities' => $capabilities,
+                    'filterOptions' => $filterOptions,
+                    'format' => 'entities',
+                ],
+                'entities' => $entities,
+            ]);
+        }
 
         $toYesNo = fn ($v) => ((int) $v) === 1 ? 'Oui' : 'Non';
 
@@ -307,6 +367,7 @@ class ResourceTableController extends Controller
                 ],
                 'capabilities' => $capabilities,
                 'filterOptions' => $filterOptions,
+                'format' => 'cells',
             ],
             'rows' => $tableRows,
         ]);

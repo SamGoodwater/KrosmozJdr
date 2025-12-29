@@ -3,8 +3,11 @@
  * EntityViewCompact Molecule
  * 
  * @description
- * Vue compacte d'une entité avec toutes les infos mais dans un format condensé
- * Utilise tooltips et scroll pour les grands textes
+ * Vue compacte d'une entité.
+ *
+ * - Default: itère sur les propriétés de l'entité (fallback historique).
+ * - Resource (Option B): rendu piloté par `resource-descriptors` (par champ / par vue),
+ *   avec tooltips systématiques "Label : Valeur".
  * 
  * @props {Object} entity - Données de l'entité
  * @props {String} entityType - Type d'entité
@@ -21,9 +24,12 @@ import Tooltip from '@/Pages/Atoms/feedback/Tooltip.vue';
 import Icon from '@/Pages/Atoms/data-display/Icon.vue';
 import Btn from '@/Pages/Atoms/action/Btn.vue';
 import Dropdown from '@/Pages/Atoms/action/Dropdown.vue';
+import CellRenderer from "@/Pages/Atoms/data-display/CellRenderer.vue";
 import { useCopyToClipboard } from '@/Composables/utils/useCopyToClipboard';
 import { useDownloadPdf } from '@/Composables/utils/useDownloadPdf';
 import { usePermissions } from '@/Composables/permissions/usePermissions';
+import { getResourceFieldDescriptors, RESOURCE_VIEW_FIELDS } from "@/Entities/resource/resource-descriptors";
+import { buildResourceCell } from "@/Entities/resource/resource-adapter";
 
 const props = defineProps({
     entity: {
@@ -44,7 +50,8 @@ const emit = defineEmits(['edit', 'copy-link', 'download-pdf', 'refresh']);
 
 const { copyToClipboard } = useCopyToClipboard();
 const { downloadPdf, isDownloading } = useDownloadPdf(props.entityType);
-const { isAdmin } = usePermissions();
+const permissionsApi = usePermissions();
+const { isAdmin, canCreateAny, canUpdateAny, canManageAny, canDeleteAny, canViewAny } = permissionsApi;
 
 // État pour la troncature
 const expandedFields = ref(new Set());
@@ -56,6 +63,93 @@ const canUpdate = computed(() => {
     }
     return props.entity?.can?.update ?? false;
 });
+
+const isResource = computed(() => props.entityType === "resource");
+
+const resourceCapabilities = computed(() => {
+    // `usePermissions` normalise automatiquement "resource" -> "resources"
+    return {
+        viewAny: canViewAny("resource"),
+        createAny: canCreateAny("resource"),
+        updateAny: canUpdateAny("resource"),
+        deleteAny: canDeleteAny("resource"),
+        manageAny: canManageAny("resource"),
+    };
+});
+
+const resourceCtx = computed(() => {
+    return {
+        capabilities: resourceCapabilities.value,
+        meta: { capabilities: resourceCapabilities.value },
+    };
+});
+
+const resourceDescriptors = computed(() => getResourceFieldDescriptors(resourceCtx.value));
+
+const rawEntity = computed(() => {
+    if (props.entity && typeof props.entity.toRaw === "function") return props.entity.toRaw();
+    if (props.entity && typeof props.entity._data !== "undefined") return props.entity._data;
+    return props.entity || {};
+});
+
+const compactFields = computed(() => {
+    const list = RESOURCE_VIEW_FIELDS.compact || [];
+    return list.filter((key) => {
+        const d = resourceDescriptors.value?.[key];
+        if (!d) return true;
+        if (typeof d.visibleIf === "function") return Boolean(d.visibleIf(resourceCtx.value));
+        return true;
+    });
+});
+
+const getViewCfg = (key) => {
+    const d = resourceDescriptors.value?.[key];
+    return d?.display?.views?.compact || null;
+};
+
+const getCompactSize = (key) => {
+    const v = getViewCfg(key);
+    const s = String(v?.size || "normal");
+    if (s === "small" || s === "large") return s;
+    return "normal";
+};
+
+const showCompactIcon = (key) => {
+    // small + large affichent l'icône, normal non (règle produit)
+    const s = getCompactSize(key);
+    return s === "small" || s === "large";
+};
+
+const showCompactLabel = (key) => {
+    // normal + large affichent le label, small non
+    const s = getCompactSize(key);
+    return s === "normal" || s === "large";
+};
+
+const tooltipForResourceField = (key, cell) => {
+    const d = resourceDescriptors.value?.[key];
+    const label = d?.label || key;
+
+    // valeur "humaine" pour tooltip
+    let v = cell?.value;
+    if (cell?.type === "icon") {
+        // boolIcon: reconstituer "Oui/Non" si possible
+        const b = cell?.params?.booleanValue;
+        const s = String(b ?? "").toLowerCase();
+        if (s === "1" || s === "true") v = "Oui";
+        else if (s === "0" || s === "false") v = "Non";
+        else v = cell?.params?.alt || "—";
+    }
+    if (cell?.type === "image") {
+        v = rawEntity.value?.name ? `Image de ${rawEntity.value.name}` : "Image";
+    }
+    if (cell?.type === "route") {
+        v = cell?.value;
+    }
+
+    const text = v === null || typeof v === "undefined" || v === "" ? "—" : String(v);
+    return `${label} : ${text}`;
+};
 
 const getEntityIcon = (type) => {
     const icons = {
@@ -206,7 +300,49 @@ const handleRefresh = () => {
 
         <!-- Informations en liste compacte avec icônes -->
         <div class="space-y-2 text-sm">
-            <template v-for="(value, key) in entity" :key="key">
+            <!-- Ressource (Option B) -->
+            <template v-if="isResource">
+                <div
+                    v-for="key in compactFields"
+                    :key="key"
+                    class="flex items-start gap-2 p-2 rounded hover:bg-base-200 transition-colors"
+                >
+                    <Tooltip
+                        :content="tooltipForResourceField(key, buildResourceCell(key, rawEntity, resourceCtx, { context: 'compact' }))"
+                        placement="top"
+                    >
+                        <div class="flex items-start gap-2 w-full">
+                            <Icon
+                                v-if="showCompactIcon(key)"
+                                :source="resourceDescriptors?.[key]?.icon || getFieldIcon(key)"
+                                size="xs"
+                                class="text-primary-400 flex-shrink-0 mt-0.5"
+                            />
+
+                            <div class="flex-1 min-w-0">
+                                <div class="flex items-center justify-between gap-2">
+                                    <span
+                                        v-if="showCompactLabel(key)"
+                                        class="text-primary-400 text-xs font-semibold uppercase"
+                                    >
+                                        {{ resourceDescriptors?.[key]?.label || key }}
+                                    </span>
+
+                                    <div class="flex-1 text-right min-w-0 text-primary-200">
+                                        <CellRenderer
+                                            :cell="buildResourceCell(key, rawEntity, resourceCtx, { context: 'compact' })"
+                                            ui-color="primary"
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </Tooltip>
+                </div>
+            </template>
+
+            <!-- Fallback historique -->
+            <template v-else v-for="(value, key) in entity" :key="key">
                 <div v-if="!['id', 'name', 'title', 'image', 'created_at', 'updated_at', 'deleted_at', 'can'].includes(key) && value !== null && value !== undefined"
                      class="flex items-start gap-2 p-2 rounded hover:bg-base-200 transition-colors">
                     <!-- Icône du champ -->

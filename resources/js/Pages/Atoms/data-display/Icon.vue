@@ -150,7 +150,7 @@ const faClasses = computed(() => {
         faSizeMap[props.size] || faSizeMap.md,
         "w-auto",
         props.disabled ? "opacity-50" : "",
-    ]);
+    ], props.class);
 });
 
 // Gestion des attributs d'accessibilité pour éviter les conflits

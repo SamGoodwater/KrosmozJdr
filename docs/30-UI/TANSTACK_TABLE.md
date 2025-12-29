@@ -44,6 +44,22 @@ Responsabilités :
   - charger un dataset initial,
   - ou des pages qui veulent des tableaux “personnalisés” en fournissant une URL paramétrée.
 
+## Debug panel (diagnostic)
+
+Le composant `TanStackTable` embarque un **debug panel** (opt-in) pour diagnostiquer rapidement :
+- filtres actifs (`activeFilters`)
+- compteurs (`rowsTotal`, `rowsFiltered`)
+- sélection (`selectionInternal` vs `selectionProp`)
+
+### Activer le debug
+
+- **Bouton UI** : en bas de table → “Activer debug”
+- **Paramètre URL** : `?tanstack_table_debug=1`
+- **localStorage** : `localStorage.setItem('tanstack_table_debug','1')`
+- **global** : `window.__TANSTACK_TABLE_DEBUG__ = true`
+
+> Ce debug est prévu pour aider à diagnostiquer des écarts entre la sélection “interne” et ce que voit le parent (v-model).
+
 ## Skeleton (chargement) — cellules & lignes
 
 Objectif : pendant `loading=true`, afficher un **skeleton cohérent colonne par colonne** (évite le layout shift et rend la lecture plus confortable).

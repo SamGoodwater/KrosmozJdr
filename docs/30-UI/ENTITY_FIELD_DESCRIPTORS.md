@@ -1,0 +1,92 @@
+# Entity Field Descriptors — Architecture (Option B)
+
+## Objectif
+
+Mettre en place une **source de vérité frontend** par champ (“field descriptor”) afin de générer :
+
+- les **cellules table** (`Cell{type,value,params}`) côté frontend,
+- les **vues** (`large/compact/minimal/text`),
+- les **configs de formulaire** (`EntityEditForm`) et de **bulk edit** (`useBulkEditPanel`),
+
+…tout en gardant :
+
+- **Backend = vérité** pour les **permissions** (Policies/Gates) + validation,
+- un payload serveur stable : `meta` (capabilities + filterOptions + query).
+
+## Pourquoi Option B ?
+
+Option B = le backend renvoie des **entités brutes** et le frontend **génère** les `cells`.
+
+- **Avantage** : cohérence totale (table + modal + form = mêmes règles).
+- **Coût** : plus de logique frontend (adapter + descriptors + tests).
+
+## Contrat backend (Table v2 — mode entities)
+
+Endpoint (exemple Ressources) :
+
+- `GET /api/tables/resources?format=entities&limit=5000`
+
+Payload attendu :
+
+- `meta` : identique à Table v2 (capabilities + filterOptions + query)
+- `entities[]` : entités brutes nécessaires au rendu **et** au tri/filtre côté client.
+
+> Règle sécurité : le backend **filtre** aussi les champs renvoyés (read), le front ne fait que de l’UX.
+
+## Contrat frontend (adapter)
+
+Le frontend reçoit `{ meta, entities }` et transforme en `{ meta, rows }` :
+
+- `rows[]` : `TableRow[]`
+  - `id`
+  - `cells` (générées)
+  - `rowParams.entity` (entité brute, pour modal/bulk/quick edit)
+
+## Affichage : tailles + contexts (convention)
+
+Chaque champ peut définir :
+
+- **Tailles** : `small | normal | large`
+  - **small** : **icône + valeur** (sans label)
+  - **normal** : **label + valeur** (sans icône)
+  - **large** : **icône + label + valeur**
+- **Contexts** : mapping “où” le champ est rendu :
+  - `table | text | compact | minimal | extended` → taille par défaut
+
+Conventions recommandées (v1) :
+
+- `table -> small`
+- `text -> normal`
+- `compact -> small`
+- `minimal -> small`
+- `extended -> large`
+
+## Structure recommandée (par entité)
+
+Exemple Ressource :
+
+- `resources/js/Entities/resource/resource-descriptors.js`
+  - source de vérité (label, format, permissions UX, etc.)
+  - `display.contexts` + `display.sizes` (small/normal/large)
+- `resources/js/Entities/resource/resource-adapter.js`
+  - génération de `cells`
+  - `adapt*Response(payload) -> { meta, rows }`
+
+## Migration (checklist)
+
+- [ ] Ajouter `format=entities` côté backend pour l’entité (sans casser le mode `cells`)
+- [ ] Créer `*descriptors` + `*adapter`
+- [ ] Brancher `responseAdapter` dans la page Index (sur `EntityTanStackTable`)
+- [ ] Remplacer progressivement :
+  - [ ] `field-schema` -> `fieldsConfig` généré depuis descriptors
+  - [ ] bulk meta -> depuis descriptors
+  - [ ] `EntityView*` -> rendu basé sur des descriptors (au lieu d’itérer les props)
+
+## Pattern “minimal → hover details”
+
+Recommandation UX :
+
+- **Minimal (base)** : affiche uniquement les champs “importants” en **small** (icône + valeur) avec tooltips.
+- **Hover** : déplie un panneau qui affiche les champs manquants en **extended** (plus détaillé).
+
+

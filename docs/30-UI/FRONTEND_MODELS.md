@@ -84,18 +84,27 @@ const items = computed(() => {
 </script>
 
 <template>
-    <EntityTable
-        :entities="items"
-        :pagination="props.items"
+    <EntityTanStackTable
         entity-type="items"
+        :config="tableConfig"
+        :server-url="serverUrl"
     />
 </template>
 ```
 
 **Points importants :**
-- Utiliser `Model.fromArray()` pour transformer un tableau de données
-- Passer les instances de modèles à `EntityTable`
-- Conserver `props.items` pour la pagination (structure Laravel)
+- Utiliser `Model.fromArray()` pour transformer un tableau de données (quand on consomme un dataset Inertia)
+- `EntityTanStackTable` est le wrapper Table v2 recommandé (permissions + fetch optionnel)
+- La pagination “Laravel paginator” n'est plus le contrat principal des tables v2 (dataset chargé côté table API)
+
+## 🧩 Schémas de champs (génération de formulaires)
+
+En complément des modèles, le projet supporte un format **meta-driven** de champs (schema) pour éviter la duplication
+entre :
+- formulaires create/edit (`EntityEditForm` via `fieldsConfig`)
+- bulk panels (`useBulkEditPanel` via `fieldMeta`)
+
+Le schéma est transformé par des helpers (ex: `createFieldsConfigFromSchema`, `createBulkFieldMetaFromSchema`).
 
 ### **2. Vues Edit (Édition)**
 

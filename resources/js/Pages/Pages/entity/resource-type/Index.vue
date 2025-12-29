@@ -5,7 +5,7 @@
  * @description
  * Table de gestion des types de ressources (incluant la registry DofusDB).
  */
-import { Head, router } from "@inertiajs/vue3";
+import { Head } from "@inertiajs/vue3";
 import { ref, computed } from "vue";
 import { usePageTitle } from "@/Composables/layout/usePageTitle";
 import { useNotificationStore } from "@/Composables/store/useNotificationStore";
@@ -18,6 +18,8 @@ import EntityTanStackTable from "@/Pages/Organismes/table/EntityTanStackTable.vu
 import CreateEntityModal from "@/Pages/Organismes/entity/CreateEntityModal.vue";
 import EntityEditForm from "@/Pages/Organismes/entity/EntityEditForm.vue";
 import ResourceTypeBulkEditPanel from "./components/ResourceTypeBulkEditPanel.vue";
+import { createFieldsConfigFromSchema, createDefaultEntityFromSchema } from "@/Utils/entity/field-schema";
+import createResourceTypeFieldSchema from "./resource-type-field-schema";
 import { createResourceTypesTanStackTableConfig } from "./resource-types-tanstack-table-config";
 
 const props = defineProps({
@@ -29,11 +31,11 @@ const props = defineProps({
 const { setPageTitle } = usePageTitle();
 setPageTitle("Types de ressources");
 
-const canModify = computed(() => Boolean(props.can?.updateAny));
-const { canUpdateAny, canCreate, canManageAny } = usePermissions();
+// (legacy) canModify inutilisé : garder uniquement les versions "Resolved"
+const { canUpdateAny, canCreate } = usePermissions();
 const canModifyResolved = computed(() => Boolean(props.can?.updateAny ?? canUpdateAny('resource-types')));
 const canCreateResolved = computed(() => Boolean(props.can?.create ?? canCreate('resource-types')));
-const canManage = computed(() => Boolean(props.can?.manageAny ?? canManageAny('resource-types')));
+// (legacy) canManage inutilisé : garder uniquement les versions "Resolved"
 
 const notificationStore = useNotificationStore();
 const { success: notifySuccess, error: notifyError } = notificationStore;
@@ -115,9 +117,10 @@ const closeEdit = () => {
 
 const selectedEntities = computed(() => {
     if (!Array.isArray(selectedIds.value) || !selectedIds.value.length) return [];
-    const idSet = new Set(selectedIds.value);
+    // Normaliser pour éviter les mismatch string vs number (Set.has est strict)
+    const idSet = new Set(selectedIds.value.map((v) => Number(v)).filter((n) => Number.isFinite(n)));
     return (tableRows.value || [])
-        .filter((r) => idSet.has(r?.id))
+        .filter((r) => idSet.has(Number(r?.id)))
         .map((r) => r?.rowParams?.entity)
         .filter(Boolean);
 });
@@ -126,32 +129,9 @@ const handleTableLoaded = ({ rows }) => {
     tableRows.value = Array.isArray(rows) ? rows : [];
 };
 
-const fieldsConfig = computed(() => ({
-    name: { type: "text", label: "Nom", required: true, showInCompact: true },
-    dofusdb_type_id: { type: "number", label: "DofusDB typeId", required: false, showInCompact: true },
-    decision: {
-        type: "select",
-        label: "Statut",
-        required: false,
-        showInCompact: true,
-        options: [
-            { value: "pending", label: "En attente" },
-            { value: "allowed", label: "Utilisé" },
-            { value: "blocked", label: "Non utilisé" },
-        ],
-    },
-    usable: { type: "checkbox", label: "Utilisable", required: false, showInCompact: true },
-    is_visible: {
-        type: "select",
-        label: "Visibilité",
-        required: false,
-        showInCompact: true,
-        options: [
-            { value: "guest", label: "Invité" },
-            { value: "super_admin", label: "Super admin" },
-        ],
-    },
-}));
+const resourceTypeSchema = computed(() => createResourceTypeFieldSchema());
+const fieldsConfig = computed(() => createFieldsConfigFromSchema(resourceTypeSchema.value));
+const defaultEntity = computed(() => createDefaultEntityFromSchema(resourceTypeSchema.value));
 </script>
 
 <template>
@@ -209,7 +189,7 @@ const fieldsConfig = computed(() => ({
             :open="createOpen"
             entity-type="resourceType"
             :fields-config="fieldsConfig"
-            :default-entity="{ usable: true, is_visible: 'guest', decision: 'pending' }"
+            :default-entity="defaultEntity"
             route-name-base="entities.resource-types"
             route-param-key="resourceType"
             @close="createOpen = false"

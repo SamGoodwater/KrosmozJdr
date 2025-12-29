@@ -66,7 +66,20 @@ export function createResourcesTanStackTableConfig() {
                 id: "level",
                 label: "Niveau",
                 sort: { enabled: true },
-                filter: { id: "level", type: "multi" },
+                filter: {
+                    id: "level",
+                    type: "multi",
+                    ui: {
+                        optionBadge: {
+                            enabled: true,
+                            color: "auto",
+                            autoScheme: "level",
+                            autoLabelFrom: "value",
+                            glassy: true,
+                            variant: "soft",
+                        },
+                    },
+                },
                 cell: { type: "text" },
             },
             {
@@ -80,7 +93,21 @@ export function createResourcesTanStackTableConfig() {
                 id: "rarity",
                 label: "Rareté",
                 sort: { enabled: true },
-                filter: { id: "rarity", type: "multi" },
+                filter: {
+                    id: "rarity",
+                    type: "multi",
+                    ui: {
+                        optionBadge: {
+                            enabled: true,
+                            color: "auto",
+                            autoScheme: "rarity",
+                            // pour une progression logique, on utilise la valeur numérique plutôt que le label
+                            autoLabelFrom: "value",
+                            glassy: true,
+                            variant: "soft",
+                        },
+                    },
+                },
                 cell: { type: "badge" },
             },
             {

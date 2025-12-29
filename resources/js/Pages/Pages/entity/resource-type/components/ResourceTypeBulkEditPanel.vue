@@ -15,9 +15,12 @@
  * @emit applied - quand la MAJ a réussi (le parent peut refresh/clear sélection).
  * @emit clear - demander au parent de vider la sélection.
  */
-import { computed } from "vue";
+import { computed, toRef } from "vue";
 import Btn from "@/Pages/Atoms/action/Btn.vue";
+import SelectCore from "@/Pages/Atoms/data-input/SelectCore.vue";
 import { useBulkEditPanel } from "@/Composables/entity/useBulkEditPanel";
+import { createBulkFieldMetaFromSchema } from "@/Utils/entity/field-schema";
+import createResourceTypeFieldSchema from "../resource-type-field-schema";
 
 const props = defineProps({
   selectedEntities: { type: Array, default: () => [] },
@@ -27,12 +30,9 @@ const props = defineProps({
 });
 
 const emit = defineEmits(["applied", "clear"]);
+const uiColor = computed(() => "primary");
 
-const FIELD_META = {
-  decision: { label: "Statut", nullable: false, build: (v) => v },
-  usable: { label: "Utilisable", nullable: false, build: (v) => v === "1" },
-  is_visible: { label: "Visibilité", nullable: false, build: (v) => v },
-};
+const FIELD_META = createBulkFieldMetaFromSchema(createResourceTypeFieldSchema());
 
 const {
   showList,
@@ -47,11 +47,11 @@ const {
   resetFromSelection,
   buildPayload,
 } = useBulkEditPanel({
-  selectedEntities: props.selectedEntities,
+  selectedEntities: toRef(props, "selectedEntities"),
   isAdmin: props.isAdmin,
   fieldMeta: FIELD_META,
   mode: props.mode,
-  filteredIds: props.filteredIds,
+  filteredIds: toRef(props, "filteredIds"),
 });
 
 const panelTitle = computed(() => {
@@ -103,32 +103,56 @@ const applyBulk = async () => {
     <div class="space-y-3">
       <div class="form-control">
         <label class="label"><span class="label-text">Statut</span></label>
-        <select class="select select-bordered" :value="form.decision" :disabled="!isAdmin" @change="(e) => onChange('decision', e)">
+        <SelectCore
+          class="w-full"
+          variant="glass"
+          size="sm"
+          :color="uiColor"
+          :disabled="!isAdmin"
+          :model-value="form.decision"
+          @update:model-value="(v) => onChange('decision', v)"
+        >
           <option value="" disabled hidden>{{ placeholder(aggregate.decision?.same) }}</option>
           <option value="pending">En attente</option>
           <option value="allowed">Utilisé</option>
           <option value="blocked">Non utilisé</option>
-        </select>
+        </SelectCore>
       </div>
 
       <div class="form-control">
         <label class="label"><span class="label-text">Utilisable</span></label>
-        <select class="select select-bordered" :value="form.usable" :disabled="!isAdmin" @change="(e) => onChange('usable', e)">
+        <SelectCore
+          class="w-full"
+          variant="glass"
+          size="sm"
+          :color="uiColor"
+          :disabled="!isAdmin"
+          :model-value="form.usable"
+          @update:model-value="(v) => onChange('usable', v)"
+        >
           <option value="" disabled hidden>{{ placeholder(aggregate.usable?.same) }}</option>
           <option value="1">Oui</option>
           <option value="0">Non</option>
-        </select>
+        </SelectCore>
       </div>
 
       <div class="form-control">
         <label class="label"><span class="label-text">Visibilité</span></label>
-        <select class="select select-bordered" :value="form.is_visible" :disabled="!isAdmin" @change="(e) => onChange('is_visible', e)">
+        <SelectCore
+          class="w-full"
+          variant="glass"
+          size="sm"
+          :color="uiColor"
+          :disabled="!isAdmin"
+          :model-value="form.is_visible"
+          @update:model-value="(v) => onChange('is_visible', v)"
+        >
           <option value="" disabled hidden>{{ placeholder(aggregate.is_visible?.same) }}</option>
           <option value="guest">Invité</option>
           <option value="user">Utilisateur</option>
           <option value="game_master">Maître de jeu</option>
           <option value="admin">Administrateur</option>
-        </select>
+        </SelectCore>
       </div>
     </div>
 

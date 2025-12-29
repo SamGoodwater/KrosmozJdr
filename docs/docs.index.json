@@ -540,6 +540,11 @@
     "description": "Mettre en place un **système de tableau unique, générique et scalable**, basé sur **TanStack Table**, sans duplication de code, et compatible avec :"
   },
   {
+    "path": "30-UI/ENTITY_FIELD_DESCRIPTORS.md",
+    "title": "Entity Field Descriptors — Architecture (Option B)",
+    "description": "Source de vérité frontend par champ pour générer table/vues/forms/bulk, avec backend = vérité permissions."
+  },
+  {
     "path": "30-UI/TEMPLATE_REGISTRY_GUIDE.md",
     "title": "Guide du Template Registry",
     "description": "Le **Template Registry** est un système centralisé de gestion des templates de sections pour Krosmoz-JDR. Il fournit :"

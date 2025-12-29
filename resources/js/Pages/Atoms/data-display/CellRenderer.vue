@@ -39,11 +39,58 @@ const text = computed(() => {
     if (v === null || typeof v === "undefined" || v === "") return "—";
     return String(v);
 });
+
+/**
+ * Détection des booléens affichés en badge (actuellement "Oui/Non") pour les compacter en icône.
+ *
+ * IMPORTANT: on évite d'inférer à partir de `filterValue` car certaines colonnes "enum"
+ * (ex: rareté) peuvent utiliser des codes numériques qui ne sont PAS des booléens.
+ *
+ * Possibilité d'override serveur: `params.boolean === true` et `params.booleanValue` (true/false/1/0).
+ */
+const boolBadgeValue = computed(() => {
+    if (type.value !== "badge") return null;
+
+    // Override explicite si le backend le fournit
+    if (params.value?.boolean === true) {
+        const v = params.value?.booleanValue;
+        const s = String(v ?? "").toLowerCase();
+        if (s === "1" || s === "true") return true;
+        if (s === "0" || s === "false") return false;
+    }
+
+    // Heuristique locale stricte: uniquement "Oui/Non"
+    const t = text.value.toLowerCase();
+    if (t === "oui") return true;
+    if (t === "non") return false;
+    return null;
+});
+
+const isBooleanBadge = computed(() => boolBadgeValue.value !== null);
 </script>
 
 <template>
     <span v-if="type === 'badge'">
-        <Badge :color="params.color || uiColor" size="sm">
+        <span v-if="isBooleanBadge" class="inline-flex items-center justify-center">
+                <Icon
+                    :source="boolBadgeValue ? 'fa-solid fa-check' : 'fa-solid fa-xmark'"
+                    :alt="boolBadgeValue ? 'Oui' : 'Non'"
+                    size="sm"
+                    :class="boolBadgeValue ? 'text-success-800' : 'text-error-800'"
+                />
+                <span class="sr-only">{{ boolBadgeValue ? "Oui" : "Non" }}</span>
+        </span>
+
+        <Badge
+            v-else
+            :color="params.color || uiColor"
+            :auto-label="params.autoLabel || ''"
+            :auto-scheme="params.autoScheme || undefined"
+            :auto-tone="params.autoTone || undefined"
+            :glassy="Boolean(params.glassy)"
+            :variant="params.variant || undefined"
+            size="sm"
+        >
             {{ text }}
         </Badge>
     </span>

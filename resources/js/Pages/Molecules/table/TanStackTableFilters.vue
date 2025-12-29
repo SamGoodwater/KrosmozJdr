@@ -47,6 +47,40 @@ const getOptions = (col) => {
 };
 
 /**
+ * UI options badges (opt-in via column config).
+ *
+ * @example
+ * filter: {
+ *   id: 'rarity',
+ *   type: 'multi',
+ *   ui: { optionBadge: { enabled: true, color: 'auto', autoLabelFrom: 'label', variant: 'soft' } }
+ * }
+ */
+const getFilterUi = (col) => (col?.filter?.ui && typeof col.filter.ui === "object" ? col.filter.ui : {});
+const getOptionBadgeCfg = (col) => {
+    const ui = getFilterUi(col);
+    const cfg = ui?.optionBadge;
+    return cfg && typeof cfg === "object" ? cfg : null;
+};
+const isOptionBadgeEnabled = (col) => Boolean(getOptionBadgeCfg(col)?.enabled);
+const optionBadgeProps = (col, opt) => {
+    const cfg = getOptionBadgeCfg(col) || {};
+    const autoLabelFrom = String(cfg.autoLabelFrom || "label"); // 'label' | 'value'
+    const label = autoLabelFrom === "value"
+        ? String(opt?.value ?? "")
+        : String(opt?.label ?? opt?.value ?? "");
+
+    return {
+        color: cfg.color || props.uiColor,
+        autoLabel: label,
+        autoScheme: cfg.autoScheme,
+        autoTone: cfg.autoTone,
+        variant: cfg.variant || "soft",
+        glassy: Boolean(cfg.glassy),
+    };
+};
+
+/**
  * Détection: un select à 2 choix qui représente un booléen (0/1, true/false).
  * Dans ce cas, on préfère un ToggleCore plutôt qu'un select.
  */
@@ -210,12 +244,14 @@ const activeBadges = computed(() => {
                 if (!vv) continue;
                 const opt = (getOptions(col) || []).find((o) => String(o.value) === vv);
                 const display = opt?.label ? String(opt.label) : vv;
+                        const badgeCfg = isOptionBadgeEnabled(col) ? optionBadgeProps(col, opt || { value: vv, label: display }) : null;
                 badges.push({
                     key: `${f.id}:${vv}`,
                     filterId: f.id,
                     type: "multi",
                     value: vv,
                     label: `${col.label}: ${display}`,
+                            badge: badgeCfg ? { ...badgeCfg } : null,
                 });
             }
             continue;
@@ -250,12 +286,14 @@ const activeBadges = computed(() => {
         const vv = String(raw);
         const opt = (getOptions(col) || []).find((o) => String(o.value) === vv);
         const display = opt?.label ? String(opt.label) : vv;
+        const badgeCfg = isOptionBadgeEnabled(col) ? optionBadgeProps(col, opt || { value: vv, label: display }) : null;
         badges.push({
             key: `${f.id}`,
             filterId: f.id,
             type: "select",
             value: vv,
             label: `${col.label}: ${display}`,
+            badge: badgeCfg ? { ...badgeCfg } : null,
         });
     }
 
@@ -401,7 +439,19 @@ const removeBadge = (badge) => {
                                             :color="uiColor"
                                             @update:model-value="(v) => handleSelectUpdate(col.filter.id, v)"
                                         />
-                                        <span class="text-sm">{{ opt.label }}</span>
+                                        <Badge
+                                            v-if="isOptionBadgeEnabled(col)"
+                                            :color="optionBadgeProps(col, opt).color"
+                                            :auto-label="optionBadgeProps(col, opt).autoLabel"
+                                            :auto-scheme="optionBadgeProps(col, opt).autoScheme || undefined"
+                                            :auto-tone="optionBadgeProps(col, opt).autoTone || undefined"
+                                            :variant="optionBadgeProps(col, opt).variant"
+                                            :glassy="Boolean(optionBadgeProps(col, opt).glassy)"
+                                            size="sm"
+                                        >
+                                            {{ opt.label }}
+                                        </Badge>
+                                        <span v-else class="text-sm">{{ opt.label }}</span>
                                     </label>
                                 </div>
                             </div>
@@ -518,7 +568,19 @@ const removeBadge = (badge) => {
                                             :color="uiColor"
                                             @update:model-value="(checked) => toggleMultiValue(col.filter.id, opt.value, Boolean(checked))"
                                         />
-                                        <span class="text-sm">{{ opt.label }}</span>
+                                        <Badge
+                                            v-if="isOptionBadgeEnabled(col)"
+                                            :color="optionBadgeProps(col, opt).color"
+                                            :auto-label="optionBadgeProps(col, opt).autoLabel"
+                                            :auto-scheme="optionBadgeProps(col, opt).autoScheme || undefined"
+                                            :auto-tone="optionBadgeProps(col, opt).autoTone || undefined"
+                                            :variant="optionBadgeProps(col, opt).variant"
+                                            :glassy="Boolean(optionBadgeProps(col, opt).glassy)"
+                                            size="sm"
+                                        >
+                                            {{ opt.label }}
+                                        </Badge>
+                                        <span v-else class="text-sm">{{ opt.label }}</span>
                                     </label>
                                 </div>
                             </div>
@@ -565,8 +627,12 @@ const removeBadge = (badge) => {
             <Badge
                 v-for="b in activeBadges"
                 :key="b.key"
-                :color="uiColor"
-                variant="soft"
+                :color="b.badge?.color || uiColor"
+                :auto-label="b.badge?.autoLabel || ''"
+                :auto-scheme="b.badge?.autoScheme || undefined"
+                :auto-tone="b.badge?.autoTone || undefined"
+                :glassy="Boolean(b.badge?.glassy)"
+                :variant="b.badge?.variant || 'soft'"
                 size="sm"
                 class="inline-flex items-center gap-1 pr-1"
             >

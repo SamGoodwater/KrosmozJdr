@@ -268,6 +268,34 @@ export function getContrastRatio(color1, color2) {
 }
 
 /**
+ * Choisit une couleur de texte lisible (clair/foncé) selon la couleur de fond.
+ *
+ * @description
+ * Utile quand le backend fournit une couleur de background (hex/rgb/hsl/oklch) et qu'on veut
+ * garantir un contraste correct sans devoir hardcoder "text-white".
+ *
+ * @param {string} backgroundColor - Couleur de fond (ex: '#22c55e', 'rgb(34,197,94)', 'oklch(...)')
+ * @param {Object} options
+ * @param {string} [options.light='#ffffff'] - Couleur "claire" candidate
+ * @param {string} [options.dark='#0b1220'] - Couleur "foncée" candidate
+ * @returns {string} - La meilleure couleur (light ou dark)
+ *
+ * @example
+ * getReadableTextColor('#22c55e') // => '#0b1220' ou '#ffffff' selon contraste
+ */
+export function getReadableTextColor(backgroundColor, options = {}) {
+  const { light = '#ffffff', dark = '#0b1220' } = options;
+
+  if (!isValidColor(backgroundColor)) return dark;
+  if (!isValidColor(light) || !isValidColor(dark)) return '#ffffff';
+
+  const lightRatio = getContrastRatio(backgroundColor, light);
+  const darkRatio = getContrastRatio(backgroundColor, dark);
+
+  return lightRatio >= darkRatio ? light : dark;
+}
+
+/**
  * Vérifie si le contraste entre deux couleurs respecte les normes WCAG
  * 
  * @param {string} color1 - Première couleur
@@ -416,6 +444,280 @@ export function convertToTailwind(color, intensity = null, options = {}) {
   }
 
   return getNearestTailwindColor(color, options);
+}
+
+/**
+ * Associe une couleur Tailwind (token `color-shade`, ex: `blue-500`) à une lettre / un mot / une phrase.
+ *
+ * @description
+ * - Extrait d'abord le **premier token** exploitable : lettres A-Z ou chiffres 0-9.
+ * - Ignore espaces et ponctuation.
+ * - Supporte un mode de mapping **stable** (mêmes entrées => mêmes couleurs) et un mode **ordonné**.
+ * - Supporte les nombres **jusqu'à 20** (utile pour un effet de progression sur des niveaux 1..20).
+ *
+ * ⚠️ Note sur les nuances Tailwind:
+ * - `200/300` = plus clair
+ * - `700/800` = plus foncé
+ *
+ * @param {string|number|null|undefined} input
+ * @param {Object} options
+ * @param {"mixed"|"rainbow"|"level"|"rarity"} [options.scheme="mixed"] - Nuancié/schéma d'auto-color
+ * @param {"mid"|"light"|"dark"} [options.tone="mid"] - Jeu de nuances à utiliser
+ * @param {number[]} [options.shades] - Override complet des nuances
+ * @param {"stableRandom"|"alphabetical"|"numericProgression"|"shadeProgression"} [options.mode="stableRandom"]
+ * @param {"asc"|"desc"} [options.direction="asc"] - Sens de progression des nuances (mode shadeProgression)
+ * @param {string[]} [options.palette] - Liste des couleurs Tailwind (sans shade), ex: ["blue","emerald",...]
+ * @param {number} [options.maxNumber=20] - Support des nombres 1..maxNumber (en mode numericProgression)
+ * @param {string} [options.baseColor="blue"] - Couleur de base pour numericProgression / shadeProgression
+ * @param {string} [options.fallback="blue-500"] - Token de fallback
+ * @returns {string} token tailwind `color-shade`
+ *
+ * @example
+ * getTailwindTokenFromLabel("Alice") // "emerald-500" (stable)
+ * getTailwindTokenFromLabel("9", { mode: "numericProgression" }) // ex: "blue-600"
+ * getTailwindTokenFromLabel("Niveau 12", { mode: "numericProgression", baseColor: "violet" })
+ */
+export function getTailwindTokenFromLabel(input, options = {}) {
+  const {
+    scheme = "mixed",
+    tone = "mid",
+    shades: shadesOverride = null,
+    mode = "stableRandom",
+    direction = "asc",
+    palette: paletteOverride = null,
+    maxNumber = 20,
+    baseColor = "blue",
+    fallback = "blue-500",
+  } = options || {};
+
+  const normalizeToken = (t) => String(t ?? "").trim();
+  const applyToneToToken = (tokenValue, t) => {
+    const raw = normalizeToken(tokenValue);
+    const [name, shadeStr] = raw.split("-");
+    const shade = Number(shadeStr);
+    if (!name || !Number.isFinite(shade)) return raw;
+    const tt = String(t || "mid");
+    if (tt === "light") {
+      // 200/300
+      const target = shade >= 500 ? 300 : 200;
+      return `${name}-${target}`;
+    }
+    if (tt === "dark") {
+      // 700/800
+      const target = shade >= 700 ? 800 : 700;
+      return `${name}-${target}`;
+    }
+    // mid: 400/500/600 => clamp around 500
+    if (shade <= 300) return `${name}-400`;
+    if (shade >= 700) return `${name}-600`;
+    return raw;
+  };
+
+  const SCHEMES = Object.freeze({
+    mixed: "mixed",
+    rainbow: "rainbow",
+    level: "level",
+    rarity: "rarity",
+  });
+
+  const palette = Array.isArray(paletteOverride) && paletteOverride.length
+    ? paletteOverride.map((c) => String(c)).filter(Boolean)
+    : [
+      "red",
+      "orange",
+      "amber",
+      "yellow",
+      "lime",
+      "green",
+      "emerald",
+      "teal",
+      "cyan",
+      "sky",
+      "blue",
+      "indigo",
+      "violet",
+      "purple",
+      "fuchsia",
+      "pink",
+      "rose",
+    ];
+
+  const resolveShades = () => {
+    if (Array.isArray(shadesOverride) && shadesOverride.length) {
+      return shadesOverride.map((n) => Number(n)).filter((n) => Number.isFinite(n));
+    }
+    const t = String(tone || "mid");
+    if (t === "light") return [200, 300];
+    if (t === "dark") return [700, 800];
+    return [400, 500, 600];
+  };
+  const shades = resolveShades();
+  if (!palette.length || !shades.length) return String(fallback);
+
+  const token = String(input ?? "");
+  if (!token.trim()) return String(fallback);
+
+  // 1) extraire le premier caractère alphanumérique, et si c'est un nombre, capturer le nombre complet
+  const extract = () => {
+    const s = String(input ?? "");
+    for (let i = 0; i < s.length; i++) {
+      const ch = s[i];
+      if (!/[a-z0-9]/i.test(ch)) continue;
+
+      // nombre complet
+      if (/[0-9]/.test(ch)) {
+        let j = i;
+        let digits = "";
+        while (j < s.length && /[0-9]/.test(s[j])) {
+          digits += s[j];
+          j++;
+        }
+        const n = Number(digits);
+        return { kind: "number", value: Number.isFinite(n) ? n : null, raw: digits };
+      }
+
+      return { kind: "letter", value: ch.toUpperCase(), raw: ch };
+    }
+    return { kind: "none", value: null, raw: "" };
+  };
+
+  const first = extract();
+  if (first.kind === "none") return String(fallback);
+
+  // --- Schemes (nuanciés) ---
+  // Ces schemes sont pensés pour des usages UI récurrents (level/rarity) sans devoir
+  // réinventer la config à chaque endroit.
+  const s = String(scheme || "mixed");
+
+  // 1..20 : progression niveau (gris -> bleu/violet, intensité croissante)
+  const levelRamp = Object.freeze([
+    "zinc-300",  // 1
+    "zinc-400",  // 2
+    "slate-400", // 3
+    "slate-500", // 4
+    "sky-500",   // 5
+    "sky-600",   // 6
+    "blue-500",  // 7
+    "blue-600",  // 8
+    "indigo-500",// 9
+    "indigo-600",// 10
+    "violet-500",// 11
+    "violet-600",// 12
+    "violet-600",// 13
+    "violet-700",// 14
+    "purple-600",// 15
+    "purple-700",// 16
+    "fuchsia-600",// 17
+    "fuchsia-700",// 18
+    "fuchsia-800",// 19
+    "fuchsia-800",// 20
+  ]);
+
+  // 1..6 : progression rareté (gris -> rouge, intensité croissante)
+  const rarityRamp = Object.freeze([
+    "zinc-400",  // 1 Commun
+    "slate-500", // 2 Peu commun
+    "blue-500",  // 3 Rare
+    "violet-600",// 4 Très rare
+    "orange-600",// 5 Légendaire
+    "red-700",   // 6 Unique
+  ]);
+
+  if (s === SCHEMES.level && first.kind === "number") {
+    const n = Number(first.value);
+    if (Number.isFinite(n) && n >= 1 && n <= 20) return applyToneToToken(levelRamp[n - 1], tone);
+  }
+
+  if (s === SCHEMES.rarity && first.kind === "number") {
+    const n = Number(first.value);
+    if (Number.isFinite(n) && n >= 1 && n <= 6) return applyToneToToken(rarityRamp[n - 1], tone);
+  }
+
+  if (s === SCHEMES.rainbow && first.kind === "letter") {
+    // Rainbow: mapping ordonné sur la palette (réparti), shade mid
+    const code = first.value.charCodeAt(0); // 'A'..'Z'
+    const idx = Math.max(0, Math.min(25, code - 65));
+    const color = palette[idx % palette.length];
+    const shade = 500;
+    return applyToneToToken(`${color}-${shade}`, tone);
+  }
+
+  const hash32 = (str) => {
+    const x = String(str ?? "");
+    let h = 2166136261; // FNV-1a 32-bit
+    for (let i = 0; i < x.length; i++) {
+      h ^= x.charCodeAt(i);
+      h = Math.imul(h, 16777619);
+    }
+    return h >>> 0;
+  };
+
+  const pickStable = (key) => {
+    const h = hash32(key);
+    const color = palette[h % palette.length];
+    const shade = shades[(Math.floor(h / palette.length) % shades.length)];
+    return `${color}-${shade}`;
+  };
+
+  // 2) mapping selon mode
+  // Scheme "mixed" (par défaut) utilise la logique existante
+  if (mode === "shadeProgression") {
+    // Progression des nuances sur une seule couleur (utile "auto-asc/desc")
+    const dir = String(direction || "asc");
+    const rampBase = Array.isArray(shadesOverride) && shadesOverride.length
+      ? shades
+      : [200, 300, 400, 500, 600, 700, 800];
+    const ramp = dir === "desc" ? [...rampBase].reverse() : rampBase;
+
+    const color = palette.includes(String(baseColor)) ? String(baseColor) : palette[0];
+
+    // Lettre => A..Z ; Nombre => 1..maxNumber
+    if (first.kind === "letter") {
+      const idx = Math.max(0, Math.min(25, first.value.charCodeAt(0) - 65));
+      const t = idx / 25;
+      const shade = ramp[Math.floor(t * (ramp.length - 1))] ?? ramp[0];
+      return `${color}-${shade}`;
+    }
+
+    if (first.kind === "number") {
+      const n = Number(first.value);
+      if (Number.isFinite(n) && n >= 1 && n <= maxNumber) {
+        const idx = Math.max(0, Math.min(maxNumber - 1, n - 1));
+        const t = idx / Math.max(1, maxNumber - 1);
+        const shade = ramp[Math.floor(t * (ramp.length - 1))] ?? ramp[0];
+        return `${color}-${shade}`;
+      }
+    }
+
+    return pickStable(first.raw || token);
+  }
+
+  if (mode === "numericProgression" && first.kind === "number") {
+    const n = Number(first.value);
+    if (Number.isFinite(n) && n >= 1 && n <= maxNumber) {
+      // progression stable : on prend une gamme large de shades et on interpole
+      const ramp = Array.isArray(shadesOverride) && shadesOverride.length
+        ? shades
+        : [200, 300, 400, 500, 600, 700, 800];
+      const idx = Math.max(0, Math.min(maxNumber - 1, n - 1));
+      const shade = ramp[Math.floor((idx / Math.max(1, maxNumber - 1)) * (ramp.length - 1))];
+      const color = palette.includes(String(baseColor)) ? String(baseColor) : palette[0];
+      return `${color}-${shade}`;
+    }
+    // si hors plage : fallback stable
+    return pickStable(first.raw || token);
+  }
+
+  if (mode === "alphabetical" && first.kind === "letter") {
+    const code = first.value.charCodeAt(0); // 'A'..'Z'
+    const idx = Math.max(0, Math.min(25, code - 65));
+    const color = palette[idx % palette.length];
+    const shade = shades[Math.floor(idx / palette.length) % shades.length] ?? shades[0];
+    return `${color}-${shade}`;
+  }
+
+  // mode default: stableRandom (ou fallback)
+  return pickStable(first.raw || token);
 }
 
 /**
