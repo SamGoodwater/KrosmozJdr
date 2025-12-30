@@ -11,10 +11,13 @@
  * @props {Object} entity - Données de l'entité
  * @props {String} entityType - Type d'entité
  */
-import { ref, watch, onMounted, onUnmounted } from 'vue';
+import { ref, watch, computed, onUnmounted } from 'vue';
 import Icon from '@/Pages/Atoms/data-display/Icon.vue';
 import Image from '@/Pages/Atoms/data-display/Image.vue';
+import Tooltip from "@/Pages/Atoms/feedback/Tooltip.vue";
+import CellRenderer from "@/Pages/Atoms/data-display/CellRenderer.vue";
 import EntityViewMinimal from './EntityViewMinimal.vue';
+import { getEntityConfig, normalizeEntityType } from "@/Entities/entity-registry";
 
 const props = defineProps({
     entity: {
@@ -30,6 +33,34 @@ const props = defineProps({
 const showHover = ref(false);
 const showPersistent = ref(false);
 const textRef = ref(null);
+
+const entityTypeKey = computed(() => normalizeEntityType(props.entityType));
+const entityConfig = computed(() => getEntityConfig(entityTypeKey.value));
+
+const rawEntity = computed(() => {
+    if (props.entity && typeof props.entity.toRaw === "function") return props.entity.toRaw();
+    if (props.entity && typeof props.entity._data !== "undefined") return props.entity._data;
+    return props.entity || {};
+});
+
+const entityName = computed(() => {
+    // Si c'est une instance de modèle, utiliser getters normalisés
+    if (props.entity && typeof props.entity._data !== "undefined") {
+        return props.entity.name || props.entity.title || "Entité";
+    }
+    return props.entity?.name || props.entity?.title || "Entité";
+});
+
+// Contexte minimal: pour le champ "name", on n'a pas besoin des permissions.
+const entityCtx = computed(() => ({ meta: {}, capabilities: null }));
+
+const nameCell = computed(() => {
+    const cfg = entityConfig.value;
+    if (cfg?.buildCell) {
+        return cfg.buildCell("name", rawEntity.value, entityCtx.value, { context: "text" });
+    }
+    return { type: "text", value: entityName.value || "Entité", params: {} };
+});
 
 const getEntityIcon = (type) => {
     const icons = {
@@ -118,7 +149,16 @@ onUnmounted(() => {
         </div>
         
         <!-- Nom -->
-        <span class="text-primary-100 group-hover:text-primary-50 transition-colors">{{ entity.name || entity.title }}</span>
+        <template v-if="entityConfig">
+            <CellRenderer :cell="nameCell" ui-color="primary" />
+        </template>
+        <template v-else>
+            <Tooltip :content="entityName" placement="top">
+                <span class="text-primary-100 group-hover:text-primary-50 transition-colors k-truncate k-truncate-md">
+                    {{ entityName }}
+                </span>
+            </Tooltip>
+        </template>
 
         <!-- Tooltip avec vue minimale au hover (non persistant) -->
         <div 

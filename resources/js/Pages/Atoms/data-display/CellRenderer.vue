@@ -14,6 +14,8 @@ import { computed } from "vue";
 import Badge from "@/Pages/Atoms/data-display/Badge.vue";
 import Icon from "@/Pages/Atoms/data-display/Icon.vue";
 import Route from "@/Pages/Atoms/action/Route.vue";
+import Tooltip from "@/Pages/Atoms/feedback/Tooltip.vue";
+import { getTruncateClass } from "@/Utils/entity/text-truncate";
 
 const props = defineProps({
     cell: {
@@ -33,6 +35,18 @@ const props = defineProps({
 const type = computed(() => String(props.cell?.type || "text"));
 const value = computed(() => props.cell?.value ?? null);
 const params = computed(() => props.cell?.params || {});
+
+const effectiveTruncateClass = computed(() => {
+    const p = params.value || {};
+    if (p.truncateClass) return String(p.truncateClass);
+    if (p.truncate && typeof p.truncate === "object") {
+        return getTruncateClass({
+            context: p.truncate.context,
+            scale: p.truncate.scale,
+        });
+    }
+    return "";
+});
 
 const text = computed(() => {
     const v = value.value;
@@ -81,6 +95,26 @@ const isBooleanBadge = computed(() => boolBadgeValue.value !== null);
                 <span class="sr-only">{{ boolBadgeValue ? "Oui" : "Non" }}</span>
         </span>
 
+        <Tooltip
+            v-else-if="params.tooltip || effectiveTruncateClass"
+            class="inline-block align-middle"
+            :content="String(params.tooltip || text)"
+            placement="top"
+        >
+            <Badge
+                :color="params.color || uiColor"
+                :auto-label="params.autoLabel || ''"
+                :auto-scheme="params.autoScheme || undefined"
+                :auto-tone="params.autoTone || undefined"
+                :glassy="Boolean(params.glassy)"
+                :variant="params.variant || undefined"
+                size="sm"
+                :class="effectiveTruncateClass"
+            >
+                {{ text }}
+            </Badge>
+        </Tooltip>
+
         <Badge
             v-else
             :color="params.color || uiColor"
@@ -117,21 +151,56 @@ const isBooleanBadge = computed(() => boolBadgeValue.value !== null);
     </span>
 
     <span v-else-if="type === 'route'">
+        <Tooltip
+            v-if="params.href && (params.tooltip || effectiveTruncateClass)"
+            class="inline-block align-middle"
+            :content="String(params.tooltip || text)"
+            placement="top"
+        >
+            <Route
+                :href="String(params.href)"
+                :target="params.target || undefined"
+                :color="uiColor"
+                hover
+            >
+                <span :class="effectiveTruncateClass">{{ text }}</span>
+            </Route>
+        </Tooltip>
+
         <Route
-            v-if="params.href"
+            v-else-if="params.href"
             :href="String(params.href)"
             :target="params.target || undefined"
             :color="uiColor"
             hover
         >
-            {{ text }}
+            <span v-if="effectiveTruncateClass" :class="effectiveTruncateClass">{{ text }}</span>
+            <template v-else>{{ text }}</template>
         </Route>
+
+        <Tooltip
+            v-else-if="params.tooltip || effectiveTruncateClass"
+            class="inline-block align-middle"
+            :content="String(params.tooltip || text)"
+            placement="top"
+        >
+            <span :class="effectiveTruncateClass">{{ text }}</span>
+        </Tooltip>
+
         <span v-else>{{ text }}</span>
     </span>
 
     <!-- custom: sera géré plus tard (Phase 1: fallback text) -->
     <span v-else>
-        {{ text }}
+        <Tooltip
+            v-if="params.tooltip || effectiveTruncateClass"
+            class="inline-block align-middle"
+            :content="String(params.tooltip || text)"
+            placement="top"
+        >
+            <span :class="effectiveTruncateClass">{{ text }}</span>
+        </Tooltip>
+        <span v-else>{{ text }}</span>
     </span>
 </template>
 

@@ -139,6 +139,12 @@ defineExpose({
     </template>
     
     <!-- Slots personnalisés -->
+    <template v-if="$slots.overStart" #overStart>
+      <slot name="overStart" />
+    </template>
+    <template v-if="$slots.overEnd" #overEnd>
+      <slot name="overEnd" />
+    </template>
     <template #helper>
       <slot name="helper" />
     </template>

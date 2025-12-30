@@ -454,6 +454,16 @@
     "title": "Guide de Design Krosmoz-JDR",
     "description": "Le design du site s'appuie sur les principes d'Atomic Design, le glassmorphism et une forte accessibilité. L'interface est responsive et moderne."
   },
+    {
+      "path": "30-UI/ENTITY_FIELD_DESCRIPTORS.md",
+      "title": "Entity Field Descriptors — Architecture (Option B)",
+      "description": "Mettre en place une **source de vérité frontend** par champ (“field descriptor”) afin de générer :"
+    },
+    {
+      "path": "30-UI/PLAN_MIGRATION_DESCRIPTORS.md",
+      "title": "Plan de migration — Système Entity Field Descriptors",
+      "description": "Plan d'action structuré pour migrer toutes les entités vers le système descriptor. **Statut** : En cours — 3/16 entités migrées (resource, resource_type, item)."
+    },
   {
     "path": "30-UI/FRONTEND_MODELS.md",
     "title": "Modèles Frontend JS — KrosmozJDR",
@@ -538,11 +548,6 @@
     "path": "30-UI/TANSTACK_TABLE.md",
     "title": "TanStack Table — Architecture & Contrats (Table v2)",
     "description": "Mettre en place un **système de tableau unique, générique et scalable**, basé sur **TanStack Table**, sans duplication de code, et compatible avec :"
-  },
-  {
-    "path": "30-UI/ENTITY_FIELD_DESCRIPTORS.md",
-    "title": "Entity Field Descriptors — Architecture (Option B)",
-    "description": "Source de vérité frontend par champ pour générer table/vues/forms/bulk, avec backend = vérité permissions."
   },
   {
     "path": "30-UI/TEMPLATE_REGISTRY_GUIDE.md",

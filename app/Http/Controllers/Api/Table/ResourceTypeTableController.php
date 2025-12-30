@@ -21,6 +21,12 @@ class ResourceTypeTableController extends Controller
     {
         $this->authorize('viewAny', ResourceType::class);
 
+        // Mode de réponse:
+        // - (default) "cells" : `rows[]` contient `cells` déjà prêtes à rendre.
+        // - "entities" : renvoie `entities[]` (données brutes + meta) pour laisser le frontend générer les `cells`.
+        //   Objectif : supporter une architecture "field descriptors" (Option B).
+        $format = $request->filled('format') ? (string) $request->get('format') : 'cells';
+
         $filters = (array) ($request->input('filters', $request->input('filter', [])) ?? []);
         if (!array_key_exists('decision', $filters) && $request->has('decision')) {
             $filters['decision'] = $request->get('decision');
@@ -77,6 +83,51 @@ class ResourceTypeTableController extends Controller
         $decisionColor = fn (string $decision) => $decision === ResourceType::DECISION_ALLOWED
             ? 'green-700'
             : ($decision === ResourceType::DECISION_BLOCKED ? 'red-700' : 'gray-700');
+
+        $filterOptions = [
+            'decision' => [
+                ['value' => ResourceType::DECISION_PENDING, 'label' => 'En attente'],
+                ['value' => ResourceType::DECISION_ALLOWED, 'label' => 'Utilisé'],
+                ['value' => ResourceType::DECISION_BLOCKED, 'label' => 'Non utilisé'],
+            ],
+        ];
+
+        // Option B: renvoyer des entités brutes (le front génère `cells`).
+        if ($format === 'entities') {
+            $entities = $rows->map(function (ResourceType $rt) {
+                $decision = (string) ($rt->decision ?? ResourceType::DECISION_PENDING);
+                $lastSeen = $rt->last_seen_at;
+
+                return [
+                    'id' => $rt->id,
+                    'name' => (string) $rt->name,
+                    'dofusdb_type_id' => $rt->dofusdb_type_id,
+                    'decision' => $decision,
+                    'seen_count' => (int) ($rt->seen_count ?? 0),
+                    'last_seen_at' => $lastSeen?->toISOString(),
+                    'resources_count' => (int) ($rt->resources_count ?? 0),
+                    'created_at' => $rt->created_at?->toISOString(),
+                    'updated_at' => $rt->updated_at?->toISOString(),
+                ];
+            })->values()->all();
+
+            return response()->json([
+                'meta' => [
+                    'entityType' => 'resource-types',
+                    'query' => [
+                        'search' => $search,
+                        'filters' => $filters,
+                        'sort' => $sort,
+                        'order' => $order,
+                        'limit' => $limit,
+                    ],
+                    'capabilities' => $capabilities,
+                    'filterOptions' => $filterOptions,
+                    'format' => 'entities',
+                ],
+                'entities' => $entities,
+            ]);
+        }
 
         $tableRows = $rows->map(function (ResourceType $rt) use ($decisionLabel, $decisionColor) {
             $showHref = route('entities.resource-types.show', $rt->id);

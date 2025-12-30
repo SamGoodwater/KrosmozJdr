@@ -21,7 +21,7 @@ import InputField from '@/Pages/Molecules/data-input/InputField.vue';
 import TextareaField from '@/Pages/Molecules/data-input/TextareaField.vue';
 import SelectField from '@/Pages/Molecules/data-input/SelectField.vue';
 import FileField from '@/Pages/Molecules/data-input/FileField.vue';
-import CheckboxField from '@/Pages/Molecules/data-input/CheckboxField.vue';
+import ToggleCore from '@/Pages/Atoms/data-input/ToggleCore.vue';
 import Btn from '@/Pages/Atoms/action/Btn.vue';
 import Tooltip from '@/Pages/Atoms/feedback/Tooltip.vue';
 
@@ -74,6 +74,15 @@ const notificationStore = useNotificationStore();
 
 // Mode d'affichage local (peut être modifié par l'utilisateur)
 const localViewMode = ref(props.viewMode);
+
+/**
+ * Multi-edit quand on n'a pas d'ID et qu'on est en mode update.
+ * Dans ce mode, on ne doit envoyer que les champs explicitement modifiés.
+ */
+const isMultiEdit = computed(() => {
+    const entityId = props.entity?.id ?? null;
+    return !entityId && Boolean(props.isUpdating);
+});
 
 // Configuration par défaut des champs selon le type d'entité
 const defaultFieldsConfig = computed(() => {
@@ -135,6 +144,12 @@ const initializeForm = () => {
     if (!props.isUpdating || !props.entity?.id) {
         const formData = {};
         Object.keys(fieldsConfig.value).forEach(key => {
+            // En multi-edit: si le champ fait partie des champs différents, valeur neutre
+            // => affiche "Valeurs différentes" et évite de pré-remplir une valeur arbitraire.
+            if (isMultiEdit.value && props.differentFields.includes(key)) {
+                formData[key] = getDefaultValue(fieldsConfig.value[key].type);
+                return;
+            }
             // Utiliser la valeur de l'entité si fournie, sinon valeur par défaut
             formData[key] = props.entity[key] !== undefined 
                 ? props.entity[key] 
@@ -172,15 +187,91 @@ const getDefaultValue = (type) => {
         case 'number': return null;
         case 'checkbox': return false;
         case 'select': return null;
+        case 'file': return null;
         default: return '';
     }
 };
 
 const form = useForm(initializeForm());
+/**
+ * Snapshot des valeurs "initiales" du formulaire (au moment de l'ouverture / dernière synchro).
+ * Utilisé par le bouton Reset.
+ */
+const initialSnapshot = ref(initializeForm());
+
+/**
+ * Track des bools modifiés en UI (utile pour gérer un état indeterminate en mode multi-edit).
+ * @type {Record<string, boolean>}
+ */
+const checkboxDirty = ref({});
+
+/**
+ * Track des champs non-bool modifiés en multi-edit.
+ * @type {Record<string, boolean>}
+ */
+const fieldDirty = ref({});
+
+/**
+ * Marque un champ comme modifié (multi-edit).
+ * @param {string} key
+ */
+const markDirty = (key) => {
+    if (!isMultiEdit.value) return;
+    if (!props.differentFields.includes(key)) return;
+    fieldDirty.value = { ...(fieldDirty.value || {}), [key]: true };
+};
+
+/**
+ * Annule la modification d'un champ (multi-edit) => ne pas modifier.
+ * @param {string} key
+ * @param {string} type
+ */
+const resetFieldMultiEdit = (key, type) => {
+    if (!isMultiEdit.value) return;
+    if (!props.differentFields.includes(key)) return;
+    fieldDirty.value = { ...(fieldDirty.value || {}), [key]: false };
+    form[key] = getDefaultValue(type);
+};
+
+/**
+ * Reset d'un champ bool en mode multi-edit : revient à l'état indeterminate (non modifié).
+ *
+ * @param {string} key
+ * @returns {void}
+ */
+const resetBoolMultiEdit = (key) => {
+    if (!key) return;
+    checkboxDirty.value = { ...(checkboxDirty.value || {}), [key]: false };
+    // Important: en mode "valeurs différentes", `form[key]` n'est pas une valeur fiable.
+    // L'état indeterminate (= ne pas modifier) est piloté par `checkboxDirty`.
+    form[key] = false;
+};
+
+/**
+ * Reset global du formulaire :
+ * - revient aux valeurs chargées au moment de l'ouverture (ou dernière synchro entity->form)
+ * - remet les champs multi-edit en mode "ne pas modifier" (dirty=false)
+ */
+const resetForm = () => {
+    const snap = initialSnapshot.value || {};
+
+    for (const key of Object.keys(fieldsConfig.value || {})) {
+        if (Object.prototype.hasOwnProperty.call(snap, key)) {
+            form[key] = snap[key];
+        } else {
+            form[key] = getDefaultValue(fieldsConfig.value?.[key]?.type);
+        }
+    }
+
+    checkboxDirty.value = {};
+    fieldDirty.value = {};
+    form.clearErrors?.();
+};
 
 // Mise à jour du formulaire quand l'entité change
 watch(() => props.entity, () => {
     const formData = initializeForm();
+    initialSnapshot.value = formData;
     Object.keys(formData).forEach(key => {
         form[key] = formData[key];
     });
@@ -201,8 +292,18 @@ const submit = () => {
     // Si l'entité n'a pas d'ID (édition multiple), émettre directement les données
     const entityId = props.entity?.id ?? null;
     if (!entityId && props.isUpdating) {
-        // Mode édition multiple : émettre les données sans faire de requête
-        emit('submit', form.data());
+        // Mode édition multiple : n'émettre que les champs explicitement modifiés.
+        // (tri-state => indeterminate = ne pas modifier)
+        const data = form.data();
+        for (const key of (props.differentFields || [])) {
+            const type = fieldsConfig.value?.[key]?.type;
+            if (type === 'checkbox') {
+                if (!checkboxDirty.value?.[key]) delete data[key];
+            } else {
+                if (!fieldDirty.value?.[key]) delete data[key];
+            }
+        }
+        emit('submit', data);
         return;
     }
 
@@ -298,32 +399,78 @@ const toggleViewMode = () => {
                             <InputField
                                 v-if="fieldConfig.type === 'text' || !['textarea', 'select', 'file', 'number', 'checkbox'].includes(fieldConfig.type)"
                                 v-model="form[fieldKey]"
+                                @update:modelValue="() => markDirty(fieldKey)"
                                 :label="fieldConfig.label"
                                 :type="fieldConfig.type || 'text'"
                                 :required="fieldConfig.required"
                                 :validation="getFieldValidation(fieldKey)"
                                 :placeholder="props.differentFields.includes(fieldKey) ? 'Valeurs différentes' : undefined"
-                            />
+                            >
+                                <template
+                                    v-if="isMultiEdit && props.differentFields.includes(fieldKey) && fieldDirty.value?.[fieldKey]"
+                                    #overEnd
+                                >
+                                    <Btn
+                                        size="xs"
+                                        variant="ghost"
+                                        title="Annuler la modification (ne pas modifier ce champ)"
+                                        @click.stop="resetFieldMultiEdit(fieldKey, fieldConfig.type || 'text')"
+                                    >
+                                        <i class="fa-solid fa-rotate-left"></i>
+                                    </Btn>
+                                </template>
+                            </InputField>
                             
                             <!-- TextareaField -->
                             <TextareaField
                                 v-else-if="fieldConfig.type === 'textarea'"
                                 v-model="form[fieldKey]"
+                                @update:modelValue="() => markDirty(fieldKey)"
                                 :label="fieldConfig.label"
                                 :required="fieldConfig.required"
                                 :validation="getFieldValidation(fieldKey)"
                                 :placeholder="props.differentFields.includes(fieldKey) ? 'Valeurs différentes' : undefined"
-                            />
+                            >
+                                <template
+                                    v-if="isMultiEdit && props.differentFields.includes(fieldKey) && fieldDirty.value?.[fieldKey]"
+                                    #overEnd
+                                >
+                                    <Btn
+                                        size="xs"
+                                        variant="ghost"
+                                        title="Annuler la modification (ne pas modifier ce champ)"
+                                        @click.stop="resetFieldMultiEdit(fieldKey, 'textarea')"
+                                    >
+                                        <i class="fa-solid fa-rotate-left"></i>
+                                    </Btn>
+                                </template>
+                            </TextareaField>
                             
                             <!-- SelectField -->
                             <SelectField
                                 v-else-if="fieldConfig.type === 'select'"
                                 v-model="form[fieldKey]"
+                                @update:modelValue="() => markDirty(fieldKey)"
                                 :label="fieldConfig.label"
                                 :options="fieldConfig.options || []"
                                 :required="fieldConfig.required"
                                 :validation="getFieldValidation(fieldKey)"
-                            />
+                                :placeholder="props.differentFields.includes(fieldKey) ? 'Valeurs différentes' : undefined"
+                            >
+                                <template
+                                    v-if="isMultiEdit && props.differentFields.includes(fieldKey) && fieldDirty.value?.[fieldKey]"
+                                    #overEnd
+                                >
+                                    <Btn
+                                        size="xs"
+                                        variant="ghost"
+                                        title="Annuler la modification (ne pas modifier ce champ)"
+                                        @click.stop="resetFieldMultiEdit(fieldKey, 'select')"
+                                    >
+                                        <i class="fa-solid fa-rotate-left"></i>
+                                    </Btn>
+                                </template>
+                            </SelectField>
                             
                             <!-- FileField -->
                             <FileField
@@ -338,21 +485,59 @@ const toggleViewMode = () => {
                             <InputField
                                 v-else-if="fieldConfig.type === 'number'"
                                 v-model="form[fieldKey]"
+                                @update:modelValue="() => markDirty(fieldKey)"
                                 :label="fieldConfig.label"
                                 type="number"
                                 :required="fieldConfig.required"
                                 :validation="getFieldValidation(fieldKey)"
                                 :placeholder="props.differentFields.includes(fieldKey) ? 'Valeurs différentes' : undefined"
-                            />
+                            >
+                                <template
+                                    v-if="isMultiEdit && props.differentFields.includes(fieldKey) && fieldDirty.value?.[fieldKey]"
+                                    #overEnd
+                                >
+                                    <Btn
+                                        size="xs"
+                                        variant="ghost"
+                                        title="Annuler la modification (ne pas modifier ce champ)"
+                                        @click.stop="resetFieldMultiEdit(fieldKey, 'number')"
+                                    >
+                                        <i class="fa-solid fa-rotate-left"></i>
+                                    </Btn>
+                                </template>
+                            </InputField>
                             
-                            <!-- CheckboxField -->
-                            <CheckboxField
-                                v-else-if="fieldConfig.type === 'checkbox'"
-                                v-model="form[fieldKey]"
-                                :label="fieldConfig.label"
-                                :required="fieldConfig.required"
-                                :validation="getFieldValidation(fieldKey)"
-                            />
+                            <!-- Bool (Toggle) -->
+                            <div v-else-if="fieldConfig.type === 'checkbox'" class="flex items-center justify-between gap-3">
+                                <div class="flex items-center gap-3">
+                                    <ToggleCore
+                                        variant="glass"
+                                        size="sm"
+                                        color="primary"
+                                        :model-value="Boolean(form[fieldKey])"
+                                        :indeterminate="props.differentFields.includes(fieldKey) && !checkboxDirty.value?.[fieldKey]"
+                                        @update:model-value="(v) => { checkboxDirty.value = { ...(checkboxDirty.value || {}), [fieldKey]: true }; form[fieldKey] = Boolean(v); }"
+                                    />
+                                    <span class="text-sm opacity-80">
+                                        <template v-if="props.differentFields.includes(fieldKey) && !checkboxDirty.value?.[fieldKey]">
+                                            Valeurs différentes
+                                        </template>
+                                        <template v-else>
+                                            {{ Boolean(form[fieldKey]) ? "Oui" : "Non" }}
+                                        </template>
+                                    </span>
+                                </div>
+
+                                <Btn
+                                    v-if="props.differentFields.includes(fieldKey) && checkboxDirty.value?.[fieldKey]"
+                                    size="xs"
+                                    variant="ghost"
+                                    title="Annuler la modification (ne pas modifier ce champ)"
+                                    @click.stop="resetBoolMultiEdit(fieldKey)"
+                                >
+                                    <i class="fa-solid fa-rotate-left"></i>
+                                </Btn>
+                            </div>
                         </Tooltip>
                     </div>
                 </template>
@@ -367,6 +552,20 @@ const toggleViewMode = () => {
                 >
                     Annuler
                 </Btn>
+
+                <Tooltip
+                    content="Réinitialise le formulaire : revient aux valeurs chargées au moment de l’ouverture (ou dernière synchro). En multi‑édition, remet les champs ‘valeurs différentes’ en mode ‘ne pas modifier’."
+                    placement="top"
+                >
+                    <Btn
+                        type="button"
+                        variant="ghost"
+                        @click="resetForm"
+                    >
+                        <i class="fa-solid fa-arrow-rotate-left mr-2"></i>
+                        Reset
+                    </Btn>
+                </Tooltip>
                 <Btn
                     type="submit"
                     color="primary"

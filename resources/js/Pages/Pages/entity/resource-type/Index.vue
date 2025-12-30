@@ -8,8 +8,8 @@
 import { Head } from "@inertiajs/vue3";
 import { ref, computed } from "vue";
 import { usePageTitle } from "@/Composables/layout/usePageTitle";
-import { useNotificationStore } from "@/Composables/store/useNotificationStore";
 import { usePermissions } from "@/Composables/permissions/usePermissions";
+import { useBulkRequest } from "@/Composables/entity/useBulkRequest";
 
 import Container from "@/Pages/Atoms/data-display/Container.vue";
 import Btn from "@/Pages/Atoms/action/Btn.vue";
@@ -17,10 +17,11 @@ import Modal from "@/Pages/Molecules/action/Modal.vue";
 import EntityTanStackTable from "@/Pages/Organismes/table/EntityTanStackTable.vue";
 import CreateEntityModal from "@/Pages/Organismes/entity/CreateEntityModal.vue";
 import EntityEditForm from "@/Pages/Organismes/entity/EntityEditForm.vue";
-import ResourceTypeBulkEditPanel from "./components/ResourceTypeBulkEditPanel.vue";
-import { createFieldsConfigFromSchema, createDefaultEntityFromSchema } from "@/Utils/entity/field-schema";
-import createResourceTypeFieldSchema from "./resource-type-field-schema";
+import EntityQuickEditPanel from "@/Pages/Organismes/entity/EntityQuickEditPanel.vue";
 import { createResourceTypesTanStackTableConfig } from "./resource-types-tanstack-table-config";
+import { adaptResourceTypeEntitiesTableResponse } from "@/Entities/resource-type/resource-type-adapter";
+import { getResourceTypeFieldDescriptors } from "@/Entities/resource-type/resource-type-descriptors";
+import { createFieldsConfigFromDescriptors, createDefaultEntityFromDescriptors } from "@/Utils/entity/descriptor-form";
 
 const props = defineProps({
     resourceTypes: { type: Object, required: true },
@@ -37,12 +38,7 @@ const canModifyResolved = computed(() => Boolean(props.can?.updateAny ?? canUpda
 const canCreateResolved = computed(() => Boolean(props.can?.create ?? canCreate('resource-types')));
 // (legacy) canManage inutilisé : garder uniquement les versions "Resolved"
 
-const notificationStore = useNotificationStore();
-const { success: notifySuccess, error: notifyError } = notificationStore;
-
-const getCsrfToken = () => {
-    return document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
-};
+const { bulkPatchJson } = useBulkRequest();
 
 const selectedEntity = ref(null);
 const editOpen = ref(false);
@@ -52,7 +48,7 @@ const tableRows = ref([]);
 const refreshToken = ref(0);
 
 const tableConfig = computed(() => createResourceTypesTanStackTableConfig());
-const serverUrl = computed(() => `${route("api.tables.resource-types")}?limit=5000&_t=${refreshToken.value}`);
+const serverUrl = computed(() => `${route("api.tables.resource-types")}?limit=5000&format=entities&_t=${refreshToken.value}`);
 
 const handleRefreshAll = () => {
     refreshToken.value++;
@@ -72,38 +68,10 @@ const handleRowDoubleClick = (row) => {
 
 const handleBulkApplied = async (payload) => {
     // payload: { ids, decision?, usable?, is_visible? }
-    const csrfToken = getCsrfToken();
-    if (!csrfToken) {
-        notifyError("Token CSRF introuvable. Recharge la page.");
-        return;
-    }
-
-    try {
-        const response = await fetch("/api/scrapping/resource-types/bulk", {
-            method: "PATCH",
-            headers: {
-                "Content-Type": "application/json",
-                "X-CSRF-TOKEN": csrfToken,
-                "Accept": "application/json",
-            },
-            body: JSON.stringify(payload),
-        });
-        const data = await response.json();
-        if (!response.ok || !data.success) {
-            notifyError(data.message || `Bulk update: ${data?.summary?.errors ?? 1} erreur(s)`);
-            return;
-        }
-
-        notifySuccess(`Mis à jour: ${data.summary.updated}/${data.summary.requested}`);
-
-        // Table v2: recharger le dataset
-        refreshToken.value++;
-
-        // Clear selection
-        selectedIds.value = [];
-    } catch (e) {
-        notifyError("Erreur bulk: " + (e?.message || "unknown"));
-    }
+    const ok = await bulkPatchJson({ url: "/api/scrapping/resource-types/bulk", payload });
+    if (!ok) return;
+    refreshToken.value++;
+    selectedIds.value = [];
 };
 
 const clearSelection = () => {
@@ -129,9 +97,9 @@ const handleTableLoaded = ({ rows }) => {
     tableRows.value = Array.isArray(rows) ? rows : [];
 };
 
-const resourceTypeSchema = computed(() => createResourceTypeFieldSchema());
-const fieldsConfig = computed(() => createFieldsConfigFromSchema(resourceTypeSchema.value));
-const defaultEntity = computed(() => createDefaultEntityFromSchema(resourceTypeSchema.value));
+const resourceTypeDescriptors = computed(() => getResourceTypeFieldDescriptors({ capabilities: props.can || {} }));
+const fieldsConfig = computed(() => createFieldsConfigFromDescriptors(resourceTypeDescriptors.value, { meta: {}, capabilities: props.can || {} }));
+const defaultEntity = computed(() => createDefaultEntityFromDescriptors(resourceTypeDescriptors.value));
 </script>
 
 <template>
@@ -160,13 +128,14 @@ const defaultEntity = computed(() => createDefaultEntityFromSchema(resourceTypeS
 
         <div
             class="grid grid-cols-1 gap-4"
-            :class="{ 'xl:grid-cols-[1fr_380px]': selectedEntities.length >= 1 }"
+            :class="{ 'xl:grid-cols-[minmax(0,1fr)_380px]': selectedEntities.length >= 1 }"
         >
-            <div>
+            <div class="min-w-0">
                 <EntityTanStackTable
                     entity-type="resource-types"
                     :config="tableConfig"
                     :server-url="serverUrl"
+                    :response-adapter="adaptResourceTypeEntitiesTableResponse"
                     v-model:selected-ids="selectedIds"
                     @loaded="handleTableLoaded"
                     @row-dblclick="handleRowDoubleClick"
@@ -174,7 +143,8 @@ const defaultEntity = computed(() => createDefaultEntityFromSchema(resourceTypeS
             </div>
 
             <div v-if="canModifyResolved && selectedEntities.length >= 1" class="sticky top-4 self-start">
-                <ResourceTypeBulkEditPanel
+                <EntityQuickEditPanel
+                    entity-type="resource-types"
                     :selected-entities="selectedEntities"
                     :is-admin="canModifyResolved"
                     mode="client"

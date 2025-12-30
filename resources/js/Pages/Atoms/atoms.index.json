@@ -2187,7 +2187,27 @@
       {
         "name": "color",
         "type": "String",
-        "desc": "- Couleur DaisyUI ('', 'neutral', 'primary', 'secondary', 'accent', 'info', 'success', 'warning', 'error') ou Tailwind (format 'color-shade', ex: 'blue-700')"
+        "desc": "- Couleur DaisyUI ('', 'neutral', 'primary', 'secondary', 'accent', 'info', 'success', 'warning', 'error') ou Tailwind (format 'color-shade', ex: 'blue-700') ou auto ('auto')"
+      },
+      {
+        "name": "autoLabel",
+        "type": "String",
+        "desc": "- Source de l'auto-color (obligatoire si le badge utilise un slot, optionnel si `content` est fourni)"
+      },
+      {
+        "name": "autoScheme",
+        "type": "String",
+        "desc": "- Nuancié: 'mixed' | 'rainbow' | 'level' | 'rarity' (défaut: 'mixed')"
+      },
+      {
+        "name": "autoTone",
+        "type": "String",
+        "desc": "- 'mid' | 'light' | 'dark' (défaut: 'mid')"
+      },
+      {
+        "name": "glassy",
+        "type": "Boolean",
+        "desc": "- Active un léger gradient \"glassmorphism\" (défaut: false)"
       },
       {
         "name": "size",

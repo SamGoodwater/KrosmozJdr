@@ -9,7 +9,8 @@
  * <EntityTanStackTable :response-adapter="adaptResourceEntitiesTableResponse" />
  */
 
-import { DEFAULT_RESOURCE_FIELD_VIEWS, getResourceFieldDescriptors, truncate } from "@/Entities/resource/resource-descriptors";
+import { DEFAULT_RESOURCE_FIELD_VIEWS, getResourceFieldDescriptors } from "@/Entities/resource/resource-descriptors";
+import { getTruncateClass, sizeToTruncateScale } from "@/Utils/entity/text-truncate";
 
 const toNumber = (v) => {
   const n = typeof v === "string" ? Number(v) : v;
@@ -103,11 +104,12 @@ const resolveViewConfigFor = (descriptor, { view = "table" } = {}) => {
 export function buildResourceCell(colId, entity, ctx = {}, opts = {}) {
   const descriptors = getResourceFieldDescriptors(ctx);
   const d = descriptors[colId] || descriptors?.[colId?.replace(/-/g, "_")] || null;
-  const viewCfg = resolveViewConfigFor(d, { view: opts?.context || "table" });
+  const context = opts?.context || "table";
+  const viewCfg = resolveViewConfigFor(d, { view: context });
   const size = opts?.size || viewCfg?.size || "normal";
   const sizeCfg = d?.display?.sizes?.[size] || {};
   const mode = viewCfg?.mode || sizeCfg?.mode || null;
-  const truncateLenFromView = Number(viewCfg?.truncate ?? 0) || 0;
+  const truncateScale = sizeToTruncateScale(size);
 
   // Baselines
   const id = entity?.id ?? null;
@@ -125,13 +127,13 @@ export function buildResourceCell(colId, entity, ctx = {}, opts = {}) {
 
   if (colId === "name") {
     const name = entity?.name || "-";
-    const truncateLen = truncateLenFromView || (Number(sizeCfg?.truncate ?? 0) || 0);
-    const shown = truncateLen ? (truncate(name, truncateLen) || "-") : name;
     return {
       type: "route",
-      value: shown,
+      value: name,
       params: {
         href: resourceShowHref(id),
+        tooltip: name === "-" ? "" : String(name),
+        truncate: { context, scale: truncateScale },
         searchValue: name === "-" ? "" : String(name),
         sortValue: name === "-" ? "" : String(name),
       },
@@ -179,6 +181,9 @@ export function buildResourceCell(colId, entity, ctx = {}, opts = {}) {
         value: typeName,
         params: {
           color: "neutral",
+          tooltip: typeName === "-" ? "" : typeName,
+          truncate: { context, scale: truncateScale },
+          truncateClass: getTruncateClass({ context, scale: truncateScale }),
           filterValue: typeId ? String(typeId) : "",
           sortValue: typeName,
           searchValue: typeName === "-" ? "" : typeName,
@@ -186,12 +191,12 @@ export function buildResourceCell(colId, entity, ctx = {}, opts = {}) {
       };
     }
 
-    const truncateLen = truncateLenFromView || (Number(sizeCfg?.truncate ?? 0) || 0);
-    const shown = truncateLen ? (truncate(typeName, truncateLen) || "-") : typeName;
     return {
       type: "text",
-      value: shown,
+      value: typeName,
       params: {
+        tooltip: typeName === "-" ? "" : typeName,
+        truncate: { context, scale: truncateScale },
         filterValue: typeId ? String(typeId) : "",
         sortValue: typeName,
         searchValue: typeName === "-" ? "" : typeName,
@@ -223,11 +228,12 @@ export function buildResourceCell(colId, entity, ctx = {}, opts = {}) {
   if (colId === "dofus_version") {
     const raw = entity?.dofus_version ?? null;
     const v = raw === null || typeof raw === "undefined" || raw === "" ? "-" : String(raw);
-    const truncateLen = truncateLenFromView || (Number(sizeCfg?.truncate ?? 0) || 0);
     return {
       type: "text",
-      value: truncateLen ? (truncate(v, truncateLen) || "-") : v,
+      value: v,
       params: {
+        tooltip: v === "-" ? "" : v,
+        truncate: { context, scale: truncateScale },
         sortValue: v === "-" ? "" : v,
         searchValue: v === "-" ? "" : v,
       },
@@ -318,14 +324,15 @@ export function buildResourceCell(colId, entity, ctx = {}, opts = {}) {
   if (colId === "dofusdb_id") {
     const raw = entity?.dofusdb_id ?? null;
     const n = toNumber(raw);
-    const truncateLen = truncateLenFromView || (Number(sizeCfg?.truncate ?? 0) || 0);
     const shown = n ? String(n) : "-";
     return {
       type: "route",
-      value: truncateLen ? truncate(shown, truncateLen) : shown,
+      value: shown,
       params: {
         href: dofusDbResourceHref(n),
         target: "_blank",
+        tooltip: shown === "-" ? "" : shown,
+        truncate: { context, scale: truncateScale },
         sortValue: n ?? 0,
         filterValue: n ? String(n) : "",
       },
@@ -334,11 +341,12 @@ export function buildResourceCell(colId, entity, ctx = {}, opts = {}) {
 
   if (colId === "created_by") {
     const createdByLabel = entity?.createdBy?.name || entity?.createdBy?.email || "-";
-    const truncateLen = truncateLenFromView || (Number(sizeCfg?.truncate ?? 0) || 0);
     return {
       type: "text",
-      value: truncateLen ? (truncate(createdByLabel, truncateLen) || "-") : createdByLabel,
+      value: createdByLabel,
       params: {
+        tooltip: createdByLabel === "-" ? "" : createdByLabel,
+        truncate: { context, scale: truncateScale },
         sortValue: createdByLabel,
         searchValue: createdByLabel === "-" ? "" : createdByLabel,
       },

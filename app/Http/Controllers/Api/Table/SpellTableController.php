@@ -21,6 +21,12 @@ class SpellTableController extends Controller
     {
         $this->authorize('viewAny', Spell::class);
 
+        // Mode de réponse:
+        // - (default) "cells" : `rows[]` contient `cells` déjà prêtes à rendre.
+        // - "entities" : renvoie `entities[]` (données brutes + meta) pour laisser le frontend générer les `cells`.
+        //   Objectif : supporter une architecture "field descriptors" (Option B).
+        $format = $request->filled('format') ? (string) $request->get('format') : 'cells';
+
         $filters = (array) ($request->input('filters', $request->input('filter', [])) ?? []);
         foreach (['level', 'pa'] as $k) {
             if (!array_key_exists($k, $filters) && $request->has($k)) {
@@ -89,6 +95,64 @@ class SpellTableController extends Controller
                 ['value' => '6', 'label' => '6+'],
             ],
         ];
+
+        // Mode "entities" : retourner les entités brutes
+        if ($format === 'entities') {
+            $entities = $rows->map(function (Spell $sp) {
+                $createdBy = $sp->createdBy;
+                return [
+                    'id' => $sp->id,
+                    'official_id' => $sp->official_id,
+                    'dofusdb_id' => $sp->dofusdb_id,
+                    'name' => $sp->name,
+                    'description' => $sp->description,
+                    'effect' => $sp->effect,
+                    'area' => $sp->area,
+                    'level' => $sp->level,
+                    'po' => $sp->po,
+                    'po_editable' => (bool) $sp->po_editable,
+                    'pa' => $sp->pa,
+                    'cast_per_turn' => $sp->cast_per_turn,
+                    'cast_per_target' => $sp->cast_per_target,
+                    'sight_line' => (bool) $sp->sight_line,
+                    'number_between_two_cast' => $sp->number_between_two_cast,
+                    'number_between_two_cast_editable' => (bool) $sp->number_between_two_cast_editable,
+                    'element' => $sp->element,
+                    'category' => $sp->category,
+                    'is_magic' => (bool) $sp->is_magic,
+                    'powerful' => $sp->powerful,
+                    'usable' => (int) ($sp->usable ?? 0),
+                    'is_visible' => $sp->is_visible,
+                    'image' => $sp->image,
+                    'auto_update' => (bool) $sp->auto_update,
+                    'spellTypes' => $sp->spellTypes?->map(fn ($t) => ['id' => $t->id, 'name' => $t->name])->values()->all() ?? [],
+                    'createdBy' => $createdBy ? [
+                        'id' => $createdBy->id,
+                        'name' => $createdBy->name,
+                        'email' => $createdBy->email,
+                    ] : null,
+                    'created_at' => $sp->created_at?->toISOString(),
+                    'updated_at' => $sp->updated_at?->toISOString(),
+                ];
+            })->values()->all();
+
+            return response()->json([
+                'meta' => [
+                    'entityType' => 'spells',
+                    'query' => [
+                        'search' => $search,
+                        'filters' => $filters,
+                        'sort' => $sort,
+                        'order' => $order,
+                        'limit' => $limit,
+                    ],
+                    'capabilities' => $capabilities,
+                    'filterOptions' => $filterOptions,
+                    'format' => 'entities',
+                ],
+                'entities' => $entities,
+            ]);
+        }
 
         $tableRows = $rows->map(function (Spell $sp) {
             $showHref = route('entities.spells.show', $sp->id);

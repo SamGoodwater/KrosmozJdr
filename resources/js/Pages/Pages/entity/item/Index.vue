@@ -10,20 +10,20 @@
 import { Head } from "@inertiajs/vue3";
 import { ref, computed, watch } from "vue";
 import { usePageTitle } from "@/Composables/layout/usePageTitle";
-import { useEntityComparison } from "@/Composables/utils/useEntityComparison";
 import { usePermissions } from "@/Composables/permissions/usePermissions";
 import { Item } from "@/Models/Entity/Item";
+import { useBulkRequest } from "@/Composables/entity/useBulkRequest";
 
 import Container from '@/Pages/Atoms/data-display/Container.vue';
 import Btn from '@/Pages/Atoms/action/Btn.vue';
-import ToggleField from '@/Pages/Molecules/data-input/ToggleField.vue';
 import EntityTanStackTable from '@/Pages/Organismes/table/EntityTanStackTable.vue';
 import EntityModal from '@/Pages/Organismes/entity/EntityModal.vue';
-import EntityEditForm from '@/Pages/Organismes/entity/EntityEditForm.vue';
+import EntityQuickEditPanel from "@/Pages/Organismes/entity/EntityQuickEditPanel.vue";
 import CreateEntityModal from '@/Pages/Organismes/entity/CreateEntityModal.vue';
 import { createItemsTanStackTableConfig } from './items-tanstack-table-config';
-import { createFieldsConfigFromSchema, createDefaultEntityFromSchema } from "@/Utils/entity/field-schema";
-import createItemFieldSchema from "./item-field-schema";
+import { adaptItemEntitiesTableResponse } from "@/Entities/item/item-adapter";
+import { getItemFieldDescriptors } from "@/Entities/item/item-descriptors";
+import { createFieldsConfigFromDescriptors, createDefaultEntityFromDescriptors } from "@/Utils/entity/descriptor-form";
 
 // Props Inertia (gardées à titre documentaire, même si non utilisées directement ici)
 defineProps({
@@ -40,6 +40,8 @@ defineProps({
 const { setPageTitle } = usePageTitle();
 setPageTitle('Liste des Objets');
 
+const { bulkPatchJson } = useBulkRequest();
+
 // Permissions
 const { canCreate: canCreatePermission, canUpdateAny } = usePermissions();
 const canCreate = computed(() => canCreatePermission('items'));
@@ -51,7 +53,7 @@ const selectedIds = ref([]);
 const tableRows = ref([]);
 const refreshToken = ref(0);
 
-const serverUrl = computed(() => `${route('api.tables.items')}?limit=5000&_t=${refreshToken.value}`);
+const serverUrl = computed(() => `${route('api.tables.items')}?limit=5000&format=entities&_t=${refreshToken.value}`);
 
 const selectedEntities = computed(() => {
     if (!Array.isArray(selectedIds.value) || !selectedIds.value.length) return [];
@@ -68,44 +70,25 @@ const handleTableLoaded = ({ rows }) => {
     tableRows.value = Array.isArray(rows) ? rows : [];
 };
 
-// UX: en édition rapide simple, on force un seul élément sélectionné.
-watch(
-    () => selectedIds.value,
-    (ids) => {
-        if (!quickEditMode.value) return;
-        if (multiEditMode.value) return;
-        if (!Array.isArray(ids) || ids.length <= 1) return;
-        selectedIds.value = [ids[ids.length - 1]];
-    },
-    { deep: true },
-);
-
 // État
 const selectedEntity = ref(null);
 const modalOpen = ref(false);
 const modalView = ref('large');
 const createModalOpen = ref(false);
-// Mode édition rapide
-const quickEditMode = ref(false);
-const quickEditViewMode = ref('compact');
-
-const multiEditMode = ref(false);
 
 // Sécurité UX: si l'utilisateur perd le droit de modifier, on coupe les modes d'édition.
 watch(
     () => canModify.value,
     (allowed) => {
         if (allowed) return;
-        quickEditMode.value = false;
-        multiEditMode.value = false;
         selectedIds.value = [];
     },
     { immediate: true }
 );
 
 const tableConfig = computed(() => {
-    // Sélection active uniquement en mode édition rapide (et sera aussi gated par updateAny via wrapper).
-    return createItemsTanStackTableConfig({ selectionEnabled: canModify.value && quickEditMode.value });
+    // Sélection sera gated par updateAny via wrapper.
+    return createItemsTanStackTableConfig({ selectionEnabled: true });
 });
 
 // Handlers
@@ -141,35 +124,20 @@ const closeModal = () => {
     selectedEntity.value = null;
 };
 
-// Schema -> fieldsConfig (source de vérité unique)
-const itemSchema = computed(() => createItemFieldSchema());
-const fieldsConfig = computed(() => createFieldsConfigFromSchema(itemSchema.value));
-const defaultEntity = computed(() => createDefaultEntityFromSchema(itemSchema.value));
+// Descriptors -> fieldsConfig (source de vérité unique)
+const itemDescriptors = computed(() => getItemFieldDescriptors({ capabilities: { updateAny: canModify.value } }));
+const fieldsConfig = computed(() => createFieldsConfigFromDescriptors(itemDescriptors.value, { meta: {}, capabilities: { updateAny: canModify.value } }));
+const defaultEntity = computed(() => createDefaultEntityFromDescriptors(itemDescriptors.value));
 
-// Comparaison des entités sélectionnées pour l'édition multiple
-const comparison = computed(() => {
-    if (multiEditMode.value && selectedEntities.value.length > 0) {
-        return useEntityComparison(selectedEntities.value, fieldsConfig.value);
-    }
-    return {
-        commonValues: {},
-        differentFields: [],
-        hasDifferences: false
-    };
-});
-
-const handleQuickEditSubmit = () => {
-    // Recharger les données après sauvegarde
+const handleBulkApplied = async (payload) => {
+    const ok = await bulkPatchJson({ url: "/api/entities/items/bulk", payload });
+    if (!ok) return;
     refreshToken.value++;
-    // Réinitialiser la sélection après sauvegarde
     selectedIds.value = [];
 };
 
-const handleQuickEditCancel = () => {
+const clearSelection = () => {
     selectedIds.value = [];
-    if (multiEditMode.value) {
-        multiEditMode.value = false;
-    }
 };
 
 // const handleRefreshAll = () => refreshToken.value++;
@@ -186,19 +154,6 @@ const handleQuickEditCancel = () => {
                 <p class="text-primary-200 mt-2">Gérez les objets et équipements</p>
             </div>
             <div class="flex gap-2 items-center">
-                <!-- Toggle édition rapide -->
-                <div class="flex items-center gap-2">
-                    <ToggleField
-                        v-if="canModify"
-                        v-model="quickEditMode"
-                        label="Édition rapide"
-                    />
-                    <ToggleField
-                        v-if="canModify && quickEditMode"
-                        v-model="multiEditMode"
-                        label="Sélection multiple"
-                    />
-                </div>
                 <Btn v-if="canCreate" @click="handleCreate" color="primary">
                     <i class="fa-solid fa-plus mr-2"></i>
                     Créer un objet
@@ -206,91 +161,34 @@ const handleQuickEditCancel = () => {
             </div>
         </div>
 
-        <!-- Vue en 2 colonnes si édition rapide activée -->
-        <div v-if="quickEditMode" class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <!-- Colonne gauche : Tableau -->
-            <div>
+        <div
+            class="grid grid-cols-1 gap-4"
+            :class="{ 'xl:grid-cols-[minmax(0,1fr)_380px]': selectedEntities.length >= 1 }"
+        >
+            <div class="min-w-0">
                 <EntityTanStackTable
                     entity-type="items"
                     :config="tableConfig"
                     :server-url="serverUrl"
+                    :response-adapter="adaptItemEntitiesTableResponse"
                     v-model:selected-ids="selectedIds"
                     @loaded="handleTableLoaded"
                     @row-dblclick="handleRowDoubleClick"
                 />
             </div>
 
-            <!-- Colonne droite : Formulaire d'édition -->
-            <div class="lg:sticky lg:top-4 lg:h-fit">
-                <!-- Édition multiple -->
-                <div v-if="multiEditMode && selectedEntities.length > 0" class="card bg-base-100 shadow-xl">
-                    <div class="card-body">
-                        <h2 class="card-title">
-                            Édition multiple
-                            <span class="badge badge-primary">{{ selectedEntities.length }}</span>
-                        </h2>
-                        <div v-if="comparison.hasDifferences" class="alert alert-warning mb-4">
-                            <i class="fa-solid fa-triangle-exclamation"></i>
-                            <div>
-                                <p class="text-sm">
-                                    Certains champs ont des valeurs différentes entre les entités sélectionnées.
-                                    Les champs vides seront ignorés lors de la sauvegarde.
-                                </p>
-                            </div>
-                        </div>
-                        <EntityEditForm
-                            :entity="comparison.commonValues"
-                            entity-type="item"
-                            :view-mode="quickEditViewMode"
-                            :fields-config="fieldsConfig"
-                            :is-updating="true"
-                            @submit="handleMultiEditSubmit"
-                            @cancel="handleQuickEditCancel"
-                            @update:view-mode="quickEditViewMode = $event"
-                        />
-                    </div>
-                </div>
-                <!-- Édition simple -->
-                <div v-else-if="!multiEditMode && quickEditEntity" class="card bg-base-100 shadow-xl">
-                    <div class="card-body">
-                        <h2 class="card-title">Édition rapide</h2>
-                        <EntityEditForm
-                            :entity="quickEditEntity"
-                            entity-type="item"
-                            :view-mode="quickEditViewMode"
-                            :fields-config="fieldsConfig"
-                            :is-updating="true"
-                            @submit="handleQuickEditSubmit"
-                            @cancel="handleQuickEditCancel"
-                            @update:view-mode="quickEditViewMode = $event"
-                        />
-                    </div>
-                </div>
-                <div v-else class="card bg-base-200 shadow-xl">
-                    <div class="card-body text-center">
-                        <p class="text-base-content/70">
-                            <span v-if="multiEditMode">
-                                Sélectionnez un ou plusieurs objets dans le tableau pour les éditer
-                            </span>
-                            <span v-else>
-                                Sélectionnez un objet dans le tableau pour l'éditer rapidement
-                            </span>
-                        </p>
-                    </div>
-                </div>
+            <div v-if="canModify && selectedEntities.length >= 1" class="sticky top-4 self-start">
+                <EntityQuickEditPanel
+                    entity-type="items"
+                    :selected-entities="selectedEntities"
+                    :is-admin="canModify"
+                    mode="client"
+                    :filtered-ids="selectedIds"
+                    @applied="handleBulkApplied"
+                    @clear="clearSelection"
+                />
             </div>
         </div>
-
-        <!-- Vue normale (tableau seul) si édition rapide désactivée -->
-        <EntityTanStackTable
-            v-else
-            entity-type="items"
-            :config="tableConfig"
-            :server-url="serverUrl"
-            v-model:selected-ids="selectedIds"
-            @loaded="handleTableLoaded"
-            @row-dblclick="handleRowDoubleClick"
-        />
 
         <!-- Modal de création -->
         <CreateEntityModal

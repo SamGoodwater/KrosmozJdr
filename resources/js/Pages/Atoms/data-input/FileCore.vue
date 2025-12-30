@@ -242,14 +242,15 @@ input[type="file"] {
     
     // Personnalisation du bouton de sélection de fichier (utilise les styles de Btn)
     &::file-selector-button {
-        @apply btn;
         transition: all 0.2s ease-in-out;
         font-weight: 500;
         margin-right: 0.5rem;
         cursor: pointer;
+        padding: 0.5rem 0.75rem;
+        border-radius: 0.75rem;
+        border: 1px solid color-mix(in srgb, var(--color) 30%, transparent);
         background-color: var(--color);
         color: white;
-        border: 1px solid color-mix(in srgb, var(--color) 30%, transparent);
         
         &:hover {
             transform: translateY(-1px);
@@ -264,23 +265,27 @@ input[type="file"] {
     
     // Variant Glass - Effet glassmorphisme (utilise les classes de Btn)
     &.btn-glass-custom {
-        @apply border-glass-md box-glass-md;
+        border-radius: 0.75rem;
+        backdrop-filter: blur(24px);
+        box-shadow:
+            0 0 10px 0 color-mix(in srgb, var(--color) 20%, transparent) inset,
+            0 10px 30px -18px rgba(0, 0, 0, 0.35);
         border-color: color-mix(in srgb, var(--color) 30%, transparent);
         background-color: color-mix(in srgb, var(--color) 10%, transparent);
         
         &:hover {
-            @apply border-glass-lg box-glass-lg;
+            box-shadow:
+                0 0 14px 0 color-mix(in srgb, var(--color) 28%, transparent) inset,
+                0 14px 34px -18px rgba(0, 0, 0, 0.42);
             border-color: color-mix(in srgb, var(--color) 50%, transparent);
             background-color: color-mix(in srgb, var(--color) 15%, transparent);
         }
         
         &::file-selector-button {
-            @apply box-glass-sm;
             background-color: color-mix(in srgb, var(--color) 80%, transparent);
             border-color: color-mix(in srgb, var(--color) 40%, transparent);
             
             &:hover {
-                @apply box-glass-md;
                 background-color: color-mix(in srgb, var(--color) 90%, transparent);
             }
         }
@@ -288,13 +293,12 @@ input[type="file"] {
     
     // Variant Dash - Style pointillé
     &.btn-dash {
-        @apply border-glass-sm;
+        border-radius: 0.75rem;
         border-style: dashed;
         border-width: 2px;
         background-color: color-mix(in srgb, var(--color) 5%, transparent);
         
         &:hover {
-            @apply border-glass-md;
             background-color: color-mix(in srgb, var(--color) 10%, transparent);
         }
         
@@ -307,12 +311,11 @@ input[type="file"] {
     
     // Variant Outline - Bordure visible
     &.btn-outline-custom {
-        @apply border-glass-md;
+        border-radius: 0.75rem;
         border-width: 2px;
         background-color: transparent;
         
         &:hover {
-            @apply border-glass-lg;
             background-color: color-mix(in srgb, var(--color) 5%, transparent);
         }
         
@@ -340,13 +343,11 @@ input[type="file"] {
     
     // Variant Soft - Bordure inférieure uniquement
     &.btn-soft {
-        @apply border-glass-b-md;
         border-bottom-width: 2px;
         border-radius: 0;
         background-color: transparent;
         
         &:hover {
-            @apply border-glass-b-lg;
             background-color: color-mix(in srgb, var(--color) 5%, transparent);
         }
         

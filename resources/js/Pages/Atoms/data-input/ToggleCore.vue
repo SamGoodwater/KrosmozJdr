@@ -203,12 +203,10 @@ input[type="checkbox"].toggle {
     
     // Variant Glass - Effet glassmorphisme
     &.bg-transparent.border {
-        @apply border-glass-md box-glass-md;
         border-color: color-mix(in srgb, var(--color) 30%, transparent);
         background-color: color-mix(in srgb, var(--color) 10%, transparent);
         
         &:hover {
-            @apply border-glass-lg box-glass-lg;
             border-color: color-mix(in srgb, var(--color) 50%, transparent);
             background-color: color-mix(in srgb, var(--color) 15%, transparent);
         }
@@ -224,12 +222,10 @@ input[type="checkbox"].toggle {
     
     // Variant Dash - Style pointillé
     &.border-dashed.border-2 {
-        @apply border-glass-sm;
         border-style: dashed;
         background-color: color-mix(in srgb, var(--color) 5%, transparent);
         
         &:hover {
-            @apply border-glass-md;
             background-color: color-mix(in srgb, var(--color) 10%, transparent);
         }
         
@@ -241,12 +237,10 @@ input[type="checkbox"].toggle {
     
     // Variant Outline - Bordure visible
     &.border-2.bg-transparent {
-        @apply border-glass-md;
         border-width: 2px;
         background-color: transparent;
         
         &:hover {
-            @apply border-glass-lg;
             background-color: color-mix(in srgb, var(--color) 5%, transparent);
         }
         
@@ -275,13 +269,11 @@ input[type="checkbox"].toggle {
     
     // Variant Soft - Bordure inférieure uniquement
     &.border-b-2.bg-transparent.rounded-none {
-        @apply border-glass-b-md;
         border-bottom-width: 2px;
         border-radius: 0;
         background-color: transparent;
         
         &:hover {
-            @apply border-glass-b-lg;
             background-color: color-mix(in srgb, var(--color) 5%, transparent);
         }
         

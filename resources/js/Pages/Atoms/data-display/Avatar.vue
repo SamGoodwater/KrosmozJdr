@@ -282,7 +282,6 @@ function onStart() {
 </template>
 
 <style scoped>
-<<<<<<< HEAD
 /* Style pour les initiales avec variable CSS --color */
 .avatar-initials {
     background: linear-gradient(

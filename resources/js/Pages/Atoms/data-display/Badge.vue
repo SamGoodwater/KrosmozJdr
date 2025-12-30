@@ -257,9 +257,9 @@ const attrs = computed(() => getCommonAttrs(props));
 <template>
     <span :class="atomClasses" v-bind="attrs" v-on="$attrs" :style="inlineStyle">
         <!-- Priorité : content prop > slot content > slot default -->
-        <span v-if="content && !$slots.content && !$slots.default">{{ content }}</span>
+        <span v-if="content && !$slots.content && !$slots.default" class="k-truncate">{{ content }}</span>
         <slot name="content" v-else-if="$slots.content" />
-        <slot v-else />
+        <span v-else class="k-truncate"><slot /></span>
     </span>
 </template>
 

@@ -13,17 +13,18 @@ import { usePageTitle } from "@/Composables/layout/usePageTitle";
 import { useNotificationStore } from "@/Composables/store/useNotificationStore";
 import { Resource } from "@/Models/Entity/Resource";
 import { usePermissions } from "@/Composables/permissions/usePermissions";
+import { useBulkRequest } from "@/Composables/entity/useBulkRequest";
 
 import Container from '@/Pages/Atoms/data-display/Container.vue';
 import Btn from '@/Pages/Atoms/action/Btn.vue';
 import EntityTanStackTable from '@/Pages/Organismes/table/EntityTanStackTable.vue';
 import EntityModal from '@/Pages/Organismes/entity/EntityModal.vue';
 import CreateEntityModal from '@/Pages/Organismes/entity/CreateEntityModal.vue';
-import ResourceBulkEditPanel from './components/ResourceBulkEditPanel.vue';
+import EntityQuickEditPanel from '@/Pages/Organismes/entity/EntityQuickEditPanel.vue';
 import { createResourcesTanStackTableConfig } from './resources-tanstack-table-config';
-import { createFieldsConfigFromSchema, createDefaultEntityFromSchema } from "@/Utils/entity/field-schema";
-import createResourceFieldSchema from "./resource-field-schema";
 import { adaptResourceEntitiesTableResponse } from "@/Entities/resource/resource-adapter";
+import { getResourceFieldDescriptors } from "@/Entities/resource/resource-descriptors";
+import { createFieldsConfigFromDescriptors, createDefaultEntityFromDescriptors } from "@/Utils/entity/descriptor-form";
 
 const props = defineProps({
     resources: {
@@ -48,6 +49,7 @@ const { setPageTitle } = usePageTitle();
 
 // Notifications
 const notificationStore = useNotificationStore();
+const { bulkPatchJson } = useBulkRequest();
 setPageTitle('Liste des Ressources');
 
 // Permissions
@@ -111,10 +113,20 @@ const handleRowDoubleClick = (row) => {
     openModal(model);
 };
 
-// Schema -> fieldsConfig (source de vérité unique)
-const resourceSchema = computed(() => createResourceFieldSchema({ resourceTypes: props.resourceTypes || [] }));
-const fieldsConfig = computed(() => createFieldsConfigFromSchema(resourceSchema.value, { resourceTypes: props.resourceTypes || [] }));
-const defaultEntity = computed(() => createDefaultEntityFromSchema(resourceSchema.value));
+// Descriptors -> fieldsConfig (source de vérité unique)
+const resourceDescriptors = computed(() =>
+    getResourceFieldDescriptors({
+        capabilities: { updateAny: canModify.value },
+        resourceTypes: props.resourceTypes || [],
+    })
+);
+const fieldsConfig = computed(() =>
+    createFieldsConfigFromDescriptors(resourceDescriptors.value, {
+        capabilities: { updateAny: canModify.value },
+        resourceTypes: props.resourceTypes || [],
+    })
+);
+const defaultEntity = computed(() => createDefaultEntityFromDescriptors(resourceDescriptors.value));
 
 const handleCreate = () => {
     createModalOpen.value = true;
@@ -137,44 +149,11 @@ const handleRefreshAll = () => {
     refreshToken.value++;
 };
 
-const getCsrfToken = () => {
-    return document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
-};
-
 const handleBulkApplied = async (payload) => {
-    const csrfToken = getCsrfToken();
-    if (!csrfToken) {
-        notificationStore.addNotification({ type: 'error', message: 'Token CSRF introuvable. Recharge la page.' });
-        return;
-    }
-
-    try {
-        const response = await fetch('/api/entities/resources/bulk', {
-            method: 'PATCH',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': csrfToken,
-                'Accept': 'application/json',
-            },
-            body: JSON.stringify(payload),
-        });
-        const data = await response.json();
-        if (!response.ok || !data.success) {
-            notificationStore.addNotification({ type: 'error', message: data.message || 'Bulk update: erreur' });
-            return;
-        }
-
-        notificationStore.addNotification({
-            type: 'success',
-            message: `Mis à jour: ${data.summary.updated}/${data.summary.requested}`,
-        });
-
-        // Table v2: recharger le dataset serveur (client-first sur le dataset)
-        refreshToken.value++;
-        clearSelection();
-    } catch (e) {
-        notificationStore.addNotification({ type: 'error', message: 'Erreur bulk: ' + (e?.message || 'unknown') });
-    }
+    const ok = await bulkPatchJson({ url: "/api/entities/resources/bulk", payload });
+    if (!ok) return;
+    refreshToken.value++;
+    clearSelection();
 };
 </script>
 
@@ -206,9 +185,9 @@ const handleBulkApplied = async (payload) => {
 
         <div
             class="grid grid-cols-1 gap-4"
-            :class="{ 'xl:grid-cols-[1fr_380px]': selectedEntities.length >= 1 }"
+            :class="{ 'xl:grid-cols-[minmax(0,1fr)_380px]': selectedEntities.length >= 1 }"
         >
-            <div>
+            <div class="min-w-0">
                 <EntityTanStackTable
                     entity-type="resources"
                     :config="tableConfig"
@@ -221,10 +200,11 @@ const handleBulkApplied = async (payload) => {
             </div>
 
             <div v-if="canModify && selectedEntities.length >= 1" class="sticky top-4 self-start">
-                <ResourceBulkEditPanel
+                <EntityQuickEditPanel
+                    entity-type="resources"
                     :selected-entities="selectedEntities"
                     :is-admin="canModify"
-                    :resource-types="props.resourceTypes || []"
+                    :extra-ctx="{ resourceTypes: props.resourceTypes || [] }"
                     :filtered-ids="filteredIds"
                     mode="client"
                     @applied="handleBulkApplied"

@@ -223,4 +223,9 @@ Route::middleware(['web'])->prefix('tables')->group(function () {
 Route::middleware(['web', 'auth'])->prefix('entities')->group(function () {
     Route::patch('/resources/bulk', [App\Http\Controllers\Api\ResourceBulkController::class, 'bulkUpdate'])
         ->name('api.entities.resources.bulk');
+    Route::patch('/items/bulk', [App\Http\Controllers\Api\ItemBulkController::class, 'bulkUpdate'])
+        ->name('api.entities.items.bulk');
+    Route::patch('/spells/bulk', [App\Http\Controllers\Api\SpellBulkController::class, 'bulkUpdate'])
+        ->name('api.entities.spells.bulk');
+        ->name('api.entities.items.bulk');
 });

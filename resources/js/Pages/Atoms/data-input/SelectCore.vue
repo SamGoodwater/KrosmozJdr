@@ -243,13 +243,11 @@ select.select {
     
     // Variant Glass - Effet glassmorphisme
     &.select-variant-glass {
-        @apply border-glass-md box-glass-md;
         border-color: color-mix(in srgb, var(--color) 30%, transparent);
         background-color: color-mix(in srgb, var(--color) 10%, transparent);
         background-image: $arrow-svg; // Réappliquer la flèche
         
         &:hover {
-            @apply border-glass-lg box-glass-lg;
             border-color: color-mix(in srgb, var(--color) 50%, transparent);
             background-color: color-mix(in srgb, var(--color) 15%, transparent);
             background-image: $arrow-svg;
@@ -264,14 +262,12 @@ select.select {
     
     // Variant Dash - Style pointillé
     &.select-variant-dash {
-        @apply border-glass-sm;
         border-style: dashed;
         border-width: 2px;
         background-color: color-mix(in srgb, var(--color) 5%, transparent);
         background-image: $arrow-svg;
         
         &:hover {
-            @apply border-glass-md;
             background-color: color-mix(in srgb, var(--color) 10%, transparent);
             background-image: $arrow-svg;
         }
@@ -285,13 +281,11 @@ select.select {
     
     // Variant Outline - Bordure visible
     &.select-variant-outline {
-        @apply border-glass-md;
         border-width: 2px;
         background-color: transparent;
         background-image: $arrow-svg;
         
         &:hover {
-            @apply border-glass-lg;
             background-color: color-mix(in srgb, var(--color) 5%, transparent);
             background-image: $arrow-svg;
         }
@@ -324,14 +318,12 @@ select.select {
     
     // Variant Soft - Bordure inférieure uniquement
     &.select-variant-soft {
-        @apply border-glass-b-md;
         border-bottom-width: 2px;
         border-radius: 0;
         background-color: transparent;
         background-image: $arrow-svg;
         
         &:hover {
-            @apply border-glass-b-lg;
             background-color: color-mix(in srgb, var(--color) 5%, transparent);
             background-image: $arrow-svg;
         }

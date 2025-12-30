@@ -82,6 +82,54 @@ Exemple Ressource :
   - [ ] bulk meta -> depuis descriptors
   - [ ] `EntityView*` -> rendu basé sur des descriptors (au lieu d’itérer les props)
 
+## Formulaires & Bulk Edit depuis les descriptors (v1)
+
+On introduit un bloc optionnel `edit.form` dans chaque descriptor (par champ) :
+
+- `type`: `text | number | textarea | select | checkbox | file`
+- `required`, `showInCompact`
+- `options` (array ou fonction `ctx => options`)
+- `defaultValue`
+- (optionnel) `help`, `tooltip`, `placeholder` (UX)
+- `bulk` (optionnel) : `enabled`, `nullable`, `build(raw, ctx)`
+
+Générateurs (frontend) :
+
+- `createFieldsConfigFromDescriptors(descriptors, ctx)` → `fieldsConfig` pour `EntityEditForm`
+- `createDefaultEntityFromDescriptors(descriptors)` → `defaultEntity` pour `CreateEntityModal`
+- `createBulkFieldMetaFromDescriptors(descriptors, ctx)` → `fieldMeta` pour `useBulkEditPanel`
+
+> Remarque : le backend reste la vérité sécurité. `edit.form` sert à l’UX, l’API est validée côté Laravel.
+
+## Quick Edit (sélection multiple) — `viewFields.quickEdit`
+
+Le **quick edit** est un panneau d’édition en masse “côté table” (sélection multiple) basé sur :
+
+- `useBulkEditPanel` (agrégation, “valeurs différentes”, payload)
+- les descriptors (`edit.form.bulk`) pour savoir quels champs sont bulk-editables et comment construire le payload
+
+### Convention
+
+- Chaque entité peut définir `viewFields.quickEdit` (liste ordonnée de clés de champs) dans `*descriptors.js`.
+- Le composant générique `EntityQuickEditPanel` utilise :
+  - **priorité** : `viewFields.quickEdit` si présent
+  - **fallback** : tous les champs où `edit.form.bulk.enabled === true`
+
+> Important : la liste `quickEdit` doit rester cohérente avec le **bulk endpoint backend** (sinon champs ignorés / 422).
+
+### Sections (groupes)
+
+Pour améliorer la lisibilité, un champ peut définir `edit.form.group` (string) :
+
+- Exemple : `"Statut" | "Métier" | "Métadonnées" | "Contenu" | "Image"`
+- Le `EntityQuickEditPanel` regroupe alors les champs par section, en conservant l’ordre (groupes ordonnés par première apparition).
+
+### Exemple
+
+- `Resource` : `resource_type_id`, `rarity`, `level`, `usable`, `auto_update`, `is_visible`, `price`, …
+- `ResourceType` : `decision`, `usable`, `is_visible`
+- `Item` : `rarity`, `level`, `usable`, `auto_update`, `is_visible`, `price`, …
+
 ## Pattern “minimal → hover details”
 
 Recommandation UX :

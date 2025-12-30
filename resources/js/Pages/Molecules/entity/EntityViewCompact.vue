@@ -28,8 +28,7 @@ import CellRenderer from "@/Pages/Atoms/data-display/CellRenderer.vue";
 import { useCopyToClipboard } from '@/Composables/utils/useCopyToClipboard';
 import { useDownloadPdf } from '@/Composables/utils/useDownloadPdf';
 import { usePermissions } from '@/Composables/permissions/usePermissions';
-import { getResourceFieldDescriptors, RESOURCE_VIEW_FIELDS } from "@/Entities/resource/resource-descriptors";
-import { buildResourceCell } from "@/Entities/resource/resource-adapter";
+import { getEntityConfig, normalizeEntityType } from "@/Entities/entity-registry";
 
 const props = defineProps({
     entity: {
@@ -64,27 +63,30 @@ const canUpdate = computed(() => {
     return props.entity?.can?.update ?? false;
 });
 
-const isResource = computed(() => props.entityType === "resource");
+const entityTypeKey = computed(() => normalizeEntityType(props.entityType));
+const entityConfig = computed(() => getEntityConfig(entityTypeKey.value));
 
-const resourceCapabilities = computed(() => {
-    // `usePermissions` normalise automatiquement "resource" -> "resources"
+const entityCapabilities = computed(() => {
+    const k = String(entityTypeKey.value || props.entityType);
     return {
-        viewAny: canViewAny("resource"),
-        createAny: canCreateAny("resource"),
-        updateAny: canUpdateAny("resource"),
-        deleteAny: canDeleteAny("resource"),
-        manageAny: canManageAny("resource"),
+        viewAny: canViewAny(k),
+        createAny: canCreateAny(k),
+        updateAny: canUpdateAny(k),
+        deleteAny: canDeleteAny(k),
+        manageAny: canManageAny(k),
     };
 });
 
-const resourceCtx = computed(() => {
-    return {
-        capabilities: resourceCapabilities.value,
-        meta: { capabilities: resourceCapabilities.value },
-    };
+const entityCtx = computed(() => {
+    const caps = entityCapabilities.value;
+    return { capabilities: caps, meta: { capabilities: caps } };
 });
 
-const resourceDescriptors = computed(() => getResourceFieldDescriptors(resourceCtx.value));
+const entityDescriptors = computed(() => {
+    const cfg = entityConfig.value;
+    if (!cfg?.getDescriptors) return {};
+    return cfg.getDescriptors(entityCtx.value) || {};
+});
 
 const rawEntity = computed(() => {
     if (props.entity && typeof props.entity.toRaw === "function") return props.entity.toRaw();
@@ -93,17 +95,18 @@ const rawEntity = computed(() => {
 });
 
 const compactFields = computed(() => {
-    const list = RESOURCE_VIEW_FIELDS.compact || [];
-    return list.filter((key) => {
-        const d = resourceDescriptors.value?.[key];
+    const cfg = entityConfig.value;
+    const list = cfg?.viewFields?.compact || [];
+    return (list || []).filter((key) => {
+        const d = entityDescriptors.value?.[key];
         if (!d) return true;
-        if (typeof d.visibleIf === "function") return Boolean(d.visibleIf(resourceCtx.value));
+        if (typeof d.visibleIf === "function") return Boolean(d.visibleIf(entityCtx.value));
         return true;
     });
 });
 
 const getViewCfg = (key) => {
-    const d = resourceDescriptors.value?.[key];
+    const d = entityDescriptors.value?.[key];
     return d?.display?.views?.compact || null;
 };
 
@@ -127,7 +130,7 @@ const showCompactLabel = (key) => {
 };
 
 const tooltipForResourceField = (key, cell) => {
-    const d = resourceDescriptors.value?.[key];
+    const d = entityDescriptors.value?.[key];
     const label = d?.label || key;
 
     // valeur "humaine" pour tooltip
@@ -300,21 +303,21 @@ const handleRefresh = () => {
 
         <!-- Informations en liste compacte avec icônes -->
         <div class="space-y-2 text-sm">
-            <!-- Ressource (Option B) -->
-            <template v-if="isResource">
+            <!-- Entités migrées (Option B via registry) -->
+            <template v-if="entityConfig">
                 <div
                     v-for="key in compactFields"
                     :key="key"
                     class="flex items-start gap-2 p-2 rounded hover:bg-base-200 transition-colors"
                 >
                     <Tooltip
-                        :content="tooltipForResourceField(key, buildResourceCell(key, rawEntity, resourceCtx, { context: 'compact' }))"
+                        :content="tooltipForResourceField(key, entityConfig.buildCell(key, rawEntity, entityCtx, { context: 'compact' }))"
                         placement="top"
                     >
                         <div class="flex items-start gap-2 w-full">
                             <Icon
                                 v-if="showCompactIcon(key)"
-                                :source="resourceDescriptors?.[key]?.icon || getFieldIcon(key)"
+                                :source="entityDescriptors?.[key]?.icon || getFieldIcon(key)"
                                 size="xs"
                                 class="text-primary-400 flex-shrink-0 mt-0.5"
                             />
@@ -325,12 +328,12 @@ const handleRefresh = () => {
                                         v-if="showCompactLabel(key)"
                                         class="text-primary-400 text-xs font-semibold uppercase"
                                     >
-                                        {{ resourceDescriptors?.[key]?.label || key }}
+                                        {{ entityDescriptors?.[key]?.label || key }}
                                     </span>
 
                                     <div class="flex-1 text-right min-w-0 text-primary-200">
                                         <CellRenderer
-                                            :cell="buildResourceCell(key, rawEntity, resourceCtx, { context: 'compact' })"
+                                            :cell="entityConfig.buildCell(key, rawEntity, entityCtx, { context: 'compact' })"
                                             ui-color="primary"
                                         />
                                     </div>

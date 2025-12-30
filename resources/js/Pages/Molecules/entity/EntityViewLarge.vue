@@ -25,8 +25,7 @@ import CellRenderer from "@/Pages/Atoms/data-display/CellRenderer.vue";
 import { useCopyToClipboard } from '@/Composables/utils/useCopyToClipboard';
 import { useDownloadPdf } from '@/Composables/utils/useDownloadPdf';
 import { usePermissions } from '@/Composables/permissions/usePermissions';
-import { getResourceFieldDescriptors, RESOURCE_VIEW_FIELDS } from "@/Entities/resource/resource-descriptors";
-import { buildResourceCell } from "@/Entities/resource/resource-adapter";
+import { getEntityConfig, normalizeEntityType } from "@/Entities/entity-registry";
 
 const props = defineProps({
     entity: {
@@ -65,26 +64,30 @@ const canView = computed(() => {
     return props.entity?.can?.view ?? false;
 });
 
-const isResource = computed(() => props.entityType === "resource");
+const entityTypeKey = computed(() => normalizeEntityType(props.entityType));
+const entityConfig = computed(() => getEntityConfig(entityTypeKey.value));
 
-const resourceCapabilities = computed(() => {
+const entityCapabilities = computed(() => {
+    const k = String(entityTypeKey.value || props.entityType);
     return {
-        viewAny: canViewAny("resource"),
-        createAny: canCreateAny("resource"),
-        updateAny: canUpdateAny("resource"),
-        deleteAny: canDeleteAny("resource"),
-        manageAny: canManageAny("resource"),
+        viewAny: canViewAny(k),
+        createAny: canCreateAny(k),
+        updateAny: canUpdateAny(k),
+        deleteAny: canDeleteAny(k),
+        manageAny: canManageAny(k),
     };
 });
 
-const resourceCtx = computed(() => {
-    return {
-        capabilities: resourceCapabilities.value,
-        meta: { capabilities: resourceCapabilities.value },
-    };
+const entityCtx = computed(() => {
+    const caps = entityCapabilities.value;
+    return { capabilities: caps, meta: { capabilities: caps } };
 });
 
-const resourceDescriptors = computed(() => getResourceFieldDescriptors(resourceCtx.value));
+const entityDescriptors = computed(() => {
+    const cfg = entityConfig.value;
+    if (!cfg?.getDescriptors) return {};
+    return cfg.getDescriptors(entityCtx.value) || {};
+});
 
 const rawEntity = computed(() => {
     if (props.entity && typeof props.entity.toRaw === "function") return props.entity.toRaw();
@@ -93,17 +96,18 @@ const rawEntity = computed(() => {
 });
 
 const extendedFields = computed(() => {
-    const list = RESOURCE_VIEW_FIELDS.extended || [];
-    return list.filter((key) => {
-        const d = resourceDescriptors.value?.[key];
+    const cfg = entityConfig.value;
+    const list = cfg?.viewFields?.extended || [];
+    return (list || []).filter((key) => {
+        const d = entityDescriptors.value?.[key];
         if (!d) return true;
-        if (typeof d.visibleIf === "function") return Boolean(d.visibleIf(resourceCtx.value));
+        if (typeof d.visibleIf === "function") return Boolean(d.visibleIf(entityCtx.value));
         return true;
     });
 });
 
 const getExtendedViewCfg = (key) => {
-    const d = resourceDescriptors.value?.[key];
+    const d = entityDescriptors.value?.[key];
     return d?.display?.views?.extended || null;
 };
 
@@ -125,7 +129,7 @@ const showExtendedLabel = (key) => {
 };
 
 const tooltipForResourceField = (key, cell) => {
-    const d = resourceDescriptors.value?.[key];
+    const d = entityDescriptors.value?.[key];
     const label = d?.label || key;
 
     let v = cell?.value;
@@ -259,34 +263,34 @@ const handleRefresh = () => {
 
         <!-- Informations principales -->
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            <!-- Ressource (Option B) -->
-            <template v-if="isResource">
+            <!-- Entités migrées (Option B via registry) -->
+            <template v-if="entityConfig">
                 <div
                     v-for="key in extendedFields"
                     :key="key"
                     class="p-3 bg-base-200 rounded-lg"
                 >
                     <Tooltip
-                        :content="tooltipForResourceField(key, buildResourceCell(key, rawEntity, resourceCtx, { context: 'extended' }))"
+                        :content="tooltipForResourceField(key, entityConfig.buildCell(key, rawEntity, entityCtx, { context: 'extended' }))"
                         placement="top"
                     >
                         <div class="flex flex-col gap-1">
                             <div class="flex items-center gap-2">
                                 <Icon
                                     v-if="showExtendedIcon(key)"
-                                    :source="resourceDescriptors?.[key]?.icon || 'fa-solid fa-info-circle'"
-                                    :alt="resourceDescriptors?.[key]?.label || key"
+                                    :source="entityDescriptors?.[key]?.icon || 'fa-solid fa-info-circle'"
+                                    :alt="entityDescriptors?.[key]?.label || key"
                                     size="xs"
                                     class="text-primary-400"
                                 />
                                 <span class="text-xs text-primary-400 uppercase font-semibold">
-                                    <span v-if="showExtendedLabel(key)">{{ resourceDescriptors?.[key]?.label || key }}</span>
-                                    <span v-else class="sr-only">{{ resourceDescriptors?.[key]?.label || key }}</span>
+                                    <span v-if="showExtendedLabel(key)">{{ entityDescriptors?.[key]?.label || key }}</span>
+                                    <span v-else class="sr-only">{{ entityDescriptors?.[key]?.label || key }}</span>
                                 </span>
                             </div>
                             <div class="text-primary-100 break-words">
                                 <CellRenderer
-                                    :cell="buildResourceCell(key, rawEntity, resourceCtx, { context: 'extended' })"
+                                    :cell="entityConfig.buildCell(key, rawEntity, entityCtx, { context: 'extended' })"
                                     ui-color="primary"
                                 />
                             </div>

@@ -22,6 +22,12 @@ class ItemTableController extends Controller
     {
         $this->authorize('viewAny', Item::class);
 
+        // Mode de réponse:
+        // - (default) "cells" : `rows[]` contient `cells` déjà prêtes à rendre.
+        // - "entities" : renvoie `entities[]` (données brutes + meta) pour laisser le frontend générer les `cells`.
+        //   Objectif : supporter une architecture "field descriptors" (Option B).
+        $format = $request->filled('format') ? (string) $request->get('format') : 'cells';
+
         $filters = (array) ($request->input('filters', $request->input('filter', [])) ?? []);
         foreach (['level', 'rarity', 'item_type_id'] as $k) {
             if (!array_key_exists($k, $filters) && $request->has($k)) {
@@ -88,11 +94,11 @@ class ItemTableController extends Controller
             ->all();
 
         $rarityMap = [
-            'common' => ['label' => 'Commun', 'color' => 'success', 'sort' => 0],
-            'uncommon' => ['label' => 'Peu commun', 'color' => 'info', 'sort' => 1],
-            'rare' => ['label' => 'Rare', 'color' => 'primary', 'sort' => 2],
-            'epic' => ['label' => 'Épique', 'color' => 'warning', 'sort' => 3],
-            'legendary' => ['label' => 'Légendaire', 'color' => 'error', 'sort' => 4],
+            '0' => ['label' => 'Commun', 'color' => 'success', 'sort' => 0],
+            '1' => ['label' => 'Peu commun', 'color' => 'info', 'sort' => 1],
+            '2' => ['label' => 'Rare', 'color' => 'primary', 'sort' => 2],
+            '3' => ['label' => 'Épique', 'color' => 'warning', 'sort' => 3],
+            '4' => ['label' => 'Légendaire', 'color' => 'error', 'sort' => 4],
         ];
 
         $filterOptions = [
@@ -109,6 +115,61 @@ class ItemTableController extends Controller
                 ['value' => '200', 'label' => '200'],
             ],
         ];
+
+        // Option B: renvoyer des entités brutes (le front génère `cells`).
+        if ($format === 'entities') {
+            $entities = $rows->map(function (Item $it) {
+                $createdBy = $it->createdBy;
+                $itemType = $it->itemType;
+
+                return [
+                    'id' => $it->id,
+                    'dofusdb_id' => $it->dofusdb_id,
+                    'official_id' => $it->official_id,
+                    'name' => $it->name,
+                    'description' => $it->description,
+                    'effect' => $it->effect,
+                    'bonus' => $it->bonus,
+                    'recipe' => $it->recipe,
+                    'level' => $it->level,
+                    'price' => $it->price,
+                    'rarity' => $it->rarity,
+                    'dofus_version' => $it->dofus_version,
+                    'usable' => (int) ($it->usable ?? 0),
+                    'image' => $it->image,
+                    'auto_update' => (bool) $it->auto_update,
+                    'item_type_id' => $it->item_type_id,
+                    'itemType' => $itemType ? [
+                        'id' => $itemType->id,
+                        'name' => $itemType->name,
+                    ] : null,
+                    'createdBy' => $createdBy ? [
+                        'id' => $createdBy->id,
+                        'name' => $createdBy->name,
+                        'email' => $createdBy->email,
+                    ] : null,
+                    'created_at' => $it->created_at?->toISOString(),
+                    'updated_at' => $it->updated_at?->toISOString(),
+                ];
+            })->values()->all();
+
+            return response()->json([
+                'meta' => [
+                    'entityType' => 'items',
+                    'query' => [
+                        'search' => $search,
+                        'filters' => $filters,
+                        'sort' => $sort,
+                        'order' => $order,
+                        'limit' => $limit,
+                    ],
+                    'capabilities' => $capabilities,
+                    'filterOptions' => $filterOptions,
+                    'format' => 'entities',
+                ],
+                'entities' => $entities,
+            ]);
+        }
 
         $tableRows = $rows->map(function (Item $it) use ($rarityMap) {
             $showHref = route('entities.items.show', $it->id);

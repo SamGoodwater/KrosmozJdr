@@ -1,0 +1,38 @@
+/**
+ * KrosmozJDR — Text truncation utilities
+ *
+ * @description
+ * Utilitaires SCSS réutilisables (pas réservés aux badges) pour :
+ * - forcer un texte sur **une seule ligne**
+ * - tronquer avec "…" selon une largeur max définie
+ *
+ * @example
+ * <span class="k-truncate k-truncate-md">Un texte très long…</span>
+ * <span class="k-truncate k-truncate-table" title="Texte complet">Texte…</span>
+ */
+
+// Base: 1 ligne + ellipsis
+.k-truncate {
+  display: inline-block;
+  min-width: 0;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  vertical-align: middle;
+}
+
+// Width presets (xs..xl) — valeurs en rem, ajustables
+.k-truncate-xs { max-width: 6rem; }   // ~96px
+.k-truncate-sm { max-width: 8rem; }   // ~128px
+.k-truncate-md { max-width: 10rem; }  // ~160px
+.k-truncate-lg { max-width: 14rem; }  // ~224px
+.k-truncate-xl { max-width: 18rem; }  // ~288px
+
+// Context presets (optionnels)
+.k-truncate-table { max-width: 9rem; }
+.k-truncate-minimal { max-width: 7rem; }
+.k-truncate-compact { max-width: 11rem; }
+.k-truncate-extended { max-width: 18rem; }
+
+

@@ -61,6 +61,21 @@ export const DEFAULT_RESOURCE_FIELD_VIEWS = Object.freeze({
  * la notion de "présence dans une vue" directement dans chaque descriptor.
  */
 export const RESOURCE_VIEW_FIELDS = Object.freeze({
+  // Champs affichés dans le panneau d’édition rapide (sélection multiple).
+  // Doit rester aligné avec le backend (bulk controller) pour éviter des champs non pris en compte.
+  quickEdit: [
+    "resource_type_id",
+    "rarity",
+    "level",
+    "usable",
+    "auto_update",
+    "is_visible",
+    "price",
+    "weight",
+    "dofus_version",
+    "description",
+    "image",
+  ],
   compact: [
     "rarity",
     "resource_type",
@@ -102,6 +117,7 @@ export const RESOURCE_VIEW_FIELDS = Object.freeze({
 export function getResourceFieldDescriptors(ctx = {}) {
   const can = ctx?.capabilities || ctx?.meta?.capabilities || null;
   const canUpdateAny = Boolean(can?.updateAny);
+  const resourceTypes = Array.isArray(ctx?.resourceTypes) ? ctx.resourceTypes : (Array.isArray(ctx?.meta?.resourceTypes) ? ctx.meta.resourceTypes : []);
 
   return {
     image: {
@@ -116,6 +132,16 @@ export function getResourceFieldDescriptors(ctx = {}) {
           small: { mode: "thumb" },
           normal: { mode: "thumb" },
           large: { mode: "thumb" },
+        },
+      },
+      edit: {
+        form: {
+          type: "text",
+          label: "Image (URL)",
+          group: "Image",
+          required: false,
+          showInCompact: false,
+          bulk: { enabled: true, nullable: true, build: (v) => (v === "" ? null : String(v)) },
         },
       },
     },
@@ -135,6 +161,33 @@ export function getResourceFieldDescriptors(ctx = {}) {
           small: { mode: "route", truncate: 44 },
           normal: { mode: "route", truncate: 80 },
           large: { mode: "route" },
+        },
+      },
+      edit: {
+        form: { type: "text", required: true, showInCompact: true, bulk: { enabled: false } },
+      },
+    },
+    description: {
+      key: "description",
+      label: "Description",
+      icon: "fa-solid fa-align-left",
+      color: "auto",
+      format: "text",
+      display: {
+        views: DEFAULT_RESOURCE_FIELD_VIEWS,
+        sizes: {
+          small: { mode: "text", truncate: 60 },
+          normal: { mode: "text", truncate: 160 },
+          large: { mode: "text" },
+        },
+      },
+      edit: {
+        form: {
+          type: "textarea",
+          group: "Contenu",
+          required: false,
+          showInCompact: false,
+          bulk: { enabled: true, nullable: true, build: (v) => (v === "" ? null : String(v)) },
         },
       },
     },
@@ -157,6 +210,16 @@ export function getResourceFieldDescriptors(ctx = {}) {
           large: { mode: "badge" },
         },
       },
+      edit: {
+        form: {
+          type: "text",
+          group: "Métier",
+          placeholder: "Ex: 50",
+          required: false,
+          showInCompact: true,
+          bulk: { enabled: true, nullable: true, build: (v) => (v === "" ? null : String(v)) },
+        },
+      },
     },
     resource_type: {
       key: "resource_type",
@@ -174,6 +237,32 @@ export function getResourceFieldDescriptors(ctx = {}) {
         },
       },
     },
+    resource_type_id: {
+      key: "resource_type_id",
+      label: "Type de ressource",
+      icon: "fa-solid fa-tag",
+      color: "auto",
+      format: "enum",
+      display: {
+        views: DEFAULT_RESOURCE_FIELD_VIEWS,
+        sizes: {
+          small: { mode: "text" },
+          normal: { mode: "text" },
+          large: { mode: "text" },
+        },
+      },
+      edit: {
+        form: {
+          type: "select",
+          group: "Métier",
+          tooltip: "Définit le type (métier) de la ressource. Impacte les filtres et le tri.",
+          required: false,
+          showInCompact: true,
+          options: () => [{ value: "", label: "—" }, ...resourceTypes.map((t) => ({ value: t.id, label: t.name }))],
+          bulk: { enabled: true, nullable: true, build: (v) => (v === "" ? null : Number(v)) },
+        },
+      },
+    },
     rarity: {
       key: "rarity",
       label: "Rareté",
@@ -186,6 +275,24 @@ export function getResourceFieldDescriptors(ctx = {}) {
           small: { mode: "badge" },
           normal: { mode: "badge" },
           large: { mode: "badge" },
+        },
+      },
+      edit: {
+        form: {
+          type: "select",
+          group: "Métier",
+          help: "La rareté est un entier (0..5). En bulk, laisser vide n’applique aucun changement.",
+          required: false,
+          showInCompact: true,
+          options: [
+            { value: 0, label: "Commun" },
+            { value: 1, label: "Peu commun" },
+            { value: 2, label: "Rare" },
+            { value: 3, label: "Très rare" },
+            { value: 4, label: "Légendaire" },
+            { value: 5, label: "Unique" },
+          ],
+          bulk: { enabled: true, nullable: false, build: (v) => Number(v) },
         },
       },
     },
@@ -206,6 +313,15 @@ export function getResourceFieldDescriptors(ctx = {}) {
           large: { mode: "text" },
         },
       },
+      edit: {
+        form: {
+          type: "text",
+          group: "Métadonnées",
+          required: false,
+          showInCompact: true,
+          bulk: { enabled: true, nullable: true, build: (v) => (v === "" ? null : String(v)) },
+        },
+      },
     },
     weight: {
       key: "weight",
@@ -222,6 +338,15 @@ export function getResourceFieldDescriptors(ctx = {}) {
           small: { mode: "text" },
           normal: { mode: "text" },
           large: { mode: "text" },
+        },
+      },
+      edit: {
+        form: {
+          type: "text",
+          group: "Métadonnées",
+          required: false,
+          showInCompact: true,
+          bulk: { enabled: true, nullable: true, build: (v) => (v === "" ? null : String(v)) },
         },
       },
     },
@@ -242,6 +367,15 @@ export function getResourceFieldDescriptors(ctx = {}) {
           large: { mode: "text" },
         },
       },
+      edit: {
+        form: {
+          type: "text",
+          group: "Métadonnées",
+          required: false,
+          showInCompact: true,
+          bulk: { enabled: true, nullable: true, build: (v) => (v === "" ? null : String(v)) },
+        },
+      },
     },
     is_visible: {
       key: "is_visible",
@@ -255,6 +389,22 @@ export function getResourceFieldDescriptors(ctx = {}) {
           small: { mode: "badge" },
           normal: { mode: "badge" },
           large: { mode: "badge" },
+        },
+      },
+      edit: {
+        form: {
+          type: "select",
+          group: "Statut",
+          help: "Contrôle la visibilité côté front. Le backend reste la vérité sécurité.",
+          required: false,
+          showInCompact: true,
+          options: [
+            { value: "guest", label: "Invité" },
+            { value: "user", label: "Utilisateur" },
+            { value: "game_master", label: "Maître de jeu" },
+            { value: "admin", label: "Administrateur" },
+          ],
+          bulk: { enabled: true, nullable: false, build: (v) => v },
         },
       },
     },
@@ -278,6 +428,16 @@ export function getResourceFieldDescriptors(ctx = {}) {
           large: { mode: "boolBadge" },
         },
       },
+      edit: {
+        form: {
+          type: "checkbox",
+          group: "Statut",
+          required: false,
+          showInCompact: true,
+          defaultValue: false,
+          bulk: { enabled: true, nullable: false, build: (v) => v === "1" || v === true },
+        },
+      },
     },
     auto_update: {
       key: "auto_update",
@@ -296,6 +456,16 @@ export function getResourceFieldDescriptors(ctx = {}) {
           small: { mode: "boolIcon" },
           normal: { mode: "boolBadge" },
           large: { mode: "boolBadge" },
+        },
+      },
+      edit: {
+        form: {
+          type: "checkbox",
+          group: "Statut",
+          required: false,
+          showInCompact: true,
+          defaultValue: false,
+          bulk: { enabled: true, nullable: false, build: (v) => v === "1" || v === true },
         },
       },
     },
