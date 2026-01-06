@@ -23,6 +23,12 @@ class ConsumableTableController extends Controller
     {
         $this->authorize('viewAny', Consumable::class);
 
+        // Mode de réponse:
+        // - (default) "cells" : `rows[]` contient `cells` déjà prêtes à rendre.
+        // - "entities" : renvoie `entities[]` (données brutes + meta) pour laisser le frontend générer les `cells`.
+        //   Objectif : supporter une architecture "field descriptors" (Option B).
+        $format = $request->filled('format') ? (string) $request->get('format') : 'cells';
+
         $search = $request->filled('search') ? (string) $request->get('search') : '';
 
         $limit = (int) $request->integer('limit', 5000);
@@ -69,6 +75,59 @@ class ConsumableTableController extends Controller
             5 => 'neutral',
             default => 'primary',
         };
+
+        $consumableTypeOptions = ConsumableType::query()
+            ->select(['id', 'name'])
+            ->orderBy('name')
+            ->get()
+            ->map(fn (ConsumableType $t) => [
+                'value' => (string) $t->id,
+                'label' => (string) $t->name,
+            ])
+            ->values()
+            ->all();
+
+        // Mode "entities" : retourner les entités brutes
+        if ($format === 'entities') {
+            $entities = $rows->map(function (Consumable $c) {
+                $createdBy = $c->createdBy;
+                return $c->toArray() + [
+                    'consumableType' => $c->consumableType ? [
+                        'id' => $c->consumableType->id,
+                        'name' => $c->consumableType->name,
+                    ] : null,
+                    'createdBy' => $createdBy ? [
+                        'id' => $createdBy->id,
+                        'name' => $createdBy->name,
+                        'email' => $createdBy->email,
+                    ] : null,
+                    'created_at' => $c->created_at?->toISOString(),
+                    'updated_at' => $c->updated_at?->toISOString(),
+                ];
+            })->values()->all();
+
+            return response()->json([
+                'meta' => [
+                    'entityType' => 'consumables',
+                    'query' => [
+                        'search' => $search,
+                        'sort' => $sort,
+                        'order' => $order,
+                        'limit' => $limit,
+                    ],
+                    'capabilities' => $capabilities,
+                    'filterOptions' => [
+                        'rarity' => collect(Resource::RARITY)->map(fn ($label, $value) => [
+                            'value' => (string) $value,
+                            'label' => (string) $label,
+                        ])->values()->all(),
+                        'consumable_type_id' => $consumableTypeOptions,
+                    ],
+                    'format' => 'entities',
+                ],
+                'entities' => $entities,
+            ]);
+        }
 
         $tableRows = $rows->map(function (Consumable $c) use ($rarityColor) {
             $showHref = route('entities.consumables.show', $c->id);

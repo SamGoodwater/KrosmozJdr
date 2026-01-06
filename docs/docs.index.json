@@ -107,7 +107,7 @@
   {
     "path": "10-BestPractices/TESTING_PRACTICES.md",
     "title": "Tests — Bonnes pratiques",
-    "description": "- Mettre en place des tests unitaires et d’intégration (backend, frontend)."
+    "description": "- Mettre en place des tests unitaires et d'intégration (backend, frontend). 159 tests passent (941 assertions) pour le système Entity Field Descriptors."
   },
   {
     "path": "100- Done/AUDIT_PAGES_SECTIONS_2025_01_13.md",
@@ -223,6 +223,11 @@
     "path": "100- Done/VALIDATION_REFACTORING.md",
     "title": "Refactoring du Système de Validation — KrosmozJDR",
     "description": "Le système de validation a été entièrement refactorisé pour répondre aux besoins de simplicité et de transparence. L'objectif était de créer une API qui évite les conflits avec les vues tout en restant puissante et flexible."
+  },
+  {
+    "path": "100- Done/TESTS_ENTITY_DESCRIPTORS_IMPLEMENTATION.md",
+    "title": "Tests — Système Entity Field Descriptors",
+    "description": "Suite de tests complète pour le système Entity Field Descriptors : 159 tests passent (941 assertions) couvrant les opérations bulk, endpoints table, adapters frontend, et utilitaires."
   },
   {
     "path": "110- To Do/To Do2.md",
@@ -454,16 +459,11 @@
     "title": "Guide de Design Krosmoz-JDR",
     "description": "Le design du site s'appuie sur les principes d'Atomic Design, le glassmorphism et une forte accessibilité. L'interface est responsive et moderne."
   },
-    {
-      "path": "30-UI/ENTITY_FIELD_DESCRIPTORS.md",
-      "title": "Entity Field Descriptors — Architecture (Option B)",
-      "description": "Mettre en place une **source de vérité frontend** par champ (“field descriptor”) afin de générer :"
-    },
-    {
-      "path": "30-UI/PLAN_MIGRATION_DESCRIPTORS.md",
-      "title": "Plan de migration — Système Entity Field Descriptors",
-      "description": "Plan d'action structuré pour migrer toutes les entités vers le système descriptor. **Statut** : En cours — 3/16 entités migrées (resource, resource_type, item)."
-    },
+  {
+    "path": "30-UI/ENTITY_FIELD_DESCRIPTORS.md",
+    "title": "Entity Field Descriptors — Architecture (Option B)",
+    "description": "Mettre en place une **source de vérité frontend** par champ (“field descriptor”) afin de générer :"
+  },
   {
     "path": "30-UI/FRONTEND_MODELS.md",
     "title": "Modèles Frontend JS — KrosmozJDR",
@@ -538,6 +538,11 @@
     "path": "30-UI/NOTIFICATIONS.md",
     "title": "Notifications — Guide KrosmozJDR",
     "description": "- **useNotificationStore (Composable)** : Centralise la gestion des notifications toast"
+  },
+  {
+    "path": "30-UI/PLAN_MIGRATION_DESCRIPTORS.md",
+    "title": "Plan de migration — Système Entity Field Descriptors",
+    "description": "**Date de création** : 2025-01-27"
   },
   {
     "path": "30-UI/README.md",

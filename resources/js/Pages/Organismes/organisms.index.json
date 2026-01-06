@@ -438,6 +438,13 @@
     "file": "entity/EntityRelationsManager.vue"
   },
   {
+    "name": "EntityQuickEditPanel",
+    "description": "EntityQuickEditPanel",
+    "props": [],
+    "slots": [],
+    "file": "entity/EntityQuickEditPanel.vue"
+  },
+  {
     "name": "EntityModal",
     "description": "EntityModal Organism",
     "props": [
@@ -502,54 +509,6 @@
     ],
     "slots": [],
     "file": "entity/EntityEditForm.vue"
-  },
-  {
-    "name": "EntityQuickEditPanel",
-    "description": "Panneau générique d’édition rapide (sélection multiple) basé sur les FieldDescriptors + bulk meta.",
-    "props": [
-      {
-        "name": "entityType",
-        "type": "String",
-        "desc": "- Type d'entité (clé registry, ex: resources, items, resource-types)"
-      },
-      {
-        "name": "selectedEntities",
-        "type": "Array",
-        "desc": "- Entités sélectionnées (objets bruts ou modèles)"
-      },
-      {
-        "name": "isAdmin",
-        "type": "Boolean",
-        "desc": "- Permission UX pour activer l’édition (backend reste vérité)"
-      },
-      {
-        "name": "filteredIds",
-        "type": "Array",
-        "desc": "- IDs filtrés (pour scope=filtered en mode client)"
-      },
-      {
-        "name": "mode",
-        "type": "String",
-        "desc": "- server|client (client requis pour scope=filtered)"
-      },
-      {
-        "name": "extraCtx",
-        "type": "Object",
-        "desc": "- Contexte additionnel pour les descriptors (ex: resourceTypes)"
-      },
-      {
-        "name": "fields",
-        "type": "Array|null",
-        "desc": "- Liste optionnelle de champs à afficher (sinon viewFields.quickEdit)"
-      },
-      {
-        "name": "title",
-        "type": "String",
-        "desc": "- Titre custom du panneau (optionnel)"
-      }
-    ],
-    "slots": [],
-    "file": "entity/EntityQuickEditPanel.vue"
   },
   {
     "name": "EntityActionsMenu",

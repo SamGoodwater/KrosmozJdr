@@ -21,6 +21,12 @@ class SpecializationTableController extends Controller
     {
         $this->authorize('viewAny', Specialization::class);
 
+        // Mode de réponse:
+        // - (default) "cells" : `rows[]` contient `cells` déjà prêtes à rendre.
+        // - "entities" : renvoie `entities[]` (données brutes + meta) pour laisser le frontend générer les `cells`.
+        //   Objectif : supporter une architecture "field descriptors" (Option B).
+        $format = $request->filled('format') ? (string) $request->get('format') : 'cells';
+
         $search = $request->filled('search') ? (string) $request->get('search') : '';
 
         $limit = (int) $request->integer('limit', 5000);
@@ -57,6 +63,46 @@ class SpecializationTableController extends Controller
             'deleteAny' => Gate::allows('deleteAny', Specialization::class),
             'manageAny' => Gate::allows('manageAny', Specialization::class),
         ];
+
+        // Mode "entities" : retourner les entités brutes
+        if ($format === 'entities') {
+            $entities = $rows->map(function (Specialization $s) {
+                $createdBy = $s->createdBy;
+                return [
+                    'id' => $s->id,
+                    'name' => $s->name,
+                    'description' => $s->description,
+                    'usable' => (int) ($s->usable ?? 0),
+                    'is_visible' => $s->is_visible,
+                    'image' => $s->image,
+                    'capabilities_count' => $s->capabilities_count ?? 0,
+                    'created_by' => $s->created_by,
+                    'createdBy' => $createdBy ? [
+                        'id' => $createdBy->id,
+                        'name' => $createdBy->name,
+                        'email' => $createdBy->email,
+                    ] : null,
+                    'created_at' => $s->created_at?->toISOString(),
+                    'updated_at' => $s->updated_at?->toISOString(),
+                ];
+            })->values()->all();
+
+            return response()->json([
+                'meta' => [
+                    'entityType' => 'specializations',
+                    'query' => [
+                        'search' => $search,
+                        'sort' => $sort,
+                        'order' => $order,
+                        'limit' => $limit,
+                    ],
+                    'capabilities' => $capabilities,
+                    'filterOptions' => [],
+                    'format' => 'entities',
+                ],
+                'entities' => $entities,
+            ]);
+        }
 
         $tableRows = $rows->map(function (Specialization $s) {
             $showHref = route('entities.specializations.show', $s->id);

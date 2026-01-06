@@ -11,6 +11,7 @@ import { Head, router } from "@inertiajs/vue3";
 import { ref, computed, onBeforeUnmount } from "vue";
 import { usePageTitle } from "@/Composables/layout/usePageTitle";
 import { usePermissions } from "@/Composables/permissions/usePermissions";
+import { useBulkRequest } from "@/Composables/entity/useBulkRequest";
 import { Npc } from "@/Models/Entity/Npc";
 
 import Container from '@/Pages/Atoms/data-display/Container.vue';
@@ -18,7 +19,11 @@ import Btn from '@/Pages/Atoms/action/Btn.vue';
 import EntityTanStackTable from '@/Pages/Organismes/table/EntityTanStackTable.vue';
 import EntityModal from '@/Pages/Organismes/entity/EntityModal.vue';
 import CreateEntityModal from '@/Pages/Organismes/entity/CreateEntityModal.vue';
+import EntityQuickEditPanel from '@/Pages/Organismes/entity/EntityQuickEditPanel.vue';
 import { createNpcsTanStackTableConfig } from './npcs-tanstack-table-config';
+import { adaptNpcEntitiesTableResponse } from "@/Entities/npc/npc-adapter";
+import { getNpcFieldDescriptors } from "@/Entities/npc/npc-descriptors";
+import { createFieldsConfigFromDescriptors, createDefaultEntityFromDescriptors } from "@/Utils/entity/descriptor-form";
 
 const props = defineProps({
     npcs: {
@@ -36,8 +41,12 @@ const { setPageTitle } = usePageTitle();
 setPageTitle('Liste des NPCs');
 
 // Permissions
-const { canCreate: canCreatePermission } = usePermissions();
+const { canCreate: canCreatePermission, canUpdateAny } = usePermissions();
 const canCreate = computed(() => canCreatePermission('npcs'));
+const canModify = computed(() => canUpdateAny('npcs'));
+
+// Bulk request
+const { bulkPatchJson } = useBulkRequest();
 
 // État
 const selectedEntity = ref(null);
@@ -49,7 +58,24 @@ const tableRows = ref([]);
 const refreshToken = ref(0);
 
 const tableConfig = computed(() => createNpcsTanStackTableConfig());
-const serverUrl = computed(() => `${route('api.tables.npcs')}?limit=5000&_t=${refreshToken.value}`);
+const serverUrl = computed(() => `${route('api.tables.npcs')}?format=entities&limit=5000&_t=${refreshToken.value}`);
+
+// Fields config pour les formulaires (généré depuis les descriptors)
+const fieldsConfig = computed(() => {
+  const ctx = { meta: { capabilities: { updateAny: canModify.value } } };
+  return createFieldsConfigFromDescriptors(getNpcFieldDescriptors(ctx));
+});
+
+const defaultEntity = computed(() => {
+  const ctx = { meta: { capabilities: { updateAny: canModify.value } } };
+  return createDefaultEntityFromDescriptors(getNpcFieldDescriptors(ctx));
+});
+
+// Bulk edit
+const handleBulkUpdate = async (payload) => {
+  await bulkPatchJson('/api/entities/npcs/bulk', payload);
+  refreshToken.value++;
+};
 
 const handleTableLoaded = ({ rows }) => {
     tableRows.value = Array.isArray(rows) ? rows : [];
@@ -99,14 +125,30 @@ const closeModal = () => {
             </Btn>
         </div>
 
-        <EntityTanStackTable
-            entity-type="npcs"
-            :config="tableConfig"
-            :server-url="serverUrl"
-            v-model:selected-ids="selectedIds"
-            @loaded="handleTableLoaded"
-            @row-dblclick="handleRowDoubleClick"
-        />
+        <!-- Grid layout pour permettre le scroll horizontal du tableau quand le quick edit est ouvert -->
+        <div class="xl:grid xl:grid-cols-[minmax(0,1fr)_380px] xl:gap-6">
+            <div class="min-w-0">
+                <EntityTanStackTable
+                    entity-type="npcs"
+                    :config="tableConfig"
+                    :server-url="serverUrl"
+                    :response-adapter="adaptNpcEntitiesTableResponse"
+                    v-model:selected-ids="selectedIds"
+                    @loaded="handleTableLoaded"
+                    @row-dblclick="handleRowDoubleClick"
+                />
+            </div>
+
+            <!-- Quick Edit Panel -->
+            <EntityQuickEditPanel
+                v-if="canModify && selectedIds.length > 0"
+                entity-type="npcs"
+                :selected-ids="selectedIds"
+                :fields-config="fieldsConfig"
+                :default-entity="defaultEntity"
+                @update="handleBulkUpdate"
+            />
+        </div>
 
         <!-- Modal de création -->
         <CreateEntityModal

@@ -21,6 +21,12 @@ class CapabilityTableController extends Controller
     {
         $this->authorize('viewAny', Capability::class);
 
+        // Mode de réponse:
+        // - (default) "cells" : `rows[]` contient `cells` déjà prêtes à rendre.
+        // - "entities" : renvoie `entities[]` (données brutes + meta) pour laisser le frontend générer les `cells`.
+        //   Objectif : supporter une architecture "field descriptors" (Option B).
+        $format = $request->filled('format') ? (string) $request->get('format') : 'cells';
+
         $search = $request->filled('search') ? (string) $request->get('search') : '';
 
         $limit = (int) $request->integer('limit', 5000);
@@ -58,6 +64,57 @@ class CapabilityTableController extends Controller
             'deleteAny' => Gate::allows('deleteAny', Capability::class),
             'manageAny' => Gate::allows('manageAny', Capability::class),
         ];
+
+        // Mode "entities" : retourner les entités brutes
+        if ($format === 'entities') {
+            $entities = $rows->map(function (Capability $c) {
+                $createdBy = $c->createdBy;
+                return [
+                    'id' => $c->id,
+                    'name' => $c->name,
+                    'description' => $c->description,
+                    'effect' => $c->effect,
+                    'level' => $c->level,
+                    'pa' => $c->pa,
+                    'po' => $c->po,
+                    'po_editable' => (bool) $c->po_editable,
+                    'time_before_use_again' => $c->time_before_use_again,
+                    'casting_time' => $c->casting_time,
+                    'duration' => $c->duration,
+                    'element' => $c->element,
+                    'is_magic' => (bool) $c->is_magic,
+                    'ritual_available' => (bool) $c->ritual_available,
+                    'powerful' => $c->powerful,
+                    'usable' => (int) ($c->usable ?? 0),
+                    'is_visible' => $c->is_visible,
+                    'image' => $c->image,
+                    'created_by' => $c->created_by,
+                    'createdBy' => $createdBy ? [
+                        'id' => $createdBy->id,
+                        'name' => $createdBy->name,
+                        'email' => $createdBy->email,
+                    ] : null,
+                    'created_at' => $c->created_at?->toISOString(),
+                    'updated_at' => $c->updated_at?->toISOString(),
+                ];
+            })->values()->all();
+
+            return response()->json([
+                'meta' => [
+                    'entityType' => 'capabilities',
+                    'query' => [
+                        'search' => $search,
+                        'sort' => $sort,
+                        'order' => $order,
+                        'limit' => $limit,
+                    ],
+                    'capabilities' => $capabilities,
+                    'filterOptions' => [],
+                    'format' => 'entities',
+                ],
+                'entities' => $entities,
+            ]);
+        }
 
         $tableRows = $rows->map(function (Capability $c) {
             $showHref = route('entities.capabilities.show', $c->id);

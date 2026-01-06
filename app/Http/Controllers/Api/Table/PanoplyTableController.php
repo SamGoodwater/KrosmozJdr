@@ -21,6 +21,12 @@ class PanoplyTableController extends Controller
     {
         $this->authorize('viewAny', Panoply::class);
 
+        // Mode de réponse:
+        // - (default) "cells" : `rows[]` contient `cells` déjà prêtes à rendre.
+        // - "entities" : renvoie `entities[]` (données brutes + meta) pour laisser le frontend générer les `cells`.
+        //   Objectif : supporter une architecture "field descriptors" (Option B).
+        $format = $request->filled('format') ? (string) $request->get('format') : 'cells';
+
         $search = $request->filled('search') ? (string) $request->get('search') : '';
 
         $limit = (int) $request->integer('limit', 5000);
@@ -57,6 +63,39 @@ class PanoplyTableController extends Controller
             'deleteAny' => Gate::allows('deleteAny', Panoply::class),
             'manageAny' => Gate::allows('manageAny', Panoply::class),
         ];
+
+        // Mode "entities" : retourner les entités brutes
+        if ($format === 'entities') {
+            $entities = $rows->map(function (Panoply $p) {
+                $createdBy = $p->createdBy;
+                return $p->toArray() + [
+                    'items_count' => $p->items_count ?? 0,
+                    'createdBy' => $createdBy ? [
+                        'id' => $createdBy->id,
+                        'name' => $createdBy->name,
+                        'email' => $createdBy->email,
+                    ] : null,
+                    'created_at' => $p->created_at?->toISOString(),
+                    'updated_at' => $p->updated_at?->toISOString(),
+                ];
+            })->values()->all();
+
+            return response()->json([
+                'meta' => [
+                    'entityType' => 'panoplies',
+                    'query' => [
+                        'search' => $search,
+                        'sort' => $sort,
+                        'order' => $order,
+                        'limit' => $limit,
+                    ],
+                    'capabilities' => $capabilities,
+                    'filterOptions' => [],
+                    'format' => 'entities',
+                ],
+                'entities' => $entities,
+            ]);
+        }
 
         $tableRows = $rows->map(function (Panoply $p) {
             $showHref = route('entities.panoplies.show', $p->id);

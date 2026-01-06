@@ -22,6 +22,12 @@ class CreatureTableController extends Controller
     {
         $this->authorize('viewAny', Creature::class);
 
+        // Mode de réponse:
+        // - (default) "cells" : `rows[]` contient `cells` déjà prêtes à rendre.
+        // - "entities" : renvoie `entities[]` (données brutes + meta) pour laisser le frontend générer les `cells`.
+        //   Objectif : supporter une architecture "field descriptors" (Option B).
+        $format = $request->filled('format') ? (string) $request->get('format') : 'cells';
+
         $search = $request->filled('search') ? (string) $request->get('search') : '';
 
         $limit = (int) $request->integer('limit', 5000);
@@ -67,6 +73,43 @@ class CreatureTableController extends Controller
             4 => 'error',   // Aggressif
             default => 'primary',
         };
+
+        // Mode "entities" : retourner les entités brutes
+        if ($format === 'entities') {
+            $entities = $rows->map(function (Creature $c) {
+                $createdBy = $c->createdBy;
+                return $c->toArray() + [
+                    'createdBy' => $createdBy ? [
+                        'id' => $createdBy->id,
+                        'name' => $createdBy->name,
+                        'email' => $createdBy->email,
+                    ] : null,
+                    'created_at' => $c->created_at?->toISOString(),
+                    'updated_at' => $c->updated_at?->toISOString(),
+                ];
+            })->values()->all();
+
+            return response()->json([
+                'meta' => [
+                    'entityType' => 'creatures',
+                    'query' => [
+                        'search' => $search,
+                        'sort' => $sort,
+                        'order' => $order,
+                        'limit' => $limit,
+                    ],
+                    'capabilities' => $capabilities,
+                    'filterOptions' => [
+                        'hostility' => collect(Monster::HOSTILITY)->map(fn ($label, $value) => [
+                            'value' => (string) $value,
+                            'label' => (string) $label,
+                        ])->values()->all(),
+                    ],
+                    'format' => 'entities',
+                ],
+                'entities' => $entities,
+            ]);
+        }
 
         $tableRows = $rows->map(function (Creature $c) use ($hostilityColor) {
             $showHref = route('entities.creatures.show', $c->id);

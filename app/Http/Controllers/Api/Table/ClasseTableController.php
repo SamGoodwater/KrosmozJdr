@@ -21,6 +21,12 @@ class ClasseTableController extends Controller
     {
         $this->authorize('viewAny', Classe::class);
 
+        // Mode de réponse:
+        // - (default) "cells" : `rows[]` contient `cells` déjà prêtes à rendre.
+        // - "entities" : renvoie `entities[]` (données brutes + meta) pour laisser le frontend générer les `cells`.
+        //   Objectif : supporter une architecture "field descriptors" (Option B).
+        $format = $request->filled('format') ? (string) $request->get('format') : 'cells';
+
         $search = $request->filled('search') ? (string) $request->get('search') : '';
 
         $limit = (int) $request->integer('limit', 5000);
@@ -57,6 +63,54 @@ class ClasseTableController extends Controller
             'deleteAny' => Gate::allows('deleteAny', Classe::class),
             'manageAny' => Gate::allows('manageAny', Classe::class),
         ];
+
+        // Mode "entities" : retourner les entités brutes
+        if ($format === 'entities') {
+            $entities = $rows->map(function (Classe $c) {
+                $createdBy = $c->createdBy;
+                return [
+                    'id' => $c->id,
+                    'official_id' => $c->official_id,
+                    'dofusdb_id' => $c->dofusdb_id,
+                    'name' => $c->name,
+                    'description_fast' => $c->description_fast,
+                    'description' => $c->description,
+                    'life' => $c->life,
+                    'life_dice' => $c->life_dice,
+                    'specificity' => $c->specificity,
+                    'dofus_version' => $c->dofus_version,
+                    'usable' => (int) ($c->usable ?? 0),
+                    'is_visible' => $c->is_visible,
+                    'image' => $c->image,
+                    'icon' => $c->icon,
+                    'auto_update' => (bool) $c->auto_update,
+                    'created_by' => $c->created_by,
+                    'createdBy' => $createdBy ? [
+                        'id' => $createdBy->id,
+                        'name' => $createdBy->name,
+                        'email' => $createdBy->email,
+                    ] : null,
+                    'created_at' => $c->created_at?->toISOString(),
+                    'updated_at' => $c->updated_at?->toISOString(),
+                ];
+            })->values()->all();
+
+            return response()->json([
+                'meta' => [
+                    'entityType' => 'classes',
+                    'query' => [
+                        'search' => $search,
+                        'sort' => $sort,
+                        'order' => $order,
+                        'limit' => $limit,
+                    ],
+                    'capabilities' => $capabilities,
+                    'filterOptions' => [],
+                    'format' => 'entities',
+                ],
+                'entities' => $entities,
+            ]);
+        }
 
         $tableRows = $rows->map(function (Classe $c) {
             $showHref = route('entities.classes.show', $c->id);

@@ -21,6 +21,12 @@ class CampaignTableController extends Controller
     {
         $this->authorize('viewAny', Campaign::class);
 
+        // Mode de réponse:
+        // - (default) "cells" : `rows[]` contient `cells` déjà prêtes à rendre.
+        // - "entities" : renvoie `entities[]` (données brutes + meta) pour laisser le frontend générer les `cells`.
+        //   Objectif : supporter une architecture "field descriptors" (Option B).
+        $format = $request->filled('format') ? (string) $request->get('format') : 'cells';
+
         $filters = (array) ($request->input('filters', $request->input('filter', [])) ?? []);
         foreach (['state', 'is_public'] as $k) {
             if (!array_key_exists($k, $filters) && $request->has($k)) {
@@ -80,6 +86,50 @@ class CampaignTableController extends Controller
                 ['value' => '0', 'label' => 'Non'],
             ],
         ];
+
+        // Mode "entities" : retourner les entités brutes
+        if ($format === 'entities') {
+            $entities = $rows->map(function (Campaign $c) {
+                $createdBy = $c->createdBy;
+                return [
+                    'id' => $c->id,
+                    'name' => $c->name,
+                    'description' => $c->description,
+                    'slug' => $c->slug,
+                    'keyword' => $c->keyword,
+                    'is_public' => (int) ($c->is_public ?? 0),
+                    'state' => $c->state,
+                    'usable' => (int) ($c->usable ?? 0),
+                    'is_visible' => $c->is_visible,
+                    'image' => $c->image,
+                    'created_by' => $c->created_by,
+                    'createdBy' => $createdBy ? [
+                        'id' => $createdBy->id,
+                        'name' => $createdBy->name,
+                        'email' => $createdBy->email,
+                    ] : null,
+                    'created_at' => $c->created_at?->toISOString(),
+                    'updated_at' => $c->updated_at?->toISOString(),
+                ];
+            })->values()->all();
+
+            return response()->json([
+                'meta' => [
+                    'entityType' => 'campaigns',
+                    'query' => [
+                        'search' => $search,
+                        'filters' => $filters,
+                        'sort' => $sort,
+                        'order' => $order,
+                        'limit' => $limit,
+                    ],
+                    'capabilities' => $capabilities,
+                    'filterOptions' => $filterOptions,
+                    'format' => 'entities',
+                ],
+                'entities' => $entities,
+            ]);
+        }
 
         $tableRows = $rows->map(function (Campaign $c) {
             $showHref = route('entities.campaigns.show', $c->id);

@@ -21,6 +21,12 @@ class MonsterTableController extends Controller
     {
         $this->authorize('viewAny', Monster::class);
 
+        // Mode de réponse:
+        // - (default) "cells" : `rows[]` contient `cells` déjà prêtes à rendre.
+        // - "entities" : renvoie `entities[]` (données brutes + meta) pour laisser le frontend générer les `cells`.
+        //   Objectif : supporter une architecture "field descriptors" (Option B).
+        $format = $request->filled('format') ? (string) $request->get('format') : 'cells';
+
         $filters = (array) ($request->input('filters', $request->input('filter', [])) ?? []);
         foreach (['size', 'is_boss'] as $k) {
             if (!array_key_exists($k, $filters) && $request->has($k)) {
@@ -80,6 +86,51 @@ class MonsterTableController extends Controller
                 ['value' => '0', 'label' => 'Non'],
             ],
         ];
+
+        // Mode "entities" : retourner les entités brutes
+        if ($format === 'entities') {
+            $entities = $rows->map(function (Monster $m) {
+                return [
+                    'id' => $m->id,
+                    'creature_id' => $m->creature_id,
+                    'official_id' => $m->official_id,
+                    'dofusdb_id' => $m->dofusdb_id,
+                    'dofus_version' => $m->dofus_version,
+                    'auto_update' => (bool) $m->auto_update,
+                    'size' => $m->size,
+                    'is_boss' => (int) ($m->is_boss ?? 0),
+                    'boss_pa' => $m->boss_pa,
+                    'monster_race_id' => $m->monster_race_id,
+                    'creature' => $m->creature ? [
+                        'id' => $m->creature->id,
+                        'name' => $m->creature->name,
+                    ] : null,
+                    'monsterRace' => $m->monsterRace ? [
+                        'id' => $m->monsterRace->id,
+                        'name' => $m->monsterRace->name,
+                    ] : null,
+                    'created_at' => $m->created_at?->toISOString(),
+                    'updated_at' => $m->updated_at?->toISOString(),
+                ];
+            })->values()->all();
+
+            return response()->json([
+                'meta' => [
+                    'entityType' => 'monsters',
+                    'query' => [
+                        'search' => $search,
+                        'filters' => $filters,
+                        'sort' => $sort,
+                        'order' => $order,
+                        'limit' => $limit,
+                    ],
+                    'capabilities' => $capabilities,
+                    'filterOptions' => $filterOptions,
+                    'format' => 'entities',
+                ],
+                'entities' => $entities,
+            ]);
+        }
 
         $tableRows = $rows->map(function (Monster $m) {
             $showHref = route('entities.monsters.show', $m->id);

@@ -130,11 +130,53 @@ Pour améliorer la lisibilité, un champ peut définir `edit.form.group` (string
 - `ResourceType` : `decision`, `usable`, `is_visible`
 - `Item` : `rarity`, `level`, `usable`, `auto_update`, `is_visible`, `price`, …
 
-## Pattern “minimal → hover details”
+## Pattern "minimal → hover details"
 
 Recommandation UX :
 
-- **Minimal (base)** : affiche uniquement les champs “importants” en **small** (icône + valeur) avec tooltips.
+- **Minimal (base)** : affiche uniquement les champs "importants" en **small** (icône + valeur) avec tooltips.
 - **Hover** : déplie un panneau qui affiche les champs manquants en **extended** (plus détaillé).
+
+---
+
+## ✅ État d'implémentation
+
+**Date de finalisation** : 2026-01-06
+
+### Migration complète
+
+- ✅ **16 entités migrées** vers le système de descriptors
+- ✅ **15 contrôleurs bulk** créés et testés
+- ✅ **16 contrôleurs table** supportent `?format=entities`
+- ✅ **16 adapters frontend** créés
+- ✅ **159 tests passent** (941 assertions) — Voir [TESTS_ENTITY_DESCRIPTORS_IMPLEMENTATION.md](../100-%20Done/TESTS_ENTITY_DESCRIPTORS_IMPLEMENTATION.md)
+
+### Entités migrées
+
+1. `resource` ✅
+2. `resource_type` ✅
+3. `item` ✅
+4. `spell` ✅
+5. `monster` ✅
+6. `creature` ✅
+7. `npc` ✅
+8. `classe` ✅
+9. `consumable` ✅
+10. `campaign` ✅
+11. `scenario` ✅
+12. `attribute` ✅
+13. `panoply` ✅
+14. `capability` ✅
+15. `specialization` ✅
+16. `shop` ✅
+
+### Tests
+
+- ✅ **14 tests BulkControllers** (PHPUnit)
+- ✅ **14 tests TableControllers** (PHPUnit)
+- ✅ **12 tests Adapters** (Vitest)
+- ✅ **4 tests Utils/Composables** (Vitest)
+
+**Voir** : [ENTITY_DESCRIPTORS_MIGRATION_COMPLETE.md](../100-%20Done/ENTITY_DESCRIPTORS_MIGRATION_COMPLETE.md) pour les détails de la migration.
 
 

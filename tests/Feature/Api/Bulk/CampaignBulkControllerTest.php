@@ -1,0 +1,168 @@
+<?php
+
+namespace Tests\Feature\Api\Bulk;
+
+use App\Models\User;
+use App\Models\Entity\Campaign;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\TestCase;
+
+/**
+ * Tests Feature pour CampaignBulkController
+ *
+ * @description
+ * Vérifie que :
+ * - Un admin peut mettre à jour plusieurs campagnes en masse
+ * - La validation fonctionne correctement
+ * - Seuls les champs fournis sont modifiés
+ */
+class CampaignBulkControllerTest extends TestCase
+{
+    use RefreshDatabase;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+        $this->withoutMiddleware(\App\Http\Middleware\CheckRole::class);
+    }
+
+    /**
+     * Test : Un admin peut mettre à jour plusieurs campagnes en masse
+     */
+    public function test_admin_can_bulk_update_campaigns(): void
+    {
+        $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
+        $campaign1 = Campaign::factory()->create([
+            'name' => 'Campaign 1',
+            'is_visible' => 'guest',
+            'created_by' => $admin->id,
+        ]);
+        $campaign2 = Campaign::factory()->create([
+            'name' => 'Campaign 2',
+            'is_visible' => 'user',
+            'created_by' => $admin->id,
+        ]);
+
+        $response = $this->actingAs($admin)
+            ->patchJson('/api/entities/campaigns/bulk', [
+                'ids' => [$campaign1->id, $campaign2->id],
+                'state' => 1,
+                'is_visible' => 'admin',
+            ]);
+
+        $response->assertOk()
+            ->assertJson(['success' => true])
+            ->assertJsonStructure([
+                'success',
+                'summary' => ['requested', 'updated', 'errors'],
+            ]);
+
+        $this->assertDatabaseHas('campaigns', [
+            'id' => $campaign1->id,
+            'is_visible' => 'admin',
+        ]);
+        $this->assertDatabaseHas('campaigns', [
+            'id' => $campaign2->id,
+            'is_visible' => 'admin',
+        ]);
+    }
+
+    /**
+     * Test : La validation échoue avec des IDs invalides
+     */
+    public function test_validation_fails_with_invalid_ids(): void
+    {
+        $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
+
+        $response = $this->actingAs($admin)
+            ->patchJson('/api/entities/campaigns/bulk', [
+                'ids' => [99999, 99998],
+                'is_visible' => 'admin',
+            ]);
+
+        $response->assertStatus(422)
+            ->assertJsonValidationErrors('ids.0');
+    }
+
+    /**
+     * Test : Seuls les champs fournis sont modifiés
+     */
+    public function test_only_provided_fields_are_updated(): void
+    {
+        $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
+        $campaign = Campaign::factory()->create([
+            'name' => 'Original Name',
+            'description' => 'Original Description',
+            'is_visible' => 'guest',
+            'created_by' => $admin->id,
+        ]);
+
+        $response = $this->actingAs($admin)
+            ->patchJson('/api/entities/campaigns/bulk', [
+                'ids' => [$campaign->id],
+                'state' => 1,
+                'is_visible' => 'admin',
+                // name et description ne sont pas modifiés
+            ]);
+
+        $response->assertOk();
+
+        $campaign->refresh();
+        $this->assertEquals('admin', $campaign->is_visible);
+        $this->assertEquals('Original Name', $campaign->name); // Non modifié
+        $this->assertEquals('Original Description', $campaign->description); // Non modifié
+    }
+
+    /**
+     * Test : Un utilisateur non-admin ne peut pas faire de bulk update
+     */
+    public function test_user_cannot_bulk_update_campaigns(): void
+    {
+        $user = User::factory()->create(['role' => User::ROLE_USER]);
+        $campaign = Campaign::factory()->create(['created_by' => $user->id]);
+
+        $response = $this->actingAs($user)
+            ->patchJson('/api/entities/campaigns/bulk', [
+                'ids' => [$campaign->id],
+                'is_visible' => 'admin',
+            ]);
+
+        $response->assertForbidden();
+    }
+
+    /**
+     * Test : La validation échoue si aucun champ n'est fourni
+     */
+    public function test_validation_fails_if_no_fields_provided(): void
+    {
+        $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
+        $campaign = Campaign::factory()->create(['created_by' => $admin->id]);
+
+        $response = $this->actingAs($admin)
+            ->patchJson('/api/entities/campaigns/bulk', [
+                'ids' => [$campaign->id],
+            ]);
+
+        $response->assertStatus(422)
+            ->assertJson(['success' => false])
+            ->assertJson(['message' => 'Aucun champ à mettre à jour.']);
+    }
+
+    /**
+     * Test : La validation échoue si is_visible a une valeur invalide
+     */
+    public function test_validation_fails_if_is_visible_invalid(): void
+    {
+        $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
+        $campaign = Campaign::factory()->create(['created_by' => $admin->id]);
+
+        $response = $this->actingAs($admin)
+            ->patchJson('/api/entities/campaigns/bulk', [
+                'ids' => [$campaign->id],
+                'is_visible' => 'invalid_role',
+            ]);
+
+        $response->assertStatus(422)
+            ->assertJsonValidationErrors('is_visible');
+    }
+}

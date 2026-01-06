@@ -21,6 +21,12 @@ class ShopTableController extends Controller
     {
         $this->authorize('viewAny', Shop::class);
 
+        // Mode de réponse:
+        // - (default) "cells" : `rows[]` contient `cells` déjà prêtes à rendre.
+        // - "entities" : renvoie `entities[]` (données brutes + meta) pour laisser le frontend générer les `cells`.
+        //   Objectif : supporter une architecture "field descriptors" (Option B).
+        $format = $request->filled('format') ? (string) $request->get('format') : 'cells';
+
         $search = $request->filled('search') ? (string) $request->get('search') : '';
 
         $limit = (int) $request->integer('limit', 5000);
@@ -60,6 +66,45 @@ class ShopTableController extends Controller
             'deleteAny' => Gate::allows('deleteAny', Shop::class),
             'manageAny' => Gate::allows('manageAny', Shop::class),
         ];
+
+        // Mode "entities" : retourner les entités brutes
+        if ($format === 'entities') {
+            $entities = $rows->map(function (Shop $s) {
+                $createdBy = $s->createdBy;
+                return $s->toArray() + [
+                    'items_count' => $s->items_count ?? 0,
+                    'npc' => $s->npc ? ($s->npc->toArray() + [
+                        'creature' => $s->npc->creature ? [
+                            'id' => $s->npc->creature->id,
+                            'name' => $s->npc->creature->name,
+                        ] : null,
+                    ]) : null,
+                    'createdBy' => $createdBy ? [
+                        'id' => $createdBy->id,
+                        'name' => $createdBy->name,
+                        'email' => $createdBy->email,
+                    ] : null,
+                    'created_at' => $s->created_at?->toISOString(),
+                    'updated_at' => $s->updated_at?->toISOString(),
+                ];
+            })->values()->all();
+
+            return response()->json([
+                'meta' => [
+                    'entityType' => 'shops',
+                    'query' => [
+                        'search' => $search,
+                        'sort' => $sort,
+                        'order' => $order,
+                        'limit' => $limit,
+                    ],
+                    'capabilities' => $capabilities,
+                    'filterOptions' => [],
+                    'format' => 'entities',
+                ],
+                'entities' => $entities,
+            ]);
+        }
 
         $tableRows = $rows->map(function (Shop $s) {
             $showHref = route('entities.shops.show', $s->id);

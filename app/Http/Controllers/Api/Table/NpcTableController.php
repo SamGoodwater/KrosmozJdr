@@ -21,6 +21,12 @@ class NpcTableController extends Controller
     {
         $this->authorize('viewAny', Npc::class);
 
+        // Mode de réponse:
+        // - (default) "cells" : `rows[]` contient `cells` déjà prêtes à rendre.
+        // - "entities" : renvoie `entities[]` (données brutes + meta) pour laisser le frontend générer les `cells`.
+        //   Objectif : supporter une architecture "field descriptors" (Option B).
+        $format = $request->filled('format') ? (string) $request->get('format') : 'cells';
+
         $search = $request->filled('search') ? (string) $request->get('search') : '';
 
         $limit = (int) $request->integer('limit', 5000);
@@ -58,6 +64,52 @@ class NpcTableController extends Controller
             'deleteAny' => Gate::allows('deleteAny', Npc::class),
             'manageAny' => Gate::allows('manageAny', Npc::class),
         ];
+
+        // Mode "entities" : retourner les entités brutes
+        if ($format === 'entities') {
+            $entities = $rows->map(function (Npc $n) {
+                return [
+                    'id' => $n->id,
+                    'creature_id' => $n->creature_id,
+                    'story' => $n->story,
+                    'historical' => $n->historical,
+                    'age' => $n->age,
+                    'size' => $n->size,
+                    'classe_id' => $n->classe_id,
+                    'specialization_id' => $n->specialization_id,
+                    'creature' => $n->creature ? [
+                        'id' => $n->creature->id,
+                        'name' => $n->creature->name,
+                    ] : null,
+                    'classe' => $n->classe ? [
+                        'id' => $n->classe->id,
+                        'name' => $n->classe->name,
+                    ] : null,
+                    'specialization' => $n->specialization ? [
+                        'id' => $n->specialization->id,
+                        'name' => $n->specialization->name,
+                    ] : null,
+                    'created_at' => $n->created_at?->toISOString(),
+                    'updated_at' => $n->updated_at?->toISOString(),
+                ];
+            })->values()->all();
+
+            return response()->json([
+                'meta' => [
+                    'entityType' => 'npcs',
+                    'query' => [
+                        'search' => $search,
+                        'sort' => $sort,
+                        'order' => $order,
+                        'limit' => $limit,
+                    ],
+                    'capabilities' => $capabilities,
+                    'filterOptions' => [],
+                    'format' => 'entities',
+                ],
+                'entities' => $entities,
+            ]);
+        }
 
         $tableRows = $rows->map(function (Npc $n) {
             $showHref = route('entities.npcs.show', $n->id);

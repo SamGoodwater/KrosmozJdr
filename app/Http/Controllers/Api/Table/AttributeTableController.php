@@ -21,6 +21,12 @@ class AttributeTableController extends Controller
     {
         $this->authorize('viewAny', Attribute::class);
 
+        // Mode de réponse:
+        // - (default) "cells" : `rows[]` contient `cells` déjà prêtes à rendre.
+        // - "entities" : renvoie `entities[]` (données brutes + meta) pour laisser le frontend générer les `cells`.
+        //   Objectif : supporter une architecture "field descriptors" (Option B).
+        $format = $request->filled('format') ? (string) $request->get('format') : 'cells';
+
         $filters = (array) ($request->input('filters', $request->input('filter', [])) ?? []);
         foreach (['usable', 'is_visible'] as $k) {
             if (!array_key_exists($k, $filters) && $request->has($k)) {
@@ -84,6 +90,46 @@ class AttributeTableController extends Controller
                 ['value' => 'game_master', 'label' => 'Maître de jeu'],
             ],
         ];
+
+        // Mode "entities" : retourner les entités brutes
+        if ($format === 'entities') {
+            $entities = $rows->map(function (Attribute $a) {
+                $createdBy = $a->createdBy;
+                return [
+                    'id' => $a->id,
+                    'name' => $a->name,
+                    'description' => $a->description,
+                    'usable' => (int) ($a->usable ?? 0),
+                    'is_visible' => $a->is_visible,
+                    'image' => $a->image,
+                    'created_by' => $a->created_by,
+                    'createdBy' => $createdBy ? [
+                        'id' => $createdBy->id,
+                        'name' => $createdBy->name,
+                        'email' => $createdBy->email,
+                    ] : null,
+                    'created_at' => $a->created_at?->toISOString(),
+                    'updated_at' => $a->updated_at?->toISOString(),
+                ];
+            })->values()->all();
+
+            return response()->json([
+                'meta' => [
+                    'entityType' => 'attributes',
+                    'query' => [
+                        'search' => $search,
+                        'filters' => $filters,
+                        'sort' => $sort,
+                        'order' => $order,
+                        'limit' => $limit,
+                    ],
+                    'capabilities' => $capabilities,
+                    'filterOptions' => $filterOptions,
+                    'format' => 'entities',
+                ],
+                'entities' => $entities,
+            ]);
+        }
 
         $tableRows = $rows->map(function (Attribute $a) {
             $showHref = route('entities.attributes.show', $a->id);

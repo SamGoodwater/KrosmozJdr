@@ -46,6 +46,14 @@ class ScenarioPolicy
     }
 
     /**
+     * Determine whether the user can update models in bulk / via édition multiple.
+     */
+    public function updateAny(User $user): bool
+    {
+        return $user->isAdmin();
+    }
+
+    /**
      * Determine whether the user can delete the model.
      */
     public function delete(User $user, Scenario $scenario): bool
