@@ -1,4 +1,6 @@
-Le dossier `docs/100-Done` a pour objectif de centraliser les fichiers Markdown relatifs aux actions réalisées durant le développement du projet, ainsi qu’aux fonctionnalités finalisées. Il s’agit de l’espace où l’on documente l’évolution concrète du projet (refactorings, jalons atteints, fonctionnalités livrées, etc.), à la différence de la documentation technique pure. Ce dossier permet de garder une trace claire de l’historique des avancées et des décisions prises au fil du temps.
+Le dossier `docs/100-Done` a pour objectif de centraliser les fichiers Markdown relatifs aux actions réalisées durant le développement du projet, ainsi qu'aux fonctionnalités finalisées. Il s'agit de l'espace où l'on documente l'évolution concrète du projet (refactorings, jalons atteints, fonctionnalités livrées, etc.), à la différence de la documentation technique pure. Ce dossier permet de garder une trace claire de l'historique des avancées et des décisions prises au fil du temps.
+
+**Note** : Certains documents de ce dossier sont temporaires et seront supprimés une fois les systèmes stabilisés (ex: `ENTITY_DESCRIPTORS_PROGRESSION.md`).
 
 ## 2025-12-26 — Refonte “Table v2” (TanStack Table)
 

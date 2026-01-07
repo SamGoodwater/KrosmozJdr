@@ -46,10 +46,11 @@ const props = defineProps({
 const emit = defineEmits([
     "row-click",
     "row-dblclick",
-    // Compat: remonter aussi la forme kebab-case si certains parents l’écoutent
+    // Compat: remonter aussi la forme kebab-case si certains parents l'écoutent
     "update:selectedIds",
     "update:selected-ids",
     "loaded",
+    "action", // Émis pour chaque action d'entité
 ]);
 
 const permissions = usePermissions();
@@ -127,11 +128,29 @@ const isColumnAllowed = (col) => {
 
 const resolvedConfig = computed(() => {
     const cfg = props.config || {};
+    const filteredColumns = Array.isArray(cfg.columns) ? cfg.columns.filter(isColumnAllowed) : [];
+    
+    // Ajouter automatiquement la colonne Actions si elle n'existe pas déjà
+    const hasActionsColumn = filteredColumns.some((col) => col.id === "actions");
+    const columnsWithActions = hasActionsColumn
+        ? filteredColumns
+        : [
+              ...filteredColumns,
+              {
+                  id: "actions",
+                  label: "", // Pas de label (colonne sans nom)
+                  hideable: false,
+                  isMain: false,
+                  sort: { enabled: false },
+                  search: { enabled: false },
+                  cell: { type: "custom" }, // Type custom pour le rendu spécial
+              },
+          ];
 
     // Gating minimal, policy-driven (évite d'afficher sélection/bulk quand pas de droits)
     return {
         ...cfg,
-        columns: Array.isArray(cfg.columns) ? cfg.columns.filter(isColumnAllowed) : [],
+        columns: columnsWithActions,
         features: {
             ...(cfg.features || {}),
             selection: {
@@ -191,6 +210,10 @@ const handleRowClick = (row) => {
     // - la sélection peut être activée via config.features.selection.clickToSelect
     emit("row-click", row);
 };
+
+const handleAction = (actionKey, entity, row) => {
+    emit("action", actionKey, entity, row);
+};
 </script>
 
 <template>
@@ -205,10 +228,13 @@ const handleRowClick = (row) => {
         :loading="loading"
         :filter-options="activeFilterOptions"
         :selected-ids="selectedIds"
+        :entity-type="entityType"
+        :show-actions-column="true"
         @update:selectedIds="(ids) => { emit('update:selectedIds', ids); emit('update:selected-ids', ids); }"
         @update:selected-ids="(ids) => { emit('update:selectedIds', ids); emit('update:selected-ids', ids); }"
         @row-click="handleRowClick"
         @row-dblclick="(row) => emit('row-dblclick', row)"
+        @action="handleAction"
     />
 </template>
 

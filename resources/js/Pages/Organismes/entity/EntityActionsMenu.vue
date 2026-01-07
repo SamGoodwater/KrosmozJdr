@@ -1,10 +1,14 @@
 <script setup>
 /**
- * EntityActionsMenu Organism
+ * EntityActionsMenu Organism (Legacy Wrapper)
  * 
  * @description
- * Menu d'actions contextuel pour une entité avec dropdown.
- * Affiche les actions disponibles selon les permissions de l'utilisateur.
+ * Wrapper de compatibilité autour de `EntityActions` pour maintenir l'API legacy.
+ * Ce composant convertit les props de permissions explicites en blacklist/whitelist
+ * pour le nouveau système d'actions.
+ * 
+ * @deprecated
+ * Utilisez directement `EntityActions` pour les nouveaux composants.
  * 
  * @props {Object} entity - Données de l'entité
  * @props {String} entityType - Type d'entité (pour générer les routes)
@@ -21,13 +25,9 @@
  * @emit delete - Événement émis pour supprimer l'entité
  * @emit refresh - Événement émis pour rafraîchir les données (admin)
  */
-import { ref, computed } from 'vue';
-import { router } from '@inertiajs/vue3';
-import Btn from '@/Pages/Atoms/action/Btn.vue';
-import Icon from '@/Pages/Atoms/data-display/Icon.vue';
-import { useCopyToClipboard } from '@/Composables/utils/useCopyToClipboard';
-import { useDownloadPdf } from '@/Composables/utils/useDownloadPdf';
-import { getEntityRouteConfig, resolveEntityRouteUrl } from '@/Composables/entity/entityRouteRegistry';
+import { computed } from 'vue';
+import EntityActions from '@/Pages/Organismes/entity/EntityActions.vue';
+import { normalizeEntityType } from '@/Entities/entity-registry';
 
 const props = defineProps({
     entity: {
@@ -69,6 +69,7 @@ const props = defineProps({
     /**
      * Configuration des routes Ziggy pour l'entité (optionnel).
      * Permet de gérer les exceptions de param keys (ex: resourceType).
+     * @deprecated Non utilisé dans le nouveau système (géré par entityRouteRegistry)
      */
     routeConfig: {
         type: Object,
@@ -78,169 +79,62 @@ const props = defineProps({
 
 const emit = defineEmits(['view', 'quick-view', 'edit', 'quick-edit', 'copy-link', 'download-pdf', 'delete', 'refresh']);
 
-const menuOpen = ref(false);
-const { copyToClipboard } = useCopyToClipboard();
-const { downloadPdf, isDownloading } = useDownloadPdf(props.entityType);
 const canManageEffective = computed(() => (props.canManage === null ? props.isAdmin : props.canManage));
 
-/**
- * Génère l'URL de l'entité
- */
-const getEntityUrl = () => {
-    const entityId = props.entity?.id ?? props.entity?.id ?? null;
-    if (!entityId) return '';
+// Normaliser le type d'entité
+const normalizedEntityType = computed(() => normalizeEntityType(props.entityType));
 
-    const cfg = props.routeConfig || getEntityRouteConfig(props.entityType);
-    return resolveEntityRouteUrl(props.entityType, 'show', entityId, cfg);
-};
-
-/**
- * Gère l'ouverture de la page de visualisation
- */
-const handleView = () => {
-    emit('view');
-    menuOpen.value = false;
-};
-
-/**
- * Gère l'ouverture rapide (modal)
- */
-const handleQuickView = () => {
-    emit('quick-view');
-    menuOpen.value = false;
-};
-
-/**
- * Gère l'ouverture de la page d'édition
- */
-const handleEdit = () => {
-    emit('edit');
-    menuOpen.value = false;
-};
-
-/**
- * Gère l'édition rapide
- */
-const handleQuickEdit = () => {
-    emit('quick-edit');
-    menuOpen.value = false;
-};
-
-/**
- * Gère la copie du lien
- */
-const handleCopyLink = async () => {
-    const url = getEntityUrl();
-    if (url) {
-        await copyToClipboard(url, 'Lien de l\'entité copié !');
-        emit('copy-link');
+// Construire la blacklist selon les permissions et disableQuickActions
+const blacklist = computed(() => {
+    const list = [];
+    
+    // Actions rapides désactivées
+    if (props.disableQuickActions) {
+        list.push('quick-view', 'quick-edit');
     }
-    menuOpen.value = false;
-};
-
-/**
- * Gère le téléchargement PDF
- */
-const handleDownloadPdf = async () => {
-    const entityId = props.entity?.id ?? props.entity?.id ?? null;
-    if (entityId) {
-        await downloadPdf(entityId);
+    
+    // Actions nécessitant canView
+    if (!props.canView) {
+        list.push('view', 'quick-view');
     }
-    emit('download-pdf');
-    menuOpen.value = false;
-};
+    
+    // Actions nécessitant canUpdate
+    if (!props.canUpdate) {
+        list.push('edit', 'quick-edit');
+    }
+    
+    // Actions nécessitant canDelete
+    if (!props.canDelete) {
+        list.push('delete');
+    }
+    
+    // Actions nécessitant canManage
+    if (!canManageEffective.value) {
+        list.push('refresh');
+    }
+    
+    return list;
+});
 
-/**
- * Gère la suppression
- */
-const handleDelete = () => {
-    emit('delete');
-    menuOpen.value = false;
-};
-
-/**
- * Gère le rafraîchissement (admin)
- */
-const handleRefresh = () => {
-    emit('refresh');
-    menuOpen.value = false;
+// Gérer les actions et émettre les événements legacy
+const handleAction = (actionKey, entity) => {
+    const targetEntity = entity || props.entity;
+    // Émettre l'événement spécifique pour compatibilité
+    emit(actionKey, targetEntity);
 };
 </script>
 
 <template>
-    <div class="dropdown dropdown-end">
-        <label tabindex="0" class="btn btn-ghost btn-sm">
-            <Icon source="fa-solid fa-ellipsis-vertical" size="sm" />
-        </label>
-        <ul tabindex="0" class="dropdown-content menu bg-base-100 rounded-box z-[1] w-56 p-2 shadow-lg border border-base-300">
-            <!-- Ouverture (page) -->
-            <li v-if="canView && !disableQuickActions">
-                <button @click="handleView" class="flex items-center gap-2">
-                    <Icon source="fa-solid fa-eye" size="sm" />
-                    <span>Ouvrir (page)</span>
-                </button>
-            </li>
-            
-            <!-- Ouverture rapide (modal) -->
-            <li v-if="canView && !disableQuickActions">
-                <button @click="handleQuickView" class="flex items-center gap-2">
-                    <Icon source="fa-solid fa-window-maximize" size="sm" />
-                    <span>Ouvrir rapide</span>
-                </button>
-            </li>
-            
-            <!-- Modification (page) -->
-            <li v-if="canUpdate && !disableQuickActions">
-                <button @click="handleEdit" class="flex items-center gap-2">
-                    <Icon source="fa-solid fa-pen" size="sm" />
-                    <span>Modifier (page)</span>
-                </button>
-            </li>
-            
-            <!-- Modification rapide -->
-            <li v-if="canUpdate && !disableQuickActions">
-                <button @click="handleQuickEdit" class="flex items-center gap-2">
-                    <Icon source="fa-solid fa-bolt" size="sm" />
-                    <span>Modifier rapide</span>
-                </button>
-            </li>
-            
-            <li><hr class="my-1" /></li>
-            
-            <!-- Copier le lien -->
-            <li>
-                <button @click="handleCopyLink" class="flex items-center gap-2">
-                    <Icon source="fa-solid fa-link" size="sm" />
-                    <span>Copier le lien</span>
-                </button>
-            </li>
-            
-            <!-- Télécharger le PDF -->
-            <li v-if="!disableQuickActions">
-                <button @click="handleDownloadPdf" :disabled="isDownloading" class="flex items-center gap-2" :class="{ 'opacity-50 cursor-not-allowed': isDownloading }">
-                    <Icon source="fa-solid fa-file-pdf" size="sm" />
-                    <span>{{ isDownloading ? 'Téléchargement...' : 'Télécharger PDF' }}</span>
-                </button>
-            </li>
-            
-            <!-- Rafraîchir (admin) -->
-            <li v-if="canManageEffective">
-                <button @click="handleRefresh" class="flex items-center gap-2">
-                    <Icon source="fa-solid fa-arrow-rotate-right" size="sm" />
-                    <span>Rafraîchir</span>
-                </button>
-            </li>
-            
-            <li v-if="canDelete"><hr class="my-1" /></li>
-            
-            <!-- Supprimer -->
-            <li v-if="canDelete">
-                <button @click="handleDelete" class="flex items-center gap-2 text-error">
-                    <Icon source="fa-solid fa-trash" size="sm" />
-                    <span>Supprimer</span>
-                </button>
-            </li>
-        </ul>
-    </div>
+    <EntityActions
+        :entity-type="normalizedEntityType"
+        :entity="entity"
+        format="dropdown"
+        display="icon-text"
+        size="sm"
+        color="primary"
+        :blacklist="blacklist"
+        :context="{ inPanel: false }"
+        @action="handleAction"
+    />
 </template>
 

@@ -710,6 +710,20 @@
     "file": "entity/EntityViewCompact.vue"
   },
   {
+    "name": "EntityActionsList",
+    "description": "EntityActionsList Molecule",
+    "props": [],
+    "slots": [],
+    "file": "entity/EntityActionsList.vue"
+  },
+  {
+    "name": "EntityActionsDropdown",
+    "description": "EntityActionsDropdown Molecule",
+    "props": [],
+    "slots": [],
+    "file": "entity/EntityActionsDropdown.vue"
+  },
+  {
     "name": "EnityCard",
     "description": "EntityCard Molecule (Atomic Design, DaisyUI)",
     "props": [

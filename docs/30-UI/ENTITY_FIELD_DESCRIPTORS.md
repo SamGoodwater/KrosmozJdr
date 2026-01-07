@@ -139,6 +139,236 @@ Recommandation UX :
 
 ---
 
+## 📚 Exemples concrets
+
+### Exemple 1 : Champ texte simple (Resource.description)
+
+```javascript
+description: {
+  key: "description",
+  label: "Description",
+  icon: "fa-solid fa-align-left",
+  format: "text",
+  display: {
+    views: DEFAULT_RESOURCE_FIELD_VIEWS,
+    sizes: { small: { mode: "text" }, normal: { mode: "text" }, large: { mode: "text" } },
+  },
+  edit: {
+    form: {
+      type: "textarea",
+      group: "Contenu",
+      required: false,
+      showInCompact: false,
+      bulk: { enabled: true, nullable: true, build: (v) => (v === "" ? null : String(v)) },
+    },
+  },
+},
+```
+
+### Exemple 2 : Champ select avec relation (Resource.resource_type_id)
+
+```javascript
+resource_type_id: {
+  key: "resource_type_id",
+  label: "Type de ressource",
+  icon: "fa-solid fa-tag",
+  format: "text",
+  display: {
+    views: DEFAULT_RESOURCE_FIELD_VIEWS,
+    sizes: { small: { mode: "text" }, normal: { mode: "text" }, large: { mode: "text" } },
+  },
+  edit: {
+    form: {
+      type: "select",
+      group: "Relations",
+      required: false,
+      showInCompact: true,
+      options: ctx?.meta?.filterOptions?.resource_type_id || [],
+      bulk: { enabled: true, nullable: true, build: (v) => (v === "" ? null : Number(v)) },
+    },
+  },
+},
+```
+
+### Exemple 3 : Champ booléen avec badge (Resource.usable)
+
+```javascript
+usable: {
+  key: "usable",
+  label: "Utilisable",
+  icon: "fa-solid fa-check-circle",
+  format: "bool",
+  display: {
+    views: DEFAULT_RESOURCE_FIELD_VIEWS,
+    sizes: { small: { mode: "badge" }, normal: { mode: "badge" }, large: { mode: "badge" } },
+  },
+  edit: {
+    form: {
+      type: "checkbox",
+      group: "Statut",
+      required: false,
+      showInCompact: true,
+      bulk: { enabled: true, build: (v) => Boolean(v) },
+    },
+  },
+},
+```
+
+### Exemple 4 : Champ enum avec badge (Resource.is_visible)
+
+```javascript
+is_visible: {
+  key: "is_visible",
+  label: "Visibilité",
+  icon: "fa-solid fa-eye",
+  format: "enum",
+  display: {
+    views: DEFAULT_RESOURCE_FIELD_VIEWS,
+    sizes: { small: { mode: "badge" }, normal: { mode: "badge" }, large: { mode: "badge" } },
+  },
+  edit: {
+    form: {
+      type: "select",
+      group: "Statut",
+      required: false,
+      showInCompact: true,
+      options: [
+        { value: "guest", label: "Invité" },
+        { value: "user", label: "Utilisateur" },
+        { value: "game_master", label: "Maître de jeu" },
+        { value: "admin", label: "Administrateur" },
+      ],
+      bulk: { enabled: true, build: (v) => String(v) },
+    },
+  },
+},
+```
+
+### Exemple 5 : Adapter avec cellule route (Resource.name)
+
+```javascript
+if (colId === "name") {
+  const name = entity?.name || "-";
+  const href = route("entities.resources.show", entity?.id);
+  return {
+    type: "route",
+    value: name,
+    params: {
+      href,
+      tooltip: name === "-" ? "" : name,
+      searchValue: name === "-" ? "" : name,
+      sortValue: name,
+    },
+  };
+}
+```
+
+### Exemple 6 : Adapter avec relation (Npc.classe_id)
+
+```javascript
+if (colId === "classe" || colId === "classe_id") {
+  const classe = entity?.classe || null;
+  const classeName = classe?.name || "-";
+  return {
+    type: "text",
+    value: classeName,
+    params: {
+      tooltip: classeName === "-" ? "" : classeName,
+      searchValue: classeName === "-" ? "" : classeName,
+      sortValue: classeName,
+    },
+  };
+}
+```
+
+---
+
+## 🔄 Patterns récurrents
+
+### Pattern 1 : Gestion des relations (belongs to)
+
+**Dans le descriptor** :
+- Utiliser `_id` comme clé (ex: `classe_id`)
+- Le backend renvoie la relation complète (ex: `classe: { id, name }`)
+
+**Dans l'adapter** :
+- Gérer les deux cas : `colId === "classe"` et `colId === "classe_id"`
+- Extraire le nom depuis la relation : `entity?.classe?.name`
+
+### Pattern 2 : Champs nullable en bulk
+
+**Dans le descriptor** :
+```javascript
+bulk: { 
+  enabled: true, 
+  nullable: true, 
+  build: (v) => (v === "" ? null : String(v)) 
+}
+```
+
+**Dans le BulkController** :
+```php
+'champ' => ['sometimes', 'nullable', 'string', 'max:255'],
+```
+
+### Pattern 3 : Permissions conditionnelles
+
+**Dans le descriptor** :
+```javascript
+visibleIf: () => canCreateAny, // Afficher seulement si l'utilisateur peut créer
+editableIf: () => canUpdateAny, // Éditer seulement si l'utilisateur peut mettre à jour
+```
+
+**Note** : Le backend doit aussi vérifier les permissions (Policies Laravel).
+
+### Pattern 4 : Groupes dans le quick edit
+
+**Dans le descriptor** :
+```javascript
+edit: {
+  form: {
+    group: "Statut", // Regroupe les champs dans le quick edit panel
+    // ...
+  },
+}
+```
+
+Les groupes sont automatiquement organisés par ordre d'apparition dans `quickEdit`.
+
+---
+
+## 🛠️ Troubleshooting
+
+### Problème : Le champ n'apparaît pas dans le quick edit
+
+**Solutions** :
+1. Vérifier que le champ est dans `{ENTITY}_VIEW_FIELDS.quickEdit`
+2. Vérifier que `edit.form.bulk.enabled === true`
+3. Vérifier que le champ est dans le BulkController backend
+
+### Problème : Le champ n'est pas sauvegardé en bulk
+
+**Solutions** :
+1. Vérifier que le champ est dans la validation du BulkController
+2. Vérifier que le champ est dans le `foreach` des champs à patcher
+3. Vérifier les permissions (`updateAny` dans la Policy)
+
+### Problème : La cellule ne s'affiche pas correctement
+
+**Solutions** :
+1. Vérifier que le cas est géré dans `build{Entity}Cell`
+2. Vérifier que le format correspond (text, badge, route, etc.)
+3. Vérifier que les valeurs nulles sont gérées (`entity?.champ || "-"`)
+
+### Problème : Les options du select ne s'affichent pas
+
+**Solutions** :
+1. Vérifier que les options sont fournies par le backend (`meta.filterOptions.{champ}`)
+2. Vérifier que le contexte est passé correctement : `get{Entity}FieldDescriptors({ meta })`
+3. Vérifier que les options sont au bon format : `[{ value, label }, ...]`
+
+---
+
 ## ✅ État d'implémentation
 
 **Date de finalisation** : 2026-01-06
@@ -177,6 +407,8 @@ Recommandation UX :
 - ✅ **12 tests Adapters** (Vitest)
 - ✅ **4 tests Utils/Composables** (Vitest)
 
-**Voir** : [ENTITY_DESCRIPTORS_MIGRATION_COMPLETE.md](../100-%20Done/ENTITY_DESCRIPTORS_MIGRATION_COMPLETE.md) pour les détails de la migration.
+**Voir** :
+- [ENTITY_DESCRIPTORS_MIGRATION_COMPLETE.md](../100-%20Done/ENTITY_DESCRIPTORS_MIGRATION_COMPLETE.md) — Détails de la migration
+- [ENTITY_DESCRIPTORS_MAINTENANCE_GUIDE.md](./ENTITY_DESCRIPTORS_MAINTENANCE_GUIDE.md) — Guide de maintenance complet
 
 

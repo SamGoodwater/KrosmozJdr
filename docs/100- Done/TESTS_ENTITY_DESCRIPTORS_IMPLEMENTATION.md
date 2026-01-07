@@ -13,7 +13,8 @@ Suite à la migration complète vers le système de descriptors (Option B), une 
 - Les adapters frontend
 - Les utilitaires et composables
 
-**Résultat final** : **165 tests passent** (966 assertions) en ~20 secondes.
+**Résultat final** : **165 tests backend passent** (966 assertions) en ~20 secondes.  
+**Tests frontend** : **16 adapters** + **4 utils/composables** = **20 fichiers de tests unitaires**.
 
 ---
 
@@ -75,7 +76,7 @@ Tous les contrôleurs table ont des tests couvrant :
 
 ### Tests Frontend (Vitest)
 
-#### Tests Adapters (12 fichiers)
+#### Tests Adapters (16 fichiers) ✅
 
 Tous les adapters ont des tests couvrant :
 - ✅ `build*Cell` génère correctement les cellules pour différents types de champs
@@ -96,7 +97,11 @@ Tous les adapters ont des tests couvrant :
 9. `shop-adapter.test.js`
 10. `resource-adapter.test.js`
 11. `resource-type-adapter.test.js`
-12. `attribute-adapter.test.js` (à vérifier si créé)
+12. `attribute-adapter.test.js`
+13. `classe-adapter.test.js` ✅
+14. `consumable-adapter.test.js` ✅
+15. `specialization-adapter.test.js` ✅
+16. `capability-adapter.test.js` ✅
 
 #### Tests Utils/Composables (4 fichiers)
 
@@ -105,6 +110,13 @@ Tests pour les utilitaires et composables :
 2. `entity-registry.test.js` — Tests pour `normalizeEntityType`, `getEntityConfig`, `getEntityResponseAdapter`
 3. `useBulkEditPanel.test.js` — Tests pour l'agrégation de valeurs, la construction du payload, le tracking des dirty states
 4. `useBulkRequest.test.js` — Tests pour la gestion des succès/erreurs et notifications
+
+#### Tests Descriptors (3 fichiers) ✅
+
+Tests pour valider la structure et la cohérence des descriptors :
+1. `spell-descriptors.test.js` — Tests pour la structure, `visibleIf`/`editableIf`, configuration bulk, groupes, `quickEdit`, options selects
+2. `item-descriptors.test.js` — Tests pour la structure, `visibleIf`/`editableIf`, configuration bulk, groupes, `quickEdit`, options selects
+3. `panoply-descriptors.test.js` — Tests pour la structure, `visibleIf`/`editableIf`, configuration bulk, groupes, options selects
 
 ---
 

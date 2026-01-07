@@ -19,13 +19,12 @@ import { router } from '@inertiajs/vue3';
 import Badge from '@/Pages/Atoms/data-display/Badge.vue';
 import Image from '@/Pages/Atoms/data-display/Image.vue';
 import Icon from '@/Pages/Atoms/data-display/Icon.vue';
-import Btn from '@/Pages/Atoms/action/Btn.vue';
-import Tooltip from '@/Pages/Atoms/feedback/Tooltip.vue';
 import CellRenderer from "@/Pages/Atoms/data-display/CellRenderer.vue";
+import EntityActions from '@/Pages/Organismes/entity/EntityActions.vue';
 import { useCopyToClipboard } from '@/Composables/utils/useCopyToClipboard';
 import { useDownloadPdf } from '@/Composables/utils/useDownloadPdf';
-import { usePermissions } from '@/Composables/permissions/usePermissions';
 import { getEntityConfig, normalizeEntityType } from "@/Entities/entity-registry";
+import { getEntityRouteConfig, resolveEntityRouteUrl } from '@/Composables/entity/entityRouteRegistry';
 
 const props = defineProps({
     entity: {
@@ -42,45 +41,27 @@ const props = defineProps({
     }
 });
 
-const emit = defineEmits(['edit', 'copy-link', 'download-pdf', 'refresh']);
+const emit = defineEmits([
+  'edit',
+  'copy-link',
+  'download-pdf',
+  'refresh',
+  'view',
+  'quick-view',
+  'quick-edit',
+  'delete',
+  'action',
+]);
 
 const { copyToClipboard } = useCopyToClipboard();
 const { downloadPdf, isDownloading } = useDownloadPdf(props.entityType);
-const permissionsApi = usePermissions();
-const { isAdmin, canCreateAny, canUpdateAny, canManageAny, canDeleteAny, canViewAny } = permissionsApi;
-
-// Permissions
-const canUpdate = computed(() => {
-    if (props.entity && typeof props.entity.canUpdate !== 'undefined') {
-        return props.entity.canUpdate ?? false;
-    }
-    return props.entity?.can?.update ?? false;
-});
-
-const canView = computed(() => {
-    if (props.entity && typeof props.entity.canView !== 'undefined') {
-        return props.entity.canView ?? false;
-    }
-    return props.entity?.can?.view ?? false;
-});
 
 const entityTypeKey = computed(() => normalizeEntityType(props.entityType));
 const entityConfig = computed(() => getEntityConfig(entityTypeKey.value));
 
-const entityCapabilities = computed(() => {
-    const k = String(entityTypeKey.value || props.entityType);
-    return {
-        viewAny: canViewAny(k),
-        createAny: canCreateAny(k),
-        updateAny: canUpdateAny(k),
-        deleteAny: canDeleteAny(k),
-        manageAny: canManageAny(k),
-    };
-});
-
 const entityCtx = computed(() => {
-    const caps = entityCapabilities.value;
-    return { capabilities: caps, meta: { capabilities: caps } };
+  // Le contexte sera géré par EntityActions via usePermissions
+  return { meta: {} };
 });
 
 const entityDescriptors = computed(() => {
@@ -169,46 +150,60 @@ const getEntityIcon = (type) => {
     return icons[type] || 'fa-solid fa-circle';
 };
 
-// Génère l'URL de l'entité
-const getEntityUrl = () => {
-    const entityId = props.entity?.id ?? null;
-    if (!entityId) return '';
-    
-    const entityTypePlural = props.entityType === 'panoply' ? 'panoplies' : `${props.entityType}s`;
-    const routeName = `entities.${entityTypePlural}.show`;
-    const routeParams = { [props.entityType]: entityId };
-    return `${window.location.origin}${route(routeName, routeParams)}`;
-};
+// Handlers pour les actions
+const handleAction = async (actionKey, entity) => {
+  const entityId = entity?.id ?? props.entity?.id ?? null;
+  if (!entityId) return;
 
-// Handlers
-const handleEdit = () => {
-    const entityId = props.entity?.id ?? null;
-    if (!entityId) return;
-    
-    const entityTypePlural = props.entityType === 'panoply' ? 'panoplies' : `${props.entityType}s`;
-    router.visit(route(`entities.${entityTypePlural}.edit`, { [props.entityType]: entityId }));
-    emit('edit');
-};
+  const entityTypePlural = props.entityType === 'panoply' ? 'panoplies' : `${props.entityType}s`;
 
-const handleCopyLink = async () => {
-    const url = getEntityUrl();
-    if (url) {
-        await copyToClipboard(url, 'Lien de l\'entité copié !');
-        emit('copy-link');
+  switch (actionKey) {
+    case 'view':
+      router.visit(route(`entities.${entityTypePlural}.show`, { [props.entityType]: entityId }));
+      emit('view', entity);
+      break;
+
+    case 'quick-view':
+      emit('quick-view', entity);
+      break;
+
+    case 'edit':
+      router.visit(route(`entities.${entityTypePlural}.edit`, { [props.entityType]: entityId }));
+      emit('edit', entity);
+      break;
+
+    case 'quick-edit':
+      emit('quick-edit', entity);
+      break;
+
+    case 'copy-link': {
+      const cfg = getEntityRouteConfig(props.entityType);
+      const url = resolveEntityRouteUrl(props.entityType, 'show', entityId, cfg);
+      if (url) {
+        await copyToClipboard(`${window.location.origin}${url}`, "Lien de l'entité copié !");
+      }
+      emit('copy-link', entity);
+      break;
     }
-};
 
-const handleDownloadPdf = async () => {
-    const entityId = props.entity?.id ?? null;
-    if (entityId) {
-        await downloadPdf(entityId);
-        emit('download-pdf');
-    }
-};
+    case 'download-pdf':
+      await downloadPdf(entityId);
+      emit('download-pdf', entity);
+      break;
 
-const handleRefresh = () => {
-    router.reload({ only: [props.entityType === 'panoply' ? 'panoplies' : `${props.entityType}s`] });
-    emit('refresh');
+    case 'refresh':
+      router.reload({ only: [entityTypePlural] });
+      emit('refresh', entity);
+      break;
+
+    case 'delete':
+      emit('delete', entity);
+      break;
+
+    case 'minimize':
+      emit('minimize', entity);
+      break;
+  }
 };
 </script>
 
@@ -235,27 +230,17 @@ const handleRefresh = () => {
                     </div>
                     
                     <!-- Actions en haut à droite -->
-                    <div v-if="showActions" class="flex gap-2 flex-shrink-0">
-                        <Tooltip v-if="canUpdate" content="Modifier" placement="left">
-                            <Btn size="sm" variant="ghost" @click="handleEdit" class="btn-square">
-                                <Icon source="fa-solid fa-pen" size="sm" />
-                            </Btn>
-                        </Tooltip>
-                        <Tooltip content="Copier le lien" placement="left">
-                            <Btn size="sm" variant="ghost" @click="handleCopyLink" class="btn-square">
-                                <Icon source="fa-solid fa-link" size="sm" />
-                            </Btn>
-                        </Tooltip>
-                        <Tooltip content="Télécharger PDF" placement="left">
-                            <Btn size="sm" variant="ghost" @click="handleDownloadPdf" :disabled="isDownloading" class="btn-square">
-                                <Icon source="fa-solid fa-file-pdf" size="sm" :class="{ 'animate-spin': isDownloading }" />
-                            </Btn>
-                        </Tooltip>
-                        <Tooltip v-if="isAdmin" content="Rafraîchir" placement="left">
-                            <Btn size="sm" variant="ghost" @click="handleRefresh" class="btn-square">
-                                <Icon source="fa-solid fa-arrows-rotate" size="sm" />
-                            </Btn>
-                        </Tooltip>
+                    <div v-if="showActions" class="flex-shrink-0">
+                        <EntityActions
+                            :entity-type="entityTypeKey"
+                            :entity="entity"
+                            format="buttons"
+                            display="icon-text"
+                            size="sm"
+                            color="primary"
+                            :context="{ inPanel: false }"
+                            @action="handleAction"
+                        />
                     </div>
                 </div>
             </div>

@@ -44,6 +44,14 @@ const props = defineProps({
      * IDs sélectionnés (mode contrôlé). Si fourni, TanStackTable se synchronise dessus.
      */
     selectedIds: { type: Array, default: null },
+    /**
+     * Type d'entité (pour la colonne Actions et le menu contextuel).
+     */
+    entityType: { type: String, default: null },
+    /**
+     * Afficher la colonne Actions.
+     */
+    showActionsColumn: { type: Boolean, default: false },
 });
 
 const emit = defineEmits([
@@ -53,6 +61,7 @@ const emit = defineEmits([
     // Compat: selon les listeners (template) on peut avoir besoin de la forme kebab-case
     "update:selectedIds",
     "update:selected-ids",
+    "action", // Émis pour chaque action d'entité
 ]);
 
 const columnsConfig = computed(() => Array.isArray(props.config?.columns) ? props.config.columns : []);
@@ -749,7 +758,7 @@ const handleExport = () => {
             <div class="overflow-x-auto">
                 <table class="table w-full" :class="[tableVariantClass, tableSizeClass]">
                 <TanStackTableHeader
-                    :columns="filteredColumnsConfig"
+                    :columns="filteredColumnsConfig.filter((col) => col.id !== 'actions')"
                     :sort-by="sortBy"
                     :sort-order="sortOrder"
                     @sort="handleSort"
@@ -757,6 +766,7 @@ const handleExport = () => {
                     :all-selected="allSelectedOnPage"
                     :some-selected="someSelectedOnPage"
                     :ui-color="uiColor"
+                    :show-actions-column="showActionsColumn"
                     @toggle-all="toggleAllOnPage"
                 />
 
@@ -771,21 +781,25 @@ const handleExport = () => {
                     <TanStackTableRow
                         v-for="row in rowsToRender"
                         :key="row.id"
+                        v-memo="[row.id, isSelected(row), filteredColumnsConfig.length]"
                         :row="row"
                         :columns="filteredColumnsConfig"
                         :show-selection="showSelectionCheckboxes"
                         :is-selected="isSelected(row)"
                         :selected-bg-class="rowSelectedBgClass"
                         :ui-color="uiColor"
+                        :entity-type="entityType"
+                        :show-actions-column="showActionsColumn"
                         @toggle-select="(r, checked) => toggleRow(r, checked)"
                         @row-click="handleRowClick"
                         @row-dblclick="(r) => emit('row-dblclick', r)"
+                        @action="(actionKey, entity, row) => emit('action', actionKey, entity, row)"
                     />
                 </tbody>
 
                 <tbody v-else>
                     <tr>
-                        <td :colspan="filteredColumnsConfig.length + (showSelectionCheckboxes ? 1 : 0)" class="text-center py-8 text-base-content/60">
+                        <td :colspan="filteredColumnsConfig.length + (showSelectionCheckboxes ? 1 : 0) + (showActionsColumn ? 1 : 0)" class="text-center py-8 text-base-content/60">
                             Aucune donnée
                         </td>
                     </tr>

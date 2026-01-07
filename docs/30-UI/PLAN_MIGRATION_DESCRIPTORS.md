@@ -1,32 +1,39 @@
 # Plan de migration — Système Entity Field Descriptors
 
 **Date de création** : 2025-01-27  
-**Statut** : En cours  
-**Entités migrées** : 3/16 (resource, resource_type, item)
+**Date de finalisation** : 2026-01-06  
+**Statut** : ✅ **100% Complété**  
+**Entités migrées** : 16/16
 
 ---
 
 ## 📊 État actuel
 
-### ✅ Entités migrées (3)
-- ✅ `resource` — Complète (descriptors + adapter + Index.vue)
-- ✅ `resource_type` — Complète (descriptors + adapter + Index.vue)
-- ✅ `item` — Complète (descriptors + adapter + Index.vue)
+### ✅ Entités migrées (16/16)
 
-### ⏳ Entités à migrer (13)
-1. `spell` — Sorts (priorité haute)
-2. `monster` — Monstres (priorité haute)
-3. `creature` — Créatures (priorité haute)
-4. `npc` — PNJ (priorité moyenne)
-5. `panoply` — Panoplies (priorité moyenne)
-6. `classe` — Classes (priorité moyenne)
-7. `capability` — Capacités (priorité basse)
-8. `attribute` — Attributs (priorité basse)
-9. `specialization` — Spécialisations (priorité basse)
-10. `shop` — Boutiques (priorité basse)
-11. `scenario` — Scénarios (priorité basse)
-12. `campaign` — Campagnes (priorité basse)
-13. `consumable` — Consommables (priorité basse)
+1. ✅ `resource` — Complète (descriptors + adapter + Index.vue + bulk controller + tests)
+2. ✅ `resource_type` — Complète (descriptors + adapter + Index.vue + tests)
+3. ✅ `item` — Complète (descriptors + adapter + Index.vue + bulk controller + tests)
+4. ✅ `spell` — Complète (descriptors + adapter + Index.vue + bulk controller + tests)
+5. ✅ `monster` — Complète (descriptors + adapter + Index.vue + bulk controller + tests)
+6. ✅ `creature` — Complète (descriptors + adapter + Index.vue + bulk controller + tests)
+7. ✅ `npc` — Complète (descriptors + adapter + Index.vue + bulk controller + tests)
+8. ✅ `classe` — Complète (descriptors + adapter + Index.vue + bulk controller + tests)
+9. ✅ `consumable` — Complète (descriptors + adapter + Index.vue + bulk controller + tests)
+10. ✅ `campaign` — Complète (descriptors + adapter + Index.vue + bulk controller + tests)
+11. ✅ `scenario` — Complète (descriptors + adapter + Index.vue + bulk controller + tests)
+12. ✅ `attribute` — Complète (descriptors + adapter + Index.vue + bulk controller + tests)
+13. ✅ `panoply` — Complète (descriptors + adapter + Index.vue + bulk controller + tests)
+14. ✅ `capability` — Complète (descriptors + adapter + Index.vue + bulk controller + tests)
+15. ✅ `specialization` — Complète (descriptors + adapter + Index.vue + bulk controller + tests)
+16. ✅ `shop` — Complète (descriptors + adapter + Index.vue + bulk controller + tests)
+
+### 📊 Résultats
+
+- **15 contrôleurs bulk** créés et testés
+- **16 contrôleurs table** supportent `?format=entities`
+- **16 adapters frontend** créés
+- **165 tests passent** (966 assertions) — Voir [TESTS_ENTITY_DESCRIPTORS_IMPLEMENTATION.md](../100-%20Done/TESTS_ENTITY_DESCRIPTORS_IMPLEMENTATION.md)
 
 ---
 

@@ -20,6 +20,10 @@ const props = defineProps({
      * Couleur UI (Design System) appliquée aux checkboxes de sélection.
      */
     uiColor: { type: String, default: "primary" },
+    /**
+     * Afficher la colonne Actions (sans label).
+     */
+    showActionsColumn: { type: Boolean, default: false },
 });
 
 const emit = defineEmits(["sort", "toggle-all"]);
@@ -54,6 +58,8 @@ const isSortable = (col) => Boolean(col?.sort?.enabled);
                     </span>
                 </div>
             </th>
+            <!-- Colonne Actions (sans label) -->
+            <th v-if="showActionsColumn" class="w-12"></th>
         </tr>
     </thead>
 </template>

@@ -2431,6 +2431,13 @@
     "file": "action/Route.vue"
   },
   {
+    "name": "EntityActionButton",
+    "description": "EntityActionButton Atom",
+    "props": [],
+    "slots": [],
+    "file": "action/EntityActionButton.vue"
+  },
+  {
     "name": "Dropdown",
     "description": "Dropdown Atom (Custom)",
     "props": [

@@ -13,7 +13,7 @@
  * @props {Object} fieldsConfig - Configuration des champs à afficher
  * @props {Boolean} isUpdating - Mode édition (true) ou création (false)
  */
-import { ref, computed, watch } from 'vue';
+import { ref, computed, watch, onMounted, onUnmounted } from 'vue';
 import { useForm, router } from '@inertiajs/vue3';
 import { useNotificationStore } from '@/Composables/store/useNotificationStore';
 import Container from '@/Pages/Atoms/data-display/Container.vue';
@@ -277,6 +277,47 @@ watch(() => props.entity, () => {
     });
 }, { deep: true });
 
+/**
+ * Raccourcis clavier
+ */
+const handleKeydown = (event) => {
+    // Ctrl+S / Cmd+S : Sauvegarder
+    if ((event.ctrlKey || event.metaKey) && event.key === 's') {
+        event.preventDefault();
+        if (!form.processing) {
+            submit();
+        }
+        return;
+    }
+
+    // Esc : Annuler / Fermer
+    if (event.key === 'Escape') {
+        event.preventDefault();
+        emit('cancel');
+        return;
+    }
+
+    // Ctrl+Z / Cmd+Z : Réinitialiser (si possible)
+    if ((event.ctrlKey || event.metaKey) && event.key === 'z' && !event.shiftKey) {
+        // Ne pas intercepter si on est dans un input/textarea (laisser le navigateur gérer)
+        const target = event.target;
+        if (target && (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA')) {
+            return;
+        }
+        event.preventDefault();
+        resetForm();
+        return;
+    }
+};
+
+onMounted(() => {
+    window.addEventListener('keydown', handleKeydown);
+});
+
+onUnmounted(() => {
+    window.removeEventListener('keydown', handleKeydown);
+});
+
 // Validation pour chaque champ
 const getFieldValidation = (fieldKey) => {
     if (!form.errors[fieldKey]) return null;
@@ -518,8 +559,15 @@ const toggleViewMode = () => {
                                         :indeterminate="props.differentFields.includes(fieldKey) && !checkboxDirty.value?.[fieldKey]"
                                         @update:model-value="(v) => { checkboxDirty.value = { ...(checkboxDirty.value || {}), [fieldKey]: true }; form[fieldKey] = Boolean(v); }"
                                     />
-                                    <span class="text-sm opacity-80">
+                                    <span
+                                        class="text-sm transition-colors duration-200 flex items-center gap-1"
+                                        :class="{
+                                            'opacity-80': !(props.differentFields.includes(fieldKey) && !checkboxDirty.value?.[fieldKey]),
+                                            'text-warning font-semibold': props.differentFields.includes(fieldKey) && !checkboxDirty.value?.[fieldKey],
+                                        }"
+                                    >
                                         <template v-if="props.differentFields.includes(fieldKey) && !checkboxDirty.value?.[fieldKey]">
+                                            <Icon source="fa-solid fa-exclamation-triangle" alt="Valeurs différentes" size="xs" />
                                             Valeurs différentes
                                         </template>
                                         <template v-else>

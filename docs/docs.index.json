@@ -60,6 +60,11 @@
     "description": "- Toujours documenter les composants, fonctions, classes, méthodes publiques."
   },
   {
+    "path": "10-BestPractices/ENTITY_DESCRIPTORS_TESTING_PLAN.md",
+    "title": "Plan de tests — Entity Descriptors System",
+    "description": "**Date** : 2025-01-27"
+  },
+  {
     "path": "10-BestPractices/FORMULAS_PRACTICES.md",
     "title": "Formules dynamiques — Bonnes pratiques",
     "description": "- Toujours utiliser la syntaxe définie dans [CONTENT_OVERVIEW.md – section 5](../30-Content/CONTENT_OVERVIEW.md#5-syntaxe-des-formules-krosmoz-jdr)."
@@ -107,7 +112,7 @@
   {
     "path": "10-BestPractices/TESTING_PRACTICES.md",
     "title": "Tests — Bonnes pratiques",
-    "description": "- Mettre en place des tests unitaires et d'intégration (backend, frontend). 159 tests passent (941 assertions) pour le système Entity Field Descriptors."
+    "description": "- Mettre en place des tests unitaires et d'intégration (backend, frontend)."
   },
   {
     "path": "100- Done/AUDIT_PAGES_SECTIONS_2025_01_13.md",
@@ -140,6 +145,31 @@
     "description": "J'ai effectué une **analyse complète et approfondie** des deux systèmes principaux de KrosmozJDR :"
   },
   {
+    "path": "100- Done/ENTITY_ACTIONS_IMPLEMENTATION_STATUS.md",
+    "title": "État d'implémentation — Système d'Actions pour les Entités",
+    "description": "**Date** : 2026-01-06"
+  },
+  {
+    "path": "100- Done/ENTITY_ACTIONS_SYSTEM_PROPOSAL.md",
+    "title": "Proposition — Système d'Actions pour les Entités",
+    "description": "**Date** : 2026-01-06"
+  },
+  {
+    "path": "100- Done/ENTITY_DESCRIPTORS_ETAT_FINAL.md",
+    "title": "État final — Système Entity Field Descriptors",
+    "description": "**Date** : 2026-01-06"
+  },
+  {
+    "path": "100- Done/ENTITY_DESCRIPTORS_PROGRESSION.md",
+    "title": "Progression — Système Entity Field Descriptors",
+    "description": "**Date de création** : 2026-01-06"
+  },
+  {
+    "path": "100- Done/ENTITY_DESCRIPTORS_VALIDATION_REPORT.md",
+    "title": "Rapport de validation — Système Entity Field Descriptors",
+    "description": "**Date** : 2026-01-06"
+  },
+  {
     "path": "100- Done/FRONTEND_MODELS_IMPLEMENTATION.md",
     "title": "Implémentation des Modèles Frontend JS — KrosmozJDR",
     "description": "**Date de complétion** : 2025-01-27"
@@ -162,7 +192,7 @@
   {
     "path": "100- Done/README.md",
     "title": "",
-    "description": "Le dossier `docs/100-Done` a pour objectif de centraliser les fichiers Markdown relatifs aux actions réalisées durant le développement du projet, ainsi qu’aux fonctionnalités finalisées. Il s’agit de l’espace où l’on documente l’évolution concrète du projet (refactorings, jalons atteints, fonctionnalités livrées, etc.), à la différence de la documentation technique pure. Ce dossier permet de garder une trace claire de l’historique des avancées et des décisions prises au fil du temps."
+    "description": "Le dossier `docs/100-Done` a pour objectif de centraliser les fichiers Markdown relatifs aux actions réalisées durant le développement du projet, ainsi qu'aux fonctionnalités finalisées. Il s'agit de l'espace où l'on documente l'évolution concrète du projet (refactorings, jalons atteints, fonctionnalités livrées, etc.), à la différence de la documentation technique pure. Ce dossier permet de garder une trace claire de l'historique des avancées et des décisions prises au fil du temps."
   },
   {
     "path": "100- Done/RECAPITULATIF_COMPLET.md",
@@ -215,6 +245,11 @@
     "description": "Cette documentation décrit les tests d'authentification mis en place pour le projet Krosmoz-JDR. Les tests couvrent les fonctionnalités principales d'authentification : inscription, connexion, déconnexion, validation des formulaires et middlewares."
   },
   {
+    "path": "100- Done/TESTS_ENTITY_DESCRIPTORS_IMPLEMENTATION.md",
+    "title": "Tests — Système Entity Field Descriptors",
+    "description": "**Date de finalisation** : 2026-01-06"
+  },
+  {
     "path": "100- Done/TESTS_IMPLEMENTATION_REPORT.md",
     "title": "Rapport d'implémentation des tests - Pages/Sections",
     "description": "**Date** : 13 Décembre 2024"
@@ -223,11 +258,6 @@
     "path": "100- Done/VALIDATION_REFACTORING.md",
     "title": "Refactoring du Système de Validation — KrosmozJDR",
     "description": "Le système de validation a été entièrement refactorisé pour répondre aux besoins de simplicité et de transparence. L'objectif était de créer une API qui évite les conflits avec les vues tout en restant puissante et flexible."
-  },
-  {
-    "path": "100- Done/TESTS_ENTITY_DESCRIPTORS_IMPLEMENTATION.md",
-    "title": "Tests — Système Entity Field Descriptors",
-    "description": "Suite de tests complète pour le système Entity Field Descriptors : 159 tests passent (941 assertions) couvrant les opérations bulk, endpoints table, adapters frontend, et utilitaires."
   },
   {
     "path": "110- To Do/To Do2.md",
@@ -460,9 +490,24 @@
     "description": "Le design du site s'appuie sur les principes d'Atomic Design, le glassmorphism et une forte accessibilité. L'interface est responsive et moderne."
   },
   {
+    "path": "30-UI/ENTITY_ACTIONS_GUIDE.md",
+    "title": "Guide d'utilisation — Système d'Actions pour les Entités",
+    "description": "**Date** : 2026-01-06"
+  },
+  {
+    "path": "30-UI/ENTITY_DESCRIPTORS_MAINTENANCE_GUIDE.md",
+    "title": "Guide de maintenance — Entity Field Descriptors",
+    "description": "**Date de création** : 2026-01-06"
+  },
+  {
     "path": "30-UI/ENTITY_FIELD_DESCRIPTORS.md",
     "title": "Entity Field Descriptors — Architecture (Option B)",
     "description": "Mettre en place une **source de vérité frontend** par champ (“field descriptor”) afin de générer :"
+  },
+  {
+    "path": "30-UI/ENTITY_FIELD_DESCRIPTORS_GUIDE.md",
+    "title": "Guide complet — Entity Field Descriptors",
+    "description": "**Date de création** : 2026-01-06"
   },
   {
     "path": "30-UI/FRONTEND_MODELS.md",
@@ -547,7 +592,7 @@
   {
     "path": "30-UI/README.md",
     "title": "UI & Atomic Design — KrosmozJDR",
-    "description": "- **[INPUT SYSTEM/](./INPUT%20SYSTEM/)** — Système d'input complet et organisé"
+    "description": "- **[ENTITY_FIELD_DESCRIPTORS_GUIDE.md](./ENTITY_FIELD_DESCRIPTORS_GUIDE.md)** — Guide complet du système Entity Field Descriptors (fonctionnement, architecture, utilisation)"
   },
   {
     "path": "30-UI/TANSTACK_TABLE.md",

@@ -33,6 +33,7 @@ import Icon from "@/Pages/Atoms/data-display/Icon.vue";
 import { useBulkEditPanel } from "@/Composables/entity/useBulkEditPanel";
 import { getEntityConfig } from "@/Entities/entity-registry";
 import { createFieldsConfigFromDescriptors, createBulkFieldMetaFromDescriptors } from "@/Utils/entity/descriptor-form";
+import { getCachedDescriptors } from "@/Utils/entity/descriptor-cache";
 
 const props = defineProps({
   entityType: { type: String, required: true },
@@ -64,7 +65,7 @@ const ctx = computed(() => ({
 
 const descriptors = computed(() => {
   if (!cfg.value?.getDescriptors) return {};
-  return cfg.value.getDescriptors(ctx.value) || {};
+  return getCachedDescriptors(props.entityType, cfg.value.getDescriptors, ctx.value);
 });
 
 const isFieldVisible = (key) => {
@@ -161,6 +162,13 @@ const panelTitle = computed(() => {
   return props.selectedEntities?.length <= 1 ? "Édition rapide" : "Édition rapide (multi)";
 });
 
+/**
+ * Nombre de champs modifiés (dirty).
+ */
+const modifiedFieldsCount = computed(() => {
+  return Object.values(dirty || {}).filter(Boolean).length;
+});
+
 const {
   showList,
   scope,
@@ -231,11 +239,32 @@ const getBoolIndeterminate = (key) => {
 </script>
 
 <template>
-  <div class="rounded-lg border border-base-300 bg-base-200 p-4 space-y-4 max-h-[calc(100vh-7rem)] overflow-y-auto">
+  <div
+    class="rounded-lg border border-base-300 bg-base-200 p-4 space-y-4 max-h-[calc(100vh-7rem)] overflow-y-auto transition-all duration-300 ease-out"
+  >
     <div class="flex items-start justify-between gap-3">
-      <div>
-        <div class="text-lg font-bold text-primary-100">{{ panelTitle }}</div>
-        <div class="text-sm text-primary-300">{{ ids.length }} sélectionnée(s)</div>
+      <div class="flex-1">
+        <div class="flex items-center gap-2">
+          <div class="text-lg font-bold text-primary-100">{{ panelTitle }}</div>
+          <transition
+            enter-active-class="transition-all duration-300 ease-out"
+            enter-from-class="opacity-0 scale-90"
+            enter-to-class="opacity-100 scale-100"
+            leave-active-class="transition-all duration-200 ease-in"
+            leave-from-class="opacity-100 scale-100"
+            leave-to-class="opacity-0 scale-90"
+          >
+            <div
+              v-if="modifiedFieldsCount > 0"
+              class="badge badge-primary badge-sm gap-1 animate-pulse"
+              :class="{ 'animate-pulse': modifiedFieldsCount > 0 }"
+            >
+              <Icon source="fa-solid fa-edit" alt="Modifié" size="xs" />
+              <span>{{ modifiedFieldsCount }} champ{{ modifiedFieldsCount > 1 ? 's' : '' }} modifié{{ modifiedFieldsCount > 1 ? 's' : '' }}</span>
+            </div>
+          </transition>
+        </div>
+        <div class="text-sm text-primary-300 mt-1">{{ ids.length }} sélectionnée(s)</div>
       </div>
       <Btn size="sm" variant="ghost" @click="$emit('clear')">Effacer</Btn>
     </div>
@@ -278,12 +307,38 @@ const getBoolIndeterminate = (key) => {
 
     <div class="space-y-5">
       <div v-for="group in groupedFieldKeys" :key="group.title" class="space-y-3">
-        <div v-if="groupedFieldKeys.length > 1" class="divider my-0">{{ group.title }}</div>
+        <div
+          v-if="groupedFieldKeys.length > 1"
+          class="divider my-0 text-base-content/60 font-semibold text-sm uppercase tracking-wide"
+        >
+          {{ group.title }}
+        </div>
 
-        <div v-for="key in group.keys" :key="key" class="form-control">
+        <div
+          v-for="key in group.keys"
+          :key="key"
+          class="form-control transition-all duration-200"
+          :class="{ 'ring-2 ring-primary/30 rounded-md p-2 -m-2': dirty?.[key] }"
+        >
           <label class="label">
             <span class="label-text flex items-center gap-2">
-              <span>{{ fieldsConfig[key]?.label }}</span>
+              <span :class="{ 'font-semibold text-primary': dirty?.[key] }">{{ fieldsConfig[key]?.label }}</span>
+              <transition
+                enter-active-class="transition-all duration-200 ease-out"
+                enter-from-class="opacity-0 scale-75"
+                enter-to-class="opacity-100 scale-100"
+                leave-active-class="transition-all duration-150 ease-in"
+                leave-from-class="opacity-100 scale-100"
+                leave-to-class="opacity-0 scale-75"
+              >
+                <Icon
+                  v-if="dirty?.[key]"
+                  source="fa-solid fa-circle-check"
+                  alt="Modifié"
+                  size="xs"
+                  class="text-primary"
+                />
+              </transition>
               <Tooltip v-if="fieldsConfig[key]?.tooltip" :content="fieldsConfig[key]?.tooltip" placement="top" color="neutral">
                 <Btn size="xs" variant="ghost" class="px-1" :aria-label="`Info: ${fieldsConfig[key]?.label || ''}`">
                   <Icon source="fa-solid fa-circle-info" alt="Info" size="xs" />
@@ -386,7 +441,24 @@ const getBoolIndeterminate = (key) => {
     </div>
 
     <div class="flex items-center justify-end gap-2 pt-2">
-      <Btn size="sm" variant="ghost" @click="resetFromSelection" :disabled="!isAdmin">Réinitialiser</Btn>
+      <div class="flex items-center gap-2">
+        <Btn
+          v-if="modifiedFieldsCount > 0"
+          size="sm"
+          variant="outline"
+          color="warning"
+          @click="resetFromSelection"
+          :disabled="!isAdmin"
+          class="gap-2"
+        >
+          <Icon source="fa-solid fa-rotate-left" alt="Réinitialiser" size="sm" />
+          <span>Tout réinitialiser</span>
+        </Btn>
+        <Btn size="sm" variant="primary" @click="apply" :disabled="!canApply" class="gap-2">
+          <Icon source="fa-solid fa-check" alt="Appliquer" size="sm" />
+          <span>Appliquer</span>
+        </Btn>
+      </div>
       <Btn size="sm" color="primary" @click="apply" :disabled="!canApply">Appliquer</Btn>
     </div>
   </div>

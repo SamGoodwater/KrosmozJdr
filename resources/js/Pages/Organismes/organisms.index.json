@@ -512,7 +512,7 @@
   },
   {
     "name": "EntityActionsMenu",
-    "description": "EntityActionsMenu Organism",
+    "description": "EntityActionsMenu Organism (Legacy Wrapper)",
     "props": [
       {
         "name": "entity",
@@ -547,6 +547,13 @@
     ],
     "slots": [],
     "file": "entity/EntityActionsMenu.vue"
+  },
+  {
+    "name": "EntityActions",
+    "description": "EntityActions Organism",
+    "props": [],
+    "slots": [],
+    "file": "entity/EntityActions.vue"
   },
   {
     "name": "CreateEntityModal",
