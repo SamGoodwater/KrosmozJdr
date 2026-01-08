@@ -176,6 +176,14 @@ const handleAction = async (actionKey, entity) => {
       emit('quick-edit', entity);
       break;
 
+    case 'expand':
+      // Expand depuis un modal : redirige vers view ou edit selon le contexte
+      // Le contexte devrait être passé via props ou détecté
+      // Pour l'instant, on redirige vers view par défaut
+      router.visit(route(`entities.${entityTypePlural}.show`, { [props.entityType]: entityId }));
+      emit('view', entity);
+      break;
+
     case 'copy-link': {
       const cfg = getEntityRouteConfig(props.entityType);
       const url = resolveEntityRouteUrl(props.entityType, 'show', entityId, cfg);
@@ -235,10 +243,10 @@ const handleAction = async (actionKey, entity) => {
                             :entity-type="entityTypeKey"
                             :entity="entity"
                             format="buttons"
-                            display="icon-text"
+                            display="icon-only"
                             size="sm"
                             color="primary"
-                            :context="{ inPanel: false }"
+                            :context="{ inPanel: false, inPage: true }"
                             @action="handleAction"
                         />
                     </div>

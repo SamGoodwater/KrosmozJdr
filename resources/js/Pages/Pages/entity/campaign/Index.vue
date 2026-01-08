@@ -14,7 +14,6 @@ import { usePermissions } from "@/Composables/permissions/usePermissions";
 import { useBulkRequest } from "@/Composables/entity/useBulkRequest";
 import { Campaign } from "@/Models/Entity/Campaign";
 
-import Container from '@/Pages/Atoms/data-display/Container.vue';
 import Btn from '@/Pages/Atoms/action/Btn.vue';
 import EntityTanStackTable from '@/Pages/Organismes/table/EntityTanStackTable.vue';
 import EntityModal from '@/Pages/Organismes/entity/EntityModal.vue';
@@ -112,7 +111,7 @@ const closeModal = () => {
 <template>
     <Head title="Liste des Campagnes" />
     
-    <Container class="space-y-6 pb-8">
+    <div class="space-y-6 pb-8 w-full">
         <!-- En-tête -->
         <div class="flex flex-col gap-2 md:flex-row md:justify-between md:items-center">
             <div>
@@ -127,7 +126,7 @@ const closeModal = () => {
 
         <!-- Grid layout pour permettre le scroll horizontal du tableau quand le quick edit est ouvert -->
         <div class="xl:grid xl:grid-cols-[minmax(0,1fr)_380px] xl:gap-6">
-            <div class="min-w-0">
+            <div class="min-w-0 overflow-x-auto">
                 <EntityTanStackTable
                     entity-type="campaigns"
                     :config="tableConfig"
@@ -167,5 +166,5 @@ const closeModal = () => {
             :open="modalOpen"
             @close="closeModal"
         />
-    </Container>
+    </div>
 </template>

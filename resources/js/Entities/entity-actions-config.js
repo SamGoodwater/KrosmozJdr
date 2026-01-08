@@ -14,11 +14,15 @@
  * @typedef {Object} EntityActionConfig
  * @property {string} key - Identifiant unique de l'action
  * @property {string} label - Label affiché à l'utilisateur
+ * @property {string} tooltip - Tooltip détaillé (optionnel, utilise label si non fourni)
  * @property {string} icon - Icône Font Awesome (ex: 'fa-solid fa-eye')
  * @property {string|null} permission - Permission requise (ex: 'canView', 'canUpdate', 'canDelete', 'canManage') ou null si toujours disponible
  * @property {boolean} requiresEntity - Si true, nécessite une entité (ne peut pas être utilisé sans entity)
  * @property {string} [variant] - Variant du bouton (ex: 'error' pour delete)
  * @property {string} [group] - Groupe d'actions (pour séparateurs dans le menu)
+ * @property {Function} [getLabel] - Fonction pour obtenir le label selon le contexte
+ * @property {Function} [getTooltip] - Fonction pour obtenir le tooltip selon le contexte
+ * @property {Function} [visibleIf] - Fonction pour déterminer si l'action est visible selon le contexte
  */
 
 /**
@@ -27,39 +31,127 @@
 export const ENTITY_ACTIONS_COMMON = Object.freeze({
   view: {
     key: "view",
-    label: "Ouvrir (page)",
+    label: "Ouvrir",
+    tooltip: "Ouvrir dans une page complète",
     icon: "fa-solid fa-eye",
     permission: "canView",
     requiresEntity: true,
     group: "navigation",
+    getLabel: (context) => {
+      // Si on est dans un modal, le label change
+      if (context?.inModal) return "Agrandir";
+      return "Ouvrir";
+    },
+    getTooltip: (context) => {
+      if (context?.inModal) return "Ouvrir dans une page complète";
+      return "Ouvrir dans une page complète";
+    },
+    visibleIf: (context) => {
+      // En modal, on n'affiche pas "view" (on utilise expand à la place)
+      if (context?.inModal) return false;
+      // Sur la page de l'entité, on n'affiche pas "view" (on est déjà sur la page)
+      if (context?.inPage) return false;
+      return true;
+    },
   },
   "quick-view": {
     key: "quick-view",
-    label: "Ouvrir rapide",
+    label: "Afficher",
+    tooltip: "Afficher dans une modal rapide",
     icon: "fa-solid fa-window-maximize",
     permission: "canView",
     requiresEntity: true,
     group: "navigation",
+    getLabel: (context) => {
+      // Si on est dans une page, on peut vouloir "Afficher" en modal
+      if (context?.inPage) return "Afficher";
+      return "Afficher";
+    },
+    getTooltip: (context) => {
+      if (context?.inPage) return "Afficher dans une modal rapide";
+      return "Afficher dans une modal rapide";
+    },
+    visibleIf: (context) => {
+      // En modal, on n'affiche pas "quick-view" (pas de sens)
+      if (context?.inModal) return false;
+      // Sur la page de l'entité, on n'affiche pas "quick-view" (on est déjà sur la page)
+      if (context?.inPage) return false;
+      return true;
+    },
   },
   edit: {
     key: "edit",
-    label: "Modifier (page)",
+    label: "Modifier",
+    tooltip: "Modifier dans une page complète",
     icon: "fa-solid fa-pen",
     permission: "canUpdate",
     requiresEntity: true,
     group: "edition",
+    getLabel: (context) => {
+      // Si on est dans un modal de modification, le label change
+      if (context?.inModal && context?.modalMode === "edit") return "Agrandir";
+      return "Modifier";
+    },
+    getTooltip: (context) => {
+      if (context?.inModal && context?.modalMode === "edit") return "Modifier dans une page complète";
+      return "Modifier dans une page complète";
+    },
+    visibleIf: (context) => {
+      // En modal, on n'affiche pas "edit" (on utilise quick-edit à la place)
+      if (context?.inModal) return false;
+      return true;
+    },
   },
   "quick-edit": {
     key: "quick-edit",
-    label: "Modifier rapide",
+    label: "Modifier",
+    tooltip: "Modifier dans une modal rapide",
     icon: "fa-solid fa-bolt",
     permission: "canUpdate",
     requiresEntity: true,
     group: "edition",
+    getLabel: (context) => {
+      // Si on est dans une page, on peut vouloir "Modifier" en modal
+      if (context?.inPage) return "Modifier";
+      return "Modifier";
+    },
+    getTooltip: (context) => {
+      if (context?.inPage) return "Modifier dans une modal rapide";
+      return "Modifier dans une modal rapide";
+    },
+    visibleIf: (context) => {
+      // En modal, on affiche "quick-edit" (modifier dans le modal)
+      // En page, on affiche aussi "quick-edit" (modifier dans un modal)
+      return true;
+    },
+  },
+  expand: {
+    key: "expand",
+    label: "Agrandir",
+    tooltip: "Ouvrir dans une page complète",
+    icon: "fa-solid fa-expand",
+    permission: null, // Hérite de la permission de l'action d'origine
+    requiresEntity: true,
+    group: "navigation",
+    getLabel: (context) => {
+      if (context?.modalMode === "view") return "Agrandir";
+      if (context?.modalMode === "edit") return "Agrandir";
+      return "Agrandir";
+    },
+    getTooltip: (context) => {
+      if (context?.modalMode === "view") return "Ouvrir dans une page complète";
+      if (context?.modalMode === "edit") return "Modifier dans une page complète";
+      return "Ouvrir dans une page complète";
+    },
+    visibleIf: (context) => {
+      // Visible uniquement si on est dans un modal
+      return Boolean(context?.inModal);
+    },
   },
   "copy-link": {
     key: "copy-link",
     label: "Copier le lien",
+    tooltip: "Copier l'URL de l'entité dans le presse-papiers",
     icon: "fa-solid fa-link",
     permission: null, // Toujours disponible
     requiresEntity: true,
@@ -68,6 +160,7 @@ export const ENTITY_ACTIONS_COMMON = Object.freeze({
   "download-pdf": {
     key: "download-pdf",
     label: "Télécharger PDF",
+    tooltip: "Télécharger l'entité au format PDF",
     icon: "fa-solid fa-file-pdf",
     permission: null, // Toujours disponible
     requiresEntity: true,
@@ -76,6 +169,7 @@ export const ENTITY_ACTIONS_COMMON = Object.freeze({
   refresh: {
     key: "refresh",
     label: "Rafraîchir",
+    tooltip: "Rafraîchir les données depuis le serveur (via scrapping)",
     icon: "fa-solid fa-arrow-rotate-right",
     permission: "canManage", // Admin/maintenance
     requiresEntity: true,
@@ -84,6 +178,7 @@ export const ENTITY_ACTIONS_COMMON = Object.freeze({
   minimize: {
     key: "minimize",
     label: "Minimiser",
+    tooltip: "Minimiser le modal (fonctionnalité future)",
     icon: "fa-solid fa-window-minimize",
     permission: null, // Toujours disponible
     requiresEntity: false, // Peut être utilisé sans entité (dans un panel)
@@ -93,6 +188,7 @@ export const ENTITY_ACTIONS_COMMON = Object.freeze({
   delete: {
     key: "delete",
     label: "Supprimer",
+    tooltip: "Supprimer définitivement l'entité",
     icon: "fa-solid fa-trash",
     permission: "canDelete",
     requiresEntity: true,

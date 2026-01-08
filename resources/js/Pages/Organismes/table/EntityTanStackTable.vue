@@ -130,12 +130,11 @@ const resolvedConfig = computed(() => {
     const cfg = props.config || {};
     const filteredColumns = Array.isArray(cfg.columns) ? cfg.columns.filter(isColumnAllowed) : [];
     
-    // Ajouter automatiquement la colonne Actions si elle n'existe pas déjà
+    // Ajouter automatiquement la colonne Actions au début si elle n'existe pas déjà
     const hasActionsColumn = filteredColumns.some((col) => col.id === "actions");
     const columnsWithActions = hasActionsColumn
         ? filteredColumns
         : [
-              ...filteredColumns,
               {
                   id: "actions",
                   label: "", // Pas de label (colonne sans nom)
@@ -145,6 +144,7 @@ const resolvedConfig = computed(() => {
                   search: { enabled: false },
                   cell: { type: "custom" }, // Type custom pour le rendu spécial
               },
+              ...filteredColumns,
           ];
 
     // Gating minimal, policy-driven (évite d'afficher sélection/bulk quand pas de droits)

@@ -259,6 +259,11 @@ const filteredColumnsConfig = computed(() => {
     return (columnsConfig.value || []).filter((col) => visibleColumns.value?.[col.id] !== false);
 });
 
+// Colonnes sans "actions" (car gérée manuellement via showActionsColumn)
+const columnsWithoutActions = computed(() => {
+    return filteredColumnsConfig.value.filter((col) => col.id !== 'actions');
+});
+
 // Search + Filters (client-first)
 const searchEnabled = computed(() => Boolean(props.config?.features?.search?.enabled));
 const searchPlaceholder = computed(() => props.config?.features?.search?.placeholder || "Rechercher…");
@@ -266,7 +271,7 @@ const searchDebounceMs = computed(() => Number(props.config?.features?.search?.d
 
 const filtersEnabled = computed(() => Boolean(props.config?.features?.filters?.enabled));
 const hasFilterableColumns = computed(() => {
-    return (filteredColumnsConfig.value || []).some((c) => Boolean(c?.filter?.id && c?.filter?.type));
+    return (columnsWithoutActions.value || []).some((c) => Boolean(c?.filter?.id && c?.filter?.type));
 });
 const filterOptions = computed(() => {
     if (props.filterOptions && typeof props.filterOptions === "object") return props.filterOptions;
@@ -427,7 +432,7 @@ const filteredRows = computed(() => {
     return rows.filter((row) => {
         // filters
         if (filtersEnabled.value) {
-            for (const col of filteredColumnsConfig.value) {
+            for (const col of columnsWithoutActions.value) {
                 if (!passesFilter(row, col)) return false;
             }
         }
@@ -435,7 +440,7 @@ const filteredRows = computed(() => {
         // search
         if (!searchEnabled.value || !search) return true;
 
-        const searchableCols = filteredColumnsConfig.value.filter((c) => c?.search?.enabled);
+        const searchableCols = columnsWithoutActions.value.filter((c) => c?.search?.enabled);
         for (const col of searchableCols) {
             const v = getSearchValueFor(row, col);
             if (normalize(v).includes(search)) return true;
@@ -468,7 +473,7 @@ const getSortValue = (row, col) => {
 };
 
 const tanstackColumns = computed(() => {
-    return filteredColumnsConfig.value.map((col) => {
+    return columnsWithoutActions.value.map((col) => {
         const canSort = Boolean(col?.sort?.enabled);
 
         const def = {
@@ -521,7 +526,7 @@ watch(
 );
 
 watch(
-    () => [searchText.value, JSON.stringify(activeFilters.value), filteredColumnsConfig.value.map((c) => c.id).join(",")].join("|"),
+    () => [searchText.value, JSON.stringify(activeFilters.value), columnsWithoutActions.value.map((c) => c.id).join(",")].join("|"),
     () => {
         // Reset page quand le dataset change
         paginationState.value = { ...paginationState.value, pageIndex: 0 };
@@ -694,7 +699,7 @@ const downloadCsv = (filename, csvText) => {
 const handleExport = () => {
     if (!exportEnabled.value) return;
 
-    const cols = filteredColumnsConfig.value;
+    const cols = columnsWithoutActions.value;
     const headers = cols.map((c) => toCsvCell(c.label || c.id)).join(",");
 
     const allSorted = table.getPrePaginationRowModel().rows.map((r) => r.original);
@@ -758,7 +763,7 @@ const handleExport = () => {
             <div class="overflow-x-auto">
                 <table class="table w-full" :class="[tableVariantClass, tableSizeClass]">
                 <TanStackTableHeader
-                    :columns="filteredColumnsConfig.filter((col) => col.id !== 'actions')"
+                    :columns="columnsWithoutActions"
                     :sort-by="sortBy"
                     :sort-order="sortOrder"
                     @sort="handleSort"
@@ -772,18 +777,18 @@ const handleExport = () => {
 
                 <TanStackTableSkeletonBody
                     v-if="loading"
-                    :columns="filteredColumnsConfig"
+                    :columns="columnsWithoutActions"
                     :rows-count="skeletonRows"
                     :show-selection="showSelectionCheckboxes"
+                    :show-actions-column="showActionsColumn"
                 />
 
                 <tbody v-else-if="rowsToRender.length">
                     <TanStackTableRow
                         v-for="row in rowsToRender"
                         :key="row.id"
-                        v-memo="[row.id, isSelected(row), filteredColumnsConfig.length]"
                         :row="row"
-                        :columns="filteredColumnsConfig"
+                        :columns="columnsWithoutActions"
                         :show-selection="showSelectionCheckboxes"
                         :is-selected="isSelected(row)"
                         :selected-bg-class="rowSelectedBgClass"
@@ -799,7 +804,7 @@ const handleExport = () => {
 
                 <tbody v-else>
                     <tr>
-                        <td :colspan="filteredColumnsConfig.length + (showSelectionCheckboxes ? 1 : 0) + (showActionsColumn ? 1 : 0)" class="text-center py-8 text-base-content/60">
+                        <td :colspan="columnsWithoutActions.length + (showSelectionCheckboxes ? 1 : 0) + (showActionsColumn ? 1 : 0)" class="text-center py-8 text-base-content/60">
                             Aucune donnée
                         </td>
                     </tr>

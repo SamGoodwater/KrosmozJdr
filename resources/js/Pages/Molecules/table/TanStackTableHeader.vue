@@ -34,16 +34,18 @@ const isSortable = (col) => Boolean(col?.sort?.enabled);
 <template>
     <thead>
         <tr>
-            <th v-if="showSelection" class="w-12">
+            <th v-if="showSelection" class="w-8">
                 <CheckboxCore
                     :model-value="allSelected"
                     :indeterminate="someSelected"
-                    size="sm"
+                    size="xs"
                     :color="uiColor"
                     aria-label="Tout sélectionner"
                     @update:model-value="(v) => emit('toggle-all', Boolean(v))"
                 />
             </th>
+            <!-- Colonne Actions (sans label) - au début -->
+            <th v-if="showActionsColumn" class="w-12"></th>
             <th
                 v-for="col in columns"
                 :key="col.id"
@@ -58,8 +60,6 @@ const isSortable = (col) => Boolean(col?.sort?.enabled);
                     </span>
                 </div>
             </th>
-            <!-- Colonne Actions (sans label) -->
-            <th v-if="showActionsColumn" class="w-12"></th>
         </tr>
     </thead>
 </template>

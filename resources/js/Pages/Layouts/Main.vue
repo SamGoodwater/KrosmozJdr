@@ -218,13 +218,11 @@ onUnmounted(() => {
         <!-- Main content -->
         <main :class="mainClasses" class="main-animated">
             <div class="min-h-full flex flex-col">
-                <!-- Contenu principal centré -->
-                <div class="flex-1 flex items-center justify-center p-4">
-                    <div class="w-full max-w-4xl">
-                        <Container fluid>
-                            <slot />
-                        </Container>
-                    </div>
+                <!-- Contenu principal - utilise toute la largeur disponible -->
+                <div class="flex-1 w-full p-4">
+                    <Container fluid>
+                        <slot />
+                    </Container>
                 </div>
                 
                 <!-- Footer -->

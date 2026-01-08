@@ -14,7 +14,6 @@ import { usePermissions } from "@/Composables/permissions/usePermissions";
 import { Item } from "@/Models/Entity/Item";
 import { useBulkRequest } from "@/Composables/entity/useBulkRequest";
 
-import Container from '@/Pages/Atoms/data-display/Container.vue';
 import Btn from '@/Pages/Atoms/action/Btn.vue';
 import EntityTanStackTable from '@/Pages/Organismes/table/EntityTanStackTable.vue';
 import EntityModal from '@/Pages/Organismes/entity/EntityModal.vue';
@@ -146,7 +145,7 @@ const clearSelection = () => {
 <template>
     <Head title="Liste des Objets" />
     
-    <Container class="space-y-6 pb-8">
+    <div class="space-y-6 pb-8 w-full">
         <!-- En-tête -->
         <div class="flex flex-col gap-2 md:flex-row md:justify-between md:items-center">
             <div>
@@ -165,7 +164,7 @@ const clearSelection = () => {
             class="grid grid-cols-1 gap-4"
             :class="{ 'xl:grid-cols-[minmax(0,1fr)_380px]': selectedEntities.length >= 1 }"
         >
-            <div class="min-w-0">
+            <div class="min-w-0 overflow-x-auto">
                 <EntityTanStackTable
                     entity-type="items"
                     :config="tableConfig"
@@ -210,6 +209,6 @@ const clearSelection = () => {
             :use-stored-format="true"
             @close="closeModal"
         />
-    </Container>
+    </div>
 </template>
 

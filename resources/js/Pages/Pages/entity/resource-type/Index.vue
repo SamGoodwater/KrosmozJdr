@@ -11,7 +11,6 @@ import { usePageTitle } from "@/Composables/layout/usePageTitle";
 import { usePermissions } from "@/Composables/permissions/usePermissions";
 import { useBulkRequest } from "@/Composables/entity/useBulkRequest";
 
-import Container from "@/Pages/Atoms/data-display/Container.vue";
 import Btn from "@/Pages/Atoms/action/Btn.vue";
 import Modal from "@/Pages/Molecules/action/Modal.vue";
 import EntityTanStackTable from "@/Pages/Organismes/table/EntityTanStackTable.vue";
@@ -105,7 +104,7 @@ const defaultEntity = computed(() => createDefaultEntityFromDescriptors(resource
 <template>
     <Head title="Types de ressources" />
 
-    <Container class="space-y-6 pb-8">
+    <div class="space-y-6 pb-8 w-full">
         <div class="flex flex-col gap-2 md:flex-row md:justify-between md:items-center">
             <div>
                 <h1 class="text-3xl font-bold text-primary-100">Types de ressources</h1>
@@ -130,7 +129,7 @@ const defaultEntity = computed(() => createDefaultEntityFromDescriptors(resource
             class="grid grid-cols-1 gap-4"
             :class="{ 'xl:grid-cols-[minmax(0,1fr)_380px]': selectedEntities.length >= 1 }"
         >
-            <div class="min-w-0">
+            <div class="min-w-0 overflow-x-auto">
                 <EntityTanStackTable
                     entity-type="resource-types"
                     :config="tableConfig"
@@ -183,7 +182,7 @@ const defaultEntity = computed(() => createDefaultEntityFromDescriptors(resource
                 />
             </div>
         </Modal>
-    </Container>
+    </div>
 </template>
 
 

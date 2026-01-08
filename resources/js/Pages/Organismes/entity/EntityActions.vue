@@ -113,6 +113,7 @@ const emit = defineEmits([
   "quick-view",
   "edit",
   "quick-edit",
+  "expand",
   "copy-link",
   "download-pdf",
   "refresh",
@@ -135,6 +136,23 @@ const handleAction = (actionKey) => {
   // Émettre aussi l'événement spécifique pour compatibilité
   emit(actionKey, props.entity);
 };
+
+/**
+ * Récupère le nom de l'entité en gérant les modèles et objets bruts.
+ */
+const getEntityName = () => {
+  if (!props.entity) return null;
+  
+  // Si c'est une instance de modèle, utiliser le getter name
+  if (props.entity && typeof props.entity._data !== 'undefined') {
+    return props.entity.name || props.entity.title || null;
+  }
+  // Sinon, accès direct
+  return props.entity?.name || props.entity?.title || null;
+};
+
+const entityName = computed(() => getEntityName());
+const showEntityName = computed(() => Boolean(entityName.value));
 
 // Pour le menu contextuel, on utilise un Dropdown positionné de manière absolue
 const contextMenuStyle = computed(() => {
@@ -166,6 +184,7 @@ const contextMenuStyle = computed(() => {
     v-else-if="format === 'dropdown'"
     :actions="availableActions"
     :grouped-actions="groupedActions"
+    :entity="entity"
     :display="display"
     :size="size"
     :color="color"
@@ -180,6 +199,13 @@ const contextMenuStyle = computed(() => {
       tabindex="0"
       class="dropdown-content menu bg-base-100 rounded-box z-[9999] w-56 p-2 shadow-lg border border-base-300"
     >
+      <!-- Nom de l'entité en haut (discret mais visible) -->
+      <li v-if="showEntityName" class="px-3 py-2 mb-1 border-b border-base-300">
+        <div class="text-xs text-base-content/60 font-medium truncate" :title="entityName">
+          {{ entityName }}
+        </div>
+      </li>
+      
       <template v-for="(groupActions, groupKey) in groupedActions" :key="groupKey">
         <li
           v-for="action in groupActions"
@@ -188,22 +214,23 @@ const contextMenuStyle = computed(() => {
             'text-error': action.variant === 'error',
           }"
         >
-          <button
-            @click="handleAction(action.key)"
-            :class="[
-              'flex items-center gap-2 w-full',
-              { 'text-error': action.variant === 'error' }
-            ]"
-          >
-            <Icon
-              v-if="display === 'icon-only' || display === 'icon-text'"
-              :source="action.icon"
-              :alt="action.label"
-              :size="size"
-            />
-            <span v-if="display === 'icon-text' || display === 'text'">{{ action.label }}</span>
-            <span v-else-if="display === 'icon-only' && !action.icon">{{ action.label }}</span>
-          </button>
+                 <button
+                   @click="handleAction(action.key)"
+                   :class="[
+                     'flex items-center gap-2 w-full',
+                     { 'text-error': action.variant === 'error' }
+                   ]"
+                   :title="action.tooltip || action.label"
+                 >
+                   <Icon
+                     v-if="display === 'icon-only' || display === 'icon-text'"
+                     :source="action.icon"
+                     :alt="action.label"
+                     :size="size"
+                   />
+                   <span v-if="display === 'icon-text' || display === 'text'">{{ action.label }}</span>
+                   <span v-else-if="display === 'icon-only' && !action.icon">{{ action.label }}</span>
+                 </button>
         </li>
 
         <!-- Séparateur entre les groupes (sauf pour le dernier) -->

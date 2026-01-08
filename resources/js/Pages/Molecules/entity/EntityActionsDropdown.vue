@@ -41,6 +41,14 @@ const props = defineProps({
     default: () => ({}),
   },
   /**
+   * Entité (pour afficher le nom en haut du menu).
+   * @type {Object|null}
+   */
+  entity: {
+    type: Object,
+    default: null,
+  },
+  /**
    * Mode d'affichage : 'icon-only' ou 'icon-text'
    */
   display: {
@@ -119,6 +127,23 @@ const getGroupActions = (groupKey) => {
   }
   return props.groupedActions[groupKey] || [];
 };
+
+/**
+ * Récupère le nom de l'entité en gérant les modèles et objets bruts.
+ */
+const getEntityName = () => {
+  if (!props.entity) return null;
+  
+  // Si c'est une instance de modèle, utiliser le getter name
+  if (props.entity && typeof props.entity._data !== 'undefined') {
+    return props.entity.name || props.entity.title || null;
+  }
+  // Sinon, accès direct
+  return props.entity?.name || props.entity?.title || null;
+};
+
+const entityName = computed(() => getEntityName());
+const showEntityName = computed(() => Boolean(entityName.value));
 </script>
 
 <template>
@@ -137,6 +162,13 @@ const getGroupActions = (groupKey) => {
     </template>
     <template #content>
       <ul class="menu bg-base-100 rounded-box z-[1] w-56 p-2 shadow-lg border border-base-300">
+        <!-- Nom de l'entité en haut (discret mais visible) -->
+        <li v-if="showEntityName" class="px-3 py-2 mb-1 border-b border-base-300">
+          <div class="text-xs text-base-content/60 font-medium truncate" :title="entityName">
+            {{ entityName }}
+          </div>
+        </li>
+        
         <template v-for="groupKey in orderedGroups" :key="groupKey">
           <li
             v-for="action in getGroupActions(groupKey)"
@@ -151,6 +183,7 @@ const getGroupActions = (groupKey) => {
               :class="{
                 'text-error': action.variant === 'error',
               }"
+              :title="action.tooltip || action.label"
             >
               <Icon v-if="showIcon" :source="action.icon" :alt="action.label" :size="size" />
               <span v-if="showText">{{ action.label }}</span>

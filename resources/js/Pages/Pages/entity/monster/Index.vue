@@ -7,14 +7,13 @@
  * 
  * @props {Object} monsters - Collection paginée des monstres
  */
-import { Head, router } from "@inertiajs/vue3";
-import { ref, computed, onBeforeUnmount } from "vue";
+import { Head } from "@inertiajs/vue3";
+import { ref, computed, watch } from "vue";
 import { usePageTitle } from "@/Composables/layout/usePageTitle";
 import { usePermissions } from "@/Composables/permissions/usePermissions";
 import { useBulkRequest } from "@/Composables/entity/useBulkRequest";
 import { Monster } from "@/Models/Entity/Monster";
 
-import Container from '@/Pages/Atoms/data-display/Container.vue';
 import Btn from '@/Pages/Atoms/action/Btn.vue';
 import EntityTanStackTable from '@/Pages/Organismes/table/EntityTanStackTable.vue';
 import EntityModal from '@/Pages/Organismes/entity/EntityModal.vue';
@@ -59,21 +58,43 @@ const refreshToken = ref(0);
 const tableConfig = computed(() => createMonstersTanStackTableConfig());
 const serverUrl = computed(() => `${route('api.tables.monsters')}?format=entities&limit=5000&_t=${refreshToken.value}`);
 
-// Fields config pour les formulaires (généré depuis les descriptors)
-const fieldsConfig = computed(() => {
-  const ctx = { meta: { capabilities: { updateAny: canModify.value } } };
-  return createFieldsConfigFromDescriptors(getMonsterFieldDescriptors(ctx));
+// Sécurité UX: si l'utilisateur perd le droit de modifier, on coupe les modes d'édition.
+watch(
+    () => canModify.value,
+    (allowed) => {
+        if (allowed) return;
+        selectedIds.value = [];
+    },
+    { immediate: true }
+);
+
+// Calcul des entités sélectionnées depuis les IDs et les rows
+const selectedEntities = computed(() => {
+    if (!Array.isArray(selectedIds.value) || !selectedIds.value.length) return [];
+    // Normaliser pour éviter les mismatch string vs number (Set.has est strict)
+    const idSet = new Set(selectedIds.value.map((v) => Number(v)).filter((n) => Number.isFinite(n)));
+    const raw = (tableRows.value || [])
+        .filter((r) => idSet.has(Number(r?.id)))
+        .map((r) => r?.rowParams?.entity)
+        .filter(Boolean);
+    return Monster.fromArray(raw);
 });
 
-const defaultEntity = computed(() => {
-  const ctx = { meta: { capabilities: { updateAny: canModify.value } } };
-  return createDefaultEntityFromDescriptors(getMonsterFieldDescriptors(ctx));
-});
+// Fields config pour les formulaires (généré depuis les descriptors)
+const monsterDescriptors = computed(() => getMonsterFieldDescriptors({ capabilities: { updateAny: canModify.value } }));
+const fieldsConfig = computed(() => createFieldsConfigFromDescriptors(monsterDescriptors.value, { meta: {}, capabilities: { updateAny: canModify.value } }));
+const defaultEntity = computed(() => createDefaultEntityFromDescriptors(monsterDescriptors.value));
 
 // Bulk edit
-const handleBulkUpdate = async (payload) => {
-  await bulkPatchJson('/api/entities/monsters/bulk', payload);
-  refreshToken.value++;
+const handleBulkApplied = async (payload) => {
+    const ok = await bulkPatchJson({ url: "/api/entities/monsters/bulk", payload });
+    if (!ok) return;
+    refreshToken.value++;
+    selectedIds.value = [];
+};
+
+const clearSelection = () => {
+    selectedIds.value = [];
 };
 
 const handleTableLoaded = ({ rows }) => {
@@ -111,7 +132,7 @@ const closeModal = () => {
 <template>
     <Head title="Liste des Monstres" />
     
-    <Container class="space-y-6 pb-8">
+    <div class="space-y-6 pb-8 w-full">
         <!-- En-tête -->
         <div class="flex flex-col gap-2 md:flex-row md:justify-between md:items-center">
             <div>
@@ -125,8 +146,11 @@ const closeModal = () => {
         </div>
 
         <!-- Grid layout pour permettre le scroll horizontal du tableau quand le quick edit est ouvert -->
-        <div class="xl:grid xl:grid-cols-[minmax(0,1fr)_380px] xl:gap-6">
-            <div class="min-w-0">
+        <div
+            class="grid grid-cols-1 gap-4"
+            :class="{ 'xl:grid-cols-[minmax(0,1fr)_380px]': selectedEntities.length >= 1 }"
+        >
+            <div class="min-w-0 overflow-x-auto">
                 <EntityTanStackTable
                     entity-type="monsters"
                     :config="tableConfig"
@@ -139,20 +163,25 @@ const closeModal = () => {
             </div>
 
             <!-- Quick Edit Panel -->
-            <EntityQuickEditPanel
-                v-if="canModify && selectedIds.length > 0"
-                entity-type="monsters"
-                :selected-ids="selectedIds"
-                :fields-config="fieldsConfig"
-                :default-entity="defaultEntity"
-                @update="handleBulkUpdate"
-            />
+            <div v-if="canModify && selectedEntities.length >= 1" class="sticky top-4 self-start">
+                <EntityQuickEditPanel
+                    entity-type="monsters"
+                    :selected-entities="selectedEntities"
+                    :is-admin="canModify"
+                    mode="client"
+                    :filtered-ids="selectedIds"
+                    @applied="handleBulkApplied"
+                    @clear="clearSelection"
+                />
+            </div>
         </div>
 
         <!-- Modal de création -->
         <CreateEntityModal
             :open="createModalOpen"
             entity-type="monster"
+            :fields-config="fieldsConfig"
+            :default-entity="defaultEntity"
             @close="handleCloseCreateModal"
             @created="handleEntityCreated"
         />
@@ -166,5 +195,5 @@ const closeModal = () => {
             :open="modalOpen"
             @close="closeModal"
         />
-    </Container>
+    </div>
 </template>

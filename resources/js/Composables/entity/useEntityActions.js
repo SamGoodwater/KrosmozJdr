@@ -80,34 +80,58 @@ export function useEntityActions(entityType, entity = null, options = {}) {
     const config = actionsConfig.value;
     const actions = Object.values(config);
     
-    return actions.filter((action) => {
-      // Whitelist : n'inclure que les actions listées
-      if (whitelist && !whitelist.includes(action.key)) {
-        return false;
-      }
-      
-      // Blacklist : exclure les actions listées
-      if (blacklist && blacklist.includes(action.key)) {
-        return false;
-      }
-      
-      // Vérifier si l'entité est requise
-      if (action.requiresEntity && !entity) {
-        return false;
-      }
-      
-      // Minimize : seulement disponible dans un panel (context.inPanel)
-      if (action.key === "minimize" && !context.inPanel) {
-        return false;
-      }
-      
-      // Vérifier les permissions
-      if (action.permission && !checkPermission(action.permission)) {
-        return false;
-      }
-      
-      return true;
-    });
+    return actions
+      .filter((action) => {
+        // Whitelist : n'inclure que les actions listées
+        if (whitelist && !whitelist.includes(action.key)) {
+          return false;
+        }
+        
+        // Blacklist : exclure les actions listées
+        if (blacklist && blacklist.includes(action.key)) {
+          return false;
+        }
+        
+        // Vérifier si l'entité est requise
+        if (action.requiresEntity && !entity) {
+          return false;
+        }
+        
+        // Minimize : seulement disponible dans un panel (context.inPanel)
+        if (action.key === "minimize" && !context.inPanel) {
+          return false;
+        }
+        
+        // Vérifier les permissions
+        if (action.permission && !checkPermission(action.permission)) {
+          return false;
+        }
+        
+        // Vérifier visibleIf si défini
+        if (typeof action.visibleIf === "function" && !action.visibleIf(context)) {
+          return false;
+        }
+        
+        return true;
+      })
+      .map((action) => {
+        // Enrichir l'action avec label et tooltip dynamiques selon le contexte
+        const enrichedAction = { ...action };
+        
+        // Label dynamique
+        if (typeof action.getLabel === "function") {
+          enrichedAction.label = action.getLabel(context) || action.label;
+        }
+        
+        // Tooltip dynamique
+        if (typeof action.getTooltip === "function") {
+          enrichedAction.tooltip = action.getTooltip(context) || action.tooltip || action.label;
+        } else {
+          enrichedAction.tooltip = action.tooltip || action.label;
+        }
+        
+        return enrichedAction;
+      });
   });
   
   /**

@@ -16,6 +16,7 @@
  */
 import Btn from "@/Pages/Atoms/action/Btn.vue";
 import Icon from "@/Pages/Atoms/data-display/Icon.vue";
+import Tooltip from "@/Pages/Atoms/feedback/Tooltip.vue";
 import { computed } from "vue";
 
 const props = defineProps({
@@ -88,17 +89,22 @@ const handleClick = (event) => {
 </script>
 
 <template>
-  <Btn
-    :size="size"
-    :variant="buttonVariant"
-    :color="buttonColor"
-    :disabled="disabled"
-    :title="showIcon && !showText ? action.label : null"
-    class="gap-2"
-    @click="handleClick"
+  <Tooltip
+    :content="action.tooltip || action.label"
+    :disabled="showText"
+    placement="top"
   >
-    <Icon v-if="showIcon" :source="action.icon" :alt="action.label" :size="size" />
-    <span v-if="showText">{{ action.label }}</span>
-  </Btn>
+    <Btn
+      :size="size"
+      :variant="buttonVariant"
+      :color="buttonColor"
+      :disabled="disabled"
+      class="gap-2"
+      @click="handleClick"
+    >
+      <Icon v-if="showIcon" :source="action.icon" :alt="action.label" :size="size" />
+      <span v-if="showText">{{ action.label }}</span>
+    </Btn>
+  </Tooltip>
 </template>
 

@@ -12,6 +12,7 @@ const props = defineProps({
     columns: { type: Array, required: true },
     rowsCount: { type: Number, default: 8 },
     showSelection: { type: Boolean, default: false },
+    showActionsColumn: { type: Boolean, default: false },
 });
 
 const skeletonTypeFor = (col) => {
@@ -23,7 +24,11 @@ const skeletonTypeFor = (col) => {
 <template>
     <tbody>
         <tr v-for="i in rowsCount" :key="i">
-            <td v-if="showSelection" class="w-12">
+            <td v-if="showSelection" class="w-8">
+                <CellSkeleton type="icon" width-class="h-4 w-4" />
+            </td>
+            <!-- Colonne Actions - au début -->
+            <td v-if="showActionsColumn" class="w-12">
                 <CellSkeleton type="icon" width-class="h-5 w-5" />
             </td>
             <td v-for="col in columns" :key="col.id">

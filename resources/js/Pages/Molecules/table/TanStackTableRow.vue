@@ -112,23 +112,16 @@ const handleAction = (actionKey, entity) => {
         @dblclick="(e) => { if (!isInteractiveTarget(e)) emit('row-dblclick', row); }"
         @contextmenu="handleContextMenu"
     >
-        <td v-if="showSelection" class="w-12">
+        <td v-if="showSelection" class="w-8">
             <CheckboxCore
                 :model-value="isSelected"
-                size="sm"
+                size="xs"
                 :color="uiColor"
                 @click.stop
                 @update:model-value="(v) => emit('toggle-select', row, Boolean(v))"
             />
         </td>
-        <td
-            v-for="col in columns"
-            :key="col.id"
-            v-memo="[getCell(col), uiColor]"
-        >
-            <CellRenderer :cell="getCell(col)" :ui-color="uiColor" />
-        </td>
-        <!-- Colonne Actions -->
+        <!-- Colonne Actions - au début -->
         <td v-if="showActionsColumn && entityType" class="w-12">
             <EntityActions
                 :entity-type="entityType"
@@ -140,6 +133,13 @@ const handleAction = (actionKey, entity) => {
                 :context="{ inPanel: false }"
                 @action="handleAction"
             />
+        </td>
+        <td
+            v-for="col in columns"
+            :key="col.id"
+            v-memo="[getCell(col), uiColor]"
+        >
+            <CellRenderer :cell="getCell(col)" :ui-color="uiColor" />
         </td>
     </tr>
     
