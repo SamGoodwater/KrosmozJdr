@@ -465,3 +465,24 @@ const handleAction = (actionKey, entity) => {
 
 **Note** : `EntityActionsMenu` est toujours disponible comme wrapper de compatibilité, mais il est déprécié. Utilisez `EntityActions` directement pour les nouveaux composants.
 
+---
+
+## 🎨 Optimisations récentes (2026-01-06)
+
+### Nom de l'entité dans les menus
+
+Le nom de l'entité est maintenant affiché en haut des menus dropdown et contextuels pour améliorer l'UX :
+- **Style discret** : Texte petit et grisé (`text-xs text-base-content/60`)
+- **Bordure de séparation** : Pour une meilleure lisibilité
+- **Truncate** : Le nom long est tronqué avec un tooltip
+
+### Actions contextuelles intelligentes
+
+Les actions s'adaptent automatiquement au contexte :
+- **Dans une page** (`inPage: true`) : `view` et `quick-view` sont masqués
+- **Dans un modal** (`inModal: true`) : `edit` est masqué, `expand` est visible
+- **Labels dynamiques** : Les labels et tooltips changent selon le contexte
+
+Voir `docs/100- Done/OPTIMISATIONS_UI_2026_01.md` pour plus de détails.
+
+---

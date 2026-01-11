@@ -1,11 +1,12 @@
 /**
- * Resource field descriptors (Option B)
+ * Resource field descriptors — Version simplifiée
  *
  * @description
  * Source de vérité côté frontend pour :
- * - l'affichage (cellules table + vues)
- * - l'édition (forms / bulk)
+ * - Configuration tableau (affichage des cellules selon la taille xs-xl)
+ * - Configuration formulaires (édition simple et bulk)
  *
+ * ⚠️ Les vues (Large, Compact, Minimal, Text) sont maintenant des composants Vue manuels.
  * ⚠️ Sécurité : ces descriptors ne sont que de l'UX. Le backend reste la vérité (Policies + filtrage des champs).
  *
  * @example
@@ -15,123 +16,76 @@
 
 /**
  * @typedef {Object} ResourceFieldDescriptor
- * @property {string} key
- * @property {string} label
- * @property {string} [description]
- * @property {string} [tooltip]
- * @property {string|null} [icon]
- * @property {string|null|"auto"} [color]
- * @property {"text"|"number"|"bool"|"date"|"image"|"link"|"enum"} [format]
- * @property {(ctx: any) => boolean} [visibleIf]
- * @property {(ctx: any) => boolean} [editableIf]
- * @property {Object} [display]
- * @property {Record<"table"|"text"|"compact"|"minimal"|"extended", { size: "small"|"normal"|"large", mode?: string, truncate?: number }>} [display.views]
- * @property {Record<"small"|"normal"|"large", any>} [display.sizes]
+ * @property {string} key - Clé unique du champ
+ * @property {string} label - Libellé affiché
+ * @property {string} [icon] - Icône FontAwesome
+ * @property {(ctx: any) => boolean} [visibleIf] - Fonction conditionnelle pour la visibilité
+ * @property {(ctx: any) => boolean} [editableIf] - Fonction conditionnelle pour l'édition
+ * @property {Object} [display] - Configuration de l'affichage dans les tableaux
+ * @property {Record<"xs"|"sm"|"md"|"lg"|"xl", {mode?: string, truncate?: number}>} [display.sizes] - Configuration par taille d'écran
+ * @property {Object} [edit] - Configuration de l'édition
+ * @property {Object} [edit.form] - Configuration du formulaire d'édition
+ * @property {"text"|"textarea"|"select"|"checkbox"|"number"|"date"|"file"} [edit.form.type] - Type de champ
+ * @property {string} [edit.form.label] - Libellé spécifique pour le formulaire
+ * @property {string} [edit.form.group] - Groupe de champs
+ * @property {string} [edit.form.help] - Texte d'aide
+ * @property {boolean} [edit.form.required] - Champ obligatoire
+ * @property {any} [edit.form.defaultValue] - Valeur par défaut
+ * @property {Array<{value: any, label: string}>|Function} [edit.form.options] - Options pour les selects
+ * @property {Object} [edit.form.bulk] - Configuration pour l'édition en masse
+ * @property {boolean} [edit.form.bulk.enabled] - Activer l'édition en masse
+ * @property {boolean} [edit.form.bulk.nullable] - Permettre null/vide en bulk
+ * @property {Function} [edit.form.bulk.build] - Fonction de transformation avant envoi
  */
 
-const truncate = (value, max = 40) => {
-  const s = String(value ?? "");
-  if (!s) return "";
-  if (s.length <= max) return s;
-  return s.slice(0, Math.max(0, max - 1)) + "…";
-};
-
 /**
- * Convention globale (v1) — utilisée comme base, mais surchargée champ par champ :
- * - table -> small
- * - text -> normal
- * - compact -> small
- * - minimal -> normal
- * - extended -> large
+ * Champs affichés dans le panneau d'édition rapide (sélection multiple).
+ * ⚠️ IMPORTANT : Doit rester aligné avec le backend (bulk controller).
  */
-export const DEFAULT_RESOURCE_FIELD_VIEWS = Object.freeze({
-  table: { size: "small" },
-  text: { size: "normal" },
-  compact: { size: "small" },
-  // Produit: minimal utilise la représentation "small" (icône + valeur)
-  minimal: { size: "small" },
-  extended: { size: "large" },
-});
+export const RESOURCE_QUICK_EDIT_FIELDS = Object.freeze([
+  "resource_type_id",
+  "rarity",
+  "level",
+  "usable",
+  "auto_update",
+  "is_visible",
+  "price",
+  "weight",
+  "dofus_version",
+  "description",
+  "image",
+  "dofusdb_id",
+]);
 
 /**
- * Ordre d'affichage "Ressource" par vue.
- *
- * @description
- * (v1) On centralise l'ordre ici pour commencer. À terme, on pourra déplacer
- * la notion de "présence dans une vue" directement dans chaque descriptor.
- */
-export const RESOURCE_VIEW_FIELDS = Object.freeze({
-  // Champs affichés dans le panneau d’édition rapide (sélection multiple).
-  // Doit rester aligné avec le backend (bulk controller) pour éviter des champs non pris en compte.
-  quickEdit: [
-    "resource_type_id",
-    "rarity",
-    "level",
-    "usable",
-    "auto_update",
-    "is_visible",
-    "price",
-    "weight",
-    "dofus_version",
-    "description",
-    "image",
-  ],
-  compact: [
-    "rarity",
-    "resource_type",
-    "level",
-    "usable",
-    "price",
-    "weight",
-    "dofus_version",
-    "is_visible",
-    "auto_update",
-    "dofusdb_id",
-  ],
-  extended: [
-    "rarity",
-    "resource_type",
-    "level",
-    "usable",
-    "price",
-    "weight",
-    "dofus_version",
-    "is_visible",
-    "auto_update",
-    "dofusdb_id",
-    "created_by",
-    "created_at",
-    "updated_at",
-  ],
-});
-
-/**
- * Descriptors "Ressource".
- *
- * Note : v1 = on définit la structure small/normal/large + mapping context -> size,
- * en priorité pour le contexte `table` (TanStack).
- *
- * @param {Object} ctx
- * @returns {Record<string, ResourceFieldDescriptor>}
+ * Retourne les descripteurs de tous les champs de l'entité "Resource".
+ * 
+ * @param {Object} ctx - Contexte d'exécution
+ * @param {Object} [ctx.capabilities] - Permissions disponibles (ou ctx.meta.capabilities)
+ * @param {Array} [ctx.resourceTypes] - Liste des types de ressources (ou ctx.meta.resourceTypes)
+ * @returns {Record<string, ResourceFieldDescriptor>} Objet avec tous les descripteurs
  */
 export function getResourceFieldDescriptors(ctx = {}) {
   const can = ctx?.capabilities || ctx?.meta?.capabilities || null;
   const canUpdateAny = Boolean(can?.updateAny);
-  const resourceTypes = Array.isArray(ctx?.resourceTypes) ? ctx.resourceTypes : (Array.isArray(ctx?.meta?.resourceTypes) ? ctx.meta.resourceTypes : []);
+  const canCreateAny = Boolean(can?.createAny);
+  
+  const resourceTypes = Array.isArray(ctx?.resourceTypes) 
+    ? ctx.resourceTypes 
+    : (Array.isArray(ctx?.meta?.resourceTypes) ? ctx.meta.resourceTypes : []);
 
   return {
     image: {
       key: "image",
       label: "Image",
       icon: "fa-solid fa-image",
-      color: "auto",
-      format: "image",
       display: {
-        views: DEFAULT_RESOURCE_FIELD_VIEWS,
         sizes: {
-          small: { mode: "thumb" },
-          normal: { mode: "thumb" },
-          large: { mode: "thumb" },
+          xs: { mode: "thumb" },
+          sm: { mode: "thumb" },
+          md: { mode: "thumb" },
+          lg: { mode: "thumb" },
+          xl: { mode: "thumb" },
         },
       },
       edit: {
@@ -140,45 +94,45 @@ export function getResourceFieldDescriptors(ctx = {}) {
           label: "Image (URL)",
           group: "Image",
           required: false,
-          showInCompact: false,
           bulk: { enabled: true, nullable: true, build: (v) => (v === "" ? null : String(v)) },
         },
       },
     },
+    
     name: {
       key: "name",
       label: "Nom",
       icon: "fa-solid fa-font",
-      color: "auto",
-      format: "text",
       display: {
-        views: {
-          ...DEFAULT_RESOURCE_FIELD_VIEWS,
-          // Exemple: en table on veut un texte lisible (pas seulement une icône)
-          table: { size: "small", mode: "route", truncate: 44 },
-        },
         sizes: {
-          small: { mode: "route", truncate: 44 },
-          normal: { mode: "route", truncate: 80 },
-          large: { mode: "route" },
+          xs: { mode: "route", truncate: 20 },
+          sm: { mode: "route", truncate: 30 },
+          md: { mode: "route", truncate: 44 },
+          lg: { mode: "route", truncate: 60 },
+          xl: { mode: "route" },
         },
       },
       edit: {
-        form: { type: "text", required: true, showInCompact: true, bulk: { enabled: false } },
+        form: { 
+          type: "text",
+          group: "Informations générales",
+          required: true, 
+          bulk: { enabled: false }, // Le nom ne peut pas être modifié en bulk
+        },
       },
     },
+    
     description: {
       key: "description",
       label: "Description",
       icon: "fa-solid fa-align-left",
-      color: "auto",
-      format: "text",
       display: {
-        views: DEFAULT_RESOURCE_FIELD_VIEWS,
         sizes: {
-          small: { mode: "text", truncate: 60 },
-          normal: { mode: "text", truncate: 160 },
-          large: { mode: "text" },
+          xs: { mode: "text", truncate: 30 },
+          sm: { mode: "text", truncate: 50 },
+          md: { mode: "text", truncate: 80 },
+          lg: { mode: "text", truncate: 120 },
+          xl: { mode: "text" },
         },
       },
       edit: {
@@ -186,28 +140,22 @@ export function getResourceFieldDescriptors(ctx = {}) {
           type: "textarea",
           group: "Contenu",
           required: false,
-          showInCompact: false,
           bulk: { enabled: true, nullable: true, build: (v) => (v === "" ? null : String(v)) },
         },
       },
     },
+    
     level: {
       key: "level",
       label: "Niveau",
       icon: "fa-solid fa-level-up-alt",
-      color: "auto",
-      format: "number",
       display: {
-        views: {
-          ...DEFAULT_RESOURCE_FIELD_VIEWS,
-          // Layout: small = icon + value (pas de label)
-          compact: { size: "small" },
-        },
         sizes: {
-          // Produit: le niveau doit toujours être un badge (nuancié "level")
-          small: { mode: "badge" },
-          normal: { mode: "badge" },
-          large: { mode: "badge" },
+          xs: { mode: "badge" },
+          sm: { mode: "badge" },
+          md: { mode: "badge" },
+          lg: { mode: "badge" },
+          xl: { mode: "badge" },
         },
       },
       edit: {
@@ -216,74 +164,71 @@ export function getResourceFieldDescriptors(ctx = {}) {
           group: "Métier",
           placeholder: "Ex: 50",
           required: false,
-          showInCompact: true,
           bulk: { enabled: true, nullable: true, build: (v) => (v === "" ? null : String(v)) },
         },
       },
     },
+    
     resource_type: {
       key: "resource_type",
       label: "Type",
       icon: "fa-solid fa-tag",
-      color: "auto",
-      format: "text",
       display: {
-        views: DEFAULT_RESOURCE_FIELD_VIEWS,
         sizes: {
-          // Produit: toujours sous forme de badge
-          small: { mode: "badge" },
-          normal: { mode: "badge" },
-          large: { mode: "badge" },
+          xs: { mode: "badge" },
+          sm: { mode: "badge" },
+          md: { mode: "badge" },
+          lg: { mode: "badge" },
+          xl: { mode: "badge" },
         },
       },
+      // Pas de section edit : champ en lecture seule (relation)
     },
+    
     resource_type_id: {
       key: "resource_type_id",
       label: "Type de ressource",
       icon: "fa-solid fa-tag",
-      color: "auto",
-      format: "enum",
       display: {
-        views: DEFAULT_RESOURCE_FIELD_VIEWS,
         sizes: {
-          small: { mode: "text" },
-          normal: { mode: "text" },
-          large: { mode: "text" },
+          xs: { mode: "text" },
+          sm: { mode: "text" },
+          md: { mode: "text" },
+          lg: { mode: "text" },
+          xl: { mode: "text" },
         },
       },
       edit: {
         form: {
           type: "select",
           group: "Métier",
-          tooltip: "Définit le type (métier) de la ressource. Impacte les filtres et le tri.",
+          help: "Définit le type (métier) de la ressource.",
           required: false,
-          showInCompact: true,
           options: () => [{ value: "", label: "—" }, ...resourceTypes.map((t) => ({ value: t.id, label: t.name }))],
           bulk: { enabled: true, nullable: true, build: (v) => (v === "" ? null : Number(v)) },
         },
       },
     },
+    
     rarity: {
       key: "rarity",
       label: "Rareté",
       icon: "fa-solid fa-star",
-      color: "auto",
-      format: "enum",
       display: {
-        views: DEFAULT_RESOURCE_FIELD_VIEWS,
         sizes: {
-          small: { mode: "badge" },
-          normal: { mode: "badge" },
-          large: { mode: "badge" },
+          xs: { mode: "badge" },
+          sm: { mode: "badge" },
+          md: { mode: "badge" },
+          lg: { mode: "badge" },
+          xl: { mode: "badge" },
         },
       },
       edit: {
         form: {
           type: "select",
           group: "Métier",
-          help: "La rareté est un entier (0..5). En bulk, laisser vide n’applique aucun changement.",
+          help: "La rareté est un entier (0..5). En bulk, laisser vide n'applique aucun changement.",
           required: false,
-          showInCompact: true,
           options: [
             { value: 0, label: "Commun" },
             { value: 1, label: "Peu commun" },
@@ -292,25 +237,22 @@ export function getResourceFieldDescriptors(ctx = {}) {
             { value: 4, label: "Légendaire" },
             { value: 5, label: "Unique" },
           ],
-          bulk: { enabled: true, nullable: false, build: (v) => Number(v) },
+          bulk: { enabled: true, nullable: true, build: (v) => (v === "" || v === null ? null : Number(v)) },
         },
       },
     },
+    
     price: {
       key: "price",
       label: "Prix",
       icon: "fa-solid fa-coins",
-      color: "auto",
-      format: "number",
       display: {
-        views: {
-          ...DEFAULT_RESOURCE_FIELD_VIEWS,
-          compact: { size: "small" },
-        },
         sizes: {
-          small: { mode: "text" },
-          normal: { mode: "text" },
-          large: { mode: "text" },
+          xs: { mode: "text" },
+          sm: { mode: "text" },
+          md: { mode: "text" },
+          lg: { mode: "text" },
+          xl: { mode: "text" },
         },
       },
       edit: {
@@ -318,26 +260,22 @@ export function getResourceFieldDescriptors(ctx = {}) {
           type: "text",
           group: "Métadonnées",
           required: false,
-          showInCompact: true,
           bulk: { enabled: true, nullable: true, build: (v) => (v === "" ? null : String(v)) },
         },
       },
     },
+    
     weight: {
       key: "weight",
       label: "Poids",
       icon: "fa-solid fa-weight-hanging",
-      color: "auto",
-      format: "number",
       display: {
-        views: {
-          ...DEFAULT_RESOURCE_FIELD_VIEWS,
-          compact: { size: "small" },
-        },
         sizes: {
-          small: { mode: "text" },
-          normal: { mode: "text" },
-          large: { mode: "text" },
+          xs: { mode: "text" },
+          sm: { mode: "text" },
+          md: { mode: "text" },
+          lg: { mode: "text" },
+          xl: { mode: "text" },
         },
       },
       edit: {
@@ -345,26 +283,22 @@ export function getResourceFieldDescriptors(ctx = {}) {
           type: "text",
           group: "Métadonnées",
           required: false,
-          showInCompact: true,
           bulk: { enabled: true, nullable: true, build: (v) => (v === "" ? null : String(v)) },
         },
       },
     },
+    
     dofus_version: {
       key: "dofus_version",
       label: "Version Dofus",
       icon: "fa-solid fa-code-branch",
-      color: "auto",
-      format: "text",
       display: {
-        views: {
-          ...DEFAULT_RESOURCE_FIELD_VIEWS,
-          compact: { size: "small", truncate: 18 },
-        },
         sizes: {
-          small: { mode: "text", truncate: 18 },
-          normal: { mode: "text", truncate: 40 },
-          large: { mode: "text" },
+          xs: { mode: "text", truncate: 10 },
+          sm: { mode: "text", truncate: 15 },
+          md: { mode: "text", truncate: 20 },
+          lg: { mode: "text" },
+          xl: { mode: "text" },
         },
       },
       edit: {
@@ -372,23 +306,22 @@ export function getResourceFieldDescriptors(ctx = {}) {
           type: "text",
           group: "Métadonnées",
           required: false,
-          showInCompact: true,
           bulk: { enabled: true, nullable: true, build: (v) => (v === "" ? null : String(v)) },
         },
       },
     },
+    
     is_visible: {
       key: "is_visible",
       label: "Visibilité",
       icon: "fa-solid fa-eye",
-      color: "auto",
-      format: "enum",
       display: {
-        views: DEFAULT_RESOURCE_FIELD_VIEWS,
         sizes: {
-          small: { mode: "badge" },
-          normal: { mode: "badge" },
-          large: { mode: "badge" },
+          xs: { mode: "badge" },
+          sm: { mode: "badge" },
+          md: { mode: "badge" },
+          lg: { mode: "badge" },
+          xl: { mode: "badge" },
         },
       },
       edit: {
@@ -397,7 +330,6 @@ export function getResourceFieldDescriptors(ctx = {}) {
           group: "Statut",
           help: "Contrôle la visibilité côté front. Le backend reste la vérité sécurité.",
           required: false,
-          showInCompact: true,
           options: [
             { value: "guest", label: "Invité" },
             { value: "user", label: "Utilisateur" },
@@ -408,24 +340,18 @@ export function getResourceFieldDescriptors(ctx = {}) {
         },
       },
     },
+    
     usable: {
       key: "usable",
       label: "Utilisable",
       icon: "fa-solid fa-check",
-      color: "auto",
-      format: "bool",
       display: {
-        views: {
-          ...DEFAULT_RESOURCE_FIELD_VIEWS,
-          // Exemple: table/minimal en icône, texte/extended en badge
-          table: { size: "small", mode: "boolIcon" },
-          minimal: { size: "small", mode: "boolIcon" },
-        },
         sizes: {
-          // table -> small : compact visuel
-          small: { mode: "boolIcon" },
-          normal: { mode: "boolBadge" },
-          large: { mode: "boolBadge" },
+          xs: { mode: "boolIcon" },
+          sm: { mode: "boolIcon" },
+          md: { mode: "boolBadge" },
+          lg: { mode: "boolBadge" },
+          xl: { mode: "boolBadge" },
         },
       },
       edit: {
@@ -433,29 +359,24 @@ export function getResourceFieldDescriptors(ctx = {}) {
           type: "checkbox",
           group: "Statut",
           required: false,
-          showInCompact: true,
           defaultValue: false,
           bulk: { enabled: true, nullable: false, build: (v) => v === "1" || v === true },
         },
       },
     },
+    
     auto_update: {
       key: "auto_update",
       label: "Auto-update",
       icon: "fa-solid fa-arrows-rotate",
-      color: "auto",
-      format: "bool",
       visibleIf: () => canUpdateAny,
       display: {
-        views: {
-          ...DEFAULT_RESOURCE_FIELD_VIEWS,
-          table: { size: "small", mode: "boolIcon" },
-          minimal: { size: "small", mode: "boolIcon" },
-        },
         sizes: {
-          small: { mode: "boolIcon" },
-          normal: { mode: "boolBadge" },
-          large: { mode: "boolBadge" },
+          xs: { mode: "boolIcon" },
+          sm: { mode: "boolIcon" },
+          md: { mode: "boolBadge" },
+          lg: { mode: "boolBadge" },
+          xl: { mode: "boolBadge" },
         },
       },
       edit: {
@@ -463,81 +384,111 @@ export function getResourceFieldDescriptors(ctx = {}) {
           type: "checkbox",
           group: "Statut",
           required: false,
-          showInCompact: true,
           defaultValue: false,
           bulk: { enabled: true, nullable: false, build: (v) => v === "1" || v === true },
         },
       },
     },
+    
     dofusdb_id: {
       key: "dofusdb_id",
       label: "DofusDB",
       icon: "fa-solid fa-arrow-up-right-from-square",
-      color: "auto",
-      format: "link",
       visibleIf: () => canUpdateAny,
       display: {
-        views: DEFAULT_RESOURCE_FIELD_VIEWS,
         sizes: {
-          small: { mode: "routeExternal", truncate: 18 },
-          normal: { mode: "routeExternal" },
-          large: { mode: "routeExternal" },
+          xs: { mode: "routeExternal", truncate: 10 },
+          sm: { mode: "routeExternal", truncate: 15 },
+          md: { mode: "routeExternal", truncate: 20 },
+          lg: { mode: "routeExternal" },
+          xl: { mode: "routeExternal" },
+        },
+      },
+      edit: {
+        form: {
+          type: "text",
+          group: "Métadonnées",
+          help: "ID externe DofusDB. Généralement géré automatiquement par le scrapping.",
+          required: false,
+          bulk: { enabled: true, nullable: true, build: (v) => (v === "" ? null : String(v)) },
         },
       },
     },
+    
+    official_id: {
+      key: "official_id",
+      label: "ID Officiel",
+      icon: "fa-solid fa-id-card",
+      display: {
+        sizes: {
+          xs: { mode: "text" },
+          sm: { mode: "text" },
+          md: { mode: "text" },
+          lg: { mode: "text" },
+          xl: { mode: "text" },
+        },
+      },
+      edit: {
+        form: {
+          type: "text",
+          group: "Métadonnées",
+          required: false,
+          bulk: { enabled: true, nullable: true, build: (v) => (v === "" ? null : Number(v)) },
+        },
+      },
+    },
+    
     created_by: {
       key: "created_by",
       label: "Créé par",
       icon: "fa-solid fa-user",
-      color: "auto",
-      format: "text",
-      visibleIf: (c) => Boolean(c?.capabilities?.createAny ?? c?.meta?.capabilities?.createAny),
+      visibleIf: () => canCreateAny,
       display: {
-        views: DEFAULT_RESOURCE_FIELD_VIEWS,
         sizes: {
-          small: { mode: "text", truncate: 18 },
-          normal: { mode: "text", truncate: 40 },
-          large: { mode: "text" },
+          xs: { mode: "text", truncate: 10 },
+          sm: { mode: "text", truncate: 15 },
+          md: { mode: "text", truncate: 20 },
+          lg: { mode: "text" },
+          xl: { mode: "text" },
         },
       },
+      // Pas de section edit : champ système, non éditable
     },
+    
     created_at: {
       key: "created_at",
       label: "Créé le",
       icon: "fa-solid fa-calendar",
-      color: "auto",
-      format: "date",
-      visibleIf: (c) => Boolean(c?.capabilities?.createAny ?? c?.meta?.capabilities?.createAny),
+      visibleIf: () => canCreateAny,
       display: {
-        views: DEFAULT_RESOURCE_FIELD_VIEWS,
         sizes: {
-          small: { mode: "dateShort" },
-          normal: { mode: "dateTime" },
-          large: { mode: "dateTime" },
+          xs: { mode: "dateShort" },
+          sm: { mode: "dateShort" },
+          md: { mode: "dateTime" },
+          lg: { mode: "dateTime" },
+          xl: { mode: "dateTime" },
         },
       },
+      // Pas de section edit : champ système, non éditable
     },
+    
     updated_at: {
       key: "updated_at",
       label: "Modifié le",
       icon: "fa-solid fa-clock",
-      color: "auto",
-      format: "date",
-      visibleIf: (c) => Boolean(c?.capabilities?.createAny ?? c?.meta?.capabilities?.createAny),
+      visibleIf: () => canCreateAny,
       display: {
-        views: DEFAULT_RESOURCE_FIELD_VIEWS,
         sizes: {
-          small: { mode: "dateShort" },
-          normal: { mode: "dateTime" },
-          large: { mode: "dateTime" },
+          xs: { mode: "dateShort" },
+          sm: { mode: "dateShort" },
+          md: { mode: "dateTime" },
+          lg: { mode: "dateTime" },
+          xl: { mode: "dateTime" },
         },
       },
+      // Pas de section edit : champ système, non éditable
     },
   };
 }
 
 export default getResourceFieldDescriptors;
-
-export { truncate };
-
-

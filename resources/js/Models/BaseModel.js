@@ -7,9 +7,13 @@
  * - Propriétés communes (id, created_by, created_at, updated_at)
  * - Permissions communes (can.update, can.delete, etc.)
  * - Méthodes utilitaires communes
+ * - Formatage des données via FormatterRegistry
+ * - Cache des cellules générées
  * 
  * @abstract
  */
+import { getFormatter } from '../Utils/Formatters/FormatterRegistry.js';
+
 export class BaseModel {
     /**
      * @param {Object} rawData - Données brutes (peut être un Proxy, un objet avec .data, etc.)
@@ -18,6 +22,9 @@ export class BaseModel {
         // Normaliser l'extraction des données
         this._raw = rawData;
         this._data = this._extractData(rawData);
+        
+        // Cache des cellules générées (Map<fieldKey-options, Cell>)
+        this._cellCache = new Map();
     }
 
     /**
@@ -194,6 +201,289 @@ export class BaseModel {
     static fromArray(rawDataArray) {
         if (!Array.isArray(rawDataArray)) return [];
         return rawDataArray.map(data => new this(data));
+    }
+
+    // ============================================
+    // FORMATAGE DES DONNÉES (via FormatterRegistry)
+    // ============================================
+
+    /**
+     * Vérifie si l'entité a une propriété
+     * @param {string} fieldKey - Clé du champ
+     * @returns {boolean}
+     */
+    has(fieldKey) {
+        return fieldKey in this._data && 
+               this._data[fieldKey] !== null && 
+               this._data[fieldKey] !== undefined;
+    }
+
+    /**
+     * Formate une propriété en utilisant le formatter correspondant
+     * @param {string} fieldKey - Clé du champ
+     * @param {Object} [options={}] - Options de formatage
+     * @returns {string|null} Label formaté ou null si valeur invalide
+     */
+    format(fieldKey, options = {}) {
+        if (!this.has(fieldKey)) {
+            return null;
+        }
+
+        const FormatterClass = getFormatter(fieldKey);
+        if (!FormatterClass || typeof FormatterClass.format !== 'function') {
+            // Fallback : retourner la valeur brute comme string
+            const value = this._data[fieldKey];
+            return value === null || value === undefined ? null : String(value);
+        }
+
+        return FormatterClass.format(this._data[fieldKey], options);
+    }
+
+    /**
+     * Génère une cellule pour une propriété en utilisant le formatter correspondant
+     * @param {string} fieldKey - Clé du champ
+     * @param {Object} [options={}] - Options (size, context, config, ctx, etc.)
+     * @returns {Object|null} Cell object {type, value, params} ou null si valeur invalide
+     */
+    toCell(fieldKey, options = {}) {
+        if (!this.has(fieldKey)) {
+            return null;
+        }
+
+        // Normaliser les options
+        const normalizedOptions = {
+            size: this._normalizeSize(options.size || 'md'),
+            context: options.context || 'table',
+            config: options.config || {},
+            ctx: options.ctx || {},
+            ...options,
+        };
+
+        // Vérifier le cache
+        const cacheKey = this._getCacheKey(fieldKey, normalizedOptions);
+        if (this._cellCache.has(cacheKey)) {
+            return this._cellCache.get(cacheKey);
+        }
+
+        // Résoudre le format selon le descriptor et la taille
+        const descriptor = normalizedOptions.config[fieldKey] || {};
+        const format = this._resolveFormat(fieldKey, descriptor, normalizedOptions.context, normalizedOptions.size);
+
+        // Essayer d'utiliser le formatter centralisé
+        const FormatterClass = getFormatter(fieldKey);
+        if (FormatterClass && typeof FormatterClass.toCell === 'function') {
+            const cell = FormatterClass.toCell(this._data[fieldKey], {
+                ...normalizedOptions,
+                format,
+            });
+            
+            if (cell) {
+                // Mettre en cache
+                this._cellCache.set(cacheKey, cell);
+                return cell;
+            }
+        }
+
+        // Essayer une méthode spécifique du modèle (pour les champs personnalisés)
+        const specificMethod = `_to${this._capitalize(fieldKey)}Cell`;
+        if (typeof this[specificMethod] === 'function') {
+            const cell = this[specificMethod](format, normalizedOptions.size, normalizedOptions);
+            if (cell) {
+                this._cellCache.set(cacheKey, cell);
+                return cell;
+            }
+        }
+
+        // Fallback : cellule par défaut
+        const defaultCell = this._toDefaultCell(fieldKey, format, normalizedOptions.size, normalizedOptions);
+        this._cellCache.set(cacheKey, defaultCell);
+        return defaultCell;
+    }
+
+    /**
+     * Résout le format selon le descriptor et la taille
+     * @private
+     * @param {string} fieldKey - Clé du champ
+     * @param {Object} descriptor - Descriptor du champ
+     * @param {string} context - Contexte (table, form, etc.)
+     * @param {string} size - Taille d'écran (xs, sm, md, lg, xl)
+     * @returns {Object} Format {mode, truncate, etc.}
+     */
+    _resolveFormat(fieldKey, descriptor, context, size) {
+        const viewCfg = descriptor?.display?.views?.[context] || {};
+        const sizeCfg = descriptor?.display?.sizes?.[size] || {};
+        return {
+            mode: viewCfg?.mode || sizeCfg?.mode || null,
+            truncate: viewCfg?.truncate || sizeCfg?.truncate || null,
+        };
+    }
+
+    /**
+     * Normalise la taille d'écran
+     * @private
+     * @param {string} size - Taille d'écran (xs, sm, md, lg, xl, auto)
+     * @returns {string} Taille normalisée (xs, sm, md, lg, xl)
+     */
+    _normalizeSize(size) {
+        if (!size || size === 'auto') {
+            return 'md';
+        }
+        const validSizes = ['xs', 'sm', 'md', 'lg', 'xl'];
+        return validSizes.includes(size) ? size : 'md';
+    }
+
+    /**
+     * Génère une cellule par défaut (texte simple)
+     * @private
+     * @param {string} fieldKey - Clé du champ
+     * @param {Object} format - Format résolu
+     * @param {string} size - Taille d'écran
+     * @param {Object} options - Options
+     * @returns {Object} Cell object
+     */
+    _toDefaultCell(fieldKey, format, size, options) {
+        const value = this._data[fieldKey];
+        const text = value === null || value === undefined || value === '' ? '-' : String(value);
+        
+        return {
+            type: 'text',
+            value: text,
+            params: {
+                sortValue: value,
+                searchValue: text === '-' ? '' : text,
+                filterValue: value,
+            },
+        };
+    }
+
+    /**
+     * Génère une clé de cache pour une cellule
+     * @private
+     * @param {string} fieldKey - Clé du champ
+     * @param {Object} options - Options
+     * @returns {string} Clé de cache
+     */
+    _getCacheKey(fieldKey, options) {
+        // Créer une clé basée sur fieldKey + size + context
+        const keyParts = [
+            fieldKey,
+            options.size || 'md',
+            options.context || 'table',
+        ];
+        return keyParts.join('|');
+    }
+
+    /**
+     * Invalide le cache des cellules
+     * @param {string} [fieldKey] - Clé du champ spécifique (optionnel, invalide tout si non fourni)
+     */
+    invalidateCache(fieldKey = null) {
+        if (fieldKey) {
+            // Invalider uniquement les cellules pour ce champ
+            const keysToDelete = [];
+            for (const key of this._cellCache.keys()) {
+                if (key.startsWith(`${fieldKey}|`)) {
+                    keysToDelete.push(key);
+                }
+            }
+            keysToDelete.forEach(key => this._cellCache.delete(key));
+        } else {
+            // Invalider tout le cache
+            this._cellCache.clear();
+        }
+    }
+
+    /**
+     * Capitalise la première lettre (helper)
+     * @private
+     * @param {string} str - Chaîne à capitaliser
+     * @returns {string} Chaîne capitalisée
+     */
+    _capitalize(str) {
+        if (!str) return '';
+        return str.charAt(0).toUpperCase() + str.slice(1);
+    }
+
+    // ============================================
+    // MÉTHODES DE CONVENANCE (pour compatibilité et lisibilité)
+    // ============================================
+
+    /**
+     * Vérifie si l'entité a une rareté
+     * @returns {boolean}
+     */
+    hasRarity() {
+        return this.has('rarity');
+    }
+
+    /**
+     * Formate la rareté
+     * @param {Object} [options={}] - Options de formatage
+     * @returns {string|null}
+     */
+    formatRarity(options = {}) {
+        return this.format('rarity', options);
+    }
+
+    /**
+     * Génère une cellule pour la rareté
+     * @param {Object} [options={}] - Options
+     * @returns {Object|null}
+     */
+    toRarityCell(options = {}) {
+        return this.toCell('rarity', options);
+    }
+
+    /**
+     * Vérifie si l'entité a un niveau
+     * @returns {boolean}
+     */
+    hasLevel() {
+        return this.has('level');
+    }
+
+    /**
+     * Formate le niveau
+     * @param {Object} [options={}] - Options de formatage
+     * @returns {string|null}
+     */
+    formatLevel(options = {}) {
+        return this.format('level', options);
+    }
+
+    /**
+     * Génère une cellule pour le niveau
+     * @param {Object} [options={}] - Options
+     * @returns {Object|null}
+     */
+    toLevelCell(options = {}) {
+        return this.toCell('level', options);
+    }
+
+    /**
+     * Vérifie si l'entité a une visibilité
+     * @returns {boolean}
+     */
+    hasVisibility() {
+        return this.has('visibility');
+    }
+
+    /**
+     * Formate la visibilité
+     * @param {Object} [options={}] - Options de formatage
+     * @returns {string|null}
+     */
+    formatVisibility(options = {}) {
+        return this.format('visibility', options);
+    }
+
+    /**
+     * Génère une cellule pour la visibilité
+     * @param {Object} [options={}] - Options
+     * @returns {Object|null}
+     */
+    toVisibilityCell(options = {}) {
+        return this.toCell('visibility', options);
     }
 }
 

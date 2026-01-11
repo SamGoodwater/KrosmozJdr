@@ -59,7 +59,8 @@ const props = defineProps({
 
 const emit = defineEmits(["action"]);
 
-const handleAction = (actionKey) => {
+const handleAction = (actionKey, event) => {
+  // EntityActionButton émet (actionKey, event), on ne garde que actionKey
   emit("action", actionKey);
 };
 </script>

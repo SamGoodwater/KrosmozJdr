@@ -33,7 +33,7 @@ class ResourceBulkController extends Controller
             'usable' => ['sometimes', 'boolean'],
             'auto_update' => ['sometimes', 'boolean'],
             'is_visible' => ['sometimes', 'string', 'in:guest,user,game_master,admin'],
-            'rarity' => ['sometimes', 'integer', 'min:0', 'max:5'],
+            'rarity' => ['sometimes', 'nullable', 'integer', 'min:0', 'max:5'],
 
             // Champs "métier" utiles en édition multiple (nullable => possibilité de vider)
             'level' => ['sometimes', 'nullable', 'string', 'max:255'],
@@ -42,6 +42,7 @@ class ResourceBulkController extends Controller
             'description' => ['sometimes', 'nullable', 'string'],
             'image' => ['sometimes', 'nullable', 'string', 'max:255'],
             'dofus_version' => ['sometimes', 'nullable', 'string', 'max:255'],
+            'dofusdb_id' => ['sometimes', 'nullable', 'string', 'max:255'],
         ]);
 
         $ids = array_values(array_unique(array_map('intval', $validated['ids'])));
@@ -65,6 +66,7 @@ class ResourceBulkController extends Controller
             'description',
             'image',
             'dofus_version',
+            'dofusdb_id',
         ] as $k) {
             if (array_key_exists($k, $validated)) {
                 $patch[$k] = $validated[$k]; // peut être null si nullable (ex: vider)

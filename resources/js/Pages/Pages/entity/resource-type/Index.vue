@@ -5,11 +5,14 @@
  * @description
  * Table de gestion des types de ressources (incluant la registry DofusDB).
  */
-import { Head } from "@inertiajs/vue3";
+import { Head, router } from "@inertiajs/vue3";
 import { ref, computed } from "vue";
 import { usePageTitle } from "@/Composables/layout/usePageTitle";
 import { usePermissions } from "@/Composables/permissions/usePermissions";
 import { useBulkRequest } from "@/Composables/entity/useBulkRequest";
+import { useCopyToClipboard } from "@/Composables/utils/useCopyToClipboard";
+import { useScrapping } from "@/Composables/utils/useScrapping";
+import { getEntityRouteConfig, resolveEntityRouteUrl } from "@/Composables/entity/entityRouteRegistry";
 
 import Btn from "@/Pages/Atoms/action/Btn.vue";
 import Modal from "@/Pages/Molecules/action/Modal.vue";
@@ -17,6 +20,7 @@ import EntityTanStackTable from "@/Pages/Organismes/table/EntityTanStackTable.vu
 import CreateEntityModal from "@/Pages/Organismes/entity/CreateEntityModal.vue";
 import EntityEditForm from "@/Pages/Organismes/entity/EntityEditForm.vue";
 import EntityQuickEditPanel from "@/Pages/Organismes/entity/EntityQuickEditPanel.vue";
+import EntityQuickEditModal from "@/Pages/Organismes/entity/EntityQuickEditModal.vue";
 import { createResourceTypesTanStackTableConfig } from "./resource-types-tanstack-table-config";
 import { adaptResourceTypeEntitiesTableResponse } from "@/Entities/resource-type/resource-type-adapter";
 import { getResourceTypeFieldDescriptors } from "@/Entities/resource-type/resource-type-descriptors";
@@ -38,10 +42,14 @@ const canCreateResolved = computed(() => Boolean(props.can?.create ?? canCreate(
 // (legacy) canManage inutilisé : garder uniquement les versions "Resolved"
 
 const { bulkPatchJson } = useBulkRequest();
+const { copyToClipboard } = useCopyToClipboard();
+const { refreshEntity } = useScrapping();
 
 const selectedEntity = ref(null);
 const editOpen = ref(false);
 const createOpen = ref(false);
+const quickEditModalOpen = ref(false);
+const quickEditEntity = ref(null);
 const selectedIds = ref([]);
 const tableRows = ref([]);
 const refreshToken = ref(0);
@@ -96,6 +104,42 @@ const handleTableLoaded = ({ rows }) => {
     tableRows.value = Array.isArray(rows) ? rows : [];
 };
 
+// Handler pour les actions du tableau
+const handleTableAction = async (actionKey, entity, row) => {
+    const entityId = entity?.id;
+    if (!entityId) return;
+
+    switch (actionKey) {
+        case 'quick-edit':
+            quickEditEntity.value = entity;
+            quickEditModalOpen.value = true;
+            break;
+
+        case 'copy-link': {
+            const cfg = getEntityRouteConfig('resource-type');
+            const url = resolveEntityRouteUrl('resource-type', 'show', entityId, cfg);
+            if (url) {
+                await copyToClipboard(url, "Lien de l'entité copié !");
+            }
+            break;
+        }
+
+        case 'refresh': {
+            await refreshEntity('resource-type', entityId, { forceUpdate: true });
+            refreshToken.value++;
+            break;
+        }
+
+        default:
+            console.log('Action non gérée:', actionKey, entity);
+    }
+};
+
+const handleQuickEditSubmit = () => {
+    refreshToken.value++;
+    quickEditEntity.value = null;
+};
+
 const resourceTypeDescriptors = computed(() => getResourceTypeFieldDescriptors({ capabilities: props.can || {} }));
 const fieldsConfig = computed(() => createFieldsConfigFromDescriptors(resourceTypeDescriptors.value, { meta: {}, capabilities: props.can || {} }));
 const defaultEntity = computed(() => createDefaultEntityFromDescriptors(resourceTypeDescriptors.value));
@@ -138,6 +182,7 @@ const defaultEntity = computed(() => createDefaultEntityFromDescriptors(resource
                     v-model:selected-ids="selectedIds"
                     @loaded="handleTableLoaded"
                     @row-dblclick="handleRowDoubleClick"
+                    @action="handleTableAction"
                 />
             </div>
 
@@ -182,6 +227,19 @@ const defaultEntity = computed(() => createDefaultEntityFromDescriptors(resource
                 />
             </div>
         </Modal>
+
+        <!-- Modal d'édition rapide -->
+        <EntityQuickEditModal
+            v-if="quickEditEntity"
+            :entity="quickEditEntity"
+            entity-type="resourceType"
+            :fields-config="fieldsConfig"
+            :open="quickEditModalOpen"
+            route-name-base="entities.resource-types"
+            route-param-key="resourceType"
+            @close="quickEditModalOpen = false"
+            @submit="handleQuickEditSubmit"
+        />
     </div>
 </template>
 

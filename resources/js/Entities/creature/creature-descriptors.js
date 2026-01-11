@@ -1,86 +1,61 @@
 /**
- * Creature field descriptors (Option B)
+ * Creature field descriptors — Version simplifiée
  *
  * @description
  * Source de vérité côté frontend pour :
- * - l'affichage (cellules table + vues)
- * - l'édition (forms / bulk)
+ * - Configuration tableau (affichage des cellules selon la taille xs-xl)
+ * - Configuration formulaires (édition simple et bulk)
  *
+ * ⚠️ Les vues (Large, Compact, Minimal, Text) sont maintenant des composants Vue manuels.
  * ⚠️ Sécurité : ces descriptors ne sont que de l'UX. Le backend reste la vérité (Policies + filtrage des champs).
+ *
+ * @example
+ * import { getCreatureFieldDescriptors } from "@/Entities/creature/creature-descriptors";
+ * const descriptors = getCreatureFieldDescriptors({ meta });
  */
 
 /**
  * @typedef {Object} CreatureFieldDescriptor
- * @property {string} key
- * @property {string} label
- * @property {string} [description]
- * @property {string} [tooltip]
- * @property {string|null} [icon]
- * @property {string|null|"auto"} [color]
- * @property {"text"|"number"|"bool"|"date"|"image"|"link"|"enum"} [format]
- * @property {(ctx: any) => boolean} [visibleIf]
- * @property {(ctx: any) => boolean} [editableIf]
- * @property {Object} [display]
- * @property {Record<"table"|"text"|"compact"|"minimal"|"extended", { size: "small"|"normal"|"large", mode?: string }>} [display.views]
- * @property {Record<"small"|"normal"|"large", any>} [display.sizes]
+ * @property {string} key - Clé unique du champ
+ * @property {string} label - Libellé affiché
+ * @property {string} [icon] - Icône FontAwesome
+ * @property {(ctx: any) => boolean} [visibleIf] - Fonction conditionnelle pour la visibilité
+ * @property {(ctx: any) => boolean} [editableIf] - Fonction conditionnelle pour l'édition
+ * @property {Object} [display] - Configuration de l'affichage dans les tableaux
+ * @property {Record<"xs"|"sm"|"md"|"lg"|"xl", {mode?: string, truncate?: number}>} [display.sizes] - Configuration par taille d'écran
+ * @property {Object} [edit] - Configuration de l'édition
+ * @property {Object} [edit.form] - Configuration du formulaire d'édition
+ * @property {"text"|"textarea"|"select"|"checkbox"|"number"|"date"|"file"} [edit.form.type] - Type de champ
+ * @property {string} [edit.form.label] - Libellé spécifique pour le formulaire
+ * @property {string} [edit.form.group] - Groupe de champs
+ * @property {string} [edit.form.help] - Texte d'aide
+ * @property {boolean} [edit.form.required] - Champ obligatoire
+ * @property {any} [edit.form.defaultValue] - Valeur par défaut
+ * @property {Array<{value: any, label: string}>|Function} [edit.form.options] - Options pour les selects
+ * @property {Object} [edit.form.bulk] - Configuration pour l'édition en masse
+ * @property {boolean} [edit.form.bulk.enabled] - Activer l'édition en masse
+ * @property {boolean} [edit.form.bulk.nullable] - Permettre null/vide en bulk
+ * @property {Function} [edit.form.bulk.build] - Fonction de transformation avant envoi
  */
 
-export const DEFAULT_CREATURE_FIELD_VIEWS = Object.freeze({
-  table: { size: "small" },
-  text: { size: "normal" },
-  compact: { size: "small" },
-  minimal: { size: "small" },
-  extended: { size: "large" },
-});
-
 /**
- * Ordre d'affichage "Creature" par vue.
+ * Champs affichés dans le panneau d'édition rapide (sélection multiple).
+ * ⚠️ IMPORTANT : Doit rester aligné avec le backend (bulk controller).
  */
-export const CREATURE_VIEW_FIELDS = Object.freeze({
-  quickEdit: [
-    "level",
-    "hostility",
-    "life",
-    "usable",
-    "is_visible",
-  ],
-  compact: [
-    "level",
-    "hostility",
-    "life",
-    "pa",
-    "pm",
-    "usable",
-    "is_visible",
-  ],
-  extended: [
-    "level",
-    "hostility",
-    "life",
-    "pa",
-    "pm",
-    "po",
-    "usable",
-    "is_visible",
-    "created_by",
-    "created_at",
-    "updated_at",
-  ],
-});
-
-const HOSTILITY_OPTIONS = [
-  { value: 0, label: "Amical" },
-  { value: 1, label: "Curieux" },
-  { value: 2, label: "Neutre" },
-  { value: 3, label: "Hostile" },
-  { value: 4, label: "Aggressif" },
-];
+export const CREATURE_QUICK_EDIT_FIELDS = Object.freeze([
+  "level",
+  "hostility",
+  "life",
+  "usable",
+  "is_visible",
+]);
 
 /**
- * Descriptors "Creature".
- *
- * @param {Object} ctx
- * @returns {Record<string, CreatureFieldDescriptor>}
+ * Retourne les descripteurs de tous les champs de l'entité "Creature".
+ * 
+ * @param {Object} ctx - Contexte d'exécution
+ * @param {Object} [ctx.capabilities] - Permissions disponibles (ou ctx.meta.capabilities)
+ * @returns {Record<string, CreatureFieldDescriptor>} Objet avec tous les descripteurs
  */
 export function getCreatureFieldDescriptors(ctx = {}) {
   const can = ctx?.capabilities || ctx?.meta?.capabilities || null;
@@ -92,21 +67,29 @@ export function getCreatureFieldDescriptors(ctx = {}) {
       key: "id",
       label: "ID",
       icon: "fa-solid fa-hashtag",
-      format: "number",
       visibleIf: () => canCreateAny,
       display: {
-        views: DEFAULT_CREATURE_FIELD_VIEWS,
-        sizes: { small: { mode: "text" }, normal: { mode: "text" }, large: { mode: "text" } },
+        sizes: {
+          xs: { mode: "text" },
+          sm: { mode: "text" },
+          md: { mode: "text" },
+          lg: { mode: "text" },
+          xl: { mode: "text" },
+        },
       },
     },
     name: {
       key: "name",
       label: "Nom",
       icon: "fa-solid fa-font",
-      format: "text",
       display: {
-        views: { ...DEFAULT_CREATURE_FIELD_VIEWS, table: { size: "small", mode: "route" } },
-        sizes: { small: { mode: "route" }, normal: { mode: "route" }, large: { mode: "route" } },
+        sizes: {
+          xs: { mode: "route", truncate: 15 },
+          sm: { mode: "route", truncate: 20 },
+          md: { mode: "route", truncate: 30 },
+          lg: { mode: "route", truncate: 40 },
+          xl: { mode: "route" },
+        },
       },
       edit: {
         form: {
@@ -117,14 +100,40 @@ export function getCreatureFieldDescriptors(ctx = {}) {
         },
       },
     },
+    description: {
+      key: "description",
+      label: "Description",
+      icon: "fa-solid fa-align-left",
+      display: {
+        sizes: {
+          xs: { mode: "text", truncate: 20 },
+          sm: { mode: "text", truncate: 30 },
+          md: { mode: "text", truncate: 50 },
+          lg: { mode: "text" },
+          xl: { mode: "text" },
+        },
+      },
+      edit: {
+        form: {
+          type: "textarea",
+          required: false,
+          showInCompact: false,
+          bulk: { enabled: false },
+        },
+      },
+    },
     level: {
       key: "level",
       label: "Niveau",
       icon: "fa-solid fa-level-up-alt",
-      format: "number",
       display: {
-        views: DEFAULT_CREATURE_FIELD_VIEWS,
-        sizes: { small: { mode: "text" }, normal: { mode: "text" }, large: { mode: "text" } },
+        sizes: {
+          xs: { mode: "text" },
+          sm: { mode: "text" },
+          md: { mode: "text" },
+          lg: { mode: "text" },
+          xl: { mode: "text" },
+        },
       },
       edit: {
         form: {
@@ -141,10 +150,14 @@ export function getCreatureFieldDescriptors(ctx = {}) {
       key: "hostility",
       label: "Hostilité",
       icon: "fa-solid fa-exclamation-triangle",
-      format: "enum",
       display: {
-        views: DEFAULT_CREATURE_FIELD_VIEWS,
-        sizes: { small: { mode: "badge" }, normal: { mode: "badge" }, large: { mode: "badge" } },
+        sizes: {
+          xs: { mode: "badge" },
+          sm: { mode: "badge" },
+          md: { mode: "badge" },
+          lg: { mode: "badge" },
+          xl: { mode: "badge" },
+        },
       },
       edit: {
         form: {
@@ -152,9 +165,38 @@ export function getCreatureFieldDescriptors(ctx = {}) {
           group: "Caractéristiques",
           required: false,
           showInCompact: true,
-          options: HOSTILITY_OPTIONS,
+          options: [
+            { value: 0, label: "Amical" },
+            { value: 1, label: "Curieux" },
+            { value: 2, label: "Neutre" },
+            { value: 3, label: "Hostile" },
+            { value: 4, label: "Aggressif" },
+          ],
           defaultValue: 2,
           bulk: { enabled: true, nullable: true, build: (v) => (v === "" ? null : Number(v)) },
+        },
+      },
+    },
+    location: {
+      key: "location",
+      label: "Localisation",
+      icon: "fa-solid fa-map-marker-alt",
+      display: {
+        sizes: {
+          xs: { mode: "text", truncate: 10 },
+          sm: { mode: "text", truncate: 15 },
+          md: { mode: "text", truncate: 20 },
+          lg: { mode: "text" },
+          xl: { mode: "text" },
+        },
+      },
+      edit: {
+        form: {
+          type: "text",
+          group: "Caractéristiques",
+          required: false,
+          showInCompact: false,
+          bulk: { enabled: false },
         },
       },
     },
@@ -162,10 +204,14 @@ export function getCreatureFieldDescriptors(ctx = {}) {
       key: "life",
       label: "Vie",
       icon: "fa-solid fa-heart",
-      format: "number",
       display: {
-        views: DEFAULT_CREATURE_FIELD_VIEWS,
-        sizes: { small: { mode: "text" }, normal: { mode: "text" }, large: { mode: "text" } },
+        sizes: {
+          xs: { mode: "text" },
+          sm: { mode: "text" },
+          md: { mode: "text" },
+          lg: { mode: "text" },
+          xl: { mode: "text" },
+        },
       },
       edit: {
         form: {
@@ -181,11 +227,15 @@ export function getCreatureFieldDescriptors(ctx = {}) {
     pa: {
       key: "pa",
       label: "PA",
-      icon: "fa-solid fa-bolt",
-      format: "number",
+      icon: "fa-solid fa-running",
       display: {
-        views: DEFAULT_CREATURE_FIELD_VIEWS,
-        sizes: { small: { mode: "text" }, normal: { mode: "text" }, large: { mode: "text" } },
+        sizes: {
+          xs: { mode: "text" },
+          sm: { mode: "text" },
+          md: { mode: "text" },
+          lg: { mode: "text" },
+          xl: { mode: "text" },
+        },
       },
       edit: {
         form: {
@@ -201,11 +251,15 @@ export function getCreatureFieldDescriptors(ctx = {}) {
     pm: {
       key: "pm",
       label: "PM",
-      icon: "fa-solid fa-wind",
-      format: "number",
+      icon: "fa-solid fa-walking",
       display: {
-        views: DEFAULT_CREATURE_FIELD_VIEWS,
-        sizes: { small: { mode: "text" }, normal: { mode: "text" }, large: { mode: "text" } },
+        sizes: {
+          xs: { mode: "text" },
+          sm: { mode: "text" },
+          md: { mode: "text" },
+          lg: { mode: "text" },
+          xl: { mode: "text" },
+        },
       },
       edit: {
         form: {
@@ -218,14 +272,42 @@ export function getCreatureFieldDescriptors(ctx = {}) {
         },
       },
     },
+    po: {
+      key: "po",
+      label: "PO",
+      icon: "fa-solid fa-crosshairs",
+      display: {
+        sizes: {
+          xs: { mode: "text" },
+          sm: { mode: "text" },
+          md: { mode: "text" },
+          lg: { mode: "text" },
+          xl: { mode: "text" },
+        },
+      },
+      edit: {
+        form: {
+          type: "text",
+          group: "Caractéristiques",
+          placeholder: "Ex: 0",
+          required: false,
+          showInCompact: false,
+          bulk: { enabled: true, nullable: true, build: (v) => (v === "" ? null : String(v)) },
+        },
+      },
+    },
     usable: {
       key: "usable",
       label: "Utilisable",
       icon: "fa-solid fa-check-circle",
-      format: "bool",
       display: {
-        views: DEFAULT_CREATURE_FIELD_VIEWS,
-        sizes: { small: { mode: "badge" }, normal: { mode: "badge" }, large: { mode: "badge" } },
+        sizes: {
+          xs: { mode: "badge" },
+          sm: { mode: "badge" },
+          md: { mode: "badge" },
+          lg: { mode: "badge" },
+          xl: { mode: "badge" },
+        },
       },
       edit: {
         form: {
@@ -233,7 +315,8 @@ export function getCreatureFieldDescriptors(ctx = {}) {
           group: "Statut",
           required: false,
           showInCompact: true,
-          bulk: { enabled: true, nullable: true, build: (v) => (v === "" || v === null ? null : Boolean(v)) },
+          defaultValue: false,
+          bulk: { enabled: true, nullable: false, build: (v) => v === "1" || v === true },
         },
       },
     },
@@ -241,10 +324,14 @@ export function getCreatureFieldDescriptors(ctx = {}) {
       key: "is_visible",
       label: "Visible",
       icon: "fa-solid fa-eye",
-      format: "enum",
       display: {
-        views: DEFAULT_CREATURE_FIELD_VIEWS,
-        sizes: { small: { mode: "badge" }, normal: { mode: "badge" }, large: { mode: "badge" } },
+        sizes: {
+          xs: { mode: "badge" },
+          sm: { mode: "badge" },
+          md: { mode: "badge" },
+          lg: { mode: "badge" },
+          xl: { mode: "badge" },
+        },
       },
       edit: {
         form: {
@@ -268,35 +355,46 @@ export function getCreatureFieldDescriptors(ctx = {}) {
       key: "created_by",
       label: "Créé par",
       icon: "fa-solid fa-user",
-      format: "text",
       visibleIf: () => canCreateAny,
       display: {
-        views: DEFAULT_CREATURE_FIELD_VIEWS,
-        sizes: { small: { mode: "text" }, normal: { mode: "text" }, large: { mode: "text" } },
+        sizes: {
+          xs: { mode: "text" },
+          sm: { mode: "text" },
+          md: { mode: "text" },
+          lg: { mode: "text" },
+          xl: { mode: "text" },
+        },
       },
     },
     created_at: {
       key: "created_at",
       label: "Créé le",
       icon: "fa-solid fa-calendar-plus",
-      format: "date",
       visibleIf: () => canCreateAny,
       display: {
-        views: DEFAULT_CREATURE_FIELD_VIEWS,
-        sizes: { small: { mode: "text" }, normal: { mode: "text" }, large: { mode: "text" } },
+        sizes: {
+          xs: { mode: "text" },
+          sm: { mode: "text" },
+          md: { mode: "text" },
+          lg: { mode: "text" },
+          xl: { mode: "text" },
+        },
       },
     },
     updated_at: {
       key: "updated_at",
       label: "Modifié le",
-      icon: "fa-solid fa-calendar-edit",
-      format: "date",
+      icon: "fa-solid fa-calendar-check",
       visibleIf: () => canCreateAny,
       display: {
-        views: DEFAULT_CREATURE_FIELD_VIEWS,
-        sizes: { small: { mode: "text" }, normal: { mode: "text" }, large: { mode: "text" } },
+        sizes: {
+          xs: { mode: "text" },
+          sm: { mode: "text" },
+          md: { mode: "text" },
+          lg: { mode: "text" },
+          xl: { mode: "text" },
+        },
       },
     },
   };
 }
-

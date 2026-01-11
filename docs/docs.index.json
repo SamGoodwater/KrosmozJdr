@@ -190,6 +190,16 @@
     "description": "**Note : 9/10** - Système d'input de niveau professionnel"
   },
   {
+    "path": "100- Done/NETTOYAGE_CODE_2026_01.md",
+    "title": "Rapport de nettoyage du code — Janvier 2026",
+    "description": "**Date** : 2026-01-08"
+  },
+  {
+    "path": "100- Done/OPTIMISATIONS_UI_2026_01.md",
+    "title": "Optimisations UI — Janvier 2026",
+    "description": "**Date** : 2026-01-06"
+  },
+  {
     "path": "100- Done/README.md",
     "title": "",
     "description": "Le dossier `docs/100-Done` a pour objectif de centraliser les fichiers Markdown relatifs aux actions réalisées durant le développement du projet, ainsi qu'aux fonctionnalités finalisées. Il s'agit de l'espace où l'on documente l'évolution concrète du projet (refactorings, jalons atteints, fonctionnalités livrées, etc.), à la différence de la documentation technique pure. Ce dossier permet de garder une trace claire de l'historique des avancées et des décisions prises au fil du temps."
@@ -485,6 +495,11 @@
     "description": "```javascript"
   },
   {
+    "path": "30-UI/DESCRIPTOR_HELPERS_GUIDE.md",
+    "title": "Guide des Descriptor Helpers",
+    "description": "**Date de création** : 2026-01-06"
+  },
+  {
     "path": "30-UI/DESIGN_GUIDE.md",
     "title": "Guide de Design Krosmoz-JDR",
     "description": "Le design du site s'appuie sur les principes d'Atomic Design, le glassmorphism et une forte accessibilité. L'interface est responsive et moderne."
@@ -507,6 +522,11 @@
   {
     "path": "30-UI/ENTITY_FIELD_DESCRIPTORS_GUIDE.md",
     "title": "Guide complet — Entity Field Descriptors",
+    "description": "**Date de création** : 2026-01-06"
+  },
+  {
+    "path": "30-UI/FIELD_DESCRIPTOR_CLASS_GUIDE.md",
+    "title": "Guide de la classe FieldDescriptor",
     "description": "**Date de création** : 2026-01-06"
   },
   {

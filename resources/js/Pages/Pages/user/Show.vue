@@ -19,7 +19,7 @@ import Route from '@/Pages/Atoms/action/Route.vue';
 import BadgeRole from '@/Pages/Molecules/user/BadgeRole.vue';
 import Container from '@/Pages/Atoms/data-display/Container.vue';
 import Badge from '@/Pages/Atoms/data-display/Badge.vue';
-import EntityCard from '@/Pages/Molecules/entity/EnityCard.vue';
+import EntityCard from '@/Pages/Molecules/entity/EntityCard.vue';
 import Tooltip from '@/Pages/Atoms/feedback/Tooltip.vue';
 import VerifyMailAlert from '@/Pages/Molecules/user/VerifyMailAlert.vue';
 

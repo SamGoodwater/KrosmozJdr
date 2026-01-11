@@ -104,6 +104,253 @@ export class Consumable extends BaseModel {
     }
 
     // ============================================
+    // FORMATAGE DES CELLULES (surcharge pour champs spécifiques)
+    // ============================================
+
+    /**
+     * Génère une cellule pour un champ (surcharge pour gérer les champs spécifiques à Consumable)
+     * @param {string} fieldKey - Clé du champ
+     * @param {Object} [options={}] - Options (size, context, config, ctx)
+     * @returns {Object|null} Cell object ou null si valeur invalide
+     */
+    toCell(fieldKey, options = {}) {
+        // D'abord, essayer la méthode de base (gère les formatters automatiquement)
+        const baseCell = super.toCell(fieldKey, options);
+        
+        // Si la méthode de base a trouvé quelque chose (formatter ou valeur par défaut valide), l'utiliser
+        if (baseCell && (baseCell.type !== 'text' || (baseCell.value && baseCell.value !== '-'))) {
+            return baseCell;
+        }
+
+        // Sinon, gérer les champs spécifiques à Consumable
+        const { size = 'md', format = {} } = options;
+        
+        switch (fieldKey) {
+            case 'name':
+                return this._toNameCell(format, size, options);
+            case 'description':
+                return this._toDescriptionCell(format, size, options);
+            case 'effect':
+                return this._toEffectCell(format, size, options);
+            case 'recipe':
+                return this._toRecipeCell(format, size, options);
+            case 'image':
+                return this._toImageCell(format, size, options);
+            case 'consumable_type':
+            case 'consumableType':
+                return this._toConsumableTypeCell(format, size, options);
+            case 'created_by':
+            case 'createdBy':
+                return this._toCreatedByCell(format, size, options);
+            case 'created_at':
+                return this._toCreatedAtCell(format, size, options);
+            case 'updated_at':
+                return this._toUpdatedAtCell(format, size, options);
+            default:
+                // Fallback vers la méthode de base
+                return baseCell;
+        }
+    }
+
+    /**
+     * Génère une cellule pour le nom (lien vers la page de détail)
+     * @private
+     */
+    _toNameCell(format, size, options) {
+        const name = this.name || '-';
+        const href = options.href || `/consumables/${this.id}`;
+        
+        return {
+            type: 'route',
+            value: name,
+            params: {
+                href,
+                tooltip: name === '-' ? '' : name,
+                truncate: format.truncate || (size === 'xs' || size === 'sm' ? 20 : null),
+                searchValue: name === '-' ? '' : name,
+                sortValue: name,
+            },
+        };
+    }
+
+    /**
+     * Génère une cellule pour la description (texte tronqué)
+     * @private
+     */
+    _toDescriptionCell(format, size, options) {
+        const description = this.description || '';
+        const maxLength = format.truncate || (size === 'xs' || size === 'sm' ? 30 : 50);
+        const truncated = description.length > maxLength 
+            ? description.slice(0, maxLength - 1) + '…'
+            : description;
+        
+        return {
+            type: 'text',
+            value: truncated || '-',
+            params: {
+                tooltip: description || '',
+                sortValue: description,
+                searchValue: description,
+            },
+        };
+    }
+
+    /**
+     * Génère une cellule pour l'effet
+     * @private
+     */
+    _toEffectCell(format, size, options) {
+        const effect = this.effect || '';
+        const maxLength = format.truncate || (size === 'xs' || size === 'sm' ? 20 : 40);
+        const truncated = effect.length > maxLength 
+            ? effect.slice(0, maxLength - 1) + '…'
+            : effect;
+        
+        return {
+            type: 'text',
+            value: truncated || '-',
+            params: {
+                tooltip: effect || '',
+                sortValue: effect,
+                searchValue: effect,
+            },
+        };
+    }
+
+    /**
+     * Génère une cellule pour la recette
+     * @private
+     */
+    _toRecipeCell(format, size, options) {
+        const recipe = this.recipe || '';
+        const maxLength = format.truncate || (size === 'xs' || size === 'sm' ? 20 : 40);
+        const truncated = recipe.length > maxLength 
+            ? recipe.slice(0, maxLength - 1) + '…'
+            : recipe;
+        
+        return {
+            type: 'text',
+            value: truncated || '-',
+            params: {
+                tooltip: recipe || '',
+                sortValue: recipe,
+                searchValue: recipe,
+            },
+        };
+    }
+
+    /**
+     * Génère une cellule pour l'image (miniature)
+     * @private
+     */
+    _toImageCell(format, size, options) {
+        const imageUrl = this.image || '';
+        
+        if (!imageUrl) {
+            return {
+                type: 'text',
+                value: '-',
+                params: {
+                    sortValue: '',
+                    searchValue: '',
+                },
+            };
+        }
+
+        const imageSize = size === 'xs' || size === 'sm' ? 32 : 48;
+        
+        return {
+            type: 'image',
+            value: imageUrl,
+            params: {
+                alt: this.name || 'Consumable image',
+                width: imageSize,
+                height: imageSize,
+                sortValue: imageUrl,
+                searchValue: imageUrl,
+            },
+        };
+    }
+
+    /**
+     * Génère une cellule pour le type de consommable
+     * @private
+     */
+    _toConsumableTypeCell(format, size, options) {
+        const consumableType = this.consumableType;
+        
+        if (!consumableType) {
+            return {
+                type: 'text',
+                value: '-',
+                params: {
+                    sortValue: '',
+                    searchValue: '',
+                },
+            };
+        }
+
+        const typeName = consumableType.name || consumableType.label || '-';
+        
+        return {
+            type: 'text',
+            value: typeName,
+            params: {
+                sortValue: typeName,
+                searchValue: typeName,
+            },
+        };
+    }
+
+    /**
+     * Génère une cellule pour le créateur
+     * @private
+     */
+    _toCreatedByCell(format, size, options) {
+        const createdBy = this.createdBy;
+        
+        if (!createdBy) {
+            return {
+                type: 'text',
+                value: '-',
+                params: {
+                    sortValue: '',
+                    searchValue: '',
+                },
+            };
+        }
+
+        const userName = createdBy.name || createdBy.email || '-';
+        
+        return {
+            type: 'text',
+            value: userName,
+            params: {
+                sortValue: userName,
+                searchValue: userName,
+            },
+        };
+    }
+
+    /**
+     * Génère une cellule pour la date de création
+     * @private
+     */
+    _toCreatedAtCell(format, size, options) {
+        // Utiliser le DateFormatter via la méthode de base
+        return super.toCell('created_at', options);
+    }
+
+    /**
+     * Génère une cellule pour la date de modification
+     * @private
+     */
+    _toUpdatedAtCell(format, size, options) {
+        // Utiliser le DateFormatter via la méthode de base
+        return super.toCell('updated_at', options);
+    }
+
+    // ============================================
     // MÉTHODES UTILITAIRES
     // ============================================
 

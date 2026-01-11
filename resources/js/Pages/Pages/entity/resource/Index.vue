@@ -14,13 +14,16 @@ import { useNotificationStore } from "@/Composables/store/useNotificationStore";
 import { Resource } from "@/Models/Entity/Resource";
 import { usePermissions } from "@/Composables/permissions/usePermissions";
 import { useBulkRequest } from "@/Composables/entity/useBulkRequest";
+import { useCopyToClipboard } from "@/Composables/utils/useCopyToClipboard";
+import { useScrapping } from "@/Composables/utils/useScrapping";
+import { getEntityRouteConfig, resolveEntityRouteUrl } from "@/Composables/entity/entityRouteRegistry";
 
 import Btn from '@/Pages/Atoms/action/Btn.vue';
 import EntityTanStackTable from '@/Pages/Organismes/table/EntityTanStackTable.vue';
 import EntityModal from '@/Pages/Organismes/entity/EntityModal.vue';
 import CreateEntityModal from '@/Pages/Organismes/entity/CreateEntityModal.vue';
 import EntityQuickEditPanel from '@/Pages/Organismes/entity/EntityQuickEditPanel.vue';
-import { createResourcesTanStackTableConfig } from './resources-tanstack-table-config';
+import { createResourceTableConfig } from "@/Entities/resource/ResourceTableConfig";
 import { adaptResourceEntitiesTableResponse } from "@/Entities/resource/resource-adapter";
 import { getResourceFieldDescriptors } from "@/Entities/resource/resource-descriptors";
 import { createFieldsConfigFromDescriptors, createDefaultEntityFromDescriptors } from "@/Utils/entity/descriptor-form";
@@ -49,6 +52,8 @@ const { setPageTitle } = usePageTitle();
 // Notifications
 const notificationStore = useNotificationStore();
 const { bulkPatchJson } = useBulkRequest();
+const { copyToClipboard } = useCopyToClipboard();
+const { refreshEntity } = useScrapping();
 setPageTitle('Liste des Ressources');
 
 // Permissions
@@ -64,11 +69,24 @@ const selectedEntity = ref(null);
 const modalOpen = ref(false);
 const modalView = ref('large');
 const createModalOpen = ref(false);
+const quickEditModalOpen = ref(false);
+const quickEditEntity = ref(null);
 const selectedIds = ref([]);
 const tableRows = ref([]);
 const refreshToken = ref(0);
 
-const tableConfig = computed(() => createResourcesTanStackTableConfig());
+// Configuration du tableau avec permissions et contexte
+const tableConfig = computed(() => {
+    const ctx = {
+        capabilities: { 
+            updateAny: canModify.value,
+            createAny: canCreate.value,
+        },
+        resourceTypes: props.resourceTypes || [],
+    };
+    const config = createResourceTableConfig(ctx);
+    return config.build(ctx);
+});
 
 const serverUrl = computed(() => {
     const base = route('api.tables.resources');
@@ -154,6 +172,106 @@ const handleBulkApplied = async (payload) => {
     refreshToken.value++;
     clearSelection();
 };
+
+// Handler pour les actions du tableau
+const handleTableAction = async (actionKey, entity, row) => {
+    const targetEntity = entity || row?.rowParams?.entity;
+    if (!targetEntity) return;
+    
+    const model = Resource.fromArray([targetEntity])[0] || null;
+    if (!model) return;
+    
+    const entityId = model.id;
+    if (!entityId) return;
+
+    switch (actionKey) {
+        case 'view':
+            router.visit(route('entities.resources.show', { resource: entityId }));
+            break;
+
+        case 'quick-view':
+            openModal(model);
+            break;
+
+        case 'edit':
+            router.visit(route('entities.resources.edit', { resource: entityId }));
+            break;
+
+        case 'quick-edit':
+            quickEditEntity.value = model;
+            quickEditModalOpen.value = true;
+            break;
+
+        case 'copy-link': {
+            const cfg = getEntityRouteConfig('resource');
+            const url = resolveEntityRouteUrl('resource', 'show', entityId, cfg);
+            if (url) {
+                await copyToClipboard(url, "Lien de l'entité copié !");
+            }
+            break;
+        }
+
+        case 'download-pdf':
+            // TODO: Implémenter le téléchargement PDF
+            break;
+
+        case 'refresh':
+            await refreshEntity('resource', entityId, { forceUpdate: true });
+            refreshToken.value++;
+            break;
+
+        case 'delete':
+            // TODO: Implémenter la suppression avec confirmation
+            break;
+    }
+};
+
+// Handlers pour les actions du modal (reçoivent directement l'entité depuis l'événement)
+const handleModalQuickEdit = (entity) => {
+    quickEditEntity.value = entity;
+    quickEditModalOpen.value = true;
+    closeModal();
+};
+
+const handleModalExpand = (entity) => {
+    const entityId = entity?.id;
+    if (!entityId) return;
+    router.visit(route('entities.resources.show', { resource: entityId }));
+    closeModal();
+};
+
+const handleModalCopyLink = async (entity) => {
+    const entityId = entity?.id;
+    if (!entityId) return;
+    const cfg = getEntityRouteConfig('resource');
+    const url = resolveEntityRouteUrl('resource', 'show', entityId, cfg);
+    if (url) {
+        await copyToClipboard(url, "Lien de l'entité copié !");
+    }
+};
+
+const handleModalDownloadPdf = (entity) => {
+    // TODO: Implémenter le téléchargement PDF
+    console.log('Download PDF:', entity);
+};
+
+const handleModalRefresh = async (entity) => {
+    const entityId = entity?.id;
+    if (!entityId) return;
+    await refreshEntity('resource', entityId, { forceUpdate: true });
+    refreshToken.value++;
+    closeModal();
+};
+
+const handleModalDelete = (entity) => {
+    // TODO: Implémenter la suppression avec confirmation
+    console.log('Delete:', entity);
+};
+
+const handleQuickEditSubmit = () => {
+    refreshToken.value++;
+    quickEditEntity.value = null;
+};
 </script>
 
 <template>
@@ -195,6 +313,7 @@ const handleBulkApplied = async (payload) => {
                     v-model:selected-ids="selectedIds"
                     @loaded="handleTableLoaded"
                     @row-dblclick="handleRowDoubleClick"
+                    @action="handleTableAction"
                 />
             </div>
 
@@ -230,6 +349,23 @@ const handleBulkApplied = async (payload) => {
             :view="modalView"
             :open="modalOpen"
             @close="closeModal"
+            @quick-edit="handleModalQuickEdit"
+            @expand="handleModalExpand"
+            @copy-link="handleModalCopyLink"
+            @download-pdf="handleModalDownloadPdf"
+            @refresh="handleModalRefresh"
+            @delete="handleModalDelete"
+        />
+
+        <!-- Modal d'édition rapide -->
+        <EntityQuickEditModal
+            v-if="quickEditEntity"
+            :entity="quickEditEntity"
+            entity-type="resource"
+            :fields-config="fieldsConfig"
+            :open="quickEditModalOpen"
+            @close="quickEditModalOpen = false"
+            @submit="handleQuickEditSubmit"
         />
     </div>
 </template>

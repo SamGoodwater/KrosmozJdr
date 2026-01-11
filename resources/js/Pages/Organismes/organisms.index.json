@@ -445,6 +445,34 @@
     "file": "entity/EntityQuickEditPanel.vue"
   },
   {
+    "name": "EntityQuickEditModal",
+    "description": "EntityQuickEditModal Organism",
+    "props": [
+      {
+        "name": "entity",
+        "type": "Object",
+        "desc": "- Données de l'entité à éditer"
+      },
+      {
+        "name": "entityType",
+        "type": "String",
+        "desc": "- Type d'entité (item, spell, monster, etc.)"
+      },
+      {
+        "name": "fieldsConfig",
+        "type": "Object",
+        "desc": "- Configuration des champs à afficher"
+      },
+      {
+        "name": "open",
+        "type": "Boolean",
+        "desc": "- Contrôle l'ouverture du modal"
+      }
+    ],
+    "slots": [],
+    "file": "entity/EntityQuickEditModal.vue"
+  },
+  {
     "name": "EntityModal",
     "description": "EntityModal Organism",
     "props": [

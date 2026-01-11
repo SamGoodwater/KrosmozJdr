@@ -15,7 +15,7 @@
  * <TanStackTable :config="config" :rows="rows" :loading="loading" />
  */
 
-import { computed, ref, watch } from "vue";
+import { computed, ref, watch, onMounted, onUnmounted } from "vue";
 import { getCoreRowModel, getPaginationRowModel, getSortedRowModel, useVueTable } from "@tanstack/vue-table";
 import TanStackTableHeader from "@/Pages/Molecules/table/TanStackTableHeader.vue";
 import TanStackTableRow from "@/Pages/Molecules/table/TanStackTableRow.vue";
@@ -24,6 +24,8 @@ import TanStackTableToolbar from "@/Pages/Molecules/table/TanStackTableToolbar.v
 import TanStackTableFilters from "@/Pages/Molecules/table/TanStackTableFilters.vue";
 import TanStackTablePagination from "@/Pages/Molecules/table/TanStackTablePagination.vue";
 import { useTanStackTablePreferences } from "@/Composables/table/useTanStackTablePreferences";
+import { getCurrentScreenSize } from "@/Entities/entity/EntityDescriptorHelpers.js";
+import { getEntityConfig } from "@/Entities/entity-registry.js";
 import Btn from "@/Pages/Atoms/action/Btn.vue";
 
 const props = defineProps({
@@ -325,10 +327,76 @@ const normalize = (s) => {
     return v.normalize("NFD").replace(/\p{Diacritic}/gu, "");
 };
 
+// Taille d'écran actuelle (réactive)
+const currentScreenSize = ref(getCurrentScreenSize());
+
+// Mettre à jour la taille d'écran au resize
+const updateScreenSize = () => {
+    currentScreenSize.value = getCurrentScreenSize();
+};
+
+onMounted(() => {
+    if (typeof window !== "undefined") {
+        window.addEventListener("resize", updateScreenSize);
+        updateScreenSize();
+    }
+});
+
+onUnmounted(() => {
+    if (typeof window !== "undefined") {
+        window.removeEventListener("resize", updateScreenSize);
+    }
+});
+
 const getCellFor = (row, col) => {
     const cellId = col?.cellId || col?.id;
+    
+    // Si la cellule existe déjà (pré-générée), l'utiliser
     const fromCells = row?.cells?.[cellId];
     if (fromCells) return fromCells;
+
+    // Génération à la volée pour Resource (et autres entités avec modèles)
+    const entity = row?.rowParams?.entity;
+    if (entity && typeof entity.toCell === "function") {
+        // Récupérer la configuration de la colonne pour le format
+        const colFormat = col?.format?.[currentScreenSize.value] || col?.format?.md || {};
+        
+        // Générer la cellule via entity.toCell()
+        const cell = entity.toCell(cellId, {
+            size: currentScreenSize.value,
+            context: "table",
+            format: colFormat,
+            href: col?.cell?.href, // Pour les colonnes route, passer le href si défini
+        });
+        
+        if (cell) {
+            // Mettre en cache la cellule générée pour éviter de la régénérer
+            if (!row.cells) row.cells = {};
+            row.cells[cellId] = cell;
+            return cell;
+        }
+    }
+
+    // Fallback : utiliser entityConfig.buildCell si disponible
+    if (props.entityType) {
+        const entityConfig = getEntityConfig(props.entityType);
+        if (entityConfig?.buildCell && entity) {
+            try {
+                const cell = entityConfig.buildCell(cellId, entity, {}, {
+                    size: currentScreenSize.value,
+                    context: "table",
+                });
+                if (cell) {
+                    // Mettre en cache
+                    if (!row.cells) row.cells = {};
+                    row.cells[cellId] = cell;
+                    return cell;
+                }
+            } catch (e) {
+                console.warn(`[TanStackTable] buildCell failed for ${cellId}:`, e);
+            }
+        }
+    }
 
     // Convenience: colonne "id" sans cellule dédiée (le row.id existe toujours)
     if (cellId === "id" && (row?.id !== null && typeof row?.id !== "undefined")) {

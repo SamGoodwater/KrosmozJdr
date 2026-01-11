@@ -7,19 +7,23 @@
  * 
  * @props {Object} monsters - Collection paginée des monstres
  */
-import { Head } from "@inertiajs/vue3";
+import { Head, router } from "@inertiajs/vue3";
 import { ref, computed, watch } from "vue";
 import { usePageTitle } from "@/Composables/layout/usePageTitle";
 import { usePermissions } from "@/Composables/permissions/usePermissions";
 import { useBulkRequest } from "@/Composables/entity/useBulkRequest";
 import { Monster } from "@/Models/Entity/Monster";
+import { useCopyToClipboard } from "@/Composables/utils/useCopyToClipboard";
+import { useScrapping } from "@/Composables/utils/useScrapping";
+import { getEntityRouteConfig, resolveEntityRouteUrl } from "@/Composables/entity/entityRouteRegistry";
 
 import Btn from '@/Pages/Atoms/action/Btn.vue';
 import EntityTanStackTable from '@/Pages/Organismes/table/EntityTanStackTable.vue';
 import EntityModal from '@/Pages/Organismes/entity/EntityModal.vue';
 import CreateEntityModal from '@/Pages/Organismes/entity/CreateEntityModal.vue';
 import EntityQuickEditPanel from '@/Pages/Organismes/entity/EntityQuickEditPanel.vue';
-import { createMonstersTanStackTableConfig } from './monsters-tanstack-table-config';
+import EntityQuickEditModal from '@/Pages/Organismes/entity/EntityQuickEditModal.vue';
+import { createMonsterTableConfig } from "@/Entities/monster/MonsterTableConfig";
 import { adaptMonsterEntitiesTableResponse } from "@/Entities/monster/monster-adapter";
 import { getMonsterFieldDescriptors } from "@/Entities/monster/monster-descriptors";
 import { createFieldsConfigFromDescriptors, createDefaultEntityFromDescriptors } from "@/Utils/entity/descriptor-form";
@@ -32,6 +36,14 @@ const props = defineProps({
     filters: {
         type: Object,
         default: () => ({})
+    },
+    creatures: {
+        type: Array,
+        default: () => []
+    },
+    monsterRaces: {
+        type: Array,
+        default: () => []
     }
 });
 
@@ -45,17 +57,32 @@ const canModify = computed(() => canUpdateAny('monsters'));
 
 // Bulk request
 const { bulkPatchJson } = useBulkRequest();
+const { copyToClipboard } = useCopyToClipboard();
+const { refreshEntity } = useScrapping();
 
 // État
 const selectedEntity = ref(null);
 const modalOpen = ref(false);
 const modalView = ref('large');
 const createModalOpen = ref(false);
+const quickEditModalOpen = ref(false);
+const quickEditEntity = ref(null);
 const selectedIds = ref([]);
 const tableRows = ref([]);
 const refreshToken = ref(0);
 
-const tableConfig = computed(() => createMonstersTanStackTableConfig());
+// Configuration du tableau avec permissions et contexte
+const tableConfig = computed(() => {
+    const ctx = {
+        capabilities: { 
+            updateAny: canModify.value,
+            createAny: canCreate.value,
+        },
+        creatures: props.creatures || [],
+        monsterRaces: props.monsterRaces || [],
+    };
+    return createMonsterTableConfig(ctx);
+});
 const serverUrl = computed(() => `${route('api.tables.monsters')}?format=entities&limit=5000&_t=${refreshToken.value}`);
 
 // Sécurité UX: si l'utilisateur perd le droit de modifier, on coupe les modes d'édition.
@@ -127,6 +154,109 @@ const closeModal = () => {
     modalOpen.value = false;
     selectedEntity.value = null;
 };
+
+// Handler pour les actions du tableau
+const handleTableAction = async (actionKey, entity, row) => {
+    const targetEntity = entity || row?.rowParams?.entity;
+    if (!targetEntity) return;
+    
+    // Si c'est déjà une instance Monster, l'utiliser directement
+    const model = targetEntity instanceof Monster ? targetEntity : Monster.fromArray([targetEntity])[0] || null;
+    if (!model) return;
+    
+    const entityId = model.id;
+    if (!entityId) return;
+
+    switch (actionKey) {
+        case 'view':
+            router.visit(route('entities.monsters.show', { monster: entityId }));
+            break;
+
+        case 'quick-view':
+            selectedEntity.value = model;
+            modalView.value = 'large';
+            modalOpen.value = true;
+            break;
+
+        case 'edit':
+            router.visit(route('entities.monsters.edit', { monster: entityId }));
+            break;
+
+        case 'quick-edit':
+            quickEditEntity.value = model;
+            quickEditModalOpen.value = true;
+            break;
+
+        case 'copy-link': {
+            const cfg = getEntityRouteConfig('monster');
+            const url = resolveEntityRouteUrl('monster', 'show', entityId, cfg);
+            if (url) {
+                await copyToClipboard(url, "Lien de l'entité copié !");
+            }
+            break;
+        }
+
+        case 'download-pdf':
+            // TODO: Implémenter le téléchargement PDF
+            break;
+
+        case 'refresh':
+            await refreshEntity('monster', entityId, { forceUpdate: true });
+            refreshToken.value++;
+            break;
+
+        case 'delete':
+            // TODO: Implémenter la suppression avec confirmation
+            break;
+    }
+};
+
+// Handlers pour les actions du modal
+const handleModalQuickEdit = (entity) => {
+    quickEditEntity.value = entity;
+    quickEditModalOpen.value = true;
+    closeModal();
+};
+
+const handleModalExpand = (entity) => {
+    const entityId = entity?.id;
+    if (!entityId) return;
+    router.visit(route('entities.monsters.show', { monster: entityId }));
+    closeModal();
+};
+
+const handleModalCopyLink = async (entity) => {
+    const entityId = entity?.id;
+    if (!entityId) return;
+    const cfg = getEntityRouteConfig('monster');
+    const url = resolveEntityRouteUrl('monster', 'show', entityId, cfg);
+    if (url) {
+        await copyToClipboard(url, "Lien de l'entité copié !");
+    }
+};
+
+const handleModalDownloadPdf = (entity) => {
+    // TODO: Implémenter le téléchargement PDF
+    console.log('Download PDF:', entity);
+};
+
+const handleModalRefresh = async (entity) => {
+    const entityId = entity?.id;
+    if (!entityId) return;
+    await refreshEntity('monster', entityId, { forceUpdate: true });
+    refreshToken.value++;
+    closeModal();
+};
+
+const handleModalDelete = (entity) => {
+    // TODO: Implémenter la suppression avec confirmation
+    console.log('Delete:', entity);
+};
+
+const handleQuickEditSubmit = () => {
+    refreshToken.value++;
+    quickEditEntity.value = null;
+};
 </script>
 
 <template>
@@ -159,6 +289,7 @@ const closeModal = () => {
                     v-model:selected-ids="selectedIds"
                     @loaded="handleTableLoaded"
                     @row-dblclick="handleRowDoubleClick"
+                    @action="handleTableAction"
                 />
             </div>
 
@@ -194,6 +325,23 @@ const closeModal = () => {
             :view="modalView"
             :open="modalOpen"
             @close="closeModal"
+            @quick-edit="handleModalQuickEdit"
+            @expand="handleModalExpand"
+            @copy-link="handleModalCopyLink"
+            @download-pdf="handleModalDownloadPdf"
+            @refresh="handleModalRefresh"
+            @delete="handleModalDelete"
+        />
+
+        <!-- Modal d'édition rapide -->
+        <EntityQuickEditModal
+            v-if="quickEditEntity"
+            :entity="quickEditEntity"
+            entity-type="monster"
+            :fields-config="fieldsConfig"
+            :open="quickEditModalOpen"
+            @close="quickEditModalOpen = false"
+            @submit="handleQuickEditSubmit"
         />
     </div>
 </template>

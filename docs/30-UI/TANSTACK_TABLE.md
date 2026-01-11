@@ -246,4 +246,22 @@ Le skeleton peut être configuré via `config.ui` :
 - **Server opt‑in** : `serverUrl` (Option A) + adapter.
 - **Persistance** : colonnes visibles, perPage, préférences (si activé).
 
+## Optimisations UI (2026-01-06)
+
+### Checkboxes
+
+Les checkboxes de sélection sont optimisées pour une meilleure UX :
+- **Taille réduite** : `size="xs"` et `w-8` (au lieu de `sm` et `w-12`)
+- **Affichage intelligent** : Les checkboxes apparaissent sur **toutes les lignes** dès qu'au moins une ligne est sélectionnée (mode `auto`)
+- **Cohérence visuelle** : Pas de décalage des colonnes, toutes les lignes ont la même structure
+
+### Layout full-width
+
+Les tableaux utilisent maintenant toute la largeur disponible :
+- **Retrait de `max-w-4xl`** : Le layout principal ne limite plus la largeur
+- **Scroll horizontal** : `overflow-x-auto` sur les conteneurs de tableaux pour gérer les tableaux larges
+- **Responsive** : Le tableau ne passe jamais sous le menu de gauche grâce au système de positionnement existant
+
+Voir `docs/100- Done/OPTIMISATIONS_UI_2026_01.md` pour plus de détails.
+
 

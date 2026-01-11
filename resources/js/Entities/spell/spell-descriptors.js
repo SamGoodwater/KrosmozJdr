@@ -1,111 +1,104 @@
 /**
- * Spell field descriptors (Option B)
+ * Spell field descriptors — Version simplifiée
  *
  * @description
  * Source de vérité côté frontend pour :
- * - l'affichage (cellules table + vues)
- * - l'édition (forms / bulk)
+ * - Configuration tableau (affichage des cellules selon la taille xs-xl)
+ * - Configuration formulaires (édition simple et bulk)
  *
+ * ⚠️ Les vues (Large, Compact, Minimal, Text) sont maintenant des composants Vue manuels.
  * ⚠️ Sécurité : ces descriptors ne sont que de l'UX. Le backend reste la vérité (Policies + filtrage des champs).
+ *
+ * @example
+ * import { getSpellFieldDescriptors } from "@/Entities/spell/spell-descriptors";
+ * const descriptors = getSpellFieldDescriptors({ meta });
  */
 
 /**
  * @typedef {Object} SpellFieldDescriptor
- * @property {string} key
- * @property {string} label
- * @property {string} [description]
- * @property {string} [tooltip]
- * @property {string|null} [icon]
- * @property {string|null|"auto"} [color]
- * @property {"text"|"number"|"bool"|"date"|"image"|"link"|"enum"} [format]
- * @property {(ctx: any) => boolean} [visibleIf]
- * @property {(ctx: any) => boolean} [editableIf]
- * @property {Object} [display]
- * @property {Record<"table"|"text"|"compact"|"minimal"|"extended", { size: "small"|"normal"|"large", mode?: string }>} [display.views]
- * @property {Record<"small"|"normal"|"large", any>} [display.sizes]
+ * @property {string} key - Clé unique du champ
+ * @property {string} label - Libellé affiché
+ * @property {string} [icon] - Icône FontAwesome
+ * @property {(ctx: any) => boolean} [visibleIf] - Fonction conditionnelle pour la visibilité
+ * @property {(ctx: any) => boolean} [editableIf] - Fonction conditionnelle pour l'édition
+ * @property {Object} [display] - Configuration de l'affichage dans les tableaux
+ * @property {Record<"xs"|"sm"|"md"|"lg"|"xl", {mode?: string, truncate?: number}>} [display.sizes] - Configuration par taille d'écran
+ * @property {Object} [edit] - Configuration de l'édition
+ * @property {Object} [edit.form] - Configuration du formulaire d'édition
+ * @property {"text"|"textarea"|"select"|"checkbox"|"number"|"date"|"file"} [edit.form.type] - Type de champ
+ * @property {string} [edit.form.label] - Libellé spécifique pour le formulaire
+ * @property {string} [edit.form.group] - Groupe de champs
+ * @property {string} [edit.form.help] - Texte d'aide
+ * @property {boolean} [edit.form.required] - Champ obligatoire
+ * @property {any} [edit.form.defaultValue] - Valeur par défaut
+ * @property {Array<{value: any, label: string}>|Function} [edit.form.options] - Options pour les selects
+ * @property {Object} [edit.form.bulk] - Configuration pour l'édition en masse
+ * @property {boolean} [edit.form.bulk.enabled] - Activer l'édition en masse
+ * @property {boolean} [edit.form.bulk.nullable] - Permettre null/vide en bulk
+ * @property {Function} [edit.form.bulk.build] - Fonction de transformation avant envoi
  */
 
-export const DEFAULT_SPELL_FIELD_VIEWS = Object.freeze({
-  table: { size: "small" },
-  text: { size: "normal" },
-  compact: { size: "small" },
-  minimal: { size: "small" },
-  extended: { size: "large" },
-});
-
 /**
- * Ordre d'affichage "Spell" par vue.
+ * Champs affichés dans le panneau d'édition rapide (sélection multiple).
+ * ⚠️ IMPORTANT : Doit rester aligné avec le backend (bulk controller).
  */
-export const SPELL_VIEW_FIELDS = Object.freeze({
-  quickEdit: [
-    "level",
-    "pa",
-    "po",
-    "area",
-    "usable",
-    "auto_update",
-    "is_visible",
-    "description",
-    "image",
-  ],
-  compact: [
-    "level",
-    "pa",
-    "po",
-    "area",
-    "spell_types",
-    "usable",
-    "is_visible",
-    "auto_update",
-    "dofusdb_id",
-  ],
-  extended: [
-    "level",
-    "pa",
-    "po",
-    "area",
-    "spell_types",
-    "usable",
-    "is_visible",
-    "auto_update",
-    "dofusdb_id",
-    "created_by",
-    "created_at",
-    "updated_at",
-  ],
-});
+export const SPELL_QUICK_EDIT_FIELDS = Object.freeze([
+  "level",
+  "pa",
+  "po",
+  "area",
+  "usable",
+  "auto_update",
+  "is_visible",
+  "description",
+  "image",
+]);
 
 /**
- * Descriptors "Spell".
- *
- * @param {Object} ctx
- * @returns {Record<string, SpellFieldDescriptor>}
+ * Retourne les descripteurs de tous les champs de l'entité "Spell".
+ * 
+ * @param {Object} ctx - Contexte d'exécution
+ * @param {Object} [ctx.capabilities] - Permissions disponibles (ou ctx.meta.capabilities)
+ * @param {Array} [ctx.spellTypes] - Liste des types de sorts (ou ctx.meta.spellTypes)
+ * @returns {Record<string, SpellFieldDescriptor>} Objet avec tous les descripteurs
  */
 export function getSpellFieldDescriptors(ctx = {}) {
   const can = ctx?.capabilities || ctx?.meta?.capabilities || null;
   const canUpdateAny = Boolean(can?.updateAny);
   const canCreateAny = Boolean(can?.createAny);
+  
+  const spellTypes = Array.isArray(ctx?.spellTypes) 
+    ? ctx.spellTypes 
+    : (Array.isArray(ctx?.meta?.spellTypes) ? ctx.meta.spellTypes : []);
 
   return {
     id: {
       key: "id",
       label: "ID",
       icon: "fa-solid fa-hashtag",
-      format: "number",
       visibleIf: () => canCreateAny,
       display: {
-        views: DEFAULT_SPELL_FIELD_VIEWS,
-        sizes: { small: { mode: "text" }, normal: { mode: "text" }, large: { mode: "text" } },
+        sizes: {
+          xs: { mode: "text" },
+          sm: { mode: "text" },
+          md: { mode: "text" },
+          lg: { mode: "text" },
+          xl: { mode: "text" },
+        },
       },
     },
     name: {
       key: "name",
       label: "Nom",
       icon: "fa-solid fa-font",
-      format: "text",
       display: {
-        views: { ...DEFAULT_SPELL_FIELD_VIEWS, table: { size: "small", mode: "route" } },
-        sizes: { small: { mode: "route" }, normal: { mode: "route" }, large: { mode: "route" } },
+        sizes: {
+          xs: { mode: "route", truncate: 15 },
+          sm: { mode: "route", truncate: 20 },
+          md: { mode: "route", truncate: 30 },
+          lg: { mode: "route", truncate: 40 },
+          xl: { mode: "route" },
+        },
       },
       edit: {
         form: {
@@ -120,10 +113,14 @@ export function getSpellFieldDescriptors(ctx = {}) {
       key: "description",
       label: "Description",
       icon: "fa-solid fa-align-left",
-      format: "text",
       display: {
-        views: DEFAULT_SPELL_FIELD_VIEWS,
-        sizes: { small: { mode: "text" }, normal: { mode: "text" }, large: { mode: "text" } },
+        sizes: {
+          xs: { mode: "text", truncate: 20 },
+          sm: { mode: "text", truncate: 30 },
+          md: { mode: "text", truncate: 50 },
+          lg: { mode: "text" },
+          xl: { mode: "text" },
+        },
       },
       edit: {
         form: {
@@ -139,10 +136,14 @@ export function getSpellFieldDescriptors(ctx = {}) {
       key: "level",
       label: "Niveau",
       icon: "fa-solid fa-level-up-alt",
-      format: "number",
       display: {
-        views: DEFAULT_SPELL_FIELD_VIEWS,
-        sizes: { small: { mode: "text" }, normal: { mode: "text" }, large: { mode: "text" } },
+        sizes: {
+          xs: { mode: "text" },
+          sm: { mode: "text" },
+          md: { mode: "text" },
+          lg: { mode: "text" },
+          xl: { mode: "text" },
+        },
       },
       edit: {
         form: {
@@ -159,10 +160,14 @@ export function getSpellFieldDescriptors(ctx = {}) {
       key: "pa",
       label: "PA",
       icon: "fa-solid fa-bolt",
-      format: "number",
       display: {
-        views: DEFAULT_SPELL_FIELD_VIEWS,
-        sizes: { small: { mode: "text" }, normal: { mode: "text" }, large: { mode: "text" } },
+        sizes: {
+          xs: { mode: "text" },
+          sm: { mode: "text" },
+          md: { mode: "text" },
+          lg: { mode: "text" },
+          xl: { mode: "text" },
+        },
       },
       edit: {
         form: {
@@ -179,10 +184,14 @@ export function getSpellFieldDescriptors(ctx = {}) {
       key: "po",
       label: "PO",
       icon: "fa-solid fa-crosshairs",
-      format: "number",
       display: {
-        views: DEFAULT_SPELL_FIELD_VIEWS,
-        sizes: { small: { mode: "text" }, normal: { mode: "text" }, large: { mode: "text" } },
+        sizes: {
+          xs: { mode: "text" },
+          sm: { mode: "text" },
+          md: { mode: "text" },
+          lg: { mode: "text" },
+          xl: { mode: "text" },
+        },
       },
       edit: {
         form: {
@@ -199,10 +208,14 @@ export function getSpellFieldDescriptors(ctx = {}) {
       key: "area",
       label: "Zone",
       icon: "fa-solid fa-expand",
-      format: "number",
       display: {
-        views: DEFAULT_SPELL_FIELD_VIEWS,
-        sizes: { small: { mode: "text" }, normal: { mode: "text" }, large: { mode: "text" } },
+        sizes: {
+          xs: { mode: "text" },
+          sm: { mode: "text" },
+          md: { mode: "text" },
+          lg: { mode: "text" },
+          xl: { mode: "text" },
+        },
       },
       edit: {
         form: {
@@ -214,43 +227,49 @@ export function getSpellFieldDescriptors(ctx = {}) {
         },
       },
     },
-    spell_types: {
-      key: "spell_types",
-      label: "Types",
-      icon: "fa-solid fa-tags",
-      format: "enum",
+    element: {
+      key: "element",
+      label: "Élément",
+      icon: "fa-solid fa-fire",
       display: {
-        views: DEFAULT_SPELL_FIELD_VIEWS,
-        sizes: { small: { mode: "text" }, normal: { mode: "text" }, large: { mode: "text" } },
+        sizes: {
+          xs: { mode: "badge" },
+          sm: { mode: "badge" },
+          md: { mode: "badge" },
+          lg: { mode: "badge" },
+          xl: { mode: "badge" },
+        },
       },
       edit: {
         form: {
           type: "select",
           group: "Métier",
           required: false,
-          showInCompact: false,
-          multiple: true,
-          bulk: { enabled: false },
+          showInCompact: true,
+          bulk: { enabled: true, nullable: true, build: (v) => (v === "" ? null : Number(v)) },
         },
       },
     },
-    dofusdb_id: {
-      key: "dofusdb_id",
-      label: "DofusDB",
-      icon: "fa-solid fa-link",
-      format: "link",
-      visibleIf: () => canUpdateAny,
+    category: {
+      key: "category",
+      label: "Catégorie",
+      icon: "fa-solid fa-tag",
       display: {
-        views: DEFAULT_SPELL_FIELD_VIEWS,
-        sizes: { small: { mode: "route" }, normal: { mode: "route" }, large: { mode: "route" } },
+        sizes: {
+          xs: { mode: "badge" },
+          sm: { mode: "badge" },
+          md: { mode: "badge" },
+          lg: { mode: "badge" },
+          xl: { mode: "badge" },
+        },
       },
       edit: {
         form: {
-          type: "text",
-          group: "Métadonnées",
+          type: "select",
+          group: "Métier",
           required: false,
-          showInCompact: false,
-          bulk: { enabled: true, nullable: true, build: (v) => (v === "" ? null : String(v)) },
+          showInCompact: true,
+          bulk: { enabled: true, nullable: true, build: (v) => (v === "" ? null : Number(v)) },
         },
       },
     },
@@ -258,10 +277,14 @@ export function getSpellFieldDescriptors(ctx = {}) {
       key: "usable",
       label: "Utilisable",
       icon: "fa-solid fa-check-circle",
-      format: "bool",
       display: {
-        views: DEFAULT_SPELL_FIELD_VIEWS,
-        sizes: { small: { mode: "badge" }, normal: { mode: "badge" }, large: { mode: "badge" } },
+        sizes: {
+          xs: { mode: "badge" },
+          sm: { mode: "badge" },
+          md: { mode: "badge" },
+          lg: { mode: "badge" },
+          xl: { mode: "badge" },
+        },
       },
       edit: {
         form: {
@@ -269,18 +292,48 @@ export function getSpellFieldDescriptors(ctx = {}) {
           group: "Statut",
           required: false,
           showInCompact: true,
-          bulk: { enabled: true, nullable: true, build: (v) => (v === "" || v === null ? null : Boolean(v)) },
+          defaultValue: false,
+          bulk: { enabled: true, nullable: false, build: (v) => v === "1" || v === true },
+        },
+      },
+    },
+    auto_update: {
+      key: "auto_update",
+      label: "Auto-update",
+      icon: "fa-solid fa-arrows-rotate",
+      visibleIf: () => canUpdateAny,
+      display: {
+        sizes: {
+          xs: { mode: "badge" },
+          sm: { mode: "badge" },
+          md: { mode: "badge" },
+          lg: { mode: "badge" },
+          xl: { mode: "badge" },
+        },
+      },
+      edit: {
+        form: {
+          type: "checkbox",
+          group: "Statut",
+          required: false,
+          showInCompact: true,
+          defaultValue: false,
+          bulk: { enabled: true, nullable: false, build: (v) => v === "1" || v === true },
         },
       },
     },
     is_visible: {
       key: "is_visible",
-      label: "Visible",
+      label: "Visibilité",
       icon: "fa-solid fa-eye",
-      format: "enum",
       display: {
-        views: DEFAULT_SPELL_FIELD_VIEWS,
-        sizes: { small: { mode: "badge" }, normal: { mode: "badge" }, large: { mode: "badge" } },
+        sizes: {
+          xs: { mode: "badge" },
+          sm: { mode: "badge" },
+          md: { mode: "badge" },
+          lg: { mode: "badge" },
+          xl: { mode: "badge" },
+        },
       },
       edit: {
         form: {
@@ -291,31 +344,11 @@ export function getSpellFieldDescriptors(ctx = {}) {
           options: [
             { value: "guest", label: "Invité" },
             { value: "user", label: "Utilisateur" },
-            { value: "player", label: "Joueur" },
-            { value: "game_master", label: "Maître du jeu" },
+            { value: "game_master", label: "Maître de jeu" },
             { value: "admin", label: "Administrateur" },
           ],
           defaultValue: "guest",
-          bulk: { enabled: true, nullable: true, build: (v) => (v === "" ? null : String(v)) },
-        },
-      },
-    },
-    auto_update: {
-      key: "auto_update",
-      label: "Mise à jour auto",
-      icon: "fa-solid fa-sync",
-      format: "bool",
-      display: {
-        views: DEFAULT_SPELL_FIELD_VIEWS,
-        sizes: { small: { mode: "badge" }, normal: { mode: "badge" }, large: { mode: "badge" } },
-      },
-      edit: {
-        form: {
-          type: "checkbox",
-          group: "Statut",
-          required: false,
-          showInCompact: true,
-          bulk: { enabled: true, nullable: true, build: (v) => (v === "" || v === null ? null : Boolean(v)) },
+          bulk: { enabled: true, nullable: false, build: (v) => v },
         },
       },
     },
@@ -323,19 +356,63 @@ export function getSpellFieldDescriptors(ctx = {}) {
       key: "image",
       label: "Image",
       icon: "fa-solid fa-image",
-      color: "auto",
-      format: "image",
       display: {
-        views: DEFAULT_SPELL_FIELD_VIEWS,
-        sizes: { small: { mode: "thumb" }, normal: { mode: "thumb" }, large: { mode: "thumb" } },
+        sizes: {
+          xs: { mode: "thumb" },
+          sm: { mode: "thumb" },
+          md: { mode: "thumb" },
+          lg: { mode: "thumb" },
+          xl: { mode: "thumb" },
+        },
       },
       edit: {
         form: {
-          type: "file",
+          type: "text",
+          label: "Image (URL)",
           group: "Image",
           required: false,
           showInCompact: false,
+          bulk: { enabled: true, nullable: true, build: (v) => (v === "" ? null : String(v)) },
+        },
+      },
+    },
+    spell_types: {
+      key: "spell_types",
+      label: "Types",
+      icon: "fa-solid fa-tags",
+      display: {
+        sizes: {
+          xs: { mode: "text", truncate: 10 },
+          sm: { mode: "text", truncate: 15 },
+          md: { mode: "text", truncate: 20 },
+          lg: { mode: "text" },
+          xl: { mode: "text" },
+        },
+      },
+      edit: {
+        form: {
+          type: "select",
+          group: "Métier",
+          required: false,
+          showInCompact: false,
+          multiple: true,
+          options: () => [{ value: "", label: "—" }, ...spellTypes.map((t) => ({ value: t.id, label: t.name }))],
           bulk: { enabled: false },
+        },
+      },
+    },
+    dofusdb_id: {
+      key: "dofusdb_id",
+      label: "DofusDB",
+      icon: "fa-solid fa-up-right-from-square",
+      visibleIf: () => canUpdateAny,
+      display: {
+        sizes: {
+          xs: { mode: "route" },
+          sm: { mode: "route" },
+          md: { mode: "route" },
+          lg: { mode: "route" },
+          xl: { mode: "route" },
         },
       },
     },
@@ -343,35 +420,46 @@ export function getSpellFieldDescriptors(ctx = {}) {
       key: "created_by",
       label: "Créé par",
       icon: "fa-solid fa-user",
-      format: "text",
       visibleIf: () => canCreateAny,
       display: {
-        views: DEFAULT_SPELL_FIELD_VIEWS,
-        sizes: { small: { mode: "text" }, normal: { mode: "text" }, large: { mode: "text" } },
+        sizes: {
+          xs: { mode: "text", truncate: 10 },
+          sm: { mode: "text", truncate: 15 },
+          md: { mode: "text", truncate: 20 },
+          lg: { mode: "text" },
+          xl: { mode: "text" },
+        },
       },
     },
     created_at: {
       key: "created_at",
       label: "Créé le",
       icon: "fa-solid fa-calendar-plus",
-      format: "date",
       visibleIf: () => canCreateAny,
       display: {
-        views: DEFAULT_SPELL_FIELD_VIEWS,
-        sizes: { small: { mode: "text" }, normal: { mode: "text" }, large: { mode: "text" } },
+        sizes: {
+          xs: { mode: "text" },
+          sm: { mode: "text" },
+          md: { mode: "text" },
+          lg: { mode: "text" },
+          xl: { mode: "text" },
+        },
       },
     },
     updated_at: {
       key: "updated_at",
       label: "Modifié le",
-      icon: "fa-solid fa-calendar-edit",
-      format: "date",
+      icon: "fa-solid fa-calendar-check",
       visibleIf: () => canCreateAny,
       display: {
-        views: DEFAULT_SPELL_FIELD_VIEWS,
-        sizes: { small: { mode: "text" }, normal: { mode: "text" }, large: { mode: "text" } },
+        sizes: {
+          xs: { mode: "text" },
+          sm: { mode: "text" },
+          md: { mode: "text" },
+          lg: { mode: "text" },
+          xl: { mode: "text" },
+        },
       },
     },
   };
 }
-
