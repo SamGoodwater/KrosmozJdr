@@ -8,11 +8,11 @@
  * - Les options des selects sont cohérentes
  * - La configuration bulk est correcte
  * - Les groupes de champs sont définis
- * - viewFields.quickEdit est cohérent avec les champs bulk
+ * - QUICK_EDIT_FIELDS est cohérent avec les champs bulk
  */
 
 import { describe, it, expect } from 'vitest';
-import { getSpellFieldDescriptors, SPELL_VIEW_FIELDS } from '@/Entities/spell/spell-descriptors';
+import { getSpellFieldDescriptors, SPELL_QUICK_EDIT_FIELDS } from '@/Entities/spell/spell-descriptors';
 
 describe('spell-descriptors', () => {
     describe('Structure des descriptors', () => {
@@ -28,11 +28,14 @@ describe('spell-descriptors', () => {
             });
         });
 
-        it('tous les descriptors ont une propriété display', () => {
+        it('tous les descriptors ont une propriété display avec sizes (pour les tableaux)', () => {
             const descriptors = getSpellFieldDescriptors();
             Object.values(descriptors).forEach((desc) => {
-                expect(desc).toHaveProperty('display');
-                expect(desc.display).toHaveProperty('views');
+                if (desc.display) {
+                    // display.views est obsolète (vues manuelles maintenant)
+                    // display.sizes est utilisé pour les tableaux (xs-xl)
+                    expect(desc.display).toHaveProperty('sizes');
+                }
             });
         });
 
@@ -97,7 +100,7 @@ describe('spell-descriptors', () => {
     describe('Configuration bulk', () => {
         it('les champs bulk-enabled ont enabled: true', () => {
             const descriptors = getSpellFieldDescriptors();
-            const bulkEnabledFields = SPELL_VIEW_FIELDS.quickEdit;
+            const bulkEnabledFields = SPELL_QUICK_EDIT_FIELDS;
 
             bulkEnabledFields.forEach((fieldKey) => {
                 const desc = descriptors[fieldKey];
@@ -167,10 +170,10 @@ describe('spell-descriptors', () => {
         });
     });
 
-    describe('viewFields.quickEdit', () => {
+    describe('QUICK_EDIT_FIELDS', () => {
         it('quickEdit contient uniquement des champs existants', () => {
             const descriptors = getSpellFieldDescriptors();
-            const quickEditFields = SPELL_VIEW_FIELDS.quickEdit;
+            const quickEditFields = SPELL_QUICK_EDIT_FIELDS;
 
             quickEditFields.forEach((fieldKey) => {
                 expect(descriptors).toHaveProperty(fieldKey);
@@ -179,7 +182,7 @@ describe('spell-descriptors', () => {
 
         it('les champs quickEdit sont bulk-enabled', () => {
             const descriptors = getSpellFieldDescriptors();
-            const quickEditFields = SPELL_VIEW_FIELDS.quickEdit;
+            const quickEditFields = SPELL_QUICK_EDIT_FIELDS;
 
             quickEditFields.forEach((fieldKey) => {
                 const desc = descriptors[fieldKey];
@@ -191,7 +194,7 @@ describe('spell-descriptors', () => {
 
         it('quickEdit ne contient pas de champs sans edit.form', () => {
             const descriptors = getSpellFieldDescriptors();
-            const quickEditFields = SPELL_VIEW_FIELDS.quickEdit;
+            const quickEditFields = SPELL_QUICK_EDIT_FIELDS;
 
             quickEditFields.forEach((fieldKey) => {
                 const desc = descriptors[fieldKey];

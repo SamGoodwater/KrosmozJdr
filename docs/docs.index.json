@@ -270,9 +270,59 @@
     "description": "Le système de validation a été entièrement refactorisé pour répondre aux besoins de simplicité et de transparence. L'objectif était de créer une API qui évite les conflits avec les vues tout en restant puissante et flexible."
   },
   {
-    "path": "110- To Do/To Do2.md",
-    "title": "Template",
-    "description": "````col"
+    "path": "110- To Do/ARCHITECTURE_ENTITIES_ATOMIC_DESIGN.md",
+    "title": "Architecture des entités — Atomic Design",
+    "description": "**Date de création** : 2026-01-06"
+  },
+  {
+    "path": "110- To Do/ARCHITECTURE_ENTITY_SYSTEM.md",
+    "title": "Architecture du système d'entités — Vue d'ensemble",
+    "description": "**Date de création** : 2026-01-XX"
+  },
+  {
+    "path": "110- To Do/CLEANUP_REPORT.md",
+    "title": "Rapport de nettoyage — Migration système d'entités",
+    "description": "**Date** : 2026-01-XX"
+  },
+  {
+    "path": "110- To Do/CLEANUP_SUMMARY.md",
+    "title": "Résumé du nettoyage — Migration système d'entités",
+    "description": "**Date** : 2026-01-XX"
+  },
+  {
+    "path": "110- To Do/DESCRIPTORS_PATTERN.md",
+    "title": "Pattern Descriptors — Contrat stable entre moteur et métier",
+    "description": "**Date de création** : 2026-01-XX"
+  },
+  {
+    "path": "110- To Do/MAPPERS_PATTERN.md",
+    "title": "Pattern Mappers — Transformation backend → frontend",
+    "description": "**Date de création** : 2026-01-XX"
+  },
+  {
+    "path": "110- To Do/New Système d'Entity.md",
+    "title": "Système d'entités — Spécifications détaillées",
+    "description": "> **Voir [ARCHITECTURE_ENTITY_SYSTEM.md](./ARCHITECTURE_ENTITY_SYSTEM.md) pour la vue d'ensemble de l'architecture en 4 couches.**"
+  },
+  {
+    "path": "110- To Do/PLAN_REFACTORING_ENTITIES.md",
+    "title": "Plan de refactoring — Système d'entités",
+    "description": "**Date de création** : 2026-01-06"
+  },
+  {
+    "path": "110- To Do/REFACTORING_DESCRIPTORS_CHECKLIST.md",
+    "title": "Checklist de refactoring des descriptors",
+    "description": "**Date de création** : 2026-01-XX"
+  },
+  {
+    "path": "110- To Do/VERIFICATION_ENTITIES_SYSTEM.md",
+    "title": "Vérification complète — Système d'entités",
+    "description": "**Date** : 2026-01-XX"
+  },
+  {
+    "path": "110- To Do/VERIFICATION_RESOURCE_REFACTORING.md",
+    "title": "Rapport de vérification — Refactoring Resource",
+    "description": "**Date** : 2026-01-XX"
   },
   {
     "path": "20-Content/21-Entities/ENTITIES_OVERVIEW.md",
@@ -495,8 +545,13 @@
     "description": "```javascript"
   },
   {
-    "path": "30-UI/DESCRIPTOR_HELPERS_GUIDE.md",
-    "title": "Guide des Descriptor Helpers",
+    "path": "30-UI/DESCRIPTOR_REFACTORING_NEEDS.md",
+    "title": "Analyse des Besoins Réels — Refactorisation Descriptors",
+    "description": "**Date de création** : 2026-01-06"
+  },
+  {
+    "path": "30-UI/DESCRIPTOR_REFACTORING_PLAN.md",
+    "title": "Plan de Refactorisation Complète des Descriptors",
     "description": "**Date de création** : 2026-01-06"
   },
   {
@@ -522,11 +577,6 @@
   {
     "path": "30-UI/ENTITY_FIELD_DESCRIPTORS_GUIDE.md",
     "title": "Guide complet — Entity Field Descriptors",
-    "description": "**Date de création** : 2026-01-06"
-  },
-  {
-    "path": "30-UI/FIELD_DESCRIPTOR_CLASS_GUIDE.md",
-    "title": "Guide de la classe FieldDescriptor",
     "description": "**Date de création** : 2026-01-06"
   },
   {

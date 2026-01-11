@@ -1,108 +1,21 @@
 /**
- * Tests unitaires pour consumable-adapter
+ * Tests unitaires pour consumable-adapter (version simplifiée)
  *
  * @description
  * Vérifie que :
- * - buildConsumableCell génère correctement les cellules
  * - adaptConsumableEntitiesTableResponse transforme correctement les données
- * - Les valeurs nulles sont gérées
- * - Les relations sont gérées
+ * - Les entités brutes sont converties en instances de Consumable
+ * - Les cellules ne sont plus pré-générées (elles sont vides)
+ * - L'instance Consumable est passée dans rowParams.entity pour génération à la volée
  */
 
-import { describe, it, expect, vi } from 'vitest';
-import { buildConsumableCell, adaptConsumableEntitiesTableResponse } from '@/Entities/consumable/consumable-adapter';
+import { describe, it, expect } from 'vitest';
+import { adaptConsumableEntitiesTableResponse } from '@/Entities/consumable/consumable-adapter';
+import { Consumable } from '@/Models/Entity/Consumable';
 
-// Mock de route() pour les tests
-vi.mock('@inertiajs/vue3', () => ({
-    route: (name, params) => {
-        if (name === 'entities.consumables.show') {
-            return `/consumables/${params?.consumable || params || ''}`;
-        }
-        return `#${name}`;
-    },
-}));
-
-describe('consumable-adapter', () => {
-    describe('buildConsumableCell', () => {
-        it('génère une cellule route pour name', () => {
-            const entity = { id: 1, name: 'Test Consumable' };
-            const cell = buildConsumableCell('name', entity, {}, { context: 'table' });
-
-            expect(cell.type).toBe('route');
-            expect(cell.value).toBe('Test Consumable');
-            expect(cell.params.href).toContain('/consumables/1');
-            expect(cell.params.searchValue).toBe('Test Consumable');
-            expect(cell.params.sortValue).toBe('Test Consumable');
-        });
-
-        it('génère une cellule badge pour rarity', () => {
-            const entity = { id: 1, rarity: 3 };
-            const cell = buildConsumableCell('rarity', entity, {}, { context: 'table' });
-
-            expect(cell.type).toBe('badge');
-            expect(cell.value).toBe('Très rare');
-            expect(cell.params.color).toBe('warning');
-        });
-
-        it('génère une cellule badge pour usable', () => {
-            const entity = { id: 1, usable: 1 };
-            const cell = buildConsumableCell('usable', entity, {}, { context: 'table' });
-
-            expect(cell.type).toBe('badge');
-            expect(cell.value).toBe('Oui');
-            expect(cell.params.color).toBe('success');
-        });
-
-        it('génère une cellule badge pour is_visible', () => {
-            const entity = { id: 1, is_visible: 'admin' };
-            const cell = buildConsumableCell('is_visible', entity, {}, { context: 'table' });
-
-            expect(cell.type).toBe('badge');
-            expect(cell.value).toBe('Administrateur');
-            expect(cell.params.color).toBe('error');
-        });
-
-        it('génère une cellule text pour consumable_type', () => {
-            const entity = {
-                id: 1,
-                consumableType: { id: 1, name: 'Potion', slug: 'potion' },
-            };
-            const cell = buildConsumableCell('consumable_type', entity, {}, { context: 'table' });
-
-            expect(cell.type).toBe('text');
-            expect(cell.value).toBe('Potion');
-        });
-
-        it('génère "-" pour consumable_type null', () => {
-            const entity = { id: 1, consumableType: null };
-            const cell = buildConsumableCell('consumable_type', entity, {}, { context: 'table' });
-
-            expect(cell.type).toBe('text');
-            expect(cell.value).toBe('-');
-        });
-
-        it('génère une cellule text pour created_by', () => {
-            const entity = {
-                id: 1,
-                createdBy: { id: 1, name: 'John Doe', email: 'john@example.com' },
-            };
-            const cell = buildConsumableCell('created_by', entity, {}, { context: 'table' });
-
-            expect(cell.type).toBe('text');
-            expect(cell.value).toBe('John Doe');
-        });
-
-        it('génère "-" pour created_by null', () => {
-            const entity = { id: 1, createdBy: null };
-            const cell = buildConsumableCell('created_by', entity, {}, { context: 'table' });
-
-            expect(cell.type).toBe('text');
-            expect(cell.value).toBe('-');
-        });
-    });
-
+describe('consumable-adapter (version simplifiée)', () => {
     describe('adaptConsumableEntitiesTableResponse', () => {
-        it('transforme entities en TableResponse', () => {
+        it('transforme entities en TableResponse avec instances Consumable', () => {
             const response = {
                 meta: {
                     entityType: 'consumables',
@@ -110,8 +23,8 @@ describe('consumable-adapter', () => {
                     capabilities: { viewAny: true, updateAny: true },
                 },
                 entities: [
-                    { id: 1, name: 'Consumable 1' },
-                    { id: 2, name: 'Consumable 2' },
+                    { id: 1, name: 'Consumable 1', level: '10', rarity: 1 },
+                    { id: 2, name: 'Consumable 2', level: '20', rarity: 2 },
                 ],
             };
 
@@ -120,9 +33,14 @@ describe('consumable-adapter', () => {
             expect(result.meta.entityType).toBe('consumables');
             expect(result.rows).toHaveLength(2);
             expect(result.rows[0].id).toBe(1);
-            expect(result.rows[0].cells.name.type).toBe('route');
-            expect(result.rows[0].cells.name.value).toBe('Consumable 1');
-            expect(result.rows[0].rowParams.entity).toBeDefined();
+            
+            // Les cellules ne sont plus pré-générées
+            expect(result.rows[0].cells).toEqual({});
+            
+            // L'instance Consumable est passée dans rowParams.entity
+            expect(result.rows[0].rowParams.entity).toBeInstanceOf(Consumable);
+            expect(result.rows[0].rowParams.entity.id).toBe(1);
+            expect(result.rows[0].rowParams.entity.name).toBe('Consumable 1');
         });
 
         it('gère un tableau vide', () => {
@@ -148,8 +66,8 @@ describe('consumable-adapter', () => {
             expect(result.rows).toHaveLength(0);
         });
 
-        it('préserve les rowParams.entity', () => {
-            const entity = { id: 1, name: 'Test', customField: 'custom' };
+        it('préserve toutes les propriétés de l\'entité dans l\'instance Consumable', () => {
+            const entity = { id: 1, name: 'Test', level: '15', rarity: 3, customField: 'custom' };
             const response = {
                 meta: { entityType: 'consumables', query: {}, capabilities: {} },
                 entities: [entity],
@@ -157,9 +75,32 @@ describe('consumable-adapter', () => {
 
             const result = adaptConsumableEntitiesTableResponse(response);
 
-            expect(result.rows[0].rowParams.entity).toEqual(entity);
-            expect(result.rows[0].rowParams.entity.customField).toBe('custom');
+            const consumable = result.rows[0].rowParams.entity;
+            expect(consumable).toBeInstanceOf(Consumable);
+            expect(consumable.id).toBe(1);
+            expect(consumable.name).toBe('Test');
+            expect(consumable.level).toBe(15);
+            expect(consumable.rarity).toBe(3);
+            // Les champs personnalisés sont préservés dans _data
+            expect(consumable._data?.customField).toBe('custom');
+        });
+
+        it('gère les valeurs nulles correctement', () => {
+            const response = {
+                meta: { entityType: 'consumables', query: {}, capabilities: {} },
+                entities: [
+                    { id: 1, name: 'Test', level: null, rarity: null },
+                ],
+            };
+
+            const result = adaptConsumableEntitiesTableResponse(response);
+
+            const consumable = result.rows[0].rowParams.entity;
+            expect(consumable).toBeInstanceOf(Consumable);
+            expect(consumable.id).toBe(1);
+            expect(consumable.name).toBe('Test');
+            expect(consumable.level).toBeNull();
+            expect(consumable.rarity).toBeNull();
         });
     });
 });
-

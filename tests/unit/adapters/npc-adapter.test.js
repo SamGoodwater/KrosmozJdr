@@ -1,106 +1,21 @@
 /**
- * Tests unitaires pour npc-adapter
+ * Tests unitaires pour npc-adapter (version simplifiée)
  *
  * @description
  * Vérifie que :
- * - buildNpcCell génère correctement les cellules
  * - adaptNpcEntitiesTableResponse transforme correctement les données
- * - Les valeurs nulles sont gérées
- * - Les relations sont gérées
+ * - Les entités brutes sont converties en instances de Npc
+ * - Les cellules ne sont plus pré-générées (elles sont vides)
+ * - L'instance Npc est passée dans rowParams.entity pour génération à la volée
  */
 
-import { describe, it, expect, vi } from 'vitest';
-import { buildNpcCell, adaptNpcEntitiesTableResponse } from '@/Entities/npc/npc-adapter';
+import { describe, it, expect } from 'vitest';
+import { adaptNpcEntitiesTableResponse } from '@/Entities/npc/npc-adapter';
+import { Npc } from '@/Models/Entity/Npc';
 
-// Mock de route() pour les tests
-vi.mock('@inertiajs/vue3', () => ({
-    route: (name, params) => {
-        if (name === 'entities.npcs.show') {
-            return `/npcs/${params?.npc || params || ''}`;
-        }
-        return `#${name}`;
-    },
-}));
-
-describe('npc-adapter', () => {
-    describe('buildNpcCell', () => {
-        it('génère une cellule route pour creature_name', () => {
-            const entity = {
-                id: 1,
-                creature: { id: 1, name: 'Test NPC' },
-            };
-            const cell = buildNpcCell('creature_name', entity, {}, { context: 'table' });
-
-            expect(cell.type).toBe('route');
-            expect(cell.value).toBe('Test NPC');
-            expect(cell.params.href).toContain('/npcs/1');
-        });
-
-        it('génère "-" pour creature_name si creature est null', () => {
-            const entity = { id: 1, creature: null };
-            const cell = buildNpcCell('creature_name', entity, {}, { context: 'table' });
-
-            expect(cell.type).toBe('text');
-            expect(cell.value).toBe('-');
-        });
-
-        it('génère une cellule text pour age', () => {
-            const entity = { id: 1, age: '25 ans' };
-            const cell = buildNpcCell('age', entity, {}, { context: 'table' });
-
-            expect(cell.type).toBe('text');
-            expect(cell.value).toBe('25 ans');
-        });
-
-        it('génère une cellule text pour size', () => {
-            const entity = { id: 1, size: '1m75' };
-            const cell = buildNpcCell('size', entity, {}, { context: 'table' });
-
-            expect(cell.type).toBe('text');
-            expect(cell.value).toBe('1m75');
-        });
-
-        it('génère une cellule text pour classe', () => {
-            const entity = {
-                id: 1,
-                classe: { id: 1, name: 'Iop' },
-            };
-            const cell = buildNpcCell('classe', entity, {}, { context: 'table' });
-
-            expect(cell.type).toBe('text');
-            expect(cell.value).toBe('Iop');
-        });
-
-        it('génère "-" pour classe null', () => {
-            const entity = { id: 1, classe: null };
-            const cell = buildNpcCell('classe', entity, {}, { context: 'table' });
-
-            expect(cell.type).toBe('text');
-            expect(cell.value).toBe('-');
-        });
-
-        it('génère une cellule text pour specialization', () => {
-            const entity = {
-                id: 1,
-                specialization: { id: 1, name: 'Guerrier' },
-            };
-            const cell = buildNpcCell('specialization', entity, {}, { context: 'table' });
-
-            expect(cell.type).toBe('text');
-            expect(cell.value).toBe('Guerrier');
-        });
-
-        it('génère "-" pour specialization null', () => {
-            const entity = { id: 1, specialization: null };
-            const cell = buildNpcCell('specialization', entity, {}, { context: 'table' });
-
-            expect(cell.type).toBe('text');
-            expect(cell.value).toBe('-');
-        });
-    });
-
+describe('npc-adapter (version simplifiée)', () => {
     describe('adaptNpcEntitiesTableResponse', () => {
-        it('transforme entities en TableResponse', () => {
+        it('transforme entities en TableResponse avec instances Npc', () => {
             const response = {
                 meta: {
                     entityType: 'npcs',
@@ -108,8 +23,8 @@ describe('npc-adapter', () => {
                     capabilities: { viewAny: true, updateAny: true },
                 },
                 entities: [
-                    { id: 1, age: '25', size: 'Moyen' },
-                    { id: 2, age: '30', size: 'Grand' },
+                    { id: 1, name: 'NPC 1' },
+                    { id: 2, name: 'NPC 2' },
                 ],
             };
 
@@ -118,7 +33,13 @@ describe('npc-adapter', () => {
             expect(result.meta.entityType).toBe('npcs');
             expect(result.rows).toHaveLength(2);
             expect(result.rows[0].id).toBe(1);
-            expect(result.rows[0].rowParams.entity).toBeDefined();
+            
+            // Les cellules ne sont plus pré-générées
+            expect(result.rows[0].cells).toEqual({});
+            
+            // L'instance Npc est passée dans rowParams.entity
+            expect(result.rows[0].rowParams.entity).toBeInstanceOf(Npc);
+            expect(result.rows[0].rowParams.entity.id).toBe(1);
         });
 
         it('gère un tableau vide', () => {
@@ -144,8 +65,8 @@ describe('npc-adapter', () => {
             expect(result.rows).toHaveLength(0);
         });
 
-        it('préserve les rowParams.entity', () => {
-            const entity = { id: 1, age: '25', customField: 'custom' };
+        it('préserve toutes les propriétés de l\'entité dans l\'instance Npc', () => {
+            const entity = { id: 1, name: 'Test', customField: 'custom' };
             const response = {
                 meta: { entityType: 'npcs', query: {}, capabilities: {} },
                 entities: [entity],
@@ -153,9 +74,29 @@ describe('npc-adapter', () => {
 
             const result = adaptNpcEntitiesTableResponse(response);
 
-            expect(result.rows[0].rowParams.entity).toEqual(entity);
-            expect(result.rows[0].rowParams.entity.customField).toBe('custom');
+            const npc = result.rows[0].rowParams.entity;
+            expect(npc).toBeInstanceOf(Npc);
+            expect(npc.id).toBe(1);
+            expect(npc.name).toBe('Test');
+            // Les champs personnalisés sont préservés dans _data
+            expect(npc._data?.customField).toBe('custom');
+        });
+
+        it('gère les valeurs nulles correctement', () => {
+            const response = {
+                meta: { entityType: 'npcs', query: {}, capabilities: {} },
+                entities: [
+                    { id: 1, name: 'Test', classe_id: null },
+                ],
+            };
+
+            const result = adaptNpcEntitiesTableResponse(response);
+
+            const npc = result.rows[0].rowParams.entity;
+            expect(npc).toBeInstanceOf(Npc);
+            expect(npc.id).toBe(1);
+            expect(npc.name).toBe('Test');
+            expect(npc.classe_id).toBeNull();
         });
     });
 });
-

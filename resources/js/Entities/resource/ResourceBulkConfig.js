@@ -28,14 +28,14 @@ export function createResourceBulkConfig(ctx = {}) {
   });
 
   // Champs bulk-editables (doit être aligné avec le backend)
-  // Utiliser les configurations des descriptors
+  // Utiliser les configurations des descriptors (sans build, géré par ResourceMapper)
   for (const [key, descriptor] of Object.entries(descriptors)) {
     if (descriptor.edit?.form?.bulk?.enabled) {
       const bulkConfigField = descriptor.edit.form.bulk;
       bulkConfig.addField(key, {
         enabled: bulkConfigField.enabled,
         nullable: bulkConfigField.nullable,
-        build: bulkConfigField.build || null,
+        // Pas de build : les transformations sont gérées par ResourceMapper.fromBulkForm()
         label: descriptor.label,
       });
     }

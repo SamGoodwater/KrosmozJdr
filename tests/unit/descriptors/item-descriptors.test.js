@@ -8,11 +8,11 @@
  * - Les options des selects sont cohérentes
  * - La configuration bulk est correcte
  * - Les groupes de champs sont définis
- * - viewFields.quickEdit est cohérent avec les champs bulk
+ * - QUICK_EDIT_FIELDS est cohérent avec les champs bulk
  */
 
 import { describe, it, expect } from 'vitest';
-import { getItemFieldDescriptors, ITEM_VIEW_FIELDS } from '@/Entities/item/item-descriptors';
+import { getItemFieldDescriptors, ITEM_QUICK_EDIT_FIELDS } from '@/Entities/item/item-descriptors';
 
 describe('item-descriptors', () => {
     describe('Structure des descriptors', () => {
@@ -28,11 +28,14 @@ describe('item-descriptors', () => {
             });
         });
 
-        it('tous les descriptors ont une propriété display', () => {
+        it('tous les descriptors ont une propriété display avec sizes (pour les tableaux)', () => {
             const descriptors = getItemFieldDescriptors();
             Object.values(descriptors).forEach((desc) => {
-                expect(desc).toHaveProperty('display');
-                expect(desc.display).toHaveProperty('views');
+                if (desc.display) {
+                    // display.views est obsolète (vues manuelles maintenant)
+                    // display.sizes est utilisé pour les tableaux (xs-xl)
+                    expect(desc.display).toHaveProperty('sizes');
+                }
             });
         });
     });
@@ -66,7 +69,7 @@ describe('item-descriptors', () => {
     describe('Configuration bulk', () => {
         it('les champs bulk-enabled ont enabled: true', () => {
             const descriptors = getItemFieldDescriptors();
-            const bulkEnabledFields = ITEM_VIEW_FIELDS.quickEdit;
+            const bulkEnabledFields = ITEM_QUICK_EDIT_FIELDS;
 
             bulkEnabledFields.forEach((fieldKey) => {
                 const desc = descriptors[fieldKey];
@@ -129,10 +132,10 @@ describe('item-descriptors', () => {
         });
     });
 
-    describe('viewFields.quickEdit', () => {
+    describe('QUICK_EDIT_FIELDS', () => {
         it('quickEdit contient uniquement des champs existants', () => {
             const descriptors = getItemFieldDescriptors();
-            const quickEditFields = ITEM_VIEW_FIELDS.quickEdit;
+            const quickEditFields = ITEM_QUICK_EDIT_FIELDS;
 
             quickEditFields.forEach((fieldKey) => {
                 expect(descriptors).toHaveProperty(fieldKey);
@@ -141,7 +144,7 @@ describe('item-descriptors', () => {
 
         it('les champs quickEdit sont bulk-enabled', () => {
             const descriptors = getItemFieldDescriptors();
-            const quickEditFields = ITEM_VIEW_FIELDS.quickEdit;
+            const quickEditFields = ITEM_QUICK_EDIT_FIELDS;
 
             quickEditFields.forEach((fieldKey) => {
                 const desc = descriptors[fieldKey];

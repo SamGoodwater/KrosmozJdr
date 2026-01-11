@@ -1,13 +1,18 @@
 /**
- * Resource field descriptors — Version simplifiée
+ * Resource field descriptors — Version refactorée selon les règles strictes
  *
  * @description
- * Source de vérité côté frontend pour :
- * - Configuration tableau (affichage des cellules selon la taille xs-xl)
- * - Configuration formulaires (édition simple et bulk)
+ * Schéma déclaratif pur qui permet au moteur de générer des outils génériques autour de Resource.
+ * 
+ * **Règles strictes respectées :**
+ * - ✅ Aucune logique métier (pas de `build`, pas de calculs)
+ * - ✅ Aucune description de vue (Large/Compact/Minimal/Text sont manuelles)
+ * - ✅ Déterministe (même contexte = même résultat)
+ * - ✅ Parle le langage du moteur (`sortable`, `filterable`, `editable`)
  *
- * ⚠️ Les vues (Large, Compact, Minimal, Text) sont maintenant des composants Vue manuels.
+ * ⚠️ Les vues (Large, Compact, Minimal, Text) sont des composants Vue manuels.
  * ⚠️ Sécurité : ces descriptors ne sont que de l'UX. Le backend reste la vérité (Policies + filtrage des champs).
+ * ⚠️ Les transformations de données sont gérées par ResourceMapper, pas ici.
  *
  * @example
  * import { getResourceFieldDescriptors } from "@/Entities/resource/resource-descriptors";
@@ -23,6 +28,11 @@
  * @property {(ctx: any) => boolean} [editableIf] - Fonction conditionnelle pour l'édition
  * @property {Object} [display] - Configuration de l'affichage dans les tableaux
  * @property {Record<"xs"|"sm"|"md"|"lg"|"xl", {mode?: string, truncate?: number}>} [display.sizes] - Configuration par taille d'écran
+ * @property {Object} [display.cell] - Configuration du composant de cellule personnalisé
+ * @property {string|Object} [display.cell.component] - Composant Vue à utiliser (chemin relatif ou import)
+ * @property {Object|Function} [display.cell.props] - Props à passer au composant (objet statique ou fonction qui retourne un objet)
+ * @property {boolean} [display.cell.passEntity] - Passer l'entité complète comme prop (défaut: false)
+ * @property {boolean} [display.cell.passValue] - Passer la valeur brute comme prop (défaut: true)
  * @property {Object} [edit] - Configuration de l'édition
  * @property {Object} [edit.form] - Configuration du formulaire d'édition
  * @property {"text"|"textarea"|"select"|"checkbox"|"number"|"date"|"file"} [edit.form.type] - Type de champ
@@ -31,11 +41,11 @@
  * @property {string} [edit.form.help] - Texte d'aide
  * @property {boolean} [edit.form.required] - Champ obligatoire
  * @property {any} [edit.form.defaultValue] - Valeur par défaut
- * @property {Array<{value: any, label: string}>|Function} [edit.form.options] - Options pour les selects
+ * @property {Array<{value: any, label: string}>} [edit.form.options] - Options pour les selects (constante uniquement)
  * @property {Object} [edit.form.bulk] - Configuration pour l'édition en masse
  * @property {boolean} [edit.form.bulk.enabled] - Activer l'édition en masse
  * @property {boolean} [edit.form.bulk.nullable] - Permettre null/vide en bulk
- * @property {Function} [edit.form.bulk.build] - Fonction de transformation avant envoi
+ * ⚠️ Pas de `build` : les transformations sont gérées par ResourceMapper
  */
 
 /**
@@ -57,8 +67,15 @@ export const RESOURCE_QUICK_EDIT_FIELDS = Object.freeze([
   "dofusdb_id",
 ]);
 
+// Import des constantes des formatters (pour les options)
+import { RarityFormatter } from '@/Utils/Formatters/RarityFormatter.js';
+import { VisibilityFormatter } from '@/Utils/Formatters/VisibilityFormatter.js';
+
 /**
  * Retourne les descripteurs de tous les champs de l'entité "Resource".
+ * 
+ * ⚠️ IMPORTANT : Cette fonction est pure et déterministe.
+ * Elle ne contient aucune logique métier, uniquement de la déclaration.
  * 
  * @param {Object} ctx - Contexte d'exécution
  * @param {Object} [ctx.capabilities] - Permissions disponibles (ou ctx.meta.capabilities)
@@ -66,9 +83,8 @@ export const RESOURCE_QUICK_EDIT_FIELDS = Object.freeze([
  * @returns {Record<string, ResourceFieldDescriptor>} Objet avec tous les descripteurs
  */
 export function getResourceFieldDescriptors(ctx = {}) {
+  // Extraire le contexte de manière pure (pas de calculs, pas de logique)
   const can = ctx?.capabilities || ctx?.meta?.capabilities || null;
-  const canUpdateAny = Boolean(can?.updateAny);
-  const canCreateAny = Boolean(can?.createAny);
   
   const resourceTypes = Array.isArray(ctx?.resourceTypes) 
     ? ctx.resourceTypes 
@@ -94,7 +110,7 @@ export function getResourceFieldDescriptors(ctx = {}) {
           label: "Image (URL)",
           group: "Image",
           required: false,
-          bulk: { enabled: true, nullable: true, build: (v) => (v === "" ? null : String(v)) },
+          bulk: { enabled: true, nullable: true },
         },
       },
     },
@@ -140,7 +156,7 @@ export function getResourceFieldDescriptors(ctx = {}) {
           type: "textarea",
           group: "Contenu",
           required: false,
-          bulk: { enabled: true, nullable: true, build: (v) => (v === "" ? null : String(v)) },
+          bulk: { enabled: true, nullable: true },
         },
       },
     },
@@ -157,6 +173,16 @@ export function getResourceFieldDescriptors(ctx = {}) {
           lg: { mode: "badge" },
           xl: { mode: "badge" },
         },
+        // Exemple de composant personnalisé (commenté par défaut)
+        // cell: {
+        //   component: '@/Pages/Atoms/data-display/CustomLevelCell.vue',
+        //   props: {
+        //     format: 'number',
+        //     showIcon: true,
+        //   },
+        //   passEntity: false, // Ne pas passer l'entité complète
+        //   passValue: true, // Passer la valeur (défaut)
+        // },
       },
       edit: {
         form: {
@@ -164,7 +190,7 @@ export function getResourceFieldDescriptors(ctx = {}) {
           group: "Métier",
           placeholder: "Ex: 50",
           required: false,
-          bulk: { enabled: true, nullable: true, build: (v) => (v === "" ? null : String(v)) },
+          bulk: { enabled: true, nullable: true },
         },
       },
     },
@@ -204,8 +230,10 @@ export function getResourceFieldDescriptors(ctx = {}) {
           group: "Métier",
           help: "Définit le type (métier) de la ressource.",
           required: false,
-          options: () => [{ value: "", label: "—" }, ...resourceTypes.map((t) => ({ value: t.id, label: t.name }))],
-          bulk: { enabled: true, nullable: true, build: (v) => (v === "" ? null : Number(v)) },
+          // Options dynamiques : seront construites dans ResourceFormConfig à partir du contexte
+          // Le descriptor ne contient pas de fonction, seulement la déclaration
+          options: null, // Sera fourni par le contexte dans ResourceFormConfig
+          bulk: { enabled: true, nullable: true },
         },
       },
     },
@@ -229,15 +257,9 @@ export function getResourceFieldDescriptors(ctx = {}) {
           group: "Métier",
           help: "La rareté est un entier (0..5). En bulk, laisser vide n'applique aucun changement.",
           required: false,
-          options: [
-            { value: 0, label: "Commun" },
-            { value: 1, label: "Peu commun" },
-            { value: 2, label: "Rare" },
-            { value: 3, label: "Très rare" },
-            { value: 4, label: "Légendaire" },
-            { value: 5, label: "Unique" },
-          ],
-          bulk: { enabled: true, nullable: true, build: (v) => (v === "" || v === null ? null : Number(v)) },
+          // Utiliser la constante du formatter (pas de duplication)
+          options: RarityFormatter.options.map(({ value, label }) => ({ value, label })),
+          bulk: { enabled: true, nullable: true },
         },
       },
     },
@@ -260,7 +282,7 @@ export function getResourceFieldDescriptors(ctx = {}) {
           type: "text",
           group: "Métadonnées",
           required: false,
-          bulk: { enabled: true, nullable: true, build: (v) => (v === "" ? null : String(v)) },
+          bulk: { enabled: true, nullable: true },
         },
       },
     },
@@ -283,7 +305,7 @@ export function getResourceFieldDescriptors(ctx = {}) {
           type: "text",
           group: "Métadonnées",
           required: false,
-          bulk: { enabled: true, nullable: true, build: (v) => (v === "" ? null : String(v)) },
+          bulk: { enabled: true, nullable: true },
         },
       },
     },
@@ -306,7 +328,7 @@ export function getResourceFieldDescriptors(ctx = {}) {
           type: "text",
           group: "Métadonnées",
           required: false,
-          bulk: { enabled: true, nullable: true, build: (v) => (v === "" ? null : String(v)) },
+          bulk: { enabled: true, nullable: true },
         },
       },
     },
@@ -330,13 +352,9 @@ export function getResourceFieldDescriptors(ctx = {}) {
           group: "Statut",
           help: "Contrôle la visibilité côté front. Le backend reste la vérité sécurité.",
           required: false,
-          options: [
-            { value: "guest", label: "Invité" },
-            { value: "user", label: "Utilisateur" },
-            { value: "game_master", label: "Maître de jeu" },
-            { value: "admin", label: "Administrateur" },
-          ],
-          bulk: { enabled: true, nullable: false, build: (v) => v },
+          // Utiliser la constante du formatter (pas de duplication)
+          options: VisibilityFormatter.options.map(({ value, label }) => ({ value, label })),
+          bulk: { enabled: true, nullable: false },
         },
       },
     },
@@ -360,7 +378,7 @@ export function getResourceFieldDescriptors(ctx = {}) {
           group: "Statut",
           required: false,
           defaultValue: false,
-          bulk: { enabled: true, nullable: false, build: (v) => v === "1" || v === true },
+          bulk: { enabled: true, nullable: false },
         },
       },
     },
@@ -369,7 +387,7 @@ export function getResourceFieldDescriptors(ctx = {}) {
       key: "auto_update",
       label: "Auto-update",
       icon: "fa-solid fa-arrows-rotate",
-      visibleIf: () => canUpdateAny,
+      visibleIf: (ctx) => Boolean(ctx?.capabilities?.updateAny ?? ctx?.meta?.capabilities?.updateAny),
       display: {
         sizes: {
           xs: { mode: "boolIcon" },
@@ -385,7 +403,7 @@ export function getResourceFieldDescriptors(ctx = {}) {
           group: "Statut",
           required: false,
           defaultValue: false,
-          bulk: { enabled: true, nullable: false, build: (v) => v === "1" || v === true },
+          bulk: { enabled: true, nullable: false },
         },
       },
     },
@@ -394,7 +412,7 @@ export function getResourceFieldDescriptors(ctx = {}) {
       key: "dofusdb_id",
       label: "DofusDB",
       icon: "fa-solid fa-arrow-up-right-from-square",
-      visibleIf: () => canUpdateAny,
+      visibleIf: (ctx) => Boolean(ctx?.capabilities?.updateAny ?? ctx?.meta?.capabilities?.updateAny),
       display: {
         sizes: {
           xs: { mode: "routeExternal", truncate: 10 },
@@ -410,7 +428,7 @@ export function getResourceFieldDescriptors(ctx = {}) {
           group: "Métadonnées",
           help: "ID externe DofusDB. Généralement géré automatiquement par le scrapping.",
           required: false,
-          bulk: { enabled: true, nullable: true, build: (v) => (v === "" ? null : String(v)) },
+          bulk: { enabled: true, nullable: true },
         },
       },
     },
@@ -433,7 +451,7 @@ export function getResourceFieldDescriptors(ctx = {}) {
           type: "text",
           group: "Métadonnées",
           required: false,
-          bulk: { enabled: true, nullable: true, build: (v) => (v === "" ? null : Number(v)) },
+          bulk: { enabled: true, nullable: true },
         },
       },
     },
@@ -442,7 +460,7 @@ export function getResourceFieldDescriptors(ctx = {}) {
       key: "created_by",
       label: "Créé par",
       icon: "fa-solid fa-user",
-      visibleIf: () => canCreateAny,
+      visibleIf: (ctx) => Boolean(ctx?.capabilities?.createAny ?? ctx?.meta?.capabilities?.createAny),
       display: {
         sizes: {
           xs: { mode: "text", truncate: 10 },
@@ -459,7 +477,7 @@ export function getResourceFieldDescriptors(ctx = {}) {
       key: "created_at",
       label: "Créé le",
       icon: "fa-solid fa-calendar",
-      visibleIf: () => canCreateAny,
+      visibleIf: (ctx) => Boolean(ctx?.capabilities?.createAny ?? ctx?.meta?.capabilities?.createAny),
       display: {
         sizes: {
           xs: { mode: "dateShort" },
@@ -476,7 +494,7 @@ export function getResourceFieldDescriptors(ctx = {}) {
       key: "updated_at",
       label: "Modifié le",
       icon: "fa-solid fa-clock",
-      visibleIf: () => canCreateAny,
+      visibleIf: (ctx) => Boolean(ctx?.capabilities?.createAny ?? ctx?.meta?.capabilities?.createAny),
       display: {
         sizes: {
           xs: { mode: "dateShort" },

@@ -78,7 +78,14 @@ describe('entity-registry', () => {
             expect(config.key).toBe('resources');
             expect(config.getDescriptors).toBeDefined();
             expect(config.buildCell).toBeDefined();
+            // viewFields peut être un tableau (QUICK_EDIT_FIELDS) ou un objet avec quickEdit/compact/extended
             expect(config.viewFields).toBeDefined();
+            // Pour resources, c'est encore un objet, pour les autres entités migrées c'est un tableau
+            if (Array.isArray(config.viewFields)) {
+                expect(config.viewFields.length).toBeGreaterThan(0);
+            } else {
+                expect(config.viewFields).toHaveProperty('quickEdit');
+            }
             expect(config.responseAdapter).toBeDefined();
         });
 

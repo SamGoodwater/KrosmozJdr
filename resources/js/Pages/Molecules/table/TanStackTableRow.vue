@@ -34,6 +34,10 @@ const props = defineProps({
      * Afficher la colonne Actions.
      */
     showActionsColumn: { type: Boolean, default: false },
+    /**
+     * Fonction pour obtenir une cellule (depuis TanStackTable parent)
+     */
+    getCellFor: { type: Function, default: null },
 });
 
 const emit = defineEmits([
@@ -44,8 +48,14 @@ const emit = defineEmits([
 ]);
 
 const getCell = (column) => {
+    // Si getCellFor est fourni, l'utiliser (génération à la volée)
+    if (props.getCellFor && typeof props.getCellFor === 'function') {
+        return props.getCellFor(props.row, column) || { type: "text", value: "—", params: {} };
+    }
+    
+    // Fallback : utiliser row.cells si disponible (ancien système)
     const cellId = column?.cellId || column?.id;
-    return props.row?.cells?.[cellId] || { type: "text", value: null, params: {} };
+    return props.row?.cells?.[cellId] || { type: "text", value: "—", params: {} };
 };
 
 const isInteractiveTarget = (event) => {
@@ -139,7 +149,7 @@ const handleAction = (actionKey, entity) => {
             :key="col.id"
             v-memo="[getCell(col), uiColor]"
         >
-            <CellRenderer :cell="getCell(col)" :ui-color="uiColor" />
+            <CellRenderer :cell="getCell(col)" :ui-color="uiColor" :entity="rowEntity" />
         </td>
     </tr>
     

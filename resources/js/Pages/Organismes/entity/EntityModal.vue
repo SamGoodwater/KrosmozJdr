@@ -12,19 +12,16 @@
  * @props {Boolean} useStoredFormat - Utiliser le format stocké dans localStorage (défaut: true)
  * @emit close - Événement émis lors de la fermeture
  */
-import { computed } from 'vue';
+import { computed, defineAsyncComponent, shallowRef, watch } from 'vue';
 import { router } from '@inertiajs/vue3';
 import Modal from '@/Pages/Molecules/action/Modal.vue';
 import Btn from '@/Pages/Atoms/action/Btn.vue';
-import EntityViewLarge from '@/Pages/Molecules/entity/EntityViewLarge.vue';
-import EntityViewCompact from '@/Pages/Molecules/entity/EntityViewCompact.vue';
-import EntityViewMinimal from '@/Pages/Molecules/entity/EntityViewMinimal.vue';
-import EntityViewText from '@/Pages/Molecules/entity/EntityViewText.vue';
 import EntityActions from '@/Pages/Organismes/entity/EntityActions.vue';
 import { useEntityViewFormat } from '@/Composables/store/useEntityViewFormat';
 import { getEntityRouteConfig, resolveEntityRouteUrl } from '@/Composables/entity/entityRouteRegistry';
 import { useCopyToClipboard } from '@/Composables/utils/useCopyToClipboard';
 import { useDownloadPdf } from '@/Composables/utils/useDownloadPdf';
+import { normalizeEntityType } from '@/Entities/entity-registry';
 
 const props = defineProps({
     entity: {
@@ -103,6 +100,83 @@ const entityTypeKey = computed(() => {
     return type;
 });
 
+// Charger dynamiquement le composant de vue approprié
+const ViewComponent = shallowRef(null);
+
+// Mapper les types d'entités vers leurs noms de composants
+const ENTITY_COMPONENT_MAP = {
+    'resources': 'Resource',
+    'items': 'Item',
+    'consumables': 'Consumable',
+    'spells': 'Spell',
+    'monsters': 'Monster',
+    'creatures': 'Creature',
+    'npcs': 'Npc',
+    'classes': 'Classe',
+    'campaigns': 'Campaign',
+    'scenarios': 'Scenario',
+    'attributes': 'Attribute',
+    'panoplies': 'Panoply',
+    'capabilities': 'Capability',
+    'specializations': 'Specialization',
+    'shops': 'Shop',
+};
+
+// Mapper les vues vers leurs noms de composants
+const VIEW_COMPONENT_MAP = {
+    'large': 'ViewLarge',
+    'compact': 'ViewCompact',
+    'minimal': 'ViewMinimal',
+    'text': 'ViewText',
+};
+
+// Fonction pour charger le composant de vue
+const loadViewComponent = async () => {
+    const normalizedType = normalizeEntityType(props.entityType);
+    const entityName = ENTITY_COMPONENT_MAP[normalizedType];
+    const viewName = VIEW_COMPONENT_MAP[currentView.value] || VIEW_COMPONENT_MAP['large'];
+
+    if (!entityName) {
+        console.warn(`[EntityModal] Type d'entité non reconnu: ${props.entityType} (normalisé: ${normalizedType})`);
+        ViewComponent.value = null;
+        return;
+    }
+
+    const componentName = `${entityName}${viewName}`;
+    const componentPath = `@/Pages/Molecules/entity/${normalizedType.replace('-', '/')}/${componentName}.vue`;
+
+    try {
+        const module = await import(componentPath);
+        ViewComponent.value = defineAsyncComponent(() => Promise.resolve(module.default || module[componentName] || module));
+    } catch (error) {
+        console.error(`[EntityModal] Erreur lors du chargement du composant ${componentPath}:`, error);
+        ViewComponent.value = null;
+    }
+};
+
+// Charger le composant quand l'entité ou la vue change
+watch([() => props.entityType, currentView], () => {
+    loadViewComponent();
+}, { immediate: true });
+
+// Obtenir les props à passer au composant selon le type d'entité
+const getComponentProps = () => {
+    const normalizedType = normalizeEntityType(props.entityType);
+    const entityName = ENTITY_COMPONENT_MAP[normalizedType];
+    
+    if (!entityName) {
+        return { entity: props.entity, showActions: false };
+    }
+    
+    // Convertir le nom de l'entité en camelCase pour la prop
+    const propName = entityName.charAt(0).toLowerCase() + entityName.slice(1);
+    
+    return {
+        [propName]: props.entity,
+        showActions: false,
+    };
+};
+
 const handleAction = async (actionKey, entity) => {
     const targetEntity = entity || props.entity;
     const entityId = targetEntity?.id ?? props.entity?.id ?? null;
@@ -178,28 +252,14 @@ const handleAction = async (actionKey, entity) => {
         </template>
 
         <div>
-            <EntityViewLarge 
-                v-if="currentView === 'large'"
-                :entity="entity"
-                :entity-type="entityType"
-                :show-actions="false" />
-            
-            <EntityViewCompact 
-                v-else-if="currentView === 'compact'"
-                :entity="entity"
-                :entity-type="entityType"
-                :show-actions="false" />
-            
-            <EntityViewMinimal 
-                v-else-if="currentView === 'minimal'"
-                :entity="entity"
-                :entity-type="entityType"
-                :show-actions="false" />
-            
-            <EntityViewText 
-                v-else
-                :entity="entity"
-                :entity-type="entityType" />
+            <component
+                v-if="ViewComponent"
+                :is="ViewComponent"
+                v-bind="getComponentProps()"
+            />
+            <div v-else class="text-center text-primary-300 py-8">
+                <p>Chargement de la vue...</p>
+            </div>
         </div>
 
         <template #actions>

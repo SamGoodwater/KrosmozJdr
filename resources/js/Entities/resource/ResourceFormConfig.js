@@ -9,6 +9,8 @@
 import { FormConfig } from "../entity/FormConfig.js";
 import { FormFieldConfig } from "../entity/FormFieldConfig.js";
 import { getResourceFieldDescriptors } from "./resource-descriptors.js";
+import { RarityFormatter } from "@/Utils/Formatters/RarityFormatter.js";
+import { VisibilityFormatter } from "@/Utils/Formatters/VisibilityFormatter.js";
 
 /**
  * Crée la configuration des formulaires pour Resource
@@ -65,7 +67,6 @@ export function createResourceFormConfig(ctx = {}) {
         .withBulk(descriptors.description?.edit?.form?.bulk || {
           enabled: true,
           nullable: true,
-          build: (v) => (v === "" ? null : String(v)),
         })
     )
     .addField(
@@ -80,7 +81,6 @@ export function createResourceFormConfig(ctx = {}) {
         .withBulk(descriptors.level?.edit?.form?.bulk || {
           enabled: true,
           nullable: true,
-          build: (v) => (v === "" ? null : String(v)),
         })
     )
     .addField(
@@ -92,11 +92,10 @@ export function createResourceFormConfig(ctx = {}) {
         .withGroup(descriptors.resource_type_id?.edit?.form?.group || "Métier")
         .withHelp(descriptors.resource_type_id?.edit?.form?.help || "Définit le type (métier) de la ressource.")
         .withShowInCompact(true)
-        .withOptions(descriptors.resource_type_id?.edit?.form?.options || (() => [{ value: "", label: "—" }, ...resourceTypes.map((t) => ({ value: t.id, label: t.name }))]))
+        .withOptions([{ value: "", label: "—" }, ...resourceTypes.map((t) => ({ value: t.id, label: t.name }))])
         .withBulk(descriptors.resource_type_id?.edit?.form?.bulk || {
           enabled: true,
           nullable: true,
-          build: (v) => (v === "" ? null : Number(v)),
         })
     )
     .addField(
@@ -108,11 +107,10 @@ export function createResourceFormConfig(ctx = {}) {
         .withGroup(descriptors.rarity?.edit?.form?.group || "Métier")
         .withHelp(descriptors.rarity?.edit?.form?.help || "La rareté est un entier (0..5). En bulk, laisser vide n'applique aucun changement.")
         .withShowInCompact(true)
-        .withOptions(descriptors.rarity?.edit?.form?.options || [])
+        .withOptions(descriptors.rarity?.edit?.form?.options ?? RarityFormatter.options.map(({ value, label }) => ({ value, label })))
         .withBulk(descriptors.rarity?.edit?.form?.bulk || {
           enabled: true,
           nullable: true,
-          build: (v) => (v === "" || v === null ? null : Number(v)),
         })
     )
     .addField(
@@ -126,7 +124,6 @@ export function createResourceFormConfig(ctx = {}) {
         .withBulk(descriptors.price?.edit?.form?.bulk || {
           enabled: true,
           nullable: true,
-          build: (v) => (v === "" ? null : String(v)),
         })
     )
     .addField(
@@ -140,7 +137,6 @@ export function createResourceFormConfig(ctx = {}) {
         .withBulk(descriptors.weight?.edit?.form?.bulk || {
           enabled: true,
           nullable: true,
-          build: (v) => (v === "" ? null : String(v)),
         })
     )
     .addField(
@@ -154,7 +150,6 @@ export function createResourceFormConfig(ctx = {}) {
         .withBulk(descriptors.dofus_version?.edit?.form?.bulk || {
           enabled: true,
           nullable: true,
-          build: (v) => (v === "" ? null : String(v)),
         })
     )
     .addField(
@@ -166,11 +161,10 @@ export function createResourceFormConfig(ctx = {}) {
         .withGroup(descriptors.is_visible?.edit?.form?.group || "Statut")
         .withHelp(descriptors.is_visible?.edit?.form?.help || "Contrôle la visibilité côté front. Le backend reste la vérité sécurité.")
         .withShowInCompact(true)
-        .withOptions(descriptors.is_visible?.edit?.form?.options || [])
+        .withOptions(descriptors.is_visible?.edit?.form?.options ?? VisibilityFormatter.options.map(({ value, label }) => ({ value, label })))
         .withBulk(descriptors.is_visible?.edit?.form?.bulk || {
           enabled: true,
           nullable: false,
-          build: (v) => v,
         })
     )
     .addField(
@@ -185,7 +179,6 @@ export function createResourceFormConfig(ctx = {}) {
         .withBulk(descriptors.usable?.edit?.form?.bulk || {
           enabled: true,
           nullable: false,
-          build: (v) => v === "1" || v === true,
         })
     )
     .addField(
@@ -199,7 +192,6 @@ export function createResourceFormConfig(ctx = {}) {
         .withBulk(descriptors.image?.edit?.form?.bulk || {
           enabled: true,
           nullable: true,
-          build: (v) => (v === "" ? null : String(v)),
         })
     )
     .addField(
@@ -213,7 +205,6 @@ export function createResourceFormConfig(ctx = {}) {
         .withBulk(descriptors.official_id?.edit?.form?.bulk || {
           enabled: true,
           nullable: true,
-          build: (v) => (v === "" ? null : Number(v)),
         })
     );
 
@@ -232,7 +223,6 @@ export function createResourceFormConfig(ctx = {}) {
           .withBulk(descriptors.auto_update.edit?.form?.bulk || {
             enabled: true,
             nullable: false,
-            build: (v) => v === "1" || v === true,
           })
       );
   }
@@ -251,7 +241,6 @@ export function createResourceFormConfig(ctx = {}) {
           .withBulk(descriptors.dofusdb_id.edit?.form?.bulk || {
             enabled: true,
             nullable: true,
-            build: (v) => (v === "" ? null : String(v)),
           })
       );
   }

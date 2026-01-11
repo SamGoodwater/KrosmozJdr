@@ -1,108 +1,21 @@
 /**
- * Tests unitaires pour item-adapter
+ * Tests unitaires pour item-adapter (version simplifiée)
  *
  * @description
  * Vérifie que :
- * - buildItemCell génère correctement les cellules
  * - adaptItemEntitiesTableResponse transforme correctement les données
- * - Les valeurs nulles sont gérées
- * - Les relations sont gérées
+ * - Les entités brutes sont converties en instances de Item
+ * - Les cellules ne sont plus pré-générées (elles sont vides)
+ * - L'instance Item est passée dans rowParams.entity pour génération à la volée
  */
 
-import { describe, it, expect, vi } from 'vitest';
-import { buildItemCell, adaptItemEntitiesTableResponse } from '@/Entities/item/item-adapter';
+import { describe, it, expect } from 'vitest';
+import { adaptItemEntitiesTableResponse } from '@/Entities/item/item-adapter';
+import { Item } from '@/Models/Entity/Item';
 
-// Mock de route() pour les tests
-vi.mock('@inertiajs/vue3', () => ({
-    route: (name, params) => {
-        if (name === 'entities.items.show') {
-            return `/items/${params?.item || params || ''}`;
-        }
-        return `#${name}`;
-    },
-}));
-
-describe('item-adapter', () => {
-    describe('buildItemCell', () => {
-        it('génère une cellule route pour name', () => {
-            const entity = { id: 1, name: 'Test Item' };
-            const cell = buildItemCell('name', entity, {}, { context: 'table' });
-
-            expect(cell.type).toBe('route');
-            expect(cell.value).toBe('Test Item');
-            expect(cell.params.href).toContain('/items/1');
-            expect(cell.params.searchValue).toBe('Test Item');
-            expect(cell.params.sortValue).toBe('Test Item');
-        });
-
-        it('génère une cellule text pour level', () => {
-            const entity = { id: 1, level: '10' };
-            const cell = buildItemCell('level', entity, {}, { context: 'table' });
-
-            expect(cell.type).toBe('text');
-            expect(cell.value).toBe('10');
-            expect(cell.params.sortValue).toBe(10);
-        });
-
-        it('génère "-" pour level null', () => {
-            const entity = { id: 1, level: null };
-            const cell = buildItemCell('level', entity, {}, { context: 'table' });
-
-            expect(cell.type).toBe('text');
-            expect(cell.value).toBe('-');
-        });
-
-        it('génère une cellule badge pour rarity', () => {
-            const entity = { id: 1, rarity: 1 };
-            const cell = buildItemCell('rarity', entity, {}, { context: 'table' });
-
-            expect(cell.type).toBe('badge');
-            expect(cell.value).toBeDefined();
-            expect(cell.params.color).toBeDefined();
-        });
-
-        it('génère une cellule badge pour usable (true)', () => {
-            const entity = { id: 1, usable: 1 };
-            const cell = buildItemCell('usable', entity, {}, { context: 'table' });
-
-            expect(cell.type).toBe('badge');
-            expect(cell.value).toBe('Oui');
-            expect(cell.params.color).toBe('success');
-            expect(cell.params.sortValue).toBe(1);
-        });
-
-        it('génère une cellule badge pour usable (false)', () => {
-            const entity = { id: 1, usable: 0 };
-            const cell = buildItemCell('usable', entity, {}, { context: 'table' });
-
-            expect(cell.type).toBe('badge');
-            expect(cell.value).toBe('Non');
-            expect(cell.params.color).toBe('neutral');
-            expect(cell.params.sortValue).toBe(0);
-        });
-
-        it('génère une cellule text pour created_by', () => {
-            const entity = {
-                id: 1,
-                createdBy: { id: 1, name: 'John Doe', email: 'john@example.com' },
-            };
-            const cell = buildItemCell('created_by', entity, {}, { context: 'table' });
-
-            expect(cell.type).toBe('text');
-            expect(cell.value).toBe('John Doe');
-        });
-
-        it('génère "-" pour created_by null', () => {
-            const entity = { id: 1, createdBy: null };
-            const cell = buildItemCell('created_by', entity, {}, { context: 'table' });
-
-            expect(cell.type).toBe('text');
-            expect(cell.value).toBe('-');
-        });
-    });
-
+describe('item-adapter (version simplifiée)', () => {
     describe('adaptItemEntitiesTableResponse', () => {
-        it('transforme entities en TableResponse', () => {
+        it('transforme entities en TableResponse avec instances Item', () => {
             const response = {
                 meta: {
                     entityType: 'items',
@@ -120,9 +33,16 @@ describe('item-adapter', () => {
             expect(result.meta.entityType).toBe('items');
             expect(result.rows).toHaveLength(2);
             expect(result.rows[0].id).toBe(1);
-            expect(result.rows[0].cells.name.type).toBe('route');
-            expect(result.rows[0].cells.name.value).toBe('Item 1');
-            expect(result.rows[0].rowParams.entity).toBeDefined();
+            
+            // Les cellules ne sont plus pré-générées
+            expect(result.rows[0].cells).toEqual({});
+            
+            // L'instance Item est passée dans rowParams.entity
+            expect(result.rows[0].rowParams.entity).toBeInstanceOf(Item);
+            expect(result.rows[0].rowParams.entity.id).toBe(1);
+            expect(result.rows[0].rowParams.entity.name).toBe('Item 1');
+            expect(result.rows[0].rowParams.entity.level).toBe(10);
+            expect(result.rows[0].rowParams.entity.rarity).toBe(1);
         });
 
         it('gère un tableau vide', () => {
@@ -148,8 +68,8 @@ describe('item-adapter', () => {
             expect(result.rows).toHaveLength(0);
         });
 
-        it('préserve les rowParams.entity', () => {
-            const entity = { id: 1, name: 'Test', level: '10', customField: 'custom' };
+        it('préserve toutes les propriétés de l\'entité dans l\'instance Item', () => {
+            const entity = { id: 1, name: 'Test', level: '15', rarity: 3, customField: 'custom' };
             const response = {
                 meta: { entityType: 'items', query: {}, capabilities: {} },
                 entities: [entity],
@@ -157,8 +77,32 @@ describe('item-adapter', () => {
 
             const result = adaptItemEntitiesTableResponse(response);
 
-            expect(result.rows[0].rowParams.entity).toEqual(entity);
-            expect(result.rows[0].rowParams.entity.customField).toBe('custom');
+            const item = result.rows[0].rowParams.entity;
+            expect(item).toBeInstanceOf(Item);
+            expect(item.id).toBe(1);
+            expect(item.name).toBe('Test');
+            expect(item.level).toBe(15);
+            expect(item.rarity).toBe(3);
+            // Les champs personnalisés sont préservés dans _data
+            expect(item._data?.customField).toBe('custom');
+        });
+
+        it('gère les valeurs nulles correctement', () => {
+            const response = {
+                meta: { entityType: 'items', query: {}, capabilities: {} },
+                entities: [
+                    { id: 1, name: 'Test', level: null, rarity: null },
+                ],
+            };
+
+            const result = adaptItemEntitiesTableResponse(response);
+
+            const item = result.rows[0].rowParams.entity;
+            expect(item).toBeInstanceOf(Item);
+            expect(item.id).toBe(1);
+            expect(item.name).toBe('Test');
+            expect(item.level).toBeNull();
+            expect(item.rarity).toBeNull();
         });
     });
 });

@@ -12,10 +12,11 @@
  *
  * @example
  * const { ids, selectedList, aggregate, form, dirty, canApply, placeholder, onChange, buildPayload } =
- *   useBulkEditPanel({ selectedEntities, isAdmin, fieldMeta, mode, filteredIds });
+ *   useBulkEditPanel({ selectedEntities, isAdmin, fieldMeta, mode, filteredIds, entityType, mapper });
  */
 
 import { computed, reactive, ref, watch, unref } from "vue";
+import { ResourceMapper } from '@/Mappers/Entity/ResourceMapper';
 
 const getId = (e) => (e && typeof e.id !== "undefined" ? Number(e.id) : null);
 const getName = (e) => {
@@ -44,12 +45,25 @@ const allSame = (arr) => {
 };
 
 /**
+ * Registre des mappers par entityType
+ * @type {Object<string, {fromBulkForm: function}>}
+ */
+const MAPPER_REGISTRY = {
+  'resources': ResourceMapper,
+  'resource': ResourceMapper,
+  // Ajouter d'autres mappers ici au fur et à mesure de leur migration
+};
+
+/**
  * @param {Object} opts
  * @param {Array} opts.selectedEntities
  * @param {boolean} opts.isAdmin
- * @param {Object<string, {label?: string, nullable?: boolean, build: (raw:string)=>any}>} opts.fieldMeta
+ * @param {Object<string, {label?: string, nullable?: boolean}>} opts.fieldMeta
+ * ⚠️ DEPRECATED: Le paramètre `build` dans `fieldMeta` est déprécié. Les transformations sont gérées par les mappers (ex: ResourceMapper.fromBulkForm()).
  * @param {"server"|"client"} [opts.mode]
  * @param {Array<number|string>} [opts.filteredIds]
+ * @param {string} [opts.entityType] - Type d'entité (ex: 'resources', 'items'). Utilisé pour déterminer le mapper approprié.
+ * @param {Object} [opts.mapper] - Mapper optionnel à utiliser directement (prioritaire sur entityType).
  */
 export function useBulkEditPanel(opts) {
   // Support: selectedEntities peut être un array, un Ref/Computed, ou une fonction qui retourne l'array.
@@ -134,12 +148,35 @@ export function useBulkEditPanel(opts) {
   const buildPayload = () => {
     const targetIds = scope.value === "filtered" ? filteredIds.value : ids.value;
     const payload = { ids: targetIds };
-    for (const key of Object.keys(dirty)) {
-      if (!dirty[key]) continue;
-      const meta = fieldMeta.value?.[key];
-      if (!meta || typeof meta.build !== "function") continue;
-      payload[key] = meta.build(form[key]);
+
+    // Déterminer le mapper à utiliser
+    const mapper = opts?.mapper || (opts?.entityType ? MAPPER_REGISTRY[opts.entityType] : null);
+
+    // Si un mapper est disponible et a la méthode fromBulkForm, l'utiliser
+    if (mapper && typeof mapper.fromBulkForm === 'function') {
+      // Collecter tous les champs dirty dans un objet
+      const bulkFormData = {};
+      for (const key of Object.keys(dirty)) {
+        if (dirty[key]) {
+          bulkFormData[key] = form[key];
+        }
+      }
+      // Utiliser le mapper pour transformer les données
+      const mappedData = mapper.fromBulkForm(bulkFormData);
+      Object.assign(payload, mappedData);
+    } else {
+      // Fallback sur l'ancienne logique (meta.build) pour rétrocompatibilité
+      if (process.env.NODE_ENV !== 'production' && opts?.entityType) {
+        console.warn(`[useBulkEditPanel] Entity type '${opts.entityType}' is using deprecated 'meta.build' logic. Please migrate to a dedicated mapper.`);
+      }
+      for (const key of Object.keys(dirty)) {
+        if (!dirty[key]) continue;
+        const meta = fieldMeta.value?.[key];
+        if (!meta || typeof meta.build !== "function") continue;
+        payload[key] = meta.build(form[key]);
+      }
     }
+
     return payload;
   };
 

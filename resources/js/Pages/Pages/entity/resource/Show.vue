@@ -11,7 +11,7 @@ import { usePageTitle } from '@/Composables/layout/usePageTitle';
 import { Resource } from '@/Models/Entity/Resource';
 import Container from '@/Pages/Atoms/data-display/Container.vue';
 import Btn from '@/Pages/Atoms/action/Btn.vue';
-import EntityViewLarge from '@/Pages/Molecules/entity/EntityViewLarge.vue';
+import ResourceViewLarge from '@/Pages/Molecules/entity/resource/ResourceViewLarge.vue';
 
 const page = usePage();
 const { setPageTitle } = usePageTitle();
@@ -50,7 +50,7 @@ const goEdit = () => {
             </Btn>
         </div>
 
-        <EntityViewLarge :entity="resource" entity-type="resource" :show-actions="true" />
+        <ResourceViewLarge :resource="resource" :show-actions="true" />
 
         <!-- Pivots niveau 1: afficher les quantités quand présentes -->
         <div class="grid gap-4 lg:grid-cols-2">

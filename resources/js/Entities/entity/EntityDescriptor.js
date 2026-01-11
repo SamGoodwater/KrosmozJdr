@@ -2,21 +2,22 @@
  * EntityDescriptor — Classe de base pour tous les descriptors d'entités
  *
  * @description
- * Cette classe centralise :
- * - Le code commun à tous les descriptors
- * - Les fonctions communes
- * - Les constantes communes
- * - Le formatage des données
- * - La validation
- * - Les valeurs par défaut
+ * ⚠️ DÉPRÉCIÉ : Cette classe n'est plus utilisée dans le nouveau système.
+ * Les descriptors sont maintenant des objets simples retournés par des fonctions (ex: getResourceFieldDescriptors).
+ * 
+ * Cette classe est conservée uniquement pour :
+ * - Les constantes statiques (RARITY_OPTIONS, etc.) - utilisez EntityDescriptorConstants directement
+ * - Les helpers de validation (validateFieldDescriptor) - peut être utile pour le debug
+ * - La rétrocompatibilité temporaire
  *
+ * @deprecated Utilisez directement les fonctions get*FieldDescriptors() et les formatters centralisés
  * @example
- * class ResourceDescriptor extends EntityDescriptor {
- *   constructor() {
- *     super('resource');
- *     // Configuration spécifique à Resource
- *   }
- * }
+ * // ❌ Ancien système (déprécié)
+ * class ResourceDescriptor extends EntityDescriptor { ... }
+ * 
+ * // ✅ Nouveau système
+ * import { getResourceFieldDescriptors } from "@/Entities/resource/resource-descriptors";
+ * const descriptors = getResourceFieldDescriptors(ctx);
  */
 
 import {
@@ -238,11 +239,8 @@ export class EntityDescriptor {
       }
 
       // Validation de bulk si présent
-      if (form.bulk?.enabled) {
-        if (typeof form.bulk.build !== "function") {
-          errors.push(`bulk.enabled nécessite une fonction bulk.build pour ${fieldKey}`);
-        }
-      }
+      // ⚠️ NOTE: bulk.build est déprécié, les transformations sont maintenant dans les mappers
+      // On ne valide plus la présence de bulk.build
     }
 
     // Validation de visibleIf et editableIf
@@ -308,14 +306,16 @@ export class EntityDescriptor {
 
   /**
    * Retourne la configuration d'une vue.
-   * À surcharger dans les classes filles.
+   * ⚠️ DÉPRÉCIÉ : Les vues sont maintenant des composants Vue manuels (Molecules).
+   * Cette méthode n'est plus utilisée.
    *
+   * @deprecated Les vues sont maintenant des composants Vue manuels dans Pages/Molecules/entity/{entity}/
    * @param {string} viewName - Nom de la vue (compact, minimal, large)
    * @param {Object} ctx - Contexte
    * @returns {Object} Configuration de la vue
    */
   getViewConfig(viewName, ctx = {}) {
-    throw new Error(`${this.constructor.name}.getViewConfig() doit être implémentée`);
+    throw new Error(`${this.constructor.name}.getViewConfig() est déprécié. Les vues sont maintenant des composants Vue manuels.`);
   }
 
   /**

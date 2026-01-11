@@ -1979,6 +1979,13 @@
     "file": "data-display/Document.vue"
   },
   {
+    "name": "CustomCellExample",
+    "description": "CustomCellExample — Exemple de composant personnalisé pour les cellules",
+    "props": [],
+    "slots": [],
+    "file": "data-display/CustomCellExample.vue"
+  },
+  {
     "name": "Container",
     "description": "Container Atom (Tailwind)",
     "props": [

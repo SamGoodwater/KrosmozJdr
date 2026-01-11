@@ -10,7 +10,7 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import { getPanoplyFieldDescriptors, PANOPLY_VIEW_FIELDS } from '@/Entities/panoply/panoply-descriptors';
+import { getPanoplyFieldDescriptors, PANOPLY_QUICK_EDIT_FIELDS } from '@/Entities/panoply/panoply-descriptors';
 
 describe('panoply-descriptors', () => {
     describe('Structure des descriptors', () => {
@@ -26,11 +26,14 @@ describe('panoply-descriptors', () => {
             });
         });
 
-        it('tous les descriptors ont une propriété display', () => {
+        it('tous les descriptors ont une propriété display avec sizes (pour les tableaux)', () => {
             const descriptors = getPanoplyFieldDescriptors();
             Object.values(descriptors).forEach((desc) => {
-                expect(desc).toHaveProperty('display');
-                expect(desc.display).toHaveProperty('views');
+                if (desc.display) {
+                    // display.views est obsolète (vues manuelles maintenant)
+                    // display.sizes est utilisé pour les tableaux (xs-xl)
+                    expect(desc.display).toHaveProperty('sizes');
+                }
             });
         });
     });
@@ -52,7 +55,7 @@ describe('panoply-descriptors', () => {
     describe('Configuration bulk', () => {
         it('les champs bulk-enabled ont enabled: true', () => {
             const descriptors = getPanoplyFieldDescriptors();
-            const bulkEnabledFields = PANOPLY_VIEW_FIELDS?.quickEdit || [];
+            const bulkEnabledFields = PANOPLY_QUICK_EDIT_FIELDS || [];
 
             bulkEnabledFields.forEach((fieldKey) => {
                 const desc = descriptors[fieldKey];

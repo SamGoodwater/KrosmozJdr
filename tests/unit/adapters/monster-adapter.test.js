@@ -1,124 +1,21 @@
 /**
- * Tests unitaires pour monster-adapter
+ * Tests unitaires pour monster-adapter (version simplifiée)
  *
  * @description
  * Vérifie que :
- * - buildMonsterCell génère correctement les cellules
  * - adaptMonsterEntitiesTableResponse transforme correctement les données
- * - Les valeurs nulles sont gérées
- * - Les relations sont gérées
+ * - Les entités brutes sont converties en instances de Monster
+ * - Les cellules ne sont plus pré-générées (elles sont vides)
+ * - L'instance Monster est passée dans rowParams.entity pour génération à la volée
  */
 
-import { describe, it, expect, vi } from 'vitest';
-import { buildMonsterCell, adaptMonsterEntitiesTableResponse } from '@/Entities/monster/monster-adapter';
+import { describe, it, expect } from 'vitest';
+import { adaptMonsterEntitiesTableResponse } from '@/Entities/monster/monster-adapter';
+import { Monster } from '@/Models/Entity/Monster';
 
-// Mock de route() pour les tests
-vi.mock('@inertiajs/vue3', () => ({
-    route: (name, params) => {
-        if (name === 'entities.monsters.show') {
-            return `/monsters/${params?.monster || params || ''}`;
-        }
-        return `#${name}`;
-    },
-}));
-
-describe('monster-adapter', () => {
-    describe('buildMonsterCell', () => {
-        it('génère une cellule route pour name', () => {
-            const entity = { id: 1, name: 'Test Monster' };
-            const cell = buildMonsterCell('name', entity, {}, { context: 'table' });
-
-            expect(cell.type).toBe('route');
-            expect(cell.value).toBe('Test Monster');
-            expect(cell.params.href).toContain('/monsters/1');
-            expect(cell.params.searchValue).toBe('Test Monster');
-            expect(cell.params.sortValue).toBe('Test Monster');
-        });
-
-        it('génère une cellule text pour level', () => {
-            const entity = { id: 1, level: '10' };
-            const cell = buildMonsterCell('level', entity, {}, { context: 'table' });
-
-            expect(cell.type).toBe('text');
-            expect(cell.value).toBe('10');
-            expect(cell.params.sortValue).toBe(10);
-        });
-
-        it('génère "-" pour level null', () => {
-            const entity = { id: 1, level: null };
-            const cell = buildMonsterCell('level', entity, {}, { context: 'table' });
-
-            expect(cell.type).toBe('text');
-            expect(cell.value).toBe('-');
-        });
-
-        it('génère une cellule badge pour hostility', () => {
-            const entity = { id: 1, hostility: 1 };
-            const cell = buildMonsterCell('hostility', entity, {}, { context: 'table' });
-
-            expect(cell.type).toBe('badge');
-            expect(cell.value).toBe('Neutre');
-            expect(cell.params.color).toBe('info');
-        });
-
-        it('génère une cellule badge pour usable (true)', () => {
-            const entity = { id: 1, usable: 1 };
-            const cell = buildMonsterCell('usable', entity, {}, { context: 'table' });
-
-            expect(cell.type).toBe('badge');
-            expect(cell.value).toBe('Oui');
-            expect(cell.params.color).toBe('success');
-            expect(cell.params.sortValue).toBe(1);
-        });
-
-        it('génère une cellule badge pour usable (false)', () => {
-            const entity = { id: 1, usable: 0 };
-            const cell = buildMonsterCell('usable', entity, {}, { context: 'table' });
-
-            expect(cell.type).toBe('badge');
-            expect(cell.value).toBe('Non');
-            expect(cell.params.color).toBe('neutral');
-            expect(cell.params.sortValue).toBe(0);
-        });
-
-        it('génère une cellule text pour life', () => {
-            const entity = { id: 1, life: '30' };
-            const cell = buildMonsterCell('life', entity, {}, { context: 'table' });
-
-            expect(cell.type).toBe('text');
-            expect(cell.value).toBe('30');
-        });
-
-        it('génère une cellule text pour pa', () => {
-            const entity = { id: 1, pa: '6' };
-            const cell = buildMonsterCell('pa', entity, {}, { context: 'table' });
-
-            expect(cell.type).toBe('text');
-            expect(cell.value).toBe('6');
-        });
-
-        it('génère une cellule text pour created_by', () => {
-            const entity = {
-                id: 1,
-                createdBy: { id: 1, name: 'John Doe', email: 'john@example.com' },
-            };
-            const cell = buildMonsterCell('created_by', entity, {}, { context: 'table' });
-
-            expect(cell.type).toBe('text');
-            expect(cell.value).toBe('John Doe');
-        });
-
-        it('génère "-" pour created_by null', () => {
-            const entity = { id: 1, createdBy: null };
-            const cell = buildMonsterCell('created_by', entity, {}, { context: 'table' });
-
-            expect(cell.type).toBe('text');
-            expect(cell.value).toBe('-');
-        });
-    });
-
+describe('monster-adapter (version simplifiée)', () => {
     describe('adaptMonsterEntitiesTableResponse', () => {
-        it('transforme entities en TableResponse', () => {
+        it('transforme entities en TableResponse avec instances Monster', () => {
             const response = {
                 meta: {
                     entityType: 'monsters',
@@ -136,9 +33,13 @@ describe('monster-adapter', () => {
             expect(result.meta.entityType).toBe('monsters');
             expect(result.rows).toHaveLength(2);
             expect(result.rows[0].id).toBe(1);
-            expect(result.rows[0].cells.name.type).toBe('route');
-            expect(result.rows[0].cells.name.value).toBe('Monster 1');
-            expect(result.rows[0].rowParams.entity).toBeDefined();
+            
+            // Les cellules ne sont plus pré-générées
+            expect(result.rows[0].cells).toEqual({});
+            
+            // L'instance Monster est passée dans rowParams.entity
+            expect(result.rows[0].rowParams.entity).toBeInstanceOf(Monster);
+            expect(result.rows[0].rowParams.entity.id).toBe(1);
         });
 
         it('gère un tableau vide', () => {
@@ -164,7 +65,7 @@ describe('monster-adapter', () => {
             expect(result.rows).toHaveLength(0);
         });
 
-        it('préserve les rowParams.entity', () => {
+        it('préserve toutes les propriétés de l\'entité dans l\'instance Monster', () => {
             const entity = { id: 1, name: 'Test', level: '10', customField: 'custom' };
             const response = {
                 meta: { entityType: 'monsters', query: {}, capabilities: {} },
@@ -173,9 +74,29 @@ describe('monster-adapter', () => {
 
             const result = adaptMonsterEntitiesTableResponse(response);
 
-            expect(result.rows[0].rowParams.entity).toEqual(entity);
-            expect(result.rows[0].rowParams.entity.customField).toBe('custom');
+            const monster = result.rows[0].rowParams.entity;
+            expect(monster).toBeInstanceOf(Monster);
+            expect(monster.id).toBe(1);
+            expect(monster.name).toBe('Test');
+            // Les champs personnalisés sont préservés dans _data
+            expect(monster._data?.customField).toBe('custom');
+        });
+
+        it('gère les valeurs nulles correctement', () => {
+            const response = {
+                meta: { entityType: 'monsters', query: {}, capabilities: {} },
+                entities: [
+                    { id: 1, name: 'Test', level: null },
+                ],
+            };
+
+            const result = adaptMonsterEntitiesTableResponse(response);
+
+            const monster = result.rows[0].rowParams.entity;
+            expect(monster).toBeInstanceOf(Monster);
+            expect(monster.id).toBe(1);
+            expect(monster.name).toBe('Test');
+            expect(monster.level).toBeNull();
         });
     });
 });
-

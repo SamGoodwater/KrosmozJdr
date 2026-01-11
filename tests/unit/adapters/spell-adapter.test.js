@@ -1,142 +1,21 @@
 /**
- * Tests unitaires pour spell-adapter
+ * Tests unitaires pour spell-adapter (version simplifiée)
  *
  * @description
  * Vérifie que :
- * - buildSpellCell génère correctement les cellules
  * - adaptSpellEntitiesTableResponse transforme correctement les données
- * - Les valeurs nulles sont gérées
- * - Les relations sont gérées
- * - Le formatage fonctionne correctement
+ * - Les entités brutes sont converties en instances de Spell
+ * - Les cellules ne sont plus pré-générées (elles sont vides)
+ * - L'instance Spell est passée dans rowParams.entity pour génération à la volée
  */
 
-import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { buildSpellCell, adaptSpellEntitiesTableResponse } from '@/Entities/spell/spell-adapter';
+import { describe, it, expect } from 'vitest';
+import { adaptSpellEntitiesTableResponse } from '@/Entities/spell/spell-adapter';
+import { Spell } from '@/Models/Entity/Spell';
 
-// Mock de route() pour les tests
-vi.mock('@inertiajs/vue3', () => ({
-    route: (name, params) => {
-        if (name === 'entities.spells.show') {
-            return `/spells/${params?.spell || params || ''}`;
-        }
-        return `#${name}`;
-    },
-}));
-
-describe('spell-adapter', () => {
-    describe('buildSpellCell', () => {
-        it('génère une cellule route pour name', () => {
-            const entity = { id: 1, name: 'Test Spell' };
-            const cell = buildSpellCell('name', entity, {}, { context: 'table' });
-
-            expect(cell.type).toBe('route');
-            expect(cell.value).toBe('Test Spell');
-            expect(cell.params.href).toContain('/spells/1');
-            expect(cell.params.searchValue).toBe('Test Spell');
-            expect(cell.params.sortValue).toBe('Test Spell');
-        });
-
-        it('génère une cellule text pour level', () => {
-            const entity = { id: 1, level: '10' };
-            const cell = buildSpellCell('level', entity, {}, { context: 'table' });
-
-            expect(cell.type).toBe('text');
-            expect(cell.value).toBe('10');
-            expect(cell.params.sortValue).toBe(10);
-        });
-
-        it('génère "-" pour level null', () => {
-            const entity = { id: 1, level: null };
-            const cell = buildSpellCell('level', entity, {}, { context: 'table' });
-
-            expect(cell.type).toBe('text');
-            expect(cell.value).toBe('-');
-        });
-
-        it('génère une cellule text pour pa', () => {
-            const entity = { id: 1, pa: '3' };
-            const cell = buildSpellCell('pa', entity, {}, { context: 'table' });
-
-            expect(cell.type).toBe('text');
-            expect(cell.value).toBe('3');
-            expect(cell.params.sortValue).toBe(3);
-        });
-
-        it('génère une cellule text pour po', () => {
-            const entity = { id: 1, po: '2' };
-            const cell = buildSpellCell('po', entity, {}, { context: 'table' });
-
-            expect(cell.type).toBe('text');
-            expect(cell.value).toBe('2');
-        });
-
-        it('génère une cellule badge pour usable (true)', () => {
-            const entity = { id: 1, usable: 1 };
-            const cell = buildSpellCell('usable', entity, {}, { context: 'table' });
-
-            expect(cell.type).toBe('badge');
-            expect(cell.value).toBe('Oui');
-            expect(cell.params.color).toBe('success');
-            expect(cell.params.sortValue).toBe(1);
-        });
-
-        it('génère une cellule badge pour usable (false)', () => {
-            const entity = { id: 1, usable: 0 };
-            const cell = buildSpellCell('usable', entity, {}, { context: 'table' });
-
-            expect(cell.type).toBe('badge');
-            expect(cell.value).toBe('Non');
-            expect(cell.params.color).toBe('neutral');
-            expect(cell.params.sortValue).toBe(0);
-        });
-
-        it('génère une cellule badge pour is_visible', () => {
-            const entity = { id: 1, is_visible: 'admin' };
-            const cell = buildSpellCell('is_visible', entity, {}, { context: 'table' });
-
-            expect(cell.type).toBe('badge');
-            expect(cell.value).toBe('Administrateur');
-            expect(cell.params.color).toBe('error');
-        });
-
-        it('génère une cellule text pour created_by', () => {
-            const entity = {
-                id: 1,
-                createdBy: { id: 1, name: 'John Doe', email: 'john@example.com' },
-            };
-            const cell = buildSpellCell('created_by', entity, {}, { context: 'table' });
-
-            expect(cell.type).toBe('text');
-            expect(cell.value).toBe('John Doe');
-        });
-
-        it('génère "-" pour created_by null', () => {
-            const entity = { id: 1, createdBy: null };
-            const cell = buildSpellCell('created_by', entity, {}, { context: 'table' });
-
-            expect(cell.type).toBe('text');
-            expect(cell.value).toBe('-');
-        });
-
-        it('génère une cellule text pour created_at', () => {
-            const entity = { id: 1, created_at: '2025-01-27T10:00:00.000Z' };
-            const cell = buildSpellCell('created_at', entity, {}, { context: 'table' });
-
-            expect(cell.type).toBe('text');
-            expect(cell.value).toMatch(/\d{2}\/\d{2}\/\d{4} \d{2}:\d{2}/);
-        });
-
-        it('génère "-" pour created_at null', () => {
-            const entity = { id: 1, created_at: null };
-            const cell = buildSpellCell('created_at', entity, {}, { context: 'table' });
-
-            expect(cell.type).toBe('text');
-            expect(cell.value).toBe('-');
-        });
-    });
-
+describe('spell-adapter (version simplifiée)', () => {
     describe('adaptSpellEntitiesTableResponse', () => {
-        it('transforme entities en TableResponse', () => {
+        it('transforme entities en TableResponse avec instances Spell', () => {
             const response = {
                 meta: {
                     entityType: 'spells',
@@ -154,9 +33,17 @@ describe('spell-adapter', () => {
             expect(result.meta.entityType).toBe('spells');
             expect(result.rows).toHaveLength(2);
             expect(result.rows[0].id).toBe(1);
-            expect(result.rows[0].cells.name.type).toBe('route');
-            expect(result.rows[0].cells.name.value).toBe('Spell 1');
-            expect(result.rows[0].rowParams.entity).toBeDefined();
+            
+            // Les cellules ne sont plus pré-générées
+            expect(result.rows[0].cells).toEqual({});
+            
+            // L'instance Spell est passée dans rowParams.entity
+            expect(result.rows[0].rowParams.entity).toBeInstanceOf(Spell);
+            expect(result.rows[0].rowParams.entity.id).toBe(1);
+            expect(result.rows[0].rowParams.entity.name).toBe('Spell 1');
+            expect(result.rows[0].rowParams.entity.level).toBe(10);
+            expect(result.rows[0].rowParams.entity.pa).toBe(3);
+            expect(result.rows[0].rowParams.entity.po).toBe(2);
         });
 
         it('gère un tableau vide', () => {
@@ -182,23 +69,8 @@ describe('spell-adapter', () => {
             expect(result.rows).toHaveLength(0);
         });
 
-        it('génère toutes les colonnes définies', () => {
-            const response = {
-                meta: { entityType: 'spells', query: {}, capabilities: {} },
-                entities: [{ id: 1, name: 'Test', level: '10' }],
-            };
-
-            const result = adaptSpellEntitiesTableResponse(response);
-
-            const expectedColumns = ['id', 'name', 'level', 'pa', 'po', 'created_by', 'created_at', 'updated_at'];
-            const actualColumns = Object.keys(result.rows[0].cells);
-            expectedColumns.forEach((col) => {
-                expect(actualColumns).toContain(col);
-            });
-        });
-
-        it('préserve les rowParams.entity', () => {
-            const entity = { id: 1, name: 'Test', level: '10', customField: 'custom' };
+        it('préserve toutes les propriétés de l\'entité dans l\'instance Spell', () => {
+            const entity = { id: 1, name: 'Test', level: '15', pa: '4', po: '3', customField: 'custom' };
             const response = {
                 meta: { entityType: 'spells', query: {}, capabilities: {} },
                 entities: [entity],
@@ -206,8 +78,34 @@ describe('spell-adapter', () => {
 
             const result = adaptSpellEntitiesTableResponse(response);
 
-            expect(result.rows[0].rowParams.entity).toEqual(entity);
-            expect(result.rows[0].rowParams.entity.customField).toBe('custom');
+            const spell = result.rows[0].rowParams.entity;
+            expect(spell).toBeInstanceOf(Spell);
+            expect(spell.id).toBe(1);
+            expect(spell.name).toBe('Test');
+            expect(spell.level).toBe(15);
+            expect(spell.pa).toBe(4);
+            expect(spell.po).toBe(3);
+            // Les champs personnalisés sont préservés dans _data
+            expect(spell._data?.customField).toBe('custom');
+        });
+
+        it('gère les valeurs nulles correctement', () => {
+            const response = {
+                meta: { entityType: 'spells', query: {}, capabilities: {} },
+                entities: [
+                    { id: 1, name: 'Test', level: null, pa: null, po: null },
+                ],
+            };
+
+            const result = adaptSpellEntitiesTableResponse(response);
+
+            const spell = result.rows[0].rowParams.entity;
+            expect(spell).toBeInstanceOf(Spell);
+            expect(spell.id).toBe(1);
+            expect(spell.name).toBe('Test');
+            expect(spell.level).toBeNull();
+            expect(spell.pa).toBeNull();
+            expect(spell.po).toBeNull();
         });
     });
 });

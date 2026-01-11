@@ -14,12 +14,14 @@
 
 import { adaptResourceEntitiesTableResponse } from "@/Entities/resource/resource-adapter";
 import { Resource } from "@/Models/Entity/Resource";
-import { adaptResourceTypeEntitiesTableResponse, buildResourceTypeCell } from "@/Entities/resource-type/resource-type-adapter";
+import { adaptResourceTypeEntitiesTableResponse } from "@/Entities/resource-type/resource-type-adapter";
+import { ResourceType } from "@/Models/Entity/ResourceType";
 import { adaptItemEntitiesTableResponse } from "@/Entities/item/item-adapter";
 import { Item } from "@/Models/Entity/Item";
 import { adaptSpellEntitiesTableResponse } from "@/Entities/spell/spell-adapter";
 import { Spell } from "@/Models/Entity/Spell";
-import { adaptMonsterEntitiesTableResponse, buildMonsterCell } from "@/Entities/monster/monster-adapter";
+import { adaptMonsterEntitiesTableResponse } from "@/Entities/monster/monster-adapter";
+import { Monster } from "@/Models/Entity/Monster";
 import { adaptCreatureEntitiesTableResponse } from "@/Entities/creature/creature-adapter";
 import { Creature } from "@/Models/Entity/Creature";
 import { adaptNpcEntitiesTableResponse } from "@/Entities/npc/npc-adapter";
@@ -43,7 +45,7 @@ import { Specialization } from "@/Models/Entity/Specialization";
 import { adaptShopEntitiesTableResponse } from "@/Entities/shop/shop-adapter";
 import { Shop } from "@/Models/Entity/Shop";
 import { getResourceFieldDescriptors, RESOURCE_QUICK_EDIT_FIELDS } from "@/Entities/resource/resource-descriptors";
-import { getResourceTypeFieldDescriptors, RESOURCE_TYPE_VIEW_FIELDS } from "@/Entities/resource-type/resource-type-descriptors";
+import { getResourceTypeFieldDescriptors, RESOURCE_TYPE_QUICK_EDIT_FIELDS } from "@/Entities/resource-type/resource-type-descriptors";
 import { getItemFieldDescriptors, ITEM_QUICK_EDIT_FIELDS } from "@/Entities/item/item-descriptors";
 import { getSpellFieldDescriptors, SPELL_QUICK_EDIT_FIELDS } from "@/Entities/spell/spell-descriptors";
 import { getMonsterFieldDescriptors, MONSTER_QUICK_EDIT_FIELDS } from "@/Entities/monster/monster-descriptors";
@@ -129,8 +131,22 @@ export function getEntityConfig(entityType) {
       return {
         key,
         getDescriptors: getResourceTypeFieldDescriptors,
-        buildCell: buildResourceTypeCell,
-        viewFields: RESOURCE_TYPE_VIEW_FIELDS,
+        // buildCell pour ResourceType : utilise resourceType.toCell() depuis l'instance du modèle
+        buildCell: (fieldKey, entityData, ctx = {}, opts = {}) => {
+          // Si entityData est déjà une instance ResourceType, l'utiliser directement
+          // Sinon, créer une instance depuis les données brutes
+          const resourceType = entityData instanceof ResourceType 
+            ? entityData 
+            : new ResourceType(entityData);
+          
+          // Générer la cellule via resourceType.toCell()
+          return resourceType.toCell(fieldKey, {
+            size: opts.size || 'md',
+            context: opts.context || 'table',
+            ...opts,
+          });
+        },
+        viewFields: RESOURCE_TYPE_QUICK_EDIT_FIELDS,
         responseAdapter: adaptResourceTypeEntitiesTableResponse,
         defaults: { minimalImportantFields: ["decision", "resources_count", "dofusdb_type_id"] },
       };

@@ -11,10 +11,13 @@
  * const bulkConfig = new BulkConfig({
  *   entityType: "resource"
  * })
- *   .addField("rarity", { enabled: true, nullable: true, build: (v) => Number(v) })
+ *   .addField("rarity", { enabled: true, nullable: true })
  *   .addField("level", { enabled: true, nullable: true })
  *   .withQuickEditFields(["rarity", "level", "usable"])
  *   .build();
+ * 
+ * ⚠️ IMPORTANT : Les transformations de données sont gérées par les mappers (ex: ResourceMapper.fromBulkForm()),
+ * pas dans la configuration bulk. Le paramètre `build` est déprécié.
  */
 
 /**

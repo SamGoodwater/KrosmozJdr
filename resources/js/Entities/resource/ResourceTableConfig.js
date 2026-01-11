@@ -89,7 +89,6 @@ export function createResourceTableConfig(ctx = {}) {
         .withDefaultVisible({ xs: false, sm: false, md: false, lg: false, xl: false })
         .withOrder(0)
         .withSort(true)
-        .build()
     )
     .addColumn(
       new TableColumnConfig({
@@ -101,7 +100,6 @@ export function createResourceTableConfig(ctx = {}) {
         .withDefaultVisible({ xs: false, sm: false, md: false, lg: false, xl: false })
         .withOrder(1)
         .withSort(true)
-        .build()
     )
     .addColumn(
       new TableColumnConfig({
@@ -113,7 +111,6 @@ export function createResourceTableConfig(ctx = {}) {
         .withDefaultVisible({ xs: false, sm: false, md: false, lg: false, xl: false })
         .withOrder(2)
         .withSort(true)
-        .build()
     )
     .addColumn(
       new TableColumnConfig({
@@ -123,7 +120,6 @@ export function createResourceTableConfig(ctx = {}) {
       })
         .withDefaultVisible({ xs: false, sm: true, md: true, lg: true, xl: true })
         .withOrder(3)
-        .build()
     )
     .addColumn(
       new TableColumnConfig({
@@ -143,7 +139,6 @@ export function createResourceTableConfig(ctx = {}) {
           lg: { mode: "full" },
           xl: { mode: "full" },
         })
-        .build()
     )
     .addColumn(
       new TableColumnConfig({
@@ -175,7 +170,6 @@ export function createResourceTableConfig(ctx = {}) {
           lg: { mode: "badge" },
           xl: { mode: "badge" },
         })
-        .build()
     )
     .addColumn(
       new TableColumnConfig({
@@ -194,7 +188,6 @@ export function createResourceTableConfig(ctx = {}) {
           lg: { mode: "badge" },
           xl: { mode: "badge" },
         })
-        .build()
     )
     .addColumn(
       new TableColumnConfig({
@@ -226,7 +219,6 @@ export function createResourceTableConfig(ctx = {}) {
           lg: { mode: "badge" },
           xl: { mode: "badge" },
         })
-        .build()
     )
     .addColumn(
       new TableColumnConfig({
@@ -238,7 +230,6 @@ export function createResourceTableConfig(ctx = {}) {
         .withDefaultVisible({ xs: false, sm: false, md: true, lg: true, xl: true })
         .withOrder(8)
         .withSort(true)
-        .build()
     )
     .addColumn(
       new TableColumnConfig({
@@ -250,7 +241,6 @@ export function createResourceTableConfig(ctx = {}) {
         .withDefaultVisible({ xs: false, sm: false, md: false, lg: true, xl: true })
         .withOrder(9)
         .withSort(true)
-        .build()
     )
     .addColumn(
       new TableColumnConfig({
@@ -263,7 +253,6 @@ export function createResourceTableConfig(ctx = {}) {
         .withOrder(10)
         .withSort(true)
         .withFilter({ id: "usable", type: "boolean" })
-        .build()
     )
     .addColumn(
       new TableColumnConfig({
@@ -276,7 +265,6 @@ export function createResourceTableConfig(ctx = {}) {
         .withOrder(11)
         .withSort(true)
         .withFilter({ id: "is_visible", type: "multi" })
-        .build()
     )
     .addColumn(
       new TableColumnConfig({
@@ -288,7 +276,6 @@ export function createResourceTableConfig(ctx = {}) {
         .withDefaultVisible({ xs: false, sm: false, md: false, lg: false, xl: true })
         .withOrder(12)
         .withSort(true)
-        .build()
     );
 
   // Colonnes conditionnelles (selon permissions)
@@ -306,7 +293,6 @@ export function createResourceTableConfig(ctx = {}) {
           .withOrder(13)
           .withSort(true)
           .withFilter({ id: "auto_update", type: "boolean" })
-          .build()
       )
       .addColumn(
         new TableColumnConfig({
@@ -326,7 +312,6 @@ export function createResourceTableConfig(ctx = {}) {
             lg: { mode: "full" },
             xl: { mode: "full" },
           })
-          .build()
       );
   }
 
@@ -344,7 +329,6 @@ export function createResourceTableConfig(ctx = {}) {
           .withOrder(15)
           .withSort(true)
           .withSearch(true)
-          .build()
       )
       .addColumn(
         new TableColumnConfig({
@@ -357,7 +341,6 @@ export function createResourceTableConfig(ctx = {}) {
           .withDefaultVisible({ xs: false, sm: false, md: false, lg: false, xl: false })
           .withOrder(16)
           .withSort(true)
-          .build()
       )
       .addColumn(
         new TableColumnConfig({
@@ -370,7 +353,6 @@ export function createResourceTableConfig(ctx = {}) {
           .withDefaultVisible({ xs: false, sm: false, md: false, lg: false, xl: false })
           .withOrder(17)
           .withSort(true)
-          .build()
       );
   }
 

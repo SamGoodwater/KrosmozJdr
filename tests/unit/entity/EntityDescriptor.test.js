@@ -2,10 +2,13 @@
  * Tests unitaires pour EntityDescriptor (classe de base)
  *
  * @description
+ * ⚠️ DÉPRÉCIÉ : Cette classe est dépréciée dans le nouveau système.
+ * Les tests sont conservés pour vérifier la rétrocompatibilité.
+ * 
  * Vérifie que :
  * - La classe de base fonctionne correctement
  * - Les constantes sont accessibles
- * - Les fonctions de formatage fonctionnent
+ * - Les fonctions de formatage fonctionnent (wrappers vers formatters)
  * - La validation fonctionne
  */
 

@@ -4,9 +4,19 @@
  * @description
  * Ce fichier centralise toutes les fonctions de formatage utilisées par les descriptors.
  * Ces fonctions peuvent être utilisées dans les descriptors ou dans les adapters.
+ * 
+ * ⚠️ DÉPRÉCIÉ : Les fonctions de formatage (formatRarity, formatVisibility, formatHostility, formatDate)
+ * sont maintenant des wrappers vers les formatters centralisés (Utils/Formatters/).
+ * Utilisez directement les formatters pour les nouveaux code.
+ * 
+ * @deprecated Utilisez directement les formatters : RarityFormatter, VisibilityFormatter, HostilityFormatter, DateFormatter
  */
 
 import { RARITY_OPTIONS, VISIBILITY_OPTIONS, HOSTILITY_OPTIONS, BREAKPOINTS, SCREEN_SIZES } from "./EntityDescriptorConstants.js";
+import { RarityFormatter } from "@/Utils/Formatters/RarityFormatter.js";
+import { VisibilityFormatter } from "@/Utils/Formatters/VisibilityFormatter.js";
+import { HostilityFormatter } from "@/Utils/Formatters/HostilityFormatter.js";
+import { DateFormatter } from "@/Utils/Formatters/DateFormatter.js";
 
 /**
  * Tronque un texte avec des ellipses.
@@ -36,6 +46,7 @@ export function capitalize(value) {
 /**
  * Formate une valeur de rareté.
  *
+ * @deprecated Utilisez directement RarityFormatter.format() ou RarityFormatter.toCell()
  * @param {number} value - Valeur de rareté (0-5)
  * @param {Object} options - Options de formatage
  * @param {boolean} [options.showLabel=true] - Afficher le label
@@ -43,9 +54,18 @@ export function capitalize(value) {
  * @returns {string|Object} Label ou objet avec label/color/icon
  */
 export function formatRarity(value, options = {}) {
+  if (process.env.NODE_ENV !== 'production') {
+    console.warn('[EntityDescriptorHelpers] formatRarity() est déprécié. Utilisez RarityFormatter.format() ou RarityFormatter.toCell()');
+  }
+  
   const { showLabel = true, showIcon = false } = options;
+  
+  // Utiliser le formatter centralisé
+  const label = RarityFormatter.format(value);
+  if (!label) return showLabel ? `Rareté ${value}` : "";
+  
   const option = RARITY_OPTIONS.find((opt) => opt.value === value);
-  if (!option) return showLabel ? `Rareté ${value}` : "";
+  if (!option) return showLabel ? label : "";
 
   if (showLabel && showIcon) {
     return { label: option.label, color: option.color, icon: option.icon };
@@ -59,53 +79,57 @@ export function formatRarity(value, options = {}) {
 /**
  * Formate une valeur de visibilité.
  *
+ * @deprecated Utilisez directement VisibilityFormatter.format() ou VisibilityFormatter.toCell()
  * @param {string} value - Valeur de visibilité
  * @returns {string} Label formaté
  */
 export function formatVisibility(value) {
-  const option = VISIBILITY_OPTIONS.find((opt) => opt.value === value);
-  return option?.label || capitalize(value);
+  if (process.env.NODE_ENV !== 'production') {
+    console.warn('[EntityDescriptorHelpers] formatVisibility() est déprécié. Utilisez VisibilityFormatter.format() ou VisibilityFormatter.toCell()');
+  }
+  
+  // Utiliser le formatter centralisé
+  const label = VisibilityFormatter.format(value);
+  return label || capitalize(value);
 }
 
 /**
  * Formate une valeur d'hostilité.
  *
+ * @deprecated Utilisez directement HostilityFormatter.format() ou HostilityFormatter.toCell()
  * @param {number} value - Valeur d'hostilité (0-4)
  * @returns {string} Label formaté
  */
 export function formatHostility(value) {
-  const option = HOSTILITY_OPTIONS.find((opt) => opt.value === value);
-  return option?.label || `Hostilité ${value}`;
+  if (process.env.NODE_ENV !== 'production') {
+    console.warn('[EntityDescriptorHelpers] formatHostility() est déprécié. Utilisez HostilityFormatter.format() ou HostilityFormatter.toCell()');
+  }
+  
+  // Utiliser le formatter centralisé
+  const label = HostilityFormatter.format(value);
+  return label || `Hostilité ${value}`;
 }
 
 /**
  * Formate une date selon la taille d'écran.
  *
+ * @deprecated Utilisez directement DateFormatter.format() ou DateFormatter.toCell()
  * @param {string|Date} value - Date à formater
  * @param {string} size - Taille d'écran (xs, sm, md, lg, xl, auto)
  * @returns {string} Date formatée
  */
 export function formatDate(value, size = "auto") {
+  if (process.env.NODE_ENV !== 'production') {
+    console.warn('[EntityDescriptorHelpers] formatDate() est déprécié. Utilisez DateFormatter.format() ou DateFormatter.toCell()');
+  }
+  
   if (!value) return "";
 
-  const date = value instanceof Date ? value : new Date(value);
-  if (isNaN(date.getTime())) return "";
-
   const actualSize = size === "auto" ? getCurrentScreenSize() : size;
-
-  // Format court pour petits écrans
-  if (actualSize === "xs" || actualSize === "sm") {
-    return date.toLocaleDateString("fr-FR", { day: "2-digit", month: "2-digit", year: "2-digit" });
-  }
-
-  // Format complet pour grands écrans
-  return date.toLocaleDateString("fr-FR", {
-    day: "2-digit",
-    month: "2-digit",
-    year: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-  });
+  
+  // Utiliser le formatter centralisé
+  const formatted = DateFormatter.format(value, { format: 'auto', size: actualSize });
+  return formatted || "";
 }
 
 /**

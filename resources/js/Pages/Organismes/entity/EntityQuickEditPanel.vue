@@ -189,6 +189,7 @@ const {
   fieldMeta,
   mode: props.mode,
   filteredIds: toRef(props, "filteredIds"),
+  entityType: props.entityType,
 });
 
 const apply = () => {

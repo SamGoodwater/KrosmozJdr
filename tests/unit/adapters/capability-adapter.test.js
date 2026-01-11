@@ -1,104 +1,21 @@
 /**
- * Tests unitaires pour capability-adapter
+ * Tests unitaires pour capability-adapter (version simplifiée)
  *
  * @description
  * Vérifie que :
- * - buildCapabilityCell génère correctement les cellules
  * - adaptCapabilityEntitiesTableResponse transforme correctement les données
- * - Les valeurs nulles sont gérées
- * - Les relations sont gérées
+ * - Les entités brutes sont converties en instances de Capability
+ * - Les cellules ne sont plus pré-générées (elles sont vides)
+ * - L'instance Capability est passée dans rowParams.entity pour génération à la volée
  */
 
-import { describe, it, expect, vi } from 'vitest';
-import { buildCapabilityCell, adaptCapabilityEntitiesTableResponse } from '@/Entities/capability/capability-adapter';
+import { describe, it, expect } from 'vitest';
+import { adaptCapabilityEntitiesTableResponse } from '@/Entities/capability/capability-adapter';
+import { Capability } from '@/Models/Entity/Capability';
 
-// Mock de route() pour les tests
-vi.mock('@inertiajs/vue3', () => ({
-    route: (name, params) => {
-        if (name === 'entities.capabilities.show') {
-            return `/capabilities/${params?.capability || params || ''}`;
-        }
-        return `#${name}`;
-    },
-}));
-
-describe('capability-adapter', () => {
-    describe('buildCapabilityCell', () => {
-        it('génère une cellule route pour name', () => {
-            const entity = { id: 1, name: 'Test Capability' };
-            const cell = buildCapabilityCell('name', entity, {}, { context: 'table' });
-
-            expect(cell.type).toBe('route');
-            expect(cell.value).toBe('Test Capability');
-            expect(cell.params.href).toContain('/capabilities/1');
-            expect(cell.params.searchValue).toBe('Test Capability');
-            expect(cell.params.sortValue).toBe('Test Capability');
-        });
-
-        it('génère une cellule text pour level', () => {
-            const entity = { id: 1, level: '10' };
-            const cell = buildCapabilityCell('level', entity, {}, { context: 'table' });
-
-            expect(cell.type).toBe('text');
-            expect(cell.value).toBe('10');
-        });
-
-        it('génère "-" pour level null', () => {
-            const entity = { id: 1, level: null };
-            const cell = buildCapabilityCell('level', entity, {}, { context: 'table' });
-
-            expect(cell.type).toBe('text');
-            expect(cell.value).toBe('-');
-        });
-
-        it('génère une cellule text pour pa', () => {
-            const entity = { id: 1, pa: '5' };
-            const cell = buildCapabilityCell('pa', entity, {}, { context: 'table' });
-
-            expect(cell.type).toBe('text');
-            expect(cell.value).toBe('5');
-        });
-
-        it('génère une cellule badge pour usable', () => {
-            const entity = { id: 1, usable: 1 };
-            const cell = buildCapabilityCell('usable', entity, {}, { context: 'table' });
-
-            expect(cell.type).toBe('badge');
-            expect(cell.value).toBe('Oui');
-            expect(cell.params.color).toBe('success');
-        });
-
-        it('génère une cellule badge pour is_visible', () => {
-            const entity = { id: 1, is_visible: 'admin' };
-            const cell = buildCapabilityCell('is_visible', entity, {}, { context: 'table' });
-
-            expect(cell.type).toBe('badge');
-            expect(cell.value).toBe('Administrateur');
-            expect(cell.params.color).toBe('error');
-        });
-
-        it('génère une cellule text pour created_by', () => {
-            const entity = {
-                id: 1,
-                createdBy: { id: 1, name: 'John Doe', email: 'john@example.com' },
-            };
-            const cell = buildCapabilityCell('created_by', entity, {}, { context: 'table' });
-
-            expect(cell.type).toBe('text');
-            expect(cell.value).toBe('John Doe');
-        });
-
-        it('génère "-" pour created_by null', () => {
-            const entity = { id: 1, createdBy: null };
-            const cell = buildCapabilityCell('created_by', entity, {}, { context: 'table' });
-
-            expect(cell.type).toBe('text');
-            expect(cell.value).toBe('-');
-        });
-    });
-
+describe('capability-adapter (version simplifiée)', () => {
     describe('adaptCapabilityEntitiesTableResponse', () => {
-        it('transforme entities en TableResponse', () => {
+        it('transforme entities en TableResponse avec instances Capability', () => {
             const response = {
                 meta: {
                     entityType: 'capabilities',
@@ -106,8 +23,8 @@ describe('capability-adapter', () => {
                     capabilities: { viewAny: true, updateAny: true },
                 },
                 entities: [
-                    { id: 1, name: 'Capability 1' },
-                    { id: 2, name: 'Capability 2' },
+                    { id: 1, name: 'Capability 1', description: 'Desc 1' },
+                    { id: 2, name: 'Capability 2', description: 'Desc 2' },
                 ],
             };
 
@@ -116,9 +33,14 @@ describe('capability-adapter', () => {
             expect(result.meta.entityType).toBe('capabilities');
             expect(result.rows).toHaveLength(2);
             expect(result.rows[0].id).toBe(1);
-            expect(result.rows[0].cells.name.type).toBe('route');
-            expect(result.rows[0].cells.name.value).toBe('Capability 1');
-            expect(result.rows[0].rowParams.entity).toBeDefined();
+            
+            // Les cellules ne sont plus pré-générées
+            expect(result.rows[0].cells).toEqual({});
+            
+            // L'instance Capability est passée dans rowParams.entity
+            expect(result.rows[0].rowParams.entity).toBeInstanceOf(Capability);
+            expect(result.rows[0].rowParams.entity.id).toBe(1);
+            expect(result.rows[0].rowParams.entity.name).toBe('Capability 1');
         });
 
         it('gère un tableau vide', () => {
@@ -144,8 +66,8 @@ describe('capability-adapter', () => {
             expect(result.rows).toHaveLength(0);
         });
 
-        it('préserve les rowParams.entity', () => {
-            const entity = { id: 1, name: 'Test', customField: 'custom' };
+        it('préserve toutes les propriétés de l\'entité dans l\'instance Capability', () => {
+            const entity = { id: 1, name: 'Test', description: 'Test desc', customField: 'custom' };
             const response = {
                 meta: { entityType: 'capabilities', query: {}, capabilities: {} },
                 entities: [entity],
@@ -153,9 +75,29 @@ describe('capability-adapter', () => {
 
             const result = adaptCapabilityEntitiesTableResponse(response);
 
-            expect(result.rows[0].rowParams.entity).toEqual(entity);
-            expect(result.rows[0].rowParams.entity.customField).toBe('custom');
+            const capability = result.rows[0].rowParams.entity;
+            expect(capability).toBeInstanceOf(Capability);
+            expect(capability.id).toBe(1);
+            expect(capability.name).toBe('Test');
+            // Les champs personnalisés sont préservés dans _data
+            expect(capability._data?.customField).toBe('custom');
+        });
+
+        it('gère les valeurs nulles correctement', () => {
+            const response = {
+                meta: { entityType: 'capabilities', query: {}, capabilities: {} },
+                entities: [
+                    { id: 1, name: 'Test', description: null },
+                ],
+            };
+
+            const result = adaptCapabilityEntitiesTableResponse(response);
+
+            const capability = result.rows[0].rowParams.entity;
+            expect(capability).toBeInstanceOf(Capability);
+            expect(capability.id).toBe(1);
+            expect(capability.name).toBe('Test');
+            expect(capability.description).toBeNull();
         });
     });
 });
-

@@ -4,6 +4,9 @@ import "./bootstrap";
 // Import Cally web component pour les composants de date
 import "cally";
 
+// IMPORTANT: Charger les formatters pour qu'ils s'enregistrent automatiquement
+import "@/Utils/Formatters";
+
 import { createInertiaApp, Head, Link } from "@inertiajs/vue3";
 import { resolvePageComponent } from "laravel-vite-plugin/inertia-helpers";
 import { createApp, h } from "vue";

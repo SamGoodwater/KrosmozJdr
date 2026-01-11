@@ -1,12 +1,13 @@
 /**
- * ResourceType field descriptors (Option B)
+ * ResourceType field descriptors — Version simplifiée
  *
  * @description
  * Source de vérité côté frontend pour :
- * - l'affichage (cellules table + vues)
- * - l'édition (forms / bulk) [à généraliser ensuite]
+ * - Configuration tableau (affichage des cellules selon la taille xs-xl)
+ * - Configuration formulaires (édition simple et bulk)
  *
- * ⚠️ Sécurité : ces descriptors ne sont que de l'UX. Le backend reste la vérité (Policies + validation).
+ * ⚠️ Les vues (Large, Compact, Minimal, Text) sont maintenant des composants Vue manuels.
+ * ⚠️ Sécurité : ces descriptors ne sont que de l'UX. Le backend reste la vérité (Policies + filtrage des champs).
  *
  * @example
  * import { getResourceTypeFieldDescriptors } from "@/Entities/resource-type/resource-type-descriptors";
@@ -15,48 +16,37 @@
 
 /**
  * @typedef {Object} ResourceTypeFieldDescriptor
- * @property {string} key
- * @property {string} label
- * @property {string} [description]
- * @property {string} [tooltip]
- * @property {string|null} [icon]
- * @property {string|null|"auto"} [color]
- * @property {"text"|"number"|"bool"|"date"|"image"|"link"|"enum"} [format]
- * @property {(ctx: any) => boolean} [visibleIf]
- * @property {(ctx: any) => boolean} [editableIf]
- * @property {Object} [display]
- * @property {Record<"table"|"text"|"compact"|"minimal"|"extended", { size: "small"|"normal"|"large", mode?: string }>} [display.views]
- * @property {Record<"small"|"normal"|"large", any>} [display.sizes]
+ * @property {string} key - Clé unique du champ
+ * @property {string} label - Libellé affiché
+ * @property {string} [icon] - Icône FontAwesome
+ * @property {(ctx: any) => boolean} [visibleIf] - Fonction conditionnelle pour la visibilité
+ * @property {(ctx: any) => boolean} [editableIf] - Fonction conditionnelle pour l'édition
+ * @property {Object} [display] - Configuration de l'affichage dans les tableaux
+ * @property {Record<"xs"|"sm"|"md"|"lg"|"xl", {mode?: string, truncate?: number}>} [display.sizes] - Configuration par taille d'écran
+ * @property {Object} [edit] - Configuration de l'édition
+ * @property {Object} [edit.form] - Configuration du formulaire d'édition
+ * @property {"text"|"textarea"|"select"|"checkbox"|"number"|"date"|"file"} [edit.form.type] - Type de champ
+ * @property {string} [edit.form.label] - Libellé spécifique pour le formulaire
+ * @property {string} [edit.form.group] - Groupe de champs
+ * @property {string} [edit.form.help] - Texte d'aide
+ * @property {boolean} [edit.form.required] - Champ obligatoire
+ * @property {any} [edit.form.defaultValue] - Valeur par défaut
+ * @property {Array<{value: any, label: string}>|Function} [edit.form.options] - Options pour les selects
+ * @property {Object} [edit.form.bulk] - Configuration pour l'édition en masse
+ * @property {boolean} [edit.form.bulk.enabled] - Activer l'édition en masse
+ * @property {boolean} [edit.form.bulk.nullable] - Permettre null/vide en bulk
+ * @property {Function} [edit.form.bulk.build] - ⚠️ DÉPRÉCIÉ : Les transformations sont maintenant dans les mappers (ex: ResourceMapper.fromBulkForm())
  */
-
-export const DEFAULT_RESOURCE_TYPE_FIELD_VIEWS = Object.freeze({
-  table: { size: "small" },
-  text: { size: "normal" },
-  compact: { size: "small" },
-  minimal: { size: "small" },
-  extended: { size: "large" },
-});
 
 /**
- * Ordre d'affichage "ResourceType" par vue.
- *
- * @description
- * (v1) On centralise l'ordre ici pour commencer (comme `resource`).
+ * Champs affichés dans le panneau d'édition rapide (sélection multiple).
+ * ⚠️ IMPORTANT : Doit rester aligné avec le backend (bulk controller).
  */
-export const RESOURCE_TYPE_VIEW_FIELDS = Object.freeze({
-  quickEdit: ["decision", "usable", "is_visible"],
-  minimal: ["decision", "resources_count", "dofusdb_type_id"],
-  compact: ["decision", "resources_count", "seen_count", "last_seen_at", "dofusdb_type_id"],
-  extended: [
-    "decision",
-    "resources_count",
-    "seen_count",
-    "last_seen_at",
-    "dofusdb_type_id",
-    "created_at",
-    "updated_at",
-  ],
-});
+export const RESOURCE_TYPE_QUICK_EDIT_FIELDS = Object.freeze([
+  "decision",
+  "usable",
+  "is_visible",
+]);
 
 export function getResourceTypeFieldDescriptors(ctx = {}) {
   const can = ctx?.capabilities || ctx?.meta?.capabilities || null;
@@ -70,8 +60,13 @@ export function getResourceTypeFieldDescriptors(ctx = {}) {
       format: "number",
       visibleIf: () => canUpdateAny,
       display: {
-        views: DEFAULT_RESOURCE_TYPE_FIELD_VIEWS,
-        sizes: { small: { mode: "text" }, normal: { mode: "text" }, large: { mode: "text" } },
+        sizes: {
+          xs: { mode: "text" },
+          sm: { mode: "text" },
+          md: { mode: "text" },
+          lg: { mode: "text" },
+          xl: { mode: "text" },
+        },
       },
     },
     name: {
@@ -80,8 +75,13 @@ export function getResourceTypeFieldDescriptors(ctx = {}) {
       icon: "fa-solid fa-tag",
       format: "text",
       display: {
-        views: { ...DEFAULT_RESOURCE_TYPE_FIELD_VIEWS, table: { size: "small", mode: "route" } },
-        sizes: { small: { mode: "route" }, normal: { mode: "route" }, large: { mode: "route" } },
+        sizes: {
+          xs: { mode: "route", truncate: 15 },
+          sm: { mode: "route", truncate: 20 },
+          md: { mode: "route", truncate: 30 },
+          lg: { mode: "route" },
+          xl: { mode: "route" },
+        },
       },
       edit: {
         form: { type: "text", required: true, showInCompact: true, bulk: { enabled: false } },
@@ -94,8 +94,13 @@ export function getResourceTypeFieldDescriptors(ctx = {}) {
       format: "number",
       visibleIf: () => canUpdateAny,
       display: {
-        views: DEFAULT_RESOURCE_TYPE_FIELD_VIEWS,
-        sizes: { small: { mode: "text" }, normal: { mode: "text" }, large: { mode: "text" } },
+        sizes: {
+          xs: { mode: "text" },
+          sm: { mode: "text" },
+          md: { mode: "text" },
+          lg: { mode: "text" },
+          xl: { mode: "text" },
+        },
       },
       edit: {
         form: { type: "number", required: false, showInCompact: true, bulk: { enabled: false } },
@@ -107,8 +112,13 @@ export function getResourceTypeFieldDescriptors(ctx = {}) {
       icon: "fa-solid fa-circle-check",
       format: "enum",
       display: {
-        views: DEFAULT_RESOURCE_TYPE_FIELD_VIEWS,
-        sizes: { small: { mode: "badge" }, normal: { mode: "badge" }, large: { mode: "badge" } },
+        sizes: {
+          xs: { mode: "badge" },
+          sm: { mode: "badge" },
+          md: { mode: "badge" },
+          lg: { mode: "badge" },
+          xl: { mode: "badge" },
+        },
       },
       edit: {
         form: {
@@ -133,8 +143,13 @@ export function getResourceTypeFieldDescriptors(ctx = {}) {
       icon: "fa-solid fa-check-circle",
       format: "bool",
       display: {
-        views: DEFAULT_RESOURCE_TYPE_FIELD_VIEWS,
-        sizes: { small: { mode: "badge" }, normal: { mode: "badge" }, large: { mode: "badge" } },
+        sizes: {
+          xs: { mode: "badge" },
+          sm: { mode: "badge" },
+          md: { mode: "badge" },
+          lg: { mode: "badge" },
+          xl: { mode: "badge" },
+        },
       },
       edit: {
         form: {
@@ -153,8 +168,13 @@ export function getResourceTypeFieldDescriptors(ctx = {}) {
       icon: "fa-solid fa-eye",
       format: "enum",
       display: {
-        views: DEFAULT_RESOURCE_TYPE_FIELD_VIEWS,
-        sizes: { small: { mode: "badge" }, normal: { mode: "badge" }, large: { mode: "badge" } },
+        sizes: {
+          xs: { mode: "badge" },
+          sm: { mode: "badge" },
+          md: { mode: "badge" },
+          lg: { mode: "badge" },
+          xl: { mode: "badge" },
+        },
       },
       edit: {
         form: {
@@ -178,8 +198,13 @@ export function getResourceTypeFieldDescriptors(ctx = {}) {
       icon: "fa-solid fa-eye",
       format: "number",
       display: {
-        views: DEFAULT_RESOURCE_TYPE_FIELD_VIEWS,
-        sizes: { small: { mode: "text" }, normal: { mode: "text" }, large: { mode: "text" } },
+        sizes: {
+          xs: { mode: "text" },
+          sm: { mode: "text" },
+          md: { mode: "text" },
+          lg: { mode: "text" },
+          xl: { mode: "text" },
+        },
       },
     },
     last_seen_at: {
@@ -188,8 +213,13 @@ export function getResourceTypeFieldDescriptors(ctx = {}) {
       icon: "fa-solid fa-clock",
       format: "date",
       display: {
-        views: DEFAULT_RESOURCE_TYPE_FIELD_VIEWS,
-        sizes: { small: { mode: "text" }, normal: { mode: "text" }, large: { mode: "text" } },
+        sizes: {
+          xs: { mode: "text" },
+          sm: { mode: "text" },
+          md: { mode: "text" },
+          lg: { mode: "text" },
+          xl: { mode: "text" },
+        },
       },
     },
     resources_count: {
@@ -198,8 +228,13 @@ export function getResourceTypeFieldDescriptors(ctx = {}) {
       icon: "fa-solid fa-cubes",
       format: "number",
       display: {
-        views: DEFAULT_RESOURCE_TYPE_FIELD_VIEWS,
-        sizes: { small: { mode: "text" }, normal: { mode: "text" }, large: { mode: "text" } },
+        sizes: {
+          xs: { mode: "text" },
+          sm: { mode: "text" },
+          md: { mode: "text" },
+          lg: { mode: "text" },
+          xl: { mode: "text" },
+        },
       },
     },
     created_at: {
@@ -209,8 +244,13 @@ export function getResourceTypeFieldDescriptors(ctx = {}) {
       format: "date",
       visibleIf: () => canUpdateAny,
       display: {
-        views: DEFAULT_RESOURCE_TYPE_FIELD_VIEWS,
-        sizes: { small: { mode: "text" }, normal: { mode: "text" }, large: { mode: "text" } },
+        sizes: {
+          xs: { mode: "text" },
+          sm: { mode: "text" },
+          md: { mode: "text" },
+          lg: { mode: "text" },
+          xl: { mode: "text" },
+        },
       },
     },
     updated_at: {
@@ -220,8 +260,13 @@ export function getResourceTypeFieldDescriptors(ctx = {}) {
       format: "date",
       visibleIf: () => canUpdateAny,
       display: {
-        views: DEFAULT_RESOURCE_TYPE_FIELD_VIEWS,
-        sizes: { small: { mode: "text" }, normal: { mode: "text" }, large: { mode: "text" } },
+        sizes: {
+          xs: { mode: "text" },
+          sm: { mode: "text" },
+          md: { mode: "text" },
+          lg: { mode: "text" },
+          xl: { mode: "text" },
+        },
       },
     },
   };

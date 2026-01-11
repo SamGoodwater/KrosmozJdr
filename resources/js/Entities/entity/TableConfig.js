@@ -211,23 +211,23 @@ export class TableConfig {
    */
   build(ctx = {}) {
     const can = ctx?.capabilities || ctx?.meta?.capabilities || {};
-
+    
     // Vérifier si quickEdit est activé et si la permission est présente
     const quickEditEnabled = this.quickEdit.enabled && (!this.quickEdit.permission || can[this.quickEdit.permission]);
-
+    
     // Vérifier si actions est activé et si la permission est présente
     const actionsEnabled = this.actions.enabled && (!this.actions.permission || can[this.actions.permission]);
-
+    
     // Construire les colonnes
     const columns = this.columns.map((col) => (col instanceof TableColumnConfig ? col.build() : col));
-
+    
     // Trier les colonnes par ordre
     columns.sort((a, b) => {
       const orderA = a.order ?? 999;
       const orderB = b.order ?? 999;
       return orderA - orderB;
     });
-
+    
     return {
       id: this.id,
       ui: { ...this.ui },
@@ -251,6 +251,11 @@ export class TableConfig {
           permission: this.actions.permission,
           available: this.actions.available,
           defaultVisible: this.actions.defaultVisible,
+        },
+        // Stocker le contexte complet pour la récupération des descriptors
+        context: {
+          capabilities: ctx?.capabilities || ctx?.meta?.capabilities || {},
+          ...ctx, // Inclure toutes les autres propriétés du contexte (resourceTypes, etc.)
         },
       },
     };

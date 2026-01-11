@@ -1,4 +1,6 @@
-# Système d'entités — Spécifications
+# Système d'entités — Spécifications détaillées
+
+> **Voir [ARCHITECTURE_ENTITY_SYSTEM.md](./ARCHITECTURE_ENTITY_SYSTEM.md) pour la vue d'ensemble de l'architecture en 4 couches.**
 
 ## Principe
 
@@ -6,6 +8,13 @@ KrosmozJDR fonctionne à l'aide d'un système d'entités. Ce sont des objets rep
 Ils sont au centre du projet, car ce sont eux qui constituent le contenu du projet.
 Chaque entité a ses spécificités (design, propriétés différentes, permissions CRUD).
 Ces entités ont néanmoins des points communs, notamment les différents formats d'affichage. Leur construction est similaire d'une entité à l'autre.
+
+**Architecture en 4 couches :**
+1. **Models** — Logique métier et formatage
+2. **Formatters** — Formatage centralisé
+3. **Descriptors** — Configuration déclarative
+4. **Renderers** — Moteurs génériques (table, actions, formulaires)
+5. **Vues** — Layouts libres (Large, Compact, Minimal, Text)
 
 Ce fichier décrit le design, le comportement et les interactions avec ces entités, ainsi que les fonctionnalités existantes et celles à améliorer/refactoriser.
 
@@ -210,30 +219,48 @@ static fromBackendResponse(response) {
 4. **Maintenabilité** : Plus facile de modifier le formatage d'un champ
 5. **Testabilité** : Plus facile de tester la logique de formatage
 
-### Architecture proposée
+### Architecture proposée — 4 couches
 
+> **Voir [ARCHITECTURE_ENTITY_SYSTEM.md](./ARCHITECTURE_ENTITY_SYSTEM.md) pour la vue d'ensemble complète.**
+
+**Principe directeur :**
+> **Une entité n'est pas une vue**  
+> **Une vue n'est pas une config**  
+> **Une config n'est pas de la logique**
+
+**Flux de données :**
 ```
-Backend → Données brutes
-    ↓
-Entity Model (Resource, Item, etc.)
-    ├── toCell(fieldKey, options) → Cell pour tableau
-    ├── toBadge(fieldKey) → Badge configuré
-    ├── toIcon(fieldKey) → Icône configuré
-    ├── formatRarity() → Formatage spécifique
-    └── formatLevel() → Formatage spécifique
-    ↓
-Descriptor (configuration uniquement)
-    ├── TableConfig → Config colonnes
-    ├── FormConfig → Config formulaires
-    └── BulkConfig → Config quickedit
-    ↓
-Composants Vue
-    ├── Tableau → Utilise entity.toCell()
-    ├── Vue Large → Utilise entity.toBadge(), entity.formatRarity(), etc.
-    └── Vue Compact → Utilise entity.toBadge(), entity.formatRarity(), etc.
+Backend (données brutes)
+   ↓
+Models (logique métier + formatage)
+   ├── toCell(fieldKey, options) → Cell pour tableau
+   ├── Utilise Formatters pour le formatage
+   └── Cache des cellules générées
+   ↓
+Formatters (formatage centralisé)
+   ├── RarityFormatter.toCell()
+   ├── LevelFormatter.toCell()
+   └── FormatterRegistry (enregistrement automatique)
+   ↓
+Descriptors (configuration déclarative)
+   ├── resource-descriptors.js → Configuration des champs
+   ├── ResourceTableConfig.js → Config colonnes
+   ├── ResourceFormConfig.js → Config formulaires
+   └── ResourceBulkConfig.js → Config quickedit
+   ↓
+Renderers (moteurs génériques)
+   ├── EntityTanStackTable → Affiche des cells
+   ├── CellRenderer → Rendu selon cell.type
+   └── EntityActions → Actions génériques
+   ↓
+Vues (layouts libres)
+   ├── ResourceViewLarge.vue → Vue manuelle
+   ├── ResourceViewCompact.vue → Vue manuelle
+   ├── ResourceViewMinimal.vue → Vue manuelle
+   └── ResourceViewText.vue → Vue manuelle
 ```
 
-**🔄 À implémenter :** Déplacer toute la logique de formatage des adapters vers les modèles.
+**🔄 À implémenter :** Déplacer toute la logique de formatage des adapters vers les modèles et formatters.
 
 ### Système de Formatters centralisés
 

@@ -35,7 +35,7 @@
  * @property {Object} [edit.form.bulk] - Configuration pour l'édition en masse
  * @property {boolean} [edit.form.bulk.enabled] - Activer l'édition en masse
  * @property {boolean} [edit.form.bulk.nullable] - Permettre null/vide en bulk
- * @property {Function} [edit.form.bulk.build] - Fonction de transformation avant envoi
+ * @property {Function} [edit.form.bulk.build] - ⚠️ DÉPRÉCIÉ : Les transformations sont maintenant dans les mappers (ex: ResourceMapper.fromBulkForm())
  */
 
 /**

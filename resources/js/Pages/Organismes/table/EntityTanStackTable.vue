@@ -187,6 +187,16 @@ async function fetchServer() {
 
         serverRows.value = Array.isArray(adapted?.rows) ? adapted.rows : [];
         serverMeta.value = adapted?.meta || {};
+        
+        // Mettre à jour le contexte dans la config si disponible
+        if (resolvedConfig.value?._metadata) {
+            resolvedConfig.value._metadata.context = {
+                ...resolvedConfig.value._metadata.context,
+                ...serverMeta.value,
+                capabilities: serverMeta.value?.capabilities || resolvedConfig.value._metadata.context?.capabilities || {},
+            };
+        }
+        
         emit("loaded", { rows: serverRows.value, meta: serverMeta.value });
     } catch (e) {
         console.error("[EntityTanStackTable] fetch failed", e);

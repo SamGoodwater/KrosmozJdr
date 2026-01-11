@@ -1,7 +1,10 @@
 # Architecture des entités — Atomic Design
 
 **Date de création** : 2026-01-06  
-**Contexte** : Clarification de l'architecture des fichiers d'entités selon l'Atomic Design
+**Dernière mise à jour** : 2026-01-XX  
+**Contexte** : Structure des fichiers d'entités selon l'Atomic Design et l'architecture en 4 couches
+
+> **Voir [ARCHITECTURE_ENTITY_SYSTEM.md](./ARCHITECTURE_ENTITY_SYSTEM.md) pour la vue d'ensemble de l'architecture.**
 
 ---
 
@@ -11,6 +14,7 @@ Respecter strictement l'Atomic Design pour organiser tous les fichiers liés aux
 - **Séparation claire** : Logique métier ≠ UI ≠ Configuration
 - **Hiérarchie respectée** : Atoms → Molecules → Organisms → Pages
 - **Cohérence** : Même structure pour toutes les entités
+- **5 couches** : Mappers → Models → Formatters → Descriptors → Renderers → Vues
 
 ---
 

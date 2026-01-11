@@ -154,14 +154,6 @@ const handleTableAction = async (actionKey, entity, row) => {
     
     const entityId = model.id;
     if (!entityId) return;
-    const targetEntity = entity || row?.rowParams?.entity;
-    if (!targetEntity) return;
-    
-    const model = Specialization.fromArray([targetEntity])[0] || null;
-    if (!model) return;
-    
-    const entityId = model.id;
-    if (!entityId) return;
 
     switch (actionKey) {
         case 'view':

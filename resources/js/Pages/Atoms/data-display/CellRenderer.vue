@@ -5,12 +5,23 @@
  * @description
  * Rend une cellule de tableau à partir d'un objet `Cell{type,value,params}`.
  * Le backend est responsable des paramètres métier/visuels (ex: badge color, href).
+ * 
+ * Supporte également les composants personnalisés via `cell.component` et `cell.componentProps`.
  *
  * @example
  * <CellRenderer :cell="row.cells.name" />
+ * 
+ * @example Composant personnalisé
+ * // Dans le descriptor :
+ * display: {
+ *   cell: {
+ *     component: '@/Pages/Atoms/data-display/CustomCell.vue',
+ *     props: { format: 'currency', locale: 'fr-FR' }
+ *   }
+ * }
  */
 
-import { computed } from "vue";
+import { computed, defineAsyncComponent, h } from "vue";
 import Badge from "@/Pages/Atoms/data-display/Badge.vue";
 import Icon from "@/Pages/Atoms/data-display/Icon.vue";
 import Route from "@/Pages/Atoms/action/Route.vue";
@@ -29,6 +40,13 @@ const props = defineProps({
     uiColor: {
         type: String,
         default: "primary",
+    },
+    /**
+     * Entité complète (pour les composants personnalisés qui en ont besoin)
+     */
+    entity: {
+        type: Object,
+        default: null,
     },
 });
 
@@ -81,10 +99,62 @@ const boolBadgeValue = computed(() => {
 });
 
 const isBooleanBadge = computed(() => boolBadgeValue.value !== null);
+
+// Support des composants personnalisés
+const customComponent = computed(() => {
+    const component = params.value?.component || props.cell?.component;
+    if (!component) return null;
+    
+    // Si c'est déjà un composant Vue, l'utiliser directement
+    if (typeof component === 'object' && component.__name) {
+        return component;
+    }
+    
+    // Sinon, c'est un chemin string, créer un composant asynchrone
+    if (typeof component === 'string') {
+        return defineAsyncComponent(() => import(/* @vite-ignore */ component));
+    }
+    
+    return null;
+});
+
+const customComponentProps = computed(() => {
+    const componentProps = params.value?.componentProps || props.cell?.componentProps || {};
+    
+    // Si c'est une fonction, l'appeler avec la valeur et l'entité
+    if (typeof componentProps === 'function') {
+        return componentProps(value.value, props.entity, params.value);
+    }
+    
+    // Sinon, c'est un objet statique
+    const propsObj = { ...componentProps };
+    
+    // Ajouter la valeur si passValue est true (par défaut)
+    if (params.value?.passValue !== false && componentProps.passValue !== false) {
+        propsObj.value = value.value;
+    }
+    
+    // Ajouter l'entité si passEntity est true
+    if (params.value?.passEntity || componentProps.passEntity) {
+        propsObj.entity = props.entity;
+    }
+    
+    return propsObj;
+});
+
+const hasCustomComponent = computed(() => customComponent.value !== null);
 </script>
 
 <template>
-    <span v-if="type === 'badge'">
+    <!-- Composant personnalisé -->
+    <component
+        v-if="hasCustomComponent"
+        :is="customComponent"
+        v-bind="customComponentProps"
+    />
+
+    <!-- Types standards -->
+    <span v-else-if="type === 'badge'">
         <span v-if="isBooleanBadge" class="inline-flex items-center justify-center">
                 <Icon
                     :source="boolBadgeValue ? 'fa-solid fa-check' : 'fa-solid fa-xmark'"

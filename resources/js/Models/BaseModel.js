@@ -246,7 +246,9 @@ export class BaseModel {
      * @returns {Object|null} Cell object {type, value, params} ou null si valeur invalide
      */
     toCell(fieldKey, options = {}) {
-        if (!this.has(fieldKey)) {
+        // Vérifier si la clé existe dans _data (même si la valeur est null/undefined)
+        // Certains champs peuvent être null mais doivent quand même être formatés
+        if (!(fieldKey in this._data)) {
             return null;
         }
 
@@ -269,18 +271,41 @@ export class BaseModel {
         const descriptor = normalizedOptions.config[fieldKey] || {};
         const format = this._resolveFormat(fieldKey, descriptor, normalizedOptions.context, normalizedOptions.size);
 
-        // Essayer d'utiliser le formatter centralisé
-        const FormatterClass = getFormatter(fieldKey);
-        if (FormatterClass && typeof FormatterClass.toCell === 'function') {
-            const cell = FormatterClass.toCell(this._data[fieldKey], {
-                ...normalizedOptions,
-                format,
-            });
-            
-            if (cell) {
-                // Mettre en cache
-                this._cellCache.set(cacheKey, cell);
-                return cell;
+        // Vérifier si un composant personnalisé est défini dans le descriptor
+        const cellConfig = descriptor.display?.cell;
+        const hasCustomComponent = cellConfig?.component;
+
+        // Essayer d'utiliser le formatter centralisé (sauf si un composant personnalisé est défini)
+        if (!hasCustomComponent) {
+            const FormatterClass = getFormatter(fieldKey);
+            if (FormatterClass && typeof FormatterClass.toCell === 'function') {
+                try {
+                    const rawValue = this._data[fieldKey];
+                    const cell = FormatterClass.toCell(rawValue, {
+                        ...normalizedOptions,
+                        format,
+                    });
+                    
+                    if (cell && cell.type) {
+                        // Ajouter la configuration du composant personnalisé si elle existe
+                        if (cellConfig) {
+                            cell.params = cell.params || {};
+                            cell.params.component = cellConfig.component;
+                            cell.params.componentProps = cellConfig.props || {};
+                            cell.params.passEntity = cellConfig.passEntity || false;
+                            cell.params.passValue = cellConfig.passValue !== false; // true par défaut
+                        }
+                        
+                        // Mettre en cache
+                        this._cellCache.set(cacheKey, cell);
+                        return cell;
+                    }
+                } catch (e) {
+                    // En cas d'erreur dans le formatter, logger et continuer avec le fallback
+                    if (process.env.NODE_ENV !== 'production') {
+                        console.warn(`[BaseModel] Formatter error for fieldKey="${fieldKey}":`, e);
+                    }
+                }
             }
         }
 
@@ -289,6 +314,15 @@ export class BaseModel {
         if (typeof this[specificMethod] === 'function') {
             const cell = this[specificMethod](format, normalizedOptions.size, normalizedOptions);
             if (cell) {
+                // Ajouter la configuration du composant personnalisé si elle existe
+                if (cellConfig) {
+                    cell.params = cell.params || {};
+                    cell.params.component = cellConfig.component;
+                    cell.params.componentProps = cellConfig.props || {};
+                    cell.params.passEntity = cellConfig.passEntity || false;
+                    cell.params.passValue = cellConfig.passValue !== false; // true par défaut
+                }
+                
                 this._cellCache.set(cacheKey, cell);
                 return cell;
             }
@@ -296,6 +330,16 @@ export class BaseModel {
 
         // Fallback : cellule par défaut
         const defaultCell = this._toDefaultCell(fieldKey, format, normalizedOptions.size, normalizedOptions);
+        
+        // Ajouter la configuration du composant personnalisé si elle existe
+        if (cellConfig) {
+            defaultCell.params = defaultCell.params || {};
+            defaultCell.params.component = cellConfig.component;
+            defaultCell.params.componentProps = cellConfig.props || {};
+            defaultCell.params.passEntity = cellConfig.passEntity || false;
+            defaultCell.params.passValue = cellConfig.passValue !== false; // true par défaut
+        }
+        
         this._cellCache.set(cacheKey, defaultCell);
         return defaultCell;
     }

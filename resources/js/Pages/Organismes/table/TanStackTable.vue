@@ -351,15 +351,18 @@ onUnmounted(() => {
 const getCellFor = (row, col) => {
     const cellId = col?.cellId || col?.id;
     
-    // Si la cellule existe déjà (pré-générée), l'utiliser
-    const fromCells = row?.cells?.[cellId];
-    if (fromCells) return fromCells;
-
     // Génération à la volée pour Resource (et autres entités avec modèles)
+    // IMPORTANT: Ne pas utiliser row.cells car cela peut causer des problèmes de réactivité
+    // et de partage de données entre les lignes. Chaque cellule doit être générée à la volée.
     const entity = row?.rowParams?.entity;
     if (entity && typeof entity.toCell === "function") {
         // Récupérer la configuration de la colonne pour le format
         const colFormat = col?.format?.[currentScreenSize.value] || col?.format?.md || {};
+        
+        // Récupérer les descriptors avec le contexte complet stocké dans _metadata
+        const context = props.config?._metadata?.context || {};
+        const descriptors = props.entityType ? getEntityConfig(props.entityType)?.getDescriptors?.(context) : {};
+        const descriptor = descriptors?.[cellId] || {};
         
         // Générer la cellule via entity.toCell()
         const cell = entity.toCell(cellId, {
@@ -367,13 +370,22 @@ const getCellFor = (row, col) => {
             context: "table",
             format: colFormat,
             href: col?.cell?.href, // Pour les colonnes route, passer le href si défini
+            config: descriptors, // Passer les descriptors pour que BaseModel puisse utiliser display.cell
         });
         
         if (cell) {
             // Mettre en cache la cellule générée pour éviter de la régénérer
-            if (!row.cells) row.cells = {};
-            row.cells[cellId] = cell;
+            // IMPORTANT: Ne pas muter directement row.cells car cela peut causer des problèmes de réactivité
+            // On retourne directement la cellule, le cache sera géré par le modèle lui-même
             return cell;
+        } else {
+            // Debug: log si la cellule n'est pas générée
+            console.warn(`[TanStackTable] toCell returned null for fieldKey="${cellId}"`, {
+                entity: entity.constructor.name,
+                entityId: entity.id,
+                hasField: fieldKey in (entity._data || {}),
+                entityData: entity._data ? Object.keys(entity._data) : 'no _data',
+            });
         }
     }
 
@@ -387,9 +399,7 @@ const getCellFor = (row, col) => {
                     context: "table",
                 });
                 if (cell) {
-                    // Mettre en cache
-                    if (!row.cells) row.cells = {};
-                    row.cells[cellId] = cell;
+                    // Retourner directement la cellule (le cache est géré par le modèle)
                     return cell;
                 }
             } catch (e) {
@@ -404,7 +414,8 @@ const getCellFor = (row, col) => {
         return { type: "text", value: v, params: { sortValue: v, searchValue: String(v) } };
     }
 
-    return { type: "text", value: null, params: {} };
+    // Fallback final : cellule vide
+    return { type: "text", value: "—", params: { sortValue: "", searchValue: "" } };
 };
 
 const getFilterValueFor = (row, col) => {
@@ -863,6 +874,7 @@ const handleExport = () => {
                         :ui-color="uiColor"
                         :entity-type="entityType"
                         :show-actions-column="showActionsColumn"
+                        :get-cell-for="getCellFor"
                         @toggle-select="(r, checked) => toggleRow(r, checked)"
                         @row-click="handleRowClick"
                         @row-dblclick="(r) => emit('row-dblclick', r)"

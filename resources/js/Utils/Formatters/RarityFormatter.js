@@ -54,7 +54,8 @@ export class RarityFormatter extends BaseFormatter {
    * @returns {Object|null} Objet Cell {type: 'badge', value, params} ou null si valeur invalide
    */
   static toCell(value, options = {}) {
-    if (!this.isValid(value)) {
+    // La valeur 0 est valide pour la rareté (Commun)
+    if (value === null || value === undefined || (typeof value !== 'number' && typeof value !== 'string')) {
       return null;
     }
 

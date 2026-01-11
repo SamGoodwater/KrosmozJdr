@@ -1,99 +1,21 @@
 /**
- * Tests unitaires pour resource-adapter
+ * Tests unitaires pour resource-adapter (version simplifiée)
  *
  * @description
  * Vérifie que :
- * - buildResourceCell génère correctement les cellules
  * - adaptResourceEntitiesTableResponse transforme correctement les données
- * - Les valeurs nulles sont gérées
- * - Les relations sont gérées
+ * - Les entités brutes sont converties en instances de Resource
+ * - Les cellules ne sont plus pré-générées (elles sont vides)
+ * - L'instance Resource est passée dans rowParams.entity pour génération à la volée
  */
 
-import { describe, it, expect, vi } from 'vitest';
-import { buildResourceCell, adaptResourceEntitiesTableResponse } from '@/Entities/resource/resource-adapter';
+import { describe, it, expect } from 'vitest';
+import { adaptResourceEntitiesTableResponse } from '@/Entities/resource/resource-adapter';
+import { Resource } from '@/Models/Entity/Resource';
 
-// Mock de route() pour les tests
-vi.mock('@inertiajs/vue3', () => ({
-    route: (name, params) => {
-        if (name === 'entities.resources.show') {
-            return `/resources/${params?.resource || params || ''}`;
-        }
-        return `#${name}`;
-    },
-}));
-
-describe('resource-adapter', () => {
-    describe('buildResourceCell', () => {
-        it('génère une cellule route pour name', () => {
-            const entity = { id: 1, name: 'Test Resource' };
-            const cell = buildResourceCell('name', entity, {}, { context: 'table' });
-
-            expect(cell.type).toBe('route');
-            expect(cell.value).toBe('Test Resource');
-            expect(cell.params.href).toContain('/resources/1');
-            expect(cell.params.searchValue).toBe('Test Resource');
-            expect(cell.params.sortValue).toBe('Test Resource');
-        });
-
-        it('génère une cellule badge pour usable', () => {
-            const entity = { id: 1, usable: 1 };
-            const cell = buildResourceCell('usable', entity, {}, { context: 'table' });
-
-            expect(cell.type).toBe('badge');
-            expect(cell.value).toBe('Oui');
-            expect(cell.params.color).toBe('success');
-        });
-
-        it('génère une cellule badge pour is_visible', () => {
-            const entity = { id: 1, is_visible: 'admin' };
-            const cell = buildResourceCell('is_visible', entity, {}, { context: 'table' });
-
-            expect(cell.type).toBe('badge');
-            expect(cell.value).toBe('Administrateur');
-            expect(cell.params.color).toBe('error');
-        });
-
-        it('génère une cellule text pour resource_type', () => {
-            const entity = {
-                id: 1,
-                resourceType: { id: 1, name: 'Wood', slug: 'wood' },
-            };
-            const cell = buildResourceCell('resource_type', entity, {}, { context: 'table' });
-
-            expect(cell.type).toBe('text');
-            expect(cell.value).toBe('Wood');
-        });
-
-        it('génère "-" pour resource_type null', () => {
-            const entity = { id: 1, resourceType: null };
-            const cell = buildResourceCell('resource_type', entity, {}, { context: 'table' });
-
-            expect(cell.type).toBe('text');
-            expect(cell.value).toBe('-');
-        });
-
-        it('génère une cellule text pour created_by', () => {
-            const entity = {
-                id: 1,
-                createdBy: { id: 1, name: 'John Doe', email: 'john@example.com' },
-            };
-            const cell = buildResourceCell('created_by', entity, {}, { context: 'table' });
-
-            expect(cell.type).toBe('text');
-            expect(cell.value).toBe('John Doe');
-        });
-
-        it('génère "-" pour created_by null', () => {
-            const entity = { id: 1, createdBy: null };
-            const cell = buildResourceCell('created_by', entity, {}, { context: 'table' });
-
-            expect(cell.type).toBe('text');
-            expect(cell.value).toBe('-');
-        });
-    });
-
+describe('resource-adapter (version simplifiée)', () => {
     describe('adaptResourceEntitiesTableResponse', () => {
-        it('transforme entities en TableResponse', () => {
+        it('transforme entities en TableResponse avec instances Resource', () => {
             const response = {
                 meta: {
                     entityType: 'resources',
@@ -101,8 +23,8 @@ describe('resource-adapter', () => {
                     capabilities: { viewAny: true, updateAny: true },
                 },
                 entities: [
-                    { id: 1, name: 'Resource 1' },
-                    { id: 2, name: 'Resource 2' },
+                    { id: 1, name: 'Resource 1', level: '10', rarity: 1 },
+                    { id: 2, name: 'Resource 2', level: '20', rarity: 2 },
                 ],
             };
 
@@ -111,9 +33,16 @@ describe('resource-adapter', () => {
             expect(result.meta.entityType).toBe('resources');
             expect(result.rows).toHaveLength(2);
             expect(result.rows[0].id).toBe(1);
-            expect(result.rows[0].cells.name.type).toBe('route');
-            expect(result.rows[0].cells.name.value).toBe('Resource 1');
-            expect(result.rows[0].rowParams.entity).toBeDefined();
+            
+            // Les cellules ne sont plus pré-générées
+            expect(result.rows[0].cells).toEqual({});
+            
+            // L'instance Resource est passée dans rowParams.entity
+            expect(result.rows[0].rowParams.entity).toBeInstanceOf(Resource);
+            expect(result.rows[0].rowParams.entity.id).toBe(1);
+            expect(result.rows[0].rowParams.entity.name).toBe('Resource 1');
+            expect(result.rows[0].rowParams.entity.level).toBe(10);
+            expect(result.rows[0].rowParams.entity.rarity).toBe(1);
         });
 
         it('gère un tableau vide', () => {
@@ -139,8 +68,8 @@ describe('resource-adapter', () => {
             expect(result.rows).toHaveLength(0);
         });
 
-        it('préserve les rowParams.entity', () => {
-            const entity = { id: 1, name: 'Test', customField: 'custom' };
+        it('préserve toutes les propriétés de l\'entité dans l\'instance Resource', () => {
+            const entity = { id: 1, name: 'Test', level: '15', rarity: 3, customField: 'custom' };
             const response = {
                 meta: { entityType: 'resources', query: {}, capabilities: {} },
                 entities: [entity],
@@ -148,8 +77,32 @@ describe('resource-adapter', () => {
 
             const result = adaptResourceEntitiesTableResponse(response);
 
-            expect(result.rows[0].rowParams.entity).toEqual(entity);
-            expect(result.rows[0].rowParams.entity.customField).toBe('custom');
+            const resource = result.rows[0].rowParams.entity;
+            expect(resource).toBeInstanceOf(Resource);
+            expect(resource.id).toBe(1);
+            expect(resource.name).toBe('Test');
+            expect(resource.level).toBe(15);
+            expect(resource.rarity).toBe(3);
+            // Les champs personnalisés sont préservés dans _data
+            expect(resource._data?.customField).toBe('custom');
+        });
+
+        it('gère les valeurs nulles correctement', () => {
+            const response = {
+                meta: { entityType: 'resources', query: {}, capabilities: {} },
+                entities: [
+                    { id: 1, name: 'Test', level: null, rarity: null },
+                ],
+            };
+
+            const result = adaptResourceEntitiesTableResponse(response);
+
+            const resource = result.rows[0].rowParams.entity;
+            expect(resource).toBeInstanceOf(Resource);
+            expect(resource.id).toBe(1);
+            expect(resource.name).toBe('Test');
+            expect(resource.level).toBeNull();
+            expect(resource.rarity).toBeNull();
         });
     });
 });

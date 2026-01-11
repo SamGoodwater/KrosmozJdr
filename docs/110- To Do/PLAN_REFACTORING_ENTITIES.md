@@ -1,8 +1,11 @@
 # Plan de refactoring — Système d'entités
 
 **Date de création** : 2026-01-06  
+**Dernière mise à jour** : 2026-01-XX  
 **Statut** : 📋 Plan d'action  
 **Contexte** : Projet non déployé → Refonte propre possible (pas de compatibilité à maintenir)
+
+> **Voir [ARCHITECTURE_ENTITY_SYSTEM.md](./ARCHITECTURE_ENTITY_SYSTEM.md) pour la vue d'ensemble de l'architecture en 4 couches.**
 
 ---
 
@@ -16,10 +19,13 @@ Refondre complètement le système d'entités frontend pour :
 - ✅ Implémenter un système de formatters centralisés
 - ✅ Optimiser les performances avec un système de cache
 - ✅ **Respecter l'Atomic Design** : Architecture claire et cohérente
+- ✅ **Architecture en 4 couches** : Models → Formatters → Descriptors → Renderers → Vues
 
 **Principe** : Refonte propre, pas de transition progressive. Supprimer l'ancien système et implémenter le nouveau.
 
-**📐 Architecture** : Voir `ARCHITECTURE_ENTITIES_ATOMIC_DESIGN.md` pour la structure complète des fichiers selon l'Atomic Design.
+**📐 Architecture** : 
+- Voir `ARCHITECTURE_ENTITY_SYSTEM.md` pour la vue d'ensemble de l'architecture en 4 couches
+- Voir `ARCHITECTURE_ENTITIES_ATOMIC_DESIGN.md` pour la structure complète des fichiers selon l'Atomic Design
 
 ---
 
@@ -689,14 +695,14 @@ resources/js/Pages/Molecules/entity/
 - [ ] Tests validés
 
 ### Phase 5 : Nettoyage
-- [ ] Anciens adapters supprimés
-- [ ] EntityDescriptorHelpers adapté
-- [ ] EntityDescriptor adapté
-- [ ] entity-registry.js mis à jour
-- [ ] Composants génériques obsolètes supprimés
-- [ ] EntityModal adapté
-- [ ] Documentation mise à jour
-- [ ] Tests créés
+- [x] Anciens adapters supprimés (build*Cell supprimés)
+- [x] EntityDescriptorHelpers adapté (wrappers vers formatters, marqué déprécié)
+- [x] EntityDescriptor adapté (marqué déprécié, validation bulk.build supprimée)
+- [x] entity-registry.js mis à jour (utilise model.toCell())
+- [x] Composants génériques obsolètes supprimés (ViewConfig.js, ViewConfig.example.js)
+- [x] EntityModal adapté (utilise resolveEntityViewComponent)
+- [x] Documentation mise à jour (CLEANUP_REPORT.md, CLEANUP_SUMMARY.md)
+- [x] Tests créés et adaptés (ResourceMapper.test.js, resource-descriptors.test.js)
 
 ---
 

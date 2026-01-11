@@ -142,10 +142,6 @@ const closeModal = () => {
     selectedEntity.value = null;
 };
 
-const clearSelection = () => {
-    selectedIds.value = [];
-};
-
 // Handler pour les actions du tableau
 const handleTableAction = async (actionKey, entity, row) => {
     const targetEntity = entity || row?.rowParams?.entity;

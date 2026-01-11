@@ -115,27 +115,20 @@ export class Resource extends BaseModel {
      * @returns {Object|null} Cell object ou null si valeur invalide
      */
     toCell(fieldKey, options = {}) {
-        // D'abord, essayer la méthode de base (gère les formatters automatiquement)
-        const baseCell = super.toCell(fieldKey, options);
-        
-        // Si la méthode de base a trouvé quelque chose (formatter ou valeur par défaut valide), l'utiliser
-        if (baseCell && (baseCell.type !== 'text' || (baseCell.value && baseCell.value !== '-'))) {
-            return baseCell;
-        }
-
-        // Sinon, gérer les champs spécifiques à Resource
+        // Gérer d'abord les champs spécifiques à Resource qui n'existent pas directement dans _data
+        // (comme resource_type qui est une relation)
         const { size = 'md', format = {} } = options;
         
         switch (fieldKey) {
+            case 'resource_type':
+            case 'resourceType':
+                return this._toResourceTypeCell(format, size, options);
             case 'name':
                 return this._toNameCell(format, size, options);
             case 'description':
                 return this._toDescriptionCell(format, size, options);
             case 'image':
                 return this._toImageCell(format, size, options);
-            case 'resource_type':
-            case 'resourceType':
-                return this._toResourceTypeCell(format, size, options);
             case 'created_by':
             case 'createdBy':
                 return this._toCreatedByCell(format, size, options);
@@ -144,8 +137,30 @@ export class Resource extends BaseModel {
             case 'updated_at':
                 return this._toUpdatedAtCell(format, size, options);
             default:
-                // Fallback vers la méthode de base
-                return baseCell;
+                // Pour les autres champs, essayer la méthode de base (gère les formatters automatiquement)
+                // La méthode de base vérifie si le champ existe dans _data, donc on peut l'appeler directement
+                const baseCell = super.toCell(fieldKey, options);
+                
+                // Si la méthode de base a retourné une cellule valide, l'utiliser
+                if (baseCell) {
+                    return baseCell;
+                }
+                
+                // Si le champ existe dans _data mais n'a pas de formatter, créer une cellule par défaut
+                if (fieldKey in this._data) {
+                    const value = this._data[fieldKey];
+                    return {
+                        type: 'text',
+                        value: value !== null && value !== undefined ? String(value) : '-',
+                        params: {
+                            sortValue: value,
+                            searchValue: value !== null && value !== undefined ? String(value) : '',
+                        },
+                    };
+                }
+                
+                // Fallback final si le champ n'existe pas du tout
+                return { type: 'text', value: '-', params: {} };
         }
     }
 

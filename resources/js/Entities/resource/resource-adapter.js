@@ -7,11 +7,13 @@
  * ⚠️ IMPORTANT : Les cellules ne sont plus pré-générées ici. Elles sont générées à la volée
  * par le composant tableau via `resource.toCell()` selon la taille d'écran (xs-xl).
  *
+ * **Utilise ResourceMapper pour transformer les données backend en modèles.**
+ *
  * @example
  * <EntityTanStackTable :response-adapter="adaptResourceEntitiesTableResponse" />
  */
 
-import { Resource } from "@/Models/Entity/Resource";
+import { ResourceMapper } from "@/Mappers/Entity/ResourceMapper";
 
 /**
  * Adapter: backend `{ meta, entities }` -> frontend `{ meta, rows }`
@@ -23,10 +25,10 @@ export function adaptResourceEntitiesTableResponse(payload) {
   const meta = payload?.meta || {};
   const entities = Array.isArray(payload?.entities) ? payload.entities : [];
 
-  // Transformer les entités brutes en instances de Resource
-  const rows = entities.map((entityData) => {
-    const resource = new Resource(entityData);
-    
+  // Utiliser le mapper pour transformer les entités brutes en instances de Resource
+  const resources = ResourceMapper.fromApiArray(entities);
+
+  const rows = resources.map((resource) => {
     return {
       id: resource.id,
       // Les cellules seront générées à la volée par le composant tableau via resource.toCell()

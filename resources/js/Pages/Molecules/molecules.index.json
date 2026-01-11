@@ -618,98 +618,6 @@
     "file": "entity/PanoplyItemsManager.vue"
   },
   {
-    "name": "EntityViewText",
-    "description": "EntityViewText Molecule",
-    "props": [
-      {
-        "name": "entity",
-        "type": "Object",
-        "desc": "- Données de l'entité"
-      },
-      {
-        "name": "entityType",
-        "type": "String",
-        "desc": "- Type d'entité"
-      }
-    ],
-    "slots": [],
-    "file": "entity/EntityViewText.vue"
-  },
-  {
-    "name": "EntityViewMinimal",
-    "description": "EntityViewMinimal Molecule",
-    "props": [
-      {
-        "name": "entity",
-        "type": "Object",
-        "desc": "- Données de l'entité"
-      },
-      {
-        "name": "entityType",
-        "type": "String",
-        "desc": "- Type d'entité"
-      },
-      {
-        "name": "importantFields",
-        "type": "Array",
-        "desc": "- Liste des champs importants à afficher"
-      },
-      {
-        "name": "showActions",
-        "type": "Boolean",
-        "desc": "- Afficher les actions (défaut: true)"
-      }
-    ],
-    "slots": [],
-    "file": "entity/EntityViewMinimal.vue"
-  },
-  {
-    "name": "EntityViewLarge",
-    "description": "EntityViewLarge Molecule",
-    "props": [
-      {
-        "name": "entity",
-        "type": "Object",
-        "desc": "- Données de l'entité"
-      },
-      {
-        "name": "entityType",
-        "type": "String",
-        "desc": "- Type d'entité"
-      },
-      {
-        "name": "showActions",
-        "type": "Boolean",
-        "desc": "- Afficher les actions (défaut: true)"
-      }
-    ],
-    "slots": [],
-    "file": "entity/EntityViewLarge.vue"
-  },
-  {
-    "name": "EntityViewCompact",
-    "description": "EntityViewCompact Molecule",
-    "props": [
-      {
-        "name": "entity",
-        "type": "Object",
-        "desc": "- Données de l'entité"
-      },
-      {
-        "name": "entityType",
-        "type": "String",
-        "desc": "- Type d'entité"
-      },
-      {
-        "name": "showActions",
-        "type": "Boolean",
-        "desc": "- Afficher les actions (défaut: true)"
-      }
-    ],
-    "slots": [],
-    "file": "entity/EntityViewCompact.vue"
-  },
-  {
     "name": "EntityCard",
     "description": "EntityCard Molecule (Atomic Design, DaisyUI)",
     "props": [
@@ -772,6 +680,1078 @@
     "props": [],
     "slots": [],
     "file": "entity/EntityActionsDropdown.vue"
+  },
+  {
+    "name": "SpellViewText",
+    "description": "SpellViewText — Vue Text pour Spell",
+    "props": [
+      {
+        "name": "spell",
+        "type": "Spell",
+        "desc": "- Instance du modèle Spell"
+      }
+    ],
+    "slots": [],
+    "file": "entity/spell/SpellViewText.vue"
+  },
+  {
+    "name": "SpellViewMinimal",
+    "description": "SpellViewMinimal — Vue Minimal pour Spell",
+    "props": [
+      {
+        "name": "spell",
+        "type": "Spell",
+        "desc": "- Instance du modèle Spell"
+      },
+      {
+        "name": "showActions",
+        "type": "Boolean",
+        "desc": "- Afficher les actions (défaut: true)"
+      }
+    ],
+    "slots": [],
+    "file": "entity/spell/SpellViewMinimal.vue"
+  },
+  {
+    "name": "SpellViewLarge",
+    "description": "SpellViewLarge — Vue Large pour Spell",
+    "props": [
+      {
+        "name": "spell",
+        "type": "Spell",
+        "desc": "- Instance du modèle Spell"
+      },
+      {
+        "name": "showActions",
+        "type": "Boolean",
+        "desc": "- Afficher les actions (défaut: true)"
+      }
+    ],
+    "slots": [],
+    "file": "entity/spell/SpellViewLarge.vue"
+  },
+  {
+    "name": "SpellViewCompact",
+    "description": "SpellViewCompact — Vue Compact pour Spell",
+    "props": [
+      {
+        "name": "spell",
+        "type": "Spell",
+        "desc": "- Instance du modèle Spell"
+      },
+      {
+        "name": "showActions",
+        "type": "Boolean",
+        "desc": "- Afficher les actions (défaut: true)"
+      }
+    ],
+    "slots": [],
+    "file": "entity/spell/SpellViewCompact.vue"
+  },
+  {
+    "name": "SpecializationViewText",
+    "description": "SpecializationViewText — Vue Text pour Specialization",
+    "props": [
+      {
+        "name": "specialization",
+        "type": "Specialization",
+        "desc": "- Instance du modèle Specialization"
+      }
+    ],
+    "slots": [],
+    "file": "entity/specialization/SpecializationViewText.vue"
+  },
+  {
+    "name": "SpecializationViewMinimal",
+    "description": "SpecializationViewMinimal — Vue Minimal pour Specialization",
+    "props": [
+      {
+        "name": "specialization",
+        "type": "Specialization",
+        "desc": "- Instance du modèle Specialization"
+      },
+      {
+        "name": "showActions",
+        "type": "Boolean",
+        "desc": "- Afficher les actions (défaut: true)"
+      }
+    ],
+    "slots": [],
+    "file": "entity/specialization/SpecializationViewMinimal.vue"
+  },
+  {
+    "name": "SpecializationViewLarge",
+    "description": "SpecializationViewLarge — Vue Large pour Specialization",
+    "props": [
+      {
+        "name": "specialization",
+        "type": "Specialization",
+        "desc": "- Instance du modèle Specialization"
+      },
+      {
+        "name": "showActions",
+        "type": "Boolean",
+        "desc": "- Afficher les actions (défaut: true)"
+      }
+    ],
+    "slots": [],
+    "file": "entity/specialization/SpecializationViewLarge.vue"
+  },
+  {
+    "name": "SpecializationViewCompact",
+    "description": "SpecializationViewCompact — Vue Compact pour Specialization",
+    "props": [
+      {
+        "name": "specialization",
+        "type": "Specialization",
+        "desc": "- Instance du modèle Specialization"
+      },
+      {
+        "name": "showActions",
+        "type": "Boolean",
+        "desc": "- Afficher les actions (défaut: true)"
+      }
+    ],
+    "slots": [],
+    "file": "entity/specialization/SpecializationViewCompact.vue"
+  },
+  {
+    "name": "ShopViewText",
+    "description": "ShopViewText — Vue Text pour Shop",
+    "props": [
+      {
+        "name": "shop",
+        "type": "Shop",
+        "desc": "- Instance du modèle Shop"
+      }
+    ],
+    "slots": [],
+    "file": "entity/shop/ShopViewText.vue"
+  },
+  {
+    "name": "ShopViewMinimal",
+    "description": "ShopViewMinimal — Vue Minimal pour Shop",
+    "props": [
+      {
+        "name": "shop",
+        "type": "Shop",
+        "desc": "- Instance du modèle Shop"
+      },
+      {
+        "name": "showActions",
+        "type": "Boolean",
+        "desc": "- Afficher les actions (défaut: true)"
+      }
+    ],
+    "slots": [],
+    "file": "entity/shop/ShopViewMinimal.vue"
+  },
+  {
+    "name": "ShopViewLarge",
+    "description": "ShopViewLarge — Vue Large pour Shop",
+    "props": [
+      {
+        "name": "shop",
+        "type": "Shop",
+        "desc": "- Instance du modèle Shop"
+      },
+      {
+        "name": "showActions",
+        "type": "Boolean",
+        "desc": "- Afficher les actions (défaut: true)"
+      }
+    ],
+    "slots": [],
+    "file": "entity/shop/ShopViewLarge.vue"
+  },
+  {
+    "name": "ShopViewCompact",
+    "description": "ShopViewCompact — Vue Compact pour Shop",
+    "props": [
+      {
+        "name": "shop",
+        "type": "Shop",
+        "desc": "- Instance du modèle Shop"
+      },
+      {
+        "name": "showActions",
+        "type": "Boolean",
+        "desc": "- Afficher les actions (défaut: true)"
+      }
+    ],
+    "slots": [],
+    "file": "entity/shop/ShopViewCompact.vue"
+  },
+  {
+    "name": "ScenarioViewText",
+    "description": "ScenarioViewText — Vue Text pour Scenario",
+    "props": [
+      {
+        "name": "scenario",
+        "type": "Scenario",
+        "desc": "- Instance du modèle Scenario"
+      }
+    ],
+    "slots": [],
+    "file": "entity/scenario/ScenarioViewText.vue"
+  },
+  {
+    "name": "ScenarioViewMinimal",
+    "description": "ScenarioViewMinimal — Vue Minimal pour Scenario",
+    "props": [
+      {
+        "name": "scenario",
+        "type": "Scenario",
+        "desc": "- Instance du modèle Scenario"
+      },
+      {
+        "name": "showActions",
+        "type": "Boolean",
+        "desc": "- Afficher les actions (défaut: true)"
+      }
+    ],
+    "slots": [],
+    "file": "entity/scenario/ScenarioViewMinimal.vue"
+  },
+  {
+    "name": "ScenarioViewLarge",
+    "description": "ScenarioViewLarge — Vue Large pour Scenario",
+    "props": [
+      {
+        "name": "scenario",
+        "type": "Scenario",
+        "desc": "- Instance du modèle Scenario"
+      },
+      {
+        "name": "showActions",
+        "type": "Boolean",
+        "desc": "- Afficher les actions (défaut: true)"
+      }
+    ],
+    "slots": [],
+    "file": "entity/scenario/ScenarioViewLarge.vue"
+  },
+  {
+    "name": "ScenarioViewCompact",
+    "description": "ScenarioViewCompact — Vue Compact pour Scenario",
+    "props": [
+      {
+        "name": "scenario",
+        "type": "Scenario",
+        "desc": "- Instance du modèle Scenario"
+      },
+      {
+        "name": "showActions",
+        "type": "Boolean",
+        "desc": "- Afficher les actions (défaut: true)"
+      }
+    ],
+    "slots": [],
+    "file": "entity/scenario/ScenarioViewCompact.vue"
+  },
+  {
+    "name": "ResourceTypeViewText",
+    "description": "ResourceTypeViewText — Vue Text pour ResourceType",
+    "props": [
+      {
+        "name": "resourceType",
+        "type": "ResourceType",
+        "desc": "- Instance du modèle ResourceType"
+      }
+    ],
+    "slots": [],
+    "file": "entity/resource-type/ResourceTypeViewText.vue"
+  },
+  {
+    "name": "ResourceTypeViewMinimal",
+    "description": "ResourceTypeViewMinimal — Vue Minimal pour ResourceType",
+    "props": [
+      {
+        "name": "resourceType",
+        "type": "ResourceType",
+        "desc": "- Instance du modèle ResourceType"
+      },
+      {
+        "name": "showActions",
+        "type": "Boolean",
+        "desc": "- Afficher les actions (défaut: true)"
+      }
+    ],
+    "slots": [],
+    "file": "entity/resource-type/ResourceTypeViewMinimal.vue"
+  },
+  {
+    "name": "ResourceTypeViewLarge",
+    "description": "ResourceTypeViewLarge — Vue Large pour ResourceType",
+    "props": [
+      {
+        "name": "resourceType",
+        "type": "ResourceType",
+        "desc": "- Instance du modèle ResourceType"
+      },
+      {
+        "name": "showActions",
+        "type": "Boolean",
+        "desc": "- Afficher les actions (défaut: true)"
+      }
+    ],
+    "slots": [],
+    "file": "entity/resource-type/ResourceTypeViewLarge.vue"
+  },
+  {
+    "name": "ResourceTypeViewCompact",
+    "description": "ResourceTypeViewCompact — Vue Compact pour ResourceType",
+    "props": [
+      {
+        "name": "resourceType",
+        "type": "ResourceType",
+        "desc": "- Instance du modèle ResourceType"
+      },
+      {
+        "name": "showActions",
+        "type": "Boolean",
+        "desc": "- Afficher les actions (défaut: true)"
+      }
+    ],
+    "slots": [],
+    "file": "entity/resource-type/ResourceTypeViewCompact.vue"
+  },
+  {
+    "name": "ResourceViewText",
+    "description": "ResourceViewText — Vue Text pour Resource",
+    "props": [
+      {
+        "name": "resource",
+        "type": "Resource",
+        "desc": "- Instance du modèle Resource"
+      }
+    ],
+    "slots": [],
+    "file": "entity/resource/ResourceViewText.vue"
+  },
+  {
+    "name": "ResourceViewMinimal",
+    "description": "ResourceViewMinimal — Vue Minimal pour Resource",
+    "props": [
+      {
+        "name": "resource",
+        "type": "Resource",
+        "desc": "- Instance du modèle Resource"
+      },
+      {
+        "name": "showActions",
+        "type": "Boolean",
+        "desc": "- Afficher les actions (défaut: true)"
+      }
+    ],
+    "slots": [],
+    "file": "entity/resource/ResourceViewMinimal.vue"
+  },
+  {
+    "name": "ResourceViewLarge",
+    "description": "ResourceViewLarge — Vue Large pour Resource",
+    "props": [
+      {
+        "name": "resource",
+        "type": "Resource",
+        "desc": "- Instance du modèle Resource"
+      },
+      {
+        "name": "showActions",
+        "type": "Boolean",
+        "desc": "- Afficher les actions (défaut: true)"
+      }
+    ],
+    "slots": [],
+    "file": "entity/resource/ResourceViewLarge.vue"
+  },
+  {
+    "name": "ResourceViewCompact",
+    "description": "ResourceViewCompact — Vue Compact pour Resource",
+    "props": [
+      {
+        "name": "resource",
+        "type": "Resource",
+        "desc": "- Instance du modèle Resource"
+      },
+      {
+        "name": "showActions",
+        "type": "Boolean",
+        "desc": "- Afficher les actions (défaut: true)"
+      }
+    ],
+    "slots": [],
+    "file": "entity/resource/ResourceViewCompact.vue"
+  },
+  {
+    "name": "PanoplyViewText",
+    "description": "PanoplyViewText — Vue Text pour Panoply",
+    "props": [
+      {
+        "name": "panoply",
+        "type": "Panoply",
+        "desc": "- Instance du modèle Panoply"
+      }
+    ],
+    "slots": [],
+    "file": "entity/panoply/PanoplyViewText.vue"
+  },
+  {
+    "name": "PanoplyViewMinimal",
+    "description": "PanoplyViewMinimal — Vue Minimal pour Panoply",
+    "props": [
+      {
+        "name": "panoply",
+        "type": "Panoply",
+        "desc": "- Instance du modèle Panoply"
+      },
+      {
+        "name": "showActions",
+        "type": "Boolean",
+        "desc": "- Afficher les actions (défaut: true)"
+      }
+    ],
+    "slots": [],
+    "file": "entity/panoply/PanoplyViewMinimal.vue"
+  },
+  {
+    "name": "PanoplyViewLarge",
+    "description": "PanoplyViewLarge — Vue Large pour Panoply",
+    "props": [
+      {
+        "name": "panoply",
+        "type": "Panoply",
+        "desc": "- Instance du modèle Panoply"
+      },
+      {
+        "name": "showActions",
+        "type": "Boolean",
+        "desc": "- Afficher les actions (défaut: true)"
+      }
+    ],
+    "slots": [],
+    "file": "entity/panoply/PanoplyViewLarge.vue"
+  },
+  {
+    "name": "PanoplyViewCompact",
+    "description": "PanoplyViewCompact — Vue Compact pour Panoply",
+    "props": [
+      {
+        "name": "panoply",
+        "type": "Panoply",
+        "desc": "- Instance du modèle Panoply"
+      },
+      {
+        "name": "showActions",
+        "type": "Boolean",
+        "desc": "- Afficher les actions (défaut: true)"
+      }
+    ],
+    "slots": [],
+    "file": "entity/panoply/PanoplyViewCompact.vue"
+  },
+  {
+    "name": "NpcViewText",
+    "description": "NpcViewText — Vue Text pour NPC",
+    "props": [
+      {
+        "name": "npc",
+        "type": "Npc",
+        "desc": "- Instance du modèle NPC"
+      }
+    ],
+    "slots": [],
+    "file": "entity/npc/NpcViewText.vue"
+  },
+  {
+    "name": "NpcViewMinimal",
+    "description": "NpcViewMinimal — Vue Minimal pour NPC",
+    "props": [
+      {
+        "name": "npc",
+        "type": "Npc",
+        "desc": "- Instance du modèle NPC"
+      },
+      {
+        "name": "showActions",
+        "type": "Boolean",
+        "desc": "- Afficher les actions (défaut: true)"
+      }
+    ],
+    "slots": [],
+    "file": "entity/npc/NpcViewMinimal.vue"
+  },
+  {
+    "name": "NpcViewLarge",
+    "description": "NpcViewLarge — Vue Large pour NPC",
+    "props": [
+      {
+        "name": "npc",
+        "type": "Npc",
+        "desc": "- Instance du modèle NPC"
+      },
+      {
+        "name": "showActions",
+        "type": "Boolean",
+        "desc": "- Afficher les actions (défaut: true)"
+      }
+    ],
+    "slots": [],
+    "file": "entity/npc/NpcViewLarge.vue"
+  },
+  {
+    "name": "NpcViewCompact",
+    "description": "NpcViewCompact — Vue Compact pour NPC",
+    "props": [
+      {
+        "name": "npc",
+        "type": "Npc",
+        "desc": "- Instance du modèle NPC"
+      },
+      {
+        "name": "showActions",
+        "type": "Boolean",
+        "desc": "- Afficher les actions (défaut: true)"
+      }
+    ],
+    "slots": [],
+    "file": "entity/npc/NpcViewCompact.vue"
+  },
+  {
+    "name": "MonsterViewText",
+    "description": "MonsterViewText — Vue Text pour Monster",
+    "props": [
+      {
+        "name": "monster",
+        "type": "Monster",
+        "desc": "- Instance du modèle Monster"
+      }
+    ],
+    "slots": [],
+    "file": "entity/monster/MonsterViewText.vue"
+  },
+  {
+    "name": "MonsterViewMinimal",
+    "description": "MonsterViewMinimal — Vue Minimal pour Monster",
+    "props": [
+      {
+        "name": "monster",
+        "type": "Monster",
+        "desc": "- Instance du modèle Monster"
+      },
+      {
+        "name": "showActions",
+        "type": "Boolean",
+        "desc": "- Afficher les actions (défaut: true)"
+      }
+    ],
+    "slots": [],
+    "file": "entity/monster/MonsterViewMinimal.vue"
+  },
+  {
+    "name": "MonsterViewLarge",
+    "description": "MonsterViewLarge — Vue Large pour Monster",
+    "props": [
+      {
+        "name": "monster",
+        "type": "Monster",
+        "desc": "- Instance du modèle Monster"
+      },
+      {
+        "name": "showActions",
+        "type": "Boolean",
+        "desc": "- Afficher les actions (défaut: true)"
+      }
+    ],
+    "slots": [],
+    "file": "entity/monster/MonsterViewLarge.vue"
+  },
+  {
+    "name": "MonsterViewCompact",
+    "description": "MonsterViewCompact — Vue Compact pour Monster",
+    "props": [
+      {
+        "name": "monster",
+        "type": "Monster",
+        "desc": "- Instance du modèle Monster"
+      },
+      {
+        "name": "showActions",
+        "type": "Boolean",
+        "desc": "- Afficher les actions (défaut: true)"
+      }
+    ],
+    "slots": [],
+    "file": "entity/monster/MonsterViewCompact.vue"
+  },
+  {
+    "name": "ItemViewText",
+    "description": "ItemViewText — Vue Text pour Item",
+    "props": [
+      {
+        "name": "item",
+        "type": "Item",
+        "desc": "- Instance du modèle Item"
+      }
+    ],
+    "slots": [],
+    "file": "entity/item/ItemViewText.vue"
+  },
+  {
+    "name": "ItemViewMinimal",
+    "description": "ItemViewMinimal — Vue Minimal pour Item",
+    "props": [
+      {
+        "name": "item",
+        "type": "Item",
+        "desc": "- Instance du modèle Item"
+      },
+      {
+        "name": "showActions",
+        "type": "Boolean",
+        "desc": "- Afficher les actions (défaut: true)"
+      }
+    ],
+    "slots": [],
+    "file": "entity/item/ItemViewMinimal.vue"
+  },
+  {
+    "name": "ItemViewLarge",
+    "description": "ItemViewLarge — Vue Large pour Item",
+    "props": [
+      {
+        "name": "item",
+        "type": "Item",
+        "desc": "- Instance du modèle Item"
+      },
+      {
+        "name": "showActions",
+        "type": "Boolean",
+        "desc": "- Afficher les actions (défaut: true)"
+      }
+    ],
+    "slots": [],
+    "file": "entity/item/ItemViewLarge.vue"
+  },
+  {
+    "name": "ItemViewCompact",
+    "description": "ItemViewCompact — Vue Compact pour Item",
+    "props": [
+      {
+        "name": "item",
+        "type": "Item",
+        "desc": "- Instance du modèle Item"
+      },
+      {
+        "name": "showActions",
+        "type": "Boolean",
+        "desc": "- Afficher les actions (défaut: true)"
+      }
+    ],
+    "slots": [],
+    "file": "entity/item/ItemViewCompact.vue"
+  },
+  {
+    "name": "CreatureViewText",
+    "description": "CreatureViewText — Vue Text pour Creature",
+    "props": [
+      {
+        "name": "creature",
+        "type": "Creature",
+        "desc": "- Instance du modèle Creature"
+      }
+    ],
+    "slots": [],
+    "file": "entity/creature/CreatureViewText.vue"
+  },
+  {
+    "name": "CreatureViewMinimal",
+    "description": "CreatureViewMinimal — Vue Minimal pour Creature",
+    "props": [
+      {
+        "name": "creature",
+        "type": "Creature",
+        "desc": "- Instance du modèle Creature"
+      },
+      {
+        "name": "showActions",
+        "type": "Boolean",
+        "desc": "- Afficher les actions (défaut: true)"
+      }
+    ],
+    "slots": [],
+    "file": "entity/creature/CreatureViewMinimal.vue"
+  },
+  {
+    "name": "CreatureViewLarge",
+    "description": "CreatureViewLarge — Vue Large pour Creature",
+    "props": [
+      {
+        "name": "creature",
+        "type": "Creature",
+        "desc": "- Instance du modèle Creature"
+      },
+      {
+        "name": "showActions",
+        "type": "Boolean",
+        "desc": "- Afficher les actions (défaut: true)"
+      }
+    ],
+    "slots": [],
+    "file": "entity/creature/CreatureViewLarge.vue"
+  },
+  {
+    "name": "CreatureViewCompact",
+    "description": "CreatureViewCompact — Vue Compact pour Creature",
+    "props": [
+      {
+        "name": "creature",
+        "type": "Creature",
+        "desc": "- Instance du modèle Creature"
+      },
+      {
+        "name": "showActions",
+        "type": "Boolean",
+        "desc": "- Afficher les actions (défaut: true)"
+      }
+    ],
+    "slots": [],
+    "file": "entity/creature/CreatureViewCompact.vue"
+  },
+  {
+    "name": "ConsumableViewText",
+    "description": "ConsumableViewText — Vue Text pour Consumable",
+    "props": [
+      {
+        "name": "consumable",
+        "type": "Consumable",
+        "desc": "- Instance du modèle Consumable"
+      }
+    ],
+    "slots": [],
+    "file": "entity/consumable/ConsumableViewText.vue"
+  },
+  {
+    "name": "ConsumableViewMinimal",
+    "description": "ConsumableViewMinimal — Vue Minimal pour Consumable",
+    "props": [
+      {
+        "name": "consumable",
+        "type": "Consumable",
+        "desc": "- Instance du modèle Consumable"
+      },
+      {
+        "name": "showActions",
+        "type": "Boolean",
+        "desc": "- Afficher les actions (défaut: true)"
+      }
+    ],
+    "slots": [],
+    "file": "entity/consumable/ConsumableViewMinimal.vue"
+  },
+  {
+    "name": "ConsumableViewLarge",
+    "description": "ConsumableViewLarge — Vue Large pour Consumable",
+    "props": [
+      {
+        "name": "consumable",
+        "type": "Consumable",
+        "desc": "- Instance du modèle Consumable"
+      },
+      {
+        "name": "showActions",
+        "type": "Boolean",
+        "desc": "- Afficher les actions (défaut: true)"
+      }
+    ],
+    "slots": [],
+    "file": "entity/consumable/ConsumableViewLarge.vue"
+  },
+  {
+    "name": "ConsumableViewCompact",
+    "description": "ConsumableViewCompact — Vue Compact pour Consumable",
+    "props": [
+      {
+        "name": "consumable",
+        "type": "Consumable",
+        "desc": "- Instance du modèle Consumable"
+      },
+      {
+        "name": "showActions",
+        "type": "Boolean",
+        "desc": "- Afficher les actions (défaut: true)"
+      }
+    ],
+    "slots": [],
+    "file": "entity/consumable/ConsumableViewCompact.vue"
+  },
+  {
+    "name": "ClasseViewText",
+    "description": "ClasseViewText — Vue Text pour Classe",
+    "props": [
+      {
+        "name": "classe",
+        "type": "Classe",
+        "desc": "- Instance du modèle Classe"
+      }
+    ],
+    "slots": [],
+    "file": "entity/classe/ClasseViewText.vue"
+  },
+  {
+    "name": "ClasseViewMinimal",
+    "description": "ClasseViewMinimal — Vue Minimal pour Classe",
+    "props": [
+      {
+        "name": "classe",
+        "type": "Classe",
+        "desc": "- Instance du modèle Classe"
+      },
+      {
+        "name": "showActions",
+        "type": "Boolean",
+        "desc": "- Afficher les actions (défaut: true)"
+      }
+    ],
+    "slots": [],
+    "file": "entity/classe/ClasseViewMinimal.vue"
+  },
+  {
+    "name": "ClasseViewLarge",
+    "description": "ClasseViewLarge — Vue Large pour Classe",
+    "props": [
+      {
+        "name": "classe",
+        "type": "Classe",
+        "desc": "- Instance du modèle Classe"
+      },
+      {
+        "name": "showActions",
+        "type": "Boolean",
+        "desc": "- Afficher les actions (défaut: true)"
+      }
+    ],
+    "slots": [],
+    "file": "entity/classe/ClasseViewLarge.vue"
+  },
+  {
+    "name": "ClasseViewCompact",
+    "description": "ClasseViewCompact — Vue Compact pour Classe",
+    "props": [
+      {
+        "name": "classe",
+        "type": "Classe",
+        "desc": "- Instance du modèle Classe"
+      },
+      {
+        "name": "showActions",
+        "type": "Boolean",
+        "desc": "- Afficher les actions (défaut: true)"
+      }
+    ],
+    "slots": [],
+    "file": "entity/classe/ClasseViewCompact.vue"
+  },
+  {
+    "name": "CapabilityViewText",
+    "description": "CapabilityViewText — Vue Text pour Capability",
+    "props": [
+      {
+        "name": "capability",
+        "type": "Capability",
+        "desc": "- Instance du modèle Capability"
+      }
+    ],
+    "slots": [],
+    "file": "entity/capability/CapabilityViewText.vue"
+  },
+  {
+    "name": "CapabilityViewMinimal",
+    "description": "CapabilityViewMinimal — Vue Minimal pour Capability",
+    "props": [
+      {
+        "name": "capability",
+        "type": "Capability",
+        "desc": "- Instance du modèle Capability"
+      },
+      {
+        "name": "showActions",
+        "type": "Boolean",
+        "desc": "- Afficher les actions (défaut: true)"
+      }
+    ],
+    "slots": [],
+    "file": "entity/capability/CapabilityViewMinimal.vue"
+  },
+  {
+    "name": "CapabilityViewLarge",
+    "description": "CapabilityViewLarge — Vue Large pour Capability",
+    "props": [
+      {
+        "name": "capability",
+        "type": "Capability",
+        "desc": "- Instance du modèle Capability"
+      },
+      {
+        "name": "showActions",
+        "type": "Boolean",
+        "desc": "- Afficher les actions (défaut: true)"
+      }
+    ],
+    "slots": [],
+    "file": "entity/capability/CapabilityViewLarge.vue"
+  },
+  {
+    "name": "CapabilityViewCompact",
+    "description": "CapabilityViewCompact — Vue Compact pour Capability",
+    "props": [
+      {
+        "name": "capability",
+        "type": "Capability",
+        "desc": "- Instance du modèle Capability"
+      },
+      {
+        "name": "showActions",
+        "type": "Boolean",
+        "desc": "- Afficher les actions (défaut: true)"
+      }
+    ],
+    "slots": [],
+    "file": "entity/capability/CapabilityViewCompact.vue"
+  },
+  {
+    "name": "CampaignViewText",
+    "description": "CampaignViewText — Vue Text pour Campaign",
+    "props": [
+      {
+        "name": "campaign",
+        "type": "Campaign",
+        "desc": "- Instance du modèle Campaign"
+      }
+    ],
+    "slots": [],
+    "file": "entity/campaign/CampaignViewText.vue"
+  },
+  {
+    "name": "CampaignViewMinimal",
+    "description": "CampaignViewMinimal — Vue Minimal pour Campaign",
+    "props": [
+      {
+        "name": "campaign",
+        "type": "Campaign",
+        "desc": "- Instance du modèle Campaign"
+      },
+      {
+        "name": "showActions",
+        "type": "Boolean",
+        "desc": "- Afficher les actions (défaut: true)"
+      }
+    ],
+    "slots": [],
+    "file": "entity/campaign/CampaignViewMinimal.vue"
+  },
+  {
+    "name": "CampaignViewLarge",
+    "description": "CampaignViewLarge — Vue Large pour Campaign",
+    "props": [
+      {
+        "name": "campaign",
+        "type": "Campaign",
+        "desc": "- Instance du modèle Campaign"
+      },
+      {
+        "name": "showActions",
+        "type": "Boolean",
+        "desc": "- Afficher les actions (défaut: true)"
+      }
+    ],
+    "slots": [],
+    "file": "entity/campaign/CampaignViewLarge.vue"
+  },
+  {
+    "name": "CampaignViewCompact",
+    "description": "CampaignViewCompact — Vue Compact pour Campaign",
+    "props": [
+      {
+        "name": "campaign",
+        "type": "Campaign",
+        "desc": "- Instance du modèle Campaign"
+      },
+      {
+        "name": "showActions",
+        "type": "Boolean",
+        "desc": "- Afficher les actions (défaut: true)"
+      }
+    ],
+    "slots": [],
+    "file": "entity/campaign/CampaignViewCompact.vue"
+  },
+  {
+    "name": "AttributeViewText",
+    "description": "AttributeViewText — Vue Text pour Attribute",
+    "props": [
+      {
+        "name": "attribute",
+        "type": "Attribute",
+        "desc": "- Instance du modèle Attribute"
+      }
+    ],
+    "slots": [],
+    "file": "entity/attribute/AttributeViewText.vue"
+  },
+  {
+    "name": "AttributeViewMinimal",
+    "description": "AttributeViewMinimal — Vue Minimal pour Attribute",
+    "props": [
+      {
+        "name": "attribute",
+        "type": "Attribute",
+        "desc": "- Instance du modèle Attribute"
+      },
+      {
+        "name": "showActions",
+        "type": "Boolean",
+        "desc": "- Afficher les actions (défaut: true)"
+      }
+    ],
+    "slots": [],
+    "file": "entity/attribute/AttributeViewMinimal.vue"
+  },
+  {
+    "name": "AttributeViewLarge",
+    "description": "AttributeViewLarge — Vue Large pour Attribute",
+    "props": [
+      {
+        "name": "attribute",
+        "type": "Attribute",
+        "desc": "- Instance du modèle Attribute"
+      },
+      {
+        "name": "showActions",
+        "type": "Boolean",
+        "desc": "- Afficher les actions (défaut: true)"
+      }
+    ],
+    "slots": [],
+    "file": "entity/attribute/AttributeViewLarge.vue"
+  },
+  {
+    "name": "AttributeViewCompact",
+    "description": "AttributeViewCompact — Vue Compact pour Attribute",
+    "props": [
+      {
+        "name": "attribute",
+        "type": "Attribute",
+        "desc": "- Instance du modèle Attribute"
+      },
+      {
+        "name": "showActions",
+        "type": "Boolean",
+        "desc": "- Afficher les actions (défaut: true)"
+      }
+    ],
+    "slots": [],
+    "file": "entity/attribute/AttributeViewCompact.vue"
   },
   {
     "name": "ToggleField",

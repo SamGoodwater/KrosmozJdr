@@ -21,10 +21,11 @@ import CreateEntityModal from "@/Pages/Organismes/entity/CreateEntityModal.vue";
 import EntityEditForm from "@/Pages/Organismes/entity/EntityEditForm.vue";
 import EntityQuickEditPanel from "@/Pages/Organismes/entity/EntityQuickEditPanel.vue";
 import EntityQuickEditModal from "@/Pages/Organismes/entity/EntityQuickEditModal.vue";
-import { createResourceTypesTanStackTableConfig } from "./resource-types-tanstack-table-config";
+import { createResourceTypeTableConfig } from "@/Entities/resource-type/ResourceTypeTableConfig";
 import { adaptResourceTypeEntitiesTableResponse } from "@/Entities/resource-type/resource-type-adapter";
 import { getResourceTypeFieldDescriptors } from "@/Entities/resource-type/resource-type-descriptors";
 import { createFieldsConfigFromDescriptors, createDefaultEntityFromDescriptors } from "@/Utils/entity/descriptor-form";
+import { ResourceType } from "@/Models/Entity/ResourceType";
 
 const props = defineProps({
     resourceTypes: { type: Object, required: true },
@@ -54,7 +55,16 @@ const selectedIds = ref([]);
 const tableRows = ref([]);
 const refreshToken = ref(0);
 
-const tableConfig = computed(() => createResourceTypesTanStackTableConfig());
+const tableConfig = computed(() => {
+    const ctx = {
+        capabilities: { 
+            updateAny: canModifyResolved.value,
+            createAny: canCreateResolved.value,
+        },
+    };
+    const config = createResourceTypeTableConfig(ctx);
+    return config.build(ctx);
+});
 const serverUrl = computed(() => `${route("api.tables.resource-types")}?limit=5000&format=entities&_t=${refreshToken.value}`);
 
 const handleRefreshAll = () => {
@@ -68,9 +78,11 @@ const handleEdit = (entity) => {
 
 const handleRowDoubleClick = (row) => {
     if (!canModifyResolved.value) return;
-    const entity = row?.rowParams?.entity;
-    if (!entity) return;
-    handleEdit(entity);
+    const raw = row?.rowParams?.entity;
+    if (!raw) return;
+    const model = raw instanceof ResourceType ? raw : ResourceType.fromArray([raw])[0] || null;
+    if (!model) return;
+    handleEdit(model);
 };
 
 const handleBulkApplied = async (payload) => {
@@ -106,12 +118,32 @@ const handleTableLoaded = ({ rows }) => {
 
 // Handler pour les actions du tableau
 const handleTableAction = async (actionKey, entity, row) => {
-    const entityId = entity?.id;
+    const targetEntity = entity || row?.rowParams?.entity;
+    if (!targetEntity) return;
+    
+    // Si c'est déjà une instance ResourceType, l'utiliser directement
+    const model = targetEntity instanceof ResourceType ? targetEntity : ResourceType.fromArray([targetEntity])[0] || null;
+    if (!model) return;
+    
+    const entityId = model.id;
     if (!entityId) return;
 
     switch (actionKey) {
+        case 'view':
+            router.visit(route('entities.resource-types.show', { resourceType: entityId }));
+            break;
+
+        case 'quick-view':
+            selectedEntity.value = model;
+            editOpen.value = true;
+            break;
+
+        case 'edit':
+            handleEdit(model);
+            break;
+
         case 'quick-edit':
-            quickEditEntity.value = entity;
+            quickEditEntity.value = model;
             quickEditModalOpen.value = true;
             break;
 
@@ -131,7 +163,7 @@ const handleTableAction = async (actionKey, entity, row) => {
         }
 
         default:
-            console.log('Action non gérée:', actionKey, entity);
+            console.log('Action non gérée:', actionKey, model);
     }
 };
 
