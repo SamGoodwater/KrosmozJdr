@@ -10,8 +10,8 @@
  * Utilise les descriptors simplifiés pour obtenir les labels, icônes et configurations.
  */
 
-import { TableConfig } from "../entity/TableConfig.js";
-import { TableColumnConfig } from "../entity/TableColumnConfig.js";
+import { TableConfig } from "@/Utils/Entity/Configs/TableConfig.js";
+import { TableColumnConfig } from "@/Utils/Entity/Configs/TableColumnConfig.js";
 import { getMonsterFieldDescriptors } from "./monster-descriptors.js";
 
 /**
@@ -28,54 +28,27 @@ export function createMonsterTableConfig(ctx = {}) {
   // Récupérer les descriptors pour obtenir labels, icônes, etc.
   const descriptors = getMonsterFieldDescriptors(ctx);
 
+  // Créer la configuration de base depuis _tableConfig dans les descriptors
+  const tableConfigData = descriptors._tableConfig || {};
+  
   const tableConfig = new TableConfig({
-    id: "monsters.index",
-    entityType: "monster",
-  })
-    .withQuickEdit({
-      enabled: true,
-      permission: "updateAny",
-    })
-    .withActions({
-      enabled: true,
-      permission: "view",
-      available: ["view", "edit", "quick-edit", "delete", "copy-link", "download-pdf", "refresh"],
-      defaultVisible: {
-        xs: false,
-        sm: true,
-        md: true,
-        lg: true,
-        xl: true,
-      },
-    })
-    .withFeatures({
-      search: {
-        enabled: true,
-        placeholder: "Rechercher un monstre…",
-        debounceMs: 200,
-      },
-      filters: { enabled: true },
-      pagination: {
-        enabled: true,
-        perPage: { default: 25, options: [10, 25, 50, 100] },
-      },
-      selection: {
-        enabled: true,
-        checkboxMode: "auto",
-        clickToSelect: true,
-      },
-      columnVisibility: {
-        enabled: true,
-        persist: true,
-      },
-      export: {
-        csv: true,
-        filename: "monsters.csv",
-      },
-    })
-    .withUI({
-      skeletonRows: 10,
-    });
+    id: tableConfigData.id || "monsters.index",
+    entityType: tableConfigData.entityType || "monster",
+  });
+
+  // Appliquer les configurations globales depuis _tableConfig
+  if (tableConfigData.quickEdit) {
+    tableConfig.withQuickEdit(tableConfigData.quickEdit);
+  }
+  if (tableConfigData.actions) {
+    tableConfig.withActions(tableConfigData.actions);
+  }
+  if (tableConfigData.features) {
+    tableConfig.withFeatures(tableConfigData.features);
+  }
+  if (tableConfigData.ui) {
+    tableConfig.withUI(tableConfigData.ui);
+  }
 
   // Colonnes du tableau
   tableConfig
@@ -89,7 +62,7 @@ export function createMonsterTableConfig(ctx = {}) {
         .withDefaultVisible({ xs: false, sm: false, md: false, lg: false, xl: false })
         .withOrder(0)
         .withSort(true)
-        .build()
+        
     )
     .addColumn(
       new TableColumnConfig({
@@ -101,7 +74,7 @@ export function createMonsterTableConfig(ctx = {}) {
         .withDefaultVisible({ xs: false, sm: false, md: false, lg: false, xl: false })
         .withOrder(1)
         .withSort(true)
-        .build()
+        
     )
     .addColumn(
       new TableColumnConfig({
@@ -113,7 +86,7 @@ export function createMonsterTableConfig(ctx = {}) {
         .withDefaultVisible({ xs: false, sm: false, md: false, lg: false, xl: false })
         .withOrder(2)
         .withSort(true)
-        .build()
+        
     )
     .addColumn(
       new TableColumnConfig({
@@ -133,7 +106,7 @@ export function createMonsterTableConfig(ctx = {}) {
           lg: { mode: "full" },
           xl: { mode: "full" },
         })
-        .build()
+        
     )
     .addColumn(
       new TableColumnConfig({
@@ -152,7 +125,7 @@ export function createMonsterTableConfig(ctx = {}) {
           lg: { mode: "full" },
           xl: { mode: "full" },
         })
-        .build()
+        
     )
     .addColumn(
       new TableColumnConfig({
@@ -184,7 +157,7 @@ export function createMonsterTableConfig(ctx = {}) {
           lg: { mode: "badge" },
           xl: { mode: "badge" },
         })
-        .build()
+        
     )
     .addColumn(
       new TableColumnConfig({
@@ -197,7 +170,7 @@ export function createMonsterTableConfig(ctx = {}) {
         .withOrder(6)
         .withSort(true)
         .withFilter({ id: "is_boss", type: "boolean" })
-        .build()
+        
     )
     .addColumn(
       new TableColumnConfig({
@@ -209,7 +182,7 @@ export function createMonsterTableConfig(ctx = {}) {
         .withDefaultVisible({ xs: false, sm: false, md: false, lg: false, xl: true })
         .withOrder(7)
         .withSort(true)
-        .build()
+        
     )
     .addColumn(
       new TableColumnConfig({
@@ -221,7 +194,7 @@ export function createMonsterTableConfig(ctx = {}) {
         .withDefaultVisible({ xs: false, sm: false, md: false, lg: false, xl: true })
         .withOrder(8)
         .withSort(true)
-        .build()
+        
     );
 
   // Colonnes conditionnelles (selon permissions)
@@ -239,7 +212,7 @@ export function createMonsterTableConfig(ctx = {}) {
           .withOrder(9)
           .withSort(true)
           .withFilter({ id: "auto_update", type: "boolean" })
-          .build()
+          
       )
       .addColumn(
         new TableColumnConfig({
@@ -259,7 +232,7 @@ export function createMonsterTableConfig(ctx = {}) {
             lg: { mode: "full" },
             xl: { mode: "full" },
           })
-          .build()
+          
       );
   }
 
@@ -276,7 +249,7 @@ export function createMonsterTableConfig(ctx = {}) {
           .withDefaultVisible({ xs: false, sm: false, md: false, lg: false, xl: false })
           .withOrder(11)
           .withSort(true)
-          .build()
+          
       )
       .addColumn(
         new TableColumnConfig({
@@ -289,7 +262,7 @@ export function createMonsterTableConfig(ctx = {}) {
           .withDefaultVisible({ xs: false, sm: false, md: false, lg: false, xl: false })
           .withOrder(12)
           .withSort(true)
-          .build()
+          
       );
   }
 

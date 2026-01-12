@@ -10,8 +10,8 @@
  * Utilise les descriptors simplifiés pour obtenir les labels, icônes et configurations.
  */
 
-import { TableConfig } from "../entity/TableConfig.js";
-import { TableColumnConfig } from "../entity/TableColumnConfig.js";
+import { TableConfig } from "@/Utils/Entity/Configs/TableConfig.js";
+import { TableColumnConfig } from "@/Utils/Entity/Configs/TableColumnConfig.js";
 import { getSpellFieldDescriptors } from "./spell-descriptors.js";
 
 /**
@@ -28,54 +28,27 @@ export function createSpellTableConfig(ctx = {}) {
   // Récupérer les descriptors pour obtenir labels, icônes, etc.
   const descriptors = getSpellFieldDescriptors(ctx);
 
+  // Créer la configuration de base depuis _tableConfig dans les descriptors
+  const tableConfigData = descriptors._tableConfig || {};
+  
   const tableConfig = new TableConfig({
-    id: "spells.index",
-    entityType: "spell",
-  })
-    .withQuickEdit({
-      enabled: true,
-      permission: "updateAny",
-    })
-    .withActions({
-      enabled: true,
-      permission: "view",
-      available: ["view", "edit", "quick-edit", "delete", "copy-link", "download-pdf", "refresh"],
-      defaultVisible: {
-        xs: false,
-        sm: true,
-        md: true,
-        lg: true,
-        xl: true,
-      },
-    })
-    .withFeatures({
-      search: {
-        enabled: true,
-        placeholder: "Rechercher un sort…",
-        debounceMs: 200,
-      },
-      filters: { enabled: true },
-      pagination: {
-        enabled: true,
-        perPage: { default: 25, options: [10, 25, 50, 100] },
-      },
-      selection: {
-        enabled: true,
-        checkboxMode: "auto",
-        clickToSelect: true,
-      },
-      columnVisibility: {
-        enabled: true,
-        persist: true,
-      },
-      export: {
-        csv: true,
-        filename: "spells.csv",
-      },
-    })
-    .withUI({
-      skeletonRows: 10,
-    });
+    id: tableConfigData.id || "spells.index",
+    entityType: tableConfigData.entityType || "spell",
+  });
+
+  // Appliquer les configurations globales depuis _tableConfig
+  if (tableConfigData.quickEdit) {
+    tableConfig.withQuickEdit(tableConfigData.quickEdit);
+  }
+  if (tableConfigData.actions) {
+    tableConfig.withActions(tableConfigData.actions);
+  }
+  if (tableConfigData.features) {
+    tableConfig.withFeatures(tableConfigData.features);
+  }
+  if (tableConfigData.ui) {
+    tableConfig.withUI(tableConfigData.ui);
+  }
 
   // Colonnes du tableau
   tableConfig
@@ -89,7 +62,7 @@ export function createSpellTableConfig(ctx = {}) {
         .withDefaultVisible({ xs: false, sm: false, md: false, lg: false, xl: false })
         .withOrder(0)
         .withSort(true)
-        .build()
+        
     )
     .addColumn(
       new TableColumnConfig({
@@ -101,7 +74,7 @@ export function createSpellTableConfig(ctx = {}) {
         .withDefaultVisible({ xs: false, sm: false, md: false, lg: false, xl: false })
         .withOrder(1)
         .withSort(true)
-        .build()
+        
     )
     .addColumn(
       new TableColumnConfig({
@@ -113,7 +86,7 @@ export function createSpellTableConfig(ctx = {}) {
         .withDefaultVisible({ xs: false, sm: false, md: false, lg: false, xl: false })
         .withOrder(2)
         .withSort(true)
-        .build()
+        
     )
     .addColumn(
       new TableColumnConfig({
@@ -123,7 +96,7 @@ export function createSpellTableConfig(ctx = {}) {
       })
         .withDefaultVisible({ xs: false, sm: true, md: true, lg: true, xl: true })
         .withOrder(3)
-        .build()
+        
     )
     .addColumn(
       new TableColumnConfig({
@@ -143,7 +116,7 @@ export function createSpellTableConfig(ctx = {}) {
           lg: { mode: "full" },
           xl: { mode: "full" },
         })
-        .build()
+        
     )
     .addColumn(
       new TableColumnConfig({
@@ -175,7 +148,7 @@ export function createSpellTableConfig(ctx = {}) {
           lg: { mode: "badge" },
           xl: { mode: "badge" },
         })
-        .build()
+        
     )
     .addColumn(
       new TableColumnConfig({
@@ -187,7 +160,7 @@ export function createSpellTableConfig(ctx = {}) {
         .withOrder(6)
         .withSort(true)
         .withFilter({ id: "pa", type: "multi" })
-        .build()
+        
     )
     .addColumn(
       new TableColumnConfig({
@@ -199,7 +172,7 @@ export function createSpellTableConfig(ctx = {}) {
         .withOrder(7)
         .withSort(true)
         .withFilter({ id: "po", type: "multi" })
-        .build()
+        
     )
     .addColumn(
       new TableColumnConfig({
@@ -212,7 +185,7 @@ export function createSpellTableConfig(ctx = {}) {
         .withOrder(8)
         .withSort(true)
         .withFilter({ id: "area", type: "multi" })
-        .build()
+        
     )
     .addColumn(
       new TableColumnConfig({
@@ -244,7 +217,7 @@ export function createSpellTableConfig(ctx = {}) {
           lg: { mode: "badge" },
           xl: { mode: "badge" },
         })
-        .build()
+        
     )
     .addColumn(
       new TableColumnConfig({
@@ -277,7 +250,7 @@ export function createSpellTableConfig(ctx = {}) {
           lg: { mode: "badge" },
           xl: { mode: "badge" },
         })
-        .build()
+        
     )
     .addColumn(
       new TableColumnConfig({
@@ -290,7 +263,7 @@ export function createSpellTableConfig(ctx = {}) {
         .withOrder(11)
         .withSort(true)
         .withFilter({ id: "usable", type: "boolean" })
-        .build()
+        
     )
     .addColumn(
       new TableColumnConfig({
@@ -303,7 +276,7 @@ export function createSpellTableConfig(ctx = {}) {
         .withOrder(12)
         .withSort(true)
         .withFilter({ id: "is_visible", type: "multi" })
-        .build()
+        
     );
 
   // Colonnes conditionnelles (selon permissions)
@@ -321,7 +294,7 @@ export function createSpellTableConfig(ctx = {}) {
           .withOrder(13)
           .withSort(true)
           .withFilter({ id: "auto_update", type: "boolean" })
-          .build()
+          
       )
       .addColumn(
         new TableColumnConfig({
@@ -341,7 +314,7 @@ export function createSpellTableConfig(ctx = {}) {
             lg: { mode: "full" },
             xl: { mode: "full" },
           })
-          .build()
+          
       );
   }
 
@@ -359,7 +332,7 @@ export function createSpellTableConfig(ctx = {}) {
           .withOrder(15)
           .withSort(true)
           .withSearch(true)
-          .build()
+          
       )
       .addColumn(
         new TableColumnConfig({
@@ -372,7 +345,7 @@ export function createSpellTableConfig(ctx = {}) {
           .withDefaultVisible({ xs: false, sm: false, md: false, lg: false, xl: false })
           .withOrder(16)
           .withSort(true)
-          .build()
+          
       )
       .addColumn(
         new TableColumnConfig({
@@ -385,7 +358,7 @@ export function createSpellTableConfig(ctx = {}) {
           .withDefaultVisible({ xs: false, sm: false, md: false, lg: false, xl: false })
           .withOrder(17)
           .withSort(true)
-          .build()
+          
       );
   }
 

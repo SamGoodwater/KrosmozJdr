@@ -10,8 +10,8 @@
  * Utilise les descriptors simplifiés pour obtenir les labels, icônes et configurations.
  */
 
-import { TableConfig } from "../entity/TableConfig.js";
-import { TableColumnConfig } from "../entity/TableColumnConfig.js";
+import { TableConfig } from "@/Utils/Entity/Configs/TableConfig.js";
+import { TableColumnConfig } from "@/Utils/Entity/Configs/TableColumnConfig.js";
 import { getCapabilityFieldDescriptors } from "./capability-descriptors.js";
 
 /**
@@ -28,54 +28,27 @@ export function createCapabilityTableConfig(ctx = {}) {
   // Récupérer les descriptors pour obtenir labels, icônes, etc.
   const descriptors = getCapabilityFieldDescriptors(ctx);
 
+  // Créer la configuration de base depuis _tableConfig dans les descriptors
+  const tableConfigData = descriptors._tableConfig || {};
+  
   const tableConfig = new TableConfig({
-    id: "capabilities.index",
-    entityType: "capability",
-  })
-    .withQuickEdit({
-      enabled: true,
-      permission: "updateAny",
-    })
-    .withActions({
-      enabled: true,
-      permission: "view",
-      available: ["view", "edit", "quick-edit", "delete", "copy-link", "download-pdf", "refresh"],
-      defaultVisible: {
-        xs: false,
-        sm: true,
-        md: true,
-        lg: true,
-        xl: true,
-      },
-    })
-    .withFeatures({
-      search: {
-        enabled: true,
-        placeholder: "Rechercher une capacité…",
-        debounceMs: 200,
-      },
-      filters: { enabled: true },
-      pagination: {
-        enabled: true,
-        perPage: { default: 25, options: [10, 25, 50, 100] },
-      },
-      selection: {
-        enabled: true,
-        checkboxMode: "auto",
-        clickToSelect: true,
-      },
-      columnVisibility: {
-        enabled: true,
-        persist: true,
-      },
-      export: {
-        csv: true,
-        filename: "capabilities.csv",
-      },
-    })
-    .withUI({
-      skeletonRows: 10,
-    });
+    id: tableConfigData.id || "capabilities.index",
+    entityType: tableConfigData.entityType || "capability",
+  });
+
+  // Appliquer les configurations globales depuis _tableConfig
+  if (tableConfigData.quickEdit) {
+    tableConfig.withQuickEdit(tableConfigData.quickEdit);
+  }
+  if (tableConfigData.actions) {
+    tableConfig.withActions(tableConfigData.actions);
+  }
+  if (tableConfigData.features) {
+    tableConfig.withFeatures(tableConfigData.features);
+  }
+  if (tableConfigData.ui) {
+    tableConfig.withUI(tableConfigData.ui);
+  }
 
   // Colonnes du tableau
   tableConfig
@@ -89,7 +62,7 @@ export function createCapabilityTableConfig(ctx = {}) {
         .withDefaultVisible({ xs: false, sm: false, md: false, lg: false, xl: false })
         .withOrder(0)
         .withSort(true)
-        .build()
+        
     )
     .addColumn(
       new TableColumnConfig({
@@ -109,7 +82,7 @@ export function createCapabilityTableConfig(ctx = {}) {
           lg: { mode: "full" },
           xl: { mode: "full" },
         })
-        .build()
+        
     )
     .addColumn(
       new TableColumnConfig({
@@ -121,7 +94,7 @@ export function createCapabilityTableConfig(ctx = {}) {
         .withDefaultVisible({ xs: false, sm: true, md: true, lg: true, xl: true })
         .withOrder(2)
         .withSort(true)
-        .build()
+        
     )
     .addColumn(
       new TableColumnConfig({
@@ -133,7 +106,7 @@ export function createCapabilityTableConfig(ctx = {}) {
         .withDefaultVisible({ xs: false, sm: true, md: true, lg: true, xl: true })
         .withOrder(3)
         .withSort(true)
-        .build()
+        
     )
     .addColumn(
       new TableColumnConfig({
@@ -145,7 +118,7 @@ export function createCapabilityTableConfig(ctx = {}) {
         .withDefaultVisible({ xs: false, sm: false, md: true, lg: true, xl: true })
         .withOrder(4)
         .withSort(true)
-        .build()
+        
     )
     .addColumn(
       new TableColumnConfig({
@@ -157,7 +130,7 @@ export function createCapabilityTableConfig(ctx = {}) {
         .withDefaultVisible({ xs: false, sm: true, md: true, lg: true, xl: true })
         .withOrder(5)
         .withSort(true)
-        .build()
+        
     )
     .addColumn(
       new TableColumnConfig({
@@ -169,7 +142,7 @@ export function createCapabilityTableConfig(ctx = {}) {
         .withDefaultVisible({ xs: false, sm: false, md: true, lg: true, xl: true })
         .withOrder(6)
         .withSort(true)
-        .build()
+        
     )
     .addColumn(
       new TableColumnConfig({
@@ -181,7 +154,7 @@ export function createCapabilityTableConfig(ctx = {}) {
         .withDefaultVisible({ xs: false, sm: false, md: false, lg: true, xl: true })
         .withOrder(7)
         .withSort(true)
-        .build()
+        
     );
 
   // Colonnes conditionnelles (selon permissions)
@@ -198,7 +171,7 @@ export function createCapabilityTableConfig(ctx = {}) {
           .withDefaultVisible({ xs: false, sm: false, md: false, lg: false, xl: false })
           .withOrder(8)
           .withSort(true)
-          .build()
+          
       )
       .addColumn(
         new TableColumnConfig({
@@ -211,7 +184,7 @@ export function createCapabilityTableConfig(ctx = {}) {
           .withDefaultVisible({ xs: false, sm: false, md: false, lg: false, xl: false })
           .withOrder(9)
           .withSort(true)
-          .build()
+          
       );
   }
 

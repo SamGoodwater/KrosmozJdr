@@ -225,7 +225,8 @@ const getBoolChecked = (key) => {
     return v === true || v === 1 || String(v) === "1";
   }
   const v = aggregate.value?.[key]?.value;
-  return v === true || v === 1;
+  // Gérer les valeurs 1/0 (conversion depuis booléen) et true/false
+  return v === true || v === 1 || String(v) === "1";
 };
 
 /**
@@ -267,7 +268,11 @@ const getBoolIndeterminate = (key) => {
         </div>
         <div class="text-sm text-primary-300 mt-1">{{ ids.length }} sélectionnée(s)</div>
       </div>
-      <Btn size="sm" variant="ghost" @click="$emit('clear')">Effacer</Btn>
+      <Tooltip content="Fermer l'édition rapide" placement="left" color="neutral">
+        <Btn size="sm" variant="ghost" @click="$emit('clear')" :aria-label="'Fermer l\'édition rapide'">
+          <Icon source="fa-solid fa-xmark" alt="Fermer" size="sm" />
+        </Btn>
+      </Tooltip>
     </div>
 
     <div class="rounded-md border border-base-300 bg-base-100 p-3">
@@ -283,24 +288,6 @@ const getBoolIndeterminate = (key) => {
       </div>
       <div v-else class="mt-1 text-xs opacity-70">
         Clique sur “Afficher” pour voir les {{ ids.length }} lignes sélectionnées.
-      </div>
-    </div>
-
-    <div class="rounded-md border border-base-300 bg-base-100 p-3 space-y-2">
-      <div class="text-sm font-semibold">Cible</div>
-      <div class="flex flex-col gap-2">
-        <label class="flex items-center gap-2 cursor-pointer">
-          <RadioCore v-model="scope" name="bulk-scope" value="selected" size="sm" :color="uiColor" />
-          <span class="text-sm">Appliquer à la sélection ({{ ids.length }})</span>
-        </label>
-        <label
-          class="flex items-center gap-2"
-          :class="{ 'opacity-60 cursor-not-allowed': mode !== 'client' }"
-          :title="mode !== 'client' ? 'Disponible en mode client uniquement (dataset chargé)' : ''"
-        >
-          <RadioCore v-model="scope" name="bulk-scope" value="filtered" size="sm" :color="uiColor" :disabled="mode !== 'client'" />
-          <span class="text-sm">Appliquer à tous les résultats filtrés ({{ filteredIdsEffective.length }})</span>
-        </label>
       </div>
     </div>
 
@@ -389,7 +376,7 @@ const getBoolIndeterminate = (key) => {
             size="sm"
             :color="uiColor"
             :disabled="!isFieldEditable(key)"
-            :model-value="form[key]"
+            :model-value="dirty[key] ? form[key] : (aggregate[key]?.same ? String(aggregate[key]?.value ?? '') : '')"
             @update:model-value="(v) => onChange(key, v)"
           >
             <option value="" disabled hidden>{{ placeholder(aggregate[key]?.same) }}</option>
@@ -407,7 +394,7 @@ const getBoolIndeterminate = (key) => {
             size="sm"
             :color="uiColor"
             :disabled="!isFieldEditable(key)"
-            :model-value="form[key]"
+            :model-value="dirty[key] ? form[key] : (aggregate[key]?.same ? String(aggregate[key]?.value ?? '') : '')"
             @update:model-value="(v) => onChange(key, v)"
             :placeholder="fieldsConfig[key]?.placeholder || placeholder(aggregate[key]?.same)"
           />
@@ -421,7 +408,7 @@ const getBoolIndeterminate = (key) => {
             size="sm"
             :color="uiColor"
             :disabled="!isFieldEditable(key)"
-            :model-value="form[key]"
+            :model-value="dirty[key] ? form[key] : (aggregate[key]?.same ? String(aggregate[key]?.value ?? '') : '')"
             @update:model-value="(v) => onChange(key, v)"
             :placeholder="fieldsConfig[key]?.placeholder || placeholder(aggregate[key]?.same)"
           />
@@ -441,8 +428,29 @@ const getBoolIndeterminate = (key) => {
       </div>
     </div>
 
-    <div class="flex items-center justify-end gap-2 pt-2">
-      <div class="flex items-center gap-2">
+    <div class="flex flex-col gap-3 pt-2 border-t border-base-300">
+      <div class="flex items-center gap-3 text-xs opacity-70">
+        <Tooltip content="Appliquer les modifications uniquement aux entités actuellement sélectionnées dans le tableau" placement="top" color="neutral">
+          <label class="flex items-center gap-1.5 cursor-pointer">
+            <RadioCore v-model="scope" name="bulk-scope" value="selected" size="xs" :color="uiColor" />
+            <span>Sélection ({{ ids.length }})</span>
+          </label>
+        </Tooltip>
+        <Tooltip 
+          :content="mode !== 'client' ? 'Disponible en mode client uniquement (dataset chargé)' : 'Appliquer les modifications à tous les résultats filtrés, même ceux non sélectionnés'"
+          placement="top" 
+          color="neutral"
+        >
+          <label
+            class="flex items-center gap-1.5"
+            :class="{ 'opacity-60 cursor-not-allowed': mode !== 'client' }"
+          >
+            <RadioCore v-model="scope" name="bulk-scope" value="filtered" size="xs" :color="uiColor" :disabled="mode !== 'client'" />
+            <span>Filtrés ({{ filteredIdsEffective.length }})</span>
+          </label>
+        </Tooltip>
+      </div>
+      <div class="flex items-center justify-end gap-2">
         <Btn
           v-if="modifiedFieldsCount > 0"
           size="sm"
@@ -455,12 +463,11 @@ const getBoolIndeterminate = (key) => {
           <Icon source="fa-solid fa-rotate-left" alt="Réinitialiser" size="sm" />
           <span>Tout réinitialiser</span>
         </Btn>
-        <Btn size="sm" variant="primary" @click="apply" :disabled="!canApply" class="gap-2">
+        <Btn size="sm" variant="glass" color="primary" @click="apply" :disabled="!canApply" class="gap-2">
           <Icon source="fa-solid fa-check" alt="Appliquer" size="sm" />
           <span>Appliquer</span>
         </Btn>
       </div>
-      <Btn size="sm" color="primary" @click="apply" :disabled="!canApply">Appliquer</Btn>
     </div>
   </div>
 </template>

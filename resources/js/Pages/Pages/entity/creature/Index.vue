@@ -24,7 +24,7 @@ import CreateEntityModal from '@/Pages/Organismes/entity/CreateEntityModal.vue';
 import EntityQuickEditPanel from '@/Pages/Organismes/entity/EntityQuickEditPanel.vue';
 import EntityQuickEditModal from '@/Pages/Organismes/entity/EntityQuickEditModal.vue';
 import { createCreatureTableConfig } from "@/Entities/creature/CreatureTableConfig";
-import { adaptCreatureEntitiesTableResponse } from "@/Entities/creature/creature-adapter";
+import { getEntityResponseAdapter } from "@/Entities/entity-registry";
 import { getCreatureFieldDescriptors } from "@/Entities/creature/creature-descriptors";
 import { createFieldsConfigFromDescriptors, createDefaultEntityFromDescriptors } from "@/Utils/entity/descriptor-form";
 
@@ -270,7 +270,7 @@ const handleQuickEditSubmit = () => {
                     entity-type="creatures"
                     :config="tableConfig"
                     :server-url="serverUrl"
-                    :response-adapter="adaptCreatureEntitiesTableResponse"
+                    :response-adapter="getEntityResponseAdapter('creatures')"
                     v-model:selected-ids="selectedIds"
                     @loaded="handleTableLoaded"
                     @row-dblclick="handleRowDoubleClick"

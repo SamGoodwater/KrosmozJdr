@@ -14,7 +14,7 @@
  */
 
 import { BaseFormatter } from './BaseFormatter.js';
-import { HOSTILITY_OPTIONS } from '../../Entities/entity/EntityDescriptorConstants.js';
+import { HOSTILITY_OPTIONS } from '@/Utils/Entity/Constants.js';
 
 export class HostilityFormatter extends BaseFormatter {
   static name = 'HostilityFormatter';

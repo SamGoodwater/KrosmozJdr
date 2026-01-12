@@ -23,7 +23,7 @@ import EntityModal from '@/Pages/Organismes/entity/EntityModal.vue';
 import EntityQuickEditPanel from '@/Pages/Organismes/entity/EntityQuickEditPanel.vue';
 import EntityQuickEditModal from '@/Pages/Organismes/entity/EntityQuickEditModal.vue';
 import { createCapabilityTableConfig } from "@/Entities/capability/CapabilityTableConfig";
-import { adaptCapabilityEntitiesTableResponse } from "@/Entities/capability/capability-adapter";
+import { getEntityResponseAdapter } from "@/Entities/entity-registry";
 import { getCapabilityFieldDescriptors } from "@/Entities/capability/capability-descriptors";
 import { createFieldsConfigFromDescriptors, createDefaultEntityFromDescriptors } from "@/Utils/entity/descriptor-form";
 
@@ -261,7 +261,7 @@ const handleQuickEditSubmit = () => {
                     entity-type="capabilities"
                     :config="tableConfig"
                     :server-url="serverUrl"
-                    :response-adapter="adaptCapabilityEntitiesTableResponse"
+                    :response-adapter="getEntityResponseAdapter('capabilities')"
                     v-model:selected-ids="selectedIds"
                     @loaded="handleTableLoaded"
                     @row-dblclick="handleRowDoubleClick"

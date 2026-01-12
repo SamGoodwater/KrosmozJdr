@@ -24,7 +24,7 @@ import CreateEntityModal from '@/Pages/Organismes/entity/CreateEntityModal.vue';
 import EntityQuickEditPanel from '@/Pages/Organismes/entity/EntityQuickEditPanel.vue';
 import EntityQuickEditModal from '@/Pages/Organismes/entity/EntityQuickEditModal.vue';
 import { createNpcTableConfig } from "@/Entities/npc/NpcTableConfig";
-import { adaptNpcEntitiesTableResponse } from "@/Entities/npc/npc-adapter";
+import { getEntityResponseAdapter } from "@/Entities/entity-registry";
 import { getNpcFieldDescriptors } from "@/Entities/npc/npc-descriptors";
 import { createFieldsConfigFromDescriptors, createDefaultEntityFromDescriptors } from "@/Utils/entity/descriptor-form";
 
@@ -288,7 +288,7 @@ const handleQuickEditSubmit = () => {
                     entity-type="npcs"
                     :config="tableConfig"
                     :server-url="serverUrl"
-                    :response-adapter="adaptNpcEntitiesTableResponse"
+                    :response-adapter="getEntityResponseAdapter('npcs')"
                     v-model:selected-ids="selectedIds"
                     @loaded="handleTableLoaded"
                     @row-dblclick="handleRowDoubleClick"

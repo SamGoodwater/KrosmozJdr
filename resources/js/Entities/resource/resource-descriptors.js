@@ -230,9 +230,9 @@ export function getResourceFieldDescriptors(ctx = {}) {
           group: "Métier",
           help: "Définit le type (métier) de la ressource.",
           required: false,
-          // Options dynamiques : seront construites dans ResourceFormConfig à partir du contexte
+          // Options dynamiques : seront construites à partir du contexte (resourceTypes)
           // Le descriptor ne contient pas de fonction, seulement la déclaration
-          options: null, // Sera fourni par le contexte dans ResourceFormConfig
+          options: null, // Sera fourni par le contexte lors de l'utilisation
           bulk: { enabled: true, nullable: true },
         },
       },
@@ -506,6 +506,64 @@ export function getResourceFieldDescriptors(ctx = {}) {
       },
       // Pas de section edit : champ système, non éditable
     },
+
+    // Configuration globale du tableau
+    _tableConfig: {
+      id: "resources.index",
+      entityType: "resource",
+      quickEdit: {
+        enabled: true,
+        permission: "updateAny",
+      },
+      actions: {
+        enabled: true,
+        permission: "view",
+        available: ["view", "edit", "quick-edit", "delete", "copy-link", "download-pdf", "refresh"],
+        defaultVisible: {
+          xs: false,
+          sm: true,
+          md: true,
+          lg: true,
+          xl: true,
+        },
+      },
+      features: {
+        search: {
+          enabled: true,
+          placeholder: "Rechercher une ressource…",
+          debounceMs: 200,
+        },
+        filters: { enabled: true },
+        pagination: {
+          enabled: true,
+          perPage: { default: 25, options: [10, 25, 50, 100] },
+        },
+        selection: {
+          enabled: true,
+          checkboxMode: "auto",
+          clickToSelect: true,
+        },
+        columnVisibility: {
+          enabled: true,
+          persist: true,
+        },
+        export: {
+          csv: true,
+          filename: "resources.csv",
+        },
+      },
+      ui: {
+        skeletonRows: 10,
+      },
+    },
+
+    // Configuration globale du quickedit
+    _quickeditConfig: {
+      fields: RESOURCE_QUICK_EDIT_FIELDS,
+    },
+
+    // Support de la constante pour BulkConfig.fromDescriptors()
+    _quickEditFields: RESOURCE_QUICK_EDIT_FIELDS,
   };
 }
 

@@ -415,5 +415,63 @@ export function getItemFieldDescriptors(ctx = {}) {
         },
       },
     },
+
+    // Configuration globale du tableau
+    _tableConfig: {
+      id: "items.index",
+      entityType: "item",
+      quickEdit: {
+        enabled: true,
+        permission: "updateAny",
+      },
+      actions: {
+        enabled: true,
+        permission: "view",
+        available: ["view", "edit", "quick-edit", "delete", "copy-link", "download-pdf", "refresh"],
+        defaultVisible: {
+          xs: false,
+          sm: true,
+          md: true,
+          lg: true,
+          xl: true,
+        },
+      },
+      features: {
+        search: {
+          enabled: true,
+          placeholder: "Rechercher un item…",
+          debounceMs: 200,
+        },
+        filters: { enabled: true },
+        pagination: {
+          enabled: true,
+          perPage: { default: 25, options: [10, 25, 50, 100] },
+        },
+        selection: {
+          enabled: true,
+          checkboxMode: "auto",
+          clickToSelect: true,
+        },
+        columnVisibility: {
+          enabled: true,
+          persist: true,
+        },
+        export: {
+          csv: true,
+          filename: "items.csv",
+        },
+      },
+      ui: {
+        skeletonRows: 10,
+      },
+    },
+
+    // Configuration globale du quickedit
+    _quickeditConfig: {
+      fields: ITEM_QUICK_EDIT_FIELDS,
+    },
+
+    // Support de la constante pour BulkConfig.fromDescriptors()
+    _quickEditFields: ITEM_QUICK_EDIT_FIELDS,
   };
 }

@@ -2,16 +2,13 @@
  * ResourceTypeTableConfig — Configuration du tableau pour l'entité ResourceType
  *
  * @description
- * Configuration du tableau TanStack pour les types de ressources avec :
- * - Colonnes avec permissions et formatage responsive (xs-xl)
- * - Configuration quickEdit
- * - Configuration actions
- * 
- * Utilise les descriptors simplifiés pour obtenir les labels, icônes et configurations.
+ * Configuration du tableau TanStack pour les types de ressources.
+ * Utilise les informations des descriptors pour éviter la duplication (labels, icônes).
+ * Les colonnes sont créées manuellement pour garder le contrôle total sur les configurations spéciales.
  */
 
-import { TableConfig } from "../entity/TableConfig.js";
-import { TableColumnConfig } from "../entity/TableColumnConfig.js";
+import { TableConfig } from "@/Utils/Entity/Configs/TableConfig.js";
+import { TableColumnConfig } from "@/Utils/Entity/Configs/TableColumnConfig.js";
 import { getResourceTypeFieldDescriptors } from "./resource-type-descriptors.js";
 
 /**
@@ -28,162 +25,137 @@ export function createResourceTypeTableConfig(ctx = {}) {
   // Récupérer les descriptors pour obtenir labels, icônes, etc.
   const descriptors = getResourceTypeFieldDescriptors(ctx);
 
+  // Créer la configuration de base depuis _tableConfig dans les descriptors
+  const tableConfigData = descriptors._tableConfig || {};
+  
   const tableConfig = new TableConfig({
-    id: "resource-types.index",
-    entityType: "resource-type",
-  })
-    .withQuickEdit({
-      enabled: true,
-      permission: "updateAny",
+    id: tableConfigData.id || "resource-types.index",
+    entityType: tableConfigData.entityType || "resource-type",
+  });
+
+  // Appliquer les configurations globales depuis _tableConfig
+  if (tableConfigData.quickEdit) {
+    tableConfig.withQuickEdit(tableConfigData.quickEdit);
+  }
+  if (tableConfigData.actions) {
+    tableConfig.withActions(tableConfigData.actions);
+  }
+  if (tableConfigData.features) {
+    tableConfig.withFeatures(tableConfigData.features);
+  }
+  if (tableConfigData.ui) {
+    tableConfig.withUI(tableConfigData.ui);
+  }
+
+  // Colonnes du tableau (utilisant les informations des descriptors)
+
+  // Colonne Name (principale)
+  tableConfig.addColumn(
+    new TableColumnConfig({
+      key: "name",
+      label: descriptors.name?.label || "Nom",
+      type: "route",
+      icon: descriptors.name?.icon || "fa-solid fa-tag",
     })
-    .withActions({
-      enabled: true,
-      permission: "view",
-      available: ["view", "edit", "quick-edit", "delete", "copy-link", "refresh"],
-      defaultVisible: {
-        xs: false,
+      .asMain(true)
+      .withSort(true)
+      .withSearch(true)
+      .withDefaultVisible({
+        xs: true,
         sm: true,
         md: true,
         lg: true,
         xl: true,
-      },
+      })
+      .withFormat({
+        xs: { mode: "truncate", maxLength: 15 },
+        sm: { mode: "truncate", maxLength: 20 },
+        md: { mode: "truncate", maxLength: 30 },
+        lg: { mode: "full" },
+        xl: { mode: "full" },
+      })
+  );
+
+  // Colonne Decision
+  tableConfig.addColumn(
+    new TableColumnConfig({
+      key: "decision",
+      label: descriptors.decision?.label || "Statut",
+      type: "badge",
+      icon: descriptors.decision?.icon || "fa-solid fa-circle-check",
     })
-    .withFeatures({
-      search: {
-        enabled: true,
-        placeholder: "Rechercher un type de ressource…",
-        debounceMs: 200,
-      },
-      filters: { enabled: true },
-      pagination: {
-        enabled: true,
-        perPage: { default: 25, options: [10, 25, 50, 100] },
-      },
-      selection: {
-        enabled: true,
-        checkboxMode: "auto",
-        clickToSelect: true,
-      },
-      columnVisibility: {
-        enabled: true,
-        persist: true,
-      },
+      .withSort(true)
+      .withDefaultVisible({
+        xs: true,
+        sm: true,
+        md: true,
+        lg: true,
+        xl: true,
+      })
+  );
+
+  // Colonne Usable
+  tableConfig.addColumn(
+    new TableColumnConfig({
+      key: "usable",
+      label: descriptors.usable?.label || "Utilisable",
+      type: "badge",
+      icon: descriptors.usable?.icon || "fa-solid fa-check-circle",
     })
-    .withUI({
-      skeletonRows: 10,
-    });
-
-  // Colonne principale : name
-  if (descriptors.name) {
-    tableConfig.addColumn(
-      new TableColumnConfig({
-        key: "name",
-        label: descriptors.name.label || "Nom",
-        type: "route",
-        icon: descriptors.name.icon || "fa-solid fa-tag",
+      .withSort(true)
+      .withDefaultVisible({
+        xs: false,
+        sm: false,
+        md: true,
+        lg: true,
+        xl: true,
       })
-        .withIsMain(true)
-        .withHideable(false)
-        .withSort(true)
-        .withSearch(true)
-        .withDefaultVisible({
-          xs: true,
-          sm: true,
-          md: true,
-          lg: true,
-          xl: true,
-        })
-    );
-  }
+  );
 
-  // Colonne : decision
-  if (descriptors.decision) {
-    tableConfig.addColumn(
-      new TableColumnConfig({
-        key: "decision",
-        label: descriptors.decision.label || "Statut",
-        type: "badge",
-        icon: descriptors.decision.icon || "fa-solid fa-circle-check",
+  // Colonne Is Visible
+  tableConfig.addColumn(
+    new TableColumnConfig({
+      key: "is_visible",
+      label: descriptors.is_visible?.label || "Visibilité",
+      type: "badge",
+      icon: descriptors.is_visible?.icon || "fa-solid fa-eye",
+    })
+      .withSort(true)
+      .withDefaultVisible({
+        xs: false,
+        sm: false,
+        md: false,
+        lg: true,
+        xl: true,
       })
-        .withSort(true)
-        .withDefaultVisible({
-          xs: true,
-          sm: true,
-          md: true,
-          lg: true,
-          xl: true,
-        })
-    );
-  }
+  );
 
-  // Colonne : usable
-  if (descriptors.usable) {
-    tableConfig.addColumn(
-      new TableColumnConfig({
-        key: "usable",
-        label: descriptors.usable.label || "Utilisable",
-        type: "badge",
-        icon: descriptors.usable.icon || "fa-solid fa-check-circle",
+  // Colonne Resources Count
+  tableConfig.addColumn(
+    new TableColumnConfig({
+      key: "resources_count",
+      label: descriptors.resources_count?.label || "Ressources",
+      type: "text",
+      icon: descriptors.resources_count?.icon || "fa-solid fa-cubes",
+    })
+      .withSort(true)
+      .withDefaultVisible({
+        xs: false,
+        sm: false,
+        md: false,
+        lg: true,
+        xl: true,
       })
-        .withSort(true)
-        .withDefaultVisible({
-          xs: false,
-          sm: false,
-          md: true,
-          lg: true,
-          xl: true,
-        })
-    );
-  }
+  );
 
-  // Colonne : is_visible
-  if (descriptors.is_visible) {
-    tableConfig.addColumn(
-      new TableColumnConfig({
-        key: "is_visible",
-        label: descriptors.is_visible.label || "Visibilité",
-        type: "badge",
-        icon: descriptors.is_visible.icon || "fa-solid fa-eye",
-      })
-        .withSort(true)
-        .withDefaultVisible({
-          xs: false,
-          sm: false,
-          md: false,
-          lg: true,
-          xl: true,
-        })
-    );
-  }
-
-  // Colonne : resources_count
-  if (descriptors.resources_count) {
-    tableConfig.addColumn(
-      new TableColumnConfig({
-        key: "resources_count",
-        label: descriptors.resources_count.label || "Ressources",
-        type: "text",
-        icon: descriptors.resources_count.icon || "fa-solid fa-cubes",
-      })
-        .withSort(true)
-        .withDefaultVisible({
-          xs: false,
-          sm: false,
-          md: false,
-          lg: true,
-          xl: true,
-        })
-    );
-  }
-
-  // Colonne : dofusdb_type_id (conditionnelle)
-  if (descriptors.dofusdb_type_id && canUpdateAny) {
+  // Colonnes conditionnelles selon permissions
+  if (canUpdateAny) {
     tableConfig.addColumn(
       new TableColumnConfig({
         key: "dofusdb_type_id",
-        label: descriptors.dofusdb_type_id.label || "DofusDB typeId",
+        label: descriptors.dofusdb_type_id?.label || "DofusDB typeId",
         type: "text",
-        icon: descriptors.dofusdb_type_id.icon || "fa-solid fa-database",
+        icon: descriptors.dofusdb_type_id?.icon || "fa-solid fa-database",
       })
         .withPermission("updateAny")
         .withSort(true)
@@ -197,54 +169,50 @@ export function createResourceTypeTableConfig(ctx = {}) {
     );
   }
 
-  // Colonne : seen_count
-  if (descriptors.seen_count) {
-    tableConfig.addColumn(
-      new TableColumnConfig({
-        key: "seen_count",
-        label: descriptors.seen_count.label || "Détections",
-        type: "text",
-        icon: descriptors.seen_count.icon || "fa-solid fa-eye",
+  // Colonne Seen Count
+  tableConfig.addColumn(
+    new TableColumnConfig({
+      key: "seen_count",
+      label: descriptors.seen_count?.label || "Détections",
+      type: "text",
+      icon: descriptors.seen_count?.icon || "fa-solid fa-eye",
+    })
+      .withSort(true)
+      .withDefaultVisible({
+        xs: false,
+        sm: false,
+        md: false,
+        lg: false,
+        xl: true,
       })
-        .withSort(true)
-        .withDefaultVisible({
-          xs: false,
-          sm: false,
-          md: false,
-          lg: false,
-          xl: true,
-        })
-    );
-  }
+  );
 
-  // Colonne : last_seen_at
-  if (descriptors.last_seen_at) {
-    tableConfig.addColumn(
-      new TableColumnConfig({
-        key: "last_seen_at",
-        label: descriptors.last_seen_at.label || "Dernière détection",
-        type: "date",
-        icon: descriptors.last_seen_at.icon || "fa-solid fa-clock",
+  // Colonne Last Seen At
+  tableConfig.addColumn(
+    new TableColumnConfig({
+      key: "last_seen_at",
+      label: descriptors.last_seen_at?.label || "Dernière détection",
+      type: "date",
+      icon: descriptors.last_seen_at?.icon || "fa-solid fa-clock",
+    })
+      .withSort(true)
+      .withDefaultVisible({
+        xs: false,
+        sm: false,
+        md: false,
+        lg: false,
+        xl: true,
       })
-        .withSort(true)
-        .withDefaultVisible({
-          xs: false,
-          sm: false,
-          md: false,
-          lg: false,
-          xl: true,
-        })
-    );
-  }
+  );
 
-  // Colonne : id (conditionnelle)
-  if (descriptors.id && canUpdateAny) {
+  // Colonnes conditionnelles selon permissions
+  if (canUpdateAny) {
     tableConfig.addColumn(
       new TableColumnConfig({
         key: "id",
-        label: descriptors.id.label || "ID",
+        label: descriptors.id?.label || "ID",
         type: "text",
-        icon: descriptors.id.icon || "fa-solid fa-hashtag",
+        icon: descriptors.id?.icon || "fa-solid fa-hashtag",
       })
         .withPermission("updateAny")
         .withSort(true)
@@ -258,47 +226,43 @@ export function createResourceTypeTableConfig(ctx = {}) {
     );
   }
 
-  // Colonne : created_at (conditionnelle)
-  if (descriptors.created_at && canCreateAny) {
-    tableConfig.addColumn(
-      new TableColumnConfig({
-        key: "created_at",
-        label: descriptors.created_at.label || "Créé le",
-        type: "date",
-        icon: descriptors.created_at.icon || "fa-solid fa-calendar-plus",
-      })
-        .withPermission("createAny")
-        .withSort(true)
-        .withDefaultVisible({
-          xs: false,
-          sm: false,
-          md: false,
-          lg: false,
-          xl: false,
+  if (canCreateAny) {
+    tableConfig
+      .addColumn(
+        new TableColumnConfig({
+          key: "created_at",
+          label: descriptors.created_at?.label || "Créé le",
+          type: "date",
+          icon: descriptors.created_at?.icon || "fa-solid fa-calendar-plus",
         })
-    );
+          .withPermission("createAny")
+          .withSort(true)
+          .withDefaultVisible({
+            xs: false,
+            sm: false,
+            md: false,
+            lg: false,
+            xl: false,
+          })
+      )
+      .addColumn(
+        new TableColumnConfig({
+          key: "updated_at",
+          label: descriptors.updated_at?.label || "Modifié le",
+          type: "date",
+          icon: descriptors.updated_at?.icon || "fa-solid fa-calendar-check",
+        })
+          .withPermission("createAny")
+          .withSort(true)
+          .withDefaultVisible({
+            xs: false,
+            sm: false,
+            md: false,
+            lg: false,
+            xl: false,
+          })
+      );
   }
 
-  // Colonne : updated_at (conditionnelle)
-  if (descriptors.updated_at && canCreateAny) {
-    tableConfig.addColumn(
-      new TableColumnConfig({
-        key: "updated_at",
-        label: descriptors.updated_at.label || "Modifié le",
-        type: "date",
-        icon: descriptors.updated_at.icon || "fa-solid fa-calendar-check",
-      })
-        .withPermission("createAny")
-        .withSort(true)
-        .withDefaultVisible({
-          xs: false,
-          sm: false,
-          md: false,
-          lg: false,
-          xl: false,
-        })
-    );
-  }
-
-  return tableConfig.build(ctx);
+  return tableConfig;
 }

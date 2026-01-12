@@ -24,7 +24,7 @@ import CreateEntityModal from '@/Pages/Organismes/entity/CreateEntityModal.vue';
 import EntityQuickEditPanel from '@/Pages/Organismes/entity/EntityQuickEditPanel.vue';
 import EntityQuickEditModal from '@/Pages/Organismes/entity/EntityQuickEditModal.vue';
 import { createAttributeTableConfig } from "@/Entities/attribute/AttributeTableConfig";
-import { adaptAttributeEntitiesTableResponse } from "@/Entities/attribute/attribute-adapter";
+import { getEntityResponseAdapter } from "@/Entities/entity-registry";
 import { getAttributeFieldDescriptors } from "@/Entities/attribute/attribute-descriptors";
 import { createFieldsConfigFromDescriptors, createDefaultEntityFromDescriptors } from "@/Utils/entity/descriptor-form";
 
@@ -275,7 +275,7 @@ const handleQuickEditSubmit = () => {
                     entity-type="attributes"
                     :config="tableConfig"
                     :server-url="serverUrl"
-                    :response-adapter="adaptAttributeEntitiesTableResponse"
+                    :response-adapter="getEntityResponseAdapter('attributes')"
                     v-model:selected-ids="selectedIds"
                     @loaded="handleTableLoaded"
                     @row-dblclick="handleRowDoubleClick"

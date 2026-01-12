@@ -12,38 +12,29 @@
  * const adapter = getEntityResponseAdapter("resources");
  */
 
-import { adaptResourceEntitiesTableResponse } from "@/Entities/resource/resource-adapter";
+// Import des modèles
 import { Resource } from "@/Models/Entity/Resource";
-import { adaptResourceTypeEntitiesTableResponse } from "@/Entities/resource-type/resource-type-adapter";
 import { ResourceType } from "@/Models/Entity/ResourceType";
-import { adaptItemEntitiesTableResponse } from "@/Entities/item/item-adapter";
 import { Item } from "@/Models/Entity/Item";
-import { adaptSpellEntitiesTableResponse } from "@/Entities/spell/spell-adapter";
 import { Spell } from "@/Models/Entity/Spell";
-import { adaptMonsterEntitiesTableResponse } from "@/Entities/monster/monster-adapter";
 import { Monster } from "@/Models/Entity/Monster";
-import { adaptCreatureEntitiesTableResponse } from "@/Entities/creature/creature-adapter";
 import { Creature } from "@/Models/Entity/Creature";
-import { adaptNpcEntitiesTableResponse } from "@/Entities/npc/npc-adapter";
 import { Npc } from "@/Models/Entity/Npc";
-import { adaptClasseEntitiesTableResponse } from "@/Entities/classe/classe-adapter";
 import { Classe } from "@/Models/Entity/Classe";
-import { adaptConsumableEntitiesTableResponse } from "@/Entities/consumable/consumable-adapter";
 import { Consumable } from "@/Models/Entity/Consumable";
-import { adaptCampaignEntitiesTableResponse } from "@/Entities/campaign/campaign-adapter";
 import { Campaign } from "@/Models/Entity/Campaign";
-import { adaptScenarioEntitiesTableResponse } from "@/Entities/scenario/scenario-adapter";
 import { Scenario } from "@/Models/Entity/Scenario";
-import { adaptAttributeEntitiesTableResponse } from "@/Entities/attribute/attribute-adapter";
 import { Attribute } from "@/Models/Entity/Attribute";
-import { adaptPanoplyEntitiesTableResponse } from "@/Entities/panoply/panoply-adapter";
 import { Panoply } from "@/Models/Entity/Panoply";
-import { adaptCapabilityEntitiesTableResponse } from "@/Entities/capability/capability-adapter";
 import { Capability } from "@/Models/Entity/Capability";
-import { adaptSpecializationEntitiesTableResponse } from "@/Entities/specialization/specialization-adapter";
 import { Specialization } from "@/Models/Entity/Specialization";
-import { adaptShopEntitiesTableResponse } from "@/Entities/shop/shop-adapter";
 import { Shop } from "@/Models/Entity/Shop";
+
+// Import du mapper Resource (seul mapper existant pour l'instant)
+import { ResourceMapper } from "@/Mappers/Entity/ResourceMapper";
+
+// Import de l'adapter générique
+import { createEntityAdapter } from "@/Utils/Entity/createEntityAdapter";
 import { getResourceFieldDescriptors, RESOURCE_QUICK_EDIT_FIELDS } from "@/Entities/resource/resource-descriptors";
 import { getResourceTypeFieldDescriptors, RESOURCE_TYPE_QUICK_EDIT_FIELDS } from "@/Entities/resource-type/resource-type-descriptors";
 import { getItemFieldDescriptors, ITEM_QUICK_EDIT_FIELDS } from "@/Entities/item/item-descriptors";
@@ -124,7 +115,7 @@ export function getEntityConfig(entityType) {
           compact: ['rarity', 'level', 'usable', 'price', 'dofus_version', 'is_visible'],
           extended: ['rarity', 'resource_type', 'level', 'usable', 'price', 'weight', 'dofus_version', 'is_visible', 'auto_update', 'dofusdb_id', 'created_by', 'created_at', 'updated_at'],
         },
-        responseAdapter: adaptResourceEntitiesTableResponse,
+        responseAdapter: createEntityAdapter(Resource, ResourceMapper),
         defaults: { minimalImportantFields: ["level", "rarity", "usable", "is_visible"] },
       };
     case "resource-types":
@@ -147,7 +138,7 @@ export function getEntityConfig(entityType) {
           });
         },
         viewFields: RESOURCE_TYPE_QUICK_EDIT_FIELDS,
-        responseAdapter: adaptResourceTypeEntitiesTableResponse,
+        responseAdapter: createEntityAdapter(ResourceType),
         defaults: { minimalImportantFields: ["decision", "resources_count", "dofusdb_type_id"] },
       };
     case "items":
@@ -165,7 +156,7 @@ export function getEntityConfig(entityType) {
           return item.toCell(fieldKey, { ...ctx, ...opts });
         },
         viewFields: ITEM_QUICK_EDIT_FIELDS,
-        responseAdapter: adaptItemEntitiesTableResponse,
+        responseAdapter: createEntityAdapter(Item),
         defaults: { minimalImportantFields: ["level", "item_type", "rarity"] },
       };
     case "spells":
@@ -183,7 +174,7 @@ export function getEntityConfig(entityType) {
           return spell.toCell(fieldKey, { ...ctx, ...opts });
         },
         viewFields: SPELL_QUICK_EDIT_FIELDS,
-        responseAdapter: adaptSpellEntitiesTableResponse,
+        responseAdapter: createEntityAdapter(Spell),
         defaults: { minimalImportantFields: ["level", "pa", "po", "element", "category"] },
       };
     case "monsters":
@@ -201,7 +192,7 @@ export function getEntityConfig(entityType) {
           return monster.toCell(fieldKey, { ...ctx, ...opts });
         },
         viewFields: MONSTER_QUICK_EDIT_FIELDS,
-        responseAdapter: adaptMonsterEntitiesTableResponse,
+        responseAdapter: createEntityAdapter(Monster),
         defaults: { minimalImportantFields: ["creature_name", "monster_race", "size", "is_boss"] },
       };
     case "creatures":
@@ -219,7 +210,7 @@ export function getEntityConfig(entityType) {
           return creature.toCell(fieldKey, { ...ctx, ...opts });
         },
         viewFields: CREATURE_QUICK_EDIT_FIELDS,
-        responseAdapter: adaptCreatureEntitiesTableResponse,
+        responseAdapter: createEntityAdapter(Creature),
         defaults: { minimalImportantFields: ["name", "level", "hostility", "life"] },
       };
     case "npcs":
@@ -237,7 +228,7 @@ export function getEntityConfig(entityType) {
           return npc.toCell(fieldKey, { ...ctx, ...opts });
         },
         viewFields: NPC_QUICK_EDIT_FIELDS,
-        responseAdapter: adaptNpcEntitiesTableResponse,
+        responseAdapter: createEntityAdapter(Npc),
         defaults: { minimalImportantFields: ["creature_name", "classe", "specialization"] },
       };
     case "classes":
@@ -255,7 +246,7 @@ export function getEntityConfig(entityType) {
           return classe.toCell(fieldKey, { ...ctx, ...opts });
         },
         viewFields: CLASSE_QUICK_EDIT_FIELDS,
-        responseAdapter: adaptClasseEntitiesTableResponse,
+        responseAdapter: createEntityAdapter(Classe),
         defaults: { minimalImportantFields: ["name", "life", "life_dice"] },
       };
     case "consumables":
@@ -273,7 +264,7 @@ export function getEntityConfig(entityType) {
           return consumable.toCell(fieldKey, { ...ctx, ...opts });
         },
         viewFields: CONSUMABLE_QUICK_EDIT_FIELDS,
-        responseAdapter: adaptConsumableEntitiesTableResponse,
+        responseAdapter: createEntityAdapter(Consumable),
         defaults: { minimalImportantFields: ["level", "consumable_type", "rarity"] },
       };
     case "campaigns":
@@ -291,7 +282,7 @@ export function getEntityConfig(entityType) {
           return campaign.toCell(fieldKey, { ...ctx, ...opts });
         },
         viewFields: CAMPAIGN_QUICK_EDIT_FIELDS,
-        responseAdapter: adaptCampaignEntitiesTableResponse,
+        responseAdapter: createEntityAdapter(Campaign),
         defaults: { minimalImportantFields: ["name", "state", "is_public"] },
       };
     case "scenarios":
@@ -309,7 +300,7 @@ export function getEntityConfig(entityType) {
           return scenario.toCell(fieldKey, { ...ctx, ...opts });
         },
         viewFields: SCENARIO_QUICK_EDIT_FIELDS,
-        responseAdapter: adaptScenarioEntitiesTableResponse,
+        responseAdapter: createEntityAdapter(Scenario),
         defaults: { minimalImportantFields: ["name", "state", "is_public"] },
       };
     case "attributes":
@@ -327,7 +318,7 @@ export function getEntityConfig(entityType) {
           return attribute.toCell(fieldKey, { ...ctx, ...opts });
         },
         viewFields: ATTRIBUTE_QUICK_EDIT_FIELDS,
-        responseAdapter: adaptAttributeEntitiesTableResponse,
+        responseAdapter: createEntityAdapter(Attribute),
         defaults: { minimalImportantFields: ["name", "usable", "is_visible"] },
       };
     case "panoplies":
@@ -345,7 +336,7 @@ export function getEntityConfig(entityType) {
           return panoply.toCell(fieldKey, { ...ctx, ...opts });
         },
         viewFields: PANOPLY_QUICK_EDIT_FIELDS,
-        responseAdapter: adaptPanoplyEntitiesTableResponse,
+        responseAdapter: createEntityAdapter(Panoply),
         defaults: { minimalImportantFields: ["name", "bonus", "items_count"] },
       };
     case "capabilities":
@@ -363,7 +354,7 @@ export function getEntityConfig(entityType) {
           return capability.toCell(fieldKey, { ...ctx, ...opts });
         },
         viewFields: CAPABILITY_QUICK_EDIT_FIELDS,
-        responseAdapter: adaptCapabilityEntitiesTableResponse,
+        responseAdapter: createEntityAdapter(Capability),
         defaults: { minimalImportantFields: ["name", "level", "pa", "po", "element"] },
       };
     case "specializations":
@@ -381,7 +372,7 @@ export function getEntityConfig(entityType) {
           return specialization.toCell(fieldKey, { ...ctx, ...opts });
         },
         viewFields: SPECIALIZATION_QUICK_EDIT_FIELDS,
-        responseAdapter: adaptSpecializationEntitiesTableResponse,
+        responseAdapter: createEntityAdapter(Specialization),
         defaults: { minimalImportantFields: ["name", "description", "capabilities_count"] },
       };
     case "shops":
@@ -399,7 +390,7 @@ export function getEntityConfig(entityType) {
           return shop.toCell(fieldKey, { ...ctx, ...opts });
         },
         viewFields: SHOP_QUICK_EDIT_FIELDS,
-        responseAdapter: adaptShopEntitiesTableResponse,
+        responseAdapter: createEntityAdapter(Shop),
         defaults: { minimalImportantFields: ["name", "location", "npc_name", "items_count"] },
       };
     default:

@@ -7,7 +7,7 @@
  */
 
 import { BaseFormatter } from './BaseFormatter.js';
-import { VISIBILITY_OPTIONS } from '../../Entities/entity/EntityDescriptorConstants.js';
+import { VISIBILITY_OPTIONS } from '@/Utils/Entity/Constants.js';
 
 export class VisibilityFormatter extends BaseFormatter {
   static name = 'VisibilityFormatter';

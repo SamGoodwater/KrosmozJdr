@@ -24,7 +24,7 @@ import EntityQuickEditPanel from "@/Pages/Organismes/entity/EntityQuickEditPanel
 import CreateEntityModal from '@/Pages/Organismes/entity/CreateEntityModal.vue';
 import EntityQuickEditModal from '@/Pages/Organismes/entity/EntityQuickEditModal.vue';
 import { createItemTableConfig } from "@/Entities/item/ItemTableConfig";
-import { adaptItemEntitiesTableResponse } from "@/Entities/item/item-adapter";
+import { getEntityResponseAdapter } from "@/Entities/entity-registry";
 import { getItemFieldDescriptors } from "@/Entities/item/item-descriptors";
 import { createFieldsConfigFromDescriptors, createDefaultEntityFromDescriptors } from "@/Utils/entity/descriptor-form";
 
@@ -284,7 +284,7 @@ const clearSelection = () => {
                     entity-type="items"
                     :config="tableConfig"
                     :server-url="serverUrl"
-                    :response-adapter="adaptItemEntitiesTableResponse"
+                    :response-adapter="getEntityResponseAdapter('items')"
                     v-model:selected-ids="selectedIds"
                     @loaded="handleTableLoaded"
                     @row-dblclick="handleRowDoubleClick"

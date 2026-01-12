@@ -286,5 +286,62 @@ export function getNpcFieldDescriptors(ctx = {}) {
         },
       },
     },
+    // Configuration globale du tableau
+    _tableConfig: {
+      id: "npcs.index",
+      entityType: "npc",
+      quickEdit: {
+        enabled: true,
+        permission: "updateAny",
+      },
+      actions: {
+        enabled: true,
+        permission: "view",
+        available: ["view", "edit", "quick-edit", "delete", "copy-link", "download-pdf", "refresh"],
+        defaultVisible: {
+          xs: false,
+          sm: true,
+          md: true,
+          lg: true,
+          xl: true,
+        },
+      },
+      features: {
+        search: {
+          enabled: true,
+          placeholder: "Rechercher un NPC…",
+          debounceMs: 200,
+        },
+        filters: { enabled: true },
+        pagination: {
+          enabled: true,
+          perPage: { default: 25, options: [10, 25, 50, 100] },
+        },
+        selection: {
+          enabled: true,
+          checkboxMode: "auto",
+          clickToSelect: true,
+        },
+        columnVisibility: {
+          enabled: true,
+          persist: true,
+        },
+        export: {
+          csv: true,
+          filename: "npcs.csv",
+        },
+      },
+      ui: {
+        skeletonRows: 10,
+      },
+    },
+
+    // Configuration globale du quickedit
+    _quickeditConfig: {
+      fields: NPC_QUICK_EDIT_FIELDS,
+    },
+
+    // Support de la constante pour BulkConfig.fromDescriptors()
+    _quickEditFields: NPC_QUICK_EDIT_FIELDS,
   };
 }

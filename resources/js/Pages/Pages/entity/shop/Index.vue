@@ -24,7 +24,7 @@ import CreateEntityModal from '@/Pages/Organismes/entity/CreateEntityModal.vue';
 import EntityQuickEditPanel from '@/Pages/Organismes/entity/EntityQuickEditPanel.vue';
 import EntityQuickEditModal from '@/Pages/Organismes/entity/EntityQuickEditModal.vue';
 import { createShopTableConfig } from "@/Entities/shop/ShopTableConfig";
-import { adaptShopEntitiesTableResponse } from "@/Entities/shop/shop-adapter";
+import { getEntityResponseAdapter } from "@/Entities/entity-registry";
 import { getShopFieldDescriptors } from "@/Entities/shop/shop-descriptors";
 import { createFieldsConfigFromDescriptors, createDefaultEntityFromDescriptors } from "@/Utils/entity/descriptor-form";
 
@@ -273,7 +273,7 @@ const handleQuickEditSubmit = () => {
                     entity-type="shops"
                     :config="tableConfig"
                     :server-url="serverUrl"
-                    :response-adapter="adaptShopEntitiesTableResponse"
+                    :response-adapter="getEntityResponseAdapter('shops')"
                     v-model:selected-ids="selectedIds"
                     @loaded="handleTableLoaded"
                     @row-dblclick="handleRowDoubleClick"

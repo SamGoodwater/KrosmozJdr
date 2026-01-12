@@ -10,8 +10,8 @@
  */
 
 import { describe, it, expect, beforeEach, vi } from "vitest";
-import { TableConfig } from "@/Entities/entity/TableConfig.js";
-import { TableColumnConfig } from "@/Entities/entity/TableColumnConfig.js";
+import { TableConfig } from "@/Utils/Entity/Configs/TableConfig.js";
+import { TableColumnConfig } from "@/Utils/Entity/Configs/TableColumnConfig.js";
 
 describe("TableColumnConfig", () => {
   it("crée une colonne avec les propriétés de base", () => {

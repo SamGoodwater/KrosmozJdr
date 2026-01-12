@@ -22,7 +22,7 @@ import EntityEditForm from "@/Pages/Organismes/entity/EntityEditForm.vue";
 import EntityQuickEditPanel from "@/Pages/Organismes/entity/EntityQuickEditPanel.vue";
 import EntityQuickEditModal from "@/Pages/Organismes/entity/EntityQuickEditModal.vue";
 import { createResourceTypeTableConfig } from "@/Entities/resource-type/ResourceTypeTableConfig";
-import { adaptResourceTypeEntitiesTableResponse } from "@/Entities/resource-type/resource-type-adapter";
+import { getEntityResponseAdapter } from "@/Entities/entity-registry";
 import { getResourceTypeFieldDescriptors } from "@/Entities/resource-type/resource-type-descriptors";
 import { createFieldsConfigFromDescriptors, createDefaultEntityFromDescriptors } from "@/Utils/entity/descriptor-form";
 import { ResourceType } from "@/Models/Entity/ResourceType";
@@ -210,7 +210,7 @@ const defaultEntity = computed(() => createDefaultEntityFromDescriptors(resource
                     entity-type="resource-types"
                     :config="tableConfig"
                     :server-url="serverUrl"
-                    :response-adapter="adaptResourceTypeEntitiesTableResponse"
+                    :response-adapter="getEntityResponseAdapter('resource-types')"
                     v-model:selected-ids="selectedIds"
                     @loaded="handleTableLoaded"
                     @row-dblclick="handleRowDoubleClick"

@@ -23,12 +23,8 @@ export default defineConfig({
     setupFiles: ['./tests/setup.js'],
     
     // Pool options pour éviter les problèmes avec jsdom
+    // Note: poolOptions a été supprimé dans Vitest 4, les options sont maintenant au niveau racine
     pool: 'threads',
-    poolOptions: {
-      threads: {
-        singleThread: false,
-      },
-    },
     
     // Coverage
     coverage: {

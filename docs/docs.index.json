@@ -270,6 +270,16 @@
     "description": "Le système de validation a été entièrement refactorisé pour répondre aux besoins de simplicité et de transparence. L'objectif était de créer une API qui évite les conflits avec les vues tout en restant puissante et flexible."
   },
   {
+    "path": "110- To Do/ANALYSE_CLEANUP_ENTITY_FOLDER.md",
+    "title": "Analyse — Nettoyage du dossier Entities/entity",
+    "description": "**Date de création** : 2026-01-XX"
+  },
+  {
+    "path": "110- To Do/ANALYSE_SIMPLIFICATION_CONFIGS.md",
+    "title": "Analyse — Simplification des Configs",
+    "description": "**Date de création** : 2026-01-XX"
+  },
+  {
     "path": "110- To Do/ARCHITECTURE_ENTITIES_ATOMIC_DESIGN.md",
     "title": "Architecture des entités — Atomic Design",
     "description": "**Date de création** : 2026-01-06"
@@ -277,6 +287,16 @@
   {
     "path": "110- To Do/ARCHITECTURE_ENTITY_SYSTEM.md",
     "title": "Architecture du système d'entités — Vue d'ensemble",
+    "description": "**Date de création** : 2026-01-XX"
+  },
+  {
+    "path": "110- To Do/ARCHITECTURE_FILE_ORGANIZATION.md",
+    "title": "Architecture — Organisation des fichiers d'entités",
+    "description": "**Date de création** : 2026-01-XX"
+  },
+  {
+    "path": "110- To Do/CE_QUI_RESTE_A_FAIRE.md",
+    "title": "Ce qui reste à faire",
     "description": "**Date de création** : 2026-01-XX"
   },
   {
@@ -295,8 +315,18 @@
     "description": "**Date de création** : 2026-01-XX"
   },
   {
+    "path": "110- To Do/EXEMPLE_UTILISATION_HELPERS.md",
+    "title": "Exemple d'utilisation des Helpers génériques",
+    "description": "**Date de création** : 2026-01-XX"
+  },
+  {
     "path": "110- To Do/MAPPERS_PATTERN.md",
     "title": "Pattern Mappers — Transformation backend → frontend",
+    "description": "**Date de création** : 2026-01-XX"
+  },
+  {
+    "path": "110- To Do/MIGRATION_ENTITY_FILES.md",
+    "title": "Migration — Réorganisation des fichiers Entities/entity",
     "description": "**Date de création** : 2026-01-XX"
   },
   {
@@ -310,8 +340,48 @@
     "description": "**Date de création** : 2026-01-06"
   },
   {
+    "path": "110- To Do/REDONDANCE_DESCRIPTORS_TABLECONFIG.md",
+    "title": "Redondance entre Descriptors et TableConfig",
+    "description": "**Date de création** : 2026-01-XX"
+  },
+  {
     "path": "110- To Do/REFACTORING_DESCRIPTORS_CHECKLIST.md",
     "title": "Checklist de refactoring des descriptors",
+    "description": "**Date de création** : 2026-01-XX"
+  },
+  {
+    "path": "110- To Do/REFONTE_ENTITES_TERMINEE.md",
+    "title": "Refonte complète des entités — Terminée ✅",
+    "description": "2024-12-XX"
+  },
+  {
+    "path": "110- To Do/REFONTE_RESOURCE_TERMINEE.md",
+    "title": "Refonte des fichiers Resource — Terminée ✅",
+    "description": "**Date de création** : 2026-01-XX"
+  },
+  {
+    "path": "110- To Do/REFONTE_RESOURCE_TYPE_TERMINEE.md",
+    "title": "Refonte de ResourceType — Terminée ✅",
+    "description": "**Date de création** : 2026-01-XX"
+  },
+  {
+    "path": "110- To Do/REORGANISATION_ENTITY_FILES.md",
+    "title": "Réorganisation des fichiers Entities/entity",
+    "description": "**Date de création** : 2026-01-XX"
+  },
+  {
+    "path": "110- To Do/REORGANISATION_TERMINEE.md",
+    "title": "Réorganisation terminée — Entities/entity → Utils/Entity",
+    "description": "**Date de création** : 2026-01-XX"
+  },
+  {
+    "path": "110- To Do/SIMPLIFICATION_CONFIGS_TERMINEE.md",
+    "title": "Simplification des Configs — Terminée ✅",
+    "description": "**Date de création** : 2026-01-XX"
+  },
+  {
+    "path": "110- To Do/SPECIFICATION_DESCRIPTOR_CENTRALISE.md",
+    "title": "Spécification — Descriptor Centralisé et Génération Automatique",
     "description": "**Date de création** : 2026-01-XX"
   },
   {
@@ -320,9 +390,19 @@
     "description": "**Date** : 2026-01-XX"
   },
   {
+    "path": "110- To Do/VERIFICATION_FICHIERS_ENTITES.md",
+    "title": "Vérification complète des fichiers entités",
+    "description": "2024-12-XX"
+  },
+  {
     "path": "110- To Do/VERIFICATION_RESOURCE_REFACTORING.md",
     "title": "Rapport de vérification — Refactoring Resource",
     "description": "**Date** : 2026-01-XX"
+  },
+  {
+    "path": "110- To Do/VERIFICATION_TESTS_ENTITES.md",
+    "title": "Vérification des tests pour les entités",
+    "description": "2024-12-XX"
   },
   {
     "path": "20-Content/21-Entities/ENTITIES_OVERVIEW.md",

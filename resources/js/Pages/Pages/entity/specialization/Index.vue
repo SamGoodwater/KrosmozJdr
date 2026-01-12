@@ -24,7 +24,7 @@ import CreateEntityModal from '@/Pages/Organismes/entity/CreateEntityModal.vue';
 import EntityQuickEditPanel from '@/Pages/Organismes/entity/EntityQuickEditPanel.vue';
 import EntityQuickEditModal from '@/Pages/Organismes/entity/EntityQuickEditModal.vue';
 import { createSpecializationTableConfig } from "@/Entities/specialization/SpecializationTableConfig";
-import { adaptSpecializationEntitiesTableResponse } from "@/Entities/specialization/specialization-adapter";
+import { getEntityResponseAdapter } from "@/Entities/entity-registry";
 import { getSpecializationFieldDescriptors } from "@/Entities/specialization/specialization-descriptors";
 import { createFieldsConfigFromDescriptors, createDefaultEntityFromDescriptors } from "@/Utils/entity/descriptor-form";
 
@@ -273,7 +273,7 @@ const handleQuickEditSubmit = () => {
                     entity-type="specializations"
                     :config="tableConfig"
                     :server-url="serverUrl"
-                    :response-adapter="adaptSpecializationEntitiesTableResponse"
+                    :response-adapter="getEntityResponseAdapter('specializations')"
                     v-model:selected-ids="selectedIds"
                     @loaded="handleTableLoaded"
                     @row-dblclick="handleRowDoubleClick"

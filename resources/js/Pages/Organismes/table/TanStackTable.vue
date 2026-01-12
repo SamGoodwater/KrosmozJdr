@@ -24,7 +24,7 @@ import TanStackTableToolbar from "@/Pages/Molecules/table/TanStackTableToolbar.v
 import TanStackTableFilters from "@/Pages/Molecules/table/TanStackTableFilters.vue";
 import TanStackTablePagination from "@/Pages/Molecules/table/TanStackTablePagination.vue";
 import { useTanStackTablePreferences } from "@/Composables/table/useTanStackTablePreferences";
-import { getCurrentScreenSize } from "@/Entities/entity/EntityDescriptorHelpers.js";
+import { getCurrentScreenSize } from "@/Utils/Entity/Helpers.js";
 import { getEntityConfig } from "@/Entities/entity-registry.js";
 import Btn from "@/Pages/Atoms/action/Btn.vue";
 

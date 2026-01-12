@@ -15,7 +15,7 @@
  */
 
 import { BaseFormatter } from './BaseFormatter.js';
-import { RARITY_OPTIONS } from '../../Entities/entity/EntityDescriptorConstants.js';
+import { RARITY_OPTIONS } from '@/Utils/Entity/Constants.js';
 
 export class RarityFormatter extends BaseFormatter {
   static name = 'RarityFormatter';

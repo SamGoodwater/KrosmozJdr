@@ -24,7 +24,7 @@ import CreateEntityModal from '@/Pages/Organismes/entity/CreateEntityModal.vue';
 import EntityQuickEditPanel from '@/Pages/Organismes/entity/EntityQuickEditPanel.vue';
 import EntityQuickEditModal from '@/Pages/Organismes/entity/EntityQuickEditModal.vue';
 import { createSpellTableConfig } from "@/Entities/spell/SpellTableConfig";
-import { adaptSpellEntitiesTableResponse } from "@/Entities/spell/spell-adapter";
+import { getEntityResponseAdapter } from "@/Entities/entity-registry";
 import { getSpellFieldDescriptors } from "@/Entities/spell/spell-descriptors";
 import { createFieldsConfigFromDescriptors, createDefaultEntityFromDescriptors } from "@/Utils/entity/descriptor-form";
 
@@ -269,7 +269,7 @@ const handleQuickEditSubmit = () => {
                     entity-type="spells"
                     :config="tableConfig"
                     :server-url="serverUrl"
-                    :response-adapter="adaptSpellEntitiesTableResponse"
+                    :response-adapter="getEntityResponseAdapter('spells')"
                     v-model:selected-ids="selectedIds"
                     @loaded="handleTableLoaded"
                     @row-dblclick="handleRowDoubleClick"

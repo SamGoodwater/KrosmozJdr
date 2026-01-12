@@ -24,7 +24,7 @@ import CreateEntityModal from '@/Pages/Organismes/entity/CreateEntityModal.vue';
 import EntityQuickEditPanel from '@/Pages/Organismes/entity/EntityQuickEditPanel.vue';
 import EntityQuickEditModal from '@/Pages/Organismes/entity/EntityQuickEditModal.vue';
 import { createPanoplyTableConfig } from "@/Entities/panoply/PanoplyTableConfig";
-import { adaptPanoplyEntitiesTableResponse } from "@/Entities/panoply/panoply-adapter";
+import { getEntityResponseAdapter } from "@/Entities/entity-registry";
 import { getPanoplyFieldDescriptors } from "@/Entities/panoply/panoply-descriptors";
 import { createFieldsConfigFromDescriptors, createDefaultEntityFromDescriptors } from "@/Utils/entity/descriptor-form";
 
@@ -273,7 +273,7 @@ const handleQuickEditSubmit = () => {
                     entity-type="panoplies"
                     :config="tableConfig"
                     :server-url="serverUrl"
-                    :response-adapter="adaptPanoplyEntitiesTableResponse"
+                    :response-adapter="getEntityResponseAdapter('panoplies')"
                     v-model:selected-ids="selectedIds"
                     @loaded="handleTableLoaded"
                     @row-dblclick="handleRowDoubleClick"

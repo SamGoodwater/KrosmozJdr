@@ -15,7 +15,7 @@
  *   useBulkEditPanel({ selectedEntities, isAdmin, fieldMeta, mode, filteredIds, entityType, mapper });
  */
 
-import { computed, reactive, ref, watch, unref } from "vue";
+import { computed, reactive, ref, watch, unref, nextTick } from "vue";
 import { ResourceMapper } from '@/Mappers/Entity/ResourceMapper';
 
 const getId = (e) => (e && typeof e.id !== "undefined" ? Number(e.id) : null);
@@ -31,15 +31,52 @@ const valuesOf = (entities, key) => {
     // Pour l'agrégation "valeurs différentes", on privilégie les données brutes `_data`
     // quand l'entité est un BaseModel. Les getters peuvent normaliser (ex: `|| ''`)
     // et masquer des différences attendues en sélection multiple.
-    .map((e) => (typeof e?._data !== "undefined" ? e._data?.[key] : e?.[key]))
-    .map((v) => (typeof v === "boolean" ? (v ? 1 : 0) : v));
+    .map((e) => {
+      if (!e) return undefined;
+      
+      // Si c'est une instance BaseModel, utiliser _data en priorité
+      if (typeof e._data !== "undefined") {
+        // Essayer d'abord _data[key]
+        if (key in e._data) {
+          return e._data[key];
+        }
+        // Si la clé n'existe pas dans _data, essayer un getter (pour les propriétés calculées)
+        // mais seulement si c'est vraiment nécessaire (ex: pour les propriétés qui n'existent pas dans _data)
+        if (typeof e[key] !== "undefined") {
+          return e[key];
+        }
+        return undefined;
+      }
+      
+      // Sinon, essayer directement sur l'objet
+      return e?.[key];
+    })
+    .map((v) => {
+      // Convertir les booléens en 1/0 pour la comparaison
+      if (typeof v === "boolean") {
+        return v ? 1 : 0;
+      }
+      return v;
+    });
 };
 
 const allSame = (arr) => {
   if (!arr.length) return { same: true, value: null };
-  const first = arr[0];
-  for (const v of arr) {
-    if (String(v ?? "") !== String(first ?? "")) return { same: false, value: null };
+  
+  // Filtrer les valeurs undefined (entités qui n'ont pas cette propriété)
+  const definedValues = arr.filter((v) => v !== undefined);
+  if (definedValues.length === 0) return { same: true, value: null };
+  
+  const first = definedValues[0];
+  // Comparer en tenant compte des types
+  for (const v of definedValues) {
+    // Comparaison stricte : même type et même valeur
+    if (v !== first) {
+      // Pour les nombres et strings, comparer aussi en string pour gérer 1 vs "1"
+      if (String(v) !== String(first)) {
+        return { same: false, value: null };
+      }
+    }
   }
   return { same: true, value: first ?? null };
 };
@@ -103,15 +140,47 @@ export function useBulkEditPanel(opts) {
   const dirty = reactive({});
 
   const resetFromSelection = () => {
+    // S'assurer que fieldMeta et aggregate sont disponibles
+    if (!fieldMeta.value || Object.keys(fieldMeta.value).length === 0) {
+      return;
+    }
+    
     for (const key of Object.keys(fieldMeta.value || {})) {
-      form[key] = aggregate.value?.[key]?.same ? String(aggregate.value?.[key]?.value ?? "") : "";
+      const agg = aggregate.value?.[key];
+      if (agg?.same) {
+        // Si toutes les valeurs sont identiques, utiliser cette valeur
+        const value = agg.value;
+        // Convertir en string pour les selects, mais préserver null/undefined pour les champs nullable
+        // Gérer les cas où value est 0 (falsy mais valide)
+        if (value === null || value === undefined) {
+          form[key] = "";
+        } else if (value === 0 || value === false) {
+          // Préserver 0 et false comme valeurs valides
+          form[key] = String(value);
+        } else {
+          form[key] = String(value);
+        }
+      } else {
+        // Si les valeurs sont différentes, laisser vide
+        form[key] = "";
+      }
       dirty[key] = false;
     }
   };
 
+  // Watch sur les IDs sélectionnés pour réinitialiser le formulaire
+  // On utilise nextTick pour s'assurer que aggregate (qui dépend de selectedEntities) est à jour
   watch(
     () => (selectedEntities.value || []).map(getId).join(","),
-    () => resetFromSelection(),
+    () => {
+      nextTick(() => {
+        // Ne réinitialiser que si on n'a pas de modifications en cours
+        const hasDirty = Object.values(dirty).some(Boolean);
+        if (!hasDirty) {
+          resetFromSelection();
+        }
+      });
+    },
     { immediate: true }
   );
 

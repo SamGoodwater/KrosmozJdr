@@ -94,11 +94,14 @@ export function createBulkFieldMetaFromDescriptors(descriptors, ctx = {}) {
   for (const [key, d] of Object.entries(descriptors || {})) {
     const bulk = d?.edit?.form?.bulk;
     if (!bulk?.enabled) continue;
-    if (typeof bulk.build !== "function") continue;
+    // ⚠️ IMPORTANT : bulk.build est déprécié. Les transformations sont maintenant gérées par les mappers.
+    // On crée quand même le fieldMeta pour permettre l'agrégation des valeurs, même sans build.
     out[key] = {
       label: d?.label || key,
       nullable: Boolean(bulk.nullable),
-      build: (raw) => bulk.build(raw, ctx),
+      // Si bulk.build existe encore (rétrocompatibilité), on le garde, sinon on laisse undefined
+      // Le mapper sera utilisé à la place dans useBulkEditPanel
+      ...(typeof bulk.build === "function" ? { build: (raw) => bulk.build(raw, ctx) } : {}),
     };
   }
   return out;

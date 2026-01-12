@@ -24,7 +24,7 @@ import CreateEntityModal from '@/Pages/Organismes/entity/CreateEntityModal.vue';
 import EntityQuickEditPanel from '@/Pages/Organismes/entity/EntityQuickEditPanel.vue';
 import EntityQuickEditModal from '@/Pages/Organismes/entity/EntityQuickEditModal.vue';
 import { createMonsterTableConfig } from "@/Entities/monster/MonsterTableConfig";
-import { adaptMonsterEntitiesTableResponse } from "@/Entities/monster/monster-adapter";
+import { getEntityResponseAdapter } from "@/Entities/entity-registry";
 import { getMonsterFieldDescriptors } from "@/Entities/monster/monster-descriptors";
 import { createFieldsConfigFromDescriptors, createDefaultEntityFromDescriptors } from "@/Utils/entity/descriptor-form";
 
@@ -285,7 +285,7 @@ const handleQuickEditSubmit = () => {
                     entity-type="monsters"
                     :config="tableConfig"
                     :server-url="serverUrl"
-                    :response-adapter="adaptMonsterEntitiesTableResponse"
+                    :response-adapter="getEntityResponseAdapter('monsters')"
                     v-model:selected-ids="selectedIds"
                     @loaded="handleTableLoaded"
                     @row-dblclick="handleRowDoubleClick"
