@@ -63,14 +63,25 @@ export class ImageService {
                     });
                     return url;
                 }
-                throw new Error('Image not found');
-            } catch (error) {
-                retries++;
-                if (retries === this.#MAX_RETRIES) {
-                    console.error('ImageService - Erreur de chargement:', error);
+                // Image non trouvée : retourner une chaîne vide sans lancer d'erreur
+                // (c'est un cas normal, pas une erreur)
+                if (response.status === 404) {
                     return "";
                 }
-                await new Promise(resolve => setTimeout(resolve, this.#RETRY_DELAY * retries));
+                // Pour les autres erreurs HTTP, retry
+                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+            } catch (error) {
+                retries++;
+                // Si c'est une erreur réseau ou autre erreur que 404, retry
+                if (retries < this.#MAX_RETRIES) {
+                    await new Promise(resolve => setTimeout(resolve, this.#RETRY_DELAY * retries));
+                    continue;
+                }
+                // Après tous les retries, si c'est toujours une erreur réseau, logger
+                if (error.message && !error.message.includes('Image not found')) {
+                    console.error('ImageService - Erreur de chargement:', error);
+                }
+                return "";
             }
         }
         return "";
@@ -126,14 +137,25 @@ export class ImageService {
                     });
                     return url;
                 }
-                throw new Error('Thumbnail not found');
-            } catch (error) {
-                retries++;
-                if (retries === this.#MAX_RETRIES) {
-                    console.error('ImageService - Erreur de chargement du thumbnail:', error);
+                // Thumbnail non trouvé ou accès refusé : retourner une chaîne vide sans lancer d'erreur
+                if (response.status === 404 || response.status === 403) {
                     return "";
                 }
-                await new Promise(resolve => setTimeout(resolve, this.#RETRY_DELAY * retries));
+                // Pour les autres erreurs HTTP, retry
+                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+            } catch (error) {
+                retries++;
+                // Si c'est une erreur réseau ou autre erreur que 404/403, retry
+                if (retries < this.#MAX_RETRIES) {
+                    await new Promise(resolve => setTimeout(resolve, this.#RETRY_DELAY * retries));
+                    continue;
+                }
+                // Après tous les retries, si c'est toujours une erreur réseau, logger
+                // (mais pas pour 404/403 qui sont des cas normaux)
+                if (error.message && !error.message.includes('404') && !error.message.includes('403')) {
+                    console.error('ImageService - Erreur de chargement du thumbnail:', error);
+                }
+                return "";
             }
         }
         return "";

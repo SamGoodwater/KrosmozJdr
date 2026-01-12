@@ -100,16 +100,16 @@ const atomClasses = computed(() => {
     
     // Si c'est un variant personnalisé (non-ghost), utiliser getInputStyle
     if (variant && variant !== 'ghost' && ['glass', 'dash', 'outline', 'soft'].includes(variant)) {
-        return mergeClasses(
-            getInputStyle('select', {
-                variant: variant,
-                color: props.color,
-                size: props.size,
-                animation: props.animation,
-                ...(typeof props.inputStyle === 'object' && props.inputStyle !== null ? props.inputStyle : {}),
-                ...(typeof props.inputStyle === 'string' ? { variant: props.inputStyle } : {})
-            }, false)
-        );
+        const styleClasses = getInputStyle('select', {
+            variant: variant,
+            color: props.color,
+            size: props.size,
+            animation: props.animation,
+            ...(typeof props.inputStyle === 'object' && props.inputStyle !== null ? props.inputStyle : {}),
+            ...(typeof props.inputStyle === 'string' ? { variant: props.inputStyle } : {})
+        }, false);
+        // Ajouter select-bordered pour le style de base DaisyUI
+        return mergeClasses(styleClasses, 'select-bordered');
     }
     
     // Sinon, utiliser directement les classes DaisyUI
@@ -241,22 +241,27 @@ select.select {
         cursor: not-allowed;
     }
     
-    // Variant Glass - Effet glassmorphisme
+    // Variant Glass - Effet glassmorphisme simple
     &.select-variant-glass {
-        border-color: color-mix(in srgb, var(--color) 30%, transparent);
-        background-color: color-mix(in srgb, var(--color) 10%, transparent);
-        background-image: $arrow-svg; // Réappliquer la flèche
+        backdrop-filter: blur(10px);
+        background-color: rgba(255, 255, 255, 0.1);
+        background-image: $arrow-svg; // Flèche
+        background-position: right 0.5rem center;
+        background-repeat: no-repeat;
+        background-size: 1.5em 1.5em;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         
         &:hover {
-            border-color: color-mix(in srgb, var(--color) 50%, transparent);
-            background-color: color-mix(in srgb, var(--color) 15%, transparent);
-            background-image: $arrow-svg;
+            background-color: rgba(255, 255, 255, 0.15);
+            border-color: rgba(255, 255, 255, 0.3);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15);
         }
         
         &:focus {
-            border-color: color-mix(in srgb, var(--color) 80%, transparent);
-            box-shadow: 0 0 0 3px color-mix(in srgb, var(--color) 20%, transparent);
-            background-image: $arrow-svg;
+            background-color: rgba(255, 255, 255, 0.2);
+            border-color: rgba(255, 255, 255, 0.4);
+            box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.1), 0 4px 6px rgba(0, 0, 0, 0.15);
         }
     }
     

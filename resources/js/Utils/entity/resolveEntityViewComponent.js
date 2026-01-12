@@ -44,6 +44,12 @@ const VIEW_COMPONENT_MAP = {
   'compact': 'ViewCompact',
   'minimal': 'ViewMinimal',
   'text': 'ViewText',
+  'quickedit': 'QuickEdit',
+  'QuickEdit': 'QuickEdit',
+  'editlarge': 'EditLarge',
+  'EditLarge': 'EditLarge',
+  'editcompact': 'EditCompact',
+  'EditCompact': 'EditCompact',
 };
 
 /**
@@ -65,15 +71,35 @@ export async function resolveEntityViewComponent(entityType, view = 'large') {
   }
 
   const componentName = `${entityName}${viewName}`;
-  const componentPath = `@/Pages/Molecules/entity/${normalizedType.replace('-', '/')}/${componentName}.vue`;
-
-  try {
-    const module = await import(componentPath);
-    return module.default || module[componentName] || module;
-  } catch (error) {
-    console.error(`[resolveEntityViewComponent] Erreur lors du chargement du composant ${componentPath}:`, error);
-    return null;
+  // Le dossier utilise le nom singulier (sans 's'), pas le type normalisé
+  // Ex: 'resources' -> 'resource', 'items' -> 'item', 'resource-types' -> 'resource-type'
+  let folderName = normalizedType.replace('-', '/');
+  // Si le type se termine par 's' (et n'est pas 'resource-types'), enlever le 's'
+  if (folderName.endsWith('s') && !folderName.includes('resource-type')) {
+    folderName = folderName.slice(0, -1);
   }
+  const componentPath = `@/Pages/Molecules/entity/${folderName}/${componentName}.vue`;
+
+  // Utiliser import.meta.glob pour que Vite puisse résoudre les imports dynamiques
+  // Note: Cette approche charge les composants à la demande (lazy loading)
+  // Inclure aussi les composants Edit et QuickEdit
+  const components = import.meta.glob('@/Pages/Molecules/entity/**/*{View,Edit,QuickEdit}*.vue');
+  
+  // Chercher le composant correspondant
+  for (const [path, importFn] of Object.entries(components)) {
+    if (path.includes(`/${folderName}/`) && path.includes(componentName)) {
+      try {
+        const module = await importFn();
+        return module.default || module[componentName] || module;
+      } catch (error) {
+        console.error(`[resolveEntityViewComponent] Erreur lors du chargement du composant ${path}:`, error);
+        return null;
+      }
+    }
+  }
+
+  console.warn(`[resolveEntityViewComponent] Composant non trouvé: ${componentPath}`);
+  return null;
 }
 
 /**
@@ -95,16 +121,30 @@ export function resolveEntityViewComponentSync(entityType, view = 'large') {
   }
 
   const componentName = `${entityName}${viewName}`;
-  const componentPath = `@/Pages/Molecules/entity/${normalizedType.replace('-', '/')}/${componentName}.vue`;
+  // Le dossier utilise le nom singulier (sans 's'), pas le type normalisé
+  let folderName = normalizedType.replace('-', '/');
+  if (folderName.endsWith('s') && !folderName.includes('resource-type')) {
+    folderName = folderName.slice(0, -1);
+  }
+  const componentPath = `@/Pages/Molecules/entity/${folderName}/${componentName}.vue`;
 
   // Utiliser import.meta.glob avec eager pour charger tous les composants au build
   // Note: Cette approche charge tous les composants au build, mais permet un accès synchrone
-  const components = import.meta.glob('@/Pages/Molecules/entity/**/*View*.vue', { eager: true });
+  // Inclure aussi les composants Edit et QuickEdit, ainsi que le composant générique EntityQuickEdit
+  const components = import.meta.glob('@/Pages/Molecules/entity/**/*{View,Edit,QuickEdit}*.vue', { eager: true });
   
-  // Chercher le composant correspondant
+  // Chercher le composant spécifique d'abord
   for (const [path, module] of Object.entries(components)) {
-    if (path.includes(`/${normalizedType.replace('-', '/')}/`) && path.includes(componentName)) {
+    if (path.includes(`/${folderName}/`) && path.includes(componentName)) {
       return module.default || module[componentName] || module;
+    }
+  }
+
+  // Pour quickedit, fallback vers le composant générique EntityQuickEdit
+  if (view === 'quickedit' || view === 'QuickEdit') {
+    const genericPath = '@/Pages/Molecules/entity/EntityQuickEdit.vue';
+    if (components[genericPath]) {
+      return components[genericPath].default || components[genericPath];
     }
   }
 

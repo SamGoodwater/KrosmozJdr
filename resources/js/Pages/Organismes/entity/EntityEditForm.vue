@@ -130,12 +130,12 @@ const fieldsConfig = computed(() => {
 });
 
 // Filtrage des champs selon le mode d'affichage
+// ⚠️ IMPORTANT : showInCompact n'existe plus dans les descriptors.
+// Les vues (Large/Compact) décident elles-mêmes quels champs afficher.
+// Ici, on affiche tous les champs pour les deux modes.
+// Si besoin de filtrage spécifique, il doit être fait dans les vues d'édition dédiées.
 const visibleFields = computed(() => {
-    const fields = Object.entries(fieldsConfig.value);
-    if (localViewMode.value === 'compact') {
-        return fields.filter(([_, config]) => config.showInCompact !== false);
-    }
-    return fields;
+    return Object.entries(fieldsConfig.value);
 });
 
 // Initialisation du formulaire avec les données de l'entité

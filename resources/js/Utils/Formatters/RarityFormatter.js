@@ -15,7 +15,7 @@
  */
 
 import { BaseFormatter } from './BaseFormatter.js';
-import { RARITY_OPTIONS } from '@/Utils/Entity/Constants.js';
+import { getRarityOptions, getRarityConfig } from '@/Utils/Entity/SharedConstants.js';
 
 export class RarityFormatter extends BaseFormatter {
   static name = 'RarityFormatter';
@@ -23,9 +23,9 @@ export class RarityFormatter extends BaseFormatter {
 
   /**
    * Options de rareté
-   * @type {Array<{value: number, label: string, color: string, icon: string}>}
+   * @type {Array<{value: number, label: string, color: string, icon: string, daisyColor: string}>}
    */
-  static options = RARITY_OPTIONS;
+  static options = getRarityOptions();
 
   /**
    * Formate une valeur de rareté en label
@@ -60,9 +60,11 @@ export class RarityFormatter extends BaseFormatter {
     }
 
     const numValue = typeof value === 'string' ? parseInt(value, 10) : value;
-    const option = this.options.find((opt) => opt.value === numValue);
+    
+    // Utiliser le nouveau système de gradient
+    const config = getRarityConfig(numValue);
 
-    if (!option) {
+    if (!config) {
       // Fallback : cellule texte avec la valeur brute
       return this.buildTextCell(`Rareté ${numValue}`, {
         sortValue: numValue,
@@ -70,34 +72,12 @@ export class RarityFormatter extends BaseFormatter {
       });
     }
 
-    // Convertir la couleur en couleur DaisyUI
-    const daisyColor = this._mapColorToDaisyUI(option.color);
-
-    return this.buildBadgeCell(option.label, daisyColor, {
+    // Utiliser directement la couleur DaisyUI depuis le gradient
+    return this.buildBadgeCell(config.label, config.daisyColor, {
       sortValue: numValue,
       filterValue: numValue,
-      icon: option.icon,
+      icon: config.icon,
     });
-  }
-
-  /**
-   * Convertit une couleur générique en couleur DaisyUI
-   *
-   * @param {string} color - Couleur générique (gray, blue, green, purple, orange, red)
-   * @returns {string} Couleur DaisyUI (neutral, info, success, warning, error, etc.)
-   * @private
-   */
-  static _mapColorToDaisyUI(color) {
-    const colorMap = {
-      gray: 'neutral',
-      blue: 'info',
-      green: 'success',
-      purple: 'primary',
-      orange: 'warning',
-      red: 'error',
-    };
-
-    return colorMap[color] || 'neutral';
   }
 
   /**
@@ -122,8 +102,8 @@ export class RarityFormatter extends BaseFormatter {
    * @returns {string} Couleur DaisyUI
    */
   static getColor(value) {
-    const option = this.getOption(value);
-    return option ? this._mapColorToDaisyUI(option.color) : 'neutral';
+    const config = getRarityConfig(typeof value === 'string' ? parseInt(value, 10) : value);
+    return config?.daisyColor || 'neutral';
   }
 
   /**
@@ -133,7 +113,7 @@ export class RarityFormatter extends BaseFormatter {
    * @returns {string|null} Icône FontAwesome ou null
    */
   static getIcon(value) {
-    const option = this.getOption(value);
-    return option?.icon || null;
+    const config = getRarityConfig(typeof value === 'string' ? parseInt(value, 10) : value);
+    return config?.icon || null;
   }
 }

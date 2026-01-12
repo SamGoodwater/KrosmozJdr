@@ -16,7 +16,7 @@
  */
 
 import { computed, reactive, ref, watch, unref, nextTick } from "vue";
-import { ResourceMapper } from '@/Mappers/Entity/ResourceMapper';
+import { getMapperForEntityType } from '@/Utils/Entity/MapperRegistry';
 
 const getId = (e) => (e && typeof e.id !== "undefined" ? Number(e.id) : null);
 const getName = (e) => {
@@ -81,15 +81,7 @@ const allSame = (arr) => {
   return { same: true, value: first ?? null };
 };
 
-/**
- * Registre des mappers par entityType
- * @type {Object<string, {fromBulkForm: function}>}
- */
-const MAPPER_REGISTRY = {
-  'resources': ResourceMapper,
-  'resource': ResourceMapper,
-  // Ajouter d'autres mappers ici au fur et à mesure de leur migration
-};
+// Le MAPPER_REGISTRY est maintenant centralisé dans Utils/Entity/MapperRegistry.js
 
 /**
  * @param {Object} opts
@@ -219,7 +211,7 @@ export function useBulkEditPanel(opts) {
     const payload = { ids: targetIds };
 
     // Déterminer le mapper à utiliser
-    const mapper = opts?.mapper || (opts?.entityType ? MAPPER_REGISTRY[opts.entityType] : null);
+    const mapper = opts?.mapper || (opts?.entityType ? getMapperForEntityType(opts.entityType) : null);
 
     // Si un mapper est disponible et a la méthode fromBulkForm, l'utiliser
     if (mapper && typeof mapper.fromBulkForm === 'function') {

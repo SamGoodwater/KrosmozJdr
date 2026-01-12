@@ -2,11 +2,20 @@
  * LevelFormatter — Formatter pour les valeurs de niveau
  *
  * @description
- * Formate les valeurs de niveau (entier positif) en texte et cellules de tableau.
+ * Formate les valeurs de niveau (1-30) en texte et cellules de tableau avec badges colorés.
  * Utilisé par : Resource, Item, Consumable, Spell, Monster, etc.
+ * 
+ * Les niveaux sont affichés avec un dégradé de couleur :
+ * - 1-5 : Gris (neutral)
+ * - 6-10 : Bleu (info)
+ * - 11-15 : Vert (success)
+ * - 16-20 : Orange (warning)
+ * - 21-25 : Rouge (error)
+ * - 26-30 : Violet foncé (primary)
  */
 
 import { BaseFormatter } from './BaseFormatter.js';
+import { getLevelColor } from '@/Utils/Entity/SharedConstants.js';
 
 export class LevelFormatter extends BaseFormatter {
   static name = 'LevelFormatter';
@@ -33,12 +42,12 @@ export class LevelFormatter extends BaseFormatter {
   }
 
   /**
-   * Génère une cellule pour un tableau
+   * Génère une cellule badge pour un tableau avec dégradé de couleur
    *
-   * @param {number|string|null} value - Valeur de niveau
+   * @param {number|string|null} value - Valeur de niveau (1-30)
    * @param {Object} [options={}] - Options de formatage
    * @param {string} [options.size='md'] - Taille d'écran (xs, sm, md, lg, xl)
-   * @returns {Object|null} Objet Cell {type: 'text', value, params} ou null si valeur invalide
+   * @returns {Object|null} Objet Cell {type: 'badge', value, params} ou null si valeur invalide
    */
   static toCell(value, options = {}) {
     if (!this.isValid(value)) {
@@ -50,11 +59,22 @@ export class LevelFormatter extends BaseFormatter {
       return null;
     }
 
+    // Si le niveau est > 30, afficher en texte (valeurs aberrantes)
+    if (numValue > 30) {
+      return this.buildTextCell(String(numValue), {
+        sortValue: numValue,
+        filterValue: numValue,
+      });
+    }
+
+    // Obtenir la couleur selon le niveau (1-30)
+    const color = getLevelColor(numValue);
     const label = String(numValue);
 
-    return this.buildTextCell(label, {
+    return this.buildBadgeCell(label, color, {
       sortValue: numValue,
       filterValue: numValue,
+      icon: 'fa-solid fa-level-up-alt',
     });
   }
 }

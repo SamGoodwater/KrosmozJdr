@@ -21,19 +21,16 @@
  *   @clear="clearSelection"
  * />
  */
-import { computed, toRef } from "vue";
+import { computed, toRef, ref } from "vue";
 import Btn from "@/Pages/Atoms/action/Btn.vue";
-import SelectCore from "@/Pages/Atoms/data-input/SelectCore.vue";
-import InputCore from "@/Pages/Atoms/data-input/InputCore.vue";
-import TextareaCore from "@/Pages/Atoms/data-input/TextareaCore.vue";
 import RadioCore from "@/Pages/Atoms/data-input/RadioCore.vue";
-import ToggleCore from "@/Pages/Atoms/data-input/ToggleCore.vue";
 import Tooltip from "@/Pages/Atoms/feedback/Tooltip.vue";
 import Icon from "@/Pages/Atoms/data-display/Icon.vue";
-import { useBulkEditPanel } from "@/Composables/entity/useBulkEditPanel";
 import { getEntityConfig } from "@/Entities/entity-registry";
-import { createFieldsConfigFromDescriptors, createBulkFieldMetaFromDescriptors } from "@/Utils/entity/descriptor-form";
+import { createBulkFieldMetaFromDescriptors } from "@/Utils/entity/descriptor-form";
 import { getCachedDescriptors } from "@/Utils/entity/descriptor-cache";
+import { resolveEntityViewComponentSync } from "@/Utils/entity/resolveEntityViewComponent";
+import { getMapperForEntityType } from '@/Utils/Entity/MapperRegistry';
 
 const props = defineProps({
   entityType: { type: String, required: true },
@@ -68,30 +65,6 @@ const descriptors = computed(() => {
   return getCachedDescriptors(props.entityType, cfg.value.getDescriptors, ctx.value);
 });
 
-const isFieldVisible = (key) => {
-  const d = descriptors.value?.[key] || null;
-  const fn = d?.visibleIf;
-  if (typeof fn !== "function") return true;
-  try {
-    return Boolean(fn(ctx.value));
-  } catch {
-    return false;
-  }
-};
-
-const isFieldEditable = (key) => {
-  if (!props.isAdmin) return false;
-  const d = descriptors.value?.[key] || null;
-  const fn = d?.editableIf;
-  if (typeof fn !== "function") return true;
-  try {
-    return Boolean(fn(ctx.value));
-  } catch {
-    return false;
-  }
-};
-
-const fieldsConfigAll = computed(() => createFieldsConfigFromDescriptors(descriptors.value, ctx.value));
 const fieldMetaAll = computed(() => createBulkFieldMetaFromDescriptors(descriptors.value, ctx.value));
 
 const fieldKeys = computed(() => {
@@ -101,143 +74,149 @@ const fieldKeys = computed(() => {
   return Object.keys(fieldMetaAll.value || {});
 });
 
-const fieldsConfig = computed(() => {
-  const out = {};
-  for (const k of fieldKeys.value || []) {
-    if (!isFieldVisible(k)) continue;
-    if (!fieldsConfigAll.value?.[k]) continue;
-    // On autorise l’affichage en read-only (disabled) mais on garde le champ visible si présent.
-    out[k] = fieldsConfigAll.value[k];
-  }
-  return out;
-});
-
-const getFieldGroup = (key) => {
-  const d = descriptors.value?.[key] || null;
-  const g = d?.edit?.form?.group;
-  return g ? String(g) : "";
-};
-
-const groupedFieldKeys = computed(() => {
-  /** @type {Array<{title: string, keys: string[]}>} */
-  const groups = [];
-  const indexByTitle = new Map();
-
-  const orderedKeys = Object.keys(fieldsConfig.value || {});
-  for (const key of orderedKeys) {
-    const title = getFieldGroup(key);
-    const groupTitle = title || "Champs";
-    if (!indexByTitle.has(groupTitle)) {
-      indexByTitle.set(groupTitle, groups.length);
-      groups.push({ title: groupTitle, keys: [] });
-    }
-    groups[indexByTitle.get(groupTitle)].keys.push(key);
-  }
-
-  return groups;
-});
-
 const fieldMeta = computed(() => {
   const out = {};
   for (const k of fieldKeys.value || []) {
-    if (!isFieldVisible(k)) continue;
-    // Le bulk panel n’expose que des champs bulk-enabled.
     if (!fieldMetaAll.value?.[k]) continue;
-    // Si pas éditable, on retire le champ du meta pour éviter un payload invalide.
-    if (!isFieldEditable(k)) continue;
     out[k] = fieldMetaAll.value[k];
   }
   return out;
 });
-
-const isNullableBulkField = (key) => Boolean(fieldMeta.value?.[key]?.nullable);
-
-const hasEmptyOption = (options) => {
-  const arr = Array.isArray(options) ? options : [];
-  return arr.some((o) => String(o?.value ?? "") === "");
-};
 
 const panelTitle = computed(() => {
   if (props.title) return props.title;
   return props.selectedEntities?.length <= 1 ? "Édition rapide" : "Édition rapide (multi)";
 });
 
-/**
- * Nombre de champs modifiés (dirty).
- */
-const modifiedFieldsCount = computed(() => {
-  return Object.values(dirty || {}).filter(Boolean).length;
+// Référence au composant QuickEdit pour accéder aux valeurs exposées
+const quickEditViewRef = ref(null);
+
+// Calculer les IDs et la liste sélectionnée depuis les entités
+const getId = (e) => (e && typeof e.id !== "undefined" ? Number(e.id) : null);
+const getName = (e) => {
+  if (!e) return "";
+  if (typeof e?._data !== "undefined") return String(e.name ?? e._data?.name ?? "");
+  return String(e?.name ?? "");
+};
+
+const ids = computed(() => {
+  return (props.selectedEntities || [])
+    .map(getId)
+    .filter(Boolean);
 });
 
-const {
-  showList,
-  scope,
-  ids,
-  selectedList,
-  aggregate,
-  form,
-  dirty,
-  filteredIds: filteredIdsEffective,
-  resetFromSelection,
-  placeholder,
-  onChange,
-  canApply,
-  buildPayload,
-} = useBulkEditPanel({
-  selectedEntities: toRef(props, "selectedEntities"),
-  isAdmin: props.isAdmin,
-  fieldMeta,
-  mode: props.mode,
-  filteredIds: toRef(props, "filteredIds"),
-  entityType: props.entityType,
+const selectedList = computed(() => {
+  return (props.selectedEntities || [])
+    .map((e) => ({ id: getId(e), name: getName(e) }))
+    .filter((x) => x.id);
+});
+
+// Scope et filteredIds (gérés par le panneau, pas par useBulkEditPanel)
+const showList = ref(false);
+const scope = ref("selected"); // selected | filtered
+const filteredIdsEffective = computed(() => {
+  const arr = props.filteredIds || [];
+  return arr.map((v) => Number(v)).filter(Boolean);
+});
+
+/**
+ * Nombre de champs modifiés (dirty).
+ * Récupéré depuis la vue QuickEdit qui expose cette information.
+ */
+const modifiedFieldsCount = computed(() => {
+  return quickEditViewRef.value?.modifiedFieldsCount || 0;
+});
+
+/**
+ * Calculer canApply en utilisant le dirty de ResourceQuickEdit
+ * au lieu du dirty de useBulkEditPanel dans EntityQuickEditPanel
+ */
+const canApply = computed(() => {
+  if (!props.isAdmin) return false;
+  
+  // Utiliser le dirty exposé par ResourceQuickEdit
+  const dirty = quickEditViewRef.value?.dirty;
+  if (!dirty) return false;
+  
+  const anyDirty = Object.values(dirty).some(Boolean);
+  if (!anyDirty) return false;
+
+  // Récupérer form depuis ResourceQuickEdit
+  const form = quickEditViewRef.value?.form;
+  if (!form) return false;
+
+  // Vérifier que les champs non-nullable ont une valeur
+  for (const key of Object.keys(dirty)) {
+    if (!dirty[key]) continue;
+    const meta = fieldMeta.value?.[key];
+    if (!meta) continue;
+    if (!meta.nullable && !form[key]) return false;
+  }
+
+  if (scope.value === "filtered" && props.mode !== "client") return false;
+  if (scope.value === "filtered" && filteredIdsEffective.value.length === 0) return false;
+
+  return true;
 });
 
 const apply = () => {
   if (!canApply.value) return;
-  emit("applied", buildPayload());
-};
-
-/**
- * Reset un champ (revient à l'état "non modifié" => dirty=false).
- *
- * @param {string} key
- * @returns {void}
- */
-const clearField = (key) => {
-  if (!key) return;
-  dirty[key] = false;
-  // IMPORTANT: `useBulkEditPanel` construit le payload uniquement sur dirty=true.
-  // On peut donc garder form[key] vide sans impact, mais on reset pour éviter les confusions UX.
-  form[key] = "";
-};
-
-/**
- * Détermine l'état checked du booléen pour l'affichage:
- * - si l'utilisateur a modifié => basé sur `form`
- * - sinon => basé sur l'agrégation (valeur commune) ou false par défaut
- *
- * @param {string} key
- * @returns {boolean}
- */
-const getBoolChecked = (key) => {
-  if (dirty?.[key]) {
-    const v = form?.[key];
-    return v === true || v === 1 || String(v) === "1";
+  
+  // Utiliser buildPayload exposé par ResourceQuickEdit si disponible
+  // Sinon, construire le payload manuellement
+  if (quickEditViewRef.value?.buildPayload) {
+    const payload = quickEditViewRef.value.buildPayload();
+    // Ajuster les IDs selon le scope
+    const targetIds = scope.value === "filtered" ? filteredIdsEffective.value : ids.value;
+    payload.ids = targetIds;
+    emit("applied", payload);
+    return;
   }
-  const v = aggregate.value?.[key]?.value;
-  // Gérer les valeurs 1/0 (conversion depuis booléen) et true/false
-  return v === true || v === 1 || String(v) === "1";
+  
+  // Fallback : construire le payload manuellement
+  const dirty = quickEditViewRef.value?.dirty;
+  const form = quickEditViewRef.value?.form;
+  
+  if (!dirty || !form) return;
+  
+  const targetIds = scope.value === "filtered" ? filteredIdsEffective.value : ids.value;
+  const payload = { ids: targetIds };
+  
+  // Récupérer le mapper depuis le registre centralisé
+  const mapper = getMapperForEntityType(props.entityType);
+  
+  if (mapper && typeof mapper.fromBulkForm === 'function') {
+    const bulkFormData = {};
+    for (const key of Object.keys(dirty)) {
+      if (dirty[key]) {
+        bulkFormData[key] = form[key];
+      }
+    }
+    const mappedData = mapper.fromBulkForm(bulkFormData);
+    Object.assign(payload, mappedData);
+  } else {
+    // Fallback : utiliser directement les valeurs du form
+    for (const key of Object.keys(dirty)) {
+      if (dirty[key]) {
+        payload[key] = form[key];
+      }
+    }
+  }
+  
+  emit("applied", payload);
 };
 
-/**
- * Indeterminate si la sélection a des valeurs différentes et que l'utilisateur n'a pas modifié le champ.
- *
- * @param {string} key
- * @returns {boolean}
- */
-const getBoolIndeterminate = (key) => {
-  return !dirty?.[key] && aggregate.value?.[key]?.same === false;
+// Réinitialiser depuis la sélection (exposé par la vue QuickEdit)
+const resetFromSelection = () => {
+  if (quickEditViewRef.value?.resetFromSelection) {
+    quickEditViewRef.value.resetFromSelection();
+  }
 };
+
+// Résoudre le composant QuickEdit pour cette entité (synchrone)
+const QuickEditComponent = computed(() => {
+  return resolveEntityViewComponentSync(props.entityType, 'quickedit');
+});
 </script>
 
 <template>
@@ -291,141 +270,19 @@ const getBoolIndeterminate = (key) => {
       </div>
     </div>
 
-    <div v-if="!isAdmin" class="text-sm text-warning">Tu dois avoir les droits pour modifier.</div>
-
-    <div class="space-y-5">
-      <div v-for="group in groupedFieldKeys" :key="group.title" class="space-y-3">
-        <div
-          v-if="groupedFieldKeys.length > 1"
-          class="divider my-0 text-base-content/60 font-semibold text-sm uppercase tracking-wide"
-        >
-          {{ group.title }}
-        </div>
-
-        <div
-          v-for="key in group.keys"
-          :key="key"
-          class="form-control transition-all duration-200"
-          :class="{ 'ring-2 ring-primary/30 rounded-md p-2 -m-2': dirty?.[key] }"
-        >
-          <label class="label">
-            <span class="label-text flex items-center gap-2">
-              <span :class="{ 'font-semibold text-primary': dirty?.[key] }">{{ fieldsConfig[key]?.label }}</span>
-              <transition
-                enter-active-class="transition-all duration-200 ease-out"
-                enter-from-class="opacity-0 scale-75"
-                enter-to-class="opacity-100 scale-100"
-                leave-active-class="transition-all duration-150 ease-in"
-                leave-from-class="opacity-100 scale-100"
-                leave-to-class="opacity-0 scale-75"
-              >
-                <Icon
-                  v-if="dirty?.[key]"
-                  source="fa-solid fa-circle-check"
-                  alt="Modifié"
-                  size="xs"
-                  class="text-primary"
-                />
-              </transition>
-              <Tooltip v-if="fieldsConfig[key]?.tooltip" :content="fieldsConfig[key]?.tooltip" placement="top" color="neutral">
-                <Btn size="xs" variant="ghost" class="px-1" :aria-label="`Info: ${fieldsConfig[key]?.label || ''}`">
-                  <Icon source="fa-solid fa-circle-info" alt="Info" size="xs" />
-                </Btn>
-              </Tooltip>
-            </span>
-          </label>
-          <div v-if="fieldsConfig[key]?.help" class="text-xs opacity-70 mb-1">
-            {{ fieldsConfig[key]?.help }}
-          </div>
-
-          <!-- bool (checkbox) -->
-          <div v-if="fieldsConfig[key]?.type === 'checkbox'" class="flex items-center justify-between gap-3">
-            <div class="flex items-center gap-2">
-              <ToggleCore
-                variant="glass"
-                size="sm"
-                :color="uiColor"
-                :disabled="!isFieldEditable(key)"
-                :model-value="getBoolChecked(key)"
-                :indeterminate="getBoolIndeterminate(key)"
-                @update:model-value="(v) => onChange(key, v ? '1' : '0')"
-              />
-              <span class="text-xs opacity-70">
-                <template v-if="getBoolIndeterminate(key)">Valeurs différentes</template>
-                <template v-else>{{ getBoolChecked(key) ? "Oui" : "Non" }}</template>
-              </span>
-            </div>
-
-            <Btn
-              v-if="dirty?.[key]"
-              size="xs"
-              variant="ghost"
-              :disabled="!isFieldEditable(key)"
-              title="Annuler la modification de ce champ"
-              @click="clearField(key)"
-            >
-              <i class="fa-solid fa-rotate-left"></i>
-            </Btn>
-          </div>
-
-          <!-- select -->
-          <SelectCore
-            v-else-if="fieldsConfig[key]?.type === 'select'"
-            class="w-full"
-            variant="glass"
-            size="sm"
-            :color="uiColor"
-            :disabled="!isFieldEditable(key)"
-            :model-value="dirty[key] ? form[key] : (aggregate[key]?.same ? String(aggregate[key]?.value ?? '') : '')"
-            @update:model-value="(v) => onChange(key, v)"
-          >
-            <option value="" disabled hidden>{{ placeholder(aggregate[key]?.same) }}</option>
-            <option v-if="isNullableBulkField(key) && !hasEmptyOption(fieldsConfig[key]?.options)" value="">—</option>
-            <option v-for="opt in fieldsConfig[key]?.options || []" :key="String(opt.value)" :value="String(opt.value)">
-              {{ opt.label }}
-            </option>
-          </SelectCore>
-
-          <!-- textarea -->
-          <TextareaCore
-            v-else-if="fieldsConfig[key]?.type === 'textarea'"
-            class="w-full"
-            variant="glass"
-            size="sm"
-            :color="uiColor"
-            :disabled="!isFieldEditable(key)"
-            :model-value="dirty[key] ? form[key] : (aggregate[key]?.same ? String(aggregate[key]?.value ?? '') : '')"
-            @update:model-value="(v) => onChange(key, v)"
-            :placeholder="fieldsConfig[key]?.placeholder || placeholder(aggregate[key]?.same)"
-          />
-
-          <!-- number/text/file fallback -->
-          <InputCore
-            v-else-if="fieldsConfig[key]?.type !== 'file'"
-            class="w-full"
-            :type="fieldsConfig[key]?.type === 'number' ? 'number' : 'text'"
-            variant="glass"
-            size="sm"
-            :color="uiColor"
-            :disabled="!isFieldEditable(key)"
-            :model-value="dirty[key] ? form[key] : (aggregate[key]?.same ? String(aggregate[key]?.value ?? '') : '')"
-            @update:model-value="(v) => onChange(key, v)"
-            :placeholder="fieldsConfig[key]?.placeholder || placeholder(aggregate[key]?.same)"
-          />
-
-          <!-- file (non supporté en bulk JSON pour l’instant) -->
-          <InputCore
-            v-else
-            class="w-full"
-            type="file"
-            variant="glass"
-            size="sm"
-            :color="uiColor"
-            :disabled="true"
-            title="Upload de fichier non supporté en bulk (payload JSON). Utilise un champ URL ou l’édition unitaire."
-          />
-        </div>
-      </div>
+    <!-- Vue QuickEdit générée depuis les descriptors -->
+    <!-- Note: Les événements 'change' et 'clear-field' sont émis par EntityQuickEdit mais non utilisés ici -->
+    <component
+      v-if="QuickEditComponent"
+      :is="QuickEditComponent"
+      ref="quickEditViewRef"
+      :selected-entities="selectedEntities"
+      :is-admin="isAdmin"
+      :extra-ctx="extraCtx"
+      :fields="fields"
+    />
+    <div v-else class="text-sm text-warning">
+      Vue QuickEdit non trouvée pour {{ entityType }}. Vérifiez que le fichier existe.
     </div>
 
     <div class="flex flex-col gap-3 pt-2 border-t border-base-300">

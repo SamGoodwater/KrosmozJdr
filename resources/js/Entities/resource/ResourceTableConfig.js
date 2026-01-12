@@ -10,6 +10,7 @@
 import { TableConfig } from "@/Utils/Entity/Configs/TableConfig.js";
 import { TableColumnConfig } from "@/Utils/Entity/Configs/TableColumnConfig.js";
 import { getResourceFieldDescriptors } from "./resource-descriptors.js";
+import { FIELD_LABELS, FIELD_ICONS } from '@/Utils/Entity/SharedConstants.js';
 
 /**
  * Crée la configuration du tableau pour Resource
@@ -67,9 +68,9 @@ export function createResourceTableConfig(ctx = {}) {
   tableConfig.addColumn(
     new TableColumnConfig({
       key: "image",
-      label: descriptors.image?.label || "Image",
+      label: descriptors.image?.general?.label || "Image",
       type: "image",
-      icon: descriptors.image?.icon || "fa-solid fa-image",
+      icon: descriptors.image?.general?.icon || "fa-solid fa-image",
     })
       .withDefaultVisible({ xs: false, sm: true, md: true, lg: true, xl: true })
       .withOrder(3)
@@ -79,9 +80,9 @@ export function createResourceTableConfig(ctx = {}) {
   tableConfig.addColumn(
     new TableColumnConfig({
       key: "name",
-      label: descriptors.name?.label || "Nom",
+      label: descriptors.name?.general?.label || "Nom",
       type: "route",
-      icon: descriptors.name?.icon || "fa-solid fa-font",
+      icon: descriptors.name?.general?.icon || "fa-solid fa-font",
     })
       .asMain(true)
       .withOrder(4)
@@ -100,9 +101,9 @@ export function createResourceTableConfig(ctx = {}) {
   tableConfig.addColumn(
     new TableColumnConfig({
       key: "level",
-      label: descriptors.level?.label || "Niveau",
+      label: FIELD_LABELS.level, // Utilise la traduction depuis SharedConstants
       type: "badge",
-      icon: descriptors.level?.icon || "fa-solid fa-level-up-alt",
+      icon: FIELD_ICONS.level, // Utilise l'icône depuis SharedConstants
     })
       .withOrder(5)
       .withSort(true)
@@ -133,9 +134,9 @@ export function createResourceTableConfig(ctx = {}) {
   tableConfig.addColumn(
     new TableColumnConfig({
       key: "resource_type",
-      label: descriptors.resource_type?.label || "Type",
+      label: descriptors.resource_type?.general?.label || "Type",
       type: "badge",
-      icon: descriptors.resource_type?.icon || "fa-solid fa-tag",
+      icon: descriptors.resource_type?.general?.icon || "fa-solid fa-tag",
     })
       .withOrder(6)
       .withSort(true)
@@ -153,9 +154,9 @@ export function createResourceTableConfig(ctx = {}) {
   tableConfig.addColumn(
     new TableColumnConfig({
       key: "rarity",
-      label: descriptors.rarity?.label || "Rareté",
+      label: FIELD_LABELS.rarity, // Utilise la traduction depuis SharedConstants
       type: "badge",
-      icon: descriptors.rarity?.icon || "fa-solid fa-star",
+      icon: FIELD_ICONS.rarity, // Utilise l'icône depuis SharedConstants
     })
       .withOrder(7)
       .withSort(true)
@@ -187,9 +188,9 @@ export function createResourceTableConfig(ctx = {}) {
   tableConfig.addColumn(
     new TableColumnConfig({
       key: "price",
-      label: descriptors.price?.label || "Prix",
+      label: descriptors.price?.general?.label || "Prix",
       type: "text",
-      icon: descriptors.price?.icon || "fa-solid fa-coins",
+      icon: descriptors.price?.general?.icon || "fa-solid fa-coins",
     })
       .withDefaultVisible({ xs: false, sm: false, md: true, lg: true, xl: true })
       .withOrder(8)
@@ -200,9 +201,9 @@ export function createResourceTableConfig(ctx = {}) {
   tableConfig.addColumn(
     new TableColumnConfig({
       key: "weight",
-      label: descriptors.weight?.label || "Poids",
+      label: descriptors.weight?.general?.label || "Poids",
       type: "text",
-      icon: descriptors.weight?.icon || "fa-solid fa-weight-hanging",
+      icon: descriptors.weight?.general?.icon || "fa-solid fa-weight-hanging",
     })
       .withDefaultVisible({ xs: false, sm: false, md: false, lg: true, xl: true })
       .withOrder(9)
@@ -213,9 +214,9 @@ export function createResourceTableConfig(ctx = {}) {
   tableConfig.addColumn(
     new TableColumnConfig({
       key: "usable",
-      label: descriptors.usable?.label || "Utilisable",
+      label: descriptors.usable?.general?.label || "Utilisable",
       type: "badge",
-      icon: descriptors.usable?.icon || "fa-solid fa-check",
+      icon: descriptors.usable?.general?.icon || "fa-solid fa-check",
     })
       .withDefaultVisible({ xs: false, sm: false, md: true, lg: true, xl: true })
       .withOrder(10)
@@ -234,9 +235,9 @@ export function createResourceTableConfig(ctx = {}) {
   tableConfig.addColumn(
     new TableColumnConfig({
       key: "is_visible",
-      label: descriptors.is_visible?.label || "Visibilité",
+      label: descriptors.is_visible?.general?.label || "Visibilité",
       type: "badge",
-      icon: descriptors.is_visible?.icon || "fa-solid fa-eye",
+      icon: descriptors.is_visible?.general?.icon || "fa-solid fa-eye",
     })
       .withDefaultVisible({ xs: false, sm: false, md: false, lg: true, xl: true })
       .withOrder(11)
@@ -248,9 +249,9 @@ export function createResourceTableConfig(ctx = {}) {
   tableConfig.addColumn(
     new TableColumnConfig({
       key: "dofus_version",
-      label: descriptors.dofus_version?.label || "Version Dofus",
+      label: descriptors.dofus_version?.general?.label || "Version Dofus",
       type: "text",
-      icon: descriptors.dofus_version?.icon || "fa-solid fa-code-branch",
+      icon: descriptors.dofus_version?.general?.icon || "fa-solid fa-code-branch",
     })
       .withDefaultVisible({ xs: false, sm: false, md: false, lg: false, xl: false })
       .withOrder(12)
@@ -263,9 +264,9 @@ export function createResourceTableConfig(ctx = {}) {
       .addColumn(
         new TableColumnConfig({
           key: "auto_update",
-          label: descriptors.auto_update?.label || "Auto-update",
+          label: descriptors.auto_update?.general?.label || "Auto-update",
           type: "badge",
-          icon: descriptors.auto_update?.icon || "fa-solid fa-arrows-rotate",
+          icon: descriptors.auto_update?.general?.icon || "fa-solid fa-arrows-rotate",
         })
           .withPermission("updateAny")
           .withDefaultVisible({ xs: false, sm: false, md: false, lg: false, xl: false })
@@ -276,9 +277,9 @@ export function createResourceTableConfig(ctx = {}) {
       .addColumn(
         new TableColumnConfig({
           key: "dofusdb_id",
-          label: descriptors.dofusdb_id?.label || "DofusDB",
+          label: descriptors.dofusdb_id?.general?.label || "DofusDB",
           type: "routeExternal",
-          icon: descriptors.dofusdb_id?.icon || "fa-solid fa-arrow-up-right-from-square",
+          icon: descriptors.dofusdb_id?.general?.icon || "fa-solid fa-arrow-up-right-from-square",
         })
           .withPermission("updateAny")
           .withDefaultVisible({ xs: false, sm: false, md: false, lg: false, xl: false })
@@ -299,9 +300,9 @@ export function createResourceTableConfig(ctx = {}) {
       .addColumn(
         new TableColumnConfig({
           key: "created_by",
-          label: descriptors.created_by?.label || "Créé par",
+          label: descriptors.created_by?.general?.label || "Créé par",
           type: "text",
-          icon: descriptors.created_by?.icon || "fa-solid fa-user",
+          icon: descriptors.created_by?.general?.icon || "fa-solid fa-user",
         })
           .withPermission("createAny")
           .withDefaultVisible({ xs: false, sm: false, md: false, lg: false, xl: false })
@@ -312,9 +313,9 @@ export function createResourceTableConfig(ctx = {}) {
       .addColumn(
         new TableColumnConfig({
           key: "created_at",
-          label: descriptors.created_at?.label || "Créé le",
+          label: descriptors.created_at?.general?.label || "Créé le",
           type: "date",
-          icon: descriptors.created_at?.icon || "fa-solid fa-calendar",
+          icon: descriptors.created_at?.general?.icon || "fa-solid fa-calendar",
         })
           .withPermission("createAny")
           .withDefaultVisible({ xs: false, sm: false, md: false, lg: false, xl: false })
@@ -324,9 +325,9 @@ export function createResourceTableConfig(ctx = {}) {
       .addColumn(
         new TableColumnConfig({
           key: "updated_at",
-          label: descriptors.updated_at?.label || "Modifié le",
+          label: descriptors.updated_at?.general?.label || "Modifié le",
           type: "date",
-          icon: descriptors.updated_at?.icon || "fa-solid fa-clock",
+          icon: descriptors.updated_at?.general?.icon || "fa-solid fa-clock",
         })
           .withPermission("createAny")
           .withDefaultVisible({ xs: false, sm: false, md: false, lg: false, xl: false })

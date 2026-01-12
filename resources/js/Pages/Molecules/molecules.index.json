@@ -618,6 +618,39 @@
     "file": "entity/PanoplyItemsManager.vue"
   },
   {
+    "name": "EntityFormField",
+    "description": "EntityFormField — Composant Molecule pour le rendu d'un champ de formulaire d'entité",
+    "props": [
+      {
+        "name": "fieldKey",
+        "type": "String",
+        "desc": "- Clé unique du champ"
+      },
+      {
+        "name": "fieldConfig",
+        "type": "Object",
+        "desc": "- Configuration du champ depuis les descriptors"
+      },
+      {
+        "name": "modelValue",
+        "type": "any",
+        "desc": "- Valeur du champ (v-model)"
+      },
+      {
+        "name": "size",
+        "type": "String",
+        "desc": "- Taille du champ ('sm', 'md', 'lg'), défaut 'md'"
+      },
+      {
+        "name": "error",
+        "type": "String",
+        "desc": "- Message d'erreur de validation"
+      }
+    ],
+    "slots": [],
+    "file": "entity/EntityFormField.vue"
+  },
+  {
     "name": "EntityCard",
     "description": "EntityCard Molecule (Atomic Design, DaisyUI)",
     "props": [
@@ -1082,6 +1115,90 @@
     ],
     "slots": [],
     "file": "entity/resource/ResourceViewCompact.vue"
+  },
+  {
+    "name": "ResourceQuickEdit",
+    "description": "ResourceQuickEdit — Vue QuickEdit pour Resource",
+    "props": [
+      {
+        "name": "selectedEntities",
+        "type": "Array",
+        "desc": "- Entités sélectionnées"
+      },
+      {
+        "name": "isAdmin",
+        "type": "Boolean",
+        "desc": "- L'utilisateur a les droits d'édition"
+      },
+      {
+        "name": "extraCtx",
+        "type": "Object",
+        "desc": "- Contexte additionnel pour les descriptors"
+      },
+      {
+        "name": "fields",
+        "type": "Array",
+        "desc": "- Liste optionnelle de champs à afficher"
+      }
+    ],
+    "slots": [],
+    "file": "entity/resource/ResourceQuickEdit.vue"
+  },
+  {
+    "name": "ResourceEditLarge",
+    "description": "ResourceEditLarge — Vue d'édition Large pour Resource",
+    "props": [
+      {
+        "name": "resource",
+        "type": "Object",
+        "desc": "- Instance du modèle Resource"
+      },
+      {
+        "name": "fieldsConfig",
+        "type": "Object",
+        "desc": "- Configuration des champs depuis les descriptors"
+      },
+      {
+        "name": "ctx",
+        "type": "Object",
+        "desc": "- Contexte pour les descriptors (options dynamiques, permissions)"
+      },
+      {
+        "name": "isUpdating",
+        "type": "Boolean",
+        "desc": "- Mode édition (true) ou création (false)"
+      }
+    ],
+    "slots": [],
+    "file": "entity/resource/ResourceEditLarge.vue"
+  },
+  {
+    "name": "ResourceEditCompact",
+    "description": "ResourceEditCompact — Vue d'édition Compact pour Resource",
+    "props": [
+      {
+        "name": "resource",
+        "type": "Object",
+        "desc": "- Instance du modèle Resource"
+      },
+      {
+        "name": "fieldsConfig",
+        "type": "Object",
+        "desc": "- Configuration des champs depuis les descriptors"
+      },
+      {
+        "name": "ctx",
+        "type": "Object",
+        "desc": "- Contexte pour les descriptors (options dynamiques, permissions)"
+      },
+      {
+        "name": "isUpdating",
+        "type": "Boolean",
+        "desc": "- Mode édition (true) ou création (false)"
+      }
+    ],
+    "slots": [],
+    "file": "entity/resource/ResourceEditCompact.vue"
   },
   {
     "name": "PanoplyViewText",
@@ -1766,6 +1883,13 @@
     "props": [],
     "slots": [],
     "file": "data-input/TextareaField.vue"
+  },
+  {
+    "name": "SelectSearchField",
+    "description": "SelectSearchField Molecule (DaisyUI, Atomic Design)",
+    "props": [],
+    "slots": [],
+    "file": "data-input/SelectSearchField.vue"
   },
   {
     "name": "SelectField",

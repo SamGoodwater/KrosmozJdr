@@ -26,7 +26,7 @@
  *   ]"
  * />
  */
-import { useSlots, useAttrs } from 'vue'
+import { useAttrs } from 'vue'
 import SelectCore from '@/Pages/Atoms/data-input/SelectCore.vue'
 import FieldTemplate from '@/Pages/Molecules/data-input/FieldTemplate.vue'
 import useInputField from '@/Composables/form/useInputField'
@@ -44,13 +44,9 @@ const $attrs = useAttrs()
 // ------------------------------------------
 const {
   // V-model et actions
-  currentValue,
   actionsToDisplay,
   inputRef,
   focus,
-  isModified,
-  isReadonly,
-  showPassword,
   
   // Attributs et événements
   inputAttrs,
@@ -62,14 +58,8 @@ const {
   // Validation
   validationState,
   validationMessage,
-  hasInteracted,
   validate,
-  setInteracted,
   resetValidation,
-  isValid,
-  hasError,
-  hasWarning,
-  hasSuccess,
   
   // Méthodes de contrôle de validation
   enableValidation,
@@ -78,9 +68,6 @@ const {
   // Style
   styleProperties,
   containerClasses,
-  
-  // Helpers
-  handleAction
 } = useInputField({
   modelValue: props.modelValue,
   type: 'select',
@@ -114,10 +101,10 @@ defineExpose({
     :helper="props.helper"
   >
     <!-- Slot core spécifique pour SelectCore -->
-    <template #core="{ inputAttrs, listeners, inputRef }">
+    <template #core="{ inputAttrs: coreInputAttrs, listeners: coreListeners }">
       <SelectCore
-        v-bind="inputAttrs"
-        v-on="listeners"
+        v-bind="coreInputAttrs"
+        v-on="coreListeners"
         :options="props.options"
         ref="inputRef"
       >

@@ -99,15 +99,23 @@ function createColumnFromDescriptor(fieldKey, descriptor, ctx = {}) {
     throw new Error(`Descriptor manquant pour ${fieldKey}`);
   }
 
-  const tableConfig = descriptor.table || {};
-  const displayConfig = descriptor.display || {};
+  // Nouvelle structure : table.cell.sizes, general.label, general.icon, permissions.visibleIf
+  // Rétrocompatibilité : display.sizes, label, icon, visibleIf
+  const tableConfigDesc = descriptor.table || {};
+  const cellConfig = tableConfigDesc.cell || {};
+  const displayConfig = descriptor.display || {}; // Rétrocompatibilité
+  const general = descriptor.general || {}; // Nouvelle structure
+  const permissions = descriptor.permissions || {}; // Nouvelle structure
 
-  let format = tableConfig.format;
-  if (!format && displayConfig.sizes) {
+  let format = tableConfigDesc.format;
+  if (!format && cellConfig.sizes) {
+    format = convertDisplaySizesToFormat(cellConfig.sizes);
+  }
+  if (!format && displayConfig.sizes) { // Rétrocompatibilité
     format = convertDisplaySizesToFormat(displayConfig.sizes);
   }
 
-  let type = tableConfig.type;
+  let type = tableConfigDesc.type;
   if (!type && format) {
     type = inferTypeFromFormat(format);
   }
@@ -117,40 +125,47 @@ function createColumnFromDescriptor(fieldKey, descriptor, ctx = {}) {
 
   const column = new TableColumnConfig({
     key: fieldKey,
-    label: descriptor.label || fieldKey,
+    label: general.label || descriptor.label || fieldKey, // Nouvelle structure puis rétrocompatibilité
     type: type,
-    icon: descriptor.icon || null,
-    tooltip: descriptor.helper || null,
+    icon: general.icon || descriptor.icon || null, // Nouvelle structure puis rétrocompatibilité
+    tooltip: general.tooltip || descriptor.helper || null, // Nouvelle structure puis rétrocompatibilité
   });
 
-  if (tableConfig.permission) {
-    column.withPermission(tableConfig.permission);
+  if (tableConfigDesc.permission) {
+    column.withPermission(tableConfigDesc.permission);
   }
-  if (tableConfig.order !== undefined) {
-    column.withOrder(tableConfig.order);
+  if (tableConfigDesc.order !== undefined) {
+    column.withOrder(tableConfigDesc.order);
   }
-  if (tableConfig.isMain) {
+  if (tableConfigDesc.isMain) {
     column.asMain(true);
   }
-  if (tableConfig.sortable) {
+  if (tableConfigDesc.sortable) {
     column.withSort(true);
   }
-  if (tableConfig.searchable) {
+  if (tableConfigDesc.searchable) {
     column.withSearch(true);
   }
-  if (tableConfig.filterable) {
-    column.withFilter(tableConfig.filterable);
+  if (tableConfigDesc.filterable) {
+    column.withFilter(tableConfigDesc.filterable);
   }
-  if (tableConfig.defaultVisible) {
-    column.withDefaultVisible(tableConfig.defaultVisible);
+  // Visibilité par défaut depuis table.defaultVisible
+  if (tableConfigDesc.defaultVisible) {
+    column.withDefaultVisible(tableConfigDesc.defaultVisible);
   }
   if (format && Object.keys(format).length > 0) {
     column.withFormat(format);
   }
 
-  if (descriptor.visibleIf && typeof descriptor.visibleIf === 'function') {
-    const isVisible = descriptor.visibleIf(ctx);
+  // Permissions : vérifier table.visibleIf en priorité, puis permissions.visibleIf
+  const tableVisibleIf = tableConfigDesc.visibleIf;
+  const permissionsVisibleIf = permissions.visibleIf || descriptor.visibleIf;
+  const visibleIf = tableVisibleIf || permissionsVisibleIf;
+  
+  if (visibleIf && typeof visibleIf === 'function') {
+    const isVisible = visibleIf(ctx);
     if (!isVisible) {
+      // Si la fonction retourne false, masquer la colonne par défaut
       column.withDefaultVisible({ xs: false, sm: false, md: false, lg: false, xl: false });
     }
   }

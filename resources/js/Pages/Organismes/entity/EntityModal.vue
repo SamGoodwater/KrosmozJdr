@@ -22,6 +22,7 @@ import { getEntityRouteConfig, resolveEntityRouteUrl } from '@/Composables/entit
 import { useCopyToClipboard } from '@/Composables/utils/useCopyToClipboard';
 import { useDownloadPdf } from '@/Composables/utils/useDownloadPdf';
 import { normalizeEntityType } from '@/Entities/entity-registry';
+import { resolveEntityViewComponent } from '@/Utils/entity/resolveEntityViewComponent';
 
 const props = defineProps({
     entity: {
@@ -132,24 +133,15 @@ const VIEW_COMPONENT_MAP = {
 
 // Fonction pour charger le composant de vue
 const loadViewComponent = async () => {
-    const normalizedType = normalizeEntityType(props.entityType);
-    const entityName = ENTITY_COMPONENT_MAP[normalizedType];
-    const viewName = VIEW_COMPONENT_MAP[currentView.value] || VIEW_COMPONENT_MAP['large'];
-
-    if (!entityName) {
-        console.warn(`[EntityModal] Type d'entité non reconnu: ${props.entityType} (normalisé: ${normalizedType})`);
-        ViewComponent.value = null;
-        return;
-    }
-
-    const componentName = `${entityName}${viewName}`;
-    const componentPath = `@/Pages/Molecules/entity/${normalizedType.replace('-', '/')}/${componentName}.vue`;
-
     try {
-        const module = await import(componentPath);
-        ViewComponent.value = defineAsyncComponent(() => Promise.resolve(module.default || module[componentName] || module));
+        const component = await resolveEntityViewComponent(props.entityType, currentView.value);
+        if (component) {
+            ViewComponent.value = defineAsyncComponent(() => Promise.resolve(component));
+        } else {
+            ViewComponent.value = null;
+        }
     } catch (error) {
-        console.error(`[EntityModal] Erreur lors du chargement du composant ${componentPath}:`, error);
+        console.error(`[EntityModal] Erreur lors du chargement du composant pour ${props.entityType}/${currentView.value}:`, error);
         ViewComponent.value = null;
     }
 };
