@@ -42,13 +42,7 @@
  * Champs affichés dans le panneau d'édition rapide (sélection multiple).
  * ⚠️ IMPORTANT : Doit rester aligné avec le backend (bulk controller).
  */
-export const PANOPLY_QUICK_EDIT_FIELDS = Object.freeze([
-  "bonus",
-  "usable",
-  "is_visible",
-  "description",
-  "dofusdb_id",
-]);
+// Les champs quickedit sont maintenant définis dans _quickeditConfig.fields
 
 /**
  * Retourne les descripteurs de tous les champs de l'entité "Panoply".
@@ -336,10 +330,12 @@ export function getPanoplyFieldDescriptors(ctx = {}) {
 
     // Configuration globale du quickedit
     _quickeditConfig: {
-      fields: PANOPLY_QUICK_EDIT_FIELDS,
-    },
-
-    // Support de la constante pour BulkConfig.fromDescriptors()
-    _quickEditFields: PANOPLY_QUICK_EDIT_FIELDS,
-  };
+      fields: [
+        "bonus",
+        "usable",
+        "is_visible",
+        "description",
+        "dofusdb_id",
+      ],
+    },};
 }

@@ -23,7 +23,7 @@ import EntityModal from '@/Pages/Organismes/entity/EntityModal.vue';
 import CreateEntityModal from '@/Pages/Organismes/entity/CreateEntityModal.vue';
 import EntityQuickEditPanel from '@/Pages/Organismes/entity/EntityQuickEditPanel.vue';
 import EntityQuickEditModal from '@/Pages/Organismes/entity/EntityQuickEditModal.vue';
-import { createAttributeTableConfig } from "@/Entities/attribute/AttributeTableConfig";
+import { TableConfig } from "@/Utils/Entity/Configs/TableConfig.js";
 import { getEntityResponseAdapter } from "@/Entities/entity-registry";
 import { getAttributeFieldDescriptors } from "@/Entities/attribute/attribute-descriptors";
 import { createFieldsConfigFromDescriptors, createDefaultEntityFromDescriptors } from "@/Utils/entity/descriptor-form";
@@ -66,7 +66,9 @@ const tableConfig = computed(() => {
             createAny: canCreate.value,
         },
     };
-    return createAttributeTableConfig(ctx);
+    const descriptors = getAttributeFieldDescriptors(ctx);
+    const config = TableConfig.fromDescriptors(descriptors, ctx);
+    return config.build(ctx);
 });
 const serverUrl = computed(() => `${route('api.tables.attributes')}?format=entities&limit=5000&_t=${refreshToken.value}`);
 
@@ -243,7 +245,11 @@ const handleModalDelete = (entity) => {
     console.log('Delete:', entity);
 };
 
-const handleQuickEditSubmit = () => {
+const handleQuickEditSubmit = async (payload) => {
+    if (payload) {
+        const ok = await bulkPatchJson('/api/entities/attributes/bulk', payload);
+        if (!ok) return;
+    }
     refreshToken.value++;
     quickEditEntity.value = null;
 };
@@ -325,8 +331,8 @@ const handleQuickEditSubmit = () => {
         <EntityQuickEditModal
             v-if="quickEditEntity"
             :entity="quickEditEntity"
-            entity-type="attribute"
-            :fields-config="fieldsConfig"
+            entity-type="attributes"
+            :is-admin="canModify"
             :open="quickEditModalOpen"
             @close="quickEditModalOpen = false"
             @submit="handleQuickEditSubmit"

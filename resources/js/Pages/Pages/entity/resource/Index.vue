@@ -23,7 +23,7 @@ import EntityTanStackTable from '@/Pages/Organismes/table/EntityTanStackTable.vu
 import EntityModal from '@/Pages/Organismes/entity/EntityModal.vue';
 import CreateEntityModal from '@/Pages/Organismes/entity/CreateEntityModal.vue';
 import EntityQuickEditPanel from '@/Pages/Organismes/entity/EntityQuickEditPanel.vue';
-import { createResourceTableConfig } from "@/Entities/resource/ResourceTableConfig";
+import { TableConfig } from "@/Utils/Entity/Configs/TableConfig.js";
 import { getEntityResponseAdapter } from "@/Entities/entity-registry";
 import { getResourceFieldDescriptors } from "@/Entities/resource/resource-descriptors";
 import { createFieldsConfigFromDescriptors, createDefaultEntityFromDescriptors } from "@/Utils/entity/descriptor-form";
@@ -84,7 +84,8 @@ const tableConfig = computed(() => {
         },
         resourceTypes: props.resourceTypes || [],
     };
-    const config = createResourceTableConfig(ctx);
+    const descriptors = getResourceFieldDescriptors(ctx);
+    const config = TableConfig.fromDescriptors(descriptors, ctx);
     return config.build(ctx);
 });
 

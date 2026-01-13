@@ -42,11 +42,7 @@
  * Champs affichés dans le panneau d'édition rapide (sélection multiple).
  * ⚠️ IMPORTANT : Doit rester aligné avec le backend (bulk controller).
  */
-export const RESOURCE_TYPE_QUICK_EDIT_FIELDS = Object.freeze([
-  "decision",
-  "usable",
-  "is_visible",
-]);
+// Les champs quickedit sont maintenant définis dans _quickeditConfig.fields
 
 export function getResourceTypeFieldDescriptors(ctx = {}) {
   const can = ctx?.capabilities || ctx?.meta?.capabilities || null;
@@ -318,12 +314,12 @@ export function getResourceTypeFieldDescriptors(ctx = {}) {
 
     // Configuration globale du quickedit
     _quickeditConfig: {
-      fields: RESOURCE_TYPE_QUICK_EDIT_FIELDS,
-    },
-
-    // Support de la constante pour BulkConfig.fromDescriptors()
-    _quickEditFields: RESOURCE_TYPE_QUICK_EDIT_FIELDS,
-  };
+      fields: [
+        "decision",
+        "usable",
+        "is_visible",
+      ],
+    },};
 }
 
 

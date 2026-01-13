@@ -23,7 +23,7 @@ import EntityModal from '@/Pages/Organismes/entity/EntityModal.vue';
 import CreateEntityModal from '@/Pages/Organismes/entity/CreateEntityModal.vue';
 import EntityQuickEditPanel from '@/Pages/Organismes/entity/EntityQuickEditPanel.vue';
 import EntityQuickEditModal from '@/Pages/Organismes/entity/EntityQuickEditModal.vue';
-import { createMonsterTableConfig } from "@/Entities/monster/MonsterTableConfig";
+import { TableConfig } from "@/Utils/Entity/Configs/TableConfig.js";
 import { getEntityResponseAdapter } from "@/Entities/entity-registry";
 import { getMonsterFieldDescriptors } from "@/Entities/monster/monster-descriptors";
 import { createFieldsConfigFromDescriptors, createDefaultEntityFromDescriptors } from "@/Utils/entity/descriptor-form";
@@ -81,7 +81,9 @@ const tableConfig = computed(() => {
         creatures: props.creatures || [],
         monsterRaces: props.monsterRaces || [],
     };
-    return createMonsterTableConfig(ctx);
+    const descriptors = getMonsterFieldDescriptors(ctx);
+    const config = TableConfig.fromDescriptors(descriptors, ctx);
+    return config.build(ctx);
 });
 const serverUrl = computed(() => `${route('api.tables.monsters')}?format=entities&limit=5000&_t=${refreshToken.value}`);
 

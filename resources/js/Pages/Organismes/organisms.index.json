@@ -456,17 +456,27 @@
       {
         "name": "entityType",
         "type": "String",
-        "desc": "- Type d'entité (item, spell, monster, etc.)"
-      },
-      {
-        "name": "fieldsConfig",
-        "type": "Object",
-        "desc": "- Configuration des champs à afficher"
+        "desc": "- Type d'entité (ex: 'attributes', 'resources', 'items')"
       },
       {
         "name": "open",
         "type": "Boolean",
         "desc": "- Contrôle l'ouverture du modal"
+      },
+      {
+        "name": "isAdmin",
+        "type": "Boolean",
+        "desc": "- L'utilisateur a les droits d'édition"
+      },
+      {
+        "name": "extraCtx",
+        "type": "Object",
+        "desc": "- Contexte additionnel pour les descriptors"
+      },
+      {
+        "name": "fields",
+        "type": "Array",
+        "desc": "- Liste optionnelle de champs à afficher"
       }
     ],
     "slots": [],

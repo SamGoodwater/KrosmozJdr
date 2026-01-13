@@ -42,13 +42,7 @@
  * Champs affichés dans le panneau d'édition rapide (sélection multiple).
  * ⚠️ IMPORTANT : Doit rester aligné avec le backend (bulk controller).
  */
-export const CREATURE_QUICK_EDIT_FIELDS = Object.freeze([
-  "level",
-  "hostility",
-  "life",
-  "usable",
-  "is_visible",
-]);
+// Les champs quickedit sont maintenant définis dans _quickeditConfig.fields
 
 /**
  * Retourne les descripteurs de tous les champs de l'entité "Creature".
@@ -448,10 +442,12 @@ export function getCreatureFieldDescriptors(ctx = {}) {
 
     // Configuration globale du quickedit
     _quickeditConfig: {
-      fields: CREATURE_QUICK_EDIT_FIELDS,
-    },
-
-    // Support de la constante pour BulkConfig.fromDescriptors()
-    _quickEditFields: CREATURE_QUICK_EDIT_FIELDS,
-  };
+      fields: [
+        "level",
+        "hostility",
+        "life",
+        "usable",
+        "is_visible",
+      ],
+    },};
 }

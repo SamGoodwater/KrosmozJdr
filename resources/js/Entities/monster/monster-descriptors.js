@@ -42,14 +42,7 @@
  * Champs affichés dans le panneau d'édition rapide (sélection multiple).
  * ⚠️ IMPORTANT : Doit rester aligné avec le backend (bulk controller).
  */
-export const MONSTER_QUICK_EDIT_FIELDS = Object.freeze([
-  "size",
-  "is_boss",
-  "boss_pa",
-  "auto_update",
-  "dofus_version",
-  "dofusdb_id",
-]);
+// Les champs quickedit sont maintenant définis dans _quickeditConfig.fields
 
 /**
  * Retourne les descripteurs de tous les champs de l'entité "Monster".
@@ -363,10 +356,13 @@ export function getMonsterFieldDescriptors(ctx = {}) {
 
     // Configuration globale du quickedit
     _quickeditConfig: {
-      fields: MONSTER_QUICK_EDIT_FIELDS,
-    },
-
-    // Support de la constante pour BulkConfig.fromDescriptors()
-    _quickEditFields: MONSTER_QUICK_EDIT_FIELDS,
-  };
+      fields: [
+        "size",
+        "is_boss",
+        "boss_pa",
+        "auto_update",
+        "dofus_version",
+        "dofusdb_id",
+      ],
+    },};
 }

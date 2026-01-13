@@ -389,24 +389,7 @@ const getCellFor = (row, col) => {
         }
     }
 
-    // Fallback : utiliser entityConfig.buildCell si disponible
-    if (props.entityType) {
-        const entityConfig = getEntityConfig(props.entityType);
-        if (entityConfig?.buildCell && entity) {
-            try {
-                const cell = entityConfig.buildCell(cellId, entity, {}, {
-                    size: currentScreenSize.value,
-                    context: "table",
-                });
-                if (cell) {
-                    // Retourner directement la cellule (le cache est géré par le modèle)
-                    return cell;
-                }
-            } catch (e) {
-                console.warn(`[TanStackTable] buildCell failed for ${cellId}:`, e);
-            }
-        }
-    }
+    // Note: buildCell a été supprimé, on utilise directement entity.toCell() ci-dessus
 
     // Convenience: colonne "id" sans cellule dédiée (le row.id existe toujours)
     if (cellId === "id" && (row?.id !== null && typeof row?.id !== "undefined")) {

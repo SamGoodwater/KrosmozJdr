@@ -42,17 +42,7 @@
  * Champs affichés dans le panneau d'édition rapide (sélection multiple).
  * ⚠️ IMPORTANT : Doit rester aligné avec le backend (bulk controller).
  */
-export const SPELL_QUICK_EDIT_FIELDS = Object.freeze([
-  "level",
-  "pa",
-  "po",
-  "area",
-  "usable",
-  "auto_update",
-  "is_visible",
-  "description",
-  "image",
-]);
+// Les champs quickedit sont maintenant définis dans _quickeditConfig.fields
 
 /**
  * Retourne les descripteurs de tous les champs de l'entité "Spell".
@@ -514,10 +504,16 @@ export function getSpellFieldDescriptors(ctx = {}) {
 
     // Configuration globale du quickedit
     _quickeditConfig: {
-      fields: SPELL_QUICK_EDIT_FIELDS,
-    },
-
-    // Support de la constante pour BulkConfig.fromDescriptors()
-    _quickEditFields: SPELL_QUICK_EDIT_FIELDS,
-  };
+      fields: [
+        "level",
+        "pa",
+        "po",
+        "area",
+        "usable",
+        "auto_update",
+        "is_visible",
+        "description",
+        "image",
+      ],
+    },};
 }

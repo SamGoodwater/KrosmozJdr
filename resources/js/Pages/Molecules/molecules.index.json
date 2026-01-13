@@ -618,6 +618,39 @@
     "file": "entity/PanoplyItemsManager.vue"
   },
   {
+    "name": "EntityQuickEdit",
+    "description": "EntityQuickEdit — Vue QuickEdit générique pour toutes les entités",
+    "props": [
+      {
+        "name": "entityType",
+        "type": "String",
+        "desc": "- Type d'entité (ex: 'resources', 'items')"
+      },
+      {
+        "name": "selectedEntities",
+        "type": "Array",
+        "desc": "- Entités sélectionnées"
+      },
+      {
+        "name": "isAdmin",
+        "type": "Boolean",
+        "desc": "- L'utilisateur a les droits d'édition"
+      },
+      {
+        "name": "extraCtx",
+        "type": "Object",
+        "desc": "- Contexte additionnel pour les descriptors"
+      },
+      {
+        "name": "fields",
+        "type": "Array",
+        "desc": "- Liste optionnelle de champs à afficher"
+      }
+    ],
+    "slots": [],
+    "file": "entity/EntityQuickEdit.vue"
+  },
+  {
     "name": "EntityFormField",
     "description": "EntityFormField — Composant Molecule pour le rendu d'un champ de formulaire d'entité",
     "props": [
@@ -1115,34 +1148,6 @@
     ],
     "slots": [],
     "file": "entity/resource/ResourceViewCompact.vue"
-  },
-  {
-    "name": "ResourceQuickEdit",
-    "description": "ResourceQuickEdit — Vue QuickEdit pour Resource",
-    "props": [
-      {
-        "name": "selectedEntities",
-        "type": "Array",
-        "desc": "- Entités sélectionnées"
-      },
-      {
-        "name": "isAdmin",
-        "type": "Boolean",
-        "desc": "- L'utilisateur a les droits d'édition"
-      },
-      {
-        "name": "extraCtx",
-        "type": "Object",
-        "desc": "- Contexte additionnel pour les descriptors"
-      },
-      {
-        "name": "fields",
-        "type": "Array",
-        "desc": "- Liste optionnelle de champs à afficher"
-      }
-    ],
-    "slots": [],
-    "file": "entity/resource/ResourceQuickEdit.vue"
   },
   {
     "name": "ResourceEditLarge",

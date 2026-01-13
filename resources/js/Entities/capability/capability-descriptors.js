@@ -42,16 +42,7 @@
  * Champs affichés dans le panneau d'édition rapide (sélection multiple).
  * ⚠️ IMPORTANT : Doit rester aligné avec le backend (bulk controller).
  */
-export const CAPABILITY_QUICK_EDIT_FIELDS = Object.freeze([
-  "level",
-  "pa",
-  "po",
-  "element",
-  "usable",
-  "is_visible",
-  "description",
-  "effect",
-]);
+// Les champs quickedit sont maintenant définis dans _quickeditConfig.fields
 
 /**
  * Retourne les descripteurs de tous les champs de l'entité "Capability".
@@ -567,10 +558,15 @@ export function getCapabilityFieldDescriptors(ctx = {}) {
 
     // Configuration globale du quickedit
     _quickeditConfig: {
-      fields: CAPABILITY_QUICK_EDIT_FIELDS,
-    },
-
-    // Support de la constante pour BulkConfig.fromDescriptors()
-    _quickEditFields: CAPABILITY_QUICK_EDIT_FIELDS,
-  };
+      fields: [
+        "level",
+        "pa",
+        "po",
+        "element",
+        "usable",
+        "is_visible",
+        "description",
+        "effect",
+      ],
+    },};
 }

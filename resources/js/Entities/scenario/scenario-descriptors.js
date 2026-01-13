@@ -42,14 +42,7 @@
  * Champs affichés dans le panneau d'édition rapide (sélection multiple).
  * ⚠️ IMPORTANT : Doit rester aligné avec le backend (bulk controller).
  */
-export const SCENARIO_QUICK_EDIT_FIELDS = Object.freeze([
-  "state",
-  "is_public",
-  "usable",
-  "is_visible",
-  "description",
-  "keyword",
-]);
+// Les champs quickedit sont maintenant définis dans _quickeditConfig.fields
 
 /**
  * Options pour le champ state
@@ -403,10 +396,13 @@ export function getScenarioFieldDescriptors(ctx = {}) {
 
     // Configuration globale du quickedit
     _quickeditConfig: {
-      fields: SCENARIO_QUICK_EDIT_FIELDS,
-    },
-
-    // Support de la constante pour BulkConfig.fromDescriptors()
-    _quickEditFields: SCENARIO_QUICK_EDIT_FIELDS,
-  };
+      fields: [
+        "state",
+        "is_public",
+        "usable",
+        "is_visible",
+        "description",
+        "keyword",
+      ],
+    },};
 }

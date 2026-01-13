@@ -42,14 +42,7 @@
  * Champs affichés dans le panneau d'édition rapide (sélection multiple).
  * ⚠️ IMPORTANT : Doit rester aligné avec le backend (bulk controller).
  */
-export const SHOP_QUICK_EDIT_FIELDS = Object.freeze([
-  "location",
-  "price",
-  "usable",
-  "is_visible",
-  "description",
-  "npc_id",
-]);
+// Les champs quickedit sont maintenant définis dans _quickeditConfig.fields
 
 /**
  * Retourne les descripteurs de tous les champs de l'entité "Shop".
@@ -398,10 +391,13 @@ export function getShopFieldDescriptors(ctx = {}) {
 
     // Configuration globale du quickedit
     _quickeditConfig: {
-      fields: SHOP_QUICK_EDIT_FIELDS,
-    },
-
-    // Support de la constante pour BulkConfig.fromDescriptors()
-    _quickEditFields: SHOP_QUICK_EDIT_FIELDS,
-  };
+      fields: [
+        "location",
+        "price",
+        "usable",
+        "is_visible",
+        "description",
+        "npc_id",
+      ],
+    },};
 }

@@ -1,5 +1,10 @@
 [
   {
+    "path": "00-Project/ARCHITECTURE_ENTITES_FRONTEND.md",
+    "title": "Architecture du système d'entités frontend — Résumé complet",
+    "description": "**Date** : 2026-01-XX"
+  },
+  {
     "path": "00-Project/GLOBAL_DESCRIPTION.md",
     "title": "",
     "description": "Ce projet est un site web. Il est responsive et utilise les dernières recommandations concernant la sécurité informatique. Le développeur du projet communique en français."
@@ -270,191 +275,6 @@
     "description": "Le système de validation a été entièrement refactorisé pour répondre aux besoins de simplicité et de transparence. L'objectif était de créer une API qui évite les conflits avec les vues tout en restant puissante et flexible."
   },
   {
-    "path": "110- To Do/ANALYSE_CLEANUP_ENTITY_FOLDER.md",
-    "title": "Analyse — Nettoyage du dossier Entities/entity",
-    "description": "**Date de création** : 2026-01-XX"
-  },
-  {
-    "path": "110- To Do/ANALYSE_SIMPLIFICATION_CONFIGS.md",
-    "title": "Analyse — Simplification des Configs",
-    "description": "**Date de création** : 2026-01-XX"
-  },
-  {
-    "path": "110- To Do/ANALYSE_VUES_RESOURCE.md",
-    "title": "Analyse des vues Resource (Large et Compact)",
-    "description": "- **Liste de champs hardcodée** : `extendedFields` (rarity, resource_type, level, usable, price, weight, dofus_version, is_visible, auto_update, dofusdb_id, official_id, created_by, created_at, updated_at)"
-  },
-  {
-    "path": "110- To Do/APPROCHE_VUES_ENTITES.md",
-    "title": "Approche pour les vues d'affichage (Modal et Page)",
-    "description": "Les modals d'affichage (`EntityModal`) et les pages d'affichage (`Show.vue`) se ressemblent beaucoup. Seuls le placement, les marges et quelques détails diffèrent."
-  },
-  {
-    "path": "110- To Do/ARCHITECTURE_ENTITIES_ATOMIC_DESIGN.md",
-    "title": "Architecture des entités — Atomic Design",
-    "description": "**Date de création** : 2026-01-06"
-  },
-  {
-    "path": "110- To Do/ARCHITECTURE_ENTITY_SYSTEM.md",
-    "title": "Architecture du système d'entités — Vue d'ensemble",
-    "description": "**Date de création** : 2026-01-XX"
-  },
-  {
-    "path": "110- To Do/ARCHITECTURE_FILE_ORGANIZATION.md",
-    "title": "Architecture — Organisation des fichiers d'entités",
-    "description": "**Date de création** : 2026-01-XX"
-  },
-  {
-    "path": "110- To Do/CE_QUI_RESTE_A_FAIRE.md",
-    "title": "Ce qui reste à faire",
-    "description": "**Date de création** : 2026-01-XX"
-  },
-  {
-    "path": "110- To Do/CLEANUP_REPORT.md",
-    "title": "Rapport de nettoyage — Migration système d'entités",
-    "description": "**Date** : 2026-01-XX"
-  },
-  {
-    "path": "110- To Do/CLEANUP_SUMMARY.md",
-    "title": "Résumé du nettoyage — Migration système d'entités",
-    "description": "**Date** : 2026-01-XX"
-  },
-  {
-    "path": "110- To Do/DESCRIPTORS_COMPLETS_RESOURCE.md",
-    "title": "Descriptors complets pour Resource",
-    "description": "Chaque propriété du descriptor `resource-descriptors.js` contient maintenant **4 sections principales** :"
-  },
-  {
-    "path": "110- To Do/DESCRIPTORS_PATTERN.md",
-    "title": "Pattern Descriptors — Contrat stable entre moteur et métier",
-    "description": "**Date de création** : 2026-01-XX"
-  },
-  {
-    "path": "110- To Do/EXEMPLE_UTILISATION_HELPERS.md",
-    "title": "Exemple d'utilisation des Helpers génériques",
-    "description": "**Date de création** : 2026-01-XX"
-  },
-  {
-    "path": "110- To Do/MAPPERS_PATTERN.md",
-    "title": "Pattern Mappers — Transformation backend → frontend",
-    "description": "**Date de création** : 2026-01-XX"
-  },
-  {
-    "path": "110- To Do/MIGRATION_ENTITY_FILES.md",
-    "title": "Migration — Réorganisation des fichiers Entities/entity",
-    "description": "**Date de création** : 2026-01-XX"
-  },
-  {
-    "path": "110- To Do/MODIFICATIONS_DESCRIPTOR_RESOURCE.md",
-    "title": "Modifications à apporter au descriptor Resource",
-    "description": "Le fichier `resource-descriptors.js` a été endommagé lors des modifications automatiques. Il faut le restaurer et appliquer les modifications correctement."
-  },
-  {
-    "path": "110- To Do/NOUVELLE_STRUCTURE_DESCRIPTOR.md",
-    "title": "Nouvelle structure du descriptor — Proposition",
-    "description": "La structure actuelle est \"brouillonne\" avec des propriétés au niveau racine (`label`, `icon`, `visibleIf`) et des objets imbriqués (`display`, `view`, `edit`) qui ne sont pas clairement organisés."
-  },
-  {
-    "path": "110- To Do/New Système d'Entity.md",
-    "title": "Système d'entités — Spécifications détaillées",
-    "description": "> **Voir [ARCHITECTURE_ENTITY_SYSTEM.md](./ARCHITECTURE_ENTITY_SYSTEM.md) pour la vue d'ensemble de l'architecture en 4 couches.**"
-  },
-  {
-    "path": "110- To Do/OPTIMISATIONS_VUES_EDITION.md",
-    "title": "Optimisations possibles pour les vues d'édition",
-    "description": "- `ResourceEditLarge.vue`"
-  },
-  {
-    "path": "110- To Do/PLAN_REFACTORING_ENTITIES.md",
-    "title": "Plan de refactoring — Système d'entités",
-    "description": "**Date de création** : 2026-01-06"
-  },
-  {
-    "path": "110- To Do/REDONDANCE_DESCRIPTORS_TABLECONFIG.md",
-    "title": "Redondance entre Descriptors et TableConfig",
-    "description": "**Date de création** : 2026-01-XX"
-  },
-  {
-    "path": "110- To Do/REFACTORING_DESCRIPTORS_CHECKLIST.md",
-    "title": "Checklist de refactoring des descriptors",
-    "description": "**Date de création** : 2026-01-XX"
-  },
-  {
-    "path": "110- To Do/REFACTORISATION_DESCRIPTOR_TERMINEE.md",
-    "title": "Refactorisation du descriptor Resource — Terminée",
-    "description": "Le descriptor a été complètement refactorisé pour une meilleure organisation et clarté."
-  },
-  {
-    "path": "110- To Do/REFACTORISATION_VUES_RESOURCE.md",
-    "title": "Refactorisation des vues Resource pour utiliser les descriptors",
-    "description": "Refactoriser `ResourceViewLarge.vue` et `ResourceViewCompact.vue` pour utiliser les descriptors au lieu des listes hardcodées, tout en gardant le layout et la structure HTML dans les composants Vue."
-  },
-  {
-    "path": "110- To Do/REFONTE_ENTITES_TERMINEE.md",
-    "title": "Refonte complète des entités — Terminée ✅",
-    "description": "2024-12-XX"
-  },
-  {
-    "path": "110- To Do/REFONTE_RESOURCE_TERMINEE.md",
-    "title": "Refonte des fichiers Resource — Terminée ✅",
-    "description": "**Date de création** : 2026-01-XX"
-  },
-  {
-    "path": "110- To Do/REFONTE_RESOURCE_TYPE_TERMINEE.md",
-    "title": "Refonte de ResourceType — Terminée ✅",
-    "description": "**Date de création** : 2026-01-XX"
-  },
-  {
-    "path": "110- To Do/REORGANISATION_ENTITY_FILES.md",
-    "title": "Réorganisation des fichiers Entities/entity",
-    "description": "**Date de création** : 2026-01-XX"
-  },
-  {
-    "path": "110- To Do/REORGANISATION_TERMINEE.md",
-    "title": "Réorganisation terminée — Entities/entity → Utils/Entity",
-    "description": "**Date de création** : 2026-01-XX"
-  },
-  {
-    "path": "110- To Do/SIMPLIFICATION_CONFIGS_TERMINEE.md",
-    "title": "Simplification des Configs — Terminée ✅",
-    "description": "**Date de création** : 2026-01-XX"
-  },
-  {
-    "path": "110- To Do/SPECIFICATION_DESCRIPTOR_CENTRALISE.md",
-    "title": "Spécification — Descriptor Centralisé et Génération Automatique",
-    "description": "**Date de création** : 2026-01-XX"
-  },
-  {
-    "path": "110- To Do/STRUCTURE_DESCRIPTOR_FINALE.md",
-    "title": "Structure finale du descriptor Resource",
-    "description": "Le descriptor contient **uniquement les métadonnées et la configuration**, pas les décisions de layout ou d'ordre qui sont gérées dans les composants Vue."
-  },
-  {
-    "path": "110- To Do/VERIFICATION_DESCRIPTORS_RESOURCE.md",
-    "title": "Vérification de la structure des descriptors Resource",
-    "description": "Chaque propriété doit avoir :"
-  },
-  {
-    "path": "110- To Do/VERIFICATION_ENTITIES_SYSTEM.md",
-    "title": "Vérification complète — Système d'entités",
-    "description": "**Date** : 2026-01-XX"
-  },
-  {
-    "path": "110- To Do/VERIFICATION_FICHIERS_ENTITES.md",
-    "title": "Vérification complète des fichiers entités",
-    "description": "2024-12-XX"
-  },
-  {
-    "path": "110- To Do/VERIFICATION_RESOURCE_REFACTORING.md",
-    "title": "Rapport de vérification — Refactoring Resource",
-    "description": "**Date** : 2026-01-XX"
-  },
-  {
-    "path": "110- To Do/VERIFICATION_TESTS_ENTITES.md",
-    "title": "Vérification des tests pour les entités",
-    "description": "2024-12-XX"
-  },
-  {
     "path": "20-Content/21-Entities/ENTITIES_OVERVIEW.md",
     "title": "Vue d'ensemble des entités – Krosmoz JDR",
     "description": "Ce document présente en détail toutes les entités du projet Krosmoz JDR, leur structure, leurs relations et leur rôle dans l'architecture globale du jeu. Il sert de référence centrale pour la modélisation des données, la génération des migrations, l'implémentation backend et la compréhension métier."
@@ -675,39 +495,64 @@
     "description": "```javascript"
   },
   {
-    "path": "30-UI/DESCRIPTOR_REFACTORING_NEEDS.md",
-    "title": "Analyse des Besoins Réels — Refactorisation Descriptors",
-    "description": "**Date de création** : 2026-01-06"
-  },
-  {
-    "path": "30-UI/DESCRIPTOR_REFACTORING_PLAN.md",
-    "title": "Plan de Refactorisation Complète des Descriptors",
-    "description": "**Date de création** : 2026-01-06"
-  },
-  {
     "path": "30-UI/DESIGN_GUIDE.md",
     "title": "Guide de Design Krosmoz-JDR",
     "description": "Le design du site s'appuie sur les principes d'Atomic Design, le glassmorphism et une forte accessibilité. L'interface est responsive et moderne."
   },
   {
+    "path": "30-UI/ENTITY SYSTEM/ARCHITECTURE.md",
+    "title": "Architecture du système d'entités — Détails complets",
+    "description": "**Version** : 2.0"
+  },
+  {
+    "path": "30-UI/ENTITY SYSTEM/CONFIGS.md",
+    "title": "Guide des Configs",
+    "description": "**Version** : 2.0"
+  },
+  {
+    "path": "30-UI/ENTITY SYSTEM/DESCRIPTORS.md",
+    "title": "Guide des Descriptors",
+    "description": "**Version** : 2.0"
+  },
+  {
+    "path": "30-UI/ENTITY SYSTEM/FLUX_COMPLETS.md",
+    "title": "Flux complets — De la base de données aux vues",
+    "description": "**Version** : 2.0"
+  },
+  {
+    "path": "30-UI/ENTITY SYSTEM/FORMATTERS.md",
+    "title": "Guide des Formatters",
+    "description": "**Version** : 2.0"
+  },
+  {
+    "path": "30-UI/ENTITY SYSTEM/MODELS.md",
+    "title": "Guide des Models",
+    "description": "**Version** : 2.0"
+  },
+  {
+    "path": "30-UI/ENTITY SYSTEM/OPTIMISATIONS_IDENTIFIEES.md",
+    "title": "Optimisations identifiées — Système d'entités",
+    "description": "**Date** : 2026-01-XX"
+  },
+  {
+    "path": "30-UI/ENTITY SYSTEM/README.md",
+    "title": "Système d'entités frontend — Documentation complète",
+    "description": "**Version** : 2.0"
+  },
+  {
+    "path": "30-UI/ENTITY SYSTEM/RENDERERS.md",
+    "title": "Guide des Renderers",
+    "description": "**Version** : 2.0"
+  },
+  {
+    "path": "30-UI/ENTITY SYSTEM/VIEWS.md",
+    "title": "Guide des Vues",
+    "description": "**Version** : 2.0"
+  },
+  {
     "path": "30-UI/ENTITY_ACTIONS_GUIDE.md",
     "title": "Guide d'utilisation — Système d'Actions pour les Entités",
     "description": "**Date** : 2026-01-06"
-  },
-  {
-    "path": "30-UI/ENTITY_DESCRIPTORS_MAINTENANCE_GUIDE.md",
-    "title": "Guide de maintenance — Entity Field Descriptors",
-    "description": "**Date de création** : 2026-01-06"
-  },
-  {
-    "path": "30-UI/ENTITY_FIELD_DESCRIPTORS.md",
-    "title": "Entity Field Descriptors — Architecture (Option B)",
-    "description": "Mettre en place une **source de vérité frontend** par champ (“field descriptor”) afin de générer :"
-  },
-  {
-    "path": "30-UI/ENTITY_FIELD_DESCRIPTORS_GUIDE.md",
-    "title": "Guide complet — Entity Field Descriptors",
-    "description": "**Date de création** : 2026-01-06"
   },
   {
     "path": "30-UI/FRONTEND_MODELS.md",
@@ -783,11 +628,6 @@
     "path": "30-UI/NOTIFICATIONS.md",
     "title": "Notifications — Guide KrosmozJDR",
     "description": "- **useNotificationStore (Composable)** : Centralise la gestion des notifications toast"
-  },
-  {
-    "path": "30-UI/PLAN_MIGRATION_DESCRIPTORS.md",
-    "title": "Plan de migration — Système Entity Field Descriptors",
-    "description": "**Date de création** : 2025-01-27"
   },
   {
     "path": "30-UI/README.md",

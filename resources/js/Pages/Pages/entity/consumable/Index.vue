@@ -23,7 +23,7 @@ import EntityModal from '@/Pages/Organismes/entity/EntityModal.vue';
 import CreateEntityModal from '@/Pages/Organismes/entity/CreateEntityModal.vue';
 import EntityQuickEditPanel from '@/Pages/Organismes/entity/EntityQuickEditPanel.vue';
 import EntityQuickEditModal from '@/Pages/Organismes/entity/EntityQuickEditModal.vue';
-import { createConsumableTableConfig } from "@/Entities/consumable/ConsumableTableConfig";
+import { TableConfig } from "@/Utils/Entity/Configs/TableConfig.js";
 import { getEntityResponseAdapter } from "@/Entities/entity-registry";
 import { getConsumableFieldDescriptors } from "@/Entities/consumable/consumable-descriptors";
 import { createFieldsConfigFromDescriptors, createDefaultEntityFromDescriptors } from "@/Utils/entity/descriptor-form";
@@ -90,7 +90,9 @@ const tableConfig = computed(() => {
         },
         consumableTypes: props.consumableTypes || [],
     };
-    return createConsumableTableConfig(ctx);
+    const descriptors = getConsumableFieldDescriptors(ctx);
+    const config = TableConfig.fromDescriptors(descriptors, ctx);
+    return config.build(ctx);
 });
 const serverUrl = computed(() => `${route('api.tables.consumables')}?format=entities&limit=5000&_t=${refreshToken.value}`);
 

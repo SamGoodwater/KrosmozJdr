@@ -42,19 +42,7 @@
  * Champs affichés dans le panneau d'édition rapide (sélection multiple).
  * ⚠️ IMPORTANT : Doit rester aligné avec le backend (bulk controller).
  */
-export const ITEM_QUICK_EDIT_FIELDS = Object.freeze([
-  "item_type_id",
-  "rarity",
-  "level",
-  "usable",
-  "auto_update",
-  "is_visible",
-  "price",
-  "dofus_version",
-  "description",
-  "image",
-  "dofusdb_id",
-]);
+// Les champs quickedit sont maintenant définis dans _quickeditConfig.fields
 
 /**
  * Retourne les descripteurs de tous les champs de l'entité "Item".
@@ -468,10 +456,18 @@ export function getItemFieldDescriptors(ctx = {}) {
 
     // Configuration globale du quickedit
     _quickeditConfig: {
-      fields: ITEM_QUICK_EDIT_FIELDS,
-    },
-
-    // Support de la constante pour BulkConfig.fromDescriptors()
-    _quickEditFields: ITEM_QUICK_EDIT_FIELDS,
-  };
+      fields: [
+        "item_type_id",
+        "rarity",
+        "level",
+        "usable",
+        "auto_update",
+        "is_visible",
+        "price",
+        "dofus_version",
+        "description",
+        "image",
+        "dofusdb_id",
+      ],
+    },};
 }

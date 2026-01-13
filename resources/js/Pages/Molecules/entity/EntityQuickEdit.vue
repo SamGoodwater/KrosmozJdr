@@ -57,7 +57,22 @@ const props = defineProps({
 const emit = defineEmits(['change', 'clear-field']);
 
 // Obtenir la configuration de l'entité
-const cfg = computed(() => getEntityConfig(props.entityType));
+const cfg = computed(() => {
+    console.log('[EntityQuickEdit] Props reçues:', {
+        entityType: props.entityType,
+        selectedEntities: props.selectedEntities,
+        isAdmin: props.isAdmin,
+        allProps: props,
+    });
+    const config = getEntityConfig(props.entityType);
+    console.log('[EntityQuickEdit] getEntityConfig:', {
+        entityType: props.entityType,
+        configFound: !!config,
+        hasGetDescriptors: !!config?.getDescriptors,
+        config: config,
+    });
+    return config;
+});
 
 // Contexte pour les descriptors
 const ctx = computed(() => ({
@@ -71,8 +86,24 @@ const ctx = computed(() => ({
 
 // Obtenir les descriptors
 const descriptors = computed(() => {
-    if (!cfg.value?.getDescriptors) return {};
-    return getCachedDescriptors(props.entityType, cfg.value.getDescriptors, ctx.value);
+    console.log('[EntityQuickEdit] Computed descriptors - cfg.value:', cfg.value);
+    if (!cfg.value?.getDescriptors) {
+        console.warn('[EntityQuickEdit] Pas de getDescriptors pour', props.entityType, 'cfg.value:', cfg.value);
+        return {};
+    }
+    console.log('[EntityQuickEdit] Appel getCachedDescriptors avec:', {
+        entityType: props.entityType,
+        ctx: ctx.value,
+    });
+    const desc = getCachedDescriptors(props.entityType, cfg.value.getDescriptors, ctx.value);
+    console.log('[EntityQuickEdit] Descriptors chargés:', {
+        entityType: props.entityType,
+        hasQuickeditConfig: !!desc._quickeditConfig,
+        quickeditFields: desc._quickeditConfig?.fields,
+        allKeys: Object.keys(desc).filter(k => !k.startsWith('_')),
+        descriptorsKeys: Object.keys(desc),
+    });
+    return desc;
 });
 
 // Générer les configs depuis les descriptors
@@ -82,7 +113,8 @@ const fieldMetaAll = computed(() => createBulkFieldMetaFromDescriptors(descripto
 // Déterminer les champs à afficher
 const fieldKeys = computed(() => {
     if (Array.isArray(props.fields) && props.fields.length) return props.fields;
-    const preferred = cfg.value?.viewFields?.quickEdit;
+    // Utiliser _quickeditConfig.fields depuis les descriptors
+    const preferred = descriptors.value?._quickeditConfig?.fields;
     if (Array.isArray(preferred) && preferred.length) return preferred;
     return Object.keys(fieldMetaAll.value || {});
 });
@@ -147,7 +179,14 @@ const { getFieldIcon: getFieldIconHelper, groupFieldsByGroup } = useEntityFieldH
 
 // Grouper les champs par groupe
 const groupedFieldKeys = computed(() => {
-    return groupFieldsByGroup(Object.keys(fieldsConfig.value || {}), 'Champs');
+    const keys = Object.keys(fieldsConfig.value || {});
+    console.log('[EntityQuickEdit] groupedFieldKeys:', {
+        fieldKeys: fieldKeys.value,
+        fieldsConfigKeys: keys,
+        fieldsConfig: fieldsConfig.value,
+        fieldMetaKeys: Object.keys(fieldMeta.value || {}),
+    });
+    return groupFieldsByGroup(keys, 'Champs');
 });
 
 // Fonctions utilitaires pour les booléens
@@ -244,6 +283,17 @@ defineExpose({
 
 <template>
     <div class="space-y-5">
+        <!-- Debug info -->
+        <div v-if="groupedFieldKeys.length === 0" class="text-sm text-warning p-4 border border-warning rounded">
+            <p><strong>Aucun champ à afficher</strong></p>
+            <p>EntityType: {{ entityType }}</p>
+            <p>FieldKeys: {{ JSON.stringify(fieldKeys) }}</p>
+            <p>FieldsConfig keys: {{ JSON.stringify(Object.keys(fieldsConfig || {})) }}</p>
+            <p>FieldMeta keys: {{ JSON.stringify(Object.keys(fieldMeta || {})) }}</p>
+            <p>Has descriptors: {{ !!descriptors._quickeditConfig }}</p>
+            <p>Quickedit fields: {{ JSON.stringify(descriptors._quickeditConfig?.fields) }}</p>
+        </div>
+
         <div v-if="!isAdmin" class="text-sm text-warning">
             Tu dois avoir les droits pour modifier.
         </div>

@@ -69,7 +69,8 @@ const fieldMetaAll = computed(() => createBulkFieldMetaFromDescriptors(descripto
 
 const fieldKeys = computed(() => {
   if (Array.isArray(props.fields) && props.fields.length) return props.fields;
-  const preferred = cfg.value?.viewFields?.quickEdit;
+  // Utiliser _quickeditConfig.fields depuis les descriptors
+  const preferred = descriptors.value?._quickeditConfig?.fields;
   if (Array.isArray(preferred) && preferred.length) return preferred;
   return Object.keys(fieldMetaAll.value || {});
 });
@@ -128,20 +129,19 @@ const modifiedFieldsCount = computed(() => {
 });
 
 /**
- * Calculer canApply en utilisant le dirty de ResourceQuickEdit
- * au lieu du dirty de useBulkEditPanel dans EntityQuickEditPanel
+ * Calculer canApply en utilisant le dirty de la vue QuickEdit
  */
 const canApply = computed(() => {
   if (!props.isAdmin) return false;
   
-  // Utiliser le dirty exposé par ResourceQuickEdit
+  // Utiliser le dirty exposé par la vue QuickEdit
   const dirty = quickEditViewRef.value?.dirty;
   if (!dirty) return false;
   
   const anyDirty = Object.values(dirty).some(Boolean);
   if (!anyDirty) return false;
 
-  // Récupérer form depuis ResourceQuickEdit
+  // Récupérer form depuis la vue QuickEdit
   const form = quickEditViewRef.value?.form;
   if (!form) return false;
 
@@ -162,7 +162,7 @@ const canApply = computed(() => {
 const apply = () => {
   if (!canApply.value) return;
   
-  // Utiliser buildPayload exposé par ResourceQuickEdit si disponible
+  // Utiliser buildPayload exposé par la vue QuickEdit si disponible
   // Sinon, construire le payload manuellement
   if (quickEditViewRef.value?.buildPayload) {
     const payload = quickEditViewRef.value.buildPayload();
@@ -276,9 +276,10 @@ const QuickEditComponent = computed(() => {
       v-if="QuickEditComponent"
       :is="QuickEditComponent"
       ref="quickEditViewRef"
-      :selected-entities="selectedEntities"
-      :is-admin="isAdmin"
-      :extra-ctx="extraCtx"
+      :entityType="entityType"
+      :selectedEntities="selectedEntities"
+      :isAdmin="isAdmin"
+      :extraCtx="extraCtx"
       :fields="fields"
     />
     <div v-else class="text-sm text-warning">

@@ -131,10 +131,16 @@ export function resolveEntityViewComponentSync(entityType, view = 'large') {
   // Utiliser import.meta.glob avec eager pour charger tous les composants au build
   // Note: Cette approche charge tous les composants au build, mais permet un accès synchrone
   // Inclure aussi les composants Edit et QuickEdit, ainsi que le composant générique EntityQuickEdit
+  // Pattern 1: Composants dans les sous-dossiers (ex: resource/ResourceQuickEdit.vue)
   const components = import.meta.glob('@/Pages/Molecules/entity/**/*{View,Edit,QuickEdit}*.vue', { eager: true });
+  // Pattern 2: Composants génériques directement dans entity/ (ex: EntityQuickEdit.vue)
+  const genericComponents = import.meta.glob('@/Pages/Molecules/entity/Entity{View,Edit,QuickEdit}*.vue', { eager: true });
+  
+  // Fusionner les deux résultats
+  const allComponents = { ...components, ...genericComponents };
   
   // Chercher le composant spécifique d'abord
-  for (const [path, module] of Object.entries(components)) {
+  for (const [path, module] of Object.entries(allComponents)) {
     if (path.includes(`/${folderName}/`) && path.includes(componentName)) {
       return module.default || module[componentName] || module;
     }
@@ -142,9 +148,11 @@ export function resolveEntityViewComponentSync(entityType, view = 'large') {
 
   // Pour quickedit, fallback vers le composant générique EntityQuickEdit
   if (view === 'quickedit' || view === 'QuickEdit') {
-    const genericPath = '@/Pages/Molecules/entity/EntityQuickEdit.vue';
-    if (components[genericPath]) {
-      return components[genericPath].default || components[genericPath];
+    // Chercher EntityQuickEdit.vue dans les composants génériques
+    for (const [path, module] of Object.entries(genericComponents)) {
+      if (path.includes('EntityQuickEdit.vue')) {
+        return module.default || module;
+      }
     }
   }
 

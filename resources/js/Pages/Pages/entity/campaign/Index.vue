@@ -23,7 +23,7 @@ import EntityModal from '@/Pages/Organismes/entity/EntityModal.vue';
 import CreateEntityModal from '@/Pages/Organismes/entity/CreateEntityModal.vue';
 import EntityQuickEditPanel from '@/Pages/Organismes/entity/EntityQuickEditPanel.vue';
 import EntityQuickEditModal from '@/Pages/Organismes/entity/EntityQuickEditModal.vue';
-import { createCampaignTableConfig } from "@/Entities/campaign/CampaignTableConfig";
+import { TableConfig } from "@/Utils/Entity/Configs/TableConfig.js";
 import { getEntityResponseAdapter } from "@/Entities/entity-registry";
 import { getCampaignFieldDescriptors } from "@/Entities/campaign/campaign-descriptors";
 import { createFieldsConfigFromDescriptors, createDefaultEntityFromDescriptors } from "@/Utils/entity/descriptor-form";
@@ -72,7 +72,9 @@ const tableConfig = computed(() => {
             createAny: canCreate.value,
         },
     };
-    return createCampaignTableConfig(ctx);
+    const descriptors = getCampaignFieldDescriptors(ctx);
+    const config = TableConfig.fromDescriptors(descriptors, ctx);
+    return config.build(ctx);
 });
 const serverUrl = computed(() => `${route('api.tables.campaigns')}?format=entities&limit=5000&_t=${refreshToken.value}`);
 

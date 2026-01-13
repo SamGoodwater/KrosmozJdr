@@ -21,7 +21,7 @@ import CreateEntityModal from "@/Pages/Organismes/entity/CreateEntityModal.vue";
 import EntityEditForm from "@/Pages/Organismes/entity/EntityEditForm.vue";
 import EntityQuickEditPanel from "@/Pages/Organismes/entity/EntityQuickEditPanel.vue";
 import EntityQuickEditModal from "@/Pages/Organismes/entity/EntityQuickEditModal.vue";
-import { createResourceTypeTableConfig } from "@/Entities/resource-type/ResourceTypeTableConfig";
+import { TableConfig } from "@/Utils/Entity/Configs/TableConfig.js";
 import { getEntityResponseAdapter } from "@/Entities/entity-registry";
 import { getResourceTypeFieldDescriptors } from "@/Entities/resource-type/resource-type-descriptors";
 import { createFieldsConfigFromDescriptors, createDefaultEntityFromDescriptors } from "@/Utils/entity/descriptor-form";
@@ -62,7 +62,8 @@ const tableConfig = computed(() => {
             createAny: canCreateResolved.value,
         },
     };
-    const config = createResourceTypeTableConfig(ctx);
+    const descriptors = getResourceTypeFieldDescriptors(ctx);
+    const config = TableConfig.fromDescriptors(descriptors, ctx);
     return config.build(ctx);
 });
 const serverUrl = computed(() => `${route("api.tables.resource-types")}?limit=5000&format=entities&_t=${refreshToken.value}`);

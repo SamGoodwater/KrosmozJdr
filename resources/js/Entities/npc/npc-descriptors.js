@@ -42,12 +42,7 @@
  * Champs affichés dans le panneau d'édition rapide (sélection multiple).
  * ⚠️ IMPORTANT : Doit rester aligné avec le backend (bulk controller).
  */
-export const NPC_QUICK_EDIT_FIELDS = Object.freeze([
-  "classe_id",
-  "specialization_id",
-  "age",
-  "size",
-]);
+// Les champs quickedit sont maintenant définis dans _quickeditConfig.fields
 
 /**
  * Retourne les descripteurs de tous les champs de l'entité "NPC".
@@ -338,10 +333,11 @@ export function getNpcFieldDescriptors(ctx = {}) {
 
     // Configuration globale du quickedit
     _quickeditConfig: {
-      fields: NPC_QUICK_EDIT_FIELDS,
-    },
-
-    // Support de la constante pour BulkConfig.fromDescriptors()
-    _quickEditFields: NPC_QUICK_EDIT_FIELDS,
-  };
+      fields: [
+        "classe_id",
+        "specialization_id",
+        "age",
+        "size",
+      ],
+    },};
 }

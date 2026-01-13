@@ -23,9 +23,9 @@ import EntityModal from '@/Pages/Organismes/entity/EntityModal.vue';
 import CreateEntityModal from '@/Pages/Organismes/entity/CreateEntityModal.vue';
 import EntityQuickEditPanel from '@/Pages/Organismes/entity/EntityQuickEditPanel.vue';
 import EntityQuickEditModal from '@/Pages/Organismes/entity/EntityQuickEditModal.vue';
-import { createSpecializationTableConfig } from "@/Entities/specialization/SpecializationTableConfig";
-import { getEntityResponseAdapter } from "@/Entities/entity-registry";
+import { TableConfig } from "@/Utils/Entity/Configs/TableConfig.js";
 import { getSpecializationFieldDescriptors } from "@/Entities/specialization/specialization-descriptors";
+import { getEntityResponseAdapter } from "@/Entities/entity-registry";
 import { createFieldsConfigFromDescriptors, createDefaultEntityFromDescriptors } from "@/Utils/entity/descriptor-form";
 
 const props = defineProps({
@@ -66,7 +66,9 @@ const tableConfig = computed(() => {
             createAny: canCreate.value,
         },
     };
-    return createSpecializationTableConfig(ctx);
+    const descriptors = getSpecializationFieldDescriptors(ctx);
+    const config = TableConfig.fromDescriptors(descriptors, ctx);
+    return config.build(ctx);
 });
 const serverUrl = computed(() => `${route('api.tables.specializations')}?format=entities&limit=5000&_t=${refreshToken.value}`);
 

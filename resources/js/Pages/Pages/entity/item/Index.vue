@@ -23,7 +23,7 @@ import EntityModal from '@/Pages/Organismes/entity/EntityModal.vue';
 import EntityQuickEditPanel from "@/Pages/Organismes/entity/EntityQuickEditPanel.vue";
 import CreateEntityModal from '@/Pages/Organismes/entity/CreateEntityModal.vue';
 import EntityQuickEditModal from '@/Pages/Organismes/entity/EntityQuickEditModal.vue';
-import { createItemTableConfig } from "@/Entities/item/ItemTableConfig";
+import { TableConfig } from "@/Utils/Entity/Configs/TableConfig.js";
 import { getEntityResponseAdapter } from "@/Entities/entity-registry";
 import { getItemFieldDescriptors } from "@/Entities/item/item-descriptors";
 import { createFieldsConfigFromDescriptors, createDefaultEntityFromDescriptors } from "@/Utils/entity/descriptor-form";
@@ -102,7 +102,9 @@ const tableConfig = computed(() => {
         },
         itemTypes: props.itemTypes || [],
     };
-    return createItemTableConfig(ctx);
+    const descriptors = getItemFieldDescriptors(ctx);
+    const config = TableConfig.fromDescriptors(descriptors, ctx);
+    return config.build(ctx);
 });
 
 // Handlers
