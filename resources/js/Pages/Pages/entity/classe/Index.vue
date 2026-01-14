@@ -229,7 +229,6 @@ const handleModalCopyLink = async (entity) => {
 
 const handleModalDownloadPdf = (entity) => {
     // TODO: Implémenter le téléchargement PDF
-    console.log('Download PDF:', entity);
 };
 
 const handleModalRefresh = async (entity) => {
@@ -242,7 +241,6 @@ const handleModalRefresh = async (entity) => {
 
 const handleModalDelete = (entity) => {
     // TODO: Implémenter la suppression avec confirmation
-    console.log('Delete:', entity);
 };
 
 const handleQuickEditSubmit = () => {

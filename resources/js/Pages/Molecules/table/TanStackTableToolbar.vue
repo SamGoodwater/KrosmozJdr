@@ -145,11 +145,11 @@ const actionBtnSize = computed(() => shiftUiSize(props.uiSize, -1));
                                 }"
                             >
                                 <CheckboxCore
-                                    :model-value="visibleColumns[col.id] !== false"
+                                    :model-value="props.visibleColumns[col.id] !== false"
                                     size="sm"
                                     :color="uiColor"
                                     :disabled="!canToggleColumn(col)"
-                                    @update:model-value="() => emit('toggle-column', col)"
+                                    @update:model-value="(v) => emit('toggle-column', col, Boolean(v))"
                                 />
                                 <span class="text-sm">{{ col.label }}</span>
                             </label>

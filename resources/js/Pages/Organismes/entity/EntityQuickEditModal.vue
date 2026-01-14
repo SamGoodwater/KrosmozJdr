@@ -60,13 +60,7 @@ const selectedEntities = computed(() => {
 
 // Résoudre le composant QuickEdit pour cette entité (synchrone)
 const QuickEditComponent = computed(() => {
-    const component = resolveEntityViewComponentSync(props.entityType, 'quickedit');
-    console.log('[EntityQuickEditModal] Résolution du composant:', {
-        entityType: props.entityType,
-        componentFound: !!component,
-        componentName: component?.name || component?.__name || 'unknown',
-    });
-    return component;
+    return resolveEntityViewComponentSync(props.entityType, 'quickedit');
 });
 
 // Réinitialiser quand le modal s'ouvre

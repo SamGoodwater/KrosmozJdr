@@ -147,7 +147,6 @@ const handleAction = (actionKey, entity) => {
         <td
             v-for="col in columns"
             :key="col.id"
-            v-memo="[getCell(col), uiColor]"
         >
             <CellRenderer :cell="getCell(col)" :ui-color="uiColor" :entity="rowEntity" />
         </td>

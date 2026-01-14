@@ -164,7 +164,8 @@ const handleTableAction = async (actionKey, entity, row) => {
         }
 
         default:
-            console.log('Action non gérée:', actionKey, model);
+            // Action non gérée (peut être étendue dans le futur)
+            break;
     }
 };
 

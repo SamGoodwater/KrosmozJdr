@@ -15,7 +15,7 @@
  * <TanStackTable :config="config" :rows="rows" :loading="loading" />
  */
 
-import { computed, ref, watch, onMounted, onUnmounted } from "vue";
+import { computed, ref, watch, onMounted, onUnmounted, toRef, toValue, shallowRef } from "vue";
 import { getCoreRowModel, getPaginationRowModel, getSortedRowModel, useVueTable } from "@tanstack/vue-table";
 import TanStackTableHeader from "@/Pages/Molecules/table/TanStackTableHeader.vue";
 import TanStackTableRow from "@/Pages/Molecules/table/TanStackTableRow.vue";
@@ -216,7 +216,9 @@ const prefs = useTanStackTablePreferences(props.config?.id, {
     pageSize: props.config?.features?.pagination?.perPage?.default ?? 25,
 });
 
-const visibleColumns = computed(() => prefs.visibleColumns.value || {});
+// Utiliser directement le ref pour garantir la réactivité maximale
+// Le ref est déjà réactif et se met à jour automatiquement
+const visibleColumns = prefs.visibleColumns;
 
 /**
  * Applique `defaultHidden` seulement si aucune préférence explicite n'existe pour la colonne.
@@ -257,13 +259,21 @@ watch(
     { immediate: true },
 );
 
-const filteredColumnsConfig = computed(() => {
-    return (columnsConfig.value || []).filter((col) => visibleColumns.value?.[col.id] !== false);
+// Colonnes visibles (source de vérité = prefs.visibleColumns)
+// On ne dépend pas de TanStack pour le rendu car on rend nos propres cellules.
+const visibleColumnsFromTable = computed(() => {
+    const visCols = visibleColumns.value || {};
+    return (columnsConfig.value || []).filter((col) => {
+        if (!col?.id || col.id === "actions") return false;
+        // Colonnes non masquables / main = toujours visibles
+        if (col?.hideable === false || col?.isMain) return true;
+        return visCols[col.id] !== false;
+    });
 });
 
-// Colonnes sans "actions" (car gérée manuellement via showActionsColumn)
+// Colonnes sans "actions" pour les filtres (utiliser toutes les colonnes configurées)
 const columnsWithoutActions = computed(() => {
-    return filteredColumnsConfig.value.filter((col) => col.id !== 'actions');
+    return (columnsConfig.value || []).filter((col) => col.id !== 'actions');
 });
 
 // Search + Filters (client-first)
@@ -285,7 +295,7 @@ let _filterDebugCount = 0;
 const debugSample = computed(() => {
     if (!debugEnabled.value) return null;
     const sampleRow = (props.rows || [])[0] || null;
-    const items = (filteredColumnsConfig.value || [])
+    const items = (columnsWithoutActions.value || [])
         .filter((c) => c?.filter?.id && c?.filter?.type)
         .map((col) => {
             const f = col.filter;
@@ -303,6 +313,8 @@ const debugSample = computed(() => {
     return {
         rowsTotal: (props.rows || []).length,
         rowsFiltered: filteredRows.value.length,
+        visibleColumnsPrefs: visibleColumns.value || {},
+        renderedColumnIds: (visibleColumnsFromTable.value || []).map((c) => c?.id).filter(Boolean),
         activeFilters: activeFilters.value || {},
         selectionInternal: Array.from(selectedIds.value || []),
         selectionProp: Array.isArray(props.selectedIds) ? props.selectedIds : null,
@@ -417,9 +429,14 @@ const getFilterValueFor = (row, col) => {
     // la valeur brute du backend quand elle est disponible dans rowParams.entity.
     const filterId = col?.filter?.id;
     const entity = row?.rowParams?.entity;
-    if (filterId && entity && Object.prototype.hasOwnProperty.call(entity, filterId)) {
-        const v = entity?.[filterId];
-        if (typeof v !== "undefined") return v;
+    // `entity` est une instance de modèle (BaseModel). Les valeurs brutes sont dans `_data`.
+    // On évite hasOwnProperty(entity, ...) qui ne marche pas avec les getters.
+    if (filterId && entity && typeof entity === "object") {
+        const raw = entity?._data;
+        if (raw && typeof raw === "object" && Object.prototype.hasOwnProperty.call(raw, filterId)) {
+            const v = raw?.[filterId];
+            if (typeof v !== "undefined") return v;
+        }
     }
 
     return cell?.value ?? null;
@@ -433,6 +450,12 @@ const passesFilter = (row, col) => {
     if (Array.isArray(raw) && raw.length === 0) return true;
 
     const rowValue = getFilterValueFor(row, col);
+
+    const toComparable = (v) => {
+        if (v === null || typeof v === "undefined") return "";
+        if (typeof v === "boolean") return v ? "1" : "0";
+        return String(v);
+    };
 
     if (debugEnabled.value && _filterDebugCount < 25) {
         _filterDebugCount++;
@@ -467,11 +490,13 @@ const passesFilter = (row, col) => {
 
     // multi
     if (Array.isArray(raw)) {
-        return raw.map((v) => String(v)).includes(String(rowValue ?? ""));
+        const selected = new Set(raw.map((v) => toComparable(v)).filter((s) => s !== ""));
+        if (selected.size === 0) return true;
+        return selected.has(toComparable(rowValue));
     }
 
     // select (default)
-    return String(rowValue ?? "") === String(raw);
+    return toComparable(rowValue) === toComparable(raw);
 };
 
 const getSearchValueFor = (row, col) => {
@@ -519,8 +544,8 @@ watch(
     },
 );
 
-const sortBy = ref("");
-const sortOrder = ref("asc");
+// État de tri : utiliser directement le format TanStack Table
+const sortingState = ref([]);
 
 const getCellObject = (row, col) => {
     // Alias pour l'usage sort/filter/search
@@ -534,8 +559,12 @@ const getSortValue = (row, col) => {
     return cell?.value ?? null;
 };
 
-const tanstackColumns = computed(() => {
-    return columnsWithoutActions.value.map((col) => {
+// Utiliser shallowRef pour les colonnes TanStack pour garantir la réactivité
+const tanstackColumnsRef = shallowRef([]);
+
+// Fonction pour mettre à jour les colonnes TanStack
+const updateTanStackColumns = () => {
+    tanstackColumnsRef.value = columnsWithoutActions.value.map((col) => {
         const canSort = Boolean(col?.sort?.enabled);
 
         const def = {
@@ -559,7 +588,24 @@ const tanstackColumns = computed(() => {
         }
         return def;
     });
+};
+
+// Computed pour synchroniser les colonnes (pour compatibilité)
+const tanstackColumns = computed({
+    get: () => tanstackColumnsRef.value,
+    set: (value) => {
+        tanstackColumnsRef.value = value;
+    }
 });
+
+// Watch pour mettre à jour les colonnes TanStack quand columnsWithoutActions change
+watch(
+    () => columnsWithoutActions.value.map((c) => c.id).join(","),
+    () => {
+        updateTanStackColumns();
+    },
+    { immediate: true }
+);
 
 const setFilters = (v) => {
     if (debugEnabled.value) console.log("[TanStackTable] update:filters", v);
@@ -571,11 +617,6 @@ const resetFilters = () => {
 const applyFilters = () => {
     paginationState.value = { ...paginationState.value, pageIndex: 0 };
 };
-
-const sortingState = computed(() => {
-    if (!sortBy.value) return [];
-    return [{ id: sortBy.value, desc: sortOrder.value === "desc" }];
-});
 
 const paginationState = ref({
     pageIndex: 0,
@@ -595,12 +636,49 @@ watch(
     },
 );
 
+// Clé réactive pour forcer le re-render du tableau quand les colonnes changent
+const columnsKey = ref(0);
+
+// Watch pour incrémenter la clé quand:
+// - la liste des colonnes change (nouvelle config / permissions)
+// - la visibilité change (prefs visibleColumns)
+// But: certains sous-composants utilisent du memo/caching; on force un repaint du <table>.
+watch(
+    () => [
+        columnsWithoutActions.value.map((c) => c.id).join(","),
+        JSON.stringify(visibleColumns.value || {}),
+    ].join("|"),
+    () => {
+        // Incrémenter la clé pour forcer le re-render du tableau
+        columnsKey.value++;
+    },
+);
+
+// État de visibilité des colonnes pour TanStack Table
+const columnVisibilityState = computed(() => {
+    const visCols = visibleColumns.value || {};
+    const state = {};
+    for (const col of columnsConfig.value || []) {
+        if (!col?.id) continue;
+        // Colonnes non masquables / main = toujours visibles
+        if (col?.hideable === false || col?.isMain) {
+            state[col.id] = true;
+        } else {
+            // Utiliser la préférence utilisateur, ou true par défaut
+            state[col.id] = visCols[col.id] !== false;
+        }
+    }
+    return state;
+});
+
+// Utiliser directement les refs/computed pour TanStack Table
+// TanStack Table détecte mieux les changements avec des refs/computed directs
 const table = useVueTable({
     get data() {
         return filteredRows.value;
     },
     get columns() {
-        return tanstackColumns.value;
+        return tanstackColumnsRef.value;
     },
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
@@ -610,12 +688,33 @@ const table = useVueTable({
             return sortingState.value;
         },
         get pagination() {
-            return paginationState.value;
+            return toValue(paginationState);
         },
+        get columnVisibility() {
+            return columnVisibilityState.value;
+        },
+    },
+    onSortingChange: (updater) => {
+        const next = typeof updater === "function" ? updater(sortingState.value) : updater;
+        sortingState.value = next;
+        // Émettre l'événement pour compatibilité
+        const firstSort = Array.isArray(next) && next.length > 0 ? next[0] : null;
+        if (firstSort) {
+            emit("sort-change", { sortBy: firstSort.id, sortOrder: firstSort.desc ? "desc" : "asc" });
+        } else {
+            emit("sort-change", { sortBy: "", sortOrder: "asc" });
+        }
     },
     onPaginationChange: (updater) => {
         const next = typeof updater === "function" ? updater(paginationState.value) : updater;
         paginationState.value = next;
+    },
+    onColumnVisibilityChange: (updater) => {
+        const next = typeof updater === "function" ? updater(columnVisibilityState.value) : updater;
+        // Mettre à jour les préférences utilisateur
+        for (const [colId, isVisible] of Object.entries(next)) {
+            prefs.setColumnVisible(colId, isVisible);
+        }
     },
 });
 
@@ -625,13 +724,16 @@ const rowsToRender = computed(() => {
 
 const handleSort = (col) => {
     if (!col?.sort?.enabled) return;
-    if (sortBy.value === col.id) {
-        sortOrder.value = sortOrder.value === "asc" ? "desc" : "asc";
+    // Utiliser l'API TanStack Table pour le tri
+    const currentSort = sortingState.value.find((s) => s.id === col.id);
+    if (currentSort) {
+        // Inverser l'ordre si déjà trié
+        const newSort = currentSort.desc ? [] : [{ id: col.id, desc: true }];
+        table.setSorting(newSort);
     } else {
-        sortBy.value = col.id;
-        sortOrder.value = "asc";
+        // Nouveau tri
+        table.setSorting([{ id: col.id, desc: false }]);
     }
-    emit("sort-change", { sortBy: sortBy.value, sortOrder: sortOrder.value });
 };
 
 const skeletonRows = computed(() => Number(props.config?.ui?.skeletonRows ?? 8));
@@ -726,14 +828,27 @@ const handleRowClick = (row) => {
     toggleRow(row, !isSelected(row));
 };
 
-const toggleColumnVisibility = (col) => {
+const toggleColumnVisibility = (col, forcedVisible = null) => {
     if (!col?.id) return;
     if (col?.hideable === false || col?.isMain) {
         prefs.setColumnVisible(col.id, true);
+        // Forcer la mise à jour via TanStack Table
+        table.setColumnVisibility((prev) => ({ ...prev, [col.id]: true }));
         return;
     }
-    const current = visibleColumns.value?.[col.id] !== false;
-    prefs.setColumnVisible(col.id, !current);
+    // Mode déterministe si la toolbar fournit la valeur
+    let newVisibility = null;
+    if (typeof forcedVisible === "boolean") {
+        newVisibility = forcedVisible;
+    } else {
+        // Fallback: toggle
+        const currentValue = visibleColumns.value?.[col.id];
+        const isCurrentlyVisible = currentValue !== false; // undefined ou true = visible
+        newVisibility = !isCurrentlyVisible;
+    }
+    prefs.setColumnVisible(col.id, newVisibility);
+    // Mettre à jour via TanStack Table
+    table.setColumnVisibility((prev) => ({ ...prev, [col.id]: newVisibility }));
 };
 
 // CSV export (Phase 1: export rows filtrées/triées, ou sélection si active)
@@ -809,7 +924,7 @@ const handleExport = () => {
             :class="[bgClass]"
         >
             <TanStackTableFilters
-                :columns="filteredColumnsConfig"
+                :columns="columnsWithoutActions"
                 :filter-values="activeFilters"
                 :filter-options="filterOptions"
                 :ui-color="uiColor"
@@ -823,11 +938,11 @@ const handleExport = () => {
         <!-- Table -->
         <div class="relative overflow-hidden p-1" :class="[bgClass]">
             <div class="overflow-x-auto">
-                <table class="table w-full" :class="[tableVariantClass, tableSizeClass]">
+                <table :key="columnsKey" class="table w-full" :class="[tableVariantClass, tableSizeClass]">
                 <TanStackTableHeader
-                    :columns="columnsWithoutActions"
-                    :sort-by="sortBy"
-                    :sort-order="sortOrder"
+                    :columns="visibleColumnsFromTable"
+                    :sort-by="sortingState.length > 0 ? sortingState[0].id : ''"
+                    :sort-order="sortingState.length > 0 && sortingState[0].desc ? 'desc' : 'asc'"
                     @sort="handleSort"
                     :show-selection="showSelectionCheckboxes"
                     :all-selected="allSelectedOnPage"
@@ -839,7 +954,7 @@ const handleExport = () => {
 
                 <TanStackTableSkeletonBody
                     v-if="loading"
-                    :columns="columnsWithoutActions"
+                    :columns="visibleColumnsFromTable"
                     :rows-count="skeletonRows"
                     :show-selection="showSelectionCheckboxes"
                     :show-actions-column="showActionsColumn"
@@ -850,7 +965,7 @@ const handleExport = () => {
                         v-for="row in rowsToRender"
                         :key="row.id"
                         :row="row"
-                        :columns="columnsWithoutActions"
+                        :columns="visibleColumnsFromTable"
                         :show-selection="showSelectionCheckboxes"
                         :is-selected="isSelected(row)"
                         :selected-bg-class="rowSelectedBgClass"
@@ -867,7 +982,7 @@ const handleExport = () => {
 
                 <tbody v-else>
                     <tr>
-                        <td :colspan="columnsWithoutActions.length + (showSelectionCheckboxes ? 1 : 0) + (showActionsColumn ? 1 : 0)" class="text-center py-8 text-base-content/60">
+                        <td :colspan="visibleColumnsFromTable.length + (showSelectionCheckboxes ? 1 : 0) + (showActionsColumn ? 1 : 0)" class="text-center py-8 text-base-content/60">
                             Aucune donnée
                         </td>
                     </tr>

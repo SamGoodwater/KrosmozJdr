@@ -206,6 +206,8 @@ export function getResourceFieldDescriptors(ctx = {}) {
         tooltip: "Nom de la ressource",
       },
       table: {
+        sortable: true,
+        searchable: true,
         cell: {
           sizes: {
             xs: { mode: "route", truncate: 20 },
@@ -239,6 +241,7 @@ export function getResourceFieldDescriptors(ctx = {}) {
         tooltip: "Description de la ressource",
       },
       table: {
+        searchable: true,
         cell: {
           sizes: {
             xs: { mode: "text", truncate: 30 },
@@ -280,6 +283,13 @@ export function getResourceFieldDescriptors(ctx = {}) {
         tooltip: "Niveau de la ressource",
       },
       table: {
+        sortable: true,
+        filterable: {
+          id: "level",
+          // UI: multi => dropdown + checkboxes (permet plusieurs valeurs)
+          // Les options peuvent venir du serveur via meta.filterOptions.level
+          type: "multi",
+        },
         cell: {
           sizes: {
             xs: { mode: "badge" },
@@ -354,6 +364,13 @@ export function getResourceFieldDescriptors(ctx = {}) {
         tooltip: "Type (métier) de la ressource",
       },
       table: {
+        sortable: true,
+        filterable: {
+          id: "resource_type_id",
+          // UI: multi => dropdown + checkboxes
+          type: "multi",
+          // Les options seront fournies par le serveur via filterOptions
+        },
         cell: {
           sizes: {
             xs: { mode: "text" },
@@ -399,6 +416,14 @@ export function getResourceFieldDescriptors(ctx = {}) {
         tooltip: "Niveau de rareté de la ressource (0-5)",
       },
       table: {
+        sortable: true,
+        filterable: {
+          id: "rarity",
+          // UI: multi => dropdown + checkboxes
+          type: "multi",
+          // Fallback si le serveur ne fournit pas filterOptions.rarity
+          options: getRarityOptions().map(({ value, label }) => ({ value, label })),
+        },
         cell: {
           sizes: {
             xs: { mode: "badge" },
@@ -436,6 +461,7 @@ export function getResourceFieldDescriptors(ctx = {}) {
         tooltip: "Prix de la ressource",
       },
       table: {
+        sortable: true,
         cell: {
           sizes: {
             xs: { mode: "text" },
@@ -477,6 +503,7 @@ export function getResourceFieldDescriptors(ctx = {}) {
         tooltip: "Poids de la ressource",
       },
       table: {
+        sortable: true,
         cell: {
           sizes: {
             xs: { mode: "text" },
@@ -592,6 +619,17 @@ export function getResourceFieldDescriptors(ctx = {}) {
           const can = ctx?.capabilities?.updateAny || ctx?.meta?.capabilities?.updateAny || false;
           return can;
         },
+        sortable: true,
+        filterable: {
+          id: "is_visible",
+          // UI: multi => checkboxes (Oui/Non)
+          // NB: le serveur ne fournit pas toujours filterOptions.is_visible, donc fallback ici.
+          type: "multi",
+          options: [
+            { value: "1", label: "Oui" },
+            { value: "0", label: "Non" },
+          ],
+        },
         cell: {
           sizes: {
             xs: { mode: "badge" },
@@ -629,6 +667,13 @@ export function getResourceFieldDescriptors(ctx = {}) {
         tooltip: "Indique si la ressource peut être utilisée",
       },
       table: {
+        sortable: true,
+        filterable: {
+          id: "usable",
+          // UI: multi => checkboxes (Oui/Non)
+          // Options fournies par le serveur via filterOptions.usable
+          type: "multi",
+        },
         cell: {
           sizes: {
             xs: { mode: "boolIcon" },
@@ -677,6 +722,13 @@ export function getResourceFieldDescriptors(ctx = {}) {
         },
         // Vérification supplémentaire de visibilité selon les permissions
         visibleIf: (ctx) => Boolean(ctx?.capabilities?.updateAny ?? ctx?.meta?.capabilities?.updateAny),
+        sortable: true,
+        filterable: {
+          id: "auto_update",
+          // UI: multi => checkboxes (Oui/Non)
+          // Options fournies par le serveur via filterOptions.auto_update
+          type: "multi",
+        },
         cell: {
           sizes: {
             xs: { mode: "boolIcon" },

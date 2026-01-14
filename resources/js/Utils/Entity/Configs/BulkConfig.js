@@ -201,8 +201,9 @@ export class BulkConfig {
       fieldsToUse = quickeditFields;
     }
 
-    if (!fieldsToUse && descriptors._quickEditFields) {
-      fieldsToUse = descriptors._quickEditFields;
+    // Utiliser _quickeditConfig.fields depuis les descriptors (nouveau pattern)
+    if (!fieldsToUse && descriptors._quickeditConfig?.fields) {
+      fieldsToUse = descriptors._quickeditConfig.fields;
     }
 
     if (fieldsToUse && Array.isArray(fieldsToUse)) {
