@@ -98,7 +98,6 @@
 // Les champs quickedit sont maintenant définis dans _quickeditConfig.fields
 
 // Import des constantes des formatters (pour les options)
-import { RarityFormatter } from '@/Utils/Formatters/RarityFormatter.js';
 import { VisibilityFormatter } from '@/Utils/Formatters/VisibilityFormatter.js';
 import { getRarityOptions } from '@/Utils/Entity/SharedConstants.js';
 
@@ -115,10 +114,8 @@ import { getRarityOptions } from '@/Utils/Entity/SharedConstants.js';
  */
 export function getResourceFieldDescriptors(ctx = {}) {
   // Extraire le contexte de manière pure (pas de calculs, pas de logique)
-  const can = ctx?.capabilities || ctx?.meta?.capabilities || null;
-  
-  const resourceTypes = Array.isArray(ctx?.resourceTypes) 
-    ? ctx.resourceTypes 
+  const resourceTypes = Array.isArray(ctx?.resourceTypes)
+    ? ctx.resourceTypes
     : (Array.isArray(ctx?.meta?.resourceTypes) ? ctx.meta.resourceTypes : []);
 
   return {
@@ -242,6 +239,8 @@ export function getResourceFieldDescriptors(ctx = {}) {
       },
       table: {
         searchable: true,
+        // Responsive: disparaît après poids
+        defaultVisible: { xs: false, sm: false, md: true, lg: true, xl: true },
         cell: {
           sizes: {
             xs: { mode: "text", truncate: 30 },
@@ -290,6 +289,8 @@ export function getResourceFieldDescriptors(ctx = {}) {
           // Les options peuvent venir du serveur via meta.filterOptions.level
           type: "multi",
         },
+        // Responsive: disparaît avant "type"
+        defaultVisible: { xs: false, sm: true, md: true, lg: true, xl: true },
         cell: {
           sizes: {
             xs: { mode: "badge" },
@@ -340,6 +341,8 @@ export function getResourceFieldDescriptors(ctx = {}) {
         tooltip: "Type (métier) de la ressource",
       },
       table: {
+        // Responsive: disparaît en dernier (avant il reste sur sm+)
+        defaultVisible: { xs: false, sm: true, md: true, lg: true, xl: true },
         cell: {
           sizes: {
             xs: { mode: "badge" },
@@ -354,58 +357,6 @@ export function getResourceFieldDescriptors(ctx = {}) {
         tooltip: "Type (métier) de la ressource",
       },
       // Pas de section edition : champ en lecture seule (relation)
-    },
-    
-    resource_type_id: {
-      key: "resource_type_id",
-      general: {
-        label: "Type de ressource",
-        icon: "fa-solid fa-tag",
-        tooltip: "Type (métier) de la ressource",
-      },
-      table: {
-        sortable: true,
-        filterable: {
-          id: "resource_type_id",
-          // UI: multi => dropdown + checkboxes
-          type: "multi",
-          // Les options seront fournies par le serveur via filterOptions
-        },
-        cell: {
-          sizes: {
-            xs: { mode: "text" },
-            sm: { mode: "text" },
-            md: { mode: "text" },
-            lg: { mode: "text" },
-            xl: { mode: "text" },
-          },
-        },
-      },
-      display: {
-        tooltip: "Type (métier) de la ressource",
-      },
-      edition: {
-        form: {
-          type: "select",
-          searchable: true, // Activer le select avec recherche pour les listes longues
-          group: "Métier",
-          help: "Définit le type (métier) de la ressource.",
-          placeholder: "Sélectionner un type",
-          required: false,
-          // Options dynamiques : fonction qui reçoit le contexte
-          options: (ctx) => {
-            const resourceTypes = ctx?.resourceTypes || ctx?.meta?.resourceTypes || [];
-            return [
-              { value: '', label: '—' },
-              ...resourceTypes.map(t => ({ value: t.id, label: t.name }))
-            ];
-          },
-        },
-        bulk: {
-          enabled: true,
-          nullable: true,
-        },
-      },
     },
     
     rarity: {
@@ -424,6 +375,8 @@ export function getResourceFieldDescriptors(ctx = {}) {
           // Fallback si le serveur ne fournit pas filterOptions.rarity
           options: getRarityOptions().map(({ value, label }) => ({ value, label })),
         },
+        // Responsive: disparaît avant niveau
+        defaultVisible: { xs: false, sm: true, md: true, lg: true, xl: true },
         cell: {
           sizes: {
             xs: { mode: "badge" },
@@ -462,6 +415,8 @@ export function getResourceFieldDescriptors(ctx = {}) {
       },
       table: {
         sortable: true,
+        // Responsive: disparaît avant rareté
+        defaultVisible: { xs: false, sm: true, md: true, lg: true, xl: true },
         cell: {
           sizes: {
             xs: { mode: "text" },
@@ -504,6 +459,8 @@ export function getResourceFieldDescriptors(ctx = {}) {
       },
       table: {
         sortable: true,
+        // Responsive: disparaît juste après "utilisable"
+        defaultVisible: { xs: false, sm: false, md: false, lg: true, xl: true },
         cell: {
           sizes: {
             xs: { mode: "text" },
@@ -674,6 +631,8 @@ export function getResourceFieldDescriptors(ctx = {}) {
           // Options fournies par le serveur via filterOptions.usable
           type: "multi",
         },
+        // Responsive: disparaît en premier
+        defaultVisible: { xs: false, sm: false, md: false, lg: false, xl: true },
         cell: {
           sizes: {
             xs: { mode: "boolIcon" },
@@ -713,13 +672,7 @@ export function getResourceFieldDescriptors(ctx = {}) {
       },
       table: {
         // Colonne cachée par défaut (seulement visible pour les admins)
-        defaultVisible: {
-          xs: false,
-          sm: false,
-          md: false,
-          lg: false,
-          xl: false,
-        },
+        defaultVisible: { xs: false, sm: false, md: false, lg: false, xl: false },
         // Vérification supplémentaire de visibilité selon les permissions
         visibleIf: (ctx) => Boolean(ctx?.capabilities?.updateAny ?? ctx?.meta?.capabilities?.updateAny),
         sortable: true,
@@ -812,6 +765,8 @@ export function getResourceFieldDescriptors(ctx = {}) {
         tooltip: "Identifiant officiel de la ressource",
       },
       table: {
+        // Colonne technique : cachée par défaut sur toutes les tailles
+        defaultVisible: { xs: false, sm: false, md: false, lg: false, xl: false },
         cell: {
           sizes: {
             xs: { mode: "text" },

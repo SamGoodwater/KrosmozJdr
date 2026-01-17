@@ -15,7 +15,7 @@
  * <TanStackTable :config="config" :rows="rows" :loading="loading" />
  */
 
-import { computed, ref, watch, onMounted, onUnmounted, toRef, toValue, shallowRef } from "vue";
+import { computed, ref, watch, onMounted, onUnmounted, toValue, shallowRef } from "vue";
 import { getCoreRowModel, getPaginationRowModel, getSortedRowModel, useVueTable } from "@tanstack/vue-table";
 import TanStackTableHeader from "@/Pages/Molecules/table/TanStackTableHeader.vue";
 import TanStackTableRow from "@/Pages/Molecules/table/TanStackTableRow.vue";
@@ -24,7 +24,7 @@ import TanStackTableToolbar from "@/Pages/Molecules/table/TanStackTableToolbar.v
 import TanStackTableFilters from "@/Pages/Molecules/table/TanStackTableFilters.vue";
 import TanStackTablePagination from "@/Pages/Molecules/table/TanStackTablePagination.vue";
 import { useTanStackTablePreferences } from "@/Composables/table/useTanStackTablePreferences";
-import { getCurrentScreenSize } from "@/Utils/Entity/Helpers.js";
+import { BREAKPOINTS } from "@/Utils/Entity/Constants.js";
 import { getEntityConfig } from "@/Entities/entity-registry.js";
 import Btn from "@/Pages/Atoms/action/Btn.vue";
 
@@ -219,50 +219,82 @@ const prefs = useTanStackTablePreferences(props.config?.id, {
 // Utiliser directement le ref pour garantir la réactivité maximale
 // Le ref est déjà réactif et se met à jour automatiquement
 const visibleColumns = prefs.visibleColumns;
+const touchedColumns = prefs.touchedColumns;
 
 /**
- * Applique `defaultHidden` seulement si aucune préférence explicite n'existe pour la colonne.
- * But: respecter `defaultHidden` (y compris pour des colonnes ajoutées plus tard) sans écraser
- * le choix d'un utilisateur (localStorage).
+ * La visibilité des colonnes a 3 sources (priorité) :
+ * - choix utilisateur (prefs.visibleColumns[id] === true/false)
+ * - visibilité responsive (col.defaultVisible[xs|sm|md|lg|xl])
+ * - fallback (col.defaultHidden / sinon visible)
+ *
+ * IMPORTANT:
+ * - on n'écrit PAS les defaults responsive dans localStorage, sinon ils deviennent "figés"
+ *   et ne suivent plus les changements de taille d'écran.
  */
-const applyDefaultColumnVisibility = () => {
-    const current = prefs.visibleColumns.value || {};
-    let changed = false;
+const effectiveVisibleColumns = computed(() => {
+    const prefsMap = visibleColumns.value || {};
+    const touched = new Set(Array.isArray(touchedColumns.value) ? touchedColumns.value : []);
+    const size = currentScreenSize.value;
+    const next = {};
 
     for (const col of columnsConfig.value || []) {
         if (!col?.id) continue;
 
         // Colonnes non masquables / main = toujours visibles
         if (col?.hideable === false || col?.isMain) {
-            if (current[col.id] !== true) {
-                current[col.id] = true;
-                changed = true;
-            }
+            next[col.id] = true;
             continue;
         }
 
-        // Si aucune préférence explicite, appliquer defaultHidden
-        if (typeof current[col.id] === "undefined") {
-            current[col.id] = col?.defaultHidden ? false : true;
-            changed = true;
+        // 1) choix explicite utilisateur (uniquement si la colonne a été "touchée")
+        if (touched.has(col.id) && typeof prefsMap[col.id] === "boolean") {
+            next[col.id] = prefsMap[col.id];
+            continue;
         }
+
+        // 2) visibilité responsive (descriptor/table.defaultVisible)
+        const dv = col?.defaultVisible;
+        if (dv && typeof dv === "object" && typeof dv?.[size] === "boolean") {
+            next[col.id] = dv[size];
+            continue;
+        }
+
+        // 3) fallback historique: defaultHidden
+        if (typeof col?.defaultHidden === "boolean") {
+            next[col.id] = !col.defaultHidden;
+            continue;
+        }
+
+        next[col.id] = true;
     }
 
-    if (changed) {
-        prefs.visibleColumns.value = { ...current };
-    }
-};
+    return next;
+});
 
+// Sécurité: si une colonne non-masquable est forcée à false en prefs, on la remet à true.
 watch(
-    () => columnsConfig.value.map((c) => `${c?.id}:${c?.defaultHidden ? 1 : 0}:${c?.hideable === false ? 1 : 0}:${c?.isMain ? 1 : 0}`).join("|"),
-    () => applyDefaultColumnVisibility(),
+    () => columnsConfig.value.map((c) => `${c?.id}:${c?.hideable === false ? 1 : 0}:${c?.isMain ? 1 : 0}`).join("|"),
+    () => {
+        const current = prefs.visibleColumns.value || {};
+        let changed = false;
+        for (const col of columnsConfig.value || []) {
+            if (!col?.id) continue;
+            if (col?.hideable === false || col?.isMain) {
+                if (current[col.id] === false) {
+                    current[col.id] = true;
+                    changed = true;
+                }
+            }
+        }
+        if (changed) prefs.visibleColumns.value = { ...current };
+    },
     { immediate: true },
 );
 
 // Colonnes visibles (source de vérité = prefs.visibleColumns)
 // On ne dépend pas de TanStack pour le rendu car on rend nos propres cellules.
 const visibleColumnsFromTable = computed(() => {
-    const visCols = visibleColumns.value || {};
+    const visCols = effectiveVisibleColumns.value || {};
     return (columnsConfig.value || []).filter((col) => {
         if (!col?.id || col.id === "actions") return false;
         // Colonnes non masquables / main = toujours visibles
@@ -313,7 +345,11 @@ const debugSample = computed(() => {
     return {
         rowsTotal: (props.rows || []).length,
         rowsFiltered: filteredRows.value.length,
+        screenSize: currentScreenSize.value,
+        tableContainerWidth: tableContainerWidth.value,
         visibleColumnsPrefs: visibleColumns.value || {},
+        touchedColumns: touchedColumns.value || [],
+        effectiveVisibleColumns: effectiveVisibleColumns.value || {},
         renderedColumnIds: (visibleColumnsFromTable.value || []).map((c) => c?.id).filter(Boolean),
         activeFilters: activeFilters.value || {},
         selectionInternal: Array.from(selectedIds.value || []),
@@ -339,24 +375,59 @@ const normalize = (s) => {
     return v.normalize("NFD").replace(/\p{Diacritic}/gu, "");
 };
 
-// Taille d'écran actuelle (réactive)
-const currentScreenSize = ref(getCurrentScreenSize());
+// Taille "réactive" basée sur la largeur du conteneur du tableau (pas la fenêtre).
+// But: dans un layout avec panneau latéral, la fenêtre peut être XL mais le tableau est "md".
+const currentScreenSize = ref("md");
+const tableContainerEl = ref(null);
+const tableContainerWidth = ref(null);
 
-// Mettre à jour la taille d'écran au resize
-const updateScreenSize = () => {
-    currentScreenSize.value = getCurrentScreenSize();
+const resolveScreenSizeFromWidth = (width) => {
+    const w = Number(width);
+    if (!Number.isFinite(w) || w <= 0) return "md";
+    if (w < BREAKPOINTS.sm) return "xs";
+    if (w < BREAKPOINTS.md) return "sm";
+    if (w < BREAKPOINTS.lg) return "md";
+    if (w < BREAKPOINTS.xl) return "lg";
+    return "xl";
+};
+
+const updateScreenSize = (forcedWidth = null) => {
+    const w = forcedWidth
+        ?? tableContainerEl.value?.clientWidth
+        ?? (typeof window !== "undefined" ? window.innerWidth : null);
+    tableContainerWidth.value = (typeof w === "number" && Number.isFinite(w)) ? w : null;
+    currentScreenSize.value = resolveScreenSizeFromWidth(w);
 };
 
 onMounted(() => {
     if (typeof window !== "undefined") {
-        window.addEventListener("resize", updateScreenSize);
+        // Fallback : si ResizeObserver non supporté, on suit le resize fenêtre.
+        window.addEventListener("resize", () => updateScreenSize());
         updateScreenSize();
+
+        // Source de vérité: largeur du conteneur du tableau.
+        if (typeof ResizeObserver !== "undefined") {
+            const ro = new ResizeObserver((entries) => {
+                const entry = entries?.[0];
+                const w = entry?.contentRect?.width;
+                updateScreenSize(typeof w === "number" ? w : null);
+            });
+            if (tableContainerEl.value) ro.observe(tableContainerEl.value);
+            // stocker sur l'élément pour cleanup
+            tableContainerEl.value.__krosmozResizeObserver = ro;
+        }
     }
 });
 
 onUnmounted(() => {
     if (typeof window !== "undefined") {
-        window.removeEventListener("resize", updateScreenSize);
+        window.removeEventListener("resize", () => updateScreenSize());
+        try {
+            const ro = tableContainerEl.value?.__krosmozResizeObserver;
+            if (ro && typeof ro.disconnect === "function") ro.disconnect();
+        } catch {
+            // ignore
+        }
     }
 });
 
@@ -374,8 +445,6 @@ const getCellFor = (row, col) => {
         // Récupérer les descriptors avec le contexte complet stocké dans _metadata
         const context = props.config?._metadata?.context || {};
         const descriptors = props.entityType ? getEntityConfig(props.entityType)?.getDescriptors?.(context) : {};
-        const descriptor = descriptors?.[cellId] || {};
-        
         // Générer la cellule via entity.toCell()
         const cell = entity.toCell(cellId, {
             size: currentScreenSize.value,
@@ -395,7 +464,7 @@ const getCellFor = (row, col) => {
             console.warn(`[TanStackTable] toCell returned null for fieldKey="${cellId}"`, {
                 entity: entity.constructor.name,
                 entityId: entity.id,
-                hasField: fieldKey in (entity._data || {}),
+                hasField: cellId in (entity._data || {}),
                 entityData: entity._data ? Object.keys(entity._data) : 'no _data',
             });
         }
@@ -589,14 +658,6 @@ const updateTanStackColumns = () => {
         return def;
     });
 };
-
-// Computed pour synchroniser les colonnes (pour compatibilité)
-const tanstackColumns = computed({
-    get: () => tanstackColumnsRef.value,
-    set: (value) => {
-        tanstackColumnsRef.value = value;
-    }
-});
 
 // Watch pour mettre à jour les colonnes TanStack quand columnsWithoutActions change
 watch(
@@ -906,8 +967,8 @@ const handleExport = () => {
                 :ui-size="uiSize"
                 :ui-color="uiColor"
                 :column-visibility-enabled="Boolean(props.config?.features?.columnVisibility?.enabled)"
-                :columns="columnsConfig"
-                :visible-columns="visibleColumns"
+                    :columns="columnsConfig"
+                    :visible-columns="effectiveVisibleColumns"
                 :export-enabled="exportEnabled"
                 :selection-count="selectedCount"
                 @update:search="updateSearch"
@@ -937,7 +998,7 @@ const handleExport = () => {
 
         <!-- Table -->
         <div class="relative overflow-hidden p-1" :class="[bgClass]">
-            <div class="overflow-x-auto">
+            <div ref="tableContainerEl" class="overflow-x-auto">
                 <table :key="columnsKey" class="table w-full" :class="[tableVariantClass, tableSizeClass]">
                 <TanStackTableHeader
                     :columns="visibleColumnsFromTable"

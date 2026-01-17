@@ -2033,6 +2033,13 @@
     "file": "data-input/CheckboxField.vue"
   },
   {
+    "name": "LevelBadge",
+    "description": "LevelBadge Molecule",
+    "props": [],
+    "slots": [],
+    "file": "data-display/LevelBadge.vue"
+  },
+  {
     "name": "AvatarGroup",
     "description": "AvatarGroup Molecule (DaisyUI + Custom Utility)",
     "props": [

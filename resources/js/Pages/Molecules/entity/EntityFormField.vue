@@ -29,6 +29,7 @@ import SelectField from '@/Pages/Molecules/data-input/SelectField.vue';
 import SelectSearchField from '@/Pages/Molecules/data-input/SelectSearchField.vue';
 import FileField from '@/Pages/Molecules/data-input/FileField.vue';
 import ToggleCore from '@/Pages/Atoms/data-input/ToggleCore.vue';
+import LevelBadge from '@/Pages/Molecules/data-display/LevelBadge.vue';
 
 const props = defineProps({
     fieldKey: {
@@ -67,6 +68,12 @@ const fieldType = computed(() => props.fieldConfig?.type || 'text');
 
 // Vérifier si c'est un champ de type number
 const isNumberField = computed(() => fieldType.value === 'number');
+
+// Afficher un badge de preview pour les champs "niveau"
+const isLevelLikeField = computed(() => {
+    const k = String(props.fieldKey || '');
+    return k === 'level' || k === 'min_level' || k === 'max_level';
+});
 
 // Vérifier si c'est un champ de type text
 const isTextField = computed(() => fieldType.value === 'text' || (!['textarea', 'select', 'file', 'number', 'checkbox'].includes(fieldType.value)));
@@ -114,7 +121,13 @@ const isFileField = computed(() => fieldType.value === 'file');
             :max="fieldConfig?.max"
             :validation="error ? { state: 'error', message: error } : null"
             :size="size"
-        />
+        >
+            <template v-if="isLevelLikeField" #overEnd>
+                <div class="pointer-events-none">
+                    <LevelBadge :level="localValue" size="sm" variant="soft" :glassy="true" />
+                </div>
+            </template>
+        </InputField>
 
         <!-- Textarea -->
         <TextareaField

@@ -12,6 +12,7 @@
  * - 16-20 : Orange (warning)
  * - 21-25 : Rouge (error)
  * - 26-30 : Violet foncé (primary)
+ * - >30 : Noir (fallback)
  */
 
 import { BaseFormatter } from './BaseFormatter.js';
@@ -59,15 +60,7 @@ export class LevelFormatter extends BaseFormatter {
       return null;
     }
 
-    // Si le niveau est > 30, afficher en texte (valeurs aberrantes)
-    if (numValue > 30) {
-      return this.buildTextCell(String(numValue), {
-        sortValue: numValue,
-        filterValue: numValue,
-      });
-    }
-
-    // Obtenir la couleur selon le niveau (1-30)
+    // Obtenir la couleur selon le niveau (0-30) ; au-delà => noir (voir SharedConstants)
     const color = getLevelColor(numValue);
     const label = String(numValue);
 

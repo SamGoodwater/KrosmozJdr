@@ -76,6 +76,8 @@ export const FIELD_ICONS = Object.freeze({
  * Dégradé progressif du gris clair vers le violet foncé
  */
 export const LEVEL_COLORS = Object.freeze({
+  // Niveau 0 : valeur “neutre” (fallback / non défini)
+  0: 'grey-200',
   // Niveaux 1-5 : Gris clair → Gris moyen
   1: 'grey-300',
   2: 'grey-400',
@@ -121,13 +123,18 @@ export const LEVEL_COLORS = Object.freeze({
 
 /**
  * Fonction pour obtenir la couleur d'un niveau
- * @param {number} level - Niveau (1-30)
- * @returns {string} Couleur DaisyUI
+ * @param {number} level - Niveau (0-30, au-delà => noir)
+ * @returns {string} Token couleur (Tailwind `color-shade` ou DaisyUI)
  */
 export function getLevelColor(level) {
-  if (typeof level !== 'number' || level < 1 || level > 30) {
-    return 'neutral';
-  }
+  if (typeof level !== 'number' || !Number.isFinite(level)) return 'neutral';
+
+  // En dessous de 0 => clamp à 0 (évite les valeurs aberrantes)
+  if (level <= 0) return LEVEL_COLORS[0] || 'neutral';
+
+  // Au-delà de la plage définie => noir
+  if (level > 30) return 'grey-950';
+
   return LEVEL_COLORS[level] || 'neutral';
 }
 
@@ -138,37 +145,39 @@ export function getLevelColor(level) {
 export const RARITY_GRADIENT = Object.freeze({
   0: {
     label: 'Commun',
-    color: 'neutral', // Gris
+    // Gradient stable (Tailwind token) — indépendant du thème DaisyUI
+    color: 'gray-400',
     icon: 'fa-solid fa-circle',
+    // Compat / fallback éventuel
     daisyColor: 'neutral',
   },
   1: {
     label: 'Peu commun',
-    color: 'info', // Bleu
+    color: 'sky-400',
     icon: 'fa-solid fa-circle',
     daisyColor: 'info',
   },
   2: {
     label: 'Rare',
-    color: 'success', // Vert
+    color: 'emerald-500',
     icon: 'fa-solid fa-circle',
     daisyColor: 'success',
   },
   3: {
     label: 'Très rare',
-    color: 'warning', // Orange
+    color: 'amber-500',
     icon: 'fa-solid fa-circle',
     daisyColor: 'warning',
   },
   4: {
     label: 'Légendaire',
-    color: 'error', // Rouge
+    color: 'rose-600',
     icon: 'fa-solid fa-circle',
     daisyColor: 'error',
   },
   5: {
     label: 'Unique',
-    color: 'primary', // Violet foncé
+    color: 'fuchsia-700',
     icon: 'fa-solid fa-star',
     daisyColor: 'primary',
   },

@@ -72,8 +72,8 @@ export class RarityFormatter extends BaseFormatter {
       });
     }
 
-    // Utiliser directement la couleur DaisyUI depuis le gradient
-    return this.buildBadgeCell(config.label, config.daisyColor, {
+    // Utiliser le gradient stable (token Tailwind) depuis le gradient
+    return this.buildBadgeCell(config.label, config.color || config.daisyColor || 'neutral', {
       sortValue: numValue,
       filterValue: numValue,
       icon: config.icon,
@@ -103,7 +103,7 @@ export class RarityFormatter extends BaseFormatter {
    */
   static getColor(value) {
     const config = getRarityConfig(typeof value === 'string' ? parseInt(value, 10) : value);
-    return config?.daisyColor || 'neutral';
+    return config?.color || config?.daisyColor || 'neutral';
   }
 
   /**

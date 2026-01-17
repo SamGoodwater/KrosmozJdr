@@ -147,7 +147,24 @@ function createColumnFromDescriptor(fieldKey, descriptor, ctx = {}) {
     column.withSearch(true);
   }
   if (tableConfigDesc.filterable) {
-    column.withFilter(tableConfigDesc.filterable);
+    // UI helpers: rendre les options de niveau lisibles et cohérentes (badges colorés)
+    // sans obliger chaque entité à dupliquer la config.
+    const f = { ...tableConfigDesc.filterable };
+    const levelLike = fieldKey === 'level' || fieldKey === 'min_level' || fieldKey === 'max_level' || f?.id === 'level' || f?.id === 'min_level' || f?.id === 'max_level';
+    if (levelLike) {
+      const ui = (f.ui && typeof f.ui === 'object') ? { ...f.ui } : {};
+      const optionBadge = (ui.optionBadge && typeof ui.optionBadge === 'object') ? { ...ui.optionBadge } : {};
+      if (typeof optionBadge.enabled === 'undefined') optionBadge.enabled = true;
+      if (!optionBadge.color) optionBadge.color = 'auto';
+      if (!optionBadge.autoLabelFrom) optionBadge.autoLabelFrom = 'value';
+      if (!optionBadge.autoScheme) optionBadge.autoScheme = 'level';
+      if (!optionBadge.autoTone) optionBadge.autoTone = 'mid';
+      if (!optionBadge.variant) optionBadge.variant = 'soft';
+      ui.optionBadge = optionBadge;
+      f.ui = ui;
+    }
+
+    column.withFilter(f);
   }
   // Visibilité par défaut depuis table.defaultVisible
   if (tableConfigDesc.defaultVisible) {
