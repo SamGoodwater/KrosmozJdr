@@ -11,6 +11,7 @@ import { ref, computed, onUnmounted } from "vue";
 import CellRenderer from "@/Pages/Atoms/data-display/CellRenderer.vue";
 import CheckboxCore from "@/Pages/Atoms/data-input/CheckboxCore.vue";
 import EntityActions from "@/Pages/Organismes/entity/EntityActions.vue";
+import Tooltip from "@/Pages/Atoms/feedback/Tooltip.vue";
 
 const props = defineProps({
     row: { type: Object, required: true },
@@ -108,6 +109,33 @@ const rowEntity = computed(() => {
     return props.row?.rowParams?.entity || props.row?.original?.entity || null;
 });
 
+const usableRaw = computed(() => {
+    const e = rowEntity.value;
+    if (!e) return undefined;
+    // BaseModel stocke les valeurs brutes dans _data
+    if (e?._data && Object.prototype.hasOwnProperty.call(e._data, "usable")) return e._data.usable;
+    // fallback si certains modèles exposent un getter usable
+    if (typeof e?.usable !== "undefined") return e.usable;
+    return undefined;
+});
+
+const hasUsable = computed(() => typeof usableRaw.value !== "undefined");
+const isUsable = computed(() => {
+    const v = usableRaw.value;
+    if (typeof v === "boolean") return v;
+    const s = String(v ?? "").toLowerCase();
+    if (s === "1" || s === "true" || s === "yes" || s === "oui") return true;
+    if (s === "0" || s === "false" || s === "no" || s === "non") return false;
+    return Boolean(v);
+});
+
+const usableDotColor = computed(() => (isUsable.value ? "success" : "error"));
+const usableTooltip = computed(() => (
+    isUsable.value
+        ? "Adapté au JDR"
+        : "Non adapté au JDR"
+));
+
 const handleAction = (actionKey, entity) => {
     closeContextMenu();
     emit("action", actionKey, entity || rowEntity.value, props.row);
@@ -122,7 +150,14 @@ const handleAction = (actionKey, entity) => {
         @dblclick="(e) => { if (!isInteractiveTarget(e)) emit('row-dblclick', row); }"
         @contextmenu="handleContextMenu"
     >
-        <td v-if="showSelection" class="w-8">
+        <td v-if="showSelection" class="w-8 relative">
+            <Tooltip v-if="hasUsable" :content="usableTooltip" placement="right" :color="usableDotColor" responsive="md">
+                <span
+                    data-no-row-select
+                    class="absolute -top-6 -left-3 w-2.5 h-2.5 rounded-full ring-1 ring-base-300 opacity-90"
+                    :class="[isUsable ? 'bg-success' : 'bg-error']"
+                />
+            </Tooltip>
             <CheckboxCore
                 :model-value="isSelected"
                 size="xs"
@@ -132,7 +167,14 @@ const handleAction = (actionKey, entity) => {
             />
         </td>
         <!-- Colonne Actions - au début -->
-        <td v-if="showActionsColumn && entityType" class="w-12">
+        <td v-if="showActionsColumn && entityType" class="w-12 relative">
+            <Tooltip v-if="!showSelection && hasUsable" :content="usableTooltip" placement="right" :color="usableDotColor" responsive="md">
+                <span
+                    data-no-row-select
+                    class="absolute -top-6 -left-3 w-2.5 h-2.5 rounded-full ring-1 ring-base-300 opacity-90"
+                    :class="[isUsable ? 'bg-success' : 'bg-error']"
+                />
+            </Tooltip>
             <EntityActions
                 :entity-type="entityType"
                 :entity="rowEntity"
@@ -145,10 +187,19 @@ const handleAction = (actionKey, entity) => {
             />
         </td>
         <td
-            v-for="col in columns"
+            v-for="(col, idx) in columns"
             :key="col.id"
         >
-            <CellRenderer :cell="getCell(col)" :ui-color="uiColor" :entity="rowEntity" />
+            <div class="relative">
+                <Tooltip v-if="!showSelection && !showActionsColumn && idx === 0 && hasUsable" :content="usableTooltip" placement="right" :color="usableDotColor" responsive="md">
+                    <span
+                        data-no-row-select
+                        class="absolute -top-6 -left-3 w-2.5 h-2.5 rounded-full ring-1 ring-base-300 opacity-90"
+                        :class="[isUsable ? 'bg-success' : 'bg-error']"
+                    />
+                </Tooltip>
+                <CellRenderer :cell="getCell(col)" :ui-color="uiColor" :entity="rowEntity" />
+            </div>
         </td>
     </tr>
     

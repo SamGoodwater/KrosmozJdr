@@ -152,6 +152,83 @@ const bgSize = computed(() => {
     return "md";
 });
 
+/**
+ * Couleur de fond du tableau (neutral par défaut).
+ * On conserve `uiColor` pour les éléments interactifs (boutons, toggles, etc.).
+ */
+const bgColor = computed(() => {
+    const c = String(props.config?.ui?.bgColor || "neutral");
+    if (c === "primary") return "primary";
+    if (c === "secondary") return "secondary";
+    if (c === "accent") return "accent";
+    if (c === "info") return "info";
+    if (c === "success") return "success";
+    if (c === "warning") return "warning";
+    if (c === "error") return "error";
+    return "neutral";
+});
+
+// IMPORTANT: pas de concaténation de classes Tailwind/DaisyUI.
+const bgVariantSizeClass = computed(() => {
+    const v = bgVariant.value;
+    const s = bgSize.value;
+
+    if (v === "glass") {
+        if (s === "xs") return "bg-glass-xs";
+        if (s === "sm") return "bg-glass-sm";
+        if (s === "lg") return "bg-glass-lg";
+        if (s === "xl") return "bg-glass-xl";
+        return "bg-glass-md";
+    }
+    if (v === "ghost") {
+        if (s === "xs") return "bg-ghost-xs";
+        if (s === "sm") return "bg-ghost-sm";
+        if (s === "lg") return "bg-ghost-lg";
+        if (s === "xl") return "bg-ghost-xl";
+        return "bg-ghost-md";
+    }
+    if (v === "soft") {
+        if (s === "xs") return "bg-soft-xs";
+        if (s === "sm") return "bg-soft-sm";
+        if (s === "lg") return "bg-soft-lg";
+        if (s === "xl") return "bg-soft-xl";
+        return "bg-soft-md";
+    }
+    if (v === "outline") {
+        if (s === "xs") return "bg-outline-xs";
+        if (s === "sm") return "bg-outline-sm";
+        if (s === "lg") return "bg-outline-lg";
+        if (s === "xl") return "bg-outline-xl";
+        return "bg-outline-md";
+    }
+    if (v === "dash") {
+        if (s === "xs") return "bg-dash-xs";
+        if (s === "sm") return "bg-dash-sm";
+        if (s === "lg") return "bg-dash-lg";
+        if (s === "xl") return "bg-dash-xl";
+        return "bg-dash-md";
+    }
+
+    // fallback
+    if (s === "xs") return "bg-glass-xs";
+    if (s === "sm") return "bg-glass-sm";
+    if (s === "lg") return "bg-glass-lg";
+    if (s === "xl") return "bg-glass-xl";
+    return "bg-glass-md";
+});
+
+const bgColorClass = computed(() => {
+    const c = bgColor.value;
+    if (c === "primary") return "bg-color-primary";
+    if (c === "secondary") return "bg-color-secondary";
+    if (c === "accent") return "bg-color-accent";
+    if (c === "info") return "bg-color-info";
+    if (c === "success") return "bg-color-success";
+    if (c === "warning") return "bg-color-warning";
+    if (c === "error") return "bg-color-error";
+    return "bg-color-neutral";
+});
+
 const tableVariantClass = computed(() => {
     // DaisyUI: `table-zebra` (stripes) est la variante principale utilisée ici.
     if (uiTableVariant.value === "zebra" || uiTableVariant.value === "striped") return "table-zebra";
@@ -169,32 +246,7 @@ const tableSizeClass = computed(() => {
 
 const bgClass = computed(() => {
     // Classes SCSS (resources/scss/src/_bg.scss) : explicites
-
-    let bg = "bg-";
-    switch (bgVariant.value) {
-        case "glass":
-            bg += "glass-";
-            break;
-        case "ghost":
-            bg += "ghost-";
-            break;
-        case "soft":
-            bg += "soft-";
-            break;
-        case "outline":
-            bg += "outline-";
-            break;
-        case "dash":
-            bg += "dash-";
-            break;
-        default:
-            bg += "glass-";
-            break;
-    }
-
-    bg += bgSize.value;
-
-    return bg + " " + "bg-color-" + uiColor.value;
+    return `${bgVariantSizeClass.value} ${bgColorClass.value}`;
 });
 
 const rowSelectedBgClass = computed(() => {
@@ -323,6 +375,36 @@ const filterOptions = computed(() => {
 });
 const activeFilters = ref({});
 let _filterDebugCount = 0;
+
+/**
+ * Appliquer des filtres par défaut (déclaratifs) si fournis sur les colonnes.
+ * Exemple d'usage dans un descriptor:
+ * table: { filterable: { id: 'usable', type: 'toggle', defaultValue: true } }
+ *
+ * Règle: on ne remplace jamais un filtre déjà défini (même vide) par le user.
+ */
+const applyDefaultFilters = () => {
+    const current = activeFilters.value || {};
+    const next = { ...current };
+    let changed = false;
+
+    for (const col of columnsWithoutActions.value || []) {
+        const f = col?.filter;
+        if (!f?.id || !f?.type) continue;
+        if (typeof f?.defaultValue === "undefined") continue;
+        if (Object.prototype.hasOwnProperty.call(next, f.id)) continue;
+        next[f.id] = f.defaultValue;
+        changed = true;
+    }
+
+    if (changed) activeFilters.value = next;
+};
+
+watch(
+    () => columnsWithoutActions.value.map((c) => `${c?.id}:${c?.filter?.id || ""}:${c?.filter?.type || ""}:${typeof c?.filter?.defaultValue !== "undefined" ? "1" : "0"}`).join("|"),
+    () => applyDefaultFilters(),
+    { immediate: true },
+);
 
 const debugSample = computed(() => {
     if (!debugEnabled.value) return null;
@@ -551,6 +633,19 @@ const passesFilter = (row, col) => {
         })();
 
         return rowBool === want;
+    }
+
+    if (f.type === "toggle") {
+        // raw === true => actif (filtrer sur true), sinon pas de filtre (déjà géré en amont)
+        if (raw !== true) return true;
+        const rowBool = (() => {
+            if (typeof rowValue === "boolean") return rowValue;
+            const s = String(rowValue ?? "").toLowerCase();
+            if (s === "1" || s === "true" || s === "yes" || s === "oui") return true;
+            if (s === "0" || s === "false" || s === "no" || s === "non") return false;
+            return Boolean(rowValue);
+        })();
+        return rowBool === true;
     }
 
     if (f.type === "text") {
@@ -912,6 +1007,15 @@ const toggleColumnVisibility = (col, forcedVisible = null) => {
     table.setColumnVisibility((prev) => ({ ...prev, [col.id]: newVisibility }));
 };
 
+const resetColumnsToDefaults = () => {
+    prefs.resetColumns();
+    try {
+        table.setColumnVisibility({});
+    } catch {
+        // ignore
+    }
+};
+
 // CSV export (Phase 1: export rows filtrées/triées, ou sélection si active)
 const exportEnabled = computed(() => Boolean(props.config?.features?.export?.csv));
 const exportFilename = computed(() => props.config?.features?.export?.filename || `${props.config?.id || "table"}.csv`);
@@ -973,6 +1077,7 @@ const handleExport = () => {
                 :selection-count="selectedCount"
                 @update:search="updateSearch"
                 @toggle-column="toggleColumnVisibility"
+                @reset-columns="resetColumnsToDefaults"
                 @export="handleExport"
                 @clear-selection="clearSelection"
             />

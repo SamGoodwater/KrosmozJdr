@@ -70,12 +70,22 @@ export function useTanStackTablePreferences(tableId, defaults = {}) {
         pageSize.value = n;
     };
 
+    /**
+     * Réinitialise uniquement les préférences de colonnes.
+     * But: revenir aux defaults responsive du descriptor, sans perdre pageSize.
+     */
+    const resetColumns = () => {
+        visibleColumns.value = {};
+        touchedColumns.value = [];
+    };
+
     return {
         visibleColumns,
         touchedColumns,
         setColumnVisible,
         pageSize,
         setPageSize,
+        resetColumns,
     };
 }
 

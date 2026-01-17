@@ -102,6 +102,8 @@ const updateFilter = (filterId, value) => {
     emit("update:filters", next);
 };
 
+const getFilterLabel = (col) => String(col?.filter?.label || col?.label || "");
+
 const getRawFilterValue = (filterId) => String((values.value?.[filterId] ?? ""));
 const getRawFilterArrayValue = (filterId) => {
     const raw = values.value?.[filterId];
@@ -257,6 +259,18 @@ const activeBadges = computed(() => {
             continue;
         }
 
+        if (f.type === "toggle") {
+            if (raw !== true) continue;
+            badges.push({
+                key: `${f.id}`,
+                filterId: f.id,
+                type: "toggle",
+                value: "1",
+                label: `${getFilterLabel(col)}: ${String(f?.onLabel || "Activé")}`,
+            });
+            continue;
+        }
+
         // text/select/boolean => un badge si valeur non vide
         if (raw === null || typeof raw === "undefined" || String(raw) === "") continue;
 
@@ -266,7 +280,7 @@ const activeBadges = computed(() => {
                 filterId: f.id,
                 type: "boolean",
                 value: String(raw),
-                label: `${col.label}: ${booleanStateLabel(String(raw))}`,
+                label: `${getFilterLabel(col)}: ${booleanStateLabel(String(raw))}`,
             });
             continue;
         }
@@ -277,7 +291,7 @@ const activeBadges = computed(() => {
                 filterId: f.id,
                 type: "text",
                 value: String(raw),
-                label: `${col.label}: ${String(raw)}`,
+                label: `${getFilterLabel(col)}: ${String(raw)}`,
             });
             continue;
         }
@@ -292,7 +306,7 @@ const activeBadges = computed(() => {
             filterId: f.id,
             type: "select",
             value: vv,
-            label: `${col.label}: ${display}`,
+            label: `${getFilterLabel(col)}: ${display}`,
             badge: badgeCfg ? { ...badgeCfg } : null,
         });
     }
@@ -306,6 +320,10 @@ const removeBadge = (badge) => {
         const current = new Set(getRawFilterArrayValue(badge.filterId));
         current.delete(String(badge.value));
         setMultiValues(badge.filterId, Array.from(current));
+        return;
+    }
+    if (badge.type === "toggle") {
+        updateFilter(badge.filterId, "");
         return;
     }
     // boolean/text/select => clear
@@ -339,11 +357,44 @@ const removeBadge = (badge) => {
 
         <div class="grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-3">
             <div v-for="col in filterableColumns()" :key="col.id" class="space-y-1">
-                <div class="text-xs opacity-70">{{ col.label }}</div>
+                <div class="text-xs opacity-70">{{ getFilterLabel(col) }}</div>
+
+                <!-- toggle (switch ON=actif, OFF=pas de filtre) -->
+                <div
+                    v-if="col.filter.type === 'toggle'"
+                    class="flex items-center justify-between gap-3 w-full rounded-lg border border-base-300 px-2 py-1"
+                >
+                    <div class="flex items-center gap-3">
+                        <div class="w-12 flex items-center justify-center shrink-0">
+                            <ToggleCore
+                                :model-value="Boolean(values?.[col.filter.id]) === true"
+                                size="sm"
+                                :color="uiColor"
+                                @update:model-value="(v) => updateFilter(col.filter.id, Boolean(v) ? true : '')"
+                            />
+                        </div>
+                        <span class="text-sm opacity-80">
+                            {{ Boolean(values?.[col.filter.id]) === true ? (col.filter?.onLabel || 'Activé') : (col.filter?.offLabel || 'Tous') }}
+                        </span>
+                    </div>
+                    <Btn
+                        type="button"
+                        size="xs"
+                        variant="ghost"
+                        square
+                        class="w-7 h-7 min-h-0 px-0 flex items-center justify-center"
+                        title="Retirer le filtre"
+                        :disabled="Boolean(values?.[col.filter.id]) !== true"
+                        :class="{ 'opacity-40 cursor-default': Boolean(values?.[col.filter.id]) !== true }"
+                        @click="updateFilter(col.filter.id, '')"
+                    >
+                        ✕
+                    </Btn>
+                </div>
 
                 <!-- boolean (switch) -->
                 <div
-                    v-if="col.filter.type === 'boolean'"
+                    v-else-if="col.filter.type === 'boolean'"
                     class="flex items-center justify-between gap-3 w-full rounded-lg border border-base-300 px-2 py-1"
                 >
                     <div class="flex items-center gap-3">
@@ -624,19 +675,23 @@ const removeBadge = (badge) => {
         <!-- Filtres actifs (chips / badges) -->
         <div v-if="activeBadges.length" class="flex flex-wrap items-center gap-2 pt-2">
             <div class="text-xs opacity-70 mr-1">Actifs :</div>
-            <Badge
+            <div
                 v-for="b in activeBadges"
                 :key="b.key"
-                :color="b.badge?.color || uiColor"
-                :auto-label="b.badge?.autoLabel || ''"
-                :auto-scheme="b.badge?.autoScheme || undefined"
-                :auto-tone="b.badge?.autoTone || undefined"
-                :glassy="Boolean(b.badge?.glassy)"
-                :variant="b.badge?.variant || 'soft'"
-                size="sm"
-                class="inline-flex items-center gap-1 pr-1"
+                class="inline-flex items-center gap-1"
             >
-                <span class="max-w-64 truncate">{{ b.label }}</span>
+                <Badge
+                    :color="b.badge?.color || uiColor"
+                    :auto-label="b.badge?.autoLabel || ''"
+                    :auto-scheme="b.badge?.autoScheme || undefined"
+                    :auto-tone="b.badge?.autoTone || undefined"
+                    :glassy="Boolean(b.badge?.glassy)"
+                    :variant="b.badge?.variant || 'soft'"
+                    size="sm"
+                    class="max-w-[20rem]"
+                >
+                    <span class="truncate">{{ b.label }}</span>
+                </Badge>
                 <Btn
                     type="button"
                     size="xs"
@@ -646,9 +701,9 @@ const removeBadge = (badge) => {
                     title="Retirer"
                     @click="removeBadge(b)"
                 >
-                    ✕
+                    <Icon source="fa-solid fa-xmark" alt="Retirer" size="xs" />
                 </Btn>
-            </Badge>
+            </div>
         </div>
     </div>
 </template>

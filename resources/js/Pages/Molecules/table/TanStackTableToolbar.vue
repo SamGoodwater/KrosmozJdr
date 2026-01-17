@@ -41,6 +41,7 @@ const props = defineProps({
 const emit = defineEmits([
     "update:search",
     "toggle-column",
+    "reset-columns",
     "export",
     "clear-selection",
 ]);
@@ -100,11 +101,9 @@ const actionBtnSize = computed(() => shiftUiSize(props.uiSize, -1));
             <Btn
                 v-if="exportEnabled"
                 :size="actionBtnSize"
-                variant="outline"
+                variant="glass"
                 :color="uiColor"
                 class="gap-2"
-                opacity="sm"
-                backdrop="sm"
                 @click="emit('export')"
                 title="Exporter en CSV"
             >
@@ -120,11 +119,9 @@ const actionBtnSize = computed(() => shiftUiSize(props.uiSize, -1));
                 <template #trigger>
                     <Btn
                         :size="actionBtnSize"
-                        variant="outline"
+                        variant="glass"
                         :color="uiColor"
                         class="gap-2"
-                        opacity="sm"
-                        backdrop="sm"
                         title="Colonnes visibles"
                     >
                         <Icon source="fa-solid fa-columns" alt="Colonnes" size="sm" />
@@ -133,7 +130,19 @@ const actionBtnSize = computed(() => shiftUiSize(props.uiSize, -1));
                 </template>
                 <template #content>
                     <div class="p-3 w-64">
-                        <div class="text-sm font-semibold mb-2">Colonnes visibles</div>
+                        <div class="flex items-center justify-between gap-2 mb-2">
+                            <div class="text-sm font-semibold">Colonnes visibles</div>
+                            <Btn
+                                :size="actionBtnSize"
+                                variant="ghost"
+                                class="gap-2"
+                                title="Réinitialiser (revenir aux colonnes par défaut)"
+                                @click="emit('reset-columns')"
+                            >
+                                <Icon source="fa-solid fa-rotate-left" alt="Réinitialiser" size="sm" />
+                                <span class="hidden md:inline">Reset</span>
+                            </Btn>
+                        </div>
                         <div class="space-y-2 max-h-64 overflow-y-auto pr-1">
                             <label
                                 v-for="col in columns"

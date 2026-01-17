@@ -114,9 +114,7 @@ import { getRarityOptions } from '@/Utils/Entity/SharedConstants.js';
  */
 export function getResourceFieldDescriptors(ctx = {}) {
   // Extraire le contexte de manière pure (pas de calculs, pas de logique)
-  const resourceTypes = Array.isArray(ctx?.resourceTypes)
-    ? ctx.resourceTypes
-    : (Array.isArray(ctx?.meta?.resourceTypes) ? ctx.meta.resourceTypes : []);
+  void ctx;
 
   return {
     id: {
@@ -627,12 +625,15 @@ export function getResourceFieldDescriptors(ctx = {}) {
         sortable: true,
         filterable: {
           id: "usable",
-          // UI: multi => checkboxes (Oui/Non)
-          // Options fournies par le serveur via filterOptions.usable
-          type: "multi",
+          // UX: toggle => ON = n'afficher que les éléments adaptés au JDR (usable=1), OFF = tout afficher
+          type: "toggle",
+          label: "Adapté au JDR",
+          onLabel: "Adaptés",
+          offLabel: "Tous",
+          defaultValue: true,
         },
-        // Responsive: disparaît en premier
-        defaultVisible: { xs: false, sm: false, md: false, lg: false, xl: true },
+        // Pas de colonne "usable" (signal via indicateur de ligne + filtre)
+        defaultVisible: { xs: false, sm: false, md: false, lg: false, xl: false },
         cell: {
           sizes: {
             xs: { mode: "boolIcon" },
