@@ -59,13 +59,54 @@ import { mergeClasses } from '@/Utils/atomic-design/uiHelper'
 // 🔧 Définition des props + emits
 // ------------------------------------------
 const props = defineProps(getInputPropsDefinition('textarea', 'core'))
-const emit = defineEmits(['update:modelValue'])
+const emit = defineEmits(['update:modelValue', 'update:model-value'])
 const $attrs = useAttrs()
 
 // ------------------------------------------
 // ⚙️ Attributs HTML + événements natifs filtrés
 // ------------------------------------------
 const { inputAttrs, listeners } = useInputProps(props, $attrs, emit, 'textarea', 'core')
+
+/**
+ * Valeur effective (compat):
+ * - en usage "core" avec v-model : on reçoit `props.modelValue`
+ * - en usage via les Molecules (TextareaField/FieldTemplate) : la valeur arrive souvent via `inputAttrs.value`
+ */
+const effectiveValue = computed(() => {
+  // Priorité au v-model standard
+  if (props.modelValue !== null && props.modelValue !== undefined) {
+    return props.modelValue;
+  }
+  // Fallback: valeur HTML passée via v-bind="inputAttrs"
+  const v = inputAttrs?.value?.value;
+  return (v !== null && v !== undefined) ? v : '';
+});
+
+/**
+ * Listener safe pour éviter de gérer deux fois `input` (nous l'utilisons pour v-model).
+ */
+const safeListeners = computed(() => {
+  const l = (listeners && typeof listeners === 'object' && 'value' in listeners)
+    ? (listeners.value || {})
+    : (listeners || {});
+  // eslint-disable-next-line no-unused-vars
+  const { input, ...rest } = l;
+  return rest;
+});
+
+function onInput(e) {
+  const next = e?.target?.value ?? '';
+  emit('update:modelValue', next);
+  emit('update:model-value', next);
+
+  // relayer un éventuel listener `input` passé via $attrs (utilisé par TextareaField/useInputField)
+  const l = (listeners && typeof listeners === 'object' && 'value' in listeners)
+    ? (listeners.value || {})
+    : (listeners || {});
+  if (typeof l?.input === 'function') {
+    l.input(e);
+  }
+}
 
 // ------------------------------------------
 // 🎨 Style dynamique basé sur variant, color, etc.
@@ -105,8 +146,10 @@ const labelClasses = computed(() =>
         </span>
         <textarea
             v-bind="inputAttrs"
-            v-on="listeners"
+            v-on="safeListeners"
             :class="atomClasses"
+            :value="effectiveValue"
+            @input="onInput"
         />
         <span v-if="labelInEnd || $slots.labelInEnd" class="label-text">
             <slot name="labelInEnd">{{ labelInEnd }}</slot>
@@ -117,8 +160,10 @@ const labelClasses = computed(() =>
     <label :class="labelClasses" v-else-if="labelFloating || $slots.floatingLabel">
         <textarea
             v-bind="inputAttrs"
-            v-on="listeners"
+            v-on="safeListeners"
             :class="atomClasses"
+            :value="effectiveValue"
+            @input="onInput"
         />
         <span class="label-text">
             <slot name="floatingLabel">{{ props.placeholder || 'Label' }}</slot>
@@ -129,8 +174,10 @@ const labelClasses = computed(() =>
     <textarea
         v-else
         v-bind="inputAttrs"
-        v-on="listeners"
+        v-on="safeListeners"
         :class="atomClasses"
+        :value="effectiveValue"
+        @input="onInput"
     />
 </template>
 

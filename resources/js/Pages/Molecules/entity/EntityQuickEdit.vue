@@ -212,14 +212,15 @@ const buildPayload = () => {
     return payload;
 };
 
-// Obtenir la valeur à afficher pour un champ (gère les valeurs différentes)
+// Obtenir la valeur à afficher pour un champ
+// IMPORTANT: on préfère `form[key]` comme source de vérité (plus stable que `aggregate`)
+// afin d'éviter que des recomputations d'aggregate "écrasent" la saisie en cours.
 const getFieldValue = (key) => {
-    if (dirty?.[key]) {
-        return form?.[key];
+    if (form && Object.prototype.hasOwnProperty.call(form, key)) {
+        return form[key];
     }
-    if (aggregate.value?.[key]?.same) {
-        return String(aggregate.value?.[key]?.value ?? '');
-    }
+    if (dirty?.[key]) return form?.[key];
+    if (aggregate.value?.[key]?.same) return String(aggregate.value?.[key]?.value ?? '');
     return '';
 };
 

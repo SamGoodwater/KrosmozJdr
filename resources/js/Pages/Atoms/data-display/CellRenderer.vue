@@ -214,7 +214,7 @@ const hasCustomComponent = computed(() => customComponent.value !== null);
             v-if="value"
             :src="String(value)"
             :alt="params.alt || 'Image'"
-            class="h-8 w-8 rounded object-contain bg-base-200"
+            class="h-8 w-8 rounded object-contain"
             loading="lazy"
         />
         <span v-else class="text-base-content/40">—</span>

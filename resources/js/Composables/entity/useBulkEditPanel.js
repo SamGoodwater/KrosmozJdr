@@ -63,9 +63,14 @@ const valuesOf = (entities, key) => {
 const allSame = (arr) => {
   if (!arr.length) return { same: true, value: null };
   
-  // Filtrer les valeurs undefined (entités qui n'ont pas cette propriété)
+  // IMPORTANT:
+  // - `undefined` signifie "champ absent dans cette entité" (dataset incomplet).
+  // - Si on ignore `undefined`, on risque d'afficher la valeur du 1er élément en multi-sélection
+  //   alors qu'en réalité certaines entités n'ont pas cette propriété chargée.
+  const hasUndefined = arr.some((v) => v === undefined);
   const definedValues = arr.filter((v) => v !== undefined);
   if (definedValues.length === 0) return { same: true, value: null };
+  if (hasUndefined && definedValues.length > 0) return { same: false, value: null };
   
   const first = definedValues[0];
   // Comparer en tenant compte des types

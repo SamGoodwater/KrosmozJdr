@@ -23,6 +23,7 @@ import { useCopyToClipboard } from '@/Composables/utils/useCopyToClipboard';
 import { useDownloadPdf } from '@/Composables/utils/useDownloadPdf';
 import { getEntityRouteConfig, resolveEntityRouteUrl } from '@/Composables/entity/entityRouteRegistry';
 import { getResourceFieldDescriptors } from '@/Entities/resource/resource-descriptors';
+import { usePermissions } from "@/Composables/permissions/usePermissions";
 
 const props = defineProps({
     resource: {
@@ -49,17 +50,21 @@ const emit = defineEmits([
 
 const { copyToClipboard } = useCopyToClipboard();
 const { downloadPdf } = useDownloadPdf('resource');
+const permissions = usePermissions();
 
-// Obtenir les descriptors avec le contexte
-const descriptors = computed(() => {
-  const ctx = {
-    capabilities: props.resource.canView ? { view: true, createAny: true, updateAny: true } : {},
-    meta: { 
-      capabilities: props.resource.canView ? { view: true, createAny: true, updateAny: true } : {} 
-    }
-  };
-  return getResourceFieldDescriptors(ctx);
+const ctx = computed(() => {
+    const capabilities = {
+        viewAny: permissions.can('resources', 'viewAny'),
+        createAny: permissions.can('resources', 'createAny'),
+        updateAny: permissions.can('resources', 'updateAny'),
+        deleteAny: permissions.can('resources', 'deleteAny'),
+        manageAny: permissions.can('resources', 'manageAny'),
+    };
+    return { capabilities, meta: { capabilities } };
 });
+
+// Obtenir les descriptors avec le contexte (permissions/options)
+const descriptors = computed(() => getResourceFieldDescriptors(ctx.value));
 
 // Champs à afficher dans la vue large sous forme de badges (principaux)
 const primaryFields = computed(() => [
@@ -74,27 +79,35 @@ const primaryFields = computed(() => [
     'auto_update',
 ]);
 
+const canShowField = (fieldKey) => {
+    const desc = descriptors.value?.[fieldKey];
+    if (!desc) return false;
+    const visibleIf = desc?.permissions?.visibleIf;
+    if (typeof visibleIf === 'function') {
+        try {
+            return Boolean(visibleIf(ctx.value));
+        } catch (e) {
+            console.warn('[ResourceViewLarge] visibleIf failed for', fieldKey, e);
+            return false;
+        }
+    }
+    return true;
+};
+
+const visiblePrimaryFields = computed(() => (primaryFields.value || []).filter(canShowField));
+
 // Champs secondaires (affichés après les principaux)
 const secondaryFields = computed(() => {
     const fields = [
         'dofusdb_id',
         'official_id',
     ];
-    
     // Ajouter les champs conditionnels si permissions (utilise visibleIf du descriptor)
-    const ctx = { 
-      capabilities: props.resource.canView ? { view: true, createAny: true } : {},
-      meta: { capabilities: props.resource.canView ? { view: true, createAny: true } : {} }
-    };
-    
-    ['created_by', 'created_at', 'updated_at'].forEach(fieldKey => {
-      const desc = descriptors.value[fieldKey];
-      if (desc && (!desc.permissions?.visibleIf || desc.permissions.visibleIf(ctx))) {
-        fields.push(fieldKey);
-      }
+    ['created_by', 'created_at', 'updated_at'].forEach((fieldKey) => {
+        if (canShowField(fieldKey)) fields.push(fieldKey);
     });
-    
-    return fields;
+
+    return fields.filter(canShowField);
 });
 
 // Handlers pour les actions
@@ -158,6 +171,20 @@ const getCell = (fieldKey) => {
         size: 'lg',
         context: 'extended',
     });
+};
+
+/**
+ * Convertit une cellule en "texte" pour éviter d'imbriquer Badge dans Badge
+ * (ex: CellRenderer(type=badge) à l'intérieur d'un <Badge> de la vue).
+ */
+const asTextCell = (cell) => {
+    if (!cell) return { type: 'text', value: '-', params: {} };
+    const v = cell?.value;
+    return {
+        type: 'text',
+        value: (v === null || typeof v === 'undefined' || String(v) === '') ? '-' : String(v),
+        params: cell?.params || {},
+    };
 };
 
 // Obtenir la couleur du badge selon le champ
@@ -250,7 +277,7 @@ const getBadgeAutoParams = (fieldKey) => {
 
         <!-- Badges principaux avec icônes -->
         <div class="flex flex-wrap gap-2">
-            <template v-for="fieldKey in primaryFields" :key="fieldKey">
+            <template v-for="fieldKey in visiblePrimaryFields" :key="fieldKey">
                 <Badge
                     :color="getBadgeColor(fieldKey)"
                     :auto-label="getBadgeAutoParams(fieldKey).autoLabel"
@@ -266,7 +293,7 @@ const getBadgeAutoParams = (fieldKey) => {
                     />
                     <span class="font-medium">
                         <CellRenderer
-                            :cell="getCell(fieldKey)"
+                            :cell="asTextCell(getCell(fieldKey))"
                             ui-color="primary"
                         />
                     </span>
@@ -293,7 +320,7 @@ const getBadgeAutoParams = (fieldKey) => {
                     />
                     <span class="font-medium">
                         <CellRenderer
-                            :cell="getCell(fieldKey)"
+                            :cell="asTextCell(getCell(fieldKey))"
                             ui-color="primary"
                         />
                     </span>

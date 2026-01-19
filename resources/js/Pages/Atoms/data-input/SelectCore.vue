@@ -75,6 +75,19 @@ const $attrs = useAttrs()
 const { inputAttrs, listeners } = useInputProps(props, $attrs, emit, 'select', 'core')
 
 /**
+ * Valeur effective (compat):
+ * - en usage "core" avec v-model : on reçoit `props.modelValue`
+ * - en usage via les Molecules (SelectField/FieldTemplate) : la valeur arrive souvent via `inputAttrs.value`
+ */
+const effectiveSingleValue = computed(() => {
+    if (props.modelValue !== null && props.modelValue !== undefined) {
+        return props.modelValue;
+    }
+    const v = inputAttrs?.value?.value;
+    return (v !== null && v !== undefined) ? v : '';
+});
+
+/**
  * Listener safe pour éviter de gérer deux fois `input` (nous l'utilisons pour v-model).
  */
 const safeListeners = computed(() => {
@@ -172,6 +185,14 @@ function onInput(e) {
         emit('update:modelValue', next);
         emit('update:model-value', next);
     }
+
+    // compat: relayer un éventuel listener `input` passé via $attrs (utilisé par SelectField/useInputField)
+    const l = (listeners && typeof listeners === 'object' && 'value' in listeners)
+        ? (listeners.value || {})
+        : (listeners || {});
+    if (typeof l?.input === 'function') {
+        l.input(e);
+    }
 }
 </script>
 
@@ -181,13 +202,13 @@ function onInput(e) {
         v-bind="inputAttrs"
         v-on="safeListeners"
         :class="atomClasses"
-        :value="props.multiple ? undefined : (props.modelValue ?? '')"
+        :value="props.multiple ? undefined : String(effectiveSingleValue ?? '')"
         @change="onInput"
         @input="onInput"
     >
         <slot>
             <option
-                v-if="!multiple && (inputAttrs.value === null || inputAttrs.value === undefined || inputAttrs.value === '')"
+                v-if="!multiple && (effectiveSingleValue === null || effectiveSingleValue === undefined || String(effectiveSingleValue) === '')"
                 value=""
                 disabled
             >

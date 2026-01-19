@@ -16,6 +16,7 @@ import CheckboxCore from "@/Pages/Atoms/data-input/CheckboxCore.vue";
 import RadioCore from "@/Pages/Atoms/data-input/RadioCore.vue";
 import Badge from "@/Pages/Atoms/data-display/Badge.vue";
 import { computed, unref, ref } from "vue";
+import { getLevelColor } from "@/Utils/Entity/SharedConstants.js";
 
 const props = defineProps({
     columns: { type: Array, required: true },
@@ -70,8 +71,15 @@ const optionBadgeProps = (col, opt) => {
         ? String(opt?.value ?? "")
         : String(opt?.label ?? opt?.value ?? "");
 
+    // Niveau: respecter le gradient centralisé (SharedConstants.getLevelColor)
+    // au lieu de dépendre d'un mapping "auto" approximatif.
+    const isLevelScheme = String(cfg.autoScheme || "") === "level";
+    const num = Number(opt?.value ?? opt?.label);
+    const isLevelValue = Number.isFinite(num);
+    const levelColor = (isLevelScheme && isLevelValue) ? getLevelColor(num) : null;
+
     return {
-        color: cfg.color || props.uiColor,
+        color: levelColor || cfg.color || props.uiColor,
         autoLabel: label,
         autoScheme: cfg.autoScheme,
         autoTone: cfg.autoTone,
@@ -328,6 +336,11 @@ const removeBadge = (badge) => {
     }
     // boolean/text/select => clear
     updateFilter(badge.filterId, "");
+};
+
+const clearAllActiveFilters = () => {
+    // On reset via emit dédié (le parent remet activeFilters = {})
+    emit("reset");
 };
 </script>
 
@@ -673,36 +686,58 @@ const removeBadge = (badge) => {
         </div>
 
         <!-- Filtres actifs (chips / badges) -->
-        <div v-if="activeBadges.length" class="flex flex-wrap items-center gap-2 pt-2">
-            <div class="text-xs opacity-70 mr-1">Actifs :</div>
-            <div
-                v-for="b in activeBadges"
-                :key="b.key"
-                class="inline-flex items-center gap-1"
-            >
-                <Badge
-                    :color="b.badge?.color || uiColor"
-                    :auto-label="b.badge?.autoLabel || ''"
-                    :auto-scheme="b.badge?.autoScheme || undefined"
-                    :auto-tone="b.badge?.autoTone || undefined"
-                    :glassy="Boolean(b.badge?.glassy)"
-                    :variant="b.badge?.variant || 'soft'"
-                    size="sm"
-                    class="max-w-[20rem]"
-                >
-                    <span class="truncate">{{ b.label }}</span>
-                </Badge>
+        <div
+            v-if="activeBadges.length"
+            class="flex flex-col gap-2 pt-2"
+        >
+            <div class="flex items-center justify-between gap-2">
+                <div class="inline-flex items-center gap-2 text-xs font-semibold opacity-80">
+                    <Icon source="fa-solid fa-filter-circle-xmark" alt="Filtres actifs" size="xs" />
+                    <span>Filtres actifs</span>
+                </div>
                 <Btn
                     type="button"
                     size="xs"
                     variant="ghost"
-                    square
-                    class="w-6 h-6 min-h-0 px-0 flex items-center justify-center"
-                    title="Retirer"
-                    @click="removeBadge(b)"
+                    class="gap-2"
+                    title="Réinitialiser tous les filtres"
+                    @click="clearAllActiveFilters"
                 >
-                    <Icon source="fa-solid fa-xmark" alt="Retirer" size="xs" />
+                    <Icon source="fa-solid fa-rotate-left" alt="Réinitialiser" size="xs" />
+                    <span class="hidden md:inline">Tout effacer</span>
                 </Btn>
+            </div>
+
+            <div class="rounded-lg border border-base-300 bg-base-200/30 p-2 flex flex-wrap items-center gap-2">
+                <div
+                    v-for="b in activeBadges"
+                    :key="b.key"
+                    class="inline-flex items-center gap-1"
+                >
+                    <Badge
+                        :color="b.badge?.color || uiColor"
+                        :auto-label="b.badge?.autoLabel || ''"
+                        :auto-scheme="b.badge?.autoScheme || undefined"
+                        :auto-tone="b.badge?.autoTone || undefined"
+                        :glassy="Boolean(b.badge?.glassy)"
+                        :variant="b.badge?.variant || 'soft'"
+                        size="sm"
+                        class="max-w-[22rem]"
+                    >
+                        <span class="truncate">{{ b.label }}</span>
+                    </Badge>
+                    <Btn
+                        type="button"
+                        size="xs"
+                        variant="ghost"
+                        square
+                        class="w-6 h-6 min-h-0 px-0 flex items-center justify-center"
+                        title="Retirer"
+                        @click="removeBadge(b)"
+                    >
+                        <Icon source="fa-solid fa-xmark" alt="Retirer" size="xs" />
+                    </Btn>
+                </div>
             </div>
         </div>
     </div>

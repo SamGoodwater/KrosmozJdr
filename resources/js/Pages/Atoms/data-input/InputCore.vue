@@ -72,6 +72,21 @@ const $attrs = useAttrs()
 const { inputAttrs, listeners } = useInputProps(props, $attrs, emit, 'input', 'core')
 
 /**
+ * Valeur effective (compat):
+ * - en usage "core" avec v-model : on reçoit `props.modelValue`
+ * - en usage via les Molecules (InputField/FieldTemplate) : la valeur arrive souvent via `inputAttrs.value`
+ */
+const effectiveValue = computed(() => {
+  // Priorité au v-model standard
+  if (props.modelValue !== null && props.modelValue !== undefined) {
+    return props.modelValue;
+  }
+  // Fallback: valeur HTML passée via v-bind="inputAttrs"
+  const v = inputAttrs?.value?.value;
+  return (v !== null && v !== undefined) ? v : '';
+});
+
+/**
  * Listener safe pour éviter de gérer deux fois `input` (nous l'utilisons pour v-model).
  */
 const safeListeners = computed(() => {
@@ -142,7 +157,7 @@ const labelClasses = computed(() =>
       v-bind="inputAttrs"
       v-on="safeListeners"
       :class="atomClasses"
-      :value="props.modelValue ?? ''"
+      :value="effectiveValue"
       @input="onInput"
     />
 
@@ -158,7 +173,7 @@ const labelClasses = computed(() =>
       v-bind="inputAttrs"
       v-on="safeListeners"
       :class="atomClasses"
-      :value="props.modelValue ?? ''"
+      :value="effectiveValue"
       @input="onInput"
     />
     <span class="label-text">
@@ -172,7 +187,7 @@ const labelClasses = computed(() =>
     v-bind="inputAttrs"
     v-on="safeListeners"
     :class="atomClasses"
-    :value="props.modelValue ?? ''"
+    :value="effectiveValue"
     @input="onInput"
   />
 </template>

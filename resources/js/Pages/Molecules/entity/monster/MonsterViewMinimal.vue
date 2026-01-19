@@ -18,6 +18,8 @@ import EntityActions from '@/Pages/Organismes/entity/EntityActions.vue';
 import { useCopyToClipboard } from '@/Composables/utils/useCopyToClipboard';
 import { useDownloadPdf } from '@/Composables/utils/useDownloadPdf';
 import { getEntityRouteConfig, resolveEntityRouteUrl } from '@/Composables/entity/entityRouteRegistry';
+import { usePermissions } from "@/Composables/permissions/usePermissions";
+import { getMonsterFieldDescriptors } from "@/Entities/monster/monster-descriptors";
 
 const props = defineProps({
     monster: {
@@ -35,28 +37,48 @@ const emit = defineEmits(['edit', 'copy-link', 'download-pdf', 'refresh', 'view'
 const isHovered = ref(false);
 const { copyToClipboard } = useCopyToClipboard();
 const { downloadPdf } = useDownloadPdf('monster');
+const permissions = usePermissions();
+
+const ctx = computed(() => {
+    const capabilities = {
+        viewAny: permissions.can('monsters', 'viewAny'),
+        createAny: permissions.can('monsters', 'createAny'),
+        updateAny: permissions.can('monsters', 'updateAny'),
+        deleteAny: permissions.can('monsters', 'deleteAny'),
+        manageAny: permissions.can('monsters', 'manageAny'),
+    };
+    return { capabilities, meta: { capabilities } };
+});
+
+const descriptors = computed(() => getMonsterFieldDescriptors(ctx.value));
+
+const canShowField = (fieldKey) => {
+    const desc = descriptors.value?.[fieldKey];
+    if (!desc) return false;
+    const visibleIf = desc?.permissions?.visibleIf;
+    if (typeof visibleIf === 'function') {
+        try {
+            return Boolean(visibleIf(ctx.value));
+        } catch (e) {
+            console.warn('[MonsterViewMinimal] visibleIf failed for', fieldKey, e);
+            return false;
+        }
+    }
+    return true;
+};
 
 // Champs importants à afficher
-const importantFields = computed(() => ['creature_name', 'monster_race', 'size', 'is_boss']);
+const importantFields = computed(() => ['creature_name', 'monster_race', 'size', 'is_boss'].filter(canShowField));
 
 // Champs supplémentaires à afficher au hover
 const expandedFields = computed(() => [
     'boss_pa',
     'dofus_version',
     'auto_update',
-]);
+].filter(canShowField));
 
 const getFieldIcon = (fieldKey) => {
-    const icons = {
-        creature_name: 'fa-solid fa-dragon',
-        monster_race: 'fa-solid fa-users',
-        size: 'fa-solid fa-expand',
-        is_boss: 'fa-solid fa-crown',
-        boss_pa: 'fa-solid fa-bolt',
-        dofus_version: 'fa-solid fa-code-branch',
-        auto_update: 'fa-solid fa-sync',
-    };
-    return icons[fieldKey] || 'fa-solid fa-info-circle';
+    return descriptors.value?.[fieldKey]?.general?.icon || 'fa-solid fa-info-circle';
 };
 
 const getCell = (fieldKey) => {
@@ -67,17 +89,8 @@ const getCell = (fieldKey) => {
 };
 
 const tooltipForField = (fieldKey, cell) => {
-    const labels = {
-        creature_name: 'Créature',
-        monster_race: 'Race',
-        size: 'Taille',
-        is_boss: 'Boss',
-        boss_pa: 'PA Boss',
-        dofus_version: 'Version Dofus',
-        auto_update: 'Mise à jour auto',
-    };
-    const label = labels[fieldKey] || fieldKey;
-    const value = cell?.value || '-';
+    const label = descriptors.value?.[fieldKey]?.general?.label || fieldKey;
+    const value = (cell?.value === null || typeof cell?.value === 'undefined' || String(cell?.value) === '') ? '-' : cell.value;
     return `${label} : ${value}`;
 };
 

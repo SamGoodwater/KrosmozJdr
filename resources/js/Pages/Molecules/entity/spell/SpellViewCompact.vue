@@ -17,6 +17,8 @@ import EntityActions from '@/Pages/Organismes/entity/EntityActions.vue';
 import { useCopyToClipboard } from '@/Composables/utils/useCopyToClipboard';
 import { useDownloadPdf } from '@/Composables/utils/useDownloadPdf';
 import { getEntityRouteConfig, resolveEntityRouteUrl } from '@/Composables/entity/entityRouteRegistry';
+import { usePermissions } from "@/Composables/permissions/usePermissions";
+import { getSpellFieldDescriptors } from "@/Entities/spell/spell-descriptors";
 
 const props = defineProps({
     spell: {
@@ -33,6 +35,35 @@ const emit = defineEmits(['edit', 'copy-link', 'download-pdf', 'refresh', 'view'
 
 const { copyToClipboard } = useCopyToClipboard();
 const { downloadPdf } = useDownloadPdf('spell');
+const permissions = usePermissions();
+
+const ctx = computed(() => {
+    const capabilities = {
+        viewAny: permissions.can('spells', 'viewAny'),
+        createAny: permissions.can('spells', 'createAny'),
+        updateAny: permissions.can('spells', 'updateAny'),
+        deleteAny: permissions.can('spells', 'deleteAny'),
+        manageAny: permissions.can('spells', 'manageAny'),
+    };
+    return { capabilities, meta: { capabilities } };
+});
+
+const descriptors = computed(() => getSpellFieldDescriptors(ctx.value));
+
+const canShowField = (fieldKey) => {
+    const desc = descriptors.value?.[fieldKey];
+    if (!desc) return false;
+    const visibleIf = desc?.permissions?.visibleIf;
+    if (typeof visibleIf === 'function') {
+        try {
+            return Boolean(visibleIf(ctx.value));
+        } catch (e) {
+            console.warn('[SpellViewCompact] visibleIf failed for', fieldKey, e);
+            return false;
+        }
+    }
+    return true;
+};
 
 // Champs à afficher dans la vue compacte
 const compactFields = computed(() => [
@@ -44,34 +75,14 @@ const compactFields = computed(() => [
     'category',
     'usable',
     'is_visible',
-]);
+].filter(canShowField));
 
 const getFieldLabel = (fieldKey) => {
-    const labels = {
-        level: 'Niveau',
-        pa: 'PA',
-        po: 'PO',
-        area: 'Zone',
-        element: 'Élément',
-        category: 'Catégorie',
-        usable: 'Utilisable',
-        is_visible: 'Visibilité',
-    };
-    return labels[fieldKey] || fieldKey;
+    return descriptors.value?.[fieldKey]?.general?.label || fieldKey;
 };
 
 const getFieldIcon = (fieldKey) => {
-    const icons = {
-        level: 'fa-solid fa-level-up-alt',
-        pa: 'fa-solid fa-bolt',
-        po: 'fa-solid fa-crosshairs',
-        area: 'fa-solid fa-expand',
-        element: 'fa-solid fa-fire',
-        category: 'fa-solid fa-tag',
-        usable: 'fa-solid fa-check-circle',
-        is_visible: 'fa-solid fa-eye',
-    };
-    return icons[fieldKey] || 'fa-solid fa-info-circle';
+    return descriptors.value?.[fieldKey]?.general?.icon || 'fa-solid fa-info-circle';
 };
 
 const getCell = (fieldKey) => {

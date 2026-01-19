@@ -18,6 +18,8 @@ import EntityActions from '@/Pages/Organismes/entity/EntityActions.vue';
 import { useCopyToClipboard } from '@/Composables/utils/useCopyToClipboard';
 import { useDownloadPdf } from '@/Composables/utils/useDownloadPdf';
 import { getEntityRouteConfig, resolveEntityRouteUrl } from '@/Composables/entity/entityRouteRegistry';
+import { getResourceFieldDescriptors } from '@/Entities/resource/resource-descriptors';
+import { usePermissions } from "@/Composables/permissions/usePermissions";
 
 const props = defineProps({
     resource: {
@@ -35,9 +37,38 @@ const emit = defineEmits(['edit', 'copy-link', 'download-pdf', 'refresh', 'view'
 const isHovered = ref(false);
 const { copyToClipboard } = useCopyToClipboard();
 const { downloadPdf } = useDownloadPdf('resource');
+const permissions = usePermissions();
+
+const ctx = computed(() => {
+    const capabilities = {
+        viewAny: permissions.can('resources', 'viewAny'),
+        createAny: permissions.can('resources', 'createAny'),
+        updateAny: permissions.can('resources', 'updateAny'),
+        deleteAny: permissions.can('resources', 'deleteAny'),
+        manageAny: permissions.can('resources', 'manageAny'),
+    };
+    return { capabilities, meta: { capabilities } };
+});
+
+const descriptors = computed(() => getResourceFieldDescriptors(ctx.value));
+
+const canShowField = (fieldKey) => {
+    const desc = descriptors.value?.[fieldKey];
+    if (!desc) return false;
+    const visibleIf = desc?.permissions?.visibleIf;
+    if (typeof visibleIf === 'function') {
+        try {
+            return Boolean(visibleIf(ctx.value));
+        } catch (e) {
+            console.warn('[ResourceViewMinimal] visibleIf failed for', fieldKey, e);
+            return false;
+        }
+    }
+    return true;
+};
 
 // Champs importants à afficher
-const importantFields = computed(() => ['level', 'rarity', 'usable', 'is_visible']);
+const importantFields = computed(() => ['level', 'rarity', 'usable', 'is_visible'].filter(canShowField));
 
 // Champs supplémentaires à afficher au hover
 const expandedFields = computed(() => [
@@ -45,20 +76,10 @@ const expandedFields = computed(() => [
     'weight',
     'dofus_version',
     'auto_update',
-]);
+].filter(canShowField));
 
 const getFieldIcon = (fieldKey) => {
-    const icons = {
-        level: 'fa-solid fa-level-up-alt',
-        rarity: 'fa-solid fa-star',
-        usable: 'fa-solid fa-check-circle',
-        is_visible: 'fa-solid fa-eye',
-        price: 'fa-solid fa-coins',
-        weight: 'fa-solid fa-weight',
-        dofus_version: 'fa-solid fa-gamepad',
-        auto_update: 'fa-solid fa-sync',
-    };
-    return icons[fieldKey] || 'fa-solid fa-info-circle';
+    return descriptors.value?.[fieldKey]?.general?.icon || 'fa-solid fa-info-circle';
 };
 
 const getCell = (fieldKey) => {
@@ -69,18 +90,8 @@ const getCell = (fieldKey) => {
 };
 
 const tooltipForField = (fieldKey, cell) => {
-    const labels = {
-        level: 'Niveau',
-        rarity: 'Rareté',
-        usable: 'Utilisable',
-        is_visible: 'Visibilité',
-        price: 'Prix',
-        weight: 'Poids',
-        dofus_version: 'Version Dofus',
-        auto_update: 'Mise à jour auto',
-    };
-    const label = labels[fieldKey] || fieldKey;
-    const value = cell?.value || '-';
+    const label = descriptors.value?.[fieldKey]?.general?.label || fieldKey;
+    const value = (cell?.value === null || typeof cell?.value === 'undefined' || String(cell?.value) === '') ? '-' : cell.value;
     return `${label} : ${value}`;
 };
 
@@ -190,7 +201,7 @@ const handleAction = async (actionKey) => {
                             />
                             <div class="flex-1 min-w-0">
                                 <div class="font-semibold text-primary-400">
-                                    {{ key }}:
+                                    {{ descriptors?.[key]?.general?.label || key }}:
                                 </div>
                                 <div class="text-primary-200 truncate">
                                     <CellRenderer

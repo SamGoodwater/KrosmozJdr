@@ -19,6 +19,8 @@ import EntityActions from '@/Pages/Organismes/entity/EntityActions.vue';
 import { useCopyToClipboard } from '@/Composables/utils/useCopyToClipboard';
 import { useDownloadPdf } from '@/Composables/utils/useDownloadPdf';
 import { getEntityRouteConfig, resolveEntityRouteUrl } from '@/Composables/entity/entityRouteRegistry';
+import { usePermissions } from "@/Composables/permissions/usePermissions";
+import { getCapabilityFieldDescriptors } from "@/Entities/capability/capability-descriptors";
 
 const props = defineProps({
     capability: {
@@ -36,27 +38,47 @@ const emit = defineEmits(['edit', 'copy-link', 'download-pdf', 'refresh', 'view'
 const isHovered = ref(false);
 const { copyToClipboard } = useCopyToClipboard();
 const { downloadPdf } = useDownloadPdf('capability');
+const permissions = usePermissions();
+
+const ctx = computed(() => {
+    const capabilities = {
+        viewAny: permissions.can('capabilities', 'viewAny'),
+        createAny: permissions.can('capabilities', 'createAny'),
+        updateAny: permissions.can('capabilities', 'updateAny'),
+        deleteAny: permissions.can('capabilities', 'deleteAny'),
+        manageAny: permissions.can('capabilities', 'manageAny'),
+    };
+    return { capabilities, meta: { capabilities } };
+});
+
+const descriptors = computed(() => getCapabilityFieldDescriptors(ctx.value));
+
+const canShowField = (fieldKey) => {
+    const desc = descriptors.value?.[fieldKey];
+    if (!desc) return false;
+    const visibleIf = desc?.permissions?.visibleIf;
+    if (typeof visibleIf === 'function') {
+        try {
+            return Boolean(visibleIf(ctx.value));
+        } catch (e) {
+            console.warn('[CapabilityViewMinimal] visibleIf failed for', fieldKey, e);
+            return false;
+        }
+    }
+    return true;
+};
 
 // Champs importants à afficher
-const importantFields = computed(() => ['name', 'level', 'pa', 'po', 'element']);
+const importantFields = computed(() => ['name', 'level', 'pa', 'po', 'element'].filter(canShowField));
 
 // Champs supplémentaires à afficher au hover
 const expandedFields = computed(() => [
     'usable',
     'is_visible',
-]);
+].filter(canShowField));
 
 const getFieldIcon = (fieldKey) => {
-    const icons = {
-        name: 'fa-solid fa-font',
-        level: 'fa-solid fa-level-up-alt',
-        pa: 'fa-solid fa-bolt',
-        po: 'fa-solid fa-crosshairs',
-        element: 'fa-solid fa-fire',
-        usable: 'fa-solid fa-check-circle',
-        is_visible: 'fa-solid fa-eye',
-    };
-    return icons[fieldKey] || 'fa-solid fa-info-circle';
+    return descriptors.value?.[fieldKey]?.general?.icon || 'fa-solid fa-info-circle';
 };
 
 const getCell = (fieldKey) => {
@@ -67,17 +89,8 @@ const getCell = (fieldKey) => {
 };
 
 const tooltipForField = (fieldKey, cell) => {
-    const labels = {
-        name: 'Nom',
-        level: 'Niveau',
-        pa: 'PA',
-        po: 'PO',
-        element: 'Élément',
-        usable: 'Utilisable',
-        is_visible: 'Visible',
-    };
-    const label = labels[fieldKey] || fieldKey;
-    const value = cell?.value || '-';
+    const label = descriptors.value?.[fieldKey]?.general?.label || fieldKey;
+    const value = (cell?.value === null || typeof cell?.value === 'undefined' || String(cell?.value) === '') ? '-' : cell.value;
     return `${label} : ${value}`;
 };
 

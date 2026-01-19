@@ -373,6 +373,55 @@ const filterOptions = computed(() => {
     if (props.filterOptions && typeof props.filterOptions === "object") return props.filterOptions;
     return props.config?.filterOptions || {};
 });
+
+/**
+ * Options de filtre résolues:
+ * - priorité aux options serveur (`props.filterOptions` / `config.filterOptions`)
+ * - sinon fallback aux `col.filter.options`
+ * - si demandé (`col.filter.ui.optionsMode === 'rows'`) ou si aucune option fournie: génération depuis les rows
+ */
+const resolvedFilterOptions = computed(() => {
+    const base = (filterOptions.value && typeof filterOptions.value === "object") ? filterOptions.value : {};
+    const out = { ...base };
+
+    const shouldDerive = (col) => {
+        const f = col?.filter;
+        if (!f?.id || !f?.type) return false;
+        if (f.type !== "multi" && f.type !== "select") return false;
+        const mode = String(f?.ui?.optionsMode || "");
+        if (mode === "rows") return true;
+        const hasServer = Array.isArray(base?.[f.id]) && base[f.id].length > 0;
+        const hasColumn = Array.isArray(f?.options) && f.options.length > 0;
+        return !hasServer && !hasColumn;
+    };
+
+    const rows = Array.isArray(props.rows) ? props.rows : [];
+    for (const col of columnsWithoutActions.value || []) {
+        if (!shouldDerive(col)) continue;
+        const f = col.filter;
+        const id = f.id;
+
+        const values = new Set();
+        for (const row of rows) {
+            const v = getFilterValueFor(row, col);
+            if (v === null || typeof v === "undefined") continue;
+            const s = typeof v === "boolean" ? (v ? "1" : "0") : String(v);
+            if (!s) continue;
+            values.add(s);
+        }
+
+        const arr = Array.from(values);
+        const numeric = arr.every((x) => x !== "" && Number.isFinite(Number(x)));
+        arr.sort((a, b) => numeric ? (Number(a) - Number(b)) : a.localeCompare(b, "fr"));
+
+        const max = Number(f?.ui?.maxOptions ?? 250);
+        const sliced = Number.isFinite(max) && max > 0 ? arr.slice(0, max) : arr;
+
+        out[id] = sliced.map((v) => ({ value: v, label: v }));
+    }
+
+    return out;
+});
 const activeFilters = ref({});
 let _filterDebugCount = 0;
 
@@ -1092,7 +1141,7 @@ const handleExport = () => {
             <TanStackTableFilters
                 :columns="columnsWithoutActions"
                 :filter-values="activeFilters"
-                :filter-options="filterOptions"
+                :filter-options="resolvedFilterOptions"
                 :ui-color="uiColor"
                 :debug="debugEnabled"
                 @update:filters="setFilters"

@@ -221,6 +221,8 @@ Route::middleware(['web'])->prefix('tables')->group(function () {
 |--------------------------------------------------------------------------
 */
 Route::middleware(['web', 'auth'])->prefix('entities')->group(function () {
+    Route::post('/resources/upload-image', [App\Http\Controllers\Api\ResourceImageUploadController::class, 'upload'])
+        ->name('api.entities.resources.upload-image');
     Route::patch('/resources/bulk', [App\Http\Controllers\Api\ResourceBulkController::class, 'bulkUpdate'])
         ->name('api.entities.resources.bulk');
     Route::patch('/items/bulk', [App\Http\Controllers\Api\ItemBulkController::class, 'bulkUpdate'])

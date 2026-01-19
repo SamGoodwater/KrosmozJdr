@@ -181,10 +181,13 @@ export function getResourceFieldDescriptors(ctx = {}) {
       },
       edition: {
         form: {
-          type: "text",
-          label: "Image (URL)",
+          type: "file",
+          label: "Image",
           group: "Image",
           required: false,
+          accept: "image/*",
+          // Upload immédiat côté front (renvoie une URL string compatible avec le bulk endpoint)
+          uploadUrl: "/api/entities/resources/upload-image",
         },
         bulk: {
           enabled: true,
@@ -286,6 +289,12 @@ export function getResourceFieldDescriptors(ctx = {}) {
           // UI: multi => dropdown + checkboxes (permet plusieurs valeurs)
           // Les options peuvent venir du serveur via meta.filterOptions.level
           type: "multi",
+          ui: {
+            // Afficher uniquement les niveaux présents dans le dataset (et non une plage arbitraire)
+            optionsMode: "rows",
+            // Sécurité UX (au cas où dataset énorme)
+            maxOptions: 250,
+          },
         },
         // Responsive: disparaît avant "type"
         defaultVisible: { xs: false, sm: true, md: true, lg: true, xl: true },

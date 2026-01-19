@@ -22,7 +22,7 @@
  *   :error="form.errors.name"
  * />
  */
-import { computed } from 'vue';
+import { computed, ref } from 'vue';
 import InputField from '@/Pages/Molecules/data-input/InputField.vue';
 import TextareaField from '@/Pages/Molecules/data-input/TextareaField.vue';
 import SelectField from '@/Pages/Molecules/data-input/SelectField.vue';
@@ -89,6 +89,91 @@ const isSelectField = computed(() => fieldType.value === 'select');
 
 // Vérifier si c'est un champ de type file
 const isFileField = computed(() => fieldType.value === 'file');
+
+// Upload (optionnel) pour les FileFields: si fieldConfig.uploadUrl est fourni, on upload immédiatement
+const uploading = ref(false);
+const uploadError = ref(null);
+
+const currentFilePath = computed(() => {
+    const v = props.modelValue;
+    return (typeof v === 'string' && v) ? v : null;
+});
+
+/**
+ * Upload un fichier vers un endpoint qui retourne { success:true, url }.
+ *
+ * @param {File} file
+ * @param {string} url
+ * @returns {Promise<string|null>} URL de fichier ou null
+ */
+const uploadFile = async (file, url) => {
+    const endpoint = String(url || '').trim();
+    if (!endpoint) return null;
+    if (!file || typeof file !== 'object') return null;
+
+    const csrf = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || null;
+    if (!csrf) {
+        uploadError.value = "Token CSRF introuvable. Recharge la page.";
+        return null;
+    }
+
+    try {
+        uploading.value = true;
+        uploadError.value = null;
+        const formData = new FormData();
+        formData.append('file', file);
+
+        const res = await fetch(endpoint, {
+            method: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': csrf,
+                Accept: 'application/json',
+            },
+            body: formData,
+        });
+
+        const data = await res.json().catch(() => null);
+        if (!res.ok || !data?.success || !data?.url) {
+            uploadError.value = data?.message || "Upload: erreur.";
+            return null;
+        }
+
+        return String(data.url);
+    } catch (e) {
+        uploadError.value = "Upload: " + (e?.message || "unknown");
+        return null;
+    } finally {
+        uploading.value = false;
+    }
+};
+
+const handleFileUpdate = async (v) => {
+    // suppression explicite
+    if (v === null || typeof v === 'undefined' || v === '') {
+        localValue.value = '';
+        return;
+    }
+
+    // Extraction du File (FileField peut renvoyer FileList)
+    const file = (v instanceof File)
+        ? v
+        : (v && typeof v === 'object' && 'length' in v ? (Array.from(v)[0] || null) : null);
+
+    if (!file) {
+        localValue.value = v;
+        return;
+    }
+
+    const uploadUrl = props.fieldConfig?.uploadUrl;
+    if (uploadUrl) {
+        const url = await uploadFile(file, uploadUrl);
+        if (url) localValue.value = url;
+        return;
+    }
+
+    // Fallback: laisser passer le File tel quel (utile dans certains formulaires non-bulk)
+    localValue.value = file;
+};
 </script>
 
 <template>
@@ -183,14 +268,23 @@ const isFileField = computed(() => fieldType.value === 'file');
         <!-- File -->
         <FileField
             v-else-if="isFileField"
-            v-model="localValue"
+            :model-value="localValue"
             :label="fieldConfig?.label"
             :accept="fieldConfig?.accept"
             :multiple="fieldConfig?.multiple"
             :required="fieldConfig?.required"
             :disabled="disabled || fieldConfig?.disabled"
             :validation="error ? { state: 'error', message: error } : null"
+            :current-path="currentFilePath"
+            @update:model-value="handleFileUpdate"
         />
+
+        <div v-if="isFileField && uploading" class="mt-1 text-xs opacity-70">
+            Upload en cours…
+        </div>
+        <div v-if="isFileField && uploadError" class="mt-1 text-xs text-error">
+            {{ uploadError }}
+        </div>
 
         <!-- Help text -->
         <div v-if="fieldConfig?.help" class="label">

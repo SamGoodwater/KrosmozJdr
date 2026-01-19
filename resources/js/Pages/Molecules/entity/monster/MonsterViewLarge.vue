@@ -17,6 +17,8 @@ import EntityActions from '@/Pages/Organismes/entity/EntityActions.vue';
 import { useCopyToClipboard } from '@/Composables/utils/useCopyToClipboard';
 import { useDownloadPdf } from '@/Composables/utils/useDownloadPdf';
 import { getEntityRouteConfig, resolveEntityRouteUrl } from '@/Composables/entity/entityRouteRegistry';
+import { usePermissions } from "@/Composables/permissions/usePermissions";
+import { getMonsterFieldDescriptors } from "@/Entities/monster/monster-descriptors";
 
 const props = defineProps({
     monster: {
@@ -33,6 +35,35 @@ const emit = defineEmits(['edit', 'copy-link', 'download-pdf', 'refresh', 'view'
 
 const { copyToClipboard } = useCopyToClipboard();
 const { downloadPdf } = useDownloadPdf('monster');
+const permissions = usePermissions();
+
+const ctx = computed(() => {
+    const capabilities = {
+        viewAny: permissions.can('monsters', 'viewAny'),
+        createAny: permissions.can('monsters', 'createAny'),
+        updateAny: permissions.can('monsters', 'updateAny'),
+        deleteAny: permissions.can('monsters', 'deleteAny'),
+        manageAny: permissions.can('monsters', 'manageAny'),
+    };
+    return { capabilities, meta: { capabilities } };
+});
+
+const descriptors = computed(() => getMonsterFieldDescriptors(ctx.value));
+
+const canShowField = (fieldKey) => {
+    const desc = descriptors.value?.[fieldKey];
+    if (!desc) return false;
+    const visibleIf = desc?.permissions?.visibleIf;
+    if (typeof visibleIf === 'function') {
+        try {
+            return Boolean(visibleIf(ctx.value));
+        } catch (e) {
+            console.warn('[MonsterViewLarge] visibleIf failed for', fieldKey, e);
+            return false;
+        }
+    }
+    return true;
+};
 
 // Champs à afficher dans la vue large
 const extendedFields = computed(() => {
@@ -47,46 +78,16 @@ const extendedFields = computed(() => {
         'dofusdb_id',
         'official_id',
     ];
-    
-    if (props.monster.canView) {
-        fields.push('created_at', 'updated_at');
-    }
-    
-    return fields;
+    ['created_at', 'updated_at'].forEach((k) => fields.push(k));
+    return fields.filter(canShowField);
 });
 
 const getFieldLabel = (fieldKey) => {
-    const labels = {
-        creature_name: 'Créature',
-        monster_race: 'Race',
-        size: 'Taille',
-        is_boss: 'Boss',
-        boss_pa: 'PA Boss',
-        dofus_version: 'Version Dofus',
-        auto_update: 'Mise à jour auto',
-        dofusdb_id: 'ID DofusDB',
-        official_id: 'ID Officiel',
-        created_at: 'Créé le',
-        updated_at: 'Modifié le',
-    };
-    return labels[fieldKey] || fieldKey;
+    return descriptors.value?.[fieldKey]?.general?.label || fieldKey;
 };
 
 const getFieldIcon = (fieldKey) => {
-    const icons = {
-        creature_name: 'fa-solid fa-dragon',
-        monster_race: 'fa-solid fa-users',
-        size: 'fa-solid fa-expand',
-        is_boss: 'fa-solid fa-crown',
-        boss_pa: 'fa-solid fa-bolt',
-        dofus_version: 'fa-solid fa-code-branch',
-        auto_update: 'fa-solid fa-sync',
-        dofusdb_id: 'fa-solid fa-database',
-        official_id: 'fa-solid fa-id-card',
-        created_at: 'fa-solid fa-calendar',
-        updated_at: 'fa-solid fa-clock',
-    };
-    return icons[fieldKey] || 'fa-solid fa-info-circle';
+    return descriptors.value?.[fieldKey]?.general?.icon || 'fa-solid fa-info-circle';
 };
 
 const getCell = (fieldKey) => {

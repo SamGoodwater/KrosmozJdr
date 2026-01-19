@@ -18,6 +18,8 @@ import EntityActions from '@/Pages/Organismes/entity/EntityActions.vue';
 import { useCopyToClipboard } from '@/Composables/utils/useCopyToClipboard';
 import { useDownloadPdf } from '@/Composables/utils/useDownloadPdf';
 import { getEntityRouteConfig, resolveEntityRouteUrl } from '@/Composables/entity/entityRouteRegistry';
+import { usePermissions } from "@/Composables/permissions/usePermissions";
+import { getCampaignFieldDescriptors } from "@/Entities/campaign/campaign-descriptors";
 
 const props = defineProps({
     campaign: {
@@ -34,6 +36,35 @@ const emit = defineEmits(['edit', 'copy-link', 'download-pdf', 'refresh', 'view'
 
 const { copyToClipboard } = useCopyToClipboard();
 const { downloadPdf } = useDownloadPdf('campaign');
+const permissions = usePermissions();
+
+const ctx = computed(() => {
+    const capabilities = {
+        viewAny: permissions.can('campaigns', 'viewAny'),
+        createAny: permissions.can('campaigns', 'createAny'),
+        updateAny: permissions.can('campaigns', 'updateAny'),
+        deleteAny: permissions.can('campaigns', 'deleteAny'),
+        manageAny: permissions.can('campaigns', 'manageAny'),
+    };
+    return { capabilities, meta: { capabilities } };
+});
+
+const descriptors = computed(() => getCampaignFieldDescriptors(ctx.value));
+
+const canShowField = (fieldKey) => {
+    const desc = descriptors.value?.[fieldKey];
+    if (!desc) return false;
+    const visibleIf = desc?.permissions?.visibleIf;
+    if (typeof visibleIf === 'function') {
+        try {
+            return Boolean(visibleIf(ctx.value));
+        } catch (e) {
+            console.warn('[CampaignViewLarge] visibleIf failed for', fieldKey, e);
+            return false;
+        }
+    }
+    return true;
+};
 
 // Champs à afficher dans la vue large
 const extendedFields = computed(() => {
@@ -47,46 +78,16 @@ const extendedFields = computed(() => {
         'usable',
         'is_visible',
     ];
-    
-    if (props.campaign.canView) {
-        fields.push('created_by', 'created_at', 'updated_at');
-    }
-    
-    return fields;
+    ['created_by', 'created_at', 'updated_at'].forEach((k) => fields.push(k));
+    return fields.filter(canShowField);
 });
 
 const getFieldLabel = (fieldKey) => {
-    const labels = {
-        name: 'Nom',
-        slug: 'Slug',
-        description: 'Description',
-        keyword: 'Mot-clé',
-        state: 'État',
-        is_public: 'Public',
-        usable: 'Utilisable',
-        is_visible: 'Visible',
-        created_by: 'Créé par',
-        created_at: 'Créé le',
-        updated_at: 'Modifié le',
-    };
-    return labels[fieldKey] || fieldKey;
+    return descriptors.value?.[fieldKey]?.general?.label || fieldKey;
 };
 
 const getFieldIcon = (fieldKey) => {
-    const icons = {
-        name: 'fa-solid fa-font',
-        slug: 'fa-solid fa-link',
-        description: 'fa-solid fa-align-left',
-        keyword: 'fa-solid fa-tag',
-        state: 'fa-solid fa-info-circle',
-        is_public: 'fa-solid fa-globe',
-        usable: 'fa-solid fa-check-circle',
-        is_visible: 'fa-solid fa-eye',
-        created_by: 'fa-solid fa-user',
-        created_at: 'fa-solid fa-calendar',
-        updated_at: 'fa-solid fa-clock',
-    };
-    return icons[fieldKey] || 'fa-solid fa-info-circle';
+    return descriptors.value?.[fieldKey]?.general?.icon || 'fa-solid fa-info-circle';
 };
 
 const getCell = (fieldKey) => {

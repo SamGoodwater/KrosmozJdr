@@ -37,6 +37,20 @@ export class BaseModel {
     _extractData(raw) {
         if (!raw) return {};
         
+        // Cas important : entité déjà normalisée (ou Proxy Vue d'une entité normalisée)
+        // On privilégie `_data` si présent, car c'est notre source de vérité.
+        // (Cela évite de "ré-envelopper" un BaseModel proxifié et de perdre l'accès aux champs.)
+        try {
+            if (typeof raw === 'object' && raw !== null && '_data' in raw) {
+                const d = raw._data;
+                if (d && typeof d === 'object') {
+                    return d;
+                }
+            }
+        } catch (e) {
+            // En cas d'erreur avec les Proxies, continuer avec raw
+        }
+
         // Si c'est déjà une instance du même modèle, retourner ses données
         if (raw instanceof this.constructor) {
             return raw._data;

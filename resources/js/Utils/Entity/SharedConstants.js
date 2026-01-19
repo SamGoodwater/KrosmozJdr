@@ -133,7 +133,7 @@ export function getLevelColor(level) {
   if (level <= 0) return LEVEL_COLORS[0] || 'neutral';
 
   // Au-delà de la plage définie => noir
-  if (level > 30) return 'grey-950';
+  if (level > 30) return 'black';
 
   return LEVEL_COLORS[level] || 'neutral';
 }

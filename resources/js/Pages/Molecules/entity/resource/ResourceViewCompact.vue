@@ -18,6 +18,7 @@ import EntityActions from '@/Pages/Organismes/entity/EntityActions.vue';
 import { useCopyToClipboard } from '@/Composables/utils/useCopyToClipboard';
 import { getEntityRouteConfig, resolveEntityRouteUrl } from '@/Composables/entity/entityRouteRegistry';
 import { getResourceFieldDescriptors } from '@/Entities/resource/resource-descriptors';
+import { usePermissions } from "@/Composables/permissions/usePermissions";
 
 const props = defineProps({
     resource: {
@@ -33,9 +34,21 @@ const props = defineProps({
 const emit = defineEmits(['edit', 'copy-link', 'download-pdf', 'refresh', 'view', 'quick-view', 'quick-edit', 'delete', 'action']);
 
 const { copyToClipboard } = useCopyToClipboard();
+const permissions = usePermissions();
 
-// Obtenir les descriptors
-const descriptors = computed(() => getResourceFieldDescriptors({}));
+const ctx = computed(() => {
+    const capabilities = {
+        viewAny: permissions.can('resources', 'viewAny'),
+        createAny: permissions.can('resources', 'createAny'),
+        updateAny: permissions.can('resources', 'updateAny'),
+        deleteAny: permissions.can('resources', 'deleteAny'),
+        manageAny: permissions.can('resources', 'manageAny'),
+    };
+    return { capabilities, meta: { capabilities } };
+});
+
+// Obtenir les descriptors avec le contexte
+const descriptors = computed(() => getResourceFieldDescriptors(ctx.value));
 
 // Champs à afficher dans la vue compacte sous forme de badges
 const compactFields = computed(() => [
@@ -48,6 +61,23 @@ const compactFields = computed(() => [
     'is_visible',
 ]);
 
+const canShowField = (fieldKey) => {
+    const desc = descriptors.value?.[fieldKey];
+    if (!desc) return false;
+    const visibleIf = desc?.permissions?.visibleIf;
+    if (typeof visibleIf === 'function') {
+        try {
+            return Boolean(visibleIf(ctx.value));
+        } catch (e) {
+            console.warn('[ResourceViewCompact] visibleIf failed for', fieldKey, e);
+            return false;
+        }
+    }
+    return true;
+};
+
+const visibleCompactFields = computed(() => (compactFields.value || []).filter(canShowField));
+
 // Utiliser les descriptors pour les icônes
 const getFieldIcon = (fieldKey) => {
     return descriptors.value[fieldKey]?.general?.icon || 'fa-solid fa-info-circle';
@@ -58,6 +88,16 @@ const getCell = (fieldKey) => {
         size: 'md',
         context: 'compact',
     });
+};
+
+const asTextCell = (cell) => {
+    if (!cell) return { type: 'text', value: '-', params: {} };
+    const v = cell?.value;
+    return {
+        type: 'text',
+        value: (v === null || typeof v === 'undefined' || String(v) === '') ? '-' : String(v),
+        params: cell?.params || {},
+    };
 };
 
 // Obtenir la couleur du badge selon le champ
@@ -168,7 +208,7 @@ const handleAction = async (actionKey) => {
 
         <!-- Badges avec icônes -->
         <div class="flex flex-wrap gap-2">
-            <template v-for="fieldKey in compactFields" :key="fieldKey">
+            <template v-for="fieldKey in visibleCompactFields" :key="fieldKey">
                 <Badge
                     :color="getBadgeColor(fieldKey)"
                     :auto-label="getBadgeAutoParams(fieldKey).autoLabel"
@@ -184,7 +224,7 @@ const handleAction = async (actionKey) => {
                     />
                     <span class="font-medium">
                         <CellRenderer
-                            :cell="getCell(fieldKey)"
+                            :cell="asTextCell(getCell(fieldKey))"
                             ui-color="primary"
                         />
                     </span>

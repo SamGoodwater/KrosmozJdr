@@ -17,6 +17,8 @@ import EntityActions from '@/Pages/Organismes/entity/EntityActions.vue';
 import { useCopyToClipboard } from '@/Composables/utils/useCopyToClipboard';
 import { useDownloadPdf } from '@/Composables/utils/useDownloadPdf';
 import { getEntityRouteConfig, resolveEntityRouteUrl } from '@/Composables/entity/entityRouteRegistry';
+import { usePermissions } from "@/Composables/permissions/usePermissions";
+import { getItemFieldDescriptors } from "@/Entities/item/item-descriptors";
 
 const props = defineProps({
     item: {
@@ -33,6 +35,35 @@ const emit = defineEmits(['edit', 'copy-link', 'download-pdf', 'refresh', 'view'
 
 const { copyToClipboard } = useCopyToClipboard();
 const { downloadPdf } = useDownloadPdf('item');
+const permissions = usePermissions();
+
+const ctx = computed(() => {
+    const capabilities = {
+        viewAny: permissions.can('items', 'viewAny'),
+        createAny: permissions.can('items', 'createAny'),
+        updateAny: permissions.can('items', 'updateAny'),
+        deleteAny: permissions.can('items', 'deleteAny'),
+        manageAny: permissions.can('items', 'manageAny'),
+    };
+    return { capabilities, meta: { capabilities } };
+});
+
+const descriptors = computed(() => getItemFieldDescriptors(ctx.value));
+
+const canShowField = (fieldKey) => {
+    const desc = descriptors.value?.[fieldKey];
+    if (!desc) return false;
+    const visibleIf = desc?.permissions?.visibleIf;
+    if (typeof visibleIf === 'function') {
+        try {
+            return Boolean(visibleIf(ctx.value));
+        } catch (e) {
+            console.warn('[ItemViewCompact] visibleIf failed for', fieldKey, e);
+            return false;
+        }
+    }
+    return true;
+};
 
 // Champs à afficher dans la vue compacte
 const compactFields = computed(() => [
@@ -42,30 +73,14 @@ const compactFields = computed(() => [
     'price',
     'dofus_version',
     'is_visible',
-]);
+].filter(canShowField));
 
 const getFieldLabel = (fieldKey) => {
-    const labels = {
-        rarity: 'Rareté',
-        level: 'Niveau',
-        usable: 'Utilisable',
-        price: 'Prix',
-        dofus_version: 'Version',
-        is_visible: 'Visibilité',
-    };
-    return labels[fieldKey] || fieldKey;
+    return descriptors.value?.[fieldKey]?.general?.label || fieldKey;
 };
 
 const getFieldIcon = (fieldKey) => {
-    const icons = {
-        rarity: 'fa-solid fa-star',
-        level: 'fa-solid fa-level-up-alt',
-        usable: 'fa-solid fa-check-circle',
-        price: 'fa-solid fa-coins',
-        dofus_version: 'fa-solid fa-gamepad',
-        is_visible: 'fa-solid fa-eye',
-    };
-    return icons[fieldKey] || 'fa-solid fa-info-circle';
+    return descriptors.value?.[fieldKey]?.general?.icon || 'fa-solid fa-info-circle';
 };
 
 const getCell = (fieldKey) => {

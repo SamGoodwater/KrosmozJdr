@@ -175,6 +175,7 @@ export default function useInputActions({
   // --- ÉTATS D'AFFICHAGE AVEC DÉBOUNCE ---
   const showReset = ref(false);
   const showBack = ref(false);
+  const isSyncingFromProp = ref(false);
   
   // --- TIMERS ---
   let resetTimeout = null;
@@ -189,18 +190,26 @@ export default function useInputActions({
     () => modelValue,
     (newVal) => {
       if (newVal !== currentValue.value) {
+        // Sync externe (prop -> state local). Ne doit pas re-emit update:modelValue.
+        isSyncingFromProp.value = true;
         currentValue.value = newVal;
+        // reset en microtask pour laisser passer la réaction du watcher currentValue
+        queueMicrotask(() => {
+          isSyncingFromProp.value = false;
+        });
       }
     },
     { immediate: true }
   );
 
-  // --- ÉMISSION DES CHANGEMENTS (NOUVEAU) ---
-  // Pour les inputs de type 'file', ne pas émettre automatiquement car FileCore le fait déjà
-  // Cela évite les conflits et les réinitialisations intempestives
+  // --- ÉMISSION DES CHANGEMENTS ---
+  // Pour les inputs de type 'file', ne pas émettre automatiquement (FileCore/FileField gèrent l'update).
+  // IMPORTANT: ne pas émettre lors d'un sync venant du parent (prop update), sinon boucles et "dirty" fantôme.
   if (type !== 'file') {
     watch(currentValue, (newVal, oldVal) => {
-      if (oldVal !== newVal && emit && typeof emit === 'function') {
+      if (isSyncingFromProp.value) return;
+      if (oldVal === newVal) return;
+      if (emit && typeof emit === 'function') {
         emit('update:modelValue', newVal);
       }
     });
@@ -446,10 +455,6 @@ export default function useInputActions({
     const newValue = event.target.value;
     // Mettre à jour la valeur interne
     currentValue.value = newValue;
-    // Émettre l'événement pour le v-model parent
-    if (emit && typeof emit === 'function') {
-      emit('update:modelValue', newValue);
-    }
   };
 
   // --- API EXPOSÉE ---
