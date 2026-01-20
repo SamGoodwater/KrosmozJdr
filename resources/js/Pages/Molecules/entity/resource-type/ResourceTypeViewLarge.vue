@@ -14,12 +14,13 @@
  */
 import { computed } from 'vue';
 import { router } from '@inertiajs/vue3';
-import Badge from '@/Pages/Atoms/data-display/Badge.vue';
 import Icon from '@/Pages/Atoms/data-display/Icon.vue';
 import CellRenderer from "@/Pages/Atoms/data-display/CellRenderer.vue";
 import EntityActions from '@/Pages/Organismes/entity/EntityActions.vue';
 import { useCopyToClipboard } from '@/Composables/utils/useCopyToClipboard';
 import { getEntityRouteConfig, resolveEntityRouteUrl } from '@/Composables/entity/entityRouteRegistry';
+import { usePermissions } from "@/Composables/permissions/usePermissions";
+import { getResourceTypeFieldDescriptors } from "@/Entities/resource-type/resource-type-descriptors";
 
 const props = defineProps({
     resourceType: {
@@ -44,6 +45,35 @@ const emit = defineEmits([
 ]);
 
 const { copyToClipboard } = useCopyToClipboard();
+const permissions = usePermissions();
+
+const ctx = computed(() => {
+    const capabilities = {
+        viewAny: permissions.can('resourceType', 'viewAny'),
+        createAny: permissions.can('resourceType', 'createAny'),
+        updateAny: permissions.can('resourceType', 'updateAny'),
+        deleteAny: permissions.can('resourceType', 'deleteAny'),
+        manageAny: permissions.can('resourceType', 'manageAny'),
+    };
+    return { capabilities, meta: { capabilities } };
+});
+
+const descriptors = computed(() => getResourceTypeFieldDescriptors(ctx.value));
+
+const canShowField = (fieldKey) => {
+    const desc = descriptors.value?.[fieldKey];
+    if (!desc) return false;
+    const visibleIf = desc?.permissions?.visibleIf;
+    if (typeof visibleIf === 'function') {
+        try {
+            return Boolean(visibleIf(ctx.value));
+        } catch (e) {
+            console.warn('[ResourceTypeViewLarge] visibleIf failed for', fieldKey, e);
+            return false;
+        }
+    }
+    return true;
+};
 
 // Champs à afficher dans la vue large
 const extendedFields = computed(() => {
@@ -56,13 +86,9 @@ const extendedFields = computed(() => {
         'seen_count',
         'last_seen_at',
     ];
-    
-    // Ajouter les champs conditionnels si permissions
-    if (props.resourceType.canView) {
-        fields.push('created_by', 'created_at', 'updated_at');
-    }
-    
-    return fields;
+
+    ['created_by', 'created_at', 'updated_at'].forEach((k) => fields.push(k));
+    return fields.filter(canShowField);
 });
 
 // Handlers pour les actions
@@ -112,35 +138,11 @@ const handleAction = async (actionKey) => {
 
 // Helpers pour les labels et icônes
 const getFieldLabel = (fieldKey) => {
-    const labels = {
-        decision: 'Statut',
-        usable: 'Utilisable',
-        is_visible: 'Visibilité',
-        resources_count: 'Nombre de ressources',
-        dofusdb_type_id: 'ID DofusDB',
-        seen_count: 'Détections',
-        last_seen_at: 'Dernière détection',
-        created_by: 'Créé par',
-        created_at: 'Créé le',
-        updated_at: 'Modifié le',
-    };
-    return labels[fieldKey] || fieldKey;
+    return descriptors.value?.[fieldKey]?.general?.label || fieldKey;
 };
 
 const getFieldIcon = (fieldKey) => {
-    const icons = {
-        decision: 'fa-solid fa-circle-check',
-        usable: 'fa-solid fa-check-circle',
-        is_visible: 'fa-solid fa-eye',
-        resources_count: 'fa-solid fa-cubes',
-        dofusdb_type_id: 'fa-solid fa-database',
-        seen_count: 'fa-solid fa-eye',
-        last_seen_at: 'fa-solid fa-clock',
-        created_by: 'fa-solid fa-user',
-        created_at: 'fa-solid fa-calendar',
-        updated_at: 'fa-solid fa-clock',
-    };
-    return icons[fieldKey] || 'fa-solid fa-info-circle';
+    return descriptors.value?.[fieldKey]?.general?.icon || 'fa-solid fa-info-circle';
 };
 
 // Génère une cellule pour un champ

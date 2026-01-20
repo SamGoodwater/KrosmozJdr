@@ -15,9 +15,12 @@ import Icon from '@/Pages/Atoms/data-display/Icon.vue';
 import Tooltip from '@/Pages/Atoms/feedback/Tooltip.vue';
 import CellRenderer from "@/Pages/Atoms/data-display/CellRenderer.vue";
 import EntityActions from '@/Pages/Organismes/entity/EntityActions.vue';
+import EntityUsableDot from "@/Pages/Atoms/data-display/EntityUsableDot.vue";
 import { useCopyToClipboard } from '@/Composables/utils/useCopyToClipboard';
 import { useDownloadPdf } from '@/Composables/utils/useDownloadPdf';
 import { getEntityRouteConfig, resolveEntityRouteUrl } from '@/Composables/entity/entityRouteRegistry';
+import { usePermissions } from "@/Composables/permissions/usePermissions";
+import { getPanoplyFieldDescriptors } from "@/Entities/panoply/panoply-descriptors";
 
 const props = defineProps({
     panoply: {
@@ -27,33 +30,65 @@ const props = defineProps({
     showActions: {
         type: Boolean,
         default: true
+    },
+    displayMode: {
+        type: String,
+        default: 'hover',
+        validator: (v) => ['compact', 'hover', 'extended'].includes(v),
     }
 });
 
 const emit = defineEmits(['edit', 'copy-link', 'download-pdf', 'refresh', 'view', 'quick-view', 'quick-edit', 'delete', 'action']);
 
-const isHovered = ref(false);
+const isHovered = ref(props.displayMode === 'extended');
+const canHoverExpand = computed(() => props.displayMode === 'hover');
 const { copyToClipboard } = useCopyToClipboard();
 const { downloadPdf } = useDownloadPdf('panoply');
+const permissions = usePermissions();
+
+const ctx = computed(() => {
+    const capabilities = {
+        viewAny: permissions.can('panoply', 'viewAny'),
+        createAny: permissions.can('panoply', 'createAny'),
+        updateAny: permissions.can('panoply', 'updateAny'),
+        deleteAny: permissions.can('panoply', 'deleteAny'),
+        manageAny: permissions.can('panoply', 'manageAny'),
+    };
+    return { capabilities, meta: { capabilities } };
+});
+
+const descriptors = computed(() => getPanoplyFieldDescriptors(ctx.value));
+
+const usableValue = computed(() => {
+    const v = props.panoply?.usable ?? props.panoply?._data?.usable;
+    return typeof v === 'boolean' ? v : null;
+});
+
+const canShowField = (fieldKey) => {
+    const desc = descriptors.value?.[fieldKey];
+    if (!desc) return false;
+    const visibleIf = desc?.permissions?.visibleIf;
+    if (typeof visibleIf === 'function') {
+        try {
+            return Boolean(visibleIf(ctx.value));
+        } catch (e) {
+            console.warn('[PanoplyViewMinimal] visibleIf failed for', fieldKey, e);
+            return false;
+        }
+    }
+    return true;
+};
 
 // Champs importants à afficher
-const importantFields = computed(() => ['name', 'bonus', 'items_count']);
+const importantFields = computed(() => ['name', 'bonus', 'items_count'].filter(canShowField));
 
 // Champs supplémentaires à afficher au hover
 const expandedFields = computed(() => [
-    'usable',
     'is_visible',
-]);
+].filter(canShowField));
 
 const getFieldIcon = (fieldKey) => {
-    const icons = {
-        name: 'fa-solid fa-font',
-        bonus: 'fa-solid fa-star',
-        items_count: 'fa-solid fa-boxes',
-        usable: 'fa-solid fa-check-circle',
-        is_visible: 'fa-solid fa-eye',
-    };
-    return icons[fieldKey] || 'fa-solid fa-info-circle';
+    return descriptors.value?.[fieldKey]?.general?.icon || 'fa-solid fa-info-circle';
 };
 
 const getCell = (fieldKey) => {
@@ -64,15 +99,8 @@ const getCell = (fieldKey) => {
 };
 
 const tooltipForField = (fieldKey, cell) => {
-    const labels = {
-        name: 'Nom',
-        bonus: 'Bonus',
-        items_count: 'Nb objets',
-        usable: 'Utilisable',
-        is_visible: 'Visible',
-    };
-    const label = labels[fieldKey] || fieldKey;
-    const value = cell?.value || '-';
+    const label = descriptors.value?.[fieldKey]?.general?.label || fieldKey;
+    const value = (cell?.value === null || typeof cell?.value === 'undefined' || String(cell?.value) === '') ? '-' : cell.value;
     return `${label} : ${value}`;
 };
 
@@ -110,8 +138,11 @@ const handleAction = async (actionKey) => {
             height: isHovered ? 'auto' : '100px',
             minHeight: '80px'
         }"
-        @mouseenter="isHovered = true"
-        @mouseleave="isHovered = false">
+        @mouseenter="canHoverExpand && (isHovered = true)"
+        @mouseleave="canHoverExpand && (isHovered = false)">
+        <div class="absolute top-1 left-1 z-20">
+            <EntityUsableDot :usable="usableValue" />
+        </div>
         
         <div class="p-3">
             <!-- En-tête avec nom et actions -->
@@ -186,7 +217,7 @@ const handleAction = async (actionKey) => {
                             />
                             <div class="flex-1 min-w-0">
                                 <div class="font-semibold text-primary-400">
-                                    {{ key }}:
+                                    {{ descriptors?.[key]?.general?.label || key }}:
                                 </div>
                                 <div class="text-primary-200 truncate">
                                     <CellRenderer

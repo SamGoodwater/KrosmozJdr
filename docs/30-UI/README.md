@@ -5,6 +5,7 @@
 - **[ENTITY_FIELD_DESCRIPTORS_GUIDE.md](./ENTITY_FIELD_DESCRIPTORS_GUIDE.md)** — Guide complet du système Entity Field Descriptors (fonctionnement, architecture, utilisation)
 - **[ENTITY_DESCRIPTORS_MAINTENANCE_GUIDE.md](./ENTITY_DESCRIPTORS_MAINTENANCE_GUIDE.md)** — Guide de maintenance (ajouter un champ, créer un descriptor, etc.)
 - **[ENTITY_ACTIONS_GUIDE.md](./ENTITY_ACTIONS_GUIDE.md)** — Guide d'utilisation du système d'actions pour les entités
+- **[ENTITY_VIEWS.md](./ENTITY_VIEWS.md)** — Conventions UI des vues d’entités (Large/Compact/Minimal) : zones, metas, helpers
 - **[INPUT SYSTEM/](./INPUT%20SYSTEM/)** — Système d'input complet et organisé
 - **[TANSTACK_TABLE.md](./TANSTACK_TABLE.md)** — Table v2 (TanStack) : architecture, contrats, plan de refonte
 - **[FRONTEND_MODELS.md](./FRONTEND_MODELS.md)** — Guide d'utilisation des modèles JS dans les vues

@@ -201,6 +201,8 @@ const sizeClassMap = {
 const modalBoxClasses = computed(() => {
     const base = [
         'modal-box',
+        'overflow-x-hidden',
+        'overflow-y-auto',
         sizeClassMap[props.size] || '',
         variantClasses.value,
         colorClasses.value,
@@ -550,6 +552,8 @@ dialog.modal {
     align-items: center;
     justify-content: center;
     padding: 2rem;
+    overflow-x: hidden;
+    overflow-y: hidden;
     
     // Masquer le backdrop natif du dialog HTML5 quand overlay est false
     &::backdrop {
@@ -644,29 +648,37 @@ dialog.modal {
 
 /* Tailles personnalisées pour les modals */
 .modal-box {
+    /* Le scroll doit rester dans la modal-box (jamais sur le <dialog>) */
+    overscroll-behavior: contain;
+
     &.modal-size-xs {
         width: 20rem; /* 320px - inchangé */
         max-width: 20rem;
+        max-height: calc(100vh - 4rem);
     }
     
     &.modal-size-sm {
         width: 24rem; /* 384px - inchangé */
         max-width: 24rem;
+        max-height: calc(100vh - 4rem);
     }
     
     &.modal-size-md {
         width: 32rem; /* 512px - valeur de lg actuel */
         max-width: 32rem;
+        max-height: calc(100vh - 4rem);
     }
     
     &.modal-size-lg {
         width: 40rem; /* 640px - un peu plus grand que xl actuel */
         max-width: 40rem;
+        max-height: calc(100vh - 4rem);
     }
     
     &.modal-size-xl {
         width: 54rem; /* 864px - 50% plus grand que xl actuel (36rem * 1.5) */
         max-width: 54rem;
+        max-height: calc(100vh - 4rem);
     }
 }
 </style>

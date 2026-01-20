@@ -125,7 +125,7 @@ const handleAction = async (actionKey) => {
 </script>
 
 <template>
-    <div class="space-y-3 max-h-96 overflow-y-auto">
+    <div class="space-y-3">
         <!-- En-tête compact -->
         <div class="flex items-center justify-between gap-2">
             <div class="flex gap-2 items-center flex-1 min-w-0">

@@ -18,6 +18,8 @@ import EntityActions from '@/Pages/Organismes/entity/EntityActions.vue';
 import { useCopyToClipboard } from '@/Composables/utils/useCopyToClipboard';
 import { useDownloadPdf } from '@/Composables/utils/useDownloadPdf';
 import { getEntityRouteConfig, resolveEntityRouteUrl } from '@/Composables/entity/entityRouteRegistry';
+import { usePermissions } from "@/Composables/permissions/usePermissions";
+import { getShopFieldDescriptors } from "@/Entities/shop/shop-descriptors";
 
 const props = defineProps({
     shop: {
@@ -34,6 +36,35 @@ const emit = defineEmits(['edit', 'copy-link', 'download-pdf', 'refresh', 'view'
 
 const { copyToClipboard } = useCopyToClipboard();
 const { downloadPdf } = useDownloadPdf('shop');
+const permissions = usePermissions();
+
+const ctx = computed(() => {
+    const capabilities = {
+        viewAny: permissions.can('shop', 'viewAny'),
+        createAny: permissions.can('shop', 'createAny'),
+        updateAny: permissions.can('shop', 'updateAny'),
+        deleteAny: permissions.can('shop', 'deleteAny'),
+        manageAny: permissions.can('shop', 'manageAny'),
+    };
+    return { capabilities, meta: { capabilities } };
+});
+
+const descriptors = computed(() => getShopFieldDescriptors(ctx.value));
+
+const canShowField = (fieldKey) => {
+    const desc = descriptors.value?.[fieldKey];
+    if (!desc) return false;
+    const visibleIf = desc?.permissions?.visibleIf;
+    if (typeof visibleIf === 'function') {
+        try {
+            return Boolean(visibleIf(ctx.value));
+        } catch (e) {
+            console.warn('[ShopViewLarge] visibleIf failed for', fieldKey, e);
+            return false;
+        }
+    }
+    return true;
+};
 
 // Champs à afficher dans la vue large
 const extendedFields = computed(() => {
@@ -47,48 +78,16 @@ const extendedFields = computed(() => {
         'usable',
         'is_visible',
     ];
-    
-    if (props.shop.canView) {
-        fields.push('image', 'created_by', 'created_at', 'updated_at');
-    }
-    
-    return fields;
+    ['image', 'created_by', 'created_at', 'updated_at'].forEach((k) => fields.push(k));
+    return fields.filter(canShowField);
 });
 
 const getFieldLabel = (fieldKey) => {
-    const labels = {
-        name: 'Nom',
-        description: 'Description',
-        location: 'Localisation',
-        npc_name: 'PNJ',
-        items_count: 'Nb objets',
-        price: 'Prix',
-        usable: 'Utilisable',
-        is_visible: 'Visible',
-        image: 'Image',
-        created_by: 'Créé par',
-        created_at: 'Créé le',
-        updated_at: 'Modifié le',
-    };
-    return labels[fieldKey] || fieldKey;
+    return descriptors.value?.[fieldKey]?.general?.label || fieldKey;
 };
 
 const getFieldIcon = (fieldKey) => {
-    const icons = {
-        name: 'fa-solid fa-font',
-        description: 'fa-solid fa-align-left',
-        location: 'fa-solid fa-map-marker-alt',
-        npc_name: 'fa-solid fa-user-ninja',
-        items_count: 'fa-solid fa-boxes',
-        price: 'fa-solid fa-coins',
-        usable: 'fa-solid fa-check-circle',
-        is_visible: 'fa-solid fa-eye',
-        image: 'fa-solid fa-image',
-        created_by: 'fa-solid fa-user',
-        created_at: 'fa-solid fa-calendar',
-        updated_at: 'fa-solid fa-clock',
-    };
-    return icons[fieldKey] || 'fa-solid fa-info-circle';
+    return descriptors.value?.[fieldKey]?.general?.icon || 'fa-solid fa-info-circle';
 };
 
 const getCell = (fieldKey) => {

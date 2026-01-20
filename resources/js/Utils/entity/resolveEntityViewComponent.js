@@ -33,6 +33,7 @@ const ENTITY_COMPONENT_MAP = {
   'panoplies': 'Panoply',
   'capabilities': 'Capability',
   'specializations': 'Specialization',
+  'resource-types': 'ResourceType',
   'shops': 'Shop',
 };
 
@@ -71,13 +72,12 @@ export async function resolveEntityViewComponent(entityType, view = 'large') {
   }
 
   const componentName = `${entityName}${viewName}`;
-  // Le dossier utilise le nom singulier (sans 's'), pas le type normalisé
-  // Ex: 'resources' -> 'resource', 'items' -> 'item', 'resource-types' -> 'resource-type'
-  let folderName = normalizedType.replace('-', '/');
-  // Si le type se termine par 's' (et n'est pas 'resource-types'), enlever le 's'
-  if (folderName.endsWith('s') && !folderName.includes('resource-type')) {
-    folderName = folderName.slice(0, -1);
-  }
+  // Le dossier utilise le nom "singulier" de l'entité, pas forcément le type normalisé (pluriel).
+  // Exemple: 'capabilities' -> 'capability', 'resource-types' -> 'resource-type'
+  // Pour éviter les heuristiques fragiles, on dérive depuis le nom de composant (ENTITY_COMPONENT_MAP).
+  const folderName = entityName
+    .replace(/([a-z0-9])([A-Z])/g, "$1-$2")
+    .toLowerCase();
   const componentPath = `@/Pages/Molecules/entity/${folderName}/${componentName}.vue`;
 
   // Utiliser import.meta.glob pour que Vite puisse résoudre les imports dynamiques
@@ -121,11 +121,9 @@ export function resolveEntityViewComponentSync(entityType, view = 'large') {
   }
 
   const componentName = `${entityName}${viewName}`;
-  // Le dossier utilise le nom singulier (sans 's'), pas le type normalisé
-  let folderName = normalizedType.replace('-', '/');
-  if (folderName.endsWith('s') && !folderName.includes('resource-type')) {
-    folderName = folderName.slice(0, -1);
-  }
+  const folderName = entityName
+    .replace(/([a-z0-9])([A-Z])/g, "$1-$2")
+    .toLowerCase();
   const componentPath = `@/Pages/Molecules/entity/${folderName}/${componentName}.vue`;
 
   // Utiliser import.meta.glob avec eager pour charger tous les composants au build

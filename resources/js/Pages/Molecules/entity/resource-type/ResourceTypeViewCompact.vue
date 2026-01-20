@@ -16,6 +16,8 @@ import CellRenderer from "@/Pages/Atoms/data-display/CellRenderer.vue";
 import EntityActions from '@/Pages/Organismes/entity/EntityActions.vue';
 import { useCopyToClipboard } from '@/Composables/utils/useCopyToClipboard';
 import { getEntityRouteConfig, resolveEntityRouteUrl } from '@/Composables/entity/entityRouteRegistry';
+import { usePermissions } from "@/Composables/permissions/usePermissions";
+import { getResourceTypeFieldDescriptors } from "@/Entities/resource-type/resource-type-descriptors";
 
 const props = defineProps({
     resourceType: {
@@ -31,6 +33,35 @@ const props = defineProps({
 const emit = defineEmits(['edit', 'copy-link', 'refresh', 'view', 'quick-view', 'quick-edit', 'delete', 'action']);
 
 const { copyToClipboard } = useCopyToClipboard();
+const permissions = usePermissions();
+
+const ctx = computed(() => {
+    const capabilities = {
+        viewAny: permissions.can('resourceType', 'viewAny'),
+        createAny: permissions.can('resourceType', 'createAny'),
+        updateAny: permissions.can('resourceType', 'updateAny'),
+        deleteAny: permissions.can('resourceType', 'deleteAny'),
+        manageAny: permissions.can('resourceType', 'manageAny'),
+    };
+    return { capabilities, meta: { capabilities } };
+});
+
+const descriptors = computed(() => getResourceTypeFieldDescriptors(ctx.value));
+
+const canShowField = (fieldKey) => {
+    const desc = descriptors.value?.[fieldKey];
+    if (!desc) return false;
+    const visibleIf = desc?.permissions?.visibleIf;
+    if (typeof visibleIf === 'function') {
+        try {
+            return Boolean(visibleIf(ctx.value));
+        } catch (e) {
+            console.warn('[ResourceTypeViewCompact] visibleIf failed for', fieldKey, e);
+            return false;
+        }
+    }
+    return true;
+};
 
 // Champs à afficher dans la vue compacte
 const compactFields = computed(() => [
@@ -38,26 +69,14 @@ const compactFields = computed(() => [
     'usable',
     'is_visible',
     'resources_count',
-]);
+].filter(canShowField));
 
 const getFieldLabel = (fieldKey) => {
-    const labels = {
-        decision: 'Statut',
-        usable: 'Utilisable',
-        is_visible: 'Visibilité',
-        resources_count: 'Ressources',
-    };
-    return labels[fieldKey] || fieldKey;
+    return descriptors.value?.[fieldKey]?.general?.label || fieldKey;
 };
 
 const getFieldIcon = (fieldKey) => {
-    const icons = {
-        decision: 'fa-solid fa-circle-check',
-        usable: 'fa-solid fa-check-circle',
-        is_visible: 'fa-solid fa-eye',
-        resources_count: 'fa-solid fa-cubes',
-    };
-    return icons[fieldKey] || 'fa-solid fa-info-circle';
+    return descriptors.value?.[fieldKey]?.general?.icon || 'fa-solid fa-info-circle';
 };
 
 const getCell = (fieldKey) => {
@@ -100,7 +119,7 @@ const handleAction = async (actionKey) => {
 </script>
 
 <template>
-    <div class="space-y-3 max-h-96 overflow-y-auto">
+    <div class="space-y-3">
         <!-- En-tête compact -->
         <div class="flex items-center justify-between gap-2">
             <div class="flex gap-2 items-center flex-1 min-w-0">

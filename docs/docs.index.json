@@ -275,6 +275,11 @@
     "description": "Le système de validation a été entièrement refactorisé pour répondre aux besoins de simplicité et de transparence. L'objectif était de créer une API qui évite les conflits avec les vues tout en restant puissante et flexible."
   },
   {
+    "path": "110- To Do/Description vues Entity.md",
+    "title": "Schéma généralite d'une vue d'entité",
+    "description": "![schéma](vues.png)"
+  },
+  {
     "path": "20-Content/21-Entities/ENTITIES_OVERVIEW.md",
     "title": "Vue d'ensemble des entités – Krosmoz JDR",
     "description": "Ce document présente en détail toutes les entités du projet Krosmoz JDR, leur structure, leurs relations et leur rôle dans l'architecture globale du jeu. Il sert de référence centrale pour la modélisation des données, la génération des migrations, l'implémentation backend et la compréhension métier."
@@ -553,6 +558,11 @@
     "path": "30-UI/ENTITY_ACTIONS_GUIDE.md",
     "title": "Guide d'utilisation — Système d'Actions pour les Entités",
     "description": "**Date** : 2026-01-06"
+  },
+  {
+    "path": "30-UI/ENTITY_VIEWS.md",
+    "title": "Vues d’entités (Large / Compact / Minimal / Texte)",
+    "description": "Standardiser l’affichage des entités (ressources, items, monstres, sorts, etc.) afin d’obtenir des “cards” cohérentes dans les modales et les listes, et limiter la duplication de logique."
   },
   {
     "path": "30-UI/FRONTEND_MODELS.md",

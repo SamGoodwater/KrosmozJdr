@@ -15,11 +15,10 @@ import Icon from '@/Pages/Atoms/data-display/Icon.vue';
 import Tooltip from '@/Pages/Atoms/feedback/Tooltip.vue';
 import CellRenderer from "@/Pages/Atoms/data-display/CellRenderer.vue";
 import EntityActions from '@/Pages/Organismes/entity/EntityActions.vue';
-import { useCopyToClipboard } from '@/Composables/utils/useCopyToClipboard';
-import { useDownloadPdf } from '@/Composables/utils/useDownloadPdf';
-import { getEntityRouteConfig, resolveEntityRouteUrl } from '@/Composables/entity/entityRouteRegistry';
+import EntityViewHeader from "@/Pages/Molecules/entity/shared/EntityViewHeader.vue";
 import { usePermissions } from "@/Composables/permissions/usePermissions";
 import { getMonsterFieldDescriptors } from "@/Entities/monster/monster-descriptors";
+import { getEntityFieldShortLabel, getEntityFieldTooltip, shouldOmitLabelInMeta } from "@/Utils/Entity/entity-view-ui";
 
 const props = defineProps({
     monster: {
@@ -29,14 +28,18 @@ const props = defineProps({
     showActions: {
         type: Boolean,
         default: true
+    },
+    displayMode: {
+        type: String,
+        default: 'hover',
+        validator: (v) => ['compact', 'hover', 'extended'].includes(v),
     }
 });
 
 const emit = defineEmits(['edit', 'copy-link', 'download-pdf', 'refresh', 'view', 'quick-view', 'quick-edit', 'delete', 'action']);
 
-const isHovered = ref(false);
-const { copyToClipboard } = useCopyToClipboard();
-const { downloadPdf } = useDownloadPdf('monster');
+const isHovered = ref(props.displayMode === 'extended');
+const canHoverExpand = computed(() => props.displayMode === 'hover');
 const permissions = usePermissions();
 
 const ctx = computed(() => {
@@ -68,7 +71,7 @@ const canShowField = (fieldKey) => {
 };
 
 // Champs importants à afficher
-const importantFields = computed(() => ['creature_name', 'monster_race', 'size', 'is_boss'].filter(canShowField));
+const importantFields = computed(() => ['monster_race', 'size', 'is_boss', 'dofus_version'].filter(canShowField));
 
 // Champs supplémentaires à afficher au hover
 const expandedFields = computed(() => [
@@ -88,10 +91,14 @@ const getCell = (fieldKey) => {
     });
 };
 
+const getFieldLabel = (fieldKey) => descriptors.value?.[fieldKey]?.general?.label || fieldKey;
+const getFieldTooltip = (fieldKey) => getEntityFieldTooltip(descriptors.value?.[fieldKey]);
+
 const tooltipForField = (fieldKey, cell) => {
-    const label = descriptors.value?.[fieldKey]?.general?.label || fieldKey;
     const value = (cell?.value === null || typeof cell?.value === 'undefined' || String(cell?.value) === '') ? '-' : cell.value;
-    return `${label} : ${value}`;
+    if (shouldOmitLabelInMeta(fieldKey)) return String(value);
+    const shortLabel = getEntityFieldShortLabel(fieldKey, getFieldLabel(fieldKey));
+    return `${shortLabel} : ${value}`;
 };
 
 const handleAction = async (actionKey) => {
@@ -128,61 +135,48 @@ const handleAction = async (actionKey) => {
             height: isHovered ? 'auto' : '100px',
             minHeight: '80px'
         }"
-        @mouseenter="isHovered = true"
-        @mouseleave="isHovered = false">
+        @mouseenter="canHoverExpand && (isHovered = true)"
+        @mouseleave="canHoverExpand && (isHovered = false)">
         
         <div class="p-3">
-            <!-- En-tête avec nom et actions -->
-            <div class="flex items-start justify-between gap-2 mb-2">
-                <div class="flex items-center gap-2 flex-1 min-w-0">
+            <EntityViewHeader mode="minimal">
+                <template #media>
                     <Icon source="fa-solid fa-dragon" :alt="monster.creature?.name || 'Monstre'" size="sm" class="flex-shrink-0" />
+                </template>
+
+                <template #title>
                     <Tooltip :content="monster.creature?.name || 'Monstre'" placement="top">
                         <span class="font-semibold text-primary-100 text-sm truncate block">
-                            <CellRenderer
-                                :cell="getCell('creature_name')"
-                                ui-color="primary"
-                            />
+                            <CellRenderer :cell="getCell('creature_name')" ui-color="primary" />
                         </span>
                     </Tooltip>
-                </div>
-                
-                <div v-if="showActions && isHovered" class="flex-shrink-0">
-                    <EntityActions
-                        entity-type="monster"
-                        :entity="monster"
-                        format="buttons"
-                        display="icon-only"
-                        size="xs"
-                        color="primary"
-                        :context="{ inPanel: false }"
-                        @action="handleAction"
-                    />
-                </div>
-            </div>
-
-            <!-- Infos importantes en icônes avec tooltips -->
-            <div class="flex gap-2 flex-wrap">
-                <template v-for="field in importantFields" :key="field">
-                    <Tooltip
-                        :content="tooltipForField(field, getCell(field))"
-                        placement="top"
-                    >
-                        <div class="flex items-center gap-1 px-2 py-1 bg-base-200 rounded">
-                            <Icon
-                                :source="getFieldIcon(field)"
-                                size="xs"
-                                class="text-primary-400"
-                            />
-                            <span class="text-xs text-primary-300 font-medium">
-                                <CellRenderer
-                                    :cell="getCell(field)"
-                                    ui-color="primary"
-                                />
-                            </span>
-                        </div>
-                    </Tooltip>
                 </template>
-            </div>
+
+                <template #mainInfosRight>
+                    <div class="flex items-center gap-2">
+                        <template v-for="field in importantFields" :key="field">
+                            <Tooltip :content="tooltipForField(field, getCell(field))" placement="top">
+                                <Icon :source="getFieldIcon(field)" size="xs" class="text-primary-400" />
+                            </Tooltip>
+                        </template>
+                    </div>
+                </template>
+
+                <template #actions>
+                    <div v-if="showActions">
+                        <EntityActions
+                            entity-type="monster"
+                            :entity="monster"
+                            format="dropdown"
+                            display="icon-only"
+                            size="xs"
+                            color="primary"
+                            :context="{ inPanel: false }"
+                            @action="handleAction"
+                        />
+                    </div>
+                </template>
+            </EntityViewHeader>
 
             <!-- Contenu supplémentaire au hover -->
             <div 
@@ -194,7 +188,7 @@ const handleAction = async (actionKey) => {
                     class="flex items-start gap-2"
                 >
                     <Tooltip
-                        :content="tooltipForField(key, getCell(key))"
+                        :content="getFieldTooltip(key) || tooltipForField(key, getCell(key))"
                         placement="left"
                     >
                         <div class="flex items-start gap-2 w-full">

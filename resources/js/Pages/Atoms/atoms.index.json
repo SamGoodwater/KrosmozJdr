@@ -1972,6 +1972,29 @@
     "file": "data-display/FilePreview.vue"
   },
   {
+    "name": "EntityUsableDot",
+    "description": "EntityUsableDot — Indicateur discret \"adapté au JDR\"",
+    "props": [
+      {
+        "name": "usable",
+        "type": "boolean|null",
+        "desc": "- true/false si connu, null pour masquer"
+      },
+      {
+        "name": "yesLabel",
+        "type": "string",
+        "desc": "- Texte tooltip si usable=true"
+      },
+      {
+        "name": "noLabel",
+        "type": "string",
+        "desc": "- Texte tooltip si usable=false"
+      }
+    ],
+    "slots": [],
+    "file": "data-display/EntityUsableDot.vue"
+  },
+  {
     "name": "Document",
     "description": "Document Atom (DaisyUI, Atomic Design)",
     "props": [],
@@ -2215,6 +2238,11 @@
         "name": "glassy",
         "type": "Boolean",
         "desc": "- Active un léger gradient \"glassmorphism\" (défaut: false)"
+      },
+      {
+        "name": "truncate",
+        "type": "Boolean",
+        "desc": "- Tronque le contenu (défaut: true). Mettre à false pour autoriser le multiline."
       },
       {
         "name": "size",

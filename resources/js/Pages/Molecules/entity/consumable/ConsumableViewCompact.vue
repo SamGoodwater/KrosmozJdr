@@ -17,6 +17,8 @@ import EntityActions from '@/Pages/Organismes/entity/EntityActions.vue';
 import { useCopyToClipboard } from '@/Composables/utils/useCopyToClipboard';
 import { useDownloadPdf } from '@/Composables/utils/useDownloadPdf';
 import { getEntityRouteConfig, resolveEntityRouteUrl } from '@/Composables/entity/entityRouteRegistry';
+import { usePermissions } from "@/Composables/permissions/usePermissions";
+import { getConsumableFieldDescriptors } from "@/Entities/consumable/consumable-descriptors";
 
 const props = defineProps({
     consumable: {
@@ -33,6 +35,35 @@ const emit = defineEmits(['edit', 'copy-link', 'download-pdf', 'refresh', 'view'
 
 const { copyToClipboard } = useCopyToClipboard();
 const { downloadPdf } = useDownloadPdf('consumable');
+const permissions = usePermissions();
+
+const ctx = computed(() => {
+    const capabilities = {
+        viewAny: permissions.can('consumable', 'viewAny'),
+        createAny: permissions.can('consumable', 'createAny'),
+        updateAny: permissions.can('consumable', 'updateAny'),
+        deleteAny: permissions.can('consumable', 'deleteAny'),
+        manageAny: permissions.can('consumable', 'manageAny'),
+    };
+    return { capabilities, meta: { capabilities } };
+});
+
+const descriptors = computed(() => getConsumableFieldDescriptors(ctx.value));
+
+const canShowField = (fieldKey) => {
+    const desc = descriptors.value?.[fieldKey];
+    if (!desc) return false;
+    const visibleIf = desc?.permissions?.visibleIf;
+    if (typeof visibleIf === 'function') {
+        try {
+            return Boolean(visibleIf(ctx.value));
+        } catch (e) {
+            console.warn('[ConsumableViewCompact] visibleIf failed for', fieldKey, e);
+            return false;
+        }
+    }
+    return true;
+};
 
 // Champs à afficher dans la vue compacte
 const compactFields = computed(() => [
@@ -42,30 +73,14 @@ const compactFields = computed(() => [
     'price',
     'dofus_version',
     'is_visible',
-]);
+].filter(canShowField));
 
 const getFieldLabel = (fieldKey) => {
-    const labels = {
-        rarity: 'Rareté',
-        level: 'Niveau',
-        usable: 'Utilisable',
-        price: 'Prix',
-        dofus_version: 'Version',
-        is_visible: 'Visibilité',
-    };
-    return labels[fieldKey] || fieldKey;
+    return descriptors.value?.[fieldKey]?.general?.label || fieldKey;
 };
 
 const getFieldIcon = (fieldKey) => {
-    const icons = {
-        rarity: 'fa-solid fa-gem',
-        level: 'fa-solid fa-level-up-alt',
-        usable: 'fa-solid fa-check-circle',
-        price: 'fa-solid fa-coins',
-        dofus_version: 'fa-solid fa-gamepad',
-        is_visible: 'fa-solid fa-eye',
-    };
-    return icons[fieldKey] || 'fa-solid fa-info-circle';
+    return descriptors.value?.[fieldKey]?.general?.icon || 'fa-solid fa-info-circle';
 };
 
 const getCell = (fieldKey) => {
@@ -108,7 +123,7 @@ const handleAction = async (actionKey) => {
 </script>
 
 <template>
-    <div class="space-y-3 max-h-96 overflow-y-auto">
+    <div class="space-y-3">
         <!-- En-tête compact -->
         <div class="flex items-center justify-between gap-2">
             <div class="flex gap-2 items-center flex-1 min-w-0">

@@ -17,6 +17,8 @@ import EntityActions from '@/Pages/Organismes/entity/EntityActions.vue';
 import { useCopyToClipboard } from '@/Composables/utils/useCopyToClipboard';
 import { useDownloadPdf } from '@/Composables/utils/useDownloadPdf';
 import { getEntityRouteConfig, resolveEntityRouteUrl } from '@/Composables/entity/entityRouteRegistry';
+import { usePermissions } from "@/Composables/permissions/usePermissions";
+import { getCreatureFieldDescriptors } from "@/Entities/creature/creature-descriptors";
 
 const props = defineProps({
     creature: {
@@ -33,6 +35,35 @@ const emit = defineEmits(['edit', 'copy-link', 'download-pdf', 'refresh', 'view'
 
 const { copyToClipboard } = useCopyToClipboard();
 const { downloadPdf } = useDownloadPdf('creature');
+const permissions = usePermissions();
+
+const ctx = computed(() => {
+    const capabilities = {
+        viewAny: permissions.can('creature', 'viewAny'),
+        createAny: permissions.can('creature', 'createAny'),
+        updateAny: permissions.can('creature', 'updateAny'),
+        deleteAny: permissions.can('creature', 'deleteAny'),
+        manageAny: permissions.can('creature', 'manageAny'),
+    };
+    return { capabilities, meta: { capabilities } };
+});
+
+const descriptors = computed(() => getCreatureFieldDescriptors(ctx.value));
+
+const canShowField = (fieldKey) => {
+    const desc = descriptors.value?.[fieldKey];
+    if (!desc) return false;
+    const visibleIf = desc?.permissions?.visibleIf;
+    if (typeof visibleIf === 'function') {
+        try {
+            return Boolean(visibleIf(ctx.value));
+        } catch (e) {
+            console.warn('[CreatureViewLarge] visibleIf failed for', fieldKey, e);
+            return false;
+        }
+    }
+    return true;
+};
 
 // Champs à afficher dans la vue large
 const extendedFields = computed(() => {
@@ -61,76 +92,16 @@ const extendedFields = computed(() => {
         'agi',
         'chance',
     ];
-    
-    if (props.creature.canView) {
-        fields.push('created_by', 'created_at', 'updated_at');
-    }
-    
-    return fields;
+    ['created_by', 'created_at', 'updated_at'].forEach((k) => fields.push(k));
+    return fields.filter(canShowField);
 });
 
 const getFieldLabel = (fieldKey) => {
-    const labels = {
-        name: 'Nom',
-        description: 'Description',
-        level: 'Niveau',
-        hostility: 'Hostilité',
-        location: 'Localisation',
-        life: 'Vie',
-        pa: 'PA',
-        pm: 'PM',
-        po: 'PO',
-        ini: 'Initiative',
-        invocation: 'Invocation',
-        touch: 'Toucher',
-        ca: 'CA',
-        dodge_pa: 'Esquive PA',
-        dodge_pm: 'Esquive PM',
-        fuite: 'Fuite',
-        tacle: 'Tacle',
-        vitality: 'Vitalité',
-        sagesse: 'Sagesse',
-        strong: 'Force',
-        intel: 'Intelligence',
-        agi: 'Agilité',
-        chance: 'Chance',
-        created_by: 'Créé par',
-        created_at: 'Créé le',
-        updated_at: 'Modifié le',
-    };
-    return labels[fieldKey] || fieldKey;
+    return descriptors.value?.[fieldKey]?.general?.label || fieldKey;
 };
 
 const getFieldIcon = (fieldKey) => {
-    const icons = {
-        name: 'fa-solid fa-font',
-        description: 'fa-solid fa-align-left',
-        level: 'fa-solid fa-level-up-alt',
-        hostility: 'fa-solid fa-exclamation-triangle',
-        location: 'fa-solid fa-map-marker-alt',
-        life: 'fa-solid fa-heart',
-        pa: 'fa-solid fa-running',
-        pm: 'fa-solid fa-walking',
-        po: 'fa-solid fa-crosshairs',
-        ini: 'fa-solid fa-bolt',
-        invocation: 'fa-solid fa-magic',
-        touch: 'fa-solid fa-hand-paper',
-        ca: 'fa-solid fa-shield-alt',
-        dodge_pa: 'fa-solid fa-user-shield',
-        dodge_pm: 'fa-solid fa-user-shield',
-        fuite: 'fa-solid fa-running',
-        tacle: 'fa-solid fa-hand-rock',
-        vitality: 'fa-solid fa-heartbeat',
-        sagesse: 'fa-solid fa-book',
-        strong: 'fa-solid fa-dumbbell',
-        intel: 'fa-solid fa-brain',
-        agi: 'fa-solid fa-wind',
-        chance: 'fa-solid fa-dice',
-        created_by: 'fa-solid fa-user',
-        created_at: 'fa-solid fa-calendar',
-        updated_at: 'fa-solid fa-clock',
-    };
-    return icons[fieldKey] || 'fa-solid fa-info-circle';
+    return descriptors.value?.[fieldKey]?.general?.icon || 'fa-solid fa-info-circle';
 };
 
 const getCell = (fieldKey) => {

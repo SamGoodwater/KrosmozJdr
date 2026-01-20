@@ -31,6 +31,7 @@
  * @props {String} autoScheme - Nuancié: 'mixed' | 'rainbow' | 'level' | 'rarity' (défaut: 'mixed')
  * @props {String} autoTone - 'mid' | 'light' | 'dark' (défaut: 'mid')
  * @props {Boolean} glassy - Active un léger gradient "glassmorphism" (défaut: false)
+ * @props {Boolean} truncate - Tronque le contenu (défaut: true). Mettre à false pour autoriser le multiline.
  * @props {String} size - Taille DaisyUI ('', 'xs', 'sm', 'md', 'lg', 'xl'), défaut ''
  * @props {String} variant - Style DaisyUI ('', 'outline', 'dash', 'soft', 'ghost'), défaut ''
  * @props {String|Object} id, ariaLabel, role, tabindex - hérités de commonProps
@@ -94,6 +95,7 @@ const props = defineProps({
         validator: v => ['mid', 'light', 'dark'].includes(v),
     },
     glassy: { type: Boolean, default: false },
+    truncate: { type: Boolean, default: true },
     size: {
         type: String,
         default: '',
@@ -326,9 +328,14 @@ const attrs = computed(() => getCommonAttrs(props));
 <template>
     <span ref="badgeEl" :class="atomClasses" v-bind="attrs" v-on="$attrs" :style="[inlineStyle, domContrastStyle]">
         <!-- Priorité : content prop > slot content > slot default -->
-        <span v-if="content && !$slots.content && !$slots.default" class="k-truncate">{{ content }}</span>
+        <span
+            v-if="content && !$slots.content && !$slots.default"
+            :class="truncate ? 'k-truncate' : 'whitespace-normal break-words'"
+        >
+            {{ content }}
+        </span>
         <slot name="content" v-else-if="$slots.content" />
-        <span v-else class="k-truncate"><slot /></span>
+        <span v-else :class="truncate ? 'k-truncate' : 'whitespace-normal break-words'"><slot /></span>
     </span>
 </template>
 

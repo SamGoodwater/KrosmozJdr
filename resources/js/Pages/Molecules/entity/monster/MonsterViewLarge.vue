@@ -12,13 +12,17 @@
 import { computed } from 'vue';
 import { router } from '@inertiajs/vue3';
 import Icon from '@/Pages/Atoms/data-display/Icon.vue';
+import Badge from '@/Pages/Atoms/data-display/Badge.vue';
 import CellRenderer from "@/Pages/Atoms/data-display/CellRenderer.vue";
+import Tooltip from "@/Pages/Atoms/feedback/Tooltip.vue";
 import EntityActions from '@/Pages/Organismes/entity/EntityActions.vue';
+import EntityViewHeader from "@/Pages/Molecules/entity/shared/EntityViewHeader.vue";
 import { useCopyToClipboard } from '@/Composables/utils/useCopyToClipboard';
 import { useDownloadPdf } from '@/Composables/utils/useDownloadPdf';
 import { getEntityRouteConfig, resolveEntityRouteUrl } from '@/Composables/entity/entityRouteRegistry';
 import { usePermissions } from "@/Composables/permissions/usePermissions";
 import { getMonsterFieldDescriptors } from "@/Entities/monster/monster-descriptors";
+import { getEntityFieldTooltip, getEntityFieldShortLabel, shouldOmitLabelInMeta } from "@/Utils/Entity/entity-view-ui";
 
 const props = defineProps({
     monster: {
@@ -50,6 +54,11 @@ const ctx = computed(() => {
 
 const descriptors = computed(() => getMonsterFieldDescriptors(ctx.value));
 
+const autoUpdateValue = computed(() => {
+    const v = props.monster?.auto_update ?? props.monster?._data?.auto_update;
+    return typeof v === 'boolean' ? v : null;
+});
+
 const canShowField = (fieldKey) => {
     const desc = descriptors.value?.[fieldKey];
     if (!desc) return false;
@@ -65,26 +74,39 @@ const canShowField = (fieldKey) => {
     return true;
 };
 
-// Champs à afficher dans la vue large
-const extendedFields = computed(() => {
-    const fields = [
-        'creature_name',
-        'monster_race',
-        'size',
-        'is_boss',
-        'boss_pa',
-        'dofus_version',
-        'auto_update',
-        'dofusdb_id',
-        'official_id',
-    ];
-    ['created_at', 'updated_at'].forEach((k) => fields.push(k));
-    return fields.filter(canShowField);
-});
+const headlineFields = computed(() => ([
+    'monster_race',
+    'size',
+    'is_boss',
+].filter(canShowField)));
+
+const metaFields = computed(() => ([
+    'boss_pa',
+].filter(canShowField).filter((k) => !headlineFields.value.includes(k))));
+
+const displayMetaFields = computed(() => [...headlineFields.value, ...metaFields.value]);
+
+const userCanEditFields = computed(() => ([
+    'dofus_version',
+    'auto_update',
+].filter(canShowField)));
+
+const technicalFields = computed(() => ([
+    'dofusdb_id',
+    'official_id',
+    'created_at',
+    'updated_at',
+].filter(canShowField)));
+
+const bodyFields = computed(() => ([
+    // creature_name est le titre
+].filter(canShowField)));
 
 const getFieldLabel = (fieldKey) => {
     return descriptors.value?.[fieldKey]?.general?.label || fieldKey;
 };
+
+const getFieldTooltip = (fieldKey) => getEntityFieldTooltip(descriptors.value?.[fieldKey]);
 
 const getFieldIcon = (fieldKey) => {
     return descriptors.value?.[fieldKey]?.general?.icon || 'fa-solid fa-info-circle';
@@ -95,6 +117,30 @@ const getCell = (fieldKey) => {
         size: 'lg',
         context: 'extended',
     });
+};
+
+const getBadgeColor = (fieldKey) => {
+    const cell = getCell(fieldKey);
+    if (cell?.params?.color) return cell.params.color;
+    const colorMap = {
+        monster_race: 'info',
+        size: 'secondary',
+        is_boss: 'warning',
+        boss_pa: 'warning',
+        dofus_version: 'secondary',
+        auto_update: 'warning',
+        dofusdb_id: 'neutral',
+        official_id: 'neutral',
+        created_at: 'neutral',
+        updated_at: 'neutral',
+    };
+    return colorMap[fieldKey] || 'neutral';
+};
+
+const asTextCell = (cell) => {
+    if (!cell) return { type: 'text', value: '-', params: {} };
+    const v = cell?.value;
+    return { type: 'text', value: (v === null || typeof v === 'undefined' || String(v) === '') ? '-' : String(v), params: cell?.params || {} };
 };
 
 const handleAction = async (actionKey) => {
@@ -139,65 +185,112 @@ const handleAction = async (actionKey) => {
 
 <template>
     <div class="space-y-6">
-        <!-- En-tête avec nom et actions -->
-        <div class="flex flex-col md:flex-row gap-4 items-start">
-            <!-- Informations principales -->
-            <div class="flex-1 w-full">
-                <div class="flex items-start justify-between gap-4">
-                    <div class="flex-1 min-w-0">
-                        <h2 class="text-2xl font-bold text-primary-100 break-words">
-                            <CellRenderer
-                                :cell="getCell('creature_name')"
-                                ui-color="primary"
-                            />
-                        </h2>
-                        <p v-if="monster.creature?.description" class="text-primary-300 mt-2 break-words">
-                            {{ monster.creature.description }}
-                        </p>
-                    </div>
-                    
-                    <!-- Actions en haut à droite -->
-                    <div v-if="showActions" class="flex-shrink-0">
-                        <EntityActions
-                            entity-type="monster"
-                            :entity="monster"
-                            format="buttons"
-                            display="icon-only"
-                            size="sm"
-                            color="primary"
-                            :context="{ inPanel: false, inPage: true }"
-                            @action="handleAction"
-                        />
-                    </div>
+        <EntityViewHeader mode="large">
+            <template #media>
+                <div class="w-32 h-32 md:w-40 md:h-40 rounded-lg bg-base-200 flex items-center justify-center border border-base-300">
+                    <Icon source="fa-solid fa-dragon" :alt="monster.creature?.name || 'Monstre'" size="xl" class="text-primary-400" />
                 </div>
-            </div>
-        </div>
+            </template>
 
-        <!-- Informations principales -->
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            <div
-                v-for="fieldKey in extendedFields"
-                :key="fieldKey"
-                class="p-3 bg-base-200 rounded-lg"
-            >
-                <div class="flex flex-col gap-1">
-                    <div class="flex items-center gap-2">
-                        <Icon
-                            :source="getFieldIcon(fieldKey)"
-                            :alt="getFieldLabel(fieldKey)"
-                            size="xs"
-                            class="text-primary-400"
-                        />
-                        <span class="text-xs text-primary-400 uppercase font-semibold">
-                            {{ getFieldLabel(fieldKey) }}
-                        </span>
-                    </div>
-                    <div class="text-primary-100 break-words">
-                        <CellRenderer
-                            :cell="getCell(fieldKey)"
-                            ui-color="primary"
-                        />
-                    </div>
+            <template #title>
+                <h2 class="text-2xl font-bold text-primary-100 break-words">
+                    <CellRenderer :cell="getCell('creature_name')" ui-color="primary" />
+                </h2>
+            </template>
+
+            <template #mainInfos>
+                <div v-if="displayMetaFields.length > 0" class="mt-3 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
+                    <template v-for="fieldKey in displayMetaFields" :key="fieldKey">
+                        <Tooltip :content="getFieldTooltip(fieldKey)" placement="top">
+                            <div class="flex items-start justify-between gap-2 min-w-0">
+                                <div class="flex items-center gap-2 min-w-0">
+                                    <Icon :source="getFieldIcon(fieldKey)" size="xs" class="text-primary-300 flex-shrink-0" />
+                                    <span
+                                        v-if="!shouldOmitLabelInMeta(fieldKey)"
+                                        class="text-xs uppercase font-semibold text-primary-300 truncate"
+                                    >
+                                        {{ getEntityFieldShortLabel(fieldKey, getFieldLabel(fieldKey)) }}
+                                    </span>
+                                </div>
+                                <Badge
+                                    :color="getBadgeColor(fieldKey)"
+                                    size="sm"
+                                    :truncate="false"
+                                    class="max-w-[18rem] whitespace-normal break-words"
+                                >
+                                    <CellRenderer :cell="asTextCell(getCell(fieldKey))" ui-color="primary" />
+                                </Badge>
+                            </div>
+                        </Tooltip>
+                    </template>
+                </div>
+            </template>
+
+            <template #subtitle>
+                <p v-if="monster.creature?.description" class="text-primary-300 mt-2 break-words">
+                    {{ monster.creature.description }}
+                </p>
+            </template>
+
+            <template #actions>
+                <div v-if="showActions">
+                    <EntityActions
+                        entity-type="monster"
+                        :entity="monster"
+                        format="buttons"
+                        display="icon-only"
+                        size="sm"
+                        color="primary"
+                        :context="{ inPanel: false, inPage: true }"
+                        @action="handleAction"
+                    />
+                </div>
+            </template>
+        </EntityViewHeader>
+
+        <div v-if="technicalFields.length > 0 || userCanEditFields.length > 0" class="pt-3 border-t border-base-300">
+            <div v-if="technicalFields.length > 0" class="flex flex-wrap gap-x-6 gap-y-2 text-xs text-primary-200/80">
+                <template v-for="fieldKey in technicalFields" :key="fieldKey">
+                    <Tooltip :content="getFieldTooltip(fieldKey)" placement="top">
+                        <div class="inline-flex items-center gap-2 min-w-0">
+                            <Icon :source="getFieldIcon(fieldKey)" size="xs" class="text-primary-300 flex-shrink-0" />
+                            <span class="uppercase tracking-wide text-primary-300">{{ getFieldLabel(fieldKey) }}</span>
+                            <span class="min-w-0 break-words">
+                                <CellRenderer :cell="asTextCell(getCell(fieldKey))" ui-color="primary" />
+                            </span>
+                        </div>
+                    </Tooltip>
+                </template>
+            </div>
+
+            <div v-if="userCanEditFields.length > 0" class="mt-4">
+                <div class="text-xs font-semibold uppercase tracking-wide text-primary-300 mb-2">Paramètres</div>
+                <div class="flex flex-wrap gap-x-6 gap-y-2 text-xs text-primary-200/80">
+                    <template v-for="fieldKey in userCanEditFields" :key="fieldKey">
+                        <Tooltip :content="getFieldTooltip(fieldKey)" placement="top">
+                            <div class="inline-flex items-center gap-2 min-w-0">
+                                <Icon :source="getFieldIcon(fieldKey)" size="xs" class="text-primary-300 flex-shrink-0" />
+                                <span class="uppercase tracking-wide text-primary-300">{{ getFieldLabel(fieldKey) }}</span>
+                                <span class="min-w-0 break-words">
+                                    <template v-if="fieldKey === 'auto_update'">
+                                        <Icon
+                                            v-if="autoUpdateValue !== null"
+                                            :source="autoUpdateValue ? 'fa-solid fa-check' : 'fa-solid fa-xmark'"
+                                            :alt="autoUpdateValue ? 'Oui' : 'Non'"
+                                            size="sm"
+                                            :class="autoUpdateValue ? 'text-success-800' : 'text-error-800'"
+                                        />
+                                        <span v-else>—</span>
+                                    </template>
+                                    <template v-else>
+                                        <Badge :color="getBadgeColor(fieldKey)" size="sm">
+                                            <CellRenderer :cell="asTextCell(getCell(fieldKey))" ui-color="primary" />
+                                        </Badge>
+                                    </template>
+                                </span>
+                            </div>
+                        </Tooltip>
+                    </template>
                 </div>
             </div>
         </div>

@@ -16,6 +16,8 @@ import { computed, defineAsyncComponent, shallowRef, watch } from 'vue';
 import { router } from '@inertiajs/vue3';
 import Modal from '@/Pages/Molecules/action/Modal.vue';
 import Btn from '@/Pages/Atoms/action/Btn.vue';
+import Dropdown from '@/Pages/Atoms/action/Dropdown.vue';
+import Icon from '@/Pages/Atoms/data-display/Icon.vue';
 import EntityActions from '@/Pages/Organismes/entity/EntityActions.vue';
 import { useEntityViewFormat } from '@/Composables/store/useEntityViewFormat';
 import { getEntityRouteConfig, resolveEntityRouteUrl } from '@/Composables/entity/entityRouteRegistry';
@@ -51,7 +53,7 @@ const props = defineProps({
 const emit = defineEmits(['close', 'edit', 'quick-edit', 'expand', 'copy-link', 'download-pdf', 'refresh', 'delete']);
 
 // Utiliser le format stocké si useStoredFormat est true et que view n'est pas fourni
-const { viewFormat } = useEntityViewFormat(props.entityType);
+const { viewFormat, setViewFormat, availableFormats, minimalDisplayMode, setMinimalDisplayMode, availableMinimalDisplayModes } = useEntityViewFormat(props.entityType);
 const currentView = computed(() => {
     if (props.view) {
         return props.view;
@@ -163,10 +165,19 @@ const getComponentProps = () => {
     // Convertir le nom de l'entité en camelCase pour la prop
     const propName = entityName.charAt(0).toLowerCase() + entityName.slice(1);
     
-    return {
+    const common = {
         [propName]: props.entity,
         showActions: false,
     };
+
+    if (currentView.value === 'minimal') {
+        return {
+            ...common,
+            displayMode: minimalDisplayMode.value,
+        };
+    }
+
+    return common;
 };
 
 const handleAction = async (actionKey, entity) => {
@@ -221,6 +232,7 @@ const handleAction = async (actionKey, entity) => {
         :size="modalSize"
         placement="middle-center"
         close-on-esc
+        :close-on-button="false"
         @close="handleClose">
         
         <template #header>
@@ -228,7 +240,63 @@ const handleAction = async (actionKey, entity) => {
                 <h3 class="text-lg font-bold text-primary-100 flex-1 min-w-0">
                     {{ getEntityName() }}
                 </h3>
-                <div class="flex-shrink-0">
+                <div class="flex items-center gap-2 flex-shrink-0">
+                    <Dropdown
+                        v-if="!view && useStoredFormat"
+                        placement="bottom-end"
+                        variant="glass"
+                        color="primary"
+                        size="sm"
+                        :close-on-content-click="false"
+                        aria-label="Options d’affichage"
+                    >
+                        <template #trigger>
+                            <Btn size="sm" variant="glass" color="primary" aria-label="Options d’affichage">
+                                <Icon source="fa-solid fa-sliders" size="sm" />
+                            </Btn>
+                        </template>
+                        <template #content>
+                            <div class="p-3 space-y-3 min-w-64">
+                                <div class="text-xs font-semibold uppercase tracking-wide text-primary-200/80">
+                                    Format
+                                </div>
+                                <div class="grid grid-cols-2 gap-2">
+                                    <Btn
+                                        v-for="f in availableFormats"
+                                        :key="f.value"
+                                        size="sm"
+                                        :variant="viewFormat === f.value ? 'glass' : 'ghost'"
+                                        color="primary"
+                                        class="justify-start gap-2"
+                                        @click="setViewFormat(f.value)"
+                                    >
+                                        <Icon :source="f.icon" size="sm" />
+                                        <span class="truncate">{{ f.label }}</span>
+                                    </Btn>
+                                </div>
+
+                                <div v-if="viewFormat === 'minimal'" class="pt-2 border-t border-base-300">
+                                    <div class="text-xs font-semibold uppercase tracking-wide text-primary-200/80 mb-2">
+                                        Minimal
+                                    </div>
+                                    <div class="space-y-1">
+                                        <Btn
+                                            v-for="m in availableMinimalDisplayModes"
+                                            :key="m.value"
+                                            size="sm"
+                                            :variant="minimalDisplayMode === m.value ? 'glass' : 'ghost'"
+                                            color="primary"
+                                            class="w-full justify-start"
+                                            @click="setMinimalDisplayMode(m.value)"
+                                        >
+                                            {{ m.label }}
+                                        </Btn>
+                                    </div>
+                                </div>
+                            </div>
+                        </template>
+                    </Dropdown>
+
                     <EntityActions
                         :entity-type="entityTypeKey"
                         :entity="entity"
@@ -239,6 +307,15 @@ const handleAction = async (actionKey, entity) => {
                         :context="{ inModal: true, modalMode: 'view' }"
                         @action="handleAction"
                     />
+                    <Btn
+                        circle
+                        size="sm"
+                        variant="ghost"
+                        aria-label="Fermer"
+                        @click="handleClose"
+                    >
+                        <i class="fa-solid fa-xmark"></i>
+                    </Btn>
                 </div>
             </div>
         </template>

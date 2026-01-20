@@ -17,6 +17,8 @@ import EntityActions from '@/Pages/Organismes/entity/EntityActions.vue';
 import { useCopyToClipboard } from '@/Composables/utils/useCopyToClipboard';
 import { useDownloadPdf } from '@/Composables/utils/useDownloadPdf';
 import { getEntityRouteConfig, resolveEntityRouteUrl } from '@/Composables/entity/entityRouteRegistry';
+import { usePermissions } from "@/Composables/permissions/usePermissions";
+import { getNpcFieldDescriptors } from "@/Entities/npc/npc-descriptors";
 
 const props = defineProps({
     npc: {
@@ -33,6 +35,35 @@ const emit = defineEmits(['edit', 'copy-link', 'download-pdf', 'refresh', 'view'
 
 const { copyToClipboard } = useCopyToClipboard();
 const { downloadPdf } = useDownloadPdf('npc');
+const permissions = usePermissions();
+
+const ctx = computed(() => {
+    const capabilities = {
+        viewAny: permissions.can('npc', 'viewAny'),
+        createAny: permissions.can('npc', 'createAny'),
+        updateAny: permissions.can('npc', 'updateAny'),
+        deleteAny: permissions.can('npc', 'deleteAny'),
+        manageAny: permissions.can('npc', 'manageAny'),
+    };
+    return { capabilities, meta: { capabilities } };
+});
+
+const descriptors = computed(() => getNpcFieldDescriptors(ctx.value));
+
+const canShowField = (fieldKey) => {
+    const desc = descriptors.value?.[fieldKey];
+    if (!desc) return false;
+    const visibleIf = desc?.permissions?.visibleIf;
+    if (typeof visibleIf === 'function') {
+        try {
+            return Boolean(visibleIf(ctx.value));
+        } catch (e) {
+            console.warn('[NpcViewLarge] visibleIf failed for', fieldKey, e);
+            return false;
+        }
+    }
+    return true;
+};
 
 // Champs à afficher dans la vue large
 const extendedFields = computed(() => {
@@ -45,42 +76,16 @@ const extendedFields = computed(() => {
         'age',
         'size',
     ];
-    
-    if (props.npc.canView) {
-        fields.push('created_at', 'updated_at');
-    }
-    
-    return fields;
+    ['created_at', 'updated_at'].forEach((k) => fields.push(k));
+    return fields.filter(canShowField);
 });
 
 const getFieldLabel = (fieldKey) => {
-    const labels = {
-        creature_name: 'Créature',
-        classe: 'Classe',
-        specialization: 'Spécialisation',
-        story: 'Histoire',
-        historical: 'Historique',
-        age: 'Âge',
-        size: 'Taille',
-        created_at: 'Créé le',
-        updated_at: 'Modifié le',
-    };
-    return labels[fieldKey] || fieldKey;
+    return descriptors.value?.[fieldKey]?.general?.label || fieldKey;
 };
 
 const getFieldIcon = (fieldKey) => {
-    const icons = {
-        creature_name: 'fa-solid fa-user',
-        classe: 'fa-solid fa-user-tie',
-        specialization: 'fa-solid fa-star',
-        story: 'fa-solid fa-book',
-        historical: 'fa-solid fa-scroll',
-        age: 'fa-solid fa-birthday-cake',
-        size: 'fa-solid fa-expand',
-        created_at: 'fa-solid fa-calendar',
-        updated_at: 'fa-solid fa-clock',
-    };
-    return icons[fieldKey] || 'fa-solid fa-info-circle';
+    return descriptors.value?.[fieldKey]?.general?.icon || 'fa-solid fa-info-circle';
 };
 
 const getCell = (fieldKey) => {

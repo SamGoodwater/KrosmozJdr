@@ -18,6 +18,8 @@ import EntityActions from '@/Pages/Organismes/entity/EntityActions.vue';
 import { useCopyToClipboard } from '@/Composables/utils/useCopyToClipboard';
 import { useDownloadPdf } from '@/Composables/utils/useDownloadPdf';
 import { getEntityRouteConfig, resolveEntityRouteUrl } from '@/Composables/entity/entityRouteRegistry';
+import { usePermissions } from "@/Composables/permissions/usePermissions";
+import { getClasseFieldDescriptors } from "@/Entities/classe/classe-descriptors";
 
 const props = defineProps({
     classe: {
@@ -34,6 +36,35 @@ const emit = defineEmits(['edit', 'copy-link', 'download-pdf', 'refresh', 'view'
 
 const { copyToClipboard } = useCopyToClipboard();
 const { downloadPdf } = useDownloadPdf('classe');
+const permissions = usePermissions();
+
+const ctx = computed(() => {
+    const capabilities = {
+        viewAny: permissions.can('classe', 'viewAny'),
+        createAny: permissions.can('classe', 'createAny'),
+        updateAny: permissions.can('classe', 'updateAny'),
+        deleteAny: permissions.can('classe', 'deleteAny'),
+        manageAny: permissions.can('classe', 'manageAny'),
+    };
+    return { capabilities, meta: { capabilities } };
+});
+
+const descriptors = computed(() => getClasseFieldDescriptors(ctx.value));
+
+const canShowField = (fieldKey) => {
+    const desc = descriptors.value?.[fieldKey];
+    if (!desc) return false;
+    const visibleIf = desc?.permissions?.visibleIf;
+    if (typeof visibleIf === 'function') {
+        try {
+            return Boolean(visibleIf(ctx.value));
+        } catch (e) {
+            console.warn('[ClasseViewCompact] visibleIf failed for', fieldKey, e);
+            return false;
+        }
+    }
+    return true;
+};
 
 // Champs à afficher dans la vue compacte
 const compactFields = computed(() => [
@@ -43,30 +74,14 @@ const compactFields = computed(() => [
     'specificity',
     'usable',
     'is_visible',
-]);
+].filter(canShowField));
 
 const getFieldLabel = (fieldKey) => {
-    const labels = {
-        name: 'Nom',
-        life: 'Vie',
-        life_dice: 'Dé de vie',
-        specificity: 'Spécificité',
-        usable: 'Utilisable',
-        is_visible: 'Visible',
-    };
-    return labels[fieldKey] || fieldKey;
+    return descriptors.value?.[fieldKey]?.general?.label || fieldKey;
 };
 
 const getFieldIcon = (fieldKey) => {
-    const icons = {
-        name: 'fa-solid fa-font',
-        life: 'fa-solid fa-heart',
-        life_dice: 'fa-solid fa-dice',
-        specificity: 'fa-solid fa-star',
-        usable: 'fa-solid fa-check-circle',
-        is_visible: 'fa-solid fa-eye',
-    };
-    return icons[fieldKey] || 'fa-solid fa-info-circle';
+    return descriptors.value?.[fieldKey]?.general?.icon || 'fa-solid fa-info-circle';
 };
 
 const getCell = (fieldKey) => {
@@ -109,7 +124,7 @@ const handleAction = async (actionKey) => {
 </script>
 
 <template>
-    <div class="space-y-3 max-h-96 overflow-y-auto">
+    <div class="space-y-3">
         <!-- En-tête compact -->
         <div class="flex items-center justify-between gap-2">
             <div class="flex gap-2 items-center flex-1 min-w-0">

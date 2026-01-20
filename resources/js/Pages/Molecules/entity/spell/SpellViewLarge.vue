@@ -13,8 +13,13 @@ import { computed } from 'vue';
 import { router } from '@inertiajs/vue3';
 import Image from '@/Pages/Atoms/data-display/Image.vue';
 import Icon from '@/Pages/Atoms/data-display/Icon.vue';
+import Badge from '@/Pages/Atoms/data-display/Badge.vue';
 import CellRenderer from "@/Pages/Atoms/data-display/CellRenderer.vue";
 import EntityActions from '@/Pages/Organismes/entity/EntityActions.vue';
+import EntityViewHeader from "@/Pages/Molecules/entity/shared/EntityViewHeader.vue";
+import EntityUsableDot from "@/Pages/Atoms/data-display/EntityUsableDot.vue";
+import Tooltip from "@/Pages/Atoms/feedback/Tooltip.vue";
+import { getEntityFieldTooltip, getEntityFieldShortLabel, shouldOmitLabelInMeta } from "@/Utils/Entity/entity-view-ui";
 import { useCopyToClipboard } from '@/Composables/utils/useCopyToClipboard';
 import { useDownloadPdf } from '@/Composables/utils/useDownloadPdf';
 import { getEntityRouteConfig, resolveEntityRouteUrl } from '@/Composables/entity/entityRouteRegistry';
@@ -51,6 +56,16 @@ const ctx = computed(() => {
 
 const descriptors = computed(() => getSpellFieldDescriptors(ctx.value));
 
+const usableValue = computed(() => {
+    const v = props.spell?.usable ?? props.spell?._data?.usable;
+    return typeof v === 'boolean' ? v : null;
+});
+
+const autoUpdateValue = computed(() => {
+    const v = props.spell?.auto_update ?? props.spell?._data?.auto_update;
+    return typeof v === 'boolean' ? v : null;
+});
+
 const canShowField = (fieldKey) => {
     const desc = descriptors.value?.[fieldKey];
     if (!desc) return false;
@@ -66,34 +81,43 @@ const canShowField = (fieldKey) => {
     return true;
 };
 
-// Champs à afficher dans la vue large
-const extendedFields = computed(() => {
-    const fields = [
-        'level',
-        'pa',
-        'po',
-        'area',
-        'element',
-        'category',
-        'cast_per_turn',
-        'cast_per_target',
-        'sight_line',
-        'number_between_two_cast',
-        'is_magic',
-        'powerful',
-        'usable',
-        'is_visible',
-        'auto_update',
-        'dofusdb_id',
-        'official_id',
-        'effect',
-        'spell_types',
-    ];
-    // Ajoute les champs système uniquement si autorisés par visibleIf
-    ['created_by', 'created_at', 'updated_at'].forEach((k) => fields.push(k));
+const headlineFields = computed(() => ([
+    'spell_types',
+    'level',
+].filter(canShowField)));
 
-    return fields.filter(canShowField);
-});
+const metaFields = computed(() => ([
+    'pa',
+    'po',
+    'area',
+    'element',
+    'category',
+].filter(canShowField).filter((k) => !headlineFields.value.includes(k))));
+
+const displayMetaFields = computed(() => [...headlineFields.value, ...metaFields.value]);
+
+const userCanEditFields = computed(() => ([
+    'auto_update',
+    'is_visible',
+].filter(canShowField)));
+
+const technicalFields = computed(() => ([
+    'dofusdb_id',
+    'official_id',
+    'created_by',
+    'created_at',
+    'updated_at',
+].filter(canShowField)));
+
+const bodyFields = computed(() => ([
+    'cast_per_turn',
+    'cast_per_target',
+    'sight_line',
+    'number_between_two_cast',
+    'is_magic',
+    'powerful',
+    'effect',
+].filter(canShowField)));
 
 const getFieldLabel = (fieldKey) => {
     return descriptors.value?.[fieldKey]?.general?.label || fieldKey;
@@ -103,11 +127,46 @@ const getFieldIcon = (fieldKey) => {
     return descriptors.value?.[fieldKey]?.general?.icon || 'fa-solid fa-info-circle';
 };
 
+const getFieldTooltip = (fieldKey) => getEntityFieldTooltip(descriptors.value?.[fieldKey]);
+
 const getCell = (fieldKey) => {
     return props.spell.toCell(fieldKey, {
         size: 'lg',
         context: 'extended',
     });
+};
+
+const getBadgeColor = (fieldKey) => {
+    const cell = getCell(fieldKey);
+    if (cell?.params?.color) return cell.params.color;
+    const colorMap = {
+        spell_types: 'info',
+        level: 'warning',
+        element: 'secondary',
+        category: 'secondary',
+        auto_update: 'warning',
+        is_visible: 'primary',
+        dofusdb_id: 'neutral',
+        official_id: 'neutral',
+        created_by: 'neutral',
+        created_at: 'neutral',
+        updated_at: 'neutral',
+    };
+    return colorMap[fieldKey] || 'neutral';
+};
+
+const getBadgeAutoParams = (fieldKey) => {
+    const cell = getCell(fieldKey);
+    if (fieldKey === 'level' && cell?.value) {
+        return { autoLabel: String(cell.value), autoScheme: 'level', autoTone: 'mid' };
+    }
+    return {};
+};
+
+const asTextCell = (cell) => {
+    if (!cell) return { type: 'text', value: '-', params: {} };
+    const v = cell?.value;
+    return { type: 'text', value: (v === null || typeof v === 'undefined' || String(v) === '') ? '-' : String(v), params: cell?.params || {} };
 };
 
 const handleAction = async (actionKey) => {
@@ -152,67 +211,167 @@ const handleAction = async (actionKey) => {
 
 <template>
     <div class="space-y-6">
-        <!-- En-tête avec image, nom et actions -->
-        <div class="flex flex-col md:flex-row gap-4 items-start">
-            <!-- Image à gauche -->
-            <div class="flex-shrink-0">
-                <div v-if="spell.image" class="w-32 h-32 md:w-40 md:h-40">
-                    <Image :source="spell.image" :alt="spell.name || 'Image'" size="lg" rounded="lg" class="w-full h-full object-cover" />
-                </div>
-                <div v-else class="w-32 h-32 md:w-40 md:h-40 flex items-center justify-center bg-base-200 rounded-lg">
-                    <Icon source="fa-solid fa-wand-magic-sparkles" :alt="spell.name" size="xl" />
-                </div>
-            </div>
-            
-            <!-- Informations principales à droite -->
-            <div class="flex-1 w-full">
-                <div class="flex items-start justify-between gap-4">
-                    <div class="flex-1 min-w-0">
-                        <h2 class="text-2xl font-bold text-primary-100 break-words">{{ spell.name }}</h2>
-                        <p v-if="spell.description" class="text-primary-300 mt-2 break-words">{{ spell.description }}</p>
+        <EntityViewHeader mode="large">
+            <template #media>
+                <div class="relative w-44 h-44 md:w-64 md:h-64 lg:w-72 lg:h-72">
+                    <div class="peer absolute inset-x-0 bottom-0 h-[80%] z-10"></div>
+
+                    <div class="absolute top-2 left-2 z-20 transition-opacity duration-150 peer-hover:opacity-0">
+                        <EntityUsableDot :usable="usableValue" />
                     </div>
-                    
-                    <!-- Actions en haut à droite -->
-                    <div v-if="showActions" class="flex-shrink-0">
-                        <EntityActions
-                            entity-type="spell"
-                            :entity="spell"
-                            format="buttons"
-                            display="icon-only"
+
+                    <div class="absolute top-2 right-2 z-20 transition-opacity duration-150 peer-hover:opacity-0">
+                        <Badge
+                            :color="getBadgeColor('level')"
+                            :auto-label="getBadgeAutoParams('level').autoLabel"
+                            :auto-scheme="getBadgeAutoParams('level').autoScheme"
+                            :auto-tone="getBadgeAutoParams('level').autoTone"
                             size="sm"
-                            color="primary"
-                            :context="{ inPanel: false, inPage: true }"
-                            @action="handleAction"
-                        />
+                        >
+                            <CellRenderer :cell="asTextCell(getCell('level'))" ui-color="primary" />
+                        </Badge>
                     </div>
+
+                    <Image
+                        v-if="spell.image"
+                        :source="spell.image"
+                        :alt="spell.name || 'Image'"
+                        size="xl"
+                        rounded="lg"
+                        fit="cover"
+                        class="w-full h-full peer-hover:hidden pointer-events-none"
+                    />
+                    <Image
+                        v-if="spell.image"
+                        :source="spell.image"
+                        :alt="spell.name || 'Image'"
+                        size="xl"
+                        rounded="lg"
+                        fit="contain"
+                        class="w-full h-full hidden peer-hover:block pointer-events-none"
+                    />
+
+                    <div v-else class="w-full h-full flex items-center justify-center bg-base-200 rounded-lg">
+                        <Icon source="fa-solid fa-wand-magic-sparkles" :alt="spell.name" size="xl" />
+                    </div>
+                </div>
+            </template>
+
+            <template #title>
+                <h2 class="text-2xl font-bold text-primary-100 break-words">{{ spell.name }}</h2>
+            </template>
+
+            <template #subtitle>
+                <p v-if="spell.description" class="text-primary-300 mt-2 break-words">{{ spell.description }}</p>
+            </template>
+
+            <template #mainInfos>
+                <div v-if="displayMetaFields.length > 0" class="mt-3 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
+                    <template v-for="fieldKey in displayMetaFields" :key="fieldKey">
+                        <Tooltip :content="getFieldTooltip(fieldKey)" placement="top">
+                            <div class="flex items-start justify-between gap-2 min-w-0">
+                                <div class="flex items-center gap-2 min-w-0">
+                                    <Icon :source="getFieldIcon(fieldKey)" size="xs" class="text-primary-300 flex-shrink-0" />
+                                    <span
+                                        v-if="!shouldOmitLabelInMeta(fieldKey)"
+                                        class="text-xs uppercase font-semibold text-primary-300 truncate"
+                                    >
+                                        {{ getEntityFieldShortLabel(fieldKey, getFieldLabel(fieldKey)) }}
+                                    </span>
+                                </div>
+                                <Badge
+                                    :color="getBadgeColor(fieldKey)"
+                                    :auto-label="getBadgeAutoParams(fieldKey).autoLabel"
+                                    :auto-scheme="getBadgeAutoParams(fieldKey).autoScheme"
+                                    :auto-tone="getBadgeAutoParams(fieldKey).autoTone"
+                                    size="sm"
+                                    :truncate="false"
+                                    class="max-w-[18rem] whitespace-normal break-words"
+                                >
+                                    <CellRenderer :cell="asTextCell(getCell(fieldKey))" ui-color="primary" />
+                                </Badge>
+                            </div>
+                        </Tooltip>
+                    </template>
+                </div>
+            </template>
+
+            <template #actions>
+                <div v-if="showActions">
+                    <EntityActions
+                        entity-type="spell"
+                        :entity="spell"
+                        format="buttons"
+                        display="icon-only"
+                        size="sm"
+                        color="primary"
+                        :context="{ inPanel: false, inPage: true }"
+                        @action="handleAction"
+                    />
+                </div>
+            </template>
+        </EntityViewHeader>
+
+        <div v-if="technicalFields.length > 0 || userCanEditFields.length > 0" class="pt-3 border-t border-base-300">
+            <div v-if="technicalFields.length > 0" class="flex flex-wrap gap-x-6 gap-y-2 text-xs text-primary-200/80">
+                <template v-for="fieldKey in technicalFields" :key="fieldKey">
+                    <Tooltip :content="getFieldTooltip(fieldKey)" placement="top">
+                        <div class="inline-flex items-center gap-2 min-w-0">
+                            <Icon :source="getFieldIcon(fieldKey)" size="xs" class="text-primary-300 flex-shrink-0" />
+                            <span class="uppercase tracking-wide text-primary-300">{{ getFieldLabel(fieldKey) }}</span>
+                            <span class="min-w-0 break-words">
+                                <CellRenderer :cell="asTextCell(getCell(fieldKey))" ui-color="primary" />
+                            </span>
+                        </div>
+                    </Tooltip>
+                </template>
+            </div>
+
+            <div v-if="userCanEditFields.length > 0" class="mt-4">
+                <div class="text-xs font-semibold uppercase tracking-wide text-primary-300 mb-2">Paramètres</div>
+                <div class="flex flex-wrap gap-x-6 gap-y-2 text-xs text-primary-200/80">
+                    <template v-for="fieldKey in userCanEditFields" :key="fieldKey">
+                        <Tooltip :content="getFieldTooltip(fieldKey)" placement="top">
+                            <div class="inline-flex items-center gap-2 min-w-0">
+                                <Icon :source="getFieldIcon(fieldKey)" size="xs" class="text-primary-300 flex-shrink-0" />
+                                <span class="uppercase tracking-wide text-primary-300">{{ getFieldLabel(fieldKey) }}</span>
+                                <span class="min-w-0 break-words">
+                                    <template v-if="fieldKey === 'auto_update'">
+                                        <Icon
+                                            v-if="autoUpdateValue !== null"
+                                            :source="autoUpdateValue ? 'fa-solid fa-check' : 'fa-solid fa-xmark'"
+                                            :alt="autoUpdateValue ? 'Oui' : 'Non'"
+                                            size="sm"
+                                            :class="autoUpdateValue ? 'text-success-800' : 'text-error-800'"
+                                        />
+                                        <span v-else>—</span>
+                                    </template>
+                                    <template v-else>
+                                        <Badge :color="getBadgeColor(fieldKey)" size="sm">
+                                            <CellRenderer :cell="asTextCell(getCell(fieldKey))" ui-color="primary" />
+                                        </Badge>
+                                    </template>
+                                </span>
+                            </div>
+                        </Tooltip>
+                    </template>
                 </div>
             </div>
         </div>
 
-        <!-- Informations principales -->
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            <div
-                v-for="fieldKey in extendedFields"
-                :key="fieldKey"
-                class="p-3 bg-base-200 rounded-lg"
-            >
+        <div v-if="bodyFields.length > 0" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div v-for="fieldKey in bodyFields" :key="fieldKey" class="p-3 bg-base-200 rounded-lg">
                 <div class="flex flex-col gap-1">
                     <div class="flex items-center gap-2">
-                        <Icon
-                            :source="getFieldIcon(fieldKey)"
-                            :alt="getFieldLabel(fieldKey)"
-                            size="xs"
-                            class="text-primary-400"
-                        />
-                        <span class="text-xs text-primary-400 uppercase font-semibold">
-                            {{ getFieldLabel(fieldKey) }}
-                        </span>
+                        <Tooltip :content="getFieldTooltip(fieldKey)" placement="top">
+                            <div class="flex items-center gap-2">
+                                <Icon :source="getFieldIcon(fieldKey)" :alt="getFieldLabel(fieldKey)" size="xs" class="text-primary-400" />
+                                <span class="text-xs text-primary-400 uppercase font-semibold">{{ getFieldLabel(fieldKey) }}</span>
+                            </div>
+                        </Tooltip>
                     </div>
                     <div class="text-primary-100 break-words">
-                        <CellRenderer
-                            :cell="getCell(fieldKey)"
-                            ui-color="primary"
-                        />
+                        <CellRenderer :cell="getCell(fieldKey)" ui-color="primary" />
                     </div>
                 </div>
             </div>

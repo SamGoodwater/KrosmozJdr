@@ -30,12 +30,18 @@ const props = defineProps({
     showActions: {
         type: Boolean,
         default: true
+    },
+    displayMode: {
+        type: String,
+        default: 'hover',
+        validator: (v) => ['compact', 'hover', 'extended'].includes(v),
     }
 });
 
 const emit = defineEmits(['edit', 'copy-link', 'download-pdf', 'refresh', 'view', 'quick-view', 'quick-edit', 'delete', 'action']);
 
-const isHovered = ref(false);
+const isHovered = ref(props.displayMode === 'extended');
+const canHoverExpand = computed(() => props.displayMode === 'hover');
 const { copyToClipboard } = useCopyToClipboard();
 const { downloadPdf } = useDownloadPdf('capability');
 const permissions = usePermissions();
@@ -128,8 +134,8 @@ const handleAction = async (actionKey) => {
             height: isHovered ? 'auto' : '100px',
             minHeight: '80px'
         }"
-        @mouseenter="isHovered = true"
-        @mouseleave="isHovered = false">
+        @mouseenter="canHoverExpand && (isHovered = true)"
+        @mouseleave="canHoverExpand && (isHovered = false)">
         
         <div class="p-3">
             <!-- En-tête avec image, nom et actions -->

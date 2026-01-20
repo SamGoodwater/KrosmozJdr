@@ -19,3 +19,11 @@ Le dossier `docs/100-Done` a pour objectif de centraliser les fichiers Markdown 
 - **Fix sélection bulk/édition rapide** : normalisation des IDs + `useBulkEditPanel` rendu compatible `ref/computed` pour que la sélection multi soit bien prise en compte.
 - **Design System** : bulk panels (Ressources / Types) migrés vers les Atoms (`SelectCore/InputCore/TextareaCore/RadioCore`).
 - **Qualité UX** : debug panel activable sans console (bouton UI + param URL).
+
+## 2026-01-19 — Harmonisation des vues d’entités (Large/Compact/Minimal)
+
+- **Objectif** : rendre les vues d’entités plus cohérentes (cards), avec un header standard (image à gauche, nom à droite) et des metas lisibles.
+- **Source de vérité UI** : labels/icônes/tooltips tirés des descriptors, et champs filtrés via `permissions.visibleIf(ctx)`.
+- **Helpers** : ajout de tooltips basés sur `general.tooltip` (fallbacks inclus).
+- **Actions** : adoption d’un pattern `buttons` en Large et `dropdown` en Compact/Minimal (gain de place).
+- **Doc** : `docs/30-UI/ENTITY_VIEWS.md` + règle Cursor `.cursor/rules/entity-views.mdc`.

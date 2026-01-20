@@ -18,6 +18,8 @@ import EntityActions from '@/Pages/Organismes/entity/EntityActions.vue';
 import { useCopyToClipboard } from '@/Composables/utils/useCopyToClipboard';
 import { useDownloadPdf } from '@/Composables/utils/useDownloadPdf';
 import { getEntityRouteConfig, resolveEntityRouteUrl } from '@/Composables/entity/entityRouteRegistry';
+import { usePermissions } from "@/Composables/permissions/usePermissions";
+import { getNpcFieldDescriptors } from "@/Entities/npc/npc-descriptors";
 
 const props = defineProps({
     npc: {
@@ -27,35 +29,62 @@ const props = defineProps({
     showActions: {
         type: Boolean,
         default: true
+    },
+    displayMode: {
+        type: String,
+        default: 'hover',
+        validator: (v) => ['compact', 'hover', 'extended'].includes(v),
     }
 });
 
 const emit = defineEmits(['edit', 'copy-link', 'download-pdf', 'refresh', 'view', 'quick-view', 'quick-edit', 'delete', 'action']);
 
-const isHovered = ref(false);
+const isHovered = ref(props.displayMode === 'extended');
+const canHoverExpand = computed(() => props.displayMode === 'hover');
 const { copyToClipboard } = useCopyToClipboard();
 const { downloadPdf } = useDownloadPdf('npc');
+const permissions = usePermissions();
+
+const ctx = computed(() => {
+    const capabilities = {
+        viewAny: permissions.can('npc', 'viewAny'),
+        createAny: permissions.can('npc', 'createAny'),
+        updateAny: permissions.can('npc', 'updateAny'),
+        deleteAny: permissions.can('npc', 'deleteAny'),
+        manageAny: permissions.can('npc', 'manageAny'),
+    };
+    return { capabilities, meta: { capabilities } };
+});
+
+const descriptors = computed(() => getNpcFieldDescriptors(ctx.value));
+
+const canShowField = (fieldKey) => {
+    const desc = descriptors.value?.[fieldKey];
+    if (!desc) return false;
+    const visibleIf = desc?.permissions?.visibleIf;
+    if (typeof visibleIf === 'function') {
+        try {
+            return Boolean(visibleIf(ctx.value));
+        } catch (e) {
+            console.warn('[NpcViewMinimal] visibleIf failed for', fieldKey, e);
+            return false;
+        }
+    }
+    return true;
+};
 
 // Champs importants à afficher
-const importantFields = computed(() => ['creature_name', 'classe', 'specialization']);
+const importantFields = computed(() => ['creature_name', 'classe', 'specialization'].filter(canShowField));
 
 // Champs supplémentaires à afficher au hover
 const expandedFields = computed(() => [
     'age',
     'size',
     'story',
-]);
+].filter(canShowField));
 
 const getFieldIcon = (fieldKey) => {
-    const icons = {
-        creature_name: 'fa-solid fa-user',
-        classe: 'fa-solid fa-user-tie',
-        specialization: 'fa-solid fa-star',
-        age: 'fa-solid fa-birthday-cake',
-        size: 'fa-solid fa-expand',
-        story: 'fa-solid fa-book',
-    };
-    return icons[fieldKey] || 'fa-solid fa-info-circle';
+    return descriptors.value?.[fieldKey]?.general?.icon || 'fa-solid fa-info-circle';
 };
 
 const getCell = (fieldKey) => {
@@ -66,16 +95,8 @@ const getCell = (fieldKey) => {
 };
 
 const tooltipForField = (fieldKey, cell) => {
-    const labels = {
-        creature_name: 'Créature',
-        classe: 'Classe',
-        specialization: 'Spécialisation',
-        age: 'Âge',
-        size: 'Taille',
-        story: 'Histoire',
-    };
-    const label = labels[fieldKey] || fieldKey;
-    const value = cell?.value || '-';
+    const label = descriptors.value?.[fieldKey]?.general?.label || fieldKey;
+    const value = (cell?.value === null || typeof cell?.value === 'undefined' || String(cell?.value) === '') ? '-' : cell.value;
     return `${label} : ${value}`;
 };
 
@@ -113,8 +134,8 @@ const handleAction = async (actionKey) => {
             height: isHovered ? 'auto' : '100px',
             minHeight: '80px'
         }"
-        @mouseenter="isHovered = true"
-        @mouseleave="isHovered = false">
+        @mouseenter="canHoverExpand && (isHovered = true)"
+        @mouseleave="canHoverExpand && (isHovered = false)">
         
         <div class="p-3">
             <!-- En-tête avec nom et actions -->

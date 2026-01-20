@@ -16,9 +16,12 @@ import Icon from '@/Pages/Atoms/data-display/Icon.vue';
 import Tooltip from '@/Pages/Atoms/feedback/Tooltip.vue';
 import CellRenderer from "@/Pages/Atoms/data-display/CellRenderer.vue";
 import EntityActions from '@/Pages/Organismes/entity/EntityActions.vue';
+import EntityUsableDot from "@/Pages/Atoms/data-display/EntityUsableDot.vue";
 import { useCopyToClipboard } from '@/Composables/utils/useCopyToClipboard';
 import { useDownloadPdf } from '@/Composables/utils/useDownloadPdf';
 import { getEntityRouteConfig, resolveEntityRouteUrl } from '@/Composables/entity/entityRouteRegistry';
+import { usePermissions } from "@/Composables/permissions/usePermissions";
+import { getShopFieldDescriptors } from "@/Entities/shop/shop-descriptors";
 
 const props = defineProps({
     shop: {
@@ -28,35 +31,65 @@ const props = defineProps({
     showActions: {
         type: Boolean,
         default: true
+    },
+    displayMode: {
+        type: String,
+        default: 'hover',
+        validator: (v) => ['compact', 'hover', 'extended'].includes(v),
     }
 });
 
 const emit = defineEmits(['edit', 'copy-link', 'download-pdf', 'refresh', 'view', 'quick-view', 'quick-edit', 'delete', 'action']);
 
-const isHovered = ref(false);
+const isHovered = ref(props.displayMode === 'extended');
+const canHoverExpand = computed(() => props.displayMode === 'hover');
 const { copyToClipboard } = useCopyToClipboard();
 const { downloadPdf } = useDownloadPdf('shop');
+const permissions = usePermissions();
+
+const ctx = computed(() => {
+    const capabilities = {
+        viewAny: permissions.can('shop', 'viewAny'),
+        createAny: permissions.can('shop', 'createAny'),
+        updateAny: permissions.can('shop', 'updateAny'),
+        deleteAny: permissions.can('shop', 'deleteAny'),
+        manageAny: permissions.can('shop', 'manageAny'),
+    };
+    return { capabilities, meta: { capabilities } };
+});
+
+const descriptors = computed(() => getShopFieldDescriptors(ctx.value));
+
+const usableValue = computed(() => {
+    const v = props.shop?.usable ?? props.shop?._data?.usable;
+    return typeof v === 'boolean' ? v : null;
+});
+
+const canShowField = (fieldKey) => {
+    const desc = descriptors.value?.[fieldKey];
+    if (!desc) return false;
+    const visibleIf = desc?.permissions?.visibleIf;
+    if (typeof visibleIf === 'function') {
+        try {
+            return Boolean(visibleIf(ctx.value));
+        } catch (e) {
+            console.warn('[ShopViewMinimal] visibleIf failed for', fieldKey, e);
+            return false;
+        }
+    }
+    return true;
+};
 
 // Champs importants à afficher
-const importantFields = computed(() => ['name', 'location', 'npc_name', 'items_count', 'price']);
+const importantFields = computed(() => ['name', 'location', 'npc_name', 'items_count', 'price'].filter(canShowField));
 
 // Champs supplémentaires à afficher au hover
 const expandedFields = computed(() => [
-    'usable',
     'is_visible',
-]);
+].filter(canShowField));
 
 const getFieldIcon = (fieldKey) => {
-    const icons = {
-        name: 'fa-solid fa-font',
-        location: 'fa-solid fa-map-marker-alt',
-        npc_name: 'fa-solid fa-user-ninja',
-        items_count: 'fa-solid fa-boxes',
-        price: 'fa-solid fa-coins',
-        usable: 'fa-solid fa-check-circle',
-        is_visible: 'fa-solid fa-eye',
-    };
-    return icons[fieldKey] || 'fa-solid fa-info-circle';
+    return descriptors.value?.[fieldKey]?.general?.icon || 'fa-solid fa-info-circle';
 };
 
 const getCell = (fieldKey) => {
@@ -67,17 +100,8 @@ const getCell = (fieldKey) => {
 };
 
 const tooltipForField = (fieldKey, cell) => {
-    const labels = {
-        name: 'Nom',
-        location: 'Localisation',
-        npc_name: 'PNJ',
-        items_count: 'Nb objets',
-        price: 'Prix',
-        usable: 'Utilisable',
-        is_visible: 'Visible',
-    };
-    const label = labels[fieldKey] || fieldKey;
-    const value = cell?.value || '-';
+    const label = descriptors.value?.[fieldKey]?.general?.label || fieldKey;
+    const value = (cell?.value === null || typeof cell?.value === 'undefined' || String(cell?.value) === '') ? '-' : cell.value;
     return `${label} : ${value}`;
 };
 
@@ -115,8 +139,11 @@ const handleAction = async (actionKey) => {
             height: isHovered ? 'auto' : '100px',
             minHeight: '80px'
         }"
-        @mouseenter="isHovered = true"
-        @mouseleave="isHovered = false">
+        @mouseenter="canHoverExpand && (isHovered = true)"
+        @mouseleave="canHoverExpand && (isHovered = false)">
+        <div class="absolute top-1 left-1 z-20">
+            <EntityUsableDot :usable="usableValue" />
+        </div>
         
         <div class="p-3">
             <!-- En-tête avec image, nom et actions -->
@@ -197,7 +224,7 @@ const handleAction = async (actionKey) => {
                             />
                             <div class="flex-1 min-w-0">
                                 <div class="font-semibold text-primary-400">
-                                    {{ key }}:
+                                    {{ descriptors?.[key]?.general?.label || key }}:
                                 </div>
                                 <div class="text-primary-200 truncate">
                                     <CellRenderer

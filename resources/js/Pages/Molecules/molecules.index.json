@@ -749,7 +749,7 @@
   },
   {
     "name": "SpellViewText",
-    "description": "SpellViewText — Vue Text pour Spell",
+    "description": "SpellViewText — Vue Texte pour Spell",
     "props": [
       {
         "name": "spell",
@@ -816,7 +816,7 @@
   },
   {
     "name": "SpecializationViewText",
-    "description": "SpecializationViewText — Vue Text pour Specialization",
+    "description": "SpecializationViewText — Vue Texte pour Specialization",
     "props": [
       {
         "name": "specialization",
@@ -883,7 +883,7 @@
   },
   {
     "name": "ShopViewText",
-    "description": "ShopViewText — Vue Text pour Shop",
+    "description": "ShopViewText — Vue Texte pour Shop",
     "props": [
       {
         "name": "shop",
@@ -949,8 +949,108 @@
     "file": "entity/shop/ShopViewCompact.vue"
   },
   {
+    "name": "EntityViewTextLink",
+    "description": "EntityViewTextLink — Vue Texte générique (inline) avec hover vers une Vue Minimal",
+    "props": [
+      {
+        "name": "entity",
+        "type": "Object",
+        "desc": "- Instance de modèle (ou objet) exposant idéalement `toCell()`"
+      },
+      {
+        "name": "entityProp",
+        "type": "string",
+        "desc": "- Nom de la prop attendue par la vue minimal (ex: 'resource', 'item')"
+      },
+      {
+        "name": "minimalComponent",
+        "type": "any",
+        "desc": "- Composant Vue de la Vue Minimal à afficher au hover"
+      },
+      {
+        "name": "fallbackIcon",
+        "type": "string",
+        "desc": "- Icône FontAwesome si pas d'image"
+      },
+      {
+        "name": "nameField",
+        "type": "string",
+        "desc": "- Champ pour le nom (default: 'name')"
+      },
+      {
+        "name": "imageField",
+        "type": "string",
+        "desc": "- Champ pour l'image (default: 'image')"
+      },
+      {
+        "name": "uiColor",
+        "type": "string",
+        "desc": "- Couleur UI pour le rendu du nom"
+      },
+      {
+        "name": "hoverWidthClass",
+        "type": "string",
+        "desc": "- Largeur du panneau hover (ex: 'w-64')"
+      },
+      {
+        "name": "hoverCardClass",
+        "type": "string",
+        "desc": "- Classes appliquées à la card hover (border/shadow)"
+      },
+      {
+        "name": "showActionsOnHover",
+        "type": "boolean",
+        "desc": "- Si la vue minimal doit afficher les actions"
+      }
+    ],
+    "slots": [],
+    "file": "entity/shared/EntityViewTextLink.vue"
+  },
+  {
+    "name": "EntityViewHeader",
+    "description": "EntityViewHeader — Header commun pour les vues d'entités",
+    "props": [
+      {
+        "name": "mode",
+        "type": "'large'|'compact'|'minimal'",
+        "desc": "- Mode de rendu du header."
+      }
+    ],
+    "slots": [
+      {
+        "name": "dot",
+        "desc": "- Indicateur optionnel (ex: EntityUsableDot) positionné en absolute par le parent."
+      },
+      {
+        "name": "media",
+        "desc": "- Image/icone (à gauche)"
+      },
+      {
+        "name": "title",
+        "desc": "- Titre (nom)"
+      },
+      {
+        "name": "mainInfos",
+        "desc": "- Infos principales (large/compact)"
+      },
+      {
+        "name": "mainInfosRight",
+        "desc": "- Infos principales à droite (minimal)"
+      },
+      {
+        "name": "subtitle",
+        "desc": "- Description / sous-texte (optionnel)"
+      },
+      {
+        "name": "actions",
+        "desc": "- Barre d'actions (EntityActions)"
+      }
+    ],
+    "file": "entity/shared/EntityViewHeader.vue"
+  },
+  {
     "name": "ScenarioViewText",
-    "description": "ScenarioViewText — Vue Text pour Scenario",
+    "description": "ScenarioViewText — Vue Texte pour Scenario",
     "props": [
       {
         "name": "scenario",
@@ -1017,7 +1117,7 @@
   },
   {
     "name": "ResourceTypeViewText",
-    "description": "ResourceTypeViewText — Vue Text pour ResourceType",
+    "description": "ResourceTypeViewText — Vue Texte pour ResourceType",
     "props": [
       {
         "name": "resourceType",
@@ -1084,7 +1184,7 @@
   },
   {
     "name": "ResourceViewText",
-    "description": "ResourceViewText — Vue Text pour Resource",
+    "description": "ResourceViewText — Vue Texte pour Resource",
     "props": [
       {
         "name": "resource",
@@ -1207,7 +1307,7 @@
   },
   {
     "name": "PanoplyViewText",
-    "description": "PanoplyViewText — Vue Text pour Panoply",
+    "description": "PanoplyViewText — Vue Texte pour Panoply",
     "props": [
       {
         "name": "panoply",
@@ -1274,7 +1374,7 @@
   },
   {
     "name": "NpcViewText",
-    "description": "NpcViewText — Vue Text pour NPC",
+    "description": "NpcViewText — Vue Texte pour NPC",
     "props": [
       {
         "name": "npc",
@@ -1341,7 +1441,7 @@
   },
   {
     "name": "MonsterViewText",
-    "description": "MonsterViewText — Vue Text pour Monster",
+    "description": "MonsterViewText — Vue Texte pour Monster",
     "props": [
       {
         "name": "monster",
@@ -1408,7 +1508,7 @@
   },
   {
     "name": "ItemViewText",
-    "description": "ItemViewText — Vue Text pour Item",
+    "description": "ItemViewText — Vue Texte pour Item",
     "props": [
       {
         "name": "item",
@@ -1475,7 +1575,7 @@
   },
   {
     "name": "CreatureViewText",
-    "description": "CreatureViewText — Vue Text pour Creature",
+    "description": "CreatureViewText — Vue Texte pour Creature",
     "props": [
       {
         "name": "creature",
@@ -1542,7 +1642,7 @@
   },
   {
     "name": "ConsumableViewText",
-    "description": "ConsumableViewText — Vue Text pour Consumable",
+    "description": "ConsumableViewText — Vue Texte pour Consumable",
     "props": [
       {
         "name": "consumable",
@@ -1609,7 +1709,7 @@
   },
   {
     "name": "ClasseViewText",
-    "description": "ClasseViewText — Vue Text pour Classe",
+    "description": "ClasseViewText — Vue Texte pour Classe",
     "props": [
       {
         "name": "classe",
@@ -1676,7 +1776,7 @@
   },
   {
     "name": "CapabilityViewText",
-    "description": "CapabilityViewText — Vue Text pour Capability",
+    "description": "CapabilityViewText — Vue Texte pour Capability",
     "props": [
       {
         "name": "capability",
@@ -1743,7 +1843,7 @@
   },
   {
     "name": "CampaignViewText",
-    "description": "CampaignViewText — Vue Text pour Campaign",
+    "description": "CampaignViewText — Vue Texte pour Campaign",
     "props": [
       {
         "name": "campaign",
@@ -1810,7 +1910,7 @@
   },
   {
     "name": "AttributeViewText",
-    "description": "AttributeViewText — Vue Text pour Attribute",
+    "description": "AttributeViewText — Vue Texte pour Attribute",
     "props": [
       {
         "name": "attribute",

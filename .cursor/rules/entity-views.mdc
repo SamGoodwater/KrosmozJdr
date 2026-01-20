@@ -1,0 +1,89 @@
+---
+description: Conventions UI pour les vues d'entités (Large/Compact/Minimal) dans Krosmoz-JDR.
+alwaysApply: false
+---
+
+# Entity Views (Large / Compact / Minimal) — Conventions
+
+## Objectif
+
+Uniformiser l’affichage des entités (ressources, items, monstres, sorts, etc.) dans les modales/cartes, afin que :
+- le **header** soit lisible et cohérent,
+- les **infos importantes** soient visibles immédiatement,
+- les **helpers** soient accessibles via tooltip,
+- les vues restent **descriptors-driven** (labels/icônes/permissions/tooltip).
+
+## Règles générales
+
+- **Header toujours structuré**:
+  - **Image** à gauche (si dispo), sinon **icône fallback**.
+  - **Nom** à droite (titre).
+  - **Barre d’actions** en haut à droite (au plus proche du bouton “fermer” du panel).
+  - En modal, la **croix “Fermer”** doit être dans **le même groupe** que les autres actions (pas de bouton flottant séparé).
+  - Overlays recommandés sur l’image (si pertinent) :
+    - `usable` : dot discret en haut-gauche.
+    - `level` : badge discret en haut-droite.
+    - Au hover de l’image : masquer les overlays + privilégier un rendu `contain` (pas de crop) si nécessaire.
+    - Zone hover : conserver une zone “safe” en haut (~20%) pour ne pas empêcher les tooltips sur `usable/level`.
+    - Alignement : `usable` et `level` doivent être à la même hauteur (même offset `top`).
+  - Actions:
+    - **Large**: `EntityActions` en `format="buttons"` (lisible).
+    - **Compact/Minimal**: `EntityActions` en `format="dropdown"` (gain de place).
+
+- **Découpage en sections (contrat)**
+  - **Header**: image + title + barre d’action + **Main infos**
+  - **Body**: `Infos top` + `Description` + `Infos mid` + `Entités liées` + `Infos bottom`
+  - **Footer**: `Infos UserCanEdit` + `Footer infos` + `Footer actions`
+
+- **Type** (ex: `resource_type`, `item_type`, etc.)
+  - Large: on peut expliciter `Type`.
+  - Compact/Minimal: on peut afficher uniquement **la valeur** (type compréhensible sans label).
+
+- **usable**
+  - Ne pas en faire une colonne “bruyante” par défaut : indicateur **dot** discret en haut à gauche de la card/ligne, + tooltip “Adapté au JDR / Non adapté au JDR”.
+
+- **Helpers**
+  - Utiliser en priorité `general.tooltip` (ou `display.tooltip` si présent).
+  - En Large, le helper reste **au survol** par défaut; il peut être affiché inline uniquement si vraiment pertinent (exception).
+
+- **Badges**
+  - Éviter le “tout en badge”.
+  - Pattern recommandé pour une meta : **icône + label** en texte inline, et **valeur seule** dans un `Badge`.
+  - Les infos techniques (IDs, dates, audit) doivent plutôt être en **texte** (phrase/liste) que sous forme de badges.
+
+- **Descriptors**
+  - Les labels/icônes viennent de `desc.general.label` / `desc.general.icon`.
+  - La visibilité vient de `permissions.visibleIf(ctx)`.
+  - Le tooltip vient de `display.tooltip` / `table.header.tooltip` / `general.tooltip` (fallback `edition.form.help`).
+
+## Minimal : compacted / extended
+
+- **Minimal compacted** (hauteur limitée) :
+  - title 1 ligne tronquée + actions en menu
+  - main infos sur 1–2 lignes max
+  - body masqué (visible au hover)
+  - footer masqué (même étendu)
+
+### Minimal : `displayMode` (compact / hover / extended)
+
+- **`displayMode: "hover"`** *(défaut)* : compacted → extended au hover (comportement attendu en “cards”).
+- **`displayMode: "compact"`** : reste compact (jamais d’extended).
+- **`displayMode: "extended"`** : reste extended (utile quand une Vue Minimal est utilisée comme “popover content”).
+
+## Vue Texte (format officiel)
+
+- Format inline **image + nom** (très compact).
+- Le détail se fait via un **hover** qui ouvre une **Vue Minimal**.
+- Par défaut, la Vue Texte doit afficher une Minimal en **`displayMode: "extended"`** (évite un double-hover).
+
+## Utilitaires recommandés
+
+- Centraliser la logique tooltip/abrégés dans `resources/js/Utils/Entity/entity-view-ui.js`:
+  - `getEntityFieldTooltip(desc)`
+  - `getEntityFieldShortLabel(fieldKey, label)` (ex: `level` → `nvx`)
+  - `shouldOmitLabelInMeta(fieldKey)` (ex: les champs “type”)
+
+## Schémas / zones
+
+Pour un schéma des zones (Large/Compact/Minimal) et des exemples de mapping de champs, voir :
+- `docs/30-UI/ENTITY_VIEWS.md`

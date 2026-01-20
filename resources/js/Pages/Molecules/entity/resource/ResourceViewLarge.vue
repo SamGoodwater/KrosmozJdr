@@ -18,12 +18,17 @@ import { router } from '@inertiajs/vue3';
 import Badge from '@/Pages/Atoms/data-display/Badge.vue';
 import Icon from '@/Pages/Atoms/data-display/Icon.vue';
 import CellRenderer from "@/Pages/Atoms/data-display/CellRenderer.vue";
+import Image from "@/Pages/Atoms/data-display/Image.vue";
+import Tooltip from "@/Pages/Atoms/feedback/Tooltip.vue";
 import EntityActions from '@/Pages/Organismes/entity/EntityActions.vue';
+import EntityViewHeader from "@/Pages/Molecules/entity/shared/EntityViewHeader.vue";
+import EntityUsableDot from "@/Pages/Atoms/data-display/EntityUsableDot.vue";
 import { useCopyToClipboard } from '@/Composables/utils/useCopyToClipboard';
 import { useDownloadPdf } from '@/Composables/utils/useDownloadPdf';
 import { getEntityRouteConfig, resolveEntityRouteUrl } from '@/Composables/entity/entityRouteRegistry';
 import { getResourceFieldDescriptors } from '@/Entities/resource/resource-descriptors';
 import { usePermissions } from "@/Composables/permissions/usePermissions";
+import { getEntityFieldShortLabel, getEntityFieldTooltip, shouldOmitLabelInMeta } from "@/Utils/Entity/entity-view-ui";
 
 const props = defineProps({
     resource: {
@@ -66,17 +71,23 @@ const ctx = computed(() => {
 // Obtenir les descriptors avec le contexte (permissions/options)
 const descriptors = computed(() => getResourceFieldDescriptors(ctx.value));
 
+const usableValue = computed(() => {
+    const v = props.resource?.usable ?? props.resource?._data?.usable;
+    return typeof v === 'boolean' ? v : null;
+});
+
+const autoUpdateValue = computed(() => {
+    const v = props.resource?.auto_update ?? props.resource?._data?.auto_update;
+    return typeof v === 'boolean' ? v : null;
+});
+
 // Champs à afficher dans la vue large sous forme de badges (principaux)
 const primaryFields = computed(() => [
     'resource_type',
     'level',
     'price',
     'rarity',
-    'usable',
     'weight',
-    'dofus_version',
-    'is_visible',
-    'auto_update',
 ]);
 
 const canShowField = (fieldKey) => {
@@ -96,7 +107,29 @@ const canShowField = (fieldKey) => {
 
 const visiblePrimaryFields = computed(() => (primaryFields.value || []).filter(canShowField));
 
-// Champs secondaires (affichés après les principaux)
+const headlineFields = computed(() => ([
+    'resource_type',
+    'level',
+].filter(canShowField)));
+
+const metaFields = computed(() => (visiblePrimaryFields.value || []).filter((k) => !headlineFields.value.includes(k)));
+
+const orderedMetaFields = computed(() => {
+    const preferred = [];
+    const rest = (metaFields.value || []).filter((k) => !preferred.includes(k));
+    const head = preferred.filter((k) => (metaFields.value || []).includes(k));
+    return [...head, ...rest];
+});
+
+const displayMetaFields = computed(() => [...headlineFields.value, ...orderedMetaFields.value]);
+
+const userCanEditFields = computed(() => ([
+    'dofus_version',
+    'auto_update',
+    'is_visible',
+].filter(canShowField)));
+
+// Champs secondaires (infos techniques)
 const secondaryFields = computed(() => {
     const fields = [
         'dofusdb_id',
@@ -109,6 +142,8 @@ const secondaryFields = computed(() => {
 
     return fields.filter(canShowField);
 });
+
+const technicalFields = computed(() => (secondaryFields.value || []).filter(canShowField));
 
 // Handlers pour les actions
 const handleAction = async (actionKey) => {
@@ -163,6 +198,14 @@ const handleAction = async (actionKey) => {
 // Utiliser les descriptors pour les icônes
 const getFieldIcon = (fieldKey) => {
     return descriptors.value[fieldKey]?.general?.icon || 'fa-solid fa-info-circle';
+};
+
+const getFieldLabel = (fieldKey) => {
+    return descriptors.value?.[fieldKey]?.general?.label || fieldKey;
+};
+
+const getFieldTooltip = (fieldKey) => {
+    return getEntityFieldTooltip(descriptors.value?.[fieldKey]);
 };
 
 // Génère une cellule pour un champ
@@ -237,95 +280,181 @@ const getBadgeAutoParams = (fieldKey) => {
 
 <template>
     <div class="space-y-6">
-        <!-- En-tête avec image, nom et actions -->
-        <div class="flex flex-col md:flex-row gap-4 items-start">
-            <!-- Image à gauche -->
-            <div class="flex-shrink-0">
-                <div class="w-32 h-32 md:w-40 md:h-40">
-                    <CellRenderer
-                        :cell="getCell('image')"
-                        ui-color="primary"
-                        class="w-full h-full"
-                    />
-                </div>
-            </div>
-            
-            <!-- Informations principales à droite -->
-            <div class="flex-1 w-full">
-                <div class="flex items-start justify-between gap-4">
-                    <div class="flex-1 min-w-0">
-                        <h2 class="text-2xl font-bold text-primary-100 break-words">{{ resource.name }}</h2>
-                        <p v-if="resource.description" class="text-primary-300 mt-2 break-words">{{ resource.description }}</p>
+        <EntityViewHeader mode="large">
+            <template #media>
+                <div class="relative w-44 h-44 md:w-64 md:h-64 lg:w-72 lg:h-72">
+                    <!-- Zone hover limitée (bas 80%) -->
+                    <div class="peer absolute inset-x-0 bottom-0 h-[80%] z-10"></div>
+
+                    <!-- Overlays (masqués seulement si hover dans la zone bas 80%) -->
+                    <div class="absolute top-2 left-2 z-20 transition-opacity duration-150 peer-hover:opacity-0">
+                        <EntityUsableDot :usable="usableValue" />
                     </div>
-                    
-                    <!-- Actions en haut à droite -->
-                    <div v-if="showActions" class="flex-shrink-0">
-                        <EntityActions
-                            entity-type="resource"
-                            :entity="resource"
-                            format="buttons"
-                            display="icon-only"
+
+                    <div class="absolute top-2 right-2 z-20 transition-opacity duration-150 peer-hover:opacity-0">
+                        <Badge
+                            :color="getBadgeColor('level')"
+                            :auto-label="getBadgeAutoParams('level').autoLabel"
+                            :auto-scheme="getBadgeAutoParams('level').autoScheme"
+                            :auto-tone="getBadgeAutoParams('level').autoTone"
                             size="sm"
-                            color="primary"
-                            :context="{ inPanel: false, inPage: true }"
-                            @action="handleAction"
-                        />
+                        >
+                            <CellRenderer :cell="asTextCell(getCell('level'))" ui-color="primary" />
+                        </Badge>
+                    </div>
+
+                    <!-- Image : cover par défaut, contain au hover pour éviter le crop -->
+                    <Image
+                        v-if="resource.image"
+                        :src="resource.image"
+                        :alt="resource.name || 'Ressource'"
+                        size="xl"
+                        rounded="lg"
+                        fit="cover"
+                        class="w-full h-full peer-hover:hidden pointer-events-none"
+                    />
+                    <Image
+                        v-if="resource.image"
+                        :src="resource.image"
+                        :alt="resource.name || 'Ressource'"
+                        size="xl"
+                        rounded="lg"
+                        fit="contain"
+                        class="w-full h-full hidden peer-hover:block pointer-events-none"
+                    />
+
+                    <div v-else class="w-full h-full flex items-center justify-center bg-base-200 rounded-lg">
+                        <Icon source="fa-solid fa-gem" :alt="resource.name" size="xl" />
                     </div>
                 </div>
+            </template>
+
+            <template #title>
+                <h2 class="text-2xl font-bold text-primary-100 break-words">{{ resource.name }}</h2>
+            </template>
+
+            <template #mainInfos>
+                <!-- Metas: icône + label inline, valeur seule en badge -->
+                <div v-if="displayMetaFields.length > 0" class="mt-3 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
+                    <template v-for="fieldKey in displayMetaFields" :key="fieldKey">
+                        <Tooltip :content="getFieldTooltip(fieldKey)" placement="top">
+                            <div class="flex items-start justify-between gap-2 min-w-0">
+                                <div class="flex items-center gap-2 min-w-0">
+                                    <Icon :source="getFieldIcon(fieldKey)" size="xs" class="text-primary-300 flex-shrink-0" />
+                                    <span
+                                        v-if="!shouldOmitLabelInMeta(fieldKey)"
+                                        class="text-xs uppercase font-semibold text-primary-300 truncate"
+                                    >
+                                        {{ getEntityFieldShortLabel(fieldKey, getFieldLabel(fieldKey)) }}
+                                    </span>
+                                </div>
+
+                                <Badge
+                                    :color="getBadgeColor(fieldKey)"
+                                    :auto-label="getBadgeAutoParams(fieldKey).autoLabel"
+                                    :auto-scheme="getBadgeAutoParams(fieldKey).autoScheme"
+                                    :auto-tone="getBadgeAutoParams(fieldKey).autoTone"
+                                    size="sm"
+                                    :truncate="false"
+                                    class="max-w-[18rem] whitespace-normal break-words"
+                                >
+                                    <template v-if="fieldKey === 'auto_update'">
+                                        <Icon
+                                            v-if="autoUpdateValue !== null"
+                                            :source="autoUpdateValue ? 'fa-solid fa-check' : 'fa-solid fa-xmark'"
+                                            :alt="autoUpdateValue ? 'Oui' : 'Non'"
+                                            size="sm"
+                                            :class="autoUpdateValue ? 'text-success-800' : 'text-error-800'"
+                                        />
+                                        <span v-else>—</span>
+                                    </template>
+                                    <template v-else>
+                                        <CellRenderer :cell="asTextCell(getCell(fieldKey))" ui-color="primary" />
+                                    </template>
+                                </Badge>
+                            </div>
+                        </Tooltip>
+                    </template>
+                </div>
+            </template>
+
+            <template #subtitle>
+                <p v-if="resource.description" class="text-primary-300 mt-3 break-words">{{ resource.description }}</p>
+            </template>
+
+            <template #actions>
+                <div v-if="showActions">
+                    <EntityActions
+                        entity-type="resource"
+                        :entity="resource"
+                        format="buttons"
+                        display="icon-only"
+                        size="sm"
+                        color="primary"
+                        :context="{ inPanel: false, inPage: true }"
+                        @action="handleAction"
+                    />
+                </div>
+            </template>
+        </EntityViewHeader>
+
+        <!-- Infos techniques (texte, pas en badges) -->
+        <div v-if="technicalFields.length > 0" class="pt-3 border-t border-base-300">
+            <div class="flex flex-wrap gap-x-6 gap-y-2 text-xs text-primary-200/80">
+                <template v-for="fieldKey in technicalFields" :key="fieldKey">
+                    <Tooltip :content="getFieldTooltip(fieldKey)" placement="top">
+                        <div class="inline-flex items-center gap-2 min-w-0">
+                            <Icon :source="getFieldIcon(fieldKey)" size="xs" class="text-primary-300 flex-shrink-0" />
+                            <span class="uppercase tracking-wide text-primary-300">
+                                {{ getFieldLabel(fieldKey) }}
+                            </span>
+                            <span class="min-w-0 break-words">
+                                <CellRenderer :cell="asTextCell(getCell(fieldKey))" ui-color="primary" />
+                            </span>
+                        </div>
+                    </Tooltip>
+                </template>
             </div>
-        </div>
-
-        <!-- Badges principaux avec icônes -->
-        <div class="flex flex-wrap gap-2">
-            <template v-for="fieldKey in visiblePrimaryFields" :key="fieldKey">
-                <Badge
-                    :color="getBadgeColor(fieldKey)"
-                    :auto-label="getBadgeAutoParams(fieldKey).autoLabel"
-                    :auto-scheme="getBadgeAutoParams(fieldKey).autoScheme"
-                    :auto-tone="getBadgeAutoParams(fieldKey).autoTone"
-                    size="sm"
-                    class="inline-flex items-center gap-1.5 px-3 py-1.5"
-                >
-                    <Icon
-                        :source="getFieldIcon(fieldKey)"
-                        size="xs"
-                        class="flex-shrink-0"
-                    />
-                    <span class="font-medium">
-                        <CellRenderer
-                            :cell="asTextCell(getCell(fieldKey))"
-                            ui-color="primary"
-                        />
-                    </span>
-                </Badge>
-            </template>
-        </div>
-
-        <!-- Badges secondaires (si présents) -->
-        <div v-if="secondaryFields.length > 0" class="flex flex-wrap gap-2 pt-2 border-t border-base-300">
-            <template v-for="fieldKey in secondaryFields" :key="fieldKey">
-                <Badge
-                    :color="getBadgeColor(fieldKey)"
-                    :auto-label="getBadgeAutoParams(fieldKey).autoLabel"
-                    :auto-scheme="getBadgeAutoParams(fieldKey).autoScheme"
-                    :auto-tone="getBadgeAutoParams(fieldKey).autoTone"
-                    size="sm"
-                    variant="outline"
-                    class="inline-flex items-center gap-1.5 px-3 py-1.5"
-                >
-                    <Icon
-                        :source="getFieldIcon(fieldKey)"
-                        size="xs"
-                        class="flex-shrink-0"
-                    />
-                    <span class="font-medium">
-                        <CellRenderer
-                            :cell="asTextCell(getCell(fieldKey))"
-                            ui-color="primary"
-                        />
-                    </span>
-                </Badge>
-            </template>
+        
+            <!-- UserCanEdit (paramètres) — sans séparation supplémentaire -->
+            <div v-if="userCanEditFields.length > 0" class="mt-4">
+            <div class="text-xs font-semibold uppercase tracking-wide text-primary-300 mb-2">Paramètres</div>
+            <div class="flex flex-wrap gap-x-6 gap-y-2 text-xs text-primary-200/80">
+                <template v-for="fieldKey in userCanEditFields" :key="fieldKey">
+                    <Tooltip :content="getFieldTooltip(fieldKey)" placement="top">
+                        <div class="inline-flex items-center gap-2 min-w-0">
+                            <Icon :source="getFieldIcon(fieldKey)" size="xs" class="text-primary-300 flex-shrink-0" />
+                            <span class="uppercase tracking-wide text-primary-300">
+                                {{ getFieldLabel(fieldKey) }}
+                            </span>
+                            <span class="min-w-0 break-words">
+                                <template v-if="fieldKey === 'auto_update'">
+                                    <Icon
+                                        v-if="autoUpdateValue !== null"
+                                        :source="autoUpdateValue ? 'fa-solid fa-check' : 'fa-solid fa-xmark'"
+                                        :alt="autoUpdateValue ? 'Oui' : 'Non'"
+                                        size="sm"
+                                        :class="autoUpdateValue ? 'text-success-800' : 'text-error-800'"
+                                    />
+                                    <span v-else>—</span>
+                                </template>
+                                <template v-else>
+                                    <Badge
+                                        :color="getBadgeColor(fieldKey)"
+                                        :auto-label="getBadgeAutoParams(fieldKey).autoLabel"
+                                        :auto-scheme="getBadgeAutoParams(fieldKey).autoScheme"
+                                        :auto-tone="getBadgeAutoParams(fieldKey).autoTone"
+                                        size="sm"
+                                    >
+                                        <CellRenderer :cell="asTextCell(getCell(fieldKey))" ui-color="primary" />
+                                    </Badge>
+                                </template>
+                            </span>
+                        </div>
+                    </Tooltip>
+                </template>
+            </div>
+            </div>
         </div>
     </div>
 </template>

@@ -18,6 +18,8 @@ import EntityActions from '@/Pages/Organismes/entity/EntityActions.vue';
 import { useCopyToClipboard } from '@/Composables/utils/useCopyToClipboard';
 import { useDownloadPdf } from '@/Composables/utils/useDownloadPdf';
 import { getEntityRouteConfig, resolveEntityRouteUrl } from '@/Composables/entity/entityRouteRegistry';
+import { usePermissions } from "@/Composables/permissions/usePermissions";
+import { getSpecializationFieldDescriptors } from "@/Entities/specialization/specialization-descriptors";
 
 const props = defineProps({
     specialization: {
@@ -34,6 +36,35 @@ const emit = defineEmits(['edit', 'copy-link', 'download-pdf', 'refresh', 'view'
 
 const { copyToClipboard } = useCopyToClipboard();
 const { downloadPdf } = useDownloadPdf('specialization');
+const permissions = usePermissions();
+
+const ctx = computed(() => {
+    const capabilities = {
+        viewAny: permissions.can('specialization', 'viewAny'),
+        createAny: permissions.can('specialization', 'createAny'),
+        updateAny: permissions.can('specialization', 'updateAny'),
+        deleteAny: permissions.can('specialization', 'deleteAny'),
+        manageAny: permissions.can('specialization', 'manageAny'),
+    };
+    return { capabilities, meta: { capabilities } };
+});
+
+const descriptors = computed(() => getSpecializationFieldDescriptors(ctx.value));
+
+const canShowField = (fieldKey) => {
+    const desc = descriptors.value?.[fieldKey];
+    if (!desc) return false;
+    const visibleIf = desc?.permissions?.visibleIf;
+    if (typeof visibleIf === 'function') {
+        try {
+            return Boolean(visibleIf(ctx.value));
+        } catch (e) {
+            console.warn('[SpecializationViewLarge] visibleIf failed for', fieldKey, e);
+            return false;
+        }
+    }
+    return true;
+};
 
 // Champs à afficher dans la vue large
 const extendedFields = computed(() => {
@@ -44,42 +75,16 @@ const extendedFields = computed(() => {
         'usable',
         'is_visible',
     ];
-    
-    if (props.specialization.canView) {
-        fields.push('image', 'created_by', 'created_at', 'updated_at');
-    }
-    
-    return fields;
+    ['image', 'created_by', 'created_at', 'updated_at'].forEach((k) => fields.push(k));
+    return fields.filter(canShowField);
 });
 
 const getFieldLabel = (fieldKey) => {
-    const labels = {
-        name: 'Nom',
-        description: 'Description',
-        capabilities_count: 'Nb capacités',
-        usable: 'Utilisable',
-        is_visible: 'Visible',
-        image: 'Image',
-        created_by: 'Créé par',
-        created_at: 'Créé le',
-        updated_at: 'Modifié le',
-    };
-    return labels[fieldKey] || fieldKey;
+    return descriptors.value?.[fieldKey]?.general?.label || fieldKey;
 };
 
 const getFieldIcon = (fieldKey) => {
-    const icons = {
-        name: 'fa-solid fa-font',
-        description: 'fa-solid fa-align-left',
-        capabilities_count: 'fa-solid fa-list',
-        usable: 'fa-solid fa-check-circle',
-        is_visible: 'fa-solid fa-eye',
-        image: 'fa-solid fa-image',
-        created_by: 'fa-solid fa-user',
-        created_at: 'fa-solid fa-calendar',
-        updated_at: 'fa-solid fa-clock',
-    };
-    return icons[fieldKey] || 'fa-solid fa-info-circle';
+    return descriptors.value?.[fieldKey]?.general?.icon || 'fa-solid fa-info-circle';
 };
 
 const getCell = (fieldKey) => {

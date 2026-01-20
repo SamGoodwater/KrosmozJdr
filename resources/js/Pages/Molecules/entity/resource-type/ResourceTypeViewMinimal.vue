@@ -15,8 +15,11 @@ import Icon from '@/Pages/Atoms/data-display/Icon.vue';
 import Tooltip from '@/Pages/Atoms/feedback/Tooltip.vue';
 import CellRenderer from "@/Pages/Atoms/data-display/CellRenderer.vue";
 import EntityActions from '@/Pages/Organismes/entity/EntityActions.vue';
+import EntityUsableDot from "@/Pages/Atoms/data-display/EntityUsableDot.vue";
 import { useCopyToClipboard } from '@/Composables/utils/useCopyToClipboard';
 import { getEntityRouteConfig, resolveEntityRouteUrl } from '@/Composables/entity/entityRouteRegistry';
+import { usePermissions } from "@/Composables/permissions/usePermissions";
+import { getResourceTypeFieldDescriptors } from "@/Entities/resource-type/resource-type-descriptors";
 
 const props = defineProps({
     resourceType: {
@@ -26,35 +29,66 @@ const props = defineProps({
     showActions: {
         type: Boolean,
         default: true
+    },
+    displayMode: {
+        type: String,
+        default: 'hover',
+        validator: (v) => ['compact', 'hover', 'extended'].includes(v),
     }
 });
 
 const emit = defineEmits(['edit', 'copy-link', 'refresh', 'view', 'quick-view', 'quick-edit', 'delete', 'action']);
 
-const isHovered = ref(false);
+const isHovered = ref(props.displayMode === 'extended');
+const canHoverExpand = computed(() => props.displayMode === 'hover');
 const { copyToClipboard } = useCopyToClipboard();
+const permissions = usePermissions();
+
+const ctx = computed(() => {
+    const capabilities = {
+        viewAny: permissions.can('resourceType', 'viewAny'),
+        createAny: permissions.can('resourceType', 'createAny'),
+        updateAny: permissions.can('resourceType', 'updateAny'),
+        deleteAny: permissions.can('resourceType', 'deleteAny'),
+        manageAny: permissions.can('resourceType', 'manageAny'),
+    };
+    return { capabilities, meta: { capabilities } };
+});
+
+const descriptors = computed(() => getResourceTypeFieldDescriptors(ctx.value));
+
+const usableValue = computed(() => {
+    const v = props.resourceType?.usable ?? props.resourceType?._data?.usable;
+    return typeof v === 'boolean' ? v : null;
+});
+
+const canShowField = (fieldKey) => {
+    const desc = descriptors.value?.[fieldKey];
+    if (!desc) return false;
+    const visibleIf = desc?.permissions?.visibleIf;
+    if (typeof visibleIf === 'function') {
+        try {
+            return Boolean(visibleIf(ctx.value));
+        } catch (e) {
+            console.warn('[ResourceTypeViewMinimal] visibleIf failed for', fieldKey, e);
+            return false;
+        }
+    }
+    return true;
+};
 
 // Champs importants à afficher
-const importantFields = computed(() => ['decision', 'usable', 'is_visible', 'resources_count']);
+const importantFields = computed(() => ['decision', 'is_visible', 'resources_count'].filter(canShowField));
 
 // Champs supplémentaires à afficher au hover
 const expandedFields = computed(() => [
     'dofusdb_type_id',
     'seen_count',
     'last_seen_at',
-]);
+].filter(canShowField));
 
 const getFieldIcon = (fieldKey) => {
-    const icons = {
-        decision: 'fa-solid fa-circle-check',
-        usable: 'fa-solid fa-check-circle',
-        is_visible: 'fa-solid fa-eye',
-        resources_count: 'fa-solid fa-cubes',
-        dofusdb_type_id: 'fa-solid fa-database',
-        seen_count: 'fa-solid fa-eye',
-        last_seen_at: 'fa-solid fa-clock',
-    };
-    return icons[fieldKey] || 'fa-solid fa-info-circle';
+    return descriptors.value?.[fieldKey]?.general?.icon || 'fa-solid fa-info-circle';
 };
 
 const getCell = (fieldKey) => {
@@ -65,17 +99,8 @@ const getCell = (fieldKey) => {
 };
 
 const tooltipForField = (fieldKey, cell) => {
-    const labels = {
-        decision: 'Statut',
-        usable: 'Utilisable',
-        is_visible: 'Visibilité',
-        resources_count: 'Ressources',
-        dofusdb_type_id: 'ID DofusDB',
-        seen_count: 'Détections',
-        last_seen_at: 'Dernière détection',
-    };
-    const label = labels[fieldKey] || fieldKey;
-    const value = cell?.value || '-';
+    const label = descriptors.value?.[fieldKey]?.general?.label || fieldKey;
+    const value = (cell?.value === null || typeof cell?.value === 'undefined' || String(cell?.value) === '') ? '-' : cell.value;
     return `${label} : ${value}`;
 };
 
@@ -113,8 +138,11 @@ const handleAction = async (actionKey) => {
             height: isHovered ? 'auto' : '100px',
             minHeight: '80px'
         }"
-        @mouseenter="isHovered = true"
-        @mouseleave="isHovered = false">
+        @mouseenter="canHoverExpand && (isHovered = true)"
+        @mouseleave="canHoverExpand && (isHovered = false)">
+        <div class="absolute top-1 left-1 z-20">
+            <EntityUsableDot :usable="usableValue" />
+        </div>
         
         <div class="p-3">
             <!-- En-tête avec nom et actions -->
@@ -185,7 +213,7 @@ const handleAction = async (actionKey) => {
                             />
                             <div class="flex-1 min-w-0">
                                 <div class="font-semibold text-primary-400">
-                                    {{ key }}:
+                                    {{ descriptors?.[key]?.general?.label || key }}:
                                 </div>
                                 <div class="text-primary-200 truncate">
                                     <CellRenderer

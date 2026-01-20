@@ -296,7 +296,7 @@ const effectiveVisibleColumns = computed(() => {
         if (col?.hideable === false || col?.isMain) {
             next[col.id] = true;
             continue;
-        }
+            }
 
         // 1) choix explicite utilisateur (uniquement si la colonne a été "touchée")
         if (touched.has(col.id) && typeof prefsMap[col.id] === "boolean") {
@@ -318,7 +318,7 @@ const effectiveVisibleColumns = computed(() => {
         }
 
         next[col.id] = true;
-    }
+        }
 
     return next;
 });
@@ -635,7 +635,7 @@ const getFilterValueFor = (row, col) => {
         const raw = entity?._data;
         if (raw && typeof raw === "object" && Object.prototype.hasOwnProperty.call(raw, filterId)) {
             const v = raw?.[filterId];
-            if (typeof v !== "undefined") return v;
+        if (typeof v !== "undefined") return v;
         }
     }
 
@@ -1047,8 +1047,8 @@ const toggleColumnVisibility = (col, forcedVisible = null) => {
         newVisibility = forcedVisible;
     } else {
         // Fallback: toggle
-        const currentValue = visibleColumns.value?.[col.id];
-        const isCurrentlyVisible = currentValue !== false; // undefined ou true = visible
+    const currentValue = visibleColumns.value?.[col.id];
+    const isCurrentlyVisible = currentValue !== false; // undefined ou true = visible
         newVisibility = !isCurrentlyVisible;
     }
     prefs.setColumnVisible(col.id, newVisibility);
@@ -1120,7 +1120,7 @@ const handleExport = () => {
                 :ui-size="uiSize"
                 :ui-color="uiColor"
                 :column-visibility-enabled="Boolean(props.config?.features?.columnVisibility?.enabled)"
-                    :columns="columnsConfig"
+                :columns="columnsConfig"
                     :visible-columns="effectiveVisibleColumns"
                 :export-enabled="exportEnabled"
                 :selection-count="selectedCount"
