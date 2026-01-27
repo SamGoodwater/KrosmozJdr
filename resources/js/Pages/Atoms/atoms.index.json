@@ -2618,6 +2618,58 @@
     "file": "action/Btn.vue"
   },
   {
+    "name": "ResponsiveActionButton",
+    "description": "ResponsiveActionButton Atom (Glass, responsive overlay)",
+    "props": [
+      {
+        "name": "label",
+        "type": "String",
+        "desc": "- Texte du bouton (fallback si slot default)"
+      },
+      {
+        "name": "icon",
+        "type": "String",
+        "desc": "- Source de l'icône (FontAwesome ou chemin)"
+      },
+      {
+        "name": "color",
+        "type": "String",
+        "desc": "- Couleur DaisyUI ('', 'neutral', 'primary', ...)"
+      },
+      {
+        "name": "size",
+        "type": "String",
+        "desc": "- Taille DaisyUI ('', 'xs', 'sm', 'md', 'lg', 'xl')"
+      },
+      {
+        "name": "type",
+        "type": "String",
+        "desc": "- Type HTML du bouton ('button', 'submit', 'reset', 'radio', 'checkbox'), défaut 'button'"
+      },
+      {
+        "name": "disabled",
+        "type": "Boolean",
+        "desc": "- Désactive le bouton"
+      },
+      {
+        "name": "id,",
+        "type": "String",
+        "desc": "ariaLabel, role, tabindex - hérités de commonProps"
+      }
+    ],
+    "slots": [
+      {
+        "name": "default",
+        "desc": "- Contenu texte (prioritaire sur label)"
+      },
+      {
+        "name": "icon",
+        "desc": "- Contenu icône (prioritaire sur icon)"
+      }
+    ],
+    "file": "action/ResponsiveActionButton.vue"
+  },
+  {
     "name": "Indicator",
     "description": "Indicator Atom (DaisyUI)",
     "props": [

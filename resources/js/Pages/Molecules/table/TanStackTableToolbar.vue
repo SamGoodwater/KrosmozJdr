@@ -9,6 +9,7 @@
 import { computed } from "vue";
 import Dropdown from "@/Pages/Atoms/action/Dropdown.vue";
 import Btn from "@/Pages/Atoms/action/Btn.vue";
+import ResponsiveActionButton from "@/Pages/Atoms/action/ResponsiveActionButton.vue";
 import Icon from "@/Pages/Atoms/data-display/Icon.vue";
 import InputCore from "@/Pages/Atoms/data-input/InputCore.vue";
 import CheckboxCore from "@/Pages/Atoms/data-input/CheckboxCore.vue";
@@ -98,18 +99,16 @@ const actionBtnSize = computed(() => shiftUiSize(props.uiSize, -1));
                 <span class="hidden md:inline">Sélection ({{ selectionCount }})</span>
             </Btn>
 
-            <Btn
+            <ResponsiveActionButton
                 v-if="exportEnabled"
                 :size="actionBtnSize"
-                variant="glass"
                 :color="uiColor"
-                class="gap-2"
+                icon="fa-solid fa-file-csv"
+                label="Exporter"
+                ariaLabel="Exporter en CSV"
                 @click="emit('export')"
                 title="Exporter en CSV"
-            >
-                <Icon source="fa-solid fa-file-csv" alt="Exporter CSV" size="sm" />
-                <span class="hidden md:inline">Exporter</span>
-            </Btn>
+            />
 
             <Dropdown
                 v-if="columnVisibilityEnabled"
@@ -117,16 +116,14 @@ const actionBtnSize = computed(() => shiftUiSize(props.uiSize, -1));
                 :close-on-content-click="false"
             >
                 <template #trigger>
-                    <Btn
+                    <ResponsiveActionButton
                         :size="actionBtnSize"
-                        variant="glass"
                         :color="uiColor"
-                        class="gap-2"
+                        icon="fa-solid fa-columns"
+                        label="Colonnes"
+                        ariaLabel="Colonnes visibles"
                         title="Colonnes visibles"
-                    >
-                        <Icon source="fa-solid fa-columns" alt="Colonnes" size="sm" />
-                        <span class="hidden md:inline">Colonnes</span>
-                    </Btn>
+                    />
                 </template>
                 <template #content>
                     <div class="p-3 w-64">
