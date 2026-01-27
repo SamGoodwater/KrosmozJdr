@@ -11,13 +11,13 @@
  */
 import { computed } from 'vue';
 import { router } from '@inertiajs/vue3';
-import Image from '@/Pages/Atoms/data-display/Image.vue';
 import Icon from '@/Pages/Atoms/data-display/Icon.vue';
 import Badge from '@/Pages/Atoms/data-display/Badge.vue';
 import CellRenderer from "@/Pages/Atoms/data-display/CellRenderer.vue";
 import Tooltip from "@/Pages/Atoms/feedback/Tooltip.vue";
 import EntityActions from '@/Pages/Organismes/entity/EntityActions.vue';
 import EntityViewHeader from "@/Pages/Molecules/entity/shared/EntityViewHeader.vue";
+import ImageViewer from "@/Pages/Molecules/data-display/ImageViewer.vue";
 import EntityUsableDot from "@/Pages/Atoms/data-display/EntityUsableDot.vue";
 import { useCopyToClipboard } from '@/Composables/utils/useCopyToClipboard';
 import { useDownloadPdf } from '@/Composables/utils/useDownloadPdf';
@@ -181,29 +181,23 @@ const handleAction = async (actionKey) => {
     <div class="space-y-6">
         <EntityViewHeader mode="large">
             <template #media>
-                <div class="relative w-44 h-44 md:w-64 md:h-64 lg:w-72 lg:h-72">
-                    <div class="peer absolute inset-x-0 bottom-0 h-[80%] z-10"></div>
-                    <div class="absolute top-2 left-2 z-20 transition-opacity duration-150 peer-hover:opacity-0">
+                <div class="group relative w-44 h-44 md:w-64 md:h-64 lg:w-72 lg:h-72">
+                    <div class="absolute top-2 left-2 z-20 transition-opacity duration-150 group-hover:opacity-0">
                         <EntityUsableDot :usable="usableValue" />
                     </div>
 
-                    <Image
+                    <ImageViewer
                         v-if="campaign.image"
                         :src="campaign.image"
                         :alt="campaign.name || 'Campaign'"
-                        size="xl"
-                        rounded="lg"
-                        fit="cover"
-                        class="w-full h-full peer-hover:hidden pointer-events-none"
-                    />
-                    <Image
-                        v-if="campaign.image"
-                        :src="campaign.image"
-                        :alt="campaign.name || 'Campaign'"
-                        size="xl"
-                        rounded="lg"
-                        fit="contain"
-                        class="w-full h-full hidden peer-hover:block pointer-events-none"
+                        :caption="campaign.name || ''"
+                        preload="hover"
+                        :image-props="{
+                            size: 'xl',
+                            rounded: 'lg',
+                            fit: 'cover',
+                            class: 'w-full h-full',
+                        }"
                     />
                     <div v-else class="w-full h-full flex items-center justify-center bg-base-200 rounded-lg">
                         <Icon source="fa-solid fa-flag" :alt="campaign.name || 'Campaign'" size="xl" />

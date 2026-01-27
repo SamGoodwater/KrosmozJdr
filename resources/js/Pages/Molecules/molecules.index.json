@@ -2140,6 +2140,64 @@
     "file": "data-display/LevelBadge.vue"
   },
   {
+    "name": "ImageViewer",
+    "description": "ImageViewer Molecule (PhotoSwipe)",
+    "props": [
+      {
+        "name": "src",
+        "type": "String",
+        "desc": "- URL directe de l'image (optionnel)"
+      },
+      {
+        "name": "source",
+        "type": "String",
+        "desc": "- Chemin source pour ImageService/MediaManager (optionnel)"
+      },
+      {
+        "name": "transform",
+        "type": "Object",
+        "desc": "- Options de thumbnail (width/height/fit/quality) (optionnel)"
+      },
+      {
+        "name": "alt",
+        "type": "String",
+        "desc": "- Texte alternatif (obligatoire)"
+      },
+      {
+        "name": "caption",
+        "type": "String",
+        "desc": "- Caption affichée dans le viewer (fallback: alt)"
+      },
+      {
+        "name": "openOnClick",
+        "type": "Boolean",
+        "desc": "- Ouvre le viewer au clic (défaut: true)"
+      },
+      {
+        "name": "preload",
+        "type": "String",
+        "desc": "- Préchargement ('off'|'hover'|'open'), défaut 'off'"
+      },
+      {
+        "name": "showHoverIcon",
+        "type": "Boolean",
+        "desc": "- Affiche une icône au survol (défaut: true)"
+      },
+      {
+        "name": "downloadEnabled",
+        "type": "Boolean",
+        "desc": "- Ajoute un bouton de téléchargement dans PhotoSwipe (défaut: true)"
+      },
+      {
+        "name": "imageProps",
+        "type": "Object",
+        "desc": "- Props pass-through vers l'Atom Image (ratio, fit, size, etc.)"
+      }
+    ],
+    "slots": [],
+    "file": "data-display/ImageViewer.vue"
+  },
+  {
     "name": "AvatarGroup",
     "description": "AvatarGroup Molecule (DaisyUI + Custom Utility)",
     "props": [

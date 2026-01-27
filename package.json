@@ -97,6 +97,7 @@
         "laravel-precognition-vue-inertia": "^0.7.3",
         "mysql-mcp": "^1.1.1",
         "mysql2": "^3.16.0",
+        "photoswipe": "^5.4.4",
         "pikaday": "^1.8.2",
         "pinia": "^3.0.4",
         "playwright": "^1.57.0",

@@ -13,11 +13,11 @@ import { computed } from 'vue';
 import { router } from '@inertiajs/vue3';
 import Icon from '@/Pages/Atoms/data-display/Icon.vue';
 import CellRenderer from "@/Pages/Atoms/data-display/CellRenderer.vue";
-import Image from "@/Pages/Atoms/data-display/Image.vue";
 import Badge from "@/Pages/Atoms/data-display/Badge.vue";
 import EntityUsableDot from "@/Pages/Atoms/data-display/EntityUsableDot.vue";
 import Tooltip from "@/Pages/Atoms/feedback/Tooltip.vue";
 import EntityViewHeader from "@/Pages/Molecules/entity/shared/EntityViewHeader.vue";
+import ImageViewer from "@/Pages/Molecules/data-display/ImageViewer.vue";
 import EntityActions from '@/Pages/Organismes/entity/EntityActions.vue';
 import { useCopyToClipboard } from '@/Composables/utils/useCopyToClipboard';
 import { useDownloadPdf } from '@/Composables/utils/useDownloadPdf';
@@ -193,12 +193,11 @@ const handleAction = async (actionKey) => {
     <div class="space-y-3">
         <EntityViewHeader mode="compact">
             <template #media>
-                <div class="relative w-16 h-16">
-                    <div class="peer absolute inset-x-0 bottom-0 h-[80%] z-10"></div>
-                    <div class="absolute top-1 left-1 z-20 transition-opacity duration-150 peer-hover:opacity-0">
+                <div class="group relative w-16 h-16">
+                    <div class="absolute top-1 left-1 z-20 transition-opacity duration-150 group-hover:opacity-0">
                         <EntityUsableDot :usable="usableValue" />
                     </div>
-                    <div class="absolute top-1 right-1 z-20 transition-opacity duration-150 peer-hover:opacity-0">
+                    <div class="absolute top-1 right-1 z-20 transition-opacity duration-150 group-hover:opacity-0">
                         <Badge
                             :color="getBadgeColor('level')"
                             :auto-label="getBadgeAutoParams('level').autoLabel"
@@ -210,23 +209,18 @@ const handleAction = async (actionKey) => {
                         </Badge>
                     </div>
 
-                    <Image
+                    <ImageViewer
                         v-if="spell.image"
                         :source="spell.image"
                         :alt="spell.name || 'Sort'"
-                        size="sm"
-                        rounded="lg"
-                        fit="cover"
-                        class="w-full h-full peer-hover:hidden pointer-events-none"
-                    />
-                    <Image
-                        v-if="spell.image"
-                        :source="spell.image"
-                        :alt="spell.name || 'Sort'"
-                        size="sm"
-                        rounded="lg"
-                        fit="contain"
-                        class="w-full h-full hidden peer-hover:block pointer-events-none"
+                        :caption="spell.name || ''"
+                        preload="hover"
+                        :image-props="{
+                            size: 'sm',
+                            rounded: 'lg',
+                            fit: 'cover',
+                            class: 'w-full h-full',
+                        }"
                     />
 
                     <div v-else class="w-full h-full flex items-center justify-center bg-base-200 rounded-lg">

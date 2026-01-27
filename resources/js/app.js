@@ -4,6 +4,9 @@ import "./bootstrap";
 // Import Cally web component pour les composants de date
 import "cally";
 
+// PhotoSwipe (ImageViewer)
+import "photoswipe/style.css";
+
 // IMPORTANT: Charger les formatters pour qu'ils s'enregistrent automatiquement
 import "@/Utils/Formatters";
 
