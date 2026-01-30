@@ -75,12 +75,12 @@ app/Services/Scrapping/
 ### 5. **Interface de test** (Partiellement ✅)
 
 #### **Commandes Artisan** :
-- ✅ **TestDataCollectCommand** : `php artisan scrapping:test-datacollect`
-  - Test de disponibilité de l'API
-  - Test de collecte par entité (class, monster, item, spell, effect)
-  - Test de collecte par type d'objet
-  - Nettoyage du cache
-  - Affichage détaillé des données
+- ✅ **ScrappingCommand** : `php artisan scrapping`
+  - Collect/search : `--collect=...` + filtres/pagination
+  - Import : `--import=...` ou `--save`
+  - Compare : `--compare` (raw/converted/existing)
+  - Batch : `--batch=/path/to/batch.json`
+  - Sync resource_types : `--sync-resource-types`
 
 #### **Contrôleurs HTTP** :
 - ✅ **DataCollectController** : Contrôleur de test pour l'API HTTP
@@ -104,7 +104,7 @@ app/Services/Scrapping/
 - ✅ **Test classe ID 1** : Collecte réussie
 - ✅ **Test monstre ID 31** : Collecte réussie (Larve Bleue)
 - ✅ **Test objet ID 15** : Collecte réussie
-- ✅ **Commande Artisan** : Fonctionne parfaitement
+- ✅ **Commande Artisan (`php artisan scrapping`)** : Fonctionne parfaitement
 
 ## 🚧 Ce qui reste à faire
 
@@ -112,7 +112,7 @@ app/Services/Scrapping/
 
 #### **1.1. Intégration de l'Orchestrateur** ⚠️
 - [ ] **Mise à jour du DataCollectController** : Intégrer l'orchestrateur pour les imports complets
-- [ ] **Mise à jour de TestDataCollectCommand** : Ajouter des options pour tester l'orchestrateur
+- [ ] **Utiliser `php artisan scrapping`** : Ajouter/adapter les options pour tester l'orchestrateur
 - [ ] **Routes orchestrateur** : Créer des routes pour l'orchestrateur dans `routes/api.php`
 
 #### **1.2. Contrôleurs de production** 📝
@@ -122,10 +122,10 @@ app/Services/Scrapping/
   - Endpoints pour le monitoring
 
 #### **1.3. Commandes Artisan de production** 📝
-- [ ] **ScrappingImportCommand** : Commande pour importer via l'orchestrateur
-  - Import individuel : `php artisan scrapping:import class 1`
-  - Import en lot : `php artisan scrapping:import batch --file=imports.json`
-  - Import par type : `php artisan scrapping:import items --type=15`
+- [ ] **ScrappingCommand** : Commande unique pour importer via l'orchestrateur
+  - Import individuel : `php artisan scrapping --import=class --id=1`
+  - Import en lot : `php artisan scrapping --batch=imports.json`
+  - Import par filtres : `php artisan scrapping --import=item --typeId=15 --limit=100 --max-pages=1`
 
 ### **Phase 2 : Interface utilisateur** (Priorité : MOYENNE)
 
@@ -216,12 +216,12 @@ app/Services/Scrapping/
 2. ✅ **Créer les commandes Artisan de test** : Fait
 3. ⚠️ **Intégrer l'orchestrateur** : À faire
    - Mettre à jour `DataCollectController` pour utiliser l'orchestrateur
-   - Mettre à jour `TestDataCollectCommand` pour tester l'orchestrateur
+   - Utiliser `php artisan scrapping` pour tester l'orchestrateur
    - Créer des routes pour l'orchestrateur
 
 ### **Court terme (2-3 semaines)**
 1. **Créer les contrôleurs de production** : `ScrappingController`
-2. **Créer les commandes de production** : `ScrappingImportCommand`
+2. **Commande de production** : `ScrappingCommand` (`php artisan scrapping`)
 3. **Tests unitaires** : Couvrir tous les services
 4. **Tests d'intégration** : Validation du workflow complet
 
@@ -255,7 +255,7 @@ app/Services/Scrapping/
 
 ### **Interfaces de test**
 - `app/Http/Controllers/Scrapping/DataCollectController.php`
-- `app/Console/Commands/TestDataCollectCommand.php`
+- `app/Console/Commands/ScrappingCommand.php`
 - `routes/api.php` (routes de test)
 
 ### **Documentation**

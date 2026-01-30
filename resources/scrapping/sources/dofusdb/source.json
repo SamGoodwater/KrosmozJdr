@@ -1,0 +1,21 @@
+{
+  "version": 1,
+  "source": "dofusdb",
+  "label": "DofusDB",
+  "baseUrl": "https://api.dofusdb.fr",
+  "defaultLanguage": "fr",
+  "http": {
+    "timeoutSeconds": 30,
+    "retryAttempts": 3,
+    "retryDelayMs": 1000,
+    "userAgent": "KrosmozJDR-Scrapping/1.0"
+  },
+  "security": {
+    "allowedHosts": ["api.dofusdb.fr"]
+  },
+  "notes": [
+    "Ce fichier décrit la source (conventions globales).",
+    "Les entités sont définies dans entities/*.json."
+  ]
+}
+

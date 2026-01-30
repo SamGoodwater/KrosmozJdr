@@ -1,40 +1,62 @@
 <script setup>
 /**
- * EntityUsableDot — Indicateur discret "adapté au JDR"
+ * EntityUsableDot — Indicateur discret d'état (`state`)
  *
  * @description
- * Petit point coloré (success/error) avec tooltip.
+ * Petit point coloré (success/warning/neutral) avec tooltip.
  * Utilisable dans les tableaux, headers de vues, listes, etc.
  *
- * @props {boolean|null} usable - true/false si connu, null pour masquer
- * @props {string} yesLabel - Texte tooltip si usable=true
- * @props {string} noLabel - Texte tooltip si usable=false
+ * @props {string|null} state - raw|draft|playable|archived (ou null)
+ * @props {string} playableLabel - Texte tooltip si state=playable
+ * @props {string} draftLabel - Texte tooltip si state=draft
+ * @props {string} rawLabel - Texte tooltip si state=raw
+ * @props {string} archivedLabel - Texte tooltip si state=archived
  * @note
  * Le positionnement (absolute, offsets, etc.) se fait via un wrapper dans le parent
  * (ex: slot `dot` de `EntityViewHeader`).
  *
  * @example
- * <EntityUsableDot :usable="entity._data.usable" class="absolute -top-2 -left-2" />
+ * <EntityUsableDot :state="entity._data.state" class="absolute -top-2 -left-2" />
  */
 import Tooltip from "@/Pages/Atoms/feedback/Tooltip.vue";
 import { computed } from "vue";
 
 const props = defineProps({
-  usable: { type: [Boolean, null], default: null },
-  yesLabel: { type: String, default: "Adapté au JDR" },
-  noLabel: { type: String, default: "Non adapté au JDR" },
+  state: { type: [String, null], default: null },
+  playableLabel: { type: String, default: "Jouable" },
+  draftLabel: { type: String, default: "Brouillon" },
+  rawLabel: { type: String, default: "Brut" },
+  archivedLabel: { type: String, default: "Archivé" },
 });
 
 const tooltip = computed(() => {
-  if (props.usable === true) return props.yesLabel;
-  if (props.usable === false) return props.noLabel;
-  return null;
+  switch (props.state) {
+    case "playable":
+      return props.playableLabel;
+    case "draft":
+      return props.draftLabel;
+    case "raw":
+      return props.rawLabel;
+    case "archived":
+      return props.archivedLabel;
+    default:
+      return null;
+  }
 });
 
 const dotClass = computed(() => {
-  if (props.usable === true) return "bg-success";
-  if (props.usable === false) return "bg-error";
-  return "bg-base-300";
+  switch (props.state) {
+    case "playable":
+      return "bg-success";
+    case "draft":
+      return "bg-warning";
+    case "raw":
+      return "bg-error";
+    case "archived":
+      return "bg-info";
+    default:
+      return "bg-base-300";
+  }
 });
 </script>
 

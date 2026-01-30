@@ -13,7 +13,7 @@
 
 | Aspect | CreatePageModal | EditPageModal | Duplication ? |
 |--------|----------------|---------------|---------------|
-| FormFields (title, slug, is_visible, etc.) | ✅ | ✅ | **OUI** (même structure) |
+| FormFields (title, slug, read_level, etc.) | ✅ | ✅ | **OUI** (même structure) |
 | Validation inline | ✅ | ✅ | **OUI** (computed identiques) |
 | Options selects (state, visibility, parent) | ✅ | ✅ | **OUI** (via composable) |
 | Génération slug auto | ✅ | ✅ | **OUI** (TransformService) |
@@ -73,8 +73,8 @@ export function usePageFormModal(initialData = null) {
   const form = useForm({
     title: initialData?.title || '',
     slug: initialData?.slug || '',
-    is_visible: initialData?.isVisible || 'guest',
-    can_edit_role: initialData?.canEditRole || 'admin',
+    read_level: initialData?.readLevel ?? 0,
+    write_level: initialData?.writeLevel ?? 4,
     in_menu: initialData?.inMenu ?? true,
     state: initialData?.state || 'draft',
     parent_id: initialData?.parentId || null,
@@ -178,8 +178,8 @@ export class PagePayloadService {
     return {
       title: formData.title,
       slug: formData.slug,
-      is_visible: formData.is_visible,
-      can_edit_role: formData.can_edit_role,
+      read_level: formData.read_level,
+      write_level: formData.write_level,
       in_menu: formData.in_menu,
       state: formData.state,
       parent_id: formData.parent_id,

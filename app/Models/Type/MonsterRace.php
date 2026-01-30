@@ -13,8 +13,9 @@ use App\Models\Entity\Monster;
  *
  * @property int $id
  * @property string $name
- * @property int $usable
- * @property string $is_visible
+ * @property string $state
+ * @property int $read_level
+ * @property int $write_level
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property \Illuminate\Support\Carbon|null $deleted_at
@@ -36,10 +37,11 @@ use App\Models\Entity\Monster;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|MonsterRace whereDeletedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|MonsterRace whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|MonsterRace whereIdSuperRace($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|MonsterRace whereIsVisible($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|MonsterRace whereReadLevel($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|MonsterRace whereName($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|MonsterRace whereUpdatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|MonsterRace whereUsable($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|MonsterRace whereState($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|MonsterRace whereWriteLevel($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|MonsterRace withTrashed()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|MonsterRace withoutTrashed()
  * @mixin \Eloquent
@@ -49,6 +51,11 @@ class MonsterRace extends Model
     /** @use HasFactory<\\Database\\Factories\\MonsterRaceFactory> */
     use HasFactory, SoftDeletes;
 
+    public const STATE_RAW = 'raw';
+    public const STATE_DRAFT = 'draft';
+    public const STATE_PLAYABLE = 'playable';
+    public const STATE_ARCHIVED = 'archived';
+
     /**
      * The attributes that are mass assignable.
      *
@@ -56,8 +63,9 @@ class MonsterRace extends Model
      */
     protected $fillable = [
         'name',
-        'usable',
-        'is_visible',
+        'state',
+        'read_level',
+        'write_level',
         'created_by',
         'id_super_race',
     ];
@@ -68,7 +76,8 @@ class MonsterRace extends Model
      * @var array<string, string>
      */
     protected $casts = [
-        'usable' => 'integer',
+        'read_level' => 'integer',
+        'write_level' => 'integer',
     ];
 
     /**

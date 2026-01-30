@@ -51,10 +51,6 @@ export class Consumable extends BaseModel {
         return this._data.rarity || null;
     }
 
-    get usable() {
-        return this._data.usable ?? false;
-    }
-
     get dofusVersion() {
         return this._data.dofus_version || null;
     }
@@ -369,7 +365,9 @@ export class Consumable extends BaseModel {
             recipe: this.recipe,
             price: this.price,
             rarity: this.rarity,
-            usable: this.usable,
+            state: this.state,
+            read_level: this.readLevel,
+            write_level: this.writeLevel,
             dofus_version: this.dofusVersion,
             image: this.image,
             auto_update: this.autoUpdate,

@@ -13,8 +13,6 @@ use App\Models\User;
 use App\Models\Section;
 use App\Models\Entity\Campaign;
 use App\Models\Entity\Scenario;
-use App\Enums\PageState;
-use App\Enums\Visibility;
 
 /**
  * Modèle Eloquent Page
@@ -28,10 +26,10 @@ use App\Enums\Visibility;
  * @property int $id
  * @property string $title
  * @property string $slug
- * @property \App\Enums\Visibility $is_visible
  * @property bool $in_menu
- * @property \App\Enums\Visibility $can_edit_role
- * @property \App\Enums\PageState $state
+ * @property string $state
+ * @property int $read_level
+ * @property int $write_level
  * @property int|null $parent_id
  * @property int $menu_order
  * @property int|null $created_by
@@ -76,16 +74,10 @@ class Page extends Model
     /** @use HasFactory<\Database\Factories\PageFactory> */
     use HasFactory, SoftDeletes;
 
-    /**
-     * Les états possibles pour une page.
-     * @deprecated Utiliser PageState enum à la place
-     */
-    const STATES = [
-        'brouillon' => 0,
-        'prévisualisation' => 1,
-        'publié' => 2,
-        'archivé' => 3,
-    ];
+    public const STATE_RAW = 'raw';
+    public const STATE_DRAFT = 'draft';
+    public const STATE_PLAYABLE = 'playable';
+    public const STATE_ARCHIVED = 'archived';
 
     /**
      * The attributes that are mass assignable.
@@ -95,10 +87,10 @@ class Page extends Model
     protected $fillable = [
         'title',
         'slug',
-        'is_visible',
-        'can_edit_role',
         'in_menu',
         'state',
+        'read_level',
+        'write_level',
         'parent_id',
         'menu_order',
         'created_by',
@@ -111,9 +103,8 @@ class Page extends Model
      */
     protected $casts = [
         'in_menu' => 'boolean',
-        'state' => PageState::class,
-        'is_visible' => Visibility::class,
-        'can_edit_role' => Visibility::class,
+        'read_level' => 'integer',
+        'write_level' => 'integer',
     ];
 
     /**
@@ -175,12 +166,12 @@ class Page extends Model
     // ============================================
 
     /**
-     * Scope pour filtrer les pages publiées.
+     * Scope pour filtrer les pages "jouables" (anciennement published).
      */
     /** @param Builder<Page> $query @return Builder<Page> */
-    public function scopePublished(Builder $query): Builder
+    public function scopePlayable(Builder $query): Builder
     {
-        return $query->where('state', PageState::PUBLISHED->value);
+        return $query->where('state', self::STATE_PLAYABLE);
     }
 
     /**
@@ -193,32 +184,18 @@ class Page extends Model
     }
 
     /**
-     * Scope pour filtrer les pages visibles pour un utilisateur.
+     * Scope pour filtrer les pages lisibles pour un utilisateur.
      */
     /** @param Builder<Page> $query @return Builder<Page> */
-    public function scopeVisibleFor(Builder $query, ?User $user = null): Builder
+    public function scopeReadableFor(Builder $query, ?User $user = null): Builder
     {
-        $allowedVisibilities = [Visibility::GUEST->value];
+        $level = $user ? (int) $user->role : User::ROLE_GUEST;
 
-        if ($user) {
-            $allowedVisibilities[] = Visibility::USER->value;
-
-            if ($user->isGameMaster()) {
-                $allowedVisibilities[] = Visibility::GAME_MASTER->value;
-            }
-
-            if ($user->isAdmin()) {
-                $allowedVisibilities[] = Visibility::ADMIN->value;
-            }
-        }
-
-        $allowedVisibilities = array_values(array_unique($allowedVisibilities));
-
-        return $query->where(function ($q) use ($user, $allowedVisibilities) {
-            $q->whereIn('is_visible', $allowedVisibilities);
+        return $query->where(function ($q) use ($user, $level) {
+            $q->where('read_level', '<=', $level);
 
             if ($user) {
-                // Visible si l'utilisateur est associé à la page
+                // Lisible si l'utilisateur est associé à la page
                 $q->orWhereHas('users', function ($userQuery) use ($user) {
                     $userQuery->where('users.id', $user->id);
                 });
@@ -241,9 +218,9 @@ class Page extends Model
     /** @param Builder<Page> $query @return Builder<Page> */
     public function scopeForMenu(Builder $query, ?User $user = null): Builder
     {
-        return $query->published()
+        return $query->playable()
             ->inMenu()
-            ->visibleFor($user)
+            ->readableFor($user)
             ->ordered();
     }
 
@@ -252,23 +229,40 @@ class Page extends Model
     // ============================================
 
     /**
-     * Vérifie si la page est publiée.
+     * Vérifie si la page est "jouable" (affichable publiquement).
      */
-    public function isPublished(): bool
+    public function isPlayable(): bool
     {
-        return $this->state === PageState::PUBLISHED;
+        return $this->state === self::STATE_PLAYABLE;
     }
 
     /**
-     * Vérifie si la page est visible pour un utilisateur.
+     * Vérifie si la page est lisible pour un utilisateur (niveau OU association).
      */
-    public function isVisibleFor(?User $user = null): bool
+    public function isReadableFor(?User $user = null): bool
     {
-        return $this->is_visible->isAccessibleBy($user);
+        $level = $user ? (int) $user->role : User::ROLE_GUEST;
+        if ((int) $this->read_level <= $level) {
+            return true;
+        }
+
+        if (!$user) {
+            return false;
+        }
+
+        if (!$this->relationLoaded('users')) {
+            try {
+                $this->load('users');
+            } catch (\Exception $e) {
+                return false;
+            }
+        }
+
+        return $this->relationLoaded('users') && $this->users->contains($user->id);
     }
 
     /**
-     * Vérifie si la page peut être vue par un utilisateur (état + visibilité).
+     * Vérifie si la page peut être vue par un utilisateur (état + read_level).
      */
     public function canBeViewedBy(?User $user = null): bool
     {
@@ -277,16 +271,21 @@ class Page extends Model
             return true;
         }
 
-        // Doit être publiée (ou en preview pour les auteurs)
-        if (!$this->isPublished() && !($user && $this->created_by === $user->id)) {
+        // Les éditeurs voient tout (draft/raw inclus)
+        if ($user && $this->canBeEditedBy($user)) {
+            return true;
+        }
+
+        // Sinon : uniquement les pages "jouables"
+        if (!$this->isPlayable()) {
             return false;
         }
 
-        return $this->isVisibleFor($user);
+        return $this->isReadableFor($user);
     }
 
     /**
-     * Vérifie si la page peut être modifiée par un utilisateur selon can_edit_role.
+     * Vérifie si la page peut être modifiée par un utilisateur selon write_level.
      */
     public function canBeEditedBy(?User $user = null): bool
     {
@@ -305,7 +304,6 @@ class Page extends Model
         }
 
         // Si l'utilisateur est associé à la page via la relation users, il peut la modifier
-        // Charger la relation si elle n'est pas déjà chargée
         if (!$this->relationLoaded('users')) {
             try {
                 $this->load('users');
@@ -317,15 +315,16 @@ class Page extends Model
             return true;
         }
 
-        return $this->can_edit_role->isAccessibleBy($user);
+        $level = (int) $user->role;
+        return $level >= (int) $this->write_level;
     }
 
     /**
-     * Publie la page.
+     * Passe la page à l'état "jouable".
      */
     public function publish(): void
     {
-        $this->update(['state' => PageState::PUBLISHED->value]);
+        $this->update(['state' => self::STATE_PLAYABLE]);
     }
 
     /**
@@ -333,15 +332,7 @@ class Page extends Model
      */
     public function archive(): void
     {
-        $this->update(['state' => PageState::ARCHIVED->value]);
-    }
-
-    /**
-     * Met la page en prévisualisation.
-     */
-    public function setPreview(): void
-    {
-        $this->update(['state' => PageState::PREVIEW->value]);
+        $this->update(['state' => self::STATE_ARCHIVED]);
     }
 
     /**
@@ -349,6 +340,6 @@ class Page extends Model
      */
     public function setDraft(): void
     {
-        $this->update(['state' => PageState::DRAFT->value]);
+        $this->update(['state' => self::STATE_DRAFT]);
     }
 }

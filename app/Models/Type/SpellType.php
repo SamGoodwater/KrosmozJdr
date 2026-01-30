@@ -16,8 +16,9 @@ use App\Models\Entity\Spell;
  * @property string|null $description
  * @property string $color
  * @property string|null $icon
- * @property int $usable
- * @property string $is_visible
+ * @property string $state
+ * @property int $read_level
+ * @property int $write_level
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property \Illuminate\Support\Carbon|null $deleted_at
@@ -37,10 +38,11 @@ use App\Models\Entity\Spell;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|SpellType whereDescription($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|SpellType whereIcon($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|SpellType whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|SpellType whereIsVisible($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SpellType whereReadLevel($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|SpellType whereName($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|SpellType whereUpdatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|SpellType whereUsable($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SpellType whereState($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SpellType whereWriteLevel($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|SpellType withTrashed()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|SpellType withoutTrashed()
  * @mixin \Eloquent
@@ -49,6 +51,11 @@ class SpellType extends Model
 {
     /** @use HasFactory<\Database\Factories\SpellTypeFactory> */
     use HasFactory, SoftDeletes;
+
+    public const STATE_RAW = 'raw';
+    public const STATE_DRAFT = 'draft';
+    public const STATE_PLAYABLE = 'playable';
+    public const STATE_ARCHIVED = 'archived';
 
     /**
      * The attributes that are mass assignable.
@@ -60,8 +67,9 @@ class SpellType extends Model
         'description',
         'color',
         'icon',
-        'usable',
-        'is_visible',
+        'state',
+        'read_level',
+        'write_level',
         'created_by',
     ];
 
@@ -71,7 +79,8 @@ class SpellType extends Model
      * @var array<string, string>
      */
     protected $casts = [
-        'usable' => 'integer',
+        'read_level' => 'integer',
+        'write_level' => 'integer',
     ];
 
     /**

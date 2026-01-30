@@ -32,15 +32,15 @@ class SpellBulkControllerTest extends TestCase
     public function test_admin_can_bulk_update_spells(): void
     {
         $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
-        $spell1 = Spell::factory()->create(['level' => '10', 'pa' => '3', 'usable' => false]);
-        $spell2 = Spell::factory()->create(['level' => '20', 'pa' => '4', 'usable' => true]);
+        $spell1 = Spell::factory()->create(['level' => '10', 'pa' => '3', 'state' => Spell::STATE_DRAFT]);
+        $spell2 = Spell::factory()->create(['level' => '20', 'pa' => '4', 'state' => Spell::STATE_PLAYABLE]);
 
         $response = $this->actingAs($admin)
             ->patchJson('/api/entities/spells/bulk', [
                 'ids' => [$spell1->id, $spell2->id],
                 'level' => '50',
                 'pa' => '5',
-                'usable' => true,
+                'state' => Spell::STATE_PLAYABLE,
             ]);
 
         $response->assertOk()
@@ -54,13 +54,13 @@ class SpellBulkControllerTest extends TestCase
             'id' => $spell1->id,
             'level' => '50',
             'pa' => '5',
-            'usable' => 1,
+            'state' => Spell::STATE_PLAYABLE,
         ]);
         $this->assertDatabaseHas('spells', [
             'id' => $spell2->id,
             'level' => '50',
             'pa' => '5',
-            'usable' => 1,
+            'state' => Spell::STATE_PLAYABLE,
         ]);
     }
 
@@ -91,14 +91,14 @@ class SpellBulkControllerTest extends TestCase
             'level' => '10',
             'pa' => '3',
             'po' => '2',
-            'usable' => false,
+            'state' => Spell::STATE_DRAFT,
         ]);
 
         $response = $this->actingAs($admin)
             ->patchJson('/api/entities/spells/bulk', [
                 'ids' => [$spell->id],
                 'level' => '50',
-                // pa, po, usable ne sont pas modifiés
+                // pa, po, state ne sont pas modifiés
             ]);
 
         $response->assertOk();
@@ -107,7 +107,7 @@ class SpellBulkControllerTest extends TestCase
         $this->assertEquals('50', $spell->level);
         $this->assertEquals('3', $spell->pa); // Non modifié
         $this->assertEquals('2', $spell->po); // Non modifié
-        $this->assertEquals(0, $spell->usable); // Non modifié
+        $this->assertEquals(Spell::STATE_DRAFT, $spell->state); // Non modifié
     }
 
     /**

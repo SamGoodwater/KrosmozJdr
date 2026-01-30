@@ -69,10 +69,11 @@ const canShowField = (fieldKey) => {
 const compactFields = computed(() => [
     'rarity',
     'level',
-    'usable',
+    'state',
     'price',
     'dofus_version',
-    'is_visible',
+    'read_level',
+    'write_level',
 ].filter(canShowField));
 
 const getFieldLabel = (fieldKey) => {

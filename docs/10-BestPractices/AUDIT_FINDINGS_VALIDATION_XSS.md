@@ -15,11 +15,11 @@
 
 1. **FormRequests dédiées** avec validation dynamique par template :
    - `StoreSectionRequest` / `UpdateSectionRequest` : règles dynamiques selon `SectionType`
-   - `StorePageRequest` / `UpdatePageRequest` : enums `Visibility` / `PageState`, slugs validés
+   - `StorePageRequest` / `UpdatePageRequest` : validation de `state` + `read_level/write_level`, slugs validés
    - Toutes les mutations passent par `validated()` (pas de `request->all()` sauvage)
 
 2. **Casts Eloquent** :
-   - `Page/Section` : casts `json` pour `settings/data`, enums pour `state/is_visible/can_edit_role`
+   - `Page/Section` : casts `json` pour `settings/data`, types pour `state/read_level/write_level`
    - Pas d'exposition de champs sensibles (`created_by` auto-rempli côté controller)
 
 3. **Validation inline limitée** :

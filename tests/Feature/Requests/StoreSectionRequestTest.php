@@ -4,7 +4,6 @@ namespace Tests\Feature\Requests;
 
 use App\Models\User;
 use App\Models\Page;
-use App\Enums\Visibility;
 use App\Enums\SectionType;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -201,23 +200,22 @@ class StoreSectionRequestTest extends TestCase
         ]);
     }
 
-    /**
-     * can_edit_role doit être une valeur valide de l'enum Visibility
-     */
-    public function test_can_edit_role_enum(): void
+    public function test_write_level_must_be_gte_read_level(): void
     {
-        $admin = User::factory()->create(['role' => 4]);
+        $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
         $page = Page::factory()->create(['created_by' => $admin->id]);
 
         $response = $this->actingAs($admin)->postJson(route('sections.store'), [
             'title' => 'Test Section',
             'page_id' => $page->id,
             'template' => SectionType::TEXT->value,
-            'can_edit_role' => 999, // Valeur invalide
+            'data' => ['content' => '<p>Test</p>'],
+            'read_level' => User::ROLE_ADMIN,
+            'write_level' => User::ROLE_GAME_MASTER,
         ]);
 
         $response->assertStatus(422);
-        $response->assertJsonValidationErrors('can_edit_role');
+        $response->assertJsonValidationErrors('write_level');
     }
 
     /**
@@ -225,14 +223,13 @@ class StoreSectionRequestTest extends TestCase
      */
     public function test_valid_request_creates_section(): void
     {
-        $admin = User::factory()->create(['role' => 4]);
+        $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
         $page = Page::factory()->create(['created_by' => $admin->id]);
 
         $response = $this->actingAs($admin)->postJson(route('sections.store'), [
             'title' => 'Valid Section',
             'page_id' => $page->id,
             'template' => SectionType::TEXT->value,
-            'can_edit_role' => Visibility::ADMIN->value,
             'data' => [
                 'content' => '<p>Test content</p>',
             ],

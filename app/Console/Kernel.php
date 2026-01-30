@@ -31,7 +31,7 @@ class Kernel extends ConsoleKernel
             $at = env('SCRAPPING_RESOURCES_AUTO_SYNC_AT', '03:00');
             $limit = (int) env('SCRAPPING_RESOURCES_AUTO_SYNC_LIMIT', 100);
             $schedule
-                ->command("scrapping:sync-resources --limit={$limit}")
+                ->command("scrapping --import=resource --resource-types=allowed --limit={$limit} --max-pages=0 --max-items=20000")
                 ->dailyAt($at);
         }
     }

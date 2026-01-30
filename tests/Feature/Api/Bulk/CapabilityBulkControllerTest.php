@@ -34,17 +34,17 @@ class CapabilityBulkControllerTest extends TestCase
         $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
         $capability1 = Capability::factory()->create([
             'name' => 'Capability 1',
-            'is_visible' => 'guest',
+            'read_level' => User::ROLE_GUEST,
         ]);
         $capability2 = Capability::factory()->create([
             'name' => 'Capability 2',
-            'is_visible' => 'user',
+            'read_level' => User::ROLE_USER,
         ]);
 
         $response = $this->actingAs($admin)
             ->patchJson('/api/entities/capabilities/bulk', [
                 'ids' => [$capability1->id, $capability2->id],
-                'is_visible' => 'admin',
+                'read_level' => User::ROLE_ADMIN,
             ]);
 
         $response->assertOk()
@@ -56,11 +56,11 @@ class CapabilityBulkControllerTest extends TestCase
 
         $this->assertDatabaseHas('capabilities', [
             'id' => $capability1->id,
-            'is_visible' => 'admin',
+            'read_level' => User::ROLE_ADMIN,
         ]);
         $this->assertDatabaseHas('capabilities', [
             'id' => $capability2->id,
-            'is_visible' => 'admin',
+            'read_level' => User::ROLE_ADMIN,
         ]);
     }
 
@@ -74,7 +74,7 @@ class CapabilityBulkControllerTest extends TestCase
         $response = $this->actingAs($admin)
             ->patchJson('/api/entities/capabilities/bulk', [
                 'ids' => [99999, 99998],
-                'is_visible' => 'admin',
+                'read_level' => User::ROLE_ADMIN,
             ]);
 
         $response->assertStatus(422)
@@ -90,20 +90,20 @@ class CapabilityBulkControllerTest extends TestCase
         $capability = Capability::factory()->create([
             'name' => 'Original Name',
             'description' => 'Original Description',
-            'is_visible' => 'guest',
+            'read_level' => User::ROLE_GUEST,
         ]);
 
         $response = $this->actingAs($admin)
             ->patchJson('/api/entities/capabilities/bulk', [
                 'ids' => [$capability->id],
-                'is_visible' => 'admin',
+                'read_level' => User::ROLE_ADMIN,
                 // name et description ne sont pas modifiés
             ]);
 
         $response->assertOk();
 
         $capability->refresh();
-        $this->assertEquals('admin', $capability->is_visible);
+        $this->assertEquals(User::ROLE_ADMIN, $capability->read_level);
         $this->assertEquals('Original Name', $capability->name); // Non modifié
         $this->assertEquals('Original Description', $capability->description); // Non modifié
     }
@@ -119,7 +119,7 @@ class CapabilityBulkControllerTest extends TestCase
         $response = $this->actingAs($user)
             ->patchJson('/api/entities/capabilities/bulk', [
                 'ids' => [$capability->id],
-                'is_visible' => 'admin',
+                'read_level' => User::ROLE_ADMIN,
             ]);
 
         $response->assertForbidden();

@@ -34,20 +34,20 @@ class CampaignBulkControllerTest extends TestCase
         $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
         $campaign1 = Campaign::factory()->create([
             'name' => 'Campaign 1',
-            'is_visible' => 'guest',
+            'read_level' => User::ROLE_GUEST,
             'created_by' => $admin->id,
         ]);
         $campaign2 = Campaign::factory()->create([
             'name' => 'Campaign 2',
-            'is_visible' => 'user',
+            'read_level' => User::ROLE_USER,
             'created_by' => $admin->id,
         ]);
 
         $response = $this->actingAs($admin)
             ->patchJson('/api/entities/campaigns/bulk', [
                 'ids' => [$campaign1->id, $campaign2->id],
-                'state' => 1,
-                'is_visible' => 'admin',
+                'progress_state' => 1,
+                'read_level' => User::ROLE_ADMIN,
             ]);
 
         $response->assertOk()
@@ -59,11 +59,11 @@ class CampaignBulkControllerTest extends TestCase
 
         $this->assertDatabaseHas('campaigns', [
             'id' => $campaign1->id,
-            'is_visible' => 'admin',
+            'read_level' => User::ROLE_ADMIN,
         ]);
         $this->assertDatabaseHas('campaigns', [
             'id' => $campaign2->id,
-            'is_visible' => 'admin',
+            'read_level' => User::ROLE_ADMIN,
         ]);
     }
 
@@ -77,7 +77,7 @@ class CampaignBulkControllerTest extends TestCase
         $response = $this->actingAs($admin)
             ->patchJson('/api/entities/campaigns/bulk', [
                 'ids' => [99999, 99998],
-                'is_visible' => 'admin',
+                'read_level' => User::ROLE_ADMIN,
             ]);
 
         $response->assertStatus(422)
@@ -93,22 +93,22 @@ class CampaignBulkControllerTest extends TestCase
         $campaign = Campaign::factory()->create([
             'name' => 'Original Name',
             'description' => 'Original Description',
-            'is_visible' => 'guest',
+            'read_level' => User::ROLE_GUEST,
             'created_by' => $admin->id,
         ]);
 
         $response = $this->actingAs($admin)
             ->patchJson('/api/entities/campaigns/bulk', [
                 'ids' => [$campaign->id],
-                'state' => 1,
-                'is_visible' => 'admin',
+                'progress_state' => 1,
+                'read_level' => User::ROLE_ADMIN,
                 // name et description ne sont pas modifiés
             ]);
 
         $response->assertOk();
 
         $campaign->refresh();
-        $this->assertEquals('admin', $campaign->is_visible);
+        $this->assertEquals(User::ROLE_ADMIN, $campaign->read_level);
         $this->assertEquals('Original Name', $campaign->name); // Non modifié
         $this->assertEquals('Original Description', $campaign->description); // Non modifié
     }
@@ -124,7 +124,7 @@ class CampaignBulkControllerTest extends TestCase
         $response = $this->actingAs($user)
             ->patchJson('/api/entities/campaigns/bulk', [
                 'ids' => [$campaign->id],
-                'is_visible' => 'admin',
+                'read_level' => User::ROLE_ADMIN,
             ]);
 
         $response->assertForbidden();
@@ -148,10 +148,7 @@ class CampaignBulkControllerTest extends TestCase
             ->assertJson(['message' => 'Aucun champ à mettre à jour.']);
     }
 
-    /**
-     * Test : La validation échoue si is_visible a une valeur invalide
-     */
-    public function test_validation_fails_if_is_visible_invalid(): void
+    public function test_validation_fails_if_read_level_invalid(): void
     {
         $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
         $campaign = Campaign::factory()->create(['created_by' => $admin->id]);
@@ -159,10 +156,10 @@ class CampaignBulkControllerTest extends TestCase
         $response = $this->actingAs($admin)
             ->patchJson('/api/entities/campaigns/bulk', [
                 'ids' => [$campaign->id],
-                'is_visible' => 'invalid_role',
+                'read_level' => 999,
             ]);
 
         $response->assertStatus(422)
-            ->assertJsonValidationErrors('is_visible');
+            ->assertJsonValidationErrors('read_level');
     }
 }

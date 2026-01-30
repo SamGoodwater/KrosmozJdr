@@ -27,8 +27,9 @@ use App\Models\Entity\Campaign;
  * @property string|null $weight
  * @property int $rarity
  * @property string $dofus_version
- * @property int $usable
- * @property string $is_visible
+ * @property string $state
+ * @property int $read_level
+ * @property int $write_level
  * @property string|null $image
  * @property bool $auto_update
  * @property \Illuminate\Support\Carbon|null $deleted_at
@@ -62,15 +63,16 @@ use App\Models\Entity\Campaign;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Resource whereDofusdbId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Resource whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Resource whereImage($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Resource whereIsVisible($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Resource whereReadLevel($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Resource whereLevel($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Resource whereName($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Resource whereOfficialId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Resource wherePrice($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Resource whereRarity($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Resource whereResourceTypeId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Resource whereState($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Resource whereUpdatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Resource whereUsable($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Resource whereWriteLevel($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Resource whereWeight($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Resource withTrashed()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Resource withoutTrashed()
@@ -80,6 +82,11 @@ class Resource extends Model
 {
     /** @use HasFactory<\Database\Factories\ResourceFactory> */
     use HasFactory, SoftDeletes;
+
+    public const STATE_RAW = 'raw';
+    public const STATE_DRAFT = 'draft';
+    public const STATE_PLAYABLE = 'playable';
+    public const STATE_ARCHIVED = 'archived';
 
     const RARITY = [
         0 => 'Commun',
@@ -104,8 +111,9 @@ class Resource extends Model
         'weight',
         'rarity',
         'dofus_version',
-        'usable',
-        'is_visible',
+        'state',
+        'read_level',
+        'write_level',
         'image',
         'auto_update',
         'resource_type_id',
@@ -120,7 +128,8 @@ class Resource extends Model
     protected $casts = [
         'official_id' => 'integer',
         'rarity' => 'integer',
-        'usable' => 'integer',
+        'read_level' => 'integer',
+        'write_level' => 'integer',
         'auto_update' => 'boolean',
     ];
 

@@ -34,7 +34,8 @@ class CampaignTableControllerTest extends TestCase
         $user = User::factory()->create();
         $campaign = Campaign::factory()->create([
             'name' => 'Test Campaign',
-            'state' => 1,
+            'progress_state' => 1,
+            'state' => Campaign::STATE_DRAFT,
             'created_by' => $user->id,
         ]);
 

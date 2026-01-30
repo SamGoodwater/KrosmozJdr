@@ -18,6 +18,7 @@ import EditPageModal from '@/Pages/Organismes/section/modals/EditPageModal.vue';
 import Icon from '@/Pages/Atoms/data-display/Icon.vue';
 import Route from '@/Pages/Atoms/action/Route.vue';
 import Alert from '@/Pages/Atoms/feedback/Alert.vue';
+import { getRoleLabel } from '@/Utils/Entity/SharedConstants';
 
 const props = defineProps({
     pages: {
@@ -113,23 +114,17 @@ const handleDelete = (pageId, pageTitle) => {
 // Formatage de l'état
 const formatState = (state) => {
     const states = {
-        'draft': { label: 'Brouillon', color: 'badge-ghost' },
-        'preview': { label: 'Prévisualisation', color: 'badge-info' },
-        'published': { label: 'Publié', color: 'badge-success' },
-        'archived': { label: 'Archivé', color: 'badge-warning' }
+        raw: { label: 'Brut', color: 'badge-ghost' },
+        draft: { label: 'Brouillon', color: 'badge-warning' },
+        playable: { label: 'Jouable', color: 'badge-success' },
+        archived: { label: 'Archivé', color: 'badge-ghost' },
     };
     return states[state] || { label: state, color: 'badge-ghost' };
 };
 
 // Formatage de la visibilité
 const formatVisibility = (visibility) => {
-    const visibilities = {
-        'guest': 'Invité',
-        'user': 'Utilisateur',
-        'game_master': 'Maître de jeu',
-        'admin': 'Administrateur'
-    };
-    return visibilities[visibility] || visibility;
+    return getRoleLabel(visibility);
 };
 
 // Handlers pour le drag & drop
@@ -304,7 +299,7 @@ function saveOrder() {
                                         {{ formatState(pageItem.state).label }}
                                     </span>
                                 </td>
-                                <td>{{ formatVisibility(pageItem.is_visible) }}</td>
+                                <td>{{ formatVisibility(pageItem.read_level) }}</td>
                                 <td>
                                     <span v-if="pageItem.in_menu" class="badge badge-success">Oui</span>
                                     <span v-else class="badge badge-ghost">Non</span>

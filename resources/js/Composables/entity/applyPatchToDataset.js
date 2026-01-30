@@ -7,7 +7,7 @@
  *
  * @example
  * allRows.value = applyPatchToDataset(allRows.value, payload, {
- *   normalize: { usable: (v) => (v ? 1 : 0) },
+ *   normalize: { state: (v) => String(v) },
  *   afterPatch: (next) => next,
  * });
  */

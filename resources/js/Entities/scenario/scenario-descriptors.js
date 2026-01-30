@@ -14,6 +14,8 @@
  * const descriptors = getScenarioFieldDescriptors({ meta });
  */
 
+import { getEntityStateOptions, getUserRoleOptions } from "@/Utils/Entity/SharedConstants";
+
 /**
  * @typedef {Object} ScenarioFieldDescriptor
  * @property {string} key - Clé unique du champ
@@ -45,7 +47,7 @@
 // Les champs quickedit sont maintenant définis dans _quickeditConfig.fields
 
 /**
- * Options pour le champ state
+ * Options pour le champ progress_state (progression de scénario)
  */
 const STATE_OPTIONS = [
   { value: 0, label: "En cours" },
@@ -172,10 +174,10 @@ export function getScenarioFieldDescriptors(ctx = {}) {
         },
       },
     },
-    state: {
-      key: "state",
-      label: "État",
-      icon: "fa-solid fa-info-circle",
+    progress_state: {
+      key: "progress_state",
+      label: "Progression",
+      icon: "fa-solid fa-list-check",
       display: {
         sizes: {
           xs: { mode: "badge" },
@@ -194,6 +196,31 @@ export function getScenarioFieldDescriptors(ctx = {}) {
           options: STATE_OPTIONS,
           defaultValue: 0,
           bulk: { enabled: true, nullable: true, build: (v) => (v === "" ? null : Number(v)) },
+        },
+      },
+    },
+    state: {
+      key: "state",
+      label: "État",
+      icon: "fa-solid fa-circle-info",
+      display: {
+        sizes: {
+          xs: { mode: "badge" },
+          sm: { mode: "badge" },
+          md: { mode: "badge" },
+          lg: { mode: "badge" },
+          xl: { mode: "badge" },
+        },
+      },
+      edit: {
+        form: {
+          type: "select",
+          group: "Statut",
+          required: false,
+          showInCompact: true,
+          options: getEntityStateOptions,
+          defaultValue: "draft",
+          bulk: { enabled: true, nullable: false, build: (v) => String(v) },
         },
       },
     },
@@ -221,33 +248,9 @@ export function getScenarioFieldDescriptors(ctx = {}) {
         },
       },
     },
-    usable: {
-      key: "usable",
-      label: "Utilisable",
-      icon: "fa-solid fa-check-circle",
-      display: {
-        sizes: {
-          xs: { mode: "badge" },
-          sm: { mode: "badge" },
-          md: { mode: "badge" },
-          lg: { mode: "badge" },
-          xl: { mode: "badge" },
-        },
-      },
-      edit: {
-        form: {
-          type: "checkbox",
-          group: "Statut",
-          required: false,
-          showInCompact: true,
-          defaultValue: false,
-          bulk: { enabled: true, nullable: false, build: (v) => v === "1" || v === true },
-        },
-      },
-    },
-    is_visible: {
-      key: "is_visible",
-      label: "Visible",
+    read_level: {
+      key: "read_level",
+      label: "Lecture (min.)",
       icon: "fa-solid fa-eye",
       display: {
         sizes: {
@@ -264,15 +267,34 @@ export function getScenarioFieldDescriptors(ctx = {}) {
           group: "Statut",
           required: false,
           showInCompact: true,
-          options: [
-            { value: "guest", label: "Invité" },
-            { value: "user", label: "Utilisateur" },
-            { value: "player", label: "Joueur" },
-            { value: "game_master", label: "Maître du jeu" },
-            { value: "admin", label: "Administrateur" },
-          ],
-          defaultValue: "guest",
-          bulk: { enabled: true, nullable: true, build: (v) => (v === "" ? null : String(v)) },
+          options: getUserRoleOptions,
+          defaultValue: 0,
+          bulk: { enabled: true, nullable: true, build: (v) => (v === "" ? null : Number(v)) },
+        },
+      },
+    },
+    write_level: {
+      key: "write_level",
+      label: "Écriture (min.)",
+      icon: "fa-solid fa-pen-to-square",
+      display: {
+        sizes: {
+          xs: { mode: "badge" },
+          sm: { mode: "badge" },
+          md: { mode: "badge" },
+          lg: { mode: "badge" },
+          xl: { mode: "badge" },
+        },
+      },
+      edit: {
+        form: {
+          type: "select",
+          group: "Statut",
+          required: false,
+          showInCompact: true,
+          options: getUserRoleOptions,
+          defaultValue: 4,
+          bulk: { enabled: true, nullable: true, build: (v) => (v === "" ? null : Number(v)) },
         },
       },
     },
@@ -397,10 +419,11 @@ export function getScenarioFieldDescriptors(ctx = {}) {
     // Configuration globale du quickedit
     _quickeditConfig: {
       fields: [
+        "progress_state",
         "state",
         "is_public",
-        "usable",
-        "is_visible",
+        "read_level",
+        "write_level",
         "description",
         "keyword",
       ],

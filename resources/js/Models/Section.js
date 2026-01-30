@@ -63,16 +63,16 @@ export class Section extends BaseModel {
         return { ...this.settings, ...this.data };
     }
 
-    get isVisible() {
-        return this._data.is_visible;
-    }
-
-    get canEditRole() {
-        return this._data.can_edit_role;
-    }
-
     get state() {
         return this._data.state;
+    }
+
+    get readLevel() {
+        return this._data.read_level;
+    }
+
+    get writeLevel() {
+        return this._data.write_level;
     }
 
 
@@ -146,11 +146,11 @@ export class Section extends BaseModel {
     }
 
     /**
-     * Vérifie si la section est publiée
+     * Vérifie si la section est jouable
      * @returns {boolean}
      */
-    get isPublished() {
-        return this.state === 'published';
+    get isPlayable() {
+        return this.state === 'playable';
     }
 
     /**
@@ -174,8 +174,8 @@ export class Section extends BaseModel {
             template: this.template,
             settings: this.settings,
             data: this.data,
-            is_visible: this.isVisible,
-            can_edit_role: this._data.can_edit_role,
+            read_level: this.readLevel,
+            write_level: this.writeLevel,
             state: this.state
         };
     }

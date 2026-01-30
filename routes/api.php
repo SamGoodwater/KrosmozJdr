@@ -78,6 +78,15 @@ Route::prefix('scrapping/test')->group(function () {
 */
 
 Route::prefix('scrapping')->group(function () {
+    // Configs JSON (sources/entités) pour l'UI
+    Route::get('/config', [App\Http\Controllers\Scrapping\ScrappingConfigController::class, 'index'])
+        ->name('scrapping.config');
+
+    // Recherche (collect-only) pour alimenter le tableau UI
+    Route::get('/search/{entity}', [App\Http\Controllers\Scrapping\ScrappingSearchController::class, 'search'])
+        ->name('scrapping.search')
+        ->where('entity', '[a-z0-9\\-]+');
+
     // Métadonnées des types d'entités
     Route::get('/meta', [App\Http\Controllers\Scrapping\ScrappingController::class, 'meta'])
         ->name('scrapping.meta');
@@ -101,6 +110,16 @@ Route::prefix('scrapping')->group(function () {
         // Import d'un objet
         Route::post('/item/{id}', [App\Http\Controllers\Scrapping\ScrappingController::class, 'importItem'])
             ->name('scrapping.import.item')
+            ->where('id', '[1-9]|[1-9][0-9]|[1-9][0-9][0-9]|[1-9][0-9][0-9][0-9]|[1-2][0-9][0-9][0-9][0-9]|30000'); // 1-30000
+
+        // Alias : import d'une ressource (item DofusDB validé comme ressource)
+        Route::post('/resource/{id}', [App\Http\Controllers\Scrapping\ScrappingController::class, 'importResource'])
+            ->name('scrapping.import.resource')
+            ->where('id', '[1-9]|[1-9][0-9]|[1-9][0-9][0-9]|[1-9][0-9][0-9][0-9]|[1-2][0-9][0-9][0-9][0-9]|30000'); // 1-30000
+
+        // Alias : import d'un consommable (reste un /items côté DofusDB)
+        Route::post('/consumable/{id}', [App\Http\Controllers\Scrapping\ScrappingController::class, 'importConsumable'])
+            ->name('scrapping.import.consumable')
             ->where('id', '[1-9]|[1-9][0-9]|[1-9][0-9][0-9]|[1-9][0-9][0-9][0-9]|[1-2][0-9][0-9][0-9][0-9]|30000'); // 1-30000
         
         // Import d'un sort

@@ -2,10 +2,12 @@
 
 namespace App\Services\Scrapping\DataCollect;
 
-use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Cache;
 use App\Models\Scrapping\PendingResourceTypeItem;
+use App\Services\Scrapping\Http\DofusDbClient;
+use Illuminate\Support\Facades\Http;
+use App\Services\Scrapping\DataCollect\ConfigDrivenDofusDbCollector;
 
 /**
  * Service de collecte de données depuis des sites externes
@@ -23,11 +25,23 @@ class DataCollectService
     private array $config;
 
     /**
+     * Client HTTP pour DofusDB
+     */
+    private DofusDbClient $client;
+
+    /**
+     * Collecteur générique basé sur config JSON.
+     */
+    private ConfigDrivenDofusDbCollector $configCollector;
+
+    /**
      * Constructeur du service de collecte
      */
-    public function __construct()
+    public function __construct(DofusDbClient $client, ConfigDrivenDofusDbCollector $configCollector)
     {
         $this->config = config('scrapping.data_collect', []);
+        $this->client = $client;
+        $this->configCollector = $configCollector;
     }
 
     /**
@@ -38,12 +52,11 @@ class DataCollectService
      * @return array Données brutes de la classe avec ses sorts si demandé
      * @throws \Exception En cas d'erreur de collecte
      */
-    public function collectClass(int $dofusdbId, bool $includeSpells = true): array
+    public function collectClass(int $dofusdbId, bool $includeSpells = true, array $options = []): array
     {
         Log::info('Collecte classe depuis DofusDB', ['dofusdb_id' => $dofusdbId, 'include_spells' => $includeSpells]);
         
-        $url = $this->buildDofusDbUrl('breeds', $dofusdbId);
-        $data = $this->fetchFromDofusDb($url);
+        $data = $this->fetchEntityFromConfigOrFallback('class', $dofusdbId, 'breeds', $options);
         
         // Vérifier que les données sont valides (pas vide et contient au moins un ID)
         if (empty($data) || !isset($data['id'])) {
@@ -52,7 +65,7 @@ class DataCollectService
         
         // Collecte des sorts associés à cette classe
         if ($includeSpells) {
-            $data['spells'] = $this->collectClassSpells($dofusdbId);
+            $data['spells'] = $this->collectClassSpells($dofusdbId, $options);
         }
         
         Log::info('Classe collectée avec succès', ['dofusdb_id' => $dofusdbId, 'spells_count' => count($data['spells'] ?? [])]);
@@ -66,7 +79,7 @@ class DataCollectService
      * @param int $breedId ID de la classe dans DofusDB
      * @return array Liste des sorts de la classe
      */
-    private function collectClassSpells(int $breedId): array
+    private function collectClassSpells(int $breedId, array $options = []): array
     {
         $baseUrl = $this->config['dofusdb']['base_url'] ?? 'https://api.dofusdb.fr';
         $lang = $this->config['dofusdb']['default_language'] ?? 'fr';
@@ -78,7 +91,7 @@ class DataCollectService
         // Récupérer les spell-levels associés à cette classe (spellBreed)
         while (true) {
             $levelsUrl = "{$baseUrl}/spell-levels?lang={$lang}&\$limit={$limit}&\$skip={$skip}";
-            $response = $this->fetchFromDofusDb($levelsUrl);
+            $response = $this->fetchFromDofusDb($levelsUrl, $options);
             
             if (!isset($response['data']) || !is_array($response['data'])) {
                 break;
@@ -103,7 +116,7 @@ class DataCollectService
         // Collecter les données complètes de chaque sort
         foreach ($spellIds as $spellId) {
             try {
-                $spellData = $this->collectSpell($spellId, false); // false = ne pas inclure les niveaux (déjà récupérés)
+                $spellData = $this->collectSpell($spellId, false, true, $options); // false = ne pas inclure les niveaux (déjà récupérés)
                 $spells[] = $spellData;
             } catch (\Exception $e) {
                 Log::warning('Impossible de collecter le sort associé à la classe', [
@@ -126,12 +139,11 @@ class DataCollectService
      * @return array Données brutes du monstre avec ses relations si demandées
      * @throws \Exception En cas d'erreur de collecte
      */
-    public function collectMonster(int $dofusdbId, bool $includeSpells = true, bool $includeDrops = true): array
+    public function collectMonster(int $dofusdbId, bool $includeSpells = true, bool $includeDrops = true, array $options = []): array
     {
         Log::info('Collecte monstre depuis DofusDB', ['dofusdb_id' => $dofusdbId, 'include_spells' => $includeSpells, 'include_drops' => $includeDrops]);
         
-        $url = $this->buildDofusDbUrl('monsters', $dofusdbId);
-        $data = $this->fetchFromDofusDb($url);
+        $data = $this->fetchEntityFromConfigOrFallback('monster', $dofusdbId, 'monsters', $options);
         
         // Vérifier que les données sont valides (pas vide et contient au moins un ID)
         if (empty($data) || !isset($data['id'])) {
@@ -145,7 +157,7 @@ class DataCollectService
                 $spellId = is_array($spellRef) ? ($spellRef['id'] ?? $spellRef) : $spellRef;
                 if ($spellId) {
                     try {
-                        $spellData = $this->collectSpell($spellId, false);
+                        $spellData = $this->collectSpell($spellId, false, true, $options);
                         $spells[] = $spellData;
                     } catch (\Exception $e) {
                         Log::warning('Impossible de collecter le sort associé au monstre', [
@@ -167,7 +179,7 @@ class DataCollectService
                 $quantity = is_array($drop) ? ($drop['quantity'] ?? null) : null;
                 if ($itemId) {
                     try {
-                        $itemData = $this->collectItem($itemId);
+                        $itemData = $this->collectItem($itemId, true, $options);
                         // Vérifier si c'est une ressource (typeId dans TYPES_RESOURCES)
                         $typeId = $itemData['typeId'] ?? null;
                         if ($typeId) {
@@ -214,12 +226,11 @@ class DataCollectService
      * @return array Données brutes de l'objet avec sa recette si demandée
      * @throws \Exception En cas d'erreur de collecte
      */
-    public function collectItem(int $dofusdbId, bool $includeRecipe = true): array
+    public function collectItem(int $dofusdbId, bool $includeRecipe = true, array $options = []): array
     {
         Log::info('Collecte objet depuis DofusDB', ['dofusdb_id' => $dofusdbId, 'include_recipe' => $includeRecipe]);
         
-        $url = $this->buildDofusDbUrl('items', $dofusdbId);
-        $data = $this->fetchFromDofusDb($url);
+        $data = $this->fetchEntityFromConfigOrFallback('item', $dofusdbId, 'items', $options);
         
         // Vérifier que les données sont valides (pas vide et contient au moins un ID)
         if (empty($data) || !isset($data['id'])) {
@@ -235,7 +246,7 @@ class DataCollectService
                 
                 if ($itemId) {
                     try {
-                        $itemData = $this->collectItem($itemId, false); // Ne pas inclure la recette pour éviter la récursion infinie
+                        $itemData = $this->collectItem($itemId, false, $options); // Ne pas inclure la recette pour éviter la récursion infinie
                         // Vérifier si c'est une ressource
                         $typeId = $itemData['typeId'] ?? null;
                         if ($typeId) {
@@ -468,7 +479,7 @@ class DataCollectService
      * @return array Données brutes du sort avec ses relations si demandées
      * @throws \Exception En cas d'erreur de collecte
      */
-    public function collectSpell(int $dofusdbId, bool $includeLevels = true, bool $includeSummon = true): array
+    public function collectSpell(int $dofusdbId, bool $includeLevels = true, bool $includeSummon = true, array $options = []): array
     {
         Log::info('Collecte sort depuis DofusDB', ['dofusdb_id' => $dofusdbId]);
         
@@ -483,7 +494,7 @@ class DataCollectService
         // Recherche du sort par pagination
         while ($spellData === null) {
             $spellUrl = "{$baseUrl}/spells?lang={$lang}&\$limit={$limit}&\$skip={$skip}";
-            $response = $this->fetchFromDofusDb($spellUrl);
+            $response = $this->fetchFromDofusDb($spellUrl, $options);
             
             if (!isset($response['data']) || !is_array($response['data'])) {
                 break;
@@ -519,7 +530,7 @@ class DataCollectService
         // Collecte des niveaux du sort si demandé (nécessaire pour les invocations aussi)
         if ($includeLevels || $includeSummon) {
             $levelsUrl = "{$baseUrl}/spell-levels?lang={$lang}&\$limit={$limit}&\$skip=0";
-            $levelsResponse = $this->fetchFromDofusDb($levelsUrl);
+            $levelsResponse = $this->fetchFromDofusDb($levelsUrl, $options);
             $levels = [];
             
             if (isset($levelsResponse['data']) && is_array($levelsResponse['data'])) {
@@ -556,8 +567,7 @@ class DataCollectService
     {
         Log::info('Collecte effet depuis DofusDB', ['dofusdb_id' => $dofusdbId]);
         
-        $url = $this->buildDofusDbUrl('effects', $dofusdbId);
-        $data = $this->fetchFromDofusDb($url);
+        $data = $this->fetchEntityFromConfigOrFallback('effect', $dofusdbId, 'effects', []);
         
         if (empty($data)) {
             throw new \Exception("Impossible de récupérer les données de l'effet ID {$dofusdbId}");
@@ -590,58 +600,38 @@ class DataCollectService
     }
 
     /**
+     * Fetch d'une entité via config JSON si disponible, sinon fallback sur buildDofusDbUrl.
+     *
+     * @param string $configEntityKey ex: class|monster|item|panoply|effect
+     * @param int $dofusdbId
+     * @param string $fallbackEndpoint ex: breeds|monsters|items|item-sets|effects
+     * @param array $options
+     * @return array
+     */
+    private function fetchEntityFromConfigOrFallback(string $configEntityKey, int $dofusdbId, string $fallbackEndpoint, array $options): array
+    {
+        try {
+            return $this->configCollector->fetchOne($configEntityKey, $dofusdbId, $options);
+        } catch (\Throwable $e) {
+            // Fallback: comportement historique
+            $url = $this->buildDofusDbUrl($fallbackEndpoint, $dofusdbId);
+            return $this->fetchFromDofusDb($url, $options);
+        }
+    }
+
+    /**
      * Récupère les données depuis DofusDB avec gestion du cache
      * 
      * @param string $url URL à récupérer
      * @return array Données récupérées
      * @throws \Exception En cas d'erreur de récupération
      */
-    private function fetchFromDofusDb(string $url): array
+    private function fetchFromDofusDb(string $url, array $options = []): array
     {
-        $cacheKey = 'dofusdb_' . md5($url);
-        $cacheTtl = $this->config['cache_ttl'] ?? 3600; // 1 heure par défaut
-        
-        // Vérification du cache
-        if (Cache::has($cacheKey)) {
-            Log::info('Données récupérées depuis le cache', ['url' => $url]);
-            return Cache::get($cacheKey);
-        }
-        
-        try {
-            $response = Http::timeout($this->config['timeout'] ?? 30)
-                ->retry($this->config['retry_attempts'] ?? 3, $this->config['retry_delay'] ?? 1000)
-                ->get($url);
-            
-            if ($response->successful()) {
-                $data = $response->json();
-                
-                // S'assurer que $data est un tableau
-                if (!is_array($data)) {
-                    $data = [];
-                }
-                
-                // Mise en cache des données
-                Cache::put($cacheKey, $data, $cacheTtl);
-                
-                Log::info('Données récupérées depuis DofusDB', [
-                    'url' => $url,
-                    'status' => $response->status(),
-                    'data_size' => strlen(json_encode($data))
-                ]);
-                
-                return $data;
-            } else {
-                throw new \Exception("Erreur HTTP {$response->status()} lors de la récupération depuis {$url}");
-            }
-            
-        } catch (\Exception $e) {
-            Log::error('Erreur lors de la récupération depuis DofusDB', [
-                'url' => $url,
-                'error' => $e->getMessage()
-            ]);
-            
-            throw $e;
-        }
+        return $this->client->getJson($url, [
+            'skip_cache' => (bool) ($options['skip_cache'] ?? false),
+            'cache_ttl' => $options['cache_ttl'] ?? null,
+        ]);
     }
 
     /**
@@ -674,7 +664,7 @@ class DataCollectService
     {
         $cacheConfig = $this->config['cache'] ?? [];
         $tags = $cacheConfig['tags'] ?? [];
-        $prefix = $cacheConfig['prefix'] ?? 'dofusdb:';
+        $prefix = $cacheConfig['prefix'] ?? 'dofusdb_';
         
         try {
             // Si le driver supporte les tags (Redis, Memcached), utilise-les

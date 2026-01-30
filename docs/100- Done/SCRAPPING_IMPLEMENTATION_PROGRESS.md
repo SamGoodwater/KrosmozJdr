@@ -79,12 +79,12 @@ Implémenter un système complet de scrapping pour récupérer des données depu
   - Endpoint pour tester la disponibilité de l'API
   - Endpoint pour nettoyer le cache
   - Endpoint pour collecter des objets par type
-- [x] **TestDataCollectCommand** : Commande Artisan pour tester le service DataCollect
-  - Options pour tester chaque type d'entité
-  - Option pour tester avec un ID spécifique
-  - Option pour tester par type d'objet
-  - Option pour nettoyer le cache
-  - Affichage détaillé des données collectées
+- [x] **ScrappingCommand** : Commande Artisan unique pour tester collect/search/import
+  - `--collect=...` + filtres/pagination
+  - `--import=...` / `--save`
+  - `--compare`
+  - `--batch=...`
+  - `--sync-resource-types`
 - [x] **Routes API de test** : Routes `/api/scrapping/test/*` dans `routes/api.php`
 - [x] **Tests validés** :
   - ✅ Test classe ID 1 : Collecte réussie
@@ -137,11 +137,11 @@ Implémenter un système complet de scrapping pour récupérer des données depu
 
 ### **Phase 2 : Contrôleurs et commandes** (Priorité : MOYENNE) ⚠️ **EN COURS**
 - [x] **Contrôleurs HTTP de test** : `DataCollectController` créé ✅
-- [x] **Commandes Artisan de test** : `TestDataCollectCommand` créée ✅
+- [x] **Commande Artisan (unique)** : `ScrappingCommand` (`php artisan scrapping`) ✅
 - [x] **Routes de test** : Routes `/api/scrapping/test/*` créées ✅
 - [ ] **Intégration orchestrateur** : Mise à jour des contrôleurs/commandes pour utiliser l'orchestrateur
 - [ ] **Contrôleurs de production** : `ScrappingController` à créer
-- [ ] **Commandes de production** : `ScrappingImportCommand` à créer
+- [ ] **Commandes de production** : utiliser `ScrappingCommand` (commande unique)
 - [ ] **Middleware** : Authentification et autorisation
 
 ### **Phase 3 : Interface utilisateur** (Priorité : BASSE)
@@ -186,7 +186,7 @@ Implémenter un système complet de scrapping pour récupérer des données depu
 
 ### **Interface de test** : 100% ✅ **NOUVEAU**
 - Contrôleurs de test : 100% ✅ (`DataCollectController`)
-- Commandes de test : 100% ✅ (`TestDataCollectCommand`)
+- Commande CLI : 100% ✅ (`ScrappingCommand`)
 - Routes de test : 100% ✅ (`/api/scrapping/test/*`)
 - Tests manuels : 100% ✅ (Classe, monstre, objet testés avec succès)
 
@@ -203,13 +203,13 @@ Implémenter un système complet de scrapping pour récupérer des données depu
 
 ### **Immédiat (Cette semaine)** ✅ **FAIT**
 1. ✅ **Créer les contrôleurs HTTP de test** : `DataCollectController` créé
-2. ✅ **Créer les commandes Artisan de test** : `TestDataCollectCommand` créée
+2. ✅ **Créer la commande CLI** : `ScrappingCommand` créée
 3. ✅ **Tests de base** : Validation réussie avec classe (ID 1), monstre (ID 31), objet (ID 15)
 
 ### **Immédiat (Prochaine étape)**
 1. **Intégrer l'orchestrateur** : Mettre à jour les contrôleurs/commandes pour utiliser l'orchestrateur
 2. **Créer les contrôleurs de production** : `ScrappingController` pour les imports complets
-3. **Créer les commandes de production** : `ScrappingImportCommand` pour les imports via orchestrateur
+3. **Commande de production** : `ScrappingCommand` pour les imports via orchestrateur
 
 ### **Court terme (2-3 semaines)**
 1. **Tests unitaires** : Couvrir tous les services

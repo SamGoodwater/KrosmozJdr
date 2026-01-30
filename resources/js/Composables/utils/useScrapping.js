@@ -21,14 +21,39 @@ function getCsrfToken() {
 /**
  * Normalise le type d'entité pour l'API de scrapping
  * @param {string} entityType - Type d'entité (ex: 'resource', 'resources', 'item', 'items')
- * @returns {string} Type normalisé pour l'API
+ * @returns {string|null} Type normalisé pour l'API, ou null si non supporté
  */
 function normalizeEntityTypeForScrapping(entityType) {
-    // L'API attend le type au singulier
-    if (entityType.endsWith('s')) {
-        return entityType.slice(0, -1);
-    }
-    return entityType;
+    if (!entityType || typeof entityType !== 'string') return null;
+
+    const raw = entityType.trim().toLowerCase();
+    if (!raw) return null;
+
+    // Normaliser pluriels simples
+    const singular = raw.endsWith('s') ? raw.slice(0, -1) : raw;
+
+    // Mapping Krosmoz (FR/EN) -> endpoints scrapping
+    const map = {
+        // DofusDB breeds
+        classe: 'class',
+        class: 'class',
+
+        // DofusDB monsters
+        monster: 'monster',
+
+        // DofusDB items (dont resources/consumables)
+        item: 'item',
+        resource: 'resource',      // endpoint dédié (strict)
+        consumable: 'consumable',  // alias vers item côté backend
+
+        // DofusDB spells
+        spell: 'spell',
+
+        // DofusDB item-sets
+        panoply: 'panoply',
+    };
+
+    return map[singular] || null;
 }
 
 export function useScrapping() {
@@ -53,6 +78,10 @@ export function useScrapping() {
         }
 
         const normalizedType = normalizeEntityTypeForScrapping(entityType);
+        if (!normalizedType) {
+            showError(`Le scrapping n'est pas supporté pour le type "${entityType}".`);
+            return false;
+        }
         const url = `/api/scrapping/import/${normalizedType}/${entityId}`;
         
         const payload = {

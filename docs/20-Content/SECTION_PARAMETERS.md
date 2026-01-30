@@ -17,9 +17,11 @@ Toutes les sections partagent les paramètres suivants, stockés directement dan
 
 | Paramètre | Type | Valeurs possibles | Description | Valeur par défaut |
 |-----------|------|-------------------|-------------|-------------------|
-| `is_visible` | `Visibility` (enum) | `guest`, `user`, `game_master`, `admin` | Niveau de visibilité minimum pour voir la section | `guest` |
-| `can_edit_role` | `Visibility` (enum) | `guest`, `user`, `game_master`, `admin` | Rôle minimum requis pour modifier la section | `admin` |
-| `state` | `PageState` (enum) | `draft`, `preview`, `published`, `archived` | État de publication de la section | `draft` |
+| `read_level` | `integer` | `0..5` (guest→super_admin) | Niveau minimal requis pour voir la section | `0` |
+| `write_level` | `integer` | `0..5` (guest→super_admin) | Niveau minimal requis pour modifier la section | `4` |
+| `state` | `string` | `raw`, `draft`, `playable`, `archived` | État de cycle de vie de la section | `draft` |
+
+**Contrainte** : `write_level >= read_level`.
 
 ### Paramètres de style (dans `settings` JSON)
 
@@ -228,8 +230,8 @@ Le modal `SectionParamsModal.vue` sera organisé en sections :
 1. **Paramètres communs** (toujours visibles) :
    - Titre (`title`)
    - Slug (`slug`)
-   - Visibilité (`is_visible`)
-   - Rôle d'édition (`can_edit_role`)
+  - Accès lecture (`read_level`)
+  - Accès écriture (`write_level`)
    - État (`state`)
    - Classes CSS (`settings.classes`)
    - CSS personnalisé (`settings.customCss`)

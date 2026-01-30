@@ -32,14 +32,14 @@ describe('Section Model', () => {
         id: 123,
         title: 'My Section',
         template: 'image',
-        state: 'published',
+        state: 'playable',
       });
       const section = new Section(rawData);
 
       expect(section.id).toBe(123);
       expect(section.title).toBe('My Section');
       expect(section.template).toBe('image');
-      expect(section.state).toBe('published');
+      expect(section.state).toBe('playable');
       expect(section.pageId).toBe(1);
     });
 
@@ -69,20 +69,22 @@ describe('Section Model', () => {
       expect(formData).toHaveProperty('data');
     });
 
-    it('devrait vérifier si la section est publiée', () => {
-      const publishedSection = new Section(createMockSection({ state: 'published' }));
+    it('devrait vérifier si la section est jouable', () => {
+      const playableSection = new Section(createMockSection({ state: 'playable' }));
       const draftSection = new Section(createMockSection({ state: 'draft' }));
 
-      expect(publishedSection.isPublished).toBe(true);
-      expect(draftSection.isPublished).toBe(false);
+      expect(playableSection.isPlayable).toBe(true);
+      expect(draftSection.isPlayable).toBe(false);
     });
 
-    it('devrait vérifier si la section est visible', () => {
-      const visibleSection = new Section(createMockSection({ is_visible: 'guest' }));
-      const hiddenSection = new Section(createMockSection({ is_visible: 'admin' }));
+    it('devrait exposer les niveaux de lecture/écriture', () => {
+      const sectionA = new Section(createMockSection({ read_level: 0, write_level: 4 }));
+      const sectionB = new Section(createMockSection({ read_level: 1, write_level: 5 }));
 
-      expect(visibleSection.isVisible).toBe('guest');
-      expect(hiddenSection.isVisible).toBe('admin');
+      expect(sectionA.readLevel).toBe(0);
+      expect(sectionA.writeLevel).toBe(4);
+      expect(sectionB.readLevel).toBe(1);
+      expect(sectionB.writeLevel).toBe(5);
     });
 
     it('devrait générer un slug depuis le titre', () => {

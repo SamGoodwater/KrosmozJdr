@@ -29,8 +29,10 @@ export const FIELD_LABELS = Object.freeze({
   rarity: 'Rareté',
   price: 'Prix',
   weight: 'Poids',
-  usable: 'Utilisable',
-  is_visible: 'Visible',
+  state: 'État',
+  progress_state: 'Progression',
+  read_level: 'Lecture (min.)',
+  write_level: 'Écriture (min.)',
   auto_update: 'Mise à jour automatique',
   dofusdb_id: 'ID DofusDB',
   official_id: 'ID Officiel',
@@ -42,7 +44,6 @@ export const FIELD_LABELS = Object.freeze({
   category: 'Catégorie',
   element: 'Élément',
   hostility: 'Hostilité',
-  visibility: 'Visibilité',
 });
 
 /**
@@ -55,8 +56,10 @@ export const FIELD_ICONS = Object.freeze({
   rarity: 'fa-solid fa-gem',
   price: 'fa-solid fa-coins',
   weight: 'fa-solid fa-weight',
-  usable: 'fa-solid fa-check-circle',
-  is_visible: 'fa-solid fa-eye',
+  state: 'fa-solid fa-circle-info',
+  progress_state: 'fa-solid fa-list-check',
+  read_level: 'fa-solid fa-eye',
+  write_level: 'fa-solid fa-pen-to-square',
   auto_update: 'fa-solid fa-sync',
   dofusdb_id: 'fa-solid fa-database',
   official_id: 'fa-solid fa-id-card',
@@ -68,7 +71,6 @@ export const FIELD_ICONS = Object.freeze({
   category: 'fa-solid fa-folder',
   element: 'fa-solid fa-fire',
   hostility: 'fa-solid fa-shield-halved',
-  visibility: 'fa-solid fa-eye',
 });
 
 /**
@@ -310,4 +312,28 @@ export function getRoleColor(role) {
 export function getRoleIcon(role) {
   const config = getRoleConfig(role);
   return config?.icon || null;
+}
+
+/**
+ * États d'entité — source de vérité (aligné backend)
+ */
+export const ENTITY_STATE_OPTIONS = Object.freeze([
+  { value: 'raw', label: 'Brut' },
+  { value: 'draft', label: 'Brouillon' },
+  { value: 'playable', label: 'Jouable' },
+  { value: 'archived', label: 'Archivé' },
+]);
+
+export function getEntityStateOptions() {
+  return ENTITY_STATE_OPTIONS.map(({ value, label }) => ({ value, label }));
+}
+
+/**
+ * Options de rôles (0..5) pour selects (read_level / write_level).
+ */
+export function getUserRoleOptions() {
+  return Object.entries(USER_ROLES).map(([value, config]) => ({
+    value: Number(value),
+    label: config.label,
+  }));
 }

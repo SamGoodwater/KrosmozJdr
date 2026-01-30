@@ -39,8 +39,8 @@ export class Scenario extends BaseModel {
         return this._data.state || null;
     }
 
-    get usable() {
-        return this._data.usable ?? false;
+    get progressState() {
+        return this._data.progress_state ?? null;
     }
 
     get image() {
@@ -378,7 +378,9 @@ export class Scenario extends BaseModel {
             keyword: this.keyword,
             is_public: this.isPublic,
             state: this.state,
-            usable: this.usable,
+            progress_state: this.progressState,
+            read_level: this.readLevel,
+            write_level: this.writeLevel,
             image: this.image
         };
     }

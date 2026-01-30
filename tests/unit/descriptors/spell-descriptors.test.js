@@ -12,13 +12,13 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import { getSpellFieldDescriptors, SPELL_QUICK_EDIT_FIELDS } from '@/Entities/spell/spell-descriptors';
+import { getSpellFieldDescriptors } from '@/Entities/spell/spell-descriptors';
 
 describe('spell-descriptors', () => {
     describe('Structure des descriptors', () => {
         it('retourne un objet avec tous les champs requis', () => {
             const descriptors = getSpellFieldDescriptors();
-            const requiredFields = ['id', 'name', 'level', 'pa', 'po', 'area', 'usable', 'is_visible'];
+            const requiredFields = ['id', 'name', 'level', 'pa', 'po', 'area', 'state', 'read_level', 'write_level'];
 
             requiredFields.forEach((field) => {
                 expect(descriptors).toHaveProperty(field);
@@ -100,7 +100,7 @@ describe('spell-descriptors', () => {
     describe('Configuration bulk', () => {
         it('les champs bulk-enabled ont enabled: true', () => {
             const descriptors = getSpellFieldDescriptors();
-            const bulkEnabledFields = SPELL_QUICK_EDIT_FIELDS;
+            const bulkEnabledFields = descriptors._quickeditConfig?.fields || [];
 
             bulkEnabledFields.forEach((fieldKey) => {
                 const desc = descriptors[fieldKey];
@@ -173,7 +173,7 @@ describe('spell-descriptors', () => {
     describe('QUICK_EDIT_FIELDS', () => {
         it('quickEdit contient uniquement des champs existants', () => {
             const descriptors = getSpellFieldDescriptors();
-            const quickEditFields = SPELL_QUICK_EDIT_FIELDS;
+            const quickEditFields = descriptors._quickeditConfig?.fields || [];
 
             quickEditFields.forEach((fieldKey) => {
                 expect(descriptors).toHaveProperty(fieldKey);
@@ -182,7 +182,7 @@ describe('spell-descriptors', () => {
 
         it('les champs quickEdit sont bulk-enabled', () => {
             const descriptors = getSpellFieldDescriptors();
-            const quickEditFields = SPELL_QUICK_EDIT_FIELDS;
+            const quickEditFields = descriptors._quickeditConfig?.fields || [];
 
             quickEditFields.forEach((fieldKey) => {
                 const desc = descriptors[fieldKey];
@@ -194,7 +194,7 @@ describe('spell-descriptors', () => {
 
         it('quickEdit ne contient pas de champs sans edit.form', () => {
             const descriptors = getSpellFieldDescriptors();
-            const quickEditFields = SPELL_QUICK_EDIT_FIELDS;
+            const quickEditFields = descriptors._quickeditConfig?.fields || [];
 
             quickEditFields.forEach((fieldKey) => {
                 const desc = descriptors[fieldKey];
@@ -230,16 +230,16 @@ describe('spell-descriptors', () => {
             });
         });
 
-        it('is_visible a les bonnes options', () => {
+        it('read_level a les bonnes options', () => {
             const descriptors = getSpellFieldDescriptors();
-            const isVisibleDesc = descriptors.is_visible;
+            const isVisibleDesc = descriptors.read_level;
 
             if (isVisibleDesc?.edit?.form?.type === 'select') {
                 const options = isVisibleDesc.edit.form.options;
                 const values = options.map((opt) => opt.value);
-                expect(values).toContain('guest');
-                expect(values).toContain('user');
-                expect(values).toContain('admin');
+                expect(values).toContain(0);
+                expect(values).toContain(1);
+                expect(values).toContain(4);
             }
         });
     });

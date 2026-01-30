@@ -23,32 +23,37 @@ class ResourceTypeSeeder extends Seeder
 
         $resourceTypes = [
             // Matériaux de base
-            ['name' => 'Bois', 'usable' => 1, 'is_visible' => 'guest'],
-            ['name' => 'Pierre', 'usable' => 1, 'is_visible' => 'guest'],
-            ['name' => 'Métal', 'usable' => 1, 'is_visible' => 'guest'],
-            ['name' => 'Cuir', 'usable' => 1, 'is_visible' => 'guest'],
-            ['name' => 'Laine', 'usable' => 1, 'is_visible' => 'guest'],
+            ['name' => 'Bois'],
+            ['name' => 'Pierre'],
+            ['name' => 'Métal'],
+            ['name' => 'Cuir'],
+            ['name' => 'Laine'],
             
             // Minerais
-            ['name' => 'Minerai', 'usable' => 1, 'is_visible' => 'guest'],
-            ['name' => 'Fragment', 'usable' => 1, 'is_visible' => 'guest'],
-            ['name' => 'Gemme', 'usable' => 1, 'is_visible' => 'guest'],
+            ['name' => 'Minerai'],
+            ['name' => 'Fragment'],
+            ['name' => 'Gemme'],
             
             // Végétaux
-            ['name' => 'Plante', 'usable' => 1, 'is_visible' => 'guest'],
-            ['name' => 'Fleur', 'usable' => 1, 'is_visible' => 'guest'],
-            ['name' => 'Graine', 'usable' => 1, 'is_visible' => 'guest'],
+            ['name' => 'Plante'],
+            ['name' => 'Fleur'],
+            ['name' => 'Graine'],
             
             // Autres
-            ['name' => 'Peau', 'usable' => 1, 'is_visible' => 'guest'],
-            ['name' => 'Plume', 'usable' => 1, 'is_visible' => 'guest'],
-            ['name' => 'Oeuf', 'usable' => 1, 'is_visible' => 'guest'],
+            ['name' => 'Peau'],
+            ['name' => 'Plume'],
+            ['name' => 'Oeuf'],
         ];
 
         foreach ($resourceTypes as $resourceType) {
             ResourceType::firstOrCreate(
                 ['name' => $resourceType['name']],
-                array_merge($resourceType, ['created_by' => $createdBy])
+                array_merge($resourceType, [
+                    'state' => 'playable',
+                    'read_level' => User::ROLE_GUEST,
+                    'write_level' => User::ROLE_ADMIN,
+                    'created_by' => $createdBy,
+                ])
             );
         }
 

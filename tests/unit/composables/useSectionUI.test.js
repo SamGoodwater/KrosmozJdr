@@ -11,7 +11,7 @@ describe('useSectionUI', () => {
   it('devrait retourner les données UI adaptées', () => {
     const section = createMockSection({
       template: 'text',
-      state: 'published',
+      state: 'playable',
     });
 
     const TestComponent = defineComponent({
@@ -34,7 +34,7 @@ describe('useSectionUI', () => {
     expect(wrapper.vm.uiData.color).toBe('success');
     expect(wrapper.vm.canEdit).toBe(true);
     expect(wrapper.vm.templateInfo.value).toBe('text');
-    expect(wrapper.vm.stateInfo.value).toBe('published');
+    expect(wrapper.vm.stateInfo.value).toBe('playable');
   });
 
   it('devrait détecter si une section a du contenu', () => {

@@ -54,8 +54,12 @@ class DataIntegrationService
      * @param string|null $currentImage
      * @return string|null
      */
-    private function resolveScrappedImage(?string $remoteUrl, string $entityFolder, ?string $dofusdbId, ?string $currentImage): ?string
+    private function resolveScrappedImage(?string $remoteUrl, string $entityFolder, ?string $dofusdbId, ?string $currentImage, bool $withImages = true): ?string
     {
+        if (!$withImages) {
+            return $currentImage ?: $remoteUrl;
+        }
+
         $cfg = config('scrapping.images', []);
         if (!(bool) ($cfg['enabled'] ?? false)) {
             return $remoteUrl ?? $currentImage;
@@ -84,15 +88,40 @@ class DataIntegrationService
      * @param array $convertedData Données converties de la classe
      * @return array Résultat de l'intégration
      */
-    public function integrateClass(array $convertedData): array
+    public function integrateClass(array $convertedData, array $options = []): array
     {
         Log::info('Intégration de classe', ['class_name' => $convertedData['name']]);
-        
+
+        $dryRun = (bool) ($options['dry_run'] ?? false);
+        $forceUpdate = (bool) ($options['force_update'] ?? false);
+
         try {
+            // Recherche d'une classe existante (priorité dofusdb_id)
+            $existingClass = null;
+            if (!empty($convertedData['dofusdb_id'])) {
+                $existingClass = Classe::where('dofusdb_id', (string) $convertedData['dofusdb_id'])->first();
+            }
+            if (!$existingClass) {
+                $existingClass = Classe::where('name', $convertedData['name'])->first();
+            }
+
+            if ($existingClass && !$forceUpdate) {
+                return [
+                    'id' => $existingClass->id,
+                    'action' => $dryRun ? 'would_skip' : 'skipped',
+                    'data' => $existingClass->toArray(),
+                ];
+            }
+
+            if ($dryRun) {
+                return [
+                    'id' => $existingClass?->id,
+                    'action' => $existingClass ? 'would_update' : 'would_create',
+                    'data' => $existingClass?->toArray(),
+                ];
+            }
+
             DB::beginTransaction();
-            
-            // Recherche d'une classe existante
-            $existingClass = Classe::where('name', $convertedData['name'])->first();
             
             if ($existingClass) {
                 // Mise à jour de la classe existante
@@ -183,18 +212,52 @@ class DataIntegrationService
      * @param array $convertedData Données converties du monstre
      * @return array Résultat de l'intégration
      */
-    public function integrateMonster(array $convertedData): array
+    public function integrateMonster(array $convertedData, array $options = []): array
     {
         Log::info('Intégration de monstre', ['monster_name' => $convertedData['creatures']['name']]);
-        
+
+        $dryRun = (bool) ($options['dry_run'] ?? false);
+        $forceUpdate = (bool) ($options['force_update'] ?? false);
+        $withImages = array_key_exists('with_images', $options) ? (bool) $options['with_images'] : true;
+
         try {
-            DB::beginTransaction();
-            
             $creatureData = $convertedData['creatures'];
             $monsterData = $convertedData['monsters'];
-            
-            // Recherche d'une créature existante
-            $existingCreature = Creature::where('name', $creatureData['name'])->first();
+
+            // Recherche existante (priorité dofusdb_id sur Monster)
+            $existingMonsterByDofus = null;
+            if (!empty($monsterData['dofusdb_id'])) {
+                $existingMonsterByDofus = Monster::where('dofusdb_id', (string) $monsterData['dofusdb_id'])->first();
+            }
+            $existingCreature = $existingMonsterByDofus?->creature ?: Creature::where('name', $creatureData['name'])->first();
+
+            if ($existingMonsterByDofus && !$forceUpdate) {
+                return [
+                    'creature_id' => $existingCreature?->id,
+                    'monster_id' => $existingMonsterByDofus->id,
+                    'creature_action' => $dryRun ? 'would_skip' : 'skipped',
+                    'monster_action' => $dryRun ? 'would_skip' : 'skipped',
+                    'data' => [
+                        'creature' => $existingCreature?->toArray(),
+                        'monster' => $existingMonsterByDofus->toArray(),
+                    ],
+                ];
+            }
+
+            if ($dryRun) {
+                return [
+                    'creature_id' => $existingCreature?->id,
+                    'monster_id' => $existingMonsterByDofus?->id,
+                    'creature_action' => $existingCreature ? 'would_update' : 'would_create',
+                    'monster_action' => $existingMonsterByDofus ? 'would_update' : 'would_create',
+                    'data' => [
+                        'creature' => $existingCreature?->toArray(),
+                        'monster' => $existingMonsterByDofus?->toArray(),
+                    ],
+                ];
+            }
+
+            DB::beginTransaction();
             
             // Mapping des noms de colonnes vers la structure de la base
             $existingMonsterImage = null;
@@ -217,7 +280,8 @@ class DataIntegrationService
                     $creatureData['image'] ?? null,
                     'monsters',
                     $monsterData['dofusdb_id'] ?? null,
-                    $existingMonsterImage
+                    $existingMonsterImage,
+                    $withImages
                 ),
                 'created_by' => $this->getSystemUserId() // Utilisateur système pour imports automatiques
             ];
@@ -236,7 +300,7 @@ class DataIntegrationService
             }
             
             // Gestion du monstre
-            $existingMonster = Monster::where('creature_id', $creature->id)->first();
+            $existingMonster = $existingMonsterByDofus ?: Monster::where('creature_id', $creature->id)->first();
             
             // Conversion de la taille string en integer
             $sizeInt = $this->convertSizeToInt($monsterData['size'] ?? 'medium');
@@ -374,20 +438,62 @@ class DataIntegrationService
      * @param array $convertedData Données converties de l'objet
      * @return array Résultat de l'intégration
      */
-    public function integrateItem(array $convertedData): array
+    public function integrateItem(array $convertedData, array $options = []): array
     {
         Log::info('Intégration d\'objet', ['item_name' => $convertedData['name']]);
-        
+
+        $dryRun = (bool) ($options['dry_run'] ?? false);
+        $forceUpdate = (bool) ($options['force_update'] ?? false);
+        $withImages = array_key_exists('with_images', $options) ? (bool) $options['with_images'] : true;
+
         try {
-            DB::beginTransaction();
-            
             // Détermination du type d'objet et de la table cible
             $targetTable = $this->determineItemTargetTable($convertedData['type'], $convertedData['category']);
+
+            // Recherche existant (priorité dofusdb_id sur la table cible)
+            $existing = null;
+            $dofusdbId = isset($convertedData['dofusdb_id']) ? (string) $convertedData['dofusdb_id'] : null;
+            if ($dofusdbId) {
+                $existing = match ($targetTable) {
+                    'items' => Item::where('dofusdb_id', $dofusdbId)->first(),
+                    'consumables' => Consumable::where('dofusdb_id', $dofusdbId)->first(),
+                    'resources' => Resource::where('dofusdb_id', $dofusdbId)->first(),
+                    default => null,
+                };
+            }
+            if (!$existing && !empty($convertedData['name'])) {
+                $existing = match ($targetTable) {
+                    'items' => Item::where('name', $convertedData['name'])->first(),
+                    'consumables' => Consumable::where('name', $convertedData['name'])->first(),
+                    'resources' => Resource::where('name', $convertedData['name'])->first(),
+                    default => null,
+                };
+            }
+
+            if ($existing && !$forceUpdate) {
+                return [
+                    'id' => $existing->id,
+                    'action' => $dryRun ? 'would_skip' : 'skipped',
+                    'table' => $targetTable,
+                    'data' => $existing->toArray(),
+                ];
+            }
+
+            if ($dryRun) {
+                return [
+                    'id' => $existing?->id,
+                    'action' => $existing ? 'would_update' : 'would_create',
+                    'table' => $targetTable,
+                    'data' => $existing?->toArray(),
+                ];
+            }
+
+            DB::beginTransaction();
             
             // Nettoyage des doublons dans les autres tables avant intégration
             $this->cleanupDuplicateItems($convertedData['name'], $targetTable);
             
-            $result = $this->integrateItemByType($convertedData, $targetTable);
+            $result = $this->integrateItemByType($convertedData, $targetTable, $withImages);
             
             // Intégration des relations : recette (ressources) via item_resource
             // Note: La recette s'applique uniquement aux items (pas aux consumables ni resources)
@@ -498,19 +604,49 @@ class DataIntegrationService
      * @param array $convertedData Données converties du sort
      * @return array Résultat de l'intégration
      */
-    public function integrateSpell(array $convertedData): array
+    public function integrateSpell(array $convertedData, array $options = []): array
     {
         Log::info('Intégration de sort', ['spell_name' => $convertedData['name']]);
-        
+
+        $dryRun = (bool) ($options['dry_run'] ?? false);
+        $forceUpdate = (bool) ($options['force_update'] ?? false);
+        $withImages = array_key_exists('with_images', $options) ? (bool) $options['with_images'] : true;
+
         try {
             DB::beginTransaction();
 
-            $existingSpell = Spell::where('name', $convertedData['name'])->first();
+            $existingSpell = null;
+            if (!empty($convertedData['dofusdb_id'])) {
+                $existingSpell = Spell::where('dofusdb_id', (string) $convertedData['dofusdb_id'])->first();
+            }
+            if (!$existingSpell) {
+                $existingSpell = Spell::where('name', $convertedData['name'])->first();
+            }
+
+            if ($existingSpell && !$forceUpdate) {
+                DB::rollBack();
+                return [
+                    'id' => $existingSpell->id,
+                    'action' => $dryRun ? 'would_skip' : 'skipped',
+                    'data' => $existingSpell->toArray(),
+                ];
+            }
+
+            if ($dryRun) {
+                DB::rollBack();
+                return [
+                    'id' => $existingSpell?->id,
+                    'action' => $existingSpell ? 'would_update' : 'would_create',
+                    'data' => $existingSpell?->toArray(),
+                ];
+            }
+
             $image = $this->resolveScrappedImage(
                 $convertedData['image'] ?? null,
                 'spells',
                 $convertedData['dofusdb_id'] ?? null,
-                $existingSpell?->image
+                $existingSpell?->image,
+                $withImages
             );
             
             // Mapping des données converties vers les colonnes de la table spells
@@ -618,13 +754,14 @@ class DataIntegrationService
      * @param array $convertedData Données converties de la panoplie
      * @return array Résultat de l'intégration
      */
-    public function integratePanoply(array $convertedData): array
+    public function integratePanoply(array $convertedData, array $options = []): array
     {
         Log::info('Intégration de panoplie', ['panoply_name' => $convertedData['name']]);
-        
+
+        $dryRun = (bool) ($options['dry_run'] ?? false);
+        $forceUpdate = (bool) ($options['force_update'] ?? false);
+
         try {
-            DB::beginTransaction();
-            
             // Recherche d'une panoplie existante par dofusdb_id ou name
             $existingPanoply = null;
             if (!empty($convertedData['dofusdb_id'])) {
@@ -633,6 +770,35 @@ class DataIntegrationService
             if (!$existingPanoply) {
                 $existingPanoply = Panoply::where('name', $convertedData['name'])->first();
             }
+
+            if ($existingPanoply && !$forceUpdate) {
+                return [
+                    'id' => $existingPanoply->id,
+                    'action' => $dryRun ? 'would_skip' : 'skipped',
+                    'data' => [
+                        'panoply' => $existingPanoply->toArray(),
+                    ],
+                ];
+            }
+
+            if ($dryRun) {
+                return [
+                    'id' => $existingPanoply?->id,
+                    'action' => $existingPanoply ? 'would_update' : 'would_create',
+                    'data' => [
+                        'panoply' => $existingPanoply?->toArray(),
+                    ],
+                ];
+            }
+
+            DB::beginTransaction();
+
+            $readLevel = (int) ($convertedData['read_level'] ?? User::ROLE_GUEST);
+            $writeLevel = (int) ($convertedData['write_level'] ?? User::ROLE_ADMIN);
+            if ($writeLevel < $readLevel) {
+                $writeLevel = $readLevel;
+            }
+            $state = is_string($convertedData['state'] ?? null) ? (string) $convertedData['state'] : Panoply::STATE_DRAFT;
             
             if ($existingPanoply) {
                 // Mise à jour de la panoplie existante
@@ -640,8 +806,9 @@ class DataIntegrationService
                     'dofusdb_id' => $convertedData['dofusdb_id'] ?? $existingPanoply->dofusdb_id,
                     'description' => $convertedData['description'],
                     'bonus' => $convertedData['bonus'],
-                    'usable' => $convertedData['usable'] ?? 0,
-                    'is_visible' => $convertedData['is_visible'] ?? 'guest',
+                    'state' => $state,
+                    'read_level' => $readLevel,
+                    'write_level' => $writeLevel,
                 ]);
                 $panoply = $existingPanoply;
                 $action = 'updated';
@@ -652,8 +819,9 @@ class DataIntegrationService
                     'name' => $convertedData['name'],
                     'description' => $convertedData['description'],
                     'bonus' => $convertedData['bonus'],
-                    'usable' => $convertedData['usable'] ?? 0,
-                    'is_visible' => $convertedData['is_visible'] ?? 'guest',
+                    'state' => $state,
+                    'read_level' => $readLevel,
+                    'write_level' => $writeLevel,
                     'created_by' => $this->getSystemUserId(),
                 ]);
                 $action = 'created';
@@ -814,18 +982,18 @@ class DataIntegrationService
      * @param string $targetTable Table cible
      * @return array Résultat de l'intégration
      */
-    private function integrateItemByType(array $convertedData, string $targetTable): array
+    private function integrateItemByType(array $convertedData, string $targetTable, bool $withImages): array
     {
         switch ($targetTable) {
             case 'consumables':
-                return $this->integrateConsumable($convertedData);
+                return $this->integrateConsumable($convertedData, $withImages);
                 
             case 'resources':
-                return $this->integrateResource($convertedData);
+                return $this->integrateResource($convertedData, $withImages);
                 
             case 'items':
             default:
-                return $this->integrateGenericItem($convertedData);
+                return $this->integrateGenericItem($convertedData, $withImages);
         }
     }
 
@@ -835,15 +1003,22 @@ class DataIntegrationService
      * @param array $convertedData Données converties de l'objet
      * @return array Résultat de l'intégration
      */
-    private function integrateConsumable(array $convertedData): array
+    private function integrateConsumable(array $convertedData, bool $withImages): array
     {
-        $existingConsumable = Consumable::where('name', $convertedData['name'])->first();
+        $existingConsumable = null;
+        if (!empty($convertedData['dofusdb_id'])) {
+            $existingConsumable = Consumable::where('dofusdb_id', (string) $convertedData['dofusdb_id'])->first();
+        }
+        if (!$existingConsumable) {
+            $existingConsumable = Consumable::where('name', $convertedData['name'])->first();
+        }
 
         $image = $this->resolveScrappedImage(
             $convertedData['image'] ?? null,
             'consumables',
             $convertedData['dofusdb_id'] ?? null,
-            $existingConsumable?->image
+            $existingConsumable?->image,
+            $withImages
         );
 
         // Mapping des données vers les colonnes de la table consumables
@@ -890,15 +1065,22 @@ class DataIntegrationService
      * @param array $convertedData Données converties de l'objet
      * @return array Résultat de l'intégration
      */
-    private function integrateResource(array $convertedData): array
+    private function integrateResource(array $convertedData, bool $withImages): array
     {
-        $existingResource = Resource::where('name', $convertedData['name'])->first();
+        $existingResource = null;
+        if (!empty($convertedData['dofusdb_id'])) {
+            $existingResource = Resource::where('dofusdb_id', (string) $convertedData['dofusdb_id'])->first();
+        }
+        if (!$existingResource) {
+            $existingResource = Resource::where('name', $convertedData['name'])->first();
+        }
 
         $image = $this->resolveScrappedImage(
             $convertedData['image'] ?? null,
             'resources',
             $convertedData['dofusdb_id'] ?? null,
-            $existingResource?->image
+            $existingResource?->image,
+            $withImages
         );
 
         // Mapping des données vers les colonnes de la table resources
@@ -945,15 +1127,22 @@ class DataIntegrationService
      * @param array $convertedData Données converties de l'objet
      * @return array Résultat de l'intégration
      */
-    private function integrateGenericItem(array $convertedData): array
+    private function integrateGenericItem(array $convertedData, bool $withImages): array
     {
-        $existingItem = Item::where('name', $convertedData['name'])->first();
+        $existingItem = null;
+        if (!empty($convertedData['dofusdb_id'])) {
+            $existingItem = Item::where('dofusdb_id', (string) $convertedData['dofusdb_id'])->first();
+        }
+        if (!$existingItem) {
+            $existingItem = Item::where('name', $convertedData['name'])->first();
+        }
 
         $image = $this->resolveScrappedImage(
             $convertedData['image'] ?? null,
             'items',
             $convertedData['dofusdb_id'] ?? null,
-            $existingItem?->image
+            $existingItem?->image,
+            $withImages
         );
 
         // Mapping des données vers les colonnes de la table items

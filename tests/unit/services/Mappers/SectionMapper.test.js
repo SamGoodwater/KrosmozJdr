@@ -95,8 +95,8 @@ describe('SectionMapper', () => {
       expect(formData).toHaveProperty('template');
       expect(formData).toHaveProperty('settings');
       expect(formData).toHaveProperty('data');
-      expect(formData).toHaveProperty('is_visible');
-      expect(formData).toHaveProperty('can_edit_role');
+      expect(formData).toHaveProperty('read_level');
+      expect(formData).toHaveProperty('write_level');
       expect(formData).toHaveProperty('state');
     });
 
@@ -123,7 +123,8 @@ describe('SectionMapper', () => {
         template: 'text',
         settings: {},
         data: {},
-        is_visible: 'guest'
+        read_level: 0,
+        write_level: 4,
       };
       const cleaned = SectionMapper.mapFromFormData(formData);
 
@@ -164,8 +165,8 @@ describe('SectionMapper', () => {
         template: 'image',
         settings: { align: 'center' },
         data: { src: 'test.jpg' },
-        is_visible: 'user',
-        can_edit_role: 'game_master',
+        read_level: 1,
+        write_level: 3,
         state: 'draft'
       });
       const normalized = SectionMapper.normalizeSectionData(rawData);
@@ -178,8 +179,8 @@ describe('SectionMapper', () => {
       expect(normalized.template).toBe('image');
       expect(normalized.settings).toEqual({ align: 'center' });
       expect(normalized.data).toEqual({ src: 'test.jpg' });
-      expect(normalized.is_visible).toBe('user');
-      expect(normalized.can_edit_role).toBe('game_master');
+      expect(normalized.read_level).toBe(1);
+      expect(normalized.write_level).toBe(3);
       expect(normalized.state).toBe('draft');
     });
 
@@ -191,8 +192,8 @@ describe('SectionMapper', () => {
       expect(normalized.order).toBe(0);
       expect(normalized.settings).toEqual({});
       expect(normalized.data).toEqual({});
-      expect(normalized.is_visible).toBe('guest');
-      expect(normalized.can_edit_role).toBe('admin');
+      expect(normalized.read_level).toBe(0);
+      expect(normalized.write_level).toBe(4);
       expect(normalized.state).toBe('draft');
     });
   });

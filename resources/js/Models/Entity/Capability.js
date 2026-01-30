@@ -71,10 +71,6 @@ export class Capability extends BaseModel {
         return this._data.powerful || null;
     }
 
-    get usable() {
-        return this._data.usable ?? false;
-    }
-
     get image() {
         return this._data.image || '';
     }
@@ -146,10 +142,6 @@ export class Capability extends BaseModel {
                 return this._toRitualAvailableCell(format, size, options);
             case 'powerful':
                 return this._toPowerfulCell(format, size, options);
-            case 'usable':
-                return this._toUsableCell(format, size, options);
-            case 'is_visible':
-                return this._toIsVisibleCell(format, size, options);
             case 'image':
                 return this._toImageCell(format, size, options);
             case 'created_by':
@@ -400,34 +392,6 @@ export class Capability extends BaseModel {
     }
 
     /**
-     * Génère une cellule pour usable
-     * @private
-     */
-    _toUsableCell(format, size, options) {
-        const usable = this.usable ?? false;
-        const label = usable ? 'Oui' : 'Non';
-        
-        return {
-            type: 'badge',
-            value: label,
-            params: {
-                color: usable ? 'success' : 'neutral',
-                sortValue: usable ? 1 : 0,
-                searchValue: label,
-            },
-        };
-    }
-
-    /**
-     * Génère une cellule pour is_visible
-     * @private
-     */
-    _toIsVisibleCell(format, size, options) {
-        // Utiliser le VisibilityFormatter via la méthode de base
-        return super.toCell('is_visible', options);
-    }
-
-    /**
      * Génère une cellule pour image
      * @private
      */
@@ -487,7 +451,9 @@ export class Capability extends BaseModel {
             is_magic: this.isMagic,
             ritual_available: this.ritualAvailable,
             powerful: this.powerful,
-            usable: this.usable,
+            state: this.state,
+            read_level: this.readLevel,
+            write_level: this.writeLevel,
             image: this.image
         };
     }

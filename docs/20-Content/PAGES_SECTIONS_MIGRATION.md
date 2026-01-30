@@ -84,7 +84,7 @@ const template = computed(() => templateInfo.value.value);
 const getStateColor = (state) => {
     const colors = {
         'draft': 'warning',
-        'published': 'success',
+        'playable': 'success',
         // ...
     };
     return colors[state] || 'neutral';

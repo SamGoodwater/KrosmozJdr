@@ -36,17 +36,17 @@ class ResourceBulkControllerTest extends TestCase
         $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
         $resource1 = Resource::factory()->create([
             'name' => 'Resource 1',
-            'is_visible' => 'guest',
+            'read_level' => User::ROLE_GUEST,
         ]);
         $resource2 = Resource::factory()->create([
             'name' => 'Resource 2',
-            'is_visible' => 'user',
+            'read_level' => User::ROLE_USER,
         ]);
 
         $response = $this->actingAs($admin)
             ->patchJson('/api/entities/resources/bulk', [
                 'ids' => [$resource1->id, $resource2->id],
-                'is_visible' => 'admin',
+                'read_level' => User::ROLE_ADMIN,
             ]);
 
         $response->assertOk()
@@ -58,11 +58,11 @@ class ResourceBulkControllerTest extends TestCase
 
         $this->assertDatabaseHas('resources', [
             'id' => $resource1->id,
-            'is_visible' => 'admin',
+            'read_level' => User::ROLE_ADMIN,
         ]);
         $this->assertDatabaseHas('resources', [
             'id' => $resource2->id,
-            'is_visible' => 'admin',
+            'read_level' => User::ROLE_ADMIN,
         ]);
     }
 
@@ -76,7 +76,7 @@ class ResourceBulkControllerTest extends TestCase
         $response = $this->actingAs($admin)
             ->patchJson('/api/entities/resources/bulk', [
                 'ids' => [99999, 99998],
-                'is_visible' => 'admin',
+                'read_level' => User::ROLE_ADMIN,
             ]);
 
         $response->assertStatus(422)
@@ -124,20 +124,20 @@ class ResourceBulkControllerTest extends TestCase
         $resource = Resource::factory()->create([
             'name' => 'Original Name',
             'description' => 'Original Description',
-            'is_visible' => 'guest',
+            'read_level' => User::ROLE_GUEST,
         ]);
 
         $response = $this->actingAs($admin)
             ->patchJson('/api/entities/resources/bulk', [
                 'ids' => [$resource->id],
-                'is_visible' => 'admin',
+                'read_level' => User::ROLE_ADMIN,
                 // name et description ne sont pas modifiés
             ]);
 
         $response->assertOk();
 
         $resource->refresh();
-        $this->assertEquals('admin', $resource->is_visible);
+        $this->assertEquals(User::ROLE_ADMIN, $resource->read_level);
         $this->assertEquals('Original Name', $resource->name); // Non modifié
         $this->assertEquals('Original Description', $resource->description); // Non modifié
     }
@@ -153,7 +153,7 @@ class ResourceBulkControllerTest extends TestCase
         $response = $this->actingAs($user)
             ->patchJson('/api/entities/resources/bulk', [
                 'ids' => [$resource->id],
-                'is_visible' => 'admin',
+                'read_level' => User::ROLE_ADMIN,
             ]);
 
         $response->assertForbidden();

@@ -85,10 +85,10 @@ $result = $orchestrator->importClass(1, ['include_relations' => false]);
 
 ```bash
 # Import avec relations (par défaut)
-php artisan scrapping:import class 1
+php artisan scrapping --import=class --id=1 --include-relations=1
 
 # Import sans relations
-php artisan scrapping:import class 1 --no-relations
+php artisan scrapping --import=class --id=1 --include-relations=0
 ```
 
 ### Via l'API

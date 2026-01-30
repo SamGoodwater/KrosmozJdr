@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\Table;
 
 use App\Http\Controllers\Controller;
 use App\Models\Entity\Campaign;
+use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
@@ -17,6 +18,13 @@ use Illuminate\Support\Facades\Gate;
  */
 class CampaignTableController extends Controller
 {
+    private const STATE_LABELS = [
+        Campaign::STATE_RAW => 'Brut',
+        Campaign::STATE_DRAFT => 'Brouillon',
+        Campaign::STATE_PLAYABLE => 'Jouable',
+        Campaign::STATE_ARCHIVED => 'Archivé',
+    ];
+
     public function index(Request $request): JsonResponse
     {
         $this->authorize('viewAny', Campaign::class);
@@ -28,7 +36,7 @@ class CampaignTableController extends Controller
         $format = $request->filled('format') ? (string) $request->get('format') : 'cells';
 
         $filters = (array) ($request->input('filters', $request->input('filter', [])) ?? []);
-        foreach (['state', 'is_public'] as $k) {
+        foreach (['state', 'progress_state', 'is_public', 'read_level', 'write_level'] as $k) {
             if (!array_key_exists($k, $filters) && $request->has($k)) {
                 $filters[$k] = $request->get($k);
             }
@@ -56,13 +64,22 @@ class CampaignTableController extends Controller
         }
 
         if (array_key_exists('state', $filters) && $filters['state'] !== '' && $filters['state'] !== null) {
-            $query->where('state', (int) $filters['state']);
+            $query->where('state', (string) $filters['state']);
+        }
+        if (array_key_exists('progress_state', $filters) && $filters['progress_state'] !== '' && $filters['progress_state'] !== null) {
+            $query->where('progress_state', (int) $filters['progress_state']);
         }
         if (array_key_exists('is_public', $filters) && $filters['is_public'] !== '' && $filters['is_public'] !== null) {
             $query->where('is_public', (int) $filters['is_public']);
         }
+        if (array_key_exists('read_level', $filters) && $filters['read_level'] !== '' && $filters['read_level'] !== null) {
+            $query->where('read_level', (int) $filters['read_level']);
+        }
+        if (array_key_exists('write_level', $filters) && $filters['write_level'] !== '' && $filters['write_level'] !== null) {
+            $query->where('write_level', (int) $filters['write_level']);
+        }
 
-        $allowedSort = ['id', 'name', 'slug', 'state', 'is_public', 'created_at', 'updated_at'];
+        $allowedSort = ['id', 'name', 'slug', 'progress_state', 'state', 'read_level', 'write_level', 'is_public', 'created_at', 'updated_at'];
         if (in_array($sort, $allowedSort, true)) {
             $query->orderBy($sort, $order);
         } else {
@@ -80,7 +97,22 @@ class CampaignTableController extends Controller
         ];
 
         $filterOptions = [
-            'state' => collect(Campaign::STATE)->map(fn ($label, $value) => ['value' => (string) $value, 'label' => (string) $label])->values()->all(),
+            'state' => collect(self::STATE_LABELS)
+                ->map(fn (string $label, string $value) => ['value' => $value, 'label' => $label])
+                ->values()
+                ->all(),
+            'progress_state' => collect(Campaign::PROGRESS_STATES)
+                ->map(fn (string $label, int $value) => ['value' => (string) $value, 'label' => $label])
+                ->values()
+                ->all(),
+            'read_level' => collect(User::ROLES)
+                ->map(fn (string $label, int $value) => ['value' => (string) $value, 'label' => $label])
+                ->values()
+                ->all(),
+            'write_level' => collect(User::ROLES)
+                ->map(fn (string $label, int $value) => ['value' => (string) $value, 'label' => $label])
+                ->values()
+                ->all(),
             'is_public' => [
                 ['value' => '1', 'label' => 'Oui'],
                 ['value' => '0', 'label' => 'Non'],
@@ -98,9 +130,10 @@ class CampaignTableController extends Controller
                     'slug' => $c->slug,
                     'keyword' => $c->keyword,
                     'is_public' => (int) ($c->is_public ?? 0),
-                    'state' => $c->state,
-                    'usable' => (int) ($c->usable ?? 0),
-                    'is_visible' => $c->is_visible,
+                    'progress_state' => (int) ($c->progress_state ?? 0),
+                    'state' => (string) ($c->state ?? 'draft'),
+                    'read_level' => (int) ($c->read_level ?? 0),
+                    'write_level' => (int) ($c->write_level ?? 0),
                     'image' => $c->image,
                     'created_by' => $c->created_by,
                     'createdBy' => $createdBy ? [
@@ -142,7 +175,7 @@ class CampaignTableController extends Controller
             $updatedAtLabel = $c->updated_at ? $c->updated_at->format('d/m/Y H:i') : '-';
             $updatedAtSort = $c->updated_at ? $c->updated_at->getTimestamp() : 0;
 
-            $stateLabel = Campaign::STATE[$c->state] ?? (string) $c->state;
+            $stateLabel = self::STATE_LABELS[(string) ($c->state ?? '')] ?? (string) ($c->state ?? '');
             $isPublicLabel = ((int) ($c->is_public ?? 0)) === 1 ? 'Oui' : 'Non';
 
             return [
@@ -171,7 +204,7 @@ class CampaignTableController extends Controller
                         'params' => [
                             'color' => 'primary',
                             'filterValue' => (string) ($c->state ?? ''),
-                            'sortValue' => (int) ($c->state ?? 0),
+                            'sortValue' => (string) ($c->state ?? ''),
                         ],
                     ],
                     'is_public' => [
@@ -216,9 +249,10 @@ class CampaignTableController extends Controller
                         'slug' => $c->slug,
                         'keyword' => $c->keyword,
                         'is_public' => (int) ($c->is_public ?? 0),
-                        'state' => $c->state,
-                        'usable' => (int) ($c->usable ?? 0),
-                        'is_visible' => $c->is_visible,
+                        'progress_state' => (int) ($c->progress_state ?? 0),
+                        'state' => (string) ($c->state ?? 'draft'),
+                        'read_level' => (int) ($c->read_level ?? 0),
+                        'write_level' => (int) ($c->write_level ?? 0),
                         'image' => $c->image,
                         'created_by' => $c->created_by,
                         'createdBy' => $createdBy ? [

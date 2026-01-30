@@ -34,17 +34,17 @@ class PanoplyBulkControllerTest extends TestCase
         $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
         $panoply1 = Panoply::factory()->create([
             'name' => 'Panoply 1',
-            'is_visible' => 'guest',
+            'read_level' => User::ROLE_GUEST,
         ]);
         $panoply2 = Panoply::factory()->create([
             'name' => 'Panoply 2',
-            'is_visible' => 'user',
+            'read_level' => User::ROLE_USER,
         ]);
 
         $response = $this->actingAs($admin)
             ->patchJson('/api/entities/panoplies/bulk', [
                 'ids' => [$panoply1->id, $panoply2->id],
-                'is_visible' => 'admin',
+                'read_level' => User::ROLE_ADMIN,
             ]);
 
         $response->assertOk()
@@ -56,11 +56,11 @@ class PanoplyBulkControllerTest extends TestCase
 
         $this->assertDatabaseHas('panoplies', [
             'id' => $panoply1->id,
-            'is_visible' => 'admin',
+            'read_level' => User::ROLE_ADMIN,
         ]);
         $this->assertDatabaseHas('panoplies', [
             'id' => $panoply2->id,
-            'is_visible' => 'admin',
+            'read_level' => User::ROLE_ADMIN,
         ]);
     }
 
@@ -74,7 +74,7 @@ class PanoplyBulkControllerTest extends TestCase
         $response = $this->actingAs($admin)
             ->patchJson('/api/entities/panoplies/bulk', [
                 'ids' => [99999, 99998],
-                'is_visible' => 'admin',
+                'read_level' => User::ROLE_ADMIN,
             ]);
 
         $response->assertStatus(422)
@@ -90,20 +90,20 @@ class PanoplyBulkControllerTest extends TestCase
         $panoply = Panoply::factory()->create([
             'name' => 'Original Name',
             'description' => 'Original Description',
-            'is_visible' => 'guest',
+            'read_level' => User::ROLE_GUEST,
         ]);
 
         $response = $this->actingAs($admin)
             ->patchJson('/api/entities/panoplies/bulk', [
                 'ids' => [$panoply->id],
-                'is_visible' => 'admin',
+                'read_level' => User::ROLE_ADMIN,
                 // name et description ne sont pas modifiés
             ]);
 
         $response->assertOk();
 
         $panoply->refresh();
-        $this->assertEquals('admin', $panoply->is_visible);
+        $this->assertEquals(User::ROLE_ADMIN, $panoply->read_level);
         $this->assertEquals('Original Name', $panoply->name); // Non modifié
         $this->assertEquals('Original Description', $panoply->description); // Non modifié
     }
@@ -119,7 +119,7 @@ class PanoplyBulkControllerTest extends TestCase
         $response = $this->actingAs($user)
             ->patchJson('/api/entities/panoplies/bulk', [
                 'ids' => [$panoply->id],
-                'is_visible' => 'admin',
+                'read_level' => User::ROLE_ADMIN,
             ]);
 
         $response->assertForbidden();

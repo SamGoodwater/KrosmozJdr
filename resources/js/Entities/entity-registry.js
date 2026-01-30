@@ -97,7 +97,7 @@ export function getEntityConfig(entityType) {
         getDescriptors: getResourceFieldDescriptors,
         // viewFields supprimé : utiliser descriptors._quickeditConfig.fields directement
         responseAdapter: createEntityAdapter(Resource, ResourceMapper),
-        defaults: { minimalImportantFields: ["level", "rarity", "usable", "is_visible"] },
+        defaults: { minimalImportantFields: ["level", "rarity", "state", "read_level"] },
       };
     case "resource-types":
       return {
@@ -174,7 +174,7 @@ export function getEntityConfig(entityType) {
         key,
         getDescriptors: getAttributeFieldDescriptors,
         responseAdapter: createEntityAdapter(Attribute),
-        defaults: { minimalImportantFields: ["name", "usable", "is_visible"] },
+        defaults: { minimalImportantFields: ["name", "state", "read_level"] },
       };
     case "panoplies":
       return {

@@ -280,6 +280,16 @@
     "description": "![schéma](vues.png)"
   },
   {
+    "path": "110- To Do/scrapping/Refonte Scrapping - Spec.md",
+    "title": "Refonte Scrapping — Spécification (base de travail)",
+    "description": "Le scrapping actuel (collect → conversion → intégration pilotés par un orchestrateur) est jugé ancien, peu optimisé et peu testé. L’objectif est de **refondre** cette fonctionnalité pour la rendre :"
+  },
+  {
+    "path": "110- To Do/scrapping/etude API dofusDB.md",
+    "title": "Effects",
+    "description": "Système présents seulement dans DofusDB."
+  },
+  {
     "path": "20-Content/21-Entities/ENTITIES_OVERVIEW.md",
     "title": "Vue d'ensemble des entités – Krosmoz JDR",
     "description": "Ce document présente en détail toutes les entités du projet Krosmoz JDR, leur structure, leurs relations et leur rôle dans l'architecture globale du jeu. Il sert de référence centrale pour la modélisation des données, la génération des migrations, l'implémentation backend et la compréhension métier."

@@ -97,9 +97,7 @@
  */
 // Les champs quickedit sont maintenant définis dans _quickeditConfig.fields
 
-// Import des constantes des formatters (pour les options)
-import { VisibilityFormatter } from '@/Utils/Formatters/VisibilityFormatter.js';
-import { getRarityOptions } from '@/Utils/Entity/SharedConstants.js';
+import { getEntityStateOptions, getRarityOptions, getUserRoleOptions } from '@/Utils/Entity/SharedConstants.js';
 
 /**
  * Retourne les descripteurs de tous les champs de l'entité "Resource".
@@ -555,15 +553,15 @@ export function getResourceFieldDescriptors(ctx = {}) {
       },
     },
     
-    is_visible: {
-      key: "is_visible",
+    read_level: {
+      key: "read_level",
       general: {
-        label: "Visibilité",
+        label: "Lecture (min.)",
         icon: "fa-solid fa-eye",
-        tooltip: "Contrôle la visibilité de la ressource côté frontend",
+        tooltip: "Niveau minimum requis pour lire la ressource",
       },
       permissions: {
-        // Seuls les admins peuvent voir la visibilité
+        // Seuls les admins peuvent voir la config d'accès
         visibleIf: (ctx) => {
           const can = ctx?.capabilities?.updateAny || ctx?.meta?.capabilities?.updateAny || false;
           return can;
@@ -585,14 +583,10 @@ export function getResourceFieldDescriptors(ctx = {}) {
         },
         sortable: true,
         filterable: {
-          id: "is_visible",
-          // UI: multi => checkboxes (Oui/Non)
-          // NB: le serveur ne fournit pas toujours filterOptions.is_visible, donc fallback ici.
+          id: "read_level",
+          // UI: multi => checkboxes
           type: "multi",
-          options: [
-            { value: "1", label: "Oui" },
-            { value: "0", label: "Non" },
-          ],
+          options: getUserRoleOptions(),
         },
         cell: {
           sizes: {
@@ -605,16 +599,15 @@ export function getResourceFieldDescriptors(ctx = {}) {
         },
       },
       display: {
-        tooltip: "Contrôle la visibilité de la ressource côté frontend",
+        tooltip: "Niveau minimum requis pour lire la ressource",
       },
       edition: {
         form: {
           type: "select",
           group: "Statut",
-          help: "Contrôle la visibilité côté front. Le backend reste la vérité sécurité.",
+          help: "Niveau minimum requis pour lire la ressource.",
           required: false,
-          // Utiliser la constante du formatter (pas de duplication)
-          options: VisibilityFormatter.options.map(({ value, label }) => ({ value, label })),
+          options: getUserRoleOptions(),
         },
         bulk: {
           enabled: true,
@@ -623,45 +616,88 @@ export function getResourceFieldDescriptors(ctx = {}) {
       },
     },
     
-    usable: {
-      key: "usable",
+    write_level: {
+      key: "write_level",
       general: {
-        label: "Utilisable",
-        icon: "fa-solid fa-check",
-        tooltip: "Indique si la ressource peut être utilisée",
+        label: "Écriture (min.)",
+        icon: "fa-solid fa-pen-to-square",
+        tooltip: "Niveau minimum requis pour modifier la ressource",
+      },
+      permissions: {
+        visibleIf: (ctx) => Boolean(ctx?.capabilities?.updateAny ?? ctx?.meta?.capabilities?.updateAny),
       },
       table: {
+        defaultVisible: { xs: false, sm: false, md: false, lg: false, xl: false },
+        visibleIf: (ctx) => Boolean(ctx?.capabilities?.updateAny ?? ctx?.meta?.capabilities?.updateAny),
         sortable: true,
         filterable: {
-          id: "usable",
-          // UX: toggle => ON = n'afficher que les éléments adaptés au JDR (usable=1), OFF = tout afficher
-          type: "toggle",
-          label: "Adapté au JDR",
-          onLabel: "Adaptés",
-          offLabel: "Tous",
-          defaultValue: true,
+          id: "write_level",
+          type: "multi",
+          options: getUserRoleOptions(),
         },
-        // Pas de colonne "usable" (signal via indicateur de ligne + filtre)
-        defaultVisible: { xs: false, sm: false, md: false, lg: false, xl: false },
         cell: {
           sizes: {
-            xs: { mode: "boolIcon" },
-            sm: { mode: "boolIcon" },
-            md: { mode: "boolBadge" },
-            lg: { mode: "boolBadge" },
-            xl: { mode: "boolBadge" },
+            xs: { mode: "badge" },
+            sm: { mode: "badge" },
+            md: { mode: "badge" },
+            lg: { mode: "badge" },
+            xl: { mode: "badge" },
           },
         },
       },
       display: {
-        tooltip: "Indique si la ressource peut être utilisée",
+        tooltip: "Niveau minimum requis pour modifier la ressource",
       },
       edition: {
         form: {
-          type: "checkbox",
+          type: "select",
+          group: "Statut",
+          help: "Niveau minimum requis pour modifier la ressource.",
+          required: false,
+          options: getUserRoleOptions(),
+        },
+        bulk: {
+          enabled: true,
+          nullable: false,
+        },
+      },
+    },
+    
+    state: {
+      key: "state",
+      general: {
+        label: "État",
+        icon: "fa-solid fa-circle-info",
+        tooltip: "Cycle de vie de la ressource (brut, brouillon, jouable, archivé)",
+      },
+      table: {
+        sortable: true,
+        filterable: {
+          id: "state",
+          type: "multi",
+          options: getEntityStateOptions(),
+        },
+        defaultVisible: { xs: false, sm: false, md: false, lg: false, xl: false },
+        cell: {
+          sizes: {
+            xs: { mode: "badge" },
+            sm: { mode: "badge" },
+            md: { mode: "badge" },
+            lg: { mode: "badge" },
+            xl: { mode: "badge" },
+          },
+        },
+      },
+      display: {
+        tooltip: "Cycle de vie de la ressource",
+      },
+      edition: {
+        form: {
+          type: "select",
           group: "Statut",
           required: false,
-          defaultValue: false,
+          defaultValue: "draft",
+          options: getEntityStateOptions,
         },
         bulk: {
           enabled: true,
@@ -970,9 +1006,10 @@ export function getResourceFieldDescriptors(ctx = {}) {
         "resource_type_id",
         "rarity",
         "level",
-        "usable",
+        "state",
         "auto_update",
-        "is_visible",
+        "read_level",
+        "write_level",
         "price",
         "weight",
         "dofus_version",

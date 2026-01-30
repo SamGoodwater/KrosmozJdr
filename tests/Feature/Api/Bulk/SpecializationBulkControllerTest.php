@@ -34,17 +34,17 @@ class SpecializationBulkControllerTest extends TestCase
         $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
         $specialization1 = Specialization::factory()->create([
             'name' => 'Specialization 1',
-            'is_visible' => 'guest',
+            'read_level' => User::ROLE_GUEST,
         ]);
         $specialization2 = Specialization::factory()->create([
             'name' => 'Specialization 2',
-            'is_visible' => 'user',
+            'read_level' => User::ROLE_USER,
         ]);
 
         $response = $this->actingAs($admin)
             ->patchJson('/api/entities/specializations/bulk', [
                 'ids' => [$specialization1->id, $specialization2->id],
-                'is_visible' => 'admin',
+                'read_level' => User::ROLE_ADMIN,
             ]);
 
         $response->assertOk()
@@ -56,11 +56,11 @@ class SpecializationBulkControllerTest extends TestCase
 
         $this->assertDatabaseHas('specializations', [
             'id' => $specialization1->id,
-            'is_visible' => 'admin',
+            'read_level' => User::ROLE_ADMIN,
         ]);
         $this->assertDatabaseHas('specializations', [
             'id' => $specialization2->id,
-            'is_visible' => 'admin',
+            'read_level' => User::ROLE_ADMIN,
         ]);
     }
 
@@ -74,7 +74,7 @@ class SpecializationBulkControllerTest extends TestCase
         $response = $this->actingAs($admin)
             ->patchJson('/api/entities/specializations/bulk', [
                 'ids' => [99999, 99998],
-                'is_visible' => 'admin',
+                'read_level' => User::ROLE_ADMIN,
             ]);
 
         $response->assertStatus(422)
@@ -90,20 +90,20 @@ class SpecializationBulkControllerTest extends TestCase
         $specialization = Specialization::factory()->create([
             'name' => 'Original Name',
             'description' => 'Original Description',
-            'is_visible' => 'guest',
+            'read_level' => User::ROLE_GUEST,
         ]);
 
         $response = $this->actingAs($admin)
             ->patchJson('/api/entities/specializations/bulk', [
                 'ids' => [$specialization->id],
-                'is_visible' => 'admin',
+                'read_level' => User::ROLE_ADMIN,
                 // name et description ne sont pas modifiés
             ]);
 
         $response->assertOk();
 
         $specialization->refresh();
-        $this->assertEquals('admin', $specialization->is_visible);
+        $this->assertEquals(User::ROLE_ADMIN, $specialization->read_level);
         $this->assertEquals('Original Name', $specialization->name); // Non modifié
         $this->assertEquals('Original Description', $specialization->description); // Non modifié
     }
@@ -119,7 +119,7 @@ class SpecializationBulkControllerTest extends TestCase
         $response = $this->actingAs($user)
             ->patchJson('/api/entities/specializations/bulk', [
                 'ids' => [$specialization->id],
-                'is_visible' => 'admin',
+                'read_level' => User::ROLE_ADMIN,
             ]);
 
         $response->assertForbidden();

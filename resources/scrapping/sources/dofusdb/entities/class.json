@@ -1,0 +1,36 @@
+{
+  "version": 1,
+  "source": "dofusdb",
+  "entity": "class",
+  "label": "Classes",
+  "meta": { "maxId": 19 },
+  "endpoints": {
+    "fetchOne": {
+      "pathTemplate": "/breeds/{id}",
+      "method": "GET",
+      "queryDefaults": { "lang": "{lang}" }
+    },
+    "fetchMany": {
+      "path": "/breeds",
+      "method": "GET",
+      "queryDefaults": { "lang": "{lang}", "$limit": 100, "$skip": 0 }
+    }
+  },
+  "filters": {
+    "supported": [
+      { "key": "id", "type": "number" },
+      { "key": "idMin", "type": "number" },
+      { "key": "idMax", "type": "number" },
+      { "key": "ids", "type": "number[]", "max": 500 },
+      { "key": "name", "type": "string" }
+    ]
+  },
+  "mapping": [
+    {
+      "key": "dofusdb_id",
+      "from": { "path": "id" },
+      "to": [{ "model": "classes", "field": "dofusdb_id" }],
+      "formatters": [{ "name": "toString", "args": {} }]
+    }
+  ]
+}

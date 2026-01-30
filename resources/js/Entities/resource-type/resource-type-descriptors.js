@@ -14,6 +14,8 @@
  * const descriptors = getResourceTypeFieldDescriptors({ meta });
  */
 
+import { getEntityStateOptions, getUserRoleOptions } from "@/Utils/Entity/SharedConstants";
+
 /**
  * @typedef {Object} ResourceTypeFieldDescriptor
  * @property {string} key - Clé unique du champ
@@ -133,11 +135,11 @@ export function getResourceTypeFieldDescriptors(ctx = {}) {
         },
       },
     },
-    usable: {
-      key: "usable",
-      label: "Utilisable",
-      icon: "fa-solid fa-check-circle",
-      format: "bool",
+    state: {
+      key: "state",
+      label: "État",
+      icon: "fa-solid fa-circle-info",
+      format: "enum",
       display: {
         sizes: {
           xs: { mode: "badge" },
@@ -149,18 +151,19 @@ export function getResourceTypeFieldDescriptors(ctx = {}) {
       },
       edit: {
         form: {
-          type: "checkbox",
+          type: "select",
           group: "Statut",
           required: false,
           showInCompact: true,
-          defaultValue: true,
-          bulk: { enabled: true, nullable: false, build: (v) => v === "1" || v === true },
+          options: getEntityStateOptions,
+          defaultValue: "draft",
+          bulk: { enabled: true, nullable: false, build: (v) => String(v) },
         },
       },
     },
-    is_visible: {
-      key: "is_visible",
-      label: "Visibilité",
+    read_level: {
+      key: "read_level",
+      label: "Lecture (min.)",
       icon: "fa-solid fa-eye",
       format: "enum",
       display: {
@@ -179,12 +182,35 @@ export function getResourceTypeFieldDescriptors(ctx = {}) {
           help: "Limite l’accès front (UX). La sécurité réelle reste côté backend.",
           required: false,
           showInCompact: true,
-          options: [
-            { value: "guest", label: "Invité" },
-            { value: "super_admin", label: "Super admin" },
-          ],
-          defaultValue: "guest",
-          bulk: { enabled: true, nullable: false, build: (v) => v },
+          options: getUserRoleOptions,
+          defaultValue: 0,
+          bulk: { enabled: true, nullable: false, build: (v) => Number(v) },
+        },
+      },
+    },
+    write_level: {
+      key: "write_level",
+      label: "Écriture (min.)",
+      icon: "fa-solid fa-pen-to-square",
+      format: "enum",
+      display: {
+        sizes: {
+          xs: { mode: "badge" },
+          sm: { mode: "badge" },
+          md: { mode: "badge" },
+          lg: { mode: "badge" },
+          xl: { mode: "badge" },
+        },
+      },
+      edit: {
+        form: {
+          type: "select",
+          group: "Statut",
+          required: false,
+          showInCompact: true,
+          options: getUserRoleOptions,
+          defaultValue: 4,
+          bulk: { enabled: true, nullable: false, build: (v) => Number(v) },
         },
       },
     },
@@ -316,8 +342,9 @@ export function getResourceTypeFieldDescriptors(ctx = {}) {
     _quickeditConfig: {
       fields: [
         "decision",
-        "usable",
-        "is_visible",
+        "state",
+        "read_level",
+        "write_level",
       ],
     },};
 }

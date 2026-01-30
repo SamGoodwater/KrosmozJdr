@@ -428,7 +428,7 @@ let _filterDebugCount = 0;
 /**
  * Appliquer des filtres par défaut (déclaratifs) si fournis sur les colonnes.
  * Exemple d'usage dans un descriptor:
- * table: { filterable: { id: 'usable', type: 'toggle', defaultValue: true } }
+ * table: { filterable: { id: 'state', type: 'multi' } }
  *
  * Règle: on ne remplace jamais un filtre déjà défini (même vide) par le user.
  */

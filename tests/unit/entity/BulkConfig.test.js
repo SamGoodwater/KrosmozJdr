@@ -50,9 +50,9 @@ describe("BulkConfig", () => {
     it("configure les quickEditFields", () => {
       const bulkConfig = new BulkConfig({
         entityType: "resource",
-      }).withQuickEditFields(["rarity", "level", "usable"]);
+      }).withQuickEditFields(["rarity", "level", "state"]);
 
-      expect(bulkConfig.quickEditFields).toEqual(["rarity", "level", "usable"]);
+      expect(bulkConfig.quickEditFields).toEqual(["rarity", "level", "state"]);
     });
 
     it("vérifie si un champ est bulk-editable", () => {
@@ -205,7 +205,7 @@ describe("BulkConfig", () => {
       expect(Array.isArray(config.quickEditFields)).toBe(true);
 
       // Vérifier que les champs attendus sont présents
-      const expectedFields = ["rarity", "level", "usable", "is_visible"];
+      const expectedFields = ["rarity", "level", "state", "read_level", "write_level"];
       expectedFields.forEach((field) => {
         if (config.quickEditFields.includes(field)) {
           expect(config.fields[field]).toBeDefined();

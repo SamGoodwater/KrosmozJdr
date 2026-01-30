@@ -70,8 +70,9 @@ const compactFields = computed(() => [
     'name',
     'bonus',
     'items_count',
-    'usable',
-    'is_visible',
+    'state',
+    'read_level',
+    'write_level',
 ].filter(canShowField));
 
 const getFieldLabel = (fieldKey) => {

@@ -28,8 +28,9 @@ use App\Models\Entity\Shop;
  * @property string|null $recipe
  * @property string|null $price
  * @property int $rarity
- * @property int $usable
- * @property string $is_visible
+ * @property string $state
+ * @property int $read_level
+ * @property int $write_level
  * @property string $dofus_version
  * @property string|null $image
  * @property bool $auto_update
@@ -64,7 +65,7 @@ use App\Models\Entity\Shop;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Consumable whereEffect($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Consumable whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Consumable whereImage($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Consumable whereIsVisible($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Consumable whereReadLevel($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Consumable whereLevel($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Consumable whereName($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Consumable whereOfficialId($value)
@@ -72,7 +73,8 @@ use App\Models\Entity\Shop;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Consumable whereRarity($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Consumable whereRecipe($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Consumable whereUpdatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Consumable whereUsable($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Consumable whereState($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Consumable whereWriteLevel($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Consumable withTrashed()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Consumable withoutTrashed()
  * @mixin \Eloquent
@@ -81,6 +83,11 @@ class Consumable extends Model
 {
     /** @use HasFactory<\Database\Factories\ConsumableFactory> */
     use HasFactory, SoftDeletes;
+
+    public const STATE_RAW = 'raw';
+    public const STATE_DRAFT = 'draft';
+    public const STATE_PLAYABLE = 'playable';
+    public const STATE_ARCHIVED = 'archived';
 
     /**
      * The attributes that are mass assignable.
@@ -97,8 +104,9 @@ class Consumable extends Model
         'recipe',
         'price',
         'rarity',
-        'usable',
-        'is_visible',
+        'state',
+        'read_level',
+        'write_level',
         'dofus_version',
         'image',
         'auto_update',
@@ -113,7 +121,8 @@ class Consumable extends Model
      */
     protected $casts = [
         'rarity' => 'integer',
-        'usable' => 'integer',
+        'read_level' => 'integer',
+        'write_level' => 'integer',
         'auto_update' => 'boolean',
     ];
 

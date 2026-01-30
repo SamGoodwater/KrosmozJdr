@@ -111,8 +111,25 @@ export class BaseModel {
         return this._data.deleted_at;
     }
 
-    get isVisible() {
-        return this._data.is_visible;
+    /**
+     * Niveau minimal requis pour lire (0..5).
+     */
+    get readLevel() {
+        return this._data.read_level;
+    }
+
+    /**
+     * Niveau minimal requis pour écrire/modifier (0..5).
+     */
+    get writeLevel() {
+        return this._data.write_level;
+    }
+
+    /**
+     * State lifecycle (raw|draft|playable|archived)
+     */
+    get state() {
+        return this._data.state;
     }
 
     // ============================================
@@ -523,7 +540,7 @@ export class BaseModel {
      * @returns {boolean}
      */
     hasVisibility() {
-        return this.has('visibility');
+        return this.has('read_level');
     }
 
     /**
@@ -532,7 +549,7 @@ export class BaseModel {
      * @returns {string|null}
      */
     formatVisibility(options = {}) {
-        return this.format('visibility', options);
+        return this.format('read_level', options);
     }
 
     /**
@@ -541,7 +558,7 @@ export class BaseModel {
      * @returns {Object|null}
      */
     toVisibilityCell(options = {}) {
-        return this.toCell('visibility', options);
+        return this.toCell('read_level', options);
     }
 }
 

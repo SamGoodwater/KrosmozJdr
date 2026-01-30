@@ -14,6 +14,8 @@
  * const descriptors = getItemFieldDescriptors({ meta });
  */
 
+import { getEntityStateOptions, getUserRoleOptions } from "@/Utils/Entity/SharedConstants";
+
 /**
  * @typedef {Object} ItemFieldDescriptor
  * @property {string} key - Clé unique du champ
@@ -179,10 +181,10 @@ export function getItemFieldDescriptors(ctx = {}) {
         },
       },
     },
-    usable: {
-      key: "usable",
-      label: "Utilisable",
-      icon: "fa-solid fa-check",
+    state: {
+      key: "state",
+      label: "État",
+      icon: "fa-solid fa-circle-info",
       display: {
         sizes: {
           xs: { mode: "badge" },
@@ -194,12 +196,13 @@ export function getItemFieldDescriptors(ctx = {}) {
       },
       edit: {
         form: {
-          type: "checkbox",
+          type: "select",
           group: "Statut",
           required: false,
           showInCompact: true,
-          defaultValue: false,
-          bulk: { enabled: true, nullable: false, build: (v) => v === "1" || v === true },
+          options: getEntityStateOptions,
+          defaultValue: "draft",
+          bulk: { enabled: true, nullable: false, build: (v) => String(v) },
         },
       },
     },
@@ -228,9 +231,9 @@ export function getItemFieldDescriptors(ctx = {}) {
         },
       },
     },
-    is_visible: {
-      key: "is_visible",
-      label: "Visibilité",
+    read_level: {
+      key: "read_level",
+      label: "Lecture (min.)",
       icon: "fa-solid fa-eye",
       display: {
         sizes: {
@@ -247,14 +250,34 @@ export function getItemFieldDescriptors(ctx = {}) {
           group: "Statut",
           required: false,
           showInCompact: true,
-          options: [
-            { value: "guest", label: "Invité" },
-            { value: "user", label: "Utilisateur" },
-            { value: "game_master", label: "Maître de jeu" },
-            { value: "admin", label: "Administrateur" },
-          ],
-          defaultValue: "guest",
-          bulk: { enabled: true, nullable: false, build: (v) => v },
+          options: getUserRoleOptions,
+          defaultValue: 0,
+          bulk: { enabled: true, nullable: false, build: (v) => Number(v) },
+        },
+      },
+    },
+    write_level: {
+      key: "write_level",
+      label: "Écriture (min.)",
+      icon: "fa-solid fa-pen-to-square",
+      display: {
+        sizes: {
+          xs: { mode: "badge" },
+          sm: { mode: "badge" },
+          md: { mode: "badge" },
+          lg: { mode: "badge" },
+          xl: { mode: "badge" },
+        },
+      },
+      edit: {
+        form: {
+          type: "select",
+          group: "Statut",
+          required: false,
+          showInCompact: true,
+          options: getUserRoleOptions,
+          defaultValue: 4,
+          bulk: { enabled: true, nullable: false, build: (v) => Number(v) },
         },
       },
     },
@@ -460,9 +483,10 @@ export function getItemFieldDescriptors(ctx = {}) {
         "item_type_id",
         "rarity",
         "level",
-        "usable",
+        "state",
         "auto_update",
-        "is_visible",
+        "read_level",
+        "write_level",
         "price",
         "dofus_version",
         "description",

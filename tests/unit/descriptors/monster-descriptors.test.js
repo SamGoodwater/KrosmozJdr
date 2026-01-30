@@ -11,13 +11,13 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import { getMonsterFieldDescriptors, MONSTER_QUICK_EDIT_FIELDS } from '@/Entities/monster/monster-descriptors';
+import { getMonsterFieldDescriptors } from '@/Entities/monster/monster-descriptors';
 
 describe('monster-descriptors', () => {
     describe('Structure des descriptors', () => {
         it('retourne un objet avec tous les champs requis', () => {
             const descriptors = getMonsterFieldDescriptors();
-            const requiredFields = ['id', 'name', 'level', 'hostility', 'life', 'usable', 'is_visible'];
+            const requiredFields = ['id', 'name', 'level', 'hostility', 'life', 'state', 'read_level', 'write_level'];
 
             requiredFields.forEach((field) => {
                 expect(descriptors).toHaveProperty(field);
@@ -51,15 +51,17 @@ describe('monster-descriptors', () => {
         });
     });
 
-    describe('QUICK_EDIT_FIELDS', () => {
-        it('QUICK_EDIT_FIELDS est défini et est un tableau', () => {
-            expect(MONSTER_QUICK_EDIT_FIELDS).toBeDefined();
-            expect(Array.isArray(MONSTER_QUICK_EDIT_FIELDS)).toBe(true);
+    describe('_quickeditConfig', () => {
+        it('définit les champs quickEdit', () => {
+            const descriptors = getMonsterFieldDescriptors();
+            expect(Array.isArray(descriptors._quickeditConfig?.fields)).toBe(true);
+            expect(descriptors._quickeditConfig.fields.length).toBeGreaterThan(0);
         });
 
-        it('QUICK_EDIT_FIELDS contient des champs valides', () => {
+        it('quickEdit contient uniquement des champs existants', () => {
             const descriptors = getMonsterFieldDescriptors();
-            MONSTER_QUICK_EDIT_FIELDS.forEach((field) => {
+            const fields = descriptors._quickeditConfig.fields;
+            fields.forEach((field) => {
                 expect(descriptors).toHaveProperty(field);
             });
         });

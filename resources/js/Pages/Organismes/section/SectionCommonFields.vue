@@ -6,8 +6,8 @@
  * Composant réutilisable pour les champs communs des formulaires de sections :
  * - Titre
  * - Slug
- * - Visibilité
- * - Rôle requis pour éditer
+ * - Lecture (min.)
+ * - Écriture (min.)
  * - État
  * - Ordre (optionnel)
  * 
@@ -15,8 +15,8 @@
  * 
  * @props {Object} form - Objet formulaire Inertia
  * @props {Boolean} showOrder - Afficher le champ ordre
- * @props {Boolean} showAdvanced - Afficher les champs avancés (can_edit_role, state)
- * @props {Array} visibilityOptions - Options pour le select de visibilité
+ * @props {Boolean} showAdvanced - Afficher les champs avancés (write_level, state)
+ * @props {Array} roleOptions - Options pour les selects read_level/write_level
  * @props {Array} stateOptions - Options pour le select d'état
  */
 import InputField from '@/Pages/Molecules/data-input/InputField.vue';
@@ -36,7 +36,7 @@ const props = defineProps({
         type: Boolean,
         default: false,
     },
-    visibilityOptions: {
+    roleOptions: {
         type: Array,
         default: () => [],
     },
@@ -46,7 +46,15 @@ const props = defineProps({
     },
 });
 
-const emit = defineEmits(['slug-input', 'update:title', 'update:slug', 'update:order', 'update:isVisible', 'update:canEditRole', 'update:state']);
+const emit = defineEmits([
+    'slug-input',
+    'update:title',
+    'update:slug',
+    'update:order',
+    'update:readLevel',
+    'update:writeLevel',
+    'update:state'
+]);
 
 // Computed avec getter/setter pour éviter les mutations directes de props
 const title = computed({
@@ -64,14 +72,14 @@ const order = computed({
     set: (value) => emit('update:order', value)
 });
 
-const isVisible = computed({
-    get: () => props.form.is_visible,
-    set: (value) => emit('update:isVisible', value)
+const readLevel = computed({
+    get: () => props.form.read_level,
+    set: (value) => emit('update:readLevel', value)
 });
 
-const canEditRole = computed({
-    get: () => props.form.can_edit_role,
-    set: (value) => emit('update:canEditRole', value)
+const writeLevel = computed({
+    get: () => props.form.write_level,
+    set: (value) => emit('update:writeLevel', value)
 });
 
 const state = computed({
@@ -145,21 +153,21 @@ const handleSlugInput = () => {
         helper="Ordre d'affichage de la section (0 = premier)"
     />
     
-    <!-- Visibilité -->
+    <!-- Lecture (min.) -->
     <SelectField
-        v-model="isVisible"
-        label="Visibilité"
-        :options="visibilityOptions"
+        v-model="readLevel"
+        label="Lecture (min.)"
+        :options="roleOptions"
         helper="Qui peut voir cette section ?"
     />
     
     <!-- Champs avancés -->
     <template v-if="showAdvanced">
-        <!-- Rôle requis pour modifier -->
+        <!-- Écriture (min.) -->
         <SelectField
-            v-model="canEditRole"
-            label="Rôle requis pour modifier"
-            :options="visibilityOptions"
+            v-model="writeLevel"
+            label="Écriture (min.)"
+            :options="roleOptions"
             helper="Rôle minimum requis pour modifier cette section"
         />
         
@@ -168,7 +176,7 @@ const handleSlugInput = () => {
             v-model="state"
             label="État"
             :options="stateOptions"
-            helper="État de publication de la section"
+            helper="Cycle de vie de la section"
         />
     </template>
 </template>

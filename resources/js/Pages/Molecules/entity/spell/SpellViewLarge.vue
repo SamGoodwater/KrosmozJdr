@@ -56,10 +56,7 @@ const ctx = computed(() => {
 
 const descriptors = computed(() => getSpellFieldDescriptors(ctx.value));
 
-const usableValue = computed(() => {
-    const v = props.spell?.usable ?? props.spell?._data?.usable;
-    return typeof v === 'boolean' ? v : null;
-});
+const stateValue = computed(() => props.spell?.state ?? props.spell?._data?.state ?? null);
 
 const autoUpdateValue = computed(() => {
     const v = props.spell?.auto_update ?? props.spell?._data?.auto_update;
@@ -98,7 +95,8 @@ const displayMetaFields = computed(() => [...headlineFields.value, ...metaFields
 
 const userCanEditFields = computed(() => ([
     'auto_update',
-    'is_visible',
+    'read_level',
+    'write_level',
 ].filter(canShowField)));
 
 const technicalFields = computed(() => ([
@@ -145,7 +143,8 @@ const getBadgeColor = (fieldKey) => {
         element: 'secondary',
         category: 'secondary',
         auto_update: 'warning',
-        is_visible: 'primary',
+        read_level: 'primary',
+        write_level: 'secondary',
         dofusdb_id: 'neutral',
         official_id: 'neutral',
         created_by: 'neutral',
@@ -216,7 +215,7 @@ const handleAction = async (actionKey) => {
                 <div class="group relative w-44 h-44 md:w-64 md:h-64 lg:w-72 lg:h-72">
 
                     <div class="absolute top-2 left-2 z-20 transition-opacity duration-150 group-hover:opacity-0">
-                        <EntityUsableDot :usable="usableValue" />
+                        <EntityUsableDot :state="stateValue" />
                     </div>
 
                     <div class="absolute top-2 right-2 z-20 transition-opacity duration-150 group-hover:opacity-0">

@@ -73,7 +73,7 @@ Vérifier que toutes les entités nécessaires sont supportées par le système 
 - **Relations** : 
   - Items (via `item_panoply`) - ✅ Import en cascade et synchronisation
   - Campaigns, Scenarios, Shops, NPCs (via pivots) - Créées manuellement
-- **Champs importés** : name, description, bonus, usable, is_visible, dofusdb_id
+- **Champs importés** : name, description, bonus, state, read_level, write_level, dofusdb_id
 
 ### 6. Scenarios (`Scenario`)
 - **Status** : ❌ Non nécessaire (créé manuellement)

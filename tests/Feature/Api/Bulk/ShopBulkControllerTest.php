@@ -34,17 +34,17 @@ class ShopBulkControllerTest extends TestCase
         $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
         $shop1 = Shop::factory()->create([
             'name' => 'Shop 1',
-            'is_visible' => 'guest',
+            'read_level' => User::ROLE_GUEST,
         ]);
         $shop2 = Shop::factory()->create([
             'name' => 'Shop 2',
-            'is_visible' => 'user',
+            'read_level' => User::ROLE_USER,
         ]);
 
         $response = $this->actingAs($admin)
             ->patchJson('/api/entities/shops/bulk', [
                 'ids' => [$shop1->id, $shop2->id],
-                'is_visible' => 'admin',
+                'read_level' => User::ROLE_ADMIN,
             ]);
 
         $response->assertOk()
@@ -56,11 +56,11 @@ class ShopBulkControllerTest extends TestCase
 
         $this->assertDatabaseHas('shops', [
             'id' => $shop1->id,
-            'is_visible' => 'admin',
+            'read_level' => User::ROLE_ADMIN,
         ]);
         $this->assertDatabaseHas('shops', [
             'id' => $shop2->id,
-            'is_visible' => 'admin',
+            'read_level' => User::ROLE_ADMIN,
         ]);
     }
 
@@ -74,7 +74,7 @@ class ShopBulkControllerTest extends TestCase
         $response = $this->actingAs($admin)
             ->patchJson('/api/entities/shops/bulk', [
                 'ids' => [99999, 99998],
-                'is_visible' => 'admin',
+                'read_level' => User::ROLE_ADMIN,
             ]);
 
         $response->assertStatus(422)
@@ -90,20 +90,20 @@ class ShopBulkControllerTest extends TestCase
         $shop = Shop::factory()->create([
             'name' => 'Original Name',
             'description' => 'Original Description',
-            'is_visible' => 'guest',
+            'read_level' => User::ROLE_GUEST,
         ]);
 
         $response = $this->actingAs($admin)
             ->patchJson('/api/entities/shops/bulk', [
                 'ids' => [$shop->id],
-                'is_visible' => 'admin',
+                'read_level' => User::ROLE_ADMIN,
                 // name et description ne sont pas modifiés
             ]);
 
         $response->assertOk();
 
         $shop->refresh();
-        $this->assertEquals('admin', $shop->is_visible);
+        $this->assertEquals(User::ROLE_ADMIN, $shop->read_level);
         $this->assertEquals('Original Name', $shop->name); // Non modifié
         $this->assertEquals('Original Description', $shop->description); // Non modifié
     }
@@ -119,7 +119,7 @@ class ShopBulkControllerTest extends TestCase
         $response = $this->actingAs($user)
             ->patchJson('/api/entities/shops/bulk', [
                 'ids' => [$shop->id],
-                'is_visible' => 'admin',
+                'read_level' => User::ROLE_ADMIN,
             ]);
 
         $response->assertForbidden();

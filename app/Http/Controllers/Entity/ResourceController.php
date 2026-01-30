@@ -54,8 +54,14 @@ class ResourceController extends Controller
             $query->where('rarity', (int) request()->rarity);
         }
 
-        if (request()->has('usable') && request()->usable !== '') {
-            $query->where('usable', (int) request()->usable);
+        if (request()->has('state') && request()->state !== '') {
+            $query->where('state', (string) request()->state);
+        }
+        if (request()->has('read_level') && request()->read_level !== '') {
+            $query->where('read_level', (int) request()->read_level);
+        }
+        if (request()->has('write_level') && request()->write_level !== '') {
+            $query->where('write_level', (int) request()->write_level);
         }
 
         if (request()->has('auto_update') && request()->auto_update !== '') {
@@ -66,7 +72,7 @@ class ResourceController extends Controller
         $sortColumn = request()->get('sort', 'id');
         $sortOrder = request()->get('order', 'desc');
         
-        if (in_array($sortColumn, ['id', 'name', 'level', 'rarity', 'price', 'weight', 'usable', 'auto_update', 'dofusdb_id', 'created_at'], true)) {
+        if (in_array($sortColumn, ['id', 'name', 'level', 'rarity', 'price', 'weight', 'state', 'read_level', 'write_level', 'auto_update', 'dofusdb_id', 'created_at'], true)) {
             $query->orderBy($sortColumn, $sortOrder);
         } else {
             $query->latest();
@@ -76,7 +82,7 @@ class ResourceController extends Controller
         
         return Inertia::render('Pages/entity/resource/Index', [
             'resources' => ResourceResource::collection($resources),
-            'filters' => request()->only(['search', 'level', 'resource_type_id', 'rarity', 'usable', 'auto_update']),
+            'filters' => request()->only(['search', 'level', 'resource_type_id', 'rarity', 'state', 'read_level', 'write_level', 'auto_update']),
             'resourceTypes' => ResourceType::query()->select('id', 'name')->orderBy('name')->get(),
             'can' => [
                 'create' => $user ? $user->can('create', Resource::class) : false,
@@ -118,11 +124,12 @@ class ResourceController extends Controller
         // Valeurs par défaut / normalisation (éviter d'insérer explicitement NULL sur des colonnes NOT NULL)
         $data['rarity'] = array_key_exists('rarity', $data) && $data['rarity'] !== null ? (int) $data['rarity'] : 0;
 
-        // Normaliser les booléens
-        if (array_key_exists('usable', $data)) {
-            $data['usable'] = (int) ((bool) $data['usable']);
-        } else {
-            $data['usable'] = 0;
+        // Valeurs par défaut d'accès/état
+        $data['state'] = $data['state'] ?? \App\Models\Entity\Resource::STATE_DRAFT;
+        $data['read_level'] = array_key_exists('read_level', $data) && $data['read_level'] !== null ? (int) $data['read_level'] : \App\Models\User::ROLE_GUEST;
+        $data['write_level'] = array_key_exists('write_level', $data) && $data['write_level'] !== null ? (int) $data['write_level'] : \App\Models\User::ROLE_GAME_MASTER;
+        if ((int) $data['write_level'] < (int) $data['read_level']) {
+            $data['write_level'] = (int) $data['read_level'];
         }
 
         if (array_key_exists('auto_update', $data)) {
@@ -204,8 +211,14 @@ class ResourceController extends Controller
             $data['rarity'] = 0;
         }
 
-        if (array_key_exists('usable', $data)) {
-            $data['usable'] = (int) ((bool) $data['usable']);
+        if (array_key_exists('read_level', $data)) {
+            $data['read_level'] = (int) $data['read_level'];
+        }
+        if (array_key_exists('write_level', $data)) {
+            $data['write_level'] = (int) $data['write_level'];
+        }
+        if (array_key_exists('read_level', $data) && array_key_exists('write_level', $data) && (int) $data['write_level'] < (int) $data['read_level']) {
+            $data['write_level'] = (int) $data['read_level'];
         }
 
         if (array_key_exists('auto_update', $data)) {

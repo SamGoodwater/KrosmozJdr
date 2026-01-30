@@ -36,8 +36,9 @@ use App\Models\Entity\Monster;
  * @property int $category
  * @property bool $is_magic
  * @property int $powerful
- * @property int $usable
- * @property string $is_visible
+ * @property string $state
+ * @property int $read_level
+ * @property int $write_level
  * @property string|null $image
  * @property bool $auto_update
  * @property \Illuminate\Support\Carbon|null $created_at
@@ -75,7 +76,7 @@ use App\Models\Entity\Monster;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Spell whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Spell whereImage($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Spell whereIsMagic($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Spell whereIsVisible($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Spell whereReadLevel($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Spell whereLevel($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Spell whereName($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Spell whereNumberBetweenTwoCast($value)
@@ -87,7 +88,8 @@ use App\Models\Entity\Monster;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Spell wherePowerful($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Spell whereSightLine($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Spell whereUpdatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Spell whereUsable($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Spell whereState($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Spell whereWriteLevel($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Spell withTrashed()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Spell withoutTrashed()
  * @mixin \Eloquent
@@ -96,6 +98,11 @@ class Spell extends Model
 {
     /** @use HasFactory<\\Database\\Factories\\SpellFactory> */
     use HasFactory, SoftDeletes;
+
+    public const STATE_RAW = 'raw';
+    public const STATE_DRAFT = 'draft';
+    public const STATE_PLAYABLE = 'playable';
+    public const STATE_ARCHIVED = 'archived';
 
     const ELEMENT = [
         0 => 'Neutre',
@@ -156,8 +163,9 @@ class Spell extends Model
         'category',
         'is_magic',
         'powerful',
-        'usable',
-        'is_visible',
+        'state',
+        'read_level',
+        'write_level',
         'image',
         'auto_update',
         'created_by',
@@ -173,7 +181,8 @@ class Spell extends Model
         'element' => 'integer',
         'category' => 'integer',
         'powerful' => 'integer',
-        'usable' => 'integer',
+        'read_level' => 'integer',
+        'write_level' => 'integer',
         'po_editable' => 'boolean',
         'sight_line' => 'boolean',
         'number_between_two_cast_editable' => 'boolean',

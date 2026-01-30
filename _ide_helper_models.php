@@ -16,8 +16,9 @@ namespace App\Models\Entity{
  * @property int $id
  * @property string $name
  * @property string|null $description
- * @property int $usable
- * @property string $is_visible
+ * @property string $state
+ * @property int $read_level
+ * @property int $write_level
  * @property string|null $image
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
@@ -37,10 +38,11 @@ namespace App\Models\Entity{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Attribute whereDescription($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Attribute whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Attribute whereImage($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Attribute whereIsVisible($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Attribute whereReadLevel($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Attribute whereName($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Attribute whereUpdatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Attribute whereUsable($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Attribute whereState($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Attribute whereWriteLevel($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Attribute withTrashed()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Attribute withoutTrashed()
  * @mixin \Eloquent
@@ -56,9 +58,10 @@ namespace App\Models\Entity{
  * @property string $slug
  * @property string|null $keyword
  * @property int $is_public
- * @property int $state
- * @property int $usable
- * @property string $is_visible
+ * @property int $progress_state
+ * @property string $state
+ * @property int $read_level
+ * @property int $write_level
  * @property string|null $image
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
@@ -101,13 +104,14 @@ namespace App\Models\Entity{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Campaign whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Campaign whereImage($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Campaign whereIsPublic($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Campaign whereIsVisible($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Campaign whereProgressState($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Campaign whereReadLevel($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Campaign whereKeyword($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Campaign whereName($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Campaign whereSlug($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Campaign whereState($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Campaign whereUpdatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Campaign whereUsable($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Campaign whereWriteLevel($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Campaign withTrashed()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Campaign withoutTrashed()
  * @mixin \Eloquent
@@ -132,8 +136,9 @@ namespace App\Models\Entity{
  * @property bool $is_magic
  * @property bool $ritual_available
  * @property string|null $powerful
- * @property int $usable
- * @property string $is_visible
+ * @property string $state
+ * @property int $read_level
+ * @property int $write_level
  * @property string|null $image
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
@@ -160,7 +165,7 @@ namespace App\Models\Entity{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Capability whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Capability whereImage($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Capability whereIsMagic($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Capability whereIsVisible($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Capability whereReadLevel($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Capability whereLevel($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Capability whereName($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Capability wherePa($value)
@@ -170,7 +175,8 @@ namespace App\Models\Entity{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Capability whereRitualAvailable($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Capability whereTimeBeforeUseAgain($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Capability whereUpdatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Capability whereUsable($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Capability whereState($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Capability whereWriteLevel($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Capability withTrashed()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Capability withoutTrashed()
  * @mixin \Eloquent
@@ -192,8 +198,9 @@ namespace App\Models\Entity{
  * @property string|null $life_dice
  * @property string|null $specificity
  * @property string $dofus_version
- * @property int $usable
- * @property string $is_visible
+ * @property string $state
+ * @property int $read_level
+ * @property int $write_level
  * @property string|null $image
  * @property string|null $icon
  * @property bool $auto_update
@@ -218,14 +225,15 @@ namespace App\Models\Entity{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Classe whereIcon($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Classe whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Classe whereImage($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Classe whereIsVisible($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Classe whereReadLevel($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Classe whereLife($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Classe whereLifeDice($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Classe whereName($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Classe whereOfficialId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Classe whereSpecificity($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Classe whereUpdatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Classe whereUsable($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Classe whereState($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Classe whereWriteLevel($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Classe withTrashed()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Classe withoutTrashed()
  * @mixin \Eloquent
@@ -249,8 +257,9 @@ namespace App\Models\Entity{
  * @property string|null $recipe
  * @property string|null $price
  * @property int $rarity
- * @property int $usable
- * @property string $is_visible
+ * @property string $state
+ * @property int $read_level
+ * @property int $write_level
  * @property string $dofus_version
  * @property string|null $image
  * @property bool $auto_update
@@ -285,7 +294,7 @@ namespace App\Models\Entity{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Consumable whereEffect($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Consumable whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Consumable whereImage($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Consumable whereIsVisible($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Consumable whereReadLevel($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Consumable whereLevel($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Consumable whereName($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Consumable whereOfficialId($value)
@@ -293,7 +302,8 @@ namespace App\Models\Entity{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Consumable whereRarity($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Consumable whereRecipe($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Consumable whereUpdatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Consumable whereUsable($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Consumable whereState($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Consumable whereWriteLevel($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Consumable withTrashed()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Consumable withoutTrashed()
  * @mixin \Eloquent
@@ -385,8 +395,9 @@ namespace App\Models\Entity{
  * @property string|null $other_consumable
  * @property string|null $other_resource
  * @property string|null $other_spell
- * @property int $usable
- * @property string $is_visible
+ * @property string $state
+ * @property int $read_level
+ * @property int $write_level
  * @property string|null $image
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
@@ -452,7 +463,7 @@ namespace App\Models\Entity{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Creature whereInvestigationBonus($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Creature whereInvestigationMastery($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Creature whereInvocation($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Creature whereIsVisible($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Creature whereReadLevel($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Creature whereKamas($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Creature whereLevel($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Creature whereLife($value)
@@ -499,7 +510,8 @@ namespace App\Models\Entity{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Creature whereTacle($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Creature whereTouch($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Creature whereUpdatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Creature whereUsable($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Creature whereState($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Creature whereWriteLevel($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Creature whereVitality($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Creature withTrashed()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Creature withoutTrashed()
@@ -522,8 +534,9 @@ namespace App\Models\Entity{
  * @property string|null $price
  * @property int $rarity
  * @property string $dofus_version
- * @property int $usable
- * @property string $is_visible
+ * @property string $state
+ * @property int $read_level
+ * @property int $write_level
  * @property string|null $image
  * @property bool $auto_update
  * @property \Illuminate\Support\Carbon|null $deleted_at
@@ -559,7 +572,7 @@ namespace App\Models\Entity{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Item whereEffect($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Item whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Item whereImage($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Item whereIsVisible($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Item whereReadLevel($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Item whereItemTypeId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Item whereLevel($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Item whereName($value)
@@ -567,8 +580,9 @@ namespace App\Models\Entity{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Item wherePrice($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Item whereRarity($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Item whereRecipe($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Item whereState($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Item whereUpdatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Item whereUsable($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Item whereWriteLevel($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Item withTrashed()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Item withoutTrashed()
  * @mixin \Eloquent
@@ -666,8 +680,9 @@ namespace App\Models\Entity{
  * @property string $name
  * @property string|null $description
  * @property string|null $bonus
- * @property int $usable
- * @property string $is_visible
+ * @property string $state
+ * @property int $read_level
+ * @property int $write_level
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property \Illuminate\Support\Carbon|null $deleted_at
@@ -694,10 +709,11 @@ namespace App\Models\Entity{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Panoply whereDeletedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Panoply whereDescription($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Panoply whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Panoply whereIsVisible($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Panoply whereReadLevel($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Panoply whereName($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Panoply whereUpdatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Panoply whereUsable($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Panoply whereState($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Panoply whereWriteLevel($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Panoply withTrashed()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Panoply withoutTrashed()
  * @mixin \Eloquent
@@ -719,8 +735,9 @@ namespace App\Models\Entity{
  * @property string|null $weight
  * @property int $rarity
  * @property string $dofus_version
- * @property int $usable
- * @property string $is_visible
+ * @property string $state
+ * @property int $read_level
+ * @property int $write_level
  * @property string|null $image
  * @property bool $auto_update
  * @property \Illuminate\Support\Carbon|null $deleted_at
@@ -754,15 +771,16 @@ namespace App\Models\Entity{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Resource whereDofusdbId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Resource whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Resource whereImage($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Resource whereIsVisible($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Resource whereReadLevel($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Resource whereLevel($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Resource whereName($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Resource whereOfficialId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Resource wherePrice($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Resource whereRarity($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Resource whereResourceTypeId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Resource whereState($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Resource whereUpdatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Resource whereUsable($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Resource whereWriteLevel($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Resource whereWeight($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Resource withTrashed()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Resource withoutTrashed()
@@ -781,9 +799,10 @@ namespace App\Models\Entity{
  * @property string $slug
  * @property string|null $keyword
  * @property bool $is_public
- * @property int $state
- * @property int $usable
- * @property string $is_visible
+ * @property int $progress_state
+ * @property string $state
+ * @property int $read_level
+ * @property int $write_level
  * @property string|null $image
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
@@ -828,13 +847,14 @@ namespace App\Models\Entity{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Scenario whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Scenario whereImage($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Scenario whereIsPublic($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Scenario whereIsVisible($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Scenario whereKeyword($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Scenario whereName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Scenario whereProgressState($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Scenario whereReadLevel($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Scenario whereSlug($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Scenario whereState($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Scenario whereUpdatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Scenario whereUsable($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Scenario whereWriteLevel($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Scenario withTrashed()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Scenario withoutTrashed()
  * @mixin \Eloquent
@@ -849,8 +869,9 @@ namespace App\Models\Entity{
  * @property string|null $description
  * @property string|null $location
  * @property int $price
- * @property int $usable
- * @property string $is_visible
+ * @property string $state
+ * @property int $read_level
+ * @property int $write_level
  * @property string|null $image
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
@@ -882,13 +903,14 @@ namespace App\Models\Entity{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Shop whereDescription($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Shop whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Shop whereImage($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Shop whereIsVisible($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Shop whereReadLevel($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Shop whereLocation($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Shop whereName($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Shop whereNpcId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Shop wherePrice($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Shop whereUpdatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Shop whereUsable($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Shop whereState($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Shop whereWriteLevel($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Shop withTrashed()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Shop withoutTrashed()
  * @mixin \Eloquent
@@ -901,8 +923,9 @@ namespace App\Models\Entity{
  * @property int $id
  * @property string $name
  * @property string|null $description
- * @property int $usable
- * @property string $is_visible
+ * @property string $state
+ * @property int $read_level
+ * @property int $write_level
  * @property string|null $image
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
@@ -924,10 +947,11 @@ namespace App\Models\Entity{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Specialization whereDescription($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Specialization whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Specialization whereImage($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Specialization whereIsVisible($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Specialization whereReadLevel($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Specialization whereName($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Specialization whereUpdatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Specialization whereUsable($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Specialization whereState($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Specialization whereWriteLevel($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Specialization withTrashed()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Specialization withoutTrashed()
  * @mixin \Eloquent
@@ -957,8 +981,9 @@ namespace App\Models\Entity{
  * @property int $category
  * @property bool $is_magic
  * @property int $powerful
- * @property int $usable
- * @property string $is_visible
+ * @property string $state
+ * @property int $read_level
+ * @property int $write_level
  * @property string|null $image
  * @property bool $auto_update
  * @property \Illuminate\Support\Carbon|null $created_at
@@ -996,7 +1021,7 @@ namespace App\Models\Entity{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Spell whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Spell whereImage($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Spell whereIsMagic($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Spell whereIsVisible($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Spell whereReadLevel($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Spell whereLevel($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Spell whereName($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Spell whereNumberBetweenTwoCast($value)
@@ -1008,7 +1033,8 @@ namespace App\Models\Entity{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Spell wherePowerful($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Spell whereSightLine($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Spell whereUpdatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Spell whereUsable($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Spell whereState($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Spell whereWriteLevel($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Spell withTrashed()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Spell withoutTrashed()
  * @mixin \Eloquent
@@ -1062,10 +1088,10 @@ namespace App\Models{
  * @property int $id
  * @property string $title
  * @property string $slug
- * @property \App\Enums\Visibility $is_visible
  * @property bool $in_menu
- * @property \App\Enums\Visibility $can_edit_role
- * @property \App\Enums\PageState $state
+ * @property string $state
+ * @property int $read_level
+ * @property int $write_level
  * @property int|null $parent_id
  * @property int $menu_order
  * @property int|null $created_by
@@ -1107,9 +1133,10 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Page forMenu(?\App\Models\User $user = null)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Page inMenu()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Page ordered()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Page published()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Page visibleFor(?\App\Models\User $user = null)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Page whereCanEditRole($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Page playable()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Page readableFor(?\App\Models\User $user = null)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Page whereReadLevel($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Page whereWriteLevel($value)
  */
 	class Page extends \Eloquent {}
 }
@@ -1166,9 +1193,9 @@ namespace App\Models{
  * @property \App\Enums\SectionType $template
  * @property array<array-key, mixed>|null $settings
  * @property array<array-key, mixed>|null $data
- * @property \App\Enums\Visibility $is_visible
- * @property \App\Enums\Visibility $can_edit_role
- * @property \App\Enums\PageState $state
+ * @property string $state
+ * @property int $read_level
+ * @property int $write_level
  * @property int|null $created_by
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
@@ -1188,7 +1215,6 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Section whereCreatedBy($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Section whereDeletedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Section whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Section whereIsVisible($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Section whereOrder($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Section wherePageId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Section whereTitle($value)
@@ -1205,11 +1231,13 @@ namespace App\Models{
  * @property array<array-key, mixed>|null $params
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Section displayable(?\App\Models\User $user = null)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Section ordered()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Section playable()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Section published()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Section visibleFor(?\App\Models\User $user = null)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Section whereCanEditRole($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Section readableFor(?\App\Models\User $user = null)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Section whereParams($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Section whereReadLevel($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Section whereType($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Section whereWriteLevel($value)
  */
 	class Section extends \Eloquent {}
 }
@@ -1218,8 +1246,9 @@ namespace App\Models\Type{
 /**
  * @property int $id
  * @property string $name
- * @property int $usable
- * @property string $is_visible
+ * @property string $state
+ * @property int $read_level
+ * @property int $write_level
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property \Illuminate\Support\Carbon|null $deleted_at
@@ -1236,10 +1265,11 @@ namespace App\Models\Type{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ConsumableType whereCreatedBy($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ConsumableType whereDeletedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ConsumableType whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|ConsumableType whereIsVisible($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ConsumableType whereReadLevel($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ConsumableType whereName($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ConsumableType whereUpdatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|ConsumableType whereUsable($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ConsumableType whereState($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ConsumableType whereWriteLevel($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ConsumableType withTrashed()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ConsumableType withoutTrashed()
  * @mixin \Eloquent
@@ -1251,8 +1281,9 @@ namespace App\Models\Type{
 /**
  * @property int $id
  * @property string $name
- * @property int $usable
- * @property string $is_visible
+ * @property string $state
+ * @property int $read_level
+ * @property int $write_level
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property \Illuminate\Support\Carbon|null $deleted_at
@@ -1269,10 +1300,11 @@ namespace App\Models\Type{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ItemType whereCreatedBy($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ItemType whereDeletedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ItemType whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|ItemType whereIsVisible($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ItemType whereReadLevel($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ItemType whereName($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ItemType whereUpdatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|ItemType whereUsable($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ItemType whereState($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ItemType whereWriteLevel($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ItemType withTrashed()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ItemType withoutTrashed()
  * @mixin \Eloquent
@@ -1284,8 +1316,9 @@ namespace App\Models\Type{
 /**
  * @property int $id
  * @property string $name
- * @property int $usable
- * @property string $is_visible
+ * @property string $state
+ * @property int $read_level
+ * @property int $write_level
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property \Illuminate\Support\Carbon|null $deleted_at
@@ -1307,10 +1340,11 @@ namespace App\Models\Type{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|MonsterRace whereDeletedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|MonsterRace whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|MonsterRace whereIdSuperRace($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|MonsterRace whereIsVisible($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|MonsterRace whereReadLevel($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|MonsterRace whereName($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|MonsterRace whereUpdatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|MonsterRace whereUsable($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|MonsterRace whereState($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|MonsterRace whereWriteLevel($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|MonsterRace withTrashed()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|MonsterRace withoutTrashed()
  * @mixin \Eloquent
@@ -1322,8 +1356,9 @@ namespace App\Models\Type{
 /**
  * @property int $id
  * @property string $name
- * @property int $usable
- * @property string $is_visible
+ * @property string $state
+ * @property int $read_level
+ * @property int $write_level
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property \Illuminate\Support\Carbon|null $deleted_at
@@ -1340,10 +1375,11 @@ namespace App\Models\Type{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ResourceType whereCreatedBy($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ResourceType whereDeletedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ResourceType whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|ResourceType whereIsVisible($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ResourceType whereReadLevel($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ResourceType whereName($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ResourceType whereUpdatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|ResourceType whereUsable($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ResourceType whereState($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ResourceType whereWriteLevel($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ResourceType withTrashed()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ResourceType withoutTrashed()
  * @mixin \Eloquent
@@ -1389,8 +1425,9 @@ namespace App\Models\Type{
  * @property string|null $description
  * @property string $color
  * @property string|null $icon
- * @property int $usable
- * @property string $is_visible
+ * @property string $state
+ * @property int $read_level
+ * @property int $write_level
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property \Illuminate\Support\Carbon|null $deleted_at
@@ -1410,10 +1447,11 @@ namespace App\Models\Type{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|SpellType whereDescription($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|SpellType whereIcon($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|SpellType whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|SpellType whereIsVisible($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SpellType whereReadLevel($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|SpellType whereName($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|SpellType whereUpdatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|SpellType whereUsable($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SpellType whereState($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SpellType whereWriteLevel($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|SpellType withTrashed()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|SpellType withoutTrashed()
  * @mixin \Eloquent

@@ -28,20 +28,20 @@ export class Page extends BaseModel {
         return this._data.slug || '';
     }
 
-    get isVisible() {
-        return this._data.is_visible;
-    }
-
-    get canEditRole() {
-        return this._data.can_edit_role;
-    }
-
     get inMenu() {
         return this._data.in_menu ?? false;
     }
 
     get state() {
         return this._data.state;
+    }
+
+    get readLevel() {
+        return this._data.read_level;
+    }
+
+    get writeLevel() {
+        return this._data.write_level;
     }
 
     get parentId() {
@@ -109,11 +109,11 @@ export class Page extends BaseModel {
     }
 
     /**
-     * Vérifie si la page est publiée
+     * Vérifie si la page est jouable
      * @returns {boolean}
      */
-    get isPublished() {
-        return this.state === 'published';
+    get isPlayable() {
+        return this.state === 'playable';
     }
 
     /**
@@ -129,7 +129,7 @@ export class Page extends BaseModel {
      * @returns {boolean}
      */
     get isVisibleInMenu() {
-        return this.inMenu && this.isPublished;
+        return this.inMenu && this.isPlayable;
     }
 
     /**
@@ -140,8 +140,8 @@ export class Page extends BaseModel {
         return {
             title: this.title,
             slug: this.slug,
-            is_visible: this.isVisible,
-            can_edit_role: this.canEditRole,
+            read_level: this.readLevel,
+            write_level: this.writeLevel,
             in_menu: this.inMenu,
             state: this.state,
             parent_id: this.parentId,

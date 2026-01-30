@@ -162,12 +162,14 @@ class XssPreventionTest extends TestCase
      */
     public function test_section_update_also_sanitizes(): void
     {
-        $admin = User::factory()->create(['role' => 4]);
+        $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
         $page = Page::factory()->create(['created_by' => $admin->id]);
         $section = Section::factory()->create([
             'page_id' => $page->id,
+            'created_by' => $admin->id,
             'template' => SectionType::TEXT->value,
             'data' => ['content' => '<p>Original content</p>'],
+            'write_level' => User::ROLE_ADMIN,
         ]);
 
         $response = $this->actingAs($admin)->patchJson(route('sections.update', $section->id), [

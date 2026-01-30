@@ -3,7 +3,6 @@
 namespace Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 use App\Models\User;
 
@@ -12,11 +11,6 @@ use App\Models\User;
  */
 class UserFactory extends Factory
 {
-    /**
-     * The current password being used by the factory.
-     */
-    protected static ?string $password;
-
     /**
      * Define the model's default state.
      *
@@ -28,7 +22,9 @@ class UserFactory extends Factory
             'name' => fake()->name(),
             'email' => fake()->unique()->safeEmail(),
             'email_verified_at' => now(),
-            'password' => static::$password ??= Hash::make('password'),
+            // On laisse le cast `hashed` du modèle hasher la valeur.
+            // Évite les soucis de cache statique si la config Hash change pendant la suite de tests.
+            'password' => 'password',
             // Défaults déterministes pour éviter des tests non reproductibles.
             // Les tests surchargent explicitement `role` quand ils veulent admin/super_admin/etc.
             'role' => User::ROLE_USER,

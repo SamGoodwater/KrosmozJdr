@@ -1973,22 +1973,32 @@
   },
   {
     "name": "EntityUsableDot",
-    "description": "EntityUsableDot — Indicateur discret \"adapté au JDR\"",
+    "description": "EntityUsableDot — Indicateur discret d'état (`state`)",
     "props": [
       {
-        "name": "usable",
-        "type": "boolean|null",
-        "desc": "- true/false si connu, null pour masquer"
+        "name": "state",
+        "type": "string|null",
+        "desc": "- raw|draft|playable|archived (ou null)"
       },
       {
-        "name": "yesLabel",
+        "name": "playableLabel",
         "type": "string",
-        "desc": "- Texte tooltip si usable=true"
+        "desc": "- Texte tooltip si state=playable"
       },
       {
-        "name": "noLabel",
+        "name": "draftLabel",
         "type": "string",
-        "desc": "- Texte tooltip si usable=false"
+        "desc": "- Texte tooltip si state=draft"
+      },
+      {
+        "name": "rawLabel",
+        "type": "string",
+        "desc": "- Texte tooltip si state=raw"
+      },
+      {
+        "name": "archivedLabel",
+        "type": "string",
+        "desc": "- Texte tooltip si state=archived"
       }
     ],
     "slots": [],
@@ -2466,6 +2476,58 @@
     "file": "action/Route.vue"
   },
   {
+    "name": "ResponsiveActionButton",
+    "description": "ResponsiveActionButton Atom (Glass)",
+    "props": [
+      {
+        "name": "label",
+        "type": "String",
+        "desc": "- Texte du bouton (fallback si slot default absent)"
+      },
+      {
+        "name": "icon",
+        "type": "String",
+        "desc": "- Source d’icône (FontAwesome ou chemin), obligatoire"
+      },
+      {
+        "name": "color",
+        "type": "String",
+        "desc": "- Couleur DaisyUI ('', 'neutral', 'primary', ...)"
+      },
+      {
+        "name": "size",
+        "type": "String",
+        "desc": "- Taille DaisyUI ('', 'xs', 'sm', 'md', 'lg', 'xl')"
+      },
+      {
+        "name": "type",
+        "type": "String",
+        "desc": "- Type HTML ('button', 'submit', 'reset', 'radio', 'checkbox')"
+      },
+      {
+        "name": "disabled",
+        "type": "Boolean",
+        "desc": "- Désactive le bouton"
+      },
+      {
+        "name": "id,",
+        "type": "String",
+        "desc": "ariaLabel, role, tabindex - hérités de commonProps"
+      }
+    ],
+    "slots": [
+      {
+        "name": "default",
+        "desc": "- Contenu texte (prioritaire sur `label`)"
+      },
+      {
+        "name": "icon",
+        "desc": "- Contenu icône (prioritaire sur `icon`)"
+      }
+    ],
+    "file": "action/ResponsiveActionButton.vue"
+  },
+  {
     "name": "EntityActionButton",
     "description": "EntityActionButton Atom",
     "props": [],
@@ -2616,58 +2678,6 @@
       }
     ],
     "file": "action/Btn.vue"
-  },
-  {
-    "name": "ResponsiveActionButton",
-    "description": "ResponsiveActionButton Atom (Glass, responsive overlay)",
-    "props": [
-      {
-        "name": "label",
-        "type": "String",
-        "desc": "- Texte du bouton (fallback si slot default)"
-      },
-      {
-        "name": "icon",
-        "type": "String",
-        "desc": "- Source de l'icône (FontAwesome ou chemin)"
-      },
-      {
-        "name": "color",
-        "type": "String",
-        "desc": "- Couleur DaisyUI ('', 'neutral', 'primary', ...)"
-      },
-      {
-        "name": "size",
-        "type": "String",
-        "desc": "- Taille DaisyUI ('', 'xs', 'sm', 'md', 'lg', 'xl')"
-      },
-      {
-        "name": "type",
-        "type": "String",
-        "desc": "- Type HTML du bouton ('button', 'submit', 'reset', 'radio', 'checkbox'), défaut 'button'"
-      },
-      {
-        "name": "disabled",
-        "type": "Boolean",
-        "desc": "- Désactive le bouton"
-      },
-      {
-        "name": "id,",
-        "type": "String",
-        "desc": "ariaLabel, role, tabindex - hérités de commonProps"
-      }
-    ],
-    "slots": [
-      {
-        "name": "default",
-        "desc": "- Contenu texte (prioritaire sur label)"
-      },
-      {
-        "name": "icon",
-        "desc": "- Contenu icône (prioritaire sur icon)"
-      }
-    ],
-    "file": "action/ResponsiveActionButton.vue"
   },
   {
     "name": "Indicator",

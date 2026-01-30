@@ -71,10 +71,7 @@ const ctx = computed(() => {
 // Obtenir les descriptors avec le contexte (permissions/options)
 const descriptors = computed(() => getResourceFieldDescriptors(ctx.value));
 
-const usableValue = computed(() => {
-    const v = props.resource?.usable ?? props.resource?._data?.usable;
-    return typeof v === 'boolean' ? v : null;
-});
+const stateValue = computed(() => props.resource?.state ?? props.resource?._data?.state ?? null);
 
 const autoUpdateValue = computed(() => {
     const v = props.resource?.auto_update ?? props.resource?._data?.auto_update;
@@ -126,7 +123,8 @@ const displayMetaFields = computed(() => [...headlineFields.value, ...orderedMet
 const userCanEditFields = computed(() => ([
     'dofus_version',
     'auto_update',
-    'is_visible',
+    'read_level',
+    'write_level',
 ].filter(canShowField)));
 
 // Champs secondaires (infos techniques)
@@ -243,10 +241,11 @@ const getBadgeColor = (fieldKey) => {
         'level': 'warning',
         'price': 'success',
         'rarity': 'auto', // Utilise auto-color avec autoScheme="rarity"
-        'usable': 'success',
+        state: 'neutral',
         'weight': 'secondary',
         'dofus_version': 'secondary',
-        'is_visible': 'primary',
+        read_level: 'primary',
+        write_level: 'secondary',
         'auto_update': 'warning',
         'dofusdb_id': 'neutral',
         'official_id': 'neutral',
@@ -284,7 +283,7 @@ const getBadgeAutoParams = (fieldKey) => {
             <template #media>
                 <div class="group relative w-44 h-44 md:w-64 md:h-64 lg:w-72 lg:h-72">
                     <div class="absolute top-2 left-2 z-20 transition-opacity duration-150 group-hover:opacity-0">
-                        <EntityUsableDot :usable="usableValue" />
+                        <EntityUsableDot :state="stateValue" />
                     </div>
 
                     <div class="absolute top-2 right-2 z-20 transition-opacity duration-150 group-hover:opacity-0">

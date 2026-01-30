@@ -5,8 +5,6 @@ namespace Tests\Feature;
 use App\Models\User;
 use App\Models\Page;
 use App\Models\Section;
-use App\Enums\PageState;
-use App\Enums\Visibility;
 use App\Enums\SectionType;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Notification;
@@ -56,8 +54,9 @@ class SectionControllerTest extends TestCase
                     'align' => 'left',
                     'size' => 'md',
                 ],
-                'is_visible' => Visibility::GUEST->value,
-                'state' => PageState::DRAFT->value,
+                'read_level' => User::ROLE_GUEST,
+                'write_level' => User::ROLE_ADMIN,
+                'state' => Section::STATE_DRAFT,
             ]);
 
         $response->assertRedirect();
@@ -83,8 +82,9 @@ class SectionControllerTest extends TestCase
                 'params' => [
                     'content' => 'Contenu de test',
                 ],
-                'is_visible' => Visibility::GUEST->value,
-                'state' => PageState::DRAFT->value,
+                'read_level' => User::ROLE_GUEST,
+                'write_level' => User::ROLE_ADMIN,
+                'state' => Section::STATE_DRAFT,
             ]);
 
         $response->assertSessionHasErrors('page_id');
@@ -106,8 +106,9 @@ class SectionControllerTest extends TestCase
                 'params' => [
                     'content' => 'Contenu de test',
                 ],
-                'is_visible' => Visibility::GUEST->value,
-                'state' => PageState::DRAFT->value,
+                'read_level' => User::ROLE_GUEST,
+                'write_level' => User::ROLE_ADMIN,
+                'state' => Section::STATE_DRAFT,
             ]);
 
         $response->assertSessionHasErrors('type');
@@ -131,8 +132,9 @@ class SectionControllerTest extends TestCase
                 'params' => [
                     'align' => 'left',
                 ],
-                'is_visible' => Visibility::GUEST->value,
-                'state' => PageState::DRAFT->value,
+                'read_level' => User::ROLE_GUEST,
+                'write_level' => User::ROLE_ADMIN,
+                'state' => Section::STATE_DRAFT,
             ]);
 
         $response->assertSessionHasErrors('params.content');
@@ -167,8 +169,9 @@ class SectionControllerTest extends TestCase
                     'align' => 'center',
                     'size' => 'lg',
                 ],
-                'is_visible' => $section->is_visible instanceof \App\Enums\Visibility ? $section->is_visible->value : $section->is_visible,
-                'state' => $section->state instanceof \App\Enums\PageState ? $section->state->value : $section->state,
+                'read_level' => $section->read_level,
+                'write_level' => $section->write_level,
+                'state' => $section->state,
             ]);
 
         $response->assertRedirect();
@@ -209,7 +212,9 @@ class SectionControllerTest extends TestCase
     {
         $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
         $otherUser = User::factory()->create();
-        $page = Page::factory()->create();
+        $page = Page::factory()->create([
+            'write_level' => User::ROLE_ADMIN,
+        ]);
         $section = Section::factory()->create([
             'page_id' => $page->id,
             'created_by' => $otherUser->id,
@@ -217,6 +222,8 @@ class SectionControllerTest extends TestCase
             'params' => [
                 'content' => 'Contenu original',
             ],
+            'read_level' => User::ROLE_GUEST,
+            'write_level' => User::ROLE_ADMIN,
         ]);
 
         $response = $this->actingAs($admin)
@@ -228,8 +235,9 @@ class SectionControllerTest extends TestCase
                 'params' => [
                     'content' => 'Contenu modifié par admin',
                 ],
-                'is_visible' => $section->is_visible instanceof \App\Enums\Visibility ? $section->is_visible->value : $section->is_visible,
-                'state' => $section->state instanceof \App\Enums\PageState ? $section->state->value : $section->state,
+                'read_level' => $section->read_level,
+                'write_level' => $section->write_level,
+                'state' => $section->state,
             ]);
 
         $response->assertRedirect();
@@ -243,18 +251,27 @@ class SectionControllerTest extends TestCase
     public function test_reorder_sections_works(): void
     {
         $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
-        $page = Page::factory()->create();
+        $page = Page::factory()->create([
+            'created_by' => $admin->id,
+            'write_level' => User::ROLE_ADMIN,
+        ]);
         $section1 = Section::factory()->create([
             'page_id' => $page->id,
             'order' => 0,
+            'created_by' => $admin->id,
+            'write_level' => User::ROLE_ADMIN,
         ]);
         $section2 = Section::factory()->create([
             'page_id' => $page->id,
             'order' => 1,
+            'created_by' => $admin->id,
+            'write_level' => User::ROLE_ADMIN,
         ]);
         $section3 = Section::factory()->create([
             'page_id' => $page->id,
             'order' => 2,
+            'created_by' => $admin->id,
+            'write_level' => User::ROLE_ADMIN,
         ]);
 
         $response = $this->actingAs($admin)
@@ -287,8 +304,9 @@ class SectionControllerTest extends TestCase
             'params' => [
                 'content' => 'Contenu de test',
             ],
-            'is_visible' => Visibility::GUEST->value,
-            'state' => PageState::DRAFT->value,
+            'read_level' => User::ROLE_GUEST,
+            'write_level' => User::ROLE_ADMIN,
+            'state' => Section::STATE_DRAFT,
         ]);
 
         $response->assertRedirect(route('login'));
@@ -322,8 +340,8 @@ class SectionControllerTest extends TestCase
         $page = Page::factory()->create();
         $section = Section::factory()->create([
             'page_id' => $page->id,
-            'state' => PageState::PUBLISHED->value,
-            'is_visible' => Visibility::GUEST->value,
+            'state' => Section::STATE_PLAYABLE,
+            'read_level' => User::ROLE_GUEST,
         ]);
 
         $response = $this->actingAs($user)

@@ -13,8 +13,9 @@ use App\Models\Entity\Resource;
  *
  * @property int $id
  * @property string $name
- * @property int $usable
- * @property string $is_visible
+ * @property string $state
+ * @property int $read_level
+ * @property int $write_level
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property \Illuminate\Support\Carbon|null $deleted_at
@@ -31,10 +32,11 @@ use App\Models\Entity\Resource;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ResourceType whereCreatedBy($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ResourceType whereDeletedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ResourceType whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|ResourceType whereIsVisible($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ResourceType whereReadLevel($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ResourceType whereName($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ResourceType whereUpdatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|ResourceType whereUsable($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ResourceType whereState($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ResourceType whereWriteLevel($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ResourceType withTrashed()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ResourceType withoutTrashed()
  * @mixin \Eloquent
@@ -43,6 +45,11 @@ class ResourceType extends Model
 {
     /** @use HasFactory<\Database\Factories\ResourceTypeFactory> */
     use HasFactory, SoftDeletes;
+
+    public const STATE_RAW = 'raw';
+    public const STATE_DRAFT = 'draft';
+    public const STATE_PLAYABLE = 'playable';
+    public const STATE_ARCHIVED = 'archived';
 
     public const DECISION_PENDING = 'pending';
     public const DECISION_ALLOWED = 'allowed';
@@ -56,8 +63,9 @@ class ResourceType extends Model
     protected $fillable = [
         'name',
         'dofusdb_type_id',
-        'usable',
-        'is_visible',
+        'state',
+        'read_level',
+        'write_level',
         'decision',
         'seen_count',
         'last_seen_at',
@@ -70,7 +78,8 @@ class ResourceType extends Model
      * @var array<string, string>
      */
     protected $casts = [
-        'usable' => 'integer',
+        'read_level' => 'integer',
+        'write_level' => 'integer',
         'dofusdb_type_id' => 'integer',
         'seen_count' => 'integer',
         'last_seen_at' => 'datetime',
@@ -159,8 +168,9 @@ class ResourceType extends Model
             ['dofusdb_type_id' => $typeId],
             [
                 'name' => $name,
-                'usable' => 1,
-                'is_visible' => 'guest',
+                'state' => self::STATE_PLAYABLE,
+                'read_level' => User::ROLE_GUEST,
+                'write_level' => User::ROLE_ADMIN,
                 'decision' => self::DECISION_PENDING,
                 'seen_count' => 0,
                 'created_by' => User::getSystemUser()?->id,

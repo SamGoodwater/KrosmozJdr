@@ -4,7 +4,7 @@
  * 
  * @description
  * Modal pour configurer tous les paramètres d'une section.
- * - Paramètres communs : title, slug, order, is_visible, can_edit_role, state, classes, customCss
+ * - Paramètres communs : title, slug, order, read_level, write_level, state, classes, customCss
  * - Paramètres spécifiques au template : générés automatiquement depuis config.parameters
  * - Les data (contenu) sont modifiées directement dans le template d'édition
  * 
@@ -18,7 +18,7 @@
  * @props {String} sectionTemplate - Template de section
  * @props {Object} section - Instance Section normalisée (depuis useSectionUI)
  * @emits close - Événement émis quand le modal se ferme
- * @emits validated - Événement émis avec { title, slug, order, is_visible, can_edit_role, state, settings } validés
+ * @emits validated - Événement émis avec { title, slug, order, read_level, write_level, state, settings } validés
  */
 import { ref, computed, watch, nextTick } from 'vue';
 import { router } from '@inertiajs/vue3';
@@ -76,7 +76,7 @@ const templateParameters = computed(() => {
 });
 
 // Options pour les selects
-const visibilityOptions = computed(() => SectionParameterService.getVisibilityOptions());
+const roleOptions = computed(() => SectionParameterService.getVisibilityOptions());
 const stateOptions = computed(() => SectionParameterService.getStateOptions());
 
 /**
@@ -107,8 +107,8 @@ const getSectionValue = (key) => {
         'title': () => model.title,
         'slug': () => model.slug,
         'order': () => model.order,
-        'is_visible': () => model.isVisible,
-        'can_edit_role': () => model.canEditRole || 'admin',
+        'read_level': () => model.readLevel,
+        'write_level': () => model.writeLevel,
         'state': () => model.state,
         'settings': () => model.settings,
         'data': () => model.data,
@@ -161,8 +161,8 @@ const initializeFormData = () => {
             slug,
             section: props.section,
             sectionSettings,
-            isVisible: getSectionValue('is_visible'),
-            canEditRole: getSectionValue('can_edit_role'),
+            readLevel: getSectionValue('read_level'),
+            writeLevel: getSectionValue('write_level'),
             state: getSectionValue('state'),
             order: getSectionValue('order'),
         });
@@ -173,8 +173,8 @@ const initializeFormData = () => {
         title: title,
         slug: slug,
         order: getSectionValue('order') || 0,
-        is_visible: getSectionValue('is_visible') || 'guest',
-        can_edit_role: getSectionValue('can_edit_role') || 'admin',
+        read_level: getSectionValue('read_level') ?? 0,
+        write_level: getSectionValue('write_level') ?? 4,
         state: getSectionValue('state') || 'draft',
         // Settings (inclut classes et customCss)
         settings: {
@@ -202,8 +202,8 @@ const formData = ref({
     title: '',
     slug: '',
     order: 0,
-    is_visible: 'guest',
-    can_edit_role: 'admin',
+    read_level: 0,
+    write_level: 4,
     state: 'draft',
     settings: {
         classes: '',
@@ -347,8 +347,8 @@ const handleValidate = () => {
         title: formData.value.title || null,
         slug: slug || null,
         order: formData.value.order,
-        is_visible: formData.value.is_visible,
-        can_edit_role: formData.value.can_edit_role,
+        read_level: formData.value.read_level,
+        write_level: formData.value.write_level,
         state: formData.value.state,
         settings: cleanedSettings,
     });
@@ -473,27 +473,27 @@ const sectionTitle = computed(() => getSectionValue('title') || '');
                     :step="1"
                 />
                 
-                <!-- Visibilité -->
+                <!-- Lecture (min.) -->
                 <SelectField
-                    v-model="formData.is_visible"
-                    label="Visibilité"
-                    helper="Niveau de visibilité minimum pour voir la section"
-                    :options="visibilityOptions"
+                    v-model="formData.read_level"
+                    label="Lecture (min.)"
+                    helper="Niveau minimum requis pour voir la section"
+                    :options="roleOptions"
                 />
                 
-                <!-- Rôle d'édition -->
+                <!-- Écriture (min.) -->
                 <SelectField
-                    v-model="formData.can_edit_role"
-                    label="Rôle d'édition"
-                    helper="Rôle minimum requis pour modifier la section"
-                    :options="visibilityOptions"
+                    v-model="formData.write_level"
+                    label="Écriture (min.)"
+                    helper="Niveau minimum requis pour modifier la section"
+                    :options="roleOptions"
                 />
                 
                 <!-- État -->
                 <SelectField
                     v-model="formData.state"
                     label="État"
-                    helper="État de publication de la section"
+                    helper="Cycle de vie de la section"
                     :options="stateOptions"
                 />
             </div>

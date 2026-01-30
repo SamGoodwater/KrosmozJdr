@@ -85,8 +85,9 @@ class CapabilityTableController extends Controller
                     'is_magic' => (bool) $c->is_magic,
                     'ritual_available' => (bool) $c->ritual_available,
                     'powerful' => $c->powerful,
-                    'usable' => (int) ($c->usable ?? 0),
-                    'is_visible' => $c->is_visible,
+                    'state' => (string) ($c->state ?? 'draft'),
+                    'read_level' => (int) ($c->read_level ?? 0),
+                    'write_level' => (int) ($c->write_level ?? 0),
                     'image' => $c->image,
                     'created_by' => $c->created_by,
                     'createdBy' => $createdBy ? [
@@ -210,8 +211,9 @@ class CapabilityTableController extends Controller
                         'is_magic' => (bool) $c->is_magic,
                         'ritual_available' => (bool) $c->ritual_available,
                         'powerful' => $c->powerful,
-                        'usable' => (int) ($c->usable ?? 0),
-                        'is_visible' => $c->is_visible,
+                        'state' => (string) ($c->state ?? 'draft'),
+                        'read_level' => (int) ($c->read_level ?? 0),
+                        'write_level' => (int) ($c->write_level ?? 0),
                         'image' => $c->image,
                         'created_by' => $c->created_by,
                         'createdBy' => $createdBy ? [

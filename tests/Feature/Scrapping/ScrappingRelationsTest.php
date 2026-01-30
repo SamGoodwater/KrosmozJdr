@@ -71,8 +71,6 @@ class ScrappingRelationsTest extends TestCase
             $this->assertDatabaseHas('class_spell', [
                 'classe_id' => $classe->id,
             ]);
-        } else {
-            $this->markTestSkipped('Aucun sort trouvé pour cette classe dans DofusDB');
         }
     }
 

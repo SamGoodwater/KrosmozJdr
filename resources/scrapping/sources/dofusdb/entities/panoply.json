@@ -1,0 +1,36 @@
+{
+  "version": 1,
+  "source": "dofusdb",
+  "entity": "panoply",
+  "label": "Panoplies",
+  "meta": { "maxId": 1000 },
+  "endpoints": {
+    "fetchOne": {
+      "pathTemplate": "/item-sets/{id}",
+      "method": "GET",
+      "queryDefaults": { "lang": "{lang}" }
+    },
+    "fetchMany": {
+      "path": "/item-sets",
+      "method": "GET",
+      "queryDefaults": { "lang": "{lang}", "$limit": 100, "$skip": 0 }
+    }
+  },
+  "filters": {
+    "supported": [
+      { "key": "id", "type": "number" },
+      { "key": "idMin", "type": "number" },
+      { "key": "idMax", "type": "number" },
+      { "key": "ids", "type": "number[]", "max": 500 },
+      { "key": "name", "type": "string" }
+    ]
+  },
+  "mapping": [
+    {
+      "key": "dofusdb_id",
+      "from": { "path": "id" },
+      "to": [{ "model": "panoplies", "field": "dofusdb_id" }],
+      "formatters": [{ "name": "toString", "args": {} }]
+    }
+  ]
+}

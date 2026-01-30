@@ -58,8 +58,9 @@ const compactFields = computed(() => [
     'level',
     'price',
     'rarity',
-    'usable',
-    'is_visible',
+    'state',
+    'read_level',
+    'write_level',
 ].filter(key => effectiveFieldsConfig.value[key]));
 
 // Initialiser le formulaire avec les données de la ressource

@@ -69,9 +69,10 @@
 | `test_slug_auto_generated_from_title` | ✅ | Slug généré auto depuis titre |
 | `test_slug_unique` | ✅ | Slug unique en BDD |
 | `test_slug_format` | ✅ | Slug format kebab-case |
-| `test_is_visible_enum` | ✅ | is_visible = enum Visibility valide |
-| `test_can_edit_role_enum` | ✅ | can_edit_role = enum Visibility valide |
-| `test_state_enum` | ✅ | state = enum PageState valide |
+| `test_read_level_range` | ✅ | read_level = entier dans la plage rôles |
+| `test_write_level_range` | ✅ | write_level = entier dans la plage rôles |
+| `test_write_level_gte_read_level` | ✅ | write_level >= read_level |
+| `test_state_enum` | ✅ | state ∈ {raw,draft,playable,archived} |
 | `test_valid_request_creates_page` | ✅ | Requête valide crée page en BDD |
 
 #### StoreSectionRequestTest (10 tests)
@@ -87,7 +88,7 @@
 | `test_data_validation_image_src_nullable` | ✅ | IMAGE : data.src nullable (création) |
 | `test_data_validation_image_alt_nullable` | ✅ | IMAGE : data.alt nullable |
 | `test_data_validation_gallery_images_can_be_empty` | ✅ | GALLERY : data.images peut être vide |
-| `test_can_edit_role_enum` | ✅ | can_edit_role = enum Visibility valide |
+| `test_write_level_gte_read_level` | ✅ | write_level >= read_level |
 | `test_valid_request_creates_section` | ✅ | Requête valide crée section en BDD |
 
 ### 3. **Sécurité XSS (SectionService) - 5 tests**
@@ -111,7 +112,7 @@
 - Création de pages réservée aux admins
 - Modification de sections nécessite droit 'update' sur la page parente
 - Suppression de sections nécessite droit 'update' sur la page parente
-- Visibilité respectée (guest, user, game_master, admin)
+- Accès respecté (read_level/write_level basés sur rôles 0..5)
 - Super admin a tous les droits
 
 ### ✅ Validation (FormRequests)
@@ -119,7 +120,7 @@
 - Slug généré automatiquement si absent
 - Slug unique en BDD
 - Slug format kebab-case (`^[a-z0-9]+(?:-[a-z0-9]+)*$`)
-- Enums validés (Visibility, PageState, SectionType)
+- Validation state + niveaux (read_level/write_level) + SectionType
 - Validation dynamique selon le type de section :
   - TEXT : data.content nullable (string)
   - IMAGE : data.src, data.alt nullable
@@ -159,7 +160,7 @@ tests/
 ## 🚧 Limitations connues
 
 ### 1. Test `test_user_cannot_delete_others_page` (échoue)
-**Raison** : La `PagePolicy::delete()` actuelle permet à un game_master de supprimer la page d'un autre game_master si `can_edit_role` le permet.
+**Raison** : La `PagePolicy::delete()` actuelle permet à un game_master de supprimer la page d'un autre game_master selon la politique d’édition (basée sur `write_level`).
 
 **Comportement actuel** :
 ```php

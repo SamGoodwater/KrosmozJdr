@@ -46,7 +46,7 @@
 
 ### 4. **Interfaces de test** ✅
 - ✅ `DataCollectController` : Contrôleur HTTP pour tester DataCollect
-- ✅ `TestDataCollectCommand` : Commande Artisan pour tester DataCollect
+- ✅ `ScrappingCommand` : Commande Artisan unique (collect/search/import)
 - ✅ Routes `/api/scrapping/test/*` : Routes de test
 
 ### 5. **Interfaces de production** ✅ **NOUVEAU (2025-01-27)**
@@ -54,10 +54,10 @@
   - Méthodes : `importClass()`, `importMonster()`, `importItem()`, `importSpell()`, `importBatch()`
   - Gestion d'erreurs complète
   - Options configurables (skip_cache, force_update, dry_run, validate_only)
-- ✅ `ScrappingImportCommand` : Commande Artisan de production utilisant l'orchestrateur
-  - Signature : `scrapping:import {entity} {id} [--options]`
-  - Support des imports en lot via fichier JSON
-  - Affichage progressif et détaillé
+- ✅ `ScrappingCommand` : Commande Artisan unique recommandée
+  - Signature : `scrapping --collect=... | --import=... | --batch=...`
+  - Support des imports en lot via fichier JSON (`--batch`)
+  - Options : skip-cache, force-update, dry-run, validate-only, include-relations, compare
 - ✅ Routes de production : `/api/scrapping/import/*` (chargées dans `bootstrap/app.php`)
   - `POST /api/scrapping/import/class/{id}` ✅
   - `POST /api/scrapping/import/monster/{id}` ✅
@@ -72,11 +72,11 @@
 **État** : Les tests de base sont effectués, mais il reste des tests à faire.
 
 **Fait** :
-- ✅ Tester `scrapping:import class 1` : Workflow complet validé
-- ✅ Tester `scrapping:import monster 31` : Workflow complet validé
-- ✅ Tester `scrapping:import item 15` : Workflow complet validé (corrections apportées)
-- ✅ Tester `scrapping:import spell 201` : Workflow complet validé (corrections apportées)
-- ✅ Tester `scrapping:import --batch` : Workflow complet validé (4 entités)
+- ✅ Tester `scrapping --import=class --id=1` : Workflow complet validé
+- ✅ Tester `scrapping --import=monster --id=31` : Workflow complet validé
+- ✅ Tester `scrapping --import=item --id=15` : Workflow complet validé (corrections apportées)
+- ✅ Tester `scrapping --import=spell --id=201` : Workflow complet validé (corrections apportées)
+- ✅ Tester `scrapping --batch=...` : Workflow complet validé (4 entités)
 - ✅ Vérification des données en base : Validée
 - ✅ Prévention des doublons : Implémentée et testée
 
@@ -108,9 +108,9 @@ app/Http/Controllers/Scrapping/ScrappingController.php
 
 #### **Étape 1.2 : Créer la commande de production**
 ```php
-app/Console/Commands/ScrappingImportCommand.php
+app/Console/Commands/ScrappingCommand.php
 ```
-- Signature : `scrapping:import {entity} {id} [--options]`
+  - Signature : `scrapping --import=... --id=...`
 - Utilise `ScrappingOrchestrator`
 - Affichage progressif des résultats
 - Support des imports en lot
@@ -129,7 +129,7 @@ routes/api.php
 
 #### **Étape 2.1 : Test avec une classe**
 ```bash
-php artisan scrapping:import class 1
+php artisan scrapping --import=class --id=1
 ```
 - Vérifier que la classe est collectée
 - Vérifier que les valeurs sont converties
@@ -137,14 +137,14 @@ php artisan scrapping:import class 1
 
 #### **Étape 2.2 : Test avec un monstre**
 ```bash
-php artisan scrapping:import monster 31
+php artisan scrapping --import=monster --id=31
 ```
 - Vérifier le workflow complet
 - Vérifier les relations (creature, monster)
 
 #### **Étape 2.3 : Test avec un objet**
 ```bash
-php artisan scrapping:import item 15
+php artisan scrapping --import=item --id=15
 ```
 - Vérifier le mapping selon le type
 - Vérifier la sauvegarde dans la bonne table
@@ -159,17 +159,17 @@ php artisan scrapping:import item 15
 ## 🎯 Prochaines étapes immédiates
 
 1. ✅ **Créer `ScrappingController`** : Fait
-2. ✅ **Créer `ScrappingImportCommand`** : Fait
+2. ✅ **Créer `ScrappingCommand`** : Fait
 3. ✅ **Ajouter les routes** : Fait
 4. ✅ **Tester le workflow complet (partiel)** : Fait
-   - ✅ Tester via commande : `php artisan scrapping:import class 1`
-   - ✅ Tester via commande : `php artisan scrapping:import monster 31`
-   - ✅ Tester via commande : `php artisan scrapping:import item 15` (corrigé)
+   - ✅ Tester via commande : `php artisan scrapping --import=class --id=1`
+   - ✅ Tester via commande : `php artisan scrapping --import=monster --id=31`
+   - ✅ Tester via commande : `php artisan scrapping --import=item --id=15` (corrigé)
    - ✅ Vérifier que les données sont sauvegardées en base
    - ⚠️ Tester via API : `POST /api/scrapping/import/*` (routes non chargées)
 5. ⚠️ **Tester les fonctionnalités restantes** : À faire
-   - [ ] Tester l'import de sort : `php artisan scrapping:import spell [id]`
-   - [ ] Tester l'import en lot : `php artisan scrapping:import --batch [fichier.json]`
+   - [ ] Tester l'import de sort : `php artisan scrapping --import=spell --id=[id]`
+   - [ ] Tester l'import en lot : `php artisan scrapping --batch [fichier.json]`
    - [ ] Corriger le problème de chargement des routes API
 6. ✅ **Améliorations** : En cours
    - [x] Tests automatisés (PHPUnit) : 37 tests créés ✅

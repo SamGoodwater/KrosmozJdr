@@ -51,10 +51,6 @@ export class Classe extends BaseModel {
         return this._data.dofus_version || null;
     }
 
-    get usable() {
-        return this._data.usable ?? false;
-    }
-
     get image() {
         return this._data.image || '';
     }
@@ -284,7 +280,9 @@ export class Classe extends BaseModel {
             life_dice: this.lifeDice,
             specificity: this.specificity,
             dofus_version: this.dofusVersion,
-            usable: this.usable,
+            state: this.state,
+            read_level: this.readLevel,
+            write_level: this.writeLevel,
             image: this.image,
             icon: this.icon,
             auto_update: this.autoUpdate

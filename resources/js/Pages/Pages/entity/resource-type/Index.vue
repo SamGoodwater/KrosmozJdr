@@ -87,7 +87,7 @@ const handleRowDoubleClick = (row) => {
 };
 
 const handleBulkApplied = async (payload) => {
-    // payload: { ids, decision?, usable?, is_visible? }
+    // payload: { ids, decision?, state?, read_level?, write_level? }
     const ok = await bulkPatchJson({ url: "/api/scrapping/resource-types/bulk", payload });
     if (!ok) return;
     refreshToken.value++;

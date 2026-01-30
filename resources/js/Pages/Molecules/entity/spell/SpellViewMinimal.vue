@@ -61,10 +61,7 @@ const ctx = computed(() => {
 
 const descriptors = computed(() => getSpellFieldDescriptors(ctx.value));
 
-const usableValue = computed(() => {
-    const v = props.spell?.usable ?? props.spell?._data?.usable;
-    return typeof v === 'boolean' ? v : null;
-});
+const stateValue = computed(() => props.spell?.state ?? props.spell?._data?.state ?? null);
 
 const canShowField = (fieldKey) => {
     const desc = descriptors.value?.[fieldKey];
@@ -82,7 +79,7 @@ const canShowField = (fieldKey) => {
 };
 
 // Champs importants à afficher
-const importantFields = computed(() => ['level', 'pa', 'po', 'element', 'category', 'is_visible'].filter(canShowField));
+const importantFields = computed(() => ['level', 'pa', 'po', 'element', 'category', 'state', 'read_level'].filter(canShowField));
 
 // Champs supplémentaires à afficher au hover
 const expandedFields = computed(() => [
@@ -152,7 +149,7 @@ const handleAction = async (actionKey) => {
         <div class="p-3">
             <EntityViewHeader mode="minimal">
                 <template #dot>
-                    <EntityUsableDot :usable="usableValue" />
+                    <EntityUsableDot :state="stateValue" />
                 </template>
                 <template #media>
                     <Icon source="fa-solid fa-wand-magic-sparkles" :alt="spell.name" size="sm" class="flex-shrink-0" />

@@ -98,10 +98,10 @@ export class PageMapper extends BaseMapper {
             title: extract('title', null),
             slug: extract('slug', null),
             
-            // Enums
-            is_visible: extract('is_visible', 'guest'),
-            can_edit_role: extract('can_edit_role', 'admin'),
+            // State + niveaux d'accès
             state: extract('state', 'draft'),
+            read_level: extract('read_level', 0),
+            write_level: extract('write_level', 4),
             
             // Menu
             in_menu: extract('in_menu', false),
@@ -146,8 +146,8 @@ export class PageMapper extends BaseMapper {
         return {
             title: pageModel.title || '',
             slug: pageModel.slug || '',
-            is_visible: this.fromEnum(pageModel.isVisible) || 'guest',
-            can_edit_role: this.fromEnum(pageModel.canEditRole) || 'admin',
+            read_level: pageModel.readLevel ?? 0,
+            write_level: pageModel.writeLevel ?? 4,
             in_menu: pageModel.inMenu ?? true,
             state: this.fromEnum(pageModel.state) || 'draft',
             parent_id: pageModel.parentId || null,

@@ -12,6 +12,7 @@ import { Campaign } from '@/Models/Entity/Campaign';
 import EntityEditForm from '@/Pages/Organismes/entity/EntityEditForm.vue';
 import EntityRelationsManager from '@/Pages/Organismes/entity/EntityRelationsManager.vue';
 import Container from '@/Pages/Atoms/data-display/Container.vue';
+import { getEntityStateOptions, getUserRoleOptions } from '@/Utils/Entity/SharedConstants';
 
 const page = usePage();
 const { setPageTitle } = usePageTitle();
@@ -84,11 +85,26 @@ const fieldsConfig = {
         required: false, 
         showInCompact: true 
     },
-    usable: { 
-        type: 'checkbox', 
-        label: 'Utilisable', 
-        required: false, 
-        showInCompact: true 
+    state: {
+        type: 'select',
+        label: 'État',
+        required: false,
+        showInCompact: true,
+        options: getEntityStateOptions(),
+    },
+    read_level: {
+        type: 'select',
+        label: 'Lecture (min.)',
+        required: false,
+        showInCompact: false,
+        options: getUserRoleOptions(),
+    },
+    write_level: {
+        type: 'select',
+        label: 'Écriture (min.)',
+        required: false,
+        showInCompact: false,
+        options: getUserRoleOptions(),
     },
     image: { 
         type: 'file', 

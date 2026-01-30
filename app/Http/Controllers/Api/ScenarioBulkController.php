@@ -16,7 +16,7 @@ use Illuminate\Support\Facades\DB;
  *
  * @example
  * PATCH /api/entities/scenarios/bulk
- * { "ids":[1,2,3], "state":1, "is_public":true, "usable":true, "is_visible":"guest", "description":"Nouvelle description" }
+ * { "ids":[1,2,3], "progress_state":1, "state":"playable", "read_level":0, "write_level":3, "is_public":true, "description":"Nouvelle description" }
  */
 class ScenarioBulkController extends Controller
 {
@@ -29,10 +29,11 @@ class ScenarioBulkController extends Controller
             'ids.*' => ['integer', 'min:1', 'exists:scenarios,id'],
 
             // Champs bulk (les clés absentes ne sont pas modifiées)
-            'state' => ['sometimes', 'nullable', 'integer', 'min:0'],
+            'progress_state' => ['sometimes', 'nullable', 'integer', 'min:0'],
+            'state' => ['sometimes', 'nullable', 'string', 'in:raw,draft,playable,archived'],
+            'read_level' => ['sometimes', 'nullable', 'integer', 'min:0', 'max:5'],
+            'write_level' => ['sometimes', 'nullable', 'integer', 'min:0', 'max:5'],
             'is_public' => ['sometimes', 'nullable', 'boolean'],
-            'usable' => ['sometimes', 'nullable', 'boolean'],
-            'is_visible' => ['sometimes', 'nullable', 'string', 'in:guest,user,player,game_master,admin'],
 
             // Champs "métier" utiles en édition multiple (nullable => possibilité de vider)
             'description' => ['sometimes', 'nullable', 'string'],
@@ -50,10 +51,11 @@ class ScenarioBulkController extends Controller
 
         $patch = [];
         foreach ([
+            'progress_state',
             'state',
+            'read_level',
+            'write_level',
             'is_public',
-            'usable',
-            'is_visible',
             'description',
             'keyword',
             'image',

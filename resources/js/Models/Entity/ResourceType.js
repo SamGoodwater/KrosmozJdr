@@ -28,10 +28,6 @@ export class ResourceType extends BaseModel {
         return this._data.decision || 'pending';
     }
 
-    get usable() {
-        return Boolean(this._data.usable);
-    }
-
     get seenCount() {
         return this._data.seen_count || 0;
     }
@@ -298,8 +294,9 @@ export class ResourceType extends BaseModel {
             name: this.name,
             dofusdb_type_id: this.dofusdbTypeId,
             decision: this.decision,
-            usable: this.usable ? 1 : 0,
-            is_visible: this.isVisible || 'guest',
+            state: this.state,
+            read_level: this.readLevel,
+            write_level: this.writeLevel,
         };
     }
 }

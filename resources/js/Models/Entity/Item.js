@@ -60,10 +60,6 @@ export class Item extends BaseModel {
         return this._data.dofus_version || null;
     }
 
-    get usable() {
-        return this._data.usable ?? false;
-    }
-
     get image() {
         return this._data.image || '';
     }
@@ -400,7 +396,9 @@ export class Item extends BaseModel {
             price: this.price,
             rarity: this.rarity,
             dofus_version: this.dofusVersion,
-            usable: this.usable,
+            state: this.state,
+            read_level: this.readLevel,
+            write_level: this.writeLevel,
             image: this.image,
             auto_update: this.autoUpdate,
             item_type_id: this.itemTypeId

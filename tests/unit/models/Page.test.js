@@ -32,14 +32,14 @@ describe('Page Model', () => {
         id: 123,
         title: 'My Page',
         slug: 'my-page',
-        state: 'published',
+        state: 'playable',
       });
       const page = new Page(rawData);
 
       expect(page.id).toBe(123);
       expect(page.title).toBe('My Page');
       expect(page.slug).toBe('my-page');
-      expect(page.state).toBe('published');
+      expect(page.state).toBe('playable');
     });
 
     it('devrait gérer les sections', () => {
@@ -59,12 +59,12 @@ describe('Page Model', () => {
   });
 
   describe('Méthodes', () => {
-    it('devrait vérifier si la page est publiée', () => {
-      const publishedPage = new Page(createMockPage({ state: 'published' }));
+    it('devrait vérifier si la page est jouable', () => {
+      const playablePage = new Page(createMockPage({ state: 'playable' }));
       const draftPage = new Page(createMockPage({ state: 'draft' }));
 
-      expect(publishedPage.isPublished).toBe(true);
-      expect(draftPage.isPublished).toBe(false);
+      expect(playablePage.isPlayable).toBe(true);
+      expect(draftPage.isPlayable).toBe(false);
     });
 
     it('devrait vérifier si la page est dans le menu', () => {

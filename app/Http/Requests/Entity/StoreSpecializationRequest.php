@@ -29,8 +29,9 @@ class StoreSpecializationRequest extends FormRequest
         return [
             'name' => ['required', 'string', 'max:255'],
             'description' => ['nullable', 'string'],
-            'usable' => ['nullable', 'integer', 'in:0,1'],
-            'is_visible' => ['nullable', 'string', 'max:255'],
+            'state' => ['nullable', 'string', 'in:raw,draft,playable,archived'],
+            'read_level' => ['nullable', 'integer', 'min:0', 'max:5'],
+            'write_level' => ['nullable', 'integer', 'min:0', 'max:5', 'gte:read_level'],
             'image' => ['nullable', 'string', 'max:255'],
         ];
     }

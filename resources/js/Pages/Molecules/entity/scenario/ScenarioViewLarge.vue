@@ -75,8 +75,9 @@ const extendedFields = computed(() => {
         'keyword',
         'state',
         'is_public',
-        'usable',
-        'is_visible',
+        'state',
+        'read_level',
+        'write_level',
     ];
     ['created_by', 'created_at', 'updated_at'].forEach((k) => fields.push(k));
     return fields.filter(canShowField);

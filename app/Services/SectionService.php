@@ -6,8 +6,6 @@ use App\Models\Section;
 use App\Models\Page;
 use App\Models\User;
 use App\Enums\SectionType;
-use App\Enums\PageState;
-use App\Enums\Visibility;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -98,9 +96,9 @@ class SectionService
             
             // Valeurs par défaut pour les autres champs
             $data['created_by'] = $user->id;
-            $data['state'] = $data['state'] ?? PageState::DRAFT->value;
-            $data['is_visible'] = $data['is_visible'] ?? Visibility::GUEST->value;
-            $data['can_edit_role'] = $data['can_edit_role'] ?? Visibility::ADMIN->value;
+            $data['state'] = $data['state'] ?? \App\Models\Section::STATE_DRAFT;
+            $data['read_level'] = $data['read_level'] ?? User::ROLE_GUEST;
+            $data['write_level'] = $data['write_level'] ?? User::ROLE_ADMIN;
 
             $section = Section::create($data);
             $section->load(['page', 'users', 'files', 'createdBy']);

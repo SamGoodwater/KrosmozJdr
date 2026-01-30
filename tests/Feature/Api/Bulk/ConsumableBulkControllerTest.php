@@ -33,14 +33,14 @@ class ConsumableBulkControllerTest extends TestCase
     public function test_admin_can_bulk_update_consumables(): void
     {
         $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
-        $consumable1 = Consumable::factory()->create(['level' => '10', 'usable' => false]);
-        $consumable2 = Consumable::factory()->create(['level' => '20', 'usable' => true]);
+        $consumable1 = Consumable::factory()->create(['level' => '10', 'state' => Consumable::STATE_DRAFT]);
+        $consumable2 = Consumable::factory()->create(['level' => '20', 'state' => Consumable::STATE_PLAYABLE]);
 
         $response = $this->actingAs($admin)
             ->patchJson('/api/entities/consumables/bulk', [
                 'ids' => [$consumable1->id, $consumable2->id],
                 'level' => '50',
-                'usable' => true,
+                'state' => Consumable::STATE_PLAYABLE,
             ]);
 
         $response->assertOk()
@@ -53,12 +53,12 @@ class ConsumableBulkControllerTest extends TestCase
         $this->assertDatabaseHas('consumables', [
             'id' => $consumable1->id,
             'level' => '50',
-            'usable' => 1,
+            'state' => Consumable::STATE_PLAYABLE,
         ]);
         $this->assertDatabaseHas('consumables', [
             'id' => $consumable2->id,
             'level' => '50',
-            'usable' => 1,
+            'state' => Consumable::STATE_PLAYABLE,
         ]);
     }
 
@@ -107,14 +107,14 @@ class ConsumableBulkControllerTest extends TestCase
         $consumable = Consumable::factory()->create([
             'level' => '10',
             'rarity' => 1,
-            'usable' => false,
+            'state' => Consumable::STATE_DRAFT,
         ]);
 
         $response = $this->actingAs($admin)
             ->patchJson('/api/entities/consumables/bulk', [
                 'ids' => [$consumable->id],
                 'level' => '50',
-                // rarity et usable ne sont pas modifiés
+                // rarity et state ne sont pas modifiés
             ]);
 
         $response->assertOk();
@@ -122,7 +122,7 @@ class ConsumableBulkControllerTest extends TestCase
         $consumable->refresh();
         $this->assertEquals('50', $consumable->level);
         $this->assertEquals(1, $consumable->rarity); // Non modifié
-        $this->assertEquals(0, $consumable->usable); // Non modifié
+        $this->assertEquals(Consumable::STATE_DRAFT, $consumable->state); // Non modifié
     }
 
     /**

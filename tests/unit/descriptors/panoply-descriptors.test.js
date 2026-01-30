@@ -10,13 +10,13 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import { getPanoplyFieldDescriptors, PANOPLY_QUICK_EDIT_FIELDS } from '@/Entities/panoply/panoply-descriptors';
+import { getPanoplyFieldDescriptors } from '@/Entities/panoply/panoply-descriptors';
 
 describe('panoply-descriptors', () => {
     describe('Structure des descriptors', () => {
         it('retourne un objet avec tous les champs requis', () => {
             const descriptors = getPanoplyFieldDescriptors();
-            const requiredFields = ['id', 'name', 'usable', 'is_visible'];
+            const requiredFields = ['id', 'name', 'state', 'read_level', 'write_level'];
 
             requiredFields.forEach((field) => {
                 expect(descriptors).toHaveProperty(field);
@@ -55,7 +55,7 @@ describe('panoply-descriptors', () => {
     describe('Configuration bulk', () => {
         it('les champs bulk-enabled ont enabled: true', () => {
             const descriptors = getPanoplyFieldDescriptors();
-            const bulkEnabledFields = PANOPLY_QUICK_EDIT_FIELDS || [];
+            const bulkEnabledFields = descriptors._quickeditConfig?.fields || [];
 
             bulkEnabledFields.forEach((fieldKey) => {
                 const desc = descriptors[fieldKey];
@@ -92,16 +92,16 @@ describe('panoply-descriptors', () => {
     });
 
     describe('Options des selects', () => {
-        it('is_visible a les bonnes options', () => {
+        it('read_level a les bonnes options', () => {
             const descriptors = getPanoplyFieldDescriptors();
-            const isVisibleDesc = descriptors.is_visible;
+            const isVisibleDesc = descriptors.read_level;
 
             if (isVisibleDesc?.edit?.form?.type === 'select') {
                 const options = isVisibleDesc.edit.form.options;
                 const values = options.map((opt) => opt.value);
-                expect(values).toContain('guest');
-                expect(values).toContain('user');
-                expect(values).toContain('admin');
+                expect(values).toContain(0);
+                expect(values).toContain(1);
+                expect(values).toContain(4);
             }
         });
     });

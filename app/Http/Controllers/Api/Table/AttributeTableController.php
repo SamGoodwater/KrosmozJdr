@@ -17,6 +17,28 @@ use Illuminate\Support\Facades\Gate;
  */
 class AttributeTableController extends Controller
 {
+    private const STATE_COLORS = [
+        'raw' => 'neutral',
+        'draft' => 'warning',
+        'playable' => 'success',
+        'archived' => 'error',
+    ];
+
+    private const LEVEL_OPTIONS = [
+        ['value' => '0', 'label' => 'Invité'],
+        ['value' => '1', 'label' => 'Utilisateur'],
+        ['value' => '2', 'label' => 'Joueur'],
+        ['value' => '3', 'label' => 'Maître de jeu'],
+        ['value' => '4', 'label' => 'Admin'],
+        ['value' => '5', 'label' => 'Super admin'],
+    ];
+
+    private function stateColor(?string $state): string
+    {
+        $s = (string) ($state ?? '');
+        return self::STATE_COLORS[$s] ?? 'base';
+    }
+
     public function index(Request $request): JsonResponse
     {
         $this->authorize('viewAny', Attribute::class);
@@ -28,7 +50,7 @@ class AttributeTableController extends Controller
         $format = $request->filled('format') ? (string) $request->get('format') : 'cells';
 
         $filters = (array) ($request->input('filters', $request->input('filter', [])) ?? []);
-        foreach (['usable', 'is_visible'] as $k) {
+        foreach (['state', 'read_level', 'write_level'] as $k) {
             if (!array_key_exists($k, $filters) && $request->has($k)) {
                 $filters[$k] = $request->get($k);
             }
@@ -54,14 +76,17 @@ class AttributeTableController extends Controller
             });
         }
 
-        if (array_key_exists('usable', $filters) && $filters['usable'] !== '' && $filters['usable'] !== null) {
-            $query->where('usable', (int) $filters['usable']);
+        if (array_key_exists('state', $filters) && $filters['state'] !== '' && $filters['state'] !== null) {
+            $query->where('state', (string) $filters['state']);
         }
-        if (array_key_exists('is_visible', $filters) && $filters['is_visible'] !== '' && $filters['is_visible'] !== null) {
-            $query->where('is_visible', (string) $filters['is_visible']);
+        if (array_key_exists('read_level', $filters) && $filters['read_level'] !== '' && $filters['read_level'] !== null) {
+            $query->where('read_level', (int) $filters['read_level']);
+        }
+        if (array_key_exists('write_level', $filters) && $filters['write_level'] !== '' && $filters['write_level'] !== null) {
+            $query->where('write_level', (int) $filters['write_level']);
         }
 
-        $allowedSort = ['id', 'name', 'usable', 'is_visible', 'created_at', 'updated_at'];
+        $allowedSort = ['id', 'name', 'state', 'read_level', 'write_level', 'created_at', 'updated_at'];
         if (in_array($sort, $allowedSort, true)) {
             $query->orderBy($sort, $order);
         } else {
@@ -79,16 +104,14 @@ class AttributeTableController extends Controller
         ];
 
         $filterOptions = [
-            'usable' => [
-                ['value' => '1', 'label' => 'Oui'],
-                ['value' => '0', 'label' => 'Non'],
+            'state' => [
+                ['value' => 'raw', 'label' => 'Brut'],
+                ['value' => 'draft', 'label' => 'Brouillon'],
+                ['value' => 'playable', 'label' => 'Jouable'],
+                ['value' => 'archived', 'label' => 'Archivé'],
             ],
-            'is_visible' => [
-                ['value' => 'guest', 'label' => 'Invité'],
-                ['value' => 'user', 'label' => 'Utilisateur'],
-                ['value' => 'player', 'label' => 'Joueur'],
-                ['value' => 'game_master', 'label' => 'Maître de jeu'],
-            ],
+            'read_level' => self::LEVEL_OPTIONS,
+            'write_level' => self::LEVEL_OPTIONS,
         ];
 
         // Mode "entities" : retourner les entités brutes
@@ -99,8 +122,9 @@ class AttributeTableController extends Controller
                     'id' => $a->id,
                     'name' => $a->name,
                     'description' => $a->description,
-                    'usable' => (int) ($a->usable ?? 0),
-                    'is_visible' => $a->is_visible,
+                    'state' => (string) ($a->state ?? 'draft'),
+                    'read_level' => (int) ($a->read_level ?? 0),
+                    'write_level' => (int) ($a->write_level ?? 0),
                     'image' => $a->image,
                     'created_by' => $a->created_by,
                     'createdBy' => $createdBy ? [
@@ -136,7 +160,7 @@ class AttributeTableController extends Controller
             $createdBy = $a->createdBy;
             $createdByLabel = $createdBy?->name ?: ($createdBy?->email ?: '-');
 
-            $usableLabel = ((int) ($a->usable ?? 0)) === 1 ? 'Oui' : 'Non';
+            $state = (string) ($a->state ?? 'draft');
 
             $createdAtLabel = $a->created_at ? $a->created_at->format('d/m/Y H:i') : '-';
             $createdAtSort = $a->created_at ? $a->created_at->getTimestamp() : 0;
@@ -163,22 +187,31 @@ class AttributeTableController extends Controller
                             'sortValue' => (string) ($a->description ?? ''),
                         ],
                     ],
-                    'usable' => [
+                    'state' => [
                         'type' => 'badge',
-                        'value' => $usableLabel,
+                        'value' => $state,
                         'params' => [
-                            'color' => ((int) ($a->usable ?? 0)) === 1 ? 'success' : 'base',
-                            'filterValue' => (string) ((int) ($a->usable ?? 0)),
-                            'sortValue' => (int) ($a->usable ?? 0),
+                            'color' => $this->stateColor($state),
+                            'filterValue' => $state,
+                            'sortValue' => $state,
                         ],
                     ],
-                    'is_visible' => [
+                    'read_level' => [
                         'type' => 'badge',
-                        'value' => (string) ($a->is_visible ?? '-'),
+                        'value' => (string) ((int) ($a->read_level ?? 0)),
                         'params' => [
                             'color' => 'info',
-                            'filterValue' => (string) ($a->is_visible ?? ''),
-                            'sortValue' => (string) ($a->is_visible ?? ''),
+                            'filterValue' => (string) ((int) ($a->read_level ?? 0)),
+                            'sortValue' => (int) ($a->read_level ?? 0),
+                        ],
+                    ],
+                    'write_level' => [
+                        'type' => 'badge',
+                        'value' => (string) ((int) ($a->write_level ?? 0)),
+                        'params' => [
+                            'color' => 'info',
+                            'filterValue' => (string) ((int) ($a->write_level ?? 0)),
+                            'sortValue' => (int) ($a->write_level ?? 0),
                         ],
                     ],
                     'created_by' => [
@@ -211,8 +244,9 @@ class AttributeTableController extends Controller
                         'id' => $a->id,
                         'name' => $a->name,
                         'description' => $a->description,
-                        'usable' => (int) ($a->usable ?? 0),
-                        'is_visible' => $a->is_visible,
+                        'state' => (string) ($a->state ?? 'draft'),
+                        'read_level' => (int) ($a->read_level ?? 0),
+                        'write_level' => (int) ($a->write_level ?? 0),
                         'image' => $a->image,
                         'created_by' => $a->created_by,
                         'createdBy' => $createdBy ? [

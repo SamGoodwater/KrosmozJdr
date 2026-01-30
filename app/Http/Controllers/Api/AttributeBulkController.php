@@ -16,7 +16,7 @@ use Illuminate\Support\Facades\DB;
  *
  * @example
  * PATCH /api/entities/attributes/bulk
- * { "ids":[1,2,3], "usable":true, "is_visible":"guest", "description":"Nouvelle description" }
+ * { "ids":[1,2,3], "state":"playable", "read_level":0, "write_level":3, "description":"Nouvelle description" }
  */
 class AttributeBulkController extends Controller
 {
@@ -29,8 +29,9 @@ class AttributeBulkController extends Controller
             'ids.*' => ['integer', 'min:1', 'exists:attributes,id'],
 
             // Champs bulk (les clés absentes ne sont pas modifiées)
-            'usable' => ['sometimes', 'nullable', 'boolean'],
-            'is_visible' => ['sometimes', 'nullable', 'string', 'in:guest,user,player,game_master,admin'],
+            'state' => ['sometimes', 'nullable', 'string', 'in:raw,draft,playable,archived'],
+            'read_level' => ['sometimes', 'nullable', 'integer', 'min:0', 'max:5'],
+            'write_level' => ['sometimes', 'nullable', 'integer', 'min:0', 'max:5'],
 
             // Champs "métier" utiles en édition multiple (nullable => possibilité de vider)
             'description' => ['sometimes', 'nullable', 'string'],
@@ -47,8 +48,9 @@ class AttributeBulkController extends Controller
 
         $patch = [];
         foreach ([
-            'usable',
-            'is_visible',
+            'state',
+            'read_level',
+            'write_level',
             'description',
             'image',
         ] as $k) {

@@ -38,13 +38,13 @@ class CreatureBulkControllerTest extends TestCase
             'level' => '10',
             'hostility' => 2,
             'life' => '30',
-            'usable' => false,
+            'state' => Creature::STATE_DRAFT,
         ]);
         $creature2 = Creature::factory()->create([
             'level' => '20',
             'hostility' => 3,
             'life' => '50',
-            'usable' => true,
+            'state' => Creature::STATE_PLAYABLE,
         ]);
 
         $response = $this->actingAs($admin)
@@ -52,7 +52,7 @@ class CreatureBulkControllerTest extends TestCase
                 'ids' => [$creature1->id, $creature2->id],
                 'level' => '50',
                 'hostility' => 1,
-                'usable' => true,
+                'state' => Creature::STATE_PLAYABLE,
             ]);
 
         $response->assertOk()
@@ -66,13 +66,13 @@ class CreatureBulkControllerTest extends TestCase
             'id' => $creature1->id,
             'level' => '50',
             'hostility' => 1,
-            'usable' => 1,
+            'state' => Creature::STATE_PLAYABLE,
         ]);
         $this->assertDatabaseHas('creatures', [
             'id' => $creature2->id,
             'level' => '50',
             'hostility' => 1,
-            'usable' => 1,
+            'state' => Creature::STATE_PLAYABLE,
         ]);
     }
 
@@ -209,10 +209,7 @@ class CreatureBulkControllerTest extends TestCase
             ->assertJsonValidationErrors('hostility');
     }
 
-    /**
-     * Test : La validation échoue si is_visible a une valeur invalide
-     */
-    public function test_validation_fails_if_is_visible_invalid(): void
+    public function test_validation_fails_if_read_level_invalid(): void
     {
         $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
         $creature = Creature::factory()->create();
@@ -220,11 +217,11 @@ class CreatureBulkControllerTest extends TestCase
         $response = $this->actingAs($admin)
             ->patchJson('/api/entities/creatures/bulk', [
                 'ids' => [$creature->id],
-                'is_visible' => 'invalid_role',
+                'read_level' => 999,
             ]);
 
         $response->assertStatus(422)
-            ->assertJsonValidationErrors('is_visible');
+            ->assertJsonValidationErrors('read_level');
     }
 }
 

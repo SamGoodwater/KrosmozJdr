@@ -35,7 +35,7 @@ const props = defineProps({
 const emit = defineEmits(['close']);
 
 // Options pour les selects
-const { stateOptions, visibilityOptions, parentPageOptions } = usePageFormOptions(() => props.pages);
+const { stateOptions, roleOptions, parentPageOptions } = usePageFormOptions(() => props.pages);
 
 // Formulaire via composable (mode création)
 const {
@@ -114,20 +114,20 @@ const submit = () => {
                     @input="handleSlugInput"
                 />
                 
-                <!-- Visibilité -->
+                <!-- Lecture (min.) -->
                 <SelectField
-                    v-model="form.is_visible"
-                    label="Visibilité"
-                    :options="visibilityOptions"
+                    v-model="form.read_level"
+                    label="Lecture (min.)"
+                    :options="roleOptions"
                     required
                     helper="Qui peut voir cette page ?"
                 />
                 
-                <!-- Rôle requis pour modifier -->
+                <!-- Écriture (min.) -->
                 <SelectField
-                    v-model="form.can_edit_role"
-                    label="Rôle requis pour modifier"
-                    :options="visibilityOptions"
+                    v-model="form.write_level"
+                    label="Écriture (min.)"
+                    :options="roleOptions"
                     required
                     helper="Rôle minimum requis pour modifier cette page (admin par défaut)"
                 />
@@ -138,7 +138,7 @@ const submit = () => {
                     label="État"
                     :options="stateOptions"
                     required
-                    helper="État de publication de la page"
+                    helper="Cycle de vie de la page"
                 />
                 
                 <!-- Page parente -->

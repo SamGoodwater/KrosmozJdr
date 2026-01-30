@@ -1,0 +1,36 @@
+{
+  "version": 1,
+  "source": "dofusdb",
+  "entity": "effect",
+  "label": "Effets",
+  "meta": { "maxId": 1000 },
+  "endpoints": {
+    "fetchOne": {
+      "pathTemplate": "/effects/{id}",
+      "method": "GET",
+      "queryDefaults": { "lang": "{lang}" }
+    },
+    "fetchMany": {
+      "path": "/effects",
+      "method": "GET",
+      "queryDefaults": { "lang": "{lang}", "$limit": 100, "$skip": 0 }
+    }
+  },
+  "filters": {
+    "supported": [
+      { "key": "id", "type": "number" },
+      { "key": "idMin", "type": "number" },
+      { "key": "idMax", "type": "number" },
+      { "key": "ids", "type": "number[]", "max": 500 },
+      { "key": "name", "type": "string" }
+    ]
+  },
+  "mapping": [
+    {
+      "key": "dofusdb_id",
+      "from": { "path": "id" },
+      "to": [{ "model": "effects", "field": "dofusdb_id" }],
+      "formatters": [{ "name": "toString", "args": {} }]
+    }
+  ]
+}

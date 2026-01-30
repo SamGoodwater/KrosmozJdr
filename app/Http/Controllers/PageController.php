@@ -144,10 +144,11 @@ class PageController extends Controller
                 'sections' => $sections->map(fn($s) => [
                     'id' => $s->id,
                     'template' => $s->template->value ?? $s->template,
-                    'state' => $s->state->value ?? $s->state,
-                    'is_visible' => $s->is_visible->value ?? $s->is_visible,
-                    'can_edit_role_section' => $s->can_edit_role->value ?? $s->can_edit_role,
-                    'can_edit_role_page' => $s->page ? ($s->page->can_edit_role->value ?? $s->page->can_edit_role) : null,
+                    'state' => $s->state,
+                    'read_level' => $s->read_level ?? null,
+                    'write_level' => $s->write_level ?? null,
+                    'page_read_level' => $s->page ? ($s->page->read_level ?? null) : null,
+                    'page_write_level' => $s->page ? ($s->page->write_level ?? null) : null,
                     'can_be_edited_by' => $user ? $s->canBeEditedBy($user) : false,
                 ])->toArray(),
             ]);

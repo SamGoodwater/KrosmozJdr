@@ -62,10 +62,7 @@ const ctx = computed(() => {
 
 const descriptors = computed(() => getCampaignFieldDescriptors(ctx.value));
 
-const usableValue = computed(() => {
-    const v = props.campaign?.usable ?? props.campaign?._data?.usable;
-    return typeof v === 'boolean' ? v : null;
-});
+const stateValue = computed(() => props.campaign?.state ?? props.campaign?._data?.state ?? null);
 
 const canShowField = (fieldKey) => {
     const desc = descriptors.value?.[fieldKey];
@@ -88,7 +85,8 @@ const importantFields = computed(() => ['name', 'state', 'is_public'].filter(can
 // Champs supplémentaires à afficher au hover
 const expandedFields = computed(() => [
     'slug',
-    'is_visible',
+    'state',
+    'read_level',
 ].filter(canShowField));
 
 const getFieldIcon = (fieldKey) => {
@@ -149,7 +147,7 @@ const handleAction = async (actionKey) => {
         <div class="p-3">
             <EntityViewHeader mode="minimal">
                 <template #dot>
-                    <EntityUsableDot :usable="usableValue" />
+                    <EntityUsableDot :state="stateValue" />
                 </template>
                 <template #media>
                     <div v-if="campaign.image" class="w-8 h-8">

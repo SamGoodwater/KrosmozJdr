@@ -4,8 +4,6 @@ namespace Tests\Feature;
 
 use App\Models\User;
 use App\Models\Page;
-use App\Enums\PageState;
-use App\Enums\Visibility;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -15,7 +13,7 @@ use Tests\TestCase;
  * Vérifie que :
  * - Les admins peuvent créer des pages
  * - Les utilisateurs peuvent voir les pages selon leur visibilité
- * - Les utilisateurs peuvent modifier les pages selon can_edit_role
+ * - Les utilisateurs peuvent modifier les pages selon write_level
  * - Les validations fonctionnent correctement
  * - Les policies fonctionnent correctement
  */
@@ -44,10 +42,10 @@ class PageControllerTest extends TestCase
             ->post(route('pages.store'), [
                 'title' => 'Page de test',
                 'slug' => 'page-de-test',
-                'is_visible' => Visibility::GUEST->value,
-                'can_edit_role' => Visibility::ADMIN->value,
+                'read_level' => User::ROLE_GUEST,
+                'write_level' => User::ROLE_ADMIN,
                 'in_menu' => true,
-                'state' => PageState::DRAFT->value,
+                'state' => Page::STATE_DRAFT,
                 'menu_order' => 0,
             ]);
 
@@ -70,10 +68,10 @@ class PageControllerTest extends TestCase
             ->post(route('pages.store'), [
                 'title' => 'Page de test',
                 'slug' => 'page-de-test',
-                'is_visible' => Visibility::GUEST->value,
-                'can_edit_role' => Visibility::ADMIN->value,
+                'read_level' => User::ROLE_GUEST,
+                'write_level' => User::ROLE_ADMIN,
                 'in_menu' => true,
-                'state' => PageState::DRAFT->value,
+                'state' => Page::STATE_DRAFT,
                 'menu_order' => 0,
             ]);
 
@@ -87,8 +85,8 @@ class PageControllerTest extends TestCase
     {
         $user = User::factory()->create(['role' => User::ROLE_USER]);
         $page = Page::factory()->create([
-            'state' => PageState::PUBLISHED->value,
-            'is_visible' => Visibility::GUEST->value,
+            'state' => Page::STATE_PLAYABLE,
+            'read_level' => User::ROLE_GUEST,
         ]);
 
         $response = $this->actingAs($user)
@@ -110,7 +108,7 @@ class PageControllerTest extends TestCase
         $page = Page::factory()->create([
             'title' => 'Page originale',
             'created_by' => $user->id,
-            'can_edit_role' => Visibility::ADMIN->value,
+            'write_level' => User::ROLE_ADMIN,
         ]);
 
         $response = $this->actingAs($user)
@@ -118,10 +116,10 @@ class PageControllerTest extends TestCase
             ->patch(route('pages.update', $page), [
                 'title' => 'Page modifiée',
                 'slug' => $page->slug,
-                'is_visible' => $page->is_visible instanceof \App\Enums\Visibility ? $page->is_visible->value : $page->is_visible,
-                'can_edit_role' => $page->can_edit_role instanceof \App\Enums\Visibility ? $page->can_edit_role->value : $page->can_edit_role,
+                'read_level' => $page->read_level,
+                'write_level' => $page->write_level,
                 'in_menu' => $page->in_menu,
-                'state' => $page->state instanceof \App\Enums\PageState ? $page->state->value : $page->state,
+                'state' => $page->state,
                 'menu_order' => $page->menu_order,
             ]);
 
@@ -133,13 +131,13 @@ class PageControllerTest extends TestCase
     }
 
     /**
-     * Test : Un game_master peut modifier une page si can_edit_role le permet
+     * Test : Un game_master peut modifier une page si write_level le permet
      */
-    public function test_game_master_can_update_page_if_can_edit_role_allows(): void
+    public function test_game_master_can_update_page_if_write_level_allows(): void
     {
         $gameMaster = User::factory()->create(['role' => User::ROLE_GAME_MASTER]);
         $page = Page::factory()->create([
-            'can_edit_role' => Visibility::GAME_MASTER->value,
+            'write_level' => User::ROLE_GAME_MASTER,
         ]);
 
         $response = $this->actingAs($gameMaster)
@@ -147,10 +145,10 @@ class PageControllerTest extends TestCase
             ->patch(route('pages.update', $page), [
                 'title' => 'Page modifiée par GM',
                 'slug' => $page->slug,
-                'is_visible' => $page->is_visible instanceof \App\Enums\Visibility ? $page->is_visible->value : $page->is_visible,
-                'can_edit_role' => $page->can_edit_role instanceof \App\Enums\Visibility ? $page->can_edit_role->value : $page->can_edit_role,
+                'read_level' => $page->read_level,
+                'write_level' => $page->write_level,
                 'in_menu' => $page->in_menu,
-                'state' => $page->state instanceof \App\Enums\PageState ? $page->state->value : $page->state,
+                'state' => $page->state,
                 'menu_order' => $page->menu_order,
             ]);
 
@@ -162,13 +160,13 @@ class PageControllerTest extends TestCase
     }
 
     /**
-     * Test : Un game_master ne peut pas modifier une page si can_edit_role est admin
+     * Test : Un game_master ne peut pas modifier une page si write_level est admin
      */
-    public function test_game_master_cannot_update_page_if_can_edit_role_is_admin(): void
+    public function test_game_master_cannot_update_page_if_write_level_is_admin(): void
     {
         $gameMaster = User::factory()->create(['role' => User::ROLE_GAME_MASTER]);
         $page = Page::factory()->create([
-            'can_edit_role' => Visibility::ADMIN->value,
+            'write_level' => User::ROLE_ADMIN,
             'created_by' => User::factory()->create()->id, // Créée par un autre utilisateur
         ]);
 
@@ -176,10 +174,10 @@ class PageControllerTest extends TestCase
             ->patch(route('pages.update', $page), [
                 'title' => 'Page modifiée par GM',
                 'slug' => $page->slug,
-                'is_visible' => $page->is_visible instanceof \App\Enums\Visibility ? $page->is_visible->value : $page->is_visible,
-                'can_edit_role' => $page->can_edit_role instanceof \App\Enums\Visibility ? $page->can_edit_role->value : $page->can_edit_role,
+                'read_level' => $page->read_level,
+                'write_level' => $page->write_level,
                 'in_menu' => $page->in_menu,
-                'state' => $page->state instanceof \App\Enums\PageState ? $page->state->value : $page->state,
+                'state' => $page->state,
                 'menu_order' => $page->menu_order,
             ]);
 
@@ -213,10 +211,10 @@ class PageControllerTest extends TestCase
         $response = $this->actingAs($admin)
             ->post(route('pages.store'), [
                 'slug' => 'page-de-test',
-                'is_visible' => Visibility::GUEST->value,
-                'can_edit_role' => Visibility::ADMIN->value,
+                'read_level' => User::ROLE_GUEST,
+                'write_level' => User::ROLE_ADMIN,
                 'in_menu' => true,
-                'state' => PageState::DRAFT->value,
+                'state' => Page::STATE_DRAFT,
                 'menu_order' => 0,
             ]);
 
@@ -235,10 +233,10 @@ class PageControllerTest extends TestCase
             ->post(route('pages.store'), [
                 'title' => 'Nouvelle page',
                 'slug' => 'page-existante', // Slug déjà utilisé
-                'is_visible' => Visibility::GUEST->value,
-                'can_edit_role' => Visibility::ADMIN->value,
+                'read_level' => User::ROLE_GUEST,
+                'write_level' => User::ROLE_ADMIN,
                 'in_menu' => true,
-                'state' => PageState::DRAFT->value,
+                'state' => Page::STATE_DRAFT,
                 'menu_order' => 0,
             ]);
 
@@ -253,10 +251,10 @@ class PageControllerTest extends TestCase
         $response = $this->post(route('pages.store'), [
             'title' => 'Page de test',
             'slug' => 'page-de-test',
-            'is_visible' => Visibility::GUEST->value,
-            'can_edit_role' => Visibility::ADMIN->value,
+            'read_level' => User::ROLE_GUEST,
+            'write_level' => User::ROLE_ADMIN,
             'in_menu' => true,
-            'state' => PageState::DRAFT->value,
+            'state' => Page::STATE_DRAFT,
             'menu_order' => 0,
         ]);
 
@@ -294,7 +292,7 @@ class PageControllerTest extends TestCase
         $otherUser = User::factory()->create();
         $page = Page::factory()->create([
             'created_by' => $otherUser->id,
-            'can_edit_role' => Visibility::ADMIN->value,
+            'write_level' => User::ROLE_ADMIN,
         ]);
 
         $response = $this->actingAs($superAdmin)
@@ -302,10 +300,10 @@ class PageControllerTest extends TestCase
             ->patch(route('pages.update', $page), [
                 'title' => 'Page modifiée par super admin',
                 'slug' => $page->slug,
-                'is_visible' => $page->is_visible instanceof \App\Enums\Visibility ? $page->is_visible->value : $page->is_visible,
-                'can_edit_role' => $page->can_edit_role instanceof \App\Enums\Visibility ? $page->can_edit_role->value : $page->can_edit_role,
+                'read_level' => $page->read_level,
+                'write_level' => $page->write_level,
                 'in_menu' => $page->in_menu,
-                'state' => $page->state instanceof \App\Enums\PageState ? $page->state->value : $page->state,
+                'state' => $page->state,
                 'menu_order' => $page->menu_order,
             ]);
 

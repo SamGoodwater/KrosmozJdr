@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Scrapping;
 
 use App\Http\Controllers\Controller;
+use App\Services\Scrapping\Config\ScrappingConfigLoader;
 use App\Services\Scrapping\Orchestrator\ScrappingOrchestrator;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
@@ -25,9 +26,13 @@ class ScrappingController extends Controller
         'item' => 30000,
         'spell' => 20000,
         'panoply' => 1000, // Estimation, à ajuster selon les données réelles
+        // Aliases (items DofusDB)
+        'resource' => 30000,
+        'consumable' => 30000,
     ];
     public function __construct(
-        private ScrappingOrchestrator $orchestrator
+        private ScrappingOrchestrator $orchestrator,
+        private ScrappingConfigLoader $configLoader
     ) {}
 
     /**
@@ -37,14 +42,40 @@ class ScrappingController extends Controller
      */
     public function meta(): JsonResponse
     {
-        $meta = [];
-        foreach (self::ENTITY_LIMITS as $type => $maxId) {
-            $meta[] = [
-                'type' => $type,
-                'maxId' => $maxId,
-                'label' => $this->getEntityLabel($type),
-            ];
+        // Refonte in-place : si une config JSON existe, elle devient source de vérité pour les métadonnées.
+        // Fallback sur les limites historiques si une entité n'est pas encore configurée.
+        $metaByType = [];
+
+        try {
+            foreach ($this->configLoader->listEntities('dofusdb') as $entity) {
+                $cfg = $this->configLoader->loadEntity('dofusdb', $entity);
+                $maxId = (int) (($cfg['meta']['maxId'] ?? 0) ?: 0);
+                if ($maxId > 0) {
+                    $metaByType[$entity] = [
+                        'type' => $entity,
+                        'maxId' => $maxId,
+                        'label' => $cfg['label'] ?? $this->getEntityLabel($entity),
+                    ];
+                }
+            }
+        } catch (\Throwable $e) {
+            // On ne casse pas l'UI si la config est absente/invalide
+            Log::warning('Impossible de charger les métadonnées depuis la config scrapping', [
+                'error' => $e->getMessage(),
+            ]);
         }
+
+        foreach (self::ENTITY_LIMITS as $type => $maxId) {
+            if (!isset($metaByType[$type])) {
+                $metaByType[$type] = [
+                    'type' => $type,
+                    'maxId' => $maxId,
+                    'label' => $this->getEntityLabel($type),
+                ];
+            }
+        }
+
+        $meta = array_values($metaByType);
 
         return response()->json([
             'success' => true,
@@ -222,6 +253,54 @@ class ScrappingController extends Controller
                 'timestamp' => now()->toISOString(),
             ], 500);
         }
+    }
+
+    /**
+     * Import d'une ressource (via /items/{id}) avec validation type "ressource".
+     */
+    public function importResource(Request $request, int $id): JsonResponse
+    {
+        try {
+            $options = $this->extractOptions($request);
+            $result = $this->orchestrator->importResource($id, $options);
+
+            if ($result['success']) {
+                return response()->json([
+                    'success' => true,
+                    'message' => $result['message'] ?? 'Ressource importée avec succès',
+                    'data' => $result['data'] ?? null,
+                    'timestamp' => now()->toISOString(),
+                ], 201);
+            }
+
+            return response()->json([
+                'success' => false,
+                'message' => $result['message'] ?? 'Erreur lors de l\'import de la ressource',
+                'error' => $result['error'] ?? 'Erreur inconnue',
+                'timestamp' => now()->toISOString(),
+            ], 400);
+        } catch (\Throwable $e) {
+            Log::error('Erreur lors de l\'import de ressource via API', [
+                'id' => $id,
+                'error' => $e->getMessage(),
+            ]);
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Erreur lors de l\'import de la ressource',
+                'error' => $e->getMessage(),
+                'timestamp' => now()->toISOString(),
+            ], 500);
+        }
+    }
+
+    /**
+     * Import d'un consommable (alias de importItem).
+     */
+    public function importConsumable(Request $request, int $id): JsonResponse
+    {
+        // Même source DofusDB (/items). La conversion/intégration décide de la table cible.
+        return $this->importItem($request, $id);
     }
 
     /**
@@ -510,6 +589,13 @@ class ScrappingController extends Controller
         
         if ($request->has('validate_only')) {
             $options['validate_only'] = $request->boolean('validate_only');
+        }
+
+        // Option pour activer/désactiver le traitement des images (par défaut true)
+        if ($request->has('with_images')) {
+            $options['with_images'] = $request->boolean('with_images');
+        } else {
+            $options['with_images'] = true;
         }
         
         // Option pour inclure les relations (par défaut true)

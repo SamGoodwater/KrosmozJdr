@@ -16,7 +16,7 @@ use Illuminate\Support\Facades\DB;
  *
  * @example
  * PATCH /api/entities/consumables/bulk
- * { "ids":[1,2,3], "level":"50", "rarity":3, "consumable_type_id":5, "usable":true, "auto_update":false, "is_visible":"guest" }
+ * { "ids":[1,2,3], "level":"50", "rarity":3, "consumable_type_id":5, "state":"playable", "read_level":0, "write_level":3, "auto_update":false }
  */
 class ConsumableBulkController extends Controller
 {
@@ -35,8 +35,9 @@ class ConsumableBulkController extends Controller
             'price' => ['sometimes', 'nullable', 'string', 'max:255'],
             'description' => ['sometimes', 'nullable', 'string'],
             'dofusdb_id' => ['sometimes', 'nullable', 'string', 'max:255'],
-            'usable' => ['sometimes', 'nullable', 'boolean'],
-            'is_visible' => ['sometimes', 'nullable', 'string', 'in:guest,user,player,game_master,admin'],
+            'state' => ['sometimes', 'nullable', 'string', 'in:raw,draft,playable,archived'],
+            'read_level' => ['sometimes', 'nullable', 'integer', 'min:0', 'max:5'],
+            'write_level' => ['sometimes', 'nullable', 'integer', 'min:0', 'max:5'],
             'auto_update' => ['sometimes', 'nullable', 'boolean'],
             'image' => ['sometimes', 'nullable', 'string', 'max:255'],
         ]);
@@ -57,8 +58,9 @@ class ConsumableBulkController extends Controller
             'price',
             'description',
             'dofusdb_id',
-            'usable',
-            'is_visible',
+            'state',
+            'read_level',
+            'write_level',
             'auto_update',
             'image',
         ] as $k) {

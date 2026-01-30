@@ -22,21 +22,26 @@ class ConsumableTypeSeeder extends Seeder
         $createdBy = $systemUser ? $systemUser->id : null;
 
         $consumableTypes = [
-            ['name' => 'Potion', 'usable' => 1, 'is_visible' => 'guest'],
-            ['name' => 'Parchemin d\'expérience', 'usable' => 1, 'is_visible' => 'guest'],
-            ['name' => 'Objet de dons', 'usable' => 1, 'is_visible' => 'guest'],
-            ['name' => 'Pain', 'usable' => 1, 'is_visible' => 'guest'],
-            ['name' => 'Viande', 'usable' => 1, 'is_visible' => 'guest'],
-            ['name' => 'Poisson', 'usable' => 1, 'is_visible' => 'guest'],
-            ['name' => 'Fruit', 'usable' => 1, 'is_visible' => 'guest'],
-            ['name' => 'Légume', 'usable' => 1, 'is_visible' => 'guest'],
-            ['name' => 'Boisson', 'usable' => 1, 'is_visible' => 'guest'],
+            ['name' => 'Potion'],
+            ['name' => 'Parchemin d\'expérience'],
+            ['name' => 'Objet de dons'],
+            ['name' => 'Pain'],
+            ['name' => 'Viande'],
+            ['name' => 'Poisson'],
+            ['name' => 'Fruit'],
+            ['name' => 'Légume'],
+            ['name' => 'Boisson'],
         ];
 
         foreach ($consumableTypes as $consumableType) {
             ConsumableType::firstOrCreate(
                 ['name' => $consumableType['name']],
-                array_merge($consumableType, ['created_by' => $createdBy])
+                array_merge($consumableType, [
+                    'state' => 'playable',
+                    'read_level' => User::ROLE_GUEST,
+                    'write_level' => User::ROLE_ADMIN,
+                    'created_by' => $createdBy,
+                ])
             );
         }
 

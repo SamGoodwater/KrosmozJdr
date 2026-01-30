@@ -4,6 +4,7 @@ namespace App\Services\Scrapping\DataConversion;
 
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Config;
+use App\Models\User;
 
 /**
  * Service de conversion des données selon les caractéristiques KrosmozJDR
@@ -240,9 +241,21 @@ class DataConversionService
             'name' => $name,
             'description' => $description,
             'bonus' => $bonus,
-            'usable' => $rawData['usable'] ?? 0,
-            'is_visible' => $rawData['is_visible'] ?? 'guest',
+            'state' => (is_string($rawData['state'] ?? null) && $rawData['state'] !== '')
+                ? (string) $rawData['state']
+                : 'draft',
+            'read_level' => is_numeric($rawData['read_level'] ?? null)
+                ? (int) $rawData['read_level']
+                : (User::roleValue($rawData['read_level'] ?? User::ROLE_GUEST) ?? User::ROLE_GUEST),
+            'write_level' => is_numeric($rawData['write_level'] ?? null)
+                ? (int) $rawData['write_level']
+                : (User::roleValue($rawData['write_level'] ?? User::ROLE_ADMIN) ?? User::ROLE_ADMIN),
         ];
+
+        // Contrainte: write_level >= read_level
+        if ((int) $converted['write_level'] < (int) $converted['read_level']) {
+            $converted['write_level'] = (int) $converted['read_level'];
+        }
         
         // Préserver les items associés (si présents dans rawData)
         if (isset($rawData['items']) && is_array($rawData['items'])) {

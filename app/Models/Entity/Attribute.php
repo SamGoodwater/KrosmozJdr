@@ -14,8 +14,9 @@ use App\Models\Entity\Creature;
  * @property int $id
  * @property string $name
  * @property string|null $description
- * @property int $usable
- * @property string $is_visible
+ * @property string $state
+ * @property int $read_level
+ * @property int $write_level
  * @property string|null $image
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
@@ -35,10 +36,11 @@ use App\Models\Entity\Creature;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Attribute whereDescription($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Attribute whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Attribute whereImage($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Attribute whereIsVisible($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Attribute whereReadLevel($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Attribute whereName($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Attribute whereUpdatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Attribute whereUsable($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Attribute whereState($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Attribute whereWriteLevel($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Attribute withTrashed()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Attribute withoutTrashed()
  * @mixin \Eloquent
@@ -48,6 +50,11 @@ class Attribute extends Model
     /** @use HasFactory<\\Database\\Factories\\AttributeFactory> */
     use HasFactory, SoftDeletes;
 
+    public const STATE_RAW = 'raw';
+    public const STATE_DRAFT = 'draft';
+    public const STATE_PLAYABLE = 'playable';
+    public const STATE_ARCHIVED = 'archived';
+
     /**
      * The attributes that are mass assignable.
      *
@@ -56,8 +63,9 @@ class Attribute extends Model
     protected $fillable = [
         'name',
         'description',
-        'usable',
-        'is_visible',
+        'state',
+        'read_level',
+        'write_level',
         'image',
         'created_by',
     ];
@@ -68,7 +76,8 @@ class Attribute extends Model
      * @var array<string, string>
      */
     protected $casts = [
-        'usable' => 'integer',
+        'read_level' => 'integer',
+        'write_level' => 'integer',
     ];
 
     /**

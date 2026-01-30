@@ -31,10 +31,6 @@ export class Panoply extends BaseModel {
         return this._data.bonus || null;
     }
 
-    get usable() {
-        return this._data.usable ?? false;
-    }
-
     // ============================================
     // RELATIONS
     // ============================================
@@ -92,10 +88,6 @@ export class Panoply extends BaseModel {
                 return this._toDescriptionCell(format, size, options);
             case 'bonus':
                 return this._toBonusCell(format, size, options);
-            case 'usable':
-                return this._toUsableCell(format, size, options);
-            case 'is_visible':
-                return this._toIsVisibleCell(format, size, options);
             case 'dofusdb_id':
                 return this._toDofusdbIdCell(format, size, options);
             case 'items_count':
@@ -167,34 +159,6 @@ export class Panoply extends BaseModel {
                 sortValue: bonus,
             },
         };
-    }
-
-    /**
-     * Génère une cellule pour usable
-     * @private
-     */
-    _toUsableCell(format, size, options) {
-        const usable = this.usable ?? false;
-        const label = usable ? 'Oui' : 'Non';
-        
-        return {
-            type: 'badge',
-            value: label,
-            params: {
-                color: usable ? 'success' : 'neutral',
-                sortValue: usable ? 1 : 0,
-                searchValue: label,
-            },
-        };
-    }
-
-    /**
-     * Génère une cellule pour is_visible
-     * @private
-     */
-    _toIsVisibleCell(format, size, options) {
-        // Utiliser le VisibilityFormatter via la méthode de base
-        return super.toCell('is_visible', options);
     }
 
     /**
@@ -272,7 +236,9 @@ export class Panoply extends BaseModel {
             name: this.name,
             description: this.description,
             bonus: this.bonus,
-            usable: this.usable
+            state: this.state,
+            read_level: this.readLevel,
+            write_level: this.writeLevel
         };
     }
 }

@@ -12,10 +12,11 @@ Les entités sont au cœur du système : elles structurent toutes les données d
 
 Toutes les entités principales et typages disposent des champs suivants :
 
-| Champ      | Type     | Description                                      |
-| ---------- | -------- | ------------------------------------------------ |
-| usable     | tinyint  | Activé ? (0/1)                                   |
-| is_visible | string   | Rôle minimum pour voir l'entité (default: guest) |
+| Champ       | Type     | Description                                                |
+| ----------- | -------- | ---------------------------------------------------------- |
+| state       | string   | État (raw, draft, playable, archived)                      |
+| read_level  | tinyint  | Niveau minimal requis pour lire/voir (0..5)                |
+| write_level | tinyint  | Niveau minimal requis pour modifier (0..5, >= read_level)  |
 | created_by | FK users | Créateur (nullable, nullOnDelete ou cascade)     |
 | created_at | datetime | Date de création                                 |
 | updated_at | datetime | Date de modification                             |
@@ -86,8 +87,9 @@ Le tableau ci-dessous synthétise les principales entités du projet, leur type 
 | life_dice        | string   | Dés de vie (nullable)             |
 | specificity      | string   | Spécificité (nullable)            |
 | dofus_version    | string   | Version Dofus (default: 3)        |
-| usable           | tinyint  | Activé ? (default: 0)             |
-| is_visible       | string   | Rôle min. (default: guest)        |
+| state           | string   | État (raw, draft, playable, archived) |
+| read_level      | tinyint  | Niveau min. lecture (0..5)            |
+| write_level     | tinyint  | Niveau min. écriture (0..5)           |
 | image            | string   | URL image (nullable)              |
 | icon             | string   | URL icône (nullable)              |
 | auto_update      | boolean  | MAJ auto (default: true)          |
@@ -142,8 +144,9 @@ Le tableau ci-dessous synthétise les principales entités du projet, leur type 
 | price         | string   | Prix (nullable)                    |
 | rarity        | integer  | Rareté (default: 0)                |
 | dofus_version | string   | Version Dofus (default: 3)         |
-| usable        | tinyint  | Activé ? (default: 0)              |
-| is_visible    | string   | Rôle min. (default: guest)         |
+| state        | string   | État (raw, draft, playable, archived) |
+| read_level   | tinyint  | Niveau min. lecture (0..5)            |
+| write_level  | tinyint  | Niveau min. écriture (0..5)           |
 | image         | string   | URL image (nullable)               |
 | auto_update   | boolean  | MAJ auto (default: true)           |
 | item_type_id  | FK       | Type d'objet (nullable)            |
@@ -166,8 +169,9 @@ Le tableau ci-dessous synthétise les principales entités du projet, leur type 
 | weight           | string   | Poids (nullable)                  |
 | rarity           | integer  | Rareté (default: 0)               |
 | dofus_version    | string   | Version Dofus (default: 3)        |
-| usable           | tinyint  | Activé ? (default: 0)             |
-| is_visible       | string   | Rôle min. (default: guest)        |
+| state            | string   | État (raw, draft, playable, archived) |
+| read_level       | tinyint  | Niveau min. lecture (0..5)            |
+| write_level      | tinyint  | Niveau min. écriture (0..5)           |
 | image            | string   | URL image (nullable)              |
 | auto_update      | boolean  | MAJ auto (default: true)          |
 | resource_type_id | FK       | Type de ressource (nullable)      |
@@ -200,8 +204,9 @@ Le tableau ci-dessous synthétise les principales entités du projet, leur type 
 | category                         | integer  | Catégorie (default: 0)                |
 | is_magic                         | boolean  | Magique ? (default: true)             |
 | powerful                         | integer  | Puissance (default: 0)                |
-| usable                           | tinyint  | Activé ? (default: 0)                 |
-| is_visible                       | string   | Rôle min. (default: guest)            |
+| state                            | string   | État (raw, draft, playable, archived) |
+| read_level                       | tinyint  | Niveau min. lecture (0..5)            |
+| write_level                      | tinyint  | Niveau min. écriture (0..5)           |
 | image                            | string   | URL image (nullable)                  |
 | auto_update                      | boolean  | MAJ auto (default: true)              |
 | softDeletes                      | datetime | Suppression logique                   |
@@ -228,8 +233,9 @@ Le tableau ci-dessous synthétise les principales entités du projet, leur type 
 | is_magic              | boolean  | Magique ? (default: true)              |
 | ritual_available      | boolean  | Rituel dispo (default: true)           |
 | powerful              | string   | Puissance (nullable)                   |
-| usable                | tinyint  | Activé ? (default: 0)                  |
-| is_visible            | string   | Rôle min. (default: guest)             |
+| state                 | string   | État (raw, draft, playable, archived)  |
+| read_level            | tinyint  | Niveau min. lecture (0..5)             |
+| write_level           | tinyint  | Niveau min. écriture (0..5)            |
 | image                 | string   | URL image (nullable)                   |
 | softDeletes           | datetime | Suppression logique                    |
 | created_by            | FK users | Créateur (nullable, nullOnDelete)      |
@@ -243,8 +249,9 @@ Le tableau ci-dessous synthétise les principales entités du projet, leur type 
 | id          | integer  | Identifiant unique                |
 | name        | string   | Nom de l'attribut                 |
 | description | string   | Description (nullable)            |
-| usable      | tinyint  | Activé ? (default: 0)             |
-| is_visible  | string   | Rôle min. (default: guest)        |
+| state       | string   | État (raw, draft, playable, archived) |
+| read_level  | tinyint  | Niveau min. lecture (0..5)            |
+| write_level | tinyint  | Niveau min. écriture (0..5)           |
 | image       | string   | URL image (nullable)              |
 | softDeletes | datetime | Suppression logique               |
 | created_by  | FK users | Créateur (nullable, nullOnDelete) |
@@ -265,8 +272,9 @@ Le tableau ci-dessous synthétise les principales entités du projet, leur type 
 | recipe             | string   | Recette (nullable)                 |
 | price              | string   | Prix (nullable)                    |
 | rarity             | integer  | Rareté (default: 0)                |
-| usable             | tinyint  | Activé ? (default: 0)              |
-| is_visible         | string   | Rôle min. (default: guest)         |
+| state              | string   | État (raw, draft, playable, archived) |
+| read_level         | tinyint  | Niveau min. lecture (0..5)            |
+| write_level        | tinyint  | Niveau min. écriture (0..5)           |
 | dofus_version      | string   | Version Dofus (default: 3)         |
 | image              | string   | URL image (nullable)               |
 | auto_update        | boolean  | MAJ auto (default: true)           |
@@ -285,8 +293,9 @@ Le tableau ci-dessous synthétise les principales entités du projet, leur type 
 | description | string   | Description (nullable)               |
 | location    | string   | Localisation (nullable)              |
 | price       | integer  | Prix de base (default: 0)            |
-| usable      | tinyint  | Activé ? (default: 0)                |
-| is_visible  | string   | Rôle min. (default: guest)           |
+| state       | string   | État (raw, draft, playable, archived) |
+| read_level  | tinyint  | Niveau min. lecture (0..5)            |
+| write_level | tinyint  | Niveau min. écriture (0..5)           |
 | image       | string   | URL image (nullable)                 |
 | softDeletes | datetime | Suppression logique                  |
 | created_by  | FK users | Créateur (nullable, nullOnDelete)    |
@@ -301,8 +310,9 @@ Le tableau ci-dessous synthétise les principales entités du projet, leur type 
 | id          | integer  | Identifiant unique                |
 | name        | string   | Nom de la spécialisation          |
 | description | string   | Description (nullable)            |
-| usable      | tinyint  | Activé ? (default: 0)             |
-| is_visible  | string   | Rôle min. (default: guest)        |
+| state       | string   | État (raw, draft, playable, archived) |
+| read_level  | tinyint  | Niveau min. lecture (0..5)            |
+| write_level | tinyint  | Niveau min. écriture (0..5)           |
 | image       | string   | URL image (nullable)              |
 | softDeletes | datetime | Suppression logique               |
 | created_by  | FK users | Créateur (nullable, nullOnDelete) |
@@ -319,9 +329,10 @@ Le tableau ci-dessous synthétise les principales entités du projet, leur type 
 | slug        | string   | Identifiant URL            |
 | keyword     | string   | Mot-clé (nullable)         |
 | is_public   | boolean  | Public ? (default: false)  |
-| state       | integer  | État (default: 0)          |
-| usable      | tinyint  | Activé ? (default: 0)      |
-| is_visible  | string   | Rôle min. (default: guest) |
+| progress_state | integer | État d’avancement (default: 0) |
+| state       | string   | État (raw, draft, playable, archived) |
+| read_level  | tinyint  | Niveau min. lecture (0..5) |
+| write_level | tinyint  | Niveau min. écriture (0..5) |
 | image       | string   | URL image (nullable)       |
 | softDeletes | datetime | Suppression logique        |
 | created_by  | FK users | Créateur (cascadeOnDelete) |
@@ -338,9 +349,10 @@ Le tableau ci-dessous synthétise les principales entités du projet, leur type 
 | slug        | string   | Identifiant URL            |
 | keyword     | string   | Mot-clé (nullable)         |
 | is_public   | boolean  | Public ? (default: false)  |
-| state       | integer  | État (default: 0)          |
-| usable      | tinyint  | Activé ? (default: 0)      |
-| is_visible  | string   | Rôle min. (default: guest) |
+| progress_state | integer | État d’avancement (default: 0) |
+| state       | string   | État (raw, draft, playable, archived) |
+| read_level  | tinyint  | Niveau min. lecture (0..5) |
+| write_level | tinyint  | Niveau min. écriture (0..5) |
 | image       | string   | URL image (nullable)       |
 | softDeletes | datetime | Suppression logique        |
 | created_by  | FK users | Créateur (cascadeOnDelete) |
@@ -355,8 +367,9 @@ Le tableau ci-dessous synthétise les principales entités du projet, leur type 
 | ----------- | -------- | ---------------------------- |
 | id          | integer  | Identifiant unique           |
 | name        | string   | Nom du type d'objet          |
-| usable      | tinyint  | Activé ? (default: 0)        |
-| is_visible  | string   | Rôle min. (default: guest)   |
+| state       | string   | État (raw, draft, playable, archived) |
+| read_level  | tinyint  | Niveau min. lecture (0..5)           |
+| write_level | tinyint  | Niveau min. écriture (0..5)          |
 | softDeletes | datetime | Suppression logique          |
 | created_by  | FK users | Créateur (nullable, cascade) |
 | created_at  | datetime | Date de création             |
@@ -368,8 +381,9 @@ Le tableau ci-dessous synthétise les principales entités du projet, leur type 
 | ----------- | -------- | ---------------------------- |
 | id          | integer  | Identifiant unique           |
 | name        | string   | Nom du type de ressource     |
-| usable      | tinyint  | Activé ? (default: 0)        |
-| is_visible  | string   | Rôle min. (default: guest)   |
+| state       | string   | État (raw, draft, playable, archived) |
+| read_level  | tinyint  | Niveau min. lecture (0..5)           |
+| write_level | tinyint  | Niveau min. écriture (0..5)          |
 | softDeletes | datetime | Suppression logique          |
 | created_by  | FK users | Créateur (nullable, cascade) |
 | created_at  | datetime | Date de création             |
@@ -381,8 +395,9 @@ Le tableau ci-dessous synthétise les principales entités du projet, leur type 
 | ----------- | -------- | ---------------------------- |
 | id          | integer  | Identifiant unique           |
 | name        | string   | Nom du type de consommable   |
-| usable      | tinyint  | Activé ? (default: 0)        |
-| is_visible  | string   | Rôle min. (default: guest)   |
+| state       | string   | État (raw, draft, playable, archived) |
+| read_level  | tinyint  | Niveau min. lecture (0..5)           |
+| write_level | tinyint  | Niveau min. écriture (0..5)          |
 | softDeletes | datetime | Suppression logique          |
 | created_by  | FK users | Créateur (nullable, cascade) |
 | created_at  | datetime | Date de création             |
@@ -397,8 +412,9 @@ Le tableau ci-dessous synthétise les principales entités du projet, leur type 
 | description | string   | Description (nullable)            |
 | color       | string   | Couleur (default: zinc)           |
 | icon        | string   | Icône (nullable)                  |
-| usable      | tinyint  | Activé ? (default: 0)             |
-| is_visible  | string   | Rôle min. (default: guest)        |
+| state       | string   | État (raw, draft, playable, archived) |
+| read_level  | tinyint  | Niveau min. lecture (0..5)           |
+| write_level | tinyint  | Niveau min. écriture (0..5)          |
 | softDeletes | datetime | Suppression logique               |
 | created_by  | FK users | Créateur (nullable, nullOnDelete) |
 | created_at  | datetime | Date de création                  |
@@ -410,8 +426,9 @@ Le tableau ci-dessous synthétise les principales entités du projet, leur type 
 | ------------- | -------- | ------------------------------ |
 | id            | integer  | Identifiant unique             |
 | name          | string   | Nom de la race                 |
-| usable        | tinyint  | Activé ? (default: 0)          |
-| is_visible    | string   | Rôle min. (default: guest)     |
+| state         | string   | État (raw, draft, playable, archived) |
+| read_level    | tinyint  | Niveau min. lecture (0..5)            |
+| write_level   | tinyint  | Niveau min. écriture (0..5)           |
 | softDeletes   | datetime | Suppression logique            |
 | created_by    | FK users | Créateur (nullable, cascade)   |
 | id_super_race | FK       | Super race (nullable, cascade) |
@@ -426,8 +443,9 @@ Le tableau ci-dessous synthétise les principales entités du projet, leur type 
 | name        | string   | Nom de la panoplie           |
 | description | string   | Description (nullable)       |
 | bonus       | string   | Bonus accordé (nullable)     |
-| usable      | tinyint  | Activé ? (default: 0)        |
-| is_visible  | string   | Rôle min. (default: guest)   |
+| state       | string   | État (raw, draft, playable, archived) |
+| read_level  | tinyint  | Niveau min. lecture (0..5)           |
+| write_level | tinyint  | Niveau min. écriture (0..5)          |
 | softDeletes | datetime | Suppression logique          |
 | created_by  | FK users | Créateur (nullable, cascade) |
 | created_at  | datetime | Date de création             |

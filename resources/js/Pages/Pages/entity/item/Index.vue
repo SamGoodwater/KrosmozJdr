@@ -29,7 +29,7 @@ import { getItemFieldDescriptors } from "@/Entities/item/item-descriptors";
 import { createFieldsConfigFromDescriptors, createDefaultEntityFromDescriptors } from "@/Utils/entity/descriptor-form";
 
 // Props Inertia (gardées à titre documentaire, même si non utilisées directement ici)
-defineProps({
+const props = defineProps({
     items: {
         type: Object,
         required: true
@@ -37,6 +37,10 @@ defineProps({
     filters: {
         type: Object,
         default: () => ({})
+    },
+    itemTypes: {
+        type: Array,
+        default: () => [],
     }
 });
 

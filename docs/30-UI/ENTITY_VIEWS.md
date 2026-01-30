@@ -58,7 +58,7 @@ flowchart TB
 | Section | Rôle | Layout (guideline) | Responsive | Permissions | Notes |
 |---|---|---|---|---|---|
 | **Main container** | Card globale | `flex-col`, `gap`, `w-full` | Large/Compact prennent la place max ; Minimal peut être `auto` ou largeur fixée | n/a | Certaines propriétés peuvent influencer la couleur (ex: élément/type → ombre/contour) |
-| **Header** | Identité | `flex`, `items-start`, `justify-between`, `gap` | si largeur > ~200px : image ≈ 1/3 ; sinon elle se réduit | n/a | Le **dot usable** est positionné en haut à gauche (très discret) |
+| **Header** | Identité | `flex`, `items-start`, `justify-between`, `gap` | si largeur > ~200px : image ≈ 1/3 ; sinon elle se réduit | n/a | Le **dot d’état** (`state`) est positionné en haut à gauche (très discret) |
 | **Header/Image** | Image carrée | conteneur carré, centré, fond transparent | s’adapte à la place | n/a | Interactions image (zoom/crop/rotate) : futur (admin vs non-admin) |
 | **Header/Barre d’action** | Actions contextuelles | icônes + tooltip, align top-right | si manque de place : bascule en menu (jusqu’à “tout sauf fermer”) | selon permissions + contexte | “Fermer” reste l’action toujours dispo en modal |
 | **Header/Title** | Titre | multi-lignes sauf Minimal compacted | Minimal compacted : 1 ligne tronquée | n/a | texte légèrement plus grand |
@@ -160,7 +160,7 @@ Utilise ces règles dans l’ordre :
 7) **Est-ce un lien vers d’autres entités (relations) ?**
 - Oui → **Body/Entités liées**
 
-> Cas spécial : `usable` s’affiche plutôt en **dot** (indicateur discret) + tooltip.
+> Cas spécial : `state` s’affiche plutôt en **dot** (indicateur discret) + tooltip.
 
 ### Tailles & responsive (contrats)
 
@@ -229,8 +229,8 @@ Dans **Body/Entités liées** :
   - **Compact/Minimal** : généralement non (la valeur suffit).  
   - **Large** : oui si utile (explicite).
 
-- **Comment afficher `usable` ?**
-  - Plutôt un **dot discret** (success/error) + tooltip **“Adapté au JDR / Non adapté au JDR”** (pas une colonne bruyante).
+- **Comment afficher `state` ?**
+  - Plutôt un **dot discret** (raw/draft/playable/archived) + tooltip (pas une colonne bruyante).
 
 - **Comment gérer les permissions ?**
   - Filtrer via `desc.permissions.visibleIf(ctx)` **avant** d’afficher/placer le champ.
@@ -267,8 +267,9 @@ Ce tableau sert de **source de vérité** pour guider le placement des propriét
 
 | Propriété                                                                                      | Section préférable                  | Priorité | Icone | Nom                                                     | Abrégé                                | Vue Minimal | Vue Compact | Vue Large | Condition | Permission |
 | ---------------------------------------------------------------------------------------------- | ----------------------------------- | -------- | ----- | ------------------------------------------------------- | ------------------------------------- | ----------- | ----------- | --------- | --------- | ---------- |
-| usable                                                                                         | Sous forme de dot en haut à gauche  | 5        | v     | Adapté                                                  |                                       | V           | V           | N + V     | all        |
-| is_visible                                                                                     | info_user_can_edit                  | 3        | -     | Visible par                                             | -                                     | -           | N + V       | N + V     |           | canEdit    |
+| state                                                                                          | Sous forme de dot en haut à gauche  | 5        | v     | État                                                    |                                       | V           | V           | N + V     | all        |
+| read_level                                                                                     | info_user_can_edit                  | 3        | -     | Lecture min.                                            | -                                     | -           | N + V       | N + V     |           | all        |
+| write_level                                                                                    | info_user_can_edit                  | 3        | -     | Écriture min.                                           | -                                     | -           | N + V       | N + V     |           | canEdit    |
 | created_by                                                                                     | info_user_can_edit                  | 1        | -     | Créé par                                                | -                                     | -           | N + V       | N + V     |           | canEdit    |
 | created_at                                                                                     | info_user_can_edit                  | 1        | -     | Créé le                                                 | -                                     | -           | N + V       | N + V     |           | canEdit    |
 | updated_at                                                                                     | info_user_can_edit                  | 2        | -     | Mis à jour le                                           | -                                     | -           | N + V       | N + V     |           | canEdit    |
@@ -345,7 +346,7 @@ Ces composants sont à privilégier pour éviter la duplication et aider la gén
     - `dot` : indicateur discret en **haut-gauche** (ex : `EntityUsableDot`).
     - `mainInfosRight` : pour les metas en **minimal** (icônes à droite du titre).
 
-- **Atom — Indicateur usable**
+- **Atom — Indicateur d’état**
   - `resources/js/Pages/Atoms/data-display/EntityUsableDot.vue`
   - Rôle : petit dot discret (success/error) + tooltip **“Adapté au JDR / Non adapté au JDR”**.
   - Usage : tableau (ligne), header de vue, liste, etc.
@@ -368,12 +369,12 @@ Ces composants sont à privilégier pour éviter la duplication et aider la gén
   - **Actions** en haut à droite (au plus proche du bouton fermer du panel).
   - **Close** : en modal, le bouton “fermer” doit être **dans le même groupe visuel** que les autres actions (continuité, pas d’élément flottant).
   - **Overlays sur image** :
-    - `usable` : dot discret en haut-gauche de l’image.
+    - `state` : dot discret en haut-gauche de l’image.
     - `level` : badge discret en haut-droite de l’image.
     - Au **hover** de l’image : masquer ces overlays pour laisser l’image “respirer”.
     - Au **hover** de l’image : afficher l’image en `object-contain` (non crop) si la vue utilise un rendu “cover” par défaut.
     - **Zone hover** : éviter de déclencher le hover sur le haut de l’image (garder ~20% “safe”) pour laisser accessibles les tooltips des overlays.
-    - **Alignement** : `usable` (dot) et `level` (badge) doivent être alignés sur la même “ligne” (même offset `top`), à gauche/droite.
+    - **Alignement** : `state` (dot) et `level` (badge) doivent être alignés sur la même “ligne” (même offset `top`), à gauche/droite.
 
 - **Infos importantes (metas)**
   - Se référer au découpage par sections (**Main infos** en header, puis **Infos top/mid/bottom** dans le body).
@@ -432,13 +433,13 @@ Cet exemple sert de **modèle** pour implémenter les autres entités.
   - `resource_type`
   - `level`
   - `rarity`
-- **Header/usable** :
+- **Header/state** :
   - **dot uniquement** sur l’image (discret, haut-gauche)
-  - pas de badge/colonne “usable” dans les metas (éviter le bruit visuel)
+  - pas de badge/colonne “state” dans les metas (éviter le bruit visuel)
 - **Header/level** :
   - En **Large**, `level` reste aussi dans **Header/Main infos** (source principale).
   - Optionnel : valeur affichée en **badge discret** sur l’image (haut-droit) pour un repère visuel rapide.
-  - au hover de l’image : on masque le badge (et le dot usable) pour laisser l’image ressortir
+  - au hover de l’image : on masque le badge (et le dot state) pour laisser l’image ressortir
 - **Body/Description** :
   - Large : `description` (en `subtitle` sous le header)
   - Minimal : le body est visible au hover (extended), selon le contrat
@@ -448,7 +449,8 @@ Cet exemple sert de **modèle** pour implémenter les autres entités.
 - **Footer/Infos UserCanEdit (paramètres)** :
   - `dofus_version`
   - `auto_update`
-  - `is_visible`
+  - `read_level`
+  - `write_level`
 - **Footer / infos techniques** :
   - Large : `dofusdb_id`, `official_id`, `created_by`, `created_at`, `updated_at` (si `visibleIf(ctx)` le permet)
 

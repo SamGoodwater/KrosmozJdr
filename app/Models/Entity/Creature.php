@@ -100,8 +100,9 @@ use App\Models\Entity\Monster;
  * @property string|null $other_consumable
  * @property string|null $other_resource
  * @property string|null $other_spell
- * @property int $usable
- * @property string $is_visible
+ * @property string $state
+ * @property int $read_level
+ * @property int $write_level
  * @property string|null $image
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
@@ -167,7 +168,7 @@ use App\Models\Entity\Monster;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Creature whereInvestigationBonus($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Creature whereInvestigationMastery($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Creature whereInvocation($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Creature whereIsVisible($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Creature whereReadLevel($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Creature whereKamas($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Creature whereLevel($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Creature whereLife($value)
@@ -214,7 +215,8 @@ use App\Models\Entity\Monster;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Creature whereTacle($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Creature whereTouch($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Creature whereUpdatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Creature whereUsable($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Creature whereState($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Creature whereWriteLevel($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Creature whereVitality($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Creature withTrashed()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Creature withoutTrashed()
@@ -224,6 +226,11 @@ class Creature extends Model
 {
     /** @use HasFactory<\Database\Factories\CreatureFactory> */
     use HasFactory, SoftDeletes;
+
+    public const STATE_RAW = 'raw';
+    public const STATE_DRAFT = 'draft';
+    public const STATE_PLAYABLE = 'playable';
+    public const STATE_ARCHIVED = 'archived';
 
     /**
      * The attributes that are mass assignable.
@@ -312,8 +319,9 @@ class Creature extends Model
         'other_consumable',
         'other_resource',
         'other_spell',
-        'usable',
-        'is_visible',
+        'state',
+        'read_level',
+        'write_level',
         'image',
         'created_by',
     ];
@@ -325,7 +333,8 @@ class Creature extends Model
      */
     protected $casts = [
         'hostility' => 'integer',
-        'usable' => 'integer',
+        'read_level' => 'integer',
+        'write_level' => 'integer',
     ];
 
     /**

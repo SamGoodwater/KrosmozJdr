@@ -257,5 +257,5 @@ Le test manquant pour `ItemBulkController` a été créé :
 - ✅ `ItemBulkControllerTest.php` (6 tests)
 - ✅ Tous les tests passent (165 tests, 966 assertions)
 
-**Note** : `ItemBulkController` n'a pas de validation pour `item_type_id` dans le contrôleur, donc le test se concentre sur les champs validés (`rarity`, `is_visible`, etc.).
+**Note** : `ItemBulkController` n'a pas de validation pour `item_type_id` dans le contrôleur, donc le test se concentre sur les champs validés (`rarity`, `state`, `read_level`, etc.).
 

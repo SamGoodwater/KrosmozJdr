@@ -41,7 +41,7 @@ class ScrappingControllerTest extends TestCase
         ];
 
         Http::fake([
-            'api.dofusdb.fr/breeds/1' => Http::response($mockData, 200),
+            'api.dofusdb.fr/breeds/1*' => Http::response($mockData, 200),
         ]);
 
         $response = $this->postJson('/api/scrapping/import/class/1');
@@ -114,7 +114,7 @@ class ScrappingControllerTest extends TestCase
         ];
 
         Http::fake([
-            'api.dofusdb.fr/monsters/31' => Http::response($mockData, 200),
+            'api.dofusdb.fr/monsters/31*' => Http::response($mockData, 200),
         ]);
 
         $response = $this->postJson('/api/scrapping/import/monster/31');
@@ -141,7 +141,7 @@ class ScrappingControllerTest extends TestCase
         ];
 
         Http::fake([
-            'api.dofusdb.fr/items/15' => Http::response($mockData, 200),
+            'api.dofusdb.fr/items/15*' => Http::response($mockData, 200),
         ]);
 
         $response = $this->postJson('/api/scrapping/import/item/15');
@@ -201,14 +201,14 @@ class ScrappingControllerTest extends TestCase
         ];
 
         Http::fake([
-            'api.dofusdb.fr/breeds/1' => Http::response([
+            'api.dofusdb.fr/breeds/1*' => Http::response([
                 'id' => 1,
                 'description' => ['fr' => 'Description'],
                 'life' => 50,
                 'life_dice' => '1d6',
                 'specificity' => 'Force'
             ], 200),
-            'api.dofusdb.fr/items/15' => Http::response([
+            'api.dofusdb.fr/items/15*' => Http::response([
                 'id' => 15,
                 'name' => ['fr' => 'Purée pique-fêle'],
                 'description' => ['fr' => 'Description'],

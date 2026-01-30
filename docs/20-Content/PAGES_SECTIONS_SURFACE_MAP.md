@@ -72,21 +72,21 @@
 ### Modèles (helpers & scopes)
 
 - `app/Models/Page.php`
-  - Scopes: `published`, `inMenu`, `visibleFor`, `forMenu`
+  - Scopes: `playable`, `inMenu`, `visibleFor`, `forMenu`
   - Helpers: `isVisibleFor`, `canBeViewedBy`, `canBeEditedBy`
-  - Casts: `is_visible`/`can_edit_role` (`Visibility`), `state` (`PageState`)
+  - Casts: `read_level`/`write_level` (int), `state` (string)
 
 - `app/Models/Section.php`
-  - Scopes: `published`, `visibleFor`, `displayable`
+  - Scopes: `playable`, `visibleFor`, `displayable`
   - Helpers: `isVisibleFor`, `canBeViewedBy`, `canBeEditedBy`
-  - Casts: `template` (`SectionType`), `data/settings` (array), `is_visible`/`can_edit_role` (`Visibility`), `state` (`PageState`)
+  - Casts: `template` (`SectionType`), `data/settings` (array), `read_level`/`write_level` (int), `state` (string)
 
 ---
 
 ## Backend — Validation (FormRequests)
 
 - Pages
-  - `app/Http/Requests/StorePageRequest.php` (autorise via policy + règles enums `Visibility`/`PageState`)
+  - `app/Http/Requests/StorePageRequest.php` (autorise via policy + règles sur `state` + `read_level/write_level`)
   - `app/Http/Requests/UpdatePageRequest.php` (autorise via policy)
 
 - Sections

@@ -17,7 +17,7 @@ describe('Section Workflow - Intégration', () => {
       // 1. Données brutes (Entity)
       const rawSection = createMockSection({
         template: 'text',
-        state: 'published',
+        state: 'playable',
         data: { content: 'Hello World' },
       });
 

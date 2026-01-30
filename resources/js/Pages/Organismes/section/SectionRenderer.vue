@@ -210,7 +210,7 @@ const handleCloseParamsModal = () => {
 /**
  * Gère la mise à jour des paramètres
  * 
- * @param {Object} updatedParams - Paramètres mis à jour (title, slug, order, is_visible, can_edit_role, state, settings)
+ * @param {Object} updatedParams - Paramètres mis à jour (title, slug, order, read_level, write_level, state, settings)
  */
 const handleParamsUpdated = async (updatedParams) => {
     const id = sectionId.value; // Utiliser le computed sectionId (avec fallback)

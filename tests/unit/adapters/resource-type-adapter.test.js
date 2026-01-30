@@ -23,8 +23,8 @@ describe('resource-type-adapter (version simplifiée)', () => {
                     capabilities: { viewAny: true, updateAny: true },
                 },
                 entities: [
-                    { id: 1, name: 'Resource Type 1', usable: true },
-                    { id: 2, name: 'Resource Type 2', usable: false },
+                    { id: 1, name: 'Resource Type 1', state: 'playable' },
+                    { id: 2, name: 'Resource Type 2', state: 'draft' },
                 ],
             };
 
@@ -41,7 +41,7 @@ describe('resource-type-adapter (version simplifiée)', () => {
             expect(result.rows[0].rowParams.entity).toBeInstanceOf(ResourceType);
             expect(result.rows[0].rowParams.entity.id).toBe(1);
             expect(result.rows[0].rowParams.entity.name).toBe('Resource Type 1');
-            expect(result.rows[0].rowParams.entity.usable).toBe(true);
+            expect(result.rows[0].rowParams.entity.state).toBe('playable');
         });
 
         it('gère un tableau vide', () => {
@@ -68,7 +68,7 @@ describe('resource-type-adapter (version simplifiée)', () => {
         });
 
         it('préserve toutes les propriétés de l\'entité dans l\'instance ResourceType', () => {
-            const entity = { id: 1, name: 'Test', usable: true, customField: 'custom' };
+            const entity = { id: 1, name: 'Test', state: 'playable', customField: 'custom' };
             const response = {
                 meta: { entityType: 'resource-types', query: {}, capabilities: {} },
                 entities: [entity],
@@ -80,7 +80,7 @@ describe('resource-type-adapter (version simplifiée)', () => {
             expect(resourceType).toBeInstanceOf(ResourceType);
             expect(resourceType.id).toBe(1);
             expect(resourceType.name).toBe('Test');
-            expect(resourceType.usable).toBe(true);
+            expect(resourceType.state).toBe('playable');
         });
     });
 });

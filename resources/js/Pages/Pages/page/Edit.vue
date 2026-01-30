@@ -20,8 +20,7 @@ import ToggleField from '@/Pages/Molecules/data-input/ToggleField.vue';
 import Btn from '@/Pages/Atoms/action/Btn.vue';
 import Container from '@/Pages/Atoms/data-display/Container.vue';
 import Alert from '@/Pages/Atoms/feedback/Alert.vue';
-import { getPageStateOptions } from '@/Utils/enums/PageState';
-import { getVisibilityOptions } from '@/Utils/enums/Visibility';
+import { getEntityStateOptions, getUserRoleOptions } from '@/Utils/Entity/SharedConstants';
 import PageSectionEditor from '@/Pages/Organismes/section/PageSectionEditor.vue';
 import { TransformService } from '@/Utils/Services';
 
@@ -48,8 +47,8 @@ const pageData = computed(() => {
 setPageTitle(`Modifier : ${pageData.value?.title || 'Page'}`);
 
 // Options pour les selects
-const stateOptions = computed(() => getPageStateOptions());
-const visibilityOptions = computed(() => getVisibilityOptions());
+const stateOptions = computed(() => getEntityStateOptions());
+const roleOptions = computed(() => getUserRoleOptions());
 
 const parentPageOptions = computed(() => {
     return [
@@ -65,8 +64,8 @@ const parentPageOptions = computed(() => {
 const form = useForm({
     title: pageData.value?.title || '',
     slug: pageData.value?.slug || '',
-    is_visible: pageData.value?.is_visible || 'guest',
-    can_edit_role: pageData.value?.can_edit_role || 'admin',
+    read_level: pageData.value?.read_level ?? 0,
+    write_level: pageData.value?.write_level ?? 4,
     in_menu: pageData.value?.in_menu ?? true,
     state: pageData.value?.state || 'draft',
     parent_id: pageData.value?.parent_id || null,
@@ -163,18 +162,18 @@ const submit = () => {
                     
                     <!-- Visibilité -->
                     <SelectField
-                        v-model="form.is_visible"
-                        label="Visibilité"
-                        :options="visibilityOptions"
+                        v-model="form.read_level"
+                        label="Lecture (min.)"
+                        :options="roleOptions"
                         required
                         helper="Qui peut voir cette page ?"
                     />
                     
                     <!-- Rôle requis pour modifier -->
                     <SelectField
-                        v-model="form.can_edit_role"
-                        label="Rôle requis pour modifier"
-                        :options="visibilityOptions"
+                        v-model="form.write_level"
+                        label="Écriture (min.)"
+                        :options="roleOptions"
                         required
                         helper="Rôle minimum requis pour modifier cette page (admin par défaut)"
                     />
@@ -185,7 +184,7 @@ const submit = () => {
                         label="État"
                         :options="stateOptions"
                         required
-                        helper="État de publication de la page"
+                        helper="Cycle de vie de la page"
                     />
                     
                     <!-- Page parente -->

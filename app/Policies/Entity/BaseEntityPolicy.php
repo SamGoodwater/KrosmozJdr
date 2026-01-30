@@ -13,6 +13,28 @@ use Illuminate\Database\Eloquent\Model;
  */
 abstract class BaseEntityPolicy
 {
+    private function userLevel(?User $user): int
+    {
+        // Invité = 0
+        return $user ? (int) ($user->role ?? 0) : 0;
+    }
+
+    private function state(Model $model): string
+    {
+        return (string) ($model->state ?? 'draft');
+    }
+
+    private function readLevel(Model $model): int
+    {
+        return (int) ($model->read_level ?? 0);
+    }
+
+    private function writeLevel(Model $model): int
+    {
+        // Par défaut, un niveau "éditeur" (MJ).
+        return (int) ($model->write_level ?? 3);
+    }
+
     /**
      * Determine whether the user can view any models.
      *
@@ -30,7 +52,25 @@ abstract class BaseEntityPolicy
      */
     public function view(?User $user, Model $model): bool
     {
-        return true;
+        if ($user && $user->isAdmin()) {
+            return true;
+        }
+
+        $state = $this->state($model);
+        $level = $this->userLevel($user);
+
+        // Archivé: réservé aux admins (simplification)
+        if ($state === 'archived') {
+            return false;
+        }
+
+        // Jouable: lisible si niveau >= read_level
+        if ($state === 'playable') {
+            return $level >= $this->readLevel($model);
+        }
+
+        // Raw/Draft: réservé aux éditeurs (niveau >= write_level)
+        return $user !== null && $level >= $this->writeLevel($model);
     }
 
     /**
@@ -62,7 +102,11 @@ abstract class BaseEntityPolicy
      */
     public function update(User $user, Model $model): bool
     {
-        return $user->isAdmin();
+        if ($user->isAdmin()) {
+            return true;
+        }
+
+        return $this->userLevel($user) >= $this->writeLevel($model);
     }
 
     /**
@@ -73,7 +117,7 @@ abstract class BaseEntityPolicy
      */
     public function updateAny(User $user): bool
     {
-        return $user->isAdmin();
+        return $user->isGameMaster();
     }
 
     /**
@@ -83,7 +127,7 @@ abstract class BaseEntityPolicy
      */
     public function delete(User $user, Model $model): bool
     {
-        return $user->isAdmin();
+        return $this->update($user, $model);
     }
 
     /**

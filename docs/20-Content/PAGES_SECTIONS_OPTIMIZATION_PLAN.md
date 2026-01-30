@@ -98,7 +98,7 @@ resources/js/Pages/Organismes/section/mappers/
 **Changements** :
 - Convertir en classe statique
 - Méthodes statiques
-- Centraliser les options (Visibility, PageState)
+- Centraliser les options (rôles 0..5, `state` raw/draft/playable/archived)
 
 **Fichiers à modifier** :
 - `SectionParamsModal.vue` : Remplacer `useSectionParameters()` par `SectionParameterService`

@@ -16,7 +16,7 @@ use Illuminate\Support\Facades\DB;
  *
  * @example
  * PATCH /api/entities/resources/bulk
- * { "ids":[1,2,3], "usable":true, "auto_update":false, "resource_type_id": 23, "is_visible":"guest" }
+ * { "ids":[1,2,3], "state":"playable", "read_level":0, "write_level":3, "auto_update":false, "resource_type_id": 23 }
  */
 class ResourceBulkController extends Controller
 {
@@ -30,9 +30,10 @@ class ResourceBulkController extends Controller
 
             // Champs bulk (les clés absentes ne sont pas modifiées)
             'resource_type_id' => ['sometimes', 'nullable', 'integer', 'exists:resource_types,id'],
-            'usable' => ['sometimes', 'boolean'],
+            'state' => ['sometimes', 'string', 'in:raw,draft,playable,archived'],
+            'read_level' => ['sometimes', 'integer', 'min:0', 'max:5'],
+            'write_level' => ['sometimes', 'integer', 'min:0', 'max:5'],
             'auto_update' => ['sometimes', 'boolean'],
-            'is_visible' => ['sometimes', 'string', 'in:guest,user,game_master,admin'],
             'rarity' => ['sometimes', 'nullable', 'integer', 'min:0', 'max:5'],
 
             // Champs "métier" utiles en édition multiple (nullable => possibilité de vider)
@@ -56,9 +57,10 @@ class ResourceBulkController extends Controller
         $patch = [];
         foreach ([
             'resource_type_id',
-            'usable',
+            'state',
+            'read_level',
+            'write_level',
             'auto_update',
-            'is_visible',
             'rarity',
             'level',
             'price',

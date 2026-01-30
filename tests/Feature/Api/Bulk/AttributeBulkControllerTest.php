@@ -34,17 +34,17 @@ class AttributeBulkControllerTest extends TestCase
         $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
         $attribute1 = Attribute::factory()->create([
             'name' => 'Attribute 1',
-            'is_visible' => 'guest',
+            'read_level' => User::ROLE_GUEST,
         ]);
         $attribute2 = Attribute::factory()->create([
             'name' => 'Attribute 2',
-            'is_visible' => 'user',
+            'read_level' => User::ROLE_USER,
         ]);
 
         $response = $this->actingAs($admin)
             ->patchJson('/api/entities/attributes/bulk', [
                 'ids' => [$attribute1->id, $attribute2->id],
-                'is_visible' => 'admin',
+                'read_level' => User::ROLE_ADMIN,
             ]);
 
         $response->assertOk()
@@ -56,11 +56,11 @@ class AttributeBulkControllerTest extends TestCase
 
         $this->assertDatabaseHas('attributes', [
             'id' => $attribute1->id,
-            'is_visible' => 'admin',
+            'read_level' => User::ROLE_ADMIN,
         ]);
         $this->assertDatabaseHas('attributes', [
             'id' => $attribute2->id,
-            'is_visible' => 'admin',
+            'read_level' => User::ROLE_ADMIN,
         ]);
     }
 
@@ -74,7 +74,7 @@ class AttributeBulkControllerTest extends TestCase
         $response = $this->actingAs($admin)
             ->patchJson('/api/entities/attributes/bulk', [
                 'ids' => [99999, 99998],
-                'is_visible' => 'admin',
+                'read_level' => User::ROLE_ADMIN,
             ]);
 
         $response->assertStatus(422)
@@ -90,20 +90,20 @@ class AttributeBulkControllerTest extends TestCase
         $attribute = Attribute::factory()->create([
             'name' => 'Original Name',
             'description' => 'Original Description',
-            'is_visible' => 'guest',
+            'read_level' => User::ROLE_GUEST,
         ]);
 
         $response = $this->actingAs($admin)
             ->patchJson('/api/entities/attributes/bulk', [
                 'ids' => [$attribute->id],
-                'is_visible' => 'admin',
+                'read_level' => User::ROLE_ADMIN,
                 // name et description ne sont pas modifiés
             ]);
 
         $response->assertOk();
 
         $attribute->refresh();
-        $this->assertEquals('admin', $attribute->is_visible);
+        $this->assertEquals(User::ROLE_ADMIN, $attribute->read_level);
         $this->assertEquals('Original Name', $attribute->name); // Non modifié
         $this->assertEquals('Original Description', $attribute->description); // Non modifié
     }
@@ -119,7 +119,7 @@ class AttributeBulkControllerTest extends TestCase
         $response = $this->actingAs($user)
             ->patchJson('/api/entities/attributes/bulk', [
                 'ids' => [$attribute->id],
-                'is_visible' => 'admin',
+                'read_level' => User::ROLE_ADMIN,
             ]);
 
         $response->assertForbidden();

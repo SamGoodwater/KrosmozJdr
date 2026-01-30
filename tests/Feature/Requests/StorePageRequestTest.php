@@ -4,8 +4,6 @@ namespace Tests\Feature\Requests;
 
 use App\Models\User;
 use App\Models\Page;
-use App\Enums\Visibility;
-use App\Enums\PageState;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -15,7 +13,7 @@ use Tests\TestCase;
  * Vérifie que les règles de validation sont correctement appliquées :
  * - Titre obligatoire (max 255)
  * - Slug obligatoire, unique, format correct
- * - Enums valides (is_visible, can_edit_role, state)
+ * - Valeurs valides (read_level, write_level, state)
  */
 class StorePageRequestTest extends TestCase
 {
@@ -26,13 +24,13 @@ class StorePageRequestTest extends TestCase
      */
     public function test_title_required(): void
     {
-        $admin = User::factory()->create(['role' => 4]);
+        $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
 
         $response = $this->actingAs($admin)->postJson(route('pages.store'), [
             'slug' => 'test-page',
-            'is_visible' => Visibility::GUEST->value,
-            'can_edit_role' => Visibility::ADMIN->value,
-            'state' => PageState::DRAFT->value,
+            'read_level' => User::ROLE_GUEST,
+            'write_level' => User::ROLE_ADMIN,
+            'state' => Page::STATE_DRAFT,
             // title manquant
         ]);
 
@@ -45,14 +43,14 @@ class StorePageRequestTest extends TestCase
      */
     public function test_title_max_length(): void
     {
-        $admin = User::factory()->create(['role' => 4]);
+        $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
 
         $response = $this->actingAs($admin)->postJson(route('pages.store'), [
             'title' => str_repeat('a', 256),
             'slug' => 'test-page',
-            'is_visible' => Visibility::GUEST->value,
-            'can_edit_role' => Visibility::ADMIN->value,
-            'state' => PageState::DRAFT->value,
+            'read_level' => User::ROLE_GUEST,
+            'write_level' => User::ROLE_ADMIN,
+            'state' => Page::STATE_DRAFT,
         ]);
 
         $response->assertStatus(422);
@@ -64,13 +62,13 @@ class StorePageRequestTest extends TestCase
      */
     public function test_slug_auto_generated_from_title(): void
     {
-        $admin = User::factory()->create(['role' => 4]);
+        $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
 
         $response = $this->actingAs($admin)->postJson(route('pages.store'), [
             'title' => 'Test Page Auto Slug',
-            'is_visible' => Visibility::GUEST->value,
-            'can_edit_role' => Visibility::ADMIN->value,
-            'state' => PageState::DRAFT->value,
+            'read_level' => User::ROLE_GUEST,
+            'write_level' => User::ROLE_ADMIN,
+            'state' => Page::STATE_DRAFT,
             // slug manquant = sera généré
         ]);
 
@@ -86,7 +84,7 @@ class StorePageRequestTest extends TestCase
      */
     public function test_slug_unique(): void
     {
-        $admin = User::factory()->create(['role' => 4]);
+        $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
         
         // Créer une page existante
         Page::factory()->create(['slug' => 'existing-slug']);
@@ -94,9 +92,9 @@ class StorePageRequestTest extends TestCase
         $response = $this->actingAs($admin)->postJson(route('pages.store'), [
             'title' => 'Test Page',
             'slug' => 'existing-slug', // Slug déjà utilisé
-            'is_visible' => Visibility::GUEST->value,
-            'can_edit_role' => Visibility::ADMIN->value,
-            'state' => PageState::DRAFT->value,
+            'read_level' => User::ROLE_GUEST,
+            'write_level' => User::ROLE_ADMIN,
+            'state' => Page::STATE_DRAFT,
         ]);
 
         $response->assertStatus(422);
@@ -108,15 +106,15 @@ class StorePageRequestTest extends TestCase
      */
     public function test_slug_format(): void
     {
-        $admin = User::factory()->create(['role' => 4]);
+        $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
 
         // Test avec espaces
         $response = $this->actingAs($admin)->postJson(route('pages.store'), [
             'title' => 'Test Page',
             'slug' => 'invalid slug',
-            'is_visible' => Visibility::GUEST->value,
-            'can_edit_role' => Visibility::ADMIN->value,
-            'state' => PageState::DRAFT->value,
+            'read_level' => User::ROLE_GUEST,
+            'write_level' => User::ROLE_ADMIN,
+            'state' => Page::STATE_DRAFT,
         ]);
         $response->assertStatus(422);
         $response->assertJsonValidationErrors('slug');
@@ -125,9 +123,9 @@ class StorePageRequestTest extends TestCase
         $response = $this->actingAs($admin)->postJson(route('pages.store'), [
             'title' => 'Test Page',
             'slug' => 'InvalidSlug',
-            'is_visible' => Visibility::GUEST->value,
-            'can_edit_role' => Visibility::ADMIN->value,
-            'state' => PageState::DRAFT->value,
+            'read_level' => User::ROLE_GUEST,
+            'write_level' => User::ROLE_ADMIN,
+            'state' => Page::STATE_DRAFT,
         ]);
         $response->assertStatus(422);
         $response->assertJsonValidationErrors('slug');
@@ -136,50 +134,44 @@ class StorePageRequestTest extends TestCase
         $response = $this->actingAs($admin)->postJson(route('pages.store'), [
             'title' => 'Test Page',
             'slug' => 'invalid_slug',
-            'is_visible' => Visibility::GUEST->value,
-            'can_edit_role' => Visibility::ADMIN->value,
-            'state' => PageState::DRAFT->value,
+            'read_level' => User::ROLE_GUEST,
+            'write_level' => User::ROLE_ADMIN,
+            'state' => Page::STATE_DRAFT,
         ]);
         $response->assertStatus(422);
         $response->assertJsonValidationErrors('slug');
     }
 
-    /**
-     * is_visible doit être une valeur valide de l'enum Visibility
-     */
-    public function test_is_visible_enum(): void
+    public function test_read_level_invalid(): void
     {
-        $admin = User::factory()->create(['role' => 4]);
+        $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
 
         $response = $this->actingAs($admin)->postJson(route('pages.store'), [
             'title' => 'Test Page',
             'slug' => 'test-page',
-            'is_visible' => 999, // Valeur invalide
-            'can_edit_role' => Visibility::ADMIN->value,
-            'state' => PageState::DRAFT->value,
+            'read_level' => 999,
+            'write_level' => User::ROLE_ADMIN,
+            'state' => Page::STATE_DRAFT,
         ]);
 
         $response->assertStatus(422);
-        $response->assertJsonValidationErrors('is_visible');
+        $response->assertJsonValidationErrors('read_level');
     }
 
-    /**
-     * can_edit_role doit être une valeur valide de l'enum Visibility
-     */
-    public function test_can_edit_role_enum(): void
+    public function test_write_level_must_be_gte_read_level(): void
     {
-        $admin = User::factory()->create(['role' => 4]);
+        $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
 
         $response = $this->actingAs($admin)->postJson(route('pages.store'), [
             'title' => 'Test Page',
             'slug' => 'test-page',
-            'is_visible' => Visibility::GUEST->value,
-            'can_edit_role' => 999, // Valeur invalide
-            'state' => PageState::DRAFT->value,
+            'read_level' => User::ROLE_ADMIN,
+            'write_level' => User::ROLE_GAME_MASTER,
+            'state' => Page::STATE_DRAFT,
         ]);
 
         $response->assertStatus(422);
-        $response->assertJsonValidationErrors('can_edit_role');
+        $response->assertJsonValidationErrors('write_level');
     }
 
     /**
@@ -187,13 +179,13 @@ class StorePageRequestTest extends TestCase
      */
     public function test_state_enum(): void
     {
-        $admin = User::factory()->create(['role' => 4]);
+        $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
 
         $response = $this->actingAs($admin)->postJson(route('pages.store'), [
             'title' => 'Test Page',
             'slug' => 'test-page',
-            'is_visible' => Visibility::GUEST->value,
-            'can_edit_role' => Visibility::ADMIN->value,
+            'read_level' => User::ROLE_GUEST,
+            'write_level' => User::ROLE_ADMIN,
             'state' => 'invalid-state', // Valeur invalide
         ]);
 
@@ -206,14 +198,14 @@ class StorePageRequestTest extends TestCase
      */
     public function test_valid_request_creates_page(): void
     {
-        $admin = User::factory()->create(['role' => 4]);
+        $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
 
         $response = $this->actingAs($admin)->postJson(route('pages.store'), [
             'title' => 'Valid Page',
             'slug' => 'valid-page',
-            'is_visible' => Visibility::GUEST->value,
-            'can_edit_role' => Visibility::ADMIN->value,
-            'state' => PageState::DRAFT->value,
+            'read_level' => User::ROLE_GUEST,
+            'write_level' => User::ROLE_ADMIN,
+            'state' => Page::STATE_DRAFT,
             'in_menu' => true,
             'menu_order' => 0,
         ]);

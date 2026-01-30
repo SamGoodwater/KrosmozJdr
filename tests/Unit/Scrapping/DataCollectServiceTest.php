@@ -3,7 +3,7 @@
 namespace Tests\Unit\Scrapping;
 
 use App\Services\Scrapping\DataCollect\DataCollectService;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use App\Services\Scrapping\Http\DofusDbClient;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
@@ -16,8 +16,6 @@ use Tests\TestCase;
  */
 class DataCollectServiceTest extends TestCase
 {
-    use RefreshDatabase;
-
     private DataCollectService $service;
 
     protected function setUp(): void
@@ -40,7 +38,10 @@ class DataCollectServiceTest extends TestCase
         Log::shouldReceive('error')->zeroOrMoreTimes();
         
         // Créer le service après avoir configuré l'environnement
-        $this->service = new DataCollectService();
+        $this->service = new DataCollectService(
+            app(DofusDbClient::class),
+            app(\App\Services\Scrapping\DataCollect\ConfigDrivenDofusDbCollector::class),
+        );
     }
 
     /**
@@ -128,6 +129,26 @@ class DataCollectServiceTest extends TestCase
         $this->assertEquals($result1['id'] ?? null, $result2['id'] ?? null);
     }
 
+    public function test_collect_class_skip_cache_bypasses_cache(): void
+    {
+        $cached = ['id' => 1, 'description' => ['fr' => 'A']];
+        $fresh = ['id' => 1, 'description' => ['fr' => 'B']];
+
+        // Pré-remplir le cache avec la valeur "A" (même clé que le client DofusDB)
+        $url = 'https://api.dofusdb.fr/breeds/1?lang=fr';
+        $cacheKey = 'dofusdb_' . md5($url);
+        Cache::put($cacheKey, $cached, 3600);
+
+        // Sans skip_cache => on lit le cache
+        Http::fake(['*' => Http::response($fresh, 200)]);
+        $r1 = $this->service->collectClass(1, false);
+        $this->assertEquals('A', $r1['description']['fr'] ?? null);
+
+        // Avec skip_cache => on force un fetch HTTP
+        $r2 = $this->service->collectClass(1, false, ['skip_cache' => true]);
+        $this->assertEquals('B', $r2['description']['fr'] ?? null);
+    }
+
     /**
      * Test de collecte d'une classe avec erreur HTTP
      */
@@ -191,7 +212,7 @@ class DataCollectServiceTest extends TestCase
         ];
 
         Http::fake([
-            'api.dofusdb.fr/monsters/31' => Http::response($mockData, 200),
+            'api.dofusdb.fr/monsters/31*' => Http::response($mockData, 200),
         ]);
 
         $result = $this->service->collectMonster(31, false, false);
@@ -240,7 +261,7 @@ class DataCollectServiceTest extends TestCase
         ];
 
         Http::fake([
-            'api.dofusdb.fr/items/15' => Http::response($mockData, 200),
+            'api.dofusdb.fr/items/15*' => Http::response($mockData, 200),
         ]);
 
         $result = $this->service->collectItem(15, false);

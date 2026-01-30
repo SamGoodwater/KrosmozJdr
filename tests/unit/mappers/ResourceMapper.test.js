@@ -26,9 +26,10 @@ describe('ResourceMapper', () => {
         price: '100',
         weight: '2.5',
         dofus_version: '2.70',
-        usable: true,
+        state: 'playable',
         auto_update: false,
-        is_visible: 'user',
+        read_level: 1,
+        write_level: 4,
         image_url: 'https://example.com/image.jpg',
         resource_type_id: 5,
         created_at: '2024-01-01T00:00:00Z',
@@ -46,9 +47,10 @@ describe('ResourceMapper', () => {
       expect(resource.price).toBe(100);
       expect(resource.weight).toBe(2.5);
       expect(resource.dofus_version).toBe('2.70');
-      expect(resource.usable).toBe(true);
+      expect(resource.state).toBe('playable');
       expect(resource.auto_update).toBe(false);
-      expect(resource.is_visible).toBe('user');
+      expect(resource.readLevel).toBe(1);
+      expect(resource.writeLevel).toBe(4);
       expect(resource.image).toBe('https://example.com/image.jpg');
       expect(resource.resource_type_id).toBe(5);
       expect(resource.created_at).toBeInstanceOf(Date);
@@ -125,9 +127,10 @@ describe('ResourceMapper', () => {
         weight: '2.5',
         rarity: '3',
         dofus_version: '2.70',
-        usable: true,
+        state: 'draft',
+        read_level: 0,
+        write_level: 4,
         auto_update: '1',
-        is_visible: 'user',
         image: 'https://example.com/image.jpg',
         resource_type_id: '5',
       };
@@ -139,13 +142,14 @@ describe('ResourceMapper', () => {
       expect(resource.name).toBe('Test Resource');
       expect(resource.description).toBe('Description');
       expect(resource.level).toBe(50); // Converti en Number
-      expect(resource.price).toBe('100'); // Reste String
-      expect(resource.weight).toBe('2.5'); // Reste String
+      expect(resource.price).toBe(100); // Converti en Number
+      expect(resource.weight).toBe(2.5); // Converti en Number
       expect(resource.rarity).toBe(3); // Converti en Number
       expect(resource.dofus_version).toBe('2.70');
-      expect(resource.usable).toBe(true);
+      expect(resource.state).toBe('draft');
+      expect(resource.readLevel).toBe(0);
+      expect(resource.writeLevel).toBe(4);
       expect(resource.auto_update).toBe(true); // '1' converti en true
-      expect(resource.is_visible).toBe('user');
       expect(resource.image).toBe('https://example.com/image.jpg');
       expect(resource.resource_type_id).toBe(5); // Converti en Number
     });
@@ -182,9 +186,10 @@ describe('ResourceMapper', () => {
         resource_type_id: '5',
         rarity: '3',
         level: '50',
-        usable: '1',
+        state: 'playable',
+        read_level: 1,
+        write_level: 4,
         auto_update: true,
-        is_visible: 'user',
         price: '100',
         weight: '2.5',
         dofus_version: '2.70',
@@ -199,9 +204,10 @@ describe('ResourceMapper', () => {
       expect(result.resource_type_id).toBe(5); // Converti en Number
       expect(result.rarity).toBe(3); // Converti en Number
       expect(result.level).toBe('50'); // Reste String
-      expect(result.usable).toBe(true); // '1' converti en true
+      expect(result.state).toBe('playable');
+      expect(result.read_level).toBe(1);
+      expect(result.write_level).toBe(4);
       expect(result.auto_update).toBe(true); // true reste true
-      expect(result.is_visible).toBe('user');
       expect(result.price).toBe('100'); // Reste String
       expect(result.weight).toBe('2.5'); // Reste String
       expect(result.dofus_version).toBe('2.70');
@@ -267,16 +273,20 @@ describe('ResourceMapper', () => {
     });
 
     it('gère les booléens correctement', () => {
-      const formData1 = { usable: '1', auto_update: true };
-      const formData2 = { usable: true, auto_update: 1 };
-      const formData3 = { usable: false, auto_update: '0' };
+      const formData1 = { auto_update: true, read_level: '1', write_level: '4' };
+      const formData2 = { auto_update: 1, read_level: 1, write_level: 4 };
+      const formData3 = { auto_update: '0', read_level: 0, write_level: 0 };
 
-      expect(ResourceMapper.fromBulkForm(formData1).usable).toBe(true);
       expect(ResourceMapper.fromBulkForm(formData1).auto_update).toBe(true);
-      expect(ResourceMapper.fromBulkForm(formData2).usable).toBe(true);
       expect(ResourceMapper.fromBulkForm(formData2).auto_update).toBe(true);
-      expect(ResourceMapper.fromBulkForm(formData3).usable).toBe(false);
       expect(ResourceMapper.fromBulkForm(formData3).auto_update).toBe(false);
+
+      expect(ResourceMapper.fromBulkForm(formData1).read_level).toBe(1);
+      expect(ResourceMapper.fromBulkForm(formData1).write_level).toBe(4);
+      expect(ResourceMapper.fromBulkForm(formData2).read_level).toBe(1);
+      expect(ResourceMapper.fromBulkForm(formData2).write_level).toBe(4);
+      expect(ResourceMapper.fromBulkForm(formData3).read_level).toBe(0);
+      expect(ResourceMapper.fromBulkForm(formData3).write_level).toBe(0);
     });
   });
 
@@ -291,9 +301,10 @@ describe('ResourceMapper', () => {
         weight: 2.5,
         rarity: 3,
         dofus_version: '2.70',
-        usable: true,
+        state: 'playable',
+        read_level: 1,
+        write_level: 4,
         auto_update: false,
-        is_visible: 'user',
         image: 'https://example.com/image.jpg',
         resource_type_id: 5,
       });
@@ -311,9 +322,10 @@ describe('ResourceMapper', () => {
         weight: 2.5,
         rarity: 3,
         dofus_version: '2.70',
-        usable: true,
+        state: 'playable',
+        read_level: 1,
+        write_level: 4,
         auto_update: false,
-        is_visible: 'user',
         image: 'https://example.com/image.jpg',
         resource_type_id: 5,
       });

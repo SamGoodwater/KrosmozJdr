@@ -1,0 +1,66 @@
+{
+  "version": 1,
+  "formatters": [
+    {
+      "name": "pickLang",
+      "type": "pure",
+      "argsSchema": { "lang": "string", "fallback": "string" },
+      "description": "Extrait une valeur multilingue selon lang, sinon fallback."
+    },
+    {
+      "name": "toString",
+      "type": "pure",
+      "argsSchema": {},
+      "description": "Convertit en string (ou '' si null)."
+    },
+    {
+      "name": "toInt",
+      "type": "pure",
+      "argsSchema": {},
+      "description": "Convertit en int (ou 0 si invalide)."
+    },
+    {
+      "name": "nullableInt",
+      "type": "pure",
+      "argsSchema": {},
+      "description": "Convertit en int ou null."
+    },
+    {
+      "name": "clampInt",
+      "type": "pure",
+      "argsSchema": { "min": "number", "max": "number" },
+      "description": "Borne un entier entre min et max."
+    },
+    {
+      "name": "truncate",
+      "type": "pure",
+      "argsSchema": { "max": "number" },
+      "description": "Tronque une string à max caractères."
+    },
+    {
+      "name": "mapSizeToKrosmoz",
+      "type": "pure",
+      "argsSchema": { "default": "string" },
+      "description": "Mappe une taille (tiny/small/medium/large/huge) vers le format attendu KrosmozJDR."
+    },
+    {
+      "name": "mapDofusdbItemType",
+      "type": "pure",
+      "argsSchema": {},
+      "description": "Mappe un typeId DofusDB vers un type KrosmozJDR (en tenant compte de resource_types.allowed)."
+    },
+    {
+      "name": "mapDofusdbItemCategory",
+      "type": "pure",
+      "argsSchema": {},
+      "description": "Mappe un typeId DofusDB vers une catégorie KrosmozJDR (en tenant compte de resource_types.allowed)."
+    },
+    {
+      "name": "storeScrappedImage",
+      "type": "side_effect",
+      "argsSchema": { "entityFolder": "string", "idPath": "string" },
+      "description": "Télécharge/stocke une image distante selon la config scrapping.images."
+    }
+  ]
+}
+

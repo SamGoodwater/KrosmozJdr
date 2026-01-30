@@ -14,8 +14,6 @@ import { ref, computed, watch } from 'vue';
 import { useForm } from '@inertiajs/vue3';
 import { SectionParameterService } from '@/Utils/Services';
 import { useTemplateRegistry } from '@/Pages/Organismes/section/composables/useTemplateRegistry';
-import { Visibility } from '@/Utils/enums/Visibility';
-import { PageState } from '@/Utils/enums/PageState';
 
 export function useSectionForm({ isEdit, initialSectionData, pageId, onSuccess, onClose }) {
     const registry = useTemplateRegistry();
@@ -34,9 +32,9 @@ export function useSectionForm({ isEdit, initialSectionData, pageId, onSuccess, 
         template: null,
         settings: {},
         data: {},
-        is_visible: Visibility.GUEST.value,
-        can_edit_role: Visibility.ADMIN.value,
-        state: PageState.DRAFT.value,
+        read_level: 0,
+        write_level: 4,
+        state: 'draft',
     });
 
     /**
@@ -53,9 +51,9 @@ export function useSectionForm({ isEdit, initialSectionData, pageId, onSuccess, 
             form.template = section.template || null;
             form.settings = section.settings || {};
             form.data = section.data || {};
-            form.is_visible = section.is_visible || Visibility.GUEST.value;
-            form.can_edit_role = section.can_edit_role || Visibility.ADMIN.value;
-            form.state = section.state || PageState.DRAFT.value;
+            form.read_level = section.read_level ?? 0;
+            form.write_level = section.write_level ?? 4;
+            form.state = section.state || 'draft';
         } else {
             // Mode création : valeurs par défaut
             form.reset();

@@ -32,9 +32,10 @@ class StoreScenarioRequest extends FormRequest
             'slug' => ['required', 'string', 'max:255', 'unique:scenarios,slug'],
             'keyword' => ['nullable', 'string', 'max:255'],
             'is_public' => ['required', 'boolean'],
-            'state' => ['required', 'integer', 'in:0,1,2,3'],
-            'usable' => ['nullable', 'integer', 'min:0', 'max:1'],
-            'is_visible' => ['nullable', 'string', 'in:guest,user,player,game_master,admin,super_admin'],
+            'progress_state' => ['required', 'integer', 'in:0,1,2,3'],
+            'state' => ['nullable', 'string', 'in:raw,draft,playable,archived'],
+            'read_level' => ['nullable', 'integer', 'min:0', 'max:5'],
+            'write_level' => ['nullable', 'integer', 'min:0', 'max:5', 'gte:read_level'],
             'image' => ['nullable', 'string', 'max:255'],
         ];
     }

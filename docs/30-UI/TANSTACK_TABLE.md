@@ -210,10 +210,10 @@ Le skeleton peut être configuré via `config.ui` :
   - `hideable: true`
   - `defaultHidden: true`
   - `permissions: { ability: "updateAny" }` (réservé aux users ayant des droits d’écriture)
-- **`usable`**
+- **`state`**
   - `hideable: true`
   - `defaultHidden: true`
-  - pas de `permissions` (visible pour tout le monde si activé)
+  - pas de `permissions` (visible pour tout le monde)
 
 ## Plan de refonte (sans doublons)
 

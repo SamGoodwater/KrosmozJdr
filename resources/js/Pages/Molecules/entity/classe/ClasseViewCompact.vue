@@ -72,8 +72,9 @@ const compactFields = computed(() => [
     'life',
     'life_dice',
     'specificity',
-    'usable',
-    'is_visible',
+    'state',
+    'read_level',
+    'write_level',
 ].filter(canShowField));
 
 const getFieldLabel = (fieldKey) => {

@@ -3,26 +3,25 @@
  *
  * @description
  * Centralise les options réutilisées dans les formulaires Page (Create/Edit) :
- * - options d'état (PageState)
- * - options de visibilité (Visibility)
+ * - options d'état (state)
+ * - options de rôles (read_level / write_level)
  * - options de page parente (exclut la page courante si fournie)
  *
  * @example
- * const { stateOptions, visibilityOptions, parentPageOptions } =
+ * const { stateOptions, roleOptions, parentPageOptions } =
  *   usePageFormOptions(() => props.pages, computed(() => currentPageId))
  *
  * @param {Function} getPages - Fonction retournant un tableau de pages
  * @param {import('vue').ComputedRef<number|null>} currentPageId - ID de la page courante (optionnel)
- * @returns {{ stateOptions: import('vue').ComputedRef<Array>, visibilityOptions: import('vue').ComputedRef<Array>, parentPageOptions: import('vue').ComputedRef<Array> }}
+ * @returns {{ stateOptions: import('vue').ComputedRef<Array>, roleOptions: import('vue').ComputedRef<Array>, parentPageOptions: import('vue').ComputedRef<Array> }}
  */
 import { computed } from 'vue';
-import { getPageStateOptions } from '@/Utils/enums/PageState';
-import { getVisibilityOptions } from '@/Utils/enums/Visibility';
+import { getEntityStateOptions, getUserRoleOptions } from '@/Utils/Entity/SharedConstants';
 import { Page } from '@/Models';
 
 export function usePageFormOptions(getPages, currentPageId = computed(() => null)) {
-  const stateOptions = computed(() => getPageStateOptions());
-  const visibilityOptions = computed(() => getVisibilityOptions());
+  const stateOptions = computed(() => getEntityStateOptions());
+  const roleOptions = computed(() => getUserRoleOptions());
 
   const parentPageOptions = computed(() => {
     const pages = typeof getPages === 'function' ? (getPages() || []) : [];
@@ -46,7 +45,7 @@ export function usePageFormOptions(getPages, currentPageId = computed(() => null
     ];
   });
 
-  return { stateOptions, visibilityOptions, parentPageOptions };
+  return { stateOptions, roleOptions, parentPageOptions };
 }
 
 

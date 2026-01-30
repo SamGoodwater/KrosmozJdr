@@ -66,8 +66,9 @@ const canShowField = (fieldKey) => {
 // Champs à afficher dans la vue compacte
 const compactFields = computed(() => [
     'decision',
-    'usable',
-    'is_visible',
+    'state',
+    'read_level',
+    'write_level',
     'resources_count',
 ].filter(canShowField));
 

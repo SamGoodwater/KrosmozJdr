@@ -60,10 +60,7 @@ const ctx = computed(() => {
 
 const descriptors = computed(() => getSpecializationFieldDescriptors(ctx.value));
 
-const usableValue = computed(() => {
-    const v = props.specialization?.usable ?? props.specialization?._data?.usable;
-    return typeof v === 'boolean' ? v : null;
-});
+const stateValue = computed(() => props.specialization?.state ?? props.specialization?._data?.state ?? null);
 
 const canShowField = (fieldKey) => {
     const desc = descriptors.value?.[fieldKey];
@@ -85,7 +82,8 @@ const importantFields = computed(() => ['name', 'capabilities_count'].filter(can
 
 // Champs supplémentaires à afficher au hover
 const expandedFields = computed(() => [
-    'is_visible',
+    'read_level',
+    'write_level',
 ].filter(canShowField));
 
 const getFieldIcon = (fieldKey) => {
@@ -142,7 +140,7 @@ const handleAction = async (actionKey) => {
         @mouseenter="canHoverExpand && (isHovered = true)"
         @mouseleave="canHoverExpand && (isHovered = false)">
         <div class="absolute top-1 left-1 z-20">
-            <EntityUsableDot :usable="usableValue" />
+            <EntityUsableDot :state="stateValue" />
         </div>
         
         <div class="p-3">

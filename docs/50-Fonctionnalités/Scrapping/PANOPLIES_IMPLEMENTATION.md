@@ -56,8 +56,8 @@ Les Panoplies sont disponibles sur DofusDB via l'endpoint `/item-sets/{id}` et o
 - ✅ Tous les tests passent
 
 ### 7. ✅ Commande Artisan
-- ✅ Support ajouté dans `ScrappingImportCommand` pour `panoply`
-- ✅ Utilisation : `php artisan scrapping:import panoply {id}`
+- ✅ Support via la commande unique `ScrappingCommand`
+- ✅ Utilisation : `php artisan scrapping --import=panoply --id={id}`
 
 ### 8. ✅ API
 - ✅ Endpoint `POST /api/scrapping/import/panoply/{id}` ajouté dans `ScrappingController`

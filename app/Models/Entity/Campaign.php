@@ -28,9 +28,10 @@ use App\Models\Entity\Panoply;
  * @property string $slug
  * @property string|null $keyword
  * @property int $is_public
- * @property int $state
- * @property int $usable
- * @property string $is_visible
+ * @property int $progress_state
+ * @property string $state
+ * @property int $read_level
+ * @property int $write_level
  * @property string|null $image
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
@@ -73,13 +74,14 @@ use App\Models\Entity\Panoply;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Campaign whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Campaign whereImage($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Campaign whereIsPublic($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Campaign whereIsVisible($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Campaign whereProgressState($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Campaign whereReadLevel($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Campaign whereKeyword($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Campaign whereName($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Campaign whereSlug($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Campaign whereState($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Campaign whereUpdatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Campaign whereUsable($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Campaign whereWriteLevel($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Campaign withTrashed()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Campaign withoutTrashed()
  * @mixin \Eloquent
@@ -89,7 +91,12 @@ class Campaign extends Model
     /** @use HasFactory<\Database\Factories\Entity\CampaignFactory> */
     use HasFactory, SoftDeletes;
 
-    const STATE = [
+    public const STATE_RAW = 'raw';
+    public const STATE_DRAFT = 'draft';
+    public const STATE_PLAYABLE = 'playable';
+    public const STATE_ARCHIVED = 'archived';
+
+    public const PROGRESS_STATES = [
         0 => 'En cours',
         1 => 'Terminée',
         2 => 'En pause',
@@ -107,9 +114,10 @@ class Campaign extends Model
         'slug',
         'keyword',
         'is_public',
+        'progress_state',
         'state',
-        'usable',
-        'is_visible',
+        'read_level',
+        'write_level',
         'image',
         'created_by',
     ];
@@ -120,7 +128,10 @@ class Campaign extends Model
      * @var array<string, string>
      */
     protected $casts = [
-        'state' => 'integer',
+        'is_public' => 'boolean',
+        'progress_state' => 'integer',
+        'read_level' => 'integer',
+        'write_level' => 'integer',
     ];
 
     /**

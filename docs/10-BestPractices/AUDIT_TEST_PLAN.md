@@ -21,8 +21,8 @@
 
 | Test | Description | Effort |
 |------|-------------|--------|
-| `PagePolicyTest::test_guest_can_view_public_page()` | Invité peut voir page `is_visible=guest` | 15min |
-| `PagePolicyTest::test_guest_cannot_view_admin_page()` | Invité ne peut pas voir page `is_visible=admin` | 15min |
+| `PagePolicyTest::test_guest_can_view_public_page()` | Invité peut voir page `read_level=0` | 15min |
+| `PagePolicyTest::test_guest_cannot_view_admin_page()` | Invité ne peut pas voir page `read_level=4` | 15min |
 | `PagePolicyTest::test_admin_can_create_page()` | Admin peut créer page | 10min |
 | `PagePolicyTest::test_user_cannot_create_page()` | User ne peut pas créer page | 10min |
 | `PagePolicyTest::test_author_can_update_own_page()` | Auteur peut modifier sa page | 15min |
@@ -45,7 +45,7 @@
 | `StorePageRequestTest::test_title_required()` | Titre obligatoire | 10min |
 | `StorePageRequestTest::test_slug_unique()` | Slug unique | 15min |
 | `StorePageRequestTest::test_slug_format()` | Slug regex `^[a-z0-9-]+$` | 10min |
-| `StorePageRequestTest::test_is_visible_enum()` | `is_visible` = enum Visibility | 10min |
+| `StorePageRequestTest::test_read_level_range()` | `read_level` = entier dans la plage rôles | 10min |
 | `StoreSectionRequestTest::test_page_id_required()` | `page_id` obligatoire | 10min |
 | `StoreSectionRequestTest::test_template_enum()` | `template` = enum SectionType | 10min |
 | `StoreSectionRequestTest::test_data_validation_text()` | Validation dynamique `data.content` (TEXT) | 20min |

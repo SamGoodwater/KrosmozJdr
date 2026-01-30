@@ -101,10 +101,10 @@ export class SectionMapper extends BaseMapper {
             settings: extract('settings', {}),
             data: extract('data', {}),
             
-            // Enums (les valeurs viennent déjà converties du backend, mais on peut les normaliser)
-            is_visible: extract('is_visible', 'guest'),
-            can_edit_role: extract('can_edit_role', 'admin'),
+            // State + niveaux d'accès
             state: extract('state', 'draft'),
+            read_level: extract('read_level', 0),
+            write_level: extract('write_level', 4),
             
             // Timestamps
             created_by: extract('created_by', null),
@@ -146,8 +146,8 @@ export class SectionMapper extends BaseMapper {
             template: sectionModel.template,
             settings: sectionModel.settings || {},
             data: sectionModel.data || {},
-            is_visible: this.fromEnum(sectionModel.isVisible) || 'guest',
-            can_edit_role: this.fromEnum(sectionModel._data.can_edit_role) || 'admin',
+            read_level: sectionModel.readLevel ?? 0,
+            write_level: sectionModel.writeLevel ?? 4,
             state: this.fromEnum(sectionModel.state) || 'draft',
         };
     }

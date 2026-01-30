@@ -14,6 +14,7 @@ import { Panoply } from '@/Models/Entity/Panoply';
 import EntityEditForm from '@/Pages/Organismes/entity/EntityEditForm.vue';
 import EntityRelationsManager from '@/Pages/Organismes/entity/EntityRelationsManager.vue';
 import Container from '@/Pages/Atoms/data-display/Container.vue';
+import { getEntityStateOptions, getUserRoleOptions } from '@/Utils/Entity/SharedConstants';
 
 const page = usePage();
 const { setPageTitle } = usePageTitle();
@@ -52,18 +53,27 @@ const fieldsConfig = {
         required: false, 
         showInCompact: false 
     },
-    usable: { 
-        type: 'checkbox', 
-        label: 'Utilisable', 
-        required: false, 
-        showInCompact: true 
+    state: {
+        type: 'select',
+        label: 'État',
+        required: false,
+        showInCompact: true,
+        options: getEntityStateOptions(),
     },
-    is_visible: { 
-        type: 'checkbox', 
-        label: 'Visible', 
-        required: false, 
-        showInCompact: false 
-    }
+    read_level: {
+        type: 'select',
+        label: 'Lecture (min.)',
+        required: false,
+        showInCompact: false,
+        options: getUserRoleOptions(),
+    },
+    write_level: {
+        type: 'select',
+        label: 'Écriture (min.)',
+        required: false,
+        showInCompact: false,
+        options: getUserRoleOptions(),
+    },
 };
 
 // Créer une instance de modèle Panoply

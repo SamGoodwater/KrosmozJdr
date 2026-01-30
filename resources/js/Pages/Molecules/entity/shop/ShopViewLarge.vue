@@ -75,8 +75,9 @@ const extendedFields = computed(() => {
         'npc_name',
         'items_count',
         'price',
-        'usable',
-        'is_visible',
+        'state',
+        'read_level',
+        'write_level',
     ];
     ['image', 'created_by', 'created_at', 'updated_at'].forEach((k) => fields.push(k));
     return fields.filter(canShowField);

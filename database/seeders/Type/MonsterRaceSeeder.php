@@ -23,23 +23,29 @@ class MonsterRaceSeeder extends Seeder
 
         // Races principales (sans super-race)
         $mainRaces = [
-            ['name' => 'Bouftou', 'usable' => 1, 'is_visible' => 'guest'],
-            ['name' => 'Tofu', 'usable' => 1, 'is_visible' => 'guest'],
-            ['name' => 'Gobelin', 'usable' => 1, 'is_visible' => 'guest'],
-            ['name' => 'Bwork', 'usable' => 1, 'is_visible' => 'guest'],
-            ['name' => 'Champ Champ', 'usable' => 1, 'is_visible' => 'guest'],
-            ['name' => 'Piou', 'usable' => 1, 'is_visible' => 'guest'],
-            ['name' => 'Arakne', 'usable' => 1, 'is_visible' => 'guest'],
-            ['name' => 'Cochon de Lait', 'usable' => 1, 'is_visible' => 'guest'],
-            ['name' => 'Sanglier', 'usable' => 1, 'is_visible' => 'guest'],
-            ['name' => 'Craqueleur', 'usable' => 1, 'is_visible' => 'guest'],
+            ['name' => 'Bouftou'],
+            ['name' => 'Tofu'],
+            ['name' => 'Gobelin'],
+            ['name' => 'Bwork'],
+            ['name' => 'Champ Champ'],
+            ['name' => 'Piou'],
+            ['name' => 'Arakne'],
+            ['name' => 'Cochon de Lait'],
+            ['name' => 'Sanglier'],
+            ['name' => 'Craqueleur'],
         ];
 
         $createdRaces = [];
         foreach ($mainRaces as $race) {
             $createdRace = MonsterRace::firstOrCreate(
                 ['name' => $race['name']],
-                array_merge($race, ['created_by' => $createdBy, 'id_super_race' => null])
+                array_merge($race, [
+                    'state' => 'playable',
+                    'read_level' => User::ROLE_GUEST,
+                    'write_level' => User::ROLE_ADMIN,
+                    'created_by' => $createdBy,
+                    'id_super_race' => null,
+                ])
             );
             $createdRaces[$race['name']] = $createdRace;
         }
@@ -59,8 +65,9 @@ class MonsterRaceSeeder extends Seeder
                     ['name' => $subRace['name']],
                     [
                         'name' => $subRace['name'],
-                        'usable' => 1,
-                        'is_visible' => 'guest',
+                        'state' => 'playable',
+                        'read_level' => User::ROLE_GUEST,
+                        'write_level' => User::ROLE_ADMIN,
                         'created_by' => $createdBy,
                         'id_super_race' => $superRace->id,
                     ]

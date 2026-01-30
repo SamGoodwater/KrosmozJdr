@@ -91,10 +91,6 @@ export class Spell extends BaseModel {
         return this._data.powerful || null;
     }
 
-    get usable() {
-        return this._data.usable ?? false;
-    }
-
     get image() {
         return this._data.image || '';
     }
@@ -546,7 +542,9 @@ export class Spell extends BaseModel {
             category: this.category,
             is_magic: this.isMagic,
             powerful: this.powerful,
-            usable: this.usable,
+            state: this.state,
+            read_level: this.readLevel,
+            write_level: this.writeLevel,
             image: this.image,
             auto_update: this.autoUpdate
         };

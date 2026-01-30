@@ -6,8 +6,6 @@ use Illuminate\Foundation\Http\FormRequest;
 use App\Models\Page;
 use App\Models\Section;
 use Illuminate\Validation\Rule;
-use App\Enums\PageState;
-use App\Enums\Visibility;
 use App\Enums\SectionType;
 
 /**
@@ -64,9 +62,9 @@ class StoreSectionRequest extends FormRequest
             'settings' => ['sometimes', 'nullable', 'array'],
             'data' => ['required_without:params', 'array'],
             'params' => ['required_without:data', 'array'],
-            'is_visible' => ['sometimes', Rule::enum(Visibility::class)],
-            'can_edit_role' => ['sometimes', Rule::enum(Visibility::class)],
-            'state' => ['sometimes', Rule::enum(PageState::class)],
+            'state' => ['sometimes', 'string', Rule::in([Section::STATE_RAW, Section::STATE_DRAFT, Section::STATE_PLAYABLE, Section::STATE_ARCHIVED])],
+            'read_level' => ['sometimes', 'integer', 'min:0', 'max:5'],
+            'write_level' => ['sometimes', 'integer', 'min:0', 'max:5', 'gte:read_level'],
         ];
 
         // Validation dynamique des settings et data selon le template
@@ -157,18 +155,6 @@ class StoreSectionRequest extends FormRequest
     {
         $data = $this->all();
         
-        if (!isset($data['is_visible'])) {
-            $this->merge([
-                'is_visible' => Visibility::GUEST->value,
-            ]);
-        }
-        
-        if (!isset($data['can_edit_role'])) {
-            $this->merge([
-                'can_edit_role' => Visibility::ADMIN->value,
-            ]);
-        }
-        
         // Ne pas définir params à un tableau vide si il n'est pas présent
         // Cela permet à la validation de détecter si params est manquant
         // if (!isset($data['params'])) {
@@ -179,8 +165,15 @@ class StoreSectionRequest extends FormRequest
         
         if (!isset($data['state'])) {
             $this->merge([
-                'state' => PageState::DRAFT->value,
+                'state' => Section::STATE_DRAFT,
             ]);
+        }
+
+        if (!isset($data['read_level'])) {
+            $this->merge(['read_level' => \App\Models\User::ROLE_GUEST]);
+        }
+        if (!isset($data['write_level'])) {
+            $this->merge(['write_level' => \App\Models\User::ROLE_ADMIN]);
         }
     }
 }

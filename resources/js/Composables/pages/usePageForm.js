@@ -21,8 +21,6 @@
  */
 import { useForm } from '@inertiajs/vue3';
 import { computed, watch, ref } from 'vue';
-import { PageState } from '@/Utils/enums/PageState';
-import { Visibility } from '@/Utils/enums/Visibility';
 import { TransformService } from '@/Utils/Services';
 
 export function usePageForm(initialData = null, options = {}) {
@@ -32,10 +30,10 @@ export function usePageForm(initialData = null, options = {}) {
   const defaultValues = {
     title: '',
     slug: '',
-    is_visible: Visibility.GUEST.value,
-    can_edit_role: Visibility.ADMIN.value,
+    read_level: 0,
+    write_level: 4,
     in_menu: true,
-    state: PageState.DRAFT.value,
+    state: 'draft',
     parent_id: null,
     menu_order: 0
   };

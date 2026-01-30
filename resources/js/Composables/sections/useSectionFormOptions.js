@@ -3,8 +3,8 @@
  * 
  * @description
  * Fournit les options pour les selects des formulaires de sections :
- * - Visibilité (is_visible)
- * - Rôle requis pour éditer (can_edit_role)
+ * - Lecture (read_level)
+ * - Écriture (write_level)
  * - État (state)
  * 
  * Centralise la logique pour éviter la duplication entre CreateSectionModal et SectionParamsModal.
@@ -13,8 +13,7 @@
  * const { visibilityOptions, stateOptions } = useSectionFormOptions();
  */
 import { computed } from 'vue';
-import { Visibility } from '@/Utils/enums/Visibility';
-import { PageState } from '@/Utils/enums/PageState';
+import { getEntityStateOptions, getUserRoleOptions } from '@/Utils/Entity/SharedConstants';
 
 /**
  * Composable pour les options de formulaire de section
@@ -23,27 +22,17 @@ import { PageState } from '@/Utils/enums/PageState';
  */
 export function useSectionFormOptions() {
     /**
-     * Options pour le champ is_visible
+     * Options pour les champs read_level / write_level
      */
-    const visibilityOptions = computed(() => [
-        { value: Visibility.GUEST.value, label: 'Public (Invité)' },
-        { value: Visibility.USER.value, label: 'Utilisateur' },
-        { value: Visibility.GAME_MASTER.value, label: 'Maître du Jeu' },
-        { value: Visibility.ADMIN.value, label: 'Administrateur' },
-    ]);
+    const roleOptions = computed(() => getUserRoleOptions());
 
     /**
      * Options pour le champ state
      */
-    const stateOptions = computed(() => [
-        { value: PageState.DRAFT.value, label: 'Brouillon' },
-        { value: PageState.PREVIEW.value, label: 'Prévisualisation' },
-        { value: PageState.PUBLISHED.value, label: 'Publié' },
-        { value: PageState.ARCHIVED.value, label: 'Archivé' },
-    ]);
+    const stateOptions = computed(() => getEntityStateOptions());
 
     return {
-        visibilityOptions,
+        roleOptions,
         stateOptions,
     };
 }

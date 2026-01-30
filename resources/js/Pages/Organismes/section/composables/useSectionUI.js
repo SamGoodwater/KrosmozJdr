@@ -33,6 +33,7 @@
 import { computed } from 'vue';
 import { SectionMapper } from '@/Utils/Services/Mappers';
 import { useTemplateRegistry } from './useTemplateRegistry';
+import { getRoleLabel } from '@/Utils/Entity/SharedConstants';
 
 // Registry de templates (singleton, au niveau module)
 const registry = useTemplateRegistry();
@@ -82,11 +83,9 @@ export function useSectionUI(rawSection) {
       // Badge pour l'état
       badge: getStateBadge(section.state),
       
-      // Label pour la visibilité
-      visibilityLabel: getVisibilityLabel(section.isVisible),
-      
-      // Label pour le rôle d'édition
-      editRoleLabel: getEditRoleLabel(section.canEditRole),
+      // Label pour le niveau de lecture / écriture
+      visibilityLabel: getVisibilityLabel(section.readLevel),
+      editRoleLabel: getEditRoleLabel(section.writeLevel),
       
       // Statut combiné (pour affichage)
       status: getCombinedStatus(section),
@@ -113,8 +112,8 @@ export function useSectionUI(rawSection) {
   // 1. Backend : SectionResource calcule 'can.update' via SectionPolicy::update()
   // 2. SectionPolicy::update() appelle Section::canBeEditedBy($user)
   // 3. Section::canBeEditedBy() vérifie :
-  //    - Les droits sur la section (can_edit_role de la section)
-  //    - ET les droits sur la page (can_edit_role de la page parente)
+  //    - Les droits sur la section (write_level de la section)
+  //    - ET les droits sur la page (write_level de la page parente)
   // 4. Frontend : SectionMapper extrait 'can.update' depuis les données
   // 5. Section Model expose canUpdate via getter
   // 6. useSectionUI expose canEdit qui utilise sectionModel.canUpdate
@@ -149,7 +148,7 @@ export function useSectionUI(rawSection) {
 
   // Informations de visibilité
   const visibilityInfo = computed(() => {
-    const visibility = sectionModel.value?.isVisible || 'guest';
+    const visibility = sectionModel.value?.readLevel ?? 0;
     return {
       value: visibility,
       label: uiData.value.visibilityLabel,
@@ -159,7 +158,7 @@ export function useSectionUI(rawSection) {
 
   // Informations de rôle d'édition
   const editRoleInfo = computed(() => {
-    const editRole = sectionModel.value?.canEditRole || 'admin';
+    const editRole = sectionModel.value?.writeLevel ?? 4;
     return {
       value: editRole,
       label: uiData.value.editRoleLabel,
@@ -229,13 +228,15 @@ function getTemplateLabel(template) {
  */
 function getVisibilityIcon(visibility) {
   const iconMap = {
-    'guest': 'fa-globe',
-    'user': 'fa-users',
-    'game_master': 'fa-user-shield',
-    'admin': 'fa-user-cog',
+    0: 'fa-globe', // guest
+    1: 'fa-user', // user
+    2: 'fa-dice', // player
+    3: 'fa-user-shield', // game_master
+    4: 'fa-user-cog', // admin
+    5: 'fa-user-secret', // super_admin
   };
-  
-  return iconMap[visibility] || 'fa-eye';
+
+  return iconMap[Number(visibility)] || 'fa-eye';
 }
 
 /**
@@ -246,13 +247,15 @@ function getVisibilityIcon(visibility) {
  */
 function getEditRoleIcon(editRole) {
   const iconMap = {
-    'guest': 'fa-edit',
-    'user': 'fa-user-edit',
-    'game_master': 'fa-user-shield',
-    'admin': 'fa-user-cog',
+    0: 'fa-edit', // guest
+    1: 'fa-user-edit', // user
+    2: 'fa-dice', // player
+    3: 'fa-user-shield', // game_master
+    4: 'fa-user-cog', // admin
+    5: 'fa-user-secret', // super_admin
   };
-  
-  return iconMap[editRole] || 'fa-lock';
+
+  return iconMap[Number(editRole)] || 'fa-lock';
 }
 
 // ============================================
@@ -264,10 +267,10 @@ function getEditRoleIcon(editRole) {
  */
 function getStateColor(state) {
   const colorMap = {
-    'draft': 'warning',
-    'preview': 'info',
-    'published': 'success',
-    'archived': 'neutral',
+    raw: 'error',
+    draft: 'warning',
+    playable: 'success',
+    archived: 'info',
   };
   return colorMap[state] || 'neutral';
 }
@@ -288,10 +291,10 @@ function getTemplateIcon(template) {
  */
 function getStateBadge(state) {
   const badgeMap = {
-    'draft': { text: 'Brouillon', color: 'warning', variant: 'soft' },
-    'preview': { text: 'Prévisualisation', color: 'info', variant: 'soft' },
-    'published': { text: 'Publié', color: 'success', variant: 'soft' },
-    'archived': { text: 'Archivé', color: 'neutral', variant: 'soft' },
+    raw: { text: 'Brut', color: 'error', variant: 'soft' },
+    draft: { text: 'Brouillon', color: 'warning', variant: 'soft' },
+    playable: { text: 'Jouable', color: 'success', variant: 'soft' },
+    archived: { text: 'Archivé', color: 'info', variant: 'soft' },
   };
   return badgeMap[state] || { text: 'Inconnu', color: 'neutral', variant: 'soft' };
 }
@@ -300,26 +303,14 @@ function getStateBadge(state) {
  * Retourne le label pour la visibilité
  */
 function getVisibilityLabel(visibility) {
-  const labelMap = {
-    'guest': 'Public',
-    'user': 'Utilisateurs',
-    'game_master': 'Maîtres de jeu',
-    'admin': 'Administrateurs',
-  };
-  return labelMap[visibility] || 'Inconnu';
+  return getRoleLabel(Number(visibility));
 }
 
 /**
  * Retourne le label pour le rôle d'édition
  */
 function getEditRoleLabel(editRole) {
-  const labelMap = {
-    'guest': 'Tous',
-    'user': 'Utilisateurs',
-    'game_master': 'Maîtres de jeu',
-    'admin': 'Administrateurs uniquement',
-  };
-  return labelMap[editRole] || 'Inconnu';
+  return getRoleLabel(Number(editRole));
 }
 
 /**
@@ -333,8 +324,8 @@ function getCombinedStatus(section) {
     text: badge.text,
     color: badge.color,
     icon: getTemplateIcon(section?.template || section?.type),
-    visibility: getVisibilityLabel(section?.isVisible),
-    editRole: getEditRoleLabel(section?.canEditRole),
+    visibility: getVisibilityLabel(section?.readLevel ?? section?.read_level ?? 0),
+    editRole: getEditRoleLabel(section?.writeLevel ?? section?.write_level ?? 4),
   };
 }
 
@@ -345,7 +336,7 @@ function getContainerClass(section) {
   const classes = ['section-container'];
   classes.push(`section-state-${section?.state || 'draft'}`);
   classes.push(`section-template-${section?.template || section?.type || 'text'}`);
-  classes.push(`section-visibility-${section?.isVisible || 'guest'}`);
+  classes.push(`section-read-level-${section?.readLevel ?? section?.read_level ?? 0}`);
   return classes.join(' ');
 }
 

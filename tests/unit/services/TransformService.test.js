@@ -146,7 +146,7 @@ describe('TransformService', () => {
     });
 
     it('devrait utiliser un objet de mapping', () => {
-      const mapping = { 'draft': 'brouillon', 'published': 'publié' };
+      const mapping = { 'draft': 'brouillon', 'playable': 'jouable' };
       const result = TransformService.toEnum('draft', mapping, 'inconnu');
       expect(result).toBe('brouillon');
     });

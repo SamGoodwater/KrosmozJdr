@@ -27,8 +27,9 @@ use App\Models\Entity\Creature;
  * @property bool $is_magic
  * @property bool $ritual_available
  * @property string|null $powerful
- * @property int $usable
- * @property string $is_visible
+ * @property string $state
+ * @property int $read_level
+ * @property int $write_level
  * @property string|null $image
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
@@ -55,7 +56,7 @@ use App\Models\Entity\Creature;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Capability whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Capability whereImage($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Capability whereIsMagic($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Capability whereIsVisible($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Capability whereReadLevel($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Capability whereLevel($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Capability whereName($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Capability wherePa($value)
@@ -65,7 +66,8 @@ use App\Models\Entity\Creature;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Capability whereRitualAvailable($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Capability whereTimeBeforeUseAgain($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Capability whereUpdatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Capability whereUsable($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Capability whereState($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Capability whereWriteLevel($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Capability withTrashed()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Capability withoutTrashed()
  * @mixin \Eloquent
@@ -74,6 +76,11 @@ class Capability extends Model
 {
     /** @use HasFactory<\Database\Factories\CapabilityFactory> */
     use HasFactory, SoftDeletes;
+
+    public const STATE_RAW = 'raw';
+    public const STATE_DRAFT = 'draft';
+    public const STATE_PLAYABLE = 'playable';
+    public const STATE_ARCHIVED = 'archived';
 
     /**
      * The attributes that are mass assignable.
@@ -95,8 +102,9 @@ class Capability extends Model
         'is_magic',
         'ritual_available',
         'powerful',
-        'usable',
-        'is_visible',
+        'state',
+        'read_level',
+        'write_level',
         'image',
         'created_by',
     ];
@@ -107,7 +115,8 @@ class Capability extends Model
      * @var array<string, string>
      */
     protected $casts = [
-        'usable' => 'integer',
+        'read_level' => 'integer',
+        'write_level' => 'integer',
         'po_editable' => 'boolean',
         'is_magic' => 'boolean',
         'ritual_available' => 'boolean',

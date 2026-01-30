@@ -14,10 +14,10 @@ Le système de pages et sections permet de créer des pages dynamiques modulaire
 - `id` : Identifiant unique
 - `title` : Titre de la page
 - `slug` : URL de la page (unique)
-- `is_visible` : Visibilité (guest, user, game_master, admin)
-- `can_edit_role` : Rôle minimum requis pour modifier (guest, user, game_master, admin)
+- `read_level` : Niveau minimal requis pour voir la page (entier, basé sur les rôles)
+- `write_level` : Niveau minimal requis pour modifier la page (entier, basé sur les rôles)
 - `in_menu` : Affichage dans le menu de navigation (booléen)
-- `state` : État de publication (draft, preview, published, archived)
+- `state` : État (raw, draft, playable, archived)
 - `parent_id` : Page parente (pour menu hiérarchique, nullable)
 - `menu_order` : Ordre dans le menu (entier)
 - `created_by` : Utilisateur créateur (nullable)
@@ -32,9 +32,9 @@ Le système de pages et sections permet de créer des pages dynamiques modulaire
 - `template` : Type de template (text, image, gallery, video, entity_table)
 - `settings` : Paramètres de configuration (JSON)
 - `data` : Données de contenu (JSON)
-- `is_visible` : Visibilité (guest, user, game_master, admin)
-- `can_edit_role` : Rôle minimum requis pour modifier
-- `state` : État de publication (draft, preview, published, archived)
+- `read_level` : Niveau minimal requis pour voir la section (entier)
+- `write_level` : Niveau minimal requis pour modifier la section (entier)
+- `state` : État (raw, draft, playable, archived)
 - `created_by` : Utilisateur créateur (nullable)
 - `created_at`, `updated_at`, `deleted_at` : Timestamps et soft delete
 
@@ -63,32 +63,32 @@ Le système de pages et sections permet de créer des pages dynamiques modulaire
 
 #### `App\Models\Page`
 - **Scopes** :
-  - `published()` : Pages publiées uniquement
+  - `playable()` : Pages jouables uniquement
   - `inMenu()` : Pages dans le menu
   - `visibleFor(?User $user)` : Pages visibles pour un utilisateur
   - `ordered()` : Triées par `menu_order`
-  - `forMenu(?User $user)` : Pages du menu (publiées + dans menu + visibles + ordonnées)
+  - `forMenu(?User $user)` : Pages du menu (jouables + dans menu + visibles + ordonnées)
 
 - **Méthodes helper** :
-  - `isPublished()` : Vérifie si la page est publiée
+  - `isPlayable()` : Vérifie si la page est jouable
   - `isVisibleFor(?User $user)` : Vérifie la visibilité
   - `canBeViewedBy(?User $user)` : Vérifie si la page peut être vue (état + visibilité)
   - `canBeEditedBy(?User $user)` : Vérifie si la page peut être modifiée
-  - `publish()`, `archive()`, `setPreview()`, `setDraft()` : Transitions d'état
+  - `setRaw()`, `setDraft()`, `setPlayable()`, `archive()` : Transitions d'état
 
 #### `App\Models\Section`
 - **Scopes** :
-  - `published()` : Sections publiées uniquement
+  - `playable()` : Sections jouables uniquement
   - `visibleFor(?User $user)` : Sections visibles pour un utilisateur
   - `ordered()` : Triées par `order`
-  - `displayable(?User $user)` : Sections affichables (publiées + visibles + ordonnées)
+  - `displayable(?User $user)` : Sections affichables (jouables + visibles + ordonnées)
 
 - **Méthodes helper** :
-  - `isPublished()` : Vérifie si la section est publiée
+  - `isPlayable()` : Vérifie si la section est jouable
   - `isVisibleFor(?User $user)` : Vérifie la visibilité
   - `canBeViewedBy(?User $user)` : Vérifie si la section peut être vue
   - `canBeEditedBy(?User $user)` : Vérifie si la section peut être modifiée
-  - `publish()`, `archive()` : Transitions d'état
+  - `setRaw()`, `setDraft()`, `setPlayable()`, `archive()` : Transitions d'état
 
 ### Services
 
@@ -96,7 +96,7 @@ Le système de pages et sections permet de créer des pages dynamiques modulaire
 - `getMenuPages(?User $user)` : Récupère les pages du menu avec cache
 - `buildMenuTree(Collection $pages)` : Construit l'arborescence du menu
 - `canViewPage(Page $page, ?User $user)` : Vérifie si une page peut être vue
-- `getPublishedSections(Page $page, ?User $user)` : Récupère les sections affichables
+- `getPlayableSections(Page $page, ?User $user)` : Récupère les sections affichables
 - `clearMenuCache(?User $user)` : Invalide le cache du menu
 
 ### Controllers
@@ -223,8 +223,8 @@ Chaque template est un composant Vue dans `resources/js/Pages/Organismes/section
 Modal d'édition d'une page avec deux onglets :
 - **Onglet "Général"** :
   - Titre, slug
-  - Visibilité, rôle requis pour modifier
-  - État de publication
+  - Niveaux `read_level` / `write_level`
+  - État (`state`)
   - Page parente (pour menu hiérarchique)
   - Affichage dans le menu, ordre dans le menu
 - **Onglet "Sections"** :
@@ -271,29 +271,31 @@ Affiche le menu dynamique des pages :
 
 ---
 
-## États et visibilité
+## États et accès
 
-### États de publication
+### États (`state`)
 
 **Pages et sections :**
-- `draft` : Brouillon (non visible publiquement)
-- `preview` : Prévisualisation (visible pour l'auteur)
-- `published` : Publié (visible selon la visibilité)
-- `archived` : Archivé (non visible publiquement)
+- `raw` : Brut
+- `draft` : Brouillon
+- `playable` : Jouable (affichable selon `read_level`)
+- `archived` : Archivé
 
-**Transitions :**
-- `draft` → `preview` : Soumettre
-- `preview` → `published` : Publier
-- `published` → `preview` : Dépublier
-- `published` → `archived` : Archiver
+**Transitions (exemples) :**
+- `raw` → `draft`
+- `draft` → `playable`
+- `playable` → `archived`
+- `archived` → `draft`
 
-### Visibilité
+### Accès en lecture/écriture
 
-**Niveaux :**
-- `guest` : Visible pour tous (invités inclus)
-- `user` : Visible pour les utilisateurs connectés
-- `game_master` : Visible pour les maîtres de jeu et supérieurs
-- `admin` : Visible pour les administrateurs uniquement
+**Niveaux (entiers) :**
+- `0` : guest
+- `1` : user
+- `2` : player
+- `3` : game_master
+- `4` : admin
+- `5` : super_admin
 
 **Logique :**
 - Les admins peuvent toujours voir toutes les pages/sections
@@ -307,13 +309,13 @@ Affiche le menu dynamique des pages :
 ### Droits d'édition
 
 **Pages :**
-- `can_edit_role` : Rôle minimum requis pour modifier
+- `write_level` : Niveau minimal requis pour modifier
 - Les super_admin peuvent toujours modifier
 - Les auteurs peuvent modifier leurs pages
 - Les utilisateurs associés via `page_user` peuvent modifier
 
 **Sections :**
-- `can_edit_role` : Rôle minimum requis pour modifier
+- `write_level` : Niveau minimal requis pour modifier
 - Les super_admin peuvent toujours modifier
 - Les auteurs peuvent modifier leurs sections
 - Les utilisateurs associés via `section_user` peuvent modifier
@@ -341,8 +343,8 @@ Affiche le menu dynamique des pages :
 1. Accéder à `/pages/create` (ou cliquer sur "Créer une page")
 2. Remplir le formulaire :
    - Titre (génère automatiquement le slug)
-   - Visibilité, rôle requis pour modifier
-   - État, page parente, affichage dans le menu
+   - `read_level` / `write_level`
+   - `state`, page parente, affichage dans le menu
 3. Sauvegarder
 4. La page est créée en état `draft`
 
@@ -410,7 +412,7 @@ Affiche le menu dynamique des pages :
   "settings": {
     "entity": "classes",
     "filters": {
-      "is_visible": "guest"
+      "read_level": 0
     }
   }
 }
@@ -422,7 +424,5 @@ Affiche le menu dynamique des pages :
 
 - [Entité Page](../21-Entities/ENTITY_PAGES.md)
 - [Entité Section](../21-Entities/ENTITY_SECTIONS.md)
-- [Enums PageState](../../app/Enums/PageState.php)
-- [Enums Visibility](../../app/Enums/Visibility.php)
 - [Enums SectionType](../../app/Enums/SectionType.php)
 

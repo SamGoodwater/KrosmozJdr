@@ -13,7 +13,7 @@
  * })
  *   .addField("rarity", { enabled: true, nullable: true })
  *   .addField("level", { enabled: true, nullable: true })
- *   .withQuickEditFields(["rarity", "level", "usable"])
+ *   .withQuickEditFields(["rarity", "level", "state"])
  *   .build();
  * 
  * @example

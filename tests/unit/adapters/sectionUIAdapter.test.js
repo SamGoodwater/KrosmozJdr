@@ -1,26 +1,26 @@
 /**
- * Tests unitaires pour sectionUIAdapter
+ * Tests unitaires pour l'UI de section (useSectionUI)
  */
 import { describe, it, expect } from 'vitest';
-import { adaptSectionToUI } from '@/Pages/Organismes/section/adapters/sectionUIAdapter';
+import { useSectionUI } from '@/Pages/Organismes/section/composables/useSectionUI';
 import { createMockSection } from '../../setup.js';
 
 describe('sectionUIAdapter', () => {
-  describe('adaptSectionToUI', () => {
-    it('devrait adapter une section text avec état published', () => {
+  describe('useSectionUI', () => {
+    it('devrait adapter une section text avec état playable', () => {
       const section = createMockSection({
         template: 'text',
-        state: 'published',
+        state: 'playable',
       });
 
-      const uiData = adaptSectionToUI(section);
+      const { uiData } = useSectionUI(section);
 
-      expect(uiData.color).toBe('success');
-      expect(uiData.icon).toBe('fa-file-text');
-      expect(uiData.badge.text).toBe('Publié');
-      expect(uiData.badge.color).toBe('success');
-      expect(uiData.containerClass).toContain('section-state-published');
-      expect(uiData.containerClass).toContain('section-template-text');
+      expect(uiData.value.color).toBe('success');
+      expect(uiData.value.icon).toBe('fa-file-text');
+      expect(uiData.value.badge.text).toBe('Jouable');
+      expect(uiData.value.badge.color).toBe('success');
+      expect(uiData.value.containerClass).toContain('section-state-playable');
+      expect(uiData.value.containerClass).toContain('section-template-text');
     });
 
     it('devrait adapter une section avec état draft', () => {
@@ -28,11 +28,11 @@ describe('sectionUIAdapter', () => {
         state: 'draft',
       });
 
-      const uiData = adaptSectionToUI(section);
+      const { uiData } = useSectionUI(section);
 
-      expect(uiData.color).toBe('warning');
-      expect(uiData.badge.text).toBe('Brouillon');
-      expect(uiData.badge.color).toBe('warning');
+      expect(uiData.value.color).toBe('warning');
+      expect(uiData.value.badge.text).toBe('Brouillon');
+      expect(uiData.value.badge.color).toBe('warning');
     });
 
     it('devrait adapter une section image', () => {
@@ -40,10 +40,10 @@ describe('sectionUIAdapter', () => {
         template: 'image',
       });
 
-      const uiData = adaptSectionToUI(section);
+      const { uiData } = useSectionUI(section);
 
-      expect(uiData.icon).toBe('fa-image');
-      expect(uiData.containerClass).toContain('section-template-image');
+      expect(uiData.value.icon).toBe('fa-image');
+      expect(uiData.value.containerClass).toContain('section-template-image');
     });
 
     it('devrait générer une URL pour la section', () => {
@@ -53,10 +53,10 @@ describe('sectionUIAdapter', () => {
         slug: 'test-section',
       });
 
-      const uiData = adaptSectionToUI(section);
+      const { uiData } = useSectionUI(section);
 
-      expect(uiData.url).toContain('test-page');
-      expect(uiData.url).toContain('section-123');
+      expect(uiData.value.url).toContain('test-page');
+      expect(uiData.value.url).toContain('section-123');
     });
 
     it('devrait détecter si une section a du contenu', () => {
@@ -70,8 +70,8 @@ describe('sectionUIAdapter', () => {
         data: { content: '' },
       });
 
-      const uiDataWithContent = adaptSectionToUI(sectionWithContent);
-      const uiDataEmpty = adaptSectionToUI(sectionEmpty);
+      const uiDataWithContent = useSectionUI(sectionWithContent).uiData.value;
+      const uiDataEmpty = useSectionUI(sectionEmpty).uiData.value;
 
       expect(uiDataWithContent.metadata.hasContent).toBe(true);
       expect(uiDataEmpty.metadata.hasContent).toBe(false);

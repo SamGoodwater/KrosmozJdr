@@ -8,7 +8,7 @@ Les panoplies sont des **ensembles d'équipement qui apportent un bonus** lorsqu
 
 ### 1. Modèle (`app/Models/Entity/Panoply.php`)
 - **Status** : ✅ Complet
-- **Champs** : `name`, `description`, `bonus`, `usable`, `is_visible`, `created_by`, `dofusdb_id`
+- **Champs** : `name`, `description`, `bonus`, `state`, `read_level`, `write_level`, `created_by`, `dofusdb_id`
 - **Relations** :
   - ✅ `items()` - Many-to-many via `item_panoply` (relation principale)
   - ✅ `campaigns()` - Many-to-many via `campaign_panoply`
@@ -42,7 +42,7 @@ Les panoplies sont des **ensembles d'équipement qui apportent un bonus** lorsqu
 - ✅ `ScrappingOrchestrator::importPanoply()` - Import avec cascade des items et synchronisation des relations
 - ✅ `ScrappingController::importPanoply()` - Endpoint API
 - ✅ Route API : `POST /api/scrapping/import/panoply/{id}`
-- ✅ Commande Artisan : `scrapping:import panoply {id}`
+- ✅ Commande Artisan : `scrapping --import=panoply --id={id}`
 - ✅ Interface Vue.js : Panoplie ajoutée dans la liste des types d'entités
 
 ### 5. Contrôleur (`app/Http/Controllers/Entity/PanoplyController.php`)
@@ -82,8 +82,9 @@ Les panoplies sont des **ensembles d'équipement qui apportent un bonus** lorsqu
 - name (required)
 - description (nullable)
 - bonus (nullable) - Contient les bonus textuels de la panoplie
-- usable (tinyInteger, default: 0)
-- is_visible (string, default: 'guest')
+- state (string, default: 'draft')
+- read_level (tinyInteger, default: 0)
+- write_level (tinyInteger, default: 4)
 - created_by (FK to users, nullable)
 - timestamps
 - deleted_at (soft deletes)

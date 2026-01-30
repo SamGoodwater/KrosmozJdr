@@ -14,6 +14,8 @@
  * const descriptors = getPanoplyFieldDescriptors({ meta });
  */
 
+import { getEntityStateOptions, getUserRoleOptions } from "@/Utils/Entity/SharedConstants";
+
 /**
  * @typedef {Object} PanoplyFieldDescriptor
  * @property {string} key - Clé unique du champ
@@ -178,10 +180,10 @@ export function getPanoplyFieldDescriptors(ctx = {}) {
         },
       },
     },
-    usable: {
-      key: "usable",
-      label: "Utilisable",
-      icon: "fa-solid fa-check-circle",
+    state: {
+      key: "state",
+      label: "État",
+      icon: "fa-solid fa-circle-info",
       display: {
         sizes: {
           xs: { mode: "badge" },
@@ -193,18 +195,19 @@ export function getPanoplyFieldDescriptors(ctx = {}) {
       },
       edit: {
         form: {
-          type: "checkbox",
+          type: "select",
           group: "Statut",
           required: false,
           showInCompact: true,
-          defaultValue: false,
-          bulk: { enabled: true, nullable: false, build: (v) => v === "1" || v === true },
+          options: getEntityStateOptions,
+          defaultValue: "draft",
+          bulk: { enabled: true, nullable: false, build: (v) => String(v) },
         },
       },
     },
-    is_visible: {
-      key: "is_visible",
-      label: "Visible",
+    read_level: {
+      key: "read_level",
+      label: "Lecture (min.)",
       icon: "fa-solid fa-eye",
       display: {
         sizes: {
@@ -221,15 +224,34 @@ export function getPanoplyFieldDescriptors(ctx = {}) {
           group: "Statut",
           required: false,
           showInCompact: true,
-          options: [
-            { value: "guest", label: "Invité" },
-            { value: "user", label: "Utilisateur" },
-            { value: "player", label: "Joueur" },
-            { value: "game_master", label: "Maître du jeu" },
-            { value: "admin", label: "Administrateur" },
-          ],
-          defaultValue: "guest",
-          bulk: { enabled: true, nullable: true, build: (v) => (v === "" ? null : String(v)) },
+          options: getUserRoleOptions,
+          defaultValue: 0,
+          bulk: { enabled: true, nullable: true, build: (v) => (v === "" ? null : Number(v)) },
+        },
+      },
+    },
+    write_level: {
+      key: "write_level",
+      label: "Écriture (min.)",
+      icon: "fa-solid fa-pen-to-square",
+      display: {
+        sizes: {
+          xs: { mode: "badge" },
+          sm: { mode: "badge" },
+          md: { mode: "badge" },
+          lg: { mode: "badge" },
+          xl: { mode: "badge" },
+        },
+      },
+      edit: {
+        form: {
+          type: "select",
+          group: "Statut",
+          required: false,
+          showInCompact: true,
+          options: getUserRoleOptions,
+          defaultValue: 4,
+          bulk: { enabled: true, nullable: true, build: (v) => (v === "" ? null : Number(v)) },
         },
       },
     },
@@ -332,8 +354,9 @@ export function getPanoplyFieldDescriptors(ctx = {}) {
     _quickeditConfig: {
       fields: [
         "bonus",
-        "usable",
-        "is_visible",
+        "state",
+        "read_level",
+        "write_level",
         "description",
         "dofusdb_id",
       ],

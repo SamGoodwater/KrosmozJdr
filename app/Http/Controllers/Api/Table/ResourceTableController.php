@@ -26,6 +26,28 @@ use Illuminate\Support\Facades\Gate;
  */
 class ResourceTableController extends Controller
 {
+    private const STATE_COLORS = [
+        'raw' => 'neutral',
+        'draft' => 'warning',
+        'playable' => 'success',
+        'archived' => 'error',
+    ];
+
+    private const LEVEL_OPTIONS = [
+        ['value' => '0', 'label' => 'Invité'],
+        ['value' => '1', 'label' => 'Utilisateur'],
+        ['value' => '2', 'label' => 'Joueur'],
+        ['value' => '3', 'label' => 'Maître de jeu'],
+        ['value' => '4', 'label' => 'Admin'],
+        ['value' => '5', 'label' => 'Super admin'],
+    ];
+
+    private function stateColor(?string $state): string
+    {
+        $s = (string) ($state ?? '');
+        return self::STATE_COLORS[$s] ?? 'base';
+    }
+
     public function index(Request $request): JsonResponse
     {
         $this->authorize('viewAny', Resource::class);
@@ -39,7 +61,7 @@ class ResourceTableController extends Controller
         $filters = (array) ($request->input('filters', $request->input('filter', [])) ?? []);
 
         // Compat: accepter des filtres "flat" (rarity=2) en plus de filters[rarity]=2
-        foreach (['level', 'resource_type_id', 'rarity', 'usable', 'auto_update'] as $k) {
+        foreach (['level', 'resource_type_id', 'rarity', 'auto_update', 'state', 'read_level', 'write_level'] as $k) {
             if (!array_key_exists($k, $filters) && $request->has($k)) {
                 $filters[$k] = $request->get($k);
             }
@@ -72,14 +94,23 @@ class ResourceTableController extends Controller
         if (array_key_exists('resource_type_id', $filters) && $filters['resource_type_id'] !== '' && $filters['resource_type_id'] !== null) {
             $query->where('resource_type_id', (int) $filters['resource_type_id']);
         }
-        foreach (['rarity', 'usable', 'auto_update'] as $k) {
+        foreach (['rarity', 'auto_update'] as $k) {
             if (array_key_exists($k, $filters) && $filters[$k] !== '' && $filters[$k] !== null) {
                 $query->where($k, (int) $filters[$k]);
             }
         }
+        if (array_key_exists('state', $filters) && $filters['state'] !== '' && $filters['state'] !== null) {
+            $query->where('state', (string) $filters['state']);
+        }
+        if (array_key_exists('read_level', $filters) && $filters['read_level'] !== '' && $filters['read_level'] !== null) {
+            $query->where('read_level', (int) $filters['read_level']);
+        }
+        if (array_key_exists('write_level', $filters) && $filters['write_level'] !== '' && $filters['write_level'] !== null) {
+            $query->where('write_level', (int) $filters['write_level']);
+        }
 
         // Tri (liste blanche)
-        $allowedSort = ['id', 'name', 'level', 'rarity', 'price', 'weight', 'usable', 'auto_update', 'dofusdb_id', 'created_at', 'updated_at'];
+        $allowedSort = ['id', 'name', 'level', 'rarity', 'price', 'weight', 'state', 'read_level', 'write_level', 'auto_update', 'dofusdb_id', 'created_at', 'updated_at'];
         if (in_array($sort, $allowedSort, true)) {
             $query->orderBy($sort, $order);
         } else {
@@ -111,14 +142,18 @@ class ResourceTableController extends Controller
                 ->map(fn ($label, $value) => ['value' => (string) $value, 'label' => (string) $label])
                 ->values()
                 ->all(),
-            'usable' => [
-                ['value' => '1', 'label' => 'Oui'],
-                ['value' => '0', 'label' => 'Non'],
-            ],
             'auto_update' => [
                 ['value' => '1', 'label' => 'Oui'],
                 ['value' => '0', 'label' => 'Non'],
             ],
+            'state' => [
+                ['value' => 'raw', 'label' => 'Brut'],
+                ['value' => 'draft', 'label' => 'Brouillon'],
+                ['value' => 'playable', 'label' => 'Jouable'],
+                ['value' => 'archived', 'label' => 'Archivé'],
+            ],
+            'read_level' => self::LEVEL_OPTIONS,
+            'write_level' => self::LEVEL_OPTIONS,
             'level' => [
                 ['value' => '1', 'label' => '1'],
                 ['value' => '50', 'label' => '50'],
@@ -145,8 +180,9 @@ class ResourceTableController extends Controller
                     'weight' => $r->weight,
                     'rarity' => $r->rarity,
                     'dofus_version' => $r->dofus_version,
-                    'usable' => (int) ($r->usable ?? 0),
-                    'is_visible' => $r->is_visible,
+                    'state' => (string) ($r->state ?? 'draft'),
+                    'read_level' => (int) ($r->read_level ?? 0),
+                    'write_level' => (int) ($r->write_level ?? 0),
                     'image' => $r->image,
                     'auto_update' => (bool) $r->auto_update,
                     'resource_type_id' => $r->resource_type_id,
@@ -182,8 +218,6 @@ class ResourceTableController extends Controller
             ]);
         }
 
-        $toYesNo = fn ($v) => ((int) $v) === 1 ? 'Oui' : 'Non';
-
         $rarityColor = fn (int $r) => match ($r) {
             0 => 'success',
             1 => 'info',
@@ -194,7 +228,7 @@ class ResourceTableController extends Controller
             default => 'primary',
         };
 
-        $tableRows = $rows->map(function (Resource $r) use ($toYesNo, $rarityColor) {
+        $tableRows = $rows->map(function (Resource $r) use ($rarityColor) {
             $showHref = route('entities.resources.show', $r->id);
             $rarityLabel = Resource::RARITY[$r->rarity] ?? (string) $r->rarity;
 
@@ -210,6 +244,7 @@ class ResourceTableController extends Controller
             $createdAtSort = $r->created_at ? $r->created_at->getTimestamp() : 0;
             $updatedAtLabel = $r->updated_at ? $r->updated_at->format('d/m/Y H:i') : '-';
             $updatedAtSort = $r->updated_at ? $r->updated_at->getTimestamp() : 0;
+            $state = (string) ($r->state ?? 'draft');
 
             return [
                 'id' => $r->id,
@@ -272,13 +307,13 @@ class ResourceTableController extends Controller
                             'sortValue' => is_numeric((string) $r->weight) ? (float) $r->weight : (string) ($r->weight ?? ''),
                         ],
                     ],
-                    'usable' => [
+                    'state' => [
                         'type' => 'badge',
-                        'value' => $toYesNo($r->usable),
+                        'value' => $state,
                         'params' => [
-                            'color' => ((int) $r->usable) === 1 ? 'success' : 'error',
-                            'filterValue' => (string) ((int) $r->usable),
-                            'sortValue' => (int) $r->usable,
+                            'color' => $this->stateColor($state),
+                            'filterValue' => $state,
+                            'sortValue' => $state,
                         ],
                     ],
                     'auto_update' => [
@@ -336,8 +371,9 @@ class ResourceTableController extends Controller
                         'weight' => $r->weight,
                         'rarity' => $r->rarity,
                         'dofus_version' => $r->dofus_version,
-                        'usable' => (int) $r->usable,
-                        'is_visible' => $r->is_visible,
+                        'state' => (string) ($r->state ?? 'draft'),
+                        'read_level' => (int) ($r->read_level ?? 0),
+                        'write_level' => (int) ($r->write_level ?? 0),
                         'image' => $r->image,
                         'auto_update' => (bool) $r->auto_update,
                         'resource_type_id' => $r->resource_type_id,

@@ -15,19 +15,15 @@
  * const fields = SectionParameterService.getParameterFields(templateConfig.parameters);
  * const commonFields = SectionParameterService.getCommonFields();
  */
+import { getEntityStateOptions, getUserRoleOptions } from '@/Utils/Entity/SharedConstants';
 export class SectionParameterService {
     /**
-     * Options pour le champ de visibilité
+     * Options pour les champs read_level / write_level
      * 
-     * @returns {Array} Options de visibilité
+     * @returns {Array} Options de rôles
      */
     static getVisibilityOptions() {
-        return [
-            { value: 'guest', label: 'Invité (public)' },
-            { value: 'user', label: 'Utilisateur' },
-            { value: 'game_master', label: 'Maître de jeu' },
-            { value: 'admin', label: 'Administrateur' },
-        ];
+        return getUserRoleOptions();
     }
 
     /**
@@ -36,12 +32,7 @@ export class SectionParameterService {
      * @returns {Array} Options d'état
      */
     static getStateOptions() {
-        return [
-            { value: 'draft', label: 'Brouillon' },
-            { value: 'preview', label: 'Prévisualisation' },
-            { value: 'published', label: 'Publié' },
-            { value: 'archived', label: 'Archivé' },
-        ];
+        return getEntityStateOptions();
     }
 
     /**
@@ -128,26 +119,26 @@ export class SectionParameterService {
                 },
             },
             {
-                key: 'is_visible',
+                key: 'read_level',
                 type: 'select',
-                label: 'Visibilité',
-                description: 'Niveau de visibilité minimum pour voir la section',
-                default: 'guest',
+                label: 'Lecture (min.)',
+                description: 'Niveau minimum requis pour voir la section',
+                default: 0,
                 options: this.getVisibilityOptions(),
             },
             {
-                key: 'can_edit_role',
+                key: 'write_level',
                 type: 'select',
-                label: 'Rôle requis pour modifier',
-                description: 'Rôle minimum requis pour modifier cette section',
-                default: 'admin',
+                label: 'Écriture (min.)',
+                description: 'Niveau minimum requis pour modifier cette section',
+                default: 4,
                 options: this.getVisibilityOptions(),
             },
             {
                 key: 'state',
                 type: 'select',
                 label: 'État',
-                description: 'État de publication de la section',
+                description: 'Cycle de vie de la section',
                 default: 'draft',
                 options: this.getStateOptions(),
             },

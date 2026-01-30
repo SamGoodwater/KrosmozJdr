@@ -12,8 +12,6 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use App\Models\User;
 use App\Models\Page;
 use App\Models\File;
-use App\Enums\PageState;
-use App\Enums\Visibility;
 use App\Enums\SectionType;
 
 /**
@@ -33,9 +31,9 @@ use App\Enums\SectionType;
  * @property \App\Enums\SectionType $template
  * @property array<array-key, mixed>|null $settings
  * @property array<array-key, mixed>|null $data
- * @property \App\Enums\Visibility $is_visible
- * @property \App\Enums\Visibility $can_edit_role
- * @property \App\Enums\PageState $state
+ * @property string $state
+ * @property int $read_level
+ * @property int $write_level
  * @property int|null $created_by
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
@@ -55,7 +53,6 @@ use App\Enums\SectionType;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Section whereCreatedBy($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Section whereDeletedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Section whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Section whereIsVisible($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Section whereOrder($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Section wherePageId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Section whereTitle($value)
@@ -74,16 +71,10 @@ class Section extends Model
     /** @use HasFactory<\Database\Factories\SectionFactory> */
     use HasFactory, SoftDeletes;
 
-    /**
-     * Les états possibles pour une section.
-     * @deprecated Utiliser PageState enum à la place (les sections utilisent les mêmes états que les pages)
-     */
-    const STATES = [
-        'brouillon' => 0,
-        'prévisualisation' => 1,
-        'publié' => 2,
-        'archivé' => 3,
-    ];
+    public const STATE_RAW = 'raw';
+    public const STATE_DRAFT = 'draft';
+    public const STATE_PLAYABLE = 'playable';
+    public const STATE_ARCHIVED = 'archived';
 
     /**
      * The attributes that are mass assignable.
@@ -96,15 +87,13 @@ class Section extends Model
         'slug',
         'order',
         'template',
-        // Legacy (toujours supporté: tests + vieux code)
         'type',
         'settings',
         'data',
-        // Legacy (toujours supporté: tests + vieux code)
         'params',
-        'is_visible',
-        'can_edit_role',
         'state',
+        'read_level',
+        'write_level',
         'created_by',
     ];
 
@@ -116,15 +105,12 @@ class Section extends Model
     protected $casts = [
         'order' => 'integer',
         'template' => SectionType::class,
-        // Legacy
         'type' => SectionType::class,
         'settings' => 'array',
         'data' => 'array',
-        // Legacy
         'params' => 'array',
-        'state' => PageState::class,
-        'is_visible' => Visibility::class,
-        'can_edit_role' => Visibility::class,
+        'read_level' => 'integer',
+        'write_level' => 'integer',
     ];
 
     /**
@@ -166,41 +152,35 @@ class Section extends Model
     // ============================================
 
     /**
-     * Scope pour filtrer les sections publiées.
+     * Scope pour filtrer les sections jouables.
+     */
+    /** @param Builder<Section> $query @return Builder<Section> */
+    public function scopePlayable(Builder $query): Builder
+    {
+        return $query->where('state', self::STATE_PLAYABLE);
+    }
+
+    /**
+     * Alias historique (préférer `playable()`).
      */
     /** @param Builder<Section> $query @return Builder<Section> */
     public function scopePublished(Builder $query): Builder
     {
-        return $query->where('state', PageState::PUBLISHED->value);
+        return $this->scopePlayable($query);
     }
 
     /**
-     * Scope pour filtrer les sections visibles pour un utilisateur.
+     * Scope pour filtrer les sections lisibles pour un utilisateur.
      */
     /** @param Builder<Section> $query @return Builder<Section> */
-    public function scopeVisibleFor(Builder $query, ?User $user = null): Builder
+    public function scopeReadableFor(Builder $query, ?User $user = null): Builder
     {
-        $allowedVisibilities = [Visibility::GUEST->value];
+        $level = $user ? (int) $user->role : User::ROLE_GUEST;
 
-        if ($user) {
-            $allowedVisibilities[] = Visibility::USER->value;
-
-            if ($user->isGameMaster()) {
-                $allowedVisibilities[] = Visibility::GAME_MASTER->value;
-            }
-
-            if ($user->isAdmin()) {
-                $allowedVisibilities[] = Visibility::ADMIN->value;
-            }
-        }
-
-        $allowedVisibilities = array_values(array_unique($allowedVisibilities));
-
-        return $query->where(function ($q) use ($user, $allowedVisibilities) {
-            $q->whereIn('is_visible', $allowedVisibilities);
+        return $query->where(function ($q) use ($user, $level) {
+            $q->where('read_level', '<=', $level);
 
             if ($user) {
-                // Visible si l'utilisateur est associé à la section
                 $q->orWhereHas('users', function ($userQuery) use ($user) {
                     $userQuery->where('users.id', $user->id);
                 });
@@ -223,8 +203,8 @@ class Section extends Model
     /** @param Builder<Section> $query @return Builder<Section> */
     public function scopeDisplayable(Builder $query, ?User $user = null): Builder
     {
-        return $query->published()
-            ->visibleFor($user)
+        return $query->playable()
+            ->readableFor($user)
             ->ordered();
     }
 
@@ -235,17 +215,34 @@ class Section extends Model
     /**
      * Vérifie si la section est publiée.
      */
-    public function isPublished(): bool
+    public function isPlayable(): bool
     {
-        return $this->state === PageState::PUBLISHED;
+        return $this->state === self::STATE_PLAYABLE;
     }
 
     /**
-     * Vérifie si la section est visible pour un utilisateur.
+     * Vérifie si la section est lisible pour un utilisateur.
      */
-    public function isVisibleFor(?User $user = null): bool
+    public function isReadableFor(?User $user = null): bool
     {
-        return $this->is_visible->isAccessibleBy($user);
+        $level = $user ? (int) $user->role : User::ROLE_GUEST;
+        if ((int) $this->read_level <= $level) {
+            return true;
+        }
+
+        if (!$user) {
+            return false;
+        }
+
+        if (!$this->relationLoaded('users')) {
+            try {
+                $this->load('users');
+            } catch (\Exception $e) {
+                return false;
+            }
+        }
+
+        return $this->relationLoaded('users') && $this->users->contains($user->id);
     }
 
     /**
@@ -258,12 +255,17 @@ class Section extends Model
             return true;
         }
 
-        // Doit être publiée (ou en preview pour les auteurs)
-        if (!$this->isPublished() && !($user && $this->created_by === $user->id)) {
+        // Auteurs/éditeurs voient leurs drafts/raw
+        if ($user && $this->canBeEditedBy($user)) {
+            return true;
+        }
+
+        // Sinon : uniquement "jouable"
+        if (!$this->isPlayable()) {
             return false;
         }
 
-        return $this->isVisibleFor($user);
+        return $this->isReadableFor($user);
     }
 
     /**
@@ -271,7 +273,7 @@ class Section extends Model
      */
     public function publish(): void
     {
-        $this->update(['state' => PageState::PUBLISHED->value]);
+        $this->update(['state' => self::STATE_PLAYABLE]);
     }
 
     /**
@@ -279,19 +281,20 @@ class Section extends Model
      */
     public function archive(): void
     {
-        $this->update(['state' => PageState::ARCHIVED->value]);
+        $this->update(['state' => self::STATE_ARCHIVED]);
     }
 
     /**
-     * Vérifie si la section peut être modifiée par un utilisateur selon can_edit_role.
+     * Vérifie si la section peut être modifiée par un utilisateur selon write_level,
+     * et en respectant aussi les droits d'écriture sur la page parente.
      * 
      * **Logique de vérification :**
      * - Les super_admin peuvent toujours modifier
      * - L'auteur de la section peut modifier sa section (même sans niveau de permission)
      *   → Il ne peut modifier que sa propre section, pas les autres sections de la page
      * - Les utilisateurs associés à la section peuvent modifier (mais doivent avoir les droits sur la page)
-     * - Sinon : l'utilisateur doit avoir des droits supérieurs ou égaux au `can_edit_role` de la section
-     *   ET des droits supérieurs ou égaux au `can_edit_role` de la page parente
+     * - Sinon : l'utilisateur doit avoir un niveau \(\ge\) `write_level` de la section
+     *   ET pouvoir modifier la page parente (selon ses propres règles d'écriture)
      * 
      * @param User|null $user Utilisateur (null pour invité)
      * @return bool True si l'utilisateur peut modifier la section
@@ -344,11 +347,9 @@ class Section extends Model
             return true;
         }
 
-        // Vérifier selon can_edit_role de la section
-        $sectionEditRole = $this->can_edit_role;
-
-        // L'utilisateur doit avoir les droits sur la section
-        if (!$sectionEditRole->isAccessibleBy($user)) {
+        // Vérifier selon write_level de la section
+        $level = (int) $user->role;
+        if ($level < (int) $this->write_level) {
             return false;
         }
 

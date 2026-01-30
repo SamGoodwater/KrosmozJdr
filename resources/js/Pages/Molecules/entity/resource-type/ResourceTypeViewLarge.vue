@@ -79,8 +79,9 @@ const canShowField = (fieldKey) => {
 const extendedFields = computed(() => {
     const fields = [
         'decision',
-        'usable',
-        'is_visible',
+        'state',
+        'read_level',
+        'write_level',
         'resources_count',
         'dofusdb_type_id',
         'seen_count',

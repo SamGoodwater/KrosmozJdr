@@ -4,8 +4,6 @@ namespace Tests\Feature\Policies;
 
 use App\Models\User;
 use App\Models\Page;
-use App\Enums\Visibility;
-use App\Enums\PageState;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -23,13 +21,13 @@ class PagePolicyTest extends TestCase
     use RefreshDatabase;
 
     /**
-     * Un invité (non connecté) peut voir une page publique (is_visible=guest)
+     * Un invité (non connecté) peut voir une page publique (read_level=guest)
      */
     public function test_guest_can_view_public_page(): void
     {
         $page = Page::factory()->create([
-            'is_visible' => Visibility::GUEST->value,
-            'state' => PageState::PUBLISHED->value,
+            'read_level' => User::ROLE_GUEST,
+            'state' => Page::STATE_PLAYABLE,
         ]);
 
         $this->assertTrue(
@@ -39,13 +37,13 @@ class PagePolicyTest extends TestCase
     }
 
     /**
-     * Un invité ne peut PAS voir une page admin (is_visible=admin)
+     * Un invité ne peut PAS voir une page admin (read_level=admin)
      */
     public function test_guest_cannot_view_admin_page(): void
     {
         $page = Page::factory()->create([
-            'is_visible' => Visibility::ADMIN->value,
-            'state' => PageState::PUBLISHED->value,
+            'read_level' => User::ROLE_ADMIN,
+            'state' => Page::STATE_PLAYABLE,
         ]);
 
         $this->assertFalse(
@@ -59,10 +57,10 @@ class PagePolicyTest extends TestCase
      */
     public function test_user_cannot_view_game_master_page(): void
     {
-        $user = User::factory()->create(['role' => 1]); // user
+        $user = User::factory()->create(['role' => User::ROLE_USER]);
         $page = Page::factory()->create([
-            'is_visible' => Visibility::GAME_MASTER->value,
-            'state' => PageState::PUBLISHED->value,
+            'read_level' => User::ROLE_GAME_MASTER,
+            'state' => Page::STATE_PLAYABLE,
         ]);
 
         $this->assertFalse(
@@ -76,7 +74,7 @@ class PagePolicyTest extends TestCase
      */
     public function test_admin_can_create_page(): void
     {
-        $admin = User::factory()->create(['role' => 4]); // admin
+        $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
 
         $this->assertTrue(
             $this->app->make(\App\Policies\PagePolicy::class)
@@ -89,7 +87,7 @@ class PagePolicyTest extends TestCase
      */
     public function test_game_master_cannot_create_page(): void
     {
-        $gm = User::factory()->create(['role' => 3]); // game_master
+        $gm = User::factory()->create(['role' => User::ROLE_GAME_MASTER]);
 
         $this->assertFalse(
             $this->app->make(\App\Policies\PagePolicy::class)
@@ -102,7 +100,7 @@ class PagePolicyTest extends TestCase
      */
     public function test_user_cannot_create_page(): void
     {
-        $user = User::factory()->create(['role' => 1]); // user
+        $user = User::factory()->create(['role' => User::ROLE_USER]);
 
         $this->assertFalse(
             $this->app->make(\App\Policies\PagePolicy::class)
@@ -115,10 +113,10 @@ class PagePolicyTest extends TestCase
      */
     public function test_author_can_update_own_page(): void
     {
-        $author = User::factory()->create(['role' => 3]); // game_master
+        $author = User::factory()->create(['role' => User::ROLE_GAME_MASTER]);
         $page = Page::factory()->create([
             'created_by' => $author->id,
-            'can_edit_role' => Visibility::GAME_MASTER->value,
+            'write_level' => User::ROLE_GAME_MASTER,
         ]);
 
         $this->assertTrue(
@@ -132,12 +130,12 @@ class PagePolicyTest extends TestCase
      */
     public function test_user_cannot_update_others_page(): void
     {
-        $author = User::factory()->create(['role' => 3]);
-        $other = User::factory()->create(['role' => 3]);
+        $author = User::factory()->create(['role' => User::ROLE_GAME_MASTER]);
+        $other = User::factory()->create(['role' => User::ROLE_GAME_MASTER]);
         
         $page = Page::factory()->create([
             'created_by' => $author->id,
-            'can_edit_role' => Visibility::ADMIN->value, // Nécessite admin
+            'write_level' => User::ROLE_ADMIN, // Nécessite admin
         ]);
 
         $this->assertFalse(
@@ -151,12 +149,12 @@ class PagePolicyTest extends TestCase
      */
     public function test_admin_can_update_any_page(): void
     {
-        $admin = User::factory()->create(['role' => 4]); // admin
-        $author = User::factory()->create(['role' => 3]);
+        $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
+        $author = User::factory()->create(['role' => User::ROLE_GAME_MASTER]);
         
         $page = Page::factory()->create([
             'created_by' => $author->id,
-            'can_edit_role' => Visibility::ADMIN->value,
+            'write_level' => User::ROLE_ADMIN,
         ]);
 
         $this->assertTrue(
@@ -170,7 +168,7 @@ class PagePolicyTest extends TestCase
      */
     public function test_author_can_delete_own_page(): void
     {
-        $author = User::factory()->create(['role' => 3]); // game_master
+        $author = User::factory()->create(['role' => User::ROLE_GAME_MASTER]);
         $page = Page::factory()->create([
             'created_by' => $author->id,
         ]);
@@ -186,8 +184,8 @@ class PagePolicyTest extends TestCase
      */
     public function test_user_cannot_delete_others_page(): void
     {
-        $author = User::factory()->create(['role' => 3]);
-        $other = User::factory()->create(['role' => 3]);
+        $author = User::factory()->create(['role' => User::ROLE_GAME_MASTER]);
+        $other = User::factory()->create(['role' => User::ROLE_GAME_MASTER]);
         
         $page = Page::factory()->create([
             'created_by' => $author->id,
@@ -204,8 +202,8 @@ class PagePolicyTest extends TestCase
      */
     public function test_admin_can_delete_any_page(): void
     {
-        $admin = User::factory()->create(['role' => 4]); // admin
-        $author = User::factory()->create(['role' => 3]);
+        $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
+        $author = User::factory()->create(['role' => User::ROLE_GAME_MASTER]);
         
         $page = Page::factory()->create([
             'created_by' => $author->id,
@@ -222,8 +220,8 @@ class PagePolicyTest extends TestCase
      */
     public function test_admin_can_force_delete_page(): void
     {
-        $admin = User::factory()->create(['role' => 4]); // admin
-        $user = User::factory()->create(['role' => 1]); // user
+        $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
+        $user = User::factory()->create(['role' => User::ROLE_USER]);
         
         $page = Page::factory()->create();
 

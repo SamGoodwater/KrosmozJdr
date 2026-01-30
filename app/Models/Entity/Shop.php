@@ -22,8 +22,9 @@ use App\Models\Entity\Panoply;
  * @property string|null $description
  * @property string|null $location
  * @property int $price
- * @property int $usable
- * @property string $is_visible
+ * @property string $state
+ * @property int $read_level
+ * @property int $write_level
  * @property string|null $image
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
@@ -55,13 +56,14 @@ use App\Models\Entity\Panoply;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Shop whereDescription($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Shop whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Shop whereImage($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Shop whereIsVisible($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Shop whereReadLevel($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Shop whereLocation($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Shop whereName($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Shop whereNpcId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Shop wherePrice($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Shop whereUpdatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Shop whereUsable($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Shop whereState($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Shop whereWriteLevel($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Shop withTrashed()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Shop withoutTrashed()
  * @mixin \Eloquent
@@ -70,6 +72,11 @@ class Shop extends Model
 {
     /** @use HasFactory<\\Database\\Factories\\ShopFactory> */
     use HasFactory, SoftDeletes;
+
+    public const STATE_RAW = 'raw';
+    public const STATE_DRAFT = 'draft';
+    public const STATE_PLAYABLE = 'playable';
+    public const STATE_ARCHIVED = 'archived';
 
     /**
      * The attributes that are mass assignable.
@@ -81,8 +88,9 @@ class Shop extends Model
         'description',
         'location',
         'price',
-        'usable',
-        'is_visible',
+        'state',
+        'read_level',
+        'write_level',
         'image',
         'created_by',
         'npc_id',
@@ -95,7 +103,8 @@ class Shop extends Model
      */
     protected $casts = [
         'price' => 'integer',
-        'usable' => 'integer',
+        'read_level' => 'integer',
+        'write_level' => 'integer',
     ];
 
     /**

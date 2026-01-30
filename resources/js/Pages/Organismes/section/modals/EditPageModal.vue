@@ -64,7 +64,7 @@ const pageModel = computed(() => {
 });
 
 // Options pour les selects
-const { stateOptions, visibilityOptions, parentPageOptions } = usePageFormOptions(
+const { stateOptions, roleOptions, parentPageOptions } = usePageFormOptions(
     () => props.pages,
     computed(() => pageModel.value?.id ?? null)
 );
@@ -90,8 +90,8 @@ const initializeForm = () => {
     const initialData = {
         title: model.title || '',
         slug: model.slug || '',
-        is_visible: model.isVisible || 'guest',
-        can_edit_role: model.canEditRole || 'admin',
+        read_level: model.readLevel ?? 0,
+        write_level: model.writeLevel ?? 4,
         in_menu: model.inMenu ?? true,
         state: model.state || 'draft',
         parent_id: model.parentId || null,
@@ -291,20 +291,20 @@ const handleClose = () => {
                 @input="handleSlugInput"
             />
             
-            <!-- Visibilité -->
+            <!-- Lecture (min.) -->
             <SelectField
-                v-model="formInstance.is_visible"
-                label="Visibilité"
-                :options="visibilityOptions"
+                v-model="formInstance.read_level"
+                label="Lecture (min.)"
+                :options="roleOptions"
                 required
                 helper="Qui peut voir cette page ?"
             />
             
-            <!-- Rôle requis pour modifier -->
+            <!-- Écriture (min.) -->
             <SelectField
-                v-model="formInstance.can_edit_role"
-                label="Rôle requis pour modifier"
-                :options="visibilityOptions"
+                v-model="formInstance.write_level"
+                label="Écriture (min.)"
+                :options="roleOptions"
                 required
                 helper="Rôle minimum requis pour modifier cette page (admin par défaut)"
             />
@@ -315,7 +315,7 @@ const handleClose = () => {
                 label="État"
                 :options="stateOptions"
                 required
-                helper="État de publication de la page"
+                helper="Cycle de vie de la page"
             />
             
             <!-- Page parente -->

@@ -2,22 +2,16 @@
  * VisibilityFormatter — Formatter pour les valeurs de visibilité
  *
  * @description
- * Formate les valeurs de visibilité (guest, user, game_master, admin) en labels et badges.
+ * Formate les niveaux d'accès (read_level / write_level) en labels et badges.
  * Utilisé par : Resource, Item, Consumable, Spell, Monster, etc.
  */
 
 import { BaseFormatter } from './BaseFormatter.js';
-import { VISIBILITY_OPTIONS } from '@/Utils/Entity/Constants.js';
+import { getRoleColor, getRoleLabel } from '@/Utils/Entity/SharedConstants.js';
 
 export class VisibilityFormatter extends BaseFormatter {
   static name = 'VisibilityFormatter';
-  static fieldKeys = ['visibility', 'visible_to'];
-
-  /**
-   * Options de visibilité
-   * @type {Array<{value: string, label: string, color: string}>}
-   */
-  static options = VISIBILITY_OPTIONS;
+  static fieldKeys = ['read_level', 'write_level'];
 
   /**
    * Formate une valeur de visibilité en label
@@ -30,11 +24,7 @@ export class VisibilityFormatter extends BaseFormatter {
     if (!this.isValid(value)) {
       return null;
     }
-
-    const strValue = String(value);
-    const option = this.options.find((opt) => opt.value === strValue);
-
-    return option?.label || this._capitalize(strValue);
+    return getRoleLabel(value);
   }
 
   /**
@@ -49,54 +39,12 @@ export class VisibilityFormatter extends BaseFormatter {
     if (!this.isValid(value)) {
       return null;
     }
+    const label = getRoleLabel(value);
+    const daisyColor = getRoleColor(value);
 
-    const strValue = String(value);
-    const option = this.options.find((opt) => opt.value === strValue);
-
-    if (!option) {
-      // Fallback : cellule texte avec la valeur brute capitalisée
-      return this.buildTextCell(this._capitalize(strValue), {
-        sortValue: strValue,
-        filterValue: strValue,
-      });
-    }
-
-    // Convertir la couleur en couleur DaisyUI
-    const daisyColor = this._mapColorToDaisyUI(option.color);
-
-    return this.buildBadgeCell(option.label, daisyColor, {
-      sortValue: strValue,
-      filterValue: strValue,
+    return this.buildBadgeCell(label, daisyColor, {
+      sortValue: Number.isFinite(Number(value)) ? Number(value) : String(value),
+      filterValue: Number.isFinite(Number(value)) ? Number(value) : String(value),
     });
-  }
-
-  /**
-   * Convertit une couleur générique en couleur DaisyUI
-   *
-   * @param {string} color - Couleur générique
-   * @returns {string} Couleur DaisyUI
-   * @private
-   */
-  static _mapColorToDaisyUI(color) {
-    const colorMap = {
-      gray: 'neutral',
-      blue: 'info',
-      purple: 'primary',
-      red: 'error',
-    };
-
-    return colorMap[color] || 'neutral';
-  }
-
-  /**
-   * Capitalise la première lettre d'une chaîne
-   *
-   * @param {string} str - Chaîne à capitaliser
-   * @returns {string} Chaîne capitalisée
-   * @private
-   */
-  static _capitalize(str) {
-    if (!str) return '';
-    return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
   }
 }

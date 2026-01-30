@@ -52,7 +52,7 @@ Vérifier que le système de scrapping utilise bien toutes les entités et toute
 ### 7. Panoplies (`Panoply`)
 - ✅ **Supporté** : `importPanoply()`
 - ✅ **Relations** : Items (`item_panoply`)
-- ✅ **Champs utilisés** : `dofusdb_id`, `name`, `description`, `bonus`, `usable`, `is_visible`
+- ✅ **Champs utilisés** : `dofusdb_id`, `name`, `description`, `bonus`, `state`, `read_level`, `write_level`
 - ⚠️ **Champs manquants** : Aucun (tous les champs importants sont utilisés)
 
 ## 🔍 Problèmes identifiés

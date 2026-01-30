@@ -10,8 +10,9 @@ erDiagram
     id : bigint(20) unsigned
     name : varchar(255)
     description : varchar(255)
-    usable : tinyint(4)
-    is_visible : varchar(255)
+    state : varchar(255)
+    read_level : tinyint(4)
+    write_level : tinyint(4)
     image : varchar(255)
     created_at : timestamp
     updated_at : timestamp
@@ -60,9 +61,10 @@ erDiagram
     slug : varchar(255)
     keyword : varchar(255)
     is_public : tinyint(1)
-    state : int(11)
-    usable : tinyint(4)
-    is_visible : varchar(255)
+    progress_state : int(11)
+    state : varchar(255)
+    read_level : tinyint(4)
+    write_level : tinyint(4)
     image : varchar(255)
     created_at : timestamp
     updated_at : timestamp
@@ -85,8 +87,9 @@ erDiagram
     is_magic : tinyint(1)
     ritual_available : tinyint(1)
     powerful : varchar(255)
-    usable : tinyint(4)
-    is_visible : varchar(255)
+    state : varchar(255)
+    read_level : tinyint(4)
+    write_level : tinyint(4)
     image : varchar(255)
     created_at : timestamp
     updated_at : timestamp
@@ -118,8 +121,9 @@ erDiagram
     life_dice : varchar(255)
     specificity : varchar(255)
     dofus_version : varchar(255)
-    usable : tinyint(4)
-    is_visible : varchar(255)
+    state : varchar(255)
+    read_level : tinyint(4)
+    write_level : tinyint(4)
     image : varchar(255)
     icon : varchar(255)
     auto_update : tinyint(1)
@@ -154,8 +158,9 @@ erDiagram
   CONSUMABLE_TYPES {
     id : bigint(20) unsigned
     name : varchar(255)
-    usable : tinyint(4)
-    is_visible : varchar(255)
+    state : varchar(255)
+    read_level : tinyint(4)
+    write_level : tinyint(4)
     created_at : timestamp
     updated_at : timestamp
     deleted_at : timestamp
@@ -174,8 +179,9 @@ erDiagram
     recipe : varchar(255)
     price : varchar(255)
     rarity : int(11)
-    usable : tinyint(4)
-    is_visible : varchar(255)
+    state : varchar(255)
+    read_level : tinyint(4)
+    write_level : tinyint(4)
     dofus_version : varchar(255)
     image : varchar(255)
     auto_update : tinyint(1)
@@ -280,8 +286,9 @@ erDiagram
     other_consumable : varchar(255)
     other_resource : varchar(255)
     other_spell : varchar(255)
-    usable : tinyint(4)
-    is_visible : varchar(255)
+    state : varchar(255)
+    read_level : tinyint(4)
+    write_level : tinyint(4)
     image : varchar(255)
     created_at : timestamp
     updated_at : timestamp
@@ -349,8 +356,9 @@ erDiagram
   ITEM_TYPES {
     id : bigint(20) unsigned
     name : varchar(255)
-    usable : tinyint(4)
-    is_visible : varchar(255)
+    state : varchar(255)
+    read_level : tinyint(4)
+    write_level : tinyint(4)
     created_at : timestamp
     updated_at : timestamp
     deleted_at : timestamp
@@ -369,8 +377,9 @@ erDiagram
     price : varchar(255)
     rarity : int(11)
     dofus_version : varchar(255)
-    usable : tinyint(4)
-    is_visible : varchar(255)
+    state : varchar(255)
+    read_level : tinyint(4)
+    write_level : tinyint(4)
     image : varchar(255)
     auto_update : tinyint(1)
     deleted_at : timestamp
@@ -412,8 +421,9 @@ erDiagram
   MONSTER_RACES {
     id : bigint(20) unsigned
     name : varchar(255)
-    usable : tinyint(4)
-    is_visible : varchar(255)
+    state : varchar(255)
+    read_level : tinyint(4)
+    write_level : tinyint(4)
     created_at : timestamp
     updated_at : timestamp
     deleted_at : timestamp
@@ -480,8 +490,8 @@ erDiagram
     id : bigint(20) unsigned
     title : varchar(255)
     slug : varchar(255)
-    is_visible : varchar(255)
-    can_edit_role : varchar(255)
+    read_level : tinyint(4)
+    write_level : tinyint(4)
     in_menu : tinyint(1)
     state : varchar(255)
     parent_id : bigint(20) unsigned
@@ -497,8 +507,9 @@ erDiagram
     name : varchar(255)
     description : varchar(255)
     bonus : varchar(255)
-    usable : tinyint(4)
-    is_visible : varchar(255)
+    state : varchar(255)
+    read_level : tinyint(4)
+    write_level : tinyint(4)
     created_at : timestamp
     updated_at : timestamp
     deleted_at : timestamp
@@ -532,8 +543,9 @@ erDiagram
     id : bigint(20) unsigned
     name : varchar(255)
     dofusdb_type_id : int(10) unsigned
-    usable : tinyint(4)
-    is_visible : varchar(255)
+    state : varchar(255)
+    read_level : tinyint(4)
+    write_level : tinyint(4)
     decision : varchar(255)
     seen_count : int(10) unsigned
     last_seen_at : timestamp
@@ -553,8 +565,9 @@ erDiagram
     weight : varchar(255)
     rarity : int(11)
     dofus_version : varchar(255)
-    usable : tinyint(4)
-    is_visible : varchar(255)
+    state : varchar(255)
+    read_level : tinyint(4)
+    write_level : tinyint(4)
     image : varchar(255)
     auto_update : tinyint(1)
     deleted_at : timestamp
@@ -596,9 +609,10 @@ erDiagram
     slug : varchar(255)
     keyword : varchar(255)
     is_public : tinyint(1)
-    state : int(11)
-    usable : tinyint(4)
-    is_visible : varchar(255)
+    progress_state : int(11)
+    state : varchar(255)
+    read_level : tinyint(4)
+    write_level : tinyint(4)
     image : varchar(255)
     created_at : timestamp
     updated_at : timestamp
@@ -630,9 +644,9 @@ erDiagram
     type : varchar(255)
     settings : longtext
     data : longtext
+    read_level : tinyint(4)
+    write_level : tinyint(4)
     params : longtext
-    is_visible : varchar(255)
-    can_edit_role : varchar(255)
     state : varchar(255)
     created_by : bigint(20) unsigned
     created_at : timestamp
@@ -653,8 +667,9 @@ erDiagram
     description : varchar(255)
     location : varchar(255)
     price : int(11)
-    usable : tinyint(4)
-    is_visible : varchar(255)
+    state : varchar(255)
+    read_level : tinyint(4)
+    write_level : tinyint(4)
     image : varchar(255)
     created_at : timestamp
     updated_at : timestamp
@@ -666,8 +681,9 @@ erDiagram
     id : bigint(20) unsigned
     name : varchar(255)
     description : varchar(255)
-    usable : tinyint(4)
-    is_visible : varchar(255)
+    state : varchar(255)
+    read_level : tinyint(4)
+    write_level : tinyint(4)
     image : varchar(255)
     created_at : timestamp
     updated_at : timestamp
@@ -688,8 +704,9 @@ erDiagram
     description : varchar(255)
     color : varchar(255)
     icon : varchar(255)
-    usable : tinyint(4)
-    is_visible : varchar(255)
+    state : varchar(255)
+    read_level : tinyint(4)
+    write_level : tinyint(4)
     created_at : timestamp
     updated_at : timestamp
     deleted_at : timestamp
@@ -716,8 +733,9 @@ erDiagram
     category : int(11)
     is_magic : tinyint(1)
     powerful : int(11)
-    usable : tinyint(4)
-    is_visible : varchar(255)
+    state : varchar(255)
+    read_level : tinyint(4)
+    write_level : tinyint(4)
     image : varchar(255)
     auto_update : tinyint(1)
     created_at : timestamp

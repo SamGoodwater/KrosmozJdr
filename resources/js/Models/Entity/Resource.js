@@ -52,10 +52,6 @@ export class Resource extends BaseModel {
         return this._data.dofus_version ?? null;
     }
 
-    get usable() {
-        return Boolean(this._data.usable);
-    }
-
     get image() {
         return this._data.image || '';
     }
@@ -365,8 +361,9 @@ export class Resource extends BaseModel {
             weight: this.weight,
             rarity: this.rarity,
             dofus_version: this.dofusVersion,
-            usable: this.usable,
-            is_visible: this._data.is_visible ?? null,
+            state: this.state,
+            read_level: this.readLevel,
+            write_level: this.writeLevel,
             image: this.image,
             auto_update: this.autoUpdate,
             resource_type_id: this.resourceTypeId

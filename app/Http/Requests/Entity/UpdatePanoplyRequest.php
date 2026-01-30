@@ -29,8 +29,9 @@ class UpdatePanoplyRequest extends FormRequest
             'name' => ['sometimes', 'required', 'string', 'max:255'],
             'description' => ['nullable', 'string'],
             'bonus' => ['nullable', 'string'],
-            'usable' => ['nullable', 'integer'],
-            'is_visible' => ['nullable', 'string', 'max:255'],
+            'state' => ['nullable', 'string', 'in:raw,draft,playable,archived'],
+            'read_level' => ['nullable', 'integer', 'min:0', 'max:5'],
+            'write_level' => ['nullable', 'integer', 'min:0', 'max:5', 'gte:read_level'],
         ];
     }
 }

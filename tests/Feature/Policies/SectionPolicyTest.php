@@ -5,7 +5,6 @@ namespace Tests\Feature\Policies;
 use App\Models\User;
 use App\Models\Page;
 use App\Models\Section;
-use App\Enums\Visibility;
 use App\Enums\SectionType;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -15,7 +14,7 @@ use Tests\TestCase;
  * 
  * Vérifie que les règles d'accès aux sections sont correctement appliquées :
  * - Création : nécessite droit 'update' sur la page parente
- * - Modification : respecte can_edit_role de la section ET de la page
+ * - Modification : respecte write_level de la section ET de la page
  * - Suppression : nécessite droit 'update' sur la page parente
  */
 class SectionPolicyTest extends TestCase
@@ -27,10 +26,10 @@ class SectionPolicyTest extends TestCase
      */
     public function test_create_section_requires_page_update_permission(): void
     {
-        $user = User::factory()->create(['role' => 3]); // game_master
+        $user = User::factory()->create(['role' => User::ROLE_GAME_MASTER]);
         $page = Page::factory()->create([
             'created_by' => $user->id,
-            'can_edit_role' => Visibility::GAME_MASTER->value,
+            'write_level' => User::ROLE_GAME_MASTER,
         ]);
 
         $this->assertTrue(
@@ -44,12 +43,12 @@ class SectionPolicyTest extends TestCase
      */
     public function test_user_cannot_create_section_without_page_permission(): void
     {
-        $author = User::factory()->create(['role' => 3]);
-        $user = User::factory()->create(['role' => 3]);
+        $author = User::factory()->create(['role' => User::ROLE_GAME_MASTER]);
+        $user = User::factory()->create(['role' => User::ROLE_GAME_MASTER]);
         
         $page = Page::factory()->create([
             'created_by' => $author->id,
-            'can_edit_role' => Visibility::ADMIN->value, // Nécessite admin
+            'write_level' => User::ROLE_ADMIN, // Nécessite admin
         ]);
 
         $this->assertFalse(
@@ -63,9 +62,9 @@ class SectionPolicyTest extends TestCase
      */
     public function test_user_without_permission_cannot_create_section(): void
     {
-        $user = User::factory()->create(['role' => 1]); // user simple
+        $user = User::factory()->create(['role' => User::ROLE_USER]);
         $page = Page::factory()->create([
-            'can_edit_role' => Visibility::ADMIN->value, // Nécessite admin
+            'write_level' => User::ROLE_ADMIN, // Nécessite admin
         ]);
 
         $this->assertFalse(
@@ -79,17 +78,17 @@ class SectionPolicyTest extends TestCase
      */
     public function test_author_can_update_own_section(): void
     {
-        $author = User::factory()->create(['role' => 3]); // game_master
+        $author = User::factory()->create(['role' => User::ROLE_GAME_MASTER]);
         
         $page = Page::factory()->create([
             'created_by' => $author->id,
-            'can_edit_role' => Visibility::GAME_MASTER->value,
+            'write_level' => User::ROLE_GAME_MASTER,
         ]);
         
         $section = Section::factory()->create([
             'page_id' => $page->id,
             'created_by' => $author->id,
-            'can_edit_role' => Visibility::GAME_MASTER->value,
+            'write_level' => User::ROLE_GAME_MASTER,
         ]);
 
         $this->assertTrue(
@@ -103,18 +102,18 @@ class SectionPolicyTest extends TestCase
      */
     public function test_user_cannot_update_section_without_page_permission(): void
     {
-        $author = User::factory()->create(['role' => 3]);
-        $user = User::factory()->create(['role' => 3]);
+        $author = User::factory()->create(['role' => User::ROLE_GAME_MASTER]);
+        $user = User::factory()->create(['role' => User::ROLE_GAME_MASTER]);
         
         $page = Page::factory()->create([
             'created_by' => $author->id,
-            'can_edit_role' => Visibility::ADMIN->value, // Nécessite admin
+            'write_level' => User::ROLE_ADMIN, // Nécessite admin
         ]);
         
         $section = Section::factory()->create([
             'page_id' => $page->id,
             'created_by' => $author->id,
-            'can_edit_role' => Visibility::GAME_MASTER->value,
+            'write_level' => User::ROLE_GAME_MASTER,
         ]);
 
         $this->assertFalse(
@@ -128,11 +127,11 @@ class SectionPolicyTest extends TestCase
      */
     public function test_delete_section_requires_page_update_permission(): void
     {
-        $author = User::factory()->create(['role' => 3]); // game_master
+        $author = User::factory()->create(['role' => User::ROLE_GAME_MASTER]);
         
         $page = Page::factory()->create([
             'created_by' => $author->id,
-            'can_edit_role' => Visibility::GAME_MASTER->value,
+            'write_level' => User::ROLE_GAME_MASTER,
         ]);
         
         $section = Section::factory()->create([
@@ -151,12 +150,12 @@ class SectionPolicyTest extends TestCase
      */
     public function test_user_cannot_delete_section_without_page_permission(): void
     {
-        $author = User::factory()->create(['role' => 3]);
-        $user = User::factory()->create(['role' => 3]);
+        $author = User::factory()->create(['role' => User::ROLE_GAME_MASTER]);
+        $user = User::factory()->create(['role' => User::ROLE_GAME_MASTER]);
         
         $page = Page::factory()->create([
             'created_by' => $author->id,
-            'can_edit_role' => Visibility::ADMIN->value,
+            'write_level' => User::ROLE_ADMIN,
         ]);
         
         $section = Section::factory()->create([
@@ -175,18 +174,18 @@ class SectionPolicyTest extends TestCase
      */
     public function test_admin_can_update_any_section(): void
     {
-        $admin = User::factory()->create(['role' => 4]); // admin
-        $author = User::factory()->create(['role' => 3]);
+        $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
+        $author = User::factory()->create(['role' => User::ROLE_GAME_MASTER]);
         
         $page = Page::factory()->create([
             'created_by' => $author->id,
-            'can_edit_role' => Visibility::ADMIN->value,
+            'write_level' => User::ROLE_ADMIN,
         ]);
         
         $section = Section::factory()->create([
             'page_id' => $page->id,
             'created_by' => $author->id,
-            'can_edit_role' => Visibility::ADMIN->value,
+            'write_level' => User::ROLE_ADMIN,
         ]);
 
         $this->assertTrue(
@@ -200,8 +199,8 @@ class SectionPolicyTest extends TestCase
      */
     public function test_admin_can_force_delete_section(): void
     {
-        $admin = User::factory()->create(['role' => 4]); // admin
-        $user = User::factory()->create(['role' => 1]); // user
+        $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
+        $user = User::factory()->create(['role' => User::ROLE_USER]);
         
         $page = Page::factory()->create();
         $section = Section::factory()->create(['page_id' => $page->id]);

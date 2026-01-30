@@ -54,7 +54,17 @@ class EntityTableDataController extends Controller
             }
         }
 
-        foreach (['rarity', 'usable', 'auto_update'] as $key) {
+        foreach (['rarity', 'auto_update'] as $key) {
+            if ($request->has($key) && $request->get($key) !== '') {
+                $query->where($key, (int) $request->get($key));
+            }
+        }
+        foreach (['state'] as $key) {
+            if ($request->has($key) && $request->get($key) !== '') {
+                $query->where($key, (string) $request->get($key));
+            }
+        }
+        foreach (['read_level', 'write_level'] as $key) {
             if ($request->has($key) && $request->get($key) !== '') {
                 $query->where($key, (int) $request->get($key));
             }
@@ -66,7 +76,7 @@ class EntityTableDataController extends Controller
             $sortOrder = 'desc';
         }
 
-        if (in_array($sortColumn, ['id', 'name', 'level', 'rarity', 'price', 'weight', 'usable', 'auto_update', 'dofusdb_id', 'created_at'], true)) {
+        if (in_array($sortColumn, ['id', 'name', 'level', 'rarity', 'price', 'weight', 'state', 'read_level', 'write_level', 'auto_update', 'dofusdb_id', 'created_at'], true)) {
             $query->orderBy($sortColumn, $sortOrder);
         } else {
             $query->latest();

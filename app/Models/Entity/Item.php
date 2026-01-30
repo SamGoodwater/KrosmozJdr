@@ -28,8 +28,9 @@ use App\Models\Entity\Scenario;
  * @property string|null $price
  * @property int $rarity
  * @property string $dofus_version
- * @property int $usable
- * @property string $is_visible
+ * @property string $state
+ * @property int $read_level
+ * @property int $write_level
  * @property string|null $image
  * @property bool $auto_update
  * @property \Illuminate\Support\Carbon|null $deleted_at
@@ -65,7 +66,7 @@ use App\Models\Entity\Scenario;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Item whereEffect($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Item whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Item whereImage($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Item whereIsVisible($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Item whereReadLevel($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Item whereItemTypeId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Item whereLevel($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Item whereName($value)
@@ -73,8 +74,9 @@ use App\Models\Entity\Scenario;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Item wherePrice($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Item whereRarity($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Item whereRecipe($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Item whereState($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Item whereUpdatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Item whereUsable($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Item whereWriteLevel($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Item withTrashed()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Item withoutTrashed()
  * @mixin \Eloquent
@@ -83,6 +85,11 @@ class Item extends Model
 {
     /** @use HasFactory<\Database\Factories\ItemFactory> */
     use HasFactory, SoftDeletes;
+
+    public const STATE_RAW = 'raw';
+    public const STATE_DRAFT = 'draft';
+    public const STATE_PLAYABLE = 'playable';
+    public const STATE_ARCHIVED = 'archived';
 
     /**
      * The attributes that are mass assignable.
@@ -101,8 +108,9 @@ class Item extends Model
         'price',
         'rarity',
         'dofus_version',
-        'usable',
-        'is_visible',
+        'state',
+        'read_level',
+        'write_level',
         'image',
         'auto_update',
         'item_type_id',
@@ -116,7 +124,8 @@ class Item extends Model
      */
     protected $casts = [
         'rarity' => 'integer',
-        'usable' => 'integer',
+        'read_level' => 'integer',
+        'write_level' => 'integer',
         'auto_update' => 'boolean',
     ];
 

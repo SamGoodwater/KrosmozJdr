@@ -23,36 +23,41 @@ class ItemTypeSeeder extends Seeder
 
         $itemTypes = [
             // Armes
-            ['name' => 'Arc', 'usable' => 1, 'is_visible' => 'guest'],
-            ['name' => 'Bouclier', 'usable' => 1, 'is_visible' => 'guest'],
-            ['name' => 'Bâton', 'usable' => 1, 'is_visible' => 'guest'],
-            ['name' => 'Dague', 'usable' => 1, 'is_visible' => 'guest'],
-            ['name' => 'Épée', 'usable' => 1, 'is_visible' => 'guest'],
-            ['name' => 'Marteau', 'usable' => 1, 'is_visible' => 'guest'],
-            ['name' => 'Pelle', 'usable' => 1, 'is_visible' => 'guest'],
-            ['name' => 'Hache', 'usable' => 1, 'is_visible' => 'guest'],
-            ['name' => 'Outil', 'usable' => 1, 'is_visible' => 'guest'],
+            ['name' => 'Arc'],
+            ['name' => 'Bouclier'],
+            ['name' => 'Bâton'],
+            ['name' => 'Dague'],
+            ['name' => 'Épée'],
+            ['name' => 'Marteau'],
+            ['name' => 'Pelle'],
+            ['name' => 'Hache'],
+            ['name' => 'Outil'],
             
             // Accessoires
-            ['name' => 'Anneau', 'usable' => 1, 'is_visible' => 'guest'],
-            ['name' => 'Amulette', 'usable' => 1, 'is_visible' => 'guest'],
-            ['name' => 'Ceinture', 'usable' => 1, 'is_visible' => 'guest'],
+            ['name' => 'Anneau'],
+            ['name' => 'Amulette'],
+            ['name' => 'Ceinture'],
             
             // Équipements
-            ['name' => 'Chapeau', 'usable' => 1, 'is_visible' => 'guest'],
-            ['name' => 'Cape', 'usable' => 1, 'is_visible' => 'guest'],
-            ['name' => 'Bottes', 'usable' => 1, 'is_visible' => 'guest'],
+            ['name' => 'Chapeau'],
+            ['name' => 'Cape'],
+            ['name' => 'Bottes'],
             
             // Autres
-            ['name' => 'Familier', 'usable' => 1, 'is_visible' => 'guest'],
-            ['name' => 'Monture', 'usable' => 1, 'is_visible' => 'guest'],
-            ['name' => 'Certificat', 'usable' => 1, 'is_visible' => 'guest'],
+            ['name' => 'Familier'],
+            ['name' => 'Monture'],
+            ['name' => 'Certificat'],
         ];
 
         foreach ($itemTypes as $itemType) {
             ItemType::firstOrCreate(
                 ['name' => $itemType['name']],
-                array_merge($itemType, ['created_by' => $createdBy])
+                array_merge($itemType, [
+                    'state' => 'playable',
+                    'read_level' => User::ROLE_GUEST,
+                    'write_level' => User::ROLE_ADMIN,
+                    'created_by' => $createdBy,
+                ])
             );
         }
 

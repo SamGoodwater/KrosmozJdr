@@ -15,8 +15,9 @@ use App\Models\Entity\Npc;
  * @property int $id
  * @property string $name
  * @property string|null $description
- * @property int $usable
- * @property string $is_visible
+ * @property string $state
+ * @property int $read_level
+ * @property int $write_level
  * @property string|null $image
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
@@ -38,10 +39,11 @@ use App\Models\Entity\Npc;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Specialization whereDescription($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Specialization whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Specialization whereImage($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Specialization whereIsVisible($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Specialization whereReadLevel($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Specialization whereName($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Specialization whereUpdatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Specialization whereUsable($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Specialization whereState($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Specialization whereWriteLevel($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Specialization withTrashed()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Specialization withoutTrashed()
  * @mixin \Eloquent
@@ -51,6 +53,11 @@ class Specialization extends Model
     /** @use HasFactory<\Database\Factories\SpecializationFactory> */
     use HasFactory, SoftDeletes;
 
+    public const STATE_RAW = 'raw';
+    public const STATE_DRAFT = 'draft';
+    public const STATE_PLAYABLE = 'playable';
+    public const STATE_ARCHIVED = 'archived';
+
     /**
      * The attributes that are mass assignable.
      *
@@ -59,8 +66,9 @@ class Specialization extends Model
     protected $fillable = [
         'name',
         'description',
-        'usable',
-        'is_visible',
+        'state',
+        'read_level',
+        'write_level',
         'image',
         'created_by',
     ];
@@ -71,7 +79,8 @@ class Specialization extends Model
      * @var array<string, string>
      */
     protected $casts = [
-        'usable' => 'integer',
+        'read_level' => 'integer',
+        'write_level' => 'integer',
     ];
 
     /**

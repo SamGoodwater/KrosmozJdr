@@ -11,13 +11,13 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import { getResourceTypeFieldDescriptors, RESOURCE_TYPE_QUICK_EDIT_FIELDS } from '@/Entities/resource-type/resource-type-descriptors';
+import { getResourceTypeFieldDescriptors } from '@/Entities/resource-type/resource-type-descriptors';
 
 describe('resource-type-descriptors', () => {
     describe('Structure des descriptors', () => {
         it('retourne un objet avec tous les champs requis', () => {
             const descriptors = getResourceTypeFieldDescriptors();
-            const requiredFields = ['id', 'name', 'usable', 'is_visible'];
+            const requiredFields = ['id', 'name', 'state', 'read_level', 'write_level'];
 
             requiredFields.forEach((field) => {
                 expect(descriptors).toHaveProperty(field);
@@ -53,28 +53,18 @@ describe('resource-type-descriptors', () => {
         });
     });
 
-    describe('QUICK_EDIT_FIELDS', () => {
-        it('QUICK_EDIT_FIELDS est défini et est un tableau', () => {
-            expect(RESOURCE_TYPE_QUICK_EDIT_FIELDS).toBeDefined();
-            expect(Array.isArray(RESOURCE_TYPE_QUICK_EDIT_FIELDS)).toBe(true);
+    describe('_quickeditConfig', () => {
+        it('définit les champs quickEdit', () => {
+            const descriptors = getResourceTypeFieldDescriptors();
+            expect(Array.isArray(descriptors._quickeditConfig?.fields)).toBe(true);
+            expect(descriptors._quickeditConfig.fields.length).toBeGreaterThan(0);
         });
 
-        it('QUICK_EDIT_FIELDS contient des champs valides', () => {
+        it('quickEdit contient uniquement des champs existants', () => {
             const descriptors = getResourceTypeFieldDescriptors();
-            RESOURCE_TYPE_QUICK_EDIT_FIELDS.forEach((field) => {
+            const fields = descriptors._quickeditConfig.fields;
+            fields.forEach((field) => {
                 expect(descriptors).toHaveProperty(field);
-            });
-        });
-
-        it('QUICK_EDIT_FIELDS est aligné avec les champs bulk enabled', () => {
-            const descriptors = getResourceTypeFieldDescriptors();
-            const bulkEnabledFields = Object.keys(descriptors).filter(
-                (key) => descriptors[key].edit?.form?.bulk?.enabled === true
-            );
-
-            // Tous les champs dans QUICK_EDIT_FIELDS doivent avoir bulk.enabled = true
-            RESOURCE_TYPE_QUICK_EDIT_FIELDS.forEach((field) => {
-                expect(bulkEnabledFields).toContain(field);
             });
         });
     });

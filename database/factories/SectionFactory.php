@@ -3,9 +3,9 @@
 namespace Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
-use App\Enums\PageState;
-use App\Enums\Visibility;
 use App\Enums\SectionType;
+use App\Models\Section;
+use App\Models\User;
 
 /**
  * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Section>
@@ -52,6 +52,17 @@ class SectionFactory extends Factory
             default => [[], ['content' => $this->faker->paragraph()]],
         };
 
+        $levels = [
+            User::ROLE_GUEST,
+            User::ROLE_USER,
+            User::ROLE_PLAYER,
+            User::ROLE_GAME_MASTER,
+            User::ROLE_ADMIN,
+            User::ROLE_SUPER_ADMIN,
+        ];
+        $readLevel = $this->faker->randomElement($levels);
+        $writeLevel = $this->faker->randomElement(array_values(array_filter($levels, fn (int $lvl) => $lvl >= $readLevel)));
+
         return [
             'page_id' => null, // Géré dans le seeder
             'title' => $this->faker->optional()->sentence(3),
@@ -60,23 +71,13 @@ class SectionFactory extends Factory
             'template' => $template,
             'settings' => $settings,
             'data' => $data,
-            'is_visible' => $this->faker->randomElement([
-                Visibility::GUEST->value,
-                Visibility::USER->value,
-                Visibility::GAME_MASTER->value,
-                Visibility::ADMIN->value,
-            ]),
-            'can_edit_role' => $this->faker->randomElement([
-                Visibility::GUEST->value,
-                Visibility::USER->value,
-                Visibility::GAME_MASTER->value,
-                Visibility::ADMIN->value,
-            ]),
+            'read_level' => $readLevel,
+            'write_level' => $writeLevel,
             'state' => $this->faker->randomElement([
-                PageState::DRAFT->value,
-                PageState::PREVIEW->value,
-                PageState::PUBLISHED->value,
-                PageState::ARCHIVED->value,
+                Section::STATE_RAW,
+                Section::STATE_DRAFT,
+                Section::STATE_PLAYABLE,
+                Section::STATE_ARCHIVED,
             ]),
             'created_by' => null, // Géré dans le seeder
         ];

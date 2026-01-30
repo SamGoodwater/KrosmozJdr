@@ -24,8 +24,9 @@ use App\Models\Entity\Spell;
  * @property string|null $life_dice
  * @property string|null $specificity
  * @property string $dofus_version
- * @property int $usable
- * @property string $is_visible
+ * @property string $state
+ * @property int $read_level
+ * @property int $write_level
  * @property string|null $image
  * @property string|null $icon
  * @property bool $auto_update
@@ -50,14 +51,15 @@ use App\Models\Entity\Spell;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Classe whereIcon($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Classe whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Classe whereImage($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Classe whereIsVisible($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Classe whereReadLevel($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Classe whereLife($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Classe whereLifeDice($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Classe whereName($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Classe whereOfficialId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Classe whereSpecificity($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Classe whereUpdatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Classe whereUsable($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Classe whereState($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Classe whereWriteLevel($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Classe withTrashed()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Classe withoutTrashed()
  * @mixin \Eloquent
@@ -66,6 +68,11 @@ class Classe extends Model
 {
     /** @use HasFactory<\Database\Factories\ClasseFactory> */
     use HasFactory, SoftDeletes;
+
+    public const STATE_RAW = 'raw';
+    public const STATE_DRAFT = 'draft';
+    public const STATE_PLAYABLE = 'playable';
+    public const STATE_ARCHIVED = 'archived';
 
     /**
      * The attributes that are mass assignable.
@@ -82,8 +89,9 @@ class Classe extends Model
         'life_dice',
         'specificity',
         'dofus_version',
-        'usable',
-        'is_visible',
+        'state',
+        'read_level',
+        'write_level',
         'image',
         'icon',
         'auto_update',
@@ -96,7 +104,8 @@ class Classe extends Model
      * @var array<string, string>
      */
     protected $casts = [
-        'usable' => 'integer',
+        'read_level' => 'integer',
+        'write_level' => 'integer',
         'auto_update' => 'boolean',
     ];
 

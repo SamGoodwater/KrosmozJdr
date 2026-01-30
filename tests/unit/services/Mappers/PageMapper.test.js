@@ -64,8 +64,8 @@ describe('PageMapper', () => {
 
       expect(formData).toHaveProperty('title');
       expect(formData).toHaveProperty('slug');
-      expect(formData).toHaveProperty('is_visible');
-      expect(formData).toHaveProperty('can_edit_role');
+      expect(formData).toHaveProperty('read_level');
+      expect(formData).toHaveProperty('write_level');
       expect(formData).toHaveProperty('in_menu');
       expect(formData).toHaveProperty('state');
       expect(formData).toHaveProperty('parent_id');
@@ -91,8 +91,8 @@ describe('PageMapper', () => {
       const formData = {
         title: '',
         slug: null,
-        is_visible: 'guest',
-        can_edit_role: 'admin',
+        read_level: 0,
+        write_level: 4,
         in_menu: true,
         state: 'draft',
         parent_id: null,
@@ -102,7 +102,7 @@ describe('PageMapper', () => {
 
       expect(cleaned).toHaveProperty('title', null);
       expect(cleaned).toHaveProperty('slug', null);
-      expect(cleaned).toHaveProperty('is_visible', 'guest');
+      expect(cleaned).toHaveProperty('read_level', 0);
     });
 
     it('devrait retourner un objet vide si formData est null', () => {

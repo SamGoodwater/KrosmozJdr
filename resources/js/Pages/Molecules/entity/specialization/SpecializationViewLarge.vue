@@ -72,8 +72,9 @@ const extendedFields = computed(() => {
         'name',
         'description',
         'capabilities_count',
-        'usable',
-        'is_visible',
+        'state',
+        'read_level',
+        'write_level',
     ];
     ['image', 'created_by', 'created_at', 'updated_at'].forEach((k) => fields.push(k));
     return fields.filter(canShowField);

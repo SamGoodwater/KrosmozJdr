@@ -5,8 +5,6 @@ namespace App\Http\Requests;
 use Illuminate\Foundation\Http\FormRequest;
 use App\Models\Section;
 use Illuminate\Validation\Rule;
-use App\Enums\PageState;
-use App\Enums\Visibility;
 use App\Enums\SectionType;
 
 /**
@@ -50,9 +48,9 @@ class UpdateSectionRequest extends FormRequest
             'settings' => ['sometimes', 'nullable', 'array'],
             'data' => ['sometimes', 'array'],
             'params' => ['sometimes', 'array'],
-            'is_visible' => ['sometimes', Rule::enum(Visibility::class)],
-            'can_edit_role' => ['sometimes', Rule::enum(Visibility::class)],
-            'state' => ['sometimes', Rule::enum(PageState::class)],
+            'state' => ['sometimes', 'string', Rule::in([Section::STATE_RAW, Section::STATE_DRAFT, Section::STATE_PLAYABLE, Section::STATE_ARCHIVED])],
+            'read_level' => ['sometimes', 'integer', 'min:0', 'max:5'],
+            'write_level' => ['sometimes', 'integer', 'min:0', 'max:5', 'gte:read_level'],
         ];
 
         // Validation dynamique des settings et data selon le template

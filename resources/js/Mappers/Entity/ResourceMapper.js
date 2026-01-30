@@ -53,9 +53,10 @@ export class ResourceMapper {
       weight: payload.weight !== undefined ? Number(payload.weight) : null,
       rarity: payload.rarity !== undefined ? Number(payload.rarity) : 0,
       dofus_version: payload.dofus_version ?? payload.dofusVersion ?? null,
-      usable: Boolean(payload.usable),
+      state: payload.state ?? 'draft',
       auto_update: Boolean(payload.auto_update ?? payload.autoUpdate),
-      is_visible: payload.is_visible ?? payload.isVisible ?? true,
+      read_level: payload.read_level !== undefined ? Number(payload.read_level) : (payload.readLevel !== undefined ? Number(payload.readLevel) : 0),
+      write_level: payload.write_level !== undefined ? Number(payload.write_level) : (payload.writeLevel !== undefined ? Number(payload.writeLevel) : 4),
 
       // Images (normalisation des noms de champs)
       image: payload.image ?? payload.image_url ?? payload.imageUrl ?? '',
@@ -126,9 +127,10 @@ export class ResourceMapper {
       weight: formData.weight !== undefined && formData.weight !== '' ? Number(formData.weight) : null,
       rarity: formData.rarity !== undefined ? Number(formData.rarity) : 0,
       dofus_version: formData.dofus_version ?? formData.dofusVersion ?? null,
-      usable: Boolean(formData.usable),
+      state: formData.state ?? 'draft',
       auto_update: Boolean(formData.auto_update ?? formData.autoUpdate),
-      is_visible: formData.is_visible ?? formData.isVisible ?? true,
+      read_level: formData.read_level !== undefined ? Number(formData.read_level) : (formData.readLevel !== undefined ? Number(formData.readLevel) : 0),
+      write_level: formData.write_level !== undefined ? Number(formData.write_level) : (formData.writeLevel !== undefined ? Number(formData.writeLevel) : 4),
 
       // Images
       image: formData.image ?? '',
@@ -168,16 +170,20 @@ export class ResourceMapper {
       result.level = formData.level === '' || formData.level === null ? null : String(formData.level);
     }
 
-    if (formData.usable !== undefined) {
-      result.usable = formData.usable === "1" || formData.usable === true || formData.usable === 1;
+    if (formData.state !== undefined) {
+      result.state = formData.state === '' || formData.state === null ? null : String(formData.state);
     }
 
     if (formData.auto_update !== undefined) {
       result.auto_update = formData.auto_update === "1" || formData.auto_update === true || formData.auto_update === 1;
     }
 
-    if (formData.is_visible !== undefined) {
-      result.is_visible = formData.is_visible;
+    if (formData.read_level !== undefined) {
+      result.read_level = formData.read_level === '' || formData.read_level === null ? null : Number(formData.read_level);
+    }
+
+    if (formData.write_level !== undefined) {
+      result.write_level = formData.write_level === '' || formData.write_level === null ? null : Number(formData.write_level);
     }
 
     if (formData.price !== undefined) {
@@ -234,9 +240,10 @@ export class ResourceMapper {
       weight: resource.weight,
       rarity: resource.rarity,
       dofus_version: resource.dofusVersion,
-      usable: resource.usable,
+      state: resource.state,
       auto_update: resource.autoUpdate,
-      is_visible: resource.isVisible,
+      read_level: resource.readLevel,
+      write_level: resource.writeLevel,
       image: resource.image,
       resource_type_id: resource.resourceTypeId,
     };

@@ -16,7 +16,7 @@ use Illuminate\Support\Facades\DB;
  *
  * @example
  * PATCH /api/entities/panoplies/bulk
- * { "ids":[1,2,3], "bonus":"+10 Force", "usable":true, "is_visible":"guest", "description":"Nouvelle description" }
+ * { "ids":[1,2,3], "bonus":"+10 Force", "state":"playable", "read_level":0, "write_level":3, "description":"Nouvelle description" }
  */
 class PanoplyBulkController extends Controller
 {
@@ -30,8 +30,9 @@ class PanoplyBulkController extends Controller
 
             // Champs bulk (les clés absentes ne sont pas modifiées)
             'bonus' => ['sometimes', 'nullable', 'string'],
-            'usable' => ['sometimes', 'nullable', 'boolean'],
-            'is_visible' => ['sometimes', 'nullable', 'string', 'in:guest,user,player,game_master,admin'],
+            'state' => ['sometimes', 'nullable', 'string', 'in:raw,draft,playable,archived'],
+            'read_level' => ['sometimes', 'nullable', 'integer', 'min:0', 'max:5'],
+            'write_level' => ['sometimes', 'nullable', 'integer', 'min:0', 'max:5'],
 
             // Champs "métier" utiles en édition multiple (nullable => possibilité de vider)
             'description' => ['sometimes', 'nullable', 'string'],
@@ -49,8 +50,9 @@ class PanoplyBulkController extends Controller
         $patch = [];
         foreach ([
             'bonus',
-            'usable',
-            'is_visible',
+            'state',
+            'read_level',
+            'write_level',
             'description',
             'dofusdb_id',
         ] as $k) {

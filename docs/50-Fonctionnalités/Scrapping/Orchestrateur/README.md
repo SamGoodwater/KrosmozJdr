@@ -189,16 +189,13 @@ class ScrappingController extends Controller
 
 ```bash
 # Import d'une classe spécifique
-php artisan scrapping:import class 123
+php artisan scrapping --import=class --id=123
 
-# Import de plusieurs entités
-php artisan scrapping:import batch --entities="class:1,class:2,monster:100"
+# Import batch (fichier JSON)
+php artisan scrapping --batch=/path/to/batch.json
 
-# Import complet par catégorie
-php artisan scrapping:import classes
-php artisan scrapping:import monsters
-php artisan scrapping:import items
-php artisan scrapping:import spells
+# Import de plusieurs IDs
+php artisan scrapping --import=monster --ids=100,101,102
 ```
 
 ### **Via Service métier**

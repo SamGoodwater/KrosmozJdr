@@ -5,8 +5,6 @@ namespace App\Services;
 use App\Models\Page;
 use App\Models\Section;
 use App\Models\User;
-use App\Enums\PageState;
-use App\Enums\Visibility;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Cache;
 
@@ -224,9 +222,9 @@ class PageService
      */
     public static function canBeInMenu(Page $page, ?User $user = null): bool
     {
-        return $page->isPublished()
+        return $page->isPlayable()
             && $page->in_menu
-            && $page->isVisibleFor($user);
+            && $page->isReadableFor($user);
     }
 }
 

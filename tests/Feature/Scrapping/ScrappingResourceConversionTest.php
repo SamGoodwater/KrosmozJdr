@@ -33,8 +33,9 @@ class ScrappingResourceConversionTest extends TestCase
             [
                 'name' => 'Minerai',
                 'decision' => ResourceType::DECISION_ALLOWED,
-                'usable' => 1,
-                'is_visible' => 'guest',
+                'state' => ResourceType::STATE_PLAYABLE,
+                'read_level' => User::ROLE_GUEST,
+                'write_level' => User::ROLE_ADMIN,
                 'created_by' => $admin->id,
             ]
         );

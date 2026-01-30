@@ -16,7 +16,7 @@ use Illuminate\Support\Facades\DB;
  *
  * @example
  * PATCH /api/entities/capabilities/bulk
- * { "ids":[1,2,3], "level":"5", "pa":"4", "po":"2", "element":"fire", "usable":true, "is_visible":"guest" }
+ * { "ids":[1,2,3], "level":"5", "pa":"4", "po":"2", "element":"fire", "state":"playable", "read_level":0, "write_level":3 }
  */
 class CapabilityBulkController extends Controller
 {
@@ -33,8 +33,9 @@ class CapabilityBulkController extends Controller
             'pa' => ['sometimes', 'nullable', 'string', 'max:255'],
             'po' => ['sometimes', 'nullable', 'string', 'max:255'],
             'element' => ['sometimes', 'nullable', 'string', 'max:255'],
-            'usable' => ['sometimes', 'nullable', 'boolean'],
-            'is_visible' => ['sometimes', 'nullable', 'string', 'in:guest,user,player,game_master,admin'],
+            'state' => ['sometimes', 'nullable', 'string', 'in:raw,draft,playable,archived'],
+            'read_level' => ['sometimes', 'nullable', 'integer', 'min:0', 'max:5'],
+            'write_level' => ['sometimes', 'nullable', 'integer', 'min:0', 'max:5'],
 
             // Champs "métier" utiles en édition multiple (nullable => possibilité de vider)
             'description' => ['sometimes', 'nullable', 'string'],
@@ -56,8 +57,9 @@ class CapabilityBulkController extends Controller
             'pa',
             'po',
             'element',
-            'usable',
-            'is_visible',
+            'state',
+            'read_level',
+            'write_level',
             'description',
             'effect',
             'image',

@@ -36,20 +36,20 @@ class ScenarioBulkControllerTest extends TestCase
         $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
         $scenario1 = Scenario::factory()->create([
             'name' => 'Scenario 1',
-            'is_visible' => 'guest',
+            'read_level' => User::ROLE_GUEST,
             'created_by' => $admin->id,
         ]);
         $scenario2 = Scenario::factory()->create([
             'name' => 'Scenario 2',
-            'is_visible' => 'user',
+            'read_level' => User::ROLE_USER,
             'created_by' => $admin->id,
         ]);
 
         $response = $this->actingAs($admin)
             ->patchJson('/api/entities/scenarios/bulk', [
                 'ids' => [$scenario1->id, $scenario2->id],
-                'state' => 1,
-                'is_visible' => 'admin',
+                'progress_state' => 1,
+                'read_level' => User::ROLE_ADMIN,
             ]);
 
         $response->assertOk()
@@ -61,11 +61,11 @@ class ScenarioBulkControllerTest extends TestCase
 
         $this->assertDatabaseHas('scenarios', [
             'id' => $scenario1->id,
-            'is_visible' => 'admin',
+            'read_level' => User::ROLE_ADMIN,
         ]);
         $this->assertDatabaseHas('scenarios', [
             'id' => $scenario2->id,
-            'is_visible' => 'admin',
+            'read_level' => User::ROLE_ADMIN,
         ]);
     }
 
@@ -79,8 +79,8 @@ class ScenarioBulkControllerTest extends TestCase
         $response = $this->actingAs($admin)
             ->patchJson('/api/entities/scenarios/bulk', [
                 'ids' => [99999, 99998],
-                'state' => 1,
-                'is_visible' => 'admin',
+                'progress_state' => 1,
+                'read_level' => User::ROLE_ADMIN,
             ]);
 
         $response->assertStatus(422)
@@ -101,13 +101,13 @@ class ScenarioBulkControllerTest extends TestCase
         $response = $this->actingAs($admin)
             ->patchJson('/api/entities/scenarios/bulk', [
                 'ids' => [$scenario->id],
-                'state' => 1,
+                'progress_state' => 1,
             ]);
 
         $response->assertOk();
 
         $scenario->refresh();
-        $this->assertEquals(1, $scenario->state);
+        $this->assertEquals(1, $scenario->progress_state);
     }
 
     /**
@@ -119,22 +119,22 @@ class ScenarioBulkControllerTest extends TestCase
         $scenario = Scenario::factory()->create([
             'name' => 'Original Name',
             'description' => 'Original Description',
-            'is_visible' => 'guest',
+            'read_level' => User::ROLE_GUEST,
             'created_by' => $admin->id,
         ]);
 
         $response = $this->actingAs($admin)
             ->patchJson('/api/entities/scenarios/bulk', [
                 'ids' => [$scenario->id],
-                'state' => 1,
-                'is_visible' => 'admin',
+                'progress_state' => 1,
+                'read_level' => User::ROLE_ADMIN,
                 // name et description ne sont pas modifiés
             ]);
 
         $response->assertOk();
 
         $scenario->refresh();
-        $this->assertEquals('admin', $scenario->is_visible);
+        $this->assertEquals(User::ROLE_ADMIN, $scenario->read_level);
         $this->assertEquals('Original Name', $scenario->name); // Non modifié
         $this->assertEquals('Original Description', $scenario->description); // Non modifié
     }
@@ -150,7 +150,7 @@ class ScenarioBulkControllerTest extends TestCase
         $response = $this->actingAs($user)
             ->patchJson('/api/entities/scenarios/bulk', [
                 'ids' => [$scenario->id],
-                'is_visible' => 'admin',
+                'read_level' => User::ROLE_ADMIN,
             ]);
 
         $response->assertForbidden();
@@ -174,10 +174,7 @@ class ScenarioBulkControllerTest extends TestCase
             ->assertJson(['message' => 'Aucun champ à mettre à jour.']);
     }
 
-    /**
-     * Test : La validation échoue si is_visible a une valeur invalide
-     */
-    public function test_validation_fails_if_is_visible_invalid(): void
+    public function test_validation_fails_if_read_level_invalid(): void
     {
         $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
         $scenario = Scenario::factory()->create(['created_by' => $admin->id]);
@@ -185,10 +182,10 @@ class ScenarioBulkControllerTest extends TestCase
         $response = $this->actingAs($admin)
             ->patchJson('/api/entities/scenarios/bulk', [
                 'ids' => [$scenario->id],
-                'is_visible' => 'invalid_role',
+                'read_level' => 999,
             ]);
 
         $response->assertStatus(422)
-            ->assertJsonValidationErrors('is_visible');
+            ->assertJsonValidationErrors('read_level');
     }
 }

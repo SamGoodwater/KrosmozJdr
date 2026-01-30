@@ -1,0 +1,108 @@
+{
+  "version": 1,
+  "source": "dofusdb",
+  "entity": "item",
+  "label": "Objets",
+  "meta": { "maxId": 30000 },
+  "endpoints": {
+    "fetchOne": {
+      "pathTemplate": "/items/{id}",
+      "method": "GET",
+      "queryDefaults": { "lang": "{lang}" }
+    },
+    "fetchMany": {
+      "path": "/items",
+      "method": "GET",
+      "queryDefaults": { "lang": "{lang}", "$limit": 100, "$skip": 0 }
+    }
+  },
+  "filters": {
+    "supported": [
+      { "key": "id", "type": "number" },
+      { "key": "idMin", "type": "number" },
+      { "key": "idMax", "type": "number" },
+      { "key": "ids", "type": "number[]", "max": 500 },
+      { "key": "name", "type": "string" },
+      { "key": "typeId", "type": "number" }
+    ]
+  },
+  "target": {
+    "krosmozEntity": "item",
+    "primaryKey": { "sourceField": "id", "targetField": "dofusdb_id" },
+    "autoUpdateField": "auto_update"
+  },
+  "mapping": [
+    {
+      "key": "dofusdb_id",
+      "from": { "path": "id" },
+      "to": [{ "model": "items", "field": "dofusdb_id" }],
+      "formatters": [{ "name": "toString", "args": {} }]
+    },
+    {
+      "key": "name",
+      "from": { "path": "name", "langAware": true },
+      "to": [{ "model": "items", "field": "name" }],
+      "formatters": [{ "name": "pickLang", "args": { "lang": "{lang}", "fallback": "fr" } }]
+    },
+    {
+      "key": "description",
+      "from": { "path": "description", "langAware": true },
+      "to": [{ "model": "items", "field": "description" }],
+      "formatters": [
+        { "name": "pickLang", "args": { "lang": "{lang}", "fallback": "fr" } },
+        { "name": "truncate", "args": { "max": 255 } }
+      ]
+    },
+    {
+      "key": "level",
+      "from": { "path": "level" },
+      "to": [{ "model": "items", "field": "level" }],
+      "formatters": [
+        { "name": "toInt", "args": {} },
+        { "name": "clampInt", "args": { "min": 1, "max": 200 } }
+      ]
+    },
+    {
+      "key": "type_id",
+      "from": { "path": "typeId" },
+      "to": [{ "model": "items", "field": "type_id" }],
+      "formatters": [{ "name": "toInt", "args": {} }]
+    },
+    {
+      "key": "type",
+      "from": { "path": "typeId" },
+      "to": [{ "model": "items", "field": "type" }],
+      "formatters": [{ "name": "mapDofusdbItemType", "args": {} }]
+    },
+    {
+      "key": "category",
+      "from": { "path": "typeId" },
+      "to": [{ "model": "items", "field": "category" }],
+      "formatters": [{ "name": "mapDofusdbItemCategory", "args": {} }]
+    },
+    {
+      "key": "rarity",
+      "from": { "path": "rarity" },
+      "to": [{ "model": "items", "field": "rarity" }],
+      "formatters": [{ "name": "toString", "args": {} }]
+    },
+    {
+      "key": "price",
+      "from": { "path": "price" },
+      "to": [{ "model": "items", "field": "price" }],
+      "formatters": [{ "name": "toInt", "args": {} }]
+    },
+    {
+      "key": "image",
+      "from": { "path": "img" },
+      "to": [{ "model": "items", "field": "image" }],
+      "formatters": [{ "name": "storeScrappedImage", "args": { "entityFolder": "items", "idPath": "id" } }]
+    },
+    {
+      "key": "recipe",
+      "from": { "path": "recipe" },
+      "to": [{ "model": "items", "field": "recipe" }],
+      "formatters": []
+    }
+  ]
+}

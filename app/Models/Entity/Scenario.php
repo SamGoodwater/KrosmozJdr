@@ -28,9 +28,10 @@ use App\Models\File;
  * @property string $slug
  * @property string|null $keyword
  * @property bool $is_public
- * @property int $state
- * @property int $usable
- * @property string $is_visible
+ * @property int $progress_state
+ * @property string $state
+ * @property int $read_level
+ * @property int $write_level
  * @property string|null $image
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
@@ -75,13 +76,14 @@ use App\Models\File;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Scenario whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Scenario whereImage($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Scenario whereIsPublic($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Scenario whereIsVisible($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Scenario whereKeyword($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Scenario whereName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Scenario whereProgressState($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Scenario whereReadLevel($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Scenario whereSlug($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Scenario whereState($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Scenario whereUpdatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Scenario whereUsable($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Scenario whereWriteLevel($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Scenario withTrashed()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Scenario withoutTrashed()
  * @mixin \Eloquent
@@ -90,6 +92,11 @@ class Scenario extends Model
 {
     /** @use HasFactory<\\Database\\Factories\\ScenarioFactory> */
     use HasFactory, SoftDeletes;
+
+    public const STATE_RAW = 'raw';
+    public const STATE_DRAFT = 'draft';
+    public const STATE_PLAYABLE = 'playable';
+    public const STATE_ARCHIVED = 'archived';
 
     /**
      * The attributes that are mass assignable.
@@ -102,9 +109,10 @@ class Scenario extends Model
         'slug',
         'keyword',
         'is_public',
+        'progress_state',
         'state',
-        'usable',
-        'is_visible',
+        'read_level',
+        'write_level',
         'image',
         'created_by',
     ];
@@ -116,8 +124,9 @@ class Scenario extends Model
      */
     protected $casts = [
         'is_public' => 'boolean',
-        'state' => 'integer',
-        'usable' => 'integer',
+        'progress_state' => 'integer',
+        'read_level' => 'integer',
+        'write_level' => 'integer',
     ];
 
     /**

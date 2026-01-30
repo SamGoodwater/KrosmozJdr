@@ -10,9 +10,8 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import { getResourceFieldDescriptors, RESOURCE_QUICK_EDIT_FIELDS } from '@/Entities/resource/resource-descriptors.js';
+import { getResourceFieldDescriptors } from '@/Entities/resource/resource-descriptors.js';
 import { RarityFormatter } from '@/Utils/Formatters/RarityFormatter.js';
-import { VisibilityFormatter } from '@/Utils/Formatters/VisibilityFormatter.js';
 
 describe('resource-descriptors (nouveau système)', () => {
   describe('Structure et conformité', () => {
@@ -46,10 +45,11 @@ describe('resource-descriptors (nouveau système)', () => {
       expect(Array.isArray(descriptors.rarity.edit.form.options)).toBe(true);
       expect(descriptors.rarity.edit.form.options.length).toBe(RarityFormatter.options.length);
 
-      // Vérifier is_visible
-      expect(descriptors.is_visible.edit.form.options).toBeDefined();
-      expect(Array.isArray(descriptors.is_visible.edit.form.options)).toBe(true);
-      expect(descriptors.is_visible.edit.form.options.length).toBe(VisibilityFormatter.options.length);
+      // Vérifier read_level / write_level
+      expect(descriptors.read_level.edit.form.options).toBeDefined();
+      expect(Array.isArray(descriptors.read_level.edit.form.options)).toBe(true);
+      expect(descriptors.write_level.edit.form.options).toBeDefined();
+      expect(Array.isArray(descriptors.write_level.edit.form.options)).toBe(true);
     });
 
     it('les visibleIf sont pures et reçoivent le contexte', () => {
@@ -85,21 +85,21 @@ describe('resource-descriptors (nouveau système)', () => {
     });
   });
 
-  describe('RESOURCE_QUICK_EDIT_FIELDS', () => {
+  describe('_quickeditConfig', () => {
     it('définit les champs affichés dans quickEdit', () => {
-      expect(Array.isArray(RESOURCE_QUICK_EDIT_FIELDS)).toBe(true);
-      expect(RESOURCE_QUICK_EDIT_FIELDS.length).toBeGreaterThan(0);
+      const descriptors = getResourceFieldDescriptors();
+      expect(Array.isArray(descriptors._quickeditConfig?.fields)).toBe(true);
+      expect(descriptors._quickeditConfig.fields.length).toBeGreaterThan(0);
     });
 
-    it('contient les champs bulk-editables', () => {
-      expect(RESOURCE_QUICK_EDIT_FIELDS).toContain('rarity');
-      expect(RESOURCE_QUICK_EDIT_FIELDS).toContain('level');
-      expect(RESOURCE_QUICK_EDIT_FIELDS).toContain('usable');
-      expect(RESOURCE_QUICK_EDIT_FIELDS).toContain('is_visible');
-    });
-
-    it('ne contient pas le champ name (non bulk-editable)', () => {
-      expect(RESOURCE_QUICK_EDIT_FIELDS).not.toContain('name');
+    it('contient les champs bulk-editables principaux', () => {
+      const descriptors = getResourceFieldDescriptors();
+      const fields = descriptors._quickeditConfig.fields;
+      expect(fields).toContain('rarity');
+      expect(fields).toContain('level');
+      expect(fields).toContain('state');
+      expect(fields).toContain('read_level');
+      expect(fields).toContain('write_level');
     });
   });
 

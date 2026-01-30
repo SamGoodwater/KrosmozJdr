@@ -70,9 +70,9 @@ describe('SectionMapper (nouveau)', () => {
       expect(formData).toHaveProperty('template', 'text');
       expect(formData).toHaveProperty('settings');
       expect(formData).toHaveProperty('data');
-      expect(formData).toHaveProperty('is_visible', 'guest');
-      expect(formData).toHaveProperty('can_edit_role', 'admin');
-      expect(formData).toHaveProperty('state', 'published');
+      expect(formData).toHaveProperty('read_level', 0);
+      expect(formData).toHaveProperty('write_level', 4);
+      expect(formData).toHaveProperty('state', 'playable');
     });
   });
 

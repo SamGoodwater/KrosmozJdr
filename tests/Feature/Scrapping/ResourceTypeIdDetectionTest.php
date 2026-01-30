@@ -3,7 +3,7 @@
 namespace Tests\Feature\Scrapping;
 
 use App\Services\Scrapping\DataCollect\DataCollectService;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use App\Services\Scrapping\Http\DofusDbClient;
 use Tests\TestCase;
 
 /**
@@ -15,8 +15,6 @@ use Tests\TestCase;
  */
 class ResourceTypeIdDetectionTest extends TestCase
 {
-    use RefreshDatabase;
-
     public function test_allowlist_allows_known_resource_type_ids(): void
     {
         // Forcer le mode "config allow/deny lists" (sinon la source de vérité est la DB)
@@ -24,7 +22,10 @@ class ResourceTypeIdDetectionTest extends TestCase
         config()->set('scrapping.data_collect.resources.type_ids_allowlist', [15, 35]);
         config()->set('scrapping.data_collect.resources.type_ids_denylist', []);
 
-        $service = new DataCollectService();
+        $service = new DataCollectService(
+            app(DofusDbClient::class),
+            app(\App\Services\Scrapping\DataCollect\ConfigDrivenDofusDbCollector::class),
+        );
 
         $method = new \ReflectionMethod($service, 'isResourceType');
         $method->setAccessible(true);
@@ -41,7 +42,10 @@ class ResourceTypeIdDetectionTest extends TestCase
         config()->set('scrapping.data_collect.resources.type_ids_allowlist', [15, 35]);
         config()->set('scrapping.data_collect.resources.type_ids_denylist', [15]);
 
-        $service = new DataCollectService();
+        $service = new DataCollectService(
+            app(DofusDbClient::class),
+            app(\App\Services\Scrapping\DataCollect\ConfigDrivenDofusDbCollector::class),
+        );
 
         $method = new \ReflectionMethod($service, 'isResourceType');
         $method->setAccessible(true);

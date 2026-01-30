@@ -39,8 +39,9 @@ class UpdateSpellRequest extends FormRequest
             'category' => ['nullable', 'integer'],
             'is_magic' => ['nullable', 'boolean'],
             'powerful' => ['nullable', 'integer'],
-            'usable' => ['nullable', 'integer'],
-            'is_visible' => ['nullable', 'string', 'max:255'],
+            'state' => ['nullable', 'string', 'in:raw,draft,playable,archived'],
+            'read_level' => ['nullable', 'integer', 'min:0', 'max:5'],
+            'write_level' => ['nullable', 'integer', 'min:0', 'max:5', 'gte:read_level'],
             'image' => ['nullable', 'string', 'max:255'],
             'auto_update' => ['nullable', 'boolean'],
         ];

@@ -183,7 +183,7 @@ class CreatureBulkControllerTest extends TestCase
             ->patchJson('/api/entities/creatures/bulk', [
                 'ids' => [$creature1->id, $creature2->id],
                 'level' => '50',
-                'usable' => true,
+                'state' => 'playable',
             ]);
 
         $response->assertOk()

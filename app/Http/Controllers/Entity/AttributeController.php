@@ -31,19 +31,21 @@ class AttributeController extends Controller
         }
         
         // Filtres
-        if (request()->has('usable') && request()->usable !== '') {
-            $query->where('usable', request()->usable);
+        if (request()->has('state') && request()->state !== '') {
+            $query->where('state', (string) request()->state);
         }
-        
-        if (request()->has('is_visible') && request()->is_visible !== '') {
-            $query->where('is_visible', request()->is_visible);
+        if (request()->has('read_level') && request()->read_level !== '') {
+            $query->where('read_level', (int) request()->read_level);
+        }
+        if (request()->has('write_level') && request()->write_level !== '') {
+            $query->where('write_level', (int) request()->write_level);
         }
         
         // Tri
         $sortColumn = request()->get('sort', 'id');
         $sortOrder = request()->get('order', 'desc');
         
-        if (in_array($sortColumn, ['id', 'name', 'usable', 'is_visible', 'created_at'])) {
+        if (in_array($sortColumn, ['id', 'name', 'state', 'read_level', 'write_level', 'created_at'], true)) {
             $query->orderBy($sortColumn, $sortOrder);
         } else {
             $query->latest();
@@ -53,7 +55,7 @@ class AttributeController extends Controller
         
         return Inertia::render('Pages/entity/attribute/Index', [
             'attributes' => AttributeResource::collection($attributes),
-            'filters' => request()->only(['search', 'usable', 'is_visible']),
+            'filters' => request()->only(['search', 'state', 'read_level', 'write_level']),
         ]);
     }
 

@@ -3,8 +3,8 @@
 namespace Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
-use App\Enums\PageState;
-use App\Enums\Visibility;
+use App\Models\Page;
+use App\Models\User;
 
 /**
  * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Page>
@@ -22,10 +22,10 @@ class PageFactory extends Factory
             'title' => $this->faker->sentence(3),
             'slug' => $this->faker->unique()->slug(),
             // Défaults déterministes pour éviter des tests non reproductibles.
-            'is_visible' => Visibility::GUEST->value,
-            'can_edit_role' => Visibility::ADMIN->value,
+            'read_level' => User::ROLE_GUEST,
+            'write_level' => User::ROLE_ADMIN,
             'in_menu' => true,
-            'state' => PageState::DRAFT->value,
+            'state' => Page::STATE_DRAFT,
             'parent_id' => null, // Géré dans le seeder pour la hiérarchie
             'menu_order' => 0,
             'created_by' => null, // Géré dans le seeder

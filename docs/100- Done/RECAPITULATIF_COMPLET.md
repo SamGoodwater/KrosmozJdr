@@ -70,7 +70,7 @@ Ce document récapitule toutes les fonctionnalités créées et améliorées dep
 - **Route** : `/entities/panoplies/{id}/edit`
 - **Fichier** : `resources/js/Pages/Pages/entity/panoply/Edit.vue`
 - **Fonctionnalités** :
-  - Formulaire avec champs (name, description, bonus, usable, is_visible)
+  - Formulaire avec champs (name, description, bonus, state, read_level, write_level)
   - Gestion des items via `EntityRelationsManager`
 - **Tests** : ✅ `tests/Feature/Entity/PanoplyControllerTest.php` (13 tests)
 - **Documentation** : ✅ Référencée dans le récapitulatif
@@ -232,7 +232,7 @@ Toutes les routes nécessaires ont été ajoutées dans `routes/entities/*.php` 
 
 #### **Interfaces** ✅
 - **Dashboard Vue.js** : Interface complète pour l'import
-- **Commandes Artisan** : `php artisan scrapping:import {type} {id}`
+- **Commandes Artisan** : `php artisan scrapping --import={type} --id={id}`
 - **API REST** : `POST /api/scrapping/import/{type}/{id}`
 
 #### **Tests** ✅

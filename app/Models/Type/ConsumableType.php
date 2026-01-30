@@ -13,8 +13,9 @@ use App\Models\Entity\Consumable;
  *
  * @property int $id
  * @property string $name
- * @property int $usable
- * @property string $is_visible
+ * @property string $state
+ * @property int $read_level
+ * @property int $write_level
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property \Illuminate\Support\Carbon|null $deleted_at
@@ -31,10 +32,11 @@ use App\Models\Entity\Consumable;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ConsumableType whereCreatedBy($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ConsumableType whereDeletedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ConsumableType whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|ConsumableType whereIsVisible($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ConsumableType whereReadLevel($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ConsumableType whereName($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ConsumableType whereUpdatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|ConsumableType whereUsable($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ConsumableType whereState($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ConsumableType whereWriteLevel($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ConsumableType withTrashed()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ConsumableType withoutTrashed()
  * @mixin \Eloquent
@@ -44,6 +46,11 @@ class ConsumableType extends Model
     /** @use HasFactory<\Database\Factories\ConsumableTypeFactory> */
     use HasFactory, SoftDeletes;
 
+    public const STATE_RAW = 'raw';
+    public const STATE_DRAFT = 'draft';
+    public const STATE_PLAYABLE = 'playable';
+    public const STATE_ARCHIVED = 'archived';
+
     /**
      * The attributes that are mass assignable.
      *
@@ -51,8 +58,9 @@ class ConsumableType extends Model
      */
     protected $fillable = [
         'name',
-        'usable',
-        'is_visible',
+        'state',
+        'read_level',
+        'write_level',
         'created_by',
     ];
 
@@ -62,7 +70,8 @@ class ConsumableType extends Model
      * @var array<string, string>
      */
     protected $casts = [
-        'usable' => 'integer',
+        'read_level' => 'integer',
+        'write_level' => 'integer',
     ];
 
     /**

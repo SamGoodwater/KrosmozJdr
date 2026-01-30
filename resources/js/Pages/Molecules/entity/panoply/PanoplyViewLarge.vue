@@ -72,8 +72,9 @@ const extendedFields = computed(() => {
         'description',
         'bonus',
         'items_count',
-        'usable',
-        'is_visible',
+        'state',
+        'read_level',
+        'write_level',
     ];
     ['dofusdb_id', 'created_by', 'created_at', 'updated_at'].forEach((k) => fields.push(k));
     return fields.filter(canShowField);

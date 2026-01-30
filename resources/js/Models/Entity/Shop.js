@@ -31,10 +31,6 @@ export class Shop extends BaseModel {
         return this._data.price || null;
     }
 
-    get usable() {
-        return this._data.usable ?? false;
-    }
-
     get image() {
         return this._data.image || '';
     }
@@ -110,10 +106,6 @@ export class Shop extends BaseModel {
                 return this._toLocationCell(format, size, options);
             case 'price':
                 return this._toPriceCell(format, size, options);
-            case 'usable':
-                return this._toUsableCell(format, size, options);
-            case 'is_visible':
-                return this._toIsVisibleCell(format, size, options);
             case 'image':
                 return this._toImageCell(format, size, options);
             case 'npc_id':
@@ -207,34 +199,6 @@ export class Shop extends BaseModel {
                 searchValue: value === '-' ? '' : value,
             },
         };
-    }
-
-    /**
-     * Génère une cellule pour usable
-     * @private
-     */
-    _toUsableCell(format, size, options) {
-        const usable = this.usable ?? false;
-        const label = usable ? 'Oui' : 'Non';
-        
-        return {
-            type: 'badge',
-            value: label,
-            params: {
-                color: usable ? 'success' : 'neutral',
-                sortValue: usable ? 1 : 0,
-                searchValue: label,
-            },
-        };
-    }
-
-    /**
-     * Génère une cellule pour is_visible
-     * @private
-     */
-    _toIsVisibleCell(format, size, options) {
-        // Utiliser le VisibilityFormatter via la méthode de base
-        return super.toCell('is_visible', options);
     }
 
     /**
@@ -340,7 +304,9 @@ export class Shop extends BaseModel {
             description: this.description,
             location: this.location,
             price: this.price,
-            usable: this.usable,
+            state: this.state,
+            read_level: this.readLevel,
+            write_level: this.writeLevel,
             image: this.image,
             npc_id: this.npcId
         };

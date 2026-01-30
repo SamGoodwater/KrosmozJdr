@@ -75,7 +75,7 @@ const canShowField = (fieldKey) => {
 };
 
 // Champs importants à afficher
-const importantFields = computed(() => ['name', 'usable', 'is_visible'].filter(canShowField));
+const importantFields = computed(() => ['name', 'state', 'read_level'].filter(canShowField));
 
 // Champs supplémentaires à afficher au hover
 const expandedFields = computed(() => [

@@ -88,18 +88,18 @@ describe('useSectionDefaults', () => {
 
 ### 2. Tests unitaires d'adapters
 
-**Exemple** : `sectionUIAdapter.test.js`
+**Exemple** : `useSectionUI.test.js`
 
 ```javascript
-import { adaptSectionToUI } from '@/Pages/Organismes/section/adapters/sectionUIAdapter';
+import { useSectionUI } from '@/Pages/Organismes/section/composables/useSectionUI';
 
 describe('sectionUIAdapter', () => {
-  it('devrait adapter une section avec état published', () => {
-    const section = createMockSection({ state: 'published' });
-    const uiData = adaptSectionToUI(section);
+  it('devrait adapter une section avec état playable', () => {
+    const section = createMockSection({ state: 'playable' });
+    const { uiData } = useSectionUI(section);
     
-    expect(uiData.color).toBe('success');
-    expect(uiData.badge.text).toBe('Publié');
+    expect(uiData.value.color).toBe('success');
+    expect(uiData.value.badge.text).toBe('Jouable');
   });
 });
 ```
@@ -184,7 +184,7 @@ it('devrait faire quelque chose', () => {
   const section = createMockSection();
   
   // Act : Exécuter l'action
-  const result = adaptSectionToUI(section);
+  const result = useSectionUI(section).uiData.value;
   
   // Assert : Vérifier le résultat
   expect(result.color).toBe('success');

@@ -60,7 +60,7 @@ class SectionPolicy
      */
     public function update(User $user, Section $section): bool
     {
-        // Utiliser la méthode canBeEditedBy du modèle qui prend en compte can_edit_role
+        // Utiliser la méthode canBeEditedBy du modèle (basée sur write_level)
         return $section->canBeEditedBy($user);
     }
 

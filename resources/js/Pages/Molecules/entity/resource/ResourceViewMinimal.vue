@@ -61,10 +61,7 @@ const ctx = computed(() => {
 
 const descriptors = computed(() => getResourceFieldDescriptors(ctx.value));
 
-const usableValue = computed(() => {
-    const v = props.resource?.usable ?? props.resource?._data?.usable;
-    return typeof v === 'boolean' ? v : null;
-});
+const stateValue = computed(() => props.resource?.state ?? props.resource?._data?.state ?? null);
 
 const canShowField = (fieldKey) => {
     const desc = descriptors.value?.[fieldKey];
@@ -82,7 +79,7 @@ const canShowField = (fieldKey) => {
 };
 
 // Champs importants à afficher
-const importantFields = computed(() => ['resource_type', 'level', 'rarity', 'is_visible'].filter(canShowField));
+const importantFields = computed(() => ['resource_type', 'level', 'rarity', 'state', 'read_level'].filter(canShowField));
 
 // Champs supplémentaires à afficher au hover
 const expandedFields = computed(() => [
@@ -153,7 +150,7 @@ const handleAction = async (actionKey) => {
         <div class="p-3">
             <EntityViewHeader mode="minimal">
                 <template #dot>
-                    <EntityUsableDot :usable="usableValue" />
+                    <EntityUsableDot :state="stateValue" />
                 </template>
                 <template #media>
                     <div class="w-8 h-8">

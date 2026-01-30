@@ -32,15 +32,15 @@ class PanoplyController extends Controller
         }
         
         // Filtres
-        if (request()->has('usable') && request()->usable !== '') {
-            $query->where('usable', request()->usable);
+        if (request()->has('state') && request()->state !== '') {
+            $query->where('state', (string) request()->state);
         }
         
         // Tri
         $sortColumn = request()->get('sort', 'id');
         $sortOrder = request()->get('order', 'desc');
         
-        if (in_array($sortColumn, ['id', 'name', 'dofusdb_id', 'usable', 'created_at'])) {
+        if (in_array($sortColumn, ['id', 'name', 'dofusdb_id', 'state', 'created_at'], true)) {
             $query->orderBy($sortColumn, $sortOrder);
         } else {
             $query->latest();
@@ -50,7 +50,7 @@ class PanoplyController extends Controller
         
         return Inertia::render('Pages/entity/panoply/Index', [
             'panoplies' => PanoplyResource::collection($panoplies),
-            'filters' => request()->only(['search', 'usable']),
+            'filters' => request()->only(['search', 'state']),
         ]);
     }
 

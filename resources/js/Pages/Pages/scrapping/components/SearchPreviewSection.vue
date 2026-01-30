@@ -2,7 +2,7 @@
 /**
  * Section de recherche et prévisualisation d'entités
  */
-import { ref, computed } from 'vue';
+import { ref, computed, watch, onMounted, nextTick } from 'vue';
 import Card from '@/Pages/Atoms/data-display/Card.vue';
 import InputField from '@/Pages/Molecules/data-input/InputField.vue';
 import Btn from '@/Pages/Atoms/action/Btn.vue';
@@ -26,6 +26,34 @@ const props = defineProps({
         type: Boolean,
         default: false,
     },
+    /**
+     * Pré-remplissage/contrôle (utile pour usage en modal ou depuis une entité donnée).
+     */
+    initialMode: { type: String, default: 'single' }, // 'single'|'range'|'all'
+    initialSingleId: { type: [String, Number], default: '' },
+    initialRangeStart: { type: [String, Number], default: '' },
+    initialRangeEnd: { type: [String, Number], default: '' },
+    /**
+     * Modes autorisés (ex: ['single'] en modal)
+     */
+    availableModes: { type: Array, default: () => ['single', 'range', 'all'] },
+    /**
+     * Verrouille les champs (utile en modal "mettre à jour cet élément").
+     */
+    lockInputs: { type: Boolean, default: false },
+    /**
+     * Lance automatiquement une prévisualisation au montage.
+     */
+    autoPreview: { type: Boolean, default: false },
+    /**
+     * Cache le header (utile en modal compacte).
+     */
+    hideHeader: { type: Boolean, default: false },
+    /**
+     * Permet de déclencher une prévisualisation "à la demande" depuis un parent
+     * (ex: depuis une table de recherche). Incrémentez la valeur pour relancer.
+     */
+    previewNonce: { type: Number, default: 0 },
 });
 
 const emit = defineEmits(['preview', 'import', 'simulate']);
@@ -34,10 +62,26 @@ const notificationStore = useNotificationStore();
 const { error: showError } = notificationStore;
 
 // Mode de recherche
-const searchMode = ref('single'); // 'single', 'range', 'all'
-const singleId = ref('');
-const rangeStart = ref('');
-const rangeEnd = ref('');
+const normalizeMode = (m) => {
+    const raw = String(m || '').trim();
+    return ['single', 'range', 'all'].includes(raw) ? raw : 'single';
+};
+
+const allowedModes = computed(() => {
+    const modes = Array.isArray(props.availableModes)
+        ? props.availableModes.map((m) => normalizeMode(m))
+        : ['single', 'range', 'all'];
+    return [...new Set(modes)].filter((m) => ['single', 'range', 'all'].includes(m));
+});
+
+const searchMode = ref(
+    allowedModes.value.includes(normalizeMode(props.initialMode))
+        ? normalizeMode(props.initialMode)
+        : (allowedModes.value[0] || 'single')
+);
+const singleId = ref(props.initialSingleId !== null && typeof props.initialSingleId !== 'undefined' ? String(props.initialSingleId) : '');
+const rangeStart = ref(props.initialRangeStart !== null && typeof props.initialRangeStart !== 'undefined' ? String(props.initialRangeStart) : '');
+const rangeEnd = ref(props.initialRangeEnd !== null && typeof props.initialRangeEnd !== 'undefined' ? String(props.initialRangeEnd) : '');
 
 // État de prévisualisation
 const previewData = ref(null);
@@ -64,6 +108,63 @@ const rangeCount = computed(() => {
 });
 
 const stringify = (obj) => JSON.stringify(obj, null, 2);
+
+watch(() => props.initialMode, (m) => {
+    const next = normalizeMode(m);
+    if (allowedModes.value.includes(next)) searchMode.value = next;
+});
+watch(() => props.availableModes, () => {
+    const current = normalizeMode(searchMode.value);
+    if (!allowedModes.value.includes(current)) {
+        searchMode.value = allowedModes.value[0] || 'single';
+    }
+}, { deep: true });
+watch(() => props.initialSingleId, (v) => {
+    if (v === null || typeof v === 'undefined') return;
+    singleId.value = String(v);
+});
+watch(() => props.initialRangeStart, (v) => {
+    if (v === null || typeof v === 'undefined') return;
+    rangeStart.value = String(v);
+});
+watch(() => props.initialRangeEnd, (v) => {
+    if (v === null || typeof v === 'undefined') return;
+    rangeEnd.value = String(v);
+});
+
+onMounted(async () => {
+    if (!props.autoPreview) return;
+    if (searchMode.value === 'single' && String(singleId.value || '').trim() !== '') {
+        await handlePreview();
+    }
+    if (searchMode.value === 'range' && String(rangeStart.value || '').trim() !== '') {
+        await handlePreview();
+    }
+});
+
+watch(
+    () => props.previewNonce,
+    async (v, old) => {
+        if (v === old) return;
+        // Laisser le temps aux watchers initialMode/initialSingleId d'appliquer la nouvelle valeur
+        await nextTick();
+        await handlePreview();
+    }
+);
+
+watch(
+    () => props.entityType,
+    () => {
+        previewData.value = null;
+    }
+);
+
+watch(
+    () => searchMode.value,
+    () => {
+        previewData.value = null;
+    }
+);
 
 const handlePreview = async () => {
     if (searchMode.value === 'single' && !isValidSingleId.value) {
@@ -151,7 +252,7 @@ const handleImport = () => {
 
 <template>
     <Card class="p-6 space-y-6">
-        <div>
+        <div v-if="!hideHeader">
             <h2 class="text-xl font-bold text-primary-100 mb-2">Recherche & Prévisualisation</h2>
             <p class="text-sm text-primary-300">
                 Recherchez une entité, prévisualisez-la et comparez-la avec la version en base avant d'importer.
@@ -160,8 +261,9 @@ const handleImport = () => {
 
         <!-- Mode de recherche -->
         <div class="space-y-4">
-            <div class="flex gap-2">
+            <div v-if="allowedModes.length > 1" class="flex gap-2">
                 <Btn
+                    v-if="allowedModes.includes('single')"
                     :color="searchMode === 'single' ? 'primary' : undefined"
                     :variant="searchMode === 'single' ? undefined : 'ghost'"
                     size="sm"
@@ -170,6 +272,7 @@ const handleImport = () => {
                     ID unique
                 </Btn>
                 <Btn
+                    v-if="allowedModes.includes('range')"
                     :color="searchMode === 'range' ? 'primary' : undefined"
                     :variant="searchMode === 'range' ? undefined : 'ghost'"
                     size="sm"
@@ -178,6 +281,7 @@ const handleImport = () => {
                     Plage d'ID
                 </Btn>
                 <Btn
+                    v-if="allowedModes.includes('all')"
                     :color="searchMode === 'all' ? 'primary' : undefined"
                     :variant="searchMode === 'all' ? undefined : 'ghost'"
                     size="sm"
@@ -188,7 +292,7 @@ const handleImport = () => {
             </div>
 
             <!-- ID unique -->
-            <div v-if="searchMode === 'single'" class="space-y-4">
+            <div v-if="searchMode === 'single' && allowedModes.includes('single')" class="space-y-4">
                 <InputField
                     v-model="singleId"
                     type="number"
@@ -196,6 +300,7 @@ const handleImport = () => {
                     :min="1"
                     :max="maxId"
                     placeholder="Ex: 1"
+                    :disabled="lockInputs"
                 />
                 <div class="flex gap-2">
                     <Btn
@@ -227,7 +332,7 @@ const handleImport = () => {
             </div>
 
             <!-- Plage d'ID -->
-            <div v-if="searchMode === 'range'" class="space-y-4">
+            <div v-if="searchMode === 'range' && allowedModes.includes('range')" class="space-y-4">
                 <div class="grid gap-4 sm:grid-cols-2">
                     <InputField
                         v-model="rangeStart"
@@ -236,6 +341,7 @@ const handleImport = () => {
                         :min="1"
                         :max="maxId"
                         placeholder="Ex: 10"
+                        :disabled="lockInputs"
                     />
                     <InputField
                         v-model="rangeEnd"
@@ -244,6 +350,7 @@ const handleImport = () => {
                         :min="1"
                         :max="maxId"
                         placeholder="Ex: 20"
+                        :disabled="lockInputs"
                     />
                 </div>
                 <div v-if="isValidRange" class="rounded-lg border border-base-300 bg-base-200/40 p-3 text-sm text-primary-200">
@@ -270,7 +377,7 @@ const handleImport = () => {
             </div>
 
             <!-- Import complet -->
-            <div v-if="searchMode === 'all'" class="space-y-4">
+            <div v-if="searchMode === 'all' && allowedModes.includes('all')" class="space-y-4">
                 <Alert color="warning" class="text-sm">
                     Cette opération importera toutes les entités de type <strong>{{ entityType }}</strong> ({{ maxId }} entités max).
                     Cela peut prendre plusieurs minutes.
@@ -354,17 +461,6 @@ const handleImport = () => {
                 />
             </div>
 
-            <!-- Actions depuis la prévisualisation -->
-            <div class="flex gap-2 pt-4 border-t border-base-300">
-                <Btn
-                    color="success"
-                    :disabled="loading"
-                    @click="handleImport"
-                >
-                    <Icon source="fa-solid fa-arrow-rotate-right" alt="Importer cette version" pack="solid" class="mr-2" />
-                    Importer cette version
-                </Btn>
-            </div>
         </div>
     </Card>
 </template>

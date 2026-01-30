@@ -2,9 +2,7 @@
 
 namespace Tests\Feature\PagesSections;
 
-use App\Enums\PageState;
 use App\Enums\SectionType;
-use App\Enums\Visibility;
 use App\Models\Page;
 use App\Models\Section;
 use App\Models\User;
@@ -28,9 +26,9 @@ class SectionAuthorizationTest extends TestCase
 
         $page = Page::factory()->create([
             'created_by' => $admin->id,
-            'state' => PageState::PUBLISHED->value,
-            'is_visible' => Visibility::GUEST->value,
-            'can_edit_role' => Visibility::ADMIN->value,
+            'state' => Page::STATE_PLAYABLE,
+            'read_level' => User::ROLE_GUEST,
+            'write_level' => User::ROLE_ADMIN,
         ]);
 
         $payload = [
@@ -51,9 +49,9 @@ class SectionAuthorizationTest extends TestCase
 
         $page = Page::factory()->create([
             'created_by' => $admin->id,
-            'state' => PageState::PUBLISHED->value,
-            'is_visible' => Visibility::GUEST->value,
-            'can_edit_role' => Visibility::ADMIN->value,
+            'state' => Page::STATE_PLAYABLE,
+            'read_level' => User::ROLE_GUEST,
+            'write_level' => User::ROLE_ADMIN,
         ]);
 
         $payload = [

@@ -152,6 +152,31 @@ SCRAPPING_RATE_LIMIT_REQUESTS=60
 
 ## 🚀 Utilisation
 
+### ✅ CLI (commande unique recommandée)
+
+Depuis la refonte “config-driven”, **la commande CLI recommandée est `php artisan scrapping`** (collect/search/import/compare/batch).
+
+Exemples :
+
+```bash
+# Collect (search) + JSON
+php artisan scrapping --collect=monster --name="Bouftou" --limit=50 --max-pages=1 --max-items=200 --json --skip-cache
+
+# Collect par IDs + compare (raw/converted/existing)
+php artisan scrapping --collect=monster --ids=31,32 --compare --json --skip-cache
+
+# Import (orchestrateur)
+php artisan scrapping --import=monster --ids=31,32 --skip-cache
+
+# Import ressources via resource_types.allowed (catalogue)
+php artisan scrapping --import=resource --resource-types=allowed --limit=100 --max-pages=0 --max-items=0
+
+# Batch (fichier JSON)
+php artisan scrapping --batch=/path/to/batch.json
+```
+
+> Note : les anciennes commandes ont été supprimées au profit de `php artisan scrapping`.
+
 ### 🖥️ Interface d'administration (Vue 3)
 
 Une interface dédiée est disponible pour les administrateurs (`/scrapping`, route `scrapping.index`). Elle est responsive (mobile → desktop) et propose quatre onglets :

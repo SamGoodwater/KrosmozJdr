@@ -2,6 +2,9 @@
 
 namespace App\Services\Scrapping\Orchestrator;
 
+use App\Services\Scrapping\Config\ScrappingConfigLoader;
+use App\Services\Scrapping\Config\FormatterRegistry;
+use App\Services\Scrapping\Config\ConfigDrivenConverter;
 use App\Services\Scrapping\DataCollect\DataCollectService;
 use App\Services\Scrapping\DataConversion\DataConversionService;
 use App\Services\Scrapping\DataIntegration\DataIntegrationService;
@@ -61,8 +64,33 @@ class ScrappingOrchestrator
     public function __construct(
         private DataCollectService $dataCollectService,
         private DataConversionService $dataConversionService,
-        private DataIntegrationService $dataIntegrationService
+        private DataIntegrationService $dataIntegrationService,
+        private ScrappingConfigLoader $configLoader
     ) {}
+
+    /**
+     * Conversion via config JSON quand disponible, sinon fallback legacy.
+     *
+     * @param string $normalizedType
+     * @param array<string,mixed> $rawData
+     * @return array<string,mixed>
+     */
+    private function convertUsingConfigOrLegacy(string $normalizedType, array $rawData): array
+    {
+        try {
+            $entityCfg = $this->configLoader->loadEntity('dofusdb', $normalizedType);
+            $registry = FormatterRegistry::fromDefaultPath();
+            $converter = new ConfigDrivenConverter($registry);
+
+            return $converter->convert($entityCfg, $rawData, [
+                'lang' => 'fr',
+                'apply_side_effects' => false,
+            ]);
+        } catch (\Throwable $e) {
+            $methods = $this->getEntityMethods($normalizedType);
+            return $this->dataConversionService->{$methods['convert']}($rawData);
+        }
+    }
 
     /**
      * Import d'une classe depuis DofusDB avec ses sorts associés
@@ -79,13 +107,27 @@ class ScrappingOrchestrator
         
         try {
             // 1. Collecte des données depuis DofusDB (avec sorts si demandé)
-            $rawData = $this->dataCollectService->collectClass($dofusdbId, $includeRelations);
+            $rawData = $this->dataCollectService->collectClass($dofusdbId, $includeRelations, $options);
             
             // 2. Conversion des valeurs selon les caractéristiques KrosmozJDR
             $convertedData = $this->dataConversionService->convertClass($rawData);
+
+            // Option: validation uniquement (collect + conversion, pas d'écriture)
+            if ((bool) ($options['validate_only'] ?? false)) {
+                return [
+                    'success' => true,
+                    'data' => [
+                        'action' => 'validated',
+                        'raw' => $rawData,
+                        'converted' => $convertedData,
+                    ],
+                    'related' => [],
+                    'message' => 'Validation uniquement (sans intégration)',
+                ];
+            }
             
-            // 3. Intégration dans la base KrosmozJDR
-            $result = $this->dataIntegrationService->integrateClass($convertedData);
+            // 3. Intégration dans la base KrosmozJDR (support options: dry_run, force_update, with_images)
+            $result = $this->dataIntegrationService->integrateClass($convertedData, $options);
             
             // 4. Import en cascade des sorts associés
             $relatedResults = [];
@@ -95,7 +137,7 @@ class ScrappingOrchestrator
                     $spellId = $spellData['id'] ?? null;
                     if ($spellId) {
                         try {
-                            $spellResult = $this->importSpell($spellId, ['include_relations' => false]); // Ne pas importer le monstre invoqué pour éviter la récursion
+                            $spellResult = $this->importSpell($spellId, array_merge($options, ['include_relations' => false])); // Ne pas importer le monstre invoqué pour éviter la récursion
                             $importedSpellIds[] = $spellResult['data']['id'] ?? null;
                             $relatedResults[] = [
                                 'type' => 'spell',
@@ -176,13 +218,26 @@ class ScrappingOrchestrator
         
         try {
             // 1. Collecte des données depuis DofusDB (avec sorts et drops si demandé)
-            $rawData = $this->dataCollectService->collectMonster($dofusdbId, $includeRelations, $includeRelations);
+            $rawData = $this->dataCollectService->collectMonster($dofusdbId, $includeRelations, $includeRelations, $options);
             
             // 2. Conversion des valeurs selon les caractéristiques KrosmozJDR
-            $convertedData = $this->dataConversionService->convertMonster($rawData);
+            $convertedData = $this->convertUsingConfigOrLegacy('monster', $rawData);
+
+            if ((bool) ($options['validate_only'] ?? false)) {
+                return [
+                    'success' => true,
+                    'data' => [
+                        'action' => 'validated',
+                        'raw' => $rawData,
+                        'converted' => $convertedData,
+                    ],
+                    'related' => [],
+                    'message' => 'Validation uniquement (sans intégration)',
+                ];
+            }
             
             // 3. Intégration dans la base KrosmozJDR
-            $result = $this->dataIntegrationService->integrateMonster($convertedData);
+            $result = $this->dataIntegrationService->integrateMonster($convertedData, $options);
             
             // 4. Import en cascade des sorts et ressources associés
             $relatedResults = [];
@@ -195,7 +250,7 @@ class ScrappingOrchestrator
                     $spellId = $spellData['id'] ?? null;
                     if ($spellId) {
                         try {
-                            $spellResult = $this->importSpell($spellId, ['include_relations' => false]);
+                            $spellResult = $this->importSpell($spellId, array_merge($options, ['include_relations' => false]));
                             $importedSpellIds[] = $spellResult['data']['id'] ?? null;
                             $relatedResults[] = [
                                 'type' => 'spell',
@@ -219,7 +274,7 @@ class ScrappingOrchestrator
                     $resourceId = $resourceData['id'] ?? null;
                     if ($resourceId) {
                         try {
-                            $resourceResult = $this->importItem($resourceId, ['include_relations' => false]);
+                            $resourceResult = $this->importItem($resourceId, array_merge($options, ['include_relations' => false]));
                             $importedResourceIds[] = $resourceResult['data']['id'] ?? null;
                             $relatedResults[] = [
                                 'type' => 'resource',
@@ -313,13 +368,26 @@ class ScrappingOrchestrator
         
         try {
             // 1. Collecte des données depuis DofusDB (avec recette si demandé)
-            $rawData = $this->dataCollectService->collectItem($dofusdbId, $includeRelations);
+            $rawData = $this->dataCollectService->collectItem($dofusdbId, $includeRelations, $options);
             
             // 2. Conversion des valeurs selon les caractéristiques KrosmozJDR
-            $convertedData = $this->dataConversionService->convertItem($rawData);
+            $convertedData = $this->convertUsingConfigOrLegacy('item', $rawData);
+
+            if ((bool) ($options['validate_only'] ?? false)) {
+                return [
+                    'success' => true,
+                    'data' => [
+                        'action' => 'validated',
+                        'raw' => $rawData,
+                        'converted' => $convertedData,
+                    ],
+                    'related' => [],
+                    'message' => 'Validation uniquement (sans intégration)',
+                ];
+            }
             
             // 3. Intégration dans la base KrosmozJDR
-            $result = $this->dataIntegrationService->integrateItem($convertedData);
+            $result = $this->dataIntegrationService->integrateItem($convertedData, $options);
             
             // 4. Import en cascade des ressources de la recette
             $relatedResults = [];
@@ -329,7 +397,7 @@ class ScrappingOrchestrator
                     $resourceId = $resourceData['id'] ?? null;
                     if ($resourceId) {
                         try {
-                            $resourceResult = $this->importItem($resourceId, ['include_relations' => false]); // Ne pas inclure la recette pour éviter la récursion infinie
+                            $resourceResult = $this->importItem($resourceId, array_merge($options, ['include_relations' => false])); // Ne pas inclure la recette pour éviter la récursion infinie
                             $relatedResults[] = [
                                 'type' => 'resource',
                                 'id' => $resourceId,
@@ -378,7 +446,7 @@ class ScrappingOrchestrator
      */
     public function collectResource(int $dofusdbId): array
     {
-        $raw = $this->dataCollectService->collectItem($dofusdbId, false);
+        $raw = $this->dataCollectService->collectItem($dofusdbId, false, []);
         $typeId = (int) ($raw['typeId'] ?? 0);
 
         if (!$typeId || !$this->dataCollectService->isAllowedResourceTypeId($typeId)) {
@@ -417,7 +485,19 @@ class ScrappingOrchestrator
                 ];
             }
 
-            $result = $this->dataIntegrationService->integrateItem($convertedData);
+            if ((bool) ($options['validate_only'] ?? false)) {
+                return [
+                    'success' => true,
+                    'message' => 'Validation uniquement (sans intégration)',
+                    'data' => [
+                        'action' => 'validated',
+                        'raw' => $rawData,
+                        'converted' => $convertedData,
+                    ],
+                ];
+            }
+
+            $result = $this->dataIntegrationService->integrateItem($convertedData, $options);
 
             return [
                 'success' => true,
@@ -450,13 +530,26 @@ class ScrappingOrchestrator
         
         try {
             // 1. Collecte des données depuis DofusDB (avec monstre invoqué si demandé)
-            $rawData = $this->dataCollectService->collectSpell($dofusdbId, true, $includeRelations);
+            $rawData = $this->dataCollectService->collectSpell($dofusdbId, true, $includeRelations, $options);
             
             // 2. Conversion des valeurs selon les caractéristiques KrosmozJDR
-            $convertedData = $this->dataConversionService->convertSpell($rawData);
+            $convertedData = $this->convertUsingConfigOrLegacy('spell', $rawData);
+
+            if ((bool) ($options['validate_only'] ?? false)) {
+                return [
+                    'success' => true,
+                    'data' => [
+                        'action' => 'validated',
+                        'raw' => $rawData,
+                        'converted' => $convertedData,
+                    ],
+                    'related' => [],
+                    'message' => 'Validation uniquement (sans intégration)',
+                ];
+            }
             
             // 3. Intégration dans la base KrosmozJDR
-            $result = $this->dataIntegrationService->integrateSpell($convertedData);
+            $result = $this->dataIntegrationService->integrateSpell($convertedData, $options);
             
             // 4. Import en cascade du monstre invoqué (si c'est un sort d'invocation)
             $relatedResults = [];
@@ -466,7 +559,7 @@ class ScrappingOrchestrator
                 $summonId = $rawData['summon']['id'] ?? null;
                 if ($summonId) {
                     try {
-                        $summonResult = $this->importMonster($summonId, ['include_relations' => false]); // Ne pas inclure les sorts/drops pour éviter la récursion
+                        $summonResult = $this->importMonster($summonId, array_merge($options, ['include_relations' => false])); // Ne pas inclure les sorts/drops pour éviter la récursion
                         $importedMonsterId = $summonResult['data']['monster_id'] ?? null;
                         $relatedResults[] = [
                             'type' => 'monster',
@@ -611,7 +704,8 @@ class ScrappingOrchestrator
 
         try {
             $rawData = $this->dataCollectService->{$methods['collect']}($dofusdbId);
-            $convertedData = $this->dataConversionService->{$methods['convert']}($rawData);
+            $convertedData = $this->convertUsingConfigOrLegacy($normalizedType, $rawData);
+
             $existing = $this->dataIntegrationService->findExistingEntity($normalizedType, $convertedData);
 
             return [
@@ -654,9 +748,22 @@ class ScrappingOrchestrator
             
             // 2. Conversion des valeurs selon les caractéristiques KrosmozJDR
             $convertedData = $this->dataConversionService->convertPanoply($rawData);
+
+            if ((bool) ($options['validate_only'] ?? false)) {
+                return [
+                    'success' => true,
+                    'data' => [
+                        'action' => 'validated',
+                        'raw' => $rawData,
+                        'converted' => $convertedData,
+                    ],
+                    'related' => [],
+                    'message' => 'Validation uniquement (sans intégration)',
+                ];
+            }
             
             // 3. Intégration dans la base KrosmozJDR
-            $result = $this->dataIntegrationService->integratePanoply($convertedData);
+            $result = $this->dataIntegrationService->integratePanoply($convertedData, $options);
             
             // 4. Import en cascade des items associés
             $relatedResults = [];
@@ -667,7 +774,7 @@ class ScrappingOrchestrator
                     $itemId = is_array($itemData) ? ($itemData['id'] ?? null) : $itemData;
                     if ($itemId) {
                         try {
-                            $itemResult = $this->importItem($itemId, ['include_relations' => false]); // Ne pas inclure la recette pour éviter la récursion
+                            $itemResult = $this->importItem($itemId, array_merge($options, ['include_relations' => false])); // Ne pas inclure la recette pour éviter la récursion
                             $importedItemIds[] = $itemResult['data']['id'] ?? null;
                             $relatedResults[] = [
                                 'type' => 'item',

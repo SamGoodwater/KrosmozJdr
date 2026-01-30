@@ -11,13 +11,13 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import { getSpecializationFieldDescriptors, SPECIALIZATION_QUICK_EDIT_FIELDS } from '@/Entities/specialization/specialization-descriptors';
+import { getSpecializationFieldDescriptors } from '@/Entities/specialization/specialization-descriptors';
 
 describe('specialization-descriptors', () => {
     describe('Structure des descriptors', () => {
         it('retourne un objet avec tous les champs requis', () => {
             const descriptors = getSpecializationFieldDescriptors();
-            const requiredFields = ['id', 'name', 'usable', 'is_visible'];
+            const requiredFields = ['id', 'name', 'state', 'read_level', 'write_level'];
 
             requiredFields.forEach((field) => {
                 expect(descriptors).toHaveProperty(field);
@@ -51,15 +51,17 @@ describe('specialization-descriptors', () => {
         });
     });
 
-    describe('QUICK_EDIT_FIELDS', () => {
-        it('QUICK_EDIT_FIELDS est défini et est un tableau', () => {
-            expect(SPECIALIZATION_QUICK_EDIT_FIELDS).toBeDefined();
-            expect(Array.isArray(SPECIALIZATION_QUICK_EDIT_FIELDS)).toBe(true);
+    describe('_quickeditConfig', () => {
+        it('définit les champs quickEdit', () => {
+            const descriptors = getSpecializationFieldDescriptors();
+            expect(Array.isArray(descriptors._quickeditConfig?.fields)).toBe(true);
+            expect(descriptors._quickeditConfig.fields.length).toBeGreaterThan(0);
         });
 
-        it('QUICK_EDIT_FIELDS contient des champs valides', () => {
+        it('quickEdit contient uniquement des champs existants', () => {
             const descriptors = getSpecializationFieldDescriptors();
-            SPECIALIZATION_QUICK_EDIT_FIELDS.forEach((field) => {
+            const fields = descriptors._quickeditConfig.fields;
+            fields.forEach((field) => {
                 expect(descriptors).toHaveProperty(field);
             });
         });

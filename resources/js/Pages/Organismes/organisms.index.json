@@ -80,12 +80,12 @@
       {
         "name": "showAdvanced",
         "type": "Boolean",
-        "desc": "- Afficher les champs avancés (can_edit_role, state)"
+        "desc": "- Afficher les champs avancés (write_level, state)"
       },
       {
-        "name": "visibilityOptions",
+        "name": "roleOptions",
         "type": "Array",
-        "desc": "- Options pour le select de visibilité"
+        "desc": "- Options pour les selects read_level/write_level"
       },
       {
         "name": "stateOptions",
@@ -386,6 +386,34 @@
     ],
     "slots": [],
     "file": "section/modals/CreatePageModal.vue"
+  },
+  {
+    "name": "ScrappingSection",
+    "description": "ScrappingSection (Organism)",
+    "props": [],
+    "slots": [],
+    "file": "scrapping/ScrappingSection.vue"
+  },
+  {
+    "name": "ScrappingSearchTableSection",
+    "description": "ScrappingSearchTableSection",
+    "props": [],
+    "slots": [],
+    "file": "scrapping/ScrappingSearchTableSection.vue"
+  },
+  {
+    "name": "ScrappingModal",
+    "description": "ScrappingModal (Organism)",
+    "props": [],
+    "slots": [],
+    "file": "scrapping/ScrappingModal.vue"
+  },
+  {
+    "name": "ScrappingDashboard",
+    "description": "ScrappingDashboard (Organism)",
+    "props": [],
+    "slots": [],
+    "file": "scrapping/ScrappingDashboard.vue"
   },
   {
     "name": "NotificationContainer",

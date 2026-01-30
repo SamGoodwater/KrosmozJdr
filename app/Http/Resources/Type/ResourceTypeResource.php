@@ -19,8 +19,9 @@ class ResourceTypeResource extends JsonResource
         return [
             'id' => $this->id,
             'name' => $this->name,
-            'usable' => $this->usable,
-            'is_visible' => $this->is_visible,
+            'state' => $this->state,
+            'read_level' => (int) ($this->read_level ?? 0),
+            'write_level' => (int) ($this->write_level ?? 0),
 
             // Registry DofusDB
             'dofusdb_type_id' => $this->dofusdb_type_id,

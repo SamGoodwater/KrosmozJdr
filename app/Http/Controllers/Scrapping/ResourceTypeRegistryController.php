@@ -6,13 +6,17 @@ use App\Http\Controllers\Controller;
 use App\Models\Entity\Consumable;
 use App\Models\Entity\Item;
 use App\Models\Entity\Monster;
+use App\Models\User;
 use App\Models\Scrapping\PendingResourceTypeItem;
 use App\Models\Type\ResourceType;
 use App\Services\Scrapping\DataCollect\DataCollectService;
+use App\Services\Scrapping\Http\DofusDbClient;
 use App\Services\Scrapping\Orchestrator\ScrappingOrchestrator;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Validation\Rule;
 
 /**
  * API de gestion des typeId DofusDB détectés (registry) pour les ressources.
@@ -23,6 +27,13 @@ use Illuminate\Http\Request;
  */
 class ResourceTypeRegistryController extends Controller
 {
+    /**
+     * Cache local (requête) pour éviter de refetch le même typeId.
+     *
+     * @var array<int, string|null>
+     */
+    private array $itemTypeNameCache = [];
+
     /**
      * Normalise un libellé métier (used/unused) vers le stockage (allowed/blocked).
      */
@@ -37,8 +48,62 @@ class ResourceTypeRegistryController extends Controller
 
     public function __construct(
         private ScrappingOrchestrator $orchestrator,
-        private DataCollectService $collector
+        private DataCollectService $collector,
+        private DofusDbClient $dofusDbClient,
     ) {}
+
+    private function stripDofusdbSuffix(?string $name): ?string
+    {
+        if (!$name) return $name;
+        $n = trim($name);
+        if (str_ends_with($n, ' (DofusDB)')) {
+            $n = trim(substr($n, 0, -strlen(' (DofusDB)')));
+        }
+        return $n;
+    }
+
+    private function fetchItemTypeName(int $typeId, bool $skipCache = false): ?string
+    {
+        if ($typeId <= 0) return null;
+        if (array_key_exists($typeId, $this->itemTypeNameCache)) {
+            return $this->itemTypeNameCache[$typeId];
+        }
+
+        $baseUrl = (string) config('scrapping.data_collect.dofusdb_base_url', 'https://api.dofusdb.fr');
+        $lang = (string) config('scrapping.data_collect.default_language', 'fr');
+        $url = rtrim($baseUrl, '/') . "/item-types/{$typeId}?lang={$lang}";
+
+        try {
+            $payload = $this->dofusDbClient->getJson($url, ['skip_cache' => $skipCache]);
+
+            // DofusDB peut renvoyer l'entité directement, ou une forme "data".
+            $row = $payload;
+            if (isset($payload['data']) && is_array($payload['data']) && isset($payload['data'][0]) && is_array($payload['data'][0])) {
+                $row = (array) $payload['data'][0];
+            }
+
+            $name = null;
+            if (isset($row['name']) && is_array($row['name'])) {
+                $cand = $row['name']['fr'] ?? $row['name'][$lang] ?? null;
+                if (is_string($cand) && trim($cand) !== '') {
+                    $name = trim($cand);
+                }
+            } elseif (isset($row['name']) && is_string($row['name']) && trim($row['name']) !== '') {
+                $name = trim($row['name']);
+            }
+
+            $name = $this->stripDofusdbSuffix($name);
+            $this->itemTypeNameCache[$typeId] = $name;
+            return $name;
+        } catch (\Throwable $e) {
+            Log::debug('resource-types: cannot resolve dofusdb item-type name', [
+                'typeId' => $typeId,
+                'error' => $e->getMessage(),
+            ]);
+            $this->itemTypeNameCache[$typeId] = null;
+            return null;
+        }
+    }
 
     /**
      * Liste des ResourceType avec dofusdb_type_id, filtrable par décision.
@@ -60,16 +125,46 @@ class ResourceTypeRegistryController extends Controller
             $query->where('decision', $decision);
         }
 
+        $rows = $query->get([
+            'id',
+            'name',
+            'dofusdb_type_id',
+            'decision',
+            'seen_count',
+            'last_seen_at',
+        ]);
+
+        // Améliorer les placeholders "DofusDB type #X" en allant chercher le vrai nom côté DofusDB.
+        foreach ($rows as $model) {
+            $typeId = is_numeric($model->dofusdb_type_id) ? (int) $model->dofusdb_type_id : 0;
+            if ($typeId <= 0) continue;
+
+            $currentName = $this->stripDofusdbSuffix(is_string($model->name) ? $model->name : null);
+            $isPlaceholder = $currentName === null || $currentName === '' || str_starts_with($currentName, 'DofusDB type #');
+
+            if (!$isPlaceholder) {
+                // On nettoie juste un éventuel suffixe (DofusDB) en sortie sans écraser le nom en base
+                $model->name = $currentName;
+                continue;
+            }
+
+            $resolved = $this->fetchItemTypeName($typeId, false);
+            if ($resolved) {
+                // On met à jour la base uniquement si le nom actuel est un placeholder.
+                $model->name = $resolved;
+                try {
+                    $model->save();
+                } catch (\Throwable) {
+                    // Non bloquant: on renvoie quand même le nom résolu
+                }
+            } else {
+                $model->name = $currentName ?: $model->name;
+            }
+        }
+
         return response()->json([
             'success' => true,
-            'data' => $query->get([
-                'id',
-                'name',
-                'dofusdb_type_id',
-                'decision',
-                'seen_count',
-                'last_seen_at',
-            ]),
+            'data' => $rows,
         ]);
     }
 
@@ -90,7 +185,7 @@ class ResourceTypeRegistryController extends Controller
      *
      * @example
      * PATCH /api/scrapping/resource-types/bulk
-     * { "ids":[1,2,3], "decision":"allowed", "usable":1, "is_visible":"guest" }
+     * { "ids":[1,2,3], "decision":"allowed", "state":"playable", "read_level":0, "write_level":4 }
      */
     public function bulkUpdate(Request $request): JsonResponse
     {
@@ -100,8 +195,15 @@ class ResourceTypeRegistryController extends Controller
             'ids' => ['required', 'array', 'min:1'],
             'ids.*' => ['integer', 'min:1'],
             'decision' => ['nullable', 'string', 'in:pending,allowed,blocked,used,unused'],
-            'usable' => ['nullable', 'boolean'],
-            'is_visible' => ['nullable', 'string', 'in:guest,user,game_master,admin'],
+            'state' => ['nullable', 'string', 'in:raw,draft,playable,archived'],
+            'read_level' => ['nullable', 'integer', 'min:' . User::ROLE_GUEST, 'max:' . User::ROLE_SUPER_ADMIN],
+            'write_level' => [
+                'nullable',
+                'integer',
+                'min:' . User::ROLE_GUEST,
+                'max:' . User::ROLE_SUPER_ADMIN,
+                Rule::when($request->input('read_level') !== null, ['gte:read_level']),
+            ],
         ]);
 
         $ids = array_values(array_unique(array_map('intval', $validated['ids'])));
@@ -116,11 +218,14 @@ class ResourceTypeRegistryController extends Controller
         if (array_key_exists('decision', $validated) && $validated['decision'] !== null) {
             $patch['decision'] = $this->normalizeDecision($validated['decision']);
         }
-        if (array_key_exists('usable', $validated) && $validated['usable'] !== null) {
-            $patch['usable'] = $validated['usable'] ? 1 : 0;
+        if (array_key_exists('state', $validated) && $validated['state'] !== null) {
+            $patch['state'] = $validated['state'];
         }
-        if (array_key_exists('is_visible', $validated) && $validated['is_visible'] !== null) {
-            $patch['is_visible'] = $validated['is_visible'];
+        if (array_key_exists('read_level', $validated) && $validated['read_level'] !== null) {
+            $patch['read_level'] = (int) $validated['read_level'];
+        }
+        if (array_key_exists('write_level', $validated) && $validated['write_level'] !== null) {
+            $patch['write_level'] = (int) $validated['write_level'];
         }
 
         if (empty($patch)) {
@@ -148,7 +253,7 @@ class ResourceTypeRegistryController extends Controller
                     $this->authorize('update', $model);
 
                     // On n’applique la registry qu’aux types liés DofusDB, mais on laisse la MAJ possible
-                    // (ex: usable/is_visible) même si dofusdb_type_id est null.
+                    // (ex: state/read_level/write_level) même si dofusdb_type_id est null.
                     foreach ($patch as $k => $v) {
                         $model->{$k} = $v;
                     }

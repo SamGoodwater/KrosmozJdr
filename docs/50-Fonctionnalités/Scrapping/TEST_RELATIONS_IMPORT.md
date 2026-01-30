@@ -23,7 +23,7 @@ Pour vérifier manuellement que les relations sont bien importées :
 
 ```bash
 # Importer une classe avec relations
-php artisan scrapping:import class 1
+php artisan scrapping --import=class --id=1 --include-relations=1
 
 # Vérifier les relations dans la base de données
 php artisan tinker

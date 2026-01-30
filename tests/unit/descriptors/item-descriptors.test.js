@@ -12,13 +12,13 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import { getItemFieldDescriptors, ITEM_QUICK_EDIT_FIELDS } from '@/Entities/item/item-descriptors';
+import { getItemFieldDescriptors } from '@/Entities/item/item-descriptors';
 
 describe('item-descriptors', () => {
     describe('Structure des descriptors', () => {
         it('retourne un objet avec tous les champs requis', () => {
             const descriptors = getItemFieldDescriptors();
-            const requiredFields = ['id', 'name', 'level', 'rarity', 'usable', 'is_visible'];
+            const requiredFields = ['id', 'name', 'level', 'rarity', 'state', 'read_level', 'write_level'];
 
             requiredFields.forEach((field) => {
                 expect(descriptors).toHaveProperty(field);
@@ -69,7 +69,7 @@ describe('item-descriptors', () => {
     describe('Configuration bulk', () => {
         it('les champs bulk-enabled ont enabled: true', () => {
             const descriptors = getItemFieldDescriptors();
-            const bulkEnabledFields = ITEM_QUICK_EDIT_FIELDS;
+            const bulkEnabledFields = descriptors._quickeditConfig?.fields || [];
 
             bulkEnabledFields.forEach((fieldKey) => {
                 const desc = descriptors[fieldKey];
@@ -135,7 +135,7 @@ describe('item-descriptors', () => {
     describe('QUICK_EDIT_FIELDS', () => {
         it('quickEdit contient uniquement des champs existants', () => {
             const descriptors = getItemFieldDescriptors();
-            const quickEditFields = ITEM_QUICK_EDIT_FIELDS;
+            const quickEditFields = descriptors._quickeditConfig?.fields || [];
 
             quickEditFields.forEach((fieldKey) => {
                 expect(descriptors).toHaveProperty(fieldKey);
@@ -144,7 +144,7 @@ describe('item-descriptors', () => {
 
         it('les champs quickEdit sont bulk-enabled', () => {
             const descriptors = getItemFieldDescriptors();
-            const quickEditFields = ITEM_QUICK_EDIT_FIELDS;
+            const quickEditFields = descriptors._quickeditConfig?.fields || [];
 
             quickEditFields.forEach((fieldKey) => {
                 const desc = descriptors[fieldKey];
@@ -156,16 +156,16 @@ describe('item-descriptors', () => {
     });
 
     describe('Options des selects', () => {
-        it('is_visible a les bonnes options', () => {
+        it('read_level a les bonnes options', () => {
             const descriptors = getItemFieldDescriptors();
-            const isVisibleDesc = descriptors.is_visible;
+            const isVisibleDesc = descriptors.read_level;
 
             if (isVisibleDesc?.edit?.form?.type === 'select') {
                 const options = isVisibleDesc.edit.form.options;
                 const values = options.map((opt) => opt.value);
-                expect(values).toContain('guest');
-                expect(values).toContain('user');
-                expect(values).toContain('admin');
+                expect(values).toContain(0);
+                expect(values).toContain(1);
+                expect(values).toContain(4);
             }
         });
 

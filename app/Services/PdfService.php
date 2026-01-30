@@ -203,7 +203,9 @@ class PdfService
                 'dofusdb_id' => $entity->dofusdb_id,
             ],
             'panoply' => [
-                'usable' => $entity->usable ?? false,
+                'state' => $entity->state ?? null,
+                'read_level' => $entity->read_level ?? null,
+                'write_level' => $entity->write_level ?? null,
                 'bonus' => $entity->bonus,
                 'dofusdb_id' => $entity->dofusdb_id,
             ],
@@ -227,8 +229,9 @@ class PdfService
                 'dofusdb_id' => $entity->dofusdb_id,
             ],
             'attribute' => [
-                'usable' => $entity->usable ?? false,
-                'is_visible' => $entity->is_visible ?? false,
+                'state' => $entity->state ?? null,
+                'read_level' => $entity->read_level ?? null,
+                'write_level' => $entity->write_level ?? null,
             ],
             'capability' => [
                 'description' => $entity->description,

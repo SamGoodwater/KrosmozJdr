@@ -16,7 +16,7 @@ use Illuminate\Support\Facades\DB;
  *
  * @example
  * PATCH /api/entities/spells/bulk
- * { "ids":[1,2,3], "usable":true, "auto_update":false, "is_visible":"guest", "level":"50", "pa":"3" }
+ * { "ids":[1,2,3], "state":"playable", "read_level":0, "write_level":3, "auto_update":false, "level":"50", "pa":"3" }
  */
 class SpellBulkController extends Controller
 {
@@ -29,9 +29,10 @@ class SpellBulkController extends Controller
             'ids.*' => ['integer', 'min:1', 'exists:spells,id'],
 
             // Champs bulk (les clés absentes ne sont pas modifiées)
-            'usable' => ['sometimes', 'boolean'],
+            'state' => ['sometimes', 'string', 'in:raw,draft,playable,archived'],
+            'read_level' => ['sometimes', 'integer', 'min:0', 'max:5'],
+            'write_level' => ['sometimes', 'integer', 'min:0', 'max:5'],
             'auto_update' => ['sometimes', 'boolean'],
-            'is_visible' => ['sometimes', 'string', 'in:guest,user,player,game_master,admin'],
 
             // Champs "métier" utiles en édition multiple (nullable => possibilité de vider)
             'level' => ['sometimes', 'nullable', 'string', 'max:255'],
@@ -53,9 +54,10 @@ class SpellBulkController extends Controller
 
         $patch = [];
         foreach ([
-            'usable',
+            'state',
+            'read_level',
+            'write_level',
             'auto_update',
-            'is_visible',
             'level',
             'pa',
             'po',

@@ -79,8 +79,9 @@ const importantFields = computed(() => ['name', 'level', 'pa', 'po', 'element'].
 
 // Champs supplémentaires à afficher au hover
 const expandedFields = computed(() => [
-    'usable',
-    'is_visible',
+    'state',
+    'read_level',
+    'write_level',
 ].filter(canShowField));
 
 const getFieldIcon = (fieldKey) => {

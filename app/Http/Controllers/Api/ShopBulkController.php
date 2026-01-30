@@ -16,7 +16,7 @@ use Illuminate\Support\Facades\DB;
  *
  * @example
  * PATCH /api/entities/shops/bulk
- * { "ids":[1,2,3], "location":"Brakmar", "price":100, "usable":true, "is_visible":"guest", "description":"Nouvelle description" }
+ * { "ids":[1,2,3], "location":"Brakmar", "price":100, "state":"playable", "read_level":0, "write_level":3, "description":"Nouvelle description" }
  */
 class ShopBulkController extends Controller
 {
@@ -31,8 +31,9 @@ class ShopBulkController extends Controller
             // Champs bulk (les clés absentes ne sont pas modifiées)
             'location' => ['sometimes', 'nullable', 'string', 'max:255'],
             'price' => ['sometimes', 'nullable', 'integer', 'min:0'],
-            'usable' => ['sometimes', 'nullable', 'boolean'],
-            'is_visible' => ['sometimes', 'nullable', 'string', 'in:guest,user,player,game_master,admin'],
+            'state' => ['sometimes', 'nullable', 'string', 'in:raw,draft,playable,archived'],
+            'read_level' => ['sometimes', 'nullable', 'integer', 'min:0', 'max:5'],
+            'write_level' => ['sometimes', 'nullable', 'integer', 'min:0', 'max:5'],
 
             // Champs "métier" utiles en édition multiple (nullable => possibilité de vider)
             'description' => ['sometimes', 'nullable', 'string'],
@@ -52,8 +53,9 @@ class ShopBulkController extends Controller
         foreach ([
             'location',
             'price',
-            'usable',
-            'is_visible',
+            'state',
+            'read_level',
+            'write_level',
             'description',
             'npc_id',
             'image',

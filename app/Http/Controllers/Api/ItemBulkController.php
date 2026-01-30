@@ -16,7 +16,7 @@ use Illuminate\Support\Facades\DB;
  *
  * @example
  * PATCH /api/entities/items/bulk
- * { "ids":[1,2,3], "usable":true, "auto_update":false, "is_visible":"guest", "rarity":"rare", "level":"50" }
+ * { "ids":[1,2,3], "state":"playable", "read_level":0, "write_level":3, "auto_update":false, "rarity":2, "level":"50" }
  */
 class ItemBulkController extends Controller
 {
@@ -29,9 +29,10 @@ class ItemBulkController extends Controller
             'ids.*' => ['integer', 'min:1', 'exists:items,id'],
 
             // Champs bulk (les clés absentes ne sont pas modifiées)
-            'usable' => ['sometimes', 'boolean'],
+            'state' => ['sometimes', 'string', 'in:raw,draft,playable,archived'],
+            'read_level' => ['sometimes', 'integer', 'min:0', 'max:5'],
+            'write_level' => ['sometimes', 'integer', 'min:0', 'max:5'],
             'auto_update' => ['sometimes', 'boolean'],
-            'is_visible' => ['sometimes', 'string', 'in:guest,user,game_master,admin'],
 
             // Rareté (int) : 0..4
             'rarity' => ['sometimes', 'integer', 'min:0', 'max:4'],
@@ -54,9 +55,10 @@ class ItemBulkController extends Controller
 
         $patch = [];
         foreach ([
-            'usable',
+            'state',
+            'read_level',
+            'write_level',
             'auto_update',
-            'is_visible',
             'rarity',
             'level',
             'price',

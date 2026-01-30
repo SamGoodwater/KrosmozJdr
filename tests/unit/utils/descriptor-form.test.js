@@ -41,15 +41,15 @@ describe('descriptor-form', () => {
                 },
             },
         },
-        usable: {
-            key: 'usable',
-            label: 'Utilisable',
+        state: {
+            key: 'state',
+            label: 'État',
             edit: {
                 form: {
-                    type: 'checkbox',
+                    type: 'select',
                     required: false,
                     showInCompact: true,
-                    bulk: { enabled: true, nullable: true, build: (v) => (v === '' || v === null ? null : Boolean(v)) },
+                    bulk: { enabled: true, nullable: true, build: (v) => (v === '' || v === null ? null : String(v)) },
                 },
             },
         },
@@ -73,7 +73,7 @@ describe('descriptor-form', () => {
 
             expect(config.name).toBeDefined();
             expect(config.level).toBeDefined();
-            expect(config.usable).toBeDefined();
+            expect(config.state).toBeDefined();
             expect(config.description).toBeDefined();
         });
 
@@ -87,7 +87,7 @@ describe('descriptor-form', () => {
             expect(config.level.type).toBe('text');
             expect(config.level.required).toBe(false);
 
-            expect(config.usable.type).toBe('checkbox');
+            expect(config.state.type).toBe('select');
         });
 
         it('exclut les champs sans edit.form', () => {
@@ -113,7 +113,7 @@ describe('descriptor-form', () => {
 
             expect(meta.name).toBeUndefined(); // bulk.enabled = false
             expect(meta.level).toBeDefined();
-            expect(meta.usable).toBeDefined();
+            expect(meta.state).toBeDefined();
             expect(meta.description).toBeDefined();
         });
 
@@ -123,15 +123,15 @@ describe('descriptor-form', () => {
             expect(meta.level.nullable).toBe(true);
             expect(typeof meta.level.build).toBe('function');
 
-            expect(meta.usable.nullable).toBe(true);
-            expect(typeof meta.usable.build).toBe('function');
+            expect(meta.state.nullable).toBe(true);
+            expect(typeof meta.state.build).toBe('function');
         });
 
         it('génère fieldMeta avec label', () => {
             const meta = createBulkFieldMetaFromDescriptors(mockDescriptors);
 
             expect(meta.level.label).toBe('Niveau');
-            expect(meta.usable.label).toBe('Utilisable');
+            expect(meta.state.label).toBe('État');
         });
 
         it('exclut les champs sans bulk.enabled', () => {
@@ -154,12 +154,12 @@ describe('descriptor-form', () => {
                         },
                     },
                 },
-                usable: {
-                    ...mockDescriptors.usable,
+                state: {
+                    ...mockDescriptors.state,
                     edit: {
                         form: {
-                            ...mockDescriptors.usable.edit.form,
-                            defaultValue: false,
+                            ...mockDescriptors.state.edit.form,
+                            defaultValue: 'draft',
                         },
                     },
                 },
@@ -168,7 +168,7 @@ describe('descriptor-form', () => {
             const defaultEntity = createDefaultEntityFromDescriptors(descriptors);
 
             expect(defaultEntity.level).toBe('1');
-            expect(defaultEntity.usable).toBe(false);
+            expect(defaultEntity.state).toBe('draft');
         });
 
         it('génère defaultEntity avec valeurs vides si pas de defaultValue', () => {

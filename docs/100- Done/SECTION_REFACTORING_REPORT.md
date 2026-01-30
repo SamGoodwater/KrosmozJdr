@@ -24,7 +24,7 @@
 ## ✅ Objectifs atteints
 
 ### 1. **Centralisation des options** ✅
-- Création de `useSectionFormOptions` pour les selects (visibility, state)
+- Création de `useSectionFormOptions` pour les selects (rôles, state)
 - Élimination de la duplication entre `CreateSectionModal` et `SectionParamsModal`
 - Cohérence garantie entre tous les formulaires de sections
 
@@ -78,7 +78,7 @@ resources/js/Pages/Organismes/section/modals/
 **Rôle** : Centralise les options des selects pour les formulaires de sections.
 
 **Exports** :
-- `visibilityOptions` : Options pour le champ `is_visible`
+- `roleOptions` : Options pour `read_level` / `write_level`
 - `stateOptions` : Options pour le champ `state`
 
 **Avantages** :
@@ -88,21 +88,14 @@ resources/js/Pages/Organismes/section/modals/
 
 ```javascript
 export function useSectionFormOptions() {
-    const visibilityOptions = computed(() => [
-        { value: Visibility.GUEST.value, label: 'Public (Invité)' },
-        { value: Visibility.USER.value, label: 'Utilisateur' },
-        { value: Visibility.GAME_MASTER.value, label: 'Maître du Jeu' },
-        { value: Visibility.ADMIN.value, label: 'Administrateur' },
-    ]);
-
     const stateOptions = computed(() => [
-        { value: PageState.DRAFT.value, label: 'Brouillon' },
-        { value: PageState.PREVIEW.value, label: 'Prévisualisation' },
-        { value: PageState.PUBLISHED.value, label: 'Publié' },
-        { value: PageState.ARCHIVED.value, label: 'Archivé' },
+        { value: 'raw', label: 'Brut' },
+        { value: 'draft', label: 'Brouillon' },
+        { value: 'playable', label: 'Jouable' },
+        { value: 'archived', label: 'Archivé' },
     ]);
 
-    return { visibilityOptions, stateOptions };
+    return { roleOptions, stateOptions };
 }
 ```
 
@@ -142,7 +135,7 @@ const { form, submit, handleClose, visibilityOptions, stateOptions } = useSectio
 **Props** :
 - `form` : Objet formulaire Inertia
 - `showOrder` : Afficher le champ ordre (optionnel)
-- `showAdvanced` : Afficher les champs avancés (can_edit_role, state)
+- `showAdvanced` : Afficher les champs avancés (`write_level`, `state`)
 - `visibilityOptions` : Options pour le select de visibilité
 - `stateOptions` : Options pour le select d'état
 
@@ -190,7 +183,7 @@ const { form, submit, handleClose, visibilityOptions, stateOptions } = useSectio
     :show-advanced="false"
     @update:title="form.title = $event"
     @update:slug="form.slug = $event"
-    @update:is-visible="form.is_visible = $event"
+    @update:read-level="form.read_level = $event"
 />
 ```
 
@@ -231,7 +224,7 @@ const stateOptions = computed(() => stateOpts.value.length > 0 ? stateOpts.value
 
 ### **Cohérence** 🎯
 - ✅ Options identiques dans tous les formulaires
-- ✅ Labels unifiés (Visibility, PageState)
+- ✅ Labels unifiés (rôles 0..5, state raw/draft/playable/archived)
 - ✅ Comportement identique (slug auto-généré)
 
 ### **DX (Developer Experience)** 💻

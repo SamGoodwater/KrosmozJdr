@@ -68,7 +68,7 @@ public function test_admin_can_bulk_update_entities(): void
     $response = $this->actingAs($admin)
         ->patchJson('/api/entities/entities/bulk', [
             'ids' => [$entity1->id, $entity2->id],
-            'is_visible' => 'admin',
+            'read_level' => User::ROLE_ADMIN,
         ]);
 
     $response->assertOk()
@@ -76,7 +76,7 @@ public function test_admin_can_bulk_update_entities(): void
 
     $this->assertDatabaseHas('entities', [
         'id' => $entity1->id,
-        'is_visible' => 'admin',
+        'read_level' => User::ROLE_ADMIN,
     ]);
 }
 ```
