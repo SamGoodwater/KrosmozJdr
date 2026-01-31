@@ -11,7 +11,7 @@
  * - Actions sur sélection: reset / simuler / importer
  * - Options d'import + historique type "invite de commande"
  */
-import { computed, onMounted, ref } from "vue";
+import { computed, onMounted, ref, watch } from "vue";
 import Card from "@/Pages/Atoms/data-display/Card.vue";
 import Btn from "@/Pages/Atoms/action/Btn.vue";
 import Badge from "@/Pages/Atoms/data-display/Badge.vue";
@@ -42,7 +42,14 @@ const filterIds = ref(""); // "1" | "1,2,3" | "1-50"
 const filterName = ref("");
 
 // Filtres dépendants (optionnels)
-const filterTypeId = ref("");
+const knownTypesLoading = ref(false);
+const knownTypeOptions = ref([]); // { value:number|string, label:string }
+const selectedKnownTypeInclude = ref("");
+const selectedKnownTypeExclude = ref("");
+
+const filterTypeIds = ref([]); // number[]
+const filterTypeIdsNot = ref([]); // number[]
+
 const filterRaceId = ref("");
 const filterBreedId = ref("");
 const filterLevelMin = ref("");
@@ -61,6 +68,13 @@ const tableSearch = ref("");
 const selectedIds = ref(new Set());
 const lastMeta = ref(null);
 
+// Analyse des effets (unmapped)
+const effectsAnalysisLoading = ref(false);
+const effectsAnalysisEntityId = ref(null);
+const effectsAnalysisType = ref(null);
+const effectsAnalysisUnmapped = ref([]);
+const effectsAnalysisSummary = ref(null);
+
 // Pagination / gros volumes
 const pageLimit = ref(100);
 const pageOffset = ref(0); // start_skip
@@ -75,11 +89,50 @@ const pushHistory = (line) => {
     historyLines.value.unshift(`[${ts}] ${line}`);
 };
 
+const loadKnownTypes = async () => {
+    const t = String(selectedEntityType.value || "");
+    const endpoint = (() => {
+        if (t === "resource") return "/api/scrapping/resource-types?decision=allowed";
+        if (t === "consumable") return "/api/scrapping/consumable-types?decision=allowed";
+        if (t === "item" || t === "equipment") return "/api/scrapping/item-types?decision=allowed";
+        return null;
+    })();
+
+    knownTypeOptions.value = [];
+    selectedKnownTypeInclude.value = "";
+    selectedKnownTypeExclude.value = "";
+    filterTypeIds.value = [];
+    filterTypeIdsNot.value = [];
+
+    if (!endpoint) return;
+
+    knownTypesLoading.value = true;
+    try {
+        const res = await fetch(endpoint, { headers: { Accept: "application/json" } });
+        const json = await res.json();
+        if (!res.ok || !json?.success) {
+            throw new Error(json?.message || "Chargement des types impossible");
+        }
+        const rows = Array.isArray(json.data) ? json.data : [];
+        knownTypeOptions.value = rows
+            .map((r) => ({
+                value: Number(r?.dofusdb_type_id),
+                label: String(r?.name || `DofusDB type #${r?.dofusdb_type_id}`),
+            }))
+            .filter((o) => Number.isFinite(Number(o.value)) && Number(o.value) > 0)
+            .sort((a, b) => String(a.label).localeCompare(String(b.label), "fr-FR"));
+    } catch (e) {
+        showError("Types: " + e.message);
+    } finally {
+        knownTypesLoading.value = false;
+    }
+};
+
 const entityOptions = computed(() => {
     // On propose uniquement les entités à la fois:
     // - déclarées en config (donc supportées par /api/scrapping/search/{entity})
     // - importables (import endpoints existants)
-    const allowed = new Set(["class", "monster", "item", "spell", "panoply"]);
+    const allowed = new Set(["class", "monster", "equipment", "consumable", "resource", "item", "spell", "panoply"]);
     const fromMeta = Array.isArray(metaEntityTypes.value) ? metaEntityTypes.value : [];
     return fromMeta
         .filter((e) => e?.type && allowed.has(String(e.type)) && configEntitiesByKey.value?.[String(e.type)])
@@ -101,6 +154,22 @@ const supportedFilters = computed(() => {
 });
 
 const supports = (key) => supportedFilters.value.some((f) => String(f?.key || "") === key);
+
+const knownTypeLabelById = computed(() => {
+    const map = new Map();
+    for (const opt of knownTypeOptions.value || []) {
+        const id = Number(opt?.value);
+        if (!Number.isFinite(id) || id <= 0) continue;
+        map.set(id, String(opt?.label || `#${id}`));
+    }
+    return map;
+});
+
+const labelForTypeId = (id) => {
+    const n = Number(id);
+    if (!Number.isFinite(n) || n <= 0) return "—";
+    return knownTypeLabelById.value.get(n) || `#${n}`;
+};
 
 const visibleItems = computed(() => {
     const items = Array.isArray(rawItems.value) ? rawItems.value : [];
@@ -152,6 +221,48 @@ const parseIdsFilter = () => {
     return {};
 };
 
+const parseNumberCsv = (txt) => {
+    const s = String(txt || "").trim();
+    if (!s) return [];
+    const parts = s
+        .split(",")
+        .map((p) => p.trim())
+        .filter(Boolean)
+        .map((p) => Number(p))
+        .filter((n) => Number.isFinite(n) && n > 0)
+        .map((n) => Math.floor(n));
+    return Array.from(new Set(parts));
+};
+
+const addKnownTypeTo = (target) => {
+    const selected = target === "exclude" ? selectedKnownTypeExclude.value : selectedKnownTypeInclude.value;
+    const id = Number(selected);
+    if (!Number.isFinite(id) || id <= 0) return;
+
+    if (target === "exclude") {
+        const next = new Set(filterTypeIdsNot.value);
+        next.add(id);
+        filterTypeIdsNot.value = Array.from(next);
+        selectedKnownTypeExclude.value = "";
+        return;
+    }
+
+    const next = new Set(filterTypeIds.value);
+    next.add(id);
+    filterTypeIds.value = Array.from(next);
+    selectedKnownTypeInclude.value = "";
+};
+
+const removeKnownTypeFrom = (target, id) => {
+    const n = Number(id);
+    if (!Number.isFinite(n) || n <= 0) return;
+    if (target === "exclude") {
+        filterTypeIdsNot.value = filterTypeIdsNot.value.filter((x) => Number(x) !== n);
+        return;
+    }
+    filterTypeIds.value = filterTypeIds.value.filter((x) => Number(x) !== n);
+};
+
 const buildSearchQuery = () => {
     const q = new URLSearchParams();
     if (optSkipCache.value) q.set("skip_cache", "true");
@@ -161,7 +272,12 @@ const buildSearchQuery = () => {
 
     if (String(filterName.value || "").trim() !== "") q.set("name", String(filterName.value).trim());
 
-    if (supports("typeId") && String(filterTypeId.value || "").trim() !== "") q.set("typeId", String(filterTypeId.value).trim());
+    // Filtres de types (sélection sur types connus)
+    const includeTypeIds = supports("typeIds") ? (filterTypeIds.value || []) : [];
+    const excludeTypeIds = supports("typeIdsNot") ? (filterTypeIdsNot.value || []) : [];
+    if (Array.isArray(includeTypeIds) && includeTypeIds.length) q.set("typeIds", includeTypeIds.join(","));
+    if (Array.isArray(excludeTypeIds) && excludeTypeIds.length) q.set("typeIdsNot", excludeTypeIds.join(","));
+
     if (supports("raceId") && String(filterRaceId.value || "").trim() !== "") q.set("raceId", String(filterRaceId.value).trim());
     if (supports("breedId") && String(filterBreedId.value || "").trim() !== "") q.set("breedId", String(filterBreedId.value).trim());
     if (supports("levelMin") && String(filterLevelMin.value || "").trim() !== "") q.set("levelMin", String(filterLevelMin.value).trim());
@@ -221,7 +337,16 @@ const loadConfig = async () => {
 
 onMounted(async () => {
     await Promise.all([loadMeta(), loadConfig()]);
+    await loadKnownTypes();
 });
+
+watch(
+    () => selectedEntityType.value,
+    async () => {
+        // Reset UI state liée aux types + recharge la liste "connue"
+        await loadKnownTypes();
+    }
+);
 
 const resetTable = () => {
     rawItems.value = [];
@@ -450,6 +575,82 @@ const existsTooltip = (it) => {
     const internal = it?.existing?.id ? `ID Krosmoz: ${it.existing.id}` : "Entrée trouvée en base.";
     return internal;
 };
+
+const canAnalyzeEffects = computed(() => {
+    const t = String(selectedEntityType.value || "");
+    return (t === "item" || t === "spell" || t === "equipment" || t === "consumable" || t === "resource") && selectedCount.value > 0;
+});
+
+const parseJsonSafe = (v) => {
+    try {
+        if (typeof v !== "string") return null;
+        const s = v.trim();
+        if (!s) return null;
+        return JSON.parse(s);
+    } catch {
+        return null;
+    }
+};
+
+const extractUnmappedFromConverted = (converted) => {
+    // item.effect = JSON bonuses
+    // spell.effect = JSON pack { normalized, bonuses }
+    const parsed = parseJsonSafe(converted?.effect);
+    if (!parsed) return { unmapped: [], summary: null };
+
+    if (Array.isArray(parsed?.unmapped)) {
+        return { unmapped: parsed.unmapped, summary: parsed };
+    }
+    if (Array.isArray(parsed?.bonuses?.unmapped)) {
+        return { unmapped: parsed.bonuses.unmapped, summary: parsed.bonuses };
+    }
+    return { unmapped: [], summary: parsed };
+};
+
+const analyzeEffects = async () => {
+    if (!canAnalyzeEffects.value) return;
+    const id = Array.from(selectedIds.value)[0];
+    if (!Number.isFinite(Number(id))) return;
+
+    effectsAnalysisLoading.value = true;
+    effectsAnalysisEntityId.value = Number(id);
+    effectsAnalysisType.value = String(selectedEntityType.value);
+    effectsAnalysisUnmapped.value = [];
+    effectsAnalysisSummary.value = null;
+
+    pushHistory(`Analyse effets: preview ${effectsAnalysisType.value} #${effectsAnalysisEntityId.value}`);
+
+    try {
+        const url = `/api/scrapping/preview/${effectsAnalysisType.value}/${effectsAnalysisEntityId.value}`;
+        const res = await fetch(url, { headers: { Accept: "application/json" } });
+        const json = await res.json();
+        if (!res.ok || !json?.success) {
+            throw new Error(json?.message || "Prévisualisation impossible");
+        }
+
+        const preview = json?.data || {};
+        const converted = preview?.converted || {};
+        const { unmapped, summary } = extractUnmappedFromConverted(converted);
+
+        effectsAnalysisUnmapped.value = Array.isArray(unmapped) ? unmapped : [];
+        effectsAnalysisSummary.value = summary || null;
+
+        success(`Analyse effets OK (${effectsAnalysisUnmapped.value.length} non mappé(s))`);
+        pushHistory(`→ Analyse OK: ${effectsAnalysisUnmapped.value.length} effet(s) non mappé(s).`);
+    } catch (e) {
+        showError("Analyse effets : " + e.message);
+        pushHistory(`→ ERREUR analyse effets: ${e.message}`);
+    } finally {
+        effectsAnalysisLoading.value = false;
+    }
+};
+
+const clearEffectsAnalysis = () => {
+    effectsAnalysisEntityId.value = null;
+    effectsAnalysisType.value = null;
+    effectsAnalysisUnmapped.value = [];
+    effectsAnalysisSummary.value = null;
+};
 </script>
 
 <template>
@@ -493,12 +694,93 @@ const existsTooltip = (it) => {
                         placeholder="Ex: Bouftou"
                     />
 
-                    <InputField
-                        v-if="supports('typeId')"
-                        v-model="filterTypeId"
-                        label="typeId"
-                        type="number"
-                    />
+                    <div v-if="supports('typeIds') || supports('typeIdsNot')" class="md:col-span-3 space-y-2">
+                        <div class="flex items-center justify-between gap-2">
+                            <div class="text-sm text-primary-300">
+                                Filtre par types (types connus uniquement)
+                            </div>
+                            <div v-if="knownTypesLoading" class="text-xs text-primary-300 flex items-center gap-2">
+                                <Loading />
+                                <span>Chargement des types…</span>
+                            </div>
+                        </div>
+
+                        <div class="grid gap-3 md:grid-cols-2">
+                            <div v-if="supports('typeIds')" class="space-y-2">
+                                <div class="flex gap-2 items-end">
+                                    <SelectField
+                                        class="flex-1"
+                                        label="Types (inclure)"
+                                        v-model="selectedKnownTypeInclude"
+                                        :options="knownTypeOptions"
+                                        placeholder="Choisir un type…"
+                                        :disabled="knownTypesLoading"
+                                    />
+                                    <Btn
+                                        size="sm"
+                                        variant="outline"
+                                        type="button"
+                                        :disabled="!selectedKnownTypeInclude"
+                                        @click="addKnownTypeTo('include')"
+                                    >
+                                        Ajouter
+                                    </Btn>
+                                </div>
+                                <div v-if="filterTypeIds.length" class="flex flex-wrap gap-2">
+                                    <span
+                                        v-for="id in filterTypeIds"
+                                        :key="`inc-${id}`"
+                                        class="inline-flex items-center gap-2 text-xs px-2 py-1 rounded border border-base-300 bg-base-200/40"
+                                    >
+                                        <span>{{ labelForTypeId(id) }}</span>
+                                        <button type="button" class="btn btn-ghost btn-xs" @click="removeKnownTypeFrom('include', id)">
+                                            ✕
+                                        </button>
+                                    </span>
+                                </div>
+                                <div v-else class="text-xs text-primary-300 italic">
+                                    Aucun type inclus.
+                                </div>
+                            </div>
+
+                            <div v-if="supports('typeIdsNot')" class="space-y-2">
+                                <div class="flex gap-2 items-end">
+                                    <SelectField
+                                        class="flex-1"
+                                        label="Types (exclure)"
+                                        v-model="selectedKnownTypeExclude"
+                                        :options="knownTypeOptions"
+                                        placeholder="Choisir un type…"
+                                        :disabled="knownTypesLoading"
+                                    />
+                                    <Btn
+                                        size="sm"
+                                        variant="outline"
+                                        type="button"
+                                        :disabled="!selectedKnownTypeExclude"
+                                        @click="addKnownTypeTo('exclude')"
+                                    >
+                                        Ajouter
+                                    </Btn>
+                                </div>
+                                <div v-if="filterTypeIdsNot.length" class="flex flex-wrap gap-2">
+                                    <span
+                                        v-for="id in filterTypeIdsNot"
+                                        :key="`exc-${id}`"
+                                        class="inline-flex items-center gap-2 text-xs px-2 py-1 rounded border border-base-300 bg-base-200/40"
+                                    >
+                                        <span>{{ labelForTypeId(id) }}</span>
+                                        <button type="button" class="btn btn-ghost btn-xs" @click="removeKnownTypeFrom('exclude', id)">
+                                            ✕
+                                        </button>
+                                    </span>
+                                </div>
+                                <div v-else class="text-xs text-primary-300 italic">
+                                    Aucun type exclu.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                     <InputField
                         v-if="supports('raceId')"
                         v-model="filterRaceId"
@@ -580,6 +862,15 @@ const existsTooltip = (it) => {
                         <Loading v-if="importing" class="mr-2" />
                         Importer
                     </Btn>
+                    <Btn
+                        variant="ghost"
+                        :disabled="effectsAnalysisLoading || !canAnalyzeEffects"
+                        @click="analyzeEffects"
+                        title="Disponible pour item/sort (sur l’ID sélectionné)"
+                    >
+                        <Loading v-if="effectsAnalysisLoading" class="mr-2" />
+                        Analyser effets (non mappés)
+                    </Btn>
                 </div>
 
                 <div class="flex items-center gap-2">
@@ -603,7 +894,7 @@ const existsTooltip = (it) => {
                             <th class="w-24">ID</th>
                             <th>Nom</th>
                             <th class="w-28">Existe</th>
-                            <th v-if="supports('typeId')" class="w-24">typeId</th>
+                            <th v-if="supports('typeId') || supports('typeIds') || supports('typeIdsNot')" class="w-48">Type</th>
                             <th v-if="supports('raceId')" class="w-24">raceId</th>
                             <th v-if="supports('breedId')" class="w-24">breedId</th>
                             <th v-if="supports('levelMin') || supports('levelMax')" class="w-24">Niveau</th>
@@ -633,10 +924,69 @@ const existsTooltip = (it) => {
                                     </span>
                                 </Tooltip>
                             </td>
-                            <td v-if="supports('typeId')">{{ it.typeId ?? "—" }}</td>
+                            <td v-if="supports('typeId') || supports('typeIds') || supports('typeIdsNot')">
+                                <span v-if="it.typeName" class="text-sm">{{ it.typeName }}</span>
+                                <span v-else class="text-primary-300 text-sm italic">—</span>
+                                <span v-if="it.typeId" class="ml-2 text-xs text-primary-300 font-mono">#{{ it.typeId }}</span>
+                                <span
+                                    v-if="it.typeDecision === 'pending'"
+                                    class="ml-2 badge badge-warning badge-xs"
+                                    title="Ce type est en attente de validation (il sera proposé dans la section de revue des types)."
+                                >
+                                    À valider
+                                </span>
+                            </td>
                             <td v-if="supports('raceId')">{{ it.raceId ?? "—" }}</td>
                             <td v-if="supports('breedId')">{{ it.breedId ?? "—" }}</td>
                             <td v-if="supports('levelMin') || supports('levelMax')">{{ it.level ?? "—" }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </Card>
+
+        <!-- Analyse des effets non mappés -->
+        <Card v-if="effectsAnalysisEntityId !== null" class="p-6 space-y-4">
+            <div class="flex items-center justify-between gap-2">
+                <div>
+                    <h3 class="font-semibold text-primary-100">Analyse des effets non mappés</h3>
+                    <p class="text-xs text-primary-300 mt-1">
+                        {{ effectsAnalysisType }} #{{ effectsAnalysisEntityId }}
+                        <span v-if="effectsAnalysisSummary && typeof effectsAnalysisSummary === 'object'">
+                            · unmapped: {{ Array.isArray(effectsAnalysisUnmapped) ? effectsAnalysisUnmapped.length : 0 }}
+                        </span>
+                    </p>
+                </div>
+                <Btn size="sm" variant="ghost" @click="clearEffectsAnalysis">Fermer</Btn>
+            </div>
+
+            <div v-if="effectsAnalysisLoading" class="flex items-center gap-2 text-primary-300">
+                <Loading />
+                <span>Analyse en cours…</span>
+            </div>
+
+            <div v-else-if="!effectsAnalysisUnmapped.length" class="text-sm text-primary-300 italic">
+                Aucun effet “unmapped” (ou format d’effets non reconnu).
+            </div>
+
+            <div v-else class="overflow-x-auto rounded-lg border border-base-300">
+                <table class="table w-full">
+                    <thead>
+                        <tr>
+                            <th class="w-24">effectId</th>
+                            <th class="w-24">min</th>
+                            <th class="w-24">max</th>
+                            <th>Description (FR)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr v-for="(u, idx) in effectsAnalysisUnmapped" :key="String(u?.effectId ?? idx)">
+                            <td class="font-mono">{{ u?.effectId ?? "—" }}</td>
+                            <td class="font-mono">{{ u?.min ?? "—" }}</td>
+                            <td class="font-mono">{{ u?.max ?? "—" }}</td>
+                            <td class="text-sm">
+                                {{ u?.meta?.description_fr || "—" }}
+                            </td>
                         </tr>
                     </tbody>
                 </table>

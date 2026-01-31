@@ -10,6 +10,9 @@ use App\Models\Entity\Monster;
 use App\Models\Entity\Panoply;
 use App\Models\Entity\Resource;
 use App\Models\Entity\Spell;
+use App\Models\Type\ConsumableType;
+use App\Models\Type\ItemType;
+use App\Models\Type\ResourceType;
 use App\Services\Scrapping\Config\ScrappingConfigLoader;
 use App\Services\Scrapping\DataCollect\ConfigDrivenDofusDbCollector;
 use Illuminate\Http\JsonResponse;
@@ -46,10 +49,12 @@ class ScrappingSearchController extends Controller
         }
 
         $filters = $this->extractFilters($request);
+        $filters = $this->applyEntityDefaults($entity, $filters);
         $options = $this->extractOptions($request);
 
         $result = $this->collector->fetchManyResult($entity, $filters, $options);
         $items = $this->withExistsFlag($entity, $result['items']);
+        $items = $this->withTypeLabelsAndRegistry($entity, $items);
 
         return response()->json([
             'success' => true,
@@ -75,6 +80,26 @@ class ScrappingSearchController extends Controller
         foreach (['id', 'idMin', 'idMax', 'name', 'raceId', 'levelMin', 'levelMax', 'breedId', 'typeId'] as $key) {
             if ($request->has($key)) {
                 $filters[$key] = $request->query($key);
+            }
+        }
+
+        if ($request->has('typeIds')) {
+            $typeIds = $request->query('typeIds');
+            if (is_string($typeIds)) {
+                $parts = array_filter(array_map('trim', explode(',', $typeIds)));
+                $filters['typeIds'] = $parts;
+            } elseif (is_array($typeIds)) {
+                $filters['typeIds'] = $typeIds;
+            }
+        }
+
+        if ($request->has('typeIdsNot')) {
+            $typeIdsNot = $request->query('typeIdsNot');
+            if (is_string($typeIdsNot)) {
+                $parts = array_filter(array_map('trim', explode(',', $typeIdsNot)));
+                $filters['typeIdsNot'] = $parts;
+            } elseif (is_array($typeIdsNot)) {
+                $filters['typeIdsNot'] = $typeIdsNot;
             }
         }
 
@@ -109,6 +134,7 @@ class ScrappingSearchController extends Controller
             'panoply' => Panoply::class,
             'resource' => Resource::class,
             'consumable' => Consumable::class,
+            'equipment' => Item::class,
             default => null,
         };
 
@@ -151,6 +177,91 @@ class ScrappingSearchController extends Controller
     }
 
     /**
+     * Ajoute des informations de type (nom) + enregistre le typeId en base si absent.
+     *
+     * @param string $entity
+     * @param array<int, array<string,mixed>> $items
+     * @return array<int, array<string,mixed>>
+     */
+    private function withTypeLabelsAndRegistry(string $entity, array $items): array
+    {
+        $entity = strtolower($entity);
+        $registry = match ($entity) {
+            'resource' => ResourceType::class,
+            'consumable' => ConsumableType::class,
+            'item', 'equipment' => ItemType::class,
+            default => null,
+        };
+
+        if (!$registry) {
+            return $items;
+        }
+
+        // 1) Extraire les typeId uniques
+        $typeIds = [];
+        foreach ($items as $it) {
+            if (!is_array($it)) continue;
+            $typeId = $it['typeId'] ?? null;
+            if (is_int($typeId) || (is_string($typeId) && ctype_digit($typeId))) {
+                $n = (int) $typeId;
+                if ($n > 0) {
+                    $typeIds[] = $n;
+                }
+            }
+        }
+        $typeIds = array_values(array_unique($typeIds));
+        if (empty($typeIds)) {
+            return $items;
+        }
+
+        // 2) Charger en bulk les types connus
+        $byTypeId = [];
+        try {
+            /** @var class-string $registry */
+            $rows = $registry::query()->whereIn('dofusdb_type_id', $typeIds)->get();
+            foreach ($rows as $row) {
+                $id = is_numeric($row->dofusdb_type_id ?? null) ? (int) $row->dofusdb_type_id : 0;
+                if ($id > 0) {
+                    $byTypeId[$id] = $row;
+                }
+            }
+        } catch (\Throwable) {
+            $byTypeId = [];
+        }
+
+        // 3) Enrichir items + auto-touch des types absents
+        foreach ($items as $i => $it) {
+            if (!is_array($it)) continue;
+
+            $typeId = $it['typeId'] ?? null;
+            if (!(is_int($typeId) || (is_string($typeId) && ctype_digit($typeId)))) {
+                continue;
+            }
+            $typeId = (int) $typeId;
+            if ($typeId <= 0) continue;
+
+            try {
+                $typeModel = $byTypeId[$typeId] ?? null;
+                if (!$typeModel) {
+                    /** @var class-string $registry */
+                    $typeModel = $registry::touchDofusdbType($typeId);
+                    $byTypeId[$typeId] = $typeModel;
+                }
+
+                $items[$i]['typeName'] = is_string($typeModel->name ?? null) ? (string) $typeModel->name : null;
+                $items[$i]['typeDecision'] = is_string($typeModel->decision ?? null) ? (string) $typeModel->decision : null;
+                $items[$i]['typeKnown'] = ($items[$i]['typeDecision'] ?? null) === 'allowed';
+            } catch (\Throwable) {
+                $items[$i]['typeName'] = null;
+                $items[$i]['typeDecision'] = null;
+                $items[$i]['typeKnown'] = null;
+            }
+        }
+
+        return $items;
+    }
+
+    /**
      * @return array{skip_cache?:bool, limit?:int, max_pages?:int, max_items?:int, start_skip?:int}
      */
     private function extractOptions(Request $request): array
@@ -184,6 +295,94 @@ class ScrappingSearchController extends Controller
         }
 
         return $options;
+    }
+
+    /**
+     * Injecte des filtres implicites pour certaines entités "alias" de /items.
+     *
+     * @param array<string,mixed> $filters
+     * @return array<string,mixed>
+     */
+    private function applyEntityDefaults(string $entity, array $filters): array
+    {
+        $entity = strtolower($entity);
+
+        $hasExplicitType = array_key_exists('typeId', $filters) || array_key_exists('typeIds', $filters) || array_key_exists('typeIdsNot', $filters);
+        if ($entity === 'resource') {
+            // Par défaut: ne retourner que les items dont le typeId est autorisé comme ressource.
+            if (!$hasExplicitType) {
+                try {
+                    $allowed = ResourceType::query()->allowed()->pluck('dofusdb_type_id')->all();
+                } catch (\Throwable) {
+                    $allowed = [];
+                }
+                if (!empty($allowed)) {
+                    $filters['typeIds'] = $allowed;
+                }
+            }
+        }
+
+        if ($entity === 'consumable') {
+            // Par défaut: typeIds consumables basés sur la config d'intégration (target_table=consumables).
+            if (!$hasExplicitType) {
+                $ids = $this->getConsumableDofusdbTypeIdsFromIntegrationConfig();
+                if (!empty($ids)) {
+                    $filters['typeIds'] = $ids;
+                }
+            }
+        }
+
+        if ($entity === 'equipment') {
+            // Par défaut: on exclut ressources + consumables pour éviter les mélanges.
+            if (!$hasExplicitType) {
+                $exclude = [];
+
+                try {
+                    $exclude = array_merge($exclude, ResourceType::query()->allowed()->pluck('dofusdb_type_id')->all());
+                } catch (\Throwable) {
+                    // ignore
+                }
+
+                $exclude = array_merge($exclude, $this->getConsumableDofusdbTypeIdsFromIntegrationConfig());
+                $exclude = array_values(array_unique(array_map('intval', $exclude)));
+
+                if (!empty($exclude)) {
+                    $filters['typeIdsNot'] = $exclude;
+                }
+            }
+        }
+
+        return $filters;
+    }
+
+    /**
+     * @return array<int,int>
+     */
+    private function getConsumableDofusdbTypeIdsFromIntegrationConfig(): array
+    {
+        try {
+            /** @var array<string,mixed> $cfg */
+            $cfg = require app_path('Services/Scrapping/DataIntegration/config.php');
+        } catch (\Throwable) {
+            return [];
+        }
+
+        $mapping = $cfg['dofusdb_mapping']['items_type_mapping'] ?? null;
+        if (!is_array($mapping)) {
+            return [];
+        }
+
+        $ids = [];
+        foreach ($mapping as $key => $entry) {
+            if (!is_array($entry)) continue;
+            if (($entry['target_table'] ?? null) !== 'consumables') continue;
+            $id = $entry['dofusdb_type_id'] ?? null;
+            if (is_int($id) || (is_string($id) && ctype_digit($id))) {
+                $ids[] = (int) $id;
+            }
+        }
+
+        return array_values(array_unique($ids));
     }
 }
 

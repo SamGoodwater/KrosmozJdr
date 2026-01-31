@@ -341,6 +341,50 @@ class ConfigDrivenDofusDbCollector
                     }
                     break;
 
+                case 'typeIds':
+                    if (is_array($value)) {
+                        $max = (int) ($supportedKeys[$key]['max'] ?? 5000);
+                        $ids = [];
+                        foreach ($value as $v) {
+                            if (is_int($v) || (is_string($v) && ctype_digit($v))) {
+                                $ids[] = (int) $v;
+                            }
+                        }
+                        $ids = array_values(array_unique($ids));
+                        if ($max > 0) {
+                            $ids = array_slice($ids, 0, $max);
+                        }
+                        if (!empty($ids)) {
+                            $q['typeId'] = ($q['typeId'] ?? []);
+                            if (is_array($q['typeId'])) {
+                                $q['typeId']['$in'] = $ids;
+                            }
+                        }
+                    }
+                    break;
+
+                case 'typeIdsNot':
+                    if (is_array($value)) {
+                        $max = (int) ($supportedKeys[$key]['max'] ?? 8000);
+                        $ids = [];
+                        foreach ($value as $v) {
+                            if (is_int($v) || (is_string($v) && ctype_digit($v))) {
+                                $ids[] = (int) $v;
+                            }
+                        }
+                        $ids = array_values(array_unique($ids));
+                        if ($max > 0) {
+                            $ids = array_slice($ids, 0, $max);
+                        }
+                        if (!empty($ids)) {
+                            $q['typeId'] = ($q['typeId'] ?? []);
+                            if (is_array($q['typeId'])) {
+                                $q['typeId']['$nin'] = $ids;
+                            }
+                        }
+                    }
+                    break;
+
                 case 'levelMin':
                     if (is_int($value) || (is_string($value) && ctype_digit($value))) {
                         $q['level'] = ($q['level'] ?? []);

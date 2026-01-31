@@ -3,8 +3,9 @@
  * Page Scrapping (wrapper)
  *
  * @description
- * La logique de scrapping est désormais centralisée dans `ScrappingSection`,
- * afin de permettre la réutilisation (page ou modal).
+ * La logique de scrapping de la page `/scrapping` est centralisée dans `ScrappingDashboard`.
+ * D'autres composants (ex: modal) peuvent réutiliser une logique similaire, mais cette page
+ * vise une UX "batch" complète (search → select → simulate/import + analyse des effets).
  */
 import { Head } from "@inertiajs/vue3";
 import { onMounted } from "vue";
@@ -13,6 +14,8 @@ import { usePageTitle } from "@/Composables/layout/usePageTitle";
 import Container from "@/Pages/Atoms/data-display/Container.vue";
 import ScrappingDashboard from "@/Pages/Organismes/scrapping/ScrappingDashboard.vue";
 import ResourceTypeReviewSection from "./components/ResourceTypeReviewSection.vue";
+import ItemTypeReviewSection from "./components/ItemTypeReviewSection.vue";
+import ConsumableTypeReviewSection from "./components/ConsumableTypeReviewSection.vue";
 
 const { setPageTitle } = usePageTitle();
 onMounted(() => setPageTitle("Gestion du Scrapping"));
@@ -41,5 +44,9 @@ if (import.meta?.hot) {
 
         <!-- UX spécifique aux resource_types -->
         <ResourceTypeReviewSection />
+
+       <!-- UX spécifique aux item_types / consumable_types -->
+       <ItemTypeReviewSection />
+       <ConsumableTypeReviewSection />
     </Container>
 </template>

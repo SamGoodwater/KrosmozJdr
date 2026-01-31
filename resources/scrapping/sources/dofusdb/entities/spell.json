@@ -71,7 +71,7 @@
     },
     {
       "key": "cost",
-      "from": { "path": "cost" },
+      "from": { "path": "levels.0.apCost" },
       "to": [{ "model": "spells", "field": "cost" }],
       "formatters": [
         { "name": "toInt", "args": {} },
@@ -80,7 +80,7 @@
     },
     {
       "key": "range",
-      "from": { "path": "range" },
+      "from": { "path": "levels.0.range" },
       "to": [{ "model": "spells", "field": "range" }],
       "formatters": [
         { "name": "toInt", "args": {} },
@@ -89,11 +89,19 @@
     },
     {
       "key": "area",
-      "from": { "path": "area" },
+      "from": { "path": "levels.0.effects.0.zoneDescr.shape" },
       "to": [{ "model": "spells", "field": "area" }],
       "formatters": [
-        { "name": "toInt", "args": {} },
-        { "name": "clampInt", "args": { "min": 0, "max": 50 } }
+        { "name": "nullableInt", "args": {} }
+      ]
+    },
+    {
+      "key": "effects_normalized_json",
+      "from": { "path": "levels.0.effects" },
+      "to": [{ "model": "spells", "field": "effect" }],
+      "formatters": [
+        { "name": "packDofusdbEffects", "args": { "sourceType": "spell_level", "includeRaw": true, "lang": "{lang}" } },
+        { "name": "jsonEncode", "args": { "pretty": false } }
       ]
     }
   ],

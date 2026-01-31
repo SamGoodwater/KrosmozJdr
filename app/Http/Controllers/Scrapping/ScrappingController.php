@@ -29,6 +29,7 @@ class ScrappingController extends Controller
         // Aliases (items DofusDB)
         'resource' => 30000,
         'consumable' => 30000,
+        'equipment' => 30000,
     ];
     public function __construct(
         private ScrappingOrchestrator $orchestrator,
@@ -95,6 +96,9 @@ class ScrappingController extends Controller
             'item' => 'Objet',
             'spell' => 'Sort',
             'panoply' => 'Panoplie',
+            'resource' => 'Ressource',
+            'consumable' => 'Consommable',
+            'equipment' => 'Équipement',
             default => ucfirst($type),
         };
     }
@@ -366,7 +370,7 @@ class ScrappingController extends Controller
         try {
             $request->validate([
                 'entities' => ['required', 'array', 'min:1'],
-                'entities.*.type' => ['required', 'string', 'in:class,monster,item,spell,panoply'],
+                'entities.*.type' => ['required', 'string', 'in:class,monster,item,spell,panoply,resource,consumable,equipment'],
                 'entities.*.id' => ['required', 'integer', 'min:1'],
             ]);
             

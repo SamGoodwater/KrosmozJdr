@@ -10,7 +10,7 @@ Le service `DataCollect` est responsable de la récupération de données brutes
 - **URL de base** : `https://api.dofusdb.fr`
 - **Langues supportées** : `fr`, `en`, `de`, `es`, `pt`
 - **Format de réponse** : JSON
-- **Limite par défaut** : 10 entités par requête
+- **Limite** : variable selon endpoint ; certains endpoints **capent** fréquemment à ~50 éléments/page.
 - **Pagination** : Supportée via `$skip` et `$limit`
 
 ### **Structure des réponses**

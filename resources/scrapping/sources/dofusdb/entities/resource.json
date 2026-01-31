@@ -1,8 +1,8 @@
 {
   "version": 1,
   "source": "dofusdb",
-  "entity": "item",
-  "label": "Objets",
+  "entity": "resource",
+  "label": "Ressources",
   "meta": { "maxId": 30000 },
   "endpoints": {
     "fetchOne": {
@@ -24,12 +24,11 @@
       { "key": "ids", "type": "number[]", "max": 500 },
       { "key": "name", "type": "string" },
       { "key": "typeId", "type": "number" },
-      { "key": "typeIds", "type": "number[]", "max": 5000 },
-      { "key": "typeIdsNot", "type": "number[]", "max": 8000 }
+      { "key": "typeIds", "type": "number[]", "max": 5000 }
     ]
   },
   "target": {
-    "krosmozEntity": "item",
+    "krosmozEntity": "resource",
     "primaryKey": { "sourceField": "id", "targetField": "dofusdb_id" },
     "autoUpdateField": "auto_update"
   },
@@ -98,7 +97,7 @@
       "key": "image",
       "from": { "path": "img" },
       "to": [{ "model": "items", "field": "image" }],
-      "formatters": [{ "name": "storeScrappedImage", "args": { "entityFolder": "items", "idPath": "id" } }]
+      "formatters": [{ "name": "storeScrappedImage", "args": { "entityFolder": "resources", "idPath": "id" } }]
     },
     {
       "key": "recipe",
@@ -126,3 +125,4 @@
     }
   ]
 }
+

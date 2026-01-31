@@ -110,6 +110,90 @@
       ]
     },
     {
+      "key": "pa",
+      "from": { "path": "grades.0.actionPoints" },
+      "to": [{ "model": "creatures", "field": "pa" }],
+      "formatters": [
+        { "name": "toInt", "args": {} },
+        { "name": "clampInt", "args": { "min": 0, "max": 20 } }
+      ]
+    },
+    {
+      "key": "pm",
+      "from": { "path": "grades.0.movementPoints" },
+      "to": [{ "model": "creatures", "field": "pm" }],
+      "formatters": [
+        { "name": "toInt", "args": {} },
+        { "name": "clampInt", "args": { "min": 0, "max": 20 } }
+      ]
+    },
+    {
+      "key": "kamas",
+      "from": { "path": "grades.0.kamas" },
+      "to": [{ "model": "creatures", "field": "kamas" }],
+      "formatters": [
+        { "name": "toInt", "args": {} },
+        { "name": "clampInt", "args": { "min": 0, "max": 9999999 } }
+      ]
+    },
+    {
+      "key": "po",
+      "from": { "path": "grades.0.bonusRange" },
+      "to": [{ "model": "creatures", "field": "po" }],
+      "formatters": [
+        { "name": "toInt", "args": {} },
+        { "name": "clampInt", "args": { "min": 0, "max": 50 } }
+      ]
+    },
+    {
+      "key": "dodge_pa",
+      "from": { "path": "grades.0.paDodge" },
+      "to": [{ "model": "creatures", "field": "dodge_pa" }],
+      "formatters": [{ "name": "nullableInt", "args": {} }]
+    },
+    {
+      "key": "dodge_pm",
+      "from": { "path": "grades.0.pmDodge" },
+      "to": [{ "model": "creatures", "field": "dodge_pm" }],
+      "formatters": [{ "name": "nullableInt", "args": {} }]
+    },
+    {
+      "key": "vitality",
+      "from": { "path": "grades.0.vitality" },
+      "to": [{ "model": "creatures", "field": "vitality" }],
+      "formatters": [{ "name": "nullableInt", "args": {} }]
+    },
+    {
+      "key": "res_neutre",
+      "from": { "path": "grades.0.neutralResistance" },
+      "to": [{ "model": "creatures", "field": "res_neutre" }],
+      "formatters": [{ "name": "nullableInt", "args": {} }]
+    },
+    {
+      "key": "res_terre",
+      "from": { "path": "grades.0.earthResistance" },
+      "to": [{ "model": "creatures", "field": "res_terre" }],
+      "formatters": [{ "name": "nullableInt", "args": {} }]
+    },
+    {
+      "key": "res_feu",
+      "from": { "path": "grades.0.fireResistance" },
+      "to": [{ "model": "creatures", "field": "res_feu" }],
+      "formatters": [{ "name": "nullableInt", "args": {} }]
+    },
+    {
+      "key": "res_air",
+      "from": { "path": "grades.0.airResistance" },
+      "to": [{ "model": "creatures", "field": "res_air" }],
+      "formatters": [{ "name": "nullableInt", "args": {} }]
+    },
+    {
+      "key": "res_eau",
+      "from": { "path": "grades.0.waterResistance" },
+      "to": [{ "model": "creatures", "field": "res_eau" }],
+      "formatters": [{ "name": "nullableInt", "args": {} }]
+    },
+    {
       "key": "image",
       "from": { "path": "img" },
       "to": [{ "model": "creatures", "field": "image" }],

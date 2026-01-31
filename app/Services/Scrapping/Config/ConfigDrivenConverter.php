@@ -17,7 +17,8 @@ use App\Models\Type\ResourceType;
 class ConfigDrivenConverter
 {
     public function __construct(
-        private FormatterRegistry $registry
+        private FormatterRegistry $registry,
+        private ?DofusDbEffectCatalog $effectCatalog = null
     ) {}
 
     /**
@@ -182,6 +183,10 @@ class ConfigDrivenConverter
             'mapSizeToKrosmoz' => $this->fmtMapSize((string) $value, (string) ($args['default'] ?? 'medium')),
             'mapDofusdbItemType' => $this->fmtMapDofusdbItemType($value),
             'mapDofusdbItemCategory' => $this->fmtMapDofusdbItemCategory($value),
+            'normalizeDofusdbEffects' => $this->fmtNormalizeDofusdbEffects($value, $args),
+            'mapDofusdbEffectsToKrosmozBonuses' => $this->fmtMapDofusdbEffectsToKrosmozBonuses($value, $args),
+            'packDofusdbEffects' => $this->fmtPackDofusdbEffects($value, $args),
+            'jsonEncode' => $this->fmtJsonEncode($value, $args),
             // storeScrappedImage: en mode side_effect, l'implémentation réelle sera dans l'intégration.
             // Ici, on renvoie simplement l'URL brute.
             'storeScrappedImage' => $this->fmtStoreScrappedImage($value),
@@ -234,6 +239,276 @@ class ConfigDrivenConverter
             return null;
         }
         return (string) $value;
+    }
+
+    /**
+     * Normalise une liste d'effets DofusDB (sorts/items) dans un format stable.
+     *
+     * @param mixed $value
+     * @param array<string,mixed> $args
+     * @return array<int,array<string,mixed>>
+     */
+    private function fmtNormalizeDofusdbEffects($value, array $args): array
+    {
+        if ($value === null) {
+            return [];
+        }
+        if (!is_array($value)) {
+            return [];
+        }
+
+        $sourceType = (string) ($args['sourceType'] ?? 'unknown');
+        $includeRaw = array_key_exists('includeRaw', $args) ? (bool) $args['includeRaw'] : true;
+
+        $out = [];
+        foreach ($value as $effect) {
+            if (!is_array($effect)) {
+                continue;
+            }
+
+            $effectId = $effect['effectId'] ?? ($effect['id'] ?? null);
+            $effectUid = $effect['effectUid'] ?? ($effect['uid'] ?? null);
+
+            $norm = [
+                'sourceType' => $sourceType,
+                'effectId' => is_numeric($effectId) ? (int) $effectId : null,
+                'effectUid' => is_numeric($effectUid) ? (int) $effectUid : null,
+            ];
+
+            // Champs communs (best effort, selon les structures DofusDB)
+            foreach ([
+                'order',
+                'targetId',
+                'targetMask',
+                'duration',
+                'delay',
+                'triggers',
+                'random',
+                'group',
+                'modificator',
+                'dispellable',
+                'effectElement',
+                'elementId',
+                'characteristic',
+                'characteristicOperator',
+            ] as $k) {
+                if (array_key_exists($k, $effect)) {
+                    $norm[$k] = $effect[$k];
+                }
+            }
+
+            // Valeurs numériques typiques d'items (from/to, diceNum/diceSide, ...)
+            foreach ([
+                'from',
+                'to',
+                'diceNum',
+                'diceSide',
+                'value',
+                'min',
+                'max',
+            ] as $k) {
+                if (array_key_exists($k, $effect)) {
+                    $norm[$k] = $effect[$k];
+                }
+            }
+
+            // Zone (sorts)
+            if (isset($effect['zoneDescr']) && is_array($effect['zoneDescr'])) {
+                $zone = $effect['zoneDescr'];
+                $norm['zone'] = [
+                    'shape' => $zone['shape'] ?? null,
+                    'param1' => $zone['param1'] ?? null,
+                    'param2' => $zone['param2'] ?? null,
+                    'cellIds' => $zone['cellIds'] ?? null,
+                    'raw' => $zone,
+                ];
+            }
+
+            if ($includeRaw) {
+                $norm['raw'] = $effect;
+            }
+
+            $out[] = $norm;
+        }
+
+        return $out;
+    }
+
+    /**
+     * Encode une valeur en JSON (utile pour stocker un array dans une colonne string).
+     *
+     * @param mixed $value
+     * @param array<string,mixed> $args
+     */
+    private function fmtJsonEncode($value, array $args): string
+    {
+        $pretty = (bool) ($args['pretty'] ?? false);
+        $flags = JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES;
+        if ($pretty) {
+            $flags |= JSON_PRETTY_PRINT;
+        }
+
+        $encoded = json_encode($value, $flags);
+        return $encoded === false ? 'null' : $encoded;
+    }
+
+    /**
+     * Mappe des effets DofusDB (instances) vers un payload "bonus" KrosmozJDR (JSON).
+     *
+     * @param mixed $value
+     * @param array<string,mixed> $args
+     * @return array<string,mixed>
+     */
+    private function fmtMapDofusdbEffectsToKrosmozBonuses($value, array $args): array
+    {
+        if (!is_array($value) || empty($value)) {
+            return [
+                'stats' => [],
+                'res_percent' => [],
+                'res_fixed' => [],
+                'damage_fixed' => [],
+                'unmapped' => [],
+            ];
+        }
+
+        $lang = (string) ($args['lang'] ?? 'fr');
+
+        $out = [
+            'stats' => [],
+            'res_percent' => [],
+            'res_fixed' => [],
+            'damage_fixed' => [],
+            'unmapped' => [],
+        ];
+
+        foreach ($value as $eff) {
+            if (!is_array($eff) || !isset($eff['effectId']) || !is_numeric($eff['effectId'])) {
+                continue;
+            }
+            $effectId = (int) $eff['effectId'];
+
+            $from = $eff['from'] ?? null;
+            $to = $eff['to'] ?? null;
+            $min = is_numeric($from) ? (int) $from : null;
+            $max = is_numeric($to) ? (int) $to : $min;
+
+            $meta = $this->effectCatalog?->get($effectId, $lang) ?? [];
+            $cat = isset($meta['category']) && is_numeric($meta['category']) ? (int) $meta['category'] : null;
+            $char = isset($meta['characteristic']) && is_numeric($meta['characteristic']) ? (int) $meta['characteristic'] : null;
+            $elem = isset($meta['elementId']) && is_numeric($meta['elementId']) ? (int) $meta['elementId'] : null;
+            $isPercent = isset($meta['isInPercent']) ? (bool) $meta['isInPercent'] : false;
+            $descFr = is_array($meta['description'] ?? null) ? (string) (($meta['description']['fr'] ?? '') ?: '') : '';
+
+            // 1) Stats principales
+            $statKey = match ($char) {
+                10 => 'strong',        // Force
+                15 => 'intel',         // Intelligence
+                14 => 'agi',           // Agilité
+                13 => 'chance',        // Chance
+                11 => 'vitality',      // Vitalité
+                12 => 'sagesse',       // Sagesse
+                default => null,
+            };
+            if ($statKey !== null && $min !== null) {
+                $out['stats'][$statKey] = $this->mergeRange($out['stats'][$statKey] ?? null, $min, $max);
+                continue;
+            }
+
+            // 2) Résistances % (IDs connus via /effects)
+            if ($isPercent && in_array($effectId, [210, 211, 212, 213, 214, 215, 216, 217, 218, 219], true) && $min !== null) {
+                $resKey = match ($effectId) {
+                    210, 215 => 'res_terre',
+                    211, 216 => 'res_eau',
+                    212, 217 => 'res_air',
+                    213, 218 => 'res_feu',
+                    214, 219 => 'res_neutre',
+                };
+                $out['res_percent'][$resKey] = $this->mergeRange($out['res_percent'][$resKey] ?? null, $min, $max);
+                continue;
+            }
+
+            // 3) Résistances fixes (IDs connus via /effects)
+            if (!$isPercent && in_array($effectId, [240, 241, 242, 243, 244, 245, 246, 247, 248, 249], true) && $min !== null) {
+                $resKey = match ($effectId) {
+                    240, 245 => 'res_fixe_terre',
+                    241, 246 => 'res_fixe_eau',
+                    242, 247 => 'res_fixe_air',
+                    243, 248 => 'res_fixe_feu',
+                    244, 249 => 'res_fixe_neutre',
+                };
+                $out['res_fixed'][$resKey] = $this->mergeRange($out['res_fixed'][$resKey] ?? null, $min, $max);
+                continue;
+            }
+
+            // 4) Dommages fixes élémentaires (heuristique)
+            // - cat=2 characteristic=0 et elementId 0..4 (neutre/terre/feu/eau/air)
+            if ($cat === 2 && $char === 0 && $elem !== null && $elem >= 0 && $elem <= 4 && $min !== null) {
+                $dmgKey = match ($elem) {
+                    0 => 'do_fixe_neutre',
+                    1 => 'do_fixe_terre',
+                    2 => 'do_fixe_feu',
+                    3 => 'do_fixe_eau',
+                    4 => 'do_fixe_air',
+                };
+                $out['damage_fixed'][$dmgKey] = $this->mergeRange($out['damage_fixed'][$dmgKey] ?? null, $min, $max);
+                continue;
+            }
+
+            $out['unmapped'][] = [
+                'effectId' => $effectId,
+                'min' => $min,
+                'max' => $max,
+                'meta' => [
+                    'category' => $cat,
+                    'characteristic' => $char,
+                    'elementId' => $elem,
+                    'isInPercent' => $isPercent,
+                    'description_fr' => $descFr,
+                ],
+            ];
+        }
+
+        return $out;
+    }
+
+    /**
+     * @param array{min:int,max:int}|null $existing
+     * @return array{min:int,max:int}
+     */
+    private function mergeRange($existing, int $min, ?int $max): array
+    {
+        $max = $max ?? $min;
+        if (!is_array($existing) || !isset($existing['min']) || !isset($existing['max'])) {
+            return ['min' => $min, 'max' => $max];
+        }
+        return [
+            'min' => min((int) $existing['min'], $min),
+            'max' => max((int) $existing['max'], $max),
+        ];
+    }
+
+    /**
+     * Pack "couche A + couche B" dans un seul objet JSON.
+     *
+     * @param mixed $value
+     * @param array<string,mixed> $args
+     * @return array{normalized: array<int,array<string,mixed>>, bonuses: array<string,mixed>}
+     */
+    private function fmtPackDofusdbEffects($value, array $args): array
+    {
+        $normalized = $this->fmtNormalizeDofusdbEffects($value, [
+            'sourceType' => (string) ($args['sourceType'] ?? 'unknown'),
+            'includeRaw' => array_key_exists('includeRaw', $args) ? (bool) $args['includeRaw'] : true,
+        ]);
+
+        $bonuses = $this->fmtMapDofusdbEffectsToKrosmozBonuses($value, [
+            'lang' => (string) ($args['lang'] ?? 'fr'),
+        ]);
+
+        return [
+            'normalized' => $normalized,
+            'bonuses' => $bonuses,
+        ];
     }
 
     /**

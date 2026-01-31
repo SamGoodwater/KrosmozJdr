@@ -93,7 +93,7 @@ Route::prefix('scrapping')->group(function () {
 
     Route::get('/preview/{type}/{id}', [App\Http\Controllers\Scrapping\ScrappingController::class, 'preview'])
         ->name('scrapping.preview')
-        ->where('type', 'class|monster|item|spell|panoply')
+        ->where('type', 'class|monster|item|spell|panoply|resource|consumable|equipment')
         ->whereNumber('id');
 
     Route::prefix('import')->group(function () {
@@ -171,6 +171,33 @@ Route::middleware(['web', 'auth'])->prefix('scrapping/resource-types')->group(fu
         ->name('scrapping.resource-types.pending-items');
     Route::post('/{resourceType}/replay', [App\Http\Controllers\Scrapping\ResourceTypeRegistryController::class, 'replayPending'])
         ->name('scrapping.resource-types.replay');
+});
+
+/*
+|--------------------------------------------------------------------------
+| Registry des typeId DofusDB (Item types / Consumable types)
+|--------------------------------------------------------------------------
+|
+| Endpoints pour valider/blacklister les nouveaux typeId détectés
+| lors du scrapping d'items/équipements/consommables.
+|
+*/
+Route::middleware(['web', 'auth'])->prefix('scrapping/item-types')->group(function () {
+    Route::get('/', [App\Http\Controllers\Scrapping\ItemTypeRegistryController::class, 'index'])
+        ->name('scrapping.item-types.index');
+    Route::get('/pending', [App\Http\Controllers\Scrapping\ItemTypeRegistryController::class, 'pending'])
+        ->name('scrapping.item-types.pending');
+    Route::patch('/{itemType}/decision', [App\Http\Controllers\Scrapping\ItemTypeRegistryController::class, 'updateDecision'])
+        ->name('scrapping.item-types.decision');
+});
+
+Route::middleware(['web', 'auth'])->prefix('scrapping/consumable-types')->group(function () {
+    Route::get('/', [App\Http\Controllers\Scrapping\ConsumableTypeRegistryController::class, 'index'])
+        ->name('scrapping.consumable-types.index');
+    Route::get('/pending', [App\Http\Controllers\Scrapping\ConsumableTypeRegistryController::class, 'pending'])
+        ->name('scrapping.consumable-types.pending');
+    Route::patch('/{consumableType}/decision', [App\Http\Controllers\Scrapping\ConsumableTypeRegistryController::class, 'updateDecision'])
+        ->name('scrapping.consumable-types.decision');
 });
 
 /*

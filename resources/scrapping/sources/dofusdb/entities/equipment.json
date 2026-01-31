@@ -1,8 +1,8 @@
 {
   "version": 1,
   "source": "dofusdb",
-  "entity": "item",
-  "label": "Objets",
+  "entity": "equipment",
+  "label": "Équipements",
   "meta": { "maxId": 30000 },
   "endpoints": {
     "fetchOne": {
@@ -126,3 +126,4 @@
     }
   ]
 }
+

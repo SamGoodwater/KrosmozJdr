@@ -5,10 +5,12 @@ namespace App\Services\Scrapping\Orchestrator;
 use App\Services\Scrapping\Config\ScrappingConfigLoader;
 use App\Services\Scrapping\Config\FormatterRegistry;
 use App\Services\Scrapping\Config\ConfigDrivenConverter;
+use App\Services\Scrapping\Config\DofusDbEffectCatalog;
 use App\Services\Scrapping\DataCollect\DataCollectService;
 use App\Services\Scrapping\DataConversion\DataConversionService;
 use App\Services\Scrapping\DataIntegration\DataIntegrationService;
 use App\Models\Entity\Panoply;
+use App\Services\Scrapping\Http\DofusDbClient;
 use Illuminate\Support\Facades\Log;
 
 /**
@@ -57,6 +59,18 @@ class ScrappingOrchestrator
             'convert' => 'convertResource',
             'import' => 'importResource',
         ],
+        // "consumable" est aussi un item DofusDB (endpoint /items).
+        'consumable' => [
+            'collect' => 'collectConsumable',
+            'convert' => 'convertConsumable',
+            'import' => 'importConsumable',
+        ],
+        // "equipment" = items hors resources/consumables (par défaut).
+        'equipment' => [
+            'collect' => 'collectEquipment',
+            'convert' => 'convertEquipment',
+            'import' => 'importEquipment',
+        ],
     ];
     /**
      * Constructeur du service d'orchestration
@@ -80,7 +94,9 @@ class ScrappingOrchestrator
         try {
             $entityCfg = $this->configLoader->loadEntity('dofusdb', $normalizedType);
             $registry = FormatterRegistry::fromDefaultPath();
-            $converter = new ConfigDrivenConverter($registry);
+            $client = app(DofusDbClient::class);
+            $effects = new DofusDbEffectCatalog($client);
+            $converter = new ConfigDrivenConverter($registry, $effects);
 
             return $converter->convert($entityCfg, $rawData, [
                 'lang' => 'fr',
@@ -461,7 +477,7 @@ class ScrappingOrchestrator
      */
     public function convertResource(array $rawData): array
     {
-        return $this->dataConversionService->convertItem($rawData);
+        return $this->convertUsingConfigOrLegacy('resource', $rawData);
     }
 
     /**
@@ -509,6 +525,145 @@ class ScrappingOrchestrator
             return [
                 'success' => false,
                 'message' => 'Erreur lors de l\'import de la ressource',
+                'error' => $e->getMessage(),
+                'data' => ['dofusdb_id' => $dofusdbId],
+            ];
+        }
+    }
+
+    /**
+     * Collecte un consommable depuis DofusDB (via /items/{id}) et valide son type.
+     */
+    public function collectConsumable(int $dofusdbId): array
+    {
+        $raw = $this->dataCollectService->collectItem($dofusdbId, false, []);
+        $typeId = (int) ($raw['typeId'] ?? 0);
+
+        $allowed = $this->getConsumableDofusdbTypeIdsFromIntegrationConfig();
+        if (!$typeId || empty($allowed) || !in_array($typeId, $allowed, true)) {
+            throw new \Exception("L'item DofusDB #{$dofusdbId} n'est pas un consommable autorisé (typeId={$typeId}).");
+        }
+
+        return $raw;
+    }
+
+    /**
+     * Conversion d'un consommable (même pipeline que item, mais config dédiée).
+     */
+    public function convertConsumable(array $rawData): array
+    {
+        return $this->convertUsingConfigOrLegacy('consumable', $rawData);
+    }
+
+    /**
+     * Import d'un consommable (collecte → conversion → intégration).
+     */
+    public function importConsumable(int $dofusdbId, array $options = []): array
+    {
+        Log::info('Début import consommable', ['dofusdb_id' => $dofusdbId, 'options' => $options]);
+
+        try {
+            $rawData = $this->collectConsumable($dofusdbId);
+            $convertedData = $this->convertConsumable($rawData);
+
+            if ((bool) ($options['validate_only'] ?? false)) {
+                return [
+                    'success' => true,
+                    'message' => 'Validation uniquement (sans intégration)',
+                    'data' => [
+                        'action' => 'validated',
+                        'raw' => $rawData,
+                        'converted' => $convertedData,
+                    ],
+                ];
+            }
+
+            $result = $this->dataIntegrationService->integrateItem($convertedData, $options);
+
+            return [
+                'success' => true,
+                'message' => 'Consommable importé avec succès',
+                'data' => $result,
+            ];
+        } catch (\Throwable $e) {
+            Log::error('Erreur import consommable', ['dofusdb_id' => $dofusdbId, 'error' => $e->getMessage()]);
+            return [
+                'success' => false,
+                'message' => 'Erreur lors de l\'import du consommable',
+                'error' => $e->getMessage(),
+                'data' => ['dofusdb_id' => $dofusdbId],
+            ];
+        }
+    }
+
+    /**
+     * Collecte un équipement depuis DofusDB (via /items/{id}) et exclut ressources/consumables.
+     */
+    public function collectEquipment(int $dofusdbId): array
+    {
+        $raw = $this->dataCollectService->collectItem($dofusdbId, false, []);
+        $typeId = (int) ($raw['typeId'] ?? 0);
+
+        if (!$typeId) {
+            throw new \Exception("Impossible de déterminer le typeId de l'item DofusDB #{$dofusdbId}.");
+        }
+
+        // Exclure ressources (whitelist DB) + types consommables (config d'intégration)
+        if ($this->dataCollectService->isAllowedResourceTypeId($typeId)) {
+            throw new \Exception("L'item DofusDB #{$dofusdbId} est une ressource (typeId={$typeId}).");
+        }
+
+        $consumableTypeIds = $this->getConsumableDofusdbTypeIdsFromIntegrationConfig();
+        if (!empty($consumableTypeIds) && in_array($typeId, $consumableTypeIds, true)) {
+            throw new \Exception("L'item DofusDB #{$dofusdbId} est un consommable (typeId={$typeId}).");
+        }
+
+        return $raw;
+    }
+
+    /**
+     * Conversion d'un équipement (config dédiée).
+     */
+    public function convertEquipment(array $rawData): array
+    {
+        return $this->convertUsingConfigOrLegacy('equipment', $rawData);
+    }
+
+    /**
+     * Import d'un équipement (collecte → conversion → intégration).
+     */
+    public function importEquipment(int $dofusdbId, array $options = []): array
+    {
+        Log::info('Début import équipement', ['dofusdb_id' => $dofusdbId, 'options' => $options]);
+
+        try {
+            $rawData = $this->collectEquipment($dofusdbId);
+            $convertedData = $this->convertEquipment($rawData);
+
+            if ((bool) ($options['validate_only'] ?? false)) {
+                return [
+                    'success' => true,
+                    'message' => 'Validation uniquement (sans intégration)',
+                    'data' => [
+                        'action' => 'validated',
+                        'raw' => $rawData,
+                        'converted' => $convertedData,
+                    ],
+                ];
+            }
+
+            $result = $this->dataIntegrationService->integrateItem($convertedData, $options);
+
+            return [
+                'success' => true,
+                'message' => 'Équipement importé avec succès',
+                'data' => $result,
+            ];
+        } catch (\Throwable $e) {
+            Log::error('Erreur import équipement', ['dofusdb_id' => $dofusdbId, 'error' => $e->getMessage()]);
+            return [
+                'success' => false,
+                'message' => 'Erreur lors de l\'import de l\'équipement',
                 'error' => $e->getMessage(),
                 'data' => ['dofusdb_id' => $dofusdbId],
             ];
@@ -703,7 +858,14 @@ class ScrappingOrchestrator
         $methods = $this->getEntityMethods($normalizedType);
 
         try {
-            $rawData = $this->dataCollectService->{$methods['collect']}($dofusdbId);
+            $collectMethod = $methods['collect'];
+            if (method_exists($this->dataCollectService, $collectMethod)) {
+                $rawData = $this->dataCollectService->{$collectMethod}($dofusdbId);
+            } elseif (method_exists($this, $collectMethod)) {
+                $rawData = $this->{$collectMethod}($dofusdbId);
+            } else {
+                throw new \Exception("Méthode de collecte introuvable: {$collectMethod}");
+            }
             $convertedData = $this->convertUsingConfigOrLegacy($normalizedType, $rawData);
 
             $existing = $this->dataIntegrationService->findExistingEntity($normalizedType, $convertedData);
@@ -851,5 +1013,35 @@ class ScrappingOrchestrator
         }
 
         return self::ENTITY_METHODS[$normalized];
+    }
+
+    /**
+     * @return array<int,int>
+     */
+    private function getConsumableDofusdbTypeIdsFromIntegrationConfig(): array
+    {
+        try {
+            /** @var array<string,mixed> $cfg */
+            $cfg = require app_path('Services/Scrapping/DataIntegration/config.php');
+        } catch (\Throwable) {
+            return [];
+        }
+
+        $mapping = $cfg['dofusdb_mapping']['items_type_mapping'] ?? null;
+        if (!is_array($mapping)) {
+            return [];
+        }
+
+        $ids = [];
+        foreach ($mapping as $entry) {
+            if (!is_array($entry)) continue;
+            if (($entry['target_table'] ?? null) !== 'consumables') continue;
+            $id = $entry['dofusdb_type_id'] ?? null;
+            if (is_int($id) || (is_string($id) && ctype_digit($id))) {
+                $ids[] = (int) $id;
+            }
+        }
+
+        return array_values(array_unique($ids));
     }
 }

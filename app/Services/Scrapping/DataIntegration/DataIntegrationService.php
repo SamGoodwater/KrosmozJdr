@@ -285,6 +285,45 @@ class DataIntegrationService
                 ),
                 'created_by' => $this->getSystemUserId() // Utilisateur système pour imports automatiques
             ];
+
+            // Champs optionnels : on ne les écrit que s'ils sont fournis par la conversion
+            // (évite d'écraser une valeur existante avec un 0 / null "par défaut").
+            if (array_key_exists('pa', $creatureData) && $creatureData['pa'] !== null) {
+                $creatureAttributes['pa'] = (string) $creatureData['pa'];
+            }
+            if (array_key_exists('pm', $creatureData) && $creatureData['pm'] !== null) {
+                $creatureAttributes['pm'] = (string) $creatureData['pm'];
+            }
+            if (array_key_exists('kamas', $creatureData) && $creatureData['kamas'] !== null) {
+                $creatureAttributes['kamas'] = (string) $creatureData['kamas'];
+            }
+            if (array_key_exists('po', $creatureData) && $creatureData['po'] !== null) {
+                $creatureAttributes['po'] = (string) $creatureData['po'];
+            }
+            if (array_key_exists('dodge_pa', $creatureData) && $creatureData['dodge_pa'] !== null) {
+                $creatureAttributes['dodge_pa'] = (string) $creatureData['dodge_pa'];
+            }
+            if (array_key_exists('dodge_pm', $creatureData) && $creatureData['dodge_pm'] !== null) {
+                $creatureAttributes['dodge_pm'] = (string) $creatureData['dodge_pm'];
+            }
+            if (array_key_exists('vitality', $creatureData) && $creatureData['vitality'] !== null) {
+                $creatureAttributes['vitality'] = (string) $creatureData['vitality'];
+            }
+            if (array_key_exists('res_neutre', $creatureData) && $creatureData['res_neutre'] !== null) {
+                $creatureAttributes['res_neutre'] = (string) $creatureData['res_neutre'];
+            }
+            if (array_key_exists('res_terre', $creatureData) && $creatureData['res_terre'] !== null) {
+                $creatureAttributes['res_terre'] = (string) $creatureData['res_terre'];
+            }
+            if (array_key_exists('res_feu', $creatureData) && $creatureData['res_feu'] !== null) {
+                $creatureAttributes['res_feu'] = (string) $creatureData['res_feu'];
+            }
+            if (array_key_exists('res_air', $creatureData) && $creatureData['res_air'] !== null) {
+                $creatureAttributes['res_air'] = (string) $creatureData['res_air'];
+            }
+            if (array_key_exists('res_eau', $creatureData) && $creatureData['res_eau'] !== null) {
+                $creatureAttributes['res_eau'] = (string) $creatureData['res_eau'];
+            }
             
             if ($existingCreature) {
                 // Mise à jour de la créature existante

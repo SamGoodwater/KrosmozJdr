@@ -51,6 +51,10 @@ class ConsumableType extends Model
     public const STATE_PLAYABLE = 'playable';
     public const STATE_ARCHIVED = 'archived';
 
+    public const DECISION_PENDING = 'pending';
+    public const DECISION_ALLOWED = 'allowed';
+    public const DECISION_BLOCKED = 'blocked';
+
     /**
      * The attributes that are mass assignable.
      *
@@ -58,6 +62,10 @@ class ConsumableType extends Model
      */
     protected $fillable = [
         'name',
+        'dofusdb_type_id',
+        'decision',
+        'seen_count',
+        'last_seen_at',
         'state',
         'read_level',
         'write_level',
@@ -72,7 +80,89 @@ class ConsumableType extends Model
     protected $casts = [
         'read_level' => 'integer',
         'write_level' => 'integer',
+        'dofusdb_type_id' => 'integer',
+        'seen_count' => 'integer',
+        'last_seen_at' => 'datetime',
     ];
+
+    /**
+     * Scope: types explicitement autorisés (whitelist).
+     */
+    public function scopeAllowed($query)
+    {
+        return $query->where('decision', self::DECISION_ALLOWED);
+    }
+
+    /**
+     * Scope: types en attente de validation UX.
+     */
+    public function scopePending($query)
+    {
+        return $query->where('decision', self::DECISION_PENDING);
+    }
+
+    /**
+     * Scope: types bloqués (blacklist).
+     */
+    public function scopeBlocked($query)
+    {
+        return $query->where('decision', self::DECISION_BLOCKED);
+    }
+
+    /**
+     * Indique si un typeId DofusDB est explicitement autorisé en base.
+     *
+     * Comportement:
+     * - Si le type n'existe pas encore, il est créé en `decision=pending` et la méthode retourne false.
+     */
+    public static function isDofusdbTypeAllowed(int $typeId): bool
+    {
+        $type = static::where('dofusdb_type_id', $typeId)->first();
+
+        if (!$type) {
+            static::touchDofusdbType($typeId);
+            return false;
+        }
+
+        return $type->decision === self::DECISION_ALLOWED;
+    }
+
+    /**
+     * Enregistre/actualise un typeId DofusDB détecté (pour revue dans le dashboard).
+     *
+     * @param int $typeId
+     * @param string|null $label Libellé optionnel pour initialiser ou améliorer `name`.
+     * @return static
+     */
+    public static function touchDofusdbType(int $typeId, ?string $label = null): static
+    {
+        $placeholderName = "DofusDB type #{$typeId}";
+        $name = $label ?: $placeholderName;
+
+        /** @var static $type */
+        $type = static::firstOrCreate(
+            ['dofusdb_type_id' => $typeId],
+            [
+                'name' => $name,
+                'usable' => 0,
+                'is_visible' => 'guest',
+                'decision' => self::DECISION_PENDING,
+                'seen_count' => 0,
+                'created_by' => User::getSystemUser()?->id,
+            ]
+        );
+
+        // Si on a un meilleur label et que le nom actuel est un placeholder, on remplace
+        if ($label && $type->name === $placeholderName) {
+            $type->name = $label;
+        }
+
+        $type->seen_count = (int) ($type->seen_count ?? 0) + 1;
+        $type->last_seen_at = now();
+        $type->save();
+
+        return $type;
+    }
 
     /**
      * Get the user that created the consumable type.

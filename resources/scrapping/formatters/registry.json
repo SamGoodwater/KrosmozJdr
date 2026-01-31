@@ -60,6 +60,30 @@
       "type": "side_effect",
       "argsSchema": { "entityFolder": "string", "idPath": "string" },
       "description": "Télécharge/stocke une image distante selon la config scrapping.images."
+    },
+    {
+      "name": "normalizeDofusdbEffects",
+      "type": "pure",
+      "argsSchema": { "sourceType": "string", "includeRaw": "boolean" },
+      "description": "Normalise une liste d'effets DofusDB (sorts/items) dans un format stable (EffectInstance)."
+    },
+    {
+      "name": "jsonEncode",
+      "type": "pure",
+      "argsSchema": { "pretty": "boolean" },
+      "description": "Encode une valeur en JSON (utile pour stocker un array dans une colonne string)."
+    },
+    {
+      "name": "mapDofusdbEffectsToKrosmozBonuses",
+      "type": "pure",
+      "argsSchema": { "lang": "string" },
+      "description": "Mappe des instances d'effets DofusDB (items/spell-levels) vers un payload bonus KrosmozJDR (stats, résistances, dommages)."
+    },
+    {
+      "name": "packDofusdbEffects",
+      "type": "pure",
+      "argsSchema": { "sourceType": "string", "includeRaw": "boolean", "lang": "string" },
+      "description": "Pack couche A (effects normalisés) + couche B (bonus Krosmoz) dans un objet unique."
     }
   ]
 }
