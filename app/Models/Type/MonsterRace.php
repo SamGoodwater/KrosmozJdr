@@ -12,6 +12,7 @@ use App\Models\Entity\Monster;
  * 
  *
  * @property int $id
+ * @property int|null $dofusdb_race_id
  * @property string $name
  * @property string $state
  * @property int $read_level
@@ -62,6 +63,7 @@ class MonsterRace extends Model
      * @var list<string>
      */
     protected $fillable = [
+        'dofusdb_race_id',
         'name',
         'state',
         'read_level',
@@ -78,7 +80,40 @@ class MonsterRace extends Model
     protected $casts = [
         'read_level' => 'integer',
         'write_level' => 'integer',
+        'dofusdb_race_id' => 'integer',
     ];
+
+    /**
+     * Enregistre/actualise une race DofusDB vue pendant le scrapping.
+     */
+    public static function touchDofusdbRace(int $dofusdbRaceId, ?string $name = null): void
+    {
+        $dofusdbRaceId = (int) $dofusdbRaceId;
+        if ($dofusdbRaceId === 0) return;
+
+        try {
+            $model = self::query()->where('dofusdb_race_id', $dofusdbRaceId)->first();
+            if (!$model) {
+                $model = new self();
+                $model->dofusdb_race_id = $dofusdbRaceId;
+                $model->name = $name ?: ("DofusDB race #{$dofusdbRaceId}");
+                $model->state = self::STATE_DRAFT;
+                $model->read_level = 0;
+                $model->write_level = 3;
+                $model->created_by = null;
+                $model->id_super_race = null;
+                $model->save();
+                return;
+            }
+
+            if (is_string($name) && $name !== '' && $model->name !== $name) {
+                $model->name = $name;
+                $model->save();
+            }
+        } catch (\Throwable) {
+            // best effort
+        }
+    }
 
     /**
      * Get the user that created the monster race.

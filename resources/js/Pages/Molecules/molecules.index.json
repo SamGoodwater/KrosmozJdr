@@ -2300,5 +2300,48 @@
       }
     ],
     "file": "action/Modal.vue"
+  },
+  {
+    "name": "ConfirmModal",
+    "description": "ConfirmModal (Molecule)",
+    "props": [
+      {
+        "name": "open",
+        "type": "Boolean",
+        "desc": ""
+      },
+      {
+        "name": "title",
+        "type": "String",
+        "desc": ""
+      },
+      {
+        "name": "message",
+        "type": "String",
+        "desc": ""
+      },
+      {
+        "name": "confirmLabel",
+        "type": "String",
+        "desc": ""
+      },
+      {
+        "name": "cancelLabel",
+        "type": "String",
+        "desc": ""
+      },
+      {
+        "name": "confirmColor",
+        "type": "String",
+        "desc": "- couleur Btn (ex: 'error', 'primary')"
+      },
+      {
+        "name": "confirmIcon",
+        "type": "String",
+        "desc": "- icône FontAwesome (ex: 'fa-solid fa-trash')"
+      }
+    ],
+    "slots": [],
+    "file": "action/ConfirmModal.vue"
   }
 ]

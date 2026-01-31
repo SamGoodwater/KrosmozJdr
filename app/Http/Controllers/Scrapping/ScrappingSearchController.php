@@ -12,9 +12,14 @@ use App\Models\Entity\Resource;
 use App\Models\Entity\Spell;
 use App\Models\Type\ConsumableType;
 use App\Models\Type\ItemType;
+use App\Services\Scrapping\Catalog\DofusDbMonsterRaceNameResolver;
 use App\Models\Type\ResourceType;
 use App\Services\Scrapping\Config\ScrappingConfigLoader;
+use App\Services\Scrapping\Constants\EntityLimits;
 use App\Services\Scrapping\DataCollect\ConfigDrivenDofusDbCollector;
+use App\Services\Scrapping\DataCollect\ItemEntityTypeFilterService;
+use App\Services\Scrapping\DataCollect\MonsterRaceFilterService;
+use App\Services\Scrapping\Registry\TypeRegistryBatchTouchService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -31,6 +36,10 @@ class ScrappingSearchController extends Controller
     public function __construct(
         private ScrappingConfigLoader $configLoader,
         private ConfigDrivenDofusDbCollector $collector,
+        private ItemEntityTypeFilterService $itemEntityTypeFilters,
+        private MonsterRaceFilterService $monsterRaceFilters,
+        private TypeRegistryBatchTouchService $typeRegistryBatchTouch,
+        private DofusDbMonsterRaceNameResolver $monsterRaceNameResolver,
     ) {}
 
     public function search(Request $request, string $entity): JsonResponse
@@ -49,18 +58,38 @@ class ScrappingSearchController extends Controller
         }
 
         $filters = $this->extractFilters($request);
-        $filters = $this->applyEntityDefaults($entity, $filters);
-        $options = $this->extractOptions($request);
+        $typeMode = $this->extractTypeMode($request);
+        $filters = $this->applyEntityDefaultsWithMode($entity, $filters, $typeMode);
+
+        // Monstres: race_mode (all/allowed/selected) -> injecter raceIds par défaut si besoin.
+        if (strtolower($entity) === 'monster') {
+            $raceMode = $this->extractRaceMode($request);
+            $filters = $this->monsterRaceFilters->applyDefaults($filters, $raceMode);
+        }
+
+        $options = $this->extractOptions($request, $entity);
 
         $result = $this->collector->fetchManyResult($entity, $filters, $options);
         $items = $this->withExistsFlag($entity, $result['items']);
         $items = $this->withTypeLabelsAndRegistry($entity, $items);
+        $items = $this->withMonsterRaceLabel($entity, $items);
+
+        // Enrichir meta avec pagination "page/per_page" si utilisée
+        $meta = $result['meta'];
+        $pagination = $this->extractPagePagination($request);
+        if ($pagination !== null) {
+            $meta['page'] = $pagination['page'];
+            $meta['per_page'] = $pagination['per_page'];
+            if (isset($meta['total']) && is_int($meta['total']) && $meta['total'] > 0) {
+                $meta['total_pages'] = (int) ceil($meta['total'] / max(1, $pagination['per_page']));
+            }
+        }
 
         return response()->json([
             'success' => true,
             'data' => [
                 'items' => $items,
-                'meta' => $result['meta'],
+                'meta' => $meta,
                 'query' => [
                     'filters' => $filters,
                     'options' => $options,
@@ -103,6 +132,17 @@ class ScrappingSearchController extends Controller
             }
         }
 
+        // raceIds peut être "1,2,3" ou ["1","2"]
+        if ($request->has('raceIds')) {
+            $raceIds = $request->query('raceIds');
+            if (is_string($raceIds)) {
+                $parts = array_filter(array_map('trim', explode(',', $raceIds)));
+                $filters['raceIds'] = $parts;
+            } elseif (is_array($raceIds)) {
+                $filters['raceIds'] = $raceIds;
+            }
+        }
+
         // ids peut être "1,2,3" ou ["1","2"]
         if ($request->has('ids')) {
             $ids = $request->query('ids');
@@ -115,6 +155,22 @@ class ScrappingSearchController extends Controller
         }
 
         return $filters;
+    }
+
+    private function extractRaceMode(Request $request): string
+    {
+        $m = $request->query('race_mode');
+        if (!is_string($m) || $m === '') {
+            return MonsterRaceFilterService::RACE_MODE_ALLOWED;
+        }
+        $m = strtolower(trim($m));
+        return in_array($m, [
+            MonsterRaceFilterService::RACE_MODE_ALL,
+            MonsterRaceFilterService::RACE_MODE_ALLOWED,
+            MonsterRaceFilterService::RACE_MODE_SELECTED,
+        ], true)
+            ? $m
+            : MonsterRaceFilterService::RACE_MODE_ALLOWED;
     }
 
     /**
@@ -229,7 +285,26 @@ class ScrappingSearchController extends Controller
             $byTypeId = [];
         }
 
-        // 3) Enrichir items + auto-touch des types absents
+        // 3) Auto-touch des types absents (batch)
+        $knownIds = array_map('intval', array_keys($byTypeId));
+        $missing = array_values(array_diff($typeIds, $knownIds));
+        if (!empty($missing)) {
+            try {
+                $this->typeRegistryBatchTouch->touchMany($registry, $missing);
+                /** @var class-string $registry */
+                $touched = $registry::query()->whereIn('dofusdb_type_id', $missing)->get();
+                foreach ($touched as $row) {
+                    $id = is_numeric($row->dofusdb_type_id ?? null) ? (int) $row->dofusdb_type_id : 0;
+                    if ($id > 0) {
+                        $byTypeId[$id] = $row;
+                    }
+                }
+            } catch (\Throwable) {
+                // ignore, best-effort
+            }
+        }
+
+        // 4) Enrichir items
         foreach ($items as $i => $it) {
             if (!is_array($it)) continue;
 
@@ -242,11 +317,7 @@ class ScrappingSearchController extends Controller
 
             try {
                 $typeModel = $byTypeId[$typeId] ?? null;
-                if (!$typeModel) {
-                    /** @var class-string $registry */
-                    $typeModel = $registry::touchDofusdbType($typeId);
-                    $byTypeId[$typeId] = $typeModel;
-                }
+                if (!$typeModel) continue;
 
                 $items[$i]['typeName'] = is_string($typeModel->name ?? null) ? (string) $typeModel->name : null;
                 $items[$i]['typeDecision'] = is_string($typeModel->decision ?? null) ? (string) $typeModel->decision : null;
@@ -262,9 +333,48 @@ class ScrappingSearchController extends Controller
     }
 
     /**
+     * Enrichit les monstres avec `raceId` + `raceName`.
+     *
+     * DofusDB renvoie `race` (int). L'UI Krosmoz préfère `raceId` et surtout le nom.
+     *
+     * @param string $entity
+     * @param array<int, array<string,mixed>> $items
+     * @return array<int, array<string,mixed>>
+     */
+    private function withMonsterRaceLabel(string $entity, array $items): array
+    {
+        if (strtolower($entity) !== 'monster') {
+            return $items;
+        }
+
+        $lang = (string) config('scrapping.data_collect.default_language', 'fr');
+
+        foreach ($items as $i => $it) {
+            if (!is_array($it)) continue;
+            $race = $it['race'] ?? ($it['raceId'] ?? null);
+            if (!(is_int($race) || (is_string($race) && preg_match('/^-?\d+$/', $race)))) {
+                continue;
+            }
+            $raceId = (int) $race;
+            $items[$i]['raceId'] = $raceId;
+
+            try {
+                $name = $this->monsterRaceNameResolver->fetchName($raceId, $lang, false);
+                $items[$i]['raceName'] = $name ?: null;
+                // registry local (validation via `state`)
+                \App\Models\Type\MonsterRace::touchDofusdbRace($raceId, $name ?: null);
+            } catch (\Throwable) {
+                $items[$i]['raceName'] = null;
+            }
+        }
+
+        return $items;
+    }
+
+    /**
      * @return array{skip_cache?:bool, limit?:int, max_pages?:int, max_items?:int, start_skip?:int}
      */
-    private function extractOptions(Request $request): array
+    private function extractOptions(Request $request, string $entity): array
     {
         $options = [];
 
@@ -282,19 +392,105 @@ class ScrappingSearchController extends Controller
             $options['start_skip'] = max(0, $startSkip);
         }
 
-        if ($request->has('max_pages')) {
-            $maxPages = $request->integer('max_pages');
-            // 0 = illimité
-            $options['max_pages'] = max(0, min(200, $maxPages));
+        // Pagination "page/per_page" (prioritaire sur l'usage manuel limit/offset si fourni)
+        $pagePagination = $this->extractPagePagination($request);
+        if ($pagePagination !== null) {
+            $perPage = $pagePagination['per_page'];
+            $page = $pagePagination['page'];
+
+            if (!$request->has('start_skip')) {
+                $options['start_skip'] = max(0, ($page - 1) * $perPage);
+            }
+            if (!$request->has('limit')) {
+                $options['limit'] = $perPage;
+            }
+            // Important: un "bloc" = per_page items, même si DofusDB cappe à 50.
+            if (!$request->has('max_items')) {
+                $options['max_items'] = $perPage;
+            }
         }
 
-        if ($request->has('max_items')) {
+        $entityKey = strtolower($entity);
+        $cap = EntityLimits::capFor($entityKey, 20000);
+
+        $hasMaxItems = $request->has('max_items');
+        $derivedMaxItems = false;
+        if ($hasMaxItems) {
             $maxItems = $request->integer('max_items');
-            // 0 = illimité
-            $options['max_items'] = max(0, min(20000, $maxItems));
+            // 0 = "tout" (borné par cap entité)
+            if ($maxItems <= 0) {
+                $options['max_items'] = $cap;
+            } else {
+                $options['max_items'] = max(1, min($cap, $maxItems));
+            }
+        }
+
+        // Si max_items n'est pas fourni, on veut quand même pouvoir dépasser le cap DofusDB=50
+        // pour atteindre le "limit" demandé (ex: limit=100 => 2 pages).
+        if (!$hasMaxItems) {
+            $want = isset($options['limit']) ? (int) $options['limit'] : 50;
+            $want = max(1, min($cap, $want));
+            $options['max_items'] = $want;
+            $hasMaxItems = true;
+            $derivedMaxItems = true;
+        }
+
+        // max_pages:
+        // - si fourni: 0 = illimité (mais on borne via un calcul safe si max_items est connu)
+        // - si non fourni mais max_items fourni: calcul automatique (pagination 50 par 50 en pratique)
+        //
+        // Compat UI:
+        // - l'ancienne UI envoyait souvent max_pages=1 "par défaut", ce qui bloquait la pagination.
+        // - si max_items a été dérivé automatiquement ET max_pages=1, on ignore ce max_pages.
+        if ($request->has('max_pages')) {
+            $maxPages = $request->integer('max_pages');
+            if ($derivedMaxItems && $maxPages === 1) {
+                // Ignorer "1 page" implicite et calculer plus bas.
+            } else {
+            if ($maxPages <= 0) {
+                if ($hasMaxItems && isset($options['max_items'])) {
+                    $assumedPageSize = 50;
+                    $calc = (int) ceil(((int) $options['max_items']) / $assumedPageSize) + 2;
+                    $options['max_pages'] = max(1, min(2000, $calc));
+                } else {
+                    // illimité (mais le collector garde de toute façon un max_items par défaut)
+                    $options['max_pages'] = 0;
+                }
+            } else {
+                $options['max_pages'] = max(1, min(2000, $maxPages));
+            }
+                return $options;
+            }
+        }
+
+        if ($hasMaxItems && isset($options['max_items'])) {
+            $assumedPageSize = 50;
+            $calc = (int) ceil(((int) $options['max_items']) / $assumedPageSize) + 2;
+            $options['max_pages'] = max(1, min(2000, $calc));
         }
 
         return $options;
+    }
+
+    /**
+     * Pagination UX : page/per_page.
+     *
+     * @return array{page:int,per_page:int}|null
+     */
+    private function extractPagePagination(Request $request): ?array
+    {
+        $has = $request->has('page') || $request->has('per_page');
+        if (!$has) return null;
+
+        $page = max(1, $request->integer('page', 1));
+        // On garde 100 comme valeur par défaut (UX) et on borne à 200 (cap historique côté API).
+        $perPage = $request->integer('per_page', 100);
+        $perPage = max(1, min(200, $perPage));
+
+        return [
+            'page' => $page,
+            'per_page' => $perPage,
+        ];
     }
 
     /**
@@ -305,84 +501,22 @@ class ScrappingSearchController extends Controller
      */
     private function applyEntityDefaults(string $entity, array $filters): array
     {
-        $entity = strtolower($entity);
-
-        $hasExplicitType = array_key_exists('typeId', $filters) || array_key_exists('typeIds', $filters) || array_key_exists('typeIdsNot', $filters);
-        if ($entity === 'resource') {
-            // Par défaut: ne retourner que les items dont le typeId est autorisé comme ressource.
-            if (!$hasExplicitType) {
-                try {
-                    $allowed = ResourceType::query()->allowed()->pluck('dofusdb_type_id')->all();
-                } catch (\Throwable) {
-                    $allowed = [];
-                }
-                if (!empty($allowed)) {
-                    $filters['typeIds'] = $allowed;
-                }
-            }
-        }
-
-        if ($entity === 'consumable') {
-            // Par défaut: typeIds consumables basés sur la config d'intégration (target_table=consumables).
-            if (!$hasExplicitType) {
-                $ids = $this->getConsumableDofusdbTypeIdsFromIntegrationConfig();
-                if (!empty($ids)) {
-                    $filters['typeIds'] = $ids;
-                }
-            }
-        }
-
-        if ($entity === 'equipment') {
-            // Par défaut: on exclut ressources + consumables pour éviter les mélanges.
-            if (!$hasExplicitType) {
-                $exclude = [];
-
-                try {
-                    $exclude = array_merge($exclude, ResourceType::query()->allowed()->pluck('dofusdb_type_id')->all());
-                } catch (\Throwable) {
-                    // ignore
-                }
-
-                $exclude = array_merge($exclude, $this->getConsumableDofusdbTypeIdsFromIntegrationConfig());
-                $exclude = array_values(array_unique(array_map('intval', $exclude)));
-
-                if (!empty($exclude)) {
-                    $filters['typeIdsNot'] = $exclude;
-                }
-            }
-        }
-
-        return $filters;
+        return $this->itemEntityTypeFilters->applyDefaults($entity, $filters, ItemEntityTypeFilterService::TYPE_MODE_ALLOWED);
     }
 
     /**
-     * @return array<int,int>
+     * @param array<string,mixed> $filters
+     * @return array<string,mixed>
      */
-    private function getConsumableDofusdbTypeIdsFromIntegrationConfig(): array
+    private function applyEntityDefaultsWithMode(string $entity, array $filters, string $typeMode): array
     {
-        try {
-            /** @var array<string,mixed> $cfg */
-            $cfg = require app_path('Services/Scrapping/DataIntegration/config.php');
-        } catch (\Throwable) {
-            return [];
-        }
+        return $this->itemEntityTypeFilters->applyDefaults($entity, $filters, $typeMode);
+    }
 
-        $mapping = $cfg['dofusdb_mapping']['items_type_mapping'] ?? null;
-        if (!is_array($mapping)) {
-            return [];
-        }
-
-        $ids = [];
-        foreach ($mapping as $key => $entry) {
-            if (!is_array($entry)) continue;
-            if (($entry['target_table'] ?? null) !== 'consumables') continue;
-            $id = $entry['dofusdb_type_id'] ?? null;
-            if (is_int($id) || (is_string($id) && ctype_digit($id))) {
-                $ids[] = (int) $id;
-            }
-        }
-
-        return array_values(array_unique($ids));
+    private function extractTypeMode(Request $request): string
+    {
+        $v = $request->query('type_mode', ItemEntityTypeFilterService::TYPE_MODE_ALLOWED);
+        return is_string($v) ? $v : ItemEntityTypeFilterService::TYPE_MODE_ALLOWED;
     }
 }
 

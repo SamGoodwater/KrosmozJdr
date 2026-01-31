@@ -7,10 +7,12 @@ use App\Services\Scrapping\Config\FormatterRegistry;
 use App\Services\Scrapping\Config\ConfigDrivenConverter;
 use App\Services\Scrapping\Config\DofusDbEffectCatalog;
 use App\Services\Scrapping\DataCollect\DataCollectService;
+use App\Services\Scrapping\DataCollect\ItemEntityTypeFilterService;
 use App\Services\Scrapping\DataConversion\DataConversionService;
 use App\Services\Scrapping\DataIntegration\DataIntegrationService;
 use App\Models\Entity\Panoply;
 use App\Services\Scrapping\Http\DofusDbClient;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Log;
 
 /**
@@ -79,7 +81,8 @@ class ScrappingOrchestrator
         private DataCollectService $dataCollectService,
         private DataConversionService $dataConversionService,
         private DataIntegrationService $dataIntegrationService,
-        private ScrappingConfigLoader $configLoader
+        private ScrappingConfigLoader $configLoader,
+        private ItemEntityTypeFilterService $itemEntityTypeFilters,
     ) {}
 
     /**
@@ -465,7 +468,7 @@ class ScrappingOrchestrator
         $raw = $this->dataCollectService->collectItem($dofusdbId, false, []);
         $typeId = (int) ($raw['typeId'] ?? 0);
 
-        if (!$typeId || !$this->dataCollectService->isAllowedResourceTypeId($typeId)) {
+        if (!$typeId || !$this->itemEntityTypeFilters->isTypeIdAllowedForEntity('resource', $typeId)) {
             throw new \Exception("L'item DofusDB #{$dofusdbId} n'est pas une ressource autorisée (typeId={$typeId}).");
         }
 
@@ -539,8 +542,7 @@ class ScrappingOrchestrator
         $raw = $this->dataCollectService->collectItem($dofusdbId, false, []);
         $typeId = (int) ($raw['typeId'] ?? 0);
 
-        $allowed = $this->getConsumableDofusdbTypeIdsFromIntegrationConfig();
-        if (!$typeId || empty($allowed) || !in_array($typeId, $allowed, true)) {
+        if (!$typeId || !$this->itemEntityTypeFilters->isTypeIdAllowedForEntity('consumable', $typeId)) {
             throw new \Exception("L'item DofusDB #{$dofusdbId} n'est pas un consommable autorisé (typeId={$typeId}).");
         }
 
@@ -608,14 +610,18 @@ class ScrappingOrchestrator
             throw new \Exception("Impossible de déterminer le typeId de l'item DofusDB #{$dofusdbId}.");
         }
 
-        // Exclure ressources (whitelist DB) + types consommables (config d'intégration)
-        if ($this->dataCollectService->isAllowedResourceTypeId($typeId)) {
+        // 1) Exclure explicitement ressources + consommables (selon registry/config)
+        if ($this->itemEntityTypeFilters->isTypeIdAllowedForEntity('resource', $typeId)) {
             throw new \Exception("L'item DofusDB #{$dofusdbId} est une ressource (typeId={$typeId}).");
         }
 
-        $consumableTypeIds = $this->getConsumableDofusdbTypeIdsFromIntegrationConfig();
-        if (!empty($consumableTypeIds) && in_array($typeId, $consumableTypeIds, true)) {
+        if ($this->itemEntityTypeFilters->isTypeIdAllowedForEntity('consumable', $typeId)) {
             throw new \Exception("L'item DofusDB #{$dofusdbId} est un consommable (typeId={$typeId}).");
+        }
+
+        // 2) Vérifier qu'il est bien autorisé comme équipement (selon config superType)
+        if (!$this->itemEntityTypeFilters->isTypeIdAllowedForEntity('equipment', $typeId)) {
+            throw new \Exception("L'item DofusDB #{$dofusdbId} n'est pas un équipement autorisé (typeId={$typeId}).");
         }
 
         return $raw;
@@ -892,6 +898,136 @@ class ScrappingOrchestrator
     }
 
     /**
+     * Import avec fusion : prévisualise, fusionne selon les choix (Krosmoz vs DofusDB par propriété), intègre.
+     *
+     * @param string $type Type d'entité (class, monster, item, spell, etc.)
+     * @param int $dofusdbId ID DofusDB
+     * @param array<string,string> $choices Clés plates (dot notation) -> "krosmoz"|"dofusdb"
+     * @param array<string,mixed> $options Options d'import (with_images, force_update, etc.)
+     * @return array{success:bool, message?:string, error?:string, data?:array}
+     */
+    public function importWithMerge(string $type, int $dofusdbId, array $choices, array $options = []): array
+    {
+        $normalizedType = strtolower($type);
+
+        try {
+            $preview = $this->previewEntity($normalizedType, $dofusdbId);
+            if (!$preview['success']) {
+                return [
+                    'success' => false,
+                    'message' => $preview['message'] ?? 'Prévisualisation impossible',
+                    'error' => $preview['error'] ?? null,
+                ];
+            }
+
+            $converted = $preview['converted'] ?? [];
+            $existing = $preview['existing'] ?? null;
+
+            if (!$existing || !isset($existing['record'])) {
+                // Pas d'existant : import classique
+                return $this->importEntity($normalizedType, $dofusdbId, $options);
+            }
+
+            $merged = $this->mergeFromChoices($converted, $existing['record'], $choices);
+            return $this->integrateMergedEntity($normalizedType, $merged, $options);
+        } catch (\Throwable $e) {
+            Log::error('Erreur import avec fusion', [
+                'type' => $normalizedType,
+                'dofusdb_id' => $dofusdbId,
+                'error' => $e->getMessage(),
+            ]);
+            return [
+                'success' => false,
+                'message' => 'Import avec fusion impossible',
+                'error' => $e->getMessage(),
+            ];
+        }
+    }
+
+    /**
+     * Fusionne converted et existing.record selon les choix (clés plates -> krosmoz|dofusdb).
+     *
+     * @param array<string,mixed> $converted Données converties DofusDB
+     * @param array<string,mixed> $existingRecord Enregistrement existant Krosmoz
+     * @param array<string,string> $choices Choix par clé plate
+     * @return array<string,mixed> Données fusionnées (structure nested)
+     */
+    private function mergeFromChoices(array $converted, array $existingRecord, array $choices): array
+    {
+        $convertedFlat = Arr::dot($converted);
+        $existingFlat = Arr::dot($existingRecord);
+        // Partir de la structure convertie (attendue par l'intégration), puis surcharger par l'existant où choix = krosmoz
+        $mergedFlat = $convertedFlat;
+        foreach ($existingFlat as $key => $value) {
+            if (($choices[$key] ?? 'dofusdb') === 'krosmoz') {
+                $mergedFlat[$key] = $value;
+            }
+        }
+
+        $merged = [];
+        foreach ($mergedFlat as $key => $value) {
+            Arr::set($merged, $key, $value);
+        }
+        return $merged;
+    }
+
+    /**
+     * Appelle l'intégration avec les données déjà fusionnées (sans collecte ni conversion).
+     *
+     * @param string $type Type d'entité
+     * @param array<string,mixed> $mergedData Données fusionnées
+     * @param array<string,mixed> $options Options d'import
+     * @return array{success:bool, data?:array, message?:string, error?:string}
+     */
+    private function integrateMergedEntity(string $type, array $mergedData, array $options): array
+    {
+        $type = strtolower($type);
+        try {
+            $result = match ($type) {
+                'class' => $this->dataIntegrationService->integrateClass($mergedData, $options),
+                'monster' => $this->dataIntegrationService->integrateMonster($mergedData, $options),
+                'item', 'resource', 'consumable', 'equipment' => $this->dataIntegrationService->integrateItem($mergedData, $options),
+                'spell' => $this->dataIntegrationService->integrateSpell($mergedData, $options),
+                'panoply' => $this->dataIntegrationService->integratePanoply($mergedData, $options),
+                default => throw new \InvalidArgumentException("Type non supporté pour intégration fusionnée: {$type}"),
+            };
+            return [
+                'success' => true,
+                'data' => $result,
+            ];
+        } catch (\Throwable $e) {
+            Log::error('Erreur intégration fusionnée', ['type' => $type, 'error' => $e->getMessage()]);
+            return [
+                'success' => false,
+                'message' => 'Intégration impossible',
+                'error' => $e->getMessage(),
+            ];
+        }
+    }
+
+    /**
+     * Import d'une entité par type et ID DofusDB (délègue aux méthodes dédiées).
+     */
+    private function importEntity(string $type, int $dofusdbId, array $options): array
+    {
+        return match ($type) {
+            'class' => $this->importClass($dofusdbId, $options),
+            'monster' => $this->importMonster($dofusdbId, $options),
+            'item' => $this->importItem($dofusdbId, $options),
+            'resource' => $this->importResource($dofusdbId, $options),
+            'consumable' => $this->importConsumable($dofusdbId, $options),
+            'equipment' => $this->importEquipment($dofusdbId, $options),
+            'spell' => $this->importSpell($dofusdbId, $options),
+            'panoply' => $this->importPanoply($dofusdbId, $options),
+            default => [
+                'success' => false,
+                'message' => "Type non supporté: {$type}",
+                'error' => "Type non supporté: {$type}",
+            ],
+        };
+    }
+
+    /**
      * Import d'une panoplie depuis DofusDB avec ses items associés
      * 
      * @param int $dofusdbId ID de la panoplie dans DofusDB
@@ -1018,30 +1154,4 @@ class ScrappingOrchestrator
     /**
      * @return array<int,int>
      */
-    private function getConsumableDofusdbTypeIdsFromIntegrationConfig(): array
-    {
-        try {
-            /** @var array<string,mixed> $cfg */
-            $cfg = require app_path('Services/Scrapping/DataIntegration/config.php');
-        } catch (\Throwable) {
-            return [];
-        }
-
-        $mapping = $cfg['dofusdb_mapping']['items_type_mapping'] ?? null;
-        if (!is_array($mapping)) {
-            return [];
-        }
-
-        $ids = [];
-        foreach ($mapping as $entry) {
-            if (!is_array($entry)) continue;
-            if (($entry['target_table'] ?? null) !== 'consumables') continue;
-            $id = $entry['dofusdb_type_id'] ?? null;
-            if (is_int($id) || (is_string($id) && ctype_digit($id))) {
-                $ids[] = (int) $id;
-            }
-        }
-
-        return array_values(array_unique($ids));
-    }
 }

@@ -43,6 +43,7 @@ return [
 
     'data_collect' => [
         'dofusdb_base_url' => env('DOFUSDB_BASE_URL', 'https://api.dofusdb.fr'),
+        'default_language' => env('DOFUSDB_DEFAULT_LANGUAGE', 'fr'),
         'timeout' => env('SCRAPPING_COLLECT_TIMEOUT', 30),
         'retry_attempts' => env('SCRAPPING_COLLECT_RETRY_ATTEMPTS', 3),
         'retry_delay' => env('SCRAPPING_COLLECT_RETRY_DELAY', 1000),

@@ -21,6 +21,11 @@ import Tooltip from "@/Pages/Atoms/feedback/Tooltip.vue";
 import InputField from "@/Pages/Molecules/data-input/InputField.vue";
 import CheckboxField from "@/Pages/Molecules/data-input/CheckboxField.vue";
 import SelectField from "@/Pages/Molecules/data-input/SelectField.vue";
+import SelectSearchField from "@/Pages/Molecules/data-input/SelectSearchField.vue";
+import Modal from "@/Pages/Molecules/action/Modal.vue";
+import TanStackTablePagination from "@/Pages/Molecules/table/TanStackTablePagination.vue";
+import TypeManagerTable from "@/Pages/Organismes/type-management/TypeManagerTable.vue";
+import CompareModal from "@/Pages/Organismes/scrapping/CompareModal.vue";
 import { useNotificationStore } from "@/Composables/store/useNotificationStore";
 
 const notificationStore = useNotificationStore();
@@ -30,12 +35,62 @@ const loadingMeta = ref(true);
 const loadingConfig = ref(true);
 const searching = ref(false);
 const importing = ref(false);
-const fetchAllRunning = ref(false);
-const fetchAllAbort = ref(null);
 
 const metaEntityTypes = ref([]);
 const configEntitiesByKey = ref({});
 const selectedEntityType = ref("monster");
+
+// Gestion des types/races (modal)
+const typeManagerOpen = ref(false);
+const typeManagerConfig = computed(() => {
+    const t = String(selectedEntityType.value || "");
+    if (t === "resource") {
+        return {
+            title: "Types DofusDB (Ressources)",
+            description: "Décider quels typeId DofusDB sont autorisés pour l’import de ressources.",
+            mode: "decision",
+            listUrl: "/api/scrapping/resource-types",
+            bulkUrl: "/api/scrapping/resource-types/bulk",
+        };
+    }
+    if (t === "consumable") {
+        return {
+            title: "Types DofusDB (Consommables)",
+            description: "Décider quels typeId DofusDB sont autorisés pour l’import de consommables.",
+            mode: "decision",
+            listUrl: "/api/scrapping/consumable-types",
+            bulkUrl: "/api/scrapping/consumable-types/bulk",
+        };
+    }
+    if (t === "equipment") {
+        return {
+            title: "Types DofusDB (Équipements)",
+            description: "Décider quels typeId DofusDB sont autorisés pour l’import d’équipements.",
+            mode: "decision",
+            listUrl: "/api/scrapping/item-types",
+            bulkUrl: "/api/scrapping/item-types/bulk",
+        };
+    }
+    if (t === "monster") {
+        return {
+            title: "Races de monstres",
+            description: "Valider ou archiver des races (champ state).",
+            mode: "state",
+            listUrl: "/api/types/monster-races",
+            bulkUrl: "/api/types/monster-races/bulk",
+        };
+    }
+    if (t === "spell") {
+        return {
+            title: "Types de sorts",
+            description: "Valider ou archiver des types de sorts (champ state).",
+            mode: "state",
+            listUrl: "/api/types/spell-types",
+            bulkUrl: "/api/types/spell-types/bulk",
+        };
+    }
+    return null;
+});
 
 // Filtres principaux demandés
 const filterIds = ref(""); // "1" | "1,2,3" | "1-50"
@@ -50,6 +105,30 @@ const selectedKnownTypeExclude = ref("");
 const filterTypeIds = ref([]); // number[]
 const filterTypeIdsNot = ref([]); // number[]
 
+// Mode de filtrage par types
+// - all: dérive les types depuis DofusDB (superType -> types)
+// - allowed: seulement les types validés (decision=allowed)
+// - selected: seulement les types cochés dans l'UI
+const typeMode = ref("allowed"); // "all" | "allowed" | "selected"
+const typeModeOptions = [
+    { value: "all", label: "Tout récupérer (tous types DofusDB)" },
+    { value: "allowed", label: "Types validés uniquement" },
+    { value: "selected", label: "Types cochés (sélection UI)" },
+];
+
+// Filtre races (monsters) : même logique que les types
+const raceMode = ref("allowed"); // "all" | "allowed" | "selected"
+const raceModeOptions = [
+    { value: "all", label: "Toutes les races" },
+    { value: "allowed", label: "Races validées uniquement" },
+    { value: "selected", label: "Races cochées (sélection UI)" },
+];
+const knownRacesLoading = ref(false);
+const knownRaceOptions = ref([]); // { value:number|string, label:string }
+const selectedKnownRace = ref("");
+const filterRaceIds = ref([]); // number[]
+
+// Fallback manuel (debug)
 const filterRaceId = ref("");
 const filterBreedId = ref("");
 const filterLevelMin = ref("");
@@ -75,14 +154,13 @@ const effectsAnalysisType = ref(null);
 const effectsAnalysisUnmapped = ref([]);
 const effectsAnalysisSummary = ref(null);
 
-// Pagination / gros volumes
-const pageLimit = ref(100);
-const pageOffset = ref(0); // start_skip
-const pageMaxItems = ref(0); // 0 = illimité côté UI
-const fetchAll = ref(false);
+// Pagination UI (serveur) : blocs de 100 par défaut
+const pageNumber = ref(1);
+const perPage = ref(100);
 
 // Historique (console)
 const historyLines = ref([]);
+const showOptionsAndHistory = ref(false); // masqué par défaut
 
 const pushHistory = (line) => {
     const ts = new Date().toLocaleString("fr-FR");
@@ -94,7 +172,7 @@ const loadKnownTypes = async () => {
     const endpoint = (() => {
         if (t === "resource") return "/api/scrapping/resource-types?decision=allowed";
         if (t === "consumable") return "/api/scrapping/consumable-types?decision=allowed";
-        if (t === "item" || t === "equipment") return "/api/scrapping/item-types?decision=allowed";
+        if (t === "equipment") return "/api/scrapping/item-types?decision=allowed";
         return null;
     })();
 
@@ -128,17 +206,87 @@ const loadKnownTypes = async () => {
     }
 };
 
+const loadKnownRaces = async () => {
+    const t = String(selectedEntityType.value || "");
+    knownRaceOptions.value = [];
+    selectedKnownRace.value = "";
+    filterRaceIds.value = [];
+
+    if (t !== "monster") return;
+
+    knownRacesLoading.value = true;
+    try {
+        // liste "validée" (state=playable) : on filtre ensuite sur dofusdb_race_id
+        const res = await fetch("/api/types/monster-races?state=playable", { headers: { Accept: "application/json" } });
+        const json = await res.json();
+        if (!res.ok || !json?.success) {
+            throw new Error(json?.message || "Chargement des races impossible");
+        }
+        const rows = Array.isArray(json.data) ? json.data : [];
+        knownRaceOptions.value = rows
+            .map((r) => ({
+                value: Number(r?.dofusdb_race_id),
+                label: String(r?.name || `#${r?.dofusdb_race_id}`),
+            }))
+            .filter((o) => Number.isFinite(Number(o.value)) && Number(o.value) !== 0)
+            .sort((a, b) => String(a.label).localeCompare(String(b.label), "fr-FR"));
+    } catch (e) {
+        showError("Races: " + e.message);
+    } finally {
+        knownRacesLoading.value = false;
+    }
+};
+
+const addKnownRace = () => {
+    const id = Number(selectedKnownRace.value);
+    if (!Number.isFinite(id) || id <= 0) return;
+    const next = new Set(filterRaceIds.value || []);
+    next.add(id);
+    filterRaceIds.value = Array.from(next);
+    selectedKnownRace.value = "";
+};
+
+const removeKnownRace = (id) => {
+    const n = Number(id);
+    if (!Number.isFinite(n) || n <= 0) return;
+    filterRaceIds.value = (filterRaceIds.value || []).filter((x) => Number(x) !== n);
+};
+
+watch(
+    () => typeMode.value,
+    (next) => {
+        const m = String(next || "allowed");
+        if (m !== "selected") {
+            selectedKnownTypeInclude.value = "";
+            selectedKnownTypeExclude.value = "";
+            filterTypeIds.value = [];
+            filterTypeIdsNot.value = [];
+        }
+    }
+);
+
 const entityOptions = computed(() => {
     // On propose uniquement les entités à la fois:
     // - déclarées en config (donc supportées par /api/scrapping/search/{entity})
     // - importables (import endpoints existants)
-    const allowed = new Set(["class", "monster", "equipment", "consumable", "resource", "item", "spell", "panoply"]);
+    // NB: on exclut volontairement "item" (Objet) : c'est l'entité générique DofusDB qui mélange
+    // équipements/consommables/ressources + autres catégories.
+    const allowed = new Set(["class", "monster", "equipment", "consumable", "resource", "spell", "panoply"]);
+    const labelOverrides = {
+        class: "Classes",
+        monster: "Monstres",
+        spell: "Sorts",
+        equipment: "Équipements",
+        consumable: "Consommables",
+        resource: "Ressources",
+        panoply: "Panoplies",
+    };
     const fromMeta = Array.isArray(metaEntityTypes.value) ? metaEntityTypes.value : [];
     return fromMeta
         .filter((e) => e?.type && allowed.has(String(e.type)) && configEntitiesByKey.value?.[String(e.type)])
         .map((e) => ({
             value: String(e.type),
-            label: String(e.label || e.type),
+            label: String(labelOverrides[String(e.type)] || e.label || e.type),
         }));
 });
 
@@ -272,26 +420,35 @@ const buildSearchQuery = () => {
 
     if (String(filterName.value || "").trim() !== "") q.set("name", String(filterName.value).trim());
 
-    // Filtres de types (sélection sur types connus)
-    const includeTypeIds = supports("typeIds") ? (filterTypeIds.value || []) : [];
-    const excludeTypeIds = supports("typeIdsNot") ? (filterTypeIdsNot.value || []) : [];
-    if (Array.isArray(includeTypeIds) && includeTypeIds.length) q.set("typeIds", includeTypeIds.join(","));
-    if (Array.isArray(excludeTypeIds) && excludeTypeIds.length) q.set("typeIdsNot", excludeTypeIds.join(","));
+    // Filtres de types (sélection sur types connus) + mode
+    if (supports("typeIds") || supports("typeIdsNot")) {
+        q.set("type_mode", String(typeMode.value || "allowed"));
 
-    if (supports("raceId") && String(filterRaceId.value || "").trim() !== "") q.set("raceId", String(filterRaceId.value).trim());
+        if (String(typeMode.value) === "selected") {
+            const includeTypeIds = supports("typeIds") ? (filterTypeIds.value || []) : [];
+            const excludeTypeIds = supports("typeIdsNot") ? (filterTypeIdsNot.value || []) : [];
+            if (Array.isArray(includeTypeIds) && includeTypeIds.length) q.set("typeIds", includeTypeIds.join(","));
+            if (Array.isArray(excludeTypeIds) && excludeTypeIds.length) q.set("typeIdsNot", excludeTypeIds.join(","));
+        }
+    }
+
+    if (supports("raceId")) {
+        q.set("race_mode", String(raceMode.value || "allowed"));
+        if (String(raceMode.value) === "selected") {
+            const ids = filterRaceIds.value || [];
+            if (Array.isArray(ids) && ids.length) q.set("raceIds", ids.join(","));
+        } else if (String(filterRaceId.value || "").trim() !== "") {
+            // fallback manuel (debug)
+            q.set("raceId", String(filterRaceId.value).trim());
+        }
+    }
     if (supports("breedId") && String(filterBreedId.value || "").trim() !== "") q.set("breedId", String(filterBreedId.value).trim());
     if (supports("levelMin") && String(filterLevelMin.value || "").trim() !== "") q.set("levelMin", String(filterLevelMin.value).trim());
     if (supports("levelMax") && String(filterLevelMax.value || "").trim() !== "") q.set("levelMax", String(filterLevelMax.value).trim());
 
-    // Pagination
-    q.set("limit", String(Math.max(1, Math.min(200, Number(pageLimit.value) || 100))));
-    q.set("start_skip", String(Math.max(0, Number(pageOffset.value) || 0)));
-
-    // Par défaut, un seul "page" (pour éviter une réponse trop grosse)
-    // En mode "Tout récupérer", on pagine côté frontend (boucle).
-    q.set("max_pages", "1");
-    const maxItems = Number(pageMaxItems.value);
-    if (Number.isFinite(maxItems) && maxItems > 0) q.set("max_items", String(Math.min(20000, Math.floor(maxItems))));
+    // Pagination serveur : blocs de 100 (par défaut)
+    q.set("page", String(Math.max(1, Math.floor(Number(pageNumber.value) || 1))));
+    q.set("per_page", String(Math.max(1, Math.min(200, Math.floor(Number(perPage.value) || 100)))));
 
     return q.toString();
 };
@@ -337,14 +494,18 @@ const loadConfig = async () => {
 
 onMounted(async () => {
     await Promise.all([loadMeta(), loadConfig()]);
-    await loadKnownTypes();
+    await Promise.all([loadKnownTypes(), loadKnownRaces()]);
 });
 
 watch(
     () => selectedEntityType.value,
     async () => {
         // Reset UI state liée aux types + recharge la liste "connue"
-        await loadKnownTypes();
+        typeMode.value = "allowed";
+        raceMode.value = "allowed";
+        pageNumber.value = 1;
+        showOptionsAndHistory.value = false;
+        await Promise.all([loadKnownTypes(), loadKnownRaces()]);
     }
 );
 
@@ -377,122 +538,94 @@ const toggleSelectOne = (id) => {
 };
 
 const runSearch = async () => {
-    if (fetchAllRunning.value) return;
     searching.value = true;
     selectedIds.value = new Set();
     try {
-        if (!fetchAll.value) {
-            const qs = buildSearchQuery();
-            const url = `/api/scrapping/search/${selectedEntityType.value}${qs ? `?${qs}` : ""}`;
-            pushHistory(`Recherche ${selectedEntityType.value} (${selectedEntityLabel.value}) : ${qs || "sans filtres"}`);
+        const qs = buildSearchQuery();
+        const url = `/api/scrapping/search/${selectedEntityType.value}${qs ? `?${qs}` : ""}`;
+        pushHistory(`Recherche ${selectedEntityType.value} (${selectedEntityLabel.value}) : ${qs || "sans filtres"}`);
 
-            const res = await fetch(url, { headers: { Accept: "application/json" } });
-            const data = await res.json();
+        const res = await fetch(url, { headers: { Accept: "application/json" } });
+        const data = await res.json();
 
-            if (res.ok && data.success) {
-                rawItems.value = data.data?.items || [];
-                lastMeta.value = data.data?.meta || null;
-                success(`Recherche OK (${rawItems.value.length} résultat(s))`);
-                pushHistory(`→ OK: ${rawItems.value.length} résultat(s).`);
-            } else {
-                showError(data.message || "Erreur lors de la recherche");
-                pushHistory(`→ ERREUR: ${data.message || "recherche"}`);
-            }
-            return;
-        }
-
-        // Mode "Tout récupérer": pagination côté frontend
-        fetchAllRunning.value = true;
-        rawItems.value = [];
-        lastMeta.value = null;
-        const seen = new Map();
-
-        const baseQs = buildSearchQuery();
-        const baseParams = new URLSearchParams(baseQs);
-        const limit = Number(baseParams.get("limit") || 100);
-        const startSkip = Number(baseParams.get("start_skip") || 0);
-        const uiMax = Number(pageMaxItems.value) || 0; // 0 = illimité
-
-        const ctrl = new AbortController();
-        fetchAllAbort.value = ctrl;
-
-        pushHistory(`Recherche ALL ${selectedEntityType.value} (limit=${limit}, start_skip=${startSkip}, max_items=${uiMax || "∞"})`);
-
-        let skip = Math.max(0, startSkip);
-        let loops = 0;
-        let total = null;
-
-        while (true) {
-            loops += 1;
-            if (loops > 100000) {
-                throw new Error("Stop sécurité: trop de pages");
-            }
-
-            const params = new URLSearchParams(baseParams);
-            params.set("start_skip", String(skip));
-            params.set("max_pages", "1");
-            // max_items côté endpoint garde un garde-fou; on gère aussi côté UI.
-            const url = `/api/scrapping/search/${selectedEntityType.value}?${params.toString()}`;
-
-            const res = await fetch(url, { headers: { Accept: "application/json" }, signal: ctrl.signal });
-            const data = await res.json();
-            if (!res.ok || !data.success) {
-                throw new Error(data?.message || "Erreur lors de la recherche");
-            }
-
-            const items = Array.isArray(data.data?.items) ? data.data.items : [];
-            const meta = data.data?.meta || null;
-            if (meta && typeof meta.total === "number") total = meta.total;
-            const effectiveLimit = Number(meta?.limit || limit) || limit;
-
-            for (const it of items) {
-                const id = Number(it?.id);
-                if (!Number.isFinite(id)) continue;
-                if (!seen.has(id)) {
-                    seen.set(id, it);
-                    rawItems.value.push(it);
-                }
-            }
-
-            lastMeta.value = meta;
-            pushHistory(`→ page skip=${skip}: +${items.length} (total unique=${rawItems.value.length}${total !== null ? ` / total=${total}` : ""})`);
-
-            // Stop conditions
-            if (items.length < effectiveLimit) break;
-            if (total !== null && skip + effectiveLimit >= total) break;
-            if (uiMax > 0 && rawItems.value.length >= uiMax) break;
-
-            skip += effectiveLimit;
-        }
-
-        success(`Recherche ALL OK (${rawItems.value.length} résultat(s) uniques)`);
-    } catch (e) {
-        if (e?.name === "AbortError") {
-            info("Recherche interrompue.", { duration: 2000 });
-            pushHistory("→ STOP: recherche interrompue.");
+        if (res.ok && data.success) {
+            rawItems.value = data.data?.items || [];
+            lastMeta.value = data.data?.meta || null;
+            const total = lastMeta.value?.total;
+            const returned = rawItems.value.length;
+            success(`Recherche OK (${returned} résultat(s))`);
+            pushHistory(`→ OK: ${returned} résultat(s)${typeof total === "number" ? ` (total=${total})` : ""}.`);
         } else {
+            showError(data.message || "Erreur lors de la recherche");
+            pushHistory(`→ ERREUR: ${data.message || "recherche"}`);
+        }
+    } catch (e) {
         showError("Erreur lors de la recherche : " + e.message);
         pushHistory(`→ ERREUR: ${e.message}`);
-        }
     } finally {
         searching.value = false;
-        fetchAllRunning.value = false;
-        fetchAllAbort.value = null;
     }
 };
 
-const stopFetchAll = () => {
-    try {
-        fetchAllAbort.value?.abort?.();
-    } catch {
-        // ignore
-    }
+const totalPages = computed(() => {
+    const t = Number(lastMeta.value?.total_pages);
+    if (Number.isFinite(t) && t > 0) return Math.floor(t);
+    const total = Number(lastMeta.value?.total);
+    const pp = Math.max(1, Math.floor(Number(perPage.value) || 100));
+    if (Number.isFinite(total) && total > 0) return Math.ceil(total / pp);
+    return null;
+});
+const canPrev = computed(() => Number(pageNumber.value) > 1 && !searching.value);
+const canNext = computed(() => {
+    const tp = totalPages.value;
+    if (tp === null) return !searching.value; // best-effort
+    return Number(pageNumber.value) < tp && !searching.value;
+});
+
+const goPrev = async () => {
+    if (!canPrev.value) return;
+    pageNumber.value = Math.max(1, Number(pageNumber.value) - 1);
+    await runSearch();
+};
+const goNext = async () => {
+    if (!canNext.value) return;
+    pageNumber.value = Number(pageNumber.value) + 1;
+    await runSearch();
 };
 
-const buildBatchPayload = (dryRun) => {
-    const ids = selectedCount.value
-        ? Array.from(selectedIds.value)
-        : visibleItems.value.map((it) => Number(it?.id)).filter((n) => Number.isFinite(n));
+const pageIndex = computed(() => Math.max(0, Math.floor(Number(pageNumber.value) || 1) - 1));
+const pageCount = computed(() => {
+    const tp = totalPages.value;
+    if (tp === null) return Math.max(1, Math.floor(Number(pageNumber.value) || 1));
+    return Math.max(1, tp);
+});
+const totalRows = computed(() => {
+    const t = Number(lastMeta.value?.total);
+    return Number.isFinite(t) && t > 0 ? Math.floor(t) : (rawItems.value?.length || 0);
+});
+
+const handlePaginationGo = async (pIdx) => {
+    const next = Math.max(0, Math.floor(Number(pIdx) || 0));
+    pageNumber.value = next + 1;
+    await runSearch();
+};
+const handleSetPageSize = async (v) => {
+    const n = Math.max(1, Math.min(200, Math.floor(Number(v) || 100)));
+    perPage.value = n;
+    pageNumber.value = 1;
+    await runSearch();
+};
+
+const buildBatchPayload = (dryRun, scope = "auto") => {
+    // scope:
+    // - auto: si une sélection existe -> sélection, sinon -> items visibles (filtre table)
+    // - all: ignore la sélection et utilise tous les items chargés (rawItems)
+    const ids =
+        scope === "all"
+            ? (rawItems.value || []).map((it) => Number(it?.id)).filter((n) => Number.isFinite(n))
+            : selectedCount.value
+              ? Array.from(selectedIds.value)
+              : visibleItems.value.map((it) => Number(it?.id)).filter((n) => Number.isFinite(n));
 
     const entities = ids.map((id) => ({ type: selectedEntityType.value, id }));
 
@@ -507,7 +640,7 @@ const buildBatchPayload = (dryRun) => {
     };
 };
 
-const runBatch = async (mode) => {
+const runBatch = async (mode, scope = "auto") => {
     // mode: 'simulate' | 'import'
     if (!visibleItems.value.length) {
         showError("Aucun résultat à traiter.");
@@ -523,7 +656,7 @@ const runBatch = async (mode) => {
     }
 
     const dryRun = mode === "simulate";
-    const payload = buildBatchPayload(dryRun);
+    const payload = buildBatchPayload(dryRun, scope);
     const targetCount = payload.entities.length;
     if (targetCount < 1) {
         showError("Aucune entité sélectionnée.");
@@ -578,7 +711,7 @@ const existsTooltip = (it) => {
 
 const canAnalyzeEffects = computed(() => {
     const t = String(selectedEntityType.value || "");
-    return (t === "item" || t === "spell" || t === "equipment" || t === "consumable" || t === "resource") && selectedCount.value > 0;
+    return (t === "spell" || t === "equipment" || t === "consumable" || t === "resource") && selectedCount.value > 0;
 });
 
 const parseJsonSafe = (v) => {
@@ -651,10 +784,95 @@ const clearEffectsAnalysis = () => {
     effectsAnalysisUnmapped.value = [];
     effectsAnalysisSummary.value = null;
 };
+
+// Modal Comparer Krosmoz / DofusDB
+const compareModalOpen = ref(false);
+const compareEntityType = ref("");
+const compareDofusdbId = ref(null);
+const canCompare = computed(() => {
+    if (selectedCount.value !== 1) return false;
+    const id = Array.from(selectedIds.value)[0];
+    return Number.isFinite(Number(id));
+});
+const openCompareModal = () => {
+    if (!canCompare.value) return;
+    const id = Array.from(selectedIds.value)[0];
+    compareEntityType.value = String(selectedEntityType.value || "");
+    compareDofusdbId.value = Number(id);
+    compareModalOpen.value = true;
+};
+/** Ouvre la modal Comparer pour la ligne donnée (double-clic sur la ligne). */
+const openCompareModalForRow = (it) => {
+    const id = it?.id != null ? Number(it.id) : null;
+    if (!Number.isFinite(id)) return;
+    compareEntityType.value = String(selectedEntityType.value || "");
+    compareDofusdbId.value = id;
+    compareModalOpen.value = true;
+};
+const onCompareImported = () => {
+    success("Import avec choix effectué.");
+    pushHistory("→ Comparer / Import avec choix OK.");
+};
 </script>
 
 <template>
     <div class="space-y-6">
+        <Modal
+            :open="typeManagerOpen"
+            size="xl"
+            placement="middle-center"
+            close-on-esc
+            @close="
+                async () => {
+                    typeManagerOpen = false;
+                    await loadKnownTypes();
+                }
+            "
+        >
+            <template #header>
+                <div class="flex items-center justify-between gap-3 w-full">
+                    <div class="font-semibold text-primary-100">
+                        {{ typeManagerConfig?.title || 'Gestion des types' }}
+                    </div>
+                    <Btn size="sm" variant="ghost" @click="typeManagerOpen = false">Fermer</Btn>
+                </div>
+            </template>
+
+            <div v-if="typeManagerConfig" class="max-h-[75vh] overflow-y-auto pr-2">
+                <TypeManagerTable
+                    :title="typeManagerConfig.title"
+                    :description="typeManagerConfig.description"
+                    :mode="typeManagerConfig.mode"
+                    :list-url="typeManagerConfig.listUrl"
+                    :bulk-url="typeManagerConfig.bulkUrl"
+                    :delete-url-base="typeManagerConfig.mode === 'decision'
+                        ? (String(selectedEntityType) === 'resource'
+                            ? '/api/scrapping/resource-types'
+                            : String(selectedEntityType) === 'consumable'
+                                ? '/api/scrapping/consumable-types'
+                                : String(selectedEntityType) === 'equipment'
+                                    ? '/api/scrapping/item-types'
+                                    : '')
+                        : (String(selectedEntityType) === 'monster'
+                            ? '/api/types/monster-races'
+                            : String(selectedEntityType) === 'spell'
+                                ? '/api/types/spell-types'
+                                : '')"
+                />
+            </div>
+            <div v-else class="text-sm text-primary-300 italic">
+                Cette entité n’a pas de gestionnaire de types/races.
+            </div>
+        </Modal>
+
+        <CompareModal
+            :open="compareModalOpen"
+            :entity-type="compareEntityType"
+            :dofusdb-id="compareDofusdbId"
+            @close="compareModalOpen = false"
+            @imported="onCompareImported"
+        />
+
         <!-- Header: entité + filtres -->
         <Card class="p-6 space-y-4">
             <div class="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
@@ -665,7 +883,7 @@ const clearEffectsAnalysis = () => {
                     </p>
                 </div>
                 <div class="min-w-[260px]">
-                    <SelectField
+                    <SelectSearchField
                         label="Entité"
                         v-model="selectedEntityType"
                         :options="entityOptions"
@@ -697,7 +915,7 @@ const clearEffectsAnalysis = () => {
                     <div v-if="supports('typeIds') || supports('typeIdsNot')" class="md:col-span-3 space-y-2">
                         <div class="flex items-center justify-between gap-2">
                             <div class="text-sm text-primary-300">
-                                Filtre par types (types connus uniquement)
+                                Filtre par types
                             </div>
                             <div v-if="knownTypesLoading" class="text-xs text-primary-300 flex items-center gap-2">
                                 <Loading />
@@ -705,7 +923,40 @@ const clearEffectsAnalysis = () => {
                             </div>
                         </div>
 
-                        <div class="grid gap-3 md:grid-cols-2">
+                        <div class="grid gap-3 md:grid-cols-3">
+                            <SelectField
+                                class="md:col-span-1"
+                                label="Mode"
+                                v-model="typeMode"
+                                :options="typeModeOptions"
+                                :disabled="knownTypesLoading"
+                            />
+                            <div class="md:col-span-2 flex items-start justify-between gap-3">
+                                <div class="text-xs text-primary-300 flex items-center gap-2">
+                                    <span v-if="String(typeMode) === 'all'">
+                                        Tous les types DofusDB (utile pour détecter de nouveaux types → “À valider”).
+                                    </span>
+                                    <span v-else-if="String(typeMode) === 'allowed'">
+                                        Uniquement les types validés (decision=allowed).
+                                    </span>
+                                    <span v-else>
+                                        Uniquement les types cochés ci-dessous (types connus).
+                                    </span>
+                                </div>
+                                <Btn
+                                    size="sm"
+                                    variant="outline"
+                                    type="button"
+                                    :disabled="!typeManagerConfig"
+                                    title="Ouvrir le gestionnaire de types/races"
+                                    @click="typeManagerOpen = true"
+                                >
+                                    Gérer les types
+                                </Btn>
+                            </div>
+                        </div>
+
+                        <div v-if="String(typeMode) === 'selected'" class="grid gap-3 md:grid-cols-2">
                             <div v-if="supports('typeIds')" class="space-y-2">
                                 <div class="flex gap-2 items-end">
                                     <SelectField
@@ -781,12 +1032,95 @@ const clearEffectsAnalysis = () => {
                             </div>
                         </div>
                     </div>
-                    <InputField
-                        v-if="supports('raceId')"
-                        v-model="filterRaceId"
-                        label="raceId"
-                        type="number"
-                    />
+                    <div v-if="supports('raceId')" class="md:col-span-3 space-y-2">
+                        <div class="flex items-center justify-between gap-2">
+                            <div class="text-sm text-primary-300">
+                                Filtre par races
+                            </div>
+                            <div v-if="knownRacesLoading" class="text-xs text-primary-300 flex items-center gap-2">
+                                <Loading />
+                                <span>Chargement des races…</span>
+                            </div>
+                        </div>
+
+                        <div class="grid gap-3 md:grid-cols-3">
+                            <SelectField
+                                class="md:col-span-1"
+                                label="Mode"
+                                v-model="raceMode"
+                                :options="raceModeOptions"
+                                :disabled="knownRacesLoading"
+                            />
+
+                            <div class="md:col-span-2 flex items-start justify-between gap-3">
+                                <div class="text-xs text-primary-300 flex items-center gap-2">
+                                    <span v-if="String(raceMode) === 'all'">Toutes les races DofusDB.</span>
+                                    <span v-else-if="String(raceMode) === 'allowed'">Uniquement les races validées (state=playable).</span>
+                                    <span v-else>Uniquement les races cochées ci-dessous (races validées).</span>
+                                </div>
+                                <Btn
+                                    size="sm"
+                                    variant="outline"
+                                    type="button"
+                                    :disabled="String(selectedEntityType) !== 'monster'"
+                                    title="Ouvrir le gestionnaire de races"
+                                    @click="typeManagerOpen = true"
+                                >
+                                    Gérer les races
+                                </Btn>
+                            </div>
+                        </div>
+
+                        <div v-if="String(raceMode) === 'selected'" class="grid gap-3 md:grid-cols-2">
+                            <div class="space-y-2">
+                                <div class="flex gap-2 items-end">
+                                    <SelectField
+                                        class="flex-1"
+                                        label="Races (inclure)"
+                                        v-model="selectedKnownRace"
+                                        :options="knownRaceOptions"
+                                        placeholder="Choisir une race…"
+                                        :disabled="knownRacesLoading"
+                                    />
+                                    <Btn
+                                        size="sm"
+                                        variant="outline"
+                                        type="button"
+                                        :disabled="!selectedKnownRace"
+                                        @click="addKnownRace"
+                                    >
+                                        Ajouter
+                                    </Btn>
+                                </div>
+
+                                <div v-if="filterRaceIds.length" class="flex flex-wrap gap-2">
+                                    <span
+                                        v-for="id in filterRaceIds"
+                                        :key="`race-${id}`"
+                                        class="inline-flex items-center gap-2 text-xs px-2 py-1 rounded border border-base-300 bg-base-200/40"
+                                    >
+                                        <span>{{ knownRaceOptions.find((o) => Number(o.value) === Number(id))?.label || `#${id}` }}</span>
+                                        <button type="button" class="btn btn-ghost btn-xs" @click="removeKnownRace(id)">
+                                            ✕
+                                        </button>
+                                    </span>
+                                </div>
+                                <div v-else class="text-xs text-primary-300 italic">
+                                    Aucune race incluse.
+                                </div>
+                            </div>
+
+                            <InputField
+                                v-model="filterRaceId"
+                                label="raceId (manuel)"
+                                type="number"
+                                helper="Optionnel : utile pour debug (non recommandé)."
+                            />
+                        </div>
+                        <div v-else class="hidden">
+                            <!-- Pas d'UI additionnelle en mode all/allowed -->
+                        </div>
+                    </div>
                     <InputField
                         v-if="supports('breedId')"
                         v-model="filterBreedId"
@@ -808,14 +1142,31 @@ const clearEffectsAnalysis = () => {
                 </div>
 
                 <div class="grid gap-3 md:grid-cols-4">
-                    <InputField v-model="pageLimit" label="Limit" type="number" helper="Taille des pages (1-200)" />
-                    <InputField v-model="pageOffset" label="Offset" type="number" helper="start_skip (>=0)" />
-                    <InputField v-model="pageMaxItems" label="Max items" type="number" helper="0 = illimité (UI)" />
-                    <CheckboxField
-                        :model-value="fetchAll"
-                        @update:model-value="fetchAll = $event"
-                        label="Tout récupérer (pagination)"
-                    />
+                    <div class="md:col-span-4">
+                        <TanStackTablePagination
+                            :page-index="pageIndex"
+                            :page-count="pageCount"
+                            :page-size="Math.max(1, Math.min(200, Math.floor(Number(perPage) || 100)))"
+                            :total-rows="totalRows"
+                            :per-page-options="[50, 100, 200]"
+                            :can-prev="canPrev"
+                            :can-next="canNext"
+                            ui-size="sm"
+                            ui-color="primary"
+                            @prev="goPrev"
+                            @next="goNext"
+                            @first="async () => { pageNumber = 1; await runSearch(); }"
+                            @last="async () => { if (totalPages !== null) { pageNumber = totalPages; await runSearch(); } }"
+                            @go="handlePaginationGo"
+                            @set-page-size="handleSetPageSize"
+                        />
+                        <div class="mt-1 text-xs text-primary-300">
+                            <span>Pagination serveur : bloc de {{ perPage }} résultat(s) par page.</span>
+                            <span v-if="lastMeta && typeof lastMeta.total === 'number'">
+                                · Total filtré : <span class="font-semibold">{{ lastMeta.total }}</span>
+                            </span>
+                        </div>
+                    </div>
                 </div>
 
                 <div class="flex flex-wrap items-center gap-2">
@@ -824,15 +1175,58 @@ const clearEffectsAnalysis = () => {
                         <Icon v-else source="fa-solid fa-magnifying-glass" alt="Rechercher" pack="solid" class="mr-2" />
                         Rechercher
                     </Btn>
-                    <Btn v-if="fetchAllRunning" variant="ghost" @click="stopFetchAll">
-                        Arrêter
-                    </Btn>
                     <div v-if="lastMeta" class="text-xs text-primary-300">
                         <Badge :content="String(lastMeta.returned ?? rawItems.length)" color="primary" />
-                        <span class="ml-2">résultat(s)</span>
+                        <span class="ml-2">retourné(s)</span>
+                        <template v-if="typeof lastMeta.total === 'number'">
+                            <span class="mx-2">/</span>
+                            <Badge :content="String(lastMeta.total)" color="neutral" />
+                            <span class="ml-2">total</span>
+                        </template>
                     </div>
                 </div>
             </template>
+        </Card>
+
+        <!-- Options + historique (au-dessus des résultats), masqué par défaut -->
+        <Card class="p-6 space-y-4">
+            <div class="flex items-center justify-between gap-2">
+                <div>
+                    <h3 class="font-semibold text-primary-100">Options & historique</h3>
+                    <p class="text-xs text-primary-300 mt-1">
+                        Masqué par défaut pour garder l’interface légère.
+                    </p>
+                </div>
+                <Btn size="sm" variant="outline" @click="showOptionsAndHistory = !showOptionsAndHistory">
+                    {{ showOptionsAndHistory ? "Masquer" : "Afficher" }}
+                </Btn>
+            </div>
+
+            <div v-if="showOptionsAndHistory" class="grid gap-6 lg:grid-cols-2">
+                <Card class="p-6 space-y-3">
+                    <h4 class="font-semibold text-primary-100">Options d’import</h4>
+                    <div class="grid gap-2 sm:grid-cols-2">
+                        <CheckboxField v-model="optSkipCache" label="Ignorer le cache" />
+                        <CheckboxField v-model="optWithImages" label="Inclure les images" />
+                        <CheckboxField v-model="optIncludeRelations" label="Inclure les relations" />
+                        <CheckboxField v-model="optForceUpdate" label="Écraser si existe déjà" />
+                        <CheckboxField v-model="optManualChoice" label="Choix manuel (validation uniquement)" />
+                    </div>
+                    <p class="text-xs text-primary-300">
+                        “Simuler” = dry-run. “Choix manuel” = ne fait pas l’intégration (validate_only).
+                    </p>
+                </Card>
+
+                <Card class="p-6 space-y-3">
+                    <div class="flex items-center justify-between gap-2">
+                        <h4 class="font-semibold text-primary-100">Historique</h4>
+                        <Btn size="sm" variant="ghost" :disabled="!historyLines.length" @click="historyLines = []">
+                            Vider
+                        </Btn>
+                    </div>
+                    <pre class="text-xs bg-base-300/30 border border-base-300 rounded p-3 max-h-80 overflow-auto whitespace-pre-wrap break-words">{{ historyLines.join("\n") }}</pre>
+                </Card>
+            </div>
         </Card>
 
         <!-- Corps: tableau -->
@@ -841,6 +1235,9 @@ const clearEffectsAnalysis = () => {
                 <div class="flex items-center gap-2">
                     <h3 class="font-semibold text-primary-100">Résultats</h3>
                     <Badge :content="String(visibleItems.length)" color="neutral" />
+                    <span v-if="lastMeta && typeof lastMeta.total === 'number'" class="text-sm text-primary-300">
+                        · total filtré: {{ lastMeta.total }}
+                    </span>
                     <span v-if="selectedCount" class="text-sm text-primary-300">· sélection: {{ selectedCount }}</span>
                 </div>
 
@@ -863,13 +1260,31 @@ const clearEffectsAnalysis = () => {
                         Importer
                     </Btn>
                     <Btn
+                        color="success"
+                        variant="outline"
+                        :disabled="importing || !rawItems.length"
+                        title="Importe tous les résultats chargés (ignore la sélection et le filtre du tableau)"
+                        @click="runBatch('import', 'all')"
+                    >
+                        <Loading v-if="importing" class="mr-2" />
+                        Tout importer
+                    </Btn>
+                    <Btn
                         variant="ghost"
                         :disabled="effectsAnalysisLoading || !canAnalyzeEffects"
                         @click="analyzeEffects"
-                        title="Disponible pour item/sort (sur l’ID sélectionné)"
+                        title="Disponible pour équipement/consommable/ressource/sort (sur l’ID sélectionné)"
                     >
                         <Loading v-if="effectsAnalysisLoading" class="mr-2" />
                         Analyser effets (non mappés)
+                    </Btn>
+                    <Btn
+                        variant="outline"
+                        :disabled="!canCompare"
+                        title="Comparer l'existant Krosmoz avec DofusDB et choisir par propriété (1 élément sélectionné)"
+                        @click="openCompareModal"
+                    >
+                        Comparer Krosmoz / DofusDB
                     </Btn>
                 </div>
 
@@ -895,13 +1310,18 @@ const clearEffectsAnalysis = () => {
                             <th>Nom</th>
                             <th class="w-28">Existe</th>
                             <th v-if="supports('typeId') || supports('typeIds') || supports('typeIdsNot')" class="w-48">Type</th>
-                            <th v-if="supports('raceId')" class="w-24">raceId</th>
+                        <th v-if="supports('raceId')" class="w-56">Race</th>
                             <th v-if="supports('breedId')" class="w-24">breedId</th>
                             <th v-if="supports('levelMin') || supports('levelMax')" class="w-24">Niveau</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <tr v-for="it in visibleItems" :key="String(it.id)">
+                        <tr
+                            v-for="it in visibleItems"
+                            :key="String(it.id)"
+                            class="cursor-pointer hover:bg-base-200/50"
+                            @dblclick="openCompareModalForRow(it)"
+                        >
                             <td>
                                 <input
                                     type="checkbox"
@@ -936,7 +1356,12 @@ const clearEffectsAnalysis = () => {
                                     À valider
                                 </span>
                             </td>
-                            <td v-if="supports('raceId')">{{ it.raceId ?? "—" }}</td>
+                            <td v-if="supports('raceId')">
+                                <span class="font-semibold">{{ it.raceName ?? "—" }}</span>
+                                <span v-if="it.raceName === null && (it.raceId ?? it.race) !== undefined" class="text-xs text-primary-300 ml-2">
+                                    ({{ it.raceId ?? it.race }})
+                                </span>
+                            </td>
                             <td v-if="supports('breedId')">{{ it.breedId ?? "—" }}</td>
                             <td v-if="supports('levelMin') || supports('levelMax')">{{ it.level ?? "—" }}</td>
                         </tr>
@@ -993,52 +1418,6 @@ const clearEffectsAnalysis = () => {
             </div>
         </Card>
 
-        <!-- Options + historique -->
-        <div class="grid gap-6 lg:grid-cols-2">
-            <Card class="p-6 space-y-3">
-                <h3 class="font-semibold text-primary-100">Options d’import</h3>
-                <div class="grid gap-2 sm:grid-cols-2">
-                    <CheckboxField
-                        :model-value="optSkipCache"
-                        @update:model-value="optSkipCache = $event"
-                        label="Ignorer le cache"
-                    />
-                    <CheckboxField
-                        :model-value="optWithImages"
-                        @update:model-value="optWithImages = $event"
-                        label="Images"
-                    />
-                    <CheckboxField
-                        :model-value="optForceUpdate"
-                        @update:model-value="optForceUpdate = $event"
-                        label="Écraser si existe déjà"
-                    />
-                    <CheckboxField
-                        :model-value="optManualChoice"
-                        @update:model-value="optManualChoice = $event"
-                        label="Choix manuel (validation uniquement)"
-                    />
-                    <CheckboxField
-                        :model-value="optIncludeRelations"
-                        @update:model-value="optIncludeRelations = $event"
-                        label="Inclure les relations"
-                    />
-                </div>
-                <p class="text-xs text-primary-300">
-                    “Simuler” = dry-run. “Choix manuel” = ne fait pas l’intégration (validate_only).
-                </p>
-            </Card>
-
-            <Card class="p-6 space-y-3">
-                <div class="flex items-center justify-between gap-2">
-                    <h3 class="font-semibold text-primary-100">Historique</h3>
-                    <Btn size="sm" variant="ghost" :disabled="!historyLines.length" @click="historyLines = []">
-                        Vider
-                    </Btn>
-                </div>
-                <pre class="text-xs bg-base-300/30 border border-base-300 rounded p-3 max-h-80 overflow-auto whitespace-pre-wrap break-words">{{ historyLines.join("\n") }}</pre>
-            </Card>
-        </div>
     </div>
 </template>
 

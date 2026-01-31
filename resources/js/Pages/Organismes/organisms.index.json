@@ -32,6 +32,13 @@
     "file": "user/DeleteUserForm.vue"
   },
   {
+    "name": "TypeManagerTable",
+    "description": "TypeManagerTable (Organism)",
+    "props": [],
+    "slots": [],
+    "file": "type-management/TypeManagerTable.vue"
+  },
+  {
     "name": "TanStackTable",
     "description": "TanStackTable Organism",
     "props": [],

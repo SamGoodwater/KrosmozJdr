@@ -47,7 +47,12 @@ But :
 GET /api/scrapping/search/{entity}
 ```
 
-`{entity}` correspond aux entités DofusDB supportées (ex: `monster`, `item`, `spell`, `class`, `panoply`, `effect`).
+`{entity}` correspond aux entités DofusDB supportées (ex: `monster`, `spell`, `class`, `panoply`, `effect`)
+et aux variantes “items” pilotées par nos registries :
+- `item` (liste globale DofusDB `/items`)
+- `equipment` (items hors ressources/consommables)
+- `resource` (items dont le `typeId` est autorisé comme ressource)
+- `consumable` (items dont le `typeId` est autorisé comme consommable)
 
 Paramètres (principaux) :
 - **Filtres (selon entité)** :
@@ -55,7 +60,7 @@ Paramètres (principaux) :
   - `ids` (csv) : `1,2,3`
   - `idMin` / `idMax` (int) : bornes sur l’id
   - `name` (string) : recherche texte (convertie en `name[$search]`)
-  - `typeId`, `raceId`, `breedId`, `levelMin`, `levelMax` (selon entité)
+  - `typeId`, `typeIds`, `typeIdsNot`, `raceId`, `breedId`, `levelMin`, `levelMax` (selon entité)
 - **Pagination / perf**
   - `limit` (int) : taille de page demandée
   - `start_skip` (int) : offset initial

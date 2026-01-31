@@ -76,9 +76,15 @@ const { inputAttrs, listeners } = useInputProps(props, $attrs, emit, 'input', 'c
  * - en usage "core" avec v-model : on reçoit `props.modelValue`
  * - en usage via les Molecules (InputField/FieldTemplate) : la valeur arrive souvent via `inputAttrs.value`
  */
+const hasVModelListener = computed(() => {
+  // Quand un parent utilise v-model, Vue passe un listener `onUpdate:modelValue`
+  // (qui reste présent dans $attrs). En usage "field", ce listener n'est pas fourni.
+  return !!($attrs?.['onUpdate:modelValue'] || $attrs?.['onUpdate:model-value'])
+})
+
 const effectiveValue = computed(() => {
-  // Priorité au v-model standard
-  if (props.modelValue !== null && props.modelValue !== undefined) {
+  // Priorité au v-model standard seulement si un listener v-model est présent
+  if (hasVModelListener.value && props.modelValue !== null && props.modelValue !== undefined) {
     return props.modelValue;
   }
   // Fallback: valeur HTML passée via v-bind="inputAttrs"

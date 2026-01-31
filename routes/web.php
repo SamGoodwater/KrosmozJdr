@@ -34,7 +34,9 @@ require __DIR__ . '/entities/classe.php';
 require __DIR__ . '/entities/consumable.php';
 require __DIR__ . '/entities/creature.php';
 require __DIR__ . '/entities/item.php';
+require __DIR__ . '/entities/item-type.php';
 require __DIR__ . '/entities/monster.php';
+require __DIR__ . '/entities/monster-race.php';
 require __DIR__ . '/entities/npc.php';
 require __DIR__ . '/entities/panoply.php';
 require __DIR__ . '/entities/resource.php';
@@ -43,6 +45,8 @@ require __DIR__ . '/entities/scenario.php';
 require __DIR__ . '/entities/shop.php';
 require __DIR__ . '/entities/specialization.php';
 require __DIR__ . '/entities/spell.php';
+require __DIR__ . '/entities/spell-type.php';
+require __DIR__ . '/entities/consumable-type.php';
 
 // SERVICES
 require __DIR__ . '/services/scrapping.php';

@@ -936,7 +936,7 @@ class DataIntegrationService
         return match ($type) {
             'class' => $this->wrapExistingRecord('classes', Classe::where('name', $convertedData['name'] ?? null)->first()),
             'monster' => $this->findExistingMonster($convertedData),
-            'item' => $this->findExistingItem($convertedData),
+            'item', 'consumable', 'resource', 'equipment' => $this->findExistingItem($convertedData),
             'spell' => $this->wrapExistingRecord('spells', Spell::where('name', $convertedData['name'] ?? null)->first()),
             'panoply' => $this->wrapExistingRecord('panoplies', Panoply::where('name', $convertedData['name'] ?? null)->orWhere('dofusdb_id', $convertedData['dofusdb_id'] ?? null)->first()),
             default => null,
@@ -991,16 +991,27 @@ class DataIntegrationService
      */
     private function findExistingItem(array $convertedData): ?array
     {
-        if (!isset($convertedData['name'], $convertedData['type'], $convertedData['category'])) {
+        $targetTable = $this->determineItemTargetTable(
+            $convertedData['type'] ?? null,
+            $convertedData['category'] ?? null
+        );
+        if (!$targetTable) {
             return null;
         }
 
-        $targetTable = $this->determineItemTargetTable($convertedData['type'], $convertedData['category']);
+        $dofusdbId = isset($convertedData['dofusdb_id']) ? (string) $convertedData['dofusdb_id'] : null;
+        $name = $convertedData['name'] ?? null;
 
         $model = match ($targetTable) {
-            'items' => Item::where('name', $convertedData['name'])->first(),
-            'consumables' => Consumable::where('name', $convertedData['name'])->first(),
-            'resources' => Resource::where('name', $convertedData['name'])->first(),
+            'items' => $dofusdbId
+                ? Item::where('dofusdb_id', $dofusdbId)->first()
+                : ($name ? Item::where('name', $name)->first() : null),
+            'consumables' => $dofusdbId
+                ? Consumable::where('dofusdb_id', $dofusdbId)->first()
+                : ($name ? Consumable::where('name', $name)->first() : null),
+            'resources' => $dofusdbId
+                ? Resource::where('dofusdb_id', $dofusdbId)->first()
+                : ($name ? Resource::where('name', $name)->first() : null),
             default => null,
         };
 

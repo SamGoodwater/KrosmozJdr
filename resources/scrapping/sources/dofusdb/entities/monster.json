@@ -24,6 +24,7 @@
       { "key": "ids", "type": "number[]", "max": 500 },
       { "key": "name", "type": "string" },
       { "key": "raceId", "type": "number" },
+      { "key": "raceIds", "type": "number[]", "max": 5000 },
       { "key": "levelMin", "type": "number" },
       { "key": "levelMax", "type": "number" }
     ]

@@ -1,0 +1,24 @@
+{
+  "version": 1,
+  "source": "dofusdb",
+  "key": "item-super-types",
+  "description": "Mapping métier des superTypeId DofusDB vers les catégories KrosmozJDR (equipment/resource/consumable) + exclusions. Utilisé pour dériver des listes de typeId via /item-types.",
+  "groups": {
+    "resource": {
+      "strategy": "include",
+      "superTypeIds": [9],
+      "notes": "SuperTypeId=9 correspond aux 'Ressource'. La liste effective de typeIds peut être restreinte par la registry DB (resource_types decision=allowed)."
+    },
+    "consumable": {
+      "strategy": "include",
+      "superTypeIds": [6],
+      "notes": "SuperTypeId=6 correspond aux 'Consommable'. La liste effective de typeIds peut être restreinte par la registry DB (consumable_types decision=allowed)."
+    },
+    "equipment": {
+      "strategy": "exclude",
+      "excludeSuperTypeIds": [6, 9],
+      "notes": "Par défaut: tout ce qui n'est pas consommable (6) ni ressource (9). Ajouter ici d'autres superTypeIds à exclure (cosmétiques, quêtes, etc.) selon le besoin."
+    }
+  }
+}
+

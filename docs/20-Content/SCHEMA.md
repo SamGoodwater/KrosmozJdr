@@ -158,6 +158,7 @@ erDiagram
   CONSUMABLE_TYPES {
     id : bigint(20) unsigned
     name : varchar(255)
+    dofusdb_type_id : int(10) unsigned
     state : varchar(255)
     read_level : tinyint(4)
     write_level : tinyint(4)
@@ -165,6 +166,9 @@ erDiagram
     updated_at : timestamp
     deleted_at : timestamp
     created_by : bigint(20) unsigned
+    decision : varchar(255)
+    seen_count : int(10) unsigned
+    last_seen_at : timestamp
   }
   CONSUMABLES {
     id : bigint(20) unsigned
@@ -356,6 +360,7 @@ erDiagram
   ITEM_TYPES {
     id : bigint(20) unsigned
     name : varchar(255)
+    dofusdb_type_id : int(10) unsigned
     state : varchar(255)
     read_level : tinyint(4)
     write_level : tinyint(4)
@@ -363,6 +368,9 @@ erDiagram
     updated_at : timestamp
     deleted_at : timestamp
     created_by : bigint(20) unsigned
+    decision : varchar(255)
+    seen_count : int(10) unsigned
+    last_seen_at : timestamp
   }
   ITEMS {
     id : bigint(20) unsigned

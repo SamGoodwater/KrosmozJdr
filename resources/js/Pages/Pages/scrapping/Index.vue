@@ -13,9 +13,6 @@ import { usePageTitle } from "@/Composables/layout/usePageTitle";
 
 import Container from "@/Pages/Atoms/data-display/Container.vue";
 import ScrappingDashboard from "@/Pages/Organismes/scrapping/ScrappingDashboard.vue";
-import ResourceTypeReviewSection from "./components/ResourceTypeReviewSection.vue";
-import ItemTypeReviewSection from "./components/ItemTypeReviewSection.vue";
-import ConsumableTypeReviewSection from "./components/ConsumableTypeReviewSection.vue";
 
 const { setPageTitle } = usePageTitle();
 onMounted(() => setPageTitle("Gestion du Scrapping"));
@@ -41,12 +38,5 @@ if (import.meta?.hot) {
         </div>
 
         <ScrappingDashboard />
-
-        <!-- UX spécifique aux resource_types -->
-        <ResourceTypeReviewSection />
-
-       <!-- UX spécifique aux item_types / consumable_types -->
-       <ItemTypeReviewSection />
-       <ConsumableTypeReviewSection />
     </Container>
 </template>

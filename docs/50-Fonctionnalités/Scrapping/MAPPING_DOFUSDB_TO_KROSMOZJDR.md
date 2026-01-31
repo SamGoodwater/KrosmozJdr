@@ -36,6 +36,18 @@ Centraliser le lien entre :
 | `grades.0.agility` | `creatures.agility` | `toInt` → `clampInt(0..1000)` |
 | `grades.0.wisdom` | `creatures.wisdom` | `toInt` → `clampInt(0..1000)` |
 | `grades.0.chance` | `creatures.chance` | `toInt` → `clampInt(0..1000)` |
+| `grades.0.actionPoints` | `creatures.pa` | `toInt` → `clampInt(0..20)` |
+| `grades.0.movementPoints` | `creatures.pm` | `toInt` → `clampInt(0..20)` |
+| `grades.0.kamas` | `creatures.kamas` | `toInt` → `clampInt(0..9999999)` |
+| `grades.0.bonusRange` | `creatures.po` | `toInt` → `clampInt(0..50)` |
+| `grades.0.paDodge` | `creatures.dodge_pa` | `nullableInt` |
+| `grades.0.pmDodge` | `creatures.dodge_pm` | `nullableInt` |
+| `grades.0.vitality` | `creatures.vitality` | `nullableInt` |
+| `grades.0.neutralResistance` | `creatures.res_neutre` | `nullableInt` |
+| `grades.0.earthResistance` | `creatures.res_terre` | `nullableInt` |
+| `grades.0.fireResistance` | `creatures.res_feu` | `nullableInt` |
+| `grades.0.airResistance` | `creatures.res_air` | `nullableInt` |
+| `grades.0.waterResistance` | `creatures.res_eau` | `nullableInt` |
 | `img` | `creatures.image` | `storeScrappedImage(entityFolder=monsters, idPath=id)` |
 | `size` | `monsters.size` | `mapSizeToKrosmoz(default=medium)` |
 | `race` | `monsters.monster_race_id` | `nullableInt` |
@@ -67,11 +79,28 @@ Centraliser le lien entre :
 | `img` | `items.image` | `storeScrappedImage(entityFolder=items, idPath=id)` |
 | `recipe` | `items.recipe` | _(aucun)_ |
 | `effects[]` | `items.bonus` | `normalizeDofusdbEffects(sourceType=item, includeRaw=true)` → `jsonEncode(pretty=false)` |
+| `effects[]` | `items.effect` | `mapDofusdbEffectsToKrosmozBonuses(lang={lang})` → `jsonEncode(pretty=false)` |
 
 ### Notes (type / category / table finale)
-L’entité DofusDB “item” est ensuite intégrée dans **une table KrosmozJDR** (`items`, `resources`, `consumables`) en fonction de :
-- `typeId` DofusDB,
-- la registry DB `resource_types` (ex: liste “allowed”).
+L’API DofusDB expose tout sous `/items`. Dans KrosmozJDR on distingue :
+- `item` : recherche globale (tous les items DofusDB)
+- `equipment` : items hors ressources/consommables (par défaut)
+- `resource` : items dont le `typeId` est autorisé comme ressource (registry `resource_types`)
+- `consumable` : items dont le `typeId` est autorisé comme consommable (registry `consumable_types`)
+
+L’intégration choisit ensuite la table cible (`items` / `resources` / `consumables`) selon `type` + `category` produits par les formatters `mapDofusdbItemType` / `mapDofusdbItemCategory`.
+
+---
+
+## Entités `equipment` / `resource` / `consumable`
+### Endpoints DofusDB
+- `GET /items/{id}?lang=fr`
+- `GET /items?lang=fr&...&$limit=...&$skip=...`
+
+### Mapping
+Ces entités sont des **vues métier** de DofusDB `/items` :
+- mapping identique à `item` (mêmes champs + mêmes formatters),
+- mais les filtres par défaut et l’“exists flag” (DB) pointent sur la table métier attendue.
 
 ---
 
@@ -88,10 +117,10 @@ L’entité DofusDB “item” est ensuite intégrée dans **une table KrosmozJD
 | `description` (multi-langue) | `spells.description` | `pickLang(lang={lang}, fallback=fr)` → `truncate(255)` |
 | `img` | `spells.image` | `storeScrappedImage(entityFolder=spells, idPath=id)` |
 | `breedId` | `spells.class` | `nullableInt` |
-| `cost` | `spells.cost` | `toInt` → `clampInt(0..20)` |
-| `range` | `spells.range` | `toInt` → `clampInt(0..50)` |
-| `area` | `spells.area` | `toInt` → `clampInt(0..50)` |
-| `levels.0.effects[]` | `spells.effect` | `normalizeDofusdbEffects(sourceType=spell_level, includeRaw=true)` → `jsonEncode(pretty=false)` |
+| `levels.0.apCost` | `spells.cost` | `toInt` → `clampInt(0..20)` |
+| `levels.0.range` | `spells.range` | `toInt` → `clampInt(0..50)` |
+| `levels.0.effects.0.zoneDescr.shape` | `spells.area` | `nullableInt` |
+| `levels.0.effects[]` | `spells.effect` | `packDofusdbEffects(sourceType=spell_level, includeRaw=true, lang={lang})` → `jsonEncode(pretty=false)` |
 
 ### Relations (config)
 - **summon** (par défaut) : détection des invocations via un “detector” (niveaux de sorts) → import + lien vers `monster`

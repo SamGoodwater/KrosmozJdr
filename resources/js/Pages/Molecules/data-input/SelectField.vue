@@ -1,139 +1,52 @@
 <script setup>
 /**
  * SelectField Molecule (DaisyUI, Atomic Design)
- * 
+ *
  * @description
- * Molecule pour champ de sélection complet, utilisant le système unifié useInputField.
- * 
- * @example
- * // Label simple (floating par défaut)
- * <SelectField label="Pays" v-model="country" :options="countries" />
- * 
- * // Avec validation
- * <SelectField 
- *   label="Rôle" 
- *   v-model="role"
- *   :validation="{ state: 'error', message: 'Rôle requis' }"
- * />
- * 
- * // Avec options
- * <SelectField 
- *   label="Catégorie" 
- *   v-model="category" 
- *   :options="[
- *     { value: 'tech', label: 'Technologie' },
- *     { value: 'design', label: 'Design' }
- *   ]"
- * />
+ * Pour corriger définitivement les soucis de rendu (menu natif OS parfois illisible),
+ * `SelectField` utilise par défaut un dropdown custom (glass) via `SelectSearchField`.
+ *
+ * Exception: `multiple` continue d'utiliser un `<select>` natif via `SelectFieldNative`.
  */
-import { useAttrs } from 'vue'
-import SelectCore from '@/Pages/Atoms/data-input/SelectCore.vue'
-import FieldTemplate from '@/Pages/Molecules/data-input/FieldTemplate.vue'
-import useInputField from '@/Composables/form/useInputField'
-import { getInputPropsDefinition } from '@/Utils/atomic-design/inputHelper'
+import { useAttrs } from "vue";
+import { computed } from "vue";
+import { getInputPropsDefinition } from "@/Utils/atomic-design/inputHelper";
+import SelectSearchField from "@/Pages/Molecules/data-input/SelectSearchField.vue";
+import SelectFieldNative from "@/Pages/Molecules/data-input/SelectFieldNative.vue";
 
-// ------------------------------------------
-// 🔧 Définition des props et des events
-// ------------------------------------------
-const props = defineProps(getInputPropsDefinition('select', 'field'))
-const emit = defineEmits(['update:modelValue'])
-const $attrs = useAttrs()
+const props = defineProps(getInputPropsDefinition("select", "field"));
+const emit = defineEmits(["update:modelValue"]);
+const $attrs = useAttrs();
 
-// ------------------------------------------
-// 🎯 Utilisation du composable unifié
-// ------------------------------------------
-const {
-  // V-model et actions
-  actionsToDisplay,
-  inputRef,
-  focus,
-  
-  // Attributs et événements
-  inputAttrs,
-  listeners,
-  
-  // Labels
-  labelConfig,
-  
-  // Validation
-  validationState,
-  validationMessage,
-  validate,
-  resetValidation,
-  
-  // Méthodes de contrôle de validation
-  enableValidation,
-  disableValidation,
-  
-  // Style
-  styleProperties,
-  containerClasses,
-} = useInputField({
-  modelValue: props.modelValue,
-  type: 'select',
-  mode: 'field',
-  props,
-  attrs: $attrs,
-  emit
-})
+const forwardUpdate = (v) => emit("update:modelValue", v);
 
-// Exposer les méthodes pour contrôle externe
-defineExpose({
-  enableValidation,
-  disableValidation,
-  resetValidation,
-  focus,
-  validate
-})
+const passThrough = computed(() => {
+    // Vue n'autorise pas les attributs dupliqués (ex: deux `v-bind` sans argument).
+    // On fusionne ici pour ne faire qu'un seul `v-bind`.
+    const { class: attrClass, style: attrStyle, ...restAttrs } = $attrs || {};
+    const { class: propClass, style: propStyle, ...restProps } = props || {};
+
+    return {
+        ...restAttrs,
+        ...restProps,
+        class: [attrClass, propClass].filter(Boolean),
+        style: [attrStyle, propStyle].filter(Boolean),
+    };
+});
 </script>
 
 <template>
-  <FieldTemplate
-    :container-classes="containerClasses"
-    :label-config="labelConfig"
-    :input-attrs="inputAttrs"
-    :listeners="listeners"
-    :input-ref="inputRef"
-    :actions-to-display="actionsToDisplay"
-    :style-properties="styleProperties"
-    :validation-state="validationState"
-    :validation-message="validationMessage"
-    :helper="props.helper"
-  >
-    <!-- Slot core spécifique pour SelectCore -->
-    <template #core="{ inputAttrs: coreInputAttrs, listeners: coreListeners }">
-      <SelectCore
-        v-bind="coreInputAttrs"
-        v-on="coreListeners"
-        :options="props.options"
-        ref="inputRef"
-      >
-        <!-- Options par défaut -->
-        <slot>
-          <option v-if="props.placeholder" value="" disabled selected>
-            {{ props.placeholder }}
-          </option>
-          <option
-            v-for="option in props.options"
-            :key="(option?.value ?? option)"
-            :value="(option?.value ?? option)"
-            :disabled="option?.disabled"
-          >
-            {{ option?.label ?? option }}
-          </option>
-        </slot>
-      </SelectCore>
-    </template>
-    
-    <!-- Slots personnalisés -->
-    <template v-if="$slots.overStart" #overStart>
-      <slot name="overStart" />
-    </template>
-    <template v-if="$slots.overEnd" #overEnd>
-      <slot name="overEnd" />
-    </template>
-    <template #helper>
-      <slot name="helper" />
-    </template>
-  </FieldTemplate>
+    <SelectFieldNative
+        v-if="props.multiple"
+        v-bind="passThrough"
+        @update:modelValue="forwardUpdate"
+    >
+        <slot />
+    </SelectFieldNative>
+
+    <SelectSearchField
+        v-else
+        v-bind="passThrough"
+        @update:modelValue="forwardUpdate"
+    />
 </template>

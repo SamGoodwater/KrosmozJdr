@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Scrapping;
 
 use App\Http\Controllers\Controller;
 use App\Services\Scrapping\Config\ScrappingConfigLoader;
+use App\Services\Scrapping\Constants\EntityLimits;
 use App\Services\Scrapping\Orchestrator\ScrappingOrchestrator;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
@@ -20,17 +21,6 @@ use Illuminate\Validation\Rule;
  */
 class ScrappingController extends Controller
 {
-    private const ENTITY_LIMITS = [
-        'class' => 19,
-        'monster' => 5000,
-        'item' => 30000,
-        'spell' => 20000,
-        'panoply' => 1000, // Estimation, à ajuster selon les données réelles
-        // Aliases (items DofusDB)
-        'resource' => 30000,
-        'consumable' => 30000,
-        'equipment' => 30000,
-    ];
     public function __construct(
         private ScrappingOrchestrator $orchestrator,
         private ScrappingConfigLoader $configLoader
@@ -66,7 +56,7 @@ class ScrappingController extends Controller
             ]);
         }
 
-        foreach (self::ENTITY_LIMITS as $type => $maxId) {
+        foreach (EntityLimits::LIMITS as $type => $maxId) {
             if (!isset($metaByType[$type])) {
                 $metaByType[$type] = [
                     'type' => $type,
@@ -303,8 +293,38 @@ class ScrappingController extends Controller
      */
     public function importConsumable(Request $request, int $id): JsonResponse
     {
-        // Même source DofusDB (/items). La conversion/intégration décide de la table cible.
-        return $this->importItem($request, $id);
+        try {
+            $options = $this->extractOptions($request);
+            $result = $this->orchestrator->importConsumable($id, $options);
+
+            if ($result['success']) {
+                return response()->json([
+                    'success' => true,
+                    'message' => $result['message'] ?? 'Consommable importé avec succès',
+                    'data' => $result['data'] ?? null,
+                    'timestamp' => now()->toISOString(),
+                ], 201);
+            }
+
+            return response()->json([
+                'success' => false,
+                'message' => $result['message'] ?? 'Erreur lors de l\'import du consommable',
+                'error' => $result['error'] ?? 'Erreur inconnue',
+                'timestamp' => now()->toISOString(),
+            ], 400);
+        } catch (\Throwable $e) {
+            Log::error('Erreur lors de l\'import de consommable via API', [
+                'id' => $id,
+                'error' => $e->getMessage(),
+            ]);
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Erreur lors de l\'import du consommable',
+                'error' => $e->getMessage(),
+                'timestamp' => now()->toISOString(),
+            ], 500);
+        }
     }
 
     /**
@@ -415,12 +435,71 @@ class ScrappingController extends Controller
     }
 
     /**
+     * Import avec fusion : compare l'existant Krosmoz et DofusDB, applique les choix par propriété.
+     *
+     * @param Request $request type, dofusdb_id, choices (optionnel, clés plates -> "krosmoz"|"dofusdb")
+     * @return JsonResponse
+     */
+    public function importWithMerge(Request $request): JsonResponse
+    {
+        try {
+            $validated = $request->validate([
+                'type' => ['required', 'string', 'in:class,monster,item,spell,panoply,resource,consumable,equipment'],
+                'dofusdb_id' => ['required', 'integer', 'min:1'],
+                'choices' => ['nullable', 'array'],
+                'choices.*' => ['string', 'in:krosmoz,dofusdb'],
+            ]);
+
+            $type = (string) $validated['type'];
+            $dofusdbId = (int) $validated['dofusdb_id'];
+            $choices = is_array($validated['choices'] ?? null) ? $validated['choices'] : [];
+            $options = $this->extractOptions($request);
+
+            $result = $this->orchestrator->importWithMerge($type, $dofusdbId, $choices, $options);
+
+            if (!$result['success']) {
+                return response()->json([
+                    'success' => false,
+                    'message' => $result['message'] ?? 'Import avec fusion impossible',
+                    'error' => $result['error'] ?? null,
+                    'timestamp' => now()->toISOString(),
+                ], 500);
+            }
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Import avec fusion effectué.',
+                'data' => $result['data'] ?? null,
+                'timestamp' => now()->toISOString(),
+            ], 201);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Erreur de validation',
+                'errors' => $e->errors(),
+                'timestamp' => now()->toISOString(),
+            ], 422);
+        } catch (\Exception $e) {
+            Log::error('Erreur import avec fusion', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+            ]);
+            return response()->json([
+                'success' => false,
+                'message' => 'Erreur lors de l\'import avec fusion',
+                'error' => $e->getMessage(),
+                'timestamp' => now()->toISOString(),
+            ], 500);
+        }
+    }
+
+    /**
      * Import d'une plage d'ID
      */
     public function importRange(Request $request): JsonResponse
     {
         $validated = $request->validate([
-            'type' => ['required', 'string', Rule::in(array_keys(self::ENTITY_LIMITS))],
+            'type' => ['required', 'string', Rule::in(array_keys(EntityLimits::LIMITS))],
             'start_id' => ['required', 'integer', 'min:1'],
             'end_id' => ['required', 'integer', 'min:1'],
         ]);
@@ -436,7 +515,7 @@ class ScrappingController extends Controller
             ], 422);
         }
 
-        $maxId = self::ENTITY_LIMITS[$type];
+        $maxId = EntityLimits::LIMITS[$type];
         if ($startId < 1 || $endId > $maxId) {
             return response()->json([
                 'success' => false,
@@ -487,11 +566,11 @@ class ScrappingController extends Controller
     public function importAll(Request $request): JsonResponse
     {
         $validated = $request->validate([
-            'type' => ['required', 'string', Rule::in(array_keys(self::ENTITY_LIMITS))],
+            'type' => ['required', 'string', Rule::in(array_keys(EntityLimits::LIMITS))],
         ]);
 
         $type = $validated['type'];
-        $maxId = self::ENTITY_LIMITS[$type];
+        $maxId = EntityLimits::LIMITS[$type];
 
         try {
             $options = $this->extractOptions($request);
@@ -535,14 +614,14 @@ class ScrappingController extends Controller
     {
         $normalizedType = strtolower($type);
 
-        if (!array_key_exists($normalizedType, self::ENTITY_LIMITS)) {
+        if (!array_key_exists($normalizedType, EntityLimits::LIMITS)) {
             return response()->json([
                 'success' => false,
                 'message' => 'Type d\'entité non supporté',
             ], 422);
         }
 
-        $maxId = self::ENTITY_LIMITS[$normalizedType];
+        $maxId = EntityLimits::LIMITS[$normalizedType];
         if ($id < 1 || $id > $maxId) {
             return response()->json([
                 'success' => false,

@@ -1273,6 +1273,17 @@ namespace App\Models\Type{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ConsumableType withTrashed()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ConsumableType withoutTrashed()
  * @mixin \Eloquent
+ * @property int|null $dofusdb_type_id
+ * @property string $decision
+ * @property int $seen_count
+ * @property \Illuminate\Support\Carbon|null $last_seen_at
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ConsumableType allowed()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ConsumableType blocked()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ConsumableType pending()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ConsumableType whereDecision($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ConsumableType whereDofusdbTypeId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ConsumableType whereLastSeenAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ConsumableType whereSeenCount($value)
  */
 	class ConsumableType extends \Eloquent {}
 }
@@ -1308,6 +1319,17 @@ namespace App\Models\Type{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ItemType withTrashed()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ItemType withoutTrashed()
  * @mixin \Eloquent
+ * @property int|null $dofusdb_type_id
+ * @property string $decision
+ * @property int $seen_count
+ * @property \Illuminate\Support\Carbon|null $last_seen_at
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ItemType allowed()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ItemType blocked()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ItemType pending()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ItemType whereDecision($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ItemType whereDofusdbTypeId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ItemType whereLastSeenAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ItemType whereSeenCount($value)
  */
 	class ItemType extends \Eloquent {}
 }

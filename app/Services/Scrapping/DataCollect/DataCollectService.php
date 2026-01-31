@@ -8,6 +8,7 @@ use App\Models\Scrapping\PendingResourceTypeItem;
 use App\Services\Scrapping\Http\DofusDbClient;
 use Illuminate\Support\Facades\Http;
 use App\Services\Scrapping\DataCollect\ConfigDrivenDofusDbCollector;
+use App\Services\Scrapping\DataCollect\ItemEntityTypeFilterService;
 
 /**
  * Service de collecte de données depuis des sites externes
@@ -180,15 +181,22 @@ class DataCollectService
                 if ($itemId) {
                     try {
                         $itemData = $this->collectItem($itemId, true, $options);
-                        // Vérifier si c'est une ressource (typeId dans TYPES_RESOURCES)
+                        // Vérifier si c'est une ressource (superType Ressource)
                         $typeId = $itemData['typeId'] ?? null;
                         if ($typeId) {
-                            if ($this->isResourceType((int) $typeId)) {
+                            $typeId = (int) $typeId;
+
+                            // IMPORTANT: ne pas polluer la registry "resource-types" avec des équipements.
+                            // On ne mémorise en pending que si le typeId appartient au groupe Ressource.
+                            if (!$this->isResourceGroupTypeId($typeId)) {
+                                continue;
+                            }
+
+                            if ($this->isAllowedResourceTypeId($typeId)) {
                                 $resources[] = $itemData;
                             } else {
-                                // Mémoriser l'item rencontré pour réimport futur si le type est autorisé
                                 $this->rememberPendingResourceCandidate(
-                                    (int) $typeId,
+                                    $typeId,
                                     (int) $itemId,
                                     'drops',
                                     'monster',
@@ -250,14 +258,21 @@ class DataCollectService
                         // Vérifier si c'est une ressource
                         $typeId = $itemData['typeId'] ?? null;
                         if ($typeId) {
-                            if ($this->isResourceType((int) $typeId)) {
+                            $typeId = (int) $typeId;
+
+                            // Seuls les items du groupe Ressource peuvent être considérés comme ingrédients "ressources".
+                            if (!$this->isResourceGroupTypeId($typeId)) {
+                                continue;
+                            }
+
+                            if ($this->isAllowedResourceTypeId($typeId)) {
                                 $recipeResources[] = [
                                     'resource' => $itemData,
-                                    'quantity' => $quantity
+                                    'quantity' => $quantity,
                                 ];
                             } else {
                                 $this->rememberPendingResourceCandidate(
-                                    (int) $typeId,
+                                    $typeId,
                                     (int) $itemId,
                                     'recipe',
                                     'item',
@@ -332,7 +347,31 @@ class DataCollectService
      */
     public function isAllowedResourceTypeId(int $typeId): bool
     {
-        return $this->isResourceType($typeId);
+        // Source de vérité: registry + config superType (via service dédié).
+        // Fallback sur legacy si le conteneur n'est pas prêt (tests isolés).
+        try {
+            /** @var ItemEntityTypeFilterService $svc */
+            $svc = app(ItemEntityTypeFilterService::class);
+            return $svc->isTypeIdAllowedForEntity('resource', (int) $typeId);
+        } catch (\Throwable) {
+            return $this->isResourceType($typeId);
+        }
+    }
+
+    /**
+     * Indique si un typeId DofusDB appartient au groupe métier "resource" (superType Ressource),
+     * indépendamment de son statut allowed/pending/blocked.
+     */
+    private function isResourceGroupTypeId(int $typeId): bool
+    {
+        try {
+            /** @var ItemEntityTypeFilterService $svc */
+            $svc = app(ItemEntityTypeFilterService::class);
+            return $svc->isTypeIdAllowedForEntity('resource', (int) $typeId, ItemEntityTypeFilterService::TYPE_MODE_ALL);
+        } catch (\Throwable) {
+            // fallback: si service indisponible, best effort via legacy
+            return $this->isResourceType((int) $typeId);
+        }
     }
 
     /**

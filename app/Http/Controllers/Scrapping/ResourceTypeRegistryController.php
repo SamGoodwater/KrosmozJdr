@@ -9,7 +9,9 @@ use App\Models\Entity\Monster;
 use App\Models\User;
 use App\Models\Scrapping\PendingResourceTypeItem;
 use App\Models\Type\ResourceType;
+use App\Services\Scrapping\Catalog\DofusDbItemTypeNameResolver;
 use App\Services\Scrapping\DataCollect\DataCollectService;
+use App\Services\Scrapping\DataCollect\ItemEntityTypeFilterService;
 use App\Services\Scrapping\Http\DofusDbClient;
 use App\Services\Scrapping\Orchestrator\ScrappingOrchestrator;
 use Illuminate\Support\Facades\DB;
@@ -28,13 +30,6 @@ use Illuminate\Validation\Rule;
 class ResourceTypeRegistryController extends Controller
 {
     /**
-     * Cache local (requête) pour éviter de refetch le même typeId.
-     *
-     * @var array<int, string|null>
-     */
-    private array $itemTypeNameCache = [];
-
-    /**
      * Normalise un libellé métier (used/unused) vers le stockage (allowed/blocked).
      */
     private function normalizeDecision(string $decision): string
@@ -49,60 +44,14 @@ class ResourceTypeRegistryController extends Controller
     public function __construct(
         private ScrappingOrchestrator $orchestrator,
         private DataCollectService $collector,
+        private ItemEntityTypeFilterService $itemEntityTypeFilters,
         private DofusDbClient $dofusDbClient,
+        private DofusDbItemTypeNameResolver $nameResolver,
     ) {}
 
     private function stripDofusdbSuffix(?string $name): ?string
     {
-        if (!$name) return $name;
-        $n = trim($name);
-        if (str_ends_with($n, ' (DofusDB)')) {
-            $n = trim(substr($n, 0, -strlen(' (DofusDB)')));
-        }
-        return $n;
-    }
-
-    private function fetchItemTypeName(int $typeId, bool $skipCache = false): ?string
-    {
-        if ($typeId <= 0) return null;
-        if (array_key_exists($typeId, $this->itemTypeNameCache)) {
-            return $this->itemTypeNameCache[$typeId];
-        }
-
-        $baseUrl = (string) config('scrapping.data_collect.dofusdb_base_url', 'https://api.dofusdb.fr');
-        $lang = (string) config('scrapping.data_collect.default_language', 'fr');
-        $url = rtrim($baseUrl, '/') . "/item-types/{$typeId}?lang={$lang}";
-
-        try {
-            $payload = $this->dofusDbClient->getJson($url, ['skip_cache' => $skipCache]);
-
-            // DofusDB peut renvoyer l'entité directement, ou une forme "data".
-            $row = $payload;
-            if (isset($payload['data']) && is_array($payload['data']) && isset($payload['data'][0]) && is_array($payload['data'][0])) {
-                $row = (array) $payload['data'][0];
-            }
-
-            $name = null;
-            if (isset($row['name']) && is_array($row['name'])) {
-                $cand = $row['name']['fr'] ?? $row['name'][$lang] ?? null;
-                if (is_string($cand) && trim($cand) !== '') {
-                    $name = trim($cand);
-                }
-            } elseif (isset($row['name']) && is_string($row['name']) && trim($row['name']) !== '') {
-                $name = trim($row['name']);
-            }
-
-            $name = $this->stripDofusdbSuffix($name);
-            $this->itemTypeNameCache[$typeId] = $name;
-            return $name;
-        } catch (\Throwable $e) {
-            Log::debug('resource-types: cannot resolve dofusdb item-type name', [
-                'typeId' => $typeId,
-                'error' => $e->getMessage(),
-            ]);
-            $this->itemTypeNameCache[$typeId] = null;
-            return null;
-        }
+        return $this->nameResolver->stripDofusdbSuffix($name);
     }
 
     /**
@@ -120,6 +69,13 @@ class ResourceTypeRegistryController extends Controller
         $query = ResourceType::query()
             ->whereNotNull('dofusdb_type_id')
             ->orderByDesc('last_seen_at');
+
+        // Sécurité UX: ne pas afficher des types hors "Ressource" (pollution possible via legacy drops/recipe).
+        // On filtre la registry sur le groupe superType Ressource.
+        $resourceTypeIds = $this->itemEntityTypeFilters->getTypeIdsForGroup('resource');
+        if (!empty($resourceTypeIds)) {
+            $query->whereIn('dofusdb_type_id', $resourceTypeIds);
+        }
 
         if (is_string($decision) && in_array($decision, ['pending', 'allowed', 'blocked'], true)) {
             $query->where('decision', $decision);
@@ -148,7 +104,7 @@ class ResourceTypeRegistryController extends Controller
                 continue;
             }
 
-            $resolved = $this->fetchItemTypeName($typeId, false);
+            $resolved = $this->nameResolver->fetchName($typeId, false, 'resource-types');
             if ($resolved) {
                 // On met à jour la base uniquement si le nom actuel est un placeholder.
                 $model->name = $resolved;
@@ -282,6 +238,23 @@ class ResourceTypeRegistryController extends Controller
                 'errors' => count($errors),
             ],
             'errors' => $errors,
+        ]);
+    }
+
+    /**
+     * Supprime une entrée de registry (soft delete).
+     *
+     * @example
+     * DELETE /api/scrapping/resource-types/{resourceType}
+     */
+    public function destroy(ResourceType $resourceType): JsonResponse
+    {
+        $this->authorize('delete', $resourceType);
+
+        $resourceType->delete();
+
+        return response()->json([
+            'success' => true,
         ]);
     }
 

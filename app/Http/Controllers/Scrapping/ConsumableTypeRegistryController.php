@@ -3,7 +3,9 @@
 namespace App\Http\Controllers\Scrapping;
 
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\Scrapping\Concerns\BulkDecisionUpdateTrait;
 use App\Models\Type\ConsumableType;
+use App\Services\Scrapping\Catalog\DofusDbItemTypeNameResolver;
 use App\Services\Scrapping\Http\DofusDbClient;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -17,14 +19,12 @@ use Illuminate\Support\Facades\Log;
  */
 class ConsumableTypeRegistryController extends Controller
 {
-    /**
-     * Cache local (requête) pour éviter de refetch le même typeId.
-     *
-     * @var array<int, string|null>
-     */
-    private array $itemTypeNameCache = [];
+    use BulkDecisionUpdateTrait;
 
-    public function __construct(private DofusDbClient $dofusDbClient) {}
+    public function __construct(
+        private DofusDbClient $dofusDbClient,
+        private DofusDbItemTypeNameResolver $nameResolver,
+    ) {}
 
     /**
      * Normalise un libellé métier (used/unused) vers le stockage (allowed/blocked).
@@ -40,55 +40,7 @@ class ConsumableTypeRegistryController extends Controller
 
     private function stripDofusdbSuffix(?string $name): ?string
     {
-        if (!$name) return $name;
-        $n = trim($name);
-        if (str_ends_with($n, ' (DofusDB)')) {
-            $n = trim(substr($n, 0, -strlen(' (DofusDB)')));
-        }
-        return $n;
-    }
-
-    private function fetchDofusdbItemTypeName(int $typeId, bool $skipCache = false): ?string
-    {
-        if ($typeId <= 0) return null;
-        if (array_key_exists($typeId, $this->itemTypeNameCache)) {
-            return $this->itemTypeNameCache[$typeId];
-        }
-
-        $baseUrl = (string) config('scrapping.data_collect.dofusdb_base_url', 'https://api.dofusdb.fr');
-        $lang = (string) config('scrapping.data_collect.default_language', 'fr');
-        $url = rtrim($baseUrl, '/') . "/item-types/{$typeId}?lang={$lang}";
-
-        try {
-            $payload = $this->dofusDbClient->getJson($url, ['skip_cache' => $skipCache]);
-
-            // DofusDB peut renvoyer l'entité directement, ou une forme "data".
-            $row = $payload;
-            if (isset($payload['data']) && is_array($payload['data']) && isset($payload['data'][0]) && is_array($payload['data'][0])) {
-                $row = (array) $payload['data'][0];
-            }
-
-            $name = null;
-            if (isset($row['name']) && is_array($row['name'])) {
-                $cand = $row['name']['fr'] ?? $row['name'][$lang] ?? null;
-                if (is_string($cand) && trim($cand) !== '') {
-                    $name = trim($cand);
-                }
-            } elseif (isset($row['name']) && is_string($row['name']) && trim($row['name']) !== '') {
-                $name = trim($row['name']);
-            }
-
-            $name = $this->stripDofusdbSuffix($name);
-            $this->itemTypeNameCache[$typeId] = $name;
-            return $name;
-        } catch (\Throwable $e) {
-            Log::debug('consumable-types: cannot resolve dofusdb item-type name', [
-                'typeId' => $typeId,
-                'error' => $e->getMessage(),
-            ]);
-            $this->itemTypeNameCache[$typeId] = null;
-            return null;
-        }
+        return $this->nameResolver->stripDofusdbSuffix($name);
     }
 
     /**
@@ -133,7 +85,7 @@ class ConsumableTypeRegistryController extends Controller
                 continue;
             }
 
-            $resolved = $this->fetchDofusdbItemTypeName($typeId, false);
+            $resolved = $this->nameResolver->fetchName($typeId, false, 'consumable-types');
             if ($resolved) {
                 $model->name = $resolved;
                 try {
@@ -159,6 +111,35 @@ class ConsumableTypeRegistryController extends Controller
     {
         $request->merge(['decision' => 'pending']);
         return $this->index($request);
+    }
+
+    /**
+     * Mise à jour en masse des ConsumableType (registry DofusDB).
+     *
+     * @example
+     * PATCH /api/scrapping/consumable-types/bulk
+     * { "ids":[1,2,3], "decision":"allowed" }
+     */
+    public function bulkUpdate(Request $request): JsonResponse
+    {
+        return $this->bulkUpdateDecision($request, ConsumableType::class, fn (string $d) => $this->normalizeDecision($d));
+    }
+
+    /**
+     * Supprime une entrée de registry (soft delete).
+     *
+     * @example
+     * DELETE /api/scrapping/consumable-types/{consumableType}
+     */
+    public function destroy(ConsumableType $consumableType): JsonResponse
+    {
+        $this->authorize('delete', $consumableType);
+
+        $consumableType->delete();
+
+        return response()->json([
+            'success' => true,
+        ]);
     }
 
     /**

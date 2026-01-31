@@ -96,6 +96,10 @@ Route::prefix('scrapping')->group(function () {
         ->where('type', 'class|monster|item|spell|panoply|resource|consumable|equipment')
         ->whereNumber('id');
 
+    // Catalogue DofusDB item-types (superType + types) pour aider au mapping
+    Route::middleware(['web', 'auth'])->get('/dofusdb/item-types', [App\Http\Controllers\Scrapping\DofusDbItemTypesCatalogController::class, 'index'])
+        ->name('scrapping.dofusdb.item-types');
+
     Route::prefix('import')->group(function () {
         // Import d'une classe
         Route::post('/class/{id}', [App\Http\Controllers\Scrapping\ScrappingController::class, 'importClass'])
@@ -144,6 +148,10 @@ Route::prefix('scrapping')->group(function () {
         Route::post('/all', [App\Http\Controllers\Scrapping\ScrappingController::class, 'importAll'])
             ->name('scrapping.import.all');
     });
+
+    // Import avec fusion (choix Krosmoz vs DofusDB par propriété)
+    Route::post('/import-with-merge', [App\Http\Controllers\Scrapping\ScrappingController::class, 'importWithMerge'])
+        ->name('scrapping.import.with-merge');
 });
 
 /*
@@ -165,6 +173,8 @@ Route::middleware(['web', 'auth'])->prefix('scrapping/resource-types')->group(fu
         ->name('scrapping.resource-types.pending');
     Route::patch('/bulk', [App\Http\Controllers\Scrapping\ResourceTypeRegistryController::class, 'bulkUpdate'])
         ->name('scrapping.resource-types.bulk');
+    Route::delete('/{resourceType}', [App\Http\Controllers\Scrapping\ResourceTypeRegistryController::class, 'destroy'])
+        ->name('scrapping.resource-types.delete');
     Route::patch('/{resourceType}/decision', [App\Http\Controllers\Scrapping\ResourceTypeRegistryController::class, 'updateDecision'])
         ->name('scrapping.resource-types.decision');
     Route::get('/{resourceType}/pending-items', [App\Http\Controllers\Scrapping\ResourceTypeRegistryController::class, 'pendingItems'])
@@ -187,6 +197,10 @@ Route::middleware(['web', 'auth'])->prefix('scrapping/item-types')->group(functi
         ->name('scrapping.item-types.index');
     Route::get('/pending', [App\Http\Controllers\Scrapping\ItemTypeRegistryController::class, 'pending'])
         ->name('scrapping.item-types.pending');
+    Route::patch('/bulk', [App\Http\Controllers\Scrapping\ItemTypeRegistryController::class, 'bulkUpdate'])
+        ->name('scrapping.item-types.bulk');
+    Route::delete('/{itemType}', [App\Http\Controllers\Scrapping\ItemTypeRegistryController::class, 'destroy'])
+        ->name('scrapping.item-types.delete');
     Route::patch('/{itemType}/decision', [App\Http\Controllers\Scrapping\ItemTypeRegistryController::class, 'updateDecision'])
         ->name('scrapping.item-types.decision');
 });
@@ -196,8 +210,50 @@ Route::middleware(['web', 'auth'])->prefix('scrapping/consumable-types')->group(
         ->name('scrapping.consumable-types.index');
     Route::get('/pending', [App\Http\Controllers\Scrapping\ConsumableTypeRegistryController::class, 'pending'])
         ->name('scrapping.consumable-types.pending');
+    Route::patch('/bulk', [App\Http\Controllers\Scrapping\ConsumableTypeRegistryController::class, 'bulkUpdate'])
+        ->name('scrapping.consumable-types.bulk');
+    Route::delete('/{consumableType}', [App\Http\Controllers\Scrapping\ConsumableTypeRegistryController::class, 'destroy'])
+        ->name('scrapping.consumable-types.delete');
     Route::patch('/{consumableType}/decision', [App\Http\Controllers\Scrapping\ConsumableTypeRegistryController::class, 'updateDecision'])
         ->name('scrapping.consumable-types.decision');
+});
+
+/*
+|--------------------------------------------------------------------------
+| Catalogue DofusDB (races monstres)
+|--------------------------------------------------------------------------
+*/
+Route::middleware(['web', 'auth'])->prefix('scrapping/monster-races')->group(function () {
+    Route::get('/', [App\Http\Controllers\Scrapping\DofusDbMonsterRacesCatalogController::class, 'index'])
+        ->name('scrapping.monster-races.catalog');
+});
+
+/*
+|--------------------------------------------------------------------------
+| Types internes (races monstres, types de sorts)
+|--------------------------------------------------------------------------
+|
+| Endpoints d'administration (liste + bulk state) utilisés par l'UI (pages + modals).
+|
+*/
+Route::middleware(['web', 'auth'])->prefix('types')->group(function () {
+    Route::prefix('monster-races')->group(function () {
+        Route::get('/', [App\Http\Controllers\Type\MonsterRaceTypeApiController::class, 'index'])
+            ->name('types.monster-races.index');
+        Route::patch('/bulk', [App\Http\Controllers\Type\MonsterRaceTypeApiController::class, 'bulkUpdate'])
+            ->name('types.monster-races.bulk');
+        Route::delete('/{monsterRace}', [App\Http\Controllers\Type\MonsterRaceTypeApiController::class, 'destroy'])
+            ->name('types.monster-races.delete');
+    });
+
+    Route::prefix('spell-types')->group(function () {
+        Route::get('/', [App\Http\Controllers\Type\SpellTypeApiController::class, 'index'])
+            ->name('types.spell-types.index');
+        Route::patch('/bulk', [App\Http\Controllers\Type\SpellTypeApiController::class, 'bulkUpdate'])
+            ->name('types.spell-types.bulk');
+        Route::delete('/{spellType}', [App\Http\Controllers\Type\SpellTypeApiController::class, 'destroy'])
+            ->name('types.spell-types.delete');
+    });
 });
 
 /*

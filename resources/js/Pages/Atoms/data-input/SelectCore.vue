@@ -237,8 +237,10 @@ select.select {
     cursor: pointer;
     --color: var(--color-primary-500); // Couleur par défaut (sera surchargée par color-{name})
     
-    // IMPORTANT: Couleur de texte pour que la valeur sélectionnée soit visible
-    color: hsl(var(--bc)); // Base-content (texte principal, s'adapte au thème)
+    // NOTE:
+    // On évite de forcer la couleur du texte ici.
+    // Sur certains navigateurs (notamment Windows), le menu déroulant natif peut rester clair
+    // alors que la couleur héritée devient claire → texte illisible (blanc sur blanc).
     
     // Personnalisation de la flèche (appliquée à tous les variants)
     $arrow-svg: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
@@ -364,7 +366,9 @@ select.select {
 
 // Styles pour les options dans la liste déroulante
 select {
-    color-scheme: dark; // Force un thème sombre pour le menu déroulant
+    // Laisser le navigateur choisir la meilleure variante (selon le thème + OS).
+    // Forcer `dark` ici a déjà causé des menus illisibles (blanc sur blanc) sur certains environnements.
+    color-scheme: light dark;
     
     option {
         padding: 0.75rem 1rem;

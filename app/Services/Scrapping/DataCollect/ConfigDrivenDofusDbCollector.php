@@ -144,7 +144,7 @@ class ConfigDrivenDofusDbCollector
             }
             $query['$skip'] = $skip;
 
-            $url = $baseUrl . $path . '?' . http_build_query($query);
+            $url = $baseUrl . $path . '?' . $this->buildFeathersQueryString($query);
             $resp = $this->client->getJson($url, [
                 'skip_cache' => (bool) ($options['skip_cache'] ?? false),
             ]);
@@ -225,6 +225,78 @@ class ConfigDrivenDofusDbCollector
                 'returned' => count($items),
             ],
         ];
+    }
+
+    /**
+     * Génère une querystring Feathers compatible.
+     *
+     * @description
+     * `http_build_query()` encode les listes avec des indices (`[0]`, `[1]`),
+     * ce qui est parfois interprété côté DofusDB comme un objet au lieu d'un array.
+     * Ex: `typeId[$in][0]=12` -> cast Number fail.
+     *
+     * Ici, on encode les listes en `[]` répétés :
+     * `typeId[$in][]=12&typeId[$in][]=13`.
+     *
+     * @param array<string,mixed> $query
+     */
+    private function buildFeathersQueryString(array $query): string
+    {
+        $pairs = [];
+        foreach ($query as $k => $v) {
+            if (!is_string($k) || $k === '') continue;
+            $this->flattenQueryPairs($pairs, $k, $v);
+        }
+
+        $out = [];
+        foreach ($pairs as [$key, $value]) {
+            $out[] = rawurlencode((string) $key) . '=' . rawurlencode((string) $value);
+        }
+
+        return implode('&', $out);
+    }
+
+    /**
+     * @param array<int, array{0:string,1:string|int|float|bool}> $pairs
+     * @param mixed $value
+     */
+    private function flattenQueryPairs(array &$pairs, string $prefix, mixed $value): void
+    {
+        if (is_array($value)) {
+            foreach ($value as $k => $v) {
+                if (is_int($k)) {
+                    // array list -> [] (pas d'index)
+                    $this->flattenQueryPairs($pairs, $prefix . '[]', $v);
+                } else {
+                    $this->flattenQueryPairs($pairs, $prefix . '[' . (string) $k . ']', $v);
+                }
+            }
+            return;
+        }
+
+        if (is_bool($value)) {
+            $pairs[] = [$prefix, $value ? 'true' : 'false'];
+            return;
+        }
+
+        if (is_int($value) || is_float($value)) {
+            $pairs[] = [$prefix, (string) $value];
+            return;
+        }
+
+        if (is_string($value) && $value !== '') {
+            $pairs[] = [$prefix, $value];
+            return;
+        }
+
+        if (is_string($value) && $value === '') {
+            // évite d'envoyer des filtres vides
+            return;
+        }
+
+        if ($value !== null) {
+            $pairs[] = [$prefix, (string) $value];
+        }
     }
 
     /**
@@ -325,7 +397,30 @@ class ConfigDrivenDofusDbCollector
 
                 case 'raceId':
                     if (is_int($value) || (is_string($value) && ctype_digit($value))) {
-                        $q['raceId'] = (int) $value;
+                        // DofusDB expose le champ `race` (pas `raceId`) sur /monsters
+                        $q['race'] = (int) $value;
+                    }
+                    break;
+
+                case 'raceIds':
+                    if (is_array($value)) {
+                        $max = (int) ($supportedKeys[$key]['max'] ?? 5000);
+                        $ids = [];
+                        foreach ($value as $v) {
+                            if (is_int($v) || (is_string($v) && ctype_digit($v))) {
+                                $ids[] = (int) $v;
+                            }
+                        }
+                        $ids = array_values(array_unique($ids));
+                        if ($max > 0) {
+                            $ids = array_slice($ids, 0, $max);
+                        }
+                        if (!empty($ids)) {
+                            $q['race'] = ($q['race'] ?? []);
+                            if (is_array($q['race'])) {
+                                $q['race']['$in'] = $ids;
+                            }
+                        }
                     }
                     break;
 

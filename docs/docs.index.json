@@ -275,21 +275,6 @@
     "description": "Le système de validation a été entièrement refactorisé pour répondre aux besoins de simplicité et de transparence. L'objectif était de créer une API qui évite les conflits avec les vues tout en restant puissante et flexible."
   },
   {
-    "path": "110- To Do/Description vues Entity.md",
-    "title": "Schéma généralite d'une vue d'entité",
-    "description": "![schéma](vues.png)"
-  },
-  {
-    "path": "110- To Do/scrapping/Refonte Scrapping - Spec.md",
-    "title": "Refonte Scrapping — Spécification (base de travail)",
-    "description": "Le scrapping actuel (collect → conversion → intégration pilotés par un orchestrateur) est jugé ancien, peu optimisé et peu testé. L’objectif est de **refondre** cette fonctionnalité pour la rendre :"
-  },
-  {
-    "path": "110- To Do/scrapping/etude API dofusDB.md",
-    "title": "Effects",
-    "description": "Système présents seulement dans DofusDB."
-  },
-  {
     "path": "20-Content/21-Entities/ENTITIES_OVERVIEW.md",
     "title": "Vue d'ensemble des entités – Krosmoz JDR",
     "description": "Ce document présente en détail toutes les entités du projet Krosmoz JDR, leur structure, leurs relations et leur rôle dans l'architecture globale du jeu. Il sert de référence centrale pour la modélisation des données, la génération des migrations, l'implémentation backend et la compréhension métier."
@@ -675,9 +660,19 @@
     "description": "Le système de gestion d'images est composé de trois composants principaux :"
   },
   {
+    "path": "40-DevGuides/INDEX_VUE_UPDATE_TEMPLATE.md",
+    "title": "",
+    "description": "Ce document a été déplacé depuis `docs/50-Fonctionnalités/Scrapping/` car il ne concerne pas spécifiquement le scrapping."
+  },
+  {
     "path": "40-DevGuides/README.md",
     "title": "Guides de développement — KrosmozJDR",
     "description": "Ce dossier regroupe les scripts, automatisations et outils pour le développement, la maintenance et le déploiement du projet."
+  },
+  {
+    "path": "40-DevGuides/UTILISATEUR_SYSTEME.md",
+    "title": "Utilisateur système (imports automatiques)",
+    "description": "Le projet utilise un **utilisateur système** pour attribuer (tracer) les opérations automatiques, notamment les imports du scrapping."
   },
   {
     "path": "50-Fonctionnalités/EntityEditForm/README.md",
@@ -695,179 +690,39 @@
     "description": "`EntityRelationsManager` est un composant générique Vue 3 permettant de gérer les relations many-to-many entre entités. Il supporte les relations simples (sans pivot) et les relations avec données pivot (quantité, prix, commentaire, etc.)."
   },
   {
-    "path": "50-Fonctionnalités/Scrapping/AUDIT_COMPLET_ENTITES.md",
-    "title": "Audit complet des entités KrosmozJDR",
-    "description": "**Date** : 2025-11-27"
-  },
-  {
-    "path": "50-Fonctionnalités/Scrapping/AUDIT_COMPLET_INFRASTRUCTURE.md",
-    "title": "Audit complet de l'infrastructure du système de scrapping",
-    "description": "Les entités suivantes sont utilisées par le système de scrapping :"
-  },
-  {
-    "path": "50-Fonctionnalités/Scrapping/AUDIT_ENTITES.md",
-    "title": "Audit des entités pour le système de scrapping",
-    "description": "Vérifier que toutes les entités nécessaires sont supportées par le système de scrapping. Le but est de récupérer les données depuis DofusDB pour les transformer en entités KrosmozJDR."
-  },
-  {
-    "path": "50-Fonctionnalités/Scrapping/AUDIT_INFRASTRUCTURE.md",
-    "title": "Audit de l'infrastructure du système de scrapping",
-    "description": "Les entités suivantes sont utilisées par le système de scrapping :"
-  },
-  {
-    "path": "50-Fonctionnalités/Scrapping/AUDIT_PANOPLIES.md",
-    "title": "Audit complet des Panoplies",
-    "description": "Les panoplies sont des **ensembles d'équipement qui apportent un bonus** lorsqu'ils sont réunis. Cette documentation vérifie que tous les fichiers liés aux panoplies sont complets et cohérents."
-  },
-  {
-    "path": "50-Fonctionnalités/Scrapping/AUDIT_UTILISATION_ENTITES.md",
-    "title": "Audit : Utilisation des entités et fonctionnalités dans le scrapping",
-    "description": "**Date** : 2025-01-27"
-  },
-  {
     "path": "50-Fonctionnalités/Scrapping/Data-collect/API.md",
     "title": "API DofusDB — Référence (collect)",
-    "description": "Référence de l’API DofusDB utilisée par KrosmozJDR : endpoints, query Feathers ($limit/$skip/$search…), pagination et cap fréquent à 50."
-  },
-  {
-    "path": "50-Fonctionnalités/Scrapping/Data-collect/DEFINITIONS.md",
-    "title": "Définitions - Service DataCollect",
-    "description": "Le service `DataCollect` est responsable de la récupération de données brutes depuis l'API DofusDB. Il gère la collecte, le cache, la limitation de débit et la gestion des erreurs pour tous les types d'entités."
-  },
-  {
-    "path": "50-Fonctionnalités/Scrapping/Data-collect/README.md",
-    "title": "Service Data-collect (Collect)",
-    "description": "Collecte de données brutes via configs JSON (source-of-truth), client HTTP DofusDB, pagination Feathers, et endpoint UI `/api/scrapping/search/{entity}`."
-  },
-  {
-    "path": "50-Fonctionnalités/Scrapping/Data-collect/SPECIFICATIONS.md",
-    "title": "Spécifications — Data-collect (Collect)",
-    "description": "Contraintes de la collect : config-driven, sécurité/allowlist, pagination Feathers (cap 50), cache/skip_cache, résilience."
-  },
-  {
-    "path": "50-Fonctionnalités/Scrapping/Data-conversion/API.md",
-    "title": "API — Conversion / Prévisualisation (Scrapping)",
-    "description": "Décrit comment la conversion est consommée via l’API scrapping : preview (collect+conversion) et options qui impactent la chaîne."
+    "description": "Cette page documente **l’API DofusDB telle qu’on l’utilise dans KrosmozJDR** pour la phase **Collect** :"
   },
   {
     "path": "50-Fonctionnalités/Scrapping/Data-conversion/DEFINITIONS.md",
-    "title": "Définitions — Conversion config-driven",
-    "description": "Définit le schéma de mapping JSON (from.path → to.model/field) et la whitelist de formatters (registry), incluant les side-effects (images)."
-  },
-  {
-    "path": "50-Fonctionnalités/Scrapping/Data-conversion/README.md",
-    "title": "Service Data-conversion (Conversion)",
-    "description": "Conversion pilotée par configs JSON + formatters whitelistés (ConfigDrivenConverter), avec fallback legacy si une entité n’est pas encore migrée."
-  },
-  {
-    "path": "50-Fonctionnalités/Scrapping/Data-conversion/SPECIFICATIONS.md",
-    "title": "Spécifications — Data-conversion (Conversion)",
-    "description": "Exigences conversion config-driven : mappings JSON, whitelist de formatters, pas de code arbitraire, side-effects contrôlés."
-  },
-  {
-    "path": "50-Fonctionnalités/Scrapping/Data-integration/API.md",
-    "title": "API — Intégration (écriture en base)",
-    "description": "Sémantique d’intégration (actions created/updated/skipped et would_*), options d’import (dry_run, force_update, with_images, include_relations…)."
-  },
-  {
-    "path": "50-Fonctionnalités/Scrapping/Data-integration/DEFINITIONS.md",
-    "title": "Définitions — Intégration (Scrapping)",
-    "description": "Conventions d’intégration : identification par dofusdb_id, tables cibles, options (dry-run/force-update/images/relations) et actions renvoyées."
-  },
-  {
-    "path": "50-Fonctionnalités/Scrapping/Data-integration/README.md",
-    "title": "Service Data-integration (Intégration)",
-    "description": "Écriture DB déclenchée par l’orchestrateur : anti-doublon dofusdb_id, options (dry_run/force_update/with_images/include_relations), gestion des relations."
-  },
-  {
-    "path": "50-Fonctionnalités/Scrapping/Data-integration/SPECIFICATIONS.md",
-    "title": "Spécifications — Data-integration (Intégration)",
-    "description": "Exigences d’intégration : anti-doublon dofusdb_id, transactions, options dry_run/force_update/images/relations, actions renvoyées."
-  },
-  {
-    "path": "50-Fonctionnalités/Scrapping/ETAT_ACTUEL.md",
-    "title": "État actuel — Scrapping (KrosmozJDR)",
-    "description": "**Date** : 2026-01-30 — Synthèse de l’existant (configs JSON, endpoints, UI/CLI, points importants DofusDB)."
-  },
-  {
-    "path": "50-Fonctionnalités/Scrapping/IMPLEMENTATION_SUMMARY.md",
-    "title": "Résumé d’implémentation — Scrapping (config-driven)",
-    "description": "Résumé des briques principales (client HTTP, collector, loader, converter, orchestrateur, intégration) et des points d’entrée UI/CLI/API."
-  },
-  {
-    "path": "50-Fonctionnalités/Scrapping/MAPPING_DOFUSDB_TO_KROSMOZJDR.md",
-    "title": "Mapping DofusDB → KrosmozJDR (configs JSON)",
-    "description": "Tables de mapping par entité : champs DofusDB, champs KrosmozJDR et formatters appliqués (source-of-truth : configs JSON)."
+    "title": "Définitions — Conversion “config-driven” (Scrapping)",
+    "description": "La conversion “config-driven” décrit **comment transformer les données DofusDB** en un payload compatible KrosmozJDR à partir de :"
   },
   {
     "path": "50-Fonctionnalités/Scrapping/EFFECTS_SYSTEM.md",
     "title": "Système d’effets (DofusDB → KrosmozJDR)",
-    "description": "Dictionnaire vs instances d’effets, normalisation `EffectInstance`, stockage temporaire JSON, et stratégie d’évolution vers des bonus/capabilities KrosmozJDR."
+    "description": "DofusDB modélise les effets selon les mécaniques de Dofus (ciblage, triggers, zones, etc.)."
   },
   {
     "path": "50-Fonctionnalités/Scrapping/MAPPING_COVERAGE_KROSMOZ_PROPS.md",
     "title": "Table de couverture — Props KrosmozJDR vs DofusDB",
-    "description": "Par entité, indique si chaque champ KrosmozJDR est auto-complétable via DofusDB, dérivable (avec règles), ou Krosmoz-only, avec suggestions de formatters."
+    "description": "Cette table sert à décider **quoi convertir** et **comment** :"
   },
   {
-    "path": "50-Fonctionnalités/Scrapping/IMPORT_RELATIONS_COMPLET.md",
-    "title": "Import des relations - Implémentation complète ✅",
-    "description": "L'import des relations est maintenant **complètement fonctionnel** pour tous les types d'entités :"
+    "path": "50-Fonctionnalités/Scrapping/MAPPING_DOFUSDB_TO_KROSMOZJDR.md",
+    "title": "Mapping DofusDB → KrosmozJDR (configs JSON)",
+    "description": "Centraliser le lien entre :"
   },
   {
     "path": "50-Fonctionnalités/Scrapping/Orchestrateur/API.md",
     "title": "API Scrapping (Laravel) — Endpoints exposés",
-    "description": "Référence des routes `/api/scrapping/*` : config/meta/search/preview/import, options, et exemples de payloads."
-  },
-  {
-    "path": "50-Fonctionnalités/Scrapping/Orchestrateur/DEFINITIONS.md",
-    "title": "Définitions — Orchestrateur (Scrapping)",
-    "description": "Définit options communes, structure des résultats, et conventions de preview (raw/converted/existing)."
-  },
-  {
-    "path": "50-Fonctionnalités/Scrapping/Orchestrateur/README.md",
-    "title": "Orchestrateur Scrapping",
-    "description": "Point d’entrée unique du pipeline collect→conversion→intégration, options (dry_run/validate_only/images/relations) et liens vers l’API/CLI/UI."
-  },
-  {
-    "path": "50-Fonctionnalités/Scrapping/Orchestrateur/SPECIFICATIONS.md",
-    "title": "Spécifications — Orchestrateur (Scrapping)",
-    "description": "Exigences d’orchestration : pipeline unique, config-driven, propagation d’options, import de relations avec garde-fous, résultats cohérents."
-  },
-  {
-    "path": "50-Fonctionnalités/Scrapping/PANOPLIES_IMPLEMENTATION.md",
-    "title": "Implémentation de l'import des Panoplies",
-    "description": "**Date de complétion** : 2025-11-27"
+    "description": "Cette page documente l’API interne utilisée par :"
   },
   {
     "path": "50-Fonctionnalités/Scrapping/README.md",
-    "title": "Fonctionnalité Scrapping — Index (KrosmozJDR)",
-    "description": "Point d’entrée de la doc scrapping : pipeline, sources de vérité (configs JSON + registry), liens vers collect/conversion/intégration/orchestrateur."
-  },
-  {
-    "path": "50-Fonctionnalités/Scrapping/RESUME_UTILISATEUR_SYSTEME.md",
-    "title": "Résumé : Utilisateur système pour les imports automatiques",
-    "description": "- ✅ **Fichier** : `database/migrations/2025_11_27_145006_add_is_system_to_users_table.php`"
-  },
-  {
-    "path": "50-Fonctionnalités/Scrapping/TEMPLATE_INDEX_UPDATE.md",
-    "title": "Template pour mettre à jour les pages Index.vue",
-    "description": "1. Ajouter `onBeforeUnmount` dans les imports"
-  },
-  {
-    "path": "50-Fonctionnalités/Scrapping/TEST_RELATIONS_IMPORT.md",
-    "title": "Tests d'import des relations",
-    "description": "Un nouveau fichier de tests a été créé : `tests/Feature/Scrapping/ScrappingRelationsTest.php`"
-  },
-  {
-    "path": "50-Fonctionnalités/Scrapping/UTILISATEUR_SYSTEME.md",
-    "title": "Utilisateur système pour les imports automatiques",
-    "description": "Un utilisateur système a été créé pour gérer les imports automatiques du système de scrapping. Cet utilisateur ne peut **pas se connecter** pour des raisons de sécurité."
-  },
-  {
-    "path": "50-Fonctionnalités/Scrapping/VERIFICATION_FRONTEND.md",
-    "title": "Vérification Frontend - Interface Entités",
-    "description": "2025-01-27"
+    "title": "Scrapping — Mapping & conversion (DofusDB → KrosmozJDR)",
+    "description": "Cette section documente **ce qui compte pour la refonte** : le **mapping** et les **fonctions de conversion (formatters)**."
   },
   {
     "path": "DOCUMENTATION_GUIDE.md",
