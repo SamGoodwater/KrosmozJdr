@@ -199,5 +199,34 @@ class DofusDbItemTypesCatalogService
         sort($ids);
         return $ids;
     }
+
+    /**
+     * Retourne le superTypeId DofusDB pour un typeId donné (ex: 15 → 9 pour Ressource).
+     * Utilisé pour ne pas traiter comme "ressource" un typeId en registry resource_types
+     * qui est en réalité un équipement (superType ≠ 9).
+     *
+     * @return int|null superTypeId ou null si typeId inconnu
+     */
+    public function getSuperTypeIdForTypeId(int $typeId, string $lang = 'fr', bool $skipCache = false): ?int
+    {
+        if ($typeId <= 0) {
+            return null;
+        }
+        $catalog = $this->getCatalog($lang, $skipCache);
+        foreach ($catalog['superTypes'] ?? [] as $st) {
+            $sid = (int) ($st['id'] ?? 0);
+            $types = $st['types'] ?? [];
+            if (!is_array($types)) {
+                continue;
+            }
+            foreach ($types as $t) {
+                $tid = is_array($t) && isset($t['id']) ? (int) $t['id'] : 0;
+                if ($tid === $typeId) {
+                    return $sid > 0 ? $sid : null;
+                }
+            }
+        }
+        return null;
+    }
 }
 

@@ -108,6 +108,9 @@ class ResourceTableController extends Controller
         if (array_key_exists('write_level', $filters) && $filters['write_level'] !== '' && $filters['write_level'] !== null) {
             $query->where('write_level', (int) $filters['write_level']);
         }
+        if (array_key_exists('id', $filters) && $filters['id'] !== '' && $filters['id'] !== null) {
+            $query->where('id', (int) $filters['id']);
+        }
 
         // Tri (liste blanche)
         $allowedSort = ['id', 'name', 'level', 'rarity', 'price', 'weight', 'state', 'read_level', 'write_level', 'auto_update', 'dofusdb_id', 'created_at', 'updated_at'];

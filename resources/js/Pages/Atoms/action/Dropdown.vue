@@ -127,6 +127,8 @@ const dropdownId = ref(`dropdown-${Date.now()}-${Math.random().toString(36).subs
 // État du dropdown
 const isOpen = ref(false);
 const zIndex = ref(1000);
+/** Cible du Teleport : dialog parent si inside modal, sinon body (pour que le menu passe au-dessus du modal). */
+const teleportTarget = ref(typeof document !== 'undefined' ? document.body : 'body');
 
 // Refs
 const containerRef = ref(null);
@@ -165,7 +167,14 @@ const { enable: enableClickOutside, disable: disableClickOutside } = useClickOut
 const open = () => {
   if (isOpen.value || props.disabled) return;
   isOpen.value = true;
-  zIndex.value = 1000 + Date.now() % 1000; // Z-index unique
+  const dialog = containerRef.value?.closest?.('dialog');
+  if (dialog) {
+    teleportTarget.value = dialog;
+    zIndex.value = 9999;
+  } else {
+    teleportTarget.value = typeof document !== 'undefined' ? document.body : 'body';
+    zIndex.value = 1000 + (Date.now() % 1000);
+  }
   enableClickOutside();
   updatePosition();
 };
@@ -367,8 +376,8 @@ onUnmounted(() => {
       </div>
     </div>
 
-    <!-- Contenu avec Teleport -->
-    <Teleport to="body">
+    <!-- Contenu avec Teleport (vers dialog si inside modal, sinon body) -->
+    <Teleport :to="teleportTarget">
       <div
         v-show="isOpen"
         ref="contentRef"

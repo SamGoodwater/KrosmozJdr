@@ -60,6 +60,9 @@ class SpellTableController extends Controller
         if (array_key_exists('pa', $filters) && $filters['pa'] !== '' && $filters['pa'] !== null) {
             $query->where('pa', (string) $filters['pa']);
         }
+        if (array_key_exists('id', $filters) && $filters['id'] !== '' && $filters['id'] !== null) {
+            $query->where('id', (int) $filters['id']);
+        }
 
         $allowedSort = ['id', 'name', 'level', 'pa', 'po', 'area', 'dofusdb_id', 'created_at', 'updated_at'];
         if (in_array($sort, $allowedSort, true)) {

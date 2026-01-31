@@ -321,18 +321,25 @@ class DataConversionService
     }
     
     /**
-     * Mappe un typeId DofusDB vers un type et catégorie KrosmozJDR
-     * 
+     * Mappe un typeId DofusDB vers un type et catégorie KrosmozJDR.
+     *
+     * On ne force "resource" que si le typeId est autorisé en registry ET appartient au superType
+     * DofusDB "Ressource" (superTypeId 9). Les typeIds en resource_types qui sont des équipements
+     * (superType ≠ 9) sont mappés en equipment.
+     *
      * @param int|null $typeId Type ID depuis DofusDB
      * @return array ['type' => string, 'category' => string]
      */
     private function mapItemTypeId(?int $typeId): array
     {
-        // Source of truth DB: si l'utilisateur a autorisé ce typeId comme "ressource",
-        // on le force en "resource" pour garantir l'intégration dans la table `resources`
-        // sans modification de code lors de nouveaux typeId.
         if ($typeId !== null && \App\Models\Type\ResourceType::isDofusdbTypeAllowed($typeId)) {
-            return ['type' => 'resource', 'category' => 'resource'];
+            $catalog = app(\App\Services\Scrapping\Catalog\DofusDbItemTypesCatalogService::class);
+            $mapping = app(\App\Services\Scrapping\Catalog\DofusDbItemSuperTypeMappingService::class);
+            $resourceSuperTypeIds = $mapping->getGroup('resource')['superTypeIds'] ?? [9];
+            $superTypeId = $catalog->getSuperTypeIdForTypeId($typeId);
+            if ($superTypeId !== null && \in_array($superTypeId, $resourceSuperTypeIds, true)) {
+                return ['type' => 'resource', 'category' => 'resource'];
+            }
         }
 
         // Mapping basé sur la configuration de DataIntegration

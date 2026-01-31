@@ -2,6 +2,8 @@
 
 namespace App\Services\Scrapping\Orchestrator;
 
+use App\Services\Scrapping\Catalog\DofusDbItemSuperTypeMappingService;
+use App\Services\Scrapping\Catalog\DofusDbItemTypesCatalogService;
 use App\Services\Scrapping\Config\ScrappingConfigLoader;
 use App\Services\Scrapping\Config\FormatterRegistry;
 use App\Services\Scrapping\Config\ConfigDrivenConverter;
@@ -99,7 +101,12 @@ class ScrappingOrchestrator
             $registry = FormatterRegistry::fromDefaultPath();
             $client = app(DofusDbClient::class);
             $effects = new DofusDbEffectCatalog($client);
-            $converter = new ConfigDrivenConverter($registry, $effects);
+            $converter = new ConfigDrivenConverter(
+                $registry,
+                $effects,
+                app(DofusDbItemTypesCatalogService::class),
+                app(DofusDbItemSuperTypeMappingService::class)
+            );
 
             return $converter->convert($entityCfg, $rawData, [
                 'lang' => 'fr',

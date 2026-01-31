@@ -26,6 +26,12 @@ import Modal from "@/Pages/Molecules/action/Modal.vue";
 import TanStackTablePagination from "@/Pages/Molecules/table/TanStackTablePagination.vue";
 import TypeManagerTable from "@/Pages/Organismes/type-management/TypeManagerTable.vue";
 import CompareModal from "@/Pages/Organismes/scrapping/CompareModal.vue";
+import EntityModal from "@/Pages/Organismes/entity/EntityModal.vue";
+import { Monster } from "@/Models/Entity/Monster";
+import { Item } from "@/Models/Entity/Item";
+import { Spell } from "@/Models/Entity/Spell";
+import { Consumable } from "@/Models/Entity/Consumable";
+import { Resource } from "@/Models/Entity/Resource";
 import { useNotificationStore } from "@/Composables/store/useNotificationStore";
 
 const notificationStore = useNotificationStore();
@@ -157,6 +163,11 @@ const effectsAnalysisSummary = ref(null);
 // Pagination UI (serveur) : blocs de 100 par défaut
 const pageNumber = ref(1);
 const perPage = ref(100);
+
+// Import par plage de pages (ex: "1-6" ou "4,5" ou toutes)
+const pageRangeInput = ref("");
+const importAllPages = ref(false);
+const importByPagesProgress = ref(null); // "2/6" ou null
 
 // Historique (console)
 const historyLines = ref([]);
@@ -616,6 +627,113 @@ const handleSetPageSize = async (v) => {
     await runSearch();
 };
 
+/**
+ * Parse la plage de pages saisie (ex: "1-6", "4,5", "1-3,5,7") ou retourne [1..totalPages] si "toutes".
+ * @returns {number[]} Liste ordonnée de numéros de page (1-based), ou [] si invalide.
+ */
+const parsePageRange = () => {
+    const tp = totalPages.value;
+    if (importAllPages.value) {
+        if (tp === null || tp < 1) return [];
+        return Array.from({ length: tp }, (_, i) => i + 1);
+    }
+    const raw = String(pageRangeInput.value || "").trim();
+    if (!raw) return [];
+    const parts = raw.split(",").map((p) => p.trim()).filter(Boolean);
+    const numbers = new Set();
+    for (const part of parts) {
+        const dash = part.indexOf("-");
+        if (dash >= 0) {
+            const a = Math.max(1, Math.floor(Number(part.slice(0, dash)) || 1));
+            const b = Math.max(1, Math.floor(Number(part.slice(dash + 1)) || 1));
+            const lo = Math.min(a, b);
+            const hi = Math.max(a, b);
+            for (let p = lo; p <= hi; p++) numbers.add(p);
+        } else {
+            const n = Math.max(1, Math.floor(Number(part) || 0));
+            if (n > 0) numbers.add(n);
+        }
+    }
+    return Array.from(numbers).sort((a, b) => a - b);
+};
+
+/**
+ * Import (ou simulation) page par page : pour chaque page de la plage, charge la page puis envoie le batch.
+ */
+const runImportByPages = async (simulate = false) => {
+    const pages = parsePageRange();
+    if (pages.length === 0) {
+        if (importAllPages.value) {
+            showError("Lance une recherche d'abord pour connaître le nombre de pages.");
+        } else {
+            showError("Saisis une plage de pages (ex: 1-6 ou 4,5).");
+        }
+        return;
+    }
+    const csrf = getCsrfToken();
+    if (!csrf) {
+        showError("Token CSRF introuvable. Veuillez recharger la page.");
+        return;
+    }
+    const label = simulate ? "Simulation" : "Import";
+    pushHistory(`${label} par pages (${selectedEntityType.value}) : pages ${pages.join(", ")}.`);
+    importing.value = true;
+    importByPagesProgress.value = `0/${pages.length}`;
+    let totalSuccess = 0;
+    let totalErrors = 0;
+    let totalEntities = 0;
+    const savedPageNumber = pageNumber.value;
+    try {
+        for (let i = 0; i < pages.length; i++) {
+            const p = pages[i];
+            importByPagesProgress.value = `${i + 1}/${pages.length}`;
+            pageNumber.value = p;
+            await runSearch();
+            if (!rawItems.value?.length) {
+                pushHistory(`→ Page ${p} : aucun résultat, ignorée.`);
+                continue;
+            }
+            const payload = buildBatchPayload(simulate, "all");
+            if (payload.entities.length < 1) {
+                pushHistory(`→ Page ${p} : 0 entité, ignorée.`);
+                continue;
+            }
+            totalEntities += payload.entities.length;
+            const res = await fetch("/api/scrapping/import/batch", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRF-TOKEN": csrf,
+                    Accept: "application/json",
+                },
+                body: JSON.stringify(payload),
+            });
+            const data = await res.json();
+            if (res.ok) {
+                const s = data.summary || {};
+                const ok = s.success ?? 0;
+                const err = s.errors ?? 0;
+                totalSuccess += ok;
+                totalErrors += err;
+                pushHistory(`→ Page ${p} : ${ok}/${s.total ?? payload.entities.length} (erreurs: ${err})`);
+            } else {
+                totalErrors += payload.entities.length;
+                pushHistory(`→ Page ${p} ERREUR: ${data.message || "batch"}`);
+            }
+        }
+        success(`${label} par pages terminé : ${totalSuccess}/${totalEntities} (erreurs: ${totalErrors})`);
+        pushHistory(`→ ${label.toUpperCase()} PAR PAGES OK: ${totalSuccess}/${totalEntities} (erreurs: ${totalErrors})`);
+    } catch (e) {
+        showError(`${label} par pages : ` + e.message);
+        pushHistory(`→ ${label.toUpperCase()} PAR PAGES ERREUR: ${e.message}`);
+    } finally {
+        importing.value = false;
+        importByPagesProgress.value = null;
+        pageNumber.value = savedPageNumber;
+        await runSearch();
+    }
+};
+
 const buildBatchPayload = (dryRun, scope = "auto") => {
     // scope:
     // - auto: si une sélection existe -> sélection, sinon -> items visibles (filtre table)
@@ -702,11 +820,81 @@ const formatName = (name) => {
     return "—";
 };
 
+/** Type d'entité scrapping → segment de route entité (entities.XXX.show). */
+const scrappingTypeToRouteEntityType = {
+    monster: "monsters",
+    resource: "resources",
+    consumable: "consumables",
+    equipment: "items",
+    spell: "spells",
+};
+
+/** Segment table API → classe modèle (pour fromArray et toCell). */
+const segmentToModel = {
+    monsters: Monster,
+    items: Item,
+    spells: Spell,
+    consumables: Consumable,
+    resources: Resource,
+};
+
 const existsLabel = (it) => (it?.exists ? "Existe" : "Nouveau");
 const existsTooltip = (it) => {
     if (!it?.exists) return "Aucune entrée trouvée en base (par dofusdb_id).";
     const internal = it?.existing?.id ? `ID Krosmoz: ${it.existing.id}` : "Entrée trouvée en base.";
     return internal;
+};
+
+/** Href vers la fiche entité si l'élément existe et qu'on a un type mappé, sinon "". */
+const existsEntityHref = (it) => {
+    if (!it?.exists || !it?.existing?.id) return "";
+    const segment = scrappingTypeToRouteEntityType[String(selectedEntityType.value || "")];
+    if (!segment) return "";
+    return `/entities/${segment}/${it.existing.id}`;
+};
+
+// Modal de visualisation de l'entité existante (clic "Existe")
+const entityModalOpen = ref(false);
+const entityModalEntity = ref(null);
+const entityModalEntityType = ref("");
+const entityModalLoading = ref(false);
+const entityModalLoadingId = ref(null);
+
+/** Ouvre la modal d'affichage de l'entité en chargeant ses données depuis l'API table. */
+const openEntityModal = async (it) => {
+    if (!it?.exists || !it?.existing?.id) return;
+    const segment = scrappingTypeToRouteEntityType[String(selectedEntityType.value || "")];
+    if (!segment) return;
+    const id = it.existing.id;
+    entityModalLoadingId.value = id;
+    entityModalLoading.value = true;
+    entityModalEntity.value = null;
+    entityModalEntityType.value = segment;
+    try {
+        const url = `${route(`api.tables.${segment}`)}?format=entities&limit=1&filters[id]=${encodeURIComponent(id)}`;
+        const res = await fetch(url, { headers: { Accept: "application/json" } });
+        const data = await res.json();
+        const entities = data?.entities ?? [];
+        const raw = entities[0] ?? null;
+        if (raw) {
+            const ModelClass = segmentToModel[segment];
+            entityModalEntity.value = ModelClass ? (ModelClass.fromArray([raw])[0] ?? raw) : raw;
+            entityModalOpen.value = true;
+        } else {
+            showError("Entité introuvable.");
+        }
+    } catch (e) {
+        showError("Impossible de charger l'entité : " + (e?.message ?? "erreur"));
+    } finally {
+        entityModalLoading.value = false;
+        entityModalLoadingId.value = null;
+    }
+};
+
+const closeEntityModal = () => {
+    entityModalOpen.value = false;
+    entityModalEntity.value = null;
+    entityModalEntityType.value = "";
 };
 
 const canAnalyzeEffects = computed(() => {
@@ -1269,6 +1457,36 @@ const onCompareImported = () => {
                         <Loading v-if="importing" class="mr-2" />
                         Tout importer
                     </Btn>
+                    <div class="flex flex-wrap items-center gap-2 border-l border-base-300 pl-2">
+                        <InputField
+                            v-model="pageRangeInput"
+                            label="Pages"
+                            :disabled="importAllPages || importing"
+                            placeholder="ex: 1-6 ou 4,5"
+                            class="w-36"
+                        />
+                        <CheckboxField v-model="importAllPages" :disabled="importing" label="Toutes les pages" />
+                        <Btn
+                            color="secondary"
+                            size="sm"
+                            :disabled="importing"
+                            title="Simule l'import page par page (plage ou toutes)"
+                            @click="runImportByPages(true)"
+                        >
+                            <Loading v-if="importing" class="mr-2" />
+                            {{ importByPagesProgress ? `Page ${importByPagesProgress}` : "Simuler par pages" }}
+                        </Btn>
+                        <Btn
+                            color="success"
+                            size="sm"
+                            :disabled="importing"
+                            title="Charge chaque page puis importe (plage ou toutes)"
+                            @click="runImportByPages(false)"
+                        >
+                            <Loading v-if="importing" class="mr-2" />
+                            {{ importByPagesProgress ? `Page ${importByPagesProgress}` : "Importer par pages" }}
+                        </Btn>
+                    </div>
                     <Btn
                         variant="ghost"
                         :disabled="effectsAnalysisLoading || !canAnalyzeEffects"
@@ -1335,7 +1553,18 @@ const onCompareImported = () => {
                             <td>
                                 <Tooltip :content="existsTooltip(it)">
                                     <span class="inline-flex items-center gap-2">
+                                        <button
+                                            v-if="existsEntityHref(it)"
+                                            type="button"
+                                            class="text-xs px-2 py-1 rounded border border-success/30 bg-success/10 text-success hover:bg-success/20 hover:underline cursor-pointer"
+                                            :disabled="entityModalLoading && entityModalLoadingId === it.existing?.id"
+                                            @click="openEntityModal(it)"
+                                        >
+                                            <span v-if="entityModalLoading && entityModalLoadingId === it.existing?.id">Chargement…</span>
+                                            <span v-else>{{ existsLabel(it) }}</span>
+                                        </button>
                                         <span
+                                            v-else
                                             class="text-xs px-2 py-1 rounded border"
                                             :class="it.exists ? 'border-success/30 bg-success/10 text-success' : 'border-base-300 bg-base-200/40 text-primary-300'"
                                         >
@@ -1418,6 +1647,15 @@ const onCompareImported = () => {
             </div>
         </Card>
 
+        <!-- Modal de visualisation de l'entité existante (clic "Existe") -->
+        <EntityModal
+            v-if="entityModalEntity"
+            :entity="entityModalEntity"
+            :entity-type="entityModalEntityType"
+            :open="entityModalOpen"
+            :use-stored-format="true"
+            @close="closeEntityModal"
+        />
     </div>
 </template>
 

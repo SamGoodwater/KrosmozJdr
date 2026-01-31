@@ -17,7 +17,6 @@ import Icon from "@/Pages/Atoms/data-display/Icon.vue";
 import Loading from "@/Pages/Atoms/feedback/Loading.vue";
 import InputField from "@/Pages/Molecules/data-input/InputField.vue";
 import SelectField from "@/Pages/Molecules/data-input/SelectField.vue";
-import CheckboxField from "@/Pages/Molecules/data-input/CheckboxField.vue";
 import ConfirmModal from "@/Pages/Molecules/action/ConfirmModal.vue";
 import { useNotificationStore } from "@/Composables/store/useNotificationStore";
 import { usePermissions } from "@/Composables/permissions/usePermissions";
@@ -53,6 +52,19 @@ const selectedIds = ref(new Set());
 const bulkValue = ref(""); // decision/state à appliquer
 
 const getCsrfToken = () => document.querySelector('meta[name="csrf-token"]')?.getAttribute("content");
+
+/** Format ISO date/heure en français, sans secondes (ex. 31/01/2026 14:43). */
+const formatDateFr = (iso) => {
+    if (!iso || typeof iso !== "string") return "—";
+    const d = new Date(iso);
+    if (Number.isNaN(d.getTime())) return "—";
+    const day = String(d.getDate()).padStart(2, "0");
+    const month = String(d.getMonth() + 1).padStart(2, "0");
+    const year = d.getFullYear();
+    const hours = String(d.getHours()).padStart(2, "0");
+    const minutes = String(d.getMinutes()).padStart(2, "0");
+    return `${day}/${month}/${year} ${hours}:${minutes}`;
+};
 
 const confirmOpen = ref(false);
 const confirmTarget = ref(null); // { id:number, name?:string } | null
@@ -121,10 +133,12 @@ const allVisibleSelected = computed(() => {
     return list.every((r) => selectedIds.value.has(Number(r?.id)));
 });
 
-const toggleSelectAllVisible = () => {
-    const next = new Set(selectedIds.value);
+/** Coche ou décoche toutes les lignes visibles. Utilise la valeur émise par la checkbox si fournie. */
+const toggleSelectAllVisible = (checked) => {
     const list = filteredRows.value;
-    const shouldSelect = !allVisibleSelected.value;
+    if (!list.length) return;
+    const next = new Set(selectedIds.value);
+    const shouldSelect = typeof checked === "boolean" ? checked : !allVisibleSelected.value;
     for (const r of list) {
         const id = Number(r?.id);
         if (!Number.isFinite(id)) continue;
@@ -318,7 +332,8 @@ onMounted(async () => {
             </div>
         </div>
 
-        <div class="grid gap-3 md:grid-cols-3">
+        <!-- z-[100] pour que les dropdowns (bulk, filtres) passent au-dessus du modal -->
+        <div class="grid gap-3 md:grid-cols-3 relative z-[100]">
             <InputField v-model="querySearch" label="Recherche" placeholder="id, nom…" />
             <SelectField
                 v-model="queryFilter"
@@ -354,10 +369,13 @@ onMounted(async () => {
                 <thead>
                     <tr>
                         <th class="w-10">
-                            <CheckboxField
-                                :model-value="allVisibleSelected"
-                                @update:modelValue="toggleSelectAllVisible"
-                                label=""
+                            <input
+                                type="checkbox"
+                                class="checkbox checkbox-sm"
+                                :checked="allVisibleSelected"
+                                :indeterminate="selectedCount > 0 && !allVisibleSelected"
+                                title="Tout cocher / tout décocher"
+                                @change="toggleSelectAllVisible($event.target.checked)"
                             />
                         </th>
                         <th class="w-20">ID</th>
@@ -419,10 +437,10 @@ onMounted(async () => {
                             </div>
                         </td>
                         <td v-if="String(mode) === 'decision'">
-                            <span class="text-sm text-primary-300">{{ r.last_seen_at ?? "—" }}</span>
+                            <span class="text-sm text-primary-300">{{ formatDateFr(r.last_seen_at) }}</span>
                         </td>
                         <td v-else>
-                            <span class="text-sm text-primary-300">{{ r.updated_at ?? "—" }}</span>
+                            <span class="text-sm text-primary-300">{{ formatDateFr(r.updated_at) }}</span>
                         </td>
                     </tr>
                     <tr v-if="!filteredRows.length">

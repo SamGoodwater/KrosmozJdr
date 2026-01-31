@@ -65,6 +65,9 @@ class ItemTableController extends Controller
             // Rareté peut être string (common/uncommon/...) ou int selon DB.
             $query->where('rarity', $filters['rarity']);
         }
+        if (array_key_exists('id', $filters) && $filters['id'] !== '' && $filters['id'] !== null) {
+            $query->where('id', (int) $filters['id']);
+        }
 
         $allowedSort = ['id', 'name', 'level', 'rarity', 'dofusdb_id', 'created_at', 'updated_at'];
         if (in_array($sort, $allowedSort, true)) {

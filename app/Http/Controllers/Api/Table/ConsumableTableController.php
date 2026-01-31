@@ -29,6 +29,8 @@ class ConsumableTableController extends Controller
         //   Objectif : supporter une architecture "field descriptors" (Option B).
         $format = $request->filled('format') ? (string) $request->get('format') : 'cells';
 
+        $filters = (array) ($request->input('filters', $request->input('filter', [])) ?? []);
+
         $search = $request->filled('search') ? (string) $request->get('search') : '';
 
         $limit = (int) $request->integer('limit', 5000);
@@ -47,6 +49,9 @@ class ConsumableTableController extends Controller
                 $q->where('name', 'like', "%{$search}%")
                     ->orWhere('description', 'like', "%{$search}%");
             });
+        }
+        if (array_key_exists('id', $filters) && $filters['id'] !== '' && $filters['id'] !== null) {
+            $query->where('id', (int) $filters['id']);
         }
 
         $allowedSort = ['id', 'name', 'level', 'rarity', 'dofusdb_id', 'created_at', 'updated_at'];

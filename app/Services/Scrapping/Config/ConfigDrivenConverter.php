@@ -4,6 +4,8 @@ namespace App\Services\Scrapping\Config;
 
 use Illuminate\Support\Arr;
 use App\Models\Type\ResourceType;
+use App\Services\Scrapping\Catalog\DofusDbItemSuperTypeMappingService;
+use App\Services\Scrapping\Catalog\DofusDbItemTypesCatalogService;
 
 /**
  * Convertit des données "raw" en données "converted" via la config JSON.
@@ -18,7 +20,9 @@ class ConfigDrivenConverter
 {
     public function __construct(
         private FormatterRegistry $registry,
-        private ?DofusDbEffectCatalog $effectCatalog = null
+        private ?DofusDbEffectCatalog $effectCatalog = null,
+        private ?DofusDbItemTypesCatalogService $itemTypesCatalog = null,
+        private ?DofusDbItemSuperTypeMappingService $superTypeMapping = null
     ) {}
 
     /**
@@ -514,15 +518,21 @@ class ConfigDrivenConverter
     /**
      * Mapping typeId DofusDB -> type/category KrosmozJDR.
      *
-     * IMPORTANT: conserve la logique actuelle : si ResourceType::isDofusdbTypeAllowed($typeId),
-     * on force en "resource" pour éviter de devoir modifier le code lors de nouveaux typeId.
+     * On ne force "resource" que si le typeId est autorisé en registry ET appartient au superType
+     * DofusDB "Ressource" (superTypeId 9). Ainsi les typeIds en resource_types qui sont en réalité
+     * des équipements (superType ≠ 9) sont mappés en equipment et non en resource.
      *
      * @return array{type:string,category:string}
      */
     private function mapItemTypeId(?int $typeId): array
     {
         if ($typeId !== null && ResourceType::isDofusdbTypeAllowed($typeId)) {
-            return ['type' => 'resource', 'category' => 'resource'];
+            $resourceSuperTypeIds = $this->superTypeMapping?->getGroup('resource')['superTypeIds'] ?? [9];
+            $superTypeId = $this->itemTypesCatalog?->getSuperTypeIdForTypeId($typeId);
+            if ($superTypeId !== null && \in_array($superTypeId, $resourceSuperTypeIds, true)) {
+                return ['type' => 'resource', 'category' => 'resource'];
+            }
+            // typeId en registry resource_types mais superType DofusDB ≠ Ressource (ex: équipement) -> ne pas forcer resource
         }
 
         $typeMapping = [

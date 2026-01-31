@@ -61,6 +61,9 @@ class MonsterTableController extends Controller
         if (array_key_exists('is_boss', $filters) && $filters['is_boss'] !== '' && $filters['is_boss'] !== null) {
             $query->where('is_boss', (int) $filters['is_boss']);
         }
+        if (array_key_exists('id', $filters) && $filters['id'] !== '' && $filters['id'] !== null) {
+            $query->where('id', (int) $filters['id']);
+        }
 
         $allowedSort = ['id', 'size', 'is_boss', 'dofusdb_id', 'created_at', 'updated_at'];
         if (in_array($sort, $allowedSort, true)) {
