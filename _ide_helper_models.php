@@ -25,8 +25,6 @@ namespace App\Models{
  * @property string|null $icon
  * @property string|null $color
  * @property int $sort_order
- * @property bool $forgemagie_allowed
- * @property int $forgemagie_max
  * @property array|null $applies_to
  * @property bool $is_competence
  * @property string|null $characteristic_id
@@ -37,8 +35,6 @@ namespace App\Models{
  * @property array|null $validation
  * @property array|null $mastery_value_available
  * @property array|null $mastery_labels
- * @property float|null $base_price_per_unit
- * @property float|null $rune_price_per_unit
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property-read Characteristic|null $alternativeCharacteristic
@@ -52,14 +48,11 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Characteristic query()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Characteristic whereAlternativeCharacteristicId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Characteristic whereAppliesTo($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Characteristic whereBasePricePerUnit($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Characteristic whereCharacteristicId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Characteristic whereColor($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Characteristic whereCreatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Characteristic whereDbColumn($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Characteristic whereDescription($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Characteristic whereForgemagieAllowed($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Characteristic whereForgemagieMax($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Characteristic whereIcon($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Characteristic whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Characteristic whereIsCompetence($value)
@@ -67,7 +60,6 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Characteristic whereMasteryLabels($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Characteristic whereMasteryValueAvailable($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Characteristic whereName($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Characteristic whereRunePricePerUnit($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Characteristic whereShortName($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Characteristic whereSkillType($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Characteristic whereSortOrder($value)
@@ -94,22 +86,30 @@ namespace App\Models{
  * @property string|null $default_value
  * @property bool $required
  * @property string|null $validation_message
+ * @property bool $forgemagie_allowed
+ * @property int $forgemagie_max
+ * @property float|null $base_price_per_unit
+ * @property float|null $rune_price_per_unit
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property-read \App\Models\Characteristic $characteristic
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicEntity newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicEntity newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicEntity query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicEntity whereBasePricePerUnit($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicEntity whereCharacteristicId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicEntity whereCreatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicEntity whereDefaultValue($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicEntity whereEntity($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicEntity whereForgemagieAllowed($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicEntity whereForgemagieMax($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicEntity whereFormula($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicEntity whereFormulaDisplay($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicEntity whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicEntity whereMax($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicEntity whereMin($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicEntity whereRequired($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicEntity whereRunePricePerUnit($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicEntity whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicEntity whereValidationMessage($value)
  */
@@ -124,6 +124,8 @@ namespace App\Models{
  * @property string $characteristic_id
  * @property string $entity
  * @property string $formula_type
+ * @property string|null $conversion_formula Formule simple ([d], [level]) ou table JSON
+ * @property string|null $handler_name Nom d'un handler PHP (ex. resistance_dofus_to_krosmoz)
  * @property array|null $parameters
  * @property string|null $formula_display
  * @property \Illuminate\Support\Carbon|null $created_at
@@ -133,10 +135,12 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|DofusdbConversionFormula newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|DofusdbConversionFormula query()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|DofusdbConversionFormula whereCharacteristicId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|DofusdbConversionFormula whereConversionFormula($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|DofusdbConversionFormula whereCreatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|DofusdbConversionFormula whereEntity($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|DofusdbConversionFormula whereFormulaDisplay($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|DofusdbConversionFormula whereFormulaType($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|DofusdbConversionFormula whereHandlerName($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|DofusdbConversionFormula whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|DofusdbConversionFormula whereParameters($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|DofusdbConversionFormula whereUpdatedAt($value)
@@ -181,6 +185,67 @@ namespace App\Models\Entity{
  * @mixin \Eloquent
  */
 	class Attribute extends \Eloquent {}
+}
+
+namespace App\Models\Entity{
+/**
+ * Entité Breed (affichée « Classe » côté utilisateur).
+ *
+ * @property int $id
+ * @property string|null $official_id
+ * @property string|null $dofusdb_id
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property string $name
+ * @property string|null $description_fast
+ * @property string|null $description
+ * @property string|null $life
+ * @property string|null $life_dice
+ * @property string|null $specificity
+ * @property string $dofus_version
+ * @property string $state
+ * @property int $read_level
+ * @property int $write_level
+ * @property string|null $image
+ * @property string|null $icon
+ * @property bool $auto_update
+ * @property \Illuminate\Support\Carbon|null $deleted_at
+ * @property int|null $created_by
+ * @property-read User|null $createdBy
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, Npc> $npcs
+ * @property-read int|null $npcs_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, Spell> $spells
+ * @property-read int|null $spells_count
+ * @method static \Database\Factories\Entity\BreedFactory factory($count = null, $state = [])
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Breed newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Breed newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Breed onlyTrashed()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Breed query()
+ * @mixin \Eloquent
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Breed whereAutoUpdate($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Breed whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Breed whereCreatedBy($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Breed whereDeletedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Breed whereDescription($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Breed whereDescriptionFast($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Breed whereDofusVersion($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Breed whereDofusdbId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Breed whereIcon($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Breed whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Breed whereImage($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Breed whereLife($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Breed whereLifeDice($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Breed whereName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Breed whereOfficialId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Breed whereReadLevel($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Breed whereSpecificity($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Breed whereState($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Breed whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Breed whereWriteLevel($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Breed withTrashed(bool $withTrashed = true)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Breed withoutTrashed()
+ */
+	class Breed extends \Eloquent {}
 }
 
 namespace App\Models\Entity{
@@ -315,65 +380,6 @@ namespace App\Models\Entity{
  * @mixin \Eloquent
  */
 	class Capability extends \Eloquent {}
-}
-
-namespace App\Models\Entity{
-/**
- * @property int $id
- * @property string|null $official_id
- * @property string|null $dofusdb_id
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
- * @property string $name
- * @property string|null $description_fast
- * @property string|null $description
- * @property string|null $life
- * @property string|null $life_dice
- * @property string|null $specificity
- * @property string $dofus_version
- * @property string $state
- * @property int $read_level
- * @property int $write_level
- * @property string|null $image
- * @property string|null $icon
- * @property bool $auto_update
- * @property \Illuminate\Support\Carbon|null $deleted_at
- * @property int|null $created_by
- * @property-read User|null $createdBy
- * @property-read \Illuminate\Database\Eloquent\Collection<int, Npc> $npcs
- * @property-read int|null $npcs_count
- * @method static \Database\Factories\Entity\ClasseFactory factory($count = null, $state = [])
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Classe newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Classe newQuery()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Classe onlyTrashed()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Classe query()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Classe whereAutoUpdate($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Classe whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Classe whereCreatedBy($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Classe whereDeletedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Classe whereDescription($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Classe whereDescriptionFast($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Classe whereDofusVersion($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Classe whereDofusdbId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Classe whereIcon($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Classe whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Classe whereImage($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Classe whereReadLevel($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Classe whereLife($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Classe whereLifeDice($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Classe whereName($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Classe whereOfficialId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Classe whereSpecificity($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Classe whereUpdatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Classe whereState($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Classe whereWriteLevel($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Classe withTrashed()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Classe withoutTrashed()
- * @mixin \Eloquent
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Entity\Spell> $spells
- * @property-read int|null $spells_count
- */
-	class Classe extends \Eloquent {}
 }
 
 namespace App\Models\Entity{
@@ -774,13 +780,13 @@ namespace App\Models\Entity{
  * @property string|null $historical
  * @property string|null $age
  * @property string|null $size
- * @property int|null $classe_id
+ * @property int|null $breed_id
  * @property int|null $specialization_id
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property-read \Illuminate\Database\Eloquent\Collection<int, Campaign> $campaigns
  * @property-read int|null $campaigns_count
- * @property-read Classe|null $classe
+ * @property-read Breed|null $breed
  * @property-read Creature|null $creature
  * @property-read \Illuminate\Database\Eloquent\Collection<int, Panoply> $panoplies
  * @property-read int|null $panoplies_count
@@ -793,7 +799,7 @@ namespace App\Models\Entity{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Npc newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Npc query()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Npc whereAge($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Npc whereClasseId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Npc whereBreedId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Npc whereCreatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Npc whereCreatureId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Npc whereHistorical($value)
@@ -1171,8 +1177,8 @@ namespace App\Models\Entity{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Spell withTrashed()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Spell withoutTrashed()
  * @mixin \Eloquent
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Entity\Classe> $classes
- * @property-read int|null $classes_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Entity\Breed> $breeds
+ * @property-read int|null $breeds_count
  */
 	class Spell extends \Eloquent {}
 }
@@ -1738,8 +1744,8 @@ namespace App\Models{
  * @property-read int|null $created_attributes_count
  * @property-read \Illuminate\Database\Eloquent\Collection<int, Capability> $createdCapabilities
  * @property-read int|null $created_capabilities_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, Classe> $createdClasses
- * @property-read int|null $created_classes_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, Breed> $createdBreeds
+ * @property-read int|null $created_breeds_count
  * @property-read \Illuminate\Database\Eloquent\Collection<int, ConsumableType> $createdConsumableTypes
  * @property-read int|null $created_consumable_types_count
  * @property-read \Illuminate\Database\Eloquent\Collection<int, Consumable> $createdConsumables

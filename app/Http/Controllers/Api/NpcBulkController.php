@@ -16,7 +16,7 @@ use Illuminate\Support\Facades\DB;
  *
  * @example
  * PATCH /api/entities/npcs/bulk
- * { "ids":[1,2,3], "classe_id":5, "specialization_id":2, "age":"25 ans", "size":"1m75" }
+ * { "ids":[1,2,3], "breed_id":5, "specialization_id":2, "age":"25 ans", "size":"1m75" }
  */
 class NpcBulkController extends Controller
 {
@@ -29,7 +29,7 @@ class NpcBulkController extends Controller
             'ids.*' => ['integer', 'min:1', 'exists:npcs,id'],
 
             // Champs bulk (les clés absentes ne sont pas modifiées)
-            'classe_id' => ['sometimes', 'nullable', 'integer', 'exists:classes,id'],
+            'breed_id' => ['sometimes', 'nullable', 'integer', 'exists:breeds,id'],
             'specialization_id' => ['sometimes', 'nullable', 'integer', 'exists:specializations,id'],
             'story' => ['sometimes', 'nullable', 'string'],
             'historical' => ['sometimes', 'nullable', 'string'],
@@ -47,7 +47,7 @@ class NpcBulkController extends Controller
 
         $patch = [];
         foreach ([
-            'classe_id',
+            'breed_id',
             'specialization_id',
             'story',
             'historical',

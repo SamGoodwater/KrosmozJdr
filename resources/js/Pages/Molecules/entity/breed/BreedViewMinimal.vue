@@ -1,12 +1,12 @@
 <script setup>
 /**
- * ClasseViewMinimal — Vue Minimal pour Classe
+ * BreedViewMinimal — Vue Minimal pour Breed
  * 
  * @description
  * Petite carte qui s'étend au survol.
  * Utilisée dans des grilles, petites modals ou hovers.
  * 
- * @props {Classe} classe - Instance du modèle Classe
+ * @props {Breed} classe - Instance du modèle Breed
  * @props {Boolean} showActions - Afficher les actions (défaut: true)
  */
 import { ref, computed } from 'vue';
@@ -20,10 +20,10 @@ import { useCopyToClipboard } from '@/Composables/utils/useCopyToClipboard';
 import { useDownloadPdf } from '@/Composables/utils/useDownloadPdf';
 import { getEntityRouteConfig, resolveEntityRouteUrl } from '@/Composables/entity/entityRouteRegistry';
 import { usePermissions } from "@/Composables/permissions/usePermissions";
-import { getClasseFieldDescriptors } from "@/Entities/classe/classe-descriptors";
+import { getBreedFieldDescriptors } from "@/Entities/breed/breed-descriptors";
 
 const props = defineProps({
-    classe: {
+    breed: {
         type: Object,
         required: true
     },
@@ -43,21 +43,21 @@ const emit = defineEmits(['edit', 'copy-link', 'download-pdf', 'refresh', 'view'
 const isHovered = ref(props.displayMode === 'extended');
 const canHoverExpand = computed(() => props.displayMode === 'hover');
 const { copyToClipboard } = useCopyToClipboard();
-const { downloadPdf } = useDownloadPdf('classe');
+const { downloadPdf } = useDownloadPdf('breed');
 const permissions = usePermissions();
 
 const ctx = computed(() => {
     const capabilities = {
-        viewAny: permissions.can('classe', 'viewAny'),
-        createAny: permissions.can('classe', 'createAny'),
-        updateAny: permissions.can('classe', 'updateAny'),
-        deleteAny: permissions.can('classe', 'deleteAny'),
-        manageAny: permissions.can('classe', 'manageAny'),
+        viewAny: permissions.can('breed', 'viewAny'),
+        createAny: permissions.can('breed', 'createAny'),
+        updateAny: permissions.can('breed', 'updateAny'),
+        deleteAny: permissions.can('breed', 'deleteAny'),
+        manageAny: permissions.can('breed', 'manageAny'),
     };
     return { capabilities, meta: { capabilities } };
 });
 
-const descriptors = computed(() => getClasseFieldDescriptors(ctx.value));
+const descriptors = computed(() => getBreedFieldDescriptors(ctx.value));
 
 const canShowField = (fieldKey) => {
     const desc = descriptors.value?.[fieldKey];
@@ -67,7 +67,7 @@ const canShowField = (fieldKey) => {
         try {
             return Boolean(visibleIf(ctx.value));
         } catch (e) {
-            console.warn('[ClasseViewMinimal] visibleIf failed for', fieldKey, e);
+            console.warn('[BreedViewMinimal] visibleIf failed for', fieldKey, e);
             return false;
         }
     }
@@ -89,7 +89,7 @@ const getFieldIcon = (fieldKey) => {
 };
 
 const getCell = (fieldKey) => {
-    return props.classe.toCell(fieldKey, {
+    return props.breed.toCell(fieldKey, {
         size: 'sm',
         context: 'minimal',
     });
@@ -102,20 +102,20 @@ const tooltipForField = (fieldKey, cell) => {
 };
 
 const handleAction = async (actionKey) => {
-    const classeId = props.classe.id;
-    if (!classeId) return;
+    const breedId = props.breed.id;
+    if (!breedId) return;
 
     switch (actionKey) {
         case 'view':
-            router.visit(route('entities.classes.show', { classe: classeId }));
-            emit('view', props.classe);
+            router.visit(route('entities.breeds.show', { breed: breedId }));
+            emit('view', props.breed);
             break;
         case 'edit':
-            router.visit(route('entities.classes.edit', { classe: classeId }));
-            emit('edit', props.classe);
+            router.visit(route('entities.breeds.edit', { breed: breedId }));
+            emit('edit', props.breed);
             break;
         case 'delete':
-            emit('delete', props.classe);
+            emit('delete', props.breed);
             break;
     }
 };
@@ -142,15 +142,15 @@ const handleAction = async (actionKey) => {
             <!-- En-tête avec image/icône, nom et actions -->
             <div class="flex items-start justify-between gap-2 mb-2">
                 <div class="flex items-center gap-2 flex-1 min-w-0">
-                    <div v-if="classe.image || classe.icon" class="flex-shrink-0">
+                    <div v-if="breed.image || breed.icon" class="flex-shrink-0">
                         <Image
-                            :src="classe.image || classe.icon"
-                            :alt="classe.name || 'Classe'"
+                            :src="breed.image || breed.icon"
+                            :alt="breed.name || 'Breed'"
                             size="xs"
                             class="rounded"
                         />
                     </div>
-                    <Tooltip :content="classe.name || 'Classe'" placement="top">
+                    <Tooltip :content="breed.name || 'Breed'" placement="top">
                         <span class="font-semibold text-primary-100 text-sm truncate block">
                             <CellRenderer
                                 :cell="getCell('name')"
@@ -162,8 +162,8 @@ const handleAction = async (actionKey) => {
                 
                 <div v-if="showActions && isHovered" class="flex-shrink-0">
                     <EntityActions
-                        entity-type="classe"
-                        :entity="classe"
+                        entity-type="breed"
+                        :entity="breed"
                         format="buttons"
                         display="icon-only"
                         size="xs"

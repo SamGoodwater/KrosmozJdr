@@ -10,14 +10,14 @@
  * ⚠️ Sécurité : ces descriptors ne sont que de l'UX. Le backend reste la vérité (Policies + filtrage des champs).
  *
  * @example
- * import { getClasseFieldDescriptors } from "@/Entities/classe/classe-descriptors";
- * const descriptors = getClasseFieldDescriptors({ meta });
+ * import { getBreedFieldDescriptors } from "@/Entities/breed/breed-descriptors";
+ * const descriptors = getBreedFieldDescriptors({ meta });
  */
 
 import { getEntityStateOptions, getUserRoleOptions } from "@/Utils/Entity/SharedConstants";
 
 /**
- * @typedef {Object} ClasseFieldDescriptor
+ * @typedef {Object} BreedFieldDescriptor
  * @property {string} key - Clé unique du champ
  * @property {string} label - Libellé affiché
  * @property {string} [icon] - Icône FontAwesome
@@ -51,9 +51,9 @@ import { getEntityStateOptions, getUserRoleOptions } from "@/Utils/Entity/Shared
  * 
  * @param {Object} ctx - Contexte d'exécution
  * @param {Object} [ctx.capabilities] - Permissions disponibles (ou ctx.meta.capabilities)
- * @returns {Record<string, ClasseFieldDescriptor>} Objet avec tous les descripteurs
+ * @returns {Record<string, BreedFieldDescriptor>} Objet avec tous les descripteurs
  */
-export function getClasseFieldDescriptors(ctx = {}) {
+export function getBreedFieldDescriptors(ctx = {}) {
   const can = ctx?.capabilities || ctx?.meta?.capabilities || null;
   const canUpdateAny = Boolean(can?.updateAny);
   const canCreateAny = Boolean(can?.createAny);
@@ -442,8 +442,8 @@ export function getClasseFieldDescriptors(ctx = {}) {
     },
     // Configuration globale du tableau
     _tableConfig: {
-      id: "classes.index",
-      entityType: "classe",
+      id: "breeds.index",
+      entityType: "breed",
       quickEdit: {
         enabled: true,
         permission: "updateAny",

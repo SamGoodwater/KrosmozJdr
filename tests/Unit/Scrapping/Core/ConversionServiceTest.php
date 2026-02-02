@@ -102,7 +102,7 @@ class ConversionServiceTest extends TestCase
         $this->assertSame('Évaporation', $out['spells']['name'] ?? null);
     }
 
-    public function test_convert_breed_produces_classes_key(): void
+    public function test_convert_breed_produces_breeds_key(): void
     {
         $raw = [
             'id' => 1,
@@ -113,9 +113,9 @@ class ConversionServiceTest extends TestCase
 
         $out = $this->service->convert('dofusdb', 'breed', $raw, ['entityType' => 'class', 'lang' => 'fr']);
 
-        $this->assertArrayHasKey('classes', $out);
-        $this->assertSame('1', $out['classes']['dofusdb_id'] ?? null);
-        $this->assertSame('Feca', $out['classes']['name'] ?? null);
+        $this->assertArrayHasKey('breeds', $out);
+        $this->assertSame('1', $out['breeds']['dofusdb_id'] ?? null);
+        $this->assertSame('Feca', $out['breeds']['name'] ?? null);
     }
 
     public function test_convert_item_produces_items_key(): void

@@ -60,7 +60,7 @@ return [
         'breeds' => [
             'endpoint' => '/breeds',
             'enabled' => true,
-            'entity' => 'classe',
+            'entity' => 'breed',
         ],
         'monsters' => [
             'endpoint' => '/monsters',
@@ -126,8 +126,8 @@ return [
             'collect' => false
         ],
 
-        // CLASSE
-        'classe' => [
+        // BREED (classe jouable)
+        'breed' => [
             'collect' => true,
             'fields' => [
                 'official_id' => [

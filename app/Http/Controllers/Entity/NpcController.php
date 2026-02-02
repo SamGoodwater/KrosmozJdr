@@ -19,7 +19,7 @@ class NpcController extends Controller
     {
         $this->authorize('viewAny', Npc::class);
         
-        $query = Npc::with(['creature', 'classe', 'specialization']);
+        $query = Npc::with(['creature', 'breed', 'specialization']);
         
         // Recherche
         if (request()->has('search') && request()->search) {
@@ -30,8 +30,8 @@ class NpcController extends Controller
         }
         
         // Filtres
-        if (request()->has('classe_id') && request()->classe_id !== '') {
-            $query->where('classe_id', request()->classe_id);
+        if (request()->has('breed_id') && request()->breed_id !== '') {
+            $query->where('breed_id', request()->breed_id);
         }
         
         if (request()->has('specialization_id') && request()->specialization_id !== '') {
@@ -52,7 +52,7 @@ class NpcController extends Controller
         
         return Inertia::render('Pages/entity/npc/Index', [
             'npcs' => NpcResource::collection($npcs),
-            'filters' => request()->only(['search', 'classe_id', 'specialization_id']),
+            'filters' => request()->only(['search', 'breed_id', 'specialization_id']),
         ]);
     }
 
@@ -87,7 +87,7 @@ class NpcController extends Controller
     {
         $this->authorize('update', $npc);
         
-        $npc->load(['creature', 'classe', 'specialization', 'panoplies', 'scenarios', 'campaigns']);
+        $npc->load(['creature', 'breed', 'specialization', 'panoplies', 'scenarios', 'campaigns']);
         
         // Charger toutes les entités disponibles pour la recherche
         $availablePanoplies = \App\Models\Entity\Panoply::select('id', 'name', 'description')

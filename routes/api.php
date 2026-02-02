@@ -309,8 +309,8 @@ Route::middleware(['web'])->prefix('tables')->group(function () {
         ->name('api.tables.attributes');
     Route::get('/capabilities', [App\Http\Controllers\Api\Table\CapabilityTableController::class, 'index'])
         ->name('api.tables.capabilities');
-    Route::get('/classes', [App\Http\Controllers\Api\Table\ClasseTableController::class, 'index'])
-        ->name('api.tables.classes');
+    Route::get('/breeds', [App\Http\Controllers\Api\Table\BreedTableController::class, 'index'])
+        ->name('api.tables.breeds');
     Route::get('/specializations', [App\Http\Controllers\Api\Table\SpecializationTableController::class, 'index'])
         ->name('api.tables.specializations');
     Route::get('/creatures', [App\Http\Controllers\Api\Table\CreatureTableController::class, 'index'])
@@ -357,8 +357,8 @@ Route::middleware(['web', 'auth'])->prefix('entities')->group(function () {
         ->name('api.entities.creatures.bulk');
     Route::patch('/npcs/bulk', [App\Http\Controllers\Api\NpcBulkController::class, 'bulkUpdate'])
         ->name('api.entities.npcs.bulk');
-    Route::patch('/classes/bulk', [App\Http\Controllers\Api\ClasseBulkController::class, 'bulkUpdate'])
-        ->name('api.entities.classes.bulk');
+    Route::patch('/breeds/bulk', [App\Http\Controllers\Api\BreedBulkController::class, 'bulkUpdate'])
+        ->name('api.entities.breeds.bulk');
     Route::patch('/consumables/bulk', [App\Http\Controllers\Api\ConsumableBulkController::class, 'bulkUpdate'])
         ->name('api.entities.consumables.bulk');
 });

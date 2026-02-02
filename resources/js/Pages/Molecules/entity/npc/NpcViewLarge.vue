@@ -69,7 +69,7 @@ const canShowField = (fieldKey) => {
 const extendedFields = computed(() => {
     const fields = [
         'creature_name',
-        'classe',
+        'breed',
         'specialization',
         'story',
         'historical',

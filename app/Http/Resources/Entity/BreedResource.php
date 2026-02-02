@@ -6,13 +6,11 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 /**
- * Resource API/Frontend pour l'entité Classe.
+ * Resource API/Frontend pour l'entité Breed (affichée « Classe »).
  */
-class ClasseResource extends JsonResource
+class BreedResource extends JsonResource
 {
     /**
-     * Transform the resource into an array.
-     *
      * @return array<string, mixed>
      */
     public function toArray(Request $request): array
@@ -40,12 +38,10 @@ class ClasseResource extends JsonResource
             'updated_at' => $this->updated_at?->toISOString(),
             'deleted_at' => $this->deleted_at?->toISOString(),
 
-            // Relations
             'createdBy' => $this->whenLoaded('createdBy'),
             'npcs' => $this->whenLoaded('npcs'),
             'spells' => $this->whenLoaded('spells'),
 
-            // Droits d'accès
             'can' => [
                 'update' => $user ? $user->can('update', $this->resource) : false,
                 'delete' => $user ? $user->can('delete', $this->resource) : false,
@@ -54,4 +50,3 @@ class ClasseResource extends JsonResource
         ];
     }
 }
-

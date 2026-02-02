@@ -19,7 +19,7 @@ class SpellController extends Controller
     {
         $this->authorize('viewAny', Spell::class);
         
-        $query = Spell::with(['createdBy', 'creatures', 'classes', 'spellTypes']);
+        $query = Spell::with(['createdBy', 'creatures', 'breeds', 'spellTypes']);
         
         // Recherche
         if (request()->has('search') && request()->search) {
@@ -88,21 +88,19 @@ class SpellController extends Controller
     {
         $this->authorize('update', $spell);
         
-        $spell->load(['createdBy', 'creatures', 'classes', 'spellTypes']);
-        
-        // Charger toutes les classes disponibles pour la recherche
-        $availableClasses = \App\Models\Entity\Classe::select('id', 'name', 'description')
+        $spell->load(['createdBy', 'creatures', 'breeds', 'spellTypes']);
+
+        $availableBreeds = \App\Models\Entity\Breed::select('id', 'name', 'description')
             ->orderBy('name')
             ->get();
-        
-        // Charger tous les types de sorts disponibles pour la recherche
+
         $availableSpellTypes = \App\Models\Type\SpellType::select('id', 'name', 'description', 'color')
             ->orderBy('name')
             ->get();
-        
+
         return Inertia::render('Pages/entity/spell/Edit', [
             'spell' => new SpellResource($spell),
-            'availableClasses' => $availableClasses,
+            'availableBreeds' => $availableBreeds,
             'availableSpellTypes' => $availableSpellTypes,
         ]);
     }
@@ -116,28 +114,28 @@ class SpellController extends Controller
         
         $spell->update($request->validated());
         
-        $spell->load(['createdBy', 'creatures', 'classes', 'spellTypes']);
-        
+        $spell->load(['createdBy', 'creatures', 'breeds', 'spellTypes']);
+
         return redirect()->route('entities.spells.show', $spell)
             ->with('success', 'Sort mis à jour avec succès.');
     }
 
     /**
-     * Update the classes of a spell.
+     * Update the breeds (affichées « Classes ») of a spell.
      */
-    public function updateClasses(\Illuminate\Http\Request $request, Spell $spell)
+    public function updateBreeds(\Illuminate\Http\Request $request, Spell $spell)
     {
         $this->authorize('update', $spell);
-        
+
         $request->validate([
-            'classes' => 'present|array',
-            'classes.*' => 'exists:classes,id',
+            'breeds' => 'present|array',
+            'breeds.*' => 'exists:breeds,id',
         ]);
-        
-        $spell->classes()->sync($request->classes);
-        
-        $spell->load(['createdBy', 'creatures', 'classes', 'spellTypes']);
-        
+
+        $spell->breeds()->sync($request->breeds);
+
+        $spell->load(['createdBy', 'creatures', 'breeds', 'spellTypes']);
+
         return redirect()->back()
             ->with('success', 'Classes du sort mises à jour avec succès.');
     }
@@ -156,8 +154,8 @@ class SpellController extends Controller
         
         $spell->spellTypes()->sync($request->spellTypes);
         
-        $spell->load(['createdBy', 'creatures', 'classes', 'spellTypes']);
-        
+        $spell->load(['createdBy', 'creatures', 'breeds', 'spellTypes']);
+
         return redirect()->back()
             ->with('success', 'Types de sort mis à jour avec succès.');
     }

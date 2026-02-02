@@ -2,7 +2,7 @@
 
 namespace Tests\Unit\Scrapping\Core;
 
-use App\Models\Entity\Classe;
+use App\Models\Entity\Breed;
 use App\Models\Entity\Creature;
 use App\Models\Entity\Monster;
 use App\Models\Entity\Spell;
@@ -198,7 +198,7 @@ class IntegrationServiceTest extends TestCase
     public function test_integrate_class_dry_run_returns_would_create(): void
     {
         $convertedData = [
-            'classes' => [
+            'breeds' => [
                 'dofusdb_id' => '1',
                 'name' => 'Feca',
                 'description' => 'Desc',
@@ -211,12 +211,12 @@ class IntegrationServiceTest extends TestCase
         $this->assertSame('would_create', $result->getPrimaryAction());
     }
 
-    public function test_integrate_class_creates_classe(): void
+    public function test_integrate_class_creates_breed(): void
     {
         $this->createSystemUser();
 
         $convertedData = [
-            'classes' => [
+            'breeds' => [
                 'dofusdb_id' => '2',
                 'name' => 'Classe Integration Test',
                 'description' => 'Desc',
@@ -227,9 +227,9 @@ class IntegrationServiceTest extends TestCase
 
         $this->assertTrue($result->isSuccess());
         $this->assertSame('created', $result->getPrimaryAction());
-        $class = Classe::find($result->getPrimaryId());
-        $this->assertNotNull($class);
-        $this->assertSame('Classe Integration Test', $class->name);
+        $breed = Breed::find($result->getPrimaryId());
+        $this->assertNotNull($breed);
+        $this->assertSame('Classe Integration Test', $breed->name);
     }
 
     public function test_integrate_item_dry_run_returns_would_create(): void
@@ -260,7 +260,7 @@ class IntegrationServiceTest extends TestCase
     public function test_integrate_breed_dispatches_to_class(): void
     {
         $convertedData = [
-            'classes' => [
+            'breeds' => [
                 'dofusdb_id' => '3',
                 'name' => 'Breed Alias Test',
                 'description' => 'Desc',

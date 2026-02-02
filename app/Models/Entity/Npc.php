@@ -5,7 +5,7 @@ namespace App\Models\Entity;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Entity\Creature;
-use App\Models\Entity\Classe;
+use App\Models\Entity\Breed;
 use App\Models\Entity\Specialization;
 use App\Models\Entity\Scenario;
 use App\Models\Entity\Campaign;
@@ -21,13 +21,13 @@ use App\Models\Entity\Panoply;
  * @property string|null $historical
  * @property string|null $age
  * @property string|null $size
- * @property int|null $classe_id
+ * @property int|null $breed_id
  * @property int|null $specialization_id
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property-read \Illuminate\Database\Eloquent\Collection<int, Campaign> $campaigns
  * @property-read int|null $campaigns_count
- * @property-read Classe|null $classe
+ * @property-read Breed|null $breed
  * @property-read Creature|null $creature
  * @property-read \Illuminate\Database\Eloquent\Collection<int, Panoply> $panoplies
  * @property-read int|null $panoplies_count
@@ -40,7 +40,7 @@ use App\Models\Entity\Panoply;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Npc newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Npc query()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Npc whereAge($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Npc whereClasseId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Npc whereBreedId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Npc whereCreatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Npc whereCreatureId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Npc whereHistorical($value)
@@ -67,7 +67,7 @@ class Npc extends Model
         'historical',
         'age',
         'size',
-        'classe_id',
+        'breed_id',
         'specialization_id',
     ];
 
@@ -88,11 +88,11 @@ class Npc extends Model
     }
 
     /**
-     * Get the class associated with the NPC.
+     * Get the breed (affichée « Classe ») associated with the NPC.
      */
-    public function classe()
+    public function breed()
     {
-        return $this->belongsTo(Classe::class, 'classe_id');
+        return $this->belongsTo(Breed::class, 'breed_id');
     }
 
     /**

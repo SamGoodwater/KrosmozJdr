@@ -1708,73 +1708,6 @@
     "file": "entity/consumable/ConsumableViewCompact.vue"
   },
   {
-    "name": "ClasseViewText",
-    "description": "ClasseViewText — Vue Texte pour Classe",
-    "props": [
-      {
-        "name": "classe",
-        "type": "Classe",
-        "desc": "- Instance du modèle Classe"
-      }
-    ],
-    "slots": [],
-    "file": "entity/classe/ClasseViewText.vue"
-  },
-  {
-    "name": "ClasseViewMinimal",
-    "description": "ClasseViewMinimal — Vue Minimal pour Classe",
-    "props": [
-      {
-        "name": "classe",
-        "type": "Classe",
-        "desc": "- Instance du modèle Classe"
-      },
-      {
-        "name": "showActions",
-        "type": "Boolean",
-        "desc": "- Afficher les actions (défaut: true)"
-      }
-    ],
-    "slots": [],
-    "file": "entity/classe/ClasseViewMinimal.vue"
-  },
-  {
-    "name": "ClasseViewLarge",
-    "description": "ClasseViewLarge — Vue Large pour Classe",
-    "props": [
-      {
-        "name": "classe",
-        "type": "Classe",
-        "desc": "- Instance du modèle Classe"
-      },
-      {
-        "name": "showActions",
-        "type": "Boolean",
-        "desc": "- Afficher les actions (défaut: true)"
-      }
-    ],
-    "slots": [],
-    "file": "entity/classe/ClasseViewLarge.vue"
-  },
-  {
-    "name": "ClasseViewCompact",
-    "description": "ClasseViewCompact — Vue Compact pour Classe",
-    "props": [
-      {
-        "name": "classe",
-        "type": "Classe",
-        "desc": "- Instance du modèle Classe"
-      },
-      {
-        "name": "showActions",
-        "type": "Boolean",
-        "desc": "- Afficher les actions (défaut: true)"
-      }
-    ],
-    "slots": [],
-    "file": "entity/classe/ClasseViewCompact.vue"
-  },
-  {
     "name": "CapabilityViewText",
     "description": "CapabilityViewText — Vue Texte pour Capability",
     "props": [
@@ -1907,6 +1840,73 @@
     ],
     "slots": [],
     "file": "entity/campaign/CampaignViewCompact.vue"
+  },
+  {
+    "name": "BreedViewText",
+    "description": "BreedViewText — Vue Texte pour Breed",
+    "props": [
+      {
+        "name": "breed",
+        "type": "Breed",
+        "desc": "- Instance du modèle Breed"
+      }
+    ],
+    "slots": [],
+    "file": "entity/breed/BreedViewText.vue"
+  },
+  {
+    "name": "BreedViewMinimal",
+    "description": "BreedViewMinimal — Vue Minimal pour Breed",
+    "props": [
+      {
+        "name": "classe",
+        "type": "Breed",
+        "desc": "- Instance du modèle Breed"
+      },
+      {
+        "name": "showActions",
+        "type": "Boolean",
+        "desc": "- Afficher les actions (défaut: true)"
+      }
+    ],
+    "slots": [],
+    "file": "entity/breed/BreedViewMinimal.vue"
+  },
+  {
+    "name": "BreedViewLarge",
+    "description": "BreedViewLarge — Vue Large pour Breed",
+    "props": [
+      {
+        "name": "classe",
+        "type": "Breed",
+        "desc": "- Instance du modèle Breed"
+      },
+      {
+        "name": "showActions",
+        "type": "Boolean",
+        "desc": "- Afficher les actions (défaut: true)"
+      }
+    ],
+    "slots": [],
+    "file": "entity/breed/BreedViewLarge.vue"
+  },
+  {
+    "name": "BreedViewCompact",
+    "description": "BreedViewCompact — Vue Compact pour Breed",
+    "props": [
+      {
+        "name": "breed",
+        "type": "Breed",
+        "desc": "- Instance du modèle Breed"
+      },
+      {
+        "name": "showActions",
+        "type": "Boolean",
+        "desc": "- Afficher les actions (défaut: true)"
+      }
+    ],
+    "slots": [],
+    "file": "entity/breed/BreedViewCompact.vue"
   },
   {
     "name": "AttributeViewText",

@@ -115,7 +115,7 @@ const ENTITY_COMPONENT_MAP = {
     'monsters': 'Monster',
     'creatures': 'Creature',
     'npcs': 'Npc',
-    'classes': 'Classe',
+    'breeds': 'Classe',
     'campaigns': 'Campaign',
     'scenarios': 'Scenario',
     'attributes': 'Attribute',

@@ -29,7 +29,7 @@ Le tableau ci-dessous synthétise les principales entités du projet, leur type 
 | Entité           | Type           | Usage principal / Description courte                         |
 | ---------------- | -------------- | ------------------------------------------------------------ |
 | users            | Métier         | Utilisateurs du site (joueurs, MJ, admins, etc.)             |
-| classes          | Métier         | Classes jouables (Féca, Iop, etc.)                           |
+| breeds           | Métier         | Classes jouables (Féca, Iop, etc.)                          |
 | monsters         | Métier         | Monstres du jeu                                              |
 | npcs             | Métier         | Personnages non joueurs                                      |
 | items            | Métier         | Objets et équipements (armes, armures, anneaux, etc.)        |
@@ -73,7 +73,7 @@ Le tableau ci-dessous synthétise les principales entités du projet, leur type 
 | created_at        | datetime  | Date de création                 |
 | updated_at        | datetime  | Date de modification             |
 
-### 3.2. Classes (`classes`)
+### 3.2. Classes (`breeds`)
 
 | Champ            | Type     | Description                       |
 | ---------------- | -------- | --------------------------------- |
@@ -463,7 +463,7 @@ Le tableau ci-dessous synthétise les principales entités du projet, leur type 
 | Table pivot               | Champs principaux / Spéciaux                          |
 | ------------------------- | ----------------------------------------------------- |
 | capability_class          | capability_id, class_id                               |
-| class_spell               | class_id, spell_id                                    |
+| breed_spell               | breed_id, spell_id                                    |
 | attribute_class           | attribute_id, class_id                                |
 | capability_specialization | capability_id, specialization_id                      |
 | spell_invocation          | spell_id, monster_id                                  |
@@ -519,7 +519,7 @@ Le tableau ci-dessous synthétise les principales entités du projet, leur type 
 
 - **Entité** : Objet métier principal du jeu (ex : utilisateur, classe, monstre, objet, ressource, sort, etc.).
 - **Typage** : Table listant des catégories ou types utilisés par d'autres entités (ex : item_types, spell_types).
-- **Pivot (table pivot)** : Table de relation entre deux entités principales (ex : item_resource, class_spell).
+- **Pivot (table pivot)** : Table de relation entre deux entités principales (ex : item_resource, breed_spell).
 - **Clé étrangère** : Champ d'une table référant à la clé primaire d'une autre table pour assurer l'intégrité référentielle.
 - **Soft delete (suppression logique)** : Suppression d'une donnée en la marquant comme supprimée (champ `deleted_at`), sans la retirer physiquement de la base.
 - **Liste évolutive** : Liste dont les valeurs peuvent être modifiées via l'interface d'administration (ajout, édition, désactivation).
@@ -533,4 +533,4 @@ Le tableau ci-dessous synthétise les principales entités du projet, leur type 
 - **Panoplie** : Ensemble d'objets qui, équipés ensemble, confèrent des bonus spécifiques.
 - **Relation** : Lien logique ou physique entre deux entités (ex : un monstre possède des sorts, un objet est composé de ressources).
 
-> **Note** : Le champ `classe_id` est utilisé dans la base de données et le code pour référencer la table des classes jouables, afin d'éviter tout conflit avec le mot réservé `class` dans la plupart des langages de programmation. Cette convention s'applique également aux clés étrangères et relations associées.
+> **Note** : La table des classes jouables est nommée `breeds` et la clé étrangère `breed_id` est utilisée dans la base de données et le code (npcs, pivot breed_spell), afin d'éviter tout conflit avec le mot réservé `class` dans la plupart des langages de programmation.

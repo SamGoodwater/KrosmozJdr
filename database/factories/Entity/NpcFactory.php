@@ -23,7 +23,7 @@ class NpcFactory extends Factory
             'historical' => fake()->optional()->text(200),
             'age' => fake()->optional()->numberBetween(18, 200),
             'size' => fake()->optional()->numberBetween(100, 250),
-            'classe_id' => null,
+            'breed_id' => null,
             'specialization_id' => null,
         ];
     }

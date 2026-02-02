@@ -39,7 +39,7 @@ const entityItems = [
     { key: 'attribute', label: 'Attributs', icon: 'fa-list', route: 'entities.attributes.index' },
     { key: 'campaign', label: 'Campagnes', icon: 'fa-book', route: 'entities.campaigns.index' },
     { key: 'capability', label: 'Capacités', icon: 'fa-star', route: 'entities.capabilities.index' },
-    { key: 'classe', label: 'Classes', icon: 'fa-user', route: 'entities.classes.index' },
+    { key: 'breed', label: 'Classes', icon: 'fa-user', route: 'entities.breeds.index' },
     { key: 'consumable', label: 'Consommables', icon: 'fa-flask', route: 'entities.consumables.index' },
     { key: 'creature', label: 'Créatures', icon: 'fa-paw', route: 'entities.creatures.index' },
     { key: 'item', label: 'Objets', icon: 'fa-box', route: 'entities.items.index' },

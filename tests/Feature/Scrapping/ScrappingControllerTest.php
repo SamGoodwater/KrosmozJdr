@@ -3,7 +3,7 @@
 namespace Tests\Feature\Scrapping;
 
 use App\Models\User;
-use App\Models\Entity\Classe;
+use App\Models\Entity\Breed;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Http;
 use Tests\TestCase;
@@ -56,8 +56,8 @@ class ScrappingControllerTest extends TestCase
                 'timestamp',
             ]);
 
-        $class = Classe::where('name', 'Iop')->orWhere('dofusdb_id', '1')->first();
-        $this->assertNotNull($class);
+        $breed = Breed::where('name', 'Iop')->orWhere('dofusdb_id', '1')->first();
+        $this->assertNotNull($breed);
     }
 
     /**

@@ -4,7 +4,7 @@ namespace Tests\Feature\Entity;
 
 use App\Models\User;
 use App\Models\Entity\Spell;
-use App\Models\Entity\Classe;
+use App\Models\Entity\Breed;
 use App\Models\Type\SpellType;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -15,7 +15,7 @@ use Tests\TestCase;
  * Vérifie que :
  * - Un utilisateur peut modifier un sort qu'il a créé
  * - Un admin peut modifier n'importe quel sort
- * - La méthode updateClasses synchronise correctement les classes
+ * - La méthode updateBreeds synchronise correctement les breeds (affichés « Classes »)
  * - La méthode updateSpellTypes synchronise correctement les types de sort
  * - Les validations fonctionnent correctement
  * - Les policies fonctionnent correctement
@@ -36,162 +36,162 @@ class SpellControllerTest extends TestCase
     /**
      * Test : Un utilisateur peut ajouter des classes à son sort
      */
-    public function test_user_can_add_classes_to_own_spell(): void
+    public function test_user_can_add_breeds_to_own_spell(): void
     {
         $user = User::factory()->create();
         $spell = Spell::factory()->create([
             'created_by' => $user->id,
         ]);
-        $classe1 = Classe::factory()->create();
-        $classe2 = Classe::factory()->create();
+        $breed1 = Breed::factory()->create();
+        $breed2 = Breed::factory()->create();
 
         $response = $this->actingAs($user)
             ->from(route('entities.spells.edit', $spell))
-            ->post(route('entities.spells.updateClasses', $spell), [
+            ->post(route('entities.spells.updateBreeds', $spell), [
                 '_method' => 'PATCH',
-                'classes' => [$classe1->id, $classe2->id],
+                'breeds' => [$breed1->id, $breed2->id],
             ]);
 
         $response->assertRedirect();
-        $this->assertCount(2, $spell->fresh()->classes);
-        $this->assertTrue($spell->fresh()->classes->contains($classe1));
-        $this->assertTrue($spell->fresh()->classes->contains($classe2));
+        $this->assertCount(2, $spell->fresh()->breeds);
+        $this->assertTrue($spell->fresh()->breeds->contains($breed1));
+        $this->assertTrue($spell->fresh()->breeds->contains($breed2));
     }
 
     /**
      * Test : Un utilisateur peut retirer des classes de son sort
      */
-    public function test_user_can_remove_classes_from_own_spell(): void
+    public function test_user_can_remove_breeds_from_own_spell(): void
     {
         $user = User::factory()->create();
         $spell = Spell::factory()->create([
             'created_by' => $user->id,
         ]);
-        $classe1 = Classe::factory()->create();
-        $classe2 = Classe::factory()->create();
-        $classe3 = Classe::factory()->create();
-        
-        // Ajouter initialement 3 classes
-        $spell->classes()->attach([$classe1->id, $classe2->id, $classe3->id]);
+        $breed1 = Breed::factory()->create();
+        $breed2 = Breed::factory()->create();
+        $breed3 = Breed::factory()->create();
 
-        // Retirer classe2 et classe3, garder seulement classe1
+        // Ajouter initialement 3 breeds
+        $spell->breeds()->attach([$breed1->id, $breed2->id, $breed3->id]);
+
+        // Retirer breed2 et breed3, garder seulement breed1
         $response = $this->actingAs($user)
             ->from(route('entities.spells.edit', $spell))
-            ->patch(route('entities.spells.updateClasses', $spell), [
-                'classes' => [$classe1->id],
+            ->patch(route('entities.spells.updateBreeds', $spell), [
+                'breeds' => [$breed1->id],
             ]);
 
         $response->assertRedirect();
-        $this->assertCount(1, $spell->fresh()->classes);
-        $this->assertTrue($spell->fresh()->classes->contains($classe1));
-        $this->assertFalse($spell->fresh()->classes->contains($classe2));
-        $this->assertFalse($spell->fresh()->classes->contains($classe3));
+        $this->assertCount(1, $spell->fresh()->breeds);
+        $this->assertTrue($spell->fresh()->breeds->contains($breed1));
+        $this->assertFalse($spell->fresh()->breeds->contains($breed2));
+        $this->assertFalse($spell->fresh()->breeds->contains($breed3));
     }
 
     /**
      * Test : Un utilisateur peut remplacer toutes les classes de son sort
      */
-    public function test_user_can_replace_all_classes_in_own_spell(): void
+    public function test_user_can_replace_all_breeds_in_own_spell(): void
     {
         $user = User::factory()->create();
         $spell = Spell::factory()->create([
             'created_by' => $user->id,
         ]);
-        $oldClasse = Classe::factory()->create();
-        $newClasse1 = Classe::factory()->create();
-        $newClasse2 = Classe::factory()->create();
-        
-        // Ajouter une classe initialement
-        $spell->classes()->attach($oldClasse->id);
+        $oldBreed = Breed::factory()->create();
+        $newBreed1 = Breed::factory()->create();
+        $newBreed2 = Breed::factory()->create();
 
-        // Remplacer par de nouvelles classes
+        // Ajouter un breed initialement
+        $spell->breeds()->attach($oldBreed->id);
+
+        // Remplacer par de nouveaux breeds
         $response = $this->actingAs($user)
             ->from(route('entities.spells.edit', $spell))
-            ->patch(route('entities.spells.updateClasses', $spell), [
-                'classes' => [$newClasse1->id, $newClasse2->id],
+            ->patch(route('entities.spells.updateBreeds', $spell), [
+                'breeds' => [$newBreed1->id, $newBreed2->id],
             ]);
 
         $response->assertRedirect();
-        $this->assertCount(2, $spell->fresh()->classes);
-        $this->assertFalse($spell->fresh()->classes->contains($oldClasse));
-        $this->assertTrue($spell->fresh()->classes->contains($newClasse1));
-        $this->assertTrue($spell->fresh()->classes->contains($newClasse2));
+        $this->assertCount(2, $spell->fresh()->breeds);
+        $this->assertFalse($spell->fresh()->breeds->contains($oldBreed));
+        $this->assertTrue($spell->fresh()->breeds->contains($newBreed1));
+        $this->assertTrue($spell->fresh()->breeds->contains($newBreed2));
     }
 
     /**
      * Test : Un utilisateur peut vider toutes les classes d'un sort
      */
-    public function test_user_can_clear_all_classes_from_own_spell(): void
+    public function test_user_can_clear_all_breeds_from_own_spell(): void
     {
         $user = User::factory()->create();
         $spell = Spell::factory()->create([
             'created_by' => $user->id,
         ]);
-        $classe1 = Classe::factory()->create();
-        $classe2 = Classe::factory()->create();
-        
-        // Ajouter des classes initialement
-        $spell->classes()->attach([$classe1->id, $classe2->id]);
+        $breed1 = Breed::factory()->create();
+        $breed2 = Breed::factory()->create();
 
-        // Vider toutes les classes
+        // Ajouter des breeds initialement
+        $spell->breeds()->attach([$breed1->id, $breed2->id]);
+
+        // Vider tous les breeds
         $response = $this->actingAs($user)
             ->from(route('entities.spells.edit', $spell))
-            ->patch(route('entities.spells.updateClasses', $spell), [
-                'classes' => [],
+            ->patch(route('entities.spells.updateBreeds', $spell), [
+                'breeds' => [],
             ]);
 
         $response->assertRedirect();
-        $this->assertCount(0, $spell->fresh()->classes);
+        $this->assertCount(0, $spell->fresh()->breeds);
     }
 
     /**
      * Test : Un admin peut modifier les classes de n'importe quel sort
      */
-    public function test_admin_can_update_classes_of_any_spell(): void
+    public function test_admin_can_update_breeds_of_any_spell(): void
     {
         $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
         $otherUser = User::factory()->create();
         $spell = Spell::factory()->create([
             'created_by' => $otherUser->id,
         ]);
-        $classe1 = Classe::factory()->create();
-        $classe2 = Classe::factory()->create();
+        $breed1 = Breed::factory()->create();
+        $breed2 = Breed::factory()->create();
 
         $response = $this->actingAs($admin)
             ->from(route('entities.spells.edit', $spell))
-            ->patch(route('entities.spells.updateClasses', $spell), [
-                'classes' => [$classe1->id, $classe2->id],
+            ->patch(route('entities.spells.updateBreeds', $spell), [
+                'breeds' => [$breed1->id, $breed2->id],
             ]);
 
         $response->assertRedirect();
-        $this->assertCount(2, $spell->fresh()->classes);
+        $this->assertCount(2, $spell->fresh()->breeds);
     }
 
     /**
      * Test : Un utilisateur ne peut pas modifier les classes d'un sort qu'il n'a pas créé
      */
-    public function test_user_cannot_update_classes_of_other_user_spell(): void
+    public function test_user_cannot_update_breeds_of_other_user_spell(): void
     {
         $user = User::factory()->create(['role' => User::ROLE_USER]);
         $otherUser = User::factory()->create();
         $spell = Spell::factory()->create([
             'created_by' => $otherUser->id,
         ]);
-        $classe1 = Classe::factory()->create();
+        $breed1 = Breed::factory()->create();
 
         $response = $this->actingAs($user)
-            ->patch(route('entities.spells.updateClasses', $spell), [
-                'classes' => [$classe1->id],
+            ->patch(route('entities.spells.updateBreeds', $spell), [
+                'breeds' => [$breed1->id],
             ]);
 
         $response->assertForbidden();
-        $this->assertCount(0, $spell->fresh()->classes);
+        $this->assertCount(0, $spell->fresh()->breeds);
     }
 
     /**
      * Test : La validation échoue si classes n'est pas un array
      */
-    public function test_update_classes_fails_if_classes_is_not_array(): void
+    public function test_update_breeds_fails_if_breeds_is_not_array(): void
     {
         $user = User::factory()->create();
         $spell = Spell::factory()->create([
@@ -200,40 +200,40 @@ class SpellControllerTest extends TestCase
 
         $response = $this->actingAs($user)
             ->from(route('entities.spells.edit', $spell))
-            ->patch(route('entities.spells.updateClasses', $spell), [
-                'classes' => 'not-an-array',
+            ->patch(route('entities.spells.updateBreeds', $spell), [
+                'breeds' => 'not-an-array',
             ]);
 
-        $response->assertSessionHasErrors('classes');
+        $response->assertSessionHasErrors('breeds');
     }
 
     /**
      * Test : La validation échoue si une classe n'existe pas
      */
-    public function test_update_classes_fails_if_classe_does_not_exist(): void
+    public function test_update_breeds_fails_if_breed_does_not_exist(): void
     {
         $user = User::factory()->create();
         $spell = Spell::factory()->create([
             'created_by' => $user->id,
         ]);
-        $classe = Classe::factory()->create();
-        
-        // Supprimer définitivement la classe pour qu'elle n'existe plus
-        $classe->forceDelete();
+        $breed = Breed::factory()->create();
+
+        // Supprimer définitivement le breed pour qu'il n'existe plus
+        $breed->forceDelete();
 
         $response = $this->actingAs($user)
             ->from(route('entities.spells.edit', $spell))
-            ->patch(route('entities.spells.updateClasses', $spell), [
-                'classes' => [$classe->id],
+            ->patch(route('entities.spells.updateBreeds', $spell), [
+                'breeds' => [$breed->id],
             ]);
 
-        $response->assertSessionHasErrors('classes.0');
+        $response->assertSessionHasErrors('breeds.0');
     }
 
     /**
      * Test : La validation échoue si classes est manquant
      */
-    public function test_update_classes_fails_if_classes_is_missing(): void
+    public function test_update_breeds_fails_if_breeds_is_missing(): void
     {
         $user = User::factory()->create();
         $spell = Spell::factory()->create([
@@ -242,24 +242,24 @@ class SpellControllerTest extends TestCase
 
         $response = $this->actingAs($user)
             ->from(route('entities.spells.edit', $spell))
-            ->post(route('entities.spells.updateClasses', $spell), [
+            ->post(route('entities.spells.updateBreeds', $spell), [
                 '_method' => 'PATCH',
             ]);
 
-        $response->assertSessionHasErrors('classes');
+        $response->assertSessionHasErrors('breeds');
     }
 
     /**
      * Test : Un utilisateur non authentifié ne peut pas modifier les classes
      */
-    public function test_guest_cannot_update_classes(): void
+    public function test_guest_cannot_update_breeds(): void
     {
         $spell = Spell::factory()->create();
-        $classe = Classe::factory()->create();
+        $breed = Breed::factory()->create();
 
-        $response = $this->post(route('entities.spells.updateClasses', $spell), [
+        $response = $this->post(route('entities.spells.updateBreeds', $spell), [
             '_method' => 'PATCH',
-            'classes' => [$classe->id],
+            'breeds' => [$breed->id],
         ]);
 
         $response->assertRedirect(route('login'));
@@ -505,18 +505,18 @@ class SpellControllerTest extends TestCase
     }
 
     /**
-     * Test : La page d'édition charge les classes et types de sort disponibles
+     * Test : La page d'édition charge les breeds et types de sort disponibles
      */
-    public function test_edit_page_loads_available_classes_and_spell_types(): void
+    public function test_edit_page_loads_available_breeds_and_spell_types(): void
     {
         $user = User::factory()->create();
         $spell = Spell::factory()->create([
             'created_by' => $user->id,
         ]);
-        $classe1 = Classe::factory()->create(['name' => 'Classe 1']);
-        $classe2 = Classe::factory()->create(['name' => 'Classe 2']);
+        $breed1 = Breed::factory()->create(['name' => 'Classe 1']);
+        $breed2 = Breed::factory()->create(['name' => 'Classe 2']);
         $spellType1 = SpellType::factory()->create(['name' => 'Type 1']);
-        $spell->classes()->attach($classe1->id);
+        $spell->breeds()->attach($breed1->id);
         $spell->spellTypes()->attach($spellType1->id);
 
         $response = $this->actingAs($user)
@@ -526,35 +526,35 @@ class SpellControllerTest extends TestCase
         $response->assertInertia(fn ($page) => $page
             ->component('Pages/entity/spell/Edit')
             ->has('spell')
-            ->has('availableClasses')
+            ->has('availableBreeds')
             ->has('availableSpellTypes')
-            ->where('spell.data.classes.0.id', $classe1->id)
+            ->where('spell.data.breeds.0.id', $breed1->id)
             ->where('spell.data.spellTypes.0.id', $spellType1->id)
         );
     }
 
     /**
-     * Test : La synchronisation des classes fonctionne avec plusieurs classes
+     * Test : La synchronisation des breeds fonctionne avec plusieurs breeds
      */
-    public function test_sync_classes_works_with_multiple_classes(): void
+    public function test_sync_breeds_works_with_multiple_breeds(): void
     {
         $user = User::factory()->create();
         $spell = Spell::factory()->create([
             'created_by' => $user->id,
         ]);
-        $classes = Classe::factory()->count(5)->create();
-        $classeIds = $classes->pluck('id')->toArray();
+        $breeds = Breed::factory()->count(5)->create();
+        $breedIds = $breeds->pluck('id')->toArray();
 
         $response = $this->actingAs($user)
             ->from(route('entities.spells.edit', $spell))
-            ->patch(route('entities.spells.updateClasses', $spell), [
-                'classes' => $classeIds,
+            ->patch(route('entities.spells.updateBreeds', $spell), [
+                'breeds' => $breedIds,
             ]);
 
         $response->assertRedirect();
-        $this->assertCount(5, $spell->fresh()->classes);
-        foreach ($classes as $classe) {
-            $this->assertTrue($spell->fresh()->classes->contains($classe));
+        $this->assertCount(5, $spell->fresh()->breeds);
+        foreach ($breeds as $breed) {
+            $this->assertTrue($spell->fresh()->breeds->contains($breed));
         }
     }
 

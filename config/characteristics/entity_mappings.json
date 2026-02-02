@@ -6,9 +6,9 @@
     "author": "KrosmozJDR Team"
   },
   "entity_mappings": {
-    "classes": {
-      "target_model": "Classe",
-      "description": "Mapping des classes KrosmozJDR",
+    "breeds": {
+      "target_model": "Breed",
+      "description": "Mapping des breeds (classes jouables) KrosmozJDR",
       "mapping": {
         "name": {
           "source": "name",

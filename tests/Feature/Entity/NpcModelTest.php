@@ -5,7 +5,7 @@ namespace Tests\Feature\Entity;
 use App\Models\User;
 use App\Models\Entity\Npc;
 use App\Models\Entity\Creature;
-use App\Models\Entity\Classe;
+use App\Models\Entity\Breed;
 use App\Models\Entity\Specialization;
 use App\Models\Entity\Panoply;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -60,25 +60,25 @@ class NpcModelTest extends TestCase
     }
 
     /**
-     * Test de la relation classe
+     * Test de la relation breed (classe jouable)
      */
-    public function test_npc_has_classe_relation(): void
+    public function test_npc_has_breed_relation(): void
     {
         $user = User::factory()->create();
         $creature = Creature::factory()->create([
             'created_by' => $user->id,
         ]);
-        $classe = Classe::factory()->create([
+        $breed = Breed::factory()->create([
             'created_by' => $user->id,
         ]);
-        
+
         $npc = Npc::factory()->create([
             'creature_id' => $creature->id,
-            'classe_id' => $classe->id,
+            'breed_id' => $breed->id,
         ]);
 
-        $this->assertNotNull($npc->classe);
-        $this->assertEquals($classe->id, $npc->classe->id);
+        $this->assertNotNull($npc->breed);
+        $this->assertEquals($breed->id, $npc->breed->id);
     }
 
     /**

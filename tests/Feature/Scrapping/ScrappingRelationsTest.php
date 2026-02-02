@@ -3,7 +3,7 @@
 namespace Tests\Feature\Scrapping;
 
 use App\Models\User;
-use App\Models\Entity\Classe;
+use App\Models\Entity\Breed;
 use App\Models\Entity\Spell;
 use App\Models\Entity\Creature;
 use App\Models\Entity\Monster;
@@ -56,7 +56,7 @@ class ScrappingRelationsTest extends TestCase
     }
 
     /**
-     * Test que l'import d'une classe avec include_relations crée les relations dans class_spell
+     * Test que l'import d'un breed avec include_relations crée les relations dans breed_spell
      * 
      * Note: Ce test nécessite que l'API DofusDB soit accessible et que les données soient cohérentes
      */
@@ -81,19 +81,19 @@ class ScrappingRelationsTest extends TestCase
         $this->assertArrayHasKey('data', $result);
         $this->assertArrayHasKey('id', $result['data']);
 
-        $classe = Classe::find($result['data']['id']);
-        $this->assertNotNull($classe);
+        $breed = Breed::find($result['data']['id']);
+        $this->assertNotNull($breed);
 
-        // Vérifier que la classe a des sorts associés
-        $spellsCount = $classe->spells()->count();
-        
+        // Vérifier que le breed a des sorts associés
+        $spellsCount = $breed->spells()->count();
+
         // Si des sorts ont été importés, ils devraient être associés
         if ($spellsCount > 0) {
-            $this->assertGreaterThan(0, $spellsCount, 'La classe devrait avoir des sorts associés');
-            
+            $this->assertGreaterThan(0, $spellsCount, 'Le breed devrait avoir des sorts associés');
+
             // Vérifier que la relation existe dans la table pivot
-            $this->assertDatabaseHas('class_spell', [
-                'classe_id' => $classe->id,
+            $this->assertDatabaseHas('breed_spell', [
+                'breed_id' => $breed->id,
             ]);
         }
     }
@@ -326,11 +326,11 @@ class ScrappingRelationsTest extends TestCase
         $this->assertArrayHasKey('data', $result);
         $this->assertArrayHasKey('id', $result['data']);
 
-        $classe = Classe::find($result['data']['id']);
-        $this->assertNotNull($classe);
+        $breed = Breed::find($result['data']['id']);
+        $this->assertNotNull($breed);
 
         // Vérifier qu'aucune relation n'a été créée
-        $spellsCount = $classe->spells()->count();
+        $spellsCount = $breed->spells()->count();
         $this->assertEquals(0, $spellsCount, 'Aucune relation ne devrait être créée sans include_relations');
     }
 }

@@ -35,8 +35,8 @@ export class Npc extends BaseModel {
         return this._data.size || null;
     }
 
-    get classeId() {
-        return this._data.classe_id || null;
+    get breedId() {
+        return this._data.breed_id || null;
     }
 
     get specializationId() {
@@ -51,8 +51,8 @@ export class Npc extends BaseModel {
         return this._data.creature || null;
     }
 
-    get classe() {
-        return this._data.classe || null;
+    get breed() {
+        return this._data.breed || null;
     }
 
     get specialization() {
@@ -101,9 +101,11 @@ export class Npc extends BaseModel {
             case 'creature_name':
             case 'creatureName':
                 return this._toCreatureNameCell(format, size, options);
+            case 'breed':
+            case 'breed_id':
             case 'classe':
             case 'classe_id':
-                return this._toClasseCell(format, size, options);
+                return this._toBreedCell(format, size, options);
             case 'specialization':
             case 'specialization_id':
                 return this._toSpecializationCell(format, size, options);
@@ -159,13 +161,13 @@ export class Npc extends BaseModel {
     }
 
     /**
-     * Génère une cellule pour la classe
+     * Génère une cellule pour la breed (affichée « Classe »)
      * @private
      */
-    _toClasseCell(format, size, options) {
-        const classe = this.classe;
-        
-        if (!classe) {
+    _toBreedCell(format, size, options) {
+        const breed = this.breed;
+
+        if (!breed) {
             return {
                 type: 'text',
                 value: '-',
@@ -176,14 +178,14 @@ export class Npc extends BaseModel {
             };
         }
 
-        const classeName = classe.name || classe.label || '-';
-        
+        const breedName = breed.name || breed.label || '-';
+
         return {
             type: 'text',
-            value: classeName,
+            value: breedName,
             params: {
-                sortValue: classeName,
-                searchValue: classeName,
+                sortValue: breedName,
+                searchValue: breedName,
             },
         };
     }

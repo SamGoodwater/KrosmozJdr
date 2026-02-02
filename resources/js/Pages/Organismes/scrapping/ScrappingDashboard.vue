@@ -829,7 +829,7 @@ const scrappingTypeToRouteEntityType = {
     spell: "spells",
 };
 
-/** Segment table API → classe modèle (pour fromArray et toCell). */
+/** Segment table API → modèle (Monster, Item, Spell, etc. pour fromArray et toCell). */
 const segmentToModel = {
     monsters: Monster,
     items: Item,

@@ -5,7 +5,7 @@ Les sorts représentent toutes les magies, attaques spéciales, pouvoirs surnatu
 
 ## Relations principales
 - **Créatures** : via le pivot `creature_spell` (N:N avec `creatures`).
-- **Classes** : via le pivot `class_spell` (N:N avec `classes`).
+- **Classes** : via le pivot `breed_spell` (N:N avec `breeds`).
 - **Types de sort** : via le pivot `spell_type` (N:N avec `spell_types`).
 - **Invocations** : via le pivot `spell_invocation` (N:N avec `monsters`).
 - **Scénarios, campagnes** : via les pivots `scenario_spell`, `campaign_spell`.

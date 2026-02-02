@@ -74,7 +74,7 @@ const canShowField = (fieldKey) => {
 };
 
 // Champs importants à afficher
-const importantFields = computed(() => ['creature_name', 'classe', 'specialization'].filter(canShowField));
+const importantFields = computed(() => ['creature_name', 'breed', 'specialization'].filter(canShowField));
 
 // Champs supplémentaires à afficher au hover
 const expandedFields = computed(() => [

@@ -237,8 +237,8 @@ export const ENTITY_ACTIONS_CONFIG = Object.freeze({
     },
   },
 
-  /** Classes : Rafraîchir utilise le pipeline V2. */
-  classes: {
+  /** Breeds (affichées « Classes ») : Rafraîchir utilise le pipeline V2. */
+  breeds: {
     refresh: {
       key: "refresh",
       label: "Rafraîchir",

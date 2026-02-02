@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Scrapping;
 
 use App\Http\Controllers\Controller;
-use App\Models\Entity\Classe;
+use App\Models\Entity\Breed;
 use App\Models\Entity\Consumable;
 use App\Models\Entity\Item;
 use App\Models\Entity\Monster;
@@ -186,7 +186,7 @@ class ScrappingSearchController extends Controller
     private function withExistsFlag(string $entity, array $items): array
     {
         $modelClass = match ($entity) {
-            'class' => Classe::class,
+            'class' => Breed::class,
             'monster' => Monster::class,
             'item' => Item::class,
             'spell' => Spell::class,

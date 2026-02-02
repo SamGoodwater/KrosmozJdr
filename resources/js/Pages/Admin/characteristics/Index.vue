@@ -408,10 +408,11 @@ async function onIconFileChange(event) {
     }
 }
 
-/** Classes de fond par zone : thème entités (general = stone, monster = creature, class = classe, item = item). */
+/** Classes de fond par zone : thème entités (monster = creature, class/breed = classe, item = item). */
 const entityBgClasses = {
     monster: 'bg-color-creature-100',
     class: 'bg-color-classe-100',
+    breed: 'bg-color-classe-100',
     item: 'bg-color-item-100',
     spell: 'bg-color-spell-100',
 };

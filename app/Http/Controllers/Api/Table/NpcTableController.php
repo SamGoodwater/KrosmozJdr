@@ -38,12 +38,12 @@ class NpcTableController extends Controller
             $order = 'desc';
         }
 
-        $query = Npc::query()->with(['creature', 'classe', 'specialization']);
+        $query = Npc::query()->with(['creature', 'breed', 'specialization']);
 
         if ($search !== '') {
             $query->where(function ($q) use ($search) {
                 $q->orWhereHas('creature', fn ($qq) => $qq->where('name', 'like', "%{$search}%"))
-                    ->orWhereHas('classe', fn ($qq) => $qq->where('name', 'like', "%{$search}%"))
+                    ->orWhereHas('breed', fn ($qq) => $qq->where('name', 'like', "%{$search}%"))
                     ->orWhereHas('specialization', fn ($qq) => $qq->where('name', 'like', "%{$search}%"));
             });
         }
@@ -75,15 +75,15 @@ class NpcTableController extends Controller
                     'historical' => $n->historical,
                     'age' => $n->age,
                     'size' => $n->size,
-                    'classe_id' => $n->classe_id,
+                    'breed_id' => $n->breed_id,
                     'specialization_id' => $n->specialization_id,
                     'creature' => $n->creature ? [
                         'id' => $n->creature->id,
                         'name' => $n->creature->name,
                     ] : null,
-                    'classe' => $n->classe ? [
-                        'id' => $n->classe->id,
-                        'name' => $n->classe->name,
+                    'breed' => $n->breed ? [
+                        'id' => $n->breed->id,
+                        'name' => $n->breed->name,
                     ] : null,
                     'specialization' => $n->specialization ? [
                         'id' => $n->specialization->id,
@@ -114,7 +114,7 @@ class NpcTableController extends Controller
         $tableRows = $rows->map(function (Npc $n) {
             $showHref = route('entities.npcs.show', $n->id);
             $creatureName = $n->creature?->name ?? '-';
-            $classeName = $n->classe?->name ?? '-';
+            $breedName = $n->breed?->name ?? '-';
             $specName = $n->specialization?->name ?? '-';
 
             $createdAtLabel = $n->created_at ? $n->created_at->format('d/m/Y H:i') : '-';
@@ -134,12 +134,12 @@ class NpcTableController extends Controller
                             'sortValue' => $creatureName,
                         ],
                     ],
-                    'classe' => [
+                    'breed' => [
                         'type' => 'text',
-                        'value' => $classeName,
+                        'value' => $breedName,
                         'params' => [
-                            'searchValue' => $classeName,
-                            'sortValue' => $classeName,
+                            'searchValue' => $breedName,
+                            'sortValue' => $breedName,
                         ],
                     ],
                     'specialization' => [
@@ -175,15 +175,15 @@ class NpcTableController extends Controller
                         'historical' => $n->historical,
                         'age' => $n->age,
                         'size' => $n->size,
-                        'classe_id' => $n->classe_id,
+                        'breed_id' => $n->breed_id,
                         'specialization_id' => $n->specialization_id,
                         'creature' => $n->creature ? [
                             'id' => $n->creature->id,
                             'name' => $n->creature->name,
                         ] : null,
-                        'classe' => $n->classe ? [
-                            'id' => $n->classe->id,
-                            'name' => $n->classe->name,
+                        'breed' => $n->breed ? [
+                            'id' => $n->breed->id,
+                            'name' => $n->breed->name,
                         ] : null,
                         'specialization' => $n->specialization ? [
                             'id' => $n->specialization->id,

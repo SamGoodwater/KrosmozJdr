@@ -1,12 +1,12 @@
 <script setup>
 /**
- * ClasseViewCompact — Vue Compact pour Classe
+ * BreedViewCompact — Vue Compact pour Breed
  * 
  * @description
  * Vue réduite d'une classe avec informations essentielles.
  * Utilisée dans les modals compacts.
  * 
- * @props {Classe} classe - Instance du modèle Classe
+ * @props {Breed} breed - Instance du modèle Breed
  * @props {Boolean} showActions - Afficher les actions (défaut: true)
  */
 import { computed } from 'vue';
@@ -19,10 +19,10 @@ import { useCopyToClipboard } from '@/Composables/utils/useCopyToClipboard';
 import { useDownloadPdf } from '@/Composables/utils/useDownloadPdf';
 import { getEntityRouteConfig, resolveEntityRouteUrl } from '@/Composables/entity/entityRouteRegistry';
 import { usePermissions } from "@/Composables/permissions/usePermissions";
-import { getClasseFieldDescriptors } from "@/Entities/classe/classe-descriptors";
+import { getBreedFieldDescriptors } from "@/Entities/breed/breed-descriptors";
 
 const props = defineProps({
-    classe: {
+    breed: {
         type: Object,
         required: true
     },
@@ -35,21 +35,21 @@ const props = defineProps({
 const emit = defineEmits(['edit', 'copy-link', 'download-pdf', 'refresh', 'view', 'quick-view', 'quick-edit', 'delete', 'action']);
 
 const { copyToClipboard } = useCopyToClipboard();
-const { downloadPdf } = useDownloadPdf('classe');
+const { downloadPdf } = useDownloadPdf('breed');
 const permissions = usePermissions();
 
 const ctx = computed(() => {
     const capabilities = {
-        viewAny: permissions.can('classe', 'viewAny'),
-        createAny: permissions.can('classe', 'createAny'),
-        updateAny: permissions.can('classe', 'updateAny'),
-        deleteAny: permissions.can('classe', 'deleteAny'),
-        manageAny: permissions.can('classe', 'manageAny'),
+        viewAny: permissions.can('breed', 'viewAny'),
+        createAny: permissions.can('breed', 'createAny'),
+        updateAny: permissions.can('breed', 'updateAny'),
+        deleteAny: permissions.can('breed', 'deleteAny'),
+        manageAny: permissions.can('breed', 'manageAny'),
     };
     return { capabilities, meta: { capabilities } };
 });
 
-const descriptors = computed(() => getClasseFieldDescriptors(ctx.value));
+const descriptors = computed(() => getBreedFieldDescriptors(ctx.value));
 
 const canShowField = (fieldKey) => {
     const desc = descriptors.value?.[fieldKey];
@@ -59,7 +59,7 @@ const canShowField = (fieldKey) => {
         try {
             return Boolean(visibleIf(ctx.value));
         } catch (e) {
-            console.warn('[ClasseViewCompact] visibleIf failed for', fieldKey, e);
+            console.warn('[BreedViewCompact] visibleIf failed for', fieldKey, e);
             return false;
         }
     }
@@ -86,39 +86,39 @@ const getFieldIcon = (fieldKey) => {
 };
 
 const getCell = (fieldKey) => {
-    return props.classe.toCell(fieldKey, {
+    return props.breed.toCell(fieldKey, {
         size: 'md',
         context: 'compact',
     });
 };
 
 const handleAction = async (actionKey) => {
-    const classeId = props.classe.id;
-    if (!classeId) return;
+    const breedId = props.breed.id;
+    if (!breedId) return;
 
     switch (actionKey) {
         case 'view':
-            router.visit(route('entities.classes.show', { classe: classeId }));
-            emit('view', props.classe);
+            router.visit(route('entities.breeds.show', { breed: breedId }));
+            emit('view', props.breed);
             break;
         case 'edit':
-            router.visit(route('entities.classes.edit', { classe: classeId }));
-            emit('edit', props.classe);
+            router.visit(route('entities.breeds.edit', { breed: breedId }));
+            emit('edit', props.breed);
             break;
         case 'quick-edit':
-            emit('quick-edit', props.classe);
+            emit('quick-edit', props.breed);
             break;
         case 'copy-link': {
-            const cfg = getEntityRouteConfig('classe');
-            const url = resolveEntityRouteUrl('classe', 'show', classeId, cfg);
+            const cfg = getEntityRouteConfig('breed');
+            const url = resolveEntityRouteUrl('breed', 'show', breedId, cfg);
             if (url) {
                 await copyToClipboard(`${window.location.origin}${url}`, "Lien copié !");
             }
-            emit('copy-link', props.classe);
+            emit('copy-link', props.breed);
             break;
         }
         case 'delete':
-            emit('delete', props.classe);
+            emit('delete', props.breed);
             break;
     }
 };
@@ -129,10 +129,10 @@ const handleAction = async (actionKey) => {
         <!-- En-tête compact -->
         <div class="flex items-center justify-between gap-2">
             <div class="flex gap-2 items-center flex-1 min-w-0">
-                <div v-if="classe.image || classe.icon" class="flex-shrink-0">
+                <div v-if="breed.image || breed.icon" class="flex-shrink-0">
                     <Image
-                        :src="classe.image || classe.icon"
-                        :alt="classe.name || 'Classe'"
+                        :src="breed.image || breed.icon"
+                        :alt="breed.name || 'Breed'"
                         size="sm"
                         class="rounded"
                     />
@@ -147,8 +147,8 @@ const handleAction = async (actionKey) => {
             
             <div v-if="showActions" class="flex-shrink-0">
                 <EntityActions
-                    entity-type="classe"
-                    :entity="classe"
+                    entity-type="breed"
+                    :entity="breed"
                     format="buttons"
                     display="icon-only"
                     size="sm"

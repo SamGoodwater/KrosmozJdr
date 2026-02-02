@@ -1,10 +1,10 @@
-# Classes (`classes`)
+# Classes (`breeds`)
 
 ## Rôle et description
-Les classes représentent les archétypes jouables du jeu (ex : Féca, Iop, Eniripsa…). Elles définissent les capacités de base, la progression, les spécialisations et les spécificités de chaque personnage joueur ou PNJ associé à une classe.
+Les classes (entité technique `breed` / `breeds`) représentent les archétypes jouables du jeu (ex : Féca, Iop, Eniripsa…). Elles définissent les capacités de base, la progression, les spécialisations et les spécificités de chaque personnage joueur ou PNJ associé à une classe.
 
 ## Relations principales
-- **NPC** : chaque NPC peut référencer une classe (`classe_id`).
+- **NPC** : chaque NPC peut référencer une classe (`breed_id`, relation `breed`).
 - **Spécialisations** : chaque classe peut avoir plusieurs spécialisations (`specializations`).
 - **Créatures** : certains personnages joueurs ou PNJ sont associés à une classe.
 

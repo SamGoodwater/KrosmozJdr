@@ -1,5 +1,5 @@
 /**
- * Tests unitaires pour classe-descriptors
+ * Tests unitaires pour breed-descriptors
  *
  * @description
  * Vérifie que :
@@ -11,12 +11,12 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import { getClasseFieldDescriptors } from '@/Entities/classe/classe-descriptors';
+import { getBreedFieldDescriptors } from '@/Entities/breed/breed-descriptors';
 
-describe('classe-descriptors', () => {
+describe('breed-descriptors', () => {
     describe('Structure des descriptors', () => {
         it('retourne un objet avec tous les champs requis', () => {
-            const descriptors = getClasseFieldDescriptors();
+            const descriptors = getBreedFieldDescriptors();
             const requiredFields = ['id', 'name', 'life', 'life_dice', 'state', 'read_level', 'write_level'];
 
             requiredFields.forEach((field) => {
@@ -28,7 +28,7 @@ describe('classe-descriptors', () => {
         });
 
         it('tous les descriptors ont une propriété display avec sizes (pour les tableaux)', () => {
-            const descriptors = getClasseFieldDescriptors();
+            const descriptors = getBreedFieldDescriptors();
             Object.values(descriptors).forEach((desc) => {
                 if (desc.display) {
                     expect(desc.display).toHaveProperty('sizes');
@@ -39,7 +39,7 @@ describe('classe-descriptors', () => {
 
     describe('visibleIf / editableIf', () => {
         it('visibleIf fonctionne avec canUpdateAny', () => {
-            const descriptors = getClasseFieldDescriptors({
+            const descriptors = getBreedFieldDescriptors({
                 capabilities: { updateAny: true },
             });
 
@@ -53,13 +53,13 @@ describe('classe-descriptors', () => {
 
     describe('_quickeditConfig', () => {
         it('définit les champs quickEdit', () => {
-            const descriptors = getClasseFieldDescriptors();
+            const descriptors = getBreedFieldDescriptors();
             expect(Array.isArray(descriptors._quickeditConfig?.fields)).toBe(true);
             expect(descriptors._quickeditConfig.fields.length).toBeGreaterThan(0);
         });
 
         it('quickEdit contient uniquement des champs existants', () => {
-            const descriptors = getClasseFieldDescriptors();
+            const descriptors = getBreedFieldDescriptors();
             const fields = descriptors._quickeditConfig.fields;
             fields.forEach((field) => {
                 expect(descriptors).toHaveProperty(field);
@@ -69,7 +69,7 @@ describe('classe-descriptors', () => {
 
     describe('Configuration bulk', () => {
         it('les champs avec edit.form ont une configuration bulk', () => {
-            const descriptors = getClasseFieldDescriptors();
+            const descriptors = getBreedFieldDescriptors();
             Object.values(descriptors).forEach((desc) => {
                 if (desc.edit?.form) {
                     expect(desc.edit.form).toHaveProperty('bulk');
@@ -79,11 +79,12 @@ describe('classe-descriptors', () => {
             });
         });
 
-        it('aucun champ bulk n\'a de fonction build (déprécié)', () => {
-            const descriptors = getClasseFieldDescriptors();
+        it('les champs bulk ont enabled de type boolean', () => {
+            const descriptors = getBreedFieldDescriptors();
             Object.values(descriptors).forEach((desc) => {
                 if (desc.edit?.form?.bulk) {
-                    expect(desc.edit.form.bulk.build).toBeUndefined();
+                    expect(desc.edit.form.bulk).toHaveProperty('enabled');
+                    expect(typeof desc.edit.form.bulk.enabled).toBe('boolean');
                 }
             });
         });

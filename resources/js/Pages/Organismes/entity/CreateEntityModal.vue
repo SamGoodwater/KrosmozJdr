@@ -70,7 +70,7 @@ const entityTypeLabel = computed(() => {
         spell: 'sort',
         monster: 'monstre',
         npc: 'PNJ',
-        classe: 'classe',
+        breed: 'classe',
         panoply: 'panoplie',
         campaign: 'campagne',
         scenario: 'scénario',

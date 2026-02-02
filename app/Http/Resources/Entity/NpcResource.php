@@ -25,14 +25,14 @@ class NpcResource extends JsonResource
             'historical' => $this->historical,
             'age' => $this->age,
             'size' => $this->size,
-            'classe_id' => $this->classe_id,
+            'breed_id' => $this->breed_id,
             'specialization_id' => $this->specialization_id,
             'created_at' => $this->created_at?->toISOString(),
             'updated_at' => $this->updated_at?->toISOString(),
 
             // Relations
             'creature' => $this->whenLoaded('creature'),
-            'classe' => $this->whenLoaded('classe'),
+            'breed' => $this->whenLoaded('breed'),
             'specialization' => $this->whenLoaded('specialization'),
             'panoplies' => $this->whenLoaded('panoplies'),
             'scenarios' => $this->whenLoaded('scenarios'),

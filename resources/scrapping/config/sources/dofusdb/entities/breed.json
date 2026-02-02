@@ -35,25 +35,25 @@
     {
       "key": "dofusdb_id",
       "from": { "path": "id" },
-      "to": [{ "model": "classes", "field": "dofusdb_id" }],
+      "to": [{ "model": "breeds", "field": "dofusdb_id" }],
       "formatters": [{ "name": "toString", "args": {} }]
     },
     {
       "key": "name",
       "from": { "path": "name", "langAware": true },
-      "to": [{ "model": "classes", "field": "name" }],
+      "to": [{ "model": "breeds", "field": "name" }],
       "formatters": [{ "name": "pickLang", "args": { "lang": "{lang}", "fallback": "fr" } }]
     },
     {
       "key": "description",
       "from": { "path": "description", "langAware": true },
-      "to": [{ "model": "classes", "field": "description" }],
+      "to": [{ "model": "breeds", "field": "description" }],
       "formatters": [{ "name": "pickLang", "args": { "lang": "{lang}", "fallback": "fr" } }]
     },
     {
       "key": "description_fast",
       "from": { "path": "shortDescription", "langAware": true },
-      "to": [{ "model": "classes", "field": "description_fast" }],
+      "to": [{ "model": "breeds", "field": "description_fast" }],
       "formatters": [
         { "name": "pickLang", "args": { "lang": "{lang}", "fallback": "fr" } },
         { "name": "truncate", "args": { "max": 255 } }
@@ -62,7 +62,7 @@
     {
       "key": "specificity",
       "from": { "path": "specificity", "langAware": true },
-      "to": [{ "model": "classes", "field": "specificity" }],
+      "to": [{ "model": "breeds", "field": "specificity" }],
       "formatters": [
         { "name": "pickLang", "args": { "lang": "{lang}", "fallback": "fr" } },
         { "name": "truncate", "args": { "max": 255 } }
@@ -71,8 +71,8 @@
     {
       "key": "image",
       "from": { "path": "img" },
-      "to": [{ "model": "classes", "field": "image" }],
-      "formatters": [{ "name": "storeScrappedImage", "args": { "entityFolder": "classes", "idPath": "id" } }]
+      "to": [{ "model": "breeds", "field": "image" }],
+      "formatters": [{ "name": "storeScrappedImage", "args": { "entityFolder": "breeds", "idPath": "id" } }]
     }
   ]
 }

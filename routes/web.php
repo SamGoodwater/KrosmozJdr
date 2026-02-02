@@ -32,7 +32,7 @@ require __DIR__ . '/page.php';
 require __DIR__ . '/entities/attribute.php';
 require __DIR__ . '/entities/campaign.php';
 require __DIR__ . '/entities/capability.php';
-require __DIR__ . '/entities/classe.php';
+require __DIR__ . '/entities/breed.php';
 require __DIR__ . '/entities/consumable.php';
 require __DIR__ . '/entities/creature.php';
 require __DIR__ . '/entities/item.php';

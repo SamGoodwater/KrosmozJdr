@@ -13,7 +13,7 @@ use App\Models\Entity\Item;
 use App\Models\Entity\Consumable;
 use App\Models\Entity\Resource;
 use App\Models\Entity\Capability;
-use App\Models\Entity\Classe;
+use App\Models\Entity\Breed;
 use App\Models\Entity\Specialization;
 use App\Models\Entity\Shop;
 use App\Models\Entity\Scenario;
@@ -95,8 +95,8 @@ use App\Models\Section;
  * @property-read int|null $created_attributes_count
  * @property-read \Illuminate\Database\Eloquent\Collection<int, Capability> $createdCapabilities
  * @property-read int|null $created_capabilities_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, Classe> $createdClasses
- * @property-read int|null $created_classes_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, Breed> $createdBreeds
+ * @property-read int|null $created_breeds_count
  * @property-read \Illuminate\Database\Eloquent\Collection<int, ConsumableType> $createdConsumableTypes
  * @property-read int|null $created_consumable_types_count
  * @property-read \Illuminate\Database\Eloquent\Collection<int, Consumable> $createdConsumables
@@ -356,9 +356,9 @@ class User extends Authenticatable
     {
         return $this->hasMany(Capability::class, 'created_by');
     }
-    public function createdClasses()
+    public function createdBreeds()
     {
-        return $this->hasMany(Classe::class, 'created_by');
+        return $this->hasMany(Breed::class, 'created_by');
     }
     public function createdSpecializations()
     {

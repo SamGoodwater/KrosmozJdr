@@ -111,8 +111,13 @@ export class Spell extends BaseModel {
         return this._data.creatures || [];
     }
 
+    get breeds() {
+        return this._data.breeds || [];
+    }
+
+    /** @deprecated Utiliser breeds. Conservé pour compat. */
     get classes() {
-        return this._data.classes || [];
+        return this.breeds;
     }
 
     get scenarios() {

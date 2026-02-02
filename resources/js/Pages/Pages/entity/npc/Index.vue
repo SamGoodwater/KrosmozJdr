@@ -41,7 +41,7 @@ const props = defineProps({
         type: Array,
         default: () => []
     },
-    classes: {
+    breeds: {
         type: Array,
         default: () => []
     },
@@ -84,7 +84,7 @@ const tableConfig = computed(() => {
             createAny: canCreate.value,
         },
         creatures: props.creatures || [],
-        classes: props.classes || [],
+        breeds: props.breeds || [],
         specializations: props.specializations || [],
     };
     const descriptors = getNpcFieldDescriptors(ctx);

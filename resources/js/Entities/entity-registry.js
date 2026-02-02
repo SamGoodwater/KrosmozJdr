@@ -20,7 +20,7 @@ import { Spell } from "@/Models/Entity/Spell";
 import { Monster } from "@/Models/Entity/Monster";
 import { Creature } from "@/Models/Entity/Creature";
 import { Npc } from "@/Models/Entity/Npc";
-import { Classe } from "@/Models/Entity/Classe";
+import { Breed } from "@/Models/Entity/Breed";
 import { Consumable } from "@/Models/Entity/Consumable";
 import { Campaign } from "@/Models/Entity/Campaign";
 import { Scenario } from "@/Models/Entity/Scenario";
@@ -42,7 +42,7 @@ import { getSpellFieldDescriptors } from "@/Entities/spell/spell-descriptors";
 import { getMonsterFieldDescriptors } from "@/Entities/monster/monster-descriptors";
 import { getCreatureFieldDescriptors } from "@/Entities/creature/creature-descriptors";
 import { getNpcFieldDescriptors } from "@/Entities/npc/npc-descriptors";
-import { getClasseFieldDescriptors } from "@/Entities/classe/classe-descriptors";
+import { getBreedFieldDescriptors } from "@/Entities/breed/breed-descriptors";
 import { getConsumableFieldDescriptors } from "@/Entities/consumable/consumable-descriptors";
 import { getCampaignFieldDescriptors } from "@/Entities/campaign/campaign-descriptors";
 import { getScenarioFieldDescriptors } from "@/Entities/scenario/scenario-descriptors";
@@ -53,7 +53,7 @@ import { getSpecializationFieldDescriptors } from "@/Entities/specialization/spe
 import { getShopFieldDescriptors } from "@/Entities/shop/shop-descriptors";
 
 /**
- * @typedef {'resources'|'resource-types'|'items'|'spells'|'monsters'|'creatures'|'npcs'|'classes'|'consumables'|'campaigns'|'scenarios'|'attributes'|'panoplies'|'capabilities'|'specializations'|'shops'} EntityTypeKey
+ * @typedef {'resources'|'resource-types'|'items'|'spells'|'monsters'|'creatures'|'npcs'|'breeds'|'consumables'|'campaigns'|'scenarios'|'attributes'|'panoplies'|'capabilities'|'specializations'|'shops'} EntityTypeKey
  */
 
 /**
@@ -72,7 +72,7 @@ export function normalizeEntityType(raw) {
   if (s === "monster" || s === "monsters") return "monsters";
   if (s === "creature" || s === "creatures") return "creatures";
   if (s === "npc" || s === "npcs") return "npcs";
-  if (s === "classe" || s === "classes") return "classes";
+  if (s === "breed" || s === "breeds" || s === "classe" || s === "classes") return "breeds";
   if (s === "consumable" || s === "consumables") return "consumables";
   if (s === "campaign" || s === "campaigns") return "campaigns";
   if (s === "scenario" || s === "scenarios") return "scenarios";
@@ -139,13 +139,13 @@ export function getEntityConfig(entityType) {
         key,
         getDescriptors: getNpcFieldDescriptors,
         responseAdapter: createEntityAdapter(Npc),
-        defaults: { minimalImportantFields: ["creature_name", "classe", "specialization"] },
+        defaults: { minimalImportantFields: ["creature_name", "breed", "specialization"] },
       };
-    case "classes":
+    case "breeds":
       return {
         key,
-        getDescriptors: getClasseFieldDescriptors,
-        responseAdapter: createEntityAdapter(Classe),
+        getDescriptors: getBreedFieldDescriptors,
+        responseAdapter: createEntityAdapter(Breed),
         defaults: { minimalImportantFields: ["name", "life", "life_dice"] },
       };
     case "consumables":

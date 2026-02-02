@@ -50,7 +50,7 @@
  * @param {Object} ctx - Contexte d'exécution
  * @param {Object} [ctx.capabilities] - Permissions disponibles (ou ctx.meta.capabilities)
  * @param {Array} [ctx.creatures] - Liste des créatures (ou ctx.meta.creatures)
- * @param {Array} [ctx.classes] - Liste des classes (ou ctx.meta.classes)
+ * @param {Array} [ctx.breeds] - Liste des breeds / classes (ou ctx.meta.breeds)
  * @param {Array} [ctx.specializations] - Liste des spécialisations (ou ctx.meta.specializations)
  * @returns {Record<string, NpcFieldDescriptor>} Objet avec tous les descripteurs
  */
@@ -63,9 +63,9 @@ export function getNpcFieldDescriptors(ctx = {}) {
     ? ctx.creatures 
     : (Array.isArray(ctx?.meta?.creatures) ? ctx.meta.creatures : []);
   
-  const classes = Array.isArray(ctx?.classes) 
-    ? ctx.classes 
-    : (Array.isArray(ctx?.meta?.classes) ? ctx.meta.classes : []);
+  const breeds = Array.isArray(ctx?.breeds)
+    ? ctx.breeds
+    : (Array.isArray(ctx?.meta?.breeds) ? ctx.meta.breeds : []);
   
   const specializations = Array.isArray(ctx?.specializations) 
     ? ctx.specializations 
@@ -111,8 +111,8 @@ export function getNpcFieldDescriptors(ctx = {}) {
         },
       },
     },
-    classe: {
-      key: "classe",
+    breed: {
+      key: "breed",
       label: "Classe",
       icon: "fa-solid fa-user-tie",
       display: {
@@ -130,7 +130,7 @@ export function getNpcFieldDescriptors(ctx = {}) {
           group: "Relations",
           required: false,
           showInCompact: true,
-          options: () => [{ value: "", label: "—" }, ...classes.map((c) => ({ value: c.id, label: c.name }))],
+          options: () => [{ value: "", label: "—" }, ...breeds.map((b) => ({ value: b.id, label: b.name }))],
           bulk: { enabled: true, nullable: true, build: (v) => (v === "" ? null : Number(v)) },
         },
       },
@@ -334,7 +334,7 @@ export function getNpcFieldDescriptors(ctx = {}) {
     // Configuration globale du quickedit
     _quickeditConfig: {
       fields: [
-        "classe_id",
+        "breed_id",
         "specialization_id",
         "age",
         "size",

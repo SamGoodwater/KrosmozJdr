@@ -4,7 +4,7 @@ namespace Tests\Feature\Entity;
 
 use App\Models\User;
 use App\Models\Entity\Spell;
-use App\Models\Entity\Classe;
+use App\Models\Entity\Breed;
 use App\Models\Entity\Creature;
 use App\Models\Entity\Monster;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -53,31 +53,31 @@ class SpellModelTest extends TestCase
     }
 
     /**
-     * Test de la relation avec les classes (many-to-many via class_spell)
+     * Test de la relation avec les breeds (many-to-many via breed_spell)
      */
-    public function test_spell_can_belong_to_classes(): void
+    public function test_spell_can_belong_to_breeds(): void
     {
         $user = User::factory()->create();
         $spell = Spell::factory()->create([
             'created_by' => $user->id,
         ]);
 
-        $classe1 = Classe::factory()->create([
+        $breed1 = Breed::factory()->create([
             'created_by' => $user->id,
         ]);
-        $classe2 = Classe::factory()->create([
+        $breed2 = Breed::factory()->create([
             'created_by' => $user->id,
         ]);
 
-        // Attacher le sort aux classes
-        $classe1->spells()->attach($spell->id);
-        $classe2->spells()->attach($spell->id);
+        // Attacher le sort aux breeds
+        $breed1->spells()->attach($spell->id);
+        $breed2->spells()->attach($spell->id);
 
         // Vérifier depuis le sort (relation inverse)
         $spell->refresh();
-        $this->assertCount(2, $spell->classes);
-        $this->assertTrue($spell->classes->contains($classe1));
-        $this->assertTrue($spell->classes->contains($classe2));
+        $this->assertCount(2, $spell->breeds);
+        $this->assertTrue($spell->breeds->contains($breed1));
+        $this->assertTrue($spell->breeds->contains($breed2));
     }
 
     /**

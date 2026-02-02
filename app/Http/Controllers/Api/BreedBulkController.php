@@ -3,32 +3,26 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Models\Entity\Classe;
+use App\Models\Entity\Breed;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 /**
- * API Bulk update pour les classes.
+ * API Bulk update pour les breeds (affichées « Classes »).
  *
- * @description
- * Applique un patch sur une liste d'IDs (sélection multiple). Seuls les champs fournis sont modifiés.
- *
- * @example
- * PATCH /api/entities/classes/bulk
- * { "ids":[1,2,3], "life":"30", "life_dice":"d8", "state":"playable", "read_level":0, "write_level":3, "auto_update":false }
+ * PATCH /api/entities/breeds/bulk
  */
-class ClasseBulkController extends Controller
+class BreedBulkController extends Controller
 {
     public function bulkUpdate(Request $request): JsonResponse
     {
-        $this->authorize('updateAny', Classe::class);
+        $this->authorize('updateAny', Breed::class);
 
         $validated = $request->validate([
             'ids' => ['required', 'array', 'min:1'],
-            'ids.*' => ['integer', 'min:1', 'exists:classes,id'],
+            'ids.*' => ['integer', 'min:1', 'exists:breeds,id'],
 
-            // Champs bulk (les clés absentes ne sont pas modifiées)
             'life' => ['sometimes', 'nullable', 'string', 'max:255'],
             'life_dice' => ['sometimes', 'nullable', 'string', 'max:255'],
             'specificity' => ['sometimes', 'nullable', 'string'],
@@ -77,7 +71,7 @@ class ClasseBulkController extends Controller
 
         DB::beginTransaction();
         try {
-            $models = Classe::query()->whereIn('id', $ids)->get();
+            $models = Breed::query()->whereIn('id', $ids)->get();
 
             foreach ($ids as $id) {
                 $model = $models->firstWhere('id', $id);
@@ -120,4 +114,3 @@ class ClasseBulkController extends Controller
         ]);
     }
 }
-

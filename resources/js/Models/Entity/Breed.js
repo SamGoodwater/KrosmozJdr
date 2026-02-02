@@ -1,16 +1,16 @@
 /**
- * Modèle Classe pour le frontend
+ * Modèle Breed pour le frontend
  * 
  * @description
- * Classe pour normaliser et manipuler les données de classe côté frontend.
+ * Breed pour normaliser et manipuler les données de classe côté frontend.
  * 
  * @example
- * const classe = new Classe(props.classe);
+ * const classe = new Breed(props.classe);
  * console.log(classe.name); // Accès normalisé
  */
 import { BaseModel } from '../BaseModel';
 
-export class Classe extends BaseModel {
+export class Breed extends BaseModel {
     // ============================================
     // PROPRIÉTÉS DE BASE
     // ============================================
@@ -84,7 +84,7 @@ export class Classe extends BaseModel {
     // ============================================
 
     /**
-     * Génère une cellule pour un champ (surcharge pour gérer les champs spécifiques à Classe)
+     * Génère une cellule pour un champ (surcharge pour gérer les champs spécifiques à Breed)
      * @param {string} fieldKey - Clé du champ
      * @param {Object} [options={}] - Options (size, context, config, ctx)
      * @returns {Object|null} Cell object ou null si valeur invalide
@@ -98,7 +98,7 @@ export class Classe extends BaseModel {
             return baseCell;
         }
 
-        // Sinon, gérer les champs spécifiques à Classe
+        // Sinon, gérer les champs spécifiques à Breed
         const { size = 'md', format = {} } = options;
         
         switch (fieldKey) {
@@ -133,7 +133,7 @@ export class Classe extends BaseModel {
      */
     _toNameCell(format, size, options) {
         const name = this.name || '-';
-        const href = options.href || `/classes/${this.id}`;
+        const href = options.href || `/breeds/${this.id}`;
         
         return {
             type: 'route',
@@ -290,4 +290,4 @@ export class Classe extends BaseModel {
     }
 }
 
-export default Classe;
+export default Breed;

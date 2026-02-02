@@ -174,7 +174,7 @@ class ValidationServiceTest extends TestCase
         ]);
         $this->clearCharacteristicsCache();
 
-        $convertedData = ['classes' => []];
+        $convertedData = ['breeds' => []];
 
         $result = $this->service->validate($convertedData, 'breed');
 
@@ -200,7 +200,7 @@ class ValidationServiceTest extends TestCase
         ]);
         $this->clearCharacteristicsCache();
 
-        $convertedData = ['classes' => ['test_class_name_ok' => 'Feca']];
+        $convertedData = ['breeds' => ['test_class_name_ok' => 'Feca']];
 
         $result = $this->service->validate($convertedData, 'breed');
 

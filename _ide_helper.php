@@ -24125,6 +24125,12 @@ namespace App\Http\Requests\Entity {
     class StoreAttributeRequest extends \Illuminate\Foundation\Http\FormRequest {
             }
     /**
+     * FormRequest pour la création d'une Breed (affichée « Classe »).
+     *
+     */
+    class StoreBreedRequest extends \Illuminate\Foundation\Http\FormRequest {
+            }
+    /**
      */
     class StoreCampaignRequest extends \Illuminate\Foundation\Http\FormRequest {
             }
@@ -24135,14 +24141,6 @@ namespace App\Http\Requests\Entity {
      *
      */
     class StoreCapabilityRequest extends \Illuminate\Foundation\Http\FormRequest {
-            }
-    /**
-     * FormRequest pour la création d'une Classe.
-     * 
-     * Valide les champs principaux d'une classe.
-     *
-     */
-    class StoreClasseRequest extends \Illuminate\Foundation\Http\FormRequest {
             }
     /**
      * FormRequest pour la création d'un Consumable.
@@ -24237,6 +24235,12 @@ namespace App\Http\Requests\Entity {
     class UpdateAttributeRequest extends \Illuminate\Foundation\Http\FormRequest {
             }
     /**
+     * FormRequest pour la mise à jour d'une Breed (affichée « Classe »).
+     *
+     */
+    class UpdateBreedRequest extends \Illuminate\Foundation\Http\FormRequest {
+            }
+    /**
      */
     class UpdateCampaignRequest extends \Illuminate\Foundation\Http\FormRequest {
             }
@@ -24247,14 +24251,6 @@ namespace App\Http\Requests\Entity {
      *
      */
     class UpdateCapabilityRequest extends \Illuminate\Foundation\Http\FormRequest {
-            }
-    /**
-     * FormRequest pour la mise à jour d'une Classe.
-     * 
-     * Valide les champs principaux d'une classe.
-     *
-     */
-    class UpdateClasseRequest extends \Illuminate\Foundation\Http\FormRequest {
             }
     /**
      * FormRequest pour la mise à jour d'un Consumable.

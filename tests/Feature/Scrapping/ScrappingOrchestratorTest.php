@@ -3,7 +3,7 @@
 namespace Tests\Feature\Scrapping;
 
 use App\Models\User;
-use App\Models\Entity\Classe;
+use App\Models\Entity\Breed;
 use App\Models\Entity\Creature;
 use App\Models\Entity\Monster;
 use App\Models\Entity\Item;
@@ -71,9 +71,9 @@ class ScrappingOrchestratorTest extends TestCase
         $this->assertTrue($result['success'], $result['message'] ?? '');
         $this->assertArrayHasKey('data', $result);
 
-        // Vérifier que la classe a été créée en base
-        $class = Classe::where('name', 'like', '%Iop%')->orWhere('name', 'like', '%Classe%')->first();
-        $this->assertNotNull($class);
+        // Vérifier que le breed (classe) a été créé en base
+        $breed = Breed::where('name', 'like', '%Iop%')->orWhere('name', 'like', '%Classe%')->first();
+        $this->assertNotNull($breed);
     }
 
     /**

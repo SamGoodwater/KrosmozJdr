@@ -3,42 +3,31 @@
 namespace App\Http\Controllers\Api\Table;
 
 use App\Http\Controllers\Controller;
-use App\Models\Entity\Classe;
+use App\Models\Entity\Breed;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 
 /**
- * ClasseTableController
- *
- * @description
- * Endpoint "Table v2" (TanStack Table) pour les classes.
- * Retourne un `TableResponse` avec des cellules typées: `Cell{type,value,params}`.
+ * Endpoint "Table v2" (TanStack Table) pour les breeds (affichées « Classes »).
  */
-class ClasseTableController extends Controller
+class BreedTableController extends Controller
 {
     public function index(Request $request): JsonResponse
     {
-        $this->authorize('viewAny', Classe::class);
+        $this->authorize('viewAny', Breed::class);
 
-        // Mode de réponse:
-        // - (default) "cells" : `rows[]` contient `cells` déjà prêtes à rendre.
-        // - "entities" : renvoie `entities[]` (données brutes + meta) pour laisser le frontend générer les `cells`.
-        //   Objectif : supporter une architecture "field descriptors" (Option B).
         $format = $request->filled('format') ? (string) $request->get('format') : 'cells';
-
         $search = $request->filled('search') ? (string) $request->get('search') : '';
-
         $limit = (int) $request->integer('limit', 5000);
         $limit = max(1, min($limit, 20000));
-
         $sort = (string) $request->get('sort', 'id');
         $order = (string) $request->get('order', 'desc');
         if (!in_array($order, ['asc', 'desc'], true)) {
             $order = 'desc';
         }
 
-        $query = Classe::query()->with(['createdBy']);
+        $query = Breed::query()->with(['createdBy']);
 
         if ($search !== '') {
             $query->where(function ($q) use ($search) {
@@ -57,16 +46,15 @@ class ClasseTableController extends Controller
         $rows = $query->limit($limit)->get();
 
         $capabilities = [
-            'viewAny' => Gate::allows('viewAny', Classe::class),
-            'createAny' => Gate::allows('createAny', Classe::class),
-            'updateAny' => Gate::allows('updateAny', Classe::class),
-            'deleteAny' => Gate::allows('deleteAny', Classe::class),
-            'manageAny' => Gate::allows('manageAny', Classe::class),
+            'viewAny' => Gate::allows('viewAny', Breed::class),
+            'createAny' => Gate::allows('createAny', Breed::class),
+            'updateAny' => Gate::allows('updateAny', Breed::class),
+            'deleteAny' => Gate::allows('deleteAny', Breed::class),
+            'manageAny' => Gate::allows('manageAny', Breed::class),
         ];
 
-        // Mode "entities" : retourner les entités brutes
         if ($format === 'entities') {
-            $entities = $rows->map(function (Classe $c) {
+            $entities = $rows->map(function (Breed $c) {
                 $createdBy = $c->createdBy;
                 return [
                     'id' => $c->id,
@@ -98,7 +86,7 @@ class ClasseTableController extends Controller
 
             return response()->json([
                 'meta' => [
-                    'entityType' => 'classes',
+                    'entityType' => 'breeds',
                     'query' => [
                         'search' => $search,
                         'sort' => $sort,
@@ -113,11 +101,10 @@ class ClasseTableController extends Controller
             ]);
         }
 
-        $tableRows = $rows->map(function (Classe $c) {
-            $showHref = route('entities.classes.show', $c->id);
+        $tableRows = $rows->map(function (Breed $c) {
+            $showHref = route('entities.breeds.show', $c->id);
             $createdBy = $c->createdBy;
             $createdByLabel = $createdBy?->name ?: ($createdBy?->email ?: '-');
-
             $createdAtLabel = $c->created_at ? $c->created_at->format('d/m/Y H:i') : '-';
             $createdAtSort = $c->created_at ? $c->created_at->getTimestamp() : 0;
             $updatedAtLabel = $c->updated_at ? $c->updated_at->format('d/m/Y H:i') : '-';
@@ -221,7 +208,7 @@ class ClasseTableController extends Controller
 
         return response()->json([
             'meta' => [
-                'entityType' => 'classes',
+                'entityType' => 'breeds',
                 'query' => [
                     'search' => $search,
                     'sort' => $sort,
@@ -235,5 +222,3 @@ class ClasseTableController extends Controller
         ]);
     }
 }
-
-

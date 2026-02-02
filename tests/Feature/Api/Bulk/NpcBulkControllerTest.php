@@ -4,7 +4,7 @@ namespace Tests\Feature\Api\Bulk;
 
 use App\Models\User;
 use App\Models\Entity\Npc;
-use App\Models\Entity\Classe;
+use App\Models\Entity\Breed;
 use App\Models\Entity\Specialization;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -16,7 +16,7 @@ use Tests\TestCase;
  * Vérifie que :
  * - Un admin peut mettre à jour plusieurs NPCs en masse
  * - La validation fonctionne correctement
- * - Les clés étrangères (classe_id, specialization_id) sont validées
+ * - Les clés étrangères (breed_id, specialization_id) sont validées
  * - Seuls les champs fournis sont modifiés
  */
 class NpcBulkControllerTest extends TestCase
@@ -88,30 +88,30 @@ class NpcBulkControllerTest extends TestCase
     {
         $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
         $npc = Npc::factory()->create();
-        $classe = Classe::factory()->create();
+        $breed = Breed::factory()->create();
         $specialization = Specialization::factory()->create();
 
-        // Test avec classe_id valide
+        // Test avec breed_id valide
         $response = $this->actingAs($admin)
             ->patchJson('/api/entities/npcs/bulk', [
                 'ids' => [$npc->id],
-                'classe_id' => $classe->id,
+                'breed_id' => $breed->id,
             ]);
 
         $response->assertOk();
 
         $npc->refresh();
-        $this->assertEquals($classe->id, $npc->classe_id);
+        $this->assertEquals($breed->id, $npc->breed_id);
 
-        // Test avec classe_id invalide
+        // Test avec breed_id invalide
         $response = $this->actingAs($admin)
             ->patchJson('/api/entities/npcs/bulk', [
                 'ids' => [$npc->id],
-                'classe_id' => 99999,
+                'breed_id' => 99999,
             ]);
 
         $response->assertStatus(422)
-            ->assertJsonValidationErrors('classe_id');
+            ->assertJsonValidationErrors('breed_id');
 
         // Test avec specialization_id valide
         $response = $this->actingAs($admin)
@@ -159,20 +159,20 @@ class NpcBulkControllerTest extends TestCase
         $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
         $npc = Npc::factory()->create([
             'age' => '25',
-            'classe_id' => Classe::factory()->create()->id,
+            'breed_id' => Breed::factory()->create()->id,
         ]);
 
         $response = $this->actingAs($admin)
             ->patchJson('/api/entities/npcs/bulk', [
                 'ids' => [$npc->id],
-                'classe_id' => null,
+                'breed_id' => null,
                 'specialization_id' => null,
             ]);
 
         $response->assertOk();
 
         $npc->refresh();
-        $this->assertNull($npc->classe_id);
+        $this->assertNull($npc->breed_id);
         $this->assertNull($npc->specialization_id);
     }
 

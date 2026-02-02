@@ -24,7 +24,7 @@ const props = defineProps({
         type: Object,
         required: true
     },
-    availableClasses: {
+    availableBreeds: {
         type: Array,
         default: () => []
     },
@@ -145,13 +145,13 @@ setPageTitle(`Modifier le sort : ${spell.value.name || 'Nouveau sort'}`);
             @update:view-mode="viewMode = $event"
         />
         
-        <!-- Gestion des classes du sort -->
+        <!-- Gestion des classes du sort (breeds) -->
         <EntityRelationsManager
-            :relations="spell.classes || []"
-            :available-items="availableClasses"
+            :relations="spell.breeds || []"
+            :available-items="availableBreeds"
             :entity-id="spell.id"
             entity-type="spells"
-            relation-type="classes"
+            relation-type="breeds"
             relation-name="Classes pouvant utiliser ce sort"
             :config="{
                 displayFields: ['name', 'description'],

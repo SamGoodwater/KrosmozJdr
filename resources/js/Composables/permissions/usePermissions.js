@@ -57,7 +57,8 @@ const normalizeEntityType = (entityType) => {
     campaign: "campaigns",
     panoply: "panoplies",
     attribute: "attributes",
-    classe: "classes",
+    breed: "breeds",
+    classe: "breeds", // alias pour rétrocompat
     resource: "resources",
     resourceType: "resource-types",
     specialization: "specializations",

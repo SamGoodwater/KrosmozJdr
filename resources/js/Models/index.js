@@ -22,7 +22,7 @@ export { Scenario, default as ScenarioModel } from './Entity/Scenario';
 export { Creature, default as CreatureModel } from './Entity/Creature';
 export { Monster, default as MonsterModel } from './Entity/Monster';
 export { Npc, default as NpcModel } from './Entity/Npc';
-export { Classe, default as ClasseModel } from './Entity/Classe';
+export { Breed, default as BreedModel } from './Entity/Breed';
 export { Capability, default as CapabilityModel } from './Entity/Capability';
 export { Specialization, default as SpecializationModel } from './Entity/Specialization';
 export { Attribute, default as AttributeModel } from './Entity/Attribute';

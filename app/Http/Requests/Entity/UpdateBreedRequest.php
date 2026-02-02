@@ -5,29 +5,22 @@ namespace App\Http\Requests\Entity;
 use Illuminate\Foundation\Http\FormRequest;
 
 /**
- * FormRequest pour la création d'une Classe.
- *
- * Valide les champs principaux d'une classe.
+ * FormRequest pour la mise à jour d'une Breed (affichée « Classe »).
  */
-class StoreClasseRequest extends FormRequest
+class UpdateBreedRequest extends FormRequest
 {
-    /**
-     * Determine if the user is authorized to make this request.
-     */
     public function authorize(): bool
     {
         return $this->user()?->isAdmin() ?? false;
     }
 
     /**
-     * Get the validation rules that apply to the request.
-     *
      * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
      */
     public function rules(): array
     {
         return [
-            'name' => ['required', 'string', 'max:255'],
+            'name' => ['sometimes', 'required', 'string', 'max:255'],
             'description_fast' => ['nullable', 'string', 'max:255'],
             'description' => ['nullable', 'string'],
             'life' => ['nullable', 'string', 'max:255'],

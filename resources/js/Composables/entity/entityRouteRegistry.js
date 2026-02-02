@@ -41,6 +41,11 @@ export const ENTITY_ROUTE_CONFIG = {
     edit: { name: "entities.resource-types.edit", paramsMode: "object", paramKey: "resourceType" },
     delete: { name: "entities.resource-types.delete", paramsMode: "object", paramKey: "resourceType" },
   },
+  breeds: {
+    show: { name: "entities.breeds.show", paramsMode: "object", paramKey: "breed" },
+    edit: { name: "entities.breeds.edit", paramsMode: "object", paramKey: "breed" },
+    delete: { name: "entities.breeds.delete", paramsMode: "object", paramKey: "breed" },
+  },
 };
 
 /**

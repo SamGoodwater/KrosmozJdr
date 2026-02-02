@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Models\User;
-use App\Models\Entity\Classe;
+use App\Models\Entity\Breed;
 use App\Models\Entity\Creature;
 use App\Models\Entity\Scenario;
 use App\Models\Entity\Campaign;
@@ -199,11 +199,11 @@ class Spell extends Model
     }
 
     /**
-     * Les classes associées à ce sort.
+     * Les breeds (affichées « Classes ») associées à ce sort.
      */
-    public function classes()
+    public function breeds()
     {
-        return $this->belongsToMany(Classe::class, 'class_spell', 'spell_id', 'classe_id');
+        return $this->belongsToMany(Breed::class, 'breed_spell', 'spell_id', 'breed_id');
     }
 
     /**

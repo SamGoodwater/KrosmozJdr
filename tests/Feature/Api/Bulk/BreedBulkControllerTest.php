@@ -3,20 +3,20 @@
 namespace Tests\Feature\Api\Bulk;
 
 use App\Models\User;
-use App\Models\Entity\Classe;
+use App\Models\Entity\Breed;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
 /**
- * Tests Feature pour ClasseBulkController
+ * Tests Feature pour BreedBulkController
  *
  * @description
  * Vérifie que :
- * - Un admin peut mettre à jour plusieurs classes en masse
+ * - Un admin peut mettre à jour plusieurs breeds (classes) en masse
  * - La validation fonctionne correctement
  * - Seuls les champs fournis sont modifiés
  */
-class ClasseBulkControllerTest extends TestCase
+class BreedBulkControllerTest extends TestCase
 {
     use RefreshDatabase;
 
@@ -27,17 +27,17 @@ class ClasseBulkControllerTest extends TestCase
     }
 
     /**
-     * Test : Un admin peut mettre à jour plusieurs classes en masse
+     * Test : Un admin peut mettre à jour plusieurs breeds en masse
      */
-    public function test_admin_can_bulk_update_classes(): void
+    public function test_admin_can_bulk_update_breeds(): void
     {
         $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
-        $classe1 = Classe::factory()->create(['life' => '50', 'life_dice' => '1d6']);
-        $classe2 = Classe::factory()->create(['life' => '60', 'life_dice' => '1d8']);
+        $breed1 = Breed::factory()->create(['life' => '50', 'life_dice' => '1d6']);
+        $breed2 = Breed::factory()->create(['life' => '60', 'life_dice' => '1d8']);
 
         $response = $this->actingAs($admin)
-            ->patchJson('/api/entities/classes/bulk', [
-                'ids' => [$classe1->id, $classe2->id],
+            ->patchJson('/api/entities/breeds/bulk', [
+                'ids' => [$breed1->id, $breed2->id],
                 'life' => '100',
                 'life_dice' => '1d10',
             ]);
@@ -49,13 +49,13 @@ class ClasseBulkControllerTest extends TestCase
                 'summary' => ['requested', 'updated', 'errors'],
             ]);
 
-        $this->assertDatabaseHas('classes', [
-            'id' => $classe1->id,
+        $this->assertDatabaseHas('breeds', [
+            'id' => $breed1->id,
             'life' => '100',
             'life_dice' => '1d10',
         ]);
-        $this->assertDatabaseHas('classes', [
-            'id' => $classe2->id,
+        $this->assertDatabaseHas('breeds', [
+            'id' => $breed2->id,
             'life' => '100',
             'life_dice' => '1d10',
         ]);
@@ -69,7 +69,7 @@ class ClasseBulkControllerTest extends TestCase
         $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
 
         $response = $this->actingAs($admin)
-            ->patchJson('/api/entities/classes/bulk', [
+            ->patchJson('/api/entities/breeds/bulk', [
                 'ids' => [99999, 99998],
                 'life' => '100',
             ]);
@@ -84,38 +84,38 @@ class ClasseBulkControllerTest extends TestCase
     public function test_only_provided_fields_are_updated(): void
     {
         $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
-        $classe = Classe::factory()->create([
+        $breed = Breed::factory()->create([
             'life' => '50',
             'life_dice' => '1d6',
             'description' => 'Description originale',
         ]);
 
         $response = $this->actingAs($admin)
-            ->patchJson('/api/entities/classes/bulk', [
-                'ids' => [$classe->id],
+            ->patchJson('/api/entities/breeds/bulk', [
+                'ids' => [$breed->id],
                 'life' => '100',
                 // life_dice et description ne sont pas modifiés
             ]);
 
         $response->assertOk();
 
-        $classe->refresh();
-        $this->assertEquals('100', $classe->life);
-        $this->assertEquals('1d6', $classe->life_dice); // Non modifié
-        $this->assertEquals('Description originale', $classe->description); // Non modifié
+        $breed->refresh();
+        $this->assertEquals('100', $breed->life);
+        $this->assertEquals('1d6', $breed->life_dice); // Non modifié
+        $this->assertEquals('Description originale', $breed->description); // Non modifié
     }
 
     /**
      * Test : Un utilisateur non-admin ne peut pas faire de bulk update
      */
-    public function test_user_cannot_bulk_update_classes(): void
+    public function test_user_cannot_bulk_update_breeds(): void
     {
         $user = User::factory()->create(['role' => User::ROLE_USER]);
-        $classe = Classe::factory()->create();
+        $breed = Breed::factory()->create();
 
         $response = $this->actingAs($user)
-            ->patchJson('/api/entities/classes/bulk', [
-                'ids' => [$classe->id],
+            ->patchJson('/api/entities/breeds/bulk', [
+                'ids' => [$breed->id],
                 'life' => '100',
             ]);
 
@@ -128,11 +128,11 @@ class ClasseBulkControllerTest extends TestCase
     public function test_validation_fails_if_no_fields_provided(): void
     {
         $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
-        $classe = Classe::factory()->create();
+        $breed = Breed::factory()->create();
 
         $response = $this->actingAs($admin)
-            ->patchJson('/api/entities/classes/bulk', [
-                'ids' => [$classe->id],
+            ->patchJson('/api/entities/breeds/bulk', [
+                'ids' => [$breed->id],
             ]);
 
         $response->assertStatus(422)
@@ -140,4 +140,3 @@ class ClasseBulkControllerTest extends TestCase
             ->assertJson(['message' => 'Aucun champ à mettre à jour.']);
     }
 }
-

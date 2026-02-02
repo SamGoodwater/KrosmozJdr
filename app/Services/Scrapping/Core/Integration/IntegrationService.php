@@ -2,7 +2,7 @@
 
 namespace App\Services\Scrapping\Core\Integration;
 
-use App\Models\Entity\Classe;
+use App\Models\Entity\Breed;
 use App\Models\Entity\Consumable;
 use App\Models\Entity\Creature;
 use App\Models\Entity\Item;
@@ -45,7 +45,7 @@ final class IntegrationService
             return $this->integrateSpell($convertedData, $options);
         }
         if ($entityType === 'breed' || $entityType === 'class') {
-            return $this->integrateClass($convertedData, $options);
+            return $this->integrateBreed($convertedData, $options);
         }
         if ($entityType === 'item') {
             return $this->integrateItem($convertedData, $options);
@@ -366,37 +366,37 @@ final class IntegrationService
     /**
      * @param array{dry_run?: bool, force_update?: bool} $options
      */
-    private function integrateClass(array $convertedData, array $options = []): IntegrationResult
+    private function integrateBreed(array $convertedData, array $options = []): IntegrationResult
     {
         $dryRun = (bool) ($options['dry_run'] ?? false);
         $forceUpdate = (bool) ($options['force_update'] ?? false);
 
-        $data = $convertedData['classes'] ?? [];
+        $data = $convertedData['breeds'] ?? $convertedData['classes'] ?? [];
         if ($data === []) {
-            return IntegrationResult::fail('Données converties incomplètes (classes manquant).');
+            return IntegrationResult::fail('Données converties incomplètes (breeds manquant).');
         }
 
-        $existingClass = null;
+        $existingBreed = null;
         if (!empty($data['dofusdb_id'])) {
-            $existingClass = Classe::where('dofusdb_id', (string) $data['dofusdb_id'])->first();
+            $existingBreed = Breed::where('dofusdb_id', (string) $data['dofusdb_id'])->first();
         }
-        if (!$existingClass && !empty($data['name'])) {
-            $existingClass = Classe::where('name', $data['name'])->first();
+        if (!$existingBreed && !empty($data['name'])) {
+            $existingBreed = Breed::where('name', $data['name'])->first();
         }
 
-        if ($existingClass && !$forceUpdate) {
+        if ($existingBreed && !$forceUpdate) {
             return IntegrationResult::okEntity(
-                $existingClass->id,
+                $existingBreed->id,
                 $dryRun ? 'would_skip' : 'skipped',
                 'Classe déjà présente, ignorée.',
-                ['class' => $existingClass->toArray()]
+                ['breed' => $existingBreed->toArray()]
             );
         }
 
         if ($dryRun) {
             return IntegrationResult::okEntity(
-                $existingClass?->id ?? 0,
-                $existingClass ? 'would_update' : 'would_create',
+                $existingBreed?->id ?? 0,
+                $existingBreed ? 'would_update' : 'would_create',
                 'Simulation : aucune écriture en base.',
                 []
             );
@@ -422,26 +422,26 @@ final class IntegrationService
 
         try {
             DB::beginTransaction();
-            if ($existingClass) {
-                $existingClass->update($payload);
-                $class = $existingClass;
+            if ($existingBreed) {
+                $existingBreed->update($payload);
+                $breed = $existingBreed;
                 $action = 'updated';
             } else {
-                $class = Classe::create($payload);
+                $breed = Breed::create($payload);
                 $action = 'created';
             }
             DB::commit();
-            Log::info('Intégration classe', ['class_id' => $class->id, 'action' => $action]);
+            Log::info('Intégration breed (classe)', ['breed_id' => $breed->id, 'action' => $action]);
 
             return IntegrationResult::okEntity(
-                $class->id,
+                $breed->id,
                 $action,
                 "Classe intégrée : {$action}.",
-                ['class' => $class->toArray()]
+                ['breed' => $breed->toArray()]
             );
         } catch (\Throwable $e) {
             DB::rollBack();
-            Log::error('Erreur intégration classe', ['error' => $e->getMessage()]);
+            Log::error('Erreur intégration breed (classe)', ['error' => $e->getMessage()]);
 
             return IntegrationResult::fail($e->getMessage());
         }

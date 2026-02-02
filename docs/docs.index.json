@@ -52,7 +52,7 @@
   {
     "path": "10-BestPractices/NETTOYAGE_CODE_OBSOLETE.md",
     "title": "Code obsolète et éléments conservés",
-    "description": "Référence des éléments supprimés ou dépréciés et de ceux conservés pour rétrocompatibilité (formules Dofus, admin caractéristiques, scrapping)."
+    "description": "Référence des **éléments supprimés** (ou dépréciés) et de ceux **conservés volontairement** pour rétrocompatibilité ou usage actif."
   },
   {
     "path": "10-BestPractices/PERMISSIONS_SOURCE_OF_TRUTH.md",
@@ -87,12 +87,17 @@
   {
     "path": "100- Done/README.md",
     "title": "100-Done",
-    "description": "Dossier réservé aux résumés descriptifs de fonctionnalités livrées ou de décisions d’architecture (référence, pas journal chronologique). Liens vers le reste de la doc."
+    "description": "Ce dossier est réservé aux **résumés descriptifs** de fonctionnalités livrées ou de décisions d’architecture, lorsqu’ils servent de référence (et non de journal chronologique)."
   },
   {
     "path": "110- To Do/PROPOSITION_CHARACTERISTICS_EQUIPMENT_IMPLEMENTATION.md",
     "title": "Proposition : intégration formules, forgemagie et équipements dans la config characteristics",
     "description": "Références : `Caractéristiques.pdf`, `Equipements et forgemagie.pdf`."
+  },
+  {
+    "path": "110- To Do/README.md",
+    "title": "110 – To Do (caractéristiques, formules, équipements)",
+    "description": "Ce dossier rassemble les **sources métier** (PDF) et la **proposition d’intégration** pour les caractéristiques, formules de calcul, forgemagie et équipements."
   },
   {
     "path": "20-Content/21-Entities/ENTITIES_OVERVIEW.md",
@@ -116,8 +121,8 @@
   },
   {
     "path": "20-Content/21-Entities/ENTITY_CLASSES.md",
-    "title": "Classes (`classes`)",
-    "description": "Les classes représentent les archétypes jouables du jeu (ex : Féca, Iop, Eniripsa…). Elles définissent les capacités de base, la progression, les spécialisations et les spécificités de chaque personnage joueur ou PNJ associé à une classe."
+    "title": "Classes (`breeds`)",
+    "description": "Les classes (entité technique `breed` / `breeds`) représentent les archétypes jouables du jeu (ex : Féca, Iop, Eniripsa…). Elles définissent les capacités de base, la progression, les spécialisations et les spécificités de chaque personnage joueur ou PNJ associé à une classe."
   },
   {
     "path": "20-Content/21-Entities/ENTITY_CONSUMABLES.md",
@@ -1060,6 +1065,11 @@
     "description": "Cette table des matières présente la structure complète du livre de règles KrosmozJDR."
   },
   {
+    "path": "50-Fonctionnalités/Characteristics-DB/CONVERSION_100_BDD_ET_HANDLERS.md",
+    "title": "Conversion 100 % pilotée par la BDD et handlers nommés",
+    "description": "**Objectif** : Que la conversion DofusDB → KrosmozJDR (côté caractéristiques) ne dépende que de la base de données. Les formules, limites et mappings sont en BDD ; les cas complexes (ex. résistances) sont gérés par des **handlers nommés** enregistrés en BDD et exécutés en PHP."
+  },
+  {
     "path": "50-Fonctionnalités/Characteristics-DB/PLAN_FORMULES_DOFUSDB_BDD.md",
     "title": "Formules de conversion DofusDB → KrosmozJDR en base de données",
     "description": "**Objectif** : Stocker les formules de conversion (DofusDB → KrosmozJDR) en base de données, par caractéristique et par entité (monster, class, item), pour les piloter depuis l’admin et permettre des formules différentes selon qu’on récupère un équipement, un monstre ou une classe."
@@ -1068,6 +1078,11 @@
     "path": "50-Fonctionnalités/Characteristics-DB/PLAN_MIGRATION_CHARACTERISTICS_DB.md",
     "title": "Plan de migration : caractéristiques en base de données",
     "description": "**Objectif** : Remplacer `config/characteristics.php` et `config/equipment_characteristics.php` par une source de vérité en base de données, exposée via un **service** accessible partout dans le projet, avec une interface admin (super_admin) pour modifier les données."
+  },
+  {
+    "path": "50-Fonctionnalités/ESTIMATION_RENOMMAGE_CLASSE_EN_BREED.md",
+    "title": "Estimation : renommage de l'entité « classe » en « breed »",
+    "description": "**Objectif** : utiliser `breed` dans le code et la documentation technique, tout en conservant **« Classe »** pour l’affichage utilisateur (menu, titres, libellés, règles du jeu)."
   },
   {
     "path": "50-Fonctionnalités/EntityEditForm/README.md",
@@ -1083,6 +1098,76 @@
     "path": "50-Fonctionnalités/EntityRelationsManager/README.md",
     "title": "EntityRelationsManager - Gestion des relations many-to-many",
     "description": "`EntityRelationsManager` est un composant générique Vue 3 permettant de gérer les relations many-to-many entre entités. Il supporte les relations simples (sans pivot) et les relations avec données pivot (quantité, prix, commentaire, etc.)."
+  },
+  {
+    "path": "50-Fonctionnalités/PLAN_REALISATION_RENOMMAGE_CLASSE_EN_BREED.md",
+    "title": "Plan de réalisation : renommage classe → breed",
+    "description": "Plan exécutable, phase par phase. Chaque phase se termine par un point de contrôle (tests / vérifications). Référence : [ESTIMATION_RENOMMAGE_CLASSE_EN_BREED.md](./ESTIMATION_RENOMMAGE_CLASSE_EN_BREED.md)."
+  },
+  {
+    "path": "50-Fonctionnalités/Scrapping/Architecture/AUDIT_ETAT_DES_LIEUX.md",
+    "title": "État des lieux du scrapping KrosmozJDR",
+    "description": "Ce document décrit **où se trouve le code** scrapping, comment il est utilisé, et les principaux couplages."
+  },
+  {
+    "path": "50-Fonctionnalités/Scrapping/Architecture/CONVERSION_FORMULAS_PLACEMENT.md",
+    "title": "Où placer les formules de conversion DofusDB → KrosmozJDR",
+    "description": "- **`config/characteristics.php`** définit les **valeurs limites** (min/max) et les **formules de génération** (ex. `[vitality] * 7` pour la vie) utilisées pour la **validation** et la **génération** de données KrosmozJDR."
+  },
+  {
+    "path": "50-Fonctionnalités/Scrapping/Architecture/DECISION_BONUS_EFFECTS_STOCKAGE.md",
+    "title": "Décision : stockage des bonus / effets d’équipement",
+    "description": "Ce document compare **garder le bonus en JSON** (état actuel) et **passer à une table ou un système plus robuste** (type DofusDB), pour les caractéristiques / bonus que peuvent apporter les équipements (et panoplies). Il vise à trancher pour la scrapping et l’évolution du modèle de données."
+  },
+  {
+    "path": "50-Fonctionnalités/Scrapping/Architecture/DECOUVERTE_API_DOFUSDB.md",
+    "title": "Découverte API DofusDB — Refonte scrapping",
+    "description": "Ce document consolide les informations sur l’API DofusDB nécessaires au scrapping : endpoints, paramètres, **structure des réponses** (déduite des configs et de la doc existante), pagination et filtres. Il sert de référence pour les configs « requêtes » et « mapping »."
+  },
+  {
+    "path": "50-Fonctionnalités/Scrapping/Architecture/ETAT_AVANCEMENT.md",
+    "title": "État actuel du scrapping",
+    "description": "Ce document décrit **ce qui existe** : le pipeline, les services, les configs et les points d’entrée du scrapping."
+  },
+  {
+    "path": "50-Fonctionnalités/Scrapping/Architecture/IMPLICATIONS_NOUVELLE_ARCHI_CARACTERISTIQUES.md",
+    "title": "Implications de la nouvelle architecture caractéristiques / formules pour le scrapping",
+    "description": "**Contexte** : Les caractéristiques (limites, requis, type, etc.) et les formules de conversion DofusDB → KrosmozJDR sont désormais stockées en base de données et exposées via des services. Ce document décrit ce que cela implique pour le pipeline de scrapping ."
+  },
+  {
+    "path": "50-Fonctionnalités/Scrapping/Architecture/ITEM_TYPES_REFERENCE.md",
+    "title": "Référence item-types DofusDB",
+    "description": "Ce document décrit comment les **232 item-types** de l’API DofusDB sont pris en compte dans la config KrosmozJDR."
+  },
+  {
+    "path": "50-Fonctionnalités/Scrapping/Architecture/PLAN_IMPLEMENTATION.md",
+    "title": "Plan d’implémentation scrapping",
+    "description": "Ce document décrit l’approche du scrapping : **config-driven**, CLI d’abord, et les liens vers la découverte de l’API. Contexte : [ETAT_AVANCEMENT.md](./ETAT_AVANCEMENT.md)."
+  },
+  {
+    "path": "50-Fonctionnalités/Scrapping/Architecture/README.md",
+    "title": "Architecture scrapping KrosmozJDR",
+    "description": "Ce dossier centralise la documentation de l’architecture du scrapping : pipeline, configs, relations et décisions."
+  },
+  {
+    "path": "50-Fonctionnalités/Scrapping/Architecture/RELATIONS.md",
+    "title": "Ordre de résolution des relations",
+    "description": "Ce document décrit le **graphe des dépendances** entre entités et le **comportement actuel** du pipeline pour les relations (sorts, drops)."
+  },
+  {
+    "path": "50-Fonctionnalités/Scrapping/Architecture/SCHEMA_CONFIG.md",
+    "title": "Schéma des configs scrapping",
+    "description": "Ce document décrit la structure des fichiers de configuration : **source**, **requêtes** (endpoints, pagination, filtres) et **mapping** (propriété DofusDB → KrosmozJDR + formatter). Les configs sont dans `resources/scrapping/config/sources/dofusdb/`."
+  },
+  {
+    "path": "50-Fonctionnalités/Scrapping/Architecture/TODOLIST.md",
+    "title": "To-do list scrapping",
+    "description": "Liste de tâches optionnelles ou de suivi. Contexte : [ETAT_AVANCEMENT.md](./ETAT_AVANCEMENT.md)."
+  },
+  {
+    "path": "50-Fonctionnalités/Scrapping/Architecture/VISION_ET_ARCHITECTURE.md",
+    "title": "Refonte scrapping — Vision et architecture cible",
+    "description": "Ce document résume la vision, les points importants, l’architecture cible et les questions / difficultés anticipées. Il complète l’[audit (AUDIT_ETAT_DES_LIEUX.md)](./AUDIT_ETAT_DES_LIEUX.md)."
   },
   {
     "path": "50-Fonctionnalités/Scrapping/Data-collect/API.md",
@@ -1110,6 +1195,11 @@
     "description": "Centraliser le lien entre :"
   },
   {
+    "path": "50-Fonctionnalités/Scrapping/OPTIMISATION_ARCHITECTURE.md",
+    "title": "Architecture du scrapping",
+    "description": "Ce document décrit l’architecture actuelle du namespace `App\\Services\\Scrapping` : structure, config, collecte, pipeline et catalogues."
+  },
+  {
     "path": "50-Fonctionnalités/Scrapping/Orchestrateur/API.md",
     "title": "API Scrapping (Laravel) — Endpoints exposés",
     "description": "Cette page documente l’API interne utilisée par :"
@@ -1117,47 +1207,12 @@
   {
     "path": "50-Fonctionnalités/Scrapping/README.md",
     "title": "Scrapping — Mapping & conversion (DofusDB → KrosmozJDR)",
-    "description": "Cette section documente **ce qui compte pour la refonte** : le **mapping** et les **fonctions de conversion (formatters)**."
+    "description": "Cette section documente le **mapping** et les **fonctions de conversion (formatters)** du scrapping."
   },
   {
-    "path": "50-Fonctionnalités/Scrapping/Architecture/AUDIT_ETAT_DES_LIEUX.md",
-    "title": "Audit — État des lieux du scrapping KrosmozJDR",
-    "description": "Document d’audit réalisé pour préparer la refonte du scrapping. Il décrit où se trouve le code, comment il est utilisé, et quels sont les couplages et points de complexité."
-  },
-  {
-    "path": "50-Fonctionnalités/Scrapping/Architecture/CONVERSION_FORMULAS_PLACEMENT.md",
-    "title": "Où placer les formules de conversion DofusDB → KrosmozJDR",
-    "description": "- **`config/characteristics.php`** définit les **valeurs limites** (min/max) et les **formules de génération** (ex. `[vitality] * 7` pour la vie) utilisées pour la **validation** et la **génération** de données KrosmozJDR."
-  },
-  {
-    "path": "50-Fonctionnalités/Scrapping/Architecture/DECISION_BONUS_EFFECTS_STOCKAGE.md",
-    "title": "Décision : stockage des bonus / effets d’équipement",
-    "description": "Ce document compare **garder le bonus en JSON** (état actuel) et **passer à une table ou un système plus robuste** (type DofusDB), pour les caractéristiques / bonus que peuvent apporter les équipements (et panoplies). Il vise à trancher pour la refonte du scrapping et l’évolution du modèle de données."
-  },
-  {
-    "path": "50-Fonctionnalités/Scrapping/Architecture/DECOUVERTE_API_DOFUSDB.md",
-    "title": "Découverte API DofusDB — Refonte scrapping",
-    "description": "Ce document consolide les informations sur l’API DofusDB nécessaires pour la refonte : endpoints, paramètres, **structure des réponses** (déduite des configs et de la doc existante), pagination et filtres. Il sert de référence pour les configs « requêtes » et « mapping »."
-  },
-  {
-    "path": "50-Fonctionnalités/Scrapping/Architecture/ITEM_TYPES_REFERENCE.md",
-    "title": "Référence item-types DofusDB",
-    "description": "Ce document décrit comment les **232 item-types** de l’API DofusDB sont pris en compte dans la config KrosmozJDR."
-  },
-  {
-    "path": "50-Fonctionnalités/Scrapping/Architecture/README.md",
-    "title": "Refonte du scrapping KrosmozJDR",
-    "description": "Ce dossier centralise les idées, l’audit et la documentation de la refonte de la fonctionnalité scrapping. L’objectif est de **remplacer entièrement** l’ancienne implémentation par une version plus simple, modulaire et maintenable."
-  },
-  {
-    "path": "50-Fonctionnalités/Scrapping/Architecture/SCHEMA_CONFIG.md",
-    "title": "Schéma des configs — Scrapping",
-    "description": "Ce document décrit la structure des fichiers de configuration : **source**, **requêtes** (endpoints, pagination, filtres) et **mapping** (propriété DofusDB → KrosmozJDR + formatter). Une entité pilote (**monster**) est définie dans `resources/scrapping/config/sources/dofusdb/`."
-  },
-  {
-    "path": "50-Fonctionnalités/Scrapping/Architecture/VISION_ET_ARCHITECTURE.md",
-    "title": "Scrapping — Vision et architecture cible",
-    "description": "Ce document résume la vision de la refonte, les points importants, l’architecture cible et les questions / difficultés anticipées. Il complète l’[audit (AUDIT_ETAT_DES_LIEUX.md)](./AUDIT_ETAT_DES_LIEUX.md)."
+    "path": "50-Fonctionnalités/Scrapping/RESTE_A_FAIRE_SCRAPPING.md",
+    "title": "Résumé — Ce qu’il reste à faire pour finir le scrapping (backend)",
+    "description": "Ce document liste ce qui reste à faire pour **finaliser la partie backend** du scrapping (hors interface, à traiter plus tard)."
   },
   {
     "path": "DOCUMENTATION_GUIDE.md",

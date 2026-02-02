@@ -52,11 +52,11 @@ class SpellResource extends JsonResource
             // Relations
             'createdBy' => $this->whenLoaded('createdBy'),
             'creatures' => $this->whenLoaded('creatures'),
-            'classes' => ($this->relationLoaded('classes') || isset($this->classes)) ? $this->classes->map(function ($classe) {
+            'breeds' => ($this->relationLoaded('breeds') || isset($this->breeds)) ? $this->breeds->map(function ($breed) {
                 return [
-                    'id' => $classe->id,
-                    'name' => $classe->name,
-                    'description' => $classe->description,
+                    'id' => $breed->id,
+                    'name' => $breed->name,
+                    'description' => $breed->description,
                 ];
             })->values()->all() : [],
             'scenarios' => $this->whenLoaded('scenarios'),

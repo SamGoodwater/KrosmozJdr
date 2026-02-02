@@ -68,7 +68,7 @@ const canShowField = (fieldKey) => {
 // Champs à afficher dans la vue compacte
 const compactFields = computed(() => [
     'creature_name',
-    'classe',
+    'breed',
     'specialization',
     'age',
     'size',

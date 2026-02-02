@@ -94,7 +94,7 @@ final class ConversionService
             $useResistanceBatch = (bool) ($entityConfig['resistanceBatch'] ?? false);
             if ($useResistanceBatch) {
                 $resMap = $this->conversionFormulas->convertResistancesBatch($raw, $entityType);
-                $targetModel = $entityType === 'monster' ? 'creatures' : ($entityType === 'class' ? 'classes' : 'items');
+                $targetModel = $entityType === 'monster' ? 'creatures' : ($entityType === 'class' ? 'breeds' : 'items');
                 if (!isset($out[$targetModel]) || !is_array($out[$targetModel])) {
                     $out[$targetModel] = [];
                 }

@@ -14,7 +14,7 @@
 use App\Models\Entity\Attribute;
 use App\Models\Entity\Campaign;
 use App\Models\Entity\Capability;
-use App\Models\Entity\Classe;
+use App\Models\Entity\Breed;
 use App\Models\Entity\Consumable;
 use App\Models\Entity\Creature;
 use App\Models\Entity\Item;
@@ -37,7 +37,7 @@ return [
     'attributes' => Attribute::class,
     'campaigns' => Campaign::class,
     'capabilities' => Capability::class,
-    'classes' => Classe::class,
+    'breeds' => Breed::class,
     'consumables' => Consumable::class,
     'creatures' => Creature::class,
     'items' => Item::class,

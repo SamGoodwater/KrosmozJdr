@@ -19,6 +19,32 @@ erDiagram
     deleted_at : timestamp
     created_by : bigint(20) unsigned
   }
+  BREED_SPELL {
+    breed_id : bigint(20) unsigned
+    spell_id : bigint(20) unsigned
+  }
+  BREEDS {
+    id : bigint(20) unsigned
+    official_id : varchar(255)
+    dofusdb_id : varchar(255)
+    created_at : timestamp
+    updated_at : timestamp
+    name : varchar(255)
+    description_fast : varchar(255)
+    description : varchar(255)
+    life : varchar(255)
+    life_dice : varchar(255)
+    specificity : varchar(255)
+    dofus_version : varchar(255)
+    state : varchar(255)
+    read_level : tinyint(4)
+    write_level : tinyint(4)
+    image : varchar(255)
+    icon : varchar(255)
+    auto_update : tinyint(1)
+    deleted_at : timestamp
+    created_by : bigint(20) unsigned
+  }
   CACHE {
     key : varchar(255)
     value : mediumtext
@@ -115,6 +141,10 @@ erDiagram
     default_value : varchar(255)
     required : tinyint(1)
     validation_message : text
+    forgemagie_allowed : tinyint(1)
+    forgemagie_max : tinyint(3) unsigned
+    base_price_per_unit : decimal(12,2)
+    rune_price_per_unit : decimal(12,2)
     created_at : timestamp
     updated_at : timestamp
   }
@@ -129,8 +159,6 @@ erDiagram
     icon : varchar(64)
     color : varchar(32)
     sort_order : smallint(5) unsigned
-    forgemagie_allowed : tinyint(1)
-    forgemagie_max : tinyint(3) unsigned
     applies_to : longtext
     is_competence : tinyint(1)
     characteristic_id : varchar(64)
@@ -141,36 +169,8 @@ erDiagram
     validation : longtext
     mastery_value_available : longtext
     mastery_labels : longtext
-    base_price_per_unit : decimal(12,2)
-    rune_price_per_unit : decimal(12,2)
     created_at : timestamp
     updated_at : timestamp
-  }
-  CLASS_SPELL {
-    classe_id : bigint(20) unsigned
-    spell_id : bigint(20) unsigned
-  }
-  CLASSES {
-    id : bigint(20) unsigned
-    official_id : varchar(255)
-    dofusdb_id : varchar(255)
-    created_at : timestamp
-    updated_at : timestamp
-    name : varchar(255)
-    description_fast : varchar(255)
-    description : varchar(255)
-    life : varchar(255)
-    life_dice : varchar(255)
-    specificity : varchar(255)
-    dofus_version : varchar(255)
-    state : varchar(255)
-    read_level : tinyint(4)
-    write_level : tinyint(4)
-    image : varchar(255)
-    icon : varchar(255)
-    auto_update : tinyint(1)
-    deleted_at : timestamp
-    created_by : bigint(20) unsigned
   }
   CONSUMABLE_CAMPAIGN {
     consumable_id : bigint(20) unsigned
@@ -346,6 +346,8 @@ erDiagram
     characteristic_id : varchar(255)
     entity : varchar(32)
     formula_type : varchar(64)
+    conversion_formula : text
+    handler_name : varchar(64)
     parameters : longtext
     formula_display : text
     created_at : timestamp
@@ -556,7 +558,7 @@ erDiagram
     historical : varchar(255)
     age : varchar(255)
     size : varchar(255)
-    classe_id : bigint(20) unsigned
+    breed_id : bigint(20) unsigned
     specialization_id : bigint(20) unsigned
     created_at : timestamp
     updated_at : timestamp
@@ -841,6 +843,9 @@ erDiagram
   ATTRIBUTE_CREATURE }o--|| ATTRIBUTES : "FK attribute_id"
   ATTRIBUTE_CREATURE }o--|| CREATURES : "FK creature_id"
   ATTRIBUTES }o--|| USERS : "FK created_by"
+  BREED_SPELL }o--|| BREEDS : "FK breed_id"
+  BREED_SPELL }o--|| SPELLS : "FK spell_id"
+  BREEDS }o--|| USERS : "FK created_by"
   CAMPAIGN_PAGE }o--|| CAMPAIGNS : "FK campaign_id"
   CAMPAIGN_PAGE }o--|| PAGES : "FK page_id"
   CAMPAIGN_PANOPLY }o--|| CAMPAIGNS : "FK campaign_id"
@@ -862,9 +867,6 @@ erDiagram
   CHARACTERISTIC_ENTITIES }o--|| CHARACTERISTICS : "FK characteristic_id"
   CHARACTERISTICS }o--|| CHARACTERISTICS : "FK alternative_characteristic_id"
   CHARACTERISTICS }o--|| CHARACTERISTICS : "FK characteristic_id"
-  CLASS_SPELL }o--|| CLASSES : "FK classe_id"
-  CLASS_SPELL }o--|| SPELLS : "FK spell_id"
-  CLASSES }o--|| USERS : "FK created_by"
   CONSUMABLE_CAMPAIGN }o--|| CAMPAIGNS : "FK campaign_id"
   CONSUMABLE_CAMPAIGN }o--|| CONSUMABLES : "FK consumable_id"
   CONSUMABLE_CREATURE }o--|| CONSUMABLES : "FK consumable_id"
@@ -921,7 +923,7 @@ erDiagram
   NPC_PANOPLY }o--|| PANOPLIES : "FK panoply_id"
   NPC_SCENARIO }o--|| NPCS : "FK npc_id"
   NPC_SCENARIO }o--|| SCENARIOS : "FK scenario_id"
-  NPCS }o--|| CLASSES : "FK classe_id"
+  NPCS }o--|| BREEDS : "FK breed_id"
   NPCS }o--|| CREATURES : "FK creature_id"
   NPCS }o--|| SPECIALIZATIONS : "FK specialization_id"
   PAGE_USER }o--|| PAGES : "FK page_id"

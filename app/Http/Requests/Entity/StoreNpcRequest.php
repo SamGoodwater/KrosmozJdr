@@ -32,7 +32,7 @@ class StoreNpcRequest extends FormRequest
             'historical' => ['nullable', 'string'],
             'age' => ['nullable', 'string', 'max:255'],
             'size' => ['nullable', 'string', 'max:255'],
-            'classe_id' => ['nullable', 'integer', 'exists:classes,id'],
+            'breed_id' => ['nullable', 'integer', 'exists:breeds,id'],
             'specialization_id' => ['nullable', 'integer', 'exists:specializations,id'],
         ];
     }

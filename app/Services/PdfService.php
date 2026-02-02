@@ -140,10 +140,10 @@ class PdfService
     {
         return match($entityType) {
             'item' => ['itemType', 'createdBy', 'resources', 'panoplies'],
-            'spell' => ['spellType', 'createdBy', 'classes'],
+            'spell' => ['spellType', 'createdBy', 'breeds'],
             'monster' => ['monsterRace', 'createdBy', 'creature'],
-            'npc' => ['creature', 'classe', 'specialization', 'createdBy'],
-            'classe' => ['createdBy', 'npcs', 'spells'],
+            'npc' => ['creature', 'breed', 'specialization', 'createdBy'],
+            'breed' => ['createdBy', 'npcs', 'spells'],
             'panoply' => ['createdBy', 'items'],
             'campaign' => ['createdBy', 'users', 'scenarios'],
             'scenario' => ['createdBy', 'campaign'],
@@ -193,11 +193,11 @@ class PdfService
                 'dofusdb_id' => $entity->dofusdb_id,
             ],
             'npc' => [
-                'classe' => $entity->classe?->name ?? null,
+                'breed' => $entity->breed?->name ?? null,
                 'specialization' => $entity->specialization?->name ?? null,
                 'creature' => $entity->creature?->name ?? null,
             ],
-            'classe' => [
+            'breed' => [
                 'life' => $entity->life,
                 'life_dice' => $entity->life_dice,
                 'dofusdb_id' => $entity->dofusdb_id,
