@@ -5,7 +5,7 @@ namespace App\Services\Scrapping\Catalog;
 /**
  * Lecture de la config de mapping superTypeId -> catégories métier.
  *
- * Source de vérité V2 : `resources/scrapping/v2/sources/dofusdb/item-super-types.json`.
+ * Source de vérité : `resources/scrapping/config/sources/dofusdb/item-super-types.json`.
  * L'ancien chemin (resources/scrapping/sources/dofusdb/) est déprécié.
  */
 class DofusDbItemSuperTypeMappingService
@@ -14,7 +14,7 @@ class DofusDbItemSuperTypeMappingService
 
     public function __construct(?string $basePath = null)
     {
-        $this->basePath = $basePath ?? base_path('resources/scrapping/v2');
+        $this->basePath = $basePath ?? base_path('resources/scrapping/config');
     }
 
     /**

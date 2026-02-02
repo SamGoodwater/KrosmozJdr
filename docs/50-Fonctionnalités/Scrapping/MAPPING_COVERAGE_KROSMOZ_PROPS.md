@@ -176,7 +176,8 @@ Source DofusDB :
 | `name` | (incertain selon payload) | 🟨 Dérivable | `pickLang` si `name` existe | À vérifier : DofusDB expose surtout `description` |
 | `description` | `breeds.description.{lang}` | ✅ Direct | `pickLang` | |
 | `image` / `icon` | `breeds.*Artwork` / `iconId` (selon payload) | 🟨 Dérivable | mapping à définir | |
-| `life`, `life_dice`, `specificity` | — | ❌ Krosmoz-only | — | |
+| `life`, `life_dice` | — | ❌ Non exposés par DofusDB pour breeds | — | Les classes DofusDB sont généralistes : noms, descriptions, illustrations, sorts liés, rôles. |
+| `specificity` | `breeds.specificity` (si présent) | ✅ Direct | `pickLang` + truncate | |
 | `state`, `read_level`, `write_level`, `auto_update`, `created_by`, `official_id`, `dofus_version` | — | ❌ Krosmoz-only | — | |
 
 ---

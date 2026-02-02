@@ -6,7 +6,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Services\Scrapping\ConversionHandlerRegistry;
-use App\Services\Scrapping\V2\Conversion\DofusDbConversionFormulas;
+use App\Services\Scrapping\Core\Conversion\DofusDbConversionFormulas;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 

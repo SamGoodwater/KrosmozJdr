@@ -43,7 +43,7 @@ Champs “best effort” (si présents dans l’input) :
 
 ---
 
-## Implémentation actuelle (refonte “couche A”)
+## Implémentation actuelle (couche A)
 ### Formatter
 - Nom : `normalizeDofusdbEffects`
 - Type : `pure`

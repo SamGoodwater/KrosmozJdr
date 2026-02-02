@@ -28,8 +28,8 @@ Le service doit exposer la **même structure** que la config actuelle pour ne pa
 
 | Fichier | Utilisation actuelle | Action |
 |---------|----------------------|--------|
-| `app/Services/Scrapping/V2/Validation/ValidationService.php` | `Config::get('characteristics.characteristics', [])` | Injecter `CharacteristicService`, utiliser `$this->characteristicService->getCharacteristics()` |
-| `app/Services/Scrapping/V2/Conversion/DofusDbConversionFormulas.php` | `Config::get('characteristics.characteristics', [])` (clamp) | Idem : passer par le service |
+| `app/Services/Scrapping/Core/Validation/ValidationService.php` | `Config::get('characteristics.characteristics', [])` | Injecter `CharacteristicService`, utiliser `$this->characteristicService->getCharacteristics()` |
+| `app/Services/Scrapping/Core/Conversion/DofusDbConversionFormulas.php` | `Config::get('characteristics.characteristics', [])` (clamp) | Idem : passer par le service |
 | `app/Services/Scrapping/DataConversion/DataConversionService.php` | `config('characteristics', [])` | Utiliser `CharacteristicService::getFullConfig()` ou équivalent |
 | `config/dofusdb_conversion.php` | Commentaire « characteristics » | Documenter que la source est le service (ou config déléguée au service) |
 | Tout futur code (formules, équipements, admin) | — | Utiliser uniquement le service |
@@ -258,7 +258,7 @@ Après migration, conserver les anciens fichiers de config en lecture pour le se
 
 - Mettre à jour :
   - `docs/10-BestPractices/SYNTAXE_FORMULES_CARACTERISTIQUES.md` : préciser que la source de vérité est la base et le service.
-  - `docs/50-Fonctionnalités/Scrapping/Refonte/` et `config/dofusdb_conversion.php` : indiquer que les limites et définitions viennent du CharacteristicService.
+  - `docs/50-Fonctionnalités/Scrapping/Architecture/` et `config/dofusdb_conversion.php` : indiquer que les limites et définitions viennent du CharacteristicService.
 - **I18n** : si plus tard les libellés (name, short_name, description) doivent être traduits, prévoir une table `characteristic_translations` (characteristic_id, locale, name, short_name, description) et adapter le service pour retourner la locale courante.
 
 ### 6.5 Récap des fichiers à créer ou modifier

@@ -35,19 +35,16 @@ class ScrappingPreviewConfigConversionTest extends TestCase
 
     public function test_preview_spell_uses_config_driven_conversion_and_keeps_name(): void
     {
+        $spellData = [
+            'id' => 201,
+            'name' => ['fr' => 'Béco du Tofu'],
+            'description' => ['fr' => 'Description'],
+            'breedId' => 1,
+            'img' => 'https://api.dofusdb.fr/img/spells/201.png',
+        ];
         Http::fake([
-            'api.dofusdb.fr/spells*' => Http::response([
-                'data' => [[
-                    'id' => 201,
-                    'name' => ['fr' => 'Béco du Tofu'],
-                    'description' => ['fr' => 'Description'],
-                    'breedId' => 1,
-                    'img' => 'https://api.dofusdb.fr/img/spells/201.png',
-                ]],
-                'total' => 1,
-                'limit' => 100,
-                'skip' => 0,
-            ], 200),
+            'api.dofusdb.fr/spells/201*' => Http::response($spellData, 200),
+            'api.dofusdb.fr/spells*' => Http::response(['data' => [$spellData]], 200),
             'api.dofusdb.fr/spell-levels*' => Http::response(['data' => []], 200),
         ]);
 
@@ -56,7 +53,7 @@ class ScrappingPreviewConfigConversionTest extends TestCase
 
         $converted = $res->json('data.converted');
         $this->assertIsArray($converted);
-        $this->assertEquals('Béco du Tofu', $converted['name'] ?? ($converted['spells']['name'] ?? null));
+        $this->assertEquals('Béco du Tofu', $converted['spells']['name'] ?? $converted['name'] ?? null);
     }
 }
 

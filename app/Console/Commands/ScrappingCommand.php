@@ -4,8 +4,12 @@ namespace App\Console\Commands;
 
 use App\Models\Type\ResourceType;
 use App\Models\User;
-use App\Services\Scrapping\DataCollect\ConfigDrivenDofusDbCollector;
-use App\Services\Scrapping\Orchestrator\ScrappingOrchestrator;
+use App\Services\Scrapping\Catalog\DofusDbItemSuperTypeMappingService;
+use App\Services\Scrapping\Catalog\DofusDbItemTypesCatalogService;
+use App\Services\Scrapping\Catalog\DofusDbMonsterRacesCatalogService;
+use App\Services\Scrapping\Core\Collect\CollectService;
+use App\Services\Scrapping\Core\Config\CollectAliasResolver;
+use App\Services\Scrapping\Core\Orchestrator\Orchestrator;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
@@ -36,8 +40,14 @@ class ScrappingCommand extends Command
         {--compare : Prévisualise et compare avec la DB (raw/converted/existing)}
         {--include-relations=1 : Inclure les relations (1/0) pour import/preview}
         {--force-update : Force la mise à jour même si l\'entité existe déjà}
+        {--replace-existing : Alias de --force-update}
         {--validate-only : Valide uniquement sans sauvegarder}
         {--dry-run : N\'écrit rien (si import)}
+        {--exclude-from-update= : Champs à ne pas écraser à l\'update (ex: name,image,level)}
+        {--ignore-unvalidated : Ignorer les objets dont la race/type n\'est pas validé}
+        {--lang=fr : Langue pour la conversion (pickLang)}
+        {--type-name= : Filtre par nom de type/catégorie (ex: Ressource, Pierre brute)}
+        {--race-name= : Filtre par nom de race (ex: Bandits d\'Amakna)}
         {--noimage : Désactive le téléchargement/stockage d\'images}
         {--skip-cache : Ignore le cache HTTP lors de la collecte}
         {--id= : ID unique DofusDB}
@@ -60,7 +70,7 @@ class ScrappingCommand extends Command
 
     protected $description = 'Commande unique pour collect/search/import du scrapping (config-driven).';
 
-    public function handle(ConfigDrivenDofusDbCollector $collector, ScrappingOrchestrator $orchestrator): int
+    public function handle(CollectService $collectService, Orchestrator $orchestrator): int
     {
         if ((bool) $this->option('sync-resource-types')) {
             return $this->handleSyncResourceTypes();
@@ -159,7 +169,7 @@ class ScrappingCommand extends Command
                             $localFilters['typeId'] = $onlyTypeId;
                         }
 
-                        $search = $collector->fetchManyResult($collectorEntity, $localFilters, $options);
+                        $search = $collectService->fetchManyResult('dofusdb', $collectorEntity, $localFilters, $options);
                         $items = $search['items'] ?? [];
                         $entityResult['items'] = array_merge($entityResult['items'], $items);
                         $entityResult['metaByType'][] = [
@@ -183,12 +193,12 @@ class ScrappingCommand extends Command
                     // Collecte unitaire (fetchOne) pour avoir du contenu même en mode IDs.
                     $entityResult['items'] = [];
                     foreach ($ids as $id) {
-                        $entityResult['items'][] = $collector->fetchOne($collectorEntity, (int) $id, [
+                            $entityResult['items'][] = $collectService->fetchOne('dofusdb', $collectorEntity, (int) $id, [
                             'skip_cache' => (bool) ($options['skip_cache'] ?? false),
                         ]);
                     }
                 } else {
-                    $search = $collector->fetchManyResult($collectorEntity, $filters, $options);
+                    $search = $collectService->fetchManyResult('dofusdb', $collectorEntity, $filters, $options);
                     $items = $search['items'] ?? [];
                     $entityResult['items'] = $items;
                     $entityResult['meta'] = $search['meta'] ?? [];
@@ -212,13 +222,7 @@ class ScrappingCommand extends Command
                 }
 
                 if ($doSave) {
-                    $importOptions = [
-                        'skip_cache' => (bool) ($options['skip_cache'] ?? false),
-                        'include_relations' => (bool) ((int) $this->option('include-relations')),
-                        'force_update' => (bool) $this->option('force-update'),
-                        'dry_run' => (bool) $this->option('dry-run'),
-                        'validate_only' => (bool) $this->option('validate-only'),
-                    ];
+                    $importOptions = $this->buildImportOptions($options);
 
                     foreach ($entityResult['ids'] as $id) {
                         $entityResult['imported'][] = $this->importOne($orchestrator, $normalizedEntity, (int) $id, $importOptions);
@@ -424,7 +428,7 @@ class ScrappingCommand extends Command
         return Command::SUCCESS;
     }
 
-    private function handleBatchImport(ScrappingOrchestrator $orchestrator): int
+    private function handleBatchImport(Orchestrator $orchestrator): int
     {
         $path = (string) $this->option('batch');
         if ($path === '' || !is_file($path)) {
@@ -450,27 +454,72 @@ class ScrappingCommand extends Command
             return Command::FAILURE;
         }
 
+        $excludeRaw = $this->option('exclude-from-update');
+        $excludeFromUpdate = is_string($excludeRaw) && $excludeRaw !== ''
+            ? array_values(array_filter(array_map('trim', explode(',', $excludeRaw))))
+            : [];
+
         $options = [
-            'skip_cache' => (bool) $this->option('skip-cache'),
-            'include_relations' => (bool) ((int) $this->option('include-relations')),
-            'force_update' => (bool) $this->option('force-update'),
+            'integrate' => !(bool) $this->option('dry-run') && !(bool) $this->option('validate-only'),
             'dry_run' => (bool) $this->option('dry-run'),
-            'validate_only' => (bool) $this->option('validate-only'),
+            'force_update' => (bool) $this->option('force-update') || (bool) $this->option('replace-existing'),
+            'lang' => (string) $this->option('lang', 'fr'),
+            'exclude_from_update' => $excludeFromUpdate,
+            'ignore_unvalidated' => (bool) $this->option('ignore-unvalidated'),
         ];
 
-        $result = $orchestrator->importBatch($entities, $options);
+        $results = [];
+        $errorCount = 0;
+        foreach ($entities as $i => $entity) {
+            $type = $entity['type'] ?? '';
+            $eid = (int) ($entity['id'] ?? 0);
+            $entityKey = $this->apiTypeToEntity($type);
+            if ($entityKey === null) {
+                $results[] = ['index' => $i, 'type' => $type, 'id' => $eid, 'success' => false, 'error' => 'Type non supporté'];
+                $errorCount++;
+                continue;
+            }
+            $result = $orchestrator->runOne('dofusdb', $entityKey, $eid, $options);
+            $results[] = [
+                'index' => $i,
+                'type' => $type,
+                'id' => $eid,
+                'success' => $result->isSuccess(),
+                'error' => $result->isSuccess() ? null : $result->getMessage(),
+            ];
+            if (!$result->isSuccess()) {
+                $errorCount++;
+            }
+        }
+
+        $result = [
+            'success' => $errorCount === 0,
+            'summary' => ['total' => count($entities), 'success' => count($entities) - $errorCount, 'errors' => $errorCount],
+            'results' => $results,
+        ];
 
         if ((bool) $this->option('json')) {
             $this->line(json_encode($result, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
         } else {
-            $summary = $result['summary'] ?? [];
+            $summary = $result['summary'];
             $this->info('📦 Import batch terminé');
-            $this->line('Total: ' . ($summary['total'] ?? 0));
-            $this->line('Succès: ' . ($summary['success'] ?? 0));
-            $this->line('Erreurs: ' . ($summary['errors'] ?? 0));
+            $this->line('Total: ' . $summary['total']);
+            $this->line('Succès: ' . $summary['success']);
+            $this->line('Erreurs: ' . $summary['errors']);
         }
 
-        return ($result['success'] ?? false) ? Command::SUCCESS : Command::FAILURE;
+        return $result['success'] ? Command::SUCCESS : Command::FAILURE;
+    }
+
+    private function apiTypeToEntity(string $type): ?string
+    {
+        return match (strtolower($type)) {
+            'class' => 'breed',
+            'monster' => 'monster',
+            'spell' => 'spell',
+            'item', 'resource', 'consumable', 'equipment' => 'item',
+            default => null,
+        };
     }
 
     /**
@@ -542,15 +591,60 @@ class ScrappingCommand extends Command
             }
         }
 
-        $typeId = $this->option('typeId');
-        if ($typeId === null || $typeId === '') {
-            $typeId = $this->option('type');
+        $typeName = $this->option('type-name');
+        if ($typeName !== null && is_string($typeName) && $typeName !== '') {
+            $lang = (string) $this->option('lang', 'fr');
+            $itemTypesCatalog = app(DofusDbItemTypesCatalogService::class);
+            $typeIds = $itemTypesCatalog->resolveTypeIdsByName($typeName, $lang);
+            if ($typeIds !== []) {
+                $superTypeMapping = app(DofusDbItemSuperTypeMappingService::class);
+                $excluded = $superTypeMapping->getExcludedTypeIds();
+                $filters['typeIds'] = array_values(array_diff($typeIds, $excluded));
+            }
+        } else {
+            $typeId = $this->option('typeId');
+            if ($typeId === null || $typeId === '') {
+                $typeId = $this->option('type');
+            }
+            if ($typeId !== null && $typeId !== '') {
+                $filters['typeId'] = $typeId;
+            }
         }
-        if ($typeId !== null && $typeId !== '') {
-            $filters['typeId'] = $typeId;
+
+        $raceName = $this->option('race-name');
+        if ($raceName !== null && is_string($raceName) && $raceName !== '') {
+            $lang = (string) $this->option('lang', 'fr');
+            $monsterRacesCatalog = app(DofusDbMonsterRacesCatalogService::class);
+            $raceId = $monsterRacesCatalog->findRaceIdByName($raceName, $lang);
+            if ($raceId !== null) {
+                $filters['raceId'] = $raceId;
+            }
         }
 
         return $filters;
+    }
+
+    /**
+     * @return array{skip_cache?: bool, include_relations?: bool, force_update: bool, dry_run: bool, validate_only: bool, lang: string, exclude_from_update: list<string>, ignore_unvalidated: bool}
+     */
+    private function buildImportOptions(array $collectOptions): array
+    {
+        $excludeRaw = $this->option('exclude-from-update');
+        $excludeFromUpdate = [];
+        if (is_string($excludeRaw) && $excludeRaw !== '') {
+            $excludeFromUpdate = array_values(array_filter(array_map('trim', explode(',', $excludeRaw))));
+        }
+
+        return [
+            'skip_cache' => (bool) ($collectOptions['skip_cache'] ?? false),
+            'include_relations' => (bool) ((int) $this->option('include-relations')),
+            'force_update' => (bool) $this->option('force-update') || (bool) $this->option('replace-existing'),
+            'dry_run' => (bool) $this->option('dry-run'),
+            'validate_only' => (bool) $this->option('validate-only'),
+            'lang' => (string) $this->option('lang', 'fr'),
+            'exclude_from_update' => $excludeFromUpdate,
+            'ignore_unvalidated' => (bool) $this->option('ignore-unvalidated'),
+        ];
     }
 
     /**
@@ -573,22 +667,36 @@ class ScrappingCommand extends Command
     /**
      * @return array<string,mixed>
      */
-    private function importOne(ScrappingOrchestrator $orchestrator, string $entity, int $id, array $options): array
+    private function importOne(Orchestrator $orchestrator, string $entity, int $id, array $options): array
     {
-        $method = 'import' . ucfirst($entity);
-        if (!method_exists($orchestrator, $method)) {
+        $entityKey = $this->apiTypeToEntity($entity);
+        if ($entityKey === null) {
             return [
                 'success' => false,
                 'entity' => $entity,
                 'id' => $id,
-                'error' => "Méthode d'import introuvable: {$method}",
+                'error' => "Type non supporté: {$entity}",
             ];
         }
 
-        $res = $orchestrator->{$method}($id, $options);
-        $res['entity'] = $entity;
-        $res['id'] = $id;
-        return $res;
+        $runOptions = [
+            'integrate' => !($options['dry_run'] ?? false) && !($options['validate_only'] ?? false),
+            'dry_run' => (bool) ($options['dry_run'] ?? false),
+            'force_update' => (bool) ($options['force_update'] ?? false),
+            'lang' => (string) ($options['lang'] ?? 'fr'),
+            'exclude_from_update' => (array) ($options['exclude_from_update'] ?? []),
+            'ignore_unvalidated' => (bool) ($options['ignore_unvalidated'] ?? false),
+        ];
+        $result = $orchestrator->runOne('dofusdb', $entityKey, $id, $runOptions);
+
+        $data = $result->getIntegrationResult()?->getData();
+        return [
+            'success' => $result->isSuccess(),
+            'entity' => $entity,
+            'id' => $id,
+            'data' => $data,
+            'error' => $result->isSuccess() ? null : $result->getMessage(),
+        ];
     }
 }
 

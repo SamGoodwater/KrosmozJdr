@@ -125,12 +125,11 @@ Chaque formatter est décrit par :
 
 ## Conversion côté code (points d’entrée)
 Le point d’entrée “conversion config-driven” est :
-- `app/Services/Scrapping/Config/ConfigDrivenConverter.php`
+- Conversion pilotée par config : `App\Services\Scrapping\Core\Conversion\ConversionService` (pipeline Core).
 
 Il est utilisé par :
-- `app/Services/Scrapping/Orchestrator/ScrappingOrchestrator.php`
+- `App\Services\Scrapping\Core\Orchestrator\Orchestrator`
 
 Notes :
-- L’orchestrateur garde un fallback legacy si aucune config JSON n’existe encore pour une entité.
 - Les formatters `side_effect` doivent rester rares et explicites (principalement images).
 

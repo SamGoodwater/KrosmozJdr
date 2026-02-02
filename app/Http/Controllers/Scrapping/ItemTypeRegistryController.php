@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Scrapping;
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\Scrapping\Concerns\BulkDecisionUpdateTrait;
 use App\Models\Type\ItemType;
-use App\Services\Scrapping\Catalog\DofusDbItemTypeNameResolver;
+use App\Services\Scrapping\Catalog\DofusDbItemTypesCatalogService;
 use App\Services\Scrapping\Http\DofusDbClient;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -23,7 +23,7 @@ class ItemTypeRegistryController extends Controller
 
     public function __construct(
         private DofusDbClient $dofusDbClient,
-        private DofusDbItemTypeNameResolver $nameResolver,
+        private DofusDbItemTypesCatalogService $itemTypesCatalog,
     ) {}
 
     /**
@@ -40,7 +40,7 @@ class ItemTypeRegistryController extends Controller
 
     private function stripDofusdbSuffix(?string $name): ?string
     {
-        return $this->nameResolver->stripDofusdbSuffix($name);
+        return $this->itemTypesCatalog->stripDofusdbSuffix($name);
     }
 
     /**
@@ -86,7 +86,7 @@ class ItemTypeRegistryController extends Controller
                 continue;
             }
 
-            $resolved = $this->nameResolver->fetchName($typeId, false, 'item-types');
+            $resolved = $this->itemTypesCatalog->fetchName($typeId, 'fr', false);
             if ($resolved) {
                 $model->name = $resolved;
                 try {

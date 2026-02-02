@@ -14,6 +14,10 @@ use App\Services\Characteristic\CharacteristicService;
 use App\Services\Characteristic\EquipmentCharacteristicService;
 use App\Services\Scrapping\ConversionHandlerRegistry;
 use App\Services\Scrapping\DofusDbConversionFormulaService;
+use App\Services\Scrapping\Core\Collect\CollectService;
+use App\Services\Scrapping\Core\Config\ConfigLoader;
+use App\Services\Scrapping\Core\Orchestrator\Orchestrator;
+use App\Services\Scrapping\Http\DofusDbClient;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Vite;
 use Illuminate\Support\ServiceProvider;
@@ -29,6 +33,12 @@ class AppServiceProvider extends ServiceProvider
         $this->app->singleton(EquipmentCharacteristicService::class);
         $this->app->singleton(DofusDbConversionFormulaService::class);
         $this->app->singleton(ConversionHandlerRegistry::class);
+        $this->app->singleton(ConfigLoader::class, static fn () => ConfigLoader::default());
+        $this->app->singleton(CollectService::class, static fn () => new CollectService(
+            app(ConfigLoader::class),
+            app(DofusDbClient::class)
+        ));
+        $this->app->singleton(Orchestrator::class, static fn () => Orchestrator::default());
     }
 
     /**

@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Cache;
  * Service de lecture des caractéristiques depuis la base de données.
  *
  * Expose la même structure que config('characteristics') pour compatibilité
- * avec ValidationService, DofusDbConversionFormulas, DataConversionService.
+ * avec ValidationService V2 et DofusDbConversionFormulas.
  *
  * @see docs/50-Fonctionnalités/Characteristics-DB/PLAN_MIGRATION_CHARACTERISTICS_DB.md
  */

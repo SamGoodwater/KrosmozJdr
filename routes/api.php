@@ -153,13 +153,11 @@ Route::prefix('scrapping')->group(function () {
     Route::post('/import-with-merge', [App\Http\Controllers\Scrapping\ScrappingController::class, 'importWithMerge'])
         ->name('scrapping.import.with-merge');
 
-    // Pipeline V2 (Collect → Conversion BDD → Validation → Intégration)
-    Route::prefix('v2')->name('scrapping.v2.')->group(function () {
-        Route::post('/import/{entity}/{id}', [App\Http\Controllers\Scrapping\ScrappingV2Controller::class, 'importOne'])
-            ->name('import.one')
-            ->where('entity', 'monster|breed|spell|item|class|classe|ressource|consumable')
-            ->whereNumber('id');
-    });
+    // Pipeline générique (Collect → Conversion → Validation → Intégration)
+    Route::post('/import/{entity}/{id}', [App\Http\Controllers\Scrapping\ScrappingImportController::class, 'importOne'])
+        ->name('scrapping.import.one')
+        ->where('entity', 'monster|breed|spell|item|class|classe|ressource|consumable')
+        ->whereNumber('id');
 });
 
 /*

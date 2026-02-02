@@ -9,11 +9,11 @@ use App\Models\Entity\Monster;
 use App\Models\User;
 use App\Models\Scrapping\PendingResourceTypeItem;
 use App\Models\Type\ResourceType;
-use App\Services\Scrapping\Catalog\DofusDbItemTypeNameResolver;
-use App\Services\Scrapping\DataCollect\DataCollectService;
+use App\Services\Scrapping\Catalog\DofusDbItemTypesCatalogService;
 use App\Services\Scrapping\DataCollect\ItemEntityTypeFilterService;
 use App\Services\Scrapping\Http\DofusDbClient;
-use App\Services\Scrapping\Orchestrator\ScrappingOrchestrator;
+use App\Services\Scrapping\Core\Collect\CollectService;
+use App\Services\Scrapping\Core\Orchestrator\Orchestrator;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -42,16 +42,16 @@ class ResourceTypeRegistryController extends Controller
     }
 
     public function __construct(
-        private ScrappingOrchestrator $orchestrator,
-        private DataCollectService $collector,
+        private Orchestrator $orchestrator,
+        private CollectService $collectService,
         private ItemEntityTypeFilterService $itemEntityTypeFilters,
         private DofusDbClient $dofusDbClient,
-        private DofusDbItemTypeNameResolver $nameResolver,
+        private DofusDbItemTypesCatalogService $itemTypesCatalog,
     ) {}
 
     private function stripDofusdbSuffix(?string $name): ?string
     {
-        return $this->nameResolver->stripDofusdbSuffix($name);
+        return $this->itemTypesCatalog->stripDofusdbSuffix($name);
     }
 
     /**
@@ -70,7 +70,7 @@ class ResourceTypeRegistryController extends Controller
             ->whereNotNull('dofusdb_type_id')
             ->orderByDesc('last_seen_at');
 
-        // Sécurité UX: ne pas afficher des types hors "Ressource" (pollution possible via legacy drops/recipe).
+        // Sécurité UX: ne pas afficher des types hors "Ressource" (drops/recettes).
         // On filtre la registry sur le groupe superType Ressource.
         $resourceTypeIds = $this->itemEntityTypeFilters->getTypeIdsForGroup('resource');
         if (!empty($resourceTypeIds)) {
@@ -104,7 +104,7 @@ class ResourceTypeRegistryController extends Controller
                 continue;
             }
 
-            $resolved = $this->nameResolver->fetchName($typeId, false, 'resource-types');
+            $resolved = $this->itemTypesCatalog->fetchName($typeId, 'fr', false);
             if ($resolved) {
                 // On met à jour la base uniquement si le nom actuel est un placeholder.
                 $model->name = $resolved;
@@ -315,14 +315,13 @@ class ResourceTypeRegistryController extends Controller
             $preview = null;
             if ($withPreview) {
                 try {
-                    $raw = $this->collector->collectItem((int) $dofusdbItemId, false);
+                    $raw = $this->collectService->fetchOne('dofusdb', 'item', (int) $dofusdbItemId);
                     $preview = [
                         'id' => (int) ($raw['id'] ?? $dofusdbItemId),
                         'typeId' => isset($raw['typeId']) ? (int) $raw['typeId'] : null,
                         'name' => is_array($raw['name'] ?? null) ? ($raw['name']['fr'] ?? reset($raw['name']) ?: null) : ($raw['name'] ?? null),
                     ];
                 } catch (\Throwable) {
-                    // Pas bloquant : on affiche au moins l'ID
                     $preview = null;
                 }
             }
@@ -463,22 +462,23 @@ class ResourceTypeRegistryController extends Controller
             $itemId = (int) $row->dofusdb_item_id;
 
             if (!isset($importCache[$itemId])) {
-                $importRes = $this->orchestrator->importResource($itemId, [
-                    'include_relations' => false,
+                $result = $this->orchestrator->runOne('dofusdb', 'item', $itemId, [
+                    'integrate' => true,
                     'dry_run' => false,
                 ]);
-
                 $resourceId = null;
-                if (($importRes['success'] ?? false) === true) {
-                    // importResource retourne ['data' => $result] où $result contient 'id' (id ressource) + 'table'
-                    $resourceId = $importRes['data']['id'] ?? null;
-                    $stats['imported']++;
+                $ok = $result->isSuccess();
+                if ($ok && $result->getIntegrationResult()?->isSuccess()) {
+                    $data = $result->getIntegrationResult()->getData();
+                    if (($data['table'] ?? '') === 'resources') {
+                        $resourceId = $data['id'] ?? null;
+                        $stats['imported']++;
+                    }
                 }
-
                 $importCache[$itemId] = [
-                    'ok' => (bool) ($importRes['success'] ?? false),
+                    'ok' => $ok && $resourceId !== null,
                     'resource_id' => is_numeric($resourceId) ? (int) $resourceId : null,
-                    'error' => $importRes['error'] ?? null,
+                    'error' => $ok ? null : $result->getMessage(),
                 ];
             }
 

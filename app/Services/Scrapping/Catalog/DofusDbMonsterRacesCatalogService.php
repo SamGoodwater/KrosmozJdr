@@ -108,6 +108,20 @@ class DofusDbMonsterRacesCatalogService
     }
 
     /**
+     * Résout un raceId DofusDB vers un nom (via le catalogue).
+     */
+    public function fetchName(int $raceId, string $lang = 'fr', bool $skipCache = false): ?string
+    {
+        $raceId = (int) $raceId;
+        if ($raceId === 0) {
+            return null;
+        }
+        $map = $this->mapNames($lang, $skipCache);
+
+        return $map[$raceId] ?? null;
+    }
+
+    /**
      * Résout un nom de race (ou slug) vers l'ID DofusDB.
      * Comparaison insensible à la casse et aux espaces.
      *

@@ -2,7 +2,7 @@
   "version": 2,
   "source": "dofusdb",
   "key": "item-super-types",
-  "description": "DÉPRÉCIÉ : la source de vérité est resources/scrapping/v2/sources/dofusdb/item-super-types.json. Ne pas modifier ce fichier.",
+  "description": "DÉPRÉCIÉ : la source de vérité est resources/scrapping/config/sources/dofusdb/item-super-types.json. Ne pas modifier ce fichier.",
   "excludedTypeIds": [219, 245, 246, 247, 248, 249, 250, 251, 252, 304, 314, 324, 325],
   "excludedTypeIdsNotes": {
     "219": "Ressource des Songes",

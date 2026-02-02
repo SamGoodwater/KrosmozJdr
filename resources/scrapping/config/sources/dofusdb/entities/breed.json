@@ -1,0 +1,78 @@
+{
+  "version": 1,
+  "source": "dofusdb",
+  "entity": "breed",
+  "label": "Classes",
+  "meta": {
+    "notes": "DofusDB breeds (classes) : pas de level, life ni attributs. On mappe : id, name, description, shortDescription, specificity, img (illustrations). Sorts liés via spell-levels (breedId) ; rôles selon API. Voir https://dofusdb.fr/fr/database/breeds/"
+  },
+  "endpoints": {
+    "fetchOne": {
+      "pathTemplate": "/breeds/{id}",
+      "method": "GET",
+      "queryDefaults": { "lang": "{lang}" }
+    },
+    "fetchMany": {
+      "path": "/breeds",
+      "method": "GET",
+      "queryDefaults": { "lang": "{lang}", "$limit": 50, "$skip": 0 }
+    }
+  },
+  "filters": {
+    "supported": [
+      { "key": "id", "type": "number" },
+      { "key": "idMin", "type": "number" },
+      { "key": "idMax", "type": "number" },
+      { "key": "name", "type": "string" }
+    ]
+  },
+  "target": {
+    "krosmozEntity": "breed",
+    "primaryKey": { "sourceField": "id", "targetField": "dofusdb_id" },
+    "autoUpdateField": "auto_update"
+  },
+  "mapping": [
+    {
+      "key": "dofusdb_id",
+      "from": { "path": "id" },
+      "to": [{ "model": "classes", "field": "dofusdb_id" }],
+      "formatters": [{ "name": "toString", "args": {} }]
+    },
+    {
+      "key": "name",
+      "from": { "path": "name", "langAware": true },
+      "to": [{ "model": "classes", "field": "name" }],
+      "formatters": [{ "name": "pickLang", "args": { "lang": "{lang}", "fallback": "fr" } }]
+    },
+    {
+      "key": "description",
+      "from": { "path": "description", "langAware": true },
+      "to": [{ "model": "classes", "field": "description" }],
+      "formatters": [{ "name": "pickLang", "args": { "lang": "{lang}", "fallback": "fr" } }]
+    },
+    {
+      "key": "description_fast",
+      "from": { "path": "shortDescription", "langAware": true },
+      "to": [{ "model": "classes", "field": "description_fast" }],
+      "formatters": [
+        { "name": "pickLang", "args": { "lang": "{lang}", "fallback": "fr" } },
+        { "name": "truncate", "args": { "max": 255 } }
+      ]
+    },
+    {
+      "key": "specificity",
+      "from": { "path": "specificity", "langAware": true },
+      "to": [{ "model": "classes", "field": "specificity" }],
+      "formatters": [
+        { "name": "pickLang", "args": { "lang": "{lang}", "fallback": "fr" } },
+        { "name": "truncate", "args": { "max": 255 } }
+      ]
+    },
+    {
+      "key": "image",
+      "from": { "path": "img" },
+      "to": [{ "model": "classes", "field": "image" }],
+      "formatters": [{ "name": "storeScrappedImage", "args": { "entityFolder": "classes", "idPath": "id" } }]
+    }
+  ]
+}

@@ -9,33 +9,50 @@ use App\Models\Entity\Creature;
 use App\Models\Entity\Monster;
 use App\Models\Entity\Resource;
 use App\Models\Entity\Item;
-use App\Services\Scrapping\Orchestrator\ScrappingOrchestrator;
+use App\Services\Scrapping\Core\Orchestrator\Orchestrator;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Http;
 use Tests\TestCase;
 use Tests\CreatesSystemUser;
 
 /**
- * Tests d'intégration pour vérifier que les relations sont bien importées lors du scrapping
- * 
+ * Tests d'intégration pour vérifier que les relations sont bien importées lors du scrapping.
+ *
  * @package Tests\Feature\Scrapping
  */
 class ScrappingRelationsTest extends TestCase
 {
     use RefreshDatabase, CreatesSystemUser;
 
-    private ScrappingOrchestrator $orchestrator;
+    private Orchestrator $orchestrator;
     private User $user;
 
     protected function setUp(): void
     {
         parent::setUp();
-        
-        // Créer l'utilisateur système pour les imports automatiques
         $this->createSystemUser();
-        
         $this->user = User::factory()->create();
-        $this->orchestrator = app(ScrappingOrchestrator::class);
+        $this->orchestrator = app(Orchestrator::class);
+    }
+
+    /** Convertit un résultat V2 en tableau (success, data) pour les assertions. */
+    private function resultToArray($result): array
+    {
+        $data = $result->getIntegrationResult()?->getData();
+        return [
+            'success' => $result->isSuccess(),
+            'data' => $data ?? [],
+            'message' => $result->getMessage(),
+        ];
+    }
+
+    private function pipelineOptions(array $opts = []): array
+    {
+        return [
+            'integrate' => !($opts['dry_run'] ?? false) && !($opts['validate_only'] ?? false),
+            'dry_run' => (bool) ($opts['dry_run'] ?? false),
+            'force_update' => (bool) ($opts['force_update'] ?? false),
+        ];
     }
 
     /**
@@ -45,17 +62,24 @@ class ScrappingRelationsTest extends TestCase
      */
     public function test_import_class_with_spells_creates_relations(): void
     {
-        // Cette classe doit avoir des sorts dans DofusDB
-        $dofusdbId = 1; // Iop - devrait avoir des sorts
-        
-        $result = $this->orchestrator->importClass($dofusdbId, [
-            'include_relations' => true,
-        ]);
+        $dofusdbId = 1;
+        $mockBreed = [
+            'id' => 1,
+            'name' => ['fr' => 'Iop'],
+            'description' => ['fr' => 'Description courte Iop'],
+            'life' => 50,
+            'life_dice' => '1d6',
+            'specificity' => 'Force',
+        ];
+        Http::fake(['api.dofusdb.fr/breeds/1*' => Http::response($mockBreed, 200)]);
+
+        $r = $this->orchestrator->runOne('dofusdb', 'breed', $dofusdbId, $this->pipelineOptions());
+        $result = $this->resultToArray($r);
 
         $this->assertIsArray($result);
+        $this->assertTrue($result['success'], $result['message'] ?? '');
         $this->assertArrayHasKey('data', $result);
         $this->assertArrayHasKey('id', $result['data']);
-        $this->assertArrayHasKey('action', $result['data']);
 
         $classe = Classe::find($result['data']['id']);
         $this->assertNotNull($classe);
@@ -141,15 +165,27 @@ class ScrappingRelationsTest extends TestCase
             return Http::response([], 404);
         });
         
-        $result = $this->orchestrator->importMonster($dofusdbId, [
-            'include_relations' => true,
+        $r = $this->orchestrator->runOneWithRaw('dofusdb', 'monster', $monsterData, [
+            'convert' => true,
+            'validate' => true,
+            'integrate' => true,
         ]);
+        if (!$r->isSuccess()) {
+            $this->fail('Import monster V2 échoué: ' . $r->getMessage());
+        }
+        $creatureId = $r->getIntegrationResult()?->getCreatureId();
+        $monsterId = $r->getIntegrationResult()?->getMonsterId();
+        $relationOut = app(\App\Services\Scrapping\Core\Relation\RelationResolutionService::class)
+            ->resolveAndSyncMonsterRelations($monsterData, $creatureId, ['integrate' => true, 'dry_run' => false]);
+        $result = [
+            'success' => true,
+            'data' => ['creature_id' => $creatureId, 'monster_id' => $monsterId],
+        ];
 
         $this->assertIsArray($result);
         $this->assertTrue($result['success']);
         $this->assertArrayHasKey('data', $result);
-        
-        // La structure de retour de integrateMonster contient creature_id et monster_id directement dans data
+
         $monsterData = $result['data'];
         $this->assertArrayHasKey('creature_id', $monsterData);
         $this->assertArrayHasKey('monster_id', $monsterData);
@@ -179,14 +215,12 @@ class ScrappingRelationsTest extends TestCase
      */
     public function test_import_item_with_recipe_creates_item_resource_relations(): void
     {
-        // Un item qui devrait avoir une recette
-        $dofusdbId = 100; // Exemple d'item avec recette
-        
-        $result = $this->orchestrator->importItem($dofusdbId, [
-            'include_relations' => true,
-        ]);
+        $dofusdbId = 100;
+        $r = $this->orchestrator->runOne('dofusdb', 'item', $dofusdbId, $this->pipelineOptions());
+        $result = $this->resultToArray($r);
 
         $this->assertIsArray($result);
+        $this->assertTrue($result['success'], $result['message'] ?? '');
         $this->assertArrayHasKey('data', $result);
         $this->assertArrayHasKey('id', $result['data']);
 
@@ -203,30 +237,68 @@ class ScrappingRelationsTest extends TestCase
     }
 
     /**
-     * Test que l'import d'un sort d'invocation avec include_relations crée la relation spell_invocation
+     * Test que l'import d'un sort d'invocation avec include_relations crée la relation spell_invocation.
+     * Utilise des mocks HTTP pour le sort 201 et le monstre invoqué.
      */
     public function test_import_invocation_spell_creates_spell_invocation_relation(): void
     {
-        // Un sort d'invocation (par exemple, invocation de Bouftou)
-        $dofusdbId = 201; // Exemple de sort d'invocation
-        
-        $result = $this->orchestrator->importSpell($dofusdbId, [
-            'include_relations' => true,
-        ]);
+        $dofusdbId = 201;
+
+        $spellData = [
+            'data' => [
+                [
+                    'id' => 201,
+                    'name' => ['fr' => 'Invocation Bouftou'],
+                    'description' => ['fr' => 'Invoque un Bouftou'],
+                    'spellLevels' => [1],
+                    'summon' => ['id' => 31, 'name' => ['fr' => 'Bouftou']],
+                ],
+            ],
+        ];
+
+        $levelsList = ['data' => []];
+
+        $monsterData = [
+            'id' => 31,
+            'name' => ['fr' => 'Bouftou'],
+            'description' => ['fr' => 'Description'],
+            'life' => 50,
+            'pa' => 3,
+            'pm' => 3,
+            'spells' => [],
+            'drops' => [],
+        ];
+
+        Http::fake(function ($request) use ($spellData, $levelsList, $monsterData) {
+            $url = $request->url();
+            if (str_contains($url, '/spells')) {
+                return Http::response($spellData, 200);
+            }
+            if (str_contains($url, '/spell-levels')) {
+                return Http::response($levelsList, 200);
+            }
+            if (str_contains($url, '/monsters/31')) {
+                return Http::response($monsterData, 200);
+            }
+            return Http::response([], 404);
+        });
+
+        $r = $this->orchestrator->runOne('dofusdb', 'spell', $dofusdbId, $this->pipelineOptions());
+        $result = $this->resultToArray($r);
 
         $this->assertIsArray($result);
+        $this->assertTrue($result['success'], $result['message'] ?? 'Import spell a échoué');
         $this->assertArrayHasKey('data', $result);
         $this->assertArrayHasKey('id', $result['data']);
 
         $spell = Spell::find($result['data']['id']);
-        if ($spell) {
-            // Vérifier les relations avec les monstres invoqués
-            $monstersCount = $spell->monsters()->count();
-            if ($monstersCount > 0) {
-                $this->assertDatabaseHas('spell_invocation', [
-                    'spell_id' => $spell->id,
-                ]);
-            }
+        $this->assertNotNull($spell);
+
+        $monstersCount = $spell->monsters()->count();
+        if ($monstersCount > 0) {
+            $this->assertDatabaseHas('spell_invocation', [
+                'spell_id' => $spell->id,
+            ]);
         }
     }
 
@@ -235,14 +307,22 @@ class ScrappingRelationsTest extends TestCase
      */
     public function test_import_without_relations_does_not_create_pivot_entries(): void
     {
-        $dofusdbId = 1; // Iop
-        
-        // Import sans relations
-        $result = $this->orchestrator->importClass($dofusdbId, [
-            'include_relations' => false,
-        ]);
+        $dofusdbId = 1;
+        $mockBreed = [
+            'id' => 1,
+            'name' => ['fr' => 'Iop'],
+            'description' => ['fr' => 'Description courte'],
+            'life' => 50,
+            'life_dice' => '1d6',
+            'specificity' => 'Force',
+        ];
+        Http::fake(['api.dofusdb.fr/breeds/1*' => Http::response($mockBreed, 200)]);
+
+        $r = $this->orchestrator->runOne('dofusdb', 'breed', $dofusdbId, $this->pipelineOptions());
+        $result = $this->resultToArray($r);
 
         $this->assertIsArray($result);
+        $this->assertTrue($result['success'], $result['message'] ?? '');
         $this->assertArrayHasKey('data', $result);
         $this->assertArrayHasKey('id', $result['data']);
 

@@ -12,11 +12,11 @@ use App\Models\Entity\Resource;
 use App\Models\Entity\Spell;
 use App\Models\Type\ConsumableType;
 use App\Models\Type\ItemType;
-use App\Services\Scrapping\Catalog\DofusDbMonsterRaceNameResolver;
+use App\Services\Scrapping\Catalog\DofusDbMonsterRacesCatalogService;
 use App\Models\Type\ResourceType;
-use App\Services\Scrapping\Config\ScrappingConfigLoader;
 use App\Services\Scrapping\Constants\EntityLimits;
-use App\Services\Scrapping\DataCollect\ConfigDrivenDofusDbCollector;
+use App\Services\Scrapping\Core\Collect\CollectService;
+use App\Services\Scrapping\Core\Config\ConfigLoader;
 use App\Services\Scrapping\DataCollect\ItemEntityTypeFilterService;
 use App\Services\Scrapping\DataCollect\MonsterRaceFilterService;
 use App\Services\Scrapping\Registry\TypeRegistryBatchTouchService;
@@ -34,21 +34,24 @@ use Illuminate\Http\Request;
 class ScrappingSearchController extends Controller
 {
     public function __construct(
-        private ScrappingConfigLoader $configLoader,
-        private ConfigDrivenDofusDbCollector $collector,
+        private ConfigLoader $configLoader,
+        private CollectService $collectService,
         private ItemEntityTypeFilterService $itemEntityTypeFilters,
         private MonsterRaceFilterService $monsterRaceFilters,
         private TypeRegistryBatchTouchService $typeRegistryBatchTouch,
-        private DofusDbMonsterRaceNameResolver $monsterRaceNameResolver,
+        private DofusDbMonsterRacesCatalogService $monsterRacesCatalog,
     ) {}
 
     public function search(Request $request, string $entity): JsonResponse
     {
-        // Source unique pour l'instant (refonte progressive)
         $source = 'dofusdb';
 
-        // 404 si l'entité n'existe pas en config (évite les appels arbitraires)
+        // Liste des entités depuis Core (config/) + alias « class » pour breed
         $available = $this->configLoader->listEntities($source);
+        if (in_array('breed', $available, true)) {
+            $available[] = 'class';
+            sort($available);
+        }
         if (!in_array($entity, $available, true)) {
             return response()->json([
                 'success' => false,
@@ -69,7 +72,7 @@ class ScrappingSearchController extends Controller
 
         $options = $this->extractOptions($request, $entity);
 
-        $result = $this->collector->fetchManyResult($entity, $filters, $options);
+        $result = $this->collectService->fetchManyResult('dofusdb', $entity, $filters, $options);
         $items = $this->withExistsFlag($entity, $result['items']);
         $items = $this->withTypeLabelsAndRegistry($entity, $items);
         $items = $this->withMonsterRaceLabel($entity, $items);
@@ -359,7 +362,7 @@ class ScrappingSearchController extends Controller
             $items[$i]['raceId'] = $raceId;
 
             try {
-                $name = $this->monsterRaceNameResolver->fetchName($raceId, $lang, false);
+                $name = $this->monsterRacesCatalog->fetchName($raceId, $lang, false);
                 $items[$i]['raceName'] = $name ?: null;
                 // registry local (validation via `state`)
                 \App\Models\Type\MonsterRace::touchDofusdbRace($raceId, $name ?: null);

@@ -133,5 +133,5 @@ Certaines entités sont déclarées pour collect/search/import mais leur mapping
 - `panoply` → `panoplies.dofusdb_id`
 - `effect` → `effects.dofusdb_id`
 
-> Prochaine étape de refonte : compléter ces mappings dans les configs JSON, puis enrichir ce document.
+> Évolution possible : compléter ces mappings dans les configs JSON, puis enrichir ce document.
 

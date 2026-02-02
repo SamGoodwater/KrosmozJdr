@@ -26,18 +26,17 @@ class ScrappingControllerTest extends TestCase
     }
 
     /**
-     * Test de l'endpoint POST /api/scrapping/import/class/{id}
+     * Test de l'endpoint POST /api/scrapping/import/class/{id} (pipeline).
      */
     public function test_import_class_endpoint_succeeds(): void
     {
         $mockData = [
             'id' => 1,
-            'description' => [
-                'fr' => 'Description de la classe Iop'
-            ],
+            'name' => ['fr' => 'Iop'],
+            'description' => ['fr' => 'Description de la classe Iop'],
             'life' => 50,
             'life_dice' => '1d6',
-            'specificity' => 'Force'
+            'specificity' => 'Force',
         ];
 
         Http::fake([
@@ -54,11 +53,10 @@ class ScrappingControllerTest extends TestCase
                 'success',
                 'message',
                 'data',
-                'timestamp'
+                'timestamp',
             ]);
 
-        // Vérifier que la classe a été créée
-        $class = Classe::where('name', 'like', '%Iop%')->orWhere('name', 'like', '%Classe%')->first();
+        $class = Classe::where('name', 'Iop')->orWhere('dofusdb_id', '1')->first();
         $this->assertNotNull($class);
     }
 
@@ -153,33 +151,23 @@ class ScrappingControllerTest extends TestCase
     }
 
     /**
-     * Test de l'endpoint POST /api/scrapping/import/spell/{id}
+     * Test de l'endpoint POST /api/scrapping/import/spell/{id} (pipeline).
+     * fetchOne GET /spells/{id} attend un objet unique.
      */
     public function test_import_spell_endpoint_succeeds(): void
     {
-        $spellList = [
-            'data' => [
-                [
-                    'id' => 201,
-                    'name' => ['fr' => 'Béco du Tofu'],
-                    'description' => ['fr' => 'Description'],
-                    'cost' => 3,
-                    'range' => 1,
-                    'area' => 1
-                ]
+        $spellObject = [
+            'id' => 201,
+            'name' => ['fr' => 'Béco du Tofu'],
+            'description' => ['fr' => 'Description du sort'],
+            'img' => null,
+            'levels' => [
+                ['apCost' => 3, 'range' => 1, 'maxCastPerTurn' => 2],
             ],
-            'total' => 1,
-            'limit' => 100,
-            'skip' => 0
-        ];
-
-        $levelsList = [
-            'data' => []
         ];
 
         Http::fake([
-            'api.dofusdb.fr/spells*' => Http::response($spellList, 200),
-            'api.dofusdb.fr/spell-levels*' => Http::response($levelsList, 200),
+            'api.dofusdb.fr/spells/201*' => Http::response($spellObject, 200),
         ]);
 
         $response = $this->postJson('/api/scrapping/import/spell/201');
@@ -187,6 +175,12 @@ class ScrappingControllerTest extends TestCase
         $response->assertStatus(201)
             ->assertJson([
                 'success' => true,
+            ])
+            ->assertJsonStructure([
+                'success',
+                'message',
+                'data',
+                'timestamp',
             ]);
     }
 

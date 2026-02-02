@@ -1,7 +1,7 @@
 # Scrapping — Mapping & conversion (DofusDB → KrosmozJDR)
 
 ### Objectif
-Cette section documente **ce qui compte pour la refonte** : le **mapping** et les **fonctions de conversion (formatters)**.
+Cette section documente le **mapping** et les **fonctions de conversion (formatters)** du scrapping.
 
 Le pipeline complet reste le même, mais la source de vérité est désormais **config-driven** (JSON) :
 
@@ -35,8 +35,8 @@ KrosmozJDR
 - **API DofusDB (collect)** : `Data-collect/API.md`
 - **API interne (UI/CLI)** : `Orchestrateur/API.md`
 
-### Refonte
-- **[Refonte/](Refonte/)** — Idées, audit et documentation pour la refonte complète du scrapping (remplacement de l'ancienne fonctionnalité).
+### Architecture
+- **[Architecture/](Architecture/)** — Documentation de l’architecture scrapping (config-driven, pipeline).
 
 ### UI (admin)
 - Page : `/scrapping`

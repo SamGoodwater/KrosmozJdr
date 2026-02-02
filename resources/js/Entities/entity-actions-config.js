@@ -223,9 +223,47 @@ export const ENTITY_ACTIONS_CONFIG = Object.freeze({
     },
   },
 
-  // Autres entités peuvent avoir des actions spécifiques
-  // spell: { ... },
-  // item: { ... },
+  /** Sorts : Rafraîchir utilise le pipeline V2. */
+  spells: {
+    refresh: {
+      key: "refresh",
+      label: "Rafraîchir",
+      tooltip: "Rafraîchir les données depuis DofusDB (pipeline V2)",
+      icon: "fa-solid fa-arrow-rotate-right",
+      permission: "canManage",
+      requiresEntity: true,
+      group: "tools",
+      badge: "V2",
+    },
+  },
+
+  /** Classes : Rafraîchir utilise le pipeline V2. */
+  classes: {
+    refresh: {
+      key: "refresh",
+      label: "Rafraîchir",
+      tooltip: "Rafraîchir les données depuis DofusDB (pipeline V2)",
+      icon: "fa-solid fa-arrow-rotate-right",
+      permission: "canManage",
+      requiresEntity: true,
+      group: "tools",
+      badge: "V2",
+    },
+  },
+
+  /** Items : Rafraîchir utilise le pipeline V2. */
+  items: {
+    refresh: {
+      key: "refresh",
+      label: "Rafraîchir",
+      tooltip: "Rafraîchir les données depuis DofusDB (pipeline V2)",
+      icon: "fa-solid fa-arrow-rotate-right",
+      permission: "canManage",
+      requiresEntity: true,
+      group: "tools",
+      badge: "V2",
+    },
+  },
 });
 
 /**

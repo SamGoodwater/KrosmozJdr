@@ -230,6 +230,45 @@ class DofusDbItemTypesCatalogService
     }
 
     /**
+     * Retire le suffixe « (DofusDB) » d'un libellé.
+     */
+    public function stripDofusdbSuffix(?string $name): ?string
+    {
+        if (!$name) {
+            return $name;
+        }
+        $n = trim($name);
+        if (str_ends_with($n, ' (DofusDB)')) {
+            $n = trim(substr($n, 0, -strlen(' (DofusDB)')));
+        }
+
+        return $n;
+    }
+
+    /**
+     * Résout un typeId DofusDB vers un nom (via le catalogue).
+     */
+    public function fetchName(int $typeId, string $lang = 'fr', bool $skipCache = false): ?string
+    {
+        if ($typeId <= 0) {
+            return null;
+        }
+        $catalog = $this->getCatalog($lang, $skipCache);
+        foreach ($catalog['superTypes'] ?? [] as $st) {
+            foreach ($st['types'] ?? [] as $t) {
+                $tid = is_array($t) && isset($t['id']) ? (int) $t['id'] : 0;
+                if ($tid === $typeId) {
+                    $name = $t['name'] ?? null;
+
+                    return is_string($name) ? $this->stripDofusdbSuffix($name) : null;
+                }
+            }
+        }
+
+        return null;
+    }
+
+    /**
      * Résout un nom (type d'objet ou superType/catégorie) vers la liste des typeIds.
      * Si le nom correspond à un superType (ex. "Ressource"), retourne tous les typeIds de ce superType.
      * Sinon cherche un type dont le nom correspond et retourne [typeId].

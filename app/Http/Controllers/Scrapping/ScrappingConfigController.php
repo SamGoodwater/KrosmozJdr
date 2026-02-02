@@ -3,32 +3,36 @@
 namespace App\Http\Controllers\Scrapping;
 
 use App\Http\Controllers\Controller;
-use App\Services\Scrapping\Config\ScrappingConfigLoader;
+use App\Services\Scrapping\Core\Config\ConfigLoader;
 use Illuminate\Http\JsonResponse;
 
 /**
  * Expose les configs de scrapping (sources + entités) pour l'UI.
  *
- * @description
- * Fournit un endpoint JSON consumable par la Section Scrapping (page/modal),
- * sans créer un second système : c'est une couche "meta" au-dessus de la refonte.
+ * Utilise le Core ConfigLoader (resources/scrapping/config/) comme source unique.
  */
 class ScrappingConfigController extends Controller
 {
-    public function __construct(private ScrappingConfigLoader $loader) {}
+    private const ENTITY_ALIASES = ['class' => 'breed'];
+
+    public function __construct(private ConfigLoader $loader) {}
 
     public function index(): JsonResponse
     {
-        // Pour l'instant on expose uniquement dofusdb (refonte progressive).
         $source = $this->loader->loadSource('dofusdb');
         $entities = $this->loader->listEntities('dofusdb');
+        if (in_array('breed', $entities, true)) {
+            $entities[] = 'class';
+            sort($entities);
+        }
 
         $entityConfigs = [];
         foreach ($entities as $entity) {
-            $cfg = $this->loader->loadEntity('dofusdb', $entity);
+            $configEntity = self::ENTITY_ALIASES[$entity] ?? $entity;
+            $cfg = $this->loader->loadEntity('dofusdb', $configEntity);
             $entityConfigs[] = [
-                'entity' => $cfg['entity'],
-                'label' => $cfg['label'] ?? ucfirst((string) $cfg['entity']),
+                'entity' => $entity,
+                'label' => $cfg['label'] ?? ucfirst((string) $entity),
                 'meta' => $cfg['meta'] ?? new \stdClass(),
                 'filters' => $cfg['filters'] ?? new \stdClass(),
                 'relations' => array_keys((array) ($cfg['relations'] ?? [])),

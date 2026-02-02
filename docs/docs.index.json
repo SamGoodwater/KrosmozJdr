@@ -1120,43 +1120,43 @@
     "description": "Cette section documente **ce qui compte pour la refonte** : le **mapping** et les **fonctions de conversion (formatters)**."
   },
   {
-    "path": "50-Fonctionnalités/Scrapping/Refonte/AUDIT_ETAT_DES_LIEUX.md",
+    "path": "50-Fonctionnalités/Scrapping/Architecture/AUDIT_ETAT_DES_LIEUX.md",
     "title": "Audit — État des lieux du scrapping KrosmozJDR",
     "description": "Document d’audit réalisé pour préparer la refonte du scrapping. Il décrit où se trouve le code, comment il est utilisé, et quels sont les couplages et points de complexité."
   },
   {
-    "path": "50-Fonctionnalités/Scrapping/Refonte/CONVERSION_FORMULAS_PLACEMENT.md",
+    "path": "50-Fonctionnalités/Scrapping/Architecture/CONVERSION_FORMULAS_PLACEMENT.md",
     "title": "Où placer les formules de conversion DofusDB → KrosmozJDR",
     "description": "- **`config/characteristics.php`** définit les **valeurs limites** (min/max) et les **formules de génération** (ex. `[vitality] * 7` pour la vie) utilisées pour la **validation** et la **génération** de données KrosmozJDR."
   },
   {
-    "path": "50-Fonctionnalités/Scrapping/Refonte/DECISION_BONUS_EFFECTS_STOCKAGE.md",
+    "path": "50-Fonctionnalités/Scrapping/Architecture/DECISION_BONUS_EFFECTS_STOCKAGE.md",
     "title": "Décision : stockage des bonus / effets d’équipement",
     "description": "Ce document compare **garder le bonus en JSON** (état actuel) et **passer à une table ou un système plus robuste** (type DofusDB), pour les caractéristiques / bonus que peuvent apporter les équipements (et panoplies). Il vise à trancher pour la refonte du scrapping et l’évolution du modèle de données."
   },
   {
-    "path": "50-Fonctionnalités/Scrapping/Refonte/DECOUVERTE_API_DOFUSDB.md",
+    "path": "50-Fonctionnalités/Scrapping/Architecture/DECOUVERTE_API_DOFUSDB.md",
     "title": "Découverte API DofusDB — Refonte scrapping",
     "description": "Ce document consolide les informations sur l’API DofusDB nécessaires pour la refonte : endpoints, paramètres, **structure des réponses** (déduite des configs et de la doc existante), pagination et filtres. Il sert de référence pour les configs « requêtes » et « mapping »."
   },
   {
-    "path": "50-Fonctionnalités/Scrapping/Refonte/ITEM_TYPES_REFERENCE.md",
+    "path": "50-Fonctionnalités/Scrapping/Architecture/ITEM_TYPES_REFERENCE.md",
     "title": "Référence item-types DofusDB",
     "description": "Ce document décrit comment les **232 item-types** de l’API DofusDB sont pris en compte dans la config KrosmozJDR."
   },
   {
-    "path": "50-Fonctionnalités/Scrapping/Refonte/README.md",
+    "path": "50-Fonctionnalités/Scrapping/Architecture/README.md",
     "title": "Refonte du scrapping KrosmozJDR",
     "description": "Ce dossier centralise les idées, l’audit et la documentation de la refonte de la fonctionnalité scrapping. L’objectif est de **remplacer entièrement** l’ancienne implémentation par une version plus simple, modulaire et maintenable."
   },
   {
-    "path": "50-Fonctionnalités/Scrapping/Refonte/SCHEMA_CONFIG_V2.md",
-    "title": "Schéma des configs V2 — Refonte scrapping",
-    "description": "Ce document décrit la structure des fichiers de configuration pour la refonte (V2) : **source**, **requêtes** (endpoints, pagination, filtres) et **mapping** (propriété DofusDB → KrosmozJDR + formatter). Une entité pilote (**monster**) est définie dans `resources/scrapping/v2/sources/dofusdb/`."
+    "path": "50-Fonctionnalités/Scrapping/Architecture/SCHEMA_CONFIG.md",
+    "title": "Schéma des configs — Scrapping",
+    "description": "Ce document décrit la structure des fichiers de configuration : **source**, **requêtes** (endpoints, pagination, filtres) et **mapping** (propriété DofusDB → KrosmozJDR + formatter). Une entité pilote (**monster**) est définie dans `resources/scrapping/config/sources/dofusdb/`."
   },
   {
-    "path": "50-Fonctionnalités/Scrapping/Refonte/VISION_ET_ARCHITECTURE.md",
-    "title": "Refonte scrapping — Vision et architecture cible",
+    "path": "50-Fonctionnalités/Scrapping/Architecture/VISION_ET_ARCHITECTURE.md",
+    "title": "Scrapping — Vision et architecture cible",
     "description": "Ce document résume la vision de la refonte, les points importants, l’architecture cible et les questions / difficultés anticipées. Il complète l’[audit (AUDIT_ETAT_DES_LIEUX.md)](./AUDIT_ETAT_DES_LIEUX.md)."
   },
   {

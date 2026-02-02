@@ -113,6 +113,6 @@ Utilisé pour la registry “resource types” (superTypeId=9) et la détection 
 Dans le code, la collecte DofusDB est centralisée ici :
 - `app/Services/Scrapping/Http/DofusDbClient.php` : cache/retry/timeout
 - `app/Services/Scrapping/DataCollect/ConfigDrivenDofusDbCollector.php` : fetchOne/fetchMany paginé piloté par JSON
-- `app/Services/Scrapping/DataCollect/DataCollectService.php` : façade legacy + fallback
+- `app/Services/Scrapping/DataCollect/DataCollectService.php` : collecte (CollectService)
 - `GET /api/scrapping/search/{entity}` : endpoint UI “collect-only” (pagination + filtres)
 
