@@ -1,0 +1,202 @@
+{
+  "version": 1,
+  "source": "dofusdb",
+  "entity": "monster",
+  "label": "Monstres",
+  "meta": {
+    "maxId": 8336,
+    "totalCount": 5093,
+    "pagination": { "pageSize": 50 }
+  },
+  "endpoints": {
+    "fetchOne": {
+      "pathTemplate": "/monsters/{id}",
+      "method": "GET",
+      "queryDefaults": { "lang": "{lang}" }
+    },
+    "fetchMany": {
+      "path": "/monsters",
+      "method": "GET",
+      "queryDefaults": { "lang": "{lang}", "$limit": 50, "$skip": 0 }
+    }
+  },
+  "filters": {
+    "supported": [
+      { "key": "id", "type": "number" },
+      { "key": "idMin", "type": "number" },
+      { "key": "idMax", "type": "number" },
+      { "key": "ids", "type": "number[]", "max": 500 },
+      { "key": "name", "type": "string" },
+      { "key": "raceId", "type": "number" },
+      { "key": "raceIds", "type": "number[]", "max": 5000 },
+      { "key": "levelMin", "type": "number" },
+      { "key": "levelMax", "type": "number" }
+    ]
+  },
+  "target": {
+    "krosmozEntity": "monster",
+    "primaryKey": { "sourceField": "id", "targetField": "dofusdb_id" },
+    "autoUpdateField": "auto_update"
+  },
+  "resistanceBatch": true,
+  "mapping": [
+    {
+      "key": "dofusdb_id",
+      "from": { "path": "id" },
+      "to": [{ "model": "monsters", "field": "dofusdb_id" }],
+      "formatters": [{ "name": "toString", "args": {} }]
+    },
+    {
+      "key": "name",
+      "from": { "path": "name", "langAware": true },
+      "to": [{ "model": "creatures", "field": "name" }],
+      "formatters": [{ "name": "pickLang", "args": { "lang": "{lang}", "fallback": "fr" } }]
+    },
+    {
+      "key": "description",
+      "from": { "path": "description", "langAware": true },
+      "to": [{ "model": "creatures", "field": "description" }],
+      "formatters": [{ "name": "pickLang", "args": { "lang": "{lang}", "fallback": "fr" } }]
+    },
+    {
+      "key": "level",
+      "from": { "path": "grades.0.level" },
+      "to": [{ "model": "creatures", "field": "level" }],
+      "formatters": [{ "name": "dofusdb_level", "args": {} }]
+    },
+    {
+      "key": "life",
+      "from": { "path": "grades.0.lifePoints" },
+      "to": [{ "model": "creatures", "field": "life" }],
+      "formatters": [{ "name": "dofusdb_life", "args": { "levelPath": "grades.0.level" } }]
+    },
+    {
+      "key": "strength",
+      "from": { "path": "grades.0.strength" },
+      "to": [{ "model": "creatures", "field": "strength" }],
+      "formatters": [{ "name": "dofusdb_attribute", "args": { "characteristicId": "strength" } }]
+    },
+    {
+      "key": "intelligence",
+      "from": { "path": "grades.0.intelligence" },
+      "to": [{ "model": "creatures", "field": "intelligence" }],
+      "formatters": [{ "name": "dofusdb_attribute", "args": { "characteristicId": "intelligence" } }]
+    },
+    {
+      "key": "agility",
+      "from": { "path": "grades.0.agility" },
+      "to": [{ "model": "creatures", "field": "agility" }],
+      "formatters": [{ "name": "dofusdb_attribute", "args": { "characteristicId": "agility" } }]
+    },
+    {
+      "key": "wisdom",
+      "from": { "path": "grades.0.wisdom" },
+      "to": [{ "model": "creatures", "field": "wisdom" }],
+      "formatters": [
+        { "name": "toInt", "args": {} },
+        { "name": "clampInt", "args": { "min": 0, "max": 1000 } }
+      ]
+    },
+    {
+      "key": "chance",
+      "from": { "path": "grades.0.chance" },
+      "to": [{ "model": "creatures", "field": "chance" }],
+      "formatters": [{ "name": "dofusdb_attribute", "args": { "characteristicId": "chance" } }]
+    },
+    {
+      "key": "pa",
+      "from": { "path": "grades.0.actionPoints" },
+      "to": [{ "model": "creatures", "field": "pa" }],
+      "formatters": [
+        { "name": "toInt", "args": {} },
+        { "name": "clampInt", "args": { "min": 0, "max": 20 } }
+      ]
+    },
+    {
+      "key": "pm",
+      "from": { "path": "grades.0.movementPoints" },
+      "to": [{ "model": "creatures", "field": "pm" }],
+      "formatters": [
+        { "name": "toInt", "args": {} },
+        { "name": "clampInt", "args": { "min": 0, "max": 20 } }
+      ]
+    },
+    {
+      "key": "kamas",
+      "from": { "path": "grades.0.kamas" },
+      "to": [{ "model": "creatures", "field": "kamas" }],
+      "formatters": [
+        { "name": "toInt", "args": {} },
+        { "name": "clampInt", "args": { "min": 0, "max": 9999999 } }
+      ]
+    },
+    {
+      "key": "po",
+      "from": { "path": "grades.0.bonusRange" },
+      "to": [{ "model": "creatures", "field": "po" }],
+      "formatters": [
+        { "name": "toInt", "args": {} },
+        { "name": "clampInt", "args": { "min": 0, "max": 50 } }
+      ]
+    },
+    {
+      "key": "dodge_pa",
+      "from": { "path": "grades.0.paDodge" },
+      "to": [{ "model": "creatures", "field": "dodge_pa" }],
+      "formatters": [{ "name": "nullableInt", "args": {} }]
+    },
+    {
+      "key": "dodge_pm",
+      "from": { "path": "grades.0.pmDodge" },
+      "to": [{ "model": "creatures", "field": "dodge_pm" }],
+      "formatters": [{ "name": "nullableInt", "args": {} }]
+    },
+    {
+      "key": "vitality",
+      "from": { "path": "grades.0.vitality" },
+      "to": [{ "model": "creatures", "field": "vitality" }],
+      "formatters": [{ "name": "nullableInt", "args": {} }]
+    },
+    {
+      "key": "image",
+      "from": { "path": "img" },
+      "to": [{ "model": "creatures", "field": "image" }],
+      "formatters": [
+        { "name": "storeScrappedImage", "args": { "entityFolder": "monsters", "idPath": "id" } }
+      ]
+    },
+    {
+      "key": "size",
+      "from": { "path": "size" },
+      "to": [{ "model": "monsters", "field": "size" }],
+      "formatters": [{ "name": "mapSizeToKrosmoz", "args": { "default": "medium" } }]
+    },
+    {
+      "key": "race",
+      "from": { "path": "race" },
+      "to": [{ "model": "monsters", "field": "monster_race_id" }],
+      "formatters": [{ "name": "nullableInt", "args": {} }]
+    }
+  ],
+  "relations": {
+    "spells": {
+      "enabledByDefault": true,
+      "maxDepth": 1,
+      "strategy": "import_and_link",
+      "extract": { "path": "spells", "idPath": "id" },
+      "targetEntity": "spell"
+    },
+    "drops": {
+      "enabledByDefault": true,
+      "maxDepth": 1,
+      "strategy": "import_and_link",
+      "extract": { "path": "drops", "idPath": "itemId", "quantityPath": "quantity" },
+      "targetEntity": "resource",
+      "filters": {
+        "resourceTypeIds": {
+          "defaultFromDb": "resource_types.allowed"
+        }
+      }
+    }
+  }
+}

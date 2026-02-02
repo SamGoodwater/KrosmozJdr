@@ -9,6 +9,8 @@ use Illuminate\Support\Facades\Auth;
 require __DIR__ . '/auth.php';
 require __DIR__ . '/user.php';
 require __DIR__ . '/file.php';
+require __DIR__ . '/admin/characteristics.php';
+require __DIR__ . '/admin/dofus-conversion-formulas.php';
 
 // Routes publiques
 Route::get('/', function () {

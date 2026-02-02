@@ -7,6 +7,7 @@ use App\Models\Entity\Resource;
 use App\Models\Type\ResourceType;
 use App\Services\Scrapping\DataConversion\DataConversionService;
 use App\Services\Scrapping\DataIntegration\DataIntegrationService;
+use Database\Seeders\CharacteristicConfigSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -22,6 +23,9 @@ class ScrappingResourceConversionTest extends TestCase
 
     public function test_item_type_resource_is_converted_and_integrated_as_resource_model(): void
     {
+        (new CharacteristicConfigSeeder)->run();
+        app(\App\Services\Characteristic\CharacteristicService::class)->clearCache();
+
         $admin = User::factory()->create([
             'role' => User::ROLE_ADMIN,
         ]);
@@ -51,14 +55,14 @@ class ScrappingResourceConversionTest extends TestCase
             'img' => 'https://example.test/iron.png',
         ];
 
-        $conversion = new DataConversionService();
+        $conversion = $this->app->make(DataConversionService::class);
         $converted = $conversion->convertItem($rawItem);
 
         $this->assertSame('resource', $converted['type']);
         $this->assertSame('resource', $converted['category']);
         $this->assertSame(15, $converted['type_id']);
 
-        $integration = new DataIntegrationService();
+        $integration = $this->app->make(DataIntegrationService::class);
         $result = $integration->integrateItem($converted);
 
         $this->assertSame('resources', $result['table'] ?? null);

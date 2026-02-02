@@ -228,5 +228,49 @@ class DofusDbItemTypesCatalogService
         }
         return null;
     }
+
+    /**
+     * Résout un nom (type d'objet ou superType/catégorie) vers la liste des typeIds.
+     * Si le nom correspond à un superType (ex. "Ressource"), retourne tous les typeIds de ce superType.
+     * Sinon cherche un type dont le nom correspond et retourne [typeId].
+     *
+     * @return array<int,int> liste de typeIds (vide si non trouvé)
+     */
+    public function resolveTypeIdsByName(string $name, string $lang = 'fr', bool $skipCache = false): array
+    {
+        $name = trim($name);
+        if ($name === '') {
+            return [];
+        }
+        $normalize = static function (string $s): string {
+            $s = mb_strtolower($s, 'UTF-8');
+            $s = preg_replace('/\s+/', ' ', $s) ?? $s;
+
+            return trim($s);
+        };
+        $needle = $normalize($name);
+        $catalog = $this->getCatalog($lang, $skipCache);
+
+        foreach ($catalog['superTypes'] ?? [] as $st) {
+            $stName = $st['name'] ?? null;
+            if (is_string($stName) && $stName !== '' && $normalize($stName) === $needle) {
+                $sid = (int) ($st['id'] ?? 0);
+                if ($sid > 0) {
+                    return $this->getTypeIdsForSuperTypes([$sid], $lang, $skipCache);
+                }
+            }
+            foreach ($st['types'] ?? [] as $t) {
+                $tName = $t['name'] ?? null;
+                if (is_string($tName) && $tName !== '' && $normalize($tName) === $needle) {
+                    $tid = (int) ($t['id'] ?? 0);
+                    if ($tid > 0) {
+                        return [$tid];
+                    }
+                }
+            }
+        }
+
+        return [];
+    }
 }
 

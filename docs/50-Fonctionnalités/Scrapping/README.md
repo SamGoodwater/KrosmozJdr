@@ -35,6 +35,9 @@ KrosmozJDR
 - **API DofusDB (collect)** : `Data-collect/API.md`
 - **API interne (UI/CLI)** : `Orchestrateur/API.md`
 
+### Refonte
+- **[Refonte/](Refonte/)** — Idées, audit et documentation pour la refonte complète du scrapping (remplacement de l'ancienne fonctionnalité).
+
 ### UI (admin)
 - Page : `/scrapping`
 - Recherche (collect-only) : `GET /api/scrapping/search/{entity}`

@@ -5,18 +5,24 @@ namespace App\Services\Scrapping\Catalog;
 /**
  * Lecture de la config de mapping superTypeId -> catégories métier.
  *
- * @description
- * Source de vérité "éditable" par config JSON (sans toucher au code) :
- * `resources/scrapping/sources/dofusdb/item-super-types.json`.
+ * Source de vérité V2 : `resources/scrapping/v2/sources/dofusdb/item-super-types.json`.
+ * L'ancien chemin (resources/scrapping/sources/dofusdb/) est déprécié.
  */
 class DofusDbItemSuperTypeMappingService
 {
+    private string $basePath;
+
+    public function __construct(?string $basePath = null)
+    {
+        $this->basePath = $basePath ?? base_path('resources/scrapping/v2');
+    }
+
     /**
      * @return array<string,mixed>
      */
     public function getConfig(): array
     {
-        $path = base_path('resources/scrapping/sources/dofusdb/item-super-types.json');
+        $path = rtrim($this->basePath, '/') . '/sources/dofusdb/item-super-types.json';
         if (!is_file($path)) {
             return [];
         }
@@ -70,6 +76,24 @@ class DofusDbItemSuperTypeMappingService
             'superTypeIds' => array_values(array_unique(array_map('intval', $superTypeIds))),
             'excludeSuperTypeIds' => array_values(array_unique(array_map('intval', $excludeSuperTypeIds))),
         ];
+    }
+
+    /**
+     * TypeIds à exclure de toute collecte item (ressource, consumable, equipment).
+     * Ex. : consommables obsolètes des Songes, La source - l'héritage des Dofus, apparat.
+     *
+     * @return list<int>
+     */
+    public function getExcludedTypeIds(): array
+    {
+        $cfg = $this->getConfig();
+        $ids = $cfg['excludedTypeIds'] ?? [];
+        if (!is_array($ids)) {
+            return [];
+        }
+        $ids = array_values(array_unique(array_map('intval', $ids)));
+
+        return array_values(array_filter($ids, fn (int $id): bool => $id > 0));
     }
 }
 

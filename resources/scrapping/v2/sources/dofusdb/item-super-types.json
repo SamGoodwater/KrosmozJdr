@@ -1,0 +1,68 @@
+{
+  "version": 2,
+  "source": "dofusdb",
+  "key": "item-super-types",
+  "description": "Mapping métier des superTypeId DofusDB vers les catégories KrosmozJDR (equipment/resource/consumable) + exclusions. Source de vérité V2 : resources/scrapping/v2/sources/dofusdb/item-super-types.json. excludedTypeIds : typeIds à ne jamais collecter (Songes obsolètes, La source, apparat).",
+  "excludedTypeIds": [219, 245, 246, 247, 248, 249, 250, 251, 252, 304, 314, 324, 325],
+  "excludedTypeIdsNotes": {
+    "219": "Ressource des Songes",
+    "245": "Ressource obsolète",
+    "246": "Chapeau d'apparat",
+    "247": "Cape d'apparat",
+    "248": "Bouclier d'apparat",
+    "249": "Familier d'apparat",
+    "250": "Montilier d'apparat",
+    "251": "Arme d'apparat",
+    "252": "Objet d'apparat divers",
+    "304": "Panoplie d'apparat",
+    "314": "Consommable obsolète des Songes",
+    "324": "Monture d'apparat",
+    "325": "La source - l'héritage des Dofus"
+  },
+  "superTypesReference": [
+    { "id": 1, "nameFr": "Amulette", "krosmozCategory": "equipment" },
+    { "id": 2, "nameFr": "Arme", "krosmozCategory": "equipment" },
+    { "id": 3, "nameFr": "Anneau", "krosmozCategory": "equipment" },
+    { "id": 4, "nameFr": "Ceinture", "krosmozCategory": "equipment" },
+    { "id": 5, "nameFr": "Bottes", "krosmozCategory": "equipment" },
+    { "id": 6, "nameFr": "Consommable", "krosmozCategory": "consumable" },
+    { "id": 7, "nameFr": "Bouclier", "krosmozCategory": "equipment" },
+    { "id": 9, "nameFr": "Ressource", "krosmozCategory": "resource" },
+    { "id": 10, "nameFr": "Chapeau", "krosmozCategory": "equipment" },
+    { "id": 11, "nameFr": "Cape", "krosmozCategory": "equipment" },
+    { "id": 12, "nameFr": "Familier", "krosmozCategory": "equipment" },
+    { "id": 13, "nameFr": "Dofus / Trophée / Prysmaradite", "krosmozCategory": "equipment" },
+    { "id": 14, "nameFr": "Objet de quête", "krosmozCategory": "excluded" },
+    { "id": 15, "nameFr": "Mutation", "krosmozCategory": "excluded" },
+    { "id": 16, "nameFr": "Nourriture", "krosmozCategory": "excluded" },
+    { "id": 17, "nameFr": "Bénédiction", "krosmozCategory": "excluded" },
+    { "id": 18, "nameFr": "Malédiction", "krosmozCategory": "excluded" },
+    { "id": 19, "nameFr": "Bonus de jeu de rôle", "krosmozCategory": "excluded" },
+    { "id": 20, "nameFr": "Suiveur", "krosmozCategory": "excluded" },
+    { "id": 22, "nameFr": "Cosmétiques", "krosmozCategory": "excluded" },
+    { "id": 23, "nameFr": "Compagnon", "krosmozCategory": "excluded" },
+    { "id": 24, "nameFr": "Equipement de monture", "krosmozCategory": "excluded" },
+    { "id": 25, "nameFr": "Costume", "krosmozCategory": "excluded" },
+    { "id": 26, "nameFr": "Certificat", "krosmozCategory": "excluded" },
+    { "id": 27, "nameFr": "Certificat de monture", "krosmozCategory": "excluded" },
+    { "id": 69, "nameFr": "Équipement de percepteur", "krosmozCategory": "excluded" },
+    { "id": 70, "nameFr": "Consommables de combat", "krosmozCategory": "consumable" }
+  ],
+  "groups": {
+    "resource": {
+      "strategy": "include",
+      "superTypeIds": [9],
+      "notes": "SuperTypeId=9 correspond aux 'Ressource'. Liste effective = typeIds de ce superType moins excludedTypeIds."
+    },
+    "consumable": {
+      "strategy": "include",
+      "superTypeIds": [6, 70],
+      "notes": "SuperTypeId=6 Consommable, 70 Consommables de combat. Liste effective = typeIds moins excludedTypeIds."
+    },
+    "equipment": {
+      "strategy": "exclude",
+      "excludeSuperTypeIds": [6, 9, 14, 15, 16, 17, 18, 19, 20, 22, 23, 24, 25, 26, 27, 69, 70],
+      "notes": "Équipement KrosmozJDR : tout sauf resource (9), consumable (6,70), quête (14), mutation (15), nourriture (16), bénédiction (17), malédiction (18), JDR (19), suiveur (20), cosmétiques (22), compagnon (23), équipement monture (24), costume (25), certificats (26,27), percepteur (69). Puis moins excludedTypeIds."
+    }
+  }
+}

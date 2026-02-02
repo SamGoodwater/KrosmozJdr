@@ -27,6 +27,7 @@ const props = defineProps({
    * @property {string} label - Label affiché
    * @property {string} icon - Icône Font Awesome
    * @property {string} [variant] - Variant du bouton (ex: 'error' pour delete)
+   * @property {string} [badge] - Badge optionnel (ex: 'V2' pour pipeline V2)
    */
   action: {
     type: Object,
@@ -104,6 +105,7 @@ const handleClick = (event) => {
     >
       <Icon v-if="showIcon" :source="action.icon" :alt="action.label" :size="size" />
       <span v-if="showText">{{ action.label }}</span>
+      <span v-if="action.badge" class="badge badge-sm badge-primary">{{ action.badge }}</span>
     </Btn>
   </Tooltip>
 </template>

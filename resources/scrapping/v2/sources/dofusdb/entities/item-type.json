@@ -1,0 +1,36 @@
+{
+  "version": 1,
+  "source": "dofusdb",
+  "entity": "item-type",
+  "label": "Types d'objets",
+  "meta": {
+    "catalogOnly": true,
+    "description": "Catalogue DofusDB des item-types (232 types). Chaque type a un superTypeId. Pagination 50."
+  },
+  "endpoints": {
+    "fetchOne": {
+      "pathTemplate": "/item-types/{id}",
+      "method": "GET",
+      "queryDefaults": { "lang": "{lang}" }
+    },
+    "fetchMany": {
+      "path": "/item-types",
+      "method": "GET",
+      "queryDefaults": { "lang": "{lang}", "$limit": 50, "$skip": 0 }
+    }
+  },
+  "filters": {
+    "supported": [
+      { "key": "id", "type": "number" },
+      { "key": "idMin", "type": "number" },
+      { "key": "idMax", "type": "number" },
+      { "key": "name", "type": "string" }
+    ]
+  },
+  "target": { "krosmozEntity": "item-type", "catalogOnly": true },
+  "mapping": [
+    { "key": "id", "from": { "path": "id" }, "to": [] },
+    { "key": "superTypeId", "from": { "path": "superTypeId" }, "to": [] },
+    { "key": "name", "from": { "path": "name", "langAware": true }, "to": [] }
+  ]
+}

@@ -2,17 +2,21 @@
 
 namespace App\Services\Scrapping\DataConversion;
 
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Config;
 use App\Models\User;
+use App\Services\Characteristic\CharacteristicService;
+use App\Services\Scrapping\V2\Conversion\DofusDbConversionFormulas;
+use App\Services\Scrapping\V2\Validation\ValidationService;
+use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\Log;
 
 /**
- * Service de conversion des données selon les caractéristiques KrosmozJDR
- * 
- * Convertit les valeurs issues de sites externes selon les règles,
- * formules et limites définies dans la configuration des caractéristiques.
- * 
- * @package App\Services\Scrapping\DataConversion
+ * Service de conversion des données selon les caractéristiques KrosmozJDR.
+ *
+ * Délègue level, life et attributs (strength, intelligence, etc.) à DofusDbConversionFormulas
+ * (formules en BDD ou config). Valide les données converties via ValidationService (V2).
+ *
+ * @see DofusDbConversionFormulas
+ * @see ValidationService
  */
 class DataConversionService
 {
@@ -21,18 +25,12 @@ class DataConversionService
      */
     private array $config;
 
-    /**
-     * Configuration des caractéristiques KrosmozJDR
-     */
-    private array $characteristics;
-
-    /**
-     * Constructeur du service de conversion
-     */
-    public function __construct()
-    {
+    public function __construct(
+        private readonly CharacteristicService $characteristicService,
+        private readonly DofusDbConversionFormulas $conversionFormulas,
+        private readonly ValidationService $validationService
+    ) {
         $this->config = config('scrapping.data_conversion', []);
-        $this->characteristics = config('characteristics', []);
     }
 
     /**
@@ -52,23 +50,32 @@ class DataConversionService
         $description = mb_substr($description, 0, 255);
         
         Log::info('Conversion de classe', ['class_id' => $rawData['id'] ?? 'Unknown', 'class_name' => $name]);
-        
+
+        $level = $this->conversionFormulas->convertLevel($this->numericValue($rawData['level'] ?? 1), 'class');
+        $life = $this->conversionFormulas->convertLife($this->numericValue($rawData['life'] ?? 0), $level, 'class');
+
         $converted = [
             'dofusdb_id' => (string) ($rawData['id'] ?? ''),
             'name' => $name,
             'description' => $description,
-            'life' => $this->convertLife($rawData['life'] ?? 0, 'class'),
+            'level' => $level,
+            'life' => $life,
             'life_dice' => $rawData['life_dice'] ?? '',
-            'specificity' => $rawData['specificity'] ?? ''
+            'specificity' => $rawData['specificity'] ?? '',
+            'strength' => $this->conversionFormulas->convertAttribute('strength', $this->numericValue($rawData['strength'] ?? 0), 'class'),
+            'intelligence' => $this->conversionFormulas->convertAttribute('intelligence', $this->numericValue($rawData['intelligence'] ?? 0), 'class'),
+            'agility' => $this->conversionFormulas->convertAttribute('agility', $this->numericValue($rawData['agility'] ?? 0), 'class'),
+            'luck' => $this->conversionFormulas->convertAttribute('luck', $this->numericValue($rawData['luck'] ?? 0), 'class'),
+            'wisdom' => $this->conversionFormulas->convertAttribute('wisdom', $this->numericValue($rawData['wisdom'] ?? 0), 'class'),
+            'chance' => $this->conversionFormulas->convertAttribute('chance', $this->numericValue($rawData['chance'] ?? 0), 'class'),
         ];
-        
+
         // Préserver les sorts associés (si présents dans rawData)
         if (isset($rawData['spells']) && is_array($rawData['spells'])) {
             $converted['spells'] = $rawData['spells'];
         }
-        
-        // Validation des valeurs converties
-        $this->validateConvertedValues($converted, 'class');
+
+        $this->validateConvertedData(['class' => $converted], 'class');
         
         Log::info('Classe convertie avec succès', ['class_name' => $converted['name']]);
         
@@ -90,18 +97,21 @@ class DataConversionService
         $grade = $this->extractMonsterGrade($rawData);
         
         Log::info('Conversion de monstre', ['monster_id' => $rawData['id'] ?? 'Unknown', 'monster_name' => $name]);
-        
+
+        $level = $this->conversionFormulas->convertLevel($this->numericValue($grade['level'] ?? $rawData['level'] ?? 1), 'monster');
+        $life = $this->conversionFormulas->convertLife($this->numericValue($grade['lifePoints'] ?? $rawData['lifePoints'] ?? 0), $level, 'monster');
+
         $converted = [
             'creatures' => [
                 'name' => $name,
-                'level' => $this->convertLevel($grade['level'] ?? $rawData['level'] ?? 1, 'monster'),
-                'life' => $this->convertLife($grade['lifePoints'] ?? $rawData['lifePoints'] ?? 0, 'monster'),
-                'strength' => $this->convertAttribute($grade['strength'] ?? 0, 'strength', 'monster'),
-                'intelligence' => $this->convertAttribute($grade['intelligence'] ?? 0, 'intelligence', 'monster'),
-                'agility' => $this->convertAttribute($grade['agility'] ?? 0, 'agility', 'monster'),
-                'luck' => $this->convertAttribute($grade['luck'] ?? 0, 'luck', 'monster'),
-                'wisdom' => $this->convertAttribute($grade['wisdom'] ?? 0, 'wisdom', 'monster'),
-                'chance' => $this->convertAttribute($grade['chance'] ?? 0, 'chance', 'monster'),
+                'level' => $level,
+                'life' => $life,
+                'strength' => $this->conversionFormulas->convertAttribute('strength', $this->numericValue($grade['strength'] ?? 0), 'monster'),
+                'intelligence' => $this->conversionFormulas->convertAttribute('intelligence', $this->numericValue($grade['intelligence'] ?? 0), 'monster'),
+                'agility' => $this->conversionFormulas->convertAttribute('agility', $this->numericValue($grade['agility'] ?? 0), 'monster'),
+                'luck' => $this->conversionFormulas->convertAttribute('luck', $this->numericValue($grade['luck'] ?? 0), 'monster'),
+                'wisdom' => $this->conversionFormulas->convertAttribute('wisdom', $this->numericValue($grade['wisdom'] ?? 0), 'monster'),
+                'chance' => $this->conversionFormulas->convertAttribute('chance', $this->numericValue($grade['chance'] ?? 0), 'monster'),
                 'image' => $rawData['img'] ?? null,
             ],
             'monsters' => [
@@ -110,19 +120,18 @@ class DataConversionService
                 'monster_race_id' => $rawData['race'] ?? $rawData['monster_race_id'] ?? null
             ]
         ];
-        
+
         // Préserver les sorts associés (si présents dans rawData)
         if (isset($rawData['spells']) && is_array($rawData['spells'])) {
             $converted['spells'] = $rawData['spells'];
         }
-        
+
         // Préserver les ressources (drops) associées (si présents dans rawData)
         if (isset($rawData['drops']) && is_array($rawData['drops'])) {
             $converted['drops'] = $rawData['drops'];
         }
-        
-        // Validation des valeurs converties
-        $this->validateConvertedValues($converted['creatures'], 'monster');
+
+        $this->validateConvertedData($converted, 'monster');
         
         Log::info('Monstre converti avec succès', ['monster_name' => $converted['creatures']['name']]);
         
@@ -186,7 +195,7 @@ class DataConversionService
         $converted = [
             'dofusdb_id' => (string) ($rawData['id'] ?? ''),
             'name' => $name,
-            'level' => $this->convertLevel($rawData['level'] ?? 1, 'item'),
+            'level' => $this->conversionFormulas->convertLevel($this->numericValue($rawData['level'] ?? 1), 'item'),
             'description' => $description,
             'type' => $typeMapping['type'],
             'category' => $typeMapping['category'],
@@ -203,9 +212,8 @@ class DataConversionService
             $converted['recipe'] = $rawData['recipe'];
         }
         
-        // Validation des valeurs converties
-        $this->validateConvertedValues($converted, 'item');
-        
+        $this->validateConvertedData(['item' => $converted], 'item');
+
         Log::info('Objet converti avec succès', ['item_name' => $converted['name']]);
         
         return $converted;
@@ -265,9 +273,8 @@ class DataConversionService
             $converted['item_ids'] = $rawData['item_ids'];
         }
         
-        // Validation des valeurs converties
-        $this->validateConvertedValues($converted, 'panoply');
-        
+        $this->validateConvertedData(['panoply' => $converted], 'panoply');
+
         Log::info('Panoplie convertie avec succès', ['panoply_name' => $converted['name']]);
         
         return $converted;
@@ -420,9 +427,8 @@ class DataConversionService
             $converted['summon'] = $rawData['summon'];
         }
         
-        // Validation des valeurs converties
-        $this->validateConvertedValues($converted, 'spell');
-        
+        $this->validateConvertedData(['spell' => $converted], 'spell');
+
         Log::info('Sort converti avec succès', ['spell_name' => $converted['name']]);
         
         return $converted;
@@ -445,79 +451,11 @@ class DataConversionService
             'condition' => $rawData['condition'] ?? ''
         ];
         
-        // Validation des valeurs converties
-        $this->validateConvertedValues($converted, 'effect');
+        $this->validateConvertedData(['effect' => $converted], 'effect');
         
         Log::info('Effet converti avec succès');
         
         return $converted;
-    }
-
-    /**
-     * Conversion de la vie selon les caractéristiques KrosmozJDR
-     * 
-     * @param int $value Valeur brute
-     * @param string $entityType Type d'entité
-     * @return int Valeur convertie
-     */
-    private function convertLife(int $value, string $entityType): int
-    {
-        $limits = $this->characteristics['life']['limits'][$entityType] ?? [1, 1000];
-        $min = $limits[0] ?? 1;
-        $max = $limits[1] ?? 1000;
-        
-        if ($value < $min) {
-            Log::warning("Vie trop faible, utilisation de la valeur minimale", [
-                'value' => $value,
-                'min' => $min,
-                'entity_type' => $entityType
-            ]);
-            return $min;
-        }
-        
-        if ($value > $max) {
-            Log::warning("Vie trop élevée, utilisation de la valeur maximale", [
-                'value' => $value,
-                'max' => $max,
-                'entity_type' => $entityType
-            ]);
-            return $max;
-        }
-        
-        return $value;
-    }
-
-    /**
-     * Conversion du niveau selon les caractéristiques KrosmozJDR
-     * 
-     * @param int $value Valeur brute
-     * @param string $entityType Type d'entité
-     * @return int Valeur convertie
-     */
-    private function convertLevel(int $value, string $entityType): int
-    {
-        $limits = $this->characteristics['level']['limits'][$entityType] ?? [1, 200];
-        $min = $limits[0] ?? 1;
-        $max = $limits[1] ?? 200;
-        
-        return max($min, min($max, $value));
-    }
-
-    /**
-     * Conversion d'un attribut selon les caractéristiques KrosmozJDR
-     * 
-     * @param int $value Valeur brute
-     * @param string $attributeType Type d'attribut
-     * @param string $entityType Type d'entité
-     * @return int Valeur convertie
-     */
-    private function convertAttribute(int $value, string $attributeType, string $entityType): int
-    {
-        $limits = $this->characteristics['attributes'][$attributeType]['limits'][$entityType] ?? [0, 100];
-        $min = $limits[0] ?? 0;
-        $max = $limits[1] ?? 100;
-        
-        return max($min, min($max, $value));
     }
 
     /**
@@ -528,13 +466,16 @@ class DataConversionService
      */
     private function convertSize(string $value): string
     {
-        $validSizes = $this->characteristics['size']['valid_values'] ?? ['tiny', 'small', 'medium', 'large', 'huge'];
-        
+        $validSizes = $this->getValueAvailableForCharacteristic('size');
+        if ($validSizes === []) {
+            $validSizes = ['tiny', 'small', 'medium', 'large', 'huge'];
+        }
+
         if (!in_array($value, $validSizes)) {
             Log::warning("Taille invalide, utilisation de la taille par défaut", ['value' => $value]);
-            return $this->characteristics['size']['default'] ?? 'medium';
+            return $this->getDefaultForCharacteristic('size', 'class') ?? 'medium';
         }
-        
+
         return $value;
     }
 
@@ -546,13 +487,16 @@ class DataConversionService
      */
     private function convertRarity(string $value): string
     {
-        $validRarities = $this->characteristics['rarity']['valid_values'] ?? ['common', 'uncommon', 'rare', 'epic', 'legendary'];
-        
+        $validRarities = $this->getValueAvailableForCharacteristic('rarity');
+        if ($validRarities === []) {
+            $validRarities = ['common', 'uncommon', 'rare', 'epic', 'legendary'];
+        }
+
         if (!in_array($value, $validRarities)) {
             Log::warning("Rareté invalide, utilisation de la rareté par défaut", ['value' => $value]);
-            return $this->characteristics['rarity']['default'] ?? 'common';
+            return $this->getDefaultForCharacteristic('rarity', 'item') ?? 'common';
         }
-        
+
         return $value;
     }
 
@@ -564,10 +508,10 @@ class DataConversionService
      */
     private function convertPrice(int $value): int
     {
-        $limits = $this->characteristics['price']['limits'] ?? [0, 1000000];
+        $limits = $this->getLimitsForCharacteristic('price', 'item');
         $min = $limits[0] ?? 0;
         $max = $limits[1] ?? 1000000;
-        
+
         return max($min, min($max, $value));
     }
 
@@ -579,10 +523,10 @@ class DataConversionService
      */
     private function convertCost(int $value): int
     {
-        $limits = $this->characteristics['cost']['limits'] ?? [0, 100];
+        $limits = $this->getLimitsForCharacteristic('cost', 'class');
         $min = $limits[0] ?? 0;
         $max = $limits[1] ?? 100;
-        
+
         return max($min, min($max, $value));
     }
 
@@ -594,10 +538,10 @@ class DataConversionService
      */
     private function convertRange(int $value): int
     {
-        $limits = $this->characteristics['range']['limits'] ?? [1, 20];
+        $limits = $this->getLimitsForCharacteristic('range', 'class');
         $min = $limits[0] ?? 1;
         $max = $limits[1] ?? 20;
-        
+
         return max($min, min($max, $value));
     }
 
@@ -609,10 +553,10 @@ class DataConversionService
      */
     private function convertArea(int $value): int
     {
-        $limits = $this->characteristics['area']['limits'] ?? [1, 10];
+        $limits = $this->getLimitsForCharacteristic('area', 'class');
         $min = $limits[0] ?? 1;
         $max = $limits[1] ?? 10;
-        
+
         return max($min, min($max, $value));
     }
 
@@ -624,10 +568,10 @@ class DataConversionService
      */
     private function convertCriticalHit(int $value): int
     {
-        $limits = $this->characteristics['critical_hit']['limits'] ?? [0, 100];
+        $limits = $this->getLimitsForCharacteristic('critical_hit', 'class');
         $min = $limits[0] ?? 0;
         $max = $limits[1] ?? 100;
-        
+
         return max($min, min($max, $value));
     }
 
@@ -639,10 +583,10 @@ class DataConversionService
      */
     private function convertFailure(int $value): int
     {
-        $limits = $this->characteristics['failure']['limits'] ?? [0, 100];
+        $limits = $this->getLimitsForCharacteristic('failure', 'class');
         $min = $limits[0] ?? 0;
         $max = $limits[1] ?? 100;
-        
+
         return max($min, min($max, $value));
     }
 
@@ -658,7 +602,7 @@ class DataConversionService
         
         foreach ($levels as $level) {
             $convertedLevels[] = [
-                'level' => $this->convertLevel($level['level'] ?? 1, 'spell'),
+                'level' => $this->conversionFormulas->convertLevel($this->numericValue($level['level'] ?? 1), 'spell'),
                 'cost' => $this->convertCost($level['cost'] ?? 0),
                 'range' => $this->convertRange($level['range'] ?? 1),
                 'area' => $this->convertArea($level['area'] ?? 1),
@@ -677,13 +621,16 @@ class DataConversionService
      */
     private function convertEffectType(string $value): string
     {
-        $validTypes = $this->characteristics['effect_types']['valid_values'] ?? ['buff', 'debuff', 'neutral'];
-        
+        $validTypes = $this->getValueAvailableForCharacteristic('effect_types');
+        if ($validTypes === []) {
+            $validTypes = ['buff', 'debuff', 'neutral'];
+        }
+
         if (!in_array($value, $validTypes)) {
             Log::warning("Type d'effet invalide, utilisation du type par défaut", ['value' => $value]);
-            return $this->characteristics['effect_types']['default'] ?? 'neutral';
+            return $this->getDefaultForCharacteristic('effect_types', 'class') ?? 'neutral';
         }
-        
+
         return $value;
     }
 
@@ -695,16 +642,86 @@ class DataConversionService
      */
     private function convertEffectValue(int $value): int
     {
-        $limits = $this->characteristics['effect_value']['limits'] ?? [-100, 100];
+        $limits = $this->getLimitsForCharacteristic('effect_value', 'class');
         $min = $limits[0] ?? -100;
         $max = $limits[1] ?? 100;
-        
+
         return max($min, min($max, $value));
     }
 
     /**
+     * Retourne [min, max] pour une caractéristique et une entité (source : CharacteristicService).
+     * Si l'entité n'existe pas (ex. spell), utilise 'class' en fallback puis défaut large.
+     *
+     * @return array{0: int, 1: int}
+     */
+    private function getLimitsForCharacteristic(string $charId, string $entityType): array
+    {
+        $limits = $this->characteristicService->getLimits($charId, $entityType);
+        if ($limits !== null) {
+            return [$limits['min'], $limits['max']];
+        }
+        if ($entityType === 'spell') {
+            $limits = $this->characteristicService->getLimits($charId, 'class');
+            if ($limits !== null) {
+                return [$limits['min'], $limits['max']];
+            }
+        }
+
+        return [0, 999];
+    }
+
+    /**
+     * Retourne les valeurs autorisées pour une caractéristique de type array.
+     *
+     * @return array<int|string, mixed>
+     */
+    private function getValueAvailableForCharacteristic(string $charId): array
+    {
+        $def = $this->characteristicService->getCharacteristic($charId);
+        if ($def === null) {
+            return [];
+        }
+        $v = $def['value_available'] ?? null;
+
+        return is_array($v) ? $v : [];
+    }
+
+    /**
+     * Retourne la valeur par défaut pour une caractéristique et une entité.
+     */
+    private function getDefaultForCharacteristic(string $charId, string $entityType): mixed
+    {
+        $def = $this->characteristicService->getCharacteristic($charId);
+        if ($def === null) {
+            return null;
+        }
+        $entityDef = $def['entities'][$entityType] ?? null;
+        if ($entityDef === null) {
+            return null;
+        }
+
+        return $entityDef['default'] ?? null;
+    }
+
+    /**
+     * Retourne une valeur numérique (int|float) à partir de données brutes (string ou numeric).
+     */
+    private function numericValue(mixed $value): int|float
+    {
+        if (is_int($value) || is_float($value)) {
+            return $value;
+        }
+        if (is_numeric($value)) {
+            return str_contains((string) $value, '.') ? (float) $value : (int) $value;
+        }
+
+        return 0;
+    }
+
+    /**
      * Extraction d'une valeur multilingue depuis les données DofusDB
-     * 
+     *
      * @param mixed $multilingualData Données multilingues (peut être string, array ou null)
      * @param string $defaultValue Valeur par défaut si non trouvée
      * @return string Valeur extraite selon la langue configurée
@@ -743,30 +760,24 @@ class DataConversionService
     }
 
     /**
-     * Validation des valeurs converties
-     * 
-     * @param array $data Données à valider
-     * @param string $entityType Type d'entité
-     * @throws \Exception En cas de validation échouée
+     * Valide les données converties via ValidationService (V2) : champs requis, min/max, valeurs autorisées.
+     *
+     * @param array<string, array<string, mixed>> $data Structure par modèle (ex. ['class' => $converted] ou ['creatures' => [...], 'monsters' => [...]])
+     * @param string $entityType Type d'entité (class, monster, item, panoply, spell, effect)
+     * @throws \Exception En cas d'erreurs de validation
      */
-    private function validateConvertedValues(array $data, string $entityType): void
+    private function validateConvertedData(array $data, string $entityType): void
     {
-        $requiredFields = $this->characteristics['required_fields'][$entityType] ?? [];
-        
-        foreach ($requiredFields as $field) {
-            // Utiliser array_key_exists au lieu de isset pour détecter les valeurs null explicites
-            // Ne pas utiliser empty() car cela rejette les valeurs 0 légitimes
-            if (!array_key_exists($field, $data)) {
-                throw new \Exception("Champ requis manquant : {$field} pour l'entité {$entityType}");
-            }
-            
-            // Vérifier que la valeur n'est pas null (mais 0 est valide)
-            if ($data[$field] === null) {
-                throw new \Exception("Champ requis null : {$field} pour l'entité {$entityType}");
-            }
+        $result = $this->validationService->validate($data, $entityType);
+
+        if ($result->isValid()) {
+            Log::info('Validation des données converties réussie', ['entity_type' => $entityType]);
+
+            return;
         }
-        
-        Log::info("Validation des valeurs converties réussie", ['entity_type' => $entityType]);
+
+        $messages = array_map(static fn (array $e) => ($e['path'] ?? '') . ': ' . ($e['message'] ?? ''), $result->getErrors());
+        throw new \Exception('Validation échouée pour ' . $entityType . ' : ' . implode(' ; ', $messages));
     }
 
     /**

@@ -413,8 +413,7 @@ export const ACTION_GROUPS_ORDER = Object.freeze([
 - **Configuration** : `resources/js/Entities/entity-actions-config.js`
 - **Composable** : `resources/js/Composables/entity/useEntityActions.js`
 - **Composant principal** : `resources/js/Pages/Organismes/entity/EntityActions.vue`
-- **Documentation technique** : `docs/100- Done/ENTITY_ACTIONS_SYSTEM_PROPOSAL.md`
-- **État d'implémentation** : `docs/100- Done/ENTITY_ACTIONS_IMPLEMENTATION_STATUS.md`
+- **Configuration, composable et composant** : voir références ci-dessus.
 
 ---
 
@@ -483,6 +482,5 @@ Les actions s'adaptent automatiquement au contexte :
 - **Dans un modal** (`inModal: true`) : `edit` est masqué, `expand` est visible
 - **Labels dynamiques** : Les labels et tooltips changent selon le contexte
 
-Voir `docs/100- Done/OPTIMISATIONS_UI_2026_01.md` pour plus de détails.
 
 ---

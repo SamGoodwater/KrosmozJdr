@@ -1,0 +1,20 @@
+{
+  "version": 1,
+  "source": "dofusdb",
+  "label": "DofusDB",
+  "baseUrl": "https://api.dofusdb.fr",
+  "defaultLanguage": "fr",
+  "http": {
+    "timeoutSeconds": 30,
+    "retryAttempts": 3,
+    "retryDelayMs": 1000,
+    "userAgent": "KrosmozJDR-Scrapping-V2/1.0"
+  },
+  "security": {
+    "allowedHosts": ["api.dofusdb.fr"]
+  },
+  "notes": [
+    "Config V2 refonte scrapping.",
+    "Entités dans entities/*.json."
+  ]
+}

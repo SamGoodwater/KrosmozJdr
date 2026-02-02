@@ -86,6 +86,12 @@ const logout = () => {
                         <template v-if="canAccess('adminPanel')">
                             <div class="w-full">
                                 <p class="text-xs text-subtitle/60 px-2 py-1 font-semibold text-center">Administration</p>
+                                <Route route="admin.characteristics.index" class="w-full">
+                                    <Btn variant="ghost" size="md" class="w-full justify-start">
+                                        <Icon source="fa-sliders" pack="solid" size="sm" alt="Caractéristiques" class="mr-2"/>
+                                        <span>Caractéristiques</span>
+                                    </Btn>
+                                </Route>
                                 <Route v-if="canAccess('scrapping')" route="scrapping.index" class="w-full">
                                     <Btn variant="ghost" size="md" class="w-full justify-start">
                                         <Icon source="fa-magnifying-glass" pack="solid" size="sm" alt="Scrapping" class="mr-2"/>

@@ -208,7 +208,21 @@ export const ENTITY_ACTIONS_CONFIG = Object.freeze({
   resource: {
     // Actions spécifiques aux ressources (si nécessaire)
   },
-  
+
+  /** Monstres : Rafraîchir utilise le pipeline scrapping V2 (conversion BDD, validation, intégration). */
+  monsters: {
+    refresh: {
+      key: "refresh",
+      label: "Rafraîchir",
+      tooltip: "Rafraîchir les données depuis DofusDB (pipeline V2)",
+      icon: "fa-solid fa-arrow-rotate-right",
+      permission: "canManage",
+      requiresEntity: true,
+      group: "tools",
+      badge: "V2",
+    },
+  },
+
   // Autres entités peuvent avoir des actions spécifiques
   // spell: { ... },
   // item: { ... },

@@ -1997,6 +1997,13 @@
     "file": "data-input/SelectSearchField.vue"
   },
   {
+    "name": "SelectFieldNative",
+    "description": "SelectFieldNative Molecule (DaisyUI, Atomic Design)",
+    "props": [],
+    "slots": [],
+    "file": "data-input/SelectFieldNative.vue"
+  },
+  {
     "name": "SelectField",
     "description": "SelectField Molecule (DaisyUI, Atomic Design)",
     "props": [],

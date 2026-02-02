@@ -423,6 +423,29 @@
     "file": "scrapping/ScrappingDashboard.vue"
   },
   {
+    "name": "CompareModal",
+    "description": "CompareModal — Comparaison Krosmoz vs DofusDB avec choix par propriété.",
+    "props": [
+      {
+        "name": "entityType",
+        "type": "String",
+        "desc": "— Type d'entité (monster, spell, class, resource, consumable, equipment)"
+      },
+      {
+        "name": "dofusdbId",
+        "type": "Number",
+        "desc": "— ID DofusDB de l'entité"
+      },
+      {
+        "name": "open",
+        "type": "Boolean",
+        "desc": "— Contrôle l'ouverture du modal"
+      }
+    ],
+    "slots": [],
+    "file": "scrapping/CompareModal.vue"
+  },
+  {
     "name": "NotificationContainer",
     "description": "NotificationContainer Organism",
     "props": [],

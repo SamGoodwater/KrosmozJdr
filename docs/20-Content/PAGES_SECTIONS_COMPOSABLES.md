@@ -245,5 +245,4 @@ const { alignClasses } = useSectionStyles(() => props.settings);
 
 Pour plus d'informations :
 - `docs/20-Content/PAGES_SECTIONS_ARCHITECTURE.md` - Architecture complète
-- `docs/20-Content/PAGES_SECTIONS_MIGRATION.md` - Guide de migration
 

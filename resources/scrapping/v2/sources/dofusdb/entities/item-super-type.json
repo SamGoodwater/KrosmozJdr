@@ -1,0 +1,35 @@
+{
+  "version": 1,
+  "source": "dofusdb",
+  "entity": "item-super-type",
+  "label": "Super-types d'objets",
+  "meta": {
+    "catalogOnly": true,
+    "description": "Liste unique des superTypes DofusDB, dérivée de l'endpoint /item-types (groupement par superTypeId). Pas d'endpoint dédié.",
+    "collectStrategy": {
+      "groupBy": "superTypeId",
+      "outputShape": "uniqueSuperTypes",
+      "sourcePath": "/item-types"
+    }
+  },
+  "endpoints": {
+    "fetchOne": {
+      "pathTemplate": "/item-types/{id}",
+      "method": "GET",
+      "queryDefaults": { "lang": "{lang}" }
+    },
+    "fetchMany": {
+      "path": "/item-types",
+      "method": "GET",
+      "queryDefaults": { "lang": "{lang}", "$limit": 50, "$skip": 0 }
+    }
+  },
+  "filters": {
+    "supported": []
+  },
+  "target": { "krosmozEntity": "item-super-type", "catalogOnly": true },
+  "mapping": [
+    { "key": "id", "from": { "path": "id" }, "to": [] },
+    { "key": "name", "from": { "path": "name", "langAware": true }, "to": [] }
+  ]
+}

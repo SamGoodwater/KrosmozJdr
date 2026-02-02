@@ -1,0 +1,105 @@
+{
+  "version": 1,
+  "source": "dofusdb",
+  "entity": "spell",
+  "label": "Sorts",
+  "meta": {
+    "notes": "DofusDB : id, name, description, img, breedId, levels[].apCost, range, grade, maxCastPerTurn, effects[].zoneDescr.shape. KrosmozJDR : spells (name, description, area, level, po, pa, cast_per_turn, image). effect non mappé en V2 (formatter packDofusdbEffects absent)."
+  },
+  "endpoints": {
+    "fetchOne": {
+      "pathTemplate": "/spells/{id}",
+      "method": "GET",
+      "queryDefaults": { "lang": "{lang}" }
+    },
+    "fetchMany": {
+      "path": "/spells",
+      "method": "GET",
+      "queryDefaults": { "lang": "{lang}", "$limit": 50, "$skip": 0 }
+    }
+  },
+  "filters": {
+    "supported": [
+      { "key": "id", "type": "number" },
+      { "key": "idMin", "type": "number" },
+      { "key": "idMax", "type": "number" },
+      { "key": "name", "type": "string" },
+      { "key": "breedId", "type": "number" }
+    ]
+  },
+  "target": {
+    "krosmozEntity": "spell",
+    "primaryKey": { "sourceField": "id", "targetField": "dofusdb_id" },
+    "autoUpdateField": "auto_update"
+  },
+  "mapping": [
+    {
+      "key": "dofusdb_id",
+      "from": { "path": "id" },
+      "to": [{ "model": "spells", "field": "dofusdb_id" }],
+      "formatters": [{ "name": "toString", "args": {} }]
+    },
+    {
+      "key": "name",
+      "from": { "path": "name", "langAware": true },
+      "to": [{ "model": "spells", "field": "name" }],
+      "formatters": [{ "name": "pickLang", "args": { "lang": "{lang}", "fallback": "fr" } }]
+    },
+    {
+      "key": "description",
+      "from": { "path": "description", "langAware": true },
+      "to": [{ "model": "spells", "field": "description" }],
+      "formatters": [{ "name": "pickLang", "args": { "lang": "{lang}", "fallback": "fr" } }]
+    },
+    {
+      "key": "image",
+      "from": { "path": "img" },
+      "to": [{ "model": "spells", "field": "image" }],
+      "formatters": [{ "name": "storeScrappedImage", "args": { "entityFolder": "spells", "idPath": "id" } }]
+    },
+    {
+      "key": "pa",
+      "from": { "path": "levels.0.apCost" },
+      "to": [{ "model": "spells", "field": "pa" }],
+      "formatters": [
+        { "name": "toInt", "args": {} },
+        { "name": "clampInt", "args": { "min": 0, "max": 20 } }
+      ]
+    },
+    {
+      "key": "po",
+      "from": { "path": "levels.0.range" },
+      "to": [{ "model": "spells", "field": "po" }],
+      "formatters": [
+        { "name": "toInt", "args": {} },
+        { "name": "clampInt", "args": { "min": 0, "max": 50 } }
+      ]
+    },
+    {
+      "key": "area",
+      "from": { "path": "levels.0.effects.0.zoneDescr.shape" },
+      "to": [{ "model": "spells", "field": "area" }],
+      "formatters": [{ "name": "nullableInt", "args": {} }]
+    },
+    {
+      "key": "level",
+      "from": { "path": "levels.0.grade" },
+      "to": [{ "model": "spells", "field": "level" }],
+      "formatters": [
+        { "name": "toInt", "args": {} },
+        { "name": "clampInt", "args": { "min": 1, "max": 6 } },
+        { "name": "toString", "args": {} }
+      ]
+    },
+    {
+      "key": "cast_per_turn",
+      "from": { "path": "levels.0.maxCastPerTurn" },
+      "to": [{ "model": "spells", "field": "cast_per_turn" }],
+      "formatters": [
+        { "name": "toInt", "args": {} },
+        { "name": "clampInt", "args": { "min": 0, "max": 10 } },
+        { "name": "toString", "args": {} }
+      ]
+    }
+  ]
+}

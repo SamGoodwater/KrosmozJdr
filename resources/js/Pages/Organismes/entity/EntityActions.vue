@@ -230,6 +230,7 @@ const contextMenuStyle = computed(() => {
                    />
                    <span v-if="display === 'icon-text' || display === 'text'">{{ action.label }}</span>
                    <span v-else-if="display === 'icon-only' && !action.icon">{{ action.label }}</span>
+                   <span v-if="action.badge" class="badge badge-sm badge-primary ml-auto">{{ action.badge }}</span>
                  </button>
         </li>
 

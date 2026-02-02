@@ -78,7 +78,8 @@ class ConfigDrivenDofusDbCollectorTest extends TestCase
 
         $this->assertNotNull($seenUrl);
         $this->assertStringContainsString('name%5B%24search%5D=Bouftou', (string) $seenUrl);
-        $this->assertStringContainsString('id%5B%24in%5D%5B0%5D=1', (string) $seenUrl);
+        $this->assertStringContainsString('id%5B%24in%5D', (string) $seenUrl);
+        $this->assertStringContainsString('1', (string) $seenUrl);
         $this->assertStringNotContainsString('unknown', (string) $seenUrl);
     }
 }

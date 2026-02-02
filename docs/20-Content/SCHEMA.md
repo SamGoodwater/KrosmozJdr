@@ -104,6 +104,48 @@ erDiagram
     capability_id : bigint(20) unsigned
     specialization_id : bigint(20) unsigned
   }
+  CHARACTERISTIC_ENTITIES {
+    id : bigint(20) unsigned
+    characteristic_id : varchar(64)
+    entity : varchar(16)
+    min : int(11)
+    max : int(11)
+    formula : text
+    formula_display : text
+    default_value : varchar(255)
+    required : tinyint(1)
+    validation_message : text
+    created_at : timestamp
+    updated_at : timestamp
+  }
+  CHARACTERISTICS {
+    id : varchar(64)
+    db_column : varchar(64)
+    name : varchar(255)
+    short_name : varchar(64)
+    description : text
+    type : varchar(16)
+    unit : varchar(32)
+    icon : varchar(64)
+    color : varchar(32)
+    sort_order : smallint(5) unsigned
+    forgemagie_allowed : tinyint(1)
+    forgemagie_max : tinyint(3) unsigned
+    applies_to : longtext
+    is_competence : tinyint(1)
+    characteristic_id : varchar(64)
+    alternative_characteristic_id : varchar(64)
+    skill_type : varchar(32)
+    value_available : longtext
+    labels : longtext
+    validation : longtext
+    mastery_value_available : longtext
+    mastery_labels : longtext
+    base_price_per_unit : decimal(12,2)
+    rune_price_per_unit : decimal(12,2)
+    created_at : timestamp
+    updated_at : timestamp
+  }
   CLASS_SPELL {
     classe_id : bigint(20) unsigned
     spell_id : bigint(20) unsigned
@@ -299,6 +341,34 @@ erDiagram
     deleted_at : timestamp
     created_by : bigint(20) unsigned
   }
+  DOFUSDB_CONVERSION_FORMULAS {
+    id : bigint(20) unsigned
+    characteristic_id : varchar(255)
+    entity : varchar(32)
+    formula_type : varchar(64)
+    parameters : longtext
+    formula_display : text
+    created_at : timestamp
+    updated_at : timestamp
+  }
+  EQUIPMENT_SLOT_CHARACTERISTICS {
+    id : bigint(20) unsigned
+    equipment_slot_id : varchar(32)
+    characteristic_id : varchar(64)
+    bracket_max : longtext
+    forgemagie_max : tinyint(3) unsigned
+    base_price_per_unit : decimal(12,2)
+    rune_price_per_unit : decimal(12,2)
+    created_at : timestamp
+    updated_at : timestamp
+  }
+  EQUIPMENT_SLOTS {
+    id : varchar(32)
+    name : varchar(255)
+    sort_order : smallint(5) unsigned
+    created_at : timestamp
+    updated_at : timestamp
+  }
   FAILED_JOBS {
     id : bigint(20) unsigned
     uuid : varchar(255)
@@ -428,6 +498,7 @@ erDiagram
   }
   MONSTER_RACES {
     id : bigint(20) unsigned
+    dofusdb_race_id : int(11)
     name : varchar(255)
     state : varchar(255)
     read_level : tinyint(4)
@@ -788,6 +859,9 @@ erDiagram
   CAPABILITY_CREATURE }o--|| CREATURES : "FK creature_id"
   CAPABILITY_SPECIALIZATION }o--|| CAPABILITIES : "FK capability_id"
   CAPABILITY_SPECIALIZATION }o--|| SPECIALIZATIONS : "FK specialization_id"
+  CHARACTERISTIC_ENTITIES }o--|| CHARACTERISTICS : "FK characteristic_id"
+  CHARACTERISTICS }o--|| CHARACTERISTICS : "FK alternative_characteristic_id"
+  CHARACTERISTICS }o--|| CHARACTERISTICS : "FK characteristic_id"
   CLASS_SPELL }o--|| CLASSES : "FK classe_id"
   CLASS_SPELL }o--|| SPELLS : "FK spell_id"
   CLASSES }o--|| USERS : "FK created_by"
@@ -811,6 +885,9 @@ erDiagram
   CREATURE_SPELL }o--|| CREATURES : "FK creature_id"
   CREATURE_SPELL }o--|| SPELLS : "FK spell_id"
   CREATURES }o--|| USERS : "FK created_by"
+  DOFUSDB_CONVERSION_FORMULAS }o--|| CHARACTERISTICS : "FK characteristic_id"
+  EQUIPMENT_SLOT_CHARACTERISTICS }o--|| CHARACTERISTICS : "FK characteristic_id"
+  EQUIPMENT_SLOT_CHARACTERISTICS }o--|| EQUIPMENT_SLOTS : "FK equipment_slot_id"
   FILE_CAMPAIGN }o--|| CAMPAIGNS : "FK campaign_id"
   FILE_CAMPAIGN }o--|| FILES : "FK file_id"
   FILE_SCENARIO }o--|| FILES : "FK file_id"

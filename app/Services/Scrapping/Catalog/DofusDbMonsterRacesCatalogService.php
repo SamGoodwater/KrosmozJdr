@@ -106,5 +106,39 @@ class DofusDbMonsterRacesCatalogService
         }
         return $map;
     }
+
+    /**
+     * Résout un nom de race (ou slug) vers l'ID DofusDB.
+     * Comparaison insensible à la casse et aux espaces.
+     *
+     * @return int|null raceId ou null si non trouvé
+     */
+    public function findRaceIdByName(string $name, string $lang = 'fr', bool $skipCache = false): ?int
+    {
+        $name = trim($name);
+        if ($name === '') {
+            return null;
+        }
+        $normalize = static function (string $s): string {
+            $s = mb_strtolower($s, 'UTF-8');
+            $s = preg_replace('/\s+/', ' ', $s) ?? $s;
+
+            return trim($s);
+        };
+        $needle = $normalize($name);
+        foreach ($this->listAll($lang, $skipCache) as $r) {
+            $raceName = $r['name'] ?? null;
+            if (!is_string($raceName) || $raceName === '') {
+                continue;
+            }
+            if ($normalize($raceName) === $needle) {
+                $id = (int) ($r['id'] ?? 0);
+
+                return $id > 0 ? $id : null;
+            }
+        }
+
+        return null;
+    }
 }
 

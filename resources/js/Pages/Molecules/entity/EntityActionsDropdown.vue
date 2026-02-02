@@ -188,6 +188,7 @@ const showEntityName = computed(() => Boolean(entityName.value));
               <Icon v-if="showIcon" :source="action.icon" :alt="action.label" :size="size" />
               <span v-if="showText">{{ action.label }}</span>
               <span v-else-if="!showIcon">{{ action.label }}</span>
+              <span v-if="action.badge" class="badge badge-sm badge-primary ml-auto">{{ action.badge }}</span>
             </button>
           </li>
           

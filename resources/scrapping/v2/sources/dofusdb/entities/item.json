@@ -1,0 +1,123 @@
+{
+  "version": 1,
+  "source": "dofusdb",
+  "entity": "item",
+  "label": "Objets (ressources / consommables / équipements)",
+  "meta": {
+    "description": "Items DofusDB. Un même mapping alimente resources, consumables et items selon le typeId. Champs communs : dofusdb_id, name, description, level, price, image, typeId, rarity. resources : + weight (realWeight). effect/bonus/recipe non mappés (formatters dédiés absents en V2). Filtrage par alias : --collect=ressource, --collect=consumable, --collect=item."
+  },
+  "endpoints": {
+    "fetchOne": {
+      "pathTemplate": "/items/{id}",
+      "method": "GET",
+      "queryDefaults": { "lang": "{lang}" }
+    },
+    "fetchMany": {
+      "path": "/items",
+      "method": "GET",
+      "queryDefaults": { "lang": "{lang}", "$limit": 50, "$skip": 0 }
+    }
+  },
+  "filters": {
+    "supported": [
+      { "key": "id", "type": "number" },
+      { "key": "idMin", "type": "number" },
+      { "key": "idMax", "type": "number" },
+      { "key": "ids", "type": "number[]", "max": 500 },
+      { "key": "name", "type": "string" },
+      { "key": "typeId", "type": "number" },
+      { "key": "typeIds", "type": "number[]", "max": 500 },
+      { "key": "levelMin", "type": "number" },
+      { "key": "levelMax", "type": "number" }
+    ]
+  },
+  "target": {
+    "krosmozEntity": "item",
+    "primaryKey": { "sourceField": "id", "targetField": "dofusdb_id" },
+    "autoUpdateField": "auto_update"
+  },
+  "mapping": [
+    {
+      "key": "dofusdb_id",
+      "from": { "path": "id" },
+      "to": [
+        { "model": "resources", "field": "dofusdb_id" },
+        { "model": "consumables", "field": "dofusdb_id" },
+        { "model": "items", "field": "dofusdb_id" }
+      ],
+      "formatters": [{ "name": "toString", "args": {} }]
+    },
+    {
+      "key": "name",
+      "from": { "path": "name", "langAware": true },
+      "to": [
+        { "model": "resources", "field": "name" },
+        { "model": "consumables", "field": "name" },
+        { "model": "items", "field": "name" }
+      ],
+      "formatters": [{ "name": "pickLang", "args": { "lang": "{lang}", "fallback": "fr" } }]
+    },
+    {
+      "key": "description",
+      "from": { "path": "description", "langAware": true },
+      "to": [
+        { "model": "resources", "field": "description" },
+        { "model": "consumables", "field": "description" },
+        { "model": "items", "field": "description" }
+      ],
+      "formatters": [{ "name": "pickLang", "args": { "lang": "{lang}", "fallback": "fr" } }]
+    },
+    {
+      "key": "level",
+      "from": { "path": "level" },
+      "to": [
+        { "model": "resources", "field": "level" },
+        { "model": "consumables", "field": "level" },
+        { "model": "items", "field": "level" }
+      ],
+      "formatters": [{ "name": "toString", "args": {} }]
+    },
+    {
+      "key": "price",
+      "from": { "path": "price" },
+      "to": [
+        { "model": "resources", "field": "price" },
+        { "model": "consumables", "field": "price" },
+        { "model": "items", "field": "price" }
+      ],
+      "formatters": [{ "name": "nullableInt", "args": {} }]
+    },
+    {
+      "key": "image",
+      "from": { "path": "img" },
+      "to": [
+        { "model": "resources", "field": "image" },
+        { "model": "consumables", "field": "image" },
+        { "model": "items", "field": "image" }
+      ],
+      "formatters": [{ "name": "storeScrappedImage", "args": { "entityFolder": "items", "idPath": "id" } }]
+    },
+    {
+      "key": "typeId",
+      "from": { "path": "typeId" },
+      "to": [{ "model": "items", "field": "type_id" }],
+      "formatters": [{ "name": "toInt", "args": {} }]
+    },
+    {
+      "key": "weight",
+      "from": { "path": "realWeight" },
+      "to": [{ "model": "resources", "field": "weight" }],
+      "formatters": [{ "name": "nullableInt", "args": {} }]
+    },
+    {
+      "key": "rarity",
+      "from": { "path": "rarity" },
+      "to": [
+        { "model": "resources", "field": "rarity" },
+        { "model": "consumables", "field": "rarity" },
+        { "model": "items", "field": "rarity" }
+      ],
+      "formatters": [{ "name": "nullableInt", "args": {} }]
+    }
+  ]
+}

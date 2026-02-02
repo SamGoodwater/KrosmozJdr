@@ -3,9 +3,12 @@
 namespace App\Http\Controllers\Scrapping;
 
 use App\Http\Controllers\Controller;
+use App\Models\Entity\Creature;
 use App\Services\Scrapping\Config\ScrappingConfigLoader;
 use App\Services\Scrapping\Constants\EntityLimits;
+use App\Services\Scrapping\DataCollect\DataCollectService;
 use App\Services\Scrapping\Orchestrator\ScrappingOrchestrator;
+use App\Services\Scrapping\V2\Orchestrator\Orchestrator as ScrappingV2Orchestrator;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Log;
@@ -23,7 +26,8 @@ class ScrappingController extends Controller
 {
     public function __construct(
         private ScrappingOrchestrator $orchestrator,
-        private ScrappingConfigLoader $configLoader
+        private ScrappingConfigLoader $configLoader,
+        private DataCollectService $dataCollectService
     ) {}
 
     /**
@@ -152,42 +156,132 @@ class ScrappingController extends Controller
      * @param int $id ID du monstre dans DofusDB (1-5000)
      * @return JsonResponse
      */
+    /**
+     * Import d'un monstre : collecte legacy (avec spells/drops), puis pipeline V2 (conversion BDD + validation + intégration).
+     * Les relations (sorts, drops) sont importées en cascade via l'orchestrateur legacy.
+     */
     public function importMonster(Request $request, int $id): JsonResponse
     {
         try {
             $options = $this->extractOptions($request);
-            $result = $this->orchestrator->importMonster($id, $options);
-            
-            if ($result['success']) {
-                $response = [
-                    'success' => true,
-                    'message' => $result['message'],
-                    'data' => $result['data'],
+            $includeRelations = $options['include_relations'] ?? true;
+            $validateOnly = (bool) ($options['validate_only'] ?? false);
+            $dryRun = (bool) ($options['dry_run'] ?? false);
+
+            $rawData = $this->dataCollectService->collectMonster($id, $includeRelations, $includeRelations, $options);
+
+            if ($rawData === []) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Aucune donnée collectée pour ce monstre.',
                     'timestamp' => now()->toISOString(),
-                ];
-                
-                // Ajouter les relations importées si présentes
-                if (isset($result['related']) && !empty($result['related'])) {
-                    $response['related'] = $result['related'];
-                }
-                
-                return response()->json($response, 201);
+                ], 404);
             }
-            
+
+            $v2Orchestrator = ScrappingV2Orchestrator::default();
+            $v2Options = [
+                'convert' => true,
+                'validate' => true,
+                'integrate' => !$validateOnly && !$dryRun,
+                'dry_run' => $dryRun,
+                'force_update' => (bool) ($options['force_update'] ?? false),
+                'ignore_unvalidated' => false,
+            ];
+
+            $v2Result = $v2Orchestrator->runOneWithRaw('dofusdb', 'monster', $rawData, $v2Options);
+
+            if (!$v2Result->isSuccess()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => $v2Result->getMessage(),
+                    'errors' => $v2Result->getValidationErrors(),
+                    'timestamp' => now()->toISOString(),
+                ], 400);
+            }
+
+            if ($validateOnly) {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Validation uniquement (sans intégration)',
+                    'data' => [
+                        'action' => 'validated',
+                        'raw' => $rawData,
+                        'converted' => $v2Result->getConverted(),
+                    ],
+                    'related' => [],
+                    'timestamp' => now()->toISOString(),
+                ], 200);
+            }
+
+            $integrationResult = $v2Result->getIntegrationResult();
+            $creatureId = $integrationResult?->getCreatureId();
+            $monsterId = $integrationResult?->getMonsterId();
+            $data = [
+                'creature_id' => $creatureId,
+                'monster_id' => $monsterId,
+                'creature_action' => $integrationResult?->getCreatureAction() ?? '',
+                'monster_action' => $integrationResult?->getMonsterAction() ?? '',
+            ];
+
+            $relatedResults = [];
+            if ($includeRelations && $creatureId !== null) {
+                $importedSpellIds = [];
+                if (isset($rawData['spells']) && is_array($rawData['spells'])) {
+                    foreach ($rawData['spells'] as $spellData) {
+                        $spellId = $spellData['id'] ?? null;
+                        if ($spellId) {
+                            try {
+                                $spellResult = $this->orchestrator->importSpell($spellId, array_merge($options, ['include_relations' => false]));
+                                $importedSpellIds[] = $spellResult['data']['id'] ?? null;
+                                $relatedResults[] = ['type' => 'spell', 'id' => $spellId, 'result' => $spellResult];
+                            } catch (\Exception $e) {
+                                Log::warning('Erreur import sort associé au monstre', ['monster_id' => $id, 'spell_id' => $spellId, 'error' => $e->getMessage()]);
+                            }
+                        }
+                    }
+                }
+                $importedResourceIds = [];
+                if (isset($rawData['drops']) && is_array($rawData['drops'])) {
+                    foreach ($rawData['drops'] as $resourceData) {
+                        $resourceId = $resourceData['id'] ?? null;
+                        if ($resourceId) {
+                            try {
+                                $resourceResult = $this->orchestrator->importItem($resourceId, array_merge($options, ['include_relations' => false]));
+                                $importedResourceIds[] = $resourceResult['data']['id'] ?? null;
+                                $relatedResults[] = ['type' => 'resource', 'id' => $resourceId, 'result' => $resourceResult];
+                            } catch (\Exception $e) {
+                                Log::warning('Erreur import ressource associée au monstre', ['monster_id' => $id, 'resource_id' => $resourceId, 'error' => $e->getMessage()]);
+                            }
+                        }
+                    }
+                }
+                $creature = Creature::find($creatureId);
+                if ($creature) {
+                    $validSpellIds = array_filter($importedSpellIds);
+                    if ($validSpellIds !== []) {
+                        $creature->spells()->sync($validSpellIds);
+                    }
+                    $validResourceIds = array_filter($importedResourceIds);
+                    if ($validResourceIds !== []) {
+                        $creature->resources()->sync(array_fill_keys($validResourceIds, ['quantity' => '1']));
+                    }
+                }
+            }
+
             return response()->json([
-                'success' => false,
-                'message' => $result['message'],
-                'error' => $result['error'] ?? 'Erreur inconnue',
+                'success' => true,
+                'message' => 'Monstre importé avec succès (pipeline V2)',
+                'data' => $data,
+                'related' => $relatedResults,
                 'timestamp' => now()->toISOString(),
-            ], 400);
-            
+            ], 201);
         } catch (\Exception $e) {
             Log::error('Erreur lors de l\'import de monstre via API', [
                 'id' => $id,
                 'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString()
+                'trace' => $e->getTraceAsString(),
             ]);
-            
+
             return response()->json([
                 'success' => false,
                 'message' => 'Erreur lors de l\'import du monstre',

@@ -1,0 +1,33 @@
+{
+  "version": 1,
+  "source": "dofusdb",
+  "entity": "monster-race",
+  "label": "Races de monstres",
+  "meta": {
+    "catalogOnly": true,
+    "description": "Catalogue DofusDB des races de monstres. Récupération via l'endpoint /monster-races (pagination 50)."
+  },
+  "endpoints": {
+    "fetchOne": {
+      "pathTemplate": "/monster-races/{id}",
+      "method": "GET",
+      "queryDefaults": { "lang": "{lang}" }
+    },
+    "fetchMany": {
+      "path": "/monster-races",
+      "method": "GET",
+      "queryDefaults": { "lang": "{lang}", "$limit": 50, "$skip": 0 }
+    }
+  },
+  "filters": {
+    "supported": [
+      { "key": "id", "type": "number" },
+      { "key": "name", "type": "string" }
+    ]
+  },
+  "target": { "krosmozEntity": "monster-race", "catalogOnly": true },
+  "mapping": [
+    { "key": "id", "from": { "path": "id" }, "to": [] },
+    { "key": "name", "from": { "path": "name", "langAware": true }, "to": [] }
+  ]
+}

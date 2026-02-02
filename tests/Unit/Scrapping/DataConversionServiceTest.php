@@ -3,12 +3,13 @@
 namespace Tests\Unit\Scrapping;
 
 use App\Services\Scrapping\DataConversion\DataConversionService;
+use Database\Seeders\CharacteristicConfigSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
 /**
  * Tests unitaires pour le service DataConversion
- * 
+ *
  * @package Tests\Unit\Scrapping
  */
 class DataConversionServiceTest extends TestCase
@@ -20,7 +21,9 @@ class DataConversionServiceTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->service = new DataConversionService();
+        (new CharacteristicConfigSeeder)->run();
+        app(\App\Services\Characteristic\CharacteristicService::class)->clearCache();
+        $this->service = $this->app->make(DataConversionService::class);
     }
 
     /**
@@ -33,6 +36,7 @@ class DataConversionServiceTest extends TestCase
             'description' => [
                 'fr' => 'Description de la classe Iop'
             ],
+            'level' => 1,
             'life' => 50,
             'life_dice' => '1d6',
             'specificity' => 'Force'
@@ -44,7 +48,8 @@ class DataConversionServiceTest extends TestCase
         $this->assertArrayHasKey('name', $result);
         $this->assertArrayHasKey('description', $result);
         $this->assertArrayHasKey('life', $result);
-        $this->assertEquals(50, $result['life']);
+        // Vie convertie via DofusDbConversionFormulas : 50/200 + level*5 (level=1) → 5
+        $this->assertEquals(5, $result['life']);
     }
 
     /**
@@ -56,6 +61,7 @@ class DataConversionServiceTest extends TestCase
         $rawData = [
             'id' => 1,
             'description' => ['fr' => $longDescription],
+            'level' => 1,
             'life' => 50,
             'life_dice' => '1d6',
             'specificity' => 'Force'
@@ -96,7 +102,8 @@ class DataConversionServiceTest extends TestCase
         $this->assertArrayHasKey('creatures', $result);
         $this->assertArrayHasKey('monsters', $result);
         $this->assertEquals('Bouftou', $result['creatures']['name']);
-        $this->assertEquals(5, $result['creatures']['level']);
+        // Niveau converti via DofusDbConversionFormulas : level Dofus 5 → round(5/10) = 1
+        $this->assertEquals(1, $result['creatures']['level']);
     }
 
     /**
@@ -176,6 +183,7 @@ class DataConversionServiceTest extends TestCase
         $rawData = [
             'id' => 1,
             'description' => ['fr' => 'Test'],
+            'level' => 1,
             'life' => 9999, // Valeur très élevée
             'life_dice' => '1d6',
             'specificity' => 'Test'
@@ -183,8 +191,8 @@ class DataConversionServiceTest extends TestCase
 
         $result = $this->service->convertClass($rawData);
 
-        // La vie devrait être limitée selon la configuration
-        $this->assertLessThanOrEqual(1000, $result['life']);
+        // La vie devrait être limitée selon la configuration (max 2000 pour class)
+        $this->assertLessThanOrEqual(2000, $result['life']);
     }
 
     /**
@@ -216,8 +224,8 @@ class DataConversionServiceTest extends TestCase
         $this->assertIsArray($result);
         // Le niveau 0 est converti au minimum (1) selon les limites
         $this->assertEquals(1, $result['creatures']['level']);
-        // La vie 0 est convertie au minimum (1) selon les limites
-        $this->assertEquals(1, $result['creatures']['life']);
+        // La vie 0 : formule d/200 + level*5 avec level=1 → 5
+        $this->assertEquals(5, $result['creatures']['life']);
     }
 
     /**
@@ -228,6 +236,10 @@ class DataConversionServiceTest extends TestCase
         $rawData = [
             'id' => 1,
             'description' => ['fr' => 'Description'],
+            'level' => 1,
+            'life' => 50,
+            'life_dice' => '1d6',
+            'specificity' => 'Force',
             'spells' => [
                 ['id' => 201, 'name' => ['fr' => 'Sort']]
             ]

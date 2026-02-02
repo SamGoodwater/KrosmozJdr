@@ -262,6 +262,5 @@ Les tableaux utilisent maintenant toute la largeur disponible :
 - **Scroll horizontal** : `overflow-x-auto` sur les conteneurs de tableaux pour gérer les tableaux larges
 - **Responsive** : Le tableau ne passe jamais sous le menu de gauche grâce au système de positionnement existant
 
-Voir `docs/100- Done/OPTIMISATIONS_UI_2026_01.md` pour plus de détails.
 
 

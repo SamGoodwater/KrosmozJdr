@@ -20,54 +20,9 @@
     "description": "Le projet utilise les dernières recommandations en matière de sécurité, de qualité de code et d'organisation. Le code est en anglais, les commentaires en français. L'architecture suit le principe Atomic Design pour le frontend."
   },
   {
-    "path": "10-BestPractices/AUDIT_FINAL_REPORT.md",
-    "title": "🎯 Rapport d'audit final — Pages/Sections (DRY + Sécurité + Bonnes pratiques)",
-    "description": "**Date** : 2025-01-13"
-  },
-  {
-    "path": "10-BestPractices/AUDIT_FINDINGS.md",
-    "title": "Résultats de l'audit initial - KrosmozJDR",
-    "description": "**Date** : 2025-01-27"
-  },
-  {
-    "path": "10-BestPractices/AUDIT_FINDINGS_DRY_MODALS.md",
-    "title": "Rapport d'audit — DRY & Duplications (Modals/Renderer/Templates)",
-    "description": "**Date** : 2025-01-13"
-  },
-  {
-    "path": "10-BestPractices/AUDIT_FINDINGS_VALIDATION_XSS.md",
-    "title": "Rapport d'audit —",
-    "description": "Validation & XSS (Pages/Sections)"
-  },
-  {
-    "path": "10-BestPractices/AUDIT_FORMREQUESTS_SUMMARY.md",
-    "title": "Résumé de l'audit des FormRequests - KrosmozJDR",
-    "description": "**Date** : 2025-01-27"
-  },
-  {
-    "path": "10-BestPractices/AUDIT_PLAN.md",
-    "title": "Plan d'audit du code - KrosmozJDR",
-    "description": "**Date de création** : 2025-01-27"
-  },
-  {
-    "path": "10-BestPractices/AUDIT_TEST_PLAN.md",
-    "title": "Plan de tests — Pages/Sections (Non-régression)",
-    "description": "**Date** : 2025-01-13"
-  },
-  {
-    "path": "10-BestPractices/AUDIT_TOOLING_QUALITY.md",
-    "title": "Rapport d'audit — Outillage qualité (PHPStan + ESLint)",
-    "description": "**Date** : 2025-01-13"
-  },
-  {
     "path": "10-BestPractices/CODE_DOCUMENTATION.md",
     "title": "Documentation du code (docbloc) — KrosmozJDR",
     "description": "- Toujours documenter les composants, fonctions, classes, méthodes publiques."
-  },
-  {
-    "path": "10-BestPractices/ENTITY_DESCRIPTORS_TESTING_PLAN.md",
-    "title": "Plan de tests — Entity Descriptors System",
-    "description": "**Date** : 2025-01-27"
   },
   {
     "path": "10-BestPractices/FORMULAS_PRACTICES.md",
@@ -95,6 +50,11 @@
     "description": "- Fichiers : kebab-case (ex : `my-class-file.php`)"
   },
   {
+    "path": "10-BestPractices/NETTOYAGE_CODE_OBSOLETE.md",
+    "title": "Code obsolète et éléments conservés",
+    "description": "Référence des éléments supprimés ou dépréciés et de ceux conservés pour rétrocompatibilité (formules Dofus, admin caractéristiques, scrapping)."
+  },
+  {
     "path": "10-BestPractices/PERMISSIONS_SOURCE_OF_TRUTH.md",
     "title": "Permissions — Source of Truth (KrosmozJDR)",
     "description": "- **Backend = vérité** : toutes les décisions d’autorisation (lecture/écriture) sont prises via **Policies/Gates** Laravel."
@@ -115,164 +75,24 @@
     "description": "- Toujours valider les entrées utilisateur (backend & frontend)."
   },
   {
+    "path": "10-BestPractices/SYNTAXE_FORMULES_CARACTERISTIQUES.md",
+    "title": "Syntaxe des formules — Caractéristiques (config)",
+    "description": "Convention pour les formules **exploitables** et **affichage** des caractéristiques (classe, monstre). Source de vérité : `config/characteristics.php` ; formules par entité dans `entities.class` et `entities.monster`. Les items n’ont pas de formule (bonus bruts)."
+  },
+  {
     "path": "10-BestPractices/TESTING_PRACTICES.md",
     "title": "Tests — Bonnes pratiques",
     "description": "- Mettre en place des tests unitaires et d'intégration (backend, frontend)."
   },
   {
-    "path": "100- Done/AUDIT_PAGES_SECTIONS_2025_01_13.md",
-    "title": "✅ Audit DRY/Sécurité Pages/Sections — Terminé (2025-01-13)",
-    "description": "**Durée** : ~6h (cartographie + analyse + recommandations + plan tests)"
-  },
-  {
-    "path": "100- Done/AUTHENTICATION_ANALYSIS_SYNTHESIS.md",
-    "title": "🔐 Synthèse de l'Analyse - Système d'Authentification KrosmozJDR",
-    "description": "J'ai effectué une **analyse complète et approfondie** du système d'authentification KrosmozJDR. Voici les résultats de cette évaluation :"
-  },
-  {
-    "path": "100- Done/AUTHENTICATION_EXECUTIVE_SUMMARY.md",
-    "title": "📊 Résumé Exécutif - Système d'Authentification KrosmozJDR",
-    "description": "**Note : 9/10** - Système d'authentification de niveau professionnel"
-  },
-  {
-    "path": "100- Done/AUTHENTICATION_SYSTEM_ANALYSIS.md",
-    "title": "🔐 Analyse du Système d'Authentification KrosmozJDR",
-    "description": "Le système d'authentification de KrosmozJDR est un système **moderne et robuste** basé sur Laravel 12 avec Vue 3, utilisant Inertia.js pour la communication frontend-backend. Il intègre des fonctionnalités avancées de validation, de notifications et de gestion d'état."
-  },
-  {
-    "path": "100- Done/AUTO_LOGIN_PLAYWRIGHT_IMPLEMENTATION.md",
-    "title": "🔐 Implémentation du Système de Connexion Automatique Playwright",
-    "description": "Cette documentation décrit l'implémentation complète du système de connexion automatique Playwright pour le projet KrosmozJDR. Ce système permet de se connecter automatiquement avec différents types d'utilisateurs pour faciliter les tests E2E et le développement."
-  },
-  {
-    "path": "100- Done/COMPLETE_SYSTEMS_ANALYSIS.md",
-    "title": "🔍 Analyse Complète des Systèmes KrosmozJDR",
-    "description": "J'ai effectué une **analyse complète et approfondie** des deux systèmes principaux de KrosmozJDR :"
-  },
-  {
-    "path": "100- Done/ENTITY_ACTIONS_IMPLEMENTATION_STATUS.md",
-    "title": "État d'implémentation — Système d'Actions pour les Entités",
-    "description": "**Date** : 2026-01-06"
-  },
-  {
-    "path": "100- Done/ENTITY_ACTIONS_SYSTEM_PROPOSAL.md",
-    "title": "Proposition — Système d'Actions pour les Entités",
-    "description": "**Date** : 2026-01-06"
-  },
-  {
-    "path": "100- Done/ENTITY_DESCRIPTORS_ETAT_FINAL.md",
-    "title": "État final — Système Entity Field Descriptors",
-    "description": "**Date** : 2026-01-06"
-  },
-  {
-    "path": "100- Done/ENTITY_DESCRIPTORS_PROGRESSION.md",
-    "title": "Progression — Système Entity Field Descriptors",
-    "description": "**Date de création** : 2026-01-06"
-  },
-  {
-    "path": "100- Done/ENTITY_DESCRIPTORS_VALIDATION_REPORT.md",
-    "title": "Rapport de validation — Système Entity Field Descriptors",
-    "description": "**Date** : 2026-01-06"
-  },
-  {
-    "path": "100- Done/FRONTEND_MODELS_IMPLEMENTATION.md",
-    "title": "Implémentation des Modèles Frontend JS — KrosmozJDR",
-    "description": "**Date de complétion** : 2025-01-27"
-  },
-  {
-    "path": "100- Done/INPUT_MIGRATION.md",
-    "title": "Migration Input — Nouvelle architecture factorisée",
-    "description": "- **API centralisée** dans `inputHelper.js`"
-  },
-  {
-    "path": "100- Done/INPUT_SYSTEM_ANALYSIS.md",
-    "title": "🔧 Analyse du Système d'Input KrosmozJDR",
-    "description": "Le système d'input de KrosmozJDR est un **système complexe et sophistiqué** basé sur l'Atomic Design, utilisant Vue 3 avec Composition API. Il intègre des fonctionnalités avancées de validation, d'actions contextuelles, de gestion d'état et de personnalisation."
-  },
-  {
-    "path": "100- Done/INPUT_SYSTEM_EXECUTIVE_SUMMARY.md",
-    "title": "📊 Résumé Exécutif - Système d'Input KrosmozJDR",
-    "description": "**Note : 9/10** - Système d'input de niveau professionnel"
-  },
-  {
-    "path": "100- Done/NETTOYAGE_CODE_2026_01.md",
-    "title": "Rapport de nettoyage du code — Janvier 2026",
-    "description": "**Date** : 2026-01-08"
-  },
-  {
-    "path": "100- Done/OPTIMISATIONS_UI_2026_01.md",
-    "title": "Optimisations UI — Janvier 2026",
-    "description": "**Date** : 2026-01-06"
-  },
-  {
     "path": "100- Done/README.md",
-    "title": "",
-    "description": "Le dossier `docs/100-Done` a pour objectif de centraliser les fichiers Markdown relatifs aux actions réalisées durant le développement du projet, ainsi qu'aux fonctionnalités finalisées. Il s'agit de l'espace où l'on documente l'évolution concrète du projet (refactorings, jalons atteints, fonctionnalités livrées, etc.), à la différence de la documentation technique pure. Ce dossier permet de garder une trace claire de l'historique des avancées et des décisions prises au fil du temps."
+    "title": "100-Done",
+    "description": "Dossier réservé aux résumés descriptifs de fonctionnalités livrées ou de décisions d’architecture (référence, pas journal chronologique). Liens vers le reste de la doc."
   },
   {
-    "path": "100- Done/RECAPITULATIF_COMPLET.md",
-    "title": "📋 Récapitulatif complet des fonctionnalités créées",
-    "description": "**Date de mise à jour** : 2025-11-30"
-  },
-  {
-    "path": "100- Done/REFACTORING_INPUTS_PHASE1.md",
-    "title": "Refactoring Inputs - Phase 1 : Composables",
-    "description": "- **Unification des props de validation** : Remplacement de `validator`, `validatorError`, `validatorSuccess`, etc. par une seule prop `validation`"
-  },
-  {
-    "path": "100- Done/REFACTORING_INPUTS_PHASE2.md",
-    "title": "Refactoring Inputs - Phase 2 : Simplification et Tableaux",
-    "description": "Cette phase 2 du refactoring des inputs a consisté à simplifier drastiquement le système en basant entièrement la logique sur les tableaux `SPECIFIC_PROPS` et `COMMON_PROPS`, éliminant ainsi la complexité et les fonctions redondantes."
-  },
-  {
-    "path": "100- Done/REFACTORING_INPUTS_PHASE3.md",
-    "title": "Refactoring Inputs - Phase 3 : Système Unifié",
-    "description": "La **Phase 3** du refactoring a consisté à unifier complètement le système d'input en créant un composable centralisé `useInputField` et un template standardisé `FieldTemplate`. Cette phase a permis d'éliminer la duplication de code et d'offrir une API transparente et cohérente."
-  },
-  {
-    "path": "100- Done/RESOURCE_ENTITY_LEVEL1.md",
-    "title": "Ressource — Chaîne Niveau 1 (CRUD + pivots essentiels + scrapping types)",
-    "description": "L’objectif était de livrer une première chaîne complète autour de l’entité **Ressource** afin de valider le “pattern” du projet (scrapping → base → backend → frontend), tout en évitant de devoir finaliser toutes les autres entités en même temps."
-  },
-  {
-    "path": "100- Done/SCRAPPING_IMPLEMENTATION_PROGRESS.md",
-    "title": "Progression de l'implémentation du système de Scrapping",
-    "description": "**2025-01-27**"
-  },
-  {
-    "path": "100- Done/SCRAPPING_STATUS_SUMMARY.md",
-    "title": "📊 Résumé de l'état du système de Scrapping - KrosmozJDR",
-    "description": "**Date de mise à jour** : 2025-01-27"
-  },
-  {
-    "path": "100- Done/SECTION_REFACTORING_REPORT.md",
-    "title": "Rapport de refactoring - Sections (Modals & Forms)",
-    "description": "**Date** : 13 Décembre 2024"
-  },
-  {
-    "path": "100- Done/SESSION_OPTIMISATION_COMPLETE_REPORT.md",
-    "title": "Rapport de Session d'Optimisation Complète - Krosmoz-JDR",
-    "description": "**Date** : 13 Décembre 2024"
-  },
-  {
-    "path": "100- Done/TESTS_AUTHENTIFICATION.md",
-    "title": "Tests d'authentification - Documentation",
-    "description": "Cette documentation décrit les tests d'authentification mis en place pour le projet Krosmoz-JDR. Les tests couvrent les fonctionnalités principales d'authentification : inscription, connexion, déconnexion, validation des formulaires et middlewares."
-  },
-  {
-    "path": "100- Done/TESTS_ENTITY_DESCRIPTORS_IMPLEMENTATION.md",
-    "title": "Tests — Système Entity Field Descriptors",
-    "description": "**Date de finalisation** : 2026-01-06"
-  },
-  {
-    "path": "100- Done/TESTS_IMPLEMENTATION_REPORT.md",
-    "title": "Rapport d'implémentation des tests - Pages/Sections",
-    "description": "**Date** : 13 Décembre 2024"
-  },
-  {
-    "path": "100- Done/VALIDATION_REFACTORING.md",
-    "title": "Refactoring du Système de Validation — KrosmozJDR",
-    "description": "Le système de validation a été entièrement refactorisé pour répondre aux besoins de simplicité et de transparence. L'objectif était de créer une API qui évite les conflits avec les vues tout en restant puissante et flexible."
+    "path": "110- To Do/PROPOSITION_CHARACTERISTICS_EQUIPMENT_IMPLEMENTATION.md",
+    "title": "Proposition : intégration formules, forgemagie et équipements dans la config characteristics",
+    "description": "Références : `Caractéristiques.pdf`, `Equipements et forgemagie.pdf`."
   },
   {
     "path": "20-Content/21-Entities/ENTITIES_OVERVIEW.md",
@@ -405,44 +225,9 @@
     "description": "L'architecture des sections et pages suit un flux de données structuré qui sépare clairement les responsabilités :"
   },
   {
-    "path": "20-Content/PAGES_SECTIONS_COMPLIANCE.md",
-    "title": "📋 Conformité Code vs To-Do List - Pages/Sections",
-    "description": "**Date** : 2025-01-27"
-  },
-  {
     "path": "20-Content/PAGES_SECTIONS_COMPOSABLES.md",
     "title": "Composables pour les Sections",
     "description": "Les composables pour les sections fournissent une interface unifiée et réutilisable pour gérer les sections dans l'application. Ils suivent le pattern de composition de Vue 3 et centralisent la logique métier."
-  },
-  {
-    "path": "20-Content/PAGES_SECTIONS_MIGRATION.md",
-    "title": "Guide de migration vers la nouvelle architecture",
-    "description": "Ce guide explique comment migrer les composants existants vers la nouvelle architecture avec les mappers, adapters et composables UI."
-  },
-  {
-    "path": "20-Content/PAGES_SECTIONS_OPTIMIZATION_PLAN.md",
-    "title": "Plan d'optimisation - Système Pages et Sections",
-    "description": "- **29+ fichiers** dans `resources/js/Pages/Organismes/section/`"
-  },
-  {
-    "path": "20-Content/PAGES_SECTIONS_REFACTORING_PLAN.md",
-    "title": "🔄 Plan de Refactorisation - Pages et Sections",
-    "description": "**Date** : 2025-01-27"
-  },
-  {
-    "path": "20-Content/PAGES_SECTIONS_STATUS.md",
-    "title": "État d'avancement - Architecture Sections et Pages",
-    "description": "**Status** : Guide de test créé"
-  },
-  {
-    "path": "20-Content/PAGES_SECTIONS_SURFACE_MAP.md",
-    "title": "Cartographie Pages/Sections — Surface technique (Backend + Frontend)",
-    "description": "**Objectif** : lister tous les points d’entrée du système Pages/Sections, les actions mutantes, et leur protection (authn/authz/validation)."
-  },
-  {
-    "path": "20-Content/PAGES_SECTIONS_TESTING.md",
-    "title": "Guide de test pour les composants migrés",
-    "description": "Ce guide liste les tests à effectuer pour vérifier que tous les composants migrés fonctionnent correctement avec la nouvelle architecture."
   },
   {
     "path": "20-Content/README.md",
@@ -528,11 +313,6 @@
     "path": "30-UI/ENTITY SYSTEM/MODELS.md",
     "title": "Guide des Models",
     "description": "**Version** : 2.0"
-  },
-  {
-    "path": "30-UI/ENTITY SYSTEM/OPTIMISATIONS_IDENTIFIEES.md",
-    "title": "Optimisations identifiées — Système d'entités",
-    "description": "**Date** : 2026-01-XX"
   },
   {
     "path": "30-UI/ENTITY SYSTEM/README.md",
@@ -675,6 +455,621 @@
     "description": "Le projet utilise un **utilisateur système** pour attribuer (tracer) les opérations automatiques, notamment les imports du scrapping."
   },
   {
+    "path": "400- Règles/1-Introduction/1.1-presentation-du-jeu/1.1.1-concept-general.md",
+    "title": "1.1.1. Concept général",
+    "description": "**Description** : Présenter la fusion entre D&D et Dofus, les objectifs du système, ce qu'il conserve ou adapte."
+  },
+  {
+    "path": "400- Règles/1-Introduction/1.1-presentation-du-jeu/1.1.2-public-vise.md",
+    "title": "1.1.2. Public visé",
+    "description": "**Description** : Identifier les profils de joueurs (débutants, fans de Dofus, MJ expérimentés) et préciser les niveaux de difficulté."
+  },
+  {
+    "path": "400- Règles/1-Introduction/1.1-presentation-du-jeu/1.1.3-ton-et-intentions.md",
+    "title": "1.1.3. Ton et intentions",
+    "description": "**Description** : Décrire l'esprit du jeu (tactique, narratif, humour dofusien) et l'équilibre entre combat, exploration et roleplay."
+  },
+  {
+    "path": "400- Règles/1-Introduction/1.1-presentation-du-jeu/1.1.4-ressources-disponibles.md",
+    "title": "1.1.4. Ressources disponibles",
+    "description": "**Description** : Lister les supports (site, PDF, fiches perso) et indiquer où trouver les éléments complémentaires."
+  },
+  {
+    "path": "400- Règles/1-Introduction/1.1-presentation-du-jeu/Readme.md",
+    "title": "",
+    "description": ""
+  },
+  {
+    "path": "400- Règles/1-Introduction/1.2-concepts-de-base/1.2.1-jets-de-des-et-difficultes.md",
+    "title": "1.2.1. Jets de dés et difficultés",
+    "description": "**Description** : Expliquer la mécanique d20, les classes de difficulté, les réussites/échecs critiques, les tests opposés."
+  },
+  {
+    "path": "400- Règles/1-Introduction/1.2-concepts-de-base/1.2.2-ressources-principales.md",
+    "title": "1.2.2. Ressources principales",
+    "description": "**Description** : Décrire PA, PM, PO, Wakfu, initiative, ainsi que leur utilisation et récupération."
+  },
+  {
+    "path": "400- Règles/1-Introduction/1.2-concepts-de-base/1.2.3-structure-d-un-tour.md",
+    "title": "1.2.3. Structure d'un tour",
+    "description": "**Description** : Résumer le déroulement d'un tour (hors combat et en combat), types d'actions disponibles, réactions."
+  },
+  {
+    "path": "400- Règles/1-Introduction/1.2-concepts-de-base/1.2.4-traits-etats-et-competences.md",
+    "title": "1.2.4. Traits, états et compétences",
+    "description": "**Description** : Présenter les traits, états temporaires, compétences, maîtrise/expertise et leur rôle global."
+  },
+  {
+    "path": "400- Règles/1-Introduction/1.2-concepts-de-base/1.2.5-notions-de-combat-et-d-exploration.md",
+    "title": "1.2.5. Notions de combat et d'exploration",
+    "description": "**Description** : Donner un aperçu des règles de combat et d'exploration avant d'aller dans les sections détaillées."
+  },
+  {
+    "path": "400- Règles/1-Introduction/1.2-concepts-de-base/Readme.md",
+    "title": "",
+    "description": ""
+  },
+  {
+    "path": "400- Règles/1-Introduction/1.3-changelog-et-historique/1.3.1-chronologie-des-versions.md",
+    "title": "1.3.1. Chronologie des versions",
+    "description": "**Description** : Lister les versions (alpha, bêta, releases), leurs dates et noms associées."
+  },
+  {
+    "path": "400- Règles/1-Introduction/1.3-changelog-et-historique/1.3.2-changements-majeurs.md",
+    "title": "1.3.2. Changements majeurs",
+    "description": "**Description** : Résumer les modifications importantes à chaque version (système de caractéristiques, classes, etc.)."
+  },
+  {
+    "path": "400- Règles/1-Introduction/1.3-changelog-et-historique/1.3.3-decisions-de-design.md",
+    "title": "1.3.3. Décisions de design",
+    "description": "**Description** : Expliquer les choix de conception (ex : spécialisation, réserve de Wakfu) et leur justification."
+  },
+  {
+    "path": "400- Règles/1-Introduction/1.3-changelog-et-historique/1.3.4-archives-et-ressources.md",
+    "title": "1.3.4. Archives et ressources",
+    "description": "**Description** : Indiquer où retrouver les anciennes versions, les documents liés (PDF, Google Docs)."
+  },
+  {
+    "path": "400- Règles/1-Introduction/1.3-changelog-et-historique/Readme.md",
+    "title": "",
+    "description": ""
+  },
+  {
+    "path": "400- Règles/1-Introduction/Readme.md",
+    "title": "",
+    "description": ""
+  },
+  {
+    "path": "400- Règles/2-Creer-un-personnage/2.1-introduction-a-la-creation/2.1-introduction-a-la-creation.md",
+    "title": "2.1. Introduction à la création",
+    "description": "**Description** : Cette sous-partie présente une vue d'ensemble du processus de création de personnage, explique l'ordre recommandé des étapes et introduit la fiche de personnage."
+  },
+  {
+    "path": "400- Règles/2-Creer-un-personnage/2.1-introduction-a-la-creation/Readme.md",
+    "title": "",
+    "description": ""
+  },
+  {
+    "path": "400- Règles/2-Creer-un-personnage/2.2-les-caracteristiques/2.2.1-caracteristiques-principales.md",
+    "title": "2.2.1. Caractéristiques principales",
+    "description": "**Description** : Présente les 6 caractéristiques principales du personnage, leurs origines (Dofus et DnD), leurs modificateurs et leurs utilisations dans le jeu."
+  },
+  {
+    "path": "400- Règles/2-Creer-un-personnage/2.2-les-caracteristiques/2.2.2-caracteristiques-secondaires.md",
+    "title": "2.2.2. Caractéristiques secondaires",
+    "description": "**Description** : Détaille toutes les caractéristiques dérivées et calculées, issues de Dofus (PA, PM, PO, etc.) ou de DnD (CA, sauvegardes, etc.), ainsi que la réserve de Wakfu spécifique à KrosmozJDR."
+  },
+  {
+    "path": "400- Règles/2-Creer-un-personnage/2.2-les-caracteristiques/2.2.3-repartition-des-points.md",
+    "title": "2.2.3. Répartition des points",
+    "description": "**Description** : Explique comment répartir les points de caractéristiques lors de la création, la progression par niveau, et les limites à respecter."
+  },
+  {
+    "path": "400- Règles/2-Creer-un-personnage/2.2-les-caracteristiques/Readme.md",
+    "title": "",
+    "description": ""
+  },
+  {
+    "path": "400- Règles/2-Creer-un-personnage/2.3-choisir-sa-classe/2.3.1-generalites-sur-les-classes.md",
+    "title": "2.3.1. Généralités sur les classes",
+    "description": "**Description** : Présente le système de classes, les 19 classes disponibles (sans description détaillée de chacune), et surtout le tableau montrant l'association entre voies élémentaires et rôles pour chaque classe."
+  },
+  {
+    "path": "400- Règles/2-Creer-un-personnage/2.3-choisir-sa-classe/2.3.2-systeme-de-progression.md",
+    "title": "2.3.2. Système de progression",
+    "description": "**Description** : Détaille comment un personnage progresse avec sa classe : déblocage des sorts, gain de points de caractéristiques, niveaux de spécialisation."
+  },
+  {
+    "path": "400- Règles/2-Creer-un-personnage/2.3-choisir-sa-classe/2.3.3-voies-elementaires.md",
+    "title": "2.3.3. Voies élémentaires",
+    "description": "**Description** : Explique le système des 4 voies élémentaires (Feu, Eau, Terre, Air), leur association avec les caractéristiques et les rôles, ainsi que le gameplay multi-voix."
+  },
+  {
+    "path": "400- Règles/2-Creer-un-personnage/2.3-choisir-sa-classe/2.3.4-passifs-de-classe.md",
+    "title": "2.3.4. Passifs de classe",
+    "description": "**Description** : Présente les passifs uniques de chaque classe, leurs mécaniques spécifiques et leurs impacts sur le gameplay."
+  },
+  {
+    "path": "400- Règles/2-Creer-un-personnage/2.3-choisir-sa-classe/Readme.md",
+    "title": "",
+    "description": ""
+  },
+  {
+    "path": "400- Règles/2-Creer-un-personnage/2.4-choisir-sa-specialisation/2.4.1-presentation-des-specialisations.md",
+    "title": "2.4.1. Présentation des spécialisations",
+    "description": "**Description** : Introduit le concept de spécialisation, explique pourquoi ce système remplace les races/historiques de D&D, et présente la liste des spécialisations disponibles."
+  },
+  {
+    "path": "400- Règles/2-Creer-un-personnage/2.4-choisir-sa-specialisation/2.4.2-systeme-de-specialisation.md",
+    "title": "2.4.2. Système de spécialisation",
+    "description": "**Description** : Explique comment la spécialisation progresse avec les niveaux et débloque de nouveaux éléments (aptitudes, capacités, maîtrises)."
+  },
+  {
+    "path": "400- Règles/2-Creer-un-personnage/2.4-choisir-sa-specialisation/2.4.3-aptitudes.md",
+    "title": "2.4.3. Aptitudes",
+    "description": "**Description** : Détaille les aptitudes, qui sont des sorts D&D adaptés pour offrir un gameplay hors combat. Elles évoluent avec les niveaux et sont principalement conçues pour le roleplay."
+  },
+  {
+    "path": "400- Règles/2-Creer-un-personnage/2.4-choisir-sa-specialisation/2.4.4-capacites.md",
+    "title": "2.4.4. Capacités",
+    "description": "**Description** : Présente les capacités, qui sont des avantages passifs ou contextuels, différents des aptitudes. Elles peuvent être fusionnées avec les aptitudes pour simplifier les règles."
+  },
+  {
+    "path": "400- Règles/2-Creer-un-personnage/2.4-choisir-sa-specialisation/2.4.5-maitrises-et-expertises.md",
+    "title": "2.4.5. Maîtrises et Expertises",
+    "description": "**Description** : Explique le système de maîtrise et d'expertise des compétences, langues, outils et métiers, inspiré de D&D."
+  },
+  {
+    "path": "400- Règles/2-Creer-un-personnage/2.4-choisir-sa-specialisation/Readme.md",
+    "title": "",
+    "description": ""
+  },
+  {
+    "path": "400- Règles/2-Creer-un-personnage/2.5-personnalite-et-historique/2.5-personnalite-et-historique.md",
+    "title": "2.5. Personnalité et historique",
+    "description": "**Description** : Cette sous-partie guide le joueur dans la création du background de son personnage, de sa personnalité et de son histoire, ce qui détermine notamment les langues connues."
+  },
+  {
+    "path": "400- Règles/2-Creer-un-personnage/2.5-personnalite-et-historique/Readme.md",
+    "title": "",
+    "description": ""
+  },
+  {
+    "path": "400- Règles/2-Creer-un-personnage/2.6-s-equiper/2.6.1-equipements-de-base.md",
+    "title": "2.6.1. Équipements de base",
+    "description": "**Description** : Présente tous les types d'équipements de base disponibles, leurs caractéristiques, leurs restrictions et leurs utilisations. Les recettes de fabrication seront évoquées ici mais détaillées dans la section Métiers."
+  },
+  {
+    "path": "400- Règles/2-Creer-un-personnage/2.6-s-equiper/2.6.2-panoplies.md",
+    "title": "2.6.2. Panoplies",
+    "description": "**Description** : Explique le système de panoplies, qui donne des bonus supplémentaires lorsque le personnage porte plusieurs équipements d'un même groupe."
+  },
+  {
+    "path": "400- Règles/2-Creer-un-personnage/2.6-s-equiper/2.6.3-dofus-et-trophees.md",
+    "title": "2.6.3. Dofus et Trophées",
+    "description": "**Description** : Présente les Dofus et Trophées, équipements spéciaux très puissants et rares, avec des effets uniques."
+  },
+  {
+    "path": "400- Règles/2-Creer-un-personnage/2.6-s-equiper/2.6.4-montures-et-familiers.md",
+    "title": "2.6.4. Montures et Familiers",
+    "description": "**Description** : Détaille les montures et familiers, qui sont à la fois des équipements (donnent des stats) et des créatures (peuvent être utilisées). Ils offrent des bonus stratégiques tout en restant faciles à gérer."
+  },
+  {
+    "path": "400- Règles/2-Creer-un-personnage/2.6-s-equiper/Readme.md",
+    "title": "",
+    "description": ""
+  },
+  {
+    "path": "400- Règles/2-Creer-un-personnage/Readme.md",
+    "title": "",
+    "description": ""
+  },
+  {
+    "path": "400- Règles/3-Jouer/3.1-partir-a-l-aventure/3.1.1-exploration.md",
+    "title": "3.1.1. Exploration",
+    "description": "**Description** : Définir comment les personnages se déplacent et interagissent avec l'environnement hors combat : structures, terrains, visibilité, lignes de vue, interactions avec les PNJ et événements narratifs."
+  },
+  {
+    "path": "400- Règles/3-Jouer/3.1-partir-a-l-aventure/3.1.2-gestion-du-temps.md",
+    "title": "3.1.2. Gestion du temps",
+    "description": "**Description** : Cadencer l'aventure hors combat : tours d'exploration, gestion des repos (courts/longs), transitions jour/nuit, événements dépendant du temps."
+  },
+  {
+    "path": "400- Règles/3-Jouer/3.1-partir-a-l-aventure/3.1.3-pieges.md",
+    "title": "3.1.3. Pièges",
+    "description": "**Description** : Poser un cadre pour la détection, le déclenchement et le désamorçage des pièges. Inclut la création de pièges par les MJ et les conséquences sur les personnages."
+  },
+  {
+    "path": "400- Règles/3-Jouer/3.1-partir-a-l-aventure/3.1.4-reactions-hors-combat.md",
+    "title": "3.1.4. Réactions hors combat",
+    "description": "**Description** : Gérer les réactions rapides en dehors des combats (surprises, embuscades, initiatives sociales, tests opposés) et les interactions dynamiques avec l'environnement."
+  },
+  {
+    "path": "400- Règles/3-Jouer/3.1-partir-a-l-aventure/Readme.md",
+    "title": "",
+    "description": ""
+  },
+  {
+    "path": "400- Règles/3-Jouer/3.2-combat/3.2.1-mise-en-place-du-combat.md",
+    "title": "3.2.1. Mise en place du combat",
+    "description": "**Description** : Définir le déclencheur d'un combat, le positionnement initial, la notion de surprise et la procédure d'initiative."
+  },
+  {
+    "path": "400- Règles/3-Jouer/3.2-combat/3.2.2-tour-de-jeu-et-actions.md",
+    "title": "3.2.2. Tour de jeu et actions",
+    "description": "**Description** : Expliquer la structure d'un tour (PA/PM/PO), les types d'actions disponibles (simples, fortes, bonus), et la gestion des opportunités."
+  },
+  {
+    "path": "400- Règles/3-Jouer/3.2-combat/3.2.3-systeme-de-reaction.md",
+    "title": "3.2.3. Système de réaction",
+    "description": "**Description** : Adapter les réactions de D&D au système KrosmozJDR : tacle, fuite, attaques d'opportunité, limitations et utilisation des PA/PM."
+  },
+  {
+    "path": "400- Règles/3-Jouer/3.2-combat/3.2.4-gerer-la-sante.md",
+    "title": "3.2.4. Gérer la santé",
+    "description": "**Description** : Décrire la gestion des points de vie, points de bouclier, points de vie temporaires, soins, réanimations et états critiques (inconscient, mort)."
+  },
+  {
+    "path": "400- Règles/3-Jouer/3.2-combat/3.2.5-traits-et-etats.md",
+    "title": "3.2.5. Traits et états",
+    "description": "**Description** : Recenser les traits permanents et états temporaires, leurs effets sur les personnages, et leurs interactions avec les sorts/aptitudes."
+  },
+  {
+    "path": "400- Règles/3-Jouer/3.2-combat/Readme.md",
+    "title": "",
+    "description": ""
+  },
+  {
+    "path": "400- Règles/3-Jouer/3.3-sorts/3.3.1-typologie-des-sorts.md",
+    "title": "3.3.1. Typologie des sorts",
+    "description": "**Description** : Classer les sorts (de classe, apprenables, consommables, créature) et préciser leurs particularités d'utilisation."
+  },
+  {
+    "path": "400- Règles/3-Jouer/3.3-sorts/3.3.2-mecaniques-de-lancement.md",
+    "title": "3.3.2. Mécaniques de lancement",
+    "description": "**Description** : Détailler coûts, portée, cibles, lignes de vue, jets d'attaque ou de sauvegarde, ainsi que les effets spéciaux (zone, durée)."
+  },
+  {
+    "path": "400- Règles/3-Jouer/3.3-sorts/3.3.3-apprentissage-et-reapprentissage.md",
+    "title": "3.3.3. Apprentissage et réapprentissage",
+    "description": "**Description** : Expliquer comment apprendre un sort (parchemins, maître, temple), combien de temps cela prend, et comment permuter les sorts connus."
+  },
+  {
+    "path": "400- Règles/3-Jouer/3.3-sorts/3.3.4-reserve-de-wakfu.md",
+    "title": "3.3.4. Réserve de Wakfu",
+    "description": "**Description** : Définir la réserve de Wakfu, son calcul, son usage pour lancer des sorts, sa récupération, et les limites qu'elle impose."
+  },
+  {
+    "path": "400- Règles/3-Jouer/3.3-sorts/3.3.5-variantes-et-personnalisation.md",
+    "title": "3.3.5. Variantes et personnalisation",
+    "description": "**Description** : Décrire le système de variantes de sort, les restrictions de changement, et comment personnaliser ses sorts dans une classe donnée."
+  },
+  {
+    "path": "400- Règles/3-Jouer/3.3-sorts/Readme.md",
+    "title": "",
+    "description": ""
+  },
+  {
+    "path": "400- Règles/3-Jouer/3.4-aptitudes-et-capacites/3.4.1-aptitudes.md",
+    "title": "3.4.1. Aptitudes",
+    "description": "**Description** : Décrire les aptitudes, leur origine (spécialisation), leur usage principal (roleplay/hors combat) et leurs éventuelles utilisations en combat."
+  },
+  {
+    "path": "400- Règles/3-Jouer/3.4-aptitudes-et-capacites/3.4.2-capacites.md",
+    "title": "3.4.2. Capacités",
+    "description": "**Description** : Présenter les capacités comme des talents passifs ou contextuels, indiquant les conditions d'activation et leur impact sur la narration."
+  },
+  {
+    "path": "400- Règles/3-Jouer/3.4-aptitudes-et-capacites/3.4.3-utilisation-en-jeu.md",
+    "title": "3.4.3. Utilisation en jeu",
+    "description": "**Description** : Fournir les règles d'activation (ressources, fréquence), la combinaison avec les actions habituelles, et l'articulation avec les tours de jeu."
+  },
+  {
+    "path": "400- Règles/3-Jouer/3.4-aptitudes-et-capacites/3.4.4-interactions-et-synergies.md",
+    "title": "3.4.4. Interactions et synergies",
+    "description": "**Description** : Détailler les synergies possibles avec les classes, spécialisations, équipements ou sorts, et comment éviter les abus (limitations)."
+  },
+  {
+    "path": "400- Règles/3-Jouer/3.4-aptitudes-et-capacites/3.4.5-variantes-et-house-rules.md",
+    "title": "3.4.5. Variantes et house rules",
+    "description": "**Description** : Proposer des options pour fusionner aptitudes/capacités, simplifier les règles ou introduire des variantes selon la table."
+  },
+  {
+    "path": "400- Règles/3-Jouer/3.4-aptitudes-et-capacites/Readme.md",
+    "title": "",
+    "description": ""
+  },
+  {
+    "path": "400- Règles/3-Jouer/3.5-competences/3.5.1-liste-des-competences.md",
+    "title": "3.5.1. Liste des compétences",
+    "description": "**Description** : Présenter l'ensemble des compétences disponibles (Arcane, Athlétisme, Discrétion, Perception, etc.), leur définition et leur usage."
+  },
+  {
+    "path": "400- Règles/3-Jouer/3.5-competences/3.5.2-tests-de-competence.md",
+    "title": "3.5.2. Tests de compétence",
+    "description": "**Description** : Expliquer comment effectuer un test (formulation, jet, difficulté), gérer réussites critiques/échecs critiques et tests opposés."
+  },
+  {
+    "path": "400- Règles/3-Jouer/3.5-competences/3.5.3-maitrise-et-expertise.md",
+    "title": "3.5.3. Maîtrise et expertise",
+    "description": "**Description** : Définir la maîtrise/expertise, comment elles s'appliquent aux tests, et leurs sources (classe, spécialisation, équipements)."
+  },
+  {
+    "path": "400- Règles/3-Jouer/3.5-competences/3.5.4-modificateurs-et-difficultes.md",
+    "title": "3.5.4. Modificateurs et difficultés",
+    "description": "**Description** : Décrire les DC (classes de difficulté), les modificateurs liés aux circonstances, outils, assistance ou obstacles."
+  },
+  {
+    "path": "400- Règles/3-Jouer/3.5-competences/3.5.5-utilisation-narrative.md",
+    "title": "3.5.5. Utilisation narrative",
+    "description": "**Description** : Proposer des exemples d'utilisation roleplay (social, investigation, craft), comment intégrer les compétences dans la narration."
+  },
+  {
+    "path": "400- Règles/3-Jouer/3.5-competences/Readme.md",
+    "title": "",
+    "description": ""
+  },
+  {
+    "path": "400- Règles/3-Jouer/Readme.md",
+    "title": "",
+    "description": ""
+  },
+  {
+    "path": "400- Règles/4-Le-monde-des-douze/4.1-l-univers/4.1.1-presentation-du-krosmoz.md",
+    "title": "4.1.1. Présentation du Krosmoz",
+    "description": "**Description** : Aperçu général de l'univers, des continents principaux, des capitales majeures (Amakna, Bonta, Brâkmar, Sufokia, etc.) et de leur ambiance."
+  },
+  {
+    "path": "400- Règles/4-Le-monde-des-douze/4.1-l-univers/4.1.2-temporalite.md",
+    "title": "4.1.2. Temporalité",
+    "description": "**Description** : Calendrier du Krosmoz (mois, saisons), événements cycliques, impact du temps sur les aventures et les coutumes locales."
+  },
+  {
+    "path": "400- Règles/4-Le-monde-des-douze/4.1-l-univers/4.1.3-systeme-monetaire.md",
+    "title": "4.1.3. Système monétaire",
+    "description": "**Description** : Fonctionnement des Kamas et des éventuelles monnaies locales, taux d'échange, valeur relative des biens/services."
+  },
+  {
+    "path": "400- Règles/4-Le-monde-des-douze/4.1-l-univers/4.1.4-langues-et-dialectes.md",
+    "title": "4.1.4. Langues et dialectes",
+    "description": "**Description** : Langues courantes et rares, dialectes régionaux, codes linguistiques propres à certaines classes ou cultures."
+  },
+  {
+    "path": "400- Règles/4-Le-monde-des-douze/4.1-l-univers/4.1.5-transports-et-communication.md",
+    "title": "4.1.5. Transports et communication",
+    "description": "**Description** : Moyens de déplacement (terrestres, maritimes, portails, Zaaps, montures publiques) et méthodes de communication longue distance."
+  },
+  {
+    "path": "400- Règles/4-Le-monde-des-douze/4.1-l-univers/Readme.md",
+    "title": "",
+    "description": ""
+  },
+  {
+    "path": "400- Règles/4-Le-monde-des-douze/4.2-les-creatures/4.2.1-categories-de-creatures.md",
+    "title": "4.2.1. Catégories de créatures",
+    "description": "**Description** : Classer les créatures par type : animaux, humanoïdes, aberrations, boss, invocations, etc."
+  },
+  {
+    "path": "400- Règles/4-Le-monde-des-douze/4.2-les-creatures/4.2.2-caracteristiques-et-statistiques.md",
+    "title": "4.2.2. Caractéristiques et statistiques",
+    "description": "**Description** : Décrire les attributs propres aux créatures (caractéristiques, PV, résistances) et leur adaptation depuis le jeu vidéo."
+  },
+  {
+    "path": "400- Règles/4-Le-monde-des-douze/4.2-les-creatures/4.2.3-competences-et-aptitudes.md",
+    "title": "4.2.3. Compétences et aptitudes",
+    "description": "**Description** : Présenter les capacités spéciales, sorts propres, passifs uniques et interactions avec les traits/états."
+  },
+  {
+    "path": "400- Règles/4-Le-monde-des-douze/4.2-les-creatures/4.2.4-comportements-et-agressivite.md",
+    "title": "4.2.4. Comportements et agressivité",
+    "description": "**Description** : Définir les comportements (amical, curieux, neutre, peureux, agressif, hostile) et comment ils influencent les rencontres."
+  },
+  {
+    "path": "400- Règles/4-Le-monde-des-douze/4.2-les-creatures/4.2.5-ressources-et-butins.md",
+    "title": "4.2.5. Ressources et butins",
+    "description": "**Description** : Lister les ressources laissées (peaux, poils, minerais, etc.), leur rareté et leur usage dans les métiers/consommables."
+  },
+  {
+    "path": "400- Règles/4-Le-monde-des-douze/4.2-les-creatures/Readme.md",
+    "title": "",
+    "description": ""
+  },
+  {
+    "path": "400- Règles/4-Le-monde-des-douze/4.3-les-metiers/4.3.1-introduction-et-progression.md",
+    "title": "4.3.1. Introduction et progression",
+    "description": "**Description** : Comment choisir/apprendre un métier, système de niveaux de métiers, outils requis, limitations de cumul."
+  },
+  {
+    "path": "400- Règles/4-Le-monde-des-douze/4.3-les-metiers/4.3.2-metiers-de-recolte.md",
+    "title": "4.3.2. Métiers de récolte",
+    "description": "**Description** : Règles pour herboriste, pêcheur, mineur, bûcheron, chasseur, etc. : zones de récolte, difficultés, risques."
+  },
+  {
+    "path": "400- Règles/4-Le-monde-des-douze/4.3-les-metiers/4.3.3-metiers-d-artisanat.md",
+    "title": "4.3.3. Métiers d'artisanat",
+    "description": "**Description** : Fonctionnement des métiers de fabrication (tailleur, forgeron, bijoutier, cordonnier, bricoleur…) : recettes, réussite/échec, qualité."
+  },
+  {
+    "path": "400- Règles/4-Le-monde-des-douze/4.3-les-metiers/4.3.4-forgemagie.md",
+    "title": "4.3.4. Forgemagie",
+    "description": "**Description** : Système d'amélioration/modification d'équipements, risques de casser l'objet, ressources spécifiques."
+  },
+  {
+    "path": "400- Règles/4-Le-monde-des-douze/4.3-les-metiers/4.3.5-commandes-et-economie.md",
+    "title": "4.3.5. Commandes et économie",
+    "description": "**Description** : Gestion des commandes (PNJ ou PJ), commerce entre joueurs, impact sur l'économie de la campagne."
+  },
+  {
+    "path": "400- Règles/4-Le-monde-des-douze/4.3-les-metiers/Readme.md",
+    "title": "",
+    "description": ""
+  },
+  {
+    "path": "400- Règles/4-Le-monde-des-douze/4.4-ressources-et-consommables/4.4.1-typologie-des-ressources.md",
+    "title": "4.4.1. Typologie des ressources",
+    "description": "**Description** : Distinguer les ressources provenant des créatures, de la récolte, des minerais, des reliques, etc."
+  },
+  {
+    "path": "400- Règles/4-Le-monde-des-douze/4.4-ressources-et-consommables/4.4.2-rarete-et-valeur.md",
+    "title": "4.4.2. Rareté et valeur",
+    "description": "**Description** : Classer les ressources par rareté, indiquer leurs valeurs approximatives et conditions de collecte."
+  },
+  {
+    "path": "400- Règles/4-Le-monde-des-douze/4.4-ressources-et-consommables/4.4.3-transformation-et-stockage.md",
+    "title": "4.4.3. Transformation et stockage",
+    "description": "**Description** : Règles sur la transformation des ressources (raffinage, préparation) et leur conservation (durée, conditions)."
+  },
+  {
+    "path": "400- Règles/4-Le-monde-des-douze/4.4-ressources-et-consommables/4.4.4-typologie-des-consommables.md",
+    "title": "4.4.4. Typologie des consommables",
+    "description": "**Description** : Présenter les principaux types (potions, nourritures, parchemins, gadgets, objets jetables) et leurs effets généraux."
+  },
+  {
+    "path": "400- Règles/4-Le-monde-des-douze/4.4-ressources-et-consommables/4.4.5-utilisation-en-jeu.md",
+    "title": "4.4.5. Utilisation en jeu",
+    "description": "**Description** : Définir les règles d'utilisation (temps, limites, effets secondaires), interaction avec les métiers et fabrication."
+  },
+  {
+    "path": "400- Règles/4-Le-monde-des-douze/4.4-ressources-et-consommables/Readme.md",
+    "title": "",
+    "description": ""
+  },
+  {
+    "path": "400- Règles/4-Le-monde-des-douze/Readme.md",
+    "title": "",
+    "description": ""
+  },
+  {
+    "path": "400- Règles/5-Ressources-et-equilibrage/5.1-ressources-mj/5.1.1-tables-generales.md",
+    "title": "5.1.1. Tables générales",
+    "description": "**Description** : Réunir les tables essentielles (difficultés, seuils de dégâts, oppositions) pour accélérer les décisions du MJ."
+  },
+  {
+    "path": "400- Règles/5-Ressources-et-equilibrage/5.1-ressources-mj/5.1.2-creation-de-pnj-et-monstres.md",
+    "title": "5.1.2. Création de PNJ et monstres",
+    "description": "**Description** : Proposer des gabarits et checklists pour créer rapidement des PNJ, monstres ou boss adaptés au niveau des joueurs."
+  },
+  {
+    "path": "400- Règles/5-Ressources-et-equilibrage/5.1-ressources-mj/5.1.3-rencontres-et-scenarios.md",
+    "title": "5.1.3. Rencontres et scénarios",
+    "description": "**Description** : Fournir des matrices pour générer des rencontres (combat, social, exploration), ainsi que des idées d'intrigues et d'obstacles."
+  },
+  {
+    "path": "400- Règles/5-Ressources-et-equilibrage/5.1-ressources-mj/5.1.4-tresors-et-recompenses.md",
+    "title": "5.1.4. Trésors et récompenses",
+    "description": "**Description** : Modèles de loot, équilibrage des récompenses (Kamas, ressources, équipements, Dofus fragments)."
+  },
+  {
+    "path": "400- Règles/5-Ressources-et-equilibrage/5.1-ressources-mj/5.1.5-conseils-de-mise-en-scene.md",
+    "title": "5.1.5. Conseils de mise en scène",
+    "description": "**Description** : Astuces pour gérer le ton, le rythme, l'humour dofusien, les transitions entre scènes."
+  },
+  {
+    "path": "400- Règles/5-Ressources-et-equilibrage/5.1-ressources-mj/Readme.md",
+    "title": "",
+    "description": ""
+  },
+  {
+    "path": "400- Règles/5-Ressources-et-equilibrage/5.2-principes-d-equilibrage/5.2.1-conversion-d-d-krosmoz.md",
+    "title": "5.2.1. Conversion D&D → Krosmoz",
+    "description": "**Description** : Méthodologie pour adapter des créatures, objets ou scénarios de D&D vers KrosmozJDR, en tenant compte des PA/PM/PO."
+  },
+  {
+    "path": "400- Règles/5-Ressources-et-equilibrage/5.2-principes-d-equilibrage/5.2.2-classes-et-specialisations.md",
+    "title": "5.2.2. Classes et spécialisations",
+    "description": "**Description** : Règles d'équilibrage des classes (voies, rôles) et spécialisations (aptitudes, capacités), critères pour juger leur puissance."
+  },
+  {
+    "path": "400- Règles/5-Ressources-et-equilibrage/5.2-principes-d-equilibrage/5.2.3-sorts-et-aptitudes.md",
+    "title": "5.2.3. Sorts et aptitudes",
+    "description": "**Description** : Cadre pour calibrer les sorts, aptitudes et capacités (coûts, dégâts, utilité, fréquence)."
+  },
+  {
+    "path": "400- Règles/5-Ressources-et-equilibrage/5.2-principes-d-equilibrage/5.2.4-equipements-et-panoplies.md",
+    "title": "5.2.4. Équipements et panoplies",
+    "description": "**Description** : Guidelines sur les bonus à accorder aux équipements, panoplies, trophées, montures, et comment éviter les cumuls abusifs."
+  },
+  {
+    "path": "400- Règles/5-Ressources-et-equilibrage/5.2-principes-d-equilibrage/5.2.5-progression-et-economie.md",
+    "title": "5.2.5. Progression et économie",
+    "description": "**Description** : Courbe de progression recommandée (XP, niveaux), gestion des récompenses, équilibre de l'économie (Kamas, ressources)."
+  },
+  {
+    "path": "400- Règles/5-Ressources-et-equilibrage/5.2-principes-d-equilibrage/Readme.md",
+    "title": "",
+    "description": ""
+  },
+  {
+    "path": "400- Règles/5-Ressources-et-equilibrage/5.3-tables-de-reference/5.3.1-resistances-et-degats.md",
+    "title": "5.3.1. Résistances et dégâts",
+    "description": "**Description** : Tables indiquant les résistances types (Feu, Eau, etc.) et les barèmes de dégâts/soins attendus par niveau."
+  },
+  {
+    "path": "400- Règles/5-Ressources-et-equilibrage/5.3-tables-de-reference/5.3.2-rarete-et-loot.md",
+    "title": "5.3.2. Rareté et loot",
+    "description": "**Description** : Tables de rareté des objets/ressources, probabilités de loot, adaptations selon la zone."
+  },
+  {
+    "path": "400- Règles/5-Ressources-et-equilibrage/5.3-tables-de-reference/5.3.3-meteo-et-evenements.md",
+    "title": "5.3.3. Météo et événements",
+    "description": "**Description** : Tables pour déterminer rapidement la météo, les phénomènes magiques, les complications environnementales."
+  },
+  {
+    "path": "400- Règles/5-Ressources-et-equilibrage/5.3-tables-de-reference/5.3.4-rencontres-aleatoires.md",
+    "title": "5.3.4. Rencontres aléatoires",
+    "description": "**Description** : Listes de rencontres (combat, social, exploration) avec modificateurs selon la région et le niveau."
+  },
+  {
+    "path": "400- Règles/5-Ressources-et-equilibrage/5.3-tables-de-reference/5.3.5-prix-et-economie.md",
+    "title": "5.3.5. Prix et économie",
+    "description": "**Description** : Barèmes de prix (équipements, services), variations régionales, inflation, troc."
+  },
+  {
+    "path": "400- Règles/5-Ressources-et-equilibrage/5.3-tables-de-reference/Readme.md",
+    "title": "",
+    "description": ""
+  },
+  {
+    "path": "400- Règles/5-Ressources-et-equilibrage/Readme.md",
+    "title": "",
+    "description": ""
+  },
+  {
+    "path": "400- Règles/FORMAT_REGLES.md",
+    "title": "Guide de Rédaction des Règles – KrosmozJDR",
+    "description": "Ce document sert de référence pour toute personne qui contribue à la rédaction ou à la mise à jour des règles. Il décrit le format attendu, les bonnes pratiques et les éléments à inclure afin de garantir l'homogénéité du livre de règles."
+  },
+  {
+    "path": "400- Règles/INDEX.md",
+    "title": "Index",
+    "description": "Cet index alphabétique permet de retrouver rapidement les termes et concepts importants du livre de règles."
+  },
+  {
+    "path": "400- Règles/RECAP.md",
+    "title": "",
+    "description": "| Niveau | Sorts                | Caractéristiques    | Spécialisation             |"
+  },
+  {
+    "path": "400- Règles/Readme.md",
+    "title": "",
+    "description": ""
+  },
+  {
+    "path": "400- Règles/TABLE_DES_MATIERES.md",
+    "title": "Table des Matières",
+    "description": "Cette table des matières présente la structure complète du livre de règles KrosmozJDR."
+  },
+  {
+    "path": "50-Fonctionnalités/Characteristics-DB/PLAN_FORMULES_DOFUSDB_BDD.md",
+    "title": "Formules de conversion DofusDB → KrosmozJDR en base de données",
+    "description": "**Objectif** : Stocker les formules de conversion (DofusDB → KrosmozJDR) en base de données, par caractéristique et par entité (monster, class, item), pour les piloter depuis l’admin et permettre des formules différentes selon qu’on récupère un équipement, un monstre ou une classe."
+  },
+  {
+    "path": "50-Fonctionnalités/Characteristics-DB/PLAN_MIGRATION_CHARACTERISTICS_DB.md",
+    "title": "Plan de migration : caractéristiques en base de données",
+    "description": "**Objectif** : Remplacer `config/characteristics.php` et `config/equipment_characteristics.php` par une source de vérité en base de données, exposée via un **service** accessible partout dans le projet, avec une interface admin (super_admin) pour modifier les données."
+  },
+  {
     "path": "50-Fonctionnalités/EntityEditForm/README.md",
     "title": "EntityEditForm - Formulaire d'édition générique",
     "description": "`EntityEditForm` est un composant générique Vue 3 permettant de créer des formulaires d'édition pour n'importe quelle entité. Il supporte deux modes d'affichage (large et compact) et génère dynamiquement les champs selon une configuration."
@@ -723,6 +1118,46 @@
     "path": "50-Fonctionnalités/Scrapping/README.md",
     "title": "Scrapping — Mapping & conversion (DofusDB → KrosmozJDR)",
     "description": "Cette section documente **ce qui compte pour la refonte** : le **mapping** et les **fonctions de conversion (formatters)**."
+  },
+  {
+    "path": "50-Fonctionnalités/Scrapping/Refonte/AUDIT_ETAT_DES_LIEUX.md",
+    "title": "Audit — État des lieux du scrapping KrosmozJDR",
+    "description": "Document d’audit réalisé pour préparer la refonte du scrapping. Il décrit où se trouve le code, comment il est utilisé, et quels sont les couplages et points de complexité."
+  },
+  {
+    "path": "50-Fonctionnalités/Scrapping/Refonte/CONVERSION_FORMULAS_PLACEMENT.md",
+    "title": "Où placer les formules de conversion DofusDB → KrosmozJDR",
+    "description": "- **`config/characteristics.php`** définit les **valeurs limites** (min/max) et les **formules de génération** (ex. `[vitality] * 7` pour la vie) utilisées pour la **validation** et la **génération** de données KrosmozJDR."
+  },
+  {
+    "path": "50-Fonctionnalités/Scrapping/Refonte/DECISION_BONUS_EFFECTS_STOCKAGE.md",
+    "title": "Décision : stockage des bonus / effets d’équipement",
+    "description": "Ce document compare **garder le bonus en JSON** (état actuel) et **passer à une table ou un système plus robuste** (type DofusDB), pour les caractéristiques / bonus que peuvent apporter les équipements (et panoplies). Il vise à trancher pour la refonte du scrapping et l’évolution du modèle de données."
+  },
+  {
+    "path": "50-Fonctionnalités/Scrapping/Refonte/DECOUVERTE_API_DOFUSDB.md",
+    "title": "Découverte API DofusDB — Refonte scrapping",
+    "description": "Ce document consolide les informations sur l’API DofusDB nécessaires pour la refonte : endpoints, paramètres, **structure des réponses** (déduite des configs et de la doc existante), pagination et filtres. Il sert de référence pour les configs « requêtes » et « mapping »."
+  },
+  {
+    "path": "50-Fonctionnalités/Scrapping/Refonte/ITEM_TYPES_REFERENCE.md",
+    "title": "Référence item-types DofusDB",
+    "description": "Ce document décrit comment les **232 item-types** de l’API DofusDB sont pris en compte dans la config KrosmozJDR."
+  },
+  {
+    "path": "50-Fonctionnalités/Scrapping/Refonte/README.md",
+    "title": "Refonte du scrapping KrosmozJDR",
+    "description": "Ce dossier centralise les idées, l’audit et la documentation de la refonte de la fonctionnalité scrapping. L’objectif est de **remplacer entièrement** l’ancienne implémentation par une version plus simple, modulaire et maintenable."
+  },
+  {
+    "path": "50-Fonctionnalités/Scrapping/Refonte/SCHEMA_CONFIG_V2.md",
+    "title": "Schéma des configs V2 — Refonte scrapping",
+    "description": "Ce document décrit la structure des fichiers de configuration pour la refonte (V2) : **source**, **requêtes** (endpoints, pagination, filtres) et **mapping** (propriété DofusDB → KrosmozJDR + formatter). Une entité pilote (**monster**) est définie dans `resources/scrapping/v2/sources/dofusdb/`."
+  },
+  {
+    "path": "50-Fonctionnalités/Scrapping/Refonte/VISION_ET_ARCHITECTURE.md",
+    "title": "Refonte scrapping — Vision et architecture cible",
+    "description": "Ce document résume la vision de la refonte, les points importants, l’architecture cible et les questions / difficultés anticipées. Il complète l’[audit (AUDIT_ETAT_DES_LIEUX.md)](./AUDIT_ETAT_DES_LIEUX.md)."
   },
   {
     "path": "DOCUMENTATION_GUIDE.md",
