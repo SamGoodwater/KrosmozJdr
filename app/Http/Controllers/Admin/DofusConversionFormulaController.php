@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Services\Scrapping\ConversionHandlerRegistry;
-use App\Services\Scrapping\Core\Conversion\DofusDbConversionFormulas;
+use App\Services\Characteristic\DofusConversion\ConversionHandlerRegistry;
+use App\Services\Characteristic\DofusConversion\DofusDbConversionFormulas;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -43,7 +43,7 @@ class DofusConversionFormulaController extends Controller
     {
         $validated = $request->validate([
             'characteristic_id' => 'required|string|max:64',
-            'entity' => 'required|in:monster,class,item',
+            'entity' => 'required|in:monster,class,item,spell',
             'd_min' => 'nullable|integer',
             'd_max' => 'nullable|integer',
             'steps' => 'nullable|integer|min:5|max:200',

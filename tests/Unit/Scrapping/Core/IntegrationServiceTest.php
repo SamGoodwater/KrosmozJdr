@@ -4,7 +4,9 @@ namespace Tests\Unit\Scrapping\Core;
 
 use App\Models\Entity\Breed;
 use App\Models\Entity\Creature;
+use App\Models\Entity\Item;
 use App\Models\Entity\Monster;
+use App\Models\Entity\Panoply;
 use App\Models\Entity\Spell;
 use App\Models\Type\MonsterRace;
 use App\Services\Scrapping\Core\Integration\IntegrationResult;
@@ -271,5 +273,110 @@ class IntegrationServiceTest extends TestCase
 
         $this->assertTrue($result->isSuccess());
         $this->assertSame('would_create', $result->getPrimaryAction());
+    }
+
+    public function test_integrate_panoply_dry_run_returns_would_create(): void
+    {
+        $convertedData = [
+            'panoplies' => [
+                'dofusdb_id' => '42',
+                'name' => 'Panoplie Test',
+                'description' => 'Description',
+                'bonus' => '[]',
+                'item_dofusdb_ids' => [],
+            ],
+        ];
+
+        $result = $this->service->integrate('panoply', $convertedData, ['dry_run' => true]);
+
+        $this->assertTrue($result->isSuccess());
+        $this->assertSame('would_create', $result->getPrimaryAction());
+    }
+
+    public function test_integrate_panoply_creates_panoply(): void
+    {
+        $this->createSystemUser();
+
+        $convertedData = [
+            'panoplies' => [
+                'dofusdb_id' => '100',
+                'name' => 'Panoplie Integration Test',
+                'description' => 'Description panoplie',
+                'bonus' => '[{"effectId":1,"value":10}]',
+                'item_dofusdb_ids' => [],
+            ],
+        ];
+
+        $result = $this->service->integrate('panoply', $convertedData, []);
+
+        $this->assertTrue($result->isSuccess());
+        $this->assertSame('created', $result->getPrimaryAction());
+        $panoply = Panoply::find($result->getPrimaryId());
+        $this->assertNotNull($panoply);
+        $this->assertSame('Panoplie Integration Test', $panoply->name);
+        $this->assertSame('100', $panoply->dofusdb_id);
+        $this->assertSame('[{"effectId":1,"value":10}]', $panoply->bonus);
+    }
+
+    public function test_integrate_panoply_incomplete_returns_fail(): void
+    {
+        $result = $this->service->integrate('panoply', [], []);
+
+        $this->assertFalse($result->isSuccess());
+        $this->assertStringContainsString('panoplies', $result->getMessage());
+    }
+
+    public function test_integrate_panoply_skips_when_dofusdb_id_exists_without_force_update(): void
+    {
+        $this->createSystemUser();
+        $existing = Panoply::factory()->create([
+            'dofusdb_id' => '200',
+            'name' => 'Panoplie existante',
+        ]);
+
+        $convertedData = [
+            'panoplies' => [
+                'dofusdb_id' => '200',
+                'name' => 'Autre nom',
+                'description' => 'Desc',
+                'bonus' => '[]',
+                'item_dofusdb_ids' => [],
+            ],
+        ];
+
+        $result = $this->service->integrate('panoply', $convertedData, []);
+
+        $this->assertTrue($result->isSuccess());
+        $this->assertSame('skipped', $result->getPrimaryAction());
+        $existing->refresh();
+        $this->assertSame('Panoplie existante', $existing->name);
+    }
+
+    public function test_integrate_panoply_syncs_items(): void
+    {
+        $this->createSystemUser();
+        $item1 = Item::factory()->create(['dofusdb_id' => '501']);
+        $item2 = Item::factory()->create(['dofusdb_id' => '502']);
+
+        $convertedData = [
+            'panoplies' => [
+                'dofusdb_id' => '300',
+                'name' => 'Panoplie avec items',
+                'description' => 'Desc',
+                'bonus' => '[]',
+                'item_dofusdb_ids' => [501, 502],
+            ],
+        ];
+
+        $result = $this->service->integrate('panoply', $convertedData, []);
+
+        $this->assertTrue($result->isSuccess());
+        $this->assertSame('created', $result->getPrimaryAction());
+        $panoply = Panoply::find($result->getPrimaryId());
+        $this->assertNotNull($panoply);
+        $syncedIds = $panoply->items()->pluck('items.id')->all();
+        $this->assertCount(2, $syncedIds);
+        $this->assertContains($item1->id, $syncedIds);
+        $this->assertContains($item2->id, $syncedIds);
     }
 }

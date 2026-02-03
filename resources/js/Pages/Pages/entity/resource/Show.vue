@@ -55,6 +55,17 @@ const goEdit = () => {
         <!-- Pivots niveau 1: afficher les quantités quand présentes -->
         <div class="grid gap-4 lg:grid-cols-2">
             <div class="rounded-lg border border-base-300 p-4">
+                <h2 class="font-semibold text-primary-100 mb-2">Recette (ingrédients)</h2>
+                <ul v-if="(resource.recipeIngredients || []).length" class="space-y-1 text-sm">
+                    <li v-for="ing in resource.recipeIngredients" :key="ing.id" class="flex justify-between gap-3">
+                        <span>{{ ing.name }}</span>
+                        <span class="text-primary-300">x{{ ing.pivot?.quantity ?? 0 }}</span>
+                    </li>
+                </ul>
+                <p v-else class="text-sm text-primary-300 italic">Aucun ingrédient (ressource non craftable).</p>
+            </div>
+
+            <div class="rounded-lg border border-base-300 p-4">
                 <h2 class="font-semibold text-primary-100 mb-2">Objets (recettes)</h2>
                 <ul v-if="(resource.items || []).length" class="space-y-1 text-sm">
                     <li v-for="it in resource.items" :key="it.id" class="flex justify-between gap-3">

@@ -75,7 +75,10 @@
         { "model": "consumables", "field": "level" },
         { "model": "items", "field": "level" }
       ],
-      "formatters": [{ "name": "toString", "args": {} }]
+      "formatters": [
+        { "name": "dofusdb_level", "args": {} },
+        { "name": "toString", "args": {} }
+      ]
     },
     {
       "key": "price",
@@ -100,8 +103,17 @@
     {
       "key": "typeId",
       "from": { "path": "typeId" },
-      "to": [{ "model": "items", "field": "type_id" }],
+      "to": [
+        { "model": "items", "field": "type_id" },
+        { "model": "resources", "field": "type_id" }
+      ],
       "formatters": [{ "name": "toInt", "args": {} }]
+    },
+    {
+      "key": "resource_type_id",
+      "from": { "path": "typeId" },
+      "to": [{ "model": "resources", "field": "resource_type_id" }],
+      "formatters": [{ "name": "resolveResourceTypeId", "args": {} }]
     },
     {
       "key": "weight",
@@ -117,7 +129,13 @@
         { "model": "consumables", "field": "rarity" },
         { "model": "items", "field": "rarity" }
       ],
-      "formatters": [{ "name": "nullableInt", "args": {} }]
+      "formatters": [{ "name": "defaultRarityByLevel", "args": {} }]
+    },
+    {
+      "key": "recipe_ingredients",
+      "from": { "path": "recipe" },
+      "to": [{ "model": "resources", "field": "recipe_ingredients" }],
+      "formatters": [{ "name": "recipeToResourceRecipe", "args": {} }]
     }
   ]
 }

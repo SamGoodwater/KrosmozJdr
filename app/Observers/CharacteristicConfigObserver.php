@@ -4,12 +4,11 @@ declare(strict_types=1);
 
 namespace App\Observers;
 
-use App\Models\Characteristic;
-use App\Models\CharacteristicEntity;
+use App\Models\EntityCharacteristic;
 use App\Services\Characteristic\CharacteristicService;
 
 /**
- * Invalide le cache des caractéristiques à chaque modification en base.
+ * Invalide le cache des caractéristiques à chaque modification entity_characteristics.
  */
 class CharacteristicConfigObserver
 {
@@ -18,12 +17,12 @@ class CharacteristicConfigObserver
     ) {
     }
 
-    public function saved(Characteristic|CharacteristicEntity $model): void
+    public function saved(EntityCharacteristic $model): void
     {
         $this->characteristicService->clearCache();
     }
 
-    public function deleted(Characteristic|CharacteristicEntity $model): void
+    public function deleted(EntityCharacteristic $model): void
     {
         $this->characteristicService->clearCache();
     }

@@ -17,6 +17,7 @@ Route::prefix('entities/resources')->name('entities.resources.')->middleware('au
     Route::get('/{resource}/pdf', [ResourceController::class, 'downloadPdf'])->name('pdf');
 
     // Gestion des pivots / relations
+    Route::patch('/{resource}/recipe', [ResourceController::class, 'updateRecipe'])->name('updateRecipe');
     Route::patch('/{resource}/items', [ResourceController::class, 'updateItems'])->name('updateItems');
     Route::patch('/{resource}/consumables', [ResourceController::class, 'updateConsumables'])->name('updateConsumables');
     Route::patch('/{resource}/creatures', [ResourceController::class, 'updateCreatures'])->name('updateCreatures');

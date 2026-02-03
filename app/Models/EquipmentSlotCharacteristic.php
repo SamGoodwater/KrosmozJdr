@@ -8,11 +8,12 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
- * Pour un slot d'équipement : une caractéristique avec bracket_max, forgemagie_max et prix par unité.
+ * Pour un slot d'équipement (entity=item) : une caractéristique avec bracket_max, forgemagie_max et prix par unité.
  *
  * @property int $id
  * @property string $equipment_slot_id
- * @property string $characteristic_id
+ * @property string $entity
+ * @property string $characteristic_key
  * @property array $bracket_max
  * @property int|null $forgemagie_max
  * @property float|null $base_price_per_unit
@@ -25,7 +26,8 @@ class EquipmentSlotCharacteristic extends Model
     /** @var list<string> */
     protected $fillable = [
         'equipment_slot_id',
-        'characteristic_id',
+        'entity',
+        'characteristic_key',
         'bracket_max',
         'forgemagie_max',
         'base_price_per_unit',
@@ -48,15 +50,5 @@ class EquipmentSlotCharacteristic extends Model
     public function equipmentSlot(): BelongsTo
     {
         return $this->belongsTo(EquipmentSlot::class, 'equipment_slot_id', 'id');
-    }
-
-    /**
-     * Caractéristique.
-     *
-     * @return BelongsTo<Characteristic, self>
-     */
-    public function characteristic(): BelongsTo
-    {
-        return $this->belongsTo(Characteristic::class, 'characteristic_id', 'id');
     }
 }

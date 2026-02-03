@@ -56,6 +56,75 @@ final class CollectService
     }
 
     /**
+     * Récupère la recette DofusDB pour un objet (ingredientIds + quantities).
+     * Utilise l'endpoint /recipes?resultId= pour obtenir les quantités réelles.
+     *
+     * @param array{skip_cache?: bool} $options
+     * @return array{ingredientIds: list<int>, quantities: list<int>}|null
+     */
+    public function fetchRecipeByResultId(string $source, int $resultId, array $options = []): ?array
+    {
+        $sourceConfig = $this->configLoader->loadSource($source);
+        $baseUrl = rtrim((string) ($sourceConfig['baseUrl'] ?? 'https://api.dofusdb.fr'), '/');
+        $lang = (string) ($sourceConfig['defaultLanguage'] ?? 'fr');
+        $query = http_build_query(['resultId' => $resultId, 'lang' => $lang], '', '&', PHP_QUERY_RFC3986);
+        $url = $baseUrl . '/recipes?' . $query;
+        $response = $this->getJson($url, $options);
+        $data = $response['data'] ?? [];
+        if (!is_array($data) || $data === []) {
+            return null;
+        }
+        $first = $data[0] ?? null;
+        if (!is_array($first)) {
+            return null;
+        }
+        $ingredientIds = $first['ingredientIds'] ?? [];
+        $quantities = $first['quantities'] ?? [];
+        if (!is_array($ingredientIds)) {
+            $ingredientIds = [];
+        }
+        if (!is_array($quantities)) {
+            $quantities = [];
+        }
+
+        return [
+            'ingredientIds' => array_values($ingredientIds),
+            'quantities' => array_values($quantities),
+        ];
+    }
+
+    /**
+     * Récupère les IDs de sorts liés à une classe (breed) via l'API /spell-levels?breedId=.
+     *
+     * @return list<int>
+     */
+    public function fetchSpellIdsByBreedId(string $source, int $breedId, array $options = []): array
+    {
+        $sourceConfig = $this->configLoader->loadSource($source);
+        $baseUrl = rtrim((string) ($sourceConfig['baseUrl'] ?? 'https://api.dofusdb.fr'), '/');
+        $lang = (string) ($sourceConfig['defaultLanguage'] ?? 'fr');
+        $query = http_build_query(['breedId' => $breedId, 'lang' => $lang, '$limit' => 500], '', '&', PHP_QUERY_RFC3986);
+        $url = $baseUrl . '/spell-levels?' . $query;
+        $response = $this->getJson($url, $options);
+        $data = $response['data'] ?? [];
+        if (!is_array($data)) {
+            return [];
+        }
+        $spellIds = [];
+        foreach ($data as $row) {
+            if (!is_array($row)) {
+                continue;
+            }
+            $id = $row['spellId'] ?? $row['spell_id'] ?? $row['id'] ?? null;
+            if ($id !== null && (is_int($id) || ctype_digit((string) $id))) {
+                $spellIds[] = (int) $id;
+            }
+        }
+
+        return array_values(array_unique($spellIds));
+    }
+
+    /**
      * Récupère une liste d'objets (pagination API en interne). limit=0 => tout, offset=0 par défaut.
      *
      * @param array<string, mixed> $filters Filtres (id, idMin, idMax, ids, name, raceId, levelMin, levelMax, etc.)
@@ -151,7 +220,20 @@ final class CollectService
     private function applyCollectStrategy(array $entityConfig, array $items, string $lang): array
     {
         $strategy = $entityConfig['meta']['collectStrategy'] ?? null;
-        if (!is_array($strategy) || ($strategy['groupBy'] ?? '') !== 'superTypeId' || ($strategy['outputShape'] ?? '') !== 'uniqueSuperTypes') {
+        if (!is_array($strategy)) {
+            return $items;
+        }
+
+        if (($strategy['filterOutCosmetic'] ?? false) === true) {
+            return array_values(array_filter($items, static function ($row): bool {
+                if (!is_array($row)) {
+                    return false;
+                }
+                return ($row['isCosmetic'] ?? true) !== true;
+            }));
+        }
+
+        if (($strategy['groupBy'] ?? '') !== 'superTypeId' || ($strategy['outputShape'] ?? '') !== 'uniqueSuperTypes') {
             return $items;
         }
 
@@ -338,8 +420,8 @@ final class CollectService
         $path = (string) $fetchMany['path'];
         $defaults = $this->interpolateQueryArray($fetchMany['queryDefaults'] ?? [], $lang);
         $limit = (int) ($options['limit'] ?? 100);
-        if ($limit <= 0) {
-            $limit = 100;
+        if ($limit < 0) {
+            $limit = 0;
         }
         $skip = (int) ($options['offset'] ?? $options['start_skip'] ?? 0);
         if ($skip < 0) {

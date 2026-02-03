@@ -6,8 +6,11 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Entity\StoreSpellRequest;
 use App\Http\Requests\Entity\UpdateSpellRequest;
 use App\Models\Entity\Spell;
+use App\Models\SpellEffect;
+use App\Models\SpellEffectType;
 use App\Http\Resources\Entity\SpellResource;
 use App\Services\PdfService;
+use Illuminate\Http\Request;
 use Inertia\Inertia;
 
 class SpellController extends Controller
@@ -88,7 +91,7 @@ class SpellController extends Controller
     {
         $this->authorize('update', $spell);
         
-        $spell->load(['createdBy', 'creatures', 'breeds', 'spellTypes']);
+        $spell->load(['createdBy', 'creatures', 'breeds', 'spellTypes', 'spellEffects.spellEffectType']);
 
         $availableBreeds = \App\Models\Entity\Breed::select('id', 'name', 'description')
             ->orderBy('name')
@@ -98,10 +101,14 @@ class SpellController extends Controller
             ->orderBy('name')
             ->get();
 
+        $availableSpellEffectTypes = SpellEffectType::orderBy('sort_order')->orderBy('name')
+            ->get(['id', 'name', 'slug', 'category', 'unit', 'value_type']);
+
         return Inertia::render('Pages/entity/spell/Edit', [
             'spell' => new SpellResource($spell),
             'availableBreeds' => $availableBreeds,
             'availableSpellTypes' => $availableSpellTypes,
+            'availableSpellEffectTypes' => $availableSpellEffectTypes,
         ]);
     }
 
@@ -153,11 +160,71 @@ class SpellController extends Controller
         ]);
         
         $spell->spellTypes()->sync($request->spellTypes);
-        
+
         $spell->load(['createdBy', 'creatures', 'breeds', 'spellTypes']);
 
         return redirect()->back()
             ->with('success', 'Types de sort mis à jour avec succès.');
+    }
+
+    /**
+     * Update the spell effects (liste d'effets avec type, valeurs, durée, cible, etc.).
+     */
+    public function updateEffects(Request $request, Spell $spell)
+    {
+        $this->authorize('update', $spell);
+
+        $validated = $request->validate([
+            'spell_effects' => 'present|array',
+            'spell_effects.*.id' => 'nullable|integer|exists:spell_effects,id',
+            'spell_effects.*.spell_effect_type_id' => 'required|integer|exists:spell_effect_types,id',
+            'spell_effects.*.value_min' => 'nullable|integer',
+            'spell_effects.*.value_max' => 'nullable|integer',
+            'spell_effects.*.dice_num' => 'nullable|integer|min:0',
+            'spell_effects.*.dice_side' => 'nullable|integer|min:0',
+            'spell_effects.*.duration' => 'nullable|integer|min:0',
+            'spell_effects.*.target_scope' => 'required|string|in:self,ally,enemy,cell,zone',
+            'spell_effects.*.zone_shape' => 'nullable|string|max:32',
+            'spell_effects.*.dispellable' => 'boolean',
+            'spell_effects.*.order' => 'integer|min:0',
+            'spell_effects.*.raw_description' => 'nullable|string|max:1000',
+            'spell_effects.*.summon_monster_id' => 'nullable|integer|exists:monsters,id',
+        ]);
+
+        $idsToKeep = [];
+        foreach ($validated['spell_effects'] as $index => $row) {
+            $data = [
+                'spell_effect_type_id' => $row['spell_effect_type_id'],
+                'value_min' => $row['value_min'] ?? null,
+                'value_max' => $row['value_max'] ?? null,
+                'dice_num' => $row['dice_num'] ?? null,
+                'dice_side' => $row['dice_side'] ?? null,
+                'duration' => $row['duration'] ?? null,
+                'target_scope' => $row['target_scope'],
+                'zone_shape' => $row['zone_shape'] ?? null,
+                'dispellable' => $row['dispellable'] ?? true,
+                'order' => $row['order'] ?? $index,
+                'raw_description' => $row['raw_description'] ?? null,
+                'summon_monster_id' => $row['summon_monster_id'] ?? null,
+            ];
+            if (!empty($row['id'])) {
+                $effect = SpellEffect::where('id', $row['id'])->where('spell_id', $spell->id)->first();
+                if ($effect) {
+                    $effect->update($data);
+                    $idsToKeep[] = $effect->id;
+                }
+            } else {
+                $effect = $spell->spellEffects()->create($data);
+                $idsToKeep[] = $effect->id;
+            }
+        }
+
+        $spell->spellEffects()->whereNotIn('id', $idsToKeep)->delete();
+
+        $spell->load(['spellEffects.spellEffectType']);
+
+        return redirect()->back()
+            ->with('success', 'Effets du sort mis à jour.');
     }
 
     /**

@@ -170,6 +170,22 @@ class Resource extends Model
     {
         return $this->belongsToMany(Item::class, 'item_resource')->withPivot('quantity');
     }
+
+    /**
+     * Recette de fabrication : ressources (ingrédients) nécessaires avec quantités.
+     * Une ressource craftable est fabriquée à partir d'autres ressources.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany<Resource, Resource>
+     */
+    public function recipeIngredients()
+    {
+        return $this->belongsToMany(
+            Resource::class,
+            'resource_recipe',
+            'resource_id',
+            'ingredient_resource_id'
+        )->withPivot('quantity');
+    }
     /**
      * Les scénarios associés à cette ressource.
      */

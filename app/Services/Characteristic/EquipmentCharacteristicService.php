@@ -80,7 +80,7 @@ final class EquipmentCharacteristicService
                 if ($sc->rune_price_per_unit !== null) {
                     $charDef['rune_price_per_unit'] = (float) $sc->rune_price_per_unit;
                 }
-                $characteristics[$sc->characteristic_id] = $charDef;
+                $characteristics[$sc->characteristic_key] = $charDef;
             }
             $out[$slot->id] = [
                 'name' => $slot->name,

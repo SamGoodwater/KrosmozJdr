@@ -92,6 +92,12 @@ const logout = () => {
                                         <span>Caractéristiques</span>
                                     </Btn>
                                 </Route>
+                                <Route route="admin.spell-effect-types.index" class="w-full">
+                                    <Btn variant="ghost" size="md" class="w-full justify-start">
+                                        <Icon source="fa-wand-magic-sparkles" pack="solid" size="sm" alt="Types d'effets de sort" class="mr-2"/>
+                                        <span>Types d'effets de sort</span>
+                                    </Btn>
+                                </Route>
                                 <Route v-if="canAccess('scrapping')" route="scrapping.index" class="w-full">
                                     <Btn variant="ghost" size="md" class="w-full justify-start">
                                         <Icon source="fa-magnifying-glass" pack="solid" size="sm" alt="Scrapping" class="mr-2"/>

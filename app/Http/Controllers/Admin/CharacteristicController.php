@@ -5,12 +5,11 @@ declare(strict_types=1);
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\Characteristic;
-use App\Models\CharacteristicEntity;
+use App\Models\EntityCharacteristic;
 use App\Models\DofusdbConversionFormula;
 use App\Services\Characteristic\CharacteristicService;
 use App\Services\Characteristic\FormulaEvaluator;
-use App\Services\Scrapping\ConversionHandlerRegistry;
+use App\Services\Characteristic\DofusConversion\ConversionHandlerRegistry;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -20,8 +19,8 @@ use Inertia\Inertia;
 use Inertia\Response as InertiaResponse;
 
 /**
- * Administration des caractéristiques (admin et super_admin).
- * Liste à gauche, panneau d'édition à droite, graphiques pour les formules.
+ * Administration des caractéristiques (entity_characteristics).
+ * Liste par characteristic_key à gauche, panneau d'édition à droite (agrégat par entité).
  */
 class CharacteristicController extends Controller
 {
@@ -32,9 +31,6 @@ class CharacteristicController extends Controller
     ) {
     }
 
-    /**
-     * Liste des caractéristiques (page avec liste à gauche, panneau vide à droite).
-     */
     public function index(): InertiaResponse
     {
         $list = $this->characteristicService->getCharacteristics();
@@ -46,17 +42,22 @@ class CharacteristicController extends Controller
     }
 
     /**
-     * Affiche une caractéristique (même page, panneau à droite rempli).
-     * Inclut les formules de conversion Dofus → JDR par entité (monster, class, item).
+     * Affiche une caractéristique par characteristic_key (agrégat des lignes entity_characteristics).
      */
-    public function show(Characteristic $characteristic): InertiaResponse
+    public function show(string $characteristic_key): InertiaResponse
     {
-        $characteristic->load('entityDefinitions');
-        $list = $this->characteristicService->getCharacteristics();
+        $rows = EntityCharacteristic::where('characteristic_key', $characteristic_key)->orderBy('entity')->get();
+        if ($rows->isEmpty()) {
+            return Inertia::render('Admin/characteristics/Index', [
+                'characteristics' => $this->buildListForPanel($this->characteristicService->getCharacteristics()),
+                'selected' => null,
+            ])->with('error', 'Caractéristique introuvable.');
+        }
 
+        $list = $this->characteristicService->getCharacteristics();
         $conversionFormulas = [];
-        foreach (['monster', 'class', 'item'] as $entity) {
-            $row = DofusdbConversionFormula::where('characteristic_id', $characteristic->id)
+        foreach (['monster', 'class', 'item', 'spell'] as $entity) {
+            $row = DofusdbConversionFormula::where('characteristic_key', $characteristic_key)
                 ->where('entity', $entity)
                 ->first();
             $conversionFormulas[] = [
@@ -67,7 +68,8 @@ class CharacteristicController extends Controller
             ];
         }
 
-        $selected = $this->characteristicToArray($characteristic);
+        $selected = $this->buildSelectedFromRows($rows);
+        $selected['id'] = $characteristic_key;
         $selected['entities'] = $this->mergeDefaultEntityDefinitions($selected['entities'] ?? []);
         $selected['conversion_formulas'] = $conversionFormulas;
 
@@ -77,12 +79,6 @@ class CharacteristicController extends Controller
         ]);
     }
 
-    /**
-     * Construit la liste pour le panneau gauche (id, name, short_name, icon, color) triée par nom.
-     *
-     * @param array<string, array<string, mixed>> $list
-     * @return list<array{id: string, name: string|null, short_name: string|null, icon: string|null, color: string|null}>
-     */
     private function buildListForPanel(array $list): array
     {
         $listForPanel = [];
@@ -100,14 +96,10 @@ class CharacteristicController extends Controller
         return $listForPanel;
     }
 
-    /**
-     * Upload d'une icône pour une caractéristique.
-     * Stocke dans storage/app/public/images/icons/characteristics et retourne le nom du fichier.
-     */
     public function uploadIcon(Request $request): JsonResponse
     {
         $validated = $request->validate([
-            'file' => ['required', 'file', 'image', 'max:2048'], // 2 Mo max
+            'file' => ['required', 'file', 'image', 'max:2048'],
         ]);
 
         $file = $validated['file'];
@@ -126,15 +118,11 @@ class CharacteristicController extends Controller
         return response()->json(['success' => true, 'icon' => $filename]);
     }
 
-    /**
-     * Aperçu graphique d'une formule : points (x = variable, y = résultat).
-     * Query: characteristic_id, entity, variable (ex. level), formula (optionnel, pour aperçu non sauvegardé).
-     */
     public function formulaPreview(Request $request): JsonResponse
     {
         $v = Validator::make($request->query(), [
             'characteristic_id' => 'required|string',
-            'entity' => 'required|in:monster,class,item',
+            'entity' => 'required|in:monster,class,item,spell',
             'variable' => 'nullable|string',
             'formula' => 'nullable|string',
         ]);
@@ -211,9 +199,9 @@ class CharacteristicController extends Controller
     }
 
     /**
-     * Met à jour une caractéristique et ses entity definitions.
+     * Met à jour les entity_characteristics pour ce characteristic_key (une ligne par entité).
      */
-    public function update(Request $request, Characteristic $characteristic): \Illuminate\Http\RedirectResponse
+    public function update(Request $request, string $characteristic_key): \Illuminate\Http\RedirectResponse
     {
         $data = $request->validate([
             'name' => 'required|string|max:255',
@@ -227,7 +215,7 @@ class CharacteristicController extends Controller
             'applies_to' => 'nullable',
             'value_available' => 'nullable',
             'entities' => 'array',
-            'entities.*.entity' => 'required|in:' . implode(',', CharacteristicEntity::VALIDATION_ENTITIES),
+            'entities.*.entity' => 'required|in:' . implode(',', EntityCharacteristic::ENTITIES),
             'entities.*.min' => 'nullable|integer',
             'entities.*.max' => 'nullable|integer',
             'entities.*.formula' => 'nullable|string',
@@ -240,7 +228,7 @@ class CharacteristicController extends Controller
             'entities.*.base_price_per_unit' => 'nullable|numeric',
             'entities.*.rune_price_per_unit' => 'nullable|numeric',
             'conversion_formulas' => 'nullable|array',
-            'conversion_formulas.*.entity' => 'required|in:monster,class,item',
+            'conversion_formulas.*.entity' => 'required|in:monster,class,item,spell',
             'conversion_formulas.*.conversion_formula' => 'nullable|string',
             'conversion_formulas.*.formula_display' => 'nullable|string',
             'conversion_formulas.*.handler_name' => [
@@ -254,25 +242,22 @@ class CharacteristicController extends Controller
             ],
         ]);
 
-        $characteristic->update([
-            'name' => $data['name'],
-            'short_name' => $data['short_name'] ?? null,
-            'description' => $data['description'] ?? null,
-            'icon' => $data['icon'] ?? null,
-            'color' => $data['color'] ?? null,
-            'type' => $data['type'],
-            'unit' => $data['unit'] ?? null,
-            'sort_order' => (int) ($data['sort_order'] ?? $characteristic->sort_order),
-            'applies_to' => $this->normalizeArrayInput($data['applies_to'] ?? null),
-            'value_available' => $this->normalizeArrayInput($data['value_available'] ?? null),
-        ]);
-
         $entities = $data['entities'] ?? [];
         foreach ($entities as $ent) {
             $entity = $ent['entity'];
-            $characteristic->entityDefinitions()->updateOrCreate(
-                ['entity' => $entity],
+            EntityCharacteristic::updateOrCreate(
+                ['entity' => $entity, 'characteristic_key' => $characteristic_key],
                 [
+                    'name' => $data['name'],
+                    'short_name' => $data['short_name'] ?? null,
+                    'descriptions' => $data['description'] ?? null,
+                    'icon' => $data['icon'] ?? null,
+                    'color' => $data['color'] ?? null,
+                    'type' => $data['type'],
+                    'unit' => $data['unit'] ?? null,
+                    'sort_order' => (int) ($data['sort_order'] ?? 0),
+                    'applies_to' => $this->normalizeArrayInput($data['applies_to'] ?? null),
+                    'value_available' => $this->normalizeArrayInput($data['value_available'] ?? null),
                     'min' => isset($ent['min']) ? (int) $ent['min'] : null,
                     'max' => isset($ent['max']) ? (int) $ent['max'] : null,
                     'formula' => $ent['formula'] ?? null,
@@ -294,7 +279,7 @@ class CharacteristicController extends Controller
         foreach ($conversionFormulas as $cf) {
             $entity = $cf['entity'];
             $row = DofusdbConversionFormula::firstOrCreate(
-                ['characteristic_id' => $characteristic->id, 'entity' => $entity],
+                ['characteristic_key' => $characteristic_key, 'entity' => $entity],
                 ['formula_type' => 'custom', 'parameters' => null]
             );
             $row->conversion_formula = isset($cf['conversion_formula']) && $cf['conversion_formula'] !== '' ? $cf['conversion_formula'] : null;
@@ -303,16 +288,10 @@ class CharacteristicController extends Controller
             $row->save();
         }
 
-        return redirect()->route('admin.characteristics.show', $characteristic->id)
+        return redirect()->route('admin.characteristics.show', ['characteristic_key' => $characteristic_key])
             ->with('success', 'Caractéristique mise à jour.');
     }
 
-    /**
-     * Normalise une entrée en tableau (accepte array ou string newline-separée).
-     *
-     * @param array<string>|string|null $input
-     * @return array<string>|null
-     */
     private function normalizeArrayInput(array|string|null $input): ?array
     {
         $items = match (true) {
@@ -321,13 +300,19 @@ class CharacteristicController extends Controller
             default => explode("\n", (string) $input),
         };
         $out = array_values(array_filter(array_map('trim', $items)));
+
         return $out === [] ? null : $out;
     }
 
-    private function characteristicToArray(Characteristic $c): array
+    /**
+     * @param \Illuminate\Database\Eloquent\Collection<int, EntityCharacteristic> $rows
+     * @return array<string, mixed>
+     */
+    private function buildSelectedFromRows($rows): array
     {
+        $first = $rows->first();
         $entities = [];
-        foreach ($c->entityDefinitions as $e) {
+        foreach ($rows as $e) {
             $entities[] = [
                 'entity' => $e->entity,
                 'min' => $e->min,
@@ -345,29 +330,21 @@ class CharacteristicController extends Controller
         }
 
         return [
-            'id' => $c->id,
-            'db_column' => $c->db_column,
-            'name' => $c->name,
-            'short_name' => $c->short_name,
-            'description' => $c->description,
-            'icon' => $c->icon,
-            'color' => $c->color,
-            'type' => $c->type,
-            'unit' => $c->unit,
-            'sort_order' => $c->sort_order,
-            'applies_to' => $c->applies_to ?? [],
-            'value_available' => $c->value_available ?? [],
+            'db_column' => $first->db_column,
+            'name' => $first->name,
+            'short_name' => $first->short_name,
+            'description' => $first->descriptions,
+            'icon' => $first->icon,
+            'color' => $first->color,
+            'type' => $first->type,
+            'unit' => $first->unit,
+            'sort_order' => $first->sort_order,
+            'applies_to' => $first->applies_to ?? [],
+            'value_available' => $first->value_available ?? [],
             'entities' => $entities,
         ];
     }
 
-    /**
-     * Fusionne les entity definitions existantes avec les entités supportées (monster, class, item, spell).
-     * Ajoute une ligne par défaut pour chaque entité manquante afin que le formulaire affiche toutes les entités.
-     *
-     * @param array<int, array<string, mixed>> $entities
-     * @return array<int, array<string, mixed>>
-     */
     private function mergeDefaultEntityDefinitions(array $entities): array
     {
         $byEntity = [];
@@ -378,7 +355,7 @@ class CharacteristicController extends Controller
             }
         }
         $out = [];
-        foreach (CharacteristicEntity::VALIDATION_ENTITIES as $entity) {
+        foreach (EntityCharacteristic::ENTITIES as $entity) {
             $out[] = $byEntity[$entity] ?? [
                 'entity' => $entity,
                 'min' => null,

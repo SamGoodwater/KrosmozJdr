@@ -53,6 +53,10 @@ const props = defineProps({
         type: Array,
         default: () => [],
     },
+    availableResourcesForRecipe: {
+        type: Array,
+        default: () => [],
+    },
 });
 
 const viewMode = ref('large');
@@ -92,6 +96,24 @@ setPageTitle(`Modifier la ressource : ${resource.value.name || 'Nouvelle ressour
             :fields-config="fieldsConfig"
             :is-updating="!!resource?.id"
             @update:view-mode="viewMode = $event"
+        />
+
+        <!-- Recette : ingrédients (autres ressources) avec quantités -->
+        <EntityRelationsManager
+            v-if="resource?.id"
+            :relations="resource.recipeIngredients || []"
+            :available-items="availableResourcesForRecipe"
+            :entity-id="resource.id"
+            entity-type="resources"
+            relation-type="recipe"
+            relation-name="Recette (ingrédients pour fabriquer cette ressource)"
+            :config="{
+                displayFields: ['name', 'description', 'level'],
+                searchFields: ['name', 'description'],
+                pivotFields: ['quantity'],
+                itemLabel: 'ressource',
+                itemLabelPlural: 'ressources'
+            }"
         />
 
         <!-- Relations / pivots niveau 1 -->

@@ -5,13 +5,12 @@ declare(strict_types=1);
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
- * Formule de conversion DofusDB → KrosmozJDR pour une caractéristique et une entité.
+ * Formule de conversion DofusDB → KrosmozJDR pour une (entity, characteristic_key).
  *
  * @property int $id
- * @property string $characteristic_id
+ * @property string $characteristic_key
  * @property string $entity
  * @property string $formula_type
  * @property string|null $conversion_formula Formule simple ([d], [level]) ou table JSON
@@ -25,7 +24,7 @@ class DofusdbConversionFormula extends Model
 
     /** @var list<string> */
     protected $fillable = [
-        'characteristic_id',
+        'characteristic_key',
         'entity',
         'formula_type',
         'conversion_formula',
@@ -38,14 +37,4 @@ class DofusdbConversionFormula extends Model
     protected $casts = [
         'parameters' => 'array',
     ];
-
-    /**
-     * Caractéristique concernée.
-     *
-     * @return BelongsTo<Characteristic, self>
-     */
-    public function characteristic(): BelongsTo
-    {
-        return $this->belongsTo(Characteristic::class, 'characteristic_id', 'id');
-    }
 }

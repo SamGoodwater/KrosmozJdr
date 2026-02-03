@@ -17,6 +17,7 @@ Route::prefix('entities/spells')->name('entities.spells.')->middleware('auth')->
     // Routes spécifiques pour les relations (doivent être avant la route update générique)
     Route::patch('/{spell}/breeds', [SpellController::class, 'updateBreeds'])->name('updateBreeds');
     Route::patch('/{spell}/spell-types', [SpellController::class, 'updateSpellTypes'])->name('updateSpellTypes');
+    Route::patch('/{spell}/effects', [SpellController::class, 'updateEffects'])->name('updateEffects');
     Route::get('/{spell}/pdf', [SpellController::class, 'downloadPdf'])->name('pdf');
     Route::patch('/{spell}', [SpellController::class, 'update'])->name('update');
     Route::delete('/{spell}', [SpellController::class, 'delete'])->name('delete');

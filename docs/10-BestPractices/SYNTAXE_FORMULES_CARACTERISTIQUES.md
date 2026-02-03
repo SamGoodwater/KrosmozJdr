@@ -1,6 +1,6 @@
-# Syntaxe des formules — Caractéristiques (config)
+# Syntaxe des formules — Caractéristiques
 
-Convention pour les formules **exploitables** et **affichage** des caractéristiques (classe, monstre). Source de vérité : `config/characteristics.php` ; formules par entité dans `entities.class` et `entities.monster`. Les items n’ont pas de formule (bonus bruts).
+Convention pour les formules **exploitables** et **affichage** des caractéristiques (classe, monstre). Source de vérité : table `entity_characteristics` (CharacteristicService) ; formules par entité (entity + characteristic_key). Les items n’ont pas de formule (bonus bruts).
 
 ## 1. Convention exploitable
 
@@ -52,7 +52,7 @@ Décodage / encodage : `App\Services\Characteristic\FormulaConfigDecoder` (PHP),
 
 | Emplacement | Contenu |
 |------------|--------|
-| `config/characteristics.php` | Pour chaque caractéristique, dans `entities.monster` et `entities.class` : `formula` (exploitable), `formula_display` (affichage). |
-| Évaluation | Un service ou helper parse la chaîne `formula`, remplace les `[id]` par les valeurs des caractéristiques, évalue les `ndX` et les opérateurs / `floor` / `ceil`. |
+| Table `entity_characteristics` (BDD) | Pour chaque (entity, characteristic_key) : `formula` (exploitable), `formula_display` (affichage). CharacteristicService expose ces données (cache). |
+| Évaluation | FormulaEvaluator parse la chaîne `formula`, remplace les `[id]` par les valeurs des caractéristiques, évalue les `ndX` et les opérateurs / `floor` / `ceil`. |
 
 Référence croisée : [FORMULAS_PRACTICES.md](FORMULAS_PRACTICES.md), [CONTENT_OVERVIEW.md – section 5](../20-Content/CONTENT_OVERVIEW.md) si existant.

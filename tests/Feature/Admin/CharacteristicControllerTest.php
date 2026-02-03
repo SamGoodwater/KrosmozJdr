@@ -4,16 +4,16 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Admin;
 
-use App\Models\Characteristic;
+use App\Models\EntityCharacteristic;
 use App\Models\User;
-use Database\Seeders\CharacteristicConfigSeeder;
+use Database\Seeders\EntityCharacteristicSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
 /**
  * Tests Feature pour Admin\CharacteristicController.
  *
- * Prérequis : tables characteristics et characteristic_entities (migrations 2026_02_01_*).
+ * Prérequis : table entity_characteristics (migrations 2026_02_03_150000_*).
  * RefreshDatabase exécute les migrations ; en environnement de test MySQL, s’assurer que les migrations sont à jour.
  *
  * Vérifie que :
@@ -29,8 +29,22 @@ class CharacteristicControllerTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        (new CharacteristicConfigSeeder)->run();
+        $this->seedEntityCharacteristics();
         app(\App\Services\Characteristic\CharacteristicService::class)->clearCache();
+    }
+
+    private function seedEntityCharacteristics(): void
+    {
+        $path = base_path('database/seeders/data/entity_characteristics.php');
+        if (is_file($path)) {
+            (new EntityCharacteristicSeeder)->run();
+            return;
+        }
+        EntityCharacteristic::insert([
+            ['entity' => 'class', 'characteristic_key' => 'life', 'name' => 'Points de vie', 'short_name' => 'PV', 'type' => 'int', 'min' => 1, 'max' => 500, 'sort_order' => 0, 'created_at' => now(), 'updated_at' => now()],
+            ['entity' => 'monster', 'characteristic_key' => 'life', 'name' => 'Points de vie', 'short_name' => 'PV', 'type' => 'int', 'min' => 1, 'max' => 10000, 'sort_order' => 0, 'created_at' => now(), 'updated_at' => now()],
+            ['entity' => 'class', 'characteristic_key' => 'level', 'name' => 'Niveau', 'short_name' => 'Niv', 'type' => 'int', 'min' => 1, 'max' => 200, 'sort_order' => 0, 'created_at' => now(), 'updated_at' => now()],
+        ]);
     }
 
     public function test_guest_redirected_to_login_on_index(): void
@@ -97,14 +111,14 @@ class CharacteristicControllerTest extends TestCase
     public function test_admin_can_update_characteristic(): void
     {
         $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
-        $char = Characteristic::query()->find('life');
+        $char = EntityCharacteristic::where('characteristic_key', 'life')->first();
         $this->assertNotNull($char);
 
         $response = $this->actingAs($admin)
             ->patch(route('admin.characteristics.update', 'life'), [
                 'name' => 'Points de vie (modifié)',
                 'short_name' => $char->short_name,
-                'description' => $char->description,
+                'description' => $char->descriptions,
                 'icon' => $char->icon,
                 'color' => $char->color,
                 'type' => 'int',
@@ -114,8 +128,8 @@ class CharacteristicControllerTest extends TestCase
             ]);
 
         $response->assertRedirect(route('admin.characteristics.show', 'life'));
-        $this->assertDatabaseHas('characteristics', [
-            'id' => 'life',
+        $this->assertDatabaseHas('entity_characteristics', [
+            'characteristic_key' => 'life',
             'name' => 'Points de vie (modifié)',
         ]);
     }
@@ -187,14 +201,14 @@ class CharacteristicControllerTest extends TestCase
     public function test_super_admin_can_update_characteristic(): void
     {
         $superAdmin = User::factory()->create(['role' => User::ROLE_SUPER_ADMIN]);
-        $char = Characteristic::query()->find('level');
+        $char = EntityCharacteristic::where('characteristic_key', 'level')->first();
         $this->assertNotNull($char);
 
         $response = $this->actingAs($superAdmin)
             ->patch(route('admin.characteristics.update', 'level'), [
                 'name' => 'Niveau (modifié)',
                 'short_name' => $char->short_name,
-                'description' => $char->description,
+                'description' => $char->descriptions,
                 'icon' => $char->icon,
                 'color' => $char->color,
                 'type' => 'int',
@@ -204,8 +218,8 @@ class CharacteristicControllerTest extends TestCase
             ]);
 
         $response->assertRedirect(route('admin.characteristics.show', 'level'));
-        $this->assertDatabaseHas('characteristics', [
-            'id' => 'level',
+        $this->assertDatabaseHas('entity_characteristics', [
+            'characteristic_key' => 'level',
             'name' => 'Niveau (modifié)',
         ]);
     }

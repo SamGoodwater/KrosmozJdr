@@ -76,8 +76,8 @@
   },
   {
     "path": "10-BestPractices/SYNTAXE_FORMULES_CARACTERISTIQUES.md",
-    "title": "Syntaxe des formules — Caractéristiques (config)",
-    "description": "Convention pour les formules **exploitables** et **affichage** des caractéristiques (classe, monstre). Source de vérité : `config/characteristics.php` ; formules par entité dans `entities.class` et `entities.monster`. Les items n’ont pas de formule (bonus bruts)."
+    "title": "Syntaxe des formules — Caractéristiques",
+    "description": "Convention pour les formules **exploitables** et **affichage** des caractéristiques (classe, monstre). Source de vérité : table `entity_characteristics` (CharacteristicService) ; formules par entité (entity + characteristic_key). Les items n’ont pas de formule (bonus bruts)."
   },
   {
     "path": "10-BestPractices/TESTING_PRACTICES.md",
@@ -1065,6 +1065,11 @@
     "description": "Cette table des matières présente la structure complète du livre de règles KrosmozJDR."
   },
   {
+    "path": "50-Fonctionnalités/Characteristics-DB/BESOIN_REFONTE.md",
+    "title": "Besoin : refonte du paramétrage des caractéristiques",
+    "description": "Résumé du besoin décrit, avec exemples. Approche retenue : **organisation par entité** (affichage, édition et modèle de données)."
+  },
+  {
     "path": "50-Fonctionnalités/Characteristics-DB/CONVERSION_100_BDD_ET_HANDLERS.md",
     "title": "Conversion 100 % pilotée par la BDD et handlers nommés",
     "description": "**Objectif** : Que la conversion DofusDB → KrosmozJDR (côté caractéristiques) ne dépende que de la base de données. Les formules, limites et mappings sont en BDD ; les cas complexes (ex. résistances) sont gérés par des **handlers nommés** enregistrés en BDD et exécutés en PHP."
@@ -1078,6 +1083,11 @@
     "path": "50-Fonctionnalités/Characteristics-DB/PLAN_MIGRATION_CHARACTERISTICS_DB.md",
     "title": "Plan de migration : caractéristiques en base de données",
     "description": "**Objectif** : Remplacer `config/characteristics.php` et `config/equipment_characteristics.php` par une source de vérité en base de données, exposée via un **service** accessible partout dans le projet, avec une interface admin (super_admin) pour modifier les données."
+  },
+  {
+    "path": "50-Fonctionnalités/Characteristics-DB/RESUME_EXISTANT.md",
+    "title": "Résumé : paramétrage des caractéristiques (état actuel)",
+    "description": "Document de synthèse du système **après refonte** : organisation par entité, table `entity_characteristics`, formules et équipement par `(entity, characteristic_key)`."
   },
   {
     "path": "50-Fonctionnalités/ESTIMATION_RENOMMAGE_CLASSE_EN_BREED.md",
@@ -1152,7 +1162,7 @@
   {
     "path": "50-Fonctionnalités/Scrapping/Architecture/RELATIONS.md",
     "title": "Ordre de résolution des relations",
-    "description": "Ce document décrit le **graphe des dépendances** entre entités et le **comportement actuel** du pipeline pour les relations (sorts, drops)."
+    "description": "Ce document décrit le **graphe des dépendances** entre entités, le **comportement actuel** du pipeline et le **système de pile** pour **toutes** les relations (classes→sorts, sorts→invocations, monstres→sorts/drops, ressources→recettes)."
   },
   {
     "path": "50-Fonctionnalités/Scrapping/Architecture/SCHEMA_CONFIG.md",
@@ -1213,6 +1223,11 @@
     "path": "50-Fonctionnalités/Scrapping/RESTE_A_FAIRE_SCRAPPING.md",
     "title": "Résumé — Ce qu’il reste à faire pour finir le scrapping (backend)",
     "description": "Ce document liste ce qui reste à faire pour **finaliser la partie backend** du scrapping (hors interface, à traiter plus tard)."
+  },
+  {
+    "path": "50-Fonctionnalités/Spell-Effects/TAXONOMIE_EFFETS_SORTS.md",
+    "title": "Taxonomie des effets de sort — Krosmoz JDR",
+    "description": "Référence **exhaustive** des types d’effets qu’un sort peut produire. Chaque type est paramétrable en base de données et peut être associé à un ou plusieurs sorts avec des valeurs (min, max, dés, durée, cible, etc.)."
   },
   {
     "path": "DOCUMENTATION_GUIDE.md",

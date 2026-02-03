@@ -68,6 +68,30 @@ class SpellResource extends JsonResource
                     'description' => $spellType->description,
                 ];
             })->values()->all() : [],
+            'spellEffects' => ($this->relationLoaded('spellEffects') || isset($this->spellEffects)) ? $this->spellEffects->map(function ($effect) {
+                return [
+                    'id' => $effect->id,
+                    'spell_effect_type_id' => $effect->spell_effect_type_id,
+                    'spellEffectType' => $effect->relationLoaded('spellEffectType') && $effect->spellEffectType ? [
+                        'id' => $effect->spellEffectType->id,
+                        'name' => $effect->spellEffectType->name,
+                        'slug' => $effect->spellEffectType->slug,
+                        'category' => $effect->spellEffectType->category,
+                        'unit' => $effect->spellEffectType->unit,
+                    ] : null,
+                    'value_min' => $effect->value_min,
+                    'value_max' => $effect->value_max,
+                    'dice_num' => $effect->dice_num,
+                    'dice_side' => $effect->dice_side,
+                    'duration' => $effect->duration,
+                    'target_scope' => $effect->target_scope,
+                    'zone_shape' => $effect->zone_shape,
+                    'dispellable' => $effect->dispellable,
+                    'order' => $effect->order,
+                    'raw_description' => $effect->raw_description,
+                    'summon_monster_id' => $effect->summon_monster_id,
+                ];
+            })->values()->all() : [],
             'monsters' => $this->whenLoaded('monsters'),
 
             // Droits d'accès

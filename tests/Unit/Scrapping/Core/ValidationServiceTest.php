@@ -2,11 +2,10 @@
 
 namespace Tests\Unit\Scrapping\Core;
 
-use App\Models\Characteristic;
-use App\Models\CharacteristicEntity;
+use App\Models\EntityCharacteristic;
 use App\Services\Characteristic\CharacteristicService;
-use App\Services\Scrapping\Core\Validation\ValidationResult;
-use App\Services\Scrapping\Core\Validation\ValidationService;
+use App\Services\Characteristic\ValidationResult;
+use App\Services\Characteristic\ValidationService;
 use Tests\TestCase;
 
 /**
@@ -47,16 +46,13 @@ class ValidationServiceTest extends TestCase
 
     public function test_validate_fails_when_required_field_missing(): void
     {
-        Characteristic::create([
-            'id' => 'test_name',
+        EntityCharacteristic::create([
+            'entity' => 'monster',
+            'characteristic_key' => 'test_name',
             'name' => 'Nom',
             'type' => 'string',
             'sort_order' => 0,
             'applies_to' => ['monster'],
-        ]);
-        CharacteristicEntity::create([
-            'characteristic_id' => 'test_name',
-            'entity' => 'monster',
             'required' => true,
         ]);
         $this->clearCharacteristicsCache();
@@ -77,16 +73,13 @@ class ValidationServiceTest extends TestCase
 
     public function test_validate_ok_when_required_field_present(): void
     {
-        Characteristic::create([
-            'id' => 'test_name_ok',
+        EntityCharacteristic::create([
+            'entity' => 'monster',
+            'characteristic_key' => 'test_name_ok',
             'name' => 'Nom',
             'type' => 'string',
             'sort_order' => 0,
             'applies_to' => ['monster'],
-        ]);
-        CharacteristicEntity::create([
-            'characteristic_id' => 'test_name_ok',
-            'entity' => 'monster',
             'required' => true,
         ]);
         $this->clearCharacteristicsCache();
@@ -103,16 +96,13 @@ class ValidationServiceTest extends TestCase
 
     public function test_validate_fails_when_int_out_of_limits(): void
     {
-        Characteristic::create([
-            'id' => 'test_level',
+        EntityCharacteristic::create([
+            'entity' => 'monster',
+            'characteristic_key' => 'test_level',
             'name' => 'Niveau',
             'type' => 'int',
             'sort_order' => 0,
             'applies_to' => ['monster'],
-        ]);
-        CharacteristicEntity::create([
-            'characteristic_id' => 'test_level',
-            'entity' => 'monster',
             'min' => 1,
             'max' => 50,
         ]);
@@ -133,16 +123,13 @@ class ValidationServiceTest extends TestCase
 
     public function test_validate_ok_when_int_within_limits(): void
     {
-        Characteristic::create([
-            'id' => 'test_level_ok',
+        EntityCharacteristic::create([
+            'entity' => 'monster',
+            'characteristic_key' => 'test_level_ok',
             'name' => 'Niveau',
             'type' => 'int',
             'sort_order' => 0,
             'applies_to' => ['monster'],
-        ]);
-        CharacteristicEntity::create([
-            'characteristic_id' => 'test_level_ok',
-            'entity' => 'monster',
             'min' => 1,
             'max' => 50,
         ]);
@@ -160,16 +147,13 @@ class ValidationServiceTest extends TestCase
 
     public function test_resolves_breed_to_class_validation_rules(): void
     {
-        Characteristic::create([
-            'id' => 'test_class_name',
+        EntityCharacteristic::create([
+            'entity' => 'class',
+            'characteristic_key' => 'test_class_name',
             'name' => 'Nom classe',
             'type' => 'string',
             'sort_order' => 0,
             'applies_to' => ['class'],
-        ]);
-        CharacteristicEntity::create([
-            'characteristic_id' => 'test_class_name',
-            'entity' => 'class',
             'required' => true,
         ]);
         $this->clearCharacteristicsCache();
@@ -186,16 +170,13 @@ class ValidationServiceTest extends TestCase
 
     public function test_validate_breed_ok_when_class_required_met(): void
     {
-        Characteristic::create([
-            'id' => 'test_class_name_ok',
+        EntityCharacteristic::create([
+            'entity' => 'class',
+            'characteristic_key' => 'test_class_name_ok',
             'name' => 'Nom classe',
             'type' => 'string',
             'sort_order' => 0,
             'applies_to' => ['class'],
-        ]);
-        CharacteristicEntity::create([
-            'characteristic_id' => 'test_class_name_ok',
-            'entity' => 'class',
             'required' => true,
         ]);
         $this->clearCharacteristicsCache();
@@ -209,17 +190,14 @@ class ValidationServiceTest extends TestCase
 
     public function test_validate_fails_when_value_available_rejects_value(): void
     {
-        Characteristic::create([
-            'id' => 'size',
+        EntityCharacteristic::create([
+            'entity' => 'monster',
+            'characteristic_key' => 'size',
             'name' => 'Taille',
             'type' => 'array',
             'sort_order' => 0,
             'applies_to' => ['monster'],
             'value_available' => ['tiny', 'small', 'medium', 'large', 'huge'],
-        ]);
-        CharacteristicEntity::create([
-            'characteristic_id' => 'size',
-            'entity' => 'monster',
         ]);
         $this->clearCharacteristicsCache();
 
@@ -237,17 +215,14 @@ class ValidationServiceTest extends TestCase
 
     public function test_validate_ok_when_value_available_accepts_value(): void
     {
-        Characteristic::create([
-            'id' => 'size_ok',
+        EntityCharacteristic::create([
+            'entity' => 'monster',
+            'characteristic_key' => 'size_ok',
             'name' => 'Taille',
             'type' => 'array',
             'sort_order' => 0,
             'applies_to' => ['monster'],
             'value_available' => ['tiny', 'small', 'medium', 'large', 'huge'],
-        ]);
-        CharacteristicEntity::create([
-            'characteristic_id' => 'size_ok',
-            'entity' => 'monster',
         ]);
         $this->clearCharacteristicsCache();
 
@@ -262,17 +237,14 @@ class ValidationServiceTest extends TestCase
 
     public function test_validate_accepts_chance_via_luck_alias(): void
     {
-        Characteristic::create([
-            'id' => 'chance',
+        EntityCharacteristic::create([
+            'entity' => 'monster',
+            'characteristic_key' => 'chance',
             'name' => 'Chance',
             'type' => 'int',
             'db_column' => 'chance',
             'sort_order' => 0,
             'applies_to' => ['monster'],
-        ]);
-        CharacteristicEntity::create([
-            'characteristic_id' => 'chance',
-            'entity' => 'monster',
             'required' => true,
         ]);
         $this->clearCharacteristicsCache();
@@ -289,16 +261,13 @@ class ValidationServiceTest extends TestCase
 
     public function test_validate_spell_uses_spell_entity_rules(): void
     {
-        Characteristic::create([
-            'id' => 'spell_name',
+        EntityCharacteristic::create([
+            'entity' => 'spell',
+            'characteristic_key' => 'spell_name',
             'name' => 'Nom sort',
             'type' => 'string',
             'sort_order' => 0,
             'applies_to' => ['spell'],
-        ]);
-        CharacteristicEntity::create([
-            'characteristic_id' => 'spell_name',
-            'entity' => 'spell',
             'required' => true,
         ]);
         $this->clearCharacteristicsCache();

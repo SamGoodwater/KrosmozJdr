@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Models\Entity\Resource;
 use App\Models\Type\ResourceType;
 use App\Models\User;
 use App\Services\Scrapping\Catalog\DofusDbItemSuperTypeMappingService;
@@ -9,7 +10,10 @@ use App\Services\Scrapping\Catalog\DofusDbItemTypesCatalogService;
 use App\Services\Scrapping\Catalog\DofusDbMonsterRacesCatalogService;
 use App\Services\Scrapping\Core\Collect\CollectService;
 use App\Services\Scrapping\Core\Config\CollectAliasResolver;
+use App\Services\Scrapping\Core\Config\ConfigLoader;
+use App\Services\Scrapping\Core\Integration\IntegrationService;
 use App\Services\Scrapping\Core\Orchestrator\Orchestrator;
+use App\Services\Scrapping\Core\Preview\ScrappingPreviewBuilder;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
@@ -42,6 +46,7 @@ class ScrappingCommand extends Command
         {--force-update : Force la mise à jour même si l\'entité existe déjà}
         {--replace-existing : Alias de --force-update}
         {--validate-only : Valide uniquement sans sauvegarder}
+        {--no-validate : Ne pas valider (validation activée par défaut)}
         {--dry-run : N\'écrit rien (si import)}
         {--exclude-from-update= : Champs à ne pas écraser à l\'update (ex: name,image,level)}
         {--ignore-unvalidated : Ignorer les objets dont la race/type n\'est pas validé}
@@ -65,8 +70,9 @@ class ScrappingCommand extends Command
         {--start-skip=0 : Skip initial (pour reprendre une pagination)}
         {--max-pages=0 : Nombre max de pages (0 = illimité)}
         {--max-items=0 : Nombre max d\'items au total (0 = illimité)}
-        {--json : Affiche en JSON}
-        {--detailed : Affichage plus verbeux}';
+        {--output= : Sortie : raw (tout DofusDB), useful (propriétés utiles), summary (comptes)}
+        {--useful= : Si output=useful : raw,converted,validated,compared (1 ou plusieurs, séparés par des virgules)}
+        {--json : Sortie JSON (pour traitement ; sinon sortie lisible et colorée)}';
 
     protected $description = 'Commande unique pour collect/search/import du scrapping (config-driven).';
 
@@ -84,9 +90,14 @@ class ScrappingCommand extends Command
         $importEntities = $this->parseEntityList((string) ($this->option('import') ?? ''));
 
         $doSave = (bool) $this->option('save') || !empty($importEntities);
-        $doCompare = (bool) $this->option('compare');
-        $json = (bool) $this->option('json');
-        $detailed = (bool) $this->option('detailed');
+        $outputMode = (string) $this->option('output');
+        if ($outputMode !== '' && !in_array($outputMode, ['raw', 'useful', 'summary'], true)) {
+            $this->error("Option --output invalide: {$outputMode}. Valeurs: raw, useful, summary.");
+            return Command::FAILURE;
+        }
+        $usefulInclude = $this->parseUsefulInclude((string) $this->option('useful'), $outputMode);
+        $outputAsJson = (bool) $this->option('json');
+        $outputVerbose = !$outputAsJson;
 
         $entities = !empty($importEntities) ? $importEntities : $collectEntities;
         if (empty($entities)) {
@@ -111,7 +122,8 @@ class ScrappingCommand extends Command
                 'collect' => !empty($collectEntities),
                 'import' => !empty($importEntities),
                 'save' => $doSave,
-                'compare' => $doCompare,
+                'output' => $outputMode !== '' ? $outputMode : null,
+                'useful_include' => $outputMode === 'useful' ? $usefulInclude : null,
             ],
             'query' => [
                 'entities' => $entities,
@@ -120,6 +132,9 @@ class ScrappingCommand extends Command
             ],
             'entities' => [],
         ];
+        if ($outputMode === 'summary') {
+            $results['summary'] = ['collected' => 0, 'converted' => 0, 'validated' => 0, 'integrated' => 0];
+        }
 
         foreach ($entities as $entity) {
             $normalizedEntity = $this->normalizeEntity($entity);
@@ -215,10 +230,115 @@ class ScrappingCommand extends Command
                     $this->line("  - trouvés: " . count($foundIds));
                 }
 
-                if ($doCompare) {
-                    foreach ($entityResult['ids'] as $id) {
-                        $entityResult['previews'][] = $orchestrator->previewEntity($normalizedEntity, (int) $id);
+                if ($outputMode === 'useful') {
+                    $configLoader = app(ConfigLoader::class);
+                    $integrationService = app(IntegrationService::class);
+                    $entityConfig = $configLoader->loadEntity('dofusdb', $collectorEntity);
+                    $entityTypeKrosmoz = (string) ($entityConfig['target']['krosmozEntity'] ?? $collectorEntity);
+                    $runOptsBase = ['convert' => true, 'validate' => !(bool) $this->option('no-validate'), 'integrate' => false, 'lang' => (string) $this->option('lang', 'fr')];
+                    $includeRaw = in_array('raw', $usefulInclude, true);
+                    $includeConverted = in_array('converted', $usefulInclude, true);
+                    $includeValidated = in_array('validated', $usefulInclude, true);
+                    $includeCompared = in_array('compared', $usefulInclude, true);
+                    $entityResult['output_items'] = [];
+                    foreach ($entityResult['items'] as $idx => $rawItem) {
+                        if (!is_array($rawItem)) {
+                            continue;
+                        }
+                        $rawUseful = ScrappingPreviewBuilder::buildRawUseful($rawItem, $entityConfig);
+                        $itemOut = ['dofusdb_id' => $rawItem['id'] ?? null, 'index' => $idx];
+                        $converted = null;
+                        $merged = [];
+                        $validationErrors = [];
+                        $existing = null;
+                        $validationValid = null;
+                        if ($includeConverted || $includeValidated || $includeCompared) {
+                            $runResult = $orchestrator->runOneWithRaw('dofusdb', $collectorEntity, $rawItem, $runOptsBase);
+                            $converted = $runResult->getConverted();
+                            $validationErrors = $runResult->getValidationErrors();
+                            $validationValid = $runResult->isSuccess();
+                            $merged = ScrappingPreviewBuilder::mergeConverted($converted ?? []);
+                            if ($includeConverted || $includeCompared) {
+                                $existing = $integrationService->getExistingAttributesForComparison($entityTypeKrosmoz, $converted ?? []);
+                            }
+                        }
+                        if ($includeCompared) {
+                            $itemOut['krosmoz_id'] = isset($existing['id']) ? (int) $existing['id'] : null;
+                        }
+                        $errorPaths = [];
+                        foreach ($validationErrors as $err) {
+                            $path = $err['path'] ?? '';
+                            if ($path !== '') {
+                                $errorPaths[$path] = true;
+                                $base = explode('.', $path)[0] ?? $path;
+                                $errorPaths[$base] = true;
+                            }
+                        }
+                        $allKeys = array_values(array_unique(array_keys($rawUseful + $merged + ($existing ?? []))));
+                        $properties = [];
+                        foreach ($allKeys as $key) {
+                            $prop = [];
+                            if ($includeRaw) {
+                                $prop['raw_value'] = $rawUseful[$key] ?? null;
+                            }
+                            if ($includeConverted) {
+                                $prop['converted_value'] = $merged[$key] ?? null;
+                            }
+                            if ($includeCompared && $existing !== null) {
+                                $prop['existing_value'] = $existing[$key] ?? null;
+                            }
+                            if ($includeValidated) {
+                                $prop['valid'] = !isset($errorPaths[$key]);
+                            }
+                            $properties[$key] = $prop;
+                        }
+                        $itemOut['properties'] = $properties;
+                        if ($includeValidated) {
+                            $itemOut['validation_valid'] = $validationValid;
+                            $itemOut['validation_errors'] = $validationErrors;
+                        }
+                        $recipeIngredients = $merged['recipe_ingredients'] ?? [];
+                        $relationObjectsMissing = [];
+                        if (is_array($recipeIngredients)) {
+                            foreach ($recipeIngredients as $row) {
+                                $id = (string) ($row['ingredient_dofusdb_id'] ?? '');
+                                if ($id !== '' && ! Resource::where('dofusdb_id', $id)->exists()) {
+                                    $relationObjectsMissing[] = [
+                                        'dofusdb_id' => $id,
+                                        'quantity' => (int) ($row['quantity'] ?? 1),
+                                    ];
+                                }
+                            }
+                        }
+                        $itemOut['relation_objects_missing'] = $relationObjectsMissing;
+                        $entityResult['output_items'][] = $itemOut;
                     }
+                    $entityResult['items'] = array_map(
+                        fn ($raw) => is_array($raw) && isset($raw['id']) ? ['dofusdb_id' => $raw['id']] : [],
+                        $entityResult['items']
+                    );
+                }
+
+                if ($outputMode === 'summary') {
+                    $summaryCounts = ['collected' => count($entityResult['items']), 'converted' => 0, 'validated' => 0];
+                    foreach ($entityResult['items'] as $rawItem) {
+                        if (!is_array($rawItem) || !isset($rawItem['id'])) {
+                            continue;
+                        }
+                        $summaryCounts['converted']++;
+                        $runResult = $orchestrator->runOneWithRaw('dofusdb', $collectorEntity, $rawItem, [
+                            'convert' => true,
+                            'validate' => !(bool) $this->option('no-validate'),
+                            'integrate' => false,
+                            'lang' => (string) $this->option('lang', 'fr'),
+                        ]);
+                        if ($runResult->isSuccess()) {
+                            $summaryCounts['validated']++;
+                        }
+                    }
+                    $results['summary']['collected'] = ($results['summary']['collected'] ?? 0) + $summaryCounts['collected'];
+                    $results['summary']['converted'] = ($results['summary']['converted'] ?? 0) + $summaryCounts['converted'];
+                    $results['summary']['validated'] = ($results['summary']['validated'] ?? 0) + $summaryCounts['validated'];
                 }
 
                 if ($doSave) {
@@ -227,36 +347,287 @@ class ScrappingCommand extends Command
                     foreach ($entityResult['ids'] as $id) {
                         $entityResult['imported'][] = $this->importOne($orchestrator, $normalizedEntity, (int) $id, $importOptions);
                     }
+                    if ($outputMode === 'summary') {
+                        $integratedCount = collect($entityResult['imported'])->filter(fn ($r) => (bool) ($r['success'] ?? false))->count();
+                        $results['summary']['integrated'] = ($results['summary']['integrated'] ?? 0) + $integratedCount;
+                    }
+                }
+                if ($outputMode === 'summary' && !$doSave) {
+                    $results['summary']['integrated'] = $results['summary']['integrated'] ?? 0;
                 }
 
-                if (!$json) {
-                    if ($doCompare) {
-                        $this->line("  - previews: " . count($entityResult['previews']));
-                    }
+                if ($outputVerbose && !$outputAsJson) {
                     if ($doSave) {
                         $ok = collect($entityResult['imported'])->filter(fn ($r) => (bool) ($r['success'] ?? false))->count();
-                        $this->line("  - imports: {$ok}/" . count($entityResult['imported']));
-                    }
-
-                    if ($detailed && !empty($entityResult['ids'])) {
-                        $this->line("  - ids: " . implode(', ', array_slice($entityResult['ids'], 0, 50)) . (count($entityResult['ids']) > 50 ? '…' : ''));
+                        $this->line("  - imports: <info>{$ok}</info>/" . count($entityResult['imported']));
                     }
                 }
             } catch (\Throwable $e) {
                 $entityResult['errors'][] = $e->getMessage();
-                if (!$json) {
-                    $this->error('  - erreur: ' . $e->getMessage());
-                }
             }
 
             $results['entities'][] = $entityResult;
         }
 
-        if ($json) {
+        if ($outputAsJson) {
             $this->line(json_encode($results, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
+        } else {
+            $this->renderVerboseOutput($results, $outputMode);
         }
 
         return Command::SUCCESS;
+    }
+
+    /**
+     * Parse --useful=raw,converted,validated en liste de chaînes.
+     * Si vide et output=useful, défaut : ['raw','converted','validated'].
+     *
+     * @return list<string>
+     */
+    private function parseUsefulInclude(string $optionValue, string $outputMode): array
+    {
+        if ($outputMode !== 'useful') {
+            return [];
+        }
+        $optionValue = trim($optionValue);
+        if ($optionValue === '') {
+            return ['raw', 'converted', 'validated'];
+        }
+        $allowed = ['raw', 'converted', 'validated', 'compared'];
+        $parts = array_map('trim', explode(',', $optionValue));
+        $out = [];
+        foreach ($parts as $p) {
+            if ($p !== '' && in_array($p, $allowed, true)) {
+                $out[] = $p;
+            }
+        }
+        return array_values(array_unique($out));
+    }
+
+    /**
+     * Affiche la sortie en mode verbose (lisible, coloré).
+     *
+     * @param array<string, mixed> $results
+     */
+    private function renderVerboseOutput(array $results, string $outputMode): void
+    {
+        $this->newLine();
+        if (isset($results['summary'])) {
+            $s = $results['summary'];
+            $this->info('📊 Résumé');
+            $this->line('  Collectés : <info>' . (int) ($s['collected'] ?? 0) . '</info>');
+            $this->line('  Convertis : <info>' . (int) ($s['converted'] ?? 0) . '</info>');
+            $this->line('  Validés   : <info>' . (int) ($s['validated'] ?? 0) . '</info>');
+            $this->line('  Intégrés  : <info>' . (int) ($s['integrated'] ?? 0) . '</info>');
+            return;
+        }
+        foreach ($results['entities'] ?? [] as $entityResult) {
+            $entity = $entityResult['entity'] ?? '?';
+            $this->line('<comment>▶ ' . $entity . '</comment>');
+            $count = isset($entityResult['output_items']) ? count($entityResult['output_items']) : count($entityResult['items'] ?? []);
+            $this->line('  Objets : <info>' . $count . '</info>');
+            if ($outputMode === 'raw' && !empty($entityResult['items'])) {
+                foreach ($entityResult['items'] as $i => $rawItem) {
+                    if (!is_array($rawItem)) {
+                        continue;
+                    }
+                    $id = $rawItem['id'] ?? $i;
+                    $this->line('  --- DofusDB #' . $id . ' ---');
+                    $this->line('    ' . $this->shortValue($rawItem));
+                }
+            }
+            if (!empty($entityResult['errors'])) {
+                foreach ($entityResult['errors'] as $err) {
+                    $this->line('  <error>✗ ' . $this->formatErrorMessage((string) $err) . '</error>');
+                }
+            }
+            if ($outputMode === 'useful' && !empty($entityResult['output_items'])) {
+                $usefulInclude = $results['mode']['useful_include'] ?? [];
+                $includeCompared = in_array('compared', $usefulInclude, true);
+                foreach ($entityResult['output_items'] as $i => $item) {
+                    $dofusId = $item['dofusdb_id'] ?? $i;
+                    if ($includeCompared && array_key_exists('krosmoz_id', $item)) {
+                        $krosmozId = $item['krosmoz_id'];
+                        $krosmozLabel = $krosmozId !== null ? '#' . $krosmozId : '(non importé)';
+                        $this->line('  --- DofusDB #' . $dofusId . ' - KrosmozJDR - ' . $krosmozLabel . ' ---');
+                    } else {
+                        $this->line('  --- DofusDB #' . $dofusId . ' ---');
+                    }
+                    $valid = $item['validation_valid'] ?? null;
+                    if ($valid !== null) {
+                        $this->line($valid ? '  <info>✓ Validé</info>' : '  <error>✗ Invalide</error>');
+                    }
+                    foreach ($item['properties'] ?? [] as $key => $prop) {
+                        $hasAny = array_key_exists('raw_value', $prop) || array_key_exists('converted_value', $prop)
+                            || array_key_exists('existing_value', $prop);
+                        if (!$hasAny) {
+                            continue;
+                        }
+                        $this->line('    <comment>' . $key . '</comment> :');
+                        if (array_key_exists('raw_value', $prop)) {
+                            $v = $prop['raw_value'];
+                            $hasRaw = $v !== null && $v !== '' && (!is_array($v) || $v !== []);
+                            $this->line('      DofusDB   : ' . ($hasRaw ? '<comment>' . $this->formatValueForDisplay($key, $v) . '</comment>' : '—'));
+                        }
+                                        if (array_key_exists('converted_value', $prop) || array_key_exists('valid', $prop)) {
+                            $cv = $prop['converted_value'] ?? null;
+                            $validMark = array_key_exists('valid', $prop)
+                                ? ($prop['valid'] ? ' <info>✓</info>' : ' <error>✗</error>')
+                                : '';
+                            $hasConverted = $cv !== null && $cv !== '' && (!is_array($cv) || $cv !== []);
+                            $this->line('      Converti  : ' . ($hasConverted ? $this->formatValueForDisplay($key, $cv) : '—') . $validMark);
+                        }
+                        if (array_key_exists('existing_value', $prop)) {
+                            $ev = $prop['existing_value'];
+                            $hasExisting = $ev !== null && $ev !== '' && (!is_array($ev) || $ev !== []);
+                            $this->line('      Krosmoz   : ' . ($hasExisting ? $this->formatValueForDisplay($key, $ev) : '—'));
+                        }
+                    }
+                    if (!empty($item['relation_objects_missing'])) {
+                        $this->line('    <comment>Relations à importer (objets non en base) :</comment>');
+                        foreach ($item['relation_objects_missing'] as $rel) {
+                            $this->line('      - DofusDB #' . $rel['dofusdb_id'] . ' x' . ($rel['quantity'] ?? 1));
+                        }
+                    }
+                }
+            }
+            $this->newLine();
+        }
+    }
+
+    private function shortValue(mixed $v): string
+    {
+        if (is_array($v)) {
+            return json_encode($v, JSON_UNESCAPED_UNICODE);
+        }
+        $s = (string) $v;
+        return mb_strlen($s) > 40 ? mb_substr($s, 0, 37) . '…' : $s;
+    }
+
+    /** Longueur max d'affichage pour une valeur (évite le wrap terminal et les lignes répétées). */
+    private const DISPLAY_VALUE_MAX_LENGTH = 200;
+
+    /**
+     * Formate une valeur pour l'affichage verbose : ajoute le nom à côté des IDs type et le label pour la rareté.
+     * Les champs texte longs (description, name) ne sont pas tronqués côté contenu, mais une seule ligne est émise
+     * (sans retours à la ligne) pour éviter la répétition du préfixe "DofusDB" / "Converti" en sortie.
+     */
+    private function formatValueForDisplay(string $key, mixed $value): string
+    {
+        if ($key === 'recipe_ingredients' && is_array($value)) {
+            return $this->formatRecipeIngredientsForDisplay($value);
+        }
+
+        $truncate = !in_array($key, ['description', 'name'], true);
+        $base = $truncate ? $this->shortValue($value) : $this->longValue($value);
+        if ($base === '—' || $base === '') {
+            return $base;
+        }
+
+        // Une seule ligne : pas de retours à la ligne (évite répétition du préfixe en sortie).
+        $base = str_replace(["\r\n", "\n", "\r"], ' ', $base);
+        // Valeurs brutes longues (ex. JSON i18n name/description) : tronquer pour une ligne lisible ; pas les chaînes déjà converties.
+        if (is_array($value) && mb_strlen($base) > self::DISPLAY_VALUE_MAX_LENGTH) {
+            $base = mb_substr($base, 0, self::DISPLAY_VALUE_MAX_LENGTH - 1) . '…';
+        }
+
+        if ($key === 'type_id' && is_numeric($value)) {
+            $typeId = (int) $value;
+            if ($typeId > 0) {
+                $name = app(DofusDbItemTypesCatalogService::class)->fetchName($typeId, 'fr', true);
+                if ($name !== null && $name !== '') {
+                    return $typeId . ' (' . $name . ')';
+                }
+            }
+        }
+
+        if ($key === 'resource_type_id' && is_numeric($value)) {
+            $id = (int) $value;
+            if ($id > 0) {
+                $rt = ResourceType::find($id);
+                if ($rt !== null && $rt->name !== null && $rt->name !== '') {
+                    return $id . ' (' . $rt->name . ')';
+                }
+                $name = app(DofusDbItemTypesCatalogService::class)->fetchName($id, 'fr', true);
+                if ($name !== null && $name !== '') {
+                    return $id . ' (' . $name . ')';
+                }
+            }
+        }
+
+        if ($key === 'rarity' && is_numeric($value)) {
+            $r = (int) $value;
+            $label = Resource::RARITY[$r] ?? null;
+            if ($label !== null) {
+                return $r . ' (' . $label . ')';
+            }
+        }
+
+        return $base;
+    }
+
+    /**
+     * Valeur affichée sans troncature (pour description, name).
+     */
+    private function longValue(mixed $v): string
+    {
+        if (is_array($v)) {
+            return json_encode($v, JSON_UNESCAPED_UNICODE);
+        }
+
+        return (string) $v;
+    }
+
+    /**
+     * Formate recipe_ingredients (liste d'ingrédients + quantités) pour l'affichage verbose.
+     * Accepte : [ { ingredient_dofusdb_id, quantity } ], [ { ingredient_resource_id, quantity } ],
+     * ou { ingredientIds: [], quantities: [] } (brut DofusDB).
+     */
+    private function formatRecipeIngredientsForDisplay(mixed $value): string
+    {
+        if (!is_array($value)) {
+            return '—';
+        }
+        $parts = [];
+        if (isset($value['ingredientIds'], $value['quantities']) && is_array($value['ingredientIds']) && is_array($value['quantities'])) {
+            foreach ($value['ingredientIds'] as $idx => $id) {
+                $qty = $value['quantities'][$idx] ?? 1;
+                $parts[] = (string) $id . ' x' . (int) $qty;
+            }
+        } else {
+            foreach ($value as $row) {
+                if (!is_array($row)) {
+                    continue;
+                }
+                $id = $row['ingredient_dofusdb_id'] ?? $row['ingredient_resource_id'] ?? null;
+                $qty = (int) ($row['quantity'] ?? 1);
+                if ($id !== null && $id !== '') {
+                    $name = null;
+                    if (isset($row['ingredient_resource_id']) && is_numeric($row['ingredient_resource_id'])) {
+                        $r = Resource::find((int) $row['ingredient_resource_id']);
+                        $name = $r?->name;
+                    }
+                    $parts[] = $name !== null && $name !== '' ? $name . ' (#' . $id . ') x' . $qty : (string) $id . ' x' . $qty;
+                }
+            }
+        }
+        return $parts === [] ? '—' : implode(', ', $parts);
+    }
+
+    /**
+     * Rend un message d'erreur HTTP lisible (extrait le message JSON si présent).
+     */
+    private function formatErrorMessage(string $err): string
+    {
+        if (preg_match('/^(.*?status code (\d+):)\s*(\{.*)$/s', $err, $m)) {
+            $prefix = trim($m[1]);
+            $jsonStr = trim($m[3]);
+            $decoded = json_decode($jsonStr, true);
+            if (is_array($decoded) && isset($decoded['message']) && is_string($decoded['message'])) {
+                return $prefix . ' ' . $decoded['message'];
+            }
+        }
+        return mb_strlen($err) > 120 ? mb_substr($err, 0, 117) . '…' : $err;
     }
 
     private function handleSyncResourceTypes(): int
@@ -460,6 +831,7 @@ class ScrappingCommand extends Command
             : [];
 
         $options = [
+            'validate' => !(bool) $this->option('no-validate'),
             'integrate' => !(bool) $this->option('dry-run') && !(bool) $this->option('validate-only'),
             'dry_run' => (bool) $this->option('dry-run'),
             'force_update' => (bool) $this->option('force-update') || (bool) $this->option('replace-existing'),
@@ -517,6 +889,7 @@ class ScrappingCommand extends Command
             'class' => 'breed',
             'monster' => 'monster',
             'spell' => 'spell',
+            'panoply' => 'panoply',
             'item', 'resource', 'consumable', 'equipment' => 'item',
             default => null,
         };
@@ -640,6 +1013,7 @@ class ScrappingCommand extends Command
             'include_relations' => (bool) ((int) $this->option('include-relations')),
             'force_update' => (bool) $this->option('force-update') || (bool) $this->option('replace-existing'),
             'dry_run' => (bool) $this->option('dry-run'),
+            'validate' => !(bool) $this->option('no-validate'),
             'validate_only' => (bool) $this->option('validate-only'),
             'lang' => (string) $this->option('lang', 'fr'),
             'exclude_from_update' => $excludeFromUpdate,
@@ -654,7 +1028,7 @@ class ScrappingCommand extends Command
     {
         $options = [
             'skip_cache' => (bool) $this->option('skip-cache'),
-            'limit' => max(1, min(200, (int) $this->option('limit'))),
+            'limit' => max(0, min(10000, (int) $this->option('limit'))),
             'start_skip' => max(0, (int) $this->option('start-skip')),
             // 0 = illimité (borné côté collector)
             'max_pages' => max(0, min(200, (int) $this->option('max-pages'))),
@@ -680,12 +1054,14 @@ class ScrappingCommand extends Command
         }
 
         $runOptions = [
+            'validate' => ($options['validate'] ?? true) !== false,
             'integrate' => !($options['dry_run'] ?? false) && !($options['validate_only'] ?? false),
             'dry_run' => (bool) ($options['dry_run'] ?? false),
             'force_update' => (bool) ($options['force_update'] ?? false),
             'lang' => (string) ($options['lang'] ?? 'fr'),
             'exclude_from_update' => (array) ($options['exclude_from_update'] ?? []),
             'ignore_unvalidated' => (bool) ($options['ignore_unvalidated'] ?? false),
+            'include_relations' => (bool) ($options['include_relations'] ?? true),
         ];
         $result = $orchestrator->runOne('dofusdb', $entityKey, $id, $runOptions);
 

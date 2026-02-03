@@ -63,7 +63,7 @@
       "to": [{ "model": "spells", "field": "pa" }],
       "formatters": [
         { "name": "toInt", "args": {} },
-        { "name": "clampInt", "args": { "min": 0, "max": 20 } }
+        { "name": "clampToCharacteristic", "args": { "characteristicId": "pa" } }
       ]
     },
     {
@@ -72,14 +72,36 @@
       "to": [{ "model": "spells", "field": "po" }],
       "formatters": [
         { "name": "toInt", "args": {} },
-        { "name": "clampInt", "args": { "min": 0, "max": 50 } }
+        { "name": "clampToCharacteristic", "args": { "characteristicId": "po" } },
+        { "name": "toString", "args": {} }
+      ]
+    },
+    {
+      "key": "spell_po_min",
+      "from": { "path": "levels.0.range.min" },
+      "to": [{ "model": "spells", "field": "spell_po_min" }],
+      "formatters": [
+        { "name": "nullableInt", "args": {} },
+        { "name": "clampToCharacteristic", "args": { "characteristicId": "spell_po_min" } }
+      ]
+    },
+    {
+      "key": "spell_po_max",
+      "from": { "path": "levels.0.range.max" },
+      "to": [{ "model": "spells", "field": "spell_po_max" }],
+      "formatters": [
+        { "name": "nullableInt", "args": {} },
+        { "name": "clampToCharacteristic", "args": { "characteristicId": "spell_po_max" } }
       ]
     },
     {
       "key": "area",
       "from": { "path": "levels.0.effects.0.zoneDescr.shape" },
       "to": [{ "model": "spells", "field": "area" }],
-      "formatters": [{ "name": "nullableInt", "args": {} }]
+      "formatters": [
+        { "name": "nullableInt", "args": {} },
+        { "name": "clampToCharacteristic", "args": { "characteristicId": "area" } }
+      ]
     },
     {
       "key": "level",
@@ -87,7 +109,7 @@
       "to": [{ "model": "spells", "field": "level" }],
       "formatters": [
         { "name": "toInt", "args": {} },
-        { "name": "clampInt", "args": { "min": 1, "max": 6 } },
+        { "name": "clampToCharacteristic", "args": { "characteristicId": "level" } },
         { "name": "toString", "args": {} }
       ]
     },
@@ -97,8 +119,91 @@
       "to": [{ "model": "spells", "field": "cast_per_turn" }],
       "formatters": [
         { "name": "toInt", "args": {} },
-        { "name": "clampInt", "args": { "min": 0, "max": 10 } },
+        { "name": "clampToCharacteristic", "args": { "characteristicId": "cast_per_turn" } },
         { "name": "toString", "args": {} }
+      ]
+    },
+    {
+      "key": "cast_per_target",
+      "from": { "path": "levels.0.maxCastPerTarget" },
+      "to": [{ "model": "spells", "field": "cast_per_target" }],
+      "formatters": [
+        { "name": "nullableInt", "args": {} },
+        { "name": "clampToCharacteristic", "args": { "characteristicId": "cast_per_target" } },
+        { "name": "toString", "args": {} }
+      ]
+    },
+    {
+      "key": "sight_line",
+      "from": { "path": "levels.0.needLineOfSight" },
+      "to": [{ "model": "spells", "field": "sight_line" }],
+      "formatters": [
+        { "name": "toInt", "args": {} },
+        { "name": "clampToCharacteristic", "args": { "characteristicId": "sight_line" } }
+      ]
+    },
+    {
+      "key": "number_between_two_cast",
+      "from": { "path": "levels.0.minCastInterval" },
+      "to": [{ "model": "spells", "field": "number_between_two_cast" }],
+      "formatters": [
+        { "name": "nullableInt", "args": {} },
+        { "name": "clampToCharacteristic", "args": { "characteristicId": "number_between_two_cast" } },
+        { "name": "toString", "args": {} }
+      ]
+    },
+    {
+      "key": "number_between_two_cast_editable",
+      "from": { "path": "levels.0.minCastIntervalEditable" },
+      "to": [{ "model": "spells", "field": "number_between_two_cast_editable" }],
+      "formatters": [
+        { "name": "toInt", "args": {} },
+        { "name": "clampToCharacteristic", "args": { "characteristicId": "number_between_two_cast_editable" } }
+      ]
+    },
+    {
+      "key": "po_editable",
+      "from": { "path": "levels.0.rangeEditable" },
+      "to": [{ "model": "spells", "field": "po_editable" }],
+      "formatters": [
+        { "name": "toInt", "args": {} },
+        { "name": "clampToCharacteristic", "args": { "characteristicId": "po_editable" } }
+      ]
+    },
+    {
+      "key": "element",
+      "from": { "path": "elementId" },
+      "to": [{ "model": "spells", "field": "element" }],
+      "formatters": [
+        { "name": "nullableInt", "args": {} },
+        { "name": "clampToCharacteristic", "args": { "characteristicId": "element" } }
+      ]
+    },
+    {
+      "key": "category",
+      "from": { "path": "categoryId" },
+      "to": [{ "model": "spells", "field": "category" }],
+      "formatters": [
+        { "name": "nullableInt", "args": {} },
+        { "name": "clampToCharacteristic", "args": { "characteristicId": "category" } }
+      ]
+    },
+    {
+      "key": "is_magic",
+      "from": { "path": "levels.0.isMagic" },
+      "to": [{ "model": "spells", "field": "is_magic" }],
+      "formatters": [
+        { "name": "toInt", "args": {} },
+        { "name": "clampToCharacteristic", "args": { "characteristicId": "is_magic" } }
+      ]
+    },
+    {
+      "key": "powerful",
+      "from": { "path": "levels.0.powerful" },
+      "to": [{ "model": "spells", "field": "powerful" }],
+      "formatters": [
+        { "name": "nullableInt", "args": {} },
+        { "name": "clampToCharacteristic", "args": { "characteristicId": "powerful" } }
       ]
     }
   ]

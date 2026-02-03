@@ -7,9 +7,13 @@ use App\Models\Entity\Consumable;
 use App\Models\Entity\Creature;
 use App\Models\Entity\Item;
 use App\Models\Entity\Monster;
+use App\Models\Entity\Panoply;
 use App\Models\Entity\Resource;
 use App\Models\Entity\Spell;
 use App\Models\User;
+use App\Models\Type\ConsumableType;
+use App\Models\Type\ItemType;
+use App\Models\Type\ResourceType;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
@@ -21,7 +25,7 @@ use Illuminate\Support\Facades\Log;
  */
 final class IntegrationService
 {
-    /** typeId DofusDB -> table cible (resources, consumables, items). */
+    /** typeId DofusDB -> table cible (fallback si résolution DB échoue). */
     private const ITEM_TYPE_TO_TABLE = [
         12 => 'consumables',
         15 => 'resources',
@@ -47,8 +51,11 @@ final class IntegrationService
         if ($entityType === 'breed' || $entityType === 'class') {
             return $this->integrateBreed($convertedData, $options);
         }
-        if ($entityType === 'item') {
+        if ($entityType === 'item' || $entityType === 'resources' || $entityType === 'consumables' || $entityType === 'items') {
             return $this->integrateItem($convertedData, $options);
+        }
+        if ($entityType === 'panoply') {
+            return $this->integratePanoply($convertedData, $options);
         }
 
         return IntegrationResult::fail("Type d'entité non supporté : {$entityType}");
@@ -323,16 +330,26 @@ final class IntegrationService
             return IntegrationResult::fail($e->getMessage());
         }
 
+        $po = $this->buildSpellPo($data);
         $payload = [
             'dofusdb_id' => $data['dofusdb_id'] ?? null,
             'name' => (string) ($data['name'] ?? ''),
             'description' => (string) ($data['description'] ?? ''),
             'image' => $data['image'] ?? null,
             'pa' => (string) ($data['pa'] ?? '3'),
-            'po' => (string) ($data['po'] ?? '1'),
+            'po' => $po,
+            'po_editable' => (bool) (isset($data['po_editable']) ? (int) $data['po_editable'] : true),
             'area' => (int) ($data['area'] ?? 0),
             'level' => (string) ($data['level'] ?? '1'),
             'cast_per_turn' => (string) ($data['cast_per_turn'] ?? '1'),
+            'cast_per_target' => (string) (isset($data['cast_per_target']) ? $data['cast_per_target'] : '0'),
+            'sight_line' => (bool) (isset($data['sight_line']) ? (int) $data['sight_line'] : true),
+            'number_between_two_cast' => (string) (isset($data['number_between_two_cast']) ? $data['number_between_two_cast'] : '0'),
+            'number_between_two_cast_editable' => (bool) (isset($data['number_between_two_cast_editable']) ? (int) $data['number_between_two_cast_editable'] : true),
+            'element' => (int) ($data['element'] ?? 0),
+            'category' => (int) ($data['category'] ?? 0),
+            'is_magic' => (bool) (isset($data['is_magic']) ? (int) $data['is_magic'] : true),
+            'powerful' => (int) ($data['powerful'] ?? 0),
             'created_by' => $userId,
         ];
 
@@ -361,6 +378,23 @@ final class IntegrationService
 
             return IntegrationResult::fail($e->getMessage());
         }
+    }
+
+    /**
+     * Construit la portée du sort (po) : une valeur (0-6) ou une plage "min-max" si spell_po_min et spell_po_max sont fournis.
+     *
+     * @param array<string, mixed> $data Données converties du sort (spells)
+     * @return string Portée : "1", "3" ou "1-3" par exemple
+     */
+    private function buildSpellPo(array $data): string
+    {
+        $min = isset($data['spell_po_min']) && is_numeric($data['spell_po_min']) ? (int) $data['spell_po_min'] : null;
+        $max = isset($data['spell_po_max']) && is_numeric($data['spell_po_max']) ? (int) $data['spell_po_max'] : null;
+        if ($min !== null && $max !== null) {
+            return $min === $max ? (string) $min : $min . '-' . $max;
+        }
+
+        return (string) ($data['po'] ?? '1');
     }
 
     /**
@@ -448,7 +482,7 @@ final class IntegrationService
     }
 
     /**
-     * @param array{dry_run?: bool, force_update?: bool} $options
+     * @param array{dry_run?: bool, force_update?: bool, include_relations?: bool} $options
      */
     private function integrateItem(array $convertedData, array $options = []): IntegrationResult
     {
@@ -456,12 +490,11 @@ final class IntegrationService
         $forceUpdate = (bool) ($options['force_update'] ?? false);
 
         $typeId = isset($convertedData['items']['type_id']) ? (int) $convertedData['items']['type_id'] : null;
-        $data = $convertedData['items'] ?? $convertedData['resources'] ?? $convertedData['consumables'] ?? [];
+        $targetTable = $this->resolveItemTargetTable($typeId);
+        $data = $convertedData[$targetTable] ?? $convertedData['items'] ?? $convertedData['resources'] ?? $convertedData['consumables'] ?? [];
         if ($data === []) {
             return IntegrationResult::fail('Données converties incomplètes (items/resources/consumables manquant).');
         }
-
-        $targetTable = self::ITEM_TYPE_TO_TABLE[$typeId] ?? 'items';
 
         $existing = null;
         $dofusdbId = isset($data['dofusdb_id']) ? (string) $data['dofusdb_id'] : null;
@@ -523,11 +556,17 @@ final class IntegrationService
             DB::beginTransaction();
             if ($targetTable === 'resources') {
                 $payload['weight'] = $data['weight'] ?? null;
+                if (isset($data['resource_type_id']) && $data['resource_type_id'] !== null) {
+                    $payload['resource_type_id'] = (int) $data['resource_type_id'];
+                }
                 if ($existing instanceof Resource) {
                     $existing->update($payload);
                     $entity = $existing;
                 } else {
                     $entity = Resource::create($payload);
+                }
+                if ($options['include_relations'] ?? true) {
+                    $this->syncResourceRecipe($entity, $data['recipe_ingredients'] ?? []);
                 }
             } elseif ($targetTable === 'consumables') {
                 if ($existing instanceof Consumable) {
@@ -560,6 +599,295 @@ final class IntegrationService
 
             return IntegrationResult::fail($e->getMessage());
         }
+    }
+
+    /**
+     * Synchronise la recette d'une ressource (pivot resource_recipe) à partir des
+     * ingrédients convertis (recipe_ingredients issus de recipeIds DofusDB).
+     * Seuls les ingrédients déjà présents en base (Resource avec ce dofusdb_id) sont liés.
+     *
+     * @param list<array{ingredient_dofusdb_id: string, quantity: int}> $recipeIngredients
+     */
+    private function syncResourceRecipe(Resource $resource, array $recipeIngredients): void
+    {
+        if ($recipeIngredients === []) {
+            $resource->recipeIngredients()->sync([]);
+
+            return;
+        }
+        $dofusdbIds = array_map(
+            static fn (array $row): string => (string) ($row['ingredient_dofusdb_id'] ?? ''),
+            $recipeIngredients
+        );
+        $dofusdbIds = array_filter($dofusdbIds, static fn (string $id): bool => $id !== '');
+        if ($dofusdbIds === []) {
+            $resource->recipeIngredients()->sync([]);
+
+            return;
+        }
+        $resourceIdsByDofusdbId = Resource::whereIn('dofusdb_id', $dofusdbIds)->pluck('id', 'dofusdb_id')->all();
+        $sync = [];
+        foreach ($recipeIngredients as $row) {
+            $dofusdbId = (string) ($row['ingredient_dofusdb_id'] ?? '');
+            $ingredientResourceId = $resourceIdsByDofusdbId[$dofusdbId] ?? null;
+            if ($ingredientResourceId !== null) {
+                $qty = (int) ($row['quantity'] ?? 1);
+                $sync[$ingredientResourceId] = ['quantity' => (string) max(1, $qty)];
+            }
+        }
+        $resource->recipeIngredients()->sync($sync);
+    }
+
+    /**
+     * Détermine la table cible (resources, consumables, items) à partir des données converties.
+     * Utilisé par l'orchestrateur pour la validation et par integrateItem.
+     */
+    public function getItemTargetTable(array $convertedData): string
+    {
+        $typeId = isset($convertedData['items']['type_id']) ? (int) $convertedData['items']['type_id'] : null;
+        if ($typeId === null) {
+            $typeId = isset($convertedData['resources']['type_id']) ? (int) $convertedData['resources']['type_id'] : null;
+        }
+        if ($typeId === null) {
+            $typeId = isset($convertedData['consumables']['type_id']) ? (int) $convertedData['consumables']['type_id'] : null;
+        }
+
+        return $this->resolveItemTargetTable($typeId);
+    }
+
+    /**
+     * Détermine la table cible (resources, consumables, items) à partir du typeId DofusDB.
+     * Utilise les registres resource_types, consumable_types, item_types (dofusdb_type_id).
+     */
+    private function resolveItemTargetTable(?int $typeId): string
+    {
+        if ($typeId === null || $typeId <= 0) {
+            return 'items';
+        }
+        if (ResourceType::where('dofusdb_type_id', $typeId)->exists()) {
+            return 'resources';
+        }
+        if (ConsumableType::where('dofusdb_type_id', $typeId)->exists()) {
+            return 'consumables';
+        }
+        if (ItemType::where('dofusdb_type_id', $typeId)->exists()) {
+            return 'items';
+        }
+
+        return self::ITEM_TYPE_TO_TABLE[$typeId] ?? 'items';
+    }
+
+    /**
+     * @param array{dry_run?: bool, force_update?: bool} $options
+     */
+    private function integratePanoply(array $convertedData, array $options = []): IntegrationResult
+    {
+        $dryRun = (bool) ($options['dry_run'] ?? false);
+        $forceUpdate = (bool) ($options['force_update'] ?? false);
+
+        $data = $convertedData['panoplies'] ?? [];
+        if ($data === []) {
+            return IntegrationResult::fail('Données converties incomplètes (panoplies manquant).');
+        }
+
+        $existingPanoply = null;
+        $dofusdbId = isset($data['dofusdb_id']) ? (string) $data['dofusdb_id'] : null;
+        if ($dofusdbId !== null && $dofusdbId !== '') {
+            $existingPanoply = Panoply::where('dofusdb_id', $dofusdbId)->first();
+        }
+        if (!$existingPanoply && !empty($data['name'])) {
+            $existingPanoply = Panoply::where('name', $data['name'])->first();
+        }
+
+        if ($existingPanoply && !$forceUpdate) {
+            return IntegrationResult::okEntity(
+                $existingPanoply->id,
+                $dryRun ? 'would_skip' : 'skipped',
+                'Panoplie déjà présente, ignorée.',
+                ['panoply' => $existingPanoply->toArray()]
+            );
+        }
+
+        if ($dryRun) {
+            return IntegrationResult::okEntity(
+                $existingPanoply?->id ?? 0,
+                $existingPanoply ? 'would_update' : 'would_create',
+                'Simulation : aucune écriture en base.',
+                []
+            );
+        }
+
+        try {
+            $userId = $this->getSystemUserId();
+        } catch (\Throwable $e) {
+            return IntegrationResult::fail($e->getMessage());
+        }
+
+        $bonus = $data['bonus'] ?? null;
+        $bonusStr = is_array($bonus) ? json_encode($bonus, JSON_UNESCAPED_UNICODE) : (string) $bonus;
+        $payload = [
+            'dofusdb_id' => $data['dofusdb_id'] ?? null,
+            'name' => (string) ($data['name'] ?? ''),
+            'description' => isset($data['description']) && (string) $data['description'] !== '' ? (string) $data['description'] : null,
+            'bonus' => $bonusStr !== '' ? $bonusStr : null,
+            'state' => Panoply::STATE_RAW,
+            'read_level' => 0,
+            'write_level' => 3,
+            'created_by' => $userId,
+        ];
+
+        try {
+            DB::beginTransaction();
+
+            if ($existingPanoply) {
+                $existingPanoply->update($payload);
+                $panoply = $existingPanoply;
+                $action = 'updated';
+            } else {
+                $panoply = Panoply::create($payload);
+                $action = 'created';
+            }
+
+            $itemDofusdbIds = $data['item_dofusdb_ids'] ?? [];
+            if (is_array($itemDofusdbIds) && $itemDofusdbIds !== []) {
+                $itemIds = Item::whereIn('dofusdb_id', array_map('strval', $itemDofusdbIds))->pluck('id')->all();
+                $panoply->items()->sync($itemIds);
+            }
+
+            DB::commit();
+            Log::info('Intégration panoplie', ['panoply_id' => $panoply->id, 'action' => $action]);
+
+            return IntegrationResult::okEntity(
+                $panoply->id,
+                $action,
+                "Panoplie intégrée : {$action}.",
+                ['panoply' => $panoply->toArray()]
+            );
+        } catch (\Throwable $e) {
+            DB::rollBack();
+            Log::error('Erreur intégration panoplie', ['error' => $e->getMessage()]);
+
+            return IntegrationResult::fail($e->getMessage());
+        }
+    }
+
+    /**
+     * Retourne les attributs de l'entité existante (si trouvée) avec les mêmes clés que les données converties (merged).
+     * Utilisé pour la sortie verbose de la commande scrapping (comparaison DofusDB / converti / existant).
+     *
+     * @param string $entityType monster, spell, breed, class, item, panoply
+     * @param array<string, array<string, mixed>> $convertedData Structure par modèle (creatures, monsters, spells, …)
+     * @return array<string, mixed>|null Attributs avec clés "converted" (ex. strength, intelligence) ou null si pas trouvé
+     */
+    public function getExistingAttributesForComparison(string $entityType, array $convertedData): ?array
+    {
+        if ($entityType === 'monster') {
+            $creatureData = $convertedData['creatures'] ?? [];
+            $monsterData = $convertedData['monsters'] ?? [];
+            if ($creatureData === [] || $monsterData === []) {
+                return null;
+            }
+            $existingMonster = null;
+            if (!empty($monsterData['dofusdb_id'])) {
+                $existingMonster = Monster::where('dofusdb_id', (string) $monsterData['dofusdb_id'])->first();
+            }
+            if (!$existingMonster && !empty($creatureData['name'])) {
+                $existingCreature = Creature::where('name', (string) $creatureData['name'])->first();
+                $existingMonster = $existingCreature?->monster;
+            }
+            if (!$existingMonster) {
+                return null;
+            }
+            $c = $existingMonster->creature;
+            $sizeMap = [0 => 'tiny', 1 => 'small', 2 => 'medium', 3 => 'large', 4 => 'huge'];
+            $sizeInt = $existingMonster->size ?? 2;
+            $sizeStr = $sizeMap[$sizeInt] ?? 'medium';
+            return array_merge(
+                [
+                    'name' => $c?->name,
+                    'level' => $c?->level,
+                    'life' => $c?->life,
+                    'strength' => $c?->strong,
+                    'intelligence' => $c?->intel,
+                    'agility' => $c?->agi,
+                    'wisdom' => $c?->sagesse,
+                    'chance' => $c?->chance,
+                    'pa' => $c?->pa,
+                    'pm' => $c?->pm,
+                    'po' => $c?->po,
+                    'image' => $c?->image,
+                    'vitality' => $c?->vitality,
+                    'res_neutre' => $c?->res_neutre,
+                    'res_terre' => $c?->res_terre,
+                    'res_feu' => $c?->res_feu,
+                    'res_air' => $c?->res_air,
+                    'res_eau' => $c?->res_eau,
+                ],
+                [
+                    'dofusdb_id' => $existingMonster->dofusdb_id,
+                    'size' => $sizeStr,
+                    'monster_race_id' => $existingMonster->monster_race_id,
+                ]
+            );
+        }
+
+        if ($entityType === 'spell' || $entityType === 'breed' || $entityType === 'class') {
+            $data = $convertedData['spells'] ?? $convertedData['breeds'] ?? $convertedData['classes'] ?? [];
+            if ($data === []) {
+                return null;
+            }
+            $model = $entityType === 'spell'
+                ? Spell::where('dofusdb_id', (string) ($data['dofusdb_id'] ?? ''))->orWhere('name', $data['name'] ?? '')->first()
+                : Breed::where('dofusdb_id', (string) ($data['dofusdb_id'] ?? ''))->orWhere('name', $data['name'] ?? '')->first();
+            if (!$model) {
+                return null;
+            }
+            return $model->toArray();
+        }
+
+        if ($entityType === 'panoply') {
+            $data = $convertedData['panoplies'] ?? [];
+            if ($data === []) {
+                return null;
+            }
+            $p = Panoply::where('dofusdb_id', (string) ($data['dofusdb_id'] ?? ''))->orWhere('name', $data['name'] ?? '')->first();
+            return $p ? $p->toArray() : null;
+        }
+
+        if ($entityType === 'item') {
+            $data = $convertedData['items'] ?? $convertedData['resources'] ?? $convertedData['consumables'] ?? [];
+            if ($data === []) {
+                return null;
+            }
+            $typeId = isset($data['type_id']) ? (int) $data['type_id'] : null;
+            $table = self::ITEM_TYPE_TO_TABLE[$typeId] ?? 'items';
+            $dofusdbId = (string) ($data['dofusdb_id'] ?? '');
+            $name = $data['name'] ?? '';
+            $model = match ($table) {
+                'resources' => Resource::where('dofusdb_id', $dofusdbId)->orWhere('name', $name)->first(),
+                'consumables' => Consumable::where('dofusdb_id', $dofusdbId)->orWhere('name', $name)->first(),
+                default => Item::where('dofusdb_id', $dofusdbId)->orWhere('name', $name)->first(),
+            };
+            if (!$model) {
+                return null;
+            }
+            $out = $model->toArray();
+            if ($model instanceof Resource) {
+                $model->load('recipeIngredients');
+                $recipeIngredients = [];
+                foreach ($model->recipeIngredients as $ing) {
+                    $recipeIngredients[] = [
+                        'ingredient_resource_id' => $ing->id,
+                        'ingredient_dofusdb_id' => $ing->dofusdb_id ?? (string) $ing->id,
+                        'quantity' => (int) ($ing->pivot->quantity ?? 1),
+                    ];
+                }
+                $out['recipe_ingredients'] = $recipeIngredients;
+            }
+            return $out;
+        }
+
+        return null;
     }
 
     private function getSystemUserId(): int

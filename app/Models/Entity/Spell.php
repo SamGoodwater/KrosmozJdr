@@ -12,6 +12,7 @@ use App\Models\Entity\Scenario;
 use App\Models\Entity\Campaign;
 use App\Models\Type\SpellType;
 use App\Models\Entity\Monster;
+use App\Models\SpellEffect;
 
 /**
  * 
@@ -234,6 +235,17 @@ class Spell extends Model
     {
         return $this->belongsToMany(SpellType::class, 'spell_type');
     }
+
+    /**
+     * Les effets de ce sort (instances liées aux types d'effet).
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany<SpellEffect, $this>
+     */
+    public function spellEffects()
+    {
+        return $this->hasMany(SpellEffect::class);
+    }
+
     /**
      * Les monstres invoqués par ce sort.
      */

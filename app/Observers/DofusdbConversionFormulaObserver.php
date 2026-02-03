@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Observers;
 
 use App\Models\DofusdbConversionFormula;
-use App\Services\Scrapping\DofusDbConversionFormulaService;
+use App\Services\Characteristic\DofusConversion\DofusDbConversionFormulaService;
 
 /**
  * Invalide le cache des formules DofusDB à chaque modification en base.

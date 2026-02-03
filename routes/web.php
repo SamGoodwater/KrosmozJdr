@@ -11,6 +11,7 @@ require __DIR__ . '/user.php';
 require __DIR__ . '/file.php';
 require __DIR__ . '/admin/characteristics.php';
 require __DIR__ . '/admin/dofus-conversion-formulas.php';
+require __DIR__ . '/admin/spell-effect-types.php';
 
 // Routes publiques
 Route::get('/', function () {

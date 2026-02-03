@@ -6,9 +6,6 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
         Schema::create('spell_types', function (Blueprint $table) {
@@ -17,17 +14,15 @@ return new class extends Migration
             $table->string('description')->nullable();
             $table->string('color')->default('zinc');
             $table->string('icon')->nullable();
-            $table->tinyInteger('usable')->default(0);
-            $table->string('is_visible')->default('guest');
+            $table->string('state')->default('draft');
+            $table->tinyInteger('read_level')->default(0);
+            $table->tinyInteger('write_level')->default(3);
             $table->timestamps();
             $table->softDeletes();
             $table->foreignId('created_by')->nullable()->constrained('users')->nullOnDelete();
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('spell_types');

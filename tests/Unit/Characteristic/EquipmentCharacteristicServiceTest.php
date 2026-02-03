@@ -4,8 +4,9 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Characteristic;
 
+use App\Models\EntityCharacteristic;
 use App\Services\Characteristic\EquipmentCharacteristicService;
-use Database\Seeders\CharacteristicConfigSeeder;
+use Database\Seeders\EntityCharacteristicSeeder;
 use Database\Seeders\EquipmentCharacteristicConfigSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Cache;
@@ -25,7 +26,14 @@ class EquipmentCharacteristicServiceTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        (new CharacteristicConfigSeeder)->run();
+        $path = base_path('database/seeders/data/entity_characteristics.php');
+        if (is_file($path)) {
+            (new EntityCharacteristicSeeder)->run();
+        } else {
+            EntityCharacteristic::insert([
+                ['entity' => 'item', 'characteristic_key' => 'touch', 'name' => 'Bonus de touche', 'type' => 'int', 'sort_order' => 0, 'created_at' => now(), 'updated_at' => now()],
+            ]);
+        }
         $this->service = $this->app->make(EquipmentCharacteristicService::class);
         (new EquipmentCharacteristicConfigSeeder)->run();
         $this->service->clearCache();

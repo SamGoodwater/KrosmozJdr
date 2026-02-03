@@ -24297,6 +24297,14 @@ namespace App\Http\Requests\Entity {
     class UpdatePanoplyRequest extends \Illuminate\Foundation\Http\FormRequest {
             }
     /**
+     * FormRequest pour la mise à jour de la recette d'une ressource (ingrédients + quantités).
+     * 
+     * Valide les relations many-to-many self-référentielles : resource ↔ resources (ingredients).
+     *
+     */
+    class UpdateResourceRecipeRequest extends \Illuminate\Foundation\Http\FormRequest {
+            }
+    /**
      * FormRequest pour la mise à jour d'une Resource.
      * 
      * Valide les champs principaux d'une ressource.

@@ -7,6 +7,7 @@ use App\Models\Entity\Breed;
 use App\Models\Entity\Creature;
 use App\Models\Entity\Monster;
 use App\Models\Entity\Item;
+use App\Models\Entity\Panoply;
 use App\Models\Entity\Resource;
 use App\Models\Entity\Spell;
 use App\Services\Scrapping\Core\Orchestrator\Orchestrator;
@@ -452,6 +453,60 @@ class ScrappingOrchestratorTest extends TestCase
         $result = $this->toArray($this->orchestrator->runOne('dofusdb', 'breed', 1, $this->pipelineOpts()));
 
         $this->assertTrue($result['success'], $result['message'] ?? '');
+    }
+
+    /**
+     * Panoplie cosmétique : rejetée par l'orchestrateur (seules les panoplies à bonus sont importables).
+     */
+    public function test_panoply_cosmetic_rejected(): void
+    {
+        $rawCosmetic = [
+            'id' => 999,
+            'name' => ['fr' => 'Panoplie cosmétique'],
+            'description' => ['fr' => 'Description'],
+            'effects' => [],
+            'items' => [],
+            'isCosmetic' => true,
+        ];
+
+        $r = $this->orchestrator->runOneWithRaw('dofusdb', 'panoply', $rawCosmetic, array_merge($this->pipelineOpts(), ['convert' => true, 'validate' => true]));
+
+        $this->assertFalse($r->isSuccess());
+        $this->assertStringContainsString('cosmétique', $r->getMessage());
+    }
+
+    /**
+     * Test d'import complet d'une panoplie (stats, pas cosmétique).
+     */
+    public function test_import_panoply_complete_workflow(): void
+    {
+        $mockPanoply = [
+            'id' => 10,
+            'name' => ['fr' => 'Panoplie du Bouftou'],
+            'description' => ['fr' => 'Bonus de panoplie'],
+            'effects' => [
+                ['effectId' => 1, 'min' => 10, 'max' => 20],
+            ],
+            'items' => [
+                ['id' => 101],
+                ['id' => 102],
+            ],
+            'isCosmetic' => false,
+        ];
+
+        Http::fake([
+            'api.dofusdb.fr/item-sets/10*' => Http::response($mockPanoply, 200),
+        ]);
+
+        $result = $this->toArray($this->orchestrator->runOne('dofusdb', 'panoply', 10, $this->pipelineOpts()));
+
+        $this->assertIsArray($result);
+        $this->assertTrue($result['success'], $result['message'] ?? '');
+
+        $panoply = Panoply::where('dofusdb_id', '10')->first();
+        $this->assertNotNull($panoply);
+        $this->assertSame('Panoplie du Bouftou', $panoply->name);
+        $this->assertNotNull($panoply->bonus);
     }
 }
 

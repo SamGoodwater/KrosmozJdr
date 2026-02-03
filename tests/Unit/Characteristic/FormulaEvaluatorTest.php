@@ -20,7 +20,7 @@ class FormulaEvaluatorTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->evaluator = new FormulaEvaluator();
+        $this->evaluator = $this->app->make(FormulaEvaluator::class);
     }
 
     public function test_evaluate_returns_null_for_empty_formula(): void

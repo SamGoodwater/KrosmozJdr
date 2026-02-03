@@ -9,20 +9,36 @@ use App\Models\EquipmentSlotCharacteristic;
 use Illuminate\Database\Seeder;
 
 /**
- * Importe config/equipment_characteristics.php (slots) vers equipment_slots et equipment_slot_characteristics.
+ * Importe database/seeders/data/equipment_slots.php vers equipment_slots et equipment_slot_characteristics.
+ *
+ * Prérequis : EntityCharacteristicSeeder (entity=item + characteristic_key doivent exister pour les carac utilisées).
+ *
+ * Pour régénérer le fichier depuis la BDD (après modification via l'interface) :
+ * php artisan db:export-seeder-data --equipment
  */
 class EquipmentCharacteristicConfigSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     */
+    private const DATA_FILE = 'database/seeders/data/equipment_slots.php';
+
     public function run(): void
     {
-        $slots = config('equipment_characteristics.slots', []);
+        $path = base_path(self::DATA_FILE);
+        if (! is_file($path)) {
+            if ($this->command) {
+                $this->command->warn('Fichier absent : ' . self::DATA_FILE . '. Exécutez : php artisan db:export-seeder-data --equipment');
+            }
+
+            return;
+        }
+
+        $slots = require $path;
+        if (! is_array($slots)) {
+            $slots = [];
+        }
 
         if (empty($slots)) {
             if ($this->command) {
-                $this->command->warn('Aucun slot dans config("equipment_characteristics.slots").');
+                $this->command->warn('Aucun slot dans ' . self::DATA_FILE);
             }
 
             return;
@@ -43,15 +59,16 @@ class EquipmentCharacteristicConfigSeeder extends Seeder
             );
 
             $characteristics = $slotData['characteristics'] ?? [];
-            foreach ($characteristics as $charId => $charData) {
-                if (! is_array($charData) || empty($charData['bracket_max'])) {
+            foreach ($characteristics as $charKey => $charData) {
+                if (! is_array($charData) || empty($charData['bracket_max'] ?? null)) {
                     continue;
                 }
 
                 EquipmentSlotCharacteristic::updateOrCreate(
                     [
                         'equipment_slot_id' => $slotId,
-                        'characteristic_id' => $charId,
+                        'entity' => $charData['entity'] ?? 'item',
+                        'characteristic_key' => $charKey,
                     ],
                     [
                         'bracket_max' => $charData['bracket_max'],

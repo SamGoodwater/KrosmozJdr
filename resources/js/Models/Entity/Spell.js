@@ -132,6 +132,10 @@ export class Spell extends BaseModel {
         return this._data.spellTypes || [];
     }
 
+    get spellEffects() {
+        return this._data.spellEffects || [];
+    }
+
     get monsters() {
         return this._data.monsters || [];
     }

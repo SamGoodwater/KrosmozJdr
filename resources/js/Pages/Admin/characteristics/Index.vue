@@ -437,8 +437,8 @@ function submit() {
             </div>
             <nav class="flex flex-col gap-0.5 p-2">
                 <p v-if="characteristics.length === 0" class="px-3 py-4 text-sm text-base-content/70">
-                    Aucune caractéristique en base. Exécutez le seeder pour importer les définitions depuis la config :
-                    <code class="mt-2 block rounded bg-base-300 px-2 py-1 text-xs">php artisan db:seed --class=CharacteristicConfigSeeder</code>
+                    Aucune caractéristique en base. Exécutez le seeder pour importer les définitions depuis le fichier de données (ou exportez après modification via l’interface) :
+                    <code class="mt-2 block rounded bg-base-300 px-2 py-1 text-xs">php artisan db:seed --class=EntityCharacteristicSeeder</code>
                 </p>
                 <Link
                     v-for="c in characteristics"

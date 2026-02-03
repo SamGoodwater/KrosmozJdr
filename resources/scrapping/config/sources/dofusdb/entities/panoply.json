@@ -1,0 +1,71 @@
+{
+  "version": 1,
+  "source": "dofusdb",
+  "entity": "panoply",
+  "label": "Panoplies (sets avec bonus)",
+  "meta": {
+    "description": "Panoplies DofusDB (item-sets). Seules les panoplies à bonus (stats) sont importées, les cosmétiques sont exclues.",
+    "collectStrategy": {
+      "filterOutCosmetic": true
+    }
+  },
+  "endpoints": {
+    "fetchOne": {
+      "pathTemplate": "/item-sets/{id}",
+      "method": "GET",
+      "queryDefaults": { "lang": "{lang}" }
+    },
+    "fetchMany": {
+      "path": "item-sets",
+      "method": "GET",
+      "queryDefaults": { "lang": "{lang}", "$limit": 50, "$skip": 0 }
+    }
+  },
+  "filters": {
+    "supported": [
+      { "key": "id", "type": "number" },
+      { "key": "idMin", "type": "number" },
+      { "key": "idMax", "type": "number" },
+      { "key": "ids", "type": "number[]", "max": 500 },
+      { "key": "name", "type": "string" },
+      { "key": "levelMin", "type": "number" },
+      { "key": "levelMax", "type": "number" }
+    ]
+  },
+  "target": {
+    "krosmozEntity": "panoply",
+    "primaryKey": { "sourceField": "id", "targetField": "dofusdb_id" }
+  },
+  "mapping": [
+    {
+      "key": "dofusdb_id",
+      "from": { "path": "id" },
+      "to": [{ "model": "panoplies", "field": "dofusdb_id" }],
+      "formatters": [{ "name": "toString", "args": {} }]
+    },
+    {
+      "key": "name",
+      "from": { "path": "name", "langAware": true },
+      "to": [{ "model": "panoplies", "field": "name" }],
+      "formatters": [{ "name": "pickLang", "args": { "lang": "{lang}", "fallback": "fr" } }]
+    },
+    {
+      "key": "description",
+      "from": { "path": "description", "langAware": true },
+      "to": [{ "model": "panoplies", "field": "description" }],
+      "formatters": [{ "name": "pickLang", "args": { "lang": "{lang}", "fallback": "fr" } }]
+    },
+    {
+      "key": "bonus",
+      "from": { "path": "effects" },
+      "to": [{ "model": "panoplies", "field": "bonus" }],
+      "formatters": [{ "name": "toJson", "args": {} }]
+    },
+    {
+      "key": "item_dofusdb_ids",
+      "from": { "path": "items" },
+      "to": [{ "model": "panoplies", "field": "item_dofusdb_ids" }],
+      "formatters": [{ "name": "extractItemIds", "args": {} }]
+    }
+  ]
+}

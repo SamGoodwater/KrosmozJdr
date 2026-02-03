@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Entity;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Entity\StoreResourceRequest;
 use App\Http\Requests\Entity\UpdateResourceRequest;
+use App\Http\Requests\Entity\UpdateResourceRecipeRequest;
 use App\Models\Entity\Resource;
 use App\Models\Entity\Item;
 use App\Models\Entity\Consumable;
@@ -158,6 +159,7 @@ class ResourceController extends Controller
             'consumables',
             'creatures',
             'items',
+            'recipeIngredients',
             'scenarios',
             'campaigns',
             'shops',
@@ -181,14 +183,22 @@ class ResourceController extends Controller
             'consumables',
             'creatures',
             'items',
+            'recipeIngredients',
             'scenarios',
             'campaigns',
             'shops',
         ]);
 
+        $availableResourcesForRecipe = Resource::query()
+            ->where('id', '!=', $resource->id)
+            ->select('id', 'name', 'description', 'level')
+            ->orderBy('name')
+            ->get();
+
         return Inertia::render('Pages/entity/resource/Edit', [
             'resource' => new ResourceResource($resource),
             'resourceTypes' => ResourceType::query()->select('id', 'name')->orderBy('name')->get(),
+            'availableResourcesForRecipe' => $availableResourcesForRecipe,
             'availableItems' => Item::query()->select('id', 'name', 'description', 'level')->orderBy('name')->get(),
             'availableConsumables' => Consumable::query()->select('id', 'name', 'description', 'level')->orderBy('name')->get(),
             'availableCreatures' => Creature::query()->select('id', 'name', 'description', 'level')->orderBy('name')->get(),
@@ -244,6 +254,21 @@ class ResourceController extends Controller
         return redirect()
             ->route('entities.resources.index')
             ->with('success', 'Ressource supprimée avec succès.');
+    }
+
+    /**
+     * Met à jour la recette de la ressource (ingrédients = autres ressources + quantités).
+     */
+    public function updateRecipe(UpdateResourceRecipeRequest $request, Resource $resource): RedirectResponse
+    {
+        $recipe = $request->validated()['recipe'] ?? [];
+        $syncData = [];
+        foreach ($recipe as $ingredientResourceId => $pivotData) {
+            $syncData[(int) $ingredientResourceId] = ['quantity' => (string) ($pivotData['quantity'] ?? 1)];
+        }
+        $resource->recipeIngredients()->sync($syncData);
+
+        return back()->with('success', 'Recette de la ressource mise à jour.');
     }
 
     /**

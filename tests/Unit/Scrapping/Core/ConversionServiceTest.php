@@ -4,7 +4,7 @@ namespace Tests\Unit\Scrapping\Core;
 
 use App\Services\Scrapping\Core\Config\ConfigLoader;
 use App\Services\Scrapping\Core\Conversion\ConversionService;
-use App\Services\Scrapping\Core\Conversion\DofusDbConversionFormulas;
+use App\Services\Characteristic\DofusConversion\DofusDbConversionFormulas;
 use App\Services\Scrapping\Core\Conversion\FormatterApplicator;
 use Tests\TestCase;
 

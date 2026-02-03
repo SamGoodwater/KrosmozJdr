@@ -2,17 +2,22 @@
 
 namespace App\Services\Scrapping\Core\Conversion;
 
+use App\Models\Type\ResourceType;
+use App\Services\Characteristic\CharacteristicService;
+use App\Services\Characteristic\DofusConversion\DofusDbConversionFormulas;
+
 /**
  * Applique les formatters purs utilisés par la conversion.
  *
  * Formatters supportés : toString, pickLang, toInt, nullableInt, clampInt, mapSizeToKrosmoz,
- * storeScrappedImage, truncate. Si DofusDbConversionFormulas est injecté : dofusdb_level,
- * dofusdb_life, dofusdb_attribute, dofusdb_ini (formules et limites en BDD).
+ * storeScrappedImage, truncate, clampToCharacteristic (limites BDD par entité).
+ * Si DofusDbConversionFormulas est injecté : dofusdb_level, dofusdb_life, dofusdb_attribute, dofusdb_ini.
  */
 final class FormatterApplicator
 {
     public function __construct(
-        private readonly ?DofusDbConversionFormulas $conversionFormulas = null
+        private readonly ?DofusDbConversionFormulas $conversionFormulas = null,
+        private readonly ?CharacteristicService $characteristicService = null
     ) {
     }
 
@@ -32,6 +37,11 @@ final class FormatterApplicator
             'toInt' => is_numeric($value) ? (int) $value : 0,
             'nullableInt' => $value === null ? null : (is_numeric($value) ? (int) $value : null),
             'clampInt' => $this->clampInt($value, (int) ($args['min'] ?? 0), (int) ($args['max'] ?? 0)),
+            'clampToCharacteristic' => $this->clampToCharacteristic(
+                $value,
+                (string) ($args['characteristicId'] ?? ''),
+                $entityType
+            ),
             'mapSizeToKrosmoz' => $this->mapSize((string) $value, (string) ($args['default'] ?? 'medium')),
             'storeScrappedImage' => $value === null ? null : (string) $value,
             'truncate' => $this->truncate($value, (int) ($args['max'] ?? 255)),
@@ -47,8 +57,50 @@ final class FormatterApplicator
             'dofusdb_ini' => $this->conversionFormulas !== null
                 ? $this->conversionFormulas->convertInitiative($this->numericValue($value), $entityType)
                 : $value,
+            'toJson' => $this->toJson($value),
+            'extractItemIds' => $this->extractItemIds($value),
+            'resolveResourceTypeId' => $this->resolveResourceTypeId($value, $raw, (string) ($context['lang'] ?? 'fr')),
+            'defaultRarityByLevel' => $this->defaultRarityByLevel($value, $raw, (string) ($context['entityType'] ?? 'item')),
+            'recipeIdsToResourceRecipe' => $this->recipeIdsToResourceRecipe($value),
+            'recipeToResourceRecipe' => $this->recipeToResourceRecipe($value, $raw),
             default => $value,
         };
+    }
+
+    /**
+     * Encode en JSON (pour bonus panoplie, effects).
+     */
+    private function toJson(mixed $value): ?string
+    {
+        if ($value === null) {
+            return null;
+        }
+        try {
+            $encoded = json_encode($value, JSON_UNESCAPED_UNICODE | JSON_THROW_ON_ERROR);
+
+            return $encoded !== false ? $encoded : null;
+        } catch (\JsonException) {
+            return null;
+        }
+    }
+
+    /**
+     * Extrait les id des éléments d'un tableau (ex. items[].id pour panoplie).
+     * Retourne un tableau d'identifiants pour la relation panoply-items.
+     */
+    private function extractItemIds(mixed $value): array
+    {
+        if (!is_array($value)) {
+            return [];
+        }
+        $ids = [];
+        foreach ($value as $item) {
+            if (is_array($item) && isset($item['id'])) {
+                $ids[] = (int) $item['id'];
+            }
+        }
+
+        return $ids;
     }
 
     public function supports(string $name): bool
@@ -59,9 +111,16 @@ final class FormatterApplicator
             'toInt',
             'nullableInt',
             'clampInt',
+            'clampToCharacteristic',
             'mapSizeToKrosmoz',
             'storeScrappedImage',
             'truncate',
+            'toJson',
+            'extractItemIds',
+            'resolveResourceTypeId',
+            'defaultRarityByLevel',
+            'recipeIdsToResourceRecipe',
+            'recipeToResourceRecipe',
         ];
         if ($this->conversionFormulas !== null) {
             $base = array_merge($base, ['dofusdb_level', 'dofusdb_life', 'dofusdb_attribute', 'dofusdb_ini']);
@@ -149,10 +208,152 @@ final class FormatterApplicator
         return max($min, min($max, $v));
     }
 
+    /**
+     * Clamp une valeur selon les limites min/max de la caractéristique pour l'entité (ex. spell).
+     * Si le service ou les limites sont absents, retourne la valeur convertie en int.
+     */
+    private function clampToCharacteristic(mixed $value, string $characteristicId, string $entityType): int
+    {
+        $v = is_numeric($value) ? (int) $value : 0;
+        if ($this->characteristicService === null || $characteristicId === '') {
+            return $v;
+        }
+        $limits = $this->characteristicService->getLimits($characteristicId, $entityType);
+        if ($limits === null) {
+            return $v;
+        }
+
+        return max($limits['min'], min($limits['max'], $v));
+    }
+
     private function mapSize(string $value, string $default): string
     {
         $valid = ['tiny', 'small', 'medium', 'large', 'huge'];
 
         return in_array($value, $valid, true) ? $value : $default;
+    }
+
+    /**
+     * Résout un typeId DofusDB vers l'id Krosmoz resource_types (firstOrCreate).
+     * Utilise raw.type.name pour le libellé si créé.
+     */
+    private function resolveResourceTypeId(mixed $value, array $raw, string $lang): ?int
+    {
+        $typeId = is_numeric($value) ? (int) $value : 0;
+        if ($typeId <= 0) {
+            return null;
+        }
+        $typeNode = $this->getByPath($raw, 'type');
+        $name = null;
+        if (is_array($typeNode) && isset($typeNode['name'])) {
+            $name = $this->pickLang($typeNode['name'], $lang, 'fr');
+        }
+        $name = is_string($name) && $name !== '' ? $name : 'DofusDB type #' . $typeId;
+
+        $rt = ResourceType::firstOrCreate(
+            ['dofusdb_type_id' => $typeId],
+            ['name' => $name, 'state' => ResourceType::STATE_PLAYABLE]
+        );
+
+        return $rt->id;
+    }
+
+    /**
+     * Rareté par défaut selon le niveau (resource, consumable, item).
+     * Si value est déjà renseigné (non null), le conserve ; sinon utilise CharacteristicService
+     * (entity_characteristics.computation pour rarity) ou config characteristics_rarity.
+     * Niveau en entrée = niveau Krosmoz (après conversion level DofusDB).
+     */
+    private function defaultRarityByLevel(mixed $value, array $raw, string $entityType): int
+    {
+        if ($value !== null && $value !== '' && is_numeric($value)) {
+            return (int) $value;
+        }
+        $rawLevel = (int) ($this->getByPath($raw, 'level') ?? 0);
+        $level = $this->conversionFormulas !== null
+            ? $this->conversionFormulas->convertLevel($rawLevel, $entityType)
+            : (int) round($rawLevel / 10);
+
+        if ($this->characteristicService !== null) {
+            return $this->characteristicService->getRarityByLevel($level, $entityType);
+        }
+
+        $bands = config('characteristics_rarity.rarity_default_by_level', [
+            0 => 0, 3 => 1, 7 => 2, 10 => 3, 17 => 4,
+        ]);
+        krsort($bands, SORT_NUMERIC);
+        foreach ($bands as $minLevel => $rarity) {
+            if ($level >= $minLevel) {
+                return (int) $rarity;
+            }
+        }
+
+        return 0;
+    }
+
+    /**
+     * Transforme l'objet recette DofusDB (ingredientIds + quantities) ou recipeIds en liste
+     * recipe_ingredients pour la table pivot resource_recipe.
+     * Préfère recipe (depuis /recipes?resultId=) pour avoir les quantités réelles ; sinon fallback sur recipeIds (qty 1).
+     *
+     * @return list<array{ingredient_dofusdb_id: string, quantity: int}>
+     */
+    private function recipeToResourceRecipe(mixed $value, array $raw): array
+    {
+        if (is_array($value) && isset($value['ingredientIds']) && isset($value['quantities'])) {
+            $ids = $value['ingredientIds'] ?? [];
+            $quantities = $value['quantities'] ?? [];
+            if (!is_array($ids) || !is_array($quantities)) {
+                return [];
+            }
+            $out = [];
+            foreach ($ids as $idx => $id) {
+                if (!is_numeric($id)) {
+                    continue;
+                }
+                $qty = isset($quantities[$idx]) && is_numeric($quantities[$idx])
+                    ? (int) $quantities[$idx]
+                    : 1;
+                $out[] = [
+                    'ingredient_dofusdb_id' => (string) $id,
+                    'quantity' => max(1, $qty),
+                ];
+            }
+
+            return $out;
+        }
+        $recipeIds = $raw['recipeIds'] ?? [];
+        return $this->recipeIdsToResourceRecipe(is_array($recipeIds) ? $recipeIds : []);
+    }
+
+    /**
+     * Fallback : transforme recipeIds (liste d'ids) en recipe_ingredients avec quantité 1 par id.
+     *
+     * @return list<array{ingredient_dofusdb_id: string, quantity: int}>
+     */
+    private function recipeIdsToResourceRecipe(mixed $value): array
+    {
+        if (!is_array($value)) {
+            return [];
+        }
+        $ids = [];
+        foreach ($value as $id) {
+            if (is_numeric($id)) {
+                $ids[] = (int) $id;
+            }
+        }
+        if ($ids === []) {
+            return [];
+        }
+        $byId = array_count_values($ids);
+        $out = [];
+        foreach ($byId as $dofusdbId => $quantity) {
+            $out[] = [
+                'ingredient_dofusdb_id' => (string) $dofusdbId,
+                'quantity' => (int) $quantity,
+            ];
+        }
+
+        return $out;
     }
 }

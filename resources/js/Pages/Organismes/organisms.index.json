@@ -453,6 +453,13 @@
     "file": "feedback/NotificationContainer.vue"
   },
   {
+    "name": "SpellEffectsManager",
+    "description": "SpellEffectsManager — Gestion des effets d'un sort (liste avec type, valeurs, durée, cible). Envoi via PATCH entities.spells.updateEffects.",
+    "props": [],
+    "slots": [],
+    "file": "entity/SpellEffectsManager.vue"
+  },
+  {
     "name": "EntityRelationsManager",
     "description": "EntityRelationsManager Organism",
     "props": [

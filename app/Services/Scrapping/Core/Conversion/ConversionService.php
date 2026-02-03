@@ -2,6 +2,7 @@
 
 namespace App\Services\Scrapping\Core\Conversion;
 
+use App\Services\Characteristic\DofusConversion\DofusDbConversionFormulas;
 use App\Services\Scrapping\Core\Config\ConfigLoader;
 
 /**
