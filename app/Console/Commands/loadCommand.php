@@ -2,10 +2,13 @@
 
 namespace App\Console\Commands;
 
+use App\Console\Concerns\GuardsProductionEnvironment;
 use Illuminate\Console\Command;
 
 class loadCommand extends Command
 {
+    use GuardsProductionEnvironment;
+
     /**
      * The name and signature of the console command.
      *
@@ -25,6 +28,10 @@ class loadCommand extends Command
      */
     public function handle()
     {
+        if (! $this->guardDevelopmentOnly()) {
+            return self::FAILURE;
+        }
+
         $this->info('Optimisation de Laravel');
         $this->call('optimize');
 

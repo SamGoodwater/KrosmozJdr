@@ -6,6 +6,7 @@
 /public/storage
 /storage/*.key
 /storage/pail
+/storage/app/seeders-data-backups
 /vendor
 .env
 .env.backup

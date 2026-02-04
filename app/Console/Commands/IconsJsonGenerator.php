@@ -2,10 +2,12 @@
 
 namespace App\Console\Commands;
 
+use App\Console\Concerns\GuardsProductionEnvironment;
 use Illuminate\Console\Command;
 
 class IconsJsonGenerator extends Command
 {
+    use GuardsProductionEnvironment;
 
     const PATH_DEST = 'storage/app/public/icons/icons.json';
 
@@ -31,6 +33,10 @@ class IconsJsonGenerator extends Command
      */
     public function handle()
     {
+        if (! $this->guardDevelopmentOnly()) {
+            return self::FAILURE;
+        }
+
         $directories = [
             'storage/app/public/images/',  // Dossier racine des images
             'storage/app/public/images/icons/',

@@ -2,12 +2,15 @@
 
 namespace App\Console\Commands;
 
+use App\Console\Concerns\GuardsProductionEnvironment;
 use Illuminate\Console\Command;
 // use Intervention\Image\Drivers\Imagick\Driver;
 use Intervention\Image\ImageManager;
 
 class fusionMapsCommand extends Command
 {
+    use GuardsProductionEnvironment;
+
     /**
      * The name and signature of the console command.
      *
@@ -28,6 +31,10 @@ class fusionMapsCommand extends Command
      */
     public function handle()
     {
+        if (! $this->guardDevelopmentOnly()) {
+            return self::FAILURE;
+        }
+
         // Dimensions des images (chaque petite image mesure 32x32 pixels)
         $image_width = 250;
         $image_height = 250;

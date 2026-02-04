@@ -2,10 +2,12 @@
 
 namespace App\Console\Commands;
 
+use App\Console\Concerns\GuardsProductionEnvironment;
 use Illuminate\Console\Command;
 
 class prepareCommand extends Command
 {
+    use GuardsProductionEnvironment;
 
     /**
      * The name and signature of the console command.
@@ -26,6 +28,10 @@ class prepareCommand extends Command
      */
     public function handle()
     {
+        if (! $this->guardDevelopmentOnly()) {
+            return self::FAILURE;
+        }
+
         $this->info('Préparation du projet');
 
         $this->info('Mise à jour des dépendances avec Composer');

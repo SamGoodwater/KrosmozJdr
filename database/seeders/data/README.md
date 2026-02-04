@@ -18,14 +18,16 @@ Ces fichiers PHP sont la **source des données** pour les seeders (caractéristi
 | `equipment_slots.php` | `EquipmentCharacteristicConfigSeeder` | Slots d'équipement et caractéristiques par slot (bracket_max, forgemagie_max) |
 | `spell_effect_types.php` | `SpellEffectTypeSeeder` | Types d'effets de sort (référentiel) |
 
-## Workflow
+## Workflow (dev)
 
 1. **Setup initial** : `php artisan db:seed` (ou les seeders concernés) lit ces fichiers et remplit les tables.
-2. **Modification via l'interface** : éditez les caractéristiques dans l'admin (`/admin/characteristics`).
-3. **Export BDD → fichiers** : après modification en BDD, régénérer les fichiers pour que l'init du projet reflète votre configuration :
+2. **Paramétrage via l'interface** : éditez les caractéristiques dans l'admin (`/admin/characteristics`) — formules, bornes min/max, spécificités par entité (monstre, classe, PNJ…).
+3. **Export BDD → seeders** : pour récupérer ce qui est en base et l'écrire dans ces fichiers (afin d’initialiser le projet avec des caractéristiques déjà paramétrées) :
    ```bash
    php artisan db:export-seeder-data --characteristics
    ```
-   Options : `--characteristics`, `--formulas` (inclus dans --characteristics), `--spell-effect-types`, `--equipment`.
+   Cela écrase `characteristics.php`, `characteristic_creature.php`, `characteristic_object.php` et `characteristic_spell.php` avec le contenu actuel des tables. Vous pouvez ensuite committer ces fichiers pour versionner votre configuration.
+
+**Autres options** : `--spell-effect-types`, `--equipment`. Sans option, toutes les exportations sont lancées.
 
 Ainsi les données par défaut du projet restent versionnées et reproductibles.

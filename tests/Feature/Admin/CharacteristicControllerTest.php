@@ -12,6 +12,7 @@ use Database\Seeders\CreatureCharacteristicSeeder;
 use Database\Seeders\ObjectCharacteristicSeeder;
 use Database\Seeders\SpellCharacteristicSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\Concerns\SeedsMinimalCharacteristics;
 use Tests\TestCase;
 
 /**
@@ -29,11 +30,13 @@ use Tests\TestCase;
 class CharacteristicControllerTest extends TestCase
 {
     use RefreshDatabase;
+    use SeedsMinimalCharacteristics;
 
     protected function setUp(): void
     {
         parent::setUp();
         $this->seedCharacteristics();
+        $this->seedMinimalCharacteristicsIfEmpty();
         $this->app->make(CharacteristicGetterService::class)->clearCache();
     }
 
@@ -102,7 +105,7 @@ class CharacteristicControllerTest extends TestCase
         $response->assertOk();
         $response->assertInertia(fn ($page) => $page
             ->component('Admin/characteristics/Index')
-            ->has('characteristics')
+            ->has('characteristicsByGroup')
             ->where('createMode', true)
             ->has('groups')
             ->has('entitiesByGroup')
@@ -112,11 +115,12 @@ class CharacteristicControllerTest extends TestCase
     public function test_admin_can_store_characteristic(): void
     {
         $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
+        $uniqueKey = 'test_store_pa_creature';
 
         $response = $this->actingAs($admin)
             ->post(route('admin.characteristics.store'), [
-                'key' => 'pa_creature',
-                'name' => 'Points d\'action',
+                'key' => $uniqueKey,
+                'name' => 'Points d\'action (test)',
                 'short_name' => 'PA',
                 'type' => 'int',
                 'group' => 'creature',
@@ -125,8 +129,8 @@ class CharacteristicControllerTest extends TestCase
                 ],
             ]);
 
-        $response->assertRedirect(route('admin.characteristics.show', 'pa_creature'));
-        $this->assertDatabaseHas('characteristics', ['key' => 'pa_creature', 'name' => 'Points d\'action']);
+        $response->assertRedirect(route('admin.characteristics.show', $uniqueKey));
+        $this->assertDatabaseHas('characteristics', ['key' => $uniqueKey, 'name' => 'Points d\'action (test)']);
         $this->assertDatabaseHas('characteristic_creature', ['entity' => '*']);
     }
 
@@ -155,7 +159,7 @@ class CharacteristicControllerTest extends TestCase
         $response->assertOk();
         $response->assertInertia(fn ($page) => $page
             ->component('Admin/characteristics/Index')
-            ->has('characteristics')
+            ->has('characteristicsByGroup')
             ->where('selected', null)
         );
     }
@@ -169,7 +173,7 @@ class CharacteristicControllerTest extends TestCase
         $response->assertOk();
         $response->assertInertia(fn ($page) => $page
             ->component('Admin/characteristics/Index')
-            ->has('characteristics')
+            ->has('characteristicsByGroup')
             ->has('selected')
             ->where('selected.id', 'life_creature')
         );
@@ -264,7 +268,7 @@ class CharacteristicControllerTest extends TestCase
         $response->assertOk();
         $response->assertInertia(fn ($page) => $page
             ->component('Admin/characteristics/Index')
-            ->has('characteristics')
+            ->has('characteristicsByGroup')
         );
     }
 

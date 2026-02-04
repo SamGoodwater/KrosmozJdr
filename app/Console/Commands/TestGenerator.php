@@ -2,16 +2,23 @@
 
 namespace App\Console\Commands;
 
+use App\Console\Concerns\GuardsProductionEnvironment;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\File;
 
 class TestGenerator extends Command
 {
+    use GuardsProductionEnvironment;
+
     protected $signature = 'generate:test {name}';
     protected $description = 'Générer un test PHPUnit pour un modèle donné';
 
     public function handle()
     {
+        if (! $this->guardDevelopmentOnly()) {
+            return self::FAILURE;
+        }
+
         $name = $this->argument('name');
         $cheminFichierTest = base_path("tests/Feature/{$name}Test.php");
 
