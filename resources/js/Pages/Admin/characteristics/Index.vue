@@ -1018,32 +1018,34 @@ function submit() {
                                     />
                                 </div>
                                 <!-- Forgemagie et prix : uniquement pour l’équipement (item) -->
-                                <template v-if="ent.entity === 'item'">
+                                <template v-if="selected?.group === 'object'">
                                     <div class="sm:col-span-2 border-t border-base-300 pt-4 mt-2">
-                                        <h3 class="mb-3 text-sm font-semibold text-base-content/80">Forgemagie et prix (équipement)</h3>
+                                        <h3 class="mb-3 text-sm font-semibold text-base-content/80">Prix / unité et forgemagie (groupe objet)</h3>
                                         <div class="grid gap-4 sm:grid-cols-2">
                                             <div class="flex flex-col gap-1">
                                                 <div class="flex items-center gap-2">
                                                     <input v-model="ent.forgemagie_allowed" type="checkbox" class="checkbox" />
-                                                    <span>Forgemagie autorisée</span>
+                                                    <span>Forgemagie possible</span>
                                                 </div>
-                                                <InputField v-model="ent.forgemagie_max" label="Forgemagie max" type="number" />
-                                                <p class="text-xs text-base-content/70">Valeur maximale autorisée en forgemagie pour cet équipement.</p>
+                                                <InputField v-model="ent.forgemagie_max" label="Max forgemagie" type="number" />
+                                                <p class="text-xs text-base-content/70">Valeur maximale ajoutable par forgemagie pour cette caractéristique.</p>
                                             </div>
                                             <div class="flex flex-col gap-2">
                                                 <InputField
                                                     v-model="ent.base_price_per_unit"
-                                                    label="Prix de base (par unité)"
+                                                    label="Prix par unité (kamas)"
                                                     type="number"
                                                     step="0.01"
+                                                    helper="Prix de base par point de bonus (création équipement)."
                                                 />
                                                 <InputField
                                                     v-model="ent.rune_price_per_unit"
-                                                    label="Prix rune (par unité)"
+                                                    label="Prix rune par unité (kamas)"
+                                                    helper="Prix de la rune de forgemagie par unité."
                                                     type="number"
                                                     step="0.01"
                                                 />
-                                                <p class="text-xs text-base-content/70">Prix utilisés pour les calculs d’équipement (optionnel).</p>
+                                                <p class="text-xs text-base-content/70">Prix base et rune pour création équipement et forgemagie (optionnel).</p>
                                             </div>
                                         </div>
                                     </div>
