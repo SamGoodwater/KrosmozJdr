@@ -4,7 +4,7 @@
  * Accès : admin et super_admin.
  * Pour chaque champ formule : graphique (variable entre min et max).
  */
-import { computed, onMounted, ref, watch } from 'vue';
+import { computed, nextTick, onMounted, ref, watch } from 'vue';
 import { Head, Link, useForm, router } from '@inertiajs/vue3';
 import { usePageTitle } from '@/Composables/layout/usePageTitle';
 import Main from '@/Pages/Layouts/Main.vue';
@@ -16,6 +16,16 @@ import { decodeFormulaConfig, encodeFormulaConfig, isFormulaTable } from '@/Util
 import axios from 'axios';
 
 const { setPageTitle } = usePageTitle();
+
+/** Contenu d’aide pour les champs formule (affiché dans le popover « ? »). */
+const formulaHelpContent = {
+    title: 'Construire une formule',
+    variables: 'Variables : [id] avec id = level, vitality, d, etc. Selon le contexte (calcul ou conversion Dofus).',
+    operators: 'Opérateurs : + - * / et parenthèses ( ).',
+    funcs1: 'Fonctions à 1 argument : floor, ceil, round, sqrt, abs, cos, sin, tan, asin, acos, atan.',
+    funcs2: 'Fonctions à 2 arguments : pow(base, exp), min(a, b), max(a, b).',
+    examples: 'Exemples : [level]*2, floor([d]/10), sqrt([vitality]), pow(2,[level]), min(10, [level]*2).',
+};
 
 const props = defineProps({
     /** Caractéristiques regroupées par groupe : { creature: [{ id, name, ... }], object: [...], spell: [...] } */
@@ -29,6 +39,23 @@ const props = defineProps({
 
 /** Entités affichées en panneaux supplémentaires (hors Général). Clic sur "Spécifier pour une entité". */
 const selectedEntityOverrides = ref([]);
+
+/** Popover aide formules : rendu dans body pour passer au-dessus du menu (Teleport). null = fermé, sinon { left, top } en px. */
+const formulaHelpAnchor = ref(null);
+const formulaHelpPopoverRef = ref(null);
+
+function openFormulaHelp(e) {
+    const rect = e.currentTarget.getBoundingClientRect();
+    formulaHelpAnchor.value = { left: rect.left, top: rect.bottom + 4 };
+    nextTick(() => {
+        const close = (ev) => {
+            if (formulaHelpPopoverRef.value?.contains(ev.target)) return;
+            formulaHelpAnchor.value = null;
+            document.removeEventListener('click', close);
+        };
+        document.addEventListener('click', close);
+    });
+}
 
 defineOptions({ layout: Main });
 setPageTitle('Administration des caractéristiques');
@@ -65,6 +92,9 @@ function buildFormData(selected, entitiesByGroup = null) {
         };
     }
     const arrToLines = (arr) => (Array.isArray(arr) && arr.length ? arr.join('\n') : '');
+    const group = selected.group ?? 'creature';
+    const allowedEntityKeys = entitiesByGroup?.[group] ?? ['*', 'monster', 'class', 'npc'];
+    const entitiesForGroup = (selected.entities ?? []).filter((e) => allowedEntityKeys.includes(e.entity));
     // Le backend envoie déjà conversion_formulas uniquement pour les entités du groupe de la caractéristique
     const conversionFormulas = (selected.conversion_formulas ?? []).map((row) => ({
         entity: row.entity,
@@ -85,7 +115,7 @@ function buildFormData(selected, entitiesByGroup = null) {
         sort_order: selected.sort_order ?? 0,
         applies_to: arrToLines(selected.applies_to),
         value_available: arrToLines(selected.value_available),
-        entities: (selected.entities ?? []).map((e) => ({
+        entities: entitiesForGroup.map((e) => ({
             entity: e.entity,
             db_column: e.db_column ?? '',
             min: e.min ?? '',
@@ -110,7 +140,6 @@ const form = useForm(buildFormData(props.selected, props.entitiesByGroup));
 watch(
     () => props.selected,
     (s) => {
-        selectedEntityOverrides.value = [];
         const data = buildFormData(s, props.entitiesByGroup);
         if (data.key !== undefined) form.key = data.key;
         if (data.group !== undefined) form.group = data.group;
@@ -126,6 +155,8 @@ watch(
         form.value_available = data.value_available;
         form.entities = data.entities;
         form.conversion_formulas = data.conversion_formulas;
+        // Réhydrater les panneaux « spécifique entité » à partir des clés renvoyées par le serveur (ex. après enregistrement)
+        selectedEntityOverrides.value = Array.isArray(s?.entity_override_keys) ? [...s.entity_override_keys] : [];
     },
     { immediate: true }
 );
@@ -157,7 +188,13 @@ function addEntityOverride(entityKey) {
     }
 }
 function removeEntityOverride(entityKey) {
+    const label = entityLabels[entityKey] || entityKey;
+    if (!confirm(`Supprimer la spécificité pour ${label} ? Les paramètres spécifiques à cette entité seront perdus.`)) {
+        return;
+    }
     selectedEntityOverrides.value = selectedEntityOverrides.value.filter((e) => e !== entityKey);
+    form.entities = (form.entities ?? []).filter((e) => e.entity !== entityKey);
+    form.patch(route('admin.characteristics.update', props.selected.id));
 }
 function confirmDelete() {
     if (props.selected?.id && confirm('Supprimer cette caractéristique ? Les données associées seront perdues.')) {
@@ -165,7 +202,7 @@ function confirmDelete() {
     }
 }
 
-// En mode création : initialiser entities et conversion_formulas selon le groupe
+// En mode création : n'initialiser qu'avec la ligne par défaut (*). Les spécificités (monster, class, etc.) s'ajoutent via « Spécifier pour une entité ».
 watch(
     () => [props.createMode, props.entitiesTemplate, props.entitiesByGroup, form.group],
     () => {
@@ -173,21 +210,25 @@ watch(
             if (props.entitiesTemplate) {
                 const template = props.entitiesTemplate[form.group];
                 if (Array.isArray(template) && template.length) {
-                    form.entities = template.map((e) => ({
-                        entity: e.entity ?? '*',
-                        db_column: e.db_column ?? '',
-                        min: e.min ?? '',
-                        max: e.max ?? '',
-                        formula: e.formula ?? '',
-                        formula_display: e.formula_display ?? '',
-                        default_value: e.default_value ?? '',
-                        required: e.required ?? false,
-                        validation_message: e.validation_message ?? '',
-                        forgemagie_allowed: e.forgemagie_allowed ?? false,
-                        forgemagie_max: e.forgemagie_max ?? 0,
-                        base_price_per_unit: e.base_price_per_unit ?? '',
-                        rune_price_per_unit: e.rune_price_per_unit ?? '',
-                    }));
+                    const defaultRow = template.find((e) => (e.entity ?? '*') === '*') ?? template[0];
+                    form.entities = [
+                        {
+                            entity: defaultRow.entity ?? '*',
+                            db_column: defaultRow.db_column ?? '',
+                            min: defaultRow.min ?? '',
+                            max: defaultRow.max ?? '',
+                            formula: defaultRow.formula ?? '',
+                            formula_display: defaultRow.formula_display ?? '',
+                            default_value: defaultRow.default_value ?? '',
+                            required: defaultRow.required ?? false,
+                            validation_message: defaultRow.validation_message ?? '',
+                            forgemagie_allowed: defaultRow.forgemagie_allowed ?? false,
+                            forgemagie_max: defaultRow.forgemagie_max ?? 0,
+                            base_price_per_unit: defaultRow.base_price_per_unit ?? '',
+                            rune_price_per_unit: defaultRow.rune_price_per_unit ?? '',
+                            conversion_formula: defaultRow.conversion_formula ?? '',
+                        },
+                    ];
                 }
             }
             // Conversion : uniquement les entités du groupe (hors '*')
@@ -714,7 +755,12 @@ function submit() {
                                         <InputField v-model="ent.min" label="Min" type="number" />
                                         <InputField v-model="ent.max" label="Max" type="number" />
                                         <div class="sm:col-span-2">
-                                            <label class="label"><span class="label-text">Formule</span></label>
+                                            <label class="label">
+                                                <span class="label-text flex items-center gap-1">
+                                                    Formule
+                                                    <button type="button" class="btn btn-circle btn-ghost btn-xs cursor-pointer" aria-label="Aide formules" @click.stop="openFormulaHelp">?</button>
+                                                </span>
+                                            </label>
                                             <textarea
                                                 v-model="ent.formula"
                                                 class="textarea textarea-bordered w-full font-mono text-sm"
@@ -865,7 +911,12 @@ function submit() {
                                 <InputField v-model="ent.min" :label="`Min (${ent.entity})`" type="number" />
                                 <InputField v-model="ent.max" :label="`Max (${ent.entity})`" type="number" />
                                 <div class="sm:col-span-2">
-                                    <label class="label"><span class="label-text">Formule ou table par caractéristique</span></label>
+                                    <label class="label">
+                                        <span class="label-text flex items-center gap-1">
+                                            Formule ou table par caractéristique
+                                            <button type="button" class="btn btn-circle btn-ghost btn-xs cursor-pointer" aria-label="Aide formules" @click.stop="openFormulaHelp">?</button>
+                                        </span>
+                                    </label>
                                     <div class="flex gap-2 mb-2">
                                         <button
                                             type="button"
@@ -893,7 +944,7 @@ function submit() {
                                             placeholder="ex: [vitality]*10+[level]*2"
                                             @focus="loadFormulaPreview(selected.id, ent.entity, 'level', ent.formula)"
                                         />
-                                        <p class="mt-1 text-xs text-base-content/70">Syntaxe : [id], floor(), ceil(), + - * /</p>
+                                        <p class="mt-1 text-xs text-base-content/70">Syntaxe : [id], floor(), ceil(), round(), sqrt(), pow(), min(), max(), cos/sin/tan, etc. + - * /</p>
                                     </template>
                                     <!-- Table par caractéristique -->
                                     <template v-else>
@@ -1065,7 +1116,12 @@ function submit() {
                             </p>
                             <div v-if="generalEntityRow()" class="space-y-4 rounded-lg border border-base-300 bg-base-200/30 p-4">
                                 <div>
-                                    <label class="label"><span class="label-text">Formule ou table par valeur (tout le groupe)</span></label>
+                                    <label class="label">
+                                        <span class="label-text flex items-center gap-1">
+                                            Formule ou table par valeur (tout le groupe)
+                                            <button type="button" class="btn btn-circle btn-ghost btn-xs cursor-pointer" aria-label="Aide formules" @click.stop="openFormulaHelp">?</button>
+                                        </span>
+                                    </label>
                                     <div class="mb-2 flex gap-2">
                                         <button
                                             type="button"
@@ -1092,7 +1148,7 @@ function submit() {
                                             placeholder="ex: [d]/10 ou floor([d]/200)+[level]*5"
                                             @focus="loadConversionFormulaPreview(selected.id, '*', generalEntityRow().conversion_formula)"
                                         />
-                                        <p class="mt-1 text-xs text-base-content/70">Syntaxe : [d], [level], floor(), ceil(), + - * /</p>
+                                        <p class="mt-1 text-xs text-base-content/70">Syntaxe : [d], [level], floor(), ceil(), round(), sqrt(), pow(), min(), max(), etc. + - * /</p>
                                     </template>
                                     <template v-else>
                                         <div class="space-y-3 rounded-lg border border-base-300 bg-base-200/30 p-3">
@@ -1205,7 +1261,9 @@ function submit() {
                         <div class="card-body" v-if="entityRow(entityKey)">
                             <div class="flex justify-between items-center flex-wrap gap-2">
                                 <h2 class="card-title text-lg">{{ entityLabels[entityKey] || entityKey }}</h2>
-                                <button type="button" class="btn btn-ghost btn-sm" @click="removeEntityOverride(entityKey)">Retirer ce panneau</button>
+                                <button type="button" class="btn btn-ghost btn-sm btn-error" @click="removeEntityOverride(entityKey)">
+                                    Supprimer la spécificité pour {{ entityLabels[entityKey] || entityKey }}
+                                </button>
                             </div>
                             <p class="text-sm text-base-content/70 mb-4">Surcharge des paramètres et de la conversion pour cette entité uniquement.</p>
 
@@ -1217,14 +1275,19 @@ function submit() {
                                     <InputField v-model="entityRow(entityKey).max" label="Max" type="number" />
                                 </div>
                                 <div>
-                                    <label class="label"><span class="label-text">Formule ou table par caractéristique</span></label>
+                                    <label class="label">
+                                        <span class="label-text flex items-center gap-1">
+                                            Formule ou table par caractéristique
+                                            <button type="button" class="btn btn-circle btn-ghost btn-xs cursor-pointer" aria-label="Aide formules" @click.stop="openFormulaHelp">?</button>
+                                        </span>
+                                    </label>
                                     <div class="flex gap-2 mb-2">
                                         <button type="button" class="btn btn-sm" :class="!isFormulaTable(entityRow(entityKey).formula) ? 'btn-primary' : 'btn-ghost'" @click="setFormulaAsSimple(entityRow(entityKey))">Formule simple</button>
                                         <button type="button" class="btn btn-sm" :class="isFormulaTable(entityRow(entityKey).formula) ? 'btn-primary' : 'btn-ghost'" @click="setFormulaAsTable(entityRow(entityKey))">Table par caractéristique</button>
                                     </div>
                                     <template v-if="!isFormulaTable(entityRow(entityKey).formula)">
                                         <textarea v-model="entityRow(entityKey).formula" class="textarea textarea-bordered w-full font-mono text-sm" rows="2" placeholder="ex: [level]*2" />
-                                        <p class="mt-1 text-xs text-base-content/70">Syntaxe : [id], floor(), ceil(), + - * /</p>
+                                        <p class="mt-1 text-xs text-base-content/70">Syntaxe : [id], floor(), ceil(), round(), sqrt(), pow(), min(), max(), etc. + - * /</p>
                                     </template>
                                     <template v-else>
                                         <div class="space-y-3 rounded-lg border border-base-300 bg-base-200/30 p-3">
@@ -1267,14 +1330,19 @@ function submit() {
                                 <h3 class="text-sm font-semibold text-base-content/80 mb-2">Conversion (surcharge pour cette entité)</h3>
                                 <p class="text-xs text-base-content/70 mb-2">Si renseigné, remplace la conversion du groupe.</p>
                                 <div>
-                                    <label class="label"><span class="label-text">Formule ou table par valeur</span></label>
+                                    <label class="label">
+                                        <span class="label-text flex items-center gap-1">
+                                            Formule ou table par valeur
+                                            <button type="button" class="btn btn-circle btn-ghost btn-xs cursor-pointer" aria-label="Aide formules" @click.stop="openFormulaHelp">?</button>
+                                        </span>
+                                    </label>
                                     <div class="mb-2 flex gap-2">
                                         <button type="button" class="btn btn-sm" :class="!isFormulaTable(entityRow(entityKey).conversion_formula) ? 'btn-primary' : 'btn-ghost'" @click="setConversionFormulaAsSimple(entityRow(entityKey))">Formule simple</button>
                                         <button type="button" class="btn btn-sm" :class="isFormulaTable(entityRow(entityKey).conversion_formula) ? 'btn-primary' : 'btn-ghost'" @click="setConversionFormulaAsTable(entityRow(entityKey))">Table par caractéristique</button>
                                     </div>
                                     <template v-if="!isFormulaTable(entityRow(entityKey).conversion_formula)">
                                         <textarea v-model="entityRow(entityKey).conversion_formula" class="textarea textarea-bordered w-full font-mono text-sm" rows="2" placeholder="ex: [d]/10 (vide = même que le groupe)" />
-                                        <p class="mt-1 text-xs text-base-content/70">Syntaxe : [d], [level], floor(), ceil(), + - * /</p>
+                                        <p class="mt-1 text-xs text-base-content/70">Syntaxe : [d], [level], floor(), ceil(), round(), sqrt(), pow(), min(), max(), etc. + - * /</p>
                                     </template>
                                     <template v-else>
                                         <div class="space-y-3 rounded-lg border border-base-300 bg-base-200/30 p-3">
@@ -1332,5 +1400,25 @@ function submit() {
             </div>
         </main>
 
+        <!-- Popover aide formules : Teleport vers body pour passer au-dessus du menu latéral -->
+        <Teleport to="body">
+            <div
+                v-if="formulaHelpAnchor"
+                ref="formulaHelpPopoverRef"
+                class="fixed z-[1100] rounded-box bg-base-200 p-4 shadow-xl border border-base-300 w-[90vw] max-w-[90vw] md:w-[60vw] md:max-w-[60vw] lg:w-96 lg:max-w-md min-w-0 overflow-hidden overflow-y-auto max-h-[85vh] box-border"
+                :style="{ left: formulaHelpAnchor.left + 'px', top: formulaHelpAnchor.top + 'px' }"
+            >
+                <div class="w-full min-w-0 max-w-full overflow-hidden box-border [overflow-wrap:anywhere]">
+                    <h4 class="font-semibold mb-2 w-full max-w-full">{{ formulaHelpContent.title }}</h4>
+                    <ul class="text-sm space-y-1 list-disc list-inside w-full max-w-full min-w-0 [overflow-wrap:anywhere]">
+                        <li class="[overflow-wrap:anywhere]">{{ formulaHelpContent.variables }}</li>
+                        <li class="[overflow-wrap:anywhere]">{{ formulaHelpContent.operators }}</li>
+                        <li class="[overflow-wrap:anywhere]">{{ formulaHelpContent.funcs1 }}</li>
+                        <li class="[overflow-wrap:anywhere]">{{ formulaHelpContent.funcs2 }}</li>
+                    </ul>
+                    <p class="text-sm mt-2 text-base-content/80 w-full max-w-full min-w-0 [overflow-wrap:anywhere]">{{ formulaHelpContent.examples }}</p>
+                </div>
+            </div>
+        </Teleport>
     </div>
 </template>

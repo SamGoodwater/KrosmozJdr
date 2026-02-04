@@ -11,7 +11,7 @@ use App\Services\Characteristic\Formula\FormulaConfigDecoder;
  *
  * Responsabilités :
  * - Valider le format des formules (syntaxe, pas de constructions dangereuses)
- * - Sécurité : évaluation sans eval(), uniquement nombres, opérateurs, floor/ceil, variables [id]
+ * - Sécurité : évaluation sans eval(), uniquement nombres, opérateurs, variables [id] et fonctions autorisées (floor, ceil, round, sqrt, abs, cos, sin, tan, asin, acos, atan, pow, min, max)
  * - Évaluer une formule (ou table JSON) avec des variables données
  * - Produire toutes les valeurs possibles pour une plage d'une variable (ex. level 1 à 20)
  *

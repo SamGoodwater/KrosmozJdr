@@ -32,16 +32,20 @@ class DofusConversionFormulaController extends Controller
     {
         $validated = $request->validate([
             'characteristic_id' => 'required|string|max:64',
-            'entity' => 'required|in:monster,class,item,spell,resource,consumable,panoply',
+            'entity' => 'required|in:*,monster,class,npc,item,spell,resource,consumable,panoply',
             'd_min' => 'nullable|integer',
             'd_max' => 'nullable|integer',
             'steps' => 'nullable|integer|min:5|max:200',
             'conversion_formula' => 'nullable|string',
         ]);
 
-        $formula = isset($validated['conversion_formula']) && $validated['conversion_formula'] !== ''
-            ? (string) $validated['conversion_formula']
-            : $this->getter->getConversionFormula($validated['characteristic_id'], $validated['entity']);
+        $entity = $validated['entity'];
+        $formula = isset($validated['conversion_formula']) && trim((string) $validated['conversion_formula']) !== ''
+            ? trim((string) $validated['conversion_formula'])
+            : null;
+        if ($formula === null && $entity !== '*') {
+            $formula = $this->getter->getConversionFormula($validated['characteristic_id'], $entity);
+        }
         if ($formula === null || $formula === '') {
             return response()->json(['points' => []]);
         }

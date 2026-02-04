@@ -176,6 +176,9 @@ class CharacteristicController extends Controller
 
         $group = $this->inferPrimaryGroup($characteristic);
         $entitiesForGroup = self::ENTITIES_BY_GROUP[$group] ?? ['*'];
+        // Ne garder que les lignes du groupe (évite d'afficher des panneaux pour d'autres groupes si des lignes ont été créées par erreur)
+        $entities = array_values(array_filter($entities, fn (array $ent): bool => in_array($ent['entity'] ?? '', $entitiesForGroup, true)));
+
         $conversionFormulas = [];
         foreach ($entitiesForGroup as $entity) {
             if ($entity === '*') {
@@ -190,6 +193,13 @@ class CharacteristicController extends Controller
             ];
         }
 
+        $entityOverrideKeys = array_values(array_filter(
+            array_unique(array_column($entities, 'entity')),
+            fn (string $e): bool => $e !== '*'
+        ));
+
+        // Ne renvoyer que les entités qui existent en base (pas de lignes par défaut pour class/npc/etc.).
+        // Sinon le formulaire les envoie à l'enregistrement et on recrée des lignes qu'on venait de supprimer.
         $selected = [
             'id' => $characteristic->key,
             'name' => $characteristic->name,
@@ -200,7 +210,8 @@ class CharacteristicController extends Controller
             'type' => $characteristic->type,
             'unit' => $characteristic->unit,
             'sort_order' => $characteristic->sort_order,
-            'entities' => $this->mergeDefaultEntityDefinitions($entities),
+            'entities' => $entities,
+            'entity_override_keys' => $entityOverrideKeys,
             'conversion_formulas' => $conversionFormulas,
             'group' => $group,
             'entitiesByGroup' => self::ENTITIES_BY_GROUP,
@@ -329,10 +340,24 @@ class CharacteristicController extends Controller
             'sort_order' => $data['sort_order'] ?? $characteristic->sort_order,
         ]);
 
-        foreach ($data['entities'] ?? [] as $ent) {
+        $group = $this->inferPrimaryGroup($characteristic);
+        $allowedForGroup = self::ENTITIES_BY_GROUP[$group] ?? [];
+        $entitiesToProcess = array_filter(
+            $data['entities'] ?? [],
+            fn (array $ent): bool => in_array($ent['entity'] ?? '', $allowedForGroup, true)
+        );
+        $sentEntities = array_column($entitiesToProcess, 'entity');
+        foreach ($entitiesToProcess as $ent) {
             $entity = $ent['entity'];
             $this->updateGroupRow($characteristic->id, $entity, $ent);
         }
+
+        $toRemove = array_filter($allowedForGroup, fn (string $e): bool => $e !== '*' && ! in_array($e, $sentEntities, true));
+        foreach ($toRemove as $entity) {
+            $this->deleteGroupRow($characteristic->id, $entity, $group);
+        }
+
+        $this->deleteOrphanGroupRows($characteristic->id, $group);
 
         $this->getter->clearCache();
 
@@ -468,7 +493,11 @@ class CharacteristicController extends Controller
         return $defaults;
     }
 
-    private function mergeDefaultEntityDefinitions(array $entities): array
+    /**
+     * Fusionne les définitions d'entités avec des valeurs par défaut pour les entités du groupe uniquement.
+     * Évite de renvoyer des entités d'autres groupes (object/spell pour une caractéristique creature).
+     */
+    private function mergeDefaultEntityDefinitionsForGroup(array $entities, string $group): array
     {
         $byEntity = [];
         foreach ($entities as $ent) {
@@ -477,8 +506,9 @@ class CharacteristicController extends Controller
                 $byEntity[$e] = $ent;
             }
         }
+        $allowed = self::ENTITIES_BY_GROUP[$group] ?? ['*'];
         $out = [];
-        foreach (self::ENTITIES as $entity) {
+        foreach ($allowed as $entity) {
             $out[] = $byEntity[$entity] ?? [
                 'entity' => $entity,
                 'db_column' => null,
@@ -537,6 +567,38 @@ class CharacteristicController extends Controller
                 ['characteristic_id' => $characteristicId, 'entity' => $entity],
                 $common
             );
+        }
+    }
+
+    /**
+     * Supprime la ligne d'une entité donnée pour une caractéristique (suppression de la spécificité).
+     */
+    private function deleteGroupRow(int $characteristicId, string $entity, string $group): void
+    {
+        if ($group === 'creature' && in_array($entity, ['monster', 'class', 'npc'], true)) {
+            CharacteristicCreature::where('characteristic_id', $characteristicId)->where('entity', $entity)->delete();
+        }
+        if ($group === 'object' && in_array($entity, ['item', 'consumable', 'resource', 'panoply'], true)) {
+            CharacteristicObject::where('characteristic_id', $characteristicId)->where('entity', $entity)->delete();
+        }
+        if ($group === 'spell' && $entity === 'spell') {
+            CharacteristicSpell::where('characteristic_id', $characteristicId)->where('entity', $entity)->delete();
+        }
+    }
+
+    /**
+     * Supprime les lignes créées par erreur dans les tables des autres groupes (ex. lignes object/spell pour une caractéristique creature).
+     */
+    private function deleteOrphanGroupRows(int $characteristicId, string $currentGroup): void
+    {
+        if ($currentGroup !== 'creature') {
+            CharacteristicCreature::where('characteristic_id', $characteristicId)->delete();
+        }
+        if ($currentGroup !== 'object') {
+            CharacteristicObject::where('characteristic_id', $characteristicId)->delete();
+        }
+        if ($currentGroup !== 'spell') {
+            CharacteristicSpell::where('characteristic_id', $characteristicId)->delete();
         }
     }
 }

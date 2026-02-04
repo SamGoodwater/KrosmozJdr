@@ -90,16 +90,6 @@
     "description": "Ce dossier est réservé aux **résumés descriptifs** de fonctionnalités livrées ou de décisions d’architecture, lorsqu’ils servent de référence (et non de journal chronologique)."
   },
   {
-    "path": "110- To Do/PROPOSITION_CHARACTERISTICS_EQUIPMENT_IMPLEMENTATION.md",
-    "title": "Proposition : intégration formules, forgemagie et équipements dans la config characteristics",
-    "description": "Références : `Caractéristiques.pdf`, `Equipements et forgemagie.pdf`."
-  },
-  {
-    "path": "110- To Do/README.md",
-    "title": "110 – To Do (caractéristiques, formules, équipements)",
-    "description": "Ce dossier rassemble les **sources métier** (PDF) et la **proposition d’intégration** pour les caractéristiques, formules de calcul, forgemagie et équipements."
-  },
-  {
     "path": "20-Content/21-Entities/ENTITIES_OVERVIEW.md",
     "title": "Vue d'ensemble des entités – Krosmoz JDR",
     "description": "Ce document présente en détail toutes les entités du projet Krosmoz JDR, leur structure, leurs relations et leur rôle dans l'architecture globale du jeu. Il sert de référence centrale pour la modélisation des données, la génération des migrations, l'implémentation backend et la compréhension métier."
@@ -1093,6 +1083,11 @@
     "path": "50-Fonctionnalités/Characteristics-DB/RESUME_EXISTANT.md",
     "title": "Résumé : paramétrage des caractéristiques (état actuel)",
     "description": "Document de synthèse du système **après refonte** : organisation par entité, table `entity_characteristics`, formules et équipement par `(entity, characteristic_key)`."
+  },
+  {
+    "path": "50-Fonctionnalités/Characteristics-DB/SEEDERS_DONNEES.md",
+    "title": "Données des seeders de caractéristiques",
+    "description": "Ce document décrit le contenu des fichiers de données des seeders (`database/seeders/data/characteristics.php`, `characteristic_creature.php`, `characteristic_object.php`, `characteristic_spell.php`) et le lien avec les autres modules (équipements, effets de sorts)."
   },
   {
     "path": "50-Fonctionnalités/ESTIMATION_RENOMMAGE_CLASSE_EN_BREED.md",
