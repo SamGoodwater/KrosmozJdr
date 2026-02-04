@@ -23,7 +23,7 @@ Les entités métier (Creature, Item, Spell, Resource, etc.) stockent les **vale
 
 | Service | Responsabilité | Entrées / sorties |
 |---------|----------------|-------------------|
-| **CharacteristicService** | Lecture des définitions depuis `entity_characteristics`. Expose getCharacteristics (structure par characteristic_key avec entities), getCharacteristicsForEntity, getCompetences, getFullConfig, getCharacteristic, getLimits. | BDD → tableau characteristic_key => [ name, type, entities => [ entity => [...] ], ... ]. Cache 1h. |
+| **CharacteristicService** | Lecture des définitions depuis `entity_characteristics`. Expose getCharacteristics (structure par characteristic_key avec entities), getCompetences, getFullConfig, getCharacteristic, getLimits, getRarityByLevel, clearCache. | BDD → tableau characteristic_key => [ name, type, entities => [ entity => [...] ], ... ]. Cache 1h. |
 | **ValidationService** | Validation des données converties selon les définitions (CharacteristicService). | CharacteristicService + convertedData + entityType → ValidationResult. |
 | **DofusDbConversionFormulaService** | Lecture des formules (dofusdb_conversion_formulas) par characteristic_key + entity. | BDD → characteristic_key => entity => [ formula_type, parameters, conversion_formula, handler_name ]. Cache 1h. |
 | **DofusdbConversionConfigService** | Lecture de la config de conversion (dofusdb_conversion_config). Pas d’observer ni d’export. | BDD → tableau associatif. Cache 1h. |
@@ -38,7 +38,29 @@ Les entités métier (Creature, Item, Spell, Resource, etc.) stockent les **vale
 - **Scrapping** : DofusDbConversionFormulas → valeurs Krosmoz → ValidationService (CharacteristicService) → intégration.
 - **Validation** : CharacteristicService fournit définitions ; ValidationService en dérive requis, min/max, value_available (alias player/npc/breed → class).
 - **Admin** : CharacteristicController édite EntityCharacteristic (par characteristic_key, agrégat des lignes par entité) et formules de conversion par entité.
-- **Rareté par niveau** : FormatterApplicator utilise `config('characteristics_rarity.rarity_default_by_level')` (fichier dédié, hors BDD).
+- **Rareté par niveau** : FormatterApplicator appelle `CharacteristicService::getRarityByLevel(level, entity)` ; la formule (table niveau → rareté) vient de `dofusdb_conversion_formulas` (conversion uniquement), sinon fallback sur `config/characteristics_rarity.php`.
+
+---
+
+## 3.1 Rôle du CharacteristicService et paramètres requis
+
+**À quoi sert le CharacteristicService ?**
+
+C’est le **lecteur unique** des définitions de caractéristiques stockées en BDD (`entity_characteristics`). Il ne modifie pas les données ; il les expose sous plusieurs formes pour des usages différents.
+
+**Paramètres qu’on a besoin de récupérer — et pourquoi :**
+
+| Besoin | Méthode / donnée | Consommateur | Raison |
+|--------|-------------------|--------------|--------|
+| **Validation** (requis, min/max, valeurs autorisées) | `getCharacteristics()` → par `characteristic_key`, avec `entities[entity].required`, `min`, `max`, `validation_message`, `value_available`, `db_column` | ValidationService | Vérifier les données converties (scrapping) ou saisies contre les règles par entité. |
+| **Clamp après conversion Dofus → Krosmoz** | `getLimits(characteristicId, entity)` → `min`, `max` | DofusDbConversionFormulas | Garder les valeurs converties dans les bornes autorisées (ex. level 1–20 pour resource). |
+| **Rareté par niveau (conversion)** | `getRarityByLevel(levelKrosmoz, entity)` | FormatterApplicator | Lors du scrapping, déduire l’indice de rareté à partir du niveau (formule dans dofusdb_conversion_formulas, sinon config). |
+| **Admin : liste et édition** | `getCharacteristics()`, `getCharacteristic(id)`, `getLimits(axisVar, entity)` | CharacteristicController | Afficher la liste par caractéristique, le détail par entité, les bornes pour les graphiques de formules. |
+| **Invalidation du cache** | `clearCache()` | Observers, ExportSeederDataCommand | Après création/modif/suppression en BDD ou après export seeder. |
+
+**Formes de données exposées :**
+
+- **Par caractéristique** (`getCharacteristics()` / `getFullConfig()`) : `characteristic_key => [ name, type, db_column, entities => [ entity => [ min, max, required, ... ] ], ... ]`. Utilisée par ValidationService, DofusDbConversionFormulas (via getLimits), et l’admin (liste + détail). La liste d’entités est dérivée de cette structure quand besoin (ex. panneau admin).
 
 ---
 

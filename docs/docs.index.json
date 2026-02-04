@@ -1075,6 +1075,11 @@
     "description": "**Objectif** : Que la conversion DofusDB → KrosmozJDR (côté caractéristiques) ne dépende que de la base de données. Les formules, limites et mappings sont en BDD ; les cas complexes (ex. résistances) sont gérés par des **handlers nommés** enregistrés en BDD et exécutés en PHP."
   },
   {
+    "path": "50-Fonctionnalités/Characteristics-DB/PLAN_ARCHITECTURE_GROUPES_ET_SOUS_SERVICES.md",
+    "title": "Plan d’architecture : groupes d’entités et sous-services",
+    "description": "Ce document analyse le plan proposé : **tables par groupe d’entités** + **4 sous-services** (getter, limite, formule, conversion) + **un seeder par groupe**. Il précise ce qui tient la route, les points d’attention et une proposition de mise en œuvre."
+  },
+  {
     "path": "50-Fonctionnalités/Characteristics-DB/PLAN_FORMULES_DOFUSDB_BDD.md",
     "title": "Formules de conversion DofusDB → KrosmozJDR en base de données",
     "description": "**Objectif** : Stocker les formules de conversion (DofusDB → KrosmozJDR) en base de données, par caractéristique et par entité (monster, class, item), pour les piloter depuis l’admin et permettre des formules différentes selon qu’on récupère un équipement, un monstre ou une classe."
@@ -1113,11 +1118,6 @@
     "path": "50-Fonctionnalités/PLAN_REALISATION_RENOMMAGE_CLASSE_EN_BREED.md",
     "title": "Plan de réalisation : renommage classe → breed",
     "description": "Plan exécutable, phase par phase. Chaque phase se termine par un point de contrôle (tests / vérifications). Référence : [ESTIMATION_RENOMMAGE_CLASSE_EN_BREED.md](./ESTIMATION_RENOMMAGE_CLASSE_EN_BREED.md)."
-  },
-  {
-    "path": "50-Fonctionnalités/Scrapping/Architecture/AUDIT_ETAT_DES_LIEUX.md",
-    "title": "État des lieux du scrapping KrosmozJDR",
-    "description": "Ce document décrit **où se trouve le code** scrapping, comment il est utilisé, et les principaux couplages."
   },
   {
     "path": "50-Fonctionnalités/Scrapping/Architecture/CONVERSION_FORMULAS_PLACEMENT.md",

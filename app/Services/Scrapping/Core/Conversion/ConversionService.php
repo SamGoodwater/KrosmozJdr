@@ -2,7 +2,7 @@
 
 namespace App\Services\Scrapping\Core\Conversion;
 
-use App\Services\Characteristic\DofusConversion\DofusDbConversionFormulas;
+use App\Services\Characteristic\Conversion\DofusConversionService;
 use App\Services\Scrapping\Core\Config\ConfigLoader;
 
 /**
@@ -10,8 +10,6 @@ use App\Services\Scrapping\Core\Config\ConfigLoader;
  *
  * Lit la config « mapping » pour une entité, extrait les valeurs par chemin,
  * applique les formatters, produit une structure au format KrosmozJDR (ex. creatures + monsters).
- * Si la config entité a "resistanceBatch": true et entityType monster/class/item, fusionne
- * le résultat de convertResistancesBatch() dans la sortie (ex. creatures).
  * Réutilisable hors scrapping (autres imports).
  */
 final class ConversionService
@@ -19,7 +17,7 @@ final class ConversionService
     public function __construct(
         private ConfigLoader $configLoader,
         private FormatterApplicator $formatterApplicator,
-        private ?DofusDbConversionFormulas $conversionFormulas = null
+        private ?DofusConversionService $conversionService = null
     ) {
     }
 
@@ -91,10 +89,10 @@ final class ConversionService
         }
 
         $entityType = (string) ($context['entityType'] ?? $entity);
-        if ($this->conversionFormulas !== null && in_array($entityType, ['monster', 'class', 'item'], true)) {
+        if ($this->conversionService !== null && in_array($entityType, ['monster', 'class', 'item'], true)) {
             $useResistanceBatch = (bool) ($entityConfig['resistanceBatch'] ?? false);
             if ($useResistanceBatch) {
-                $resMap = $this->conversionFormulas->convertResistancesBatch($raw, $entityType);
+                $resMap = $this->conversionService->convertResistancesBatch($raw, $entityType);
                 $targetModel = $entityType === 'monster' ? 'creatures' : ($entityType === 'class' ? 'breeds' : 'items');
                 if (!isset($out[$targetModel]) || !is_array($out[$targetModel])) {
                     $out[$targetModel] = [];

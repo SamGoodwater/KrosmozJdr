@@ -4,10 +4,11 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Characteristic;
 
-use App\Models\EntityCharacteristic;
-use App\Services\Characteristic\EquipmentCharacteristicService;
-use Database\Seeders\EntityCharacteristicSeeder;
-use Database\Seeders\EquipmentCharacteristicConfigSeeder;
+use App\Models\EquipmentSlot;
+use App\Models\EquipmentSlotCharacteristic;
+use App\Services\Characteristic\Equipment\EquipmentCharacteristicService;
+use Database\Seeders\CharacteristicSeeder;
+use Database\Seeders\ObjectCharacteristicSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Cache;
 use Tests\TestCase;
@@ -26,17 +27,32 @@ class EquipmentCharacteristicServiceTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $path = base_path('database/seeders/data/entity_characteristics.php');
-        if (is_file($path)) {
-            (new EntityCharacteristicSeeder)->run();
-        } else {
-            EntityCharacteristic::insert([
-                ['entity' => 'item', 'characteristic_key' => 'touch', 'name' => 'Bonus de touche', 'type' => 'int', 'sort_order' => 0, 'created_at' => now(), 'updated_at' => now()],
-            ]);
-        }
+        $this->seed(CharacteristicSeeder::class);
+        $this->seed(ObjectCharacteristicSeeder::class);
+        $this->createMinimalEquipmentSlots();
         $this->service = $this->app->make(EquipmentCharacteristicService::class);
-        (new EquipmentCharacteristicConfigSeeder)->run();
         $this->service->clearCache();
+    }
+
+    private function createMinimalEquipmentSlots(): void
+    {
+        EquipmentSlot::updateOrCreate(
+            ['id' => 'weapon'],
+            ['name' => 'Arme', 'sort_order' => 0]
+        );
+        EquipmentSlotCharacteristic::updateOrCreate(
+            [
+                'equipment_slot_id' => 'weapon',
+                'entity' => 'item',
+                'characteristic_key' => 'touch',
+            ],
+            [
+                'bracket_max' => ['1' => 10, '50' => 20, '100' => 30],
+                'forgemagie_max' => 5,
+                'base_price_per_unit' => null,
+                'rune_price_per_unit' => null,
+            ]
+        );
     }
 
     public function test_get_slots_returns_name_and_characteristics_per_slot(): void

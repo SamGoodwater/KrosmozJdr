@@ -2,14 +2,16 @@
 
 namespace Tests\Unit\Scrapping\Core;
 
+use App\Services\Characteristic\Conversion\DofusConversionService;
+use App\Services\Characteristic\Getter\CharacteristicGetterService;
 use App\Services\Scrapping\Core\Config\ConfigLoader;
 use App\Services\Scrapping\Core\Conversion\ConversionService;
-use App\Services\Characteristic\DofusConversion\DofusDbConversionFormulas;
 use App\Services\Scrapping\Core\Conversion\FormatterApplicator;
 use Tests\TestCase;
 
 /**
  * Tests unitaires pour ConversionService (mapping, formatters, resistanceBatch).
+ * Utilise DofusConversionService et CharacteristicGetterService (nouvelle architecture caractéristiques).
  */
 class ConversionServiceTest extends TestCase
 {
@@ -19,11 +21,12 @@ class ConversionServiceTest extends TestCase
     {
         parent::setUp();
         $configLoader = ConfigLoader::default();
-        $conversionFormulas = app(DofusDbConversionFormulas::class);
+        $conversionService = app(DofusConversionService::class);
+        $getter = app(CharacteristicGetterService::class);
         $this->service = new ConversionService(
             $configLoader,
-            new FormatterApplicator($conversionFormulas),
-            $conversionFormulas
+            new FormatterApplicator($conversionService, $getter),
+            $conversionService
         );
     }
 
@@ -168,7 +171,7 @@ class ConversionServiceTest extends TestCase
         $out = $this->service->convert('dofusdb', 'monster', $raw, ['entityType' => 'monster', 'lang' => 'fr']);
 
         $creatures = $out['creatures'] ?? [];
-        // resistanceBatch dans monster.json : résistances fusionnées dans creatures
+        // resistanceBatch dans monster.json : résistances fusionnées dans creatures (DofusConversionService::convertResistancesBatch)
         $this->assertArrayHasKey('creatures', $out);
         // Au moins une résistance mappée (selon handler ou fallback DofusDbConversionFormulas)
         $resKeys = ['res_neutre', 'res_terre', 'res_feu', 'res_air', 'res_eau'];

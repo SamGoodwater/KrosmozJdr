@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Services\Characteristic\Formula;
 
-use App\Services\Characteristic\FormulaConfigDecoder;
+use App\Services\Characteristic\Formula\FormulaConfigDecoder;
 
 /**
  * Service central de résolution des formules de caractéristiques.

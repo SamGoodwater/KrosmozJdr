@@ -2,16 +2,17 @@
 
 namespace App\Services\Scrapping\Core\Orchestrator;
 
+use App\Services\Characteristic\Conversion\DofusConversionService;
+use App\Services\Characteristic\Getter\CharacteristicGetterService;
+use App\Services\Characteristic\Limit\CharacteristicLimitService;
 use App\Services\Scrapping\Core\Collect\CollectService;
 use App\Services\Scrapping\Core\Config\ConfigLoader;
 use App\Services\Scrapping\Core\Conversion\ConversionService;
-use App\Services\Characteristic\DofusConversion\DofusDbConversionFormulas;
 use App\Services\Scrapping\Core\Conversion\FormatterApplicator;
 use App\Services\Scrapping\Core\Integration\IntegrationResult;
 use App\Services\Scrapping\Core\Integration\IntegrationService;
 use App\Services\Scrapping\Core\Relation\RelationImportStack;
 use App\Services\Scrapping\Core\Relation\RelationResolutionService;
-use App\Services\Characteristic\ValidationService;
 
 /**
  * Orchestrateur : enchaîne Collecte → Conversion → Validation → Intégration.
@@ -25,7 +26,7 @@ final class Orchestrator
         private ConfigLoader $configLoader,
         private CollectService $collectService,
         private ConversionService $conversionService,
-        private ValidationService $validationService,
+        private CharacteristicLimitService $limitService,
         private IntegrationService $integrationService,
         private ?RelationResolutionService $relationResolutionService = null
     ) {
@@ -38,17 +39,18 @@ final class Orchestrator
     {
         $configLoader = ConfigLoader::default();
 
-        $conversionFormulas = app(DofusDbConversionFormulas::class);
+        $conversionService = app(DofusConversionService::class);
+        $getter = app(CharacteristicGetterService::class);
 
         $orchestrator = new self(
             $configLoader,
             new CollectService($configLoader),
             new ConversionService(
                 $configLoader,
-                new FormatterApplicator($conversionFormulas, app(\App\Services\Characteristic\CharacteristicService::class)),
-                $conversionFormulas
+                new FormatterApplicator($conversionService, $getter),
+                $conversionService
             ),
-            app(ValidationService::class),
+            app(CharacteristicLimitService::class),
             new IntegrationService(),
             null
         );
@@ -139,7 +141,7 @@ final class Orchestrator
 
             $doValidate = ($options['validate'] ?? true) !== false;
             if ($doValidate) {
-                $validationResult = $this->validationService->validate($converted, $entityType);
+                $validationResult = $this->limitService->validate($converted, $entityType);
                 if (!$validationResult->isValid()) {
                     return OrchestratorResult::fail(
                         'Validation échouée.',
@@ -217,7 +219,7 @@ final class Orchestrator
 
             $doValidate = ($options['validate'] ?? true) !== false;
             if ($doValidate) {
-                $validationResult = $this->validationService->validate($converted, $entityType);
+                $validationResult = $this->limitService->validate($converted, $entityType);
                 if (!$validationResult->isValid()) {
                     return OrchestratorResult::fail(
                         'Validation échouée.',
@@ -319,7 +321,7 @@ final class Orchestrator
 
                 $doValidate = ($options['validate'] ?? true) !== false;
                 if ($doValidate) {
-                    $validationResult = $this->validationService->validate($converted, $entityTypeForItem);
+                    $validationResult = $this->limitService->validate($converted, $entityTypeForItem);
                     if (!$validationResult->isValid()) {
                         foreach ($validationResult->getErrors() as $err) {
                             $allValidationErrors[] = [

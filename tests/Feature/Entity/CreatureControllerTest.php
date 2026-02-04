@@ -298,7 +298,9 @@ class CreatureControllerTest extends TestCase
     public function test_user_cannot_update_relations_of_creature(): void
     {
         $user = User::factory()->create(['role' => User::ROLE_USER]);
-        $creature = Creature::factory()->create();
+        $creature = Creature::factory()->create([
+            'write_level' => User::ROLE_GAME_MASTER,
+        ]);
         $item = Item::factory()->create();
 
         $response = $this->actingAs($user)

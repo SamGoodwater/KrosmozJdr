@@ -13,48 +13,12 @@
 
 namespace App\Models{
 /**
- * Entrée de config de conversion DofusDB (clé → valeur JSON).
+ * Caractéristique générale : propriétés communes et id unique.
  * 
- * Clés : pass_through_characteristics, characteristic_transformations, limits_source,
- * effect_id_to_characteristic, element_id_to_resistance, limits.
+ * Une ligne = une caractéristique (ex. PA créature, PA sort, PA objet = 3 lignes).
  *
+ * @property int $id
  * @property string $key
- * @property array|null $value
- * @method static \Illuminate\Database\Eloquent\Builder<static>|DofusdbConversionConfig newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|DofusdbConversionConfig newQuery()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|DofusdbConversionConfig query()
- */
-	class DofusdbConversionConfig extends \Eloquent {}
-}
-
-namespace App\Models{
-/**
- * Formule de conversion DofusDB → KrosmozJDR pour une (entity, characteristic_key).
- *
- * @property int $id
- * @property string $characteristic_key
- * @property string $entity
- * @property string $formula_type
- * @property string|null $conversion_formula Formule simple ([d], [level]) ou table JSON
- * @property string|null $handler_name Nom d'un handler PHP (ex. resistance_dofus_to_krosmoz)
- * @property array|null $parameters
- * @property string|null $formula_display
- * @method static \Illuminate\Database\Eloquent\Builder<static>|DofusdbConversionFormula newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|DofusdbConversionFormula newQuery()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|DofusdbConversionFormula query()
- */
-	class DofusdbConversionFormula extends \Eloquent {}
-}
-
-namespace App\Models{
-/**
- * Définition d'une caractéristique pour une entité (source de vérité centrée entité).
- * 
- * Une ligne = une caractéristique attachée à une entité (entity + characteristic_key).
- *
- * @property int $id
- * @property string $entity
- * @property string $characteristic_key
  * @property string $name
  * @property string|null $short_name
  * @property string|null $helper
@@ -62,36 +26,192 @@ namespace App\Models{
  * @property string|null $icon
  * @property string|null $color
  * @property string|null $unit
- * @property int $sort_order
- * @property string|null $db_column
  * @property string $type
+ * @property int $sort_order
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\CharacteristicCreature> $creatureRows
+ * @property-read int|null $creature_rows_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\CharacteristicObject> $objectRows
+ * @property-read int|null $object_rows_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\CharacteristicSpell> $spellRows
+ * @property-read int|null $spell_rows_count
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Characteristic newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Characteristic newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Characteristic query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Characteristic whereColor($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Characteristic whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Characteristic whereDescriptions($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Characteristic whereHelper($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Characteristic whereIcon($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Characteristic whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Characteristic whereKey($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Characteristic whereName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Characteristic whereShortName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Characteristic whereSortOrder($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Characteristic whereType($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Characteristic whereUnit($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Characteristic whereUpdatedAt($value)
+ */
+	class Characteristic extends \Eloquent {}
+}
+
+namespace App\Models{
+/**
+ * Définition d’une caractéristique pour une entité du groupe créature (monster, class, npc).
+ *
+ * @property int $id
+ * @property int $characteristic_id
+ * @property string $entity
+ * @property string|null $db_column
  * @property int|null $min
  * @property int|null $max
  * @property string|null $formula
  * @property string|null $formula_display
- * @property array|null $computation
  * @property string|null $default_value
  * @property bool $required
  * @property string|null $validation_message
- * @property bool $forgemagie_allowed
- * @property int $forgemagie_max
- * @property float|null $base_price_per_unit
- * @property float|null $rune_price_per_unit
+ * @property string|null $conversion_formula
+ * @property int $sort_order
  * @property array|null $applies_to
  * @property bool $is_competence
- * @property string|null $characteristic_id
- * @property string|null $alternative_characteristic_id
+ * @property string|null $skill_characteristic_key
+ * @property string|null $alternative_characteristic_key
  * @property string|null $skill_type
  * @property array|null $value_available
  * @property array|null $labels
  * @property array|null $validation
  * @property array|null $mastery_value_available
  * @property array|null $mastery_labels
- * @method static \Illuminate\Database\Eloquent\Builder<static>|EntityCharacteristic newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|EntityCharacteristic newQuery()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|EntityCharacteristic query()
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \App\Models\Characteristic $characteristic
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicCreature newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicCreature newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicCreature query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicCreature whereAlternativeCharacteristicKey($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicCreature whereAppliesTo($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicCreature whereCharacteristicId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicCreature whereConversionFormula($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicCreature whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicCreature whereDbColumn($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicCreature whereDefaultValue($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicCreature whereEntity($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicCreature whereFormula($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicCreature whereFormulaDisplay($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicCreature whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicCreature whereIsCompetence($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicCreature whereLabels($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicCreature whereMasteryLabels($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicCreature whereMasteryValueAvailable($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicCreature whereMax($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicCreature whereMin($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicCreature whereRequired($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicCreature whereSkillCharacteristicKey($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicCreature whereSkillType($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicCreature whereSortOrder($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicCreature whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicCreature whereValidation($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicCreature whereValidationMessage($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicCreature whereValueAvailable($value)
  */
-	class EntityCharacteristic extends \Eloquent {}
+	class CharacteristicCreature extends \Eloquent {}
+}
+
+namespace App\Models{
+/**
+ * Définition d’une caractéristique pour une entité du groupe objet (item, consumable, resource, panoply).
+ *
+ * @property int $id
+ * @property int $characteristic_id
+ * @property string $entity
+ * @property string|null $db_column
+ * @property int|null $min
+ * @property int|null $max
+ * @property string|null $formula
+ * @property string|null $formula_display
+ * @property string|null $default_value
+ * @property bool $required
+ * @property string|null $validation_message
+ * @property string|null $conversion_formula
+ * @property int $sort_order
+ * @property bool $forgemagie_allowed
+ * @property int $forgemagie_max
+ * @property float|null $base_price_per_unit
+ * @property float|null $rune_price_per_unit
+ * @property array|null $value_available
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \App\Models\Characteristic $characteristic
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicObject newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicObject newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicObject query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicObject whereBasePricePerUnit($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicObject whereCharacteristicId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicObject whereConversionFormula($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicObject whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicObject whereDbColumn($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicObject whereDefaultValue($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicObject whereEntity($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicObject whereForgemagieAllowed($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicObject whereForgemagieMax($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicObject whereFormula($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicObject whereFormulaDisplay($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicObject whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicObject whereMax($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicObject whereMin($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicObject whereRequired($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicObject whereRunePricePerUnit($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicObject whereSortOrder($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicObject whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicObject whereValidationMessage($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicObject whereValueAvailable($value)
+ */
+	class CharacteristicObject extends \Eloquent {}
+}
+
+namespace App\Models{
+/**
+ * Définition d’une caractéristique pour l’entité spell (groupe sort).
+ *
+ * @property int $id
+ * @property int $characteristic_id
+ * @property string $entity
+ * @property string|null $db_column
+ * @property int|null $min
+ * @property int|null $max
+ * @property string|null $formula
+ * @property string|null $formula_display
+ * @property string|null $default_value
+ * @property bool $required
+ * @property string|null $validation_message
+ * @property string|null $conversion_formula
+ * @property int $sort_order
+ * @property array|null $value_available
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \App\Models\Characteristic $characteristic
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicSpell newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicSpell newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicSpell query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicSpell whereCharacteristicId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicSpell whereConversionFormula($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicSpell whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicSpell whereDbColumn($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicSpell whereDefaultValue($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicSpell whereEntity($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicSpell whereFormula($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicSpell whereFormulaDisplay($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicSpell whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicSpell whereMax($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicSpell whereMin($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicSpell whereRequired($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicSpell whereSortOrder($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicSpell whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicSpell whereValidationMessage($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicSpell whereValueAvailable($value)
+ */
+	class CharacteristicSpell extends \Eloquent {}
 }
 
 namespace App\Models\Entity{
@@ -129,10 +249,6 @@ namespace App\Models\Entity{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Attribute withTrashed()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Attribute withoutTrashed()
  * @mixin \Eloquent
- * @property int $usable
- * @property string $is_visible
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Attribute whereIsVisible($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Attribute whereUsable($value)
  */
 	class Attribute extends \Eloquent {}
 }
@@ -172,6 +288,26 @@ namespace App\Models\Entity{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Breed onlyTrashed()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Breed query()
  * @mixin \Eloquent
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Breed whereAutoUpdate($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Breed whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Breed whereCreatedBy($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Breed whereDeletedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Breed whereDescription($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Breed whereDescriptionFast($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Breed whereDofusVersion($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Breed whereDofusdbId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Breed whereIcon($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Breed whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Breed whereImage($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Breed whereLife($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Breed whereLifeDice($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Breed whereName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Breed whereOfficialId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Breed whereReadLevel($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Breed whereSpecificity($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Breed whereState($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Breed whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Breed whereWriteLevel($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Breed withTrashed(bool $withTrashed = true)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Breed withoutTrashed()
  */
@@ -243,10 +379,6 @@ namespace App\Models\Entity{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Campaign withTrashed()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Campaign withoutTrashed()
  * @mixin \Eloquent
- * @property int $usable
- * @property string $is_visible
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Campaign whereIsVisible($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Campaign whereUsable($value)
  */
 	class Campaign extends \Eloquent {}
 }
@@ -312,10 +444,6 @@ namespace App\Models\Entity{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Capability withTrashed()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Capability withoutTrashed()
  * @mixin \Eloquent
- * @property int $usable
- * @property string $is_visible
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Capability whereIsVisible($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Capability whereUsable($value)
  */
 	class Capability extends \Eloquent {}
 }
@@ -384,10 +512,6 @@ namespace App\Models\Entity{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Consumable withTrashed()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Consumable withoutTrashed()
  * @mixin \Eloquent
- * @property int $usable
- * @property string $is_visible
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Consumable whereIsVisible($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Consumable whereUsable($value)
  */
 	class Consumable extends \Eloquent {}
 }
@@ -597,10 +721,6 @@ namespace App\Models\Entity{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Creature withTrashed()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Creature withoutTrashed()
  * @mixin \Eloquent
- * @property int $usable
- * @property string $is_visible
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Creature whereIsVisible($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Creature whereUsable($value)
  */
 	class Creature extends \Eloquent {}
 }
@@ -671,10 +791,6 @@ namespace App\Models\Entity{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Item withTrashed()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Item withoutTrashed()
  * @mixin \Eloquent
- * @property int $usable
- * @property string $is_visible
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Item whereIsVisible($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Item whereUsable($value)
  */
 	class Item extends \Eloquent {}
 }
@@ -759,8 +875,6 @@ namespace App\Models\Entity{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Npc whereStory($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Npc whereUpdatedAt($value)
  * @mixin \Eloquent
- * @property int|null $classe_id
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Npc whereClasseId($value)
  */
 	class Npc extends \Eloquent {}
 }
@@ -808,10 +922,8 @@ namespace App\Models\Entity{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Panoply withTrashed()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Panoply withoutTrashed()
  * @mixin \Eloquent
- * @property int $usable
- * @property string $is_visible
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Panoply whereIsVisible($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Panoply whereUsable($value)
+ * @property string|null $dofusdb_id
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Panoply whereDofusdbId($value)
  */
 	class Panoply extends \Eloquent {}
 }
@@ -878,14 +990,10 @@ namespace App\Models\Entity{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Resource withTrashed()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Resource withoutTrashed()
  * @mixin \Eloquent
- * @property int $usable
- * @property string $is_visible
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Entity\Campaign> $campaigns
  * @property-read int|null $campaigns_count
  * @property-read \Illuminate\Database\Eloquent\Collection<int, Resource> $recipeIngredients
  * @property-read int|null $recipe_ingredients_count
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Resource whereIsVisible($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Resource whereUsable($value)
  */
 	class Resource extends \Eloquent {}
 }
@@ -957,10 +1065,6 @@ namespace App\Models\Entity{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Scenario withTrashed()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Scenario withoutTrashed()
  * @mixin \Eloquent
- * @property int $usable
- * @property string $is_visible
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Scenario whereIsVisible($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Scenario whereUsable($value)
  */
 	class Scenario extends \Eloquent {}
 }
@@ -1017,10 +1121,6 @@ namespace App\Models\Entity{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Shop withTrashed()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Shop withoutTrashed()
  * @mixin \Eloquent
- * @property int $usable
- * @property string $is_visible
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Shop whereIsVisible($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Shop whereUsable($value)
  */
 	class Shop extends \Eloquent {}
 }
@@ -1062,10 +1162,6 @@ namespace App\Models\Entity{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Specialization withTrashed()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Specialization withoutTrashed()
  * @mixin \Eloquent
- * @property int $usable
- * @property string $is_visible
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Specialization whereIsVisible($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Specialization whereUsable($value)
  */
 	class Specialization extends \Eloquent {}
 }
@@ -1149,14 +1245,10 @@ namespace App\Models\Entity{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Spell withTrashed()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Spell withoutTrashed()
  * @mixin \Eloquent
- * @property int $usable
- * @property string $is_visible
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Entity\Breed> $breeds
  * @property-read int|null $breeds_count
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\SpellEffect> $spellEffects
  * @property-read int|null $spell_effects_count
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Spell whereIsVisible($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Spell whereUsable($value)
  */
 	class Spell extends \Eloquent {}
 }
@@ -1168,11 +1260,18 @@ namespace App\Models{
  * @property string $id
  * @property string $name
  * @property int $sort_order
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\EquipmentSlotCharacteristic> $slotCharacteristics
  * @property-read int|null $slot_characteristics_count
  * @method static \Illuminate\Database\Eloquent\Builder<static>|EquipmentSlot newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|EquipmentSlot newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|EquipmentSlot query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|EquipmentSlot whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|EquipmentSlot whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|EquipmentSlot whereName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|EquipmentSlot whereSortOrder($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|EquipmentSlot whereUpdatedAt($value)
  */
 	class EquipmentSlot extends \Eloquent {}
 }
@@ -1189,10 +1288,22 @@ namespace App\Models{
  * @property int|null $forgemagie_max
  * @property float|null $base_price_per_unit
  * @property float|null $rune_price_per_unit
- * @property-read \App\Models\EquipmentSlot|null $equipmentSlot
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \App\Models\EquipmentSlot $equipmentSlot
  * @method static \Illuminate\Database\Eloquent\Builder<static>|EquipmentSlotCharacteristic newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|EquipmentSlotCharacteristic newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|EquipmentSlotCharacteristic query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|EquipmentSlotCharacteristic whereBasePricePerUnit($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|EquipmentSlotCharacteristic whereBracketMax($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|EquipmentSlotCharacteristic whereCharacteristicKey($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|EquipmentSlotCharacteristic whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|EquipmentSlotCharacteristic whereEntity($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|EquipmentSlotCharacteristic whereEquipmentSlotId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|EquipmentSlotCharacteristic whereForgemagieMax($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|EquipmentSlotCharacteristic whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|EquipmentSlotCharacteristic whereRunePricePerUnit($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|EquipmentSlotCharacteristic whereUpdatedAt($value)
  */
 	class EquipmentSlotCharacteristic extends \Eloquent {}
 }
@@ -1283,12 +1394,13 @@ namespace App\Models{
  * @property-read \Illuminate\Database\Eloquent\Collection<int, Scenario> $scenarios
  * @property-read int|null $scenarios_count
  * @mixin \Eloquent
- * @property string $is_visible
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Page forMenu(?\App\Models\User $user = null)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Page inMenu()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Page ordered()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Page playable()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Page readableFor(?\App\Models\User $user = null)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Page whereReadLevel($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Page whereWriteLevel($value)
  */
 	class Page extends \Eloquent {}
 }
@@ -1302,9 +1414,27 @@ namespace App\Models\Scrapping{
  *   'dofusdb_item_id' => 12345,
  *   'context' => 'recipe',
  * ]);
+ * @property int $id
+ * @property int $dofusdb_type_id
+ * @property int $dofusdb_item_id
+ * @property string $context
+ * @property string|null $source_entity_type
+ * @property int|null $source_entity_dofusdb_id
+ * @property int|null $quantity
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
  * @method static \Illuminate\Database\Eloquent\Builder<static>|PendingResourceTypeItem newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|PendingResourceTypeItem newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|PendingResourceTypeItem query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PendingResourceTypeItem whereContext($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PendingResourceTypeItem whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PendingResourceTypeItem whereDofusdbItemId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PendingResourceTypeItem whereDofusdbTypeId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PendingResourceTypeItem whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PendingResourceTypeItem whereQuantity($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PendingResourceTypeItem whereSourceEntityDofusdbId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PendingResourceTypeItem whereSourceEntityType($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PendingResourceTypeItem whereUpdatedAt($value)
  */
 	class PendingResourceTypeItem extends \Eloquent {}
 }
@@ -1361,12 +1491,17 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Section withTrashed()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Section withoutTrashed()
  * @mixin \Eloquent
- * @property \App\Enums\SectionType $type
+ * @property \App\Enums\SectionType|null $type
+ * @property array<array-key, mixed>|null $params
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Section displayable(?\App\Models\User $user = null)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Section ordered()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Section playable()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Section published()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Section readableFor(?\App\Models\User $user = null)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Section whereParams($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Section whereReadLevel($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Section whereType($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Section whereWriteLevel($value)
  */
 	class Section extends \Eloquent {}
 }
@@ -1392,9 +1527,27 @@ namespace App\Models{
  * @property-read Spell $spell
  * @property-read SpellEffectType $spellEffectType
  * @property-read Monster|null $summonMonster
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
  * @method static \Illuminate\Database\Eloquent\Builder<static>|SpellEffect newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|SpellEffect newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|SpellEffect query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SpellEffect whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SpellEffect whereDiceNum($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SpellEffect whereDiceSide($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SpellEffect whereDispellable($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SpellEffect whereDuration($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SpellEffect whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SpellEffect whereOrder($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SpellEffect whereRawDescription($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SpellEffect whereSpellEffectTypeId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SpellEffect whereSpellId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SpellEffect whereSummonMonsterId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SpellEffect whereTargetScope($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SpellEffect whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SpellEffect whereValueMax($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SpellEffect whereValueMin($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SpellEffect whereZoneShape($value)
  */
 	class SpellEffect extends \Eloquent {}
 }
@@ -1415,10 +1568,25 @@ namespace App\Models{
  * @property int $sort_order
  * @property int|null $dofusdb_effect_id
  * @property \Illuminate\Database\Eloquent\Collection<int, SpellEffect> $spellEffects
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
  * @property-read int|null $spell_effects_count
  * @method static \Illuminate\Database\Eloquent\Builder<static>|SpellEffectType newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|SpellEffectType newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|SpellEffectType query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SpellEffectType whereCategory($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SpellEffectType whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SpellEffectType whereDescription($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SpellEffectType whereDofusdbEffectId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SpellEffectType whereElement($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SpellEffectType whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SpellEffectType whereIsPositive($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SpellEffectType whereName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SpellEffectType whereSlug($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SpellEffectType whereSortOrder($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SpellEffectType whereUnit($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SpellEffectType whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SpellEffectType whereValueType($value)
  */
 	class SpellEffectType extends \Eloquent {}
 }
@@ -1454,13 +1622,17 @@ namespace App\Models\Type{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ConsumableType withTrashed()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ConsumableType withoutTrashed()
  * @mixin \Eloquent
- * @property int $usable
- * @property string $is_visible
+ * @property int|null $dofusdb_type_id
+ * @property string $decision
+ * @property int $seen_count
+ * @property \Illuminate\Support\Carbon|null $last_seen_at
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ConsumableType allowed()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ConsumableType blocked()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ConsumableType pending()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|ConsumableType whereIsVisible($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|ConsumableType whereUsable($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ConsumableType whereDecision($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ConsumableType whereDofusdbTypeId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ConsumableType whereLastSeenAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ConsumableType whereSeenCount($value)
  */
 	class ConsumableType extends \Eloquent {}
 }
@@ -1496,13 +1668,17 @@ namespace App\Models\Type{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ItemType withTrashed()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ItemType withoutTrashed()
  * @mixin \Eloquent
- * @property int $usable
- * @property string $is_visible
+ * @property int|null $dofusdb_type_id
+ * @property string $decision
+ * @property int $seen_count
+ * @property \Illuminate\Support\Carbon|null $last_seen_at
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ItemType allowed()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ItemType blocked()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ItemType pending()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|ItemType whereIsVisible($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|ItemType whereUsable($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ItemType whereDecision($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ItemType whereDofusdbTypeId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ItemType whereLastSeenAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ItemType whereSeenCount($value)
  */
 	class ItemType extends \Eloquent {}
 }
@@ -1544,10 +1720,7 @@ namespace App\Models\Type{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|MonsterRace withTrashed()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|MonsterRace withoutTrashed()
  * @mixin \Eloquent
- * @property int $usable
- * @property string $is_visible
- * @method static \Illuminate\Database\Eloquent\Builder<static>|MonsterRace whereIsVisible($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|MonsterRace whereUsable($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|MonsterRace whereDofusdbRaceId($value)
  */
 	class MonsterRace extends \Eloquent {}
 }
@@ -1583,13 +1756,17 @@ namespace App\Models\Type{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ResourceType withTrashed()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ResourceType withoutTrashed()
  * @mixin \Eloquent
- * @property int $usable
- * @property string $is_visible
+ * @property int|null $dofusdb_type_id
+ * @property string $decision
+ * @property int $seen_count
+ * @property \Illuminate\Support\Carbon|null $last_seen_at
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ResourceType allowed()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ResourceType blocked()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ResourceType pending()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|ResourceType whereIsVisible($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|ResourceType whereUsable($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ResourceType whereDecision($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ResourceType whereDofusdbTypeId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ResourceType whereLastSeenAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ResourceType whereSeenCount($value)
  */
 	class ResourceType extends \Eloquent {}
 }
@@ -1651,10 +1828,6 @@ namespace App\Models\Type{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|SpellType withTrashed()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|SpellType withoutTrashed()
  * @mixin \Eloquent
- * @property int $usable
- * @property string $is_visible
- * @method static \Illuminate\Database\Eloquent\Builder<static>|SpellType whereIsVisible($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|SpellType whereUsable($value)
  */
 	class SpellType extends \Eloquent {}
 }
@@ -1759,6 +1932,8 @@ namespace App\Models{
  * @property-read int|null $scenarios_count
  * @property-read string $role_name
  * @mixin \Eloquent
+ * @property bool $is_system
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereIsSystem($value)
  */
 	class User extends \Eloquent {}
 }

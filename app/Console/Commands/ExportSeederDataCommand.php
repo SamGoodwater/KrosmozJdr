@@ -4,11 +4,13 @@ declare(strict_types=1);
 
 namespace App\Console\Commands;
 
-use App\Models\EntityCharacteristic;
-use App\Models\DofusdbConversionFormula;
+use App\Models\Characteristic;
+use App\Models\CharacteristicCreature;
+use App\Models\CharacteristicObject;
+use App\Models\CharacteristicSpell;
 use App\Models\EquipmentSlot;
 use App\Models\SpellEffectType;
-use App\Services\Characteristic\CharacteristicService;
+use App\Services\Characteristic\Getter\CharacteristicGetterService;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Schema;
 
@@ -22,14 +24,14 @@ class ExportSeederDataCommand extends Command
 {
     protected $signature = 'db:export-seeder-data
                             {--characteristics : Exporter uniquement characteristics}
-                            {--formulas : Exporter uniquement dofusdb_conversion_formulas}
+                            {--formulas : Exporter les formules de conversion (tables characteristic_creature/object/spell)}
                             {--spell-effect-types : Exporter uniquement spell_effect_types}
                             {--equipment : Exporter uniquement equipment_slots}';
 
     protected $description = 'Exporte characteristics, formules, spell_effect_types et equipment_slots vers database/seeders/data/';
 
     public function __construct(
-        private readonly CharacteristicService $characteristicService
+        private readonly CharacteristicGetterService $getter
     ) {
         parent::__construct();
     }
@@ -45,10 +47,10 @@ class ExportSeederDataCommand extends Command
         }
 
         if ($all || $this->option('characteristics')) {
-            $this->exportEntityCharacteristics($dir);
+            $this->exportCharacteristics($dir);
         }
         if ($all || $this->option('formulas')) {
-            $this->exportDofusdbFormulas($dir);
+            $this->exportConversionFormulasInGroups($dir);
         }
         if ($all || $this->option('spell-effect-types')) {
             $this->exportSpellEffectTypes($dir);
@@ -62,81 +64,102 @@ class ExportSeederDataCommand extends Command
         return self::SUCCESS;
     }
 
-    private function exportEntityCharacteristics(string $dir): void
+    private function exportCharacteristics(string $dir): void
     {
-        $this->characteristicService->clearCache();
-        $rows = EntityCharacteristic::query()->orderBy('entity')->orderBy('sort_order')->orderBy('characteristic_key')->get();
-        $data = $rows->map(fn ($r) => [
-            'entity' => $r->entity,
-            'characteristic_key' => $r->characteristic_key,
-            'name' => $r->name,
-            'short_name' => $r->short_name,
-            'helper' => $r->helper,
-            'descriptions' => $r->descriptions,
-            'icon' => $r->icon,
-            'color' => $r->color,
-            'unit' => $r->unit,
-            'sort_order' => $r->sort_order,
-            'db_column' => $r->db_column,
-            'type' => $r->type,
-            'min' => $r->min,
-            'max' => $r->max,
-            'formula' => $r->formula,
-            'formula_display' => $r->formula_display,
-            'computation' => $r->computation,
-            'default_value' => $r->default_value,
-            'required' => $r->required,
-            'validation_message' => $r->validation_message,
-            'forgemagie_allowed' => $r->forgemagie_allowed,
-            'forgemagie_max' => $r->forgemagie_max,
-            'base_price_per_unit' => $r->base_price_per_unit !== null ? (float) $r->base_price_per_unit : null,
-            'rune_price_per_unit' => $r->rune_price_per_unit !== null ? (float) $r->rune_price_per_unit : null,
-            'applies_to' => $r->applies_to,
-            'is_competence' => $r->is_competence,
-            'characteristic_id' => $r->characteristic_id,
-            'alternative_characteristic_id' => $r->alternative_characteristic_id,
-            'skill_type' => $r->skill_type,
-            'value_available' => $r->value_available,
-            'labels' => $r->labels,
-            'validation' => $r->validation,
-            'mastery_value_available' => $r->mastery_value_available,
-            'mastery_labels' => $r->mastery_labels,
-        ])->all();
+        $this->getter->clearCache();
 
-        $path = $dir . '/entity_characteristics.php';
-        $content = "<?php\n\ndeclare(strict_types=1);\n\n/**\n * Données entity_characteristics (export BDD).\n * Généré par php artisan db:export-seeder-data\n */\n\nreturn " . $this->varExportShort($data) . ";\n";
-        file_put_contents($path, $content);
-        $this->info('Exported ' . count($data) . ' entity_characteristics → ' . $path);
+        if (Schema::hasTable('characteristics')) {
+            $rows = Characteristic::query()->orderBy('sort_order')->orderBy('key')->get();
+            $data = $rows->map(fn ($r) => [
+                'key' => $r->key,
+                'name' => $r->name,
+                'short_name' => $r->short_name,
+                'helper' => $r->helper,
+                'descriptions' => $r->descriptions,
+                'icon' => $r->icon,
+                'color' => $r->color,
+                'unit' => $r->unit,
+                'type' => $r->type,
+                'sort_order' => $r->sort_order,
+            ])->all();
+            $path = $dir . '/characteristics.php';
+            $content = "<?php\n\ndeclare(strict_types=1);\n\n/**\n * Table characteristics (export BDD).\n * Généré par php artisan db:export-seeder-data --characteristics\n */\n\nreturn " . $this->varExportShort($data) . ";\n";
+            file_put_contents($path, $content);
+            $this->info('Exported ' . count($data) . ' characteristics → ' . $path);
+        }
+
+        if (Schema::hasTable('characteristic_creature')) {
+            $rows = CharacteristicCreature::with('characteristic')->orderBy('characteristic_id')->orderBy('entity')->get();
+            $data = $rows->map(fn ($r) => [
+                'characteristic_key' => $r->characteristic->key,
+                'entity' => $r->entity,
+                'db_column' => $r->db_column,
+                'min' => $r->min,
+                'max' => $r->max,
+                'formula' => $r->formula,
+                'formula_display' => $r->formula_display,
+                'default_value' => $r->default_value,
+                'required' => $r->required,
+                'validation_message' => $r->validation_message,
+                'conversion_formula' => $r->conversion_formula,
+                'sort_order' => $r->sort_order,
+            ])->all();
+            $path = $dir . '/characteristic_creature.php';
+            $content = "<?php\n\ndeclare(strict_types=1);\n\n/**\n * characteristic_creature (export BDD).\n */\n\nreturn " . $this->varExportShort($data) . ";\n";
+            file_put_contents($path, $content);
+            $this->info('Exported ' . count($data) . ' characteristic_creature → ' . $path);
+        }
+
+        if (Schema::hasTable('characteristic_object')) {
+            $rows = CharacteristicObject::with('characteristic')->orderBy('characteristic_id')->orderBy('entity')->get();
+            $data = $rows->map(fn ($r) => [
+                'characteristic_key' => $r->characteristic->key,
+                'entity' => $r->entity,
+                'db_column' => $r->db_column,
+                'min' => $r->min,
+                'max' => $r->max,
+                'formula' => $r->formula,
+                'formula_display' => $r->formula_display,
+                'default_value' => $r->default_value,
+                'required' => $r->required,
+                'validation_message' => $r->validation_message,
+                'conversion_formula' => $r->conversion_formula,
+                'sort_order' => $r->sort_order,
+                'forgemagie_allowed' => $r->forgemagie_allowed,
+                'forgemagie_max' => $r->forgemagie_max,
+            ])->all();
+            $path = $dir . '/characteristic_object.php';
+            $content = "<?php\n\ndeclare(strict_types=1);\n\n/**\n * characteristic_object (export BDD).\n */\n\nreturn " . $this->varExportShort($data) . ";\n";
+            file_put_contents($path, $content);
+            $this->info('Exported ' . count($data) . ' characteristic_object → ' . $path);
+        }
+
+        if (Schema::hasTable('characteristic_spell')) {
+            $rows = CharacteristicSpell::with('characteristic')->orderBy('characteristic_id')->orderBy('entity')->get();
+            $data = $rows->map(fn ($r) => [
+                'characteristic_key' => $r->characteristic->key,
+                'entity' => $r->entity,
+                'db_column' => $r->db_column,
+                'min' => $r->min,
+                'max' => $r->max,
+                'formula' => $r->formula,
+                'formula_display' => $r->formula_display,
+                'default_value' => $r->default_value,
+                'required' => $r->required,
+                'validation_message' => $r->validation_message,
+                'conversion_formula' => $r->conversion_formula,
+                'sort_order' => $r->sort_order,
+            ])->all();
+            $path = $dir . '/characteristic_spell.php';
+            $content = "<?php\n\ndeclare(strict_types=1);\n\n/**\n * characteristic_spell (export BDD).\n */\n\nreturn " . $this->varExportShort($data) . ";\n";
+            file_put_contents($path, $content);
+            $this->info('Exported ' . count($data) . ' characteristic_spell → ' . $path);
+        }
     }
 
-    private function exportDofusdbFormulas(string $dir): void
+    private function exportConversionFormulasInGroups(string $dir): void
     {
-        $keyColumn = Schema::hasColumn('dofusdb_conversion_formulas', 'characteristic_key')
-            ? 'characteristic_key'
-            : 'characteristic_id';
-
-        $rows = DofusdbConversionFormula::query()
-            ->orderBy($keyColumn)
-            ->orderBy('entity')
-            ->get()
-            ->map(function ($m) use ($keyColumn) {
-                $key = $m->getAttribute($keyColumn);
-                return [
-                    'characteristic_key' => $key,
-                    'entity' => $m->entity,
-                    'formula_type' => $m->formula_type,
-                    'parameters' => $m->parameters,
-                    'formula_display' => $m->formula_display,
-                    'conversion_formula' => $m->conversion_formula ?? null,
-                    'handler_name' => $m->handler_name ?? null,
-                ];
-            })
-            ->all();
-
-        $path = $dir . '/dofusdb_conversion_formulas.php';
-        $content = "<?php\n\ndeclare(strict_types=1);\n\n/**\n * Formules de conversion DofusDB → Krosmoz (export BDD).\n * Généré par php artisan db:export-seeder-data\n */\n\nreturn " . $this->varExportShort($rows) . ";\n";
-        file_put_contents($path, $content);
-        $this->info('Exported ' . count($rows) . ' formulas → ' . $path);
+        $this->info('Les formules de conversion sont dans les tables de groupe (characteristic_*). Utilisez --characteristics pour tout exporter.');
     }
 
     private function exportSpellEffectTypes(string $dir): void

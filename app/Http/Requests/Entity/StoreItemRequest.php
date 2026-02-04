@@ -2,15 +2,18 @@
 
 namespace App\Http\Requests\Entity;
 
+use App\Http\Requests\Concerns\HasCharacteristicValidation;
 use Illuminate\Foundation\Http\FormRequest;
 
 /**
  * FormRequest pour la création d'un Item.
  *
  * Valide les champs principaux d'un objet/équipement.
+ * Les min/max des champs liés aux caractéristiques sont dérivés de CharacteristicGetterService.
  */
 class StoreItemRequest extends FormRequest
 {
+    use HasCharacteristicValidation;
     /**
      * Determine if the user is authorized to make this request.
      */
@@ -28,13 +31,22 @@ class StoreItemRequest extends FormRequest
     {
         return [
             'name' => ['required', 'string', 'max:255'],
-            'level' => ['nullable', 'integer', 'min:0'],
+            'level' => array_merge(
+                ['nullable', 'integer'],
+                $this->characteristicMinMaxRules('level', 'item') ?: ['min:0']
+            ),
             'description' => ['nullable', 'string'],
             'effect' => ['nullable', 'string'],
             'bonus' => ['nullable', 'string'],
             'recipe' => ['nullable', 'string'],
-            'price' => ['nullable', 'numeric', 'min:0'],
-            'rarity' => ['nullable', 'integer', 'min:0'],
+            'price' => array_merge(
+                ['nullable', 'numeric'],
+                $this->characteristicMinMaxRules('price', 'item') ?: ['min:0']
+            ),
+            'rarity' => array_merge(
+                ['nullable', 'integer'],
+                $this->characteristicMinMaxRules('rarity', 'item') ?: ['min:0']
+            ),
             'dofus_version' => ['nullable', 'string', 'max:255'],
             'state' => ['nullable', 'string', 'in:raw,draft,playable,archived'],
             'read_level' => ['nullable', 'integer', 'min:0', 'max:5'],

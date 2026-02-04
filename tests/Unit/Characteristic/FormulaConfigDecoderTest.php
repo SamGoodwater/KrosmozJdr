@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Characteristic;
 
-use App\Services\Characteristic\FormulaConfigDecoder;
+use App\Services\Characteristic\Formula\FormulaConfigDecoder;
 use Tests\TestCase;
 
 class FormulaConfigDecoderTest extends TestCase

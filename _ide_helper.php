@@ -24146,6 +24146,7 @@ namespace App\Http\Requests\Entity {
      * FormRequest pour la création d'un Consumable.
      * 
      * Valide les champs principaux d'un consommable.
+     * Les min/max des champs liés aux caractéristiques sont dérivés de CharacteristicGetterService.
      *
      */
     class StoreConsumableRequest extends \Illuminate\Foundation\Http\FormRequest {
@@ -24162,6 +24163,7 @@ namespace App\Http\Requests\Entity {
      * FormRequest pour la création d'un Item.
      * 
      * Valide les champs principaux d'un objet/équipement.
+     * Les min/max des champs liés aux caractéristiques sont dérivés de CharacteristicGetterService.
      *
      */
     class StoreItemRequest extends \Illuminate\Foundation\Http\FormRequest {
@@ -24194,6 +24196,7 @@ namespace App\Http\Requests\Entity {
      * FormRequest pour la création d'une Resource.
      * 
      * Valide les champs principaux d'une ressource.
+     * Les min/max des champs liés aux caractéristiques (ex. rarity) sont dérivés de CharacteristicGetterService.
      *
      */
     class StoreResourceRequest extends \Illuminate\Foundation\Http\FormRequest {
@@ -24226,6 +24229,7 @@ namespace App\Http\Requests\Entity {
      * FormRequest pour la création d'un Spell.
      * 
      * Valide les champs principaux d'un sort.
+     * Les min/max des champs liés aux caractéristiques sont dérivés de CharacteristicGetterService.
      *
      */
     class StoreSpellRequest extends \Illuminate\Foundation\Http\FormRequest {
@@ -24256,6 +24260,7 @@ namespace App\Http\Requests\Entity {
      * FormRequest pour la mise à jour d'un Consumable.
      * 
      * Valide les champs principaux d'un consommable.
+     * Les min/max des champs liés aux caractéristiques (rarity, etc.) sont dérivés de CharacteristicGetterService.
      *
      */
     class UpdateConsumableRequest extends \Illuminate\Foundation\Http\FormRequest {
@@ -24269,6 +24274,11 @@ namespace App\Http\Requests\Entity {
     class UpdateCreatureRequest extends \Illuminate\Foundation\Http\FormRequest {
             }
     /**
+     * FormRequest pour la mise à jour d'un Item.
+     * 
+     * Les min/max des champs liés aux caractéristiques (level, rarity, etc.)
+     * sont dérivés de CharacteristicGetterService (entity item).
+     *
      */
     class UpdateItemRequest extends \Illuminate\Foundation\Http\FormRequest {
             }
@@ -24308,6 +24318,7 @@ namespace App\Http\Requests\Entity {
      * FormRequest pour la mise à jour d'une Resource.
      * 
      * Valide les champs principaux d'une ressource.
+     * Les min/max des champs liés aux caractéristiques (ex. rarity) sont dérivés de CharacteristicGetterService.
      *
      */
     class UpdateResourceRequest extends \Illuminate\Foundation\Http\FormRequest {
@@ -24337,6 +24348,11 @@ namespace App\Http\Requests\Entity {
     class UpdateSpecializationRequest extends \Illuminate\Foundation\Http\FormRequest {
             }
     /**
+     * FormRequest pour la mise à jour d'un Spell.
+     * 
+     * Les min/max des champs liés aux caractéristiques (area, element, powerful, etc.)
+     * sont dérivés de CharacteristicGetterService (entity spell).
+     *
      */
     class UpdateSpellRequest extends \Illuminate\Foundation\Http\FormRequest {
             }

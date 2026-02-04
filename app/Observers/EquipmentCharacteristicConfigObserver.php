@@ -6,7 +6,7 @@ namespace App\Observers;
 
 use App\Models\EquipmentSlot;
 use App\Models\EquipmentSlotCharacteristic;
-use App\Services\Characteristic\EquipmentCharacteristicService;
+use App\Services\Characteristic\Equipment\EquipmentCharacteristicService;
 
 /**
  * Invalide le cache des slots d'équipement à chaque modification en base.

@@ -13,6 +13,10 @@ const props = defineProps({
     },
     /** Hauteur minimale en px (le conteneur peut être plus grand via CSS). */
     height: { type: Number, default: 128 },
+    /** Libellé axe X (ex. niveau, variable). */
+    xLabel: { type: String, default: '' },
+    /** Libellé axe Y (ex. résultat, valeur). */
+    yLabel: { type: String, default: '' },
 });
 
 const canvasRef = ref(null);
@@ -63,11 +67,11 @@ function buildChart() {
             },
             scales: {
                 x: {
-                    title: { display: false },
+                    title: { display: !!props.xLabel, text: props.xLabel },
                     ticks: { maxTicksLimit: 8 },
                 },
                 y: {
-                    title: { display: false },
+                    title: { display: !!props.yLabel, text: props.yLabel },
                     beginAtZero: false,
                 },
             },

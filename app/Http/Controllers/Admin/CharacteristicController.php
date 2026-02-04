@@ -5,204 +5,292 @@ declare(strict_types=1);
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\EntityCharacteristic;
-use App\Models\DofusdbConversionFormula;
-use App\Services\Characteristic\CharacteristicService;
-use App\Services\Characteristic\FormulaEvaluator;
-use App\Services\Characteristic\DofusConversion\ConversionHandlerRegistry;
+use App\Models\Characteristic;
+use App\Models\CharacteristicCreature;
+use App\Models\CharacteristicObject;
+use App\Models\CharacteristicSpell;
+use App\Services\Characteristic\Formula\CharacteristicFormulaService;
+use App\Services\Characteristic\Formula\FormulaConfigDecoder;
+use App\Services\Characteristic\Getter\CharacteristicGetterService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Validation\Rule;
-use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Str;
 use Inertia\Inertia;
 use Inertia\Response as InertiaResponse;
 
 /**
- * Administration des caractéristiques (entity_characteristics).
- * Liste par characteristic_key à gauche, panneau d'édition à droite (agrégat par entité).
+ * Administration des caractéristiques (nouvelle structure : characteristics + characteristic_creature/object/spell).
  */
 class CharacteristicController extends Controller
 {
+    /** Entités possibles + '*' = toutes les entités du groupe (défaut). */
+    private const ENTITIES = ['*', 'monster', 'class', 'npc', 'item', 'consumable', 'resource', 'panoply', 'spell'];
+
+    /** Entités par groupe (pour la création). */
+    private const ENTITIES_BY_GROUP = [
+        'creature' => ['*', 'monster', 'class', 'npc'],
+        'object' => ['*', 'item', 'consumable', 'resource', 'panoply'],
+        'spell' => ['*', 'spell'],
+    ];
+
     public function __construct(
-        private readonly CharacteristicService $characteristicService,
-        private readonly FormulaEvaluator $formulaEvaluator,
-        private readonly ConversionHandlerRegistry $handlerRegistry
+        private readonly CharacteristicGetterService $getter,
+        private readonly CharacteristicFormulaService $formulaService
     ) {
     }
 
     public function index(): InertiaResponse
     {
-        $list = $this->characteristicService->getCharacteristics();
+        $characteristicsByGroup = $this->buildCharacteristicsByGroup();
 
         return Inertia::render('Admin/characteristics/Index', [
-            'characteristics' => $this->buildListForPanel($list),
+            'characteristicsByGroup' => $characteristicsByGroup,
             'selected' => null,
+            'entitiesByGroup' => self::ENTITIES_BY_GROUP,
         ]);
     }
 
     /**
-     * Affiche une caractéristique par characteristic_key (agrégat des lignes entity_characteristics).
+     * Formulaire de création d'une caractéristique.
      */
+    public function create(): InertiaResponse
+    {
+        $characteristicsByGroup = $this->buildCharacteristicsByGroup();
+
+        $defaultEntityRow = [
+            'entity' => '*',
+            'db_column' => null,
+            'min' => null,
+            'max' => null,
+            'formula' => null,
+            'formula_display' => null,
+            'default_value' => null,
+            'required' => false,
+            'validation_message' => null,
+            'conversion_formula' => null,
+            'sort_order' => 0,
+            'forgemagie_allowed' => false,
+            'forgemagie_max' => 0,
+            'base_price_per_unit' => null,
+            'rune_price_per_unit' => null,
+        ];
+        $entitiesTemplate = [];
+        foreach (self::ENTITIES_BY_GROUP as $group => $entities) {
+            $entitiesTemplate[$group] = array_map(fn (string $entity) => array_merge($defaultEntityRow, ['entity' => $entity]), $entities);
+        }
+
+        return Inertia::render('Admin/characteristics/Index', [
+            'characteristicsByGroup' => $characteristicsByGroup,
+            'selected' => null,
+            'createMode' => true,
+            'groups' => array_keys(self::ENTITIES_BY_GROUP),
+            'entitiesByGroup' => self::ENTITIES_BY_GROUP,
+            'entitiesTemplate' => $entitiesTemplate,
+        ]);
+    }
+
+    /**
+     * Enregistre une nouvelle caractéristique (table générale + lignes du groupe choisi).
+     */
+    public function store(Request $request): \Illuminate\Http\RedirectResponse
+    {
+        $data = $request->validate([
+            'key' => ['required', 'string', 'max:64', 'regex:/^[a-z0-9_]+$/', 'unique:characteristics,key'],
+            'name' => 'required|string|max:255',
+            'short_name' => 'nullable|string|max:255',
+            'description' => 'nullable|string',
+            'helper' => 'nullable|string',
+            'icon' => 'nullable|string|max:64',
+            'color' => 'nullable|string|max:64',
+            'type' => 'required|in:int,string,array',
+            'unit' => 'nullable|string|max:64',
+            'sort_order' => 'nullable|integer',
+            'group' => 'required|in:creature,object,spell',
+            'entities' => 'array',
+            'entities.*.entity' => 'required|string|max:32',
+            'entities.*.db_column' => 'nullable|string|max:64',
+            'entities.*.min' => 'nullable|integer',
+            'entities.*.max' => 'nullable|integer',
+            'entities.*.formula' => 'nullable|string',
+            'entities.*.formula_display' => 'nullable|string',
+            'entities.*.default_value' => 'nullable|string|max:512',
+            'entities.*.required' => 'nullable|boolean',
+            'entities.*.validation_message' => 'nullable|string',
+            'entities.*.conversion_formula' => 'nullable|string',
+            'entities.*.sort_order' => 'nullable|integer',
+            'entities.*.forgemagie_allowed' => 'nullable|boolean',
+            'entities.*.forgemagie_max' => 'nullable|integer',
+            'entities.*.base_price_per_unit' => 'nullable|numeric',
+            'entities.*.rune_price_per_unit' => 'nullable|numeric',
+        ]);
+
+        $allowedEntities = self::ENTITIES_BY_GROUP[$data['group']];
+        $entities = array_filter($data['entities'] ?? [], function ($ent) use ($allowedEntities) {
+            return in_array($ent['entity'] ?? '', $allowedEntities, true);
+        });
+
+        $characteristic = Characteristic::create([
+            'key' => $data['key'],
+            'name' => $data['name'],
+            'short_name' => $data['short_name'] ?? null,
+            'helper' => $data['helper'] ?? null,
+            'descriptions' => $data['description'] ?? null,
+            'icon' => $data['icon'] ?? null,
+            'color' => $data['color'] ?? null,
+            'type' => $data['type'],
+            'unit' => $data['unit'] ?? null,
+            'sort_order' => (int) ($data['sort_order'] ?? 0),
+        ]);
+
+        foreach ($entities as $ent) {
+            $this->updateGroupRow($characteristic->id, $ent['entity'], $ent);
+        }
+
+        $this->getter->clearCache();
+
+        return redirect()
+            ->route('admin.characteristics.show', $characteristic->key)
+            ->with('success', 'Caractéristique créée.');
+    }
+
     public function show(string $characteristic_key): InertiaResponse
     {
-        $rows = EntityCharacteristic::where('characteristic_key', $characteristic_key)->orderBy('entity')->get();
-        if ($rows->isEmpty()) {
+        $characteristic = Characteristic::where('key', $characteristic_key)->first();
+        if ($characteristic === null) {
             return Inertia::render('Admin/characteristics/Index', [
-                'characteristics' => $this->buildListForPanel($this->characteristicService->getCharacteristics()),
+                'characteristicsByGroup' => $this->buildCharacteristicsByGroup(),
                 'selected' => null,
+                'entitiesByGroup' => self::ENTITIES_BY_GROUP,
             ])->with('error', 'Caractéristique introuvable.');
         }
 
-        $list = $this->characteristicService->getCharacteristics();
+        $entities = [];
+        foreach (CharacteristicCreature::where('characteristic_id', $characteristic->id)->orderBy('entity')->get() as $row) {
+            $entities[] = $this->groupRowToEntity($row, $characteristic);
+        }
+        foreach (CharacteristicObject::where('characteristic_id', $characteristic->id)->orderBy('entity')->get() as $row) {
+            $entities[] = $this->groupRowToEntity($row, $characteristic);
+        }
+        foreach (CharacteristicSpell::where('characteristic_id', $characteristic->id)->orderBy('entity')->get() as $row) {
+            $entities[] = $this->groupRowToEntity($row, $characteristic);
+        }
+
+        $group = $this->inferPrimaryGroup($characteristic);
+        $entitiesForGroup = self::ENTITIES_BY_GROUP[$group] ?? ['*'];
         $conversionFormulas = [];
-        foreach (['monster', 'class', 'item', 'spell'] as $entity) {
-            $row = DofusdbConversionFormula::where('characteristic_key', $characteristic_key)
-                ->where('entity', $entity)
-                ->first();
+        foreach ($entitiesForGroup as $entity) {
+            if ($entity === '*') {
+                continue;
+            }
+            $def = $this->getter->getDefinition($characteristic_key, $entity);
             $conversionFormulas[] = [
                 'entity' => $entity,
-                'conversion_formula' => $row?->conversion_formula ?? '',
-                'formula_display' => $row?->formula_display ?? '',
-                'handler_name' => $row?->handler_name ?? '',
+                'conversion_formula' => $def['conversion_formula'] ?? '',
+                'formula_display' => $def['formula_display'] ?? '',
+                'handler_name' => '',
             ];
         }
 
-        $selected = $this->buildSelectedFromRows($rows);
-        $selected['id'] = $characteristic_key;
-        $selected['entities'] = $this->mergeDefaultEntityDefinitions($selected['entities'] ?? []);
-        $selected['conversion_formulas'] = $conversionFormulas;
+        $selected = [
+            'id' => $characteristic->key,
+            'name' => $characteristic->name,
+            'short_name' => $characteristic->short_name,
+            'description' => $characteristic->descriptions,
+            'icon' => $characteristic->icon,
+            'color' => $characteristic->color,
+            'type' => $characteristic->type,
+            'unit' => $characteristic->unit,
+            'sort_order' => $characteristic->sort_order,
+            'entities' => $this->mergeDefaultEntityDefinitions($entities),
+            'conversion_formulas' => $conversionFormulas,
+            'group' => $group,
+            'entitiesByGroup' => self::ENTITIES_BY_GROUP,
+        ];
 
         return Inertia::render('Admin/characteristics/Index', [
-            'characteristics' => $this->buildListForPanel($list),
+            'characteristicsByGroup' => $this->buildCharacteristicsByGroup(),
             'selected' => $selected,
+            'entitiesByGroup' => self::ENTITIES_BY_GROUP,
         ]);
     }
 
-    private function buildListForPanel(array $list): array
+    /**
+     * Supprime une caractéristique (et ses lignes de groupe par cascade).
+     */
+    public function destroy(string $characteristic_key): \Illuminate\Http\RedirectResponse
     {
-        $listForPanel = [];
-        foreach ($list as $id => $def) {
-            $listForPanel[] = [
-                'id' => $id,
-                'name' => $def['name'] ?? $id,
-                'short_name' => $def['short_name'] ?? null,
-                'icon' => $def['icon'] ?? null,
-                'color' => $def['color'] ?? null,
-            ];
+        $characteristic = Characteristic::where('key', $characteristic_key)->first();
+        if ($characteristic === null) {
+            return redirect()->route('admin.characteristics.index')->with('error', 'Caractéristique introuvable.');
         }
-        usort($listForPanel, fn ($a, $b) => ($a['name'] ?? '') <=> ($b['name'] ?? ''));
+        $characteristic->delete();
+        $this->getter->clearCache();
 
-        return $listForPanel;
+        return redirect()->route('admin.characteristics.index')->with('success', 'Caractéristique supprimée.');
     }
 
-    public function uploadIcon(Request $request): JsonResponse
+    /**
+     * Infère le groupe principal de la caractéristique (creature, object ou spell) selon les tables qui ont des lignes.
+     */
+    private function inferPrimaryGroup(Characteristic $characteristic): string
     {
-        $validated = $request->validate([
-            'file' => ['required', 'file', 'image', 'max:2048'],
-        ]);
-
-        $file = $validated['file'];
-        $ext = $file->getClientOriginalExtension() ?: 'png';
-        $name = Str::slug(pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME));
-        $name = $name ?: Str::random(8);
-        $filename = $name . '_' . time() . '.' . strtolower($ext);
-
-        $dir = 'images/icons/characteristics';
-        $path = $file->storeAs($dir, $filename, ['disk' => 'public']);
-
-        if (!$path) {
-            return response()->json(['success' => false, 'message' => "Impossible d'uploader l'icône."], 500);
+        if (CharacteristicCreature::where('characteristic_id', $characteristic->id)->exists()) {
+            return 'creature';
         }
-
-        return response()->json(['success' => true, 'icon' => $filename]);
+        if (CharacteristicObject::where('characteristic_id', $characteristic->id)->exists()) {
+            return 'object';
+        }
+        if (CharacteristicSpell::where('characteristic_id', $characteristic->id)->exists()) {
+            return 'spell';
+        }
+        return 'creature';
     }
 
     public function formulaPreview(Request $request): JsonResponse
     {
-        $v = Validator::make($request->query(), [
-            'characteristic_id' => 'required|string',
-            'entity' => 'required|in:monster,class,item,spell',
-            'variable' => 'nullable|string',
-            'formula' => 'nullable|string',
-        ]);
-        if ($v->fails()) {
-            return response()->json(['points' => []], 422);
-        }
-
-        $characteristicId = $request->query('characteristic_id');
-        $entity = $request->query('entity');
+        $characteristicId = $request->query('characteristic_id', '');
+        $entity = $request->query('entity', 'resource');
         $variable = $request->query('variable', 'level');
         $formulaOverride = $request->query('formula');
 
-        $def = $this->characteristicService->getCharacteristic($characteristicId);
-        $entityDef = $def !== null ? ($def['entities'][$entity] ?? null) : null;
+        $def = $this->getter->getDefinition($characteristicId, $entity);
         $formula = $formulaOverride !== null && $formulaOverride !== ''
             ? $formulaOverride
-            : ($entityDef['formula'] ?? null);
+            : ($def['formula'] ?? $def['conversion_formula'] ?? null);
         if ($formula === null || $formula === '') {
             return response()->json(['points' => []]);
         }
 
-        $decoded = \App\Services\Characteristic\FormulaConfigDecoder::decode($formula);
+        $decoded = FormulaConfigDecoder::decode($formula);
         $axisVar = $variable;
         if ($decoded['type'] === 'table') {
             $axisVar = $decoded['characteristic'];
         }
 
-        $limits = $this->characteristicService->getLimits($axisVar, $entity);
+        $limits = $this->getter->getLimitsByField($axisVar, $entity);
         if ($limits === null) {
             $limits = ['min' => 1, 'max' => 20];
         }
         $min = $limits['min'];
         $max = min($limits['max'], $min + 50);
 
-        $defaults = [];
-        if ($decoded['type'] === 'table') {
-            foreach ($decoded['entries'] as $entry) {
-                $v = $entry['value'];
-                if (is_string($v) && $v !== '' && preg_match_all('/\[(\w+)\]/', $v, $m)) {
-                    foreach (array_unique($m[1]) as $varId) {
-                        if ($varId === $axisVar || isset($defaults[$varId])) {
-                            continue;
-                        }
-                        $lim = $this->characteristicService->getLimits($varId, $entity);
-                        $defaults[$varId] = $lim !== null
-                            ? (int) round(($lim['min'] + $lim['max']) / 2)
-                            : 10;
-                    }
-                }
-            }
-        } else {
-            if (preg_match_all('/\[(\w+)\]/', $formula, $m)) {
-                foreach (array_unique($m[1]) as $varId) {
-                    if ($varId === $axisVar) {
-                        continue;
-                    }
-                    $lim = $this->characteristicService->getLimits($varId, $entity);
-                    $defaults[$varId] = $lim !== null
-                        ? (int) round(($lim['min'] + $lim['max']) / 2)
-                        : 10;
-                }
-            }
-        }
+        $defaults = $this->buildDefaultVariablesForPreview($formula, $decoded, $axisVar, $entity);
 
+        $range = $this->formulaService->evaluateForVariableRange($formula, $axisVar, $min, $max, $defaults);
         $points = [];
-        for ($x = $min; $x <= $max; $x++) {
-            $vars = $defaults;
-            $vars[$axisVar] = $x;
-            $y = $this->formulaEvaluator->evaluateFormulaOrTable($formula, $vars);
-            $points[] = ['x' => $x, 'y' => $y !== null ? round($y, 2) : 0];
+        foreach ($range as $x => $y) {
+            $points[] = ['x' => $x, 'y' => round($y, 2)];
         }
 
         return response()->json(['points' => $points]);
     }
 
-    /**
-     * Met à jour les entity_characteristics pour ce characteristic_key (une ligne par entité).
-     */
     public function update(Request $request, string $characteristic_key): \Illuminate\Http\RedirectResponse
     {
+        $characteristic = Characteristic::where('key', $characteristic_key)->first();
+        if ($characteristic === null) {
+            return redirect()->route('admin.characteristics.index')->with('error', 'Caractéristique introuvable.');
+        }
+
         $data = $request->validate([
             'name' => 'required|string|max:255',
             'short_name' => 'nullable|string|max:255',
@@ -211,138 +299,173 @@ class CharacteristicController extends Controller
             'color' => 'nullable|string|max:64',
             'type' => 'required|in:int,string,array',
             'unit' => 'nullable|string|max:64',
-            'sort_order' => 'integer',
-            'applies_to' => 'nullable',
-            'value_available' => 'nullable',
+            'sort_order' => 'nullable|integer',
             'entities' => 'array',
-            'entities.*.entity' => 'required|in:' . implode(',', EntityCharacteristic::ENTITIES),
+            'entities.*.entity' => 'required|in:' . implode(',', self::ENTITIES),
+            'entities.*.db_column' => 'nullable|string|max:64',
             'entities.*.min' => 'nullable|integer',
             'entities.*.max' => 'nullable|integer',
             'entities.*.formula' => 'nullable|string',
             'entities.*.formula_display' => 'nullable|string',
-            'entities.*.default_value' => 'nullable|string',
-            'entities.*.required' => 'boolean',
+            'entities.*.default_value' => 'nullable|string|max:512',
+            'entities.*.required' => 'nullable|boolean',
             'entities.*.validation_message' => 'nullable|string',
-            'entities.*.forgemagie_allowed' => 'boolean',
-            'entities.*.forgemagie_max' => 'integer',
+            'entities.*.conversion_formula' => 'nullable|string',
+            'entities.*.sort_order' => 'nullable|integer',
+            'entities.*.forgemagie_allowed' => 'nullable|boolean',
+            'entities.*.forgemagie_max' => 'nullable|integer',
             'entities.*.base_price_per_unit' => 'nullable|numeric',
             'entities.*.rune_price_per_unit' => 'nullable|numeric',
-            'conversion_formulas' => 'nullable|array',
-            'conversion_formulas.*.entity' => 'required|in:monster,class,item,spell',
-            'conversion_formulas.*.conversion_formula' => 'nullable|string',
-            'conversion_formulas.*.formula_display' => 'nullable|string',
-            'conversion_formulas.*.handler_name' => [
-                'nullable',
-                'string',
-                'max:64',
-                Rule::in(array_merge(
-                    [''],
-                    array_column($this->handlerRegistry->allHandlersForSelect(), 'name')
-                )),
-            ],
         ]);
 
-        $entities = $data['entities'] ?? [];
-        foreach ($entities as $ent) {
+        $characteristic->update([
+            'name' => $data['name'],
+            'short_name' => $data['short_name'] ?? null,
+            'descriptions' => $data['description'] ?? null,
+            'icon' => $data['icon'] ?? null,
+            'color' => $data['color'] ?? null,
+            'type' => $data['type'],
+            'unit' => $data['unit'] ?? null,
+            'sort_order' => $data['sort_order'] ?? $characteristic->sort_order,
+        ]);
+
+        foreach ($data['entities'] ?? [] as $ent) {
             $entity = $ent['entity'];
-            EntityCharacteristic::updateOrCreate(
-                ['entity' => $entity, 'characteristic_key' => $characteristic_key],
-                [
-                    'name' => $data['name'],
-                    'short_name' => $data['short_name'] ?? null,
-                    'descriptions' => $data['description'] ?? null,
-                    'icon' => $data['icon'] ?? null,
-                    'color' => $data['color'] ?? null,
-                    'type' => $data['type'],
-                    'unit' => $data['unit'] ?? null,
-                    'sort_order' => (int) ($data['sort_order'] ?? 0),
-                    'applies_to' => $this->normalizeArrayInput($data['applies_to'] ?? null),
-                    'value_available' => $this->normalizeArrayInput($data['value_available'] ?? null),
-                    'min' => isset($ent['min']) ? (int) $ent['min'] : null,
-                    'max' => isset($ent['max']) ? (int) $ent['max'] : null,
-                    'formula' => $ent['formula'] ?? null,
-                    'formula_display' => $ent['formula_display'] ?? null,
-                    'default_value' => isset($ent['default_value']) ? (string) $ent['default_value'] : null,
-                    'required' => (bool) ($ent['required'] ?? false),
-                    'validation_message' => $ent['validation_message'] ?? null,
-                    'forgemagie_allowed' => (bool) ($ent['forgemagie_allowed'] ?? false),
-                    'forgemagie_max' => (int) ($ent['forgemagie_max'] ?? 0),
-                    'base_price_per_unit' => isset($ent['base_price_per_unit']) && $ent['base_price_per_unit'] !== '' ? (float) $ent['base_price_per_unit'] : null,
-                    'rune_price_per_unit' => isset($ent['rune_price_per_unit']) && $ent['rune_price_per_unit'] !== '' ? (float) $ent['rune_price_per_unit'] : null,
-                ]
-            );
+            $this->updateGroupRow($characteristic->id, $entity, $ent);
         }
 
-        $this->characteristicService->clearCache();
+        $this->getter->clearCache();
 
-        $conversionFormulas = $data['conversion_formulas'] ?? [];
-        foreach ($conversionFormulas as $cf) {
-            $entity = $cf['entity'];
-            $row = DofusdbConversionFormula::firstOrCreate(
-                ['characteristic_key' => $characteristic_key, 'entity' => $entity],
-                ['formula_type' => 'custom', 'parameters' => null]
-            );
-            $row->conversion_formula = isset($cf['conversion_formula']) && $cf['conversion_formula'] !== '' ? $cf['conversion_formula'] : null;
-            $row->formula_display = $cf['formula_display'] ?? null;
-            $row->handler_name = isset($cf['handler_name']) && $cf['handler_name'] !== '' ? $cf['handler_name'] : null;
-            $row->save();
-        }
-
-        return redirect()->route('admin.characteristics.show', ['characteristic_key' => $characteristic_key])
-            ->with('success', 'Caractéristique mise à jour.');
+        return redirect()->route('admin.characteristics.show', $characteristic_key)->with('success', 'Caractéristique mise à jour.');
     }
 
-    private function normalizeArrayInput(array|string|null $input): ?array
+    public function uploadIcon(Request $request): JsonResponse
     {
-        $items = match (true) {
-            $input === null || $input === '' => [],
-            is_array($input) => $input,
-            default => explode("\n", (string) $input),
-        };
-        $out = array_values(array_filter(array_map('trim', $items)));
-
-        return $out === [] ? null : $out;
+        return response()->json(['url' => null]);
     }
 
     /**
-     * @param \Illuminate\Database\Eloquent\Collection<int, EntityCharacteristic> $rows
-     * @return array<string, mixed>
+     * Liste des caractéristiques regroupées par groupe (creature, object, spell) pour le menu gauche.
+     *
+     * @return array<string, list<array{id: string, name: string, short_name: string|null, icon: string|null, color: string|null}>>
      */
-    private function buildSelectedFromRows($rows): array
+    private function buildCharacteristicsByGroup(): array
     {
-        $first = $rows->first();
-        $entities = [];
-        foreach ($rows as $e) {
-            $entities[] = [
-                'entity' => $e->entity,
-                'min' => $e->min,
-                'max' => $e->max,
-                'formula' => $e->formula,
-                'formula_display' => $e->formula_display,
-                'default_value' => $e->default_value,
-                'required' => $e->required,
-                'validation_message' => $e->validation_message,
-                'forgemagie_allowed' => $e->forgemagie_allowed ?? false,
-                'forgemagie_max' => $e->forgemagie_max ?? 0,
-                'base_price_per_unit' => $e->base_price_per_unit,
-                'rune_price_per_unit' => $e->rune_price_per_unit,
+        $byGroup = [
+            'creature' => [],
+            'object' => [],
+            'spell' => [],
+        ];
+        $characteristics = Characteristic::orderBy('sort_order')->orderBy('key')->get();
+        foreach ($characteristics as $c) {
+            $group = $this->inferPrimaryGroup($c);
+            $byGroup[$group][] = [
+                'id' => $c->key,
+                'name' => $c->name,
+                'short_name' => $c->short_name,
+                'icon' => $c->icon,
+                'color' => $c->color,
             ];
         }
+        return $byGroup;
+    }
 
-        return [
-            'db_column' => $first->db_column,
-            'name' => $first->name,
-            'short_name' => $first->short_name,
-            'description' => $first->descriptions,
-            'icon' => $first->icon,
-            'color' => $first->color,
-            'type' => $first->type,
-            'unit' => $first->unit,
-            'sort_order' => $first->sort_order,
-            'applies_to' => $first->applies_to ?? [],
-            'value_available' => $first->value_available ?? [],
-            'entities' => $entities,
+    /**
+     * Navigation par entité : pour chaque entité, liste des caractéristiques qui ont une ligne pour cette entité.
+     *
+     * @return array<string, list<array{id: string, name: string}>>
+     */
+    private function buildEntityNav(): array
+    {
+        $byEntity = [];
+        foreach (self::ENTITIES as $entity) {
+            $byEntity[$entity] = [];
+        }
+        $ids = [];
+        foreach (CharacteristicCreature::select('characteristic_id', 'entity')->distinct()->get() as $row) {
+            $ids[$row->entity][] = $row->characteristic_id;
+        }
+        foreach (CharacteristicObject::select('characteristic_id', 'entity')->distinct()->get() as $row) {
+            $ids[$row->entity][] = $row->characteristic_id;
+        }
+        foreach (CharacteristicSpell::select('characteristic_id', 'entity')->distinct()->get() as $row) {
+            $ids[$row->entity][] = $row->characteristic_id;
+        }
+        foreach ($ids as $entity => $characteristicIds) {
+            $characteristicIds = array_unique($characteristicIds);
+            $chars = Characteristic::whereIn('id', $characteristicIds)->orderBy('sort_order')->orderBy('key')->get();
+            $byEntity[$entity] = $chars->map(fn ($c) => ['id' => $c->key, 'name' => $c->name ?? $c->key])->all();
+        }
+        return $byEntity;
+    }
+
+    /**
+     * @param CharacteristicCreature|CharacteristicObject|CharacteristicSpell $row
+     * @return array<string, mixed>
+     */
+    private function groupRowToEntity(CharacteristicCreature|CharacteristicObject|CharacteristicSpell $row, Characteristic $characteristic): array
+    {
+        $out = [
+            'entity' => $row->entity,
+            'db_column' => $row->db_column,
+            'min' => $row->min,
+            'max' => $row->max,
+            'formula' => $row->formula,
+            'formula_display' => $row->formula_display,
+            'default_value' => $row->default_value,
+            'required' => $row->required,
+            'validation_message' => $row->validation_message,
+            'conversion_formula' => $row->conversion_formula,
+            'sort_order' => $row->sort_order,
+            'forgemagie_allowed' => false,
+            'forgemagie_max' => 0,
+            'base_price_per_unit' => null,
+            'rune_price_per_unit' => null,
         ];
+        if ($row instanceof CharacteristicObject) {
+            $out['forgemagie_allowed'] = $row->forgemagie_allowed;
+            $out['forgemagie_max'] = $row->forgemagie_max;
+            $out['base_price_per_unit'] = $row->base_price_per_unit;
+            $out['rune_price_per_unit'] = $row->rune_price_per_unit;
+        }
+        return $out;
+    }
+
+    /**
+     * Construit les variables par défaut pour la prévisualisation (autres que la variable d’axe).
+     *
+     * @param array{type: string, characteristic?: string, entries?: list<array{value?: string}>} $decoded
+     * @return array<string, int|float>
+     */
+    private function buildDefaultVariablesForPreview(string $formula, array $decoded, string $axisVar, string $entity): array
+    {
+        $defaults = [];
+        $collectVar = function (string $varId) use ($axisVar, $entity, &$defaults): void {
+            if ($varId === $axisVar || isset($defaults[$varId])) {
+                return;
+            }
+            $lim = $this->getter->getLimitsByField($varId, $entity);
+            $defaults[$varId] = $lim !== null ? (int) round(($lim['min'] + $lim['max']) / 2) : 10;
+        };
+
+        if ($decoded['type'] === 'table' && isset($decoded['entries'])) {
+            foreach ($decoded['entries'] as $entry) {
+                $v = $entry['value'] ?? null;
+                if (is_string($v) && $v !== '' && preg_match_all('/\[(\w+)\]/', $v, $m)) {
+                    foreach (array_unique($m[1]) as $varId) {
+                        $collectVar($varId);
+                    }
+                }
+            }
+        } else {
+            if (preg_match_all('/\[(\w+)\]/', $formula, $m)) {
+                foreach (array_unique($m[1]) as $varId) {
+                    $collectVar($varId);
+                }
+            }
+        }
+
+        return $defaults;
     }
 
     private function mergeDefaultEntityDefinitions(array $entities): array
@@ -355,9 +478,10 @@ class CharacteristicController extends Controller
             }
         }
         $out = [];
-        foreach (EntityCharacteristic::ENTITIES as $entity) {
+        foreach (self::ENTITIES as $entity) {
             $out[] = $byEntity[$entity] ?? [
                 'entity' => $entity,
+                'db_column' => null,
                 'min' => null,
                 'max' => null,
                 'formula' => null,
@@ -365,13 +489,54 @@ class CharacteristicController extends Controller
                 'default_value' => null,
                 'required' => false,
                 'validation_message' => null,
+                'conversion_formula' => null,
+                'sort_order' => 0,
                 'forgemagie_allowed' => false,
                 'forgemagie_max' => 0,
                 'base_price_per_unit' => null,
                 'rune_price_per_unit' => null,
             ];
         }
-
         return $out;
+    }
+
+    private function updateGroupRow(int $characteristicId, string $entity, array $data): void
+    {
+        $common = [
+            'db_column' => $data['db_column'] ?? null,
+            'min' => $data['min'] ?? null,
+            'max' => $data['max'] ?? null,
+            'formula' => $data['formula'] ?? null,
+            'formula_display' => $data['formula_display'] ?? null,
+            'default_value' => $data['default_value'] ?? null,
+            'required' => (bool) ($data['required'] ?? false),
+            'validation_message' => $data['validation_message'] ?? null,
+            'conversion_formula' => $data['conversion_formula'] ?? null,
+            'sort_order' => isset($data['sort_order']) ? (int) $data['sort_order'] : 0,
+        ];
+
+        if (in_array($entity, ['*', 'monster', 'class', 'npc'], true)) {
+            CharacteristicCreature::updateOrCreate(
+                ['characteristic_id' => $characteristicId, 'entity' => $entity],
+                $common
+            );
+        }
+        if (in_array($entity, ['*', 'item', 'consumable', 'resource', 'panoply'], true)) {
+            CharacteristicObject::updateOrCreate(
+                ['characteristic_id' => $characteristicId, 'entity' => $entity],
+                array_merge($common, [
+                    'forgemagie_allowed' => (bool) ($data['forgemagie_allowed'] ?? false),
+                    'forgemagie_max' => (int) ($data['forgemagie_max'] ?? 0),
+                    'base_price_per_unit' => isset($data['base_price_per_unit']) ? (float) $data['base_price_per_unit'] : null,
+                    'rune_price_per_unit' => isset($data['rune_price_per_unit']) ? (float) $data['rune_price_per_unit'] : null,
+                ])
+            );
+        }
+        if ($entity === 'spell' || $entity === '*') {
+            CharacteristicSpell::updateOrCreate(
+                ['characteristic_id' => $characteristicId, 'entity' => $entity],
+                $common
+            );
+        }
     }
 }

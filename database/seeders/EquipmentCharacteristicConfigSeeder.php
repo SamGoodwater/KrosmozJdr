@@ -11,7 +11,7 @@ use Illuminate\Database\Seeder;
 /**
  * Importe database/seeders/data/equipment_slots.php vers equipment_slots et equipment_slot_characteristics.
  *
- * Prérequis : EntityCharacteristicSeeder (entity=item + characteristic_key doivent exister pour les carac utilisées).
+ * Prérequis : CharacteristicSeeder + ObjectCharacteristicSeeder (entity=item + characteristic_key dans characteristic_object pour les carac utilisées).
  *
  * Pour régénérer le fichier depuis la BDD (après modification via l'interface) :
  * php artisan db:export-seeder-data --equipment

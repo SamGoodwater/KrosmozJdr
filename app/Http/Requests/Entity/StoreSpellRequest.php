@@ -2,15 +2,18 @@
 
 namespace App\Http\Requests\Entity;
 
+use App\Http\Requests\Concerns\HasCharacteristicValidation;
 use Illuminate\Foundation\Http\FormRequest;
 
 /**
  * FormRequest pour la création d'un Spell.
  *
  * Valide les champs principaux d'un sort.
+ * Les min/max des champs liés aux caractéristiques sont dérivés de CharacteristicGetterService.
  */
 class StoreSpellRequest extends FormRequest
 {
+    use HasCharacteristicValidation;
     /**
      * Determine if the user is authorized to make this request.
      */
@@ -30,7 +33,10 @@ class StoreSpellRequest extends FormRequest
             'name' => ['required', 'string', 'max:255'],
             'description' => ['required', 'string'],
             'effect' => ['nullable', 'string'],
-            'area' => ['nullable', 'integer', 'min:0'],
+            'area' => array_merge(
+                ['nullable', 'integer'],
+                $this->characteristicMinMaxRules('area', 'spell') ?: ['min:0']
+            ),
             'level' => ['nullable', 'string', 'max:255'],
             'po' => ['nullable', 'string', 'max:255'],
             'po_editable' => ['nullable', 'boolean'],
@@ -40,10 +46,19 @@ class StoreSpellRequest extends FormRequest
             'sight_line' => ['nullable', 'boolean'],
             'number_between_two_cast' => ['nullable', 'string', 'max:255'],
             'number_between_two_cast_editable' => ['nullable', 'boolean'],
-            'element' => ['nullable', 'integer', 'min:0', 'max:19'],
-            'category' => ['nullable', 'integer'],
+            'element' => array_merge(
+                ['nullable', 'integer'],
+                $this->characteristicMinMaxRules('element', 'spell') ?: ['min:0', 'max:19']
+            ),
+            'category' => array_merge(
+                ['nullable', 'integer'],
+                $this->characteristicMinMaxRules('category', 'spell')
+            ),
             'is_magic' => ['nullable', 'boolean'],
-            'powerful' => ['nullable', 'integer'],
+            'powerful' => array_merge(
+                ['nullable', 'integer'],
+                $this->characteristicMinMaxRules('powerful', 'spell')
+            ),
             'state' => ['nullable', 'string', 'in:raw,draft,playable,archived'],
             'read_level' => ['nullable', 'integer', 'min:0', 'max:5'],
             'write_level' => ['nullable', 'integer', 'min:0', 'max:5', 'gte:read_level'],

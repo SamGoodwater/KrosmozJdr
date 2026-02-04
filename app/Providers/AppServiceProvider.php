@@ -2,17 +2,14 @@
 
 namespace App\Providers;
 
-use App\Models\EntityCharacteristic;
-use App\Models\DofusdbConversionFormula;
 use App\Models\EquipmentSlot;
 use App\Models\EquipmentSlotCharacteristic;
-use App\Observers\CharacteristicConfigObserver;
-use App\Observers\DofusdbConversionFormulaObserver;
 use App\Observers\EquipmentCharacteristicConfigObserver;
-use App\Services\Characteristic\CharacteristicService;
-use App\Services\Characteristic\EquipmentCharacteristicService;
-use App\Services\Characteristic\DofusConversion\ConversionHandlerRegistry;
-use App\Services\Characteristic\DofusConversion\DofusDbConversionFormulaService;
+use App\Services\Characteristic\Conversion\DofusConversionService;
+use App\Services\Characteristic\Equipment\EquipmentCharacteristicService;
+use App\Services\Characteristic\Formula\CharacteristicFormulaService;
+use App\Services\Characteristic\Getter\CharacteristicGetterService;
+use App\Services\Characteristic\Limit\CharacteristicLimitService;
 use App\Services\Scrapping\Core\Collect\CollectService;
 use App\Services\Scrapping\Core\Config\ConfigLoader;
 use App\Services\Scrapping\Core\Orchestrator\Orchestrator;
@@ -23,15 +20,14 @@ use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
 {
-    /**
-     * Register any application services.
-     */
     public function register(): void
     {
-        $this->app->singleton(CharacteristicService::class);
+        $this->app->singleton(CharacteristicGetterService::class);
+        $this->app->singleton(CharacteristicLimitService::class);
+        $this->app->singleton(CharacteristicFormulaService::class);
+        $this->app->singleton(DofusConversionService::class);
         $this->app->singleton(EquipmentCharacteristicService::class);
-        $this->app->singleton(DofusDbConversionFormulaService::class);
-        $this->app->singleton(ConversionHandlerRegistry::class);
+
         $this->app->singleton(ConfigLoader::class, static fn () => ConfigLoader::default());
         $this->app->singleton(CollectService::class, static fn () => new CollectService(
             app(ConfigLoader::class),
@@ -40,17 +36,12 @@ class AppServiceProvider extends ServiceProvider
         $this->app->singleton(Orchestrator::class, static fn () => Orchestrator::default());
     }
 
-    /**
-     * Bootstrap any application services.
-     */
     public function boot(): void
     {
         Vite::prefetch(concurrency: 3);
         Model::unguard();
 
-        EntityCharacteristic::observe(CharacteristicConfigObserver::class);
         EquipmentSlot::observe(EquipmentCharacteristicConfigObserver::class);
         EquipmentSlotCharacteristic::observe(EquipmentCharacteristicConfigObserver::class);
-        DofusdbConversionFormula::observe(DofusdbConversionFormulaObserver::class);
     }
 }

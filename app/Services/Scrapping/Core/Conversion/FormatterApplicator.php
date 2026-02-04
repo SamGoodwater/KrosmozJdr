@@ -3,21 +3,21 @@
 namespace App\Services\Scrapping\Core\Conversion;
 
 use App\Models\Type\ResourceType;
-use App\Services\Characteristic\CharacteristicService;
-use App\Services\Characteristic\DofusConversion\DofusDbConversionFormulas;
+use App\Services\Characteristic\Conversion\DofusConversionService;
+use App\Services\Characteristic\Getter\CharacteristicGetterService;
 
 /**
  * Applique les formatters purs utilisés par la conversion.
  *
- * Formatters supportés : toString, pickLang, toInt, nullableInt, clampInt, mapSizeToKrosmoz,
+ * Formatters supportés : toString, pickLang, toInt, clampInt, mapSizeToKrosmoz,
  * storeScrappedImage, truncate, clampToCharacteristic (limites BDD par entité).
- * Si DofusDbConversionFormulas est injecté : dofusdb_level, dofusdb_life, dofusdb_attribute, dofusdb_ini.
+ * Si DofusConversionService est injecté : dofusdb_level, dofusdb_life, dofusdb_attribute, dofusdb_ini.
  */
 final class FormatterApplicator
 {
     public function __construct(
-        private readonly ?DofusDbConversionFormulas $conversionFormulas = null,
-        private readonly ?CharacteristicService $characteristicService = null
+        private readonly ?DofusConversionService $conversionService = null,
+        private readonly ?CharacteristicGetterService $getter = null
     ) {
     }
 
@@ -45,17 +45,17 @@ final class FormatterApplicator
             'mapSizeToKrosmoz' => $this->mapSize((string) $value, (string) ($args['default'] ?? 'medium')),
             'storeScrappedImage' => $value === null ? null : (string) $value,
             'truncate' => $this->truncate($value, (int) ($args['max'] ?? 255)),
-            'dofusdb_level' => $this->conversionFormulas !== null
-                ? $this->conversionFormulas->convertLevel($this->numericValue($value), $entityType)
+            'dofusdb_level' => $this->conversionService !== null
+                ? $this->conversionService->convertLevel($this->numericValue($value), $entityType)
                 : $value,
-            'dofusdb_life' => $this->conversionFormulas !== null
+            'dofusdb_life' => $this->conversionService !== null
                 ? $this->applyDofusdbLife($value, $raw, $args, $entityType)
                 : $value,
-            'dofusdb_attribute' => $this->conversionFormulas !== null && isset($args['characteristicId'])
-                ? $this->conversionFormulas->convertAttribute((string) $args['characteristicId'], $value, $entityType)
+            'dofusdb_attribute' => $this->conversionService !== null && isset($args['characteristicId'])
+                ? $this->conversionService->convertAttribute((string) $args['characteristicId'], $value, $entityType)
                 : $value,
-            'dofusdb_ini' => $this->conversionFormulas !== null
-                ? $this->conversionFormulas->convertInitiative($this->numericValue($value), $entityType)
+            'dofusdb_ini' => $this->conversionService !== null
+                ? $this->conversionService->convertInitiative($this->numericValue($value), $entityType)
                 : $value,
             'toJson' => $this->toJson($value),
             'extractItemIds' => $this->extractItemIds($value),
@@ -122,7 +122,7 @@ final class FormatterApplicator
             'recipeIdsToResourceRecipe',
             'recipeToResourceRecipe',
         ];
-        if ($this->conversionFormulas !== null) {
+        if ($this->conversionService !== null) {
             $base = array_merge($base, ['dofusdb_level', 'dofusdb_life', 'dofusdb_attribute', 'dofusdb_ini']);
         }
 
@@ -142,9 +142,9 @@ final class FormatterApplicator
     {
         $levelPath = (string) ($args['levelPath'] ?? 'grades.0.level');
         $levelRaw = $this->getByPath($raw, $levelPath);
-        $levelKrosmoz = $this->conversionFormulas->convertLevel($this->numericValue($levelRaw), $entityType);
+        $levelKrosmoz = $this->conversionService->convertLevel($this->numericValue($levelRaw), $entityType);
 
-        return $this->conversionFormulas->convertLife($this->numericValue($value), $levelKrosmoz, $entityType);
+        return $this->conversionService->convertLife($this->numericValue($value), $levelKrosmoz, $entityType);
     }
 
     /**
@@ -215,10 +215,10 @@ final class FormatterApplicator
     private function clampToCharacteristic(mixed $value, string $characteristicId, string $entityType): int
     {
         $v = is_numeric($value) ? (int) $value : 0;
-        if ($this->characteristicService === null || $characteristicId === '') {
+        if ($this->getter === null || $characteristicId === '') {
             return $v;
         }
-        $limits = $this->characteristicService->getLimits($characteristicId, $entityType);
+        $limits = $this->getter->getLimits($characteristicId, $entityType);
         if ($limits === null) {
             return $v;
         }
@@ -259,10 +259,8 @@ final class FormatterApplicator
     }
 
     /**
-     * Rareté par défaut selon le niveau (resource, consumable, item).
-     * Si value est déjà renseigné (non null), le conserve ; sinon utilise CharacteristicService
-     * (entity_characteristics.computation pour rarity) ou config characteristics_rarity.
-     * Niveau en entrée = niveau Krosmoz (après conversion level DofusDB).
+     * Rareté par défaut selon le niveau (resource, consumable, item, panoply).
+     * Niveau = niveau Krosmoz (après conversion level DofusDB). Si conversionService présent, utilise getRarityByLevel.
      */
     private function defaultRarityByLevel(mixed $value, array $raw, string $entityType): int
     {
@@ -270,12 +268,12 @@ final class FormatterApplicator
             return (int) $value;
         }
         $rawLevel = (int) ($this->getByPath($raw, 'level') ?? 0);
-        $level = $this->conversionFormulas !== null
-            ? $this->conversionFormulas->convertLevel($rawLevel, $entityType)
+        $level = $this->conversionService !== null
+            ? $this->conversionService->convertLevel($rawLevel, $entityType)
             : (int) round($rawLevel / 10);
 
-        if ($this->characteristicService !== null) {
-            return $this->characteristicService->getRarityByLevel($level, $entityType);
+        if ($this->conversionService !== null) {
+            return $this->conversionService->getRarityByLevel($level, $entityType);
         }
 
         $bands = config('characteristics_rarity.rarity_default_by_level', [
