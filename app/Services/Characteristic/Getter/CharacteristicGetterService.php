@@ -74,7 +74,25 @@ final class CharacteristicGetterService
     }
 
     /**
-     * Résout un nom de champ (ex. level, life) en clé de caractéristique (ex. level_object) pour une entité.
+     * Retourne le groupe (creature, object, spell) pour une entité.
+     */
+    public function getGroupForEntity(string $entity): string
+    {
+        if (in_array($entity, self::GROUP_CREATURE, true)) {
+            return 'creature';
+        }
+        if (in_array($entity, self::GROUP_OBJECT, true)) {
+            return 'object';
+        }
+        if (in_array($entity, self::GROUP_SPELL, true)) {
+            return 'spell';
+        }
+        return 'object';
+    }
+
+    /**
+     * Résout un nom de champ (ex. level, life) ou un nom court (ex. level → level_creature) en clé BDD pour une entité.
+     * Accepte la clé complète, le db_column, ou le nom court sans suffixe (_creature, _object, _spell).
      */
     private function resolveFieldToKey(string $field, string $entity): ?string
     {
@@ -85,6 +103,10 @@ final class CharacteristicGetterService
                     return $row->characteristic->key;
                 }
             }
+            $fullKey = $field . '_creature';
+            if ($this->getDefinition($fullKey, $entity) !== null) {
+                return $fullKey;
+            }
         }
         if (in_array($entity, self::GROUP_OBJECT, true)) {
             $rows = CharacteristicObject::whereIn('entity', [$entity, self::ENTITY_ALL])->with('characteristic')->get();
@@ -93,6 +115,10 @@ final class CharacteristicGetterService
                     return $row->characteristic->key;
                 }
             }
+            $fullKey = $field . '_object';
+            if ($this->getDefinition($fullKey, $entity) !== null) {
+                return $fullKey;
+            }
         }
         if (in_array($entity, self::GROUP_SPELL, true)) {
             $rows = CharacteristicSpell::whereIn('entity', [$entity, self::ENTITY_ALL])->with('characteristic')->get();
@@ -100,6 +126,10 @@ final class CharacteristicGetterService
                 if ($row->characteristic->key === $field || $row->db_column === $field) {
                     return $row->characteristic->key;
                 }
+            }
+            $fullKey = $field . '_spell';
+            if ($this->getDefinition($fullKey, $entity) !== null) {
+                return $fullKey;
             }
         }
         return null;

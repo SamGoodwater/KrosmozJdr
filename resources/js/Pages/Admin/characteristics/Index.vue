@@ -419,6 +419,15 @@ const characteristicsForFormulaOptions = computed(() => {
     return props.characteristicsByGroup[group] ?? [];
 });
 
+/** Clé finale en création : ajoute le suffixe du groupe si absent (ex. life_dice → life_dice_creature). */
+const normalizedCreateKey = computed(() => {
+    const key = (form.key ?? '').trim();
+    const group = form.group ?? 'creature';
+    if (!key) return '';
+    const suffix = `_${group}`;
+    if (key.length >= suffix.length && key.endsWith(suffix)) return key;
+    return key + suffix;
+});
 
 function getDecodedFormula(ent) {
     return decodeFormulaConfig(ent?.formula ?? '');
@@ -660,7 +669,14 @@ function submit() {
                                     <span v-else class="text-xs">{{ c.icon }}</span>
                                 </span>
                                 <span v-if="!c.icon && c.color" class="h-2.5 w-2.5 shrink-0 rounded-full" :style="{ backgroundColor: `var(--color-${c.color})` }" />
-                                <span class="truncate">{{ c.name || c.id }}</span>
+                                <span class="min-w-0 flex flex-col">
+                                    <span class="truncate">{{ c.name || c.id }}</span>
+                                    <span
+                                        class="truncate text-xs italic opacity-70"
+                                        :class="selected?.id === c.id ? 'text-primary-content/80' : 'text-base-content/60'"
+                                        :title="`Dans les formules : [${c.id}]`"
+                                    >[{{ c.id }}]</span>
+                                </span>
                             </Link>
                             <Link
                                 :href="route('admin.characteristics.create') + '?group=' + group"
@@ -709,9 +725,12 @@ function submit() {
                                     v-model="form.key"
                                     label="Clé (identifiant technique)"
                                     name="key"
-                                    helper="Lettres minuscules, chiffres et underscores uniquement (ex. life_creature, level_object)."
+                                    helper="Lettres minuscules, chiffres et underscores. Si vous omettez le suffixe (_creature, _object, _spell), il sera ajouté automatiquement selon le groupe choisi (ex. life_dice → life_dice_creature)."
                                     required
                                 />
+                                <p v-if="createMode && form.key && form.group" class="text-xs text-base-content/60 mt-1">
+                                    Clé enregistrée : <span class="font-mono">{{ normalizedCreateKey }}</span>
+                                </p>
                             </div>
                         </div>
                     </div>
@@ -785,10 +804,13 @@ function submit() {
 
             <!-- Mode édition : caractéristique existante -->
             <template v-else-if="selected">
-                <h1 class="mb-2 text-2xl font-bold flex items-center gap-2" :style="form.color ? { borderLeftColor: `var(--color-${form.color})` } : {}" :class="form.color ? 'pl-3 border-l-4' : ''">
+                <h1 class="mb-1 text-2xl font-bold flex items-center gap-2" :style="form.color ? { borderLeftColor: `var(--color-${form.color})` } : {}" :class="form.color ? 'pl-3 border-l-4' : ''">
                     {{ selected.name || selected.id }}
                     <span v-if="selected.group" class="badge badge-sm badge-ghost">{{ groupLabels[selected.group] || selected.group }}</span>
                 </h1>
+                <p class="mb-1 text-sm italic text-base-content/60" :title="`Clé utilisée dans les formules (non modifiable)`">
+                    Clé formule : <code class="rounded bg-base-200 px-1 font-mono">[{{ selected.id }}]</code>
+                </p>
                 <p class="mb-6 text-sm text-base-content/70">
                     Modifiez les champs puis cliquez sur « Enregistrer ». Les paramètres sont organisés par groupe d'entités ; un graphique apparaît pour chaque formule.
                 </p>

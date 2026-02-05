@@ -93,4 +93,65 @@ class FormulaResolutionServiceTest extends TestCase
         $json = '{"characteristic":"level","1":0,"7":2,"14":4}';
         $this->assertSame([], $this->service->validateFormula($json));
     }
+
+    public function test_evaluate_dice_notation_literal_1d8(): void
+    {
+        $result = $this->service->evaluate('1d8', []);
+        $this->assertNotNull($result);
+        $this->assertGreaterThanOrEqual(1.0, $result);
+        $this->assertLessThanOrEqual(8.0, $result);
+        $this->assertSame((float) (int) $result, $result);
+    }
+
+    public function test_evaluate_dice_notation_literal_2d6(): void
+    {
+        $result = $this->service->evaluate('2d6', []);
+        $this->assertNotNull($result);
+        $this->assertGreaterThanOrEqual(2.0, $result);
+        $this->assertLessThanOrEqual(12.0, $result);
+        $this->assertSame((float) (int) $result, $result);
+    }
+
+    public function test_evaluate_dice_notation_with_variables(): void
+    {
+        $result = $this->service->evaluate('[level]d[life_dice]', ['level' => 3, 'life_dice' => 6]);
+        $this->assertNotNull($result);
+        $this->assertGreaterThanOrEqual(3.0, $result);
+        $this->assertLessThanOrEqual(18.0, $result);
+    }
+
+    public function test_evaluate_formula_with_dice_and_arithmetic(): void
+    {
+        $formula = '[vitality]*([level]-1) + [life_dice] + [level]d[life_dice]';
+        $result = $this->service->evaluate($formula, [
+            'vitality' => 5,
+            'level' => 3,
+            'life_dice' => 8,
+        ]);
+        $this->assertNotNull($result);
+        $expectedFixed = 5 * (3 - 1) + 8; // 10 + 8 = 18
+        $diceMin = 3;
+        $diceMax = 3 * 8;
+        $this->assertGreaterThanOrEqual($expectedFixed + $diceMin, $result);
+        $this->assertLessThanOrEqual($expectedFixed + $diceMax, $result);
+    }
+
+    public function test_validate_formula_accepts_dice_notation(): void
+    {
+        $this->assertSame([], $this->service->validateFormula('[level]d[life_dice]'));
+        $this->assertSame([], $this->service->validateFormula('2d6 + [vitality]'));
+    }
+
+    public function test_evaluate_power_operator(): void
+    {
+        $this->assertSame(8.0, $this->service->evaluate('2**3', []));
+        $this->assertSame(9.0, $this->service->evaluate('[level]**2', ['level' => 3]));
+        $this->assertSame(512.0, $this->service->evaluate('2**3**2', []));
+    }
+
+    public function test_validate_formula_accepts_power_operator(): void
+    {
+        $this->assertSame([], $this->service->validateFormula('[level]**2'));
+        $this->assertSame([], $this->service->validateFormula('2**([level]-1)'));
+    }
 }

@@ -14,6 +14,7 @@ use App\Services\Characteristic\Formula\FormulaConfigDecoder;
 use App\Services\Characteristic\Getter\CharacteristicGetterService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 use Inertia\Inertia;
 use Inertia\Response as InertiaResponse;
 
@@ -90,11 +91,13 @@ class CharacteristicController extends Controller
 
     /**
      * Enregistre une nouvelle caractéristique (table générale + lignes du groupe choisi).
+     * La clé est normalisée : si elle ne se termine pas par _creature, _object ou _spell,
+     * le suffixe correspondant au groupe choisi est ajouté automatiquement (ex. life_dice → life_dice_creature).
      */
     public function store(Request $request): \Illuminate\Http\RedirectResponse
     {
         $data = $request->validate([
-            'key' => ['required', 'string', 'max:64', 'regex:/^[a-z0-9_]+$/', 'unique:characteristics,key'],
+            'key' => ['required', 'string', 'max:64', 'regex:/^[a-z0-9_]+$/'],
             'name' => 'required|string|max:255',
             'short_name' => 'nullable|string|max:255',
             'description' => 'nullable|string',
@@ -123,13 +126,19 @@ class CharacteristicController extends Controller
             'entities.*.rune_price_per_unit' => 'nullable|numeric',
         ]);
 
+        $key = $this->normalizeCharacteristicKey(trim($data['key']), $data['group']);
+        Validator::make(
+            ['key' => $key],
+            ['key' => ['required', 'string', 'max:64', 'regex:/^[a-z0-9_]+$/', 'unique:characteristics,key']]
+        )->validate();
+
         $allowedEntities = self::ENTITIES_BY_GROUP[$data['group']];
         $entities = array_filter($data['entities'] ?? [], function ($ent) use ($allowedEntities) {
             return in_array($ent['entity'] ?? '', $allowedEntities, true);
         });
 
         $characteristic = Characteristic::create([
-            'key' => $data['key'],
+            'key' => $key,
             'name' => $data['name'],
             'short_name' => $data['short_name'] ?? null,
             'helper' => $data['helper'] ?? null,
@@ -528,6 +537,19 @@ class CharacteristicController extends Controller
             ];
         }
         return $out;
+    }
+
+    /**
+     * Normalise la clé d'une caractéristique : ajoute le suffixe du groupe si absent.
+     * Ex. life_dice + groupe creature → life_dice_creature ; life_creature → inchangé.
+     */
+    private function normalizeCharacteristicKey(string $key, string $group): string
+    {
+        $suffix = '_' . $group;
+        if (strlen($key) >= strlen($suffix) && str_ends_with($key, $suffix)) {
+            return $key;
+        }
+        return $key . $suffix;
     }
 
     private function updateGroupRow(int $characteristicId, string $entity, array $data): void

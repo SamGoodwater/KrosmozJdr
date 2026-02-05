@@ -48,6 +48,7 @@
 - **Assertions** : Vérifier à la fois le code HTTP et les données retournées
 - **Fixtures** : Utiliser les factories Laravel pour créer les données de test
 - **Transactions** : Utiliser `RefreshDatabase` pour isoler les tests
+- **Base de données** : En PHPUnit, une base dédiée aux tests est **obligatoire**. Dans `phpunit.xml`, les variables `DB_CONNECTION=sqlite` et `DB_DATABASE=:memory:` doivent être définies. Sinon, les tests utilisent la base du `.env` (MySQL) et `RefreshDatabase` vide la base de développement à chaque exécution de `php artisan test`.
 
 ### Tests Frontend
 

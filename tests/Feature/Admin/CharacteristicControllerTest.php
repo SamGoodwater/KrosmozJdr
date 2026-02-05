@@ -134,6 +134,28 @@ class CharacteristicControllerTest extends TestCase
         $this->assertDatabaseHas('characteristic_creature', ['entity' => '*']);
     }
 
+    public function test_store_automatically_adds_group_suffix_to_key(): void
+    {
+        $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
+        $keyWithoutSuffix = 'test_life_dice';
+
+        $response = $this->actingAs($admin)
+            ->post(route('admin.characteristics.store'), [
+                'key' => $keyWithoutSuffix,
+                'name' => 'Dé de vie (test)',
+                'type' => 'int',
+                'group' => 'creature',
+                'entities' => [
+                    ['entity' => '*', 'min' => 4, 'max' => 20, 'db_column' => 'life_dice', 'conversion_formula' => null, 'sort_order' => 0],
+                ],
+            ]);
+
+        $expectedKey = 'test_life_dice_creature';
+        $response->assertRedirect(route('admin.characteristics.show', $expectedKey));
+        $this->assertDatabaseHas('characteristics', ['key' => $expectedKey, 'name' => 'Dé de vie (test)']);
+        $this->assertDatabaseMissing('characteristics', ['key' => $keyWithoutSuffix]);
+    }
+
     public function test_store_validation_fails_duplicate_key(): void
     {
         $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);

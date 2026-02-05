@@ -7,10 +7,14 @@ namespace App\Services\Characteristic\Formula;
 /**
  * Évalue une expression mathématique sans eval().
  *
- * Caractères autorisés : chiffres, + - * / ( ) , et noms de fonctions listées ci-dessous.
+ * Caractères autorisés : chiffres, + - * / ( ) , d (notation dés) et noms de fonctions listées ci-dessous.
  * Utilisé après remplacement des variables [id] par des valeurs numériques.
  * Sécurisé contre l'injection de code.
  *
+ * Notation dés (JDR) : NdX = somme de N dés à X faces (ex. 2d6 = entre 2 et 12, 1d8 = entre 1 et 8).
+ * N et X peuvent être des expressions numériques (souvent des variables substituées : [level]d[life_dice]).
+ *
+ * Opérateur puissance : ** (ex. 2**3 = 8, [level]**2). Associatif à droite (2**3**2 = 2**(3**2)).
  * Fonctions autorisées (1 argument) : floor, ceil, round, sqrt, abs, cos, sin, tan, asin, acos, atan.
  * Fonctions autorisées (2 arguments) : pow, min, max.
  *
@@ -156,11 +160,20 @@ final class SafeExpressionEvaluator
             $op = $expr[$pos];
             if ($op === '*') {
                 $pos++;
-                $right = $this->parseFactor($expr, $pos);
-                if ($right === null) {
-                    return null;
+                if ($pos < $len && $expr[$pos] === '*') {
+                    $pos++;
+                    $right = $this->parseTerm($expr, $pos);
+                    if ($right === null) {
+                        return null;
+                    }
+                    $left = (float) pow($left, $right);
+                } else {
+                    $right = $this->parseFactor($expr, $pos);
+                    if ($right === null) {
+                        return null;
+                    }
+                    $left *= $right;
                 }
-                $left *= $right;
             } elseif ($op === '/') {
                 $pos++;
                 $right = $this->parseFactor($expr, $pos);
@@ -276,7 +289,36 @@ final class SafeExpressionEvaluator
             }
         }
 
-        return $this->parseNumber($expr, $pos);
+        // Notation dés JDR : NdX = somme de N dés à X faces (N et X numériques après substitution)
+        $n = $this->parseNumber($expr, $pos);
+        if ($n !== null) {
+            $this->skipSpaces($expr, $pos);
+            if ($pos < $len && $expr[$pos] === 'd') {
+                $pos++;
+                $this->skipSpaces($expr, $pos);
+                $x = $this->parseNumber($expr, $pos);
+                if ($x === null) {
+                    return null; // "Nd" sans nombre après d = invalide
+                }
+                return (float) $this->rollDice((int) max(1, $n), (int) max(1, $x));
+            }
+            return $n;
+        }
+
+        return null;
+    }
+
+    /**
+     * Lance N dés à X faces et retourne la somme (chaque dé : entier entre 1 et X inclus).
+     */
+    private function rollDice(int $n, int $x): int
+    {
+        $sum = 0;
+        for ($i = 0; $i < $n; $i++) {
+            $sum += mt_rand(1, max(1, $x));
+        }
+
+        return $sum;
     }
 
     private function parseNumber(string $expr, int &$pos): ?float

@@ -8,14 +8,14 @@ Une formule exploitable est une chaîne que l’on peut parser et évaluer pour 
 
 | Syntaxe | Signification | Exemple |
 |--------|----------------|--------|
-| `[id]` | Référence à une autre caractéristique (id = clé dans `characteristics`) | `[vitality]`, `[level]`, `[strength]` |
+| `[id]` | Référence à une autre caractéristique. En contexte entité, on peut utiliser le **nom court** (`[level]`, `[life]`) : le moteur résout vers la clé BDD du groupe (ex. `level_creature`). La clé complète (`[level_creature]`) reste valide. | `[vitality]`, `[level]`, `[level_creature]` |
 | `[mod_<carac>]` | Modificateur d’une caractéristique primaire (carac = strength, intelligence, agility, chance, wisdom, vitality). Défini comme caractéristique dérivée dans la config ; permet de ne pas recalculer le mod et de vérifier les limites. | `[mod_strength]`, `[mod_vitality]` |
 | `[competence_mastery]` | **Variable contextuelle** (compétences uniquement). Lors de l’évaluation d’un jet de compétence, l’évaluateur injecte la valeur de maîtrise de l’entité pour cette compétence : **0** = aucune, **1** = maîtrisé (+1×master_bonus), **2** = expertise (+2×master_bonus). Source : `competences_mastery.<id_compétence>` ou équivalent. | Utilisé dans la formule des compétences |
 | `ndX` | Dés : n dés à X faces | `1d6`, `2d10`, `1d20` |
 | Opérateurs | `+`, `-`, `*`, `/`, `(`, `)` | `[vitality] * 10 + [level] * 2` |
 | Arrondis | `floor(...)`, `ceil(...)` | `floor(([strength]-10)/2)` (ou utiliser `[mod_strength]`) |
 
-- **Référence caractéristique** : entre crochets, l’`id` est la clé de la caractéristique. Lors de l’évaluation, remplacer chaque `[id]` par la valeur courante pour l’entité.
+- **Référence caractéristique** : entre crochets, l’`id` est la clé de la caractéristique ou son **nom court** (sans suffixe `_creature`, `_object`, `_spell`). En contexte entité (ex. formule d’un monstre), `[level]` est résolu en `level_creature` ; la clé BDD reste unique par groupe. Lors de l’évaluation, chaque `[id]` est remplacé par la valeur courante pour l’entité.
 - **Modificateurs** : `mod_strength`, `mod_intelligence`, `mod_agility`, `mod_chance`, `mod_wisdom`, `mod_vitality` sont des caractéristiques à part entière (formula = `floor(([<carac>]-10)/2)`), avec min/max pour la validation.
 - **Dés** : à l’évaluation, `ndX` donne une valeur entière (somme de n jets de dé à X faces).
 - **Reste** : nombres et opérateurs mathématiques de base ; `floor` et `ceil` si besoin.

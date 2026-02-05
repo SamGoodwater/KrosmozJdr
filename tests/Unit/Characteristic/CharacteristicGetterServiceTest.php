@@ -81,6 +81,25 @@ class CharacteristicGetterServiceTest extends TestCase
         $this->assertArrayHasKey('max', $limits);
     }
 
+    public function test_get_limits_by_field_resolves_short_name_to_full_key(): void
+    {
+        $limitsByShort = $this->getter->getLimitsByField('level', 'monster');
+        $limitsByFull = $this->getter->getLimits('level_creature', 'monster');
+        $this->assertNotNull($limitsByShort);
+        $this->assertNotNull($limitsByFull);
+        $this->assertSame($limitsByFull['min'], $limitsByShort['min']);
+        $this->assertSame($limitsByFull['max'], $limitsByShort['max']);
+    }
+
+    public function test_get_group_for_entity(): void
+    {
+        $this->assertSame('creature', $this->getter->getGroupForEntity('monster'));
+        $this->assertSame('creature', $this->getter->getGroupForEntity('class'));
+        $this->assertSame('object', $this->getter->getGroupForEntity('item'));
+        $this->assertSame('object', $this->getter->getGroupForEntity('resource'));
+        $this->assertSame('spell', $this->getter->getGroupForEntity('spell'));
+    }
+
     public function test_clear_cache_does_not_throw(): void
     {
         $this->getter->clearCache();
