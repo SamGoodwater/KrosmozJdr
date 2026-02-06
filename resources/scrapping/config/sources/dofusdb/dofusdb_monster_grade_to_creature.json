@@ -1,0 +1,31 @@
+{
+  "version": 1,
+  "source": "https://api.dofusdb.fr/monsters",
+  "description": "Mapping champ grade monstre DofusDB (grades[].field ou grades[].bonusCharacteristics.field) vers characteristic_key Krosmoz. Clés avec point = sous-objet (ex. bonusCharacteristics.tackleBlock).",
+  "mapping": {
+    "level": "level_creature",
+    "lifePoints": "life_creature",
+    "actionPoints": "pa_creature",
+    "movementPoints": "pm_creature",
+    "bonusRange": "po_creature",
+    "strength": "strong_creature",
+    "intelligence": "intel_creature",
+    "agility": "agi_creature",
+    "wisdom": "sagesse_creature",
+    "chance": "chance_creature",
+    "vitality": "vitality_creature",
+    "paDodge": "dodge_pa_creature",
+    "pmDodge": "dodge_pm_creature",
+    "earthResistance": "res_fixe_terre_creature",
+    "fireResistance": "res_fixe_feu_creature",
+    "waterResistance": "res_fixe_eau_creature",
+    "airResistance": "res_fixe_air_creature",
+    "neutralResistance": "res_fixe_neutre_creature",
+    "bonusCharacteristics.tackleBlock": "tacle_creature",
+    "bonusCharacteristics.tackleEvade": "fuite_creature",
+    "bonusCharacteristics.bonusEarthDamage": "do_fixe_terre_creature",
+    "bonusCharacteristics.bonusFireDamage": "do_fixe_feu_creature",
+    "bonusCharacteristics.bonusWaterDamage": "do_fixe_eau_creature",
+    "bonusCharacteristics.bonusAirDamage": "do_fixe_air_creature"
+  }
+}

@@ -2105,6 +2105,13 @@
     "file": "data-input/InputField.vue"
   },
   {
+    "name": "FormulaOrTableField",
+    "description": "Champ formule ou table par caractéristique. - Un champ simple (formule ou valeur fixe) avec un bouton [+] à droite. - Clic sur [+] : affiche la table (caractéristique de référence + lignes \"à partir de\" / \"valeur\"). - Chaque ligne a un bouton [-] ; minimum 1 ligne. Si une seule ligne reste, on repasse en vue simple (champ unique + [+]), sans afficher la référence ni la colonne \"à partir de\".",
+    "props": [],
+    "slots": [],
+    "file": "data-input/FormulaOrTableField.vue"
+  },
+  {
     "name": "FilterField",
     "description": "FilterField Molecule (DaisyUI, Atomic Design)",
     "props": [],

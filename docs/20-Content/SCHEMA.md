@@ -134,25 +134,17 @@ erDiagram
     characteristic_id : bigint(20) unsigned
     entity : varchar(32)
     db_column : varchar(64)
-    min : int(11)
-    max : int(11)
+    min : varchar(512)
+    max : varchar(512)
     formula : text
     formula_display : text
     default_value : varchar(512)
-    required : tinyint(1)
-    validation_message : text
     conversion_formula : text
-    sort_order : smallint(5) unsigned
-    applies_to : longtext
-    is_competence : tinyint(1)
-    skill_characteristic_key : varchar(64)
-    alternative_characteristic_key : varchar(64)
-    skill_type : varchar(32)
-    value_available : longtext
+    conversion_dofus_sample : longtext
+    conversion_krosmoz_sample : longtext
+    conversion_sample_rows : longtext
     labels : longtext
     validation : longtext
-    mastery_value_available : longtext
-    mastery_labels : longtext
     created_at : timestamp
     updated_at : timestamp
   }
@@ -161,15 +153,15 @@ erDiagram
     characteristic_id : bigint(20) unsigned
     entity : varchar(32)
     db_column : varchar(64)
-    min : int(11)
-    max : int(11)
+    min : varchar(512)
+    max : varchar(512)
     formula : text
     formula_display : text
     default_value : varchar(512)
-    required : tinyint(1)
-    validation_message : text
     conversion_formula : text
-    sort_order : smallint(5) unsigned
+    conversion_dofus_sample : longtext
+    conversion_krosmoz_sample : longtext
+    conversion_sample_rows : longtext
     forgemagie_allowed : tinyint(1)
     forgemagie_max : tinyint(3) unsigned
     base_price_per_unit : decimal(12,2)
@@ -178,20 +170,27 @@ erDiagram
     created_at : timestamp
     updated_at : timestamp
   }
+  CHARACTERISTIC_OBJECT_ITEM_TYPE {
+    id : bigint(20) unsigned
+    characteristic_object_id : bigint(20) unsigned
+    item_type_id : bigint(20) unsigned
+    created_at : timestamp
+    updated_at : timestamp
+  }
   CHARACTERISTIC_SPELL {
     id : bigint(20) unsigned
     characteristic_id : bigint(20) unsigned
     entity : varchar(32)
     db_column : varchar(64)
-    min : int(11)
-    max : int(11)
+    min : varchar(512)
+    max : varchar(512)
     formula : text
     formula_display : text
     default_value : varchar(512)
-    required : tinyint(1)
-    validation_message : text
     conversion_formula : text
-    sort_order : smallint(5) unsigned
+    conversion_dofus_sample : longtext
+    conversion_krosmoz_sample : longtext
+    conversion_sample_rows : longtext
     value_available : longtext
     created_at : timestamp
     updated_at : timestamp
@@ -911,6 +910,8 @@ erDiagram
   CAPABILITY_SPECIALIZATION }o--|| SPECIALIZATIONS : "FK specialization_id"
   CHARACTERISTIC_CREATURE }o--|| CHARACTERISTICS : "FK characteristic_id"
   CHARACTERISTIC_OBJECT }o--|| CHARACTERISTICS : "FK characteristic_id"
+  CHARACTERISTIC_OBJECT_ITEM_TYPE }o--|| CHARACTERISTIC_OBJECT : "FK characteristic_object_id"
+  CHARACTERISTIC_OBJECT_ITEM_TYPE }o--|| ITEM_TYPES : "FK item_type_id"
   CHARACTERISTIC_SPELL }o--|| CHARACTERISTICS : "FK characteristic_id"
   CONSUMABLE_CAMPAIGN }o--|| CAMPAIGNS : "FK campaign_id"
   CONSUMABLE_CAMPAIGN }o--|| CONSUMABLES : "FK consumable_id"

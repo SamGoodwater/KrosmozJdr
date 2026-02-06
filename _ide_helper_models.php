@@ -64,35 +64,28 @@ namespace App\Models{
  * @property int $characteristic_id
  * @property string $entity
  * @property string|null $db_column
- * @property int|null $min
- * @property int|null $max
+ * @property string|null $min Valeur fixe, formule ou table JSON
+ * @property string|null $max Valeur fixe, formule ou table JSON
  * @property string|null $formula
  * @property string|null $formula_display
  * @property string|null $default_value
- * @property bool $required
- * @property string|null $validation_message
  * @property string|null $conversion_formula
- * @property int $sort_order
- * @property array|null $applies_to
- * @property bool $is_competence
- * @property string|null $skill_characteristic_key
- * @property string|null $alternative_characteristic_key
- * @property string|null $skill_type
- * @property array|null $value_available
+ * @property array|null $conversion_dofus_sample Niveau → valeur Dofus (ex. {"1":1,"200":200})
+ * @property array|null $conversion_krosmoz_sample Niveau → valeur Krosmoz (ex. {"1":1,"20":20})
  * @property array|null $labels
  * @property array|null $validation
- * @property array|null $mastery_value_available
- * @property array|null $mastery_labels
+ * @property array<array-key, mixed>|null $conversion_sample_rows Lignes [{dofus_level, dofus_value, krosmoz_level, krosmoz_value}, ...]
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property-read \App\Models\Characteristic $characteristic
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicCreature newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicCreature newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicCreature query()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicCreature whereAlternativeCharacteristicKey($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicCreature whereAppliesTo($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicCreature whereCharacteristicId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicCreature whereConversionDofusSample($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicCreature whereConversionFormula($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicCreature whereConversionKrosmozSample($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicCreature whereConversionSampleRows($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicCreature whereCreatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicCreature whereDbColumn($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicCreature whereDefaultValue($value)
@@ -100,20 +93,11 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicCreature whereFormula($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicCreature whereFormulaDisplay($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicCreature whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicCreature whereIsCompetence($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicCreature whereLabels($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicCreature whereMasteryLabels($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicCreature whereMasteryValueAvailable($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicCreature whereMax($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicCreature whereMin($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicCreature whereRequired($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicCreature whereSkillCharacteristicKey($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicCreature whereSkillType($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicCreature whereSortOrder($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicCreature whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicCreature whereValidation($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicCreature whereValidationMessage($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicCreature whereValueAvailable($value)
  */
 	class CharacteristicCreature extends \Eloquent {}
 }
@@ -126,29 +110,34 @@ namespace App\Models{
  * @property int $characteristic_id
  * @property string $entity
  * @property string|null $db_column
- * @property int|null $min
- * @property int|null $max
+ * @property string|null $min Valeur fixe, formule ou table JSON
+ * @property string|null $max Valeur fixe, formule ou table JSON
  * @property string|null $formula
  * @property string|null $formula_display
  * @property string|null $default_value
- * @property bool $required
- * @property string|null $validation_message
  * @property string|null $conversion_formula
- * @property int $sort_order
+ * @property array|null $conversion_dofus_sample Niveau → valeur Dofus (ex. {"1":1,"200":200})
+ * @property array|null $conversion_krosmoz_sample Niveau → valeur Krosmoz (ex. {"1":1,"20":20})
  * @property bool $forgemagie_allowed
  * @property int $forgemagie_max
  * @property float|null $base_price_per_unit
  * @property float|null $rune_price_per_unit
  * @property array|null $value_available
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, ItemType> $allowedItemTypes
+ * @property array<array-key, mixed>|null $conversion_sample_rows Lignes [{dofus_level, dofus_value, krosmoz_level, krosmoz_value}, ...]
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read int|null $allowed_item_types_count
  * @property-read \App\Models\Characteristic $characteristic
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicObject newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicObject newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicObject query()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicObject whereBasePricePerUnit($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicObject whereCharacteristicId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicObject whereConversionDofusSample($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicObject whereConversionFormula($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicObject whereConversionKrosmozSample($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicObject whereConversionSampleRows($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicObject whereCreatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicObject whereDbColumn($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicObject whereDefaultValue($value)
@@ -160,11 +149,8 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicObject whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicObject whereMax($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicObject whereMin($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicObject whereRequired($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicObject whereRunePricePerUnit($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicObject whereSortOrder($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicObject whereUpdatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicObject whereValidationMessage($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicObject whereValueAvailable($value)
  */
 	class CharacteristicObject extends \Eloquent {}
@@ -178,16 +164,16 @@ namespace App\Models{
  * @property int $characteristic_id
  * @property string $entity
  * @property string|null $db_column
- * @property int|null $min
- * @property int|null $max
+ * @property string|null $min Valeur fixe, formule ou table JSON
+ * @property string|null $max Valeur fixe, formule ou table JSON
  * @property string|null $formula
  * @property string|null $formula_display
  * @property string|null $default_value
- * @property bool $required
- * @property string|null $validation_message
  * @property string|null $conversion_formula
- * @property int $sort_order
+ * @property array|null $conversion_dofus_sample Niveau → valeur Dofus (ex. {"1":1,"200":200})
+ * @property array|null $conversion_krosmoz_sample Niveau → valeur Krosmoz (ex. {"1":1,"20":20})
  * @property array|null $value_available
+ * @property array<array-key, mixed>|null $conversion_sample_rows Lignes [{dofus_level, dofus_value, krosmoz_level, krosmoz_value}, ...]
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property-read \App\Models\Characteristic $characteristic
@@ -195,7 +181,10 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicSpell newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicSpell query()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicSpell whereCharacteristicId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicSpell whereConversionDofusSample($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicSpell whereConversionFormula($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicSpell whereConversionKrosmozSample($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicSpell whereConversionSampleRows($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicSpell whereCreatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicSpell whereDbColumn($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicSpell whereDefaultValue($value)
@@ -205,10 +194,7 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicSpell whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicSpell whereMax($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicSpell whereMin($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicSpell whereRequired($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicSpell whereSortOrder($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicSpell whereUpdatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicSpell whereValidationMessage($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicSpell whereValueAvailable($value)
  */
 	class CharacteristicSpell extends \Eloquent {}
@@ -1617,6 +1603,8 @@ namespace App\Models\Type{
  * @property string $decision
  * @property int $seen_count
  * @property \Illuminate\Support\Carbon|null $last_seen_at
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\CharacteristicObject> $allowedCharacteristicObjects
+ * @property-read int|null $allowed_characteristic_objects_count
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ItemType allowed()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ItemType blocked()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ItemType pending()

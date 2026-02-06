@@ -705,6 +705,13 @@
     "file": "data-input/SearchInput.vue"
   },
   {
+    "name": "FormulaOrTableFieldWithChart",
+    "description": "Organisme : FormulaOrTableField + aperçu graphique (FormulaChart). - Desktop (lg) : champ à gauche, graph à droite. - Tablette / mobile : champ au-dessus, graph en dessous. Le graph est chargé via l’API de prévisualisation (formule ou conversion Dofus).",
+    "props": [],
+    "slots": [],
+    "file": "data-input/FormulaOrTableFieldWithChart.vue"
+  },
+  {
     "name": "Fieldset",
     "description": "Fieldset Molecule (DaisyUI + Custom Utility)",
     "props": [

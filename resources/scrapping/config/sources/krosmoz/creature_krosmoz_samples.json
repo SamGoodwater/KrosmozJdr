@@ -1,0 +1,213 @@
+{
+  "version": 1,
+  "source": "rules",
+  "description": "Samples Krosmoz JDR (niveau 1–20 → valeur cible) pour les caractéristiques creature (monster, npc), issus des règles 2.2.1 / 2.2.2. Données fiables : objectif à atteindre pour la conversion Dofus → Krosmoz.",
+  "reference_levels_krosmoz": [1, 4, 8, 12, 16, 20],
+  "sources_rule": [
+    "docs/400- Jeu/420- Règles/2-Creer-un-personnage/2.2-les-caracteristiques/2.2.1-caracteristiques-principales.md",
+    "docs/400- Jeu/420- Règles/2-Creer-un-personnage/2.2-les-caracteristiques/2.2.2-caracteristiques-secondaires.md",
+    "docs/400- Jeu/420- Règles/3-Jouer/3.3-sorts/3.3.4-reserve-de-wakfu.md"
+  ],
+  "by_characteristic_key": {
+    "level_creature": {
+      "conversion_krosmoz_sample": { "1": 1, "4": 4, "8": 8, "12": 12, "16": 16, "20": 20 },
+      "source_rule": "Niveau JDR = identité (échelle 1–20)"
+    },
+    "life_creature": {
+      "conversion_krosmoz_sample": { "1": 20, "4": 35, "8": 55, "12": 80, "16": 110, "20": 140 },
+      "source_rule": "2.2.2 : PV fonction de la classe / créature ; convention ordre de grandeur"
+    },
+    "pa_creature": {
+      "conversion_krosmoz_sample": { "1": 6, "4": 7, "8": 8, "12": 10, "16": 11, "20": 12 },
+      "source_rule": "2.2.2 : PA base 6, max 12"
+    },
+    "pm_creature": {
+      "conversion_krosmoz_sample": { "1": 3, "4": 3, "8": 4, "12": 5, "16": 5, "20": 6 },
+      "source_rule": "2.2.2 : PM base 3, max 6"
+    },
+    "po_creature": {
+      "conversion_krosmoz_sample": { "1": 0, "4": 1, "8": 2, "12": 4, "16": 5, "20": 6 },
+      "source_rule": "2.2.2 : PO 0 à 6"
+    },
+    "ini_creature": {
+      "conversion_krosmoz_sample": { "1": 0, "4": 5, "8": 15, "12": 25, "16": 35, "20": 50 },
+      "source_rule": "2.2.2.1 : 1d20 + mod. Intelligence + bonus équipement"
+    },
+    "ca_creature": {
+      "conversion_krosmoz_sample": { "1": 10, "4": 11, "8": 12, "12": 14, "16": 16, "20": 18 },
+      "source_rule": "2.2.2.2 : 10 + mod. Vitalité + bonus bouclier (max 21+5)"
+    },
+    "vitality_creature": {
+      "conversion_krosmoz_sample": { "1": 8, "4": 12, "8": 16, "12": 22, "16": 26, "20": 31 },
+      "source_rule": "2.2.1 : score caractéristique 6–31 par niveau"
+    },
+    "strong_creature": {
+      "conversion_krosmoz_sample": { "1": 8, "4": 12, "8": 16, "12": 22, "16": 26, "20": 31 },
+      "source_rule": "2.2.1 : idem"
+    },
+    "agi_creature": {
+      "conversion_krosmoz_sample": { "1": 8, "4": 12, "8": 16, "12": 22, "16": 26, "20": 31 },
+      "source_rule": "2.2.1 : idem"
+    },
+    "intel_creature": {
+      "conversion_krosmoz_sample": { "1": 8, "4": 12, "8": 16, "12": 22, "16": 26, "20": 31 },
+      "source_rule": "2.2.1 : idem"
+    },
+    "sagesse_creature": {
+      "conversion_krosmoz_sample": { "1": 8, "4": 12, "8": 16, "12": 22, "16": 26, "20": 31 },
+      "source_rule": "2.2.1 : idem"
+    },
+    "chance_creature": {
+      "conversion_krosmoz_sample": { "1": 8, "4": 12, "8": 16, "12": 22, "16": 26, "20": 31 },
+      "source_rule": "2.2.1 : idem"
+    },
+    "touch_creature": {
+      "conversion_krosmoz_sample": { "1": 0, "4": 4, "8": 8, "12": 12, "16": 14, "20": 16 },
+      "source_rule": "Portée 0 à 16 ; convention"
+    },
+    "invocation_creature": {
+      "conversion_krosmoz_sample": { "1": 1, "4": 2, "8": 3, "12": 4, "16": 5, "20": 6 },
+      "source_rule": "Invocation 1 à 6"
+    },
+    "dodge_pa_creature": {
+      "conversion_krosmoz_sample": { "1": 7, "4": 8, "8": 9, "12": 10, "16": 11, "20": 13 },
+      "source_rule": "2.2.2.3 : 8 + mod. Sagesse (max 19+5 équip.)"
+    },
+    "dodge_pm_creature": {
+      "conversion_krosmoz_sample": { "1": 7, "4": 8, "8": 9, "12": 10, "16": 11, "20": 13 },
+      "source_rule": "2.2.2.3 : 8 + mod. Sagesse (max 19+5 équip.)"
+    },
+    "res_fixe_neutre_creature": {
+      "conversion_krosmoz_sample": { "1": 0, "4": 2, "8": 4, "12": 6, "16": 8, "20": 10 },
+      "source_rule": "2.2.2 : résistance fixe 0 à 10"
+    },
+    "res_fixe_terre_creature": {
+      "conversion_krosmoz_sample": { "1": 0, "4": 2, "8": 4, "12": 6, "16": 8, "20": 10 },
+      "source_rule": "2.2.2 : idem"
+    },
+    "res_fixe_feu_creature": {
+      "conversion_krosmoz_sample": { "1": 0, "4": 2, "8": 4, "12": 6, "16": 8, "20": 10 },
+      "source_rule": "2.2.2 : idem"
+    },
+    "res_fixe_eau_creature": {
+      "conversion_krosmoz_sample": { "1": 0, "4": 2, "8": 4, "12": 6, "16": 8, "20": 10 },
+      "source_rule": "2.2.2 : idem"
+    },
+    "res_fixe_air_creature": {
+      "conversion_krosmoz_sample": { "1": 0, "4": 2, "8": 4, "12": 6, "16": 8, "20": 10 },
+      "source_rule": "2.2.2 : idem"
+    },
+    "res_neutre_creature": {
+      "conversion_krosmoz_sample": { "1": 0, "4": 0, "8": 0, "12": 0, "16": 0, "20": 0 },
+      "source_rule": "Résistance % (0, 50, 100)"
+    },
+    "res_terre_creature": {
+      "conversion_krosmoz_sample": { "1": 0, "4": 0, "8": 0, "12": 0, "16": 0, "20": 0 },
+      "source_rule": "Résistance % terre"
+    },
+    "res_feu_creature": {
+      "conversion_krosmoz_sample": { "1": 0, "4": 0, "8": 0, "12": 0, "16": 0, "20": 0 },
+      "source_rule": "Résistance % feu"
+    },
+    "res_eau_creature": {
+      "conversion_krosmoz_sample": { "1": 0, "4": 0, "8": 0, "12": 0, "16": 0, "20": 0 },
+      "source_rule": "Résistance % eau"
+    },
+    "res_air_creature": {
+      "conversion_krosmoz_sample": { "1": 0, "4": 0, "8": 0, "12": 0, "16": 0, "20": 0 },
+      "source_rule": "Résistance % air"
+    },
+    "do_fixe_neutre_creature": {
+      "conversion_krosmoz_sample": { "1": 0, "4": 1, "8": 2, "12": 4, "16": 6, "20": 8 },
+      "source_rule": "Dégât fixe neutre"
+    },
+    "do_fixe_terre_creature": {
+      "conversion_krosmoz_sample": { "1": 0, "4": 1, "8": 2, "12": 4, "16": 6, "20": 8 },
+      "source_rule": "Dégât fixe terre (Dofus bonusEarthDamage)"
+    },
+    "do_fixe_feu_creature": {
+      "conversion_krosmoz_sample": { "1": 0, "4": 1, "8": 2, "12": 4, "16": 6, "20": 8 },
+      "source_rule": "Dégât fixe feu"
+    },
+    "do_fixe_air_creature": {
+      "conversion_krosmoz_sample": { "1": 0, "4": 1, "8": 2, "12": 4, "16": 6, "20": 8 },
+      "source_rule": "Dégât fixe air"
+    },
+    "do_fixe_eau_creature": {
+      "conversion_krosmoz_sample": { "1": 0, "4": 1, "8": 2, "12": 4, "16": 6, "20": 8 },
+      "source_rule": "Dégât fixe eau"
+    },
+    "do_fixe_multiple_creature": {
+      "conversion_krosmoz_sample": { "1": 0, "4": 1, "8": 2, "12": 3, "16": 4, "20": 5 },
+      "source_rule": "Dommage fixe Multiples (équip. +5, forgemagie +2)"
+    },
+    "tacle_creature": {
+      "conversion_krosmoz_sample": { "1": 0, "4": 2, "8": 5, "12": 8, "16": 12, "20": 15 },
+      "source_rule": "Tacle (Dofus tackleBlock)"
+    },
+    "fuite_creature": {
+      "conversion_krosmoz_sample": { "1": 0, "4": 2, "8": 5, "12": 8, "16": 12, "20": 15 },
+      "source_rule": "Fuite (Dofus tackleEvade)"
+    },
+    "bonus_maitrise_creature": {
+      "conversion_krosmoz_sample": { "1": 1, "4": 2, "8": 3, "12": 4, "16": 5, "20": 6 },
+      "source_rule": "2.2.2.4 : 1 + floor(niveau/4), max 6 (niv. 1-3: +1, 4-7: +2, …)"
+    },
+    "reserve_wakfu_creature": {
+      "conversion_krosmoz_sample": { "1": 1, "4": 2, "8": 3, "12": 4, "16": 5, "20": 6 },
+      "source_rule": "2.2.2.5 / 3.3.4 : bonus_maîtrise + bonus_équipement (sans équip. = bonus_maîtrise)"
+    },
+    "de_vie_creature": {
+      "conversion_krosmoz_sample": { "1": 0, "4": 2, "8": 4, "12": 6, "16": 8, "20": 10 },
+      "source_rule": "2.2.2.4 : floor(niveau/2), max 10"
+    },
+    "modificateur_agi_creature": {
+      "conversion_krosmoz_sample": { "1": 0, "4": 0, "8": 0, "12": 0, "16": 0, "20": 0 },
+      "source_rule": "Modificateur d'agilité (Krosmoz only)"
+    },
+    "modificateur_intel_creature": {
+      "conversion_krosmoz_sample": { "1": 0, "4": 0, "8": 0, "12": 0, "16": 0, "20": 0 },
+      "source_rule": "Modificateur d'intelligence (Krosmoz only)"
+    },
+    "modificateur_force_creature": {
+      "conversion_krosmoz_sample": { "1": 0, "4": 0, "8": 0, "12": 0, "16": 0, "20": 0 },
+      "source_rule": "Modificateur de force (Krosmoz only)"
+    },
+    "modificateur_vitality_creature": {
+      "conversion_krosmoz_sample": { "1": 0, "4": 0, "8": 0, "12": 0, "16": 0, "20": 0 },
+      "source_rule": "Modificateur de vitalité (Krosmoz only)"
+    },
+    "modificateur_sagesse_creature": {
+      "conversion_krosmoz_sample": { "1": 0, "4": 0, "8": 0, "12": 0, "16": 0, "20": 0 },
+      "source_rule": "Modificateur de sagesse (Krosmoz only)"
+    },
+    "modificateur_chance_creature": {
+      "conversion_krosmoz_sample": { "1": 0, "4": 0, "8": 0, "12": 0, "16": 0, "20": 0 },
+      "source_rule": "Modificateur de chance (Krosmoz only)"
+    },
+    "save_sagesse_creature": {
+      "conversion_krosmoz_sample": { "1": 0, "4": 0, "8": 0, "12": 0, "16": 0, "20": 0 },
+      "source_rule": "Bonus jet de sauvegarde Sagesse (Krosmoz only)"
+    },
+    "save_chance_creature": {
+      "conversion_krosmoz_sample": { "1": 0, "4": 0, "8": 0, "12": 0, "16": 0, "20": 0 },
+      "source_rule": "Bonus jet de sauvegarde Chance (Krosmoz only)"
+    },
+    "save_intel_creature": {
+      "conversion_krosmoz_sample": { "1": 0, "4": 0, "8": 0, "12": 0, "16": 0, "20": 0 },
+      "source_rule": "Bonus jet de sauvegarde Intelligence (Krosmoz only)"
+    },
+    "save_force_creature": {
+      "conversion_krosmoz_sample": { "1": 0, "4": 0, "8": 0, "12": 0, "16": 0, "20": 0 },
+      "source_rule": "Bonus jet de sauvegarde Force (Krosmoz only)"
+    },
+    "save_agi_creature": {
+      "conversion_krosmoz_sample": { "1": 0, "4": 0, "8": 0, "12": 0, "16": 0, "20": 0 },
+      "source_rule": "Bonus jet de sauvegarde Agilité (Krosmoz only)"
+    },
+    "save_vitality_creature": {
+      "conversion_krosmoz_sample": { "1": 0, "4": 0, "8": 0, "12": 0, "16": 0, "20": 0 },
+      "source_rule": "Bonus jet de sauvegarde Vitalité (Krosmoz only)"
+    }
+  }
+}

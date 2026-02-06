@@ -1,6 +1,6 @@
-# Source des samples Krosmoz (conversion object)
+# Source des samples Krosmoz (conversion object et creature)
 
-Les **samples Krosmoz** (`conversion_krosmoz_sample` / `conversion_krosmoz_sample_reference`) sont des valeurs **cibles** pour la conversion Dofus → Krosmoz. Ils sont chargés depuis un fichier JSON dérivé des règles JDR et fusionnés dans le fichier produit par `php artisan characteristics:extract-object-samples`.
+Les **samples Krosmoz** (`conversion_krosmoz_sample` / `conversion_krosmoz_sample_reference`) sont des valeurs **cibles** pour la conversion Dofus → Krosmoz. Ils sont chargés depuis des fichiers JSON dérivés des règles JDR et fusionnés dans les fichiers produits par les commandes d’extraction (**object** : équipements ; **creature** : monstres).
 
 ---
 
@@ -48,4 +48,15 @@ Une évolution ultérieure peut s’appuyer sur les **tableaux PDF** (Equipement
 ## Utilisation
 
 - **Admin caractéristiques** : utiliser **by_characteristic_key[clé].conversion_krosmoz_sample_reference** pour pré-remplir les lignes « Krosmoz » du tableau de conversion (niveaux 1, 4, 8, 12, 16, 20).
-- Ces données sont **fiables** car elles représentent l’objectif à atteindre pour la conversion (règles JDR), avec moins de points que Dofus mais cohérentes avec le système de jeu.
+- Ces données sont **fiables** (objectif à atteindre pour la conversion, règles JDR).
+
+---
+
+## Créature (monster, npc)
+
+Même principe pour le groupe **creature** :
+
+- **Fichier Krosmoz** : `resources/scrapping/config/sources/krosmoz/creature_krosmoz_samples.json` (niveaux 1, 4, 8, 12, 16, 20 ; règles 2.2.1 / 2.2.2).
+- **Extraction Dofus** : `php artisan characteristics:extract-creature-samples` agrège les **grades** des monstres DofusDB par niveau, fusionne avec le fichier Krosmoz, écrit **storage/app/characteristics_creature_samples.json**.
+- **Mapping grade → clé** : `resources/scrapping/config/sources/dofusdb/dofusdb_monster_grade_to_creature.json` (ex. `lifePoints` → `life_creature`, `actionPoints` → `pa_creature`).
+- **Seeder** : `CreatureCharacteristicSeeder` charge ce JSON et enrichit les lignes (conversion_dofus_sample, conversion_krosmoz_sample, conversion_sample_rows).
