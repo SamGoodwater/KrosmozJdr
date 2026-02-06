@@ -12,6 +12,7 @@ use App\Models\CharacteristicSpell;
 use App\Services\Characteristic\Conversion\ConversionFormulaGenerator;
 use App\Services\Characteristic\Formula\CharacteristicFormulaService;
 use App\Services\Characteristic\Formula\FormulaConfigDecoder;
+use App\Services\Characteristic\CharacteristicColorCssGenerator;
 use App\Services\Characteristic\Getter\CharacteristicGetterService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -37,7 +38,8 @@ class CharacteristicController extends Controller
     public function __construct(
         private readonly CharacteristicGetterService $getter,
         private readonly CharacteristicFormulaService $formulaService,
-        private readonly ConversionFormulaGenerator $conversionFormulaGenerator
+        private readonly ConversionFormulaGenerator $conversionFormulaGenerator,
+        private readonly CharacteristicColorCssGenerator $colorCssGenerator
     ) {
     }
 
@@ -105,7 +107,7 @@ class CharacteristicController extends Controller
             'description' => 'nullable|string',
             'helper' => 'nullable|string',
             'icon' => 'nullable|string|max:64',
-            'color' => 'nullable|string|max:64',
+            'color' => ['nullable', 'string', 'max:7', 'regex:/^#([0-9A-Fa-f]{3}){1,2}$/'],
             'type' => 'required|in:int,string,array',
             'unit' => 'nullable|string|max:64',
             'sort_order' => 'nullable|integer',
@@ -154,6 +156,7 @@ class CharacteristicController extends Controller
         }
 
         $this->getter->clearCache();
+        $this->colorCssGenerator->generate();
 
         return redirect()
             ->route('admin.characteristics.show', $characteristic->key)
@@ -244,6 +247,7 @@ class CharacteristicController extends Controller
         }
         $characteristic->delete();
         $this->getter->clearCache();
+        $this->colorCssGenerator->generate();
 
         return redirect()->route('admin.characteristics.index')->with('success', 'Caractéristique supprimée.');
     }
@@ -465,7 +469,7 @@ class CharacteristicController extends Controller
             'description' => 'nullable|string',
             'helper' => 'nullable|string',
             'icon' => 'nullable|string|max:64',
-            'color' => 'nullable|string|max:64',
+            'color' => ['nullable', 'string', 'max:7', 'regex:/^#([0-9A-Fa-f]{3}){1,2}$/'],
             'type' => 'required|in:int,string,array',
             'unit' => 'nullable|string|max:64',
             'sort_order' => 'nullable|integer',
@@ -525,6 +529,7 @@ class CharacteristicController extends Controller
         $this->deleteOrphanGroupRows($characteristic->id, $group);
 
         $this->getter->clearCache();
+        $this->colorCssGenerator->generate();
 
         return redirect()->route('admin.characteristics.show', $characteristic_key)->with('success', 'Caractéristique mise à jour.');
     }

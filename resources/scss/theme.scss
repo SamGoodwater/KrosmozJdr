@@ -1,10 +1,11 @@
 @use "sass:map";
 @use "themes/_theme-global" as *;
 @use "themes/_theme-entities" as *;
-@use "themes/_theme-caracs" as *;
 
-// Fusion de toutes les maps de couleurs
-$ref-colors: map.merge($theme-global, map.merge($theme-entities, $theme-caracs));
+// Couleurs des caractéristiques : générées depuis la BDD (hex) dans public/css/characteristic-colors.css
+// via php artisan characteristics:generate-color-css ou à la sauvegarde d'une caractéristique.
+// On ne fusionne plus theme-caracs ici (classes .color-{key} viennent du fichier généré).
+$ref-colors: map.merge($theme-global, $theme-entities);
 
 $weights: 50, 100, 200, 300, 400, 500, 600, 700, 800, 900, 950;
 

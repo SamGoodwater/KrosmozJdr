@@ -1,6 +1,6 @@
 @use '../themes/_theme-global.scss' as *;
-@use '../themes/_theme-caracs.scss' as *;
 @use '../themes/_theme-entities.scss' as *;
+// theme-caracs : couleurs des caractéristiques générées depuis la BDD (public/css/characteristic-colors.css)
 
 $intensities: (
     50: 50,
@@ -40,5 +40,4 @@ $intensities: (
 }
 
 @include colorTheme($theme-global);
-@include colorTheme($theme-caracs);
 @include colorTheme($theme-entities);

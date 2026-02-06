@@ -10,7 +10,7 @@ import { usePageTitle } from '@/Composables/layout/usePageTitle';
 import Main from '@/Pages/Layouts/Main.vue';
 import Btn from '@/Pages/Atoms/action/Btn.vue';
 import InputField from '@/Pages/Molecules/data-input/InputField.vue';
-import SelectFieldNative from '@/Pages/Molecules/data-input/SelectFieldNative.vue';
+import ColorCore from '@/Pages/Atoms/data-input/ColorCore.vue';
 import FormulaOrTableField from '@/Pages/Molecules/data-input/FormulaOrTableField.vue';
 import FormulaOrTableFieldWithChart from '@/Pages/Organismes/data-input/FormulaOrTableFieldWithChart.vue';
 import axios from 'axios';
@@ -438,31 +438,20 @@ const conversionTableCharacteristicOptions = [
     { id: 'level', name: 'Niveau JDR (level)' },
 ];
 
-/** Couleurs Tailwind / DaisyUI pour le select (sémantiques + palette teinte 500). */
-const colorOptions = [
-    { value: '', label: '— Aucune —' },
-    { value: 'red-500', label: 'Rouge' },
-    { value: 'orange-500', label: 'Orange' },
-    { value: 'amber-500', label: 'Ambre' },
-    { value: 'yellow-500', label: 'Jaune' },
-    { value: 'lime-500', label: 'Lime' },
-    { value: 'green-500', label: 'Vert' },
-    { value: 'emerald-500', label: 'Émeraude' },
-    { value: 'teal-500', label: 'Teal' },
-    { value: 'cyan-500', label: 'Cyan' },
-    { value: 'sky-500', label: 'Sky' },
-    { value: 'blue-500', label: 'Bleu' },
-    { value: 'indigo-500', label: 'Indigo' },
-    { value: 'violet-500', label: 'Violet' },
-    { value: 'purple-500', label: 'Pourpre' },
-    { value: 'fuchsia-500', label: 'Fuchsia' },
-    { value: 'pink-500', label: 'Pink' },
-    { value: 'rose-500', label: 'Rose' },
-    { value: 'slate-500', label: 'Ardoise' },
-    { value: 'gray-500', label: 'Gris' },
-    { value: 'zinc-500', label: 'Zinc' },
-    { value: 'stone-500', label: 'Stone' },
-];
+/** Retourne la valeur CSS pour afficher la couleur (hex ou ancien nom Tailwind). */
+function displayColor(val) {
+    if (!val) return null;
+    if (typeof val === 'string' && val.startsWith('#')) return val;
+    return `var(--color-${val})`;
+}
+
+/** Valeur pour le color picker (doit être un hex valide). */
+const defaultHexForPicker = '#808080';
+function colorForPicker(hex) {
+    if (!hex || typeof hex !== 'string') return defaultHexForPicker;
+    if (/^#([0-9A-Fa-f]{3}){1,2}$/.test(hex)) return hex;
+    return defaultHexForPicker;
+}
 
 /** URL des icônes : storage/app/public/images/icons/characteristics/ (servi via /storage/...) */
 const iconBasePath = '/storage/images/icons/characteristics';
@@ -556,7 +545,7 @@ function submit() {
                                 :href="route('admin.characteristics.show', c.id)"
                                 class="flex items-center gap-2 rounded-lg px-3 py-2 text-left text-sm transition-colors border-l-4 border-transparent"
                                 :class="selected?.id === c.id ? 'bg-primary text-primary-content' : 'hover:bg-base-300'"
-                                :style="c.color && selected?.id !== c.id ? { borderLeftColor: `var(--color-${c.color})` } : {}"
+                                :style="displayColor(c.color) ? { borderLeftColor: displayColor(c.color) } : {}"
                             >
                                 <span v-if="c.icon" class="flex h-6 w-6 shrink-0 items-center justify-center text-sm">
                                     <i v-if="c.icon.startsWith('fa-')" :class="['fa', c.icon]" />
@@ -569,7 +558,7 @@ function submit() {
                                     />
                                     <span v-else class="text-xs">{{ c.icon }}</span>
                                 </span>
-                                <span v-if="!c.icon && c.color" class="h-2.5 w-2.5 shrink-0 rounded-full" :style="{ backgroundColor: `var(--color-${c.color})` }" />
+                                <span v-if="!c.icon && displayColor(c.color)" class="h-2.5 w-2.5 shrink-0 rounded-full" :style="{ backgroundColor: displayColor(c.color) }" />
                                 <span class="min-w-0 flex flex-col">
                                     <span class="truncate">{{ c.name || c.id }}</span>
                                     <span
@@ -644,7 +633,23 @@ function submit() {
                                 <InputField v-model="form.short_name" label="Nom abrégé" name="short_name" helper="Listes compactes." />
                                 <InputField v-model="form.description" label="Description" name="description" type="textarea" class="sm:col-span-2" />
                                 <div>
-                                    <SelectFieldNative v-model="form.color" label="Couleur" name="color" :options="colorOptions" />
+                                    <label class="label"><span class="label-text">Couleur</span></label>
+                                    <div class="flex flex-wrap items-center gap-2">
+                                        <input
+                                            v-model="form.color"
+                                            type="text"
+                                            name="color"
+                                            class="input input-bordered w-28 font-mono"
+                                            placeholder="#000000"
+                                            maxlength="7"
+                                        />
+                                        <ColorCore
+                                            :model-value="colorForPicker(form.color)"
+                                            @update:model-value="form.color = $event"
+                                            class="input-primary"
+                                        />
+                                    </div>
+                                    <p class="mt-1 text-xs text-base-content/70">Code hexadécimal (ex. #3b82f6).</p>
                                 </div>
                                 <div>
                                     <InputField v-model="form.type" label="Type" name="type" :options="['int', 'string', 'array']" />
@@ -721,7 +726,7 @@ function submit() {
 
             <!-- Mode édition : caractéristique existante -->
             <template v-else-if="selected">
-                <h1 class="mb-1 text-2xl font-bold flex items-center gap-2" :style="form.color ? { borderLeftColor: `var(--color-${form.color})` } : {}" :class="form.color ? 'pl-3 border-l-4' : ''">
+                <h1 class="mb-1 text-2xl font-bold flex items-center gap-2" :style="displayColor(form.color) ? { borderLeftColor: displayColor(form.color) } : {}" :class="displayColor(form.color) ? 'pl-3 border-l-4' : ''">
                     {{ selected.name || selected.id }}
                     <span v-if="selected.group" class="badge badge-sm badge-ghost">{{ groupLabels[selected.group] || selected.group }}</span>
                 </h1>
@@ -788,13 +793,23 @@ function submit() {
                                     </div>
                                 </div>
                                 <div>
-                                    <SelectFieldNative
-                                        v-model="form.color"
-                                        label="Couleur"
-                                        name="color"
-                                        :options="colorOptions"
-                                    />
-                                    <p class="mt-1 text-xs text-base-content/70">Utilisée pour les badges, graphiques et indicateurs.</p>
+                                    <label class="label"><span class="label-text">Couleur</span></label>
+                                    <div class="flex flex-wrap items-center gap-2">
+                                        <input
+                                            v-model="form.color"
+                                            type="text"
+                                            name="color"
+                                            class="input input-bordered w-28 font-mono"
+                                            placeholder="#000000"
+                                            maxlength="7"
+                                        />
+                                        <ColorCore
+                                            :model-value="colorForPicker(form.color)"
+                                            @update:model-value="form.color = $event"
+                                            class="input-primary"
+                                        />
+                                    </div>
+                                    <p class="mt-1 text-xs text-base-content/70">Code hexadécimal (ex. #3b82f6). Utilisée pour les badges, graphiques et indicateurs.</p>
                                 </div>
                                 <div>
                                     <InputField v-model="form.type" label="Type" name="type" :options="['int', 'string', 'array']" />

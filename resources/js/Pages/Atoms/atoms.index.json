@@ -1474,7 +1474,7 @@
   },
   {
     "name": "ColorCore",
-    "description": "ColorCore Atom (DaisyUI + vue-color-kit, Atomic Design)",
+    "description": "ColorCore Atom (DaisyUI, input color natif HTML, Atomic Design)",
     "props": [
       {
         "name": "modelValue",

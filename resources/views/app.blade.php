@@ -22,6 +22,7 @@
     @vite(['resources/js/app.js', "resources/js/Pages/{$page['component']}.vue"])
     @inertiaHead
     @vite('resources/css/app.css')
+    <link rel="stylesheet" href="{{ asset('css/characteristic-colors.css') }}" />
 </head>
 
 <body class="antialiased w-screen h-screen">
