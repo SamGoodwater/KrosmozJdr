@@ -14,15 +14,14 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property int $characteristic_id
  * @property string $entity
  * @property string|null $db_column
- * @property int|null $min
- * @property int|null $max
+ * @property string|null $min Valeur fixe, formule ou table JSON
+ * @property string|null $max Valeur fixe, formule ou table JSON
  * @property string|null $formula
  * @property string|null $formula_display
  * @property string|null $default_value
- * @property bool $required
- * @property string|null $validation_message
  * @property string|null $conversion_formula
- * @property int $sort_order
+ * @property array|null $conversion_dofus_sample Niveau → valeur Dofus (ex. {"1":1,"200":200})
+ * @property array|null $conversion_krosmoz_sample Niveau → valeur Krosmoz (ex. {"1":1,"20":20})
  * @property array|null $value_available
  */
 class CharacteristicSpell extends Model
@@ -47,19 +46,18 @@ class CharacteristicSpell extends Model
         'formula',
         'formula_display',
         'default_value',
-        'required',
-        'validation_message',
         'conversion_formula',
-        'sort_order',
+        'conversion_dofus_sample',
+        'conversion_krosmoz_sample',
+        'conversion_sample_rows',
         'value_available',
     ];
 
     /** @var array<string, string> */
     protected $casts = [
-        'min' => 'integer',
-        'max' => 'integer',
-        'required' => 'boolean',
-        'sort_order' => 'integer',
+        'conversion_dofus_sample' => 'array',
+        'conversion_krosmoz_sample' => 'array',
+        'conversion_sample_rows' => 'array',
         'value_available' => 'array',
     ];
 

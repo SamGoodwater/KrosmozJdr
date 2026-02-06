@@ -9,7 +9,6 @@ use App\Models\Characteristic;
 use App\Models\CharacteristicCreature;
 use App\Models\CharacteristicObject;
 use App\Models\CharacteristicSpell;
-use App\Models\EquipmentSlot;
 use App\Models\SpellEffectType;
 use App\Services\Characteristic\Getter\CharacteristicGetterService;
 use Illuminate\Console\Command;
@@ -39,10 +38,9 @@ class ExportSeederDataCommand extends Command
     protected $signature = 'db:export-seeder-data
                             {--characteristics : Exporter uniquement characteristics}
                             {--formulas : Exporter les formules de conversion (tables characteristic_creature/object/spell)}
-                            {--spell-effect-types : Exporter uniquement spell_effect_types}
-                            {--equipment : Exporter uniquement equipment_slots}';
+                            {--spell-effect-types : Exporter uniquement spell_effect_types}';
 
-    protected $description = 'Exporte characteristics, formules, spell_effect_types et equipment_slots vers database/seeders/data/';
+    protected $description = 'Exporte characteristics, formules et spell_effect_types vers database/seeders/data/';
 
     public function __construct(
         private readonly CharacteristicGetterService $getter
@@ -57,7 +55,7 @@ class ExportSeederDataCommand extends Command
         }
 
         $all = ! $this->option('characteristics') && ! $this->option('formulas')
-            && ! $this->option('spell-effect-types') && ! $this->option('equipment');
+            && ! $this->option('spell-effect-types');
 
         $dir = database_path('seeders/data');
         if (! is_dir($dir)) {
@@ -78,9 +76,6 @@ class ExportSeederDataCommand extends Command
         }
         if ($all || $this->option('spell-effect-types')) {
             $this->exportSpellEffectTypes($dir);
-        }
-        if ($all || $this->option('equipment')) {
-            $this->exportEquipment($dir);
         }
 
         $this->cleanupOldBackups();
@@ -111,9 +106,6 @@ class ExportSeederDataCommand extends Command
         }
         if ($all || $this->option('spell-effect-types')) {
             $files[] = 'spell_effect_types.php';
-        }
-        if ($all || $this->option('equipment')) {
-            $files[] = 'equipment_slots.php';
         }
 
         return array_values(array_unique($files));
@@ -210,10 +202,9 @@ class ExportSeederDataCommand extends Command
                 'formula' => $r->formula,
                 'formula_display' => $r->formula_display,
                 'default_value' => $r->default_value,
-                'required' => $r->required,
-                'validation_message' => $r->validation_message,
                 'conversion_formula' => $r->conversion_formula,
-                'sort_order' => $r->sort_order,
+                'conversion_dofus_sample' => $r->conversion_dofus_sample,
+                'conversion_krosmoz_sample' => $r->conversion_krosmoz_sample,
             ])->all();
             $path = $dir . '/characteristic_creature.php';
             $content = "<?php\n\ndeclare(strict_types=1);\n\n/**\n * Groupe creature (monster, class, npc). Régénéré par : php artisan db:export-seeder-data --characteristics\n */\n\nreturn " . $this->varExportShort($data) . ";\n";
@@ -232,14 +223,14 @@ class ExportSeederDataCommand extends Command
                 'formula' => $r->formula,
                 'formula_display' => $r->formula_display,
                 'default_value' => $r->default_value,
-                'required' => $r->required,
-                'validation_message' => $r->validation_message,
                 'conversion_formula' => $r->conversion_formula,
-                'sort_order' => $r->sort_order,
+                'conversion_dofus_sample' => $r->conversion_dofus_sample,
+                'conversion_krosmoz_sample' => $r->conversion_krosmoz_sample,
                 'forgemagie_allowed' => $r->forgemagie_allowed,
                 'forgemagie_max' => $r->forgemagie_max,
                 'base_price_per_unit' => $r->base_price_per_unit,
                 'rune_price_per_unit' => $r->rune_price_per_unit,
+                'value_available' => $r->value_available,
             ])->all();
             $path = $dir . '/characteristic_object.php';
             $content = "<?php\n\ndeclare(strict_types=1);\n\n/**\n * Groupe object : item, consumable, resource, panoply.\n * Régénéré par : php artisan db:export-seeder-data --characteristics\n */\n\nreturn " . $this->varExportShort($data) . ";\n";
@@ -258,10 +249,10 @@ class ExportSeederDataCommand extends Command
                 'formula' => $r->formula,
                 'formula_display' => $r->formula_display,
                 'default_value' => $r->default_value,
-                'required' => $r->required,
-                'validation_message' => $r->validation_message,
                 'conversion_formula' => $r->conversion_formula,
-                'sort_order' => $r->sort_order,
+                'conversion_dofus_sample' => $r->conversion_dofus_sample,
+                'conversion_krosmoz_sample' => $r->conversion_krosmoz_sample,
+                'value_available' => $r->value_available,
             ])->all();
             $path = $dir . '/characteristic_spell.php';
             $content = "<?php\n\ndeclare(strict_types=1);\n\n/**\n * Groupe spell. Régénéré par : php artisan db:export-seeder-data --characteristics\n */\n\nreturn " . $this->varExportShort($data) . ";\n";
@@ -299,42 +290,6 @@ class ExportSeederDataCommand extends Command
         $content = "<?php\n\ndeclare(strict_types=1);\n\n/**\n * Types d'effets de sort (export BDD).\n * Généré par php artisan db:export-seeder-data\n */\n\nreturn " . $this->varExportShort($rows) . ";\n";
         file_put_contents($path, $content);
         $this->info('Exported ' . count($rows) . ' spell effect types → ' . $path);
-    }
-
-    private function exportEquipment(string $dir): void
-    {
-        $slots = EquipmentSlot::query()
-            ->with('slotCharacteristics')
-            ->orderBy('sort_order')
-            ->get();
-
-        $out = [];
-        foreach ($slots as $slot) {
-            $characteristics = [];
-            foreach ($slot->slotCharacteristics as $sc) {
-                $characteristics[$sc->characteristic_key] = [
-                    'bracket_max' => $sc->bracket_max,
-                    'forgemagie_max' => $sc->forgemagie_max,
-                    'base_price_per_unit' => $sc->base_price_per_unit !== null ? (float) $sc->base_price_per_unit : null,
-                    'rune_price_per_unit' => $sc->rune_price_per_unit !== null ? (float) $sc->rune_price_per_unit : null,
-                ];
-                if ($characteristics[$sc->characteristic_key]['base_price_per_unit'] === null) {
-                    unset($characteristics[$sc->characteristic_key]['base_price_per_unit']);
-                }
-                if ($characteristics[$sc->characteristic_key]['rune_price_per_unit'] === null) {
-                    unset($characteristics[$sc->characteristic_key]['rune_price_per_unit']);
-                }
-            }
-            $out[$slot->id] = [
-                'name' => $slot->name,
-                'characteristics' => $characteristics,
-            ];
-        }
-
-        $path = $dir . '/equipment_slots.php';
-        $content = "<?php\n\ndeclare(strict_types=1);\n\n/**\n * Slots d'équipement (export BDD).\n * Généré par php artisan db:export-seeder-data --equipment\n */\n\nreturn " . $this->varExportShort($out) . ";\n";
-        file_put_contents($path, $content);
-        $this->info('Exported ' . count($out) . ' equipment slots → ' . $path);
     }
 
     private function varExportShort(mixed $var): string

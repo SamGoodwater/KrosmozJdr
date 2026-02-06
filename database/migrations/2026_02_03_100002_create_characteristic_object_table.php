@@ -24,10 +24,7 @@ return new class extends Migration
             $table->text('formula')->nullable();
             $table->text('formula_display')->nullable();
             $table->string('default_value', 512)->nullable();
-            $table->boolean('required')->default(false);
-            $table->text('validation_message')->nullable();
             $table->text('conversion_formula')->nullable()->comment('Formule Dofus → Krosmoz');
-            $table->unsignedSmallInteger('sort_order')->default(0);
             $table->boolean('forgemagie_allowed')->default(false);
             $table->unsignedTinyInteger('forgemagie_max')->default(0);
             $table->decimal('base_price_per_unit', 12, 2)->nullable();

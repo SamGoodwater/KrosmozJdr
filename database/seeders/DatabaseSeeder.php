@@ -8,7 +8,6 @@ use Database\Seeders\CharacteristicSeeder;
 use Database\Seeders\CreatureCharacteristicSeeder;
 use Database\Seeders\ObjectCharacteristicSeeder;
 use Database\Seeders\SpellCharacteristicSeeder;
-use Database\Seeders\EquipmentCharacteristicConfigSeeder;
 use Database\Seeders\SpellEffectTypeSeeder;
 
 class DatabaseSeeder extends Seeder
@@ -27,7 +26,6 @@ class DatabaseSeeder extends Seeder
             CreatureCharacteristicSeeder::class,
             ObjectCharacteristicSeeder::class,
             SpellCharacteristicSeeder::class,
-            EquipmentCharacteristicConfigSeeder::class,
             SpellEffectTypeSeeder::class,
         ]);
     }

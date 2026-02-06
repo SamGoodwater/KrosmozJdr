@@ -125,7 +125,7 @@ class CharacteristicControllerTest extends TestCase
                 'type' => 'int',
                 'group' => 'creature',
                 'entities' => [
-                    ['entity' => '*', 'min' => 0, 'max' => 20, 'db_column' => 'pa', 'conversion_formula' => null, 'sort_order' => 0],
+                    ['entity' => '*', 'min' => '0', 'max' => '20', 'db_column' => 'pa', 'conversion_formula' => null, 'sort_order' => 0],
                 ],
             ]);
 
@@ -146,7 +146,7 @@ class CharacteristicControllerTest extends TestCase
                 'type' => 'int',
                 'group' => 'creature',
                 'entities' => [
-                    ['entity' => '*', 'min' => 4, 'max' => 20, 'db_column' => 'life_dice', 'conversion_formula' => null, 'sort_order' => 0],
+                    ['entity' => '*', 'min' => '4', 'max' => '20', 'db_column' => 'life_dice', 'conversion_formula' => null, 'sort_order' => 0],
                 ],
             ]);
 

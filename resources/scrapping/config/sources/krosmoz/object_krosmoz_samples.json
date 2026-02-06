@@ -1,0 +1,92 @@
+{
+  "version": 1,
+  "source": "rules",
+  "description": "Samples Krosmoz JDR (niveau 1–20 → valeur cible) pour les caractéristiques object, issus des règles Markdown (400- Règles). Données fiables : objectif à atteindre pour la conversion Dofus → Krosmoz.",
+  "reference_levels_krosmoz": [1, 4, 8, 12, 16, 20],
+  "sources_rule": [
+    "docs/400- Règles/2-Creer-un-personnage/2.2-les-caracteristiques/2.2.1-caracteristiques-principales.md",
+    "docs/400- Règles/2-Creer-un-personnage/2.2-les-caracteristiques/2.2.2-caracteristiques-secondaires.md"
+  ],
+  "by_characteristic_key": {
+    "level_object": {
+      "conversion_krosmoz_sample": { "1": 1, "4": 4, "8": 8, "12": 12, "16": 16, "20": 20 },
+      "source_rule": "Niveau JDR = identité (échelle 1–20)"
+    },
+    "pa_object": {
+      "conversion_krosmoz_sample": { "1": 0, "4": 1, "8": 2, "12": 3, "16": 4, "20": 6 },
+      "source_rule": "2.2.2 : PA base 6, max 12, équipement +6 max → bonus équipement 0 à 6"
+    },
+    "pm_object": {
+      "conversion_krosmoz_sample": { "1": 0, "4": 0, "8": 1, "12": 2, "16": 3, "20": 3 },
+      "source_rule": "2.2.2 : PM base 3, max 6, équipement +3 max"
+    },
+    "strong_object": {
+      "conversion_krosmoz_sample": { "1": 0, "4": 1, "8": 2, "12": 3, "16": 4, "20": 4 },
+      "source_rule": "2.2.1 : jusqu'à +4 par objet sur une caractéristique"
+    },
+    "vitality_object": {
+      "conversion_krosmoz_sample": { "1": 0, "4": 1, "8": 2, "12": 3, "16": 4, "20": 4 },
+      "source_rule": "2.2.1 : jusqu'à +4 par objet"
+    },
+    "sagesse_object": {
+      "conversion_krosmoz_sample": { "1": 0, "4": 1, "8": 2, "12": 3, "16": 4, "20": 4 },
+      "source_rule": "2.2.1 : jusqu'à +4 par objet"
+    },
+    "chance_object": {
+      "conversion_krosmoz_sample": { "1": 0, "4": 1, "8": 2, "12": 3, "16": 4, "20": 4 },
+      "source_rule": "2.2.1 : jusqu'à +4 par objet"
+    },
+    "agi_object": {
+      "conversion_krosmoz_sample": { "1": 0, "4": 1, "8": 2, "12": 3, "16": 4, "20": 4 },
+      "source_rule": "2.2.1 : jusqu'à +4 par objet"
+    },
+    "intel_object": {
+      "conversion_krosmoz_sample": { "1": 0, "4": 1, "8": 2, "12": 3, "16": 4, "20": 4 },
+      "source_rule": "2.2.1 : jusqu'à +4 par objet"
+    },
+    "pv_max_object": {
+      "conversion_krosmoz_sample": { "1": 0, "4": 5, "8": 10, "12": 15, "16": 18, "20": 20 },
+      "source_rule": "2.2.2 : modifiable par équipement (illimité) ; convention ordre de grandeur bonus PV"
+    },
+    "invocation_object": {
+      "conversion_krosmoz_sample": { "1": 0, "4": 1, "8": 2, "12": 3, "16": 4, "20": 5 },
+      "source_rule": "2.2.2 : +5 max équipement"
+    },
+    "esquive_pa_object": {
+      "conversion_krosmoz_sample": { "1": 0, "4": 1, "8": 2, "12": 3, "16": 4, "20": 5 },
+      "source_rule": "2.2.2 : +5 max équipement"
+    },
+    "esquive_pm_object": {
+      "conversion_krosmoz_sample": { "1": 0, "4": 1, "8": 2, "12": 3, "16": 4, "20": 5 },
+      "source_rule": "2.2.2 : +5 max équipement"
+    },
+    "ini_object": {
+      "conversion_krosmoz_sample": { "1": 0, "4": 1, "8": 2, "12": 3, "16": 4, "20": 5 },
+      "source_rule": "2.2.2 : modifiable par équipement (illimité) ; convention ordre de grandeur"
+    },
+    "res_50_object": {
+      "conversion_krosmoz_sample": { "1": 0, "4": 0, "8": 0, "12": 0, "16": 0, "20": 0 },
+      "source_rule": "2.2.2 : résistance % (0, 50, 100) ; pas de courbe niveau → valeur unique par objet"
+    },
+    "res_fixe_terre_object": {
+      "conversion_krosmoz_sample": { "1": 0, "4": 2, "8": 4, "12": 6, "16": 8, "20": 10 },
+      "source_rule": "2.2.2 : résistance fixe 0 à 10, équipement +10 max"
+    },
+    "res_fixe_feu_object": {
+      "conversion_krosmoz_sample": { "1": 0, "4": 2, "8": 4, "12": 6, "16": 8, "20": 10 },
+      "source_rule": "2.2.2 : idem"
+    },
+    "res_fixe_eau_object": {
+      "conversion_krosmoz_sample": { "1": 0, "4": 2, "8": 4, "12": 6, "16": 8, "20": 10 },
+      "source_rule": "2.2.2 : idem"
+    },
+    "res_fixe_air_object": {
+      "conversion_krosmoz_sample": { "1": 0, "4": 2, "8": 4, "12": 6, "16": 8, "20": 10 },
+      "source_rule": "2.2.2 : idem"
+    },
+    "weight_object": {
+      "conversion_krosmoz_sample": {},
+      "source_rule": "Pods : pas de table niveau → valeur cible dans les règles ; laisser vide"
+    }
+  }
+}

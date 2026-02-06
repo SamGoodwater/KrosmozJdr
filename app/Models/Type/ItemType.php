@@ -4,9 +4,11 @@ namespace App\Models\Type;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use App\Models\User;
+use App\Models\CharacteristicObject;
 use App\Models\Entity\Item;
+use App\Models\User;
 
 /**
  * 
@@ -179,5 +181,16 @@ class ItemType extends Model
     public function items()
     {
         return $this->hasMany(Item::class, 'item_type_id');
+    }
+
+    /**
+     * Définitions de caractéristiques (groupe object) qui sont réservées à ce type d'équipement.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany<CharacteristicObject, self>
+     */
+    public function allowedCharacteristicObjects(): BelongsToMany
+    {
+        return $this->belongsToMany(CharacteristicObject::class, 'characteristic_object_item_type')
+            ->withTimestamps();
     }
 }

@@ -11,8 +11,8 @@ import Main from '@/Pages/Layouts/Main.vue';
 import Btn from '@/Pages/Atoms/action/Btn.vue';
 import InputField from '@/Pages/Molecules/data-input/InputField.vue';
 import SelectFieldNative from '@/Pages/Molecules/data-input/SelectFieldNative.vue';
-import FormulaChart from '@/Pages/Admin/characteristics/FormulaChart.vue';
-import { decodeFormulaConfig, encodeFormulaConfig, isFormulaTable } from '@/Utils/characteristic/formulaConfig';
+import FormulaOrTableField from '@/Pages/Molecules/data-input/FormulaOrTableField.vue';
+import FormulaOrTableFieldWithChart from '@/Pages/Organismes/data-input/FormulaOrTableFieldWithChart.vue';
 import axios from 'axios';
 
 const { setPageTitle } = usePageTitle();
@@ -44,6 +44,101 @@ const selectedEntityOverrides = ref([]);
 const formulaHelpAnchor = ref(null);
 const formulaHelpPopoverRef = ref(null);
 
+/** Proposition de formule de conversion (affichée jusqu'à validation ou annulation). */
+const conversionSuggestionFormula = ref(null);
+const conversionSuggestionR2 = ref(null);
+const conversionSuggestionLoading = ref(false);
+const conversionSuggestionError = ref(null);
+/** Entité concernée par la suggestion en cours ('*' = groupe, sinon clé d'entité). */
+const conversionSuggestionForEntity = ref(null);
+
+/** Ligne entity pour le groupe (*) ou une entité spécifique. */
+function getConversionRow(entityKey) {
+    return entityKey === '*' ? generalEntityRow() : entityRow(entityKey);
+}
+
+/** Demande une formule suggérée (table, linéaire, carré, carré décalé). Utilise les lignes du tableau (paires d, k). */
+function requestConversionSuggestion(curveType, entityKey = '*') {
+    const row = getConversionRow(entityKey);
+    if (!row) return;
+    const sampleRows = row.conversion_sample_rows ?? [];
+    const pairs = sampleRows
+        .filter((r) => r.dofus_value !== '' && r.dofus_value != null && r.krosmoz_value !== '' && r.krosmoz_value != null)
+        .filter((r) => !Number.isNaN(Number(r.dofus_value)) && !Number.isNaN(Number(r.krosmoz_value)))
+        .map((r) => ({ d: Number(r.dofus_value), k: Number(r.krosmoz_value) }));
+    if (pairs.length < 2) {
+        conversionSuggestionError.value = 'Renseignez au moins 2 lignes avec des valeurs Dofus et Krosmoz pour proposer une formule.';
+        conversionSuggestionFormula.value = null;
+        conversionSuggestionR2.value = null;
+        conversionSuggestionForEntity.value = null;
+        return;
+    }
+    conversionSuggestionError.value = null;
+    conversionSuggestionFormula.value = null;
+    conversionSuggestionR2.value = null;
+    conversionSuggestionForEntity.value = entityKey;
+    conversionSuggestionLoading.value = true;
+    const suggestUrl = typeof route === 'function' ? (() => { try { return route('admin.characteristics.suggest-conversion-formula'); } catch { return '/admin/characteristics/suggest-conversion-formula'; } })() : '/admin/characteristics/suggest-conversion-formula';
+    axios
+        .post(suggestUrl, {
+            pairs,
+            curve_type: curveType,
+        })
+        .then((res) => {
+            conversionSuggestionFormula.value = res.data.formula ?? null;
+            conversionSuggestionR2.value = res.data.r2 ?? null;
+            conversionSuggestionLoading.value = false;
+        })
+        .catch((err) => {
+            conversionSuggestionError.value = err.response?.data?.message ?? err.message ?? 'Erreur lors de la suggestion';
+            conversionSuggestionFormula.value = null;
+            conversionSuggestionR2.value = null;
+            conversionSuggestionLoading.value = false;
+        });
+}
+
+/** Ajoute une ligne au tableau d'échantillons (groupe ou entité spécifique). */
+function addConversionSampleRow(entityKey = '*') {
+    const row = getConversionRow(entityKey);
+    if (!row) return;
+    const rows = Array.isArray(row.conversion_sample_rows) ? [...row.conversion_sample_rows] : getDefaultConversionSampleRows();
+    const last = rows[rows.length - 1];
+    const nextDofus = last ? Number(last.dofus_level) + 40 : 200;
+    const nextKrosmoz = last ? Number(last.krosmoz_level) + 4 : 20;
+    rows.push({ dofus_level: nextDofus, dofus_value: '', krosmoz_level: nextKrosmoz, krosmoz_value: '' });
+    row.conversion_sample_rows = rows;
+}
+
+/** Supprime une ligne du tableau d'échantillons. Minimum 1 ligne. */
+function removeConversionSampleRow(entityKey, index) {
+    if (entityKey === undefined) {
+        entityKey = '*';
+    }
+    const row = getConversionRow(entityKey);
+    if (!row || !Array.isArray(row.conversion_sample_rows) || row.conversion_sample_rows.length <= 1) return;
+    row.conversion_sample_rows = row.conversion_sample_rows.filter((_, i) => i !== index);
+}
+
+/** Valide la formule suggérée : remplace la valeur du champ conversion pour l'entité concernée et efface la proposition. */
+function applyConversionSuggestion() {
+    const entityKey = conversionSuggestionForEntity.value ?? '*';
+    const row = getConversionRow(entityKey);
+    if (row && conversionSuggestionFormula.value) {
+        row.conversion_formula = conversionSuggestionFormula.value;
+        conversionSuggestionFormula.value = null;
+        conversionSuggestionR2.value = null;
+        conversionSuggestionForEntity.value = null;
+    }
+}
+
+/** Annule la proposition (sans modifier le champ). */
+function clearConversionSuggestion() {
+    conversionSuggestionFormula.value = null;
+    conversionSuggestionR2.value = null;
+    conversionSuggestionError.value = null;
+    conversionSuggestionForEntity.value = null;
+}
+
 function openFormulaHelp(e) {
     const rect = e.currentTarget.getBoundingClientRect();
     formulaHelpAnchor.value = { left: rect.left, top: rect.bottom + 4 };
@@ -59,6 +154,18 @@ function openFormulaHelp(e) {
 
 defineOptions({ layout: Main });
 setPageTitle('Administration des caractéristiques');
+
+/** Lignes par défaut pour le tableau Dofus/Krosmoz (6 paires niveau/valeur). */
+function getDefaultConversionSampleRows() {
+    const dofusLevels = [1, 40, 80, 120, 160, 200];
+    const krosmozLevels = [1, 4, 8, 12, 16, 20];
+    return dofusLevels.map((dofusLevel, i) => ({
+        dofus_level: dofusLevel,
+        dofus_value: '',
+        krosmoz_level: krosmozLevels[i] ?? i + 1,
+        krosmoz_value: '',
+    }));
+}
 
 /** Conversion formulas par défaut pour un groupe (entités du groupe hors '*'). */
 function defaultConversionFormulasForGroup(entitiesByGroup, group = 'creature') {
@@ -85,13 +192,10 @@ function buildFormData(selected, entitiesByGroup = null) {
             type: 'int',
             unit: '',
             sort_order: 0,
-            applies_to: '',
-            value_available: '',
             entities: [],
             conversion_formulas: defaultConversionFormulasForGroup(entitiesByGroup ?? {}, 'creature'),
         };
     }
-    const arrToLines = (arr) => (Array.isArray(arr) && arr.length ? arr.join('\n') : '');
     const group = selected.group ?? 'creature';
     const allowedEntityKeys = entitiesByGroup?.[group] ?? ['*', 'monster', 'class', 'npc'];
     const entitiesForGroup = (selected.entities ?? []).filter((e) => allowedEntityKeys.includes(e.entity));
@@ -108,13 +212,12 @@ function buildFormData(selected, entitiesByGroup = null) {
         name: selected.name ?? '',
         short_name: selected.short_name ?? '',
         description: selected.description ?? '',
+        helper: selected.helper ?? '',
         icon: selected.icon ?? '',
         color: selected.color ?? '',
         type: selected.type ?? 'int',
         unit: selected.unit ?? '',
         sort_order: selected.sort_order ?? 0,
-        applies_to: arrToLines(selected.applies_to),
-        value_available: arrToLines(selected.value_available),
         entities: entitiesForGroup.map((e) => ({
             entity: e.entity,
             db_column: e.db_column ?? '',
@@ -123,13 +226,14 @@ function buildFormData(selected, entitiesByGroup = null) {
             formula: e.formula ?? '',
             formula_display: e.formula_display ?? '',
             default_value: e.default_value ?? '',
-            required: e.required ?? false,
-            validation_message: e.validation_message ?? '',
             forgemagie_allowed: e.forgemagie_allowed ?? false,
             forgemagie_max: e.forgemagie_max ?? 0,
             base_price_per_unit: e.base_price_per_unit ?? '',
             rune_price_per_unit: e.rune_price_per_unit ?? '',
             conversion_formula: e.conversion_formula ?? '',
+            conversion_dofus_sample: e.conversion_dofus_sample ?? null,
+            conversion_krosmoz_sample: e.conversion_krosmoz_sample ?? null,
+            conversion_sample_rows: (e.conversion_sample_rows && e.conversion_sample_rows.length) ? e.conversion_sample_rows : getDefaultConversionSampleRows(),
         })),
         conversion_formulas: conversionFormulas,
     };
@@ -146,17 +250,21 @@ watch(
         form.name = data.name;
         form.short_name = data.short_name;
         form.description = data.description;
+        form.helper = data.helper;
         form.icon = data.icon;
         form.color = data.color;
         form.type = data.type;
         form.unit = data.unit;
         form.sort_order = data.sort_order;
-        form.applies_to = data.applies_to;
-        form.value_available = data.value_available;
         form.entities = data.entities;
         form.conversion_formulas = data.conversion_formulas;
         // Réhydrater les panneaux « spécifique entité » à partir des clés renvoyées par le serveur (ex. après enregistrement)
         selectedEntityOverrides.value = Array.isArray(s?.entity_override_keys) ? [...s.entity_override_keys] : [];
+        // Réinitialiser la proposition de formule quand on change de caractéristique
+        conversionSuggestionFormula.value = null;
+        conversionSuggestionR2.value = null;
+        conversionSuggestionError.value = null;
+        conversionSuggestionForEntity.value = null;
     },
     { immediate: true }
 );
@@ -176,13 +284,14 @@ function addEntityOverride(entityKey) {
             formula: '',
             formula_display: '',
             default_value: '',
-            required: false,
-            validation_message: '',
             forgemagie_allowed: false,
             forgemagie_max: 0,
             base_price_per_unit: '',
             rune_price_per_unit: '',
             conversion_formula: '',
+            conversion_dofus_sample: null,
+            conversion_krosmoz_sample: null,
+            conversion_sample_rows: getDefaultConversionSampleRows(),
         };
         form.entities = [...(form.entities ?? []), defaultRow];
     }
@@ -220,8 +329,6 @@ watch(
                             formula: defaultRow.formula ?? '',
                             formula_display: defaultRow.formula_display ?? '',
                             default_value: defaultRow.default_value ?? '',
-                            required: defaultRow.required ?? false,
-                            validation_message: defaultRow.validation_message ?? '',
                             forgemagie_allowed: defaultRow.forgemagie_allowed ?? false,
                             forgemagie_max: defaultRow.forgemagie_max ?? 0,
                             base_price_per_unit: defaultRow.base_price_per_unit ?? '',
@@ -238,10 +345,6 @@ watch(
     { immediate: true }
 );
 
-const formulaPoints = ref({});
-const formulaLoading = ref({});
-const conversionFormulaPoints = ref({});
-const conversionFormulaLoading = ref({});
 const conversionHandlers = ref([]);
 
 function loadConversionHandlers() {
@@ -266,113 +369,6 @@ onMounted(() => {
         }
     }
 });
-
-function loadFormulaPreview(charId, entity, variable = 'level', formulaOverride = null) {
-    const key = `${charId}-${entity}`;
-    formulaLoading.value[key] = true;
-    const params = { characteristic_id: charId, entity, variable };
-    if (formulaOverride != null && String(formulaOverride).trim() !== '') {
-        params.formula = formulaOverride;
-    }
-    axios
-        .get(route('admin.characteristics.formula-preview'), {
-            params,
-        })
-        .then((res) => {
-            formulaPoints.value[key] = res.data.points ?? [];
-        })
-        .catch(() => {
-            formulaPoints.value[key] = [];
-        })
-        .finally(() => {
-            formulaLoading.value[key] = false;
-        });
-}
-
-function getFormulaPoints(charId, entity) {
-    const key = `${charId}-${entity}`;
-    return formulaPoints.value[key] ?? [];
-}
-
-function getFormulaChartKey(charId, entity) {
-    return `${charId}-${entity}`;
-}
-
-function loadConversionFormulaPreview(charId, entity, conversionFormulaOverride = null) {
-    const key = `conv-${charId}-${entity}`;
-    conversionFormulaLoading.value[key] = true;
-    const params = { characteristic_id: charId, entity };
-    if (conversionFormulaOverride != null && String(conversionFormulaOverride).trim() !== '') {
-        params.conversion_formula = conversionFormulaOverride;
-    }
-    axios
-        .get(route('admin.dofus-conversion-formulas.formula-preview'), { params })
-        .then((res) => {
-            conversionFormulaPoints.value[key] = res.data.points ?? [];
-        })
-        .catch(() => {
-            conversionFormulaPoints.value[key] = [];
-        })
-        .finally(() => {
-            conversionFormulaLoading.value[key] = false;
-        });
-}
-
-function getConversionFormulaPoints(charId, entity) {
-    const key = `conv-${charId}-${entity}`;
-    return conversionFormulaPoints.value[key] ?? [];
-}
-
-function getConversionFormulaChartKey(charId, entity) {
-    return `conv-${charId}-${entity}`;
-}
-
-let conversionFormulaDebounceTimer = null;
-function debouncedLoadConversionFormula(charId, entity, conversionFormula) {
-    if (conversionFormulaDebounceTimer) clearTimeout(conversionFormulaDebounceTimer);
-    conversionFormulaDebounceTimer = setTimeout(() => {
-        loadConversionFormulaPreview(charId, entity, conversionFormula);
-        conversionFormulaDebounceTimer = null;
-    }, 400);
-}
-
-// Chargement automatique des graphiques à l’ouverture du panneau et au changement de formule (debounce)
-let formulaDebounceTimer = null;
-function debouncedLoadFormula(charId, entity, formula) {
-    if (formulaDebounceTimer) clearTimeout(formulaDebounceTimer);
-    formulaDebounceTimer = setTimeout(() => {
-        loadFormulaPreview(charId, entity, 'level', formula);
-        formulaDebounceTimer = null;
-    }, 400);
-}
-
-watch(
-    () => [props.selected?.id, form.entities],
-    () => {
-        const charId = props.selected?.id;
-        if (!charId) return;
-        form.entities.forEach((ent) => {
-            if (ent.formula && String(ent.formula).trim()) {
-                debouncedLoadFormula(charId, ent.entity, ent.formula);
-            }
-        });
-    },
-    { immediate: true, deep: true }
-);
-
-watch(
-    () => [props.selected?.id, form.entities],
-    () => {
-        const charId = props.selected?.id;
-        if (!charId) return;
-        (form.entities ?? []).forEach((ent) => {
-            if (ent.conversion_formula != null && String(ent.conversion_formula).trim()) {
-                debouncedLoadConversionFormula(charId, ent.entity, ent.conversion_formula);
-            }
-        });
-    },
-    { immediate: true, deep: true }
-);
 
 /** Libellés pour chaque entité (affichage dans les cartes). */
 const entityLabels = {
@@ -419,6 +415,13 @@ const characteristicsForFormulaOptions = computed(() => {
     return props.characteristicsByGroup[group] ?? [];
 });
 
+/** Caractéristiques pour les tables min/max : en création utilise form.group, en édition selected.group. */
+const limitCharacteristicOptions = computed(() => {
+    const group = props.selected?.group ?? form.group;
+    if (!group) return [];
+    return props.characteristicsByGroup?.[group] ?? [];
+});
+
 /** Clé finale en création : ajoute le suffixe du groupe si absent (ex. life_dice → life_dice_creature). */
 const normalizedCreateKey = computed(() => {
     const key = (form.key ?? '').trim();
@@ -428,108 +431,6 @@ const normalizedCreateKey = computed(() => {
     if (key.length >= suffix.length && key.endsWith(suffix)) return key;
     return key + suffix;
 });
-
-function getDecodedFormula(ent) {
-    return decodeFormulaConfig(ent?.formula ?? '');
-}
-
-function setFormulaAsSimple(ent) {
-    ent.formula = '';
-}
-
-function setFormulaAsTable(ent) {
-    ent.formula = encodeFormulaConfig({
-        type: 'table',
-        characteristic: 'level',
-        entries: [{ from: 1, value: 0 }, { from: 7, value: 2 }, { from: 14, value: 4 }],
-    });
-}
-
-function setTableCharacteristic(ent, characteristic) {
-    const dec = getDecodedFormula(ent);
-    if (dec.type !== 'table') return;
-    ent.formula = encodeFormulaConfig({ type: 'table', characteristic, entries: dec.entries });
-}
-
-function setTableEntries(ent, entries) {
-    const dec = getDecodedFormula(ent);
-    if (dec.type !== 'table') return;
-    ent.formula = encodeFormulaConfig({ type: 'table', characteristic: dec.characteristic, entries });
-}
-
-function addTableRow(ent) {
-    const dec = getDecodedFormula(ent);
-    if (dec.type !== 'table') return;
-    const lastFrom = dec.entries.length ? dec.entries[dec.entries.length - 1].from : 0;
-    const newEntries = [...dec.entries, { from: lastFrom + 1, value: 0 }];
-    setTableEntries(ent, newEntries);
-}
-
-function removeTableRow(ent, index) {
-    const dec = getDecodedFormula(ent);
-    if (dec.type !== 'table' || index < 0 || index >= dec.entries.length) return;
-    const newEntries = dec.entries.filter((_, i) => i !== index);
-    setTableEntries(ent, newEntries);
-}
-
-function updateTableEntry(ent, index, field, value) {
-    const dec = getDecodedFormula(ent);
-    if (dec.type !== 'table' || index < 0 || index >= dec.entries.length) return;
-    const newEntries = dec.entries.map((e, i) => {
-        if (i !== index) return e;
-        if (field === 'from') return { ...e, from: Number(value) || 0 };
-        if (field === 'value') return { ...e, value: typeof value === 'number' ? value : String(value ?? '') };
-        return e;
-    });
-    setTableEntries(ent, newEntries);
-}
-
-// ——— Formules de conversion Dofus → JDR (même format formule/table, variable [d] et [level])
-function getDecodedConversionFormula(cf) {
-    return decodeFormulaConfig(cf?.conversion_formula ?? '');
-}
-function setConversionFormulaAsSimple(cf) {
-    cf.conversion_formula = '';
-}
-function setConversionFormulaAsTable(cf) {
-    cf.conversion_formula = encodeFormulaConfig({
-        type: 'table',
-        characteristic: 'd',
-        entries: [{ from: 0, value: 0 }, { from: 100, value: 10 }, { from: 200, value: 20 }],
-    });
-}
-function setConversionTableCharacteristic(cf, characteristic) {
-    const dec = getDecodedConversionFormula(cf);
-    if (dec.type !== 'table') return;
-    cf.conversion_formula = encodeFormulaConfig({ type: 'table', characteristic, entries: dec.entries });
-}
-function setConversionTableEntries(cf, entries) {
-    const dec = getDecodedConversionFormula(cf);
-    if (dec.type !== 'table') return;
-    cf.conversion_formula = encodeFormulaConfig({ type: 'table', characteristic: dec.characteristic, entries });
-}
-function addConversionTableRow(cf) {
-    const dec = getDecodedConversionFormula(cf);
-    if (dec.type !== 'table') return;
-    const lastFrom = dec.entries.length ? dec.entries[dec.entries.length - 1].from : 0;
-    setConversionTableEntries(cf, [...dec.entries, { from: lastFrom + 1, value: 0 }]);
-}
-function removeConversionTableRow(cf, index) {
-    const dec = getDecodedConversionFormula(cf);
-    if (dec.type !== 'table' || index < 0 || index >= dec.entries.length) return;
-    setConversionTableEntries(cf, dec.entries.filter((_, i) => i !== index));
-}
-function updateConversionTableEntry(cf, index, field, value) {
-    const dec = getDecodedConversionFormula(cf);
-    if (dec.type !== 'table' || index < 0 || index >= dec.entries.length) return;
-    const newEntries = dec.entries.map((e, i) => {
-        if (i !== index) return e;
-        if (field === 'from') return { ...e, from: Number(value) || 0 };
-        if (field === 'value') return { ...e, value: typeof value === 'number' ? value : String(value ?? '') };
-        return e;
-    });
-    setConversionTableEntries(cf, newEntries);
-}
 
 /** Options pour la table de conversion : d (valeur Dofus), level (niveau JDR). */
 const conversionTableCharacteristicOptions = [
@@ -771,8 +672,24 @@ function submit() {
                                 <div class="collapse-content">
                                     <div class="grid gap-4 sm:grid-cols-2 pt-2">
                                         <InputField v-model="ent.db_column" label="Colonne BDD" name="db_column" />
-                                        <InputField v-model="ent.min" label="Min" type="number" />
-                                        <InputField v-model="ent.max" label="Max" type="number" />
+                                        <div class="sm:col-span-2">
+                                            <FormulaOrTableField
+                                                :model-value="ent.min"
+                                                @update:model-value="(v) => (ent.min = v)"
+                                                :characteristic-options="limitCharacteristicOptions"
+                                                label="Min"
+                                                placeholder="ex: 0, 1 ou [level]*2"
+                                            />
+                                        </div>
+                                        <div class="sm:col-span-2">
+                                            <FormulaOrTableField
+                                                :model-value="ent.max"
+                                                @update:model-value="(v) => (ent.max = v)"
+                                                :characteristic-options="limitCharacteristicOptions"
+                                                label="Max"
+                                                placeholder="ex: 100, 200 ou [level]*10"
+                                            />
+                                        </div>
                                         <div class="sm:col-span-2">
                                             <label class="label">
                                                 <span class="label-text flex items-center gap-1">
@@ -780,10 +697,10 @@ function submit() {
                                                     <button type="button" class="btn btn-circle btn-ghost btn-xs cursor-pointer" aria-label="Aide formules" @click.stop="openFormulaHelp">?</button>
                                                 </span>
                                             </label>
-                                            <textarea
-                                                v-model="ent.formula"
-                                                class="textarea textarea-bordered w-full font-mono text-sm"
-                                                rows="2"
+                                            <FormulaOrTableField
+                                                :model-value="ent.formula"
+                                                @update:model-value="(v) => (ent.formula = v)"
+                                                :characteristic-options="limitCharacteristicOptions"
                                                 placeholder="ex: [level]*2 ou table par niveau"
                                             />
                                             <p v-if="ent.formula" class="mt-2 text-xs text-base-content/60">Le graphique sera disponible après enregistrement.</p>
@@ -896,26 +813,6 @@ function submit() {
                                     type="number"
                                     helper="Ordre d’affichage dans les listes (plus petit = plus haut)."
                                 />
-                                <div class="sm:col-span-2">
-                                    <label class="label"><span class="label-text">S’applique à (un type par ligne)</span></label>
-                                    <textarea
-                                        v-model="form.applies_to"
-                                        class="textarea textarea-bordered w-full font-mono text-sm"
-                                        rows="2"
-                                        placeholder="ex: monster&#10;class&#10;item"
-                                    />
-                                    <p class="mt-1 text-xs text-base-content/70">Types d’entités : <code class="rounded bg-base-300 px-1">monster</code>, <code class="rounded bg-base-300 px-1">class</code>, <code class="rounded bg-base-300 px-1">item</code> (équipement).</p>
-                                </div>
-                                <div class="sm:col-span-2">
-                                    <label class="label"><span class="label-text">Valeurs autorisées (un par ligne)</span></label>
-                                    <textarea
-                                        v-model="form.value_available"
-                                        class="textarea textarea-bordered w-full font-mono text-sm"
-                                        rows="3"
-                                        placeholder="ex: 0&#10;1&#10;2"
-                                    />
-                                    <p class="mt-1 text-xs text-base-content/70">Laissez vide si aucune liste imposée.</p>
-                                </div>
                             </div>
                         </div>
                     </div>
@@ -930,8 +827,24 @@ function submit() {
                                 Bornes min/max et formule de calcul pour ce type d’entité. Le graphique montre l’évolution en fonction du niveau.
                             </p>
                             <div class="grid gap-4 sm:grid-cols-2">
-                                <InputField v-model="ent.min" :label="`Min (${ent.entity})`" type="number" />
-                                <InputField v-model="ent.max" :label="`Max (${ent.entity})`" type="number" />
+                                <div class="sm:col-span-2">
+                                    <FormulaOrTableField
+                                        :model-value="ent.min"
+                                        @update:model-value="(v) => (ent.min = v)"
+                                        :characteristic-options="limitCharacteristicOptions"
+                                        label="Min (valeur fixe, formule ou table)"
+                                        placeholder="ex: 0, 1 ou [level]*2"
+                                    />
+                                </div>
+                                <div class="sm:col-span-2">
+                                    <FormulaOrTableField
+                                        :model-value="ent.max"
+                                        @update:model-value="(v) => (ent.max = v)"
+                                        :characteristic-options="limitCharacteristicOptions"
+                                        label="Max (valeur fixe, formule ou table)"
+                                        placeholder="ex: 100 ou [level]*10"
+                                    />
+                                </div>
                                 <div class="sm:col-span-2">
                                     <label class="label">
                                         <span class="label-text flex items-center gap-1">
@@ -939,130 +852,15 @@ function submit() {
                                             <button type="button" class="btn btn-circle btn-ghost btn-xs cursor-pointer" aria-label="Aide formules" @click.stop="openFormulaHelp">?</button>
                                         </span>
                                     </label>
-                                    <div class="flex gap-2 mb-2">
-                                        <button
-                                            type="button"
-                                            class="btn btn-sm"
-                                            :class="!isFormulaTable(ent.formula) ? 'btn-primary' : 'btn-ghost'"
-                                            @click="setFormulaAsSimple(ent)"
-                                        >
-                                            Formule simple
-                                        </button>
-                                        <button
-                                            type="button"
-                                            class="btn btn-sm"
-                                            :class="isFormulaTable(ent.formula) ? 'btn-primary' : 'btn-ghost'"
-                                            @click="setFormulaAsTable(ent)"
-                                        >
-                                            Table par caractéristique
-                                        </button>
-                                    </div>
-                                    <!-- Formule simple -->
-                                    <template v-if="!isFormulaTable(ent.formula)">
-                                        <textarea
-                                            v-model="ent.formula"
-                                            class="textarea textarea-bordered w-full font-mono text-sm"
-                                            rows="2"
-                                            placeholder="ex: [vitality]*10+[level]*2"
-                                            @focus="loadFormulaPreview(selected.id, ent.entity, 'level', ent.formula)"
-                                        />
-                                        <p class="mt-1 text-xs text-base-content/70">Syntaxe : [id], floor(), ceil(), round(), sqrt(), pow(), min(), max(), cos/sin/tan, etc. + - * /</p>
-                                    </template>
-                                    <!-- Table par caractéristique -->
-                                    <template v-else>
-                                        <div class="space-y-3 rounded-lg border border-base-300 bg-base-200/30 p-3">
-                                            <div>
-                                                <label class="label label-text text-xs">Dépend de</label>
-                                                <select
-                                                    :value="getDecodedFormula(ent).characteristic"
-                                                    class="select select-bordered select-sm w-full max-w-xs"
-                                                    @change="setTableCharacteristic(ent, $event.target.value)"
-                                                >
-                                                    <option
-                                                        v-for="c in characteristicsForFormulaOptions"
-                                                        :key="c.id"
-                                                        :value="c.id"
-                                                    >
-                                                        {{ c.name || c.id }}
-                                                    </option>
-                                                </select>
-                                                <p class="mt-1 text-xs text-base-content/70">À partir de chaque valeur ci‑dessous, ce résultat s’applique jusqu’à la valeur suivante (non comprise). La dernière ligne s’applique à toutes les valeurs supérieures.</p>
-                                            </div>
-                                            <div>
-                                                <div class="flex items-center justify-between mb-1">
-                                                    <span class="label-text text-xs">À partir de (valeur) → résultat</span>
-                                                    <button type="button" class="btn btn-ghost btn-xs" @click="addTableRow(ent)">Ajouter</button>
-                                                </div>
-                                                <div class="overflow-x-auto">
-                                                    <table class="table table-xs">
-                                                        <thead>
-                                                            <tr>
-                                                                <th>À partir de</th>
-                                                                <th>Valeur (fixe ou formule)</th>
-                                                                <th></th>
-                                                            </tr>
-                                                        </thead>
-                                                        <tbody>
-                                                            <tr v-for="(row, idx) in getDecodedFormula(ent).entries" :key="idx">
-                                                                <td>
-                                                                    <input
-                                                                        type="number"
-                                                                        class="input input-bordered input-xs w-20"
-                                                                        :value="row.from"
-                                                                        @input="updateTableEntry(ent, idx, 'from', $event.target.value)"
-                                                                    />
-                                                                </td>
-                                                                <td>
-                                                                    <input
-                                                                        type="text"
-                                                                        class="input input-bordered input-xs w-full font-mono"
-                                                                        :value="row.value"
-                                                                        placeholder="0 ou [level]*2"
-                                                                        @input="updateTableEntry(ent, idx, 'value', $event.target.value)"
-                                                                    />
-                                                                </td>
-                                                                <td>
-                                                                    <button
-                                                                        type="button"
-                                                                        class="btn btn-ghost btn-xs btn-square"
-                                                                        aria-label="Supprimer"
-                                                                        @click="removeTableRow(ent, idx)"
-                                                                    >
-                                                                        ×
-                                                                    </button>
-                                                                </td>
-                                                            </tr>
-                                                        </tbody>
-                                                    </table>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </template>
-                                    <!-- Graphique formule -->
-                                    <div v-if="ent.formula" class="mt-3 rounded-lg border border-base-300 bg-base-200/30 p-3">
-                                        <div class="mb-2 flex items-center justify-between">
-                                            <span class="text-sm font-medium">
-                                                Aperçu (variable : {{ isFormulaTable(ent.formula) ? getDecodedFormula(ent).characteristic : 'level' }})
-                                            </span>
-                                            <button
-                                                type="button"
-                                                class="btn btn-ghost btn-xs"
-                                                @click="loadFormulaPreview(selected.id, ent.entity, 'level', ent.formula)"
-                                            >
-                                                Actualiser
-                                            </button>
-                                        </div>
-                                        <div v-if="formulaLoading[getFormulaChartKey(selected.id, ent.entity)]" class="flex h-32 items-center justify-center text-sm text-base-content/60">
-                                            Chargement…
-                                        </div>
-                                        <div v-else class="h-32 w-full">
-                                            <FormulaChart
-                                                :points="getFormulaPoints(selected.id, ent.entity)"
-                                                :x-label="isFormulaTable(ent.formula) ? (getDecodedFormula(ent).characteristic || 'variable') : 'level'"
-                                                y-label="Résultat"
-                                            />
-                                        </div>
-                                    </div>
+                                    <FormulaOrTableFieldWithChart
+                                        :model-value="ent.formula"
+                                        @update:model-value="(v) => (ent.formula = v)"
+                                        :characteristic-options="characteristicsForFormulaOptions"
+                                        placeholder="ex: [vitality]*10+[level]*2"
+                                        :preview="{ characteristicKey: selected.id, entity: ent.entity, variable: 'level', mode: 'formula' }"
+                                        chart-y-label="Résultat"
+                                    />
+                                    <p class="mt-1 text-xs text-base-content/70">Syntaxe : [id], floor(), ceil(), round(), sqrt(), pow(), min(), max(), cos/sin/tan, etc. + - * /</p>
                                 </div>
                                 <div class="sm:col-span-2">
                                     <label class="label"><span class="label-text">Formule (affichage)</span></label>
@@ -1075,21 +873,6 @@ function submit() {
                                     <p class="mt-1 text-xs text-base-content/70">Version lisible affichée à l’utilisateur (sans code).</p>
                                 </div>
                                 <InputField v-model="ent.default_value" label="Valeur par défaut" type="text" />
-                                <div class="sm:col-span-2">
-                                    <div class="flex items-center gap-2">
-                                        <input v-model="ent.required" type="checkbox" class="checkbox" />
-                                        <span>Requis</span>
-                                    </div>
-                                    <p class="mt-1 text-xs text-base-content/70">Cochez si cette caractéristique doit être renseignée pour ce type d’entité.</p>
-                                </div>
-                                <div class="sm:col-span-2">
-                                    <InputField
-                                        v-model="ent.validation_message"
-                                        label="Message de validation"
-                                        type="text"
-                                        helper="Affiché si la valeur saisie est invalide (optionnel)."
-                                    />
-                                </div>
                                 <!-- Forgemagie et prix : uniquement pour l’équipement (item) -->
                                 <template v-if="selected?.group === 'object'">
                                     <div class="sm:col-span-2 border-t border-base-300 pt-4 mt-2">
@@ -1144,126 +927,107 @@ function submit() {
                                             <button type="button" class="btn btn-circle btn-ghost btn-xs cursor-pointer" aria-label="Aide formules" @click.stop="openFormulaHelp">?</button>
                                         </span>
                                     </label>
-                                    <div class="mb-2 flex gap-2">
-                                        <button
-                                            type="button"
-                                            class="btn btn-sm"
-                                            :class="!isFormulaTable(generalEntityRow().conversion_formula) ? 'btn-primary' : 'btn-ghost'"
-                                            @click="setConversionFormulaAsSimple(generalEntityRow())"
-                                        >
-                                            Formule simple
-                                        </button>
-                                        <button
-                                            type="button"
-                                            class="btn btn-sm"
-                                            :class="isFormulaTable(generalEntityRow().conversion_formula) ? 'btn-primary' : 'btn-ghost'"
-                                            @click="setConversionFormulaAsTable(generalEntityRow())"
-                                        >
-                                            Table par caractéristique
-                                        </button>
+                                    <FormulaOrTableFieldWithChart
+                                        :model-value="generalEntityRow().conversion_formula"
+                                        @update:model-value="(v) => (generalEntityRow().conversion_formula = v)"
+                                        :characteristic-options="conversionTableCharacteristicOptions"
+                                        placeholder="ex: [d]/10 ou floor([d]/200)+[level]*5"
+                                        :preview="{ characteristicKey: selected.id, entity: '*', mode: 'conversion' }"
+                                        chart-x-label="d (Dofus)"
+                                        chart-y-label="k (JDR)"
+                                    />
+                                    <p class="mt-1 text-xs text-base-content/70">Syntaxe : [d], [level], floor(), ceil(), round(), sqrt(), pow(), min(), max(), etc. + - * /</p>
+                                </div>
+
+                                <!-- Échantillons et proposition de formule (automatisation) -->
+                                <div class="rounded-lg border border-base-300 bg-base-200/50 p-4 space-y-4">
+                                    <h4 class="text-sm font-semibold text-base-content/80">Échantillons (automatisation des formules)</h4>
+                                    <p class="text-xs text-base-content/70">Tableau : 2 colonnes Dofus (niveau, valeur) et 2 colonnes Krosmoz (niveau, valeur). Au moins 2 lignes renseignées pour proposer une formule. 6 points donnent en général un bon ajustement.</p>
+                                    <div class="overflow-x-auto">
+                                        <table class="table table-sm table-zebra">
+                                            <thead>
+                                                <tr>
+                                                    <th class="bg-base-300">Dofus (niv.)</th>
+                                                    <th class="bg-base-300">Dofus (valeur)</th>
+                                                    <th class="bg-base-300">Krosmoz (niv.)</th>
+                                                    <th class="bg-base-300">Krosmoz (valeur)</th>
+                                                    <th class="bg-base-300 w-10"></th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr v-for="(sampleRow, idx) in (generalEntityRow()?.conversion_sample_rows || getDefaultConversionSampleRows())" :key="idx">
+                                                    <td>
+                                                        <input
+                                                            v-model.number="sampleRow.dofus_level"
+                                                            type="number"
+                                                            min="1"
+                                                            class="input input-bordered input-sm w-20"
+                                                        />
+                                                    </td>
+                                                    <td>
+                                                        <input
+                                                            v-model.number="sampleRow.dofus_value"
+                                                            type="number"
+                                                            step="any"
+                                                            class="input input-bordered input-sm w-24"
+                                                            placeholder="—"
+                                                        />
+                                                    </td>
+                                                    <td>
+                                                        <input
+                                                            v-model.number="sampleRow.krosmoz_level"
+                                                            type="number"
+                                                            min="1"
+                                                            class="input input-bordered input-sm w-20"
+                                                        />
+                                                    </td>
+                                                    <td>
+                                                        <input
+                                                            v-model.number="sampleRow.krosmoz_value"
+                                                            type="number"
+                                                            step="any"
+                                                            class="input input-bordered input-sm w-24"
+                                                            placeholder="—"
+                                                        />
+                                                    </td>
+                                                    <td>
+                                                        <button
+                                                            type="button"
+                                                            class="btn btn-ghost btn-xs btn-error"
+                                                            :disabled="(generalEntityRow()?.conversion_sample_rows?.length ?? 0) <= 1"
+                                                            :aria-label="'Supprimer la ligne ' + (idx + 1)"
+                                                            @click="removeConversionSampleRow('*', idx)"
+                                                        >
+                                                            −
+                                                        </button>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                        <button type="button" class="btn btn-sm btn-ghost mt-2" @click="addConversionSampleRow">+ Ajouter une ligne</button>
                                     </div>
-                                    <template v-if="!isFormulaTable(generalEntityRow().conversion_formula)">
-                                        <textarea
-                                            v-model="generalEntityRow().conversion_formula"
-                                            class="textarea textarea-bordered w-full font-mono text-sm"
-                                            rows="2"
-                                            placeholder="ex: [d]/10 ou floor([d]/200)+[level]*5"
-                                            @focus="loadConversionFormulaPreview(selected.id, '*', generalEntityRow().conversion_formula)"
-                                        />
-                                        <p class="mt-1 text-xs text-base-content/70">Syntaxe : [d], [level], floor(), ceil(), round(), sqrt(), pow(), min(), max(), etc. + - * /</p>
-                                    </template>
-                                    <template v-else>
-                                        <div class="space-y-3 rounded-lg border border-base-300 bg-base-200/30 p-3">
-                                            <div>
-                                                <label class="label label-text text-xs">Dépend de</label>
-                                                <select
-                                                    :value="getDecodedConversionFormula(generalEntityRow()).characteristic"
-                                                    class="select select-bordered select-sm w-full max-w-xs"
-                                                    @change="setConversionTableCharacteristic(generalEntityRow(), $event.target.value)"
-                                                >
-                                                    <option
-                                                        v-for="opt in conversionTableCharacteristicOptions"
-                                                        :key="opt.id"
-                                                        :value="opt.id"
-                                                    >
-                                                        {{ opt.name }}
-                                                    </option>
-                                                </select>
+                                    <div>
+                                        <span class="label-text block mb-2">Proposer une formule (à valider ensuite)</span>
+                                        <div class="flex flex-wrap gap-2">
+                                            <button type="button" class="btn btn-sm btn-outline" :disabled="conversionSuggestionLoading" @click="requestConversionSuggestion('table', '*')">Table</button>
+                                            <button type="button" class="btn btn-sm btn-outline" :disabled="conversionSuggestionLoading" @click="requestConversionSuggestion('linear', '*')">Linéaire</button>
+                                            <button type="button" class="btn btn-sm btn-outline" :disabled="conversionSuggestionLoading" @click="requestConversionSuggestion('power', '*')">Carré</button>
+                                            <button type="button" class="btn btn-sm btn-outline" :disabled="conversionSuggestionLoading" @click="requestConversionSuggestion('shifted_power', '*')">Carré décalé</button>
+                                        </div>
+                                        <p v-if="conversionSuggestionLoading && conversionSuggestionForEntity === '*'" class="mt-2 text-sm text-info">Calcul en cours…</p>
+                                        <p v-else-if="conversionSuggestionError && conversionSuggestionForEntity === '*'" class="mt-2 text-sm text-error">{{ conversionSuggestionError }}</p>
+                                        <div v-else-if="conversionSuggestionFormula && conversionSuggestionForEntity === '*'" class="mt-3 p-3 rounded-lg bg-base-300 border border-base-content/10">
+                                            <p class="text-sm font-medium text-base-content/80 mb-1">Proposition :</p>
+                                            <code class="block text-xs break-all mb-2">{{ conversionSuggestionFormula }}</code>
+                                            <p v-if="conversionSuggestionR2 != null" class="text-xs text-base-content/70 mb-2">R² = {{ conversionSuggestionR2 }}</p>
+                                            <div class="flex gap-2">
+                                                <button type="button" class="btn btn-sm btn-primary" @click="applyConversionSuggestion">Valider (remplacer le champ)</button>
+                                                <button type="button" class="btn btn-sm btn-ghost" @click="clearConversionSuggestion">Annuler</button>
                                             </div>
-                                            <div>
-                                                <div class="mb-1 flex items-center justify-between">
-                                                    <span class="label-text text-xs">À partir de (valeur) → résultat</span>
-                                                    <button type="button" class="btn btn-ghost btn-xs" @click="addConversionTableRow(generalEntityRow())">Ajouter</button>
-                                                </div>
-                                                <div class="overflow-x-auto">
-                                                    <table class="table table-xs">
-                                                        <thead>
-                                                            <tr>
-                                                                <th>À partir de</th>
-                                                                <th>Valeur (fixe ou formule)</th>
-                                                                <th></th>
-                                                            </tr>
-                                                        </thead>
-                                                        <tbody>
-                                                            <tr v-for="(row, idx) in getDecodedConversionFormula(generalEntityRow()).entries" :key="idx">
-                                                                <td>
-                                                                    <input
-                                                                        type="number"
-                                                                        class="input input-bordered input-xs w-20"
-                                                                        :value="row.from"
-                                                                        @input="updateConversionTableEntry(generalEntityRow(), idx, 'from', $event.target.value)"
-                                                                    />
-                                                                </td>
-                                                                <td>
-                                                                    <input
-                                                                        type="text"
-                                                                        class="input input-bordered input-xs w-full font-mono"
-                                                                        :value="row.value"
-                                                                        placeholder="0 ou [d]/10"
-                                                                        @input="updateConversionTableEntry(generalEntityRow(), idx, 'value', $event.target.value)"
-                                                                    />
-                                                                </td>
-                                                                <td>
-                                                                    <button
-                                                                        type="button"
-                                                                        class="btn btn-ghost btn-xs btn-square"
-                                                                        aria-label="Supprimer"
-                                                                        @click="removeConversionTableRow(generalEntityRow(), idx)"
-                                                                    >
-                                                                        ×
-                                                                    </button>
-                                                                </td>
-                                                            </tr>
-                                                        </tbody>
-                                                    </table>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </template>
-                                    <!-- Aperçu graphique conversion (d Dofus → k JDR) -->
-                                    <div v-if="generalEntityRow().conversion_formula" class="mt-3 rounded-lg border border-base-300 bg-base-200/30 p-3">
-                                        <div class="mb-2 flex items-center justify-between">
-                                            <span class="text-sm font-medium">Aperçu (d Dofus → k JDR)</span>
-                                            <button
-                                                type="button"
-                                                class="btn btn-ghost btn-xs"
-                                                @click="loadConversionFormulaPreview(selected.id, '*', generalEntityRow().conversion_formula)"
-                                            >
-                                                Actualiser
-                                            </button>
-                                        </div>
-                                        <div v-if="conversionFormulaLoading[getConversionFormulaChartKey(selected.id, '*')]" class="flex h-32 items-center justify-center text-sm text-base-content/60">
-                                            Chargement…
-                                        </div>
-                                        <div v-else class="h-32 w-full">
-                                            <FormulaChart
-                                                :points="getConversionFormulaPoints(selected.id, '*')"
-                                                x-label="d (Dofus)"
-                                                y-label="k (JDR)"
-                                            />
                                         </div>
                                     </div>
                                 </div>
+
                                 <div>
                                     <label class="label"><span class="label-text">Formule (affichage)</span></label>
                                     <input
@@ -1293,8 +1057,24 @@ function submit() {
                             <div class="space-y-4 mb-6">
                                 <h3 class="text-sm font-semibold text-base-content/80">Limite et défaut</h3>
                                 <div class="grid gap-4 sm:grid-cols-2">
-                                    <InputField v-model="entityRow(entityKey).min" label="Min" type="number" />
-                                    <InputField v-model="entityRow(entityKey).max" label="Max" type="number" />
+                                    <div class="sm:col-span-2">
+                                        <FormulaOrTableField
+                                            :model-value="entityRow(entityKey).min"
+                                            @update:model-value="(v) => (entityRow(entityKey).min = v)"
+                                            :characteristic-options="limitCharacteristicOptions"
+                                            label="Min"
+                                            placeholder="ex: 0 ou [level]*2"
+                                        />
+                                    </div>
+                                    <div class="sm:col-span-2">
+                                        <FormulaOrTableField
+                                            :model-value="entityRow(entityKey).max"
+                                            @update:model-value="(v) => (entityRow(entityKey).max = v)"
+                                            :characteristic-options="limitCharacteristicOptions"
+                                            label="Max"
+                                            placeholder="ex: 100 ou [level]*10"
+                                        />
+                                    </div>
                                 </div>
                                 <div>
                                     <label class="label">
@@ -1303,45 +1083,15 @@ function submit() {
                                             <button type="button" class="btn btn-circle btn-ghost btn-xs cursor-pointer" aria-label="Aide formules" @click.stop="openFormulaHelp">?</button>
                                         </span>
                                     </label>
-                                    <div class="flex gap-2 mb-2">
-                                        <button type="button" class="btn btn-sm" :class="!isFormulaTable(entityRow(entityKey).formula) ? 'btn-primary' : 'btn-ghost'" @click="setFormulaAsSimple(entityRow(entityKey))">Formule simple</button>
-                                        <button type="button" class="btn btn-sm" :class="isFormulaTable(entityRow(entityKey).formula) ? 'btn-primary' : 'btn-ghost'" @click="setFormulaAsTable(entityRow(entityKey))">Table par caractéristique</button>
-                                    </div>
-                                    <template v-if="!isFormulaTable(entityRow(entityKey).formula)">
-                                        <textarea v-model="entityRow(entityKey).formula" class="textarea textarea-bordered w-full font-mono text-sm" rows="2" placeholder="ex: [level]*2" />
-                                        <p class="mt-1 text-xs text-base-content/70">Syntaxe : [id], floor(), ceil(), round(), sqrt(), pow(), min(), max(), etc. + - * /</p>
-                                    </template>
-                                    <template v-else>
-                                        <div class="space-y-3 rounded-lg border border-base-300 bg-base-200/30 p-3">
-                                            <div>
-                                                <label class="label label-text text-xs">Dépend de</label>
-                                                <select :value="getDecodedFormula(entityRow(entityKey)).characteristic" class="select select-bordered select-sm w-full max-w-xs" @change="setTableCharacteristic(entityRow(entityKey), $event.target.value)">
-                                                    <option v-for="c in characteristicsForFormulaOptions" :key="c.id" :value="c.id">{{ c.name || c.id }}</option>
-                                                </select>
-                                            </div>
-                                            <div>
-                                                <div class="flex items-center justify-between mb-1">
-                                                    <span class="label-text text-xs">À partir de (valeur) → résultat</span>
-                                                    <button type="button" class="btn btn-ghost btn-xs" @click="addTableRow(entityRow(entityKey))">Ajouter</button>
-                                                </div>
-                                                <div class="overflow-x-auto">
-                                                    <table class="table table-xs">
-                                                        <thead><tr><th>À partir de</th><th>Valeur (fixe ou formule)</th><th></th></tr></thead>
-                                                        <tbody>
-                                                            <tr v-for="(row, idx) in getDecodedFormula(entityRow(entityKey)).entries" :key="idx">
-                                                                <td><input type="number" class="input input-bordered input-xs w-20" :value="row.from" @input="updateTableEntry(entityRow(entityKey), idx, 'from', $event.target.value)" /></td>
-                                                                <td><input type="text" class="input input-bordered input-xs w-full font-mono" :value="row.value" placeholder="0 ou [level]*2" @input="updateTableEntry(entityRow(entityKey), idx, 'value', $event.target.value)" /></td>
-                                                                <td><button type="button" class="btn btn-ghost btn-xs btn-square" aria-label="Supprimer" @click="removeTableRow(entityRow(entityKey), idx)">×</button></td>
-                                                            </tr>
-                                                        </tbody>
-                                                    </table>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </template>
-                                    <div v-if="entityRow(entityKey).formula" class="mt-3 rounded-lg border border-base-300 bg-base-200/30 p-3">
-                                        <FormulaChart :points="getFormulaPoints(selected.id, entityKey)" :x-label="isFormulaTable(entityRow(entityKey).formula) ? (getDecodedFormula(entityRow(entityKey)).characteristic || 'variable') : 'level'" y-label="Résultat" />
-                                    </div>
+                                    <FormulaOrTableFieldWithChart
+                                        :model-value="entityRow(entityKey).formula"
+                                        @update:model-value="(v) => (entityRow(entityKey).formula = v)"
+                                        :characteristic-options="characteristicsForFormulaOptions"
+                                        placeholder="ex: [level]*2"
+                                        :preview="{ characteristicKey: selected.id, entity: entityKey, variable: 'level', mode: 'formula' }"
+                                        chart-y-label="Résultat"
+                                    />
+                                    <p class="mt-1 text-xs text-base-content/70">Syntaxe : [id], floor(), ceil(), round(), sqrt(), pow(), min(), max(), etc. + - * /</p>
                                 </div>
                                 <InputField v-model="entityRow(entityKey).formula_display" label="Formule (affichage)" class="sm:col-span-2" />
                                 <InputField v-model="entityRow(entityKey).default_value" label="Valeur par défaut" />
@@ -1354,48 +1104,70 @@ function submit() {
                                 <div>
                                     <label class="label">
                                         <span class="label-text flex items-center gap-1">
-                                            Formule ou table par valeur
+                                            Formule ou table par valeur (surcharge)
                                             <button type="button" class="btn btn-circle btn-ghost btn-xs cursor-pointer" aria-label="Aide formules" @click.stop="openFormulaHelp">?</button>
                                         </span>
                                     </label>
-                                    <div class="mb-2 flex gap-2">
-                                        <button type="button" class="btn btn-sm" :class="!isFormulaTable(entityRow(entityKey).conversion_formula) ? 'btn-primary' : 'btn-ghost'" @click="setConversionFormulaAsSimple(entityRow(entityKey))">Formule simple</button>
-                                        <button type="button" class="btn btn-sm" :class="isFormulaTable(entityRow(entityKey).conversion_formula) ? 'btn-primary' : 'btn-ghost'" @click="setConversionFormulaAsTable(entityRow(entityKey))">Table par caractéristique</button>
+                                    <FormulaOrTableFieldWithChart
+                                        :model-value="entityRow(entityKey).conversion_formula"
+                                        @update:model-value="(v) => (entityRow(entityKey).conversion_formula = v)"
+                                        :characteristic-options="conversionTableCharacteristicOptions"
+                                        placeholder="ex: [d]/10 (vide = même que le groupe)"
+                                        :preview="{ characteristicKey: selected.id, entity: entityKey, mode: 'conversion' }"
+                                        chart-x-label="d (Dofus)"
+                                        chart-y-label="k (JDR)"
+                                    />
+                                    <p class="mt-1 text-xs text-base-content/70">Syntaxe : [d], [level], floor(), ceil(), round(), sqrt(), pow(), min(), max(), etc. + - * /</p>
+                                </div>
+
+                                <!-- Échantillons et proposition de formule (surcharge entité) -->
+                                <div class="rounded-lg border border-base-300 bg-base-200/50 p-4 space-y-4 mt-4">
+                                    <h4 class="text-sm font-semibold text-base-content/80">Échantillons (automatisation pour cette entité)</h4>
+                                    <p class="text-xs text-base-content/70">Même tableau Dofus/Krosmoz que pour le groupe : renseignez les valeurs puis proposez une formule pour cette surcharge.</p>
+                                    <div class="overflow-x-auto">
+                                        <table class="table table-sm table-zebra">
+                                            <thead>
+                                                <tr>
+                                                    <th class="bg-base-300">Dofus (niv.)</th>
+                                                    <th class="bg-base-300">Dofus (valeur)</th>
+                                                    <th class="bg-base-300">Krosmoz (niv.)</th>
+                                                    <th class="bg-base-300">Krosmoz (valeur)</th>
+                                                    <th class="bg-base-300 w-10"></th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr v-for="(sampleRow, idx) in (entityRow(entityKey)?.conversion_sample_rows || getDefaultConversionSampleRows())" :key="idx">
+                                                    <td><input v-model.number="sampleRow.dofus_level" type="number" min="1" class="input input-bordered input-sm w-20" /></td>
+                                                    <td><input v-model.number="sampleRow.dofus_value" type="number" step="any" class="input input-bordered input-sm w-24" placeholder="—" /></td>
+                                                    <td><input v-model.number="sampleRow.krosmoz_level" type="number" min="1" class="input input-bordered input-sm w-20" /></td>
+                                                    <td><input v-model.number="sampleRow.krosmoz_value" type="number" step="any" class="input input-bordered input-sm w-24" placeholder="—" /></td>
+                                                    <td>
+                                                        <button type="button" class="btn btn-ghost btn-xs btn-error" :disabled="(entityRow(entityKey)?.conversion_sample_rows?.length ?? 0) <= 1" :aria-label="'Supprimer la ligne ' + (idx + 1)" @click="removeConversionSampleRow(entityKey, idx)">−</button>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                        <button type="button" class="btn btn-sm btn-ghost mt-2" @click="addConversionSampleRow(entityKey)">+ Ajouter une ligne</button>
                                     </div>
-                                    <template v-if="!isFormulaTable(entityRow(entityKey).conversion_formula)">
-                                        <textarea v-model="entityRow(entityKey).conversion_formula" class="textarea textarea-bordered w-full font-mono text-sm" rows="2" placeholder="ex: [d]/10 (vide = même que le groupe)" />
-                                        <p class="mt-1 text-xs text-base-content/70">Syntaxe : [d], [level], floor(), ceil(), round(), sqrt(), pow(), min(), max(), etc. + - * /</p>
-                                    </template>
-                                    <template v-else>
-                                        <div class="space-y-3 rounded-lg border border-base-300 bg-base-200/30 p-3">
-                                            <div>
-                                                <label class="label label-text text-xs">Dépend de</label>
-                                                <select :value="getDecodedConversionFormula(entityRow(entityKey)).characteristic" class="select select-bordered select-sm w-full max-w-xs" @change="setConversionTableCharacteristic(entityRow(entityKey), $event.target.value)">
-                                                    <option v-for="opt in conversionTableCharacteristicOptions" :key="opt.id" :value="opt.id">{{ opt.name }}</option>
-                                                </select>
-                                            </div>
-                                            <div>
-                                                <div class="flex items-center justify-between mb-1">
-                                                    <span class="label-text text-xs">À partir de (valeur) → résultat</span>
-                                                    <button type="button" class="btn btn-ghost btn-xs" @click="addConversionTableRow(entityRow(entityKey))">Ajouter</button>
-                                                </div>
-                                                <div class="overflow-x-auto">
-                                                    <table class="table table-xs">
-                                                        <thead><tr><th>À partir de</th><th>Valeur (fixe ou formule)</th><th></th></tr></thead>
-                                                        <tbody>
-                                                            <tr v-for="(row, idx) in getDecodedConversionFormula(entityRow(entityKey)).entries" :key="idx">
-                                                                <td><input type="number" class="input input-bordered input-xs w-20" :value="row.from" @input="updateConversionTableEntry(entityRow(entityKey), idx, 'from', $event.target.value)" /></td>
-                                                                <td><input type="text" class="input input-bordered input-xs w-full font-mono" :value="row.value" placeholder="0 ou [d]/10" @input="updateConversionTableEntry(entityRow(entityKey), idx, 'value', $event.target.value)" /></td>
-                                                                <td><button type="button" class="btn btn-ghost btn-xs btn-square" aria-label="Supprimer" @click="removeConversionTableRow(entityRow(entityKey), idx)">×</button></td>
-                                                            </tr>
-                                                        </tbody>
-                                                    </table>
-                                                </div>
+                                    <div>
+                                        <span class="label-text block mb-2">Proposer une formule (à valider ensuite)</span>
+                                        <div class="flex flex-wrap gap-2">
+                                            <button type="button" class="btn btn-sm btn-outline" :disabled="conversionSuggestionLoading" @click="requestConversionSuggestion('table', entityKey)">Table</button>
+                                            <button type="button" class="btn btn-sm btn-outline" :disabled="conversionSuggestionLoading" @click="requestConversionSuggestion('linear', entityKey)">Linéaire</button>
+                                            <button type="button" class="btn btn-sm btn-outline" :disabled="conversionSuggestionLoading" @click="requestConversionSuggestion('power', entityKey)">Carré</button>
+                                            <button type="button" class="btn btn-sm btn-outline" :disabled="conversionSuggestionLoading" @click="requestConversionSuggestion('shifted_power', entityKey)">Carré décalé</button>
+                                        </div>
+                                        <p v-if="conversionSuggestionLoading && conversionSuggestionForEntity === entityKey" class="mt-2 text-sm text-info">Calcul en cours…</p>
+                                        <p v-else-if="conversionSuggestionError && conversionSuggestionForEntity === entityKey" class="mt-2 text-sm text-error">{{ conversionSuggestionError }}</p>
+                                        <div v-else-if="conversionSuggestionFormula && conversionSuggestionForEntity === entityKey" class="mt-3 p-3 rounded-lg bg-base-300 border border-base-content/10">
+                                            <p class="text-sm font-medium text-base-content/80 mb-1">Proposition :</p>
+                                            <code class="block text-xs break-all mb-2">{{ conversionSuggestionFormula }}</code>
+                                            <p v-if="conversionSuggestionR2 != null" class="text-xs text-base-content/70 mb-2">R² = {{ conversionSuggestionR2 }}</p>
+                                            <div class="flex gap-2">
+                                                <button type="button" class="btn btn-sm btn-primary" @click="applyConversionSuggestion">Valider (remplacer le champ)</button>
+                                                <button type="button" class="btn btn-sm btn-ghost" @click="clearConversionSuggestion">Annuler</button>
                                             </div>
                                         </div>
-                                    </template>
-                                    <div v-if="entityRow(entityKey).conversion_formula" class="mt-3 rounded-lg border border-base-300 bg-base-200/30 p-3">
-                                        <FormulaChart :points="getConversionFormulaPoints(selected.id, entityKey)" x-label="d (Dofus)" y-label="k (JDR)" />
                                     </div>
                                 </div>
                             </div>

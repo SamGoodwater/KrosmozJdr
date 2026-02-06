@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Models\Type\ItemType;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 /**
  * Définition d’une caractéristique pour une entité du groupe objet (item, consumable, resource, panoply).
@@ -14,20 +16,20 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property int $characteristic_id
  * @property string $entity
  * @property string|null $db_column
- * @property int|null $min
- * @property int|null $max
+ * @property string|null $min Valeur fixe, formule ou table JSON
+ * @property string|null $max Valeur fixe, formule ou table JSON
  * @property string|null $formula
  * @property string|null $formula_display
  * @property string|null $default_value
- * @property bool $required
- * @property string|null $validation_message
  * @property string|null $conversion_formula
- * @property int $sort_order
+ * @property array|null $conversion_dofus_sample Niveau → valeur Dofus (ex. {"1":1,"200":200})
+ * @property array|null $conversion_krosmoz_sample Niveau → valeur Krosmoz (ex. {"1":1,"20":20})
  * @property bool $forgemagie_allowed
  * @property int $forgemagie_max
  * @property float|null $base_price_per_unit
  * @property float|null $rune_price_per_unit
  * @property array|null $value_available
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, ItemType> $allowedItemTypes
  */
 class CharacteristicObject extends Model
 {
@@ -59,10 +61,10 @@ class CharacteristicObject extends Model
         'formula',
         'formula_display',
         'default_value',
-        'required',
-        'validation_message',
         'conversion_formula',
-        'sort_order',
+        'conversion_dofus_sample',
+        'conversion_krosmoz_sample',
+        'conversion_sample_rows',
         'forgemagie_allowed',
         'forgemagie_max',
         'base_price_per_unit',
@@ -72,10 +74,9 @@ class CharacteristicObject extends Model
 
     /** @var array<string, string> */
     protected $casts = [
-        'min' => 'integer',
-        'max' => 'integer',
-        'required' => 'boolean',
-        'sort_order' => 'integer',
+        'conversion_dofus_sample' => 'array',
+        'conversion_krosmoz_sample' => 'array',
+        'conversion_sample_rows' => 'array',
         'forgemagie_allowed' => 'boolean',
         'forgemagie_max' => 'integer',
         'base_price_per_unit' => 'decimal:2',
@@ -86,5 +87,17 @@ class CharacteristicObject extends Model
     public function characteristic(): BelongsTo
     {
         return $this->belongsTo(Characteristic::class);
+    }
+
+    /**
+     * Types d'équipement (item_types) pour lesquels cette caractéristique est autorisée.
+     * Vide = tous les types ; sinon la caractéristique ne s'applique qu'aux types listés.
+     *
+     * @return BelongsToMany<ItemType, self>
+     */
+    public function allowedItemTypes(): BelongsToMany
+    {
+        return $this->belongsToMany(ItemType::class, 'characteristic_object_item_type')
+            ->withTimestamps();
     }
 }

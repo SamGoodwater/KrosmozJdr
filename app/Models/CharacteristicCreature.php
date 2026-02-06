@@ -14,25 +14,16 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property int $characteristic_id
  * @property string $entity
  * @property string|null $db_column
- * @property int|null $min
- * @property int|null $max
+ * @property string|null $min Valeur fixe, formule ou table JSON
+ * @property string|null $max Valeur fixe, formule ou table JSON
  * @property string|null $formula
  * @property string|null $formula_display
  * @property string|null $default_value
- * @property bool $required
- * @property string|null $validation_message
  * @property string|null $conversion_formula
- * @property int $sort_order
- * @property array|null $applies_to
- * @property bool $is_competence
- * @property string|null $skill_characteristic_key
- * @property string|null $alternative_characteristic_key
- * @property string|null $skill_type
- * @property array|null $value_available
+ * @property array|null $conversion_dofus_sample Niveau → valeur Dofus (ex. {"1":1,"200":200})
+ * @property array|null $conversion_krosmoz_sample Niveau → valeur Krosmoz (ex. {"1":1,"20":20})
  * @property array|null $labels
  * @property array|null $validation
- * @property array|null $mastery_value_available
- * @property array|null $mastery_labels
  */
 class CharacteristicCreature extends Model
 {
@@ -58,35 +49,21 @@ class CharacteristicCreature extends Model
         'formula',
         'formula_display',
         'default_value',
-        'required',
-        'validation_message',
         'conversion_formula',
-        'sort_order',
-        'applies_to',
-        'is_competence',
-        'skill_characteristic_key',
-        'alternative_characteristic_key',
-        'skill_type',
-        'value_available',
+        'conversion_dofus_sample',
+        'conversion_krosmoz_sample',
+        'conversion_sample_rows',
         'labels',
         'validation',
-        'mastery_value_available',
-        'mastery_labels',
     ];
 
     /** @var array<string, string> */
     protected $casts = [
-        'min' => 'integer',
-        'max' => 'integer',
-        'required' => 'boolean',
-        'sort_order' => 'integer',
-        'is_competence' => 'boolean',
-        'applies_to' => 'array',
-        'value_available' => 'array',
+        'conversion_dofus_sample' => 'array',
+        'conversion_krosmoz_sample' => 'array',
+        'conversion_sample_rows' => 'array',
         'labels' => 'array',
         'validation' => 'array',
-        'mastery_value_available' => 'array',
-        'mastery_labels' => 'array',
     ];
 
     public function characteristic(): BelongsTo

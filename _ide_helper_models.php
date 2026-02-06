@@ -1255,61 +1255,6 @@ namespace App\Models\Entity{
 
 namespace App\Models{
 /**
- * Slot d'équipement (arme, chapeau, cape, etc.).
- *
- * @property string $id
- * @property string $name
- * @property int $sort_order
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\EquipmentSlotCharacteristic> $slotCharacteristics
- * @property-read int|null $slot_characteristics_count
- * @method static \Illuminate\Database\Eloquent\Builder<static>|EquipmentSlot newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|EquipmentSlot newQuery()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|EquipmentSlot query()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|EquipmentSlot whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|EquipmentSlot whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|EquipmentSlot whereName($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|EquipmentSlot whereSortOrder($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|EquipmentSlot whereUpdatedAt($value)
- */
-	class EquipmentSlot extends \Eloquent {}
-}
-
-namespace App\Models{
-/**
- * Pour un slot d'équipement (entity=item) : une caractéristique avec bracket_max, forgemagie_max et prix par unité.
- *
- * @property int $id
- * @property string $equipment_slot_id
- * @property string $entity
- * @property string $characteristic_key
- * @property array $bracket_max
- * @property int|null $forgemagie_max
- * @property float|null $base_price_per_unit
- * @property float|null $rune_price_per_unit
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
- * @property-read \App\Models\EquipmentSlot $equipmentSlot
- * @method static \Illuminate\Database\Eloquent\Builder<static>|EquipmentSlotCharacteristic newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|EquipmentSlotCharacteristic newQuery()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|EquipmentSlotCharacteristic query()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|EquipmentSlotCharacteristic whereBasePricePerUnit($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|EquipmentSlotCharacteristic whereBracketMax($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|EquipmentSlotCharacteristic whereCharacteristicKey($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|EquipmentSlotCharacteristic whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|EquipmentSlotCharacteristic whereEntity($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|EquipmentSlotCharacteristic whereEquipmentSlotId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|EquipmentSlotCharacteristic whereForgemagieMax($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|EquipmentSlotCharacteristic whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|EquipmentSlotCharacteristic whereRunePricePerUnit($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|EquipmentSlotCharacteristic whereUpdatedAt($value)
- */
-	class EquipmentSlotCharacteristic extends \Eloquent {}
-}
-
-namespace App\Models{
-/**
  * @property int $id
  * @property string $file
  * @property string|null $title

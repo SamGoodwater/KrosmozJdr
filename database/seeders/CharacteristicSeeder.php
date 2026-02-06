@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Database\Seeders;
 
 use App\Models\Characteristic;
+use Database\Seeders\Concerns\LoadsSeederDataFile;
 use Illuminate\Database\Seeder;
 
 /**
@@ -12,16 +13,13 @@ use Illuminate\Database\Seeder;
  */
 class CharacteristicSeeder extends Seeder
 {
+    use LoadsSeederDataFile;
+
+    private const DATA_FILE = 'database/seeders/data/characteristics.php';
+
     public function run(): void
     {
-        $path = base_path('database/seeders/data/characteristics.php');
-        if (! is_file($path)) {
-            return;
-        }
-        $rows = require $path;
-        if (! is_array($rows)) {
-            $rows = [];
-        }
+        $rows = $this->loadDataFile(self::DATA_FILE);
         foreach ($rows as $row) {
             Characteristic::updateOrCreate(
                 ['key' => $row['key']],

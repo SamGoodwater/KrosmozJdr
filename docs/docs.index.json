@@ -1060,6 +1060,21 @@
     "description": "Résumé du besoin décrit, avec exemples. Approche retenue : **organisation par entité** (affichage, édition et modèle de données)."
   },
   {
+    "path": "50-Fonctionnalités/Characteristics-DB/PRESENTATION_SERVICE_CARACTERISTIQUES.md",
+    "title": "Service de caractéristiques — Présentation et objectifs",
+    "description": "Objectif du service (BDD + interface admin), les 3 groupes (object, spell, creature), même nom / sens différent, lien définition ↔ entité, et propriétés communes (face visible : clé, nom, nom court, icône, unité, description)."
+  },
+  {
+    "path": "50-Fonctionnalités/Characteristics-DB/TYPES_VALEURS_ET_CONTENU_JSON.md",
+    "title": "Types de valeurs et contenu JSON des caractéristiques",
+    "description": "Types Boolean, Liste, String avec leurs propriétés (valeur calculée, par défaut, min/max, valeurs possibles, helper, calcul affiché). Stockage JSON : valeur fixe, formule ou table par caractéristique (seuils n → (n+1)-1)."
+  },
+  {
+    "path": "50-Fonctionnalités/Characteristics-DB/ANALYSE_PDF_CARACTERISTIQUES_EQUIPEMENTS.md",
+    "title": "Analyse des PDF Caractéristiques et Équipements / Forgemagie",
+    "description": "Comparaison des PDF règles (Caractéristiques.pdf, Equipements et forgemagie.pdf) avec l’architecture du service de caractéristiques : groupes, fixe/formule/table, prix/forgemagie, slots. Conclusion : architecture adaptée ; recommandation d’ajouter le type int/numeric en doc."
+  },
+  {
     "path": "50-Fonctionnalités/Characteristics-DB/CONVERSION_100_BDD_ET_HANDLERS.md",
     "title": "Conversion 100 % pilotée par la BDD et handlers nommés",
     "description": "**Objectif** : Que la conversion DofusDB → KrosmozJDR (côté caractéristiques) ne dépende que de la base de données. Les formules, limites et mappings sont en BDD ; les cas complexes (ex. résistances) sont gérés par des **handlers nommés** enregistrés en BDD et exécutés en PHP."
@@ -1087,7 +1102,22 @@
   {
     "path": "50-Fonctionnalités/Characteristics-DB/SEEDERS_DONNEES.md",
     "title": "Données des seeders de caractéristiques",
-    "description": "Ce document décrit le contenu des fichiers de données des seeders (`database/seeders/data/characteristics.php`, `characteristic_creature.php`, `characteristic_object.php`, `characteristic_spell.php`) et le lien avec les autres modules (équipements, effets de sorts)."
+    "description": "Ce document décrit le contenu des fichiers de données des seeders (`database/seeders/data/characteristics.php`, `characteristic_creature.php`, `characteristic_object.php`, `characteristic_spell.php`) et le lien avec les autres modules (équipements, effets de sorts). Export BDD → fichiers : php artisan db:export-seeder-data --characteristics."
+  },
+  {
+    "path": "50-Fonctionnalités/Characteristics-DB/ARCHITECTURE_SOUS_SERVICES.md",
+    "title": "Architecture : les 4 sous-services de caractéristiques",
+    "description": "Getter (récupérer les définitions), Limit (valider selon type boolean/list/string, clamp), Formula (résolution sécurisée, ndX, [variable]), Conversion (Dofus → Krosmoz). Export seeders. Slots vs item_types."
+  },
+  {
+    "path": "50-Fonctionnalités/Characteristics-DB/AUDIT_CODE_CARACTERISTIQUES.md",
+    "title": "Audit code : caractéristiques (doublons, obsolète, à optimiser)",
+    "description": "Recensement des écarts : Limit à étendre (validation par type), export seeder (pivot item_type, value_available), config characteristics_rarity obsolète, slots vs item_types."
+  },
+  {
+    "path": "50-Fonctionnalités/Characteristics-DB/PROPRIETES_CONVERSION_DOFUS_KROSMOZ.md",
+    "title": "Propriétés de conversion Dofus → Krosmoz",
+    "description": "conversion_formula (fixe, formule, table avec variable d), conversion_dofus_sample et conversion_krosmoz_sample (JSON par niveau), graphiques et automatisation de la formule."
   },
   {
     "path": "50-Fonctionnalités/ESTIMATION_RENOMMAGE_CLASSE_EN_BREED.md",

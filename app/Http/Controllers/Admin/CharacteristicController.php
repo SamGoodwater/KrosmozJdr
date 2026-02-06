@@ -9,6 +9,7 @@ use App\Models\Characteristic;
 use App\Models\CharacteristicCreature;
 use App\Models\CharacteristicObject;
 use App\Models\CharacteristicSpell;
+use App\Services\Characteristic\Conversion\ConversionFormulaGenerator;
 use App\Services\Characteristic\Formula\CharacteristicFormulaService;
 use App\Services\Characteristic\Formula\FormulaConfigDecoder;
 use App\Services\Characteristic\Getter\CharacteristicGetterService;
@@ -35,7 +36,8 @@ class CharacteristicController extends Controller
 
     public function __construct(
         private readonly CharacteristicGetterService $getter,
-        private readonly CharacteristicFormulaService $formulaService
+        private readonly CharacteristicFormulaService $formulaService,
+        private readonly ConversionFormulaGenerator $conversionFormulaGenerator
     ) {
     }
 
@@ -65,10 +67,10 @@ class CharacteristicController extends Controller
             'formula' => null,
             'formula_display' => null,
             'default_value' => null,
-            'required' => false,
-            'validation_message' => null,
             'conversion_formula' => null,
-            'sort_order' => 0,
+            'conversion_dofus_sample' => null,
+            'conversion_krosmoz_sample' => null,
+            'conversion_sample_rows' => null,
             'forgemagie_allowed' => false,
             'forgemagie_max' => 0,
             'base_price_per_unit' => null,
@@ -111,15 +113,12 @@ class CharacteristicController extends Controller
             'entities' => 'array',
             'entities.*.entity' => 'required|string|max:32',
             'entities.*.db_column' => 'nullable|string|max:64',
-            'entities.*.min' => 'nullable|integer',
-            'entities.*.max' => 'nullable|integer',
+            'entities.*.min' => 'nullable|string|max:512',
+            'entities.*.max' => 'nullable|string|max:512',
             'entities.*.formula' => 'nullable|string',
             'entities.*.formula_display' => 'nullable|string',
             'entities.*.default_value' => 'nullable|string|max:512',
-            'entities.*.required' => 'nullable|boolean',
-            'entities.*.validation_message' => 'nullable|string',
             'entities.*.conversion_formula' => 'nullable|string',
-            'entities.*.sort_order' => 'nullable|integer',
             'entities.*.forgemagie_allowed' => 'nullable|boolean',
             'entities.*.forgemagie_max' => 'nullable|integer',
             'entities.*.base_price_per_unit' => 'nullable|numeric',
@@ -214,6 +213,7 @@ class CharacteristicController extends Controller
             'name' => $characteristic->name,
             'short_name' => $characteristic->short_name,
             'description' => $characteristic->descriptions,
+            'helper' => $characteristic->helper,
             'icon' => $characteristic->icon,
             'color' => $characteristic->color,
             'type' => $characteristic->type,
@@ -304,6 +304,154 @@ class CharacteristicController extends Controller
         return response()->json(['points' => $points]);
     }
 
+    /**
+     * Suggère une formule de conversion à partir des échantillons ou des paires (d, k).
+     * Body : soit (conversion_dofus_sample + conversion_krosmoz_sample), soit (pairs : [{d, k}, ...]), et curve_type (table|linear|power|shifted_power).
+     */
+    public function suggestConversionFormula(Request $request): JsonResponse
+    {
+        $validated = $request->validate([
+            'conversion_dofus_sample' => 'nullable|array',
+            'conversion_dofus_sample.*' => 'numeric',
+            'conversion_krosmoz_sample' => 'nullable|array',
+            'conversion_krosmoz_sample.*' => 'numeric',
+            'pairs' => 'nullable|array',
+            'pairs.*.d' => 'required_with:pairs|numeric',
+            'pairs.*.k' => 'required_with:pairs|numeric',
+            'curve_type' => 'required|in:table,linear,power,shifted_power',
+        ]);
+        $curveType = $validated['curve_type'];
+
+        if (! empty($validated['pairs'])) {
+            $pairs = array_map(function (array $p): array {
+                return ['d' => (float) $p['d'], 'k' => (float) $p['k']];
+            }, $validated['pairs']);
+            $suggestions = $this->conversionFormulaGenerator->suggestFormulasFromPairs($pairs);
+        } else {
+            $dofusSample = $this->normalizeSampleKeys($validated['conversion_dofus_sample'] ?? []);
+            $krosmozSample = $this->normalizeSampleKeys($validated['conversion_krosmoz_sample'] ?? []);
+            if ($dofusSample === [] || $krosmozSample === []) {
+                return response()->json(
+                    ['message' => 'Fournissez soit des paires (d, k), soit conversion_dofus_sample et conversion_krosmoz_sample.'],
+                    422
+                );
+            }
+            $suggestions = $this->conversionFormulaGenerator->suggestFormulas($dofusSample, $krosmozSample);
+        }
+
+        if ($curveType === 'table') {
+            return response()->json(['formula' => $suggestions['table']]);
+        }
+        $result = $suggestions[$curveType] ?? null;
+        if ($result === null) {
+            return response()->json(
+                ['message' => "Ajustement {$curveType} impossible avec les données fournies."],
+                422
+            );
+        }
+        return response()->json([
+            'formula' => $result['formula'],
+            'r2' => $result['r2'],
+        ]);
+    }
+
+    /**
+     * @param array<string, mixed> $sample
+     * @return array<int|string, float>
+     */
+    private function normalizeSampleKeys(array $sample): array
+    {
+        $out = [];
+        foreach ($sample as $k => $v) {
+            $key = is_numeric($k) ? (int) $k : $k;
+            $out[$key] = (float) $v;
+        }
+        return $out;
+    }
+
+    /**
+     * Normalise les échantillons pour la sauvegarde (null ou tableau clé → valeur numérique).
+     *
+     * @param mixed $value
+     * @return array<int|string, float>|null
+     */
+    private function normalizeSampleForSave(mixed $value): ?array
+    {
+        if ($value === null || $value === []) {
+            return null;
+        }
+        if (! is_array($value)) {
+            return null;
+        }
+        $out = [];
+        foreach ($value as $k => $v) {
+            if (is_numeric($v)) {
+                $out[is_numeric($k) ? (int) $k : (string) $k] = (float) $v;
+            }
+        }
+        return $out ?: null;
+    }
+
+    /**
+     * Normalise conversion_sample_rows pour la sauvegarde (liste de {dofus_level, dofus_value, krosmoz_level, krosmoz_value}).
+     *
+     * @param mixed $value
+     * @return list<array{dofus_level: int|float, dofus_value: int|float, krosmoz_level: int|float, krosmoz_value: int|float}>|null
+     */
+    private function normalizeSampleRowsForSave(mixed $value): ?array
+    {
+        if ($value === null || ! is_array($value)) {
+            return null;
+        }
+        $out = [];
+        foreach ($value as $row) {
+            if (! is_array($row)) {
+                continue;
+            }
+            $dofusLevel = isset($row['dofus_level']) && is_numeric($row['dofus_level']) ? (float) $row['dofus_level'] : null;
+            $krosmozLevel = isset($row['krosmoz_level']) && is_numeric($row['krosmoz_level']) ? (float) $row['krosmoz_level'] : null;
+            if ($dofusLevel === null || $krosmozLevel === null) {
+                continue;
+            }
+            $dofusValue = isset($row['dofus_value']) && $row['dofus_value'] !== '' && is_numeric($row['dofus_value']) ? (float) $row['dofus_value'] : null;
+            $krosmozValue = isset($row['krosmoz_value']) && $row['krosmoz_value'] !== '' && is_numeric($row['krosmoz_value']) ? (float) $row['krosmoz_value'] : null;
+            $out[] = [
+                'dofus_level' => $dofusLevel,
+                'dofus_value' => $dofusValue,
+                'krosmoz_level' => $krosmozLevel,
+                'krosmoz_value' => $krosmozValue,
+            ];
+        }
+        return $out ?: null;
+    }
+
+    /**
+     * Dérive un échantillon (niveau → valeur) à partir des lignes, pour compatibilité avec les lecteurs existants.
+     *
+     * @param list<array{dofus_level: int|float, dofus_value: int|float, krosmoz_level: int|float, krosmoz_value: int|float}>|null $rows
+     * @return array<int|string, float>|null
+     */
+    private function deriveSampleFromRows(?array $rows, string $which): ?array
+    {
+        if ($rows === null || $rows === []) {
+            return null;
+        }
+        $out = [];
+        foreach ($rows as $row) {
+            if ($which === 'dofus') {
+                $key = $row['dofus_level'];
+                $val = $row['dofus_value'];
+            } else {
+                $key = $row['krosmoz_level'];
+                $val = $row['krosmoz_value'];
+            }
+            if ($key !== null && $val !== null && $val !== '' && is_numeric($val)) {
+                $out[is_numeric($key) ? (int) $key : (string) $key] = (float) $val;
+            }
+        }
+        return $out ?: null;
+    }
+
     public function update(Request $request, string $characteristic_key): \Illuminate\Http\RedirectResponse
     {
         $characteristic = Characteristic::where('key', $characteristic_key)->first();
@@ -315,6 +463,7 @@ class CharacteristicController extends Controller
             'name' => 'required|string|max:255',
             'short_name' => 'nullable|string|max:255',
             'description' => 'nullable|string',
+            'helper' => 'nullable|string',
             'icon' => 'nullable|string|max:64',
             'color' => 'nullable|string|max:64',
             'type' => 'required|in:int,string,array',
@@ -323,15 +472,21 @@ class CharacteristicController extends Controller
             'entities' => 'array',
             'entities.*.entity' => 'required|in:' . implode(',', self::ENTITIES),
             'entities.*.db_column' => 'nullable|string|max:64',
-            'entities.*.min' => 'nullable|integer',
-            'entities.*.max' => 'nullable|integer',
+            'entities.*.min' => 'nullable|string|max:512',
+            'entities.*.max' => 'nullable|string|max:512',
             'entities.*.formula' => 'nullable|string',
             'entities.*.formula_display' => 'nullable|string',
             'entities.*.default_value' => 'nullable|string|max:512',
-            'entities.*.required' => 'nullable|boolean',
-            'entities.*.validation_message' => 'nullable|string',
             'entities.*.conversion_formula' => 'nullable|string',
-            'entities.*.sort_order' => 'nullable|integer',
+            'entities.*.conversion_dofus_sample' => 'nullable|array',
+            'entities.*.conversion_dofus_sample.*' => 'numeric',
+            'entities.*.conversion_krosmoz_sample' => 'nullable|array',
+            'entities.*.conversion_krosmoz_sample.*' => 'numeric',
+            'entities.*.conversion_sample_rows' => 'nullable|array',
+            'entities.*.conversion_sample_rows.*.dofus_level' => 'nullable|numeric',
+            'entities.*.conversion_sample_rows.*.dofus_value' => 'nullable|numeric',
+            'entities.*.conversion_sample_rows.*.krosmoz_level' => 'nullable|numeric',
+            'entities.*.conversion_sample_rows.*.krosmoz_value' => 'nullable|numeric',
             'entities.*.forgemagie_allowed' => 'nullable|boolean',
             'entities.*.forgemagie_max' => 'nullable|integer',
             'entities.*.base_price_per_unit' => 'nullable|numeric',
@@ -342,6 +497,7 @@ class CharacteristicController extends Controller
             'name' => $data['name'],
             'short_name' => $data['short_name'] ?? null,
             'descriptions' => $data['description'] ?? null,
+            'helper' => $data['helper'] ?? null,
             'icon' => $data['icon'] ?? null,
             'color' => $data['color'] ?? null,
             'type' => $data['type'],
@@ -447,10 +603,10 @@ class CharacteristicController extends Controller
             'formula' => $row->formula,
             'formula_display' => $row->formula_display,
             'default_value' => $row->default_value,
-            'required' => $row->required,
-            'validation_message' => $row->validation_message,
             'conversion_formula' => $row->conversion_formula,
-            'sort_order' => $row->sort_order,
+            'conversion_dofus_sample' => $row->conversion_dofus_sample,
+            'conversion_krosmoz_sample' => $row->conversion_krosmoz_sample,
+            'conversion_sample_rows' => $row->conversion_sample_rows,
             'forgemagie_allowed' => false,
             'forgemagie_max' => 0,
             'base_price_per_unit' => null,
@@ -526,10 +682,7 @@ class CharacteristicController extends Controller
                 'formula' => null,
                 'formula_display' => null,
                 'default_value' => null,
-                'required' => false,
-                'validation_message' => null,
                 'conversion_formula' => null,
-                'sort_order' => 0,
                 'forgemagie_allowed' => false,
                 'forgemagie_max' => 0,
                 'base_price_per_unit' => null,
@@ -554,6 +707,7 @@ class CharacteristicController extends Controller
 
     private function updateGroupRow(int $characteristicId, string $entity, array $data): void
     {
+        $sampleRows = $this->normalizeSampleRowsForSave($data['conversion_sample_rows'] ?? null);
         $common = [
             'db_column' => $data['db_column'] ?? null,
             'min' => $data['min'] ?? null,
@@ -561,10 +715,10 @@ class CharacteristicController extends Controller
             'formula' => $data['formula'] ?? null,
             'formula_display' => $data['formula_display'] ?? null,
             'default_value' => $data['default_value'] ?? null,
-            'required' => (bool) ($data['required'] ?? false),
-            'validation_message' => $data['validation_message'] ?? null,
             'conversion_formula' => $data['conversion_formula'] ?? null,
-            'sort_order' => isset($data['sort_order']) ? (int) $data['sort_order'] : 0,
+            'conversion_dofus_sample' => $this->deriveSampleFromRows($sampleRows, 'dofus') ?? $this->normalizeSampleForSave($data['conversion_dofus_sample'] ?? null),
+            'conversion_krosmoz_sample' => $this->deriveSampleFromRows($sampleRows, 'krosmoz') ?? $this->normalizeSampleForSave($data['conversion_krosmoz_sample'] ?? null),
+            'conversion_sample_rows' => $sampleRows,
         ];
 
         if (in_array($entity, ['*', 'monster', 'class', 'npc'], true)) {
@@ -574,13 +728,15 @@ class CharacteristicController extends Controller
             );
         }
         if (in_array($entity, ['*', 'item', 'consumable', 'resource', 'panoply'], true)) {
+            $basePrice = $data['base_price_per_unit'] ?? null;
+            $runePrice = $data['rune_price_per_unit'] ?? null;
             CharacteristicObject::updateOrCreate(
                 ['characteristic_id' => $characteristicId, 'entity' => $entity],
                 array_merge($common, [
                     'forgemagie_allowed' => (bool) ($data['forgemagie_allowed'] ?? false),
                     'forgemagie_max' => (int) ($data['forgemagie_max'] ?? 0),
-                    'base_price_per_unit' => isset($data['base_price_per_unit']) ? (float) $data['base_price_per_unit'] : null,
-                    'rune_price_per_unit' => isset($data['rune_price_per_unit']) ? (float) $data['rune_price_per_unit'] : null,
+                    'base_price_per_unit' => $basePrice !== null && $basePrice !== '' ? (float) $basePrice : null,
+                    'rune_price_per_unit' => $runePrice !== null && $runePrice !== '' ? (float) $runePrice : null,
                 ])
             );
         }

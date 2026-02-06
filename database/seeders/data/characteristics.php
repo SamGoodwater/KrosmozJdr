@@ -14,7 +14,7 @@ return array (
     'short_name' => 'Niv.',
     'helper' => 'Niveau de la créature (1–200).',
     'descriptions' => NULL,
-    'icon' => NULL,
+    'icon' => 'life.png',
     'color' => NULL,
     'unit' => NULL,
     'type' => 'int',

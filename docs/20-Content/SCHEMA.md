@@ -380,25 +380,6 @@ erDiagram
     deleted_at : timestamp
     created_by : bigint(20) unsigned
   }
-  EQUIPMENT_SLOT_CHARACTERISTICS {
-    id : bigint(20) unsigned
-    equipment_slot_id : varchar(32)
-    entity : varchar(32)
-    characteristic_key : varchar(64)
-    bracket_max : longtext
-    forgemagie_max : tinyint(3) unsigned
-    base_price_per_unit : decimal(12,2)
-    rune_price_per_unit : decimal(12,2)
-    created_at : timestamp
-    updated_at : timestamp
-  }
-  EQUIPMENT_SLOTS {
-    id : varchar(32)
-    name : varchar(255)
-    sort_order : smallint(5) unsigned
-    created_at : timestamp
-    updated_at : timestamp
-  }
   FAILED_JOBS {
     id : bigint(20) unsigned
     uuid : varchar(255)
@@ -951,7 +932,6 @@ erDiagram
   CREATURE_SPELL }o--|| CREATURES : "FK creature_id"
   CREATURE_SPELL }o--|| SPELLS : "FK spell_id"
   CREATURES }o--|| USERS : "FK created_by"
-  EQUIPMENT_SLOT_CHARACTERISTICS }o--|| EQUIPMENT_SLOTS : "FK equipment_slot_id"
   FILE_CAMPAIGN }o--|| CAMPAIGNS : "FK campaign_id"
   FILE_CAMPAIGN }o--|| FILES : "FK file_id"
   FILE_SCENARIO }o--|| FILES : "FK file_id"

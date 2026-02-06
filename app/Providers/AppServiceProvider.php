@@ -2,11 +2,7 @@
 
 namespace App\Providers;
 
-use App\Models\EquipmentSlot;
-use App\Models\EquipmentSlotCharacteristic;
-use App\Observers\EquipmentCharacteristicConfigObserver;
 use App\Services\Characteristic\Conversion\DofusConversionService;
-use App\Services\Characteristic\Equipment\EquipmentCharacteristicService;
 use App\Services\Characteristic\Formula\CharacteristicFormulaService;
 use App\Services\Characteristic\Getter\CharacteristicGetterService;
 use App\Services\Characteristic\Limit\CharacteristicLimitService;
@@ -26,7 +22,6 @@ class AppServiceProvider extends ServiceProvider
         $this->app->singleton(CharacteristicLimitService::class);
         $this->app->singleton(CharacteristicFormulaService::class);
         $this->app->singleton(DofusConversionService::class);
-        $this->app->singleton(EquipmentCharacteristicService::class);
 
         $this->app->singleton(ConfigLoader::class, static fn () => ConfigLoader::default());
         $this->app->singleton(CollectService::class, static fn () => new CollectService(
@@ -40,8 +35,5 @@ class AppServiceProvider extends ServiceProvider
     {
         Vite::prefetch(concurrency: 3);
         Model::unguard();
-
-        EquipmentSlot::observe(EquipmentCharacteristicConfigObserver::class);
-        EquipmentSlotCharacteristic::observe(EquipmentCharacteristicConfigObserver::class);
     }
 }

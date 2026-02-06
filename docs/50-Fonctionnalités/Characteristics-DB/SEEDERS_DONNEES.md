@@ -1,6 +1,6 @@
 # Données des seeders de caractéristiques
 
-Ce document décrit le contenu des fichiers de données des seeders (`database/seeders/data/characteristics.php`, `characteristic_creature.php`, `characteristic_object.php`, `characteristic_spell.php`) et le lien avec les autres modules (équipements, effets de sorts).
+Ce document décrit le contenu des fichiers de données des seeders (`database/seeders/data/characteristics.php`, `characteristic_creature.php`, `characteristic_object.php`, `characteristic_spell.php`) et le lien avec les autres modules (équipements, effets de sorts). Pour **régénérer** ces fichiers à partir de la BDD : `php artisan db:export-seeder-data` (option `--characteristics`). Fichiers produits : `database/seeders/data/characteristics.php`, `characteristic_creature.php`, `characteristic_object.php`, `characteristic_spell.php`. Voir [ARCHITECTURE_SOUS_SERVICES.md](./ARCHITECTURE_SOUS_SERVICES.md) § 6.
 
 ---
 
@@ -15,7 +15,7 @@ Ce document décrit le contenu des fichiers de données des seeders (`database/s
 
 ---
 
-## 2. Groupe object : bonus des équipements
+## 3. Groupe object : bonus des équipements
 
 Les **bonus que peuvent donner les équipements** (armes, chapeaux, capes, amulettes, bottes, anneaux, ceintures, boucliers) sont définis comme caractéristiques du groupe **object**, d’après le document **Equipements et forgemagie.pdf** (docs/110- To Do).
 
@@ -28,7 +28,7 @@ Exemples : bonus de touche, dommages fixes (neutre, terre, feu, air, eau, multip
 
 ---
 
-## 3. Groupe spell : propriétés du sort vs effets du sort
+## 4. Groupe spell : propriétés du sort vs effets du sort
 
 Les **caractéristiques du groupe spell** décrivent les **propriétés du sort** stockées sur le modèle **Spell** : niveau, coût en PA, portée (PO), zone (area), élément, puissance, lancers par tour / par cible, ligne de vue, délai entre deux lancers, catégorie, sort magique (booléen).
 

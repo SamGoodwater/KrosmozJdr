@@ -7,7 +7,7 @@ namespace App\Services\Characteristic\Limit;
 use App\Services\Characteristic\Getter\CharacteristicGetterService;
 
 /**
- * Service limite : valide un objet entité ou une caractéristique contre les limites (min, max, required, value_available).
+ * Service limite : valide un objet entité ou une caractéristique contre les limites (min, max).
  * S’appuie uniquement sur le Getter.
  */
 final class CharacteristicLimitService

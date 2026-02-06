@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Database\Seeders;
 
 use App\Models\SpellEffectType;
+use Database\Seeders\Concerns\LoadsSeederDataFile;
 use Illuminate\Database\Seeder;
 
 /**
@@ -17,24 +18,18 @@ use Illuminate\Database\Seeder;
  */
 class SpellEffectTypeSeeder extends Seeder
 {
+    use LoadsSeederDataFile;
+
     private const DATA_FILE = 'database/seeders/data/spell_effect_types.php';
 
     public function run(): void
     {
         $path = base_path(self::DATA_FILE);
-        if (! is_file($path)) {
-            if ($this->command) {
-                $this->command->warn('Fichier absent : ' . self::DATA_FILE);
-            }
-
-            return;
+        if (! is_file($path) && $this->command) {
+            $this->command->warn('Fichier absent : ' . self::DATA_FILE);
         }
 
-        $types = require $path;
-        if (! is_array($types)) {
-            $types = [];
-        }
-
+        $types = $this->loadDataFile(self::DATA_FILE);
         foreach ($types as $row) {
             SpellEffectType::updateOrCreate(
                 ['slug' => $row['slug']],
@@ -51,7 +46,6 @@ class SpellEffectTypeSeeder extends Seeder
                 ]
             );
         }
-
         if ($this->command) {
             $this->command->info('SpellEffectTypeSeeder : ' . count($types) . ' types d\'effets créés.');
         }

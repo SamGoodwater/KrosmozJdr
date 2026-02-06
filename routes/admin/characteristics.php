@@ -17,6 +17,7 @@ Route::prefix('admin/characteristics')
         Route::get('/create', [CharacteristicController::class, 'create'])->name('create');
         Route::post('/', [CharacteristicController::class, 'store'])->name('store');
         Route::get('/formula-preview', [CharacteristicController::class, 'formulaPreview'])->name('formula-preview');
+        Route::post('/suggest-conversion-formula', [CharacteristicController::class, 'suggestConversionFormula'])->name('suggest-conversion-formula');
         Route::post('/upload-icon', [CharacteristicController::class, 'uploadIcon'])->name('upload-icon');
         Route::get('/{characteristic_key}', [CharacteristicController::class, 'show'])->name('show')->where('characteristic_key', '[a-z0-9_]+');
         Route::patch('/{characteristic_key}', [CharacteristicController::class, 'update'])->name('update')->where('characteristic_key', '[a-z0-9_]+');

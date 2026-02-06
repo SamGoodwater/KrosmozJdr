@@ -8,6 +8,8 @@ use App\Models\Characteristic;
 use App\Models\CharacteristicCreature;
 use App\Models\CharacteristicObject;
 use App\Models\CharacteristicSpell;
+use App\Services\Characteristic\Formula\FormulaResolutionService;
+
 /**
  * Getter généraliste : fournit les définitions d’une caractéristique par clé et entité.
  * Résout entity → groupe (creature, object, spell) et fusionne table générale + table de groupe.
@@ -16,6 +18,11 @@ final class CharacteristicGetterService
 {
     /** Valeur entity = « s'applique à toutes les entités du groupe ». */
     public const ENTITY_ALL = '*';
+
+    public function __construct(
+        private readonly FormulaResolutionService $formulaResolution
+    ) {
+    }
 
     /** Entités du groupe creature */
     private const GROUP_CREATURE = ['monster', 'class', 'npc'];
@@ -37,40 +44,49 @@ final class CharacteristicGetterService
         if ($characteristic === null) {
             return null;
         }
-        $row = $this->findGroupRow($characteristic->id, $entity);
-        if ($row === null) {
+        [$base, $overlay] = $this->findGroupRows($characteristic->id, $entity);
+        if ($base === null && $overlay === null) {
             return null;
         }
-        return $this->mergeDefinition($characteristic, $row);
+        return $this->mergeDefinition($characteristic, $base, $overlay, $entity);
     }
 
     /**
      * Retourne les limites min/max pour une caractéristique et une entité.
+     * Min/max peuvent être une valeur fixe, une formule ([level]*2) ou une table par caractéristique ;
+     * ils sont évalués avec les variables fournies (ex. level, vitality). Sans variables, formules/tables
+     * sont évaluées avec 0 pour les variables manquantes.
      *
+     * @param array<string, int|float> $variables Contexte pour l'évaluation (ex. ['level' => 5, 'vitality' => 10])
      * @return array{min: int, max: int}|null
      */
-    public function getLimits(string $characteristicKey, string $entity): ?array
+    public function getLimits(string $characteristicKey, string $entity, array $variables = []): ?array
     {
         $def = $this->getDefinition($characteristicKey, $entity);
-        if ($def === null || !isset($def['min'], $def['max'])) {
+        if ($def === null) {
+            return null;
+        }
+        $minVal = $this->resolveLimitValue($def['min'] ?? null, $variables);
+        $maxVal = $this->resolveLimitValue($def['max'] ?? null, $variables);
+        if ($minVal === null || $maxVal === null) {
             return null;
         }
         return [
-            'min' => (int) $def['min'],
-            'max' => (int) $def['max'],
+            'min' => (int) $minVal,
+            'max' => (int) $maxVal,
         ];
     }
 
     /**
      * Retourne les limites pour un champ de données (nom de colonne ou clé) et une entité.
-     * Résout field via key ou db_column.
      *
+     * @param array<string, int|float> $variables Contexte pour l'évaluation des formules min/max
      * @return array{min: int, max: int}|null
      */
-    public function getLimitsByField(string $field, string $entity): ?array
+    public function getLimitsByField(string $field, string $entity, array $variables = []): ?array
     {
         $key = $this->resolveFieldToKey($field, $entity);
-        return $key !== null ? $this->getLimits($key, $entity) : null;
+        return $key !== null ? $this->getLimits($key, $entity, $variables) : null;
     }
 
     /**
@@ -151,42 +167,98 @@ final class CharacteristicGetterService
     }
 
     /**
-     * Trouve la ligne du groupe pour characteristic_id + entity.
-     * Priorité : 1) ligne avec entity = entité demandée (surcharge), 2) ligne avec entity = '*' (défaut groupe).
+     * Trouve la ligne de base (entity='*') et la surcharge (entity spécifique) pour characteristic_id + entity.
+     * Permet d'affiner les propriétés du groupe pour une entité précise (ex. formule PV pour monster uniquement).
      *
-     * @return CharacteristicCreature|CharacteristicObject|CharacteristicSpell|null
+     * @return array{0: CharacteristicCreature|CharacteristicObject|CharacteristicSpell|null, 1: CharacteristicCreature|CharacteristicObject|CharacteristicSpell|null}
      */
-    private function findGroupRow(int $characteristicId, string $entity): CharacteristicCreature|CharacteristicObject|CharacteristicSpell|null
+    private function findGroupRows(int $characteristicId, string $entity): array
     {
+        $entities = $entity !== self::ENTITY_ALL ? [$entity, self::ENTITY_ALL] : [self::ENTITY_ALL];
+
         if (in_array($entity, self::GROUP_CREATURE, true)) {
-            return CharacteristicCreature::where('characteristic_id', $characteristicId)
-                ->whereIn('entity', [$entity, self::ENTITY_ALL])
-                ->orderByRaw('entity = ? DESC', [$entity])
-                ->first();
+            $rows = CharacteristicCreature::where('characteristic_id', $characteristicId)
+                ->whereIn('entity', $entities)
+                ->get();
+            $base = $rows->firstWhere('entity', self::ENTITY_ALL);
+            $overlay = $entity !== self::ENTITY_ALL ? $rows->firstWhere('entity', $entity) : null;
+            return [$base, $overlay];
         }
         if (in_array($entity, self::GROUP_OBJECT, true)) {
-            return CharacteristicObject::where('characteristic_id', $characteristicId)
-                ->whereIn('entity', [$entity, self::ENTITY_ALL])
-                ->orderByRaw('entity = ? DESC', [$entity])
-                ->first();
+            $rows = CharacteristicObject::where('characteristic_id', $characteristicId)
+                ->whereIn('entity', $entities)
+                ->with('allowedItemTypes')
+                ->get();
+            $base = $rows->firstWhere('entity', self::ENTITY_ALL);
+            $overlay = $entity !== self::ENTITY_ALL ? $rows->firstWhere('entity', $entity) : null;
+            return [$base, $overlay];
         }
         if (in_array($entity, self::GROUP_SPELL, true)) {
-            return CharacteristicSpell::where('characteristic_id', $characteristicId)
-                ->whereIn('entity', [$entity, self::ENTITY_ALL])
-                ->orderByRaw('entity = ? DESC', [$entity])
-                ->first();
+            $rows = CharacteristicSpell::where('characteristic_id', $characteristicId)
+                ->whereIn('entity', $entities)
+                ->get();
+            $base = $rows->firstWhere('entity', self::ENTITY_ALL);
+            $overlay = $entity !== self::ENTITY_ALL ? $rows->firstWhere('entity', $entity) : null;
+            return [$base, $overlay];
         }
-        return null;
+        return [null, null];
     }
 
     /**
-     * Fusionne la caractéristique générale et la ligne de groupe en un seul tableau.
+     * Fusionne base et overlay : pour chaque propriété du groupe, la valeur non nulle de l'overlay l'emporte.
+     */
+    private function pickGroupValue(
+        CharacteristicCreature|CharacteristicObject|CharacteristicSpell|null $base,
+        CharacteristicCreature|CharacteristicObject|CharacteristicSpell|null $overlay,
+        string $attribute
+    ): mixed {
+        $overlayVal = $overlay !== null ? $overlay->getAttribute($attribute) : null;
+        if ($overlayVal !== null && $overlayVal !== '') {
+            return $overlayVal;
+        }
+        return $base !== null ? $base->getAttribute($attribute) : null;
+    }
+
+    /**
+     * Résout une limite (min ou max) : valeur fixe, formule ou table → entier.
      *
-     * @param CharacteristicCreature|CharacteristicObject|CharacteristicSpell $row
+     * @param mixed $value Valeur en BDD (string numérique, formule ou JSON table)
+     * @param array<string, int|float> $variables Contexte pour l'évaluation
+     */
+    private function resolveLimitValue(mixed $value, array $variables): ?int
+    {
+        if ($value === null || $value === '') {
+            return null;
+        }
+        $s = trim((string) $value);
+        if ($s === '') {
+            return null;
+        }
+        if (is_numeric($s)) {
+            return (int) (float) $s;
+        }
+        $evaluated = $this->formulaResolution->evaluate($s, $variables);
+        if ($evaluated === null) {
+            return null;
+        }
+        return (int) round($evaluated);
+    }
+
+    /**
+     * Fusionne la caractéristique générale et les lignes de groupe (base + surcharge entité) en un seul tableau.
+     * Les propriétés non généralistes (min, max, formula, etc.) sont prises sur la surcharge si non vides, sinon sur la base.
+     *
+     * @param CharacteristicCreature|CharacteristicObject|CharacteristicSpell|null $base Ligne entity='*'
+     * @param CharacteristicCreature|CharacteristicObject|CharacteristicSpell|null $overlay Ligne entity précise (ex. monster)
      * @return array<string, mixed>
      */
-    private function mergeDefinition(Characteristic $characteristic, CharacteristicCreature|CharacteristicObject|CharacteristicSpell $row): array
-    {
+    private function mergeDefinition(
+        Characteristic $characteristic,
+        CharacteristicCreature|CharacteristicObject|CharacteristicSpell|null $base,
+        CharacteristicCreature|CharacteristicObject|CharacteristicSpell|null $overlay,
+        string $entity
+    ): array {
+        $row = $overlay ?? $base;
         $out = [
             'id' => $characteristic->id,
             'key' => $characteristic->key,
@@ -198,35 +270,35 @@ final class CharacteristicGetterService
             'color' => $characteristic->color,
             'unit' => $characteristic->unit,
             'type' => $characteristic->type,
-            'sort_order' => $row->sort_order,
-            'entity' => $row->entity,
-            'db_column' => $row->db_column ?? $characteristic->key,
-            'min' => $row->min,
-            'max' => $row->max,
-            'formula' => $row->formula,
-            'formula_display' => $row->formula_display,
-            'default_value' => $row->default_value,
-            'required' => $row->required,
-            'validation_message' => $row->validation_message,
-            'conversion_formula' => $row->conversion_formula,
+            'entity' => $entity,
+            'db_column' => $this->pickGroupValue($base, $overlay, 'db_column') ?? $characteristic->key,
+            'min' => $this->pickGroupValue($base, $overlay, 'min'),
+            'max' => $this->pickGroupValue($base, $overlay, 'max'),
+            'formula' => $this->pickGroupValue($base, $overlay, 'formula'),
+            'formula_display' => $this->pickGroupValue($base, $overlay, 'formula_display'),
+            'default_value' => $this->pickGroupValue($base, $overlay, 'default_value'),
+            'conversion_formula' => $this->pickGroupValue($base, $overlay, 'conversion_formula'),
+            'conversion_dofus_sample' => $this->pickGroupValue($base, $overlay, 'conversion_dofus_sample'),
+            'conversion_krosmoz_sample' => $this->pickGroupValue($base, $overlay, 'conversion_krosmoz_sample'),
         ];
         if ($row instanceof CharacteristicObject) {
-            $out['forgemagie_allowed'] = $row->forgemagie_allowed;
-            $out['forgemagie_max'] = $row->forgemagie_max;
-            $out['base_price_per_unit'] = $row->base_price_per_unit;
-            $out['rune_price_per_unit'] = $row->rune_price_per_unit;
+            $out['forgemagie_allowed'] = $this->pickGroupValue($base, $overlay, 'forgemagie_allowed') ?? $row->forgemagie_allowed;
+            $out['forgemagie_max'] = $this->pickGroupValue($base, $overlay, 'forgemagie_max') ?? $row->forgemagie_max;
+            $out['base_price_per_unit'] = $this->pickGroupValue($base, $overlay, 'base_price_per_unit');
+            $out['rune_price_per_unit'] = $this->pickGroupValue($base, $overlay, 'rune_price_per_unit');
+            $out['value_available'] = $this->pickGroupValue($base, $overlay, 'value_available') ?? $row->value_available;
+            $overlayObj = $overlay instanceof CharacteristicObject ? $overlay : null;
+            $baseObj = $base instanceof CharacteristicObject ? $base : null;
+            $out['allowed_item_type_ids'] = ($overlayObj && $overlayObj->relationLoaded('allowedItemTypes') && $overlayObj->allowedItemTypes->isNotEmpty())
+                ? $overlayObj->allowedItemTypes->pluck('id')->all()
+                : ($baseObj && $baseObj->relationLoaded('allowedItemTypes') ? $baseObj->allowedItemTypes->pluck('id')->all() : []);
         }
         if ($row instanceof CharacteristicCreature) {
-            $out['applies_to'] = $row->applies_to;
-            $out['is_competence'] = $row->is_competence;
-            $out['value_available'] = $row->value_available;
-            $out['labels'] = $row->labels;
-            $out['validation'] = $row->validation;
-            $out['mastery_value_available'] = $row->mastery_value_available;
-            $out['mastery_labels'] = $row->mastery_labels;
+            $out['labels'] = $this->pickGroupValue($base, $overlay, 'labels') ?? $row->labels;
+            $out['validation'] = $this->pickGroupValue($base, $overlay, 'validation') ?? $row->validation;
         }
-        if ($row instanceof CharacteristicObject || $row instanceof CharacteristicSpell) {
-            $out['value_available'] = $row->value_available ?? null;
+        if ($row instanceof CharacteristicSpell) {
+            $out['value_available'] = $this->pickGroupValue($base, $overlay, 'value_available') ?? $row->value_available;
         }
         return $out;
     }
