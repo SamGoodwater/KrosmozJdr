@@ -404,7 +404,7 @@ final class CollectService
      * fetchMany avec encodage Feathers (tableaux en key[]=v) et meta complète.
      *
      * @param array<string, mixed> $filters
-     * @param array{skip_cache?: bool, limit?: int, offset?: int, start_skip?: int, max_pages?: int, max_items?: int, page_size?: int} $options
+     * @param array{skip_cache?: bool, limit?: int, offset?: int, start_skip?: int, max_pages?: int, max_items?: int, page_size?: int, debug_callback?: callable(string): void} $options
      * @return array{items: list<array<string, mixed>>, meta: array{total: int, limit: int, offset: int, skip: int, pages: int, returned: int, collected: int}}
      */
     private function fetchManyWithFeathersEncoding(string $source, string $entity, array $filters = [], array $options = []): array
@@ -442,6 +442,9 @@ final class CollectService
         $effectiveLimit = $pageSize;
         $initialSkip = $skip;
 
+        $debugCb = $options['debug_callback'] ?? null;
+        $isDebug = is_callable($debugCb);
+
         while (true) {
             $page++;
             if ($page > $maxPages) {
@@ -451,6 +454,14 @@ final class CollectService
             $query = array_merge($defaults, ['$limit' => $requestLimit, '$skip' => $skip], $this->filtersToFeathersQuery($entityConfig, $filters));
             $queryString = $this->buildFeathersQueryString($query);
             $url = $baseUrl . '/' . ltrim($path, '/') . '?' . $queryString;
+            if ($isDebug) {
+                $shortUrl = '/' . ltrim($path, '/') . '?$limit=' . $requestLimit . '&$skip=' . $skip;
+                if ($page === 1) {
+                    $debugCb("Collecte page 1 : GET " . $shortUrl . " (total API connu après 1ère réponse)");
+                } elseif ($page % 10 === 0 || $page <= 3) {
+                    $debugCb("Collecte page {$page} (skip={$skip})…");
+                }
+            }
             $response = $this->getJson($url, $options);
             $dataList = $response['data'] ?? [];
             if (!is_array($dataList)) {
@@ -462,6 +473,11 @@ final class CollectService
                 : 0;
             if ($apiLimit > 0) {
                 $effectiveLimit = $apiLimit;
+            }
+            $pageCount = is_array($dataList) ? count($dataList) : 0;
+            if ($isDebug) {
+                $cumul = count($allItems) + $pageCount;
+                $debugCb("  page {$page} : +{$pageCount} items, cumul={$cumul}" . ($total > 0 ? ", total API={$total}" : ""));
             }
             foreach ($dataList as $item) {
                 if (is_array($item)) {

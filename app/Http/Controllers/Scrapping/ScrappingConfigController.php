@@ -27,6 +27,7 @@ class ScrappingConfigController extends Controller
         }
 
         $entityConfigs = [];
+        $itemConfig = null;
         foreach ($entities as $entity) {
             $configEntity = self::ENTITY_ALIASES[$entity] ?? $entity;
             $cfg = $this->loader->loadEntity('dofusdb', $configEntity);
@@ -37,6 +38,27 @@ class ScrappingConfigController extends Controller
                 'filters' => $cfg['filters'] ?? new \stdClass(),
                 'relations' => array_keys((array) ($cfg['relations'] ?? [])),
             ];
+            if ($configEntity === 'item') {
+                $itemConfig = $cfg;
+            }
+        }
+
+        // Exposer resource, consumable, equipment (même config que item) pour le sélecteur d'entité UI
+        if ($itemConfig !== null) {
+            $itemLike = [
+                'meta' => $itemConfig['meta'] ?? new \stdClass(),
+                'filters' => $itemConfig['filters'] ?? new \stdClass(),
+                'relations' => array_keys((array) ($itemConfig['relations'] ?? [])),
+            ];
+            foreach (['resource' => 'Ressources', 'consumable' => 'Consommables', 'equipment' => 'Équipements'] as $alias => $label) {
+                $entityConfigs[] = [
+                    'entity' => $alias,
+                    'label' => $label,
+                    'meta' => $itemLike['meta'],
+                    'filters' => $itemLike['filters'],
+                    'relations' => $itemLike['relations'],
+                ];
+            }
         }
 
         return response()->json([

@@ -24432,6 +24432,16 @@ namespace App\Http\Requests\Type {
             }
     }
 
+namespace Spatie\MediaLibrary\MediaCollections\Models\Collections {
+    /**
+     * @template TKey of array-key
+     * @template TModel of \Spatie\MediaLibrary\MediaCollections\Models\Media
+     * @extends Collection<TKey, TModel>
+     */
+    class MediaCollection extends \Illuminate\Database\Eloquent\Collection {
+            }
+    }
+
 namespace Illuminate\Database\Eloquent {
     /**
      * @template TKey of array-key

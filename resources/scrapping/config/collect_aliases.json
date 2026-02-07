@@ -1,43 +1,14 @@
 {
   "version": 1,
-  "description": "Alias utilisateur pour --collect= : spell, monster, classe, ressource, item, consumable. Pas d'IDs (type/race) en CLI : utiliser --type= ou --race= (noms).",
+  "description": "Alias pour collect/search UI : spell, monster, class, resource, consumable, equipment.",
   "aliases": {
-    "spell": {
-      "source": "dofusdb",
-      "entity": "spell",
-      "label": "Sorts"
-    },
-    "monster": {
-      "source": "dofusdb",
-      "entity": "monster",
-      "label": "Monstres",
-      "filterByRace": "race"
-    },
-    "classe": {
-      "source": "dofusdb",
-      "entity": "breed",
-      "label": "Classes"
-    },
-    "ressource": {
-      "source": "dofusdb",
-      "entity": "item",
-      "label": "Ressources",
-      "defaultFilter": { "superTypeGroup": "resource" },
-      "filterByType": "type"
-    },
-    "item": {
-      "source": "dofusdb",
-      "entity": "item",
-      "label": "Équipements",
-      "defaultFilter": { "superTypeGroup": "equipment" },
-      "filterByType": "type"
-    },
-    "consumable": {
-      "source": "dofusdb",
-      "entity": "item",
-      "label": "Consommables",
-      "defaultFilter": { "superTypeGroup": "consumable" },
-      "filterByType": "type"
-    }
+    "spell": {"source": "dofusdb", "entity": "spell", "label": "Sorts"},
+    "monster": {"source": "dofusdb", "entity": "monster", "label": "Monstres", "filterByRace": "race"},
+    "classe": {"source": "dofusdb", "entity": "breed", "label": "Classes"},
+    "ressource": {"source": "dofusdb", "entity": "item", "label": "Ressources", "defaultFilter": {"superTypeGroup": "resource"}, "filterByType": "type"},
+    "resource": {"source": "dofusdb", "entity": "item", "label": "Ressources", "defaultFilter": {"superTypeGroup": "resource"}, "filterByType": "type"},
+    "item": {"source": "dofusdb", "entity": "item", "label": "Équipements", "defaultFilter": {"superTypeGroup": "equipment"}, "filterByType": "type"},
+    "equipment": {"source": "dofusdb", "entity": "item", "label": "Équipements", "defaultFilter": {"superTypeGroup": "equipment"}, "filterByType": "type"},
+    "consumable": {"source": "dofusdb", "entity": "item", "label": "Consommables", "defaultFilter": {"superTypeGroup": "consumable"}, "filterByType": "type"}
   }
 }

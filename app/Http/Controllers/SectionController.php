@@ -8,15 +8,13 @@ use App\Http\Requests\StoreSectionRequest;
 use App\Http\Requests\UpdateSectionRequest;
 use App\Http\Requests\StoreFileRequest;
 use App\Http\Requests\UpdateFileRequest;
-use App\Models\File;
 use App\Services\FileService;
-use App\Services\ImageService;
+use Spatie\MediaLibrary\MediaCollections\Models\Media;
 use App\Services\SectionService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 use App\Services\NotificationService;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 use App\Http\Resources\SectionResource;
 
@@ -36,7 +34,7 @@ class SectionController extends Controller
     public function index(): \Inertia\Response
     {
         $this->authorize('viewAny', \App\Models\Section::class);
-        $sections = \App\Models\Section::with(['page', 'users', 'files', 'createdBy'])->paginate(20);
+        $sections = \App\Models\Section::with(['page', 'users', 'media', 'createdBy'])->paginate(20);
         return Inertia::render('Pages/section/Index', [
             'sections' => SectionResource::collection($sections),
         ]);
@@ -102,7 +100,7 @@ class SectionController extends Controller
 
         // Les sections sont généralement affichées dans leur page parente,
         // mais on conserve une vue dédiée (utile pour les tests et liens directs).
-        $section->load(['page', 'users', 'files', 'createdBy']);
+        $section->load(['page', 'users', 'media', 'createdBy']);
 
         return Inertia::render('Pages/section/Show', [
             'section' => new SectionResource($section),
@@ -185,60 +183,68 @@ class SectionController extends Controller
     }
 
     /**
-     * Ajoute un fichier à une section.
+     * Ajoute un fichier à une section (Spatie Media Library).
+     * Les images sont converties en WebP et une miniature est générée.
+     *
      * @param StoreFileRequest $request
      * @param Section $section
-     * @param ImageService $imageService
      * @return \Illuminate\Http\JsonResponse
      */
-    public function storeFile(StoreFileRequest $request, Section $section, ImageService $imageService): \Illuminate\Http\JsonResponse
+    public function storeFile(StoreFileRequest $request, Section $section): \Illuminate\Http\JsonResponse
     {
-        // Autorisation (policy sur la section)
         $this->authorize('update', $section);
 
-        $uploadedFile = $request->file('file');
-        $path = $uploadedFile->store('sections', FileService::DISK_DEFAULT);
+        $ext = $request->file('file')->getClientOriginalExtension() ?: 'bin';
+        $customName = $section->getMediaFileNameForCollection('files', $ext);
+        $adder = $section->addMediaFromRequest('file');
+        if ($customName !== null && $customName !== '') {
+            $adder->usingFileName($customName);
+        }
+        $media = $adder
+            ->withCustomProperties([
+                'title' => $request->input('title'),
+                'comment' => $request->input('comment'),
+                'description' => $request->input('description'),
+            ])
+            ->toMediaCollection('files');
 
-        // Traitement (ex: conversion webp si image)
-        if (FileService::isImagePath($path)) {
-            $path = $imageService->convertToWebp($path);
+        $order = $request->input('order');
+        if (is_numeric($order)) {
+            $media->order_column = (int) $order;
+            $media->save();
         }
 
-        // Création de l'entrée File
-        $file = File::create([
-            'file' => $path,
-            'title' => $request->input('title'),
-            'comment' => $request->input('comment'),
-            'description' => $request->input('description'),
-        ]);
+        $filePayload = [
+            'id' => $media->id,
+            'file' => $media->getUrl(),
+            'url' => $media->getUrl(),
+            'title' => $media->getCustomProperty('title'),
+            'comment' => $media->getCustomProperty('comment'),
+            'description' => $media->getCustomProperty('description'),
+        ];
+        if ($media->hasGeneratedConversion('thumb')) {
+            $filePayload['thumb_url'] = $media->getUrl('thumb');
+        }
 
-        // Association à la section (avec ordre si fourni)
-        $section->files()->attach($file->id, [
-            'order' => $request->input('order'),
-        ]);
-
-        return response()->json(['success' => true, 'file' => $file]);
+        return response()->json(['success' => true, 'file' => $filePayload]);
     }
 
     /**
-     * Supprime un fichier lié à une section.
+     * Supprime un fichier (média) lié à une section.
+     *
      * @param Section $section
-     * @param File $file
+     * @param Media $medium Média à supprimer (doit appartenir à cette section)
      * @return \Illuminate\Http\JsonResponse
      */
-    public function deleteFile(Section $section, File $file): \Illuminate\Http\JsonResponse
+    public function deleteFile(Section $section, Media $medium): \Illuminate\Http\JsonResponse
     {
-        // Autorisation (policy sur la section)
         $this->authorize('update', $section);
 
-        // Détacher le fichier de la section
-        $section->files()->detach($file->id);
-
-        // (Optionnel) Supprimer le fichier physique et l'entrée File si plus utilisé ailleurs
-        if ($file->sections()->count() === 0) {
-            Storage::disk(FileService::DISK_DEFAULT)->delete($file->file);
-            $file->delete();
+        if ((int) $medium->model_id !== (int) $section->id || $medium->collection_name !== 'files') {
+            return response()->json(['success' => false, 'message' => 'Fichier non associé à cette section.'], 403);
         }
+
+        $medium->delete();
 
         return response()->json(['success' => true]);
     }

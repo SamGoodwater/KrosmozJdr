@@ -4,8 +4,12 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Models\Concerns\HasMediaCustomNaming;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Spatie\MediaLibrary\HasMedia;
+use Spatie\MediaLibrary\InteractsWithMedia;
+use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
 /**
  * Caractéristique générale : propriétés communes et id unique.
@@ -23,8 +27,17 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property string $type
  * @property int $sort_order
  */
-class Characteristic extends Model
+class Characteristic extends Model implements HasMedia
 {
+    use InteractsWithMedia;
+    use HasMediaCustomNaming;
+
+    /** Répertoire Media Library pour ce modèle. */
+    public const MEDIA_PATH = 'images/entity/characteristics';
+
+    /** Motif de nommage pour la collection icons (placeholders: [name], [date], [id]). */
+    public const MEDIA_FILE_PATTERN_ICONS = '[key]';
+
     protected $table = 'characteristics';
 
     /** @var list<string> */
@@ -59,5 +72,18 @@ class Characteristic extends Model
     public function spellRows(): HasMany
     {
         return $this->hasMany(CharacteristicSpell::class, 'characteristic_id');
+    }
+
+    public function registerMediaCollections(): void
+    {
+        $this->addMediaCollection('icons')->singleFile();
+    }
+
+    public function registerMediaConversions(?Media $media = null): void
+    {
+        $this->addMediaConversion('webp')
+            ->performOnCollections('icons')
+            ->format('webp')
+            ->nonQueued();
     }
 }

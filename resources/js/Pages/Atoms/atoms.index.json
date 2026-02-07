@@ -1474,37 +1474,12 @@
   },
   {
     "name": "ColorCore",
-    "description": "ColorCore Atom (DaisyUI, input color natif HTML, Atomic Design)",
+    "description": "ColorCore Atom (DaisyUI, Atomic Design)",
     "props": [
       {
         "name": "modelValue",
         "type": "String",
-        "desc": "- v-model (couleur actuelle)"
-      },
-      {
-        "name": "format",
-        "type": "String",
-        "desc": "- Format de couleur (hex, rgb, rgba, hsl, hsla)"
-      },
-      {
-        "name": "theme",
-        "type": "String",
-        "desc": "- Thème du color picker (light, dark)"
-      },
-      {
-        "name": "colorsDefault",
-        "type": "Array",
-        "desc": "- Palette de couleurs par défaut"
-      },
-      {
-        "name": "colorsHistoryKey",
-        "type": "String",
-        "desc": "- Clé pour l'historique des couleurs"
-      },
-      {
-        "name": "suckerHide",
-        "type": "Boolean",
-        "desc": "- Masquer le pipette"
+        "desc": "- v-model (couleur hex, ex. #3b82f6)"
       },
       {
         "name": "disabled,",
@@ -1520,34 +1495,9 @@
         "name": "inputStyle",
         "type": "String|Object",
         "desc": "- Style d'input (string ou objet avec variant, size, color, animation)"
-      },
-      {
-        "name": "animation",
-        "type": "String|Boolean",
-        "desc": "- Animation Tailwind ou booléen"
-      },
-      {
-        "name": "id,",
-        "type": "String",
-        "desc": "ariaLabel, role, tabindex"
-      },
-      {
-        "name": "aria-invalid",
-        "type": "Boolean|String",
-        "desc": "- État de validation pour l'accessibilité"
-      },
-      {
-        "name": "shadow,",
-        "type": "String",
-        "desc": "backdrop, opacity, rounded - utilitaires custom"
       }
     ],
-    "slots": [
-      {
-        "name": "default",
-        "desc": "- Contenu personnalisé du color picker"
-      }
-    ],
+    "slots": [],
     "file": "data-input/ColorCore.vue"
   },
   {

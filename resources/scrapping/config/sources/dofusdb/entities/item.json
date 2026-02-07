@@ -4,7 +4,7 @@
   "entity": "item",
   "label": "Objets (ressources / consommables / équipements)",
   "meta": {
-    "description": "Items DofusDB. Un même mapping alimente resources, consumables et items selon le typeId. Champs communs : dofusdb_id, name, description, level, price, image, typeId, rarity. resources : + weight (realWeight). effect/bonus/recipe non mappés (formatters dédiés absents en V2). Filtrage par alias : --collect=ressource, --collect=consumable, --collect=item."
+    "description": "Items DofusDB. Un même mapping alimente resources, consumables et items selon le typeId. Champs communs : dofusdb_id, name, description, level, price, image, typeId, rarity. resources : + weight (realWeight). effect : effects[] converti en bonus Krosmoz (intel, strong, etc.) ; bonus : effects[] brut JSON. Filtrage par alias : --collect=ressource, --collect=consumable, --collect=item."
   },
   "endpoints": {
     "fetchOne": {
@@ -136,6 +136,18 @@
       "from": { "path": "recipe" },
       "to": [{ "model": "resources", "field": "recipe_ingredients" }],
       "formatters": [{ "name": "recipeToResourceRecipe", "args": {} }]
+    },
+    {
+      "key": "effect",
+      "from": { "path": "effects" },
+      "to": [{ "model": "items", "field": "effect" }],
+      "formatters": [{ "name": "itemEffectsToKrosmozBonus", "args": {} }]
+    },
+    {
+      "key": "bonus",
+      "from": { "path": "effects" },
+      "to": [{ "model": "items", "field": "bonus" }],
+      "formatters": [{ "name": "toJson", "args": {} }]
     }
   ]
 }

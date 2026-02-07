@@ -80,10 +80,23 @@ return array (
     'conversion_formula' => '[d]',
     'conversion_dofus_sample' => NULL,
     'conversion_krosmoz_sample' => NULL,
-    'value_available' => array (
-      0 => 'Neutre', 1 => 'Terre', 2 => 'Feu', 3 => 'Air', 4 => 'Eau',
-      5 => 'Neutre-Terre', 6 => 'Neutre-Feu', 7 => 'Neutre-Air', 8 => 'Neutre-Eau',
-      9 => 'Terre-Feu', 10 => 'Terre-Air', 11 => 'Terre-Eau', 12 => 'Feu-Air', 13 => 'Feu-Eau', 14 => 'Air-Eau',
+    'value_available' => 
+    array (
+      0 => 'Neutre',
+      1 => 'Terre',
+      2 => 'Feu',
+      3 => 'Air',
+      4 => 'Eau',
+      5 => 'Neutre-Terre',
+      6 => 'Neutre-Feu',
+      7 => 'Neutre-Air',
+      8 => 'Neutre-Eau',
+      9 => 'Terre-Feu',
+      10 => 'Terre-Air',
+      11 => 'Terre-Eau',
+      12 => 'Feu-Air',
+      13 => 'Feu-Eau',
+      14 => 'Air-Eau',
     ),
   ),
   5 => 
@@ -174,8 +187,14 @@ return array (
     'conversion_formula' => '[d]',
     'conversion_dofus_sample' => NULL,
     'conversion_krosmoz_sample' => NULL,
-    'value_available' => array (
-      0 => 'Non défini', 1 => 'Offensif', 2 => 'Défensif', 3 => 'Soin', 4 => 'Buff', 5 => 'Debuff',
+    'value_available' => 
+    array (
+      0 => 'Non défini',
+      1 => 'Offensif',
+      2 => 'Défensif',
+      3 => 'Soin',
+      4 => 'Buff',
+      5 => 'Debuff',
     ),
   ),
   11 => 

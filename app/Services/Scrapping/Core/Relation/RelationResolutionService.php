@@ -117,7 +117,7 @@ final class RelationResolutionService
         $importedResourceIds = [];
         if (isset($rawData['drops']) && is_array($rawData['drops'])) {
             foreach ($rawData['drops'] as $dropData) {
-                $itemId = isset($dropData['id']) ? (int) $dropData['id'] : 0;
+                $itemId = isset($dropData['itemId']) ? (int) $dropData['itemId'] : (isset($dropData['id']) ? (int) $dropData['id'] : 0);
                 if ($itemId <= 0) {
                     continue;
                 }

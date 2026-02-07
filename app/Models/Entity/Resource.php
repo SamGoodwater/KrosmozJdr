@@ -13,6 +13,8 @@ use App\Models\Entity\Item;
 use App\Models\Entity\Scenario;
 use App\Models\Entity\Shop;
 use App\Models\Entity\Campaign;
+use App\Models\Concerns\HasEntityImageMedia;
+use Spatie\MediaLibrary\HasMedia;
 
 /**
  * 
@@ -78,15 +80,21 @@ use App\Models\Entity\Campaign;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Resource withoutTrashed()
  * @mixin \Eloquent
  */
-class Resource extends Model
+class Resource extends Model implements HasMedia
 {
     /** @use HasFactory<\Database\Factories\ResourceFactory> */
-    use HasFactory, SoftDeletes;
+    use HasFactory, SoftDeletes, HasEntityImageMedia;
 
     public const STATE_RAW = 'raw';
     public const STATE_DRAFT = 'draft';
     public const STATE_PLAYABLE = 'playable';
     public const STATE_ARCHIVED = 'archived';
+
+    /** Répertoire Media Library pour ce modèle. */
+    public const MEDIA_PATH = 'images/entity/resources';
+
+    /** Motif de nommage pour la collection images (placeholders: [name], [date], [id]). */
+    public const MEDIA_FILE_PATTERN_IMAGES = 'image-[id]-[name]';
 
     const RARITY = [
         0 => 'Commun',
@@ -208,4 +216,5 @@ class Resource extends Model
     {
         return $this->belongsToMany(Shop::class, 'resource_shop')->withPivot('quantity', 'price', 'comment');
     }
+
 }

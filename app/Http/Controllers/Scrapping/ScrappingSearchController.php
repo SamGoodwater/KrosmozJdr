@@ -16,6 +16,7 @@ use App\Services\Scrapping\Catalog\DofusDbMonsterRacesCatalogService;
 use App\Models\Type\ResourceType;
 use App\Services\Scrapping\Constants\EntityLimits;
 use App\Services\Scrapping\Core\Collect\CollectService;
+use App\Services\Scrapping\Core\Config\CollectAliasResolver;
 use App\Services\Scrapping\Core\Config\ConfigLoader;
 use App\Services\Scrapping\DataCollect\ItemEntityTypeFilterService;
 use App\Services\Scrapping\DataCollect\MonsterRaceFilterService;
@@ -35,6 +36,7 @@ class ScrappingSearchController extends Controller
 {
     public function __construct(
         private ConfigLoader $configLoader,
+        private CollectAliasResolver $aliasResolver,
         private CollectService $collectService,
         private ItemEntityTypeFilterService $itemEntityTypeFilters,
         private MonsterRaceFilterService $monsterRaceFilters,
@@ -46,12 +48,18 @@ class ScrappingSearchController extends Controller
     {
         $source = 'dofusdb';
 
-        // Liste des entités depuis Core (config/) + alias « class » pour breed
+        // Liste des entités depuis Core (config/) + alias « class » pour breed + resource/consumable/equipment (item)
         $available = $this->configLoader->listEntities($source);
         if (in_array('breed', $available, true)) {
             $available[] = 'class';
-            sort($available);
         }
+        if (in_array('item', $available, true)) {
+            $available[] = 'resource';
+            $available[] = 'consumable';
+            $available[] = 'equipment';
+        }
+        sort($available);
+
         if (!in_array($entity, $available, true)) {
             return response()->json([
                 'success' => false,
@@ -64,6 +72,14 @@ class ScrappingSearchController extends Controller
         $typeMode = $this->extractTypeMode($request);
         $filters = $this->applyEntityDefaultsWithMode($entity, $filters, $typeMode);
 
+        // resource / consumable / equipment : résolution alias → item + filtre superTypeGroup
+        $collectEntity = $entity;
+        $aliasCfg = $this->aliasResolver->resolve($entity);
+        if ($aliasCfg !== null && isset($aliasCfg['entity'], $aliasCfg['defaultFilter']) && $aliasCfg['entity'] === 'item') {
+            $collectEntity = 'item';
+            $filters = array_merge($aliasCfg['defaultFilter'], $filters);
+        }
+
         // Monstres: race_mode (all/allowed/selected) -> injecter raceIds par défaut si besoin.
         if (strtolower($entity) === 'monster') {
             $raceMode = $this->extractRaceMode($request);
@@ -72,7 +88,7 @@ class ScrappingSearchController extends Controller
 
         $options = $this->extractOptions($request, $entity);
 
-        $result = $this->collectService->fetchManyResult('dofusdb', $entity, $filters, $options);
+        $result = $this->collectService->fetchManyResult('dofusdb', $collectEntity, $filters, $options);
         $items = $this->withExistsFlag($entity, $result['items']);
         $items = $this->withTypeLabelsAndRegistry($entity, $items);
         $items = $this->withMonsterRaceLabel($entity, $items);

@@ -5,7 +5,7 @@ Les sections représentent les blocs de contenu qui composent une page (texte, i
 
 ## Relations principales
 - **Pages** : chaque section appartient à une page (`page_id`).
-- **Fichiers** : via le pivot `file_section` (N:N avec `files`).
+- **Fichiers** : médias attachés via Spatie Media Library (`$section->getMedia('files')`). Voir [ENTITY_FILES.md](ENTITY_FILES.md).
 - **Utilisateurs** : via le pivot `section_user` (N:N avec `users`).
 
 ## Exemples d’utilisation

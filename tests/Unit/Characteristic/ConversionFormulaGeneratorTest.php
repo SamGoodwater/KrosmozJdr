@@ -5,11 +5,10 @@ declare(strict_types=1);
 namespace Tests\Unit\Characteristic;
 
 use App\Services\Characteristic\Conversion\ConversionFormulaGenerator;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 
-/**
- * @covers \App\Services\Characteristic\Conversion\ConversionFormulaGenerator
- */
+#[CoversClass(ConversionFormulaGenerator::class)]
 class ConversionFormulaGeneratorTest extends TestCase
 {
     private ConversionFormulaGenerator $generator;

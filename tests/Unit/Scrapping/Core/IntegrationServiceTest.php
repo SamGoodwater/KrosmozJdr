@@ -7,10 +7,12 @@ use App\Models\Entity\Creature;
 use App\Models\Entity\Item;
 use App\Models\Entity\Monster;
 use App\Models\Entity\Panoply;
+use App\Models\Entity\Resource;
 use App\Models\Entity\Spell;
 use App\Models\Type\MonsterRace;
 use App\Services\Scrapping\Core\Integration\IntegrationResult;
 use App\Services\Scrapping\Core\Integration\IntegrationService;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\CreatesSystemUser;
 use Tests\TestCase;
 
@@ -20,6 +22,7 @@ use Tests\TestCase;
 class IntegrationServiceTest extends TestCase
 {
     use CreatesSystemUser;
+    use RefreshDatabase;
 
     private IntegrationService $service;
 
@@ -378,5 +381,49 @@ class IntegrationServiceTest extends TestCase
         $this->assertCount(2, $syncedIds);
         $this->assertContains($item1->id, $syncedIds);
         $this->assertContains($item2->id, $syncedIds);
+    }
+
+    /**
+     * Test : attachImageFromUrl retourne false quand l'URL est vide.
+     */
+    public function test_attach_image_from_url_returns_false_when_url_empty(): void
+    {
+        $this->createSystemUser();
+        $resource = Resource::factory()->create();
+
+        $this->assertFalse($this->service->attachImageFromUrl($resource, null, ['download_images' => true]));
+        $this->assertFalse($this->service->attachImageFromUrl($resource, '', ['download_images' => true]));
+        $this->assertFalse($this->service->attachImageFromUrl($resource, '   ', ['download_images' => true]));
+    }
+
+    /**
+     * Test : attachImageFromUrl retourne false quand download_images est false.
+     */
+    public function test_attach_image_from_url_returns_false_when_download_images_disabled(): void
+    {
+        $this->createSystemUser();
+        $resource = Resource::factory()->create();
+        config(['scrapping.images.allowed_hosts' => ['api.dofusdb.fr']]);
+
+        $this->assertFalse($this->service->attachImageFromUrl(
+            $resource,
+            'https://api.dofusdb.fr/img/items/1.png',
+            ['download_images' => false]
+        ));
+    }
+
+    /**
+     * Test : attachImageFromUrl retourne false quand l'hôte n'est pas dans allowed_hosts.
+     */
+    public function test_attach_image_from_url_returns_false_when_host_not_allowed(): void
+    {
+        $this->createSystemUser();
+        config(['scrapping.images.allowed_hosts' => ['api.dofusdb.fr']]);
+
+        $resource = Resource::factory()->create();
+        $otherUrl = 'https://other.example.com/img/1.png';
+
+        $this->assertFalse($this->service->attachImageFromUrl($resource, $otherUrl, ['download_images' => true]));
+        $this->assertCount(0, $resource->getMedia('images'));
     }
 }

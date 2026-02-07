@@ -12,6 +12,8 @@ use Database\Seeders\CreatureCharacteristicSeeder;
 use Database\Seeders\ObjectCharacteristicSeeder;
 use Database\Seeders\SpellCharacteristicSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Storage;
 use Tests\Concerns\SeedsMinimalCharacteristics;
 use Tests\TestCase;
 
@@ -318,5 +320,30 @@ class CharacteristicControllerTest extends TestCase
             'key' => 'level_creature',
             'name' => 'Niveau (modifié)',
         ]);
+    }
+
+    /**
+     * Test : Un admin peut uploader une icône pour une caractéristique (Media Library).
+     */
+    public function test_admin_can_upload_characteristic_icon(): void
+    {
+        Storage::fake('public');
+        $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
+        $characteristic = Characteristic::first();
+        $this->assertNotNull($characteristic);
+        $file = UploadedFile::fake()->image('icon.png', 64, 64);
+
+        $response = $this->actingAs($admin)
+            ->postJson(route('admin.characteristics.upload-icon'), [
+                'file' => $file,
+                'characteristic_id' => $characteristic->id,
+            ]);
+
+        $response->assertOk();
+        $response->assertJson(['success' => true]);
+        $response->assertJsonPath('icon', fn ($url) => is_string($url) && $url !== '');
+        $characteristic->refresh();
+        $this->assertCount(1, $characteristic->getMedia('icons'));
+        $this->assertNotEmpty($characteristic->icon);
     }
 }

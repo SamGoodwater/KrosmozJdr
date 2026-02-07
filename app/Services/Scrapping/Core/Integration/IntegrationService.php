@@ -32,6 +32,10 @@ final class IntegrationService
         35 => 'resources',
     ];
 
+    public function __construct()
+    {
+    }
+
     /**
      * Intègre les données converties pour un type d’entité.
      *
@@ -131,6 +135,7 @@ final class IntegrationService
         }
 
         $creatureAttributes = $this->mapCreatureAttributes($creatureData, $userId);
+        unset($creatureAttributes['image']);
         $sizeInt = $this->sizeStringToInt((string) ($monsterData['size'] ?? 'medium'));
         $monsterRaceId = $this->resolveMonsterRaceId($monsterData['monster_race_id'] ?? null);
 
@@ -189,6 +194,8 @@ final class IntegrationService
 
             DB::commit();
 
+            $this->attachImageFromUrl($creature, $creatureData['image'] ?? null, $options);
+
             Log::info('Intégration monstre', [
                 'creature_id' => $creature->id,
                 'monster_id' => $monster->id,
@@ -227,7 +234,6 @@ final class IntegrationService
             'agi' => (string) ($creatureData['agility'] ?? '0'),
             'sagesse' => (string) ($creatureData['wisdom'] ?? '0'),
             'chance' => (string) ($creatureData['chance'] ?? '0'),
-            'image' => $creatureData['image'] ?? null,
             'created_by' => $createdBy,
         ];
 
@@ -269,6 +275,58 @@ final class IntegrationService
         $excludeSet = array_fill_keys($exclude, true);
 
         return array_diff_key($data, $excludeSet);
+    }
+
+    /**
+     * Attache une image à l'entité via Media Library (addMediaFromUrl).
+     * Respecte download_images et allowed_hosts (config scrapping.images).
+     * Met à jour la colonne image de l'entité avec l'URL du média.
+     *
+     * @param object $entity Modèle avec HasMedia et collection 'images'
+     * @param array{dry_run?: bool, download_images?: bool} $options
+     * @return bool true si le média a été attaché, false si ignoré ou erreur
+     */
+    public function attachImageFromUrl(object $entity, ?string $imageUrl, array $options = []): bool
+    {
+        if ($imageUrl === null || trim($imageUrl) === '') {
+            return false;
+        }
+        if (!($options['download_images'] ?? true)) {
+            return false;
+        }
+        $url = trim($imageUrl);
+        if (!str_starts_with($url, 'http://') && !str_starts_with($url, 'https://')) {
+            return false;
+        }
+        $host = (string) parse_url($url, PHP_URL_HOST);
+        if ($host !== '') {
+            $allowedHosts = config('scrapping.images.allowed_hosts', []);
+            if ($allowedHosts !== [] && !in_array(strtolower($host), array_map('strtolower', $allowedHosts), true)) {
+                return false;
+            }
+        }
+        if (!method_exists($entity, 'clearMediaCollection') || !method_exists($entity, 'addMediaFromUrl')) {
+            return false;
+        }
+        try {
+            $entity->clearMediaCollection('images');
+            $ext = pathinfo((string) parse_url($url, PHP_URL_PATH), PATHINFO_EXTENSION) ?: 'png';
+            $customName = method_exists($entity, 'getMediaFileNameForCollection')
+                ? $entity->getMediaFileNameForCollection('images', $ext)
+                : null;
+            $adder = $entity->addMediaFromUrl($url);
+            if ($customName !== null && $customName !== '') {
+                $adder->usingFileName($customName);
+            }
+            $media = $adder->toMediaCollection('images');
+            $entity->update(['image' => $media->getUrl()]);
+
+            return true;
+        } catch (\Throwable $e) {
+            Log::warning('Integration attach image failed', ['url' => $url, 'error' => $e->getMessage()]);
+
+            return false;
+        }
     }
 
     private function resolveMonsterRaceId(mixed $monsterRaceId): ?int
@@ -335,7 +393,6 @@ final class IntegrationService
             'dofusdb_id' => $data['dofusdb_id'] ?? null,
             'name' => (string) ($data['name'] ?? ''),
             'description' => (string) ($data['description'] ?? ''),
-            'image' => $data['image'] ?? null,
             'pa' => (string) ($data['pa'] ?? '3'),
             'po' => $po,
             'po_editable' => (bool) (isset($data['po_editable']) ? (int) $data['po_editable'] : true),
@@ -364,6 +421,7 @@ final class IntegrationService
                 $action = 'created';
             }
             DB::commit();
+            $this->attachImageFromUrl($spell, $data['image'] ?? null, $options);
             Log::info('Intégration sort', ['spell_id' => $spell->id, 'action' => $action]);
 
             return IntegrationResult::okEntity(
@@ -450,7 +508,6 @@ final class IntegrationService
             'life' => (string) ($data['life'] ?? ''),
             'life_dice' => (string) ($data['life_dice'] ?? ''),
             'specificity' => $data['specificity'] ?? null,
-            'image' => $data['image'] ?? null,
             'created_by' => $userId,
         ];
 
@@ -465,6 +522,7 @@ final class IntegrationService
                 $action = 'created';
             }
             DB::commit();
+            $this->attachImageFromUrl($breed, $data['image'] ?? null, $options);
             Log::info('Intégration breed (classe)', ['breed_id' => $breed->id, 'action' => $action]);
 
             return IntegrationResult::okEntity(
@@ -548,9 +606,14 @@ final class IntegrationService
             'level' => (string) ($data['level'] ?? '1'),
             'price' => $data['price'] !== null ? (string) $data['price'] : null,
             'rarity' => $rarity,
-            'image' => $data['image'] ?? null,
             'created_by' => $userId,
         ];
+        if ($targetTable === 'items') {
+            $effectStr = $data['effect'] ?? null;
+            $payload['effect'] = is_string($effectStr) ? $effectStr : (is_array($data['effect'] ?? null) ? json_encode($data['effect'], JSON_UNESCAPED_UNICODE) : null);
+            $bonusRaw = $data['bonus'] ?? null;
+            $payload['bonus'] = is_string($bonusRaw) ? $bonusRaw : (is_array($bonusRaw) ? json_encode($bonusRaw, JSON_UNESCAPED_UNICODE) : null);
+        }
 
         try {
             DB::beginTransaction();
@@ -585,6 +648,7 @@ final class IntegrationService
             }
             $action = $existing ? 'updated' : 'created';
             DB::commit();
+            $this->attachImageFromUrl($entity, $data['image'] ?? null, $options);
             Log::info('Intégration item', ['id' => $entity->id, 'table' => $targetTable, 'action' => $action]);
 
             return IntegrationResult::okEntity(

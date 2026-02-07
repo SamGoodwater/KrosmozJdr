@@ -118,6 +118,29 @@ final class DofusConversionService
     }
 
     /**
+     * Convertit une valeur Dofus d’effet d’équipement (item/resource/consumable/panoply) en valeur Krosmoz.
+     * Utilise la formule de conversion (conversion_formula) enregistrée en BDD pour la caractéristique objet
+     * (ex. intel_object avec floor(0.2227 * pow([d], 0.7999))).
+     *
+     * @param string $characteristicKey Clé du groupe object (ex. intel_object, strong_object)
+     * @param int|float $dofusValue Valeur Dofus (ex. 12 pour from=10, to=13)
+     * @param string $entityType item, consumable, resource ou panoply
+     */
+    public function convertObjectAttribute(string $characteristicKey, int|float $dofusValue, string $entityType): int
+    {
+        $d = is_numeric($dofusValue) ? (float) $dofusValue : 0.0;
+        $formula = $this->getter->getConversionFormula($characteristicKey, $entityType);
+        if ($formula !== null) {
+            $k = $this->formulaService->evaluate($formula, ['d' => $d]);
+            $k = $k !== null ? (int) round($k) : 0;
+        } else {
+            $k = (int) round($d);
+        }
+
+        return $this->limitService->clamp($characteristicKey, $k, $entityType);
+    }
+
+    /**
      * Clampe une valeur convertie dans les limites de la caractéristique.
      */
     public function clampToLimits(string $characteristicKey, int $value, string $entityType): int

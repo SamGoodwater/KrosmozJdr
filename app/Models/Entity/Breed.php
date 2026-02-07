@@ -8,6 +8,9 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Models\User;
 use App\Models\Entity\Npc;
 use App\Models\Entity\Spell;
+use App\Models\Concerns\HasEntityImageMedia;
+use Spatie\MediaLibrary\HasMedia;
+use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
 /**
  * Entité Breed (affichée « Classe » côté utilisateur).
@@ -44,10 +47,17 @@ use App\Models\Entity\Spell;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Breed query()
  * @mixin \Eloquent
  */
-class Breed extends Model
+class Breed extends Model implements HasMedia
 {
     /** @use HasFactory<\Database\Factories\Entity\BreedFactory> */
-    use HasFactory, SoftDeletes;
+    use HasFactory, SoftDeletes, HasEntityImageMedia;
+
+    /** Répertoire Media Library pour ce modèle. */
+    public const MEDIA_PATH = 'images/entity/breeds';
+
+    /** Motif de nommage pour la collection icons (placeholders: [name], [date], [id]). */
+    public const MEDIA_FILE_PATTERN_ICONS = 'icon-[id]-[name]';
+    public const MEDIA_FILE_PATTERN_IMAGES = 'image-[id]-[name]';
 
     protected $table = 'breeds';
 
@@ -113,5 +123,20 @@ class Breed extends Model
     public function spells()
     {
         return $this->belongsToMany(Spell::class, 'breed_spell', 'breed_id', 'spell_id');
+    }
+
+    public function registerMediaCollections(): void
+    {
+        $this->addMediaCollection('images')->singleFile();
+        $this->addMediaCollection('icons')->singleFile();
+    }
+
+    public function registerMediaConversions(?Media $media = null): void
+    {
+        $this->registerEntityImageMediaConversions($media);
+        $this->addMediaConversion('webp')
+            ->performOnCollections('icons')
+            ->format('webp')
+            ->nonQueued();
     }
 }

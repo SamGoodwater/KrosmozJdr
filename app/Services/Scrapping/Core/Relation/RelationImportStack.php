@@ -170,7 +170,7 @@ final class RelationImportStack
     /**
      * Enregistre les dépendances sorts d'une créature (monstre) et les drops (items→ressources).
      *
-     * @param array{spells?: list<array{id?: int}>, drops?: list<array{id?: int, quantity?: int}>} $rawData
+     * @param array{spells?: list<array{id?: int}>, drops?: list<array{id?: int, itemId?: int, quantity?: int}>} $rawData
      * @return list<array{entity: string, dofusdb_id: string}> éléments ajoutés à la pile
      */
     public function registerCreatureRelationDependents(int $creatureId, array $rawData, bool $dryRun = false): array
@@ -205,7 +205,7 @@ final class RelationImportStack
 
         if (isset($rawData['drops']) && is_array($rawData['drops'])) {
             foreach ($rawData['drops'] as $dropData) {
-                $itemId = isset($dropData['id']) ? (int) $dropData['id'] : 0;
+                $itemId = isset($dropData['itemId']) ? (int) $dropData['itemId'] : (isset($dropData['id']) ? (int) $dropData['id'] : 0);
                 if ($itemId <= 0) {
                     continue;
                 }

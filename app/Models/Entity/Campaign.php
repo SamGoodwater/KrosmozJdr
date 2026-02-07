@@ -7,8 +7,11 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Models\User;
 use App\Models\Page;
-use App\Models\File;
 use App\Models\Entity\Scenario;
+use Spatie\MediaLibrary\HasMedia;
+use Spatie\MediaLibrary\InteractsWithMedia;
+use Spatie\MediaLibrary\MediaCollections\Models\Media;
+use App\Models\Concerns\HasEntityImageMedia;
 use App\Models\Entity\Item;
 use App\Models\Entity\Consumable;
 use App\Models\Entity\Resource;
@@ -40,8 +43,8 @@ use App\Models\Entity\Panoply;
  * @property-read \Illuminate\Database\Eloquent\Collection<int, Consumable> $consumables
  * @property-read int|null $consumables_count
  * @property-read User $createdBy
- * @property-read \Illuminate\Database\Eloquent\Collection<int, File> $files
- * @property-read int|null $files_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, Media> $media
+ * @property-read int|null $media_count
  * @property-read \Illuminate\Database\Eloquent\Collection<int, Item> $items
  * @property-read int|null $items_count
  * @property-read \Illuminate\Database\Eloquent\Collection<int, Monster> $monsters
@@ -86,15 +89,21 @@ use App\Models\Entity\Panoply;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Campaign withoutTrashed()
  * @mixin \Eloquent
  */
-class Campaign extends Model
+class Campaign extends Model implements HasMedia
 {
     /** @use HasFactory<\Database\Factories\Entity\CampaignFactory> */
-    use HasFactory, SoftDeletes;
+    use HasFactory, SoftDeletes, InteractsWithMedia, HasEntityImageMedia;
 
     public const STATE_RAW = 'raw';
     public const STATE_DRAFT = 'draft';
     public const STATE_PLAYABLE = 'playable';
     public const STATE_ARCHIVED = 'archived';
+
+    /** Répertoire Media Library pour ce modèle. */
+    public const MEDIA_PATH = 'images/entity/campaigns';
+
+    /** Motif de nommage pour la collection images (placeholders: [name], [date], [id]). */
+    public const MEDIA_FILE_PATTERN_IMAGES = 'image-[id]-[slug]';
 
     public const PROGRESS_STATES = [
         0 => 'En cours',
@@ -219,13 +228,24 @@ class Campaign extends Model
     {
         return $this->belongsToMany(Panoply::class, 'campaign_panoply');
     }
-    /**
-     * Les fichiers liés à cette campagne, triés par ordre.
-     */
-    public function files()
+    public function registerMediaCollections(): void
     {
-        return $this->belongsToMany(File::class, 'file_campaign')
-            ->withPivot('order')
-            ->orderBy('file_campaign.order');
+        $this->addMediaCollection('files');
+        $this->addMediaCollection('images')->singleFile();
+    }
+
+    public function registerMediaConversions(?Media $media = null): void
+    {
+        $this->registerEntityImageMediaConversions($media);
+        $this->addMediaConversion('thumb')
+            ->performOnCollections('files')
+            ->width(368)
+            ->height(232)
+            ->format('webp')
+            ->nonQueued();
+        $this->addMediaConversion('webp')
+            ->performOnCollections('files')
+            ->format('webp')
+            ->nonQueued();
     }
 }

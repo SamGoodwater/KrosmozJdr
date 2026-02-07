@@ -148,6 +148,11 @@ erDiagram
     created_at : timestamp
     updated_at : timestamp
   }
+  CHARACTERISTIC_ICON_UPLOADS {
+    id : bigint(20) unsigned
+    created_at : timestamp
+    updated_at : timestamp
+  }
   CHARACTERISTIC_OBJECT {
     id : bigint(20) unsigned
     characteristic_id : bigint(20) unsigned
@@ -379,6 +384,11 @@ erDiagram
     deleted_at : timestamp
     created_by : bigint(20) unsigned
   }
+  ENTITY_IMAGE_UPLOADS {
+    id : bigint(20) unsigned
+    created_at : timestamp
+    updated_at : timestamp
+  }
   FAILED_JOBS {
     id : bigint(20) unsigned
     uuid : varchar(255)
@@ -387,29 +397,6 @@ erDiagram
     payload : longtext
     exception : longtext
     failed_at : timestamp
-  }
-  FILE_CAMPAIGN {
-    file_id : bigint(20) unsigned
-    campaign_id : bigint(20) unsigned
-  }
-  FILE_SCENARIO {
-    file_id : bigint(20) unsigned
-    scenario_id : bigint(20) unsigned
-  }
-  FILE_SECTION {
-    file_id : bigint(20) unsigned
-    section_id : bigint(20) unsigned
-    order : int(11)
-  }
-  FILES {
-    id : bigint(20) unsigned
-    file : varchar(255)
-    title : varchar(255)
-    comment : varchar(255)
-    description : text
-    created_at : timestamp
-    updated_at : timestamp
-    deleted_at : timestamp
   }
   ITEM_CAMPAIGN {
     item_id : bigint(20) unsigned
@@ -494,6 +481,26 @@ erDiagram
     reserved_at : int(10) unsigned
     available_at : int(10) unsigned
     created_at : int(10) unsigned
+  }
+  MEDIA {
+    id : bigint(20) unsigned
+    model_type : varchar(255)
+    model_id : bigint(20) unsigned
+    uuid : char(36)
+    collection_name : varchar(255)
+    name : varchar(255)
+    file_name : varchar(255)
+    mime_type : varchar(255)
+    disk : varchar(255)
+    conversions_disk : varchar(255)
+    size : bigint(20) unsigned
+    manipulations : longtext
+    custom_properties : longtext
+    generated_conversions : longtext
+    responsive_images : longtext
+    order_column : int(10) unsigned
+    created_at : timestamp
+    updated_at : timestamp
   }
   MIGRATIONS {
     id : int(10) unsigned
@@ -933,12 +940,6 @@ erDiagram
   CREATURE_SPELL }o--|| CREATURES : "FK creature_id"
   CREATURE_SPELL }o--|| SPELLS : "FK spell_id"
   CREATURES }o--|| USERS : "FK created_by"
-  FILE_CAMPAIGN }o--|| CAMPAIGNS : "FK campaign_id"
-  FILE_CAMPAIGN }o--|| FILES : "FK file_id"
-  FILE_SCENARIO }o--|| FILES : "FK file_id"
-  FILE_SCENARIO }o--|| SCENARIOS : "FK scenario_id"
-  FILE_SECTION }o--|| FILES : "FK file_id"
-  FILE_SECTION }o--|| SECTIONS : "FK section_id"
   ITEM_CAMPAIGN }o--|| CAMPAIGNS : "FK campaign_id"
   ITEM_CAMPAIGN }o--|| ITEMS : "FK item_id"
   ITEM_PANOPLY }o--|| ITEMS : "FK item_id"

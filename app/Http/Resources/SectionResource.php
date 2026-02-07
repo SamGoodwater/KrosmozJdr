@@ -54,7 +54,17 @@ class SectionResource extends JsonResource
             // Relations (chargées uniquement si incluses)
             'page' => $this->whenLoaded('page'),
             'users' => $this->whenLoaded('users'),
-            'files' => $this->whenLoaded('files'),
+            'files' => $this->whenLoaded('media', fn () => $section->getMedia('files')->map(function ($media) {
+                return [
+                    'id' => $media->id,
+                    'file' => $media->getUrl(),
+                    'url' => $media->getUrl(),
+                    'thumb_url' => $media->hasGeneratedConversions('thumb') ? $media->getUrl('thumb') : null,
+                    'title' => $media->getCustomProperty('title'),
+                    'comment' => $media->getCustomProperty('comment'),
+                    'description' => $media->getCustomProperty('description'),
+                ];
+            })->values()->all()),
             'createdBy' => $this->whenLoaded('createdBy'),
 
             // Droits d'accès pour l'utilisateur courant

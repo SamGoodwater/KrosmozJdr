@@ -63,8 +63,78 @@ final class FormatterApplicator
             'defaultRarityByLevel' => $this->defaultRarityByLevel($value, $raw, (string) ($context['entityType'] ?? 'item')),
             'recipeIdsToResourceRecipe' => $this->recipeIdsToResourceRecipe($value),
             'recipeToResourceRecipe' => $this->recipeToResourceRecipe($value, $raw),
+            'itemEffectsToKrosmozBonus' => $this->itemEffectsToKrosmozBonus($value, $raw),
             default => $value,
         };
+    }
+
+    /**
+     * Convertit item.effects[] DofusDB (characteristic id + value) en JSON bonus Krosmoz
+     * (stats : intel, strong, etc.) pour la colonne effect.
+     * Utilise dofusdb_characteristic_to_krosmoz.json pour mapper id → characteristic_key.
+     *
+     * @param mixed $value item.effects (array)
+     * @param array<string, mixed> $raw item brut
+     * @return string|null JSON encodé ou null
+     */
+    private function itemEffectsToKrosmozBonus(mixed $value, array $raw): ?string
+    {
+        if (!is_array($value) || $value === []) {
+            return null;
+        }
+
+        $path = base_path('resources/scrapping/config/sources/dofusdb/dofusdb_characteristic_to_krosmoz.json');
+        if (!is_file($path)) {
+            return $this->toJson($value);
+        }
+
+        try {
+            $config = json_decode((string) file_get_contents($path), true, 512, JSON_THROW_ON_ERROR);
+        } catch (\JsonException) {
+            return $this->toJson($value);
+        }
+
+        $mapping = $config['mapping'] ?? [];
+        if (!is_array($mapping)) {
+            return $this->toJson($value);
+        }
+
+        $bonus = [];
+        foreach ($value as $effect) {
+            if (!is_array($effect)) {
+                continue;
+            }
+            $charId = isset($effect['characteristic']) ? (int) $effect['characteristic'] : null;
+            if ($charId === null) {
+                continue;
+            }
+            $charKey = $mapping[(string) $charId] ?? null;
+            if (!is_string($charKey) || $charKey === '') {
+                continue;
+            }
+            $from = isset($effect['from']) && is_numeric($effect['from']) ? (int) $effect['from'] : null;
+            $to = isset($effect['to']) && is_numeric($effect['to']) ? (int) $effect['to'] : null;
+            $val = $effect['value'] ?? $effect['min'] ?? $effect['max'] ?? null;
+            if ($val === null && $from !== null && $to !== null) {
+                $val = (int) round(($from + $to) / 2);
+            } elseif ($val === null && $to !== null) {
+                $val = $to;
+            } elseif ($val === null && $from !== null) {
+                $val = $from;
+            }
+            $val = is_numeric($val) ? (int) $val : 0;
+            if ($this->conversionService !== null) {
+                $val = $this->conversionService->convertObjectAttribute($charKey, $val, 'item');
+            }
+            $shortKey = str_ends_with($charKey, '_object') ? substr($charKey, 0, -7) : $charKey;
+            $bonus[$shortKey] = ($bonus[$shortKey] ?? 0) + $val;
+        }
+
+        if ($bonus === []) {
+            return null;
+        }
+
+        return $this->toJson($bonus);
     }
 
     /**
@@ -121,6 +191,7 @@ final class FormatterApplicator
             'defaultRarityByLevel',
             'recipeIdsToResourceRecipe',
             'recipeToResourceRecipe',
+            'itemEffectsToKrosmozBonus',
         ];
         if ($this->conversionService !== null) {
             $base = array_merge($base, ['dofusdb_level', 'dofusdb_life', 'dofusdb_attribute', 'dofusdb_ini']);

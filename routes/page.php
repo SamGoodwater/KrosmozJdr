@@ -61,6 +61,6 @@ Route::prefix('sections')->name('sections.')->middleware('auth')->group(function
 
     // Fichiers liés à une section (toujours auth, policy gère le droit)
     Route::post('/{section}/files', [SectionController::class, 'storeFile'])->name('files.store');
-    Route::delete('/{section}/files/{file}', [SectionController::class, 'deleteFile'])->name('files.delete');
+    Route::delete('/{section}/files/{medium}', [SectionController::class, 'deleteFile'])->name('files.delete');
 });
 // Les droits d'accès fins sont désormais gérés uniquement par les policies (plus de middleware 'role').

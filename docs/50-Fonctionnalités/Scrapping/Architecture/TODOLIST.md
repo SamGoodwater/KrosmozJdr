@@ -42,6 +42,7 @@ Liste de tâches optionnelles ou de suivi. Contexte : [ETAT_AVANCEMENT.md](./ETA
 - [x] **3.1** Exposer une route dédiée `POST /api/scrapping/import/{entity}/{id}` (ScrappingController) qui appelle l’Orchestrator. Entités : monster, breed, spell, item, class (→ breed).  
 - [x] **3.2** Basculer l’import monster : `POST /api/scrapping/import/monster/{id}` utilise la collecte puis runOne / runOneWithRaw (conversion BDD + validation + intégration). Relations (sorts, drops) en cascade via RelationResolutionService + sync sur la créature.  
 - [x] **3.3** Dashboard / UI : indication pour monster — tooltip « Rafraîchir les données depuis DofusDB (pipeline) » et badge sur l’action Rafraîchir (entity-actions-config monsters, EntityActionButton / dropdown / context).
+- [x] **3.4** API : lire `include_relations` dans `optionsFromRequest` (défaut true). Drops : utiliser `itemId` avec fallback `id` dans RelationResolutionService et RelationImportStack. Test de régression runMany + include_relations (ScrappingOrchestratorTest::test_run_many_monster_with_include_relations_passes_raw_to_relations).
 
 ---
 

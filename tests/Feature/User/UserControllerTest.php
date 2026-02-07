@@ -4,7 +4,9 @@ namespace Tests\Feature\User;
 
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
 
 /**
@@ -369,6 +371,47 @@ class UserControllerTest extends TestCase
         $response = $this->actingAs($user)->get(route('user.admin.edit', $targetUser));
 
         $response->assertForbidden();
+    }
+
+    /**
+     * Test : Un utilisateur peut uploader son avatar (Media Library).
+     */
+    public function test_user_can_upload_avatar(): void
+    {
+        Storage::fake('public');
+        $user = User::factory()->create(['role' => User::ROLE_USER]);
+        $file = UploadedFile::fake()->image('avatar.png', 200, 200);
+
+        $response = $this->actingAs($user)
+            ->post(route('user.updateAvatar'), [
+                'avatar' => $file,
+            ]);
+
+        $response->assertRedirect();
+        $response->assertSessionHas('success');
+        $user->refresh();
+        $this->assertCount(1, $user->getMedia('avatars'));
+        $this->assertNotEmpty($user->avatar);
+    }
+
+    /**
+     * Test : Un utilisateur peut supprimer son avatar.
+     */
+    public function test_user_can_delete_avatar(): void
+    {
+        Storage::fake('public');
+        $user = User::factory()->create(['role' => User::ROLE_USER]);
+        $user->addMedia(UploadedFile::fake()->image('avatar.png'))->toMediaCollection('avatars');
+        $user->update(['avatar' => $user->getFirstMediaUrl('avatars')]);
+
+        $response = $this->actingAs($user)
+            ->delete(route('user.deleteAvatar'));
+
+        $response->assertRedirect();
+        $response->assertSessionHas('success');
+        $user->refresh();
+        $this->assertCount(0, $user->getMedia('avatars'));
+        $this->assertNull($user->avatar);
     }
 }
 

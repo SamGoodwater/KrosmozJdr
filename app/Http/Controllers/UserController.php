@@ -79,14 +79,22 @@ class UserController extends Controller
     {
         $this->authorize('create', User::class);
         $data = $request->validated();
-        // Gestion de l'avatar
-        if (isset($data['avatar'])) {
-            $data['avatar'] = $request->file('avatar')->store('avatars', 'public');
+        if ($request->hasFile('avatar')) {
+            unset($data['avatar']);
         }
-        // Valeurs par défaut pour les notifications
         $data['notifications_enabled'] = $data['notifications_enabled'] ?? true;
         $data['notification_channels'] = $data['notification_channels'] ?? ['database'];
         $user = User::create($data);
+        if ($request->hasFile('avatar')) {
+            $ext = $request->file('avatar')->getClientOriginalExtension() ?: 'png';
+            $customName = $user->getMediaFileNameForCollection('avatars', $ext);
+            $adder = $user->addMediaFromRequest('avatar');
+            if ($customName !== null && $customName !== '') {
+                $adder->usingFileName($customName);
+            }
+            $media = $adder->toMediaCollection('avatars');
+            $user->update(['avatar' => $media->getUrl()]);
+        }
         return redirect()->route('users.show', $user)->with('success', 'Utilisateur créé avec succès.');
     }
 
@@ -122,12 +130,17 @@ class UserController extends Controller
         $this->authorize('update', $user);
         $old = clone $user;
         $data = $request->validated();
-        // Gestion de l'avatar
-        if (isset($data['avatar'])) {
-            if ($user->avatar && Storage::disk('public')->exists($user->avatar)) {
-                Storage::disk('public')->delete($user->avatar);
+        // Gestion de l'avatar (Media Library)
+        if ($request->hasFile('avatar')) {
+            $user->clearMediaCollection('avatars');
+            $ext = $request->file('avatar')->getClientOriginalExtension() ?: 'png';
+            $customName = $user->getMediaFileNameForCollection('avatars', $ext);
+            $adder = $user->addMediaFromRequest('avatar');
+            if ($customName !== null && $customName !== '') {
+                $adder->usingFileName($customName);
             }
-            $data['avatar'] = $request->file('avatar')->store('avatars', 'public');
+            $media = $adder->toMediaCollection('avatars');
+            $data['avatar'] = $media->getUrl();
         }
         $user->update($data);
         NotificationService::notifyProfileModified($user, Auth::user(), $old);
@@ -161,10 +174,7 @@ class UserController extends Controller
     public function forceDelete(User $user)
     {
         $this->authorize('forceDelete', $user);
-        // Supprimer l'avatar physique si présent
-        if ($user->avatar && Storage::disk('public')->exists($user->avatar)) {
-            Storage::disk('public')->delete($user->avatar);
-        }
+        $user->clearMediaCollection('avatars');
         $user->forceDelete();
         return redirect()->route('user.index')->with('success', 'Utilisateur supprimé définitivement.');
     }
@@ -204,14 +214,16 @@ class UserController extends Controller
         $request->validate([
             'avatar' => ['required', 'image', 'mimes:jpeg,jpg,png,gif,webp,svg', 'max:5120'], // 5MB max
         ]);
-        
-        // Supprimer l'ancien avatar si présent
-        if ($user->avatar && Storage::disk('public')->exists($user->avatar)) {
-            Storage::disk('public')->delete($user->avatar);
+
+        $user->clearMediaCollection('avatars');
+        $ext = $request->file('avatar')->getClientOriginalExtension() ?: 'png';
+        $customName = $user->getMediaFileNameForCollection('avatars', $ext);
+        $adder = $user->addMediaFromRequest('avatar');
+        if ($customName !== null && $customName !== '') {
+            $adder->usingFileName($customName);
         }
-        
-        $user->avatar = $request->file('avatar')->store('avatars', 'public');
-        $user->save();
+        $media = $adder->toMediaCollection('avatars');
+        $user->update(['avatar' => $media->getUrl()]);
         
         // Recharger l'utilisateur avec les relations pour retourner les données complètes
         $user->refresh();
@@ -230,11 +242,8 @@ class UserController extends Controller
     {
         $user = $user ?? Auth::user();
         $this->authorize('update', $user);
-        if ($user->avatar && Storage::disk('public')->exists($user->avatar)) {
-            Storage::disk('public')->delete($user->avatar);
-        }
-        $user->avatar = null;
-        $user->save();
+        $user->clearMediaCollection('avatars');
+        $user->update(['avatar' => null]);
         return redirect()->back()->with('success', 'Avatar supprimé.');
     }
 

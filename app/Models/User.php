@@ -27,6 +27,10 @@ use App\Models\Entity\Spell;
 use App\Models\Entity\Campaign;
 use App\Models\Page;
 use App\Models\Section;
+use App\Models\Concerns\HasMediaCustomNaming;
+use Spatie\MediaLibrary\HasMedia;
+use Spatie\MediaLibrary\InteractsWithMedia;
+use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
 /**
  * Modèle User central du projet Krosmoz JDR.
@@ -128,10 +132,10 @@ use App\Models\Section;
  * @property-read string $role_name
  * @mixin \Eloquent
  */
-class User extends Authenticatable
+class User extends Authenticatable implements HasMedia
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, Notifiable, SoftDeletes;
+    use HasFactory, Notifiable, SoftDeletes, InteractsWithMedia, HasMediaCustomNaming;
 
     const ROLES = [
         0 => 'guest', // Visiteur non connecté
@@ -152,7 +156,13 @@ class User extends Authenticatable
     const NOTIFICATION_CHANNELS = ['database', 'email'];
 
     public const DEFAULT_AVATAR = 'storage/images/avatar/default_avatar_head.webp';
-    
+
+    /** Répertoire Media Library pour ce modèle. */
+    public const MEDIA_PATH = 'images/users';
+
+    /** Motif de nommage pour la collection avatars (placeholders: [name], [date], [id]). */
+    public const MEDIA_FILE_PATTERN_AVATARS = 'avatar-[id]';
+
     /**
      * ID de l'utilisateur système (pour les imports automatiques)
      * Note: L'ID réel peut varier, on utilise l'email pour l'identifier
@@ -231,21 +241,50 @@ class User extends Authenticatable
     }
 
     /**
+     * Collections et conversions Media Library pour l'avatar.
+     */
+    public function registerMediaCollections(): void
+    {
+        $this->addMediaCollection('avatars')->singleFile();
+    }
+
+    /**
+     * Conversions pour la collection avatars (WebP + miniature).
+     */
+    public function registerMediaConversions(?Media $media = null): void
+    {
+        $this->addMediaConversion('thumb')
+            ->performOnCollections('avatars')
+            ->width(150)
+            ->height(150)
+            ->format('webp')
+            ->nonQueued();
+
+        $this->addMediaConversion('webp')
+            ->performOnCollections('avatars')
+            ->format('webp')
+            ->nonQueued();
+    }
+
+    /**
      * Retourne l'URL de l'avatar de l'utilisateur (jamais null).
+     * Priorité : média collection avatars > colonne avatar (legacy) > défaut.
      *
      * @return string URL absolue de l'avatar
      */
     public function avatarPath(): string
     {
-        if (!$this->avatar) {
-            return asset(self::DEFAULT_AVATAR);
+        $url = $this->getFirstMediaUrl('avatars');
+        if ($url !== '') {
+            return $url;
         }
-        // Si le chemin commence déjà par 'storage/', utiliser asset() directement
-        // Sinon, utiliser Storage::url() qui ajoute '/storage/'
-        if (str_starts_with($this->avatar, 'storage/')) {
-            return asset($this->avatar);
+        if ($this->avatar) {
+            if (str_starts_with($this->avatar, 'storage/')) {
+                return asset($this->avatar);
+            }
+            return Storage::url($this->avatar);
         }
-        return Storage::url($this->avatar);
+        return asset(self::DEFAULT_AVATAR);
     }
 
     /**

@@ -472,10 +472,15 @@ function getXsrfToken() {
 async function onIconFileChange(event) {
     const file = event.target.files?.[0];
     if (!file) return;
+    const characteristicId = props.selected?.id;
+    if (!characteristicId) {
+        return; // En édition uniquement : la caractéristique doit exister pour attacher l'icône
+    }
     iconUploading.value = true;
     try {
         const formData = new FormData();
         formData.append('file', file);
+        formData.append('characteristic_id', String(characteristicId));
         const headers = { Accept: 'application/json' };
         const token = getXsrfToken();
         if (token) headers['X-XSRF-TOKEN'] = token;

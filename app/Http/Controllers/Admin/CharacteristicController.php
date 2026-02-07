@@ -534,9 +534,34 @@ class CharacteristicController extends Controller
         return redirect()->route('admin.characteristics.show', $characteristic_key)->with('success', 'Caractéristique mise à jour.');
     }
 
+    /**
+     * Upload d'icône pour une caractéristique (Spatie Media Library).
+     * Requiert characteristic_id ; attache le média à la caractéristique et met à jour la colonne icon.
+     */
     public function uploadIcon(Request $request): JsonResponse
     {
-        return response()->json(['url' => null]);
+        $validated = $request->validate([
+            'file' => ['required', 'file', 'image', 'max:2048'], // 2MB
+            'characteristic_id' => ['required', 'integer', 'exists:characteristics,id'],
+        ]);
+
+        $characteristic = Characteristic::findOrFail($validated['characteristic_id']);
+        $this->authorize('update', $characteristic);
+
+        $characteristic->clearMediaCollection('icons');
+        $ext = $request->file('file')->getClientOriginalExtension() ?: 'png';
+        $customName = $characteristic->getMediaFileNameForCollection('icons', $ext);
+        $adder = $characteristic->addMediaFromRequest('file');
+        if ($customName !== null && $customName !== '') {
+            $adder->usingFileName($customName);
+        }
+        $media = $adder->toMediaCollection('icons');
+        $characteristic->update(['icon' => $media->getUrl()]);
+
+        return response()->json([
+            'success' => true,
+            'icon' => $media->getUrl(),
+        ]);
     }
 
     /**

@@ -8,6 +8,8 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Models\User;
 use App\Models\Entity\Capability;
 use App\Models\Entity\Npc;
+use App\Models\Concerns\HasEntityImageMedia;
+use Spatie\MediaLibrary\HasMedia;
 
 /**
  * 
@@ -48,15 +50,21 @@ use App\Models\Entity\Npc;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Specialization withoutTrashed()
  * @mixin \Eloquent
  */
-class Specialization extends Model
+class Specialization extends Model implements HasMedia
 {
     /** @use HasFactory<\Database\Factories\SpecializationFactory> */
-    use HasFactory, SoftDeletes;
+    use HasFactory, SoftDeletes, HasEntityImageMedia;
 
     public const STATE_RAW = 'raw';
     public const STATE_DRAFT = 'draft';
     public const STATE_PLAYABLE = 'playable';
     public const STATE_ARCHIVED = 'archived';
+
+    /** Répertoire Media Library pour ce modèle. */
+    public const MEDIA_PATH = 'images/entity/specializations';
+
+    /** Motif de nommage pour la collection images (placeholders: [name], [date], [id]). */
+    public const MEDIA_FILE_PATTERN_IMAGES = 'image-[id]-[name]';
 
     /**
      * The attributes that are mass assignable.

@@ -152,6 +152,9 @@ const rawItems = ref([]);
 const tableSearch = ref("");
 const selectedIds = ref(new Set());
 const lastMeta = ref(null);
+// Données converties par ID (pour affichage valeur convertie + brute)
+const convertedByItemId = ref({});
+const loadingConverted = ref(false);
 
 // Analyse des effets (unmapped)
 const effectsAnalysisLoading = ref(false);
@@ -525,7 +528,179 @@ const resetTable = () => {
     selectedIds.value = new Set();
     lastMeta.value = null;
     tableSearch.value = "";
+    convertedByItemId.value = {};
+    expandedRowId.value = null;
     pushHistory("Réinitialisation du tableau.");
+};
+
+/** Extrait le nom affichable depuis la structure convertie (par type d'entité). */
+function convertedName(converted, entityType) {
+    if (!converted || typeof converted !== "object") return null;
+    const t = String(entityType || "");
+    const first = (arr) => (Array.isArray(arr) && arr.length ? arr[0] : null);
+    const from = first(converted.creatures) ?? first(converted.monsters)
+        ?? first(converted.spells) ?? first(converted.breeds) ?? first(converted.classes)
+        ?? first(converted.resources) ?? first(converted.consumables) ?? first(converted.items)
+        ?? first(converted.panoplies);
+    if (from && typeof from.name !== "undefined") return from.name;
+    if (from && typeof from === "object" && from.name) return from.name;
+    return null;
+}
+
+/** Extrait le niveau depuis la structure convertie. */
+function convertedLevel(converted) {
+    if (!converted || typeof converted !== "object") return null;
+    const first = (arr) => (Array.isArray(arr) && arr.length ? arr[0] : null);
+    const from = first(converted.creatures) ?? first(converted.monsters) ?? first(converted.spells)
+        ?? first(converted.breeds) ?? first(converted.classes);
+    if (from && typeof from.level !== "undefined") return from.level;
+    return null;
+}
+
+/** Enregistrement existant (Krosmoz) pour une ligne. */
+function existingRecord(it) {
+    const id = Number(it?.id);
+    if (!Number.isFinite(id)) return null;
+    return convertedByItemId.value[id]?.existing?.record ?? null;
+}
+
+/** Valeur affichable pour une cellule à trois lignes (existant / converti / brut). */
+function cellTriple(it, getExisting, getConverted, getRaw) {
+    const existing = existingRecord(it);
+    const data = convertedByItemId.value[Number(it?.id)];
+    return {
+        existant: getExisting(existing),
+        converti: getConverted(data?.converted),
+        brut: getRaw(it),
+    };
+}
+
+/** Aplatit un objet en clés pointées (pour tableau détaillé). */
+function flattenForCompare(obj, prefix = "") {
+    if (!obj || typeof obj !== "object") return {};
+    const out = {};
+    for (const key of Object.keys(obj)) {
+        const val = obj[key];
+        const fullKey = prefix ? `${prefix}.${key}` : key;
+        if (val !== null && typeof val === "object" && !Array.isArray(val)) {
+            Object.assign(out, flattenForCompare(val, fullKey));
+        } else if (Array.isArray(val)) {
+            val.forEach((item, i) => {
+                Object.assign(out, flattenForCompare(item, `${fullKey}[${i}]`));
+            });
+        } else {
+            out[fullKey] = val;
+        }
+    }
+    return out;
+}
+
+/** Pour une ligne, retourne la liste des lignes de comparaison (clé, existant, converti, brut). */
+function comparisonRows(it) {
+    const existing = existingRecord(it);
+    const data = convertedByItemId.value[Number(it?.id)];
+    const raw = it ?? {};
+    const existingFlat = flattenForCompare(existing ?? {});
+    const convertedFlat = flattenForCompare(data?.converted ?? {});
+    const rawFlat = flattenForCompare(raw);
+    const keys = [...new Set([...Object.keys(existingFlat), ...Object.keys(convertedFlat), ...Object.keys(rawFlat)])].sort();
+    return keys.map((key) => ({
+        key,
+        existant: existingFlat[key],
+        converti: convertedFlat[key],
+        brut: rawFlat[key],
+    }));
+}
+
+function formatCompareVal(val) {
+    if (val == null || val === "") return "—";
+    if (typeof val === "object") return JSON.stringify(val);
+    return String(val);
+}
+
+function extractFirstBlock(converted) {
+    if (!converted || typeof converted !== "object") return null;
+    const first = (arr) => (Array.isArray(arr) && arr.length ? arr[0] : null);
+    return first(converted.creatures) ?? first(converted.monsters) ?? first(converted.spells)
+        ?? first(converted.breeds) ?? first(converted.classes)
+        ?? first(converted.resources) ?? first(converted.consumables) ?? first(converted.items)
+        ?? first(converted.panoplies) ?? null;
+}
+
+/** Triple (existant, converti, brut) pour la colonne Nom. */
+function tripleName(it) {
+    return cellTriple(
+        it,
+        (r) => (r?.name != null ? String(r.name) : null),
+        (c) => convertedName(c, selectedEntityType.value),
+        (r) => formatName(r?.name)
+    );
+}
+
+/** Triple pour la colonne Niveau. */
+function tripleLevel(it) {
+    return cellTriple(
+        it,
+        (r) => (r?.level != null ? String(r.level) : null),
+        (c) => (convertedLevel(c) != null ? String(convertedLevel(c)) : null),
+        (r) => (r?.level != null ? String(r.level) : null)
+    );
+}
+
+/** Triple pour Type (type_id / typeName). */
+function tripleType(it) {
+    return cellTriple(
+        it,
+        (r) => (r?.item_type_id ?? r?.resource_type_id ?? r?.consumable_type_id ?? r?.type_id != null ? String(r.item_type_id ?? r.resource_type_id ?? r.consumable_type_id ?? r.type_id) : null),
+        (c) => {
+            const block = extractFirstBlock(c);
+            return block?.type_id != null ? String(block.type_id) : null;
+        },
+        (r) => (r?.typeName ?? (r?.typeId != null ? `#${r.typeId}` : null))
+    );
+}
+
+/** Ligne étendue (détail des propriétés) : id de la ligne ouverte, ou null. */
+const expandedRowId = ref(null);
+function toggleExpandedRow(id) {
+    const n = Number(id);
+    if (!Number.isFinite(n)) return;
+    expandedRowId.value = expandedRowId.value === n ? null : n;
+}
+
+/** Charge les données converties pour les IDs de la page courante (batch preview). */
+const fetchConvertedBatch = async () => {
+    const ids = (rawItems.value || []).map((it) => Number(it?.id)).filter((n) => Number.isFinite(n) && n > 0);
+    if (!ids.length || !selectedEntityType.value) return;
+    loadingConverted.value = true;
+    const next = {};
+    try {
+        const res = await fetch("/api/scrapping/preview/batch", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                Accept: "application/json",
+                "X-CSRF-TOKEN": getCsrfToken() || "",
+            },
+            body: JSON.stringify({ type: selectedEntityType.value, ids }),
+        });
+        const data = await res.json();
+        if (res.ok && data.success && Array.isArray(data.data?.items)) {
+            for (const item of data.data.items) {
+                const id = Number(item?.id);
+                if (Number.isFinite(id)) next[id] = {
+                    converted: item.converted ?? null,
+                    existing: item.existing ?? null,
+                    error: item.error ?? null,
+                };
+            }
+            convertedByItemId.value = next;
+        }
+    } catch (e) {
+        showError("Valeurs converties : " + (e?.message ?? "erreur"));
+    } finally {
+        loadingConverted.value = false;
+    }
 };
 
 const toggleSelectAll = () => {
@@ -566,6 +741,7 @@ const runSearch = async () => {
             const returned = rawItems.value.length;
             success(`Recherche OK (${returned} résultat(s))`);
             pushHistory(`→ OK: ${returned} résultat(s)${typeof total === "number" ? ` (total=${total})` : ""}.`);
+            void fetchConvertedBatch();
         } else {
             showError(data.message || "Erreur lors de la recherche");
             pushHistory(`→ ERREUR: ${data.message || "recherche"}`);
@@ -1427,6 +1603,10 @@ const onCompareImported = () => {
                         · total filtré: {{ lastMeta.total }}
                     </span>
                     <span v-if="selectedCount" class="text-sm text-primary-300">· sélection: {{ selectedCount }}</span>
+                    <span v-if="loadingConverted" class="text-xs text-primary-300 flex items-center gap-1">
+                        <Loading />
+                        Valeurs converties…
+                    </span>
                 </div>
 
                 <div class="flex flex-wrap gap-2 items-center">
@@ -1525,18 +1705,18 @@ const onCompareImported = () => {
                                 <input type="checkbox" class="checkbox checkbox-sm" :checked="allSelected" @change="toggleSelectAll" />
                             </th>
                             <th class="w-24">ID</th>
+                            <th class="w-8" title="Détail des propriétés"></th>
                             <th>Nom</th>
                             <th class="w-28">Existe</th>
                             <th v-if="supports('typeId') || supports('typeIds') || supports('typeIdsNot')" class="w-48">Type</th>
                         <th v-if="supports('raceId')" class="w-56">Race</th>
                             <th v-if="supports('breedId')" class="w-24">breedId</th>
-                            <th v-if="supports('levelMin') || supports('levelMax')" class="w-24">Niveau</th>
+                            <th v-if="supports('levelMin') || supports('levelMax')" class="w-32">Niveau</th>
                         </tr>
                     </thead>
                     <tbody>
+                        <template v-for="it in visibleItems" :key="String(it.id)">
                         <tr
-                            v-for="it in visibleItems"
-                            :key="String(it.id)"
                             class="cursor-pointer hover:bg-base-200/50"
                             @dblclick="openCompareModalForRow(it)"
                         >
@@ -1549,7 +1729,30 @@ const onCompareImported = () => {
                                 />
                             </td>
                             <td class="font-mono">{{ it.id }}</td>
-                            <td class="font-medium">{{ formatName(it.name) }}</td>
+                            <td class="p-1">
+                                <button
+                                    type="button"
+                                    class="btn btn-ghost btn-xs p-1"
+                                    :class="expandedRowId === Number(it.id) ? 'text-primary' : 'text-primary-300'"
+                                    :title="expandedRowId === Number(it.id) ? 'Replier' : 'Toutes les propriétés (existant / converti / brut)'"
+                                    @click.stop="toggleExpandedRow(it.id)"
+                                >
+                                    <Icon :source="expandedRowId === Number(it.id) ? 'fa-solid fa-chevron-down' : 'fa-solid fa-chevron-right'" alt="" pack="solid" />
+                                </button>
+                            </td>
+                            <td class="align-top">
+                                <div class="space-y-0.5 text-sm">
+                                    <div v-if="tripleName(it).existant != null" class="text-primary-100">
+                                        <span class="text-xs text-primary-400 font-medium">Krosmoz:</span> {{ tripleName(it).existant }}
+                                    </div>
+                                    <div>
+                                        <span class="text-xs text-primary-400 font-medium">Converti:</span> {{ tripleName(it).converti ?? formatName(it.name) ?? "—" }}
+                                    </div>
+                                    <div class="text-xs text-primary-300">
+                                        <span class="font-medium">DofusDB:</span> {{ tripleName(it).brut ?? "—" }}
+                                    </div>
+                                </div>
+                            </td>
                             <td>
                                 <Tooltip :content="existsTooltip(it)">
                                     <span class="inline-flex items-center gap-2">
@@ -1573,27 +1776,60 @@ const onCompareImported = () => {
                                     </span>
                                 </Tooltip>
                             </td>
-                            <td v-if="supports('typeId') || supports('typeIds') || supports('typeIdsNot')">
-                                <span v-if="it.typeName" class="text-sm">{{ it.typeName }}</span>
-                                <span v-else class="text-primary-300 text-sm italic">—</span>
-                                <span v-if="it.typeId" class="ml-2 text-xs text-primary-300 font-mono">#{{ it.typeId }}</span>
+                            <td v-if="supports('typeId') || supports('typeIds') || supports('typeIdsNot')" class="align-top">
+                                <div class="space-y-0.5 text-sm">
+                                    <div v-if="tripleType(it).existant != null" class="text-primary-100"><span class="text-xs text-primary-400">Krosmoz:</span> {{ tripleType(it).existant }}</div>
+                                    <div><span class="text-xs text-primary-400">Converti:</span> {{ tripleType(it).converti ?? "—" }}</div>
+                                    <div class="text-xs text-primary-300"><span class="font-medium">DofusDB:</span> {{ tripleType(it).brut ?? it.typeName ?? (it.typeId != null ? '#' + it.typeId : '—') }}</div>
+                                </div>
                                 <span
                                     v-if="it.typeDecision === 'pending'"
                                     class="ml-2 badge badge-warning badge-xs"
-                                    title="Ce type est en attente de validation (il sera proposé dans la section de revue des types)."
+                                    title="Ce type est en attente de validation."
                                 >
                                     À valider
                                 </span>
                             </td>
                             <td v-if="supports('raceId')">
-                                <span class="font-semibold">{{ it.raceName ?? "—" }}</span>
-                                <span v-if="it.raceName === null && (it.raceId ?? it.race) !== undefined" class="text-xs text-primary-300 ml-2">
-                                    ({{ it.raceId ?? it.race }})
-                                </span>
+                                <div class="font-semibold">{{ it.raceName ?? "—" }}</div>
+                                <div v-if="(it.raceId ?? it.race) !== undefined" class="text-xs text-primary-300">({{ it.raceId ?? it.race }})</div>
                             </td>
                             <td v-if="supports('breedId')">{{ it.breedId ?? "—" }}</td>
-                            <td v-if="supports('levelMin') || supports('levelMax')">{{ it.level ?? "—" }}</td>
+                            <td v-if="supports('levelMin') || supports('levelMax')" class="align-top">
+                                <div class="space-y-0.5 text-sm">
+                                    <div v-if="tripleLevel(it).existant != null" class="text-primary-100"><span class="text-xs text-primary-400">Krosmoz:</span> {{ tripleLevel(it).existant }}</div>
+                                    <div><span class="text-xs text-primary-400">Converti:</span> {{ tripleLevel(it).converti ?? "—" }}</div>
+                                    <div class="text-xs text-primary-300"><span class="font-medium">DofusDB:</span> {{ tripleLevel(it).brut ?? "—" }}</div>
+                                </div>
+                            </td>
                         </tr>
+                        <!-- Ligne dépliée : comparaison de toutes les propriétés -->
+                        <tr v-if="expandedRowId === Number(it.id)" :key="'exp-' + it.id" class="bg-base-200/60">
+                            <td colspan="100" class="p-3 align-top">
+                                <div class="text-xs font-semibold text-primary-200 mb-2">Toutes les propriétés (Krosmoz / Converti / DofusDB)</div>
+                                <div class="overflow-x-auto max-h-64 overflow-y-auto rounded border border-base-300">
+                                    <table class="table table-xs w-full">
+                                        <thead>
+                                            <tr class="bg-base-300/50">
+                                                <th class="w-48 font-mono">Propriété</th>
+                                                <th>Krosmoz (existant)</th>
+                                                <th>Converti</th>
+                                                <th>DofusDB (brut)</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr v-for="row in comparisonRows(it)" :key="row.key" class="border-b border-base-300/30">
+                                                <td class="font-mono text-primary-200">{{ row.key }}</td>
+                                                <td class="break-all text-sm">{{ formatCompareVal(row.existant) }}</td>
+                                                <td class="break-all text-sm">{{ formatCompareVal(row.converti) }}</td>
+                                                <td class="break-all text-sm text-primary-300">{{ formatCompareVal(row.brut) }}</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </td>
+                        </tr>
+                        </template>
                     </tbody>
                 </table>
             </div>

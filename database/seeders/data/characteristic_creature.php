@@ -20,12 +20,12 @@ return array (
     'conversion_formula' => '{"1":"floor([d]/10)","characteristic":"d"}',
     'conversion_dofus_sample' => 
     array (
-      1 => 1,
-      40 => 40,
-      80 => 80,
-      120 => 120,
-      160 => 160,
-      200 => 200,
+      1 => 3,
+      40 => 44,
+      80 => 83,
+      120 => 122,
+      160 => 162,
+      200 => 247,
     ),
     'conversion_krosmoz_sample' => 
     array (
@@ -48,8 +48,24 @@ return array (
     'formula_display' => NULL,
     'default_value' => '1',
     'conversion_formula' => '{"1":"1 + 19 * sqrt(([d] - 1) / 799)","800":"20 + 10 * (([d] - 800) / 400)","characteristic":"d"}',
-    'conversion_dofus_sample' => NULL,
-    'conversion_krosmoz_sample' => NULL,
+    'conversion_dofus_sample' => 
+    array (
+      1 => 3,
+      40 => 44,
+      80 => 83,
+      120 => 122,
+      160 => 162,
+      200 => 247,
+    ),
+    'conversion_krosmoz_sample' => 
+    array (
+      1 => 1,
+      4 => 4,
+      8 => 8,
+      12 => 12,
+      16 => 16,
+      20 => 20,
+    ),
   ),
   2 => 
   array (
@@ -62,8 +78,24 @@ return array (
     'formula_display' => 'Vitalité×10 + dés de vie (2.2.2)',
     'default_value' => '1',
     'conversion_formula' => 'floor([d]/200)+[level]*5',
-    'conversion_dofus_sample' => NULL,
-    'conversion_krosmoz_sample' => NULL,
+    'conversion_dofus_sample' => 
+    array (
+      1 => 255,
+      40 => 681,
+      80 => 1906,
+      120 => 3533,
+      160 => 5542,
+      200 => 9528,
+    ),
+    'conversion_krosmoz_sample' => 
+    array (
+      1 => 20,
+      4 => 35,
+      8 => 55,
+      12 => 80,
+      16 => 110,
+      20 => 140,
+    ),
   ),
   3 => 
   array (
@@ -76,8 +108,24 @@ return array (
     'formula_display' => 'Base 6, max 12 (équip. +6, forgemagie +1)',
     'default_value' => '6',
     'conversion_formula' => '[d]',
-    'conversion_dofus_sample' => NULL,
-    'conversion_krosmoz_sample' => NULL,
+    'conversion_dofus_sample' => 
+    array (
+      1 => 3,
+      40 => 7,
+      80 => 8,
+      120 => 9,
+      160 => 11,
+      200 => 11,
+    ),
+    'conversion_krosmoz_sample' => 
+    array (
+      1 => 6,
+      4 => 7,
+      8 => 8,
+      12 => 10,
+      16 => 11,
+      20 => 12,
+    ),
   ),
   4 => 
   array (
@@ -90,8 +138,24 @@ return array (
     'formula_display' => 'Base 3, max 6 (équip. +3, forgemagie +1)',
     'default_value' => '3',
     'conversion_formula' => '[d]',
-    'conversion_dofus_sample' => NULL,
-    'conversion_krosmoz_sample' => NULL,
+    'conversion_dofus_sample' => 
+    array (
+      1 => 2,
+      40 => 5,
+      80 => 4,
+      120 => 5,
+      160 => 5,
+      200 => 5,
+    ),
+    'conversion_krosmoz_sample' => 
+    array (
+      1 => 3,
+      4 => 3,
+      8 => 4,
+      12 => 5,
+      16 => 5,
+      20 => 6,
+    ),
   ),
   5 => 
   array (
@@ -104,8 +168,24 @@ return array (
     'formula_display' => 'Base 0, max 6 (équip. +6, forgemagie +1)',
     'default_value' => '0',
     'conversion_formula' => '[d]',
-    'conversion_dofus_sample' => NULL,
-    'conversion_krosmoz_sample' => NULL,
+    'conversion_dofus_sample' => 
+    array (
+      1 => 0,
+      40 => 0,
+      80 => 0,
+      120 => 0,
+      160 => 1,
+      200 => 0,
+    ),
+    'conversion_krosmoz_sample' => 
+    array (
+      1 => 0,
+      4 => 1,
+      8 => 2,
+      12 => 4,
+      16 => 5,
+      20 => 6,
+    ),
   ),
   6 => 
   array (
@@ -119,7 +199,15 @@ return array (
     'default_value' => '0',
     'conversion_formula' => '[d]',
     'conversion_dofus_sample' => NULL,
-    'conversion_krosmoz_sample' => NULL,
+    'conversion_krosmoz_sample' => 
+    array (
+      1 => 0,
+      4 => 5,
+      8 => 15,
+      12 => 25,
+      16 => 35,
+      20 => 50,
+    ),
   ),
   7 => 
   array (
@@ -133,7 +221,15 @@ return array (
     'default_value' => '10',
     'conversion_formula' => '10+floor(([d]-10)/2)',
     'conversion_dofus_sample' => NULL,
-    'conversion_krosmoz_sample' => NULL,
+    'conversion_krosmoz_sample' => 
+    array (
+      1 => 10,
+      4 => 11,
+      8 => 12,
+      12 => 14,
+      16 => 16,
+      20 => 18,
+    ),
   ),
   8 => 
   array (
@@ -146,8 +242,24 @@ return array (
     'formula_display' => NULL,
     'default_value' => '8',
     'conversion_formula' => '[d]',
-    'conversion_dofus_sample' => NULL,
-    'conversion_krosmoz_sample' => NULL,
+    'conversion_dofus_sample' => 
+    array (
+      1 => 0,
+      40 => 2,
+      80 => 11,
+      120 => 11,
+      160 => 15,
+      200 => 19,
+    ),
+    'conversion_krosmoz_sample' => 
+    array (
+      1 => 8,
+      4 => 12,
+      8 => 16,
+      12 => 22,
+      16 => 26,
+      20 => 31,
+    ),
   ),
   9 => 
   array (
@@ -160,8 +272,24 @@ return array (
     'formula_display' => NULL,
     'default_value' => '8',
     'conversion_formula' => '[d]',
-    'conversion_dofus_sample' => NULL,
-    'conversion_krosmoz_sample' => NULL,
+    'conversion_dofus_sample' => 
+    array (
+      1 => 36,
+      40 => 255,
+      80 => 235,
+      120 => 414,
+      160 => 636,
+      200 => 625,
+    ),
+    'conversion_krosmoz_sample' => 
+    array (
+      1 => 8,
+      4 => 12,
+      8 => 16,
+      12 => 22,
+      16 => 26,
+      20 => 31,
+    ),
   ),
   10 => 
   array (
@@ -174,8 +302,24 @@ return array (
     'formula_display' => NULL,
     'default_value' => '8',
     'conversion_formula' => '[d]',
-    'conversion_dofus_sample' => NULL,
-    'conversion_krosmoz_sample' => NULL,
+    'conversion_dofus_sample' => 
+    array (
+      1 => 44,
+      40 => 231,
+      80 => 260,
+      120 => 449,
+      160 => 641,
+      200 => 622,
+    ),
+    'conversion_krosmoz_sample' => 
+    array (
+      1 => 8,
+      4 => 12,
+      8 => 16,
+      12 => 22,
+      16 => 26,
+      20 => 31,
+    ),
   ),
   11 => 
   array (
@@ -188,8 +332,24 @@ return array (
     'formula_display' => NULL,
     'default_value' => '8',
     'conversion_formula' => '[d]',
-    'conversion_dofus_sample' => NULL,
-    'conversion_krosmoz_sample' => NULL,
+    'conversion_dofus_sample' => 
+    array (
+      1 => 38,
+      40 => 227,
+      80 => 219,
+      120 => 417,
+      160 => 610,
+      200 => 605,
+    ),
+    'conversion_krosmoz_sample' => 
+    array (
+      1 => 8,
+      4 => 12,
+      8 => 16,
+      12 => 22,
+      16 => 26,
+      20 => 31,
+    ),
   ),
   12 => 
   array (
@@ -202,8 +362,24 @@ return array (
     'formula_display' => NULL,
     'default_value' => '8',
     'conversion_formula' => '[d]',
-    'conversion_dofus_sample' => NULL,
-    'conversion_krosmoz_sample' => NULL,
+    'conversion_dofus_sample' => 
+    array (
+      1 => 59,
+      40 => 146,
+      80 => 180,
+      120 => 330,
+      160 => 515,
+      200 => 654,
+    ),
+    'conversion_krosmoz_sample' => 
+    array (
+      1 => 8,
+      4 => 12,
+      8 => 16,
+      12 => 22,
+      16 => 26,
+      20 => 31,
+    ),
   ),
   13 => 
   array (
@@ -216,8 +392,24 @@ return array (
     'formula_display' => NULL,
     'default_value' => '8',
     'conversion_formula' => '[d]',
-    'conversion_dofus_sample' => NULL,
-    'conversion_krosmoz_sample' => NULL,
+    'conversion_dofus_sample' => 
+    array (
+      1 => 34,
+      40 => 222,
+      80 => 192,
+      120 => 361,
+      160 => 717,
+      200 => 607,
+    ),
+    'conversion_krosmoz_sample' => 
+    array (
+      1 => 8,
+      4 => 12,
+      8 => 16,
+      12 => 22,
+      16 => 26,
+      20 => 31,
+    ),
   ),
   14 => 
   array (
@@ -231,7 +423,15 @@ return array (
     'default_value' => '0',
     'conversion_formula' => '[d]',
     'conversion_dofus_sample' => NULL,
-    'conversion_krosmoz_sample' => NULL,
+    'conversion_krosmoz_sample' => 
+    array (
+      1 => 0,
+      4 => 4,
+      8 => 8,
+      12 => 12,
+      16 => 14,
+      20 => 16,
+    ),
   ),
   15 => 
   array (
@@ -245,7 +445,15 @@ return array (
     'default_value' => '1',
     'conversion_formula' => '[d]',
     'conversion_dofus_sample' => NULL,
-    'conversion_krosmoz_sample' => NULL,
+    'conversion_krosmoz_sample' => 
+    array (
+      1 => 1,
+      4 => 2,
+      8 => 3,
+      12 => 4,
+      16 => 5,
+      20 => 6,
+    ),
   ),
   16 => 
   array (
@@ -258,8 +466,24 @@ return array (
     'formula_display' => '8 + mod. Sagesse (+5 max équip.)',
     'default_value' => '8',
     'conversion_formula' => '[d]',
-    'conversion_dofus_sample' => NULL,
-    'conversion_krosmoz_sample' => NULL,
+    'conversion_dofus_sample' => 
+    array (
+      1 => 9,
+      40 => 4,
+      80 => 5,
+      120 => 4,
+      160 => 2,
+      200 => 15,
+    ),
+    'conversion_krosmoz_sample' => 
+    array (
+      1 => 7,
+      4 => 8,
+      8 => 9,
+      12 => 10,
+      16 => 11,
+      20 => 13,
+    ),
   ),
   17 => 
   array (
@@ -272,8 +496,24 @@ return array (
     'formula_display' => '8 + mod. Sagesse (+5 max équip.)',
     'default_value' => '8',
     'conversion_formula' => '[d]',
-    'conversion_dofus_sample' => NULL,
-    'conversion_krosmoz_sample' => NULL,
+    'conversion_dofus_sample' => 
+    array (
+      1 => 5,
+      40 => 5,
+      80 => 6,
+      120 => 5,
+      160 => 4,
+      200 => 9,
+    ),
+    'conversion_krosmoz_sample' => 
+    array (
+      1 => 7,
+      4 => 8,
+      8 => 9,
+      12 => 10,
+      16 => 11,
+      20 => 13,
+    ),
   ),
   18 => 
   array (
@@ -286,8 +526,24 @@ return array (
     'formula_display' => '1d20 + mod. Agilité + bonus équip. (+10 max)',
     'default_value' => '0',
     'conversion_formula' => '[d]',
-    'conversion_dofus_sample' => NULL,
-    'conversion_krosmoz_sample' => NULL,
+    'conversion_dofus_sample' => 
+    array (
+      1 => 0,
+      40 => 0,
+      80 => 0,
+      120 => 0,
+      160 => 0,
+      200 => 0,
+    ),
+    'conversion_krosmoz_sample' => 
+    array (
+      1 => 0,
+      4 => 2,
+      8 => 5,
+      12 => 8,
+      16 => 12,
+      20 => 15,
+    ),
   ),
   19 => 
   array (
@@ -300,8 +556,24 @@ return array (
     'formula_display' => '1d20 + mod. Chance + bonus équip. (+10 max)',
     'default_value' => '0',
     'conversion_formula' => '[d]',
-    'conversion_dofus_sample' => NULL,
-    'conversion_krosmoz_sample' => NULL,
+    'conversion_dofus_sample' => 
+    array (
+      1 => 0,
+      40 => 0,
+      80 => 0,
+      120 => 0,
+      160 => 0,
+      200 => 0,
+    ),
+    'conversion_krosmoz_sample' => 
+    array (
+      1 => 0,
+      4 => 2,
+      8 => 5,
+      12 => 8,
+      16 => 12,
+      20 => 15,
+    ),
   ),
   20 => 
   array (
@@ -314,8 +586,24 @@ return array (
     'formula_display' => NULL,
     'default_value' => '0',
     'conversion_formula' => '[d]',
-    'conversion_dofus_sample' => NULL,
-    'conversion_krosmoz_sample' => NULL,
+    'conversion_dofus_sample' => 
+    array (
+      1 => 10,
+      40 => 20,
+      80 => 20,
+      120 => 21,
+      160 => 25,
+      200 => 19,
+    ),
+    'conversion_krosmoz_sample' => 
+    array (
+      1 => 0,
+      4 => 2,
+      8 => 4,
+      12 => 6,
+      16 => 8,
+      20 => 10,
+    ),
   ),
   21 => 
   array (
@@ -328,8 +616,24 @@ return array (
     'formula_display' => NULL,
     'default_value' => '0',
     'conversion_formula' => '[d]',
-    'conversion_dofus_sample' => NULL,
-    'conversion_krosmoz_sample' => NULL,
+    'conversion_dofus_sample' => 
+    array (
+      1 => 6,
+      40 => 12,
+      80 => 15,
+      120 => 15,
+      160 => 17,
+      200 => 15,
+    ),
+    'conversion_krosmoz_sample' => 
+    array (
+      1 => 0,
+      4 => 2,
+      8 => 4,
+      12 => 6,
+      16 => 8,
+      20 => 10,
+    ),
   ),
   22 => 
   array (
@@ -342,8 +646,24 @@ return array (
     'formula_display' => NULL,
     'default_value' => '0',
     'conversion_formula' => '[d]',
-    'conversion_dofus_sample' => NULL,
-    'conversion_krosmoz_sample' => NULL,
+    'conversion_dofus_sample' => 
+    array (
+      1 => 5,
+      40 => 11,
+      80 => 14,
+      120 => 15,
+      160 => 19,
+      200 => 16,
+    ),
+    'conversion_krosmoz_sample' => 
+    array (
+      1 => 0,
+      4 => 2,
+      8 => 4,
+      12 => 6,
+      16 => 8,
+      20 => 10,
+    ),
   ),
   23 => 
   array (
@@ -356,8 +676,24 @@ return array (
     'formula_display' => NULL,
     'default_value' => '0',
     'conversion_formula' => '[d]',
-    'conversion_dofus_sample' => NULL,
-    'conversion_krosmoz_sample' => NULL,
+    'conversion_dofus_sample' => 
+    array (
+      1 => 5,
+      40 => 12,
+      80 => 14,
+      120 => 13,
+      160 => 16,
+      200 => 16,
+    ),
+    'conversion_krosmoz_sample' => 
+    array (
+      1 => 0,
+      4 => 2,
+      8 => 4,
+      12 => 6,
+      16 => 8,
+      20 => 10,
+    ),
   ),
   24 => 
   array (
@@ -370,8 +706,24 @@ return array (
     'formula_display' => NULL,
     'default_value' => '0',
     'conversion_formula' => '[d]',
-    'conversion_dofus_sample' => NULL,
-    'conversion_krosmoz_sample' => NULL,
+    'conversion_dofus_sample' => 
+    array (
+      1 => 6,
+      40 => 13,
+      80 => 10,
+      120 => 13,
+      160 => 20,
+      200 => 16,
+    ),
+    'conversion_krosmoz_sample' => 
+    array (
+      1 => 0,
+      4 => 2,
+      8 => 4,
+      12 => 6,
+      16 => 8,
+      20 => 10,
+    ),
   ),
   25 => 
   array (
@@ -385,7 +737,15 @@ return array (
     'default_value' => '0',
     'conversion_formula' => '[d]',
     'conversion_dofus_sample' => NULL,
-    'conversion_krosmoz_sample' => NULL,
+    'conversion_krosmoz_sample' => 
+    array (
+      1 => 0,
+      4 => 1,
+      8 => 2,
+      12 => 4,
+      16 => 6,
+      20 => 8,
+    ),
   ),
   26 => 
   array (
@@ -398,8 +758,24 @@ return array (
     'formula_display' => NULL,
     'default_value' => '0',
     'conversion_formula' => '[d]',
-    'conversion_dofus_sample' => NULL,
-    'conversion_krosmoz_sample' => NULL,
+    'conversion_dofus_sample' => 
+    array (
+      1 => 4,
+      40 => 0,
+      80 => 0,
+      120 => 0,
+      160 => 0,
+      200 => 0,
+    ),
+    'conversion_krosmoz_sample' => 
+    array (
+      1 => 0,
+      4 => 1,
+      8 => 2,
+      12 => 4,
+      16 => 6,
+      20 => 8,
+    ),
   ),
   27 => 
   array (
@@ -412,8 +788,24 @@ return array (
     'formula_display' => NULL,
     'default_value' => '0',
     'conversion_formula' => '[d]',
-    'conversion_dofus_sample' => NULL,
-    'conversion_krosmoz_sample' => NULL,
+    'conversion_dofus_sample' => 
+    array (
+      1 => 4,
+      40 => 0,
+      80 => 0,
+      120 => 0,
+      160 => 0,
+      200 => 0,
+    ),
+    'conversion_krosmoz_sample' => 
+    array (
+      1 => 0,
+      4 => 1,
+      8 => 2,
+      12 => 4,
+      16 => 6,
+      20 => 8,
+    ),
   ),
   28 => 
   array (
@@ -426,8 +818,24 @@ return array (
     'formula_display' => NULL,
     'default_value' => '0',
     'conversion_formula' => '[d]',
-    'conversion_dofus_sample' => NULL,
-    'conversion_krosmoz_sample' => NULL,
+    'conversion_dofus_sample' => 
+    array (
+      1 => 4,
+      40 => 0,
+      80 => 0,
+      120 => 0,
+      160 => 0,
+      200 => 0,
+    ),
+    'conversion_krosmoz_sample' => 
+    array (
+      1 => 0,
+      4 => 1,
+      8 => 2,
+      12 => 4,
+      16 => 6,
+      20 => 8,
+    ),
   ),
   29 => 
   array (
@@ -440,8 +848,24 @@ return array (
     'formula_display' => NULL,
     'default_value' => '0',
     'conversion_formula' => '[d]',
-    'conversion_dofus_sample' => NULL,
-    'conversion_krosmoz_sample' => NULL,
+    'conversion_dofus_sample' => 
+    array (
+      1 => 4,
+      40 => 0,
+      80 => 0,
+      120 => 0,
+      160 => 0,
+      200 => 0,
+    ),
+    'conversion_krosmoz_sample' => 
+    array (
+      1 => 0,
+      4 => 1,
+      8 => 2,
+      12 => 4,
+      16 => 6,
+      20 => 8,
+    ),
   ),
   30 => 
   array (
@@ -455,7 +879,15 @@ return array (
     'default_value' => '0',
     'conversion_formula' => NULL,
     'conversion_dofus_sample' => NULL,
-    'conversion_krosmoz_sample' => NULL,
+    'conversion_krosmoz_sample' => 
+    array (
+      1 => 0,
+      4 => 0,
+      8 => 0,
+      12 => 0,
+      16 => 0,
+      20 => 0,
+    ),
   ),
   31 => 
   array (
@@ -469,7 +901,15 @@ return array (
     'default_value' => '0',
     'conversion_formula' => NULL,
     'conversion_dofus_sample' => NULL,
-    'conversion_krosmoz_sample' => NULL,
+    'conversion_krosmoz_sample' => 
+    array (
+      1 => 0,
+      4 => 0,
+      8 => 0,
+      12 => 0,
+      16 => 0,
+      20 => 0,
+    ),
   ),
   32 => 
   array (
@@ -483,7 +923,15 @@ return array (
     'default_value' => '0',
     'conversion_formula' => NULL,
     'conversion_dofus_sample' => NULL,
-    'conversion_krosmoz_sample' => NULL,
+    'conversion_krosmoz_sample' => 
+    array (
+      1 => 0,
+      4 => 0,
+      8 => 0,
+      12 => 0,
+      16 => 0,
+      20 => 0,
+    ),
   ),
   33 => 
   array (
@@ -497,7 +945,15 @@ return array (
     'default_value' => '0',
     'conversion_formula' => NULL,
     'conversion_dofus_sample' => NULL,
-    'conversion_krosmoz_sample' => NULL,
+    'conversion_krosmoz_sample' => 
+    array (
+      1 => 0,
+      4 => 0,
+      8 => 0,
+      12 => 0,
+      16 => 0,
+      20 => 0,
+    ),
   ),
   34 => 
   array (
@@ -511,7 +967,15 @@ return array (
     'default_value' => '0',
     'conversion_formula' => NULL,
     'conversion_dofus_sample' => NULL,
-    'conversion_krosmoz_sample' => NULL,
+    'conversion_krosmoz_sample' => 
+    array (
+      1 => 0,
+      4 => 0,
+      8 => 0,
+      12 => 0,
+      16 => 0,
+      20 => 0,
+    ),
   ),
   35 => 
   array (
@@ -525,7 +989,15 @@ return array (
     'default_value' => '0',
     'conversion_formula' => NULL,
     'conversion_dofus_sample' => NULL,
-    'conversion_krosmoz_sample' => NULL,
+    'conversion_krosmoz_sample' => 
+    array (
+      1 => 0,
+      4 => 1,
+      8 => 2,
+      12 => 3,
+      16 => 4,
+      20 => 5,
+    ),
   ),
   36 => 
   array (
@@ -539,7 +1011,15 @@ return array (
     'default_value' => '0',
     'conversion_formula' => NULL,
     'conversion_dofus_sample' => NULL,
-    'conversion_krosmoz_sample' => NULL,
+    'conversion_krosmoz_sample' => 
+    array (
+      1 => 0,
+      4 => 2,
+      8 => 4,
+      12 => 6,
+      16 => 8,
+      20 => 10,
+    ),
   ),
   37 => 
   array (
@@ -553,7 +1033,15 @@ return array (
     'default_value' => '0',
     'conversion_formula' => NULL,
     'conversion_dofus_sample' => NULL,
-    'conversion_krosmoz_sample' => NULL,
+    'conversion_krosmoz_sample' => 
+    array (
+      1 => 1,
+      4 => 2,
+      8 => 3,
+      12 => 4,
+      16 => 5,
+      20 => 6,
+    ),
   ),
   38 => 
   array (
@@ -567,7 +1055,15 @@ return array (
     'default_value' => '0',
     'conversion_formula' => NULL,
     'conversion_dofus_sample' => NULL,
-    'conversion_krosmoz_sample' => NULL,
+    'conversion_krosmoz_sample' => 
+    array (
+      1 => 1,
+      4 => 2,
+      8 => 3,
+      12 => 4,
+      16 => 5,
+      20 => 6,
+    ),
   ),
   39 => 
   array (
@@ -581,7 +1077,15 @@ return array (
     'default_value' => '0',
     'conversion_formula' => NULL,
     'conversion_dofus_sample' => NULL,
-    'conversion_krosmoz_sample' => NULL,
+    'conversion_krosmoz_sample' => 
+    array (
+      1 => 0,
+      4 => 0,
+      8 => 0,
+      12 => 0,
+      16 => 0,
+      20 => 0,
+    ),
   ),
   40 => 
   array (
@@ -595,7 +1099,15 @@ return array (
     'default_value' => '0',
     'conversion_formula' => NULL,
     'conversion_dofus_sample' => NULL,
-    'conversion_krosmoz_sample' => NULL,
+    'conversion_krosmoz_sample' => 
+    array (
+      1 => 0,
+      4 => 0,
+      8 => 0,
+      12 => 0,
+      16 => 0,
+      20 => 0,
+    ),
   ),
   41 => 
   array (
@@ -609,7 +1121,15 @@ return array (
     'default_value' => '0',
     'conversion_formula' => NULL,
     'conversion_dofus_sample' => NULL,
-    'conversion_krosmoz_sample' => NULL,
+    'conversion_krosmoz_sample' => 
+    array (
+      1 => 0,
+      4 => 0,
+      8 => 0,
+      12 => 0,
+      16 => 0,
+      20 => 0,
+    ),
   ),
   42 => 
   array (
@@ -623,7 +1143,15 @@ return array (
     'default_value' => '0',
     'conversion_formula' => NULL,
     'conversion_dofus_sample' => NULL,
-    'conversion_krosmoz_sample' => NULL,
+    'conversion_krosmoz_sample' => 
+    array (
+      1 => 0,
+      4 => 0,
+      8 => 0,
+      12 => 0,
+      16 => 0,
+      20 => 0,
+    ),
   ),
   43 => 
   array (
@@ -637,7 +1165,15 @@ return array (
     'default_value' => '0',
     'conversion_formula' => NULL,
     'conversion_dofus_sample' => NULL,
-    'conversion_krosmoz_sample' => NULL,
+    'conversion_krosmoz_sample' => 
+    array (
+      1 => 0,
+      4 => 0,
+      8 => 0,
+      12 => 0,
+      16 => 0,
+      20 => 0,
+    ),
   ),
   44 => 
   array (
@@ -651,7 +1187,15 @@ return array (
     'default_value' => '0',
     'conversion_formula' => NULL,
     'conversion_dofus_sample' => NULL,
-    'conversion_krosmoz_sample' => NULL,
+    'conversion_krosmoz_sample' => 
+    array (
+      1 => 0,
+      4 => 0,
+      8 => 0,
+      12 => 0,
+      16 => 0,
+      20 => 0,
+    ),
   ),
   45 => 
   array (
@@ -665,7 +1209,15 @@ return array (
     'default_value' => '0',
     'conversion_formula' => NULL,
     'conversion_dofus_sample' => NULL,
-    'conversion_krosmoz_sample' => NULL,
+    'conversion_krosmoz_sample' => 
+    array (
+      1 => 0,
+      4 => 0,
+      8 => 0,
+      12 => 0,
+      16 => 0,
+      20 => 0,
+    ),
   ),
   46 => 
   array (
@@ -679,7 +1231,15 @@ return array (
     'default_value' => '0',
     'conversion_formula' => NULL,
     'conversion_dofus_sample' => NULL,
-    'conversion_krosmoz_sample' => NULL,
+    'conversion_krosmoz_sample' => 
+    array (
+      1 => 0,
+      4 => 0,
+      8 => 0,
+      12 => 0,
+      16 => 0,
+      20 => 0,
+    ),
   ),
   47 => 
   array (
@@ -693,7 +1253,15 @@ return array (
     'default_value' => '0',
     'conversion_formula' => NULL,
     'conversion_dofus_sample' => NULL,
-    'conversion_krosmoz_sample' => NULL,
+    'conversion_krosmoz_sample' => 
+    array (
+      1 => 0,
+      4 => 0,
+      8 => 0,
+      12 => 0,
+      16 => 0,
+      20 => 0,
+    ),
   ),
   48 => 
   array (
@@ -707,7 +1275,15 @@ return array (
     'default_value' => '0',
     'conversion_formula' => NULL,
     'conversion_dofus_sample' => NULL,
-    'conversion_krosmoz_sample' => NULL,
+    'conversion_krosmoz_sample' => 
+    array (
+      1 => 0,
+      4 => 0,
+      8 => 0,
+      12 => 0,
+      16 => 0,
+      20 => 0,
+    ),
   ),
   49 => 
   array (
@@ -721,7 +1297,15 @@ return array (
     'default_value' => '0',
     'conversion_formula' => NULL,
     'conversion_dofus_sample' => NULL,
-    'conversion_krosmoz_sample' => NULL,
+    'conversion_krosmoz_sample' => 
+    array (
+      1 => 0,
+      4 => 0,
+      8 => 0,
+      12 => 0,
+      16 => 0,
+      20 => 0,
+    ),
   ),
   50 => 
   array (
@@ -735,6 +1319,14 @@ return array (
     'default_value' => '0',
     'conversion_formula' => NULL,
     'conversion_dofus_sample' => NULL,
-    'conversion_krosmoz_sample' => NULL,
+    'conversion_krosmoz_sample' => 
+    array (
+      1 => 0,
+      4 => 0,
+      8 => 0,
+      12 => 0,
+      16 => 0,
+      20 => 0,
+    ),
   ),
 );

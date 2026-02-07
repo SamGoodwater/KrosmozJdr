@@ -6,13 +6,15 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use App\Models\User;
 use App\Models\Page;
-use App\Models\File;
 use App\Enums\SectionType;
+use App\Models\Concerns\HasMediaCustomNaming;
+use Spatie\MediaLibrary\HasMedia;
+use Spatie\MediaLibrary\InteractsWithMedia;
+use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
 /**
  * Modèle Eloquent Section
@@ -21,7 +23,7 @@ use App\Enums\SectionType;
  * Gère l'ordre, le type, les paramètres dynamiques, la visibilité, l'état, les utilisateurs et fichiers associés.
  * Utilisé pour la construction flexible des pages et la gestion fine des droits d'accès.
  * 
- * Relations : page, users, files, createdBy
+ * Relations : page, users, createdBy ; médias via Media Library (collection files)
  *
  * @property int $id
  * @property int $page_id
@@ -39,8 +41,8 @@ use App\Enums\SectionType;
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property \Illuminate\Support\Carbon|null $deleted_at
  * @property-read \App\Models\User|null $createdBy
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\File> $files
- * @property-read int|null $files_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, Media> $media
+ * @property-read int|null $media_count
  * @property-read \App\Models\Page $page
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\User> $users
  * @property-read int|null $users_count
@@ -66,15 +68,21 @@ use App\Enums\SectionType;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Section withoutTrashed()
  * @mixin \Eloquent
  */
-class Section extends Model
+class Section extends Model implements HasMedia
 {
     /** @use HasFactory<\Database\Factories\SectionFactory> */
-    use HasFactory, SoftDeletes;
+    use HasFactory, SoftDeletes, InteractsWithMedia, HasMediaCustomNaming;
 
     public const STATE_RAW = 'raw';
     public const STATE_DRAFT = 'draft';
     public const STATE_PLAYABLE = 'playable';
     public const STATE_ARCHIVED = 'archived';
+    
+    /** Répertoire Media Library pour ce modèle. */
+    public const MEDIA_PATH = 'sections/files';
+
+    /** Motif de nommage pour la collection files (placeholders: [name], [date], [id], [uniqid]). */
+    public const MEDIA_FILE_PATTERN_FILES = '[id]-[date]-[uniqid]';
 
     /**
      * The attributes that are mass assignable.
@@ -138,13 +146,29 @@ class Section extends Model
     }
 
     /**
-     * Les fichiers liés à la section, triés par ordre.
+     * Enregistre les conversions média (WebP + miniature) pour la collection "files".
+     * Les images sont converties en WebP pour réduire la taille et servies en miniature.
+     *
+     * @see https://spatie.be/docs/laravel-medialibrary/v11/converting-images/defining-conversions
      */
-    public function files(): BelongsToMany
+    public function registerMediaConversions(?Media $media = null): void
     {
-        return $this->belongsToMany(File::class, 'file_section')
-            ->withPivot('order')
-            ->orderBy('file_section.order');
+        // En test, pas de conversions pour éviter les échecs avec Storage::fake()
+        if (app()->environment('testing')) {
+            return;
+        }
+
+        $this->addMediaConversion('thumb')
+            ->performOnCollections('files')
+            ->width(368)
+            ->height(232)
+            ->format('webp')
+            ->nonQueued();
+
+        $this->addMediaConversion('webp')
+            ->performOnCollections('files')
+            ->format('webp')
+            ->nonQueued();
     }
 
     // ============================================

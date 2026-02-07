@@ -6,7 +6,7 @@ Les pages représentent les contenus dynamiques du site ou du jeu : pages de c
 ## Relations principales
 - **Sections** : chaque page est composée de sections (`sections`).
 - **Scénarios, campagnes** : via les pivots `scenario_page`, `campaign_page`.
-- **Fichiers** : via le pivot `file_section` (N:N avec `files`).
+- **Fichiers** : sur les sections, via Media Library (`getMedia('files')`). Voir [ENTITY_FILES.md](ENTITY_FILES.md).
 - **Utilisateurs** : via le pivot `page_user` (N:N avec `users`).
 - **Parent/enfant** : une page peut avoir une page parente (`parent_id`).
 

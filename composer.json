@@ -19,6 +19,7 @@
         "laravel/sanctum": "^4.0",
         "laravel/tinker": "^2.9",
         "mews/purifier": "^3.4",
+        "spatie/laravel-medialibrary": "^11.17",
         "tightenco/ziggy": "^2.0"
     },
     "require-dev": {

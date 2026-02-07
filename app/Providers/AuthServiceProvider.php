@@ -8,8 +8,10 @@ use App\Models\Type\ItemType;
 use App\Models\Type\MonsterRace;
 use App\Models\Type\ResourceType;
 use App\Models\Type\SpellType;
+use App\Models\Characteristic;
 use App\Models\Page;
 use App\Models\Section;
+use App\Policies\CharacteristicPolicy;
 use App\Policies\PagePolicy;
 use App\Policies\SectionPolicy;
 use App\Policies\Type\ConsumableTypePolicy;
@@ -26,6 +28,7 @@ class AuthServiceProvider extends ServiceProvider
      * @var array<class-string, class-string>
      */
     protected $policies = [
+        Characteristic::class => CharacteristicPolicy::class,
         Page::class => PagePolicy::class,
         Section::class => SectionPolicy::class,
         ItemType::class => ItemTypePolicy::class,

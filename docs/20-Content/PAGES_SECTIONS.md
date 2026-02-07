@@ -52,7 +52,7 @@ Le système de pages et sections permet de créer des pages dynamiques modulaire
 **Sections :**
 - `page` : BelongsTo (page parente)
 - `users` : BelongsToMany (utilisateurs associés via `section_user`)
-- `files` : BelongsToMany (fichiers associés via `file_section` avec pivot `order`)
+- `files` : médias attachés via Spatie Media Library (`$section->getMedia('files')`)
 - `createdBy` : BelongsTo (utilisateur créateur)
 
 ---

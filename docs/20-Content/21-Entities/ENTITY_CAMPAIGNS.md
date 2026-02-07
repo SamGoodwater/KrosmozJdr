@@ -7,7 +7,7 @@ Les campagnes regroupent un ensemble de scénarios, pages, entités et joueurs a
 - **Créateur** : chaque campagne référence son créateur (`created_by`).
 - **Scénarios** : via le pivot `campaign_scenario` (N:N avec `scenarios`).
 - **Pages** : via le pivot `campaign_page` (N:N avec `pages`).
-- **Fichiers** : via le pivot `file_campaign` (N:N avec `files`).
+- **Fichiers** : médias attachés via Media Library (`$campaign->getMedia('files')`). Voir [ENTITY_FILES.md](ENTITY_FILES.md).
 - **Objets, ressources, consommables, panoplies** : via les pivots `item_campaign`, `resource_campaign`, `consumable_campaign`, `panoply_campaign`.
 - **Monstres, NPC** : via les pivots `monster_campaign`, `npc_campaign`.
 - **Boutiques, sorts** : via les pivots `campaign_shop`, `campaign_spell`.

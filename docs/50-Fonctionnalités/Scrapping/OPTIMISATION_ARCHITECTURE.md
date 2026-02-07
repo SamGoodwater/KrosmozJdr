@@ -30,7 +30,7 @@ app/Services/Scrapping/
 │   ├── ItemEntityTypeFilterService
 │   └── MonsterRaceFilterService
 ├── Http/                   # DofusDbClient (cache, retry)
-├── Media/                  # ScrappingImageStorageService
+├── (images)                # IntegrationService::attachImageFromUrl (Media Library)
 ├── Conversion/             # Handlers métier (ex. résistances)
 ├── Registry/               # TypeRegistryBatchTouchService
 ├── Constants/              # EntityLimits, DofusDbLimits

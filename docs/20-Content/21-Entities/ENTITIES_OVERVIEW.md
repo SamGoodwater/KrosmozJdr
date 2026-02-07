@@ -477,8 +477,6 @@ Le tableau ci-dessous synthétise les principales entités du projet, leur type 
 | consumable_resource       | consumable_id, resource_id, quantity (default: 1)     |
 | item_resource             | item_id, resource_id, quantity (default: 1)           |
 | item_panoply              | item_id, panoply_id                                   |
-| file_scenario             | id, scenario_id, file                                 |
-| file_campaign             | id, campaign_id, file                                 |
 | scenario_page             | scenario_id, page_id                                  |
 | campaign_page             | campaign_id, page_id                                  |
 | campaign_scenario         | campaign_id, scenario_id, order (nullable)            |

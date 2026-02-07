@@ -17,7 +17,10 @@ use App\Models\Entity\Shop;
 use App\Models\Entity\Spell;
 use App\Models\Entity\Panoply;
 use App\Models\Type\ScenarioLink;
-use App\Models\File;
+use Spatie\MediaLibrary\HasMedia;
+use Spatie\MediaLibrary\InteractsWithMedia;
+use Spatie\MediaLibrary\MediaCollections\Models\Media;
+use App\Models\Concerns\HasEntityImageMedia;
 
 /**
  * 
@@ -42,8 +45,8 @@ use App\Models\File;
  * @property-read \Illuminate\Database\Eloquent\Collection<int, Consumable> $consumables
  * @property-read int|null $consumables_count
  * @property-read User $createdBy
- * @property-read \Illuminate\Database\Eloquent\Collection<int, File> $files
- * @property-read int|null $files_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, Media> $media
+ * @property-read int|null $media_count
  * @property-read \Illuminate\Database\Eloquent\Collection<int, Item> $items
  * @property-read int|null $items_count
  * @property-read \Illuminate\Database\Eloquent\Collection<int, Monster> $monsters
@@ -88,15 +91,21 @@ use App\Models\File;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Scenario withoutTrashed()
  * @mixin \Eloquent
  */
-class Scenario extends Model
+class Scenario extends Model implements HasMedia
 {
     /** @use HasFactory<\\Database\\Factories\\ScenarioFactory> */
-    use HasFactory, SoftDeletes;
+    use HasFactory, SoftDeletes, InteractsWithMedia, HasEntityImageMedia;
 
     public const STATE_RAW = 'raw';
     public const STATE_DRAFT = 'draft';
     public const STATE_PLAYABLE = 'playable';
     public const STATE_ARCHIVED = 'archived';
+
+    /** Répertoire Media Library pour ce modèle. */
+    public const MEDIA_PATH = 'images/entity/scenarios';
+
+    /** Motif de nommage pour la collection images (placeholders: [name], [date], [id]). */
+    public const MEDIA_FILE_PATTERN_IMAGES = 'image-[id]-[slug]';
 
     /**
      * The attributes that are mass assignable.
@@ -221,13 +230,24 @@ class Scenario extends Model
     {
         return $this->hasMany(ScenarioLink::class, 'scenario_id');
     }
-    /**
-     * Les fichiers liés à ce scénario, triés par ordre.
-     */
-    public function files()
+    public function registerMediaCollections(): void
     {
-        return $this->belongsToMany(File::class, 'file_scenario')
-            ->withPivot('order')
-            ->orderBy('file_scenario.order');
+        $this->addMediaCollection('files');
+        $this->addMediaCollection('images')->singleFile();
+    }
+
+    public function registerMediaConversions(?Media $media = null): void
+    {
+        $this->registerEntityImageMediaConversions($media);
+        $this->addMediaConversion('thumb')
+            ->performOnCollections('files')
+            ->width(368)
+            ->height(232)
+            ->format('webp')
+            ->nonQueued();
+        $this->addMediaConversion('webp')
+            ->performOnCollections('files')
+            ->format('webp')
+            ->nonQueued();
     }
 }

@@ -2,7 +2,7 @@
 
 ## 📋 Vue d'ensemble
 
-Le système d'upload de fichiers de KrosmozJDR est un système complet et robuste qui gère l'upload, la prévisualisation, la validation et la suppression de fichiers. Il utilise les composants `FileCore` (Atom) et `FileField` (Molecule), ainsi que les composables `useFileUpload` et `useDragAndDrop`.
+Le système d'upload de fichiers de KrosmozJDR gère l'upload, la prévisualisation, la validation et la suppression de fichiers. Côté **frontend** il utilise les composants `FileCore` (Atom) et `FileField` (Molecule), ainsi que les composables `useFileUpload` et `useDragAndDrop`. Côté **backend**, les fichiers attachés aux modèles (sections, utilisateur avatar, caractéristiques icône, ressources image) sont **tous gérés par [Spatie Laravel Media Library](https://spatie.be/docs/laravel-medialibrary/v11/introduction)** : le composant File envoie le fichier vers les routes API (ex. `sections.files.store`, `user.updateAvatar`, `admin.characteristics.upload-icon`, `api.entities.resources.upload-image`), et chaque contrôleur attache le média via `addMediaFromRequest()` / `toMediaCollection()`. Conversions WebP et miniatures : voir [Spatie Media Library — Medias](../../50-Fonctionnalités/Medias/SPATIE_MEDIA_LIBRARY.md).
 
 ---
 
@@ -332,6 +332,22 @@ La détection se fait via :
 3. **Valider côté serveur** : La validation côté client est pratique, mais toujours valider côté serveur
 4. **Gérer les erreurs** : Utilisez l'événement `@error` pour afficher des messages d'erreur à l'utilisateur
 5. **Optimiser les images** : Utilisez `ImageService` côté serveur pour générer des thumbnails
+
+---
+
+## 🧪 Tests
+
+Les flux d’upload reliés à Media Library sont couverts par des tests Feature et Unit :
+
+| Contexte | Fichier de test | Tests |
+|----------|-----------------|-------|
+| Section (fichiers) | `SectionControllerTest` | `test_section_file_upload_via_media_library`, `test_section_file_delete` |
+| Utilisateur (avatar) | `UserControllerTest` | `test_user_can_upload_avatar`, `test_user_can_delete_avatar` |
+| Caractéristique (icône) | `CharacteristicControllerTest` | `test_admin_can_upload_characteristic_icon` |
+| Scrapping (attach image) | `IntegrationServiceTest` | `test_attach_image_from_url_*` (URL vide, téléchargement désactivé, hôte non autorisé) |
+| Avatar path | `UserTest` | `test_avatar_path_returns_default_if_none` |
+
+L’upload d’image des ressources (API `api.entities.resources.upload-image`) peut être couvert par un test Feature dédié si besoin.
 
 ---
 

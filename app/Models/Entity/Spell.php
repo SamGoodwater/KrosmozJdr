@@ -13,6 +13,8 @@ use App\Models\Entity\Campaign;
 use App\Models\Type\SpellType;
 use App\Models\Entity\Monster;
 use App\Models\SpellEffect;
+use App\Models\Concerns\HasEntityImageMedia;
+use Spatie\MediaLibrary\HasMedia;
 
 /**
  * 
@@ -95,15 +97,21 @@ use App\Models\SpellEffect;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Spell withoutTrashed()
  * @mixin \Eloquent
  */
-class Spell extends Model
+class Spell extends Model implements HasMedia
 {
     /** @use HasFactory<\\Database\\Factories\\SpellFactory> */
-    use HasFactory, SoftDeletes;
+    use HasFactory, SoftDeletes, HasEntityImageMedia;
 
     public const STATE_RAW = 'raw';
     public const STATE_DRAFT = 'draft';
     public const STATE_PLAYABLE = 'playable';
     public const STATE_ARCHIVED = 'archived';
+
+    /** Répertoire Media Library pour ce modèle. */
+    public const MEDIA_PATH = 'images/entity/spells';
+
+    /** Motif de nommage pour la collection images (placeholders: [name], [date], [id]). */
+    public const MEDIA_FILE_PATTERN_IMAGES = 'image-[id]-[name]';
 
     const ELEMENT = [
         0 => 'Neutre',

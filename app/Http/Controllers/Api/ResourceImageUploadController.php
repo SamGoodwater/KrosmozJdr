@@ -4,25 +4,17 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Entity\Resource;
+use App\Models\EntityImageUpload;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Str;
 
 /**
- * API Upload d'image pour les ressources.
+ * API Upload d'image pour les ressources (Spatie Media Library).
  *
- * @description
- * Permet d'uploader une image (fichier) et de récupérer une URL utilisable dans le champ `image`
- * (qui reste une string dans les endpoints bulk). Utile pour le quickedit / bulk.
+ * Si resource_id est fourni : attache l'image à la ressource (collection images) et met à jour image.
+ * Sinon (bulk) : attache à un placeholder EntityImageUpload et retourne l'URL à affecter aux entités.
  *
- * Sécurité :
- * - Auth obligatoire
- * - Seuls les admins (policy updateAny) peuvent uploader
- *
- * @example
- * POST /api/entities/resources/upload-image (multipart/form-data)
- * file: <image>
+ * Réponse attendue par le front : { success: true, url: "..." }
  */
 class ResourceImageUploadController extends Controller
 {
@@ -32,27 +24,28 @@ class ResourceImageUploadController extends Controller
 
         $validated = $request->validate([
             'file' => ['required', 'file', 'image', 'max:5120'], // 5MB
+            'resource_id' => ['sometimes', 'integer', 'exists:resources,id'],
         ]);
 
-        /** @var \Illuminate\Http\UploadedFile $file */
-        $file = $validated['file'];
+        $resourceId = $validated['resource_id'] ?? null;
 
-        // Stockage public (accessible via Storage::url)
-        $dir = 'uploads/entities/resources/images';
-        $name = Str::random(24).'_'.time().'.'.$file->getClientOriginalExtension();
-        $path = $file->storeAs($dir, $name, ['disk' => 'public']);
-
-        if (!$path) {
-            return response()->json([
-                'success' => false,
-                'message' => "Impossible d'uploader l'image.",
-            ], 500);
+        if ($resourceId) {
+            $resource = Resource::findOrFail($resourceId);
+            $this->authorize('update', $resource);
+            $resource->clearMediaCollection('images');
+            $media = $resource->addMediaFromRequest('file')->toMediaCollection('images');
+            $resource->update(['image' => $media->getUrl()]);
+            $url = $media->getUrl();
+        } else {
+            $placeholder = EntityImageUpload::create();
+            $media = $placeholder->addMediaFromRequest('file')->toMediaCollection('images');
+            $url = $media->getUrl();
         }
 
         return response()->json([
             'success' => true,
-            'path' => $path,
-            'url' => Storage::disk('public')->url($path),
+            'path' => $media->getPath(),
+            'url' => $url,
         ]);
     }
 }

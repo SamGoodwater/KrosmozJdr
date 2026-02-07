@@ -434,6 +434,65 @@ class ScrappingOrchestratorTest extends TestCase
     }
 
     /**
+     * runMany avec integrate + include_relations : vérifie que la variable de boucle ($raw) est bien
+     * passée à resolveRelationsAndDrain (régression si on utilisait $rawItem par erreur).
+     * Monster sans spells/drops pour limiter les appels HTTP du drain.
+     */
+    public function test_run_many_monster_with_include_relations_passes_raw_to_relations(): void
+    {
+        $monsterData = [
+            'id' => 31,
+            'name' => ['fr' => 'Bouftou'],
+            'grades' => [
+                [
+                    'level' => 5,
+                    'lifePoints' => 100,
+                    'strength' => 10,
+                    'intelligence' => 5,
+                    'agility' => 8,
+                    'wisdom' => 3,
+                    'chance' => 2,
+                ],
+            ],
+            'size' => 'medium',
+            'race' => 1,
+            'spells' => [],
+            'drops' => [],
+        ];
+
+        $fetchManyResponse = [
+            'data' => [$monsterData],
+            'total' => 1,
+            'limit' => 1,
+        ];
+
+        Http::fake(function ($request) use ($fetchManyResponse) {
+            $url = $request->url();
+            if (str_contains($url, 'monsters')) {
+                return Http::response($fetchManyResponse, 200);
+            }
+            return Http::response([], 404);
+        });
+
+        $opts = [
+            'limit' => 1,
+            'convert' => true,
+            'validate' => true,
+            'integrate' => true,
+            'dry_run' => false,
+            'include_relations' => true,
+            'lang' => 'fr',
+        ];
+
+        $result = $this->orchestrator->runMany('dofusdb', 'monster', [], $opts);
+
+        $this->assertTrue($result->isSuccess(), $result->getMessage());
+        $convertedList = $result->getConverted();
+        $this->assertIsArray($convertedList);
+        $this->assertCount(1, $convertedList);
+    }
+
+    /**
      * Test d'import sans relations
      */
     public function test_import_without_relations(): void

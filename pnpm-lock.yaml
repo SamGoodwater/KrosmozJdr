@@ -158,9 +158,6 @@ importers:
       vanilla-tilt:
         specifier: ^1.8.1
         version: 1.8.1
-      vue-color-kit:
-        specifier: ^1.0.6
-        version: 1.0.6(vue@3.5.26)
     devDependencies:
       '@eslint/js':
         specifier: ^9.39.2
@@ -3431,11 +3428,6 @@ packages:
       jsdom:
         optional: true
 
-  vue-color-kit@1.0.6:
-    resolution: {integrity: sha512-56oSUp8hGIZ3E4ayZLqTDAb2C7VzaWAC1EVUsZEvPCD2wiiiFd2L2BiEGN1ingfz538sYWKNXxMZQGslqbMiBg==}
-    peerDependencies:
-      vue: ^3.0.5
-
   vue-component-type-helpers@2.2.12:
     resolution: {integrity: sha512-YbGqHZ5/eW4SnkPNR44mKVc6ZKQoRs/Rux1sxC6rdwXb4qpbOSYfDr9DsTHolOTGmIKgM9j141mZbBeg05R1pw==}
 
@@ -6585,10 +6577,6 @@ snapshots:
       - terser
       - tsx
       - yaml
-
-  vue-color-kit@1.0.6(vue@3.5.26):
-    dependencies:
-      vue: 3.5.26
 
   vue-component-type-helpers@2.2.12: {}
 

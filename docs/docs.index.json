@@ -95,6 +95,11 @@
     "description": "Ce dossier est réservé aux **résumés descriptifs** de fonctionnalités livrées ou de décisions d’architecture, lorsqu’ils servent de référence (et non de journal chronologique)."
   },
   {
+    "path": "100- Done/TESTS_SCRAPPING_COMMANDE_CHAINE_COMPLETE.md",
+    "title": "Tests chaîne complète de la commande scrapping",
+    "description": "**Livré** : réécriture et extension des tests de la commande `php artisan scrapping` pour couvrir toute la chaîne (API → conversion → validation → intégration BDD) pour toutes les entités et les principaux paramètres."
+  },
+  {
     "path": "20-Content/21-Entities/ENTITIES_OVERVIEW.md",
     "title": "Vue d'ensemble des entités – Krosmoz JDR",
     "description": "Ce document présente en détail toutes les entités du projet Krosmoz JDR, leur structure, leurs relations et leur rôle dans l'architecture globale du jeu. Il sert de référence centrale pour la modélisation des données, la génération des migrations, l'implémentation backend et la compréhension métier."
@@ -367,7 +372,7 @@
   {
     "path": "30-UI/INPUT SYSTEM/FILE_UPLOAD.md",
     "title": "📁 Système d'Upload de Fichiers",
-    "description": "Le système d'upload de fichiers de KrosmozJDR est un système complet et robuste qui gère l'upload, la prévisualisation, la validation et la suppression de fichiers. Il utilise les composants `FileCore` (Atom) et `FileField` (Molecule), ainsi que les composables `useFileUpload` et `useDragAndDrop`."
+    "description": "Le système d'upload de fichiers de KrosmozJDR gère l'upload, la prévisualisation, la validation et la suppression de fichiers. Côté **frontend** il utilise les composants `FileCore` (Atom) et `FileField` (Molecule), ainsi que les composables `useFileUpload` et `useDragAndDrop`. Côté **backend**, les fichiers attachés aux modèles (ex. sections) sont gérés par [Spatie Laravel Media Library](https://spatie.be/docs/laravel-medialibrary/v11/introduction), avec conversions WebP et miniatures (voir [Spatie Media Library — Medias](../../50-Fonctionnalités/Medias/SPATIE_MEDIA_LIBRARY.md))."
   },
   {
     "path": "30-UI/INPUT SYSTEM/INSTALLATION.md",
@@ -1140,6 +1145,11 @@
     "description": "`EntityRelationsManager` est un composant générique Vue 3 permettant de gérer les relations many-to-many entre entités. Il supporte les relations simples (sans pivot) et les relations avec données pivot (quantité, prix, commentaire, etc.)."
   },
   {
+    "path": "50-Fonctionnalités/Medias/SPATIE_MEDIA_LIBRARY.md",
+    "title": "Spatie Laravel Media Library — Gestion des médias",
+    "description": "Le projet utilise [Spatie Laravel Media Library](https://spatie.be/docs/laravel-medialibrary/v11/introduction) pour associer des fichiers (images, documents) aux modèles Eloquent, générer des conversions (dont WebP) et des miniatures, et gérer le stockage sur le disque Laravel."
+  },
+  {
     "path": "50-Fonctionnalités/PLAN_REALISATION_RENOMMAGE_CLASSE_EN_BREED.md",
     "title": "Plan de réalisation : renommage classe → breed",
     "description": "Plan exécutable, phase par phase. Chaque phase se termine par un point de contrôle (tests / vérifications). Référence : [ESTIMATION_RENOMMAGE_CLASSE_EN_BREED.md](./ESTIMATION_RENOMMAGE_CLASSE_EN_BREED.md)."
@@ -1238,6 +1248,11 @@
     "path": "50-Fonctionnalités/Scrapping/Orchestrateur/API.md",
     "title": "API Scrapping (Laravel) — Endpoints exposés",
     "description": "Cette page documente l’API interne utilisée par :"
+  },
+  {
+    "path": "50-Fonctionnalités/Scrapping/PLAN_FINALISATION_SCRAPPING.md",
+    "title": "Plan de finalisation du service de scrapping",
+    "description": "Ce document décrit les **tâches restantes** pour considérer le service de scrapping comme terminé (backend), dans l’ordre de priorité recommandé. Contexte : [ETAT_AVANCEMENT.md](./Architecture/ETAT_AVANCEMENT.md), [RESTE_A_FAIRE_SCRAPPING.md](./RESTE_A_FAIRE_SCRAPPING.md)."
   },
   {
     "path": "50-Fonctionnalités/Scrapping/README.md",

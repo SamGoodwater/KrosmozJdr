@@ -32,6 +32,8 @@ namespace App\Models{
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\CharacteristicCreature> $creatureRows
  * @property-read int|null $creature_rows_count
+ * @property-read \Spatie\MediaLibrary\MediaCollections\Models\Collections\MediaCollection<int, \Spatie\MediaLibrary\MediaCollections\Models\Media> $media
+ * @property-read int|null $media_count
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\CharacteristicObject> $objectRows
  * @property-read int|null $object_rows_count
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\CharacteristicSpell> $spellRows
@@ -53,7 +55,7 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Characteristic whereUnit($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Characteristic whereUpdatedAt($value)
  */
-	class Characteristic extends \Eloquent {}
+	class Characteristic extends \Eloquent implements \Spatie\MediaLibrary\HasMedia {}
 }
 
 namespace App\Models{
@@ -200,6 +202,28 @@ namespace App\Models{
 	class CharacteristicSpell extends \Eloquent {}
 }
 
+namespace App\Models{
+/**
+ * Modèle placeholder pour les uploads d'images d'entités sans entité cible (ex. bulk).
+ * 
+ * Un média est attaché à cette instance ; l'URL retournée peut être affectée au champ
+ * image de plusieurs entités (string). Nettoyage des anciennes lignes à prévoir (job).
+ *
+ * @property int $id
+ * @property \Illuminate\Support\Carbon $created_at
+ * @property \Illuminate\Support\Carbon $updated_at
+ * @property-read \Spatie\MediaLibrary\MediaCollections\Models\Collections\MediaCollection<int, \Spatie\MediaLibrary\MediaCollections\Models\Media> $media
+ * @property-read int|null $media_count
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|EntityImageUpload newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|EntityImageUpload newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|EntityImageUpload query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|EntityImageUpload whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|EntityImageUpload whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|EntityImageUpload whereUpdatedAt($value)
+ */
+	class EntityImageUpload extends \Eloquent implements \Spatie\MediaLibrary\HasMedia {}
+}
+
 namespace App\Models\Entity{
 /**
  * @property int $id
@@ -235,8 +259,10 @@ namespace App\Models\Entity{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Attribute withTrashed()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Attribute withoutTrashed()
  * @mixin \Eloquent
+ * @property-read \Spatie\MediaLibrary\MediaCollections\Models\Collections\MediaCollection<int, \Spatie\MediaLibrary\MediaCollections\Models\Media> $media
+ * @property-read int|null $media_count
  */
-	class Attribute extends \Eloquent {}
+	class Attribute extends \Eloquent implements \Spatie\MediaLibrary\HasMedia {}
 }
 
 namespace App\Models\Entity{
@@ -274,6 +300,8 @@ namespace App\Models\Entity{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Breed onlyTrashed()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Breed query()
  * @mixin \Eloquent
+ * @property-read \Spatie\MediaLibrary\MediaCollections\Models\Collections\MediaCollection<int, \Spatie\MediaLibrary\MediaCollections\Models\Media> $media
+ * @property-read int|null $media_count
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Breed whereAutoUpdate($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Breed whereCreatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Breed whereCreatedBy($value)
@@ -297,7 +325,7 @@ namespace App\Models\Entity{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Breed withTrashed(bool $withTrashed = true)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Breed withoutTrashed()
  */
-	class Breed extends \Eloquent {}
+	class Breed extends \Eloquent implements \Spatie\MediaLibrary\HasMedia {}
 }
 
 namespace App\Models\Entity{
@@ -320,8 +348,8 @@ namespace App\Models\Entity{
  * @property-read \Illuminate\Database\Eloquent\Collection<int, Consumable> $consumables
  * @property-read int|null $consumables_count
  * @property-read User $createdBy
- * @property-read \Illuminate\Database\Eloquent\Collection<int, File> $files
- * @property-read int|null $files_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, Media> $media
+ * @property-read int|null $media_count
  * @property-read \Illuminate\Database\Eloquent\Collection<int, Item> $items
  * @property-read int|null $items_count
  * @property-read \Illuminate\Database\Eloquent\Collection<int, Monster> $monsters
@@ -366,7 +394,7 @@ namespace App\Models\Entity{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Campaign withoutTrashed()
  * @mixin \Eloquent
  */
-	class Campaign extends \Eloquent {}
+	class Campaign extends \Eloquent implements \Spatie\MediaLibrary\HasMedia {}
 }
 
 namespace App\Models\Entity{
@@ -430,8 +458,10 @@ namespace App\Models\Entity{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Capability withTrashed()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Capability withoutTrashed()
  * @mixin \Eloquent
+ * @property-read \Spatie\MediaLibrary\MediaCollections\Models\Collections\MediaCollection<int, \Spatie\MediaLibrary\MediaCollections\Models\Media> $media
+ * @property-read int|null $media_count
  */
-	class Capability extends \Eloquent {}
+	class Capability extends \Eloquent implements \Spatie\MediaLibrary\HasMedia {}
 }
 
 namespace App\Models\Entity{
@@ -498,8 +528,10 @@ namespace App\Models\Entity{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Consumable withTrashed()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Consumable withoutTrashed()
  * @mixin \Eloquent
+ * @property-read \Spatie\MediaLibrary\MediaCollections\Models\Collections\MediaCollection<int, \Spatie\MediaLibrary\MediaCollections\Models\Media> $media
+ * @property-read int|null $media_count
  */
-	class Consumable extends \Eloquent {}
+	class Consumable extends \Eloquent implements \Spatie\MediaLibrary\HasMedia {}
 }
 
 namespace App\Models\Entity{
@@ -707,8 +739,10 @@ namespace App\Models\Entity{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Creature withTrashed()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Creature withoutTrashed()
  * @mixin \Eloquent
+ * @property-read \Spatie\MediaLibrary\MediaCollections\Models\Collections\MediaCollection<int, \Spatie\MediaLibrary\MediaCollections\Models\Media> $media
+ * @property-read int|null $media_count
  */
-	class Creature extends \Eloquent {}
+	class Creature extends \Eloquent implements \Spatie\MediaLibrary\HasMedia {}
 }
 
 namespace App\Models\Entity{
@@ -777,8 +811,10 @@ namespace App\Models\Entity{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Item withTrashed()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Item withoutTrashed()
  * @mixin \Eloquent
+ * @property-read \Spatie\MediaLibrary\MediaCollections\Models\Collections\MediaCollection<int, \Spatie\MediaLibrary\MediaCollections\Models\Media> $media
+ * @property-read int|null $media_count
  */
-	class Item extends \Eloquent {}
+	class Item extends \Eloquent implements \Spatie\MediaLibrary\HasMedia {}
 }
 
 namespace App\Models\Entity{
@@ -978,10 +1014,12 @@ namespace App\Models\Entity{
  * @mixin \Eloquent
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Entity\Campaign> $campaigns
  * @property-read int|null $campaigns_count
+ * @property-read \Spatie\MediaLibrary\MediaCollections\Models\Collections\MediaCollection<int, \Spatie\MediaLibrary\MediaCollections\Models\Media> $media
+ * @property-read int|null $media_count
  * @property-read \Illuminate\Database\Eloquent\Collection<int, Resource> $recipeIngredients
  * @property-read int|null $recipe_ingredients_count
  */
-	class Resource extends \Eloquent {}
+	class Resource extends \Eloquent implements \Spatie\MediaLibrary\HasMedia {}
 }
 
 namespace App\Models\Entity{
@@ -1006,8 +1044,8 @@ namespace App\Models\Entity{
  * @property-read \Illuminate\Database\Eloquent\Collection<int, Consumable> $consumables
  * @property-read int|null $consumables_count
  * @property-read User $createdBy
- * @property-read \Illuminate\Database\Eloquent\Collection<int, File> $files
- * @property-read int|null $files_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, Media> $media
+ * @property-read int|null $media_count
  * @property-read \Illuminate\Database\Eloquent\Collection<int, Item> $items
  * @property-read int|null $items_count
  * @property-read \Illuminate\Database\Eloquent\Collection<int, Monster> $monsters
@@ -1052,7 +1090,7 @@ namespace App\Models\Entity{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Scenario withoutTrashed()
  * @mixin \Eloquent
  */
-	class Scenario extends \Eloquent {}
+	class Scenario extends \Eloquent implements \Spatie\MediaLibrary\HasMedia {}
 }
 
 namespace App\Models\Entity{
@@ -1107,8 +1145,10 @@ namespace App\Models\Entity{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Shop withTrashed()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Shop withoutTrashed()
  * @mixin \Eloquent
+ * @property-read \Spatie\MediaLibrary\MediaCollections\Models\Collections\MediaCollection<int, \Spatie\MediaLibrary\MediaCollections\Models\Media> $media
+ * @property-read int|null $media_count
  */
-	class Shop extends \Eloquent {}
+	class Shop extends \Eloquent implements \Spatie\MediaLibrary\HasMedia {}
 }
 
 namespace App\Models\Entity{
@@ -1148,8 +1188,10 @@ namespace App\Models\Entity{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Specialization withTrashed()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Specialization withoutTrashed()
  * @mixin \Eloquent
+ * @property-read \Spatie\MediaLibrary\MediaCollections\Models\Collections\MediaCollection<int, \Spatie\MediaLibrary\MediaCollections\Models\Media> $media
+ * @property-read int|null $media_count
  */
-	class Specialization extends \Eloquent {}
+	class Specialization extends \Eloquent implements \Spatie\MediaLibrary\HasMedia {}
 }
 
 namespace App\Models\Entity{
@@ -1233,41 +1275,12 @@ namespace App\Models\Entity{
  * @mixin \Eloquent
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Entity\Breed> $breeds
  * @property-read int|null $breeds_count
+ * @property-read \Spatie\MediaLibrary\MediaCollections\Models\Collections\MediaCollection<int, \Spatie\MediaLibrary\MediaCollections\Models\Media> $media
+ * @property-read int|null $media_count
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\SpellEffect> $spellEffects
  * @property-read int|null $spell_effects_count
  */
-	class Spell extends \Eloquent {}
-}
-
-namespace App\Models{
-/**
- * @property int $id
- * @property string $file
- * @property string|null $title
- * @property string|null $comment
- * @property string|null $description
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
- * @property \Illuminate\Support\Carbon|null $deleted_at
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Section> $sections
- * @property-read int|null $sections_count
- * @method static \Illuminate\Database\Eloquent\Builder<static>|File newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|File newQuery()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|File onlyTrashed()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|File query()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|File whereComment($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|File whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|File whereDeletedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|File whereDescription($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|File whereFile($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|File whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|File whereTitle($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|File whereUpdatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|File withTrashed()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|File withoutTrashed()
- * @mixin \Eloquent
- */
-	class File extends \Eloquent {}
+	class Spell extends \Eloquent implements \Spatie\MediaLibrary\HasMedia {}
 }
 
 namespace App\Models{
@@ -1396,8 +1409,8 @@ namespace App\Models{
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property \Illuminate\Support\Carbon|null $deleted_at
  * @property-read \App\Models\User|null $createdBy
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\File> $files
- * @property-read int|null $files_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, Media> $media
+ * @property-read int|null $media_count
  * @property-read \App\Models\Page $page
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\User> $users
  * @property-read int|null $users_count
@@ -1434,7 +1447,7 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Section whereType($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Section whereWriteLevel($value)
  */
-	class Section extends \Eloquent {}
+	class Section extends \Eloquent implements \Spatie\MediaLibrary\HasMedia {}
 }
 
 namespace App\Models{

@@ -87,22 +87,21 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Téléchargement / stockage local des images (scrapping)
+    | Téléchargement des images (scrapping → Media Library)
     |--------------------------------------------------------------------------
     |
-    | Lors du scrapping, certaines entités disposent d'une image (champ `img` côté DofusDB).
-    | Cette section permet de télécharger l'image et de la ranger dans le projet
-    | pour éviter la dépendance à une URL externe et garder une arborescence propre.
+    | Lors du scrapping, les images sont attachées aux entités via Spatie Media Library
+    | (IntegrationService::attachImageFromUrl). Le stockage suit MEDIA_PATH du modèle.
     |
-    | Chemin final (disk public) :
-    |   scrapping/images/{entity}/{bucket}/{dofusdb_id}.{ext}
+    | Clés utilisées : enabled, allowed_hosts. Les autres (disk, base_dir, etc.) sont
+    | conservées pour compatibilité env éventuelle mais ne sont plus utilisées.
     |
     */
     'images' => [
         'enabled' => env('SCRAPPING_IMAGES_ENABLED', true),
         'disk' => env('SCRAPPING_IMAGES_DISK', 'public'),
         'base_dir' => env('SCRAPPING_IMAGES_BASE_DIR', 'scrapping/images'),
-        // Sécurité: liste blanche des hosts autorisés pour le téléchargement d'images
+        // Sécurité : liste blanche des hosts autorisés pour le téléchargement
         'allowed_hosts' => [
             'api.dofusdb.fr',
         ],

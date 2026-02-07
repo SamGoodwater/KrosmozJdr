@@ -7,7 +7,9 @@ use App\Models\Page;
 use App\Models\Section;
 use App\Enums\SectionType;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Notification;
+use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
 
 /**
@@ -352,6 +354,59 @@ class SectionControllerTest extends TestCase
             ->component('Pages/section/Show')
             ->has('section')
         );
+    }
+
+    /**
+     * Test : Upload d'un fichier sur une section (Media Library).
+     */
+    public function test_section_file_upload_via_media_library(): void
+    {
+        Storage::fake('public');
+        $user = User::factory()->create(['role' => User::ROLE_ADMIN]);
+        $page = Page::factory()->create(['created_by' => $user->id]);
+        $section = Section::factory()->create([
+            'page_id' => $page->id,
+            'created_by' => $user->id,
+            'type' => SectionType::TEXT->value,
+            'write_level' => User::ROLE_GUEST,
+        ]);
+        $page->update(['write_level' => User::ROLE_GUEST]);
+
+        $file = UploadedFile::fake()->image('section-file.jpg', 100, 100);
+
+        $response = $this->actingAs($user)
+            ->post(route('sections.files.store', $section), [
+                'file' => $file,
+                'title' => 'Titre fichier',
+            ]);
+
+        $response->assertOk();
+        $response->assertJson(['success' => true]);
+        $response->assertJsonPath('file.id', fn ($id) => is_numeric($id));
+        $response->assertJsonPath('file.url', fn ($url) => is_string($url) && $url !== '');
+        $this->assertCount(1, $section->fresh()->getMedia('files'));
+    }
+
+    /**
+     * Test : Suppression d'un fichier (média) d'une section.
+     */
+    public function test_section_file_delete(): void
+    {
+        Storage::fake('public');
+        $user = User::factory()->create(['role' => User::ROLE_ADMIN]);
+        $page = Page::factory()->create(['created_by' => $user->id]);
+        $section = Section::factory()->create([
+            'page_id' => $page->id,
+            'created_by' => $user->id,
+        ]);
+        $section->addMedia(UploadedFile::fake()->image('doc.jpg'))->toMediaCollection('files');
+        $media = $section->getMedia('files')->first();
+
+        $response = $this->actingAs($user)
+            ->delete(route('sections.files.delete', [$section, $media]));
+
+        $response->assertOk();
+        $this->assertCount(0, $section->fresh()->getMedia('files'));
     }
 }
 

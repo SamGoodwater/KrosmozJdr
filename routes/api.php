@@ -96,6 +96,9 @@ Route::prefix('scrapping')->group(function () {
         ->where('type', 'class|monster|item|spell|panoply|resource|consumable|equipment')
         ->whereNumber('id');
 
+    Route::post('/preview/batch', [App\Http\Controllers\Scrapping\ScrappingController::class, 'previewBatch'])
+        ->name('scrapping.preview.batch');
+
     // Catalogue DofusDB item-types (superType + types) pour aider au mapping
     Route::middleware(['web', 'auth'])->get('/dofusdb/item-types', [App\Http\Controllers\Scrapping\DofusDbItemTypesCatalogController::class, 'index'])
         ->name('scrapping.dofusdb.item-types');

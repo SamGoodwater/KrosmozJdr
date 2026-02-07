@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Services\Scrapping\Constants\EntityLimits;
 use App\Services\Scrapping\Core\Config\CollectAliasResolver;
 use App\Services\Scrapping\Core\Config\ConfigLoader;
+use App\Services\Scrapping\Core\Integration\IntegrationService;
 use App\Services\Scrapping\Core\Orchestrator\Orchestrator;
 use App\Services\Scrapping\Core\Orchestrator\OrchestratorResult;
 use Illuminate\Http\Request;
@@ -24,6 +25,7 @@ class ScrappingController extends Controller
 
     public function __construct(
         private ConfigLoader $configLoader,
+        private IntegrationService $integrationService,
     ) {}
 
     /**
@@ -84,7 +86,7 @@ class ScrappingController extends Controller
         };
     }
 
-    /** @return array{convert: bool, validate: bool, integrate: bool, dry_run: bool, force_update: bool, lang: string} */
+    /** @return array{convert: bool, validate: bool, integrate: bool, dry_run: bool, force_update: bool, include_relations: bool, lang: string} */
     private function optionsFromRequest(Request $request): array
     {
         return [
@@ -93,6 +95,7 @@ class ScrappingController extends Controller
             'integrate' => !$request->boolean('validate_only', false) && !$request->boolean('dry_run', false),
             'dry_run' => $request->boolean('dry_run', false),
             'force_update' => $request->boolean('force_update', false),
+            'include_relations' => $request->boolean('include_relations', true),
             'lang' => (string) $request->input('lang', 'fr'),
         ];
     }
@@ -127,6 +130,20 @@ class ScrappingController extends Controller
         }
         $entity = $type === 'class' ? 'breed' : $type;
         return ['source' => 'dofusdb', 'entity' => $entity];
+    }
+
+    /**
+     * Type d'entité pour getExistingAttributesForComparison (monster, spell, breed, class, item, panoply).
+     * @return string|null
+     */
+    private function entityTypeForComparison(string $normalizedType): ?string
+    {
+        return match ($normalizedType) {
+            'class' => 'breed',
+            'equipment', 'consumable', 'resource' => 'item',
+            'monster', 'spell', 'panoply' => $normalizedType,
+            default => null,
+        };
     }
 
     /**
@@ -431,16 +448,79 @@ class ScrappingController extends Controller
         try {
             $options = ['convert' => true, 'validate' => true, 'integrate' => false, 'dry_run' => true, 'force_update' => false, 'lang' => 'fr'];
             $result = Orchestrator::default()->runOne($resolved['source'], $resolved['entity'], $id, $options);
+            $converted = $result->getConverted();
+            $comparisonType = $this->entityTypeForComparison($normalizedType);
+            $existingRecord = $comparisonType !== null
+                ? $this->integrationService->getExistingAttributesForComparison($comparisonType, $converted)
+                : null;
             $data = [
                 'success' => $result->isSuccess(),
                 'raw' => null,
-                'converted' => $result->getConverted(),
+                'converted' => $converted,
                 'validation_errors' => $result->getValidationErrors(),
+                'existing' => $existingRecord !== null ? ['record' => $existingRecord] : null,
             ];
             return response()->json(['success' => true, 'data' => $data, 'timestamp' => now()->toISOString()]);
         } catch (\Throwable $e) {
             Log::error('Erreur prévisualisation', ['type' => $type, 'id' => $id, 'error' => $e->getMessage()]);
             return response()->json(['success' => false, 'message' => 'Erreur lors de la prévisualisation', 'error' => $e->getMessage(), 'timestamp' => now()->toISOString()], 500);
+        }
+    }
+
+    /**
+     * Prévisualisation en lot : pour chaque ID, runOne en dry_run et retourne les données converties.
+     * Limite : 100 IDs par requête. Utilisé par l'UI pour afficher valeur convertie + brute par ligne.
+     */
+    public function previewBatch(Request $request): JsonResponse
+    {
+        try {
+            $validated = $request->validate([
+                'type' => ['required', 'string', 'in:class,monster,item,spell,panoply,resource,consumable,equipment'],
+                'ids' => ['required', 'array', 'min:1', 'max:100'],
+                'ids.*' => ['integer', 'min:1'],
+            ]);
+            $type = (string) $validated['type'];
+            $ids = array_values(array_unique(array_map('intval', $validated['ids'])));
+            $resolved = $this->resolveEntityForImport($type);
+            if ($resolved === null) {
+                return response()->json(['success' => false, 'message' => 'Type non supporté.', 'timestamp' => now()->toISOString()], 422);
+            }
+            $maxId = EntityLimits::LIMITS[$type] ?? 10000;
+            $comparisonType = $this->entityTypeForComparison($type);
+            $options = ['convert' => true, 'validate' => true, 'integrate' => false, 'dry_run' => true, 'force_update' => false, 'lang' => 'fr'];
+            $orchestrator = Orchestrator::default();
+            $items = [];
+            foreach ($ids as $id) {
+                if ($id < 1 || $id > $maxId) {
+                    $items[] = ['id' => $id, 'converted' => null, 'existing' => null, 'error' => "ID hors plage 1-{$maxId}"];
+                    continue;
+                }
+                try {
+                    $result = $orchestrator->runOne($resolved['source'], $resolved['entity'], $id, $options);
+                    $converted = $result->getConverted();
+                    $existingRecord = $comparisonType !== null
+                        ? $this->integrationService->getExistingAttributesForComparison($comparisonType, $converted)
+                        : null;
+                    $items[] = [
+                        'id' => $id,
+                        'converted' => $converted,
+                        'existing' => $existingRecord !== null ? ['record' => $existingRecord] : null,
+                        'error' => $result->isSuccess() ? null : $result->getMessage(),
+                    ];
+                } catch (\Throwable $e) {
+                    $items[] = ['id' => $id, 'converted' => null, 'existing' => null, 'error' => $e->getMessage()];
+                }
+            }
+            return response()->json([
+                'success' => true,
+                'data' => ['items' => $items],
+                'timestamp' => now()->toISOString(),
+            ]);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json(['success' => false, 'message' => 'Erreur de validation', 'errors' => $e->errors(), 'timestamp' => now()->toISOString()], 422);
+        } catch (\Throwable $e) {
+            Log::error('Erreur prévisualisation batch', ['error' => $e->getMessage()]);
+            return response()->json(['success' => false, 'message' => 'Erreur lors de la prévisualisation en lot', 'error' => $e->getMessage(), 'timestamp' => now()->toISOString()], 500);
         }
     }
 }

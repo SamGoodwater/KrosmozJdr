@@ -93,6 +93,7 @@ final class Orchestrator
             'ignore_unvalidated' => (bool) ($options['ignore_unvalidated'] ?? false),
             'exclude_from_update' => $excludeList,
             'include_relations' => (bool) ($options['include_relations'] ?? true),
+            'download_images' => (bool) ($options['download_images'] ?? true),
         ];
     }
 
@@ -340,7 +341,7 @@ final class Orchestrator
                     );
                     $integrationResults[] = $intResult;
                     if ($this->relationResolutionService !== null && ($options['include_relations'] ?? true) && $intResult->isSuccess()) {
-                        $this->resolveRelationsAndDrain($source, $entity, $entityTypeForItem, $rawItem, $converted, $intResult, $options);
+                        $this->resolveRelationsAndDrain($source, $entity, $entityTypeForItem, $raw, $converted, $intResult, $options);
                     }
                 }
             }

@@ -6,7 +6,7 @@ Les scénarios représentent les aventures, quêtes, donjons ou missions jouable
 ## Relations principales
 - **Créateur** : chaque scénario référence son créateur (`created_by`).
 - **Pages** : via le pivot `scenario_page` (N:N avec `pages`).
-- **Fichiers** : via le pivot `file_scenario` (N:N avec `files`).
+- **Fichiers** : médias attachés via Media Library (`$scenario->getMedia('files')`). Voir [ENTITY_FILES.md](ENTITY_FILES.md).
 - **Objets, ressources, consommables, panoplies** : via les pivots `item_scenario`, `resource_scenario`, `consumable_scenario`, `panoply_scenario`.
 - **Monstres, NPC** : via les pivots `monster_scenario`, `npc_scenario`.
 - **Boutiques, sorts** : via les pivots `scenario_shop`, `scenario_spell`.

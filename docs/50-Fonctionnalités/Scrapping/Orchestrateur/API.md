@@ -105,7 +105,7 @@ Options (query ou body, selon usage UI) :
 - `dry_run` (bool)
 - `validate_only` (bool)
 - `with_images` (bool, défaut `true`)
-- `include_relations` (bool, défaut `true`)
+- `include_relations` (bool, défaut `true`) : si `true`, après intégration de l’entité principale (ex. monster), le service résout et importe les relations (sorts, drops, recettes, etc.) puis met à jour les tables de liaison. Si `false`, seul l’entité principale est importée.
 
 ### Import batch (IDs)
 ```http
@@ -148,13 +148,13 @@ Pour les usages CLI (collect/search/import), voir :
 
 Exemples :
 ```bash
-# Search (collect-only)
-php artisan scrapping --collect=monster --name="Bouftou" --limit=50 --max-pages=2 --json
+# Recherche + import (par défaut)
+php artisan scrapping --entity=monster --name="Bouftou" --limit=50 --max-pages=2 --json
 
-# Import (écriture DB)
-php artisan scrapping --import=monster --ids=31,32 --with-images --include-relations
+# Import plusieurs entités à la suite
+php artisan scrapping --entity=monster,item --ids=31,32 --include-relations
 
-# Simulation
-php artisan scrapping --import=item --id=15 --dry-run --skip-cache
+# Simulation (sans écriture en base)
+php artisan scrapping --entity=item --id=15 --simulate --skip-cache
 ```
 

@@ -101,7 +101,7 @@ class SectionService
             $data['write_level'] = $data['write_level'] ?? User::ROLE_ADMIN;
 
             $section = Section::create($data);
-            $section->load(['page', 'users', 'files', 'createdBy']);
+            $section->load(['page', 'users', 'createdBy']);
 
             DB::commit();
             return $section;
@@ -175,7 +175,7 @@ class SectionService
 
             $section->update($data);
             // Recharger les relations pour avoir les données à jour
-            $section->load(['page', 'users', 'files', 'createdBy']);
+            $section->load(['page', 'users', 'createdBy']);
 
             DB::commit();
             return $section;
