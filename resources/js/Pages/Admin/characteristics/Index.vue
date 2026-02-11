@@ -9,10 +9,12 @@ import { Head, Link, useForm, router } from '@inertiajs/vue3';
 import { usePageTitle } from '@/Composables/layout/usePageTitle';
 import Main from '@/Pages/Layouts/Main.vue';
 import Btn from '@/Pages/Atoms/action/Btn.vue';
+import Tooltip from '@/Pages/Atoms/feedback/Tooltip.vue';
 import InputField from '@/Pages/Molecules/data-input/InputField.vue';
 import ColorCore from '@/Pages/Atoms/data-input/ColorCore.vue';
 import FormulaOrTableField from '@/Pages/Molecules/data-input/FormulaOrTableField.vue';
 import FormulaOrTableFieldWithChart from '@/Pages/Organismes/data-input/FormulaOrTableFieldWithChart.vue';
+import ConversionChartBlock from '@/Pages/Admin/characteristics/ConversionChartBlock.vue';
 import axios from 'axios';
 
 const { setPageTitle } = usePageTitle();
@@ -56,6 +58,17 @@ const conversionSuggestionForEntity = ref(null);
 function getConversionRow(entityKey) {
     return entityKey === '*' ? generalEntityRow() : entityRow(entityKey);
 }
+
+/** Textes d’aide pour les boutons de proposition de formule (tooltips). */
+const conversionSuggestionTooltips = {
+    table: 'Utilise exactement les paires (d, k) du tableau. Idéal pour une courbe irrégulière ou un contrôle point par point.',
+    linear: 'k = a×d + b. À utiliser quand les points sont presque alignés (croissance régulière).',
+    power: 'k = a×d^b. À utiliser quand la croissance accélère avec d (typique des stats Dofus).',
+    shifted_power: 'k = a + b×((d-c)/e)^f. Courbe en puissance qui ne part pas de 0. Utile quand les valeurs ne suivent pas une simple puissance.',
+    exponential: 'k = a×exp(b×d). Croissance très rapide. Exige des valeurs Krosmoz > 0.',
+    log: 'k = a×ln(d) + b. Croissance qui ralentit. Exige des valeurs Dofus > 0.',
+    polynomial2: 'k = a×d² + b×d + c. Courbe avec une seule courbure (parabole). Au moins 3 points.',
+};
 
 /** Demande une formule suggérée (table, linéaire, carré, carré décalé). Utilise les lignes du tableau (paires d, k). */
 function requestConversionSuggestion(curveType, entityKey = '*') {
@@ -107,6 +120,22 @@ function addConversionSampleRow(entityKey = '*') {
     const nextKrosmoz = last ? Number(last.krosmoz_level) + 4 : 20;
     rows.push({ dofus_level: nextDofus, dofus_value: '', krosmoz_level: nextKrosmoz, krosmoz_value: '' });
     row.conversion_sample_rows = rows;
+}
+
+/** Calcule les bornes min/max des échantillons (Dofus = abscisses, Krosmoz = ordonnées) pour le graphique. */
+function conversionBoundsFromRow(row) {
+    if (!row?.conversion_sample_rows?.length) return null;
+    const values = row.conversion_sample_rows
+        .filter((r) => r.dofus_value !== '' && r.dofus_value != null && r.krosmoz_value !== '' && r.krosmoz_value != null)
+        .filter((r) => !Number.isNaN(Number(r.dofus_value)) && !Number.isNaN(Number(r.krosmoz_value)))
+        .map((r) => ({ d: Number(r.dofus_value), k: Number(r.krosmoz_value) }));
+    if (values.length === 0) return null;
+    const dMin = Math.min(...values.map((v) => v.d));
+    const dMax = Math.max(...values.map((v) => v.d));
+    const kMin = Math.min(...values.map((v) => v.k));
+    const kMax = Math.max(...values.map((v) => v.k));
+    if (dMin === dMax) return null;
+    return { dMin, dMax, kMin, kMax };
 }
 
 /** Supprime une ligne du tableau d'échantillons. Minimum 1 ligne. */
@@ -453,6 +482,20 @@ function colorForPicker(hex) {
     return defaultHexForPicker;
 }
 
+/** Style CSS pour le thème de la caractéristique : glass, bordures, graphique, boutons, inputs. */
+const characteristicColorStyle = computed(() => {
+    const hex = form.color && typeof form.color === 'string' && /^#([0-9A-Fa-f]{3}){1,2}$/.test(form.color.trim()) ? form.color.trim() : null;
+    if (!hex) return {};
+    return {
+        '--color': hex,
+        '--bg-color': hex,
+        '--chart-fill': `color-mix(in srgb, ${hex} 15%, transparent)`,
+        /* Surcharge primary du thème pour boutons, liens, focus inputs */
+        '--color-primary': hex,
+        '--color-primary-content': '#fff',
+    };
+});
+
 /** URL des icônes : storage/app/public/images/icons/characteristics/ (servi via /storage/...) */
 const iconBasePath = '/storage/images/icons/characteristics';
 function iconUrl(icon) {
@@ -742,13 +785,18 @@ function submit() {
                     Modifiez les champs puis cliquez sur « Enregistrer ». Les paramètres sont organisés par groupe d'entités ; un graphique apparaît pour chaque formule.
                 </p>
 
+                <div
+                    class="transition-colors duration-200 characteristic-theme"
+                    :class="{ 'has-characteristic-color': !!characteristicColorStyle['--color'] }"
+                    :style="characteristicColorStyle"
+                >
                 <form @submit.prevent="submit" class="space-y-6">
                     <!-- Panel Général -->
                     <section class="space-y-4">
                         <h2 class="text-xl font-semibold text-base-content">Général</h2>
                     <!-- Définition -->
-                    <div class="card bg-base-100 shadow bg-color-campaign-100">
-                        <div class="card-body">
+                    <div class="card shadow border-glass-sm relative overflow-hidden">
+                        <div class="card-body bg-base-100 rounded-lg">
                             <h3 class="card-title text-lg">Définition</h3>
                             <p class="text-sm text-base-content/70">
                                 Nom, affichage (icône, couleur), type de donnée et règles (unité, entités concernées). Forgemagie et prix sont dans la section Équipement.
@@ -840,8 +888,8 @@ function submit() {
                     <!-- Général : Limite et défaut (entité * uniquement) -->
                     <div class="space-y-4" v-if="generalEntityRow()">
                                 <div class="space-y-4 pt-2">
-                    <div v-for="ent in (generalEntityRow() ? [generalEntityRow()] : [])" :key="ent.entity" class="card bg-base-100 shadow border border-base-200 bg-base-200">
-                        <div class="card-body">
+                    <div v-for="ent in (generalEntityRow() ? [generalEntityRow()] : [])" :key="ent.entity" class="card shadow border border-base-200 border-glass-sm relative overflow-hidden">
+                        <div class="card-body bg-base-200 rounded-lg">
                             <h3 class="card-title text-lg">Limite et défaut</h3>
                             <p class="text-sm text-base-content/70">
                                 Bornes min/max et formule de calcul pour ce type d’entité. Le graphique montre l’évolution en fonction du niveau.
@@ -933,13 +981,21 @@ function submit() {
                     </div>
 
                     <!-- Conversion : une seule config pour tout le groupe -->
-                    <div v-if="generalEntityRow()" class="card bg-base-100 shadow bg-color-neutral-100">
-                        <div class="card-body">
+                    <div v-if="generalEntityRow()" class="card shadow border-glass-sm relative overflow-hidden">
+                        <div class="card-body bg-base-100 rounded-lg bg-color-neutral-100">
                             <h3 class="card-title text-lg">Conversion</h3>
                             <p class="text-sm text-base-content/70">
                                 Formules utilisées lors du scrapping pour convertir les valeurs DofusDB en valeurs JDR. Variable <code class="rounded bg-base-300 px-1">[d]</code> = valeur Dofus, <code class="rounded bg-base-300 px-1">[level]</code> = niveau JDR (pour la vie). Une formule différente par type d’entité (monstre, classe, équipement).
                             </p>
                             <div v-if="generalEntityRow()" class="space-y-4 rounded-lg border border-base-300 bg-base-200/30 p-4">
+                                <!-- Formule affichée (lecture seule, au-dessus du champ) -->
+                                <div>
+                                    <span class="label-text text-base-content/70">Formule affichée</span>
+                                    <p class="mt-0.5 font-mono text-sm">
+                                        {{ generalEntityRow().conversion_formula?.trim() ? generalEntityRow().conversion_formula : '[vide]' }}
+                                    </p>
+                                </div>
+                                <!-- Champ formule (sans graphique intégré) -->
                                 <div>
                                     <label class="label">
                                         <span class="label-text flex items-center gap-1">
@@ -947,21 +1003,89 @@ function submit() {
                                             <button type="button" class="btn btn-circle btn-ghost btn-xs cursor-pointer" aria-label="Aide formules" @click.stop="openFormulaHelp">?</button>
                                         </span>
                                     </label>
-                                    <FormulaOrTableFieldWithChart
+                                    <FormulaOrTableField
                                         :model-value="generalEntityRow().conversion_formula"
                                         @update:model-value="(v) => (generalEntityRow().conversion_formula = v)"
                                         :characteristic-options="conversionTableCharacteristicOptions"
                                         placeholder="ex: [d]/10 ou floor([d]/200)+[level]*5"
-                                        :preview="{ characteristicKey: selected.id, entity: '*', mode: 'conversion' }"
-                                        chart-x-label="d (Dofus)"
-                                        chart-y-label="k (JDR)"
                                     />
                                     <p class="mt-1 text-xs text-base-content/70">Syntaxe : [d], [level], floor(), ceil(), round(), sqrt(), pow(), min(), max(), etc. + - * /</p>
                                 </div>
+                                <div>
+                                    <label class="label"><span class="label-text">Formule (affichage)</span></label>
+                                    <input
+                                        v-model="generalEntityRow().formula_display"
+                                        type="text"
+                                        class="input input-bordered w-full"
+                                        placeholder="ex: k = d / 10"
+                                    />
+                                    <p class="mt-1 text-xs text-base-content/70">Version lisible affichée à l'utilisateur.</p>
+                                </div>
 
-                                <!-- Échantillons et proposition de formule (automatisation) -->
-                                <div class="rounded-lg border border-base-300 bg-base-200/50 p-4 space-y-4">
-                                    <h4 class="text-sm font-semibold text-base-content/80">Échantillons (automatisation des formules)</h4>
+                                <!-- Graphique en grand sous la formule -->
+                                <ConversionChartBlock
+                                    :formula="generalEntityRow().conversion_formula"
+                                    :conversion-bounds="conversionBoundsFromRow(generalEntityRow())"
+                                    :characteristic-key="selected.id"
+                                    entity-key="*"
+                                    chart-x-label="d (Dofus)"
+                                    chart-y-label="k (JDR)"
+                                    :chart-height="280"
+                                />
+
+                                <!-- Fonctions disponibles (masqué par défaut) -->
+                                <div class="collapse collapse-arrow rounded-lg border border-base-300 bg-base-200/50">
+                                    <input type="checkbox" />
+                                    <div class="collapse-title min-h-0 py-2 text-sm font-semibold text-base-content/80">
+                                        Fonctions disponibles (Table, Linéaire, Carré, etc.)
+                                    </div>
+                                    <div class="collapse-content space-y-4">
+                                        <span class="label-text block mb-2">Proposer une formule (à valider ensuite)</span>
+                                        <div class="flex flex-wrap gap-2">
+                                            <Tooltip :content="conversionSuggestionTooltips.table" placement="top">
+                                                <button type="button" class="btn btn-sm btn-outline" :disabled="conversionSuggestionLoading" @click="requestConversionSuggestion('table', '*')">Table</button>
+                                            </Tooltip>
+                                            <Tooltip :content="conversionSuggestionTooltips.linear" placement="top">
+                                                <button type="button" class="btn btn-sm btn-outline" :disabled="conversionSuggestionLoading" @click="requestConversionSuggestion('linear', '*')">Linéaire</button>
+                                            </Tooltip>
+                                            <Tooltip :content="conversionSuggestionTooltips.power" placement="top">
+                                                <button type="button" class="btn btn-sm btn-outline" :disabled="conversionSuggestionLoading" @click="requestConversionSuggestion('power', '*')">Carré</button>
+                                            </Tooltip>
+                                            <Tooltip :content="conversionSuggestionTooltips.shifted_power" placement="top">
+                                                <button type="button" class="btn btn-sm btn-outline" :disabled="conversionSuggestionLoading" @click="requestConversionSuggestion('shifted_power', '*')">Carré décalé</button>
+                                            </Tooltip>
+                                            <Tooltip :content="conversionSuggestionTooltips.exponential" placement="top">
+                                                <button type="button" class="btn btn-sm btn-outline" :disabled="conversionSuggestionLoading" @click="requestConversionSuggestion('exponential', '*')">Exponentielle</button>
+                                            </Tooltip>
+                                            <Tooltip :content="conversionSuggestionTooltips.log" placement="top">
+                                                <button type="button" class="btn btn-sm btn-outline" :disabled="conversionSuggestionLoading" @click="requestConversionSuggestion('log', '*')">Logarithmique</button>
+                                            </Tooltip>
+                                            <Tooltip :content="conversionSuggestionTooltips.polynomial2" placement="top">
+                                                <button type="button" class="btn btn-sm btn-outline" :disabled="conversionSuggestionLoading" @click="requestConversionSuggestion('polynomial2', '*')">Polynôme 2</button>
+                                            </Tooltip>
+                                        </div>
+                                        <p class="mt-1 text-xs text-base-content/60">Les formules générées sont enveloppées dans floor() pour le graphique et des entiers.</p>
+                                        <p v-if="conversionSuggestionLoading && conversionSuggestionForEntity === '*'" class="mt-2 text-sm text-info">Calcul en cours…</p>
+                                        <p v-else-if="conversionSuggestionError && conversionSuggestionForEntity === '*'" class="mt-2 text-sm text-error">{{ conversionSuggestionError }}</p>
+                                        <div v-else-if="conversionSuggestionFormula && conversionSuggestionForEntity === '*'" class="mt-3 p-3 rounded-lg bg-base-300 border border-base-content/10">
+                                            <p class="text-sm font-medium text-base-content/80 mb-1">Proposition :</p>
+                                            <code class="block text-xs break-all mb-2">{{ conversionSuggestionFormula }}</code>
+                                            <p v-if="conversionSuggestionR2 != null" class="text-xs text-base-content/70 mb-2">R² = {{ conversionSuggestionR2 }}</p>
+                                            <div class="flex gap-2">
+                                                <button type="button" class="btn btn-sm btn-primary" @click="applyConversionSuggestion">Valider (remplacer le champ)</button>
+                                                <button type="button" class="btn btn-sm btn-ghost" @click="clearConversionSuggestion">Annuler</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Échantillonnage (masqué par défaut) -->
+                                <div class="collapse collapse-arrow rounded-lg border border-base-300 bg-base-200/50">
+                                    <input type="checkbox" />
+                                    <div class="collapse-title min-h-0 py-2 text-sm font-semibold text-base-content/80">
+                                        Échantillons (automatisation des formules)
+                                    </div>
+                                    <div class="collapse-content space-y-4 pt-2">
                                     <p class="text-xs text-base-content/70">Tableau : 2 colonnes Dofus (niveau, valeur) et 2 colonnes Krosmoz (niveau, valeur). Au moins 2 lignes renseignées pour proposer une formule. 6 points donnent en général un bon ajustement.</p>
                                     <div class="overflow-x-auto">
                                         <table class="table table-sm table-zebra">
@@ -1025,46 +1149,16 @@ function submit() {
                                             </tbody>
                                         </table>
                                         <button type="button" class="btn btn-sm btn-ghost mt-2" @click="addConversionSampleRow">+ Ajouter une ligne</button>
-                                    </div>
-                                    <div>
-                                        <span class="label-text block mb-2">Proposer une formule (à valider ensuite)</span>
-                                        <div class="flex flex-wrap gap-2">
-                                            <button type="button" class="btn btn-sm btn-outline" :disabled="conversionSuggestionLoading" @click="requestConversionSuggestion('table', '*')">Table</button>
-                                            <button type="button" class="btn btn-sm btn-outline" :disabled="conversionSuggestionLoading" @click="requestConversionSuggestion('linear', '*')">Linéaire</button>
-                                            <button type="button" class="btn btn-sm btn-outline" :disabled="conversionSuggestionLoading" @click="requestConversionSuggestion('power', '*')">Carré</button>
-                                            <button type="button" class="btn btn-sm btn-outline" :disabled="conversionSuggestionLoading" @click="requestConversionSuggestion('shifted_power', '*')">Carré décalé</button>
-                                        </div>
-                                        <p v-if="conversionSuggestionLoading && conversionSuggestionForEntity === '*'" class="mt-2 text-sm text-info">Calcul en cours…</p>
-                                        <p v-else-if="conversionSuggestionError && conversionSuggestionForEntity === '*'" class="mt-2 text-sm text-error">{{ conversionSuggestionError }}</p>
-                                        <div v-else-if="conversionSuggestionFormula && conversionSuggestionForEntity === '*'" class="mt-3 p-3 rounded-lg bg-base-300 border border-base-content/10">
-                                            <p class="text-sm font-medium text-base-content/80 mb-1">Proposition :</p>
-                                            <code class="block text-xs break-all mb-2">{{ conversionSuggestionFormula }}</code>
-                                            <p v-if="conversionSuggestionR2 != null" class="text-xs text-base-content/70 mb-2">R² = {{ conversionSuggestionR2 }}</p>
-                                            <div class="flex gap-2">
-                                                <button type="button" class="btn btn-sm btn-primary" @click="applyConversionSuggestion">Valider (remplacer le champ)</button>
-                                                <button type="button" class="btn btn-sm btn-ghost" @click="clearConversionSuggestion">Annuler</button>
-                                            </div>
                                         </div>
                                     </div>
-                                </div>
-
-                                <div>
-                                    <label class="label"><span class="label-text">Formule (affichage)</span></label>
-                                    <input
-                                        v-model="generalEntityRow().formula_display"
-                                        type="text"
-                                        class="input input-bordered w-full"
-                                        placeholder="ex: k = d / 10"
-                                    />
-                                    <p class="mt-1 text-xs text-base-content/70">Version lisible affichée à l’utilisateur.</p>
                                 </div>
                             </div>
                         </div>
                     </div>
 
                     <!-- Panneaux entité spécifique (sous Conversion) -->
-                    <div v-for="entityKey in selectedEntityOverrides" :key="entityKey" class="card bg-base-100 shadow border border-base-200 mt-4" :class="entityBgClasses[entityKey]">
-                        <div class="card-body" v-if="entityRow(entityKey)">
+                    <div v-for="entityKey in selectedEntityOverrides" :key="entityKey" class="card shadow border border-base-200 mt-4 border-glass-sm relative overflow-hidden" :class="entityBgClasses[entityKey]">
+                        <div class="card-body bg-base-100 rounded-lg" v-if="entityRow(entityKey)">
                             <div class="flex justify-between items-center flex-wrap gap-2">
                                 <h2 class="card-title text-lg">{{ entityLabels[entityKey] || entityKey }}</h2>
                                 <button type="button" class="btn btn-ghost btn-sm btn-error" @click="removeEntityOverride(entityKey)">
@@ -1118,9 +1212,18 @@ function submit() {
                             </div>
 
                             <!-- Conversion (même interface que Général) -->
-                            <div class="pt-4 border-t border-base-300">
+                            <div class="pt-4 border-t border-base-300 space-y-4">
                                 <h3 class="text-sm font-semibold text-base-content/80 mb-2">Conversion (surcharge pour cette entité)</h3>
                                 <p class="text-xs text-base-content/70 mb-2">Si renseigné, remplace la conversion du groupe.</p>
+
+                                <!-- Formule affichée (lecture seule) -->
+                                <div>
+                                    <span class="label-text text-base-content/70">Formule affichée</span>
+                                    <p class="mt-0.5 font-mono text-sm">
+                                        {{ entityRow(entityKey).conversion_formula?.trim() ? entityRow(entityKey).conversion_formula : '[vide]' }}
+                                    </p>
+                                </div>
+                                <!-- Champ formule (sans graphique intégré) -->
                                 <div>
                                     <label class="label">
                                         <span class="label-text flex items-center gap-1">
@@ -1128,55 +1231,68 @@ function submit() {
                                             <button type="button" class="btn btn-circle btn-ghost btn-xs cursor-pointer" aria-label="Aide formules" @click.stop="openFormulaHelp">?</button>
                                         </span>
                                     </label>
-                                    <FormulaOrTableFieldWithChart
+                                    <FormulaOrTableField
                                         :model-value="entityRow(entityKey).conversion_formula"
                                         @update:model-value="(v) => (entityRow(entityKey).conversion_formula = v)"
                                         :characteristic-options="conversionTableCharacteristicOptions"
                                         placeholder="ex: [d]/10 (vide = même que le groupe)"
-                                        :preview="{ characteristicKey: selected.id, entity: entityKey, mode: 'conversion' }"
-                                        chart-x-label="d (Dofus)"
-                                        chart-y-label="k (JDR)"
                                     />
                                     <p class="mt-1 text-xs text-base-content/70">Syntaxe : [d], [level], floor(), ceil(), round(), sqrt(), pow(), min(), max(), etc. + - * /</p>
                                 </div>
+                                <div>
+                                    <label class="label"><span class="label-text">Formule (affichage)</span></label>
+                                    <input
+                                        v-model="entityRow(entityKey).formula_display"
+                                        type="text"
+                                        class="input input-bordered w-full"
+                                        placeholder="ex: k = d / 10"
+                                    />
+                                    <p class="mt-1 text-xs text-base-content/70">Version lisible affichée à l'utilisateur.</p>
+                                </div>
 
-                                <!-- Échantillons et proposition de formule (surcharge entité) -->
-                                <div class="rounded-lg border border-base-300 bg-base-200/50 p-4 space-y-4 mt-4">
-                                    <h4 class="text-sm font-semibold text-base-content/80">Échantillons (automatisation pour cette entité)</h4>
-                                    <p class="text-xs text-base-content/70">Même tableau Dofus/Krosmoz que pour le groupe : renseignez les valeurs puis proposez une formule pour cette surcharge.</p>
-                                    <div class="overflow-x-auto">
-                                        <table class="table table-sm table-zebra">
-                                            <thead>
-                                                <tr>
-                                                    <th class="bg-base-300">Dofus (niv.)</th>
-                                                    <th class="bg-base-300">Dofus (valeur)</th>
-                                                    <th class="bg-base-300">Krosmoz (niv.)</th>
-                                                    <th class="bg-base-300">Krosmoz (valeur)</th>
-                                                    <th class="bg-base-300 w-10"></th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                <tr v-for="(sampleRow, idx) in (entityRow(entityKey)?.conversion_sample_rows || getDefaultConversionSampleRows())" :key="idx">
-                                                    <td><input v-model.number="sampleRow.dofus_level" type="number" min="1" class="input input-bordered input-sm w-20" /></td>
-                                                    <td><input v-model.number="sampleRow.dofus_value" type="number" step="any" class="input input-bordered input-sm w-24" placeholder="—" /></td>
-                                                    <td><input v-model.number="sampleRow.krosmoz_level" type="number" min="1" class="input input-bordered input-sm w-20" /></td>
-                                                    <td><input v-model.number="sampleRow.krosmoz_value" type="number" step="any" class="input input-bordered input-sm w-24" placeholder="—" /></td>
-                                                    <td>
-                                                        <button type="button" class="btn btn-ghost btn-xs btn-error" :disabled="(entityRow(entityKey)?.conversion_sample_rows?.length ?? 0) <= 1" :aria-label="'Supprimer la ligne ' + (idx + 1)" @click="removeConversionSampleRow(entityKey, idx)">−</button>
-                                                    </td>
-                                                </tr>
-                                            </tbody>
-                                        </table>
-                                        <button type="button" class="btn btn-sm btn-ghost mt-2" @click="addConversionSampleRow(entityKey)">+ Ajouter une ligne</button>
+                                <!-- Graphique en grand sous la formule -->
+                                <ConversionChartBlock
+                                    :formula="entityRow(entityKey).conversion_formula"
+                                    :conversion-bounds="conversionBoundsFromRow(entityRow(entityKey))"
+                                    :characteristic-key="selected.id"
+                                    :entity-key="entityKey"
+                                    chart-x-label="d (Dofus)"
+                                    chart-y-label="k (JDR)"
+                                    :chart-height="280"
+                                />
+
+                                <!-- Fonctions disponibles (masqué par défaut) -->
+                                <div class="collapse collapse-arrow rounded-lg border border-base-300 bg-base-200/50">
+                                    <input type="checkbox" />
+                                    <div class="collapse-title min-h-0 py-2 text-sm font-semibold text-base-content/80">
+                                        Fonctions disponibles (Table, Linéaire, Carré, etc.)
                                     </div>
-                                    <div>
+                                    <div class="collapse-content space-y-4">
                                         <span class="label-text block mb-2">Proposer une formule (à valider ensuite)</span>
                                         <div class="flex flex-wrap gap-2">
-                                            <button type="button" class="btn btn-sm btn-outline" :disabled="conversionSuggestionLoading" @click="requestConversionSuggestion('table', entityKey)">Table</button>
-                                            <button type="button" class="btn btn-sm btn-outline" :disabled="conversionSuggestionLoading" @click="requestConversionSuggestion('linear', entityKey)">Linéaire</button>
-                                            <button type="button" class="btn btn-sm btn-outline" :disabled="conversionSuggestionLoading" @click="requestConversionSuggestion('power', entityKey)">Carré</button>
-                                            <button type="button" class="btn btn-sm btn-outline" :disabled="conversionSuggestionLoading" @click="requestConversionSuggestion('shifted_power', entityKey)">Carré décalé</button>
+                                            <Tooltip :content="conversionSuggestionTooltips.table" placement="top">
+                                                <button type="button" class="btn btn-sm btn-outline" :disabled="conversionSuggestionLoading" @click="requestConversionSuggestion('table', entityKey)">Table</button>
+                                            </Tooltip>
+                                            <Tooltip :content="conversionSuggestionTooltips.linear" placement="top">
+                                                <button type="button" class="btn btn-sm btn-outline" :disabled="conversionSuggestionLoading" @click="requestConversionSuggestion('linear', entityKey)">Linéaire</button>
+                                            </Tooltip>
+                                            <Tooltip :content="conversionSuggestionTooltips.power" placement="top">
+                                                <button type="button" class="btn btn-sm btn-outline" :disabled="conversionSuggestionLoading" @click="requestConversionSuggestion('power', entityKey)">Carré</button>
+                                            </Tooltip>
+                                            <Tooltip :content="conversionSuggestionTooltips.shifted_power" placement="top">
+                                                <button type="button" class="btn btn-sm btn-outline" :disabled="conversionSuggestionLoading" @click="requestConversionSuggestion('shifted_power', entityKey)">Carré décalé</button>
+                                            </Tooltip>
+                                            <Tooltip :content="conversionSuggestionTooltips.exponential" placement="top">
+                                                <button type="button" class="btn btn-sm btn-outline" :disabled="conversionSuggestionLoading" @click="requestConversionSuggestion('exponential', entityKey)">Exponentielle</button>
+                                            </Tooltip>
+                                            <Tooltip :content="conversionSuggestionTooltips.log" placement="top">
+                                                <button type="button" class="btn btn-sm btn-outline" :disabled="conversionSuggestionLoading" @click="requestConversionSuggestion('log', entityKey)">Logarithmique</button>
+                                            </Tooltip>
+                                            <Tooltip :content="conversionSuggestionTooltips.polynomial2" placement="top">
+                                                <button type="button" class="btn btn-sm btn-outline" :disabled="conversionSuggestionLoading" @click="requestConversionSuggestion('polynomial2', entityKey)">Polynôme 2</button>
+                                            </Tooltip>
                                         </div>
+                                        <p class="mt-1 text-xs text-base-content/60">Formules générées avec floor() pour le graphique et des entiers.</p>
                                         <p v-if="conversionSuggestionLoading && conversionSuggestionForEntity === entityKey" class="mt-2 text-sm text-info">Calcul en cours…</p>
                                         <p v-else-if="conversionSuggestionError && conversionSuggestionForEntity === entityKey" class="mt-2 text-sm text-error">{{ conversionSuggestionError }}</p>
                                         <div v-else-if="conversionSuggestionFormula && conversionSuggestionForEntity === entityKey" class="mt-3 p-3 rounded-lg bg-base-300 border border-base-content/10">
@@ -1187,6 +1303,42 @@ function submit() {
                                                 <button type="button" class="btn btn-sm btn-primary" @click="applyConversionSuggestion">Valider (remplacer le champ)</button>
                                                 <button type="button" class="btn btn-sm btn-ghost" @click="clearConversionSuggestion">Annuler</button>
                                             </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Échantillonnage (masqué par défaut) -->
+                                <div class="collapse collapse-arrow rounded-lg border border-base-300 bg-base-200/50">
+                                    <input type="checkbox" />
+                                    <div class="collapse-title min-h-0 py-2 text-sm font-semibold text-base-content/80">
+                                        Échantillons (automatisation pour cette entité)
+                                    </div>
+                                    <div class="collapse-content space-y-4 pt-2">
+                                        <p class="text-xs text-base-content/70">Même tableau Dofus/Krosmoz que pour le groupe : renseignez les valeurs puis proposez une formule pour cette surcharge.</p>
+                                        <div class="overflow-x-auto">
+                                            <table class="table table-sm table-zebra">
+                                                <thead>
+                                                    <tr>
+                                                        <th class="bg-base-300">Dofus (niv.)</th>
+                                                        <th class="bg-base-300">Dofus (valeur)</th>
+                                                        <th class="bg-base-300">Krosmoz (niv.)</th>
+                                                        <th class="bg-base-300">Krosmoz (valeur)</th>
+                                                        <th class="bg-base-300 w-10"></th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <tr v-for="(sampleRow, idx) in (entityRow(entityKey)?.conversion_sample_rows || getDefaultConversionSampleRows())" :key="idx">
+                                                        <td><input v-model.number="sampleRow.dofus_level" type="number" min="1" class="input input-bordered input-sm w-20" /></td>
+                                                        <td><input v-model.number="sampleRow.dofus_value" type="number" step="any" class="input input-bordered input-sm w-24" placeholder="—" /></td>
+                                                        <td><input v-model.number="sampleRow.krosmoz_level" type="number" min="1" class="input input-bordered input-sm w-20" /></td>
+                                                        <td><input v-model.number="sampleRow.krosmoz_value" type="number" step="any" class="input input-bordered input-sm w-24" placeholder="—" /></td>
+                                                        <td>
+                                                            <button type="button" class="btn btn-ghost btn-xs btn-error" :disabled="(entityRow(entityKey)?.conversion_sample_rows?.length ?? 0) <= 1" :aria-label="'Supprimer la ligne ' + (idx + 1)" @click="removeConversionSampleRow(entityKey, idx)">−</button>
+                                                        </td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                            <button type="button" class="btn btn-sm btn-ghost mt-2" @click="addConversionSampleRow(entityKey)">+ Ajouter une ligne</button>
                                         </div>
                                     </div>
                                 </div>
@@ -1207,6 +1359,7 @@ function submit() {
                         <Btn type="submit" color="primary" :disabled="form.processing">Enregistrer</Btn>
                     </div>
                 </form>
+                </div>
             </template>
             <div v-else class="flex h-64 flex-col items-center justify-center gap-2 text-base-content/60">
                 <p>Sélectionnez une caractéristique dans la liste à gauche pour l'éditer.</p>
@@ -1236,3 +1389,40 @@ function submit() {
         </Teleport>
     </div>
 </template>
+
+<style scoped>
+/* Thème couleur caractéristique : boutons, inputs, fonds (quand --color est défini) */
+.has-characteristic-color .btn-primary,
+.has-characteristic-color .btn.btn-primary {
+    background-color: var(--color);
+    border-color: var(--color);
+}
+.has-characteristic-color .btn-primary:hover,
+.has-characteristic-color .btn.btn-primary:hover {
+    background-color: color-mix(in srgb, var(--color) 85%, black);
+    border-color: color-mix(in srgb, var(--color) 85%, black);
+}
+.has-characteristic-color .btn-ghost:hover {
+    background-color: color-mix(in srgb, var(--color) 15%, transparent);
+}
+.has-characteristic-color .input:focus,
+.has-characteristic-color input.input-bordered:focus,
+.has-characteristic-color .select.select-bordered:focus,
+.has-characteristic-color select.select-bordered:focus {
+    border-color: var(--color);
+    outline-color: var(--color);
+}
+.has-characteristic-color .input-primary {
+    border-color: color-mix(in srgb, var(--color) 50%, transparent);
+}
+.has-characteristic-color .input-primary:focus {
+    border-color: var(--color);
+    outline-color: var(--color);
+}
+/* Fond très discret pour la zone formulaire */
+.has-characteristic-color.characteristic-theme {
+    background-color: color-mix(in srgb, var(--color) 5%, transparent);
+    border-radius: var(--radius-box, 0.5rem);
+    padding: 0.25rem;
+}
+</style>

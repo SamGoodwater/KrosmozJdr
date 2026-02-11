@@ -302,7 +302,7 @@ class CharacteristicController extends Controller
         $range = $this->formulaService->evaluateForVariableRange($formula, $axisVar, $min, $max, $defaults);
         $points = [];
         foreach ($range as $x => $y) {
-            $points[] = ['x' => $x, 'y' => round($y, 2)];
+            $points[] = ['x' => $x, 'y' => (int) round($y, 0)];
         }
 
         return response()->json(['points' => $points]);
@@ -322,7 +322,7 @@ class CharacteristicController extends Controller
             'pairs' => 'nullable|array',
             'pairs.*.d' => 'required_with:pairs|numeric',
             'pairs.*.k' => 'required_with:pairs|numeric',
-            'curve_type' => 'required|in:table,linear,power,shifted_power',
+            'curve_type' => 'required|in:table,linear,power,shifted_power,exponential,log,polynomial2',
         ]);
         $curveType = $validated['curve_type'];
 

@@ -148,11 +148,6 @@ erDiagram
     created_at : timestamp
     updated_at : timestamp
   }
-  CHARACTERISTIC_ICON_UPLOADS {
-    id : bigint(20) unsigned
-    created_at : timestamp
-    updated_at : timestamp
-  }
   CHARACTERISTIC_OBJECT {
     id : bigint(20) unsigned
     characteristic_id : bigint(20) unsigned

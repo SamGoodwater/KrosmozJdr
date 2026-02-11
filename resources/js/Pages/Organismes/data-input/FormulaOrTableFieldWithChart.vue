@@ -32,6 +32,7 @@ const props = defineProps({
 const emit = defineEmits(['update:modelValue']);
 
 const points = ref([]);
+const axisBounds = ref(null);
 const loading = ref(false);
 let debounceTimer = null;
 
@@ -55,6 +56,15 @@ function fetchPreview() {
         entity: props.preview.entity,
     };
     if (props.preview.mode === 'conversion') {
+        const bounds = props.preview.conversionBounds;
+        if (bounds && Number.isFinite(bounds.dMin) && Number.isFinite(bounds.dMax)) {
+            params.d_min = bounds.dMin;
+            params.d_max = bounds.dMax;
+        }
+        if (bounds && Number.isFinite(bounds.kMin) && Number.isFinite(bounds.kMax)) {
+            params.k_min = bounds.kMin;
+            params.k_max = bounds.kMax;
+        }
         if (props.modelValue != null && String(props.modelValue).trim() !== '') {
             params.conversion_formula = props.modelValue;
         }
@@ -69,9 +79,11 @@ function fetchPreview() {
         .get(route(routeName), { params })
         .then((res) => {
             points.value = res.data.points ?? [];
+            axisBounds.value = res.data.axisBounds ?? null;
         })
         .catch(() => {
             points.value = [];
+            axisBounds.value = null;
         })
         .finally(() => {
             loading.value = false;
@@ -141,6 +153,7 @@ const hasPoints = computed(() => Array.isArray(points.value) && points.value.len
                     :x-label="xLabel"
                     :y-label="chartYLabel"
                     :height="128"
+                    :axis-bounds="axisBounds"
                 />
             </div>
         </div>

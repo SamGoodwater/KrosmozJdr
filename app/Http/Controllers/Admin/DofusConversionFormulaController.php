@@ -33,8 +33,10 @@ class DofusConversionFormulaController extends Controller
         $validated = $request->validate([
             'characteristic_id' => 'required|string|max:64',
             'entity' => 'required|in:*,monster,class,npc,item,spell,resource,consumable,panoply',
-            'd_min' => 'nullable|integer',
-            'd_max' => 'nullable|integer',
+            'd_min' => 'nullable|numeric',
+            'd_max' => 'nullable|numeric',
+            'k_min' => 'nullable|numeric',
+            'k_max' => 'nullable|numeric',
             'steps' => 'nullable|integer|min:5|max:200',
             'conversion_formula' => 'nullable|string',
         ]);
@@ -47,14 +49,16 @@ class DofusConversionFormulaController extends Controller
             $formula = $this->getter->getConversionFormula($validated['characteristic_id'], $entity);
         }
         if ($formula === null || $formula === '') {
-            return response()->json(['points' => []]);
+            return response()->json(['points' => [], 'axisBounds' => null]);
         }
 
-        $dMin = isset($validated['d_min']) ? (int) $validated['d_min'] : 0;
-        $dMax = isset($validated['d_max']) ? (int) $validated['d_max'] : 200;
+        $dMin = isset($validated['d_min']) ? (int) round((float) $validated['d_min']) : 0;
+        $dMax = isset($validated['d_max']) ? (int) round((float) $validated['d_max']) : 200;
+        $kMin = isset($validated['k_min']) ? (int) round((float) $validated['k_min']) : null;
+        $kMax = isset($validated['k_max']) ? (int) round((float) $validated['k_max']) : null;
         $steps = (int) ($validated['steps'] ?? 50);
         if ($dMax <= $dMin || $steps < 2) {
-            return response()->json(['points' => []]);
+            return response()->json(['points' => [], 'axisBounds' => null]);
         }
 
         $step = ($dMax - $dMin) / ($steps - 1);
@@ -64,9 +68,16 @@ class DofusConversionFormulaController extends Controller
             $d = (float) ($dMin + $i * $step);
             $vars = ['d' => $d, 'level' => $levelKrosmoz];
             $y = $this->formulaService->evaluate($formula, $vars);
-            $points[] = ['x' => (int) round($d), 'y' => $y !== null ? round($y, 2) : 0];
+            $points[] = ['x' => (int) round($d), 'y' => $y !== null ? (int) round($y, 0) : 0];
         }
 
-        return response()->json(['points' => $points]);
+        $axisBounds = [
+            'xMin' => $dMin,
+            'xMax' => $dMax,
+            'yMin' => $kMin,
+            'yMax' => $kMax,
+        ];
+
+        return response()->json(['points' => $points, 'axisBounds' => $axisBounds]);
     }
 }

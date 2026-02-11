@@ -15,7 +15,7 @@ namespace App\Services\Characteristic\Formula;
  * N et X peuvent être des expressions numériques (souvent des variables substituées : [level]d[life_dice]).
  *
  * Opérateur puissance : ** (ex. 2**3 = 8, [level]**2). Associatif à droite (2**3**2 = 2**(3**2)).
- * Fonctions autorisées (1 argument) : floor, ceil, round, sqrt, abs, cos, sin, tan, asin, acos, atan.
+ * Fonctions autorisées (1 argument) : floor, ceil, round, sqrt, abs, exp, log, cos, sin, tan, asin, acos, atan.
  * Fonctions autorisées (2 arguments) : pow, min, max.
  *
  * @internal Utilisé par FormulaResolutionService
@@ -27,7 +27,7 @@ final class SafeExpressionEvaluator
 
     /** Noms de fonctions autorisées (sans espaces, en minuscules pour comparaison) */
     private const ALLOWED_FUNCTIONS = [
-        'floor', 'ceil', 'round', 'sqrt', 'abs',
+        'floor', 'ceil', 'round', 'sqrt', 'abs', 'exp', 'log',
         'cos', 'sin', 'tan', 'asin', 'acos', 'atan',
         'pow', 'min', 'max',
     ];
@@ -95,11 +95,11 @@ final class SafeExpressionEvaluator
 
         // Ordre important : asin, acos, atan avant sin, cos, tan pour ne pas couper les noms
         $oneArgReplace = [
-            'floor(', 'ceil(', 'round(', 'sqrt(', 'abs(',
+            'floor(', 'ceil(', 'round(', 'sqrt(', 'abs(', 'exp(', 'log(',
             'asin(', 'acos(', 'atan(', 'cos(', 'sin(', 'tan(',
         ];
         $oneArgWithPrefix = [
-            '__floor(', '__ceil(', '__round(', '__sqrt(', '__abs(',
+            '__floor(', '__ceil(', '__round(', '__sqrt(', '__abs(', '__exp(', '__log(',
             '__asin(', '__acos(', '__atan(', '__cos(', '__sin(', '__tan(',
         ];
         $expr = str_replace($oneArgReplace, $oneArgWithPrefix, $expr);
@@ -220,6 +220,8 @@ final class SafeExpressionEvaluator
             '__round(' => 8,
             '__sqrt(' => 7,
             '__abs(' => 6,
+            '__exp(' => 6,
+            '__log(' => 6,
             '__cos(' => 6,
             '__sin(' => 6,
             '__tan(' => 6,
@@ -245,6 +247,8 @@ final class SafeExpressionEvaluator
                     '__round(' => (float) round($v),
                     '__sqrt(' => $v < 0 ? 0.0 : (float) sqrt($v),
                     '__abs(' => (float) abs($v),
+                    '__exp(' => (float) exp($v),
+                    '__log(' => $v <= 0 ? 0.0 : (float) log($v),
                     '__cos(' => (float) cos($v),
                     '__sin(' => (float) sin($v),
                     '__tan(' => (float) tan($v),

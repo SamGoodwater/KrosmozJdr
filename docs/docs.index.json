@@ -136,8 +136,8 @@
   },
   {
     "path": "20-Content/21-Entities/ENTITY_FILES.md",
-    "title": "Fichiers (`files`)",
-    "description": "Les fichiers regroupent tous les documents, images, médias ou ressources numériques associés aux entités du jeu (scénarios, campagnes, pages, etc.). Ils permettent d’enrichir le contenu, d’illustrer ou de stocker des données annexes."
+    "title": "Fichiers et médias (Media Library)",
+    "description": "Les fichiers et images sont gérés par **Spatie Laravel Media Library**. Les documents, images et médias sont attachés aux modèles via des collections (`files`, `images`, `icons` selon le modèle)."
   },
   {
     "path": "20-Content/21-Entities/ENTITY_ITEMS.md",
@@ -372,7 +372,7 @@
   {
     "path": "30-UI/INPUT SYSTEM/FILE_UPLOAD.md",
     "title": "📁 Système d'Upload de Fichiers",
-    "description": "Le système d'upload de fichiers de KrosmozJDR gère l'upload, la prévisualisation, la validation et la suppression de fichiers. Côté **frontend** il utilise les composants `FileCore` (Atom) et `FileField` (Molecule), ainsi que les composables `useFileUpload` et `useDragAndDrop`. Côté **backend**, les fichiers attachés aux modèles (ex. sections) sont gérés par [Spatie Laravel Media Library](https://spatie.be/docs/laravel-medialibrary/v11/introduction), avec conversions WebP et miniatures (voir [Spatie Media Library — Medias](../../50-Fonctionnalités/Medias/SPATIE_MEDIA_LIBRARY.md))."
+    "description": "Le système d'upload de fichiers de KrosmozJDR gère l'upload, la prévisualisation, la validation et la suppression de fichiers. Côté **frontend** il utilise les composants `FileCore` (Atom) et `FileField` (Molecule), ainsi que les composables `useFileUpload` et `useDragAndDrop`. Côté **backend**, les fichiers attachés aux modèles (sections, utilisateur avatar, caractéristiques icône, ressources image) sont **tous gérés par [Spatie Laravel Media Library](https://spatie.be/docs/laravel-medialibrary/v11/introduction)** : le composant File envoie le fichier vers les routes API (ex. `sections.files.store`, `user.updateAvatar`, `admin.characteristics.upload-icon`, `api.entities.resources.upload-image`), et chaque contrôleur attache le média via `addMediaFromRequest()` / `toMediaCollection()`. Conversions WebP et miniatures : voir [Spatie Media Library — Medias](../../50-Fonctionnalités/Medias/SPATIE_MEDIA_LIBRARY.md)."
   },
   {
     "path": "30-UI/INPUT SYSTEM/INSTALLATION.md",

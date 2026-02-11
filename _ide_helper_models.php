@@ -1391,7 +1391,7 @@ namespace App\Models{
  * Gère l'ordre, le type, les paramètres dynamiques, la visibilité, l'état, les utilisateurs et fichiers associés.
  * Utilisé pour la construction flexible des pages et la gestion fine des droits d'accès.
  * 
- * Relations : page, users, files, createdBy
+ * Relations : page, users, createdBy ; médias via Media Library (collection files)
  *
  * @property int $id
  * @property int $page_id
@@ -1879,8 +1879,10 @@ namespace App\Models{
  * @property-read string $role_name
  * @mixin \Eloquent
  * @property bool $is_system
+ * @property-read \Spatie\MediaLibrary\MediaCollections\Models\Collections\MediaCollection<int, \Spatie\MediaLibrary\MediaCollections\Models\Media> $media
+ * @property-read int|null $media_count
  * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereIsSystem($value)
  */
-	class User extends \Eloquent {}
+	class User extends \Eloquent implements \Spatie\MediaLibrary\HasMedia {}
 }
 

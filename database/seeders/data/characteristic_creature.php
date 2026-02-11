@@ -735,8 +735,16 @@ return array (
     'formula' => NULL,
     'formula_display' => NULL,
     'default_value' => '0',
-    'conversion_formula' => '[d]',
-    'conversion_dofus_sample' => NULL,
+    'conversion_formula' => '-0.1704 + 8.418 * pow(([d]-0)/40, 1.3)',
+    'conversion_dofus_sample' => 
+    array (
+      1 => 0,
+      40 => 10,
+      80 => 15,
+      120 => 25,
+      160 => 28,
+      2000 => 40,
+    ),
     'conversion_krosmoz_sample' => 
     array (
       1 => 0,
@@ -1004,11 +1012,11 @@ return array (
     'characteristic_key' => 'de_vie_creature',
     'entity' => '*',
     'db_column' => NULL,
-    'min' => '0',
-    'max' => '100',
-    'formula' => NULL,
+    'min' => '4',
+    'max' => '20',
+    'formula' => '8',
     'formula_display' => 'floor(niveau/2), max 10 (2.2.2.4)',
-    'default_value' => '0',
+    'default_value' => '8',
     'conversion_formula' => NULL,
     'conversion_dofus_sample' => NULL,
     'conversion_krosmoz_sample' => 
