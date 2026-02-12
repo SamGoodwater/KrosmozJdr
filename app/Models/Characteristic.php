@@ -6,6 +6,7 @@ namespace App\Models;
 
 use App\Models\Concerns\HasMediaCustomNaming;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
@@ -26,6 +27,8 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
  * @property string|null $unit
  * @property string $type
  * @property int $sort_order
+ * @property string|null $group
+ * @property int|null $linked_to_characteristic_id
  */
 class Characteristic extends Model implements HasMedia
 {
@@ -52,12 +55,54 @@ class Characteristic extends Model implements HasMedia
         'unit',
         'type',
         'sort_order',
+        'group',
+        'linked_to_characteristic_id',
     ];
 
     /** @var array<string, string> */
     protected $casts = [
         'sort_order' => 'integer',
     ];
+
+    /**
+     * Caractéristique maître si cette ligne est une caractéristique liée.
+     */
+    public function masterCharacteristic(): BelongsTo
+    {
+        return $this->belongsTo(self::class, 'linked_to_characteristic_id');
+    }
+
+    /**
+     * Caractéristiques liées qui réutilisent cette ligne comme source de configuration.
+     *
+     * @return HasMany<self>
+     */
+    public function linkedCharacteristics(): HasMany
+    {
+        return $this->hasMany(self::class, 'linked_to_characteristic_id');
+    }
+
+    /**
+     * Indique si la caractéristique est liée à une autre.
+     */
+    public function isLinked(): bool
+    {
+        return $this->linked_to_characteristic_id !== null;
+    }
+
+    /**
+     * Retourne la caractéristique effective (maître si liée, sinon elle-même).
+     */
+    public function effectiveCharacteristic(): self
+    {
+        if (! $this->isLinked()) {
+            return $this;
+        }
+
+        $master = $this->relationLoaded('masterCharacteristic') ? $this->masterCharacteristic : $this->masterCharacteristic()->first();
+
+        return $master ?? $this;
+    }
 
     public function creatureRows(): HasMany
     {

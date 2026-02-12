@@ -37,10 +37,25 @@ const props = defineProps({
     groups: { type: Array, default: () => ['creature', 'object', 'spell'] },
     entitiesByGroup: { type: Object, default: () => ({}) },
     entitiesTemplate: { type: Object, default: () => ({}) },
+    /** Liste des caractéristiques non liées pour "Lier à" / "Copier depuis" (mode création). */
+    characteristicsForLinkOrCopy: { type: Array, default: () => [] },
+    /** Données de la caractéristique source pour préremplir le formulaire "Copier depuis". */
+    copyFromCharacteristic: { type: Object, default: null },
+    /** Liste des caractéristiques maîtres possibles pour « Convertir en liée » (mode édition, non liée). */
+    characteristicsForConvertToLinked: { type: Array, default: () => [] },
 });
 
 /** Entités affichées en panneaux supplémentaires (hors Général). Clic sur "Spécifier pour une entité". */
 const selectedEntityOverrides = ref([]);
+
+/** Mode de création : nouvelle, lier à une existante, ou copier depuis une existante. */
+const createModeType = ref('new');
+/** Pour le mode "Lier" : id de la caractéristique maître et groupe de la liée. */
+const linkForm = ref({ linked_to_characteristic_id: '', group: 'object', key: '' });
+/** Pour le mode "Copier" : clé choisie dans le select (redirection vers ?copy_from=key). */
+const copySelectKey = ref('');
+/** Pour « Convertir en liée » (édition) : id de la caractéristique maître choisie. */
+const convertToLinkedMasterId = ref('');
 
 /** Popover aide formules : rendu dans body pour passer au-dessus du menu (Teleport). null = fermé, sinon { left, top } en px. */
 const formulaHelpAnchor = ref(null);
@@ -340,12 +355,47 @@ function confirmDelete() {
     }
 }
 
-// En mode création : n'initialiser qu'avec la ligne par défaut (*). Les spécificités (monster, class, etc.) s'ajoutent via « Spécifier pour une entité ».
+// En mode création : n'initialiser qu'avec la ligne par défaut (*). Les spécificités s'ajoutent via « Spécifier pour une entité ». Si copyFromCharacteristic est fourni, préremplir le formulaire.
 watch(
-    () => [props.createMode, props.entitiesTemplate, props.entitiesByGroup, form.group],
+    () => [props.createMode, props.entitiesTemplate, props.entitiesByGroup, form.group, props.copyFromCharacteristic],
     () => {
+        if (props.createMode && props.copyFromCharacteristic) {
+            createModeType.value = 'copy';
+            const src = props.copyFromCharacteristic;
+            copySelectKey.value = src.key ?? '';
+            form.group = src.group ?? form.group;
+            form.name = src.name ?? '';
+            form.short_name = src.short_name ?? '';
+            form.description = src.descriptions ?? '';
+            form.helper = src.helper ?? '';
+            form.icon = src.icon ?? '';
+            form.color = src.color ?? '';
+            form.type = src.type ?? 'int';
+            form.unit = src.unit ?? '';
+            form.sort_order = src.sort_order ?? 0;
+            form.key = (src.key ?? '').replace(/_creature$|_object$|_spell$/, '') || '';
+            if (Array.isArray(src.entities) && src.entities.length) {
+                form.entities = src.entities.map((e) => ({
+                    entity: e.entity ?? '*',
+                    db_column: e.db_column ?? '',
+                    min: e.min ?? '',
+                    max: e.max ?? '',
+                    formula: e.formula ?? '',
+                    formula_display: e.formula_display ?? '',
+                    default_value: e.default_value ?? '',
+                    forgemagie_allowed: e.forgemagie_allowed ?? false,
+                    forgemagie_max: e.forgemagie_max ?? 0,
+                    base_price_per_unit: e.base_price_per_unit ?? '',
+                    rune_price_per_unit: e.rune_price_per_unit ?? '',
+                    conversion_formula: e.conversion_formula ?? '',
+                    conversion_sample_rows: e.conversion_sample_rows ?? null,
+                }));
+            }
+            form.conversion_formulas = defaultConversionFormulasForGroup(props.entitiesByGroup ?? {}, form.group);
+            return;
+        }
         if (props.createMode && form.group) {
-            if (props.entitiesTemplate) {
+            if (props.entitiesTemplate && !props.copyFromCharacteristic) {
                 const template = props.entitiesTemplate[form.group];
                 if (Array.isArray(template) && template.length) {
                     const defaultRow = template.find((e) => (e.entity ?? '*') === '*') ?? template[0];
@@ -367,8 +417,9 @@ watch(
                     ];
                 }
             }
-            // Conversion : uniquement les entités du groupe (hors '*')
-            form.conversion_formulas = defaultConversionFormulasForGroup(props.entitiesByGroup ?? {}, form.group);
+            if (!props.copyFromCharacteristic) {
+                form.conversion_formulas = defaultConversionFormulasForGroup(props.entitiesByGroup ?? {}, form.group);
+            }
         }
     },
     { immediate: true }
@@ -553,11 +604,37 @@ const entityBgClasses = {
 
 function submit() {
     if (props.createMode) {
+        if (createModeType.value === 'link') {
+            router.post(route('admin.characteristics.store'), {
+                create_mode: 'link',
+                linked_to_characteristic_id: Number(linkForm.value.linked_to_characteristic_id),
+                group: linkForm.value.group,
+                key: linkForm.value.key?.trim() || undefined,
+            });
+            return;
+        }
         form.post(route('admin.characteristics.store'));
         return;
     }
     if (!props.selected?.id) return;
     form.patch(route('admin.characteristics.update', props.selected.id));
+}
+
+function submitLinkDisabled() {
+    return !linkForm.value.linked_to_characteristic_id || !linkForm.value.group;
+}
+
+function goCopyFrom(key) {
+    if (key) router.visit(route('admin.characteristics.create') + '?copy_from=' + encodeURIComponent(key));
+}
+
+function submitConvertToLinked() {
+    if (!props.selected?.id || !convertToLinkedMasterId.value) return;
+    if (!confirm('Convertir cette caractéristique en liée ? La clé sera conservée mais les paramètres par entité (formules, bornes, conversion) actuels seront supprimés et remplacés par ceux de la maître.')) return;
+    router.patch(route('admin.characteristics.update', props.selected.id), {
+        convert_to_linked: true,
+        linked_to_characteristic_id: Number(convertToLinkedMasterId.value),
+    });
 }
 </script>
 
@@ -631,13 +708,127 @@ function submit() {
 
         <!-- Panneau central -->
         <main class="min-w-0 flex-1 overflow-y-auto p-6">
-            <!-- Mode création : nouvelle caractéristique -->
+            <!-- Mode création : nouvelle / lier / copier -->
             <template v-if="createMode">
                 <h1 class="mb-2 text-2xl font-bold">Nouvelle caractéristique</h1>
-                <p class="mb-6 text-sm text-base-content/70">
+                <div class="mb-6 flex flex-wrap gap-2">
+                    <div class="join">
+                        <button
+                            type="button"
+                            class="join-item btn btn-sm"
+                            :class="createModeType === 'new' ? 'btn-primary' : 'btn-ghost'"
+                            @click="createModeType = 'new'"
+                        >
+                            Nouvelle
+                        </button>
+                        <button
+                            type="button"
+                            class="join-item btn btn-sm"
+                            :class="createModeType === 'link' ? 'btn-primary' : 'btn-ghost'"
+                            @click="createModeType = 'link'"
+                        >
+                            Lier à une existante
+                        </button>
+                        <button
+                            type="button"
+                            class="join-item btn btn-sm"
+                            :class="createModeType === 'copy' ? 'btn-primary' : 'btn-ghost'"
+                            @click="createModeType = 'copy'; copySelectKey = ''"
+                        >
+                            Copier depuis une existante
+                        </button>
+                    </div>
+                    <select
+                        v-if="createModeType === 'copy'"
+                        v-model="copySelectKey"
+                        class="select select-bordered select-sm max-w-xs"
+                        @change="goCopyFrom(copySelectKey)"
+                    >
+                        <option value="">Choisir une caractéristique à copier…</option>
+                        <option
+                            v-for="c in characteristicsForLinkOrCopy"
+                            :key="c.id"
+                            :value="c.key"
+                        >
+                            {{ c.name }} [{{ c.key }}] ({{ c.group }})
+                        </option>
+                    </select>
+                </div>
+                <p v-if="createModeType === 'new'" class="mb-6 text-sm text-base-content/70">
                     Choisissez le groupe d'entités, la clé et le nom, puis renseignez les paramètres par entité.
                 </p>
-                <form @submit.prevent="submit" class="space-y-6">
+                <p v-if="createModeType === 'link'" class="mb-6 text-sm text-base-content/70">
+                    Créez une caractéristique « liée » qui réutilise la définition d'une caractéristique maître (même nom, formules, conversion). La liée n'a pas de configuration propre.
+                </p>
+                <p v-if="createModeType === 'copy'" class="mb-6 text-sm text-base-content/70">
+                    Préremplir le formulaire à partir d'une caractéristique existante pour créer une nouvelle caractéristique autonome (modifiable).
+                </p>
+
+                <!-- Formulaire "Lier à une existante" -->
+                <form v-if="createModeType === 'link'" @submit.prevent="submit" class="space-y-6">
+                    <div class="card bg-base-100 shadow bg-color-campaign-100">
+                        <div class="card-body">
+                            <h2 class="card-title text-lg">Lier à une caractéristique maître</h2>
+                            <div class="grid gap-4 sm:grid-cols-2">
+                                <div>
+                                    <label class="label"><span class="label-text">Caractéristique maître</span></label>
+                                    <select
+                                        v-model="linkForm.linked_to_characteristic_id"
+                                        class="select select-bordered w-full"
+                                        required
+                                    >
+                                        <option value="">Choisir…</option>
+                                        <option
+                                            v-for="c in characteristicsForLinkOrCopy"
+                                            :key="c.id"
+                                            :value="c.id"
+                                        >
+                                            {{ c.name }} [{{ c.key }}] ({{ c.group }})
+                                        </option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="label"><span class="label-text">Groupe de la liée</span></label>
+                                    <select
+                                        v-model="linkForm.group"
+                                        class="select select-bordered w-full"
+                                        required
+                                    >
+                                        <option
+                                            v-for="g in groups"
+                                            :key="g"
+                                            :value="g"
+                                        >
+                                            {{ groupLabels[g] || g }}
+                                        </option>
+                                    </select>
+                                    <p class="mt-1 text-xs text-base-content/70">La liée sera utilisée pour ce groupe (ex. level_object si la maître est level_creature).</p>
+                                </div>
+                                <div class="sm:col-span-2">
+                                    <label class="label"><span class="label-text">Clé personnalisée (optionnel)</span></label>
+                                    <input
+                                        v-model="linkForm.key"
+                                        type="text"
+                                        class="input input-bordered w-full max-w-md"
+                                        placeholder="ex. level_object"
+                                    />
+                                    <p class="mt-1 text-xs text-base-content/70">Si vide, la clé sera dérivée automatiquement (ex. level_object).</p>
+                                </div>
+                            </div>
+                            <div class="card-actions justify-end pt-4">
+                                <button type="submit" class="btn btn-primary" :disabled="submitLinkDisabled()">
+                                    Créer le lien
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+
+                <!-- Formulaire principal (Nouvelle ou Copier) -->
+                <form v-if="createModeType !== 'link'" @submit.prevent="submit" class="space-y-6">
+                    <div v-if="copyFromCharacteristic" class="alert alert-info mb-6">
+                        <span>Vous copiez depuis <strong>{{ copyFromCharacteristic.name }}</strong> [{{ copyFromCharacteristic.key }}].</span>
+                    </div>
                     <div class="card bg-base-100 shadow bg-color-campaign-100">
                         <div class="card-body">
                             <h2 class="card-title text-lg">Groupe et identifiant</h2>
@@ -774,6 +965,12 @@ function submit() {
 
             <!-- Mode édition : caractéristique existante -->
             <template v-else-if="selected">
+                <div v-if="selected.is_linked && selected.master_key" class="alert alert-info mb-6">
+                    <span>Cette caractéristique est <strong>liée</strong> à la caractéristique maître. Les paramètres (nom, formules, conversion) sont définis sur la maître.</span>
+                    <Link :href="route('admin.characteristics.show', selected.master_key)" class="btn btn-sm btn-ghost">
+                        Modifier la caractéristique maître
+                    </Link>
+                </div>
                 <h1 class="mb-1 text-2xl font-bold flex items-center gap-2" :style="displayColor(form.color) ? { borderLeftColor: displayColor(form.color) } : {}" :class="displayColor(form.color) ? 'pl-3 border-l-4' : ''">
                     {{ selected.name || selected.id }}
                     <span v-if="selected.group" class="badge badge-sm badge-ghost">{{ groupLabels[selected.group] || selected.group }}</span>
@@ -781,9 +978,50 @@ function submit() {
                 <p class="mb-1 text-sm italic text-base-content/60" :title="`Clé utilisée dans les formules (non modifiable)`">
                     Clé formule : <code class="rounded bg-base-200 px-1 font-mono">[{{ selected.id }}]</code>
                 </p>
-                <p class="mb-6 text-sm text-base-content/70">
+                <p v-if="!selected.is_linked" class="mb-6 text-sm text-base-content/70">
                     Modifiez les champs puis cliquez sur « Enregistrer ». Les paramètres sont organisés par groupe d'entités ; un graphique apparaît pour chaque formule.
                 </p>
+                <p v-else class="mb-6 text-sm text-base-content/70">
+                    Affichage en lecture seule. Pour modifier la définition, utilisez le lien « Modifier la caractéristique maître » ci-dessus.
+                </p>
+
+                <div
+                    v-if="!selected.is_linked && characteristicsForConvertToLinked?.length"
+                    class="card bg-base-100 shadow border border-warning/30 mb-6"
+                >
+                    <div class="card-body">
+                        <h2 class="card-title text-lg">Convertir en caractéristique liée</h2>
+                        <p class="text-sm text-base-content/70">
+                            Liez cette caractéristique à une maître existante : la clé <code class="rounded bg-base-200 px-1 font-mono">[{{ selected.id }}]</code> est conservée, mais les paramètres par entité (formules, bornes, conversion) seront remplacés par ceux de la maître.
+                        </p>
+                        <div class="flex flex-wrap items-end gap-4 mt-2">
+                            <div class="form-control min-w-[280px]">
+                                <label class="label"><span class="label-text">Caractéristique maître</span></label>
+                                <select
+                                    v-model="convertToLinkedMasterId"
+                                    class="select select-bordered w-full"
+                                >
+                                    <option value="">Choisir…</option>
+                                    <option
+                                        v-for="c in characteristicsForConvertToLinked"
+                                        :key="c.id"
+                                        :value="c.id"
+                                    >
+                                        {{ c.name }} [{{ c.key }}] ({{ c.group }})
+                                    </option>
+                                </select>
+                            </div>
+                            <button
+                                type="button"
+                                class="btn btn-warning btn-outline"
+                                :disabled="!convertToLinkedMasterId"
+                                @click="submitConvertToLinked"
+                            >
+                                Convertir en liée
+                            </button>
+                        </div>
+                    </div>
+                </div>
 
                 <div
                     class="transition-colors duration-200 characteristic-theme"
@@ -791,6 +1029,7 @@ function submit() {
                     :style="characteristicColorStyle"
                 >
                 <form @submit.prevent="submit" class="space-y-6">
+                    <fieldset :disabled="!!selected.is_linked" class="contents">
                     <!-- Panel Général -->
                     <section class="space-y-4">
                         <h2 class="text-xl font-semibold text-base-content">Général</h2>
@@ -1347,7 +1586,8 @@ function submit() {
                     </div>
                     </section>
 
-                    <div class="flex flex-wrap items-center justify-end gap-2 mt-6">
+                    </fieldset>
+                    <div v-if="!selected.is_linked" class="flex flex-wrap items-center justify-end gap-2 mt-6">
                         <div class="flex flex-wrap items-center gap-2">
                             <span class="label-text">Spécifier pour une entité :</span>
                             <select class="select select-bordered select-sm max-w-xs" @change="(e) => { const v = e.target.value; if (v) { addEntityOverride(v); e.target.value = ''; } }">

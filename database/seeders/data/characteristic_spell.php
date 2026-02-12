@@ -9,21 +9,6 @@ declare(strict_types=1);
 return array (
   0 => 
   array (
-    'characteristic_key' => 'level_spell',
-    'entity' => '*',
-    'db_column' => 'level',
-    'min' => '1',
-    'max' => '200',
-    'formula' => NULL,
-    'formula_display' => 'Niveau du sort (1–200, conversion Dofus : floor(d/10))',
-    'default_value' => '1',
-    'conversion_formula' => 'floor([d]/10)',
-    'conversion_dofus_sample' => NULL,
-    'conversion_krosmoz_sample' => NULL,
-    'value_available' => NULL,
-  ),
-  1 => 
-  array (
     'characteristic_key' => 'pa_spell',
     'entity' => '*',
     'db_column' => 'pa',
@@ -37,7 +22,7 @@ return array (
     'conversion_krosmoz_sample' => NULL,
     'value_available' => NULL,
   ),
-  2 => 
+  1 => 
   array (
     'characteristic_key' => 'po_spell',
     'entity' => '*',
@@ -52,7 +37,7 @@ return array (
     'conversion_krosmoz_sample' => NULL,
     'value_available' => NULL,
   ),
-  3 => 
+  2 => 
   array (
     'characteristic_key' => 'area_spell',
     'entity' => '*',
@@ -67,7 +52,7 @@ return array (
     'conversion_krosmoz_sample' => NULL,
     'value_available' => NULL,
   ),
-  4 => 
+  3 => 
   array (
     'characteristic_key' => 'element_spell',
     'entity' => '*',
@@ -99,7 +84,7 @@ return array (
       14 => 'Air-Eau',
     ),
   ),
-  5 => 
+  4 => 
   array (
     'characteristic_key' => 'powerful_spell',
     'entity' => '*',
@@ -114,7 +99,7 @@ return array (
     'conversion_krosmoz_sample' => NULL,
     'value_available' => NULL,
   ),
-  6 => 
+  5 => 
   array (
     'characteristic_key' => 'cast_per_turn_spell',
     'entity' => '*',
@@ -129,7 +114,7 @@ return array (
     'conversion_krosmoz_sample' => NULL,
     'value_available' => NULL,
   ),
-  7 => 
+  6 => 
   array (
     'characteristic_key' => 'cast_per_target_spell',
     'entity' => '*',
@@ -144,7 +129,7 @@ return array (
     'conversion_krosmoz_sample' => NULL,
     'value_available' => NULL,
   ),
-  8 => 
+  7 => 
   array (
     'characteristic_key' => 'sight_line_spell',
     'entity' => '*',
@@ -159,7 +144,7 @@ return array (
     'conversion_krosmoz_sample' => NULL,
     'value_available' => NULL,
   ),
-  9 => 
+  8 => 
   array (
     'characteristic_key' => 'number_between_two_cast_spell',
     'entity' => '*',
@@ -174,7 +159,7 @@ return array (
     'conversion_krosmoz_sample' => NULL,
     'value_available' => NULL,
   ),
-  10 => 
+  9 => 
   array (
     'characteristic_key' => 'category_spell',
     'entity' => '*',
@@ -197,7 +182,7 @@ return array (
       5 => 'Debuff',
     ),
   ),
-  11 => 
+  10 => 
   array (
     'characteristic_key' => 'is_magic_spell',
     'entity' => '*',
@@ -212,7 +197,7 @@ return array (
     'conversion_krosmoz_sample' => NULL,
     'value_available' => NULL,
   ),
-  12 => 
+  11 => 
   array (
     'characteristic_key' => 'po_editable_spell',
     'entity' => '*',
@@ -227,7 +212,7 @@ return array (
     'conversion_krosmoz_sample' => NULL,
     'value_available' => NULL,
   ),
-  13 => 
+  12 => 
   array (
     'characteristic_key' => 'number_between_two_cast_editable_spell',
     'entity' => '*',

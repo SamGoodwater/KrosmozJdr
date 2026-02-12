@@ -172,19 +172,28 @@ class ExportSeederDataCommand extends Command
         $this->getter->clearCache();
 
         if (Schema::hasTable('characteristics')) {
-            $rows = Characteristic::query()->orderBy('sort_order')->orderBy('key')->get();
-            $data = $rows->map(fn ($r) => [
-                'key' => $r->key,
-                'name' => $r->name,
-                'short_name' => $r->short_name,
-                'helper' => $r->helper,
-                'descriptions' => $r->descriptions,
-                'icon' => $r->icon,
-                'color' => $r->color,
-                'unit' => $r->unit,
-                'type' => $r->type,
-                'sort_order' => $r->sort_order,
-            ])->all();
+            $rows = Characteristic::with('masterCharacteristic')
+                ->orderBy('sort_order')
+                ->orderBy('key')
+                ->get();
+            $data = $rows->map(
+                fn (Characteristic $r) => [
+                    'key' => $r->key,
+                    'name' => $r->name,
+                    'short_name' => $r->short_name,
+                    'helper' => $r->helper,
+                    'descriptions' => $r->descriptions,
+                    'icon' => $r->icon,
+                    'color' => $r->color,
+                    'unit' => $r->unit,
+                    'type' => $r->type,
+                    'sort_order' => $r->sort_order,
+                    // Nouveau : groupe principal explicite (creature, object, spell) pour éviter de le recalculer.
+                    'group' => $r->group,
+                    // Nouveau : lien logique vers la caractéristique maître (clé), pour reconstruire linked_to_characteristic_id au seed.
+                    'linked_to_key' => $r->masterCharacteristic?->key,
+                ]
+            )->all();
             $path = $dir . '/characteristics.php';
             $content = "<?php\n\ndeclare(strict_types=1);\n\n/**\n * Table générale characteristics. Régénéré par : php artisan db:export-seeder-data --characteristics\n */\n\nreturn " . $this->varExportShort($data) . ";\n";
             file_put_contents($path, $content);

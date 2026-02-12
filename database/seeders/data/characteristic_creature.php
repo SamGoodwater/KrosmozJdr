@@ -13,7 +13,7 @@ return array (
     'entity' => '*',
     'db_column' => 'level',
     'min' => '1',
-    'max' => '200',
+    'max' => '20',
     'formula' => NULL,
     'formula_display' => 'd/10',
     'default_value' => '1',
@@ -73,8 +73,8 @@ return array (
     'entity' => '*',
     'db_column' => 'life',
     'min' => '1',
-    'max' => '9999',
-    'formula' => NULL,
+    'max' => '{"1":"9999","characteristic":"level_creature"}',
+    'formula' => '[char',
     'formula_display' => 'Vitalité×10 + dés de vie (2.2.2)',
     'default_value' => '1',
     'conversion_formula' => 'floor([d]/200)+[level]*5',
@@ -736,15 +736,7 @@ return array (
     'formula_display' => NULL,
     'default_value' => '0',
     'conversion_formula' => '-0.1704 + 8.418 * pow(([d]-0)/40, 1.3)',
-    'conversion_dofus_sample' => 
-    array (
-      1 => 0,
-      40 => 10,
-      80 => 15,
-      120 => 25,
-      160 => 28,
-      2000 => 40,
-    ),
+    'conversion_dofus_sample' => NULL,
     'conversion_krosmoz_sample' => 
     array (
       1 => 0,

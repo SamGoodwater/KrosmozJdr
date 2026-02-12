@@ -55,9 +55,9 @@ class CharacteristicController extends Controller
     }
 
     /**
-     * Formulaire de création d'une caractéristique.
+     * Formulaire de création d'une caractéristique (nouvelle, liée ou copie).
      */
-    public function create(): InertiaResponse
+    public function create(Request $request): InertiaResponse
     {
         $characteristicsByGroup = $this->buildCharacteristicsByGroup();
 
@@ -83,6 +83,30 @@ class CharacteristicController extends Controller
             $entitiesTemplate[$group] = array_map(fn (string $entity) => array_merge($defaultEntityRow, ['entity' => $entity]), $entities);
         }
 
+        // Caractéristiques éditables (non liées) pour "Lier à" et "Copier depuis"
+        $characteristicsForLinkOrCopy = Characteristic::whereNull('linked_to_characteristic_id')
+            ->orderBy('sort_order')
+            ->orderBy('key')
+            ->get(['id', 'key', 'name', 'group'])
+            ->map(fn (Characteristic $c) => [
+                'id' => $c->id,
+                'key' => $c->key,
+                'name' => $c->name ?? $c->key,
+                'group' => $c->group ?? $this->inferPrimaryGroup($c),
+            ])
+            ->values()
+            ->all();
+
+        // Préremplissage "Copier depuis" : charge la caractéristique source et envoie ses données au front
+        $copyFromKey = $request->query('copy_from', '');
+        $copyFromCharacteristic = null;
+        if (is_string($copyFromKey) && $copyFromKey !== '') {
+            $source = Characteristic::where('key', $copyFromKey)->whereNull('linked_to_characteristic_id')->first();
+            if ($source !== null) {
+                $copyFromCharacteristic = $this->buildSelectedPayloadForCopy($source);
+            }
+        }
+
         return Inertia::render('Admin/characteristics/Index', [
             'characteristicsByGroup' => $characteristicsByGroup,
             'selected' => null,
@@ -90,7 +114,46 @@ class CharacteristicController extends Controller
             'groups' => array_keys(self::ENTITIES_BY_GROUP),
             'entitiesByGroup' => self::ENTITIES_BY_GROUP,
             'entitiesTemplate' => $entitiesTemplate,
+            'characteristicsForLinkOrCopy' => $characteristicsForLinkOrCopy,
+            'copyFromCharacteristic' => $copyFromCharacteristic,
         ]);
+    }
+
+    /**
+     * Construit le payload "selected" d'une caractéristique pour préremplir le formulaire "Copier depuis".
+     *
+     * @return array<string, mixed>
+     */
+    private function buildSelectedPayloadForCopy(Characteristic $characteristic): array
+    {
+        $group = $characteristic->group ?? $this->inferPrimaryGroup($characteristic);
+        $entitiesForGroup = self::ENTITIES_BY_GROUP[$group] ?? ['*'];
+        $entities = [];
+        foreach (CharacteristicCreature::where('characteristic_id', $characteristic->id)->orderBy('entity')->get() as $row) {
+            $entities[] = $this->groupRowToEntity($row, $characteristic);
+        }
+        foreach (CharacteristicObject::where('characteristic_id', $characteristic->id)->orderBy('entity')->get() as $row) {
+            $entities[] = $this->groupRowToEntity($row, $characteristic);
+        }
+        foreach (CharacteristicSpell::where('characteristic_id', $characteristic->id)->orderBy('entity')->get() as $row) {
+            $entities[] = $this->groupRowToEntity($row, $characteristic);
+        }
+        $entities = array_values(array_filter($entities, fn (array $ent): bool => in_array($ent['entity'] ?? '', $entitiesForGroup, true)));
+
+        return [
+            'key' => $characteristic->key,
+            'name' => $characteristic->name,
+            'short_name' => $characteristic->short_name,
+            'descriptions' => $characteristic->descriptions,
+            'helper' => $characteristic->helper,
+            'icon' => $characteristic->icon,
+            'color' => $characteristic->color,
+            'type' => $characteristic->type,
+            'unit' => $characteristic->unit,
+            'sort_order' => $characteristic->sort_order,
+            'group' => $group,
+            'entities' => $entities,
+        ];
     }
 
     /**
@@ -100,6 +163,11 @@ class CharacteristicController extends Controller
      */
     public function store(Request $request): \Illuminate\Http\RedirectResponse
     {
+        $createMode = $request->input('create_mode', 'new');
+        if ($createMode === 'link') {
+            return $this->storeLink($request);
+        }
+
         $data = $request->validate([
             'key' => ['required', 'string', 'max:64', 'regex:/^[a-z0-9_]+$/'],
             'name' => 'required|string|max:255',
@@ -149,6 +217,7 @@ class CharacteristicController extends Controller
             'type' => $data['type'],
             'unit' => $data['unit'] ?? null,
             'sort_order' => (int) ($data['sort_order'] ?? 0),
+            'group' => $data['group'],
         ]);
 
         foreach ($entities as $ent) {
@@ -163,9 +232,71 @@ class CharacteristicController extends Controller
             ->with('success', 'Caractéristique créée.');
     }
 
+    /**
+     * Crée une caractéristique liée (pas de lignes de groupe, config = maître).
+     */
+    private function storeLink(Request $request): \Illuminate\Http\RedirectResponse
+    {
+        $data = $request->validate([
+            'linked_to_characteristic_id' => ['required', 'integer', 'exists:characteristics,id'],
+            'group' => 'required|in:creature,object,spell',
+            'key' => ['nullable', 'string', 'max:64', 'regex:/^[a-z0-9_]+$/'],
+        ]);
+
+        $master = Characteristic::findOrFail($data['linked_to_characteristic_id']);
+        if ($master->linked_to_characteristic_id !== null) {
+            return redirect()->back()->withErrors(['linked_to_characteristic_id' => 'La caractéristique source ne peut pas être elle-même une liée.'])->withInput();
+        }
+
+        $key = isset($data['key']) && trim($data['key']) !== ''
+            ? $this->normalizeCharacteristicKey(trim($data['key']), $data['group'])
+            : $this->deriveLinkedKey($master->key, $data['group']);
+
+        Validator::make(
+            ['key' => $key],
+            ['key' => ['required', 'string', 'max:64', 'regex:/^[a-z0-9_]+$/', 'unique:characteristics,key']]
+        )->validate();
+
+        $characteristic = Characteristic::create([
+            'key' => $key,
+            'name' => null,
+            'short_name' => null,
+            'helper' => null,
+            'descriptions' => null,
+            'icon' => null,
+            'color' => null,
+            'type' => $master->type,
+            'unit' => null,
+            'sort_order' => $master->sort_order,
+            'group' => $data['group'],
+            'linked_to_characteristic_id' => $master->id,
+        ]);
+
+        $this->getter->clearCache();
+        $this->colorCssGenerator->generate();
+
+        return redirect()
+            ->route('admin.characteristics.show', $characteristic->key)
+            ->with('success', 'Caractéristique liée créée. Les paramètres sont ceux de la caractéristique maître.');
+    }
+
+    /**
+     * Dérive la clé d'une caractéristique liée à partir de la clé maître et du groupe (ex. level_creature + object → level_object).
+     */
+    private function deriveLinkedKey(string $masterKey, string $group): string
+    {
+        $suffix = '_' . $group;
+        foreach (['_creature', '_object', '_spell'] as $s) {
+            if (str_ends_with($masterKey, $s)) {
+                return substr($masterKey, 0, -strlen($s)) . $suffix;
+            }
+        }
+        return $masterKey . $suffix;
+    }
+
     public function show(string $characteristic_key): InertiaResponse
     {
-        $characteristic = Characteristic::where('key', $characteristic_key)->first();
+        $characteristic = Characteristic::where('key', $characteristic_key)->with('masterCharacteristic')->first();
         if ($characteristic === null) {
             return Inertia::render('Admin/characteristics/Index', [
                 'characteristicsByGroup' => $this->buildCharacteristicsByGroup(),
@@ -174,21 +305,33 @@ class CharacteristicController extends Controller
             ])->with('error', 'Caractéristique introuvable.');
         }
 
-        $entities = [];
-        foreach (CharacteristicCreature::where('characteristic_id', $characteristic->id)->orderBy('entity')->get() as $row) {
-            $entities[] = $this->groupRowToEntity($row, $characteristic);
-        }
-        foreach (CharacteristicObject::where('characteristic_id', $characteristic->id)->orderBy('entity')->get() as $row) {
-            $entities[] = $this->groupRowToEntity($row, $characteristic);
-        }
-        foreach (CharacteristicSpell::where('characteristic_id', $characteristic->id)->orderBy('entity')->get() as $row) {
-            $entities[] = $this->groupRowToEntity($row, $characteristic);
-        }
-
-        $group = $this->inferPrimaryGroup($characteristic);
+        $effective = $characteristic->effectiveCharacteristic();
+        $group = $characteristic->group !== null && in_array($characteristic->group, ['creature', 'object', 'spell'], true)
+            ? $characteristic->group
+            : $this->inferPrimaryGroup($characteristic);
         $entitiesForGroup = self::ENTITIES_BY_GROUP[$group] ?? ['*'];
-        // Ne garder que les lignes du groupe (évite d'afficher des panneaux pour d'autres groupes si des lignes ont été créées par erreur)
-        $entities = array_values(array_filter($entities, fn (array $ent): bool => in_array($ent['entity'] ?? '', $entitiesForGroup, true)));
+
+        $entities = [];
+        if ($characteristic->isLinked()) {
+            // Caractéristique liée : pas de lignes en base, on construit à partir du getter (données maître).
+            foreach ($entitiesForGroup as $entity) {
+                $def = $this->getter->getDefinition($characteristic_key, $entity);
+                if ($def !== null) {
+                    $entities[] = $this->definitionToEntityRow($def);
+                }
+            }
+        } else {
+            foreach (CharacteristicCreature::where('characteristic_id', $characteristic->id)->orderBy('entity')->get() as $row) {
+                $entities[] = $this->groupRowToEntity($row, $characteristic);
+            }
+            foreach (CharacteristicObject::where('characteristic_id', $characteristic->id)->orderBy('entity')->get() as $row) {
+                $entities[] = $this->groupRowToEntity($row, $characteristic);
+            }
+            foreach (CharacteristicSpell::where('characteristic_id', $characteristic->id)->orderBy('entity')->get() as $row) {
+                $entities[] = $this->groupRowToEntity($row, $characteristic);
+            }
+            $entities = array_values(array_filter($entities, fn (array $ent): bool => in_array($ent['entity'] ?? '', $entitiesForGroup, true)));
+        }
 
         $conversionFormulas = [];
         foreach ($entitiesForGroup as $entity) {
@@ -209,41 +352,103 @@ class CharacteristicController extends Controller
             fn (string $e): bool => $e !== '*'
         ));
 
-        // Ne renvoyer que les entités qui existent en base (pas de lignes par défaut pour class/npc/etc.).
-        // Sinon le formulaire les envoie à l'enregistrement et on recrée des lignes qu'on venait de supprimer.
         $selected = [
             'id' => $characteristic->key,
-            'name' => $characteristic->name,
-            'short_name' => $characteristic->short_name,
-            'description' => $characteristic->descriptions,
-            'helper' => $characteristic->helper,
-            'icon' => $characteristic->icon,
-            'color' => $characteristic->color,
-            'type' => $characteristic->type,
-            'unit' => $characteristic->unit,
+            'name' => $effective->name,
+            'short_name' => $effective->short_name,
+            'description' => $effective->descriptions,
+            'helper' => $effective->helper,
+            'icon' => $effective->icon,
+            'color' => $effective->color,
+            'type' => $effective->type,
+            'unit' => $effective->unit,
             'sort_order' => $characteristic->sort_order,
             'entities' => $entities,
             'entity_override_keys' => $entityOverrideKeys,
             'conversion_formulas' => $conversionFormulas,
             'group' => $group,
             'entitiesByGroup' => self::ENTITIES_BY_GROUP,
+            'is_linked' => $characteristic->isLinked(),
+            'master_key' => $characteristic->isLinked() ? $effective->key : null,
         ];
+
+        $characteristicsForConvertToLinked = [];
+        if (! $characteristic->isLinked()) {
+            $characteristicsForConvertToLinked = Characteristic::whereNull('linked_to_characteristic_id')
+                ->where('id', '!=', $characteristic->id)
+                ->orderBy('sort_order')
+                ->orderBy('key')
+                ->get()
+                ->map(fn (Characteristic $c): array => [
+                    'id' => $c->id,
+                    'key' => $c->key,
+                    'name' => $c->name,
+                    'group' => $c->group ?? $this->inferPrimaryGroup($c),
+                ])
+                ->all();
+        }
 
         return Inertia::render('Admin/characteristics/Index', [
             'characteristicsByGroup' => $this->buildCharacteristicsByGroup(),
             'selected' => $selected,
             'entitiesByGroup' => self::ENTITIES_BY_GROUP,
+            'characteristicsForConvertToLinked' => $characteristicsForConvertToLinked,
         ]);
     }
 
     /**
+     * Construit une ligne entité pour l'affichage à partir d'une définition getter (utilisé pour les caractéristiques liées).
+     *
+     * @param array<string, mixed> $def
+     * @return array<string, mixed>
+     */
+    private function definitionToEntityRow(array $def): array
+    {
+        $out = [
+            'entity' => $def['entity'] ?? '*',
+            'db_column' => $def['db_column'] ?? null,
+            'min' => $def['min'] ?? null,
+            'max' => $def['max'] ?? null,
+            'formula' => $def['formula'] ?? null,
+            'formula_display' => $def['formula_display'] ?? null,
+            'default_value' => $def['default_value'] ?? null,
+            'conversion_formula' => $def['conversion_formula'] ?? null,
+            'conversion_dofus_sample' => $def['conversion_dofus_sample'] ?? null,
+            'conversion_krosmoz_sample' => $def['conversion_krosmoz_sample'] ?? null,
+            'conversion_sample_rows' => null,
+            'forgemagie_allowed' => false,
+            'forgemagie_max' => 0,
+            'base_price_per_unit' => null,
+            'rune_price_per_unit' => null,
+        ];
+        if (isset($def['forgemagie_allowed'])) {
+            $out['forgemagie_allowed'] = (bool) $def['forgemagie_allowed'];
+        }
+        if (isset($def['forgemagie_max'])) {
+            $out['forgemagie_max'] = (int) $def['forgemagie_max'];
+        }
+        if (array_key_exists('base_price_per_unit', $def)) {
+            $out['base_price_per_unit'] = $def['base_price_per_unit'];
+        }
+        if (array_key_exists('rune_price_per_unit', $def)) {
+            $out['rune_price_per_unit'] = $def['rune_price_per_unit'];
+        }
+        return $out;
+    }
+
+    /**
      * Supprime une caractéristique (et ses lignes de groupe par cascade).
+     * Une maître ne peut pas être supprimée tant qu'elle a des caractéristiques liées.
      */
     public function destroy(string $characteristic_key): \Illuminate\Http\RedirectResponse
     {
-        $characteristic = Characteristic::where('key', $characteristic_key)->first();
+        $characteristic = Characteristic::where('key', $characteristic_key)->withCount('linkedCharacteristics')->first();
         if ($characteristic === null) {
             return redirect()->route('admin.characteristics.index')->with('error', 'Caractéristique introuvable.');
+        }
+        if ($characteristic->linked_characteristics_count > 0) {
+            return redirect()->route('admin.characteristics.index')
+                ->with('error', 'Impossible de supprimer une caractéristique maître tant que des caractéristiques y sont liées. Supprimez d\'abord les liées.');
         }
         $characteristic->delete();
         $this->getter->clearCache();
@@ -462,6 +667,14 @@ class CharacteristicController extends Controller
         if ($characteristic === null) {
             return redirect()->route('admin.characteristics.index')->with('error', 'Caractéristique introuvable.');
         }
+        if ($characteristic->isLinked()) {
+            return redirect()->route('admin.characteristics.show', $characteristic_key)
+                ->with('error', 'Une caractéristique liée ne peut pas être modifiée ici. Modifiez la caractéristique maître.');
+        }
+
+        if ($request->boolean('convert_to_linked')) {
+            return $this->convertToLinked($request, $characteristic);
+        }
 
         $data = $request->validate([
             'name' => 'required|string|max:255',
@@ -535,6 +748,40 @@ class CharacteristicController extends Controller
     }
 
     /**
+     * Convertit une caractéristique autonome en caractéristique liée : lie à une maître et supprime les lignes entité.
+     */
+    private function convertToLinked(Request $request, Characteristic $characteristic): \Illuminate\Http\RedirectResponse
+    {
+        $validated = $request->validate([
+            'linked_to_characteristic_id' => ['required', 'integer', 'exists:characteristics,id'],
+        ]);
+        $masterId = (int) $validated['linked_to_characteristic_id'];
+
+        if ($masterId === $characteristic->id) {
+            return redirect()->route('admin.characteristics.show', $characteristic->key)
+                ->with('error', 'Une caractéristique ne peut pas être liée à elle-même.');
+        }
+
+        $master = Characteristic::find($masterId);
+        if ($master->isLinked()) {
+            return redirect()->route('admin.characteristics.show', $characteristic->key)
+                ->with('error', 'La caractéristique maître choisie est elle-même une liée. Choisissez une caractéristique autonome.');
+        }
+
+        $characteristic->update(['linked_to_characteristic_id' => $masterId]);
+
+        CharacteristicCreature::where('characteristic_id', $characteristic->id)->delete();
+        CharacteristicObject::where('characteristic_id', $characteristic->id)->delete();
+        CharacteristicSpell::where('characteristic_id', $characteristic->id)->delete();
+
+        $this->getter->clearCache();
+        $this->colorCssGenerator->generate();
+
+        return redirect()->route('admin.characteristics.show', $characteristic->key)
+            ->with('success', 'Caractéristique convertie en liée. La définition est désormais celle de la caractéristique maître.');
+    }
+
+    /**
      * Upload d'icône pour une caractéristique (Spatie Media Library).
      * Requiert characteristic_id ; attache le média à la caractéristique et met à jour la colonne icon.
      */
@@ -576,15 +823,20 @@ class CharacteristicController extends Controller
             'object' => [],
             'spell' => [],
         ];
-        $characteristics = Characteristic::orderBy('sort_order')->orderBy('key')->get();
+        $characteristics = Characteristic::with('masterCharacteristic')->orderBy('sort_order')->orderBy('key')->get();
         foreach ($characteristics as $c) {
-            $group = $this->inferPrimaryGroup($c);
+            $group = $c->group !== null && in_array($c->group, ['creature', 'object', 'spell'], true)
+                ? $c->group
+                : $this->inferPrimaryGroup($c);
+            $effective = $c->effectiveCharacteristic();
             $byGroup[$group][] = [
                 'id' => $c->key,
-                'name' => $c->name,
-                'short_name' => $c->short_name,
-                'icon' => $c->icon,
-                'color' => $c->color,
+                'name' => $effective->name,
+                'short_name' => $effective->short_name,
+                'icon' => $effective->icon,
+                'color' => $effective->color,
+                'is_linked' => $c->isLinked(),
+                'master_key' => $c->isLinked() ? $effective->key : null,
             ];
         }
         return $byGroup;

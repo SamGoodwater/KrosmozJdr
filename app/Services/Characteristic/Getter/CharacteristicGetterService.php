@@ -44,6 +44,25 @@ final class CharacteristicGetterService
         if ($characteristic === null) {
             return null;
         }
+
+        // Si la caractéristique est liée, on résout la définition via la caractéristique maître.
+        if ($characteristic->linked_to_characteristic_id !== null) {
+            $master = $characteristic->effectiveCharacteristic();
+
+            // On récupère la ligne de base (entity='*') de la maître, quelle que soit sa table de groupe.
+            $base = $this->findMasterBaseRow($master);
+            if ($base === null) {
+                return null;
+            }
+
+            $def = $this->mergeDefinition($master, $base, null, $entity);
+            // La clé exposée reste celle de la caractéristique liée (ex. level_object),
+            // même si la config vient de la maître (ex. level_creature).
+            $def['key'] = $characteristicKey;
+
+            return $def;
+        }
+
         [$base, $overlay] = $this->findGroupRows($characteristic->id, $entity);
         if ($base === null && $overlay === null) {
             return null;
@@ -301,5 +320,49 @@ final class CharacteristicGetterService
             $out['value_available'] = $this->pickGroupValue($base, $overlay, 'value_available') ?? $row->value_available;
         }
         return $out;
+    }
+
+    /**
+     * Retourne la ligne de base (entity='*' ou équivalent) pour une caractéristique maître,
+     * en cherchant dans les trois tables de groupe. Utilisé pour les caractéristiques liées.
+     */
+    private function findMasterBaseRow(Characteristic $characteristic): CharacteristicCreature|CharacteristicObject|CharacteristicSpell|null
+    {
+        $id = $characteristic->id;
+
+        // On privilégie la ligne avec entity='*' si elle existe.
+        $row = CharacteristicCreature::where('characteristic_id', $id)
+            ->where('entity', self::ENTITY_ALL)
+            ->first();
+        if ($row !== null) {
+            return $row;
+        }
+
+        $row = CharacteristicObject::where('characteristic_id', $id)
+            ->where('entity', self::ENTITY_ALL)
+            ->first();
+        if ($row !== null) {
+            return $row;
+        }
+
+        $row = CharacteristicSpell::where('characteristic_id', $id)
+            ->where('entity', self::ENTITY_ALL)
+            ->first();
+        if ($row !== null) {
+            return $row;
+        }
+
+        // Fallback : première ligne trouvée dans l'une des tables.
+        $row = CharacteristicCreature::where('characteristic_id', $id)->first();
+        if ($row !== null) {
+            return $row;
+        }
+
+        $row = CharacteristicObject::where('characteristic_id', $id)->first();
+        if ($row !== null) {
+            return $row;
+        }
+
+        return CharacteristicSpell::where('characteristic_id', $id)->first();
     }
 }

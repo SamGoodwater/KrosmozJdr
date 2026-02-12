@@ -19,6 +19,8 @@ return array (
     'unit' => NULL,
     'type' => 'int',
     'sort_order' => 0,
+    'group' => 'creature',
+    'linked_to_key' => NULL,
   ),
   1 => 
   array (
@@ -32,6 +34,8 @@ return array (
     'unit' => NULL,
     'type' => 'int',
     'sort_order' => 0,
+    'group' => 'object',
+    'linked_to_key' => NULL,
   ),
   2 => 
   array (
@@ -45,6 +49,8 @@ return array (
     'unit' => NULL,
     'type' => 'int',
     'sort_order' => 0,
+    'group' => 'spell',
+    'linked_to_key' => 'level_creature',
   ),
   3 => 
   array (
@@ -58,6 +64,8 @@ return array (
     'unit' => NULL,
     'type' => 'int',
     'sort_order' => 1,
+    'group' => 'creature',
+    'linked_to_key' => NULL,
   ),
   4 => 
   array (
@@ -71,6 +79,8 @@ return array (
     'unit' => NULL,
     'type' => 'int',
     'sort_order' => 1,
+    'group' => 'spell',
+    'linked_to_key' => NULL,
   ),
   5 => 
   array (
@@ -84,6 +94,8 @@ return array (
     'unit' => NULL,
     'type' => 'int',
     'sort_order' => 1,
+    'group' => 'object',
+    'linked_to_key' => NULL,
   ),
   6 => 
   array (
@@ -97,6 +109,8 @@ return array (
     'unit' => NULL,
     'type' => 'int',
     'sort_order' => 2,
+    'group' => 'creature',
+    'linked_to_key' => NULL,
   ),
   7 => 
   array (
@@ -110,6 +124,8 @@ return array (
     'unit' => NULL,
     'type' => 'int',
     'sort_order' => 2,
+    'group' => 'spell',
+    'linked_to_key' => NULL,
   ),
   8 => 
   array (
@@ -123,6 +139,8 @@ return array (
     'unit' => 'kamas',
     'type' => 'int',
     'sort_order' => 2,
+    'group' => 'object',
+    'linked_to_key' => NULL,
   ),
   9 => 
   array (
@@ -136,6 +154,8 @@ return array (
     'unit' => NULL,
     'type' => 'int',
     'sort_order' => 3,
+    'group' => 'spell',
+    'linked_to_key' => NULL,
   ),
   10 => 
   array (
@@ -149,6 +169,8 @@ return array (
     'unit' => NULL,
     'type' => 'int',
     'sort_order' => 3,
+    'group' => 'creature',
+    'linked_to_key' => NULL,
   ),
   11 => 
   array (
@@ -162,6 +184,8 @@ return array (
     'unit' => 'pods',
     'type' => 'int',
     'sort_order' => 3,
+    'group' => 'object',
+    'linked_to_key' => NULL,
   ),
   12 => 
   array (
@@ -175,6 +199,8 @@ return array (
     'unit' => NULL,
     'type' => 'int',
     'sort_order' => 4,
+    'group' => 'spell',
+    'linked_to_key' => NULL,
   ),
   13 => 
   array (
@@ -188,6 +214,8 @@ return array (
     'unit' => NULL,
     'type' => 'int',
     'sort_order' => 4,
+    'group' => 'creature',
+    'linked_to_key' => NULL,
   ),
   14 => 
   array (
@@ -201,6 +229,8 @@ return array (
     'unit' => NULL,
     'type' => 'int',
     'sort_order' => 5,
+    'group' => 'creature',
+    'linked_to_key' => NULL,
   ),
   15 => 
   array (
@@ -214,6 +244,8 @@ return array (
     'unit' => NULL,
     'type' => 'int',
     'sort_order' => 5,
+    'group' => 'spell',
+    'linked_to_key' => NULL,
   ),
   16 => 
   array (
@@ -227,6 +259,8 @@ return array (
     'unit' => NULL,
     'type' => 'int',
     'sort_order' => 6,
+    'group' => 'creature',
+    'linked_to_key' => NULL,
   ),
   17 => 
   array (
@@ -240,6 +274,8 @@ return array (
     'unit' => NULL,
     'type' => 'int',
     'sort_order' => 6,
+    'group' => 'spell',
+    'linked_to_key' => NULL,
   ),
   18 => 
   array (
@@ -253,6 +289,8 @@ return array (
     'unit' => NULL,
     'type' => 'int',
     'sort_order' => 7,
+    'group' => 'spell',
+    'linked_to_key' => NULL,
   ),
   19 => 
   array (
@@ -266,6 +304,8 @@ return array (
     'unit' => NULL,
     'type' => 'bool',
     'sort_order' => 8,
+    'group' => 'spell',
+    'linked_to_key' => NULL,
   ),
   20 => 
   array (
@@ -279,6 +319,8 @@ return array (
     'unit' => NULL,
     'type' => 'int',
     'sort_order' => 9,
+    'group' => 'spell',
+    'linked_to_key' => NULL,
   ),
   21 => 
   array (
@@ -292,6 +334,8 @@ return array (
     'unit' => NULL,
     'type' => 'int',
     'sort_order' => 10,
+    'group' => 'spell',
+    'linked_to_key' => NULL,
   ),
   22 => 
   array (
@@ -305,6 +349,8 @@ return array (
     'unit' => NULL,
     'type' => 'int',
     'sort_order' => 10,
+    'group' => 'object',
+    'linked_to_key' => NULL,
   ),
   23 => 
   array (
@@ -318,6 +364,8 @@ return array (
     'unit' => NULL,
     'type' => 'int',
     'sort_order' => 10,
+    'group' => 'creature',
+    'linked_to_key' => NULL,
   ),
   24 => 
   array (
@@ -331,6 +379,8 @@ return array (
     'unit' => NULL,
     'type' => 'int',
     'sort_order' => 11,
+    'group' => 'object',
+    'linked_to_key' => NULL,
   ),
   25 => 
   array (
@@ -344,6 +394,8 @@ return array (
     'unit' => NULL,
     'type' => 'bool',
     'sort_order' => 11,
+    'group' => 'spell',
+    'linked_to_key' => NULL,
   ),
   26 => 
   array (
@@ -357,6 +409,8 @@ return array (
     'unit' => NULL,
     'type' => 'int',
     'sort_order' => 11,
+    'group' => 'creature',
+    'linked_to_key' => NULL,
   ),
   27 => 
   array (
@@ -370,6 +424,8 @@ return array (
     'unit' => NULL,
     'type' => 'int',
     'sort_order' => 12,
+    'group' => 'creature',
+    'linked_to_key' => NULL,
   ),
   28 => 
   array (
@@ -383,6 +439,8 @@ return array (
     'unit' => NULL,
     'type' => 'int',
     'sort_order' => 12,
+    'group' => 'object',
+    'linked_to_key' => NULL,
   ),
   29 => 
   array (
@@ -396,6 +454,8 @@ return array (
     'unit' => NULL,
     'type' => 'int',
     'sort_order' => 13,
+    'group' => 'object',
+    'linked_to_key' => NULL,
   ),
   30 => 
   array (
@@ -409,6 +469,8 @@ return array (
     'unit' => NULL,
     'type' => 'int',
     'sort_order' => 13,
+    'group' => 'creature',
+    'linked_to_key' => NULL,
   ),
   31 => 
   array (
@@ -422,6 +484,8 @@ return array (
     'unit' => NULL,
     'type' => 'int',
     'sort_order' => 14,
+    'group' => 'object',
+    'linked_to_key' => NULL,
   ),
   32 => 
   array (
@@ -435,6 +499,8 @@ return array (
     'unit' => NULL,
     'type' => 'int',
     'sort_order' => 14,
+    'group' => 'creature',
+    'linked_to_key' => NULL,
   ),
   33 => 
   array (
@@ -448,6 +514,8 @@ return array (
     'unit' => NULL,
     'type' => 'int',
     'sort_order' => 15,
+    'group' => 'creature',
+    'linked_to_key' => NULL,
   ),
   34 => 
   array (
@@ -461,6 +529,8 @@ return array (
     'unit' => NULL,
     'type' => 'int',
     'sort_order' => 15,
+    'group' => 'object',
+    'linked_to_key' => NULL,
   ),
   35 => 
   array (
@@ -474,6 +544,8 @@ return array (
     'unit' => NULL,
     'type' => 'int',
     'sort_order' => 16,
+    'group' => 'object',
+    'linked_to_key' => NULL,
   ),
   36 => 
   array (
@@ -487,6 +559,8 @@ return array (
     'unit' => NULL,
     'type' => 'int',
     'sort_order' => 20,
+    'group' => 'object',
+    'linked_to_key' => NULL,
   ),
   37 => 
   array (
@@ -500,6 +574,8 @@ return array (
     'unit' => NULL,
     'type' => 'int',
     'sort_order' => 20,
+    'group' => 'creature',
+    'linked_to_key' => NULL,
   ),
   38 => 
   array (
@@ -513,6 +589,8 @@ return array (
     'unit' => NULL,
     'type' => 'int',
     'sort_order' => 21,
+    'group' => 'creature',
+    'linked_to_key' => NULL,
   ),
   39 => 
   array (
@@ -526,6 +604,8 @@ return array (
     'unit' => NULL,
     'type' => 'int',
     'sort_order' => 21,
+    'group' => 'object',
+    'linked_to_key' => NULL,
   ),
   40 => 
   array (
@@ -539,6 +619,8 @@ return array (
     'unit' => NULL,
     'type' => 'int',
     'sort_order' => 22,
+    'group' => 'creature',
+    'linked_to_key' => NULL,
   ),
   41 => 
   array (
@@ -552,6 +634,8 @@ return array (
     'unit' => NULL,
     'type' => 'int',
     'sort_order' => 22,
+    'group' => 'object',
+    'linked_to_key' => NULL,
   ),
   42 => 
   array (
@@ -565,6 +649,8 @@ return array (
     'unit' => NULL,
     'type' => 'int',
     'sort_order' => 23,
+    'group' => 'creature',
+    'linked_to_key' => NULL,
   ),
   43 => 
   array (
@@ -578,6 +664,8 @@ return array (
     'unit' => NULL,
     'type' => 'int',
     'sort_order' => 23,
+    'group' => 'object',
+    'linked_to_key' => NULL,
   ),
   44 => 
   array (
@@ -591,6 +679,8 @@ return array (
     'unit' => NULL,
     'type' => 'int',
     'sort_order' => 24,
+    'group' => 'object',
+    'linked_to_key' => NULL,
   ),
   45 => 
   array (
@@ -604,6 +694,8 @@ return array (
     'unit' => NULL,
     'type' => 'int',
     'sort_order' => 24,
+    'group' => 'creature',
+    'linked_to_key' => NULL,
   ),
   46 => 
   array (
@@ -617,6 +709,8 @@ return array (
     'unit' => NULL,
     'type' => 'int',
     'sort_order' => 25,
+    'group' => 'object',
+    'linked_to_key' => NULL,
   ),
   47 => 
   array (
@@ -630,6 +724,8 @@ return array (
     'unit' => NULL,
     'type' => 'int',
     'sort_order' => 25,
+    'group' => 'creature',
+    'linked_to_key' => NULL,
   ),
   48 => 
   array (
@@ -643,6 +739,8 @@ return array (
     'unit' => NULL,
     'type' => 'int',
     'sort_order' => 26,
+    'group' => 'object',
+    'linked_to_key' => NULL,
   ),
   49 => 
   array (
@@ -656,6 +754,8 @@ return array (
     'unit' => NULL,
     'type' => 'int',
     'sort_order' => 27,
+    'group' => 'object',
+    'linked_to_key' => NULL,
   ),
   50 => 
   array (
@@ -669,6 +769,8 @@ return array (
     'unit' => NULL,
     'type' => 'int',
     'sort_order' => 28,
+    'group' => 'object',
+    'linked_to_key' => NULL,
   ),
   51 => 
   array (
@@ -682,6 +784,8 @@ return array (
     'unit' => NULL,
     'type' => 'int',
     'sort_order' => 29,
+    'group' => 'object',
+    'linked_to_key' => NULL,
   ),
   52 => 
   array (
@@ -695,6 +799,8 @@ return array (
     'unit' => NULL,
     'type' => 'int',
     'sort_order' => 30,
+    'group' => 'object',
+    'linked_to_key' => NULL,
   ),
   53 => 
   array (
@@ -708,6 +814,8 @@ return array (
     'unit' => NULL,
     'type' => 'int',
     'sort_order' => 30,
+    'group' => 'creature',
+    'linked_to_key' => NULL,
   ),
   54 => 
   array (
@@ -721,6 +829,8 @@ return array (
     'unit' => NULL,
     'type' => 'int',
     'sort_order' => 31,
+    'group' => 'creature',
+    'linked_to_key' => NULL,
   ),
   55 => 
   array (
@@ -734,6 +844,8 @@ return array (
     'unit' => NULL,
     'type' => 'int',
     'sort_order' => 31,
+    'group' => 'object',
+    'linked_to_key' => NULL,
   ),
   56 => 
   array (
@@ -747,6 +859,8 @@ return array (
     'unit' => NULL,
     'type' => 'int',
     'sort_order' => 32,
+    'group' => 'object',
+    'linked_to_key' => NULL,
   ),
   57 => 
   array (
@@ -760,6 +874,8 @@ return array (
     'unit' => NULL,
     'type' => 'int',
     'sort_order' => 32,
+    'group' => 'creature',
+    'linked_to_key' => NULL,
   ),
   58 => 
   array (
@@ -773,6 +889,8 @@ return array (
     'unit' => NULL,
     'type' => 'int',
     'sort_order' => 33,
+    'group' => 'object',
+    'linked_to_key' => NULL,
   ),
   59 => 
   array (
@@ -786,6 +904,8 @@ return array (
     'unit' => NULL,
     'type' => 'int',
     'sort_order' => 33,
+    'group' => 'creature',
+    'linked_to_key' => NULL,
   ),
   60 => 
   array (
@@ -799,6 +919,8 @@ return array (
     'unit' => NULL,
     'type' => 'int',
     'sort_order' => 34,
+    'group' => 'object',
+    'linked_to_key' => NULL,
   ),
   61 => 
   array (
@@ -812,6 +934,8 @@ return array (
     'unit' => NULL,
     'type' => 'int',
     'sort_order' => 34,
+    'group' => 'creature',
+    'linked_to_key' => NULL,
   ),
   62 => 
   array (
@@ -825,6 +949,8 @@ return array (
     'unit' => NULL,
     'type' => 'int',
     'sort_order' => 35,
+    'group' => 'object',
+    'linked_to_key' => NULL,
   ),
   63 => 
   array (
@@ -838,6 +964,8 @@ return array (
     'unit' => NULL,
     'type' => 'int',
     'sort_order' => 36,
+    'group' => 'object',
+    'linked_to_key' => NULL,
   ),
   64 => 
   array (
@@ -851,6 +979,8 @@ return array (
     'unit' => NULL,
     'type' => 'int',
     'sort_order' => 37,
+    'group' => 'object',
+    'linked_to_key' => NULL,
   ),
   65 => 
   array (
@@ -864,6 +994,8 @@ return array (
     'unit' => NULL,
     'type' => 'int',
     'sort_order' => 38,
+    'group' => 'object',
+    'linked_to_key' => NULL,
   ),
   66 => 
   array (
@@ -877,6 +1009,8 @@ return array (
     'unit' => NULL,
     'type' => 'int',
     'sort_order' => 39,
+    'group' => 'object',
+    'linked_to_key' => NULL,
   ),
   67 => 
   array (
@@ -890,6 +1024,8 @@ return array (
     'unit' => NULL,
     'type' => 'int',
     'sort_order' => 40,
+    'group' => 'creature',
+    'linked_to_key' => NULL,
   ),
   68 => 
   array (
@@ -903,6 +1039,8 @@ return array (
     'unit' => NULL,
     'type' => 'int',
     'sort_order' => 40,
+    'group' => 'object',
+    'linked_to_key' => NULL,
   ),
   69 => 
   array (
@@ -916,6 +1054,8 @@ return array (
     'unit' => NULL,
     'type' => 'int',
     'sort_order' => 41,
+    'group' => 'object',
+    'linked_to_key' => NULL,
   ),
   70 => 
   array (
@@ -929,6 +1069,8 @@ return array (
     'unit' => NULL,
     'type' => 'int',
     'sort_order' => 41,
+    'group' => 'creature',
+    'linked_to_key' => NULL,
   ),
   71 => 
   array (
@@ -942,6 +1084,8 @@ return array (
     'unit' => NULL,
     'type' => 'int',
     'sort_order' => 42,
+    'group' => 'creature',
+    'linked_to_key' => NULL,
   ),
   72 => 
   array (
@@ -955,6 +1099,8 @@ return array (
     'unit' => NULL,
     'type' => 'int',
     'sort_order' => 42,
+    'group' => 'object',
+    'linked_to_key' => NULL,
   ),
   73 => 
   array (
@@ -968,6 +1114,8 @@ return array (
     'unit' => NULL,
     'type' => 'int',
     'sort_order' => 43,
+    'group' => 'creature',
+    'linked_to_key' => NULL,
   ),
   74 => 
   array (
@@ -981,6 +1129,8 @@ return array (
     'unit' => NULL,
     'type' => 'int',
     'sort_order' => 43,
+    'group' => 'object',
+    'linked_to_key' => NULL,
   ),
   75 => 
   array (
@@ -994,6 +1144,8 @@ return array (
     'unit' => NULL,
     'type' => 'int',
     'sort_order' => 44,
+    'group' => 'creature',
+    'linked_to_key' => NULL,
   ),
   76 => 
   array (
@@ -1007,6 +1159,8 @@ return array (
     'unit' => NULL,
     'type' => 'int',
     'sort_order' => 44,
+    'group' => 'object',
+    'linked_to_key' => NULL,
   ),
   77 => 
   array (
@@ -1020,6 +1174,8 @@ return array (
     'unit' => NULL,
     'type' => 'int',
     'sort_order' => 45,
+    'group' => 'object',
+    'linked_to_key' => NULL,
   ),
   78 => 
   array (
@@ -1033,6 +1189,8 @@ return array (
     'unit' => NULL,
     'type' => 'int',
     'sort_order' => 46,
+    'group' => 'object',
+    'linked_to_key' => NULL,
   ),
   79 => 
   array (
@@ -1046,6 +1204,8 @@ return array (
     'unit' => NULL,
     'type' => 'int',
     'sort_order' => 47,
+    'group' => 'object',
+    'linked_to_key' => NULL,
   ),
   80 => 
   array (
@@ -1059,6 +1219,8 @@ return array (
     'unit' => NULL,
     'type' => 'int',
     'sort_order' => 48,
+    'group' => 'object',
+    'linked_to_key' => NULL,
   ),
   81 => 
   array (
@@ -1072,6 +1234,8 @@ return array (
     'unit' => '%',
     'type' => 'int',
     'sort_order' => 49,
+    'group' => 'creature',
+    'linked_to_key' => NULL,
   ),
   82 => 
   array (
@@ -1085,6 +1249,8 @@ return array (
     'unit' => '%',
     'type' => 'int',
     'sort_order' => 50,
+    'group' => 'creature',
+    'linked_to_key' => NULL,
   ),
   83 => 
   array (
@@ -1098,6 +1264,8 @@ return array (
     'unit' => '%',
     'type' => 'int',
     'sort_order' => 51,
+    'group' => 'creature',
+    'linked_to_key' => NULL,
   ),
   84 => 
   array (
@@ -1111,6 +1279,8 @@ return array (
     'unit' => '%',
     'type' => 'int',
     'sort_order' => 52,
+    'group' => 'creature',
+    'linked_to_key' => NULL,
   ),
   85 => 
   array (
@@ -1124,6 +1294,8 @@ return array (
     'unit' => '%',
     'type' => 'int',
     'sort_order' => 53,
+    'group' => 'creature',
+    'linked_to_key' => NULL,
   ),
   86 => 
   array (
@@ -1137,6 +1309,8 @@ return array (
     'unit' => NULL,
     'type' => 'int',
     'sort_order' => 54,
+    'group' => 'creature',
+    'linked_to_key' => NULL,
   ),
   87 => 
   array (
@@ -1150,6 +1324,8 @@ return array (
     'unit' => NULL,
     'type' => 'int',
     'sort_order' => 55,
+    'group' => 'creature',
+    'linked_to_key' => NULL,
   ),
   88 => 
   array (
@@ -1163,6 +1339,8 @@ return array (
     'unit' => NULL,
     'type' => 'int',
     'sort_order' => 56,
+    'group' => 'creature',
+    'linked_to_key' => NULL,
   ),
   89 => 
   array (
@@ -1176,6 +1354,8 @@ return array (
     'unit' => NULL,
     'type' => 'int',
     'sort_order' => 57,
+    'group' => 'creature',
+    'linked_to_key' => NULL,
   ),
   90 => 
   array (
@@ -1189,6 +1369,8 @@ return array (
     'unit' => NULL,
     'type' => 'int',
     'sort_order' => 58,
+    'group' => 'creature',
+    'linked_to_key' => NULL,
   ),
   91 => 
   array (
@@ -1202,6 +1384,8 @@ return array (
     'unit' => NULL,
     'type' => 'int',
     'sort_order' => 59,
+    'group' => 'creature',
+    'linked_to_key' => NULL,
   ),
   92 => 
   array (
@@ -1215,6 +1399,8 @@ return array (
     'unit' => NULL,
     'type' => 'int',
     'sort_order' => 60,
+    'group' => 'creature',
+    'linked_to_key' => NULL,
   ),
   93 => 
   array (
@@ -1228,6 +1414,8 @@ return array (
     'unit' => NULL,
     'type' => 'int',
     'sort_order' => 61,
+    'group' => 'creature',
+    'linked_to_key' => NULL,
   ),
   94 => 
   array (
@@ -1241,6 +1429,8 @@ return array (
     'unit' => NULL,
     'type' => 'int',
     'sort_order' => 62,
+    'group' => 'creature',
+    'linked_to_key' => NULL,
   ),
   95 => 
   array (
@@ -1254,6 +1444,8 @@ return array (
     'unit' => NULL,
     'type' => 'int',
     'sort_order' => 63,
+    'group' => 'creature',
+    'linked_to_key' => NULL,
   ),
   96 => 
   array (
@@ -1267,6 +1459,8 @@ return array (
     'unit' => NULL,
     'type' => 'int',
     'sort_order' => 64,
+    'group' => 'creature',
+    'linked_to_key' => NULL,
   ),
   97 => 
   array (
@@ -1280,6 +1474,8 @@ return array (
     'unit' => NULL,
     'type' => 'int',
     'sort_order' => 65,
+    'group' => 'creature',
+    'linked_to_key' => NULL,
   ),
   98 => 
   array (
@@ -1293,6 +1489,8 @@ return array (
     'unit' => NULL,
     'type' => 'int',
     'sort_order' => 66,
+    'group' => 'creature',
+    'linked_to_key' => NULL,
   ),
   99 => 
   array (
@@ -1306,6 +1504,8 @@ return array (
     'unit' => NULL,
     'type' => 'int',
     'sort_order' => 67,
+    'group' => 'creature',
+    'linked_to_key' => NULL,
   ),
   100 => 
   array (
@@ -1319,6 +1519,8 @@ return array (
     'unit' => NULL,
     'type' => 'int',
     'sort_order' => 68,
+    'group' => 'creature',
+    'linked_to_key' => NULL,
   ),
   101 => 
   array (
@@ -1332,6 +1534,8 @@ return array (
     'unit' => NULL,
     'type' => 'int',
     'sort_order' => 69,
+    'group' => 'creature',
+    'linked_to_key' => NULL,
   ),
   102 => 
   array (
@@ -1345,6 +1549,8 @@ return array (
     'unit' => NULL,
     'type' => 'bool',
     'sort_order' => 70,
+    'group' => 'spell',
+    'linked_to_key' => NULL,
   ),
   103 => 
   array (
@@ -1358,5 +1564,7 @@ return array (
     'unit' => NULL,
     'type' => 'bool',
     'sort_order' => 71,
+    'group' => 'spell',
+    'linked_to_key' => NULL,
   ),
 );
