@@ -120,13 +120,16 @@ class ObjectCharacteristicSeeder extends CharacteristicGroupSeeder
                 continue;
             }
             $entity = $row['entity'] ?? $this->defaultEntity();
-            $modelClass::updateOrCreate(
+            $charObj = $modelClass::updateOrCreate(
                 [
                     'characteristic_id' => $char->id,
                     'entity' => $entity,
                 ],
                 $this->mapRowToAttributes($row)
             );
+            if (isset($row['item_type_ids']) && is_array($row['item_type_ids'])) {
+                $charObj->allowedItemTypes()->sync(array_values(array_filter($row['item_type_ids'], 'is_numeric')));
+            }
         }
 
         if ($this->command) {

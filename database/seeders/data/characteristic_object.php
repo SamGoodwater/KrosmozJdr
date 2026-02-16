@@ -42,6 +42,9 @@ return array (
     'base_price_per_unit' => NULL,
     'rune_price_per_unit' => NULL,
     'value_available' => NULL,
+    'item_type_ids' => 
+    array (
+    ),
   ),
   1 => 
   array (
@@ -77,6 +80,9 @@ return array (
     'base_price_per_unit' => NULL,
     'rune_price_per_unit' => NULL,
     'value_available' => NULL,
+    'item_type_ids' => 
+    array (
+    ),
   ),
   2 => 
   array (
@@ -96,6 +102,9 @@ return array (
     'base_price_per_unit' => NULL,
     'rune_price_per_unit' => NULL,
     'value_available' => NULL,
+    'item_type_ids' => 
+    array (
+    ),
   ),
   3 => 
   array (
@@ -115,6 +124,9 @@ return array (
     'base_price_per_unit' => NULL,
     'rune_price_per_unit' => NULL,
     'value_available' => NULL,
+    'item_type_ids' => 
+    array (
+    ),
   ),
   4 => 
   array (
@@ -134,6 +146,9 @@ return array (
     'base_price_per_unit' => NULL,
     'rune_price_per_unit' => NULL,
     'value_available' => NULL,
+    'item_type_ids' => 
+    array (
+    ),
   ),
   5 => 
   array (
@@ -161,6 +176,9 @@ return array (
     'base_price_per_unit' => NULL,
     'rune_price_per_unit' => NULL,
     'value_available' => NULL,
+    'item_type_ids' => 
+    array (
+    ),
   ),
   6 => 
   array (
@@ -188,6 +206,9 @@ return array (
     'base_price_per_unit' => NULL,
     'rune_price_per_unit' => NULL,
     'value_available' => NULL,
+    'item_type_ids' => 
+    array (
+    ),
   ),
   7 => 
   array (
@@ -207,6 +228,9 @@ return array (
     'base_price_per_unit' => '200.00',
     'rune_price_per_unit' => NULL,
     'value_available' => NULL,
+    'item_type_ids' => 
+    array (
+    ),
   ),
   8 => 
   array (
@@ -226,6 +250,9 @@ return array (
     'base_price_per_unit' => '700.00',
     'rune_price_per_unit' => '1400.00',
     'value_available' => NULL,
+    'item_type_ids' => 
+    array (
+    ),
   ),
   9 => 
   array (
@@ -245,6 +272,9 @@ return array (
     'base_price_per_unit' => '700.00',
     'rune_price_per_unit' => '1400.00',
     'value_available' => NULL,
+    'item_type_ids' => 
+    array (
+    ),
   ),
   10 => 
   array (
@@ -264,6 +294,9 @@ return array (
     'base_price_per_unit' => '700.00',
     'rune_price_per_unit' => '1400.00',
     'value_available' => NULL,
+    'item_type_ids' => 
+    array (
+    ),
   ),
   11 => 
   array (
@@ -283,6 +316,9 @@ return array (
     'base_price_per_unit' => '700.00',
     'rune_price_per_unit' => '1400.00',
     'value_available' => NULL,
+    'item_type_ids' => 
+    array (
+    ),
   ),
   12 => 
   array (
@@ -302,6 +338,9 @@ return array (
     'base_price_per_unit' => '700.00',
     'rune_price_per_unit' => '1400.00',
     'value_available' => NULL,
+    'item_type_ids' => 
+    array (
+    ),
   ),
   13 => 
   array (
@@ -321,6 +360,9 @@ return array (
     'base_price_per_unit' => '900.00',
     'rune_price_per_unit' => '1800.00',
     'value_available' => NULL,
+    'item_type_ids' => 
+    array (
+    ),
   ),
   14 => 
   array (
@@ -356,6 +398,9 @@ return array (
     'base_price_per_unit' => '50.00',
     'rune_price_per_unit' => '100.00',
     'value_available' => NULL,
+    'item_type_ids' => 
+    array (
+    ),
   ),
   15 => 
   array (
@@ -391,6 +436,9 @@ return array (
     'base_price_per_unit' => '600.00',
     'rune_price_per_unit' => '1200.00',
     'value_available' => NULL,
+    'item_type_ids' => 
+    array (
+    ),
   ),
   16 => 
   array (
@@ -426,6 +474,9 @@ return array (
     'base_price_per_unit' => '600.00',
     'rune_price_per_unit' => '1200.00',
     'value_available' => NULL,
+    'item_type_ids' => 
+    array (
+    ),
   ),
   17 => 
   array (
@@ -445,6 +496,9 @@ return array (
     'base_price_per_unit' => '800.00',
     'rune_price_per_unit' => NULL,
     'value_available' => NULL,
+    'item_type_ids' => 
+    array (
+    ),
   ),
   18 => 
   array (
@@ -464,6 +518,9 @@ return array (
     'base_price_per_unit' => '400.00',
     'rune_price_per_unit' => '800.00',
     'value_available' => NULL,
+    'item_type_ids' => 
+    array (
+    ),
   ),
   19 => 
   array (
@@ -483,6 +540,9 @@ return array (
     'base_price_per_unit' => '500.00',
     'rune_price_per_unit' => '1000.00',
     'value_available' => NULL,
+    'item_type_ids' => 
+    array (
+    ),
   ),
   20 => 
   array (
@@ -518,6 +578,9 @@ return array (
     'base_price_per_unit' => '100.00',
     'rune_price_per_unit' => '200.00',
     'value_available' => NULL,
+    'item_type_ids' => 
+    array (
+    ),
   ),
   21 => 
   array (
@@ -553,6 +616,9 @@ return array (
     'base_price_per_unit' => '500.00',
     'rune_price_per_unit' => '1000.00',
     'value_available' => NULL,
+    'item_type_ids' => 
+    array (
+    ),
   ),
   22 => 
   array (
@@ -588,6 +654,9 @@ return array (
     'base_price_per_unit' => '500.00',
     'rune_price_per_unit' => '1000.00',
     'value_available' => NULL,
+    'item_type_ids' => 
+    array (
+    ),
   ),
   23 => 
   array (
@@ -623,6 +692,9 @@ return array (
     'base_price_per_unit' => '500.00',
     'rune_price_per_unit' => '1000.00',
     'value_available' => NULL,
+    'item_type_ids' => 
+    array (
+    ),
   ),
   24 => 
   array (
@@ -658,6 +730,9 @@ return array (
     'base_price_per_unit' => '500.00',
     'rune_price_per_unit' => '1000.00',
     'value_available' => NULL,
+    'item_type_ids' => 
+    array (
+    ),
   ),
   25 => 
   array (
@@ -677,6 +752,9 @@ return array (
     'base_price_per_unit' => '700.00',
     'rune_price_per_unit' => NULL,
     'value_available' => NULL,
+    'item_type_ids' => 
+    array (
+    ),
   ),
   26 => 
   array (
@@ -712,6 +790,9 @@ return array (
     'base_price_per_unit' => '1300.00',
     'rune_price_per_unit' => '2600.00',
     'value_available' => NULL,
+    'item_type_ids' => 
+    array (
+    ),
   ),
   27 => 
   array (
@@ -747,6 +828,9 @@ return array (
     'base_price_per_unit' => '300.00',
     'rune_price_per_unit' => '600.00',
     'value_available' => NULL,
+    'item_type_ids' => 
+    array (
+    ),
   ),
   28 => 
   array (
@@ -782,6 +866,9 @@ return array (
     'base_price_per_unit' => '1000.00',
     'rune_price_per_unit' => '2000.00',
     'value_available' => NULL,
+    'item_type_ids' => 
+    array (
+    ),
   ),
   29 => 
   array (
@@ -817,6 +904,9 @@ return array (
     'base_price_per_unit' => '300.00',
     'rune_price_per_unit' => '600.00',
     'value_available' => NULL,
+    'item_type_ids' => 
+    array (
+    ),
   ),
   30 => 
   array (
@@ -852,6 +942,9 @@ return array (
     'base_price_per_unit' => '800.00',
     'rune_price_per_unit' => '1600.00',
     'value_available' => NULL,
+    'item_type_ids' => 
+    array (
+    ),
   ),
   31 => 
   array (
@@ -871,6 +964,9 @@ return array (
     'base_price_per_unit' => '800.00',
     'rune_price_per_unit' => '1600.00',
     'value_available' => NULL,
+    'item_type_ids' => 
+    array (
+    ),
   ),
   32 => 
   array (
@@ -890,6 +986,9 @@ return array (
     'base_price_per_unit' => '300.00',
     'rune_price_per_unit' => '600.00',
     'value_available' => NULL,
+    'item_type_ids' => 
+    array (
+    ),
   ),
   33 => 
   array (
@@ -909,6 +1008,9 @@ return array (
     'base_price_per_unit' => '300.00',
     'rune_price_per_unit' => '600.00',
     'value_available' => NULL,
+    'item_type_ids' => 
+    array (
+    ),
   ),
   34 => 
   array (
@@ -928,6 +1030,9 @@ return array (
     'base_price_per_unit' => '1500.00',
     'rune_price_per_unit' => NULL,
     'value_available' => NULL,
+    'item_type_ids' => 
+    array (
+    ),
   ),
   35 => 
   array (
@@ -947,6 +1052,9 @@ return array (
     'base_price_per_unit' => '1100.00',
     'rune_price_per_unit' => NULL,
     'value_available' => NULL,
+    'item_type_ids' => 
+    array (
+    ),
   ),
   36 => 
   array (
@@ -966,6 +1074,9 @@ return array (
     'base_price_per_unit' => '600.00',
     'rune_price_per_unit' => '1200.00',
     'value_available' => NULL,
+    'item_type_ids' => 
+    array (
+    ),
   ),
   37 => 
   array (
@@ -1001,6 +1112,9 @@ return array (
     'base_price_per_unit' => '600.00',
     'rune_price_per_unit' => '1200.00',
     'value_available' => NULL,
+    'item_type_ids' => 
+    array (
+    ),
   ),
   38 => 
   array (
@@ -1036,6 +1150,9 @@ return array (
     'base_price_per_unit' => '600.00',
     'rune_price_per_unit' => '1200.00',
     'value_available' => NULL,
+    'item_type_ids' => 
+    array (
+    ),
   ),
   39 => 
   array (
@@ -1071,6 +1188,9 @@ return array (
     'base_price_per_unit' => '600.00',
     'rune_price_per_unit' => '1200.00',
     'value_available' => NULL,
+    'item_type_ids' => 
+    array (
+    ),
   ),
   40 => 
   array (
@@ -1106,6 +1226,9 @@ return array (
     'base_price_per_unit' => '600.00',
     'rune_price_per_unit' => '1200.00',
     'value_available' => NULL,
+    'item_type_ids' => 
+    array (
+    ),
   ),
   41 => 
   array (
@@ -1141,6 +1264,9 @@ return array (
     'base_price_per_unit' => '2500.00',
     'rune_price_per_unit' => NULL,
     'value_available' => NULL,
+    'item_type_ids' => 
+    array (
+    ),
   ),
   42 => 
   array (
@@ -1160,5 +1286,8 @@ return array (
     'base_price_per_unit' => '5000.00',
     'rune_price_per_unit' => NULL,
     'value_available' => NULL,
+    'item_type_ids' => 
+    array (
+    ),
   ),
 );

@@ -207,6 +207,8 @@ erDiagram
     unit : varchar(32)
     type : varchar(16)
     sort_order : smallint(5) unsigned
+    group : varchar(16)
+    linked_to_characteristic_id : bigint(20) unsigned
     created_at : timestamp
     updated_at : timestamp
   }
@@ -915,6 +917,7 @@ erDiagram
   CHARACTERISTIC_OBJECT_ITEM_TYPE }o--|| CHARACTERISTIC_OBJECT : "FK characteristic_object_id"
   CHARACTERISTIC_OBJECT_ITEM_TYPE }o--|| ITEM_TYPES : "FK item_type_id"
   CHARACTERISTIC_SPELL }o--|| CHARACTERISTICS : "FK characteristic_id"
+  CHARACTERISTICS }o--|| CHARACTERISTICS : "FK linked_to_characteristic_id"
   CONSUMABLE_CAMPAIGN }o--|| CAMPAIGNS : "FK campaign_id"
   CONSUMABLE_CAMPAIGN }o--|| CONSUMABLES : "FK consumable_id"
   CONSUMABLE_CREATURE }o--|| CONSUMABLES : "FK consumable_id"

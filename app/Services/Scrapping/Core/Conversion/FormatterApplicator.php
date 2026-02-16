@@ -347,13 +347,12 @@ final class FormatterApplicator
             return $this->conversionService->getRarityByLevel($level, $entityType);
         }
 
-        $bands = config('characteristics_rarity.rarity_default_by_level', [
-            0 => 0, 3 => 1, 7 => 2, 10 => 3, 17 => 4,
-        ]);
-        krsort($bands, SORT_NUMERIC);
-        foreach ($bands as $minLevel => $rarity) {
-            if ($level >= $minLevel) {
-                return (int) $rarity;
+        // Sans conversionService : défaut depuis la caractéristique rarity (liste) si disponible.
+        if ($this->getter !== null) {
+            $def = $this->getter->getDefinition('rarity_object', $entityType);
+            if ($def !== null && isset($def['value_available']) && is_array($def['value_available']) && $def['value_available'] !== []) {
+                $first = reset($def['value_available']);
+                return is_numeric($first) ? (int) (float) $first : 0;
             }
         }
 

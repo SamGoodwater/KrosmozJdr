@@ -10,6 +10,11 @@
     "description": "Ce projet est un site web. Il est responsive et utilise les dernières recommandations concernant la sécurité informatique. Le développeur du projet communique en français."
   },
   {
+    "path": "00-Project/PLAN-LIEN-ET-COPY-CARACTERISTIQUES.md",
+    "title": "Plan : Lien et copie de caractéristiques",
+    "description": "1. **Lien** : Une caractéristique peut être « liée » à une caractéristique maître. La liée n’a pas de paramètres propres : elle affiche et utilise partout la config de la maître (nom, couleur, formules, conversion, etc.). Une seule source de vérité pour des caractéristiques identiques dans plusieurs groupes (ex. `level_creature`, `level_object`, `level_spell` → une maître + deux liées)."
+  },
+  {
     "path": "00-Project/README.md",
     "title": "Présentation du projet KrosmozJDR",
     "description": "Bienvenue dans la documentation synthétique du projet."

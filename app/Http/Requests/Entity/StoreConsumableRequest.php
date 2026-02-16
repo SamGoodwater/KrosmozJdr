@@ -36,10 +36,7 @@ class StoreConsumableRequest extends FormRequest
             'level' => ['nullable', 'string', 'max:255'],
             'recipe' => ['nullable', 'string'],
             'price' => ['nullable', 'string', 'max:255'],
-            'rarity' => array_merge(
-                ['nullable', 'integer'],
-                $this->characteristicMinMaxRules('rarity', 'consumable') ?: ['min:0']
-            ),
+            'rarity' => $this->characteristicRules('rarity', 'consumable') ?: ['nullable', 'integer', 'min:0'],
             'state' => ['nullable', 'string', 'in:raw,draft,playable,archived'],
             'read_level' => ['nullable', 'integer', 'min:0', 'max:5'],
             'write_level' => ['nullable', 'integer', 'min:0', 'max:5', 'gte:read_level'],

@@ -56,6 +56,11 @@ const linkForm = ref({ linked_to_characteristic_id: '', group: 'object', key: ''
 const copySelectKey = ref('');
 /** Pour « Convertir en liée » (édition) : id de la caractéristique maître choisie. */
 const convertToLinkedMasterId = ref('');
+/** Afficher le panneau « Convertir en caractéristique liée » (déplié au clic sur Lier). */
+const showConvertToLinkedPanel = ref(false);
+
+/** Fermer le panneau Lier quand on change de caractéristique. */
+watch(() => props.selected?.id, () => { showConvertToLinkedPanel.value = false; });
 
 /** Popover aide formules : rendu dans body pour passer au-dessus du menu (Teleport). null = fermé, sinon { left, top } en px. */
 const formulaHelpAnchor = ref(null);
@@ -971,9 +976,20 @@ function submitConvertToLinked() {
                         Modifier la caractéristique maître
                     </Link>
                 </div>
-                <h1 class="mb-1 text-2xl font-bold flex items-center gap-2" :style="displayColor(form.color) ? { borderLeftColor: displayColor(form.color) } : {}" :class="displayColor(form.color) ? 'pl-3 border-l-4' : ''">
+                <h1 class="mb-1 text-2xl font-bold flex flex-wrap items-center gap-2" :style="displayColor(form.color) ? { borderLeftColor: displayColor(form.color) } : {}" :class="displayColor(form.color) ? 'pl-3 border-l-4' : ''">
                     {{ selected.name || selected.id }}
                     <span v-if="selected.group" class="badge badge-sm badge-ghost">{{ groupLabels[selected.group] || selected.group }}</span>
+                    <button
+                        v-if="!selected.is_linked && characteristicsForConvertToLinked?.length"
+                        type="button"
+                        class="btn btn-sm btn-ghost btn-outline border-warning/50 text-warning gap-1"
+                        :class="{ 'btn-active': showConvertToLinkedPanel }"
+                        :title="showConvertToLinkedPanel ? 'Masquer le panneau Lier' : 'Lier cette caractéristique à une maître'"
+                        @click="showConvertToLinkedPanel = !showConvertToLinkedPanel"
+                    >
+                        <i class="fa fa-link text-xs" />
+                        Lier
+                    </button>
                 </h1>
                 <p class="mb-1 text-sm italic text-base-content/60" :title="`Clé utilisée dans les formules (non modifiable)`">
                     Clé formule : <code class="rounded bg-base-200 px-1 font-mono">[{{ selected.id }}]</code>
@@ -986,6 +1002,7 @@ function submitConvertToLinked() {
                 </p>
 
                 <div
+                    v-show="showConvertToLinkedPanel"
                     v-if="!selected.is_linked && characteristicsForConvertToLinked?.length"
                     class="card bg-base-100 shadow border border-warning/30 mb-6"
                 >

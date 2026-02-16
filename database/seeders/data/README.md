@@ -8,7 +8,7 @@ Ces fichiers PHP sont la **source des données** pour les seeders (caractéristi
 |---------|--------|-------------|
 | `characteristics.php` | `CharacteristicSeeder` | Table générale : une ligne par caractéristique (key, name, type, unit, sort_order, etc.) |
 | `characteristic_creature.php` | `CreatureCharacteristicSeeder` | Groupe creature (monster, class, npc) : limites, formules, conversion_formula par entity |
-| `characteristic_object.php` | `ObjectCharacteristicSeeder` | Groupe object (item, consumable, resource, panoply) : idem + forgemagie, base_price_per_unit, rune_price_per_unit |
+| `characteristic_object.php` | `ObjectCharacteristicSeeder` | Groupe object : idem + forgemagie, base_price_per_unit, rune_price_per_unit, value_available, item_type_ids (pivot characteristic_object_item_type) |
 | `characteristic_spell.php` | `SpellCharacteristicSeeder` | Groupe spell : limites, formules, conversion_formula, value_available |
 
 Les fichiers de groupe (creature, object, spell) peuvent contenir des clés non persistées (ex. `required`, `validation_message`, `sort_order`) : elles sont ignorées à l’import. L’export n’écrit que les colonnes présentes en BDD.

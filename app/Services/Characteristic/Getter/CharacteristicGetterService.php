@@ -109,6 +109,19 @@ final class CharacteristicGetterService
     }
 
     /**
+     * Retourne la définition complète d'une caractéristique à partir d'un nom de champ (colonne ou clé).
+     * Utilisé par le service Limit pour valider selon le type (boolean, list, string).
+     *
+     * @return array<string, mixed>|null
+     */
+    public function getDefinitionByField(string $field, string $entity): ?array
+    {
+        $key = $this->resolveFieldToKey($field, $entity);
+
+        return $key !== null ? $this->getDefinition($key, $entity) : null;
+    }
+
+    /**
      * Retourne le groupe (creature, object, spell) pour une entité.
      */
     public function getGroupForEntity(string $entity): string

@@ -222,7 +222,10 @@ class ExportSeederDataCommand extends Command
         }
 
         if (Schema::hasTable('characteristic_object')) {
-            $rows = CharacteristicObject::with('characteristic')->orderBy('characteristic_id')->orderBy('entity')->get();
+            $rows = CharacteristicObject::with(['characteristic', 'allowedItemTypes'])
+                ->orderBy('characteristic_id')
+                ->orderBy('entity')
+                ->get();
             $data = $rows->map(fn ($r) => [
                 'characteristic_key' => $r->characteristic->key,
                 'entity' => $r->entity,
@@ -240,6 +243,7 @@ class ExportSeederDataCommand extends Command
                 'base_price_per_unit' => $r->base_price_per_unit,
                 'rune_price_per_unit' => $r->rune_price_per_unit,
                 'value_available' => $r->value_available,
+                'item_type_ids' => $r->allowedItemTypes->pluck('id')->values()->all(),
             ])->all();
             $path = $dir . '/characteristic_object.php';
             $content = "<?php\n\ndeclare(strict_types=1);\n\n/**\n * Groupe object : item, consumable, resource, panoply.\n * Régénéré par : php artisan db:export-seeder-data --characteristics\n */\n\nreturn " . $this->varExportShort($data) . ";\n";

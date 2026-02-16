@@ -28,10 +28,15 @@ namespace App\Models{
  * @property string|null $unit
  * @property string $type
  * @property int $sort_order
+ * @property string|null $group
+ * @property int|null $linked_to_characteristic_id
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\CharacteristicCreature> $creatureRows
  * @property-read int|null $creature_rows_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, Characteristic> $linkedCharacteristics
+ * @property-read int|null $linked_characteristics_count
+ * @property-read Characteristic|null $masterCharacteristic
  * @property-read \Spatie\MediaLibrary\MediaCollections\Models\Collections\MediaCollection<int, \Spatie\MediaLibrary\MediaCollections\Models\Media> $media
  * @property-read int|null $media_count
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\CharacteristicObject> $objectRows
@@ -44,10 +49,12 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Characteristic whereColor($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Characteristic whereCreatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Characteristic whereDescriptions($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Characteristic whereGroup($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Characteristic whereHelper($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Characteristic whereIcon($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Characteristic whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Characteristic whereKey($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Characteristic whereLinkedToCharacteristicId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Characteristic whereName($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Characteristic whereShortName($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Characteristic whereSortOrder($value)

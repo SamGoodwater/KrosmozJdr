@@ -43,10 +43,7 @@ class UpdateItemRequest extends FormRequest
                 ['nullable', 'numeric'],
                 $this->characteristicMinMaxRules('price', 'item') ?: ['min:0']
             ),
-            'rarity' => array_merge(
-                ['nullable', 'integer'],
-                $this->characteristicMinMaxRules('rarity', 'item')
-            ),
+            'rarity' => $this->characteristicRules('rarity', 'item') ?: ['nullable', 'integer', 'min:0'],
             'dofus_version' => ['nullable', 'string', 'max:255'],
             'state' => ['nullable', 'string', 'in:raw,draft,playable,archived'],
             'read_level' => ['nullable', 'integer', 'min:0', 'max:5'],

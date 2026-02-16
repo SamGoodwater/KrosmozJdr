@@ -6,18 +6,19 @@ Ce document recense les écarts et points d’attention repérés dans le code d
 
 ---
 
-## 1. Service Limit : validation par type (boolean, list, string)
+## 1. Service Limit : validation par type (boolean, list, string) — fait
 
 **Documentation :** [ARCHITECTURE_SOUS_SERVICES.md § 3](./ARCHITECTURE_SOUS_SERVICES.md#3-limit-characteristiclimitservice) décrit une validation selon le **type** de la caractéristique :
 - **boolean** : valeur = true/false ;
 - **list** : valeur dans la liste des valeurs possibles (`value_available`) ;
 - **string** : valeur entre min et max.
 
-**Code actuel :** `CharacteristicLimitService` ne fait que :
-- `validate()` : min/max pour chaque champ (valeur numérique) ;
-- `clamp()` : ramener une valeur dans [min, max].
+**Code actuel :** `CharacteristicLimitService` implémente :
+- `validateSingle($characteristicKey, $value, $entity)` : validation unitaire selon le type (boolean, list, min/max) ;
+- `validate()` : parcourt les champs, utilise `getDefinitionByField` puis `validateSingle` par type ;
+- `clamp()` : appliqué uniquement aux types numériques (string/int) ; pour boolean/list la valeur est retournée inchangée.
 
-**À faire :** Étendre le service pour prendre en compte le **type** (lu depuis la définition Getter) et appliquer la règle correspondante. Prévoir une méthode de validation unitaire (entité, clé, valeur) retournant ok/ko + message, en plus de la validation globale et du clamp.
+Le trait **HasCharacteristicValidation** expose `characteristicRules($field, $entity)` pour les Form Requests (règles Laravel selon type : `in:...` pour list, `boolean` pour boolean, min/max pour string/int).
 
 ---
 
@@ -40,16 +41,13 @@ Ce document recense les écarts et points d’attention repérés dans le code d
 
 ---
 
-## 3. Config obsolète ou absente
+## 3. Config obsolète ou absente — résolu
 
-**Fichier :** `app/Services/Scrapping/Core/Conversion/FormatterApplicator.php` (méthode de rareté par niveau).
+**Fichier :** `app/Services/Scrapping/Core/Conversion/FormatterApplicator.php` (méthode `defaultRarityByLevel`).
 
-**Code :**  
-`config('characteristics_rarity.rarity_default_by_level', [0 => 0, 3 => 1, 7 => 2, 10 => 3, 17 => 4])`
+**Constat initial :** Référence à `config('characteristics_rarity.rarity_default_by_level')` alors qu’aucune config n’existait. La rareté est une **caractéristique de type list** en BDD (`rarity_object`).
 
-**Constat :** Aucun fichier `config/characteristics_rarity.php` (ou clé équivalente) n’existe dans le projet. La valeur utilisée est donc **toujours** le tableau par défaut en second argument.
-
-**À faire :** Soit créer une config dédiée si on veut rendre cette règle configurable, soit s’appuyer sur la **caractéristique** en BDD (formule de conversion / valeur par défaut pour la rareté) et retirer la référence à `characteristics_rarity` pour éviter une config fantôme.
+**Résolution :** La référence à la config a été supprimée. Lorsque `conversionService` est absent, le getter est utilisé pour récupérer la définition de `rarity_object` ; si `value_available` est renseigné, la première valeur de la liste est utilisée comme défaut, sinon 0. Aucun fichier de config dédié à la rareté n’est nécessaire.
 
 ---
 
@@ -71,11 +69,11 @@ Le frontend (`Index.vue`) appelle les deux selon le contexte (formule caractéri
 
 ## 6. Récapitulatif des actions recommandées
 
-| Priorité | Action |
-|----------|--------|
-| Haute | Étendre **CharacteristicLimitService** pour valider selon le type (boolean, list, string) et exposer une validation unitaire. |
-| Haute | **Export seeder** : ajouter `value_available` pour object et spell ; exporter la pivot **characteristic_object_item_type** et adapter le seeder pour la réimporter. |
-| Moyenne | Supprimer ou remplacer la référence à `config('characteristics_rarity.rarity_default_by_level')` (config inexistante) ; privilégier la BDD (caractéristique / conversion). |
+| Priorité | Action | État |
+|----------|--------|------|
+| Haute | Étendre **CharacteristicLimitService** pour valider selon le type (boolean, list, string) et exposer une validation unitaire. | Fait |
+| Haute | **Export seeder** : value_available (object/spell) et pivot **characteristic_object_item_type** (export en `item_type_ids` par ligne, sync dans ObjectCharacteristicSeeder). | Fait |
+| Moyenne | Supprimer la référence à `config('characteristics_rarity.rarity_default_by_level')` ; privilégier la BDD (caractéristique rarity). | Fait |
 
 ---
 
