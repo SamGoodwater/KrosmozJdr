@@ -8,8 +8,10 @@ Le projet utilise les dernières recommandations en matière de sécurité, de q
 
 - **Laravel 12** : https://laravel.com/docs/12.x
 - **PHP 8.4**
-- **MySQL** (nom de la base : krosmozDB, user : krosmozUser, mot de passe : krosmozPassword)
-  - ⚠️ Les identifiants fournis sont pour le développement/test. En production, utiliser des variables d'environnement et ne jamais versionner les secrets.
+- **MySQL** (base par défaut). Exemple dev : `DB_DATABASE=krosmoz`, `DB_USERNAME=user`, `DB_PASSWORD=…`, `DB_CHARSET=utf8mb4`, `DB_COLLATION=utf8mb4_unicode_ci`
+  - ⚠️ En production, utiliser des variables d'environnement et ne jamais versionner les secrets.
+  - **Commande** `php artisan setup` : paquets apt (dont php-mysql, MySQL), création l’utilisateur et la base si besoin user et base si besoin (root avec `DB_PASSWORD`), puis migrations + seeders. Options : `--install`, `--update`, `--db` (avec `--no-seed`), `--clean`, `--refresh`. La commande `run` délègue à `setup` pour install/update/db/clean/refresh.
+  - Passage possible vers PostgreSQL (voir [Passage à PostgreSQL](MIGRATION_MYSQL_VERS_POSTGRESQL.md)).
 - Les données proviennent d'une source extérieure, avec des données de test initiales.
 - **Gestion des secrets** :
   - Utiliser le fichier `.env` de Laravel pour stocker les variables sensibles (DB, API keys, etc.).

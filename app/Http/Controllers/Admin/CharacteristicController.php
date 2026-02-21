@@ -9,6 +9,7 @@ use App\Models\Characteristic;
 use App\Models\CharacteristicCreature;
 use App\Models\CharacteristicObject;
 use App\Models\CharacteristicSpell;
+use App\Services\Characteristic\Admin\CharacteristicShowPayloadBuilder;
 use App\Services\Characteristic\Conversion\ConversionFormulaGenerator;
 use App\Services\Characteristic\Formula\CharacteristicFormulaService;
 use App\Services\Characteristic\Formula\FormulaConfigDecoder;
@@ -39,7 +40,8 @@ class CharacteristicController extends Controller
         private readonly CharacteristicGetterService $getter,
         private readonly CharacteristicFormulaService $formulaService,
         private readonly ConversionFormulaGenerator $conversionFormulaGenerator,
-        private readonly CharacteristicColorCssGenerator $colorCssGenerator
+        private readonly CharacteristicColorCssGenerator $colorCssGenerator,
+        private readonly CharacteristicShowPayloadBuilder $showPayloadBuilder
     ) {
     }
 
@@ -296,7 +298,7 @@ class CharacteristicController extends Controller
 
     public function show(string $characteristic_key): InertiaResponse
     {
-        $characteristic = Characteristic::where('key', $characteristic_key)->with('masterCharacteristic')->first();
+        $characteristic = Characteristic::where('key', $characteristic_key)->first();
         if ($characteristic === null) {
             return Inertia::render('Admin/characteristics/Index', [
                 'characteristicsByGroup' => $this->buildCharacteristicsByGroup(),
@@ -305,135 +307,15 @@ class CharacteristicController extends Controller
             ])->with('error', 'Caractéristique introuvable.');
         }
 
-        $effective = $characteristic->effectiveCharacteristic();
-        $group = $characteristic->group !== null && in_array($characteristic->group, ['creature', 'object', 'spell'], true)
-            ? $characteristic->group
-            : $this->inferPrimaryGroup($characteristic);
-        $entitiesForGroup = self::ENTITIES_BY_GROUP[$group] ?? ['*'];
-
-        $entities = [];
-        if ($characteristic->isLinked()) {
-            // Caractéristique liée : pas de lignes en base, on construit à partir du getter (données maître).
-            foreach ($entitiesForGroup as $entity) {
-                $def = $this->getter->getDefinition($characteristic_key, $entity);
-                if ($def !== null) {
-                    $entities[] = $this->definitionToEntityRow($def);
-                }
-            }
-        } else {
-            foreach (CharacteristicCreature::where('characteristic_id', $characteristic->id)->orderBy('entity')->get() as $row) {
-                $entities[] = $this->groupRowToEntity($row, $characteristic);
-            }
-            foreach (CharacteristicObject::where('characteristic_id', $characteristic->id)->orderBy('entity')->get() as $row) {
-                $entities[] = $this->groupRowToEntity($row, $characteristic);
-            }
-            foreach (CharacteristicSpell::where('characteristic_id', $characteristic->id)->orderBy('entity')->get() as $row) {
-                $entities[] = $this->groupRowToEntity($row, $characteristic);
-            }
-            $entities = array_values(array_filter($entities, fn (array $ent): bool => in_array($ent['entity'] ?? '', $entitiesForGroup, true)));
-        }
-
-        $conversionFormulas = [];
-        foreach ($entitiesForGroup as $entity) {
-            if ($entity === '*') {
-                continue;
-            }
-            $def = $this->getter->getDefinition($characteristic_key, $entity);
-            $conversionFormulas[] = [
-                'entity' => $entity,
-                'conversion_formula' => $def['conversion_formula'] ?? '',
-                'formula_display' => $def['formula_display'] ?? '',
-                'handler_name' => '',
-            ];
-        }
-
-        $entityOverrideKeys = array_values(array_filter(
-            array_unique(array_column($entities, 'entity')),
-            fn (string $e): bool => $e !== '*'
-        ));
-
-        $selected = [
-            'id' => $characteristic->key,
-            'name' => $effective->name,
-            'short_name' => $effective->short_name,
-            'description' => $effective->descriptions,
-            'helper' => $effective->helper,
-            'icon' => $effective->icon,
-            'color' => $effective->color,
-            'type' => $effective->type,
-            'unit' => $effective->unit,
-            'sort_order' => $characteristic->sort_order,
-            'entities' => $entities,
-            'entity_override_keys' => $entityOverrideKeys,
-            'conversion_formulas' => $conversionFormulas,
-            'group' => $group,
-            'entitiesByGroup' => self::ENTITIES_BY_GROUP,
-            'is_linked' => $characteristic->isLinked(),
-            'master_key' => $characteristic->isLinked() ? $effective->key : null,
-        ];
-
-        $characteristicsForConvertToLinked = [];
-        if (! $characteristic->isLinked()) {
-            $characteristicsForConvertToLinked = Characteristic::whereNull('linked_to_characteristic_id')
-                ->where('id', '!=', $characteristic->id)
-                ->orderBy('sort_order')
-                ->orderBy('key')
-                ->get()
-                ->map(fn (Characteristic $c): array => [
-                    'id' => $c->id,
-                    'key' => $c->key,
-                    'name' => $c->name,
-                    'group' => $c->group ?? $this->inferPrimaryGroup($c),
-                ])
-                ->all();
-        }
+        $payload = $this->showPayloadBuilder->build($characteristic);
 
         return Inertia::render('Admin/characteristics/Index', [
             'characteristicsByGroup' => $this->buildCharacteristicsByGroup(),
-            'selected' => $selected,
+            'selected' => $payload['selected'],
             'entitiesByGroup' => self::ENTITIES_BY_GROUP,
-            'characteristicsForConvertToLinked' => $characteristicsForConvertToLinked,
+            'characteristicsForConvertToLinked' => $payload['characteristicsForConvertToLinked'],
+            'scrappingMappingsUsingThis' => $payload['scrappingMappingsUsingThis'],
         ]);
-    }
-
-    /**
-     * Construit une ligne entité pour l'affichage à partir d'une définition getter (utilisé pour les caractéristiques liées).
-     *
-     * @param array<string, mixed> $def
-     * @return array<string, mixed>
-     */
-    private function definitionToEntityRow(array $def): array
-    {
-        $out = [
-            'entity' => $def['entity'] ?? '*',
-            'db_column' => $def['db_column'] ?? null,
-            'min' => $def['min'] ?? null,
-            'max' => $def['max'] ?? null,
-            'formula' => $def['formula'] ?? null,
-            'formula_display' => $def['formula_display'] ?? null,
-            'default_value' => $def['default_value'] ?? null,
-            'conversion_formula' => $def['conversion_formula'] ?? null,
-            'conversion_dofus_sample' => $def['conversion_dofus_sample'] ?? null,
-            'conversion_krosmoz_sample' => $def['conversion_krosmoz_sample'] ?? null,
-            'conversion_sample_rows' => null,
-            'forgemagie_allowed' => false,
-            'forgemagie_max' => 0,
-            'base_price_per_unit' => null,
-            'rune_price_per_unit' => null,
-        ];
-        if (isset($def['forgemagie_allowed'])) {
-            $out['forgemagie_allowed'] = (bool) $def['forgemagie_allowed'];
-        }
-        if (isset($def['forgemagie_max'])) {
-            $out['forgemagie_max'] = (int) $def['forgemagie_max'];
-        }
-        if (array_key_exists('base_price_per_unit', $def)) {
-            $out['base_price_per_unit'] = $def['base_price_per_unit'];
-        }
-        if (array_key_exists('rune_price_per_unit', $def)) {
-            $out['rune_price_per_unit'] = $def['rune_price_per_unit'];
-        }
-        return $out;
     }
 
     /**

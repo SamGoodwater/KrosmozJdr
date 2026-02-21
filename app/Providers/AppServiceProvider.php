@@ -9,6 +9,7 @@ use App\Services\Characteristic\Limit\CharacteristicLimitService;
 use App\Services\Scrapping\Core\Collect\CollectService;
 use App\Services\Scrapping\Core\Config\CollectAliasResolver;
 use App\Services\Scrapping\Core\Config\ConfigLoader;
+use App\Services\Scrapping\Core\Config\ScrappingMappingService;
 use App\Services\Scrapping\Core\Orchestrator\Orchestrator;
 use App\Services\Scrapping\Http\DofusDbClient;
 use Illuminate\Database\Eloquent\Model;
@@ -24,7 +25,13 @@ class AppServiceProvider extends ServiceProvider
         $this->app->singleton(CharacteristicFormulaService::class);
         $this->app->singleton(DofusConversionService::class);
 
-        $this->app->singleton(ConfigLoader::class, static fn () => ConfigLoader::default());
+        $this->app->singleton(ScrappingMappingService::class);
+        $this->app->singleton(ConfigLoader::class, static function () {
+            return new ConfigLoader(
+                base_path('resources/scrapping/config'),
+                app(ScrappingMappingService::class)
+            );
+        });
         $this->app->singleton(CollectAliasResolver::class, static fn () => CollectAliasResolver::default());
         $this->app->singleton(CollectService::class, static fn () => new CollectService(
             app(ConfigLoader::class),

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Tests\Feature\Admin;
 
 use App\Models\Characteristic;
+use App\Models\CharacteristicCreature;
 use App\Models\User;
 use App\Services\Characteristic\Getter\CharacteristicGetterService;
 use Database\Seeders\CharacteristicSeeder;
@@ -200,6 +201,8 @@ class CharacteristicControllerTest extends TestCase
             ->has('characteristicsByGroup')
             ->has('selected')
             ->where('selected.id', 'life_creature')
+            ->has('scrappingMappingsUsingThis')
+            ->has('characteristicsForConvertToLinked')
         );
     }
 
@@ -320,6 +323,85 @@ class CharacteristicControllerTest extends TestCase
             'key' => 'level_creature',
             'name' => 'Niveau (modifié)',
         ]);
+    }
+
+    public function test_admin_show_returns_error_when_characteristic_not_found(): void
+    {
+        $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
+
+        $response = $this->actingAs($admin)->get(route('admin.characteristics.show', 'nonexistent_key_creature'));
+
+        $response->assertOk();
+        $response->assertInertia(fn ($page) => $page->where('selected', null));
+        $response->assertSessionHas('error');
+    }
+
+    public function test_admin_can_destroy_characteristic(): void
+    {
+        $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
+        $char = Characteristic::create([
+            'key' => 'test_destroy_me_creature',
+            'name' => 'À supprimer',
+            'type' => 'int',
+            'sort_order' => 999,
+            'group' => 'creature',
+        ]);
+        CharacteristicCreature::create([
+            'characteristic_id' => $char->id,
+            'entity' => '*',
+            'db_column' => 'test_destroy',
+            'min' => '0',
+            'max' => '100',
+        ]);
+        $key = $char->key;
+
+        $response = $this->actingAs($admin)->delete(route('admin.characteristics.destroy', $key));
+
+        $response->assertRedirect(route('admin.characteristics.index'));
+        $response->assertSessionHas('success');
+        $this->assertDatabaseMissing('characteristics', ['key' => $key]);
+    }
+
+    public function test_admin_cannot_destroy_characteristic_with_linked(): void
+    {
+        $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
+        $master = Characteristic::where('key', 'life_creature')->first();
+        $this->assertNotNull($master);
+        // Créer une caractéristique liée (level_object par ex. si level_creature existe)
+        $levelCreature = Characteristic::where('key', 'level_creature')->first();
+        if ($levelCreature === null) {
+            $this->markTestSkipped('level_creature requis pour le test des liées.');
+        }
+        Characteristic::create([
+            'key' => 'level_object',
+            'name' => 'Niveau objet',
+            'type' => 'int',
+            'sort_order' => 0,
+            'group' => 'object',
+            'linked_to_characteristic_id' => $levelCreature->id,
+        ]);
+
+        $response = $this->actingAs($admin)->delete(route('admin.characteristics.destroy', 'level_creature'));
+
+        $response->assertRedirect(route('admin.characteristics.index'));
+        $response->assertSessionHas('error');
+        $this->assertDatabaseHas('characteristics', ['key' => 'level_creature']);
+    }
+
+    public function test_admin_can_call_suggest_conversion_formula(): void
+    {
+        $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
+
+        $payload = [
+            'pairs' => [['d' => 10, 'k' => 1], ['d' => 200, 'k' => 20]],
+            'curve_type' => 'table',
+        ];
+        $response = $this->actingAs($admin)->postJson(route('admin.characteristics.suggest-conversion-formula'), $payload);
+
+        $response->assertOk();
+        $response->assertJsonStructure(['formula']);
+        $data = $response->json();
+        $this->assertIsString($data['formula']);
     }
 
     /**

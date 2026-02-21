@@ -10,12 +10,12 @@
     "fetchOne": {
       "pathTemplate": "/items/{id}",
       "method": "GET",
-      "queryDefaults": { "lang": "{lang}" }
+      "queryDefaults": { "lang": "fr" }
     },
     "fetchMany": {
       "path": "/items",
       "method": "GET",
-      "queryDefaults": { "lang": "{lang}", "$limit": 50, "$skip": 0 }
+      "queryDefaults": { "lang": "fr", "$limit": 50, "$skip": 0 }
     }
   },
   "filters": {
@@ -55,7 +55,7 @@
         { "model": "consumables", "field": "name" },
         { "model": "items", "field": "name" }
       ],
-      "formatters": [{ "name": "pickLang", "args": { "lang": "{lang}", "fallback": "fr" } }]
+      "formatters": [{ "name": "pickLang", "args": { "lang": "fr", "fallback": "fr" } }]
     },
     {
       "key": "description",
@@ -65,7 +65,7 @@
         { "model": "consumables", "field": "description" },
         { "model": "items", "field": "description" }
       ],
-      "formatters": [{ "name": "pickLang", "args": { "lang": "{lang}", "fallback": "fr" } }]
+      "formatters": [{ "name": "pickLang", "args": { "lang": "fr", "fallback": "fr" } }]
     },
     {
       "key": "level",

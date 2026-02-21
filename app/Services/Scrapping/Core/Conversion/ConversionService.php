@@ -62,7 +62,8 @@ final class ConversionService
                         continue;
                     }
                     $args = $this->interpolateArgs($fmt['args'] ?? [], ['lang' => $lang]);
-                    $value = $this->formatterApplicator->apply($fmt['name'], $value, $args, $raw, $context);
+                    $contextWithRule = array_merge($context, ['mappingRule' => $map]);
+                    $value = $this->formatterApplicator->apply($fmt['name'], $value, $args, $raw, $contextWithRule);
                 }
             }
 

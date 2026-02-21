@@ -3,24 +3,13 @@
 namespace App\Http\Controllers\Scrapping;
 
 use App\Http\Controllers\Controller;
-use App\Models\Entity\Breed;
-use App\Models\Entity\Consumable;
-use App\Models\Entity\Item;
-use App\Models\Entity\Monster;
-use App\Models\Entity\Panoply;
-use App\Models\Entity\Resource;
-use App\Models\Entity\Spell;
-use App\Models\Type\ConsumableType;
-use App\Models\Type\ItemType;
-use App\Services\Scrapping\Catalog\DofusDbMonsterRacesCatalogService;
-use App\Models\Type\ResourceType;
 use App\Services\Scrapping\Constants\EntityLimits;
 use App\Services\Scrapping\Core\Collect\CollectService;
 use App\Services\Scrapping\Core\Config\CollectAliasResolver;
 use App\Services\Scrapping\Core\Config\ConfigLoader;
+use App\Services\Scrapping\Core\Search\SearchResultEnricher;
 use App\Services\Scrapping\DataCollect\ItemEntityTypeFilterService;
 use App\Services\Scrapping\DataCollect\MonsterRaceFilterService;
-use App\Services\Scrapping\Registry\TypeRegistryBatchTouchService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -38,10 +27,9 @@ class ScrappingSearchController extends Controller
         private ConfigLoader $configLoader,
         private CollectAliasResolver $aliasResolver,
         private CollectService $collectService,
+        private SearchResultEnricher $searchEnricher,
         private ItemEntityTypeFilterService $itemEntityTypeFilters,
         private MonsterRaceFilterService $monsterRaceFilters,
-        private TypeRegistryBatchTouchService $typeRegistryBatchTouch,
-        private DofusDbMonsterRacesCatalogService $monsterRacesCatalog,
     ) {}
 
     public function search(Request $request, string $entity): JsonResponse
@@ -89,9 +77,7 @@ class ScrappingSearchController extends Controller
         $options = $this->extractOptions($request, $entity);
 
         $result = $this->collectService->fetchManyResult('dofusdb', $collectEntity, $filters, $options);
-        $items = $this->withExistsFlag($entity, $result['items']);
-        $items = $this->withTypeLabelsAndRegistry($entity, $items);
-        $items = $this->withMonsterRaceLabel($entity, $items);
+        $items = $this->searchEnricher->enrich($entity, $result['items']);
 
         // Enrichir meta avec pagination "page/per_page" si utilisée
         $meta = $result['meta'];
@@ -190,204 +176,6 @@ class ScrappingSearchController extends Controller
         ], true)
             ? $m
             : MonsterRaceFilterService::RACE_MODE_ALLOWED;
-    }
-
-    /**
-     * Ajoute `exists` + `existing` (id interne) aux items de DofusDB.
-     *
-     * @param string $entity
-     * @param array<int, array<string,mixed>> $items
-     * @return array<int, array<string,mixed>>
-     */
-    private function withExistsFlag(string $entity, array $items): array
-    {
-        $modelClass = match ($entity) {
-            'class' => Breed::class,
-            'monster' => Monster::class,
-            'item' => Item::class,
-            'spell' => Spell::class,
-            'panoply' => Panoply::class,
-            'resource' => Resource::class,
-            'consumable' => Consumable::class,
-            'equipment' => Item::class,
-            default => null,
-        };
-
-        if (!$modelClass) {
-            return $items;
-        }
-
-        $dofusIds = [];
-        foreach ($items as $it) {
-            if (!is_array($it)) continue;
-            if (isset($it['id']) && (is_int($it['id']) || (is_string($it['id']) && ctype_digit($it['id'])))) {
-                $dofusIds[] = (string) (int) $it['id'];
-            }
-        }
-        $dofusIds = array_values(array_unique($dofusIds));
-        if (empty($dofusIds)) {
-            return $items;
-        }
-
-        /** @var array<string,int> $existingMap */
-        try {
-            $existingMap = $modelClass::query()
-                ->whereIn('dofusdb_id', $dofusIds)
-                ->pluck('id', 'dofusdb_id')
-                ->all();
-        } catch (\Throwable) {
-            // Best-effort: en environnement sans DB/migrations (tests), on n'échoue pas la recherche.
-            $existingMap = [];
-        }
-
-        foreach ($items as $i => $it) {
-            if (!is_array($it)) continue;
-            $idStr = isset($it['id']) ? (string) (int) $it['id'] : null;
-            $existingId = ($idStr !== null && isset($existingMap[$idStr])) ? (int) $existingMap[$idStr] : null;
-            $items[$i]['exists'] = $existingId !== null;
-            $items[$i]['existing'] = $existingId ? ['id' => $existingId] : null;
-        }
-
-        return $items;
-    }
-
-    /**
-     * Ajoute des informations de type (nom) + enregistre le typeId en base si absent.
-     *
-     * @param string $entity
-     * @param array<int, array<string,mixed>> $items
-     * @return array<int, array<string,mixed>>
-     */
-    private function withTypeLabelsAndRegistry(string $entity, array $items): array
-    {
-        $entity = strtolower($entity);
-        $registry = match ($entity) {
-            'resource' => ResourceType::class,
-            'consumable' => ConsumableType::class,
-            'item', 'equipment' => ItemType::class,
-            default => null,
-        };
-
-        if (!$registry) {
-            return $items;
-        }
-
-        // 1) Extraire les typeId uniques
-        $typeIds = [];
-        foreach ($items as $it) {
-            if (!is_array($it)) continue;
-            $typeId = $it['typeId'] ?? null;
-            if (is_int($typeId) || (is_string($typeId) && ctype_digit($typeId))) {
-                $n = (int) $typeId;
-                if ($n > 0) {
-                    $typeIds[] = $n;
-                }
-            }
-        }
-        $typeIds = array_values(array_unique($typeIds));
-        if (empty($typeIds)) {
-            return $items;
-        }
-
-        // 2) Charger en bulk les types connus
-        $byTypeId = [];
-        try {
-            /** @var class-string $registry */
-            $rows = $registry::query()->whereIn('dofusdb_type_id', $typeIds)->get();
-            foreach ($rows as $row) {
-                $id = is_numeric($row->dofusdb_type_id ?? null) ? (int) $row->dofusdb_type_id : 0;
-                if ($id > 0) {
-                    $byTypeId[$id] = $row;
-                }
-            }
-        } catch (\Throwable) {
-            $byTypeId = [];
-        }
-
-        // 3) Auto-touch des types absents (batch)
-        $knownIds = array_map('intval', array_keys($byTypeId));
-        $missing = array_values(array_diff($typeIds, $knownIds));
-        if (!empty($missing)) {
-            try {
-                $this->typeRegistryBatchTouch->touchMany($registry, $missing);
-                /** @var class-string $registry */
-                $touched = $registry::query()->whereIn('dofusdb_type_id', $missing)->get();
-                foreach ($touched as $row) {
-                    $id = is_numeric($row->dofusdb_type_id ?? null) ? (int) $row->dofusdb_type_id : 0;
-                    if ($id > 0) {
-                        $byTypeId[$id] = $row;
-                    }
-                }
-            } catch (\Throwable) {
-                // ignore, best-effort
-            }
-        }
-
-        // 4) Enrichir items
-        foreach ($items as $i => $it) {
-            if (!is_array($it)) continue;
-
-            $typeId = $it['typeId'] ?? null;
-            if (!(is_int($typeId) || (is_string($typeId) && ctype_digit($typeId)))) {
-                continue;
-            }
-            $typeId = (int) $typeId;
-            if ($typeId <= 0) continue;
-
-            try {
-                $typeModel = $byTypeId[$typeId] ?? null;
-                if (!$typeModel) continue;
-
-                $items[$i]['typeName'] = is_string($typeModel->name ?? null) ? (string) $typeModel->name : null;
-                $items[$i]['typeDecision'] = is_string($typeModel->decision ?? null) ? (string) $typeModel->decision : null;
-                $items[$i]['typeKnown'] = ($items[$i]['typeDecision'] ?? null) === 'allowed';
-            } catch (\Throwable) {
-                $items[$i]['typeName'] = null;
-                $items[$i]['typeDecision'] = null;
-                $items[$i]['typeKnown'] = null;
-            }
-        }
-
-        return $items;
-    }
-
-    /**
-     * Enrichit les monstres avec `raceId` + `raceName`.
-     *
-     * DofusDB renvoie `race` (int). L'UI Krosmoz préfère `raceId` et surtout le nom.
-     *
-     * @param string $entity
-     * @param array<int, array<string,mixed>> $items
-     * @return array<int, array<string,mixed>>
-     */
-    private function withMonsterRaceLabel(string $entity, array $items): array
-    {
-        if (strtolower($entity) !== 'monster') {
-            return $items;
-        }
-
-        $lang = (string) config('scrapping.data_collect.default_language', 'fr');
-
-        foreach ($items as $i => $it) {
-            if (!is_array($it)) continue;
-            $race = $it['race'] ?? ($it['raceId'] ?? null);
-            if (!(is_int($race) || (is_string($race) && preg_match('/^-?\d+$/', $race)))) {
-                continue;
-            }
-            $raceId = (int) $race;
-            $items[$i]['raceId'] = $raceId;
-
-            try {
-                $name = $this->monsterRacesCatalog->fetchName($raceId, $lang, false);
-                $items[$i]['raceName'] = $name ?: null;
-                // registry local (validation via `state`)
-                \App\Models\Type\MonsterRace::touchDofusdbRace($raceId, $name ?: null);
-            } catch (\Throwable) {
-                $items[$i]['raceName'] = null;
-            }
-        }
-
-        return $items;
     }
 
     /**

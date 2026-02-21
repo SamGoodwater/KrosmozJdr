@@ -9,6 +9,8 @@ use App\Models\Characteristic;
 use App\Models\CharacteristicCreature;
 use App\Models\CharacteristicObject;
 use App\Models\CharacteristicSpell;
+use App\Models\Scrapping\ScrappingEntityMapping;
+use App\Models\Scrapping\ScrappingEntityMappingTarget;
 use App\Models\SpellEffectType;
 use App\Services\Characteristic\Getter\CharacteristicGetterService;
 use Illuminate\Console\Command;
@@ -38,9 +40,10 @@ class ExportSeederDataCommand extends Command
     protected $signature = 'db:export-seeder-data
                             {--characteristics : Exporter uniquement characteristics}
                             {--formulas : Exporter les formules de conversion (tables characteristic_creature/object/spell)}
-                            {--spell-effect-types : Exporter uniquement spell_effect_types}';
+                            {--spell-effect-types : Exporter uniquement spell_effect_types}
+                            {--scrapping-mappings : Exporter les règles de mapping scrapping (DofusDB → Krosmoz)}';
 
-    protected $description = 'Exporte characteristics, formules et spell_effect_types vers database/seeders/data/';
+    protected $description = 'Exporte characteristics, formules, spell_effect_types et mapping scrapping vers database/seeders/data/';
 
     public function __construct(
         private readonly CharacteristicGetterService $getter
@@ -55,7 +58,7 @@ class ExportSeederDataCommand extends Command
         }
 
         $all = ! $this->option('characteristics') && ! $this->option('formulas')
-            && ! $this->option('spell-effect-types');
+            && ! $this->option('spell-effect-types') && ! $this->option('scrapping-mappings');
 
         $dir = database_path('seeders/data');
         if (! is_dir($dir)) {
@@ -76,6 +79,9 @@ class ExportSeederDataCommand extends Command
         }
         if ($all || $this->option('spell-effect-types')) {
             $this->exportSpellEffectTypes($dir);
+        }
+        if ($all || $this->option('scrapping-mappings')) {
+            $this->exportScrappingMappings($dir);
         }
 
         $this->cleanupOldBackups();
@@ -106,6 +112,9 @@ class ExportSeederDataCommand extends Command
         }
         if ($all || $this->option('spell-effect-types')) {
             $files[] = 'spell_effect_types.php';
+        }
+        if ($all || $this->option('scrapping-mappings')) {
+            $files[] = 'scrapping_entity_mappings.php';
         }
 
         return array_values(array_unique($files));
@@ -303,6 +312,45 @@ class ExportSeederDataCommand extends Command
         $content = "<?php\n\ndeclare(strict_types=1);\n\n/**\n * Types d'effets de sort (export BDD).\n * Généré par php artisan db:export-seeder-data\n */\n\nreturn " . $this->varExportShort($rows) . ";\n";
         file_put_contents($path, $content);
         $this->info('Exported ' . count($rows) . ' spell effect types → ' . $path);
+    }
+
+    private function exportScrappingMappings(string $dir): void
+    {
+        if (! Schema::hasTable('scrapping_entity_mappings')) {
+            return;
+        }
+
+        $rows = ScrappingEntityMapping::with(['targets', 'characteristic'])
+            ->orderBy('source')
+            ->orderBy('entity')
+            ->orderBy('sort_order')
+            ->orderBy('id')
+            ->get();
+
+        $data = $rows->map(function (ScrappingEntityMapping $r) {
+            $targets = $r->targets->map(fn (ScrappingEntityMappingTarget $t) => [
+                'target_model' => $t->target_model,
+                'target_field' => $t->target_field,
+                'sort_order' => $t->sort_order,
+            ])->values()->all();
+
+            return [
+                'source' => $r->source,
+                'entity' => $r->entity,
+                'mapping_key' => $r->mapping_key,
+                'from_path' => $r->from_path,
+                'from_lang_aware' => $r->from_lang_aware,
+                'characteristic_key' => $r->characteristic?->key,
+                'formatters' => $r->formatters,
+                'sort_order' => $r->sort_order,
+                'targets' => $targets,
+            ];
+        })->all();
+
+        $path = $dir . '/scrapping_entity_mappings.php';
+        $content = "<?php\n\ndeclare(strict_types=1);\n\n/**\n * Règles de mapping scrapping (DofusDB → Krosmoz). Régénéré par : php artisan db:export-seeder-data --scrapping-mappings\n */\n\nreturn " . $this->varExportShort($data) . ";\n";
+        file_put_contents($path, $content);
+        $this->info('Exported ' . count($data) . ' scrapping entity mappings → ' . $path);
     }
 
     private function varExportShort(mixed $var): string

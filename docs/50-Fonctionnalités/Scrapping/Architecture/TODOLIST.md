@@ -21,7 +21,7 @@ Liste de tâches optionnelles ou de suivi. Contexte : [ETAT_AVANCEMENT.md](./ETA
   - Remplacer pour life : `toInt` + `clampInt` par `dofusdb_life` (avec `levelPath: "grades.0.level"`).  
   - Remplacer pour strength, intelligence, agility, chance : par `dofusdb_attribute` avec `characteristicId` dans args.  
   - wisdom : laissé en toInt + clampInt (pas de formule BDD pour wisdom).  
-  - Si initiative (ini) est mappée plus tard : utiliser `dofusdb_ini`.
+  - [x] Initiative (ini) : mappée `grades.0.initiative` → `creatures.ini` avec `dofusdb_ini`.
 
 - [x] **1.4** Config breed.json : DofusDB n’expose pas level, life ni attributs pour les classes (breeds) ; uniquement descriptions, noms, illustrations, sorts liés, rôles. Mapping aligné (pas de life/life_dice depuis l’API).
 

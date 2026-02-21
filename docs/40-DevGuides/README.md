@@ -2,7 +2,11 @@
 
 Ce dossier regroupe les scripts, automatisations et outils pour le développement, la maintenance et le déploiement du projet.
 
-## Commande artisan universelle : `php artisan run`
+## Commande `php artisan setup`
+
+Setup centralise la vérification/installation des logiciels et librairies et la base de données. Utilisée seule ou appelée par `run`. Options : `--install` (paquets apt dont MySQL + composer/pnpm), `--update` (apt, pnpm, composer), `--db` (MySQL par défaut : création user et base si besoin via root/DB_PASSWORD, puis migrations + seeders ; `--no-seed` pour sans seeders), `--clean` (supprimer node_modules, vendor, locks ; clear config), `--refresh` (clean puis réinstall). Liste des paquets apt dans `app/Console/Commands/SetupCommand.php`.
+
+## Commande `php artisan run`
 
 La commande `run` centralise toutes les tâches de maintenance, de nettoyage, de mise à jour et de lancement du projet. Elle permet d’enchaîner plusieurs actions dans un ordre logique, avec des options unitaires ou composées.
 
@@ -12,17 +16,17 @@ La commande `run` centralise toutes les tâches de maintenance, de nettoyage, de
 |---------------------- |-------------------------------------------------------------------------------------------|
 | --kill                | Tuer les serveurs locaux (ports 8000, 8001, 8002, 5173)                                   |
 | --clear:all           | Nettoyer tous les caches, CSS, debugbar, queue, schedule, events, optimisations            |
-| --update:all          | Mise à jour complète (système, pnpm, composer, css, docs, dump-autoload)                   |
+| --update:all          | setup --install + setup --update + css, docs, dump                                        |
 | --optimise:all        | Générer les fichiers IDE Helper et optimiser Laravel                                       |
-| --migrate             | Exécuter les migrations                                                                    |
+| --migrate             | setup --db (migrations + seeders)                                                          |
 | --dev                 | Lancer le serveur en mode optimisé                                                        |
 | --dev:watch           | Lancer le serveur en mode watch                                                           |
-| --clean               | Enchaîner : kill, clear:all, update:base, optimise:all                                    |
-| --all                 | Enchaîner : kill, clear:all, update:all, optimise:all, migrate, dev                       |
-| --reset:pnpm          | Supprimer node_modules et pnpm-lock.yaml, puis pnpm install (jamais inclus dans --all)     |
-| --reset:composer      | Supprimer vendor et composer.lock, puis composer install (jamais inclus dans --all)        |
-| --install:pnpm        | Installer les dépendances pnpm (pnpm install)                                             |
-| --install:composer    | Installer les dépendances composer (composer install)                                     |
+| --regenerate          | kill, clear:all, update:base, optimise:all                                                |
+| --all                 | kill, clear, setup install+update, css, docs, dump, optimise, migrate, dev                |
+| --reset:pnpm          | setup --refresh                                                                            |
+| --reset:composer      | setup --refresh                                                                            |
+| --install:pnpm        | setup --install                                                                            |
+| --install:composer    | setup --install                                                                            |
 
 > **Note :** Les options `--reset:pnpm` et `--reset:composer` sont à utiliser ponctuellement, en cas de corruption ou de problème de dépendances. Elles ne sont jamais incluses dans les options englobantes.
 
@@ -54,7 +58,7 @@ La commande `run` centralise toutes les tâches de maintenance, de nettoyage, de
 - **Mise à jour globale de pnpm/composer** : nécessite sudo, à faire manuellement si besoin, pas dans les scripts automatisés.
 - **Utilisation de reset** : uniquement en cas de problème, jamais en routine.
 - **Enchaînement d’options** : tu peux combiner autant d’options que tu veux, elles seront exécutées dans l’ordre logique (kill → clear → update/install → optimise → migrate → dev).
-- **Voir le code source** : pour la liste complète des options et la logique, voir `app/Console/Commands/Run.php`.
+- **Voir le code source** : `app/Console/Commands/Run.php` (run), `app/Console/Commands/SetupCommand.php` (setup, liste des paquets apt).
 
 ---
 

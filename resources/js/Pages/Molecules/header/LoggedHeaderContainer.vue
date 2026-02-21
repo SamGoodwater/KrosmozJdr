@@ -98,6 +98,12 @@ const logout = () => {
                                         <span>Types d'effets de sort</span>
                                     </Btn>
                                 </Route>
+                                <Route route="admin.scrapping-mappings.index" class="w-full">
+                                    <Btn variant="ghost" size="md" class="w-full justify-start">
+                                        <Icon source="fa-code-branch" pack="solid" size="sm" alt="Mapping scrapping" class="mr-2"/>
+                                        <span>Mapping scrapping</span>
+                                    </Btn>
+                                </Route>
                                 <Route v-if="canAccess('scrapping')" route="scrapping.index" class="w-full">
                                     <Btn variant="ghost" size="md" class="w-full justify-start">
                                         <Icon source="fa-magnifying-glass" pack="solid" size="sm" alt="Scrapping" class="mr-2"/>

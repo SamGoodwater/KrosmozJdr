@@ -24,6 +24,13 @@
 - Couverture : format de réponse, permissions, pagination, relations
 - **Localisation** : `tests/Feature/Api/Table/*TableControllerTest.php`
 
+#### Tests Admin (caractéristiques, mapping scrapping)
+- **CharacteristicControllerTest** : index, show, create, store, update, destroy, formula-preview, suggest-conversion-formula, upload-icon ; payload show (selected, scrappingMappingsUsingThis, characteristicsForConvertToLinked).
+- **ScrappingMappingControllerTest** : index (Inertia), store, update, destroy ; accès guest/user/admin.
+- **CharacteristicShowPayloadBuilderTest** (unit) : build() retourne selected, scrappingMappingsUsingThis, characteristicsForConvertToLinked ; intégration avec règles de mapping liées.
+- **ScrappingMappingServiceTest** (unit) : listMappingsForCharacteristic (vide / avec règles), getMappingForEntity, hasMappingForEntity.
+- **FormatterApplicatorTest** (unit) : registry (supports, apply formatter inconnu → valeur inchangée), toInt, toString, clampToCharacteristic, dofusdb_* sans service.
+
 ### Tests Frontend (Vitest)
 
 #### Tests Adapters (12 fichiers)

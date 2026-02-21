@@ -107,7 +107,34 @@ const rangeCount = computed(() => {
     return end - start + 1;
 });
 
-const stringify = (obj) => JSON.stringify(obj, null, 2);
+/** Formate une valeur pour affichage dans le résumé (primitif, tableau, objet). */
+function formatSummaryValue(val) {
+    if (val === null) return '—';
+    if (typeof val === 'boolean') return val ? 'Oui' : 'Non';
+    if (typeof val === 'number' || typeof val === 'string') return String(val);
+    if (Array.isArray(val)) return `${val.length} élément(s)`;
+    if (typeof val === 'object') return Object.keys(val).length ? `{ ${Object.keys(val).join(', ')} }` : '{}';
+    return String(val);
+}
+
+/**
+ * Construit une liste de paires (clé, valeur) pour un bloc converted/existing.
+ * Chaque clé top-level (creatures, monsters, items…) devient une section avec ses champs au premier niveau.
+ * @param {Record<string, unknown>|null} data
+ * @returns {{ section: string, rows: { key: string, value: string }[] }[]}
+ */
+function buildStructuredSummary(data) {
+    if (!data || typeof data !== 'object') return [];
+    return Object.entries(data).map(([section, content]) => {
+        if (content === null || typeof content !== 'object') {
+            return { section, rows: [{ key: '(valeur)', value: formatSummaryValue(content) }] };
+        }
+        const rows = Array.isArray(content)
+            ? [{ key: 'length', value: `${content.length} élément(s)` }]
+            : Object.entries(content).map(([k, v]) => ({ key: k, value: formatSummaryValue(v) }));
+        return { section, rows };
+    });
+}
 
 watch(() => props.initialMode, (m) => {
     const next = normalizeMode(m);
@@ -199,9 +226,16 @@ const handlePreview = async () => {
         const data = await response.json();
 
         if (response.ok && data.success) {
-            previewData.value = data.data;
-            emit('preview', data.data);
+            const payload = data.data;
+            previewData.value = payload;
+            emit('preview', payload);
+            if (payload && payload.success === false) {
+                showError(payload.validation_errors?.length
+                    ? `Validation échouée (${payload.validation_errors.length} erreur(s))`
+                    : (data.message || 'La prévisualisation a échoué'));
+            }
         } else {
+            previewData.value = null;
             showError(data.message || 'Impossible de prévisualiser cette entité');
         }
     } catch (err) {
@@ -405,60 +439,153 @@ const handleImport = () => {
 
             <!-- Résultat de prévisualisation -->
         <div v-if="previewData" class="space-y-4 border-t border-base-300 pt-4">
-            <h3 class="font-semibold text-primary-100">Résultat de la prévisualisation</h3>
+            <div class="flex flex-wrap items-center gap-2">
+                <h3 class="font-semibold text-primary-100">Résultat de la prévisualisation</h3>
+                <Badge
+                    v-if="previewData.success === true"
+                    color="success"
+                    size="sm"
+                    content="Prêt pour l'import"
+                />
+                <Badge
+                    v-else
+                    color="warning"
+                    size="sm"
+                    content="Validation échouée"
+                />
+            </div>
 
-            <!-- Informations sur les relations -->
-            <div v-if="previewData.raw" class="mb-4 p-3 bg-info/10 border border-info/30 rounded text-sm">
+            <!-- Échec de validation : ne pas afficher comme succès -->
+            <Alert v-if="previewData.success === false" color="warning" class="text-sm">
+                <span class="font-medium">La validation a échoué.</span>
+                <span class="text-primary-200"> L'import pourrait échouer ou produire des données incohérentes.</span>
+            </Alert>
+
+            <!-- Erreurs de validation (path + message) -->
+            <Alert v-if="previewData.validation_errors?.length > 0" color="error" class="text-sm">
+                <p class="font-semibold mb-2 flex items-center gap-2">
+                    <Icon source="fa-solid fa-circle-exclamation" alt="" pack="solid" class="text-error shrink-0" />
+                    Erreurs de validation
+                    <Badge :content="String(previewData.validation_errors.length)" color="error" size="xs" />
+                </p>
+                <ul class="list-disc list-inside space-y-1 text-xs text-primary-200">
+                    <li v-for="(err, idx) in previewData.validation_errors" :key="idx">
+                        <span class="font-mono text-error-200">{{ err.path || '—' }}</span>
+                        <span> : {{ err.message || 'Erreur' }}</span>
+                    </li>
+                </ul>
+            </Alert>
+
+            <!-- Relations détectées -->
+            <Alert v-if="previewData.raw" color="info" variant="soft" class="text-sm">
                 <p class="font-semibold text-info mb-2 flex items-center gap-2">
-                    <Icon source="fa-solid fa-info-circle" alt="Informations" pack="solid" class="text-xs" />
+                    <Icon source="fa-solid fa-link" alt="" pack="solid" class="shrink-0" />
                     Relations détectées
                 </p>
-                <div class="space-y-1 text-xs text-primary-200">
-                    <div v-if="previewData.raw.spells && previewData.raw.spells.length > 0" class="flex items-center gap-2">
-                        <Icon source="fa-solid fa-wand-magic-sparkles" alt="Sorts" pack="solid" class="text-xs" />
-                        <span>{{ previewData.raw.spells.length }} sort(s) associé(s)</span>
-                    </div>
-                    <div v-if="previewData.raw.drops && previewData.raw.drops.length > 0" class="flex items-center gap-2">
-                        <Icon source="fa-solid fa-gem" alt="Ressources droppées" pack="solid" class="text-xs" />
-                        <span>{{ previewData.raw.drops.length }} ressource(s) droppée(s)</span>
-                    </div>
-                    <div v-if="previewData.raw.recipe && previewData.raw.recipe.length > 0" class="flex items-center gap-2">
-                        <Icon source="fa-solid fa-book" alt="Recette" pack="solid" class="text-xs" />
-                        <span>{{ previewData.raw.recipe.length }} ressource(s) dans la recette</span>
-                    </div>
-                    <div v-if="previewData.raw.summon" class="flex items-center gap-2">
-                        <Icon source="fa-solid fa-dragon" alt="Monstre invoqué" pack="solid" class="text-xs" />
-                        <span>Monstre invoqué (ID: {{ previewData.raw.summon.id }})</span>
-                    </div>
-                    <p v-if="!previewData.raw.spells?.length && !previewData.raw.drops?.length && !previewData.raw.recipe?.length && !previewData.raw.summon" class="text-primary-300 italic">
-                        Aucune relation détectée
-                    </p>
+                <div class="flex flex-wrap gap-2">
+                    <Badge
+                        v-if="previewData.raw.spells?.length"
+                        color="info"
+                        size="sm"
+                        variant="outline"
+                        :content="`${previewData.raw.spells.length} sort(s)`"
+                    />
+                    <Badge
+                        v-if="previewData.raw.drops?.length"
+                        color="info"
+                        size="sm"
+                        variant="outline"
+                        :content="`${previewData.raw.drops.length} drop(s)`"
+                    />
+                    <Badge
+                        v-if="previewData.raw.recipe?.length"
+                        color="info"
+                        size="sm"
+                        variant="outline"
+                        :content="`${previewData.raw.recipe.length} recette`"
+                    />
+                    <Badge
+                        v-if="previewData.raw.summon"
+                        color="info"
+                        size="sm"
+                        variant="outline"
+                        content="Invoc."
+                    />
+                    <span
+                        v-if="!previewData.raw.spells?.length && !previewData.raw.drops?.length && !previewData.raw.recipe?.length && !previewData.raw.summon"
+                        class="text-primary-400 text-sm italic"
+                    >
+                        Aucune relation
+                    </span>
                 </div>
-            </div>
+            </Alert>
 
+            <!-- Version DofusDB / Version Krosmoz -->
             <div class="grid gap-4 xl:grid-cols-2">
-                <div>
-                    <h4 class="font-semibold text-primary-100 mb-2 text-sm">Version DofusDB convertie</h4>
-                    <pre class="text-xs bg-base-300/50 p-3 rounded max-h-80 overflow-auto max-w-full break-words whitespace-pre-wrap">{{ stringify(previewData.converted) }}</pre>
+                <div class="rounded-lg border border-primary/20 bg-base-300/30 overflow-hidden">
+                    <div class="flex items-center gap-2 border-b border-base-300 bg-base-300/50 px-3 py-2">
+                        <Icon source="fa-solid fa-database" alt="" pack="solid" class="text-primary-300 text-sm" />
+                        <h4 class="font-semibold text-primary-100 text-sm">Version DofusDB convertie</h4>
+                        <Badge color="primary" size="xs" variant="outline" content="Import" />
+                    </div>
+                    <div class="space-y-3 p-3 max-h-80 overflow-auto">
+                        <div
+                            v-for="block in buildStructuredSummary(previewData.converted)"
+                            :key="block.section"
+                            class="rounded bg-base-300/50 p-2.5 text-xs"
+                        >
+                            <p class="font-semibold text-primary-200 mb-1.5 capitalize text-[11px] uppercase tracking-wide">{{ block.section }}</p>
+                            <dl class="space-y-1">
+                                <div v-for="row in block.rows" :key="row.key" class="flex gap-2">
+                                    <dt class="text-primary-400 shrink-0">{{ row.key }} :</dt>
+                                    <dd class="text-primary-100 break-words">{{ row.value }}</dd>
+                                </div>
+                            </dl>
+                        </div>
+                    </div>
                 </div>
-                <div>
-                    <h4 class="font-semibold text-primary-100 mb-2 text-sm">Version actuelle (base Krosmoz)</h4>
+                <div class="rounded-lg border border-base-300 overflow-hidden">
+                    <div class="flex items-center gap-2 border-b border-base-300 bg-base-300/50 px-3 py-2">
+                        <Icon source="fa-solid fa-server" alt="" pack="solid" class="text-primary-300 text-sm" />
+                        <h4 class="font-semibold text-primary-100 text-sm">Version actuelle (Krosmoz)</h4>
+                        <Badge color="neutral" size="xs" variant="outline" content="Base" />
+                    </div>
                     <template v-if="previewData.existing">
-                        <pre class="text-xs bg-base-300/50 p-3 rounded max-h-80 overflow-auto max-w-full break-words whitespace-pre-wrap">{{ stringify(previewData.existing) }}</pre>
+                        <div class="space-y-3 p-3 max-h-80 overflow-auto">
+                            <div
+                                v-for="block in buildStructuredSummary(previewData.existing)"
+                                :key="block.section"
+                                class="rounded bg-base-300/50 p-2.5 text-xs"
+                            >
+                                <p class="font-semibold text-primary-200 mb-1.5 capitalize text-[11px] uppercase tracking-wide">{{ block.section }}</p>
+                                <dl class="space-y-1">
+                                    <div v-for="row in block.rows" :key="row.key" class="flex gap-2">
+                                        <dt class="text-primary-400 shrink-0">{{ row.key }} :</dt>
+                                        <dd class="text-primary-100 break-words">{{ row.value }}</dd>
+                                    </div>
+                                </dl>
+                            </div>
+                        </div>
                     </template>
-                    <p v-else class="text-sm text-primary-300 italic">
+                    <Alert v-else color="info" variant="soft" class="m-3 text-sm">
                         Aucune donnée existante. L'import créera une nouvelle entrée.
-                    </p>
+                    </Alert>
                 </div>
             </div>
 
-            <!-- Comparaison -->
-            <div v-if="previewData.existing" class="mt-4">
-                <h4 class="font-semibold text-primary-100 mb-2 text-sm">Comparaison</h4>
-                <EntityDiffTable
-                    :existing="previewData.existing.record"
-                    :incoming="previewData.converted"
-                />
+            <!-- Comparaison : propriétés (Brut / Converti / Krosmoz existant) -->
+            <div class="rounded-lg border border-base-300 overflow-hidden">
+                <div class="flex items-center gap-2 border-b border-base-300 bg-base-300/50 px-3 py-2">
+                    <Icon source="fa-solid fa-code-compare" alt="" pack="solid" class="text-primary-300 text-sm" />
+                    <h4 class="font-semibold text-primary-100 text-sm">Propriétés : Brut / Converti / Krosmoz</h4>
+                </div>
+                <div class="p-3">
+                    <EntityDiffTable
+                        :raw="previewData.raw"
+                        :incoming="previewData.converted"
+                        :existing="previewData.existing?.record ?? null"
+                    />
+                </div>
             </div>
 
         </div>

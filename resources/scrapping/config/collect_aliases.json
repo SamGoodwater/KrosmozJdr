@@ -5,6 +5,7 @@
     "spell": {"source": "dofusdb", "entity": "spell", "label": "Sorts"},
     "monster": {"source": "dofusdb", "entity": "monster", "label": "Monstres", "filterByRace": "race"},
     "classe": {"source": "dofusdb", "entity": "breed", "label": "Classes"},
+    "class": {"source": "dofusdb", "entity": "breed", "label": "Classes"},
     "ressource": {"source": "dofusdb", "entity": "item", "label": "Ressources", "defaultFilter": {"superTypeGroup": "resource"}, "filterByType": "type"},
     "resource": {"source": "dofusdb", "entity": "item", "label": "Ressources", "defaultFilter": {"superTypeGroup": "resource"}, "filterByType": "type"},
     "item": {"source": "dofusdb", "entity": "item", "label": "Équipements", "defaultFilter": {"superTypeGroup": "equipment"}, "filterByType": "type"},

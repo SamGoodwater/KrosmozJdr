@@ -41,7 +41,7 @@ class ScrappingImportController extends Controller
         }
 
         try {
-            $configLoader = ConfigLoader::default();
+            $configLoader = app(ConfigLoader::class);
             $entities = $configLoader->listEntities($source);
             if (!in_array($entityKey, $entities, true)) {
                 return response()->json([

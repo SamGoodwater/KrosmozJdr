@@ -13,12 +13,12 @@
     "fetchOne": {
       "pathTemplate": "/item-sets/{id}",
       "method": "GET",
-      "queryDefaults": { "lang": "{lang}" }
+      "queryDefaults": { "lang": "fr" }
     },
     "fetchMany": {
       "path": "item-sets",
       "method": "GET",
-      "queryDefaults": { "lang": "{lang}", "$limit": 50, "$skip": 0 }
+      "queryDefaults": { "lang": "fr", "$limit": 50, "$skip": 0 }
     }
   },
   "filters": {
@@ -47,13 +47,13 @@
       "key": "name",
       "from": { "path": "name", "langAware": true },
       "to": [{ "model": "panoplies", "field": "name" }],
-      "formatters": [{ "name": "pickLang", "args": { "lang": "{lang}", "fallback": "fr" } }]
+      "formatters": [{ "name": "pickLang", "args": { "lang": "fr", "fallback": "fr" } }]
     },
     {
       "key": "description",
       "from": { "path": "description", "langAware": true },
       "to": [{ "model": "panoplies", "field": "description" }],
-      "formatters": [{ "name": "pickLang", "args": { "lang": "{lang}", "fallback": "fr" } }]
+      "formatters": [{ "name": "pickLang", "args": { "lang": "fr", "fallback": "fr" } }]
     },
     {
       "key": "bonus",

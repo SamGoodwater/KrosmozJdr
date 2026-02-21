@@ -715,6 +715,28 @@ erDiagram
     deleted_at : timestamp
     created_by : bigint(20) unsigned
   }
+  SCRAPPING_ENTITY_MAPPING_TARGETS {
+    id : bigint(20) unsigned
+    scrapping_entity_mapping_id : bigint(20) unsigned
+    target_model : varchar(64)
+    target_field : varchar(64)
+    sort_order : smallint(5) unsigned
+    created_at : timestamp
+    updated_at : timestamp
+  }
+  SCRAPPING_ENTITY_MAPPINGS {
+    id : bigint(20) unsigned
+    source : varchar(64)
+    entity : varchar(64)
+    mapping_key : varchar(128)
+    from_path : varchar(256)
+    from_lang_aware : tinyint(1)
+    characteristic_id : bigint(20) unsigned
+    formatters : longtext
+    sort_order : smallint(5) unsigned
+    created_at : timestamp
+    updated_at : timestamp
+  }
   SCRAPPING_PENDING_RESOURCE_TYPE_ITEMS {
     id : bigint(20) unsigned
     dofusdb_type_id : int(10) unsigned
@@ -999,6 +1021,8 @@ erDiagram
   SCENARIO_USER }o--|| SCENARIOS : "FK scenario_id"
   SCENARIO_USER }o--|| USERS : "FK user_id"
   SCENARIOS }o--|| USERS : "FK created_by"
+  SCRAPPING_ENTITY_MAPPING_TARGETS }o--|| SCRAPPING_ENTITY_MAPPINGS : "FK scrapping_entity_mapping_id"
+  SCRAPPING_ENTITY_MAPPINGS }o--|| CHARACTERISTICS : "FK characteristic_id"
   SECTION_USER }o--|| SECTIONS : "FK section_id"
   SECTION_USER }o--|| USERS : "FK user_id"
   SECTIONS }o--|| USERS : "FK created_by"

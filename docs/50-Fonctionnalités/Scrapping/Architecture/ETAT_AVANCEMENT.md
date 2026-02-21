@@ -55,7 +55,15 @@ Pour l’import **monster**, après intégration Creature + Monster, le **Relati
 
 ---
 
-## 6. Références
+## 6. Limites et initiative
+
+- **Limites (maxId)** : la validation (preview, import range, etc.) utilise en priorité `meta.maxId` des configs d'entité (`entities/*.json`), avec repli sur `EntityLimits::LIMITS`.
+- **Initiative (monster)** : le champ `grades.0.initiative` DofusDB est mappé vers `creatures.ini` avec le formatter `dofusdb_ini` dans `monster.json` et IntegrationService.
+- **Import de plage** : `importRange` / `importAll` s'appuient sur **Orchestrator::runMany** (une collecte fetchMany avec filtres idMin/idMax, puis conversion et intégration par item).
+
+---
+
+## 7. Références
 
 - [README](./README.md) — Contenu du dossier Architecture.
 - [VISION_ET_ARCHITECTURE.md](./VISION_ET_ARCHITECTURE.md) — Vision et chaîne Collect → Conversion → Validation → Intégration.

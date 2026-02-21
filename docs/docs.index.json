@@ -10,6 +10,11 @@
     "description": "Ce projet est un site web. Il est responsive et utilise les dernières recommandations concernant la sécurité informatique. Le développeur du projet communique en français."
   },
   {
+    "path": "00-Project/MIGRATION_MYSQL_VERS_POSTGRESQL.md",
+    "title": "Passage de MySQL à PostgreSQL — KrosmozJDR",
+    "description": "Le projet utilise **MySQL par défaut**. Il reste **compatible PostgreSQL** sans modification de code : si vous souhaitez repasser à PostgreSQL (base vide), un simple changement de configuration suffit."
+  },
+  {
     "path": "00-Project/PLAN-LIEN-ET-COPY-CARACTERISTIQUES.md",
     "title": "Plan : Lien et copie de caractéristiques",
     "description": "1. **Lien** : Une caractéristique peut être « liée » à une caractéristique maître. La liée n’a pas de paramètres propres : elle affiche et utilise partout la config de la maître (nom, couleur, formules, conversion, etc.). Une seule source de vérité pour des caractéristiques identiques dans plusieurs groupes (ex. `level_creature`, `level_object`, `level_spell` → une maître + deux liées)."
@@ -88,6 +93,11 @@
     "path": "10-BestPractices/TESTING_PRACTICES.md",
     "title": "Tests — Bonnes pratiques",
     "description": "- Mettre en place des tests unitaires et d'intégration (backend, frontend)."
+  },
+  {
+    "path": "100- Done/FINALISATION_SCRAPPING_BACKEND.md",
+    "title": "Finalisation du service de scrapping (backend)",
+    "description": "**Contexte** : [PLAN_FINALISATION_SCRAPPING.md](../50-Fonctionnalités/Scrapping/PLAN_FINALISATION_SCRAPPING.md), [RESTE_A_FAIRE_SCRAPPING.md](../50-Fonctionnalités/Scrapping/RESTE_A_FAIRE_SCRAPPING.md)."
   },
   {
     "path": "100- Done/ISOLATION_BASE_TESTS_PHPUNIT.md",
@@ -1070,6 +1080,16 @@
     "description": "Cette table des matières présente la structure complète du livre de règles KrosmozJDR."
   },
   {
+    "path": "50-Fonctionnalités/ARCHITECTURE_SCRAPPING_MAPPING_CARACTERISTIQUES.md",
+    "title": "Architecture cible : Scrapping → Mapping → Conversion → Caractéristiques",
+    "description": "Ce document résume **comment les services doivent être composés et architecturés** (Scrapping, Mappings, Conversion, Caractéristiques, UI admin), puis **compare avec l’existant**."
+  },
+  {
+    "path": "50-Fonctionnalités/AUDIT_OPTIMISATION_SCRAPPING_MAPPING_CARACTERISTIQUES.md",
+    "title": "Audit optimisation : Scrapping, Mapping, Caractéristiques",
+    "description": "Ce document recense les **doublons supprimés**, les **extractions déjà faites** et les **recommandations** pour garder un code simple, sans duplication, avec des responsabilités claires."
+  },
+  {
     "path": "50-Fonctionnalités/Characteristics-DB/ANALYSE_PDF_CARACTERISTIQUES_EQUIPEMENTS.md",
     "title": "Analyse des PDF Caractéristiques et Équipements / Forgemagie",
     "description": "Ce document compare le contenu des documents **Caractéristiques.pdf** et **Equipements et forgemagie.pdf** (règles Krosmoz JDR α 0.1.3.0) avec l’architecture du service de caractéristiques documentée dans ce dossier. Objectif : vérifier que l’architecture proposée permet de décrire l’ensemble des caractéristiques et des règles liées aux équipements et à la forgemagie."
@@ -1083,6 +1103,11 @@
     "path": "50-Fonctionnalités/Characteristics-DB/AUDIT_CODE_CARACTERISTIQUES.md",
     "title": "Audit code : caractéristiques (doublons, obsolète, à optimiser)",
     "description": "Ce document recense les écarts et points d’attention repérés dans le code du service de caractéristiques après plusieurs évolutions. À traiter pour aligner le code sur la documentation et supprimer les doublons ou parties obsolètes."
+  },
+  {
+    "path": "50-Fonctionnalités/Characteristics-DB/BILAN_SERVICE_CARACTERISTIQUES.md",
+    "title": "Bilan : service de caractéristiques — fonctionnel, propre, à finaliser",
+    "description": "**Date :** 2026-02"
   },
   {
     "path": "50-Fonctionnalités/Characteristics-DB/DOFUSDB_CHARACTERISTIC_ID_REFERENCE.md",
@@ -1220,6 +1245,11 @@
     "description": "Ce document résume la vision, les points importants, l’architecture cible et les questions / difficultés anticipées. Il complète l’[audit (AUDIT_ETAT_DES_LIEUX.md)](./AUDIT_ETAT_DES_LIEUX.md)."
   },
   {
+    "path": "50-Fonctionnalités/Scrapping/DIVISION_TACHES_SCRAPPING.md",
+    "title": "Division des tâches — Scrapping (backend / services / frontend)",
+    "description": "Ce document décrit la répartition des responsabilités entre **contrôleurs** (API), **services** (métier) et **frontend** (UI) pour le module scrapping, et signale les incohérences éventuelles."
+  },
+  {
     "path": "50-Fonctionnalités/Scrapping/Data-collect/API.md",
     "title": "API DofusDB — Référence (collect)",
     "description": "Cette page documente **l’API DofusDB telle qu’on l’utilise dans KrosmozJDR** pour la phase **Collect** :"
@@ -1233,6 +1263,21 @@
     "path": "50-Fonctionnalités/Scrapping/EFFECTS_SYSTEM.md",
     "title": "Système d’effets (DofusDB → KrosmozJDR)",
     "description": "DofusDB modélise les effets selon les mécaniques de Dofus (ciblage, triggers, zones, etc.)."
+  },
+  {
+    "path": "50-Fonctionnalités/Scrapping/ETAT_LIEUX_AFFICHAGE_SCRAPPING.md",
+    "title": "État des lieux : affichage scrapping et conversion",
+    "description": "**Contexte :** Tester le flux scrapping → conversion des données. Le principal problème signalé est que **les données ne s'affichent pas très bien** lors du lancement d'un scrapping."
+  },
+  {
+    "path": "50-Fonctionnalités/Scrapping/INVENTAIRE_JSON_ET_MIGRATION_BDD_UI.md",
+    "title": "Inventaire des JSON scrapping et évaluation migration BDD + UI",
+    "description": "Ce document inventorie les fichiers JSON utilisés par le scrapping, décrit leur rôle et les clés lues par le code, puis évalue la faisabilité d’un transfert en base de données avec une interface admin éditable."
+  },
+  {
+    "path": "50-Fonctionnalités/Scrapping/LIEN_JSON_CARACTERISTIQUES_BDD.md",
+    "title": "Lien entre le mapping JSON (scrapping) et les caractéristiques BDD Krosmoz",
+    "description": "Ce document décrit **comment une propriété issue du JSON d’entité (ou du scrapping DofusDB) est reliée à la caractéristique en base Krosmoz** pour les formules de conversion et les limites."
   },
   {
     "path": "50-Fonctionnalités/Scrapping/MAPPING_COVERAGE_KROSMOZ_PROPS.md",
@@ -1260,9 +1305,19 @@
     "description": "Ce document décrit les **tâches restantes** pour considérer le service de scrapping comme terminé (backend), dans l’ordre de priorité recommandé. Contexte : [ETAT_AVANCEMENT.md](./Architecture/ETAT_AVANCEMENT.md), [RESTE_A_FAIRE_SCRAPPING.md](./RESTE_A_FAIRE_SCRAPPING.md)."
   },
   {
+    "path": "50-Fonctionnalités/Scrapping/PROPRIETES_UTILES_KROSMOZ.md",
+    "title": "Propriétés DofusDB utiles pour KrosmozJDR",
+    "description": "Lors de l’affichage des propriétés (Brut / Converti / Krosmoz), seules les propriétés listées ci‑dessous sont affichées. Le reste (moteur de jeu Dofus, champs API, doublons) est masqué."
+  },
+  {
     "path": "50-Fonctionnalités/Scrapping/README.md",
     "title": "Scrapping — Mapping & conversion (DofusDB → KrosmozJDR)",
     "description": "Cette section documente le **mapping** et les **fonctions de conversion (formatters)** du scrapping."
+  },
+  {
+    "path": "50-Fonctionnalités/Scrapping/RECOMMANDATION_MAPPING_PROPRIETES.md",
+    "title": "Recommandation : mapping propriétés Krosmoz ↔ DofusDB",
+    "description": "Faut-il un fichier JSON (ou équivalent) répertoriant toutes les propriétés des entités scrappables, avec pour chaque propriété le chemin côté API DofusDB ?"
   },
   {
     "path": "50-Fonctionnalités/Scrapping/RESTE_A_FAIRE_SCRAPPING.md",
@@ -1273,6 +1328,11 @@
     "path": "50-Fonctionnalités/Spell-Effects/TAXONOMIE_EFFETS_SORTS.md",
     "title": "Taxonomie des effets de sort — Krosmoz JDR",
     "description": "Référence **exhaustive** des types d’effets qu’un sort peut produire. Chaque type est paramétrable en base de données et peut être associé à un ou plusieurs sorts avec des valeurs (min, max, dés, durée, cible, etc.)."
+  },
+  {
+    "path": "50-Fonctionnalités/VISION_UI_ADMIN_MAPPING_ET_CARACTERISTIQUES.md",
+    "title": "Vision : UI admin Mapping DofusDB → KrosmozJDR et caractéristiques",
+    "description": "Ce document fixe l’**objectif global** et la **spécification de l’interface admin** pour gérer le flux **Scrapping (récupération) → Mapping → Conversion / validation** entièrement depuis la base de données et l’UI."
   },
   {
     "path": "DOCUMENTATION_GUIDE.md",

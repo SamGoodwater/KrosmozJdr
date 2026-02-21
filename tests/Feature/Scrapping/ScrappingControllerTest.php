@@ -124,6 +124,47 @@ class ScrappingControllerTest extends TestCase
     }
 
     /**
+     * Test de l'endpoint POST /api/scrapping/import/monster/{id} avec include_relations (pipeline relations).
+     */
+    public function test_import_monster_with_relations_succeeds(): void
+    {
+        $mockData = [
+            'id' => 31,
+            'name' => ['fr' => 'Bouftou'],
+            'level' => 5,
+            'lifePoints' => 100,
+            'race' => 1,
+            'grades' => [
+                [
+                    'level' => 5,
+                    'lifePoints' => 100,
+                    'strength' => 10,
+                    'intelligence' => 5,
+                    'agility' => 8,
+                    'wisdom' => 3,
+                    'chance' => 2,
+                ],
+            ],
+            'spells' => [],
+            'drops' => [],
+            'size' => 'medium',
+        ];
+
+        Http::fake([
+            'api.dofusdb.fr/monsters/31*' => Http::response($mockData, 200),
+        ]);
+
+        $response = $this->postJson('/api/scrapping/import/monster/31', [
+            'include_relations' => true,
+        ]);
+
+        $response->assertStatus(201)
+            ->assertJson([
+                'success' => true,
+            ]);
+    }
+
+    /**
      * Test de l'endpoint POST /api/scrapping/import/item/{id}
      */
     public function test_import_item_endpoint_succeeds(): void

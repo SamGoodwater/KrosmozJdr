@@ -13,6 +13,7 @@
  */
 import { computed, onMounted, ref, watch } from "vue";
 import Card from "@/Pages/Atoms/data-display/Card.vue";
+import Alert from "@/Pages/Atoms/feedback/Alert.vue";
 import Btn from "@/Pages/Atoms/action/Btn.vue";
 import Badge from "@/Pages/Atoms/data-display/Badge.vue";
 import Icon from "@/Pages/Atoms/data-display/Icon.vue";
@@ -176,6 +177,14 @@ const importByPagesProgress = ref(null); // "2/6" ou null
 const historyLines = ref([]);
 const showOptionsAndHistory = ref(false); // masqué par défaut
 
+// Détail des erreurs du dernier import batch (pour affichage ID | Statut | Erreur)
+const lastBatchResults = ref(null);
+const lastBatchErrorResults = computed(() => {
+    const list = lastBatchResults.value;
+    if (!Array.isArray(list)) return [];
+    return list.filter((r) => r && r.success === false);
+});
+
 const pushHistory = (line) => {
     const ts = new Date().toLocaleString("fr-FR");
     historyLines.value.unshift(`[${ts}] ${line}`);
@@ -336,14 +345,20 @@ const labelForTypeId = (id) => {
 const visibleItems = computed(() => {
     const items = Array.isArray(rawItems.value) ? rawItems.value : [];
     const q = String(tableSearch.value || "").trim().toLowerCase();
-    if (!q) return items;
-
-    const norm = (v) => String(v ?? "").toLowerCase();
-    return items.filter((it) => {
-        const id = norm(it?.id);
-        const name = norm(it?.name?.fr || it?.name?.en || it?.name);
-        return id.includes(q) || name.includes(q);
-    });
+    const filtered = !q
+        ? items
+        : items.filter((it) => {
+              const norm = (v) => String(v ?? "").toLowerCase();
+              const id = norm(it?.id);
+              const name = norm(it?.name?.fr || it?.name?.en || it?.name);
+              return id.includes(q) || name.includes(q);
+          });
+    const byId = convertedByItemId.value;
+    return filtered.map((it) => ({
+        ...it,
+        exists: !!byId[Number(it?.id)]?.existing,
+        existing: byId[Number(it?.id)]?.existing?.record ?? null,
+    }));
 });
 
 const selectedCount = computed(() => selectedIds.value.size);
@@ -575,19 +590,25 @@ function cellTriple(it, getExisting, getConverted, getRaw) {
     };
 }
 
-/** Aplatit un objet en clés pointées (pour tableau détaillé). */
-function flattenForCompare(obj, prefix = "") {
+/** Aplatit un objet en clés pointées (pour récupérer des valeurs). Limité à 2 niveaux (section.clé) pour ne garder que les propriétés "modèle". */
+function flattenForCompareShallow(obj, prefix = "") {
     if (!obj || typeof obj !== "object") return {};
     const out = {};
     for (const key of Object.keys(obj)) {
         const val = obj[key];
         const fullKey = prefix ? `${prefix}.${key}` : key;
         if (val !== null && typeof val === "object" && !Array.isArray(val)) {
-            Object.assign(out, flattenForCompare(val, fullKey));
+            for (const k2 of Object.keys(val)) {
+                const v2 = val[k2];
+                const key2 = `${fullKey}.${k2}`;
+                if (v2 !== null && typeof v2 === "object" && (Array.isArray(v2) || typeof v2 === "object")) {
+                    out[key2] = Array.isArray(v2) ? `[${v2.length} élément(s)]` : `{${Object.keys(v2).length} clé(s)}`;
+                } else {
+                    out[key2] = v2;
+                }
+            }
         } else if (Array.isArray(val)) {
-            val.forEach((item, i) => {
-                Object.assign(out, flattenForCompare(item, `${fullKey}[${i}]`));
-            });
+            out[fullKey] = `[${val.length} élément(s)]`;
         } else {
             out[fullKey] = val;
         }
@@ -595,27 +616,81 @@ function flattenForCompare(obj, prefix = "") {
     return out;
 }
 
-/** Pour une ligne, retourne la liste des lignes de comparaison (clé, existant, converti, brut). */
+/** Trouve une valeur dans un objet aplati par clé modèle (ex: "name" -> flat["name"] ou flat["creatures.name"]). */
+function findInFlat(flat, modelKey) {
+    if (flat[modelKey] !== undefined) return flat[modelKey];
+    const suffix = `.${modelKey}`;
+    const found = Object.keys(flat).find((k) => k === modelKey || k.endsWith(suffix));
+    return found !== undefined ? flat[found] : undefined;
+}
+
+/**
+ * Indique si une clé doit être affichée dans la comparaison (sans existant).
+ * Le tri est fait côté backend : on n'affiche que les clés présentes dans comparisonKeys (config = mapping JSON).
+ */
+function isAllowedComparisonKey(key, entityType) {
+    if (!key || typeof key !== "string") return false;
+    const comparisonKeys = configEntitiesByKey.value?.[String(entityType || "")]?.comparisonKeys;
+    if (Array.isArray(comparisonKeys) && comparisonKeys.length > 0) {
+        if (comparisonKeys.includes(key)) return true;
+        if (comparisonKeys.some((k) => key === k || key.endsWith("." + k))) return true;
+        return false;
+    }
+    return true;
+}
+
+/** Filtre les clés pour n'afficher que celles de la config (comparisonKeys) quand pas d'existant. */
+function filterAllowedComparisonKeys(keys, entityType) {
+    const t = String(entityType || "").trim();
+    return keys.filter((k) => isAllowedComparisonKey(k, t));
+}
+
+/** Pour une ligne, retourne les lignes de comparaison (clé, brut, converti, existant) : propriétés du modèle uniquement. */
 function comparisonRows(it) {
     const existing = existingRecord(it);
     const data = convertedByItemId.value[Number(it?.id)];
-    const raw = it ?? {};
-    const existingFlat = flattenForCompare(existing ?? {});
-    const convertedFlat = flattenForCompare(data?.converted ?? {});
-    const rawFlat = flattenForCompare(raw);
-    const keys = [...new Set([...Object.keys(existingFlat), ...Object.keys(convertedFlat), ...Object.keys(rawFlat)])].sort();
-    return keys.map((key) => ({
-        key,
-        existant: existingFlat[key],
-        converti: convertedFlat[key],
-        brut: rawFlat[key],
-    }));
+    const raw = data?.raw ?? it ?? {};
+    const existingFlat = flattenForCompareShallow(existing ?? {});
+    const convertedFlat = flattenForCompareShallow(data?.converted ?? {});
+    const rawFlat = flattenForCompareShallow(raw);
+    let modelKeys = Object.keys(existingFlat).length > 0
+        ? Object.keys(existingFlat)
+        : Object.keys(convertedFlat);
+    if (modelKeys.length === 0) modelKeys = Object.keys(rawFlat);
+    if (modelKeys.length > 0 && Object.keys(existingFlat).length === 0) {
+        modelKeys = filterAllowedComparisonKeys(modelKeys, selectedEntityType.value);
+    }
+    return modelKeys.sort().map((key) => {
+        const brut = findInFlat(rawFlat, key) ?? findInFlat(rawFlat, key.split(".").pop());
+        const converti = findInFlat(convertedFlat, key) ?? findInFlat(convertedFlat, key.split(".").pop());
+        const existant = existingFlat[key];
+        const differs = converti !== existant;
+        return {
+            key,
+            brut,
+            converti,
+            existant,
+            differs,
+        };
+    });
 }
 
 function formatCompareVal(val) {
     if (val == null || val === "") return "—";
     if (typeof val === "object") return JSON.stringify(val);
     return String(val);
+}
+
+/** True si les données converties diffèrent des données existantes (pour surligner la ligne). */
+function rowHasDiff(it) {
+    const name = tripleName(it);
+    const level = tripleLevel(it);
+    const type = tripleType(it);
+    return (
+        (name.converti !== name.existant) ||
+        (level.converti !== level.existant) ||
+        (type.converti !== type.existant)
+    );
 }
 
 function extractFirstBlock(converted) {
@@ -689,6 +764,7 @@ const fetchConvertedBatch = async () => {
             for (const item of data.data.items) {
                 const id = Number(item?.id);
                 if (Number.isFinite(id)) next[id] = {
+                    raw: item.raw ?? null,
                     converted: item.converted ?? null,
                     existing: item.existing ?? null,
                     error: item.error ?? null,
@@ -741,7 +817,7 @@ const runSearch = async () => {
             const returned = rawItems.value.length;
             success(`Recherche OK (${returned} résultat(s))`);
             pushHistory(`→ OK: ${returned} résultat(s)${typeof total === "number" ? ` (total=${total})` : ""}.`);
-            void fetchConvertedBatch();
+            await fetchConvertedBatch();
         } else {
             showError(data.message || "Erreur lors de la recherche");
             pushHistory(`→ ERREUR: ${data.message || "recherche"}`);
@@ -977,13 +1053,16 @@ const runBatch = async (mode, scope = "auto") => {
             const s = data.summary || {};
             success(`${label}: ${s.success ?? 0}/${s.total ?? targetCount} (erreurs: ${s.errors ?? 0})`);
             pushHistory(`→ ${label.toUpperCase()} OK: ${s.success ?? 0}/${s.total ?? targetCount} (erreurs: ${s.errors ?? 0})`);
+            lastBatchResults.value = (s.errors ?? 0) > 0 ? (data.results ?? []) : null;
         } else {
+            lastBatchResults.value = null;
             showError(data.message || `Erreur ${label.toLowerCase()}`);
             pushHistory(`→ ${label.toUpperCase()} ERREUR: ${data.message || "batch"}`);
         }
     } catch (e) {
         showError(`Erreur ${label.toLowerCase()} : ` + e.message);
         pushHistory(`→ ${label.toUpperCase()} ERREUR: ${e.message}`);
+        lastBatchResults.value = null;
     } finally {
         importing.value = false;
     }
@@ -1590,6 +1669,58 @@ const onCompareImported = () => {
                     </div>
                     <pre class="text-xs bg-base-300/30 border border-base-300 rounded p-3 max-h-80 overflow-auto whitespace-pre-wrap break-words">{{ historyLines.join("\n") }}</pre>
                 </Card>
+
+                <!-- Détail des erreurs du dernier import batch -->
+                <Card v-if="lastBatchErrorResults.length > 0" class="overflow-hidden border-error/30 bg-error/5">
+                    <div class="flex flex-wrap items-center justify-between gap-2 border-b border-error/20 bg-error/10 px-4 py-3">
+                        <div class="flex items-center gap-2">
+                            <Icon source="fa-solid fa-triangle-exclamation" alt="" pack="solid" class="text-error text-lg" />
+                            <h4 class="font-semibold text-primary-100">Erreurs import batch</h4>
+                            <Badge :content="String(lastBatchErrorResults.length)" color="error" size="sm" />
+                        </div>
+                        <Btn size="sm" variant="ghost" color="error" @click="lastBatchResults = null">
+                            Fermer
+                        </Btn>
+                    </div>
+                    <div class="p-4 space-y-3">
+                        <Alert color="error" variant="soft" class="text-sm">
+                            <span class="font-medium">{{ lastBatchErrorResults.length }} entité(s) en échec</span>
+                            <span class="text-primary-200"> sur le dernier import. Détail ci-dessous.</span>
+                        </Alert>
+                        <div class="overflow-x-auto rounded-lg border border-base-300 bg-base-100 max-h-56 overflow-y-auto">
+                            <table class="table table-zebra table-pin-rows table-xs">
+                                <thead>
+                                    <tr class="bg-base-300/70 text-primary-200">
+                                        <th class="w-24 font-semibold">Type</th>
+                                        <th class="w-20 font-semibold">ID</th>
+                                        <th class="font-semibold">Message / Détails</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr
+                                        v-for="(row, idx) in lastBatchErrorResults"
+                                        :key="idx"
+                                        class="hover:bg-error/5"
+                                    >
+                                        <td>
+                                            <Badge :content="row.type" color="neutral" size="xs" class="font-mono" />
+                                        </td>
+                                        <td class="font-mono text-primary-100 font-medium">{{ row.id }}</td>
+                                        <td class="text-xs">
+                                            <span class="text-error-200 font-medium">{{ row.error || '—' }}</span>
+                                            <ul v-if="row.validation_errors?.length" class="list-disc list-inside mt-1 text-primary-400 space-y-0.5">
+                                                <li v-for="(ve, i) in row.validation_errors" :key="i">
+                                                    <span class="font-mono text-[11px]">{{ ve.path || '—' }}</span>
+                                                    <span> : {{ ve.message || '—' }}</span>
+                                                </li>
+                                            </ul>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </Card>
             </div>
         </Card>
 
@@ -1718,6 +1849,7 @@ const onCompareImported = () => {
                         <template v-for="it in visibleItems" :key="String(it.id)">
                         <tr
                             class="cursor-pointer hover:bg-base-200/50"
+                            :class="rowHasDiff(it) ? 'bg-warning/15' : ''"
                             @dblclick="openCompareModalForRow(it)"
                         >
                             <td>
@@ -1734,7 +1866,7 @@ const onCompareImported = () => {
                                     type="button"
                                     class="btn btn-ghost btn-xs p-1"
                                     :class="expandedRowId === Number(it.id) ? 'text-primary' : 'text-primary-300'"
-                                    :title="expandedRowId === Number(it.id) ? 'Replier' : 'Toutes les propriétés (existant / converti / brut)'"
+                                    :title="expandedRowId === Number(it.id) ? 'Replier' : 'Propriétés : Brut / Converti / Krosmoz'"
                                     @click.stop="toggleExpandedRow(it.id)"
                                 >
                                     <Icon :source="expandedRowId === Number(it.id) ? 'fa-solid fa-chevron-down' : 'fa-solid fa-chevron-right'" alt="" pack="solid" />
@@ -1806,23 +1938,30 @@ const onCompareImported = () => {
                         <!-- Ligne dépliée : comparaison de toutes les propriétés -->
                         <tr v-if="expandedRowId === Number(it.id)" :key="'exp-' + it.id" class="bg-base-200/60">
                             <td colspan="100" class="p-3 align-top">
-                                <div class="text-xs font-semibold text-primary-200 mb-2">Toutes les propriétés (Krosmoz / Converti / DofusDB)</div>
+                                <div class="text-xs font-semibold text-primary-200 mb-2">Propriétés : Brut / Converti / Krosmoz (existant)</div>
                                 <div class="overflow-x-auto max-h-64 overflow-y-auto rounded border border-base-300">
                                     <table class="table table-xs w-full">
                                         <thead>
                                             <tr class="bg-base-300/50">
-                                                <th class="w-48 font-mono">Propriété</th>
-                                                <th>Krosmoz (existant)</th>
+                                                <th class="w-40 font-mono">Propriété</th>
+                                                <th>Brut (DofusDB)</th>
                                                 <th>Converti</th>
-                                                <th>DofusDB (brut)</th>
+                                                <th>Krosmoz (existant)</th>
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            <tr v-for="row in comparisonRows(it)" :key="row.key" class="border-b border-base-300/30">
+                                            <tr
+                                                v-for="row in comparisonRows(it)"
+                                                :key="row.key"
+                                                class="border-b border-base-300/30"
+                                                :class="row.differs ? 'bg-warning/15' : ''"
+                                            >
                                                 <td class="font-mono text-primary-200">{{ row.key }}</td>
-                                                <td class="break-all text-sm">{{ formatCompareVal(row.existant) }}</td>
-                                                <td class="break-all text-sm">{{ formatCompareVal(row.converti) }}</td>
                                                 <td class="break-all text-sm text-primary-300">{{ formatCompareVal(row.brut) }}</td>
+                                                <td class="break-all text-sm text-primary-100">{{ formatCompareVal(row.converti) }}</td>
+                                                <td class="break-all text-sm" :class="row.differs ? 'text-warning font-medium' : 'text-primary-200'">
+                                                    {{ formatCompareVal(row.existant) }}
+                                                </td>
                                             </tr>
                                         </tbody>
                                     </table>

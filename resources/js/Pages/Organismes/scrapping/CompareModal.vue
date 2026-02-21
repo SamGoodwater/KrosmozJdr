@@ -33,23 +33,37 @@ const error = ref(null);
 const choices = ref({}); // { "field.path": "krosmoz" | "dofusdb" }
 const importing = ref(false);
 
-function flattenObject(obj, prefix = "") {
+/** Aplatit au plus 2 niveaux (section.clé) pour ne garder que les propriétés du modèle. */
+function flattenShallow(obj, prefix = "") {
+    if (!obj || typeof obj !== "object") return {};
     const result = {};
-    if (!obj || typeof obj !== "object") return result;
     Object.keys(obj).forEach((key) => {
         const value = obj[key];
         const newKey = prefix ? `${prefix}.${key}` : key;
         if (value !== null && typeof value === "object" && !Array.isArray(value)) {
-            Object.assign(result, flattenObject(value, newKey));
-        } else if (Array.isArray(value)) {
-            value.forEach((item, index) => {
-                Object.assign(result, flattenObject(item, `${newKey}[${index}]`));
+            Object.keys(value).forEach((k2) => {
+                const v2 = value[k2];
+                const key2 = `${newKey}.${k2}`;
+                if (v2 !== null && typeof v2 === "object" && (Array.isArray(v2) || typeof v2 === "object")) {
+                    result[key2] = Array.isArray(v2) ? `[${v2.length} élément(s)]` : `{${Object.keys(v2).length} clé(s)}`;
+                } else {
+                    result[key2] = v2;
+                }
             });
+        } else if (Array.isArray(value)) {
+            result[newKey] = `[${value.length} élément(s)]`;
         } else {
             result[newKey] = value;
         }
     });
     return result;
+}
+
+function findInFlat(flat, modelKey) {
+    if (flat[modelKey] !== undefined) return flat[modelKey];
+    const suffix = `.${modelKey}`;
+    const found = Object.keys(flat).find((k) => k === modelKey || k.endsWith(suffix));
+    return found !== undefined ? flat[found] : undefined;
 }
 
 const existingRecord = computed(() => {
@@ -61,19 +75,22 @@ const existingRecord = computed(() => {
 const convertedData = computed(() => preview.value?.converted ?? {});
 
 const existingFlat = computed(() =>
-    existingRecord.value ? flattenObject(existingRecord.value) : {}
+    existingRecord.value ? flattenShallow(existingRecord.value) : {}
 );
-const convertedFlat = computed(() => flattenObject(convertedData.value));
+const convertedFlat = computed(() => flattenShallow(convertedData.value));
 
+/** Clés à afficher : uniquement propriétés du modèle (existant) ou shallow du converti. */
 const allKeys = computed(() => {
-    const a = new Set([...Object.keys(existingFlat.value), ...Object.keys(convertedFlat.value)]);
-    return Array.from(a).sort();
+    const fromExisting = Object.keys(existingFlat.value);
+    const fromConverted = Object.keys(convertedFlat.value);
+    const keys = fromExisting.length > 0 ? fromExisting : fromConverted;
+    return [...new Set(keys)].sort();
 });
 
 const rows = computed(() => {
     return allKeys.value.map((key) => {
         const krosmozVal = existingFlat.value[key];
-        const dofusdbVal = convertedFlat.value[key];
+        const dofusdbVal = findInFlat(convertedFlat.value, key) ?? findInFlat(convertedFlat.value, key.split(".").pop());
         const krosmozStr =
             krosmozVal === undefined || krosmozVal === null
                 ? "(vide)"
@@ -116,7 +133,7 @@ async function fetchPreview() {
         }
         preview.value = json.data ?? null;
         if (preview.value?.existing?.record) {
-            const flat = flattenObject(preview.value.existing.record);
+            const flat = flattenShallow(preview.value.existing.record);
             const defaults = {};
             Object.keys(flat).forEach((k) => {
                 defaults[k] = "krosmoz";

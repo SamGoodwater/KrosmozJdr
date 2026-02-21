@@ -16,12 +16,12 @@
     "fetchOne": {
       "pathTemplate": "/item-types/{id}",
       "method": "GET",
-      "queryDefaults": { "lang": "{lang}" }
+      "queryDefaults": { "lang": "fr" }
     },
     "fetchMany": {
       "path": "/item-types",
       "method": "GET",
-      "queryDefaults": { "lang": "{lang}", "$limit": 50, "$skip": 0 }
+      "queryDefaults": { "lang": "fr", "$limit": 50, "$skip": 0 }
     }
   },
   "filters": {

@@ -15,6 +15,7 @@ import ColorCore from '@/Pages/Atoms/data-input/ColorCore.vue';
 import FormulaOrTableField from '@/Pages/Molecules/data-input/FormulaOrTableField.vue';
 import FormulaOrTableFieldWithChart from '@/Pages/Organismes/data-input/FormulaOrTableFieldWithChart.vue';
 import ConversionChartBlock from '@/Pages/Admin/characteristics/ConversionChartBlock.vue';
+import MappingPanel from '@/Pages/Admin/characteristics/MappingPanel.vue';
 import axios from 'axios';
 
 const { setPageTitle } = usePageTitle();
@@ -43,6 +44,8 @@ const props = defineProps({
     copyFromCharacteristic: { type: Object, default: null },
     /** Liste des caractéristiques maîtres possibles pour « Convertir en liée » (mode édition, non liée). */
     characteristicsForConvertToLinked: { type: Array, default: () => [] },
+    /** Règles de mapping scrapping (source, entity, mapping_key, from_path, targets) qui utilisent cette caractéristique (panneau 3). */
+    scrappingMappingsUsingThis: { type: Array, default: () => [] },
 });
 
 /** Entités affichées en panneaux supplémentaires (hors Général). Clic sur "Spécifier pour une entité". */
@@ -1141,9 +1144,10 @@ function submitConvertToLinked() {
                         </div>
                     </div>
 
-                    <!-- Général : Limite et défaut (entité * uniquement) -->
-                    <div class="space-y-4" v-if="generalEntityRow()">
-                                <div class="space-y-4 pt-2">
+                    <!-- Panneau 1 — Limite et valeur (défaut, min, max : expressions dynamiques) -->
+                    <section class="space-y-4" v-if="generalEntityRow()">
+                        <h2 class="text-xl font-semibold text-base-content border-b border-base-300 pb-2">Panneau 1 — Limite et valeur</h2>
+                        <div class="space-y-4 pt-2">
                     <div v-for="ent in (generalEntityRow() ? [generalEntityRow()] : [])" :key="ent.entity" class="card shadow border border-base-200 border-glass-sm relative overflow-hidden">
                         <div class="card-body bg-base-200 rounded-lg">
                             <h3 class="card-title text-lg">Limite et défaut</h3>
@@ -1234,12 +1238,14 @@ function submitConvertToLinked() {
                         </div>
                     </div>
                                 </div>
-                    </div>
+                    </section>
 
-                    <!-- Conversion : une seule config pour tout le groupe -->
-                    <div v-if="generalEntityRow()" class="card shadow border-glass-sm relative overflow-hidden">
+                    <!-- Panneau 2 — Conversion (formule DofusDB → Krosmoz, graphe, échantillonnage) -->
+                    <section v-if="generalEntityRow()" class="space-y-4">
+                        <h2 class="text-xl font-semibold text-base-content border-b border-base-300 pb-2">Panneau 2 — Conversion</h2>
+                    <div class="card shadow border-glass-sm relative overflow-hidden">
                         <div class="card-body bg-base-100 rounded-lg bg-color-neutral-100">
-                            <h3 class="card-title text-lg">Conversion</h3>
+                            <h3 class="card-title text-lg">Formule de conversion</h3>
                             <p class="text-sm text-base-content/70">
                                 Formules utilisées lors du scrapping pour convertir les valeurs DofusDB en valeurs JDR. Variable <code class="rounded bg-base-300 px-1">[d]</code> = valeur Dofus, <code class="rounded bg-base-300 px-1">[level]</code> = niveau JDR (pour la vie). Une formule différente par type d’entité (monstre, classe, équipement).
                             </p>
@@ -1411,6 +1417,10 @@ function submitConvertToLinked() {
                             </div>
                         </div>
                     </div>
+                    </section>
+
+                    <!-- Panneau 3 — Mapping (lien DofusDB ↔ Krosmoz, unique par entité) -->
+                    <MappingPanel :scrapping-mappings-using-this="scrappingMappingsUsingThis ?? []" />
 
                     <!-- Panneaux entité spécifique (sous Conversion) -->
                     <div v-for="entityKey in selectedEntityOverrides" :key="entityKey" class="card shadow border border-base-200 mt-4 border-glass-sm relative overflow-hidden" :class="entityBgClasses[entityKey]">

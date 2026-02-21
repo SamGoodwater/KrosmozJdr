@@ -21,10 +21,9 @@ use Illuminate\Validation\Rule;
  */
 class ScrappingController extends Controller
 {
-    private const ENTITY_ALIASES = ['class' => 'breed'];
-
     public function __construct(
         private ConfigLoader $configLoader,
+        private CollectAliasResolver $aliasResolver,
         private IntegrationService $integrationService,
     ) {}
 
@@ -41,14 +40,16 @@ class ScrappingController extends Controller
                 sort($entities);
             }
             foreach ($entities as $entity) {
-                $configEntity = self::ENTITY_ALIASES[$entity] ?? $entity;
+                $aliasCfg = $this->aliasResolver->resolve($entity);
+                $configEntity = ($aliasCfg !== null && isset($aliasCfg['entity'])) ? $aliasCfg['entity'] : $entity;
                 $cfg = $this->configLoader->loadEntity('dofusdb', $configEntity);
                 $maxId = (int) (($cfg['meta']['maxId'] ?? 0) ?: 0);
                 if ($maxId > 0) {
+                    $label = ($aliasCfg !== null ? ($aliasCfg['label'] ?? null) : null) ?? $cfg['label'] ?? $this->getEntityLabel($entity);
                     $metaByType[$entity] = [
                         'type' => $entity,
                         'maxId' => $maxId,
-                        'label' => $cfg['label'] ?? $this->getEntityLabel($entity),
+                        'label' => $label,
                     ];
                 }
             }
@@ -84,6 +85,27 @@ class ScrappingController extends Controller
             'equipment' => 'Équipement',
             default => ucfirst($type),
         };
+    }
+
+    /**
+     * Retourne la limite maxId pour un type d'entité : config (meta.maxId) en priorité, EntityLimits en secours.
+     */
+    private function getMaxIdForType(string $type): int
+    {
+        $resolved = $this->resolveEntityForImport($type);
+        if ($resolved === null) {
+            return EntityLimits::capFor($type);
+        }
+        try {
+            $cfg = $this->configLoader->loadEntity($resolved['source'], $resolved['entity']);
+            $maxId = (int) (($cfg['meta']['maxId'] ?? 0) ?: 0);
+            if ($maxId > 0) {
+                return $maxId;
+            }
+        } catch (\Throwable) {
+            // fallback
+        }
+        return EntityLimits::capFor($type);
     }
 
     /** @return array{convert: bool, validate: bool, integrate: bool, dry_run: bool, force_update: bool, include_relations: bool, lang: string} */
@@ -123,13 +145,11 @@ class ScrappingController extends Controller
     /** @return array{source: string, entity: string}|null */
     private function resolveEntityForImport(string $type): ?array
     {
-        $aliasResolver = CollectAliasResolver::default();
-        $cfg = $aliasResolver->resolve($type);
+        $cfg = $this->aliasResolver->resolve($type);
         if ($cfg !== null) {
             return ['source' => (string) ($cfg['source'] ?? 'dofusdb'), 'entity' => (string) ($cfg['entity'] ?? $type)];
         }
-        $entity = $type === 'class' ? 'breed' : $type;
-        return ['source' => 'dofusdb', 'entity' => $entity];
+        return ['source' => 'dofusdb', 'entity' => $type];
     }
 
     /**
@@ -308,6 +328,7 @@ class ScrappingController extends Controller
                         'success' => $result->isSuccess(),
                         'data' => $result->isSuccess() ? ($result->getIntegrationResult()?->getData() ?? $result->getConverted()) : null,
                         'error' => $result->isSuccess() ? null : $result->getMessage(),
+                        'validation_errors' => $result->isSuccess() ? [] : $result->getValidationErrors(),
                     ];
                     $result->isSuccess() ? $successCount++ : $errorCount++;
                 } catch (\Throwable $e) {
@@ -326,7 +347,7 @@ class ScrappingController extends Controller
         } catch (\Illuminate\Validation\ValidationException $e) {
             return response()->json(['success' => false, 'message' => 'Erreur de validation', 'errors' => $e->errors(), 'timestamp' => now()->toISOString()], 422);
         } catch (\Throwable $e) {
-            Log::error('Erreur import en lot via API', ['error' => $e->getMessage()]);
+            Log::error('Erreur import en lot via API', ['count' => count($entities ?? []), 'error' => $e->getMessage()]);
             return response()->json(['success' => false, 'message' => 'Erreur lors de l\'import en lot', 'error' => $e->getMessage(), 'timestamp' => now()->toISOString()], 500);
         }
     }
@@ -377,7 +398,7 @@ class ScrappingController extends Controller
         if ($startId > $endId) {
             return response()->json(['success' => false, 'message' => 'La valeur de début doit être inférieure ou égale à la valeur de fin'], 422);
         }
-        $maxId = EntityLimits::LIMITS[$type] ?? 10000;
+        $maxId = $this->getMaxIdForType($type);
         if ($startId < 1 || $endId > $maxId) {
             return response()->json(['success' => false, 'message' => "La plage doit être comprise entre 1 et {$maxId}"], 422);
         }
@@ -387,33 +408,67 @@ class ScrappingController extends Controller
         }
         try {
             $options = $this->optionsFromRequest($request);
+            $options['limit'] = $endId - $startId + 1;
+            $options['offset'] = 0;
+            $filters = ['idMin' => $startId, 'idMax' => $endId];
             $orchestrator = Orchestrator::default();
+            $result = $orchestrator->runMany($resolved['source'], $resolved['entity'], $filters, $options);
+
+            if (!$result->isSuccess()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => $result->getMessage(),
+                    'errors' => $result->getValidationErrors(),
+                    'range' => ['type' => $type, 'start' => $startId, 'end' => $endId],
+                    'timestamp' => now()->toISOString(),
+                ], 400);
+            }
+
+            $convertedList = $result->getConverted();
+            $integrationResults = $result->getIntegrationResults() ?? [];
             $results = [];
             $successCount = 0;
             $errorCount = 0;
-            for ($id = $startId; $id <= $endId; $id++) {
-                try {
-                    $result = $orchestrator->runOne($resolved['source'], $resolved['entity'], $id, $options);
-                    $results[] = ['id' => $id, 'success' => $result->isSuccess(), 'error' => $result->isSuccess() ? null : $result->getMessage()];
-                    $result->isSuccess() ? $successCount++ : $errorCount++;
-                } catch (\Throwable $e) {
-                    $results[] = ['id' => $id, 'success' => false, 'error' => $e->getMessage()];
-                    $errorCount++;
+            foreach ($convertedList as $i => $converted) {
+                if (!is_array($converted)) {
+                    continue;
                 }
+                $id = $this->extractDofusdbIdFromConverted($converted);
+                $intResult = $integrationResults[$i] ?? null;
+                $success = $intResult !== null && $intResult->isSuccess();
+                $results[] = [
+                    'id' => $id ?? $startId + $i,
+                    'success' => $success,
+                    'error' => $success ? null : ($intResult?->getMessage() ?? 'Erreur inconnue'),
+                ];
+                $success ? $successCount++ : $errorCount++;
             }
             $statusCode = $errorCount === 0 ? 201 : 207;
             return response()->json([
                 'success' => $errorCount === 0,
                 'message' => $errorCount === 0 ? 'Import de plage terminé' : 'Import de plage avec erreurs',
-                'summary' => ['total' => $endId - $startId + 1, 'success' => $successCount, 'errors' => $errorCount],
+                'summary' => ['total' => count($results), 'success' => $successCount, 'errors' => $errorCount],
                 'results' => $results,
                 'range' => ['type' => $type, 'start' => $startId, 'end' => $endId],
                 'timestamp' => now()->toISOString(),
             ], $statusCode);
         } catch (\Throwable $e) {
-            Log::error('Erreur import de plage', ['type' => $type, 'error' => $e->getMessage()]);
+            Log::error('Erreur import de plage', ['type' => $type, 'start_id' => $startId, 'end_id' => $endId, 'error' => $e->getMessage()]);
             return response()->json(['success' => false, 'message' => 'Erreur lors de l\'import de la plage', 'error' => $e->getMessage(), 'timestamp' => now()->toISOString()], 500);
         }
+    }
+
+    /**
+     * Extrait l'ID DofusDB d'une structure convertie (runMany) pour le rapport par item.
+     */
+    private function extractDofusdbIdFromConverted(array $converted): ?int
+    {
+        $id = $converted['monsters']['dofusdb_id'] ?? $converted['breeds']['dofusdb_id'] ?? $converted['items']['dofusdb_id']
+            ?? $converted['spells']['dofusdb_id'] ?? $converted['panoplies']['dofusdb_id'] ?? null;
+        if ($id !== null && (is_int($id) || (is_string($id) && ctype_digit($id)))) {
+            return (int) $id;
+        }
+        return null;
     }
 
     /**
@@ -423,7 +478,7 @@ class ScrappingController extends Controller
     {
         $validated = $request->validate(['type' => ['required', 'string', Rule::in(array_keys(EntityLimits::LIMITS))]]);
         $type = (string) $validated['type'];
-        $maxId = EntityLimits::LIMITS[$type] ?? 10000;
+        $maxId = $this->getMaxIdForType($type);
         $request->merge(['start_id' => 1, 'end_id' => $maxId]);
         return $this->importRange($request);
     }
@@ -437,7 +492,7 @@ class ScrappingController extends Controller
         if (!array_key_exists($normalizedType, EntityLimits::LIMITS)) {
             return response()->json(['success' => false, 'message' => 'Type d\'entité non supporté'], 422);
         }
-        $maxId = EntityLimits::LIMITS[$normalizedType];
+        $maxId = $this->getMaxIdForType($normalizedType);
         if ($id < 1 || $id > $maxId) {
             return response()->json(['success' => false, 'message' => "L'identifiant doit être compris entre 1 et {$maxId}"], 422);
         }
@@ -455,7 +510,7 @@ class ScrappingController extends Controller
                 : null;
             $data = [
                 'success' => $result->isSuccess(),
-                'raw' => null,
+                'raw' => $result->getRaw(),
                 'converted' => $converted,
                 'validation_errors' => $result->getValidationErrors(),
                 'existing' => $existingRecord !== null ? ['record' => $existingRecord] : null,
@@ -485,7 +540,7 @@ class ScrappingController extends Controller
             if ($resolved === null) {
                 return response()->json(['success' => false, 'message' => 'Type non supporté.', 'timestamp' => now()->toISOString()], 422);
             }
-            $maxId = EntityLimits::LIMITS[$type] ?? 10000;
+            $maxId = $this->getMaxIdForType($type);
             $comparisonType = $this->entityTypeForComparison($type);
             $options = ['convert' => true, 'validate' => true, 'integrate' => false, 'dry_run' => true, 'force_update' => false, 'lang' => 'fr'];
             $orchestrator = Orchestrator::default();
@@ -503,6 +558,7 @@ class ScrappingController extends Controller
                         : null;
                     $items[] = [
                         'id' => $id,
+                        'raw' => $result->getRaw(),
                         'converted' => $converted,
                         'existing' => $existingRecord !== null ? ['record' => $existingRecord] : null,
                         'error' => $result->isSuccess() ? null : $result->getMessage(),
@@ -519,7 +575,7 @@ class ScrappingController extends Controller
         } catch (\Illuminate\Validation\ValidationException $e) {
             return response()->json(['success' => false, 'message' => 'Erreur de validation', 'errors' => $e->errors(), 'timestamp' => now()->toISOString()], 422);
         } catch (\Throwable $e) {
-            Log::error('Erreur prévisualisation batch', ['error' => $e->getMessage()]);
+            Log::error('Erreur prévisualisation batch', ['type' => $type ?? null, 'error' => $e->getMessage()]);
             return response()->json(['success' => false, 'message' => 'Erreur lors de la prévisualisation en lot', 'error' => $e->getMessage(), 'timestamp' => now()->toISOString()], 500);
         }
     }

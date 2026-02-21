@@ -10,12 +10,12 @@
     "fetchOne": {
       "pathTemplate": "/breeds/{id}",
       "method": "GET",
-      "queryDefaults": { "lang": "{lang}" }
+      "queryDefaults": { "lang": "fr" }
     },
     "fetchMany": {
       "path": "/breeds",
       "method": "GET",
-      "queryDefaults": { "lang": "{lang}", "$limit": 50, "$skip": 0 }
+      "queryDefaults": { "lang": "fr", "$limit": 50, "$skip": 0 }
     }
   },
   "filters": {
@@ -42,20 +42,20 @@
       "key": "name",
       "from": { "path": "name", "langAware": true },
       "to": [{ "model": "breeds", "field": "name" }],
-      "formatters": [{ "name": "pickLang", "args": { "lang": "{lang}", "fallback": "fr" } }]
+      "formatters": [{ "name": "pickLang", "args": { "lang": "fr", "fallback": "fr" } }]
     },
     {
       "key": "description",
       "from": { "path": "description", "langAware": true },
       "to": [{ "model": "breeds", "field": "description" }],
-      "formatters": [{ "name": "pickLang", "args": { "lang": "{lang}", "fallback": "fr" } }]
+      "formatters": [{ "name": "pickLang", "args": { "lang": "fr", "fallback": "fr" } }]
     },
     {
       "key": "description_fast",
       "from": { "path": "shortDescription", "langAware": true },
       "to": [{ "model": "breeds", "field": "description_fast" }],
       "formatters": [
-        { "name": "pickLang", "args": { "lang": "{lang}", "fallback": "fr" } },
+        { "name": "pickLang", "args": { "lang": "fr", "fallback": "fr" } },
         { "name": "truncate", "args": { "max": 255 } }
       ]
     },
@@ -64,7 +64,7 @@
       "from": { "path": "specificity", "langAware": true },
       "to": [{ "model": "breeds", "field": "specificity" }],
       "formatters": [
-        { "name": "pickLang", "args": { "lang": "{lang}", "fallback": "fr" } },
+        { "name": "pickLang", "args": { "lang": "fr", "fallback": "fr" } },
         { "name": "truncate", "args": { "max": 255 } }
       ]
     },

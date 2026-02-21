@@ -9,6 +9,8 @@
 import { computed, ref, watch } from "vue";
 import Card from "@/Pages/Atoms/data-display/Card.vue";
 import Btn from "@/Pages/Atoms/action/Btn.vue";
+import Badge from "@/Pages/Atoms/data-display/Badge.vue";
+import Icon from "@/Pages/Atoms/data-display/Icon.vue";
 import Loading from "@/Pages/Atoms/feedback/Loading.vue";
 import Alert from "@/Pages/Atoms/feedback/Alert.vue";
 import InputField from "@/Pages/Molecules/data-input/InputField.vue";
@@ -40,6 +42,12 @@ const searching = ref(false);
 const importing = ref(false);
 const lastResult = ref(null);
 const selectedIds = ref([]);
+const lastBatchResults = ref(null);
+const lastBatchErrorResults = computed(() => {
+    const list = lastBatchResults.value;
+    if (!Array.isArray(list)) return [];
+    return list.filter((r) => r && r.success === false);
+});
 
 const filterValues = ref({
     id: "",
@@ -64,6 +72,7 @@ watch(
     () => {
         selectedIds.value = [];
         lastResult.value = null;
+        lastBatchResults.value = null;
         paging.value.start_skip = 0;
     }
 );
@@ -224,11 +233,14 @@ const importSelected = async () => {
         if (res.ok) {
             const s = data.summary || {};
             success(`Import batch: ${s.success ?? 0}/${s.total ?? entities.length} (erreurs: ${s.errors ?? 0})`);
+            lastBatchResults.value = (s.errors ?? 0) > 0 ? (data.results ?? []) : null;
         } else {
             showError(data.message || "Erreur lors de l'import batch");
+            lastBatchResults.value = null;
         }
     } catch (e) {
         showError("Erreur lors de l'import batch : " + e.message);
+        lastBatchResults.value = null;
     } finally {
         importing.value = false;
     }
@@ -312,6 +324,44 @@ const previewSelected = () => {
 
             <div v-else class="text-sm text-primary-300 italic">
                 Aucun résultat (lance une recherche).
+            </div>
+
+            <!-- Détail des erreurs du dernier import batch -->
+            <div v-if="lastBatchErrorResults.length > 0" class="mt-4 overflow-hidden rounded-lg border border-error/30 bg-error/5">
+                <div class="flex flex-wrap items-center justify-between gap-2 border-b border-error/20 bg-error/10 px-3 py-2">
+                    <div class="flex items-center gap-2">
+                        <Icon source="fa-solid fa-triangle-exclamation" alt="" pack="solid" class="text-error text-sm" />
+                        <span class="font-semibold text-primary-100 text-sm">Erreurs import</span>
+                        <Badge :content="String(lastBatchErrorResults.length)" color="error" size="xs" />
+                    </div>
+                    <Btn size="sm" variant="ghost" class="text-error-200 hover:bg-error/10" @click="lastBatchResults = null">Fermer</Btn>
+                </div>
+                <Alert color="error" variant="soft" class="mx-3 mt-2 mb-0 text-xs rounded">
+                    {{ lastBatchErrorResults.length }} entité(s) en échec. Détail ci-dessous.
+                </Alert>
+                <div class="overflow-x-auto p-3 max-h-44 overflow-y-auto">
+                    <table class="table table-zebra table-pin-rows table-xs">
+                        <thead>
+                            <tr class="bg-base-300/70 text-primary-200">
+                                <th class="w-20 font-semibold">Type</th>
+                                <th class="w-16 font-semibold">ID</th>
+                                <th class="font-semibold">Message / Détails</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr v-for="(row, idx) in lastBatchErrorResults" :key="idx" class="hover:bg-error/5">
+                                <td><Badge :content="row.type" color="neutral" size="xs" class="font-mono" /></td>
+                                <td class="font-mono font-medium text-primary-100">{{ row.id }}</td>
+                                <td class="text-xs">
+                                    <span class="text-error-200 font-medium">{{ row.error || '—' }}</span>
+                                    <ul v-if="row.validation_errors?.length" class="list-disc list-inside mt-1 text-primary-400 space-y-0.5">
+                                        <li v-for="(ve, i) in row.validation_errors" :key="i"><span class="font-mono text-[11px]">{{ ve.path || '—' }}</span> : {{ ve.message || '—' }}</li>
+                                    </ul>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
     </Card>

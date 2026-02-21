@@ -34,7 +34,7 @@ Ce document liste ce qui reste à faire pour **finaliser la partie backend** du 
 
 ---
 
-## 4. Optionnel (améliorations possibles)
+## 4. Optionnel (améliorations possibles) — réalisé
 
 - **Classes (breeds)** : DofusDB n’expose pas level, life ni attributs pour les classes ([dofusdb.fr/database/breeds](https://dofusdb.fr/fr/database/breeds/)) — uniquement descriptions, noms, illustrations, sorts liés (spell-levels par breedId), rôles. Le mapping `breed.json` est aligné sur ce qui existe.  
 - **Initiative (ini)** : Ajouter le champ initiative dans `monster.json` si l’API DofusDB l’expose.  
@@ -49,6 +49,6 @@ Ce document liste ce qui reste à faire pour **finaliser la partie backend** du 
 | 1 | Brancher **RelationResolutionService** pour l’import monster (API + CLI) avec option `include_relations`. | Fait |
 | 2 | Vérifier/corriger le champ utilisé pour les drops (id vs itemId) dans RelationResolutionService et la config. | Fait |
 | 3 | Panoply : config + intégration. | En place |
-| 4 | (Optionnel) Initiative pour monster, optimisation runMany. Classes (breeds) : pas de level/life/attributs dans DofusDB. | Optionnel |
+| 4 | Initiative monster (mapping ini), optimisation runMany pour import range. | Fait |
 
 La partie backend du scrapping est considérée comme terminée pour le périmètre actuel (hors interface). Voir [PLAN_FINALISATION_SCRAPPING.md](./PLAN_FINALISATION_SCRAPPING.md) pour les tâches P2/P3 optionnelles (robustesse, doc, 100-Done).

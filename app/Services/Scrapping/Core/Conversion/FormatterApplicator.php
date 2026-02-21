@@ -12,60 +12,91 @@ use App\Services\Characteristic\Getter\CharacteristicGetterService;
  * Formatters supportés : toString, pickLang, toInt, clampInt, mapSizeToKrosmoz,
  * storeScrappedImage, truncate, clampToCharacteristic (limites BDD par entité).
  * Si DofusConversionService est injecté : dofusdb_level, dofusdb_life, dofusdb_attribute, dofusdb_ini.
+ * Si la règle de mapping (context.mappingRule) a characteristic_key, dofusdb_attribute utilise
+ * convertByCharacteristicKey pour formules/limites BDD.
  */
 final class FormatterApplicator
 {
+    /** @var array<string, callable(mixed, array, array, array): mixed> */
+    private array $registry = [];
+
     public function __construct(
         private readonly ?DofusConversionService $conversionService = null,
         private readonly ?CharacteristicGetterService $getter = null
     ) {
+        $this->registry = $this->buildRegistry();
     }
 
     /**
+     * Dispatch unique : délègue au formatter enregistré ou retourne la valeur inchangée.
+     *
      * @param array<string, mixed> $args
      * @param array<string, mixed> $raw
-     * @param array{entityType?: string, lang?: string} $context
+     * @param array{entityType?: string, lang?: string, mappingRule?: array{characteristic_key?: string|null}} $context
      * @return mixed
      */
     public function apply(string $name, mixed $value, array $args, array $raw, array $context = []): mixed
     {
-        $entityType = (string) ($context['entityType'] ?? 'monster');
+        $context['_resolvedCharacteristicKey'] = $this->resolveCharacteristicKeyFromContext($context);
+        if (isset($this->registry[$name])) {
+            return ($this->registry[$name])($value, $args, $raw, $context);
+        }
 
-        return match ($name) {
-            'toString' => $value === null ? '' : (string) $value,
-            'pickLang' => $this->pickLang($value, (string) ($args['lang'] ?? 'fr'), (string) ($args['fallback'] ?? 'fr')),
-            'toInt' => is_numeric($value) ? (int) $value : 0,
-            'nullableInt' => $value === null ? null : (is_numeric($value) ? (int) $value : null),
-            'clampInt' => $this->clampInt($value, (int) ($args['min'] ?? 0), (int) ($args['max'] ?? 0)),
-            'clampToCharacteristic' => $this->clampToCharacteristic(
-                $value,
-                (string) ($args['characteristicId'] ?? ''),
-                $entityType
-            ),
-            'mapSizeToKrosmoz' => $this->mapSize((string) $value, (string) ($args['default'] ?? 'medium')),
-            'storeScrappedImage' => $value === null ? null : (string) $value,
-            'truncate' => $this->truncate($value, (int) ($args['max'] ?? 255)),
-            'dofusdb_level' => $this->conversionService !== null
-                ? $this->conversionService->convertLevel($this->numericValue($value), $entityType)
-                : $value,
-            'dofusdb_life' => $this->conversionService !== null
-                ? $this->applyDofusdbLife($value, $raw, $args, $entityType)
-                : $value,
-            'dofusdb_attribute' => $this->conversionService !== null && isset($args['characteristicId'])
-                ? $this->conversionService->convertAttribute((string) $args['characteristicId'], $value, $entityType)
-                : $value,
-            'dofusdb_ini' => $this->conversionService !== null
-                ? $this->conversionService->convertInitiative($this->numericValue($value), $entityType)
-                : $value,
-            'toJson' => $this->toJson($value),
-            'extractItemIds' => $this->extractItemIds($value),
-            'resolveResourceTypeId' => $this->resolveResourceTypeId($value, $raw, (string) ($context['lang'] ?? 'fr')),
-            'defaultRarityByLevel' => $this->defaultRarityByLevel($value, $raw, (string) ($context['entityType'] ?? 'item')),
-            'recipeIdsToResourceRecipe' => $this->recipeIdsToResourceRecipe($value),
-            'recipeToResourceRecipe' => $this->recipeToResourceRecipe($value, $raw),
-            'itemEffectsToKrosmozBonus' => $this->itemEffectsToKrosmozBonus($value, $raw),
-            default => $value,
-        };
+        return $value;
+    }
+
+    /**
+     * Construit le registry nom → callable pour un dispatch unique et des formatters testables.
+     *
+     * @return array<string, callable(mixed, array, array, array): mixed>
+     */
+    private function buildRegistry(): array
+    {
+        $registry = [
+            'toString' => fn (mixed $v): string => $v === null ? '' : (string) $v,
+            'pickLang' => fn (mixed $v, array $a): string => $this->pickLang($v, (string) ($a['lang'] ?? 'fr'), (string) ($a['fallback'] ?? 'fr')),
+            'toInt' => fn (mixed $v): int => is_numeric($v) ? (int) $v : 0,
+            'nullableInt' => fn (mixed $v): ?int => $v === null ? null : (is_numeric($v) ? (int) $v : null),
+            'clampInt' => fn (mixed $v, array $a): int => $this->clampInt($v, (int) ($a['min'] ?? 0), (int) ($a['max'] ?? 0)),
+            'clampToCharacteristic' => function (mixed $v, array $a, array $r, array $c): int {
+                return $this->clampToCharacteristic($v, (string) ($a['characteristicId'] ?? ''), (string) ($c['entityType'] ?? 'monster'));
+            },
+            'mapSizeToKrosmoz' => fn (mixed $v, array $a): string => $this->mapSize((string) $v, (string) ($a['default'] ?? 'medium')),
+            'storeScrappedImage' => fn (mixed $v): ?string => $v === null ? null : (string) $v,
+            'truncate' => fn (mixed $v, array $a): string => $this->truncate($v, (int) ($a['max'] ?? 255)),
+            'toJson' => fn (mixed $v): ?string => $this->toJson($v),
+            'extractItemIds' => fn (mixed $v): array => $this->extractItemIds($v),
+            'resolveResourceTypeId' => function (mixed $v, array $a, array $r, array $c): ?int {
+                return $this->resolveResourceTypeId($v, $r, (string) ($c['lang'] ?? 'fr'));
+            },
+            'defaultRarityByLevel' => function (mixed $v, array $a, array $r, array $c): int {
+                return $this->defaultRarityByLevel($v, $r, (string) ($c['entityType'] ?? 'item'));
+            },
+            'recipeIdsToResourceRecipe' => fn (mixed $v): array => $this->recipeIdsToResourceRecipe($v),
+            'recipeToResourceRecipe' => function (mixed $v, array $a, array $r): array {
+                return $this->recipeToResourceRecipe($v, $r);
+            },
+            'itemEffectsToKrosmozBonus' => function (mixed $v, array $a, array $r): ?string {
+                return $this->itemEffectsToKrosmozBonus($v, $r);
+            },
+        ];
+
+        if ($this->conversionService !== null) {
+            $registry['dofusdb_level'] = function (mixed $v, array $a, array $r, array $c): mixed {
+                return $this->conversionService->convertLevel($this->numericValue($v), (string) ($c['entityType'] ?? 'monster'));
+            };
+            $registry['dofusdb_life'] = function (mixed $v, array $a, array $r, array $c): mixed {
+                return $this->applyDofusdbLife($v, $r, $a, (string) ($c['entityType'] ?? 'monster'));
+            };
+            $registry['dofusdb_attribute'] = function (mixed $v, array $a, array $r, array $c): mixed {
+                return $this->applyDofusdbAttribute($v, $a, (string) ($c['entityType'] ?? 'monster'), $c['_resolvedCharacteristicKey'] ?? null);
+            };
+            $registry['dofusdb_ini'] = function (mixed $v, array $a, array $r, array $c): mixed {
+                return $this->conversionService->convertInitiative($this->numericValue($v), (string) ($c['entityType'] ?? 'monster'));
+            };
+        }
+
+        return $registry;
     }
 
     /**
@@ -175,29 +206,7 @@ final class FormatterApplicator
 
     public function supports(string $name): bool
     {
-        $base = [
-            'toString',
-            'pickLang',
-            'toInt',
-            'nullableInt',
-            'clampInt',
-            'clampToCharacteristic',
-            'mapSizeToKrosmoz',
-            'storeScrappedImage',
-            'truncate',
-            'toJson',
-            'extractItemIds',
-            'resolveResourceTypeId',
-            'defaultRarityByLevel',
-            'recipeIdsToResourceRecipe',
-            'recipeToResourceRecipe',
-            'itemEffectsToKrosmozBonus',
-        ];
-        if ($this->conversionService !== null) {
-            $base = array_merge($base, ['dofusdb_level', 'dofusdb_life', 'dofusdb_attribute', 'dofusdb_ini']);
-        }
-
-        return in_array($name, $base, true);
+        return isset($this->registry[$name]);
     }
 
     private function numericValue(mixed $value): float
@@ -216,6 +225,42 @@ final class FormatterApplicator
         $levelKrosmoz = $this->conversionService->convertLevel($this->numericValue($levelRaw), $entityType);
 
         return $this->conversionService->convertLife($this->numericValue($value), $levelKrosmoz, $entityType);
+    }
+
+    /**
+     * Extrait la clé de caractéristique depuis context.mappingRule (règle de mapping BDD).
+     * Une seule responsabilité : résoudre la clé pour les formatters dofusdb_*.
+     *
+     * @param array{mappingRule?: array{characteristic_key?: string|null}} $context
+     */
+    private function resolveCharacteristicKeyFromContext(array $context): ?string
+    {
+        $mappingRule = $context['mappingRule'] ?? null;
+        if (! is_array($mappingRule) || ! isset($mappingRule['characteristic_key']) || ! is_string($mappingRule['characteristic_key'])) {
+            return null;
+        }
+        $key = $mappingRule['characteristic_key'];
+
+        return $key !== '' ? $key : null;
+    }
+
+    /**
+     * Applique dofusdb_attribute : utilise characteristic_key de la règle de mapping si présent,
+     * sinon args.characteristicId (convention xxx_creature).
+     */
+    private function applyDofusdbAttribute(mixed $value, array $args, string $entityType, ?string $characteristicKey): mixed
+    {
+        if ($this->conversionService === null) {
+            return $value;
+        }
+        if ($characteristicKey !== null) {
+            return $this->conversionService->convertByCharacteristicKey($characteristicKey, $value, $entityType);
+        }
+        if (isset($args['characteristicId']) && is_string($args['characteristicId'])) {
+            return $this->conversionService->convertAttribute($args['characteristicId'], $value, $entityType);
+        }
+
+        return $value;
     }
 
     /**

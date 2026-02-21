@@ -37,7 +37,7 @@ final class Orchestrator
      */
     public static function default(): self
     {
-        $configLoader = ConfigLoader::default();
+        $configLoader = app(ConfigLoader::class);
 
         $conversionService = app(DofusConversionService::class);
         $getter = app(CharacteristicGetterService::class);

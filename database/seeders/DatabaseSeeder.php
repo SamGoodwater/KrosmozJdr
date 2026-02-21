@@ -9,6 +9,7 @@ use Database\Seeders\CreatureCharacteristicSeeder;
 use Database\Seeders\ObjectCharacteristicSeeder;
 use Database\Seeders\SpellCharacteristicSeeder;
 use Database\Seeders\SpellEffectTypeSeeder;
+use Database\Seeders\ScrappingEntityMappingSeeder;
 
 class DatabaseSeeder extends Seeder
 {
@@ -27,6 +28,7 @@ class DatabaseSeeder extends Seeder
             ObjectCharacteristicSeeder::class,
             SpellCharacteristicSeeder::class,
             SpellEffectTypeSeeder::class,
+            ScrappingEntityMappingSeeder::class,
         ]);
     }
 }

@@ -237,7 +237,7 @@ final class IntegrationService
             'created_by' => $createdBy,
         ];
 
-        $optional = ['pa', 'pm', 'kamas', 'po', 'dodge_pa', 'dodge_pm', 'vitality', 'res_neutre', 'res_terre', 'res_feu', 'res_air', 'res_eau'];
+        $optional = ['pa', 'pm', 'kamas', 'po', 'dodge_pa', 'dodge_pm', 'ini', 'vitality', 'res_neutre', 'res_terre', 'res_feu', 'res_air', 'res_eau'];
         foreach ($optional as $key) {
             if (array_key_exists($key, $creatureData) && $creatureData[$key] !== null) {
                 $attrs[$key] = (string) $creatureData[$key];
@@ -868,6 +868,7 @@ final class IntegrationService
             $sizeStr = $sizeMap[$sizeInt] ?? 'medium';
             return array_merge(
                 [
+                    'id' => $existingMonster->id,
                     'name' => $c?->name,
                     'level' => $c?->level,
                     'life' => $c?->life,
@@ -886,6 +887,7 @@ final class IntegrationService
                     'res_feu' => $c?->res_feu,
                     'res_air' => $c?->res_air,
                     'res_eau' => $c?->res_eau,
+                    'ini' => $c?->ini,
                 ],
                 [
                     'dofusdb_id' => $existingMonster->dofusdb_id,

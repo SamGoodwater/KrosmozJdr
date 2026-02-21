@@ -3,6 +3,8 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
+use Illuminate\Database\QueryException;
+use PDOException;
 
 class Run extends Command
 {
@@ -95,9 +97,9 @@ class Run extends Command
         $actions = [];
         // Ordre logique : kill -> clear -> update -> optimise -> migrate -> dev
 
-        // 0. RESET (jamais inclus dans --all ou autres options englobantes)
-        if ($this->option('reset:pnpm')) $actions[] = 'resetPnpm';
-        if ($this->option('reset:composer')) $actions[] = 'resetComposer';
+        // 0. RESET (délégation à setup --clean / --refresh)
+        if ($this->option('reset:pnpm')) $actions[] = 'runSetupRefresh';
+        if ($this->option('reset:composer')) $actions[] = 'runSetupRefresh';
         if ($this->option('reset:all')) $actions[] = 'resetAll';
         if ($this->option('reset:full')) $actions[] = 'resetFull';
         // 1. KILL
@@ -132,36 +134,21 @@ class Run extends Command
             if ($this->option('clear:optimize')) $actions[] = 'clearOptimize';
         }
 
-        // 3. UPDATE/INSTALL
+        // 3. UPDATE/INSTALL (délégation à setup pour apt/pnpm/composer)
         if ($this->option('update:all') || $this->option('all')) {
-            $actions = array_merge($actions, 
-                        [
-                            'updateSystem',
-                            'updatePnpm',
-                            'updateComposer',
-                            'installPnpm',
-                            'installComposer',
-                            'updateCss',
-                            'updateDocs',
-                            'dumpAutoload',
-                        ]
-                    );
+            $actions[] = 'runSetupInstall';
+            $actions[] = 'runSetupUpdate';
+            $actions = array_merge($actions, ['updateCss', 'updateDocs', 'dumpAutoload']);
         } elseif ($this->option('update:base') || $this->option('regenerate')) {
-            $actions = array_merge($actions, 
-                        [
-                            'installPnpm',
-                            'installComposer',
-                            'updateCss',
-                            'updateDocs',
-                            'dumpAutoload',
-                        ]
-                    );
+            $actions[] = 'runSetupInstall';
+            $actions = array_merge($actions, ['updateCss', 'updateDocs', 'dumpAutoload']);
         } else {
-            if ($this->option('update:system')) $actions[] = 'updateSystem';
-            if ($this->option('update:pnpm')) $actions[] = 'updatePnpm';
-            if ($this->option('install:pnpm')) $actions[] = 'installPnpm';
-            if ($this->option('update:composer')) $actions[] = 'updateComposer';
-            if ($this->option('install:composer')) $actions[] = 'installComposer';
+            if ($this->option('update:system') || $this->option('update:pnpm') || $this->option('update:composer')) {
+                $actions[] = 'runSetupUpdate';
+            }
+            if ($this->option('install:pnpm') || $this->option('install:composer')) {
+                $actions[] = 'runSetupInstall';
+            }
             if ($this->option('update:css')) $actions[] = 'updateCss';
             if ($this->option('update:docs')) $actions[] = 'updateDocs';
             if ($this->option('update:privilege')) $actions[] = 'updatePrivileges';
@@ -181,8 +168,8 @@ class Run extends Command
             if ($this->option('optimise:laravel')) $actions[] = 'optimiseLaravel';
         }
 
-        // 5. MIGRATE
-        if ($this->option('migrate') || $this->option('update:all') || $this->option('update:base') || $this->option('regenerate') || $this->option('all')) $actions[] = 'runMigrate';
+        // 5. MIGRATE (délégation à setup --db)
+        if ($this->option('migrate') || $this->option('update:all') || $this->option('update:base') || $this->option('regenerate') || $this->option('all')) $actions[] = 'runSetupDb';
 
         // 6. DEV
         if ($this->option('dev') || $this->option('all')) $actions[] = 'runDev';
@@ -218,7 +205,20 @@ class Run extends Command
             $this->info($result);
         }
     }
-    protected function clearCache() { $this->call('cache:clear'); }
+    protected function clearCache(): void
+    {
+        try {
+            $this->call('cache:clear');
+        } catch (QueryException|PDOException $e) {
+            $msg = $e->getMessage();
+            if (str_contains($msg, 'could not find driver') || str_contains($msg, 'Connection:')) {
+                $this->warn('Cache non vidé : driver BDD indisponible (ex. extension pdo_mysql manquante).');
+                $this->warn('Installez php-mysql ou définissez CACHE_STORE=file dans .env.');
+            } else {
+                throw $e;
+            }
+        }
+    }
     protected function clearConfig() { $this->call('config:clear'); }
     protected function clearRoute() { $this->call('route:clear'); }
     protected function clearEvent() { $this->call('event:clear'); }
@@ -227,22 +227,17 @@ class Run extends Command
     protected function clearQueue() { $this->call('queue:clear'); }
     protected function clearSchedule() { $this->call('schedule:clear-cache'); }
     protected function clearOptimize() { $this->call('optimize:clear'); }
-    protected function updateSystem() {
-        $this->info('Mise à jour du système (Debian uniquement)');
-        if (stripos(PHP_OS, 'Linux') !== false && file_exists('/etc/debian_version') && trim(shell_exec('which apt'))) {
-            exec('sudo apt update && sudo apt upgrade -y');
-        } else {
-            $this->warn('Mise à jour système ignorée : cette commande ne fonctionne que sur Debian avec apt.');
-        }
+    protected function runSetupInstall(): void
+    {
+        $this->call('setup', ['--install' => true]);
     }
-    protected function updatePnpm() {
-        $this->info('Mise à jour de pnpm...');
-        exec('pnpm install -g pnpm@latest');
+    protected function runSetupUpdate(): void
+    {
+        $this->call('setup', ['--update' => true]);
     }
-    protected function updateComposer() {
-        $this->info('Mise à jour de composer...');
-        exec('composer self-update');
-
+    protected function runSetupDb(): void
+    {
+        $this->call('setup', ['--db' => true]);
     }
     protected function updateCss() {
         $this->info('Rebuild CSS...');
@@ -270,91 +265,12 @@ class Run extends Command
         $this->info('Optimisation du framework Laravel...');
         $this->call('optimize');
     }
-    protected function runMigrate() {
-        $this->info('Exécution des migrations...');
-        $this->call('migrate');
-    }
-    protected function resetPnpm() {
-        $this->info('Suppression de node_modules et pnpm-lock.yaml...');
-        
-        $errors = [];
-        
-        // Supprimer node_modules
-        if (is_dir('node_modules')) {
-            $result = shell_exec('rm -rf node_modules 2>&1');
-            if ($result !== null && !empty(trim($result))) {
-                $errors[] = "Erreur lors de la suppression de node_modules: $result";
-            } else {
-                $this->info('✅ node_modules supprimé');
-            }
-        } else {
-            $this->warn('node_modules n\'existe pas, suppression ignorée');
-        }
-        
-        // Supprimer pnpm-lock.yaml
-        if (file_exists('pnpm-lock.yaml')) {
-            $result = shell_exec('rm -f pnpm-lock.yaml 2>&1');
-            if ($result !== null && !empty(trim($result))) {
-                $errors[] = "Erreur lors de la suppression de pnpm-lock.yaml: $result";
-            } else {
-                $this->info('✅ pnpm-lock.yaml supprimé');
-            }
-        } else {
-            $this->warn('pnpm-lock.yaml n\'existe pas, suppression ignorée');
-        }
-        
-        if (!empty($errors)) {
-            foreach ($errors as $error) {
-                $this->error($error);
-            }
-        }
-    }
-    
-    protected function resetComposer() {
-        $this->info('Suppression de vendor et composer.lock...');
-        
-        $errors = [];
-        
-        // Supprimer vendor
-        if (is_dir('vendor')) {
-            $result = shell_exec('rm -rf vendor 2>&1');
-            if ($result !== null && !empty(trim($result))) {
-                $errors[] = "Erreur lors de la suppression de vendor: $result";
-            } else {
-                $this->info('✅ vendor supprimé');
-            }
-        } else {
-            $this->warn('vendor n\'existe pas, suppression ignorée');
-        }
-        
-        // Supprimer composer.lock
-        if (file_exists('composer.lock')) {
-            $result = shell_exec('rm -f composer.lock 2>&1');
-            if ($result !== null && !empty(trim($result))) {
-                $errors[] = "Erreur lors de la suppression de composer.lock: $result";
-            } else {
-                $this->info('✅ composer.lock supprimé');
-            }
-        } else {
-            $this->warn('composer.lock n\'existe pas, suppression ignorée');
-        }
-        
-        if (!empty($errors)) {
-            foreach ($errors as $error) {
-                $this->error($error);
-            }
-        }
-    }
     protected function resetAll() {
         $this->info('Réinitialisation de tout (pnpm, composer, css, docs, dump)...');
-        
-        // 1. Arrêter les serveurs en cours
         $this->killServers();
-        
-        // 2. Nettoyer les caches Laravel
         $this->clearCss();
         $this->clearCache();
-        $this->clearConfig();   
+        $this->clearConfig();
         $this->clearRoute();
         $this->clearView();
         $this->clearDebugbar();
@@ -362,23 +278,12 @@ class Run extends Command
         $this->clearSchedule();
         $this->clearEvent();
         $this->clearOptimize();
-        
-        // 3. Supprimer les dépendances
-        $this->resetPnpm();
-        $this->resetComposer();
-        
-        // 4. Réinstaller les dépendances
-        $this->info('Réinstallation des dépendances...');
-        $this->installComposer();
-        $this->installPnpm();
-        
-        // 5. Reconstruire les assets et optimiser
+        $this->call('setup', ['--refresh' => true]);
         $this->updateCss();
         $this->updateDocs();
         $this->dumpAutoload();
         $this->optimiseIde();
         $this->optimiseLaravel();
-        
         $this->info('✅ Réinitialisation complète terminée !');
     }
     
@@ -396,82 +301,11 @@ class Run extends Command
         
         // 2. Reset de la base de données
         $this->info('🔄 Reset de la base de données...');
-        
-        // Vider toutes les tables
-        $this->info('Suppression de toutes les données...');
-        $this->call('migrate:fresh');
-        
-        // Exécuter les seeders si ils existent
-        if (file_exists('database/seeders/DatabaseSeeder.php')) {
-            $this->info('Exécution des seeders...');
-            $this->call('db:seed');
-        }
-        
+        $this->call('migrate:fresh', ['--seed' => true, '--force' => true]);
         $this->info('✅ Reset complet terminé !');
         $this->warn('⚠️  Toutes les données ont été supprimées et la base a été réinitialisée.');
     }
     
-    protected function installPnpm() {
-        $this->info('Installation des dépendances pnpm...');
-        
-        // Vérifier que pnpm est installé
-        $pnpmPath = trim(shell_exec('which pnpm 2>/dev/null'));
-        if (empty($pnpmPath)) {
-            $this->error('pnpm n\'est pas installé. Veuillez l\'installer d\'abord.');
-            return false;
-        }
-        
-        // Vérifier que package.json existe
-        if (!file_exists('package.json')) {
-            $this->error('package.json n\'existe pas. Impossible d\'installer les dépendances pnpm.');
-            return false;
-        }
-        
-        $result = shell_exec('pnpm install 2>&1');
-        if ($result !== null) {
-            $this->info($result);
-        }
-        
-        // Vérifier si l'installation a réussi
-        if (is_dir('node_modules')) {
-            $this->info('✅ Dépendances pnpm installées avec succès');
-            return true;
-        } else {
-            $this->error('❌ Échec de l\'installation des dépendances pnpm');
-            return false;
-        }
-    }
-    
-    protected function installComposer() {
-        $this->info('Installation des dépendances composer...');
-        
-        // Vérifier que composer est installé
-        $composerPath = trim(shell_exec('which composer 2>/dev/null'));
-        if (empty($composerPath)) {
-            $this->error('Composer n\'est pas installé. Veuillez l\'installer d\'abord.');
-            return false;
-        }
-        
-        // Vérifier que composer.json existe
-        if (!file_exists('composer.json')) {
-            $this->error('composer.json n\'existe pas. Impossible d\'installer les dépendances composer.');
-            return false;
-        }
-        
-        $result = shell_exec('composer install 2>&1');
-        if ($result !== null) {
-            $this->info($result);
-        }
-        
-        // Vérifier si l'installation a réussi
-        if (is_dir('vendor')) {
-            $this->info('✅ Dépendances composer installées avec succès');
-            return true;
-        } else {
-            $this->error('❌ Échec de l\'installation des dépendances composer');
-            return false;
-        }
-    }
     protected function runDev() {
         $this->info('Lancement des serveurs de développement...');
         

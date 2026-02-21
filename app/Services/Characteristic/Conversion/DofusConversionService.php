@@ -85,19 +85,32 @@ final class DofusConversionService
 
     /**
      * Convertit un attribut Dofus (Force, Intelligence, etc.) en Krosmoz.
+     * Construit la clé comme characteristicId + '_creature'.
      */
     public function convertAttribute(string $characteristicId, int|float|string|null $dofusValue, string $entityType): int
     {
-        $d = $dofusValue !== null && $dofusValue !== '' && is_numeric($dofusValue) ? (float) $dofusValue : 0.0;
         $key = $characteristicId . '_creature';
-        $formula = $this->getter->getConversionFormula($key, $entityType);
+
+        return $this->convertByCharacteristicKey($key, $dofusValue, $entityType);
+    }
+
+    /**
+     * Convertit une valeur Dofus en Krosmoz en utilisant la formule et les limites
+     * de la caractéristique désignée par sa clé (ex. strong_creature, level_creature).
+     * Utilisé par le pipeline lorsque la règle de mapping a un characteristic_id.
+     */
+    public function convertByCharacteristicKey(string $characteristicKey, int|float|string|null $dofusValue, string $entityType): int
+    {
+        $d = $dofusValue !== null && $dofusValue !== '' && is_numeric($dofusValue) ? (float) $dofusValue : 0.0;
+        $formula = $this->getter->getConversionFormula($characteristicKey, $entityType);
         if ($formula !== null) {
             $k = $this->formulaService->evaluate($formula, ['d' => $d]);
             $k = $k !== null ? (int) round($k) : 0;
         } else {
             $k = (int) round(6 + 24 * sqrt(max(0, ($d - 50) / 1150)));
         }
-        return $this->limitService->clamp($key, $k, $entityType);
+
+        return $this->limitService->clamp($characteristicKey, $k, $entityType);
     }
 
     /**

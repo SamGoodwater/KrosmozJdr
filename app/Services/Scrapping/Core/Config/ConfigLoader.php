@@ -3,15 +3,17 @@
 namespace App\Services\Scrapping\Core\Config;
 
 /**
- * Charge les configs JSON (source + entités) depuis resources/scrapping/config/.
+ * Charge les configs depuis resources/scrapping/config/ (source + entités).
+ * Endpoints, filtres, target, meta, relations viennent des JSON.
+ * Le mapping (règles DofusDB → Krosmoz) vient uniquement de la BDD via ScrappingMappingService.
  *
- * Utilisé par le service de collecte et, plus tard, par la conversion.
- * Validation minimale : structure requise (version, source, entity, endpoints, mapping).
+ * Validation minimale : version, source, entity, endpoints ; mapping fourni par la BDD (ou []).
  */
 final class ConfigLoader
 {
     public function __construct(
-        private string $baseDir
+        private string $baseDir,
+        private ?ScrappingMappingService $mappingService = null
     ) {
         if (!is_dir($this->baseDir)) {
             throw new \InvalidArgumentException("Répertoire config scrapping introuvable: {$this->baseDir}");
@@ -81,9 +83,14 @@ final class ConfigLoader
             throw new \InvalidArgumentException("Config entité '{$source}/{$entity}': 'endpoints' requis.");
         }
 
-        $mapping = $data['mapping'] ?? null;
-        if (!is_array($mapping)) {
-            throw new \InvalidArgumentException("Config entité '{$source}/{$entity}': 'mapping' doit être un tableau.");
+        // Mapping uniquement depuis la BDD (panneau admin). On n'utilise plus le mapping des JSON.
+        if ($this->mappingService !== null) {
+            $data['mapping'] = $this->mappingService->getMappingForEntity($source, $entity) ?? [];
+        } elseif (is_array($data['mapping'] ?? null)) {
+            // Fallback si le service n'est pas injecté (tests, CLI sans container).
+            $data['mapping'] = $data['mapping'];
+        } else {
+            $data['mapping'] = [];
         }
 
         return $data;

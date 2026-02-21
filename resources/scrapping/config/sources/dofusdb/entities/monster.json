@@ -12,12 +12,12 @@
     "fetchOne": {
       "pathTemplate": "/monsters/{id}",
       "method": "GET",
-      "queryDefaults": { "lang": "{lang}" }
+      "queryDefaults": { "lang": "fr" }
     },
     "fetchMany": {
       "path": "/monsters",
       "method": "GET",
-      "queryDefaults": { "lang": "{lang}", "$limit": 50, "$skip": 0 }
+      "queryDefaults": { "lang": "fr", "$limit": 50, "$skip": 0 }
     }
   },
   "filters": {
@@ -50,13 +50,13 @@
       "key": "name",
       "from": { "path": "name", "langAware": true },
       "to": [{ "model": "creatures", "field": "name" }],
-      "formatters": [{ "name": "pickLang", "args": { "lang": "{lang}", "fallback": "fr" } }]
+      "formatters": [{ "name": "pickLang", "args": { "lang": "fr", "fallback": "fr" } }]
     },
     {
       "key": "description",
       "from": { "path": "description", "langAware": true },
       "to": [{ "model": "creatures", "field": "description" }],
-      "formatters": [{ "name": "pickLang", "args": { "lang": "{lang}", "fallback": "fr" } }]
+      "formatters": [{ "name": "pickLang", "args": { "lang": "fr", "fallback": "fr" } }]
     },
     {
       "key": "level",
@@ -152,6 +152,12 @@
       "formatters": [{ "name": "nullableInt", "args": {} }]
     },
     {
+      "key": "ini",
+      "from": { "path": "grades.0.initiative" },
+      "to": [{ "model": "creatures", "field": "ini" }],
+      "formatters": [{ "name": "dofusdb_ini", "args": {} }]
+    },
+    {
       "key": "vitality",
       "from": { "path": "grades.0.vitality" },
       "to": [{ "model": "creatures", "field": "vitality" }],
@@ -175,6 +181,36 @@
       "key": "race",
       "from": { "path": "race" },
       "to": [{ "model": "monsters", "field": "monster_race_id" }],
+      "formatters": [{ "name": "nullableInt", "args": {} }]
+    },
+    {
+      "key": "res_neutre",
+      "from": { "path": "grades.0.neutralResistance" },
+      "to": [{ "model": "creatures", "field": "res_neutre" }],
+      "formatters": [{ "name": "nullableInt", "args": {} }]
+    },
+    {
+      "key": "res_terre",
+      "from": { "path": "grades.0.earthResistance" },
+      "to": [{ "model": "creatures", "field": "res_terre" }],
+      "formatters": [{ "name": "nullableInt", "args": {} }]
+    },
+    {
+      "key": "res_feu",
+      "from": { "path": "grades.0.fireResistance" },
+      "to": [{ "model": "creatures", "field": "res_feu" }],
+      "formatters": [{ "name": "nullableInt", "args": {} }]
+    },
+    {
+      "key": "res_air",
+      "from": { "path": "grades.0.airResistance" },
+      "to": [{ "model": "creatures", "field": "res_air" }],
+      "formatters": [{ "name": "nullableInt", "args": {} }]
+    },
+    {
+      "key": "res_eau",
+      "from": { "path": "grades.0.waterResistance" },
+      "to": [{ "model": "creatures", "field": "res_eau" }],
       "formatters": [{ "name": "nullableInt", "args": {} }]
     }
   ],

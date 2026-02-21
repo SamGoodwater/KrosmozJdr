@@ -1390,6 +1390,73 @@ namespace App\Models\Scrapping{
 	class PendingResourceTypeItem extends \Eloquent {}
 }
 
+namespace App\Models\Scrapping{
+/**
+ * Règle de mapping : une clé logique (ex. level, name) pour une source+entité DofusDB.
+ * 
+ * Lie un chemin API (from_path) à une ou plusieurs cibles Krosmoz (model.field) avec formatters.
+ *
+ * @property int $id
+ * @property string $source
+ * @property string $entity
+ * @property string $mapping_key
+ * @property string $from_path
+ * @property bool $from_lang_aware
+ * @property int|null $characteristic_id
+ * @property array|null $formatters
+ * @property int $sort_order
+ * @example ScrappingEntityMapping::where('source', 'dofusdb')->where('entity', 'monster')->orderBy('sort_order')->get();
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \App\Models\Characteristic|null $characteristic
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Scrapping\ScrappingEntityMappingTarget> $targets
+ * @property-read int|null $targets_count
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ScrappingEntityMapping newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ScrappingEntityMapping newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ScrappingEntityMapping query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ScrappingEntityMapping whereCharacteristicId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ScrappingEntityMapping whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ScrappingEntityMapping whereEntity($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ScrappingEntityMapping whereFormatters($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ScrappingEntityMapping whereFromLangAware($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ScrappingEntityMapping whereFromPath($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ScrappingEntityMapping whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ScrappingEntityMapping whereMappingKey($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ScrappingEntityMapping whereSortOrder($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ScrappingEntityMapping whereSource($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ScrappingEntityMapping whereUpdatedAt($value)
+ */
+	class ScrappingEntityMapping extends \Eloquent {}
+}
+
+namespace App\Models\Scrapping{
+/**
+ * Cible d'une règle de mapping : un couple (model, field) Krosmoz.
+ * 
+ * Une règle peut avoir plusieurs cibles (ex. item → resources, consumables, items).
+ *
+ * @property int $id
+ * @property int $scrapping_entity_mapping_id
+ * @property string $target_model
+ * @property string $target_field
+ * @property int $sort_order
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \App\Models\Scrapping\ScrappingEntityMapping $scrappingEntityMapping
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ScrappingEntityMappingTarget newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ScrappingEntityMappingTarget newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ScrappingEntityMappingTarget query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ScrappingEntityMappingTarget whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ScrappingEntityMappingTarget whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ScrappingEntityMappingTarget whereScrappingEntityMappingId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ScrappingEntityMappingTarget whereSortOrder($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ScrappingEntityMappingTarget whereTargetField($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ScrappingEntityMappingTarget whereTargetModel($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ScrappingEntityMappingTarget whereUpdatedAt($value)
+ */
+	class ScrappingEntityMappingTarget extends \Eloquent {}
+}
+
 namespace App\Models{
 /**
  * Modèle Eloquent Section
