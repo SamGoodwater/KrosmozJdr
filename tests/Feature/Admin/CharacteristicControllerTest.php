@@ -6,6 +6,8 @@ namespace Tests\Feature\Admin;
 
 use App\Models\Characteristic;
 use App\Models\CharacteristicCreature;
+use App\Models\Scrapping\ScrappingEntityMapping;
+use App\Models\Scrapping\ScrappingEntityMappingTarget;
 use App\Models\User;
 use App\Services\Characteristic\Getter\CharacteristicGetterService;
 use Database\Seeders\CharacteristicSeeder;
@@ -427,5 +429,90 @@ class CharacteristicControllerTest extends TestCase
         $characteristic->refresh();
         $this->assertCount(1, $characteristic->getMedia('icons'));
         $this->assertNotEmpty($characteristic->icon);
+    }
+
+    /**
+     * Options de mapping scrapping : invité redirigé.
+     */
+    public function test_guest_redirected_on_scrapping_mapping_options(): void
+    {
+        $url = route('admin.characteristics.scrapping-mapping-options', ['characteristic_key' => 'life_creature']) . '?entity=monster';
+        $response = $this->getJson($url);
+        $response->assertRedirect(route('login'));
+    }
+
+    /**
+     * Sans entity : retourne la liste des entités pour le groupe (modal étape 1).
+     */
+    public function test_admin_can_get_scrapping_mapping_entities(): void
+    {
+        $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
+        $url = route('admin.characteristics.scrapping-mapping-options', ['characteristic_key' => 'life_creature']);
+        $response = $this->actingAs($admin)->getJson($url);
+        $response->assertOk();
+        $response->assertJsonStructure(['entities']);
+        $entities = $response->json('entities');
+        $this->assertIsArray($entities);
+        $this->assertGreaterThan(0, count($entities));
+    }
+
+    /**
+     * Avec entity : retourne les chemins (paths) depuis le JSON entité.
+     */
+    public function test_admin_can_get_scrapping_mapping_paths(): void
+    {
+        $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
+        $url = route('admin.characteristics.scrapping-mapping-options', ['characteristic_key' => 'life_creature']) . '?entity=monster';
+        $response = $this->actingAs($admin)->getJson($url);
+        $response->assertOk();
+        $response->assertJsonStructure(['paths']);
+        $this->assertIsArray($response->json('paths'));
+    }
+
+    /**
+     * Un admin peut créer une règle de mapping depuis un chemin (store) et la lier à la caractéristique.
+     */
+    public function test_admin_can_store_scrapping_mapping(): void
+    {
+        $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
+        $char = Characteristic::where('key', 'life_creature')->first();
+        $this->assertNotNull($char);
+        $response = $this->actingAs($admin)->postJson(
+            route('admin.characteristics.store-scrapping-mapping', ['characteristic_key' => 'life_creature']),
+            ['entity' => 'monster', 'from_path' => 'grades.0.lifePoints']
+        );
+        $response->assertOk();
+        $response->assertJson(['success' => true]);
+        $this->assertDatabaseHas('scrapping_entity_mappings', [
+            'characteristic_id' => $char->id,
+            'entity' => 'monster',
+            'from_path' => 'grades.0.lifePoints',
+        ]);
+    }
+
+    /**
+     * Un admin peut délier une règle de mapping d'une caractéristique.
+     */
+    public function test_admin_can_unlink_scrapping_mapping(): void
+    {
+        $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
+        $char = Characteristic::where('key', 'life_creature')->first();
+        $this->assertNotNull($char);
+        $mapping = ScrappingEntityMapping::create([
+            'source' => 'dofusdb',
+            'entity' => 'monster',
+            'mapping_key' => 'life',
+            'from_path' => 'grades.0.lifePoints',
+            'characteristic_id' => $char->id,
+            'sort_order' => 0,
+        ]);
+        $response = $this->actingAs($admin)->postJson(
+            route('admin.characteristics.unlink-scrapping-mapping', ['characteristic_key' => 'life_creature']),
+            ['mapping_id' => $mapping->id]
+        );
+        $response->assertOk();
+        $response->assertJson(['success' => true]);
+        $mapping->refresh();
+        $this->assertNull($mapping->characteristic_id);
     }
 }

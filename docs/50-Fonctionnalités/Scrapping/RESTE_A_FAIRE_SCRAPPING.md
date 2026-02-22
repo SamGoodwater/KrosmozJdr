@@ -51,4 +51,4 @@ Ce document liste ce qui reste à faire pour **finaliser la partie backend** du 
 | 3 | Panoply : config + intégration. | En place |
 | 4 | Initiative monster (mapping ini), optimisation runMany pour import range. | Fait |
 
-La partie backend du scrapping est considérée comme terminée pour le périmètre actuel (hors interface). Voir [PLAN_FINALISATION_SCRAPPING.md](./PLAN_FINALISATION_SCRAPPING.md) pour les tâches P2/P3 optionnelles (robustesse, doc, 100-Done).
+La partie backend du scrapping est considérée comme terminée pour le périmètre actuel. Côté interface admin : le panel Conversion des caractéristiques expose un select « Fonction de conversion » alimenté par le registry (voir [100-Done/README.md](../../100-%20Done/README.md)). Voir [PLAN_FINALISATION_SCRAPPING.md](./PLAN_FINALISATION_SCRAPPING.md) pour les tâches P2/P3 optionnelles (robustesse, doc, 100-Done).

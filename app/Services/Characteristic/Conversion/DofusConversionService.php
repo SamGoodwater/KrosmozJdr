@@ -10,147 +10,124 @@ use App\Services\Characteristic\Limit\CharacteristicLimitService;
 
 /**
  * Service de conversion Dofus → Krosmoz.
- * S’appuie sur le Getter (formules de conversion + limites), le service Formules (calcul) et le service Limite (clamp).
+ * Une seule entrée : convert(). Source de vérité : conversion_formula en BDD par caractéristique/entité.
+ * Chaîne : formule BDD → éventuelle conversion_function (Registry, choisie en UI) → clamp (Limite).
  */
 final class DofusConversionService
 {
     /** Entités ayant une rareté dérivée du niveau (object) */
-    private const RARITY_ENTITIES = ['item', 'consumable', 'resource', 'panoply'];
+    public const RARITY_ENTITIES = ['item', 'consumable', 'resource', 'panoply'];
+
+    /** Contexte pour la fonction personnalisée : convertedOutput, raw. */
+    public const CONTEXT_CONVERTED_OUTPUT = 'convertedOutput';
+    public const CONTEXT_RAW = 'raw';
 
     public function __construct(
         private readonly CharacteristicGetterService $getter,
         private readonly CharacteristicFormulaService $formulaService,
-        private readonly CharacteristicLimitService $limitService
+        private readonly CharacteristicLimitService $limitService,
+        private readonly ConversionFunctionRegistry $functionRegistry
     ) {
     }
 
     /**
-     * Convertit le niveau Dofus (d) en niveau Krosmoz pour une entité.
+     * Conversion : formule BDD puis éventuelle fonction personnalisée (conversion_function en BDD) puis clamp.
+     *
+     * @param array<string, float|int> $variables Ex. ['d' => 100] ou ['d' => 50, 'level' => 5]
+     * @param float|null $fallbackWhenFormulaNull Si formule absente en BDD, valeur utilisée avant clamp (sinon 0)
+     * @param array<string, mixed> $context Optionnel : convertedOutput, raw (pour la fonction personnalisée)
      */
-    public function convertLevel(int|float|null $dofusValue, string $entityType): int
+    public function convert(string $characteristicKey, array $variables, string $entityType, ?float $fallbackWhenFormulaNull = null, array $context = []): int
     {
-        $d = $dofusValue !== null && is_numeric($dofusValue) ? (float) $dofusValue : 0.0;
-        $key = $this->levelCharacteristicKeyForEntity($entityType);
-        $formula = $this->getter->getConversionFormula($key, $entityType);
+        $formula = $this->getter->getConversionFormula($characteristicKey, $entityType);
         if ($formula !== null) {
-            $k = $this->formulaService->evaluate($formula, ['d' => $d]);
-            $k = $k !== null ? (int) round($k) : 0;
+            $k = $this->formulaService->evaluate($formula, $variables);
+            $k = $k !== null ? (float) $k : 0.0;
         } else {
-            $k = (int) round($d / 10);
+            $k = $fallbackWhenFormulaNull ?? 0.0;
         }
-        return $this->limitService->clamp($key, $k, $entityType);
+        $k = $this->applyConversionFunction($k, $characteristicKey, $entityType, $context);
+
+        return $this->limitService->clamp($characteristicKey, (int) round($k), $entityType);
     }
 
     /**
-     * Rareté par niveau Krosmoz (pour object). Utilisé lors du scrapping ; une fois enregistrée, la rareté est éditable à la main.
+     * Clé de caractéristique pour le niveau selon l'entité (level_creature ou level_object).
      */
-    public function getRarityByLevel(int $levelKrosmoz, string $entity): int
+    public function getLevelCharacteristicKey(string $entityType): string
     {
-        if (! in_array($entity, self::RARITY_ENTITIES, true)) {
-            return 0;
-        }
-        $formula = $this->getter->getConversionFormula('rarity_object', $entity);
-        if ($formula !== null) {
-            $result = $this->formulaService->evaluate($formula, ['level' => $levelKrosmoz]);
-            if ($result !== null) {
-                return (int) round($result);
-            }
-        }
-        $bands = [0 => 0, 3 => 1, 7 => 2, 10 => 3, 17 => 4];
-        krsort($bands, SORT_NUMERIC);
-        foreach ($bands as $minLevel => $rarity) {
-            if ($levelKrosmoz >= $minLevel) {
-                return (int) $rarity;
-            }
-        }
-        return 0;
+        return $this->levelCharacteristicKeyForEntity($entityType);
     }
 
     /**
-     * Convertit la vie Dofus en vie Krosmoz (créature). Variables : d, level (niveau Krosmoz).
+     * Fallback rareté par niveau (bandes) quand aucune formule BDD pour rarity_object.
      */
-    public function convertLife(int|float|null $dofusValue, int $krosmozLevel, string $entityType): int
+    public function getRarityFallbackForLevel(int $levelKrosmoz): int
     {
-        $d = $dofusValue !== null && is_numeric($dofusValue) ? (float) $dofusValue : 0.0;
-        $key = 'life_creature';
-        $formula = $this->getter->getConversionFormula($key, $entityType);
-        if ($formula !== null) {
-            $k = $this->formulaService->evaluate($formula, ['d' => $d, 'level' => $krosmozLevel]);
-            $k = $k !== null ? (int) round($k) : 0;
-        } else {
-            $k = (int) round($d / 200 + $krosmozLevel * 5);
-        }
-        return $this->limitService->clamp($key, $k, $entityType);
+        return $this->rarityFallbackFromBands($levelKrosmoz);
     }
 
     /**
      * Convertit un attribut Dofus (Force, Intelligence, etc.) en Krosmoz.
-     * Construit la clé comme characteristicId + '_creature'.
+     * Construit la clé comme characteristicId + '_creature'. Transmet $context à convert() pour la fonction personnalisée éventuelle.
+     *
+     * @param array<string, mixed> $context Transmis à convert() (convertedOutput, raw pour conversion_function)
      */
-    public function convertAttribute(string $characteristicId, int|float|string|null $dofusValue, string $entityType): int
+    public function convertAttribute(string $characteristicId, int|float|string|null $dofusValue, string $entityType, array $context = []): int
     {
         $key = $characteristicId . '_creature';
 
-        return $this->convertByCharacteristicKey($key, $dofusValue, $entityType);
+        return $this->convertByCharacteristicKey($key, $dofusValue, $entityType, $context);
     }
 
     /**
-     * Convertit une valeur Dofus en Krosmoz en utilisant la formule et les limites
-     * de la caractéristique désignée par sa clé (ex. strong_creature, level_creature).
-     * Utilisé par le pipeline lorsque la règle de mapping a un characteristic_id.
+     * Convertit une valeur Dofus en Krosmoz via la formule et les limites de la caractéristique (clé BDD).
+     * Utilisé par le pipeline lorsque la règle de mapping a un characteristic_id. Transmet $context à convert().
+     *
+     * @param array<string, mixed> $context Transmis à convert() (convertedOutput, raw pour conversion_function)
      */
-    public function convertByCharacteristicKey(string $characteristicKey, int|float|string|null $dofusValue, string $entityType): int
+    public function convertByCharacteristicKey(string $characteristicKey, int|float|string|null $dofusValue, string $entityType, array $context = []): int
     {
         $d = $dofusValue !== null && $dofusValue !== '' && is_numeric($dofusValue) ? (float) $dofusValue : 0.0;
-        $formula = $this->getter->getConversionFormula($characteristicKey, $entityType);
-        if ($formula !== null) {
-            $k = $this->formulaService->evaluate($formula, ['d' => $d]);
-            $k = $k !== null ? (int) round($k) : 0;
-        } else {
-            $k = (int) round(6 + 24 * sqrt(max(0, ($d - 50) / 1150)));
-        }
+        $fallback = (float) round(6 + 24 * sqrt(max(0, ($d - 50) / 1150)));
 
-        return $this->limitService->clamp($characteristicKey, $k, $entityType);
-    }
-
-    /**
-     * Convertit l’initiative Dofus en Krosmoz (créature).
-     */
-    public function convertInitiative(int|float|null $dofusValue, string $entityType): int
-    {
-        $d = $dofusValue !== null && is_numeric($dofusValue) ? (float) $dofusValue : 0.0;
-        $key = 'ini_creature';
-        $formula = $this->getter->getConversionFormula($key, $entityType);
-        if ($formula !== null) {
-            $k = $this->formulaService->evaluate($formula, ['d' => $d]);
-            $k = $k !== null ? (int) round($k) : 0;
-        } else {
-            $k = (int) round($d);
-        }
-        return $this->limitService->clamp($key, $k, $entityType);
+        return $this->convert($characteristicKey, ['d' => $d], $entityType, $fallback, $context);
     }
 
     /**
      * Convertit une valeur Dofus d’effet d’équipement (item/resource/consumable/panoply) en valeur Krosmoz.
-     * Utilise la formule de conversion (conversion_formula) enregistrée en BDD pour la caractéristique objet
-     * (ex. intel_object avec floor(0.2227 * pow([d], 0.7999))).
+     * Formule et limites depuis la BDD (clé du groupe object).
      *
      * @param string $characteristicKey Clé du groupe object (ex. intel_object, strong_object)
      * @param int|float $dofusValue Valeur Dofus (ex. 12 pour from=10, to=13)
      * @param string $entityType item, consumable, resource ou panoply
+     * @param array<string, mixed> $context Transmis à convert() (pour conversion_function)
      */
-    public function convertObjectAttribute(string $characteristicKey, int|float $dofusValue, string $entityType): int
+    public function convertObjectAttribute(string $characteristicKey, int|float $dofusValue, string $entityType, array $context = []): int
     {
         $d = is_numeric($dofusValue) ? (float) $dofusValue : 0.0;
-        $formula = $this->getter->getConversionFormula($characteristicKey, $entityType);
-        if ($formula !== null) {
-            $k = $this->formulaService->evaluate($formula, ['d' => $d]);
-            $k = $k !== null ? (int) round($k) : 0;
-        } else {
-            $k = (int) round($d);
-        }
 
-        return $this->limitService->clamp($characteristicKey, $k, $entityType);
+        return $this->convert($characteristicKey, ['d' => $d], $entityType, $d, $context);
+    }
+
+    /**
+     * Applique la fonction personnalisée (conversion_function) si associée à la caractéristique en BDD depuis l'UI.
+     */
+    private function applyConversionFunction(float $value, string $characteristicKey, string $entityType, array $context): float
+    {
+        $functionId = $this->getter->getConversionFunctionId($characteristicKey, $entityType);
+        if ($functionId === null) {
+            return $value;
+        }
+        $callable = $this->functionRegistry->get($functionId);
+        if ($callable === null) {
+            return $value;
+        }
+        $convertedOutput = is_array($context[self::CONTEXT_CONVERTED_OUTPUT] ?? null) ? $context[self::CONTEXT_CONVERTED_OUTPUT] : [];
+        $raw = is_array($context[self::CONTEXT_RAW] ?? null) ? $context[self::CONTEXT_RAW] : [];
+        $result = $callable($value, $convertedOutput, $raw, $characteristicKey, $entityType);
+
+        return is_numeric($result) ? (float) $result : $value;
     }
 
     /**
@@ -202,5 +179,17 @@ final class DofusConversionService
             return 'level_creature';
         }
         return 'level_object';
+    }
+
+    private function rarityFallbackFromBands(int $levelKrosmoz): int
+    {
+        $bands = [0 => 0, 3 => 1, 7 => 2, 10 => 3, 17 => 4];
+        krsort($bands, SORT_NUMERIC);
+        foreach ($bands as $minLevel => $rarity) {
+            if ($levelKrosmoz >= $minLevel) {
+                return $rarity;
+            }
+        }
+        return 0;
     }
 }

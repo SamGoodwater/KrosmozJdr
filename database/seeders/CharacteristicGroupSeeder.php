@@ -48,6 +48,7 @@ abstract class CharacteristicGroupSeeder extends Seeder
             'formula_display' => $row['formula_display'] ?? null,
             'default_value' => $row['default_value'] ?? null,
             'conversion_formula' => $row['conversion_formula'] ?? null,
+            'conversion_function' => isset($row['conversion_function']) && $row['conversion_function'] !== '' ? $row['conversion_function'] : null,
             'conversion_dofus_sample' => $row['conversion_dofus_sample'] ?? null,
             'conversion_krosmoz_sample' => $row['conversion_krosmoz_sample'] ?? null,
             'conversion_sample_rows' => $row['conversion_sample_rows'] ?? null,

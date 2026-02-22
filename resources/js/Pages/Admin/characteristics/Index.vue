@@ -46,7 +46,17 @@ const props = defineProps({
     characteristicsForConvertToLinked: { type: Array, default: () => [] },
     /** Règles de mapping scrapping (source, entity, mapping_key, from_path, targets) qui utilisent cette caractéristique (panneau 3). */
     scrappingMappingsUsingThis: { type: Array, default: () => [] },
+    /** Options pour le select "Fonction de conversion" (mode création : passé à la racine). */
+    conversionFunctionOptions: { type: Array, default: () => [] },
 });
+
+/** Options du select "Fonction de conversion" : depuis selected (édition) ou props (création). */
+const conversionFunctionSelectOptions = computed(() =>
+    (props.selected?.conversionFunctionOptions ?? props.conversionFunctionOptions ?? []).map((opt) => ({
+        value: opt.id ?? opt.value ?? '',
+        label: opt.label ?? opt.id ?? '',
+    }))
+);
 
 /** Entités affichées en panneaux supplémentaires (hors Général). Clic sur "Spécifier pour une entité". */
 const selectedEntityOverrides = ref([]);
@@ -283,6 +293,7 @@ function buildFormData(selected, entitiesByGroup = null) {
             base_price_per_unit: e.base_price_per_unit ?? '',
             rune_price_per_unit: e.rune_price_per_unit ?? '',
             conversion_formula: e.conversion_formula ?? '',
+            conversion_function: e.conversion_function ?? null,
             conversion_dofus_sample: e.conversion_dofus_sample ?? null,
             conversion_krosmoz_sample: e.conversion_krosmoz_sample ?? null,
             conversion_sample_rows: (e.conversion_sample_rows && e.conversion_sample_rows.length) ? e.conversion_sample_rows : getDefaultConversionSampleRows(),
@@ -341,6 +352,7 @@ function addEntityOverride(entityKey) {
             base_price_per_unit: '',
             rune_price_per_unit: '',
             conversion_formula: '',
+            conversion_function: null,
             conversion_dofus_sample: null,
             conversion_krosmoz_sample: null,
             conversion_sample_rows: getDefaultConversionSampleRows(),
@@ -360,6 +372,41 @@ function removeEntityOverride(entityKey) {
 function confirmDelete() {
     if (props.selected?.id && confirm('Supprimer cette caractéristique ? Les données associées seront perdues.')) {
         router.delete(route('admin.characteristics.destroy', props.selected.id));
+    }
+}
+
+/** Actions seeders (admin / super_admin) */
+const seederExportLoading = ref(false);
+const seederImportLoading = ref(false);
+const seederMessage = ref({ type: '', text: '' });
+
+async function runExportSeederData() {
+    if (!confirm('Mettre à jour les fichiers seeders à partir de la BDD actuelle ? (db:export-seeder-data)\nDésactivé en production.')) return;
+    seederMessage.value = { type: '', text: '' };
+    seederExportLoading.value = true;
+    try {
+        const res = await axios.post(route('admin.characteristics.run-export-seeder-data'));
+        seederMessage.value = { type: res.data?.success ? 'success' : 'error', text: res.data?.message ?? '' };
+        if (res.data?.success) router.reload();
+    } catch (err) {
+        seederMessage.value = { type: 'error', text: err.response?.data?.message ?? 'Erreur réseau.' };
+    } finally {
+        seederExportLoading.value = false;
+    }
+}
+
+async function runImportSeeder() {
+    if (!confirm('Importer les seeders en BDD ? (db:seed --force)\nCela peut écraser des données. Continuer ?')) return;
+    seederMessage.value = { type: '', text: '' };
+    seederImportLoading.value = true;
+    try {
+        const res = await axios.post(route('admin.characteristics.run-import-seeder'));
+        seederMessage.value = { type: res.data?.success ? 'success' : 'error', text: res.data?.message ?? '' };
+        if (res.data?.success) router.reload();
+    } catch (err) {
+        seederMessage.value = { type: 'error', text: err.response?.data?.message ?? 'Erreur réseau.' };
+    } finally {
+        seederImportLoading.value = false;
     }
 }
 
@@ -396,6 +443,7 @@ watch(
                     base_price_per_unit: e.base_price_per_unit ?? '',
                     rune_price_per_unit: e.rune_price_per_unit ?? '',
                     conversion_formula: e.conversion_formula ?? '',
+                    conversion_function: e.conversion_function ?? null,
                     conversion_sample_rows: e.conversion_sample_rows ?? null,
                 }));
             }
@@ -421,6 +469,7 @@ watch(
                             base_price_per_unit: defaultRow.base_price_per_unit ?? '',
                             rune_price_per_unit: defaultRow.rune_price_per_unit ?? '',
                             conversion_formula: defaultRow.conversion_formula ?? '',
+                            conversion_function: defaultRow.conversion_function ?? null,
                         },
                     ];
                 }
@@ -458,10 +507,11 @@ onMounted(() => {
     }
 });
 
-/** Libellés pour chaque entité (affichage dans les cartes). */
+/** Libellés pour chaque entité (affichage dans les cartes et panneau Mapping). */
 const entityLabels = {
     '*': 'Défaut (toutes les entités du groupe)',
     monster: 'Monstre',
+    breed: 'Classes',
     class: 'Classe',
     npc: 'PNJ',
     item: 'Équipement',
@@ -710,6 +760,32 @@ function submitConvertToLinked() {
                             </Link>
                         </div>
                     </div>
+                </div>
+                <!-- Actions seeders (admin / super_admin uniquement, protégées côté serveur) -->
+                <div class="mt-4 border-t border-base-300 pt-3 px-2 space-y-2">
+                    <button
+                        type="button"
+                        class="btn btn-ghost btn-sm w-full justify-start gap-2 text-warning"
+                        :disabled="seederExportLoading || seederImportLoading"
+                        @click="runExportSeederData"
+                    >
+                        <span v-if="seederExportLoading" class="loading loading-spinner loading-xs" />
+                        <i v-else class="fa fa-file-export" />
+                        Mettre à jour le seeder (BDD → fichiers)
+                    </button>
+                    <button
+                        type="button"
+                        class="btn btn-ghost btn-sm w-full justify-start gap-2 text-info"
+                        :disabled="seederExportLoading || seederImportLoading"
+                        @click="runImportSeeder"
+                    >
+                        <span v-if="seederImportLoading" class="loading loading-spinner loading-xs" />
+                        <i v-else class="fa fa-file-import" />
+                        Importer le seeder (fichiers → BDD)
+                    </button>
+                    <p v-if="seederMessage.text" class="text-xs px-1" :class="seederMessage.type === 'success' ? 'text-success' : 'text-error'">
+                        {{ seederMessage.text }}
+                    </p>
                 </div>
             </nav>
         </aside>
@@ -1274,6 +1350,26 @@ function submitConvertToLinked() {
                                     <p class="mt-1 text-xs text-base-content/70">Syntaxe : [d], [level], floor(), ceil(), round(), sqrt(), pow(), min(), max(), etc. + - * /</p>
                                 </div>
                                 <div>
+                                    <label class="label"><span class="label-text">Fonction de conversion</span></label>
+                                    <select
+                                        v-model="generalEntityRow().conversion_function"
+                                        class="select select-bordered w-full"
+                                        aria-label="Choisir une fonction de conversion"
+                                    >
+                                        <option value="">Aucune</option>
+                                        <option
+                                            v-for="opt in conversionFunctionSelectOptions"
+                                            :key="opt.value"
+                                            :value="opt.value || null"
+                                        >
+                                            {{ opt.label }}
+                                        </option>
+                                    </select>
+                                    <p class="mt-1 text-xs text-base-content/70">
+                                        Optionnelle. Liste fournie par le serveur (registry). Appliquée après la formule.
+                                    </p>
+                                </div>
+                                <div>
                                     <label class="label"><span class="label-text">Formule (affichage)</span></label>
                                     <input
                                         v-model="generalEntityRow().formula_display"
@@ -1420,7 +1516,12 @@ function submitConvertToLinked() {
                     </section>
 
                     <!-- Panneau 3 — Mapping (lien DofusDB ↔ Krosmoz, unique par entité) -->
-                    <MappingPanel :scrapping-mappings-using-this="scrappingMappingsUsingThis ?? []" />
+                    <MappingPanel
+                        :scrapping-mappings-using-this="scrappingMappingsUsingThis ?? []"
+                        :characteristic-key="selected?.id ?? ''"
+                        :mapping-entities="selected?.scrappingMappingEntities ?? []"
+                        :entity-labels="entityLabels"
+                    />
 
                     <!-- Panneaux entité spécifique (sous Conversion) -->
                     <div v-for="entityKey in selectedEntityOverrides" :key="entityKey" class="card shadow border border-base-200 mt-4 border-glass-sm relative overflow-hidden" :class="entityBgClasses[entityKey]">
@@ -1504,6 +1605,24 @@ function submitConvertToLinked() {
                                         placeholder="ex: [d]/10 (vide = même que le groupe)"
                                     />
                                     <p class="mt-1 text-xs text-base-content/70">Syntaxe : [d], [level], floor(), ceil(), round(), sqrt(), pow(), min(), max(), etc. + - * /</p>
+                                </div>
+                                <div>
+                                    <label class="label"><span class="label-text">Fonction de conversion</span></label>
+                                    <select
+                                        v-model="entityRow(entityKey).conversion_function"
+                                        class="select select-bordered w-full"
+                                        aria-label="Choisir une fonction de conversion pour cette entité"
+                                    >
+                                        <option value="">Aucune</option>
+                                        <option
+                                            v-for="opt in conversionFunctionSelectOptions"
+                                            :key="opt.value"
+                                            :value="opt.value || null"
+                                        >
+                                            {{ opt.label }}
+                                        </option>
+                                    </select>
+                                    <p class="mt-1 text-xs text-base-content/70">Surcharge pour cette entité. Même liste que le panneau Général.</p>
                                 </div>
                                 <div>
                                     <label class="label"><span class="label-text">Formule (affichage)</span></label>

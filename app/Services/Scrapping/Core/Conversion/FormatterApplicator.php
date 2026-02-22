@@ -76,23 +76,28 @@ final class FormatterApplicator
             'recipeToResourceRecipe' => function (mixed $v, array $a, array $r): array {
                 return $this->recipeToResourceRecipe($v, $r);
             },
-            'itemEffectsToKrosmozBonus' => function (mixed $v, array $a, array $r): ?string {
-                return $this->itemEffectsToKrosmozBonus($v, $r);
+            'itemEffectsToKrosmozBonus' => function (mixed $v, array $a, array $r, array $c): ?string {
+                return $this->itemEffectsToKrosmozBonus($v, $r, $c);
             },
         ];
 
         if ($this->conversionService !== null) {
             $registry['dofusdb_level'] = function (mixed $v, array $a, array $r, array $c): mixed {
-                return $this->conversionService->convertLevel($this->numericValue($v), (string) ($c['entityType'] ?? 'monster'));
+                $entityType = (string) ($c['entityType'] ?? 'monster');
+                $d = $this->numericValue($v);
+                $key = $this->conversionService->getLevelCharacteristicKey($entityType);
+                return $this->conversionService->convert($key, ['d' => $d], $entityType, (float) round($d / 10), $c);
             };
             $registry['dofusdb_life'] = function (mixed $v, array $a, array $r, array $c): mixed {
-                return $this->applyDofusdbLife($v, $r, $a, (string) ($c['entityType'] ?? 'monster'));
+                return $this->applyDofusdbLife($v, $r, $a, (string) ($c['entityType'] ?? 'monster'), $c);
             };
             $registry['dofusdb_attribute'] = function (mixed $v, array $a, array $r, array $c): mixed {
-                return $this->applyDofusdbAttribute($v, $a, (string) ($c['entityType'] ?? 'monster'), $c['_resolvedCharacteristicKey'] ?? null);
+                return $this->applyDofusdbAttribute($v, $a, (string) ($c['entityType'] ?? 'monster'), $c['_resolvedCharacteristicKey'] ?? null, $c);
             };
             $registry['dofusdb_ini'] = function (mixed $v, array $a, array $r, array $c): mixed {
-                return $this->conversionService->convertInitiative($this->numericValue($v), (string) ($c['entityType'] ?? 'monster'));
+                $entityType = (string) ($c['entityType'] ?? 'monster');
+                $d = $this->numericValue($v);
+                return $this->conversionService->convert('ini_creature', ['d' => $d], $entityType, $d, $c);
             };
         }
 
@@ -106,9 +111,10 @@ final class FormatterApplicator
      *
      * @param mixed $value item.effects (array)
      * @param array<string, mixed> $raw item brut
+     * @param array<string, mixed> $context Contexte (convertedOutput, raw) pour les fonctions de conversion
      * @return string|null JSON encodé ou null
      */
-    private function itemEffectsToKrosmozBonus(mixed $value, array $raw): ?string
+    private function itemEffectsToKrosmozBonus(mixed $value, array $raw, array $context = []): ?string
     {
         if (!is_array($value) || $value === []) {
             return null;
@@ -155,7 +161,7 @@ final class FormatterApplicator
             }
             $val = is_numeric($val) ? (int) $val : 0;
             if ($this->conversionService !== null) {
-                $val = $this->conversionService->convertObjectAttribute($charKey, $val, 'item');
+                $val = $this->conversionService->convertObjectAttribute($charKey, $val, 'item', $context);
             }
             $shortKey = str_ends_with($charKey, '_object') ? substr($charKey, 0, -7) : $charKey;
             $bonus[$shortKey] = ($bonus[$shortKey] ?? 0) + $val;
@@ -218,13 +224,19 @@ final class FormatterApplicator
         return is_numeric($value) ? (float) $value : 0.0;
     }
 
-    private function applyDofusdbLife(mixed $value, array $raw, array $args, string $entityType): int
+    /**
+     * @param array<string, mixed> $context Contexte (convertedOutput, raw) pour les fonctions de conversion
+     */
+    private function applyDofusdbLife(mixed $value, array $raw, array $args, string $entityType, array $context = []): int
     {
         $levelPath = (string) ($args['levelPath'] ?? 'grades.0.level');
         $levelRaw = $this->getByPath($raw, $levelPath);
-        $levelKrosmoz = $this->conversionService->convertLevel($this->numericValue($levelRaw), $entityType);
+        $dLevel = $this->numericValue($levelRaw);
+        $keyLevel = $this->conversionService->getLevelCharacteristicKey($entityType);
+        $levelKrosmoz = $this->conversionService->convert($keyLevel, ['d' => $dLevel], $entityType, (float) round($dLevel / 10), $context);
+        $dLife = $this->numericValue($value);
 
-        return $this->conversionService->convertLife($this->numericValue($value), $levelKrosmoz, $entityType);
+        return $this->conversionService->convert('life_creature', ['d' => $dLife, 'level' => $levelKrosmoz], $entityType, (float) round($dLife / 200 + $levelKrosmoz * 5), $context);
     }
 
     /**
@@ -247,17 +259,19 @@ final class FormatterApplicator
     /**
      * Applique dofusdb_attribute : utilise characteristic_key de la règle de mapping si présent,
      * sinon args.characteristicId (convention xxx_creature).
+     *
+     * @param array<string, mixed> $context Contexte (convertedOutput, raw) pour les fonctions de conversion
      */
-    private function applyDofusdbAttribute(mixed $value, array $args, string $entityType, ?string $characteristicKey): mixed
+    private function applyDofusdbAttribute(mixed $value, array $args, string $entityType, ?string $characteristicKey, array $context = []): mixed
     {
         if ($this->conversionService === null) {
             return $value;
         }
         if ($characteristicKey !== null) {
-            return $this->conversionService->convertByCharacteristicKey($characteristicKey, $value, $entityType);
+            return $this->conversionService->convertByCharacteristicKey($characteristicKey, $value, $entityType, $context);
         }
         if (isset($args['characteristicId']) && is_string($args['characteristicId'])) {
-            return $this->conversionService->convertAttribute($args['characteristicId'], $value, $entityType);
+            return $this->conversionService->convertAttribute($args['characteristicId'], $value, $entityType, $context);
         }
 
         return $value;
@@ -376,7 +390,7 @@ final class FormatterApplicator
 
     /**
      * Rareté par défaut selon le niveau (resource, consumable, item, panoply).
-     * Niveau = niveau Krosmoz (après conversion level DofusDB). Si conversionService présent, utilise getRarityByLevel.
+     * Niveau = niveau Krosmoz (convert level). Si conversionService présent, appelle convert('rarity_object', ['level' => level], …).
      */
     private function defaultRarityByLevel(mixed $value, array $raw, string $entityType): int
     {
@@ -384,24 +398,25 @@ final class FormatterApplicator
             return (int) $value;
         }
         $rawLevel = (int) ($this->getByPath($raw, 'level') ?? 0);
-        $level = $this->conversionService !== null
-            ? $this->conversionService->convertLevel($rawLevel, $entityType)
-            : (int) round($rawLevel / 10);
-
-        if ($this->conversionService !== null) {
-            return $this->conversionService->getRarityByLevel($level, $entityType);
-        }
-
-        // Sans conversionService : défaut depuis la caractéristique rarity (liste) si disponible.
-        if ($this->getter !== null) {
-            $def = $this->getter->getDefinition('rarity_object', $entityType);
-            if ($def !== null && isset($def['value_available']) && is_array($def['value_available']) && $def['value_available'] !== []) {
-                $first = reset($def['value_available']);
-                return is_numeric($first) ? (int) (float) $first : 0;
+        if ($this->conversionService === null) {
+            $level = (int) round($rawLevel / 10);
+            if ($this->getter !== null) {
+                $def = $this->getter->getDefinition('rarity_object', $entityType);
+                if ($def !== null && isset($def['value_available']) && is_array($def['value_available']) && $def['value_available'] !== []) {
+                    $first = reset($def['value_available']);
+                    return is_numeric($first) ? (int) (float) $first : 0;
+                }
             }
+            return 0;
         }
+        $keyLevel = $this->conversionService->getLevelCharacteristicKey($entityType);
+        $level = $this->conversionService->convert($keyLevel, ['d' => (float) $rawLevel], $entityType, (float) round($rawLevel / 10));
+        if (! in_array($entityType, DofusConversionService::RARITY_ENTITIES, true)) {
+            return 0;
+        }
+        $fallback = $this->conversionService->getRarityFallbackForLevel($level);
 
-        return 0;
+        return $this->conversionService->convert('rarity_object', ['level' => $level], $entityType, (float) $fallback);
     }
 
     /**

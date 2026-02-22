@@ -5,9 +5,9 @@ namespace App\Services\Scrapping\Core\Config;
 /**
  * Charge les configs depuis resources/scrapping/config/ (source + entités).
  * Endpoints, filtres, target, meta, relations viennent des JSON.
- * Le mapping (règles DofusDB → Krosmoz) vient uniquement de la BDD via ScrappingMappingService.
+ * Mapping : BDD via ScrappingMappingService si présent, sinon fallback sur le mapping des JSON d'entité.
  *
- * Validation minimale : version, source, entity, endpoints ; mapping fourni par la BDD (ou []).
+ * Validation minimale : version, source, entity, endpoints ; mapping = BDD ou JSON (jamais vide si le JSON en contient).
  */
 final class ConfigLoader
 {
@@ -83,17 +83,72 @@ final class ConfigLoader
             throw new \InvalidArgumentException("Config entité '{$source}/{$entity}': 'endpoints' requis.");
         }
 
-        // Mapping uniquement depuis la BDD (panneau admin). On n'utilise plus le mapping des JSON.
+        // Mapping : BDD (panneau admin) si présent, sinon fallback sur le JSON (tests, première install).
+        $jsonMapping = is_array($data['mapping'] ?? null) ? $data['mapping'] : [];
         if ($this->mappingService !== null) {
-            $data['mapping'] = $this->mappingService->getMappingForEntity($source, $entity) ?? [];
-        } elseif (is_array($data['mapping'] ?? null)) {
-            // Fallback si le service n'est pas injecté (tests, CLI sans container).
-            $data['mapping'] = $data['mapping'];
+            $fromDb = $this->mappingService->getMappingForEntity($source, $entity);
+            $data['mapping'] = ($fromDb !== null && $fromDb !== []) ? $fromDb : $jsonMapping;
         } else {
-            $data['mapping'] = [];
+            $data['mapping'] = $jsonMapping;
         }
 
         return $data;
+    }
+
+    /**
+     * Lit le mapping d'une entité depuis le fichier JSON uniquement (sans fusion BDD).
+     * Utilisé pour lister les chemins possibles (modal « Lier » depuis la caractéristique).
+     * Ne retourne que les entrées ayant "from.path" (pas "extract").
+     *
+     * @return list<array{path: string, key: string, langAware: bool, targets: list<array{model: string, field: string}>, formatters: list<array{name: string, args: array}>}>
+     */
+    public function getEntityMappingEntriesFromFile(string $source, string $entity): array
+    {
+        $path = $this->baseDir . "/sources/{$source}/entities/{$entity}.json";
+        $data = $this->readJson($path);
+        $mapping = $data['mapping'] ?? [];
+        if (! is_array($mapping)) {
+            return [];
+        }
+        $out = [];
+        foreach ($mapping as $entry) {
+            $from = $entry['from'] ?? null;
+            if (! is_array($from) || ! isset($from['path']) || is_string($from['path']) === false) {
+                continue;
+            }
+            $to = $entry['to'] ?? [];
+            $targets = [];
+            foreach (is_array($to) ? $to : [] as $t) {
+                if (isset($t['model'], $t['field'])) {
+                    $targets[] = ['model' => (string) $t['model'], 'field' => (string) $t['field']];
+                }
+            }
+            $formatters = $entry['formatters'] ?? [];
+            if (! is_array($formatters)) {
+                $formatters = [];
+            }
+            $out[] = [
+                'path' => $from['path'],
+                'key' => $entry['key'] ?? $from['path'],
+                'langAware' => (bool) ($from['langAware'] ?? false),
+                'targets' => $targets,
+                'formatters' => $formatters,
+            ];
+        }
+        return $out;
+    }
+
+    /**
+     * Retourne le libellé d'une entité depuis son fichier JSON (clé "label" ou id de l'entité).
+     */
+    public function getEntityLabel(string $source, string $entity): string
+    {
+        $path = $this->baseDir . "/sources/{$source}/entities/{$entity}.json";
+        if (! is_file($path)) {
+            return $entity;
+        }
+        $data = $this->readJson($path);
+        return (string) ($data['label'] ?? $entity);
     }
 
     /**

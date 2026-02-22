@@ -114,6 +114,38 @@ final class CharacteristicLimitService
     }
 
     /**
+     * Clampe les valeurs numériques des données converties dans les limites min/max avant validation.
+     * Convention : éviter les échecs de validation pour des valeurs hors bornes en les ramenant dans l'intervalle.
+     *
+     * @param array<string, array<string, mixed>> $convertedData Données par modèle (ex. ['creatures' => [...], 'monsters' => [...]])
+     * @return array<string, array<string, mixed>> Données avec champs numériques clamés
+     */
+    public function clampConvertedData(array $convertedData, string $entityType): array
+    {
+        $entity = self::ENTITY_ALIASES[$entityType] ?? $entityType;
+        foreach ($convertedData as $model => $fields) {
+            if (! is_array($fields)) {
+                continue;
+            }
+            foreach ($fields as $field => $value) {
+                if ($value === null || ! is_numeric($value)) {
+                    continue;
+                }
+                $def = $this->getter->getDefinitionByField($field, $entity);
+                if ($def === null) {
+                    continue;
+                }
+                $key = $def['key'] ?? $field;
+                $limits = $this->getter->getLimits($key, $entity);
+                if ($limits !== null) {
+                    $convertedData[$model][$field] = $this->clamp($key, (int) (float) $value, $entity);
+                }
+            }
+        }
+        return $convertedData;
+    }
+
+    /**
      * Clampe une valeur dans les limites min/max pour l'entité.
      * Ne s'applique qu'aux types numériques (string/int) ; pour boolean/list, retourne la valeur inchangée.
      */

@@ -115,18 +115,51 @@ Réponse : `{ formula: string, r2?: number }` (ou 422 si l’ajustement demandé
 
 ---
 
-## 4. Récapitulatif des champs
+## 4. Source de vérité : formule BDD puis fonction optionnelle
+
+La **conversion Dofus → Krosmoz** est pilotée par l'expression dynamique (`conversion_formula`) en base, puis par une **fonction personnalisée** optionnelle (`conversion_function`), puis par le clamp (CharacteristicLimitService). Le service lit la formule via le Getter, l'évalue (CharacteristicFormulaService), applique éventuellement la fonction enregistrée dans le Registry, puis clampe le résultat.
+
+### 4.1 Quand une formule ne suffit pas : recourir à une conversion_function
+
+La formule ne reçoit que les **variables** passées explicitement à `convert()` (ex. `d`, `level`). Elle **ne peut pas** accéder à l'entité brute (**raw** : autres champs du monstre, de l'objet, du sort) ni aux **données déjà converties** (**convertedOutput**).
+
+**Règle :** toute conversion dont la logique métier dépend de **raw** ou de **convertedOutput** **doit** passer par une **conversion_function** (en plus ou à la place de la formule), car seule la callable reçoit `(valeur, convertedOutput, raw, characteristicKey, entityType)`.
+
+**Exemples où une fonction personnalisée est nécessaire :**
+
+| Cas | Pourquoi la formule ne suffit pas |
+|-----|-----------------------------------|
+| Rareté / niveau dépendant d'un autre champ (ex. type d'objet) | La formule n'a pas accès à `raw` (type, catégorie, etc.). |
+| Plafonnement par une autre caractéristique déjà convertie | La formule n'a pas accès à `convertedOutput` (ex. plafonner par le niveau déjà converti). |
+| Logique conditionnelle sur plusieurs champs de l'entité | Seule une fonction peut lire plusieurs champs de `raw` et décider. |
+| Effets d'objet dont la conversion dépend du reste de l'item | Pour `itemEffectsToKrosmozBonus`, si la règle doit s'appuyer sur d'autres champs de l'item (raw) ou d'autres stats converties, il faut une `conversion_function` sur la caractéristique cible. |
+
+**Conversions qui peuvent rester en formule seule** (variables suffisantes) : niveau (`[d]`), vie (`[d]` + `[level]`), initiative (`[d]`), attributs (`[d]`), rareté par niveau (`[level]` en table). Dès que la règle exige **contexte entité** (raw) ou **contexte converti** (convertedOutput), il faut une fonction.
+
+### 4.2 Champ conversion_function
+
+- **Champ** : `conversion_function` (string, nullable, 64 caractères).
+- **Rôle** : identifiant d'une fonction enregistrée dans `ConversionFunctionRegistry`. Si renseigné en BDD (associé depuis l'UI), la fonction est **appliquée après** l'évaluation de la formule (ou directement sur la valeur si pas de formule). Signature de la callable : `(valeur, convertedOutput, raw, characteristicKey, entityType) → valeur avant clamp`.
+- **Registry** : `ConversionFunctionRegistry` expose les options pour le select UI ; les callables sont enregistrés dans `AppServiceProvider::registerConversionFunctions`. Le pipeline les appelle dans `DofusConversionService::convert()` lorsqu'une caractéristique a `conversion_function` renseigné.
+
+**Fichiers** : `DofusConversionService` (formule → conversion_function → clamp), `ConversionFunctionRegistry`, panel Conversion dans l'admin caractéristiques.
+
+---
+
+## 5. Récapitulatif des champs
 
 | Champ | Table(s) | Type | Rôle |
 |-------|----------|------|------|
 | **conversion_formula** | characteristic_creature, characteristic_object, characteristic_spell | text (nullable) | Formule de conversion : **fixe**, **formule** avec `[d]`, ou **table** par `d`. |
+| **conversion_function** | idem | string (nullable, 64) | Identifiant d’une fonction de conversion enregistrée (optionnel). Identifiant d'une fonction personnalisée ; associée à la caractéristique depuis l'UI, enregistrée en BDD ; appliquée après la formule si configurée. |
 | **conversion_dofus_sample** | idem | json (nullable) | Échantillon niveau → valeur Dofus (pour graphiques et génération de formule). Défaut suggéré : `{"1":1,"200":200}`. |
 | **conversion_krosmoz_sample** | idem | json (nullable) | Échantillon niveau → valeur Krosmoz (pour graphiques et génération de formule). Défaut suggéré : `{"1":1,"20":20}`. |
 
 ---
 
-## 5. Suite
+## 6. Suite
 
 - **Service d’automatisation** : `App\Services\Characteristic\Conversion\ConversionFormulaGenerator` (table + formules puissance et puissance décalée, avec R²). Tests : `tests/Unit/Characteristic/ConversionFormulaGeneratorTest.php`.
+- **Fonctions de conversion** : `ConversionFunctionRegistry` (options UI) ; associées à la caractéristique depuis l'UI et enregistrées en BDD ; appliquées après la formule dans `DofusConversionService::convert()` si configurées.
 - Évaluation de la conversion (variable `d`) : [ARCHITECTURE_SOUS_SERVICES.md](./ARCHITECTURE_SOUS_SERVICES.md) § 5, `DofusConversionService`.
 - Syntaxe des formules et tables : [TYPES_VALEURS_ET_CONTENU_JSON.md](./TYPES_VALEURS_ET_CONTENU_JSON.md) § 3, [SYNTAXE_FORMULES_CARACTERISTIQUES.md](../../10-BestPractices/SYNTAXE_FORMULES_CARACTERISTIQUES.md).

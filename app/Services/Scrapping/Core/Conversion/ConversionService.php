@@ -62,7 +62,11 @@ final class ConversionService
                         continue;
                     }
                     $args = $this->interpolateArgs($fmt['args'] ?? [], ['lang' => $lang]);
-                    $contextWithRule = array_merge($context, ['mappingRule' => $map]);
+                    $contextWithRule = array_merge($context, [
+                        'mappingRule' => $map,
+                        DofusConversionService::CONTEXT_CONVERTED_OUTPUT => $out,
+                        DofusConversionService::CONTEXT_RAW => $raw,
+                    ]);
                     $value = $this->formatterApplicator->apply($fmt['name'], $value, $args, $raw, $contextWithRule);
                 }
             }

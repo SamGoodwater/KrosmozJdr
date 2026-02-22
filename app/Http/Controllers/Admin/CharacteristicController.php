@@ -10,13 +10,20 @@ use App\Models\CharacteristicCreature;
 use App\Models\CharacteristicObject;
 use App\Models\CharacteristicSpell;
 use App\Services\Characteristic\Admin\CharacteristicShowPayloadBuilder;
+use App\Services\Characteristic\Conversion\ConversionFunctionRegistry;
 use App\Services\Characteristic\Conversion\ConversionFormulaGenerator;
 use App\Services\Characteristic\Formula\CharacteristicFormulaService;
 use App\Services\Characteristic\Formula\FormulaConfigDecoder;
 use App\Services\Characteristic\CharacteristicColorCssGenerator;
 use App\Services\Characteristic\Getter\CharacteristicGetterService;
+use App\Services\Scrapping\Core\Config\ConfigLoader;
+use App\Services\Scrapping\Core\Config\ScrappingMappingService;
+use App\Models\Scrapping\ScrappingEntityMapping;
+use App\Models\Scrapping\ScrappingEntityMappingTarget;
+use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Validator;
 use Inertia\Inertia;
 use Inertia\Response as InertiaResponse;
@@ -36,12 +43,22 @@ class CharacteristicController extends Controller
         'spell' => ['*', 'spell'],
     ];
 
+    /** Entités DofusDB proposées dans la modal mapping par groupe (objet → chemins). */
+    private const DOFUSDB_ENTITIES_BY_GROUP = [
+        'creature' => ['monster', 'breed'],
+        'object' => ['item', 'panoply'],
+        'spell' => ['spell'],
+    ];
+
     public function __construct(
         private readonly CharacteristicGetterService $getter,
         private readonly CharacteristicFormulaService $formulaService,
         private readonly ConversionFormulaGenerator $conversionFormulaGenerator,
+        private readonly ConversionFunctionRegistry $conversionFunctionRegistry,
         private readonly CharacteristicColorCssGenerator $colorCssGenerator,
-        private readonly CharacteristicShowPayloadBuilder $showPayloadBuilder
+        private readonly CharacteristicShowPayloadBuilder $showPayloadBuilder,
+        private readonly ScrappingMappingService $scrappingMappingService,
+        private readonly ConfigLoader $configLoader
     ) {
     }
 
@@ -72,6 +89,7 @@ class CharacteristicController extends Controller
             'formula_display' => null,
             'default_value' => null,
             'conversion_formula' => null,
+            'conversion_function' => null,
             'conversion_dofus_sample' => null,
             'conversion_krosmoz_sample' => null,
             'conversion_sample_rows' => null,
@@ -118,6 +136,7 @@ class CharacteristicController extends Controller
             'entitiesTemplate' => $entitiesTemplate,
             'characteristicsForLinkOrCopy' => $characteristicsForLinkOrCopy,
             'copyFromCharacteristic' => $copyFromCharacteristic,
+            'conversionFunctionOptions' => $this->conversionFunctionRegistry->options(),
         ]);
     }
 
@@ -191,6 +210,7 @@ class CharacteristicController extends Controller
             'entities.*.formula_display' => 'nullable|string',
             'entities.*.default_value' => 'nullable|string|max:512',
             'entities.*.conversion_formula' => 'nullable|string',
+            'entities.*.conversion_function' => 'nullable|string|max:64',
             'entities.*.forgemagie_allowed' => 'nullable|boolean',
             'entities.*.forgemagie_max' => 'nullable|integer',
             'entities.*.base_price_per_unit' => 'nullable|numeric',
@@ -300,6 +320,7 @@ class CharacteristicController extends Controller
     {
         $characteristic = Characteristic::where('key', $characteristic_key)->first();
         if ($characteristic === null) {
+            session()->flash('error', 'Caractéristique introuvable.');
             return Inertia::render('Admin/characteristics/Index', [
                 'characteristicsByGroup' => $this->buildCharacteristicsByGroup(),
                 'selected' => null,
@@ -315,6 +336,7 @@ class CharacteristicController extends Controller
             'entitiesByGroup' => self::ENTITIES_BY_GROUP,
             'characteristicsForConvertToLinked' => $payload['characteristicsForConvertToLinked'],
             'scrappingMappingsUsingThis' => $payload['scrappingMappingsUsingThis'],
+            'conversionFunctionOptions' => $this->conversionFunctionRegistry->options(),
         ]);
     }
 
@@ -337,6 +359,194 @@ class CharacteristicController extends Controller
         $this->colorCssGenerator->generate();
 
         return redirect()->route('admin.characteristics.index')->with('success', 'Caractéristique supprimée.');
+    }
+
+    /**
+     * Modal mapping : sans entity → liste des entités DofusDB pour le groupe ; avec entity → chemins (from_path) depuis le JSON.
+     *
+     * @see docs/50-Fonctionnalités/Scrapping/SIMPLIFICATION_UI_MAPPING_DEPUIS_CARACTERISTIQUE.md
+     */
+    public function scrappingMappingOptions(Request $request, string $characteristic_key): JsonResponse
+    {
+        $characteristic = Characteristic::where('key', $characteristic_key)->firstOrFail();
+        $group = $this->inferPrimaryGroup($characteristic);
+        $entity = (string) $request->query('entity', '');
+        $entityIds = self::DOFUSDB_ENTITIES_BY_GROUP[$group] ?? [];
+
+        if ($entity === '') {
+            $entities = [];
+            foreach ($entityIds as $e) {
+                $entities[] = [
+                    'id' => $e,
+                    'label' => $this->configLoader->getEntityLabel('dofusdb', $e),
+                ];
+            }
+            return response()->json(['entities' => $entities]);
+        }
+
+        if (! in_array($entity, $entityIds, true)) {
+            return response()->json(['message' => 'Entité invalide pour ce groupe.'], 422);
+        }
+        try {
+            $paths = $this->configLoader->getEntityMappingEntriesFromFile('dofusdb', $entity);
+        } catch (\Throwable) {
+            return response()->json(['message' => 'Config entité introuvable.'], 422);
+        }
+        return response()->json(['paths' => $paths]);
+    }
+
+    /**
+     * Crée (ou met à jour) une règle de mapping depuis un chemin DofusDB et la lie à cette caractéristique.
+     * Les targets et formatters viennent du JSON d'entité.
+     *
+     * @see docs/50-Fonctionnalités/Scrapping/SIMPLIFICATION_UI_MAPPING_DEPUIS_CARACTERISTIQUE.md
+     */
+    public function storeScrappingMapping(Request $request, string $characteristic_key): JsonResponse
+    {
+        $characteristic = Characteristic::where('key', $characteristic_key)->firstOrFail();
+        $validated = $request->validate([
+            'entity' => 'required|string|max:64',
+            'from_path' => 'required|string|max:256',
+        ]);
+        $group = $this->inferPrimaryGroup($characteristic);
+        $entityIds = self::DOFUSDB_ENTITIES_BY_GROUP[$group] ?? [];
+        if (! in_array($validated['entity'], $entityIds, true)) {
+            return response()->json(['message' => 'Entité invalide pour ce groupe.'], 422);
+        }
+        try {
+            $entries = $this->configLoader->getEntityMappingEntriesFromFile('dofusdb', $validated['entity']);
+        } catch (\Throwable) {
+            return response()->json(['message' => 'Config entité introuvable.'], 422);
+        }
+        $entry = null;
+        foreach ($entries as $e) {
+            if ($e['path'] === $validated['from_path']) {
+                $entry = $e;
+                break;
+            }
+        }
+        if ($entry === null) {
+            return response()->json(['message' => 'Chemin non trouvé dans la config de l\'entité.'], 422);
+        }
+        if ($entry['targets'] === []) {
+            return response()->json(['message' => 'Ce chemin n\'a pas de cible Krosmoz définie dans la config.'], 422);
+        }
+
+        // Contrainte unique (source, entity, mapping_key) : réutiliser la règle existante ou créer
+        $mapping = ScrappingEntityMapping::where('source', 'dofusdb')
+            ->where('entity', $validated['entity'])
+            ->where('mapping_key', $entry['key'])
+            ->first();
+
+        if ($mapping !== null) {
+            $mapping->update([
+                'from_path' => $entry['path'],
+                'from_lang_aware' => $entry['langAware'],
+                'formatters' => $entry['formatters'],
+                'characteristic_id' => $characteristic->id,
+            ]);
+            $mapping->targets()->delete();
+        } else {
+            $maxSort = (int) ScrappingEntityMapping::where('source', 'dofusdb')
+                ->where('entity', $validated['entity'])
+                ->max('sort_order');
+            $mapping = ScrappingEntityMapping::create([
+                'source' => 'dofusdb',
+                'entity' => $validated['entity'],
+                'mapping_key' => $entry['key'],
+                'from_path' => $entry['path'],
+                'from_lang_aware' => $entry['langAware'],
+                'characteristic_id' => $characteristic->id,
+                'formatters' => $entry['formatters'],
+                'sort_order' => $maxSort + 1,
+            ]);
+        }
+
+        foreach ($entry['targets'] as $i => $t) {
+            ScrappingEntityMappingTarget::create([
+                'scrapping_entity_mapping_id' => $mapping->id,
+                'target_model' => $t['model'],
+                'target_field' => $t['field'],
+                'sort_order' => $i,
+            ]);
+        }
+
+        $mapping->load('targets');
+        return response()->json([
+            'success' => true,
+            'message' => 'Mapping enregistré.',
+            'mapping' => $mapping->toSummaryArray(),
+        ]);
+    }
+
+    /**
+     * Délie une règle de mapping de cette caractéristique (characteristic_id = null).
+     *
+     * @see docs/50-Fonctionnalités/Scrapping/SIMPLIFICATION_UI_MAPPING_DEPUIS_CARACTERISTIQUE.md
+     */
+    public function unlinkScrappingMapping(Request $request, string $characteristic_key): JsonResponse
+    {
+        $characteristic = Characteristic::where('key', $characteristic_key)->firstOrFail();
+        $validated = $request->validate(['mapping_id' => 'required|integer|exists:scrapping_entity_mappings,id']);
+        $mapping = ScrappingEntityMapping::findOrFail($validated['mapping_id']);
+        if ($mapping->characteristic_id !== (int) $characteristic->id) {
+            return response()->json(['message' => 'Cette règle n\'est pas liée à cette caractéristique.'], 422);
+        }
+        $mapping->update(['characteristic_id' => null]);
+        return response()->json(['success' => true, 'message' => 'Règle déliée.']);
+    }
+
+    /**
+     * Met à jour les fichiers seeders à partir de la BDD (php artisan db:export-seeder-data).
+     * Réservé admin / super_admin. Désactivé en production (commande guardée).
+     */
+    public function runExportSeederData(Request $request): JsonResponse
+    {
+        if (! $request->user() || ! $request->user()->verifyRole(User::ROLE_ADMIN)) {
+            return response()->json(['success' => false, 'message' => 'Accès non autorisé.'], 403);
+        }
+        try {
+            $exitCode = Artisan::call('db:export-seeder-data');
+            if ($exitCode !== 0) {
+                $out = trim(Artisan::output());
+                return response()->json([
+                    'success' => false,
+                    'message' => $out ?: 'La commande est désactivée en production ou a échoué.',
+                ], 422);
+            }
+            return response()->json([
+                'success' => true,
+                'message' => 'Fichiers seeders mis à jour depuis la BDD.',
+            ]);
+        } catch (\Throwable $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Erreur : ' . $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    /**
+     * Importe les seeders en BDD (php artisan db:seed --force).
+     * Réservé admin / super_admin.
+     */
+    public function runImportSeeder(Request $request): JsonResponse
+    {
+        if (! $request->user() || ! $request->user()->verifyRole(User::ROLE_ADMIN)) {
+            return response()->json(['success' => false, 'message' => 'Accès non autorisé.'], 403);
+        }
+        try {
+            Artisan::call('db:seed', ['--force' => true]);
+            return response()->json([
+                'success' => true,
+                'message' => 'Seeders exécutés.',
+            ]);
+        } catch (\Throwable $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Erreur : ' . $e->getMessage(),
+            ], 500);
+        }
     }
 
     /**
@@ -577,6 +787,7 @@ class CharacteristicController extends Controller
             'entities.*.formula_display' => 'nullable|string',
             'entities.*.default_value' => 'nullable|string|max:512',
             'entities.*.conversion_formula' => 'nullable|string',
+            'entities.*.conversion_function' => 'nullable|string|max:64',
             'entities.*.conversion_dofus_sample' => 'nullable|array',
             'entities.*.conversion_dofus_sample.*' => 'numeric',
             'entities.*.conversion_krosmoz_sample' => 'nullable|array',
@@ -768,6 +979,7 @@ class CharacteristicController extends Controller
             'formula_display' => $row->formula_display,
             'default_value' => $row->default_value,
             'conversion_formula' => $row->conversion_formula,
+            'conversion_function' => $row->conversion_function,
             'conversion_dofus_sample' => $row->conversion_dofus_sample,
             'conversion_krosmoz_sample' => $row->conversion_krosmoz_sample,
             'conversion_sample_rows' => $row->conversion_sample_rows,
@@ -847,6 +1059,7 @@ class CharacteristicController extends Controller
                 'formula_display' => null,
                 'default_value' => null,
                 'conversion_formula' => null,
+                'conversion_function' => null,
                 'forgemagie_allowed' => false,
                 'forgemagie_max' => 0,
                 'base_price_per_unit' => null,
@@ -880,6 +1093,7 @@ class CharacteristicController extends Controller
             'formula_display' => $data['formula_display'] ?? null,
             'default_value' => $data['default_value'] ?? null,
             'conversion_formula' => $data['conversion_formula'] ?? null,
+            'conversion_function' => trim((string) ($data['conversion_function'] ?? '')) === '' ? null : $data['conversion_function'],
             'conversion_dofus_sample' => $this->deriveSampleFromRows($sampleRows, 'dofus') ?? $this->normalizeSampleForSave($data['conversion_dofus_sample'] ?? null),
             'conversion_krosmoz_sample' => $this->deriveSampleFromRows($sampleRows, 'krosmoz') ?? $this->normalizeSampleForSave($data['conversion_krosmoz_sample'] ?? null),
             'conversion_sample_rows' => $sampleRows,

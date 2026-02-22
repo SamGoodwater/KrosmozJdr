@@ -107,4 +107,31 @@ final class ScrappingMappingService
             ->values()
             ->all();
     }
+
+    /**
+     * Règles de mapping disponibles pour une entité (pour le modal « Lier » depuis la fiche caractéristique).
+     * Retourne toutes les règles (source, entity) avec characteristic_id et characteristic pour afficher « déjà liée à X ».
+     *
+     * @return list<array{id: int, mapping_key: string, from_path: string, characteristic_id: int|null, characteristic: array{id: int, key: string, name: string|null}|null}>
+     */
+    public function listAvailableMappingsForEntity(string $source, string $entity): array
+    {
+        return ScrappingEntityMapping::where('source', $source)
+            ->where('entity', $entity)
+            ->with('characteristic:id,key,name')
+            ->orderBy('sort_order')
+            ->orderBy('id')
+            ->get()
+            ->map(fn (ScrappingEntityMapping $m): array => [
+                'id' => $m->id,
+                'mapping_key' => $m->mapping_key,
+                'from_path' => $m->from_path,
+                'characteristic_id' => $m->characteristic_id,
+                'characteristic' => $m->relationLoaded('characteristic') && $m->characteristic
+                    ? ['id' => $m->characteristic->id, 'key' => $m->characteristic->key, 'name' => $m->characteristic->name]
+                    : null,
+            ])
+            ->values()
+            ->all();
+    }
 }

@@ -1100,6 +1100,11 @@
     "description": "Ce document décrit les **quatre sous-services** qui permettent d’utiliser et de manipuler les données des caractéristiques. Ils s’appuient sur les tables centrales (`characteristics`, `characteristic_creature`, `characteristic_object`, `characteristic_spell`) et constituent le cœur technique du système."
   },
   {
+    "path": "50-Fonctionnalités/Characteristics-DB/AUDIT_CARACTERISTIQUES.md",
+    "title": "Audit des caractéristiques — Exhaustivité, expressions dynamiques, types",
+    "description": "Vérification approfondie des données de caractéristiques (seeders) : exhaustivité (name, helper, icon, color, descriptions), cohérence clés/groupe, validation des formules et min/max dynamiques, types (int, bool), caractéristique liée, correction formule life_creature."
+  },
+  {
     "path": "50-Fonctionnalités/Characteristics-DB/AUDIT_CODE_CARACTERISTIQUES.md",
     "title": "Audit code : caractéristiques (doublons, obsolète, à optimiser)",
     "description": "Ce document recense les écarts et points d’attention repérés dans le code du service de caractéristiques après plusieurs évolutions. À traiter pour aligner le code sur la documentation et supprimer les doublons ou parties obsolètes."
@@ -1323,6 +1328,11 @@
     "path": "50-Fonctionnalités/Scrapping/RESTE_A_FAIRE_SCRAPPING.md",
     "title": "Résumé — Ce qu’il reste à faire pour finir le scrapping (backend)",
     "description": "Ce document liste ce qui reste à faire pour **finaliser la partie backend** du scrapping (hors interface, à traiter plus tard)."
+  },
+  {
+    "path": "50-Fonctionnalités/Scrapping/SIMPLIFICATION_UI_MAPPING_DEPUIS_CARACTERISTIQUE.md",
+    "title": "Simplification UI mapping : lier depuis la caractéristique",
+    "description": "Proposition d’évolution de l’interface : tableau par entité DofusDB dans le panneau Mapping de la fiche caractéristique, modal « Lier » avec choix de la source (règle / variable), et endpoints backend associés."
   },
   {
     "path": "50-Fonctionnalités/Spell-Effects/TAXONOMIE_EFFETS_SORTS.md",

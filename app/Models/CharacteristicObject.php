@@ -22,6 +22,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
  * @property string|null $formula_display
  * @property string|null $default_value
  * @property string|null $conversion_formula
+ * @property string|null $conversion_function Identifiant d'une fonction de conversion enregistrée
  * @property array|null $conversion_dofus_sample Niveau → valeur Dofus (ex. {"1":1,"200":200})
  * @property array|null $conversion_krosmoz_sample Niveau → valeur Krosmoz (ex. {"1":1,"20":20})
  * @property bool $forgemagie_allowed
@@ -62,6 +63,7 @@ class CharacteristicObject extends Model
         'formula_display',
         'default_value',
         'conversion_formula',
+        'conversion_function',
         'conversion_dofus_sample',
         'conversion_krosmoz_sample',
         'conversion_sample_rows',

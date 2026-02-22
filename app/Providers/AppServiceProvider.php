@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Services\Characteristic\Conversion\ConversionFunctionRegistry;
 use App\Services\Characteristic\Conversion\DofusConversionService;
 use App\Services\Characteristic\Formula\CharacteristicFormulaService;
 use App\Services\Characteristic\Getter\CharacteristicGetterService;
@@ -23,6 +24,7 @@ class AppServiceProvider extends ServiceProvider
         $this->app->singleton(CharacteristicGetterService::class);
         $this->app->singleton(CharacteristicLimitService::class);
         $this->app->singleton(CharacteristicFormulaService::class);
+        $this->app->singleton(ConversionFunctionRegistry::class);
         $this->app->singleton(DofusConversionService::class);
 
         $this->app->singleton(ScrappingMappingService::class);
@@ -44,5 +46,15 @@ class AppServiceProvider extends ServiceProvider
     {
         Vite::prefetch(concurrency: 3);
         Model::unguard();
+
+        $this->registerConversionFunctions();
+    }
+
+    private function registerConversionFunctions(): void
+    {
+        $registry = $this->app->make(ConversionFunctionRegistry::class);
+        $registry->register('identity', static function (float $value): float {
+            return $value;
+        }, 'Identité (inchangé)');
     }
 }

@@ -74,7 +74,7 @@ return array (
     'db_column' => 'life',
     'min' => '1',
     'max' => '{"1":"9999","characteristic":"level_creature"}',
-    'formula' => '[char',
+    'formula' => '[vitality_creature]*10+[de_vie_creature]',
     'formula_display' => 'Vitalité×10 + dés de vie (2.2.2)',
     'default_value' => '1',
     'conversion_formula' => 'floor([d]/200)+[level]*5',
@@ -877,7 +877,7 @@ return array (
     'formula' => NULL,
     'formula_display' => NULL,
     'default_value' => '0',
-    'conversion_formula' => NULL,
+    'conversion_formula' => '[d]',
     'conversion_dofus_sample' => NULL,
     'conversion_krosmoz_sample' => 
     array (
@@ -899,7 +899,7 @@ return array (
     'formula' => NULL,
     'formula_display' => NULL,
     'default_value' => '0',
-    'conversion_formula' => NULL,
+    'conversion_formula' => '[d]',
     'conversion_dofus_sample' => NULL,
     'conversion_krosmoz_sample' => 
     array (
@@ -921,7 +921,7 @@ return array (
     'formula' => NULL,
     'formula_display' => NULL,
     'default_value' => '0',
-    'conversion_formula' => NULL,
+    'conversion_formula' => '[d]',
     'conversion_dofus_sample' => NULL,
     'conversion_krosmoz_sample' => 
     array (
@@ -943,7 +943,7 @@ return array (
     'formula' => NULL,
     'formula_display' => NULL,
     'default_value' => '0',
-    'conversion_formula' => NULL,
+    'conversion_formula' => '[d]',
     'conversion_dofus_sample' => NULL,
     'conversion_krosmoz_sample' => 
     array (
@@ -965,7 +965,7 @@ return array (
     'formula' => NULL,
     'formula_display' => NULL,
     'default_value' => '0',
-    'conversion_formula' => NULL,
+    'conversion_formula' => '[d]',
     'conversion_dofus_sample' => NULL,
     'conversion_krosmoz_sample' => 
     array (
@@ -987,7 +987,7 @@ return array (
     'formula' => NULL,
     'formula_display' => '0-5 (équip. +5, forgemagie +2) (2.2.2.3)',
     'default_value' => '0',
-    'conversion_formula' => NULL,
+    'conversion_formula' => '[d]',
     'conversion_dofus_sample' => NULL,
     'conversion_krosmoz_sample' => 
     array (
@@ -1009,7 +1009,7 @@ return array (
     'formula' => '8',
     'formula_display' => 'floor(niveau/2), max 10 (2.2.2.4)',
     'default_value' => '8',
-    'conversion_formula' => NULL,
+    'conversion_formula' => '[d]',
     'conversion_dofus_sample' => NULL,
     'conversion_krosmoz_sample' => 
     array (
@@ -1031,7 +1031,7 @@ return array (
     'formula' => NULL,
     'formula_display' => 'bonus_maîtrise + bonus équip. (2.2.2.5 / 3.3.4)',
     'default_value' => '0',
-    'conversion_formula' => NULL,
+    'conversion_formula' => '[d]',
     'conversion_dofus_sample' => NULL,
     'conversion_krosmoz_sample' => 
     array (
@@ -1053,7 +1053,7 @@ return array (
     'formula' => NULL,
     'formula_display' => '1 + floor(niveau/4), max 6 (2.2.2.4)',
     'default_value' => '0',
-    'conversion_formula' => NULL,
+    'conversion_formula' => '[d]',
     'conversion_dofus_sample' => NULL,
     'conversion_krosmoz_sample' => 
     array (
@@ -1075,7 +1075,7 @@ return array (
     'formula' => NULL,
     'formula_display' => 'floor((score−10)/2) (2.2.1.2)',
     'default_value' => '0',
-    'conversion_formula' => NULL,
+    'conversion_formula' => '[d]',
     'conversion_dofus_sample' => NULL,
     'conversion_krosmoz_sample' => 
     array (
@@ -1097,7 +1097,7 @@ return array (
     'formula' => NULL,
     'formula_display' => 'floor((score−10)/2) (2.2.1.2)',
     'default_value' => '0',
-    'conversion_formula' => NULL,
+    'conversion_formula' => '[d]',
     'conversion_dofus_sample' => NULL,
     'conversion_krosmoz_sample' => 
     array (
@@ -1119,7 +1119,7 @@ return array (
     'formula' => NULL,
     'formula_display' => 'floor((score−10)/2) (2.2.1.2)',
     'default_value' => '0',
-    'conversion_formula' => NULL,
+    'conversion_formula' => '[d]',
     'conversion_dofus_sample' => NULL,
     'conversion_krosmoz_sample' => 
     array (
@@ -1141,7 +1141,7 @@ return array (
     'formula' => NULL,
     'formula_display' => 'floor((score−10)/2) (2.2.1.2)',
     'default_value' => '0',
-    'conversion_formula' => NULL,
+    'conversion_formula' => '[d]',
     'conversion_dofus_sample' => NULL,
     'conversion_krosmoz_sample' => 
     array (
@@ -1163,7 +1163,7 @@ return array (
     'formula' => NULL,
     'formula_display' => 'floor((score−10)/2) (2.2.1.2)',
     'default_value' => '0',
-    'conversion_formula' => NULL,
+    'conversion_formula' => '[d]',
     'conversion_dofus_sample' => NULL,
     'conversion_krosmoz_sample' => 
     array (
@@ -1185,7 +1185,7 @@ return array (
     'formula' => NULL,
     'formula_display' => 'floor((score−10)/2) (2.2.1.2)',
     'default_value' => '0',
-    'conversion_formula' => NULL,
+    'conversion_formula' => '[d]',
     'conversion_dofus_sample' => NULL,
     'conversion_krosmoz_sample' => 
     array (
@@ -1207,7 +1207,7 @@ return array (
     'formula' => NULL,
     'formula_display' => '1d20 + mod. carac. + bonus maîtrise (2.2.1.3)',
     'default_value' => '0',
-    'conversion_formula' => NULL,
+    'conversion_formula' => '[d]',
     'conversion_dofus_sample' => NULL,
     'conversion_krosmoz_sample' => 
     array (
@@ -1229,7 +1229,7 @@ return array (
     'formula' => NULL,
     'formula_display' => '1d20 + mod. carac. + bonus maîtrise (2.2.1.3)',
     'default_value' => '0',
-    'conversion_formula' => NULL,
+    'conversion_formula' => '[d]',
     'conversion_dofus_sample' => NULL,
     'conversion_krosmoz_sample' => 
     array (
@@ -1251,7 +1251,7 @@ return array (
     'formula' => NULL,
     'formula_display' => '1d20 + mod. carac. + bonus maîtrise (2.2.1.3)',
     'default_value' => '0',
-    'conversion_formula' => NULL,
+    'conversion_formula' => '[d]',
     'conversion_dofus_sample' => NULL,
     'conversion_krosmoz_sample' => 
     array (
@@ -1273,7 +1273,7 @@ return array (
     'formula' => NULL,
     'formula_display' => '1d20 + mod. carac. + bonus maîtrise (2.2.1.3)',
     'default_value' => '0',
-    'conversion_formula' => NULL,
+    'conversion_formula' => '[d]',
     'conversion_dofus_sample' => NULL,
     'conversion_krosmoz_sample' => 
     array (
@@ -1295,7 +1295,7 @@ return array (
     'formula' => NULL,
     'formula_display' => '1d20 + mod. carac. + bonus maîtrise (2.2.1.3)',
     'default_value' => '0',
-    'conversion_formula' => NULL,
+    'conversion_formula' => '[d]',
     'conversion_dofus_sample' => NULL,
     'conversion_krosmoz_sample' => 
     array (
@@ -1317,7 +1317,7 @@ return array (
     'formula' => NULL,
     'formula_display' => '1d20 + mod. carac. + bonus maîtrise (2.2.1.3)',
     'default_value' => '0',
-    'conversion_formula' => NULL,
+    'conversion_formula' => '[d]',
     'conversion_dofus_sample' => NULL,
     'conversion_krosmoz_sample' => 
     array (
@@ -1328,5 +1328,19 @@ return array (
       16 => 0,
       20 => 0,
     ),
+  ),
+  51 => 
+  array (
+    'characteristic_key' => 'name_object',
+    'entity' => '*',
+    'db_column' => NULL,
+    'min' => NULL,
+    'max' => NULL,
+    'formula' => NULL,
+    'formula_display' => NULL,
+    'default_value' => NULL,
+    'conversion_formula' => NULL,
+    'conversion_dofus_sample' => NULL,
+    'conversion_krosmoz_sample' => NULL,
   ),
 );

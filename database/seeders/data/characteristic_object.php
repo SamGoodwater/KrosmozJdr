@@ -116,7 +116,7 @@ return array (
     'formula' => NULL,
     'formula_display' => NULL,
     'default_value' => NULL,
-    'conversion_formula' => NULL,
+    'conversion_formula' => '[d]',
     'conversion_dofus_sample' => NULL,
     'conversion_krosmoz_sample' => NULL,
     'forgemagie_allowed' => false,
@@ -138,7 +138,7 @@ return array (
     'formula' => NULL,
     'formula_display' => NULL,
     'default_value' => NULL,
-    'conversion_formula' => NULL,
+    'conversion_formula' => '[d]',
     'conversion_dofus_sample' => NULL,
     'conversion_krosmoz_sample' => NULL,
     'forgemagie_allowed' => false,
@@ -160,7 +160,7 @@ return array (
     'formula' => NULL,
     'formula_display' => NULL,
     'default_value' => NULL,
-    'conversion_formula' => NULL,
+    'conversion_formula' => '[d]',
     'conversion_dofus_sample' => 
     array (
       1 => 114,
@@ -190,7 +190,7 @@ return array (
     'formula' => NULL,
     'formula_display' => NULL,
     'default_value' => '0',
-    'conversion_formula' => NULL,
+    'conversion_formula' => '[d]',
     'conversion_dofus_sample' => 
     array (
       1 => 114,
@@ -220,7 +220,7 @@ return array (
     'formula' => NULL,
     'formula_display' => NULL,
     'default_value' => '0',
-    'conversion_formula' => NULL,
+    'conversion_formula' => '[d]',
     'conversion_dofus_sample' => NULL,
     'conversion_krosmoz_sample' => NULL,
     'forgemagie_allowed' => true,
@@ -242,7 +242,7 @@ return array (
     'formula' => NULL,
     'formula_display' => NULL,
     'default_value' => '0',
-    'conversion_formula' => NULL,
+    'conversion_formula' => '[d]',
     'conversion_dofus_sample' => NULL,
     'conversion_krosmoz_sample' => NULL,
     'forgemagie_allowed' => true,
@@ -264,7 +264,7 @@ return array (
     'formula' => NULL,
     'formula_display' => NULL,
     'default_value' => '0',
-    'conversion_formula' => NULL,
+    'conversion_formula' => '[d]',
     'conversion_dofus_sample' => NULL,
     'conversion_krosmoz_sample' => NULL,
     'forgemagie_allowed' => true,
@@ -286,7 +286,7 @@ return array (
     'formula' => NULL,
     'formula_display' => NULL,
     'default_value' => '0',
-    'conversion_formula' => NULL,
+    'conversion_formula' => '[d]',
     'conversion_dofus_sample' => NULL,
     'conversion_krosmoz_sample' => NULL,
     'forgemagie_allowed' => true,
@@ -308,7 +308,7 @@ return array (
     'formula' => NULL,
     'formula_display' => NULL,
     'default_value' => '0',
-    'conversion_formula' => NULL,
+    'conversion_formula' => '[d]',
     'conversion_dofus_sample' => NULL,
     'conversion_krosmoz_sample' => NULL,
     'forgemagie_allowed' => true,
@@ -330,7 +330,7 @@ return array (
     'formula' => NULL,
     'formula_display' => NULL,
     'default_value' => '0',
-    'conversion_formula' => NULL,
+    'conversion_formula' => '[d]',
     'conversion_dofus_sample' => NULL,
     'conversion_krosmoz_sample' => NULL,
     'forgemagie_allowed' => true,
@@ -352,7 +352,7 @@ return array (
     'formula' => NULL,
     'formula_display' => NULL,
     'default_value' => '0',
-    'conversion_formula' => NULL,
+    'conversion_formula' => '[d]',
     'conversion_dofus_sample' => NULL,
     'conversion_krosmoz_sample' => NULL,
     'forgemagie_allowed' => true,
@@ -374,7 +374,7 @@ return array (
     'formula' => NULL,
     'formula_display' => NULL,
     'default_value' => '0',
-    'conversion_formula' => NULL,
+    'conversion_formula' => '[d]',
     'conversion_dofus_sample' => 
     array (
       1 => 3,
@@ -488,7 +488,7 @@ return array (
     'formula' => NULL,
     'formula_display' => NULL,
     'default_value' => '0',
-    'conversion_formula' => NULL,
+    'conversion_formula' => '[d]',
     'conversion_dofus_sample' => NULL,
     'conversion_krosmoz_sample' => NULL,
     'forgemagie_allowed' => false,
@@ -510,7 +510,7 @@ return array (
     'formula' => NULL,
     'formula_display' => NULL,
     'default_value' => '0',
-    'conversion_formula' => NULL,
+    'conversion_formula' => '[d]',
     'conversion_dofus_sample' => NULL,
     'conversion_krosmoz_sample' => NULL,
     'forgemagie_allowed' => true,
@@ -532,7 +532,7 @@ return array (
     'formula' => NULL,
     'formula_display' => NULL,
     'default_value' => '0',
-    'conversion_formula' => NULL,
+    'conversion_formula' => '[d]',
     'conversion_dofus_sample' => NULL,
     'conversion_krosmoz_sample' => NULL,
     'forgemagie_allowed' => true,
@@ -554,7 +554,7 @@ return array (
     'formula' => NULL,
     'formula_display' => NULL,
     'default_value' => '0',
-    'conversion_formula' => NULL,
+    'conversion_formula' => '[d]',
     'conversion_dofus_sample' => 
     array (
       1 => 12,
@@ -744,7 +744,7 @@ return array (
     'formula' => NULL,
     'formula_display' => NULL,
     'default_value' => '0',
-    'conversion_formula' => NULL,
+    'conversion_formula' => '[d]',
     'conversion_dofus_sample' => NULL,
     'conversion_krosmoz_sample' => NULL,
     'forgemagie_allowed' => false,
@@ -766,7 +766,7 @@ return array (
     'formula' => NULL,
     'formula_display' => NULL,
     'default_value' => '0',
-    'conversion_formula' => NULL,
+    'conversion_formula' => '[d]',
     'conversion_dofus_sample' => 
     array (
       1 => 1,
@@ -804,7 +804,7 @@ return array (
     'formula' => NULL,
     'formula_display' => NULL,
     'default_value' => '0',
-    'conversion_formula' => NULL,
+    'conversion_formula' => '[d]',
     'conversion_dofus_sample' => 
     array (
       1 => 23,
@@ -842,7 +842,7 @@ return array (
     'formula' => NULL,
     'formula_display' => NULL,
     'default_value' => '0',
-    'conversion_formula' => NULL,
+    'conversion_formula' => '[d]',
     'conversion_dofus_sample' => 
     array (
       1 => 0,
@@ -880,7 +880,7 @@ return array (
     'formula' => NULL,
     'formula_display' => NULL,
     'default_value' => '0',
-    'conversion_formula' => NULL,
+    'conversion_formula' => '[d]',
     'conversion_dofus_sample' => 
     array (
       1 => 2,
@@ -918,7 +918,7 @@ return array (
     'formula' => NULL,
     'formula_display' => NULL,
     'default_value' => '0',
-    'conversion_formula' => NULL,
+    'conversion_formula' => '[d]',
     'conversion_dofus_sample' => 
     array (
       1 => 1,
@@ -956,7 +956,7 @@ return array (
     'formula' => NULL,
     'formula_display' => NULL,
     'default_value' => '0',
-    'conversion_formula' => NULL,
+    'conversion_formula' => '[d]',
     'conversion_dofus_sample' => NULL,
     'conversion_krosmoz_sample' => NULL,
     'forgemagie_allowed' => true,
@@ -978,7 +978,7 @@ return array (
     'formula' => NULL,
     'formula_display' => NULL,
     'default_value' => '0',
-    'conversion_formula' => NULL,
+    'conversion_formula' => '[d]',
     'conversion_dofus_sample' => NULL,
     'conversion_krosmoz_sample' => NULL,
     'forgemagie_allowed' => true,
@@ -1000,7 +1000,7 @@ return array (
     'formula' => NULL,
     'formula_display' => NULL,
     'default_value' => '0',
-    'conversion_formula' => NULL,
+    'conversion_formula' => '[d]',
     'conversion_dofus_sample' => NULL,
     'conversion_krosmoz_sample' => NULL,
     'forgemagie_allowed' => true,
@@ -1022,7 +1022,7 @@ return array (
     'formula' => NULL,
     'formula_display' => NULL,
     'default_value' => '0',
-    'conversion_formula' => NULL,
+    'conversion_formula' => '[d]',
     'conversion_dofus_sample' => NULL,
     'conversion_krosmoz_sample' => NULL,
     'forgemagie_allowed' => false,
@@ -1044,7 +1044,7 @@ return array (
     'formula' => NULL,
     'formula_display' => NULL,
     'default_value' => '0',
-    'conversion_formula' => NULL,
+    'conversion_formula' => '[d]',
     'conversion_dofus_sample' => NULL,
     'conversion_krosmoz_sample' => NULL,
     'forgemagie_allowed' => false,
@@ -1066,7 +1066,7 @@ return array (
     'formula' => NULL,
     'formula_display' => NULL,
     'default_value' => '0',
-    'conversion_formula' => NULL,
+    'conversion_formula' => '[d]',
     'conversion_dofus_sample' => NULL,
     'conversion_krosmoz_sample' => NULL,
     'forgemagie_allowed' => true,
@@ -1088,7 +1088,7 @@ return array (
     'formula' => NULL,
     'formula_display' => NULL,
     'default_value' => '0',
-    'conversion_formula' => NULL,
+    'conversion_formula' => '[d]',
     'conversion_dofus_sample' => 
     array (
       1 => 26,
@@ -1126,7 +1126,7 @@ return array (
     'formula' => NULL,
     'formula_display' => NULL,
     'default_value' => '0',
-    'conversion_formula' => NULL,
+    'conversion_formula' => '[d]',
     'conversion_dofus_sample' => 
     array (
       1 => 26,
@@ -1164,7 +1164,7 @@ return array (
     'formula' => NULL,
     'formula_display' => NULL,
     'default_value' => '0',
-    'conversion_formula' => NULL,
+    'conversion_formula' => '[d]',
     'conversion_dofus_sample' => 
     array (
       1 => 26,
@@ -1202,7 +1202,7 @@ return array (
     'formula' => NULL,
     'formula_display' => NULL,
     'default_value' => '0',
-    'conversion_formula' => NULL,
+    'conversion_formula' => '[d]',
     'conversion_dofus_sample' => 
     array (
       1 => 26,
@@ -1240,7 +1240,7 @@ return array (
     'formula' => NULL,
     'formula_display' => NULL,
     'default_value' => '0',
-    'conversion_formula' => NULL,
+    'conversion_formula' => '[d]',
     'conversion_dofus_sample' => 
     array (
       1 => -1,
@@ -1278,7 +1278,7 @@ return array (
     'formula' => NULL,
     'formula_display' => NULL,
     'default_value' => '0',
-    'conversion_formula' => NULL,
+    'conversion_formula' => '[d]',
     'conversion_dofus_sample' => NULL,
     'conversion_krosmoz_sample' => NULL,
     'forgemagie_allowed' => false,

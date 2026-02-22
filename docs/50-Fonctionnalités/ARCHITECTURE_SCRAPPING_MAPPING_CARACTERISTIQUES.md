@@ -43,7 +43,7 @@ DofusDB (API)
 
 | Composant | Rôle |
 |-----------|------|
-| **ConfigLoader** | Charge config par source/entité (endpoints, filtres, target). **Mapping** fourni par **ScrappingMappingService** (BDD), plus par JSON. |
+| **ConfigLoader** | Charge config par source/entité (endpoints, filtres, target). **Mapping** : BDD via ScrappingMappingService si présent, sinon fallback sur le mapping des JSON d'entité. |
 | **ScrappingMappingService** | Lit les règles de mapping en BDD (`scrapping_entity_mappings` + targets). Retourne un tableau au format attendu par ConversionService (key, from.path, from.langAware, to[], formatters[]). |
 | **CollectService** | Exécute les requêtes (endpoints, pagination, filtres) décrites en config. |
 | **ConversionService** | Applique le mapping (extraction par path, formatters, écriture model.field). Délègue à **DofusConversionService** pour level, life, attributs, initiative, résistances quand le formatter le demande (et selon entity). |
@@ -113,7 +113,7 @@ Une règle = une ligne dans `scrapping_entity_mappings` + une ou plusieurs ligne
 
 | Contrôleur | Rôle |
 |------------|------|
-| **ScrappingController** / **ScrappingImportController** | Lancement import (Collect → Conversion → Validation → Intégration), utilisation de ConfigLoader (donc mapping depuis BDD). |
+| **ScrappingController** / **ScrappingImportController** | Lancement import (Collect → Conversion → Validation → Intégration), utilisation de ConfigLoader (mapping BDD ou fallback JSON). |
 | **ScrappingMappingController** | CRUD des règles de mapping (source, entity, mapping_key, from_path, characteristic_id, formatters, targets). |
 | **CharacteristicController** | CRUD caractéristiques, panneaux Limite/valeur, Conversion (formule + graphe + échantillonnage). À étendre avec le **panneau Mapping** (ou lien depuis la fiche caractéristique vers les règles de mapping qui référencent cette caractéristique). |
 | **DofusConversionFormulaController** | Si encore utilisé : prévisualisation formules, suggestion de formules à partir des échantillons. |
@@ -126,7 +126,7 @@ Une règle = une ligne dans `scrapping_entity_mappings` + une ou plusieurs ligne
 
 | Élément | Existant |
 |--------|----------|
-| **ConfigLoader** | Charge source + entité ; **mapping lu depuis BDD** via ScrappingMappingService (si injecté), sinon fallback `mapping` dans JSON. |
+| **ConfigLoader** | Charge source + entité ; mapping : BDD via ScrappingMappingService (si injecté et non vide), sinon fallback `mapping` dans JSON d'entité. |
 | **ScrappingMappingService** | Retourne le mapping pour (source, entity) au format attendu par ConversionService (key, from, to, formatters). |
 | **Tables mapping** | `scrapping_entity_mappings` (avec characteristic_id), `scrapping_entity_mapping_targets`. |
 | **ConversionService** | Applique mapping (path, formatters, to). Appelle DofusConversionService pour résistances batch (monster, class, item). |
@@ -144,7 +144,7 @@ Une règle = une ligne dans `scrapping_entity_mappings` + une ou plusieurs ligne
 | **Graphe conversion** | Options d’affichage (bornes min/max pour le graphe) sans enregistrement. Déjà partiellement présent (formula-preview) ; à aligner avec la vision (limites du panneau 1, menu d’options). |
 | **Échantillonnage** | Tableau DofusDB niv→valeur / Krosmoz niv→valeur avec niveaux par défaut et suggestion de formules (linéaire, carré, etc.) — à renforcer côté UI et éventuellement API (suggest-conversion-formula existe). |
 | **Panneau Mapping dans la fiche caractéristique** | Soit on ajoute un bloc « Règles de mapping qui utilisent cette caractéristique » (lecture seule + lien vers admin scrapping-mappings), soit on intègre un mini-CRUD par entité. La vision indique que le panneau 3 contient « toutes les infos » pour faire le lien DofusDB ↔ Krosmoz ; la BDD est déjà prête (scrapping_entity_mappings.characteristic_id). |
-| **ConfigLoader** | Déjà branché sur ScrappingMappingService dans l’app (AppServiceProvider) ; en tests/CLI sans container le fallback peut être un mapping vide ou lu depuis JSON. À documenter. |
+| **ConfigLoader** | Branché sur ScrappingMappingService dans l’app (AppServiceProvider) ; si BDD vide (tests, première install), fallback = mapping des JSON d'entité. |
 
 ### 7.3 Synthèse
 
@@ -174,7 +174,7 @@ Une règle = une ligne dans `scrapping_entity_mappings` + une ou plusieurs ligne
                     ▼
 ┌─────────────────────────────────────────────────────────────────────────────┐
 │  SCRAPPING                                                                   │
-│  ConfigLoader (+ ScrappingMappingService) → mapping depuis BDD               │
+│  ConfigLoader (+ ScrappingMappingService) → mapping BDD ou fallback JSON     │
 │  CollectService → ConversionService (mapping + FormatterApplicator)           │
 │  FormatterApplicator ↔ DofusConversionService (Getter, Formula, Limit)      │
 │  ValidationService → IntegrationService ; Orchestrator enchaîne tout        │

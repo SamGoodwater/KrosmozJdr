@@ -142,6 +142,7 @@ final class Orchestrator
 
             $doValidate = ($options['validate'] ?? true) !== false;
             if ($doValidate) {
+                $converted = $this->limitService->clampConvertedData($converted, $entityType);
                 $validationResult = $this->limitService->validate($converted, $entityType);
                 if (!$validationResult->isValid()) {
                     return OrchestratorResult::fail(
@@ -220,6 +221,7 @@ final class Orchestrator
 
             $doValidate = ($options['validate'] ?? true) !== false;
             if ($doValidate) {
+                $converted = $this->limitService->clampConvertedData($converted, $entityType);
                 $validationResult = $this->limitService->validate($converted, $entityType);
                 if (!$validationResult->isValid()) {
                     return OrchestratorResult::fail(
@@ -322,6 +324,7 @@ final class Orchestrator
 
                 $doValidate = ($options['validate'] ?? true) !== false;
                 if ($doValidate) {
+                    $converted = $this->limitService->clampConvertedData($converted, $entityTypeForItem);
                     $validationResult = $this->limitService->validate($converted, $entityTypeForItem);
                     if (!$validationResult->isValid()) {
                         foreach ($validationResult->getErrors() as $err) {

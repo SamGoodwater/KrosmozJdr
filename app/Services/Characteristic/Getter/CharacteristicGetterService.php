@@ -193,6 +193,16 @@ final class CharacteristicGetterService
         return is_string($formula) && trim($formula) !== '' ? $formula : null;
     }
 
+    /**
+     * Retourne l'identifiant de la fonction de conversion optionnelle pour une caractéristique et une entité.
+     */
+    public function getConversionFunctionId(string $characteristicKey, string $entity): ?string
+    {
+        $def = $this->getDefinition($characteristicKey, $entity);
+        $id = $def['conversion_function'] ?? null;
+        return is_string($id) && trim($id) !== '' ? $id : null;
+    }
+
     public function clearCache(): void
     {
         // Cache optionnel à ajouter plus tard avec invalidation ciblée (tags ou clés).
@@ -310,6 +320,7 @@ final class CharacteristicGetterService
             'formula_display' => $this->pickGroupValue($base, $overlay, 'formula_display'),
             'default_value' => $this->pickGroupValue($base, $overlay, 'default_value'),
             'conversion_formula' => $this->pickGroupValue($base, $overlay, 'conversion_formula'),
+            'conversion_function' => $this->pickGroupValue($base, $overlay, 'conversion_function'),
             'conversion_dofus_sample' => $this->pickGroupValue($base, $overlay, 'conversion_dofus_sample'),
             'conversion_krosmoz_sample' => $this->pickGroupValue($base, $overlay, 'conversion_krosmoz_sample'),
         ];

@@ -1,0 +1,82 @@
+<?php
+
+declare(strict_types=1);
+
+/**
+ * Mapping clé caractéristique → icône (fichier dans storage/app/public/images/icons/characteristics/)
+ * et → couleur (hex). Utilisé par CharacteristicSeeder pour compléter icon/color quand NULL.
+ *
+ * Icônes disponibles (copiées depuis Icones/caracteristiques/old/) : life_temp, shield, casting_time,
+ * dice12, duration, time_before_use_again, none.
+ */
+return [
+    'icons' => [
+        'life_creature' => 'life_temp.svg',
+        'ca_creature' => 'shield.svg',
+        'res_neutre_creature' => 'shield.svg',
+        'res_terre_creature' => 'shield.svg',
+        'res_feu_creature' => 'shield.svg',
+        'res_air_creature' => 'shield.svg',
+        'res_eau_creature' => 'shield.svg',
+        'pa_creature' => 'casting_time.svg',
+        'pm_creature' => 'casting_time.svg',
+        'pa_spell' => 'casting_time.svg',
+        'cast_per_turn_spell' => 'casting_time.svg',
+        'cast_per_target_spell' => 'casting_time.svg',
+        'pa_object' => 'casting_time.svg',
+        'pm_object' => 'casting_time.svg',
+        'de_vie_creature' => 'dice12.svg',
+        'number_between_two_cast_spell' => 'time_before_use_again.svg',
+        'number_between_two_cast_editable_spell' => 'time_before_use_again.svg',
+    ],
+    'colors' => [
+        'level_creature' => '#9c27b0',
+        'level_object' => '#9c27b0',
+        'level_spell' => '#9c27b0',
+        'life_creature' => '#e93323',
+        'pa_creature' => '#1a73e8',
+        'pm_creature' => '#0d904f',
+        'pa_spell' => '#1a73e8',
+        'po_spell' => '#5c6bc0',
+        'area_spell' => '#5c6bc0',
+        'po_creature' => '#5c6bc0',
+        'ini_creature' => '#ff9800',
+        'rarity_object' => '#ff9800',
+        'price_object' => '#795548',
+        'weight_object' => '#795548',
+        'element_spell' => '#00bcd4',
+        'powerful_spell' => '#e91e63',
+        'ca_creature' => '#3f51b5',
+        'cast_per_turn_spell' => '#1a73e8',
+        'cast_per_target_spell' => '#1a73e8',
+        'res_neutre_creature' => '#9e9e9e',
+        'res_terre_creature' => '#8d6e63',
+        'res_feu_creature' => '#e93323',
+        'res_air_creature' => '#26c6da',
+        'res_eau_creature' => '#29b6f6',
+        'strong_creature' => '#8d6e63',
+        'agi_creature' => '#26c6da',
+        'intel_creature' => '#e93323',
+        'sagesse_creature' => '#ffb74d',
+        'chance_creature' => '#29b6f6',
+        'vitality_creature' => '#66bb6a',
+        'touch_object' => '#ff9800',
+        'touch_creature' => '#ff9800',
+    ],
+    'descriptions' => [
+        'level_creature' => 'Niveau de la créature (monstre, classe, PNJ). Échelle Krosmoz 1–20, conversion depuis Dofus 1–200.',
+        'level_object' => 'Niveau de l\'objet (équipement 1–200, ressource 1–20).',
+        'life_creature' => 'Points de vie. Calcul en JDR : Vitalité × 10 + dés de vie (2.2.2).',
+        'pa_creature' => 'Points d\'action par tour. Base 6, maximum 12 avec équipement et forgemagie.',
+        'pm_creature' => 'Points de mouvement par tour. Base 3, maximum 6.',
+        'ini_creature' => 'Initiative au combat. 1d20 + Mod. Intelligence + bonus équipement.',
+        'ca_creature' => 'Classe d\'armure. 10 + Mod. Vitalité + bonus bouclier.',
+        'rarity_object' => 'Rareté : 0 commun, 1 rare, 2 mythique, 3 épique, 4 légendaire. Souvent dérivée du niveau.',
+        'pa_spell' => 'Coût en points d\'action pour lancer le sort (règles 3.3.2.1).',
+        'po_spell' => 'Portée du sort en cases (fixe, modifiable ou variable).',
+        'area_spell' => 'Taille de la zone d\'effet (ligne, cône, cercle, carré).',
+        'element_spell' => 'Élément du sort (Neutre, Terre, Feu, Air, Eau et combinaisons, 0–28).',
+        'price_object' => 'Prix en kamas (achat / vente).',
+        'weight_object' => 'Poids en pods (charge, surtout pour les ressources).',
+    ],
+];

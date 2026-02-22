@@ -38,45 +38,50 @@ class DofusConversionServiceTest extends TestCase
 
     public function test_convert_level_creature_returns_integer(): void
     {
-        $result = $this->service->convertLevel(100, 'monster');
+        $key = $this->service->getLevelCharacteristicKey('monster');
+        $result = $this->service->convert($key, ['d' => 100.0], 'monster', 10.0);
         $this->assertIsInt($result);
         $this->assertGreaterThanOrEqual(0, $result);
     }
 
     public function test_convert_level_handles_null(): void
     {
-        $result = $this->service->convertLevel(null, 'monster');
+        $key = $this->service->getLevelCharacteristicKey('monster');
+        $result = $this->service->convert($key, ['d' => 0.0], 'monster', 0.0);
         $this->assertIsInt($result);
     }
 
     public function test_convert_level_object(): void
     {
-        $result = $this->service->convertLevel(50, 'item');
+        $key = $this->service->getLevelCharacteristicKey('item');
+        $result = $this->service->convert($key, ['d' => 50.0], 'item', 5.0);
         $this->assertIsInt($result);
     }
 
     public function test_get_rarity_by_level_returns_zero_for_creature_entity(): void
     {
-        $this->assertSame(0, $this->service->getRarityByLevel(10, 'monster'));
+        $this->assertNotContains('monster', DofusConversionService::RARITY_ENTITIES);
     }
 
     public function test_get_rarity_by_level_returns_integer_for_object_entity(): void
     {
-        $result = $this->service->getRarityByLevel(10, 'item');
+        $level = 10;
+        $fallback = $this->service->getRarityFallbackForLevel($level);
+        $result = $this->service->convert('rarity_object', ['level' => $level], 'item', (float) $fallback);
         $this->assertIsInt($result);
         $this->assertGreaterThanOrEqual(0, $result);
     }
 
     public function test_convert_life_returns_integer(): void
     {
-        $result = $this->service->convertLife(1000, 10, 'monster');
+        $result = $this->service->convert('life_creature', ['d' => 1000.0, 'level' => 10], 'monster', 55.0);
         $this->assertIsInt($result);
         $this->assertGreaterThanOrEqual(0, $result);
     }
 
     public function test_convert_life_handles_null_dofus_value(): void
     {
-        $result = $this->service->convertLife(null, 5, 'monster');
+        $result = $this->service->convert('life_creature', ['d' => 0.0, 'level' => 5], 'monster', 25.0);
         $this->assertIsInt($result);
     }
 
@@ -88,7 +93,7 @@ class DofusConversionServiceTest extends TestCase
 
     public function test_convert_initiative_returns_integer(): void
     {
-        $result = $this->service->convertInitiative(50, 'monster');
+        $result = $this->service->convert('ini_creature', ['d' => 50.0], 'monster', 50.0);
         $this->assertIsInt($result);
     }
 

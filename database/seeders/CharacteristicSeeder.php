@@ -17,20 +17,28 @@ class CharacteristicSeeder extends Seeder
 
     private const DATA_FILE = 'database/seeders/data/characteristics.php';
 
+    private const ICONS_COLORS_FILE = 'database/seeders/data/characteristic_icons_colors.php';
+
     public function run(): void
     {
         $rows = $this->loadDataFile(self::DATA_FILE);
+        $defaults = $this->loadIconsAndColorsDefaults();
+        $icons = $defaults['icons'] ?? [];
+        $colors = $defaults['colors'] ?? [];
+        $descriptions = $defaults['descriptions'] ?? [];
+
         // 1) Création / mise à jour des caractéristiques sans gérer les liens
         foreach ($rows as $row) {
+            $key = $row['key'] ?? '';
             Characteristic::updateOrCreate(
-                ['key' => $row['key']],
+                ['key' => $key],
                 [
                     'name' => $row['name'],
                     'short_name' => $row['short_name'] ?? null,
                     'helper' => $row['helper'] ?? null,
-                    'descriptions' => $row['descriptions'] ?? null,
-                    'icon' => $row['icon'] ?? null,
-                    'color' => $row['color'] ?? null,
+                    'descriptions' => $row['descriptions'] ?? $descriptions[$key] ?? null,
+                    'icon' => $row['icon'] ?? $icons[$key] ?? null,
+                    'color' => $row['color'] ?? $colors[$key] ?? null,
                     'unit' => $row['unit'] ?? null,
                     'type' => $row['type'] ?? 'string',
                     'sort_order' => (int) ($row['sort_order'] ?? 0),
@@ -69,5 +77,26 @@ class CharacteristicSeeder extends Seeder
         if ($this->command) {
             $this->command->info('CharacteristicSeeder : ' . count($rows) . ' ligne(s).');
         }
+    }
+
+    /**
+     * Charge le mapping clé → icône et clé → couleur (fichier characteristic_icons_colors.php).
+     *
+     * @return array{icons: array<string, string>, colors: array<string, string>, descriptions: array<string, string>}
+     */
+    private function loadIconsAndColorsDefaults(): array
+    {
+        $path = base_path(self::ICONS_COLORS_FILE);
+        if (! is_file($path)) {
+            return ['icons' => [], 'colors' => [], 'descriptions' => []];
+        }
+
+        $data = require $path;
+
+        return [
+            'icons' => is_array($data['icons'] ?? null) ? $data['icons'] : [],
+            'colors' => is_array($data['colors'] ?? null) ? $data['colors'] : [],
+            'descriptions' => is_array($data['descriptions'] ?? null) ? $data['descriptions'] : [],
+        ];
     }
 }

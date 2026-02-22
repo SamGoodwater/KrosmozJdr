@@ -8,6 +8,7 @@ use App\Models\Characteristic;
 use App\Models\CharacteristicCreature;
 use App\Models\CharacteristicObject;
 use App\Models\CharacteristicSpell;
+use App\Services\Characteristic\Conversion\ConversionFunctionRegistry;
 use App\Services\Characteristic\Getter\CharacteristicGetterService;
 use App\Services\Scrapping\Core\Config\ScrappingMappingService;
 
@@ -25,9 +26,17 @@ final class CharacteristicShowPayloadBuilder
         'spell' => ['*', 'spell'],
     ];
 
+    /** Entités DofusDB pour le panneau Mapping (une ligne par entité, modal « Lier »). */
+    private const SCRAPPING_MAPPING_ENTITIES_BY_GROUP = [
+        'creature' => ['monster', 'breed'],
+        'object' => ['item', 'panoply'],
+        'spell' => ['spell'],
+    ];
+
     public function __construct(
         private readonly CharacteristicGetterService $getter,
-        private readonly ScrappingMappingService $mappingService
+        private readonly ScrappingMappingService $mappingService,
+        private readonly ConversionFunctionRegistry $conversionFunctionRegistry
     ) {
     }
 
@@ -64,8 +73,10 @@ final class CharacteristicShowPayloadBuilder
             'entities' => $entities,
             'entity_override_keys' => $entityOverrideKeys,
             'conversion_formulas' => $conversionFormulas,
+            'conversionFunctionOptions' => $this->conversionFunctionRegistry->options(),
             'group' => $group,
             'entitiesByGroup' => self::ENTITIES_BY_GROUP,
+            'scrappingMappingEntities' => self::SCRAPPING_MAPPING_ENTITIES_BY_GROUP[$group] ?? [],
             'is_linked' => $characteristic->isLinked(),
             'master_key' => $characteristic->isLinked() ? $effective->key : null,
         ];
@@ -173,6 +184,7 @@ final class CharacteristicShowPayloadBuilder
             'formula_display' => $def['formula_display'] ?? null,
             'default_value' => $def['default_value'] ?? null,
             'conversion_formula' => $def['conversion_formula'] ?? null,
+            'conversion_function' => $def['conversion_function'] ?? null,
             'conversion_dofus_sample' => $def['conversion_dofus_sample'] ?? null,
             'conversion_krosmoz_sample' => $def['conversion_krosmoz_sample'] ?? null,
             'conversion_sample_rows' => null,
@@ -211,6 +223,7 @@ final class CharacteristicShowPayloadBuilder
             'formula_display' => $row->formula_display,
             'default_value' => $row->default_value,
             'conversion_formula' => $row->conversion_formula,
+            'conversion_function' => $row->conversion_function,
             'conversion_dofus_sample' => $row->conversion_dofus_sample,
             'conversion_krosmoz_sample' => $row->conversion_krosmoz_sample,
             'conversion_sample_rows' => $row->conversion_sample_rows,
