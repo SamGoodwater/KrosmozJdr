@@ -69,6 +69,20 @@ return array (
   ),
   2 => 
   array (
+    'characteristic_key' => 'name_object',
+    'entity' => '*',
+    'db_column' => NULL,
+    'min' => NULL,
+    'max' => NULL,
+    'formula' => NULL,
+    'formula_display' => NULL,
+    'default_value' => NULL,
+    'conversion_formula' => NULL,
+    'conversion_dofus_sample' => NULL,
+    'conversion_krosmoz_sample' => NULL,
+  ),
+  3 => 
+  array (
     'characteristic_key' => 'life_creature',
     'entity' => '*',
     'db_column' => 'life',
@@ -97,7 +111,7 @@ return array (
       20 => 140,
     ),
   ),
-  3 => 
+  4 => 
   array (
     'characteristic_key' => 'pa_creature',
     'entity' => '*',
@@ -127,7 +141,7 @@ return array (
       20 => 12,
     ),
   ),
-  4 => 
+  5 => 
   array (
     'characteristic_key' => 'pm_creature',
     'entity' => '*',
@@ -157,7 +171,7 @@ return array (
       20 => 6,
     ),
   ),
-  5 => 
+  6 => 
   array (
     'characteristic_key' => 'po_creature',
     'entity' => '*',
@@ -187,7 +201,7 @@ return array (
       20 => 6,
     ),
   ),
-  6 => 
+  7 => 
   array (
     'characteristic_key' => 'ini_creature',
     'entity' => '*',
@@ -209,7 +223,7 @@ return array (
       20 => 50,
     ),
   ),
-  7 => 
+  8 => 
   array (
     'characteristic_key' => 'ca_creature',
     'entity' => '*',
@@ -231,7 +245,7 @@ return array (
       20 => 18,
     ),
   ),
-  8 => 
+  9 => 
   array (
     'characteristic_key' => 'vitality_creature',
     'entity' => '*',
@@ -261,7 +275,7 @@ return array (
       20 => 31,
     ),
   ),
-  9 => 
+  10 => 
   array (
     'characteristic_key' => 'strong_creature',
     'entity' => '*',
@@ -291,7 +305,7 @@ return array (
       20 => 31,
     ),
   ),
-  10 => 
+  11 => 
   array (
     'characteristic_key' => 'agi_creature',
     'entity' => '*',
@@ -321,7 +335,7 @@ return array (
       20 => 31,
     ),
   ),
-  11 => 
+  12 => 
   array (
     'characteristic_key' => 'intel_creature',
     'entity' => '*',
@@ -351,7 +365,7 @@ return array (
       20 => 31,
     ),
   ),
-  12 => 
+  13 => 
   array (
     'characteristic_key' => 'sagesse_creature',
     'entity' => '*',
@@ -381,7 +395,7 @@ return array (
       20 => 31,
     ),
   ),
-  13 => 
+  14 => 
   array (
     'characteristic_key' => 'chance_creature',
     'entity' => '*',
@@ -411,7 +425,7 @@ return array (
       20 => 31,
     ),
   ),
-  14 => 
+  15 => 
   array (
     'characteristic_key' => 'touch_creature',
     'entity' => '*',
@@ -433,7 +447,7 @@ return array (
       20 => 16,
     ),
   ),
-  15 => 
+  16 => 
   array (
     'characteristic_key' => 'invocation_creature',
     'entity' => '*',
@@ -455,7 +469,7 @@ return array (
       20 => 6,
     ),
   ),
-  16 => 
+  17 => 
   array (
     'characteristic_key' => 'dodge_pa_creature',
     'entity' => '*',
@@ -485,7 +499,7 @@ return array (
       20 => 13,
     ),
   ),
-  17 => 
+  18 => 
   array (
     'characteristic_key' => 'dodge_pm_creature',
     'entity' => '*',
@@ -515,7 +529,7 @@ return array (
       20 => 13,
     ),
   ),
-  18 => 
+  19 => 
   array (
     'characteristic_key' => 'fuite_creature',
     'entity' => '*',
@@ -545,7 +559,7 @@ return array (
       20 => 15,
     ),
   ),
-  19 => 
+  20 => 
   array (
     'characteristic_key' => 'tacle_creature',
     'entity' => '*',
@@ -575,7 +589,7 @@ return array (
       20 => 15,
     ),
   ),
-  20 => 
+  21 => 
   array (
     'characteristic_key' => 'res_fixe_neutre_creature',
     'entity' => '*',
@@ -605,7 +619,7 @@ return array (
       20 => 10,
     ),
   ),
-  21 => 
+  22 => 
   array (
     'characteristic_key' => 'res_fixe_terre_creature',
     'entity' => '*',
@@ -635,7 +649,7 @@ return array (
       20 => 10,
     ),
   ),
-  22 => 
+  23 => 
   array (
     'characteristic_key' => 'res_fixe_feu_creature',
     'entity' => '*',
@@ -665,7 +679,7 @@ return array (
       20 => 10,
     ),
   ),
-  23 => 
+  24 => 
   array (
     'characteristic_key' => 'res_fixe_air_creature',
     'entity' => '*',
@@ -695,7 +709,7 @@ return array (
       20 => 10,
     ),
   ),
-  24 => 
+  25 => 
   array (
     'characteristic_key' => 'res_fixe_eau_creature',
     'entity' => '*',
@@ -725,7 +739,7 @@ return array (
       20 => 10,
     ),
   ),
-  25 => 
+  26 => 
   array (
     'characteristic_key' => 'do_fixe_neutre_creature',
     'entity' => '*',
@@ -747,7 +761,7 @@ return array (
       20 => 8,
     ),
   ),
-  26 => 
+  27 => 
   array (
     'characteristic_key' => 'do_fixe_terre_creature',
     'entity' => '*',
@@ -777,7 +791,7 @@ return array (
       20 => 8,
     ),
   ),
-  27 => 
+  28 => 
   array (
     'characteristic_key' => 'do_fixe_feu_creature',
     'entity' => '*',
@@ -807,7 +821,7 @@ return array (
       20 => 8,
     ),
   ),
-  28 => 
+  29 => 
   array (
     'characteristic_key' => 'do_fixe_air_creature',
     'entity' => '*',
@@ -837,7 +851,7 @@ return array (
       20 => 8,
     ),
   ),
-  29 => 
+  30 => 
   array (
     'characteristic_key' => 'do_fixe_eau_creature',
     'entity' => '*',
@@ -867,7 +881,7 @@ return array (
       20 => 8,
     ),
   ),
-  30 => 
+  31 => 
   array (
     'characteristic_key' => 'res_neutre_creature',
     'entity' => '*',
@@ -889,7 +903,7 @@ return array (
       20 => 0,
     ),
   ),
-  31 => 
+  32 => 
   array (
     'characteristic_key' => 'res_terre_creature',
     'entity' => '*',
@@ -911,7 +925,7 @@ return array (
       20 => 0,
     ),
   ),
-  32 => 
+  33 => 
   array (
     'characteristic_key' => 'res_feu_creature',
     'entity' => '*',
@@ -933,7 +947,7 @@ return array (
       20 => 0,
     ),
   ),
-  33 => 
+  34 => 
   array (
     'characteristic_key' => 'res_air_creature',
     'entity' => '*',
@@ -955,7 +969,7 @@ return array (
       20 => 0,
     ),
   ),
-  34 => 
+  35 => 
   array (
     'characteristic_key' => 'res_eau_creature',
     'entity' => '*',
@@ -977,7 +991,7 @@ return array (
       20 => 0,
     ),
   ),
-  35 => 
+  36 => 
   array (
     'characteristic_key' => 'do_fixe_multiple_creature',
     'entity' => '*',
@@ -999,7 +1013,7 @@ return array (
       20 => 5,
     ),
   ),
-  36 => 
+  37 => 
   array (
     'characteristic_key' => 'de_vie_creature',
     'entity' => '*',
@@ -1021,7 +1035,7 @@ return array (
       20 => 10,
     ),
   ),
-  37 => 
+  38 => 
   array (
     'characteristic_key' => 'reserve_wakfu_creature',
     'entity' => '*',
@@ -1043,7 +1057,7 @@ return array (
       20 => 6,
     ),
   ),
-  38 => 
+  39 => 
   array (
     'characteristic_key' => 'bonus_maitrise_creature',
     'entity' => '*',
@@ -1065,7 +1079,7 @@ return array (
       20 => 6,
     ),
   ),
-  39 => 
+  40 => 
   array (
     'characteristic_key' => 'modificateur_vitality_creature',
     'entity' => '*',
@@ -1087,7 +1101,7 @@ return array (
       20 => 0,
     ),
   ),
-  40 => 
+  41 => 
   array (
     'characteristic_key' => 'modificateur_sagesse_creature',
     'entity' => '*',
@@ -1109,7 +1123,7 @@ return array (
       20 => 0,
     ),
   ),
-  41 => 
+  42 => 
   array (
     'characteristic_key' => 'modificateur_force_creature',
     'entity' => '*',
@@ -1131,7 +1145,7 @@ return array (
       20 => 0,
     ),
   ),
-  42 => 
+  43 => 
   array (
     'characteristic_key' => 'modificateur_intel_creature',
     'entity' => '*',
@@ -1153,7 +1167,7 @@ return array (
       20 => 0,
     ),
   ),
-  43 => 
+  44 => 
   array (
     'characteristic_key' => 'modificateur_chance_creature',
     'entity' => '*',
@@ -1175,7 +1189,7 @@ return array (
       20 => 0,
     ),
   ),
-  44 => 
+  45 => 
   array (
     'characteristic_key' => 'modificateur_agi_creature',
     'entity' => '*',
@@ -1197,7 +1211,7 @@ return array (
       20 => 0,
     ),
   ),
-  45 => 
+  46 => 
   array (
     'characteristic_key' => 'save_vitality_creature',
     'entity' => '*',
@@ -1219,7 +1233,7 @@ return array (
       20 => 0,
     ),
   ),
-  46 => 
+  47 => 
   array (
     'characteristic_key' => 'save_sagesse_creature',
     'entity' => '*',
@@ -1241,7 +1255,7 @@ return array (
       20 => 0,
     ),
   ),
-  47 => 
+  48 => 
   array (
     'characteristic_key' => 'save_force_creature',
     'entity' => '*',
@@ -1263,7 +1277,7 @@ return array (
       20 => 0,
     ),
   ),
-  48 => 
+  49 => 
   array (
     'characteristic_key' => 'save_intel_creature',
     'entity' => '*',
@@ -1285,7 +1299,7 @@ return array (
       20 => 0,
     ),
   ),
-  49 => 
+  50 => 
   array (
     'characteristic_key' => 'save_chance_creature',
     'entity' => '*',
@@ -1307,7 +1321,7 @@ return array (
       20 => 0,
     ),
   ),
-  50 => 
+  51 => 
   array (
     'characteristic_key' => 'save_agi_creature',
     'entity' => '*',
@@ -1328,19 +1342,5 @@ return array (
       16 => 0,
       20 => 0,
     ),
-  ),
-  51 => 
-  array (
-    'characteristic_key' => 'name_object',
-    'entity' => '*',
-    'db_column' => NULL,
-    'min' => NULL,
-    'max' => NULL,
-    'formula' => NULL,
-    'formula_display' => NULL,
-    'default_value' => NULL,
-    'conversion_formula' => NULL,
-    'conversion_dofus_sample' => NULL,
-    'conversion_krosmoz_sample' => NULL,
   ),
 );

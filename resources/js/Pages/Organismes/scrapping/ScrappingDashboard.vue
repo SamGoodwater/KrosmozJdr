@@ -34,6 +34,14 @@ import { Spell } from "@/Models/Entity/Spell";
 import { Consumable } from "@/Models/Entity/Consumable";
 import { Resource } from "@/Models/Entity/Resource";
 import { useNotificationStore } from "@/Composables/store/useNotificationStore";
+import { useScrappingPreferences } from "@/Composables/store/useScrappingPreferences";
+import {
+    downloadCsvFromRows,
+    filenameForBatchErrors,
+    filenameForBatchPreview,
+    buildCsvFromErrorResults,
+    buildCsvFromPreviewResults,
+} from "@/Composables/utils/useCsvDownload";
 
 const notificationStore = useNotificationStore();
 const { success, error: showError, info } = notificationStore;
@@ -50,7 +58,7 @@ const selectedEntityType = ref("monster");
 // Gestion des types/races (modal)
 const typeManagerOpen = ref(false);
 const typeManagerConfig = computed(() => {
-    const t = String(selectedEntityType.value || "");
+    const t = selectedEntityTypeStr.value;
     if (t === "resource") {
         return {
             title: "Types DofusDB (Ressources)",
@@ -164,9 +172,153 @@ const effectsAnalysisType = ref(null);
 const effectsAnalysisUnmapped = ref([]);
 const effectsAnalysisSummary = ref(null);
 
+/** Mapping id caractéristique DofusDB → libellé (pour colonne "characteristic" des effets bruts). */
+const characteristicLabelsById = ref({});
+
+/** Fallback statique id → nom (keywords DofusDB). Synchronisé avec dofusdb_characteristic_to_krosmoz.json et DOFUSDB_CHARACTERISTIC_ID_REFERENCE.md. */
+const DEFAULT_CHARACTERISTIC_LABELS = {
+    "-1": "unknown",
+    0: "hitPoints",
+    1: "actionPoints",
+    3: "statsPoints",
+    4: "spellsPoints",
+    5: "level",
+    10: "strength",
+    11: "vitality",
+    12: "wisdom",
+    13: "chance",
+    14: "agility",
+    15: "intelligence",
+    16: "allDamageBonus",
+    17: "damageFactor",
+    18: "criticalHit",
+    19: "range",
+    20: "magicalReduction",
+    21: "physicalReduction",
+    22: "experienceBoost",
+    23: "movementPoints",
+    24: "invisibility",
+    25: "damagePercent",
+    26: "maxSummonedCreaturesBoost",
+    27: "DodgeApLostProbability",
+    28: "DodgeMpLostProbability",
+    29: "energyPoints",
+    30: "alignementValue",
+    31: "weaponDamagePercent",
+    32: "physicalDamageBonus",
+    33: "earthElementResistPercent",
+    34: "fireElementResistPercent",
+    35: "waterElementResistPercent",
+    36: "airElementResistPercent",
+    37: "neutralElementResistPercent",
+    39: "criticalMiss",
+    40: "weight",
+    41: "restrictionOnPlayer",
+    42: "restrictionOnOthers",
+    43: "alignementSide",
+    44: "initiative",
+    45: "shopPercentReduction",
+    46: "alignementRank",
+    47: "maxEnergyPoints",
+    48: "magicFind",
+    49: "healBonus",
+    50: "reflectDamage",
+    51: "energyLoose",
+    52: "honourPoints",
+    53: "disgracePoints",
+    54: "earthElementReduction",
+    55: "fireElementReduction",
+    56: "waterElementReduction",
+    57: "airElementReduction",
+    58: "neutralElementReduction",
+    69: "trapDamageBonusPercent",
+    70: "trapDamageBonus",
+    71: "fakeSkillForStates",
+    72: "soulCaptureBonus",
+    73: "rideXPBonus",
+    74: "confusion",
+    75: "permanentDamagePercent",
+    76: "unlucky",
+    77: "maximizeRoll",
+    78: "tackleEvade",
+    79: "tackleBlock",
+    80: "allianceAutoAgressRange",
+    81: "allianceAutoAgressResist",
+    82: "apReduction",
+    83: "mpReduction",
+    84: "pushDamageBonus",
+    85: "pushDamageReduction",
+    86: "criticalDamageBonus",
+    87: "criticalDamageReduction",
+    88: "earthDamageBonus",
+    89: "fireDamageBonus",
+    90: "waterDamageBonus",
+    91: "airDamageBonus",
+    92: "neutralDamageBonus",
+    93: "maxBomb",
+    94: "bombComboBonus",
+    95: "maxLifePoints",
+    96: "shield",
+    97: "hitPointLoss",
+    98: "damagePercentSpell",
+    99: "extraScale",
+    100: "passTurn",
+    101: "resistPercent",
+    102: "curPermanentDamage",
+    103: "weaponPower",
+    104: "incomingPercentDamageMultiplicator",
+    105: "incomingPercentHealMultiplicator",
+    106: "glyphPower",
+    107: "dealtDamageMultiplier",
+    108: "stopXP",
+    109: "hunter",
+    110: "runePower",
+    120: "dealtDamageMultiplierDistance",
+    121: "receivedDamageMultiplierDistance",
+    122: "dealtDamageMultiplierWeapon",
+    123: "dealtDamageMultiplierSpells",
+    124: "receivedDamageMultiplierMelee",
+    125: "dealtDamageMultiplierMelee",
+    126: "agilityInitialPercent",
+    127: "strengthInitialPercent",
+    128: "chanceInitialPercent",
+    129: "intelligenceInitialPercent",
+    130: "vitalityInitialPercent",
+    131: "wisdomInitialPercent",
+    132: "tackleBlockInitialPercent",
+    133: "tackleEvadeInitialPercent",
+    134: "actionPointsInitialPercent",
+    135: "movementPointsInitialPercent",
+    136: "apAttackInitialPercent",
+    137: "mpAttackInitialPercent",
+    138: "dodgeApLostProbabilityInitialPercent",
+    139: "dodgeMpLostProbabilityInitialPercent",
+    140: "extraScalePercent",
+    141: "receivedDamageMultiplierSpells",
+    142: "receivedDamageMultiplierWeapon",
+    143: "dealtHealMultiplier",
+    150: "allDamageMultiplier",
+    158: "pushDamagePercent",
+    199: "StopDrop",
+};
+
 // Pagination UI (serveur) : blocs de 100 par défaut
 const pageNumber = ref(1);
 const perPage = ref(100);
+
+// Préférences persistées (localStorage)
+const prefsRefs = {
+    selectedEntityType,
+    optSkipCache,
+    optWithImages,
+    optForceUpdate,
+    optManualChoice,
+    optIncludeRelations,
+    perPage,
+    filterIds,
+    filterName,
+};
+const { hydrate: hydratePrefs, persist: persistPrefs } = useScrappingPreferences(prefsRefs);
 
 // Import par plage de pages (ex: "1-6" ou "4,5" ou toutes)
 const pageRangeInput = ref("");
@@ -185,13 +337,27 @@ const lastBatchErrorResults = computed(() => {
     return list.filter((r) => r && r.success === false);
 });
 
+/** Prévisualisation batch (tableau ID | Nom | Statut | Message). */
+const batchPreviewLoading = ref(false);
+const batchPreviewResults = ref([]);
+const nameByIdFromRawItems = computed(() => {
+    const items = rawItems.value || [];
+    const map = {};
+    items.forEach((it) => {
+        if (!it || !Number.isFinite(Number(it.id))) return;
+        const name = typeof it.name === "string" ? it.name : it.name?.fr || it.name?.en || "—";
+        map[Number(it.id)] = name;
+    });
+    return map;
+});
+
 const pushHistory = (line) => {
     const ts = new Date().toLocaleString("fr-FR");
     historyLines.value.unshift(`[${ts}] ${line}`);
 };
 
 const loadKnownTypes = async () => {
-    const t = String(selectedEntityType.value || "");
+    const t = selectedEntityTypeStr.value;
     const endpoint = (() => {
         if (t === "resource") return "/api/scrapping/resource-types?decision=allowed";
         if (t === "consumable") return "/api/scrapping/consumable-types?decision=allowed";
@@ -230,7 +396,7 @@ const loadKnownTypes = async () => {
 };
 
 const loadKnownRaces = async () => {
-    const t = String(selectedEntityType.value || "");
+    const t = selectedEntityTypeStr.value;
     knownRaceOptions.value = [];
     selectedKnownRace.value = "";
     filterRaceIds.value = [];
@@ -313,13 +479,22 @@ const entityOptions = computed(() => {
         }));
 });
 
+/** Type d'entité normalisé en chaîne (évite [object Object] si le select émet un objet). */
+const selectedEntityTypeStr = computed(() => {
+    const v = selectedEntityType.value;
+    if (typeof v === "string") return v;
+    if (v && typeof v === "object" && typeof v.value === "string") return v.value;
+    return String(v ?? "");
+});
+
 const selectedEntityLabel = computed(() => {
-    const opt = entityOptions.value.find((o) => o.value === selectedEntityType.value);
-    return opt?.label || selectedEntityType.value;
+    const t = selectedEntityTypeStr.value;
+    const opt = entityOptions.value.find((o) => o.value === t);
+    return opt?.label || t;
 });
 
 const supportedFilters = computed(() => {
-    const cfg = configEntitiesByKey.value?.[String(selectedEntityType.value)] || null;
+    const cfg = configEntitiesByKey.value?.[selectedEntityTypeStr.value] || null;
     const supported = cfg?.filters?.supported;
     return Array.isArray(supported) ? supported : [];
 });
@@ -521,21 +696,49 @@ const loadConfig = async () => {
     }
 };
 
+async function loadCharacteristicLabels() {
+    try {
+        const res = await fetch("/api/scrapping/dofusdb/characteristic-labels", { credentials: "include" });
+        const json = await res.json();
+        if (json?.success && json?.data && typeof json.data === "object") {
+            characteristicLabelsById.value = json.data;
+        }
+    } catch {
+        // ignore
+    }
+}
+
 onMounted(async () => {
-    await Promise.all([loadMeta(), loadConfig()]);
+    await Promise.all([loadMeta(), loadConfig(), loadCharacteristicLabels()]);
+    hydratePrefs();
+    const allowed = metaEntityTypes.value || [];
+    const allowedTypes = allowed.map((e) => (e && typeof e === "object" && e.type != null ? e.type : e));
+    const currentStr = selectedEntityTypeStr.value;
+    if (allowedTypes.length && !allowedTypes.includes(currentStr)) {
+        selectedEntityType.value = allowed[0] && typeof allowed[0] === "object" && allowed[0].type != null
+            ? allowed[0].type
+            : allowed[0];
+        persistPrefs();
+    }
     await Promise.all([loadKnownTypes(), loadKnownRaces()]);
 });
 
 watch(
     () => selectedEntityType.value,
     async () => {
-        // Reset UI state liée aux types + recharge la liste "connue"
+        persistPrefs();
         typeMode.value = "allowed";
         raceMode.value = "allowed";
         pageNumber.value = 1;
         showOptionsAndHistory.value = false;
         await Promise.all([loadKnownTypes(), loadKnownRaces()]);
     }
+);
+
+watch(
+    [optSkipCache, optWithImages, optForceUpdate, optManualChoice, optIncludeRelations, perPage],
+    () => persistPrefs(),
+    { deep: true }
 );
 
 const resetTable = () => {
@@ -583,10 +786,11 @@ function existingRecord(it) {
 function cellTriple(it, getExisting, getConverted, getRaw) {
     const existing = existingRecord(it);
     const data = convertedByItemId.value[Number(it?.id)];
+    const rawSource = data?.raw ?? it;
     return {
         existant: getExisting(existing),
         converti: getConverted(data?.converted),
-        brut: getRaw(it),
+        brut: getRaw(rawSource),
     };
 }
 
@@ -598,6 +802,45 @@ function flattenForCompareShallow(obj, prefix = "") {
         const val = obj[key];
         const fullKey = prefix ? `${prefix}.${key}` : key;
         if (val !== null && typeof val === "object" && !Array.isArray(val)) {
+            for (const k2 of Object.keys(val)) {
+                const v2 = val[k2];
+                const key2 = `${fullKey}.${k2}`;
+                if (v2 !== null && typeof v2 === "object" && (Array.isArray(v2) || typeof v2 === "object")) {
+                    out[key2] = Array.isArray(v2) ? `[${v2.length} élément(s)]` : `{${Object.keys(v2).length} clé(s)}`;
+                } else {
+                    out[key2] = v2;
+                }
+            }
+        } else if (Array.isArray(val)) {
+            out[fullKey] = `[${val.length} élément(s)]`;
+        } else {
+            out[fullKey] = val;
+        }
+    }
+    return out;
+}
+
+/**
+ * Aplatit les données brutes DofusDB en incluant le premier élément des tableaux (ex. grades.0.strength).
+ * Permet d'afficher la colonne "Brut" en faisant correspondre creatures.strength → grades.0.strength.
+ */
+function flattenRawForCompare(obj, prefix = "") {
+    if (!obj || typeof obj !== "object") return {};
+    const out = {};
+    for (const key of Object.keys(obj)) {
+        const val = obj[key];
+        const fullKey = prefix ? `${prefix}.${key}` : key;
+        if (Array.isArray(val) && val.length > 0 && val[0] !== null && typeof val[0] === "object") {
+            for (const k2 of Object.keys(val[0])) {
+                const v2 = val[0][k2];
+                const key2 = `${fullKey}.0.${k2}`;
+                if (v2 !== null && typeof v2 === "object" && (Array.isArray(v2) || (typeof v2 === "object" && Object.keys(v2).length > 0))) {
+                    out[key2] = Array.isArray(v2) ? `[${v2.length} élément(s)]` : `{${Object.keys(v2).length} clé(s)}`;
+                } else {
+                    out[key2] = v2;
+                }
+            }
+        } else if (val !== null && typeof val === "object" && !Array.isArray(val)) {
             for (const k2 of Object.keys(val)) {
                 const v2 = val[k2];
                 const key2 = `${fullKey}.${k2}`;
@@ -652,13 +895,13 @@ function comparisonRows(it) {
     const raw = data?.raw ?? it ?? {};
     const existingFlat = flattenForCompareShallow(existing ?? {});
     const convertedFlat = flattenForCompareShallow(data?.converted ?? {});
-    const rawFlat = flattenForCompareShallow(raw);
+    const rawFlat = flattenRawForCompare(raw);
     let modelKeys = Object.keys(existingFlat).length > 0
         ? Object.keys(existingFlat)
         : Object.keys(convertedFlat);
     if (modelKeys.length === 0) modelKeys = Object.keys(rawFlat);
     if (modelKeys.length > 0 && Object.keys(existingFlat).length === 0) {
-        modelKeys = filterAllowedComparisonKeys(modelKeys, selectedEntityType.value);
+        modelKeys = filterAllowedComparisonKeys(modelKeys, selectedEntityTypeStr.value);
     }
     return modelKeys.sort().map((key) => {
         const brut = findInFlat(rawFlat, key) ?? findInFlat(rawFlat, key.split(".").pop());
@@ -681,6 +924,50 @@ function formatCompareVal(val) {
     return String(val);
 }
 
+/** Types d'entités dont les items ont des effets (bonus) à afficher en brut + converti. */
+const ITEM_TYPES_WITH_EFFECTS = ["equipment", "consumable", "resource"];
+
+/**
+ * Pour une ligne item (équipement, consommable, ressource), extrait les effets bruts DofusDB
+ * et les bonus convertis Krosmoz pour affichage dans la ligne dépliée.
+ * @param {object} it - Ligne du tableau (entité)
+ * @returns {{ rawEffects: Array<{characteristic?: number, from?: number, to?: number, value?: number}>, convertedBonus: Record<string, number> }}
+ */
+function itemEffectsForRow(it) {
+    const data = convertedByItemId.value[Number(it?.id)];
+    const raw = data?.raw ?? {};
+    const converted = data?.converted ?? {};
+    const rawEffects = Array.isArray(raw.effects) ? raw.effects : [];
+    const firstBlock = extractFirstBlock(converted);
+    // effect peut être dans le bloc (items/consumables/resources en objet unique) ou directement sur converted.items
+    let effectStr = firstBlock?.effect;
+    if (effectStr == null && converted && typeof converted === "object") {
+        const block = converted.items ?? converted.consumables ?? converted.resources;
+        effectStr = block && typeof block === "object" ? block.effect : null;
+    }
+    const convertedBonus = typeof effectStr === "string"
+        ? (parseJsonSafe(effectStr) ?? {})
+        : (typeof effectStr === "object" && effectStr !== null ? effectStr : {});
+    return { rawEffects, convertedBonus: convertedBonus && typeof convertedBonus === "object" ? convertedBonus : {} };
+}
+
+function hasItemEffects(entityType) {
+    return ITEM_TYPES_WITH_EFFECTS.includes(String(entityType || ""));
+}
+
+/** Libellé affiché pour une caractéristique DofusDB (id) : nom connu ou "ID {id}" si inconnu. Utilise le fallback statique + chargement API. */
+function getCharacteristicLabel(charId) {
+    if (charId == null || charId === "") return "—";
+    const key = String(charId);
+    const fromApi = characteristicLabelsById.value[key];
+    const fromDefault = DEFAULT_CHARACTERISTIC_LABELS[key];
+    const keyword = fromApi ?? fromDefault;
+    if (keyword && typeof keyword === "string") {
+        return keyword.charAt(0).toUpperCase() + keyword.slice(1);
+    }
+    return `ID ${charId}`;
+}
+
 /** True si les données converties diffèrent des données existantes (pour surligner la ligne). */
 function rowHasDiff(it) {
     const name = tripleName(it);
@@ -693,12 +980,18 @@ function rowHasDiff(it) {
     );
 }
 
+/**
+ * Retourne le premier bloc utile pour comparaison / effets.
+ * Pour creatures, monsters, spells, etc. : premier élément du tableau.
+ * Pour items / consumables / resources : la conversion renvoie un objet unique (pas un tableau), on le prend tel quel.
+ */
 function extractFirstBlock(converted) {
     if (!converted || typeof converted !== "object") return null;
     const first = (arr) => (Array.isArray(arr) && arr.length ? arr[0] : null);
+    const firstOrObject = (val) => (Array.isArray(val) && val.length ? val[0] : (val && typeof val === "object" ? val : null));
     return first(converted.creatures) ?? first(converted.monsters) ?? first(converted.spells)
         ?? first(converted.breeds) ?? first(converted.classes)
-        ?? first(converted.resources) ?? first(converted.consumables) ?? first(converted.items)
+        ?? firstOrObject(converted.resources) ?? firstOrObject(converted.consumables) ?? firstOrObject(converted.items)
         ?? first(converted.panoplies) ?? null;
 }
 
@@ -707,23 +1000,36 @@ function tripleName(it) {
     return cellTriple(
         it,
         (r) => (r?.name != null ? String(r.name) : null),
-        (c) => convertedName(c, selectedEntityType.value),
+        (c) => convertedName(c, selectedEntityTypeStr.value),
         (r) => formatName(r?.name)
     );
 }
 
 /** Triple pour la colonne Niveau. */
 function tripleLevel(it) {
+    const rawLevel = (r) => {
+        if (r?.level != null) return String(r.level);
+        const g0 = r?.grades?.[0];
+        if (g0?.level != null) return String(g0.level);
+        return null;
+    };
     return cellTriple(
         it,
         (r) => (r?.level != null ? String(r.level) : null),
         (c) => (convertedLevel(c) != null ? String(convertedLevel(c)) : null),
-        (r) => (r?.level != null ? String(r.level) : null)
+        rawLevel
     );
 }
 
 /** Triple pour Type (type_id / typeName). */
 function tripleType(it) {
+    const rawType = (r) => {
+        const name = r?.typeName ?? r?.type?.name;
+        if (name != null) return String(name);
+        const id = r?.typeId ?? r?.type?.id ?? r?.item_type_id ?? r?.resource_type_id ?? r?.consumable_type_id ?? r?.type_id;
+        if (id != null) return `#${id}`;
+        return null;
+    };
     return cellTriple(
         it,
         (r) => (r?.item_type_id ?? r?.resource_type_id ?? r?.consumable_type_id ?? r?.type_id != null ? String(r.item_type_id ?? r.resource_type_id ?? r.consumable_type_id ?? r.type_id) : null),
@@ -731,7 +1037,7 @@ function tripleType(it) {
             const block = extractFirstBlock(c);
             return block?.type_id != null ? String(block.type_id) : null;
         },
-        (r) => (r?.typeName ?? (r?.typeId != null ? `#${r.typeId}` : null))
+        rawType
     );
 }
 
@@ -746,7 +1052,7 @@ function toggleExpandedRow(id) {
 /** Charge les données converties pour les IDs de la page courante (batch preview). */
 const fetchConvertedBatch = async () => {
     const ids = (rawItems.value || []).map((it) => Number(it?.id)).filter((n) => Number.isFinite(n) && n > 0);
-    if (!ids.length || !selectedEntityType.value) return;
+    if (!ids.length || !selectedEntityTypeStr.value) return;
     loadingConverted.value = true;
     const next = {};
     try {
@@ -757,7 +1063,7 @@ const fetchConvertedBatch = async () => {
                 Accept: "application/json",
                 "X-CSRF-TOKEN": getCsrfToken() || "",
             },
-            body: JSON.stringify({ type: selectedEntityType.value, ids }),
+            body: JSON.stringify({ type: selectedEntityTypeStr.value, ids }),
         });
         const data = await res.json();
         if (res.ok && data.success && Array.isArray(data.data?.items)) {
@@ -804,8 +1110,9 @@ const runSearch = async () => {
     selectedIds.value = new Set();
     try {
         const qs = buildSearchQuery();
-        const url = `/api/scrapping/search/${selectedEntityType.value}${qs ? `?${qs}` : ""}`;
-        pushHistory(`Recherche ${selectedEntityType.value} (${selectedEntityLabel.value}) : ${qs || "sans filtres"}`);
+        const entityStr = selectedEntityTypeStr.value;
+        const url = `/api/scrapping/search/${entityStr}${qs ? `?${qs}` : ""}`;
+        pushHistory(`Recherche ${entityStr} (${selectedEntityLabel.value}) : ${qs || "sans filtres"}`);
 
         const res = await fetch(url, { headers: { Accept: "application/json" } });
         const data = await res.json();
@@ -817,6 +1124,7 @@ const runSearch = async () => {
             const returned = rawItems.value.length;
             success(`Recherche OK (${returned} résultat(s))`);
             pushHistory(`→ OK: ${returned} résultat(s)${typeof total === "number" ? ` (total=${total})` : ""}.`);
+            persistPrefs();
             await fetchConvertedBatch();
         } else {
             showError(data.message || "Erreur lors de la recherche");
@@ -928,12 +1236,13 @@ const runImportByPages = async (simulate = false) => {
         return;
     }
     const label = simulate ? "Simulation" : "Import";
-    pushHistory(`${label} par pages (${selectedEntityType.value}) : pages ${pages.join(", ")}.`);
+    pushHistory(`${label} par pages (${selectedEntityTypeStr.value}) : pages ${pages.join(", ")}.`);
     importing.value = true;
     importByPagesProgress.value = `0/${pages.length}`;
     let totalSuccess = 0;
     let totalErrors = 0;
     let totalEntities = 0;
+    const accumulatedErrorResults = [];
     const savedPageNumber = pageNumber.value;
     try {
         for (let i = 0; i < pages.length; i++) {
@@ -967,17 +1276,23 @@ const runImportByPages = async (simulate = false) => {
                 const err = s.errors ?? 0;
                 totalSuccess += ok;
                 totalErrors += err;
+                const results = data.results ?? [];
+                results.filter((r) => r && r.success === false).forEach((r) => accumulatedErrorResults.push(r));
                 pushHistory(`→ Page ${p} : ${ok}/${s.total ?? payload.entities.length} (erreurs: ${err})`);
             } else {
                 totalErrors += payload.entities.length;
-                pushHistory(`→ Page ${p} ERREUR: ${data.message || "batch"}`);
+                const msg = data.message || "batch";
+                payload.entities.forEach((ent) => accumulatedErrorResults.push({ type: ent.type, id: ent.id, success: false, error: msg }));
+                pushHistory(`→ Page ${p} ERREUR: ${msg}`);
             }
         }
         success(`${label} par pages terminé : ${totalSuccess}/${totalEntities} (erreurs: ${totalErrors})`);
         pushHistory(`→ ${label.toUpperCase()} PAR PAGES OK: ${totalSuccess}/${totalEntities} (erreurs: ${totalErrors})`);
+        lastBatchResults.value = accumulatedErrorResults.length > 0 ? accumulatedErrorResults : null;
     } catch (e) {
         showError(`${label} par pages : ` + e.message);
         pushHistory(`→ ${label.toUpperCase()} PAR PAGES ERREUR: ${e.message}`);
+        lastBatchResults.value = null;
     } finally {
         importing.value = false;
         importByPagesProgress.value = null;
@@ -997,7 +1312,7 @@ const buildBatchPayload = (dryRun, scope = "auto") => {
               ? Array.from(selectedIds.value)
               : visibleItems.value.map((it) => Number(it?.id)).filter((n) => Number.isFinite(n));
 
-    const entities = ids.map((id) => ({ type: selectedEntityType.value, id }));
+    const entities = ids.map((id) => ({ type: selectedEntityTypeStr.value, id }));
 
     return {
         entities,
@@ -1008,6 +1323,47 @@ const buildBatchPayload = (dryRun, scope = "auto") => {
         include_relations: !!optIncludeRelations.value,
         with_images: !!optWithImages.value,
     };
+};
+
+/** Prévisualisation en lot : appelle preview/batch pour la sélection, affiche tableau ID | Nom | Statut | Message. */
+const runBatchPreview = async () => {
+    const ids = Array.from(selectedIds.value || []).slice(0, 100).filter((n) => Number.isFinite(Number(n)) && Number(n) > 0);
+    if (!ids.length) {
+        showError("Aucun ID sélectionné (sélectionne des lignes dans le tableau, max 100).");
+        return;
+    }
+    batchPreviewLoading.value = true;
+    batchPreviewResults.value = [];
+    try {
+        const res = await fetch("/api/scrapping/preview/batch", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                Accept: "application/json",
+                "X-CSRF-TOKEN": getCsrfToken() || "",
+            },
+            body: JSON.stringify({ type: selectedEntityTypeStr.value, ids }),
+        });
+        const data = await res.json();
+        const items = res.ok && data.success ? data.data?.items || [] : [];
+        const nameById = nameByIdFromRawItems.value;
+        batchPreviewResults.value = items.map((item) => ({
+            id: item.id,
+            name: nameById[item.id] ?? "—",
+            status: item.error ? "error" : "ok",
+            error: item.error ?? null,
+        }));
+        if (!res.ok) showError(data.message || "Erreur prévisualisation batch");
+        else if (batchPreviewResults.value.length) {
+            const okCount = batchPreviewResults.value.filter((r) => r.status === "ok").length;
+            success(`Prévisualisation : ${okCount}/${batchPreviewResults.value.length} OK`);
+        }
+    } catch (e) {
+        showError("Prévisualisation batch : " + (e?.message ?? "erreur"));
+        batchPreviewResults.value = [];
+    } finally {
+        batchPreviewLoading.value = false;
+    }
 };
 
 const runBatch = async (mode, scope = "auto") => {
@@ -1035,7 +1391,7 @@ const runBatch = async (mode, scope = "auto") => {
     }
 
     const label = dryRun ? "Simulation" : "Import";
-    pushHistory(`${label} batch (${selectedEntityType.value}) sur ${targetCount} entité(s).`);
+    pushHistory(`${label} batch (${selectedEntityTypeStr.value}) sur ${targetCount} entité(s).`);
     info(`${label} en cours…`, { duration: 1500 });
 
     try {
@@ -1066,6 +1422,18 @@ const runBatch = async (mode, scope = "auto") => {
     } finally {
         importing.value = false;
     }
+};
+
+const exportBatchErrorsCsv = () => {
+    const { headers, rows } = buildCsvFromErrorResults(lastBatchErrorResults.value);
+    downloadCsvFromRows(headers, rows, filenameForBatchErrors());
+    success("Export CSV des erreurs téléchargé.");
+};
+
+const exportBatchPreviewCsv = () => {
+    const { headers, rows } = buildCsvFromPreviewResults(batchPreviewResults.value);
+    downloadCsvFromRows(headers, rows, filenameForBatchPreview());
+    success("Export CSV de la prévisualisation téléchargé.");
 };
 
 const formatName = (name) => {
@@ -1103,7 +1471,7 @@ const existsTooltip = (it) => {
 /** Href vers la fiche entité si l'élément existe et qu'on a un type mappé, sinon "". */
 const existsEntityHref = (it) => {
     if (!it?.exists || !it?.existing?.id) return "";
-    const segment = scrappingTypeToRouteEntityType[String(selectedEntityType.value || "")];
+    const segment = scrappingTypeToRouteEntityType[selectedEntityTypeStr.value];
     if (!segment) return "";
     return `/entities/${segment}/${it.existing.id}`;
 };
@@ -1118,7 +1486,7 @@ const entityModalLoadingId = ref(null);
 /** Ouvre la modal d'affichage de l'entité en chargeant ses données depuis l'API table. */
 const openEntityModal = async (it) => {
     if (!it?.exists || !it?.existing?.id) return;
-    const segment = scrappingTypeToRouteEntityType[String(selectedEntityType.value || "")];
+    const segment = scrappingTypeToRouteEntityType[selectedEntityTypeStr.value];
     if (!segment) return;
     const id = it.existing.id;
     entityModalLoadingId.value = id;
@@ -1153,7 +1521,7 @@ const closeEntityModal = () => {
 };
 
 const canAnalyzeEffects = computed(() => {
-    const t = String(selectedEntityType.value || "");
+    const t = selectedEntityTypeStr.value;
     return (t === "spell" || t === "equipment" || t === "consumable" || t === "resource") && selectedCount.value > 0;
 });
 
@@ -1190,7 +1558,7 @@ const analyzeEffects = async () => {
 
     effectsAnalysisLoading.value = true;
     effectsAnalysisEntityId.value = Number(id);
-    effectsAnalysisType.value = String(selectedEntityType.value);
+    effectsAnalysisType.value = selectedEntityTypeStr.value;
     effectsAnalysisUnmapped.value = [];
     effectsAnalysisSummary.value = null;
 
@@ -1240,7 +1608,7 @@ const canCompare = computed(() => {
 const openCompareModal = () => {
     if (!canCompare.value) return;
     const id = Array.from(selectedIds.value)[0];
-    compareEntityType.value = String(selectedEntityType.value || "");
+    compareEntityType.value = selectedEntityTypeStr.value;
     compareDofusdbId.value = Number(id);
     compareModalOpen.value = true;
 };
@@ -1248,7 +1616,7 @@ const openCompareModal = () => {
 const openCompareModalForRow = (it) => {
     const id = it?.id != null ? Number(it.id) : null;
     if (!Number.isFinite(id)) return;
-    compareEntityType.value = String(selectedEntityType.value || "");
+    compareEntityType.value = selectedEntityTypeStr.value;
     compareDofusdbId.value = id;
     compareModalOpen.value = true;
 };
@@ -1289,16 +1657,16 @@ const onCompareImported = () => {
                     :list-url="typeManagerConfig.listUrl"
                     :bulk-url="typeManagerConfig.bulkUrl"
                     :delete-url-base="typeManagerConfig.mode === 'decision'
-                        ? (String(selectedEntityType) === 'resource'
+                        ? (selectedEntityTypeStr === 'resource'
                             ? '/api/scrapping/resource-types'
-                            : String(selectedEntityType) === 'consumable'
+                            : selectedEntityTypeStr === 'consumable'
                                 ? '/api/scrapping/consumable-types'
-                                : String(selectedEntityType) === 'equipment'
+                                : selectedEntityTypeStr === 'equipment'
                                     ? '/api/scrapping/item-types'
                                     : '')
-                        : (String(selectedEntityType) === 'monster'
+                        : (selectedEntityTypeStr === 'monster'
                             ? '/api/types/monster-races'
-                            : String(selectedEntityType) === 'spell'
+                            : selectedEntityTypeStr === 'spell'
                                 ? '/api/types/spell-types'
                                 : '')"
                 />
@@ -1505,7 +1873,7 @@ const onCompareImported = () => {
                                     size="sm"
                                     variant="outline"
                                     type="button"
-                                    :disabled="String(selectedEntityType) !== 'monster'"
+                                    :disabled="selectedEntityTypeStr !== 'monster'"
                                     title="Ouvrir le gestionnaire de races"
                                     @click="typeManagerOpen = true"
                                 >
@@ -1672,15 +2040,20 @@ const onCompareImported = () => {
 
                 <!-- Détail des erreurs du dernier import batch -->
                 <Card v-if="lastBatchErrorResults.length > 0" class="overflow-hidden border-error/30 bg-error/5">
-                    <div class="flex flex-wrap items-center justify-between gap-2 border-b border-error/20 bg-error/10 px-4 py-3">
+                        <div class="flex flex-wrap items-center justify-between gap-2 border-b border-error/20 bg-error/10 px-4 py-3">
                         <div class="flex items-center gap-2">
                             <Icon source="fa-solid fa-triangle-exclamation" alt="" pack="solid" class="text-error text-lg" />
                             <h4 class="font-semibold text-primary-100">Erreurs import batch</h4>
                             <Badge :content="String(lastBatchErrorResults.length)" color="error" size="sm" />
                         </div>
-                        <Btn size="sm" variant="ghost" color="error" @click="lastBatchResults = null">
-                            Fermer
-                        </Btn>
+                        <div class="flex items-center gap-2">
+                            <Btn size="sm" variant="outline" color="error" title="Télécharger les erreurs en CSV" @click="exportBatchErrorsCsv">
+                                Exporter (CSV)
+                            </Btn>
+                            <Btn size="sm" variant="ghost" color="error" @click="lastBatchResults = null">
+                                Fermer
+                            </Btn>
+                        </div>
                     </div>
                     <div class="p-4 space-y-3">
                         <Alert color="error" variant="soft" class="text-sm">
@@ -1693,6 +2066,7 @@ const onCompareImported = () => {
                                     <tr class="bg-base-300/70 text-primary-200">
                                         <th class="w-24 font-semibold">Type</th>
                                         <th class="w-20 font-semibold">ID</th>
+                                        <th class="w-16 font-semibold">Statut</th>
                                         <th class="font-semibold">Message / Détails</th>
                                     </tr>
                                 </thead>
@@ -1706,6 +2080,7 @@ const onCompareImported = () => {
                                             <Badge :content="row.type" color="neutral" size="xs" class="font-mono" />
                                         </td>
                                         <td class="font-mono text-primary-100 font-medium">{{ row.id }}</td>
+                                        <td><Badge content="Erreur" color="error" size="xs" /></td>
                                         <td class="text-xs">
                                             <span class="text-error-200 font-medium">{{ row.error || '—' }}</span>
                                             <ul v-if="row.validation_errors?.length" class="list-disc list-inside mt-1 text-primary-400 space-y-0.5">
@@ -1719,6 +2094,45 @@ const onCompareImported = () => {
                                 </tbody>
                             </table>
                         </div>
+                    </div>
+                </Card>
+
+                <!-- Résultat prévisualisation batch (ID | Nom | Statut | Message) -->
+                <Card v-if="batchPreviewResults.length > 0" class="overflow-hidden border border-base-300">
+                    <div class="flex flex-wrap items-center justify-between gap-2 border-b border-base-300 bg-base-200/50 px-4 py-3">
+                        <h4 class="font-semibold text-primary-100">Prévisualisation sélection</h4>
+                        <div class="flex items-center gap-2">
+                            <Btn size="sm" variant="outline" title="Télécharger la prévisualisation en CSV" @click="exportBatchPreviewCsv">
+                                Exporter (CSV)
+                            </Btn>
+                            <Btn size="sm" variant="ghost" @click="batchPreviewResults = []">Fermer</Btn>
+                        </div>
+                    </div>
+                    <div class="overflow-x-auto max-h-56 overflow-y-auto p-4">
+                        <table class="table table-zebra table-pin-rows table-xs">
+                            <thead>
+                                <tr class="bg-base-300/70 text-primary-200">
+                                    <th class="w-16 font-semibold">ID</th>
+                                    <th class="font-semibold">Nom</th>
+                                    <th class="w-20 font-semibold">Statut</th>
+                                    <th class="font-semibold">Message</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr
+                                    v-for="(row, idx) in batchPreviewResults"
+                                    :key="idx"
+                                    :class="row.status === 'error' ? 'hover:bg-error/5' : ''"
+                                >
+                                    <td class="font-mono font-medium text-primary-100">{{ row.id }}</td>
+                                    <td class="text-primary-200">{{ row.name }}</td>
+                                    <td>
+                                        <Badge :content="row.status === 'ok' ? 'OK' : 'Erreur'" :color="row.status === 'ok' ? 'success' : 'error'" size="xs" />
+                                    </td>
+                                    <td class="text-xs text-primary-300">{{ row.error || '—' }}</td>
+                                </tr>
+                            </tbody>
+                        </table>
                     </div>
                 </Card>
             </div>
@@ -1749,6 +2163,16 @@ const onCompareImported = () => {
                 <div class="flex flex-wrap gap-2">
                     <Btn variant="ghost" :disabled="!rawItems.length" @click="resetTable">
                         Réinitialiser
+                    </Btn>
+                    <Btn
+                        color="secondary"
+                        variant="outline"
+                        :disabled="batchPreviewLoading || !selectedCount"
+                        title="Prévisualiser la sélection (conversion OK / Erreur par ID)"
+                        @click="runBatchPreview"
+                    >
+                        <Loading v-if="batchPreviewLoading" class="mr-2" />
+                        Prévisualiser la sélection
                     </Btn>
                     <Btn color="secondary" :disabled="importing || !rawItems.length" @click="runBatch('simulate')">
                         <Loading v-if="importing" class="mr-2" />
@@ -1965,6 +2389,56 @@ const onCompareImported = () => {
                                             </tr>
                                         </tbody>
                                     </table>
+                                </div>
+                                <!-- Effets / bonus (items : équipement, consommable, ressource) -->
+                                <div v-if="expandedRowId === Number(it.id) && hasItemEffects(selectedEntityTypeStr)" class="mt-4 space-y-3">
+                                    <div class="text-xs font-semibold text-primary-200">Effets (brut DofusDB) et bonus convertis (Krosmoz)</div>
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <div class="rounded border border-base-300 overflow-hidden">
+                                            <div class="bg-base-300/50 px-2 py-1 text-xs font-medium text-primary-200">Effets DofusDB (brut)</div>
+                                            <div class="overflow-x-auto max-h-48 overflow-y-auto">
+                                                <table class="table table-xs w-full">
+                                                    <thead>
+                                                        <tr class="bg-base-300/30">
+                                                            <th class="w-20">characteristic</th>
+                                                            <th class="w-16">from</th>
+                                                            <th class="w-16">to</th>
+                                                            <th>value</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <tr v-for="(eff, idx) in itemEffectsForRow(it).rawEffects" :key="idx" class="border-b border-base-300/30">
+                                                            <td class="text-primary-300">{{ getCharacteristicLabel(eff.characteristic) }}</td>
+                                                            <td class="font-mono text-primary-300">{{ eff.from ?? "—" }}</td>
+                                                            <td class="font-mono text-primary-300">{{ eff.to ?? "—" }}</td>
+                                                            <td class="font-mono text-primary-100">{{ eff.value ?? eff.min ?? eff.max ?? "—" }}</td>
+                                                        </tr>
+                                                        <tr v-if="!itemEffectsForRow(it).rawEffects.length">
+                                                            <td colspan="4" class="text-xs text-primary-400 italic">Aucun effet brut</td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                        <div class="rounded border border-base-300 overflow-hidden">
+                                            <div class="bg-base-300/50 px-2 py-1 text-xs font-medium text-primary-200">Bonus convertis (Krosmoz)</div>
+                                            <div class="p-2 overflow-y-auto max-h-48">
+                                                <ul class="space-y-1 text-sm">
+                                                    <li
+                                                        v-for="(val, key) in itemEffectsForRow(it).convertedBonus"
+                                                        :key="key"
+                                                        class="flex justify-between gap-2 font-mono"
+                                                    >
+                                                        <span class="text-primary-200">{{ key }}</span>
+                                                        <span class="text-primary-100">{{ Number(val) >= 0 ? "+" : "" }}{{ val }}</span>
+                                                    </li>
+                                                    <li v-if="Object.keys(itemEffectsForRow(it).convertedBonus).length === 0" class="text-xs text-primary-400 italic">
+                                                        Aucun bonus converti
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                             </td>
                         </tr>

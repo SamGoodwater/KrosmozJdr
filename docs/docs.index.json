@@ -1102,7 +1102,7 @@
   {
     "path": "50-Fonctionnalités/Characteristics-DB/AUDIT_CARACTERISTIQUES.md",
     "title": "Audit des caractéristiques — Exhaustivité, expressions dynamiques, types",
-    "description": "Vérification approfondie des données de caractéristiques (seeders) : exhaustivité (name, helper, icon, color, descriptions), cohérence clés/groupe, validation des formules et min/max dynamiques, types (int, bool), caractéristique liée, correction formule life_creature."
+    "description": "Ce document synthétise une **vérification approfondie** des données de caractéristiques (seeders, cohérence, formules, types). Dernière mise à jour : 2026-02."
   },
   {
     "path": "50-Fonctionnalités/Characteristics-DB/AUDIT_CODE_CARACTERISTIQUES.md",
@@ -1310,6 +1310,11 @@
     "description": "Ce document décrit les **tâches restantes** pour considérer le service de scrapping comme terminé (backend), dans l’ordre de priorité recommandé. Contexte : [ETAT_AVANCEMENT.md](./Architecture/ETAT_AVANCEMENT.md), [RESTE_A_FAIRE_SCRAPPING.md](./RESTE_A_FAIRE_SCRAPPING.md)."
   },
   {
+    "path": "50-Fonctionnalités/Scrapping/PLAN_OPTIMISATION_SCRAPPING_UI.md",
+    "title": "Plan d’optimisation — UI Scrapping (existant)",
+    "description": "**Contexte :** Idées issues des échanges sur l’affichage scrapping et l’enregistrement. Ce plan vise à **optimiser l’existant** sans refonte complète."
+  },
+  {
     "path": "50-Fonctionnalités/Scrapping/PROPRIETES_UTILES_KROSMOZ.md",
     "title": "Propriétés DofusDB utiles pour KrosmozJDR",
     "description": "Lors de l’affichage des propriétés (Brut / Converti / Krosmoz), seules les propriétés listées ci‑dessous sont affichées. Le reste (moteur de jeu Dofus, champs API, doublons) est masqué."
@@ -1331,8 +1336,8 @@
   },
   {
     "path": "50-Fonctionnalités/Scrapping/SIMPLIFICATION_UI_MAPPING_DEPUIS_CARACTERISTIQUE.md",
-    "title": "Simplification UI mapping : lier depuis la caractéristique",
-    "description": "Proposition d’évolution de l’interface : tableau par entité DofusDB dans le panneau Mapping de la fiche caractéristique, modal « Lier » avec choix de la source (règle / variable), et endpoints backend associés."
+    "title": "Simplification de l’UI mapping : lier depuis la caractéristique",
+    "description": "Ce document décrit une **évolution de l’interface** pour faire le lien entre une caractéristique KrosmozJDR et les règles de mapping DofusDB **directement depuis la fiche caractéristique**, sans obliger à passer par l’écran « Mappings » pour associer une règle à une caractéristique."
   },
   {
     "path": "50-Fonctionnalités/Spell-Effects/TAXONOMIE_EFFETS_SORTS.md",

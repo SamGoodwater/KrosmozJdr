@@ -22,6 +22,16 @@ class CharacteristicSeeder extends Seeder
     public function run(): void
     {
         $rows = $this->loadDataFile(self::DATA_FILE);
+        // Dédoublonnage par clé pour éviter les violations de contrainte unique (ex. exécution parallèle de tests).
+        $byKey = [];
+        foreach ($rows as $row) {
+            $k = $row['key'] ?? '';
+            if ($k !== '') {
+                $byKey[$k] = $row;
+            }
+        }
+        $rows = array_values($byKey);
+
         $defaults = $this->loadIconsAndColorsDefaults();
         $icons = $defaults['icons'] ?? [];
         $colors = $defaults['colors'] ?? [];

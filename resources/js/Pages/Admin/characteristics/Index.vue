@@ -293,7 +293,7 @@ function buildFormData(selected, entitiesByGroup = null) {
             base_price_per_unit: e.base_price_per_unit ?? '',
             rune_price_per_unit: e.rune_price_per_unit ?? '',
             conversion_formula: e.conversion_formula ?? '',
-            conversion_function: e.conversion_function ?? null,
+            conversion_function: e.conversion_function ?? '',
             conversion_dofus_sample: e.conversion_dofus_sample ?? null,
             conversion_krosmoz_sample: e.conversion_krosmoz_sample ?? null,
             conversion_sample_rows: (e.conversion_sample_rows && e.conversion_sample_rows.length) ? e.conversion_sample_rows : getDefaultConversionSampleRows(),
@@ -352,7 +352,7 @@ function addEntityOverride(entityKey) {
             base_price_per_unit: '',
             rune_price_per_unit: '',
             conversion_formula: '',
-            conversion_function: null,
+            conversion_function: '',
             conversion_dofus_sample: null,
             conversion_krosmoz_sample: null,
             conversion_sample_rows: getDefaultConversionSampleRows(),
@@ -443,7 +443,7 @@ watch(
                     base_price_per_unit: e.base_price_per_unit ?? '',
                     rune_price_per_unit: e.rune_price_per_unit ?? '',
                     conversion_formula: e.conversion_formula ?? '',
-                    conversion_function: e.conversion_function ?? null,
+                    conversion_function: e.conversion_function ?? '',
                     conversion_sample_rows: e.conversion_sample_rows ?? null,
                 }));
             }
@@ -469,7 +469,7 @@ watch(
                             base_price_per_unit: defaultRow.base_price_per_unit ?? '',
                             rune_price_per_unit: defaultRow.rune_price_per_unit ?? '',
                             conversion_formula: defaultRow.conversion_formula ?? '',
-                            conversion_function: defaultRow.conversion_function ?? null,
+                            conversion_function: defaultRow.conversion_function ?? '',
                         },
                     ];
                 }
@@ -1360,13 +1360,13 @@ function submitConvertToLinked() {
                                         <option
                                             v-for="opt in conversionFunctionSelectOptions"
                                             :key="opt.value"
-                                            :value="opt.value || null"
+                                            :value="opt.value"
                                         >
                                             {{ opt.label }}
                                         </option>
                                     </select>
                                     <p class="mt-1 text-xs text-base-content/70">
-                                        Optionnelle. Liste fournie par le serveur (registry). Appliquée après la formule.
+                                        Optionnelle. Appliquée après la formule (ou seule si pas de formule). Accès aux données converties et brutes.
                                     </p>
                                 </div>
                                 <div>
@@ -1617,12 +1617,12 @@ function submitConvertToLinked() {
                                         <option
                                             v-for="opt in conversionFunctionSelectOptions"
                                             :key="opt.value"
-                                            :value="opt.value || null"
+                                            :value="opt.value"
                                         >
                                             {{ opt.label }}
                                         </option>
                                     </select>
-                                    <p class="mt-1 text-xs text-base-content/70">Surcharge pour cette entité. Même liste que le panneau Général.</p>
+                                    <p class="mt-1 text-xs text-base-content/70">Surcharge pour cette entité. Appliquée après la formule.</p>
                                 </div>
                                 <div>
                                     <label class="label"><span class="label-text">Formule (affichage)</span></label>

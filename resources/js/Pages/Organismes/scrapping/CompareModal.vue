@@ -18,6 +18,7 @@ import Modal from "@/Pages/Molecules/action/Modal.vue";
 import Btn from "@/Pages/Atoms/action/Btn.vue";
 import Loading from "@/Pages/Atoms/feedback/Loading.vue";
 import Icon from "@/Pages/Atoms/data-display/Icon.vue";
+import { getFieldLabel, getSectionFromFlatKey } from "@/Pages/Pages/scrapping/components/previewDiffLabels";
 
 const props = defineProps({
     entityType: { type: String, default: "" },
@@ -102,12 +103,24 @@ const rows = computed(() => {
         const differs = krosmozStr !== dofusdbStr;
         return {
             key,
+            label: getFieldLabel(key),
+            section: getSectionFromFlatKey(key),
             krosmozStr,
             dofusdbStr,
             differs,
             choice: choices.value[key] ?? (existingRecord.value ? "krosmoz" : "dofusdb"),
         };
     });
+});
+
+const rowsBySection = computed(() => {
+    const map = {};
+    for (const row of rows.value) {
+        const sec = row.section || "Autres";
+        if (!map[sec]) map[sec] = [];
+        map[sec].push(row);
+    }
+    return Object.entries(map).sort((a, b) => a[0].localeCompare(b[0]));
 });
 
 const hasExisting = computed(() => !!existingRecord.value);
@@ -241,35 +254,42 @@ watch(
                             </tr>
                         </thead>
                         <tbody>
-                            <tr v-for="row in rows" :key="row.key">
-                                <td class="font-mono text-primary-100">{{ row.key }}</td>
-                                <td class="break-all text-primary-300 max-w-xs">{{ row.krosmozStr }}</td>
-                                <td class="break-all text-primary-100 max-w-xs">{{ row.dofusdbStr }}</td>
-                                <td v-if="hasExisting" class="align-middle">
-                                    <div class="flex flex-wrap gap-2">
-                                        <label class="label cursor-pointer gap-1 p-0">
-                                            <input
-                                                type="radio"
-                                                :name="`choice-${row.key}`"
-                                                :checked="row.choice === 'krosmoz'"
-                                                class="radio radio-sm"
-                                                @change="setChoice(row.key, 'krosmoz')"
-                                            />
-                                            <span class="text-xs">Krosmoz</span>
-                                        </label>
-                                        <label class="label cursor-pointer gap-1 p-0">
-                                            <input
-                                                type="radio"
-                                                :name="`choice-${row.key}`"
-                                                :checked="row.choice === 'dofusdb'"
-                                                class="radio radio-sm"
-                                                @change="setChoice(row.key, 'dofusdb')"
-                                            />
-                                            <span class="text-xs">DofusDB</span>
-                                        </label>
-                                    </div>
-                                </td>
-                            </tr>
+                            <template v-for="[sectionName, sectionRows] in rowsBySection" :key="sectionName">
+                                <tr class="bg-base-300/60">
+                                    <td :colspan="hasExisting ? 4 : 3" class="font-semibold text-primary-200 text-[11px] uppercase tracking-wide py-1.5 px-2">
+                                        {{ sectionName }}
+                                    </td>
+                                </tr>
+                                <tr v-for="row in sectionRows" :key="row.key">
+                                    <td class="font-semibold text-primary-100 pl-3">{{ row.label }}</td>
+                                    <td class="break-all text-primary-300 max-w-xs">{{ row.krosmozStr }}</td>
+                                    <td class="break-all text-primary-100 max-w-xs">{{ row.dofusdbStr }}</td>
+                                    <td v-if="hasExisting" class="align-middle">
+                                        <div class="flex flex-wrap gap-2">
+                                            <label class="label cursor-pointer gap-1 p-0">
+                                                <input
+                                                    type="radio"
+                                                    :name="`choice-${row.key}`"
+                                                    :checked="row.choice === 'krosmoz'"
+                                                    class="radio radio-sm"
+                                                    @change="setChoice(row.key, 'krosmoz')"
+                                                />
+                                                <span class="text-xs">Krosmoz</span>
+                                            </label>
+                                            <label class="label cursor-pointer gap-1 p-0">
+                                                <input
+                                                    type="radio"
+                                                    :name="`choice-${row.key}`"
+                                                    :checked="row.choice === 'dofusdb'"
+                                                    class="radio radio-sm"
+                                                    @change="setChoice(row.key, 'dofusdb')"
+                                                />
+                                                <span class="text-xs">DofusDB</span>
+                                            </label>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </template>
                         </tbody>
                     </table>
                 </div>

@@ -66,6 +66,17 @@ abstract class CharacteristicGroupSeeder extends Seeder
     public function run(): void
     {
         $rows = $this->loadDataFile($this->dataPath());
+        // Dédoublonnage par (characteristic_key, entity) pour éviter les violations de contrainte unique.
+        $byKeyEntity = [];
+        foreach ($rows as $row) {
+            $key = $row['characteristic_key'] ?? '';
+            $entity = $row['entity'] ?? $this->defaultEntity();
+            if ($key !== '') {
+                $byKeyEntity[$key . "\0" . $entity] = $row;
+            }
+        }
+        $rows = array_values($byKeyEntity);
+
         $modelClass = $this->modelClass();
         foreach ($rows as $row) {
             $char = Characteristic::where('key', $row['characteristic_key'] ?? '')->first();

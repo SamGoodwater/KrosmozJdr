@@ -374,9 +374,11 @@ class CharacteristicControllerTest extends TestCase
         if ($levelCreature === null) {
             $this->markTestSkipped('level_creature requis pour le test des liées.');
         }
+        $key = 'level_object_linked_test';
+        Characteristic::query()->where('key', $key)->delete();
         Characteristic::create([
-            'key' => 'level_object',
-            'name' => 'Niveau objet',
+            'key' => $key,
+            'name' => 'Niveau objet (test liée)',
             'type' => 'int',
             'sort_order' => 0,
             'group' => 'object',
@@ -432,13 +434,13 @@ class CharacteristicControllerTest extends TestCase
     }
 
     /**
-     * Options de mapping scrapping : invité redirigé.
+     * Options de mapping scrapping : invité non autorisé (401 pour JSON, ou redirection login pour GET).
      */
     public function test_guest_redirected_on_scrapping_mapping_options(): void
     {
         $url = route('admin.characteristics.scrapping-mapping-options', ['characteristic_key' => 'life_creature']) . '?entity=monster';
         $response = $this->getJson($url);
-        $response->assertRedirect(route('login'));
+        $response->assertStatus(401);
     }
 
     /**
@@ -498,14 +500,18 @@ class CharacteristicControllerTest extends TestCase
         $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
         $char = Characteristic::where('key', 'life_creature')->first();
         $this->assertNotNull($char);
-        $mapping = ScrappingEntityMapping::create([
-            'source' => 'dofusdb',
-            'entity' => 'monster',
-            'mapping_key' => 'life',
-            'from_path' => 'grades.0.lifePoints',
-            'characteristic_id' => $char->id,
-            'sort_order' => 0,
-        ]);
+        $mapping = ScrappingEntityMapping::firstOrCreate(
+            [
+                'source' => 'dofusdb',
+                'entity' => 'monster',
+                'mapping_key' => 'life',
+            ],
+            [
+                'from_path' => 'grades.0.lifePoints',
+                'characteristic_id' => $char->id,
+                'sort_order' => 0,
+            ]
+        );
         $response = $this->actingAs($admin)->postJson(
             route('admin.characteristics.unlink-scrapping-mapping', ['characteristic_key' => 'life_creature']),
             ['mapping_id' => $mapping->id]

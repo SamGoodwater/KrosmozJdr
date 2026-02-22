@@ -16,6 +16,7 @@ import Alert from "@/Pages/Atoms/feedback/Alert.vue";
 import InputField from "@/Pages/Molecules/data-input/InputField.vue";
 import TanStackTable from "@/Pages/Organismes/table/TanStackTable.vue";
 import { useNotificationStore } from "@/Composables/store/useNotificationStore";
+import { downloadCsvFromRows, filenameForBatchErrors, filenameForBatchPreview, buildCsvFromErrorResults, buildCsvFromPreviewResults } from "@/Composables/utils/useCsvDownload";
 
 const props = defineProps({
     entityType: { type: String, required: true },
@@ -47,6 +48,18 @@ const lastBatchErrorResults = computed(() => {
     const list = lastBatchResults.value;
     if (!Array.isArray(list)) return [];
     return list.filter((r) => r && r.success === false);
+});
+
+/** Prévisualisation batch : chargement + résultats (ID, nom, statut, message). */
+const batchPreviewLoading = ref(false);
+const batchPreviewResults = ref([]);
+const nameByIdFromSearch = computed(() => {
+    const items = lastResult.value?.data?.items || [];
+    const map = {};
+    items.forEach((it) => {
+        if (it && Number.isFinite(Number(it.id))) map[Number(it.id)] = normalizeName(it.name);
+    });
+    return map;
 });
 
 const filterValues = ref({
@@ -254,6 +267,58 @@ const previewSelected = () => {
     }
     emit("preview-selected", Number(ids[0]));
 };
+
+/** Prévisualisation en lot : appelle preview/batch et remplit batchPreviewResults (ID | Nom | Statut | Message). */
+const runBatchPreview = async () => {
+    const raw = selectedIds?.value ?? selectedIds;
+    const ids = Array.isArray(raw) ? raw : Array.from(raw || []);
+    const idList = ids.slice(0, 100).map((id) => Number(id)).filter((n) => Number.isFinite(n) && n > 0);
+    if (!idList.length) {
+        showError("Aucun ID sélectionné (max 100)");
+        return;
+    }
+    batchPreviewLoading.value = true;
+    batchPreviewResults.value = [];
+    try {
+        const res = await fetch("/api/scrapping/preview/batch", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                Accept: "application/json",
+                "X-CSRF-TOKEN": getCsrfToken() || "",
+            },
+            body: JSON.stringify({ type: props.entityType, ids: idList }),
+        });
+        const data = await res.json();
+        const items = res.ok && data.success ? data.data?.items || [] : [];
+        const nameById = nameByIdFromSearch.value;
+        batchPreviewResults.value = items.map((item) => ({
+            id: item.id,
+            name: nameById[item.id] ?? "—",
+            status: item.error ? "error" : "ok",
+            error: item.error ?? null,
+        }));
+        if (!res.ok) showError(data.message || "Erreur prévisualisation batch");
+        else if (batchPreviewResults.value.length) success(`Prévisualisation : ${batchPreviewResults.value.filter((r) => r.status === "ok").length}/${batchPreviewResults.value.length} OK`);
+    } catch (e) {
+        showError("Prévisualisation batch : " + (e?.message ?? "erreur"));
+        batchPreviewResults.value = [];
+    } finally {
+        batchPreviewLoading.value = false;
+    }
+};
+
+const exportBatchErrorsCsv = () => {
+    const { headers, rows } = buildCsvFromErrorResults(lastBatchErrorResults.value);
+    downloadCsvFromRows(headers, rows, filenameForBatchErrors());
+    success("Export CSV des erreurs téléchargé.");
+};
+
+const exportBatchPreviewCsv = () => {
+    const { headers, rows } = buildCsvFromPreviewResults(batchPreviewResults.value);
+    downloadCsvFromRows(headers, rows, filenameForBatchPreview());
+    success("Export CSV de la prévisualisation téléchargé.");
+};
 </script>
 
 <template>
@@ -300,6 +365,10 @@ const previewSelected = () => {
                 <Btn color="secondary" :disabled="!selectedIds.length" @click="previewSelected">
                     Prévisualiser ({{ selectedIds.length ? selectedIds[0] : "—" }})
                 </Btn>
+                <Btn color="secondary" variant="outline" :disabled="batchPreviewLoading || !selectedIds.length" @click="runBatchPreview">
+                    <Loading v-if="batchPreviewLoading" class="mr-2" />
+                    Prévisualiser la sélection ({{ Math.min(selectedIds.length, 100) }})
+                </Btn>
                 <Btn color="success" :disabled="importing || !selectedIds.length" @click="importSelected">
                     <Loading v-if="importing" class="mr-2" />
                     Importer la sélection ({{ selectedIds.length }})
@@ -326,6 +395,39 @@ const previewSelected = () => {
                 Aucun résultat (lance une recherche).
             </div>
 
+            <!-- Résultat prévisualisation batch (ID | Nom | Statut | Message) -->
+            <div v-if="batchPreviewResults.length > 0" class="mt-4 overflow-hidden rounded-lg border border-base-300 bg-base-100">
+                <div class="flex flex-wrap items-center justify-between gap-2 border-b border-base-300 px-3 py-2">
+                    <span class="font-semibold text-primary-100 text-sm">Résultat prévisualisation ({{ batchPreviewResults.length }} ligne(s))</span>
+                    <div class="flex items-center gap-2">
+                        <Btn size="sm" variant="outline" title="Télécharger en CSV" @click="exportBatchPreviewCsv">Exporter (CSV)</Btn>
+                        <Btn size="sm" variant="ghost" @click="batchPreviewResults = []">Fermer</Btn>
+                    </div>
+                </div>
+                <div class="overflow-x-auto p-3 max-h-56 overflow-y-auto">
+                    <table class="table table-zebra table-pin-rows table-xs">
+                        <thead>
+                            <tr class="bg-base-300/70 text-primary-200">
+                                <th class="w-16 font-semibold">ID</th>
+                                <th class="font-semibold">Nom</th>
+                                <th class="w-20 font-semibold">Statut</th>
+                                <th class="font-semibold">Message</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr v-for="(row, idx) in batchPreviewResults" :key="idx" :class="row.status === 'error' ? 'hover:bg-error/5' : ''">
+                                <td class="font-mono font-medium text-primary-100">{{ row.id }}</td>
+                                <td class="text-primary-200">{{ row.name }}</td>
+                                <td>
+                                    <Badge :content="row.status === 'ok' ? 'OK' : 'Erreur'" :color="row.status === 'ok' ? 'success' : 'error'" size="xs" />
+                                </td>
+                                <td class="text-xs text-primary-300">{{ row.error || '—' }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
             <!-- Détail des erreurs du dernier import batch -->
             <div v-if="lastBatchErrorResults.length > 0" class="mt-4 overflow-hidden rounded-lg border border-error/30 bg-error/5">
                 <div class="flex flex-wrap items-center justify-between gap-2 border-b border-error/20 bg-error/10 px-3 py-2">
@@ -334,7 +436,10 @@ const previewSelected = () => {
                         <span class="font-semibold text-primary-100 text-sm">Erreurs import</span>
                         <Badge :content="String(lastBatchErrorResults.length)" color="error" size="xs" />
                     </div>
-                    <Btn size="sm" variant="ghost" class="text-error-200 hover:bg-error/10" @click="lastBatchResults = null">Fermer</Btn>
+                    <div class="flex items-center gap-2">
+                        <Btn size="sm" variant="outline" class="text-error-200" title="Télécharger les erreurs en CSV" @click="exportBatchErrorsCsv">Exporter (CSV)</Btn>
+                        <Btn size="sm" variant="ghost" class="text-error-200 hover:bg-error/10" @click="lastBatchResults = null">Fermer</Btn>
+                    </div>
                 </div>
                 <Alert color="error" variant="soft" class="mx-3 mt-2 mb-0 text-xs rounded">
                     {{ lastBatchErrorResults.length }} entité(s) en échec. Détail ci-dessous.
@@ -345,6 +450,7 @@ const previewSelected = () => {
                             <tr class="bg-base-300/70 text-primary-200">
                                 <th class="w-20 font-semibold">Type</th>
                                 <th class="w-16 font-semibold">ID</th>
+                                <th class="w-14 font-semibold">Statut</th>
                                 <th class="font-semibold">Message / Détails</th>
                             </tr>
                         </thead>
@@ -352,6 +458,7 @@ const previewSelected = () => {
                             <tr v-for="(row, idx) in lastBatchErrorResults" :key="idx" class="hover:bg-error/5">
                                 <td><Badge :content="row.type" color="neutral" size="xs" class="font-mono" /></td>
                                 <td class="font-mono font-medium text-primary-100">{{ row.id }}</td>
+                                <td><Badge content="Erreur" color="error" size="xs" /></td>
                                 <td class="text-xs">
                                     <span class="text-error-200 font-medium">{{ row.error || '—' }}</span>
                                     <ul v-if="row.validation_errors?.length" class="list-disc list-inside mt-1 text-primary-400 space-y-0.5">

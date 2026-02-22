@@ -103,6 +103,10 @@ Route::prefix('scrapping')->group(function () {
     Route::middleware(['web', 'auth'])->get('/dofusdb/item-types', [App\Http\Controllers\Scrapping\DofusDbItemTypesCatalogController::class, 'index'])
         ->name('scrapping.dofusdb.item-types');
 
+    // Mapping id caractéristique DofusDB → libellé (pour affichage effets bruts)
+    Route::middleware(['web', 'auth'])->get('/dofusdb/characteristic-labels', [App\Http\Controllers\Scrapping\ScrappingController::class, 'dofusdbCharacteristicLabels'])
+        ->name('scrapping.dofusdb.characteristic-labels');
+
     Route::prefix('import')->group(function () {
         // Import d'une classe
         Route::post('/class/{id}', [App\Http\Controllers\Scrapping\ScrappingController::class, 'importClass'])

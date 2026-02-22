@@ -12,6 +12,7 @@ import Alert from '@/Pages/Atoms/feedback/Alert.vue';
 import Badge from '@/Pages/Atoms/data-display/Badge.vue';
 import EntityDiffTable from './EntityDiffTable.vue';
 import { useNotificationStore } from '@/Composables/store/useNotificationStore';
+import { getSectionLabel, getFieldLabel } from './previewDiffLabels';
 
 const props = defineProps({
     entityType: {
@@ -119,20 +120,21 @@ function formatSummaryValue(val) {
 
 /**
  * Construit une liste de paires (clé, valeur) pour un bloc converted/existing.
- * Chaque clé top-level (creatures, monsters, items…) devient une section avec ses champs au premier niveau.
+ * Chaque clé top-level (creatures, monsters, items…) devient une section avec libellé ; les clés sont affichées avec libellé métier.
  * @param {Record<string, unknown>|null} data
- * @returns {{ section: string, rows: { key: string, value: string }[] }[]}
+ * @returns {{ section: string, sectionLabel: string, rows: { key: string, label: string, value: string }[] }[]}
  */
 function buildStructuredSummary(data) {
     if (!data || typeof data !== 'object') return [];
     return Object.entries(data).map(([section, content]) => {
+        const sectionLabel = getSectionLabel(section);
         if (content === null || typeof content !== 'object') {
-            return { section, rows: [{ key: '(valeur)', value: formatSummaryValue(content) }] };
+            return { section, sectionLabel, rows: [{ key: '(valeur)', label: '(valeur)', value: formatSummaryValue(content) }] };
         }
         const rows = Array.isArray(content)
-            ? [{ key: 'length', value: `${content.length} élément(s)` }]
-            : Object.entries(content).map(([k, v]) => ({ key: k, value: formatSummaryValue(v) }));
-        return { section, rows };
+            ? [{ key: 'length', label: getFieldLabel('length'), value: `${content.length} élément(s)` }]
+            : Object.entries(content).map(([k, v]) => ({ key: k, label: getFieldLabel(k), value: formatSummaryValue(v) }));
+        return { section, sectionLabel, rows };
     });
 }
 
@@ -520,24 +522,34 @@ const handleImport = () => {
                 </div>
             </Alert>
 
-            <!-- Version DofusDB / Version Krosmoz -->
+            <!-- Version DofusDB / Version Krosmoz : ne pas afficher comme succès si validation a échoué -->
+            <p v-if="previewData.success === false" class="text-xs text-warning">
+                Les données ci-dessous sont affichées à titre indicatif ; la validation a échoué (voir erreurs ci-dessus).
+            </p>
             <div class="grid gap-4 xl:grid-cols-2">
-                <div class="rounded-lg border border-primary/20 bg-base-300/30 overflow-hidden">
+                <div
+                    class="rounded-lg overflow-hidden transition-colors"
+                    :class="previewData.success === false ? 'border border-warning/50 bg-warning/5' : 'border border-primary/20 bg-base-300/30'"
+                >
                     <div class="flex items-center gap-2 border-b border-base-300 bg-base-300/50 px-3 py-2">
                         <Icon source="fa-solid fa-database" alt="" pack="solid" class="text-primary-300 text-sm" />
                         <h4 class="font-semibold text-primary-100 text-sm">Version DofusDB convertie</h4>
-                        <Badge color="primary" size="xs" variant="outline" content="Import" />
+                        <Badge v-if="previewData.success === true" color="primary" size="xs" variant="outline" content="Import" />
+                        <Badge v-else color="warning" size="xs" variant="outline" content="Invalide" />
                     </div>
+                    <p class="text-[11px] text-primary-400 px-3 py-1.5 bg-base-300/30 border-b border-base-300/50">
+                        Données DofusDB → converties via formules et limites (BDD Krosmoz).
+                    </p>
                     <div class="space-y-3 p-3 max-h-80 overflow-auto">
                         <div
                             v-for="block in buildStructuredSummary(previewData.converted)"
                             :key="block.section"
                             class="rounded bg-base-300/50 p-2.5 text-xs"
                         >
-                            <p class="font-semibold text-primary-200 mb-1.5 capitalize text-[11px] uppercase tracking-wide">{{ block.section }}</p>
+                            <p class="font-semibold text-primary-200 mb-1.5 text-[11px] uppercase tracking-wide">{{ block.sectionLabel }}</p>
                             <dl class="space-y-1">
                                 <div v-for="row in block.rows" :key="row.key" class="flex gap-2">
-                                    <dt class="text-primary-400 shrink-0">{{ row.key }} :</dt>
+                                    <dt class="text-primary-400 shrink-0">{{ row.label }} :</dt>
                                     <dd class="text-primary-100 break-words">{{ row.value }}</dd>
                                 </div>
                             </dl>
@@ -557,10 +569,10 @@ const handleImport = () => {
                                 :key="block.section"
                                 class="rounded bg-base-300/50 p-2.5 text-xs"
                             >
-                                <p class="font-semibold text-primary-200 mb-1.5 capitalize text-[11px] uppercase tracking-wide">{{ block.section }}</p>
+                                <p class="font-semibold text-primary-200 mb-1.5 text-[11px] uppercase tracking-wide">{{ block.sectionLabel }}</p>
                                 <dl class="space-y-1">
                                     <div v-for="row in block.rows" :key="row.key" class="flex gap-2">
-                                        <dt class="text-primary-400 shrink-0">{{ row.key }} :</dt>
+                                        <dt class="text-primary-400 shrink-0">{{ row.label }} :</dt>
                                         <dd class="text-primary-100 break-words">{{ row.value }}</dd>
                                     </div>
                                 </dl>
@@ -579,6 +591,9 @@ const handleImport = () => {
                     <Icon source="fa-solid fa-code-compare" alt="" pack="solid" class="text-primary-300 text-sm" />
                     <h4 class="font-semibold text-primary-100 text-sm">Propriétés : Brut / Converti / Krosmoz</h4>
                 </div>
+                <p class="text-[11px] text-primary-400 px-3 py-1.5 bg-base-300/30 border-b border-base-300/50">
+                    Converti = DofusDB après formules et limites BDD.
+                </p>
                 <div class="p-3">
                     <EntityDiffTable
                         :raw="previewData.raw"

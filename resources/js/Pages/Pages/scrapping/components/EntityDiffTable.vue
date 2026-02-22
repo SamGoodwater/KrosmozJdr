@@ -2,8 +2,10 @@
 /**
  * Comparaison des propriétés de l'entité : liste des propriétés du modèle avec 3 colonnes
  * (Brut, Converti, Krosmoz existant). Les lignes où Converti ≠ Krosmoz existant sont surlignées.
+ * Libellés métier et regroupement par section (Identité, Monstre, etc.).
  */
 import { computed } from 'vue';
+import { getFieldLabel, getSectionFromFlatKey } from './previewDiffLabels';
 
 const props = defineProps({
     /** Données brutes DofusDB (optionnel). */
@@ -62,7 +64,7 @@ function formatVal(val) {
     return String(val);
 }
 
-/** Toutes les lignes : propriété | brut | converti | krosmoz. Surlignée si converti !== krosmoz. */
+/** Toutes les lignes : propriété | brut | converti | krosmoz. Surlignée si converti !== krosmoz. Avec libellé et section pour regroupement. */
 const rows = computed(() => {
     if (!props.incoming) return [];
 
@@ -83,12 +85,25 @@ const rows = computed(() => {
         const differs = converti !== krosmoz;
         return {
             field: key,
+            label: getFieldLabel(key),
+            section: getSectionFromFlatKey(key),
             brut,
             converti,
             krosmoz,
             differs,
         };
     });
+});
+
+/** Lignes regroupées par section pour affichage avec titres de section. */
+const rowsBySection = computed(() => {
+    const map = {};
+    for (const row of rows.value) {
+        const sec = row.section || 'Autres';
+        if (!map[sec]) map[sec] = [];
+        map[sec].push(row);
+    }
+    return Object.entries(map).sort((a, b) => a[0].localeCompare(b[0]));
 });
 </script>
 
@@ -104,18 +119,25 @@ const rows = computed(() => {
                 </tr>
             </thead>
             <tbody>
-                <tr
-                    v-for="entry in rows"
-                    :key="entry.field"
-                    :class="entry.differs ? 'bg-warning/15' : ''"
-                >
-                    <td class="font-semibold text-primary-100">{{ entry.field }}</td>
-                    <td class="break-all text-primary-300">{{ formatVal(entry.brut) }}</td>
-                    <td class="break-all text-primary-100">{{ formatVal(entry.converti) }}</td>
-                    <td class="break-all" :class="entry.differs ? 'text-warning font-medium' : 'text-primary-200'">
-                        {{ formatVal(entry.krosmoz) }}
-                    </td>
-                </tr>
+                <template v-for="[sectionName, sectionRows] in rowsBySection" :key="sectionName">
+                    <tr class="bg-base-300/60">
+                        <td colspan="4" class="font-semibold text-primary-200 text-[11px] uppercase tracking-wide py-1.5 px-2">
+                            {{ sectionName }}
+                        </td>
+                    </tr>
+                    <tr
+                        v-for="entry in sectionRows"
+                        :key="entry.field"
+                        :class="entry.differs ? 'bg-warning/15' : ''"
+                    >
+                        <td class="font-semibold text-primary-100 pl-3">{{ entry.label }}</td>
+                        <td class="break-all text-primary-300">{{ formatVal(entry.brut) }}</td>
+                        <td class="break-all text-primary-100">{{ formatVal(entry.converti) }}</td>
+                        <td class="break-all" :class="entry.differs ? 'text-warning font-medium' : 'text-primary-200'">
+                            {{ formatVal(entry.krosmoz) }}
+                        </td>
+                    </tr>
+                </template>
             </tbody>
         </table>
     </div>

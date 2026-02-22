@@ -79,6 +79,7 @@ namespace App\Models{
  * @property string|null $formula_display
  * @property string|null $default_value
  * @property string|null $conversion_formula
+ * @property string|null $conversion_function Identifiant d'une fonction de conversion enregistrée
  * @property array|null $conversion_dofus_sample Niveau → valeur Dofus (ex. {"1":1,"200":200})
  * @property array|null $conversion_krosmoz_sample Niveau → valeur Krosmoz (ex. {"1":1,"20":20})
  * @property array|null $labels
@@ -93,6 +94,7 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicCreature whereCharacteristicId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicCreature whereConversionDofusSample($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicCreature whereConversionFormula($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicCreature whereConversionFunction($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicCreature whereConversionKrosmozSample($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicCreature whereConversionSampleRows($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicCreature whereCreatedAt($value)
@@ -125,6 +127,7 @@ namespace App\Models{
  * @property string|null $formula_display
  * @property string|null $default_value
  * @property string|null $conversion_formula
+ * @property string|null $conversion_function Identifiant d'une fonction de conversion enregistrée
  * @property array|null $conversion_dofus_sample Niveau → valeur Dofus (ex. {"1":1,"200":200})
  * @property array|null $conversion_krosmoz_sample Niveau → valeur Krosmoz (ex. {"1":1,"20":20})
  * @property bool $forgemagie_allowed
@@ -145,6 +148,7 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicObject whereCharacteristicId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicObject whereConversionDofusSample($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicObject whereConversionFormula($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicObject whereConversionFunction($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicObject whereConversionKrosmozSample($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicObject whereConversionSampleRows($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicObject whereCreatedAt($value)
@@ -179,6 +183,7 @@ namespace App\Models{
  * @property string|null $formula_display
  * @property string|null $default_value
  * @property string|null $conversion_formula
+ * @property string|null $conversion_function Identifiant d'une fonction de conversion enregistrée
  * @property array|null $conversion_dofus_sample Niveau → valeur Dofus (ex. {"1":1,"200":200})
  * @property array|null $conversion_krosmoz_sample Niveau → valeur Krosmoz (ex. {"1":1,"20":20})
  * @property array|null $value_available
@@ -192,6 +197,7 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicSpell whereCharacteristicId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicSpell whereConversionDofusSample($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicSpell whereConversionFormula($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicSpell whereConversionFunction($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicSpell whereConversionKrosmozSample($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicSpell whereConversionSampleRows($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicSpell whereCreatedAt($value)

@@ -78,6 +78,18 @@ final class OrchestratorResult
         return new self(false, $message, null, null, $validationErrors, null, null, null);
     }
 
+    /**
+     * Échec de validation en conservant raw (et optionnellement converted) pour l’affichage (ex. prévisualisation).
+     */
+    public static function validationFailed(
+        string $message,
+        array $validationErrors,
+        ?array $raw = null,
+        ?array $converted = null
+    ): self {
+        return new self(false, $message, $raw, $converted, $validationErrors, null, null, null);
+    }
+
     public static function ok(
         string $message,
         ?array $raw = null,

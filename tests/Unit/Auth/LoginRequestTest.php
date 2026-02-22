@@ -7,12 +7,32 @@ use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\RateLimiter;
+use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 use Tests\TestCase;
 
 class LoginRequestTest extends TestCase
 {
     use RefreshDatabase;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+        $this->clearLoginRateLimiters();
+    }
+
+    /**
+     * Réinitialise les limiteurs de connexion utilisés par les tests pour éviter les interférences.
+     * Nettoie avec 127.0.0.1 et avec IP vide (contexte CLI sans REMOTE_ADDR).
+     */
+    private function clearLoginRateLimiters(): void
+    {
+        foreach (['test@example.com', 'testuser', 'TEST@EXAMPLE.COM'] as $identifier) {
+            $base = Str::transliterate(Str::lower($identifier));
+            RateLimiter::clear($base . '|127.0.0.1');
+            RateLimiter::clear($base . '|');
+        }
+    }
 
     /**
      * Test de validation avec des données valides.
@@ -203,6 +223,8 @@ class LoginRequestTest extends TestCase
             'identifier' => 'test@example.com',
             'password' => 'wrong-password',
         ]);
+        $request->server->set('REMOTE_ADDR', '127.0.0.1');
+        RateLimiter::clear($request->throttleKey());
 
         // Première tentative échouée
         try {
@@ -235,6 +257,8 @@ class LoginRequestTest extends TestCase
             'identifier' => 'test@example.com',
             'password' => 'wrong-password',
         ]);
+        $request->server->set('REMOTE_ADDR', '127.0.0.1');
+        RateLimiter::clear($request->throttleKey());
 
         // Quelques tentatives échouées
         for ($i = 0; $i < 3; $i++) {

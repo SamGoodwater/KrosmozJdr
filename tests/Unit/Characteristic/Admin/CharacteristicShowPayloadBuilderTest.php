@@ -7,6 +7,7 @@ namespace Tests\Unit\Characteristic\Admin;
 use App\Models\Characteristic;
 use App\Models\CharacteristicCreature;
 use App\Services\Characteristic\Admin\CharacteristicShowPayloadBuilder;
+use App\Services\Characteristic\Conversion\ConversionFunctionRegistry;
 use App\Services\Characteristic\Getter\CharacteristicGetterService;
 use App\Services\Scrapping\Core\Config\ScrappingMappingService;
 use Database\Seeders\CharacteristicSeeder;
@@ -40,7 +41,8 @@ class CharacteristicShowPayloadBuilderTest extends TestCase
         $this->app->make(CharacteristicGetterService::class)->clearCache();
         $this->builder = new CharacteristicShowPayloadBuilder(
             $this->app->make(CharacteristicGetterService::class),
-            $this->app->make(ScrappingMappingService::class)
+            $this->app->make(ScrappingMappingService::class),
+            $this->app->make(ConversionFunctionRegistry::class)
         );
     }
 

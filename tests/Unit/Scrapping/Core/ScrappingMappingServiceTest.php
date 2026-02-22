@@ -45,8 +45,9 @@ class ScrappingMappingServiceTest extends TestCase
 
     public function test_list_mappings_for_characteristic_returns_summary_array(): void
     {
+        $key = 'level_creature_test_' . uniqid();
         $char = Characteristic::create([
-            'key' => 'level_creature',
+            'key' => $key,
             'name' => 'Niveau',
             'type' => 'int',
             'sort_order' => 0,
@@ -83,15 +84,15 @@ class ScrappingMappingServiceTest extends TestCase
         $this->assertSame('level', $list[0]['targets'][0]['field']);
     }
 
-    public function test_get_mapping_for_entity_returns_null_when_empty(): void
+    public function test_get_mapping_for_entity_returns_null_when_no_bdd_mappings(): void
     {
-        $out = $this->service->getMappingForEntity('dofusdb', 'monster');
+        $out = $this->service->getMappingForEntity('dofusdb', 'entity_sans_mapping_xyz');
 
         $this->assertNull($out);
     }
 
-    public function test_has_mapping_for_entity_returns_false_when_empty(): void
+    public function test_has_mapping_for_entity_returns_false_when_no_bdd_mappings(): void
     {
-        $this->assertFalse($this->service->hasMappingForEntity('dofusdb', 'monster'));
+        $this->assertFalse($this->service->hasMappingForEntity('dofusdb', 'entity_sans_mapping_xyz'));
     }
 }

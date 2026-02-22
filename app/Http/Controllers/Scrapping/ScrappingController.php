@@ -72,6 +72,30 @@ class ScrappingController extends Controller
         ]);
     }
 
+    /**
+     * Retourne le mapping id caractéristique DofusDB → libellé (keyword) pour l'affichage des effets bruts.
+     * Source : dofusdb_characteristic_to_krosmoz.json (keywords_by_id).
+     */
+    public function dofusdbCharacteristicLabels(): JsonResponse
+    {
+        $path = resource_path('scrapping/config/sources/dofusdb/dofusdb_characteristic_to_krosmoz.json');
+        if (! is_file($path)) {
+            return response()->json(['success' => true, 'data' => []]);
+        }
+        try {
+            $config = json_decode((string) file_get_contents($path), true, 512, JSON_THROW_ON_ERROR);
+        } catch (\JsonException) {
+            return response()->json(['success' => true, 'data' => []]);
+        }
+        $keywordsById = $config['keywords_by_id'] ?? [];
+        $labels = is_array($keywordsById) ? $keywordsById : [];
+
+        return response()->json([
+            'success' => true,
+            'data' => $labels,
+        ]);
+    }
+
     private function getEntityLabel(string $type): string
     {
         return match ($type) {
@@ -485,6 +509,7 @@ class ScrappingController extends Controller
 
     /**
      * Prévisualisation d'une entité avant import (runOne avec dry_run, pipeline Core).
+     * Retourne raw (données brutes DofusDB) pour alimenter le bloc « Relations détectées » (spells, drops, recipe, summon) côté front.
      */
     public function preview(string $type, int $id): JsonResponse
     {

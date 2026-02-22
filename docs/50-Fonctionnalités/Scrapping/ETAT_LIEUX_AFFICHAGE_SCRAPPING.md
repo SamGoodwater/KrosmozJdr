@@ -117,7 +117,7 @@
    - Côté front : afficher un résumé + liste dépliable ou tableau « ID | Statut | Erreur ».
 
 9. **Prévisualisation batch dans l’UI**  
-   - Pour une sélection multiple, appeler `preview/batch` et afficher un tableau avec pour chaque ligne : ID, nom, statut (OK / Erreur), message d’erreur éventuel. Permet de voir avant d’importer quels IDs posent problème.
+   - Pour une sélection multiple, appeler `preview/batch` et afficher un tableau avec pour chaque ligne : ID, nom, statut (OK / Erreur), message d’erreur éventuel. Permet de voir avant d’importer quels IDs posent problème. *Implémenté : bouton « Prévisualiser la sélection » (ScrappingSearchTableSection + ScrappingDashboard), tableau ID | Nom | Statut | Message (max 100 IDs).*
 
 10. **Indicateurs de conversion**  
     - Afficher clairement quelles caractéristiques viennent de la conversion (niveau, rareté, PV, etc.) et rappeler la source (DofusDB → formules / limites BDD) pour faciliter le debug et la confiance dans le flux.

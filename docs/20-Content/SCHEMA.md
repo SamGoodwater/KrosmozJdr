@@ -140,6 +140,7 @@ erDiagram
     formula_display : text
     default_value : varchar(512)
     conversion_formula : text
+    conversion_function : varchar(64)
     conversion_dofus_sample : longtext
     conversion_krosmoz_sample : longtext
     conversion_sample_rows : longtext
@@ -159,6 +160,7 @@ erDiagram
     formula_display : text
     default_value : varchar(512)
     conversion_formula : text
+    conversion_function : varchar(64)
     conversion_dofus_sample : longtext
     conversion_krosmoz_sample : longtext
     conversion_sample_rows : longtext
@@ -188,6 +190,7 @@ erDiagram
     formula_display : text
     default_value : varchar(512)
     conversion_formula : text
+    conversion_function : varchar(64)
     conversion_dofus_sample : longtext
     conversion_krosmoz_sample : longtext
     conversion_sample_rows : longtext

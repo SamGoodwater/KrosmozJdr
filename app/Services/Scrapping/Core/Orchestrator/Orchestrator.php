@@ -145,9 +145,11 @@ final class Orchestrator
                 $converted = $this->limitService->clampConvertedData($converted, $entityType);
                 $validationResult = $this->limitService->validate($converted, $entityType);
                 if (!$validationResult->isValid()) {
-                    return OrchestratorResult::fail(
+                    return OrchestratorResult::validationFailed(
                         'Validation échouée.',
-                        $validationResult->getErrors()
+                        $validationResult->getErrors(),
+                        $raw,
+                        $converted
                     );
                 }
             }
@@ -224,9 +226,11 @@ final class Orchestrator
                 $converted = $this->limitService->clampConvertedData($converted, $entityType);
                 $validationResult = $this->limitService->validate($converted, $entityType);
                 if (!$validationResult->isValid()) {
-                    return OrchestratorResult::fail(
+                    return OrchestratorResult::validationFailed(
                         'Validation échouée.',
-                        $validationResult->getErrors()
+                        $validationResult->getErrors(),
+                        $raw,
+                        $converted
                     );
                 }
             }
