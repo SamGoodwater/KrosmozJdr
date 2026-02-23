@@ -75,7 +75,7 @@ Aucune clé de groupe ne pointe vers une caractéristique manquante ou vers un m
 ## 5. Icônes et couleurs
 
 - **characteristic_icons_colors.php** : Définit des valeurs par défaut pour `icon`, `color` et `descriptions` par clé. Utilisé par `CharacteristicSeeder` lorsque la valeur en base ou dans `characteristics.php` est NULL.
-- **Fichiers physiques** : Les icônes utilisées (ex. `life_temp.svg`, `shield.svg`, `casting_time.svg`) sont présentes dans `storage/app/public/images/icons/characteristics/` (copiées depuis `Icones/caracteristiques/old/`).
+- **Fichiers physiques** : Les icônes utilisées (ex. `life_temp.svg`, `shield.svg`, `casting_time.svg`) sont présentes dans `storage/app/public/images/icons/characteristics/` (copiées depuis `icons/caracteristiques/old/`).
 
 ---
 

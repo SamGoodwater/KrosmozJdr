@@ -52,6 +52,33 @@ final class CollectService
             return [];
         }
 
+        return $this->unwrapSingleResource($data);
+    }
+
+    /**
+     * Déstructure la réponse DofusDB/Feathers pour un seul élément : l’API renvoie souvent
+     * { "data": { ... } } ou { "data": [ { ... } ] }. On retourne l’objet interne pour que
+     * les relations (spells, drops, etc.) soient accessibles dans $raw.
+     *
+     * @param array<string, mixed> $data
+     * @return array<string, mixed>
+     */
+    private function unwrapSingleResource(array $data): array
+    {
+        if (!isset($data['data'])) {
+            return $data;
+        }
+        $inner = $data['data'];
+        if (!is_array($inner)) {
+            return $data;
+        }
+        if (array_is_list($inner) && isset($inner[0]) && is_array($inner[0])) {
+            return $inner[0];
+        }
+        if (!array_is_list($inner)) {
+            return $inner;
+        }
+
         return $data;
     }
 

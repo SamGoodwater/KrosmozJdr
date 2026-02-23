@@ -111,12 +111,14 @@ defineExpose({
     :helper="props.helper"
     input-type="toggle"
   >
-    <!-- Slot core spécifique pour ToggleCore -->
+    <!-- Slot core spécifique pour ToggleCore : modelValue explicite (checkbox/toggle = checked, pas value) -->
     <template #core="{ inputAttrs, listeners, inputRef }">
       <ToggleCore
+        :model-value="props.modelValue"
         v-bind="inputAttrs"
         v-on="listeners"
         ref="inputRef"
+        @update:model-value="emit('update:modelValue', $event)"
       />
     </template>
     

@@ -70,9 +70,9 @@ Le projet utilise les dernières recommandations en matière de sécurité, de q
   - `storage/images/Logos/logo.png`
   - `storage/images/Logos/logo.ico`
 - **Aires des sorts** :
-  - `storage/images/Icones/zones/X.svg` (X = nom de la zone)
+  - `storage/images/icons/zones/X.svg` (X = nom de la zone)
 - **Caractéristiques** :
-  - `storage/images/Icones/caracteristiques/X.png` (X = nom de la caractéristique)
+  - `storage/images/icons/caracteristiques/X.png` (X = nom de la caractéristique)
 - **Fichiers uploadés** :
   - Pour une entité : `storage/entities/nom_de_l_entite/`
   - Pour une page : `storage/pages/`

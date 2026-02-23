@@ -1,15 +1,15 @@
 <script setup>
 /**
- * CompareModal — Comparaison Krosmoz vs DofusDB avec choix par propriété.
+ * CompareModal — Comparaison Brut / Converti / Krosmoz avec choix par propriété.
  *
  * @description
- * Affiche l'existant (Krosmoz) et les données récupérables (DofusDB), permet de choisir
- * pour chaque propriété : garder Krosmoz ou remplacer par DofusDB, puis importer avec ces choix.
+ * Affiche les 3 formats : données brutes (DofusDB), converties, et KrosmozJDR si existant.
+ * Pour chaque propriété : choisir Existant (Krosmoz) ou Converti (nouveau), puis importer.
+ * Ouverture : double-clic sur une ligne du tableau des résultats.
  *
  * @props {String} entityType — Type d'entité (monster, spell, class, resource, consumable, equipment)
  * @props {Number} dofusdbId — ID DofusDB de l'entité
  * @props {Boolean} open — Contrôle l'ouverture du modal
- *
  * @emits close — Fermeture du modal
  * @emits imported — Import réussi (payload)
  */
@@ -73,41 +73,40 @@ const existingRecord = computed(() => {
     return ex.record;
 });
 
+const rawData = computed(() => preview.value?.raw ?? {});
 const convertedData = computed(() => preview.value?.converted ?? {});
 
+const rawFlat = computed(() => flattenShallow(rawData.value));
 const existingFlat = computed(() =>
     existingRecord.value ? flattenShallow(existingRecord.value) : {}
 );
 const convertedFlat = computed(() => flattenShallow(convertedData.value));
 
-/** Clés à afficher : uniquement propriétés du modèle (existant) ou shallow du converti. */
+/** Clés à afficher : union Brut, Converti, Krosmoz. */
 const allKeys = computed(() => {
-    const fromExisting = Object.keys(existingFlat.value);
-    const fromConverted = Object.keys(convertedFlat.value);
-    const keys = fromExisting.length > 0 ? fromExisting : fromConverted;
-    return [...new Set(keys)].sort();
+    const keys = new Set([
+        ...Object.keys(rawFlat.value),
+        ...Object.keys(convertedFlat.value),
+        ...Object.keys(existingFlat.value),
+    ]);
+    return [...keys].sort();
 });
 
 const rows = computed(() => {
     return allKeys.value.map((key) => {
+        const rawVal = findInFlat(rawFlat.value, key) ?? findInFlat(rawFlat.value, key.split(".").pop());
+        const convertedVal = findInFlat(convertedFlat.value, key) ?? findInFlat(convertedFlat.value, key.split(".").pop());
         const krosmozVal = existingFlat.value[key];
-        const dofusdbVal = findInFlat(convertedFlat.value, key) ?? findInFlat(convertedFlat.value, key.split(".").pop());
-        const krosmozStr =
-            krosmozVal === undefined || krosmozVal === null
-                ? "(vide)"
-                : String(krosmozVal);
-        const dofusdbStr =
-            dofusdbVal === undefined || dofusdbVal === null
-                ? "(vide)"
-                : String(dofusdbVal);
-        const differs = krosmozStr !== dofusdbStr;
+        const rawStr = rawVal === undefined || rawVal === null ? "—" : String(rawVal);
+        const convertedStr = convertedVal === undefined || convertedVal === null ? "—" : String(convertedVal);
+        const krosmozStr = krosmozVal === undefined || krosmozVal === null ? "—" : String(krosmozVal);
         return {
             key,
             label: getFieldLabel(key),
             section: getSectionFromFlatKey(key),
+            rawStr,
+            convertedStr,
             krosmozStr,
-            dofusdbStr,
-            differs,
             choice: choices.value[key] ?? (existingRecord.value ? "krosmoz" : "dofusdb"),
         };
     });
@@ -127,6 +126,12 @@ const hasExisting = computed(() => !!existingRecord.value);
 
 function setChoice(key, value) {
     choices.value = { ...choices.value, [key]: value };
+}
+
+function setAllChoices(value) {
+    const next = {};
+    allKeys.value.forEach((k) => { next[k] = value; });
+    choices.value = next;
 }
 
 async function fetchPreview() {
@@ -218,12 +223,12 @@ watch(
         <template #header>
             <div class="flex items-center justify-between gap-3 w-full">
                 <div class="font-semibold text-primary-100">
-                    Comparer Krosmoz / DofusDB
+                    Comparaison — Brut / Converti / Krosmoz
                     <span v-if="entityType && dofusdbId" class="font-normal text-primary-300 ml-2">
                         {{ entityType }} #{{ dofusdbId }}
                     </span>
                 </div>
-                <Btn size="sm" variant="ghost" @click="emit('close')">Fermer</Btn>
+                <Btn size="sm" variant="ghost" @click="emit('close')"></Btn>
             </div>
         </template>
 
@@ -237,33 +242,44 @@ watch(
 
             <template v-else-if="preview">
                 <p v-if="!hasExisting" class="text-sm text-primary-300 italic">
-                    Aucune entrée existante en base. L’import créera une nouvelle entrée à partir de DofusDB.
+                    Aucune entrée existante en base. L’import créera une nouvelle entrée à partir des données converties.
                 </p>
                 <p v-else class="text-sm text-primary-200">
-                    Choisis pour chaque propriété : <strong>Garder Krosmoz</strong> ou <strong>Remplacer par DofusDB</strong>.
+                    Pour chaque propriété, choisis <strong>Existant</strong> (Krosmoz) ou <strong>Converti</strong> (nouveau). Puis importer.
                 </p>
+
+                <div v-if="hasExisting" class="flex flex-wrap gap-2">
+                    <Btn size="sm" variant="outline" @click="setAllChoices('krosmoz')">
+                        Tout l'existant (Krosmoz)
+                    </Btn>
+                    <Btn size="sm" variant="outline" @click="setAllChoices('dofusdb')">
+                        Tout le converti (nouveau)
+                    </Btn>
+                </div>
 
                 <div class="overflow-x-auto rounded-lg border border-base-300">
                     <table class="table table-zebra text-xs w-full">
                         <thead>
                             <tr class="text-primary-200 bg-base-200">
-                                <th class="font-semibold w-48">Champ</th>
-                                <th class="font-semibold">Krosmoz (actuel)</th>
-                                <th class="font-semibold">DofusDB (API)</th>
-                                <th v-if="hasExisting" class="font-semibold w-52">Choix</th>
+                                <th class="font-semibold w-40">Champ</th>
+                                <th class="font-semibold max-w-[200px]">Brut (DofusDB)</th>
+                                <th class="font-semibold max-w-[200px]">Converti</th>
+                                <th class="font-semibold max-w-[200px]">Krosmoz (existant)</th>
+                                <th v-if="hasExisting" class="font-semibold w-48">Choix</th>
                             </tr>
                         </thead>
                         <tbody>
                             <template v-for="[sectionName, sectionRows] in rowsBySection" :key="sectionName">
                                 <tr class="bg-base-300/60">
-                                    <td :colspan="hasExisting ? 4 : 3" class="font-semibold text-primary-200 text-[11px] uppercase tracking-wide py-1.5 px-2">
+                                    <td :colspan="hasExisting ? 5 : 4" class="font-semibold text-primary-200 text-[11px] uppercase tracking-wide py-1.5 px-2">
                                         {{ sectionName }}
                                     </td>
                                 </tr>
                                 <tr v-for="row in sectionRows" :key="row.key">
                                     <td class="font-semibold text-primary-100 pl-3">{{ row.label }}</td>
-                                    <td class="break-all text-primary-300 max-w-xs">{{ row.krosmozStr }}</td>
-                                    <td class="break-all text-primary-100 max-w-xs">{{ row.dofusdbStr }}</td>
+                                    <td class="break-all text-primary-400 max-w-[200px]">{{ row.rawStr }}</td>
+                                    <td class="break-all text-primary-100 max-w-[200px]">{{ row.convertedStr }}</td>
+                                    <td class="break-all text-primary-300 max-w-[200px]">{{ row.krosmozStr }}</td>
                                     <td v-if="hasExisting" class="align-middle">
                                         <div class="flex flex-wrap gap-2">
                                             <label class="label cursor-pointer gap-1 p-0">
@@ -274,7 +290,7 @@ watch(
                                                     class="radio radio-sm"
                                                     @change="setChoice(row.key, 'krosmoz')"
                                                 />
-                                                <span class="text-xs">Krosmoz</span>
+                                                <span class="text-xs">Existant</span>
                                             </label>
                                             <label class="label cursor-pointer gap-1 p-0">
                                                 <input
@@ -284,7 +300,7 @@ watch(
                                                     class="radio radio-sm"
                                                     @change="setChoice(row.key, 'dofusdb')"
                                                 />
-                                                <span class="text-xs">DofusDB</span>
+                                                <span class="text-xs">Converti</span>
                                             </label>
                                         </div>
                                     </td>
@@ -306,7 +322,7 @@ watch(
                 >
                     <Loading v-if="importing" class="mr-2" />
                     <Icon v-else source="fa-solid fa-cloud-arrow-down" alt="" pack="solid" class="mr-2" />
-                    {{ hasExisting ? "Importer avec ces choix" : "Importer" }}
+                    Importer
                 </Btn>
             </div>
         </template>

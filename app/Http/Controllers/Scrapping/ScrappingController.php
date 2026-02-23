@@ -132,16 +132,51 @@ class ScrappingController extends Controller
         return EntityLimits::capFor($type);
     }
 
-    /** @return array{convert: bool, validate: bool, integrate: bool, dry_run: bool, force_update: bool, include_relations: bool, lang: string} */
+    /** @return array{convert: bool, validate: bool, integrate: bool, dry_run: bool, force_update: bool, replace_mode?: string, include_relations: bool, exclude_from_update: list<string>, property_whitelist: list<string>, download_images: bool, lang: string} */
     private function optionsFromRequest(Request $request): array
     {
+        $replaceMode = $request->input('replace_mode');
+        $replaceMode = is_string($replaceMode) && in_array($replaceMode, ['never', 'draft_raw_only', 'always'], true) ? $replaceMode : null;
+
+        $excludeFromUpdate = $request->input('exclude_from_update');
+        if (! is_array($excludeFromUpdate)) {
+            $excludeFromUpdate = [];
+        }
+        $excludeFromUpdate = array_values(array_filter(array_map('strval', $excludeFromUpdate)));
+
+        $withImages = $request->boolean('with_images', true);
+        $downloadImages = $request->boolean('download_images', $withImages);
+        if (! $withImages) {
+            $excludeFromUpdate = array_unique(array_merge($excludeFromUpdate, ['image']));
+        }
+
+        $propertyWhitelist = $request->input('property_whitelist');
+        if (is_array($propertyWhitelist)) {
+            $propertyWhitelist = array_values(array_filter(array_map('strval', $propertyWhitelist)));
+        } else {
+            $propertyWhitelist = is_string($propertyWhitelist)
+                ? array_values(array_filter(array_map('trim', explode(',', $propertyWhitelist))))
+                : [];
+        }
+
+        $forceUpdate = $request->boolean('force_update', false);
+        if ($replaceMode === 'always') {
+            $forceUpdate = true;
+        } elseif ($replaceMode === 'never') {
+            $forceUpdate = false;
+        }
+
         return [
             'convert' => true,
             'validate' => $request->boolean('validate', true),
-            'integrate' => !$request->boolean('validate_only', false) && !$request->boolean('dry_run', false),
+            'integrate' => ! $request->boolean('validate_only', false) && ! $request->boolean('dry_run', false),
             'dry_run' => $request->boolean('dry_run', false),
-            'force_update' => $request->boolean('force_update', false),
+            'force_update' => $forceUpdate,
+            'replace_mode' => $replaceMode,
             'include_relations' => $request->boolean('include_relations', true),
+            'exclude_from_update' => $excludeFromUpdate,
+            'property_whitelist' => $propertyWhitelist,
+            'download_images' => $downloadImages,
             'lang' => (string) $request->input('lang', 'fr'),
         ];
     }
@@ -353,6 +388,7 @@ class ScrappingController extends Controller
                         'data' => $result->isSuccess() ? ($result->getIntegrationResult()?->getData() ?? $result->getConverted()) : null,
                         'error' => $result->isSuccess() ? null : $result->getMessage(),
                         'validation_errors' => $result->isSuccess() ? [] : $result->getValidationErrors(),
+                        'relations' => $result->isSuccess() ? ($result->getRelations() ?? []) : [],
                     ];
                     $result->isSuccess() ? $successCount++ : $errorCount++;
                 } catch (\Throwable $e) {

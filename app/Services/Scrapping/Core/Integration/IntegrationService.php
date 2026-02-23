@@ -66,17 +66,49 @@ final class IntegrationService
     }
 
     /**
-     * @param array{dry_run?: bool, force_update?: bool, ignore_unvalidated?: bool, exclude_from_update?: list<string>} $options
+     * Calcule si on doit remplacer un enregistrement existant selon replace_mode ou force_update.
+     *
+     * @param bool $forceUpdate Valeur legacy force_update
+     * @param string|null $replaceMode 'never' | 'draft_raw_only' | 'always'
+     * @param Creature|Item|Resource|Consumable|Spell|Breed|Panoply|null $existing Entité existante (avec state)
+     */
+    private function shouldReplaceExisting(bool $forceUpdate, ?string $replaceMode, $existing): bool
+    {
+        if ($replaceMode !== null && $replaceMode !== '') {
+            if ($replaceMode === 'always') {
+                return true;
+            }
+            if ($replaceMode === 'never') {
+                return false;
+            }
+            if ($replaceMode === 'draft_raw_only' && $existing !== null) {
+                $state = $existing->state ?? null;
+
+                return $state === Creature::STATE_RAW || $state === Creature::STATE_DRAFT;
+            }
+        }
+
+        return $forceUpdate;
+    }
+
+    /**
+     * @param array{dry_run?: bool, force_update?: bool, replace_mode?: string, ignore_unvalidated?: bool, exclude_from_update?: list<string>, property_whitelist?: list<string>} $options
      */
     private function integrateMonster(array $convertedData, array $options = []): IntegrationResult
     {
         $dryRun = (bool) ($options['dry_run'] ?? false);
         $forceUpdate = (bool) ($options['force_update'] ?? false);
+        $replaceMode = isset($options['replace_mode']) ? (string) $options['replace_mode'] : null;
         $ignoreUnvalidated = (bool) ($options['ignore_unvalidated'] ?? false);
         /** @var list<string> $excludeFromUpdate */
         $excludeFromUpdate = $options['exclude_from_update'] ?? [];
         if (!is_array($excludeFromUpdate)) {
             $excludeFromUpdate = [];
+        }
+        /** @var list<string> $propertyWhitelist */
+        $propertyWhitelist = $options['property_whitelist'] ?? [];
+        if (!is_array($propertyWhitelist)) {
+            $propertyWhitelist = [];
         }
 
         $creatureData = $convertedData['creatures'] ?? [];
@@ -108,7 +140,8 @@ final class IntegrationService
         }
         $existingCreature = $existingMonsterByDofus?->creature ?? Creature::where('name', (string) ($creatureData['name'] ?? ''))->first();
 
-        if ($existingMonsterByDofus && !$forceUpdate) {
+        $doReplace = $this->shouldReplaceExisting($forceUpdate, $replaceMode, $existingCreature);
+        if ($existingMonsterByDofus && !$doReplace) {
             return IntegrationResult::ok(
                 $existingCreature?->id,
                 $existingMonsterByDofus->id,
@@ -139,7 +172,10 @@ final class IntegrationService
         $sizeInt = $this->sizeStringToInt((string) ($monsterData['size'] ?? 'medium'));
         $monsterRaceId = $this->resolveMonsterRaceId($monsterData['monster_race_id'] ?? null);
 
-        if ($existingCreature && $excludeFromUpdate !== []) {
+        if ($propertyWhitelist !== []) {
+            $creatureAttributes = $this->filterByWhitelist($creatureAttributes, $propertyWhitelist);
+        }
+        if ($excludeFromUpdate !== []) {
             $creatureAttributes = $this->filterExcludedFromUpdate($creatureAttributes, $excludeFromUpdate);
         }
 
@@ -148,6 +184,9 @@ final class IntegrationService
             'size' => $sizeInt,
             'monster_race_id' => $monsterRaceId,
         ];
+        if ($propertyWhitelist !== []) {
+            $monsterUpdate = $this->filterByWhitelist($monsterUpdate, $propertyWhitelist);
+        }
         if ($excludeFromUpdate !== []) {
             $monsterUpdate = $this->filterExcludedFromUpdate($monsterUpdate, $excludeFromUpdate);
         }
@@ -278,6 +317,23 @@ final class IntegrationService
     }
 
     /**
+     * Restreint les clés au whitelist si non vide.
+     *
+     * @param array<string, mixed> $data
+     * @param list<string> $whitelist
+     * @return array<string, mixed>
+     */
+    private function filterByWhitelist(array $data, array $whitelist): array
+    {
+        if ($whitelist === []) {
+            return $data;
+        }
+        $allowSet = array_fill_keys($whitelist, true);
+
+        return array_intersect_key($data, $allowSet);
+    }
+
+    /**
      * Attache une image à l'entité via Media Library (addMediaFromUrl).
      * Respecte download_images et allowed_hosts (config scrapping.images).
      * Met à jour la colonne image de l'entité avec l'URL du média.
@@ -344,12 +400,15 @@ final class IntegrationService
     }
 
     /**
-     * @param array{dry_run?: bool, force_update?: bool} $options
+     * @param array{dry_run?: bool, force_update?: bool, replace_mode?: string, exclude_from_update?: list<string>, property_whitelist?: list<string>} $options
      */
     private function integrateSpell(array $convertedData, array $options = []): IntegrationResult
     {
         $dryRun = (bool) ($options['dry_run'] ?? false);
         $forceUpdate = (bool) ($options['force_update'] ?? false);
+        $replaceMode = isset($options['replace_mode']) ? (string) $options['replace_mode'] : null;
+        $excludeFromUpdate = is_array($options['exclude_from_update'] ?? null) ? $options['exclude_from_update'] : [];
+        $propertyWhitelist = is_array($options['property_whitelist'] ?? null) ? $options['property_whitelist'] : [];
 
         $data = $convertedData['spells'] ?? [];
         if ($data === []) {
@@ -364,7 +423,8 @@ final class IntegrationService
             $existingSpell = Spell::where('name', $data['name'])->first();
         }
 
-        if ($existingSpell && !$forceUpdate) {
+        $doReplace = $this->shouldReplaceExisting($forceUpdate, $replaceMode, $existingSpell);
+        if ($existingSpell && !$doReplace) {
             return IntegrationResult::okEntity(
                 $existingSpell->id,
                 $dryRun ? 'would_skip' : 'skipped',
@@ -409,6 +469,12 @@ final class IntegrationService
             'powerful' => (int) ($data['powerful'] ?? 0),
             'created_by' => $userId,
         ];
+        if ($propertyWhitelist !== []) {
+            $payload = $this->filterByWhitelist($payload, $propertyWhitelist);
+        }
+        if ($excludeFromUpdate !== []) {
+            $payload = $this->filterExcludedFromUpdate($payload, $excludeFromUpdate);
+        }
 
         try {
             DB::beginTransaction();
@@ -456,12 +522,15 @@ final class IntegrationService
     }
 
     /**
-     * @param array{dry_run?: bool, force_update?: bool} $options
+     * @param array{dry_run?: bool, force_update?: bool, replace_mode?: string, exclude_from_update?: list<string>, property_whitelist?: list<string>} $options
      */
     private function integrateBreed(array $convertedData, array $options = []): IntegrationResult
     {
         $dryRun = (bool) ($options['dry_run'] ?? false);
         $forceUpdate = (bool) ($options['force_update'] ?? false);
+        $replaceMode = isset($options['replace_mode']) ? (string) $options['replace_mode'] : null;
+        $excludeFromUpdate = is_array($options['exclude_from_update'] ?? null) ? $options['exclude_from_update'] : [];
+        $propertyWhitelist = is_array($options['property_whitelist'] ?? null) ? $options['property_whitelist'] : [];
 
         $data = $convertedData['breeds'] ?? $convertedData['classes'] ?? [];
         if ($data === []) {
@@ -476,7 +545,8 @@ final class IntegrationService
             $existingBreed = Breed::where('name', $data['name'])->first();
         }
 
-        if ($existingBreed && !$forceUpdate) {
+        $doReplace = $this->shouldReplaceExisting($forceUpdate, $replaceMode, $existingBreed);
+        if ($existingBreed && !$doReplace) {
             return IntegrationResult::okEntity(
                 $existingBreed->id,
                 $dryRun ? 'would_skip' : 'skipped',
@@ -510,6 +580,12 @@ final class IntegrationService
             'specificity' => $data['specificity'] ?? null,
             'created_by' => $userId,
         ];
+        if ($propertyWhitelist !== []) {
+            $payload = $this->filterByWhitelist($payload, $propertyWhitelist);
+        }
+        if ($excludeFromUpdate !== []) {
+            $payload = $this->filterExcludedFromUpdate($payload, $excludeFromUpdate);
+        }
 
         try {
             DB::beginTransaction();
@@ -540,12 +616,15 @@ final class IntegrationService
     }
 
     /**
-     * @param array{dry_run?: bool, force_update?: bool, include_relations?: bool} $options
+     * @param array{dry_run?: bool, force_update?: bool, replace_mode?: string, include_relations?: bool, exclude_from_update?: list<string>, property_whitelist?: list<string>} $options
      */
     private function integrateItem(array $convertedData, array $options = []): IntegrationResult
     {
         $dryRun = (bool) ($options['dry_run'] ?? false);
         $forceUpdate = (bool) ($options['force_update'] ?? false);
+        $replaceMode = isset($options['replace_mode']) ? (string) $options['replace_mode'] : null;
+        $excludeFromUpdate = is_array($options['exclude_from_update'] ?? null) ? $options['exclude_from_update'] : [];
+        $propertyWhitelist = is_array($options['property_whitelist'] ?? null) ? $options['property_whitelist'] : [];
 
         $typeId = isset($convertedData['items']['type_id']) ? (int) $convertedData['items']['type_id'] : null;
         $targetTable = $this->resolveItemTargetTable($typeId);
@@ -573,7 +652,8 @@ final class IntegrationService
             };
         }
 
-        if ($existing && !$forceUpdate) {
+        $doReplace = $this->shouldReplaceExisting($forceUpdate, $replaceMode, $existing);
+        if ($existing && !$doReplace) {
             $id = $existing->id;
             return IntegrationResult::okEntity(
                 $id,
@@ -613,6 +693,12 @@ final class IntegrationService
             $payload['effect'] = is_string($effectStr) ? $effectStr : (is_array($data['effect'] ?? null) ? json_encode($data['effect'], JSON_UNESCAPED_UNICODE) : null);
             $bonusRaw = $data['bonus'] ?? null;
             $payload['bonus'] = is_string($bonusRaw) ? $bonusRaw : (is_array($bonusRaw) ? json_encode($bonusRaw, JSON_UNESCAPED_UNICODE) : null);
+        }
+        if ($propertyWhitelist !== []) {
+            $payload = $this->filterByWhitelist($payload, $propertyWhitelist);
+        }
+        if ($excludeFromUpdate !== []) {
+            $payload = $this->filterExcludedFromUpdate($payload, $excludeFromUpdate);
         }
 
         try {
@@ -742,12 +828,15 @@ final class IntegrationService
     }
 
     /**
-     * @param array{dry_run?: bool, force_update?: bool} $options
+     * @param array{dry_run?: bool, force_update?: bool, replace_mode?: string, exclude_from_update?: list<string>, property_whitelist?: list<string>} $options
      */
     private function integratePanoply(array $convertedData, array $options = []): IntegrationResult
     {
         $dryRun = (bool) ($options['dry_run'] ?? false);
         $forceUpdate = (bool) ($options['force_update'] ?? false);
+        $replaceMode = isset($options['replace_mode']) ? (string) $options['replace_mode'] : null;
+        $excludeFromUpdate = is_array($options['exclude_from_update'] ?? null) ? $options['exclude_from_update'] : [];
+        $propertyWhitelist = is_array($options['property_whitelist'] ?? null) ? $options['property_whitelist'] : [];
 
         $data = $convertedData['panoplies'] ?? [];
         if ($data === []) {
@@ -763,7 +852,8 @@ final class IntegrationService
             $existingPanoply = Panoply::where('name', $data['name'])->first();
         }
 
-        if ($existingPanoply && !$forceUpdate) {
+        $doReplace = $this->shouldReplaceExisting($forceUpdate, $replaceMode, $existingPanoply);
+        if ($existingPanoply && !$doReplace) {
             return IntegrationResult::okEntity(
                 $existingPanoply->id,
                 $dryRun ? 'would_skip' : 'skipped',
@@ -799,6 +889,12 @@ final class IntegrationService
             'write_level' => 3,
             'created_by' => $userId,
         ];
+        if ($propertyWhitelist !== []) {
+            $payload = $this->filterByWhitelist($payload, $propertyWhitelist);
+        }
+        if ($excludeFromUpdate !== []) {
+            $payload = $this->filterExcludedFromUpdate($payload, $excludeFromUpdate);
+        }
 
         try {
             DB::beginTransaction();

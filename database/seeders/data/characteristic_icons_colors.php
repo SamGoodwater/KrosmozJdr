@@ -6,7 +6,7 @@ declare(strict_types=1);
  * Mapping clé caractéristique → icône (fichier dans storage/app/public/images/icons/characteristics/)
  * et → couleur (hex). Utilisé par CharacteristicSeeder pour compléter icon/color quand NULL.
  *
- * Icônes disponibles (copiées depuis Icones/caracteristiques/old/) : life_temp, shield, casting_time,
+ * Icônes disponibles (copiées depuis icons/caracteristiques/old/) : life_temp, shield, casting_time,
  * dice12, duration, time_before_use_again, none.
  */
 return [

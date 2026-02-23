@@ -24,7 +24,8 @@ final class OrchestratorResult
         private array $validationErrors = [],
         private ?IntegrationResult $integrationResult = null,
         private ?array $integrationResults = null,
-        private ?array $meta = null
+        private ?array $meta = null,
+        private ?array $relations = null
     ) {
     }
 
@@ -73,9 +74,15 @@ final class OrchestratorResult
         return $this->meta;
     }
 
+    /** @return list<array{type: string, id: int}>|null */
+    public function getRelations(): ?array
+    {
+        return $this->relations;
+    }
+
     public static function fail(string $message, array $validationErrors = []): self
     {
-        return new self(false, $message, null, null, $validationErrors, null, null, null);
+        return new self(false, $message, null, null, $validationErrors, null, null, null, null);
     }
 
     /**
@@ -87,7 +94,7 @@ final class OrchestratorResult
         ?array $raw = null,
         ?array $converted = null
     ): self {
-        return new self(false, $message, $raw, $converted, $validationErrors, null, null, null);
+        return new self(false, $message, $raw, $converted, $validationErrors, null, null, null, null);
     }
 
     public static function ok(
@@ -96,8 +103,9 @@ final class OrchestratorResult
         ?array $converted = null,
         ?IntegrationResult $integrationResult = null,
         ?array $integrationResults = null,
-        ?array $meta = null
+        ?array $meta = null,
+        ?array $relations = null
     ): self {
-        return new self(true, $message, $raw, $converted, [], $integrationResult, $integrationResults, $meta);
+        return new self(true, $message, $raw, $converted, [], $integrationResult, $integrationResults, $meta, $relations);
     }
 }

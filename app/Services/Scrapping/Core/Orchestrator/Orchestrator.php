@@ -86,12 +86,23 @@ final class Orchestrator
     {
         $exclude = $options['exclude_from_update'] ?? [];
         $excludeList = is_array($exclude) ? $exclude : [];
+        $propertyWhitelist = $options['property_whitelist'] ?? [];
+        $propertyWhitelist = is_array($propertyWhitelist) ? $propertyWhitelist : [];
+        $replaceMode = isset($options['replace_mode']) ? (string) $options['replace_mode'] : null;
+        $forceUpdate = (bool) ($options['force_update'] ?? false);
+        if ($replaceMode === 'always') {
+            $forceUpdate = true;
+        } elseif ($replaceMode === 'never') {
+            $forceUpdate = false;
+        }
 
         return [
             'dry_run' => (bool) ($options['dry_run'] ?? false),
-            'force_update' => (bool) ($options['force_update'] ?? false),
+            'force_update' => $forceUpdate,
+            'replace_mode' => $replaceMode,
             'ignore_unvalidated' => (bool) ($options['ignore_unvalidated'] ?? false),
             'exclude_from_update' => $excludeList,
+            'property_whitelist' => $propertyWhitelist,
             'include_relations' => (bool) ($options['include_relations'] ?? true),
             'download_images' => (bool) ($options['download_images'] ?? true),
         ];
@@ -155,6 +166,7 @@ final class Orchestrator
             }
 
             $integrationResult = null;
+            $relations = null;
             if (!empty($options['integrate'])) {
                 $integrationResult = $this->integrationService->integrate(
                     $entityType,
@@ -165,7 +177,7 @@ final class Orchestrator
                     return OrchestratorResult::fail($integrationResult->getMessage());
                 }
                 if ($this->relationResolutionService !== null && ($options['include_relations'] ?? true)) {
-                    $this->resolveRelationsAndDrain($source, $entity, $entityType, $raw, $converted, $integrationResult, $options);
+                    $relations = $this->resolveRelationsAndDrain($source, $entity, $entityType, $raw, $converted, $integrationResult, $options);
                 }
             }
 
@@ -175,7 +187,8 @@ final class Orchestrator
                 $converted,
                 $integrationResult,
                 null,
-                null
+                null,
+                $relations
             );
         } catch (\Throwable $e) {
             return OrchestratorResult::fail($e->getMessage());
@@ -236,6 +249,7 @@ final class Orchestrator
             }
 
             $integrationResult = null;
+            $relations = null;
             if (!empty($options['integrate'])) {
                 $integrationResult = $this->integrationService->integrate(
                     $entityType,
@@ -246,7 +260,7 @@ final class Orchestrator
                     return OrchestratorResult::fail($integrationResult->getMessage());
                 }
                 if ($this->relationResolutionService !== null && ($options['include_relations'] ?? true)) {
-                    $this->resolveRelationsAndDrain($source, $entity, $entityType, $raw, $converted, $integrationResult, $options);
+                    $relations = $this->resolveRelationsAndDrain($source, $entity, $entityType, $raw, $converted, $integrationResult, $options);
                 }
             }
 
@@ -256,7 +270,8 @@ final class Orchestrator
                 $converted,
                 $integrationResult,
                 null,
-                null
+                null,
+                $relations
             );
         } catch (\Throwable $e) {
             return OrchestratorResult::fail($e->getMessage());
@@ -410,11 +425,51 @@ final class Orchestrator
     }
 
     /**
+     * Normalise les données brutes monster pour la résolution des relations : l’API DofusDB renvoie
+     * spells comme tableau d’IDs [10198, 10199] et drops avec objectId/count au lieu de itemId/quantity.
+     *
+     * @param array<string, mixed> $raw
+     * @return array<string, mixed>
+     */
+    private function normalizeMonsterRawForRelations(array $raw): array
+    {
+        $out = $raw;
+        if (isset($raw['spells']) && is_array($raw['spells'])) {
+            $spells = [];
+            foreach ($raw['spells'] as $s) {
+                $id = is_array($s) ? (int) ($s['id'] ?? 0) : (int) $s;
+                if ($id > 0) {
+                    $spells[] = ['id' => $id];
+                }
+            }
+            $out['spells'] = $spells;
+        }
+        if (isset($raw['drops']) && is_array($raw['drops'])) {
+            $drops = [];
+            foreach ($raw['drops'] as $d) {
+                if (!is_array($d)) {
+                    continue;
+                }
+                $itemId = (int) ($d['itemId'] ?? $d['objectId'] ?? $d['id'] ?? 0);
+                if ($itemId <= 0) {
+                    continue;
+                }
+                $qty = (int) ($d['quantity'] ?? $d['count'] ?? 1);
+                $drops[] = ['itemId' => $itemId, 'id' => $itemId, 'quantity' => max(1, $qty)];
+            }
+            $out['drops'] = $drops;
+        }
+        return $out;
+    }
+
+    /**
      * Selon le type d'entité intégrée, enregistre les dépendances sur la pile (sorts, monstres,
      * items, recettes) puis vide la pile. Une seule pile est utilisée par run pour toutes les relations.
+     * Retourne la liste des relations (type + id DofusDB) pour affichage dans le tableau (monster → spells, drops).
      *
      * @param array<string, mixed> $raw Données brutes (pour monster: spells/drops ; pour spell: summon)
      * @param array<string, array<string, mixed>> $converted Données converties
+     * @return list<array{type: string, id: int}>
      */
     private function resolveRelationsAndDrain(
         string $source,
@@ -424,7 +479,7 @@ final class Orchestrator
         array $converted,
         \App\Services\Scrapping\Core\Integration\IntegrationResult $integrationResult,
         array $options
-    ): void {
+    ): array {
         $stack = $options['relation_import_stack'] ?? null;
         if ($stack === null) {
             $stack = new RelationImportStack();
@@ -435,6 +490,8 @@ final class Orchestrator
             'force_update' => (bool) ($options['force_update'] ?? false),
             'validate' => ($options['validate'] ?? true) !== false,
         ];
+
+        $relations = [];
 
         if ($entityType === 'resource' || $entityType === 'resources') {
             $primaryId = $integrationResult->getPrimaryId();
@@ -474,16 +531,31 @@ final class Orchestrator
         } elseif ($entityType === 'monster') {
             $creatureId = $integrationResult->getCreatureId();
             if ($creatureId !== null) {
+                $normalizedRaw = $this->normalizeMonsterRawForRelations($raw);
                 $this->relationResolutionService->resolveAndSyncMonsterRelations(
-                    $raw,
+                    $normalizedRaw,
                     (int) $creatureId,
                     $relOptions,
                     $stack
                 );
+                foreach ($normalizedRaw['spells'] ?? [] as $s) {
+                    $id = (int) ($s['id'] ?? 0);
+                    if ($id > 0) {
+                        $relations[] = ['type' => 'spell', 'id' => $id];
+                    }
+                }
+                foreach ($normalizedRaw['drops'] ?? [] as $d) {
+                    $id = (int) ($d['itemId'] ?? $d['id'] ?? 0);
+                    if ($id > 0) {
+                        $relations[] = ['type' => 'item', 'id' => $id];
+                    }
+                }
             }
         }
 
         $this->drainRelationImportStack($stack, $options);
+
+        return $relations;
     }
 
     /**

@@ -12,21 +12,24 @@
  */
 const STORAGE_KEY = "krosmoz_scrapping_prefs";
 
-const DEFAULTS = {
+export const DEFAULTS = {
     selectedEntityType: "monster",
+    optIncludeRelations: true,
+    optReplaceMode: "draft_raw_only",
     optSkipCache: false,
-    optWithImages: true,
     optForceUpdate: false,
     optManualChoice: false,
-    optIncludeRelations: true,
     perPage: 100,
     filterIds: "",
     filterName: "",
+    optPropertyWhitelist: "",
+    optPropertyBlacklist: "",
 };
 
 /**
  * Lit les préférences depuis localStorage.
- * @returns {Object} Objet partiel (seules les clés valides sont retournées).
+ * Applique les migrations à la lecture : optIncludeRelations false → true, optReplaceMode never → draft_raw_only.
+ * @returns {Object} Objet partiel (seules les clés valides sont retournées, valeurs déjà migrées).
  */
 export function loadScrappingPreferences() {
     if (typeof window === "undefined" || !window.localStorage) return {};
@@ -41,14 +44,18 @@ export function loadScrappingPreferences() {
             const str = typeof v === "string" ? v : (v && typeof v === "object" && typeof v.value === "string" ? v.value : null);
             if (str != null) out.selectedEntityType = str;
         }
+        if (typeof parsed.optIncludeRelations === "boolean") out.optIncludeRelations = true;
+        if (typeof parsed.optReplaceMode === "string" && ["never", "draft_raw_only", "always"].includes(parsed.optReplaceMode)) {
+            out.optReplaceMode = parsed.optReplaceMode === "never" ? "draft_raw_only" : parsed.optReplaceMode;
+        }
         if (typeof parsed.optSkipCache === "boolean") out.optSkipCache = parsed.optSkipCache;
-        if (typeof parsed.optWithImages === "boolean") out.optWithImages = parsed.optWithImages;
         if (typeof parsed.optForceUpdate === "boolean") out.optForceUpdate = parsed.optForceUpdate;
         if (typeof parsed.optManualChoice === "boolean") out.optManualChoice = parsed.optManualChoice;
-        if (typeof parsed.optIncludeRelations === "boolean") out.optIncludeRelations = parsed.optIncludeRelations;
         if (Number.isFinite(Number(parsed.perPage))) out.perPage = Math.max(1, Math.min(200, Number(parsed.perPage)));
         if (typeof parsed.filterIds === "string") out.filterIds = parsed.filterIds;
         if (typeof parsed.filterName === "string") out.filterName = parsed.filterName;
+        if (typeof parsed.optPropertyWhitelist === "string") out.optPropertyWhitelist = parsed.optPropertyWhitelist;
+        if (typeof parsed.optPropertyBlacklist === "string") out.optPropertyBlacklist = parsed.optPropertyBlacklist;
         return out;
     } catch (_) {
         return {};
@@ -79,39 +86,25 @@ export function saveScrappingPreferences(prefs) {
 export function useScrappingPreferences(refs = null) {
     const persist = (overrides = {}) => {
         if (!refs) return;
-        const raw = refs.selectedEntityType?.value;
-        const selectedEntityTypeStr =
-            typeof raw === "string" ? raw : raw && typeof raw === "object" && typeof raw.value === "string" ? raw.value : undefined;
-        const prefs = {
-            selectedEntityType: selectedEntityTypeStr,
-            optSkipCache: refs.optSkipCache?.value,
-            optWithImages: refs.optWithImages?.value,
-            optForceUpdate: refs.optForceUpdate?.value,
-            optManualChoice: refs.optManualChoice?.value,
-            optIncludeRelations: refs.optIncludeRelations?.value,
-            perPage: refs.perPage?.value,
-            filterIds: refs.filterIds?.value,
-            filterName: refs.filterName?.value,
-        };
+        const prefs = {};
+        for (const key of Object.keys(DEFAULTS)) {
+            if (refs[key] == null) continue;
+            const v = refs[key].value;
+            prefs[key] = key === "selectedEntityType" ? (typeof v === "string" ? v : undefined) : v;
+        }
         Object.assign(prefs, overrides);
         saveScrappingPreferences(prefs);
     };
 
+    /** Applique les préférences chargées (déjà migrées) aux refs. Défauts utilisés si clé absente. */
     const hydrate = () => {
+        if (!refs) return;
         const loaded = loadScrappingPreferences();
-        if (!refs || !Object.keys(loaded).length) return;
-        if (loaded.selectedEntityType != null) {
-            const v = loaded.selectedEntityType;
-            refs.selectedEntityType.value = typeof v === "string" ? v : (v && typeof v === "object" && typeof v.value === "string" ? v.value : refs.selectedEntityType?.value ?? "");
+        for (const key of Object.keys(DEFAULTS)) {
+            if (refs[key] != null) {
+                refs[key].value = loaded[key] ?? DEFAULTS[key];
+            }
         }
-        if (loaded.optSkipCache != null) refs.optSkipCache.value = loaded.optSkipCache;
-        if (loaded.optWithImages != null) refs.optWithImages.value = loaded.optWithImages;
-        if (loaded.optForceUpdate != null) refs.optForceUpdate.value = loaded.optForceUpdate;
-        if (loaded.optManualChoice != null) refs.optManualChoice.value = loaded.optManualChoice;
-        if (loaded.optIncludeRelations != null) refs.optIncludeRelations.value = loaded.optIncludeRelations;
-        if (loaded.perPage != null) refs.perPage.value = loaded.perPage;
-        if (loaded.filterIds != null) refs.filterIds.value = loaded.filterIds;
-        if (loaded.filterName != null) refs.filterName.value = loaded.filterName;
     };
 
     return {

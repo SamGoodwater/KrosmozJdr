@@ -409,11 +409,32 @@
     "file": "scrapping/ScrappingSearchTableSection.vue"
   },
   {
+    "name": "ScrappingResultsTable",
+    "description": "ScrappingResultsTable — Tableau résultats (lignes entité + relation + détail dépliable). Reçoit rows et getters (statut, triple*, comparisonRows) ; émet toggle-expand, open-compare, open-entity, update:selectedIds. Affiche le type d'entité via EntityLabel (icône + label).",
+    "props": [],
+    "slots": [],
+    "file": "scrapping/ScrappingResultsTable.vue"
+  },
+  {
+    "name": "ScrappingOptionsPanel",
+    "description": "ScrappingOptionsPanel — Options d'import, historique, erreurs batch. Bloc repliable ; n'exécute pas de logique batch, uniquement affichage et emit.",
+    "props": [],
+    "slots": [],
+    "file": "scrapping/ScrappingOptionsPanel.vue"
+  },
+  {
     "name": "ScrappingModal",
     "description": "ScrappingModal (Organism)",
     "props": [],
     "slots": [],
     "file": "scrapping/ScrappingModal.vue"
+  },
+  {
+    "name": "ScrappingFilters",
+    "description": "ScrappingFilters — Bloc filtres de recherche (IDs, nom, types, races, niveau, pagination). Affiche les champs selon le type d'entité et la config ; émet @search au clic Rechercher.",
+    "props": [],
+    "slots": [],
+    "file": "scrapping/ScrappingFilters.vue"
   },
   {
     "name": "ScrappingDashboard",
@@ -424,7 +445,7 @@
   },
   {
     "name": "CompareModal",
-    "description": "CompareModal — Comparaison Krosmoz vs DofusDB avec choix par propriété.",
+    "description": "CompareModal — Comparaison Brut / Converti / Krosmoz avec choix par propriété.",
     "props": [
       {
         "name": "entityType",

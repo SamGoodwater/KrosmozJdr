@@ -366,9 +366,10 @@ select.select {
 
 // Styles pour les options dans la liste déroulante
 select {
-    // Laisser le navigateur choisir la meilleure variante (selon le thème + OS).
-    // Forcer `dark` ici a déjà causé des menus illisibles (blanc sur blanc) sur certains environnements.
-    color-scheme: light dark;
+    // Forcer le mode sombre pour le menu natif : sous Windows/Chrome le dropdown est souvent
+    // rendu blanc par l'OS, ce qui rend le texte (hérité du thème sombre) illisible.
+    // color-scheme: dark force un rendu fond sombre / texte clair pour la liste.
+    color-scheme: dark;
     
     option {
         padding: 0.75rem 1rem;

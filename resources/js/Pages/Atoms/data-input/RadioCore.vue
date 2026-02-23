@@ -234,28 +234,28 @@ input[type="radio"] {
 
 // Styles pour les tailles DaisyUI (conservés car spécifiques au radio)
 .radio-xs, .radio.imput-xs{
-    width: 0.70rem;
-    height: 0.70rem;
+    width: 0.625rem;
+    height: 0.625rem;
 }
 
 .radio-sm, .radio.input-sm {
-    width: 0.85rem;
-    height: 0.85rem;
+    width: 0.75rem;
+    height: 0.75rem;
 }
 
 .radio-md, .radio.input-md {
+    width: 1rem;
+    height: 1rem;
+}
+
+.radio-lg, .radio.input-lg {
     width: 1.25rem;
     height: 1.25rem;
 }
 
-.radio-lg, .radio.input-lg {
+.radio-xl, .radio.input-xl {
     width: 1.5rem;
     height: 1.5rem;
-}
-
-.radio-xl, .radio.input-xl {
-    width: 2rem;
-    height: 2rem;
 }
 
 // Application des classes color-* pour définir --color

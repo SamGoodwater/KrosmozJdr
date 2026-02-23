@@ -435,6 +435,11 @@
     "description": "- **useNotificationStore (Composable)** : Centralise la gestion des notifications toast"
   },
   {
+    "path": "30-UI/PLAN_ENTITY_LABEL_COMPONENT.md",
+    "title": "Plan : Composant Entity Label (icône + label entité)",
+    "description": "**Contexte** : Ajout d’un composant d’UI pour afficher le type d’entité (icône fine + couleur de thème), avec plusieurs variantes d’affichage et un fond en trapèze aux bords diffus. Les entités et couleurs sont définies dans `resources/scss/themes/_theme-entities.scss` ; les icônes sont dans `storage/app/public/images/icons/entities/`."
+  },
+  {
     "path": "30-UI/README.md",
     "title": "UI & Atomic Design — KrosmozJDR",
     "description": "- **[ENTITY_FIELD_DESCRIPTORS_GUIDE.md](./ENTITY_FIELD_DESCRIPTORS_GUIDE.md)** — Guide complet du système Entity Field Descriptors (fonctionnement, architecture, utilisation)"
@@ -1315,6 +1320,11 @@
     "description": "**Contexte :** Idées issues des échanges sur l’affichage scrapping et l’enregistrement. Ce plan vise à **optimiser l’existant** sans refonte complète."
   },
   {
+    "path": "50-Fonctionnalités/Scrapping/PLAN_REFONTE_UI_SCRAPPING.md",
+    "title": "Plan de refonte totale — UI Scrapping",
+    "description": "**Objectifs :** Simplicité et robustesse, en conservant **toutes** les fonctionnalités décrites dans [SPEC_UI_SCRAPPING.md](./SPEC_UI_SCRAPPING.md)."
+  },
+  {
     "path": "50-Fonctionnalités/Scrapping/PROPRIETES_UTILES_KROSMOZ.md",
     "title": "Propriétés DofusDB utiles pour KrosmozJDR",
     "description": "Lors de l’affichage des propriétés (Brut / Converti / Krosmoz), seules les propriétés listées ci‑dessous sont affichées. Le reste (moteur de jeu Dofus, champs API, doublons) est masqué."
@@ -1330,6 +1340,11 @@
     "description": "Faut-il un fichier JSON (ou équivalent) répertoriant toutes les propriétés des entités scrappables, avec pour chaque propriété le chemin côté API DofusDB ?"
   },
   {
+    "path": "50-Fonctionnalités/Scrapping/REFONTE_SCRAPPING_ANALYSE_ET_PLAN.md",
+    "title": "Analyse et plan de refonte — Module Scrapping",
+    "description": "**Contexte :** Le système de scrapping a évolué par ajouts successifs. Ce document fait le point sur la **qualité du code**, la **logique** et l’**optimisation**, puis propose une **refonte progressive** pour simplifier et rendre le tout plus robuste."
+  },
+  {
     "path": "50-Fonctionnalités/Scrapping/RESTE_A_FAIRE_SCRAPPING.md",
     "title": "Résumé — Ce qu’il reste à faire pour finir le scrapping (backend)",
     "description": "Ce document liste ce qui reste à faire pour **finaliser la partie backend** du scrapping (hors interface, à traiter plus tard)."
@@ -1338,6 +1353,16 @@
     "path": "50-Fonctionnalités/Scrapping/SIMPLIFICATION_UI_MAPPING_DEPUIS_CARACTERISTIQUE.md",
     "title": "Simplification de l’UI mapping : lier depuis la caractéristique",
     "description": "Ce document décrit une **évolution de l’interface** pour faire le lien entre une caractéristique KrosmozJDR et les règles de mapping DofusDB **directement depuis la fiche caractéristique**, sans obliger à passer par l’écran « Mappings » pour associer une règle à une caractéristique."
+  },
+  {
+    "path": "50-Fonctionnalités/Scrapping/SPEC_UI_SCRAPPING.md",
+    "title": "Spécification fonctionnelle — UI Scrapping",
+    "description": "**Objectif :** Définir de façon exhaustive ce que doit faire l’interface de scrapping (fonctionnalités, composants, flux). Cette spec sert de référence pour la refonte du code frontend : le comportement décrit ici doit être conservé ; seuls l’organisation du code et les composants internes changent."
+  },
+  {
+    "path": "50-Fonctionnalités/Scrapping/VERIFICATION_SPEC_UI_SCRAPPING.md",
+    "title": "Vérification des fonctionnalités — UI Scrapping",
+    "description": "**Référence :** [SPEC_UI_SCRAPPING.md](./SPEC_UI_SCRAPPING.md) (liste exhaustive F1–F28)."
   },
   {
     "path": "50-Fonctionnalités/Spell-Effects/TAXONOMIE_EFFETS_SORTS.md",

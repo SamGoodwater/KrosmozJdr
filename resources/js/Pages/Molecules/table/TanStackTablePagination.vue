@@ -8,7 +8,7 @@
 
 import { computed } from "vue";
 import Btn from "@/Pages/Atoms/action/Btn.vue";
-import SelectCore from "@/Pages/Atoms/data-input/SelectCore.vue";
+import Dropdown from "@/Pages/Atoms/action/Dropdown.vue";
 import Icon from "@/Pages/Atoms/data-display/Icon.vue";
 import { useDevice } from "@/Composables/layout/useDevice";
 
@@ -81,18 +81,44 @@ const pageNumbers = computed(() => {
         <div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-end sm:gap-3">
             <label class="flex items-center gap-2 text-sm text-base-content/70">
                 <span class="hidden sm:inline">Lignes</span>
-                <SelectCore
-                    :model-value="pageSize"
-                    variant="glass"
-                    :color="uiColor"
-                    :size="uiSize"
-                    title="Lignes par page"
-                    @update:model-value="(v) => emit('set-page-size', v)"
+                <!-- Menu personnalisé (au lieu du select natif) pour un rendu lisible en thème sombre sur tous les navigateurs -->
+                <Dropdown
+                    placement="bottom-start"
+                    :close-on-content-click="true"
                 >
-                    <option v-for="opt in perPageOptions" :key="String(opt)" :value="opt">
-                        {{ opt }}
-                    </option>
-                </SelectCore>
+                    <template #trigger>
+                        <button
+                            type="button"
+                            class="flex items-center justify-between gap-2 rounded-lg border border-base-300 bg-base-200/90 px-3 py-2 text-left text-base-content backdrop-blur-sm min-w-[4.5rem] hover:bg-base-300/90 focus:outline focus:ring-2 focus:ring-primary/50"
+                            :class="uiSize === 'xs' ? 'text-xs py-1.5' : uiSize === 'lg' ? 'text-base py-2.5' : 'text-sm'"
+                            title="Lignes par page"
+                            aria-haspopup="listbox"
+                            :aria-label="`Lignes par page : ${pageSize} actuellement`"
+                        >
+                            <span>{{ pageSize }}</span>
+                            <Icon source="fa-solid fa-chevron-down" alt="" size="xs" class="opacity-70" />
+                        </button>
+                    </template>
+                    <template #content>
+                        <div
+                            class="bg-base-100 text-base-content rounded-lg border border-base-300 shadow-lg py-1 min-w-[4.5rem]"
+                            role="listbox"
+                        >
+                            <button
+                                v-for="opt in perPageOptions"
+                                :key="String(opt)"
+                                type="button"
+                                role="option"
+                                :aria-selected="opt === pageSize"
+                                class="w-full px-3 py-2 text-left text-sm transition-colors rounded-none first:rounded-t-lg last:rounded-b-lg"
+                                :class="opt === pageSize ? 'bg-primary/20 text-primary-content' : 'hover:bg-base-200'"
+                                @click="emit('set-page-size', opt)"
+                            >
+                                {{ opt }}
+                            </button>
+                        </div>
+                    </template>
+                </Dropdown>
             </label>
 
             <div class="flex items-center gap-1 justify-end">

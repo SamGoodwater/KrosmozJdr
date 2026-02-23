@@ -1955,6 +1955,39 @@
     "file": "data-display/EntityUsableDot.vue"
   },
   {
+    "name": "EntityLabel",
+    "description": "EntityLabel — Indicateur de type d'entité (icône sur fond polygon + label optionnel)",
+    "props": [
+      {
+        "name": "entity",
+        "type": "string",
+        "desc": "- Clé d'entité (obligatoire)"
+      },
+      {
+        "name": "variant",
+        "type": "string",
+        "desc": "- 'icon-only' | 'icon-stack' | 'icon-inline', défaut 'icon-only'"
+      },
+      {
+        "name": "size",
+        "type": "string",
+        "desc": "- 'xs' | 'sm' | 'md' | 'lg' | 'xl', défaut 'md'"
+      },
+      {
+        "name": "label",
+        "type": "string",
+        "desc": "- Override du label affiché (optionnel)"
+      }
+    ],
+    "slots": [
+      {
+        "name": "default",
+        "desc": "- Remplace le label en variantes stack/inline Tooltip au survol : affiche le nom de l'entité."
+      }
+    ],
+    "file": "data-display/EntityLabel.vue"
+  },
+  {
     "name": "Document",
     "description": "Document Atom (DaisyUI, Atomic Design)",
     "props": [],

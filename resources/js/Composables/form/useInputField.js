@@ -27,6 +27,9 @@ import { processLabelConfig } from '@/Utils/atomic-design/labelManager'
 import { getInputStyleProperties } from './useInputStyle'
 import { getCustomUtilityClasses, mergeClasses } from '@/Utils/atomic-design/uiHelper'
 
+/** Types d'input dont l'état n'est pas piloté par l'attribut value (file, checkbox, toggle). */
+const INPUT_TYPES_WITHOUT_VALUE = new Set(['file', 'checkbox', 'toggle'])
+
 export default function useInputField({
   modelValue,
   type = 'input',
@@ -67,15 +70,10 @@ export default function useInputField({
   const { inputAttrs, listeners } = useInputProps(props, attrs, emit, type, mode)
 
   // --- FUSION DES ATTRIBUTS AVEC LA VALEUR ---
-  // Note: Pour les inputs de type 'file', on ne peut pas définir la propriété 'value'
-  // (sauf pour la chaîne vide) pour des raisons de sécurité du navigateur
   const mergedInputAttrs = computed(() => {
     const attrs = { ...inputAttrs.value };
     const inputType = props.type || type;
-    // Ne pas ajouter 'value' pour les inputs de type 'file'
-    if (inputType !== 'file') {
-      attrs.value = currentValue.value;
-    }
+    if (!INPUT_TYPES_WITHOUT_VALUE.has(inputType)) attrs.value = currentValue.value;
     return attrs;
   })
 

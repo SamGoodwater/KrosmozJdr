@@ -20,7 +20,6 @@
 import { computed, ref, useAttrs } from 'vue';
 import Dropdown from '@/Pages/Atoms/action/Dropdown.vue';
 import InputCore from '@/Pages/Atoms/data-input/InputCore.vue';
-import RadioCore from '@/Pages/Atoms/data-input/RadioCore.vue';
 import FieldTemplate from '@/Pages/Molecules/data-input/FieldTemplate.vue';
 import useInputField from '@/Composables/form/useInputField';
 import { getInputPropsDefinition } from '@/Utils/atomic-design/inputHelper';
@@ -102,9 +101,12 @@ const filteredOptions = computed(() => {
     });
 });
 
-// Label de l'option sélectionnée
+// Valeur affichée : on s'appuie sur la prop pour rester synchronisé avec le parent (v-model)
+const displayedValue = computed(() => props.modelValue ?? currentValue.value);
+
+// Label de l'option sélectionnée (basé sur la prop pour mise à jour fiable)
 const selectedLabel = computed(() => {
-    const val = currentValue.value;
+    const val = displayedValue.value;
     if (val === null || val === undefined || val === '') {
         return props.placeholder || 'Choisir...';
     }
@@ -114,6 +116,13 @@ const selectedLabel = computed(() => {
     });
     return opt?.label ?? opt?.value ?? val ?? props.placeholder ?? 'Choisir...';
 });
+
+// Indique si une option est sélectionnée (pour le style de fond, sans radio)
+const isOptionSelected = (optionValue) => {
+    const val = displayedValue.value;
+    if (val === null || val === undefined) return optionValue == null;
+    return String(optionValue ?? '') === String(val);
+};
 
 // Gérer la sélection
 const handleSelect = (value) => {
@@ -169,7 +178,7 @@ defineExpose({
                         :disabled="props.disabled || isReadonly"
                         ref="inputRef"
                     >
-                        <span :class="{ 'opacity-50': !currentValue && currentValue !== 0 }">
+                        <span :class="{ 'opacity-50': (displayedValue == null || displayedValue === '') }">
                             {{ selectedLabel }}
                         </span>
                     </button>
@@ -189,43 +198,33 @@ defineExpose({
                             @click.stop
                         />
 
-                        <!-- Option "Tous" / Vide -->
-                        <label
+                        <!-- Option "Tous" / Vide (sans radio, sélection par fond) -->
+                        <button
                             v-if="!props.required"
-                            class="flex items-center gap-2 cursor-pointer hover:bg-base-200 rounded p-1"
+                            type="button"
+                            class="w-full flex items-center rounded p-2 text-left text-sm cursor-pointer transition-colors"
+                            :class="isOptionSelected(null) ? 'bg-primary/20 text-primary-content' : 'hover:bg-base-200'"
                             @click.stop="handleSelect(null)"
                         >
-                                <RadioCore
-                                    :name="`select-search-${inputAttrs.id || 'default'}`"
-                                    :value="null"
-                                    :model-value="currentValue"
-                                    :size="props.size"
-                                    color="primary"
-                                    @update:model-value="handleSelect(null)"
-                                />
-                                <span class="text-sm">{{ props.placeholder || 'Aucun' }}</span>
-                            </label>
+                            <span>{{ props.placeholder || 'Aucun' }}</span>
+                        </button>
 
-                            <!-- Liste des options filtrées -->
+                            <!-- Liste des options filtrées (sans radio, sélection par fond) -->
                             <div class="max-h-64 overflow-y-auto pr-1 space-y-1">
-                                <label
+                                <button
                                     v-for="option in filteredOptions"
                                     :key="String(option?.value ?? option)"
-                                    class="flex items-center gap-2 cursor-pointer hover:bg-base-200 rounded p-1"
-                                    :class="{ 'opacity-50': option?.disabled }"
+                                    type="button"
+                                    class="w-full flex items-center rounded p-2 text-left text-sm cursor-pointer transition-colors"
+                                    :class="[
+                                        option?.disabled ? 'opacity-50 cursor-not-allowed' : '',
+                                        isOptionSelected(option?.value ?? option) ? 'bg-primary/20 text-primary-content' : 'hover:bg-base-200'
+                                    ]"
+                                    :disabled="option?.disabled"
                                     @click.stop="!option?.disabled && handleSelect(option?.value ?? option)"
                                 >
-                                    <RadioCore
-                                        :name="`select-search-${inputAttrs.id || 'default'}`"
-                                        :value="option?.value ?? option"
-                                        :model-value="currentValue"
-                                        :size="props.size"
-                                        color="primary"
-                                        :disabled="option?.disabled"
-                                        @update:model-value="handleSelect(option?.value ?? option)"
-                                    />
-                                <span class="text-sm">{{ option?.label ?? option?.value ?? option }}</span>
-                            </label>
+                                    <span>{{ option?.label ?? option?.value ?? option }}</span>
+                                </button>
                             
                             <!-- Message si aucune option trouvée -->
                             <div v-if="filteredOptions.length === 0" class="text-sm text-base-content/60 text-center py-2">
