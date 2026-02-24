@@ -1859,9 +1859,9 @@
     "description": "BreedViewMinimal — Vue Minimal pour Breed",
     "props": [
       {
-        "name": "breed",
+        "name": "classe",
         "type": "Breed",
-        "desc": "- Instance du modèle Breed (affichée « Classe »)"
+        "desc": "- Instance du modèle Breed"
       },
       {
         "name": "showActions",
