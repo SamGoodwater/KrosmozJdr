@@ -103,8 +103,6 @@ export class Npc extends BaseModel {
                 return this._toCreatureNameCell(format, size, options);
             case 'breed':
             case 'breed_id':
-            case 'classe':
-            case 'classe_id':
                 return this._toBreedCell(format, size, options);
             case 'specialization':
             case 'specialization_id':
@@ -323,7 +321,7 @@ export class Npc extends BaseModel {
             historical: this.historical,
             age: this.age,
             size: this.size,
-            classe_id: this.classeId,
+            breed_id: this.breedId,
             specialization_id: this.specializationId
         };
     }

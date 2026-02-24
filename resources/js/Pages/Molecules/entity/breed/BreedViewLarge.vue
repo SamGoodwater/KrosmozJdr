@@ -6,7 +6,7 @@
  * Vue complète d'une classe avec toutes les informations affichées.
  * Utilisée dans les grandes modals ou directement dans le main.
  * 
- * @props {Breed} classe - Instance du modèle Breed
+ * @props {Breed} breed - Instance du modèle Breed (affichée « Classe »)
  * @props {Boolean} showActions - Afficher les actions (défaut: true)
  */
 import { computed } from 'vue';

@@ -42,6 +42,7 @@ KrosmozJDR
 - Page : `/scrapping`
 - Recherche (collect-only) : `GET /api/scrapping/search/{entity}`
 - Import : `POST /api/scrapping/import/*`
+- **Propriétés affichées en comparaison (Brut / Converti / Krosmoz)** : définies par le mapping ; voir `PROPRIETES_COMPARAISON_UI.md` et `MAPPING_ENTRIES_REFERENCE.md` (liste par entité + propriétés en réserve).
 
 ### Types (import/filtrage)
 Le scrapping enregistre automatiquement les nouveaux `typeId` DofusDB détectés (pending), afin de pouvoir :

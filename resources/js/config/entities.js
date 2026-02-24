@@ -33,7 +33,7 @@ const ENTITY_CONFIG = {
   user: { color: 'blue', label: 'Utilisateur' },
   attribute: { color: 'yellow', label: 'Attribut' },
   capitalize: { color: 'slate', label: 'Capital' },
-  breed: { color: 'cyan', label: 'Race' },
+  breed: { color: 'cyan', label: 'Classe' },
   consumable: { color: 'orange', label: 'Consommable' },
   scenario: { color: 'neutral', label: 'Scénario' },
   condition: { color: 'red', label: 'Condition' },

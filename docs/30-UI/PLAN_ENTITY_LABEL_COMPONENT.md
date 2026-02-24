@@ -20,7 +20,7 @@
 
 - **Fichier** : `resources/scss/themes/_theme-entities.scss`
 - **Map** : `$theme-entities` — clés = type d’entité, valeurs = nom de couleur DaisyUI (zinc, green, indigo, emerald, amber, etc.).
-- **Clés actuelles** : `section`, `page`, `npc`, `item`, `creature`, `shop`, `campaign`, `resource`, `mob`, `specialization`, `spell`, `user`, `attribute`, `capitalize`, `classe`, `consumable`, `scenario`, `condition`.
+- **Clés actuelles** : `section`, `page`, `npc`, `item`, `creature`, `shop`, `campaign`, `resource`, `monster`, `specialization`, `spell`, `user`, `attribute`, `capitalize`, `breed`, `consumable`, `scenario`, `condition`.
 - **Classes générées** (ex. `_color.scss`, `_box.scss`, `_border.scss`) :  
   `bg-color-{entityKey}-{intensity}`, `color-{entityKey}-{intensity}`, `border-glass-{entityKey}-*`, etc.  
   **Contrainte** : pas de construction dynamique de noms de classes ; utiliser un mapping explicite entité → classe complète dans le composant (comme `entityBgClasses` dans `resources/js/Pages/Admin/characteristics/Index.vue`).

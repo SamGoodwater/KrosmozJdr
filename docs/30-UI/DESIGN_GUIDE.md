@@ -39,7 +39,7 @@ Le système génère automatiquement des variantes colorées pour trois thèmes 
 
 - **Thème global** (`$theme-global`) : `primary`, `secondary`, `accent`, `neutral`, `info`, `success`, `warning`, `error`, `base`
 - **Thème caractéristiques** (`$theme-caracs`) : `pa`, `pm`, `fuite`, `tacle`, `cc`, `res_cc`, `ini`, `ca`, `kamas`, `touch`, `mastery`, `expertise`, `res-neutre`, `res-terre`, `res-air`, `res-feu`, `res-eau`, `cast-per-turn`, `cast-per-target`, `sight-line`, `number-between-two-cast`, `time_before_use_again`, `casting_time`, `dodge_pa`, `dodge_pm`, `po`, `po-editable`, `force`, `strong`, `terre`, `intel`, `feu`, `agi`, `air`, `chance`, `eau`, `vitality`, `sagesse`, `life`, `level`, `master_bonus`
-- **Thème entités** (`$theme-entities`) : `section`, `page`, `npc`, `item`, `creature`, `shop`, `campaign`, `resource`, `mob`, `specialization`, `spell`, `user`, `attribute`, `capitalize`, `classe`, `consumable`, `scenario`, `condition`
+- **Thème entités** (`$theme-entities`) : `section`, `page`, `npc`, `item`, `creature`, `shop`, `campaign`, `resource`, `monster`, `specialization`, `spell`, `user`, `attribute`, `capitalize`, `breed`, `consumable`, `scenario`, `condition`
 
 #### Tailles d'intensité disponibles
 

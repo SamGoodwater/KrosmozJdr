@@ -163,7 +163,7 @@ Route::prefix('scrapping')->group(function () {
     // Pipeline générique (Collect → Conversion → Validation → Intégration)
     Route::post('/import/{entity}/{id}', [App\Http\Controllers\Scrapping\ScrappingImportController::class, 'importOne'])
         ->name('scrapping.import.one')
-        ->where('entity', 'monster|breed|spell|item|class|classe|ressource|consumable')
+        ->where('entity', 'monster|breed|spell|item|class|ressource|consumable')
         ->whereNumber('id');
 });
 

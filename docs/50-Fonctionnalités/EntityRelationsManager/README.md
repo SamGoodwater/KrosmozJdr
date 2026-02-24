@@ -29,8 +29,8 @@
     :config="{
         displayFields: ['name', 'description'],
         searchFields: ['name'],
-        itemLabel: 'classe',
-        itemLabelPlural: 'classes'
+        itemLabel: 'breed',
+        itemLabelPlural: 'breeds'
     }"
 />
 ```
@@ -160,8 +160,8 @@ Pour les relations avec pivots multiples :
     :config="{
         displayFields: ['name', 'description'],
         searchFields: ['name'],
-        itemLabel: 'classe',
-        itemLabelPlural: 'classes'
+        itemLabel: 'breed',
+        itemLabelPlural: 'breeds'
     }"
 />
 ```

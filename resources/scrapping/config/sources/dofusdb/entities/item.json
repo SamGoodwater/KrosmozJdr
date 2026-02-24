@@ -4,19 +4,11 @@
   "entity": "item",
   "label": "Objets (ressources / consommables / équipements)",
   "meta": {
-    "description": "Items DofusDB. Un même mapping alimente resources, consumables et items selon le typeId. Champs communs : dofusdb_id, name, description, level, price, image, typeId, rarity. resources : + weight (realWeight). effect : effects[] converti en bonus Krosmoz (intel, strong, etc.) ; bonus : effects[] brut JSON. Filtrage par alias : --collect=ressource, --collect=consumable, --collect=item."
+    "description": "Items DofusDB. Un même mapping alimente resources, consumables et items selon le typeId. Champs communs : dofusdb_id, name, description, level, price, image, typeId, rarity. resources : + weight (realWeight). effect : effects[] converti en bonus Krosmoz ; bonus : effects[] brut JSON. _mappingUnusedDocumentation liste les champs DofusDB non mappés."
   },
   "endpoints": {
-    "fetchOne": {
-      "pathTemplate": "/items/{id}",
-      "method": "GET",
-      "queryDefaults": { "lang": "fr" }
-    },
-    "fetchMany": {
-      "path": "/items",
-      "method": "GET",
-      "queryDefaults": { "lang": "fr", "$limit": 50, "$skip": 0 }
-    }
+    "fetchOne": { "pathTemplate": "/items/{id}", "method": "GET", "queryDefaults": { "lang": "fr" } },
+    "fetchMany": { "path": "/items", "method": "GET", "queryDefaults": { "lang": "fr", "$limit": 50, "$skip": 0 } }
   },
   "filters": {
     "supported": [
@@ -37,117 +29,25 @@
     "autoUpdateField": "auto_update"
   },
   "mapping": [
-    {
-      "key": "dofusdb_id",
-      "from": { "path": "id" },
-      "to": [
-        { "model": "resources", "field": "dofusdb_id" },
-        { "model": "consumables", "field": "dofusdb_id" },
-        { "model": "items", "field": "dofusdb_id" }
-      ],
-      "formatters": [{ "name": "toString", "args": {} }]
-    },
-    {
-      "key": "name",
-      "from": { "path": "name", "langAware": true },
-      "to": [
-        { "model": "resources", "field": "name" },
-        { "model": "consumables", "field": "name" },
-        { "model": "items", "field": "name" }
-      ],
-      "formatters": [{ "name": "pickLang", "args": { "lang": "fr", "fallback": "fr" } }]
-    },
-    {
-      "key": "description",
-      "from": { "path": "description", "langAware": true },
-      "to": [
-        { "model": "resources", "field": "description" },
-        { "model": "consumables", "field": "description" },
-        { "model": "items", "field": "description" }
-      ],
-      "formatters": [{ "name": "pickLang", "args": { "lang": "fr", "fallback": "fr" } }]
-    },
-    {
-      "key": "level",
-      "from": { "path": "level" },
-      "to": [
-        { "model": "resources", "field": "level" },
-        { "model": "consumables", "field": "level" },
-        { "model": "items", "field": "level" }
-      ],
-      "formatters": [
-        { "name": "dofusdb_level", "args": {} },
-        { "name": "toString", "args": {} }
-      ]
-    },
-    {
-      "key": "price",
-      "from": { "path": "price" },
-      "to": [
-        { "model": "resources", "field": "price" },
-        { "model": "consumables", "field": "price" },
-        { "model": "items", "field": "price" }
-      ],
-      "formatters": [{ "name": "nullableInt", "args": {} }]
-    },
-    {
-      "key": "image",
-      "from": { "path": "img" },
-      "to": [
-        { "model": "resources", "field": "image" },
-        { "model": "consumables", "field": "image" },
-        { "model": "items", "field": "image" }
-      ],
-      "formatters": [{ "name": "storeScrappedImage", "args": { "entityFolder": "items", "idPath": "id" } }]
-    },
-    {
-      "key": "typeId",
-      "from": { "path": "typeId" },
-      "to": [
-        { "model": "items", "field": "type_id" },
-        { "model": "resources", "field": "type_id" }
-      ],
-      "formatters": [{ "name": "toInt", "args": {} }]
-    },
-    {
-      "key": "resource_type_id",
-      "from": { "path": "typeId" },
-      "to": [{ "model": "resources", "field": "resource_type_id" }],
-      "formatters": [{ "name": "resolveResourceTypeId", "args": {} }]
-    },
-    {
-      "key": "weight",
-      "from": { "path": "realWeight" },
-      "to": [{ "model": "resources", "field": "weight" }],
-      "formatters": [{ "name": "nullableInt", "args": {} }]
-    },
-    {
-      "key": "rarity",
-      "from": { "path": "rarity" },
-      "to": [
-        { "model": "resources", "field": "rarity" },
-        { "model": "consumables", "field": "rarity" },
-        { "model": "items", "field": "rarity" }
-      ],
-      "formatters": [{ "name": "defaultRarityByLevel", "args": {} }]
-    },
-    {
-      "key": "recipe_ingredients",
-      "from": { "path": "recipe" },
-      "to": [{ "model": "resources", "field": "recipe_ingredients" }],
-      "formatters": [{ "name": "recipeToResourceRecipe", "args": {} }]
-    },
-    {
-      "key": "effect",
-      "from": { "path": "effects" },
-      "to": [{ "model": "items", "field": "effect" }],
-      "formatters": [{ "name": "itemEffectsToKrosmozBonus", "args": {} }]
-    },
-    {
-      "key": "bonus",
-      "from": { "path": "effects" },
-      "to": [{ "model": "items", "field": "bonus" }],
-      "formatters": [{ "name": "toJson", "args": {} }]
-    }
+    { "key": "dofusdb_id", "from": { "path": "id" }, "to": [{ "model": "resources", "field": "dofusdb_id" }, { "model": "consumables", "field": "dofusdb_id" }, { "model": "items", "field": "dofusdb_id" }], "formatters": [{ "name": "toString", "args": {} }] },
+    { "key": "name", "from": { "path": "name", "langAware": true }, "to": [{ "model": "resources", "field": "name" }, { "model": "consumables", "field": "name" }, { "model": "items", "field": "name" }], "formatters": [{ "name": "pickLang", "args": { "lang": "fr", "fallback": "fr" } }] },
+    { "key": "description", "from": { "path": "description", "langAware": true }, "to": [{ "model": "resources", "field": "description" }, { "model": "consumables", "field": "description" }, { "model": "items", "field": "description" }], "formatters": [{ "name": "pickLang", "args": { "lang": "fr", "fallback": "fr" } }] },
+    { "key": "level", "from": { "path": "level" }, "to": [{ "model": "resources", "field": "level" }, { "model": "consumables", "field": "level" }, { "model": "items", "field": "level" }], "formatters": [{ "name": "dofusdb_level", "args": {} }, { "name": "toString", "args": {} }] },
+    { "key": "price", "from": { "path": "price" }, "to": [{ "model": "resources", "field": "price" }, { "model": "consumables", "field": "price" }, { "model": "items", "field": "price" }], "formatters": [{ "name": "nullableInt", "args": {} }] },
+    { "key": "image", "from": { "path": "img" }, "to": [{ "model": "resources", "field": "image" }, { "model": "consumables", "field": "image" }, { "model": "items", "field": "image" }], "formatters": [{ "name": "storeScrappedImage", "args": { "entityFolder": "items", "idPath": "id" } }] },
+    { "key": "typeId", "from": { "path": "typeId" }, "to": [{ "model": "items", "field": "type_id" }, { "model": "resources", "field": "type_id" }], "formatters": [{ "name": "toInt", "args": {} }] },
+    { "key": "resource_type_id", "from": { "path": "typeId" }, "to": [{ "model": "resources", "field": "resource_type_id" }], "formatters": [{ "name": "resolveResourceTypeId", "args": {} }] },
+    { "key": "weight", "from": { "path": "realWeight" }, "to": [{ "model": "resources", "field": "weight" }], "formatters": [{ "name": "nullableInt", "args": {} }] },
+    { "key": "rarity", "from": { "path": "rarity" }, "to": [{ "model": "resources", "field": "rarity" }, { "model": "consumables", "field": "rarity" }, { "model": "items", "field": "rarity" }], "formatters": [{ "name": "defaultRarityByLevel", "args": {} }] },
+    { "key": "recipe_ingredients", "from": { "path": "recipe" }, "to": [{ "model": "resources", "field": "recipe_ingredients" }], "formatters": [{ "name": "recipeToResourceRecipe", "args": {} }] },
+    { "key": "effect", "from": { "path": "effects" }, "to": [{ "model": "items", "field": "effect" }], "formatters": [{ "name": "itemEffectsToKrosmozBonus", "args": {} }] },
+    { "key": "bonus", "from": { "path": "effects" }, "to": [{ "model": "items", "field": "bonus" }], "formatters": [{ "name": "toJson", "args": {} }] }
+  ],
+  "_mappingUnusedDocumentation": [
+    { "dofusdbPath": "effects", "explanation": "Détail par effet : mappé globalement en effect (bonus Krosmoz) et bonus (JSON brut) ; pas de mapping champ par champ." },
+    { "dofusdbPath": "recipe", "explanation": "Structure complète de recette : mappée en recipe_ingredients pour les ressources ; champs secondaires non exposés." },
+    { "dofusdbPath": "itemSetId", "explanation": "Set d’objets Dofus ; non utilisé dans Krosmoz." },
+    { "dofusdbPath": "criteria", "explanation": "Critères d’obtention ; non utilisés." },
+    { "dofusdbPath": "possibleEffects", "explanation": "Effets possibles (aléatoires) ; non mappés." }
   ]
 }

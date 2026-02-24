@@ -410,7 +410,7 @@ Affiche le menu dynamique des pages :
 ```json
 {
   "settings": {
-    "entity": "classes",
+    "entity": "breeds",
     "filters": {
       "read_level": 0
     }

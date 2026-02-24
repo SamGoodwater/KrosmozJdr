@@ -132,7 +132,11 @@ export function useScrappingCompare(options) {
         if (flat[modelKey] !== undefined) return flat[modelKey];
         const suffix = `.${modelKey}`;
         const found = Object.keys(flat).find((k) => k === modelKey || k.endsWith(suffix));
-        return found !== undefined ? flat[found] : undefined;
+        if (found !== undefined) return flat[found];
+        // Brut DofusDB : clés imbriquées (ex. "name.fr") alors que le converti a "name"
+        const prefix = `${modelKey}.`;
+        const prefixKey = Object.keys(flat).find((k) => k.startsWith(prefix));
+        return prefixKey !== undefined ? flat[prefixKey] : undefined;
     }
 
     function isAllowedComparisonKey(key, entityTypeStr) {
@@ -150,6 +154,11 @@ export function useScrappingCompare(options) {
         return keys.filter((k) => isAllowedComparisonKey(k, entityTypeStr));
     }
 
+    function hasComparisonKeysConfig(entityTypeStr) {
+        const comparisonKeys = config()[String(entityTypeStr || "")]?.comparisonKeys;
+        return Array.isArray(comparisonKeys) && comparisonKeys.length > 0;
+    }
+
     function comparisonRows(item, dataEntry, entityTypeOverride) {
         const existing = existingRecord(item, dataEntry);
         const data = dataEntry ?? byId()[Number(item?.id)];
@@ -159,8 +168,11 @@ export function useScrappingCompare(options) {
         const rawFlat = flattenRawForCompare(raw);
         let modelKeys = Object.keys(existingFlat).length > 0 ? Object.keys(existingFlat) : Object.keys(convertedFlat);
         if (modelKeys.length === 0) modelKeys = Object.keys(rawFlat);
+        // Inclure les clés du brut pour afficher les données DofusDB (ex. relations où seul le converti était affiché)
+        modelKeys = [...new Set([...modelKeys, ...Object.keys(rawFlat)])];
         const typeForFilter = entityTypeOverride ?? entityType();
-        if (modelKeys.length > 0 && Object.keys(existingFlat).length === 0) {
+        // Toujours filtrer par comparisonKeys quand la config en définit : n'afficher que les propriétés "intéressantes" (mapping)
+        if (modelKeys.length > 0 && hasComparisonKeysConfig(typeForFilter)) {
             modelKeys = filterAllowedComparisonKeys(modelKeys, typeForFilter);
         }
         return modelKeys.sort().map((key) => {

@@ -1859,9 +1859,9 @@
     "description": "BreedViewMinimal — Vue Minimal pour Breed",
     "props": [
       {
-        "name": "classe",
+        "name": "breed",
         "type": "Breed",
-        "desc": "- Instance du modèle Breed"
+        "desc": "- Instance du modèle Breed (affichée « Classe »)"
       },
       {
         "name": "showActions",
@@ -1877,9 +1877,9 @@
     "description": "BreedViewLarge — Vue Large pour Breed",
     "props": [
       {
-        "name": "classe",
+        "name": "breed",
         "type": "Breed",
-        "desc": "- Instance du modèle Breed"
+        "desc": "- Instance du modèle Breed (affichée « Classe »)"
       },
       {
         "name": "showActions",

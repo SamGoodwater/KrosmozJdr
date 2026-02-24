@@ -649,13 +649,13 @@ async function onIconFileChange(event) {
 /** Classes de fond par zone : thème entités. */
 const entityBgClasses = {
     '*': 'bg-base-200',
-    monster: 'bg-color-creature-100',
-    class: 'bg-color-classe-100',
-    breed: 'bg-color-classe-100',
-    npc: 'bg-color-classe-100',
+    monster: 'bg-color-monster-100',
+    class: 'bg-color-breed-100',
+    breed: 'bg-color-breed-100',
+    npc: 'bg-color-npc-100',
     item: 'bg-color-item-100',
     consumable: 'bg-color-item-100',
-    resource: 'bg-color-item-100',
+    resource: 'bg-color-resource-100',
     panoply: 'bg-color-item-100',
     spell: 'bg-color-spell-100',
 };

@@ -9,16 +9,8 @@
     "pagination": { "pageSize": 50 }
   },
   "endpoints": {
-    "fetchOne": {
-      "pathTemplate": "/monsters/{id}",
-      "method": "GET",
-      "queryDefaults": { "lang": "fr" }
-    },
-    "fetchMany": {
-      "path": "/monsters",
-      "method": "GET",
-      "queryDefaults": { "lang": "fr", "$limit": 50, "$skip": 0 }
-    }
+    "fetchOne": { "pathTemplate": "/monsters/{id}", "method": "GET", "queryDefaults": { "lang": "fr" } },
+    "fetchMany": { "path": "/monsters", "method": "GET", "queryDefaults": { "lang": "fr", "$limit": 50, "$skip": 0 } }
   },
   "filters": {
     "supported": [
@@ -40,199 +32,43 @@
   },
   "resistanceBatch": true,
   "mapping": [
-    {
-      "key": "dofusdb_id",
-      "from": { "path": "id" },
-      "to": [{ "model": "monsters", "field": "dofusdb_id" }],
-      "formatters": [{ "name": "toString", "args": {} }]
-    },
-    {
-      "key": "name",
-      "from": { "path": "name", "langAware": true },
-      "to": [{ "model": "creatures", "field": "name" }],
-      "formatters": [{ "name": "pickLang", "args": { "lang": "fr", "fallback": "fr" } }]
-    },
-    {
-      "key": "description",
-      "from": { "path": "description", "langAware": true },
-      "to": [{ "model": "creatures", "field": "description" }],
-      "formatters": [{ "name": "pickLang", "args": { "lang": "fr", "fallback": "fr" } }]
-    },
-    {
-      "key": "level",
-      "from": { "path": "grades.0.level" },
-      "to": [{ "model": "creatures", "field": "level" }],
-      "formatters": [{ "name": "dofusdb_level", "args": {} }]
-    },
-    {
-      "key": "life",
-      "from": { "path": "grades.0.lifePoints" },
-      "to": [{ "model": "creatures", "field": "life" }],
-      "formatters": [{ "name": "dofusdb_life", "args": { "levelPath": "grades.0.level" } }]
-    },
-    {
-      "key": "strength",
-      "from": { "path": "grades.0.strength" },
-      "to": [{ "model": "creatures", "field": "strength" }],
-      "formatters": [{ "name": "dofusdb_attribute", "args": { "characteristicId": "strength" } }]
-    },
-    {
-      "key": "intelligence",
-      "from": { "path": "grades.0.intelligence" },
-      "to": [{ "model": "creatures", "field": "intelligence" }],
-      "formatters": [{ "name": "dofusdb_attribute", "args": { "characteristicId": "intelligence" } }]
-    },
-    {
-      "key": "agility",
-      "from": { "path": "grades.0.agility" },
-      "to": [{ "model": "creatures", "field": "agility" }],
-      "formatters": [{ "name": "dofusdb_attribute", "args": { "characteristicId": "agility" } }]
-    },
-    {
-      "key": "wisdom",
-      "from": { "path": "grades.0.wisdom" },
-      "to": [{ "model": "creatures", "field": "wisdom" }],
-      "formatters": [
-        { "name": "toInt", "args": {} },
-        { "name": "clampInt", "args": { "min": 0, "max": 1000 } }
-      ]
-    },
-    {
-      "key": "chance",
-      "from": { "path": "grades.0.chance" },
-      "to": [{ "model": "creatures", "field": "chance" }],
-      "formatters": [{ "name": "dofusdb_attribute", "args": { "characteristicId": "chance" } }]
-    },
-    {
-      "key": "pa",
-      "from": { "path": "grades.0.actionPoints" },
-      "to": [{ "model": "creatures", "field": "pa" }],
-      "formatters": [
-        { "name": "toInt", "args": {} },
-        { "name": "clampInt", "args": { "min": 0, "max": 20 } }
-      ]
-    },
-    {
-      "key": "pm",
-      "from": { "path": "grades.0.movementPoints" },
-      "to": [{ "model": "creatures", "field": "pm" }],
-      "formatters": [
-        { "name": "toInt", "args": {} },
-        { "name": "clampInt", "args": { "min": 0, "max": 20 } }
-      ]
-    },
-    {
-      "key": "kamas",
-      "from": { "path": "grades.0.kamas" },
-      "to": [{ "model": "creatures", "field": "kamas" }],
-      "formatters": [
-        { "name": "toInt", "args": {} },
-        { "name": "clampInt", "args": { "min": 0, "max": 9999999 } }
-      ]
-    },
-    {
-      "key": "po",
-      "from": { "path": "grades.0.bonusRange" },
-      "to": [{ "model": "creatures", "field": "po" }],
-      "formatters": [
-        { "name": "toInt", "args": {} },
-        { "name": "clampInt", "args": { "min": 0, "max": 50 } }
-      ]
-    },
-    {
-      "key": "dodge_pa",
-      "from": { "path": "grades.0.paDodge" },
-      "to": [{ "model": "creatures", "field": "dodge_pa" }],
-      "formatters": [{ "name": "nullableInt", "args": {} }]
-    },
-    {
-      "key": "dodge_pm",
-      "from": { "path": "grades.0.pmDodge" },
-      "to": [{ "model": "creatures", "field": "dodge_pm" }],
-      "formatters": [{ "name": "nullableInt", "args": {} }]
-    },
-    {
-      "key": "ini",
-      "from": { "path": "grades.0.initiative" },
-      "to": [{ "model": "creatures", "field": "ini" }],
-      "formatters": [{ "name": "dofusdb_ini", "args": {} }]
-    },
-    {
-      "key": "vitality",
-      "from": { "path": "grades.0.vitality" },
-      "to": [{ "model": "creatures", "field": "vitality" }],
-      "formatters": [{ "name": "nullableInt", "args": {} }]
-    },
-    {
-      "key": "image",
-      "from": { "path": "img" },
-      "to": [{ "model": "creatures", "field": "image" }],
-      "formatters": [
-        { "name": "storeScrappedImage", "args": { "entityFolder": "monsters", "idPath": "id" } }
-      ]
-    },
-    {
-      "key": "size",
-      "from": { "path": "size" },
-      "to": [{ "model": "monsters", "field": "size" }],
-      "formatters": [{ "name": "mapSizeToKrosmoz", "args": { "default": "medium" } }]
-    },
-    {
-      "key": "race",
-      "from": { "path": "race" },
-      "to": [{ "model": "monsters", "field": "monster_race_id" }],
-      "formatters": [{ "name": "nullableInt", "args": {} }]
-    },
-    {
-      "key": "res_neutre",
-      "from": { "path": "grades.0.neutralResistance" },
-      "to": [{ "model": "creatures", "field": "res_neutre" }],
-      "formatters": [{ "name": "nullableInt", "args": {} }]
-    },
-    {
-      "key": "res_terre",
-      "from": { "path": "grades.0.earthResistance" },
-      "to": [{ "model": "creatures", "field": "res_terre" }],
-      "formatters": [{ "name": "nullableInt", "args": {} }]
-    },
-    {
-      "key": "res_feu",
-      "from": { "path": "grades.0.fireResistance" },
-      "to": [{ "model": "creatures", "field": "res_feu" }],
-      "formatters": [{ "name": "nullableInt", "args": {} }]
-    },
-    {
-      "key": "res_air",
-      "from": { "path": "grades.0.airResistance" },
-      "to": [{ "model": "creatures", "field": "res_air" }],
-      "formatters": [{ "name": "nullableInt", "args": {} }]
-    },
-    {
-      "key": "res_eau",
-      "from": { "path": "grades.0.waterResistance" },
-      "to": [{ "model": "creatures", "field": "res_eau" }],
-      "formatters": [{ "name": "nullableInt", "args": {} }]
-    }
+    { "key": "dofusdb_id", "from": { "path": "id" }, "to": [{ "model": "monsters", "field": "dofusdb_id" }], "formatters": [{ "name": "toString", "args": {} }] },
+    { "key": "name", "from": { "path": "name", "langAware": true }, "to": [{ "model": "creatures", "field": "name" }], "formatters": [{ "name": "pickLang", "args": { "lang": "fr", "fallback": "fr" } }] },
+    { "key": "description", "from": { "path": "description", "langAware": true }, "to": [{ "model": "creatures", "field": "description" }], "formatters": [{ "name": "pickLang", "args": { "lang": "fr", "fallback": "fr" } }] },
+    { "key": "level", "from": { "path": "grades.0.level" }, "to": [{ "model": "creatures", "field": "level" }], "formatters": [{ "name": "dofusdb_level", "args": {} }] },
+    { "key": "life", "from": { "path": "grades.0.lifePoints" }, "to": [{ "model": "creatures", "field": "life" }], "formatters": [{ "name": "dofusdb_life", "args": { "levelPath": "grades.0.level" } }] },
+    { "key": "strength", "from": { "path": "grades.0.strength" }, "to": [{ "model": "creatures", "field": "strength" }], "formatters": [{ "name": "dofusdb_attribute", "args": { "characteristicId": "strength" } }] },
+    { "key": "intelligence", "from": { "path": "grades.0.intelligence" }, "to": [{ "model": "creatures", "field": "intelligence" }], "formatters": [{ "name": "dofusdb_attribute", "args": { "characteristicId": "intelligence" } }] },
+    { "key": "agility", "from": { "path": "grades.0.agility" }, "to": [{ "model": "creatures", "field": "agility" }], "formatters": [{ "name": "dofusdb_attribute", "args": { "characteristicId": "agility" } }] },
+    { "key": "wisdom", "from": { "path": "grades.0.wisdom" }, "to": [{ "model": "creatures", "field": "wisdom" }], "formatters": [{ "name": "toInt", "args": {} }, { "name": "clampInt", "args": { "min": 0, "max": 1000 } }] },
+    { "key": "chance", "from": { "path": "grades.0.chance" }, "to": [{ "model": "creatures", "field": "chance" }], "formatters": [{ "name": "dofusdb_attribute", "args": { "characteristicId": "chance" } }] },
+    { "key": "pa", "from": { "path": "grades.0.actionPoints" }, "to": [{ "model": "creatures", "field": "pa" }], "formatters": [{ "name": "toInt", "args": {} }, { "name": "clampInt", "args": { "min": 0, "max": 20 } }] },
+    { "key": "pm", "from": { "path": "grades.0.movementPoints" }, "to": [{ "model": "creatures", "field": "pm" }], "formatters": [{ "name": "toInt", "args": {} }, { "name": "clampInt", "args": { "min": 0, "max": 20 } }] },
+    { "key": "kamas", "from": { "path": "grades.0.kamas" }, "to": [{ "model": "creatures", "field": "kamas" }], "formatters": [{ "name": "toInt", "args": {} }, { "name": "clampInt", "args": { "min": 0, "max": 9999999 } }] },
+    { "key": "po", "from": { "path": "grades.0.bonusRange" }, "to": [{ "model": "creatures", "field": "po" }], "formatters": [{ "name": "toInt", "args": {} }, { "name": "clampInt", "args": { "min": 0, "max": 50 } }] },
+    { "key": "dodge_pa", "from": { "path": "grades.0.paDodge" }, "to": [{ "model": "creatures", "field": "dodge_pa" }], "formatters": [{ "name": "nullableInt", "args": {} }] },
+    { "key": "dodge_pm", "from": { "path": "grades.0.pmDodge" }, "to": [{ "model": "creatures", "field": "dodge_pm" }], "formatters": [{ "name": "nullableInt", "args": {} }] },
+    { "key": "ini", "from": { "path": "grades.0.initiative" }, "to": [{ "model": "creatures", "field": "ini" }], "formatters": [{ "name": "dofusdb_ini", "args": {} }] },
+    { "key": "vitality", "from": { "path": "grades.0.vitality" }, "to": [{ "model": "creatures", "field": "vitality" }], "formatters": [{ "name": "nullableInt", "args": {} }] },
+    { "key": "image", "from": { "path": "img" }, "to": [{ "model": "creatures", "field": "image" }], "formatters": [{ "name": "storeScrappedImage", "args": { "entityFolder": "monsters", "idPath": "id" } }] },
+    { "key": "size", "from": { "path": "size" }, "to": [{ "model": "monsters", "field": "size" }], "formatters": [{ "name": "mapSizeToKrosmoz", "args": { "default": "medium" } }] },
+    { "key": "race", "from": { "path": "race" }, "to": [{ "model": "monsters", "field": "monster_race_id" }], "formatters": [{ "name": "nullableInt", "args": {} }] },
+    { "key": "res_neutre", "from": { "path": "grades.0.neutralResistance" }, "to": [{ "model": "creatures", "field": "res_neutre" }], "formatters": [{ "name": "nullableInt", "args": {} }] },
+    { "key": "res_terre", "from": { "path": "grades.0.earthResistance" }, "to": [{ "model": "creatures", "field": "res_terre" }], "formatters": [{ "name": "nullableInt", "args": {} }] },
+    { "key": "res_feu", "from": { "path": "grades.0.fireResistance" }, "to": [{ "model": "creatures", "field": "res_feu" }], "formatters": [{ "name": "nullableInt", "args": {} }] },
+    { "key": "res_air", "from": { "path": "grades.0.airResistance" }, "to": [{ "model": "creatures", "field": "res_air" }], "formatters": [{ "name": "nullableInt", "args": {} }] },
+    { "key": "res_eau", "from": { "path": "grades.0.waterResistance" }, "to": [{ "model": "creatures", "field": "res_eau" }], "formatters": [{ "name": "nullableInt", "args": {} }] }
   ],
   "relations": {
-    "spells": {
-      "enabledByDefault": true,
-      "maxDepth": 1,
-      "strategy": "import_and_link",
-      "extract": { "path": "spells", "idPath": "id" },
-      "targetEntity": "spell"
-    },
-    "drops": {
-      "enabledByDefault": true,
-      "maxDepth": 1,
-      "strategy": "import_and_link",
-      "extract": { "path": "drops", "idPath": "itemId", "quantityPath": "quantity" },
-      "targetEntity": "resource",
-      "filters": {
-        "resourceTypeIds": {
-          "defaultFromDb": "resource_types.allowed"
-        }
-      }
-    }
-  }
+    "spells": { "enabledByDefault": true, "maxDepth": 1, "strategy": "import_and_link", "extract": { "path": "spells", "idPath": "id" }, "targetEntity": "spell" },
+    "drops": { "enabledByDefault": true, "maxDepth": 1, "strategy": "import_and_link", "extract": { "path": "drops", "idPath": "itemId", "quantityPath": "quantity" }, "targetEntity": "resource", "filters": { "resourceTypeIds": { "defaultFromDb": "resource_types.allowed" } } }
+  },
+  "_mappingUnusedDocumentation": [
+    { "dofusdbPath": "spells", "explanation": "Liste des sorts invocables (IDs). Géré par les relations (import des sorts liés), pas par le mapping." },
+    { "dofusdbPath": "drops", "explanation": "Liste des drops (itemId, quantity). Géré par les relations (import des items liés)." },
+    { "dofusdbPath": "grades", "explanation": "Tableau des grades ; on mappe uniquement grades.0.*. Autres indices ou détails non utilisés." },
+    { "dofusdbPath": "subareas", "explanation": "Zones géographiques Dofus ; non utilisées dans Krosmoz." },
+    { "dofusdbPath": "areas", "explanation": "Zones géographiques Dofus ; non utilisées dans Krosmoz." },
+    { "dofusdbPath": "useRaceStats", "explanation": "Option de calcul des stats ; non utilisée." }
+  ]
 }

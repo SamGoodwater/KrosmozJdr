@@ -12,13 +12,13 @@ import Tooltip from "@/Pages/Atoms/feedback/Tooltip.vue";
 
 /** Mapping type scrapping → clé EntityLabel (entities.js). */
 const SCRAP_ENTITY_TO_LABEL = {
-    monster: "mob",
+    monster: "monster",
     spell: "spell",
     item: "item",
     resource: "resource",
     consumable: "consumable",
     equipment: "item",
-    class: "classe",
+    class: "breed",
     panoply: "item",
 };
 

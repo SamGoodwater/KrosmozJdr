@@ -161,8 +161,8 @@ setPageTitle(`Modifier le sort : ${spell.value.name || 'Nouveau sort'}`);
             :config="{
                 displayFields: ['name', 'description'],
                 searchFields: ['name', 'description'],
-                itemLabel: 'classe',
-                itemLabelPlural: 'classes'
+                itemLabel: 'breed',
+                itemLabelPlural: 'breeds'
             }"
         />
         

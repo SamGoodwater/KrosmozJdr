@@ -745,6 +745,7 @@ const canNextUnwrapped = computed(() => search.canNext?.value === true);
 const batchImportingUnwrapped = computed(() => batch.importing?.value === true);
 const batchImportByPagesProgressUnwrapped = computed(() => batch.importByPagesProgress?.value ?? null);
 const loadingConvertedUnwrapped = computed(() => preview.loadingConverted?.value === true);
+const conversionProgressUnwrapped = computed(() => preview.conversionProgress?.value ?? null);
 
 const pageIndex = computed(() => Math.max(0, Math.floor(Number(pageNumber.value) || 1) - 1));
 const pageCount = computed(() => {
@@ -1137,9 +1138,23 @@ const onCompareImported = () => {
                         · total filtré: {{ lastMetaUnwrapped.total }}
                     </span>
                     <span v-if="selectedCount" class="text-sm text-primary-300">· sélection: {{ selectedCount }}</span>
-                    <span v-if="loadingConvertedUnwrapped" class="text-xs text-primary-300 flex items-center gap-1">
-                        <Loading />
-                        Valeurs converties…
+                    <span v-if="loadingConvertedUnwrapped" class="text-xs text-primary-300 flex flex-col gap-1">
+                        <span class="flex items-center gap-2">
+                            <Loading />
+                            <span>{{ conversionProgressUnwrapped?.phase === 'relations' ? 'Relations…' : 'Valeurs converties…' }}</span>
+                            <template v-if="conversionProgressUnwrapped && conversionProgressUnwrapped.total > 0">
+                                <div class="w-24 h-1.5 rounded-full bg-base-300 overflow-hidden" role="progressbar" :aria-valuenow="conversionProgressUnwrapped.done" :aria-valuemin="0" :aria-valuemax="conversionProgressUnwrapped.total">
+                                    <div
+                                        class="h-full bg-primary transition-all duration-200"
+                                        :style="{ width: Math.min(100, (conversionProgressUnwrapped.done / conversionProgressUnwrapped.total) * 100) + '%' }"
+                                    />
+                                </div>
+                                <span class="text-primary-400 tabular-nums">{{ conversionProgressUnwrapped.total ? Math.round((conversionProgressUnwrapped.done / conversionProgressUnwrapped.total) * 100) : 0 }}%</span>
+                            </template>
+                        </span>
+                        <span v-if="conversionProgressUnwrapped && conversionProgressUnwrapped.total > 0" class="text-[10px] text-primary-400/80">
+                            {{ conversionProgressUnwrapped.done }} traités / {{ conversionProgressUnwrapped.total - conversionProgressUnwrapped.done }} restant
+                        </span>
                     </span>
                 </div>
 

@@ -44,9 +44,11 @@ describe('entity-registry', () => {
             expect(normalizeEntityType('npcs')).toBe('npcs');
         });
 
-        it('normalise classe vers classes', () => {
-            expect(normalizeEntityType('classe')).toBe('classes');
-            expect(normalizeEntityType('classes')).toBe('classes');
+        it('normalise breed/classe vers breeds (clé technique breed, affichage Classe)', () => {
+            expect(normalizeEntityType('breed')).toBe('breeds');
+            expect(normalizeEntityType('breeds')).toBe('breeds');
+            expect(normalizeEntityType('classe')).toBe('breeds');
+            expect(normalizeEntityType('classes')).toBe('breeds');
         });
 
         it('normalise capability vers capabilities', () => {

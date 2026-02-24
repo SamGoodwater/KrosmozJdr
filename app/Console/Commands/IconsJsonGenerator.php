@@ -40,11 +40,13 @@ class IconsJsonGenerator extends Command
         $directories = [
             'storage/app/public/images/',  // Dossier racine des images
             'storage/app/public/images/icons/',
-            'storage/app/public/images/icons/modules/',
-            'storage/app/public/images/icons/modules/classes',
-            'storage/app/public/images/icons/modules/dices',
-            'storage/app/public/images/icons/modules/spell_zone',
-            'storage/app/public/images/icons/modules/classe_orientations/',
+            'storage/app/public/images/icons/breed_orientations/',
+            'storage/app/public/images/icons/caracteristics/',
+            'storage/app/public/images/icons/entities/',
+            'storage/app/public/images/icons/zones/',
+            'storage/app/public/images/icons/dices/',
+            'storage/app/public/images/icons/items/',
+            'storage/app/public/images/icons/weapons/',
         ];
 
         $imageLinks = [];
