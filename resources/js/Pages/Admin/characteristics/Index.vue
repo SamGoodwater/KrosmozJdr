@@ -106,7 +106,13 @@ const conversionSuggestionTooltips = {
 /** Demande une formule suggérée (table, linéaire, carré, carré décalé). Utilise les lignes du tableau (paires d, k). */
 function requestConversionSuggestion(curveType, entityKey = '*') {
     const row = getConversionRow(entityKey);
-    if (!row) return;
+    if (!row) {
+        conversionSuggestionForEntity.value = entityKey;
+        conversionSuggestionError.value = 'Aucune ligne d\'entité pour ce groupe. Rechargez la page ou enregistrez d\'abord la caractéristique.';
+        conversionSuggestionFormula.value = null;
+        conversionSuggestionR2.value = null;
+        return;
+    }
     const sampleRows = row.conversion_sample_rows ?? [];
     const pairs = sampleRows
         .filter((r) => r.dofus_value !== '' && r.dofus_value != null && r.krosmoz_value !== '' && r.krosmoz_value != null)
@@ -360,14 +366,29 @@ function addEntityOverride(entityKey) {
         form.entities = [...(form.entities ?? []), defaultRow];
     }
 }
-function removeEntityOverride(entityKey) {
+async function removeEntityOverride(entityKey) {
     const label = entityLabels[entityKey] || entityKey;
     if (!confirm(`Supprimer la spécificité pour ${label} ? Les paramètres spécifiques à cette entité seront perdus.`)) {
         return;
     }
     selectedEntityOverrides.value = selectedEntityOverrides.value.filter((e) => e !== entityKey);
-    form.entities = (form.entities ?? []).filter((e) => e.entity !== entityKey);
-    form.patch(route('admin.characteristics.update', props.selected.id));
+    const entitiesFiltered = (form.entities ?? []).filter((e) => e.entity !== entityKey);
+    form.entities = entitiesFiltered;
+    await nextTick();
+    // Envoyer les entités filtrées + entity_override_keys pour que le backend supprime et ne recrée pas
+    router.patch(route('admin.characteristics.update', props.selected.id), {
+        name: form.name,
+        short_name: form.short_name,
+        description: form.description,
+        helper: form.helper,
+        icon: form.icon,
+        color: form.color,
+        type: form.type,
+        unit: form.unit,
+        sort_order: form.sort_order,
+        entities: entitiesFiltered,
+        entity_override_keys: selectedEntityOverrides.value,
+    }, { preserveScroll: true });
 }
 function confirmDelete() {
     if (props.selected?.id && confirm('Supprimer cette caractéristique ? Les données associées seront perdues.')) {
@@ -675,7 +696,23 @@ function submit() {
         return;
     }
     if (!props.selected?.id) return;
-    form.patch(route('admin.characteristics.update', props.selected.id));
+    // N'envoyer que '*' et les spécificités choisies pour ne pas créer de lignes en BDD
+    const entitiesToSend = (form.entities ?? []).filter(
+        (e) => e.entity === '*' || selectedEntityOverrides.value.includes(e.entity)
+    );
+    router.patch(route('admin.characteristics.update', props.selected.id), {
+        name: form.name,
+        short_name: form.short_name,
+        description: form.description,
+        helper: form.helper,
+        icon: form.icon,
+        color: form.color,
+        type: form.type,
+        unit: form.unit,
+        sort_order: form.sort_order,
+        entities: entitiesToSend,
+        entity_override_keys: selectedEntityOverrides.value,
+    }, { preserveScroll: true });
 }
 
 function submitLinkDisabled() {

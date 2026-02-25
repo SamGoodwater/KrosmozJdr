@@ -801,6 +801,8 @@ class CharacteristicController extends Controller
             'entities.*.forgemagie_max' => 'nullable|integer',
             'entities.*.base_price_per_unit' => 'nullable|numeric',
             'entities.*.rune_price_per_unit' => 'nullable|numeric',
+            'entity_override_keys' => 'nullable|array',
+            'entity_override_keys.*' => 'string|max:32',
         ]);
 
         $characteristic->update([
@@ -817,10 +819,22 @@ class CharacteristicController extends Controller
 
         $group = $this->inferPrimaryGroup($characteristic);
         $allowedForGroup = self::ENTITIES_BY_GROUP[$group] ?? [];
-        $entitiesToProcess = array_filter(
+        $allowedEntities = array_filter(
             $data['entities'] ?? [],
             fn (array $ent): bool => in_array($ent['entity'] ?? '', $allowedForGroup, true)
         );
+        // Ne persister que '*' + entity_override_keys lorsque la clé est fournie (évite de recréer des lignes)
+        $entitiesToProcess = $allowedEntities;
+        if (array_key_exists('entity_override_keys', $data) && is_array($data['entity_override_keys'])) {
+            $overrideKeys = array_values(array_filter(
+                $data['entity_override_keys'],
+                fn ($k): bool => is_string($k) && $k !== ''
+            ));
+            $entitiesToProcess = array_filter(
+                $allowedEntities,
+                fn (array $ent): bool => ($ent['entity'] ?? '') === '*' || in_array($ent['entity'] ?? '', $overrideKeys, true)
+            );
+        }
         $sentEntities = array_column($entitiesToProcess, 'entity');
         foreach ($entitiesToProcess as $ent) {
             $entity = $ent['entity'];

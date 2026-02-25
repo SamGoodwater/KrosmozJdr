@@ -52,12 +52,10 @@ final class CharacteristicShowPayloadBuilder
         $group = $this->inferPrimaryGroup($characteristic);
         $entitiesForGroup = self::ENTITIES_BY_GROUP[$group] ?? ['*'];
 
-        $entities = $this->buildEntities($characteristic, $characteristic->key, $group, $entitiesForGroup);
+        $buildResult = $this->buildEntities($characteristic, $characteristic->key, $group, $entitiesForGroup);
+        $entities = $buildResult['entities'];
+        $entityOverrideKeys = $buildResult['entity_override_keys'];
         $conversionFormulas = $this->buildConversionFormulas($characteristic->key, $entitiesForGroup);
-        $entityOverrideKeys = array_values(array_filter(
-            array_unique(array_column($entities, 'entity')),
-            fn (string $e): bool => $e !== '*'
-        ));
 
         $selected = [
             'id' => $characteristic->key,
@@ -106,32 +104,82 @@ final class CharacteristicShowPayloadBuilder
     }
 
     /**
-     * @return list<array<string, mixed>>
+     * Construit la liste des entités pour le formulaire et les clés des spécificités réellement en BDD.
+     * Garantit une ligne par entité du groupe (dont '*') pour le panneau Conversion.
+     *
+     * @return array{entities: list<array<string, mixed>>, entity_override_keys: list<string>}
      */
     private function buildEntities(Characteristic $characteristic, string $characteristicKey, string $group, array $entitiesForGroup): array
     {
         $entities = [];
+        $entityOverrideKeys = [];
         if ($characteristic->isLinked()) {
             foreach ($entitiesForGroup as $entity) {
                 $def = $this->getter->getDefinition($characteristicKey, $entity);
-                if ($def !== null) {
-                    $entities[] = $this->definitionToEntityRow($def);
-                }
+                $entities[] = $def !== null ? $this->definitionToEntityRow($def) : $this->defaultEntityRow($entity);
             }
         } else {
+            $byEntity = [];
             foreach (CharacteristicCreature::where('characteristic_id', $characteristic->id)->orderBy('entity')->get() as $row) {
-                $entities[] = $this->groupRowToEntity($row, $characteristic);
+                $ent = $this->groupRowToEntity($row, $characteristic);
+                $byEntity[$ent['entity'] ?? ''] = $ent;
             }
             foreach (CharacteristicObject::where('characteristic_id', $characteristic->id)->orderBy('entity')->get() as $row) {
-                $entities[] = $this->groupRowToEntity($row, $characteristic);
+                $ent = $this->groupRowToEntity($row, $characteristic);
+                $byEntity[$ent['entity'] ?? ''] = $ent;
             }
             foreach (CharacteristicSpell::where('characteristic_id', $characteristic->id)->orderBy('entity')->get() as $row) {
-                $entities[] = $this->groupRowToEntity($row, $characteristic);
+                $ent = $this->groupRowToEntity($row, $characteristic);
+                $byEntity[$ent['entity'] ?? ''] = $ent;
             }
-            $entities = array_values(array_filter($entities, fn (array $ent): bool => in_array($ent['entity'] ?? '', $entitiesForGroup, true)));
+            $entityOverrideKeys = array_values(array_filter(
+                array_keys($byEntity),
+                fn (string $e): bool => $e !== '*'
+            ));
+            foreach ($entitiesForGroup as $entity) {
+                $entities[] = $byEntity[$entity] ?? $this->defaultEntityRow($entity);
+            }
         }
 
-        return $entities;
+        return ['entities' => $entities, 'entity_override_keys' => $entityOverrideKeys];
+    }
+
+    /**
+     * Ligne d'entité par défaut (pour garantir la présence de '*' et des autres entités du groupe).
+     *
+     * @return array<string, mixed>
+     */
+    private function defaultEntityRow(string $entity): array
+    {
+        return [
+            'entity' => $entity,
+            'db_column' => null,
+            'min' => null,
+            'max' => null,
+            'formula' => null,
+            'formula_display' => null,
+            'default_value' => null,
+            'conversion_formula' => null,
+            'conversion_function' => null,
+            'conversion_dofus_sample' => null,
+            'conversion_krosmoz_sample' => null,
+            'conversion_sample_rows' => $this->defaultConversionSampleRows(),
+            'forgemagie_allowed' => false,
+            'forgemagie_max' => 0,
+            'base_price_per_unit' => null,
+            'rune_price_per_unit' => null,
+        ];
+    }
+
+    /**
+     * @return list<array{dofus_level: int, dofus_value: mixed, krosmoz_level: int, krosmoz_value: mixed}>
+     */
+    private function defaultConversionSampleRows(): array
+    {
+        return [
+            ['dofus_level' => 1, 'dofus_value' => '', 'krosmoz_level' => 1, 'krosmoz_value' => ''],
+            ['dofus_level' => 200, 'dofus_value' => '', 'krosmoz_level' => 20, 'krosmoz_value' => ''],
+        ];
     }
 
     /**
