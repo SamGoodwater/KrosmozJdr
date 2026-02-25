@@ -15,14 +15,15 @@ export function getCsrfToken() {
 /**
  * GET JSON. Ne lance jamais.
  * @param {string} url - URL
- * @param {{ headers?: Record<string, string> }} [options]
- * @returns {Promise<{ ok: boolean, data?: any, error?: string, status?: number }>}
+ * @param {{ headers?: Record<string, string>, signal?: AbortSignal }} [options]
+ * @returns {Promise<{ ok: boolean, data?: any, error?: string, status?: number, aborted?: boolean }>}
  */
 export async function getJson(url, options = {}) {
     try {
         const res = await fetch(url, {
             method: "GET",
             headers: { Accept: "application/json", ...options.headers },
+            signal: options.signal ?? undefined,
         });
         let data;
         try {
@@ -36,6 +37,9 @@ export async function getJson(url, options = {}) {
         }
         return { ok: true, data, status: res.status };
     } catch (e) {
+        if (e?.name === "AbortError") {
+            return { ok: false, error: "Requête annulée", aborted: true };
+        }
         return { ok: false, error: e?.message ?? "Erreur réseau" };
     }
 }
@@ -44,8 +48,8 @@ export async function getJson(url, options = {}) {
  * POST JSON. Ne lance jamais.
  * @param {string} url - URL
  * @param {Object} body - Corps (sera JSON.stringify)
- * @param {{ headers?: Record<string, string> }} [options]
- * @returns {Promise<{ ok: boolean, data?: any, error?: string, status?: number }>}
+ * @param {{ headers?: Record<string, string>, signal?: AbortSignal }} [options]
+ * @returns {Promise<{ ok: boolean, data?: any, error?: string, status?: number, aborted?: boolean }>}
  */
 export async function postJson(url, body, options = {}) {
     try {
@@ -57,6 +61,7 @@ export async function postJson(url, body, options = {}) {
                 ...options.headers,
             },
             body: JSON.stringify(body),
+            signal: options.signal ?? undefined,
         });
         let data;
         try {
@@ -70,6 +75,9 @@ export async function postJson(url, body, options = {}) {
         }
         return { ok: true, data, status: res.status };
     } catch (e) {
+        if (e?.name === "AbortError") {
+            return { ok: false, error: "Requête annulée", aborted: true };
+        }
         return { ok: false, error: e?.message ?? "Erreur réseau" };
     }
 }

@@ -5,7 +5,9 @@ declare(strict_types=1);
 namespace App\Services\Scrapping\Core\Relation;
 
 use App\Models\Entity\Breed;
+use App\Models\Entity\Consumable;
 use App\Models\Entity\Creature;
+use App\Models\Entity\Item;
 use App\Models\Entity\Resource;
 use App\Models\Entity\Spell;
 
@@ -13,9 +15,12 @@ use App\Models\Entity\Spell;
  * Pile d'import pour toutes les relations : on empile ce qui reste à récupérer (sorts, monstres,
  * items, etc.) et on garde en mémoire qui dépend de quoi ; lorsqu'un élément est chargé, on
  * récupère son id et on met à jour les tables de relation (breed_spell, creature_spell,
- * creature_resource, resource_recipe, spell_invocation).
+ * creature_resource, creature_item, consumable_creature, resource_recipe, spell_invocation).
  *
- * Types de dépendances : recipe, breed_spell, creature_spell, creature_resource, spell_invocation.
+ * Les drops monster sont catégorisés selon la table cible (resources, items, consumables) une fois
+ * l'item importé ; le type d'enregistrement est creature_drop pour être résolu selon $table.
+ *
+ * Types de dépendances : recipe, breed_spell, creature_spell, creature_drop, spell_invocation.
  *
  * @see RelationResolutionService
  * @see docs/50-Fonctionnalités/Scrapping/Architecture/RELATIONS.md
@@ -168,7 +173,9 @@ final class RelationImportStack
     }
 
     /**
-     * Enregistre les dépendances sorts d'une créature (monstre) et les drops (items→ressources).
+     * Enregistre les dépendances sorts d'une créature (monstre) et les drops (items).
+     * Les drops sont catégorisés selon la table existante (Resource, Item, Consumable) ou
+     * enregistrés comme creature_drop et résolus à l'import selon la table cible (resources, items, consumables).
      *
      * @param array{spells?: list<array{id?: int}>, drops?: list<array{id?: int, itemId?: int, quantity?: int}>} $rawData
      * @return list<array{entity: string, dofusdb_id: string}> éléments ajoutés à la pile
@@ -182,6 +189,8 @@ final class RelationImportStack
 
         $spellIdsToSync = [];
         $resourceSync = [];
+        $itemSync = [];
+        $consumableSync = [];
         $added = [];
 
         if (isset($rawData['spells']) && is_array($rawData['spells'])) {
@@ -209,14 +218,29 @@ final class RelationImportStack
                 if ($itemId <= 0) {
                     continue;
                 }
-                $qty = (int) ($dropData['quantity'] ?? 1);
+                $qty = max(1, (int) ($dropData['quantity'] ?? 1));
                 $dofusdbId = (string) $itemId;
+
                 $existingResource = Resource::where('dofusdb_id', $dofusdbId)->first();
                 if ($existingResource !== null) {
-                    $resourceSync[$existingResource->id] = ['quantity' => (string) max(1, $qty)];
+                    $prev = isset($resourceSync[$existingResource->id]) ? (int) $resourceSync[$existingResource->id]['quantity'] : 0;
+                    $resourceSync[$existingResource->id] = ['quantity' => (string) ($prev + $qty)];
                     continue;
                 }
-                $this->registerDependent('item', $dofusdbId, 'creature_resource', ['creature_id' => $creatureId, 'quantity' => max(1, $qty)]);
+                $existingItem = Item::where('dofusdb_id', $dofusdbId)->first();
+                if ($existingItem !== null) {
+                    $prev = isset($itemSync[$existingItem->id]) ? (int) $itemSync[$existingItem->id]['quantity'] : 0;
+                    $itemSync[$existingItem->id] = ['quantity' => $prev + $qty];
+                    continue;
+                }
+                $existingConsumable = Consumable::where('dofusdb_id', $dofusdbId)->first();
+                if ($existingConsumable !== null) {
+                    $prev = isset($consumableSync[$existingConsumable->id]) ? (int) $consumableSync[$existingConsumable->id]['quantity'] : 0;
+                    $consumableSync[$existingConsumable->id] = ['quantity' => (string) ($prev + $qty)];
+                    continue;
+                }
+
+                $this->registerDependent('item', $dofusdbId, 'creature_drop', ['creature_id' => $creatureId, 'quantity' => $qty]);
                 if ($this->pushPending(self::SOURCE_DOFUSDB, 'item', $dofusdbId)) {
                     $added[] = ['entity' => 'item', 'dofusdb_id' => $dofusdbId];
                 }
@@ -229,6 +253,12 @@ final class RelationImportStack
             }
             if ($resourceSync !== []) {
                 $creature->resources()->sync($resourceSync);
+            }
+            if ($itemSync !== []) {
+                $creature->items()->sync($itemSync);
+            }
+            if ($consumableSync !== []) {
+                $creature->consumables()->sync($consumableSync);
             }
         }
 
@@ -316,8 +346,14 @@ final class RelationImportStack
                 $this->resolveBreedSpell($payload, $krosmozPrimaryId);
             } elseif ($type === 'creature_spell' && $entity === 'spell' && $krosmozPrimaryId !== null && $krosmozPrimaryId > 0) {
                 $this->resolveCreatureSpell($payload, $krosmozPrimaryId);
-            } elseif ($type === 'creature_resource' && $entity === 'item' && $table === 'resources' && $krosmozPrimaryId !== null && $krosmozPrimaryId > 0) {
-                $this->resolveCreatureResource($payload, $krosmozPrimaryId);
+            } elseif (($type === 'creature_drop' || $type === 'creature_resource') && $entity === 'item' && $krosmozPrimaryId !== null && $krosmozPrimaryId > 0) {
+                if ($table === 'resources') {
+                    $this->resolveCreatureResource($payload, $krosmozPrimaryId);
+                } elseif ($table === 'items') {
+                    $this->resolveCreatureItem($payload, $krosmozPrimaryId);
+                } elseif ($table === 'consumables') {
+                    $this->resolveCreatureConsumable($payload, $krosmozPrimaryId);
+                }
             } elseif ($type === 'spell_invocation' && $entity === 'monster' && $krosmozPrimaryId !== null && $krosmozPrimaryId > 0) {
                 $this->resolveSpellInvocation($payload, $krosmozPrimaryId);
             }
@@ -374,7 +410,7 @@ final class RelationImportStack
     private function resolveCreatureResource(array $payload, int $resourceId): void
     {
         $creatureId = (int) ($payload['creature_id'] ?? 0);
-        $quantity = (int) ($payload['quantity'] ?? 1);
+        $quantity = max(1, (int) ($payload['quantity'] ?? 1));
         if ($creatureId <= 0) {
             return;
         }
@@ -386,8 +422,48 @@ final class RelationImportStack
         foreach ($creature->resources as $r) {
             $sync[$r->id] = ['quantity' => (string) ($r->pivot->quantity ?? 1)];
         }
-        $sync[$resourceId] = ['quantity' => (string) max(1, $quantity)];
+        $prev = isset($sync[$resourceId]) ? (int) $sync[$resourceId]['quantity'] : 0;
+        $sync[$resourceId] = ['quantity' => (string) ($prev + $quantity)];
         $creature->resources()->sync($sync);
+    }
+
+    private function resolveCreatureItem(array $payload, int $itemId): void
+    {
+        $creatureId = (int) ($payload['creature_id'] ?? 0);
+        $quantity = max(1, (int) ($payload['quantity'] ?? 1));
+        if ($creatureId <= 0) {
+            return;
+        }
+        $creature = Creature::find($creatureId);
+        if ($creature === null) {
+            return;
+        }
+        $sync = [];
+        foreach ($creature->items as $item) {
+            $sync[$item->id] = ['quantity' => (int) ($item->pivot->quantity ?? 1)];
+        }
+        $sync[$itemId] = ['quantity' => ($sync[$itemId]['quantity'] ?? 0) + $quantity];
+        $creature->items()->sync($sync);
+    }
+
+    private function resolveCreatureConsumable(array $payload, int $consumableId): void
+    {
+        $creatureId = (int) ($payload['creature_id'] ?? 0);
+        $quantity = max(1, (int) ($payload['quantity'] ?? 1));
+        if ($creatureId <= 0) {
+            return;
+        }
+        $creature = Creature::find($creatureId);
+        if ($creature === null) {
+            return;
+        }
+        $sync = [];
+        foreach ($creature->consumables as $c) {
+            $sync[$c->id] = ['quantity' => (string) ($c->pivot->quantity ?? 1)];
+        }
+        $prev = isset($sync[$consumableId]) ? (int) $sync[$consumableId]['quantity'] : 0;
+        $sync[$consumableId] = ['quantity' => (string) ($prev + $quantity)];
+        $creature->consumables()->sync($sync);
     }
 
     private function resolveSpellInvocation(array $payload, int $monsterId): void

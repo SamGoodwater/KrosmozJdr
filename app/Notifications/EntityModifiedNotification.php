@@ -24,11 +24,19 @@ class EntityModifiedNotification extends Notification implements ShouldQueue
     use Queueable;
 
     public $entityType;
+
     public $entityId;
+
     public $entityName;
+
     public $modifier;
+
     public $channels;
+
     public $changes;
+
+    /** @var string|null URL vers l'entité (page/section avec slug si fourni) */
+    public $url;
 
     /**
      * @param string $entityType
@@ -37,8 +45,9 @@ class EntityModifiedNotification extends Notification implements ShouldQueue
      * @param \App\Models\User $modifier
      * @param array $channels
      * @param array $changes
+     * @param string|null $url
      */
-    public function __construct($entityType, $entityId, $entityName, $modifier, $channels = ['database'], $changes = [])
+    public function __construct($entityType, $entityId, $entityName, $modifier, $channels = ['database'], $changes = [], $url = null)
     {
         $this->entityType = $entityType;
         $this->entityId = $entityId;
@@ -46,6 +55,7 @@ class EntityModifiedNotification extends Notification implements ShouldQueue
         $this->modifier = $modifier;
         $this->channels = $channels;
         $this->changes = $changes;
+        $this->url = $url;
     }
 
     /**
@@ -91,7 +101,8 @@ class EntityModifiedNotification extends Notification implements ShouldQueue
             }
         }
 
-        $mail->action('Voir l\'entité', url("/{$this->entityType}/{$this->entityId}"))
+        $linkUrl = $this->url ?? url("/{$this->entityType}/{$this->entityId}");
+        $mail->action('Voir l\'entité', $linkUrl)
             ->line('Merci d\'utiliser Krosmoz JDR.');
         return $mail;
     }
@@ -115,6 +126,7 @@ class EntityModifiedNotification extends Notification implements ShouldQueue
             $displayed++;
         }
         $more_changes = count($this->changes) > 3;
+        $linkUrl = $this->url ?? url("/{$this->entityType}/{$this->entityId}");
         return [
             'entity_type' => $this->entityType,
             'entity_id' => $this->entityId,
@@ -122,7 +134,7 @@ class EntityModifiedNotification extends Notification implements ShouldQueue
             'modifier_id' => $this->modifier->id,
             'modifier_name' => $this->modifier->name,
             'message' => "L'entité {$this->entityType} : '{$this->entityName}' a été modifiée par {$this->modifier->name}.",
-            'url' => url("/{$this->entityType}/{$this->entityId}"),
+            'url' => $linkUrl,
             'changes' => $changes,
             'more_changes' => $more_changes,
         ];

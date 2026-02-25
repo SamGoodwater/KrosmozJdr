@@ -33,7 +33,7 @@ app/Services/Scrapping/
 ├── (images)                # IntegrationService::attachImageFromUrl (Media Library)
 ├── Conversion/             # Handlers métier (ex. résistances)
 ├── Registry/               # TypeRegistryBatchTouchService
-├── Constants/              # EntityLimits, DofusDbLimits
+├── Core/Config/             # ConfigLoader, CollectAliasResolver, EntityMetaService (types autorisés, maxId)
 └── [racine]                # DofusDbConversionFormulaService, ConversionHandlerRegistry
 ```
 

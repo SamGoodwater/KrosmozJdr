@@ -3,6 +3,7 @@
  * @description
  * Page d'édition du profil utilisateur.
  * - Édition des informations de base (nom, email, avatar)
+ * - Lien vers Paramètres du compte (page dédiée, onglet Notifications)
  * - Actions administrateurs (mot de passe, rôle)
  * - Structure DRY, accessibilité, tooltips, etc.
  */
@@ -15,6 +16,7 @@ import InputField from '@/Pages/Molecules/data-input/InputField.vue';
 import File from '@/Pages/Molecules/data-input/FileField.vue';
 import SelectField from '@/Pages/Molecules/data-input/SelectField.vue';
 import Btn from '@/Pages/Atoms/action/Btn.vue';
+import Route from '@/Pages/Atoms/action/Route.vue';
 import Avatar from '@/Pages/Atoms/data-display/Avatar.vue';
 import BadgeRole from '@/Pages/Molecules/user/BadgeRole.vue';
 import VerifyMailAlert from '@/Pages/Molecules/user/VerifyMailAlert.vue';
@@ -37,11 +39,11 @@ const user = computed(() => {
     return userData;
 });
 
-// Formulaire unifié pour le profil (nom + email)
-// Initialiser avec des valeurs vides, puis remplir via watch
+// Formulaire unifié pour le profil (nom + email + préférences de notifications)
 const formProfile = useForm({
     name: '',
     email: '',
+    notification_preferences: {},
 });
 
 // Rôle (admin)
@@ -69,6 +71,12 @@ const initializeForms = (userData) => {
     if (data.role !== undefined) {
         formRole.role = data.role;
     }
+    const types = page.props.notificationTypes || {};
+    const prefs = data.notification_preferences || {};
+    const defaultPrefs = Object.fromEntries(
+        Object.keys(types).map((k) => [k, types[k].channels_default || ['database']])
+    );
+    formProfile.notification_preferences = { ...defaultPrefs, ...prefs };
 };
 
 // Surveiller le computed user pour initialiser les formulaires dès que les données sont disponibles
@@ -311,6 +319,7 @@ const roleValidation = computed(() => {
         showNotification: false
     };
 });
+
 </script>
 
 <template>
@@ -327,6 +336,14 @@ const roleValidation = computed(() => {
                 Mettez à jour les informations de votre compte et votre adresse
                 email.
             </p>
+            <Route
+                v-if="isSelfUpdate"
+                :href="route('user.settings')"
+                class="link link-primary text-sm mt-2 inline-flex items-center gap-1"
+            >
+                <i class="fa-solid fa-cog" aria-hidden="true"></i>
+                Paramètres du compte
+            </Route>
         </header>
         <form @submit.prevent class="mt-6 space-y-6" autocomplete="off">
             <div class="flex flex-row gap-4">
@@ -348,7 +365,7 @@ const roleValidation = computed(() => {
                             color="primary"
                             inputLabel="Avatar"
                         >
-                            <template #default="{ url, source, canDelete }">
+                            <template #default="{ url, canDelete }">
                                 <div class="relative inline-block group">
                                     <Avatar
                                         :src="url || user?.avatar || '/storage/images/avatar/default_avatar_head.webp'"
@@ -423,7 +440,7 @@ const roleValidation = computed(() => {
                     </Btn>
                 </Tooltip>
             </div>
-            
+
             <!-- Section mot de passe -->
             <div class="mt-6">
                 <hr class="border-gray-300 dark:border-gray-700 my-4" />

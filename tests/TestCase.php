@@ -11,6 +11,21 @@ abstract class TestCase extends BaseTestCase
     use RefreshDatabase;
 
     /**
+     * Force SQLite en mémoire pour les tests si le driver est dispo (évite MySQL quand .env écrase phpunit.xml).
+     */
+    public function createApplication(): \Illuminate\Foundation\Application
+    {
+        $app = parent::createApplication();
+        if (extension_loaded('pdo_sqlite')) {
+            $app['config']->set('database.default', 'sqlite');
+            $app['config']->set('database.connections.sqlite.database', ':memory:');
+            $app->forgetInstance('db');
+        }
+
+        return $app;
+    }
+
+    /**
      * Configuration des tests d'authentification.
      */
     protected function setUp(): void

@@ -42,6 +42,8 @@ class UserResource extends JsonResource
             'avatar_is_default' => $this->avatar === null, // Indique si l'avatar est par défaut
             'notifications_enabled' => $this->notifications_enabled,
             'notification_channels' => $this->notification_channels,
+            'notification_preferences' => $this->notification_preferences ?? [],
+            'last_login_at' => $this->last_login_at?->toISOString(),
             'created_at' => $this->created_at?->toISOString(),
             'updated_at' => $this->updated_at?->toISOString(),
 

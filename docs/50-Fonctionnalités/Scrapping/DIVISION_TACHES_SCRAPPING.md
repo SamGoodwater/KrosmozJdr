@@ -11,7 +11,7 @@ Ce document décrit la répartition des responsabilités entre **contrôleurs** 
 | Contrôleur | Responsabilités |
 |------------|-----------------|
 | **ScrappingConfigController** | Lit la config via `ConfigLoader`, expose `label`, `meta`, `filters`, `relations`, **comparisonKeys** pour l’UI. Une seule source : les JSON d’entité. |
-| **ScrappingController** | **meta** : agrège limites + labels (alias, config, `EntityLimits` en fallback). **preview / previewBatch** : appelle `Orchestrator` + `IntegrationService::getExistingAttributesForComparison`, renvoie raw + converted + existing. **import*** : valide la requête, appelle `Orchestrator::runOne`, renvoie le résultat. **resolveEntityForImport** : délègue à `CollectAliasResolver`. |
+| **ScrappingController** | **meta** : agrège limites + labels (alias, config, **EntityMetaService** pour types autorisés et maxId). **preview / previewBatch** : appelle `Orchestrator` + `IntegrationService::getExistingAttributesForComparison`, renvoie raw + converted + existing. **import*** : valide la requête, appelle `Orchestrator::runOne`, renvoie le résultat. **resolveEntityForImport** : délègue à `CollectAliasResolver`. |
 | **ScrappingSearchController** | Valide l’entité, extrait filtres/pagination, appelle `CollectService::fetchManyResult`, délègue l’enrichissement à **SearchResultEnricher**, renvoie JSON. |
 | **ScrappingImportController** / **ScrappingV2Controller** | Import unitaire : résolution d’entité, options, `Orchestrator::runOne`, réponse. |
 | **ResourceTypeRegistryController** / **ItemTypeRegistryController** / **ConsumableTypeRegistryController** | Registres de types (allowed/blocked), listes, bulk PATCH, etc. Hors pipeline collect/conversion. |
@@ -82,10 +82,10 @@ Ce document décrit la répartition des responsabilités entre **contrôleurs** 
 
 - Dans **meta()**, le libellé est désormais pris dans l’ordre : alias (`CollectAliasResolver`), puis config (`cfg['label']`), puis **getEntityLabel()** en secours.
 
-### 5.3 Limites (maxId) : config vs EntityLimits
+### 5.3 Limites (maxId) : config + EntityMetaService (fait)
 
 - Les JSON d’entité peuvent définir **meta.maxId**.
-- **EntityLimits::LIMITS** définit aussi des plages max par type (validation preview, import range).
+- **EntityMetaService** (Core/Config) dérive les types autorisés et le maxId depuis la config (meta.maxId + fallback unique).
 
 **Recommandation** : à long terme, dériver les limites de validation depuis la config (meta.maxId) lorsque c’est possible, et n’utiliser `EntityLimits` qu’en secours ou pour des caps “métier” explicites (éviter deux sources différentes pour la même chose).
 

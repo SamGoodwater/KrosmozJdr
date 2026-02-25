@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace App\Http\Controllers\Scrapping;
 
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\Scrapping\Concerns\RespondsWithOrchestratorResult;
 use App\Services\Scrapping\Core\Config\CollectAliasResolver;
 use App\Services\Scrapping\Core\Config\ConfigLoader;
 use App\Services\Scrapping\Core\Orchestrator\Orchestrator;
-use App\Services\Scrapping\Core\Orchestrator\OrchestratorResult;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -20,6 +20,14 @@ use Illuminate\Support\Facades\Log;
  */
 class ScrappingImportController extends Controller
 {
+    use RespondsWithOrchestratorResult;
+
+    public function __construct(
+        private CollectAliasResolver $aliasResolver,
+        private ConfigLoader $configLoader,
+        private Orchestrator $orchestrator,
+    ) {}
+
     /**
      * Import d'un seul objet via le pipeline.
      *
@@ -28,25 +36,16 @@ class ScrappingImportController extends Controller
      */
     public function importOne(Request $request, string $entity, int $id): JsonResponse
     {
-        $aliasResolver = CollectAliasResolver::default();
-        $aliasConfig = $aliasResolver->resolve($entity);
-        $source = 'dofusdb';
-        $entityKey = $entity;
-
-        if ($aliasConfig !== null) {
-            $source = (string) ($aliasConfig['source'] ?? $source);
-            $entityKey = (string) ($aliasConfig['entity'] ?? $entity);
-        } else {
-            $entityKey = $entity === 'class' ? 'breed' : $entity;
-        }
+        $resolved = $this->resolveEntityForImport($entity);
+        $source = $resolved['source'];
+        $entityKey = $resolved['entity'];
 
         try {
-            $configLoader = app(ConfigLoader::class);
-            $entities = $configLoader->listEntities($source);
+            $entities = $this->configLoader->listEntities($source);
             if (!in_array($entityKey, $entities, true)) {
                 return response()->json([
                     'success' => false,
-                    'message' => "Entité inconnue : {$entity}. Valeurs : " . implode(', ', $aliasResolver->listAliases()),
+                    'message' => "Entité inconnue : {$entity}. Valeurs : " . implode(', ', $this->aliasResolver->listAliases()),
                     'timestamp' => now()->toISOString(),
                 ], 422);
             }
@@ -60,18 +59,10 @@ class ScrappingImportController extends Controller
             ], 503);
         }
 
-        $options = [
-            'convert' => true,
-            'validate' => $request->boolean('validate', true),
-            'integrate' => $request->boolean('integrate', true),
-            'dry_run' => $request->boolean('dry_run', false),
-            'force_update' => $request->boolean('force_update', false),
-            'lang' => (string) $request->input('lang', 'fr'),
-        ];
+        $options = $this->optionsFromRequest($request);
 
         try {
-            $orchestrator = Orchestrator::default();
-            $result = $orchestrator->runOne($source, $entityKey, $id, $options);
+            $result = $this->orchestrator->runOne($source, $entityKey, $id, $options);
 
             return $this->resultToJson($result, 201);
         } catch (\Throwable $e) {
@@ -89,33 +80,50 @@ class ScrappingImportController extends Controller
         }
     }
 
-    private function resultToJson(OrchestratorResult $result, int $successStatus = 200): JsonResponse
+    /**
+     * Options d'import alignées sur ScrappingController (replace_mode, exclude_from_update, etc.).
+     *
+     * @return array{convert: bool, validate: bool, integrate: bool, dry_run: bool, force_update: bool, include_relations: bool, lang: string, ...}
+     */
+    private function optionsFromRequest(Request $request): array
     {
-        if ($result->isSuccess()) {
-            $data = null;
-            $integrationResult = $result->getIntegrationResult();
-            if ($integrationResult !== null && $integrationResult->isSuccess()) {
-                $data = $integrationResult->getData();
-            }
-            if ($data === null) {
-                $data = $result->getConverted();
-            }
+        $replaceMode = $request->input('replace_mode');
+        $replaceMode = is_string($replaceMode) && in_array($replaceMode, ['never', 'draft_raw_only', 'always'], true) ? $replaceMode : null;
 
-            return response()->json([
-                'success' => true,
-                'message' => $result->getMessage(),
-                'data' => $data,
-                'timestamp' => now()->toISOString(),
-            ], $successStatus);
+        $excludeFromUpdate = $request->input('exclude_from_update');
+        if (!is_array($excludeFromUpdate)) {
+            $excludeFromUpdate = [];
+        }
+        $excludeFromUpdate = array_values(array_filter(array_map('strval', $excludeFromUpdate)));
+
+        $propertyWhitelist = $request->input('property_whitelist');
+        if (is_array($propertyWhitelist)) {
+            $propertyWhitelist = array_values(array_filter(array_map('strval', $propertyWhitelist)));
+        } else {
+            $propertyWhitelist = is_string($propertyWhitelist)
+                ? array_values(array_filter(array_map('trim', explode(',', $propertyWhitelist))))
+                : [];
         }
 
-        $errors = $result->getValidationErrors();
+        $forceUpdate = $request->boolean('force_update', false);
+        if ($replaceMode === 'always') {
+            $forceUpdate = true;
+        } elseif ($replaceMode === 'never') {
+            $forceUpdate = false;
+        }
 
-        return response()->json([
-            'success' => false,
-            'message' => $result->getMessage(),
-            'errors' => $errors,
-            'timestamp' => now()->toISOString(),
-        ], 400);
+        return [
+            'convert' => true,
+            'validate' => $request->boolean('validate', true),
+            'integrate' => !$request->boolean('validate_only', false) && !$request->boolean('dry_run', false),
+            'dry_run' => $request->boolean('dry_run', false),
+            'force_update' => $forceUpdate,
+            'replace_mode' => $replaceMode,
+            'include_relations' => $request->boolean('include_relations', true),
+            'exclude_from_update' => $excludeFromUpdate,
+            'property_whitelist' => $propertyWhitelist,
+            'download_images' => $request->boolean('download_images', $request->boolean('with_images', true)),
+            'lang' => (string) $request->input('lang', 'fr'),
+        ];
     }
 }

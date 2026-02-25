@@ -3,10 +3,10 @@
 namespace App\Http\Controllers\Scrapping;
 
 use App\Http\Controllers\Controller;
-use App\Services\Scrapping\Constants\EntityLimits;
 use App\Services\Scrapping\Core\Collect\CollectService;
 use App\Services\Scrapping\Core\Config\CollectAliasResolver;
 use App\Services\Scrapping\Core\Config\ConfigLoader;
+use App\Services\Scrapping\Core\Config\EntityMetaService;
 use App\Services\Scrapping\Core\Search\SearchResultEnricher;
 use App\Services\Scrapping\DataCollect\ItemEntityTypeFilterService;
 use App\Services\Scrapping\DataCollect\MonsterRaceFilterService;
@@ -26,6 +26,7 @@ class ScrappingSearchController extends Controller
     public function __construct(
         private ConfigLoader $configLoader,
         private CollectAliasResolver $aliasResolver,
+        private EntityMetaService $entityMeta,
         private CollectService $collectService,
         private SearchResultEnricher $searchEnricher,
         private ItemEntityTypeFilterService $itemEntityTypeFilters,
@@ -218,7 +219,7 @@ class ScrappingSearchController extends Controller
         }
 
         $entityKey = strtolower($entity);
-        $cap = EntityLimits::capFor($entityKey, 20000);
+        $cap = $this->entityMeta->getMaxIdForType($entityKey);
 
         $hasMaxItems = $request->has('max_items');
         $derivedMaxItems = false;

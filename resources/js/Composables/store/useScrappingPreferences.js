@@ -19,7 +19,7 @@ export const DEFAULTS = {
     optSkipCache: false,
     optForceUpdate: false,
     optManualChoice: false,
-    perPage: 100,
+    perPage: 50,
     filterIds: "",
     filterName: "",
     optPropertyWhitelist: "",

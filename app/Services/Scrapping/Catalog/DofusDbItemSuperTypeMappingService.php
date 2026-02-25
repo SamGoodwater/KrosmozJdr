@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Services\Scrapping\Catalog;
 
 /**
@@ -76,6 +78,38 @@ class DofusDbItemSuperTypeMappingService
             'superTypeIds' => array_values(array_unique(array_map('intval', $superTypeIds))),
             'excludeSuperTypeIds' => array_values(array_unique(array_map('intval', $excludeSuperTypeIds))),
         ];
+    }
+
+    /**
+     * Retourne la catégorie Krosmoz (resource, consumable, equipment) pour un superTypeId DofusDB.
+     * Utilisé pour l'extraction des types (Phase 3) ; exclut les superTypes non inclus (excluded).
+     *
+     * @return 'resource'|'consumable'|'equipment'|null null = exclu
+     */
+    public function getCategoryForSuperTypeId(int $superTypeId): ?string
+    {
+        if ($superTypeId <= 0) {
+            return null;
+        }
+        $resource = $this->getGroup('resource');
+        $consumable = $this->getGroup('consumable');
+        $equipment = $this->getGroup('equipment');
+
+        $resourceIds = array_flip($resource['superTypeIds'] ?? []);
+        $consumableIds = array_flip($consumable['superTypeIds'] ?? []);
+        $excludeIds = array_flip($equipment['excludeSuperTypeIds'] ?? []);
+
+        if (isset($resourceIds[$superTypeId])) {
+            return 'resource';
+        }
+        if (isset($consumableIds[$superTypeId])) {
+            return 'consumable';
+        }
+        if (!isset($excludeIds[$superTypeId])) {
+            return 'equipment';
+        }
+
+        return null;
     }
 
     /**

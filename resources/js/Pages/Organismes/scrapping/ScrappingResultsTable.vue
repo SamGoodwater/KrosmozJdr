@@ -22,8 +22,10 @@ const SCRAP_ENTITY_TO_LABEL = {
     panoply: "item",
 };
 
-function entityKeyForRow(row, entityTypeStr) {
-    const raw = row?.isRelation ? (row.relation?.type ?? row.item?.type) : entityTypeStr;
+function entityKeyForRow(row, entityTypeStr, getRelationEntityType) {
+    const raw = row?.isRelation
+        ? (getRelationEntityType?.(row) ?? row.relation?.type ?? row.item?.type)
+        : entityTypeStr;
     const key = String(raw ?? "").trim().toLowerCase();
     return SCRAP_ENTITY_TO_LABEL[key] ?? (key || "item");
 }
@@ -42,7 +44,9 @@ const props = defineProps({
     tripleType: { type: Function, default: () => ({ existant: null, converti: null, brut: null }) },
     comparisonRows: { type: Function, default: () => [] },
     formatCompareVal: { type: Function, default: (v) => (v != null ? String(v) : "—") },
-    relationTypeLabel: { type: Function, default: (r) => r?.type ?? "—" },
+    relationTypeLabel: { type: Function, default: (row) => row?.relation?.type ?? "—" },
+    /** Pour les lignes relation : type résolu (resource/consumable/equipment) pour l’icône entité. */
+    getRelationEntityType: { type: Function, default: () => undefined },
     supports: { type: Function, default: () => false },
     formatName: { type: Function, default: (n) => (n?.fr ?? n?.en ?? (typeof n === "string" ? n : "—")) },
     existsLabel: { type: Function, default: (it) => (it?.exists ? "Existe" : "Nouveau") },
@@ -139,13 +143,13 @@ function selectedHas(id) {
                         </td>
                         <td class="align-middle">
                             <EntityLabel
-                                :entity="entityKeyForRow(row, entityTypeStr)"
+                                :entity="entityKeyForRow(row, entityTypeStr, getRelationEntityType)"
                                 variant="icon-rect"
                                 size="sm"
                             />
                         </td>
                         <td class="align-top text-sm" :class="row.isRelation ? 'text-primary-300 italic' : ''">
-                            {{ formatName(tripleName(row).converti) ?? formatName(row.item?.name) ?? (row.isRelation ? relationTypeLabel(row.relation) + " (" + row.item?.id + ")" : "—") }}
+                            {{ formatName(tripleName(row).converti) ?? formatName(row.item?.name) ?? (row.isRelation ? relationTypeLabel(row) + " (" + row.item?.id + ")" : "—") }}
                         </td>
                         <td>
                             <Tooltip :content="existsTooltip(row.item)">

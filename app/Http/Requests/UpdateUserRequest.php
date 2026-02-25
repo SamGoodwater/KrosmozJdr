@@ -10,7 +10,8 @@ use Illuminate\Support\Facades\Auth;
 /**
  * FormRequest pour la mise à jour d'un utilisateur.
  *
- * Valide les champs principaux du profil utilisateur, y compris l'avatar (image, max 5MB).
+ * Valide : name, email, avatar (image max 5MB), notifications_enabled, notification_channels,
+ * notification_preferences (par type : channels = ['database','mail'], frequency = instant|daily|weekly|monthly).
  */
 class UpdateUserRequest extends FormRequest
 {
@@ -39,7 +40,12 @@ class UpdateUserRequest extends FormRequest
             ],
             'notifications_enabled' => ['sometimes', 'boolean'],
             'notification_channels' => ['sometimes', 'array'],
-            'notification_channels.*' => ['sometimes', 'string', \App\Models\User::NOTIFICATION_CHANNELS],
+            'notification_channels.*' => ['sometimes', 'string', Rule::in(\App\Models\User::NOTIFICATION_CHANNELS)],
+            'notification_preferences' => ['sometimes', 'nullable', 'array'],
+            'notification_preferences.*' => ['sometimes', 'array'],
+            'notification_preferences.*.channels' => ['sometimes', 'array'],
+            'notification_preferences.*.channels.*' => ['sometimes', 'string', Rule::in(['database', 'mail'])],
+            'notification_preferences.*.frequency' => ['sometimes', 'string', Rule::in(['instant', 'daily', 'weekly', 'monthly'])],
             'password' => ['sometimes', 'nullable', 'string', 'min:8'],
             'avatar' => ['sometimes', 'nullable', 'image', 'max:5120'], // 5MB max
         ];

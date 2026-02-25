@@ -114,6 +114,28 @@ class UserController extends Controller
             'user' => new UserResource($user),
             'roles' => User::ROLES,
             'notificationChannels' => User::NOTIFICATION_CHANNELS,
+            'notificationTypes' => config('notifications.types', []),
+            'notificationChannelsLabels' => config('notifications.channels', []),
+            'notificationFrequencies' => config('notifications.frequencies', []),
+        ]);
+    }
+
+    /**
+     * Affiche la page des paramètres du compte (onglets : notifications, etc.).
+     * Profil courant uniquement.
+     *
+     * @return \Inertia\Response
+     */
+    public function settings()
+    {
+        $user = Auth::user();
+        $this->authorize('update', $user);
+        $user->load([]);
+        return Inertia::render('Pages/user/Settings', [
+            'user' => new UserResource($user),
+            'notificationTypes' => config('notifications.types', []),
+            'notificationChannelsLabels' => config('notifications.channels', []),
+            'notificationFrequencies' => config('notifications.frequencies', []),
         ]);
     }
 
@@ -142,9 +164,35 @@ class UserController extends Controller
             $media = $adder->toMediaCollection('avatars');
             $data['avatar'] = $media->getUrl();
         }
+        // Normalisation des préférences de notifications : forme { channels: [], frequency: 'instant'|... }
+        if (array_key_exists('notification_preferences', $data)) {
+            $allowedTypes = array_keys(config('notifications.types', []));
+            $prefs = $data['notification_preferences'];
+            if (is_array($prefs)) {
+                $data['notification_preferences'] = [];
+                foreach (array_intersect_key($prefs, array_flip($allowedTypes)) as $type => $val) {
+                    $channels = [];
+                    $frequency = config('notifications.types.' . $type . '.frequency_default', 'instant');
+                    if (is_array($val)) {
+                        if (isset($val['channels']) && is_array($val['channels'])) {
+                            $channels = array_values(array_intersect($val['channels'], ['database', 'mail']));
+                            $frequency = in_array($val['frequency'] ?? '', ['instant', 'daily', 'weekly', 'monthly'], true)
+                                ? $val['frequency'] : $frequency;
+                        } else {
+                            // Format legacy : valeur = tableau de canaux uniquement
+                            $channels = array_values(array_intersect($val, ['database', 'mail']));
+                        }
+                    }
+                    $data['notification_preferences'][$type] = ['channels' => $channels, 'frequency' => $frequency];
+                }
+            }
+        }
         $user->update($data);
         NotificationService::notifyProfileModified($user, Auth::user(), $old);
-        // Redirection selon le contexte
+        // Redirection selon le contexte ou la demande (ex. depuis la page paramètres)
+        if ($request->input('redirect') === 'settings' && $user->id === Auth::id()) {
+            return redirect()->to(route('user.settings').'#notifications')->with('success', 'Préférences enregistrées.');
+        }
         if ($user->id === Auth::id()) {
             return redirect()->route('user.show', $user)->with('success', 'Profil mis à jour.');
         }
@@ -160,6 +208,11 @@ class UserController extends Controller
     public function delete(User $user)
     {
         $this->authorize('delete', $user);
+        try {
+            NotificationService::notifyUserDeleted($user, Auth::user());
+        } catch (\Throwable $e) {
+            report($e);
+        }
         $user->delete();
         return redirect()->route('user.index')->with('success', 'Utilisateur supprimé.');
     }

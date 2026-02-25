@@ -2,6 +2,7 @@
 
 namespace App\Services\Scrapping\Core\Collect;
 
+use App\Services\Scrapping\Core\Config\CollectAliasResolver;
 use App\Services\Scrapping\Core\Config\ConfigLoader;
 use App\Services\Scrapping\Http\DofusDbClient;
 use Illuminate\Support\Facades\Http;
@@ -15,12 +16,27 @@ use Illuminate\Support\Facades\Log;
  */
 final class CollectService
 {
-    private const ENTITY_ALIASES = ['class' => 'breed'];
-
     public function __construct(
         private ConfigLoader $configLoader,
         private ?DofusDbClient $dofusDbClient = null,
+        private ?CollectAliasResolver $aliasResolver = null,
     ) {
+    }
+
+    /**
+     * Résout un alias d'entité (ex. class) vers la clé de config (ex. breed).
+     * S'appuie sur CollectAliasResolver lorsqu'injecté, sinon fallback class → breed.
+     */
+    private function resolveConfigEntity(string $entity): string
+    {
+        if ($this->aliasResolver !== null) {
+            $cfg = $this->aliasResolver->resolve($entity);
+            if ($cfg !== null && isset($cfg['entity'])) {
+                return (string) $cfg['entity'];
+            }
+        }
+
+        return $entity === 'class' ? 'breed' : $entity;
     }
 
     /**
@@ -31,7 +47,7 @@ final class CollectService
      */
     public function fetchOne(string $source, string $entity, int $id, array $options = []): array
     {
-        $configEntity = self::ENTITY_ALIASES[$entity] ?? $entity;
+        $configEntity = $this->resolveConfigEntity($entity);
         $sourceConfig = $this->configLoader->loadSource($source);
         $entityConfig = $this->configLoader->loadEntity($source, $configEntity);
 
@@ -412,7 +428,7 @@ final class CollectService
      */
     public function fetchManyResult(string $source, string $entity, array $filters = [], array $options = []): array
     {
-        $configEntity = self::ENTITY_ALIASES[$entity] ?? $entity;
+        $configEntity = $this->resolveConfigEntity($entity);
         $result = $this->fetchManyWithFeathersEncoding($source, $configEntity, $filters, $options);
         $meta = $result['meta'];
         return [

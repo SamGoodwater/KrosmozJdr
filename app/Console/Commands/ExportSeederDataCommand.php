@@ -12,6 +12,9 @@ use App\Models\CharacteristicSpell;
 use App\Models\Scrapping\ScrappingEntityMapping;
 use App\Models\Scrapping\ScrappingEntityMappingTarget;
 use App\Models\SpellEffectType;
+use App\Models\Type\ConsumableType;
+use App\Models\Type\ItemType;
+use App\Models\Type\ResourceType;
 use App\Services\Characteristic\Getter\CharacteristicGetterService;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\File;
@@ -41,9 +44,10 @@ class ExportSeederDataCommand extends Command
                             {--characteristics : Exporter uniquement characteristics}
                             {--formulas : Exporter les formules de conversion (tables characteristic_creature/object/spell)}
                             {--spell-effect-types : Exporter uniquement spell_effect_types}
-                            {--scrapping-mappings : Exporter les règles de mapping scrapping (DofusDB → Krosmoz)}';
+                            {--scrapping-mappings : Exporter les règles de mapping scrapping (DofusDB → Krosmoz)}
+                            {--item-types : Exporter resource_types, consumable_types, item_types (types item scrapping)}';
 
-    protected $description = 'Exporte characteristics, formules, spell_effect_types et mapping scrapping vers database/seeders/data/';
+    protected $description = 'Exporte characteristics, formules, spell_effect_types, mapping scrapping et types item vers database/seeders/data/';
 
     public function __construct(
         private readonly CharacteristicGetterService $getter
@@ -58,7 +62,8 @@ class ExportSeederDataCommand extends Command
         }
 
         $all = ! $this->option('characteristics') && ! $this->option('formulas')
-            && ! $this->option('spell-effect-types') && ! $this->option('scrapping-mappings');
+            && ! $this->option('spell-effect-types') && ! $this->option('scrapping-mappings')
+            && ! $this->option('item-types');
 
         $dir = database_path('seeders/data');
         if (! is_dir($dir)) {
@@ -82,6 +87,9 @@ class ExportSeederDataCommand extends Command
         }
         if ($all || $this->option('scrapping-mappings')) {
             $this->exportScrappingMappings($dir);
+        }
+        if ($all || $this->option('item-types')) {
+            $this->exportItemTypes($dir);
         }
 
         $this->cleanupOldBackups();
@@ -115,6 +123,11 @@ class ExportSeederDataCommand extends Command
         }
         if ($all || $this->option('scrapping-mappings')) {
             $files[] = 'scrapping_entity_mappings.php';
+        }
+        if ($all || $this->option('item-types')) {
+            $files[] = 'resource_types.php';
+            $files[] = 'consumable_types.php';
+            $files[] = 'item_types.php';
         }
 
         return array_values(array_unique($files));
@@ -312,6 +325,32 @@ class ExportSeederDataCommand extends Command
         $content = "<?php\n\ndeclare(strict_types=1);\n\n/**\n * Types d'effets de sort (export BDD).\n * Généré par php artisan db:export-seeder-data\n */\n\nreturn " . $this->varExportShort($rows) . ";\n";
         file_put_contents($path, $content);
         $this->info('Exported ' . count($rows) . ' spell effect types → ' . $path);
+    }
+
+    private function exportItemTypes(string $dir): void
+    {
+        $this->exportItemTypesTable($dir, ResourceType::query()->whereNotNull('dofusdb_type_id')->orderBy('dofusdb_type_id')->get(), 'resource_types', 'resource_types', 'Ressources (superType 9). Régénéré par : php artisan db:export-seeder-data --item-types');
+        $this->exportItemTypesTable($dir, ConsumableType::query()->whereNotNull('dofusdb_type_id')->orderBy('dofusdb_type_id')->get(), 'consumable_types', 'consumable_types', 'Consommables (superTypes 6, 70). Régénéré par : php artisan db:export-seeder-data --item-types');
+        $this->exportItemTypesTable($dir, ItemType::query()->whereNotNull('dofusdb_type_id')->orderBy('dofusdb_type_id')->get(), 'item_types', 'item_types', 'Équipements. Régénéré par : php artisan db:export-seeder-data --item-types');
+    }
+
+    /**
+     * @param  \Illuminate\Database\Eloquent\Collection<int, ResourceType|ConsumableType|ItemType>  $rows
+     */
+    private function exportItemTypesTable(string $dir, $rows, string $filename, string $label, string $comment): void
+    {
+        $data = $rows->map(fn ($r) => [
+            'dofusdb_type_id' => $r->dofusdb_type_id,
+            'name' => $r->name,
+            'decision' => $r->decision,
+            'state' => $r->state,
+            'read_level' => $r->read_level,
+            'write_level' => $r->write_level,
+        ])->all();
+        $path = $dir . '/' . $filename . '.php';
+        $content = "<?php\n\ndeclare(strict_types=1);\n\n/**\n * {$label} – {$comment}\n */\n\nreturn " . $this->varExportShort($data) . ";\n";
+        file_put_contents($path, $content);
+        $this->info('Exported ' . count($data) . ' ' . $label . ' → ' . $path);
     }
 
     private function exportScrappingMappings(string $dir): void

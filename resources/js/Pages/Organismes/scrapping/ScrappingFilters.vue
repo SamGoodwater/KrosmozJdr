@@ -45,16 +45,18 @@ const props = defineProps({
     typeManagerConfig: { type: [Object, null], default: null },
     pageIndex: { type: Number, default: 0 },
     pageCount: { type: Number, default: 1 },
-    perPage: { type: Number, default: 100 },
+    perPage: { type: Number, default: 50 },
     totalRows: { type: Number, default: 0 },
     canPrev: { type: Boolean, default: false },
     canNext: { type: Boolean, default: false },
     searching: { type: Boolean, default: false },
     lastMeta: { type: [Object, null], default: null },
     rawItemsLength: { type: Number, default: 0 },
+    /** Afficher le bouton Annuler (recherche ou conversion en cours). */
+    cancelVisible: { type: Boolean, default: false },
 });
 
-const emit = defineEmits(["update:selectedEntityType", "update:filterIds", "update:filterName", "update:typeMode", "update:filterTypeIds", "update:filterTypeIdsNot", "update:selectedKnownTypeInclude", "update:selectedKnownTypeExclude", "update:raceMode", "update:filterRaceIds", "update:selectedKnownRace", "update:filterRaceId", "update:filterBreedId", "update:filterLevelMin", "update:filterLevelMax", "search", "open-type-manager", "add-known-type", "remove-known-type", "add-known-race", "remove-known-race", "prev", "next", "first", "last", "go", "set-page-size"]);
+const emit = defineEmits(["update:selectedEntityType", "update:filterIds", "update:filterName", "update:typeMode", "update:filterTypeIds", "update:filterTypeIdsNot", "update:selectedKnownTypeInclude", "update:selectedKnownTypeExclude", "update:raceMode", "update:filterRaceIds", "update:selectedKnownRace", "update:filterRaceId", "update:filterBreedId", "update:filterLevelMin", "update:filterLevelMax", "search", "open-type-manager", "add-known-type", "remove-known-type", "add-known-race", "remove-known-race", "prev", "next", "first", "last", "go", "set-page-size", "cancel"]);
 
 function supports(key) {
     const supported = props.config?.[entityTypeStr.value]?.filters?.supported;
@@ -323,6 +325,17 @@ const entityTypeStr = computed(() => {
                     <Loading v-if="searching" class="mr-2" />
                     <Icon v-else source="fa-solid fa-magnifying-glass" alt="Rechercher" pack="solid" class="mr-2" />
                     Rechercher
+                </Btn>
+                <Btn
+                    v-if="cancelVisible"
+                    color="error"
+                    variant="outline"
+                    size="sm"
+                    title="Arrêter la recherche et la conversion en cours"
+                    @click="emit('cancel')"
+                >
+                    <Icon source="fa-solid fa-stop" alt="" pack="solid" class="mr-2" />
+                    Annuler
                 </Btn>
                 <div v-if="lastMeta" class="text-xs text-primary-300">
                     <Badge :content="String(lastMeta.returned ?? rawItemsLength)" color="primary" />

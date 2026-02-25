@@ -88,7 +88,14 @@ class OrchestratorTest extends TestCase
         Http::fake(function ($request) use (&$callCount) {
             $url = (string) $request->url();
             $callCount++;
-            if (str_contains($url, 'skip=0') || str_contains($url, '%24skip=0')) {
+            // CollectService utilise page_size 50 par défaut ; extraire skip depuis l’URL (ex. %24skip=0 ou $skip=0)
+            $skip = 0;
+            if (preg_match('/[\$%]24skip=(\d+)/', $url, $m)) {
+                $skip = (int) $m[1];
+            } elseif (preg_match('/[?&]skip=(\d+)/', $url, $m)) {
+                $skip = (int) $m[1];
+            }
+            if ($skip === 0) {
                 return Http::response([
                     'data' => [['id' => 1], ['id' => 2]],
                     'total' => 3,
@@ -96,7 +103,7 @@ class OrchestratorTest extends TestCase
                     'skip' => 0,
                 ], 200);
             }
-            if (str_contains($url, 'skip=2') || str_contains($url, '%24skip=2')) {
+            if ($skip === 2) {
                 return Http::response([
                     'data' => [['id' => 3]],
                     'total' => 3,
@@ -107,7 +114,12 @@ class OrchestratorTest extends TestCase
             return Http::response([], 404);
         });
 
-        $result = $this->orchestrator->runMany('dofusdb', 'monster', [], ['limit' => 0, 'offset' => 0]);
+        $result = $this->orchestrator->runMany('dofusdb', 'monster', [], [
+            'limit' => 0,
+            'offset' => 0,
+            'page_size' => 2,
+            'skip_cache' => true, // force les appels HTTP pour que le mock soit bien invoqué (évite le cache DofusDB)
+        ]);
 
         $this->assertTrue($result->isSuccess());
         $this->assertCount(3, $result->getConverted());

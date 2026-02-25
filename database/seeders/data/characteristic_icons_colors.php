@@ -3,11 +3,11 @@
 declare(strict_types=1);
 
 /**
- * Mapping clé caractéristique → icône (fichier dans storage/app/public/images/icons/characteristics/)
+ * Mapping clé caractéristique → icône (fichier dans storage/app/public/images/icons/caracteristics/)
  * et → couleur (hex). Utilisé par CharacteristicSeeder pour compléter icon/color quand NULL.
  *
- * Icônes disponibles (copiées depuis icons/caracteristiques/old/) : life_temp, shield, casting_time,
- * dice12, duration, time_before_use_again, none.
+ * Icônes disponibles dans caracteristics/ : life_temp.svg, shield.svg, casting_time.svg,
+ * dice12.svg, duration.svg, time_before_use_again.svg ; ou .webp (pa, pm, po, initiative, etc.).
  */
 return [
     'icons' => [
@@ -28,6 +28,24 @@ return [
         'de_vie_creature' => 'dice12.svg',
         'number_between_two_cast_spell' => 'time_before_use_again.svg',
         'number_between_two_cast_editable_spell' => 'time_before_use_again.svg',
+        'po_spell' => 'po.webp',
+        'area_spell' => 'po.webp',
+        'po_creature' => 'po.webp',
+        'po_object' => 'po.webp',
+        'ini_creature' => 'initiative.webp',
+        'ini_object' => 'initiative.webp',
+        'powerful_spell' => 'puissance.webp',
+        'price_object' => 'kamas.webp',
+        'weight_object' => 'pod.webp',
+        'touch_object' => 'touch.webp',
+        'touch_creature' => 'touch.webp',
+        'invocation_creature' => 'invocation.webp',
+        'invocation_object' => 'invocation.webp',
+        'ca_object' => 'shield.svg',
+        'fuite_creature' => 'fuite.webp',
+        'tacle_creature' => 'tacle.webp',
+        'fuite_object' => 'fuite.webp',
+        'tacle_object' => 'tacle.webp',
     ],
     'colors' => [
         'level_creature' => '#9c27b0',

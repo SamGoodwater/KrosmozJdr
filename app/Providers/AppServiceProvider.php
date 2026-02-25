@@ -37,7 +37,8 @@ class AppServiceProvider extends ServiceProvider
         $this->app->singleton(CollectAliasResolver::class, static fn () => CollectAliasResolver::default());
         $this->app->singleton(CollectService::class, static fn () => new CollectService(
             app(ConfigLoader::class),
-            app(DofusDbClient::class)
+            app(DofusDbClient::class),
+            app(CollectAliasResolver::class)
         ));
         $this->app->singleton(Orchestrator::class, static fn () => Orchestrator::default());
     }

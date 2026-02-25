@@ -183,7 +183,9 @@ class User extends Authenticatable implements HasMedia
         'avatar',
         'notifications_enabled',
         'notification_channels',
+        'notification_preferences',
         'is_system',
+        'last_login_at',
     ];
 
     /**
@@ -206,24 +208,93 @@ class User extends Authenticatable implements HasMedia
         'password' => 'hashed',
         'notifications_enabled' => 'boolean',
         'notification_channels' => 'array',
+        'notification_preferences' => 'array',
         'is_system' => 'boolean',
+        'last_login_at' => 'datetime',
     ];
 
     /**
      * Retourne true si l'utilisateur souhaite recevoir des notifications (hors notification de profil).
+     * Si $type est fourni, utilise les préférences par type (notification_preferences).
      *
-     * @param string|null $type Type de notification (optionnel)
+     * @param string|null $type Type de notification (clé config/notifications.php)
      * @return bool
      */
     public function wantsNotification(?string $type = null): bool
     {
+        if ($type !== null) {
+            return $this->wantsNotificationForType($type);
+        }
         return $this->notifications_enabled;
     }
 
     /**
-     * Retourne la liste des canaux de notification préférés de l'utilisateur.
+     * Retourne les canaux pour un type de notification donné (préférences par type ou défaut).
+     * Forme préférence : { channels: ['database','mail'], frequency: 'instant' } ou legacy [ 'database' ].
      *
-     * @return array Liste des canaux (ex: ['database', 'email'])
+     * @param string $type Clé du type (ex: entity_modified, new_account_registered)
+     * @return list<string> Canaux ('database', 'mail') ou vide si désactivé
+     */
+    public function getChannelsForNotificationType(string $type): array
+    {
+        $prefs = $this->notification_preferences ?? [];
+        if (array_key_exists($type, $prefs)) {
+            $ch = $prefs[$type];
+            if (is_array($ch)) {
+                $allowed = ['database', 'mail'];
+                if (isset($ch['channels']) && is_array($ch['channels'])) {
+                    return array_values(array_intersect($ch['channels'], $allowed));
+                }
+                return array_values(array_intersect($ch, $allowed));
+            }
+            if ($ch === false || $ch === 'off') {
+                return [];
+            }
+        }
+        if (!$this->notifications_enabled) {
+            return [];
+        }
+        $defaults = config('notifications.types.' . $type . '.channels_default', null);
+        if (is_array($defaults)) {
+            return $defaults;
+        }
+        $channels = $this->notification_channels ?? ['database'];
+        return array_values(array_intersect((array) $channels, ['database', 'mail']));
+    }
+
+    /**
+     * Retourne la fréquence pour un type de notification (instant, daily, weekly, monthly).
+     *
+     * @param string $type Clé du type
+     * @return string 'instant'|'daily'|'weekly'|'monthly'
+     */
+    public function getFrequencyForNotificationType(string $type): string
+    {
+        $prefs = $this->notification_preferences ?? [];
+        if (array_key_exists($type, $prefs)) {
+            $p = $prefs[$type];
+            if (is_array($p) && isset($p['frequency']) && in_array($p['frequency'], ['instant', 'daily', 'weekly', 'monthly'], true)) {
+                return $p['frequency'];
+            }
+        }
+        return config('notifications.types.' . $type . '.frequency_default', 'instant');
+    }
+
+    /**
+     * Indique si l'utilisateur souhaite recevoir ce type de notification (au moins un canal).
+     *
+     * @param string $type Clé du type
+     * @return bool
+     */
+    public function wantsNotificationForType(string $type): bool
+    {
+        return count($this->getChannelsForNotificationType($type)) > 0;
+    }
+
+    /**
+     * Retourne la liste des canaux de notification préférés de l'utilisateur (défaut global).
+     *
+     * @return array Liste des canaux (ex: ['database', 'mail'])
      */
     public function notificationChannels(): array
     {

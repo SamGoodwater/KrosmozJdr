@@ -329,6 +329,8 @@ onUnmounted(() => {
   window.removeEventListener('resize', updatePosition);
   window.removeEventListener('scroll', updatePosition);
 });
+
+defineExpose({ open, close, toggle, isOpen });
 </script>
 
 <template>

@@ -7,6 +7,7 @@ use App\Http\Controllers\Scrapping\Concerns\BulkDecisionUpdateTrait;
 use App\Models\Type\ItemType;
 use App\Services\Scrapping\Catalog\DofusDbItemTypesCatalogService;
 use App\Services\Scrapping\Http\DofusDbClient;
+use App\Services\Scrapping\Registry\ItemTypeCategoryMoveService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -24,6 +25,7 @@ class ItemTypeRegistryController extends Controller
     public function __construct(
         private DofusDbClient $dofusDbClient,
         private DofusDbItemTypesCatalogService $itemTypesCatalog,
+        private ItemTypeCategoryMoveService $typeCategoryMove,
     ) {}
 
     /**
@@ -140,6 +142,61 @@ class ItemTypeRegistryController extends Controller
 
         return response()->json([
             'success' => true,
+        ]);
+    }
+
+    /**
+     * Déplace en masse des types vers une autre catégorie.
+     *
+     * @example POST /api/scrapping/item-types/move-bulk { "ids": [1,2], "target": "resource" }
+     */
+    public function moveBulkToCategory(Request $request): JsonResponse
+    {
+        $this->authorize('updateAny', ItemType::class);
+
+        $validated = $request->validate([
+            'ids' => ['required', 'array', 'min:1'],
+            'ids.*' => ['integer', 'min:1'],
+            'target' => ['required', 'string', 'in:resource,consumable'],
+        ]);
+
+        $result = $this->typeCategoryMove->moveBulk('equipment', $validated['ids'], $validated['target']);
+
+        return response()->json([
+            'success' => true,
+            'message' => $this->typeCategoryMove->formatBulkMoveMessage($result, $validated['target']),
+            'moved' => $result['moved'],
+            'failed' => $result['failed'],
+            'errors' => $result['errors'],
+        ]);
+    }
+
+    /**
+     * Déplace ce type vers une autre catégorie (ressource ou consommable).
+     *
+     * @example POST /api/scrapping/item-types/{id}/move { "target": "resource" }
+     */
+    public function moveToCategory(Request $request, ItemType $itemType): JsonResponse
+    {
+        $this->authorize('update', $itemType);
+
+        $validated = $request->validate([
+            'target' => ['required', 'string', 'in:resource,consumable'],
+        ]);
+
+        $result = $this->typeCategoryMove->move('equipment', $itemType->id, $validated['target']);
+
+        if (!$result['success']) {
+            return response()->json([
+                'success' => false,
+                'message' => $result['message'],
+            ], 422);
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => $result['message'],
+            'target_id' => $result['target_id'] ?? null,
         ]);
     }
 

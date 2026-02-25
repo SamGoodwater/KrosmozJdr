@@ -1,36 +1,29 @@
 <?php
 
-use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
-use Inertia\Inertia;
-use Illuminate\Support\Fluent;
-use Illuminate\Support\Facades\Auth;
+
+/*
+|--------------------------------------------------------------------------
+| Web Routes — Point d'entrée
+|--------------------------------------------------------------------------
+|
+| Découpage par thème : auth (racine), web/*, admin/*, entities/*, services/*.
+| Voir docs/10-BestPractices/ROUTES_ARCHITECTURE.md.
+|
+*/
 
 require __DIR__ . '/auth.php';
-require __DIR__ . '/user.php';
-require __DIR__ . '/file.php';
+require __DIR__ . '/web/statics.php';
+require __DIR__ . '/web/notifications.php';
+require __DIR__ . '/web/user.php';
+require __DIR__ . '/web/file.php';
+require __DIR__ . '/web/page.php';
+
 require __DIR__ . '/admin/characteristics.php';
 require __DIR__ . '/admin/dofus-conversion-formulas.php';
 require __DIR__ . '/admin/scrapping-mappings.php';
 require __DIR__ . '/admin/spell-effect-types.php';
 
-// Routes publiques
-Route::get('/', function () {
-    return Inertia::render('Home', [
-        'canLogin' => Route::has('login'),
-        'canRegister' => Route::has('register')
-    ]);
-})->name('home');
-
-// STATICS
-Route::get('/contribuer', function () {
-    return Inertia::render('Statics/contribute');
-})->name('contribute');
-
-// PAGES ET SECTIONS
-require __DIR__ . '/page.php';
-
-// ENTITIES
 require __DIR__ . '/entities/attribute.php';
 require __DIR__ . '/entities/campaign.php';
 require __DIR__ . '/entities/capability.php';
@@ -52,5 +45,4 @@ require __DIR__ . '/entities/spell.php';
 require __DIR__ . '/entities/spell-type.php';
 require __DIR__ . '/entities/consumable-type.php';
 
-// SERVICES
 require __DIR__ . '/services/scrapping.php';

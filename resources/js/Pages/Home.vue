@@ -447,33 +447,13 @@ const linkButtons = [
         tooltip: "Lien neutre",
     },
 ];
-// Démo icônes
+// Démo icônes (storage/app/public/images/icons/caracteristics/, servi via /storage/)
 const demoIcons = [
-    {
-        size: "xs",
-        source: "icons/characteristics/pa.png",
-        tooltip: "Icône extra-small",
-    },
-    {
-        size: "sm",
-        source: "icons/characteristics/pm.png",
-        tooltip: "Icône small",
-    },
-    {
-        size: "md",
-        source: "icons/characteristics/po.png",
-        tooltip: "Icône medium",
-    },
-    {
-        size: "lg",
-        source: "icons/characteristics/tacle.png",
-        tooltip: "Icône large",
-    },
-    {
-        size: "xl",
-        source: "icons/characteristics/res_terre.png",
-        tooltip: "Icône extra-large",
-    },
+    { size: "xs", source: "/storage/images/icons/caracteristics/pa.webp", tooltip: "Icône extra-small" },
+    { size: "sm", source: "/storage/images/icons/caracteristics/pp.webp", tooltip: "Icône small" },
+    { size: "md", source: "/storage/images/icons/caracteristics/po.webp", tooltip: "Icône medium" },
+    { size: "lg", source: "/storage/images/icons/caracteristics/tacle.webp", tooltip: "Icône large" },
+    { size: "xl", source: "/storage/images/icons/caracteristics/resTerre.webp", tooltip: "Icône extra-large" },
 ];
 
 // États pour les modals de démonstration

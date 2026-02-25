@@ -77,18 +77,23 @@ export function useScrappingSearch(options) {
         if (supports("levelMax") && String(r.filterLevelMax.value || "").trim() !== "") q.set("levelMax", String(r.filterLevelMax.value).trim());
 
         q.set("page", String(Math.max(1, Math.floor(Number(r.pageNumber.value) || 1))));
-        q.set("per_page", String(Math.max(1, Math.min(200, Math.floor(Number(r.perPage.value) || 100)))));
+        q.set("per_page", String(Math.max(1, Math.min(200, Math.floor(Number(r.perPage.value) || 50)))));
 
         return q.toString();
     }
 
-    async function runSearch() {
+    /**
+     * Lance la recherche.
+     * @param {{ signal?: AbortSignal }} [options] - optionnel : annulation via signal
+     */
+    async function runSearch(options = {}) {
         searching.value = true;
         try {
             const qs = buildSearchQuery();
             const entityStr = entityTypeRef.value;
             const url = `/api/scrapping/search/${entityStr}${qs ? `?${qs}` : ""}`;
-            const result = await getJson(url);
+            const result = await getJson(url, { signal: options.signal });
+            if (result.aborted) return;
             if (result.ok && result.data?.success) {
                 rawItems.value = result.data.data?.items || [];
                 lastMeta.value = result.data.data?.meta || null;
@@ -98,6 +103,7 @@ export function useScrappingSearch(options) {
             }
             notifyError(result.error || result.data?.message || "Erreur lors de la recherche");
         } catch (e) {
+            if (e?.name === "AbortError") return;
             notifyError("Erreur lors de la recherche : " + (e?.message ?? "erreur"));
         } finally {
             searching.value = false;
@@ -108,7 +114,7 @@ export function useScrappingSearch(options) {
         const t = Number(lastMeta.value?.total_pages);
         if (Number.isFinite(t) && t > 0) return Math.floor(t);
         const total = Number(lastMeta.value?.total);
-        const pp = Math.max(1, Math.floor(Number(filterRefs.perPage.value) || 100));
+        const pp = Math.max(1, Math.floor(Number(filterRefs.perPage.value) || 50));
         if (Number.isFinite(total) && total > 0) return Math.ceil(total / pp);
         return null;
     });
@@ -125,29 +131,33 @@ export function useScrappingSearch(options) {
         return Number.isFinite(t) && t > 0 ? Math.floor(t) : (rawItems.value?.length || 0);
     });
 
-    async function goPrev() {
+    /** @param {{ signal?: AbortSignal }} [opts] */
+    async function goPrev(opts = {}) {
         if (!canPrev.value) return;
         filterRefs.pageNumber.value = Math.max(1, Number(filterRefs.pageNumber.value) - 1);
-        await runSearch();
+        await runSearch({ signal: opts.signal });
     }
 
-    async function goNext() {
+    /** @param {{ signal?: AbortSignal }} [opts] */
+    async function goNext(opts = {}) {
         if (!canNext.value) return;
         filterRefs.pageNumber.value = Number(filterRefs.pageNumber.value) + 1;
-        await runSearch();
+        await runSearch({ signal: opts.signal });
     }
 
-    async function goToPage(n) {
+    /** @param {number} n - index 0-based. @param {{ signal?: AbortSignal }} [opts] */
+    async function goToPage(n, opts = {}) {
         const next = Math.max(0, Math.floor(Number(n) || 0));
         filterRefs.pageNumber.value = next + 1;
-        await runSearch();
+        await runSearch({ signal: opts.signal });
     }
 
-    async function setPageSize(v) {
+    /** @param {number} v - @param {{ signal?: AbortSignal }} [opts] */
+    async function setPageSize(v, opts = {}) {
         const n = Math.max(1, Math.min(200, Math.floor(Number(v) || 100)));
         filterRefs.perPage.value = n;
         filterRefs.pageNumber.value = 1;
-        await runSearch();
+        await runSearch({ signal: opts.signal });
     }
 
     return {

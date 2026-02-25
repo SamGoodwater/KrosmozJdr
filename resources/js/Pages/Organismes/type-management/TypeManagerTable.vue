@@ -36,6 +36,12 @@ const props = defineProps({
     mode: { type: String, required: true, validator: (v) => ["decision", "state"].includes(String(v)) },
     // libellé affiché pour le champ principal
     fieldLabel: { type: String, default: "" },
+    /** Incrémenté par le parent (ex. ouverture du modal, fin de recherche) pour forcer un rechargement de la liste. */
+    refreshTrigger: { type: Number, default: 0 },
+    /** Base URL pour déplacer un type vers une autre catégorie (ex. /api/scrapping/resource-types). Si vide, pas d'action "Déplacer vers". */
+    moveCategoryUrlBase: { type: String, default: "" },
+    /** Catégorie courante : resource | consumable | equipment. Requis pour afficher "Déplacer vers". */
+    currentCategory: { type: String, default: "" },
 });
 
 const notificationStore = useNotificationStore();
@@ -68,6 +74,12 @@ const formatDateFr = (iso) => {
 
 const confirmOpen = ref(false);
 const confirmTarget = ref(null); // { id:number, name?:string } | null
+
+const moveConfirmOpen = ref(false);
+const moveTarget = ref(null); // { id: number, name: string, target: 'resource'|'consumable'|'equipment' } | null
+
+const bulkMoveConfirmOpen = ref(false);
+const bulkMoveTarget = ref(""); // 'resource'|'consumable'|'equipment' pour le déplacement en masse
 
 const filterOptions = computed(() => {
     if (String(props.mode) === "decision") {
@@ -105,6 +117,24 @@ const bulkOptions = computed(() => {
 
 const fieldKey = computed(() => (String(props.mode) === "decision" ? "decision" : "state"));
 const filterQueryKey = computed(() => (String(props.mode) === "decision" ? "decision" : "state"));
+
+const MOVE_CATEGORY_OPTIONS = [
+    { value: "resource", label: "Ressources" },
+    { value: "consumable", label: "Consommables" },
+    { value: "equipment", label: "Équipements" },
+];
+const moveTargetOptions = computed(() => {
+    const cur = String(props.currentCategory || "").toLowerCase();
+    if (!cur) return [];
+    return MOVE_CATEGORY_OPTIONS.filter((o) => o.value !== cur);
+});
+const canMoveCategory = computed(
+    () =>
+        String(props.mode) === "decision" &&
+        Boolean(props.moveCategoryUrlBase?.trim()) &&
+        Boolean(props.currentCategory?.trim()) &&
+        moveTargetOptions.value.length > 0
+);
 
 const selectedCount = computed(() => selectedIds.value.size);
 
@@ -275,10 +305,100 @@ const updateSingle = async (id, value) => {
     await bulkApply();
 };
 
+function requestMove(row, target) {
+    const id = Number(row?.id);
+    if (!Number.isFinite(id)) return;
+    const name = row?.name ? String(row.name) : "";
+    moveTarget.value = { id, name, target };
+    moveConfirmOpen.value = true;
+}
+
+/** POST vers l’API move (un type ou move-bulk). Retourne le JSON en succès, sinon throw. */
+async function postMove(urlSuffix, body) {
+    const base = String(props.moveCategoryUrlBase || "").trim();
+    if (!base) return null;
+    const csrfToken = getCsrfToken();
+    if (!csrfToken) {
+        showError("Token CSRF introuvable. Veuillez recharger la page.");
+        return null;
+    }
+    const res = await fetch(`${base}${urlSuffix}`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "X-CSRF-TOKEN": csrfToken,
+            Accept: "application/json",
+        },
+        body: JSON.stringify(body),
+    });
+    const json = await res.json().catch(() => null);
+    if (!res.ok || (json && json.success === false)) {
+        throw new Error(json?.message || "Déplacement impossible");
+    }
+    return json;
+}
+
+const executeMove = async () => {
+    const payload = moveTarget.value;
+    moveConfirmOpen.value = false;
+    moveTarget.value = null;
+    if (!payload || !Number.isFinite(payload.id)) return;
+    try {
+        const json = await postMove(`/${payload.id}/move`, { target: payload.target });
+        if (json) {
+            success(json?.message ?? "Type déplacé.", { duration: 2500 });
+            await load();
+        }
+    } catch (e) {
+        showError("Déplacement : " + e.message);
+    }
+};
+
+function requestBulkMove() {
+    const target = String(bulkMoveTarget.value || "").trim();
+    if (!target || !moveTargetOptions.value.some((o) => o.value === target)) return;
+    bulkMoveConfirmOpen.value = true;
+}
+
+const executeBulkMove = async () => {
+    const target = String(bulkMoveTarget.value || "").trim();
+    bulkMoveConfirmOpen.value = false;
+    if (!target || !selectedIds.value.size) return;
+    try {
+        const json = await postMove("/move-bulk", {
+            ids: Array.from(selectedIds.value),
+            target,
+        });
+        if (json) {
+            success(json?.message ?? "Types déplacés.", { duration: 3000 });
+            selectedIds.value = new Set();
+            bulkMoveTarget.value = "";
+            await load();
+        }
+    } catch (e) {
+        showError("Déplacement en masse : " + e.message);
+    }
+};
+
 watch(
     () => queryFilter.value,
     async () => {
         await load();
+    }
+);
+
+// Recharger quand l’URL de liste change (ex. changement d’entité dans le modal Scrapping)
+watch(
+    () => props.listUrl,
+    async () => {
+        await load();
+    }
+);
+
+watch(
+    () => props.refreshTrigger,
+    async (val, prev) => {
+        if (Number(val) !== Number(prev) && Number(val) > 0) await load();
     }
 );
 
@@ -296,7 +416,6 @@ onMounted(async () => {
             confirm-label="Supprimer"
             cancel-label="Annuler"
             confirm-color="error"
-            confirm-icon="fa-solid fa-trash"
             @close="confirmOpen = false"
             @cancel="
                 () => {
@@ -316,6 +435,38 @@ onMounted(async () => {
             "
         />
 
+        <ConfirmModal
+            :open="moveConfirmOpen"
+            title="Déplacer ce type"
+            :message="
+                moveTarget
+                    ? `Déplacer « ${moveTarget.name || moveTarget.id} » vers ${MOVE_CATEGORY_OPTIONS.find((o) => o.value === moveTarget.target)?.label ?? moveTarget.target} ? Il disparaîtra de cette liste.`
+                    : ''
+            "
+            confirm-label="Déplacer"
+            cancel-label="Annuler"
+            confirm-color="primary"
+            @close="moveConfirmOpen = false; moveTarget = null"
+            @cancel="moveConfirmOpen = false; moveTarget = null"
+            @confirm="executeMove"
+        />
+
+        <ConfirmModal
+            :open="bulkMoveConfirmOpen"
+            :title="`Déplacer ${selectedCount} type(s)`"
+            :message="
+                bulkMoveTarget
+                    ? `Déplacer ${selectedCount} type(s) vers ${MOVE_CATEGORY_OPTIONS.find((o) => o.value === bulkMoveTarget)?.label ?? bulkMoveTarget} ? Ils disparaîtront de cette liste.`
+                    : ''
+            "
+            confirm-label="Déplacer la sélection"
+            cancel-label="Annuler"
+            confirm-color="primary"
+            @close="bulkMoveConfirmOpen = false; bulkMoveTarget = ''"
+            @cancel="bulkMoveConfirmOpen = false"
+            @confirm="executeBulkMove"
+        />
+
         <div class="flex items-start justify-between gap-4">
             <div class="min-w-0">
                 <h2 class="text-xl font-bold text-primary-100">{{ title }}</h2>
@@ -333,7 +484,7 @@ onMounted(async () => {
         </div>
 
         <!-- z-[100] pour que les dropdowns (bulk, filtres) passent au-dessus du modal -->
-        <div class="grid gap-3 md:grid-cols-3 relative z-[100]">
+        <div class="grid gap-3 md:grid-cols-3 relative z-[100]" :class="{ 'md:grid-cols-4': canMoveCategory }">
             <InputField v-model="querySearch" label="Recherche" placeholder="id, nom…" />
             <SelectField
                 v-model="queryFilter"
@@ -356,6 +507,24 @@ onMounted(async () => {
                         Appliquer
                     </Btn>
                 </div>
+            </div>
+            <div v-if="canMoveCategory" class="space-y-1">
+                <SelectField
+                    v-model="bulkMoveTarget"
+                    label="Changer de catégorie (sélection)"
+                    :options="moveTargetOptions"
+                    :disabled="!isAdmin || selectedCount === 0"
+                    placeholder="Déplacer vers…"
+                />
+                <Btn
+                    size="sm"
+                    variant="outline"
+                    color="primary"
+                    :disabled="!isAdmin || selectedCount === 0 || !bulkMoveTarget"
+                    @click="requestBulkMove"
+                >
+                    Déplacer la sélection
+                </Btn>
             </div>
         </div>
 
@@ -424,6 +593,32 @@ onMounted(async () => {
                                     </template>
                                 </select>
 
+                                <template v-if="canMoveCategory">
+                                    <select
+                                        class="select select-bordered select-xs max-w-[120px]"
+                                        :disabled="!isAdmin"
+                                        title="Déplacer vers…"
+                                        :value="''"
+                                        @change="
+                                            (e) => {
+                                                const t = e.target.value;
+                                                if (t) {
+                                                    requestMove(r, t);
+                                                    e.target.value = '';
+                                                }
+                                            }
+                                        "
+                                    >
+                                        <option value="" disabled>Déplacer vers…</option>
+                                        <option
+                                            v-for="opt in moveTargetOptions"
+                                            :key="opt.value"
+                                            :value="opt.value"
+                                        >
+                                            {{ opt.label }}
+                                        </option>
+                                    </select>
+                                </template>
                                 <Btn
                                     v-if="deleteUrlBase"
                                     size="sm"

@@ -37,11 +37,12 @@ function chunkArray(arr, chunkSize) {
  *   notifyError: (msg: string) => void,
  *   getCsrfToken: () => string | null,
  *   setStatusForEntities?: (entities: Array<{ type: string, id: number }>, status: string) => void,
- *   itemStatusByKeyRef?: import('vue').Ref<Record<string, { status?: string }>>
+ *   itemStatusByKeyRef?: import('vue').Ref<Record<string, { status?: string }>>,
+ *   includeRelationsRef?: import('vue').Ref<boolean>
  * }} options
  */
 export function useScrappingPreview(options) {
-    const { entityTypeRef, rawItemsRef, notifyError, getCsrfToken, setStatusForEntities, itemStatusByKeyRef } = options;
+    const { entityTypeRef, rawItemsRef, notifyError, getCsrfToken, setStatusForEntities, itemStatusByKeyRef, includeRelationsRef } = options;
 
     const convertedByItemId = ref({});
     const convertedByRelationKey = ref({});
@@ -77,7 +78,12 @@ export function useScrappingPreview(options) {
         }
     }
 
-    async function fetchConvertedBatch() {
+    /**
+     * Charge les données converties et relations par paquets.
+     * @param {{ signal?: AbortSignal }} [options] - optionnel : annulation via signal (vérifié entre chaque paquet)
+     */
+    async function fetchConvertedBatch(options = {}) {
+        const signal = options.signal ?? null;
         const ids = (rawItemsRef.value || []).map((it) => Number(it?.id)).filter((n) => Number.isFinite(n) && n > 0);
         if (!ids.length || !entityTypeRef.value) return;
 
@@ -94,11 +100,13 @@ export function useScrappingPreview(options) {
             // 1) Entités principales : par paquets pour mise à jour progressive et éviter timeout
             const mainChunks = chunkArray(ids, PREVIEW_CHUNK_SIZE);
             for (const chunkIds of mainChunks) {
+                if (signal?.aborted) break;
                 const result = await postJson(
                     "/api/scrapping/preview/batch",
                     { type: entityType, ids: chunkIds },
-                    { headers: { "X-CSRF-TOKEN": getCsrfToken() || "" } }
+                    { headers: { "X-CSRF-TOKEN": getCsrfToken() || "" }, signal }
                 );
+                if (result.aborted) break;
                 if (!result.ok) {
                     notifyError(result.error || "Erreur lors de la prévisualisation");
                     return;
@@ -123,67 +131,74 @@ export function useScrappingPreview(options) {
                 }
             }
 
-            // 2) Relations : collecte par type puis chargement par paquets
-            const idsByType = {};
-            for (const list of Object.values(lastBatchRelationsByKey.value)) {
-                if (!Array.isArray(list)) continue;
-                for (const r of list) {
-                    const t = String(r?.type ?? "").toLowerCase();
-                    const rid = Number(r?.id);
-                    if (!t || !Number.isFinite(rid) || rid <= 0) continue;
-                    if (!idsByType[t]) idsByType[t] = new Set();
-                    idsByType[t].add(rid);
-                }
-            }
+            // 2) Relations : collecte par type puis chargement par paquets (sauf si "Inclure les relations" désactivé)
             const relConv = { ...convertedByRelationKey.value };
-            const relationTotal = Object.values(idsByType).reduce((acc, set) => acc + set.size, 0);
-            let relationDone = 0;
-            if (relationTotal > 0) {
-                conversionProgress.value = { phase: "relations", total: relationTotal, done: 0 };
-            }
-            for (const [relType, idSet] of Object.entries(idsByType)) {
-                const relIds = Array.from(idSet);
-                const relChunks = chunkArray(relIds, PREVIEW_CHUNK_SIZE);
-                for (const relChunkIds of relChunks) {
-                    try {
-                        const relResult = await postJson(
-                            "/api/scrapping/preview/batch",
-                            { type: relType, ids: relChunkIds },
-                            { headers: { "X-CSRF-TOKEN": getCsrfToken() || "" } }
-                        );
-                        if (!relResult.ok) continue;
-                        const relData = relResult.data;
-                        const relItems = Array.isArray(relData?.data?.items) ? relData.data.items : (Array.isArray(relData?.items) ? relData.items : []);
-                        if (!relItems?.length || relData?.success !== true) continue;
-                        for (const relItem of relItems) {
-                            const rid = Number(relItem?.id);
-                            if (!Number.isFinite(rid)) continue;
-                            const rk = `${relType}-${rid}`;
-                            relConv[rk] = {
-                                raw: relItem.raw ?? null,
-                                converted: relItem.converted ?? null,
-                                existing: relItem.existing ?? null,
-                                error: relItem.error ?? null,
-                            };
-                        }
-                        if (setStatusForEntities) {
-                            const entities = relItems.filter((i) => Number.isFinite(Number(i?.id))).map((i) => ({ type: relType, id: Number(i.id) }));
-                            setStatusForEntities(entities, "converti");
-                        } else if (itemStatusByKeyRef) {
-                            const nextStatus = { ...itemStatusByKeyRef.value };
-                            for (const i of relItems) {
-                                const id = Number(i?.id);
-                                if (!Number.isFinite(id)) continue;
-                                const key = `${relType}-${id}`;
-                                if (TERMINAL_STATUSES.has(nextStatus[key]?.status)) continue;
-                                nextStatus[key] = { status: "converti" };
+            const includeRelations = includeRelationsRef?.value !== false;
+            if (includeRelations) {
+                const idsByType = {};
+                for (const list of Object.values(lastBatchRelationsByKey.value)) {
+                    if (!Array.isArray(list)) continue;
+                    for (const r of list) {
+                        const t = String(r?.type ?? "").toLowerCase();
+                        const rid = Number(r?.id);
+                        if (!t || !Number.isFinite(rid) || rid <= 0) continue;
+                        if (!idsByType[t]) idsByType[t] = new Set();
+                        idsByType[t].add(rid);
+                    }
+                }
+                const relationTotal = Object.values(idsByType).reduce((acc, set) => acc + set.size, 0);
+                let relationDone = 0;
+                if (relationTotal > 0) {
+                    conversionProgress.value = { phase: "relations", total: relationTotal, done: 0 };
+                }
+                for (const [relType, idSet] of Object.entries(idsByType)) {
+                    if (signal?.aborted) break;
+                    const relIds = Array.from(idSet);
+                    const relChunks = chunkArray(relIds, PREVIEW_CHUNK_SIZE);
+                    for (const relChunkIds of relChunks) {
+                        if (signal?.aborted) break;
+                        try {
+                            const relResult = await postJson(
+                                "/api/scrapping/preview/batch",
+                                { type: relType, ids: relChunkIds },
+                                { headers: { "X-CSRF-TOKEN": getCsrfToken() || "" }, signal }
+                            );
+                            if (relResult.aborted) break;
+                            if (!relResult.ok) continue;
+                            const relData = relResult.data;
+                            const relItems = Array.isArray(relData?.data?.items) ? relData.data.items : (Array.isArray(relData?.items) ? relData.items : []);
+                            if (!relItems?.length || relData?.success !== true) continue;
+                            for (const relItem of relItems) {
+                                const rid = Number(relItem?.id);
+                                if (!Number.isFinite(rid)) continue;
+                                const rk = `${relType}-${rid}`;
+                                relConv[rk] = {
+                                    raw: relItem.raw ?? null,
+                                    converted: relItem.converted ?? null,
+                                    existing: relItem.existing ?? null,
+                                    error: relItem.error ?? null,
+                                    resolvedEntityType: relItem.resolved_entity_type ?? null,
+                                };
                             }
-                            itemStatusByKeyRef.value = nextStatus;
+                            if (setStatusForEntities) {
+                                const entities = relItems.filter((i) => Number.isFinite(Number(i?.id))).map((i) => ({ type: relType, id: Number(i.id) }));
+                                setStatusForEntities(entities, "converti");
+                            } else if (itemStatusByKeyRef) {
+                                const nextStatus = { ...itemStatusByKeyRef.value };
+                                for (const i of relItems) {
+                                    const id = Number(i?.id);
+                                    if (!Number.isFinite(id)) continue;
+                                    const key = `${relType}-${id}`;
+                                    if (TERMINAL_STATUSES.has(nextStatus[key]?.status)) continue;
+                                    nextStatus[key] = { status: "converti" };
+                                }
+                                itemStatusByKeyRef.value = nextStatus;
+                            }
+                            relationDone += relChunkIds.length;
+                            conversionProgress.value = { phase: "relations", total: relationTotal, done: relationDone };
+                        } catch {
+                            // ignorer erreur sur un paquet de relations
                         }
-                        relationDone += relChunkIds.length;
-                        conversionProgress.value = { phase: "relations", total: relationTotal, done: relationDone };
-                    } catch {
-                        // ignorer erreur sur un paquet de relations
                     }
                 }
             }

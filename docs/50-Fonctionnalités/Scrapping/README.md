@@ -48,3 +48,6 @@ KrosmozJDR
 Le scrapping enregistre automatiquement les nouveaux `typeId` DofusDB détectés (pending), afin de pouvoir :
 - **valider** les types (allowed/blocked),
 - filtrer le scrapping sur des **types connus** (par nom) dans l’UI.
+
+### Types et races — source de vérité en BDD
+Les **types d’objets** (item-types, super-types) et les **races de monstres** sont gérés en base de données (`resource_types`, `consumable_types`, `item_types`, `monster_races`). Les catalogues DofusDB sont exposés via des services dédiés (`DofusDbItemTypesCatalogService`, `DofusDbMonsterRacesCatalogService`) qui construisent les URLs d’API en dur (sans config d’entité). Les anciens fichiers de config d’entité **catalog-only** (`item-type.json`, `item-super-type.json`, `monster-race.json`) ont été supprimés : ils ne servaient qu’à les faire apparaître dans la liste d’entités de l’API config, sans être utilisés par la recherche, l’import ou les services de catalogue.

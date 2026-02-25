@@ -37,7 +37,14 @@ export const RELATION_EXTRACT_CONFIG = {
     ],
 };
 
-export const RELATION_TYPE_LABELS = { spell: "Sort", item: "Drop", monster: "Invoqué" };
+export const RELATION_TYPE_LABELS = {
+    spell: "Sort",
+    item: "Drop",
+    monster: "Invoqué",
+    resource: "Ressource",
+    consumable: "Consommable",
+    equipment: "Équipement",
+};
 
 /**
  * Extrait les relations depuis raw selon la config. Ne lance jamais.

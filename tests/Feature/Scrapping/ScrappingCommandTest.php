@@ -620,6 +620,9 @@ class ScrappingCommandTest extends TestCase
         $first = Creature::where('name', 'like', '%Bouftou%')->first();
         $this->assertNotNull($first);
 
+        // Vider le cache DofusDB pour que le 2e import refasse bien la requête et reçoive le nom mis à jour du mock
+        \Illuminate\Support\Facades\Cache::flush();
+
         $code = Artisan::call('scrapping', [
             '--entity' => 'monster',
             '--id' => '31',

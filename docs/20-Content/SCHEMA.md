@@ -542,6 +542,14 @@ erDiagram
     created_at : timestamp
     updated_at : timestamp
   }
+  NOTIFICATION_DIGEST_QUEUE {
+    id : bigint(20) unsigned
+    user_id : bigint(20) unsigned
+    notification_type : varchar(64)
+    frequency : varchar(16)
+    payload : longtext
+    created_at : timestamp
+  }
   NOTIFICATIONS {
     id : char(36)
     type : varchar(255)
@@ -549,6 +557,8 @@ erDiagram
     notifiable_id : bigint(20) unsigned
     data : text
     read_at : timestamp
+    archived_at : timestamp
+    pinned_at : timestamp
     created_at : timestamp
     updated_at : timestamp
   }
@@ -904,11 +914,13 @@ erDiagram
     email_verified_at : timestamp
     password : varchar(255)
     remember_token : varchar(100)
+    last_login_at : timestamp
     role : int(11)
     is_system : tinyint(1)
     avatar : varchar(255)
     notifications_enabled : tinyint(1)
     notification_channels : longtext
+    notification_preferences : longtext
     deleted_at : timestamp
     created_at : timestamp
     updated_at : timestamp
@@ -984,6 +996,7 @@ erDiagram
   MONSTER_SCENARIO }o--|| SCENARIOS : "FK scenario_id"
   MONSTERS }o--|| CREATURES : "FK creature_id"
   MONSTERS }o--|| MONSTER_RACES : "FK monster_race_id"
+  NOTIFICATION_DIGEST_QUEUE }o--|| USERS : "FK user_id"
   NPC_CAMPAIGN }o--|| CAMPAIGNS : "FK campaign_id"
   NPC_CAMPAIGN }o--|| NPCS : "FK npc_id"
   NPC_PANOPLY }o--|| NPCS : "FK npc_id"

@@ -10,8 +10,8 @@ use App\Models\User;
 use App\Models\Scrapping\PendingResourceTypeItem;
 use App\Models\Type\ResourceType;
 use App\Services\Scrapping\Catalog\DofusDbItemTypesCatalogService;
-use App\Services\Scrapping\DataCollect\ItemEntityTypeFilterService;
 use App\Services\Scrapping\Http\DofusDbClient;
+use App\Services\Scrapping\Registry\ItemTypeCategoryMoveService;
 use App\Services\Scrapping\Core\Collect\CollectService;
 use App\Services\Scrapping\Core\Orchestrator\Orchestrator;
 use Illuminate\Support\Facades\DB;
@@ -44,9 +44,9 @@ class ResourceTypeRegistryController extends Controller
     public function __construct(
         private Orchestrator $orchestrator,
         private CollectService $collectService,
-        private ItemEntityTypeFilterService $itemEntityTypeFilters,
         private DofusDbClient $dofusDbClient,
         private DofusDbItemTypesCatalogService $itemTypesCatalog,
+        private ItemTypeCategoryMoveService $typeCategoryMove,
     ) {}
 
     private function stripDofusdbSuffix(?string $name): ?string
@@ -69,13 +69,6 @@ class ResourceTypeRegistryController extends Controller
         $query = ResourceType::query()
             ->whereNotNull('dofusdb_type_id')
             ->orderByDesc('last_seen_at');
-
-        // Sécurité UX: ne pas afficher des types hors "Ressource" (drops/recettes).
-        // On filtre la registry sur le groupe superType Ressource.
-        $resourceTypeIds = $this->itemEntityTypeFilters->getTypeIdsForGroup('resource');
-        if (!empty($resourceTypeIds)) {
-            $query->whereIn('dofusdb_type_id', $resourceTypeIds);
-        }
 
         if (is_string($decision) && in_array($decision, ['pending', 'allowed', 'blocked'], true)) {
             $query->where('decision', $decision);
@@ -255,6 +248,61 @@ class ResourceTypeRegistryController extends Controller
 
         return response()->json([
             'success' => true,
+        ]);
+    }
+
+    /**
+     * Déplace en masse des types vers une autre catégorie.
+     *
+     * @example POST /api/scrapping/resource-types/move-bulk { "ids": [1,2,3], "target": "consumable" }
+     */
+    public function moveBulkToCategory(Request $request): JsonResponse
+    {
+        $this->authorize('updateAny', ResourceType::class);
+
+        $validated = $request->validate([
+            'ids' => ['required', 'array', 'min:1'],
+            'ids.*' => ['integer', 'min:1'],
+            'target' => ['required', 'string', 'in:consumable,equipment'],
+        ]);
+
+        $result = $this->typeCategoryMove->moveBulk('resource', $validated['ids'], $validated['target']);
+
+        return response()->json([
+            'success' => true,
+            'message' => $this->typeCategoryMove->formatBulkMoveMessage($result, $validated['target']),
+            'moved' => $result['moved'],
+            'failed' => $result['failed'],
+            'errors' => $result['errors'],
+        ]);
+    }
+
+    /**
+     * Déplace ce type vers une autre catégorie (consommable ou équipement).
+     *
+     * @example POST /api/scrapping/resource-types/{id}/move { "target": "consumable" }
+     */
+    public function moveToCategory(Request $request, ResourceType $resourceType): JsonResponse
+    {
+        $this->authorize('update', $resourceType);
+
+        $validated = $request->validate([
+            'target' => ['required', 'string', 'in:consumable,equipment'],
+        ]);
+
+        $result = $this->typeCategoryMove->move('resource', $resourceType->id, $validated['target']);
+
+        if (!$result['success']) {
+            return response()->json([
+                'success' => false,
+                'message' => $result['message'],
+            ], 422);
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => $result['message'],
+            'target_id' => $result['target_id'] ?? null,
         ]);
     }
 

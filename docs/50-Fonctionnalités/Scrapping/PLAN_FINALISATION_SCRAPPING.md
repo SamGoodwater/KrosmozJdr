@@ -59,9 +59,9 @@ Ce document décrit les **tâches restantes** pour considérer le service de scr
 1. Vérifier que `panoply.json` contient endpoints, filtres et mapping cohérents avec l’API DofusDB.
 2. Vérifier que `IntegrationService` gère bien l’entité `panoply` (création/mise à jour des modèles Krosmoz, tables concernées).
 3. Si tout est en place : marquer panoply comme supporté dans la doc (ETAT_AVANCEMENT, README Scrapping).
-4. Si panoply n’est pas encore supporté côté API DofusDB ou intégration : retirer panoply des types acceptés dans les routes/validation (EntityLimits, ScrappingController) et documenter “à venir”.
+4. Si panoply n’est pas encore supporté côté API DofusDB ou intégration : retirer panoply des types acceptés (EntityMetaService::IMPORTABLE_ENTITIES, config, routes) et documenter “à venir”.
 
-**Fichiers** : `resources/scrapping/config/sources/dofusdb/entities/panoply.json`, `IntegrationService.php`, `EntityLimits.php`, contrôleurs/routes.
+**Fichiers** : `resources/scrapping/config/sources/dofusdb/entities/panoply.json`, `IntegrationService.php`, `EntityMetaService.php`, contrôleurs/routes.
 
 ---
 
@@ -98,7 +98,7 @@ Ce document décrit les **tâches restantes** pour considérer le service de scr
 | Priorité | Fichiers |
 |----------|----------|
 | P0 | `ScrappingController.php` (optionsFromRequest), `RelationResolutionService.php`, `RelationImportStack.php`, `monster.json` (si itemId), `Orchestrateur/API.md` |
-| P1 | `panoply.json`, `IntegrationService.php`, `EntityLimits.php`, routes/contrôleurs si retrait panoply, ETAT_AVANCEMENT / README |
+| P1 | `panoply.json`, `IntegrationService.php`, `EntityMetaService.php`, routes/contrôleurs si retrait panoply, ETAT_AVANCEMENT / README |
 | P2 | Logs/erreurs (fichiers concernés), `monster.json` (ini), tests (Feature/Unit Scrapping) |
 | P3 | `ETAT_AVANCEMENT.md`, `RESTE_A_FAIRE_SCRAPPING.md`, `TODOLIST.md`, `100-Done/README.md` |
 

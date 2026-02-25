@@ -80,6 +80,11 @@
     "description": "- DRY, factorisation, atomic design, accessibilité, sécurité."
   },
   {
+    "path": "10-BestPractices/ROUTES_ARCHITECTURE.md",
+    "title": "Architecture des routes — KrosmozJDR",
+    "description": "Les routes sont découpées par thème pour éviter des fichiers monolithiques. Un seul point d'entrée par groupe (web, api) charge les sous-fichiers par `require`."
+  },
+  {
     "path": "10-BestPractices/SECURITY_PRACTICES.md",
     "title": "Sécurité — Bonnes pratiques",
     "description": "- Toujours valider les entrées utilisateur (backend & frontend)."
@@ -1185,39 +1190,44 @@
     "description": "`EntityRelationsManager` est un composant générique Vue 3 permettant de gérer les relations many-to-many entre entités. Il supporte les relations simples (sans pivot) et les relations avec données pivot (quantité, prix, commentaire, etc.)."
   },
   {
-    "path": "50-Fonctionnalités/Notifications/BESOINS_ET_SPEC_NOTIFICATIONS.md",
-    "title": "Besoins et spécification — Notifications KrosmozJDR",
-    "description": "Deux types de notifications (A éphémères / B métier), historique de session, centre de notifications, préférences par type et digest."
-  },
-  {
-    "path": "50-Fonctionnalités/Notifications/ETAT_DES_LIEUX_NOTIFICATIONS.md",
-    "title": "État des lieux — Système de notifications KrosmozJDR",
-    "description": "Ce qui existe : toasts frontend, flash Laravel, notifications BDD (User), limites et manques."
-  },
-  {
-    "path": "50-Fonctionnalités/Notifications/INVENTAIRE_NOTIFICATIONS_PAR_ROLE.md",
-    "title": "Inventaire des notifications par rôle — KrosmozJDR",
-    "description": "Liste exhaustive des types de notifications par rôle (guest à super_admin), avec inscription/désinscription (in-app, mail, les deux) et option digest."
-  },
-  {
-    "path": "50-Fonctionnalités/Notifications/OPTIONS_LARAVEL_COMMUNAUTE.md",
-    "title": "Options Laravel et communauté — Notifications",
-    "description": "Laravel natif, packages (ex. laravel-notification-preferences), recommandations pour historique session, centre de notifications, préférences et digest."
-  },
-  {
-    "path": "50-Fonctionnalités/Notifications/README.md",
-    "title": "Notifications — KrosmozJDR",
-    "description": "Documentation du système de notifications (toasts, centre, préférences). Index du dossier Notifications."
-  },
-  {
     "path": "50-Fonctionnalités/Medias/SPATIE_MEDIA_LIBRARY.md",
     "title": "Spatie Laravel Media Library — Gestion des médias",
     "description": "Le projet utilise [Spatie Laravel Media Library](https://spatie.be/docs/laravel-medialibrary/v11/introduction) pour associer des fichiers (images, documents) aux modèles Eloquent, générer des conversions (dont WebP) et des miniatures, et gérer le stockage sur le disque Laravel."
   },
   {
+    "path": "50-Fonctionnalités/Notifications/BESOINS_ET_SPEC_NOTIFICATIONS.md",
+    "title": "Besoins et spécification — Notifications KrosmozJDR",
+    "description": "**Date** : 2026-02"
+  },
+  {
+    "path": "50-Fonctionnalités/Notifications/ETAT_DES_LIEUX_NOTIFICATIONS.md",
+    "title": "État des lieux — Système de notifications KrosmozJDR",
+    "description": "**Date** : 2026-02"
+  },
+  {
+    "path": "50-Fonctionnalités/Notifications/INVENTAIRE_NOTIFICATIONS_PAR_ROLE.md",
+    "title": "Inventaire des notifications par rôle — KrosmozJDR",
+    "description": "**Date** : 2026-02"
+  },
+  {
+    "path": "50-Fonctionnalités/Notifications/OPTIONS_LARAVEL_COMMUNAUTE.md",
+    "title": "Options Laravel et communauté — Notifications KrosmozJDR",
+    "description": "**Date** : 2026-02"
+  },
+  {
+    "path": "50-Fonctionnalités/Notifications/README.md",
+    "title": "Notifications — KrosmozJDR",
+    "description": "Documentation du système de notifications (toasts, centre de notifications, préférences)."
+  },
+  {
     "path": "50-Fonctionnalités/PLAN_REALISATION_RENOMMAGE_CLASSE_EN_BREED.md",
     "title": "Plan de réalisation : renommage classe → breed",
     "description": "Plan exécutable, phase par phase. Chaque phase se termine par un point de contrôle (tests / vérifications). Référence : [ESTIMATION_RENOMMAGE_CLASSE_EN_BREED.md](./ESTIMATION_RENOMMAGE_CLASSE_EN_BREED.md)."
+  },
+  {
+    "path": "50-Fonctionnalités/Scrapping/AUDIT_COHERENCE_ROBUSTESSE.md",
+    "title": "Audit global — Système de scrapping",
+    "description": "**Date** : 2026-02-25"
   },
   {
     "path": "50-Fonctionnalités/Scrapping/Architecture/CONVERSION_FORMULAS_PLACEMENT.md",
@@ -1355,9 +1365,19 @@
     "description": "**Objectifs :** Simplicité et robustesse, en conservant **toutes** les fonctionnalités décrites dans [SPEC_UI_SCRAPPING.md](./SPEC_UI_SCRAPPING.md)."
   },
   {
+    "path": "50-Fonctionnalités/Scrapping/PLAN_TYPES_ITEM_BDD_SEEDER.md",
+    "title": "Plan : Types item (ressource / consommable / équipement) — BDD unique et seeder",
+    "description": "**Objectif** : une seule source de vérité en base de données pour savoir si un `typeId` DofusDB est une ressource, un consommable ou un équipement ; permettre de modifier la catégorie d’un type dans les listes ; alimenter les registres via extraction (comme les caractéristiques) et seeders."
+  },
+  {
     "path": "50-Fonctionnalités/Scrapping/PROPRIETES_COMPARAISON_UI.md",
     "title": "Propriétés affichées dans la comparaison (Brut / Converti / Krosmoz)",
     "description": "Dans le tableau de résultats du scrapping, le détail dépliable (et la modale Comparer) affichent pour chaque ligne les propriétés en trois colonnes : **Brut (DofusDB)**, **Converti**, **Krosmoz (existant)**."
+  },
+  {
+    "path": "50-Fonctionnalités/Scrapping/PROPRIETES_ITEMS_RESOURCES_CONSUMABLES.md",
+    "title": "Propriétés Items / Resources / Consumables — Comprendre la conversion",
+    "description": "Explique pourquoi il y a trois blocs (consumables.*, items.*, resources.*) et ce que signifie chaque propriété, notamment pour les consumables."
   },
   {
     "path": "50-Fonctionnalités/Scrapping/PROPRIETES_UTILES_KROSMOZ.md",
@@ -1393,6 +1413,11 @@
     "path": "50-Fonctionnalités/Scrapping/SPEC_UI_SCRAPPING.md",
     "title": "Spécification fonctionnelle — UI Scrapping",
     "description": "**Objectif :** Définir de façon exhaustive ce que doit faire l’interface de scrapping (fonctionnalités, composants, flux). Cette spec sert de référence pour la refonte du code frontend : le comportement décrit ici doit être conservé ; seuls l’organisation du code et les composants internes changent."
+  },
+  {
+    "path": "50-Fonctionnalités/Scrapping/TESTS_4_ERREURS_EXPLICATION.md",
+    "title": "Explication des 4 tests en échec (php artisan test)",
+    "description": "Ce document décrit les 4 erreurs observées, leur cause probable et les **corrections appliquées**."
   },
   {
     "path": "50-Fonctionnalités/Scrapping/VERIFICATION_SPEC_UI_SCRAPPING.md",

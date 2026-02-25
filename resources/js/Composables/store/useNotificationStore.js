@@ -21,8 +21,10 @@ import { ref, computed } from "vue";
  * @property {number} [createdAt] - Timestamp de création
  * @property {number} [fullDisplayTime] - Temps en mode full (40% de duration)
  * @property {number} [contractedDisplayTime] - Temps en mode contracted (60% de duration)
+ * @property {number} [progress] - Progression personnalisée 0–100 (notifications dynamiques). Si défini, remplace la progression basée sur le temps.
  *
  * @note Si duration = 0, la notification reste affichée indéfiniment jusqu'à fermeture manuelle
+ * @note Pour des mises à jour en cours (processus en arrière-plan), utiliser updateNotification(id, { message, progress })
  * @note Les notifications permanentes restent toujours en mode 'full' et ont une barre de progression à 100%
  */
 
@@ -32,6 +34,9 @@ const FULL_DISPLAY_RATIO = 0.4; // 40% du temps en mode full
 const CONTRACTED_DISPLAY_RATIO = 0.6; // 60% du temps en mode contracted
 
 const notifications = ref([]);
+
+/** Historique des toasts affichés depuis le chargement de la page (pour l’onglet « Notifications temporaires »). */
+const temporaryHistory = ref([]);
 
 function addNotification({
     message,
@@ -68,7 +73,15 @@ function addNotification({
     
     // Ajouter la notification au début (plus récente en haut)
     notifications.value.unshift(notification);
-    
+
+    // Garder une trace en historique pour l’onglet « Notifications temporaires »
+    temporaryHistory.value.unshift({
+        id,
+        message,
+        type: type || 'info',
+        createdAt,
+    });
+
     // Limiter le nombre de notifications par placement
     limitNotificationsByPlacement(placement);
     
@@ -94,6 +107,41 @@ function limitNotificationsByPlacement(placement) {
 
 function removeNotification(id) {
     notifications.value = notifications.value.filter((n) => n.id !== id);
+}
+
+/**
+ * Met à jour une notification existante (pour notifications dynamiques : message, progression, etc.).
+ * Les propriétés fournies dans updates sont fusionnées dans l'objet notification (réactivité conservée).
+ * Si une entrée correspondante existe dans temporaryHistory, son message est aussi mis à jour.
+ *
+ * @param {number} id - Id de la notification retourné par addNotification
+ * @param {Object} updates - Clés à mettre à jour (message, progress, type, etc.)
+ * @returns {boolean} true si une notification a été trouvée et mise à jour
+ *
+ * @example
+ * const id = addNotification({ message: 'Démarrage...', duration: 0 });
+ * updateNotification(id, { message: 'Import en cours...', progress: 30 });
+ * updateNotification(id, { message: 'Terminé', progress: 100 });
+ */
+function updateNotification(id, updates) {
+    const notif = notifications.value.find((n) => n.id === id);
+    if (!notif) return false;
+    Object.assign(notif, updates);
+    const hist = temporaryHistory.value.find((t) => t.id === id);
+    if (hist && updates.message !== undefined) {
+        hist.message = updates.message;
+    }
+    return true;
+}
+
+/** Vide l’historique des notifications temporaires (toasts). */
+function clearTemporaryHistory() {
+    temporaryHistory.value = [];
+}
+
+/** Retire une entrée de l'historique temporaire par id. */
+function removeFromTemporaryHistory(id) {
+    temporaryHistory.value = temporaryHistory.value.filter((t) => t.id !== id);
 }
 
 // Méthodes utilitaires pour les types courants
@@ -179,11 +227,13 @@ function getRemainingTime(notification) {
  * @returns {number} Pourcentage entre 0 et 100 (100 si duration = 0)
  */
 function getProgressPercentage(notification) {
-    // Si duration = 0, la barre de progression reste à 100%
+    // Progression personnalisée (notifications dynamiques)
+    if (notification.progress !== undefined && notification.progress !== null) {
+        return Math.max(0, Math.min(100, Number(notification.progress)));
+    }
     if (notification.duration === 0) {
         return 100;
     }
-    
     const remaining = getRemainingTime(notification);
     return Math.max(0, Math.min(100, (remaining / notification.duration) * 100));
 }
@@ -207,8 +257,12 @@ export function useNotificationStore() {
     return {
         notifications,
         notificationsByPlacement,
+        temporaryHistory,
         addNotification,
+        updateNotification,
         removeNotification,
+        clearTemporaryHistory,
+        removeFromTemporaryHistory,
         getRemainingTime,
         getProgressPercentage,
         getNotificationState,
@@ -224,7 +278,6 @@ export function useNotificationStore() {
         permanentWarning,
         permanentPrimary,
         permanentSecondary,
-        // Constantes exportées
         MAX_NOTIFICATIONS,
         DEFAULT_DURATION,
         FULL_DISPLAY_RATIO,

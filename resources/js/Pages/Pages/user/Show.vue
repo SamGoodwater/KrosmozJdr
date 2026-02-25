@@ -68,7 +68,12 @@ onMounted(() => {
                             </div>
                         </div>
                     </div>
-                    <div class="flex justify-end max-[930px]:w-full">
+                    <div class="flex justify-end gap-2 max-[930px]:w-full">
+                        <Tooltip content="Paramètres du compte (notifications, etc.)" placement="top">
+                            <Route route="user.settings">
+                                <Btn color="neutral" variant="outline" size="sm">Paramètres</Btn>
+                            </Route>
+                        </Tooltip>
                         <Tooltip content="Modifier mon profil" placement="top">
                             <Route route="user.edit">
                                 <Btn color="primary" size="sm">Éditer</Btn>

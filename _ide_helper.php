@@ -24397,7 +24397,8 @@ namespace App\Http\Requests {
     /**
      * FormRequest pour la mise à jour d'un utilisateur.
      * 
-     * Valide les champs principaux du profil utilisateur, y compris l'avatar (image, max 5MB).
+     * Valide : name, email, avatar (image max 5MB), notifications_enabled, notification_channels,
+     * notification_preferences (par type : channels = ['database','mail'], frequency = instant|daily|weekly|monthly).
      *
      */
     class UpdateUserRequest extends \Illuminate\Foundation\Http\FormRequest {

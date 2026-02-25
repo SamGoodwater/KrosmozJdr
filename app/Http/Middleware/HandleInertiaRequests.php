@@ -42,7 +42,19 @@ class HandleInertiaRequests extends Middleware
                     }
                     return (new UserLightResource($request->user()))->toArray($request);
                 },
-                'isLogged' => fn() => $request->user() !== null,
+                'isLogged' => fn () => $request->user() !== null,
+                'notifications_unread_count' => function () use ($request) {
+                    if (! $request->user()) {
+                        return 0;
+                    }
+                    return $request->user()->unreadNotifications()->whereNull('archived_at')->count();
+                },
+            ],
+            'flash' => [
+                'success' => fn () => session('success'),
+                'error' => fn () => session('error'),
+                'warning' => fn () => session('warning'),
+                'info' => fn () => session('info'),
             ],
             /**
              * Permissions globales (par entité) exposées au frontend.

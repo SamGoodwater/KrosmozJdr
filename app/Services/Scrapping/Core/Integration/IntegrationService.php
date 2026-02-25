@@ -25,13 +25,6 @@ use Illuminate\Support\Facades\Log;
  */
 final class IntegrationService
 {
-    /** typeId DofusDB -> table cible (fallback si résolution DB échoue). */
-    private const ITEM_TYPE_TO_TABLE = [
-        12 => 'consumables',
-        15 => 'resources',
-        35 => 'resources',
-    ];
-
     public function __construct()
     {
     }
@@ -789,11 +782,38 @@ final class IntegrationService
     }
 
     /**
+     * Détermine la table cible (resources, consumables, items) à partir des données brutes (item).
+     * Permet de ne convertir que le bloc cible (performance + affichage ciblé).
+     */
+    public function getItemTargetTableFromRaw(array $raw): string
+    {
+        $typeId = isset($raw['typeId']) ? (int) $raw['typeId'] : null;
+
+        return $this->resolveItemTargetTable($typeId);
+    }
+
+    /**
      * Détermine la table cible (resources, consumables, items) à partir des données converties.
      * Utilisé par l'orchestrateur pour la validation et par integrateItem.
      */
     public function getItemTargetTable(array $convertedData): string
     {
+        if (isset($convertedData['resources']) && is_array($convertedData['resources']) && $convertedData['resources'] !== []
+            && (!isset($convertedData['consumables']) || !is_array($convertedData['consumables']) || $convertedData['consumables'] === [])
+            && (!isset($convertedData['items']) || !is_array($convertedData['items']) || $convertedData['items'] === [])) {
+            return 'resources';
+        }
+        if (isset($convertedData['consumables']) && is_array($convertedData['consumables']) && $convertedData['consumables'] !== []
+            && (!isset($convertedData['resources']) || !is_array($convertedData['resources']) || $convertedData['resources'] === [])
+            && (!isset($convertedData['items']) || !is_array($convertedData['items']) || $convertedData['items'] === [])) {
+            return 'consumables';
+        }
+        if (isset($convertedData['items']) && is_array($convertedData['items']) && $convertedData['items'] !== []
+            && (!isset($convertedData['resources']) || !is_array($convertedData['resources']) || $convertedData['resources'] === [])
+            && (!isset($convertedData['consumables']) || !is_array($convertedData['consumables']) || $convertedData['consumables'] === [])) {
+            return 'items';
+        }
+
         $typeId = isset($convertedData['items']['type_id']) ? (int) $convertedData['items']['type_id'] : null;
         if ($typeId === null) {
             $typeId = isset($convertedData['resources']['type_id']) ? (int) $convertedData['resources']['type_id'] : null;
@@ -824,7 +844,7 @@ final class IntegrationService
             return 'items';
         }
 
-        return self::ITEM_TYPE_TO_TABLE[$typeId] ?? 'items';
+        return 'items';
     }
 
     /**
@@ -1022,7 +1042,7 @@ final class IntegrationService
                 return null;
             }
             $typeId = isset($data['type_id']) ? (int) $data['type_id'] : null;
-            $table = self::ITEM_TYPE_TO_TABLE[$typeId] ?? 'items';
+            $table = $this->resolveItemTargetTable($typeId);
             $dofusdbId = (string) ($data['dofusdb_id'] ?? '');
             $name = $data['name'] ?? '';
             $model = match ($table) {
@@ -1050,6 +1070,20 @@ final class IntegrationService
         }
 
         return null;
+    }
+
+    /**
+     * Retourne le type d'entité UI (resource, consumable, equipment) pour un typeId DofusDB.
+     * Utilisé pour l'affichage et la comparaison des relations « item » (recettes, drops).
+     */
+    public function resolveItemEntityType(?int $typeId): string
+    {
+        $table = $this->resolveItemTargetTable($typeId);
+        return match ($table) {
+            'resources' => 'resource',
+            'consumables' => 'consumable',
+            default => 'equipment',
+        };
     }
 
     private function getSystemUserId(): int

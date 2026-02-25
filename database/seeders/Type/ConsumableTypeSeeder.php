@@ -1,51 +1,64 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Database\Seeders\Type;
 
-use Illuminate\Database\Seeder;
 use App\Models\Type\ConsumableType;
 use App\Models\User;
+use Database\Seeders\Concerns\LoadsSeederDataFile;
+use Illuminate\Database\Seeder;
 
 /**
- * Seeder pour les types de consommables
- * 
- * Initialise les types de consommables de base
+ * Seed des types de consommables depuis database/seeders/data/consumable_types.php.
+ *
+ * Fichier généré par : php artisan scrapping:extract-item-types
+ * Régénéré depuis la BDD par : php artisan db:export-seeder-data --item-types
+ *
+ * @see docs/50-Fonctionnalités/Scrapping/PLAN_TYPES_ITEM_BDD_SEEDER.md
  */
 class ConsumableTypeSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     */
+    use LoadsSeederDataFile;
+
+    private const DATA_FILE = 'database/seeders/data/consumable_types.php';
+
     public function run(): void
     {
+        $path = base_path(self::DATA_FILE);
+        if (!is_file($path)) {
+            if ($this->command) {
+                $this->command->warn('Fichier absent : ' . self::DATA_FILE . ' — exécutez php artisan scrapping:extract-item-types');
+            }
+
+            return;
+        }
+
+        $rows = $this->loadDataFile(self::DATA_FILE);
         $systemUser = User::getSystemUser();
-        $createdBy = $systemUser ? $systemUser->id : null;
+        $createdBy = $systemUser?->id;
 
-        $consumableTypes = [
-            ['name' => 'Potion'],
-            ['name' => 'Parchemin d\'expérience'],
-            ['name' => 'Objet de dons'],
-            ['name' => 'Pain'],
-            ['name' => 'Viande'],
-            ['name' => 'Poisson'],
-            ['name' => 'Fruit'],
-            ['name' => 'Légume'],
-            ['name' => 'Boisson'],
-        ];
-
-        foreach ($consumableTypes as $consumableType) {
-            ConsumableType::firstOrCreate(
-                ['name' => $consumableType['name']],
-                array_merge($consumableType, [
-                    'state' => 'playable',
-                    'read_level' => User::ROLE_GUEST,
-                    'write_level' => User::ROLE_ADMIN,
-                    'created_by' => $createdBy,
-                ])
+        foreach ($rows as $row) {
+            $typeId = (int) ($row['dofusdb_type_id'] ?? 0);
+            if ($typeId <= 0) {
+                continue;
+            }
+            ConsumableType::updateOrCreate(
+                ['dofusdb_type_id' => $typeId],
+                [
+                    'name' => (string) ($row['name'] ?? ''),
+                    'decision' => (string) ($row['decision'] ?? 'pending'),
+                    'state' => (string) ($row['state'] ?? 'draft'),
+                    'read_level' => (int) ($row['read_level'] ?? User::ROLE_GUEST),
+                    'write_level' => (int) ($row['write_level'] ?? User::ROLE_ADMIN),
+                    'created_by' => $row['created_by'] ?? $createdBy,
+                ]
             );
         }
 
-        $this->command->info('✅ Types de consommables créés : ' . count($consumableTypes));
+        if ($this->command) {
+            $this->command->info('✅ ConsumableTypeSeeder : ' . count($rows) . ' types.');
+        }
     }
 }
 

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\LoginRequest;
+use App\Services\NotificationService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -32,6 +33,16 @@ class AuthenticatedSessionController extends Controller
         $request->authenticate();
 
         $request->session()->regenerate();
+
+        $user = Auth::user();
+        if ($user) {
+            $user->update(['last_login_at' => now()]);
+            try {
+                NotificationService::notifyLastConnection($user);
+            } catch (\Throwable $e) {
+                report($e);
+            }
+        }
 
         return redirect()->intended(route('user.show', absolute: false));
     }

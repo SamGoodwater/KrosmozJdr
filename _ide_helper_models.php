@@ -1298,6 +1298,33 @@ namespace App\Models\Entity{
 
 namespace App\Models{
 /**
+ * Entrée en attente pour envoi en digest (quotidien, hebdo, mensuel).
+ * 
+ * Le payload est stocké en JSON ; NotificationService::pushToDigestQueue le normalise
+ * (Carbon, Enum, etc.) avant enregistrement.
+ *
+ * @property int $id
+ * @property int $user_id
+ * @property string $notification_type
+ * @property string $frequency
+ * @property array $payload
+ * @property \Illuminate\Support\Carbon $created_at
+ * @property-read User $user
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|NotificationDigestQueue newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|NotificationDigestQueue newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|NotificationDigestQueue query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|NotificationDigestQueue whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|NotificationDigestQueue whereFrequency($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|NotificationDigestQueue whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|NotificationDigestQueue whereNotificationType($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|NotificationDigestQueue wherePayload($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|NotificationDigestQueue whereUserId($value)
+ */
+	class NotificationDigestQueue extends \Eloquent {}
+}
+
+namespace App\Models{
+/**
  * Modèle Eloquent Page
  * 
  * Représente une page dynamique du site (menu, arborescence, sections, droits, etc.).
@@ -1958,10 +1985,14 @@ namespace App\Models{
  * @property-read int|null $scenarios_count
  * @property-read string $role_name
  * @mixin \Eloquent
+ * @property \Illuminate\Support\Carbon|null $last_login_at
  * @property bool $is_system
+ * @property array<array-key, mixed>|null $notification_preferences
  * @property-read \Spatie\MediaLibrary\MediaCollections\Models\Collections\MediaCollection<int, \Spatie\MediaLibrary\MediaCollections\Models\Media> $media
  * @property-read int|null $media_count
  * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereIsSystem($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereLastLoginAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereNotificationPreferences($value)
  */
 	class User extends \Eloquent implements \Spatie\MediaLibrary\HasMedia {}
 }

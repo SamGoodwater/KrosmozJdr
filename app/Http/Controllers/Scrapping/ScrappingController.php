@@ -3,9 +3,10 @@
 namespace App\Http\Controllers\Scrapping;
 
 use App\Http\Controllers\Controller;
-use App\Services\Scrapping\Constants\EntityLimits;
+use App\Http\Controllers\Scrapping\Concerns\RespondsWithOrchestratorResult;
 use App\Services\Scrapping\Core\Config\CollectAliasResolver;
 use App\Services\Scrapping\Core\Config\ConfigLoader;
+use App\Services\Scrapping\Core\Config\EntityMetaService;
 use App\Services\Scrapping\Core\Integration\IntegrationService;
 use App\Services\Scrapping\Core\Orchestrator\Orchestrator;
 use App\Services\Scrapping\Core\Orchestrator\OrchestratorResult;
@@ -21,10 +22,14 @@ use Illuminate\Validation\Rule;
  */
 class ScrappingController extends Controller
 {
+    use RespondsWithOrchestratorResult;
+
     public function __construct(
         private ConfigLoader $configLoader,
         private CollectAliasResolver $aliasResolver,
+        private EntityMetaService $entityMeta,
         private IntegrationService $integrationService,
+        private Orchestrator $orchestrator,
     ) {}
 
     /**
@@ -56,11 +61,11 @@ class ScrappingController extends Controller
         } catch (\Throwable $e) {
             Log::warning('Impossible de charger les métadonnées depuis la config scrapping', ['error' => $e->getMessage()]);
         }
-        foreach (EntityLimits::LIMITS as $type => $maxId) {
+        foreach ($this->entityMeta->allowedTypes() as $type) {
             if (!isset($metaByType[$type])) {
                 $metaByType[$type] = [
                     'type' => $type,
-                    'maxId' => $maxId,
+                    'maxId' => $this->entityMeta->getMaxIdForType($type),
                     'label' => $this->getEntityLabel($type),
                 ];
             }
@@ -112,24 +117,11 @@ class ScrappingController extends Controller
     }
 
     /**
-     * Retourne la limite maxId pour un type d'entité : config (meta.maxId) en priorité, EntityLimits en secours.
+     * Retourne la limite maxId pour un type d'entité (config meta.maxId en priorité, fallback sinon).
      */
     private function getMaxIdForType(string $type): int
     {
-        $resolved = $this->resolveEntityForImport($type);
-        if ($resolved === null) {
-            return EntityLimits::capFor($type);
-        }
-        try {
-            $cfg = $this->configLoader->loadEntity($resolved['source'], $resolved['entity']);
-            $maxId = (int) (($cfg['meta']['maxId'] ?? 0) ?: 0);
-            if ($maxId > 0) {
-                return $maxId;
-            }
-        } catch (\Throwable) {
-            // fallback
-        }
-        return EntityLimits::capFor($type);
+        return $this->entityMeta->getMaxIdForType($type);
     }
 
     /** @return array{convert: bool, validate: bool, integrate: bool, dry_run: bool, force_update: bool, replace_mode?: string, include_relations: bool, exclude_from_update: list<string>, property_whitelist: list<string>, download_images: bool, lang: string} */
@@ -181,36 +173,6 @@ class ScrappingController extends Controller
         ];
     }
 
-    private function resultToJson(OrchestratorResult $result, int $successStatus = 200): JsonResponse
-    {
-        if ($result->isSuccess()) {
-            $data = $result->getIntegrationResult()?->getData() ?? $result->getConverted();
-            return response()->json([
-                'success' => true,
-                'message' => $result->getMessage(),
-                'data' => $data,
-                'timestamp' => now()->toISOString(),
-            ], $successStatus);
-        }
-        return response()->json([
-            'success' => false,
-            'message' => $result->getMessage(),
-            'error' => $result->getMessage(),
-            'errors' => $result->getValidationErrors(),
-            'timestamp' => now()->toISOString(),
-        ], 400);
-    }
-
-    /** @return array{source: string, entity: string}|null */
-    private function resolveEntityForImport(string $type): ?array
-    {
-        $cfg = $this->aliasResolver->resolve($type);
-        if ($cfg !== null) {
-            return ['source' => (string) ($cfg['source'] ?? 'dofusdb'), 'entity' => (string) ($cfg['entity'] ?? $type)];
-        }
-        return ['source' => 'dofusdb', 'entity' => $type];
-    }
-
     /**
      * Type d'entité pour getExistingAttributesForComparison (monster, spell, breed, class, item, panoply).
      * @return string|null
@@ -232,7 +194,7 @@ class ScrappingController extends Controller
     {
         try {
             $options = $this->optionsFromRequest($request);
-            $result = Orchestrator::default()->runOne('dofusdb', 'breed', $id, $options);
+            $result = $this->orchestrator->runOne('dofusdb', 'breed', $id, $options);
             return $this->resultToJson($result, 201);
         } catch (\Throwable $e) {
             Log::error('Erreur lors de l\'import de classe via API', ['id' => $id, 'error' => $e->getMessage()]);
@@ -252,7 +214,7 @@ class ScrappingController extends Controller
     {
         try {
             $options = $this->optionsFromRequest($request);
-            $result = Orchestrator::default()->runOne('dofusdb', 'monster', $id, $options);
+            $result = $this->orchestrator->runOne('dofusdb', 'monster', $id, $options);
             return $this->resultToJson($result, 201);
         } catch (\Throwable $e) {
             Log::error('Erreur lors de l\'import de monstre via API', ['id' => $id, 'error' => $e->getMessage()]);
@@ -272,7 +234,7 @@ class ScrappingController extends Controller
     {
         try {
             $options = $this->optionsFromRequest($request);
-            $result = Orchestrator::default()->runOne('dofusdb', 'item', $id, $options);
+            $result = $this->orchestrator->runOne('dofusdb', 'item', $id, $options);
             return $this->resultToJson($result, 201);
         } catch (\Throwable $e) {
             Log::error('Erreur lors de l\'import d\'objet via API', ['id' => $id, 'error' => $e->getMessage()]);
@@ -291,12 +253,9 @@ class ScrappingController extends Controller
     public function importResource(Request $request, int $id): JsonResponse
     {
         $resolved = $this->resolveEntityForImport('resource');
-        if ($resolved === null) {
-            return response()->json(['success' => false, 'message' => 'Entité resource non supportée.', 'timestamp' => now()->toISOString()], 422);
-        }
         try {
             $options = $this->optionsFromRequest($request);
-            $result = Orchestrator::default()->runOne($resolved['source'], $resolved['entity'], $id, $options);
+            $result = $this->orchestrator->runOne($resolved['source'], $resolved['entity'], $id, $options);
             return $this->resultToJson($result, 201);
         } catch (\Throwable $e) {
             Log::error('Erreur import ressource via API', ['id' => $id, 'error' => $e->getMessage()]);
@@ -310,12 +269,9 @@ class ScrappingController extends Controller
     public function importConsumable(Request $request, int $id): JsonResponse
     {
         $resolved = $this->resolveEntityForImport('consumable');
-        if ($resolved === null) {
-            return response()->json(['success' => false, 'message' => 'Entité consumable non supportée.', 'timestamp' => now()->toISOString()], 422);
-        }
         try {
             $options = $this->optionsFromRequest($request);
-            $result = Orchestrator::default()->runOne($resolved['source'], $resolved['entity'], $id, $options);
+            $result = $this->orchestrator->runOne($resolved['source'], $resolved['entity'], $id, $options);
             return $this->resultToJson($result, 201);
         } catch (\Throwable $e) {
             Log::error('Erreur import consommable via API', ['id' => $id, 'error' => $e->getMessage()]);
@@ -330,7 +286,7 @@ class ScrappingController extends Controller
     {
         try {
             $options = $this->optionsFromRequest($request);
-            $result = Orchestrator::default()->runOne('dofusdb', 'spell', $id, $options);
+            $result = $this->orchestrator->runOne('dofusdb', 'spell', $id, $options);
             return $this->resultToJson($result, 201);
         } catch (\Throwable $e) {
             Log::error('Erreur import sort via API', ['id' => $id, 'error' => $e->getMessage()]);
@@ -345,7 +301,7 @@ class ScrappingController extends Controller
     {
         try {
             $options = $this->optionsFromRequest($request);
-            $result = Orchestrator::default()->runOne('dofusdb', 'panoply', $id, $options);
+            $result = $this->orchestrator->runOne('dofusdb', 'panoply', $id, $options);
             return $this->resultToJson($result, 201);
         } catch (\Throwable $e) {
             Log::error('Erreur import panoplie via API', ['id' => $id, 'error' => $e->getMessage()]);
@@ -366,7 +322,7 @@ class ScrappingController extends Controller
             ]);
             $options = $this->optionsFromRequest($request);
             $entities = $request->input('entities');
-            $orchestrator = Orchestrator::default();
+            $orchestrator = $this->orchestrator;
             $results = [];
             $successCount = 0;
             $errorCount = 0;
@@ -374,7 +330,7 @@ class ScrappingController extends Controller
                 $type = (string) ($item['type'] ?? '');
                 $id = (int) ($item['id'] ?? 0);
                 $resolved = $this->resolveEntityForImport($type);
-                if ($resolved === null || $id <= 0) {
+                if ($id <= 0) {
                     $results[] = ['type' => $type, 'id' => $id, 'success' => false, 'error' => 'Entité ou ID invalide'];
                     $errorCount++;
                     continue;
@@ -427,12 +383,9 @@ class ScrappingController extends Controller
             $type = (string) $validated['type'];
             $dofusdbId = (int) $validated['dofusdb_id'];
             $resolved = $this->resolveEntityForImport($type);
-            if ($resolved === null) {
-                return response()->json(['success' => false, 'message' => 'Type non supporté.', 'timestamp' => now()->toISOString()], 422);
-            }
             $options = $this->optionsFromRequest($request);
             $options['force_update'] = true;
-            $result = Orchestrator::default()->runOne($resolved['source'], $resolved['entity'], $dofusdbId, $options);
+            $result = $this->orchestrator->runOne($resolved['source'], $resolved['entity'], $dofusdbId, $options);
             return $this->resultToJson($result, 201);
         } catch (\Illuminate\Validation\ValidationException $e) {
             return response()->json(['success' => false, 'message' => 'Erreur de validation', 'errors' => $e->errors(), 'timestamp' => now()->toISOString()], 422);
@@ -448,7 +401,7 @@ class ScrappingController extends Controller
     public function importRange(Request $request): JsonResponse
     {
         $validated = $request->validate([
-            'type' => ['required', 'string', Rule::in(array_keys(EntityLimits::LIMITS))],
+            'type' => ['required', 'string', Rule::in($this->entityMeta->allowedTypes())],
             'start_id' => ['required', 'integer', 'min:1'],
             'end_id' => ['required', 'integer', 'min:1'],
         ]);
@@ -463,15 +416,12 @@ class ScrappingController extends Controller
             return response()->json(['success' => false, 'message' => "La plage doit être comprise entre 1 et {$maxId}"], 422);
         }
         $resolved = $this->resolveEntityForImport($type);
-        if ($resolved === null) {
-            return response()->json(['success' => false, 'message' => 'Type non supporté.'], 422);
-        }
         try {
             $options = $this->optionsFromRequest($request);
             $options['limit'] = $endId - $startId + 1;
             $options['offset'] = 0;
             $filters = ['idMin' => $startId, 'idMax' => $endId];
-            $orchestrator = Orchestrator::default();
+            $orchestrator = $this->orchestrator;
             $result = $orchestrator->runMany($resolved['source'], $resolved['entity'], $filters, $options);
 
             if (!$result->isSuccess()) {
@@ -536,7 +486,7 @@ class ScrappingController extends Controller
      */
     public function importAll(Request $request): JsonResponse
     {
-        $validated = $request->validate(['type' => ['required', 'string', Rule::in(array_keys(EntityLimits::LIMITS))]]);
+        $validated = $request->validate(['type' => ['required', 'string', Rule::in($this->entityMeta->allowedTypes())]]);
         $type = (string) $validated['type'];
         $maxId = $this->getMaxIdForType($type);
         $request->merge(['start_id' => 1, 'end_id' => $maxId]);
@@ -550,7 +500,7 @@ class ScrappingController extends Controller
     public function preview(string $type, int $id): JsonResponse
     {
         $normalizedType = strtolower($type);
-        if (!array_key_exists($normalizedType, EntityLimits::LIMITS)) {
+        if (!$this->entityMeta->isAllowedType($normalizedType)) {
             return response()->json(['success' => false, 'message' => 'Type d\'entité non supporté'], 422);
         }
         $maxId = $this->getMaxIdForType($normalizedType);
@@ -558,12 +508,9 @@ class ScrappingController extends Controller
             return response()->json(['success' => false, 'message' => "L'identifiant doit être compris entre 1 et {$maxId}"], 422);
         }
         $resolved = $this->resolveEntityForImport($normalizedType);
-        if ($resolved === null) {
-            return response()->json(['success' => false, 'message' => 'Type non supporté.'], 422);
-        }
         try {
             $options = ['convert' => true, 'validate' => true, 'integrate' => false, 'dry_run' => true, 'force_update' => false, 'lang' => 'fr'];
-            $result = Orchestrator::default()->runOne($resolved['source'], $resolved['entity'], $id, $options);
+            $result = $this->orchestrator->runOne($resolved['source'], $resolved['entity'], $id, $options);
             $converted = $result->getConverted();
             $comparisonType = $this->entityTypeForComparison($normalizedType);
             $existingRecord = $comparisonType !== null
@@ -598,13 +545,10 @@ class ScrappingController extends Controller
             $type = (string) $validated['type'];
             $ids = array_values(array_unique(array_map('intval', $validated['ids'])));
             $resolved = $this->resolveEntityForImport($type);
-            if ($resolved === null) {
-                return response()->json(['success' => false, 'message' => 'Type non supporté.', 'timestamp' => now()->toISOString()], 422);
-            }
             $maxId = $this->getMaxIdForType($type);
             $comparisonType = $this->entityTypeForComparison($type);
             $options = ['convert' => true, 'validate' => true, 'integrate' => false, 'dry_run' => true, 'force_update' => false, 'lang' => 'fr'];
-            $orchestrator = Orchestrator::default();
+            $orchestrator = $this->orchestrator;
             $items = [];
             foreach ($ids as $id) {
                 if ($id < 1 || $id > $maxId) {
@@ -617,13 +561,19 @@ class ScrappingController extends Controller
                     $existingRecord = $comparisonType !== null
                         ? $this->integrationService->getExistingAttributesForComparison($comparisonType, $converted)
                         : null;
-                    $items[] = [
+                    $itemPayload = [
                         'id' => $id,
                         'raw' => $result->getRaw(),
                         'converted' => $converted,
                         'existing' => $existingRecord !== null ? ['record' => $existingRecord] : null,
                         'error' => $result->isSuccess() ? null : $result->getMessage(),
                     ];
+                    if ($type === 'item') {
+                        $itemData = $converted['items'] ?? $converted['resources'] ?? $converted['consumables'] ?? [];
+                        $typeId = isset($itemData['type_id']) ? (int) $itemData['type_id'] : null;
+                        $itemPayload['resolved_entity_type'] = $this->integrationService->resolveItemEntityType($typeId);
+                    }
+                    $items[] = $itemPayload;
                 } catch (\Throwable $e) {
                     $items[] = ['id' => $id, 'converted' => null, 'existing' => null, 'error' => $e->getMessage()];
                 }

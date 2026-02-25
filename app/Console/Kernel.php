@@ -2,6 +2,7 @@
 
 namespace App\Console;
 
+use App\Jobs\SendNotificationDigestsJob;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 
@@ -24,6 +25,11 @@ class Kernel extends ConsoleKernel
     {
         // $schedule->command('inspire')->hourly();
         $schedule->command('media:clean-thumbnails')->daily();
+
+        // Digests de notifications (quotidien, hebdo, mensuel)
+        $schedule->job(new SendNotificationDigestsJob('daily'))->dailyAt('00:05');
+        $schedule->job(new SendNotificationDigestsJob('weekly'))->weeklyOn(1, '00:10');
+        $schedule->job(new SendNotificationDigestsJob('monthly'))->monthlyOn(1, '00:15');
 
         // Sync automatique du catalogue de ressources depuis DofusDB
         // Activable via env: SCRAPPING_RESOURCES_AUTO_SYNC=true (par défaut: false)

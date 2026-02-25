@@ -22,6 +22,7 @@ function parseCommaList(str) {
  *   batchScopeRef: import('vue').Ref<string>,
  *   pageRangeRef: import('vue').Ref<string>,
  *   pageNumberRef: import('vue').Ref<number>,
+ *   getTotalPages?: () => number - nombre total de pages pour scope "all"
  *   optReplaceMode: import('vue').Ref<string>,
  *   optIncludeRelations: import('vue').Ref<boolean>,
  *   optPropertyWhitelist: import('vue').Ref<string>,
@@ -49,6 +50,7 @@ export function useScrappingBatch(options) {
         batchScopeRef,
         pageRangeRef,
         pageNumberRef,
+        getTotalPages = () => 1,
         optReplaceMode,
         optIncludeRelations,
         optPropertyWhitelist,
@@ -264,14 +266,105 @@ export function useScrappingBatch(options) {
         }
     }
 
+    /** Import/simulation sur toutes les pages (1 à totalPages), une par une. */
+    async function runImportAllPages(simulate = false) {
+        const totalPages = getTotalPages();
+        const total = Math.max(1, Math.floor(Number(totalPages)));
+        const pages = Array.from({ length: total }, (_, i) => i + 1);
+        const csrf = getCsrfToken();
+        if (!csrf) {
+            notifyError("Token CSRF introuvable. Veuillez recharger la page.");
+            return;
+        }
+
+        const label = simulate ? "Simulation" : "Import";
+        pushHistory(`${label} « Tous » (${entityTypeRef.value}) : ${pages.length} page(s).`);
+        importing.value = true;
+        importByPagesProgress.value = `0/${pages.length}`;
+        let totalSuccess = 0;
+        let totalErrors = 0;
+        let totalEntities = 0;
+        const accumulatedErrorResults = [];
+        const savedPageNumber = pageNumberRef.value;
+
+        try {
+            for (let i = 0; i < pages.length; i++) {
+                const p = pages[i];
+                importByPagesProgress.value = `${i + 1}/${pages.length}`;
+                pageNumberRef.value = p;
+                await runSearch();
+
+                if (!rawItemsRef.value?.length) {
+                    pushHistory(`→ Page ${p} : aucun résultat, ignorée.`);
+                    continue;
+                }
+                const payload = buildBatchPayload(simulate, "all");
+                if (payload.entities.length < 1) {
+                    pushHistory(`→ Page ${p} : 0 entité, ignorée.`);
+                    continue;
+                }
+                totalEntities += payload.entities.length;
+                setStatusForEntities(payload.entities, simulate ? "simulation en cours" : "importation en cours");
+
+                const result = await postJson("/api/scrapping/import/batch", payload, {
+                    headers: { "X-CSRF-TOKEN": csrf },
+                });
+
+                if (result.ok && result.data) {
+                    const data = result.data;
+                    setStatusFromBatchResults(data.results ?? [], simulate);
+                    const nextRel = { ...lastBatchRelationsByKeyRef.value };
+                    for (const r of data.results ?? []) {
+                        if (r?.relations?.length) nextRel[`${r.type}-${r.id}`] = r.relations;
+                    }
+                    lastBatchRelationsByKeyRef.value = nextRel;
+                    const s = data.summary || {};
+                    const ok = s.success ?? 0;
+                    const err = s.errors ?? 0;
+                    totalSuccess += ok;
+                    totalErrors += err;
+                    (data.results ?? []).filter((r) => r && r.success === false).forEach((r) => accumulatedErrorResults.push(r));
+                    pushHistory(`→ Page ${p} : ${ok}/${s.total ?? payload.entities.length} (erreurs: ${err})`);
+                } else {
+                    setStatusForEntities(payload.entities, "erreur", result.error || "batch");
+                    totalErrors += payload.entities.length;
+                    payload.entities.forEach((ent) => accumulatedErrorResults.push({ type: ent.type, id: ent.id, success: false, error: result.error || "batch" }));
+                    pushHistory(`→ Page ${p} ERREUR: ${result.error || "batch"}`);
+                }
+            }
+            lastBatchResults.value = accumulatedErrorResults.length > 0 ? accumulatedErrorResults : null;
+            if (totalErrors > 0) {
+                const firstFailed = accumulatedErrorResults[0];
+                const firstError = firstFailed?.error || firstFailed?.validation_errors?.[0] || "Erreur inconnue";
+                notifyError(`${label} « Tous » : ${totalErrors} erreur(s). ${typeof firstError === "string" ? firstError : JSON.stringify(firstError)}. Voir Options & historique.`);
+                onBatchErrors();
+            } else {
+                notifySuccess(`${label} « Tous » terminé : ${totalSuccess}/${totalEntities}`);
+            }
+            pushHistory(`→ ${label.toUpperCase()} TOUS OK: ${totalSuccess}/${totalEntities} (erreurs: ${totalErrors})`);
+        } catch (e) {
+            notifyError(`${label} « Tous » : ` + (e?.message ?? "erreur"));
+            pushHistory(`→ ${label.toUpperCase()} TOUS ERREUR: ${e?.message}`);
+            lastBatchResults.value = null;
+        } finally {
+            importing.value = false;
+            importByPagesProgress.value = null;
+            pageNumberRef.value = savedPageNumber;
+            await runSearch();
+        }
+    }
+
     async function runBatchOrByPages(mode) {
         const dryRun = mode === "simulate";
         if (batchScopeRef.value === "pages") {
             await runImportByPages(dryRun);
             return;
         }
-        const scope = batchScopeRef.value === "all" ? "all" : "auto";
-        await runBatch(mode, scope);
+        if (batchScopeRef.value === "all") {
+            await runImportAllPages(dryRun);
+            return;
+        }
+        await runBatch(mode, "auto");
     }
 
     function clearBatchErrors() {

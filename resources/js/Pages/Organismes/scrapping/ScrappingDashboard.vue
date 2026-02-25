@@ -11,10 +11,11 @@
  * - Actions sur sélection: reset / simuler / importer
  * - Options d'import + historique type "invite de commande"
  */
-import { computed, onMounted, ref, watch } from "vue";
+import { computed, nextTick, onMounted, ref, watch } from "vue";
 import Card from "@/Pages/Atoms/data-display/Card.vue";
 import Btn from "@/Pages/Atoms/action/Btn.vue";
 import Badge from "@/Pages/Atoms/data-display/Badge.vue";
+import Icon from "@/Pages/Atoms/data-display/Icon.vue";
 import Loading from "@/Pages/Atoms/feedback/Loading.vue";
 import InputField from "@/Pages/Molecules/data-input/InputField.vue";
 import Modal from "@/Pages/Molecules/action/Modal.vue";
@@ -23,6 +24,7 @@ import CompareModal from "@/Pages/Organismes/scrapping/CompareModal.vue";
 import ScrappingFilters from "@/Pages/Organismes/scrapping/ScrappingFilters.vue";
 import ScrappingOptionsPanel from "@/Pages/Organismes/scrapping/ScrappingOptionsPanel.vue";
 import ScrappingResultsTable from "@/Pages/Organismes/scrapping/ScrappingResultsTable.vue";
+import TanStackTablePagination from "@/Pages/Molecules/table/TanStackTablePagination.vue";
 import EntityModal from "@/Pages/Organismes/entity/EntityModal.vue";
 import { Monster } from "@/Models/Entity/Monster";
 import { Item } from "@/Models/Entity/Item";
@@ -107,6 +109,12 @@ onMounted(async () => {
 
 // Gestion des types/races (modal)
 const typeManagerOpen = ref(false);
+/** Incrémenté à l'ouverture du modal « Gérer les types » et après une recherche pour forcer le rechargement de la liste. */
+const typeManagerRefreshTrigger = ref(0);
+function handleOpenTypeManager() {
+    typeManagerOpen.value = true;
+    typeManagerRefreshTrigger.value += 1;
+}
 const typeManagerConfig = computed(() => {
     const t = selectedEntityTypeStr.value;
     if (t === "resource") {
@@ -116,6 +124,8 @@ const typeManagerConfig = computed(() => {
             mode: "decision",
             listUrl: "/api/scrapping/resource-types",
             bulkUrl: "/api/scrapping/resource-types/bulk",
+            moveCategoryUrlBase: "/api/scrapping/resource-types",
+            currentCategory: "resource",
         };
     }
     if (t === "consumable") {
@@ -125,6 +135,8 @@ const typeManagerConfig = computed(() => {
             mode: "decision",
             listUrl: "/api/scrapping/consumable-types",
             bulkUrl: "/api/scrapping/consumable-types/bulk",
+            moveCategoryUrlBase: "/api/scrapping/consumable-types",
+            currentCategory: "consumable",
         };
     }
     if (t === "equipment") {
@@ -134,6 +146,8 @@ const typeManagerConfig = computed(() => {
             mode: "decision",
             listUrl: "/api/scrapping/item-types",
             bulkUrl: "/api/scrapping/item-types/bulk",
+            moveCategoryUrlBase: "/api/scrapping/item-types",
+            currentCategory: "equipment",
         };
     }
     if (t === "monster") {
@@ -386,9 +400,9 @@ const pushHistory = (line) => {
 const loadKnownTypes = async () => {
     const t = selectedEntityTypeStr.value;
     const endpoint = (() => {
-        if (t === "resource") return "/api/scrapping/resource-types?decision=allowed";
-        if (t === "consumable") return "/api/scrapping/consumable-types?decision=allowed";
-        if (t === "equipment") return "/api/scrapping/item-types?decision=allowed";
+        if (t === "resource") return "/api/scrapping/resource-types";
+        if (t === "consumable") return "/api/scrapping/consumable-types";
+        if (t === "equipment") return "/api/scrapping/item-types";
         return null;
     })();
 
@@ -432,7 +446,7 @@ const loadKnownRaces = async () => {
 
     knownRacesLoading.value = true;
     try {
-        const result = await getJson("/api/types/monster-races?state=playable");
+        const result = await getJson("/api/types/monster-races");
         if (!result.ok || !result.data?.success) {
             showError(result.error || result.data?.message || "Chargement des races impossible");
             return;
@@ -557,6 +571,7 @@ const preview = useScrappingPreview({
     notifyError: showError,
     getCsrfToken,
     itemStatusByKeyRef: status.itemStatusByKey,
+    includeRelationsRef: optIncludeRelations,
 });
 const compare = useScrappingCompare({
     convertedByItemIdRef: preview.convertedByItemId,
@@ -622,15 +637,17 @@ function getExpandKey(row) {
     return row?.item?.id != null ? String(row.item.id) : "";
 }
 
-/** Lignes du tableau : chaque item suivi de ses relations avec item synthétique (conversion, double-clic, comparaison). */
+/** Lignes du tableau : chaque item suivi de ses relations (si "Inclure les relations" activé). */
 const visibleRowsWithRelations = computed(() => {
     const items = visibleItems.value;
+    const includeRelations = optIncludeRelations.value !== false;
     const relByKey = preview.lastBatchRelationsByKey.value;
     const convRel = preview.convertedByRelationKey?.value ?? {};
     const entityType = selectedEntityTypeStr.value;
     const out = [];
     for (const it of items) {
         out.push({ isRelation: false, item: it });
+        if (!includeRelations) continue;
         const key = `${entityType}-${Number(it?.id)}`;
         const relations = relByKey[key];
         if (Array.isArray(relations) && relations.length) {
@@ -661,7 +678,11 @@ const visibleRowsWithRelations = computed(() => {
     return out;
 });
 
-const relationTypeLabel = (rel) => RELATION_TYPE_LABELS[rel?.type] ?? rel?.type ?? "—";
+/** Libellé du type de relation ; utilise le type résolu (resource/consumable/equipment) quand disponible. */
+function relationTypeLabel(rel, resolvedEntityType = null) {
+    const type = resolvedEntityType ?? rel?.type;
+    return RELATION_TYPE_LABELS[type] ?? type ?? "—";
+}
 
 const batch = useScrappingBatch({
     entityTypeRef: selectedEntityTypeStr,
@@ -671,6 +692,11 @@ const batch = useScrappingBatch({
     batchScopeRef: batchScope,
     pageRangeRef: pageRangeInput,
     pageNumberRef: pageNumber,
+    getTotalPages: () => {
+        const tp = search.totalPages?.value ?? null;
+        if (tp != null && Number.isFinite(tp)) return Math.max(1, Math.floor(tp));
+        return Math.max(1, Math.floor(Number(pageNumber.value) || 1));
+    },
     optReplaceMode,
     optIncludeRelations,
     optPropertyWhitelist,
@@ -749,11 +775,11 @@ const conversionProgressUnwrapped = computed(() => preview.conversionProgress?.v
 
 const pageIndex = computed(() => Math.max(0, Math.floor(Number(pageNumber.value) || 1) - 1));
 const pageCount = computed(() => {
-    const tp = search.totalPages;
-    if (tp === null) return Math.max(1, Math.floor(Number(pageNumber.value) || 1));
-    return Math.max(1, tp);
+    const tp = search.totalPages?.value ?? null;
+    if (tp == null || !Number.isFinite(tp)) return Math.max(1, Math.floor(Number(pageNumber.value) || 1));
+    return Math.max(1, Math.floor(tp));
 });
-const totalRows = computed(() => search.totalRows);
+const totalRows = computed(() => search.totalRows?.value ?? 0);
 
 const addKnownTypeTo = (target) => {
     const selected = target === "exclude" ? selectedKnownTypeExclude.value : selectedKnownTypeInclude.value;
@@ -784,43 +810,92 @@ const removeKnownTypeFrom = (target, id) => {
     filterTypeIds.value = filterTypeIds.value.filter((x) => Number(x) !== n);
 };
 
-async function applyStatusAndPreview() {
+/** Contrôleur d'annulation pour la recherche + conversion en cours. */
+const searchAbortControllerRef = ref(/** @type {AbortController | null} */ (null));
+
+async function applyStatusAndPreview(/** @type {AbortSignal | null | undefined} */ signal) {
     if (!search.rawItems.value?.length) return;
     const entityType = selectedEntityTypeStr.value;
     const entities = search.rawItems.value.map((it) => ({ type: entityType, id: Number(it?.id) })).filter((e) => Number.isFinite(e.id) && e.id > 0);
     const toUpdate = entities.filter((e) => !status.TERMINAL_STATUSES.has(status.itemStatusByKey.value[status.statusKey({ id: e.id })]?.status));
     status.setStatusForEntities(toUpdate, "recherché");
-    await preview.fetchConvertedBatch();
+    await preview.fetchConvertedBatch({ signal: signal ?? undefined });
+}
+
+function cancelSearchAndConversion() {
+    searchAbortControllerRef.value?.abort();
+    searchAbortControllerRef.value = null;
 }
 
 async function runSearchAndPreview() {
-    await search.runSearch();
-    await applyStatusAndPreview();
+    searchAbortControllerRef.value = new AbortController();
+    const sig = searchAbortControllerRef.value.signal;
+    try {
+        await search.runSearch({ signal: sig });
+        if (sig.aborted) return;
+        await nextTick();
+        await applyStatusAndPreview(sig);
+    } finally {
+        searchAbortControllerRef.value = null;
+    }
+    typeManagerRefreshTrigger.value += 1;
 }
 
 const goPrev = async () => {
-    await search.goPrev();
-    await applyStatusAndPreview();
+    searchAbortControllerRef.value = new AbortController();
+    const sig = searchAbortControllerRef.value.signal;
+    try {
+        await search.goPrev({ signal: sig });
+        if (sig.aborted) return;
+        await nextTick();
+        await applyStatusAndPreview(sig);
+    } finally {
+        searchAbortControllerRef.value = null;
+    }
 };
 const goNext = async () => {
-    await search.goNext();
-    await applyStatusAndPreview();
+    searchAbortControllerRef.value = new AbortController();
+    const sig = searchAbortControllerRef.value.signal;
+    try {
+        await search.goNext({ signal: sig });
+        if (sig.aborted) return;
+        await nextTick();
+        await applyStatusAndPreview(sig);
+    } finally {
+        searchAbortControllerRef.value = null;
+    }
 };
 const handlePaginationGo = async (pIdx) => {
-    await search.goToPage(pIdx);
-    await applyStatusAndPreview();
+    searchAbortControllerRef.value = new AbortController();
+    const sig = searchAbortControllerRef.value.signal;
+    try {
+        await search.goToPage(pIdx, { signal: sig });
+        if (sig.aborted) return;
+        await nextTick();
+        await applyStatusAndPreview(sig);
+    } finally {
+        searchAbortControllerRef.value = null;
+    }
 };
 const handleSetPageSize = async (v) => {
-    await search.setPageSize(v);
-    await applyStatusAndPreview();
+    searchAbortControllerRef.value = new AbortController();
+    const sig = searchAbortControllerRef.value.signal;
+    try {
+        await search.setPageSize(v, { signal: sig });
+        if (sig.aborted) return;
+        await nextTick();
+        await applyStatusAndPreview(sig);
+    } finally {
+        searchAbortControllerRef.value = null;
+    }
 };
 const handleFirst = async () => {
     pageNumber.value = 1;
     await runSearchAndPreview();
 };
 const handleLast = async () => {
-    const tp = search.totalPages;
-    if (tp != null) await handlePaginationGo(tp - 1);
+    const tp = search.totalPages?.value ?? null;
+    if (tp != null && Number.isFinite(tp)) await handlePaginationGo(tp - 1);
 };
 
 const exportBatchErrorsCsv = () => {
@@ -1024,7 +1099,9 @@ const onCompareImported = () => {
                     <div class="font-semibold text-primary-100">
                         {{ typeManagerConfig?.title || 'Gestion des types' }}
                     </div>
-                    <Btn size="sm" variant="ghost" @click="handleTypeManagerClose">Fermer</Btn>
+                    <Btn size="sm" variant="ghost" @click="handleTypeManagerClose">
+                        <Icon source="fa-solid fa-xmark" alt="Fermer" size="sm" /> <!-- pas besoin du texte car icone gérérer automatiquementfermer -->
+                    </Btn>
                 </div>
             </template>
 
@@ -1034,7 +1111,10 @@ const onCompareImported = () => {
                     :description="typeManagerConfig.description"
                     :mode="typeManagerConfig.mode"
                     :list-url="typeManagerConfig.listUrl"
+                    :refresh-trigger="typeManagerRefreshTrigger"
                     :bulk-url="typeManagerConfig.bulkUrl"
+                    :move-category-url-base="typeManagerConfig.moveCategoryUrlBase"
+                    :current-category="typeManagerConfig.currentCategory"
                     :delete-url-base="typeManagerConfig.mode === 'decision'
                         ? (selectedEntityTypeStr === 'resource'
                             ? '/api/scrapping/resource-types'
@@ -1101,8 +1181,10 @@ const onCompareImported = () => {
             :searching="searchingUnwrapped"
             :last-meta="lastMetaUnwrapped"
             :raw-items-length="rawItemsLength"
+            :cancel-visible="searchingUnwrapped || loadingConvertedUnwrapped"
             @search="runSearchAndPreview"
-            @open-type-manager="typeManagerOpen = true"
+            @cancel="cancelSearchAndConversion"
+            @open-type-manager="handleOpenTypeManager"
             @add-known-type="(target) => addKnownTypeTo(target)"
             @remove-known-type="(list, id) => removeKnownTypeFrom(list, id)"
             @add-known-race="addKnownRace"
@@ -1156,6 +1238,18 @@ const onCompareImported = () => {
                             {{ conversionProgressUnwrapped.done }} traités / {{ conversionProgressUnwrapped.total - conversionProgressUnwrapped.done }} restant
                         </span>
                     </span>
+                    <Btn
+                        v-if="searchingUnwrapped || loadingConvertedUnwrapped"
+                        color="error"
+                        variant="outline"
+                        size="sm"
+                        class="ml-2"
+                        title="Arrêter la recherche et la conversion en cours"
+                        @click="cancelSearchAndConversion"
+                    >
+                        <Icon source="fa-solid fa-stop" alt="" pack="solid" class="mr-1" />
+                        Annuler
+                    </Btn>
                 </div>
 
                 <div class="flex flex-wrap gap-2 items-center">
@@ -1242,19 +1336,20 @@ const onCompareImported = () => {
                 :triple-name="(row) => compare.tripleName(row.item, getConvertedForRow(row))"
                 :triple-level="(row) => compare.tripleLevel(row.item, getConvertedForRow(row))"
                 :triple-type="(row) => compare.tripleType(row.item, getConvertedForRow(row))"
-                :comparison-rows="(row) => compare.comparisonRows(row.item, getConvertedForRow(row), row.isRelation ? row.relation?.type : undefined)"
+                :comparison-rows="(row) => compare.comparisonRows(row.item, getConvertedForRow(row), row.isRelation ? (getConvertedForRow(row)?.resolvedEntityType ?? row.relation?.type) : undefined)"
                 :format-compare-val="compare.formatCompareVal"
-                :relation-type-label="relationTypeLabel"
+                :relation-type-label="(row) => relationTypeLabel(row?.relation, getConvertedForRow(row)?.resolvedEntityType)"
                 :supports="supports"
                 :format-name="(n) => (n?.fr ?? n?.en ?? (typeof n === 'string' ? n : '—'))"
                 :exists-label="existsLabel"
                 :exists-tooltip="existsTooltip"
                 :exists-entity-href="existsEntityHref"
-                :row-has-diff="(row) => compare.comparisonRows(row.item, getConvertedForRow(row), row.isRelation ? row.relation?.type : undefined).some(r => r.differs)"
+                :row-has-diff="(row) => compare.comparisonRows(row.item, getConvertedForRow(row), row.isRelation ? (getConvertedForRow(row)?.resolvedEntityType ?? row.relation?.type) : undefined).some(r => r.differs)"
                 :has-item-effects="hasItemEffects"
                 :item-effects-for-row="itemEffectsForRow"
                 :get-characteristic-label="getCharacteristicLabel"
                 :entity-type-str="selectedEntityTypeStr"
+                :get-relation-entity-type="(row) => getConvertedForRow(row)?.resolvedEntityType"
                 :entity-modal-loading="entityModalLoading"
                 :entity-modal-loading-id="entityModalLoadingId"
                 @update:selected-ids="(p) => p === 'toggle-all' ? toggleSelectAll() : (p?.type === 'toggle-one' && toggleSelectOne(p.id))"
@@ -1263,6 +1358,26 @@ const onCompareImported = () => {
                 @open-entity="openEntityModal"
             />
 
+            <!-- Pagination sous les résultats (visible après recherche) -->
+            <div v-if="hasRawItems" class="mt-4 pt-4 border-t border-base-300">
+                <TanStackTablePagination
+                    :page-index="pageIndex"
+                    :page-count="pageCount"
+                    :page-size="Math.max(1, Math.min(200, perPage))"
+                    :total-rows="totalRows"
+                    :per-page-options="[50, 100, 200]"
+                    :can-prev="canPrevUnwrapped"
+                    :can-next="canNextUnwrapped"
+                    ui-size="sm"
+                    ui-color="primary"
+                    @prev="goPrev"
+                    @next="goNext"
+                    @first="handleFirst"
+                    @last="handleLast"
+                    @go="handlePaginationGo"
+                    @set-page-size="handleSetPageSize"
+                />
+            </div>
         </Card>
 
         <!-- Analyse des effets non mappés -->

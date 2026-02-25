@@ -63,9 +63,9 @@ export class ImageService {
                     });
                     return url;
                 }
-                // Image non trouvée : retourner une chaîne vide sans lancer d'erreur
-                // (c'est un cas normal, pas une erreur)
-                if (response.status === 404) {
+                // Image non trouvée / accès refusé : retourner une chaîne vide sans lancer d'erreur
+                // (cas normaux : image manquante ou non exposée publiquement)
+                if (response.status === 404 || response.status === 403) {
                     return "";
                 }
                 // Pour les autres erreurs HTTP, retry

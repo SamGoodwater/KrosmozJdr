@@ -605,8 +605,8 @@ const characteristicColorStyle = computed(() => {
     };
 });
 
-/** URL des icônes : storage/app/public/images/icons/characteristics/ (servi via /storage/...) */
-const iconBasePath = '/storage/images/icons/characteristics';
+/** URL des icônes : storage/app/public/images/icons/caracteristics/ (servi via /storage/...) */
+const iconBasePath = '/storage/images/icons/caracteristics';
 function iconUrl(icon) {
     if (!icon || typeof icon !== 'string') return null;
     if (icon.startsWith('fa-') || icon.startsWith('http')) return null;
@@ -1168,7 +1168,7 @@ function submitConvertToLinked() {
                                                 @change="onIconFileChange"
                                             />
                                             <p class="text-xs text-base-content/70">
-                                                Fichier dans <code class="rounded bg-base-300 px-1">storage/app/public/images/icons/characteristics/</code>. Ou saisir <code class="rounded bg-base-300 px-1">fa-heart</code> pour Font Awesome.
+                                                Fichier dans <code class="rounded bg-base-300 px-1">storage/app/public/images/icons/caracteristics/</code>. Ou saisir <code class="rounded bg-base-300 px-1">fa-heart</code> pour Font Awesome.
                                             </p>
                                         </div>
                                         <input

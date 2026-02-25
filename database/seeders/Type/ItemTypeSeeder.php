@@ -1,67 +1,64 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Database\Seeders\Type;
 
-use Illuminate\Database\Seeder;
 use App\Models\Type\ItemType;
 use App\Models\User;
+use Database\Seeders\Concerns\LoadsSeederDataFile;
+use Illuminate\Database\Seeder;
 
 /**
- * Seeder pour les types d'items
- * 
- * Initialise les types d'objets/équipements de base
+ * Seed des types d'équipements (items) depuis database/seeders/data/item_types.php.
+ *
+ * Fichier généré par : php artisan scrapping:extract-item-types
+ * Régénéré depuis la BDD par : php artisan db:export-seeder-data --item-types
+ *
+ * @see docs/50-Fonctionnalités/Scrapping/PLAN_TYPES_ITEM_BDD_SEEDER.md
  */
 class ItemTypeSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     */
+    use LoadsSeederDataFile;
+
+    private const DATA_FILE = 'database/seeders/data/item_types.php';
+
     public function run(): void
     {
+        $path = base_path(self::DATA_FILE);
+        if (!is_file($path)) {
+            if ($this->command) {
+                $this->command->warn('Fichier absent : ' . self::DATA_FILE . ' — exécutez php artisan scrapping:extract-item-types');
+            }
+
+            return;
+        }
+
+        $rows = $this->loadDataFile(self::DATA_FILE);
         $systemUser = User::getSystemUser();
-        $createdBy = $systemUser ? $systemUser->id : null;
+        $createdBy = $systemUser?->id;
 
-        $itemTypes = [
-            // Armes
-            ['name' => 'Arc'],
-            ['name' => 'Bouclier'],
-            ['name' => 'Bâton'],
-            ['name' => 'Dague'],
-            ['name' => 'Épée'],
-            ['name' => 'Marteau'],
-            ['name' => 'Pelle'],
-            ['name' => 'Hache'],
-            ['name' => 'Outil'],
-            
-            // Accessoires
-            ['name' => 'Anneau'],
-            ['name' => 'Amulette'],
-            ['name' => 'Ceinture'],
-            
-            // Équipements
-            ['name' => 'Chapeau'],
-            ['name' => 'Cape'],
-            ['name' => 'Bottes'],
-            
-            // Autres
-            ['name' => 'Familier'],
-            ['name' => 'Monture'],
-            ['name' => 'Certificat'],
-        ];
-
-        foreach ($itemTypes as $itemType) {
-            ItemType::firstOrCreate(
-                ['name' => $itemType['name']],
-                array_merge($itemType, [
-                    'state' => 'playable',
-                    'read_level' => User::ROLE_GUEST,
-                    'write_level' => User::ROLE_ADMIN,
-                    'created_by' => $createdBy,
-                ])
+        foreach ($rows as $row) {
+            $typeId = (int) ($row['dofusdb_type_id'] ?? 0);
+            if ($typeId <= 0) {
+                continue;
+            }
+            ItemType::updateOrCreate(
+                ['dofusdb_type_id' => $typeId],
+                [
+                    'name' => (string) ($row['name'] ?? ''),
+                    'decision' => (string) ($row['decision'] ?? 'pending'),
+                    'state' => (string) ($row['state'] ?? 'draft'),
+                    'read_level' => (int) ($row['read_level'] ?? User::ROLE_GUEST),
+                    'write_level' => (int) ($row['write_level'] ?? User::ROLE_ADMIN),
+                    'created_by' => $row['created_by'] ?? $createdBy,
+                ]
             );
         }
 
-        $this->command->info('✅ Types d\'items créés : ' . count($itemTypes));
+        if ($this->command) {
+            $this->command->info('✅ ItemTypeSeeder : ' . count($rows) . ' types.');
+        }
     }
 }
 

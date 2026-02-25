@@ -107,6 +107,28 @@ class ItemEntityTypeFilterService
     }
 
     /**
+     * Liste des typeId DofusDB présents en base pour une entité (resource, consumable, equipment).
+     * Source de vérité : les tables resource_types, consumable_types, item_types.
+     *
+     * @return array<int,int>
+     */
+    public function getTypeIdsFromRegistry(string $entity): array
+    {
+        $entity = strtolower(trim($entity));
+        try {
+            $ids = match ($entity) {
+                'resource' => ResourceType::query()->whereNotNull('dofusdb_type_id')->pluck('dofusdb_type_id')->all(),
+                'consumable' => ConsumableType::query()->whereNotNull('dofusdb_type_id')->pluck('dofusdb_type_id')->all(),
+                'equipment' => ItemType::query()->whereNotNull('dofusdb_type_id')->pluck('dofusdb_type_id')->all(),
+                default => [],
+            };
+            return array_values(array_unique(array_map('intval', $ids)));
+        } catch (\Throwable) {
+            return [];
+        }
+    }
+
+    /**
      * @return array<int,int>
      */
     public function getTypeIdsForGroup(string $group): array
@@ -145,35 +167,24 @@ class ItemEntityTypeFilterService
                 if (!empty($allowed)) {
                     return in_array($typeId, $allowed, true);
                 }
-                // fallback: si registry vide, on laisse passer via config superType (utile au bootstrap)
-                $fromCfg = $this->getTypeIdsForGroup($entity);
-                return !empty($fromCfg) && in_array($typeId, $fromCfg, true);
+                return true;
             }
 
-            // all/selected: on se base sur la config superType
-            $fromCfg = $this->getTypeIdsForGroup($entity);
-            return !empty($fromCfg) && in_array($typeId, $fromCfg, true);
+            $fromRegistry = $this->getTypeIdsFromRegistry($entity);
+            return !empty($fromRegistry) && in_array($typeId, $fromRegistry, true);
         }
 
         if ($entity === 'equipment') {
-            // allowed: si on a une registry item_types (decision=allowed), on la respecte.
             if ($typeMode === self::TYPE_MODE_ALLOWED) {
                 $allowed = $this->getAllowedTypeIdsFromRegistry('equipment');
                 if (!empty($allowed)) {
                     return in_array($typeId, $allowed, true);
                 }
+                return true;
             }
 
-            // all: basé sur la config superType (exclusions)
-            $defaults = $this->defaultEquipmentFilters(self::TYPE_MODE_ALL);
-            if (isset($defaults['typeIds']) && is_array($defaults['typeIds'])) {
-                $ids = array_values(array_unique(array_map('intval', $defaults['typeIds'])));
-                return !empty($ids) && in_array($typeId, $ids, true);
-            }
-            if (isset($defaults['typeIdsNot']) && is_array($defaults['typeIdsNot'])) {
-                $idsNot = array_values(array_unique(array_map('intval', $defaults['typeIdsNot'])));
-                return empty($idsNot) || !in_array($typeId, $idsNot, true);
-            }
+            $fromRegistry = $this->getTypeIdsFromRegistry('equipment');
+            return !empty($fromRegistry) && in_array($typeId, $fromRegistry, true);
         }
 
         return false;
@@ -191,8 +202,7 @@ class ItemEntityTypeFilterService
             }
         }
 
-        $fromCfg = $this->getTypeIdsForGroup('resource');
-        return empty($fromCfg) ? [] : ['typeIds' => $fromCfg];
+        return [];
     }
 
     /**
@@ -207,8 +217,7 @@ class ItemEntityTypeFilterService
             }
         }
 
-        $fromCfg = $this->getTypeIdsForGroup('consumable');
-        return empty($fromCfg) ? [] : ['typeIds' => $fromCfg];
+        return [];
     }
 
     /**
@@ -221,28 +230,9 @@ class ItemEntityTypeFilterService
             if (!empty($allowed)) {
                 return ['typeIds' => $allowed];
             }
-            // fallback: si la registry n'est pas encore prête, on retombe sur la stratégie "all"
         }
 
-        $lang = (string) config('scrapping.data_collect.default_language', 'fr');
-        $g = $this->itemSuperTypeMapping->getGroup('equipment');
-        $strategy = $g['strategy'] ?? 'include';
-
-        if ($strategy === 'include') {
-            $superTypeIds = $g['superTypeIds'] ?? [];
-            if (!is_array($superTypeIds) || empty($superTypeIds)) {
-                return [];
-            }
-            $typeIds = $this->itemTypesCatalog->getTypeIdsForSuperTypes($superTypeIds, $lang, false);
-            return empty($typeIds) ? [] : ['typeIds' => $typeIds];
-        }
-
-        $excludeSuperTypeIds = $g['excludeSuperTypeIds'] ?? [];
-        if (!is_array($excludeSuperTypeIds) || empty($excludeSuperTypeIds)) {
-            return [];
-        }
-        $typeIdsNot = $this->itemTypesCatalog->getTypeIdsForSuperTypes($excludeSuperTypeIds, $lang, false);
-        return empty($typeIdsNot) ? [] : ['typeIdsNot' => $typeIdsNot];
+        return [];
     }
 
     private function normalizeTypeMode(string $mode): string

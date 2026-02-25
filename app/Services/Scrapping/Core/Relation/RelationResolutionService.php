@@ -115,24 +115,38 @@ final class RelationResolutionService
         }
 
         $importedResourceIds = [];
+        $importedItemIds = [];
+        $importedConsumableIds = [];
+        $dropSyncByTable = ['resources' => [], 'items' => [], 'consumables' => []];
+
         if (isset($rawData['drops']) && is_array($rawData['drops'])) {
             foreach ($rawData['drops'] as $dropData) {
                 $itemId = isset($dropData['itemId']) ? (int) $dropData['itemId'] : (isset($dropData['id']) ? (int) $dropData['id'] : 0);
                 if ($itemId <= 0) {
                     continue;
                 }
+                $qty = max(1, (int) ($dropData['quantity'] ?? 1));
                 $result = $this->orchestrator->runOne('dofusdb', 'item', $itemId, $v2Options);
                 $krosmozId = null;
+                $table = 'items';
                 if ($result->isSuccess()) {
                     $intResult = $result->getIntegrationResult();
                     if ($intResult !== null && $intResult->isSuccess()) {
                         $data = $intResult->getData();
-                        $table = $data['table'] ?? 'items';
-                        if ($table === 'resources') {
-                            $krosmozId = $intResult->getPrimaryId();
-                            if ($krosmozId !== null) {
-                                $importedResourceIds[] = $krosmozId;
-                            }
+                        $table = (string) ($data['table'] ?? 'items');
+                        $krosmozId = $intResult->getPrimaryId();
+                        if ($krosmozId !== null && $table === 'resources') {
+                            $importedResourceIds[] = $krosmozId;
+                            $prev = (int) ($dropSyncByTable['resources'][$krosmozId]['quantity'] ?? 0);
+                            $dropSyncByTable['resources'][$krosmozId] = ['quantity' => (string) ($prev + $qty)];
+                        } elseif ($krosmozId !== null && $table === 'items') {
+                            $importedItemIds[] = $krosmozId;
+                            $prev = (int) ($dropSyncByTable['items'][$krosmozId]['quantity'] ?? 0);
+                            $dropSyncByTable['items'][$krosmozId] = ['quantity' => $prev + $qty];
+                        } elseif ($krosmozId !== null && $table === 'consumables') {
+                            $importedConsumableIds[] = $krosmozId;
+                            $prev = (int) ($dropSyncByTable['consumables'][$krosmozId]['quantity'] ?? 0);
+                            $dropSyncByTable['consumables'][$krosmozId] = ['quantity' => (string) ($prev + $qty)];
                         }
                     }
                 } else {
@@ -142,7 +156,7 @@ final class RelationResolutionService
                     ]);
                 }
                 $relatedResults[] = [
-                    'type' => 'resource',
+                    'type' => $table === 'resources' ? 'resource' : ($table === 'consumables' ? 'consumable' : 'item'),
                     'id' => $itemId,
                     'success' => $result->isSuccess(),
                     'krosmoz_id' => $krosmozId,
@@ -156,9 +170,14 @@ final class RelationResolutionService
             if ($validSpellIds !== []) {
                 $creature->spells()->sync($validSpellIds);
             }
-            $validResourceIds = array_values(array_unique(array_filter($importedResourceIds)));
-            if ($validResourceIds !== []) {
-                $creature->resources()->sync(array_fill_keys($validResourceIds, ['quantity' => '1']));
+            if ($dropSyncByTable['resources'] !== []) {
+                $creature->resources()->sync($dropSyncByTable['resources']);
+            }
+            if ($dropSyncByTable['items'] !== []) {
+                $creature->items()->sync($dropSyncByTable['items']);
+            }
+            if ($dropSyncByTable['consumables'] !== []) {
+                $creature->consumables()->sync($dropSyncByTable['consumables']);
             }
         }
 

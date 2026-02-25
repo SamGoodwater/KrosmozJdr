@@ -76,6 +76,9 @@ final class ConversionService
                 continue;
             }
 
+            $targetModel = $context['targetModel'] ?? null;
+            $targetModelFilter = is_string($targetModel) && $targetModel !== '';
+
             foreach ($targets as $target) {
                 if (!is_array($target)) {
                     continue;
@@ -83,6 +86,9 @@ final class ConversionService
                 $model = $target['model'] ?? null;
                 $field = $target['field'] ?? null;
                 if (!is_string($model) || $model === '' || !is_string($field) || $field === '') {
+                    continue;
+                }
+                if ($targetModelFilter && $model !== $targetModel) {
                     continue;
                 }
 
@@ -94,16 +100,21 @@ final class ConversionService
         }
 
         $entityType = (string) ($context['entityType'] ?? $entity);
+        $contextTargetModel = $context['targetModel'] ?? null;
         if ($this->conversionService !== null && in_array($entityType, ['monster', 'class', 'item'], true)) {
             $useResistanceBatch = (bool) ($entityConfig['resistanceBatch'] ?? false);
             if ($useResistanceBatch) {
                 $resMap = $this->conversionService->convertResistancesBatch($raw, $entityType);
-                $targetModel = $entityType === 'monster' ? 'creatures' : ($entityType === 'class' ? 'breeds' : 'items');
-                if (!isset($out[$targetModel]) || !is_array($out[$targetModel])) {
-                    $out[$targetModel] = [];
-                }
-                foreach ($resMap as $field => $value) {
-                    $out[$targetModel][$field] = is_numeric($value) ? (int) $value : (string) $value;
+                $batchTargetModel = $entityType === 'monster' ? 'creatures' : ($entityType === 'class' ? 'breeds' : 'items');
+                if (is_string($contextTargetModel) && $contextTargetModel !== '' && $batchTargetModel !== $contextTargetModel) {
+                    // Conversion ciblée : ne pas remplir un autre bloc (ex. items pour resistances quand target = consumables).
+                } else {
+                    if (!isset($out[$batchTargetModel]) || !is_array($out[$batchTargetModel])) {
+                        $out[$batchTargetModel] = [];
+                    }
+                    foreach ($resMap as $field => $value) {
+                        $out[$batchTargetModel][$field] = is_numeric($value) ? (int) $value : (string) $value;
+                    }
                 }
             }
         }

@@ -6,7 +6,7 @@
 
 ## Livré
 
-- **Limites (maxId)** : une seule source — priorité à la config (`entities/*.json` → `meta.maxId`), secours `EntityLimits::LIMITS`. Méthode `getMaxIdForType()` dans ScrappingController utilisée pour preview, previewBatch, importRange, importAll.
+- **Limites (maxId)** : une seule source — priorité à la config (`entities/*.json` → `meta.maxId`), secours une constante par défaut. **EntityMetaService** (Core/Config) fournit `allowedTypes()`, `getMaxIdForType()` et `isAllowedType()` ; utilisée par ScrappingController et ScrappingSearchController pour preview, previewBatch, importRange, importAll et recherche.
 - **Initiative (monster)** : mapping `grades.0.initiative` → `creatures.ini` avec formatter `dofusdb_ini` dans `monster.json` ; prise en charge dans IntegrationService (`mapCreatureAttributes`, `getExistingAttributesForComparison`).
 - **Import de plage** : `importRange` et `importAll` utilisent **Orchestrator::runMany** (une collecte fetchMany + conversion/intégration par item) au lieu d’une boucle runOne, avec réponse `results` + `summary` inchangée.
 - **Robustesse** : logs d’erreur avec contexte (type, id, start_id/end_id, count) dans ScrappingController.

@@ -44,7 +44,7 @@ final class Orchestrator
 
         $orchestrator = new self(
             $configLoader,
-            new CollectService($configLoader),
+            app(CollectService::class),
             new ConversionService(
                 $configLoader,
                 new FormatterApplicator($conversionService, $getter),
@@ -143,6 +143,9 @@ final class Orchestrator
             $raw = $this->enrichRawWithRecipe($source, $entity, $raw);
             $context = $this->contextFromOptions($options);
             $context['entityType'] = $entity === 'breed' ? 'class' : $entity;
+            if ($entity === 'item') {
+                $context['targetModel'] = $this->integrationService->getItemTargetTableFromRaw($raw);
+            }
             $converted = $this->conversionService->convert($source, $entity, $raw, $context);
 
             $entityConfig = $this->configLoader->loadEntity($source, $entity);
@@ -226,6 +229,9 @@ final class Orchestrator
             $raw = $this->enrichRawWithRecipe($source, $entity, $raw);
             $context = $this->contextFromOptions($options);
             $context['entityType'] = $entity === 'breed' ? 'class' : $entity;
+            if ($entity === 'item') {
+                $context['targetModel'] = $this->integrationService->getItemTargetTableFromRaw($raw);
+            }
             $converted = $this->conversionService->convert($source, $entity, $raw, $context);
 
             $entityConfig = $this->configLoader->loadEntity($source, $entity);
@@ -301,6 +307,12 @@ final class Orchestrator
                 'limit' => (int) ($options['limit'] ?? 0),
                 'offset' => (int) ($options['offset'] ?? 0),
             ];
+            if (isset($options['page_size'])) {
+                $collectOptions['page_size'] = (int) $options['page_size'];
+            }
+            if (isset($options['skip_cache'])) {
+                $collectOptions['skip_cache'] = (bool) $options['skip_cache'];
+            }
             $result = $this->collectService->fetchMany($source, $entity, $filters, $collectOptions);
             $items = $result['items'];
             $meta = $result['meta'];
@@ -336,16 +348,21 @@ final class Orchestrator
                     continue;
                 }
                 $raw = $this->enrichRawWithRecipe($source, $entity, $raw);
+                if ($entity === 'item') {
+                    $context['targetModel'] = $this->integrationService->getItemTargetTableFromRaw($raw);
+                }
                 $converted = $this->conversionService->convert($source, $entity, $raw, $context);
                 $convertedList[] = $converted;
 
                 $entityTypeForItem = $entityType === 'item' ? $this->integrationService->getItemTargetTable($converted) : $entityType;
 
                 $doValidate = ($options['validate'] ?? true) !== false;
+                $itemValid = true;
                 if ($doValidate) {
                     $converted = $this->limitService->clampConvertedData($converted, $entityTypeForItem);
                     $validationResult = $this->limitService->validate($converted, $entityTypeForItem);
                     if (!$validationResult->isValid()) {
+                        $itemValid = false;
                         foreach ($validationResult->getErrors() as $err) {
                             $allValidationErrors[] = [
                                 'path' => "item#{$i}.{$err['path']}",
@@ -355,7 +372,8 @@ final class Orchestrator
                     }
                 }
 
-                if (!empty($options['integrate']) && empty($entityConfig['meta']['catalogOnly'] ?? false)) {
+                // N'intégrer que les items dont la validation a réussi (ou lorsque la validation est désactivée).
+                if ($itemValid && !empty($options['integrate']) && empty($entityConfig['meta']['catalogOnly'] ?? false)) {
                     $intResult = $this->integrationService->integrate(
                         $entityTypeForItem,
                         $converted,
@@ -365,6 +383,9 @@ final class Orchestrator
                     if ($this->relationResolutionService !== null && ($options['include_relations'] ?? true) && $intResult->isSuccess()) {
                         $this->resolveRelationsAndDrain($source, $entity, $entityTypeForItem, $raw, $converted, $intResult, $options);
                     }
+                } elseif (!empty($options['integrate']) && empty($entityConfig['meta']['catalogOnly'] ?? false) && !$itemValid) {
+                    // Conserver l'alignement des index avec convertedList pour le rapport (item non intégré car invalide).
+                    $integrationResults[] = IntegrationResult::fail('Validation échouée.');
                 }
             }
 

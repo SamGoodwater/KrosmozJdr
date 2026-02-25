@@ -27,6 +27,7 @@ import { useSidebar } from "@/Composables/layout/useSidebar";
 import { useDevice } from "@/Composables/layout/useDevice";
 import ToggleHeader from "@/Pages/Molecules/layout/ToggleHeader.vue";
 import { useNotificationProvider } from "@/Composables/providers/useNotificationProvider";
+import { useFlashNotifications } from "@/Composables/notifications/useFlashNotifications";
 
 // Centralisation des classes Tailwind pour le layout
 const ASIDE_WIDTH_CLASS = 'w-64'      // 16rem = 256px
@@ -41,6 +42,8 @@ const { isSidebarOpen, toggleSidebar, closeSidebar } = useSidebar();
 
 // Provider de notifications pour toute l'application
 useNotificationProvider();
+// Affiche les messages flash Laravel (success, error, warning, info) en toasts
+useFlashNotifications();
 
 // Computed pour déterminer le comportement responsive
 const isDesktopMode = computed(() => isDesktop.value);

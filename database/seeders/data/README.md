@@ -18,6 +18,11 @@ Les fichiers de groupe (creature, object, spell) peuvent contenir des clés non 
 | Fichier | Seeder | Description |
 |---------|--------|-------------|
 | `spell_effect_types.php` | `SpellEffectTypeSeeder` | Types d'effets de sort (référentiel) |
+| `resource_types.php` | `ResourceTypeSeeder` | Types de ressources (DofusDB, scrapping) |
+| `consumable_types.php` | `ConsumableTypeSeeder` | Types de consommables (DofusDB, scrapping) |
+| `item_types.php` | `ItemTypeSeeder` | Types d'équipements / items (DofusDB, scrapping) |
+
+Les trois fichiers de types item sont remplis depuis l’API DofusDB ([item-types](https://api.dofusdb.fr/item-types)) : une seule commande `php artisan scrapping:seed-item-types` récupère tout le catalogue (superTypeId → Ressource / Consommable / Équipement), écrit les fichiers puis exécute les seeders. Ensuite, après réglages en UI, `php artisan db:export-seeder-data --item-types` régénère les fichiers depuis la BDD. Voir [PLAN_TYPES_ITEM_BDD_SEEDER.md](../../docs/50-Fonctionnalités/Scrapping/PLAN_TYPES_ITEM_BDD_SEEDER.md).
 
 ## Workflow (dev)
 
@@ -29,13 +34,14 @@ Les fichiers de groupe (creature, object, spell) peuvent contenir des clés non 
    ```
    Cela écrase `characteristics.php`, `characteristic_creature.php`, `characteristic_object.php` et `characteristic_spell.php` avec le contenu actuel des tables. Vous pouvez ensuite committer ces fichiers pour versionner votre configuration.
 
-**Autres options** : `--spell-effect-types`. Sans option, toutes les exportations sont lancées.
+**Autres options** : `--spell-effect-types`, `--scrapping-mappings`, `--item-types`. Sans option, toutes les exportations sont lancées.
 
 Ainsi les données par défaut du projet restent versionnées et reproductibles.
 
 ## Exhaustivité des données (audit)
 
 - **characteristics.php** : 106 entrées. Toutes ont `name`, `short_name`, `helper` renseignés. Les champs `descriptions`, `icon`, `color` sont souvent NULL (à compléter via l’admin ou l’export si besoin).
-- **characteristic_icons_colors.php** : mapping optionnel `icons`, `colors`, `descriptions` par clé ; utilisé par CharacteristicSeeder quand la valeur est NULL. Icônes dans `storage/app/public/images/icons/characteristics/` (copiées depuis Icones).
+- **characteristic_icons_colors.php** : mapping optionnel `icons`, `colors`, `descriptions` par clé ; utilisé par CharacteristicSeeder quand la valeur est NULL. Icônes dans `storage/app/public/images/icons/caracteristics/` (SVG dans `old/` ou à la racine ; webp disponibles pour pa, pm, po, initiative, etc.).
+- **Liaisons (linked_to_key)** : dans `characteristics.php`, une entrée peut avoir `linked_to_key` = clé d’une autre caractéristique (maître). La caractéristique liée réutilise alors la config de la maître (formules, bornes, conversion). Ex. `level_spell` → `linked_to_key` = `level_creature`.
 - **Formules de conversion** : toutes les lignes des fichiers de groupe ont une `conversion_formula` (plus de NULL). Par défaut : `[d]` (pass-through) ou `min(1,max(0,round([d])))` pour les champs 0/1 (sorts). Les formules spécifiques (niveau, vie, rareté, dégâts, etc.) sont conservées.
 - **conversion_function** : pris en charge dans `CharacteristicGroupSeeder::commonAttributes` ; peut être renseigné dans les fichiers de données pour une fonction personnalisée (registry).

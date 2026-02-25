@@ -2,7 +2,6 @@
 
 namespace App\Services\Scrapping\Catalog;
 
-use App\Services\Scrapping\Constants\DofusDbLimits;
 use App\Services\Scrapping\Http\DofusDbClient;
 use Illuminate\Support\Facades\Cache;
 
@@ -16,6 +15,9 @@ use Illuminate\Support\Facades\Cache;
  */
 class DofusDbItemTypesCatalogService
 {
+    /** DofusDB cappe les listes (ex. /item-types) à 50 éléments par page. */
+    private const PAGE_LIMIT = 50;
+
     public function __construct(private DofusDbClient $client) {}
 
     /**
@@ -37,15 +39,16 @@ class DofusDbItemTypesCatalogService
         }
 
         $baseUrl = (string) config('scrapping.data_collect.dofusdb_base_url', 'https://api.dofusdb.fr');
-        $limit = DofusDbLimits::PAGE_LIMIT;
+        $limit = self::PAGE_LIMIT;
         $skip = 0;
         $page = 0;
         $total = null;
+        $maxPages = 50; // sécurité : 50 × 50 = 2500 types max
 
         /** @var array<int, array{id:int,name:string|null,types:array<int,array<string,mixed>>}> $bySuperType */
         $bySuperType = [];
 
-        while (true) {
+        while ($page < $maxPages) {
             $page++;
 
             $url = rtrim($baseUrl, '/') . '/item-types?lang=' . urlencode($lang) . '&$limit=' . $limit . '&$skip=' . $skip;
@@ -60,11 +63,10 @@ class DofusDbItemTypesCatalogService
                 $total = (int) $payload['total'];
             }
 
-            $effectiveLimit = isset($payload['limit']) && (is_int($payload['limit']) || (is_string($payload['limit']) && ctype_digit($payload['limit'])))
-                ? (int) $payload['limit']
-                : 0;
-            if ($effectiveLimit <= 0) {
-                $effectiveLimit = count($data);
+            $apiSkip = isset($payload['skip']) ? (int) $payload['skip'] : $skip;
+            $apiLimit = isset($payload['limit']) ? (int) $payload['limit'] : $limit;
+            if ($apiLimit <= 0) {
+                $apiLimit = $limit;
             }
 
             foreach ($data as $row) {
@@ -113,11 +115,9 @@ class DofusDbItemTypesCatalogService
                 ];
             }
 
-            $skip += $effectiveLimit;
-            if ($total !== null && $skip >= $total) {
-                break;
-            }
-            if (count($data) < $effectiveLimit) {
+            // Utiliser limit et skip renvoyés par l’API pour la page suivante
+            $skip = $apiSkip + $apiLimit;
+            if (count($data) < $apiLimit || ($total !== null && $skip >= $total)) {
                 break;
             }
         }

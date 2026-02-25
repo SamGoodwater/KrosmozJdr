@@ -175,6 +175,19 @@ export function useScrappingCompare(options) {
         if (modelKeys.length > 0 && hasComparisonKeysConfig(typeForFilter)) {
             modelKeys = filterAllowedComparisonKeys(modelKeys, typeForFilter);
         }
+        // Item (resource/consumable/equipment) : une seule ligne par propriété. Le brut a level/price/name à la racine,
+        // le converti a resources.* / consumables.* / items.*. On garde uniquement la clé préfixée pour éviter les doublons.
+        const itemLikeEntities = new Set(["item", "resource", "consumable", "equipment"]);
+        if (itemLikeEntities.has(typeForFilter)) {
+            const prefixes = ["resources.", "consumables.", "items."];
+            const prefixedKeys = new Set(modelKeys.filter((k) => prefixes.some((p) => k.startsWith(p))));
+            modelKeys = modelKeys.filter((key) => {
+                if (prefixedKeys.has(key)) return true;
+                const short = key.includes(".") ? key.split(".").pop() : key;
+                const hasPrefixed = prefixes.some((p) => prefixedKeys.has(p + short));
+                return !hasPrefixed;
+            });
+        }
         return modelKeys.sort().map((key) => {
             const brut = findInFlat(rawFlat, key) ?? findInFlat(rawFlat, key.split(".").pop());
             const converti = findInFlat(convertedFlat, key) ?? findInFlat(convertedFlat, key.split(".").pop());

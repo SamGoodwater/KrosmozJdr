@@ -8,6 +8,7 @@ Référence des **éléments supprimés** (ou dépréciés) et de ceux **conserv
 
 | Élément | Remplacement / raison |
 |--------|------------------------|
+| Configs scrapping `item-type.json`, `item-super-type.json`, `monster-race.json` (DofusDB entities) | Types et races gérés en BDD ; catalogues exposés par `DofusDbItemTypesCatalogService` et `DofusDbMonsterRacesCatalogService` (URLs en dur). Ces configs catalog-only n’étaient utilisées que pour lister les entités dans l’API config. |
 | Page admin `/admin/dofus-conversion-formulas` | Édition des formules dans **Admin > Caractéristiques** (section « Formules de conversion Dofus → JDR » par caractéristique). |
 | `DofusConversionFormulaController::index()` et `defaultFormulaDisplay()` | Contrôleur réduit à `formulaPreview()` pour l’API d’aperçu graphique. |
 | `DataConversionService::getRequiredFieldsForEntity()` | Code mort ; validation des champs requis par `ValidationService` (V2) via `validateConvertedData()`. |

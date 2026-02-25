@@ -1334,7 +1334,7 @@ return array (
     'short_name' => 'Dés PV',
     'helper' => '[niveau / 2] – 10. Spécifique Krosmoz JDR.',
     'descriptions' => NULL,
-    'icon' => 'dice12.png',
+    'icon' => 'dice12.svg',
     'color' => '#2f2f2f',
     'unit' => NULL,
     'type' => 'int',

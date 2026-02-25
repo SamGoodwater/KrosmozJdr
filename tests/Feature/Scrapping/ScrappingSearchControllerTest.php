@@ -71,15 +71,14 @@ class ScrappingSearchControllerTest extends TestCase
         $seenUrls = [];
 
         Http::fake(function ($request) use (&$seenUrls) {
-            $url = $request->url();
+            $url = (string) $request->url();
             $seenUrls[] = $url;
 
             $skip = 0;
-            if (str_contains($url, '%24skip=')) {
-                // Extract skip value from encoded query
-                $parts = explode('%24skip=', $url, 2);
-                $skipStr = $parts[1] ?? '0';
-                $skip = (int) preg_replace('/[^0-9].*$/', '', $skipStr);
+            if (preg_match('/[\$%]24skip=(\d+)/', $url, $m)) {
+                $skip = (int) $m[1];
+            } elseif (preg_match('/[?&]skip=(\d+)/', $url, $m)) {
+                $skip = (int) $m[1];
             }
 
             $data = [];
@@ -96,7 +95,7 @@ class ScrappingSearchControllerTest extends TestCase
             ], 200);
         });
 
-        $res = $this->getJson('/api/scrapping/search/monster?limit=200&max_pages=2');
+        $res = $this->getJson('/api/scrapping/search/monster?limit=200&max_pages=2&skip_cache=true');
 
         $res->assertOk();
         $res->assertJsonPath('success', true);

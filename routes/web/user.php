@@ -3,18 +3,22 @@
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
-// Toutes les routes liées à l'utilisateur (profil, gestion admin, etc.)
+/*
+|--------------------------------------------------------------------------
+| Web — Utilisateur (profil, gestion admin)
+|--------------------------------------------------------------------------
+*/
+
 Route::prefix('user')->name('user.')->middleware('auth')->group(function () {
-    // Profil utilisateur courant (toujours sans id)
     Route::get('/', [UserController::class, 'show'])->name('show');
     Route::get('/edit', [UserController::class, 'edit'])->name('edit');
+    Route::get('/settings', [UserController::class, 'settings'])->name('settings');
     Route::patch('/', [UserController::class, 'update'])->name('update');
     Route::patch('/password', [UserController::class, 'updatePassword'])->name('updatePassword');
     Route::post('/avatar', [UserController::class, 'updateAvatar'])->name('updateAvatar');
     Route::delete('/avatar', [UserController::class, 'deleteAvatar'])->name('deleteAvatar');
     Route::delete('/', [UserController::class, 'delete'])->name('delete');
 
-    // Gestion des utilisateurs (admin et super_admin) via id numérique
     Route::middleware('role:admin')->group(function () {
         Route::get('/list', [UserController::class, 'index'])->name('index');
         Route::get('/create', [UserController::class, 'create'])->name('create');
@@ -28,9 +32,7 @@ Route::prefix('user')->name('user.')->middleware('auth')->group(function () {
         Route::patch('/{user}/password', [UserController::class, 'updatePassword'])->name('admin.updatePassword');
     });
 
-    // Actions super_admin uniquement
     Route::middleware('role:super_admin')->group(function () {
         Route::delete('/forceDelete/{user}', [UserController::class, 'forceDelete'])->name('forceDelete');
     });
 });
-// Les routes admin utilisent désormais l'id numérique pour l'utilisateur ciblé.
