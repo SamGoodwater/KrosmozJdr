@@ -7,6 +7,8 @@ Ce document liste **toutes** les caractéristiques exposées par l’API DofusDB
 
 Source : API DofusDB (dernière récupération documentée). Pour mettre à jour, relancer une requête sur `/characteristics` avec `$limit` suffisant.
 
+**Caractéristiques objet non liées à une propriété DofusDB (intentionnel)** : CA (`ca_object`), recharge de Wakfu (`wakfu_recharge_object`), bonus de sauvegarde (`save_*_object`), compétences (`competences_object`, `competences_passives_object`), bonus de touche (`touch_object`). Elles n’ont pas d’équivalent dans `item.effects[]` ou ne sont pas mappées.
+
 ---
 
 ## Tableau complet : id → keyword, nom (fr), characteristic_key
@@ -14,7 +16,7 @@ Source : API DofusDB (dernière récupération documentée). Pour mettre à jour
 | id | keyword | nom (fr) | characteristic_key (KrosmozJDR) |
 |----|---------|----------|----------------------------------|
 | -1 | unknown | Inconnue | — |
-| 0 | hitPoints | Points de vie | pv_max_object |
+| 0 | hitPoints | Points de vie | pv_object |
 | 1 | actionPoints | PA | pa_object |
 | 3 | statsPoints | Points de caractéristiques | — |
 | 4 | spellsPoints | Points de sorts | — |
@@ -28,7 +30,7 @@ Source : API DofusDB (dernière récupération documentée). Pour mettre à jour
 | 16 | allDamageBonus | Dommages | — |
 | 17 | damageFactor | *(visible: false)* | — |
 | 18 | criticalHit | Critique | — |
-| 19 | range | Portée | — |
+| 19 | range | Portée | po_object |
 | 20 | magicalReduction | Réduction des dégats magiques | — |
 | 21 | physicalReduction | Réduction des dégats physiques | — |
 | 22 | experienceBoost | Boost : expérience | — |
@@ -66,7 +68,7 @@ Source : API DofusDB (dernière récupération documentée). Pour mettre à jour
 | 55 | fireElementReduction | Feu (fixe) | res_fixe_feu_object |
 | 56 | waterElementReduction | Eau (fixe) | res_fixe_eau_object |
 | 57 | airElementReduction | Air (fixe) | res_fixe_air_object |
-| 58 | neutralElementReduction | Neutre (fixe) | — |
+| 58 | neutralElementReduction | Neutre (fixe) | res_fixe_neutre_object |
 | 69 | trapDamageBonusPercent | Puissance Pièges | — |
 | 70 | trapDamageBonus | Dommages Pièges | — |
 | 71 | fakeSkillForStates | État *(visible: false)* | — |
@@ -76,8 +78,8 @@ Source : API DofusDB (dernière récupération documentée). Pour mettre à jour
 | 75 | permanentDamagePercent | Érosion | — |
 | 76 | unlucky | Poisse | — |
 | 77 | maximizeRoll | Maximise les effets aléatoires | — |
-| 78 | tackleEvade | Fuite | — |
-| 79 | tackleBlock | Tacle | — |
+| 78 | tackleEvade | Fuite | fuite_object |
+| 79 | tackleBlock | Tacle | tacle_object |
 | 80 | allianceAutoAgressRange | Rayon d'auto aggression JcJ | — |
 | 81 | allianceAutoAgressResist | Esquive auto aggression JcJ | — |
 | 82 | apReduction | Retrait PA | — |
@@ -86,11 +88,11 @@ Source : API DofusDB (dernière récupération documentée). Pour mettre à jour
 | 85 | pushDamageReduction | Poussée (fixe) | — |
 | 86 | criticalDamageBonus | Critiques | — |
 | 87 | criticalDamageReduction | Critiques (fixe) | — |
-| 88 | earthDamageBonus | Terre (dommages) | — |
-| 89 | fireDamageBonus | Feu (dommages) | — |
-| 90 | waterDamageBonus | Eau (dommages) | — |
-| 91 | airDamageBonus | Air (dommages) | — |
-| 92 | neutralDamageBonus | Neutre (dommages) | — |
+| 88 | earthDamageBonus | Terre (dommages) | do_fixe_terre_object |
+| 89 | fireDamageBonus | Feu (dommages) | do_fixe_feu_object |
+| 90 | waterDamageBonus | Eau (dommages) | do_fixe_eau_object |
+| 91 | airDamageBonus | Air (dommages) | do_fixe_air_object |
+| 92 | neutralDamageBonus | Neutre (dommages) | do_fixe_neutre_object |
 | 93 | maxBomb | Nombre max d'invocations de bombes | — |
 | 94 | bombComboBonus | Bonus de combo de bombe | — |
 | 95 | maxLifePoints | Bonus vitalité (n'enlève pas de PV quand dissipé) | — |
@@ -101,7 +103,7 @@ Source : API DofusDB (dernière récupération documentée). Pour mettre à jour
 | 100 | passTurn | PasseSonTour | — |
 | 101 | resistPercent | Pourcentage de résistance aux dommages | — |
 | 102 | curPermanentDamage | Érosion *(visible: false)* | — |
-| 103 | weaponPower | Bonus de puissance pour les armes | — |
+| 103 | weaponPower | Bonus de puissance pour les armes | do_fixe_multiple_object |
 | 104 | incomingPercentDamageMultiplicator | Multiplication des dommages reçus | — |
 | 105 | incomingPercentHealMultiplicator | Multiplication des dommages reçus en soins | — |
 | 106 | glyphPower | Bonus de puissance pour les glyphes | — |

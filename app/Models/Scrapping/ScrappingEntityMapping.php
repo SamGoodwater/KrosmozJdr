@@ -7,6 +7,7 @@ namespace App\Models\Scrapping;
 use App\Models\Characteristic;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
@@ -52,6 +53,21 @@ class ScrappingEntityMapping extends Model
     public function characteristic(): BelongsTo
     {
         return $this->belongsTo(Characteristic::class);
+    }
+
+    /**
+     * Caractéristiques liées via la table pivot (plusieurs caractéristiques par règle).
+     *
+     * @return BelongsToMany<Characteristic, $this>
+     */
+    public function characteristics(): BelongsToMany
+    {
+        return $this->belongsToMany(
+            Characteristic::class,
+            'scrapping_entity_mapping_characteristic',
+            'scrapping_entity_mapping_id',
+            'characteristic_id'
+        );
     }
 
     /** @return HasMany<ScrappingEntityMappingTarget, $this> */

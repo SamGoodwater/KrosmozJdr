@@ -7,13 +7,13 @@
     "characteristic_key": "clé Krosmoz du seeder characteristic_object (ex: pa_object, strong_object)"
   },
   "mapping": {
-    "0": "pv_max_object",
+    "0": "pv_object",
     "1": "pa_object",
     "5": "level_object",
     "10": "strong_object",
     "11": "vitality_object",
     "12": "sagesse_object",
-    "13": "chance_object",
+    "13": "chance_object" ,
     "14": "agi_object",
     "15": "intel_object",
     "23": "pm_object",
@@ -30,7 +30,17 @@
     "54": "res_fixe_terre_object",
     "55": "res_fixe_feu_object",
     "56": "res_fixe_eau_object",
-    "57": "res_fixe_air_object"
+    "57": "res_fixe_air_object",
+    "58": "res_fixe_neutre_object",
+    "19": "po_object",
+    "78": "fuite_object",
+    "79": "tacle_object",
+    "88": "do_fixe_terre_object",
+    "89": "do_fixe_feu_object",
+    "90": "do_fixe_eau_object",
+    "91": "do_fixe_air_object",
+    "92": "do_fixe_neutre_object",
+    "103": "do_fixe_multiple_object"
   },
   "keywords_by_id": {
     "-1": "unknown",

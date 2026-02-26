@@ -217,6 +217,129 @@ namespace App\Models{
 
 namespace App\Models{
 /**
+ * Effet (conteneur de sous-effets). Niveau sur effect_usage.
+ *
+ * @property int $id
+ * @property string|null $name
+ * @property string|null $slug
+ * @property string|null $description
+ * @property int|null $effect_group_id
+ * @property int|null $degree
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \App\Models\EffectGroup|null $effectGroup
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\EffectUsage> $effectUsages
+ * @property-read int|null $effect_usages_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\SubEffect> $subEffects
+ * @property-read int|null $sub_effects_count
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Effect newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Effect newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Effect query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Effect whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Effect whereDegree($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Effect whereDescription($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Effect whereEffectGroupId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Effect whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Effect whereName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Effect whereSlug($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Effect whereUpdatedAt($value)
+ */
+	class Effect extends \Eloquent {}
+}
+
+namespace App\Models{
+/**
+ * Groupe d'effets (degres de puissance).
+ *
+ * @property int $id
+ * @property string $name
+ * @property string $slug
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Effect> $effects
+ * @property-read int|null $effects_count
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|EffectGroup newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|EffectGroup newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|EffectGroup query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|EffectGroup whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|EffectGroup whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|EffectGroup whereName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|EffectGroup whereSlug($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|EffectGroup whereUpdatedAt($value)
+ */
+	class EffectGroup extends \Eloquent {}
+}
+
+namespace App\Models{
+/**
+ * Pivot effect / sub_effect (ordre, scope, params).
+ *
+ * @property int $id
+ * @property int $effect_id
+ * @property int $sub_effect_id
+ * @property int $order
+ * @property string $scope
+ * @property int|null $value_min
+ * @property int|null $value_max
+ * @property int|null $dice_num
+ * @property int|null $dice_side
+ * @property array<array-key, mixed>|null $params
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \App\Models\Effect $effect
+ * @property-read \App\Models\SubEffect $subEffect
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|EffectSubEffect newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|EffectSubEffect newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|EffectSubEffect query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|EffectSubEffect whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|EffectSubEffect whereDiceNum($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|EffectSubEffect whereDiceSide($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|EffectSubEffect whereEffectId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|EffectSubEffect whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|EffectSubEffect whereOrder($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|EffectSubEffect whereParams($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|EffectSubEffect whereScope($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|EffectSubEffect whereSubEffectId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|EffectSubEffect whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|EffectSubEffect whereValueMax($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|EffectSubEffect whereValueMin($value)
+ */
+	class EffectSubEffect extends \Eloquent {}
+}
+
+namespace App\Models{
+/**
+ * Lien polymorphique entité (spell, item, consumable…) → effect.
+ * 
+ * level_min / level_max = tranche de niveau pour cet effet.
+ *
+ * @property int $id
+ * @property string $entity_type
+ * @property int $entity_id
+ * @property int $effect_id
+ * @property int|null $level_min
+ * @property int|null $level_max
+ * @property \Illuminate\Support\Carbon $created_at
+ * @property \Illuminate\Support\Carbon $updated_at
+ * @property-read Model $entity
+ * @property-read Effect $effect
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|EffectUsage newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|EffectUsage newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|EffectUsage query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|EffectUsage whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|EffectUsage whereEffectId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|EffectUsage whereEntityId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|EffectUsage whereEntityType($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|EffectUsage whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|EffectUsage whereLevelMax($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|EffectUsage whereLevelMin($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|EffectUsage whereUpdatedAt($value)
+ */
+	class EffectUsage extends \Eloquent {}
+}
+
+namespace App\Models{
+/**
  * Modèle placeholder pour les uploads d'images d'entités sans entité cible (ex. bulk).
  * 
  * Un média est attaché à cette instance ; l'URL retournée peut être affectée au champ
@@ -541,6 +664,8 @@ namespace App\Models\Entity{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Consumable withTrashed()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Consumable withoutTrashed()
  * @mixin \Eloquent
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\EffectUsage> $effectUsages
+ * @property-read int|null $effect_usages_count
  * @property-read \Spatie\MediaLibrary\MediaCollections\Models\Collections\MediaCollection<int, \Spatie\MediaLibrary\MediaCollections\Models\Media> $media
  * @property-read int|null $media_count
  */
@@ -824,6 +949,8 @@ namespace App\Models\Entity{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Item withTrashed()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Item withoutTrashed()
  * @mixin \Eloquent
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\EffectUsage> $effectUsages
+ * @property-read int|null $effect_usages_count
  * @property-read \Spatie\MediaLibrary\MediaCollections\Models\Collections\MediaCollection<int, \Spatie\MediaLibrary\MediaCollections\Models\Media> $media
  * @property-read int|null $media_count
  */
@@ -1027,6 +1154,8 @@ namespace App\Models\Entity{
  * @mixin \Eloquent
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Entity\Campaign> $campaigns
  * @property-read int|null $campaigns_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\EffectUsage> $effectUsages
+ * @property-read int|null $effect_usages_count
  * @property-read \Spatie\MediaLibrary\MediaCollections\Models\Collections\MediaCollection<int, \Spatie\MediaLibrary\MediaCollections\Models\Media> $media
  * @property-read int|null $media_count
  * @property-read \Illuminate\Database\Eloquent\Collection<int, Resource> $recipeIngredients
@@ -1288,6 +1417,8 @@ namespace App\Models\Entity{
  * @mixin \Eloquent
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Entity\Breed> $breeds
  * @property-read int|null $breeds_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\EffectUsage> $effectUsages
+ * @property-read int|null $effect_usages_count
  * @property-read \Spatie\MediaLibrary\MediaCollections\Models\Collections\MediaCollection<int, \Spatie\MediaLibrary\MediaCollections\Models\Media> $media
  * @property-read int|null $media_count
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\SpellEffect> $spellEffects
@@ -1442,6 +1573,8 @@ namespace App\Models\Scrapping{
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property-read \App\Models\Characteristic|null $characteristic
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Characteristic> $characteristics
+ * @property-read int|null $characteristics_count
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Scrapping\ScrappingEntityMappingTarget> $targets
  * @property-read int|null $targets_count
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ScrappingEntityMapping newModelQuery()
@@ -1640,6 +1773,39 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|SpellEffectType whereValueType($value)
  */
 	class SpellEffectType extends \Eloquent {}
+}
+
+namespace App\Models{
+/**
+ * Sous-effet (atome : taper, soigner, vol_pa.
+ * 
+ * ..).
+ *
+ * @property int $id
+ * @property string $slug
+ * @property string $type_slug
+ * @property string|null $template_text
+ * @property string|null $formula
+ * @property array<array-key, mixed>|null $variables_allowed
+ * @property int|null $dofusdb_effect_id
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Effect> $effects
+ * @property-read int|null $effects_count
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SubEffect newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SubEffect newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SubEffect query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SubEffect whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SubEffect whereDofusdbEffectId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SubEffect whereFormula($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SubEffect whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SubEffect whereSlug($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SubEffect whereTemplateText($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SubEffect whereTypeSlug($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SubEffect whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SubEffect whereVariablesAllowed($value)
+ */
+	class SubEffect extends \Eloquent {}
 }
 
 namespace App\Models\Type{

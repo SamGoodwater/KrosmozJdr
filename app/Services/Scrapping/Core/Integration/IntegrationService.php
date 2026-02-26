@@ -826,22 +826,23 @@ final class IntegrationService
     }
 
     /**
-     * Détermine la table cible (resources, consumables, items) à partir du typeId DofusDB.
-     * Utilise les registres resource_types, consumable_types, item_types (dofusdb_type_id).
+     * Détermine la table cible (items, consumables, resources) à partir du typeId DofusDB.
+     * Priorité : item_types (équipements) puis consumable_types puis resource_types,
+     * pour que les anneaux, armes, etc. soient bien routés vers items même si un doublon existe en base.
      */
     private function resolveItemTargetTable(?int $typeId): string
     {
         if ($typeId === null || $typeId <= 0) {
             return 'items';
         }
-        if (ResourceType::where('dofusdb_type_id', $typeId)->exists()) {
-            return 'resources';
+        if (ItemType::where('dofusdb_type_id', $typeId)->exists()) {
+            return 'items';
         }
         if (ConsumableType::where('dofusdb_type_id', $typeId)->exists()) {
             return 'consumables';
         }
-        if (ItemType::where('dofusdb_type_id', $typeId)->exists()) {
-            return 'items';
+        if (ResourceType::where('dofusdb_type_id', $typeId)->exists()) {
+            return 'resources';
         }
 
         return 'items';

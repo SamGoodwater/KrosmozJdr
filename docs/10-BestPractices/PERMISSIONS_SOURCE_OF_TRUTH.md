@@ -26,6 +26,20 @@
 
 ---
 
+## Règles par zone (Scrapping, Effets, Caractéristiques)
+
+| Zone | Lecture | Écriture / Gestion |
+|------|---------|---------------------|
+| **Scrapping** | Admin uniquement | Admin uniquement |
+| **Effets** (sous-effets, effects, usages) | Tout le monde (guest sans connexion) | Game master et au-dessus |
+| **Caractéristiques** (admin) | Admin (pages de gestion) | Admin (création, modification, suppression) |
+
+- **Scrapping** : routes API et page dashboard protégées par `auth` + `role:admin`. Menu « Scrapping » via `access-permissions.scrapping` (users manageAny = admin).
+- **Effets** : API GET (for-entity, usages, sub-effects, effects) sans auth ; API POST/PATCH/DELETE et pages admin `admin/sub-effects`, `admin/effects` avec `auth` + `role:game_master`. Menu « Sous-effets » / « Effets » via `canAccess('effectsAdmin')` (spells updateAny = game_master).
+- **Caractéristiques** : routes `admin/characteristics` avec `auth` + `role:admin`. Lecture publique des définitions (si exposée ailleurs) pour tout le monde.
+
+---
+
 ## Objectif DRY
 
 Une seule logique de permission :

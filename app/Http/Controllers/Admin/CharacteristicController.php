@@ -407,6 +407,7 @@ class CharacteristicController extends Controller
         $validated = $request->validate([
             'entity' => 'required|string|max:64',
             'from_path' => 'required|string|max:256',
+            'from_key' => 'nullable|string|max:64',
         ]);
         $group = $this->inferPrimaryGroup($characteristic);
         $entityIds = self::DOFUSDB_ENTITIES_BY_GROUP[$group] ?? [];
@@ -418,15 +419,24 @@ class CharacteristicController extends Controller
         } catch (\Throwable) {
             return response()->json(['message' => 'Config entité introuvable.'], 422);
         }
+        $fromKey = isset($validated['from_key']) && $validated['from_key'] !== '' ? (string) $validated['from_key'] : null;
         $entry = null;
         foreach ($entries as $e) {
-            if ($e['path'] === $validated['from_path']) {
-                $entry = $e;
-                break;
+            if ($e['path'] !== $validated['from_path']) {
+                continue;
             }
+            if ($fromKey !== null) {
+                if (($e['key'] ?? '') === $fromKey) {
+                    $entry = $e;
+                    break;
+                }
+                continue;
+            }
+            $entry = $e;
+            break;
         }
         if ($entry === null) {
-            return response()->json(['message' => 'Chemin non trouvé dans la config de l\'entité.'], 422);
+            return response()->json(['message' => 'Chemin (ou clé) non trouvé dans la config de l\'entité.'], 422);
         }
         if ($entry['targets'] === []) {
             return response()->json(['message' => 'Ce chemin n\'a pas de cible Krosmoz définie dans la config.'], 422);
@@ -443,9 +453,9 @@ class CharacteristicController extends Controller
                 'from_path' => $entry['path'],
                 'from_lang_aware' => $entry['langAware'],
                 'formatters' => $entry['formatters'],
-                'characteristic_id' => $characteristic->id,
             ]);
             $mapping->targets()->delete();
+            $mapping->characteristics()->syncWithoutDetaching([$characteristic->id]);
         } else {
             $maxSort = (int) ScrappingEntityMapping::where('source', 'dofusdb')
                 ->where('entity', $validated['entity'])
@@ -456,10 +466,11 @@ class CharacteristicController extends Controller
                 'mapping_key' => $entry['key'],
                 'from_path' => $entry['path'],
                 'from_lang_aware' => $entry['langAware'],
-                'characteristic_id' => $characteristic->id,
+                'characteristic_id' => null,
                 'formatters' => $entry['formatters'],
                 'sort_order' => $maxSort + 1,
             ]);
+            $mapping->characteristics()->attach($characteristic->id);
         }
 
         foreach ($entry['targets'] as $i => $t) {
@@ -489,10 +500,15 @@ class CharacteristicController extends Controller
         $characteristic = Characteristic::where('key', $characteristic_key)->firstOrFail();
         $validated = $request->validate(['mapping_id' => 'required|integer|exists:scrapping_entity_mappings,id']);
         $mapping = ScrappingEntityMapping::findOrFail($validated['mapping_id']);
-        if ($mapping->characteristic_id !== (int) $characteristic->id) {
+        $linkedViaPivot = $mapping->characteristics()->where('characteristics.id', $characteristic->id)->exists();
+        $linkedViaColumn = $mapping->characteristic_id === (int) $characteristic->id;
+        if (! $linkedViaPivot && ! $linkedViaColumn) {
             return response()->json(['message' => 'Cette règle n\'est pas liée à cette caractéristique.'], 422);
         }
-        $mapping->update(['characteristic_id' => null]);
+        $mapping->characteristics()->detach($characteristic->id);
+        if ($linkedViaColumn) {
+            $mapping->update(['characteristic_id' => null]);
+        }
         return response()->json(['success' => true, 'message' => 'Règle déliée.']);
     }
 

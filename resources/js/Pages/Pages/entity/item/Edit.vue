@@ -13,6 +13,7 @@ import { usePageTitle } from '@/Composables/layout/usePageTitle';
 import { Item } from '@/Models/Entity/Item';
 import EntityEditForm from '@/Pages/Organismes/entity/EntityEditForm.vue';
 import EntityRelationsManager from '@/Pages/Organismes/entity/EntityRelationsManager.vue';
+import EffectUsagesManager from '@/Pages/Organismes/entity/EffectUsagesManager.vue';
 import Container from '@/Pages/Atoms/data-display/Container.vue';
 
 const page = usePage();
@@ -26,7 +27,10 @@ const props = defineProps({
     availableResources: {
         type: Array,
         default: () => []
-    }
+    },
+    effectUsages: { type: Array, default: () => [] },
+    availableEffects: { type: Array, default: () => [] },
+    effectEntityType: { type: String, default: 'item' },
 });
 
 // Mode d'affichage par défaut
@@ -95,6 +99,14 @@ setPageTitle(`Modifier l'item : ${item.value.name || 'Nouvel item'}`);
             @update:view-mode="viewMode = $event"
         />
         
+        <!-- Gestion des usages d'effets (système unifié) -->
+        <EffectUsagesManager
+            :effect-usages="effectUsages"
+            :available-effects="availableEffects"
+            :entity-type="effectEntityType"
+            :entity-id="item.id"
+        />
+
         <!-- Gestion des ressources de l'item (recette de craft avec quantités) -->
         <EntityRelationsManager
             :relations="item.resources || []"

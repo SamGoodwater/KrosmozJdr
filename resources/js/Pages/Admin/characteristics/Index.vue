@@ -4,7 +4,7 @@
  * Accès : admin et super_admin.
  * Pour chaque champ formule : graphique (variable entre min et max).
  */
-import { computed, nextTick, onMounted, ref, watch } from 'vue';
+import { computed, inject, nextTick, onMounted, ref, watch } from 'vue';
 import { Head, Link, useForm, router } from '@inertiajs/vue3';
 import { usePageTitle } from '@/Composables/layout/usePageTitle';
 import Main from '@/Pages/Layouts/Main.vue';
@@ -19,6 +19,7 @@ import MappingPanel from '@/Pages/Admin/characteristics/MappingPanel.vue';
 import axios from 'axios';
 
 const { setPageTitle } = usePageTitle();
+const notificationStore = inject('notificationStore', null);
 
 /** Contenu d’aide pour les champs formule (affiché dans le popover « ? »). */
 const formulaHelpContent = {
@@ -388,7 +389,12 @@ async function removeEntityOverride(entityKey) {
         sort_order: form.sort_order,
         entities: entitiesFiltered,
         entity_override_keys: selectedEntityOverrides.value,
-    }, { preserveScroll: true });
+    }, {
+        preserveScroll: true,
+        onSuccess: () => {
+            notificationStore?.success?.('Caractéristique mise à jour.', { duration: 5000 });
+        },
+    });
 }
 function confirmDelete() {
     if (props.selected?.id && confirm('Supprimer cette caractéristique ? Les données associées seront perdues.')) {
@@ -712,7 +718,12 @@ function submit() {
         sort_order: form.sort_order,
         entities: entitiesToSend,
         entity_override_keys: selectedEntityOverrides.value,
-    }, { preserveScroll: true });
+    }, {
+        preserveScroll: true,
+        onSuccess: () => {
+            notificationStore?.success?.('Caractéristique mise à jour.', { duration: 5000 });
+        },
+    });
 }
 
 function submitLinkDisabled() {
@@ -729,6 +740,10 @@ function submitConvertToLinked() {
     router.patch(route('admin.characteristics.update', props.selected.id), {
         convert_to_linked: true,
         linked_to_characteristic_id: Number(convertToLinkedMasterId.value),
+    }, {
+        onSuccess: () => {
+            notificationStore?.success?.('Caractéristique convertie en liée.', { duration: 5000 });
+        },
     });
 }
 </script>

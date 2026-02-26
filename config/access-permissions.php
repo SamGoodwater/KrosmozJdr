@@ -25,11 +25,17 @@ return [
     ],
 
     /**
-     * Accès au menu "Scrapping".
+     * Accès au menu "Scrapping" (réservé aux administrateurs).
      */
     'scrapping' => [
-        ['entity' => 'resources', 'ability' => 'manageAny'],
-        ['entity' => 'resource-types', 'ability' => 'manageAny'],
+        ['entity' => 'users', 'ability' => 'manageAny'],
+    ],
+
+    /**
+     * Accès au menu "Sous-effets" / "Effets" (game_master et au-dessus).
+     */
+    'effectsAdmin' => [
+        ['entity' => 'spells', 'ability' => 'updateAny'],
     ],
 
     /**

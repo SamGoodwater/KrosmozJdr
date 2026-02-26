@@ -118,7 +118,7 @@ function saveLink() {
         characteristic_key: props.characteristicKey,
     });
     axios
-        .post(url, { entity: selectedEntity.value, from_path: entry.path })
+        .post(url, { entity: selectedEntity.value, from_path: entry.path, from_key: entry.key ?? null })
         .then(() => {
             closeLinkModal();
             router.reload();

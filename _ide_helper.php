@@ -24106,6 +24106,33 @@ namespace Illuminate\Foundation\Http {
             }
     }
 
+namespace App\Http\Requests\Effect {
+    /**
+     */
+    class StoreEffectRequest extends \Illuminate\Foundation\Http\FormRequest {
+            }
+    /**
+     */
+    class StoreEffectUsageRequest extends \Illuminate\Foundation\Http\FormRequest {
+            }
+    /**
+     */
+    class StoreSubEffectRequest extends \Illuminate\Foundation\Http\FormRequest {
+            }
+    /**
+     */
+    class UpdateEffectRequest extends \Illuminate\Foundation\Http\FormRequest {
+            }
+    /**
+     */
+    class UpdateEffectUsageRequest extends \Illuminate\Foundation\Http\FormRequest {
+            }
+    /**
+     */
+    class UpdateSubEffectRequest extends \Illuminate\Foundation\Http\FormRequest {
+            }
+    }
+
 namespace App\Http\Requests\Entity {
     /**
      */

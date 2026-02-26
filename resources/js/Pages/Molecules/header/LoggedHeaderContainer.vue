@@ -485,28 +485,40 @@ const logout = () => {
                             />
                         </Route>
                         <span class="border-glass-b-sm w-full h-px"></span>
-                        <template v-if="canAccess('adminPanel')">
+                        <template v-if="canAccess('adminPanel') || canAccess('effectsAdmin')">
                             <div class="w-full">
                                 <p class="text-xs text-subtitle/60 px-2 py-1 font-semibold text-center">Administration</p>
-                                <Route route="admin.characteristics.index" class="w-full">
+                                <Route v-if="canAccess('adminPanel')" route="admin.characteristics.index" class="w-full">
                                     <Btn variant="ghost" size="md" class="w-full justify-start">
                                         <Icon source="fa-sliders" pack="solid" size="sm" alt="Caractéristiques" class="mr-2"/>
                                         <span>Caractéristiques</span>
                                     </Btn>
                                 </Route>
-                                <Route route="admin.spell-effect-types.index" class="w-full">
+                                <Route v-if="canAccess('adminPanel')" route="admin.spell-effect-types.index" class="w-full">
                                     <Btn variant="ghost" size="md" class="w-full justify-start">
                                         <Icon source="fa-wand-magic-sparkles" pack="solid" size="sm" alt="Types d'effets de sort" class="mr-2"/>
                                         <span>Types d'effets de sort</span>
                                     </Btn>
                                 </Route>
-                                <Route v-if="canAccess('scrapping')" route="scrapping.index" class="w-full">
+                                <Route v-if="canAccess('effectsAdmin')" route="admin.sub-effects.index" class="w-full">
+                                    <Btn variant="ghost" size="md" class="w-full justify-start">
+                                        <Icon source="fa-puzzle-piece" pack="solid" size="sm" alt="Sous-effets" class="mr-2"/>
+                                        <span>Sous-effets</span>
+                                    </Btn>
+                                </Route>
+                                <Route v-if="canAccess('effectsAdmin')" route="admin.effects.index" class="w-full">
+                                    <Btn variant="ghost" size="md" class="w-full justify-start">
+                                        <Icon source="fa-bolt" pack="solid" size="sm" alt="Effets" class="mr-2"/>
+                                        <span>Effets</span>
+                                    </Btn>
+                                </Route>
+                                <Route v-if="canAccess('adminPanel') && canAccess('scrapping')" route="scrapping.index" class="w-full">
                                     <Btn variant="ghost" size="md" class="w-full justify-start">
                                         <Icon source="fa-magnifying-glass" pack="solid" size="sm" alt="Scrapping" class="mr-2"/>
                                         <span>Scrapping</span>
                                     </Btn>
                                 </Route>
-                                <Route route="user.index" class="w-full">
+                                <Route v-if="canAccess('adminPanel')" route="user.index" class="w-full">
                                     <Btn variant="ghost" size="md" class="w-full justify-start">
                                         <Icon source="fa-users" pack="solid" size="sm" alt="Utilisateurs" class="mr-2"/>
                                         <span>Utilisateurs</span>

@@ -59,7 +59,7 @@
       "key": "bonus",
       "from": { "path": "effects" },
       "to": [{ "model": "panoplies", "field": "bonus" }],
-      "formatters": [{ "name": "toJson", "args": {} }]
+      "formatters": [{ "name": "itemEffectsToKrosmozBonus", "args": {} }]
     },
     {
       "key": "item_dofusdb_ids",

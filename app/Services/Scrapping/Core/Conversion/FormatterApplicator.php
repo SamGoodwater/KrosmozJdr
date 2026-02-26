@@ -160,8 +160,9 @@ final class FormatterApplicator
                 $val = $from;
             }
             $val = is_numeric($val) ? (int) $val : 0;
+            $entityType = (string) ($context['entityType'] ?? 'item');
             if ($this->conversionService !== null) {
-                $val = $this->conversionService->convertObjectAttribute($charKey, $val, 'item', $context);
+                $val = $this->conversionService->convertObjectAttribute($charKey, $val, $entityType, $context);
             }
             $shortKey = str_ends_with($charKey, '_object') ? substr($charKey, 0, -7) : $charKey;
             $bonus[$shortKey] = ($bonus[$shortKey] ?? 0) + $val;

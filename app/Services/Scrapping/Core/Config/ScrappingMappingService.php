@@ -91,13 +91,14 @@ final class ScrappingMappingService
     }
 
     /**
-     * Règles de mapping qui utilisent une caractéristique donnée (pour le panneau 3 de la fiche caractéristique).
+     * Règles de mapping qui utilisent une caractéristique donnée (characteristic_id ou pivot).
      *
      * @return list<array{id: int, source: string, entity: string, mapping_key: string, from_path: string, targets: list<array{model: string, field: string}>}>
      */
     public function listMappingsForCharacteristic(int $characteristicId): array
     {
         return ScrappingEntityMapping::where('characteristic_id', $characteristicId)
+            ->orWhereHas('characteristics', fn ($q) => $q->where('characteristics.id', $characteristicId))
             ->with('targets')
             ->orderBy('source')
             ->orderBy('entity')

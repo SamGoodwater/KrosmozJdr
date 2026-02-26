@@ -40,7 +40,7 @@ class ExtractObjectConversionSamplesCommand extends Command
     /** Libellés FR pour l’affichage (characteristic_key → label). */
     private const CHARACTERISTIC_KEY_LABELS = [
         'level_object' => 'Niveau',
-        'pv_max_object' => 'Points de vie',
+        'pv_object' => 'Points de vie',
         'pa_object' => 'PA',
         'pm_object' => 'PM',
         'strong_object' => 'Force',

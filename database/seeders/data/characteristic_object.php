@@ -56,7 +56,7 @@ return array (
     'formula' => NULL,
     'formula_display' => NULL,
     'default_value' => '0',
-    'conversion_formula' => '{"0":"0","1":"1","3":"2","8":"3","23":"4","characteristic":"level"}',
+    'conversion_formula' => '{"0":"0","1":"0","3":"0","8":"1","23":"1","characteristic":"level"}',
     'conversion_dofus_sample' => NULL,
     'conversion_krosmoz_sample' => NULL,
     'forgemagie_allowed' => false,
@@ -92,16 +92,24 @@ return array (
   ),
   3 => 
   array (
-    'characteristic_key' => 'price_object',
-    'entity' => 'resource',
-    'db_column' => 'price',
+    'characteristic_key' => 'weight_object',
+    'entity' => '*',
+    'db_column' => 'weight',
     'min' => '0',
     'max' => NULL,
     'formula' => NULL,
     'formula_display' => NULL,
     'default_value' => NULL,
     'conversion_formula' => '[d]',
-    'conversion_dofus_sample' => NULL,
+    'conversion_dofus_sample' => 
+    array (
+      1 => 114,
+      40 => 151,
+      80 => 233,
+      120 => 389,
+      160 => 500,
+      200 => 500,
+    ),
     'conversion_krosmoz_sample' => NULL,
     'forgemagie_allowed' => false,
     'forgemagie_max' => 0,
@@ -115,13 +123,13 @@ return array (
   4 => 
   array (
     'characteristic_key' => 'weight_object',
-    'entity' => '*',
+    'entity' => 'resource',
     'db_column' => 'weight',
     'min' => '0',
     'max' => NULL,
     'formula' => NULL,
     'formula_display' => NULL,
-    'default_value' => NULL,
+    'default_value' => '0',
     'conversion_formula' => '[d]',
     'conversion_dofus_sample' => 
     array (
@@ -144,36 +152,6 @@ return array (
   ),
   5 => 
   array (
-    'characteristic_key' => 'weight_object',
-    'entity' => 'resource',
-    'db_column' => 'weight',
-    'min' => '0',
-    'max' => NULL,
-    'formula' => NULL,
-    'formula_display' => NULL,
-    'default_value' => '0',
-    'conversion_formula' => '[d]',
-    'conversion_dofus_sample' => 
-    array (
-      1 => 114,
-      40 => 151,
-      80 => 233,
-      120 => 389,
-      160 => 500,
-      200 => 500,
-    ),
-    'conversion_krosmoz_sample' => NULL,
-    'forgemagie_allowed' => false,
-    'forgemagie_max' => 0,
-    'base_price_per_unit' => NULL,
-    'rune_price_per_unit' => NULL,
-    'value_available' => NULL,
-    'item_type_ids' => 
-    array (
-    ),
-  ),
-  6 => 
-  array (
     'characteristic_key' => 'touch_object',
     'entity' => '*',
     'db_column' => NULL,
@@ -194,7 +172,7 @@ return array (
     array (
     ),
   ),
-  7 => 
+  6 => 
   array (
     'characteristic_key' => 'do_fixe_neutre_object',
     'entity' => '*',
@@ -232,10 +210,32 @@ return array (
     array (
     ),
   ),
-  8 => 
+  7 => 
   array (
     'characteristic_key' => 'do_fixe_neutre_object',
     'entity' => 'consumable',
+    'db_column' => NULL,
+    'min' => NULL,
+    'max' => NULL,
+    'formula' => NULL,
+    'formula_display' => NULL,
+    'default_value' => NULL,
+    'conversion_formula' => NULL,
+    'conversion_dofus_sample' => NULL,
+    'conversion_krosmoz_sample' => NULL,
+    'forgemagie_allowed' => false,
+    'forgemagie_max' => 0,
+    'base_price_per_unit' => NULL,
+    'rune_price_per_unit' => NULL,
+    'value_available' => NULL,
+    'item_type_ids' => 
+    array (
+    ),
+  ),
+  8 => 
+  array (
+    'characteristic_key' => 'do_fixe_neutre_object',
+    'entity' => 'item',
     'db_column' => NULL,
     'min' => NULL,
     'max' => NULL,
@@ -257,28 +257,6 @@ return array (
   9 => 
   array (
     'characteristic_key' => 'do_fixe_neutre_object',
-    'entity' => 'item',
-    'db_column' => NULL,
-    'min' => NULL,
-    'max' => NULL,
-    'formula' => NULL,
-    'formula_display' => NULL,
-    'default_value' => NULL,
-    'conversion_formula' => NULL,
-    'conversion_dofus_sample' => NULL,
-    'conversion_krosmoz_sample' => NULL,
-    'forgemagie_allowed' => false,
-    'forgemagie_max' => 0,
-    'base_price_per_unit' => NULL,
-    'rune_price_per_unit' => NULL,
-    'value_available' => NULL,
-    'item_type_ids' => 
-    array (
-    ),
-  ),
-  10 => 
-  array (
-    'characteristic_key' => 'do_fixe_neutre_object',
     'entity' => 'panoply',
     'db_column' => NULL,
     'min' => NULL,
@@ -298,7 +276,7 @@ return array (
     array (
     ),
   ),
-  11 => 
+  10 => 
   array (
     'characteristic_key' => 'do_fixe_terre_object',
     'entity' => '*',
@@ -320,10 +298,32 @@ return array (
     array (
     ),
   ),
-  12 => 
+  11 => 
   array (
     'characteristic_key' => 'do_fixe_terre_object',
     'entity' => 'consumable',
+    'db_column' => NULL,
+    'min' => NULL,
+    'max' => NULL,
+    'formula' => NULL,
+    'formula_display' => NULL,
+    'default_value' => NULL,
+    'conversion_formula' => NULL,
+    'conversion_dofus_sample' => NULL,
+    'conversion_krosmoz_sample' => NULL,
+    'forgemagie_allowed' => false,
+    'forgemagie_max' => 0,
+    'base_price_per_unit' => NULL,
+    'rune_price_per_unit' => NULL,
+    'value_available' => NULL,
+    'item_type_ids' => 
+    array (
+    ),
+  ),
+  12 => 
+  array (
+    'characteristic_key' => 'do_fixe_terre_object',
+    'entity' => 'item',
     'db_column' => NULL,
     'min' => NULL,
     'max' => NULL,
@@ -345,7 +345,7 @@ return array (
   13 => 
   array (
     'characteristic_key' => 'do_fixe_terre_object',
-    'entity' => 'item',
+    'entity' => 'panoply',
     'db_column' => NULL,
     'min' => NULL,
     'max' => NULL,
@@ -367,28 +367,6 @@ return array (
   14 => 
   array (
     'characteristic_key' => 'do_fixe_terre_object',
-    'entity' => 'panoply',
-    'db_column' => NULL,
-    'min' => NULL,
-    'max' => NULL,
-    'formula' => NULL,
-    'formula_display' => NULL,
-    'default_value' => NULL,
-    'conversion_formula' => NULL,
-    'conversion_dofus_sample' => NULL,
-    'conversion_krosmoz_sample' => NULL,
-    'forgemagie_allowed' => false,
-    'forgemagie_max' => 0,
-    'base_price_per_unit' => NULL,
-    'rune_price_per_unit' => NULL,
-    'value_available' => NULL,
-    'item_type_ids' => 
-    array (
-    ),
-  ),
-  15 => 
-  array (
-    'characteristic_key' => 'do_fixe_terre_object',
     'entity' => 'resource',
     'db_column' => NULL,
     'min' => NULL,
@@ -408,7 +386,7 @@ return array (
     array (
     ),
   ),
-  16 => 
+  15 => 
   array (
     'characteristic_key' => 'do_fixe_feu_object',
     'entity' => '*',
@@ -430,7 +408,7 @@ return array (
     array (
     ),
   ),
-  17 => 
+  16 => 
   array (
     'characteristic_key' => 'do_fixe_feu_object',
     'entity' => 'consumable',
@@ -452,7 +430,7 @@ return array (
     array (
     ),
   ),
-  18 => 
+  17 => 
   array (
     'characteristic_key' => 'do_fixe_feu_object',
     'entity' => 'item',
@@ -474,7 +452,7 @@ return array (
     array (
     ),
   ),
-  19 => 
+  18 => 
   array (
     'characteristic_key' => 'do_fixe_feu_object',
     'entity' => 'panoply',
@@ -496,7 +474,7 @@ return array (
     array (
     ),
   ),
-  20 => 
+  19 => 
   array (
     'characteristic_key' => 'do_fixe_feu_object',
     'entity' => 'resource',
@@ -518,7 +496,7 @@ return array (
     array (
     ),
   ),
-  21 => 
+  20 => 
   array (
     'characteristic_key' => 'do_fixe_air_object',
     'entity' => '*',
@@ -540,7 +518,7 @@ return array (
     array (
     ),
   ),
-  22 => 
+  21 => 
   array (
     'characteristic_key' => 'do_fixe_eau_object',
     'entity' => '*',
@@ -569,7 +547,7 @@ return array (
     array (
     ),
   ),
-  23 => 
+  22 => 
   array (
     'characteristic_key' => 'do_fixe_eau_object',
     'entity' => 'item',
@@ -591,7 +569,7 @@ return array (
     array (
     ),
   ),
-  24 => 
+  23 => 
   array (
     'characteristic_key' => 'do_fixe_eau_object',
     'entity' => 'panoply',
@@ -613,7 +591,7 @@ return array (
     array (
     ),
   ),
-  25 => 
+  24 => 
   array (
     'characteristic_key' => 'do_fixe_eau_object',
     'entity' => 'resource',
@@ -635,7 +613,7 @@ return array (
     array (
     ),
   ),
-  26 => 
+  25 => 
   array (
     'characteristic_key' => 'do_fixe_multiple_object',
     'entity' => '*',
@@ -673,7 +651,7 @@ return array (
     array (
     ),
   ),
-  27 => 
+  26 => 
   array (
     'characteristic_key' => 'do_fixe_multiple_object',
     'entity' => 'consumable',
@@ -695,7 +673,7 @@ return array (
     array (
     ),
   ),
-  28 => 
+  27 => 
   array (
     'characteristic_key' => 'do_fixe_multiple_object',
     'entity' => 'item',
@@ -717,7 +695,7 @@ return array (
     array (
     ),
   ),
-  29 => 
+  28 => 
   array (
     'characteristic_key' => 'do_fixe_multiple_object',
     'entity' => 'resource',
@@ -739,17 +717,17 @@ return array (
     array (
     ),
   ),
-  30 => 
+  29 => 
   array (
     'characteristic_key' => 'pv_max_object',
     'entity' => '*',
     'db_column' => NULL,
     'min' => '0',
-    'max' => '5',
+    'max' => NULL,
     'formula' => NULL,
     'formula_display' => NULL,
     'default_value' => '0',
-    'conversion_formula' => '[d]',
+    'conversion_formula' => 'floor(0.2728 * pow([d], 0.759))',
     'conversion_dofus_sample' => 
     array (
       1 => 3,
@@ -777,105 +755,17 @@ return array (
     array (
     ),
   ),
-  31 => 
-  array (
-    'characteristic_key' => 'pv_max_object',
-    'entity' => 'consumable',
-    'db_column' => NULL,
-    'min' => NULL,
-    'max' => NULL,
-    'formula' => NULL,
-    'formula_display' => NULL,
-    'default_value' => NULL,
-    'conversion_formula' => NULL,
-    'conversion_dofus_sample' => NULL,
-    'conversion_krosmoz_sample' => NULL,
-    'forgemagie_allowed' => false,
-    'forgemagie_max' => 0,
-    'base_price_per_unit' => NULL,
-    'rune_price_per_unit' => NULL,
-    'value_available' => NULL,
-    'item_type_ids' => 
-    array (
-    ),
-  ),
-  32 => 
-  array (
-    'characteristic_key' => 'pv_max_object',
-    'entity' => 'item',
-    'db_column' => NULL,
-    'min' => NULL,
-    'max' => NULL,
-    'formula' => NULL,
-    'formula_display' => NULL,
-    'default_value' => NULL,
-    'conversion_formula' => NULL,
-    'conversion_dofus_sample' => NULL,
-    'conversion_krosmoz_sample' => NULL,
-    'forgemagie_allowed' => false,
-    'forgemagie_max' => 0,
-    'base_price_per_unit' => NULL,
-    'rune_price_per_unit' => NULL,
-    'value_available' => NULL,
-    'item_type_ids' => 
-    array (
-    ),
-  ),
-  33 => 
-  array (
-    'characteristic_key' => 'pv_max_object',
-    'entity' => 'panoply',
-    'db_column' => NULL,
-    'min' => NULL,
-    'max' => NULL,
-    'formula' => NULL,
-    'formula_display' => NULL,
-    'default_value' => NULL,
-    'conversion_formula' => NULL,
-    'conversion_dofus_sample' => NULL,
-    'conversion_krosmoz_sample' => NULL,
-    'forgemagie_allowed' => false,
-    'forgemagie_max' => 0,
-    'base_price_per_unit' => NULL,
-    'rune_price_per_unit' => NULL,
-    'value_available' => NULL,
-    'item_type_ids' => 
-    array (
-    ),
-  ),
-  34 => 
-  array (
-    'characteristic_key' => 'pv_max_object',
-    'entity' => 'resource',
-    'db_column' => NULL,
-    'min' => NULL,
-    'max' => NULL,
-    'formula' => NULL,
-    'formula_display' => NULL,
-    'default_value' => NULL,
-    'conversion_formula' => NULL,
-    'conversion_dofus_sample' => NULL,
-    'conversion_krosmoz_sample' => NULL,
-    'forgemagie_allowed' => false,
-    'forgemagie_max' => 0,
-    'base_price_per_unit' => NULL,
-    'rune_price_per_unit' => NULL,
-    'value_available' => NULL,
-    'item_type_ids' => 
-    array (
-    ),
-  ),
-  35 => 
+  30 => 
   array (
     'characteristic_key' => 'vitality_object',
     'entity' => '*',
     'db_column' => NULL,
     'min' => '0',
     'max' => '8',
-    'formula' => NULL,
+    'formula' => '[level]*(8/20)',
     'formula_display' => NULL,
     'default_value' => '0',
-    'conversion_formula' => 'floor(0.2227 * pow([d], 0.7999))',
+    'conversion_formula' => 'floor(0.0408 * pow([d], 0.9412))',
     'conversion_dofus_sample' => 
     array (
       1 => 16,
@@ -903,7 +793,7 @@ return array (
     array (
     ),
   ),
-  36 => 
+  31 => 
   array (
     'characteristic_key' => 'sagesse_object',
     'entity' => '*',
@@ -913,7 +803,7 @@ return array (
     'formula' => NULL,
     'formula_display' => NULL,
     'default_value' => '0',
-    'conversion_formula' => 'floor(0.2227 * pow([d], 0.7999))',
+    'conversion_formula' => 'floor(0.0408 * pow([d], 0.9412))',
     'conversion_dofus_sample' => 
     array (
       1 => 21,
@@ -941,7 +831,7 @@ return array (
     array (
     ),
   ),
-  37 => 
+  32 => 
   array (
     'characteristic_key' => 'save_vit_sag_object',
     'entity' => '*',
@@ -963,7 +853,7 @@ return array (
     array (
     ),
   ),
-  38 => 
+  33 => 
   array (
     'characteristic_key' => 'competences_object',
     'entity' => '*',
@@ -985,7 +875,7 @@ return array (
     array (
     ),
   ),
-  39 => 
+  34 => 
   array (
     'characteristic_key' => 'competences_passives_object',
     'entity' => '*',
@@ -1007,7 +897,7 @@ return array (
     array (
     ),
   ),
-  40 => 
+  35 => 
   array (
     'characteristic_key' => 'ini_object',
     'entity' => '*',
@@ -1045,7 +935,7 @@ return array (
     array (
     ),
   ),
-  41 => 
+  36 => 
   array (
     'characteristic_key' => 'strong_object',
     'entity' => '*',
@@ -1055,7 +945,7 @@ return array (
     'formula' => NULL,
     'formula_display' => NULL,
     'default_value' => '0',
-    'conversion_formula' => 'floor(0.2227 * pow([d], 0.7999))',
+    'conversion_formula' => 'floor(0.0408 * pow([d], 0.9412))',
     'conversion_dofus_sample' => 
     array (
       1 => 7,
@@ -1083,7 +973,7 @@ return array (
     array (
     ),
   ),
-  42 => 
+  37 => 
   array (
     'characteristic_key' => 'intel_object',
     'entity' => '*',
@@ -1093,7 +983,7 @@ return array (
     'formula' => NULL,
     'formula_display' => NULL,
     'default_value' => '0',
-    'conversion_formula' => 'floor(0.2227 * pow([d], 0.7999))',
+    'conversion_formula' => 'floor(0.0408 * pow([d], 0.9412))',
     'conversion_dofus_sample' => 
     array (
       1 => 7,
@@ -1121,7 +1011,7 @@ return array (
     array (
     ),
   ),
-  43 => 
+  38 => 
   array (
     'characteristic_key' => 'chance_object',
     'entity' => '*',
@@ -1131,7 +1021,7 @@ return array (
     'formula' => NULL,
     'formula_display' => NULL,
     'default_value' => '0',
-    'conversion_formula' => 'floor(0.2227 * pow([d], 0.7999))',
+    'conversion_formula' => 'floor(0.0408 * pow([d], 0.9412))',
     'conversion_dofus_sample' => 
     array (
       1 => 7,
@@ -1159,7 +1049,7 @@ return array (
     array (
     ),
   ),
-  44 => 
+  39 => 
   array (
     'characteristic_key' => 'agi_object',
     'entity' => '*',
@@ -1169,7 +1059,7 @@ return array (
     'formula' => NULL,
     'formula_display' => NULL,
     'default_value' => '0',
-    'conversion_formula' => 'floor(0.2227 * pow([d], 0.7999))',
+    'conversion_formula' => 'floor(0.0408 * pow([d], 0.9412))',
     'conversion_dofus_sample' => 
     array (
       1 => 8,
@@ -1197,7 +1087,7 @@ return array (
     array (
     ),
   ),
-  45 => 
+  40 => 
   array (
     'characteristic_key' => 'save_force_int_cha_agi_object',
     'entity' => '*',
@@ -1219,7 +1109,7 @@ return array (
     array (
     ),
   ),
-  46 => 
+  41 => 
   array (
     'characteristic_key' => 'pa_object',
     'entity' => '*',
@@ -1257,95 +1147,7 @@ return array (
     array (
     ),
   ),
-  47 => 
-  array (
-    'characteristic_key' => 'pa_object',
-    'entity' => 'consumable',
-    'db_column' => NULL,
-    'min' => NULL,
-    'max' => NULL,
-    'formula' => NULL,
-    'formula_display' => NULL,
-    'default_value' => NULL,
-    'conversion_formula' => NULL,
-    'conversion_dofus_sample' => NULL,
-    'conversion_krosmoz_sample' => NULL,
-    'forgemagie_allowed' => false,
-    'forgemagie_max' => 0,
-    'base_price_per_unit' => NULL,
-    'rune_price_per_unit' => NULL,
-    'value_available' => NULL,
-    'item_type_ids' => 
-    array (
-    ),
-  ),
-  48 => 
-  array (
-    'characteristic_key' => 'pa_object',
-    'entity' => 'item',
-    'db_column' => NULL,
-    'min' => NULL,
-    'max' => NULL,
-    'formula' => NULL,
-    'formula_display' => NULL,
-    'default_value' => NULL,
-    'conversion_formula' => NULL,
-    'conversion_dofus_sample' => NULL,
-    'conversion_krosmoz_sample' => NULL,
-    'forgemagie_allowed' => false,
-    'forgemagie_max' => 0,
-    'base_price_per_unit' => NULL,
-    'rune_price_per_unit' => NULL,
-    'value_available' => NULL,
-    'item_type_ids' => 
-    array (
-    ),
-  ),
-  49 => 
-  array (
-    'characteristic_key' => 'pa_object',
-    'entity' => 'panoply',
-    'db_column' => NULL,
-    'min' => NULL,
-    'max' => NULL,
-    'formula' => NULL,
-    'formula_display' => NULL,
-    'default_value' => NULL,
-    'conversion_formula' => NULL,
-    'conversion_dofus_sample' => NULL,
-    'conversion_krosmoz_sample' => NULL,
-    'forgemagie_allowed' => false,
-    'forgemagie_max' => 0,
-    'base_price_per_unit' => NULL,
-    'rune_price_per_unit' => NULL,
-    'value_available' => NULL,
-    'item_type_ids' => 
-    array (
-    ),
-  ),
-  50 => 
-  array (
-    'characteristic_key' => 'pa_object',
-    'entity' => 'resource',
-    'db_column' => NULL,
-    'min' => NULL,
-    'max' => NULL,
-    'formula' => NULL,
-    'formula_display' => NULL,
-    'default_value' => NULL,
-    'conversion_formula' => NULL,
-    'conversion_dofus_sample' => NULL,
-    'conversion_krosmoz_sample' => NULL,
-    'forgemagie_allowed' => false,
-    'forgemagie_max' => 0,
-    'base_price_per_unit' => NULL,
-    'rune_price_per_unit' => NULL,
-    'value_available' => NULL,
-    'item_type_ids' => 
-    array (
-    ),
-  ),
-  51 => 
+  42 => 
   array (
     'characteristic_key' => 'esquive_pa_object',
     'entity' => '*',
@@ -1355,7 +1157,7 @@ return array (
     'formula' => NULL,
     'formula_display' => NULL,
     'default_value' => '0',
-    'conversion_formula' => '[d]',
+    'conversion_formula' => 'floor(0.6567 * pow([d], 0.5307))',
     'conversion_dofus_sample' => 
     array (
       1 => 23,
@@ -1383,7 +1185,7 @@ return array (
     array (
     ),
   ),
-  52 => 
+  43 => 
   array (
     'characteristic_key' => 'pm_object',
     'entity' => '*',
@@ -1421,7 +1223,7 @@ return array (
     array (
     ),
   ),
-  53 => 
+  44 => 
   array (
     'characteristic_key' => 'esquive_pm_object',
     'entity' => '*',
@@ -1431,7 +1233,7 @@ return array (
     'formula' => NULL,
     'formula_display' => NULL,
     'default_value' => '0',
-    'conversion_formula' => '[d]',
+    'conversion_formula' => 'floor(0.6567 * pow([d], 0.5307))',
     'conversion_dofus_sample' => 
     array (
       1 => 2,
@@ -1459,13 +1261,13 @@ return array (
     array (
     ),
   ),
-  54 => 
+  45 => 
   array (
     'characteristic_key' => 'invocation_object',
     'entity' => '*',
     'db_column' => NULL,
     'min' => '0',
-    'max' => '3',
+    'max' => '5',
     'formula' => NULL,
     'formula_display' => NULL,
     'default_value' => '0',
@@ -1497,13 +1299,13 @@ return array (
     array (
     ),
   ),
-  55 => 
+  46 => 
   array (
     'characteristic_key' => 'po_object',
     'entity' => '*',
     'db_column' => NULL,
     'min' => '0',
-    'max' => '3',
+    'max' => '5',
     'formula' => NULL,
     'formula_display' => NULL,
     'default_value' => '0',
@@ -1519,7 +1321,7 @@ return array (
     array (
     ),
   ),
-  56 => 
+  47 => 
   array (
     'characteristic_key' => 'tacle_object',
     'entity' => '*',
@@ -1529,9 +1331,25 @@ return array (
     'formula' => NULL,
     'formula_display' => NULL,
     'default_value' => '0',
-    'conversion_formula' => '[d]',
-    'conversion_dofus_sample' => NULL,
-    'conversion_krosmoz_sample' => NULL,
+    'conversion_formula' => 'floor(1.0997 * pow([d], 0.8043))',
+    'conversion_dofus_sample' => 
+    array (
+      1 => 1,
+      40 => 2,
+      80 => 5,
+      120 => 6,
+      160 => 8,
+      200 => 15,
+    ),
+    'conversion_krosmoz_sample' => 
+    array (
+      1 => 1,
+      4 => 2,
+      8 => 4,
+      12 => 5,
+      16 => 7,
+      20 => 8,
+    ),
     'forgemagie_allowed' => true,
     'forgemagie_max' => 2,
     'base_price_per_unit' => '300.00',
@@ -1541,7 +1359,7 @@ return array (
     array (
     ),
   ),
-  57 => 
+  48 => 
   array (
     'characteristic_key' => 'fuite_object',
     'entity' => '*',
@@ -1551,7 +1369,7 @@ return array (
     'formula' => NULL,
     'formula_display' => NULL,
     'default_value' => '0',
-    'conversion_formula' => '[d]',
+    'conversion_formula' => 'floor(1.0997 * pow([d], 0.8043))',
     'conversion_dofus_sample' => NULL,
     'conversion_krosmoz_sample' => NULL,
     'forgemagie_allowed' => true,
@@ -1563,7 +1381,7 @@ return array (
     array (
     ),
   ),
-  58 => 
+  49 => 
   array (
     'characteristic_key' => 'wakfu_recharge_object',
     'entity' => '*',
@@ -1585,7 +1403,7 @@ return array (
     array (
     ),
   ),
-  59 => 
+  50 => 
   array (
     'characteristic_key' => 'ca_object',
     'entity' => '*',
@@ -1607,7 +1425,7 @@ return array (
     array (
     ),
   ),
-  60 => 
+  51 => 
   array (
     'characteristic_key' => 'res_fixe_neutre_object',
     'entity' => '*',
@@ -1617,9 +1435,25 @@ return array (
     'formula' => NULL,
     'formula_display' => NULL,
     'default_value' => '0',
-    'conversion_formula' => '[d]',
-    'conversion_dofus_sample' => NULL,
-    'conversion_krosmoz_sample' => NULL,
+    'conversion_formula' => 'floor(1.1361 + 5.7303 * pow(([d]-1)/9, 0.6))',
+    'conversion_dofus_sample' => 
+    array (
+      1 => 1,
+      40 => 2,
+      80 => 4,
+      120 => 6,
+      160 => 8,
+      200 => 10,
+    ),
+    'conversion_krosmoz_sample' => 
+    array (
+      1 => 1,
+      4 => 3,
+      8 => 4,
+      12 => 5,
+      16 => 6,
+      20 => 7,
+    ),
     'forgemagie_allowed' => true,
     'forgemagie_max' => 3,
     'base_price_per_unit' => '600.00',
@@ -1629,7 +1463,7 @@ return array (
     array (
     ),
   ),
-  61 => 
+  52 => 
   array (
     'characteristic_key' => 'res_fixe_terre_object',
     'entity' => '*',
@@ -1639,7 +1473,7 @@ return array (
     'formula' => NULL,
     'formula_display' => NULL,
     'default_value' => '0',
-    'conversion_formula' => '[d]',
+    'conversion_formula' => 'floor(1.1361 + 5.7303 * pow(([d]-1)/9, 0.6))',
     'conversion_dofus_sample' => 
     array (
       1 => 26,
@@ -1667,7 +1501,7 @@ return array (
     array (
     ),
   ),
-  62 => 
+  53 => 
   array (
     'characteristic_key' => 'res_fixe_feu_object',
     'entity' => '*',
@@ -1677,7 +1511,7 @@ return array (
     'formula' => NULL,
     'formula_display' => NULL,
     'default_value' => '0',
-    'conversion_formula' => '[d]',
+    'conversion_formula' => 'floor(1.1361 + 5.7303 * pow(([d]-1)/9, 0.6))',
     'conversion_dofus_sample' => 
     array (
       1 => 26,
@@ -1705,7 +1539,7 @@ return array (
     array (
     ),
   ),
-  63 => 
+  54 => 
   array (
     'characteristic_key' => 'res_fixe_air_object',
     'entity' => '*',
@@ -1715,7 +1549,7 @@ return array (
     'formula' => NULL,
     'formula_display' => NULL,
     'default_value' => '0',
-    'conversion_formula' => '[d]',
+    'conversion_formula' => 'floor(1.1361 + 5.7303 * pow(([d]-1)/9, 0.6))',
     'conversion_dofus_sample' => 
     array (
       1 => 26,
@@ -1743,7 +1577,7 @@ return array (
     array (
     ),
   ),
-  64 => 
+  55 => 
   array (
     'characteristic_key' => 'res_fixe_eau_object',
     'entity' => '*',
@@ -1753,7 +1587,7 @@ return array (
     'formula' => NULL,
     'formula_display' => NULL,
     'default_value' => '0',
-    'conversion_formula' => '[d]',
+    'conversion_formula' => 'floor(1.1361 + 5.7303 * pow(([d]-1)/9, 0.6))',
     'conversion_dofus_sample' => 
     array (
       1 => 26,
@@ -1781,7 +1615,7 @@ return array (
     array (
     ),
   ),
-  65 => 
+  56 => 
   array (
     'characteristic_key' => 'res_50_object',
     'entity' => '*',
@@ -1791,7 +1625,7 @@ return array (
     'formula' => NULL,
     'formula_display' => NULL,
     'default_value' => '0',
-    'conversion_formula' => '[d]',
+    'conversion_formula' => '{"1":"0","20":"1","30":"0","characteristic":"d"}',
     'conversion_dofus_sample' => 
     array (
       1 => -1,
@@ -1819,7 +1653,7 @@ return array (
     array (
     ),
   ),
-  66 => 
+  57 => 
   array (
     'characteristic_key' => 'invuln_100_object',
     'entity' => '*',
@@ -1829,7 +1663,7 @@ return array (
     'formula' => NULL,
     'formula_display' => NULL,
     'default_value' => '0',
-    'conversion_formula' => '[d]',
+    'conversion_formula' => '{"1":"0","30":"1","characteristic":"d"}',
     'conversion_dofus_sample' => NULL,
     'conversion_krosmoz_sample' => NULL,
     'forgemagie_allowed' => false,

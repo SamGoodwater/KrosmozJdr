@@ -13,6 +13,7 @@ use App\Models\Entity\Item;
 use App\Models\Entity\Scenario;
 use App\Models\Entity\Shop;
 use App\Models\Entity\Campaign;
+use App\Models\EffectUsage;
 use App\Models\Concerns\HasEntityImageMedia;
 use Spatie\MediaLibrary\HasMedia;
 
@@ -217,4 +218,11 @@ class Resource extends Model implements HasMedia
         return $this->belongsToMany(Shop::class, 'resource_shop')->withPivot('quantity', 'price', 'comment');
     }
 
+    /**
+     * Usages d'effets unifiés (effect_usage) pour cette ressource.
+     */
+    public function effectUsages()
+    {
+        return $this->morphMany(EffectUsage::class, 'entity');
+    }
 }

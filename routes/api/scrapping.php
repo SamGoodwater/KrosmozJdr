@@ -6,7 +6,9 @@ use Illuminate\Support\Facades\Route;
 |--------------------------------------------------------------------------
 | API — Scrapping (tests, production, registries, catalogues)
 |--------------------------------------------------------------------------
+| Accès réservé aux administrateurs (lecture et écriture).
 */
+Route::middleware(['web', 'auth', 'role:admin'])->group(function () {
 
 // Routes de test (DataCollect sans orchestrateur)
 Route::prefix('scrapping/test')->group(function () {
@@ -48,9 +50,9 @@ Route::prefix('scrapping')->group(function () {
         ->whereNumber('id');
     Route::post('/preview/batch', [App\Http\Controllers\Scrapping\ScrappingController::class, 'previewBatch'])
         ->name('scrapping.preview.batch');
-    Route::middleware(['web', 'auth'])->get('/dofusdb/item-types', [App\Http\Controllers\Scrapping\DofusDbItemTypesCatalogController::class, 'index'])
+    Route::get('/dofusdb/item-types', [App\Http\Controllers\Scrapping\DofusDbItemTypesCatalogController::class, 'index'])
         ->name('scrapping.dofusdb.item-types');
-    Route::middleware(['web', 'auth'])->get('/dofusdb/characteristic-labels', [App\Http\Controllers\Scrapping\ScrappingController::class, 'dofusdbCharacteristicLabels'])
+    Route::get('/dofusdb/characteristic-labels', [App\Http\Controllers\Scrapping\ScrappingController::class, 'dofusdbCharacteristicLabels'])
         ->name('scrapping.dofusdb.characteristic-labels');
 
     Route::prefix('import')->group(function () {
@@ -91,8 +93,8 @@ Route::prefix('scrapping')->group(function () {
         ->whereNumber('id');
 });
 
-// Registries (resource-types, item-types, consumable-types) — UI Inertia (web + auth)
-Route::middleware(['web', 'auth'])->prefix('scrapping/resource-types')->group(function () {
+// Registries (resource-types, item-types, consumable-types)
+Route::prefix('scrapping/resource-types')->group(function () {
     Route::get('/', [App\Http\Controllers\Scrapping\ResourceTypeRegistryController::class, 'index'])
         ->name('scrapping.resource-types.index');
     Route::get('/pending', [App\Http\Controllers\Scrapping\ResourceTypeRegistryController::class, 'pending'])
@@ -113,7 +115,7 @@ Route::middleware(['web', 'auth'])->prefix('scrapping/resource-types')->group(fu
         ->name('scrapping.resource-types.replay');
 });
 
-Route::middleware(['web', 'auth'])->prefix('scrapping/item-types')->group(function () {
+Route::prefix('scrapping/item-types')->group(function () {
     Route::get('/', [App\Http\Controllers\Scrapping\ItemTypeRegistryController::class, 'index'])
         ->name('scrapping.item-types.index');
     Route::get('/pending', [App\Http\Controllers\Scrapping\ItemTypeRegistryController::class, 'pending'])
@@ -130,7 +132,7 @@ Route::middleware(['web', 'auth'])->prefix('scrapping/item-types')->group(functi
         ->name('scrapping.item-types.decision');
 });
 
-Route::middleware(['web', 'auth'])->prefix('scrapping/consumable-types')->group(function () {
+Route::prefix('scrapping/consumable-types')->group(function () {
     Route::get('/', [App\Http\Controllers\Scrapping\ConsumableTypeRegistryController::class, 'index'])
         ->name('scrapping.consumable-types.index');
     Route::get('/pending', [App\Http\Controllers\Scrapping\ConsumableTypeRegistryController::class, 'pending'])
@@ -148,7 +150,8 @@ Route::middleware(['web', 'auth'])->prefix('scrapping/consumable-types')->group(
 });
 
 // Catalogue DofusDB (races monstres)
-Route::middleware(['web', 'auth'])->prefix('scrapping/monster-races')->group(function () {
+Route::prefix('scrapping/monster-races')->group(function () {
     Route::get('/', [App\Http\Controllers\Scrapping\DofusDbMonsterRacesCatalogController::class, 'index'])
         ->name('scrapping.monster-races.catalog');
+});
 });

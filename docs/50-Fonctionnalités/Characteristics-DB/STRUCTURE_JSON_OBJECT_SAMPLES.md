@@ -28,7 +28,7 @@ Exemple de correspondance (issue de l’API /characteristics) :
 
 | dofusdb_characteristic_id | keyword (API) | characteristic_key |
 |---------------------------|----------------|----------------------|
-| 0 | hitPoints | pv_max_object |
+| 0 | hitPoints | pv_object |
 | 1 | actionPoints | pa_object |
 | 5 | level | level_object |
 | 10 | strength | strong_object |
@@ -168,5 +168,5 @@ Conservé pour analyse ou pour un mapping effectId → characteristic_key ultér
 - **Données correctes** : les valeurs sont des **moyennes** (from+to)/2 par tranche de niveau sur les équipements collectés. Elles reflètent le jeu Dofus (bonus typiques par niveau).
 - **Référence admin** : `conversion_dofus_sample_reference` est calculé aux niveaux **1, 40, 80, 120, 160, 200** (avec interpolation si une tranche n’a pas d’équipement). C’est le format attendu par le tableau de conversion de l’admin.
 - **Caractéristiques sans samples** : `meta.characteristic_keys_without_samples` liste les clés mappées mais jamais observées sur les équipements (ex. esquive_pa_object, weight_object si aucun item avec cet effet dans l’échantillon). Augmenter `--max-items` ou vérifier le mapping si besoin.
-- **Valeurs atypiques** : certaines caractéristiques (ex. pv_max_object) peuvent avoir des valeurs élevées ou des malus (négatifs) selon les effets Dofus ; à interpréter comme bonus bruts, pas comme PV finaux.
+- **Valeurs atypiques** : certaines caractéristiques (ex. pv_object) peuvent avoir des valeurs élevées ou des malus (négatifs) selon les effets Dofus ; à interpréter comme bonus bruts, pas comme PV finaux.
 - **Granularité** : `conversion_dofus_sample` garde toutes les tranches (1, 10, 20, …) pour analyse ; `conversion_dofus_sample_reference` ne garde que les 6 niveaux de référence pour l’import admin.

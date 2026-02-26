@@ -12,6 +12,7 @@ use App\Models\Entity\Scenario;
 use App\Models\Entity\Campaign;
 use App\Models\Type\SpellType;
 use App\Models\Entity\Monster;
+use App\Models\EffectUsage;
 use App\Models\SpellEffect;
 use App\Models\Concerns\HasEntityImageMedia;
 use Spatie\MediaLibrary\HasMedia;
@@ -260,5 +261,13 @@ class Spell extends Model implements HasMedia
     public function monsters()
     {
         return $this->belongsToMany(Monster::class, 'spell_invocation');
+    }
+
+    /**
+     * Usages d'effets unifiés (effect_usage) pour ce sort.
+     */
+    public function effectUsages()
+    {
+        return $this->morphMany(EffectUsage::class, 'entity');
     }
 }

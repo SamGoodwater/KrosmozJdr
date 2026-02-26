@@ -44,7 +44,7 @@
       "conversion_krosmoz_sample": { "1": 0, "4": 1, "8": 2, "12": 3, "16": 4, "20": 4 },
       "source_rule": "2.2.1 : jusqu'à +4 par objet"
     },
-    "pv_max_object": {
+    "pv_object": {
       "conversion_krosmoz_sample": { "1": 0, "4": 5, "8": 10, "12": 15, "16": 18, "20": 20 },
       "source_rule": "2.2.2 : modifiable par équipement (illimité) ; convention ordre de grandeur bonus PV"
     },

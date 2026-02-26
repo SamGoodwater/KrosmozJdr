@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Entity;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Entity\StoreSpellRequest;
 use App\Http\Requests\Entity\UpdateSpellRequest;
+use App\Models\Effect;
 use App\Models\Entity\Spell;
 use App\Models\SpellEffect;
 use App\Models\SpellEffectType;
@@ -91,7 +92,7 @@ class SpellController extends Controller
     {
         $this->authorize('update', $spell);
         
-        $spell->load(['createdBy', 'creatures', 'breeds', 'spellTypes', 'spellEffects.spellEffectType']);
+        $spell->load(['createdBy', 'creatures', 'breeds', 'spellTypes', 'spellEffects.spellEffectType', 'effectUsages.effect.subEffects']);
 
         $availableBreeds = \App\Models\Entity\Breed::select('id', 'name', 'description')
             ->orderBy('name')
@@ -104,11 +105,34 @@ class SpellController extends Controller
         $availableSpellEffectTypes = SpellEffectType::orderBy('sort_order')->orderBy('name')
             ->get(['id', 'name', 'slug', 'category', 'unit', 'value_type']);
 
+        $effectUsages = $spell->effectUsages()->with('effect.subEffects')->orderBy('level_min')->get()->map(fn ($u) => [
+            'id' => $u->id,
+            'effect_id' => $u->effect_id,
+            'effect' => $u->effect ? [
+                'id' => $u->effect->id,
+                'name' => $u->effect->name,
+                'slug' => $u->effect->slug,
+                'degree' => $u->effect->degree,
+            ] : null,
+            'level_min' => $u->level_min,
+            'level_max' => $u->level_max,
+        ])->values()->all();
+
+        $availableEffects = Effect::orderBy('name')->get(['id', 'name', 'slug', 'degree'])->map(fn ($e) => [
+            'id' => $e->id,
+            'name' => $e->name ?? $e->slug ?? 'Effet #' . $e->id,
+            'slug' => $e->slug,
+            'degree' => $e->degree,
+        ])->values()->all();
+
         return Inertia::render('Pages/entity/spell/Edit', [
             'spell' => new SpellResource($spell),
             'availableBreeds' => $availableBreeds,
             'availableSpellTypes' => $availableSpellTypes,
             'availableSpellEffectTypes' => $availableSpellEffectTypes,
+            'effectUsages' => $effectUsages,
+            'availableEffects' => $availableEffects,
+            'effectEntityType' => 'spell',
         ]);
     }
 

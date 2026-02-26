@@ -12,6 +12,7 @@ use App\Models\Entity\Panoply;
 use App\Models\Entity\Campaign;
 use App\Models\Entity\Shop;
 use App\Models\Entity\Scenario;
+use App\Models\EffectUsage;
 use App\Models\Concerns\HasEntityImageMedia;
 use Spatie\MediaLibrary\HasMedia;
 
@@ -191,5 +192,13 @@ class Item extends Model implements HasMedia
     public function shops()
     {
         return $this->belongsToMany(Shop::class, 'item_shop')->withPivot('quantity', 'price', 'comment');
+    }
+
+    /**
+     * Usages d'effets unifiés (effect_usage) pour cet item.
+     */
+    public function effectUsages()
+    {
+        return $this->morphMany(EffectUsage::class, 'entity');
     }
 }

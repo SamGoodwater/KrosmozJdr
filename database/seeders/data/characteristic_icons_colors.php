@@ -91,8 +91,8 @@ return [
         'sagesse_object' => 'skillSagesse.webp',
         'chance_object' => 'skillChance.webp',
         'vitality_object' => 'vitality.webp',
-        // —— Object : PV max, sauvegardes, compétences, esquives ——
-        'pv_max_object' => 'life.webp',
+        // —— Object : PV, sauvegardes, compétences, esquives ——
+        'pv_object' => 'life.webp',
         'save_vit_sag_object' => 'shield.webp',
         'save_force_int_cha_agi_object' => 'shield.webp',
         'competences_object' => 'skill.webp',
@@ -203,7 +203,7 @@ return [
         'invocation_object' => '#9c27b0',
         'fuite_object' => '#26c6da',
         'tacle_object' => '#29b6f6',
-        'pv_max_object' => '#e93323',
+        'pv_object' => '#e93323',
         'save_vit_sag_object' => '#5c6bc0',
         'save_force_int_cha_agi_object' => '#5c6bc0',
         'competences_object' => '#ffb74d',
@@ -331,8 +331,8 @@ return [
         'sagesse_object' => 'Bonus Sagesse (chapeaux).',
         'chance_object' => 'Bonus Chance (capes).',
         'vitality_object' => 'Bonus Vitalité (chapeaux). Équip. max 8, forgemagie +2.',
-        // —— Object : PV max, sauvegardes, compétences, esquives ——
-        'pv_max_object' => 'Bonus PV max (chapeaux, capes, amulettes, bottes, anneaux). Équip. max 5, forgemagie +20.',
+        // —— Object : PV, sauvegardes, compétences, esquives ——
+        'pv_object' => 'Bonus PV (chapeaux, capes, amulettes, bottes, anneaux). Équip. max 5, forgemagie +20.',
         'save_vit_sag_object' => 'Bonus jet de sauvegarde Vitalité ou Sagesse (chapeaux). Max 3.',
         'save_force_int_cha_agi_object' => 'Bonus jet de sauvegarde For/Int/Cha/Agi (capes). Max 3.',
         'competences_object' => 'Bonus compétences (chapeaux, capes). Forgemagie +3.',

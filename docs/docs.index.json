@@ -1377,7 +1377,7 @@
   {
     "path": "50-Fonctionnalités/Scrapping/PROPRIETES_ITEMS_RESOURCES_CONSUMABLES.md",
     "title": "Propriétés Items / Resources / Consumables — Comprendre la conversion",
-    "description": "Explique pourquoi il y a trois blocs (consumables.*, items.*, resources.*) et ce que signifie chaque propriété, notamment pour les consumables."
+    "description": "Ce document explique **pourquoi** tu voyais trois blocs de propriétés (`consumables.*`, `items.*`, `resources.*`) et ce que signifie chaque propriété. Depuis la **conversion ciblée** (voir ci‑dessous), un seul bloc est produit et affiché selon le type d’item (resource / consommable / équipement)."
   },
   {
     "path": "50-Fonctionnalités/Scrapping/PROPRIETES_UTILES_KROSMOZ.md",
@@ -1423,6 +1423,26 @@
     "path": "50-Fonctionnalités/Scrapping/VERIFICATION_SPEC_UI_SCRAPPING.md",
     "title": "Vérification des fonctionnalités — UI Scrapping",
     "description": "**Référence :** [SPEC_UI_SCRAPPING.md](./SPEC_UI_SCRAPPING.md) (liste exhaustive F1–F28)."
+  },
+  {
+    "path": "50-Fonctionnalités/Spell-Effects/EFFETS_TEMPLATES_ET_SURETE.md",
+    "title": "Effets (items & sorts) : templates, variables et sûreté",
+    "description": "Proposition d’implémentation pour gérer les **effets textuels** des objets et des sorts : récupération DofusDB, sûreté du texte, variables (caractéristiques, dés), réutilisation et variantes par niveau."
+  },
+  {
+    "path": "50-Fonctionnalités/Spell-Effects/MODELE_EFFECT_SOUS_EFFECT.md",
+    "title": "Modèle unifié : effect + sous-effet (une table effect, interopérable)",
+    "description": "Ce document décide du **modèle de données** pour les effets : une seule table **effect** partagée par toutes les entités (sorts, items, etc.), avec une décomposition en **sous-effets** (ex. taper, soigner, vol PA) pour pouvoir composer et réutiliser."
+  },
+  {
+    "path": "50-Fonctionnalités/Spell-Effects/PLAN_MISE_EN_OEUVRE_EFFECTS.md",
+    "title": "Plan de mise en œuvre — Système effect / sous-effet",
+    "description": "Ce document décrit le **plan de mise en œuvre** du système unifié d’effets (effect + sous-effet, entités → effect via effect_usage, degrés de puissance). Il s’appuie sur [MODELE_EFFECT_SOUS_EFFECT.md](./MODELE_EFFECT_SOUS_EFFECT.md) et [EFFETS_TEMPLATES_ET_SURETE.md](./EFFETS_TEMPLATES_ET_SURETE.md)."
+  },
+  {
+    "path": "50-Fonctionnalités/Spell-Effects/SYNTAXE_EFFETS.md",
+    "title": "Syntaxe des effets — Variables, dés et formules",
+    "description": "Ce document décrit la **syntaxe autorisée** pour les champs texte des effets (template, description) et pour le champ **formula** des sous-effets. Tout texte stocké doit passer par `App\\Services\\Effect\\EffectTextSanitizer` avant enregistrement."
   },
   {
     "path": "50-Fonctionnalités/Spell-Effects/TAXONOMIE_EFFETS_SORTS.md",

@@ -384,6 +384,47 @@ erDiagram
     deleted_at : timestamp
     created_by : bigint(20) unsigned
   }
+  EFFECT_GROUPS {
+    id : bigint(20) unsigned
+    name : varchar(255)
+    slug : varchar(64)
+    created_at : timestamp
+    updated_at : timestamp
+  }
+  EFFECT_SUB_EFFECT {
+    id : bigint(20) unsigned
+    effect_id : bigint(20) unsigned
+    sub_effect_id : bigint(20) unsigned
+    order : smallint(5) unsigned
+    scope : varchar(32)
+    value_min : int(11)
+    value_max : int(11)
+    dice_num : tinyint(3) unsigned
+    dice_side : tinyint(3) unsigned
+    params : longtext
+    created_at : timestamp
+    updated_at : timestamp
+  }
+  EFFECT_USAGES {
+    id : bigint(20) unsigned
+    entity_type : varchar(255)
+    entity_id : bigint(20) unsigned
+    effect_id : bigint(20) unsigned
+    level_min : smallint(5) unsigned
+    level_max : smallint(5) unsigned
+    created_at : timestamp
+    updated_at : timestamp
+  }
+  EFFECTS {
+    id : bigint(20) unsigned
+    name : varchar(255)
+    slug : varchar(64)
+    description : text
+    effect_group_id : bigint(20) unsigned
+    degree : tinyint(3) unsigned
+    created_at : timestamp
+    updated_at : timestamp
+  }
   ENTITY_IMAGE_UPLOADS {
     id : bigint(20) unsigned
     created_at : timestamp
@@ -728,6 +769,13 @@ erDiagram
     deleted_at : timestamp
     created_by : bigint(20) unsigned
   }
+  SCRAPPING_ENTITY_MAPPING_CHARACTERISTIC {
+    id : bigint(20) unsigned
+    scrapping_entity_mapping_id : bigint(20) unsigned
+    characteristic_id : bigint(20) unsigned
+    created_at : timestamp
+    updated_at : timestamp
+  }
   SCRAPPING_ENTITY_MAPPING_TARGETS {
     id : bigint(20) unsigned
     scrapping_entity_mapping_id : bigint(20) unsigned
@@ -907,6 +955,17 @@ erDiagram
     deleted_at : timestamp
     created_by : bigint(20) unsigned
   }
+  SUB_EFFECTS {
+    id : bigint(20) unsigned
+    slug : varchar(64)
+    type_slug : varchar(64)
+    template_text : text
+    formula : text
+    variables_allowed : longtext
+    dofusdb_effect_id : int(10) unsigned
+    created_at : timestamp
+    updated_at : timestamp
+  }
   USERS {
     id : bigint(20) unsigned
     name : varchar(255)
@@ -975,6 +1034,10 @@ erDiagram
   CREATURE_SPELL }o--|| CREATURES : "FK creature_id"
   CREATURE_SPELL }o--|| SPELLS : "FK spell_id"
   CREATURES }o--|| USERS : "FK created_by"
+  EFFECT_SUB_EFFECT }o--|| EFFECTS : "FK effect_id"
+  EFFECT_SUB_EFFECT }o--|| SUB_EFFECTS : "FK sub_effect_id"
+  EFFECT_USAGES }o--|| EFFECTS : "FK effect_id"
+  EFFECTS }o--|| EFFECT_GROUPS : "FK effect_group_id"
   ITEM_CAMPAIGN }o--|| CAMPAIGNS : "FK campaign_id"
   ITEM_CAMPAIGN }o--|| ITEMS : "FK item_id"
   ITEM_PANOPLY }o--|| ITEMS : "FK item_id"
@@ -1037,6 +1100,8 @@ erDiagram
   SCENARIO_USER }o--|| SCENARIOS : "FK scenario_id"
   SCENARIO_USER }o--|| USERS : "FK user_id"
   SCENARIOS }o--|| USERS : "FK created_by"
+  SCRAPPING_ENTITY_MAPPING_CHARACTERISTIC }o--|| CHARACTERISTICS : "FK characteristic_id"
+  SCRAPPING_ENTITY_MAPPING_CHARACTERISTIC }o--|| SCRAPPING_ENTITY_MAPPINGS : "FK scrapping_entity_mapping_id"
   SCRAPPING_ENTITY_MAPPING_TARGETS }o--|| SCRAPPING_ENTITY_MAPPINGS : "FK scrapping_entity_mapping_id"
   SCRAPPING_ENTITY_MAPPINGS }o--|| CHARACTERISTICS : "FK characteristic_id"
   SECTION_USER }o--|| SECTIONS : "FK section_id"

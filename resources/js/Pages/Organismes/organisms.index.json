@@ -680,6 +680,13 @@
     "file": "entity/EntityActions.vue"
   },
   {
+    "name": "EffectUsagesManager",
+    "description": "EffectUsagesManager — Gestion des effect_usages sur une entité (sort, item, consumable). Liste des usages (tranche level_min–level_max → effect), ajout/édition/suppression via API. Prévisualisation « effet pour niveau X » via GET api/effects/for-entity.",
+    "props": [],
+    "slots": [],
+    "file": "entity/EffectUsagesManager.vue"
+  },
+  {
     "name": "CreateEntityModal",
     "description": "CreateEntityModal Organism",
     "props": [

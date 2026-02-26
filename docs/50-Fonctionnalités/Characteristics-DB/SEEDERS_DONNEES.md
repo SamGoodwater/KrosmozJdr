@@ -25,6 +25,8 @@ Exemples : bonus de touche, dommages fixes (neutre, terre, feu, air, eau, multip
 - **Prix par unité** (`base_price_per_unit`) : prix de base par point de bonus pour la création d’équipement (kamas).
 - **Prix rune par unité** (`rune_price_per_unit`) : prix de la rune de forgemagie par unité (brisage / forgemagie). Null si pas de rune (ex. bonus de touche, CA, résistance 50 %, invulnérabilité).
 - Le **stockage** côté item : le modèle `Item` possède un champ `bonus` (texte/JSON). Les caractéristiques bonus ont `db_column` à null ; une évolution peut prévoir un mapping clé caractéristique → clé dans le JSON `bonus` pour lecture/écriture.
+- **Panoplies** : le bonus de panoplie (champ `bonus` sur `panoplies`) est converti via le même formatter `itemEffectsToKrosmozBonus` que les items, avec `entityType` = `panoply`, donc formules et limites de `characteristic_object` (entity panoply ou *) s’appliquent. Les règles de mapping panoply sont en BDD (`scrapping_entity_mappings`) et liées aux caractéristiques via la table pivot `scrapping_entity_mapping_characteristic` (voir `ScrappingEntityMappingCharacteristicSeeder`).
+- **Consommables et ressources** : la règle de mapping « effect » (entity item) cible aussi `resources.effect` et `consumables.effect`. Lors du scrapping, selon le type d’item (équipement, ressource ou consommable), le bonus converti est écrit dans `items.effect`, `resources.effect` ou `consumables.effect`, en utilisant les formules et limites du groupe object.
 
 ---
 

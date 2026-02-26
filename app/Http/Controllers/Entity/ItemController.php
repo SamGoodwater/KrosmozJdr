@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Entity\StoreItemRequest;
 use App\Http\Requests\Entity\UpdateItemRequest;
 use App\Http\Requests\Entity\UpdateItemResourcesRequest;
+use App\Models\Effect;
 use App\Models\Entity\Item;
 use App\Http\Resources\Entity\ItemResource;
 use App\Services\PdfService;
@@ -92,17 +93,39 @@ class ItemController extends Controller
     public function edit(Item $item)
     {
         $this->authorize('update', $item);
-        
-        $item->load(['itemType', 'createdBy', 'resources']);
-        
-        // Charger toutes les ressources disponibles pour la recherche
+
+        $item->load(['itemType', 'createdBy', 'resources', 'effectUsages.effect.subEffects']);
+
         $availableResources = \App\Models\Entity\Resource::select('id', 'name', 'description', 'level')
             ->orderBy('name')
             ->get();
-        
+
+        $effectUsages = $item->effectUsages()->with('effect.subEffects')->orderBy('level_min')->get()->map(fn ($u) => [
+            'id' => $u->id,
+            'effect_id' => $u->effect_id,
+            'effect' => $u->effect ? [
+                'id' => $u->effect->id,
+                'name' => $u->effect->name,
+                'slug' => $u->effect->slug,
+                'degree' => $u->effect->degree,
+            ] : null,
+            'level_min' => $u->level_min,
+            'level_max' => $u->level_max,
+        ])->values()->all();
+
+        $availableEffects = Effect::orderBy('name')->get(['id', 'name', 'slug', 'degree'])->map(fn ($e) => [
+            'id' => $e->id,
+            'name' => $e->name ?? $e->slug ?? 'Effet #' . $e->id,
+            'slug' => $e->slug,
+            'degree' => $e->degree,
+        ])->values()->all();
+
         return Inertia::render('Pages/entity/item/Edit', [
             'item' => new ItemResource($item),
             'availableResources' => $availableResources,
+            'effectUsages' => $effectUsages,
+            'availableEffects' => $availableEffects,
+            'effectEntityType' => 'item',
         ]);
     }
 

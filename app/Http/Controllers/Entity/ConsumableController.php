@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Entity;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Entity\StoreConsumableRequest;
 use App\Http\Requests\Entity\UpdateConsumableRequest;
+use App\Models\Effect;
 use App\Models\Entity\Consumable;
 use App\Http\Resources\Entity\ConsumableResource;
 use App\Services\PdfService;
@@ -86,7 +87,41 @@ class ConsumableController extends Controller
      */
     public function edit(Consumable $consumable)
     {
-        //
+        $this->authorize('update', $consumable);
+
+        $consumable->load(['createdBy', 'consumableType', 'resources', 'effectUsages.effect.subEffects']);
+
+        $availableConsumableTypes = \App\Models\Type\ConsumableType::select('id', 'name', 'description')
+            ->orderBy('name')
+            ->get();
+
+        $effectUsages = $consumable->effectUsages()->with('effect.subEffects')->orderBy('level_min')->get()->map(fn ($u) => [
+            'id' => $u->id,
+            'effect_id' => $u->effect_id,
+            'effect' => $u->effect ? [
+                'id' => $u->effect->id,
+                'name' => $u->effect->name,
+                'slug' => $u->effect->slug,
+                'degree' => $u->effect->degree,
+            ] : null,
+            'level_min' => $u->level_min,
+            'level_max' => $u->level_max,
+        ])->values()->all();
+
+        $availableEffects = Effect::orderBy('name')->get(['id', 'name', 'slug', 'degree'])->map(fn ($e) => [
+            'id' => $e->id,
+            'name' => $e->name ?? $e->slug ?? 'Effet #' . $e->id,
+            'slug' => $e->slug,
+            'degree' => $e->degree,
+        ])->values()->all();
+
+        return Inertia::render('Pages/entity/consumable/Edit', [
+            'consumable' => new ConsumableResource($consumable),
+            'availableConsumableTypes' => $availableConsumableTypes,
+            'effectUsages' => $effectUsages,
+            'availableEffects' => $availableEffects,
+            'effectEntityType' => 'consumable',
+        ]);
     }
 
     /**
@@ -94,7 +129,14 @@ class ConsumableController extends Controller
      */
     public function update(UpdateConsumableRequest $request, Consumable $consumable)
     {
-        //
+        $this->authorize('update', $consumable);
+
+        $consumable->update($request->validated());
+
+        $consumable->load(['createdBy', 'consumableType']);
+
+        return redirect()->route('entities.consumables.show', $consumable)
+            ->with('success', 'Consommable mis à jour avec succès.');
     }
 
     /**
