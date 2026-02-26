@@ -24,6 +24,16 @@ const props = defineProps({
 defineOptions({ layout: Main });
 setPageTitle('Effets');
 
+function defaultParamsForSubEffect(subEffect) {
+    if (!subEffect?.param_schema?.params) return {};
+    const p = {};
+    for (const param of subEffect.param_schema.params) {
+        if (param.type === 'characteristic') p.characteristic = '';
+        if (param.type === 'formula') p.value_formula = '';
+    }
+    return p;
+}
+
 function buildFormData(selected) {
     if (!selected || selected === 'new') {
         return {
@@ -41,16 +51,26 @@ function buildFormData(selected) {
         description: selected.description ?? '',
         effect_group_id: selected.effect_group_id ?? '',
         degree: selected.degree ?? '',
-        effect_sub_effects: (selected.sub_effects || []).map((s) => ({
-            sub_effect_id: s.id,
-            order: s.order ?? 0,
-            scope: s.scope ?? 'general',
-            value_min: s.value_min ?? '',
-            value_max: s.value_max ?? '',
-            dice_num: s.dice_num ?? '',
-            dice_side: s.dice_side ?? '',
-            params: s.params ?? null,
-        })),
+        effect_sub_effects: (selected.sub_effects || []).map((s) => {
+            const defaultP = (schema) => {
+                const p = {};
+                (schema?.params || []).forEach((param) => {
+                    if (param.type === 'characteristic') p.characteristic = '';
+                    if (param.type === 'formula') p.value_formula = '';
+                });
+                return p;
+            };
+            return {
+                sub_effect_id: s.id,
+                order: s.order ?? 0,
+                scope: s.scope ?? 'general',
+                value_min: s.value_min ?? '',
+                value_max: s.value_max ?? '',
+                dice_num: s.dice_num ?? '',
+                dice_side: s.dice_side ?? '',
+                params: { ...defaultP(s.param_schema), ...(s.params && typeof s.params === 'object' ? s.params : {}) },
+            };
+        }),
     };
 }
 
@@ -72,18 +92,37 @@ watch(
 );
 
 function addSubEffect() {
-    const firstId = props.options.sub_effects?.[0]?.id;
-    if (!firstId) return;
+    const first = props.options.sub_effects?.[0];
+    if (!first) return;
     form.effect_sub_effects.push({
-        sub_effect_id: firstId,
+        sub_effect_id: first.id,
         order: form.effect_sub_effects.length,
         scope: 'general',
         value_min: '',
         value_max: '',
         dice_num: '',
         dice_side: '',
-        params: null,
+        params: defaultParamsForSubEffect(first),
     });
+}
+
+function getSubEffectById(subEffectId) {
+    return props.options.sub_effects?.find((s) => s.id === subEffectId) ?? null;
+}
+
+/** Filtre les caractéristiques selon param.categories (ex. frapper ⇒ element). */
+function characteristicOptionsForParam(param) {
+    const list = props.options.characteristics ?? [];
+    const categories = param.categories;
+    if (!Array.isArray(categories) || categories.length === 0) return list;
+    return list.filter((c) => c.category && categories.includes(c.category));
+}
+
+function onSubEffectChange(row) {
+    const sub = getSubEffectById(row.sub_effect_id);
+    if (sub) {
+        row.params = { ...defaultParamsForSubEffect(sub), ...(row.params || {}) };
+    }
 }
 
 function removeSubEffect(index) {
@@ -94,8 +133,13 @@ function removeSubEffect(index) {
 }
 
 function subEffectLabel(subEffectId) {
-    const s = props.options.sub_effects?.find((e) => e.id === subEffectId);
-    return s ? `${s.slug} (${s.type_slug})` : `#${subEffectId}`;
+    const s = getSubEffectById(subEffectId);
+    return s ? s.slug : `#${subEffectId}`;
+}
+
+function paramSchemaForRow(row) {
+    const sub = getSubEffectById(row.sub_effect_id);
+    return sub?.param_schema?.params ?? [];
 }
 
 function submit() {
@@ -125,7 +169,7 @@ function submit() {
                 value_max: row.value_max !== '' && row.value_max != null ? Number(row.value_max) : null,
                 dice_num: row.dice_num !== '' && row.dice_num != null ? Number(row.dice_num) : null,
                 dice_side: row.dice_side !== '' && row.dice_side != null ? Number(row.dice_side) : null,
-                params: row.params || null,
+                params: row.params && typeof row.params === 'object' ? row.params : null,
             })),
         };
         form.transform(() => payload).patch(route('admin.effects.update', props.selected.id));
@@ -221,68 +265,82 @@ function destroy() {
                                 <div
                                     v-for="(row, index) in form.effect_sub_effects"
                                     :key="index"
-                                    class="flex flex-wrap items-end gap-3 rounded-lg border border-base-300 bg-base-200/30 p-3"
+                                    class="rounded-lg border border-base-300 bg-base-200/30 p-3 space-y-3"
                                 >
-                                    <div class="min-w-[180px] flex-1">
-                                        <label class="label text-xs">Sous-effet</label>
-                                        <select
-                                            v-model="row.sub_effect_id"
-                                            class="select select-bordered select-sm w-full"
-                                            required
+                                    <div class="flex flex-wrap items-end gap-3">
+                                        <div class="min-w-[160px]">
+                                            <label class="label text-xs">Action</label>
+                                            <select
+                                                v-model="row.sub_effect_id"
+                                                class="select select-bordered select-sm w-full"
+                                                required
+                                                @change="onSubEffectChange(row)"
+                                            >
+                                                <option value="">— Choisir —</option>
+                                                <option
+                                                    v-for="s in options.sub_effects"
+                                                    :key="s.id"
+                                                    :value="s.id"
+                                                >
+                                                    {{ s.slug }}
+                                                </option>
+                                            </select>
+                                        </div>
+                                        <div class="w-28">
+                                            <label class="label text-xs">Contexte</label>
+                                            <select v-model="row.scope" class="select select-bordered select-sm w-full">
+                                                <option
+                                                    v-for="sc in options.scopes"
+                                                    :key="sc.value"
+                                                    :value="sc.value"
+                                                >
+                                                    {{ sc.label }}
+                                                </option>
+                                            </select>
+                                        </div>
+                                        <button
+                                            type="button"
+                                            class="btn btn-ghost btn-sm btn-square text-error"
+                                            title="Retirer"
+                                            @click="removeSubEffect(index)"
                                         >
-                                            <option
-                                                v-for="s in options.sub_effects"
-                                                :key="s.id"
-                                                :value="s.id"
-                                            >
-                                                {{ s.slug }} ({{ s.type_slug }})
-                                            </option>
-                                        </select>
+                                            ×
+                                        </button>
                                     </div>
-                                    <div class="w-28">
-                                        <label class="label text-xs">Contexte</label>
-                                        <select v-model="row.scope" class="select select-bordered select-sm w-full">
-                                            <option
-                                                v-for="sc in options.scopes"
-                                                :key="sc.value"
-                                                :value="sc.value"
-                                            >
-                                                {{ sc.label }}
-                                            </option>
-                                        </select>
-                                    </div>
-                                    <InputField
-                                        v-model="row.value_min"
-                                        label="Min"
-                                        type="number"
-                                        class="w-20"
-                                    />
-                                    <InputField
-                                        v-model="row.value_max"
-                                        label="Max"
-                                        type="number"
-                                        class="w-20"
-                                    />
-                                    <InputField
-                                        v-model="row.dice_num"
-                                        label="Dés n"
-                                        type="number"
-                                        class="w-16"
-                                    />
-                                    <InputField
-                                        v-model="row.dice_side"
-                                        label="Faces"
-                                        type="number"
-                                        class="w-16"
-                                    />
-                                    <button
-                                        type="button"
-                                        class="btn btn-ghost btn-sm btn-square text-error"
-                                        title="Retirer"
-                                        @click="removeSubEffect(index)"
-                                    >
-                                        ×
-                                    </button>
+                                    <template v-if="row.sub_effect_id">
+                                        <div class="flex flex-wrap items-end gap-3 border-t border-base-300 pt-3">
+                                            <template v-for="param in paramSchemaForRow(row)" :key="param.key">
+                                                <div v-if="param.type === 'characteristic'" class="min-w-[140px]">
+                                                    <label class="label text-xs">{{ param.label }}</label>
+                                                    <select
+                                                        v-model="row.params.characteristic"
+                                                        class="select select-bordered select-sm w-full"
+                                                    >
+                                                        <option value="">— Choisir —</option>
+                                                        <option
+                                                            v-for="c in characteristicOptionsForParam(param)"
+                                                            :key="c.key"
+                                                            :value="c.key"
+                                                        >
+                                                            {{ c.label }}
+                                                        </option>
+                                                    </select>
+                                                </div>
+                                                <div v-else-if="param.type === 'formula'" class="flex-1 min-w-[200px]">
+                                                    <label class="label text-xs">{{ param.label }}</label>
+                                                    <input
+                                                        v-model="row.params.value_formula"
+                                                        type="text"
+                                                        class="input input-bordered input-sm w-full"
+                                                        placeholder="ex: 2d6, [1-4], [level]*2+[agi]"
+                                                    />
+                                                    <p class="text-xs text-base-content/60 mt-0.5">
+                                                        Formule : ndX, [min-max], [level], [agi], floor(), etc.
+                                                    </p>
+                                                </div>
+                                            </template>
+                                        </div>
+                                    </template>
                                 </div>
                             </div>
                         </div>

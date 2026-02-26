@@ -13,7 +13,6 @@ import { usePageTitle } from '@/Composables/layout/usePageTitle';
 import { Spell } from '@/Models/Entity/Spell';
 import EntityEditForm from '@/Pages/Organismes/entity/EntityEditForm.vue';
 import EntityRelationsManager from '@/Pages/Organismes/entity/EntityRelationsManager.vue';
-import SpellEffectsManager from '@/Pages/Organismes/entity/SpellEffectsManager.vue';
 import EffectUsagesManager from '@/Pages/Organismes/entity/EffectUsagesManager.vue';
 import Container from '@/Pages/Atoms/data-display/Container.vue';
 import { getEntityStateOptions, getUserRoleOptions } from '@/Utils/Entity/SharedConstants';
@@ -31,10 +30,6 @@ const props = defineProps({
         default: () => []
     },
     availableSpellTypes: {
-        type: Array,
-        default: () => []
-    },
-    availableSpellEffectTypes: {
         type: Array,
         default: () => []
     },
@@ -185,12 +180,6 @@ setPageTitle(`Modifier le sort : ${spell.value.name || 'Nouveau sort'}`);
                 itemLabel: 'type',
                 itemLabelPlural: 'types'
             }"
-        />
-
-        <!-- Effets du sort (dégâts, soins, états, etc.) -->
-        <SpellEffectsManager
-            :spell="spell"
-            :available-spell-effect-types="availableSpellEffectTypes"
         />
 
         <!-- Effets (système unifié : effect_usage par tranche de niveau) -->

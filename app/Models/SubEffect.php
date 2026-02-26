@@ -14,11 +14,12 @@ class SubEffect extends Model
 
     protected $fillable = [
         'slug', 'type_slug', 'template_text', 'formula',
-        'variables_allowed', 'dofusdb_effect_id',
+        'variables_allowed', 'param_schema', 'dofusdb_effect_id',
     ];
 
     protected $casts = [
         'variables_allowed' => 'array',
+        'param_schema' => 'array',
         'dofusdb_effect_id' => 'integer',
     ];
 

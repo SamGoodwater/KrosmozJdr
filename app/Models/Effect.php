@@ -32,6 +32,13 @@ class Effect extends Model
         return $this->belongsTo(EffectGroup::class, 'effect_group_id');
     }
 
+    /** Lignes pivot (une par instance de sous-effet, même action possible plusieurs fois). */
+    public function effectSubEffects(): HasMany
+    {
+        return $this->hasMany(EffectSubEffect::class)->orderBy('order');
+    }
+
+    /** Sous-effets uniques (legacy / API). Pour la liste complète avec params, utiliser effectSubEffects. */
     public function subEffects(): BelongsToMany
     {
         return $this->belongsToMany(SubEffect::class, 'effect_sub_effect')

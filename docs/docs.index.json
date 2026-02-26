@@ -1445,6 +1445,21 @@
     "description": "Ce document décrit la **syntaxe autorisée** pour les champs texte des effets (template, description) et pour le champ **formula** des sous-effets. Tout texte stocké doit passer par `App\\Services\\Effect\\EffectTextSanitizer` avant enregistrement."
   },
   {
+    "path": "50-Fonctionnalités/Spell-Effects/ARCHITECTURE_EFFETS_3_COUCHES.md",
+    "title": "Architecture des effets en trois couches",
+    "description": "Pattern action → caractéristique → valeur ; couche Effect (durée, défense, conséquences partielles) ; couche Spell/Item (cible, zone, coût, limites)."
+  },
+  {
+    "path": "50-Fonctionnalités/Spell-Effects/TAXONOMIE_SOUS_EFFETS.md",
+    "title": "Taxonomie des sous-effets — Mots-clés, variables et choix à l’effet",
+    "description": "Liste **exhaustive** des types de sous-effets (ajout/diminution carac, dégâts, soin, protection, retrait PA/PM/PO…). Chaque type = template avec variables ; à la construction d’un effet on choisit comment remplir chaque variable (caractéristique, dé, fourchette, formule, élément)."
+  },
+  {
+    "path": "50-Fonctionnalités/Spell-Effects/NOTATION_SOUS_EFFETS.md",
+    "title": "Notation standardisée des sous-effets — Formules et traduction lisible",
+    "description": "Description **mathématique** des sous-effets (param_schema, formules ndX, [min-max], [level], [agi], floor…) pour outils interactifs et traducteur vers texte lisible."
+  },
+  {
     "path": "50-Fonctionnalités/Spell-Effects/TAXONOMIE_EFFETS_SORTS.md",
     "title": "Taxonomie des effets de sort — Krosmoz JDR",
     "description": "Référence **exhaustive** des types d’effets qu’un sort peut produire. Chaque type est paramétrable en base de données et peut être associé à un ou plusieurs sorts avec des valeurs (min, max, dés, durée, cible, etc.)."

@@ -9,6 +9,7 @@ use App\Http\Requests\Effect\StoreEffectRequest;
 use App\Http\Requests\Effect\UpdateEffectRequest;
 use App\Models\Effect;
 use App\Models\EffectGroup;
+use App\Models\EffectSubEffect;
 use App\Models\SubEffect;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -61,7 +62,7 @@ class EffectController extends Controller
 
     public function show(Effect $effect): InertiaResponse
     {
-        $effect->load(['effectGroup', 'subEffects']);
+        $effect->load(['effectGroup', 'effectSubEffects.subEffect']);
         $list = Effect::with('effectGroup')->orderBy('name')->get(['id', 'name', 'slug', 'effect_group_id', 'degree']);
         $selected = [
             'id' => $effect->id,
@@ -70,19 +71,26 @@ class EffectController extends Controller
             'description' => $effect->description,
             'effect_group_id' => $effect->effect_group_id,
             'degree' => $effect->degree,
-            'sub_effects' => $effect->subEffects->map(fn ($s) => [
-                'id' => $s->id,
-                'slug' => $s->slug,
-                'type_slug' => $s->type_slug,
-                'template_text' => $s->template_text,
-                'order' => $s->pivot->order ?? 0,
-                'scope' => $s->pivot->scope ?? 'general',
-                'value_min' => $s->pivot->value_min,
-                'value_max' => $s->pivot->value_max,
-                'dice_num' => $s->pivot->dice_num,
-                'dice_side' => $s->pivot->dice_side,
-                'params' => $s->pivot->params,
-            ])->values()->all(),
+            'sub_effects' => $effect->effectSubEffects->map(function (EffectSubEffect $p) {
+                $params = $p->params ?? [];
+                if (! isset($params['characteristic'])) {
+                    $params['characteristic'] = $params['element'] ?? $params['caracteristic'] ?? '';
+                }
+                return [
+                    'id' => $p->subEffect->id,
+                    'slug' => $p->subEffect->slug,
+                    'type_slug' => $p->subEffect->type_slug,
+                    'template_text' => $p->subEffect->template_text,
+                    'param_schema' => $p->subEffect->param_schema,
+                    'order' => $p->order,
+                    'scope' => $p->scope ?? 'general',
+                    'value_min' => $p->value_min,
+                    'value_max' => $p->value_max,
+                    'dice_num' => $p->dice_num,
+                    'dice_side' => $p->dice_side,
+                    'params' => $params,
+                ];
+            })->values()->all(),
         ];
         return Inertia::render('Admin/effects/Index', [
             'effects' => $list->map(fn (Effect $e) => [
@@ -111,21 +119,28 @@ class EffectController extends Controller
             'effect_sub_effects.*.dice_num' => 'nullable|integer|min:0',
             'effect_sub_effects.*.dice_side' => 'nullable|integer|min:0',
             'effect_sub_effects.*.params' => 'nullable|array',
+            'effect_sub_effects.*.params.characteristic' => 'nullable|string|max:64',
+            'effect_sub_effects.*.params.value_formula' => 'nullable|string|max:500',
         ]);
 
-        $sync = [];
+        $effect->effectSubEffects()->delete();
+        $sanitizer = new \App\Services\Effect\EffectTextSanitizer();
         foreach ($validated['effect_sub_effects'] as $i => $row) {
-            $sync[$row['sub_effect_id']] = [
+            $params = $row['params'] ?? null;
+            if ($params && ! empty($params['value_formula'])) {
+                $params['value_formula'] = $sanitizer->sanitize($params['value_formula']);
+            }
+            $effect->effectSubEffects()->create([
+                'sub_effect_id' => $row['sub_effect_id'],
                 'order' => $row['order'] ?? $i,
                 'scope' => $row['scope'] ?? 'general',
                 'value_min' => $row['value_min'] ?? null,
                 'value_max' => $row['value_max'] ?? null,
                 'dice_num' => $row['dice_num'] ?? null,
                 'dice_side' => $row['dice_side'] ?? null,
-                'params' => $row['params'] ?? null,
-            ];
+                'params' => $params,
+            ]);
         }
-        $effect->subEffects()->sync($sync);
 
         return redirect()->route('admin.effects.show', $effect)
             ->with('success', 'Effet enregistré.');
@@ -140,7 +155,7 @@ class EffectController extends Controller
 
     public function duplicateDegree(Request $request, Effect $effect): RedirectResponse
     {
-        $effect->load('subEffects');
+        $effect->load('effectSubEffects');
         $newDegree = ($effect->degree ?? 0) + 1;
         $newEffect = Effect::create([
             'name' => $effect->name,
@@ -149,19 +164,18 @@ class EffectController extends Controller
             'effect_group_id' => $effect->effect_group_id,
             'degree' => $newDegree,
         ]);
-        $sync = [];
-        foreach ($effect->subEffects as $i => $s) {
-            $sync[$s->id] = [
-                'order' => $s->pivot->order ?? $i,
-                'scope' => $s->pivot->scope ?? 'general',
-                'value_min' => $s->pivot->value_min,
-                'value_max' => $s->pivot->value_max,
-                'dice_num' => $s->pivot->dice_num,
-                'dice_side' => $s->pivot->dice_side,
-                'params' => $s->pivot->params,
-            ];
+        foreach ($effect->effectSubEffects as $p) {
+            $newEffect->effectSubEffects()->create([
+                'sub_effect_id' => $p->sub_effect_id,
+                'order' => $p->order,
+                'scope' => $p->scope,
+                'value_min' => $p->value_min,
+                'value_max' => $p->value_max,
+                'dice_num' => $p->dice_num,
+                'dice_side' => $p->dice_side,
+                'params' => $p->params,
+            ]);
         }
-        $newEffect->subEffects()->sync($sync);
         return redirect()->route('admin.effects.show', $newEffect)
             ->with('success', 'Degré dupliqué. Ajustez les sous-effets si besoin.');
     }
@@ -169,14 +183,18 @@ class EffectController extends Controller
     private function options(): array
     {
         $effectGroups = EffectGroup::orderBy('name')->get(['id', 'name', 'slug']);
-        $subEffects = SubEffect::orderBy('type_slug')->orderBy('slug')->get(['id', 'slug', 'type_slug']);
+        $subEffects = SubEffect::orderBy('type_slug')->orderBy('slug')->get(['id', 'slug', 'type_slug', 'template_text', 'variables_allowed', 'param_schema']);
         return [
             'effect_groups' => $effectGroups->map(fn ($g) => ['value' => $g->id, 'label' => $g->name])->values()->all(),
             'sub_effects' => $subEffects->map(fn ($s) => [
                 'id' => $s->id,
                 'slug' => $s->slug,
                 'type_slug' => $s->type_slug,
+                'template_text' => $s->template_text,
+                'variables_allowed' => $s->variables_allowed,
+                'param_schema' => $s->param_schema,
             ])->values()->all(),
+            'characteristics' => config('effect_sub_effects.characteristics', []),
             'scopes' => [
                 ['value' => 'general', 'label' => 'Général'],
                 ['value' => 'combat', 'label' => 'Combat'],
