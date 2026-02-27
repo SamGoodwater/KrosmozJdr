@@ -285,7 +285,12 @@ namespace App\Models{
  * @property int|null $value_max
  * @property int|null $dice_num
  * @property int|null $dice_side
+ * @property string|null $duration_formula
+ * @property string|null $logic_group
+ * @property string|null $logic_operator
+ * @property string|null $logic_condition
  * @property array<array-key, mixed>|null $params
+ * @property bool $crit_only
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property-read \App\Models\Effect $effect
@@ -294,10 +299,15 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|EffectSubEffect newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|EffectSubEffect query()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|EffectSubEffect whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|EffectSubEffect whereCritOnly($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|EffectSubEffect whereDiceNum($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|EffectSubEffect whereDiceSide($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|EffectSubEffect whereDurationFormula($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|EffectSubEffect whereEffectId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|EffectSubEffect whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|EffectSubEffect whereLogicCondition($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|EffectSubEffect whereLogicGroup($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|EffectSubEffect whereLogicOperator($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|EffectSubEffect whereOrder($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|EffectSubEffect whereParams($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|EffectSubEffect whereScope($value)

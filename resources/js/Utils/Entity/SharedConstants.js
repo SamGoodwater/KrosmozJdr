@@ -315,6 +315,38 @@ export function getRoleIcon(role) {
 }
 
 /**
+ * Créature / Monstre — icônes et libellés pour colonnes résumées (tableau).
+ * Utilisé pour afficher CA + résistances, dommages, stats, PA/PM/Ini etc. avec tooltips.
+ */
+export const CREATURE_ELEMENT_ICONS = Object.freeze({
+  neutre: { icon: 'fa-solid fa-circle', label: 'Neutre' },
+  terre: { icon: 'fa-solid fa-mountain-sun', label: 'Terre' },
+  feu: { icon: 'fa-solid fa-fire', label: 'Feu' },
+  air: { icon: 'fa-solid fa-wind', label: 'Air' },
+  eau: { icon: 'fa-solid fa-droplet', label: 'Eau' },
+});
+
+export const CREATURE_STAT_ICONS = Object.freeze({
+  strong: { icon: 'fa-solid fa-dumbbell', label: 'Force' },
+  intel: { icon: 'fa-solid fa-brain', label: 'Intelligence' },
+  agi: { icon: 'fa-solid fa-wind', label: 'Agilité' },
+  chance: { icon: 'fa-solid fa-clover', label: 'Chance' },
+  vitality: { icon: 'fa-solid fa-heart-pulse', label: 'Vitalité' },
+  sagesse: { icon: 'fa-solid fa-book-open-reader', label: 'Sagesse' },
+});
+
+export const CREATURE_COMBAT_ICONS = Object.freeze({
+  pa: { icon: 'fa-solid fa-bolt', label: 'Points d\'action' },
+  pm: { icon: 'fa-solid fa-shoe-prints', label: 'Points de mouvement' },
+  po: { icon: 'fa-solid fa-crosshairs', label: 'Portée' },
+  life: { icon: 'fa-solid fa-heart', label: 'Points de vie' },
+  ini: { icon: 'fa-solid fa-clock', label: 'Initiative' },
+  invocation: { icon: 'fa-solid fa-hand-sparkles', label: 'Invocation' },
+  ca: { icon: 'fa-solid fa-shield-halved', label: 'Classe d\'armure' },
+  touch: { icon: 'fa-solid fa-hand-back-fist', label: 'Bonus de touche' },
+});
+
+/**
  * États d'entité — source de vérité (aligné backend)
  */
 export const ENTITY_STATE_OPTIONS = Object.freeze([

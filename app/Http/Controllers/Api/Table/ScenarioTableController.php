@@ -59,20 +59,29 @@ class ScenarioTableController extends Controller
             });
         }
 
-        // Visibilité : scénarios publics visibles par tous.
-        // Si non publics, réservés à l'admin/super_admin ou au créateur.
+        // Visibilité :
+        // - Scénarios publics (`is_public=1`) visibles par tous.
+        // - Sinon, visibles si :
+        //   - l'utilisateur est admin/super_admin
+        //   - OU il est créateur
+        //   - OU il est explicitement associé via la relation `users` (table pivot scenario_user).
+        // - Dans tous les cas, `read_level` reste un garde‑fou minimal.
         if (! $user) {
             $query->where('is_public', 1);
         } else {
             if (! $user->isAdmin()) {
                 $query->where(function ($q) use ($user) {
                     $q->where('is_public', 1)
-                        ->orWhere('created_by', $user->id);
+                        ->orWhere('created_by', $user->id)
+                        ->orWhereHas('users', function ($uq) use ($user) {
+                            $uq->where('users.id', $user->id);
+                        });
                 });
             }
+            // Les admins voient tout : pas de restriction supplémentaire sur is_public / created_by / users.
         }
 
-        // read_level = niveau minimal requis pour lire
+        // read_level = niveau minimal requis pour lire (y compris pour les scénarios publics)
         $query->where('read_level', '<=', $userRole);
 
         if (array_key_exists('state', $filters) && $filters['state'] !== '' && $filters['state'] !== null) {

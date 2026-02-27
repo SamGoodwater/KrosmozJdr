@@ -562,6 +562,13 @@
     "file": "entity/EntityQuickEditModal.vue"
   },
   {
+    "name": "EntityPickerCore",
+    "description": "EntityPickerCore",
+    "props": [],
+    "slots": [],
+    "file": "entity/EntityPickerCore.vue"
+  },
+  {
     "name": "EntityModal",
     "description": "EntityModal Organism",
     "props": [

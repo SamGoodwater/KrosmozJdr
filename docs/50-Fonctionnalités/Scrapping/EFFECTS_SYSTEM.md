@@ -43,6 +43,8 @@ Champs “best effort” (si présents dans l’input) :
 
 ---
 
+Pour l’**architecture détaillée** (sort → spell-levels → effectId → dictionnaire) et la **conversion vers les Effects/SubEffects KrosmozJDR**, voir [DOFUSDB_EFFECTS_CONVERSION.md](./DOFUSDB_EFFECTS_CONVERSION.md).
+
 ## Implémentation actuelle (couche A)
 ### Formatter
 - Nom : `normalizeDofusdbEffects`

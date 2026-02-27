@@ -1190,11 +1190,6 @@
     "description": "`EntityRelationsManager` est un composant générique Vue 3 permettant de gérer les relations many-to-many entre entités. Il supporte les relations simples (sans pivot) et les relations avec données pivot (quantité, prix, commentaire, etc.)."
   },
   {
-    "path": "50-Fonctionnalités/Search/BESOINS_ET_CONCEPTION_MOTEUR_RECHERCHE.md",
-    "title": "Moteur de recherche d'entités — Besoins et conception",
-    "description": "Besoins, cas d'usage, sécurité (effets réservés game_master/admin), architecture backend (service + API tables) et frontend (composable + Entity Picker), option plugin ou maison."
-  },
-  {
     "path": "50-Fonctionnalités/Medias/SPATIE_MEDIA_LIBRARY.md",
     "title": "Spatie Laravel Media Library — Gestion des médias",
     "description": "Le projet utilise [Spatie Laravel Media Library](https://spatie.be/docs/laravel-medialibrary/v11/introduction) pour associer des fichiers (images, documents) aux modèles Eloquent, générer des conversions (dont WebP) et des miniatures, et gérer le stockage sur le disque Laravel."
@@ -1298,6 +1293,11 @@
     "path": "50-Fonctionnalités/Scrapping/DIVISION_TACHES_SCRAPPING.md",
     "title": "Division des tâches — Scrapping (backend / services / frontend)",
     "description": "Ce document décrit la répartition des responsabilités entre **contrôleurs** (API), **services** (métier) et **frontend** (UI) pour le module scrapping, et signale les incohérences éventuelles."
+  },
+  {
+    "path": "50-Fonctionnalités/Scrapping/DOFUSDB_EFFECTS_CONVERSION.md",
+    "title": "Architecture DofusDB des effets et conversion vers KrosmozJDR",
+    "description": "Ce document décrit la structure des données **effets** côté DofusDB (tout en IDs), comment les récupérer, et comment envisager la conversion vers le modèle KrosmozJDR (Effect, SubEffect, EffectSubEffect, EffectUsage)."
   },
   {
     "path": "50-Fonctionnalités/Scrapping/Data-collect/API.md",
@@ -1430,6 +1430,16 @@
     "description": "**Référence :** [SPEC_UI_SCRAPPING.md](./SPEC_UI_SCRAPPING.md) (liste exhaustive F1–F28)."
   },
   {
+    "path": "50-Fonctionnalités/Search/BESOINS_ET_CONCEPTION_MOTEUR_RECHERCHE.md",
+    "title": "Moteur de recherche d’entités — Besoins et conception",
+    "description": "**Date** : 2026-02-27"
+  },
+  {
+    "path": "50-Fonctionnalités/Search/VERIFICATION_MOTEUR_RECHERCHE.md",
+    "title": "Vérification du moteur de recherche d'entités",
+    "description": "**Date** : 2026-02-27"
+  },
+  {
     "path": "50-Fonctionnalités/Spell-Effects/ARCHITECTURE_EFFETS_3_COUCHES.md",
     "title": "Architecture des effets en trois couches",
     "description": "Ce document décrit la répartition des responsabilités entre **sous-effet**, **Effect** et **Spell/Item** : un pattern générique (action → caractéristique → valeur), sans figer en dur toutes les possibilités ; c’est **Effect** qui interprète l’action et définit durée, défense et conséquences partielles ; **Spell/Item** gère cibles, zone, coût et limites d’usage."
@@ -1451,8 +1461,8 @@
   },
   {
     "path": "50-Fonctionnalités/Spell-Effects/PLAN_MISE_EN_OEUVRE_EFFECTS.md",
-    "title": "Plan de mise en œuvre — Système effect / sous-effet",
-    "description": "Ce document décrit le **plan de mise en œuvre** du système unifié d’effets (effect + sous-effet, entités → effect via effect_usage, degrés de puissance). Il s’appuie sur [MODELE_EFFECT_SOUS_EFFECT.md](./MODELE_EFFECT_SOUS_EFFECT.md) et [EFFETS_TEMPLATES_ET_SURETE.md](./EFFETS_TEMPLATES_ET_SURETE.md)."
+    "title": "Système d’effets — état actuel",
+    "description": "Ce document décrit **ce qui existe aujourd’hui** pour le système d’effets : modèle de données, services, API et UI admin."
   },
   {
     "path": "50-Fonctionnalités/Spell-Effects/SYNTAXE_EFFETS.md",

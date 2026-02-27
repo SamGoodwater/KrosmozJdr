@@ -1641,6 +1641,13 @@
     "file": "entity/creature/CreatureViewCompact.vue"
   },
   {
+    "name": "CreatureSummaryCell",
+    "description": "CreatureSummaryCell — Molecule",
+    "props": [],
+    "slots": [],
+    "file": "entity/creature/CreatureSummaryCell.vue"
+  },
+  {
     "name": "ConsumableViewText",
     "description": "ConsumableViewText — Vue Texte pour Consumable",
     "props": [

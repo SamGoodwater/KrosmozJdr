@@ -21,7 +21,7 @@
  * }
  */
 
-import { computed, defineAsyncComponent, h } from "vue";
+import { computed, defineAsyncComponent } from "vue";
 import Badge from "@/Pages/Atoms/data-display/Badge.vue";
 import Icon from "@/Pages/Atoms/data-display/Icon.vue";
 import Route from "@/Pages/Atoms/action/Route.vue";
@@ -101,6 +101,8 @@ const boolBadgeValue = computed(() => {
 const isBooleanBadge = computed(() => boolBadgeValue.value !== null);
 
 // Support des composants personnalisés
+const asyncComponents = import.meta.glob("@/Pages/**/*.vue");
+
 const customComponent = computed(() => {
     const component = params.value?.component || props.cell?.component;
     if (!component) return null;
@@ -112,7 +114,12 @@ const customComponent = computed(() => {
     
     // Sinon, c'est un chemin string, créer un composant asynchrone
     if (typeof component === 'string') {
-        return defineAsyncComponent(() => import(/* @vite-ignore */ component));
+        const loader = asyncComponents[component];
+        if (!loader) {
+            console.warn("[CellRenderer] composant de cellule inconnu:", component);
+            return null;
+        }
+        return defineAsyncComponent(loader);
     }
     
     return null;
@@ -258,6 +265,29 @@ const hasCustomComponent = computed(() => customComponent.value !== null);
         </Tooltip>
 
         <span v-else>{{ text }}</span>
+    </span>
+
+    <!-- chips : colonnes résumées (icône + valeur avec tooltip par item) -->
+    <span v-else-if="type === 'chips'" class="inline-flex flex-wrap items-center gap-x-2 gap-y-0.5">
+        <template v-for="(item, idx) in (params.items || [])" :key="idx">
+            <Tooltip
+                v-if="item.value != null && item.value !== ''"
+                :content="item.tooltip || item.label || String(item.value)"
+                placement="top"
+                class="inline-flex items-center gap-1"
+            >
+                <Icon
+                    v-if="item.icon"
+                    :source="item.icon"
+                    :alt="item.tooltip || item.label || ''"
+                    size="xs"
+                    class="shrink-0 opacity-80"
+                    :style="item.color ? { color: item.color } : undefined"
+                />
+                <span class="text-xs" :style="item.color ? { color: item.color } : undefined">{{ item.value }}</span>
+            </Tooltip>
+        </template>
+        <span v-if="!(params.items || []).length || (params.items || []).every(i => i.value == null || i.value === '')" class="text-base-content/40">—</span>
     </span>
 
     <!-- custom: sera géré plus tard (Phase 1: fallback text) -->

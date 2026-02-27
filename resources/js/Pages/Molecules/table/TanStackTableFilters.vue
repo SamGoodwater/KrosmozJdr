@@ -35,7 +35,24 @@ const props = defineProps({
 
 const emit = defineEmits(["update:filters", "reset", "apply"]);
 
-const filterableColumns = () => (props.columns || []).filter((c) => c?.filter?.id && c?.filter?.type);
+const filterableColumns = () => (Array.isArray(props.columns) ? props.columns : []).filter((c) => c?.filter?.id && c?.filter?.type);
+
+/** Filtres visibles par défaut (state, boss, race, etc.) */
+const mainFilterColumns = () =>
+  filterableColumns().filter((c) => c?.filter?.defaultVisible !== false);
+
+/** Filtres masqués par défaut, affichés via "Afficher plus de filtres" */
+const extraFilterColumns = () =>
+  filterableColumns().filter((c) => c?.filter?.defaultVisible === false);
+
+const showExtraFilters = ref(false);
+const toggleExtraFilters = () => {
+  showExtraFilters.value = !showExtraFilters.value;
+};
+
+/** Colonnes de filtres actuellement affichées (principales seules ou toutes) */
+const visibleFilterColumns = () =>
+  showExtraFilters.value ? filterableColumns() : mainFilterColumns();
 
 // Support: le parent peut passer soit un objet, soit un ref({}) (compat).
 const values = computed(() => unref(props.filterValues) || {});
@@ -368,8 +385,20 @@ const clearAllActiveFilters = () => {
             </div>
         </div>
 
+        <div v-if="extraFilterColumns().length" class="flex justify-end">
+            <Btn
+                size="xs"
+                variant="ghost"
+                type="button"
+                :title="showExtraFilters ? 'Masquer les filtres avancés' : `Afficher ${extraFilterColumns().length} filtre(s) de plus`"
+                @click="toggleExtraFilters"
+            >
+                <Icon :source="showExtraFilters ? 'fa-solid fa-chevron-up' : 'fa-solid fa-chevron-down'" alt="" size="xs" />
+                <span>{{ showExtraFilters ? 'Masquer les filtres avancés' : `+ ${extraFilterColumns().length} filtre(s)` }}</span>
+            </Btn>
+        </div>
         <div class="grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-3">
-            <div v-for="col in filterableColumns()" :key="col.id" class="space-y-1">
+            <div v-for="col in visibleFilterColumns()" :key="col.id" class="space-y-1">
                 <div class="text-xs opacity-70">{{ getFilterLabel(col) }}</div>
 
                 <!-- toggle (switch ON=actif, OFF=pas de filtre) -->
@@ -601,6 +630,7 @@ const clearAllActiveFilters = () => {
                         <template #content>
                             <div class="p-3 w-72 space-y-2">
                                 <InputCore
+                                    v-if="getFilterUi(col).searchable !== false"
                                     type="search"
                                     variant="glass"
                                     :color="uiColor"

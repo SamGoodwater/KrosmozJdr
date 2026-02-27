@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Api\Table;
 
 use App\Http\Controllers\Controller;
+use App\Models\CharacteristicCreature;
+use App\Models\Entity\Creature;
 use App\Models\Entity\Monster;
 use App\Models\Type\MonsterRace;
 use Illuminate\Http\JsonResponse;
@@ -145,6 +147,26 @@ class MonsterTableController extends Controller
             ->values()
             ->all();
 
+        $creatureHostilityOptions = [
+            ['value' => '0', 'label' => 'Amical'],
+            ['value' => '1', 'label' => 'Curieux'],
+            ['value' => '2', 'label' => 'Neutre'],
+            ['value' => '3', 'label' => 'Hostile'],
+            ['value' => '4', 'label' => 'Agressif'],
+        ];
+        $creatureStateOptions = [
+            ['value' => Creature::STATE_RAW, 'label' => 'Brouillon (raw)'],
+            ['value' => Creature::STATE_DRAFT, 'label' => 'Brouillon'],
+            ['value' => Creature::STATE_PLAYABLE, 'label' => 'Jouable'],
+            ['value' => Creature::STATE_ARCHIVED, 'label' => 'Archivé'],
+        ];
+        $toDistinctOptions = function ($values, $sort = true) {
+            $collected = collect($values)->filter(fn ($v) => $v !== null && $v !== '')->map(fn ($v) => (string) $v)->unique()->values();
+            if ($sort) {
+                $collected = $collected->sort(SORT_NATURAL)->values();
+            }
+            return $collected->map(fn ($v) => ['value' => $v, 'label' => $v])->all();
+        };
         $filterOptions = [
             'size' => collect(Monster::SIZE)->map(fn ($label, $value) => ['value' => (string) $value, 'label' => (string) $label])->values()->all(),
             'is_boss' => [
@@ -152,11 +174,126 @@ class MonsterTableController extends Controller
                 ['value' => '0', 'label' => 'Non'],
             ],
             'monster_race_id' => $monsterRaceOptions,
+            'creature_level' => $toDistinctOptions($rows->pluck('creature.level')),
+            'creature_life' => $toDistinctOptions($rows->pluck('creature.life')),
+            'creature_pa' => $toDistinctOptions($rows->pluck('creature.pa')),
+            'creature_pm' => $toDistinctOptions($rows->pluck('creature.pm')),
+            'creature_po' => $toDistinctOptions($rows->pluck('creature.po')),
+            'creature_ini' => $toDistinctOptions($rows->pluck('creature.ini')),
+            'creature_ca' => $toDistinctOptions($rows->pluck('creature.ca')),
+            'creature_hostility' => $creatureHostilityOptions,
+            'creature_state' => $creatureStateOptions,
         ];
 
-        // Mode "entities" : retourner les entités brutes
+        // Caractéristiques (BDD) pour enrichir l'UI (icônes/couleurs/tooltips) des champs créature côté frontend.
+        // On expose un mapping par db_column pour l'entité "monster" (fallback sur entity='*').
+        $creatureCharacteristicsByDbColumn = [];
+        try {
+            $charRows = CharacteristicCreature::query()
+                ->whereIn('entity', [CharacteristicCreature::ENTITY_ALL, CharacteristicCreature::ENTITY_MONSTER])
+                ->whereNotNull('db_column')
+                ->with(['characteristic.masterCharacteristic'])
+                ->get();
+
+            // Ordre important: base (*) puis overlay (monster)
+            $sorted = $charRows->sortBy(fn (CharacteristicCreature $r) => $r->entity === CharacteristicCreature::ENTITY_ALL ? 0 : 1)->values();
+
+            foreach ($sorted as $row) {
+                $dbColumn = is_string($row->db_column) ? trim($row->db_column) : '';
+                if ($dbColumn === '') {
+                    continue;
+                }
+                $baseChar = $row->characteristic;
+                if ($baseChar === null) {
+                    continue;
+                }
+                $c = $baseChar->effectiveCharacteristic();
+
+                $icon = $c->icon;
+                if (is_string($icon) && $icon !== '') {
+                    // Icônes fichier: préfixer le chemin attendu par ImageService (/storage/images/...).
+                    // Les icônes de caractéristiques sont stockées dans storage/app/public/images/icons/caracteristics/.
+                    if (! str_starts_with($icon, 'fa-') && ! str_contains($icon, '/')) {
+                        $icon = 'icons/caracteristics/' . $icon;
+                    }
+                }
+
+                $creatureCharacteristicsByDbColumn[$dbColumn] = [
+                    'key' => $baseChar->key,
+                    'db_column' => $dbColumn,
+                    'name' => $c->name,
+                    'short_name' => $c->short_name,
+                    'helper' => $c->helper,
+                    'descriptions' => $c->descriptions,
+                    'icon' => $icon,
+                    'color' => $c->color,
+                    'unit' => $c->unit,
+                    'type' => $c->type,
+                ];
+            }
+        } catch (\Throwable $e) {
+            // En cas d'erreur (table manquante, etc.), on ne bloque pas le tableau.
+            $creatureCharacteristicsByDbColumn = [];
+        }
+
+        // Mode "entities" : retourner les entités brutes (monstre + créature complète pour le tableau)
         if ($format === 'entities') {
             $entities = $rows->map(function (Monster $m) {
+                $creature = null;
+                if ($m->creature) {
+                    $c = $m->creature;
+                    $creature = [
+                        'id' => $c->id,
+                        'name' => $c->name,
+                        'description' => $c->description,
+                        'level' => $c->level,
+                        'life' => $c->life,
+                        'pa' => $c->pa,
+                        'pm' => $c->pm,
+                        'po' => $c->po,
+                        'ini' => $c->ini,
+                        'ca' => $c->ca,
+                        'touch' => $c->touch,
+                        'invocation' => $c->invocation,
+                        'dodge_pa' => $c->dodge_pa,
+                        'dodge_pm' => $c->dodge_pm,
+                        'fuite' => $c->fuite,
+                        'tacle' => $c->tacle,
+                        'vitality' => $c->vitality,
+                        'sagesse' => $c->sagesse,
+                        'strong' => $c->strong,
+                        'intel' => $c->intel,
+                        'agi' => $c->agi,
+                        'chance' => $c->chance,
+                        'hostility' => $c->hostility,
+                        'location' => $c->location,
+                        'image' => $c->image,
+                        'state' => $c->state,
+                        'other_info' => $c->other_info,
+                        'kamas' => $c->kamas,
+                        'drop_' => $c->drop_,
+                        'other_item' => $c->other_item,
+                        'other_consumable' => $c->other_consumable,
+                        'other_resource' => $c->other_resource,
+                        'other_spell' => $c->other_spell,
+                        'do_fixe_neutre' => $c->do_fixe_neutre,
+                        'do_fixe_terre' => $c->do_fixe_terre,
+                        'do_fixe_feu' => $c->do_fixe_feu,
+                        'do_fixe_air' => $c->do_fixe_air,
+                        'do_fixe_eau' => $c->do_fixe_eau,
+                        'res_fixe_neutre' => $c->res_fixe_neutre,
+                        'res_fixe_terre' => $c->res_fixe_terre,
+                        'res_fixe_feu' => $c->res_fixe_feu,
+                        'res_fixe_air' => $c->res_fixe_air,
+                        'res_fixe_eau' => $c->res_fixe_eau,
+                        'res_neutre' => $c->res_neutre,
+                        'res_terre' => $c->res_terre,
+                        'res_feu' => $c->res_feu,
+                        'res_air' => $c->res_air,
+                        'res_eau' => $c->res_eau,
+                    ];
+                }
+
                 return [
                     'id' => $m->id,
                     'creature_id' => $m->creature_id,
@@ -168,10 +305,7 @@ class MonsterTableController extends Controller
                     'is_boss' => (int) ($m->is_boss ?? 0),
                     'boss_pa' => $m->boss_pa,
                     'monster_race_id' => $m->monster_race_id,
-                    'creature' => $m->creature ? [
-                        'id' => $m->creature->id,
-                        'name' => $m->creature->name,
-                    ] : null,
+                    'creature' => $creature,
                     'monsterRace' => $m->monsterRace ? [
                         'id' => $m->monsterRace->id,
                         'name' => $m->monsterRace->name,
@@ -193,6 +327,11 @@ class MonsterTableController extends Controller
                     ],
                     'capabilities' => $capabilities,
                     'filterOptions' => $filterOptions,
+                    'characteristics' => [
+                        'creature' => [
+                            'byDbColumn' => $creatureCharacteristicsByDbColumn,
+                        ],
+                    ],
                     'format' => 'entities',
                 ],
                 'entities' => $entities,

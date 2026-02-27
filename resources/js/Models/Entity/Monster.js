@@ -9,6 +9,7 @@
  * console.log(monster.creature?.name); // Accès via la relation creature
  */
 import { BaseModel } from '../BaseModel';
+import CreatureSummaryCell from '@/Pages/Molecules/entity/creature/CreatureSummaryCell.vue';
 
 export class Monster extends BaseModel {
     // ============================================
@@ -116,10 +117,283 @@ export class Monster extends BaseModel {
                 return this._toCreatedAtCell(format, size, options);
             case 'updated_at':
                 return this._toUpdatedAtCell(format, size, options);
+            case 'creature_summary_resistance':
+                return this._toSummaryResistanceCell(options);
+            case 'creature_summary_damage':
+                return this._toSummaryDamageCell(options);
+            case 'creature_summary_stats':
+                return this._toSummaryStatsCell(options);
+            case 'creature_summary_combat':
+                return this._toSummaryCombatCell(options);
+            case 'creature_summary_control':
+                return this._toSummaryControlCell(options);
             default:
-                // Fallback vers la méthode de base
+                if (fieldKey.startsWith('creature_')) {
+                    const creatureKey = fieldKey.slice(9);
+                    return this._toCreatureFieldCell(creatureKey, options);
+                }
                 return baseCell;
         }
+    }
+
+    /**
+     * Génère une cellule pour un champ de la créature (level, life, pa, etc.)
+     * @private
+     * @param {string} creatureKey - Clé du champ sur l'objet creature (ex: level, life, pa)
+     * @param {Object} [_options] - Options passées à toCell
+     * @returns {Object} Cell object
+     */
+    _toCreatureFieldCell(creatureKey, _options) {
+        const creature = this.creature;
+        if (!creature || typeof creature !== 'object') {
+            return creatureKey === 'image'
+                ? { type: 'image', value: '', params: { sortValue: '', searchValue: '' } }
+                : { type: 'text', value: '-', params: { sortValue: '', searchValue: '', filterValue: null } };
+        }
+        let raw = creature[creatureKey];
+        if (creatureKey === 'image') {
+            const url = raw && String(raw).trim() ? String(raw) : '';
+            return {
+                type: 'image',
+                value: url,
+                params: { sortValue: url ? 1 : 0, searchValue: '', alt: this.creature?.name || 'Créature' },
+            };
+        }
+        const rawForFilter = raw !== null && raw !== undefined && raw !== '' ? String(raw) : null;
+        if (raw === null || raw === undefined || raw === '') {
+            return {
+                type: 'text',
+                value: '-',
+                params: { sortValue: '', searchValue: '', filterValue: null },
+            };
+        }
+        if (creatureKey === 'hostility') {
+            const labels = { 0: 'Amical', 1: 'Curieux', 2: 'Neutre', 3: 'Hostile', 4: 'Agressif' };
+            const displayRaw = labels[Number(raw)] ?? String(raw);
+            return {
+                type: 'text',
+                value: displayRaw,
+                params: {
+                    sortValue: Number(raw),
+                    searchValue: displayRaw,
+                    filterValue: String(raw),
+                },
+            };
+        }
+        const value = String(raw);
+        const sortValue = Number(raw);
+        return {
+            type: 'text',
+            value,
+            params: {
+                sortValue: Number.isFinite(sortValue) ? sortValue : value,
+                searchValue: value,
+                filterValue: rawForFilter ?? value,
+            },
+        };
+    }
+
+    /**
+     * Colonne résumée : résistances fixes + % (neutre, terre, feu, air, eau)
+     * @private
+     */
+    _toSummaryResistanceCell(_options) {
+        const c = this.creature;
+        const ctx = _options?.ctx || _options?.context || null;
+        const byDb = ctx?.characteristics?.creature?.byDbColumn || {};
+
+        // filterValue: toutes les valeurs de résistances fixes + %
+        const elements = ['neutre', 'terre', 'feu', 'air', 'eau'];
+        const filterParts = [];
+        if (c && typeof c === 'object') {
+            for (const el of elements) {
+                const fixed = c[`res_fixe_${el}`];
+                const percent = c[`res_${el}`];
+                if (fixed !== null && typeof fixed !== 'undefined' && String(fixed) !== '') {
+                    filterParts.push(String(fixed));
+                }
+                if (percent !== null && typeof percent !== 'undefined' && String(percent) !== '') {
+                    filterParts.push(String(percent));
+                }
+            }
+        }
+        const filterValue = filterParts.join(' ');
+
+        return {
+            type: 'chips',
+            value: '',
+            params: {
+                component: CreatureSummaryCell,
+                componentProps: {
+                    variant: 'resistance',
+                    creature: this.creature,
+                    characteristicsByDbColumn: byDb,
+                },
+                passValue: false,
+                sortValue: 0,
+                searchValue: filterValue,
+                filterValue,
+            },
+        };
+    }
+
+    /**
+     * Colonne résumée : bonus de touche + dommages fixes (neutre, terre, feu, air, eau)
+     * @private
+     */
+    _toSummaryDamageCell(_options) {
+        const c = this.creature;
+        const ctx = _options?.ctx || _options?.context || null;
+        const byDb = ctx?.characteristics?.creature?.byDbColumn || {};
+
+        const elements = ['neutre', 'terre', 'feu', 'air', 'eau'];
+        const filterParts = [];
+        if (c && typeof c === 'object') {
+            if (c.touch !== null && typeof c.touch !== 'undefined' && String(c.touch) !== '') {
+                filterParts.push(String(c.touch));
+            }
+            for (const el of elements) {
+                const v = c[`do_fixe_${el}`];
+                if (v !== null && typeof v !== 'undefined' && String(v) !== '') {
+                    filterParts.push(String(v));
+                }
+            }
+        }
+        const filterValue = filterParts.join(' ');
+
+        return {
+            type: 'chips',
+            value: '',
+            params: {
+                component: CreatureSummaryCell,
+                componentProps: {
+                    variant: 'damage',
+                    creature: this.creature,
+                    characteristicsByDbColumn: byDb,
+                },
+                passValue: false,
+                sortValue: 0,
+                searchValue: filterValue,
+                filterValue,
+            },
+        };
+    }
+
+    /**
+     * Colonne résumée : Force, Intel, Agi, Chance, Vitalité, Sagesse
+     * @private
+     */
+    _toSummaryStatsCell(_options) {
+        const c = this.creature;
+        const ctx = _options?.ctx || _options?.context || null;
+        const byDb = ctx?.characteristics?.creature?.byDbColumn || {};
+
+        const statKeys = ['strong', 'intel', 'agi', 'chance', 'vitality', 'sagesse'];
+        const filterParts = [];
+        if (c && typeof c === 'object') {
+            for (const key of statKeys) {
+                const v = c[key];
+                if (v !== null && typeof v !== 'undefined' && String(v) !== '') {
+                    filterParts.push(String(v));
+                }
+            }
+        }
+        const filterValue = filterParts.join(' ');
+
+        return {
+            type: 'chips',
+            value: '',
+            params: {
+                component: CreatureSummaryCell,
+                componentProps: {
+                    variant: 'stats',
+                    creature: this.creature,
+                    characteristicsByDbColumn: byDb,
+                },
+                passValue: false,
+                sortValue: 0,
+                searchValue: filterValue,
+                filterValue,
+            },
+        };
+    }
+
+    /**
+     * Colonne résumée : PA, PM, PO, PV, Initiative, Invocation
+     * @private
+     */
+    _toSummaryCombatCell(_options) {
+        const c = this.creature;
+        const ctx = _options?.ctx || _options?.context || null;
+        const byDb = ctx?.characteristics?.creature?.byDbColumn || {};
+
+        const combatKeys = ['pa', 'pm', 'po', 'life', 'ini', 'invocation'];
+        const filterParts = [];
+        if (c && typeof c === 'object') {
+            for (const key of combatKeys) {
+                const v = c[key];
+                if (v !== null && typeof v !== 'undefined' && String(v) !== '') {
+                    filterParts.push(String(v));
+                }
+            }
+        }
+        const filterValue = filterParts.join(' ');
+
+        return {
+            type: 'chips',
+            value: '',
+            params: {
+                component: CreatureSummaryCell,
+                componentProps: {
+                    variant: 'combat',
+                    creature: this.creature,
+                    characteristicsByDbColumn: byDb,
+                },
+                passValue: false,
+                sortValue: 0,
+                searchValue: filterValue,
+                filterValue,
+            },
+        };
+    }
+
+    /**
+     * Colonne résumée : contrôle (CA + esquive PA/PM + fuite + tacle)
+     * @private
+     */
+    _toSummaryControlCell(_options) {
+        const c = this.creature;
+        const ctx = _options?.ctx || _options?.context || null;
+        const byDb = ctx?.characteristics?.creature?.byDbColumn || {};
+
+        const ctrlKeys = ['ca', 'dodge_pa', 'dodge_pm', 'fuite', 'tacle'];
+        const filterParts = [];
+        if (c && typeof c === 'object') {
+            for (const key of ctrlKeys) {
+                const v = c[key];
+                if (v !== null && typeof v !== 'undefined' && String(v) !== '') {
+                    filterParts.push(String(v));
+                }
+            }
+        }
+        const filterValue = filterParts.join(' ');
+
+        return {
+            type: 'chips',
+            value: '',
+            params: {
+                component: CreatureSummaryCell,
+                componentProps: {
+                    variant: 'control',
+                    creature: this.creature,
+                    characteristicsByDbColumn: byDb,
+                },
+                passValue: false,
+                sortValue: 0,
+                searchValue: filterValue,
+                filterValue,
+            },
+        };
     }
 
     /**
@@ -159,7 +433,7 @@ export class Monster extends BaseModel {
      * Génère une cellule pour la race du monstre
      * @private
      */
-    _toMonsterRaceCell(format, size, options) {
+    _toMonsterRaceCell(_format, _size, _options) {
         const monsterRace = this.monsterRace;
         
         if (!monsterRace) {
@@ -189,7 +463,7 @@ export class Monster extends BaseModel {
      * Génère une cellule pour la taille
      * @private
      */
-    _toSizeCell(format, size, options) {
+    _toSizeCell(_format, _size, _options) {
         const sizeValue = this.size ?? null;
         const sizeLabels = {
             0: 'Minuscule',
@@ -216,24 +490,59 @@ export class Monster extends BaseModel {
      * Génère une cellule pour is_boss
      * @private
      */
-    _toIsBossCell(format, size, options) {
-        // Utiliser le BooleanFormatter via la méthode de base
-        return super.toCell('is_boss', options);
+    _toIsBossCell(_format, _size, _options) {
+        const isBoss = !!this.isBoss;
+        const rawPa = this.bossPa;
+        const paNumber = rawPa !== null && rawPa !== undefined && rawPa !== '' ? Number(rawPa) : null;
+
+        let label = '';
+        if (isBoss) {
+            if (paNumber !== null && !Number.isNaN(paNumber) && paNumber > 0) {
+                label = `Boss +${paNumber} PA`;
+            } else if (rawPa && String(rawPa) !== '0') {
+                label = `Boss +${rawPa} PA`;
+            } else {
+                label = 'Boss';
+            }
+        }
+
+        const tooltip =
+            "Les boss ont des PA supplémentaires qu'ils peuvent utiliser entre leurs tours à n'importe quel moment.";
+
+        return {
+            type: 'badge',
+            value: label,
+            params: {
+                color: isBoss ? 'error' : 'base',
+                sortValue: isBoss ? (paNumber || 0) + 1 : 0,
+                searchValue: label,
+                filterValue: isBoss ? '1' : '0',
+                tooltip: isBoss ? tooltip : '',
+            },
+        };
     }
 
     /**
      * Génère une cellule pour boss_pa
      * @private
      */
-    _toBossPaCell(format, size, options) {
-        const bossPa = this.bossPa || '-';
-        
+    _toBossPaCell(_format, _size, _options) {
+        const rawPa = this.bossPa;
+        const paNumber = rawPa !== null && Number(rawPa) > 0 && rawPa !== undefined && rawPa !== '' ? Number(rawPa) : null;
+
+        let display = '-';
+        if (paNumber !== null && !Number.isNaN(paNumber) && paNumber > 0) {
+            display = `${paNumber} PA`;
+        } else if (rawPa && String(rawPa) !== '0') {
+            display = `${rawPa} PA`;
+        }
+
         return {
             type: 'text',
-            value: bossPa,
+            value: display,
             params: {
-                sortValue: bossPa === '-' ? '' : bossPa,
-                searchValue: bossPa === '-' ? '' : bossPa,
+                sortValue: paNumber && !Number.isNaN(paNumber) ? paNumber : 0,
+                searchValue: display === '-' ? '' : display,
             },
         };
     }
@@ -242,8 +551,7 @@ export class Monster extends BaseModel {
      * Génère une cellule pour la date de création
      * @private
      */
-    _toCreatedAtCell(format, size, options) {
-        // Utiliser le DateFormatter via la méthode de base
+    _toCreatedAtCell(_format, _size, options) {
         return super.toCell('created_at', options);
     }
 
@@ -251,8 +559,7 @@ export class Monster extends BaseModel {
      * Génère une cellule pour la date de modification
      * @private
      */
-    _toUpdatedAtCell(format, size, options) {
-        // Utiliser le DateFormatter via la méthode de base
+    _toUpdatedAtCell(_format, _size, options) {
         return super.toCell('updated_at', options);
     }
 

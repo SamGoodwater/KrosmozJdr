@@ -21,6 +21,8 @@ import { getCommonProps } from "@/Utils/atomic-design/uiHelper";
 import InputField from "@/Pages/Molecules/data-input/InputField.vue";
 import Icon from "@/Pages/Atoms/data-display/Icon.vue";
 import Kbd from "@/Pages/Atoms/data-display/Kbd.vue";
+import { useGlobalEntitySearch } from "@/Composables/entity/useGlobalEntitySearch";
+import { router } from "@inertiajs/vue3";
 
 const props = defineProps({
     ...getCommonProps(),
@@ -49,6 +51,29 @@ const emit = defineEmits(["update:modelValue"]);
 // Génération d'un ID unique et robuste
 const searchBarId = ref(`searchBar-${Date.now()}-${Math.random().toString(36).substring(2, 11)}`);
 
+// Recherche globale (moteur d'entités)
+const {
+    query,
+    results,
+    loading,
+    isOpen,
+    hasResults,
+    setQuery,
+    close,
+} = useGlobalEntitySearch();
+
+const handleInput = (value) => {
+    emit("update:modelValue", value);
+    setQuery(value);
+};
+
+const handleSelectResult = (result) => {
+    if (result?.href) {
+        router.visit(result.href);
+    }
+    close();
+};
+
 const handleKeydown = (event) => {
     const [modifier, key] = props.shortcut.split("+");
     if (
@@ -69,23 +94,71 @@ onUnmounted(() => {
 </script>
 
 <template>
-    <div class="w-full flex items-center gap-2">
-        <InputField
-            :id="searchBarId"
-            :placeholder="placeholder"
-            @update:modelValue="(value) => emit('update:modelValue', value)"
-            class="w-full"
-        >
-            <template #labelInEnd>
-                <Icon
-                    source="fa-magnifying-glass"
-                    alt="Rechercher"
-                    size="md"
-                    pack="solid"
-                    class="opacity-70"
-                />
-            </template>
-        </InputField>
+    <div class="w-full flex items-center gap-2 relative">
+        <div class="w-full">
+            <InputField
+                :id="searchBarId"
+                :placeholder="placeholder"
+                @update:modelValue="handleInput"
+                class="w-full"
+            >
+                <template #labelInEnd>
+                    <Icon
+                        source="fa-magnifying-glass"
+                        alt="Rechercher"
+                        size="md"
+                        pack="solid"
+                        class="opacity-70"
+                    />
+                </template>
+            </InputField>
+
+            <!-- Dropdown résultats de recherche globale -->
+            <div
+                v-if="isOpen && hasResults"
+                class="absolute left-0 right-0 mt-2 z-30"
+            >
+                <div class="bg-base-100/95 backdrop-blur border border-base-300 rounded-xl shadow-xl max-h-96 overflow-y-auto">
+                    <ul class="divide-y divide-base-200">
+                        <li
+                            v-for="result in results"
+                            :key="`${result.entityType}-${result.id}`"
+                        >
+                            <button
+                                type="button"
+                                class="w-full flex items-start gap-3 px-3 py-2 text-sm hover:bg-base-200/70 transition-colors text-left"
+                                @click="handleSelectResult(result)"
+                            >
+                                <span class="mt-0.5">
+                                    <Icon
+                                        v-if="result.icon"
+                                        :source="result.icon.replace('fa ', '')"
+                                        pack="custom"
+                                        size="sm"
+                                        alt=""
+                                    />
+                                </span>
+                                <span class="flex-1 min-w-0">
+                                    <span class="block font-medium truncate">
+                                        {{ result.title }}
+                                    </span>
+                                    <span v-if="result.subtitle" class="block text-xs text-base-content/70 truncate">
+                                        {{ result.subtitle }}
+                                    </span>
+                                    <span class="block text-[11px] uppercase tracking-wide text-base-content/50 mt-0.5">
+                                        {{ result.group }}
+                                    </span>
+                                </span>
+                            </button>
+                        </li>
+                    </ul>
+
+                    <div v-if="loading" class="px-3 py-2 text-xs text-base-content/60">
+                        Chargement…
+                    </div>
+                </div>
+            </div>
+        </div>
         <Kbd size="sm" class="ml-2">{{ props.shortcut }}</Kbd>
     </div>
 </template>

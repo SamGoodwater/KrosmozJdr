@@ -97,6 +97,7 @@ export const CELL_TYPES = Object.freeze([
   "number",    // Nombre formaté
   "image",     // Image (thumb)
   "icon",      // Icône seule
+  "chips",     // Liste compacte icône + valeur avec tooltips (colonnes résumées)
   "bool",      // Booléen (icône ou badge)
   "date",      // Date formatée
   "link",      // Lien cliquable

@@ -401,7 +401,12 @@ erDiagram
     value_max : int(11)
     dice_num : tinyint(3) unsigned
     dice_side : tinyint(3) unsigned
+    duration_formula : varchar(255)
+    logic_group : varchar(64)
+    logic_operator : varchar(8)
+    logic_condition : varchar(255)
     params : longtext
+    crit_only : tinyint(1)
     created_at : timestamp
     updated_at : timestamp
   }

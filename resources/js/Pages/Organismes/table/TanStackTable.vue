@@ -582,6 +582,7 @@ const getCellFor = (row, col) => {
             context: "table",
             format: colFormat,
             href: col?.cell?.href, // Pour les colonnes route, passer le href si défini
+            ctx: context, // Contexte complet (meta serveur inclus: capabilities, filterOptions, characteristics, etc.)
             config: descriptors, // Passer les descriptors pour que BaseModel puisse utiliser display.cell
         });
         

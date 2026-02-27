@@ -42,7 +42,7 @@ export default [
 
       // Réduction du bruit initial : le projet existant contient beaucoup de legacy.
       // On durcira progressivement une fois le baseline stabilisé.
-      'no-unused-vars': 'warn',
+      'no-unused-vars': ['warn', { argsIgnorePattern: '^_' }],
       'no-undef': 'error',
       'vue/multi-word-component-names': 'off',
       'vue/attributes-order': 'off',
