@@ -190,12 +190,6 @@ export class Monster extends BaseModel {
      * @private
      */
     _toSizeCell(format, size, options) {
-        // Utiliser le formatter via la méthode de base si disponible
-        const cell = super.toCell('size', options);
-        if (cell && cell.type !== 'text') {
-            return cell;
-        }
-
         const sizeValue = this.size ?? null;
         const sizeLabels = {
             0: 'Minuscule',
@@ -213,6 +207,7 @@ export class Monster extends BaseModel {
             params: {
                 sortValue: sizeValue ?? 0,
                 searchValue: label === '-' ? '' : label,
+                filterValue: sizeValue !== null ? String(sizeValue) : null,
             },
         };
     }

@@ -494,12 +494,6 @@ const logout = () => {
                                         <span>Caractéristiques</span>
                                     </Btn>
                                 </Route>
-                                <Route v-if="canAccess('effectsAdmin')" route="admin.sub-effects.index" class="w-full">
-                                    <Btn variant="ghost" size="md" class="w-full justify-start">
-                                        <Icon source="fa-puzzle-piece" pack="solid" size="sm" alt="Sous-effets" class="mr-2"/>
-                                        <span>Sous-effets</span>
-                                    </Btn>
-                                </Route>
                                 <Route v-if="canAccess('effectsAdmin')" route="admin.effects.index" class="w-full">
                                     <Btn variant="ghost" size="md" class="w-full justify-start">
                                         <Icon source="fa-bolt" pack="solid" size="sm" alt="Effets" class="mr-2"/>

@@ -28,7 +28,7 @@ class SpellTableController extends Controller
         $format = $request->filled('format') ? (string) $request->get('format') : 'cells';
 
         $filters = (array) ($request->input('filters', $request->input('filter', [])) ?? []);
-        foreach (['level', 'pa'] as $k) {
+        foreach (['level', 'pa', 'category', 'element', 'is_magic', 'powerful', 'state'] as $k) {
             if (!array_key_exists($k, $filters) && $request->has($k)) {
                 $filters[$k] = $request->get($k);
             }
@@ -63,8 +63,23 @@ class SpellTableController extends Controller
         if (array_key_exists('id', $filters) && $filters['id'] !== '' && $filters['id'] !== null) {
             $query->where('id', (int) $filters['id']);
         }
+        if (array_key_exists('category', $filters) && $filters['category'] !== '' && $filters['category'] !== null) {
+            $query->where('category', (int) $filters['category']);
+        }
+        if (array_key_exists('element', $filters) && $filters['element'] !== '' && $filters['element'] !== null) {
+            $query->where('element', (int) $filters['element']);
+        }
+        if (array_key_exists('is_magic', $filters) && $filters['is_magic'] !== '' && $filters['is_magic'] !== null) {
+            $query->where('is_magic', (int) $filters['is_magic']);
+        }
+        if (array_key_exists('powerful', $filters) && $filters['powerful'] !== '' && $filters['powerful'] !== null) {
+            $query->where('powerful', (int) $filters['powerful']);
+        }
+        if (array_key_exists('state', $filters) && $filters['state'] !== '' && $filters['state'] !== null) {
+            $query->where('state', (string) $filters['state']);
+        }
 
-        $allowedSort = ['id', 'name', 'level', 'pa', 'po', 'area', 'dofusdb_id', 'created_at', 'updated_at'];
+        $allowedSort = ['id', 'name', 'level', 'pa', 'po', 'area', 'dofusdb_id', 'created_at', 'updated_at', 'state'];
         if (in_array($sort, $allowedSort, true)) {
             $query->orderBy($sort, $order);
         } else {
@@ -96,6 +111,30 @@ class SpellTableController extends Controller
                 ['value' => '4', 'label' => '4'],
                 ['value' => '5', 'label' => '5'],
                 ['value' => '6', 'label' => '6+'],
+            ],
+            'category' => [
+                ['value' => '0', 'label' => 'Inconnu'],
+                ['value' => '1', 'label' => 'Offensif'],
+                ['value' => '2', 'label' => 'Défensif'],
+                ['value' => '3', 'label' => 'Utilitaire'],
+            ],
+            'element' => collect(\App\Models\Entity\Spell::ELEMENT)
+                ->map(fn (string $label, int $value) => ['value' => (string) $value, 'label' => $label])
+                ->values()
+                ->all(),
+            'is_magic' => [
+                ['value' => '1', 'label' => 'Magique'],
+                ['value' => '0', 'label' => 'Physique'],
+            ],
+            'powerful' => [
+                ['value' => '0', 'label' => 'Normal'],
+                ['value' => '1', 'label' => 'Puissant'],
+            ],
+            'state' => [
+                ['value' => 'raw', 'label' => 'Brut'],
+                ['value' => 'draft', 'label' => 'Brouillon'],
+                ['value' => 'playable', 'label' => 'Jouable'],
+                ['value' => 'archived', 'label' => 'Archivé'],
             ],
         ];
 

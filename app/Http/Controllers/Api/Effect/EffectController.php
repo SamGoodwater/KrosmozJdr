@@ -10,6 +10,8 @@ use App\Http\Requests\Effect\UpdateEffectRequest;
 use App\Http\Resources\Effect\EffectResource;
 use App\Models\Effect;
 use App\Models\EffectUsage;
+use App\Models\User;
+use App\Services\Effect\EffectResolutionService;
 use App\Services\Effect\EffectService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -18,12 +20,19 @@ use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 class EffectController extends Controller
 {
     public function __construct(
-        private readonly EffectService $effectService
+        private readonly EffectService $effectService,
+        private readonly EffectResolutionService $effectResolutionService
     ) {
     }
 
-    public function index(): AnonymousResourceCollection
+    public function index(Request $request): AnonymousResourceCollection
     {
+        $user = $request->user();
+        // Effets réservés aux utilisateurs ayant au moins le rôle "player"
+        if (! $user || ! $user->verifyRole(User::ROLE_PLAYER)) {
+            abort(403);
+        }
+
         $list = Effect::with('subEffects')->orderBy('name')->get();
         return EffectResource::collection($list);
     }
@@ -63,7 +72,7 @@ class EffectController extends Controller
             'context' => 'nullable|string|in:combat,out_of_combat',
             'format_dice_human' => 'boolean',
         ]);
-        $entityType = $validated['entity_type'];
+        $entityType = $validated['entity_type']; // short type: spell, item, consumable, resource
         $entityId = (int) $validated['entity_id'];
         $level = (int) $validated['level'];
         $context = $validated['context'] ?? null;
@@ -74,14 +83,25 @@ class EffectController extends Controller
             return response()->json(['message' => 'Invalid entity_type'], 422);
         }
 
-        $effects = $this->effectService->getEffectsForEntity($class, $entityId, $level, $context);
+        // On utilise le short type pour la requête (convention côté EffectUsage)
+        $effects = $this->effectService->getEffectsForEntity($entityType, $entityId, $level, $context);
         $baseContext = ['level' => $level];
 
-        $payload = $effects->map(fn (Effect $e) => [
-            'effect' => (new EffectResource($e))->toArray($request),
-            'resolved_text' => $this->effectService->renderEffectText($e, $baseContext, $context, $formatDiceHuman),
-            'description' => $e->description,
-        ])->values()->all();
+        $payload = $effects->map(function (Effect $e) use ($request, $baseContext, $context, $formatDiceHuman) {
+            $resolved = $this->effectResolutionService->resolveEffect($e, $baseContext, $context, $formatDiceHuman, false);
+            $resolvedCrit = $this->effectResolutionService->resolveEffect($e, $baseContext, $context, $formatDiceHuman, true);
+
+            return [
+                'effect' => (new EffectResource($e))->toArray($request),
+                // Texte global (compat) basé sur l’ancien rendu agrégé
+                'resolved_text' => $this->effectService->renderEffectText($e, $baseContext, $context, $formatDiceHuman),
+                // Résolution détaillée par sous-effet (normal)
+                'resolved' => $resolved,
+                // Résolution en cas de critique (sous-effets crit_only + value_formula_crit)
+                'resolved_crit' => $resolvedCrit,
+                'description' => $e->description,
+            ];
+        })->values()->all();
 
         return response()->json(['data' => $payload]);
     }

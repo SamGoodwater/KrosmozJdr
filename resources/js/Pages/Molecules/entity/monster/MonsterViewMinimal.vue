@@ -81,7 +81,8 @@ const expandedFields = computed(() => [
 ].filter(canShowField));
 
 const getFieldIcon = (fieldKey) => {
-    return descriptors.value?.[fieldKey]?.general?.icon || 'fa-solid fa-info-circle';
+    const desc = descriptors.value?.[fieldKey];
+    return desc?.general?.icon ?? desc?.icon ?? 'fa-solid fa-info-circle';
 };
 
 const getCell = (fieldKey) => {
@@ -91,7 +92,10 @@ const getCell = (fieldKey) => {
     });
 };
 
-const getFieldLabel = (fieldKey) => descriptors.value?.[fieldKey]?.general?.label || fieldKey;
+const getFieldLabel = (fieldKey) => {
+    const desc = descriptors.value?.[fieldKey];
+    return desc?.general?.label ?? desc?.label ?? fieldKey;
+};
 const getFieldTooltip = (fieldKey) => getEntityFieldTooltip(descriptors.value?.[fieldKey]);
 
 const tooltipForField = (fieldKey, cell) => {

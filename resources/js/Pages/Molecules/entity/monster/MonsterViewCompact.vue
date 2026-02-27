@@ -99,11 +99,13 @@ const technicalFields = computed(() => ([
 ].filter(canShowField)));
 
 const getFieldLabel = (fieldKey) => {
-    return descriptors.value?.[fieldKey]?.general?.label || fieldKey;
+    const desc = descriptors.value?.[fieldKey];
+    return desc?.general?.label ?? desc?.label ?? fieldKey;
 };
 
 const getFieldIcon = (fieldKey) => {
-    return descriptors.value?.[fieldKey]?.general?.icon || 'fa-solid fa-info-circle';
+    const desc = descriptors.value?.[fieldKey];
+    return desc?.general?.icon ?? desc?.icon ?? 'fa-solid fa-info-circle';
 };
 
 const getFieldTooltip = (fieldKey) => getEntityFieldTooltip(descriptors.value?.[fieldKey]);
@@ -155,6 +157,9 @@ const handleAction = async (actionKey) => {
         case 'quick-edit':
             emit('quick-edit', props.monster);
             break;
+        case 'quick-view':
+            emit('quick-view', props.monster);
+            break;
         case 'copy-link': {
             const cfg = getEntityRouteConfig('monster');
             const url = resolveEntityRouteUrl('monster', 'show', monsterId, cfg);
@@ -164,6 +169,14 @@ const handleAction = async (actionKey) => {
             emit('copy-link', props.monster);
             break;
         }
+        case 'download-pdf':
+            await downloadPdf(monsterId);
+            emit('download-pdf', props.monster);
+            break;
+        case 'refresh':
+            router.reload({ only: ['monsters'] });
+            emit('refresh', props.monster);
+            break;
         case 'delete':
             emit('delete', props.monster);
             break;

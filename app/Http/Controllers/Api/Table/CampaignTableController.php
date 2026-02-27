@@ -55,6 +55,9 @@ class CampaignTableController extends Controller
 
         $query = Campaign::query()->with(['createdBy']);
 
+        $user = $request->user();
+        $userRole = $user?->role ?? User::ROLE_GUEST;
+
         if ($search !== '') {
             $query->where(function ($q) use ($search) {
                 $q->where('name', 'like', "%{$search}%")
@@ -62,6 +65,22 @@ class CampaignTableController extends Controller
                     ->orWhere('description', 'like', "%{$search}%");
             });
         }
+
+        // Visibilité : campagnes publiques visibles par tous.
+        // Si non publiques, réservées à l'admin/super_admin ou au créateur.
+        if (! $user) {
+            $query->where('is_public', 1);
+        } else {
+            if (! $user->isAdmin()) {
+                $query->where(function ($q) use ($user) {
+                    $q->where('is_public', 1)
+                        ->orWhere('created_by', $user->id);
+                });
+            }
+        }
+
+        // read_level = niveau minimal requis pour lire
+        $query->where('read_level', '<=', $userRole);
 
         if (array_key_exists('state', $filters) && $filters['state'] !== '' && $filters['state'] !== null) {
             $query->where('state', (string) $filters['state']);

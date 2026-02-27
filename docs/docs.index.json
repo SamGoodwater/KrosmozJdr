@@ -1190,6 +1190,11 @@
     "description": "`EntityRelationsManager` est un composant générique Vue 3 permettant de gérer les relations many-to-many entre entités. Il supporte les relations simples (sans pivot) et les relations avec données pivot (quantité, prix, commentaire, etc.)."
   },
   {
+    "path": "50-Fonctionnalités/Search/BESOINS_ET_CONCEPTION_MOTEUR_RECHERCHE.md",
+    "title": "Moteur de recherche d'entités — Besoins et conception",
+    "description": "Besoins, cas d'usage, sécurité (effets réservés game_master/admin), architecture backend (service + API tables) et frontend (composable + Entity Picker), option plugin ou maison."
+  },
+  {
     "path": "50-Fonctionnalités/Medias/SPATIE_MEDIA_LIBRARY.md",
     "title": "Spatie Laravel Media Library — Gestion des médias",
     "description": "Le projet utilise [Spatie Laravel Media Library](https://spatie.be/docs/laravel-medialibrary/v11/introduction) pour associer des fichiers (images, documents) aux modèles Eloquent, générer des conversions (dont WebP) et des miniatures, et gérer le stockage sur le disque Laravel."
@@ -1425,6 +1430,11 @@
     "description": "**Référence :** [SPEC_UI_SCRAPPING.md](./SPEC_UI_SCRAPPING.md) (liste exhaustive F1–F28)."
   },
   {
+    "path": "50-Fonctionnalités/Spell-Effects/ARCHITECTURE_EFFETS_3_COUCHES.md",
+    "title": "Architecture des effets en trois couches",
+    "description": "Ce document décrit la répartition des responsabilités entre **sous-effet**, **Effect** et **Spell/Item** : un pattern générique (action → caractéristique → valeur), sans figer en dur toutes les possibilités ; c’est **Effect** qui interprète l’action et définit durée, défense et conséquences partielles ; **Spell/Item** gère cibles, zone, coût et limites d’usage."
+  },
+  {
     "path": "50-Fonctionnalités/Spell-Effects/EFFETS_TEMPLATES_ET_SURETE.md",
     "title": "Effets (items & sorts) : templates, variables et sûreté",
     "description": "Proposition d’implémentation pour gérer les **effets textuels** des objets et des sorts : récupération DofusDB, sûreté du texte, variables (caractéristiques, dés), réutilisation et variantes par niveau."
@@ -1433,6 +1443,11 @@
     "path": "50-Fonctionnalités/Spell-Effects/MODELE_EFFECT_SOUS_EFFECT.md",
     "title": "Modèle unifié : effect + sous-effet (une table effect, interopérable)",
     "description": "Ce document décide du **modèle de données** pour les effets : une seule table **effect** partagée par toutes les entités (sorts, items, etc.), avec une décomposition en **sous-effets** (ex. taper, soigner, vol PA) pour pouvoir composer et réutiliser."
+  },
+  {
+    "path": "50-Fonctionnalités/Spell-Effects/NOTATION_SOUS_EFFETS.md",
+    "title": "Notation standardisée des sous-effets",
+    "description": "Description **mathématique** des sous-effets pour outils interactifs et traduction en texte lisible. Pattern : **action → caractéristique (élément = caractéristique) → valeur**."
   },
   {
     "path": "50-Fonctionnalités/Spell-Effects/PLAN_MISE_EN_OEUVRE_EFFECTS.md",
@@ -1445,24 +1460,14 @@
     "description": "Ce document décrit la **syntaxe autorisée** pour les champs texte des effets (template, description) et pour le champ **formula** des sous-effets. Tout texte stocké doit passer par `App\\Services\\Effect\\EffectTextSanitizer` avant enregistrement."
   },
   {
-    "path": "50-Fonctionnalités/Spell-Effects/ARCHITECTURE_EFFETS_3_COUCHES.md",
-    "title": "Architecture des effets en trois couches",
-    "description": "Pattern action → caractéristique → valeur ; couche Effect (durée, défense, conséquences partielles) ; couche Spell/Item (cible, zone, coût, limites)."
-  },
-  {
-    "path": "50-Fonctionnalités/Spell-Effects/TAXONOMIE_SOUS_EFFETS.md",
-    "title": "Taxonomie des sous-effets — Mots-clés, variables et choix à l’effet",
-    "description": "Liste **exhaustive** des types de sous-effets (ajout/diminution carac, dégâts, soin, protection, retrait PA/PM/PO…). Chaque type = template avec variables ; à la construction d’un effet on choisit comment remplir chaque variable (caractéristique, dé, fourchette, formule, élément)."
-  },
-  {
-    "path": "50-Fonctionnalités/Spell-Effects/NOTATION_SOUS_EFFETS.md",
-    "title": "Notation standardisée des sous-effets — Formules et traduction lisible",
-    "description": "Description **mathématique** des sous-effets (param_schema, formules ndX, [min-max], [level], [agi], floor…) pour outils interactifs et traducteur vers texte lisible."
-  },
-  {
     "path": "50-Fonctionnalités/Spell-Effects/TAXONOMIE_EFFETS_SORTS.md",
     "title": "Taxonomie des effets de sort — Krosmoz JDR",
     "description": "Référence **exhaustive** des types d’effets qu’un sort peut produire. Chaque type est paramétrable en base de données et peut être associé à un ou plusieurs sorts avec des valeurs (min, max, dés, durée, cible, etc.)."
+  },
+  {
+    "path": "50-Fonctionnalités/Spell-Effects/TAXONOMIE_SOUS_EFFETS.md",
+    "title": "Taxonomie des sous-effets — Pattern et rôle d’Effect",
+    "description": "Ce document décrit le **pattern** des sous-effets et le rôle d’**Effect** pour interpréter l’action. On ne fixe pas une liste exhaustive en dur : on garde **action → caractéristique (élément = caractéristique) → valeur**, et c’est **Effect** qui définit les contraintes par action (durée, défense, conséquences partielles)."
   },
   {
     "path": "50-Fonctionnalités/VISION_UI_ADMIN_MAPPING_ET_CARACTERISTIQUES.md",

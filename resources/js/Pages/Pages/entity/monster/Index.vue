@@ -74,7 +74,7 @@ const refreshToken = ref(0);
 // Configuration du tableau avec permissions et contexte
 const tableConfig = computed(() => {
     const ctx = {
-        capabilities: { 
+        capabilities: {
             updateAny: canModify.value,
             createAny: canCreate.value,
         },
@@ -85,7 +85,10 @@ const tableConfig = computed(() => {
     const config = TableConfig.fromDescriptors(descriptors, ctx);
     return config.build(ctx);
 });
+
 const serverUrl = computed(() => `${route('api.tables.monsters')}?format=entities&limit=5000&_t=${refreshToken.value}`);
+
+const filteredIds = computed(() => selectedIds.value || []);
 
 // Sécurité UX: si l'utilisateur perd le droit de modifier, on coupe les modes d'édition.
 watch(
@@ -110,8 +113,20 @@ const selectedEntities = computed(() => {
 });
 
 // Fields config pour les formulaires (généré depuis les descriptors)
-const monsterDescriptors = computed(() => getMonsterFieldDescriptors({ capabilities: { updateAny: canModify.value } }));
-const fieldsConfig = computed(() => createFieldsConfigFromDescriptors(monsterDescriptors.value, { meta: {}, capabilities: { updateAny: canModify.value } }));
+const monsterDescriptors = computed(() =>
+    getMonsterFieldDescriptors({
+        capabilities: { updateAny: canModify.value, createAny: canCreate.value },
+        creatures: props.creatures || [],
+        monsterRaces: props.monsterRaces || [],
+    })
+);
+const fieldsConfig = computed(() =>
+    createFieldsConfigFromDescriptors(monsterDescriptors.value, {
+        capabilities: { updateAny: canModify.value },
+        creatures: props.creatures || [],
+        monsterRaces: props.monsterRaces || [],
+    })
+);
 const defaultEntity = computed(() => createDefaultEntityFromDescriptors(monsterDescriptors.value));
 
 // Bulk edit
@@ -130,14 +145,18 @@ const handleTableLoaded = ({ rows }) => {
     tableRows.value = Array.isArray(rows) ? rows : [];
 };
 
+const openModal = (entity) => {
+    selectedEntity.value = entity;
+    modalView.value = 'large';
+    modalOpen.value = true;
+};
+
 const handleRowDoubleClick = (row) => {
     const raw = row?.rowParams?.entity;
     if (!raw) return;
     const model = Monster.fromArray([raw])[0] || null;
     if (!model) return;
-    selectedEntity.value = model;
-    modalView.value = 'large';
-    modalOpen.value = true;
+    openModal(model);
 };
 
 const handleCreate = () => {
@@ -175,9 +194,7 @@ const handleTableAction = async (actionKey, entity, row) => {
             break;
 
         case 'quick-view':
-            selectedEntity.value = model;
-            modalView.value = 'large';
-            modalOpen.value = true;
+            openModal(model);
             break;
 
         case 'edit':
@@ -237,7 +254,7 @@ const handleModalCopyLink = async (entity) => {
     }
 };
 
-const handleModalDownloadPdf = (entity) => {
+const handleModalDownloadPdf = () => {
     // TODO: Implémenter le téléchargement PDF
 };
 
@@ -249,7 +266,7 @@ const handleModalRefresh = async (entity) => {
     closeModal();
 };
 
-const handleModalDelete = (entity) => {
+const handleModalDelete = () => {
     // TODO: Implémenter la suppression avec confirmation
 };
 
@@ -269,10 +286,20 @@ const handleQuickEditSubmit = () => {
                 <h1 class="text-3xl font-bold text-primary-100">Liste des Monstres</h1>
                 <p class="text-primary-200 mt-2">Gérez les monstres du jeu</p>
             </div>
-            <Btn v-if="canCreate" @click="handleCreate" color="primary">
-                <i class="fa-solid fa-plus mr-2"></i>
-                Créer un monstre
-            </Btn>
+            <div class="flex gap-2">
+                <Btn variant="ghost" @click="refreshToken++" title="Recharger le dataset">
+                    <i class="fa-solid fa-arrow-rotate-right mr-2"></i>
+                    Recharger
+                </Btn>
+                <Btn variant="ghost" @click="router.visit(route('entities.monster-races.index'))">
+                    <i class="fa-solid fa-users mr-2"></i>
+                    Races de monstres
+                </Btn>
+                <Btn v-if="canCreate" @click="handleCreate" color="primary">
+                    <i class="fa-solid fa-plus mr-2"></i>
+                    Créer un monstre
+                </Btn>
+            </div>
         </div>
 
         <!-- Grid layout pour permettre le scroll horizontal du tableau quand le quick edit est ouvert -->
@@ -300,7 +327,8 @@ const handleQuickEditSubmit = () => {
                     :selected-entities="selectedEntities"
                     :is-admin="canModify"
                     mode="client"
-                    :filtered-ids="selectedIds"
+                    :filtered-ids="filteredIds"
+                    :extra-ctx="{ creatures: props.creatures || [], monsterRaces: props.monsterRaces || [] }"
                     @applied="handleBulkApplied"
                     @clear="clearSelection"
                 />

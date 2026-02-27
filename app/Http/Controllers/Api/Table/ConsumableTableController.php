@@ -30,7 +30,11 @@ class ConsumableTableController extends Controller
         $format = $request->filled('format') ? (string) $request->get('format') : 'cells';
 
         $filters = (array) ($request->input('filters', $request->input('filter', [])) ?? []);
-
+        foreach (['level', 'rarity', 'consumable_type_id'] as $k) {
+            if (!array_key_exists($k, $filters) && $request->has($k)) {
+                $filters[$k] = $request->get($k);
+            }
+        }
         $search = $request->filled('search') ? (string) $request->get('search') : '';
 
         $limit = (int) $request->integer('limit', 5000);
@@ -52,6 +56,15 @@ class ConsumableTableController extends Controller
         }
         if (array_key_exists('id', $filters) && $filters['id'] !== '' && $filters['id'] !== null) {
             $query->where('id', (int) $filters['id']);
+        }
+        if (array_key_exists('level', $filters) && $filters['level'] !== '' && $filters['level'] !== null) {
+            $query->where('level', (string) $filters['level']);
+        }
+        if (array_key_exists('rarity', $filters) && $filters['rarity'] !== '' && $filters['rarity'] !== null) {
+            $query->where('rarity', (int) $filters['rarity']);
+        }
+        if (array_key_exists('consumable_type_id', $filters) && $filters['consumable_type_id'] !== '' && $filters['consumable_type_id'] !== null) {
+            $query->where('consumable_type_id', (int) $filters['consumable_type_id']);
         }
 
         $allowedSort = ['id', 'name', 'level', 'rarity', 'dofusdb_id', 'created_at', 'updated_at'];

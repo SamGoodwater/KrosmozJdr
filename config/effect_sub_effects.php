@@ -15,9 +15,11 @@ return [
     | category: stat | resource | element — Effect exige "element" pour l'action frapper, etc.
     */
     'characteristics' => [
+        // Ressources
         ['key' => 'pa', 'label' => 'PA', 'category' => 'resource'],
         ['key' => 'pm', 'label' => 'PM', 'category' => 'resource'],
         ['key' => 'po', 'label' => 'PO', 'category' => 'resource'],
+        // Stats
         ['key' => 'agi', 'label' => 'Agilité', 'category' => 'stat'],
         ['key' => 'force', 'label' => 'Force', 'category' => 'stat'],
         ['key' => 'intel', 'label' => 'Intelligence', 'category' => 'stat'],
@@ -26,10 +28,11 @@ return [
         ['key' => 'vita', 'label' => 'Vitalité', 'category' => 'stat'],
         ['key' => 'pv', 'label' => 'Points de vie', 'category' => 'stat'],
         ['key' => 'bouclier', 'label' => 'Points de bouclier', 'category' => 'stat'],
-        ['key' => 'neutre', 'label' => 'Neutre', 'category' => 'element'],
+        // Éléments : terre, feu, eau, air, neutre
+        ['key' => 'terre', 'label' => 'Terre', 'category' => 'element'],
         ['key' => 'feu', 'label' => 'Feu', 'category' => 'element'],
         ['key' => 'eau', 'label' => 'Eau', 'category' => 'element'],
-        ['key' => 'terre', 'label' => 'Terre', 'category' => 'element'],
         ['key' => 'air', 'label' => 'Air', 'category' => 'element'],
+        ['key' => 'neutre', 'label' => 'Neutre', 'category' => 'element'],
     ],
 ];

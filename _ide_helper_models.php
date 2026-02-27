@@ -228,6 +228,8 @@ namespace App\Models{
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property-read \App\Models\EffectGroup|null $effectGroup
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\EffectSubEffect> $effectSubEffects
+ * @property-read int|null $effect_sub_effects_count
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\EffectUsage> $effectUsages
  * @property-read int|null $effect_usages_count
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\SubEffect> $subEffects
@@ -1787,6 +1789,7 @@ namespace App\Models{
  * @property string|null $template_text
  * @property string|null $formula
  * @property array<array-key, mixed>|null $variables_allowed
+ * @property array<array-key, mixed>|null $param_schema
  * @property int|null $dofusdb_effect_id
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
@@ -1799,6 +1802,7 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|SubEffect whereDofusdbEffectId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|SubEffect whereFormula($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|SubEffect whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SubEffect whereParamSchema($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|SubEffect whereSlug($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|SubEffect whereTemplateText($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|SubEffect whereTypeSlug($value)

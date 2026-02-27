@@ -13,8 +13,20 @@ class EffectSubEffect extends Model
     protected $table = 'effect_sub_effect';
 
     protected $fillable = [
-        'effect_id', 'sub_effect_id', 'order', 'scope',
-        'value_min', 'value_max', 'dice_num', 'dice_side', 'params',
+        'effect_id',
+        'sub_effect_id',
+        'order',
+        'scope',
+        'value_min',
+        'value_max',
+        'dice_num',
+        'dice_side',
+        'duration_formula',
+        'logic_group',
+        'logic_operator',
+        'logic_condition',
+        'params',
+        'crit_only',
     ];
 
     protected $casts = [
@@ -25,7 +37,12 @@ class EffectSubEffect extends Model
         'value_max' => 'integer',
         'dice_num' => 'integer',
         'dice_side' => 'integer',
+        'duration_formula' => 'string',
+        'logic_group' => 'string',
+        'logic_operator' => 'string',
+        'logic_condition' => 'string',
         'params' => 'array',
+        'crit_only' => 'boolean',
     ];
 
     public function effect(): BelongsTo

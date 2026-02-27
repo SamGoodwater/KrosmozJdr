@@ -42,61 +42,92 @@ const props = defineProps({
 const viewMode = ref('large');
 
 // Configuration des champs pour les sorts
+// NB : plusieurs champs numériques côté gameplay sont en base des strings → on autorise des formules.
 const fieldsConfig = {
-    name: { 
-        type: 'text', 
-        label: 'Nom', 
-        required: true, 
-        showInCompact: true 
+    name: {
+        type: 'text',
+        label: 'Nom',
+        required: true,
+        showInCompact: true,
     },
-    description: { 
-        type: 'textarea', 
-        label: 'Description', 
-        required: false, 
-        showInCompact: false 
+    description: {
+        type: 'textarea',
+        label: 'Description',
+        required: false,
+        showInCompact: false,
     },
-    level: { 
-        type: 'number', 
-        label: 'Niveau', 
-        required: false, 
-        showInCompact: true 
+    level: {
+        type: 'text',
+        label: 'Niveau (formule ou valeur)',
+        required: false,
+        showInCompact: true,
     },
-    pa: { 
-        type: 'number', 
-        label: 'Coût PA', 
-        required: false, 
-        showInCompact: true 
+    pa: {
+        type: 'text',
+        label: 'Coût PA (formule ou valeur)',
+        required: false,
+        showInCompact: true,
     },
-    po: { 
-        type: 'number', 
-        label: 'Portée', 
-        required: false, 
-        showInCompact: false 
+    po: {
+        type: 'text',
+        label: 'Portée (formule ou valeur)',
+        required: false,
+        showInCompact: false,
     },
-    area: { 
-        type: 'text', 
-        label: 'Zone', 
-        required: false, 
-        showInCompact: false 
+    area: {
+        type: 'text',
+        label: 'Zone',
+        required: false,
+        showInCompact: false,
     },
-    element: { 
-        type: 'select', 
-        label: 'Élément', 
-        required: false, 
+    cast_per_turn: {
+        type: 'text',
+        label: 'Lancers par tour (formule ou valeur)',
+        required: false,
+        showInCompact: false,
+    },
+    cast_per_target: {
+        type: 'text',
+        label: 'Lancers par cible (formule ou valeur)',
+        required: false,
+        showInCompact: false,
+    },
+    number_between_two_cast: {
+        type: 'text',
+        label: 'Délai entre deux lancers (tours, formule ou valeur)',
+        required: false,
+        showInCompact: false,
+    },
+    po_editable: {
+        type: 'checkbox',
+        label: 'Portée modifiable',
+        required: false,
+        showInCompact: false,
+    },
+    sight_line: {
+        type: 'checkbox',
+        label: 'Nécessite la ligne de vue',
+        required: false,
+        showInCompact: false,
+    },
+    element: {
+        type: 'select',
+        label: 'Élément',
+        required: false,
         showInCompact: false,
         options: [
-            { value: 'neutral', label: 'Neutre' },
-            { value: 'fire', label: 'Feu' },
-            { value: 'water', label: 'Eau' },
-            { value: 'earth', label: 'Terre' },
-            { value: 'air', label: 'Air' }
-        ]
+            { value: 0, label: 'Neutre' },
+            { value: 1, label: 'Terre' },
+            { value: 2, label: 'Feu' },
+            { value: 3, label: 'Air' },
+            { value: 4, label: 'Eau' },
+        ],
     },
-    is_magic: { 
-        type: 'checkbox', 
-        label: 'Magique', 
-        required: false, 
-        showInCompact: true 
+    is_magic: {
+        type: 'checkbox',
+        label: 'Magique',
+        required: false,
+        showInCompact: true,
     },
     state: {
         type: 'select',
@@ -119,12 +150,12 @@ const fieldsConfig = {
         showInCompact: false,
         options: getUserRoleOptions(),
     },
-    image: { 
-        type: 'file', 
-        label: 'Image', 
-        required: false, 
-        showInCompact: false 
-    }
+    image: {
+        type: 'file',
+        label: 'Image',
+        required: false,
+        showInCompact: false,
+    },
 };
 
 // Créer une instance de modèle Spell

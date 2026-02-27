@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\Table;
 
 use App\Http\Controllers\Controller;
 use App\Models\Entity\Scenario;
+use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
@@ -47,6 +48,9 @@ class ScenarioTableController extends Controller
 
         $query = Scenario::query()->with(['createdBy']);
 
+        $user = $request->user();
+        $userRole = $user?->role ?? User::ROLE_GUEST;
+
         if ($search !== '') {
             $query->where(function ($q) use ($search) {
                 $q->where('name', 'like', "%{$search}%")
@@ -55,8 +59,24 @@ class ScenarioTableController extends Controller
             });
         }
 
+        // Visibilité : scénarios publics visibles par tous.
+        // Si non publics, réservés à l'admin/super_admin ou au créateur.
+        if (! $user) {
+            $query->where('is_public', 1);
+        } else {
+            if (! $user->isAdmin()) {
+                $query->where(function ($q) use ($user) {
+                    $q->where('is_public', 1)
+                        ->orWhere('created_by', $user->id);
+                });
+            }
+        }
+
+        // read_level = niveau minimal requis pour lire
+        $query->where('read_level', '<=', $userRole);
+
         if (array_key_exists('state', $filters) && $filters['state'] !== '' && $filters['state'] !== null) {
-            $query->where('state', (int) $filters['state']);
+            $query->where('state', (string) $filters['state']);
         }
         if (array_key_exists('is_public', $filters) && $filters['is_public'] !== '' && $filters['is_public'] !== null) {
             $query->where('is_public', (int) $filters['is_public']);

@@ -118,26 +118,17 @@ La table **effects** peut porter un champ **description** (optionnel) : court ap
 
 ---
 
-## 7. Plan d’implémentation par étapes
+## 7. Résumé de l’existant
 
-| Étape | Objectif | Fichiers / BDD |
-|-------|----------|----------------|
-| **1** | Sanitization | `EffectTextSanitizer`, tests unitaires, utilisation dans tout flux qui écrit une description d’effet (import + formulaires). |
-| **2** | Table `effect_templates` | Migration : id, slug (unique), template_text (text, sanitized), variables_allowed (JSON array), dice_notation_allowed (bool), dofusdb_effect_id (nullable), timestamps. Option : level_min/level_max si on gère le niveau au niveau du template. |
-| **3** | Lien spell_effect_types → effect_templates | Migration : effect_template_id nullable sur spell_effect_types. Remplir template_text à partir de description existante + sanitize. |
-| **4** | Variables et ndX dans les templates | Documenter syntaxe ; dans l’UI (admin), afficher les variables autorisées et exemples ndX ; à l’affichage public, résolution [var] et formatage ndX. |
-| **5** | Import DofusDB → effect_templates | Lors du scrapping sorts/items : pour chaque effet (effectId), créer ou récupérer un effect_template, générer un template_text avec [value], [agi], etc. et ndX si besoin ; sanitize puis enregistrer. Lier spell_effects / item_effects aux templates. |
-| **6** | Niveau (optionnel) | Ajouter level_min / level_max sur spell_effects et sur item_effects ; ou table effect_template_levels. Adapter l’API d’affichage pour retourner le bon texte selon le niveau. |
-| **7** | Items : table item_effects (optionnel) | Si on veut le même modèle que les sorts : item_effects (item_id, effect_template_id, value_min, value_max, dice_num, dice_side, level_min, level_max, order). Sinon, garder un JSON sur items qui référence des template_id + paramètres. |
-
----
-
-## 8. Résumé des choix
-
-- **Un référentiel de templates** (`effect_templates`) : texte sûr, variables explicites, ndX autorisé.
-- **Réutilisation** : sorts et items référencent ces templates (via spell_effect_types ou item_effects).
-- **Sûreté** : un seul point d’entrée (EffectTextSanitizer) pour tout texte d’effet.
-- **Niveau** : géré sur l’usage (spell_effect / item_effect) avec level_min / level_max pour rester simple.
-- **Cohérence** : une syntaxe documentée ([var], ndX) et appliquée partout.
-
-Cette approche reste simple (peu de tables nouvelles si on réutilise spell_effect_types), robuste (sanitization centralisée, pas d’HTML/JS), et cohérente (même mécanisme pour items et sorts).
+- **Sanitizer unique** : `App\Services\Effect\EffectTextSanitizer` est aujourd’hui le point d’entrée pour tout texte d’effet (templates, descriptions, formules texte).
+- **Syntaxe normalisée** :
+  - Variables `[nom]` (voir `SYNTAXE_EFFETS.md`),
+  - dés `ndX`,
+  - formules alignées sur le moteur de caractéristiques (`CharacteristicFormulaService`).
+- **Stockage des effets** :
+  - Les templates et paramètres sont portés par `sub_effects`, `effects` et le pivot `effect_sub_effect` (et non plus par une table générique `effect_templates`).
+  - Les entités (sorts, items, etc.) réutilisent ces effets via `effect_usages`.
+- **Sûreté** :
+  - Pas d’HTML/JS dans les textes,
+  - placeholders `[var]` et `ndX` préservés,
+  - même logique appliquée à l’import (scrapping) et aux formulaires admin.

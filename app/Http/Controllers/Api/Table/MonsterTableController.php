@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\Table;
 
 use App\Http\Controllers\Controller;
 use App\Models\Entity\Monster;
+use App\Models\Type\MonsterRace;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
@@ -14,6 +15,23 @@ use Illuminate\Support\Facades\Gate;
  * @description
  * Endpoint "Table v2" (TanStack Table) pour les monstres.
  * Retourne un `TableResponse` avec des cellules typées: `Cell{type,value,params}`.
+ *
+ * Contrat commun (utilisé par le moteur de recherche d'entités) :
+ * - Paramètres acceptés :
+ *   - `search` : recherche texte (id Dofus, nom de la créature, nom de la race)
+ *   - `filters[size]`, `filters[is_boss]`, `filters[id]` (+ équivalents plats `size`, `is_boss`, `id`)
+ *   - `limit` : nombre max de résultats (1..20000)
+ *   - `sort` : colonne de tri (`id`, `size`, `is_boss`, `dofusdb_id`, `created_at`, `updated_at`, `name`)
+ *   - `order` : `asc` ou `desc`
+ *   - `format` : `cells` (défaut) ou `entities` (renvoie `entities[]`)
+ *   - `whitelist` / `ids[]` : liste d'ids à inclure uniquement
+ *   - `blacklist` / `exclude[]` : liste d'ids à exclure
+ * - Réponse `format=entities` :
+ *   - `entities[]` : tableau d'entités brutes (monstre + relations minimales)
+ *   - `meta.entityType` = `monsters`
+ *   - `meta.query` = paramètres réellement appliqués
+ *   - `meta.capabilities` = droits de l'utilisateur courant
+ *   - `meta.filterOptions` = options pour les filtres (taille, boss)
  */
 class MonsterTableController extends Controller
 {
@@ -28,7 +46,7 @@ class MonsterTableController extends Controller
         $format = $request->filled('format') ? (string) $request->get('format') : 'cells';
 
         $filters = (array) ($request->input('filters', $request->input('filter', [])) ?? []);
-        foreach (['size', 'is_boss'] as $k) {
+        foreach (['size', 'is_boss', 'monster_race_id'] as $k) {
             if (!array_key_exists($k, $filters) && $request->has($k)) {
                 $filters[$k] = $request->get($k);
             }
@@ -64,12 +82,46 @@ class MonsterTableController extends Controller
         if (array_key_exists('id', $filters) && $filters['id'] !== '' && $filters['id'] !== null) {
             $query->where('id', (int) $filters['id']);
         }
+        if (array_key_exists('monster_race_id', $filters) && $filters['monster_race_id'] !== '' && $filters['monster_race_id'] !== null) {
+            $query->where('monster_race_id', (int) $filters['monster_race_id']);
+        }
 
-        $allowedSort = ['id', 'size', 'is_boss', 'dofusdb_id', 'created_at', 'updated_at'];
-        if (in_array($sort, $allowedSort, true)) {
+        // Liste blanche de tri : id, size, is_boss, dofusdb_id, dates, nom de créature (name ou creature_name).
+        $allowedSort = ['id', 'size', 'is_boss', 'boss_pa', 'dofusdb_id', 'created_at', 'updated_at', 'name', 'creature_name'];
+
+        if ($sort === 'name' || $sort === 'creature_name') {
+            // Tri par nom de créature (alphabétique)
+            $query->join('creatures', 'monsters.creature_id', '=', 'creatures.id')
+                ->orderBy('creatures.name', $order)
+                ->select('monsters.*');
+        } elseif (in_array($sort, $allowedSort, true)) {
             $query->orderBy($sort, $order);
         } else {
             $query->latest();
+        }
+
+        // Whitelist / blacklist d'ids (utiles pour le moteur de recherche)
+        $whitelist = $request->input('whitelist', $request->input('ids', []));
+        $blacklist = $request->input('blacklist', $request->input('exclude', []));
+
+        $whitelistIds = collect((array) $whitelist)
+            ->map(fn ($v) => (int) $v)
+            ->filter(fn ($v) => $v > 0)
+            ->values()
+            ->all();
+
+        $blacklistIds = collect((array) $blacklist)
+            ->map(fn ($v) => (int) $v)
+            ->filter(fn ($v) => $v > 0)
+            ->values()
+            ->all();
+
+        if (!empty($whitelistIds)) {
+            $query->whereIn('id', $whitelistIds);
+        }
+
+        if (!empty($blacklistIds)) {
+            $query->whereNotIn('id', $blacklistIds);
         }
 
         $rows = $query->limit($limit)->get();
@@ -82,12 +134,24 @@ class MonsterTableController extends Controller
             'manageAny' => Gate::allows('manageAny', Monster::class),
         ];
 
+        $monsterRaceOptions = MonsterRace::query()
+            ->select(['id', 'name'])
+            ->orderBy('name')
+            ->get()
+            ->map(fn (MonsterRace $race) => [
+                'value' => (string) $race->id,
+                'label' => (string) $race->name,
+            ])
+            ->values()
+            ->all();
+
         $filterOptions = [
             'size' => collect(Monster::SIZE)->map(fn ($label, $value) => ['value' => (string) $value, 'label' => (string) $label])->values()->all(),
             'is_boss' => [
                 ['value' => '1', 'label' => 'Oui'],
                 ['value' => '0', 'label' => 'Non'],
             ],
+            'monster_race_id' => $monsterRaceOptions,
         ];
 
         // Mode "entities" : retourner les entités brutes

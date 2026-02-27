@@ -1,37 +1,79 @@
 <script setup>
 /**
- * Admin Effects — Liste à gauche, panneau création/édition à droite.
+ * Admin Effects — Liste à gauche, panneau groupe + édition d'un degré à droite.
  * Gestion des sous-effets (ordre, scope, paramètres). Bouton « Ajouter un degré ».
  */
-import { watch, ref } from 'vue';
+import { watch } from 'vue';
 import { Head, Link, useForm } from '@inertiajs/vue3';
 import { usePageTitle } from '@/Composables/layout/usePageTitle';
 import Main from '@/Pages/Layouts/Main.vue';
 import InputField from '@/Pages/Molecules/data-input/InputField.vue';
 import SelectFieldNative from '@/Pages/Molecules/data-input/SelectFieldNative.vue';
+import EntityPickerCore from '@/Pages/Organismes/entity/EntityPickerCore.vue';
 
 const { setPageTitle } = usePageTitle();
 
 const props = defineProps({
     effects: { type: Array, required: true },
+    groups: { type: Array, default: () => [] },
     selected: { type: [Object, String], default: null },
     options: {
         type: Object,
-        default: () => ({ effect_groups: [], sub_effects: [], scopes: [] }),
+        default: () => ({ effect_groups: [], sub_effects: [], scopes: [], characteristics: [], monsters: [] }),
     },
 });
 
 defineOptions({ layout: Main });
 setPageTitle('Effets');
 
-function defaultParamsForSubEffect(subEffect) {
-    if (!subEffect?.param_schema?.params) return {};
-    const p = {};
-    for (const param of subEffect.param_schema.params) {
-        if (param.type === 'characteristic') p.characteristic = '';
-        if (param.type === 'formula') p.value_formula = '';
-    }
-    return p;
+function defaultParamsForSubEffect() {
+    return {
+        characteristic: '',
+        value_formula: '',
+        value_formula_crit: '',
+        monster_id: '',
+    };
+}
+
+/** Schéma des paramètres du sous-effet sélectionné (pour afficher les bons champs). */
+function getParamSchemaForRow(row) {
+    if (!row?.sub_effect_id || !props.options?.sub_effects) return null;
+    const sub = props.options.sub_effects.find((s) => s.id === row.sub_effect_id);
+    return sub?.param_schema ?? null;
+}
+
+/** Caractéristiques filtrées selon le param_schema du sous-effet (categories). */
+function characteristicsForRow(row) {
+    const schema = getParamSchemaForRow(row);
+    const param = schema?.params?.find((p) => p.key === 'characteristic');
+    const categories = param?.categories;
+    if (!categories?.length) return props.options.characteristics ?? [];
+    return (props.options.characteristics ?? []).filter((c) => categories.includes(c.category));
+}
+
+/** Indique si le sous-effet a un paramètre "caractéristique" (élément ou toute caractéristique). */
+function rowHasCharacteristicParam(row) {
+    const schema = getParamSchemaForRow(row);
+    return schema?.params?.some((p) => p.key === 'characteristic') ?? false;
+}
+
+/** Indique si le sous-effet a un paramètre "valeur" (formule). */
+function rowHasValueParam(row) {
+    const schema = getParamSchemaForRow(row);
+    return schema?.params?.some((p) => p.key === 'value') ?? false;
+}
+
+/** Indique si le sous-effet a un paramètre monstre (invoquer). */
+function rowHasMonsterParam(row) {
+    const schema = getParamSchemaForRow(row);
+    return schema?.params?.some((p) => p.type === 'monster') ?? false;
+}
+
+/** Label du champ caractéristique (Élément vs Caractéristique). */
+function characteristicLabelForRow(row) {
+    const schema = getParamSchemaForRow(row);
+    const param = schema?.params?.find((p) => p.key === 'characteristic');
+    return param?.label ?? 'Caractéristique';
 }
 
 function buildFormData(selected) {
@@ -51,26 +93,24 @@ function buildFormData(selected) {
         description: selected.description ?? '',
         effect_group_id: selected.effect_group_id ?? '',
         degree: selected.degree ?? '',
-        effect_sub_effects: (selected.sub_effects || []).map((s) => {
-            const defaultP = (schema) => {
-                const p = {};
-                (schema?.params || []).forEach((param) => {
-                    if (param.type === 'characteristic') p.characteristic = '';
-                    if (param.type === 'formula') p.value_formula = '';
-                });
-                return p;
-            };
-            return {
-                sub_effect_id: s.id,
-                order: s.order ?? 0,
-                scope: s.scope ?? 'general',
-                value_min: s.value_min ?? '',
-                value_max: s.value_max ?? '',
-                dice_num: s.dice_num ?? '',
-                dice_side: s.dice_side ?? '',
-                params: { ...defaultP(s.param_schema), ...(s.params && typeof s.params === 'object' ? s.params : {}) },
-            };
-        }),
+        effect_sub_effects: (selected.sub_effects || []).map((s) => ({
+            sub_effect_id: s.id,
+            order: s.order ?? 0,
+            scope: s.scope ?? 'general',
+            value_min: s.value_min ?? '',
+            value_max: s.value_max ?? '',
+            dice_num: s.dice_num ?? '',
+            dice_side: s.dice_side ?? '',
+            duration_formula: s.duration_formula ?? '',
+            logic_group: s.logic_group ?? '',
+            logic_operator: s.logic_operator ?? '',
+            logic_condition: s.logic_condition ?? '',
+            crit_only: s.crit_only ?? false,
+            params: {
+                ...defaultParamsForSubEffect(),
+                ...(s.params && typeof s.params === 'object' ? s.params : {}),
+            },
+        })),
     };
 }
 
@@ -102,27 +142,17 @@ function addSubEffect() {
         value_max: '',
         dice_num: '',
         dice_side: '',
-        params: defaultParamsForSubEffect(first),
+        crit_only: false,
+        params: defaultParamsForSubEffect(),
     });
 }
 
-function getSubEffectById(subEffectId) {
-    return props.options.sub_effects?.find((s) => s.id === subEffectId) ?? null;
-}
-
-/** Filtre les caractéristiques selon param.categories (ex. frapper ⇒ element). */
-function characteristicOptionsForParam(param) {
-    const list = props.options.characteristics ?? [];
-    const categories = param.categories;
-    if (!Array.isArray(categories) || categories.length === 0) return list;
-    return list.filter((c) => c.category && categories.includes(c.category));
-}
-
 function onSubEffectChange(row) {
-    const sub = getSubEffectById(row.sub_effect_id);
-    if (sub) {
-        row.params = { ...defaultParamsForSubEffect(sub), ...(row.params || {}) };
-    }
+    // Changement d'action : on réinitialise les paramètres à la structure générique.
+    row.params = {
+        ...defaultParamsForSubEffect(),
+        ...(row.params || {}),
+    };
 }
 
 function removeSubEffect(index) {
@@ -132,14 +162,15 @@ function removeSubEffect(index) {
     });
 }
 
-function subEffectLabel(subEffectId) {
-    const s = getSubEffectById(subEffectId);
-    return s ? s.slug : `#${subEffectId}`;
-}
-
-function paramSchemaForRow(row) {
-    const sub = getSubEffectById(row.sub_effect_id);
-    return sub?.param_schema?.params ?? [];
+function duplicateSubEffect(index) {
+    const original = form.effect_sub_effects[index];
+    if (!original) return;
+    const clone = JSON.parse(JSON.stringify(original));
+    // On insère juste après la ligne originale
+    form.effect_sub_effects.splice(index + 1, 0, clone);
+    form.effect_sub_effects.forEach((row, i) => {
+        row.order = i;
+    });
 }
 
 function submit() {
@@ -169,6 +200,10 @@ function submit() {
                 value_max: row.value_max !== '' && row.value_max != null ? Number(row.value_max) : null,
                 dice_num: row.dice_num !== '' && row.dice_num != null ? Number(row.dice_num) : null,
                 dice_side: row.dice_side !== '' && row.dice_side != null ? Number(row.dice_side) : null,
+                duration_formula: row.duration_formula || null,
+                logic_group: row.logic_group || null,
+                logic_operator: row.logic_operator || null,
+                logic_condition: row.logic_condition || null,
                 params: row.params && typeof row.params === 'object' ? row.params : null,
             })),
         };
@@ -187,6 +222,11 @@ function destroy() {
         form.delete(route('admin.effects.destroy', props.selected.id));
     }
 }
+
+function duplicateEffect() {
+    if (!props.selected?.id) return;
+    duplicateForm.post(route('admin.effects.duplicate', props.selected.id));
+}
 </script>
 
 <template>
@@ -196,7 +236,7 @@ function destroy() {
             <div class="p-3">
                 <div class="font-semibold text-base-content">Effets</div>
                 <p class="mt-1 text-xs text-base-content/70">
-                    Conteneurs de sous-effets. Degré = puissance (sorts). Niveau géré sur l'usage (entité).
+                    Conteneurs de sous-effets. Les entrées listent les groupes d'effets (degrés).
                 </p>
             </div>
             <nav class="flex flex-col gap-0.5 p-2">
@@ -208,14 +248,19 @@ function destroy() {
                     + Nouvel effet
                 </Link>
                 <Link
-                    v-for="e in effects"
-                    :key="e.id"
-                    :href="route('admin.effects.show', e.id)"
+                    v-for="g in groups"
+                    :key="g.id ? 'group-' + g.id : 'single-' + g.effects[0]?.id"
+                    :href="route('admin.effects.show', g.effects[0].id)"
                     class="flex items-center gap-2 rounded-lg px-3 py-2 text-left transition-colors border-l-4 border-transparent"
-                    :class="selected?.id === e.id ? 'bg-primary text-primary-content' : 'hover:bg-base-300'"
+                    :class="selected && g.effects.some((e) => e.id === selected.id) ? 'bg-primary text-primary-content' : 'hover:bg-base-300'"
                 >
-                    <span class="truncate">{{ e.name || e.slug || 'Effet #' + e.id }}</span>
-                    <span v-if="e.degree != null" class="text-xs opacity-70 shrink-0">d{{ e.degree }}</span>
+                    <span class="truncate">{{ g.label }}</span>
+                    <span v-if="g.effects.length > 1" class="text-xs opacity-70 shrink-0">
+                        {{ g.effects.length }} degrés
+                    </span>
+                    <span v-else-if="g.effects[0]?.degree != null" class="text-xs opacity-70 shrink-0">
+                        d{{ g.effects[0].degree }}
+                    </span>
                 </Link>
             </nav>
         </aside>
@@ -298,27 +343,37 @@ function destroy() {
                                                 </option>
                                             </select>
                                         </div>
-                                        <button
-                                            type="button"
-                                            class="btn btn-ghost btn-sm btn-square text-error"
-                                            title="Retirer"
-                                            @click="removeSubEffect(index)"
-                                        >
-                                            ×
-                                        </button>
+                                        <div class="flex gap-1 ml-auto">
+                                            <button
+                                                type="button"
+                                                class="btn btn-ghost btn-sm btn-square"
+                                                title="Dupliquer ce sous-effet"
+                                                @click="duplicateSubEffect(index)"
+                                            >
+                                                +
+                                            </button>
+                                            <button
+                                                type="button"
+                                                class="btn btn-ghost btn-sm btn-square text-error"
+                                                title="Retirer"
+                                                @click="removeSubEffect(index)"
+                                            >
+                                                ×
+                                            </button>
+                                        </div>
                                     </div>
                                     <template v-if="row.sub_effect_id">
                                         <div class="flex flex-wrap items-end gap-3 border-t border-base-300 pt-3">
-                                            <template v-for="param in paramSchemaForRow(row)" :key="param.key">
-                                                <div v-if="param.type === 'characteristic'" class="min-w-[140px]">
-                                                    <label class="label text-xs">{{ param.label }}</label>
+                                            <template v-if="rowHasCharacteristicParam(row)">
+                                                <div class="min-w-[160px]">
+                                                    <label class="label text-xs">{{ characteristicLabelForRow(row) }}</label>
                                                     <select
                                                         v-model="row.params.characteristic"
                                                         class="select select-bordered select-sm w-full"
                                                     >
                                                         <option value="">— Choisir —</option>
                                                         <option
-                                                            v-for="c in characteristicOptionsForParam(param)"
+                                                            v-for="c in characteristicsForRow(row)"
                                                             :key="c.key"
                                                             :value="c.key"
                                                         >
@@ -326,8 +381,23 @@ function destroy() {
                                                         </option>
                                                     </select>
                                                 </div>
-                                                <div v-else-if="param.type === 'formula'" class="flex-1 min-w-[200px]">
-                                                    <label class="label text-xs">{{ param.label }}</label>
+                                            </template>
+                                            <template v-if="rowHasMonsterParam(row)">
+                                                <div class="min-w-[220px]">
+                                                    <label class="label text-xs">Monstre</label>
+                                                    <EntityPickerCore
+                                                        v-model="row.params.monster_id"
+                                                        entity-type="monsters"
+                                                        :multiple="false"
+                                                        variant="compact"
+                                                        placeholder="Choisir un monstre…"
+                                                        size="sm"
+                                                    />
+                                                </div>
+                                            </template>
+                                            <template v-if="rowHasValueParam(row)">
+                                                <div class="flex-1 min-w-[200px]">
+                                                    <label class="label text-xs">Valeur (formule)</label>
                                                     <input
                                                         v-model="row.params.value_formula"
                                                         type="text"
@@ -338,7 +408,62 @@ function destroy() {
                                                         Formule : ndX, [min-max], [level], [agi], floor(), etc.
                                                     </p>
                                                 </div>
+                                                <div class="flex-1 min-w-[200px]">
+                                                    <label class="label text-xs">Valeur critique (formule, optionnel)</label>
+                                                    <input
+                                                        v-model="row.params.value_formula_crit"
+                                                        type="text"
+                                                        class="input input-bordered input-sm w-full"
+                                                        placeholder="ex: [value]*2, 3d6…"
+                                                    />
+                                                    <p class="text-xs text-base-content/60 mt-0.5">
+                                                        Utilisée uniquement en cas de critique.
+                                                    </p>
+                                                </div>
                                             </template>
+                                            <div class="flex flex-col gap-1 min-w-[120px]">
+                                                <label class="label text-xs">Uniquement en critique</label>
+                                                <label class="label cursor-pointer justify-start gap-2">
+                                                    <input
+                                                        v-model="row.crit_only"
+                                                        type="checkbox"
+                                                        class="checkbox checkbox-sm"
+                                                    />
+                                                    <span class="label-text">Ce sous-effet ne s’applique qu’en cas de critique</span>
+                                                </label>
+                                            </div>
+                                            <div class="flex flex-col gap-1 min-w-[220px]">
+                                                <label class="label text-xs">Durée (formule, en tours ou secondes)</label>
+                                                <input
+                                                    v-model="row.duration_formula"
+                                                    type="text"
+                                                    class="input input-bordered input-sm w-full"
+                                                    placeholder="ex: 2 (tours), [level]/2, 10 (secondes)…"
+                                                />
+                                                <p class="text-xs text-base-content/60 mt-0.5">
+                                                    Formule numérique, interprétée selon le contexte (tours en combat, secondes hors combat).
+                                                </p>
+                                            </div>
+                                            <div class="flex flex-col gap-1 min-w-[220px]">
+                                                <label class="label text-xs">Opérateur avec le précédent</label>
+                                                <select
+                                                    v-model="row.logic_operator"
+                                                    class="select select-bordered select-sm w-full"
+                                                >
+                                                    <option value="">— Aucun (premier) —</option>
+                                                    <option value="AND">ET</option>
+                                                    <option value="OR">OU (si condition)</option>
+                                                </select>
+                                                <div v-if="row.logic_operator === 'OR'" class="mt-1">
+                                                    <label class="label text-xs">Condition pour le OU</label>
+                                                    <input
+                                                        v-model="row.logic_condition"
+                                                        type="text"
+                                                        class="input input-bordered input-sm w-full"
+                                                        placeholder="ex: [target_is_ally] == 1"
+                                                    />
+                                                </div>
+                                            </div>
                                         </div>
                                     </template>
                                 </div>
@@ -358,6 +483,15 @@ function destroy() {
                             @click="duplicateDegree"
                         >
                             Ajouter un degré
+                        </button>
+                        <button
+                            v-if="selected?.id"
+                            type="button"
+                            class="btn btn-outline"
+                            :disabled="duplicateForm.processing"
+                            @click="duplicateEffect"
+                        >
+                            Dupliquer l'effet
                         </button>
                         <button
                             v-if="selected?.id"

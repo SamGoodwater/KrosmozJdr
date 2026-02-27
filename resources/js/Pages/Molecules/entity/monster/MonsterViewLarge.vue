@@ -17,6 +17,7 @@ import CellRenderer from "@/Pages/Atoms/data-display/CellRenderer.vue";
 import Tooltip from "@/Pages/Atoms/feedback/Tooltip.vue";
 import EntityActions from '@/Pages/Organismes/entity/EntityActions.vue';
 import EntityViewHeader from "@/Pages/Molecules/entity/shared/EntityViewHeader.vue";
+import ImageViewer from "@/Pages/Molecules/data-display/ImageViewer.vue";
 import { useCopyToClipboard } from '@/Composables/utils/useCopyToClipboard';
 import { useDownloadPdf } from '@/Composables/utils/useDownloadPdf';
 import { getEntityRouteConfig, resolveEntityRouteUrl } from '@/Composables/entity/entityRouteRegistry';
@@ -98,18 +99,16 @@ const technicalFields = computed(() => ([
     'updated_at',
 ].filter(canShowField)));
 
-const bodyFields = computed(() => ([
-    // creature_name est le titre
-].filter(canShowField)));
-
 const getFieldLabel = (fieldKey) => {
-    return descriptors.value?.[fieldKey]?.general?.label || fieldKey;
+    const desc = descriptors.value?.[fieldKey];
+    return desc?.general?.label ?? desc?.label ?? fieldKey;
 };
 
 const getFieldTooltip = (fieldKey) => getEntityFieldTooltip(descriptors.value?.[fieldKey]);
 
 const getFieldIcon = (fieldKey) => {
-    return descriptors.value?.[fieldKey]?.general?.icon || 'fa-solid fa-info-circle';
+    const desc = descriptors.value?.[fieldKey];
+    return desc?.general?.icon ?? desc?.icon ?? 'fa-solid fa-info-circle';
 };
 
 const getCell = (fieldKey) => {
@@ -152,6 +151,9 @@ const handleAction = async (actionKey) => {
             router.visit(route('entities.monsters.show', { monster: monsterId }));
             emit('view', props.monster);
             break;
+        case 'quick-view':
+            emit('quick-view', props.monster);
+            break;
         case 'edit':
             router.visit(route('entities.monsters.edit', { monster: monsterId }));
             emit('edit', props.monster);
@@ -187,8 +189,26 @@ const handleAction = async (actionKey) => {
     <div class="space-y-6">
         <EntityViewHeader mode="large">
             <template #media>
-                <div class="w-32 h-32 md:w-40 md:h-40 rounded-lg bg-base-200 flex items-center justify-center border border-base-300">
-                    <Icon source="fa-solid fa-dragon" :alt="monster.creature?.name || 'Monstre'" size="xl" class="text-primary-400" />
+                <div class="group relative w-44 h-44 md:w-64 md:h-64 lg:w-72 lg:h-72">
+                    <ImageViewer
+                        v-if="monster.creature?.image"
+                        :src="monster.creature.image"
+                        :alt="monster.creature?.name || 'Monstre'"
+                        :caption="monster.creature?.name || ''"
+                        preload="hover"
+                        :image-props="{
+                            size: 'xl',
+                            rounded: 'lg',
+                            fit: 'cover',
+                            class: 'w-full h-full',
+                        }"
+                    />
+                    <div
+                        v-else
+                        class="w-full h-full rounded-lg bg-base-200 flex items-center justify-center border border-base-300"
+                    >
+                        <Icon source="fa-solid fa-dragon" :alt="monster.creature?.name || 'Monstre'" size="xl" class="text-primary-400" />
+                    </div>
                 </div>
             </template>
 

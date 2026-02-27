@@ -962,6 +962,7 @@ erDiagram
     template_text : text
     formula : text
     variables_allowed : longtext
+    param_schema : longtext
     dofusdb_effect_id : int(10) unsigned
     created_at : timestamp
     updated_at : timestamp

@@ -35,7 +35,7 @@
 | **Caractéristiques** (admin) | Admin (pages de gestion) | Admin (création, modification, suppression) |
 
 - **Scrapping** : routes API et page dashboard protégées par `auth` + `role:admin`. Menu « Scrapping » via `access-permissions.scrapping` (users manageAny = admin).
-- **Effets** : API GET (for-entity, usages, sub-effects, effects) sans auth ; API POST/PATCH/DELETE et pages admin `admin/sub-effects`, `admin/effects` avec `auth` + `role:game_master`. Menu « Sous-effets » / « Effets » via `canAccess('effectsAdmin')` (spells updateAny = game_master).
+- **Effets** : API GET (for-entity, usages, sub-effects, effects) sans auth ; API POST/PATCH/DELETE sur les effects/usages et page admin `admin/effects` avec `auth` + `role:game_master`. Pas d’UI dédiée aux sous-effets (gérés via seeders). Menu « Effets » via `canAccess('effectsAdmin')` (spells updateAny = game_master).
 - **Caractéristiques** : routes `admin/characteristics` avec `auth` + `role:admin`. Lecture publique des définitions (si exposée ailleurs) pour tout le monde.
 
 ---

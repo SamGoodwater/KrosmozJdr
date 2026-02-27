@@ -29,7 +29,7 @@ class ItemTableController extends Controller
         $format = $request->filled('format') ? (string) $request->get('format') : 'cells';
 
         $filters = (array) ($request->input('filters', $request->input('filter', [])) ?? []);
-        foreach (['level', 'rarity', 'item_type_id'] as $k) {
+        foreach (['level', 'rarity', 'item_type_id', 'state'] as $k) {
             if (!array_key_exists($k, $filters) && $request->has($k)) {
                 $filters[$k] = $request->get($k);
             }
@@ -62,14 +62,16 @@ class ItemTableController extends Controller
             $query->where('item_type_id', (int) $filters['item_type_id']);
         }
         if (array_key_exists('rarity', $filters) && $filters['rarity'] !== '' && $filters['rarity'] !== null) {
-            // Rareté peut être string (common/uncommon/...) ou int selon DB.
             $query->where('rarity', $filters['rarity']);
         }
         if (array_key_exists('id', $filters) && $filters['id'] !== '' && $filters['id'] !== null) {
             $query->where('id', (int) $filters['id']);
         }
+        if (array_key_exists('state', $filters) && $filters['state'] !== '' && $filters['state'] !== null) {
+            $query->where('state', (string) $filters['state']);
+        }
 
-        $allowedSort = ['id', 'name', 'level', 'rarity', 'dofusdb_id', 'created_at', 'updated_at'];
+        $allowedSort = ['id', 'name', 'level', 'rarity', 'dofusdb_id', 'state', 'created_at', 'updated_at'];
         if (in_array($sort, $allowedSort, true)) {
             $query->orderBy($sort, $order);
         } else {

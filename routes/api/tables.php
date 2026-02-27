@@ -19,6 +19,14 @@ Route::middleware(['web'])->prefix('tables')->group(function () {
         ->name('api.tables.resource-types');
     Route::get('/items', [App\Http\Controllers\Api\Table\ItemTableController::class, 'index'])
         ->name('api.tables.items');
+    Route::get('/item-types', [App\Http\Controllers\Api\Table\ItemTypeTableController::class, 'index'])
+        ->name('api.tables.item-types');
+    Route::get('/consumable-types', [App\Http\Controllers\Api\Table\ConsumableTypeTableController::class, 'index'])
+        ->name('api.tables.consumable-types');
+    Route::get('/monster-races', [App\Http\Controllers\Api\Table\MonsterRaceTableController::class, 'index'])
+        ->name('api.tables.monster-races');
+    Route::get('/spell-categories', [App\Http\Controllers\Api\Table\SpellCategoryTableController::class, 'index'])
+        ->name('api.tables.spell-categories');
     Route::get('/spells', [App\Http\Controllers\Api\Table\SpellTableController::class, 'index'])
         ->name('api.tables.spells');
     Route::get('/monsters', [App\Http\Controllers\Api\Table\MonsterTableController::class, 'index'])

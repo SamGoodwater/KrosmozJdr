@@ -10,11 +10,10 @@ use Illuminate\Database\Seeder;
 
 /**
  * Seed du référentiel de sous-effets (actions fondamentales).
- * Pattern : action → caractéristique (élément = caractéristique) → valeur.
- * param_schema décrit les paramètres ; "categories" sur characteristic filtre la liste (ex. frapper ⇒ element).
+ * Liste : frapper, soigner, protéger, voler-vie, booster, retirer, voler-caracteristiques, invoquer, déplacer.
+ * param_schema décrit les paramètres ; categories sur characteristic filtre la liste (element / toutes caractéristiques / monster / sans option).
  *
  * @see docs/50-Fonctionnalités/Spell-Effects/ARCHITECTURE_EFFETS_3_COUCHES.md
- * @see docs/50-Fonctionnalités/Spell-Effects/NOTATION_SOUS_EFFETS.md
  */
 class SubEffectSeeder extends Seeder
 {
@@ -23,44 +22,6 @@ class SubEffectSeeder extends Seeder
         $sanitizer = new EffectTextSanitizer();
 
         $rows = [
-            [
-                'slug' => 'booster',
-                'type_slug' => 'booster',
-                'template_text' => 'Ajout [characteristic] de [value].',
-                'variables_allowed' => ['characteristic', 'value'],
-                'param_schema' => [
-                    'action' => 'booster',
-                    'params' => [
-                        ['key' => 'characteristic', 'type' => 'characteristic', 'label' => 'Caractéristique', 'categories' => ['stat', 'resource']],
-                        ['key' => 'value', 'type' => 'formula', 'label' => 'Valeur (formule)'],
-                    ],
-                ],
-            ],
-            [
-                'slug' => 'retirer',
-                'type_slug' => 'retirer',
-                'template_text' => 'Retrait [characteristic] de [value].',
-                'variables_allowed' => ['characteristic', 'value'],
-                'param_schema' => [
-                    'action' => 'retirer',
-                    'params' => [
-                        ['key' => 'characteristic', 'type' => 'characteristic', 'label' => 'Caractéristique', 'categories' => ['stat', 'resource']],
-                        ['key' => 'value', 'type' => 'formula', 'label' => 'Valeur (formule)'],
-                    ],
-                ],
-            ],
-            [
-                'slug' => 'soigner',
-                'type_slug' => 'soigner',
-                'template_text' => 'Soin [value].',
-                'variables_allowed' => ['value'],
-                'param_schema' => [
-                    'action' => 'soigner',
-                    'params' => [
-                        ['key' => 'value', 'type' => 'formula', 'label' => 'Valeur (formule)'],
-                    ],
-                ],
-            ],
             [
                 'slug' => 'frapper',
                 'type_slug' => 'frapper',
@@ -74,7 +35,100 @@ class SubEffectSeeder extends Seeder
                     ],
                 ],
             ],
+            [
+                'slug' => 'soigner',
+                'type_slug' => 'soigner',
+                'template_text' => 'Soin [value] [characteristic].',
+                'variables_allowed' => ['value', 'characteristic'],
+                'param_schema' => [
+                    'action' => 'soigner',
+                    'params' => [
+                        ['key' => 'characteristic', 'type' => 'characteristic', 'label' => 'Élément', 'categories' => ['element']],
+                        ['key' => 'value', 'type' => 'formula', 'label' => 'Valeur (formule)'],
+                    ],
+                ],
+            ],
+            [
+                'slug' => 'protéger',
+                'type_slug' => 'protéger',
+                'template_text' => 'Protège la cible.',
+                'variables_allowed' => [],
+                'param_schema' => ['action' => 'protéger', 'params' => []],
+            ],
+            [
+                'slug' => 'voler-vie',
+                'type_slug' => 'voler-vie',
+                'template_text' => 'Vol de vie [value] [characteristic].',
+                'variables_allowed' => ['value', 'characteristic'],
+                'param_schema' => [
+                    'action' => 'voler-vie',
+                    'params' => [
+                        ['key' => 'characteristic', 'type' => 'characteristic', 'label' => 'Élément', 'categories' => ['element']],
+                        ['key' => 'value', 'type' => 'formula', 'label' => 'Valeur (formule)'],
+                    ],
+                ],
+            ],
+            [
+                'slug' => 'booster',
+                'type_slug' => 'booster',
+                'template_text' => 'Ajout [characteristic] de [value].',
+                'variables_allowed' => ['characteristic', 'value'],
+                'param_schema' => [
+                    'action' => 'booster',
+                    'params' => [
+                        ['key' => 'characteristic', 'type' => 'characteristic', 'label' => 'Caractéristique', 'categories' => ['stat', 'resource', 'element']],
+                        ['key' => 'value', 'type' => 'formula', 'label' => 'Valeur (formule)'],
+                    ],
+                ],
+            ],
+            [
+                'slug' => 'retirer',
+                'type_slug' => 'retirer',
+                'template_text' => 'Retrait [characteristic] de [value].',
+                'variables_allowed' => ['characteristic', 'value'],
+                'param_schema' => [
+                    'action' => 'retirer',
+                    'params' => [
+                        ['key' => 'characteristic', 'type' => 'characteristic', 'label' => 'Caractéristique', 'categories' => ['stat', 'resource', 'element']],
+                        ['key' => 'value', 'type' => 'formula', 'label' => 'Valeur (formule)'],
+                    ],
+                ],
+            ],
+            [
+                'slug' => 'voler-caracteristiques',
+                'type_slug' => 'voler-caracteristiques',
+                'template_text' => 'Vol [characteristic] de [value].',
+                'variables_allowed' => ['characteristic', 'value'],
+                'param_schema' => [
+                    'action' => 'voler-caracteristiques',
+                    'params' => [
+                        ['key' => 'characteristic', 'type' => 'characteristic', 'label' => 'Caractéristique', 'categories' => ['stat', 'resource', 'element']],
+                        ['key' => 'value', 'type' => 'formula', 'label' => 'Valeur (formule)'],
+                    ],
+                ],
+            ],
+            [
+                'slug' => 'invoquer',
+                'type_slug' => 'invoquer',
+                'template_text' => 'Invocation [monster].',
+                'variables_allowed' => ['monster'],
+                'param_schema' => [
+                    'action' => 'invoquer',
+                    'params' => [
+                        ['key' => 'monster_id', 'type' => 'monster', 'label' => 'Monstre'],
+                    ],
+                ],
+            ],
+            [
+                'slug' => 'déplacer',
+                'type_slug' => 'déplacer',
+                'template_text' => 'Déplace la cible.',
+                'variables_allowed' => [],
+                'param_schema' => ['action' => 'déplacer', 'params' => []],
+            ],
         ];
+
+        $allowedSlugs = array_column($rows, 'slug');
 
         foreach ($rows as $row) {
             $template_text = isset($row['template_text'])
@@ -91,6 +145,9 @@ class SubEffectSeeder extends Seeder
                 $payload
             );
         }
+
+        // Retirer les anciens sous-effets qui ne font plus partie du référentiel
+        SubEffect::whereNotIn('slug', $allowedSlugs)->delete();
 
         if ($this->command) {
             $this->command->info('SubEffectSeeder : ' . count($rows) . ' sous-effets créés ou mis à jour.');
