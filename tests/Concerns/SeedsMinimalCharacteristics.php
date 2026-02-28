@@ -15,12 +15,12 @@ trait SeedsMinimalCharacteristics
 {
     protected function seedMinimalCharacteristicsIfEmpty(): void
     {
-        if (Characteristic::where('key', 'life_creature')->exists()) {
+        if (Characteristic::where('key', 'life_points_creature')->exists()) {
             return;
         }
 
         $life = Characteristic::create([
-            'key' => 'life_creature',
+            'key' => 'life_points_creature',
             'name' => 'Vie',
             'short_name' => 'PV',
             'type' => 'int',

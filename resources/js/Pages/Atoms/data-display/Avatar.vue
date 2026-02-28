@@ -50,6 +50,7 @@ import { getCommonProps, getCommonAttrs, getCustomUtilityProps, getCustomUtility
 import { sizeXlList } from '@/Pages/Atoms/atomMap';
 import { sizeMap, roundedMap, ringMap, ringColorMap, ringOffsetMap, ringOffsetColorMap } from './data-displayMap';
 import { generateColorFromString } from '@/Utils/color/Color';
+import { FALLBACK_IMAGE_URL } from '@/Utils/file/ImageService';
 
 const props = defineProps({
     ...getCommonProps(),
@@ -89,9 +90,8 @@ const isLoading = ref(false);
 const imageError = ref(false);
 const defaultAvatarError = ref(false);
 
-// Constante pour l'image de fallback
+// Constante pour l'avatar par défaut ; image introuvable = FALLBACK_IMAGE_URL (ImageService)
 const FALLBACK_AVATAR = "/storage/images/avatar/default_avatar_head.webp";
-const FALLBACK_IMAGE = "/storage/images/no_found.svg";
 
 /**
  * Génère les initiales à partir d'un label
@@ -272,7 +272,7 @@ function onStart() {
             <!-- Fallback final (ne devrait jamais arriver) -->
             <template v-else>
                 <img 
-                    :src="FALLBACK_IMAGE" 
+                    :src="FALLBACK_IMAGE_URL" 
                     :alt="displayAlt" 
                     class="w-full h-full object-cover rounded-full" 
                 />

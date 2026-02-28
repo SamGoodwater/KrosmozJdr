@@ -137,6 +137,35 @@ final class CollectService
     }
 
     /**
+     * Récupère les niveaux d'un sort via l'API /spell-levels?spellId=.
+     *
+     * @return list<array<string, mixed>>
+     */
+    public function fetchSpellLevelsBySpellId(string $source, int $spellId, array $options = []): array
+    {
+        $sourceConfig = $this->configLoader->loadSource($source);
+        $baseUrl = rtrim((string) ($sourceConfig['baseUrl'] ?? 'https://api.dofusdb.fr'), '/');
+        $lang = (string) ($sourceConfig['defaultLanguage'] ?? 'fr');
+        $query = http_build_query(['spellId' => $spellId, 'lang' => $lang, '$limit' => 50], '', '&', PHP_QUERY_RFC3986);
+        $url = $baseUrl . '/spell-levels?' . $query;
+
+        $response = $this->getJson($url, $options);
+        $data = $response['data'] ?? [];
+        if (!is_array($data) || $data === []) {
+            return [];
+        }
+
+        $levels = [];
+        foreach ($data as $row) {
+            if (is_array($row)) {
+                $levels[] = $row;
+            }
+        }
+
+        return $levels;
+    }
+
+    /**
      * Récupère les IDs de sorts liés à une classe (breed) via l'API /spell-levels?breedId=.
      *
      * @return list<int>

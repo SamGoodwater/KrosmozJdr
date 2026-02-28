@@ -9,7 +9,7 @@ declare(strict_types=1);
 return array (
   0 => 
   array (
-    'characteristic_key' => 'pa_spell',
+    'characteristic_key' => 'action_points_spell',
     'entity' => '*',
     'db_column' => 'pa',
     'min' => '0',
@@ -24,7 +24,7 @@ return array (
   ),
   1 => 
   array (
-    'characteristic_key' => 'po_spell',
+    'characteristic_key' => 'range_spell',
     'entity' => '*',
     'db_column' => 'po',
     'min' => '0',
@@ -86,7 +86,7 @@ return array (
   ),
   4 => 
   array (
-    'characteristic_key' => 'powerful_spell',
+    'characteristic_key' => 'power_spell',
     'entity' => '*',
     'db_column' => 'powerful',
     'min' => '0',
@@ -199,7 +199,7 @@ return array (
   ),
   11 => 
   array (
-    'characteristic_key' => 'po_editable_spell',
+    'characteristic_key' => 'range_editable_spell',
     'entity' => '*',
     'db_column' => 'po_editable',
     'min' => '0',
@@ -229,7 +229,7 @@ return array (
   ),
   13 => 
   array (
-    'characteristic_key' => 'spell_po_min_spell',
+    'characteristic_key' => 'spell_range_min_spell',
     'entity' => '*',
     'db_column' => 'spell_po_min',
     'min' => '0',
@@ -244,7 +244,7 @@ return array (
   ),
   14 => 
   array (
-    'characteristic_key' => 'spell_po_max_spell',
+    'characteristic_key' => 'spell_range_max_spell',
     'entity' => '*',
     'db_column' => 'spell_po_max',
     'min' => '0',

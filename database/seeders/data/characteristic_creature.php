@@ -83,12 +83,68 @@ return array (
   ),
   3 => 
   array (
-    'characteristic_key' => 'life_creature',
+    'characteristic_key' => 'object_save_agility_creature',
+    'entity' => '*',
+    'db_column' => 'sav_agi',
+    'min' => '0',
+    'max' => '3',
+    'formula' => NULL,
+    'formula_display' => NULL,
+    'default_value' => NULL,
+    'conversion_formula' => NULL,
+    'conversion_dofus_sample' => NULL,
+    'conversion_krosmoz_sample' => NULL,
+  ),
+  4 => 
+  array (
+    'characteristic_key' => 'object_save_chance_creature',
+    'entity' => '*',
+    'db_column' => 'sav_chance',
+    'min' => '0',
+    'max' => '3',
+    'formula' => NULL,
+    'formula_display' => NULL,
+    'default_value' => NULL,
+    'conversion_formula' => NULL,
+    'conversion_dofus_sample' => NULL,
+    'conversion_krosmoz_sample' => NULL,
+  ),
+  5 => 
+  array (
+    'characteristic_key' => 'object_save_intelligence_object',
+    'entity' => '*',
+    'db_column' => 'sav_intel',
+    'min' => '0',
+    'max' => '3',
+    'formula' => NULL,
+    'formula_display' => NULL,
+    'default_value' => NULL,
+    'conversion_formula' => NULL,
+    'conversion_dofus_sample' => NULL,
+    'conversion_krosmoz_sample' => NULL,
+  ),
+  6 => 
+  array (
+    'characteristic_key' => 'object_save_wisdom_object',
+    'entity' => '*',
+    'db_column' => 'sav_sagesse',
+    'min' => '0',
+    'max' => '3',
+    'formula' => NULL,
+    'formula_display' => NULL,
+    'default_value' => NULL,
+    'conversion_formula' => NULL,
+    'conversion_dofus_sample' => NULL,
+    'conversion_krosmoz_sample' => NULL,
+  ),
+  7 => 
+  array (
+    'characteristic_key' => 'life_points_creature',
     'entity' => '*',
     'db_column' => 'life',
     'min' => '1',
     'max' => '{"1":"9999","characteristic":"level_creature"}',
-    'formula' => '[vitality_creature]*10+[de_vie_creature]',
+    'formula' => '[vitality_creature]*10+[hit_dice_creature]',
     'formula_display' => 'Vitalité×10 + dés de vie (2.2.2)',
     'default_value' => '1',
     'conversion_formula' => 'floor([d]/200)+[level]*5',
@@ -111,9 +167,9 @@ return array (
       20 => 140,
     ),
   ),
-  4 => 
+  8 => 
   array (
-    'characteristic_key' => 'pa_creature',
+    'characteristic_key' => 'action_points_creature',
     'entity' => '*',
     'db_column' => 'pa',
     'min' => '6',
@@ -141,9 +197,9 @@ return array (
       20 => 12,
     ),
   ),
-  5 => 
+  9 => 
   array (
-    'characteristic_key' => 'pm_creature',
+    'characteristic_key' => 'movement_points_creature',
     'entity' => '*',
     'db_column' => 'pm',
     'min' => '3',
@@ -171,9 +227,9 @@ return array (
       20 => 6,
     ),
   ),
-  6 => 
+  10 => 
   array (
-    'characteristic_key' => 'po_creature',
+    'characteristic_key' => 'range_creature',
     'entity' => '*',
     'db_column' => 'po',
     'min' => '0',
@@ -201,9 +257,9 @@ return array (
       20 => 6,
     ),
   ),
-  7 => 
+  11 => 
   array (
-    'characteristic_key' => 'ini_creature',
+    'characteristic_key' => 'initiative_creature',
     'entity' => '*',
     'db_column' => 'ini',
     'min' => '0',
@@ -223,9 +279,9 @@ return array (
       20 => 50,
     ),
   ),
-  8 => 
+  12 => 
   array (
-    'characteristic_key' => 'ca_creature',
+    'characteristic_key' => 'armor_class_creature',
     'entity' => '*',
     'db_column' => 'ca',
     'min' => '0',
@@ -245,7 +301,7 @@ return array (
       20 => 18,
     ),
   ),
-  9 => 
+  13 => 
   array (
     'characteristic_key' => 'vitality_creature',
     'entity' => '*',
@@ -275,9 +331,9 @@ return array (
       20 => 31,
     ),
   ),
-  10 => 
+  14 => 
   array (
-    'characteristic_key' => 'strong_creature',
+    'characteristic_key' => 'strength_creature',
     'entity' => '*',
     'db_column' => 'strong',
     'min' => '6',
@@ -305,9 +361,9 @@ return array (
       20 => 31,
     ),
   ),
-  11 => 
+  15 => 
   array (
-    'characteristic_key' => 'agi_creature',
+    'characteristic_key' => 'agility_creature',
     'entity' => '*',
     'db_column' => 'agi',
     'min' => '6',
@@ -335,9 +391,9 @@ return array (
       20 => 31,
     ),
   ),
-  12 => 
+  16 => 
   array (
-    'characteristic_key' => 'intel_creature',
+    'characteristic_key' => 'intelligence_creature',
     'entity' => '*',
     'db_column' => 'intel',
     'min' => '6',
@@ -365,9 +421,9 @@ return array (
       20 => 31,
     ),
   ),
-  13 => 
+  17 => 
   array (
-    'characteristic_key' => 'sagesse_creature',
+    'characteristic_key' => 'wisdom_creature',
     'entity' => '*',
     'db_column' => 'sagesse',
     'min' => '6',
@@ -395,7 +451,7 @@ return array (
       20 => 31,
     ),
   ),
-  14 => 
+  18 => 
   array (
     'characteristic_key' => 'chance_creature',
     'entity' => '*',
@@ -425,9 +481,9 @@ return array (
       20 => 31,
     ),
   ),
-  15 => 
+  19 => 
   array (
-    'characteristic_key' => 'touch_creature',
+    'characteristic_key' => 'hit_bonus_creature',
     'entity' => '*',
     'db_column' => 'touch',
     'min' => '0',
@@ -447,9 +503,9 @@ return array (
       20 => 16,
     ),
   ),
-  16 => 
+  20 => 
   array (
-    'characteristic_key' => 'invocation_creature',
+    'characteristic_key' => 'summoning_creature',
     'entity' => '*',
     'db_column' => 'invocation',
     'min' => '1',
@@ -469,9 +525,9 @@ return array (
       20 => 6,
     ),
   ),
-  17 => 
+  21 => 
   array (
-    'characteristic_key' => 'dodge_pa_creature',
+    'characteristic_key' => 'dodge_action_points_creature',
     'entity' => '*',
     'db_column' => 'dodge_pa',
     'min' => '0',
@@ -499,9 +555,9 @@ return array (
       20 => 13,
     ),
   ),
-  18 => 
+  22 => 
   array (
-    'characteristic_key' => 'dodge_pm_creature',
+    'characteristic_key' => 'dodge_movement_points_creature',
     'entity' => '*',
     'db_column' => 'dodge_pm',
     'min' => '0',
@@ -529,9 +585,9 @@ return array (
       20 => 13,
     ),
   ),
-  19 => 
+  23 => 
   array (
-    'characteristic_key' => 'fuite_creature',
+    'characteristic_key' => 'dodge_creature',
     'entity' => '*',
     'db_column' => 'fuite',
     'min' => '0',
@@ -559,9 +615,9 @@ return array (
       20 => 15,
     ),
   ),
-  20 => 
+  24 => 
   array (
-    'characteristic_key' => 'tacle_creature',
+    'characteristic_key' => 'tackle_creature',
     'entity' => '*',
     'db_column' => 'tacle',
     'min' => '0',
@@ -589,9 +645,9 @@ return array (
       20 => 15,
     ),
   ),
-  21 => 
+  25 => 
   array (
-    'characteristic_key' => 'res_fixe_neutre_creature',
+    'characteristic_key' => 'fixed_resistance_neutral_creature',
     'entity' => '*',
     'db_column' => 'res_fixe_neutre',
     'min' => '0',
@@ -619,9 +675,9 @@ return array (
       20 => 10,
     ),
   ),
-  22 => 
+  26 => 
   array (
-    'characteristic_key' => 'res_fixe_terre_creature',
+    'characteristic_key' => 'fixed_resistance_earth_creature',
     'entity' => '*',
     'db_column' => 'res_fixe_terre',
     'min' => '0',
@@ -649,9 +705,9 @@ return array (
       20 => 10,
     ),
   ),
-  23 => 
+  27 => 
   array (
-    'characteristic_key' => 'res_fixe_feu_creature',
+    'characteristic_key' => 'fixed_resistance_fire_creature',
     'entity' => '*',
     'db_column' => 'res_fixe_feu',
     'min' => '0',
@@ -679,9 +735,9 @@ return array (
       20 => 10,
     ),
   ),
-  24 => 
+  28 => 
   array (
-    'characteristic_key' => 'res_fixe_air_creature',
+    'characteristic_key' => 'fixed_resistance_air_creature',
     'entity' => '*',
     'db_column' => 'res_fixe_air',
     'min' => '0',
@@ -709,9 +765,9 @@ return array (
       20 => 10,
     ),
   ),
-  25 => 
+  29 => 
   array (
-    'characteristic_key' => 'res_fixe_eau_creature',
+    'characteristic_key' => 'fixed_resistance_water_creature',
     'entity' => '*',
     'db_column' => 'res_fixe_eau',
     'min' => '0',
@@ -739,9 +795,9 @@ return array (
       20 => 10,
     ),
   ),
-  26 => 
+  30 => 
   array (
-    'characteristic_key' => 'do_fixe_neutre_creature',
+    'characteristic_key' => 'fixed_damage_neutral_creature',
     'entity' => '*',
     'db_column' => 'do_fixe_neutre',
     'min' => '0',
@@ -761,9 +817,9 @@ return array (
       20 => 8,
     ),
   ),
-  27 => 
+  31 => 
   array (
-    'characteristic_key' => 'do_fixe_terre_creature',
+    'characteristic_key' => 'fixed_damage_earth_creature',
     'entity' => '*',
     'db_column' => 'do_fixe_terre',
     'min' => '0',
@@ -791,9 +847,9 @@ return array (
       20 => 8,
     ),
   ),
-  28 => 
+  32 => 
   array (
-    'characteristic_key' => 'do_fixe_feu_creature',
+    'characteristic_key' => 'fixed_damage_fire_creature',
     'entity' => '*',
     'db_column' => 'do_fixe_feu',
     'min' => '0',
@@ -821,9 +877,9 @@ return array (
       20 => 8,
     ),
   ),
-  29 => 
+  33 => 
   array (
-    'characteristic_key' => 'do_fixe_air_creature',
+    'characteristic_key' => 'fixed_damage_air_creature',
     'entity' => '*',
     'db_column' => 'do_fixe_air',
     'min' => '0',
@@ -851,9 +907,9 @@ return array (
       20 => 8,
     ),
   ),
-  30 => 
+  34 => 
   array (
-    'characteristic_key' => 'do_fixe_eau_creature',
+    'characteristic_key' => 'fixed_damage_water_creature',
     'entity' => '*',
     'db_column' => 'do_fixe_eau',
     'min' => '0',
@@ -881,9 +937,9 @@ return array (
       20 => 8,
     ),
   ),
-  31 => 
+  35 => 
   array (
-    'characteristic_key' => 'res_neutre_creature',
+    'characteristic_key' => 'resistance_neutral_creature',
     'entity' => '*',
     'db_column' => 'res_neutre',
     'min' => '0',
@@ -903,9 +959,9 @@ return array (
       20 => 0,
     ),
   ),
-  32 => 
+  36 => 
   array (
-    'characteristic_key' => 'res_terre_creature',
+    'characteristic_key' => 'resistance_earth_creature',
     'entity' => '*',
     'db_column' => 'res_terre',
     'min' => '0',
@@ -925,9 +981,9 @@ return array (
       20 => 0,
     ),
   ),
-  33 => 
+  37 => 
   array (
-    'characteristic_key' => 'res_feu_creature',
+    'characteristic_key' => 'resistance_fire_creature',
     'entity' => '*',
     'db_column' => 'res_feu',
     'min' => '0',
@@ -947,9 +1003,9 @@ return array (
       20 => 0,
     ),
   ),
-  34 => 
+  38 => 
   array (
-    'characteristic_key' => 'res_air_creature',
+    'characteristic_key' => 'resistance_air_creature',
     'entity' => '*',
     'db_column' => 'res_air',
     'min' => '0',
@@ -969,9 +1025,9 @@ return array (
       20 => 0,
     ),
   ),
-  35 => 
+  39 => 
   array (
-    'characteristic_key' => 'res_eau_creature',
+    'characteristic_key' => 'resistance_water_creature',
     'entity' => '*',
     'db_column' => 'res_eau',
     'min' => '0',
@@ -991,9 +1047,9 @@ return array (
       20 => 0,
     ),
   ),
-  36 => 
+  40 => 
   array (
-    'characteristic_key' => 'do_fixe_multiple_creature',
+    'characteristic_key' => 'fixed_damage_multiple_creature',
     'entity' => '*',
     'db_column' => NULL,
     'min' => '0',
@@ -1013,9 +1069,9 @@ return array (
       20 => 5,
     ),
   ),
-  37 => 
+  41 => 
   array (
-    'characteristic_key' => 'de_vie_creature',
+    'characteristic_key' => 'hit_dice_creature',
     'entity' => '*',
     'db_column' => NULL,
     'min' => '4',
@@ -1035,9 +1091,9 @@ return array (
       20 => 10,
     ),
   ),
-  38 => 
+  42 => 
   array (
-    'characteristic_key' => 'reserve_wakfu_creature',
+    'characteristic_key' => 'wakfu_reserve_creature',
     'entity' => '*',
     'db_column' => NULL,
     'min' => '0',
@@ -1057,9 +1113,9 @@ return array (
       20 => 6,
     ),
   ),
-  39 => 
+  43 => 
   array (
-    'characteristic_key' => 'bonus_maitrise_creature',
+    'characteristic_key' => 'mastery_bonus_creature',
     'entity' => '*',
     'db_column' => NULL,
     'min' => '0',
@@ -1079,97 +1135,9 @@ return array (
       20 => 6,
     ),
   ),
-  40 => 
-  array (
-    'characteristic_key' => 'modificateur_vitality_creature',
-    'entity' => '*',
-    'db_column' => NULL,
-    'min' => '-5',
-    'max' => '10',
-    'formula' => NULL,
-    'formula_display' => 'floor((score−10)/2) (2.2.1.2)',
-    'default_value' => '0',
-    'conversion_formula' => '[d]',
-    'conversion_dofus_sample' => NULL,
-    'conversion_krosmoz_sample' => 
-    array (
-      1 => 0,
-      4 => 0,
-      8 => 0,
-      12 => 0,
-      16 => 0,
-      20 => 0,
-    ),
-  ),
-  41 => 
-  array (
-    'characteristic_key' => 'modificateur_sagesse_creature',
-    'entity' => '*',
-    'db_column' => NULL,
-    'min' => '-5',
-    'max' => '10',
-    'formula' => NULL,
-    'formula_display' => 'floor((score−10)/2) (2.2.1.2)',
-    'default_value' => '0',
-    'conversion_formula' => '[d]',
-    'conversion_dofus_sample' => NULL,
-    'conversion_krosmoz_sample' => 
-    array (
-      1 => 0,
-      4 => 0,
-      8 => 0,
-      12 => 0,
-      16 => 0,
-      20 => 0,
-    ),
-  ),
-  42 => 
-  array (
-    'characteristic_key' => 'modificateur_force_creature',
-    'entity' => '*',
-    'db_column' => NULL,
-    'min' => '-5',
-    'max' => '10',
-    'formula' => NULL,
-    'formula_display' => 'floor((score−10)/2) (2.2.1.2)',
-    'default_value' => '0',
-    'conversion_formula' => '[d]',
-    'conversion_dofus_sample' => NULL,
-    'conversion_krosmoz_sample' => 
-    array (
-      1 => 0,
-      4 => 0,
-      8 => 0,
-      12 => 0,
-      16 => 0,
-      20 => 0,
-    ),
-  ),
-  43 => 
-  array (
-    'characteristic_key' => 'modificateur_intel_creature',
-    'entity' => '*',
-    'db_column' => NULL,
-    'min' => '-5',
-    'max' => '10',
-    'formula' => NULL,
-    'formula_display' => 'floor((score−10)/2) (2.2.1.2)',
-    'default_value' => '0',
-    'conversion_formula' => '[d]',
-    'conversion_dofus_sample' => NULL,
-    'conversion_krosmoz_sample' => 
-    array (
-      1 => 0,
-      4 => 0,
-      8 => 0,
-      12 => 0,
-      16 => 0,
-      20 => 0,
-    ),
-  ),
   44 => 
   array (
-    'characteristic_key' => 'modificateur_chance_creature',
+    'characteristic_key' => 'modifier_vitality_creature',
     'entity' => '*',
     'db_column' => NULL,
     'min' => '-5',
@@ -1191,7 +1159,7 @@ return array (
   ),
   45 => 
   array (
-    'characteristic_key' => 'modificateur_agi_creature',
+    'characteristic_key' => 'modifier_wisdom_creature',
     'entity' => '*',
     'db_column' => NULL,
     'min' => '-5',
@@ -1213,13 +1181,13 @@ return array (
   ),
   46 => 
   array (
-    'characteristic_key' => 'save_vitality_creature',
+    'characteristic_key' => 'modifier_strength_creature',
     'entity' => '*',
     'db_column' => NULL,
     'min' => '-5',
-    'max' => '20',
+    'max' => '10',
     'formula' => NULL,
-    'formula_display' => '1d20 + mod. carac. + bonus maîtrise (2.2.1.3)',
+    'formula_display' => 'floor((score−10)/2) (2.2.1.2)',
     'default_value' => '0',
     'conversion_formula' => '[d]',
     'conversion_dofus_sample' => NULL,
@@ -1235,13 +1203,13 @@ return array (
   ),
   47 => 
   array (
-    'characteristic_key' => 'save_sagesse_creature',
+    'characteristic_key' => 'modifier_intelligence_creature',
     'entity' => '*',
     'db_column' => NULL,
     'min' => '-5',
-    'max' => '20',
+    'max' => '10',
     'formula' => NULL,
-    'formula_display' => '1d20 + mod. carac. + bonus maîtrise (2.2.1.3)',
+    'formula_display' => 'floor((score−10)/2) (2.2.1.2)',
     'default_value' => '0',
     'conversion_formula' => '[d]',
     'conversion_dofus_sample' => NULL,
@@ -1257,13 +1225,13 @@ return array (
   ),
   48 => 
   array (
-    'characteristic_key' => 'save_force_creature',
+    'characteristic_key' => 'modifier_chance_creature',
     'entity' => '*',
     'db_column' => NULL,
     'min' => '-5',
-    'max' => '20',
+    'max' => '10',
     'formula' => NULL,
-    'formula_display' => '1d20 + mod. carac. + bonus maîtrise (2.2.1.3)',
+    'formula_display' => 'floor((score−10)/2) (2.2.1.2)',
     'default_value' => '0',
     'conversion_formula' => '[d]',
     'conversion_dofus_sample' => NULL,
@@ -1279,13 +1247,13 @@ return array (
   ),
   49 => 
   array (
-    'characteristic_key' => 'save_intel_creature',
+    'characteristic_key' => 'modifier_agility_creature',
     'entity' => '*',
     'db_column' => NULL,
     'min' => '-5',
-    'max' => '20',
+    'max' => '10',
     'formula' => NULL,
-    'formula_display' => '1d20 + mod. carac. + bonus maîtrise (2.2.1.3)',
+    'formula_display' => 'floor((score−10)/2) (2.2.1.2)',
     'default_value' => '0',
     'conversion_formula' => '[d]',
     'conversion_dofus_sample' => NULL,
@@ -1301,7 +1269,7 @@ return array (
   ),
   50 => 
   array (
-    'characteristic_key' => 'save_chance_creature',
+    'characteristic_key' => 'save_vitality_creature',
     'entity' => '*',
     'db_column' => NULL,
     'min' => '-5',
@@ -1323,7 +1291,95 @@ return array (
   ),
   51 => 
   array (
-    'characteristic_key' => 'save_agi_creature',
+    'characteristic_key' => 'save_wisdom_creature',
+    'entity' => '*',
+    'db_column' => NULL,
+    'min' => '-5',
+    'max' => '20',
+    'formula' => NULL,
+    'formula_display' => '1d20 + mod. carac. + bonus maîtrise (2.2.1.3)',
+    'default_value' => '0',
+    'conversion_formula' => '[d]',
+    'conversion_dofus_sample' => NULL,
+    'conversion_krosmoz_sample' => 
+    array (
+      1 => 0,
+      4 => 0,
+      8 => 0,
+      12 => 0,
+      16 => 0,
+      20 => 0,
+    ),
+  ),
+  52 => 
+  array (
+    'characteristic_key' => 'save_strength_creature',
+    'entity' => '*',
+    'db_column' => NULL,
+    'min' => '-5',
+    'max' => '20',
+    'formula' => NULL,
+    'formula_display' => '1d20 + mod. carac. + bonus maîtrise (2.2.1.3)',
+    'default_value' => '0',
+    'conversion_formula' => '[d]',
+    'conversion_dofus_sample' => NULL,
+    'conversion_krosmoz_sample' => 
+    array (
+      1 => 0,
+      4 => 0,
+      8 => 0,
+      12 => 0,
+      16 => 0,
+      20 => 0,
+    ),
+  ),
+  53 => 
+  array (
+    'characteristic_key' => 'save_intelligence_creature',
+    'entity' => '*',
+    'db_column' => NULL,
+    'min' => '-5',
+    'max' => '20',
+    'formula' => NULL,
+    'formula_display' => '1d20 + mod. carac. + bonus maîtrise (2.2.1.3)',
+    'default_value' => '0',
+    'conversion_formula' => '[d]',
+    'conversion_dofus_sample' => NULL,
+    'conversion_krosmoz_sample' => 
+    array (
+      1 => 0,
+      4 => 0,
+      8 => 0,
+      12 => 0,
+      16 => 0,
+      20 => 0,
+    ),
+  ),
+  54 => 
+  array (
+    'characteristic_key' => 'save_chance_creature',
+    'entity' => '*',
+    'db_column' => NULL,
+    'min' => '-5',
+    'max' => '20',
+    'formula' => NULL,
+    'formula_display' => '1d20 + mod. carac. + bonus maîtrise (2.2.1.3)',
+    'default_value' => '0',
+    'conversion_formula' => '[d]',
+    'conversion_dofus_sample' => NULL,
+    'conversion_krosmoz_sample' => 
+    array (
+      1 => 0,
+      4 => 0,
+      8 => 0,
+      12 => 0,
+      16 => 0,
+      20 => 0,
+    ),
+  ),
+  55 => 
+  array (
+    'characteristic_key' => 'save_agility_creature',
     'entity' => '*',
     'db_column' => NULL,
     'min' => '-5',

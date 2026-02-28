@@ -11,6 +11,7 @@ return new class extends Migration
         Schema::create('creature_resource', function (Blueprint $table) {
             $table->foreignId('creature_id')->constrained('creatures')->cascadeOnDelete();
             $table->foreignId('resource_id')->constrained('resources')->cascadeOnDelete();
+            $table->unsignedInteger('quantity')->default(1);
             $table->primary(['creature_id', 'resource_id']);
         });
     }

@@ -178,10 +178,11 @@ const attrs = computed(() => {
         v-on="$attrs"
     />
 
-    <!-- Image -->
+    <!-- Image : passer l'URL résolue en src pour éviter un second appel à ImageService (double HEAD). -->
     <Image
         v-else
-        :source="props.source"
+        :src="iconUrl || undefined"
+        :source="iconUrl ? undefined : props.source"
         :alt="props.alt"
         :height="height"
         :size="''"

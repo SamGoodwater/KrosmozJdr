@@ -5,11 +5,16 @@ namespace App\Services\Scrapping\Core\Integration;
 use App\Models\Entity\Breed;
 use App\Models\Entity\Consumable;
 use App\Models\Entity\Creature;
+use App\Models\Effect;
+use App\Models\EffectGroup;
+use App\Models\EffectSubEffect;
 use App\Models\Entity\Item;
 use App\Models\Entity\Monster;
 use App\Models\Entity\Panoply;
 use App\Models\Entity\Resource;
 use App\Models\Entity\Spell;
+use App\Models\EffectUsage;
+use App\Models\SubEffect;
 use App\Models\User;
 use App\Models\Type\ConsumableType;
 use App\Models\Type\ItemType;
@@ -479,6 +484,13 @@ final class IntegrationService
                 $spell = Spell::create($payload);
                 $action = 'created';
             }
+
+            // Intégration des effets de sort (EffectGroup, Effects, sous-effets, usages), si présents.
+            $spellEffectsPayload = $convertedData['spell_effects'] ?? null;
+            if (is_array($spellEffectsPayload)) {
+                $this->integrateSpellEffectsForSpell($spell, $spellEffectsPayload);
+            }
+
             DB::commit();
             $this->attachImageFromUrl($spell, $data['image'] ?? null, $options);
             Log::info('Intégration sort', ['spell_id' => $spell->id, 'action' => $action]);
@@ -512,6 +524,259 @@ final class IntegrationService
         }
 
         return (string) ($data['po'] ?? '1');
+    }
+
+    /**
+     * Intègre les effets convertis d'un sort (EffectGroup, Effects, EffectSubEffect, EffectUsage).
+     * Réutilise un Effect existant si sa signature de configuration (sous-effets) est identique.
+     *
+     * @param array{
+     *   effect_group: array{name: string, slug: string},
+     *   effects: list<array{
+     *     degree: int,
+     *     name: string,
+     *     slug: string,
+     *     description: string|null,
+     *     sub_effects: list<array{
+     *       order: int,
+     *       sub_effect_slug: string,
+     *       params: array<string, mixed>,
+     *       crit_only: bool
+     *     }>
+     *   }>
+     * } $payload
+     */
+    private function integrateSpellEffectsForSpell(Spell $spell, array $payload): void
+    {
+        $groupData = $payload['effect_group'] ?? null;
+        $effectsData = $payload['effects'] ?? [];
+        if (!is_array($groupData) || $effectsData === []) {
+            return;
+        }
+
+        $groupSlug = (string) ($groupData['slug'] ?? '');
+        $groupName = (string) ($groupData['name'] ?? $spell->name);
+
+        $group = EffectGroup::firstOrCreate(
+            ['slug' => $groupSlug !== '' ? $groupSlug : 'spell-' . $spell->id],
+            ['name' => $groupName !== '' ? $groupName : $spell->name]
+        );
+
+        $slugToId = $this->collectSubEffectIdsFromSpellPayload($effectsData);
+
+        foreach ($effectsData as $effectRow) {
+            if (!is_array($effectRow)) {
+                continue;
+            }
+            $degree = isset($effectRow['degree']) && is_numeric($effectRow['degree']) ? (int) $effectRow['degree'] : 1;
+            $effectName = (string) ($effectRow['name'] ?? $spell->name);
+            $effectSlug = (string) ($effectRow['slug'] ?? '');
+            if ($effectSlug === '') {
+                $effectSlug = $group->slug . '-' . $degree;
+            }
+
+            $subEffectsRaw = $effectRow['sub_effects'] ?? [];
+            if (!is_array($subEffectsRaw)) {
+                $subEffectsRaw = [];
+            }
+
+            $normalizedRows = $this->normalizeSubEffectsRowsForSignature($subEffectsRaw, $slugToId);
+            $signature = $normalizedRows !== [] ? $this->computeEffectConfigSignature($normalizedRows) : null;
+
+            if ($signature !== null) {
+                $existingEffect = Effect::where('config_signature', $signature)->first();
+                if ($existingEffect !== null) {
+                    EffectUsage::firstOrCreate(
+                        [
+                            'entity_type' => 'spell',
+                            'entity_id' => $spell->id,
+                            'effect_id' => $existingEffect->id,
+                            'level_min' => $degree,
+                            'level_max' => $degree,
+                        ],
+                        []
+                    );
+                    continue;
+                }
+            }
+
+            $effect = Effect::create([
+                'effect_group_id' => $group->id,
+                'degree' => $degree,
+                'name' => $effectName,
+                'slug' => $effectSlug,
+                'description' => $effectRow['description'] ?? null,
+                'config_signature' => $signature,
+            ]);
+
+            EffectUsage::firstOrCreate(
+                [
+                    'entity_type' => 'spell',
+                    'entity_id' => $spell->id,
+                    'effect_id' => $effect->id,
+                    'level_min' => $degree,
+                    'level_max' => $degree,
+                ],
+                []
+            );
+
+            foreach ($subEffectsRaw as $row) {
+                if (!is_array($row)) {
+                    continue;
+                }
+                $slug = (string) ($row['sub_effect_slug'] ?? '');
+                if ($slug === '' || !isset($slugToId[$slug])) {
+                    continue;
+                }
+                $subId = $slugToId[$slug];
+
+                $params = is_array($row['params'] ?? null) ? $row['params'] : [];
+                $critOnly = (bool) ($row['crit_only'] ?? false);
+                $order = isset($row['order']) && is_numeric($row['order']) ? (int) $row['order'] : 0;
+
+                $alreadyExists = $effect->effectSubEffects()
+                    ->where($this->effectSubEffectDedupWhere($subId, $critOnly, $params))
+                    ->exists();
+
+                if ($alreadyExists) {
+                    continue;
+                }
+
+                $effect->effectSubEffects()->create([
+                    'sub_effect_id' => $subId,
+                    'order' => $order,
+                    'scope' => null,
+                    'params' => $params,
+                    'crit_only' => $critOnly,
+                ]);
+            }
+        }
+    }
+
+    /**
+     * Collecte tous les slugs de sous-effets présents dans le payload et retourne slug => id.
+     *
+     * @param list<array{sub_effects?: list<array{sub_effect_slug?: string}>}> $effectsData
+     * @return array<string, int>
+     */
+    private function collectSubEffectIdsFromSpellPayload(array $effectsData): array
+    {
+        $slugs = [];
+        foreach ($effectsData as $effectRow) {
+            if (!is_array($effectRow)) {
+                continue;
+            }
+            foreach ($effectRow['sub_effects'] ?? [] as $row) {
+                if (is_array($row) && !empty($row['sub_effect_slug'])) {
+                    $slugs[(string) $row['sub_effect_slug']] = true;
+                }
+            }
+        }
+        if ($slugs === []) {
+            return [];
+        }
+
+        return SubEffect::whereIn('slug', array_keys($slugs))->pluck('id', 'slug')->all();
+    }
+
+    /**
+     * Normalise les lignes sous-effets pour le calcul de signature : résolution slug → id, déduplication.
+     *
+     * @param list<array{order?: int, sub_effect_slug?: string, params?: array, crit_only?: bool}> $rows
+     * @param array<string, int> $slugToId
+     * @return list<array{order: int, sub_effect_id: int, crit_only: bool, characteristic: mixed, value_formula: mixed, value_formula_crit: mixed, value: mixed}>
+     */
+    private function normalizeSubEffectsRowsForSignature(array $rows, array $slugToId): array
+    {
+        $seen = [];
+        $out = [];
+        foreach ($rows as $row) {
+            if (!is_array($row)) {
+                continue;
+            }
+            $slug = (string) ($row['sub_effect_slug'] ?? '');
+            if ($slug === '' || !isset($slugToId[$slug])) {
+                continue;
+            }
+            $params = is_array($row['params'] ?? null) ? $row['params'] : [];
+            $critOnly = (bool) ($row['crit_only'] ?? false);
+            $order = isset($row['order']) && is_numeric($row['order']) ? (int) $row['order'] : 0;
+            $char = $params['characteristic'] ?? null;
+            $valueFormula = $params['value_formula'] ?? null;
+            $valueFormulaCrit = $params['value_formula_crit'] ?? null;
+            $value = $params['value'] ?? null;
+
+            $dedupKey = $this->effectSubEffectDedupKey($slugToId[$slug], $critOnly, $params);
+            if (isset($seen[$dedupKey])) {
+                continue;
+            }
+            $seen[$dedupKey] = true;
+            $out[] = [
+                'order' => $order,
+                'sub_effect_id' => $slugToId[$slug],
+                'crit_only' => $critOnly,
+                'characteristic' => $char,
+                'value_formula' => $valueFormula,
+                'value_formula_crit' => $valueFormulaCrit,
+                'value' => $value,
+            ];
+        }
+        usort($out, static fn (array $a, array $b) => $a['order'] <=> $b['order']);
+
+        return $out;
+    }
+
+    /**
+     * Calcule une signature (hash) pour réutiliser un Effect existant.
+     *
+     * @param list<array{order: int, sub_effect_id: int, crit_only: bool, characteristic: mixed, value_formula: mixed, value_formula_crit: mixed, value?: mixed}> $normalizedRows
+     */
+    private function computeEffectConfigSignature(array $normalizedRows): string
+    {
+        $parts = [];
+        foreach ($normalizedRows as $r) {
+            $parts[] = json_encode([
+                'o' => $r['order'],
+                's' => $r['sub_effect_id'],
+                'c' => $r['crit_only'],
+                'char' => $r['characteristic'] ?? null,
+                'v' => $r['value_formula'] ?? null,
+                'vcrit' => $r['value_formula_crit'] ?? null,
+                'val' => $r['value'] ?? null,
+            ], JSON_UNESCAPED_UNICODE);
+        }
+
+        return hash('sha256', implode("\n", $parts));
+    }
+
+    /**
+     * Clé de déduplication pour un pivot sous-effet (même action + params = même ligne).
+     */
+    private function effectSubEffectDedupKey(int $subEffectId, bool $critOnly, array $params): string
+    {
+        return $subEffectId . '|' . ($critOnly ? '1' : '0') . '|'
+            . ($params['characteristic'] ?? '') . '|' . ($params['value_formula'] ?? '') . '|'
+            . ($params['value_formula_crit'] ?? '') . '|' . ($params['value'] ?? '');
+    }
+
+    /**
+     * Conditions where pour vérifier l'existence d'un pivot identique (déduplication).
+     *
+     * @return array<string, mixed>
+     */
+    private function effectSubEffectDedupWhere(int $subEffectId, bool $critOnly, array $params): array
+    {
+        $where = [
+            'sub_effect_id' => $subEffectId,
+            'crit_only' => $critOnly,
+            'params->characteristic' => $params['characteristic'] ?? null,
+            'params->value_formula' => $params['value_formula'] ?? null,
+            'params->value_formula_crit' => $params['value_formula_crit'] ?? null,
+        ];
+        if (array_key_exists('value', $params)) {
+            $where['params->value'] = $params['value'];
+        }
+        return $where;
     }
 
     /**

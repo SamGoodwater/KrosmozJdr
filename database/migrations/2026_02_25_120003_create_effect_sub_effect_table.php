@@ -21,6 +21,11 @@ return new class extends Migration
             $table->unsignedTinyInteger('dice_num')->nullable();
             $table->unsignedTinyInteger('dice_side')->nullable();
             $table->json('params')->nullable();
+            $table->boolean('crit_only')->default(false);
+            $table->string('duration_formula', 255)->nullable();
+            $table->string('logic_group', 64)->nullable();
+            $table->string('logic_operator', 8)->nullable();
+            $table->string('logic_condition', 255)->nullable();
             $table->timestamps();
 
             $table->index(['effect_id', 'order']);

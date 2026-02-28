@@ -10,7 +10,7 @@ use Illuminate\Database\Seeder;
 
 /**
  * Seed du référentiel de sous-effets (actions fondamentales).
- * Liste : frapper, soigner, protéger, voler-vie, booster, retirer, voler-caracteristiques, invoquer, déplacer.
+ * Liste : frapper, soigner, protéger, voler-vie, booster, retirer, voler-caracteristiques, invoquer, déplacer, autre.
  * param_schema décrit les paramètres ; categories sur characteristic filtre la liste (element / toutes caractéristiques / monster / sans option).
  *
  * @see docs/50-Fonctionnalités/Spell-Effects/ARCHITECTURE_EFFETS_3_COUCHES.md
@@ -125,6 +125,18 @@ class SubEffectSeeder extends Seeder
                 'template_text' => 'Déplace la cible.',
                 'variables_allowed' => [],
                 'param_schema' => ['action' => 'déplacer', 'params' => []],
+            ],
+            [
+                'slug' => 'autre',
+                'type_slug' => 'autre',
+                'template_text' => '[value].',
+                'variables_allowed' => ['value'],
+                'param_schema' => [
+                    'action' => 'autre',
+                    'params' => [
+                        ['key' => 'value', 'type' => 'formula', 'label' => 'Valeur ou description (ex. description DofusDB)'],
+                    ],
+                ],
             ],
         ];
 

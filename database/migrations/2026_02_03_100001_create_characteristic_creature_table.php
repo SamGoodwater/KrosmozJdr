@@ -19,12 +19,16 @@ return new class extends Migration
             $table->foreignId('characteristic_id')->constrained('characteristics')->cascadeOnDelete();
             $table->string('entity', 32)->comment('monster, class, npc ou * = toutes les entités du groupe');
             $table->string('db_column', 64)->nullable();
-            $table->integer('min')->nullable();
-            $table->integer('max')->nullable();
+            $table->string('min', 512)->nullable();
+            $table->string('max', 512)->nullable();
             $table->text('formula')->nullable();
             $table->text('formula_display')->nullable();
             $table->string('default_value', 512)->nullable();
             $table->text('conversion_formula')->nullable()->comment('Formule Dofus → Krosmoz');
+            $table->string('conversion_function', 64)->nullable()->comment('Identifiant d\'une fonction de conversion enregistrée (optionnel)');
+            $table->json('conversion_dofus_sample')->nullable()->comment('Niveau → valeur Dofus (ex. {"1":200,"200":50000})');
+            $table->json('conversion_krosmoz_sample')->nullable()->comment('Niveau → valeur Krosmoz (ex. {"1":1,"20":20})');
+            $table->json('conversion_sample_rows')->nullable()->comment('Lignes [{dofus_level, dofus_value, krosmoz_level, krosmoz_value}, ...]');
             $table->json('labels')->nullable();
             $table->json('validation')->nullable();
             $table->timestamps();

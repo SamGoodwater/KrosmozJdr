@@ -19,8 +19,6 @@ return new class extends Migration
             $table->softDeletes();
             $table->foreignId('created_by')->nullable()->constrained('users')->cascadeOnDelete();
             $table->unsignedBigInteger('id_super_race')->nullable();
-        });
-        Schema::table('monster_races', function (Blueprint $table) {
             $table->foreign('id_super_race')->references('id')->on('monster_races')->nullOnDelete();
         });
     }

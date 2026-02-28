@@ -449,11 +449,11 @@ const linkButtons = [
 ];
 // Démo icônes (storage/app/public/images/icons/caracteristics/, servi via /storage/)
 const demoIcons = [
-    { size: "xs", source: "/storage/images/icons/caracteristics/pa.webp", tooltip: "Icône extra-small" },
+    { size: "xs", source: "/storage/images/icons/caracteristics/actionPoints.webp", tooltip: "Icône extra-small" },
     { size: "sm", source: "/storage/images/icons/caracteristics/pp.webp", tooltip: "Icône small" },
-    { size: "md", source: "/storage/images/icons/caracteristics/po.webp", tooltip: "Icône medium" },
-    { size: "lg", source: "/storage/images/icons/caracteristics/tacle.webp", tooltip: "Icône large" },
-    { size: "xl", source: "/storage/images/icons/caracteristics/resTerre.webp", tooltip: "Icône extra-large" },
+    { size: "md", source: "/storage/images/icons/caracteristics/range.webp", tooltip: "Icône medium" },
+    { size: "lg", source: "/storage/images/icons/caracteristics/tackle.webp", tooltip: "Icône large" },
+    { size: "xl", source: "/storage/images/icons/caracteristics/resEarth.webp", tooltip: "Icône extra-large" },
 ];
 
 // États pour les modals de démonstration

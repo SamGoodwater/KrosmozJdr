@@ -15,11 +15,13 @@ return new class extends Migration
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
             $table->rememberToken();
+            $table->timestamp('last_login_at')->nullable();
             $table->integer('role')->default(1);
             $table->boolean('is_system')->default(false);
             $table->string('avatar')->nullable();
             $table->boolean('notifications_enabled')->default(true);
             $table->json('notification_channels')->default(json_encode(['database']));
+            $table->json('notification_preferences')->nullable();
             $table->softDeletes();
             $table->timestamps();
         });

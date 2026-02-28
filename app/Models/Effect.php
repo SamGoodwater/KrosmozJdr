@@ -15,7 +15,7 @@ class Effect extends Model
     protected $table = 'effects';
 
     protected $fillable = [
-        'name', 'slug', 'description', 'effect_group_id', 'degree',
+        'name', 'slug', 'description', 'effect_group_id', 'degree', 'config_signature',
     ];
 
     protected $casts = [

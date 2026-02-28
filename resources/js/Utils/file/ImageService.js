@@ -21,11 +21,18 @@
  *     quality: 80
  * });
  */
+
+/** URL de l'image par défaut si fichier introuvable ou erreur (storage/app/public/images/no_found.svg). */
+export const FALLBACK_IMAGE_URL = '/storage/images/no_found.svg';
+
 export class ImageService {
     static #cache = new Map();
     static #CACHE_TTL = 3600000; // 1 heure en millisecondes
     static #MAX_RETRIES = 3;
     static #RETRY_DELAY = 1000; // 1 seconde
+
+    /** Chemins statiques (icônes, etc.) : pas de HEAD, URL construite directement pour éviter latence et 403. */
+    static #STATIC_PATH_PREFIX = 'icons/';
 
     /**
      * Récupère l'URL d'une image avec cache
@@ -48,36 +55,35 @@ export class ImageService {
             return path;
         }
 
-        // Sinon, construire l'URL de l'image avec retry
+        const url = `/storage/images/${path}`;
+
+        // Chemins statiques (icônes caractéristiques, etc.) : pas de HEAD pour éviter latence,
+        // saturation des connexions et 403 qui masquent l'icône. Le navigateur fera le GET et
+        // le composant Image gère @error (fallback) si le fichier est absent.
+        if (path.startsWith(this.#STATIC_PATH_PREFIX)) {
+            this.#cache.set(cacheKey, { url, timestamp: Date.now() });
+            return url;
+        }
+
+        // Sinon, vérifier si l'image existe avec retry (pour chemins dynamiques)
         let retries = 0;
         while (retries < this.#MAX_RETRIES) {
             try {
-                const url = `/storage/images/${path}`;
-                // Vérifier si l'image existe
                 const response = await fetch(url, { method: 'HEAD' });
                 if (response.ok) {
-                    // Mettre en cache
-                    this.#cache.set(cacheKey, {
-                        url,
-                        timestamp: Date.now()
-                    });
+                    this.#cache.set(cacheKey, { url, timestamp: Date.now() });
                     return url;
                 }
-                // Image non trouvée / accès refusé : retourner une chaîne vide sans lancer d'erreur
-                // (cas normaux : image manquante ou non exposée publiquement)
                 if (response.status === 404 || response.status === 403) {
                     return "";
                 }
-                // Pour les autres erreurs HTTP, retry
                 throw new Error(`HTTP ${response.status}: ${response.statusText}`);
             } catch (error) {
                 retries++;
-                // Si c'est une erreur réseau ou autre erreur que 404, retry
                 if (retries < this.#MAX_RETRIES) {
                     await new Promise(resolve => setTimeout(resolve, this.#RETRY_DELAY * retries));
                     continue;
                 }
-                // Après tous les retries, si c'est toujours une erreur réseau, logger
                 if (error.message && !error.message.includes('Image not found')) {
                     console.error('ImageService - Erreur de chargement:', error);
                 }

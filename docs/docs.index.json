@@ -60,6 +60,11 @@
     "description": "- Fichiers : kebab-case (ex : `my-class-file.php`)"
   },
   {
+    "path": "10-BestPractices/CHARACTERISTIC_PROPERTY_NAMING_REFERENCE.md",
+    "title": "Characteristic and property naming reference (English, no abbreviations)",
+    "description": "Single source of truth for characteristic keys and property names: English only, no abbreviations. Applies to seeders, migrations, config, mapping. Tables: elements, stats, save, resources, life/damage/resistance, combat, spells, modifiers; plus old → new key mapping for migration."
+  },
+  {
     "path": "10-BestPractices/NETTOYAGE_CODE_OBSOLETE.md",
     "title": "Code obsolète et éléments conservés",
     "description": "Référence des **éléments supprimés** (ou dépréciés) et de ceux **conservés volontairement** pour rétrocompatibilité ou usage actif."
@@ -1230,6 +1235,11 @@
     "description": "**Date** : 2026-02-25"
   },
   {
+    "path": "50-Fonctionnalités/Scrapping/ANALYSE_ZONES_RISQUE_NAMMING.md",
+    "title": "Analyse des zones à risque de nommage (propriétés)",
+    "description": "Inventaire des endroits où des noms de propriétés sont définis ou utilisés (BDD, modèles, caractéristiques, config, icônes, scrapping, frontend) et incohérences repérées (pv_object vs pv_max_object, objet_sav/save, clés courtes vs complètes)."
+  },
+  {
     "path": "50-Fonctionnalités/Scrapping/Architecture/CONVERSION_FORMULAS_PLACEMENT.md",
     "title": "Où placer les formules de conversion DofusDB → KrosmozJDR",
     "description": "- **`config/characteristics.php`** définit les **valeurs limites** (min/max) et les **formules de génération** (ex. `[vitality] * 7` pour la vie) utilisées pour la **validation** et la **génération** de données KrosmozJDR."
@@ -1298,6 +1308,21 @@
     "path": "50-Fonctionnalités/Scrapping/DOFUSDB_EFFECTS_CONVERSION.md",
     "title": "Architecture DofusDB des effets et conversion vers KrosmozJDR",
     "description": "Ce document décrit la structure des données **effets** côté DofusDB (tout en IDs), comment les récupérer, et comment envisager la conversion vers le modèle KrosmozJDR (Effect, SubEffect, EffectSubEffect, EffectUsage)."
+  },
+  {
+    "path": "50-Fonctionnalités/Scrapping/PLAN_MAPPING_EFFETS_DOFUSDB_KROSMOZ.md",
+    "title": "Plan : Mapping des actions DofusDB → KrosmozJDR",
+    "description": "Options (UI admin, config, BDD) pour mapper les effectId DofusDB aux sous-effets Krosmoz et recommandation."
+  },
+  {
+    "path": "50-Fonctionnalités/Scrapping/CARACTERISTIQUES_EFFETS_PAR_ACTION.md",
+    "title": "Caractéristiques des effets de sort — Classification par action",
+    "description": "Récap besoins, propriétés déjà converties, tri par action (1 règle / aucune / par caractéristique), liste caractéristiques de base."
+  },
+  {
+    "path": "50-Fonctionnalités/Scrapping/PLAN_IMPLEMENTATION_MAPPING_EFFETS.md",
+    "title": "Plan d’implémentation — Mapping effets DofusDB (phases)",
+    "description": "Phases 1 à 3 (table + service, données + UI, conversion par action) en tenant compte de l’harmonisation des noms."
   },
   {
     "path": "50-Fonctionnalités/Scrapping/Data-collect/API.md",

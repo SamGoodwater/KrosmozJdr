@@ -237,7 +237,7 @@ final class FormatterApplicator
         $levelKrosmoz = $this->conversionService->convert($keyLevel, ['d' => $dLevel], $entityType, (float) round($dLevel / 10), $context);
         $dLife = $this->numericValue($value);
 
-        return $this->conversionService->convert('life_creature', ['d' => $dLife, 'level' => $levelKrosmoz], $entityType, (float) round($dLife / 200 + $levelKrosmoz * 5), $context);
+        return $this->conversionService->convert('life_points_creature', ['d' => $dLife, 'level' => $levelKrosmoz], $entityType, (float) round($dLife / 200 + $levelKrosmoz * 5), $context);
     }
 
     /**

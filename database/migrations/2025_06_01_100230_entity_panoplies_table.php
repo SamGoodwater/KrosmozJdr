@@ -20,8 +20,7 @@ return new class extends Migration
             $table->timestamps();
             $table->softDeletes();
             $table->foreignId('created_by')->nullable()->constrained('users')->nullOnDelete();
-        });
-        Schema::table('panoplies', function (Blueprint $table) {
+
             $table->index('dofusdb_id');
         });
     }

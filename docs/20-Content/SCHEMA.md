@@ -427,6 +427,7 @@ erDiagram
     description : text
     effect_group_id : bigint(20) unsigned
     degree : tinyint(3) unsigned
+    config_signature : varchar(64)
     created_at : timestamp
     updated_at : timestamp
   }

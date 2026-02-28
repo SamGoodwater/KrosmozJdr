@@ -9,7 +9,8 @@
  * - Support du ratio d'aspect
  * - Support des filtres (simple ou multiple)
  * - Support des masks DaisyUI
- * - Gestion du chargement et des erreurs
+ * - Gestion du chargement et des erreurs : si le fichier est introuvable (404/403) ou ne charge pas,
+ *   affichage de l'image par défaut (storage/app/public/images/no_found.svg, voir FALLBACK_IMAGE_URL).
  *
  * @example
  * <Image source="logos/logo" alt="Logo" size="lg" />
@@ -36,7 +37,7 @@
  */
 
 import { computed, ref, watch, onMounted, useSlots } from "vue";
-import { ImageService } from "@/Utils/file/ImageService";
+import { ImageService, FALLBACK_IMAGE_URL } from "@/Utils/file/ImageService";
 import {
     getCommonProps,
     getCommonAttrs,
@@ -99,7 +100,6 @@ const props = defineProps({
 const imageUrl = ref("");
 const isLoading = ref(false);
 const hasError = ref(false);
-const FALLBACK_IMAGE = "/storage/images/no_found.svg";
 let triedFallback = false;
 const maxRetries = 3;
 let retryCount = 0;
@@ -160,8 +160,8 @@ async function resolveImage() {
 }
 
 function onError() {
-    if (!triedFallback && imageUrl.value !== FALLBACK_IMAGE) {
-        imageUrl.value = FALLBACK_IMAGE;
+    if (!triedFallback && imageUrl.value !== FALLBACK_IMAGE_URL) {
+        imageUrl.value = FALLBACK_IMAGE_URL;
         triedFallback = true;
         hasError.value = false;
     } else {
@@ -252,7 +252,7 @@ onMounted(() => {
             <slot name="fallback" />
         </template>
 
-        <img v-else :src="FALLBACK_IMAGE" alt="Image non disponible" :class="imageClasses" :style="imageStyle"
+        <img v-else :src="FALLBACK_IMAGE_URL" alt="Image non disponible" :class="imageClasses" :style="imageStyle"
             v-bind="imgAttrs" v-on="$attrs" loading="lazy" decoding="async" />
     </div>
 </template>

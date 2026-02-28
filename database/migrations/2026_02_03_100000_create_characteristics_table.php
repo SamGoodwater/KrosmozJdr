@@ -26,6 +26,8 @@ return new class extends Migration
             $table->string('unit', 32)->nullable();
             $table->string('type', 16)->default('string');
             $table->unsignedSmallInteger('sort_order')->default(0);
+            $table->string('group', 16)->nullable()->comment('Groupe principal : creature, object ou spell');
+            $table->foreignId('linked_to_characteristic_id')->nullable()->constrained('characteristics')->nullOnDelete()->comment('Caractéristique maître si cette ligne est une caractéristique liée');
             $table->timestamps();
         });
     }

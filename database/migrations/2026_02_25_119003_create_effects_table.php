@@ -17,9 +17,11 @@ return new class extends Migration
             $table->text('description')->nullable();
             $table->foreignId('effect_group_id')->nullable()->constrained('effect_groups')->nullOnDelete();
             $table->unsignedTinyInteger('degree')->nullable();
+            $table->string('config_signature', 64)->nullable();
             $table->timestamps();
 
             $table->index(['effect_group_id', 'degree']);
+            $table->index('config_signature');
         });
     }
 

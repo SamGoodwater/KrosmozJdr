@@ -17,6 +17,7 @@ return new class extends Migration
             $table->text('template_text')->nullable();
             $table->text('formula')->nullable();
             $table->json('variables_allowed')->nullable();
+            $table->json('param_schema')->nullable();
             $table->unsignedInteger('dofusdb_effect_id')->nullable();
             $table->timestamps();
         });

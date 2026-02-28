@@ -12,11 +12,14 @@ namespace App\Services\Scrapping\Core\Conversion\SpellEffects;
  */
 final class DofusDbEffectMapping
 {
+    /** Slug du sous-effet de repli pour les effectId non mappés (valeur seule, pas de caractéristique). */
+    public const SUB_EFFECT_SLUG_OTHER = 'autre';
+
     private const ELEMENT_ID_TO_KEY = [
-        0 => 'neutre',
-        1 => 'feu',
-        2 => 'eau',
-        3 => 'terre',
+        0 => 'neutral',
+        1 => 'fire',
+        2 => 'water',
+        3 => 'earth',
         4 => 'air',
     ];
 

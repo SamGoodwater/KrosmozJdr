@@ -225,6 +225,7 @@ namespace App\Models{
  * @property string|null $description
  * @property int|null $effect_group_id
  * @property int|null $degree
+ * @property string|null $config_signature
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property-read \App\Models\EffectGroup|null $effectGroup
@@ -237,6 +238,7 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Effect newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Effect newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Effect query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Effect whereConfigSignature($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Effect whereCreatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Effect whereDegree($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Effect whereDescription($value)

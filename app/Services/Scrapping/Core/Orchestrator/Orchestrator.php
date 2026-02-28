@@ -9,6 +9,7 @@ use App\Services\Scrapping\Core\Collect\CollectService;
 use App\Services\Scrapping\Core\Config\ConfigLoader;
 use App\Services\Scrapping\Core\Conversion\ConversionService;
 use App\Services\Scrapping\Core\Conversion\FormatterApplicator;
+use App\Services\Scrapping\Core\Conversion\SpellEffects\SpellEffectsConversionService;
 use App\Services\Scrapping\Core\Integration\IntegrationResult;
 use App\Services\Scrapping\Core\Integration\IntegrationService;
 use App\Services\Scrapping\Core\Relation\RelationImportStack;
@@ -28,6 +29,7 @@ final class Orchestrator
         private ConversionService $conversionService,
         private CharacteristicLimitService $limitService,
         private IntegrationService $integrationService,
+        private SpellEffectsConversionService $spellEffectsConversionService,
         private ?RelationResolutionService $relationResolutionService = null
     ) {
     }
@@ -52,6 +54,7 @@ final class Orchestrator
             ),
             app(CharacteristicLimitService::class),
             new IntegrationService(),
+            app(SpellEffectsConversionService::class),
             null
         );
         $orchestrator->setRelationResolutionService(new RelationResolutionService($orchestrator));
@@ -148,6 +151,26 @@ final class Orchestrator
             }
             $converted = $this->conversionService->convert($source, $entity, $raw, $context);
 
+            if ($entity === 'spell') {
+                $spellId = isset($raw['id']) && is_numeric($raw['id']) ? (int) $raw['id'] : 0;
+                if ($spellId > 0) {
+                    $levels = $this->collectService->fetchSpellLevelsBySpellId($source, $spellId, [
+                        'skip_cache' => (bool) ($options['skip_cache'] ?? false),
+                    ]);
+                    if ($levels !== []) {
+                        $effectsResult = $this->spellEffectsConversionService->convert($raw, $levels, [
+                            'lang' => $context['lang'],
+                        ]);
+                        if ($effectsResult->hasEffects()) {
+                            $converted['spell_effects'] = [
+                                'effect_group' => $effectsResult->getEffectGroup(),
+                                'effects' => $effectsResult->getEffects(),
+                            ];
+                        }
+                    }
+                }
+            }
+
             $entityConfig = $this->configLoader->loadEntity($source, $entity);
             $entityType = (string) ($entityConfig['target']['krosmozEntity'] ?? $entity);
             if ($entityType === 'item') {
@@ -233,6 +256,26 @@ final class Orchestrator
                 $context['targetModel'] = $this->integrationService->getItemTargetTableFromRaw($raw);
             }
             $converted = $this->conversionService->convert($source, $entity, $raw, $context);
+
+            if ($entity === 'spell') {
+                $spellId = isset($raw['id']) && is_numeric($raw['id']) ? (int) $raw['id'] : 0;
+                if ($spellId > 0) {
+                    $levels = $this->collectService->fetchSpellLevelsBySpellId($source, $spellId, [
+                        'skip_cache' => (bool) ($options['skip_cache'] ?? false),
+                    ]);
+                    if ($levels !== []) {
+                        $effectsResult = $this->spellEffectsConversionService->convert($raw, $levels, [
+                            'lang' => $context['lang'],
+                        ]);
+                        if ($effectsResult->hasEffects()) {
+                            $converted['spell_effects'] = [
+                                'effect_group' => $effectsResult->getEffectGroup(),
+                                'effects' => $effectsResult->getEffects(),
+                            ];
+                        }
+                    }
+                }
+            }
 
             $entityConfig = $this->configLoader->loadEntity($source, $entity);
             $entityType = (string) ($entityConfig['target']['krosmozEntity'] ?? $entity);
@@ -352,6 +395,27 @@ final class Orchestrator
                     $context['targetModel'] = $this->integrationService->getItemTargetTableFromRaw($raw);
                 }
                 $converted = $this->conversionService->convert($source, $entity, $raw, $context);
+
+                if ($entity === 'spell') {
+                    $spellId = isset($raw['id']) && is_numeric($raw['id']) ? (int) $raw['id'] : 0;
+                    if ($spellId > 0) {
+                        $levels = $this->collectService->fetchSpellLevelsBySpellId($source, $spellId, [
+                            'skip_cache' => (bool) ($options['skip_cache'] ?? false),
+                        ]);
+                        if ($levels !== []) {
+                            $effectsResult = $this->spellEffectsConversionService->convert($raw, $levels, [
+                                'lang' => $context['lang'],
+                            ]);
+                            if ($effectsResult->hasEffects()) {
+                                $converted['spell_effects'] = [
+                                    'effect_group' => $effectsResult->getEffectGroup(),
+                                    'effects' => $effectsResult->getEffects(),
+                                ];
+                            }
+                        }
+                    }
+                }
+
                 $convertedList[] = $converted;
 
                 $entityTypeForItem = $entityType === 'item' ? $this->integrationService->getItemTargetTable($converted) : $entityType;

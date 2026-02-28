@@ -12,15 +12,15 @@
       "conversion_krosmoz_sample": { "1": 1, "4": 4, "8": 8, "12": 12, "16": 16, "20": 20 },
       "source_rule": "Niveau JDR = identité (échelle 1–20)"
     },
-    "pa_object": {
+    "action_points_object": {
       "conversion_krosmoz_sample": { "1": 0, "4": 1, "8": 2, "12": 3, "16": 4, "20": 6 },
       "source_rule": "2.2.2 : PA base 6, max 12, équipement +6 max → bonus équipement 0 à 6"
     },
-    "pm_object": {
+    "movement_points_object": {
       "conversion_krosmoz_sample": { "1": 0, "4": 0, "8": 1, "12": 2, "16": 3, "20": 3 },
       "source_rule": "2.2.2 : PM base 3, max 6, équipement +3 max"
     },
-    "strong_object": {
+    "strength_object": {
       "conversion_krosmoz_sample": { "1": 0, "4": 1, "8": 2, "12": 3, "16": 4, "20": 4 },
       "source_rule": "2.2.1 : jusqu'à +4 par objet sur une caractéristique"
     },
@@ -28,7 +28,7 @@
       "conversion_krosmoz_sample": { "1": 0, "4": 1, "8": 2, "12": 3, "16": 4, "20": 4 },
       "source_rule": "2.2.1 : jusqu'à +4 par objet"
     },
-    "sagesse_object": {
+    "wisdom_object": {
       "conversion_krosmoz_sample": { "1": 0, "4": 1, "8": 2, "12": 3, "16": 4, "20": 4 },
       "source_rule": "2.2.1 : jusqu'à +4 par objet"
     },
@@ -36,51 +36,51 @@
       "conversion_krosmoz_sample": { "1": 0, "4": 1, "8": 2, "12": 3, "16": 4, "20": 4 },
       "source_rule": "2.2.1 : jusqu'à +4 par objet"
     },
-    "agi_object": {
+    "agility_object": {
       "conversion_krosmoz_sample": { "1": 0, "4": 1, "8": 2, "12": 3, "16": 4, "20": 4 },
       "source_rule": "2.2.1 : jusqu'à +4 par objet"
     },
-    "intel_object": {
+    "intelligence_object": {
       "conversion_krosmoz_sample": { "1": 0, "4": 1, "8": 2, "12": 3, "16": 4, "20": 4 },
       "source_rule": "2.2.1 : jusqu'à +4 par objet"
     },
-    "pv_object": {
+    "life_points_max_object": {
       "conversion_krosmoz_sample": { "1": 0, "4": 5, "8": 10, "12": 15, "16": 18, "20": 20 },
       "source_rule": "2.2.2 : modifiable par équipement (illimité) ; convention ordre de grandeur bonus PV"
     },
-    "invocation_object": {
+    "summoning_object": {
       "conversion_krosmoz_sample": { "1": 0, "4": 1, "8": 2, "12": 3, "16": 4, "20": 5 },
       "source_rule": "2.2.2 : +5 max équipement"
     },
-    "esquive_pa_object": {
+    "dodge_action_points_object": {
       "conversion_krosmoz_sample": { "1": 0, "4": 1, "8": 2, "12": 3, "16": 4, "20": 5 },
       "source_rule": "2.2.2 : +5 max équipement"
     },
-    "esquive_pm_object": {
+    "dodge_movement_points_object": {
       "conversion_krosmoz_sample": { "1": 0, "4": 1, "8": 2, "12": 3, "16": 4, "20": 5 },
       "source_rule": "2.2.2 : +5 max équipement"
     },
-    "ini_object": {
+    "initiative_object": {
       "conversion_krosmoz_sample": { "1": 0, "4": 1, "8": 2, "12": 3, "16": 4, "20": 5 },
       "source_rule": "2.2.2 : modifiable par équipement (illimité) ; convention ordre de grandeur"
     },
-    "res_50_object": {
+    "resistance_50_percent_object": {
       "conversion_krosmoz_sample": { "1": 0, "4": 0, "8": 0, "12": 0, "16": 0, "20": 0 },
       "source_rule": "2.2.2 : résistance % (0, 50, 100) ; pas de courbe niveau → valeur unique par objet"
     },
-    "res_fixe_terre_object": {
+    "fixed_resistance_earth_object": {
       "conversion_krosmoz_sample": { "1": 0, "4": 2, "8": 4, "12": 6, "16": 8, "20": 10 },
       "source_rule": "2.2.2 : résistance fixe 0 à 10, équipement +10 max"
     },
-    "res_fixe_feu_object": {
+    "fixed_resistance_fire_object": {
       "conversion_krosmoz_sample": { "1": 0, "4": 2, "8": 4, "12": 6, "16": 8, "20": 10 },
       "source_rule": "2.2.2 : idem"
     },
-    "res_fixe_eau_object": {
+    "fixed_resistance_water_object": {
       "conversion_krosmoz_sample": { "1": 0, "4": 2, "8": 4, "12": 6, "16": 8, "20": 10 },
       "source_rule": "2.2.2 : idem"
     },
-    "res_fixe_air_object": {
+    "fixed_resistance_air_object": {
       "conversion_krosmoz_sample": { "1": 0, "4": 2, "8": 4, "12": 6, "16": 8, "20": 10 },
       "source_rule": "2.2.2 : idem"
     },

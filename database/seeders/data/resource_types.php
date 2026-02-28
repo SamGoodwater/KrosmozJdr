@@ -252,6 +252,15 @@ return array (
   ),
   27 => 
   array (
+    'dofusdb_type_id' => 37,
+    'name' => 'Bière',
+    'decision' => 'pending',
+    'state' => 'playable',
+    'read_level' => 0,
+    'write_level' => 3,
+  ),
+  28 => 
+  array (
     'dofusdb_type_id' => 38,
     'name' => 'Bois',
     'decision' => 'allowed',
@@ -259,7 +268,7 @@ return array (
     'read_level' => 0,
     'write_level' => 4,
   ),
-  28 => 
+  29 => 
   array (
     'dofusdb_type_id' => 39,
     'name' => 'Minerai',
@@ -268,7 +277,7 @@ return array (
     'read_level' => 0,
     'write_level' => 4,
   ),
-  29 => 
+  30 => 
   array (
     'dofusdb_type_id' => 40,
     'name' => 'Alliage',
@@ -277,7 +286,7 @@ return array (
     'read_level' => 0,
     'write_level' => 4,
   ),
-  30 => 
+  31 => 
   array (
     'dofusdb_type_id' => 41,
     'name' => 'Poisson',
@@ -286,7 +295,7 @@ return array (
     'read_level' => 0,
     'write_level' => 4,
   ),
-  31 => 
+  32 => 
   array (
     'dofusdb_type_id' => 42,
     'name' => 'Friandise',
@@ -295,7 +304,7 @@ return array (
     'read_level' => 0,
     'write_level' => 4,
   ),
-  32 => 
+  33 => 
   array (
     'dofusdb_type_id' => 46,
     'name' => 'Fruit',
@@ -304,7 +313,7 @@ return array (
     'read_level' => 0,
     'write_level' => 4,
   ),
-  33 => 
+  34 => 
   array (
     'dofusdb_type_id' => 47,
     'name' => 'Os',
@@ -313,7 +322,7 @@ return array (
     'read_level' => 0,
     'write_level' => 4,
   ),
-  34 => 
+  35 => 
   array (
     'dofusdb_type_id' => 48,
     'name' => 'Poudre',
@@ -322,7 +331,7 @@ return array (
     'read_level' => 0,
     'write_level' => 4,
   ),
-  35 => 
+  36 => 
   array (
     'dofusdb_type_id' => 50,
     'name' => 'Pierre précieuse',
@@ -331,7 +340,7 @@ return array (
     'read_level' => 0,
     'write_level' => 4,
   ),
-  36 => 
+  37 => 
   array (
     'dofusdb_type_id' => 51,
     'name' => 'Pierre brute',
@@ -340,7 +349,7 @@ return array (
     'read_level' => 0,
     'write_level' => 4,
   ),
-  37 => 
+  38 => 
   array (
     'dofusdb_type_id' => 53,
     'name' => 'Plume',
@@ -349,7 +358,7 @@ return array (
     'read_level' => 0,
     'write_level' => 4,
   ),
-  38 => 
+  39 => 
   array (
     'dofusdb_type_id' => 54,
     'name' => 'Poil',
@@ -358,7 +367,7 @@ return array (
     'read_level' => 0,
     'write_level' => 4,
   ),
-  39 => 
+  40 => 
   array (
     'dofusdb_type_id' => 55,
     'name' => 'Étoffe',
@@ -367,7 +376,7 @@ return array (
     'read_level' => 0,
     'write_level' => 4,
   ),
-  40 => 
+  41 => 
   array (
     'dofusdb_type_id' => 56,
     'name' => 'Cuir',
@@ -376,7 +385,7 @@ return array (
     'read_level' => 0,
     'write_level' => 4,
   ),
-  41 => 
+  42 => 
   array (
     'dofusdb_type_id' => 57,
     'name' => 'Laine',
@@ -385,7 +394,7 @@ return array (
     'read_level' => 0,
     'write_level' => 4,
   ),
-  42 => 
+  43 => 
   array (
     'dofusdb_type_id' => 58,
     'name' => 'Graine',
@@ -394,7 +403,7 @@ return array (
     'read_level' => 0,
     'write_level' => 4,
   ),
-  43 => 
+  44 => 
   array (
     'dofusdb_type_id' => 59,
     'name' => 'Peau',
@@ -403,7 +412,7 @@ return array (
     'read_level' => 0,
     'write_level' => 4,
   ),
-  44 => 
+  45 => 
   array (
     'dofusdb_type_id' => 60,
     'name' => 'Huile',
@@ -412,7 +421,7 @@ return array (
     'read_level' => 0,
     'write_level' => 4,
   ),
-  45 => 
+  46 => 
   array (
     'dofusdb_type_id' => 61,
     'name' => 'Peluche',
@@ -421,7 +430,7 @@ return array (
     'read_level' => 0,
     'write_level' => 4,
   ),
-  46 => 
+  47 => 
   array (
     'dofusdb_type_id' => 63,
     'name' => 'Viande',
@@ -430,7 +439,7 @@ return array (
     'read_level' => 0,
     'write_level' => 4,
   ),
-  47 => 
+  48 => 
   array (
     'dofusdb_type_id' => 65,
     'name' => 'Queue',
@@ -439,7 +448,7 @@ return array (
     'read_level' => 0,
     'write_level' => 4,
   ),
-  48 => 
+  49 => 
   array (
     'dofusdb_type_id' => 66,
     'name' => 'Métaria',
@@ -448,7 +457,7 @@ return array (
     'read_level' => 0,
     'write_level' => 4,
   ),
-  49 => 
+  50 => 
   array (
     'dofusdb_type_id' => 68,
     'name' => 'Légume',
@@ -457,7 +466,16 @@ return array (
     'read_level' => 0,
     'write_level' => 4,
   ),
-  50 => 
+  51 => 
+  array (
+    'dofusdb_type_id' => 69,
+    'name' => 'Viande comestible',
+    'decision' => 'pending',
+    'state' => 'playable',
+    'read_level' => 0,
+    'write_level' => 3,
+  ),
+  52 => 
   array (
     'dofusdb_type_id' => 70,
     'name' => 'Teinture',
@@ -466,7 +484,7 @@ return array (
     'read_level' => 0,
     'write_level' => 4,
   ),
-  51 => 
+  53 => 
   array (
     'dofusdb_type_id' => 71,
     'name' => 'Matériel d\'alchimie',
@@ -475,7 +493,7 @@ return array (
     'read_level' => 0,
     'write_level' => 4,
   ),
-  52 => 
+  54 => 
   array (
     'dofusdb_type_id' => 78,
     'name' => 'Rune de forgemagie',
@@ -484,7 +502,7 @@ return array (
     'read_level' => 0,
     'write_level' => 4,
   ),
-  53 => 
+  55 => 
   array (
     'dofusdb_type_id' => 84,
     'name' => 'Clef',
@@ -493,7 +511,16 @@ return array (
     'read_level' => 0,
     'write_level' => 4,
   ),
-  54 => 
+  56 => 
+  array (
+    'dofusdb_type_id' => 94,
+    'name' => 'Objet utilisable',
+    'decision' => 'pending',
+    'state' => 'playable',
+    'read_level' => 0,
+    'write_level' => 3,
+  ),
+  57 => 
   array (
     'dofusdb_type_id' => 95,
     'name' => 'Planche',
@@ -502,7 +529,7 @@ return array (
     'read_level' => 0,
     'write_level' => 4,
   ),
-  55 => 
+  58 => 
   array (
     'dofusdb_type_id' => 96,
     'name' => 'Écorce',
@@ -511,7 +538,7 @@ return array (
     'read_level' => 0,
     'write_level' => 4,
   ),
-  56 => 
+  59 => 
   array (
     'dofusdb_type_id' => 98,
     'name' => 'Racine',
@@ -520,7 +547,7 @@ return array (
     'read_level' => 0,
     'write_level' => 4,
   ),
-  57 => 
+  60 => 
   array (
     'dofusdb_type_id' => 103,
     'name' => 'Patte',
@@ -529,7 +556,7 @@ return array (
     'read_level' => 0,
     'write_level' => 4,
   ),
-  58 => 
+  61 => 
   array (
     'dofusdb_type_id' => 104,
     'name' => 'Aile',
@@ -538,7 +565,7 @@ return array (
     'read_level' => 0,
     'write_level' => 4,
   ),
-  59 => 
+  62 => 
   array (
     'dofusdb_type_id' => 105,
     'name' => 'Œuf',
@@ -547,7 +574,7 @@ return array (
     'read_level' => 0,
     'write_level' => 4,
   ),
-  60 => 
+  63 => 
   array (
     'dofusdb_type_id' => 106,
     'name' => 'Oreille',
@@ -556,7 +583,7 @@ return array (
     'read_level' => 0,
     'write_level' => 4,
   ),
-  61 => 
+  64 => 
   array (
     'dofusdb_type_id' => 107,
     'name' => 'Carapace',
@@ -565,7 +592,7 @@ return array (
     'read_level' => 0,
     'write_level' => 4,
   ),
-  62 => 
+  65 => 
   array (
     'dofusdb_type_id' => 108,
     'name' => 'Bourgeon',
@@ -574,7 +601,7 @@ return array (
     'read_level' => 0,
     'write_level' => 4,
   ),
-  63 => 
+  66 => 
   array (
     'dofusdb_type_id' => 109,
     'name' => 'Œil',
@@ -583,7 +610,7 @@ return array (
     'read_level' => 0,
     'write_level' => 4,
   ),
-  64 => 
+  67 => 
   array (
     'dofusdb_type_id' => 110,
     'name' => 'Gelée',
@@ -592,7 +619,7 @@ return array (
     'read_level' => 0,
     'write_level' => 4,
   ),
-  65 => 
+  68 => 
   array (
     'dofusdb_type_id' => 111,
     'name' => 'Coquille',
@@ -601,7 +628,7 @@ return array (
     'read_level' => 0,
     'write_level' => 4,
   ),
-  66 => 
+  69 => 
   array (
     'dofusdb_type_id' => 119,
     'name' => 'Champignon',
@@ -610,7 +637,7 @@ return array (
     'read_level' => 0,
     'write_level' => 4,
   ),
-  67 => 
+  70 => 
   array (
     'dofusdb_type_id' => 125,
     'name' => 'Souvenir',
@@ -619,7 +646,7 @@ return array (
     'read_level' => 0,
     'write_level' => 4,
   ),
-  68 => 
+  71 => 
   array (
     'dofusdb_type_id' => 129,
     'name' => 'Alignement',
@@ -628,7 +655,7 @@ return array (
     'read_level' => 0,
     'write_level' => 3,
   ),
-  69 => 
+  72 => 
   array (
     'dofusdb_type_id' => 131,
     'name' => 'Événements',
@@ -637,7 +664,7 @@ return array (
     'read_level' => 0,
     'write_level' => 3,
   ),
-  70 => 
+  73 => 
   array (
     'dofusdb_type_id' => 133,
     'name' => 'Astrub',
@@ -646,7 +673,7 @@ return array (
     'read_level' => 0,
     'write_level' => 3,
   ),
-  71 => 
+  74 => 
   array (
     'dofusdb_type_id' => 141,
     'name' => 'Île de Nowel',
@@ -655,7 +682,7 @@ return array (
     'read_level' => 0,
     'write_level' => 3,
   ),
-  72 => 
+  75 => 
   array (
     'dofusdb_type_id' => 142,
     'name' => 'Incarnam',
@@ -664,7 +691,7 @@ return array (
     'read_level' => 0,
     'write_level' => 3,
   ),
-  73 => 
+  76 => 
   array (
     'dofusdb_type_id' => 144,
     'name' => 'Pandala',
@@ -673,7 +700,7 @@ return array (
     'read_level' => 0,
     'write_level' => 3,
   ),
-  74 => 
+  77 => 
   array (
     'dofusdb_type_id' => 149,
     'name' => 'Île de Moon',
@@ -682,7 +709,7 @@ return array (
     'read_level' => 0,
     'write_level' => 4,
   ),
-  75 => 
+  78 => 
   array (
     'dofusdb_type_id' => 150,
     'name' => 'Îles des Wabbits',
@@ -691,7 +718,7 @@ return array (
     'read_level' => 0,
     'write_level' => 3,
   ),
-  76 => 
+  79 => 
   array (
     'dofusdb_type_id' => 152,
     'name' => 'Galet',
@@ -700,7 +727,7 @@ return array (
     'read_level' => 0,
     'write_level' => 4,
   ),
-  77 => 
+  80 => 
   array (
     'dofusdb_type_id' => 153,
     'name' => 'Nowel',
@@ -709,7 +736,7 @@ return array (
     'read_level' => 0,
     'write_level' => 4,
   ),
-  78 => 
+  81 => 
   array (
     'dofusdb_type_id' => 154,
     'name' => 'Emballage',
@@ -718,7 +745,7 @@ return array (
     'read_level' => 0,
     'write_level' => 4,
   ),
-  79 => 
+  82 => 
   array (
     'dofusdb_type_id' => 155,
     'name' => 'Sufokia',
@@ -727,7 +754,7 @@ return array (
     'read_level' => 0,
     'write_level' => 3,
   ),
-  80 => 
+  83 => 
   array (
     'dofusdb_type_id' => 164,
     'name' => 'Vêtement',
@@ -736,7 +763,7 @@ return array (
     'read_level' => 0,
     'write_level' => 4,
   ),
-  81 => 
+  84 => 
   array (
     'dofusdb_type_id' => 167,
     'name' => 'Essence de gardien de donjon',
@@ -745,7 +772,7 @@ return array (
     'read_level' => 0,
     'write_level' => 4,
   ),
-  82 => 
+  85 => 
   array (
     'dofusdb_type_id' => 174,
     'name' => 'Carte',
@@ -754,7 +781,7 @@ return array (
     'read_level' => 0,
     'write_level' => 4,
   ),
-  83 => 
+  86 => 
   array (
     'dofusdb_type_id' => 175,
     'name' => 'Fragment de carte',
@@ -763,7 +790,7 @@ return array (
     'read_level' => 0,
     'write_level' => 4,
   ),
-  84 => 
+  87 => 
   array (
     'dofusdb_type_id' => 179,
     'name' => 'Préparation',
@@ -772,7 +799,7 @@ return array (
     'read_level' => 0,
     'write_level' => 4,
   ),
-  85 => 
+  88 => 
   array (
     'dofusdb_type_id' => 183,
     'name' => 'Substrat',
@@ -781,7 +808,16 @@ return array (
     'read_level' => 0,
     'write_level' => 4,
   ),
-  86 => 
+  89 => 
+  array (
+    'dofusdb_type_id' => 184,
+    'name' => 'Conteneur',
+    'decision' => 'pending',
+    'state' => 'playable',
+    'read_level' => 0,
+    'write_level' => 3,
+  ),
+  90 => 
   array (
     'dofusdb_type_id' => 185,
     'name' => 'Sève',
@@ -790,7 +826,7 @@ return array (
     'read_level' => 0,
     'write_level' => 4,
   ),
-  87 => 
+  91 => 
   array (
     'dofusdb_type_id' => 189,
     'name' => 'Orbe de forgemagie',
@@ -799,7 +835,7 @@ return array (
     'read_level' => 0,
     'write_level' => 4,
   ),
-  88 => 
+  92 => 
   array (
     'dofusdb_type_id' => 190,
     'name' => 'Harnachements de Dragodinde',
@@ -808,7 +844,7 @@ return array (
     'read_level' => 0,
     'write_level' => 3,
   ),
-  89 => 
+  93 => 
   array (
     'dofusdb_type_id' => 195,
     'name' => 'Matériel d\'exploration',
@@ -817,7 +853,7 @@ return array (
     'read_level' => 0,
     'write_level' => 4,
   ),
-  90 => 
+  94 => 
   array (
     'dofusdb_type_id' => 197,
     'name' => 'Caution',
@@ -826,7 +862,7 @@ return array (
     'read_level' => 0,
     'write_level' => 4,
   ),
-  91 => 
+  95 => 
   array (
     'dofusdb_type_id' => 202,
     'name' => 'Sidimote',
@@ -835,7 +871,7 @@ return array (
     'read_level' => 0,
     'write_level' => 3,
   ),
-  92 => 
+  96 => 
   array (
     'dofusdb_type_id' => 209,
     'name' => 'Nourriture pour familier',
@@ -844,7 +880,7 @@ return array (
     'read_level' => 0,
     'write_level' => 4,
   ),
-  93 => 
+  97 => 
   array (
     'dofusdb_type_id' => 211,
     'name' => 'Rune de transcendance',
@@ -853,7 +889,7 @@ return array (
     'read_level' => 0,
     'write_level' => 4,
   ),
-  94 => 
+  98 => 
   array (
     'dofusdb_type_id' => 228,
     'name' => 'Liquide',
@@ -862,7 +898,7 @@ return array (
     'read_level' => 0,
     'write_level' => 4,
   ),
-  95 => 
+  99 => 
   array (
     'dofusdb_type_id' => 229,
     'name' => 'Ressource de combat',
@@ -871,7 +907,7 @@ return array (
     'read_level' => 0,
     'write_level' => 4,
   ),
-  96 => 
+  100 => 
   array (
     'dofusdb_type_id' => 230,
     'name' => 'Obsolète',
@@ -880,7 +916,7 @@ return array (
     'read_level' => 0,
     'write_level' => 4,
   ),
-  97 => 
+  101 => 
   array (
     'dofusdb_type_id' => 231,
     'name' => 'Rabmablague',
@@ -889,7 +925,7 @@ return array (
     'read_level' => 0,
     'write_level' => 4,
   ),
-  98 => 
+  102 => 
   array (
     'dofusdb_type_id' => 232,
     'name' => 'Haïku',
@@ -898,7 +934,7 @@ return array (
     'read_level' => 0,
     'write_level' => 4,
   ),
-  99 => 
+  103 => 
   array (
     'dofusdb_type_id' => 233,
     'name' => 'Rune astrale',
@@ -907,7 +943,7 @@ return array (
     'read_level' => 0,
     'write_level' => 4,
   ),
-  100 => 
+  104 => 
   array (
     'dofusdb_type_id' => 241,
     'name' => 'Ressource de Temporis',
@@ -916,7 +952,7 @@ return array (
     'read_level' => 0,
     'write_level' => 4,
   ),
-  101 => 
+  105 => 
   array (
     'dofusdb_type_id' => 246,
     'name' => 'Chapeau d\'apparat',
@@ -925,7 +961,7 @@ return array (
     'read_level' => 0,
     'write_level' => 3,
   ),
-  102 => 
+  106 => 
   array (
     'dofusdb_type_id' => 247,
     'name' => 'Cape d\'apparat',
@@ -934,7 +970,7 @@ return array (
     'read_level' => 0,
     'write_level' => 3,
   ),
-  103 => 
+  107 => 
   array (
     'dofusdb_type_id' => 248,
     'name' => 'Bouclier d\'apparat',
@@ -943,7 +979,7 @@ return array (
     'read_level' => 0,
     'write_level' => 3,
   ),
-  104 => 
+  108 => 
   array (
     'dofusdb_type_id' => 249,
     'name' => 'Familier d\'apparat',
@@ -952,7 +988,7 @@ return array (
     'read_level' => 0,
     'write_level' => 3,
   ),
-  105 => 
+  109 => 
   array (
     'dofusdb_type_id' => 251,
     'name' => 'Arme d\'apparat',
@@ -961,7 +997,7 @@ return array (
     'read_level' => 0,
     'write_level' => 3,
   ),
-  106 => 
+  110 => 
   array (
     'dofusdb_type_id' => 255,
     'name' => 'Harnachements de Muldo',
@@ -970,7 +1006,7 @@ return array (
     'read_level' => 0,
     'write_level' => 3,
   ),
-  107 => 
+  111 => 
   array (
     'dofusdb_type_id' => 258,
     'name' => 'Gravure de forgemagie',
@@ -979,7 +1015,7 @@ return array (
     'read_level' => 0,
     'write_level' => 4,
   ),
-  108 => 
+  112 => 
   array (
     'dofusdb_type_id' => 260,
     'name' => 'Forêt Maléfique',
@@ -988,7 +1024,7 @@ return array (
     'read_level' => 0,
     'write_level' => 4,
   ),
-  109 => 
+  113 => 
   array (
     'dofusdb_type_id' => 262,
     'name' => 'Matériel de mégaltération',
@@ -997,7 +1033,7 @@ return array (
     'read_level' => 0,
     'write_level' => 4,
   ),
-  110 => 
+  114 => 
   array (
     'dofusdb_type_id' => 266,
     'name' => 'Ressource des Anomalies Temporelles',
@@ -1006,7 +1042,7 @@ return array (
     'read_level' => 0,
     'write_level' => 4,
   ),
-  111 => 
+  115 => 
   array (
     'dofusdb_type_id' => 271,
     'name' => 'Lance',
@@ -1015,7 +1051,7 @@ return array (
     'read_level' => 0,
     'write_level' => 3,
   ),
-  112 => 
+  116 => 
   array (
     'dofusdb_type_id' => 278,
     'name' => 'Ressource de Percepteur',
@@ -1024,7 +1060,7 @@ return array (
     'read_level' => 0,
     'write_level' => 4,
   ),
-  113 => 
+  117 => 
   array (
     'dofusdb_type_id' => 309,
     'name' => 'Pierre d\'âme spéciale non transformée',
@@ -1033,7 +1069,7 @@ return array (
     'read_level' => 0,
     'write_level' => 4,
   ),
-  114 => 
+  118 => 
   array (
     'dofusdb_type_id' => 312,
     'name' => 'Ressource de quête',

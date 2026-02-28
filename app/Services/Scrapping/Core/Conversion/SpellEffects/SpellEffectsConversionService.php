@@ -89,15 +89,25 @@ final class SpellEffectsConversionService
                 continue;
             }
 
-            $definition = $this->effectCatalog->get($effectId, $lang);
             $mapping = DofusDbEffectMapping::getSubEffectForEffectId($effectId);
-            if ($mapping === null) {
-                continue;
+            $subEffectSlug = null;
+            $charSource = null;
+            $definition = [];
+
+            if ($mapping !== null) {
+                [$subEffectSlug, $charSource] = $mapping;
+                if ($charSource === 'element') {
+                    $definition = $this->effectCatalog->get($effectId, $lang);
+                }
+            } else {
+                $subEffectSlug = DofusDbEffectMapping::SUB_EFFECT_SLUG_OTHER;
+                $definition = $this->effectCatalog->get($effectId, $lang);
             }
 
-            [$subEffectSlug, $charSource] = $mapping;
             $order = isset($instance['order']) ? (int) $instance['order'] : $index;
-            $params = $this->buildParams($instance, $definition, $charSource);
+            $params = $subEffectSlug === DofusDbEffectMapping::SUB_EFFECT_SLUG_OTHER
+                ? $this->buildParamsForOther($instance, $definition, $lang)
+                : $this->buildParams($instance, $definition, $charSource ?? 'none');
             $critOnly = false;
 
             $criticalInstance = $criticalList[$order] ?? null;
@@ -140,6 +150,48 @@ final class SpellEffectsConversionService
             $indexed[$order] = $inst;
         }
         return $indexed;
+    }
+
+    /**
+     * Params pour le sous-effet "autre" : valeur (formule dés/valeur) + description DofusDB (pour affichage / sous-effets personnalisés).
+     *
+     * @param array<string, mixed> $instance Instance d'effet (diceNum, diceSide, value)
+     * @param array<string, mixed> $definition Définition GET /effects/{id} (description multilingue)
+     * @return array{value_formula: ?string, value: string, value_formula_crit: null}
+     */
+    private function buildParamsForOther(array $instance, array $definition, string $lang): array
+    {
+        $valueFormula = $this->buildValueFormula($instance);
+        $description = $this->extractEffectDescription($definition, $lang);
+        $value = $description !== '' ? $description : ($valueFormula ?? 'Effet non mappé');
+
+        return [
+            'value_formula' => $valueFormula,
+            'value' => $value,
+            'value_formula_crit' => null,
+        ];
+    }
+
+    /**
+     * Extrait la description d'une définition d'effet DofusDB (champ description multilingue).
+     */
+    private function extractEffectDescription(array $definition, string $lang): string
+    {
+        $desc = $definition['description'] ?? null;
+        if (is_string($desc)) {
+            return $desc;
+        }
+        if (is_array($desc) && isset($desc[$lang])) {
+            return (string) $desc[$lang];
+        }
+        if (is_array($desc) && isset($desc['fr'])) {
+            return (string) $desc['fr'];
+        }
+        if (is_array($desc)) {
+            $first = reset($desc);
+            return $first !== false ? (string) $first : '';
+        }
+        return '';
     }
 
     /**

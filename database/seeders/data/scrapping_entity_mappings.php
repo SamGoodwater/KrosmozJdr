@@ -814,7 +814,7 @@ return array (
     'mapping_key' => 'life',
     'from_path' => 'grades.0.lifePoints',
     'from_lang_aware' => false,
-    'characteristic_key' => 'life_creature',
+    'characteristic_key' => 'life_points_creature',
     'formatters' => 
     array (
       0 => 
@@ -844,7 +844,7 @@ return array (
     'mapping_key' => 'strength',
     'from_path' => 'grades.0.strength',
     'from_lang_aware' => false,
-    'characteristic_key' => 'strong_creature',
+    'characteristic_key' => 'strength_creature',
     'formatters' => 
     array (
       0 => 
@@ -874,7 +874,7 @@ return array (
     'mapping_key' => 'intelligence',
     'from_path' => 'grades.0.intelligence',
     'from_lang_aware' => false,
-    'characteristic_key' => 'intel_creature',
+    'characteristic_key' => 'intelligence_creature',
     'formatters' => 
     array (
       0 => 
@@ -904,7 +904,7 @@ return array (
     'mapping_key' => 'agility',
     'from_path' => 'grades.0.agility',
     'from_lang_aware' => false,
-    'characteristic_key' => 'agi_creature',
+    'characteristic_key' => 'agility_creature',
     'formatters' => 
     array (
       0 => 
@@ -1002,7 +1002,7 @@ return array (
     'mapping_key' => 'pa',
     'from_path' => 'grades.0.actionPoints',
     'from_lang_aware' => false,
-    'characteristic_key' => 'pa_creature',
+    'characteristic_key' => 'action_points_creature',
     'formatters' => 
     array (
       0 => 
@@ -1040,7 +1040,7 @@ return array (
     'mapping_key' => 'pm',
     'from_path' => 'grades.0.movementPoints',
     'from_lang_aware' => false,
-    'characteristic_key' => 'pm_creature',
+    'characteristic_key' => 'movement_points_creature',
     'formatters' => 
     array (
       0 => 
@@ -1116,7 +1116,7 @@ return array (
     'mapping_key' => 'po',
     'from_path' => 'grades.0.bonusRange',
     'from_lang_aware' => false,
-    'characteristic_key' => 'po_creature',
+    'characteristic_key' => 'range_creature',
     'formatters' => 
     array (
       0 => 
@@ -1212,7 +1212,7 @@ return array (
     'mapping_key' => 'ini',
     'from_path' => 'grades.0.initiative',
     'from_lang_aware' => false,
-    'characteristic_key' => 'ini_creature',
+    'characteristic_key' => 'initiative_creature',
     'formatters' => 
     array (
       0 => 
@@ -1627,7 +1627,7 @@ return array (
     'mapping_key' => 'pa',
     'from_path' => 'levels.0.apCost',
     'from_lang_aware' => false,
-    'characteristic_key' => 'pa_spell',
+    'characteristic_key' => 'action_points_spell',
     'formatters' => 
     array (
       0 => 
@@ -1664,7 +1664,7 @@ return array (
     'mapping_key' => 'po',
     'from_path' => 'levels.0.range',
     'from_lang_aware' => false,
-    'characteristic_key' => 'po_spell',
+    'characteristic_key' => 'range_spell',
     'formatters' => 
     array (
       0 => 
@@ -1708,7 +1708,7 @@ return array (
     'mapping_key' => 'spell_po_min',
     'from_path' => 'levels.0.range.min',
     'from_lang_aware' => false,
-    'characteristic_key' => 'spell_po_min_spell',
+    'characteristic_key' => 'spell_range_min_spell',
     'formatters' => 
     array (
       0 => 
@@ -1745,7 +1745,7 @@ return array (
     'mapping_key' => 'spell_po_max',
     'from_path' => 'levels.0.range.max',
     'from_lang_aware' => false,
-    'characteristic_key' => 'spell_po_max_spell',
+    'characteristic_key' => 'spell_range_max_spell',
     'formatters' => 
     array (
       0 => 
@@ -2069,7 +2069,7 @@ return array (
     'mapping_key' => 'po_editable',
     'from_path' => 'levels.0.rangeEditable',
     'from_lang_aware' => false,
-    'characteristic_key' => 'po_editable_spell',
+    'characteristic_key' => 'range_editable_spell',
     'formatters' => 
     array (
       0 => 
@@ -2217,7 +2217,7 @@ return array (
     'mapping_key' => 'powerful',
     'from_path' => 'levels.0.powerful',
     'from_lang_aware' => false,
-    'characteristic_key' => 'powerful_spell',
+    'characteristic_key' => 'power_spell',
     'formatters' => 
     array (
       0 => 

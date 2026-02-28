@@ -11,6 +11,9 @@ return new class extends Migration
         Schema::create('consumable_shop', function (Blueprint $table) {
             $table->foreignId('consumable_id')->constrained('consumables')->cascadeOnDelete();
             $table->foreignId('shop_id')->constrained('shops')->cascadeOnDelete();
+            $table->unsignedInteger('quantity')->default(1);
+            $table->string('price')->nullable();
+            $table->string('comment')->nullable();
             $table->primary(['consumable_id', 'shop_id']);
         });
     }

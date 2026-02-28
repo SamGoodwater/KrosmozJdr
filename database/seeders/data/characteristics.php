@@ -69,12 +69,87 @@ return array (
   ),
   4 => 
   array (
-    'key' => 'life_creature',
+    'key' => 'object_save_agility_creature',
+    'name' => 'Bonus sauvegarde Agilité',
+    'short_name' => 'sav Agi',
+    'helper' => NULL,
+    'descriptions' => NULL,
+    'icon' => 'air.webp',
+    'color' => '#84ab61',
+    'unit' => NULL,
+    'type' => 'int',
+    'sort_order' => 0,
+    'group' => 'creature',
+    'linked_to_key' => NULL,
+  ),
+  5 => 
+  array (
+    'key' => 'object_save_chance_creature',
+    'name' => 'Bonus Sauvegarde Chance',
+    'short_name' => 'Sav Chance',
+    'helper' => NULL,
+    'descriptions' => NULL,
+    'icon' => 'water.webp',
+    'color' => '#94d0ef',
+    'unit' => NULL,
+    'type' => 'int',
+    'sort_order' => 0,
+    'group' => 'creature',
+    'linked_to_key' => NULL,
+  ),
+  6 => 
+  array (
+    'key' => 'object_save_intelligence_object',
+    'name' => 'Bonus sauvegarde Intelligence',
+    'short_name' => 'Sav Intel',
+    'helper' => NULL,
+    'descriptions' => NULL,
+    'icon' => 'fire.webp',
+    'color' => '#eb7432',
+    'unit' => NULL,
+    'type' => 'int',
+    'sort_order' => 0,
+    'group' => 'object',
+    'linked_to_key' => NULL,
+  ),
+  7 => 
+  array (
+    'key' => 'object_save_wisdom_object',
+    'name' => 'Bonus sauvegarde Sagesse',
+    'short_name' => 'Sav Sagesse',
+    'helper' => NULL,
+    'descriptions' => NULL,
+    'icon' => NULL,
+    'color' => '#4e1c75',
+    'unit' => NULL,
+    'type' => 'int',
+    'sort_order' => 0,
+    'group' => 'object',
+    'linked_to_key' => NULL,
+  ),
+  8 => 
+  array (
+    'key' => 'action_points_spell',
+    'name' => 'Coût en PA',
+    'short_name' => 'PA',
+    'helper' => 'Points d\'action pour lancer le sort. Typique : 3–4 (simple), 5 (puissant/zone), 2–3 (bonus). Règles 3.3.2.1.',
+    'descriptions' => 'Coût en points d\'action pour lancer le sort (règles 3.3.2.1).',
+    'icon' => 'castingTime.webp',
+    'color' => '#1a73e8',
+    'unit' => NULL,
+    'type' => 'int',
+    'sort_order' => 1,
+    'group' => 'spell',
+    'linked_to_key' => NULL,
+  ),
+  9 => 
+  array (
+    'key' => 'life_points_creature',
     'name' => 'Points de vie',
     'short_name' => 'PV',
     'helper' => 'Points de vie (santé). Calcul : Vitalité × 10 + dés de vie.',
     'descriptions' => 'Points de vie. Calcul en JDR : Vitalité × 10 + dés de vie (2.2.2).',
-    'icon' => 'life_temp.svg',
+    'icon' => 'life.webp',
     'color' => '#e93323',
     'unit' => NULL,
     'type' => 'int',
@@ -82,29 +157,14 @@ return array (
     'group' => 'creature',
     'linked_to_key' => NULL,
   ),
-  5 => 
-  array (
-    'key' => 'pa_spell',
-    'name' => 'Coût en PA',
-    'short_name' => 'PA',
-    'helper' => 'Points d\'action pour lancer le sort. Typique : 3–4 (simple), 5 (puissant/zone), 2–3 (bonus). Règles 3.3.2.1.',
-    'descriptions' => 'Coût en points d\'action pour lancer le sort (règles 3.3.2.1).',
-    'icon' => 'casting_time.svg',
-    'color' => '#1a73e8',
-    'unit' => NULL,
-    'type' => 'int',
-    'sort_order' => 1,
-    'group' => 'spell',
-    'linked_to_key' => NULL,
-  ),
-  6 => 
+  10 => 
   array (
     'key' => 'rarity_object',
     'name' => 'Rareté',
     'short_name' => 'Rar.',
     'helper' => '0 = commun, 1 = rare, 2 = mythique, 3 = épique, 4 = légendaire.',
     'descriptions' => 'Rareté : 0 commun, 1 peu commun 2 rare, 3 épique, 4 légendaire, 5 unique. Souvent dérivée du niveau.',
-    'icon' => NULL,
+    'icon' => 'critical.webp',
     'color' => '#e83323',
     'unit' => NULL,
     'type' => 'int',
@@ -112,14 +172,14 @@ return array (
     'group' => 'object',
     'linked_to_key' => NULL,
   ),
-  7 => 
+  11 => 
   array (
-    'key' => 'pa_creature',
+    'key' => 'action_points_creature',
     'name' => 'Points d\'action',
     'short_name' => 'PA',
     'helper' => 'Points d\'action par tour. Base 6, max 12 (équipement +6, forgemagie +1).',
     'descriptions' => 'Points d\'action par tour. Base 6, maximum 12 avec équipement et forgemagie.',
-    'icon' => 'casting_time.svg',
+    'icon' => 'actionPoints.webp',
     'color' => '#1a73e8',
     'unit' => NULL,
     'type' => 'int',
@@ -127,22 +187,7 @@ return array (
     'group' => 'creature',
     'linked_to_key' => NULL,
   ),
-  8 => 
-  array (
-    'key' => 'po_spell',
-    'name' => 'Portée',
-    'short_name' => 'PO',
-    'helper' => 'Portée du sort (cases). Fixe, modifiable (base + PO lanceur) ou variable. Règles 3.3.2.2.',
-    'descriptions' => 'Portée du sort en cases (fixe, modifiable ou variable).',
-    'icon' => 'po.webp',
-    'color' => '#5c6bc0',
-    'unit' => NULL,
-    'type' => 'int',
-    'sort_order' => 2,
-    'group' => 'spell',
-    'linked_to_key' => NULL,
-  ),
-  9 => 
+  12 => 
   array (
     'key' => 'price_object',
     'name' => 'Prix',
@@ -157,14 +202,29 @@ return array (
     'group' => 'object',
     'linked_to_key' => NULL,
   ),
-  10 => 
+  13 => 
+  array (
+    'key' => 'range_spell',
+    'name' => 'Portée',
+    'short_name' => 'PO',
+    'helper' => 'Portée du sort (cases). Fixe, modifiable (base + PO lanceur) ou variable. Règles 3.3.2.2.',
+    'descriptions' => 'Portée du sort en cases (fixe, modifiable ou variable).',
+    'icon' => 'range.webp',
+    'color' => '#5c6bc0',
+    'unit' => NULL,
+    'type' => 'int',
+    'sort_order' => 2,
+    'group' => 'spell',
+    'linked_to_key' => NULL,
+  ),
+  14 => 
   array (
     'key' => 'area_spell',
     'name' => 'Zone',
     'short_name' => 'Zone',
     'helper' => 'Taille de la zone d\'effet (cases).',
     'descriptions' => 'Taille de la zone d\'effet (ligne, cône, cercle, carré).',
-    'icon' => 'po.webp',
+    'icon' => 'range.webp',
     'color' => '#5c6bc0',
     'unit' => NULL,
     'type' => 'int',
@@ -172,14 +232,14 @@ return array (
     'group' => 'spell',
     'linked_to_key' => NULL,
   ),
-  11 => 
+  15 => 
   array (
-    'key' => 'pm_creature',
+    'key' => 'movement_points_creature',
     'name' => 'Points de mouvement',
     'short_name' => 'PM',
     'helper' => 'Points de mouvement par tour. Base 3, max 6 (équipement +3, forgemagie +1).',
     'descriptions' => 'Points de mouvement par tour. Base 3, maximum 6.',
-    'icon' => 'casting_time.svg',
+    'icon' => 'movementPoints.webp',
     'color' => '#0d904f',
     'unit' => NULL,
     'type' => 'int',
@@ -187,7 +247,7 @@ return array (
     'group' => 'creature',
     'linked_to_key' => NULL,
   ),
-  12 => 
+  16 => 
   array (
     'key' => 'weight_object',
     'name' => 'Poids',
@@ -202,14 +262,14 @@ return array (
     'group' => 'object',
     'linked_to_key' => NULL,
   ),
-  13 => 
+  17 => 
   array (
     'key' => 'element_spell',
     'name' => 'Élément',
     'short_name' => 'Élém.',
     'helper' => 'Élément du sort (0–28 : Neutre, Terre, Feu, Air, Eau et combinaisons).',
     'descriptions' => 'Élément du sort (Neutre, Terre, Feu, Air, Eau et combinaisons, 0–28).',
-    'icon' => 'neutre.webp',
+    'icon' => 'neutral.webp',
     'color' => '#00bcd4',
     'unit' => NULL,
     'type' => 'int',
@@ -217,14 +277,14 @@ return array (
     'group' => 'spell',
     'linked_to_key' => NULL,
   ),
-  14 => 
+  18 => 
   array (
-    'key' => 'po_creature',
+    'key' => 'range_creature',
     'name' => 'Portée',
     'short_name' => 'PO',
     'helper' => 'Bonus de portée (sorts/aptitudes). Base 0, max 6 (équipement +6, forgemagie +1).',
     'descriptions' => 'Bonus de portée (sorts/aptitudes). Base 0, max 6 (équipement +6, forgemagie +1).',
-    'icon' => 'po.webp',
+    'icon' => 'range.webp',
     'color' => '#5c6bc0',
     'unit' => NULL,
     'type' => 'int',
@@ -232,9 +292,9 @@ return array (
     'group' => 'creature',
     'linked_to_key' => NULL,
   ),
-  15 => 
+  19 => 
   array (
-    'key' => 'ini_creature',
+    'key' => 'initiative_creature',
     'name' => 'Initiative',
     'short_name' => 'Ini',
     'helper' => 'Ordre d\'action au combat. 1d20 + Mod. Intelligence + équipement.',
@@ -247,14 +307,14 @@ return array (
     'group' => 'creature',
     'linked_to_key' => NULL,
   ),
-  16 => 
+  20 => 
   array (
-    'key' => 'powerful_spell',
+    'key' => 'power_spell',
     'name' => 'Puissance',
     'short_name' => 'Puis.',
     'helper' => 'Indice de puissance du sort (dégâts/soins).',
     'descriptions' => 'Indice de puissance du sort (dégâts/soins).',
-    'icon' => 'puissance.webp',
+    'icon' => 'power.webp',
     'color' => '#e91e63',
     'unit' => NULL,
     'type' => 'int',
@@ -262,14 +322,14 @@ return array (
     'group' => 'spell',
     'linked_to_key' => NULL,
   ),
-  17 => 
+  21 => 
   array (
-    'key' => 'ca_creature',
+    'key' => 'armor_class_creature',
     'name' => 'Classe d\'armure',
     'short_name' => 'CA',
     'helper' => '10 + Mod. Vitalité + bonus bouclier. Max 21 + 5 (équipement).',
     'descriptions' => 'Classe d\'armure. 10 + Mod. Vitalité + bonus bouclier.',
-    'icon' => 'shield.svg',
+    'icon' => 'armorClass.webp',
     'color' => '#3f51b5',
     'unit' => NULL,
     'type' => 'int',
@@ -277,14 +337,14 @@ return array (
     'group' => 'creature',
     'linked_to_key' => NULL,
   ),
-  18 => 
+  22 => 
   array (
     'key' => 'cast_per_turn_spell',
     'name' => 'Lancers par tour',
     'short_name' => 'Lanc./tour',
     'helper' => 'Nombre de fois que le sort peut être lancé par tour.',
     'descriptions' => 'Nombre de fois que le sort peut être lancé par tour.',
-    'icon' => 'casting_time.svg',
+    'icon' => 'castingTime.webp',
     'color' => '#1a73e8',
     'unit' => NULL,
     'type' => 'int',
@@ -292,14 +352,14 @@ return array (
     'group' => 'spell',
     'linked_to_key' => NULL,
   ),
-  19 => 
+  23 => 
   array (
     'key' => 'cast_per_target_spell',
     'name' => 'Lancers par cible',
     'short_name' => 'Lanc./cible',
     'helper' => 'Nombre de fois que le sort peut toucher la même cible par tour.',
     'descriptions' => 'Nombre de fois que le sort peut toucher la même cible par tour.',
-    'icon' => 'casting_time.svg',
+    'icon' => 'castingTime.webp',
     'color' => '#1a73e8',
     'unit' => NULL,
     'type' => 'int',
@@ -307,7 +367,7 @@ return array (
     'group' => 'spell',
     'linked_to_key' => NULL,
   ),
-  20 => 
+  24 => 
   array (
     'key' => 'sight_line_spell',
     'name' => 'Ligne de vue',
@@ -322,14 +382,14 @@ return array (
     'group' => 'spell',
     'linked_to_key' => NULL,
   ),
-  21 => 
+  25 => 
   array (
     'key' => 'number_between_two_cast_spell',
     'name' => 'Délai entre deux lancers',
     'short_name' => 'Délai',
     'helper' => 'Nombre de tours minimum entre deux lancers du même sort.',
     'descriptions' => 'Nombre de tours minimum entre deux lancers du même sort.',
-    'icon' => 'time_before_use_again.svg',
+    'icon' => 'timeBeforeUseAgain.webp',
     'color' => '#757575',
     'unit' => NULL,
     'type' => 'int',
@@ -337,14 +397,14 @@ return array (
     'group' => 'spell',
     'linked_to_key' => NULL,
   ),
-  22 => 
+  26 => 
   array (
     'key' => 'category_spell',
     'name' => 'Catégorie',
     'short_name' => 'Cat.',
     'helper' => 'Catégorie du sort (offensif, soin, etc.).',
     'descriptions' => 'Catégorie du sort (offensif, soin, etc.).',
-    'icon' => 'soin.webp',
+    'icon' => 'heal.webp',
     'color' => '#00bcd4',
     'unit' => NULL,
     'type' => 'int',
@@ -352,9 +412,9 @@ return array (
     'group' => 'spell',
     'linked_to_key' => NULL,
   ),
-  23 => 
+  27 => 
   array (
-    'key' => 'touch_object',
+    'key' => 'hit_bonus_object',
     'name' => 'Bonus de touche',
     'short_name' => 'Touche',
     'helper' => 'Bonus de touche (armes). Équip. max 5, forgemagie +1.',
@@ -367,7 +427,7 @@ return array (
     'group' => 'object',
     'linked_to_key' => NULL,
   ),
-  24 => 
+  28 => 
   array (
     'key' => 'vitality_creature',
     'name' => 'Vitalité',
@@ -382,14 +442,14 @@ return array (
     'group' => 'creature',
     'linked_to_key' => NULL,
   ),
-  25 => 
+  29 => 
   array (
-    'key' => 'do_fixe_neutre_object',
+    'key' => 'fixed_damage_neutral_object',
     'name' => 'Dommage fixe Neutre',
     'short_name' => 'Dmg N',
     'helper' => 'Bonus dégâts Neutre (armes). Équip. max 5, forgemagie +5.',
     'descriptions' => 'Bonus dégâts Neutre (armes). Équip. max 5, forgemagie +5.',
-    'icon' => 'dmgArme.webp',
+    'icon' => 'dmgNeutral.webp',
     'color' => '#94a6bf',
     'unit' => NULL,
     'type' => 'int',
@@ -397,7 +457,7 @@ return array (
     'group' => 'object',
     'linked_to_key' => NULL,
   ),
-  26 => 
+  30 => 
   array (
     'key' => 'is_magic_spell',
     'name' => 'Sort magique',
@@ -412,14 +472,14 @@ return array (
     'group' => 'spell',
     'linked_to_key' => NULL,
   ),
-  27 => 
+  31 => 
   array (
-    'key' => 'strong_creature',
+    'key' => 'strength_creature',
     'name' => 'Force',
     'short_name' => 'For',
     'helper' => 'Caractéristique principale (Terre). Score 6–31.',
     'descriptions' => 'Force (Terre). Score 6–31, mod = ⌊(score−10)/2⌋.',
-    'icon' => 'skillForce.webp',
+    'icon' => 'skillStrength.webp',
     'color' => '#8d6e63',
     'unit' => NULL,
     'type' => 'int',
@@ -427,14 +487,14 @@ return array (
     'group' => 'creature',
     'linked_to_key' => NULL,
   ),
-  28 => 
+  32 => 
   array (
-    'key' => 'agi_creature',
+    'key' => 'agility_creature',
     'name' => 'Agilité',
     'short_name' => 'Agi',
     'helper' => 'Caractéristique principale (Air, Dextérité). Score 6–31.',
     'descriptions' => 'Agilité (Air, Dextérité). Score 6–31.',
-    'icon' => 'skillAgi.webp',
+    'icon' => 'skillAgility.webp',
     'color' => '#26c6da',
     'unit' => NULL,
     'type' => 'int',
@@ -442,14 +502,14 @@ return array (
     'group' => 'creature',
     'linked_to_key' => NULL,
   ),
-  29 => 
+  33 => 
   array (
-    'key' => 'do_fixe_terre_object',
+    'key' => 'fixed_damage_earth_object',
     'name' => 'Dommage fixe Terre',
     'short_name' => 'Dmg T',
     'helper' => 'Bonus dégâts Terre (armes).',
     'descriptions' => 'Bonus dégâts Terre (armes).',
-    'icon' => 'terre.webp',
+    'icon' => 'dmgEarth.webp',
     'color' => '#96743c',
     'unit' => NULL,
     'type' => 'int',
@@ -457,14 +517,14 @@ return array (
     'group' => 'object',
     'linked_to_key' => NULL,
   ),
-  30 => 
+  34 => 
   array (
-    'key' => 'do_fixe_feu_object',
+    'key' => 'fixed_damage_fire_object',
     'name' => 'Dommage fixe Feu',
     'short_name' => 'Dmg F',
     'helper' => 'Bonus dégâts Feu (armes).',
     'descriptions' => 'Bonus dégâts Feu (armes).',
-    'icon' => 'feu.webp',
+    'icon' => 'dmgFire.webp',
     'color' => '#f2a963',
     'unit' => NULL,
     'type' => 'int',
@@ -472,14 +532,14 @@ return array (
     'group' => 'object',
     'linked_to_key' => NULL,
   ),
-  31 => 
+  35 => 
   array (
-    'key' => 'intel_creature',
+    'key' => 'intelligence_creature',
     'name' => 'Intelligence',
     'short_name' => 'Int',
     'helper' => 'Caractéristique principale (Feu). Score 6–31.',
     'descriptions' => 'Intelligence (Feu). Score 6–31.',
-    'icon' => 'skillIntel.webp',
+    'icon' => 'skillIntelligence.webp',
     'color' => '#e93323',
     'unit' => NULL,
     'type' => 'int',
@@ -487,14 +547,14 @@ return array (
     'group' => 'creature',
     'linked_to_key' => NULL,
   ),
-  32 => 
+  36 => 
   array (
-    'key' => 'do_fixe_air_object',
+    'key' => 'fixed_damage_air_object',
     'name' => 'Dommage fixe Air',
     'short_name' => 'Dmg A',
     'helper' => 'Bonus dégâts Air (armes).',
     'descriptions' => 'Bonus dégâts Air (armes).',
-    'icon' => 'air.webp',
+    'icon' => 'dmgAir.webp',
     'color' => '#96c270',
     'unit' => NULL,
     'type' => 'int',
@@ -502,14 +562,14 @@ return array (
     'group' => 'object',
     'linked_to_key' => NULL,
   ),
-  33 => 
+  37 => 
   array (
-    'key' => 'sagesse_creature',
+    'key' => 'wisdom_creature',
     'name' => 'Sagesse',
     'short_name' => 'Sag',
     'helper' => 'Caractéristique principale (perception, soins). Score 6–31.',
     'descriptions' => 'Sagesse (perception, soins). Score 6–31.',
-    'icon' => 'skillSagesse.webp',
+    'icon' => 'skillWisdom.webp',
     'color' => '#ffb74d',
     'unit' => NULL,
     'type' => 'int',
@@ -517,7 +577,7 @@ return array (
     'group' => 'creature',
     'linked_to_key' => NULL,
   ),
-  34 => 
+  38 => 
   array (
     'key' => 'chance_creature',
     'name' => 'Chance',
@@ -532,14 +592,14 @@ return array (
     'group' => 'creature',
     'linked_to_key' => NULL,
   ),
-  35 => 
+  39 => 
   array (
-    'key' => 'do_fixe_eau_object',
+    'key' => 'fixed_damage_water_object',
     'name' => 'Dommage fixe Eau',
     'short_name' => 'Dmg E',
     'helper' => 'Bonus dégâts Eau (armes).',
     'descriptions' => 'Bonus dégâts Eau (armes).',
-    'icon' => 'eau.webp',
+    'icon' => 'dmgWater.webp',
     'color' => '#a4dcfc',
     'unit' => NULL,
     'type' => 'int',
@@ -547,9 +607,9 @@ return array (
     'group' => 'object',
     'linked_to_key' => NULL,
   ),
-  36 => 
+  40 => 
   array (
-    'key' => 'do_fixe_multiple_object',
+    'key' => 'fixed_damage_multiple_object',
     'name' => 'Dommage fixe multiple',
     'short_name' => 'Dmg mult.',
     'helper' => 'Bonus dégâts tous éléments (armes). Équip. max 3, forgemagie +2.',
@@ -562,24 +622,9 @@ return array (
     'group' => 'object',
     'linked_to_key' => NULL,
   ),
-  37 => 
+  41 => 
   array (
-    'key' => 'pv_max_object',
-    'name' => 'Points de vie',
-    'short_name' => 'PV',
-    'helper' => 'Bonus PV max (chapeaux, capes, amulettes, bottes, anneaux). Équip. max 5, forgemagie +20.',
-    'descriptions' => 'Bonus PV max (chapeaux, capes, amulettes, bottes, anneaux). Équip. max 5, forgemagie +20.',
-    'icon' => 'life.webp',
-    'color' => '#d23946',
-    'unit' => NULL,
-    'type' => 'int',
-    'sort_order' => 20,
-    'group' => 'object',
-    'linked_to_key' => NULL,
-  ),
-  38 => 
-  array (
-    'key' => 'touch_creature',
+    'key' => 'hit_bonus_creature',
     'name' => 'Bonus de touche',
     'short_name' => 'Touche',
     'helper' => 'Jet d\'attaque. Max 11 + 5 (équipement).',
@@ -592,14 +637,29 @@ return array (
     'group' => 'creature',
     'linked_to_key' => NULL,
   ),
-  39 => 
+  42 => 
   array (
-    'key' => 'invocation_creature',
+    'key' => 'life_points_max_object',
+    'name' => 'Points de vie',
+    'short_name' => 'PV',
+    'helper' => 'Bonus PV max (chapeaux, capes, amulettes, bottes, anneaux). Équip. max 5, forgemagie +20.',
+    'descriptions' => 'Bonus PV max (chapeaux, capes, amulettes, bottes, anneaux). Équip. max 5, forgemagie +20.',
+    'icon' => 'life.webp',
+    'color' => '#d23946',
+    'unit' => NULL,
+    'type' => 'int',
+    'sort_order' => 20,
+    'group' => 'object',
+    'linked_to_key' => NULL,
+  ),
+  43 => 
+  array (
+    'key' => 'summoning_creature',
     'name' => 'Nombre d\'invocations',
     'short_name' => 'Invoc.',
     'helper' => 'Créatures invoquées simultanément. Base 1, max = bonus de maîtrise.',
     'descriptions' => 'Nombre de créatures invoquées simultanément. Base 1, max = bonus de maîtrise.',
-    'icon' => 'invocation.webp',
+    'icon' => 'summoning.webp',
     'color' => '#9c27b0',
     'unit' => NULL,
     'type' => 'int',
@@ -607,7 +667,7 @@ return array (
     'group' => 'creature',
     'linked_to_key' => NULL,
   ),
-  40 => 
+  44 => 
   array (
     'key' => 'vitality_object',
     'name' => 'Vitalité',
@@ -622,14 +682,14 @@ return array (
     'group' => 'object',
     'linked_to_key' => NULL,
   ),
-  41 => 
+  45 => 
   array (
-    'key' => 'dodge_pa_creature',
+    'key' => 'dodge_action_points_creature',
     'name' => 'Esquive PA',
     'short_name' => 'Esq. PA',
     'helper' => '8 + Mod. Sagesse. Évite les effets retirant des PA.',
     'descriptions' => 'Esquive PA : 8 + Mod. Sagesse. Évite les effets retirant des PA.',
-    'icon' => 'esquivePA.webp',
+    'icon' => 'dodgeActionPoints.webp',
     'color' => '#ffb74d',
     'unit' => NULL,
     'type' => 'int',
@@ -637,14 +697,14 @@ return array (
     'group' => 'creature',
     'linked_to_key' => NULL,
   ),
-  42 => 
+  46 => 
   array (
-    'key' => 'sagesse_object',
+    'key' => 'wisdom_object',
     'name' => 'Sagesse',
     'short_name' => 'Sag',
     'helper' => 'Bonus Sagesse (chapeaux).',
     'descriptions' => 'Bonus Sagesse (chapeaux).',
-    'icon' => 'sagesse.webp',
+    'icon' => 'wisdom.webp',
     'color' => '#551779',
     'unit' => NULL,
     'type' => 'int',
@@ -652,14 +712,14 @@ return array (
     'group' => 'object',
     'linked_to_key' => NULL,
   ),
-  43 => 
+  47 => 
   array (
-    'key' => 'dodge_pm_creature',
+    'key' => 'dodge_movement_points_creature',
     'name' => 'Esquive PM',
     'short_name' => 'Esq. PM',
     'helper' => '8 + Mod. Sagesse. Évite les effets retirant des PM.',
     'descriptions' => 'Esquive PM : 8 + Mod. Sagesse. Évite les effets retirant des PM.',
-    'icon' => 'esquivePM.webp',
+    'icon' => 'dodgeMovementPoints.webp',
     'color' => '#ffb74d',
     'unit' => NULL,
     'type' => 'int',
@@ -667,24 +727,39 @@ return array (
     'group' => 'creature',
     'linked_to_key' => NULL,
   ),
-  44 => 
+  48 => 
   array (
-    'key' => 'save_vit_sag_object',
-    'name' => 'Bonus sauvegarde Vitalité/Sagesse',
-    'short_name' => 'Sauv. V/S',
+    'key' => 'save_vitality_wisdom_object',
+    'name' => 'Bonus sauvegarde Vitalité',
+    'short_name' => 'Sav Vitalité',
     'helper' => 'Bonus jet de sauvegarde Vit. ou Sag. (chapeaux). Max 3.',
     'descriptions' => 'Bonus jet de sauvegarde Vitalité ou Sagesse (chapeaux). Max 3.',
-    'icon' => 'shield.webp',
-    'color' => '#5a5c71',
+    'icon' => 'vitality.webp',
+    'color' => '#d78b3d',
     'unit' => NULL,
     'type' => 'int',
     'sort_order' => 23,
     'group' => 'object',
     'linked_to_key' => NULL,
   ),
-  45 => 
+  49 => 
   array (
-    'key' => 'competences_object',
+    'key' => 'dodge_creature',
+    'name' => 'Fuite',
+    'short_name' => 'Fuite',
+    'helper' => '1d20 + Mod. Agilité. Quitter un corps-à-corps (jet opposé Tacle).',
+    'descriptions' => 'Fuite : 1d20 + Mod. Agilité pour quitter un corps-à-corps (jet opposé Tacle).',
+    'icon' => 'dodge.webp',
+    'color' => '#26c6da',
+    'unit' => NULL,
+    'type' => 'int',
+    'sort_order' => 24,
+    'group' => 'creature',
+    'linked_to_key' => NULL,
+  ),
+  50 => 
+  array (
+    'key' => 'skills_object',
     'name' => 'Compétences',
     'short_name' => 'Comp.',
     'helper' => 'Bonus compétences (chapeaux, capes). Forgemagie +3.',
@@ -697,24 +772,9 @@ return array (
     'group' => 'object',
     'linked_to_key' => NULL,
   ),
-  46 => 
+  51 => 
   array (
-    'key' => 'fuite_creature',
-    'name' => 'Fuite',
-    'short_name' => 'Fuite',
-    'helper' => '1d20 + Mod. Agilité. Quitter un corps-à-corps (jet opposé Tacle).',
-    'descriptions' => 'Fuite : 1d20 + Mod. Agilité pour quitter un corps-à-corps (jet opposé Tacle).',
-    'icon' => 'fuite.webp',
-    'color' => '#26c6da',
-    'unit' => NULL,
-    'type' => 'int',
-    'sort_order' => 24,
-    'group' => 'creature',
-    'linked_to_key' => NULL,
-  ),
-  47 => 
-  array (
-    'key' => 'competences_passives_object',
+    'key' => 'passive_skills_object',
     'name' => 'Compétences passives',
     'short_name' => 'Comp. pass.',
     'helper' => 'Bonus compétences passives (chapeaux). Max 3, forgemagie +2.',
@@ -727,14 +787,14 @@ return array (
     'group' => 'object',
     'linked_to_key' => NULL,
   ),
-  48 => 
+  52 => 
   array (
-    'key' => 'tacle_creature',
+    'key' => 'tackle_creature',
     'name' => 'Tacle',
     'short_name' => 'Tacle',
     'helper' => '1d20 + Mod. Chance. Empêcher la fuite au corps-à-corps.',
     'descriptions' => 'Tacle : 1d20 + Mod. Chance pour empêcher la fuite au corps-à-corps.',
-    'icon' => 'tacle.webp',
+    'icon' => 'tackle.webp',
     'color' => '#29b6f6',
     'unit' => NULL,
     'type' => 'int',
@@ -742,29 +802,29 @@ return array (
     'group' => 'creature',
     'linked_to_key' => NULL,
   ),
-  49 => 
+  53 => 
   array (
-    'key' => 'ini_object',
+    'key' => 'initiative_object',
     'name' => 'Initiative',
     'short_name' => 'Ini',
     'helper' => 'Bonus Initiative (capes). Max 3, forgemagie +3.',
     'descriptions' => 'Bonus Initiative (capes). Max 3, forgemagie +3.',
     'icon' => 'initiative.webp',
-    'color' => '#ff9800',
+    'color' => '#743d8a',
     'unit' => NULL,
     'type' => 'int',
     'sort_order' => 26,
     'group' => 'object',
     'linked_to_key' => NULL,
   ),
-  50 => 
+  54 => 
   array (
-    'key' => 'strong_object',
+    'key' => 'strength_object',
     'name' => 'Force',
     'short_name' => 'For',
     'helper' => 'Bonus Force (capes). Équip. max 8, forgemagie +2.',
     'descriptions' => 'Bonus Force (capes). Équip. max 8, forgemagie +2.',
-    'icon' => 'terre.webp',
+    'icon' => 'earth.webp',
     'color' => '#695223',
     'unit' => NULL,
     'type' => 'int',
@@ -772,14 +832,14 @@ return array (
     'group' => 'object',
     'linked_to_key' => NULL,
   ),
-  51 => 
+  55 => 
   array (
-    'key' => 'intel_object',
+    'key' => 'intelligence_object',
     'name' => 'Intelligence',
     'short_name' => 'Int',
     'helper' => 'Bonus Intelligence (capes).',
     'descriptions' => 'Bonus Intelligence (capes).',
-    'icon' => 'feu.webp',
+    'icon' => 'fire.webp',
     'color' => '#872d1c',
     'unit' => NULL,
     'type' => 'int',
@@ -787,14 +847,14 @@ return array (
     'group' => 'object',
     'linked_to_key' => NULL,
   ),
-  52 => 
+  56 => 
   array (
     'key' => 'chance_object',
     'name' => 'Chance',
     'short_name' => 'Cha',
     'helper' => 'Bonus Chance (capes).',
     'descriptions' => 'Bonus Chance (capes).',
-    'icon' => 'eau.webp',
+    'icon' => 'water.webp',
     'color' => '#29b6f6',
     'unit' => NULL,
     'type' => 'int',
@@ -802,9 +862,9 @@ return array (
     'group' => 'object',
     'linked_to_key' => NULL,
   ),
-  53 => 
+  57 => 
   array (
-    'key' => 'agi_object',
+    'key' => 'agility_object',
     'name' => 'Agilité',
     'short_name' => 'Agi',
     'helper' => 'Bonus Agilité (capes).',
@@ -817,14 +877,14 @@ return array (
     'group' => 'object',
     'linked_to_key' => NULL,
   ),
-  54 => 
+  58 => 
   array (
-    'key' => 'res_fixe_neutre_creature',
+    'key' => 'fixed_resistance_neutral_creature',
     'name' => 'Résistance fixe Neutre',
     'short_name' => 'Rés. N',
     'helper' => 'Réduction fixe des dégâts Neutre. 0–10 (équip. +10, forgemagie +3).',
     'descriptions' => 'Réduction fixe des dégâts Neutre. 0–10 (équip. +10, forgemagie +3).',
-    'icon' => 'resNeutre.webp',
+    'icon' => 'resNeutral.webp',
     'color' => '#9e9e9e',
     'unit' => NULL,
     'type' => 'int',
@@ -832,14 +892,14 @@ return array (
     'group' => 'creature',
     'linked_to_key' => NULL,
   ),
-  55 => 
+  59 => 
   array (
-    'key' => 'res_fixe_terre_creature',
+    'key' => 'fixed_resistance_earth_creature',
     'name' => 'Résistance fixe Terre',
     'short_name' => 'Rés. T',
     'helper' => 'Réduction fixe des dégâts Terre. 0–10.',
     'descriptions' => 'Réduction fixe des dégâts Terre. 0–10.',
-    'icon' => 'resTerre.webp',
+    'icon' => 'resEarth.webp',
     'color' => '#8d6e63',
     'unit' => NULL,
     'type' => 'int',
@@ -847,29 +907,29 @@ return array (
     'group' => 'creature',
     'linked_to_key' => NULL,
   ),
-  56 => 
+  60 => 
   array (
-    'key' => 'save_force_int_cha_agi_object',
-    'name' => 'Bonus sauvegarde For/Int/Cha/Agi',
-    'short_name' => 'Sauv. F/I/C/A',
+    'key' => 'save_strength_intelligence_chance_agility_object',
+    'name' => 'Bonus sauvegarde Force',
+    'short_name' => 'Sav Force',
     'helper' => 'Bonus jet de sauvegarde (capes). Max 3.',
-    'descriptions' => 'Bonus jet de sauvegarde For/Int/Cha/Agi (capes). Max 3.',
-    'icon' => 'shield.webp',
-    'color' => '#5c6bc0',
+    'descriptions' => 'Bonus jet de sauvegarde Force',
+    'icon' => 'earth.webp',
+    'color' => '#95743c',
     'unit' => NULL,
     'type' => 'int',
     'sort_order' => 31,
     'group' => 'object',
     'linked_to_key' => NULL,
   ),
-  57 => 
+  61 => 
   array (
-    'key' => 'pa_object',
+    'key' => 'action_points_object',
     'name' => 'PA',
     'short_name' => 'PA',
     'helper' => 'Bonus PA (amulettes). Équip. max 5, forgemagie +1.',
     'descriptions' => 'Bonus PA (amulettes). Équip. max 5, forgemagie +1.',
-    'icon' => 'pa.webp',
+    'icon' => 'actionPoints.webp',
     'color' => '#1a73e8',
     'unit' => NULL,
     'type' => 'int',
@@ -877,14 +937,14 @@ return array (
     'group' => 'object',
     'linked_to_key' => NULL,
   ),
-  58 => 
+  62 => 
   array (
-    'key' => 'res_fixe_feu_creature',
+    'key' => 'fixed_resistance_fire_creature',
     'name' => 'Résistance fixe Feu',
     'short_name' => 'Rés. F',
     'helper' => 'Réduction fixe des dégâts Feu. 0–10.',
     'descriptions' => 'Réduction fixe des dégâts Feu. 0–10.',
-    'icon' => 'resFeu.webp',
+    'icon' => 'resFire.webp',
     'color' => '#e93323',
     'unit' => NULL,
     'type' => 'int',
@@ -892,14 +952,14 @@ return array (
     'group' => 'creature',
     'linked_to_key' => NULL,
   ),
-  59 => 
+  63 => 
   array (
-    'key' => 'esquive_pa_object',
+    'key' => 'dodge_action_points_object',
     'name' => 'Esquive PA',
     'short_name' => 'Esq. PA',
     'helper' => 'Bonus Esquive PA (amulettes). Max 3, forgemagie +2.',
     'descriptions' => 'Bonus Esquive PA (amulettes). Max 3, forgemagie +2.',
-    'icon' => 'esquivePA.webp',
+    'icon' => 'dodgeActionPoints.webp',
     'color' => '#6cc0e8',
     'unit' => NULL,
     'type' => 'int',
@@ -907,9 +967,9 @@ return array (
     'group' => 'object',
     'linked_to_key' => NULL,
   ),
-  60 => 
+  64 => 
   array (
-    'key' => 'res_fixe_air_creature',
+    'key' => 'fixed_resistance_air_creature',
     'name' => 'Résistance fixe Air',
     'short_name' => 'Rés. A',
     'helper' => 'Réduction fixe des dégâts Air. 0–10.',
@@ -922,29 +982,14 @@ return array (
     'group' => 'creature',
     'linked_to_key' => NULL,
   ),
-  61 => 
+  65 => 
   array (
-    'key' => 'pm_object',
-    'name' => 'PM',
-    'short_name' => 'PM',
-    'helper' => 'Bonus PM (bottes). Équip. max 5, forgemagie +1.',
-    'descriptions' => 'Bonus PM (bottes). Équip. max 5, forgemagie +1.',
-    'icon' => 'pm.webp',
-    'color' => '#0d904f',
-    'unit' => NULL,
-    'type' => 'int',
-    'sort_order' => 34,
-    'group' => 'object',
-    'linked_to_key' => NULL,
-  ),
-  62 => 
-  array (
-    'key' => 'res_fixe_eau_creature',
+    'key' => 'fixed_resistance_water_creature',
     'name' => 'Résistance fixe Eau',
     'short_name' => 'Rés. E',
     'helper' => 'Réduction fixe des dégâts Eau. 0–10.',
     'descriptions' => 'Réduction fixe des dégâts Eau. 0–10.',
-    'icon' => 'resEau.webp',
+    'icon' => 'resWater.webp',
     'color' => '#29b6f6',
     'unit' => NULL,
     'type' => 'int',
@@ -952,14 +997,29 @@ return array (
     'group' => 'creature',
     'linked_to_key' => NULL,
   ),
-  63 => 
+  66 => 
   array (
-    'key' => 'esquive_pm_object',
+    'key' => 'movement_points_object',
+    'name' => 'PM',
+    'short_name' => 'PM',
+    'helper' => 'Bonus PM (bottes). Équip. max 5, forgemagie +1.',
+    'descriptions' => 'Bonus PM (bottes). Équip. max 5, forgemagie +1.',
+    'icon' => 'movementPoints.webp',
+    'color' => '#0d904f',
+    'unit' => NULL,
+    'type' => 'int',
+    'sort_order' => 34,
+    'group' => 'object',
+    'linked_to_key' => NULL,
+  ),
+  67 => 
+  array (
+    'key' => 'dodge_movement_points_object',
     'name' => 'Esquive PM',
     'short_name' => 'Esq. PM',
     'helper' => 'Bonus Esquive PM (bottes). Max 3, forgemagie +2.',
     'descriptions' => 'Bonus Esquive PM (bottes). Max 3, forgemagie +2.',
-    'icon' => 'esquivePM.webp',
+    'icon' => 'dodgeMovementPoints.webp',
     'color' => '#5aa367',
     'unit' => NULL,
     'type' => 'int',
@@ -967,14 +1027,14 @@ return array (
     'group' => 'object',
     'linked_to_key' => NULL,
   ),
-  64 => 
+  68 => 
   array (
-    'key' => 'invocation_object',
+    'key' => 'summoning_object',
     'name' => 'Nombre d\'invocations',
     'short_name' => 'Invoc.',
     'helper' => 'Bonus invocations (anneaux, 2 par personnage). Max 3, forgemagie +1.',
     'descriptions' => 'Bonus invocations (anneaux, 2 par personnage). Max 3, forgemagie +1.',
-    'icon' => 'invocation.webp',
+    'icon' => 'summoning.webp',
     'color' => '#bc6634',
     'unit' => NULL,
     'type' => 'int',
@@ -982,14 +1042,14 @@ return array (
     'group' => 'object',
     'linked_to_key' => NULL,
   ),
-  65 => 
+  69 => 
   array (
-    'key' => 'po_object',
+    'key' => 'range_object',
     'name' => 'PO',
     'short_name' => 'PO',
     'helper' => 'Bonus portée (anneaux). Max 3, forgemagie +1.',
     'descriptions' => 'Bonus portée (anneaux). Max 3, forgemagie +1.',
-    'icon' => 'po.webp',
+    'icon' => 'range.webp',
     'color' => '#469381',
     'unit' => NULL,
     'type' => 'int',
@@ -997,14 +1057,14 @@ return array (
     'group' => 'object',
     'linked_to_key' => NULL,
   ),
-  66 => 
+  70 => 
   array (
-    'key' => 'tacle_object',
+    'key' => 'tackle_object',
     'name' => 'Tacle',
     'short_name' => 'Tacle',
     'helper' => 'Bonus Tacle (ceintures). Max 8, forgemagie +2.',
     'descriptions' => 'Bonus Tacle (ceintures). Max 8, forgemagie +2.',
-    'icon' => 'tacle.webp',
+    'icon' => 'tackle.webp',
     'color' => '#b8cd46',
     'unit' => NULL,
     'type' => 'int',
@@ -1012,14 +1072,14 @@ return array (
     'group' => 'object',
     'linked_to_key' => NULL,
   ),
-  67 => 
+  71 => 
   array (
-    'key' => 'fuite_object',
+    'key' => 'dodge_object',
     'name' => 'Fuite',
     'short_name' => 'Fuite',
     'helper' => 'Bonus Fuite (ceintures). Max 8, forgemagie +2.',
     'descriptions' => 'Bonus Fuite (ceintures). Max 8, forgemagie +2.',
-    'icon' => 'fuite.webp',
+    'icon' => 'dodge.webp',
     'color' => '#699144',
     'unit' => NULL,
     'type' => 'int',
@@ -1027,9 +1087,9 @@ return array (
     'group' => 'object',
     'linked_to_key' => NULL,
   ),
-  68 => 
+  72 => 
   array (
-    'key' => 'do_fixe_neutre_creature',
+    'key' => 'fixed_damage_neutral_creature',
     'name' => 'Dommage fixe Neutre',
     'short_name' => 'Dmg N',
     'helper' => 'Bonus dégâts Neutre. 0–10 (équip. +10, forgemagie +5).',
@@ -1042,7 +1102,7 @@ return array (
     'group' => 'creature',
     'linked_to_key' => NULL,
   ),
-  69 => 
+  73 => 
   array (
     'key' => 'wakfu_recharge_object',
     'name' => 'Recharge réserve Wakfu',
@@ -1057,14 +1117,14 @@ return array (
     'group' => 'object',
     'linked_to_key' => NULL,
   ),
-  70 => 
+  74 => 
   array (
-    'key' => 'ca_object',
+    'key' => 'armor_class_object',
     'name' => 'Classe d\'armure',
     'short_name' => 'CA',
     'helper' => 'Bonus CA (boucliers). Max 5.',
     'descriptions' => 'Bonus CA (boucliers). Max 5.',
-    'icon' => 'shield.svg',
+    'icon' => 'armorClass.webp',
     'color' => '#474747',
     'unit' => NULL,
     'type' => 'int',
@@ -1072,14 +1132,14 @@ return array (
     'group' => 'object',
     'linked_to_key' => NULL,
   ),
-  71 => 
+  75 => 
   array (
-    'key' => 'do_fixe_terre_creature',
+    'key' => 'fixed_damage_earth_creature',
     'name' => 'Dommage fixe Terre',
     'short_name' => 'Dmg T',
     'helper' => 'Bonus dégâts Terre. 0–10.',
     'descriptions' => 'Bonus dégâts Terre. 0–10.',
-    'icon' => 'terre.webp',
+    'icon' => 'earth.webp',
     'color' => '#8d6e63',
     'unit' => NULL,
     'type' => 'int',
@@ -1087,14 +1147,14 @@ return array (
     'group' => 'creature',
     'linked_to_key' => NULL,
   ),
-  72 => 
+  76 => 
   array (
-    'key' => 'do_fixe_feu_creature',
+    'key' => 'fixed_damage_fire_creature',
     'name' => 'Dommage fixe Feu',
     'short_name' => 'Dmg F',
     'helper' => 'Bonus dégâts Feu. 0–10.',
     'descriptions' => 'Bonus dégâts Feu. 0–10.',
-    'icon' => 'feu.webp',
+    'icon' => 'fire.webp',
     'color' => '#e93323',
     'unit' => NULL,
     'type' => 'int',
@@ -1102,14 +1162,14 @@ return array (
     'group' => 'creature',
     'linked_to_key' => NULL,
   ),
-  73 => 
+  77 => 
   array (
-    'key' => 'res_fixe_neutre_object',
+    'key' => 'fixed_resistance_neutral_object',
     'name' => 'Résistance fixe Neutre',
     'short_name' => 'Rés. N',
     'helper' => 'Bonus résistance fixe Neutre (boucliers). Max 7, forgemagie +3.',
     'descriptions' => 'Bonus résistance fixe Neutre (boucliers). Max 7, forgemagie +3.',
-    'icon' => 'resNeutre.webp',
+    'icon' => 'resNeutral.webp',
     'color' => '#9e9e9e',
     'unit' => NULL,
     'type' => 'int',
@@ -1117,9 +1177,9 @@ return array (
     'group' => 'object',
     'linked_to_key' => NULL,
   ),
-  74 => 
+  78 => 
   array (
-    'key' => 'do_fixe_air_creature',
+    'key' => 'fixed_damage_air_creature',
     'name' => 'Dommage fixe Air',
     'short_name' => 'Dmg A',
     'helper' => 'Bonus dégâts Air. 0–10.',
@@ -1132,14 +1192,14 @@ return array (
     'group' => 'creature',
     'linked_to_key' => NULL,
   ),
-  75 => 
+  79 => 
   array (
-    'key' => 'res_fixe_terre_object',
+    'key' => 'fixed_resistance_earth_object',
     'name' => 'Résistance fixe Terre',
     'short_name' => 'Rés. T',
     'helper' => 'Bonus résistance fixe Terre (boucliers).',
     'descriptions' => 'Bonus résistance fixe Terre (boucliers).',
-    'icon' => 'resTerre.webp',
+    'icon' => 'resEarth.webp',
     'color' => '#957541',
     'unit' => NULL,
     'type' => 'int',
@@ -1147,14 +1207,14 @@ return array (
     'group' => 'object',
     'linked_to_key' => NULL,
   ),
-  76 => 
+  80 => 
   array (
-    'key' => 'do_fixe_eau_creature',
+    'key' => 'fixed_damage_water_creature',
     'name' => 'Dommage fixe Eau',
     'short_name' => 'Dmg E',
     'helper' => 'Bonus dégâts Eau. 0–10.',
     'descriptions' => 'Bonus dégâts Eau. 0–10.',
-    'icon' => 'eau.webp',
+    'icon' => 'water.webp',
     'color' => '#29b6f6',
     'unit' => NULL,
     'type' => 'int',
@@ -1162,14 +1222,14 @@ return array (
     'group' => 'creature',
     'linked_to_key' => NULL,
   ),
-  77 => 
+  81 => 
   array (
-    'key' => 'res_fixe_feu_object',
+    'key' => 'fixed_resistance_fire_object',
     'name' => 'Résistance fixe Feu',
     'short_name' => 'Rés. F',
     'helper' => 'Bonus résistance fixe Feu (boucliers).',
     'descriptions' => 'Bonus résistance fixe Feu (boucliers).',
-    'icon' => 'resFeu.webp',
+    'icon' => 'resFire.webp',
     'color' => '#f2a861',
     'unit' => NULL,
     'type' => 'int',
@@ -1177,9 +1237,9 @@ return array (
     'group' => 'object',
     'linked_to_key' => NULL,
   ),
-  78 => 
+  82 => 
   array (
-    'key' => 'res_fixe_air_object',
+    'key' => 'fixed_resistance_air_object',
     'name' => 'Résistance fixe Air',
     'short_name' => 'Rés. A',
     'helper' => 'Bonus résistance fixe Air (boucliers).',
@@ -1192,14 +1252,14 @@ return array (
     'group' => 'object',
     'linked_to_key' => NULL,
   ),
-  79 => 
+  83 => 
   array (
-    'key' => 'res_fixe_eau_object',
+    'key' => 'fixed_resistance_water_object',
     'name' => 'Résistance fixe Eau',
     'short_name' => 'Rés. E',
     'helper' => 'Bonus résistance fixe Eau (boucliers).',
     'descriptions' => 'Bonus résistance fixe Eau (boucliers).',
-    'icon' => 'resEau.webp',
+    'icon' => 'resWater.webp',
     'color' => '#7db2d5',
     'unit' => NULL,
     'type' => 'int',
@@ -1207,9 +1267,9 @@ return array (
     'group' => 'object',
     'linked_to_key' => NULL,
   ),
-  80 => 
+  84 => 
   array (
-    'key' => 'res_50_object',
+    'key' => 'resistance_50_percent_object',
     'name' => 'Résistance 50%',
     'short_name' => 'Rés. 50%',
     'helper' => 'Réduction 50% dégâts élément (boucliers). Binaire (0/1).',
@@ -1222,9 +1282,9 @@ return array (
     'group' => 'object',
     'linked_to_key' => NULL,
   ),
-  81 => 
+  85 => 
   array (
-    'key' => 'invuln_100_object',
+    'key' => 'invulnerability_100_percent_object',
     'name' => 'Invulnérabilité 100%',
     'short_name' => 'Invul. 100%',
     'helper' => 'Immunité dégâts élément (boucliers). Binaire (0/1).',
@@ -1237,14 +1297,14 @@ return array (
     'group' => 'object',
     'linked_to_key' => NULL,
   ),
-  82 => 
+  86 => 
   array (
-    'key' => 'res_neutre_creature',
+    'key' => 'resistance_neutral_creature',
     'name' => 'Résistance Neutre %',
     'short_name' => 'Rés. N %',
     'helper' => 'Résistance en % aux dégâts Neutre (0%, 50%, 100%). Issu Dofus.',
     'descriptions' => 'Résistance en % aux dégâts Neutre (0%, 50%, 100%). Issu Dofus.',
-    'icon' => 'shield.svg',
+    'icon' => 'shield.webp',
     'color' => '#9e9e9e',
     'unit' => '%',
     'type' => 'int',
@@ -1252,14 +1312,14 @@ return array (
     'group' => 'creature',
     'linked_to_key' => NULL,
   ),
-  83 => 
+  87 => 
   array (
-    'key' => 'res_terre_creature',
+    'key' => 'resistance_earth_creature',
     'name' => 'Résistance Terre %',
     'short_name' => 'Rés. T %',
     'helper' => 'Résistance en % aux dégâts Terre. Issu Dofus.',
     'descriptions' => 'Résistance en % aux dégâts Terre. Issu Dofus.',
-    'icon' => 'shield.svg',
+    'icon' => 'shield.webp',
     'color' => '#8d6e63',
     'unit' => '%',
     'type' => 'int',
@@ -1267,14 +1327,14 @@ return array (
     'group' => 'creature',
     'linked_to_key' => NULL,
   ),
-  84 => 
+  88 => 
   array (
-    'key' => 'res_feu_creature',
+    'key' => 'resistance_fire_creature',
     'name' => 'Résistance Feu %',
     'short_name' => 'Rés. F %',
     'helper' => 'Résistance en % aux dégâts Feu. Issu Dofus.',
     'descriptions' => 'Résistance en % aux dégâts Feu. Issu Dofus.',
-    'icon' => 'shield.svg',
+    'icon' => 'shield.webp',
     'color' => '#e93323',
     'unit' => '%',
     'type' => 'int',
@@ -1282,14 +1342,14 @@ return array (
     'group' => 'creature',
     'linked_to_key' => NULL,
   ),
-  85 => 
+  89 => 
   array (
-    'key' => 'res_air_creature',
+    'key' => 'resistance_air_creature',
     'name' => 'Résistance Air %',
     'short_name' => 'Rés. A %',
     'helper' => 'Résistance en % aux dégâts Air. Issu Dofus.',
     'descriptions' => 'Résistance en % aux dégâts Air. Issu Dofus.',
-    'icon' => 'shield.svg',
+    'icon' => 'shield.webp',
     'color' => '#26c6da',
     'unit' => '%',
     'type' => 'int',
@@ -1297,14 +1357,14 @@ return array (
     'group' => 'creature',
     'linked_to_key' => NULL,
   ),
-  86 => 
+  90 => 
   array (
-    'key' => 'res_eau_creature',
+    'key' => 'resistance_water_creature',
     'name' => 'Résistance Eau %',
     'short_name' => 'Rés. E %',
     'helper' => 'Résistance en % aux dégâts Eau. Issu Dofus.',
     'descriptions' => 'Résistance en % aux dégâts Eau. Issu Dofus.',
-    'icon' => 'shield.svg',
+    'icon' => 'shield.webp',
     'color' => '#29b6f6',
     'unit' => '%',
     'type' => 'int',
@@ -1312,9 +1372,9 @@ return array (
     'group' => 'creature',
     'linked_to_key' => NULL,
   ),
-  87 => 
+  91 => 
   array (
-    'key' => 'do_fixe_multiple_creature',
+    'key' => 'fixed_damage_multiple_creature',
     'name' => 'Dommage fixe Multiples',
     'short_name' => 'DO mult.',
     'helper' => 'Dommages fixe multi-éléments. 0–5 (équip. +5, forgemagie +2). Issu Dofus.',
@@ -1327,14 +1387,14 @@ return array (
     'group' => 'creature',
     'linked_to_key' => NULL,
   ),
-  88 => 
+  92 => 
   array (
-    'key' => 'de_vie_creature',
+    'key' => 'hit_dice_creature',
     'name' => 'Dés de vie',
     'short_name' => 'Dés PV',
     'helper' => '[niveau / 2] – 10. Spécifique Krosmoz JDR.',
     'descriptions' => 'Dés de vie. Formule Krosmoz : [niveau / 2] – 10.',
-    'icon' => 'dice12.svg',
+    'icon' => 'dice.webp',
     'color' => '#2f2f2f',
     'unit' => NULL,
     'type' => 'int',
@@ -1342,9 +1402,9 @@ return array (
     'group' => 'creature',
     'linked_to_key' => NULL,
   ),
-  89 => 
+  93 => 
   array (
-    'key' => 'reserve_wakfu_creature',
+    'key' => 'wakfu_reserve_creature',
     'name' => 'Réserve de Wakfu',
     'short_name' => 'Réserve Wakfu',
     'helper' => '[bonus de maîtrise]. Spécifique Krosmoz JDR.',
@@ -1357,9 +1417,9 @@ return array (
     'group' => 'creature',
     'linked_to_key' => NULL,
   ),
-  90 => 
+  94 => 
   array (
-    'key' => 'bonus_maitrise_creature',
+    'key' => 'mastery_bonus_creature',
     'name' => 'Bonus de maîtrise',
     'short_name' => 'Bonus maîtrise',
     'helper' => '[1 + niveau / 4]. Spécifique Krosmoz JDR.',
@@ -1372,9 +1432,9 @@ return array (
     'group' => 'creature',
     'linked_to_key' => NULL,
   ),
-  91 => 
+  95 => 
   array (
-    'key' => 'modificateur_vitality_creature',
+    'key' => 'modifier_vitality_creature',
     'name' => 'Modificateur de Vitalité',
     'short_name' => 'Mod. Vit',
     'helper' => '[(Vitalité - 10) / 2]. Spécifique Krosmoz JDR.',
@@ -1387,14 +1447,14 @@ return array (
     'group' => 'creature',
     'linked_to_key' => NULL,
   ),
-  92 => 
+  96 => 
   array (
-    'key' => 'modificateur_sagesse_creature',
+    'key' => 'modifier_wisdom_creature',
     'name' => 'Modificateur de Sagesse',
     'short_name' => 'Mod. Sag',
     'helper' => '[(Sagesse - 10) / 2]. Spécifique Krosmoz JDR.',
     'descriptions' => 'Modificateur de Sagesse : [(Sagesse - 10) / 2].',
-    'icon' => 'skillSagesse.webp',
+    'icon' => 'skillWisdom.webp',
     'color' => '#ffb74d',
     'unit' => NULL,
     'type' => 'int',
@@ -1402,14 +1462,14 @@ return array (
     'group' => 'creature',
     'linked_to_key' => NULL,
   ),
-  93 => 
+  97 => 
   array (
-    'key' => 'modificateur_force_creature',
+    'key' => 'modifier_strength_creature',
     'name' => 'Modificateur de Force',
     'short_name' => 'Mod. For',
     'helper' => '[(Force - 10) / 2]. Spécifique Krosmoz JDR.',
     'descriptions' => 'Modificateur de Force : [(Force - 10) / 2].',
-    'icon' => 'skillForce.webp',
+    'icon' => 'skillStrength.webp',
     'color' => '#8d6e63',
     'unit' => NULL,
     'type' => 'int',
@@ -1417,14 +1477,14 @@ return array (
     'group' => 'creature',
     'linked_to_key' => NULL,
   ),
-  94 => 
+  98 => 
   array (
-    'key' => 'modificateur_intel_creature',
+    'key' => 'modifier_intelligence_creature',
     'name' => 'Modificateur d\'Intelligence',
     'short_name' => 'Mod. Int',
     'helper' => '[(Intelligence - 10) / 2]. Spécifique Krosmoz JDR.',
     'descriptions' => 'Modificateur d\'Intelligence : [(Intelligence - 10) / 2].',
-    'icon' => 'skillIntel.webp',
+    'icon' => 'skillIntelligence.webp',
     'color' => '#e93323',
     'unit' => NULL,
     'type' => 'int',
@@ -1432,9 +1492,9 @@ return array (
     'group' => 'creature',
     'linked_to_key' => NULL,
   ),
-  95 => 
+  99 => 
   array (
-    'key' => 'modificateur_chance_creature',
+    'key' => 'modifier_chance_creature',
     'name' => 'Modificateur de Chance',
     'short_name' => 'Mod. Cha',
     'helper' => '[(Chance - 10) / 2]. Spécifique Krosmoz JDR.',
@@ -1447,14 +1507,14 @@ return array (
     'group' => 'creature',
     'linked_to_key' => NULL,
   ),
-  96 => 
+  100 => 
   array (
-    'key' => 'modificateur_agi_creature',
+    'key' => 'modifier_agility_creature',
     'name' => 'Modificateur d\'Agilité',
     'short_name' => 'Mod. Agi',
     'helper' => '[(Agilité - 10) / 2]. Spécifique Krosmoz JDR.',
     'descriptions' => 'Modificateur d\'Agilité : [(Agilité - 10) / 2].',
-    'icon' => 'skillAgi.webp',
+    'icon' => 'skillAgility.webp',
     'color' => '#26c6da',
     'unit' => NULL,
     'type' => 'int',
@@ -1462,7 +1522,7 @@ return array (
     'group' => 'creature',
     'linked_to_key' => NULL,
   ),
-  97 => 
+  101 => 
   array (
     'key' => 'save_vitality_creature',
     'name' => 'Bonus jet de sauvegarde Vitalité',
@@ -1477,14 +1537,14 @@ return array (
     'group' => 'creature',
     'linked_to_key' => NULL,
   ),
-  98 => 
+  102 => 
   array (
-    'key' => 'save_sagesse_creature',
+    'key' => 'save_wisdom_creature',
     'name' => 'Bonus jet de sauvegarde Sagesse',
     'short_name' => 'Sauv. Sag',
     'helper' => 'Bonus au jet de sauvegarde (mod. Sagesse ou + bonus maîtrise). Issu Dofus.',
     'descriptions' => 'Bonus au jet de sauvegarde (mod. Sagesse ou + bonus maîtrise). Issu Dofus.',
-    'icon' => 'skillSagesse.webp',
+    'icon' => 'skillWisdom.webp',
     'color' => '#ffb74d',
     'unit' => NULL,
     'type' => 'int',
@@ -1492,14 +1552,14 @@ return array (
     'group' => 'creature',
     'linked_to_key' => NULL,
   ),
-  99 => 
+  103 => 
   array (
-    'key' => 'save_force_creature',
+    'key' => 'save_strength_creature',
     'name' => 'Bonus jet de sauvegarde Force',
     'short_name' => 'Sauv. For',
     'helper' => 'Bonus au jet de sauvegarde (mod. Force ou + bonus maîtrise). Issu Dofus.',
     'descriptions' => 'Bonus au jet de sauvegarde (mod. Force ou + bonus maîtrise). Issu Dofus.',
-    'icon' => 'skillForce.webp',
+    'icon' => 'skillStrength.webp',
     'color' => '#8d6e63',
     'unit' => NULL,
     'type' => 'int',
@@ -1507,14 +1567,14 @@ return array (
     'group' => 'creature',
     'linked_to_key' => NULL,
   ),
-  100 => 
+  104 => 
   array (
-    'key' => 'save_intel_creature',
+    'key' => 'save_intelligence_creature',
     'name' => 'Bonus jet de sauvegarde Intelligence',
     'short_name' => 'Sauv. Int',
     'helper' => 'Bonus au jet de sauvegarde (mod. Intelligence ou + bonus maîtrise). Issu Dofus.',
     'descriptions' => 'Bonus au jet de sauvegarde (mod. Intelligence ou + bonus maîtrise). Issu Dofus.',
-    'icon' => 'skillIntel.webp',
+    'icon' => 'skillIntelligence.webp',
     'color' => '#e93323',
     'unit' => NULL,
     'type' => 'int',
@@ -1522,7 +1582,7 @@ return array (
     'group' => 'creature',
     'linked_to_key' => NULL,
   ),
-  101 => 
+  105 => 
   array (
     'key' => 'save_chance_creature',
     'name' => 'Bonus jet de sauvegarde Chance',
@@ -1537,14 +1597,14 @@ return array (
     'group' => 'creature',
     'linked_to_key' => NULL,
   ),
-  102 => 
+  106 => 
   array (
-    'key' => 'save_agi_creature',
+    'key' => 'save_agility_creature',
     'name' => 'Bonus jet de sauvegarde Agilité',
     'short_name' => 'Sauv. Agi',
     'helper' => 'Bonus au jet de sauvegarde (mod. Agilité ou + bonus maîtrise). Issu Dofus.',
     'descriptions' => 'Bonus au jet de sauvegarde (mod. Agilité ou + bonus maîtrise). Issu Dofus.',
-    'icon' => 'skillAgi.webp',
+    'icon' => 'skillAgility.webp',
     'color' => '#26c6da',
     'unit' => NULL,
     'type' => 'int',
@@ -1552,14 +1612,14 @@ return array (
     'group' => 'creature',
     'linked_to_key' => NULL,
   ),
-  103 => 
+  107 => 
   array (
-    'key' => 'po_editable_spell',
+    'key' => 'range_editable_spell',
     'name' => 'Portée modifiable',
     'short_name' => 'PO mod.',
     'helper' => 'Indique si la portée du sort peut être modifiée par le PO du lanceur (3.3.2.2).',
     'descriptions' => 'Indique si la portée peut être modifiée par le PO du lanceur (3.3.2.2).',
-    'icon' => 'poEditable.webp',
+    'icon' => 'rangeEditable.webp',
     'color' => '#5c6bc0',
     'unit' => NULL,
     'type' => 'bool',
@@ -1567,14 +1627,14 @@ return array (
     'group' => 'spell',
     'linked_to_key' => NULL,
   ),
-  104 => 
+  108 => 
   array (
     'key' => 'number_between_two_cast_editable_spell',
     'name' => 'Délai entre lancers modifiable',
     'short_name' => 'Délai mod.',
     'helper' => 'Indique si le délai entre deux lancers du sort est modifiable (règles 3.3).',
     'descriptions' => 'Indique si le délai entre deux lancers est modifiable (règles 3.3).',
-    'icon' => 'time_before_use_again.svg',
+    'icon' => 'timeBeforeUseAgain.webp',
     'color' => '#757575',
     'unit' => NULL,
     'type' => 'bool',
@@ -1582,14 +1642,14 @@ return array (
     'group' => 'spell',
     'linked_to_key' => NULL,
   ),
-  105 => 
+  109 => 
   array (
-    'key' => 'spell_po_min_spell',
+    'key' => 'spell_range_min_spell',
     'name' => 'Portée min',
     'short_name' => 'PO min',
     'helper' => 'Portée minimale du sort (cases). DofusDB levels.0.range.min.',
     'descriptions' => 'Portée minimale du sort en cases (DofusDB levels.0.range.min).',
-    'icon' => 'po.webp',
+    'icon' => 'range.webp',
     'color' => '#5c6bc0',
     'unit' => NULL,
     'type' => 'int',
@@ -1597,14 +1657,14 @@ return array (
     'group' => 'spell',
     'linked_to_key' => NULL,
   ),
-  106 => 
+  110 => 
   array (
-    'key' => 'spell_po_max_spell',
+    'key' => 'spell_range_max_spell',
     'name' => 'Portée max',
     'short_name' => 'PO max',
     'helper' => 'Portée maximale du sort (cases). DofusDB levels.0.range.max.',
     'descriptions' => 'Portée maximale du sort en cases (DofusDB levels.0.range.max).',
-    'icon' => 'po.webp',
+    'icon' => 'range.webp',
     'color' => '#5c6bc0',
     'unit' => NULL,
     'type' => 'int',
