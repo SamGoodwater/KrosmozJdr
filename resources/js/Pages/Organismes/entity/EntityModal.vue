@@ -47,6 +47,11 @@ const props = defineProps({
     useStoredFormat: {
         type: Boolean,
         default: true
+    },
+    /** Meta renvoyée par le tableau (ex. characteristics.creature.byDbColumn pour les monstres) */
+    tableMeta: {
+        type: Object,
+        default: () => ({})
     }
 });
 
@@ -113,7 +118,6 @@ const ENTITY_COMPONENT_MAP = {
     'consumables': 'Consumable',
     'spells': 'Spell',
     'monsters': 'Monster',
-    'creatures': 'Creature',
     'npcs': 'Npc',
     'breeds': 'Classe',
     'campaigns': 'Campaign',
@@ -168,6 +172,7 @@ const getComponentProps = () => {
     const common = {
         [propName]: props.entity,
         showActions: false,
+        ...(Object.keys(props.tableMeta || {}).length > 0 ? { tableMeta: props.tableMeta } : {}),
     };
 
     if (currentView.value === 'minimal') {

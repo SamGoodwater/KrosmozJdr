@@ -18,6 +18,8 @@ import Tooltip from "@/Pages/Atoms/feedback/Tooltip.vue";
 import EntityActions from '@/Pages/Organismes/entity/EntityActions.vue';
 import EntityViewHeader from "@/Pages/Molecules/entity/shared/EntityViewHeader.vue";
 import ImageViewer from "@/Pages/Molecules/data-display/ImageViewer.vue";
+import CharacteristicsCard from "@/Pages/Organismes/data-display/CharacteristicsCard.vue";
+import { buildCreatureCharacteristicGroups } from "@/Utils/Entity/buildCreatureCharacteristicGroups";
 import { useCopyToClipboard } from '@/Composables/utils/useCopyToClipboard';
 import { useDownloadPdf } from '@/Composables/utils/useDownloadPdf';
 import { getEntityRouteConfig, resolveEntityRouteUrl } from '@/Composables/entity/entityRouteRegistry';
@@ -33,6 +35,11 @@ const props = defineProps({
     showActions: {
         type: Boolean,
         default: true
+    },
+    /** Meta du tableau (ex. characteristics.creature.byDbColumn) pour la carte caractéristiques */
+    tableMeta: {
+        type: Object,
+        default: () => ({})
     }
 });
 
@@ -117,6 +124,18 @@ const getCell = (fieldKey) => {
         context: 'extended',
     });
 };
+
+const characteristicsByDbColumn = computed(() =>
+    props.tableMeta?.characteristics?.creature?.byDbColumn || {}
+);
+const creatureData = computed(() => {
+    const m = props.monster;
+    return m?.creature ?? m?.data?.creature ?? null;
+});
+const creatureCharacteristicsGroups = computed(() =>
+    buildCreatureCharacteristicGroups(creatureData.value, characteristicsByDbColumn.value)
+);
+const hasCreatureCharacteristics = computed(() => !!creatureData.value);
 
 const getBadgeColor = (fieldKey) => {
     const cell = getCell(fieldKey);
@@ -267,6 +286,18 @@ const handleAction = async (actionKey) => {
                 </div>
             </template>
         </EntityViewHeader>
+
+        <!-- Carte caractéristiques complète (mode étendu) -->
+        <section v-if="hasCreatureCharacteristics" class="pt-4 border-t border-base-300">
+            <h3 class="text-sm font-semibold uppercase tracking-wide text-primary-300 mb-3">
+                Caractéristiques
+            </h3>
+            <CharacteristicsCard
+                :entity="creatureData"
+                :groups="creatureCharacteristicsGroups"
+                :dense="false"
+            />
+        </section>
 
         <div v-if="technicalFields.length > 0 || userCanEditFields.length > 0" class="pt-3 border-t border-base-300">
             <div v-if="technicalFields.length > 0" class="flex flex-wrap gap-x-6 gap-y-2 text-xs text-primary-200/80">

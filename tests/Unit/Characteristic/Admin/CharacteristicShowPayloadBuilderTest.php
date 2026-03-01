@@ -48,7 +48,7 @@ class CharacteristicShowPayloadBuilderTest extends TestCase
 
     public function test_build_returns_selected_with_entities_and_group(): void
     {
-        $characteristic = Characteristic::where('key', 'life_creature')->first();
+        $characteristic = Characteristic::where('key', 'life_points_creature')->first();
         $this->assertNotNull($characteristic);
 
         $payload = $this->builder->build($characteristic);
@@ -57,7 +57,7 @@ class CharacteristicShowPayloadBuilderTest extends TestCase
         $this->assertArrayHasKey('scrappingMappingsUsingThis', $payload);
         $this->assertArrayHasKey('characteristicsForConvertToLinked', $payload);
         $selected = $payload['selected'];
-        $this->assertSame('life_creature', $selected['id']);
+        $this->assertSame('life_points_creature', $selected['id']);
         $this->assertArrayHasKey('name', $selected);
         $this->assertArrayHasKey('entities', $selected);
         $this->assertArrayHasKey('group', $selected);
@@ -68,7 +68,7 @@ class CharacteristicShowPayloadBuilderTest extends TestCase
 
     public function test_build_includes_scrapping_mappings_when_rule_linked_to_characteristic(): void
     {
-        $characteristic = Characteristic::where('key', 'life_creature')->first();
+        $characteristic = Characteristic::where('key', 'life_points_creature')->first();
         $this->assertNotNull($characteristic);
         $mapping = \App\Models\Scrapping\ScrappingEntityMapping::create([
             'source' => 'dofusdb',

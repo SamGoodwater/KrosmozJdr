@@ -8,7 +8,7 @@ Les objets regroupent tous les équipements, armes, armures, anneaux, etc. Ils s
 - **Créatures** : via le pivot `creature_item` (N:N avec `creatures`).
 - **Panoplies** : via le pivot `item_panoply` (N:N avec `panoplies`).
 - **Ressources** : via le pivot `item_resource` (N:N avec `resources`).
-- **Scénarios, campagnes, boutiques** : via les pivots `item_scenario`, `item_campaign`, `item_shop`.
+- **Scénarios, campagnes, hotels de vente vente** : via les pivots `item_scenario`, `item_campaign`, `item_shop`.
 
 ## Exemples d’utilisation
 - Attribution d’un équipement à un joueur ou un monstre.

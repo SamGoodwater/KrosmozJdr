@@ -69,6 +69,12 @@ export function getConsumableFieldDescriptors(ctx = {}) {
       label: "ID",
       icon: "fa-solid fa-hashtag",
       visibleIf: () => canCreateAny,
+      table: {
+        sortable: true,
+        defaultVisible: { xs: false, sm: false, md: false, lg: false, xl: false },
+        filterable: { id: "id", type: "text", defaultVisible: false },
+        cell: { sizes: { xs: { mode: "text" }, sm: { mode: "text" }, md: { mode: "text" }, lg: { mode: "text" }, xl: { mode: "text" } } },
+      },
       display: {
         sizes: {
           xs: { mode: "text" },
@@ -83,6 +89,12 @@ export function getConsumableFieldDescriptors(ctx = {}) {
       key: "name",
       label: "Nom",
       icon: "fa-solid fa-font",
+      table: {
+        sortable: true,
+        searchable: true,
+        defaultVisible: { xs: true, sm: true, md: true, lg: true, xl: true },
+        cell: { sizes: { xs: { mode: "route", truncate: 15 }, sm: { mode: "route", truncate: 20 }, md: { mode: "route", truncate: 30 }, lg: { mode: "route", truncate: 40 }, xl: { mode: "route" } } },
+      },
       display: {
         sizes: {
           xs: { mode: "route", truncate: 15 },
@@ -105,6 +117,12 @@ export function getConsumableFieldDescriptors(ctx = {}) {
       key: "level",
       label: "Niveau",
       icon: "fa-solid fa-level-up-alt",
+      table: {
+        sortable: true,
+        filterable: { id: "level", type: "multi", defaultVisible: true },
+        defaultVisible: { xs: false, sm: true, md: true, lg: true, xl: true },
+        cell: { sizes: { xs: { mode: "text" }, sm: { mode: "text" }, md: { mode: "text" }, lg: { mode: "text" }, xl: { mode: "text" } } },
+      },
       display: {
         sizes: {
           xs: { mode: "text" },
@@ -129,6 +147,12 @@ export function getConsumableFieldDescriptors(ctx = {}) {
       key: "rarity",
       label: "Rareté",
       icon: "fa-solid fa-gem",
+      table: {
+        sortable: true,
+        filterable: { id: "rarity", type: "multi", defaultVisible: true },
+        defaultVisible: { xs: false, sm: true, md: true, lg: true, xl: true },
+        cell: { sizes: { xs: { mode: "badge" }, sm: { mode: "badge" }, md: { mode: "badge" }, lg: { mode: "badge" }, xl: { mode: "badge" } } },
+      },
       display: {
         sizes: {
           xs: { mode: "badge" },
@@ -162,6 +186,12 @@ export function getConsumableFieldDescriptors(ctx = {}) {
       key: "state",
       label: "État",
       icon: "fa-solid fa-circle-info",
+      table: {
+        sortable: true,
+        filterable: { id: "state", type: "multi", defaultVisible: true },
+        defaultVisible: { xs: false, sm: true, md: true, lg: true, xl: true },
+        cell: { sizes: { xs: { mode: "badge" }, sm: { mode: "badge" }, md: { mode: "badge" }, lg: { mode: "badge" }, xl: { mode: "badge" } } },
+      },
       display: {
         sizes: {
           xs: { mode: "badge" },
@@ -188,6 +218,10 @@ export function getConsumableFieldDescriptors(ctx = {}) {
       label: "Auto-update",
       icon: "fa-solid fa-arrows-rotate",
       visibleIf: () => canUpdateAny,
+      table: {
+        defaultVisible: { xs: false, sm: false, md: false, lg: false, xl: false },
+        cell: { sizes: { xs: { mode: "badge" }, sm: { mode: "badge" }, md: { mode: "badge" }, lg: { mode: "badge" }, xl: { mode: "badge" } } },
+      },
       display: {
         sizes: {
           xs: { mode: "badge" },
@@ -212,6 +246,10 @@ export function getConsumableFieldDescriptors(ctx = {}) {
       key: "read_level",
       label: "Lecture (min.)",
       icon: "fa-solid fa-eye",
+      table: {
+        defaultVisible: { xs: false, sm: false, md: false, lg: false, xl: false },
+        cell: { sizes: { xs: { mode: "badge" }, sm: { mode: "badge" }, md: { mode: "badge" }, lg: { mode: "badge" }, xl: { mode: "badge" } } },
+      },
       display: {
         sizes: {
           xs: { mode: "badge" },
@@ -237,6 +275,10 @@ export function getConsumableFieldDescriptors(ctx = {}) {
       key: "write_level",
       label: "Écriture (min.)",
       icon: "fa-solid fa-pen-to-square",
+      table: {
+        defaultVisible: { xs: false, sm: false, md: false, lg: false, xl: false },
+        cell: { sizes: { xs: { mode: "badge" }, sm: { mode: "badge" }, md: { mode: "badge" }, lg: { mode: "badge" }, xl: { mode: "badge" } } },
+      },
       display: {
         sizes: {
           xs: { mode: "badge" },
@@ -262,6 +304,10 @@ export function getConsumableFieldDescriptors(ctx = {}) {
       key: "price",
       label: "Prix",
       icon: "fa-solid fa-coins",
+      table: {
+        defaultVisible: { xs: false, sm: false, md: false, lg: true, xl: true },
+        cell: { sizes: { xs: { mode: "text", truncate: 10 }, sm: { mode: "text", truncate: 15 }, md: { mode: "text", truncate: 20 }, lg: { mode: "text" }, xl: { mode: "text" } } },
+      },
       display: {
         sizes: {
           xs: { mode: "text", truncate: 10 },
@@ -286,6 +332,10 @@ export function getConsumableFieldDescriptors(ctx = {}) {
       key: "dofus_version",
       label: "Version Dofus",
       icon: "fa-solid fa-code-branch",
+      table: {
+        defaultVisible: { xs: false, sm: false, md: false, lg: false, xl: false },
+        cell: { sizes: { xs: { mode: "text" }, sm: { mode: "text" }, md: { mode: "text" }, lg: { mode: "text" }, xl: { mode: "text" } } },
+      },
       display: {
         sizes: {
           xs: { mode: "text" },
@@ -309,6 +359,12 @@ export function getConsumableFieldDescriptors(ctx = {}) {
       key: "consumable_type",
       label: "Type",
       icon: "fa-solid fa-tags",
+      table: {
+        sortable: true,
+        filterable: { id: "consumable_type_id", type: "multi", defaultVisible: false },
+        defaultVisible: { xs: false, sm: false, md: true, lg: true, xl: true },
+        cell: { sizes: { xs: { mode: "text", truncate: 10 }, sm: { mode: "text", truncate: 15 }, md: { mode: "text", truncate: 20 }, lg: { mode: "text" }, xl: { mode: "text" } } },
+      },
       display: {
         sizes: {
           xs: { mode: "text", truncate: 10 },
@@ -323,6 +379,10 @@ export function getConsumableFieldDescriptors(ctx = {}) {
       key: "image",
       label: "Image",
       icon: "fa-solid fa-image",
+      table: {
+        defaultVisible: { xs: false, sm: false, md: false, lg: false, xl: false },
+        cell: { sizes: { xs: { mode: "thumb" }, sm: { mode: "thumb" }, md: { mode: "thumb" }, lg: { mode: "thumb" }, xl: { mode: "thumb" } } },
+      },
       display: {
         sizes: {
           xs: { mode: "thumb" },
@@ -348,6 +408,11 @@ export function getConsumableFieldDescriptors(ctx = {}) {
       label: "DofusDB",
       icon: "fa-solid fa-up-right-from-square",
       visibleIf: () => canUpdateAny,
+      table: {
+        sortable: true,
+        defaultVisible: { xs: false, sm: false, md: false, lg: false, xl: false },
+        cell: { sizes: { xs: { mode: "route" }, sm: { mode: "route" }, md: { mode: "route" }, lg: { mode: "route" }, xl: { mode: "route" } } },
+      },
       display: {
         sizes: {
           xs: { mode: "route" },
@@ -363,6 +428,10 @@ export function getConsumableFieldDescriptors(ctx = {}) {
       label: "Créé par",
       icon: "fa-solid fa-user",
       visibleIf: () => canCreateAny,
+      table: {
+        defaultVisible: { xs: false, sm: false, md: false, lg: false, xl: false },
+        cell: { sizes: { xs: { mode: "text", truncate: 10 }, sm: { mode: "text", truncate: 15 }, md: { mode: "text", truncate: 20 }, lg: { mode: "text" }, xl: { mode: "text" } } },
+      },
       display: {
         sizes: {
           xs: { mode: "text", truncate: 10 },
@@ -378,6 +447,11 @@ export function getConsumableFieldDescriptors(ctx = {}) {
       label: "Créé le",
       icon: "fa-solid fa-calendar-plus",
       visibleIf: () => canCreateAny,
+      table: {
+        sortable: true,
+        defaultVisible: { xs: false, sm: false, md: false, lg: false, xl: false },
+        cell: { sizes: { xs: { mode: "text" }, sm: { mode: "text" }, md: { mode: "text" }, lg: { mode: "text" }, xl: { mode: "text" } } },
+      },
       display: {
         sizes: {
           xs: { mode: "text" },
@@ -393,6 +467,11 @@ export function getConsumableFieldDescriptors(ctx = {}) {
       label: "Modifié le",
       icon: "fa-solid fa-calendar-check",
       visibleIf: () => canCreateAny,
+      table: {
+        sortable: true,
+        defaultVisible: { xs: false, sm: false, md: false, lg: false, xl: false },
+        cell: { sizes: { xs: { mode: "text" }, sm: { mode: "text" }, md: { mode: "text" }, lg: { mode: "text" }, xl: { mode: "text" } } },
+      },
       display: {
         sizes: {
           xs: { mode: "text" },

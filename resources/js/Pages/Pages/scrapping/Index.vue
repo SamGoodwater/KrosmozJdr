@@ -35,6 +35,20 @@ if (import.meta?.hot) {
                 <h1 class="text-3xl font-bold text-primary-100">Gestion du Scrapping</h1>
                 <p class="text-primary-200 mt-2">Importez des données depuis DofusDB vers KrosmozJDR</p>
             </div>
+            <div class="flex flex-wrap gap-2">
+                <a
+                    :href="route('admin.scrapping-mappings.index')"
+                    class="btn btn-ghost btn-sm"
+                >
+                    Mapping entités
+                </a>
+                <a
+                    :href="route('admin.dofusdb-effect-mappings.index')"
+                    class="btn btn-ghost btn-sm"
+                >
+                    Mapping effets DofusDB
+                </a>
+            </div>
         </div>
 
         <ScrappingDashboard />

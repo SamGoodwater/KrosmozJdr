@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Gate;
  * ShopTableController
  *
  * @description
- * Endpoint "Table v2" (TanStack Table) pour les boutiques.
+ * Endpoint "Table v2" (TanStack Table) pour les hotels de vente.
  * Retourne un `TableResponse` avec des cellules typées: `Cell{type,value,params}`.
  */
 class ShopTableController extends Controller

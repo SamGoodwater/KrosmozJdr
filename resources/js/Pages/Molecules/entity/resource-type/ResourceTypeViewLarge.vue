@@ -30,6 +30,10 @@ const props = defineProps({
     showActions: {
         type: Boolean,
         default: true
+    },
+    tableMeta: {
+        type: Object,
+        default: () => ({})
     }
 });
 

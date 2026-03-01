@@ -64,6 +64,12 @@ export function getAttributeFieldDescriptors(ctx = {}) {
       label: "ID",
       icon: "fa-solid fa-hashtag",
       visibleIf: () => canCreateAny,
+      table: {
+        sortable: true,
+        defaultVisible: { xs: false, sm: false, md: false, lg: false, xl: false },
+        filterable: { id: "id", type: "text", defaultVisible: false },
+        cell: { sizes: { xs: { mode: "text" }, sm: { mode: "text" }, md: { mode: "text" }, lg: { mode: "text" }, xl: { mode: "text" } } },
+      },
       display: {
         sizes: {
           xs: { mode: "text" },
@@ -78,6 +84,12 @@ export function getAttributeFieldDescriptors(ctx = {}) {
       key: "name",
       label: "Nom",
       icon: "fa-solid fa-font",
+      table: {
+        sortable: true,
+        searchable: true,
+        defaultVisible: { xs: true, sm: true, md: true, lg: true, xl: true },
+        cell: { sizes: { xs: { mode: "route", truncate: 15 }, sm: { mode: "route", truncate: 20 }, md: { mode: "route", truncate: 30 }, lg: { mode: "route", truncate: 40 }, xl: { mode: "route" } } },
+      },
       display: {
         sizes: {
           xs: { mode: "route", truncate: 15 },
@@ -100,6 +112,11 @@ export function getAttributeFieldDescriptors(ctx = {}) {
       key: "description",
       label: "Description",
       icon: "fa-solid fa-align-left",
+      table: {
+        searchable: true,
+        defaultVisible: { xs: false, sm: false, md: true, lg: true, xl: true },
+        cell: { sizes: { xs: { mode: "text", truncate: 20 }, sm: { mode: "text", truncate: 30 }, md: { mode: "text", truncate: 50 }, lg: { mode: "text" }, xl: { mode: "text" } } },
+      },
       display: {
         sizes: {
           xs: { mode: "text", truncate: 20 },
@@ -122,6 +139,12 @@ export function getAttributeFieldDescriptors(ctx = {}) {
       key: "state",
       label: "État",
       icon: "fa-solid fa-circle-info",
+      table: {
+        sortable: true,
+        filterable: { id: "state", type: "multi", defaultVisible: true },
+        defaultVisible: { xs: false, sm: true, md: true, lg: true, xl: true },
+        cell: { sizes: { xs: { mode: "badge" }, sm: { mode: "badge" }, md: { mode: "badge" }, lg: { mode: "badge" }, xl: { mode: "badge" } } },
+      },
       display: {
         sizes: {
           xs: { mode: "badge" },
@@ -147,6 +170,11 @@ export function getAttributeFieldDescriptors(ctx = {}) {
       key: "read_level",
       label: "Lecture (min.)",
       icon: "fa-solid fa-eye",
+      table: {
+        defaultVisible: { xs: false, sm: false, md: false, lg: false, xl: false },
+        filterable: { id: "read_level", type: "multi", defaultVisible: false },
+        cell: { sizes: { xs: { mode: "badge" }, sm: { mode: "badge" }, md: { mode: "badge" }, lg: { mode: "badge" }, xl: { mode: "badge" } } },
+      },
       display: {
         sizes: {
           xs: { mode: "badge" },
@@ -172,6 +200,11 @@ export function getAttributeFieldDescriptors(ctx = {}) {
       key: "write_level",
       label: "Écriture (min.)",
       icon: "fa-solid fa-pen-to-square",
+      table: {
+        defaultVisible: { xs: false, sm: false, md: false, lg: false, xl: false },
+        filterable: { id: "write_level", type: "multi", defaultVisible: false },
+        cell: { sizes: { xs: { mode: "badge" }, sm: { mode: "badge" }, md: { mode: "badge" }, lg: { mode: "badge" }, xl: { mode: "badge" } } },
+      },
       display: {
         sizes: {
           xs: { mode: "badge" },
@@ -197,6 +230,10 @@ export function getAttributeFieldDescriptors(ctx = {}) {
       key: "image",
       label: "Image",
       icon: "fa-solid fa-image",
+      table: {
+        defaultVisible: { xs: false, sm: false, md: false, lg: false, xl: false },
+        cell: { sizes: { xs: { mode: "image" }, sm: { mode: "image" }, md: { mode: "image" }, lg: { mode: "image" }, xl: { mode: "image" } } },
+      },
       display: {
         sizes: {
           xs: { mode: "image" },
@@ -221,6 +258,10 @@ export function getAttributeFieldDescriptors(ctx = {}) {
       label: "Créé par",
       icon: "fa-solid fa-user",
       visibleIf: () => canCreateAny,
+      table: {
+        defaultVisible: { xs: false, sm: false, md: false, lg: false, xl: false },
+        cell: { sizes: { xs: { mode: "text" }, sm: { mode: "text" }, md: { mode: "text" }, lg: { mode: "text" }, xl: { mode: "text" } } },
+      },
       display: {
         sizes: {
           xs: { mode: "text" },
@@ -236,6 +277,11 @@ export function getAttributeFieldDescriptors(ctx = {}) {
       label: "Créé le",
       icon: "fa-solid fa-calendar-plus",
       visibleIf: () => canCreateAny,
+      table: {
+        sortable: true,
+        defaultVisible: { xs: false, sm: false, md: false, lg: false, xl: false },
+        cell: { sizes: { xs: { mode: "text" }, sm: { mode: "text" }, md: { mode: "text" }, lg: { mode: "text" }, xl: { mode: "text" } } },
+      },
       display: {
         sizes: {
           xs: { mode: "text" },
@@ -251,6 +297,11 @@ export function getAttributeFieldDescriptors(ctx = {}) {
       label: "Modifié le",
       icon: "fa-solid fa-calendar-check",
       visibleIf: () => canCreateAny,
+      table: {
+        sortable: true,
+        defaultVisible: { xs: false, sm: false, md: false, lg: false, xl: false },
+        cell: { sizes: { xs: { mode: "text" }, sm: { mode: "text" }, md: { mode: "text" }, lg: { mode: "text" }, xl: { mode: "text" } } },
+      },
       display: {
         sizes: {
           xs: { mode: "text" },

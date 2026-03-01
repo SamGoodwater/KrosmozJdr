@@ -171,13 +171,13 @@ setPageTitle(`Modifier la ressource : ${resource.value.name || 'Nouvelle ressour
             :entity-id="resource.id"
             entity-type="resources"
             relation-type="shops"
-            relation-name="Boutiques associées"
+            relation-name="hotels de vente associées"
             :config="{
                 displayFields: ['name', 'description'],
                 searchFields: ['name', 'description'],
                 pivotFields: ['quantity', 'price', 'comment'],
-                itemLabel: 'boutique',
-                itemLabelPlural: 'boutiques'
+                itemLabel: 'hotel de vente',
+                itemLabelPlural: 'hotels de vente'
             }"
         />
 

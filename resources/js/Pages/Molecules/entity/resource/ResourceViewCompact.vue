@@ -33,6 +33,11 @@ const props = defineProps({
     showActions: {
         type: Boolean,
         default: true
+    },
+    /** Meta du tableau pour usage futur (carte caractéristiques, etc.) */
+    tableMeta: {
+        type: Object,
+        default: () => ({})
     }
 });
 

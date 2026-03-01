@@ -35,7 +35,6 @@ class SpellFactory extends Factory
             'name' => fake()->unique()->words(3, true),
             'description' => fake()->sentence(),
             'effect' => fake()->optional()->sentence(),
-            'area' => fake()->numberBetween(0, 10),
             'level' => (string) fake()->numberBetween(1, 200),
             'po' => (string) fake()->numberBetween(1, 20),
             'po_editable' => fake()->boolean(),

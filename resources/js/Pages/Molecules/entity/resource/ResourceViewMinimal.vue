@@ -37,6 +37,11 @@ const props = defineProps({
         type: String,
         default: 'hover',
         validator: (v) => ['compact', 'hover', 'extended'].includes(v),
+    },
+    /** Meta du tableau pour usage futur (carte caractéristiques, etc.) */
+    tableMeta: {
+        type: Object,
+        default: () => ({})
     }
 });
 

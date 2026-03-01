@@ -41,7 +41,7 @@
 - `resources` (avec pivot `quantity`, `price`, `comment`) - **PRIORITAIRE**
 - `panoplies` - Utile
 
-**Pourquoi :** Les boutiques ont des relations avec des pivots complexes (quantité, prix, commentaire). C'est un cas d'usage important pour la gestion des ventes.
+**Pourquoi :** Les hotels de vente vente ont des relations avec des pivots complexes (quantité, prix, commentaire). C'est un cas d'usage important pour la gestion des ventes.
 
 **Complexité :** Élevée (nécessite support des pivots multiples)
 

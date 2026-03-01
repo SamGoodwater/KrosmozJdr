@@ -2102,6 +2102,100 @@
     "file": "data-display/Collapse.vue"
   },
   {
+    "name": "CharacteristicFormula",
+    "description": "CharacteristicFormula — Atome d'affichage d'une caractéristique à formule (valeur + unité).",
+    "props": [
+      {
+        "name": "def",
+        "type": "Object",
+        "desc": "- Définition (key, name, short_name, icon, color, unit, descriptions)"
+      },
+      {
+        "name": "value",
+        "type": "string|number",
+        "desc": "- Valeur affichée"
+      },
+      {
+        "name": "formulaResolved",
+        "type": "string",
+        "desc": "- Formule avec variables remplacées"
+      },
+      {
+        "name": "formulaRaw",
+        "type": "string",
+        "desc": "- Formule brute (tooltip)"
+      },
+      {
+        "name": "levelTable",
+        "type": "Array<{level, value}>",
+        "desc": "- Tableau niveau → valeur"
+      },
+      {
+        "name": "unit",
+        "type": "string",
+        "desc": "- Unité (affichée après la valeur)"
+      },
+      {
+        "name": "compact",
+        "type": "boolean",
+        "desc": "- Mode compact (icône + valeur uniquement, padding minimal)"
+      }
+    ],
+    "slots": [],
+    "file": "data-display/CharacteristicFormula.vue"
+  },
+  {
+    "name": "CharacteristicBoolean",
+    "description": "CharacteristicBoolean — Atome d'affichage d'une caractéristique booléenne (oui/non).",
+    "props": [
+      {
+        "name": "def",
+        "type": "Object",
+        "desc": "- Définition (key, name, icon, iconFalse?, color, descriptions)"
+      },
+      {
+        "name": "value",
+        "type": "boolean",
+        "desc": "- Valeur courante"
+      },
+      {
+        "name": "compact",
+        "type": "boolean",
+        "desc": "- Mode compact (icône seule)"
+      }
+    ],
+    "slots": [],
+    "file": "data-display/CharacteristicBoolean.vue"
+  },
+  {
+    "name": "CharacteristicBadges",
+    "description": "CharacteristicBadges — Atome d'affichage d'une liste de badges (ex. taille, propriétés).",
+    "props": [
+      {
+        "name": "def",
+        "type": "Object",
+        "desc": "- Définition (value_available, color pour le conteneur en mode normal)"
+      },
+      {
+        "name": "items",
+        "type": "Array",
+        "desc": "- Liste directe de badges"
+      },
+      {
+        "name": "value",
+        "type": "Array",
+        "desc": "- Valeurs (si def fourni, pour résoudre les libellés)"
+      },
+      {
+        "name": "compact",
+        "type": "boolean",
+        "desc": "- Mode compact (gap réduit)"
+      }
+    ],
+    "slots": [],
+    "file": "data-display/CharacteristicBadges.vue"
+  },
+  {
     "name": "CellSkeleton",
     "description": "CellSkeleton Atom",
     "props": [],

@@ -782,10 +782,6 @@ return [
                     'field_name' => 'effect',
                     'convert' => true,
                 ],
-                'area' => [
-                    'field_name' => 'area',
-                    'convert' => true,
-                ],
                 'level' => [
                     'field_name' => 'level',
                     'convert' => true,

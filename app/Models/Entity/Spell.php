@@ -26,7 +26,7 @@ use Spatie\MediaLibrary\HasMedia;
  * @property string $name
  * @property string $description
  * @property string|null $effect
- * @property int $area
+ * @property string|null $area Zone d'impact (déléguée au premier effet lié ; voir Effect::area)
  * @property string $level
  * @property string $po
  * @property bool $po_editable
@@ -159,7 +159,6 @@ class Spell extends Model implements HasMedia
         'name',
         'description',
         'effect',
-        'area',
         'level',
         'po',
         'po_editable',
@@ -187,7 +186,6 @@ class Spell extends Model implements HasMedia
      * @var array<string, string>
      */
     protected $casts = [
-        'area' => 'integer',
         'element' => 'integer',
         'category' => 'integer',
         'powerful' => 'integer',
@@ -269,5 +267,18 @@ class Spell extends Model implements HasMedia
     public function effectUsages()
     {
         return $this->morphMany(EffectUsage::class, 'entity');
+    }
+
+    /**
+     * Zone d'impact du sort (déléguée au premier effet lié).
+     * La colonne area a été déplacée sur Effect ; cet accesseur assure la rétrocompatibilité.
+     *
+     * @return string|null Notation zone (point, line-1x9, cross-2, circle-2, rect-3x4) ou null
+     */
+    public function getAreaAttribute(): ?string
+    {
+        $usage = $this->effectUsages()->with('effect')->first();
+
+        return $usage?->effect?->area;
     }
 }

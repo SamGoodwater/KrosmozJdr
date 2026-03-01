@@ -65,7 +65,7 @@ class CharacteristicLimitServiceTest extends TestCase
     public function test_validate_returns_ok_when_values_in_limits(): void
     {
         $getter = $this->app->make(\App\Services\Characteristic\Getter\CharacteristicGetterService::class);
-        $limits = $getter->getLimits('life_creature', 'monster');
+        $limits = $getter->getLimits('life_points_creature', 'monster');
         $this->assertNotNull($limits);
         $value = (int) (($limits['min'] + $limits['max']) / 2);
         $result = $this->service->validate(['creatures' => ['life' => $value]], 'monster');
@@ -84,26 +84,26 @@ class CharacteristicLimitServiceTest extends TestCase
     public function test_clamp_returns_value_when_in_limits(): void
     {
         $getter = $this->app->make(\App\Services\Characteristic\Getter\CharacteristicGetterService::class);
-        $limits = $getter->getLimits('life_creature', 'monster');
+        $limits = $getter->getLimits('life_points_creature', 'monster');
         $this->assertNotNull($limits);
         $mid = (int) (($limits['min'] + $limits['max']) / 2);
-        $this->assertSame($mid, $this->service->clamp('life_creature', $mid, 'monster'));
+        $this->assertSame($mid, $this->service->clamp('life_points_creature', $mid, 'monster'));
     }
 
     public function test_clamp_returns_min_when_below(): void
     {
         $getter = $this->app->make(\App\Services\Characteristic\Getter\CharacteristicGetterService::class);
-        $limits = $getter->getLimits('life_creature', 'monster');
+        $limits = $getter->getLimits('life_points_creature', 'monster');
         $this->assertNotNull($limits);
-        $this->assertSame($limits['min'], $this->service->clamp('life_creature', $limits['min'] - 100, 'monster'));
+        $this->assertSame($limits['min'], $this->service->clamp('life_points_creature', $limits['min'] - 100, 'monster'));
     }
 
     public function test_clamp_returns_max_when_above(): void
     {
         $getter = $this->app->make(\App\Services\Characteristic\Getter\CharacteristicGetterService::class);
-        $limits = $getter->getLimits('life_creature', 'monster');
+        $limits = $getter->getLimits('life_points_creature', 'monster');
         $this->assertNotNull($limits);
-        $this->assertSame($limits['max'], $this->service->clamp('life_creature', $limits['max'] + 100, 'monster'));
+        $this->assertSame($limits['max'], $this->service->clamp('life_points_creature', $limits['max'] + 100, 'monster'));
     }
 
     public function test_clamp_returns_value_when_no_limits(): void

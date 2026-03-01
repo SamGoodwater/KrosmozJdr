@@ -358,7 +358,7 @@ export function getMonsterFieldDescriptors(ctx = {}) {
     creature_summary_resistance: {
       key: 'creature_summary_resistance',
       general: {
-        label: 'Résistance',
+        label: 'Résistances',
         icon: 'fa-solid fa-shield-halved',
         tooltip: 'Résistances fixes + % (neutre, terre, feu, air, eau)',
       },
@@ -367,6 +367,21 @@ export function getMonsterFieldDescriptors(ctx = {}) {
         sortable: true,
         searchable: true,
         defaultVisible: { xs: false, sm: false, md: true, lg: true, xl: true },
+        cell: { sizes: { xs: { mode: 'chips' }, sm: { mode: 'chips' }, md: { mode: 'chips' }, lg: { mode: 'chips' }, xl: { mode: 'chips' } } },
+      },
+    },
+    creature_characteristics: {
+      key: 'creature_characteristics',
+      general: {
+        label: 'Caractéristiques (tout)',
+        icon: 'fa-solid fa-chart-simple',
+        tooltip: 'Tous les groupes : Combat, Stats, Résistances, Dommages, Contrôle',
+      },
+      table: {
+        type: 'chips',
+        sortable: true,
+        searchable: true,
+        defaultVisible: { xs: false, sm: false, md: false, lg: false, xl: false },
         cell: { sizes: { xs: { mode: 'chips' }, sm: { mode: 'chips' }, md: { mode: 'chips' }, lg: { mode: 'chips' }, xl: { mode: 'chips' } } },
       },
     },
@@ -388,7 +403,7 @@ export function getMonsterFieldDescriptors(ctx = {}) {
     creature_summary_stats: {
       key: 'creature_summary_stats',
       general: {
-        label: 'Stats',
+        label: 'Statistiques',
         icon: 'fa-solid fa-chart-simple',
         tooltip: 'Force, Intelligence, Agilité, Chance, Vitalité, Sagesse',
       },

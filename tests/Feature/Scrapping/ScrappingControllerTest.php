@@ -17,12 +17,12 @@ class ScrappingControllerTest extends TestCase
 {
     use RefreshDatabase;
 
+    private User $admin;
+
     protected function setUp(): void
     {
         parent::setUp();
-        
-        // Créer un utilisateur système
-        User::factory()->create();
+        $this->admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
     }
 
     /**
@@ -43,7 +43,7 @@ class ScrappingControllerTest extends TestCase
             'api.dofusdb.fr/breeds/1*' => Http::response($mockData, 200),
         ]);
 
-        $response = $this->postJson('/api/scrapping/import/class/1');
+        $response = $this->actingAs($this->admin)->postJson('/api/scrapping/import/class/1');
 
         $response->assertStatus(201)
             ->assertJson([
@@ -72,7 +72,7 @@ class ScrappingControllerTest extends TestCase
 
         // Utiliser un ID valide selon la contrainte de route (1-19)
         // mais qui provoque une erreur lors de la collecte
-        $response = $this->postJson('/api/scrapping/import/class/19');
+        $response = $this->actingAs($this->admin)->postJson('/api/scrapping/import/class/19');
 
         // Le contrôleur retourne 400 si l'orchestrateur retourne success=false
         // ou 500 si une exception est levée
@@ -115,7 +115,7 @@ class ScrappingControllerTest extends TestCase
             'api.dofusdb.fr/monsters/31*' => Http::response($mockData, 200),
         ]);
 
-        $response = $this->postJson('/api/scrapping/import/monster/31');
+        $response = $this->actingAs($this->admin)->postJson('/api/scrapping/import/monster/31');
 
         $response->assertStatus(201)
             ->assertJson([
@@ -154,7 +154,7 @@ class ScrappingControllerTest extends TestCase
             'api.dofusdb.fr/monsters/31*' => Http::response($mockData, 200),
         ]);
 
-        $response = $this->postJson('/api/scrapping/import/monster/31', [
+        $response = $this->actingAs($this->admin)->postJson('/api/scrapping/import/monster/31', [
             'include_relations' => true,
         ]);
 
@@ -183,7 +183,7 @@ class ScrappingControllerTest extends TestCase
             'api.dofusdb.fr/items/15*' => Http::response($mockData, 200),
         ]);
 
-        $response = $this->postJson('/api/scrapping/import/item/15');
+        $response = $this->actingAs($this->admin)->postJson('/api/scrapping/import/item/15');
 
         $response->assertStatus(201)
             ->assertJson([
@@ -211,7 +211,7 @@ class ScrappingControllerTest extends TestCase
             'api.dofusdb.fr/spells/201*' => Http::response($spellObject, 200),
         ]);
 
-        $response = $this->postJson('/api/scrapping/import/spell/201');
+        $response = $this->actingAs($this->admin)->postJson('/api/scrapping/import/spell/201');
 
         $response->assertStatus(201)
             ->assertJson([
@@ -254,7 +254,7 @@ class ScrappingControllerTest extends TestCase
             ], 200),
         ]);
 
-        $response = $this->postJson('/api/scrapping/import/batch', [
+        $response = $this->actingAs($this->admin)->postJson('/api/scrapping/import/batch', [
             'entities' => $entities
         ]);
 
@@ -279,7 +279,7 @@ class ScrappingControllerTest extends TestCase
      */
     public function test_import_batch_endpoint_validates_input(): void
     {
-        $response = $this->postJson('/api/scrapping/import/batch', [
+        $response = $this->actingAs($this->admin)->postJson('/api/scrapping/import/batch', [
             'entities' => [
                 ['type' => 'invalid', 'id' => 1]
             ]

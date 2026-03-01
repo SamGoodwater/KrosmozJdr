@@ -64,6 +64,11 @@ export function getShopFieldDescriptors(ctx = {}) {
       label: "ID",
       icon: "fa-solid fa-hashtag",
       visibleIf: () => canCreateAny,
+      table: {
+        sortable: true,
+        defaultVisible: { xs: false, sm: false, md: false, lg: false, xl: false },
+        cell: { sizes: { xs: { mode: "text" }, sm: { mode: "text" }, md: { mode: "text" }, lg: { mode: "text" }, xl: { mode: "text" } } },
+      },
       display: {
         sizes: {
           xs: { mode: "text" },
@@ -78,6 +83,12 @@ export function getShopFieldDescriptors(ctx = {}) {
       key: "name",
       label: "Nom",
       icon: "fa-solid fa-font",
+      table: {
+        sortable: true,
+        searchable: true,
+        defaultVisible: { xs: true, sm: true, md: true, lg: true, xl: true },
+        cell: { sizes: { xs: { mode: "route", truncate: 15 }, sm: { mode: "route", truncate: 20 }, md: { mode: "route", truncate: 30 }, lg: { mode: "route", truncate: 40 }, xl: { mode: "route" } } },
+      },
       display: {
         sizes: {
           xs: { mode: "route", truncate: 15 },
@@ -100,6 +111,10 @@ export function getShopFieldDescriptors(ctx = {}) {
       key: "location",
       label: "Localisation",
       icon: "fa-solid fa-map-marker-alt",
+      table: {
+        defaultVisible: { xs: false, sm: true, md: true, lg: true, xl: true },
+        cell: { sizes: { xs: { mode: "text", truncate: 15 }, sm: { mode: "text", truncate: 20 }, md: { mode: "text", truncate: 30 }, lg: { mode: "text" }, xl: { mode: "text" } } },
+      },
       display: {
         sizes: {
           xs: { mode: "text", truncate: 15 },
@@ -199,6 +214,12 @@ export function getShopFieldDescriptors(ctx = {}) {
       key: "state",
       label: "État",
       icon: "fa-solid fa-circle-info",
+      table: {
+        sortable: true,
+        filterable: { id: "state", type: "multi", defaultVisible: true },
+        defaultVisible: { xs: false, sm: true, md: true, lg: true, xl: true },
+        cell: { sizes: { xs: { mode: "badge" }, sm: { mode: "badge" }, md: { mode: "badge" }, lg: { mode: "badge" }, xl: { mode: "badge" } } },
+      },
       display: {
         sizes: {
           xs: { mode: "badge" },

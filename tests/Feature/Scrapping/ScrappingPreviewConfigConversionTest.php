@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Scrapping;
 
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Http;
 use Tests\TestCase;
@@ -12,6 +13,7 @@ class ScrappingPreviewConfigConversionTest extends TestCase
 
     public function test_preview_monster_uses_config_driven_conversion_shape(): void
     {
+        $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
         Http::fake([
             'api.dofusdb.fr/monsters/31*' => Http::response([
                 'id' => 31,
@@ -23,7 +25,7 @@ class ScrappingPreviewConfigConversionTest extends TestCase
             ], 200),
         ]);
 
-        $res = $this->getJson('/api/scrapping/preview/monster/31');
+        $res = $this->actingAs($admin)->getJson('/api/scrapping/preview/monster/31');
         $res->assertStatus(200)->assertJson(['success' => true]);
 
         $converted = $res->json('data.converted');
@@ -42,13 +44,14 @@ class ScrappingPreviewConfigConversionTest extends TestCase
             'breedId' => 1,
             'img' => 'https://api.dofusdb.fr/img/spells/201.png',
         ];
+        $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
         Http::fake([
             'api.dofusdb.fr/spells/201*' => Http::response($spellData, 200),
             'api.dofusdb.fr/spells*' => Http::response(['data' => [$spellData]], 200),
             'api.dofusdb.fr/spell-levels*' => Http::response(['data' => []], 200),
         ]);
 
-        $res = $this->getJson('/api/scrapping/preview/spell/201');
+        $res = $this->actingAs($admin)->getJson('/api/scrapping/preview/spell/201');
         $res->assertStatus(200)->assertJson(['success' => true]);
 
         $converted = $res->json('data.converted');

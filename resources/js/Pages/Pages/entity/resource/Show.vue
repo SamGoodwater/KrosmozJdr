@@ -99,7 +99,7 @@ const goEdit = () => {
             </div>
 
             <div class="rounded-lg border border-base-300 p-4">
-                <h2 class="font-semibold text-primary-100 mb-2">Boutiques</h2>
+                <h2 class="font-semibold text-primary-100 mb-2">hotels de vente vente vente vente vente</h2>
                 <ul v-if="(resource.shops || []).length" class="space-y-2 text-sm">
                     <li v-for="s in resource.shops" :key="s.id" class="flex justify-between gap-3">
                         <div>
@@ -112,7 +112,7 @@ const goEdit = () => {
                         </div>
                     </li>
                 </ul>
-                <p v-else class="text-sm text-primary-300 italic">Aucune boutique liée.</p>
+                <p v-else class="text-sm text-primary-300 italic">Aucune hotel de vente liée.</p>
             </div>
 
             <div class="rounded-lg border border-base-300 p-4">

@@ -57,6 +57,11 @@ export function getResourceTypeFieldDescriptors(ctx = {}) {
       icon: "fa-solid fa-hashtag",
       format: "number",
       visibleIf: () => canUpdateAny,
+      table: {
+        sortable: true,
+        defaultVisible: { xs: false, sm: false, md: false, lg: false, xl: false },
+        cell: { sizes: { xs: { mode: "text" }, sm: { mode: "text" }, md: { mode: "text" }, lg: { mode: "text" }, xl: { mode: "text" } } },
+      },
       display: {
         sizes: {
           xs: { mode: "text" },
@@ -72,6 +77,12 @@ export function getResourceTypeFieldDescriptors(ctx = {}) {
       label: "Nom",
       icon: "fa-solid fa-tag",
       format: "text",
+      table: {
+        sortable: true,
+        searchable: true,
+        defaultVisible: { xs: true, sm: true, md: true, lg: true, xl: true },
+        cell: { sizes: { xs: { mode: "route", truncate: 15 }, sm: { mode: "route", truncate: 20 }, md: { mode: "route", truncate: 30 }, lg: { mode: "route" }, xl: { mode: "route" } } },
+      },
       display: {
         sizes: {
           xs: { mode: "route", truncate: 15 },
@@ -109,6 +120,11 @@ export function getResourceTypeFieldDescriptors(ctx = {}) {
       label: "Statut",
       icon: "fa-solid fa-circle-check",
       format: "enum",
+      table: {
+        filterable: { id: "decision", type: "multi", defaultVisible: false },
+        defaultVisible: { xs: false, sm: false, md: true, lg: true, xl: true },
+        cell: { sizes: { xs: { mode: "badge" }, sm: { mode: "badge" }, md: { mode: "badge" }, lg: { mode: "badge" }, xl: { mode: "badge" } } },
+      },
       display: {
         sizes: {
           xs: { mode: "badge" },
@@ -140,6 +156,12 @@ export function getResourceTypeFieldDescriptors(ctx = {}) {
       label: "État",
       icon: "fa-solid fa-circle-info",
       format: "enum",
+      table: {
+        sortable: true,
+        filterable: { id: "state", type: "multi", defaultVisible: true },
+        defaultVisible: { xs: false, sm: true, md: true, lg: true, xl: true },
+        cell: { sizes: { xs: { mode: "badge" }, sm: { mode: "badge" }, md: { mode: "badge" }, lg: { mode: "badge" }, xl: { mode: "badge" } } },
+      },
       display: {
         sizes: {
           xs: { mode: "badge" },

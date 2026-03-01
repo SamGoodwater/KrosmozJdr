@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\Table;
 
 use App\Http\Controllers\Controller;
 use App\Models\Entity\Npc;
+use App\Services\Characteristic\CharacteristicMetaByDbColumnService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
@@ -17,6 +18,11 @@ use Illuminate\Support\Facades\Gate;
  */
 class NpcTableController extends Controller
 {
+    public function __construct(
+        private readonly CharacteristicMetaByDbColumnService $characteristicMeta
+    ) {
+    }
+
     public function index(Request $request): JsonResponse
     {
         $this->authorize('viewAny', Npc::class);
@@ -105,6 +111,11 @@ class NpcTableController extends Controller
                     ],
                     'capabilities' => $capabilities,
                     'filterOptions' => [],
+                    'characteristics' => [
+                        'creature' => [
+                            'byDbColumn' => $this->characteristicMeta->buildCreatureByDbColumn(),
+                        ],
+                    ],
                     'format' => 'entities',
                 ],
                 'entities' => $entities,

@@ -217,6 +217,32 @@ namespace App\Models{
 
 namespace App\Models{
 /**
+ * Mapping effectId DofusDB → sous-effet KrosmozJDR (sub_effect_slug + characteristic_source).
+ *
+ * @see docs/50-Fonctionnalités/Scrapping/PLAN_IMPLEMENTATION_MAPPING_EFFETS.md
+ * @property int $id
+ * @property int $dofusdb_effect_id
+ * @property string $sub_effect_slug
+ * @property string $characteristic_source
+ * @property string|null $characteristic_key
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|DofusdbEffectMapping newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|DofusdbEffectMapping newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|DofusdbEffectMapping query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|DofusdbEffectMapping whereCharacteristicKey($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|DofusdbEffectMapping whereCharacteristicSource($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|DofusdbEffectMapping whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|DofusdbEffectMapping whereDofusdbEffectId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|DofusdbEffectMapping whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|DofusdbEffectMapping whereSubEffectSlug($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|DofusdbEffectMapping whereUpdatedAt($value)
+ */
+	class DofusdbEffectMapping extends \Eloquent {}
+}
+
+namespace App\Models{
+/**
  * Effet (conteneur de sous-effets). Niveau sur effect_usage.
  *
  * @property int $id
@@ -287,12 +313,12 @@ namespace App\Models{
  * @property int|null $value_max
  * @property int|null $dice_num
  * @property int|null $dice_side
+ * @property array<array-key, mixed>|null $params
+ * @property bool $crit_only
  * @property string|null $duration_formula
  * @property string|null $logic_group
  * @property string|null $logic_operator
  * @property string|null $logic_condition
- * @property array<array-key, mixed>|null $params
- * @property bool $crit_only
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property-read \App\Models\Effect $effect

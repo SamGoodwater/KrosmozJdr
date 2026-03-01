@@ -1,10 +1,10 @@
-# Boutiques (`shops`)
+# hotels de vente vente (`shops`)
 
 ## Rôle et description
-Les boutiques représentent tous les points de vente, marchands, échoppes ou vendeurs du jeu. Elles permettent aux joueurs d’acheter, vendre ou échanger des objets, ressources, consommables, etc.
+Les hotels de vente vente vente représentent tous les points de vente, marchands, échoppes ou vendeurs du jeu. Elles permettent aux joueurs d’acheter, vendre ou échanger des objets, ressources, consommables, etc.
 
 ## Relations principales
-- **NPC** : chaque boutique peut être liée à un NPC (`npc_id`).
+- **NPC** : chaque hotel de vente peut être liée à un NPC (`npc_id`).
 - **Objets** : via le pivot `item_shop` (N:N avec `items`).
 - **Ressources** : via le pivot `resource_shop` (N:N avec `resources`).
 - **Consommables** : via le pivot `consumable_shop` (N:N avec `consumables`).

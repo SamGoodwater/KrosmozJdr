@@ -34,6 +34,10 @@ const props = defineProps({
         type: String,
         default: 'hover',
         validator: (v) => ['compact', 'hover', 'extended'].includes(v),
+    },
+    tableMeta: {
+        type: Object,
+        default: () => ({})
     }
 });
 

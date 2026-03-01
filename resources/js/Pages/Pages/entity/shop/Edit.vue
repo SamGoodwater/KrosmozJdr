@@ -3,7 +3,7 @@
  * Shop Edit Page
  * 
  * @description
- * Page d'édition d'une boutique avec gestion des relations (Items, Consumables, Resources avec prix/quantité/commentaire)
+ * Page d'édition d'une hotel de vente avec gestion des relations (Items, Consumables, Resources avec prix/quantité/commentaire)
  */
 import { ref, computed } from 'vue';
 import { Head, usePage } from '@inertiajs/vue3';
@@ -98,11 +98,11 @@ const shop = computed(() => {
     return new Shop(shopData);
 });
 
-setPageTitle(`Modifier la boutique : ${shop.value.name || 'Nouvelle boutique'}`);
+setPageTitle(`Modifier la hotel de vente : ${shop.value.name || 'Nouvelle hotel de vente'}`);
 </script>
 
 <template>
-    <Head :title="`Modifier la boutique : ${shop?.name || 'Nouvelle boutique'}`" />
+    <Head :title="`Modifier la hotel de vente : ${shop?.name || 'Nouvelle hotel de vente'}`" />
     
     <Container class="space-y-6">
         <EntityEditForm
@@ -114,14 +114,14 @@ setPageTitle(`Modifier la boutique : ${shop.value.name || 'Nouvelle boutique'}`)
             @update:view-mode="viewMode = $event"
         />
         
-        <!-- Gestion des objets de la boutique (avec prix/quantité/commentaire) -->
+        <!-- Gestion des objets de la hotel de vente (avec prix/quantité/commentaire) -->
         <EntityRelationsManager
             :relations="shop.items || []"
             :available-items="availableItems"
             :entity-id="shop.id"
             entity-type="shops"
             relation-type="items"
-            relation-name="Objets vendus dans la boutique"
+            relation-name="Objets vendus dans la hotel de vente"
             :config="{
                 displayFields: ['name', 'description', 'level'],
                 searchFields: ['name', 'description'],
@@ -131,14 +131,14 @@ setPageTitle(`Modifier la boutique : ${shop.value.name || 'Nouvelle boutique'}`)
             }"
         />
         
-        <!-- Gestion des consommables de la boutique (avec prix/quantité/commentaire) -->
+        <!-- Gestion des consommables de la hotel de vente (avec prix/quantité/commentaire) -->
         <EntityRelationsManager
             :relations="shop.consumables || []"
             :available-items="availableConsumables"
             :entity-id="shop.id"
             entity-type="shops"
             relation-type="consumables"
-            relation-name="Consommables vendus dans la boutique"
+            relation-name="Consommables vendus dans la hotel de vente"
             :config="{
                 displayFields: ['name', 'description', 'level'],
                 searchFields: ['name', 'description'],
@@ -148,14 +148,14 @@ setPageTitle(`Modifier la boutique : ${shop.value.name || 'Nouvelle boutique'}`)
             }"
         />
         
-        <!-- Gestion des ressources de la boutique (avec prix/quantité/commentaire) -->
+        <!-- Gestion des ressources de la hotel de vente (avec prix/quantité/commentaire) -->
         <EntityRelationsManager
             :relations="shop.resources || []"
             :available-items="availableResources"
             :entity-id="shop.id"
             entity-type="shops"
             relation-type="resources"
-            relation-name="Ressources vendues dans la boutique"
+            relation-name="Ressources vendues dans la hotel de vente"
             :config="{
                 displayFields: ['name', 'description', 'level'],
                 searchFields: ['name', 'description'],

@@ -41,14 +41,14 @@ const entityItems = [
     { key: 'capability', label: 'Capacités', icon: 'fa-star', route: 'entities.capabilities.index' },
     { key: 'breed', label: 'Classes', icon: 'fa-user', route: 'entities.breeds.index' },
     { key: 'consumable', label: 'Consommables', icon: 'fa-flask', route: 'entities.consumables.index' },
-    { key: 'creature', label: 'Créatures', icon: 'fa-paw', route: 'entities.creatures.index' },
+    // Creature : pas d'entrée menu (classe mère pour NPC et Monster uniquement, pas d'accès direct)
     { key: 'item', label: 'Objets', icon: 'fa-box', route: 'entities.items.index' },
     { key: 'monster', label: 'Monstres', icon: 'fa-dragon', route: 'entities.monsters.index' },
     { key: 'npc', label: 'NPCs', icon: 'fa-user-tie', route: 'entities.npcs.index' },
     { key: 'panoply', label: 'Panoplies', icon: 'fa-layer-group', route: 'entities.panoplies.index' },
     { key: 'resource', label: 'Ressources', icon: 'fa-gem', route: 'entities.resources.index' },
     { key: 'scenario', label: 'Scénarios', icon: 'fa-scroll', route: 'entities.scenarios.index' },
-    { key: 'shop', label: 'Boutiques', icon: 'fa-store', route: 'entities.shops.index' },
+    { key: 'shop', label: 'hotels de vente', icon: 'fa-store', route: 'entities.shops.index' },
     { key: 'specialization', label: 'Spécialisations', icon: 'fa-graduation-cap', route: 'entities.specializations.index' },
     { key: 'spell', label: 'Sorts', icon: 'fa-wand-magic-sparkles', route: 'entities.spells.index' },
 ];

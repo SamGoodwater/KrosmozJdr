@@ -131,42 +131,42 @@ class Shop extends Model implements HasMedia
         return $this->belongsTo(Npc::class, 'npc_id');
     }
     /**
-     * Les objets vendus dans cette boutique.
+     * Les objets vendus dans cette hotel de vente.
      */
     public function items()
     {
         return $this->belongsToMany(Item::class, 'item_shop')->withPivot('quantity', 'price', 'comment');
     }
     /**
-     * Les panoplies vendues dans cette boutique.
+     * Les panoplies vendues dans cette hotel de vente.
      */
     public function panoplies()
     {
         return $this->belongsToMany(Panoply::class, 'panoply_shop');
     }
     /**
-     * Les consommables vendus dans cette boutique.
+     * Les consommables vendus dans cette hotel de vente.
      */
     public function consumables()
     {
         return $this->belongsToMany(Consumable::class, 'consumable_shop')->withPivot('quantity', 'price', 'comment');
     }
     /**
-     * Les ressources vendues dans cette boutique.
+     * Les ressources vendues dans cette hotel de vente.
      */
     public function resources()
     {
         return $this->belongsToMany(Resource::class, 'resource_shop')->withPivot('quantity', 'price', 'comment');
     }
     /**
-     * Les scénarios associés à cette boutique.
+     * Les scénarios associés à cette hotel de vente.
      */
     public function scenarios()
     {
         return $this->belongsToMany(Scenario::class, 'scenario_shop');
     }
     /**
-     * Les campagnes associées à cette boutique.
+     * Les campagnes associées à cette hotel de vente vente.
      */
     public function campaigns()
     {

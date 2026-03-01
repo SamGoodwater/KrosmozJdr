@@ -770,5 +770,28 @@
       }
     ],
     "file": "data-input/Fieldset.vue"
+  },
+  {
+    "name": "CharacteristicsCard",
+    "description": "CharacteristicsCard — Organisme : carte d'affichage des caractéristiques d'une entité.",
+    "props": [
+      {
+        "name": "entity",
+        "type": "Object",
+        "desc": "- Entité (resource, item, monster, spell…) avec au minimum level"
+      },
+      {
+        "name": "groups",
+        "type": "Array<{title?: string, characteristics: Array}>",
+        "desc": "- Groupes de caractéristiques"
+      },
+      {
+        "name": "levelOptions",
+        "type": "Array<number>",
+        "desc": "- Options de level pour le sélecteur (si vide, déduit de entity.level via useCharacteristicLevel)"
+      }
+    ],
+    "slots": [],
+    "file": "data-display/CharacteristicsCard.vue"
   }
 ]

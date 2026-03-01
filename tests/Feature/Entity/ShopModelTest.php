@@ -24,7 +24,7 @@ class ShopModelTest extends TestCase
     use RefreshDatabase;
 
     /**
-     * Test de création d'une boutique via factory
+     * Test de création d'une hotel de vente via factory
      */
     public function test_shop_factory_creates_valid_shop(): void
     {

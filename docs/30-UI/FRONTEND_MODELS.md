@@ -57,7 +57,7 @@ export class Item extends BaseModel {
 - `Spell` - Sorts
 - `Panoply` - Panoplies
 - `Resource` - Ressources
-- `Shop` - Boutiques
+- `Shop` - hotels de vente
 - Et autres...
 
 ---

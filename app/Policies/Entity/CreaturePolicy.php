@@ -2,16 +2,60 @@
 
 namespace App\Policies\Entity;
 
-use App\Models\Entity\Creature;
 use App\Models\User;
+use Illuminate\Database\Eloquent\Model;
 
 /**
  * Policy d'autorisation pour l'entité Creature.
  *
- * Utilise BaseEntityPolicy pour les méthodes communes.
+ * La créature n'est pas une entité exposée aux utilisateurs : elle existe uniquement
+ * comme classe mère pour NPC et Monster. Aucun accès au tableau, à la création ni
+ * à la lecture directe des créatures.
  */
 class CreaturePolicy extends BaseEntityPolicy
 {
-    // Toutes les méthodes sont héritées de BaseEntityPolicy
-    // Pas besoin de les redéfinir car elles suivent le pattern standard
+    public function viewAny(?User $user): bool
+    {
+        return false;
+    }
+
+    public function view(?User $user, Model $model): bool
+    {
+        return false;
+    }
+
+    public function create(User $user): bool
+    {
+        return false;
+    }
+
+    public function createAny(User $user): bool
+    {
+        return false;
+    }
+
+    public function update(User $user, Model $model): bool
+    {
+        return false;
+    }
+
+    public function updateAny(User $user): bool
+    {
+        return false;
+    }
+
+    public function delete(User $user, Model $model): bool
+    {
+        return false;
+    }
+
+    public function deleteAny(User $user): bool
+    {
+        return false;
+    }
+
+    public function manageAny(User $user): bool
+    {
+        return false;
+    }
 }

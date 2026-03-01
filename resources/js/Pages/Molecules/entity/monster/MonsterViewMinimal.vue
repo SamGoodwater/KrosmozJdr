@@ -16,6 +16,8 @@ import Tooltip from '@/Pages/Atoms/feedback/Tooltip.vue';
 import CellRenderer from "@/Pages/Atoms/data-display/CellRenderer.vue";
 import EntityActions from '@/Pages/Organismes/entity/EntityActions.vue';
 import EntityViewHeader from "@/Pages/Molecules/entity/shared/EntityViewHeader.vue";
+import CharacteristicsCard from "@/Pages/Organismes/data-display/CharacteristicsCard.vue";
+import { buildCreatureCharacteristicGroups } from "@/Utils/Entity/buildCreatureCharacteristicGroups";
 import { usePermissions } from "@/Composables/permissions/usePermissions";
 import { getMonsterFieldDescriptors } from "@/Entities/monster/monster-descriptors";
 import { getEntityFieldShortLabel, getEntityFieldTooltip, shouldOmitLabelInMeta } from "@/Utils/Entity/entity-view-ui";
@@ -33,6 +35,11 @@ const props = defineProps({
         type: String,
         default: 'hover',
         validator: (v) => ['compact', 'hover', 'extended'].includes(v),
+    },
+    /** Meta du tableau (ex. characteristics.creature.byDbColumn) pour la carte caractéristiques */
+    tableMeta: {
+        type: Object,
+        default: () => ({})
     }
 });
 
@@ -97,6 +104,18 @@ const getFieldLabel = (fieldKey) => {
     return desc?.general?.label ?? desc?.label ?? fieldKey;
 };
 const getFieldTooltip = (fieldKey) => getEntityFieldTooltip(descriptors.value?.[fieldKey]);
+
+const characteristicsByDbColumn = computed(() =>
+    props.tableMeta?.characteristics?.creature?.byDbColumn || {}
+);
+const creatureData = computed(() => {
+    const m = props.monster;
+    return m?.creature ?? m?.data?.creature ?? null;
+});
+const creatureCharacteristicsGroups = computed(() =>
+    buildCreatureCharacteristicGroups(creatureData.value, characteristicsByDbColumn.value)
+);
+const hasCreatureCharacteristics = computed(() => !!creatureData.value);
 
 const tooltipForField = (fieldKey, cell) => {
     const value = (cell?.value === null || typeof cell?.value === 'undefined' || String(cell?.value) === '') ? '-' : cell.value;
@@ -185,7 +204,7 @@ const handleAction = async (actionKey) => {
             <!-- Contenu supplémentaire au hover -->
             <div 
                 v-if="isHovered" 
-                class="mt-2 pt-2 border-t border-base-300 space-y-1 text-xs text-primary-300 animate-fade-in">
+                class="mt-2 pt-2 border-t border-base-300 space-y-2 text-xs text-primary-300 animate-fade-in">
                 <div
                     v-for="key in expandedFields"
                     :key="key"
@@ -215,6 +234,15 @@ const handleAction = async (actionKey) => {
                         </div>
                     </Tooltip>
                 </div>
+                <!-- Carte caractéristiques (mode dense) -->
+                <section v-if="hasCreatureCharacteristics" class="pt-2 border-t border-base-300">
+                    <h4 class="text-xs font-semibold uppercase tracking-wide text-primary-400 mb-1.5">Caractéristiques</h4>
+                    <CharacteristicsCard
+                        :entity="creatureData"
+                        :groups="creatureCharacteristicsGroups"
+                        :dense="true"
+                    />
+                </section>
             </div>
         </div>
     </div>

@@ -14,8 +14,8 @@ use Tests\TestCase;
  * Tests Feature pour ShopController
  * 
  * Vérifie que :
- * - Un utilisateur peut modifier une boutique qu'il a créée
- * - Un admin peut modifier n'importe quelle boutique
+ * - Un utilisateur peut modifier une hotel de vente qu'il a créée
+ * - Un admin peut modifier n'importe quelle hotel de vente
  * - Les méthodes update* synchronisent correctement les relations avec prix/quantité/commentaire
  * - Les validations fonctionnent correctement
  * - Les policies fonctionnent correctement
@@ -33,7 +33,7 @@ class ShopControllerTest extends TestCase
     }
 
     /**
-     * Test : Un admin peut ajouter des items à une boutique avec prix/quantité/commentaire
+     * Test : Un admin peut ajouter des items à une hotel de vente avec prix/quantité/commentaire
      */
     public function test_admin_can_add_items_to_shop_with_pivot_data(): void
     {
@@ -293,7 +293,7 @@ class ShopControllerTest extends TestCase
     }
 
     /**
-     * Test : Un admin peut modifier les relations de n'importe quelle boutique
+     * Test : Un admin peut modifier les relations de n'importe quelle hotel de vente
      */
     public function test_admin_can_update_relations_of_any_shop(): void
     {
@@ -331,7 +331,7 @@ class ShopControllerTest extends TestCase
     }
 
     /**
-     * Test : Un utilisateur non-admin ne peut pas modifier les relations d'une boutique
+     * Test : Un utilisateur non-admin ne peut pas modifier les relations d'une hotel de vente
      */
     public function test_user_cannot_update_relations_of_shop(): void
     {

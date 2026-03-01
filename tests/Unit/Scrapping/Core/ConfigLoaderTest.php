@@ -36,9 +36,7 @@ class ConfigLoaderTest extends TestCase
         $this->assertContains('spell', $entities);
         $this->assertContains('item', $entities);
         $this->assertContains('breed', $entities);
-        $this->assertContains('monster-race', $entities);
-        $this->assertContains('item-type', $entities);
-        $this->assertContains('item-super-type', $entities);
+        $this->assertContains('panoply', $entities);
         $sorted = $entities;
         sort($sorted);
         $this->assertSame($sorted, $entities);

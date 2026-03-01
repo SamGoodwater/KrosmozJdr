@@ -24,7 +24,6 @@ const ENTITY_COMPONENT_MAP = {
   'consumables': 'Consumable',
   'spells': 'Spell',
   'monsters': 'Monster',
-  'creatures': 'Creature',
   'npcs': 'Npc',
   'breeds': 'Breed',
   'campaigns': 'Campaign',

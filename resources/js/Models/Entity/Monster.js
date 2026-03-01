@@ -9,7 +9,8 @@
  * console.log(monster.creature?.name); // Accès via la relation creature
  */
 import { BaseModel } from '../BaseModel';
-import CreatureSummaryCell from '@/Pages/Molecules/entity/creature/CreatureSummaryCell.vue';
+import CharacteristicsCard from '@/Pages/Organismes/data-display/CharacteristicsCard.vue';
+import { buildCreatureCharacteristicGroups } from '@/Utils/Entity/buildCreatureCharacteristicGroups';
 
 export class Monster extends BaseModel {
     // ============================================
@@ -117,6 +118,8 @@ export class Monster extends BaseModel {
                 return this._toCreatedAtCell(format, size, options);
             case 'updated_at':
                 return this._toUpdatedAtCell(format, size, options);
+            case 'creature_characteristics':
+                return this._toCreatureCharacteristicsCell(options);
             case 'creature_summary_resistance':
                 return this._toSummaryResistanceCell(options);
             case 'creature_summary_damage':
@@ -194,183 +197,108 @@ export class Monster extends BaseModel {
     }
 
     /**
-     * Colonne résumée : résistances fixes + % (neutre, terre, feu, air, eau)
+     * Colonne unique : carte de caractéristiques (remplace les 5 colonnes résumé).
+     * @private
+     */
+    _toCreatureCharacteristicsCell(_options) {
+        const ctx = _options?.ctx || _options?.context || null;
+        const byDb = ctx?.characteristics?.creature?.byDbColumn || {};
+        const groups = buildCreatureCharacteristicGroups(this.creature, byDb);
+
+        const c = this.creature;
+        const elements = ["neutre", "terre", "feu", "air", "eau"];
+        const filterParts = [];
+        if (c && typeof c === "object") {
+            for (const db of ["pa", "pm", "po", "life", "ini", "invocation", "strong", "intel", "agi", "chance", "vitality", "sagesse", "ca", "dodge_pa", "dodge_pm", "fuite", "tacle", "touch"]) {
+                const v = c[db];
+                if (v !== null && typeof v !== "undefined" && String(v) !== "") filterParts.push(String(v));
+            }
+            for (const el of elements) {
+                ["res_fixe_" + el, "res_" + el, "do_fixe_" + el].forEach((db) => {
+                    const v = c[db];
+                    if (v !== null && typeof v !== "undefined" && String(v) !== "") filterParts.push(String(v));
+                });
+            }
+        }
+        const filterValue = filterParts.join(" ");
+
+        return {
+            type: "chips",
+            value: "",
+            params: {
+                component: CharacteristicsCard,
+                componentProps: {
+                    entity: this.creature || null,
+                    groups,
+                    dense: true,
+                    passValue: false,
+                },
+                passValue: false,
+                sortValue: 0,
+                searchValue: filterValue,
+                filterValue,
+            },
+        };
+    }
+
+    /**
+     * Colonne résumée : résistances fixes + % (neutre, terre, feu, air, eau) — groupe Résistances.
      * @private
      */
     _toSummaryResistanceCell(_options) {
-        const c = this.creature;
-        const ctx = _options?.ctx || _options?.context || null;
-        const byDb = ctx?.characteristics?.creature?.byDbColumn || {};
-
-        // filterValue: toutes les valeurs de résistances fixes + %
-        const elements = ['neutre', 'terre', 'feu', 'air', 'eau'];
-        const filterParts = [];
-        if (c && typeof c === 'object') {
-            for (const el of elements) {
-                const fixed = c[`res_fixe_${el}`];
-                const percent = c[`res_${el}`];
-                if (fixed !== null && typeof fixed !== 'undefined' && String(fixed) !== '') {
-                    filterParts.push(String(fixed));
-                }
-                if (percent !== null && typeof percent !== 'undefined' && String(percent) !== '') {
-                    filterParts.push(String(percent));
-                }
-            }
-        }
-        const filterValue = filterParts.join(' ');
-
-        return {
-            type: 'chips',
-            value: '',
-            params: {
-                component: CreatureSummaryCell,
-                componentProps: {
-                    variant: 'resistance',
-                    creature: this.creature,
-                    characteristicsByDbColumn: byDb,
-                },
-                passValue: false,
-                sortValue: 0,
-                searchValue: filterValue,
-                filterValue,
-            },
-        };
+        return this._toSummaryGroupCell(_options, 'Résistances', ['res_fixe_neutre', 'res_neutre', 'res_fixe_terre', 'res_terre', 'res_fixe_feu', 'res_feu', 'res_fixe_air', 'res_air', 'res_fixe_eau', 'res_eau']);
     }
 
     /**
-     * Colonne résumée : bonus de touche + dommages fixes (neutre, terre, feu, air, eau)
+     * Colonne résumée : bonus de touche + dommages fixes (neutre, terre, feu, air, eau) — groupe Dommages.
      * @private
      */
     _toSummaryDamageCell(_options) {
-        const c = this.creature;
-        const ctx = _options?.ctx || _options?.context || null;
-        const byDb = ctx?.characteristics?.creature?.byDbColumn || {};
-
-        const elements = ['neutre', 'terre', 'feu', 'air', 'eau'];
-        const filterParts = [];
-        if (c && typeof c === 'object') {
-            if (c.touch !== null && typeof c.touch !== 'undefined' && String(c.touch) !== '') {
-                filterParts.push(String(c.touch));
-            }
-            for (const el of elements) {
-                const v = c[`do_fixe_${el}`];
-                if (v !== null && typeof v !== 'undefined' && String(v) !== '') {
-                    filterParts.push(String(v));
-                }
-            }
-        }
-        const filterValue = filterParts.join(' ');
-
-        return {
-            type: 'chips',
-            value: '',
-            params: {
-                component: CreatureSummaryCell,
-                componentProps: {
-                    variant: 'damage',
-                    creature: this.creature,
-                    characteristicsByDbColumn: byDb,
-                },
-                passValue: false,
-                sortValue: 0,
-                searchValue: filterValue,
-                filterValue,
-            },
-        };
+        return this._toSummaryGroupCell(_options, 'Dommages', ['touch', 'do_fixe_neutre', 'do_fixe_terre', 'do_fixe_feu', 'do_fixe_air', 'do_fixe_eau']);
     }
 
     /**
-     * Colonne résumée : Force, Intel, Agi, Chance, Vitalité, Sagesse
+     * Colonne résumée : Force, Intel, Agi, Chance, Vitalité, Sagesse — groupe Stats.
      * @private
      */
     _toSummaryStatsCell(_options) {
-        const c = this.creature;
-        const ctx = _options?.ctx || _options?.context || null;
-        const byDb = ctx?.characteristics?.creature?.byDbColumn || {};
-
-        const statKeys = ['strong', 'intel', 'agi', 'chance', 'vitality', 'sagesse'];
-        const filterParts = [];
-        if (c && typeof c === 'object') {
-            for (const key of statKeys) {
-                const v = c[key];
-                if (v !== null && typeof v !== 'undefined' && String(v) !== '') {
-                    filterParts.push(String(v));
-                }
-            }
-        }
-        const filterValue = filterParts.join(' ');
-
-        return {
-            type: 'chips',
-            value: '',
-            params: {
-                component: CreatureSummaryCell,
-                componentProps: {
-                    variant: 'stats',
-                    creature: this.creature,
-                    characteristicsByDbColumn: byDb,
-                },
-                passValue: false,
-                sortValue: 0,
-                searchValue: filterValue,
-                filterValue,
-            },
-        };
+        return this._toSummaryGroupCell(_options, 'Stats', ['strong', 'intel', 'agi', 'chance', 'vitality', 'sagesse']);
     }
 
     /**
-     * Colonne résumée : PA, PM, PO, PV, Initiative, Invocation
+     * Colonne résumée : PA, PM, PO, PV, Initiative, Invocation — groupe Combat.
      * @private
      */
     _toSummaryCombatCell(_options) {
-        const c = this.creature;
-        const ctx = _options?.ctx || _options?.context || null;
-        const byDb = ctx?.characteristics?.creature?.byDbColumn || {};
-
-        const combatKeys = ['pa', 'pm', 'po', 'life', 'ini', 'invocation'];
-        const filterParts = [];
-        if (c && typeof c === 'object') {
-            for (const key of combatKeys) {
-                const v = c[key];
-                if (v !== null && typeof v !== 'undefined' && String(v) !== '') {
-                    filterParts.push(String(v));
-                }
-            }
-        }
-        const filterValue = filterParts.join(' ');
-
-        return {
-            type: 'chips',
-            value: '',
-            params: {
-                component: CreatureSummaryCell,
-                componentProps: {
-                    variant: 'combat',
-                    creature: this.creature,
-                    characteristicsByDbColumn: byDb,
-                },
-                passValue: false,
-                sortValue: 0,
-                searchValue: filterValue,
-                filterValue,
-            },
-        };
+        return this._toSummaryGroupCell(_options, 'Combat', ['pa', 'pm', 'po', 'life', 'ini', 'invocation']);
     }
 
     /**
-     * Colonne résumée : contrôle (CA + esquive PA/PM + fuite + tacle)
+     * Colonne résumée : CA, esquive PA/PM, fuite, tacle — groupe Contrôle.
      * @private
      */
     _toSummaryControlCell(_options) {
-        const c = this.creature;
+        return this._toSummaryGroupCell(_options, 'Contrôle', ['ca', 'dodge_pa', 'dodge_pm', 'fuite', 'tacle']);
+    }
+
+    /**
+     * Génère une cellule résumé avec CharacteristicsCard pour un seul groupe (Combat, Stats, Résistances, Dommages, Contrôle).
+     * @private
+     * @param {Object} _options - Options (ctx pour byDbColumn)
+     * @param {string} groupTitle - Titre du groupe tel que retourné par buildCreatureCharacteristicGroups
+     * @param {string[]} dbColumnsForFilter - Clés creature pour construire filterValue (recherche)
+     */
+    _toSummaryGroupCell(_options, groupTitle, dbColumnsForFilter) {
         const ctx = _options?.ctx || _options?.context || null;
         const byDb = ctx?.characteristics?.creature?.byDbColumn || {};
+        const allGroups = buildCreatureCharacteristicGroups(this.creature, byDb);
+        const groups = allGroups.filter((g) => g.title === groupTitle);
 
-        const ctrlKeys = ['ca', 'dodge_pa', 'dodge_pm', 'fuite', 'tacle'];
+        const c = this.creature;
         const filterParts = [];
         if (c && typeof c === 'object') {
-            for (const key of ctrlKeys) {
-                const v = c[key];
+            for (const db of dbColumnsForFilter) {
+                const v = c[db];
                 if (v !== null && typeof v !== 'undefined' && String(v) !== '') {
                     filterParts.push(String(v));
                 }
@@ -382,11 +310,12 @@ export class Monster extends BaseModel {
             type: 'chips',
             value: '',
             params: {
-                component: CreatureSummaryCell,
+                component: CharacteristicsCard,
                 componentProps: {
-                    variant: 'control',
-                    creature: this.creature,
-                    characteristicsByDbColumn: byDb,
+                    entity: this.creature || null,
+                    groups,
+                    dense: true,
+                    passValue: false,
                 },
                 passValue: false,
                 sortValue: 0,

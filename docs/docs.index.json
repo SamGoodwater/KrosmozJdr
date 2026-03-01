@@ -20,6 +20,11 @@
     "description": "1. **Lien** : Une caractéristique peut être « liée » à une caractéristique maître. La liée n’a pas de paramètres propres : elle affiche et utilise partout la config de la maître (nom, couleur, formules, conversion, etc.). Une seule source de vérité pour des caractéristiques identiques dans plusieurs groupes (ex. `level_creature`, `level_object`, `level_spell` → une maître + deux liées)."
   },
   {
+    "path": "00-Project/PLAN-TABLEAUX-ET-DISPLAY-ENTITES.md",
+    "title": "Plan — Tableaux et affichage des entités (alignement Monster / Resource)",
+    "description": "**Date** : 2026-03"
+  },
+  {
     "path": "00-Project/README.md",
     "title": "Présentation du projet KrosmozJDR",
     "description": "Bienvenue dans la documentation synthétique du projet."
@@ -28,6 +33,11 @@
     "path": "00-Project/TECHNOLOGIES.md",
     "title": "Stack Technique et Outils Krosmoz-JDR",
     "description": "Le projet utilise les dernières recommandations en matière de sécurité, de qualité de code et d'organisation. Le code est en anglais, les commentaires en français. L'architecture suit le principe Atomic Design pour le frontend."
+  },
+  {
+    "path": "10-BestPractices/CHARACTERISTIC_PROPERTY_NAMING_REFERENCE.md",
+    "title": "Characteristic and property naming reference (English, no abbreviations)",
+    "description": "**Rule** : All characteristic keys, property names, and related identifiers use **English** and **full words** (no abbreviations). This applies everywhere: seeders, migrations, config files, function/method names, characteristic keys, and mapping configs."
   },
   {
     "path": "10-BestPractices/CODE_DOCUMENTATION.md",
@@ -56,13 +66,8 @@
   },
   {
     "path": "10-BestPractices/NAMING_CONVENTIONS.md",
-    "title": "Conventions de nommage",
-    "description": "- Fichiers : kebab-case (ex : `my-class-file.php`)"
-  },
-  {
-    "path": "10-BestPractices/CHARACTERISTIC_PROPERTY_NAMING_REFERENCE.md",
-    "title": "Characteristic and property naming reference (English, no abbreviations)",
-    "description": "Single source of truth for characteristic keys and property names: English only, no abbreviations. Applies to seeders, migrations, config, mapping. Tables: elements, stats, save, resources, life/damage/resistance, combat, spells, modifiers; plus old → new key mapping for migration."
+    "title": "",
+    "description": "Conventions de nommage"
   },
   {
     "path": "10-BestPractices/NETTOYAGE_CODE_OBSOLETE.md",
@@ -206,8 +211,8 @@
   },
   {
     "path": "20-Content/21-Entities/ENTITY_SHOPS.md",
-    "title": "Boutiques (`shops`)",
-    "description": "Les boutiques représentent tous les points de vente, marchands, échoppes ou vendeurs du jeu. Elles permettent aux joueurs d’acheter, vendre ou échanger des objets, ressources, consommables, etc."
+    "title": "hotels de vente (`shops`)",
+    "description": "Les hotels de vente représentent tous les points de vente, marchands, échoppes ou vendeurs du jeu. Elles permettent aux joueurs d’acheter, vendre ou échanger des objets, ressources, consommables, etc."
   },
   {
     "path": "20-Content/21-Entities/ENTITY_SPECIALIZATIONS.md",
@@ -308,6 +313,11 @@
     "path": "30-UI/BEST_PRACTICES.md",
     "title": "Bonnes pratiques UI — KrosmozJDR",
     "description": "```javascript"
+  },
+  {
+    "path": "30-UI/CHARACTERISTICS_CARD_SCHEMA.md",
+    "title": "Schéma UI — Carte de caractéristiques (Atomic Design)",
+    "description": "**Objectif** : Définir l’architecture des composants d’affichage des **caractéristiques classiques** pour les entités (ressource, équipement, consommable, monstre, NPC, sort), en Atomic Design : atomes → groupes (molécules) → carte (organisme)."
   },
   {
     "path": "30-UI/DESIGN_GUIDE.md",
@@ -1230,14 +1240,14 @@
     "description": "Plan exécutable, phase par phase. Chaque phase se termine par un point de contrôle (tests / vérifications). Référence : [ESTIMATION_RENOMMAGE_CLASSE_EN_BREED.md](./ESTIMATION_RENOMMAGE_CLASSE_EN_BREED.md)."
   },
   {
+    "path": "50-Fonctionnalités/Scrapping/ANALYSE_ZONES_RISQUE_NAMMING.md",
+    "title": "Analyse des zones à risque de nommage (propriétés)",
+    "description": "**Objectif** : Repérer tous les endroits du projet où des **noms de propriétés** sont définis ou utilisés, afin d’uniformiser les conventions et d’éviter les erreurs de mapping liées au naming."
+  },
+  {
     "path": "50-Fonctionnalités/Scrapping/AUDIT_COHERENCE_ROBUSTESSE.md",
     "title": "Audit global — Système de scrapping",
     "description": "**Date** : 2026-02-25"
-  },
-  {
-    "path": "50-Fonctionnalités/Scrapping/ANALYSE_ZONES_RISQUE_NAMMING.md",
-    "title": "Analyse des zones à risque de nommage (propriétés)",
-    "description": "Inventaire des endroits où des noms de propriétés sont définis ou utilisés (BDD, modèles, caractéristiques, config, icônes, scrapping, frontend) et incohérences repérées (pv_object vs pv_max_object, objet_sav/save, clés courtes vs complètes)."
   },
   {
     "path": "50-Fonctionnalités/Scrapping/Architecture/CONVERSION_FORMULAS_PLACEMENT.md",
@@ -1300,6 +1310,11 @@
     "description": "Ce document résume la vision, les points importants, l’architecture cible et les questions / difficultés anticipées. Il complète l’[audit (AUDIT_ETAT_DES_LIEUX.md)](./AUDIT_ETAT_DES_LIEUX.md)."
   },
   {
+    "path": "50-Fonctionnalités/Scrapping/CARACTERISTIQUES_EFFETS_PAR_ACTION.md",
+    "title": "Caractéristiques des effets de sort — Classification par action",
+    "description": "**Contexte** : Ce document formalise le récapitulatif des besoins pour la conversion des effets de sorts DofusDB → KrosmozJDR : mapping des effectId, propriétés déjà converties, et **tri des caractéristiques par action** (quelle conversion appliquer selon l’action)."
+  },
+  {
     "path": "50-Fonctionnalités/Scrapping/DIVISION_TACHES_SCRAPPING.md",
     "title": "Division des tâches — Scrapping (backend / services / frontend)",
     "description": "Ce document décrit la répartition des responsabilités entre **contrôleurs** (API), **services** (métier) et **frontend** (UI) pour le module scrapping, et signale les incohérences éventuelles."
@@ -1308,21 +1323,6 @@
     "path": "50-Fonctionnalités/Scrapping/DOFUSDB_EFFECTS_CONVERSION.md",
     "title": "Architecture DofusDB des effets et conversion vers KrosmozJDR",
     "description": "Ce document décrit la structure des données **effets** côté DofusDB (tout en IDs), comment les récupérer, et comment envisager la conversion vers le modèle KrosmozJDR (Effect, SubEffect, EffectSubEffect, EffectUsage)."
-  },
-  {
-    "path": "50-Fonctionnalités/Scrapping/PLAN_MAPPING_EFFETS_DOFUSDB_KROSMOZ.md",
-    "title": "Plan : Mapping des actions DofusDB → KrosmozJDR",
-    "description": "Options (UI admin, config, BDD) pour mapper les effectId DofusDB aux sous-effets Krosmoz et recommandation."
-  },
-  {
-    "path": "50-Fonctionnalités/Scrapping/CARACTERISTIQUES_EFFETS_PAR_ACTION.md",
-    "title": "Caractéristiques des effets de sort — Classification par action",
-    "description": "Récap besoins, propriétés déjà converties, tri par action (1 règle / aucune / par caractéristique), liste caractéristiques de base."
-  },
-  {
-    "path": "50-Fonctionnalités/Scrapping/PLAN_IMPLEMENTATION_MAPPING_EFFETS.md",
-    "title": "Plan d’implémentation — Mapping effets DofusDB (phases)",
-    "description": "Phases 1 à 3 (table + service, données + UI, conversion par action) en tenant compte de l’harmonisation des noms."
   },
   {
     "path": "50-Fonctionnalités/Scrapping/Data-collect/API.md",
@@ -1383,6 +1383,16 @@
     "path": "50-Fonctionnalités/Scrapping/PLAN_FINALISATION_SCRAPPING.md",
     "title": "Plan de finalisation du service de scrapping",
     "description": "Ce document décrit les **tâches restantes** pour considérer le service de scrapping comme terminé (backend), dans l’ordre de priorité recommandé. Contexte : [ETAT_AVANCEMENT.md](./Architecture/ETAT_AVANCEMENT.md), [RESTE_A_FAIRE_SCRAPPING.md](./RESTE_A_FAIRE_SCRAPPING.md)."
+  },
+  {
+    "path": "50-Fonctionnalités/Scrapping/PLAN_IMPLEMENTATION_MAPPING_EFFETS.md",
+    "title": "Plan d’implémentation — Mapping effets DofusDB → KrosmozJDR",
+    "description": "**Contexte** : L’harmonisation des noms des propriétés (BDD, config, seeders) est **en cours**. Ce plan découpe l’implémentation du mapping des effectId DofusDB vers les actions Krosmoz (table, service, UI, conversion par action) en **phases** pour avancer sans bloquer sur l’harmonisation, et pour aligner les nouveaux éléments sur les noms une fois stabilisés."
+  },
+  {
+    "path": "50-Fonctionnalités/Scrapping/PLAN_MAPPING_EFFETS_DOFUSDB_KROSMOZ.md",
+    "title": "Plan : Mapping des actions d’effets DofusDB → KrosmozJDR",
+    "description": "**Contexte** : Aujourd’hui le mapping effectId DofusDB → sous-effet Krosmoz est figé dans `DofusDbEffectMapping` (constante PHP). Les effectId non mappés tombent dans le sous-effet **« autre »** (valeur seule, pas de caractéristique). Pour gérer le mapping de façon évolutive et claire, plusieurs options sont possibles. Les caractéristiques possèdent déjà un groupe « sort » avec des caractéristiques (ex. dommages) et des formules de conversion DofusDB → Krosmoz ; ce plan se concentre sur le **mapping des actions** (effectId → sub_effect_slug + règle characteristic)."
   },
   {
     "path": "50-Fonctionnalités/Scrapping/PLAN_OPTIMISATION_SCRAPPING_UI.md",
@@ -1503,6 +1513,11 @@
     "path": "50-Fonctionnalités/Spell-Effects/TAXONOMIE_SOUS_EFFETS.md",
     "title": "Taxonomie des sous-effets — Pattern et rôle d’Effect",
     "description": "Ce document décrit le **pattern** des sous-effets et le rôle d’**Effect** pour interpréter l’action. On ne fixe pas une liste exhaustive en dur : on garde **action → caractéristique (élément = caractéristique) → valeur**, et c’est **Effect** qui définit les contraintes par action (durée, défense, conséquences partielles)."
+  },
+  {
+    "path": "50-Fonctionnalités/Spell-Effects/ZONE_NOTATION.md",
+    "title": "Notation des zones d'effet (damier)",
+    "description": "Forme de la valeur area sur Effect : point, line-WxL, cross-N, circle-N, rect-WxH. Utilisation avec target_type (direct, trap, glyph)."
   },
   {
     "path": "50-Fonctionnalités/VISION_UI_ADMIN_MAPPING_ET_CARACTERISTIQUES.md",

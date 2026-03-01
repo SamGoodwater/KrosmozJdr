@@ -9,6 +9,8 @@
  * console.log(creature.name); // Accès normalisé
  */
 import { BaseModel } from '../BaseModel';
+import CharacteristicsCard from '@/Pages/Organismes/data-display/CharacteristicsCard.vue';
+import { buildCreatureCharacteristicGroups } from '@/Utils/Entity/buildCreatureCharacteristicGroups';
 
 export class Creature extends BaseModel {
     // ============================================
@@ -207,10 +209,110 @@ export class Creature extends BaseModel {
                 return this._toCreatedAtCell(format, size, options);
             case 'updated_at':
                 return this._toUpdatedAtCell(format, size, options);
+            case 'creature_characteristics':
+                return this._toCreatureCharacteristicsCell(options);
+            case 'creature_summary_combat':
+                return this._toSummaryCombatCell(options);
+            case 'creature_summary_resistance':
+                return this._toSummaryResistanceCell(options);
+            case 'creature_summary_damage':
+                return this._toSummaryDamageCell(options);
+            case 'creature_summary_stats':
+                return this._toSummaryStatsCell(options);
+            case 'creature_summary_control':
+                return this._toSummaryControlCell(options);
             default:
                 // Fallback vers la méthode de base
                 return baseCell;
         }
+    }
+
+    _getCreatureData() {
+        return this._data && typeof this._data === 'object' ? this._data : null;
+    }
+
+    _toCreatureCharacteristicsCell(_options) {
+        const ctx = _options?.ctx || _options?.context || null;
+        const byDb = ctx?.characteristics?.creature?.byDbColumn || {};
+        const creatureData = this._getCreatureData();
+        const groups = buildCreatureCharacteristicGroups(creatureData, byDb);
+        const c = creatureData;
+        const elements = ['neutre', 'terre', 'feu', 'air', 'eau'];
+        const filterParts = [];
+        if (c && typeof c === 'object') {
+            for (const db of ['pa', 'pm', 'po', 'life', 'ini', 'invocation', 'strong', 'intel', 'agi', 'chance', 'vitality', 'sagesse', 'ca', 'dodge_pa', 'dodge_pm', 'fuite', 'tacle', 'touch']) {
+                const v = c[db];
+                if (v !== null && typeof v !== 'undefined' && String(v) !== '') filterParts.push(String(v));
+            }
+            for (const el of elements) {
+                ['res_fixe_' + el, 'res_' + el, 'do_fixe_' + el].forEach((db) => {
+                    const v = c[db];
+                    if (v !== null && typeof v !== 'undefined' && String(v) !== '') filterParts.push(String(v));
+                });
+            }
+        }
+        const filterValue = filterParts.join(' ');
+        return {
+            type: 'chips',
+            value: '',
+            params: {
+                component: CharacteristicsCard,
+                componentProps: { entity: creatureData, groups, dense: true, passValue: false },
+                passValue: false,
+                sortValue: 0,
+                searchValue: filterValue,
+                filterValue,
+            },
+        };
+    }
+
+    _toSummaryResistanceCell(_options) {
+        return this._toSummaryGroupCell(_options, 'Résistances', ['res_fixe_neutre', 'res_neutre', 'res_fixe_terre', 'res_terre', 'res_fixe_feu', 'res_feu', 'res_fixe_air', 'res_air', 'res_fixe_eau', 'res_eau']);
+    }
+
+    _toSummaryDamageCell(_options) {
+        return this._toSummaryGroupCell(_options, 'Dommages', ['touch', 'do_fixe_neutre', 'do_fixe_terre', 'do_fixe_feu', 'do_fixe_air', 'do_fixe_eau']);
+    }
+
+    _toSummaryStatsCell(_options) {
+        return this._toSummaryGroupCell(_options, 'Stats', ['strong', 'intel', 'agi', 'chance', 'vitality', 'sagesse']);
+    }
+
+    _toSummaryCombatCell(_options) {
+        return this._toSummaryGroupCell(_options, 'Combat', ['pa', 'pm', 'po', 'life', 'ini', 'invocation']);
+    }
+
+    _toSummaryControlCell(_options) {
+        return this._toSummaryGroupCell(_options, 'Contrôle', ['ca', 'dodge_pa', 'dodge_pm', 'fuite', 'tacle']);
+    }
+
+    _toSummaryGroupCell(_options, groupTitle, dbColumnsForFilter) {
+        const ctx = _options?.ctx || _options?.context || null;
+        const byDb = ctx?.characteristics?.creature?.byDbColumn || {};
+        const creatureData = this._getCreatureData();
+        const allGroups = buildCreatureCharacteristicGroups(creatureData, byDb);
+        const groups = allGroups.filter((g) => g.title === groupTitle);
+        const c = creatureData;
+        const filterParts = [];
+        if (c && typeof c === 'object') {
+            for (const db of dbColumnsForFilter) {
+                const v = c[db];
+                if (v !== null && typeof v !== 'undefined' && String(v) !== '') filterParts.push(String(v));
+            }
+        }
+        const filterValue = filterParts.join(' ');
+        return {
+            type: 'chips',
+            value: '',
+            params: {
+                component: CharacteristicsCard,
+                componentProps: { entity: creatureData, groups, dense: true, passValue: false },
+                passValue: false,
+                sortValue: 0,
+                searchValue: filterValue,
+                filterValue,
+            },
+        };
     }
 
     /**

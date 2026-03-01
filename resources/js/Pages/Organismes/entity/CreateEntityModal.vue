@@ -80,7 +80,7 @@ const entityTypeLabel = computed(() => {
         attribute: 'attribut',
         capability: 'capacité',
         specialization: 'spécialisation',
-        shop: 'boutique'
+        shop: 'hotel de vente'
         ,resourceType: 'type de ressource'
     };
     return labels[props.entityType] || props.entityType;

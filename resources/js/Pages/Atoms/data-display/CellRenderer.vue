@@ -108,7 +108,7 @@ const customComponent = computed(() => {
     if (!component) return null;
     
     // Si c'est déjà un composant Vue, l'utiliser directement
-    if (typeof component === 'object' && component.__name) {
+    if (typeof component === 'object' && (component.__name || component.render || component.setup || component.template)) {
         return component;
     }
     

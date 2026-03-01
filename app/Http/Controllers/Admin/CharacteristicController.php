@@ -453,6 +453,7 @@ class CharacteristicController extends Controller
                 'from_path' => $entry['path'],
                 'from_lang_aware' => $entry['langAware'],
                 'formatters' => $entry['formatters'],
+                'characteristic_id' => $characteristic->id,
             ]);
             $mapping->targets()->delete();
             $mapping->characteristics()->syncWithoutDetaching([$characteristic->id]);
@@ -466,7 +467,7 @@ class CharacteristicController extends Controller
                 'mapping_key' => $entry['key'],
                 'from_path' => $entry['path'],
                 'from_lang_aware' => $entry['langAware'],
-                'characteristic_id' => null,
+                'characteristic_id' => $characteristic->id,
                 'formatters' => $entry['formatters'],
                 'sort_order' => $maxSort + 1,
             ]);

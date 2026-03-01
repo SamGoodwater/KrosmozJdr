@@ -203,7 +203,7 @@ class Scenario extends Model implements HasMedia
         return $this->belongsToMany(Resource::class, 'resource_scenario');
     }
     /**
-     * Les boutiques associées à ce scénario.
+     * Les hotels de vente associées à ce scénario.
      */
     public function shops()
     {

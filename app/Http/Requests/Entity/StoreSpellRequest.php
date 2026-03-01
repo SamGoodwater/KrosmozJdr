@@ -33,10 +33,6 @@ class StoreSpellRequest extends FormRequest
             'name' => ['required', 'string', 'max:255'],
             'description' => ['required', 'string'],
             'effect' => ['nullable', 'string'],
-            'area' => array_merge(
-                ['nullable', 'integer'],
-                $this->characteristicMinMaxRules('area', 'spell') ?: ['min:0']
-            ),
             'level' => ['nullable', 'string', 'max:255'],
             'po' => ['nullable', 'string', 'max:255'],
             'po_editable' => ['nullable', 'boolean'],

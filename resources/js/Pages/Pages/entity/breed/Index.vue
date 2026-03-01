@@ -96,8 +96,10 @@ const clearSelection = () => {
     selectedIds.value = [];
 };
 
-const handleTableLoaded = ({ rows }) => {
+const tableMeta = ref({});
+const handleTableLoaded = ({ rows, meta }) => {
     tableRows.value = Array.isArray(rows) ? rows : [];
+    tableMeta.value = meta || {};
 };
 
 const handleRowDoubleClick = (row) => {
@@ -285,6 +287,7 @@ const handleQuickEditSubmit = () => {
             entity-type="breed"
             :view="modalView"
             :open="modalOpen"
+            :table-meta="tableMeta"
             @close="closeModal"
             @quick-edit="handleModalQuickEdit"
             @expand="handleModalExpand"

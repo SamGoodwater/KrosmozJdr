@@ -12,7 +12,7 @@ use Tests\TestCase;
  *
  * @description
  * Vérifie que :
- * - Un admin peut mettre à jour plusieurs boutiques en masse
+ * - Un admin peut mettre à jour plusieurs hotels de vente en masse
  * - La validation fonctionne correctement
  * - Seuls les champs fournis sont modifiés
  */
@@ -27,7 +27,7 @@ class ShopBulkControllerTest extends TestCase
     }
 
     /**
-     * Test : Un admin peut mettre à jour plusieurs boutiques en masse
+     * Test : Un admin peut mettre à jour plusieurs hotels de vente en masse
      */
     public function test_admin_can_bulk_update_shops(): void
     {

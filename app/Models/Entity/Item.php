@@ -187,7 +187,7 @@ class Item extends Model implements HasMedia
     }
 
     /**
-     * Les boutiques associées à cet objet.
+     * Les hotels de vente associées à cet objet.
      */
     public function shops()
     {

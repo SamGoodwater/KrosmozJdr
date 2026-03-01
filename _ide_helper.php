@@ -24226,7 +24226,7 @@ namespace App\Http\Requests\Entity {
     /**
      * FormRequest pour la création d'un Shop.
      * 
-     * Valide les champs principaux d'une boutique.
+     * Valide les champs principaux d'une hotel de vente.
      *
      */
     class StoreShopRequest extends \Illuminate\Foundation\Http\FormRequest {
@@ -24348,7 +24348,7 @@ namespace App\Http\Requests\Entity {
     /**
      * FormRequest pour la mise à jour d'un Shop.
      * 
-     * Valide les champs principaux d'une boutique.
+     * Valide les champs principaux d'une hotel de vente.
      *
      */
     class UpdateShopRequest extends \Illuminate\Foundation\Http\FormRequest {

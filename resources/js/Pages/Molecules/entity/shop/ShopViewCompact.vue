@@ -3,7 +3,7 @@
  * ShopViewCompact — Vue Compact pour Shop
  * 
  * @description
- * Vue réduite d'une boutique avec informations essentielles.
+ * Vue réduite d'une hotel de vente vente avec informations essentielles.
  * Utilisée dans les modals compacts.
  * 
  * @props {Shop} shop - Instance du modèle Shop
@@ -29,6 +29,10 @@ const props = defineProps({
     showActions: {
         type: Boolean,
         default: true
+    },
+    tableMeta: {
+        type: Object,
+        default: () => ({})
     }
 });
 

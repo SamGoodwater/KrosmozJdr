@@ -351,7 +351,7 @@ class ResourceController extends Controller
 
         $resource->shops()->sync($sync);
 
-        return back()->with('success', 'Boutiques liées mises à jour.');
+        return back()->with('success', 'hotels de vente liées mises à jour.');
     }
 
     /**

@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Scrapping;
 
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -11,7 +12,8 @@ class ScrappingConfigControllerTest extends TestCase
 
     public function test_config_endpoint_returns_sources_and_entities(): void
     {
-        $response = $this->getJson('/api/scrapping/config');
+        $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
+        $response = $this->actingAs($admin)->getJson('/api/scrapping/config');
 
         $response->assertStatus(200)
             ->assertJson([

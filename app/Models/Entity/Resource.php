@@ -211,7 +211,7 @@ class Resource extends Model implements HasMedia
         return $this->belongsToMany(Campaign::class, 'resource_campaign');
     }
     /**
-     * Les boutiques associées à cette ressource.
+     * Les hotels de vente associées à cette ressource.
      */
     public function shops()
     {

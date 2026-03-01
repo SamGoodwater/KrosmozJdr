@@ -9,7 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 /**
- * API Bulk update pour les boutiques.
+ * API Bulk update pour les hotels de vente.
  *
  * @description
  * Applique un patch sur une liste d'IDs (sélection multiple). Seuls les champs fournis sont modifiés.

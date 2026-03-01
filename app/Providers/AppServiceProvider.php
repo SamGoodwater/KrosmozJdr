@@ -11,7 +11,9 @@ use App\Services\Scrapping\Core\Collect\CollectService;
 use App\Services\Scrapping\Core\Config\CollectAliasResolver;
 use App\Services\Scrapping\Core\Config\ConfigLoader;
 use App\Services\Scrapping\Core\Config\ScrappingMappingService;
+use App\Services\Scrapping\Core\Conversion\SpellEffects\DofusdbEffectMappingService;
 use App\Services\Scrapping\Core\Orchestrator\Orchestrator;
+use App\Models\DofusdbEffectMapping;
 use App\Services\Scrapping\Http\DofusDbClient;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Vite;
@@ -40,6 +42,9 @@ class AppServiceProvider extends ServiceProvider
             app(DofusDbClient::class),
             app(CollectAliasResolver::class)
         ));
+        $this->app->singleton(DofusdbEffectMappingService::class, static function ($app) {
+            return new DofusdbEffectMappingService($app->make(DofusdbEffectMapping::class));
+        });
         $this->app->singleton(Orchestrator::class, static fn () => Orchestrator::default());
     }
 

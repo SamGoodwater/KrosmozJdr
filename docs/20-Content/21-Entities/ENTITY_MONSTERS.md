@@ -11,7 +11,7 @@ Les monstres servent à défier les joueurs, enrichir les combats, proposer des 
 - **Race** : chaque monstre peut référencer une race (`monster_race_id`).
 - **Scénarios** : via le pivot `monster_scenario` (N:N avec `scenarios`).
 - **Campagnes** : via le pivot `monster_campaign` (N:N avec `campaigns`).
-- **Boutiques** : via le pivot `monster_shop` (N:N avec `shops`).
+- **hotels de vente** : via le pivot `monster_shop` (N:N avec `shops`).
 - **Panoplies** : via le pivot `monster_panoply` (N:N avec `panoplies`).
 
 ## Typage

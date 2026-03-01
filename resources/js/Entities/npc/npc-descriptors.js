@@ -77,6 +77,11 @@ export function getNpcFieldDescriptors(ctx = {}) {
       label: "ID",
       icon: "fa-solid fa-hashtag",
       visibleIf: () => canCreateAny,
+      table: {
+        sortable: true,
+        defaultVisible: { xs: false, sm: false, md: false, lg: false, xl: false },
+        cell: { sizes: { xs: { mode: "text" }, sm: { mode: "text" }, md: { mode: "text" }, lg: { mode: "text" }, xl: { mode: "text" } } },
+      },
       display: {
         sizes: {
           xs: { mode: "text" },
@@ -91,6 +96,12 @@ export function getNpcFieldDescriptors(ctx = {}) {
       key: "creature_name",
       label: "Créature",
       icon: "fa-solid fa-user",
+      table: {
+        sortable: true,
+        searchable: true,
+        defaultVisible: { xs: true, sm: true, md: true, lg: true, xl: true },
+        cell: { sizes: { xs: { mode: "route", truncate: 15 }, sm: { mode: "route", truncate: 20 }, md: { mode: "route", truncate: 30 }, lg: { mode: "route", truncate: 40 }, xl: { mode: "route" } } },
+      },
       display: {
         sizes: {
           xs: { mode: "route", truncate: 15 },
@@ -115,6 +126,11 @@ export function getNpcFieldDescriptors(ctx = {}) {
       key: "breed",
       label: "Classe",
       icon: "fa-solid fa-user-tie",
+      table: {
+        filterable: { id: "breed_id", type: "multi", defaultVisible: false },
+        defaultVisible: { xs: false, sm: true, md: true, lg: true, xl: true },
+        cell: { sizes: { xs: { mode: "text", truncate: 10 }, sm: { mode: "text", truncate: 15 }, md: { mode: "text", truncate: 20 }, lg: { mode: "text" }, xl: { mode: "text" } } },
+      },
       display: {
         sizes: {
           xs: { mode: "text", truncate: 10 },
@@ -256,6 +272,11 @@ export function getNpcFieldDescriptors(ctx = {}) {
       label: "Créé le",
       icon: "fa-solid fa-calendar-plus",
       visibleIf: () => canCreateAny,
+      table: {
+        sortable: true,
+        defaultVisible: { xs: false, sm: false, md: false, lg: false, xl: false },
+        cell: { sizes: { xs: { mode: "text" }, sm: { mode: "text" }, md: { mode: "text" }, lg: { mode: "text" }, xl: { mode: "text" } } },
+      },
       display: {
         sizes: {
           xs: { mode: "text" },
@@ -271,6 +292,11 @@ export function getNpcFieldDescriptors(ctx = {}) {
       label: "Modifié le",
       icon: "fa-solid fa-calendar-check",
       visibleIf: () => canCreateAny,
+      table: {
+        sortable: true,
+        defaultVisible: { xs: false, sm: false, md: false, lg: false, xl: false },
+        cell: { sizes: { xs: { mode: "text" }, sm: { mode: "text" }, md: { mode: "text" }, lg: { mode: "text" }, xl: { mode: "text" } } },
+      },
       display: {
         sizes: {
           xs: { mode: "text" },

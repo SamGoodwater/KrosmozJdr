@@ -113,8 +113,10 @@ const selectedEntities = computed(() => {
         .filter(Boolean);
 });
 
-const handleTableLoaded = ({ rows }) => {
+const tableMeta = ref({});
+const handleTableLoaded = ({ rows, meta }) => {
     tableRows.value = Array.isArray(rows) ? rows : [];
+    tableMeta.value = meta || {};
 };
 
 // Handler pour les actions du tableau

@@ -3,7 +3,7 @@
  * ShopViewLarge — Vue Large pour Shop
  * 
  * @description
- * Vue complète d'une boutique avec toutes les informations affichées.
+ * Vue complète d'une hotel de vente vente avec toutes les informations affichées.
  * Utilisée dans les grandes modals ou directement dans le main.
  * 
  * @props {Shop} shop - Instance du modèle Shop
@@ -29,6 +29,10 @@ const props = defineProps({
     showActions: {
         type: Boolean,
         default: true
+    },
+    tableMeta: {
+        type: Object,
+        default: () => ({})
     }
 });
 
@@ -118,7 +122,7 @@ const handleAction = async (actionKey) => {
             const cfg = getEntityRouteConfig('shop');
             const url = resolveEntityRouteUrl('shop', 'show', shopId, cfg);
             if (url) {
-                await copyToClipboard(`${window.location.origin}${url}`, "Lien de la boutique copié !");
+                await copyToClipboard(`${window.location.origin}${url}`, "Lien de la hotel de vente vente copié !");
             }
             emit('copy-link', props.shop);
             break;

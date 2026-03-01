@@ -6,6 +6,12 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
+    /**
+     * Désactive la transaction pour éviter un deadlock MySQL lors de l'ajout des FK
+     * (plusieurs migrations créent des pivots vers campaigns/scenarios en séquence).
+     */
+    public $withinTransaction = false;
+
     public function up(): void
     {
         Schema::create('campaign_scenario', function (Blueprint $table) {

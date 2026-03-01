@@ -120,7 +120,7 @@ class Npc extends Model
     }
 
     /**
-     * La boutique associée à ce PNJ.
+     * La hotel de vente associée à ce PNJ.
      */
     public function shop()
     {

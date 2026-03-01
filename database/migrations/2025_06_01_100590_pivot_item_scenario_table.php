@@ -6,6 +6,9 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
+    /** Évite les deadlocks MySQL lors de migrate:fresh (pivots vers scenarios). */
+    public $withinTransaction = false;
+
     public function up(): void
     {
         Schema::create('item_scenario', function (Blueprint $table) {

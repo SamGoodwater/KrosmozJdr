@@ -3,10 +3,10 @@
 namespace App\Http\Controllers\Api\Table;
 
 use App\Http\Controllers\Controller;
-use App\Models\CharacteristicCreature;
 use App\Models\Entity\Creature;
 use App\Models\Entity\Monster;
 use App\Models\Type\MonsterRace;
+use App\Services\Characteristic\CharacteristicMetaByDbColumnService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
@@ -37,6 +37,11 @@ use Illuminate\Support\Facades\Gate;
  */
 class MonsterTableController extends Controller
 {
+    public function __construct(
+        private readonly CharacteristicMetaByDbColumnService $characteristicMeta
+    ) {
+    }
+
     public function index(Request $request): JsonResponse
     {
         $this->authorize('viewAny', Monster::class);
@@ -187,54 +192,7 @@ class MonsterTableController extends Controller
 
         // Caractéristiques (BDD) pour enrichir l'UI (icônes/couleurs/tooltips) des champs créature côté frontend.
         // On expose un mapping par db_column pour l'entité "monster" (fallback sur entity='*').
-        $creatureCharacteristicsByDbColumn = [];
-        try {
-            $charRows = CharacteristicCreature::query()
-                ->whereIn('entity', [CharacteristicCreature::ENTITY_ALL, CharacteristicCreature::ENTITY_MONSTER])
-                ->whereNotNull('db_column')
-                ->with(['characteristic.masterCharacteristic'])
-                ->get();
-
-            // Ordre important: base (*) puis overlay (monster)
-            $sorted = $charRows->sortBy(fn (CharacteristicCreature $r) => $r->entity === CharacteristicCreature::ENTITY_ALL ? 0 : 1)->values();
-
-            foreach ($sorted as $row) {
-                $dbColumn = is_string($row->db_column) ? trim($row->db_column) : '';
-                if ($dbColumn === '') {
-                    continue;
-                }
-                $baseChar = $row->characteristic;
-                if ($baseChar === null) {
-                    continue;
-                }
-                $c = $baseChar->effectiveCharacteristic();
-
-                $icon = $c->icon;
-                if (is_string($icon) && $icon !== '') {
-                    // Icônes fichier: préfixer le chemin attendu par ImageService (/storage/images/...).
-                    // Les icônes de caractéristiques sont stockées dans storage/app/public/images/icons/caracteristics/.
-                    if (! str_starts_with($icon, 'fa-') && ! str_contains($icon, '/')) {
-                        $icon = 'icons/caracteristics/' . $icon;
-                    }
-                }
-
-                $creatureCharacteristicsByDbColumn[$dbColumn] = [
-                    'key' => $baseChar->key,
-                    'db_column' => $dbColumn,
-                    'name' => $c->name,
-                    'short_name' => $c->short_name,
-                    'helper' => $c->helper,
-                    'descriptions' => $c->descriptions,
-                    'icon' => $icon,
-                    'color' => $c->color,
-                    'unit' => $c->unit,
-                    'type' => $c->type,
-                ];
-            }
-        } catch (\Throwable $e) {
-            // En cas d'erreur (table manquante, etc.), on ne bloque pas le tableau.
-            $creatureCharacteristicsByDbColumn = [];
-        }
+        $creatureCharacteristicsByDbColumn = $this->characteristicMeta->buildCreatureByDbColumn();
 
         // Mode "entities" : retourner les entités brutes (monstre + créature complète pour le tableau)
         if ($format === 'entities') {

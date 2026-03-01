@@ -69,6 +69,12 @@ export function getItemFieldDescriptors(ctx = {}) {
       label: "ID",
       icon: "fa-solid fa-hashtag",
       visibleIf: () => canUpdateAny,
+      table: {
+        sortable: true,
+        defaultVisible: { xs: false, sm: false, md: false, lg: false, xl: false },
+        filterable: { id: "id", type: "text", defaultVisible: false },
+        cell: { sizes: { xs: { mode: "text" }, sm: { mode: "text" }, md: { mode: "text" }, lg: { mode: "text" }, xl: { mode: "text" } } },
+      },
       display: {
         sizes: {
           xs: { mode: "text" },
@@ -83,6 +89,12 @@ export function getItemFieldDescriptors(ctx = {}) {
       key: "name",
       label: "Nom",
       icon: "fa-solid fa-font",
+      table: {
+        sortable: true,
+        searchable: true,
+        defaultVisible: { xs: true, sm: true, md: true, lg: true, xl: true },
+        cell: { sizes: { xs: { mode: "route", truncate: 15 }, sm: { mode: "route", truncate: 20 }, md: { mode: "route", truncate: 30 }, lg: { mode: "route", truncate: 40 }, xl: { mode: "route" } } },
+      },
       display: {
         sizes: {
           xs: { mode: "route", truncate: 15 },
@@ -105,6 +117,11 @@ export function getItemFieldDescriptors(ctx = {}) {
       key: "description",
       label: "Description",
       icon: "fa-solid fa-align-left",
+      table: {
+        searchable: true,
+        defaultVisible: { xs: false, sm: false, md: true, lg: true, xl: true },
+        cell: { sizes: { xs: { mode: "text", truncate: 20 }, sm: { mode: "text", truncate: 30 }, md: { mode: "text", truncate: 50 }, lg: { mode: "text", truncate: 80 }, xl: { mode: "text" } } },
+      },
       display: {
         sizes: {
           xs: { mode: "text", truncate: 20 },
@@ -128,6 +145,12 @@ export function getItemFieldDescriptors(ctx = {}) {
       key: "level",
       label: "Niveau",
       icon: "fa-solid fa-level-up-alt",
+      table: {
+        sortable: true,
+        filterable: { id: "level", type: "multi", defaultVisible: true },
+        defaultVisible: { xs: false, sm: true, md: true, lg: true, xl: true },
+        cell: { sizes: { xs: { mode: "text" }, sm: { mode: "text" }, md: { mode: "text" }, lg: { mode: "text" }, xl: { mode: "text" } } },
+      },
       display: {
         sizes: {
           xs: { mode: "text" },
@@ -152,6 +175,12 @@ export function getItemFieldDescriptors(ctx = {}) {
       key: "rarity",
       label: "Rareté",
       icon: "fa-solid fa-star",
+      table: {
+        sortable: true,
+        filterable: { id: "rarity", type: "multi", defaultVisible: true },
+        defaultVisible: { xs: false, sm: true, md: true, lg: true, xl: true },
+        cell: { sizes: { xs: { mode: "badge" }, sm: { mode: "badge" }, md: { mode: "badge" }, lg: { mode: "badge" }, xl: { mode: "badge" } } },
+      },
       display: {
         sizes: {
           xs: { mode: "badge" },
@@ -185,6 +214,12 @@ export function getItemFieldDescriptors(ctx = {}) {
       key: "state",
       label: "État",
       icon: "fa-solid fa-circle-info",
+      table: {
+        sortable: true,
+        filterable: { id: "state", type: "multi", defaultVisible: true },
+        defaultVisible: { xs: false, sm: true, md: true, lg: true, xl: true },
+        cell: { sizes: { xs: { mode: "badge" }, sm: { mode: "badge" }, md: { mode: "badge" }, lg: { mode: "badge" }, xl: { mode: "badge" } } },
+      },
       display: {
         sizes: {
           xs: { mode: "badge" },
@@ -211,6 +246,10 @@ export function getItemFieldDescriptors(ctx = {}) {
       label: "Auto-update",
       icon: "fa-solid fa-arrows-rotate",
       visibleIf: () => canUpdateAny,
+      table: {
+        defaultVisible: { xs: false, sm: false, md: false, lg: false, xl: false },
+        cell: { sizes: { xs: { mode: "badge" }, sm: { mode: "badge" }, md: { mode: "badge" }, lg: { mode: "badge" }, xl: { mode: "badge" } } },
+      },
       display: {
         sizes: {
           xs: { mode: "badge" },
@@ -332,6 +371,12 @@ export function getItemFieldDescriptors(ctx = {}) {
       key: "item_type",
       label: "Type",
       icon: "fa-solid fa-tags",
+      table: {
+        sortable: true,
+        filterable: { id: "item_type_id", type: "multi", defaultVisible: true },
+        defaultVisible: { xs: false, sm: false, md: true, lg: true, xl: true },
+        cell: { sizes: { xs: { mode: "text", truncate: 10 }, sm: { mode: "text", truncate: 15 }, md: { mode: "text", truncate: 20 }, lg: { mode: "text" }, xl: { mode: "text" } } },
+      },
       display: {
         sizes: {
           xs: { mode: "text", truncate: 10 },
@@ -371,6 +416,11 @@ export function getItemFieldDescriptors(ctx = {}) {
       label: "DofusDB",
       icon: "fa-solid fa-up-right-from-square",
       visibleIf: () => canUpdateAny,
+      table: {
+        sortable: true,
+        defaultVisible: { xs: false, sm: false, md: false, lg: false, xl: false },
+        cell: { sizes: { xs: { mode: "route" }, sm: { mode: "route" }, md: { mode: "route" }, lg: { mode: "route" }, xl: { mode: "route" } } },
+      },
       display: {
         sizes: {
           xs: { mode: "route" },
@@ -401,6 +451,11 @@ export function getItemFieldDescriptors(ctx = {}) {
       label: "Créé le",
       icon: "fa-solid fa-calendar-plus",
       visibleIf: () => canUpdateAny,
+      table: {
+        sortable: true,
+        defaultVisible: { xs: false, sm: false, md: false, lg: false, xl: false },
+        cell: { sizes: { xs: { mode: "text" }, sm: { mode: "text" }, md: { mode: "text" }, lg: { mode: "text" }, xl: { mode: "text" } } },
+      },
       display: {
         sizes: {
           xs: { mode: "text" },
@@ -416,6 +471,11 @@ export function getItemFieldDescriptors(ctx = {}) {
       label: "Modifié le",
       icon: "fa-solid fa-calendar-check",
       visibleIf: () => canUpdateAny,
+      table: {
+        sortable: true,
+        defaultVisible: { xs: false, sm: false, md: false, lg: false, xl: false },
+        cell: { sizes: { xs: { mode: "text" }, sm: { mode: "text" }, md: { mode: "text" }, lg: { mode: "text" }, xl: { mode: "text" } } },
+      },
       display: {
         sizes: {
           xs: { mode: "text" },

@@ -18,7 +18,6 @@ import { ResourceType } from "@/Models/Entity/ResourceType";
 import { Item } from "@/Models/Entity/Item";
 import { Spell } from "@/Models/Entity/Spell";
 import { Monster } from "@/Models/Entity/Monster";
-import { Creature } from "@/Models/Entity/Creature";
 import { Npc } from "@/Models/Entity/Npc";
 import { Breed } from "@/Models/Entity/Breed";
 import { Consumable } from "@/Models/Entity/Consumable";
@@ -40,7 +39,6 @@ import { getResourceTypeFieldDescriptors } from "@/Entities/resource-type/resour
 import { getItemFieldDescriptors } from "@/Entities/item/item-descriptors";
 import { getSpellFieldDescriptors } from "@/Entities/spell/spell-descriptors";
 import { getMonsterFieldDescriptors } from "@/Entities/monster/monster-descriptors";
-import { getCreatureFieldDescriptors } from "@/Entities/creature/creature-descriptors";
 import { getNpcFieldDescriptors } from "@/Entities/npc/npc-descriptors";
 import { getBreedFieldDescriptors } from "@/Entities/breed/breed-descriptors";
 import { getConsumableFieldDescriptors } from "@/Entities/consumable/consumable-descriptors";
@@ -128,12 +126,8 @@ export function getEntityConfig(entityType) {
         defaults: { minimalImportantFields: ["creature_name", "monster_race", "size", "is_boss"] },
       };
     case "creatures":
-      return {
-        key,
-        getDescriptors: getCreatureFieldDescriptors,
-        responseAdapter: createEntityAdapter(Creature),
-        defaults: { minimalImportantFields: ["name", "level", "hostility", "life"] },
-      };
+      // Pas d'accès direct (classe mère pour NPC et Monster uniquement)
+      return null;
     case "npcs":
       return {
         key,

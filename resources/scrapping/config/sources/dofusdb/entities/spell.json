@@ -4,7 +4,7 @@
   "entity": "spell",
   "label": "Sorts",
   "meta": {
-    "notes": "DofusDB : id, name, description, img, breedId, levels[].apCost, range, grade, maxCastPerTurn, effects[].zoneDescr.shape. KrosmozJDR : spells (name, description, area, level, po, pa, cast_per_turn, image). Effets détaillés non mappés en V2. Propriétés en _mappingUnused : réserve (copier dans mapping pour les réafficher)."
+    "notes": "DofusDB : id, name, description, img, breedId, levels[].apCost, range, grade, maxCastPerTurn, effects[].zoneDescr. KrosmozJDR : spells (name, description, level, po, pa, cast_per_turn, image). Zone d'impact (area) et type de cible (piège/glyphe) sur Effect, voir spell_effects."
   },
   "endpoints": {
     "fetchOne": {
@@ -39,7 +39,6 @@
     { "key": "image", "from": { "path": "img" }, "to": [{ "model": "spells", "field": "image" }], "formatters": [{ "name": "storeScrappedImage", "args": { "entityFolder": "spells", "idPath": "id" } }] },
     { "key": "pa", "from": { "path": "levels.0.apCost" }, "to": [{ "model": "spells", "field": "pa" }], "formatters": [{ "name": "toInt", "args": {} }, { "name": "clampToCharacteristic", "args": { "characteristicId": "pa" } }] },
     { "key": "po", "from": { "path": "levels.0.range" }, "to": [{ "model": "spells", "field": "po" }], "formatters": [{ "name": "toInt", "args": {} }, { "name": "clampToCharacteristic", "args": { "characteristicId": "po" } }, { "name": "toString", "args": {} }] },
-    { "key": "area", "from": { "path": "levels.0.effects.0.zoneDescr.shape" }, "to": [{ "model": "spells", "field": "area" }], "formatters": [{ "name": "nullableInt", "args": {} }, { "name": "clampToCharacteristic", "args": { "characteristicId": "area" } }] },
     { "key": "level", "from": { "path": "levels.0.grade" }, "to": [{ "model": "spells", "field": "level" }], "formatters": [{ "name": "toInt", "args": {} }, { "name": "clampToCharacteristic", "args": { "characteristicId": "level" } }, { "name": "toString", "args": {} }] },
     { "key": "cast_per_turn", "from": { "path": "levels.0.maxCastPerTurn" }, "to": [{ "model": "spells", "field": "cast_per_turn" }], "formatters": [{ "name": "toInt", "args": {} }, { "name": "clampToCharacteristic", "args": { "characteristicId": "cast_per_turn" } }, { "name": "toString", "args": {} }] },
     { "key": "cast_per_target", "from": { "path": "levels.0.maxCastPerTarget" }, "to": [{ "model": "spells", "field": "cast_per_target" }], "formatters": [{ "name": "nullableInt", "args": {} }, { "name": "clampToCharacteristic", "args": { "characteristicId": "cast_per_target" } }, { "name": "toString", "args": {} }] },

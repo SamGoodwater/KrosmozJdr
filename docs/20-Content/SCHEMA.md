@@ -384,6 +384,15 @@ erDiagram
     deleted_at : timestamp
     created_by : bigint(20) unsigned
   }
+  DOFUSDB_EFFECT_MAPPINGS {
+    id : bigint(20) unsigned
+    dofusdb_effect_id : int(10) unsigned
+    sub_effect_slug : varchar(64)
+    characteristic_source : varchar(32)
+    characteristic_key : varchar(64)
+    created_at : timestamp
+    updated_at : timestamp
+  }
   EFFECT_GROUPS {
     id : bigint(20) unsigned
     name : varchar(255)
@@ -401,12 +410,12 @@ erDiagram
     value_max : int(11)
     dice_num : tinyint(3) unsigned
     dice_side : tinyint(3) unsigned
+    params : longtext
+    crit_only : tinyint(1)
     duration_formula : varchar(255)
     logic_group : varchar(64)
     logic_operator : varchar(8)
     logic_condition : varchar(255)
-    params : longtext
-    crit_only : tinyint(1)
     created_at : timestamp
     updated_at : timestamp
   }

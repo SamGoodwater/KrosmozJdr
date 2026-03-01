@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\Table;
 
 use App\Http\Controllers\Controller;
 use App\Models\Entity\Spell;
+use App\Services\Characteristic\CharacteristicMetaByDbColumnService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
@@ -17,6 +18,11 @@ use Illuminate\Support\Facades\Gate;
  */
 class SpellTableController extends Controller
 {
+    public function __construct(
+        private readonly CharacteristicMetaByDbColumnService $characteristicMeta
+    ) {
+    }
+
     public function index(Request $request): JsonResponse
     {
         $this->authorize('viewAny', Spell::class);
@@ -191,6 +197,11 @@ class SpellTableController extends Controller
                     ],
                     'capabilities' => $capabilities,
                     'filterOptions' => $filterOptions,
+                    'characteristics' => [
+                        'spell' => [
+                            'byDbColumn' => $this->characteristicMeta->buildSpellByDbColumn(),
+                        ],
+                    ],
                     'format' => 'entities',
                 ],
                 'entities' => $entities,
@@ -252,7 +263,7 @@ class SpellTableController extends Controller
                         'type' => 'text',
                         'value' => $sp->area ?? '-',
                         'params' => [
-                            'sortValue' => (int) ($sp->area ?? 0),
+                            'sortValue' => (string) ($sp->area ?? ''),
                         ],
                     ],
                     'spell_types' => [

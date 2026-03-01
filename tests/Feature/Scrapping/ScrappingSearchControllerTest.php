@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Scrapping;
 
+use App\Models\User;
 use Illuminate\Support\Facades\Http;
 use Tests\TestCase;
 
@@ -9,6 +10,7 @@ class ScrappingSearchControllerTest extends TestCase
 {
     public function test_search_endpoint_returns_items_and_meta(): void
     {
+        $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
         $seenUrl = null;
 
         Http::fake(function ($request) use (&$seenUrl) {
@@ -23,7 +25,7 @@ class ScrappingSearchControllerTest extends TestCase
             ], 200);
         });
 
-        $res = $this->getJson('/api/scrapping/search/monster?name=Bouftou&limit=2&max_pages=1&skip_cache=true');
+        $res = $this->actingAs($admin)->getJson('/api/scrapping/search/monster?name=Bouftou&limit=2&max_pages=1&skip_cache=true');
 
         $res->assertOk();
         $res->assertJsonPath('success', true);
@@ -43,6 +45,7 @@ class ScrappingSearchControllerTest extends TestCase
 
     public function test_search_supports_id_range_filters(): void
     {
+        $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
         $seenUrl = null;
 
         Http::fake(function ($request) use (&$seenUrl) {
@@ -57,7 +60,7 @@ class ScrappingSearchControllerTest extends TestCase
             ], 200);
         });
 
-        $res = $this->getJson('/api/scrapping/search/monster?idMin=10&idMax=12&limit=2&max_pages=1');
+        $res = $this->actingAs($admin)->getJson('/api/scrapping/search/monster?idMin=10&idMax=12&limit=2&max_pages=1');
 
         $res->assertOk();
         $res->assertJsonPath('success', true);
@@ -68,6 +71,7 @@ class ScrappingSearchControllerTest extends TestCase
 
     public function test_search_paginates_using_api_limit_when_capped(): void
     {
+        $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
         $seenUrls = [];
 
         Http::fake(function ($request) use (&$seenUrls) {
@@ -95,7 +99,7 @@ class ScrappingSearchControllerTest extends TestCase
             ], 200);
         });
 
-        $res = $this->getJson('/api/scrapping/search/monster?limit=200&max_pages=2&skip_cache=true');
+        $res = $this->actingAs($admin)->getJson('/api/scrapping/search/monster?limit=200&max_pages=2&skip_cache=true');
 
         $res->assertOk();
         $res->assertJsonPath('success', true);
@@ -108,7 +112,8 @@ class ScrappingSearchControllerTest extends TestCase
 
     public function test_search_unknown_entity_returns_404(): void
     {
-        $res = $this->getJson('/api/scrapping/search/not-a-real-entity');
+        $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
+        $res = $this->actingAs($admin)->getJson('/api/scrapping/search/not-a-real-entity');
         $res->assertStatus(404);
         $res->assertJsonPath('success', false);
     }

@@ -3,9 +3,9 @@
  * Shop Index Page
  * 
  * @description
- * Page de liste des boutiques avec tableau et modal
+ * Page de liste des hotels de vente vente avec tableau et modal
  * 
- * @props {Object} shops - Collection paginée des boutiques
+ * @props {Object} shops - Collection paginée des hotels de vente vente
  */
 import { Head, router } from "@inertiajs/vue3";
 import { ref, computed } from "vue";
@@ -41,7 +41,7 @@ const props = defineProps({
 
 const { setPageTitle } = usePageTitle();
 
-setPageTitle('Liste des Boutiques');
+setPageTitle('Liste des hotels de vente vente');
 
 // Permissions
 const { canCreate: canCreatePermission, canUpdateAny } = usePermissions();
@@ -113,8 +113,10 @@ const clearSelection = () => {
     selectedIds.value = [];
 };
 
-const handleTableLoaded = ({ rows }) => {
+const tableMeta = ref({});
+const handleTableLoaded = ({ rows, meta }) => {
     tableRows.value = Array.isArray(rows) ? rows : [];
+    tableMeta.value = meta || {};
 };
 
 const handleRowDoubleClick = (row) => {
@@ -248,18 +250,18 @@ const handleQuickEditSubmit = () => {
 </script>
 
 <template>
-    <Head title="Liste des Boutiques" />
+    <Head title="Liste des hotels de vente vente" />
     
     <div class="space-y-6 pb-8 w-full">
         <!-- En-tête -->
         <div class="flex flex-col gap-2 md:flex-row md:justify-between md:items-center">
             <div>
-                <h1 class="text-3xl font-bold text-primary-100">Liste des Boutiques</h1>
-                <p class="text-primary-200 mt-2">Gérez les boutiques et commerces</p>
+                <h1 class="text-3xl font-bold text-primary-100">Liste des hotels de vente vente</h1>
+                <p class="text-primary-200 mt-2">Gérez les hotels de vente et commerces</p>
             </div>
             <Btn v-if="canCreate" @click="handleCreate" color="primary">
                 <i class="fa-solid fa-plus mr-2"></i>
-                Créer une boutique
+                Créer une hotel de vente
             </Btn>
         </div>
 
@@ -310,6 +312,7 @@ const handleQuickEditSubmit = () => {
             entity-type="shop"
             :view="modalView"
             :open="modalOpen"
+            :table-meta="tableMeta"
             @close="closeModal"
             @quick-edit="handleModalQuickEdit"
             @expand="handleModalExpand"

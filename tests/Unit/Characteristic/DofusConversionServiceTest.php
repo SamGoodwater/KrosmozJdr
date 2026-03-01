@@ -74,14 +74,14 @@ class DofusConversionServiceTest extends TestCase
 
     public function test_convert_life_returns_integer(): void
     {
-        $result = $this->service->convert('life_creature', ['d' => 1000.0, 'level' => 10], 'monster', 55.0);
+        $result = $this->service->convert('life_points_creature', ['d' => 1000.0, 'level' => 10], 'monster', 55.0);
         $this->assertIsInt($result);
         $this->assertGreaterThanOrEqual(0, $result);
     }
 
     public function test_convert_life_handles_null_dofus_value(): void
     {
-        $result = $this->service->convert('life_creature', ['d' => 0.0, 'level' => 5], 'monster', 25.0);
+        $result = $this->service->convert('life_points_creature', ['d' => 0.0, 'level' => 5], 'monster', 25.0);
         $this->assertIsInt($result);
     }
 
@@ -100,10 +100,10 @@ class DofusConversionServiceTest extends TestCase
     public function test_clamp_to_limits_returns_value_in_limits(): void
     {
         $getter = $this->app->make(\App\Services\Characteristic\Getter\CharacteristicGetterService::class);
-        $limits = $getter->getLimits('life_creature', 'monster');
+        $limits = $getter->getLimits('life_points_creature', 'monster');
         $this->assertNotNull($limits);
         $mid = (int) (($limits['min'] + $limits['max']) / 2);
-        $result = $this->service->clampToLimits('life_creature', $mid, 'monster');
+        $result = $this->service->clampToLimits('life_points_creature', $mid, 'monster');
         $this->assertSame($mid, $result);
     }
 

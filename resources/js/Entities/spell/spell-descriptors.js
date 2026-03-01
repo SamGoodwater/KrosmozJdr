@@ -69,6 +69,12 @@ export function getSpellFieldDescriptors(ctx = {}) {
       label: "ID",
       icon: "fa-solid fa-hashtag",
       visibleIf: () => canCreateAny,
+      table: {
+        sortable: true,
+        defaultVisible: { xs: false, sm: false, md: false, lg: false, xl: false },
+        filterable: { id: "id", type: "text", defaultVisible: false },
+        cell: { sizes: { xs: { mode: "text" }, sm: { mode: "text" }, md: { mode: "text" }, lg: { mode: "text" }, xl: { mode: "text" } } },
+      },
       display: {
         sizes: {
           xs: { mode: "text" },
@@ -83,6 +89,12 @@ export function getSpellFieldDescriptors(ctx = {}) {
       key: "name",
       label: "Nom",
       icon: "fa-solid fa-font",
+      table: {
+        sortable: true,
+        searchable: true,
+        defaultVisible: { xs: true, sm: true, md: true, lg: true, xl: true },
+        cell: { sizes: { xs: { mode: "route", truncate: 15 }, sm: { mode: "route", truncate: 20 }, md: { mode: "route", truncate: 30 }, lg: { mode: "route", truncate: 40 }, xl: { mode: "route" } } },
+      },
       display: {
         sizes: {
           xs: { mode: "route", truncate: 15 },
@@ -105,6 +117,11 @@ export function getSpellFieldDescriptors(ctx = {}) {
       key: "description",
       label: "Description",
       icon: "fa-solid fa-align-left",
+      table: {
+        searchable: true,
+        defaultVisible: { xs: false, sm: false, md: true, lg: true, xl: true },
+        cell: { sizes: { xs: { mode: "text", truncate: 20 }, sm: { mode: "text", truncate: 30 }, md: { mode: "text", truncate: 50 }, lg: { mode: "text" }, xl: { mode: "text" } } },
+      },
       display: {
         sizes: {
           xs: { mode: "text", truncate: 20 },
@@ -128,6 +145,12 @@ export function getSpellFieldDescriptors(ctx = {}) {
       key: "level",
       label: "Niveau",
       icon: "fa-solid fa-level-up-alt",
+      table: {
+        sortable: true,
+        filterable: { id: "level", type: "multi", defaultVisible: true },
+        defaultVisible: { xs: false, sm: true, md: true, lg: true, xl: true },
+        cell: { sizes: { xs: { mode: "text" }, sm: { mode: "text" }, md: { mode: "text" }, lg: { mode: "text" }, xl: { mode: "text" } } },
+      },
       display: {
         sizes: {
           xs: { mode: "text" },
@@ -152,6 +175,12 @@ export function getSpellFieldDescriptors(ctx = {}) {
       key: "pa",
       label: "PA",
       icon: "fa-solid fa-bolt",
+      table: {
+        sortable: true,
+        filterable: { id: "pa", type: "text", defaultVisible: false },
+        defaultVisible: { xs: false, sm: false, md: true, lg: true, xl: true },
+        cell: { sizes: { xs: { mode: "text" }, sm: { mode: "text" }, md: { mode: "text" }, lg: { mode: "text" }, xl: { mode: "text" } } },
+      },
       display: {
         sizes: {
           xs: { mode: "text" },
@@ -176,6 +205,11 @@ export function getSpellFieldDescriptors(ctx = {}) {
       key: "po",
       label: "PO",
       icon: "fa-solid fa-crosshairs",
+      table: {
+        sortable: true,
+        defaultVisible: { xs: false, sm: false, md: true, lg: true, xl: true },
+        cell: { sizes: { xs: { mode: "text" }, sm: { mode: "text" }, md: { mode: "text" }, lg: { mode: "text" }, xl: { mode: "text" } } },
+      },
       display: {
         sizes: {
           xs: { mode: "text" },
@@ -200,6 +234,11 @@ export function getSpellFieldDescriptors(ctx = {}) {
       key: "area",
       label: "Zone",
       icon: "fa-solid fa-expand",
+      table: {
+        sortable: true,
+        defaultVisible: { xs: false, sm: false, md: false, lg: true, xl: true },
+        cell: { sizes: { xs: { mode: "text" }, sm: { mode: "text" }, md: { mode: "text" }, lg: { mode: "text" }, xl: { mode: "text" } } },
+      },
       display: {
         sizes: {
           xs: { mode: "text" },
@@ -223,6 +262,11 @@ export function getSpellFieldDescriptors(ctx = {}) {
       key: "element",
       label: "Élément",
       icon: "fa-solid fa-fire",
+      table: {
+        filterable: { id: "element", type: "multi", defaultVisible: false },
+        defaultVisible: { xs: false, sm: false, md: true, lg: true, xl: true },
+        cell: { sizes: { xs: { mode: "badge" }, sm: { mode: "badge" }, md: { mode: "badge" }, lg: { mode: "badge" }, xl: { mode: "badge" } } },
+      },
       display: {
         sizes: {
           xs: { mode: "badge" },
@@ -246,6 +290,11 @@ export function getSpellFieldDescriptors(ctx = {}) {
       key: "category",
       label: "Catégorie",
       icon: "fa-solid fa-tag",
+      table: {
+        filterable: { id: "category", type: "multi", defaultVisible: false },
+        defaultVisible: { xs: false, sm: false, md: true, lg: true, xl: true },
+        cell: { sizes: { xs: { mode: "badge" }, sm: { mode: "badge" }, md: { mode: "badge" }, lg: { mode: "badge" }, xl: { mode: "badge" } } },
+      },
       display: {
         sizes: {
           xs: { mode: "badge" },
@@ -269,6 +318,12 @@ export function getSpellFieldDescriptors(ctx = {}) {
       key: "state",
       label: "État",
       icon: "fa-solid fa-circle-info",
+      table: {
+        sortable: true,
+        filterable: { id: "state", type: "multi", defaultVisible: true },
+        defaultVisible: { xs: false, sm: true, md: true, lg: true, xl: true },
+        cell: { sizes: { xs: { mode: "badge" }, sm: { mode: "badge" }, md: { mode: "badge" }, lg: { mode: "badge" }, xl: { mode: "badge" } } },
+      },
       display: {
         sizes: {
           xs: { mode: "badge" },
@@ -295,6 +350,10 @@ export function getSpellFieldDescriptors(ctx = {}) {
       label: "Auto-update",
       icon: "fa-solid fa-arrows-rotate",
       visibleIf: () => canUpdateAny,
+      table: {
+        defaultVisible: { xs: false, sm: false, md: false, lg: false, xl: false },
+        cell: { sizes: { xs: { mode: "badge" }, sm: { mode: "badge" }, md: { mode: "badge" }, lg: { mode: "badge" }, xl: { mode: "badge" } } },
+      },
       display: {
         sizes: {
           xs: { mode: "badge" },
@@ -319,6 +378,10 @@ export function getSpellFieldDescriptors(ctx = {}) {
       key: "read_level",
       label: "Lecture (min.)",
       icon: "fa-solid fa-eye",
+      table: {
+        defaultVisible: { xs: false, sm: false, md: false, lg: false, xl: false },
+        cell: { sizes: { xs: { mode: "badge" }, sm: { mode: "badge" }, md: { mode: "badge" }, lg: { mode: "badge" }, xl: { mode: "badge" } } },
+      },
       display: {
         sizes: {
           xs: { mode: "badge" },
@@ -344,6 +407,10 @@ export function getSpellFieldDescriptors(ctx = {}) {
       key: "write_level",
       label: "Écriture (min.)",
       icon: "fa-solid fa-pen-to-square",
+      table: {
+        defaultVisible: { xs: false, sm: false, md: false, lg: false, xl: false },
+        cell: { sizes: { xs: { mode: "badge" }, sm: { mode: "badge" }, md: { mode: "badge" }, lg: { mode: "badge" }, xl: { mode: "badge" } } },
+      },
       display: {
         sizes: {
           xs: { mode: "badge" },
@@ -369,6 +436,10 @@ export function getSpellFieldDescriptors(ctx = {}) {
       key: "image",
       label: "Image",
       icon: "fa-solid fa-image",
+      table: {
+        defaultVisible: { xs: false, sm: false, md: false, lg: false, xl: false },
+        cell: { sizes: { xs: { mode: "thumb" }, sm: { mode: "thumb" }, md: { mode: "thumb" }, lg: { mode: "thumb" }, xl: { mode: "thumb" } } },
+      },
       display: {
         sizes: {
           xs: { mode: "thumb" },
@@ -393,6 +464,10 @@ export function getSpellFieldDescriptors(ctx = {}) {
       key: "spell_types",
       label: "Types",
       icon: "fa-solid fa-tags",
+      table: {
+        defaultVisible: { xs: false, sm: false, md: false, lg: true, xl: true },
+        cell: { sizes: { xs: { mode: "text", truncate: 10 }, sm: { mode: "text", truncate: 15 }, md: { mode: "text", truncate: 20 }, lg: { mode: "text" }, xl: { mode: "text" } } },
+      },
       display: {
         sizes: {
           xs: { mode: "text", truncate: 10 },
@@ -419,6 +494,11 @@ export function getSpellFieldDescriptors(ctx = {}) {
       label: "DofusDB",
       icon: "fa-solid fa-up-right-from-square",
       visibleIf: () => canUpdateAny,
+      table: {
+        sortable: true,
+        defaultVisible: { xs: false, sm: false, md: false, lg: false, xl: false },
+        cell: { sizes: { xs: { mode: "route" }, sm: { mode: "route" }, md: { mode: "route" }, lg: { mode: "route" }, xl: { mode: "route" } } },
+      },
       display: {
         sizes: {
           xs: { mode: "route" },
@@ -434,6 +514,10 @@ export function getSpellFieldDescriptors(ctx = {}) {
       label: "Créé par",
       icon: "fa-solid fa-user",
       visibleIf: () => canCreateAny,
+      table: {
+        defaultVisible: { xs: false, sm: false, md: false, lg: false, xl: false },
+        cell: { sizes: { xs: { mode: "text", truncate: 10 }, sm: { mode: "text", truncate: 15 }, md: { mode: "text", truncate: 20 }, lg: { mode: "text" }, xl: { mode: "text" } } },
+      },
       display: {
         sizes: {
           xs: { mode: "text", truncate: 10 },
@@ -449,6 +533,11 @@ export function getSpellFieldDescriptors(ctx = {}) {
       label: "Créé le",
       icon: "fa-solid fa-calendar-plus",
       visibleIf: () => canCreateAny,
+      table: {
+        sortable: true,
+        defaultVisible: { xs: false, sm: false, md: false, lg: false, xl: false },
+        cell: { sizes: { xs: { mode: "text" }, sm: { mode: "text" }, md: { mode: "text" }, lg: { mode: "text" }, xl: { mode: "text" } } },
+      },
       display: {
         sizes: {
           xs: { mode: "text" },
@@ -464,6 +553,11 @@ export function getSpellFieldDescriptors(ctx = {}) {
       label: "Modifié le",
       icon: "fa-solid fa-calendar-check",
       visibleIf: () => canCreateAny,
+      table: {
+        sortable: true,
+        defaultVisible: { xs: false, sm: false, md: false, lg: false, xl: false },
+        cell: { sizes: { xs: { mode: "text" }, sm: { mode: "text" }, md: { mode: "text" }, lg: { mode: "text" }, xl: { mode: "text" } } },
+      },
       display: {
         sizes: {
           xs: { mode: "text" },

@@ -8,7 +8,7 @@ Les ressources regroupent tous les matériaux de base du jeu : minerais, plant
 - **Créatures** : via le pivot `creature_resource` (N:N avec `creatures`).
 - **Objets** : via le pivot `item_resource` (N:N avec `items`).
 - **Consommables** : via le pivot `consumable_resource` (N:N avec `consumables`).
-- **Boutiques** : via le pivot `resource_shop` (N:N avec `shops`).
+- **hotels de vente** : via le pivot `resource_shop` (N:N avec `shops`).
 - **Scénarios, campagnes** : via les pivots `resource_scenario`, `resource_campaign`.
 
 ## Exemples d’utilisation

@@ -43,14 +43,14 @@ class CharacteristicGetterServiceTest extends TestCase
 
     public function test_get_definition_returns_null_for_unknown_entity(): void
     {
-        $this->assertNull($this->getter->getDefinition('life_creature', 'unknown_entity'));
+        $this->assertNull($this->getter->getDefinition('life_points_creature', 'unknown_entity'));
     }
 
     public function test_get_definition_returns_merged_definition_for_creature(): void
     {
-        $def = $this->getter->getDefinition('life_creature', 'monster');
+        $def = $this->getter->getDefinition('life_points_creature', 'monster');
         $this->assertNotNull($def);
-        $this->assertSame('life_creature', $def['key']);
+        $this->assertSame('life_points_creature', $def['key']);
         $this->assertArrayHasKey('name', $def);
         $this->assertArrayHasKey('min', $def);
         $this->assertArrayHasKey('max', $def);
@@ -65,7 +65,7 @@ class CharacteristicGetterServiceTest extends TestCase
 
     public function test_get_limits_returns_min_max_for_known_characteristic(): void
     {
-        $limits = $this->getter->getLimits('life_creature', 'monster');
+        $limits = $this->getter->getLimits('life_points_creature', 'monster');
         $this->assertNotNull($limits);
         $this->assertArrayHasKey('min', $limits);
         $this->assertArrayHasKey('max', $limits);

@@ -59,9 +59,18 @@ Index unique sur `dofusdb_effect_id`.
 
 ---
 
-## Phase 2 — Données initiales + UI admin (après ou en fin d’harmonisation)
+## Phase 2 — Données initiales + UI admin (après ou en fin d’harmonisation) ✅
 
 Objectif : **alimenter** la table (mappings connus) et permettre d’**éditer** les mappings en admin.
+
+**Implémenté** : Seeder `DofusdbEffectMappingSeeder`, routes `admin.dofusdb-effect-mappings.*`, contrôleur `Admin\DofusdbEffectMappingController`, page Vue `Admin/dofusdb-effect-mappings/Index.vue`, lien depuis la page Scrapping « Mapping effets DofusDB ». Cache du service invalidé après store/update/destroy.
+
+**Remplissage de la base depuis l’API** : la commande `php artisan dofusdb:fetch-effect-mappings` interroge l’API DofusDB (`GET /effects`), déduit pour chaque effectId un mapping vers un sous-effet Krosmoz (frapper, soigner, déplacer, booster, etc.), remplit **characteristic_key** quand l’effet a une caractéristique DofusDB connue (voir tableau id → clé dans la commande), et écrit le résultat dans `database/seeders/data/dofusdb_effect_mappings_suggested.php`. Chaque ligne du fichier est commentée avec la description FR de l’effet et l’id carac. DofusDB si pertinent.
+
+**Que faire avec le fichier généré ?**
+1. **Lancer le seeder** : `php artisan db:seed --class=DofusdbEffectMappingSeeder` → la table `dofusdb_effect_mappings` est remplie avec les entrées du fichier (ou les 5 en dur si le fichier n’existe pas).
+2. **Corriger si besoin** : via l’admin **Mapping effets DofusDB** (lien sur la page Scrapping), tu peux modifier un sous-effet, une source ou une characteristic_key. Les clés sont en format court (ex. `pa`, `strong`, `po`) ; si ta BDD utilise un suffixe `_spell` ou `_creature`, tu peux ajuster en admin ou en éditant le fichier avant de relancer le seeder.
+3. **Regénérer** : pour repartir de l’API (après mise à jour du jeu de données DofusDB ou des heuristiques), relancer `dofusdb:fetch-effect-mappings --no-cache --output=.../dofusdb_effect_mappings_suggested.php` puis le seeder.
 
 ### 2.1 Tâches
 

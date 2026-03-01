@@ -184,7 +184,7 @@ class Consumable extends Model implements HasMedia
     }
 
     /**
-     * Les boutiques associées à ce consommable.
+     * Les hotels de vente associées à ce consommable.
      */
     public function shops()
     {

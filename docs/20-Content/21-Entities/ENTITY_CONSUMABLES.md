@@ -7,7 +7,7 @@ Les consommables regroupent tous les objets à usage unique ou limité : potio
 - **Type de consommable** : chaque consommable référence un type (`consumable_type_id`).
 - **Créatures** : via le pivot `consumable_creature` (N:N avec `creatures`).
 - **Ressources** : via le pivot `consumable_resource` (N:N avec `resources`).
-- **Boutiques** : via le pivot `consumable_shop` (N:N avec `shops`).
+- **hotels de vente vente** : via le pivot `consumable_shop` (N:N avec `shops`).
 - **Scénarios, campagnes** : via les pivots `consumable_scenario`, `consumable_campaign`.
 
 ## Exemples d’utilisation

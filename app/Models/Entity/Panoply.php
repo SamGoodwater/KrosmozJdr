@@ -118,7 +118,7 @@ class Panoply extends Model
     }
 
     /**
-     * Les boutiques associées à cette panoplie.
+     * Les hotels de vente associées à cette panoplie.
      */
     public function shops()
     {

@@ -85,10 +85,10 @@ class FormatterApplicatorTest extends TestCase
         $getter->clearCache();
         $applicator = new FormatterApplicator(null, $getter);
 
-        $result = $applicator->apply('clampToCharacteristic', 500, ['characteristicId' => 'life_creature'], [], ['entityType' => 'monster']);
+        $result = $applicator->apply('clampToCharacteristic', 500, ['characteristicId' => 'life_points_creature'], [], ['entityType' => 'monster']);
 
         $this->assertIsInt($result);
-        $limits = $getter->getLimits('life_creature', 'monster');
+        $limits = $getter->getLimits('life_points_creature', 'monster');
         $this->assertNotNull($limits);
         $this->assertLessThanOrEqual($limits['max'], $result);
         $this->assertGreaterThanOrEqual($limits['min'], $result);

@@ -38,7 +38,7 @@ Le tableau ci-dessous synthétise les principales entités du projet, leur type 
 | capabilities     | Métier         | Compétences spéciales, pouvoirs                              |
 | attributes       | Métier         | Attributs/caractéristiques (force, intelligence, etc.)       |
 | consumables      | Métier         | Objets consommables (potions, nourritures, parchemins, etc.) |
-| shops            | Métier         | Boutiques et vendeurs                                        |
+| shops            | Métier         | hotels de vente et vendeurs                                        |
 | specializations  | Métier         | Spécialisations de classes (tank, soigneur, dps, etc.)       |
 | scenarios        | Métier         | Scénarios de jeu (quêtes, donjons, aventures)                |
 | campaigns        | Métier         | Campagnes de jeu (enchaînement de scénarios)                 |
@@ -284,12 +284,12 @@ Le tableau ci-dessous synthétise les principales entités du projet, leur type 
 | created_at         | datetime | Date de création                   |
 | updated_at         | datetime | Date de modification               |
 
-### 3.11. Boutiques (`shops`)
+### 3.11. hotels de vente (`shops`)
 
 | Champ       | Type     | Description                          |
 | ----------- | -------- | ------------------------------------ |
 | id          | integer  | Identifiant unique                   |
-| name        | string   | Nom de la boutique                   |
+| name        | string   | Nom de la hotel de vente                   |
 | description | string   | Description (nullable)               |
 | location    | string   | Localisation (nullable)              |
 | price       | integer  | Prix de base (default: 0)            |

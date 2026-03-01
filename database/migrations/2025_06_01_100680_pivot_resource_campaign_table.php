@@ -6,6 +6,9 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
+    /** Évite les deadlocks MySQL lors de migrate:fresh (pivots vers campaigns). */
+    public $withinTransaction = false;
+
     public function up(): void
     {
         Schema::create('resource_campaign', function (Blueprint $table) {

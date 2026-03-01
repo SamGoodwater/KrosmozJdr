@@ -20,6 +20,7 @@ final class SpellEffectsConversionService
 {
     public function __construct(
         private DofusDbEffectCatalog $effectCatalog,
+        private DofusdbEffectMappingService $mappingService,
     ) {
     }
 
@@ -89,7 +90,7 @@ final class SpellEffectsConversionService
                 continue;
             }
 
-            $mapping = DofusDbEffectMapping::getSubEffectForEffectId($effectId);
+            $mapping = $this->mappingService->getSubEffectForEffectId($effectId);
             $subEffectSlug = null;
             $charSource = null;
             $definition = [];
@@ -126,13 +127,88 @@ final class SpellEffectsConversionService
             ];
         }
 
+        $area = $this->extractAreaNotationFromLevel($levelData);
+        $targetType = $this->extractTargetTypeFromLevel($levelData);
+
         return [
             'degree' => $degree,
             'name' => $spellName,
             'slug' => $slug,
             'description' => null,
+            'target_type' => $targetType,
+            'area' => $area,
             'sub_effects' => $subEffects,
         ];
+    }
+
+    /**
+     * Extrait la notation zone (point, line-WxL, cross-N, circle-N, rect-WxH) depuis le premier zoneDescr du niveau.
+     *
+     * @param array<string, mixed> $levelData spell-level (effects[].zoneDescr)
+     * @return string|null
+     */
+    private function extractAreaNotationFromLevel(array $levelData): ?string
+    {
+        $effectsList = $levelData['effects'] ?? [];
+        foreach ($effectsList as $inst) {
+            if (!is_array($inst)) {
+                continue;
+            }
+            $zone = $inst['zoneDescr'] ?? null;
+            if (!is_array($zone)) {
+                continue;
+            }
+            $notation = self::zoneDescrToNotation($zone);
+            if ($notation !== null) {
+                return $notation;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Convertisseur zoneDescr DofusDB (shape, param1, param2) → notation KrosmozJDR.
+     *
+     * @see docs/50-Fonctionnalités/Spell-Effects/ZONE_NOTATION.md
+     * @param array{shape?: int, param1?: int, param2?: int} $zoneDescr
+     */
+    public static function zoneDescrToNotation(array $zoneDescr): ?string
+    {
+        $shape = isset($zoneDescr['shape']) ? (int) $zoneDescr['shape'] : 0;
+        $p1 = isset($zoneDescr['param1']) ? (int) $zoneDescr['param1'] : 0;
+        $p2 = isset($zoneDescr['param2']) ? (int) $zoneDescr['param2'] : 0;
+
+        return match (true) {
+            $shape === 0 => 'point',
+            $shape === 1 => 'line-1x' . max(1, $p1 ?: 1),
+            $shape === 2, $shape === 4 => 'cross-' . max(1, $p1 ?: 1),
+            $shape === 3 => 'circle-' . max(1, $p1 ?: 1),
+            default => $shape > 0 ? 'shape-' . $shape : null,
+        };
+    }
+
+    /**
+     * Déduit target_type (direct / trap / glyph) depuis le niveau (Dofus : triggers, etc.).
+     *
+     * @param array<string, mixed> $levelData
+     * @return string
+     */
+    private function extractTargetTypeFromLevel(array $levelData): string
+    {
+        $effectsList = $levelData['effects'] ?? [];
+        foreach ($effectsList as $inst) {
+            if (!is_array($inst)) {
+                continue;
+            }
+            $triggers = $inst['triggers'] ?? null;
+            if (is_string($triggers) && str_contains(strtoupper($triggers), 'P')) {
+                return \App\Models\Effect::TARGET_TRAP;
+            }
+            if (is_string($triggers) && str_contains(strtoupper($triggers), 'G')) {
+                return \App\Models\Effect::TARGET_GLYPH;
+            }
+        }
+        return \App\Models\Effect::TARGET_DIRECT;
     }
 
     /**

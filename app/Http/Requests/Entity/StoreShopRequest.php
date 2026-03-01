@@ -7,7 +7,7 @@ use Illuminate\Foundation\Http\FormRequest;
 /**
  * FormRequest pour la création d'un Shop.
  *
- * Valide les champs principaux d'une boutique.
+ * Valide les champs principaux d'une hotel de vente.
  */
 class StoreShopRequest extends FormRequest
 {

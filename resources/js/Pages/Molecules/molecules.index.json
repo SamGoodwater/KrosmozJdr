@@ -1574,80 +1574,6 @@
     "file": "entity/item/ItemViewCompact.vue"
   },
   {
-    "name": "CreatureViewText",
-    "description": "CreatureViewText — Vue Texte pour Creature",
-    "props": [
-      {
-        "name": "creature",
-        "type": "Creature",
-        "desc": "- Instance du modèle Creature"
-      }
-    ],
-    "slots": [],
-    "file": "entity/creature/CreatureViewText.vue"
-  },
-  {
-    "name": "CreatureViewMinimal",
-    "description": "CreatureViewMinimal — Vue Minimal pour Creature",
-    "props": [
-      {
-        "name": "creature",
-        "type": "Creature",
-        "desc": "- Instance du modèle Creature"
-      },
-      {
-        "name": "showActions",
-        "type": "Boolean",
-        "desc": "- Afficher les actions (défaut: true)"
-      }
-    ],
-    "slots": [],
-    "file": "entity/creature/CreatureViewMinimal.vue"
-  },
-  {
-    "name": "CreatureViewLarge",
-    "description": "CreatureViewLarge — Vue Large pour Creature",
-    "props": [
-      {
-        "name": "creature",
-        "type": "Creature",
-        "desc": "- Instance du modèle Creature"
-      },
-      {
-        "name": "showActions",
-        "type": "Boolean",
-        "desc": "- Afficher les actions (défaut: true)"
-      }
-    ],
-    "slots": [],
-    "file": "entity/creature/CreatureViewLarge.vue"
-  },
-  {
-    "name": "CreatureViewCompact",
-    "description": "CreatureViewCompact — Vue Compact pour Creature",
-    "props": [
-      {
-        "name": "creature",
-        "type": "Creature",
-        "desc": "- Instance du modèle Creature"
-      },
-      {
-        "name": "showActions",
-        "type": "Boolean",
-        "desc": "- Afficher les actions (défaut: true)"
-      }
-    ],
-    "slots": [],
-    "file": "entity/creature/CreatureViewCompact.vue"
-  },
-  {
-    "name": "CreatureSummaryCell",
-    "description": "CreatureSummaryCell — Molecule",
-    "props": [],
-    "slots": [],
-    "file": "entity/creature/CreatureSummaryCell.vue"
-  },
-  {
     "name": "ConsumableViewText",
     "description": "ConsumableViewText — Vue Texte pour Consumable",
     "props": [
@@ -2166,6 +2092,29 @@
     "props": [],
     "slots": [],
     "file": "data-display/ImageViewer.vue"
+  },
+  {
+    "name": "CharacteristicGroup",
+    "description": "CharacteristicGroup — Molécule regroupant des atomes de caractéristiques (Formula, Boolean, Badges).",
+    "props": [
+      {
+        "name": "characteristics",
+        "type": "Array<Object>",
+        "desc": "- Liste d'items { type, def, value?, formulaResolved?, formulaRaw?, levelTable?, items? }"
+      },
+      {
+        "name": "levelEffective",
+        "type": "number|null",
+        "desc": "- Level effectif pour les formules (optionnel)"
+      },
+      {
+        "name": "title",
+        "type": "string",
+        "desc": "- Titre optionnel du groupe (ex. \"Stats de combat\")"
+      }
+    ],
+    "slots": [],
+    "file": "data-display/CharacteristicGroup.vue"
   },
   {
     "name": "AvatarGroup",

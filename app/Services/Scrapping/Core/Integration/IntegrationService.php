@@ -454,7 +454,6 @@ final class IntegrationService
             'pa' => (string) ($data['pa'] ?? '3'),
             'po' => $po,
             'po_editable' => (bool) (isset($data['po_editable']) ? (int) $data['po_editable'] : true),
-            'area' => (int) ($data['area'] ?? 0),
             'level' => (string) ($data['level'] ?? '1'),
             'cast_per_turn' => (string) ($data['cast_per_turn'] ?? '1'),
             'cast_per_target' => (string) (isset($data['cast_per_target']) ? $data['cast_per_target'] : '0'),
@@ -606,6 +605,8 @@ final class IntegrationService
                 'name' => $effectName,
                 'slug' => $effectSlug,
                 'description' => $effectRow['description'] ?? null,
+                'target_type' => (string) ($effectRow['target_type'] ?? \App\Models\Effect::TARGET_DIRECT),
+                'area' => isset($effectRow['area']) ? (string) $effectRow['area'] : null,
                 'config_signature' => $signature,
             ]);
 

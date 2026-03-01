@@ -172,7 +172,7 @@ class ShopController extends Controller
         $shop->items()->sync($syncData);
         
         return redirect()->back()
-            ->with('success', 'Objets de la boutique mis à jour avec succès.');
+            ->with('success', 'Objets de la hotel de vente mis à jour avec succès.');
     }
 
     /**
@@ -222,7 +222,7 @@ class ShopController extends Controller
         $shop->consumables()->sync($syncData);
         
         return redirect()->back()
-            ->with('success', 'Consommables de la boutique mis à jour avec succès.');
+            ->with('success', 'Consommables de la hotel de vente mis à jour avec succès.');
     }
 
     /**
@@ -272,7 +272,7 @@ class ShopController extends Controller
         $shop->resources()->sync($syncData);
         
         return redirect()->back()
-            ->with('success', 'Ressources de la boutique mises à jour avec succès.');
+            ->with('success', 'Ressources de la hotel de vente mises à jour avec succès.');
     }
 
     /**

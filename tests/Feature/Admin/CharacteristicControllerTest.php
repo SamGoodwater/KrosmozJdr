@@ -62,7 +62,7 @@ class CharacteristicControllerTest extends TestCase
 
     public function test_guest_redirected_to_login_on_show(): void
     {
-        $response = $this->get(route('admin.characteristics.show', 'life_creature'));
+        $response = $this->get(route('admin.characteristics.show', 'life_points_creature'));
 
         $response->assertRedirect(route('login'));
     }
@@ -87,7 +87,7 @@ class CharacteristicControllerTest extends TestCase
     {
         $user = User::factory()->create(['role' => User::ROLE_USER]);
 
-        $response = $this->actingAs($user)->get(route('admin.characteristics.show', 'life_creature'));
+        $response = $this->actingAs($user)->get(route('admin.characteristics.show', 'life_points_creature'));
 
         $response->assertForbidden();
     }
@@ -167,7 +167,7 @@ class CharacteristicControllerTest extends TestCase
 
         $response = $this->actingAs($admin)
             ->post(route('admin.characteristics.store'), [
-                'key' => 'life_creature',
+                'key' => 'life_points_creature',
                 'name' => 'Vie',
                 'type' => 'int',
                 'group' => 'creature',
@@ -195,14 +195,14 @@ class CharacteristicControllerTest extends TestCase
     {
         $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
 
-        $response = $this->actingAs($admin)->get(route('admin.characteristics.show', 'life_creature'));
+        $response = $this->actingAs($admin)->get(route('admin.characteristics.show', 'life_points_creature'));
 
         $response->assertOk();
         $response->assertInertia(fn ($page) => $page
             ->component('Admin/characteristics/Index')
             ->has('characteristicsByGroup')
             ->has('selected')
-            ->where('selected.id', 'life_creature')
+            ->where('selected.id', 'life_points_creature')
             ->has('scrappingMappingsUsingThis')
             ->has('characteristicsForConvertToLinked')
         );
@@ -211,11 +211,11 @@ class CharacteristicControllerTest extends TestCase
     public function test_admin_can_update_characteristic(): void
     {
         $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
-        $char = Characteristic::where('key', 'life_creature')->first();
+        $char = Characteristic::where('key', 'life_points_creature')->first();
         $this->assertNotNull($char);
 
         $response = $this->actingAs($admin)
-            ->patch(route('admin.characteristics.update', 'life_creature'), [
+            ->patch(route('admin.characteristics.update', 'life_points_creature'), [
                 'name' => 'Points de vie (modifié)',
                 'short_name' => $char->short_name,
                 'description' => $char->descriptions,
@@ -227,9 +227,9 @@ class CharacteristicControllerTest extends TestCase
                 'entities' => [],
             ]);
 
-        $response->assertRedirect(route('admin.characteristics.show', 'life_creature'));
+        $response->assertRedirect(route('admin.characteristics.show', 'life_points_creature'));
         $this->assertDatabaseHas('characteristics', [
-            'key' => 'life_creature',
+            'key' => 'life_points_creature',
             'name' => 'Points de vie (modifié)',
         ]);
     }
@@ -239,7 +239,7 @@ class CharacteristicControllerTest extends TestCase
         $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
 
         $url = route('admin.characteristics.formula-preview') . '?' . http_build_query([
-            'characteristic_id' => 'life_creature',
+            'characteristic_id' => 'life_points_creature',
             'entity' => 'monster',
             'variable' => 'level',
         ]);
@@ -256,7 +256,7 @@ class CharacteristicControllerTest extends TestCase
         $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
 
         $response = $this->actingAs($admin)->getJson(route('admin.characteristics.formula-preview') . '?' . http_build_query([
-            'characteristic_id' => 'life_creature',
+            'characteristic_id' => 'life_points_creature',
             'entity' => 'monster',
             'variable' => 'level',
             'formula' => '[level] * 2',
@@ -277,7 +277,7 @@ class CharacteristicControllerTest extends TestCase
         $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
 
         $url = route('admin.characteristics.formula-preview') . '?' . http_build_query([
-            'characteristic_id' => 'life_creature',
+            'characteristic_id' => 'life_points_creature',
             'entity' => 'invalid_entity',
         ]);
         $response = $this->actingAs($admin)->getJson($url);
@@ -367,7 +367,7 @@ class CharacteristicControllerTest extends TestCase
     public function test_admin_cannot_destroy_characteristic_with_linked(): void
     {
         $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
-        $master = Characteristic::where('key', 'life_creature')->first();
+        $master = Characteristic::where('key', 'life_points_creature')->first();
         $this->assertNotNull($master);
         // Créer une caractéristique liée (level_object par ex. si level_creature existe)
         $levelCreature = Characteristic::where('key', 'level_creature')->first();
@@ -438,7 +438,7 @@ class CharacteristicControllerTest extends TestCase
      */
     public function test_guest_redirected_on_scrapping_mapping_options(): void
     {
-        $url = route('admin.characteristics.scrapping-mapping-options', ['characteristic_key' => 'life_creature']) . '?entity=monster';
+        $url = route('admin.characteristics.scrapping-mapping-options', ['characteristic_key' => 'life_points_creature']) . '?entity=monster';
         $response = $this->getJson($url);
         $response->assertStatus(401);
     }
@@ -449,7 +449,7 @@ class CharacteristicControllerTest extends TestCase
     public function test_admin_can_get_scrapping_mapping_entities(): void
     {
         $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
-        $url = route('admin.characteristics.scrapping-mapping-options', ['characteristic_key' => 'life_creature']);
+        $url = route('admin.characteristics.scrapping-mapping-options', ['characteristic_key' => 'life_points_creature']);
         $response = $this->actingAs($admin)->getJson($url);
         $response->assertOk();
         $response->assertJsonStructure(['entities']);
@@ -464,7 +464,7 @@ class CharacteristicControllerTest extends TestCase
     public function test_admin_can_get_scrapping_mapping_paths(): void
     {
         $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
-        $url = route('admin.characteristics.scrapping-mapping-options', ['characteristic_key' => 'life_creature']) . '?entity=monster';
+        $url = route('admin.characteristics.scrapping-mapping-options', ['characteristic_key' => 'life_points_creature']) . '?entity=monster';
         $response = $this->actingAs($admin)->getJson($url);
         $response->assertOk();
         $response->assertJsonStructure(['paths']);
@@ -477,10 +477,10 @@ class CharacteristicControllerTest extends TestCase
     public function test_admin_can_store_scrapping_mapping(): void
     {
         $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
-        $char = Characteristic::where('key', 'life_creature')->first();
+        $char = Characteristic::where('key', 'life_points_creature')->first();
         $this->assertNotNull($char);
         $response = $this->actingAs($admin)->postJson(
-            route('admin.characteristics.store-scrapping-mapping', ['characteristic_key' => 'life_creature']),
+            route('admin.characteristics.store-scrapping-mapping', ['characteristic_key' => 'life_points_creature']),
             ['entity' => 'monster', 'from_path' => 'grades.0.lifePoints']
         );
         $response->assertOk();
@@ -498,7 +498,7 @@ class CharacteristicControllerTest extends TestCase
     public function test_admin_can_unlink_scrapping_mapping(): void
     {
         $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
-        $char = Characteristic::where('key', 'life_creature')->first();
+        $char = Characteristic::where('key', 'life_points_creature')->first();
         $this->assertNotNull($char);
         $mapping = ScrappingEntityMapping::firstOrCreate(
             [
@@ -513,7 +513,7 @@ class CharacteristicControllerTest extends TestCase
             ]
         );
         $response = $this->actingAs($admin)->postJson(
-            route('admin.characteristics.unlink-scrapping-mapping', ['characteristic_key' => 'life_creature']),
+            route('admin.characteristics.unlink-scrapping-mapping', ['characteristic_key' => 'life_points_creature']),
             ['mapping_id' => $mapping->id]
         );
         $response->assertOk();

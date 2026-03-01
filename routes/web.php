@@ -22,6 +22,7 @@ require __DIR__ . '/web/page.php';
 require __DIR__ . '/admin/characteristics.php';
 require __DIR__ . '/admin/dofus-conversion-formulas.php';
 require __DIR__ . '/admin/scrapping-mappings.php';
+require __DIR__ . '/admin/dofusdb-effect-mappings.php';
 require __DIR__ . '/admin/effects.php';
 
 require __DIR__ . '/entities/attribute.php';
