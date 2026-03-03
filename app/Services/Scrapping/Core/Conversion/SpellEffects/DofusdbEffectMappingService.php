@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Services\Scrapping\Core\Conversion\SpellEffects;
 
 use App\Models\DofusdbEffectMapping;
+use App\Services\Scrapping\Core\Conversion\SpellEffects\DofusDbEffectMapping as FallbackEffectMapping;
 use Illuminate\Support\Facades\Cache;
 
 /**
@@ -38,7 +39,7 @@ final class DofusdbEffectMappingService
             }
             return $result;
         }
-        return DofusDbEffectMapping::getSubEffectForEffectId($effectId);
+        return FallbackEffectMapping::getSubEffectForEffectId($effectId);
     }
 
     private function findByEffectId(int $effectId): ?DofusdbEffectMapping

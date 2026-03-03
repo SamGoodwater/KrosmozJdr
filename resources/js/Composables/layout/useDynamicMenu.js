@@ -1,48 +1,34 @@
 /**
  * useDynamicMenu Composable
- * 
+ *
  * @description
  * Composable pour gérer le menu dynamique des pages.
- * - Récupère les pages du menu depuis l'API
- * - Gère le cache côté client
- * - Construit l'arborescence du menu
- * 
+ * - Récupère les pages du menu depuis l'API GET /pages/menu
+ * - Affiche uniquement les pages « à afficher » : state=playable, in_menu=true, visibles pour l'utilisateur
+ * - Rafraîchit le menu à chaque navigation vers une URL /pages/* (après création/édition/suppression)
+ *
  * @example
  * const { menuItems, loading, error, refresh } = useDynamicMenu();
  */
-import { ref, computed, onMounted } from 'vue';
+import { ref, computed, onMounted, watch } from 'vue';
+import { usePage } from '@inertiajs/vue3';
 import axios from 'axios';
 
 const menuItems = ref([]);
 const loading = ref(false);
 const error = ref(null);
-const cacheTTL = 3600000; // 1 heure en millisecondes
 
 /**
- * Génère la clé de cache selon l'utilisateur
- * @param {number|null} userId - ID de l'utilisateur (null pour invité)
- * @returns {string}
- */
-const getCacheKey = (userId) => {
-    return `dynamic_menu_cache_${userId || 'guest'}`;
-};
-
-/**
- * Récupère les pages du menu depuis l'API
+ * Récupère les pages du menu depuis l'API.
+ * Le backend ne retourne que les pages playable + in_menu + visibles pour l'utilisateur.
  */
 const fetchMenuPages = async () => {
     loading.value = true;
     error.value = null;
-    
+
     try {
-        // Récupérer l'ID utilisateur depuis les props Inertia
-        // On doit utiliser usePage() mais on ne peut pas l'utiliser ici car c'est en dehors du composable
-        // On va donc récupérer depuis window.__inertia ou faire l'appel sans cache côté client
-        // Le backend gère déjà le cache par utilisateur
-        
-        // Récupérer depuis l'API (le backend gère le cache par utilisateur)
         const response = await axios.get(route('pages.menu'));
-        
+
         if (response.data && response.data.menu) {
             menuItems.value = response.data.menu;
         }
@@ -111,11 +97,25 @@ const shouldMenuBeOpen = (page, currentRoute) => {
 };
 
 export function useDynamicMenu() {
+    const page = usePage();
+
     // Charger le menu au montage
     onMounted(() => {
         fetchMenuPages();
     });
-    
+
+    // Rafraîchir le menu à chaque navigation vers une page /pages/* (ex. après création/édition)
+    // pour que la liste de gauche reflète bien les pages à afficher (in_menu, playable).
+    watch(
+        () => page.url,
+        (newUrl) => {
+            if (newUrl && newUrl.startsWith('/pages')) {
+                fetchMenuPages();
+            }
+        },
+        { immediate: false }
+    );
+
     return {
         menuItems: computed(() => menuItems.value),
         loading: computed(() => loading.value),

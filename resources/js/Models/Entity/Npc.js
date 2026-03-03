@@ -1,14 +1,17 @@
 /**
  * Modèle Npc pour le frontend
- * 
+ *
  * @description
  * Classe pour normaliser et manipuler les données de npc côté frontend.
- * 
+ * Réutilise les colonnes résumé créature (Combat, Résistances, Stats, Dommages, Contrôle) comme Monster.
+ *
  * @example
  * const npc = new Npc(props.npc);
  * console.log(npc.creature?.name); // Accès via la relation creature
  */
 import { BaseModel } from '../BaseModel';
+import CharacteristicsCard from '@/Pages/Organismes/data-display/CharacteristicsCard.vue';
+import { buildCreatureCharacteristicGroups } from '@/Utils/Entity/buildCreatureCharacteristicGroups';
 
 export class Npc extends BaseModel {
     // ============================================
@@ -107,6 +110,10 @@ export class Npc extends BaseModel {
             case 'specialization':
             case 'specialization_id':
                 return this._toSpecializationCell(format, size, options);
+            case 'creature_level':
+                return this._toCreatureLevelCell(options);
+            case 'creature_state':
+                return this._toCreatureStateCell(options);
             case 'story':
                 return this._toStoryCell(format, size, options);
             case 'historical':
@@ -119,17 +126,158 @@ export class Npc extends BaseModel {
                 return this._toCreatedAtCell(format, size, options);
             case 'updated_at':
                 return this._toUpdatedAtCell(format, size, options);
+            case 'creature_characteristics':
+                return this._toCreatureCharacteristicsCell(options);
+            case 'creature_summary_combat':
+                return this._toSummaryCombatCell(options);
+            case 'creature_summary_resistance':
+                return this._toSummaryResistanceCell(options);
+            case 'creature_summary_damage':
+                return this._toSummaryDamageCell(options);
+            case 'creature_summary_stats':
+                return this._toSummaryStatsCell(options);
+            case 'creature_summary_control':
+                return this._toSummaryControlCell(options);
             default:
                 // Fallback vers la méthode de base
                 return baseCell;
         }
     }
 
+    /** @private Données brutes de la créature (pour buildCreatureCharacteristicGroups). */
+    _getCreatureData() {
+        return this._data?.creature ?? null;
+    }
+
+    /** @private Cellule niveau (créature). */
+    _toCreatureLevelCell(_options) {
+        const raw = this._data?.creature_level ?? this._data?.creature?.level ?? null;
+        const v = raw !== null && raw !== undefined && raw !== '' ? String(raw) : '—';
+        return {
+            type: 'badge',
+            value: v,
+            params: {
+                filterValue: raw !== null && raw !== undefined && raw !== '' ? String(raw) : '',
+                sortValue: typeof raw === 'number' ? raw : (typeof raw === 'string' && /^\d+$/.test(raw) ? parseInt(raw, 10) : raw ?? ''),
+                searchValue: v,
+            },
+        };
+    }
+
+    /** @private Cellule état (créature). */
+    _toCreatureStateCell(_options) {
+        const raw = this._data?.creature_state ?? this._data?.creature?.state ?? null;
+        const v = raw !== null && raw !== undefined && raw !== '' ? String(raw) : '—';
+        return {
+            type: 'text',
+            value: v,
+            params: {
+                filterValue: raw !== null && raw !== undefined && raw !== '' ? String(raw) : '',
+                sortValue: v,
+                searchValue: v,
+            },
+        };
+    }
+
+    /** @private Cellule « Caractéristiques (tout) ». */
+    _toCreatureCharacteristicsCell(_options) {
+        const ctx = _options?.ctx ?? _options?.context ?? null;
+        const byDb = ctx?.characteristics?.creature?.byDbColumn ?? {};
+        const creatureData = this._getCreatureData();
+        const groups = buildCreatureCharacteristicGroups(creatureData, byDb);
+        const c = creatureData;
+        const elements = ['neutre', 'terre', 'feu', 'air', 'eau'];
+        const filterParts = [];
+        if (c && typeof c === 'object') {
+            for (const db of ['pa', 'pm', 'po', 'life', 'ini', 'invocation', 'strong', 'intel', 'agi', 'chance', 'vitality', 'sagesse', 'ca', 'dodge_pa', 'dodge_pm', 'fuite', 'tacle', 'touch']) {
+                const v = c[db];
+                if (v != null && String(v) !== '') filterParts.push(String(v));
+            }
+            for (const el of elements) {
+                ['res_fixe_' + el, 'res_' + el, 'do_fixe_' + el].forEach((db) => {
+                    const v = c[db];
+                    if (v != null && String(v) !== '') filterParts.push(String(v));
+                });
+            }
+        }
+        const filterValue = filterParts.join(' ');
+        return {
+            type: 'chips',
+            value: '',
+            params: {
+                component: CharacteristicsCard,
+                componentProps: { entity: creatureData, groups, dense: true, passValue: false },
+                passValue: false,
+                sortValue: 0,
+                searchValue: filterValue,
+                filterValue,
+            },
+        };
+    }
+
+    /** @private */
+    _toSummaryResistanceCell(_options) {
+        return this._toSummaryGroupCell(_options, 'Résistances', ['res_fixe_neutre', 'res_neutre', 'res_fixe_terre', 'res_terre', 'res_fixe_feu', 'res_feu', 'res_fixe_air', 'res_air', 'res_fixe_eau', 'res_eau']);
+    }
+
+    /** @private */
+    _toSummaryDamageCell(_options) {
+        return this._toSummaryGroupCell(_options, 'Dommages', ['touch', 'do_fixe_neutre', 'do_fixe_terre', 'do_fixe_feu', 'do_fixe_air', 'do_fixe_eau']);
+    }
+
+    /** @private */
+    _toSummaryStatsCell(_options) {
+        return this._toSummaryGroupCell(_options, 'Stats', ['strong', 'intel', 'agi', 'chance', 'vitality', 'sagesse']);
+    }
+
+    /** @private */
+    _toSummaryCombatCell(_options) {
+        return this._toSummaryGroupCell(_options, 'Combat', ['pa', 'pm', 'po', 'life', 'ini', 'invocation']);
+    }
+
+    /** @private */
+    _toSummaryControlCell(_options) {
+        return this._toSummaryGroupCell(_options, 'Contrôle', ['ca', 'dodge_pa', 'dodge_pm', 'fuite', 'tacle']);
+    }
+
+    /**
+     * Génère une cellule résumé avec CharacteristicsCard pour un groupe (Combat, Résistances, etc.).
+     * @private
+     */
+    _toSummaryGroupCell(_options, groupTitle, dbColumnsForFilter) {
+        const ctx = _options?.ctx ?? _options?.context ?? null;
+        const byDb = ctx?.characteristics?.creature?.byDbColumn ?? {};
+        const creatureData = this._getCreatureData();
+        const allGroups = buildCreatureCharacteristicGroups(creatureData, byDb);
+        const groups = allGroups.filter((g) => g.title === groupTitle);
+        const c = creatureData;
+        const filterParts = [];
+        if (c && typeof c === 'object') {
+            for (const db of dbColumnsForFilter) {
+                const v = c[db];
+                if (v != null && String(v) !== '') filterParts.push(String(v));
+            }
+        }
+        const filterValue = filterParts.join(' ');
+        return {
+            type: 'chips',
+            value: '',
+            params: {
+                component: CharacteristicsCard,
+                componentProps: { entity: creatureData, groups, dense: true, passValue: false },
+                passValue: false,
+                sortValue: 0,
+                searchValue: filterValue,
+                filterValue,
+            },
+        };
+    }
+
     /**
      * Génère une cellule pour le nom de la créature (lien vers la page de détail)
      * @private
      */
-    _toCreatureNameCell(format, size, options) {
+    _toCreatureNameCell(format, size, _options) {
         const creature = this.creature;
         if (!creature) {
             return {
@@ -143,15 +291,14 @@ export class Npc extends BaseModel {
         }
 
         const name = creature.name || '-';
-        const href = options.href || `/creatures/${creature.id}`;
-        
+        const truncate = format.truncate || (size === 'xs' || size === 'sm' ? 20 : null);
+
         return {
-            type: 'route',
+            type: 'text',
             value: name,
             params: {
-                href,
                 tooltip: name === '-' ? '' : name,
-                truncate: format.truncate || (size === 'xs' || size === 'sm' ? 20 : null),
+                truncate,
                 searchValue: name === '-' ? '' : name,
                 sortValue: name,
             },
@@ -182,6 +329,7 @@ export class Npc extends BaseModel {
             type: 'text',
             value: breedName,
             params: {
+                tooltip: breedName === '-' ? '' : breedName,
                 sortValue: breedName,
                 searchValue: breedName,
             },
@@ -207,11 +355,12 @@ export class Npc extends BaseModel {
         }
 
         const specializationName = specialization.name || specialization.label || '-';
-        
+
         return {
             type: 'text',
             value: specializationName,
             params: {
+                tooltip: specializationName === '-' ? '' : specializationName,
                 sortValue: specializationName,
                 searchValue: specializationName,
             },

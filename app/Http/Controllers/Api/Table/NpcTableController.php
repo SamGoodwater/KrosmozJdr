@@ -3,7 +3,10 @@
 namespace App\Http\Controllers\Api\Table;
 
 use App\Http\Controllers\Controller;
+use App\Models\Entity\Breed;
+use App\Models\Entity\Creature;
 use App\Models\Entity\Npc;
+use App\Models\Entity\Specialization;
 use App\Services\Characteristic\CharacteristicMetaByDbColumnService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -33,6 +36,13 @@ class NpcTableController extends Controller
         //   Objectif : supporter une architecture "field descriptors" (Option B).
         $format = $request->filled('format') ? (string) $request->get('format') : 'cells';
 
+        $filters = (array) ($request->input('filters', $request->input('filter', [])) ?? []);
+        foreach (['breed_id', 'specialization_id', 'creature_level', 'creature_state'] as $k) {
+            if (! array_key_exists($k, $filters) && $request->has($k)) {
+                $filters[$k] = $request->get($k);
+            }
+        }
+
         $search = $request->filled('search') ? (string) $request->get('search') : '';
 
         $limit = (int) $request->integer('limit', 5000);
@@ -54,6 +64,39 @@ class NpcTableController extends Controller
             });
         }
 
+        if (array_key_exists('breed_id', $filters) && $filters['breed_id'] !== '' && $filters['breed_id'] !== null) {
+            $val = $filters['breed_id'];
+            $ids = is_array($val) ? array_map('intval', $val) : [(int) $val];
+            $ids = array_filter($ids, fn ($id) => $id > 0);
+            if ($ids !== []) {
+                $query->whereIn('breed_id', $ids);
+            }
+        }
+        if (array_key_exists('specialization_id', $filters) && $filters['specialization_id'] !== '' && $filters['specialization_id'] !== null) {
+            $val = $filters['specialization_id'];
+            $ids = is_array($val) ? array_map('intval', $val) : [(int) $val];
+            $ids = array_filter($ids, fn ($id) => $id > 0);
+            if ($ids !== []) {
+                $query->whereIn('specialization_id', $ids);
+            }
+        }
+        if (array_key_exists('creature_level', $filters) && $filters['creature_level'] !== '' && $filters['creature_level'] !== null) {
+            $val = $filters['creature_level'];
+            $levels = is_array($val) ? $val : [$val];
+            $levels = array_filter($levels, fn ($v) => $v !== '' && $v !== null);
+            if ($levels !== []) {
+                $query->whereHas('creature', fn ($q) => $q->whereIn('level', $levels));
+            }
+        }
+        if (array_key_exists('creature_state', $filters) && $filters['creature_state'] !== '' && $filters['creature_state'] !== null) {
+            $val = $filters['creature_state'];
+            $states = is_array($val) ? $val : [$val];
+            $states = array_filter($states, fn ($v) => $v !== '' && $v !== null);
+            if ($states !== []) {
+                $query->whereHas('creature', fn ($q) => $q->whereIn('state', $states));
+            }
+        }
+
         $allowedSort = ['id', 'created_at', 'updated_at'];
         if (in_array($sort, $allowedSort, true)) {
             $query->orderBy($sort, $order);
@@ -71,9 +114,99 @@ class NpcTableController extends Controller
             'manageAny' => Gate::allows('manageAny', Npc::class),
         ];
 
-        // Mode "entities" : retourner les entités brutes
+        $breedOptions = Breed::query()
+            ->select(['id', 'name'])
+            ->orderBy('name')
+            ->get()
+            ->map(fn ($b) => ['value' => (string) $b->id, 'label' => (string) $b->name])
+            ->values()
+            ->all();
+        $specializationOptions = Specialization::query()
+            ->select(['id', 'name'])
+            ->orderBy('name')
+            ->get()
+            ->map(fn ($s) => ['value' => (string) $s->id, 'label' => (string) $s->name])
+            ->values()
+            ->all();
+        $toDistinctOptions = function ($values, $sort = true) {
+            $collected = collect($values)->filter(fn ($v) => $v !== null && $v !== '')->map(fn ($v) => (string) $v)->unique()->values();
+            if ($sort) {
+                $collected = $collected->sort(SORT_NATURAL)->values();
+            }
+
+            return $collected->map(fn ($v) => ['value' => $v, 'label' => $v])->all();
+        };
+        $creatureStateOptions = [
+            ['value' => Creature::STATE_RAW, 'label' => 'Brouillon (raw)'],
+            ['value' => Creature::STATE_DRAFT, 'label' => 'Brouillon'],
+            ['value' => Creature::STATE_PLAYABLE, 'label' => 'Jouable'],
+            ['value' => Creature::STATE_ARCHIVED, 'label' => 'Archivé'],
+        ];
+        $filterOptions = [
+            'breed_id' => $breedOptions,
+            'specialization_id' => $specializationOptions,
+            'creature_level' => $toDistinctOptions($rows->pluck('creature.level')),
+            'creature_state' => $creatureStateOptions,
+        ];
+
+        // Mode "entities" : retourner les entités brutes (créature complète pour colonnes résumé comme Monster)
         if ($format === 'entities') {
             $entities = $rows->map(function (Npc $n) {
+                $creature = null;
+                if ($n->creature) {
+                    $c = $n->creature;
+                    $creature = [
+                        'id' => $c->id,
+                        'name' => $c->name,
+                        'description' => $c->description,
+                        'level' => $c->level,
+                        'life' => $c->life,
+                        'pa' => $c->pa,
+                        'pm' => $c->pm,
+                        'po' => $c->po,
+                        'ini' => $c->ini,
+                        'ca' => $c->ca,
+                        'touch' => $c->touch,
+                        'invocation' => $c->invocation,
+                        'dodge_pa' => $c->dodge_pa,
+                        'dodge_pm' => $c->dodge_pm,
+                        'fuite' => $c->fuite,
+                        'tacle' => $c->tacle,
+                        'vitality' => $c->vitality,
+                        'sagesse' => $c->sagesse,
+                        'strong' => $c->strong,
+                        'intel' => $c->intel,
+                        'agi' => $c->agi,
+                        'chance' => $c->chance,
+                        'hostility' => $c->hostility,
+                        'location' => $c->location,
+                        'image' => $c->image,
+                        'state' => $c->state,
+                        'other_info' => $c->other_info,
+                        'kamas' => $c->kamas,
+                        'drop_' => $c->drop_,
+                        'other_item' => $c->other_item,
+                        'other_consumable' => $c->other_consumable,
+                        'other_resource' => $c->other_resource,
+                        'other_spell' => $c->other_spell,
+                        'do_fixe_neutre' => $c->do_fixe_neutre,
+                        'do_fixe_terre' => $c->do_fixe_terre,
+                        'do_fixe_feu' => $c->do_fixe_feu,
+                        'do_fixe_air' => $c->do_fixe_air,
+                        'do_fixe_eau' => $c->do_fixe_eau,
+                        'res_fixe_neutre' => $c->res_fixe_neutre,
+                        'res_fixe_terre' => $c->res_fixe_terre,
+                        'res_fixe_feu' => $c->res_fixe_feu,
+                        'res_fixe_air' => $c->res_fixe_air,
+                        'res_fixe_eau' => $c->res_fixe_eau,
+                        'res_neutre' => $c->res_neutre,
+                        'res_terre' => $c->res_terre,
+                        'res_feu' => $c->res_feu,
+                        'res_air' => $c->res_air,
+                        'res_eau' => $c->res_eau,
+                    ];
+                }
+
                 return [
                     'id' => $n->id,
                     'creature_id' => $n->creature_id,
@@ -83,10 +216,9 @@ class NpcTableController extends Controller
                     'size' => $n->size,
                     'breed_id' => $n->breed_id,
                     'specialization_id' => $n->specialization_id,
-                    'creature' => $n->creature ? [
-                        'id' => $n->creature->id,
-                        'name' => $n->creature->name,
-                    ] : null,
+                    'creature_level' => $n->creature?->level,
+                    'creature_state' => $n->creature?->state,
+                    'creature' => $creature,
                     'breed' => $n->breed ? [
                         'id' => $n->breed->id,
                         'name' => $n->breed->name,
@@ -105,12 +237,13 @@ class NpcTableController extends Controller
                     'entityType' => 'npcs',
                     'query' => [
                         'search' => $search,
+                        'filters' => $filters,
                         'sort' => $sort,
                         'order' => $order,
                         'limit' => $limit,
                     ],
                     'capabilities' => $capabilities,
-                    'filterOptions' => [],
+                    'filterOptions' => $filterOptions,
                     'characteristics' => [
                         'creature' => [
                             'byDbColumn' => $this->characteristicMeta->buildCreatureByDbColumn(),
@@ -210,12 +343,13 @@ class NpcTableController extends Controller
                 'entityType' => 'npcs',
                 'query' => [
                     'search' => $search,
+                    'filters' => $filters,
                     'sort' => $sort,
                     'order' => $order,
                     'limit' => $limit,
                 ],
                 'capabilities' => $capabilities,
-                'filterOptions' => [],
+                'filterOptions' => $filterOptions,
             ],
             'rows' => $tableRows,
         ]);

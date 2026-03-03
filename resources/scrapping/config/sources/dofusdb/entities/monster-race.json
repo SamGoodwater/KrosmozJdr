@@ -1,0 +1,22 @@
+{
+  "version": 1,
+  "source": "dofusdb",
+  "entity": "monster-race",
+  "label": "Races de monstres",
+  "meta": {
+    "catalogOnly": true
+  },
+  "endpoints": {
+    "fetchMany": {
+      "path": "/monster-races",
+      "method": "GET",
+      "queryDefaults": { "lang": "fr", "$limit": 50, "$skip": 0 }
+    }
+  },
+  "target": {
+    "krosmozEntity": "monster_race"
+  },
+  "mapping": [
+    { "key": "id", "from": { "path": "id" }, "to": [], "formatters": [] }
+  ]
+}

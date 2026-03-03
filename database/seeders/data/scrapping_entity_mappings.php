@@ -1679,7 +1679,7 @@ return array (
         'name' => 'clampToCharacteristic',
         'args' => 
         array (
-          'characteristicId' => 'po',
+          'characteristicId' => 'spell_range_min_spell',
         ),
       ),
       2 => 
@@ -1696,7 +1696,7 @@ return array (
       0 => 
       array (
         'target_model' => 'spells',
-        'target_field' => 'po',
+        'target_field' => 'po_min',
         'sort_order' => 0,
       ),
     ),

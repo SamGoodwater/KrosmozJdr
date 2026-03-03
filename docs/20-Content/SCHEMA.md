@@ -436,6 +436,8 @@ erDiagram
     description : text
     effect_group_id : bigint(20) unsigned
     degree : tinyint(3) unsigned
+    target_type : varchar(32)
+    area : varchar(64)
     config_signature : varchar(64)
     created_at : timestamp
     updated_at : timestamp
@@ -946,9 +948,9 @@ erDiagram
     name : varchar(255)
     description : varchar(255)
     effect : varchar(255)
-    area : int(11)
     level : varchar(255)
-    po : varchar(255)
+    po_min : varchar(64)
+    po_max : varchar(64)
     po_editable : tinyint(1)
     pa : varchar(255)
     cast_per_turn : varchar(255)

@@ -4,6 +4,7 @@ namespace Tests\Feature\Scrapping;
 
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
 use Tests\TestCase;
 
@@ -13,17 +14,21 @@ class ScrappingPreviewConfigConversionTest extends TestCase
 
     public function test_preview_monster_uses_config_driven_conversion_shape(): void
     {
+        Cache::flush();
         $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
-        Http::fake([
-            'api.dofusdb.fr/monsters/31*' => Http::response([
-                'id' => 31,
-                'name' => ['fr' => 'Bouftou'],
-                'grades' => [['level' => 5, 'lifePoints' => 100]],
-                'size' => 'medium',
-                'race' => 1,
-                'img' => 'https://api.dofusdb.fr/img/monsters/31.png',
-            ], 200),
-        ]);
+        Http::fake(function ($request) {
+            if (str_contains((string) $request->url(), '/monsters/31')) {
+                return Http::response([
+                    'id' => 31,
+                    'name' => ['fr' => 'Bouftou'],
+                    'grades' => [['level' => 5, 'lifePoints' => 100]],
+                    'size' => 'medium',
+                    'race' => 1,
+                    'img' => 'https://api.dofusdb.fr/img/monsters/31.png',
+                ], 200);
+            }
+            return Http::response([], 404);
+        });
 
         $res = $this->actingAs($admin)->getJson('/api/scrapping/preview/monster/31');
         $res->assertStatus(200)->assertJson(['success' => true]);
@@ -46,9 +51,9 @@ class ScrappingPreviewConfigConversionTest extends TestCase
         ];
         $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
         Http::fake([
-            'api.dofusdb.fr/spells/201*' => Http::response($spellData, 200),
-            'api.dofusdb.fr/spells*' => Http::response(['data' => [$spellData]], 200),
-            'api.dofusdb.fr/spell-levels*' => Http::response(['data' => []], 200),
+            '*spells/201*' => Http::response($spellData, 200),
+            '*spells*' => Http::response(['data' => [$spellData]], 200),
+            '*spell-levels*' => Http::response(['data' => []], 200),
         ]);
 
         $res = $this->actingAs($admin)->getJson('/api/scrapping/preview/spell/201');
@@ -58,5 +63,6 @@ class ScrappingPreviewConfigConversionTest extends TestCase
         $this->assertIsArray($converted);
         $this->assertEquals('Béco du Tofu', $converted['spells']['name'] ?? $converted['name'] ?? null);
     }
+
 }
 

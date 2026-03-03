@@ -84,11 +84,22 @@ Objectif : **alimenter** la table (mappings connus) et permettre d’**éditer**
 
 **Livrable Phase 2** : un admin peut consulter et modifier les mappings sans toucher au code.
 
+### Simulation des effets dans l’interface de scrapping
+
+En prévisualisation (sans import), l’UI affiche désormais pour les **sorts** :
+
+- **Prévisualisation (ID unique)** : bloc « Simulation des effets (aucune création en base) » avec le groupe d’effets, et pour chaque effet : degré, type de cible (direct / piège / glyphe), zone (`area`), liste des sous-effets (slug + paramètres), et badge **Création** ou **Réutilisation (effet #id)** selon que l’effet serait créé ou réutilisé (même `config_signature`).
+- **Prévisualisation batch** (recherche + « Prévisualiser la sélection ») : pour chaque sort, une colonne « Effets (simul.) » indique le résumé (nombre d’effets, créations / réutilisations).
+
+Aucun objet n’est créé en base tant que l’utilisateur ne lance pas l’import. Backend : `IntegrationService::simulateSpellEffects()`, réponses `preview` et `preview/batch` enrichies avec `spell_effects_simulation`.
+
 ---
 
 ## Phase 3 — Conversion par action (après harmonisation)
 
 Objectif : faire en sorte que la **valeur** convertie (value_formula, etc.) s’appuie sur les **règles par action** décrites dans [CARACTERISTIQUES_EFFETS_PAR_ACTION.md](./CARACTERISTIQUES_EFFETS_PAR_ACTION.md) (1 règle dommages/soin/bouclier vs par caractéristique).
+
+**Plan d’implémentation détaillé** : [PLAN_IMPLEMENTATION_PHASE3_CONVERSION_VALEURS_EFFETS.md](./PLAN_IMPLEMENTATION_PHASE3_CONVERSION_VALEURS_EFFETS.md) (étapes 3.1 à 3.7, fichiers, tests, décisions produit).
 
 ### 3.1 Tâches
 

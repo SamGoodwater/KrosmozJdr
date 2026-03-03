@@ -544,7 +544,7 @@ class ScrappingOrchestratorTest extends TestCase
             'name' => ['fr' => 'Panoplie du Bouftou'],
             'description' => ['fr' => 'Bonus de panoplie'],
             'effects' => [
-                ['effectId' => 1, 'min' => 10, 'max' => 20],
+                ['characteristic' => 1, 'min' => 10, 'max' => 20],
             ],
             'items' => [
                 ['id' => 101],

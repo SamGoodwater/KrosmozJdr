@@ -37,7 +37,8 @@ class SpellTableControllerTest extends TestCase
             'name' => 'Test Spell',
             'level' => '10',
             'pa' => '3',
-            'po' => '2',
+            'po_min' => '2',
+            'po_max' => '2',
         ]);
 
         $response = $this->actingAs($user)

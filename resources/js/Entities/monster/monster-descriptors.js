@@ -103,11 +103,11 @@ export function getMonsterFieldDescriptors(ctx = {}) {
         defaultVisible: { xs: true, sm: true, md: true, lg: true, xl: true },
         cell: {
           sizes: {
-            xs: { mode: 'route', truncate: 15 },
-            sm: { mode: 'route', truncate: 20 },
-            md: { mode: 'route', truncate: 30 },
-            lg: { mode: 'route', truncate: 40 },
-            xl: { mode: 'route' },
+            xs: { mode: 'text', truncate: 15 },
+            sm: { mode: 'text', truncate: 20 },
+            md: { mode: 'text', truncate: 30 },
+            lg: { mode: 'text', truncate: 40 },
+            xl: { mode: 'text' },
           },
         },
       },

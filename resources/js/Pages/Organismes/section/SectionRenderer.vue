@@ -187,8 +187,9 @@ const handleCopyLink = async () => {
   if (!sectionModel.value || !sectionModel.value.page) return;
   
   const pageSlug = sectionModel.value.page.slug || sectionModel.value.pageId;
-  const sectionSlug = sectionModel.value.slug || sectionModel.value.id;
-  const url = `${window.location.origin}${route('pages.show', pageSlug)}#${sectionSlug}`;
+  const sectionId = sectionModel.value.id ?? props.section?.id;
+  if (!sectionId) return;
+  const url = `${window.location.origin}${route('pages.show', pageSlug)}#section-${sectionId}`;
   
   await copyToClipboard(url, 'Lien de la section copié !');
 };
@@ -249,6 +250,7 @@ const handleDataUpdate = () => {
 
 <template>
     <div 
+        :id="sectionId ? `section-${sectionId}` : undefined"
         class="section-renderer group relative" 
         :class="uiData.containerClass"
         :data-section-id="sectionModel?.id" 

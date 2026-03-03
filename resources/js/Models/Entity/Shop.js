@@ -211,34 +211,38 @@ export class Shop extends BaseModel {
     }
 
     /**
-     * Génère une cellule pour npc_id
+     * Génère une cellule pour npc_id (affichage du nom du NPC, pas l'ID)
      * @private
      */
     _toNpcIdCell(format, size, options) {
-        const npcId = this.npcId || '-';
-        
+        const npc = this.npc;
+        const displayName = npc?.creature?.name ?? npc?.name ?? '-';
+
         return {
             type: 'text',
-            value: npcId,
+            value: displayName,
             params: {
-                sortValue: npcId === '-' ? '' : npcId,
-                searchValue: npcId === '-' ? '' : npcId,
+                tooltip: displayName === '-' ? '' : displayName,
+                truncate: format.truncate || (size === 'xs' || size === 'sm' ? 20 : null),
+                sortValue: displayName === '-' ? '' : displayName,
+                searchValue: displayName === '-' ? '' : displayName,
             },
         };
     }
 
     /**
-     * Génère une cellule pour npc_name
+     * Génère une cellule pour npc_name (relation NPC)
      * @private
      */
     _toNpcNameCell(format, size, options) {
         const npc = this.npc;
-        const npcName = npc?.name || '-';
-        
+        const npcName = npc?.creature?.name ?? npc?.name ?? '-';
+
         return {
             type: 'text',
             value: npcName,
             params: {
+                tooltip: npcName === '-' ? '' : npcName,
                 truncate: format.truncate || (size === 'xs' || size === 'sm' ? 20 : null),
                 sortValue: npcName === '-' ? '' : npcName,
                 searchValue: npcName === '-' ? '' : npcName,

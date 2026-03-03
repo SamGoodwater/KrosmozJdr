@@ -54,8 +54,10 @@ Ce document décrit les propriétés utilisées dans le mapping par entité (aff
 | description | description (lang) | spells.description | Description |
 | image | img | spells.image | Image |
 | pa | levels.0.apCost | spells.pa | Coût en PA |
-| po | levels.0.range | spells.po | Portée |
-| area | levels.0.effects.0.zoneDescr.shape | spells.area | Zone (forme) |
+| po | levels.0.range | (affichage) | Portée valeur unique si pas de min/max (utilisée comme po_min/po_max) |
+| spell_po_min | levels.0.range.min | spells.po_min | Portée min (0 = soi-même, 1 = cac). En édition : formule possible ([level], etc.) |
+| spell_po_max | levels.0.range.max | spells.po_max | Portée max. En édition : formule possible. |
+| area | levels.0.effects.0.zoneDescr.shape | (effets) | Zone sur Effect, pas sur Spell |
 | level | levels.0.grade | spells.level | Niveau / grade du sort |
 | cast_per_turn | levels.0.maxCastPerTurn | spells.cast_per_turn | Lancers par tour |
 | cast_per_target | levels.0.maxCastPerTarget | spells.cast_per_target | Lancers par cible |
@@ -63,10 +65,15 @@ Ce document décrit les propriétés utilisées dans le mapping par entité (aff
 | element | elementId | spells.element | Élément (caractéristique) |
 | category | categoryId | spells.category | Catégorie (caractéristique) |
 
+### Portée (po) : deux valeurs min/max + formules
+
+La portée est stockée en **po_min** et **po_max** (string) pour permettre plages et formules :
+- **0** = peut se lancer sur soi-même ; **1-1** = cac (mêlée) ; **2-6** = plage en cases.
+- En édition manuelle, chaque borne peut être une **formule** (ex. `[level]`, `[level]*2`) évaluée en jeu.
+- Le modèle expose l’attribut calculé **po_display** pour l’affichage "min-max" et l’API.
+
 ### Entrées en réserve (_mappingUnused) — à remettre dans `mapping` si besoin
 
-- **spell_po_min** — Portée min (levels.0.range.min). Utile si tu affiches min/max séparément.
-- **spell_po_max** — Portée max (levels.0.range.max).
 - **number_between_two_cast** — Intervalle entre deux lancers (levels.0.minCastInterval).
 - **number_between_two_cast_editable** — Indique si l’intervalle est éditable (levels.0.minCastIntervalEditable).
 - **po_editable** — Portée éditable (levels.0.rangeEditable).

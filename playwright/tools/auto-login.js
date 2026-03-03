@@ -10,8 +10,8 @@
  * node playwright/tasks/auto-login.js [url] [user-type] [options]
  * 
  * Types d'utilisateurs disponibles :
- * - super-admin : contact@jdr.iota21.fr / 0000
- * - test-user : test@example.com / password
+ * - super-admin : super-admin@test.fr / 0000
+ * - test-user : test-user@test.fr / password
  * - custom : avec identifiants personnalisés
  * 
  * Options :

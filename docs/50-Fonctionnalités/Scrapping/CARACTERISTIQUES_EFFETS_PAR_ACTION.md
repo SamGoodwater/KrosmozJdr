@@ -87,6 +87,16 @@ Le service de caractéristiques (groupe « sort » / creature selon le contexte)
 | voler-caracteristiques | Par caractéristique | Idem. |
 | autre | — | Valeur / description uniquement. |
 
+### 2.5 Implémentation Phase 3 (SpellEffectConversionFormulaResolver)
+
+Le service `SpellEffectConversionFormulaResolver` résout la **characteristic_key** (groupe spell) utilisée pour la conversion :
+
+- **Une règle** (frapper, soigner, voler-vie, protéger) → `power_spell` (existe en `characteristic_spell`).
+- **Par caractéristique** (booster, retirer, voler-caracteristiques) → `params.characteristic` normalisé :
+  - Alias : `pa` → `action_points_spell`, `po` → `range_spell`.
+  - Sinon : suffixe `_spell` (ex. `strong_spell`, `pm_spell`). Si la clé n’existe pas en BDD, la conversion utilise le fallback (moyenne dés / valeur fixe).
+- **Aucune conversion** : déplacer, invoquer, autre → `null`.
+
 ---
 
 ## 3. Caractéristiques de base à supporter en priorité

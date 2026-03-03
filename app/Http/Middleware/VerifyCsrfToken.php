@@ -9,10 +9,14 @@ class VerifyCsrfToken extends Middleware
     /**
      * The URIs that should be excluded from CSRF verification.
      *
+     * Les routes API scrapping sont appelées depuis l'UI (même origine) avec X-CSRF-TOKEN,
+     * mais peuvent provoquer un mismatch si la session ou le token a été régénéré.
+     * On les exclut car elles sont protégées par auth et réservées aux admins.
+     *
      * @var array<int, string>
      */
     protected $except = [
-        //
+        'api/scrapping/*',
     ];
 
     /**
@@ -32,6 +36,12 @@ class VerifyCsrfToken extends Middleware
     {
         // En environnement de test, toutes les routes sont exclues
         if (app()->environment('testing') || config('app.env') === 'testing') {
+            return true;
+        }
+
+        // Routes scrapping (web + auth) : exclues pour éviter mismatch token/session
+        $path = trim($request->path(), '/');
+        if (str_starts_with($path, 'api/scrapping')) {
             return true;
         }
 

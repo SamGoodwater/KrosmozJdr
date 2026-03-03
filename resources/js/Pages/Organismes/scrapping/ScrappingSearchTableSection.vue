@@ -292,12 +292,24 @@ const runBatchPreview = async () => {
         const data = await res.json();
         const items = res.ok && data.success ? data.data?.items || [] : [];
         const nameById = nameByIdFromSearch.value;
-        batchPreviewResults.value = items.map((item) => ({
-            id: item.id,
-            name: nameById[item.id] ?? "—",
-            status: item.error ? "error" : "ok",
-            error: item.error ?? null,
-        }));
+        batchPreviewResults.value = items.map((item) => {
+            const sim = item.spell_effects_simulation || [];
+            const createCount = sim.filter((s) => s.action === "create").length;
+            const reuseCount = sim.filter((s) => s.action === "reuse").length;
+            const effectsSummary =
+                props.entityType === "spell" && sim.length > 0
+                    ? `${sim.length} effet(s) (${createCount} créat., ${reuseCount} réutil.)`
+                    : null;
+            return {
+                id: item.id,
+                name: nameById[item.id] ?? "—",
+                status: item.error ? "error" : "ok",
+                error: item.error ?? null,
+                converted: item.converted ?? null,
+                spell_effects_simulation: item.spell_effects_simulation ?? null,
+                effects_summary: effectsSummary,
+            };
+        });
         if (!res.ok) showError(data.message || "Erreur prévisualisation batch");
         else if (batchPreviewResults.value.length) success(`Prévisualisation : ${batchPreviewResults.value.filter((r) => r.status === "ok").length}/${batchPreviewResults.value.length} OK`);
     } catch (e) {
@@ -411,6 +423,7 @@ const exportBatchPreviewCsv = () => {
                                 <th class="w-16 font-semibold">ID</th>
                                 <th class="font-semibold">Nom</th>
                                 <th class="w-20 font-semibold">Statut</th>
+                                <th v-if="entityType === 'spell'" class="w-44 font-semibold">Effets (simul.)</th>
                                 <th class="font-semibold">Message</th>
                             </tr>
                         </thead>
@@ -420,6 +433,9 @@ const exportBatchPreviewCsv = () => {
                                 <td class="text-primary-200">{{ row.name }}</td>
                                 <td>
                                     <Badge :content="row.status === 'ok' ? 'OK' : 'Erreur'" :color="row.status === 'ok' ? 'success' : 'error'" size="xs" />
+                                </td>
+                                <td v-if="entityType === 'spell'" class="text-xs text-primary-300" :title="row.effects_summary || 'Aucun effet'">
+                                    {{ row.effects_summary || '—' }}
                                 </td>
                                 <td class="text-xs text-primary-300">{{ row.error || '—' }}</td>
                             </tr>

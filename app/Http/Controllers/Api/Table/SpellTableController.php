@@ -157,7 +157,7 @@ class SpellTableController extends Controller
                     'effect' => $sp->effect,
                     'area' => $sp->area,
                     'level' => $sp->level,
-                    'po' => $sp->po,
+                    'po' => $sp->po_display,
                     'po_editable' => (bool) $sp->po_editable,
                     'pa' => $sp->pa,
                     'cast_per_turn' => $sp->cast_per_turn,
@@ -254,9 +254,9 @@ class SpellTableController extends Controller
                     ],
                     'po' => [
                         'type' => 'text',
-                        'value' => $sp->po ?: '-',
+                        'value' => $sp->po_display ?: '-',
                         'params' => [
-                            'sortValue' => (string) ($sp->po ?? ''),
+                            'sortValue' => (string) ($sp->po_display ?? ''),
                         ],
                     ],
                     'area' => [
@@ -319,7 +319,7 @@ class SpellTableController extends Controller
                         'effect' => $sp->effect,
                         'area' => $sp->area,
                         'level' => $sp->level,
-                        'po' => $sp->po,
+                        'po' => $sp->po_display,
                         'po_editable' => (bool) $sp->po_editable,
                         'pa' => $sp->pa,
                         'cast_per_turn' => $sp->cast_per_turn,

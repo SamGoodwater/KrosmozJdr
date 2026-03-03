@@ -37,6 +37,7 @@ class CampaignTableControllerTest extends TestCase
             'progress_state' => 1,
             'state' => Campaign::STATE_DRAFT,
             'created_by' => $user->id,
+            'read_level' => (int) ($user->role ?? 0),
         ]);
 
         $response = $this->actingAs($user)
@@ -76,6 +77,7 @@ class CampaignTableControllerTest extends TestCase
         $campaign = Campaign::factory()->create([
             'name' => 'Test Campaign',
             'created_by' => $user->id,
+            'read_level' => (int) ($user->role ?? 0),
         ]);
 
         $response = $this->actingAs($user)
@@ -113,6 +115,7 @@ class CampaignTableControllerTest extends TestCase
         $user = User::factory()->create();
         $campaign = Campaign::factory()->create([
             'created_by' => $user->id,
+            'read_level' => (int) ($user->role ?? 0),
         ]);
 
         $response = $this->actingAs($user)
@@ -133,7 +136,7 @@ class CampaignTableControllerTest extends TestCase
     public function test_entities_format_respects_permissions(): void
     {
         $user = User::factory()->create(['role' => User::ROLE_USER]);
-        Campaign::factory()->create(['created_by' => $user->id]);
+        Campaign::factory()->create(['created_by' => $user->id, 'read_level' => User::ROLE_USER]);
 
         $response = $this->actingAs($user)
             ->getJson('/api/tables/campaigns?format=entities&limit=10');
@@ -152,7 +155,8 @@ class CampaignTableControllerTest extends TestCase
     public function test_entities_format_respects_limit(): void
     {
         $user = User::factory()->create();
-        Campaign::factory()->count(15)->create(['created_by' => $user->id]);
+        $readLevel = (int) ($user->role ?? 0);
+        Campaign::factory()->count(15)->create(['created_by' => $user->id, 'read_level' => $readLevel]);
 
         $response = $this->actingAs($user)
             ->getJson('/api/tables/campaigns?format=entities&limit=5');

@@ -67,6 +67,15 @@ class ShopTableController extends Controller
             'manageAny' => Gate::allows('manageAny', Shop::class),
         ];
 
+        $filterOptions = [
+            'state' => [
+                ['value' => Shop::STATE_RAW, 'label' => 'Brouillon (raw)'],
+                ['value' => Shop::STATE_DRAFT, 'label' => 'Brouillon'],
+                ['value' => Shop::STATE_PLAYABLE, 'label' => 'Jouable'],
+                ['value' => Shop::STATE_ARCHIVED, 'label' => 'Archivé'],
+            ],
+        ];
+
         // Mode "entities" : retourner les entités brutes
         if ($format === 'entities') {
             $entities = $rows->map(function (Shop $s) {
@@ -99,7 +108,7 @@ class ShopTableController extends Controller
                         'limit' => $limit,
                     ],
                     'capabilities' => $capabilities,
-                    'filterOptions' => [],
+                    'filterOptions' => $filterOptions,
                     'format' => 'entities',
                 ],
                 'entities' => $entities,
@@ -205,7 +214,7 @@ class ShopTableController extends Controller
                     'limit' => $limit,
                 ],
                 'capabilities' => $capabilities,
-                'filterOptions' => [],
+                'filterOptions' => $filterOptions,
             ],
             'rows' => $tableRows,
         ]);

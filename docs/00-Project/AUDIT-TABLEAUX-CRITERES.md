@@ -58,7 +58,11 @@
 - **Tri** : sortable sur id, name, level, rarity, state, consumable_type, dofusdb_id, created_at, updated_at.
 - **QuickEdit** : activé.
 
-### Npc, Breed, Campaign, Scenario, Attribute, Panoply, Capability, Specialization, Shop, Resource-type
+### Npc ✅ (filtres 2026-03)
+
+- **Filtres** : breed_id, specialization_id, creature_level, creature_state ; backend NpcTableController + filterOptions ; toCell creature_level/creature_state dans Npc.js.
+
+### Breed, Campaign, Scenario, Attribute, Panoply, Capability, Specialization, Shop, Resource-type
 
 - **Structure** : la plupart n’ont que `display` (pas de `table` détaillé) → colonnes toutes visibles, colonnes visibles selon fallback. QuickEdit vérifié : tous ont _tableConfig.quickEdit.enabled: true et _quickeditConfig.fields rempli. Colonnes principales définies dans les descriptors (name, state, etc.). Action optionnelle : ajouter table.sortable / filterable / defaultVisible.
 - **QuickEdit** : tous ont _tableConfig.quickEdit et _quickeditConfig.fields.

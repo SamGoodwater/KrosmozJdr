@@ -4,6 +4,14 @@ Ce document sert de référence pour toute personne qui contribue à la rédacti
 
 ---
 
+## 0. Ton et personne
+
+- **Tutoiement** : On s'adresse au lecteur (joueur ou MJ) avec **tu / ton / ta**. Ex. : « Tu peux répartir tes points… », « Si ton personnage est taclé… ».
+- **Style** : Ton léger et accessible, à la façon d'Ankama : clins d'œil possibles, pas de ton scolaire ou guindé, tout en restant clair et précis pour le jeu.
+- **Cohérence** : Utiliser le même ton dans tout le livre (éviter de mélanger « vous » et « tu »).
+
+---
+
 ## 1. Structure générale d'un fichier
 
 Chaque fichier Markdown doit suivre cette structure :
@@ -57,7 +65,7 @@ Ajouter des exemples dès qu'une règle pourrait être ambiguë.
 ```markdown
 **Exemple – Tour de combat**
 > *Contexte* : Iop niveau 5 attaque un Bouftou.
-> 1. Initiative : 1d20 + Agilité = 16 → joue en premier.
+> 1. Initiative : 1d20 + Intelligence = 16 → joue en premier.
 > 2. Déplacement : 2 cases (2 PM).
 > 3. Attaque : 1d20 + mod. + maîtrise = 19 vs CA 10 → touche.
 > 4. Dégâts : 1d8 + 3 = 8 dégâts → Bouftou à 22 PV.
@@ -135,7 +143,7 @@ Pour plus de détails, consultez :
 
 **Situation** : Cra niveau 3 (PA 6, PM 3) affronte un Bouftou (CA 11, 24 PV).
 
-1. **Initiative** : 1d20 + Agilité = 12 → joue après le Bouftou.
+1. **Initiative** : 1d20 + Intelligence = 12 → joue après le Bouftou.
 2. **Début de tour** : Récupère 6 PA, 3 PM.
 3. **Action 1** : Lance \"Flèche Magique\" (3 PA, portée 7). Jet d'attaque 15 vs CA 11 → touche. Dégâts = 1d6 + 2 = 6.
 4. **Action 2** : Se déplace de 3 cases (3 PM) pour garder ses distances.

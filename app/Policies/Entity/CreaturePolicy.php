@@ -8,9 +8,8 @@ use Illuminate\Database\Eloquent\Model;
 /**
  * Policy d'autorisation pour l'entité Creature.
  *
- * La créature n'est pas une entité exposée aux utilisateurs : elle existe uniquement
- * comme classe mère pour NPC et Monster. Aucun accès au tableau, à la création ni
- * à la lecture directe des créatures.
+ * La créature n'est pas une entité exposée : elle sert uniquement de parent pour NPC et Monster.
+ * Aucun accès au tableau, à la création ni à la manipulation directe des créatures.
  */
 class CreaturePolicy extends BaseEntityPolicy
 {

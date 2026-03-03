@@ -90,7 +90,8 @@ class SpellBulkControllerTest extends TestCase
         $spell = Spell::factory()->create([
             'level' => '10',
             'pa' => '3',
-            'po' => '2',
+            'po_min' => '2',
+            'po_max' => '2',
             'state' => Spell::STATE_DRAFT,
         ]);
 
@@ -98,7 +99,7 @@ class SpellBulkControllerTest extends TestCase
             ->patchJson('/api/entities/spells/bulk', [
                 'ids' => [$spell->id],
                 'level' => '50',
-                // pa, po, state ne sont pas modifiés
+                // pa, po_min/po_max, state ne sont pas modifiés
             ]);
 
         $response->assertOk();
@@ -106,7 +107,7 @@ class SpellBulkControllerTest extends TestCase
         $spell->refresh();
         $this->assertEquals('50', $spell->level);
         $this->assertEquals('3', $spell->pa); // Non modifié
-        $this->assertEquals('2', $spell->po); // Non modifié
+        $this->assertEquals('2', $spell->po_display); // Non modifié (po_min/po_max)
         $this->assertEquals(Spell::STATE_DRAFT, $spell->state); // Non modifié
     }
 

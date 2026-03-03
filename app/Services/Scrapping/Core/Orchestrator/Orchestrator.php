@@ -149,25 +149,27 @@ final class Orchestrator
             if ($entity === 'item') {
                 $context['targetModel'] = $this->integrationService->getItemTargetTableFromRaw($raw);
             }
-            $converted = $this->conversionService->convert($source, $entity, $raw, $context);
-
+            // Sorts : récupérer les niveaux avant conversion pour que le mapping (levels.0.apCost, etc.) ait des données.
             if ($entity === 'spell') {
                 $spellId = isset($raw['id']) && is_numeric($raw['id']) ? (int) $raw['id'] : 0;
                 if ($spellId > 0) {
-                    $levels = $this->collectService->fetchSpellLevelsBySpellId($source, $spellId, [
+                    $raw['levels'] = $this->collectService->fetchSpellLevelsBySpellId($source, $spellId, [
                         'skip_cache' => (bool) ($options['skip_cache'] ?? false),
                     ]);
-                    if ($levels !== []) {
-                        $effectsResult = $this->spellEffectsConversionService->convert($raw, $levels, [
-                            'lang' => $context['lang'],
-                        ]);
-                        if ($effectsResult->hasEffects()) {
-                            $converted['spell_effects'] = [
-                                'effect_group' => $effectsResult->getEffectGroup(),
-                                'effects' => $effectsResult->getEffects(),
-                            ];
-                        }
-                    }
+                }
+            }
+            $converted = $this->conversionService->convert($source, $entity, $raw, $context);
+
+            if ($entity === 'spell') {
+                $levels = $raw['levels'] ?? [];
+                if ($levels !== []) {
+                    $effectsResult = $this->spellEffectsConversionService->convert($raw, $levels, [
+                        'lang' => $context['lang'],
+                    ]);
+                    $converted['spell_effects'] = [
+                        'effect_group' => $effectsResult->getEffectGroup(),
+                        'effects' => $effectsResult->getEffects(),
+                    ];
                 }
             }
 
@@ -255,24 +257,28 @@ final class Orchestrator
             if ($entity === 'item') {
                 $context['targetModel'] = $this->integrationService->getItemTargetTableFromRaw($raw);
             }
-            $converted = $this->conversionService->convert($source, $entity, $raw, $context);
-
+            // Sorts : récupérer les niveaux avant conversion pour que le mapping (levels.0.apCost, etc.) ait des données.
             if ($entity === 'spell') {
                 $spellId = isset($raw['id']) && is_numeric($raw['id']) ? (int) $raw['id'] : 0;
                 if ($spellId > 0) {
-                    $levels = $this->collectService->fetchSpellLevelsBySpellId($source, $spellId, [
+                    $raw['levels'] = $this->collectService->fetchSpellLevelsBySpellId($source, $spellId, [
                         'skip_cache' => (bool) ($options['skip_cache'] ?? false),
                     ]);
-                    if ($levels !== []) {
-                        $effectsResult = $this->spellEffectsConversionService->convert($raw, $levels, [
-                            'lang' => $context['lang'],
-                        ]);
-                        if ($effectsResult->hasEffects()) {
-                            $converted['spell_effects'] = [
-                                'effect_group' => $effectsResult->getEffectGroup(),
-                                'effects' => $effectsResult->getEffects(),
-                            ];
-                        }
+                }
+            }
+            $converted = $this->conversionService->convert($source, $entity, $raw, $context);
+
+            if ($entity === 'spell') {
+                $levels = $raw['levels'] ?? [];
+                if ($levels !== []) {
+                    $effectsResult = $this->spellEffectsConversionService->convert($raw, $levels, [
+                        'lang' => $context['lang'],
+                    ]);
+                    if ($effectsResult->hasEffects()) {
+                        $converted['spell_effects'] = [
+                            'effect_group' => $effectsResult->getEffectGroup(),
+                            'effects' => $effectsResult->getEffects(),
+                        ];
                     }
                 }
             }
@@ -394,25 +400,27 @@ final class Orchestrator
                 if ($entity === 'item') {
                     $context['targetModel'] = $this->integrationService->getItemTargetTableFromRaw($raw);
                 }
-                $converted = $this->conversionService->convert($source, $entity, $raw, $context);
-
+                // Sorts : récupérer les niveaux avant conversion pour que le mapping (levels.0.apCost, etc.) ait des données.
                 if ($entity === 'spell') {
                     $spellId = isset($raw['id']) && is_numeric($raw['id']) ? (int) $raw['id'] : 0;
                     if ($spellId > 0) {
-                        $levels = $this->collectService->fetchSpellLevelsBySpellId($source, $spellId, [
+                        $raw['levels'] = $this->collectService->fetchSpellLevelsBySpellId($source, $spellId, [
                             'skip_cache' => (bool) ($options['skip_cache'] ?? false),
                         ]);
-                        if ($levels !== []) {
-                            $effectsResult = $this->spellEffectsConversionService->convert($raw, $levels, [
-                                'lang' => $context['lang'],
-                            ]);
-                            if ($effectsResult->hasEffects()) {
-                                $converted['spell_effects'] = [
-                                    'effect_group' => $effectsResult->getEffectGroup(),
-                                    'effects' => $effectsResult->getEffects(),
-                                ];
-                            }
-                        }
+                    }
+                }
+                $converted = $this->conversionService->convert($source, $entity, $raw, $context);
+
+                if ($entity === 'spell') {
+                    $levels = $raw['levels'] ?? [];
+                    if ($levels !== []) {
+                        $effectsResult = $this->spellEffectsConversionService->convert($raw, $levels, [
+                            'lang' => $context['lang'],
+                        ]);
+                        $converted['spell_effects'] = [
+                            'effect_group' => $effectsResult->getEffectGroup(),
+                            'effects' => $effectsResult->getEffects(),
+                        ];
                     }
                 }
 

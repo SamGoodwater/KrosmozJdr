@@ -219,11 +219,31 @@ export function getSpellFieldDescriptors(ctx = {}) {
           xl: { mode: "text" },
         },
       },
+    },
+    po_min: {
+      key: "po_min",
+      label: "Portée min",
+      icon: "fa-solid fa-crosshairs",
       edit: {
         form: {
           type: "text",
           group: "Métier",
-          placeholder: "Ex: 1-6",
+          placeholder: "0 = soi, 1 = cac, ou formule [level]",
+          required: false,
+          showInCompact: true,
+          bulk: { enabled: true, nullable: true, build: (v) => (v === "" ? null : String(v)) },
+        },
+      },
+    },
+    po_max: {
+      key: "po_max",
+      label: "Portée max",
+      icon: "fa-solid fa-crosshairs",
+      edit: {
+        form: {
+          type: "text",
+          group: "Métier",
+          placeholder: "Valeur ou formule",
           required: false,
           showInCompact: true,
           bulk: { enabled: true, nullable: true, build: (v) => (v === "" ? null : String(v)) },
@@ -624,7 +644,8 @@ export function getSpellFieldDescriptors(ctx = {}) {
       fields: [
         "level",
         "pa",
-        "po",
+        "po_min",
+        "po_max",
         "area",
         "state",
         "auto_update",

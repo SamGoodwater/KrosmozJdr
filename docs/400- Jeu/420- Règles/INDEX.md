@@ -3635,7 +3635,7 @@ Cet index alphabétique permet de retrouver rapidement les termes et concepts im
 
 
 
-**PDF du site (iota21.fr)** : 
+**PDF du site DofusJDR (archivé)** : 
 1.3.4
 
 

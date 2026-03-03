@@ -100,7 +100,7 @@ Les utilisateurs de test sont configurés dans `playwright/config/test-users.js`
 ```javascript
 export const TEST_USERS = {
   'super-admin': {
-    identifier: 'contact@jdr.iota21.fr',
+    identifier: 'super-admin@test.fr',
     password: '0000',
     description: 'Super administrateur',
     role: 'super_admin',

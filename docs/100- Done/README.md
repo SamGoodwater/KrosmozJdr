@@ -12,6 +12,7 @@ Pour la documentation technique et les bonnes pratiques, voir :
 
 ### Livraisons
 
+- **Vérification confidentialité GitHub** : [VERIFICATION_CONFIDENTIALITE_GITHUB.md](./VERIFICATION_CONFIDENTIALITE_GITHUB.md) — audit des données personnelles (emails, clés, fichiers sensibles), corrections appliquées (scripts Playwright + neutralisation des références à l’ancien site dans la doc règles), 2 mentions conservées pour l’ancienne adresse du JDR.
 - **Scrapping (backend)** : [FINALISATION_SCRAPPING_BACKEND.md](./FINALISATION_SCRAPPING_BACKEND.md) — limites depuis config, initiative monster, import range via runMany, robustesse, tests, doc.
 - **Scrapping (config)** : [INVENTAIRE_JSON_ET_MIGRATION_BDD_UI.md](../50-Fonctionnalités/Scrapping/INVENTAIRE_JSON_ET_MIGRATION_BDD_UI.md) — inventaire des JSON (rôle, clés utilisées), évaluation transfert BDD + UI admin, plan de migration en 3 phases.
 - **Scrapping (mapping BDD + UI)** : migration `scrapping_entity_mappings` / `scrapping_entity_mapping_targets`, modèles, `ScrappingMappingService`, intégration dans `ConfigLoader` (mapping BDD prioritaire, fallback sur le mapping des JSON d'entité si BDD vide), contrôleur admin, page Vue « Mapping scrapping » (liste par entité, CRUD règles + cibles). Lien dans le menu Admin.

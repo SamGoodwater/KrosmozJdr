@@ -108,6 +108,13 @@ const rangeCount = computed(() => {
     return end - start + 1;
 });
 
+/** Retourne l'effet à l'index donné (pour la simulation des sorts). */
+function getEffectByIndex(index) {
+    const effects = previewData.value?.converted?.spell_effects?.effects;
+    if (!Array.isArray(effects) || index < 0 || index >= effects.length) return null;
+    return effects[index];
+}
+
 /** Formate une valeur pour affichage dans le résumé (primitif, tableau, objet). */
 function formatSummaryValue(val) {
     if (val === null) return '—';
@@ -600,6 +607,66 @@ const handleImport = () => {
                         :incoming="previewData.converted"
                         :existing="previewData.existing?.record ?? null"
                     />
+                </div>
+            </div>
+
+            <!-- Simulation des effets (sorts uniquement) : ce qui sera créé / réutilisé sans écriture en base -->
+            <div
+                v-if="entityType === 'spell' && previewData.converted?.spell_effects"
+                class="rounded-lg border border-primary/30 overflow-hidden bg-base-300/20"
+            >
+                <div class="flex items-center gap-2 border-b border-base-300 bg-base-300/50 px-3 py-2">
+                    <Icon source="fa-solid fa-wand-magic-sparkles" alt="" pack="solid" class="text-primary-300 text-sm" />
+                    <h4 class="font-semibold text-primary-100 text-sm">Simulation des effets (aucune création en base)</h4>
+                    <Badge color="info" size="xs" variant="outline" content="Preview" />
+                </div>
+                <p class="text-[11px] text-primary-400 px-3 py-1.5 bg-base-300/30 border-b border-base-300/50">
+                    Conversion DofusDB → effets et sous-effets Krosmoz. « Création » = nouvel Effect ; « Réutilisation » = effet existant (même signature).
+                </p>
+                <div class="p-3 space-y-4 max-h-96 overflow-auto">
+                    <div v-if="previewData.converted.spell_effects.effect_group" class="text-xs text-primary-300">
+                        <span class="font-semibold">Groupe :</span>
+                        {{ previewData.converted.spell_effects.effect_group.name || '—' }}
+                        <span class="font-mono text-primary-400">({{ previewData.converted.spell_effects.effect_group.slug || '—' }})</span>
+                    </div>
+                    <Alert v-if="!previewData.spell_effects_simulation?.length" color="warning" variant="soft" class="text-xs">
+                        Aucun effet à simuler pour ce sort. Vérifier que les niveaux du sort ont bien été récupérés et que le mapping DofusDB → sous-effets couvre les effectId de ce sort.
+                    </Alert>
+                    <div
+                        v-for="(sim, idx) in previewData.spell_effects_simulation"
+                        :key="idx"
+                        class="rounded-lg border border-base-300 bg-base-200/50 p-3 text-xs space-y-2"
+                    >
+                        <div class="flex flex-wrap items-center gap-2">
+                            <span class="font-semibold text-primary-100">Degré {{ sim.degree }}</span>
+                            <Badge
+                                :color="sim.action === 'reuse' ? 'success' : 'primary'"
+                                size="xs"
+                                :content="sim.action === 'reuse' ? `Réutilisation (effet #${sim.existing_effect_id})` : 'Création'"
+                            />
+                            <span v-if="sim.target_type && sim.target_type !== 'direct'" class="text-primary-400">
+                                Cible : {{ sim.target_type }}
+                            </span>
+                            <span v-if="sim.area" class="font-mono text-primary-400">Zone : {{ sim.area }}</span>
+                        </div>
+                        <p v-if="sim.name" class="text-primary-200 truncate">{{ sim.name }}</p>
+                        <div v-if="getEffectByIndex(idx)?.sub_effects?.length" class="pl-2 border-l-2 border-base-300 space-y-1">
+                            <p class="text-[11px] text-primary-400 font-semibold uppercase">Sous-effets ({{ getEffectByIndex(idx).sub_effects.length }})</p>
+                            <ul class="list-disc list-inside space-y-0.5 text-primary-200">
+                                <li
+                                    v-for="(sub, si) in getEffectByIndex(idx).sub_effects"
+                                    :key="si"
+                                    class="flex flex-wrap items-center gap-1"
+                                >
+                                    <span class="font-mono">{{ sub.sub_effect_slug }}</span>
+                                    <span v-if="sub.params?.value_formula" class="text-primary-400">→ {{ sub.params.value_formula }}</span>
+                                    <span v-if="sub.params?.value_converted != null" class="text-secondary-400" title="Valeur convertie (Phase 3)">→ {{ sub.params.value_converted }}</span>
+                                    <span v-if="sub.params?.dice_formula" class="text-accent-400 font-mono" title="Notation dés (convertToDice)">→ {{ sub.params.dice_formula }}</span>
+                                    <span v-if="sub.params?.characteristic" class="text-primary-400">({{ sub.params.characteristic }})</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
                 </div>
             </div>
 

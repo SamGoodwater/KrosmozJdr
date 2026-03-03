@@ -181,7 +181,7 @@ Chaque template est un composant Vue dans `resources/js/Pages/Organismes/section
 - **Description** : Section de texte riche avec éditeur WYSIWYG
 - **Édition** : Directe via modal de paramètres (WYSIWYG)
 - **Paramètres** :
-  - `data.html` : Contenu HTML du texte
+  - `data.content` : Contenu HTML du texte
 
 #### `SectionImage.vue`
 - **Description** : Affiche une image unique avec légende optionnelle
@@ -386,7 +386,7 @@ Affiche le menu dynamique des pages :
 ```json
 {
   "data": {
-    "html": "<p>Contenu riche avec <strong>formatage</strong>.</p>"
+    "content": "<p>Contenu riche avec <strong>formatage</strong>.</p>"
   }
 }
 ```

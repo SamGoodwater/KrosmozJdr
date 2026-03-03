@@ -62,5 +62,8 @@ class AppServiceProvider extends ServiceProvider
         $registry->register('identity', static function (float $value): float {
             return $value;
         }, 'Identité (inchangé)');
+        $registry->register('convertToDice', static function (float $value): float {
+            return $value;
+        }, 'Notation dés (ndX / ndX+y)');
     }
 }

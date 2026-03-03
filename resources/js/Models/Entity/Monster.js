@@ -329,7 +329,7 @@ export class Monster extends BaseModel {
      * Génère une cellule pour le nom de la créature (lien vers la page de détail)
      * @private
      */
-    _toCreatureNameCell(format, size, options) {
+    _toCreatureNameCell(format, size, _options) {
         const creature = this.creature;
         if (!creature) {
             return {
@@ -343,15 +343,14 @@ export class Monster extends BaseModel {
         }
 
         const name = creature.name || '-';
-        const href = options.href || `/creatures/${creature.id}`;
-        
+        const truncate = format.truncate || (size === 'xs' || size === 'sm' ? 20 : null);
+
         return {
-            type: 'route',
+            type: 'text',
             value: name,
             params: {
-                href,
                 tooltip: name === '-' ? '' : name,
-                truncate: format.truncate || (size === 'xs' || size === 'sm' ? 20 : null),
+                truncate,
                 searchValue: name === '-' ? '' : name,
                 sortValue: name,
             },
@@ -377,11 +376,12 @@ export class Monster extends BaseModel {
         }
 
         const raceName = monsterRace.name || monsterRace.label || '-';
-        
+
         return {
             type: 'text',
             value: raceName,
             params: {
+                tooltip: raceName === '-' ? '' : raceName,
                 sortValue: raceName,
                 searchValue: raceName,
             },

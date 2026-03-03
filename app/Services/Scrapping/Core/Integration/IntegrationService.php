@@ -446,13 +446,14 @@ final class IntegrationService
             return IntegrationResult::fail($e->getMessage());
         }
 
-        $po = $this->buildSpellPo($data);
+        [$poMin, $poMax] = $this->buildSpellPoMinMax($data);
         $payload = [
             'dofusdb_id' => $data['dofusdb_id'] ?? null,
             'name' => (string) ($data['name'] ?? ''),
             'description' => (string) ($data['description'] ?? ''),
             'pa' => (string) ($data['pa'] ?? '3'),
-            'po' => $po,
+            'po_min' => $poMin,
+            'po_max' => $poMax,
             'po_editable' => (bool) (isset($data['po_editable']) ? (int) $data['po_editable'] : true),
             'level' => (string) ($data['level'] ?? '1'),
             'cast_per_turn' => (string) ($data['cast_per_turn'] ?? '1'),
@@ -509,20 +510,31 @@ final class IntegrationService
     }
 
     /**
-     * Construit la portée du sort (po) : une valeur (0-6) ou une plage "min-max" si spell_po_min et spell_po_max sont fournis.
+     * Construit la portée du sort (po_min, po_max).
+     * Accepte des valeurs numériques ou des formules (ex. "[level]", "[level]*2").
+     * 0 = soi-même, 1-1 = cac, 2-6 = plage.
      *
      * @param array<string, mixed> $data Données converties du sort (spells)
-     * @return string Portée : "1", "3" ou "1-3" par exemple
+     * @return array{0: string, 1: string} [po_min, po_max]
      */
-    private function buildSpellPo(array $data): string
+    private function buildSpellPoMinMax(array $data): array
     {
-        $min = isset($data['spell_po_min']) && is_numeric($data['spell_po_min']) ? (int) $data['spell_po_min'] : null;
-        $max = isset($data['spell_po_max']) && is_numeric($data['spell_po_max']) ? (int) $data['spell_po_max'] : null;
-        if ($min !== null && $max !== null) {
-            return $min === $max ? (string) $min : $min . '-' . $max;
+        $minRaw = $data['spell_po_min'] ?? $data['po'] ?? null;
+        $maxRaw = $data['spell_po_max'] ?? $data['po'] ?? null;
+        if ($minRaw !== null && $maxRaw !== null) {
+            return [(string) $minRaw, (string) $maxRaw];
         }
-
-        return (string) ($data['po'] ?? '1');
+        $single = trim((string) ($data['po'] ?? '1'));
+        if ($single === '') {
+            return ['1', '1'];
+        }
+        if (str_contains($single, '-')) {
+            $parts = explode('-', $single, 2);
+            $min = trim($parts[0]) !== '' ? trim($parts[0]) : '1';
+            $max = trim($parts[1] ?? '') !== '' ? trim($parts[1]) : $min;
+            return [$min, $max];
+        }
+        return [$single, $single];
     }
 
     /**
@@ -652,6 +664,66 @@ final class IntegrationService
                 ]);
             }
         }
+    }
+
+    /**
+     * Simule la création des effets d'un sort sans écrire en base.
+     * Retourne pour chaque effet du payload : action (create|reuse), existing_effect_id si réutilisation.
+     *
+     * @param array{effect_group: array{name?: string, slug?: string}, effects: list<array{degree?: int, name?: string, slug?: string, target_type?: string, area?: string, sub_effects?: list}>} $payload
+     * @return list<array{index: int, degree: int, name: string, slug: string, target_type: string, area: string|null, sub_effects_count: int, action: 'create'|'reuse', existing_effect_id: int|null}>
+     */
+    public function simulateSpellEffects(array $payload): array
+    {
+        $effectsData = $payload['effects'] ?? [];
+        if (!is_array($effectsData) || $effectsData === []) {
+            return [];
+        }
+
+        $slugToId = $this->collectSubEffectIdsFromSpellPayload($effectsData);
+        $plan = [];
+        $index = 0;
+
+        foreach ($effectsData as $effectRow) {
+            if (!is_array($effectRow)) {
+                continue;
+            }
+            $degree = isset($effectRow['degree']) && is_numeric($effectRow['degree']) ? (int) $effectRow['degree'] : 1;
+            $name = (string) ($effectRow['name'] ?? '');
+            $slug = (string) ($effectRow['slug'] ?? '');
+            $targetType = (string) ($effectRow['target_type'] ?? Effect::TARGET_DIRECT);
+            $area = isset($effectRow['area']) ? (string) $effectRow['area'] : null;
+            $subEffectsRaw = $effectRow['sub_effects'] ?? [];
+            $subEffectsCount = is_array($subEffectsRaw) ? count($subEffectsRaw) : 0;
+
+            $normalizedRows = $this->normalizeSubEffectsRowsForSignature(is_array($subEffectsRaw) ? $subEffectsRaw : [], $slugToId);
+            $signature = $normalizedRows !== [] ? $this->computeEffectConfigSignature($normalizedRows) : null;
+
+            $action = 'create';
+            $existingEffectId = null;
+            if ($signature !== null) {
+                $existing = Effect::where('config_signature', $signature)->first();
+                if ($existing !== null) {
+                    $action = 'reuse';
+                    $existingEffectId = $existing->id;
+                }
+            }
+
+            $plan[] = [
+                'index' => $index,
+                'degree' => $degree,
+                'name' => $name,
+                'slug' => $slug,
+                'target_type' => $targetType,
+                'area' => $area,
+                'sub_effects_count' => $subEffectsCount,
+                'action' => $action,
+                'existing_effect_id' => $existingEffectId,
+            ];
+            $index++;
+        }
+
+        return $plan;
     }
 
     /**

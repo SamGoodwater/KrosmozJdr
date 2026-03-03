@@ -287,11 +287,12 @@ export class Consumable extends BaseModel {
         }
 
         const typeName = consumableType.name || consumableType.label || '-';
-        
+
         return {
             type: 'text',
             value: typeName,
             params: {
+                tooltip: typeName === '-' ? '' : typeName,
                 sortValue: typeName,
                 searchValue: typeName,
             },
@@ -317,11 +318,12 @@ export class Consumable extends BaseModel {
         }
 
         const userName = createdBy.name || createdBy.email || '-';
-        
+
         return {
             type: 'text',
             value: userName,
             params: {
+                tooltip: userName === '-' ? '' : userName,
                 sortValue: userName,
                 searchValue: userName,
             },

@@ -152,23 +152,28 @@ const loadViewComponent = async () => {
     }
 };
 
-// Charger le composant quand l'entité ou la vue change
-watch([() => props.entityType, currentView], () => {
-    loadViewComponent();
-}, { immediate: true });
+// Charger le composant uniquement quand le modal est ouvert (évite les résolutions inutiles)
+watch(
+    [() => props.open, () => props.entityType, currentView],
+    ([open]) => {
+        if (open) {
+            loadViewComponent();
+        }
+    },
+    { immediate: true }
+);
 
-// Obtenir les props à passer au composant selon le type d'entité
-const getComponentProps = () => {
+// Props passées au composant de vue (computed pour éviter recalcul à chaque rendu)
+const componentProps = computed(() => {
     const normalizedType = normalizeEntityType(props.entityType);
     const entityName = ENTITY_COMPONENT_MAP[normalizedType];
-    
+
     if (!entityName) {
         return { entity: props.entity, showActions: false };
     }
-    
-    // Convertir le nom de l'entité en camelCase pour la prop
+
     const propName = entityName.charAt(0).toLowerCase() + entityName.slice(1);
-    
+
     const common = {
         [propName]: props.entity,
         showActions: false,
@@ -183,7 +188,7 @@ const getComponentProps = () => {
     }
 
     return common;
-};
+});
 
 const handleAction = async (actionKey, entity) => {
     const targetEntity = entity || props.entity;
@@ -245,7 +250,7 @@ const handleAction = async (actionKey, entity) => {
                 <h3 class="text-lg font-bold text-primary-100 flex-1 min-w-0">
                     {{ getEntityName() }}
                 </h3>
-                <div class="flex items-center gap-2 flex-shrink-0">
+                <div class="flex items-center gap-2 shrink-0">
                     <Dropdown
                         v-if="!view && useStoredFormat"
                         placement="bottom-end"
@@ -329,7 +334,8 @@ const handleAction = async (actionKey, entity) => {
             <component
                 v-if="ViewComponent"
                 :is="ViewComponent"
-                v-bind="getComponentProps()"
+                :key="`${entityType}-${currentView}`"
+                v-bind="componentProps"
             />
             <div v-else class="text-center text-primary-300 py-8">
                 <p>Chargement de la vue...</p>

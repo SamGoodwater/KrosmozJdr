@@ -28,7 +28,8 @@ use Spatie\MediaLibrary\HasMedia;
  * @property string|null $effect
  * @property string|null $area Zone d'impact (déléguée au premier effet lié ; voir Effect::area)
  * @property string $level
- * @property string $po
+ * @property string|null $po_min Portée min (valeur ou formule, ex. "0", "[level]")
+ * @property string|null $po_max Portée max (valeur ou formule, ex. "1", "6")
  * @property bool $po_editable
  * @property string $pa
  * @property string $cast_per_turn
@@ -87,7 +88,8 @@ use Spatie\MediaLibrary\HasMedia;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Spell whereNumberBetweenTwoCastEditable($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Spell whereOfficialId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Spell wherePa($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Spell wherePo($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Spell wherePoMin($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Spell wherePoMax($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Spell wherePoEditable($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Spell wherePowerful($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Spell whereSightLine($value)
@@ -160,7 +162,8 @@ class Spell extends Model implements HasMedia
         'description',
         'effect',
         'level',
-        'po',
+        'po_min',
+        'po_max',
         'po_editable',
         'pa',
         'cast_per_turn',
@@ -267,6 +270,18 @@ class Spell extends Model implements HasMedia
     public function effectUsages()
     {
         return $this->morphMany(EffectUsage::class, 'entity');
+    }
+
+    /**
+     * Portée affichable : "min-max" ou valeur unique à partir de po_min/po_max.
+     * 0 = soi-même, 1-1 = cac, 2-6 = plage.
+     */
+    public function getPoDisplayAttribute(): string
+    {
+        $min = $this->po_min ?? '1';
+        $max = $this->po_max ?? $this->po_min ?? '1';
+
+        return $min === $max ? $min : $min . '-' . $max;
     }
 
     /**

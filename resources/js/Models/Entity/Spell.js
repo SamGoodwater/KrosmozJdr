@@ -43,12 +43,21 @@ export class Spell extends BaseModel {
         return this._data.level || null;
     }
 
+    /** Affichage portée (calculé côté API à partir de po_min/po_max). */
     get po() {
-        return this._data.po || null;
+        return this._data.po ?? null;
+    }
+
+    get poMin() {
+        return this._data.po_min ?? null;
+    }
+
+    get poMax() {
+        return this._data.po_max ?? null;
     }
 
     get poEditable() {
-        return this._data.po_editable || null;
+        return this._data.po_editable ?? null;
     }
 
     get pa() {
@@ -173,6 +182,10 @@ export class Spell extends BaseModel {
                 return this._toAreaCell(format, size, options);
             case 'po':
                 return this._toPoCell(format, size, options);
+            case 'po_min':
+                return this._toPoMinMaxCell(this.poMin, options);
+            case 'po_max':
+                return this._toPoMinMaxCell(this.poMax, options);
             case 'pa':
                 return this._toPaCell(format, size, options);
             case 'cast_per_turn':
@@ -294,13 +307,28 @@ export class Spell extends BaseModel {
      */
     _toPoCell(format, size, options) {
         const po = this.po || '-';
-        
         return {
             type: 'text',
             value: po,
             params: {
                 sortValue: po === '-' ? '' : po,
                 searchValue: po === '-' ? '' : po,
+            },
+        };
+    }
+
+    /**
+     * Génère une cellule pour portée min ou max (po_min / po_max).
+     * @private
+     */
+    _toPoMinMaxCell(val, options) {
+        const v = val != null ? String(val) : '-';
+        return {
+            type: 'text',
+            value: v,
+            params: {
+                sortValue: v === '-' ? '' : v,
+                searchValue: v === '-' ? '' : v,
             },
         };
     }
@@ -493,11 +521,12 @@ export class Spell extends BaseModel {
         }
 
         const userName = createdBy.name || createdBy.email || '-';
-        
+
         return {
             type: 'text',
             value: userName,
             params: {
+                tooltip: userName === '-' ? '' : userName,
                 sortValue: userName,
                 searchValue: userName,
             },
@@ -539,7 +568,8 @@ export class Spell extends BaseModel {
             effect: this.effect,
             area: this.area,
             level: this.level,
-            po: this.po,
+            po_min: this.poMin,
+            po_max: this.poMax,
             po_editable: this.poEditable,
             pa: this.pa,
             cast_per_turn: this.castPerTurn,

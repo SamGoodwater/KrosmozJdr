@@ -271,11 +271,12 @@ export class Resource extends BaseModel {
         }
 
         const typeName = resourceType.name || resourceType.label || '-';
-        
+
         return {
             type: 'text',
             value: typeName,
             params: {
+                tooltip: typeName === '-' ? '' : typeName,
                 sortValue: typeName,
                 searchValue: typeName,
             },
@@ -305,11 +306,12 @@ export class Resource extends BaseModel {
         }
 
         const userName = createdBy.name || createdBy.email || '-';
-        
+
         return {
             type: 'text',
             value: userName,
             params: {
+                tooltip: userName === '-' ? '' : userName,
                 sortValue: userName,
                 searchValue: userName,
             },

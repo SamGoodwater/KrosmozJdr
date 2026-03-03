@@ -198,11 +198,11 @@ const tasks = {
   help                              - Afficher cette aide
 
 👤 Types d'utilisateurs pour login:
-  super-admin                       - contact@jdr.iota21.fr / 0000
-  test-user                         - test@example.com / password
-  admin                             - admin@test.com / password
-  game-master                       - gm@test.com / password
-  player                            - player@test.com / password
+  super-admin                       - super-admin@test.fr / 0000
+  test-user                         - test-user@test.fr / password
+  admin                             - admin@test.fr / password
+  game-master                       - gm@test.fr / password
+  player                            - player@test.fr / password
 
 📝 Exemples:
 

@@ -513,15 +513,22 @@ class ScrappingController extends Controller
             $result = $this->orchestrator->runOne($resolved['source'], $resolved['entity'], $id, $options);
             $converted = $result->getConverted();
             $comparisonType = $this->entityTypeForComparison($normalizedType);
-            $existingRecord = $comparisonType !== null
+            $existingRecord = $comparisonType !== null && is_array($converted)
                 ? $this->integrationService->getExistingAttributesForComparison($comparisonType, $converted)
                 : null;
+
+            $spellEffectsSimulation = null;
+            if ($normalizedType === 'spell' && is_array($converted) && is_array($converted['spell_effects'] ?? null)) {
+                $spellEffectsSimulation = $this->integrationService->simulateSpellEffects($converted['spell_effects']);
+            }
+
             $data = [
                 'success' => $result->isSuccess(),
                 'raw' => $result->getRaw(),
                 'converted' => $converted,
                 'validation_errors' => $result->getValidationErrors(),
                 'existing' => $existingRecord !== null ? ['record' => $existingRecord] : null,
+                'spell_effects_simulation' => $spellEffectsSimulation,
             ];
             return response()->json(['success' => true, 'data' => $data, 'timestamp' => now()->toISOString()]);
         } catch (\Throwable $e) {
@@ -558,14 +565,19 @@ class ScrappingController extends Controller
                 try {
                     $result = $orchestrator->runOne($resolved['source'], $resolved['entity'], $id, $options);
                     $converted = $result->getConverted();
-                    $existingRecord = $comparisonType !== null
+                    $existingRecord = $comparisonType !== null && is_array($converted)
                         ? $this->integrationService->getExistingAttributesForComparison($comparisonType, $converted)
                         : null;
+                    $spellEffectsSimulation = null;
+                    if ($type === 'spell' && is_array($converted) && is_array($converted['spell_effects'] ?? null)) {
+                        $spellEffectsSimulation = $this->integrationService->simulateSpellEffects($converted['spell_effects']);
+                    }
                     $itemPayload = [
                         'id' => $id,
                         'raw' => $result->getRaw(),
                         'converted' => $converted,
                         'existing' => $existingRecord !== null ? ['record' => $existingRecord] : null,
+                        'spell_effects_simulation' => $spellEffectsSimulation,
                         'error' => $result->isSuccess() ? null : $result->getMessage(),
                     ];
                     if ($type === 'item') {

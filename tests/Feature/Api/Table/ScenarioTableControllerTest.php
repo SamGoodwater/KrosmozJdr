@@ -36,6 +36,7 @@ class ScenarioTableControllerTest extends TestCase
             'name' => 'Test Scenario',
             'state' => 1,
             'created_by' => $user->id,
+            'read_level' => (int) ($user->role ?? 0),
         ]);
 
         $response = $this->actingAs($user)
@@ -75,6 +76,7 @@ class ScenarioTableControllerTest extends TestCase
         $scenario = Scenario::factory()->create([
             'name' => 'Test Scenario',
             'created_by' => $user->id,
+            'read_level' => (int) ($user->role ?? 0),
         ]);
 
         $response = $this->actingAs($user)
@@ -113,6 +115,7 @@ class ScenarioTableControllerTest extends TestCase
         $user = User::factory()->create();
         $scenario = Scenario::factory()->create([
             'created_by' => $user->id,
+            'read_level' => (int) ($user->role ?? 0),
         ]);
 
         $response = $this->actingAs($user)
@@ -133,7 +136,7 @@ class ScenarioTableControllerTest extends TestCase
     public function test_entities_format_respects_permissions(): void
     {
         $user = User::factory()->create(['role' => User::ROLE_USER]);
-        Scenario::factory()->create(['created_by' => $user->id]);
+        Scenario::factory()->create(['created_by' => $user->id, 'read_level' => User::ROLE_USER]);
 
         $response = $this->actingAs($user)
             ->getJson('/api/tables/scenarios?format=entities&limit=10');
@@ -152,7 +155,8 @@ class ScenarioTableControllerTest extends TestCase
     public function test_entities_format_respects_limit(): void
     {
         $user = User::factory()->create();
-        Scenario::factory()->count(15)->create(['created_by' => $user->id]);
+        $readLevel = (int) ($user->role ?? 0);
+        Scenario::factory()->count(15)->create(['created_by' => $user->id, 'read_level' => $readLevel]);
 
         $response = $this->actingAs($user)
             ->getJson('/api/tables/scenarios?format=entities&limit=5');

@@ -244,13 +244,19 @@ namespace App\Models{
 namespace App\Models{
 /**
  * Effet (conteneur de sous-effets). Niveau sur effect_usage.
+ * 
+ * target_type : application directe sur la cible (direct), ou pose d’un piège (trap) / glyphe (glyph).
+ * area : notation de la zone d’impact sur le damier (point, line-1x9, cross-2, circle-2, rect-3x4).
  *
+ * @see docs/50-Fonctionnalités/Spell-Effects/ZONE_NOTATION.md
  * @property int $id
  * @property string|null $name
  * @property string|null $slug
  * @property string|null $description
  * @property int|null $effect_group_id
  * @property int|null $degree
+ * @property string $target_type
+ * @property string|null $area
  * @property string|null $config_signature
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
@@ -264,6 +270,7 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Effect newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Effect newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Effect query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Effect whereArea($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Effect whereConfigSignature($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Effect whereCreatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Effect whereDegree($value)
@@ -272,6 +279,7 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Effect whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Effect whereName($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Effect whereSlug($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Effect whereTargetType($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Effect whereUpdatedAt($value)
  */
 	class Effect extends \Eloquent {}
@@ -1384,9 +1392,10 @@ namespace App\Models\Entity{
  * @property string $name
  * @property string $description
  * @property string|null $effect
- * @property int $area
+ * @property string|null $area Zone d'impact (déléguée au premier effet lié ; voir Effect::area)
  * @property string $level
- * @property string $po
+ * @property string|null $po_min Portée min (valeur ou formule, ex. "0", "[level]")
+ * @property string|null $po_max Portée max (valeur ou formule, ex. "1", "6")
  * @property bool $po_editable
  * @property string $pa
  * @property string $cast_per_turn
@@ -1445,7 +1454,8 @@ namespace App\Models\Entity{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Spell whereNumberBetweenTwoCastEditable($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Spell whereOfficialId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Spell wherePa($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Spell wherePo($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Spell wherePoMin($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Spell wherePoMax($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Spell wherePoEditable($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Spell wherePowerful($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Spell whereSightLine($value)
@@ -1459,6 +1469,7 @@ namespace App\Models\Entity{
  * @property-read int|null $breeds_count
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\EffectUsage> $effectUsages
  * @property-read int|null $effect_usages_count
+ * @property-read string $po_display
  * @property-read \Spatie\MediaLibrary\MediaCollections\Models\Collections\MediaCollection<int, \Spatie\MediaLibrary\MediaCollections\Models\Media> $media
  * @property-read int|null $media_count
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\SpellEffect> $spellEffects

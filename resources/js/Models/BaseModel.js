@@ -418,17 +418,33 @@ export class BaseModel {
      */
     _toDefaultCell(fieldKey, format, size, options) {
         const value = this._data[fieldKey];
-        const text = value === null || value === undefined || value === '' ? '-' : String(value);
-        
+        // Relations : afficher le libellé (name, label, email) plutôt que l'ID ou [object Object]
+        const displayText = this._relationDisplayValue(value);
+        const text = displayText ?? (value === null || value === undefined || value === '' ? '-' : String(value));
+
         return {
             type: 'text',
             value: text,
             params: {
-                sortValue: value,
+                tooltip: text !== '-' ? text : '',
+                sortValue: typeof displayText === 'string' ? displayText : value,
                 searchValue: text === '-' ? '' : text,
                 filterValue: value,
             },
         };
+    }
+
+    /**
+     * Pour une valeur relation (objet avec name/label/email), retourne le libellé affichable.
+     * @private
+     * @param {*} value - Valeur brute (objet relation ou autre)
+     * @returns {string|null} Libellé ou null si pas une relation affichable
+     */
+    _relationDisplayValue(value) {
+        if (value === null || value === undefined) return null;
+        if (typeof value !== 'object') return null;
+        const name = value.name ?? value.label ?? value.email;
+        return name != null && name !== '' ? String(name) : null;
     }
 
     /**

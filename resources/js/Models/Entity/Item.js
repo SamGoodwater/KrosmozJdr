@@ -316,11 +316,12 @@ export class Item extends BaseModel {
         }
 
         const typeName = itemType.name || itemType.label || '-';
-        
+
         return {
             type: 'text',
             value: typeName,
             params: {
+                tooltip: typeName === '-' ? '' : typeName,
                 sortValue: typeName,
                 searchValue: typeName,
             },
@@ -346,11 +347,12 @@ export class Item extends BaseModel {
         }
 
         const userName = createdBy.name || createdBy.email || '-';
-        
+
         return {
             type: 'text',
             value: userName,
             params: {
+                tooltip: userName === '-' ? '' : userName,
                 sortValue: userName,
                 searchValue: userName,
             },

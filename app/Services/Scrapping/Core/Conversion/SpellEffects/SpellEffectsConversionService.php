@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace App\Services\Scrapping\Core\Conversion\SpellEffects;
 
+use App\Services\Characteristic\Conversion\DofusConversionService;
+use App\Services\Characteristic\Getter\CharacteristicGetterService;
+use App\Services\Jdr\DiceNotationService;
 use App\Services\Scrapping\Config\DofusDbEffectCatalog;
 use Illuminate\Support\Str;
 
@@ -13,14 +16,20 @@ use Illuminate\Support\Str;
  * Prend en entrée les données brutes du sort et les spell-levels (déjà récupérés),
  * résout chaque effectId via DofusDbEffectCatalog, applique le mapping effectId → SubEffect
  * et produit une structure prête pour l'intégration (EffectGroup + Effects + sous-effets).
+ * Phase 3 : conversion des valeurs via characteristic_spell (value_converted).
  *
  * @see docs/50-Fonctionnalités/Scrapping/DOFUSDB_EFFECTS_CONVERSION.md
+ * @see docs/50-Fonctionnalités/Scrapping/PLAN_IMPLEMENTATION_PHASE3_CONVERSION_VALEURS_EFFETS.md
  */
 final class SpellEffectsConversionService
 {
     public function __construct(
         private DofusDbEffectCatalog $effectCatalog,
         private DofusdbEffectMappingService $mappingService,
+        private SpellEffectConversionFormulaResolver $formulaResolver,
+        private DofusConversionService $dofusConversion,
+        private CharacteristicGetterService $characteristicGetter,
+        private DiceNotationService $diceNotationService,
     ) {
     }
 
@@ -108,7 +117,7 @@ final class SpellEffectsConversionService
             $order = isset($instance['order']) ? (int) $instance['order'] : $index;
             $params = $subEffectSlug === DofusDbEffectMapping::SUB_EFFECT_SLUG_OTHER
                 ? $this->buildParamsForOther($instance, $definition, $lang)
-                : $this->buildParams($instance, $definition, $charSource ?? 'none');
+                : $this->buildParams($instance, $definition, $charSource ?? 'none', $subEffectSlug);
             $critOnly = false;
 
             $criticalInstance = $criticalList[$order] ?? null;
@@ -273,9 +282,9 @@ final class SpellEffectsConversionService
     /**
      * @param array<string, mixed> $instance Instance d'effet (diceNum, diceSide, value, effectElement)
      * @param array<string, mixed> $definition Définition /effects/{id} (elementId, characteristic)
-     * @return array<string, mixed> params pour le pivot (value_formula, characteristic, value_formula_crit si fourni ailleurs)
+     * @return array<string, mixed> params pour le pivot (value_formula, characteristic, value_converted, value_formula_crit si fourni ailleurs)
      */
-    private function buildParams(array $instance, array $definition, string $charSource): array
+    private function buildParams(array $instance, array $definition, string $charSource, string $subEffectSlug): array
     {
         $params = [
             'value_formula' => $this->buildValueFormula($instance),
@@ -292,7 +301,65 @@ final class SpellEffectsConversionService
             }
         }
 
+        $this->applyValueConversion($instance, $subEffectSlug, $params);
+
         return $params;
+    }
+
+    /**
+     * Calcule la valeur Dofus « d » (moyenne des dés ou valeur fixe) pour la conversion.
+     *
+     * @param array<string, mixed> $instance Instance d'effet (diceNum, diceSide, value)
+     * @return float|null Moyenne diceNum * (diceSide + 1) / 2, ou value si fixe, ou null
+     */
+    private function computeDofusValueForConversion(array $instance): ?float
+    {
+        $diceNum = isset($instance['diceNum']) && is_numeric($instance['diceNum']) ? (int) $instance['diceNum'] : null;
+        $diceSide = isset($instance['diceSide']) && is_numeric($instance['diceSide']) ? (int) $instance['diceSide'] : null;
+        if ($diceNum !== null && $diceSide !== null && $diceNum > 0 && $diceSide > 0) {
+            return $diceNum * ($diceSide + 1) / 2.0;
+        }
+        $value = isset($instance['value']) && is_numeric($instance['value']) ? (float) $instance['value'] : null;
+        if ($value !== null) {
+            return $value;
+        }
+        return null;
+    }
+
+    /**
+     * Applique la conversion BDD (characteristic_spell) et remplit params.value_converted si possible.
+     *
+     * @param array<string, mixed> $instance Instance d'effet DofusDB
+     * @param array<string, mixed> $params Params déjà remplis (value_formula, characteristic) — modifié par référence
+     */
+    private function applyValueConversion(array $instance, string $subEffectSlug, array &$params): void
+    {
+        $characteristicKey = $this->formulaResolver->resolveCharacteristicKeyForConversion($subEffectSlug, $params);
+        if ($characteristicKey === null) {
+            return;
+        }
+        $d = $this->computeDofusValueForConversion($instance);
+        if ($d === null) {
+            return;
+        }
+        $fallback = (float) round($d);
+        $context = ['raw' => $instance];
+        $converted = $this->dofusConversion->convert(
+            $characteristicKey,
+            ['d' => $d],
+            SpellEffectConversionFormulaResolver::ENTITY_SPELL,
+            $fallback,
+            $context
+        );
+        $params['value_converted'] = $converted;
+
+        $conversionFunctionId = $this->characteristicGetter->getConversionFunctionId(
+            $characteristicKey,
+            SpellEffectConversionFormulaResolver::ENTITY_SPELL
+        );
+        if ($conversionFunctionId === 'convertToDice') {
+            $params['dice_formula'] = $this->diceNotationService->toDiceNotation((float) $converted);
+        }
     }
 
     /**
