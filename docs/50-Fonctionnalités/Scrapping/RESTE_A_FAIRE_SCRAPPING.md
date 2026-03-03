@@ -10,7 +10,7 @@ Ce document liste ce qui reste à faire pour **finaliser la partie backend** du 
 
 - **Orchestrator** : lorsque `integrate` et `include_relations` sont true, après intégration de l’entité principale, l’Orchestrator appelle `resolveRelationsAndDrain` (RelationResolutionService + pile). Pas de branchement spécifique dans le contrôleur : tout passe par `runOne` / `runOneWithRaw` avec les options.
 - **API** : `ScrappingController::optionsFromRequest()` lit `include_relations` (query ou body, défaut `true`) et le transmet à l’Orchestrator.
-- **CLI** : `ScrappingCommand` transmet déjà `include_relations` via `buildImportOptions()` et `importOne()`.
+- **CLI** : `ScrappingRunCommand` transmet déjà `include_relations` via `buildImportOptions()` et `importOne()`.
 - **Drops** : le code utilise désormais `itemId` avec fallback sur `id` dans `RelationResolutionService` et `RelationImportStack`, aligné avec la config `monster.json` (`idPath: "itemId"`).
 
 ---

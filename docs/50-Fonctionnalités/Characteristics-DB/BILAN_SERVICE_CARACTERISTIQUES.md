@@ -9,7 +9,7 @@
 
 | Service | Rôle | État | Utilisation |
 |--------|------|------|-------------|
-| **Getter** | Définitions par clé/entité, limites, formules, conversion, type, value_available, lien maître/liée. | ✅ Fonctionnel | Admin (CharacteristicController, DofusConversionFormulaController), Form Requests (HasCharacteristicValidation), Limit, Conversion, FormatterApplicator, ExportSeederDataCommand, Orchestrator. |
+| **Getter** | Définitions par clé/entité, limites, formules, conversion, type, value_available, lien maître/liée. | ✅ Fonctionnel | Admin (CharacteristicController, DofusConversionFormulaController), Form Requests (HasCharacteristicValidation), Limit, Conversion, FormatterApplicator, ScrappingSeedersExportCommand, Orchestrator. |
 | **Limit** | Validation par type (boolean, list, min/max), validation globale, clamp. | ✅ Fonctionnel | Orchestrator (validation des données converties), DofusConversionService (clamp après conversion), Form Requests via characteristicRules / characteristicMinMaxRules. |
 | **Formula** | Évaluation sécurisée des formules (variables, fonctions, tables). | ✅ Fonctionnel | DofusConversionService, CharacteristicController (formula-preview), Getter (résolution min/max formule/table). |
 | **Conversion** | Dofus → Krosmoz (niveau, vie, attributs, initiative, rareté). | ✅ Fonctionnel | FormatterApplicator, Orchestrator (ConversionService), DofusConversionFormulaController. |

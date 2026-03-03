@@ -22,7 +22,7 @@ Les fichiers de groupe (creature, object, spell) peuvent contenir des clés non 
 | `consumable_types.php` | `ConsumableTypeSeeder` | Types de consommables (DofusDB, scrapping) |
 | `item_types.php` | `ItemTypeSeeder` | Types d'équipements / items (DofusDB, scrapping) |
 
-Les trois fichiers de types item sont remplis depuis l’API DofusDB ([item-types](https://api.dofusdb.fr/item-types)) : une seule commande `php artisan scrapping:seed-item-types` récupère tout le catalogue (superTypeId → Ressource / Consommable / Équipement), écrit les fichiers puis exécute les seeders. Ensuite, après réglages en UI, `php artisan db:export-seeder-data --item-types` régénère les fichiers depuis la BDD. Voir [PLAN_TYPES_ITEM_BDD_SEEDER.md](../../docs/50-Fonctionnalités/Scrapping/PLAN_TYPES_ITEM_BDD_SEEDER.md).
+Les trois fichiers de types item sont remplis depuis l’API DofusDB ([item-types](https://api.dofusdb.fr/item-types)) : une seule commande `php artisan scrapping:types:seed` (alias legacy : `scrapping:seed-item-types`) récupère tout le catalogue (superTypeId → Ressource / Consommable / Équipement), écrit les fichiers puis exécute les seeders. Ensuite, après réglages en UI, `php artisan scrapping:seeders:export --item-types` (alias legacy : `db:export-seeder-data --item-types`) régénère les fichiers depuis la BDD. Voir [PLAN_TYPES_ITEM_BDD_SEEDER.md](../../docs/50-Fonctionnalités/Scrapping/PLAN_TYPES_ITEM_BDD_SEEDER.md).
 
 ## Workflow (dev)
 
@@ -30,7 +30,7 @@ Les trois fichiers de types item sont remplis depuis l’API DofusDB ([item-type
 2. **Paramétrage via l'interface** : éditez les caractéristiques dans l'admin (`/admin/characteristics`) — formules, bornes min/max, spécificités par entité (monstre, classe, PNJ…).
 3. **Export BDD → seeders** : pour récupérer ce qui est en base et l'écrire dans ces fichiers (afin d’initialiser le projet avec des caractéristiques déjà paramétrées) :
    ```bash
-   php artisan db:export-seeder-data --characteristics
+   php artisan scrapping:seeders:export --characteristics
    ```
    Cela écrase `characteristics.php`, `characteristic_creature.php`, `characteristic_object.php` et `characteristic_spell.php` avec le contenu actuel des tables. Vous pouvez ensuite committer ces fichiers pour versionner votre configuration.
 

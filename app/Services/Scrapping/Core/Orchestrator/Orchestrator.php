@@ -2,16 +2,20 @@
 
 namespace App\Services\Scrapping\Core\Orchestrator;
 
-use App\Services\Characteristic\Conversion\DofusConversionService;
-use App\Services\Characteristic\Getter\CharacteristicGetterService;
+use App\Models\Entity\Breed;
+use App\Models\Entity\Consumable;
+use App\Models\Entity\Item;
+use App\Models\Entity\Monster;
+use App\Models\Entity\Resource;
+use App\Models\Entity\Spell;
 use App\Services\Characteristic\Limit\CharacteristicLimitService;
 use App\Services\Scrapping\Core\Collect\CollectService;
 use App\Services\Scrapping\Core\Config\ConfigLoader;
 use App\Services\Scrapping\Core\Conversion\ConversionService;
-use App\Services\Scrapping\Core\Conversion\FormatterApplicator;
 use App\Services\Scrapping\Core\Conversion\SpellEffects\SpellEffectsConversionService;
 use App\Services\Scrapping\Core\Integration\IntegrationResult;
 use App\Services\Scrapping\Core\Integration\IntegrationService;
+use App\Services\Scrapping\Core\Normalizer\SpellGlobalNormalizer;
 use App\Services\Scrapping\Core\Relation\RelationImportStack;
 use App\Services\Scrapping\Core\Relation\RelationResolutionService;
 
@@ -30,36 +34,17 @@ final class Orchestrator
         private CharacteristicLimitService $limitService,
         private IntegrationService $integrationService,
         private SpellEffectsConversionService $spellEffectsConversionService,
-        private ?RelationResolutionService $relationResolutionService = null
+        private ?RelationResolutionService $relationResolutionService = null,
+        private ?SpellGlobalNormalizer $spellGlobalNormalizer = null
     ) {
     }
 
     /**
-     * Crée une instance avec les services par défaut.
+     * Crée une instance avec les services par défaut (délègue à ScrappingPipelineFactory).
      */
     public static function default(): self
     {
-        $configLoader = app(ConfigLoader::class);
-
-        $conversionService = app(DofusConversionService::class);
-        $getter = app(CharacteristicGetterService::class);
-
-        $orchestrator = new self(
-            $configLoader,
-            app(CollectService::class),
-            new ConversionService(
-                $configLoader,
-                new FormatterApplicator($conversionService, $getter),
-                $conversionService
-            ),
-            app(CharacteristicLimitService::class),
-            new IntegrationService(),
-            app(SpellEffectsConversionService::class),
-            null
-        );
-        $orchestrator->setRelationResolutionService(new RelationResolutionService($orchestrator));
-
-        return $orchestrator;
+        return ScrappingPipelineFactory::createDefault();
     }
 
     public function setRelationResolutionService(RelationResolutionService $service): void
@@ -143,81 +128,7 @@ final class Orchestrator
                 return OrchestratorResult::ok('OK', $raw, null, null, null, null);
             }
 
-            $raw = $this->enrichRawWithRecipe($source, $entity, $raw);
-            $context = $this->contextFromOptions($options);
-            $context['entityType'] = $entity === 'breed' ? 'class' : $entity;
-            if ($entity === 'item') {
-                $context['targetModel'] = $this->integrationService->getItemTargetTableFromRaw($raw);
-            }
-            // Sorts : récupérer les niveaux avant conversion pour que le mapping (levels.0.apCost, etc.) ait des données.
-            if ($entity === 'spell') {
-                $spellId = isset($raw['id']) && is_numeric($raw['id']) ? (int) $raw['id'] : 0;
-                if ($spellId > 0) {
-                    $raw['levels'] = $this->collectService->fetchSpellLevelsBySpellId($source, $spellId, [
-                        'skip_cache' => (bool) ($options['skip_cache'] ?? false),
-                    ]);
-                }
-            }
-            $converted = $this->conversionService->convert($source, $entity, $raw, $context);
-
-            if ($entity === 'spell') {
-                $levels = $raw['levels'] ?? [];
-                if ($levels !== []) {
-                    $effectsResult = $this->spellEffectsConversionService->convert($raw, $levels, [
-                        'lang' => $context['lang'],
-                    ]);
-                    $converted['spell_effects'] = [
-                        'effect_group' => $effectsResult->getEffectGroup(),
-                        'effects' => $effectsResult->getEffects(),
-                    ];
-                }
-            }
-
-            $entityConfig = $this->configLoader->loadEntity($source, $entity);
-            $entityType = (string) ($entityConfig['target']['krosmozEntity'] ?? $entity);
-            if ($entityType === 'item') {
-                $entityType = $this->integrationService->getItemTargetTable($converted);
-            }
-
-            $doValidate = ($options['validate'] ?? true) !== false;
-            if ($doValidate) {
-                $converted = $this->limitService->clampConvertedData($converted, $entityType);
-                $validationResult = $this->limitService->validate($converted, $entityType);
-                if (!$validationResult->isValid()) {
-                    return OrchestratorResult::validationFailed(
-                        'Validation échouée.',
-                        $validationResult->getErrors(),
-                        $raw,
-                        $converted
-                    );
-                }
-            }
-
-            $integrationResult = null;
-            $relations = null;
-            if (!empty($options['integrate'])) {
-                $integrationResult = $this->integrationService->integrate(
-                    $entityType,
-                    $converted,
-                    $this->integrationOptions($options)
-                );
-                if (!$integrationResult->isSuccess()) {
-                    return OrchestratorResult::fail($integrationResult->getMessage());
-                }
-                if ($this->relationResolutionService !== null && ($options['include_relations'] ?? true)) {
-                    $relations = $this->resolveRelationsAndDrain($source, $entity, $entityType, $raw, $converted, $integrationResult, $options);
-                }
-            }
-
-            return OrchestratorResult::ok(
-                'OK',
-                $raw,
-                $converted,
-                $integrationResult,
-                null,
-                null,
-                $relations
-            );
+            return $this->executePipelineForOneRaw($source, $entity, $raw, $options);
         } catch (\Throwable $e) {
             return OrchestratorResult::fail($e->getMessage());
         }
@@ -251,86 +162,88 @@ final class Orchestrator
                 return OrchestratorResult::ok('OK', $raw, null, null, null, null);
             }
 
-            $raw = $this->enrichRawWithRecipe($source, $entity, $raw);
-            $context = $this->contextFromOptions($options);
-            $context['entityType'] = $entity === 'breed' ? 'class' : $entity;
-            if ($entity === 'item') {
-                $context['targetModel'] = $this->integrationService->getItemTargetTableFromRaw($raw);
-            }
-            // Sorts : récupérer les niveaux avant conversion pour que le mapping (levels.0.apCost, etc.) ait des données.
-            if ($entity === 'spell') {
-                $spellId = isset($raw['id']) && is_numeric($raw['id']) ? (int) $raw['id'] : 0;
-                if ($spellId > 0) {
-                    $raw['levels'] = $this->collectService->fetchSpellLevelsBySpellId($source, $spellId, [
-                        'skip_cache' => (bool) ($options['skip_cache'] ?? false),
-                    ]);
-                }
-            }
-            $converted = $this->conversionService->convert($source, $entity, $raw, $context);
-
-            if ($entity === 'spell') {
-                $levels = $raw['levels'] ?? [];
-                if ($levels !== []) {
-                    $effectsResult = $this->spellEffectsConversionService->convert($raw, $levels, [
-                        'lang' => $context['lang'],
-                    ]);
-                    if ($effectsResult->hasEffects()) {
-                        $converted['spell_effects'] = [
-                            'effect_group' => $effectsResult->getEffectGroup(),
-                            'effects' => $effectsResult->getEffects(),
-                        ];
-                    }
-                }
-            }
-
-            $entityConfig = $this->configLoader->loadEntity($source, $entity);
-            $entityType = (string) ($entityConfig['target']['krosmozEntity'] ?? $entity);
-            if ($entityType === 'item') {
-                $entityType = $this->integrationService->getItemTargetTable($converted);
-            }
-
-            $doValidate = ($options['validate'] ?? true) !== false;
-            if ($doValidate) {
-                $converted = $this->limitService->clampConvertedData($converted, $entityType);
-                $validationResult = $this->limitService->validate($converted, $entityType);
-                if (!$validationResult->isValid()) {
-                    return OrchestratorResult::validationFailed(
-                        'Validation échouée.',
-                        $validationResult->getErrors(),
-                        $raw,
-                        $converted
-                    );
-                }
-            }
-
-            $integrationResult = null;
-            $relations = null;
-            if (!empty($options['integrate'])) {
-                $integrationResult = $this->integrationService->integrate(
-                    $entityType,
-                    $converted,
-                    $this->integrationOptions($options)
-                );
-                if (!$integrationResult->isSuccess()) {
-                    return OrchestratorResult::fail($integrationResult->getMessage());
-                }
-                if ($this->relationResolutionService !== null && ($options['include_relations'] ?? true)) {
-                    $relations = $this->resolveRelationsAndDrain($source, $entity, $entityType, $raw, $converted, $integrationResult, $options);
-                }
-            }
-
-            return OrchestratorResult::ok(
-                'OK',
-                $raw,
-                $converted,
-                $integrationResult,
-                null,
-                null,
-                $relations
-            );
+            return $this->executePipelineForOneRaw($source, $entity, $raw, $options);
         } catch (\Throwable $e) {
             return OrchestratorResult::fail($e->getMessage());
         }
+    }
+
+    /**
+     * Exécute le pipeline complet pour un jeu de données brutes : enrichissement → conversion
+     * → validation → intégration → relations. Partagé par runOne et runOneWithRaw.
+     *
+     * @param array<string, mixed> $raw
+     * @param array<string, mixed> $options
+     */
+    private function executePipelineForOneRaw(string $source, string $entity, array $raw, array $options): OrchestratorResult
+    {
+        $context = $this->contextFromOptions($options);
+        $context['entityType'] = $entity === 'breed' ? 'class' : $entity;
+        $raw = $this->prepareRawForConversion($source, $entity, $raw, $options);
+        $context = $this->prepareContextForEntity($entity, $raw, $context);
+
+        $converted = $this->conversionService->convert($source, $entity, $raw, $context);
+
+        if ($entity === 'spell') {
+            $levels = $raw['levels'] ?? [];
+            if ($levels !== []) {
+                $effectsResult = $this->spellEffectsConversionService->convert($raw, $levels, [
+                    'lang' => $context['lang'],
+                ]);
+                if ($effectsResult->hasEffects()) {
+                    $converted['spell_effects'] = [
+                        'effect_group' => $effectsResult->getEffectGroup(),
+                        'effects' => $effectsResult->getEffects(),
+                    ];
+                }
+            }
+        }
+
+        $entityConfig = $this->configLoader->loadEntity($source, $entity);
+        $entityType = (string) ($entityConfig['target']['krosmozEntity'] ?? $entity);
+        if ($entityType === 'item') {
+            $entityType = $this->integrationService->getItemTargetTable($converted);
+        }
+
+        $doValidate = ($options['validate'] ?? true) !== false;
+        if ($doValidate) {
+            $converted = $this->limitService->clampConvertedData($converted, $entityType);
+            $validationResult = $this->limitService->validate($converted, $entityType);
+            if (!$validationResult->isValid()) {
+                return OrchestratorResult::validationFailed(
+                    'Validation échouée.',
+                    $validationResult->getErrors(),
+                    $raw,
+                    $converted
+                );
+            }
+        }
+
+        $integrationResult = null;
+        $relations = null;
+        if (!empty($options['integrate'])) {
+            $integrationResult = $this->integrationService->integrate(
+                $entityType,
+                $converted,
+                $this->integrationOptions($options)
+            );
+            if (!$integrationResult->isSuccess()) {
+                return OrchestratorResult::fail($integrationResult->getMessage());
+            }
+            if ($this->relationResolutionService !== null && ($options['include_relations'] ?? true)) {
+                $relations = $this->resolveRelationsAndDrain($source, $entity, $entityType, $raw, $converted, $integrationResult, $options);
+            }
+        }
+
+        return OrchestratorResult::ok(
+            'OK',
+            $raw,
+            $converted,
+            $integrationResult,
+            null,
+            null,
+            $relations
+        );
     }
 
     /**
@@ -391,31 +304,24 @@ final class Orchestrator
             $convertedList = [];
             $allValidationErrors = [];
             $integrationResults = [];
+            /** @var array<int, array<string, mixed>> $spellLevelsCache */
+            $spellLevelsCache = [];
+            /** @var array<int, array<string, mixed>|null> $recipeCache */
+            $recipeCache = [];
 
             foreach ($items as $i => $raw) {
                 if (!is_array($raw)) {
                     continue;
                 }
-                $raw = $this->enrichRawWithRecipe($source, $entity, $raw);
-                if ($entity === 'item') {
-                    $context['targetModel'] = $this->integrationService->getItemTargetTableFromRaw($raw);
-                }
-                // Sorts : récupérer les niveaux avant conversion pour que le mapping (levels.0.apCost, etc.) ait des données.
-                if ($entity === 'spell') {
-                    $spellId = isset($raw['id']) && is_numeric($raw['id']) ? (int) $raw['id'] : 0;
-                    if ($spellId > 0) {
-                        $raw['levels'] = $this->collectService->fetchSpellLevelsBySpellId($source, $spellId, [
-                            'skip_cache' => (bool) ($options['skip_cache'] ?? false),
-                        ]);
-                    }
-                }
-                $converted = $this->conversionService->convert($source, $entity, $raw, $context);
+                $raw = $this->prepareRawForConversion($source, $entity, $raw, $options, $spellLevelsCache, $recipeCache);
+                $itemContext = $this->prepareContextForEntity($entity, $raw, $context);
+                $converted = $this->conversionService->convert($source, $entity, $raw, $itemContext);
 
                 if ($entity === 'spell') {
                     $levels = $raw['levels'] ?? [];
                     if ($levels !== []) {
                         $effectsResult = $this->spellEffectsConversionService->convert($raw, $levels, [
-                            'lang' => $context['lang'],
+                            'lang' => $itemContext['lang'],
                         ]);
                         $converted['spell_effects'] = [
                             'effect_group' => $effectsResult->getEffectGroup(),
@@ -495,7 +401,12 @@ final class Orchestrator
      * @param array<string, mixed> $raw
      * @return array<string, mixed>
      */
-    private function enrichRawWithRecipe(string $source, string $entity, array $raw): array
+    private function enrichRawWithRecipe(
+        string $source,
+        string $entity,
+        array $raw,
+        ?array &$recipeCache = null
+    ): array
     {
         if (!in_array($entity, ['item', 'resource', 'consumable'], true)) {
             return $raw;
@@ -509,12 +420,80 @@ final class Orchestrator
         if ($resultId <= 0) {
             return $raw;
         }
-        $recipe = $this->collectService->fetchRecipeByResultId($source, $resultId);
+        if ($recipeCache !== null && array_key_exists($resultId, $recipeCache)) {
+            $recipe = $recipeCache[$resultId];
+        } else {
+            $recipe = $this->collectService->fetchRecipeByResultId($source, $resultId);
+            if ($recipeCache !== null) {
+                $recipeCache[$resultId] = $recipe;
+            }
+        }
         if ($recipe !== null) {
             $raw['recipe'] = $recipe;
         }
 
         return $raw;
+    }
+
+    /**
+     * Prépare les données brutes avant conversion (enrichissements communs + spécifiques entité).
+     *
+     * @param array<string, mixed> $raw
+     * @param array<string, mixed> $options
+     * @param array<int, array<string, mixed>>|null $spellLevelsCache Cache local runMany pour éviter les requêtes répétées.
+     * @param array<int, array<string, mixed>|null>|null $recipeCache Cache local runMany des recettes par resultId.
+     * @return array<string, mixed>
+     */
+    private function prepareRawForConversion(
+        string $source,
+        string $entity,
+        array $raw,
+        array $options,
+        ?array &$spellLevelsCache = null,
+        ?array &$recipeCache = null
+    ): array {
+        $raw = $this->enrichRawWithRecipe($source, $entity, $raw, $recipeCache);
+
+        if ($entity !== 'spell') {
+            return $raw;
+        }
+
+        $spellId = isset($raw['id']) && is_numeric($raw['id']) ? (int) $raw['id'] : 0;
+        if ($spellId > 0) {
+            if ($spellLevelsCache !== null && array_key_exists($spellId, $spellLevelsCache)) {
+                $raw['levels'] = $spellLevelsCache[$spellId];
+            } else {
+                $levels = $this->collectService->fetchSpellLevelsBySpellId($source, $spellId, [
+                    'skip_cache' => (bool) ($options['skip_cache'] ?? false),
+                ]);
+                $raw['levels'] = $levels;
+                if ($spellLevelsCache !== null) {
+                    $spellLevelsCache[$spellId] = $levels;
+                }
+            }
+        }
+
+        if ($this->spellGlobalNormalizer !== null) {
+            $raw['spell_global'] = $this->spellGlobalNormalizer->build($raw);
+        }
+
+        return $raw;
+    }
+
+    /**
+     * Prépare le contexte de conversion selon l'entité.
+     *
+     * @param array<string, mixed> $raw
+     * @param array<string, mixed> $context
+     * @return array<string, mixed>
+     */
+    private function prepareContextForEntity(string $entity, array $raw, array $context): array
+    {
+        if ($entity === 'item') {
+            $context['targetModel'] = $this->integrationService->getItemTargetTableFromRaw($raw);
+        }
+
+        return $context;
     }
 
     /**
@@ -680,23 +659,72 @@ final class Orchestrator
                 continue;
             }
 
-            $result = $this->runOne($source, $entity, (int) $dofusdbId, $runOptions);
-
             $primaryId = null;
             $table = null;
-            if ($result->isSuccess()) {
-                $intResult = $result->getIntegrationResult();
-                if ($intResult !== null && $intResult->isSuccess()) {
-                    $data = $intResult->getData();
-                    $table = isset($data['table']) ? (string) $data['table'] : null;
-                    if ($entity === 'monster') {
-                        $primaryId = $intResult->getMonsterId() ?? $intResult->getCreatureId();
-                    } else {
-                        $primaryId = $intResult->getPrimaryId();
+            $existing = $this->resolveExistingRelationImportState($entity, $dofusdbId);
+            if ($existing !== null) {
+                $primaryId = $existing['primary_id'];
+                $table = $existing['table'];
+            } else {
+                $result = $this->runOne($source, $entity, (int) $dofusdbId, $runOptions);
+                if ($result->isSuccess()) {
+                    $intResult = $result->getIntegrationResult();
+                    if ($intResult !== null && $intResult->isSuccess()) {
+                        $data = $intResult->getData();
+                        $table = isset($data['table']) ? (string) $data['table'] : null;
+                        if ($entity === 'monster') {
+                            $primaryId = $intResult->getMonsterId() ?? $intResult->getCreatureId();
+                        } else {
+                            $primaryId = $intResult->getPrimaryId();
+                        }
                     }
                 }
             }
             $stack->onImported($entity, $dofusdbId, $primaryId, $table, $dryRun);
         }
+    }
+
+    /**
+     * Retourne l'état d'une entité déjà importée pour éviter un runOne redondant dans le drain.
+     *
+     * @return array{primary_id: int, table: string|null}|null
+     */
+    private function resolveExistingRelationImportState(string $entity, string $dofusdbId): ?array
+    {
+        if ($dofusdbId === '') {
+            return null;
+        }
+
+        if ($entity === 'spell') {
+            $spell = Spell::query()->where('dofusdb_id', $dofusdbId)->first();
+            return $spell !== null ? ['primary_id' => (int) $spell->id, 'table' => 'spells'] : null;
+        }
+
+        if ($entity === 'breed' || $entity === 'class') {
+            $breed = Breed::query()->where('dofusdb_id', $dofusdbId)->first();
+            return $breed !== null ? ['primary_id' => (int) $breed->id, 'table' => 'breeds'] : null;
+        }
+
+        if ($entity === 'monster') {
+            $monster = Monster::query()->where('dofusdb_id', $dofusdbId)->first();
+            return $monster !== null ? ['primary_id' => (int) $monster->id, 'table' => 'monsters'] : null;
+        }
+
+        if ($entity === 'item') {
+            $resource = Resource::query()->where('dofusdb_id', $dofusdbId)->first();
+            if ($resource !== null) {
+                return ['primary_id' => (int) $resource->id, 'table' => 'resources'];
+            }
+            $item = Item::query()->where('dofusdb_id', $dofusdbId)->first();
+            if ($item !== null) {
+                return ['primary_id' => (int) $item->id, 'table' => 'items'];
+            }
+            $consumable = Consumable::query()->where('dofusdb_id', $dofusdbId)->first();
+            if ($consumable !== null) {
+                return ['primary_id' => (int) $consumable->id, 'table' => 'consumables'];
+            }
+        }
+
+        return null;
     }
 }

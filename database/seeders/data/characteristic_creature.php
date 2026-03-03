@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 /**
- * Groupe creature (monster, class, npc). Régénéré par : php artisan db:export-seeder-data --characteristics
+ * Groupe creature (monster, class, npc). Régénéré par : php artisan scrapping:seeders:export --characteristics
  */
 
 return array (

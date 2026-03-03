@@ -3,6 +3,7 @@
 namespace Tests\Unit\Scrapping\Core;
 
 use App\Services\Scrapping\Core\Config\ConfigLoader;
+use App\Services\Scrapping\Core\Config\ScrappingMappingService;
 use Tests\TestCase;
 
 /**
@@ -93,5 +94,32 @@ class ConfigLoaderTest extends TestCase
         $source = $loader->loadSource('dofusdb');
 
         $this->assertSame('dofusdb', $source['source']);
+    }
+
+    public function test_load_entity_catalog_only_does_not_require_bdd_mapping(): void
+    {
+        $loader = new ConfigLoader(
+            base_path('resources/scrapping/config'),
+            $this->app->make(ScrappingMappingService::class)
+        );
+
+        $entity = $loader->loadEntity('dofusdb', 'monster-race');
+
+        $this->assertSame('monster-race', $entity['entity']);
+        $this->assertTrue((bool) ($entity['meta']['catalogOnly'] ?? false));
+        $this->assertIsArray($entity['mapping'] ?? null);
+    }
+
+    public function test_load_entity_non_catalog_still_requires_bdd_mapping(): void
+    {
+        $loader = new ConfigLoader(
+            base_path('resources/scrapping/config'),
+            $this->app->make(ScrappingMappingService::class)
+        );
+
+        $this->expectException(\RuntimeException::class);
+        $this->expectExceptionMessage('Aucun mapping BDD');
+
+        $loader->loadEntity('dofusdb', 'monster');
     }
 }

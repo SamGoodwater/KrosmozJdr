@@ -5,12 +5,19 @@ namespace App\Services\Scrapping\Core\Config;
 /**
  * Charge les configs depuis resources/scrapping/config/ (source + entités).
  * Endpoints, filtres, target, meta, relations viennent des JSON.
- * Mapping : BDD via ScrappingMappingService si présent, sinon fallback sur le mapping des JSON d'entité.
+ * Mapping runtime : BDD via ScrappingMappingService (source de vérité applicative).
+ * Sans mappingService (tests/outils), le mapping JSON d'entité reste disponible.
  *
- * Validation minimale : version, source, entity, endpoints ; mapping = BDD ou JSON (jamais vide si le JSON en contient).
+ * Validation minimale : version, source, entity, endpoints.
  */
 final class ConfigLoader
 {
+    /** @var array<string, array<string, mixed>> */
+    private array $sourceCache = [];
+
+    /** @var array<string, array<string, mixed>> */
+    private array $entityCache = [];
+
     public function __construct(
         private string $baseDir,
         private ?ScrappingMappingService $mappingService = null
@@ -30,12 +37,18 @@ final class ConfigLoader
      */
     public function loadSource(string $source): array
     {
+        if (isset($this->sourceCache[$source])) {
+            return $this->sourceCache[$source];
+        }
+
         $path = $this->baseDir . "/sources/{$source}/source.json";
         $data = $this->readJson($path);
 
         if (($data['source'] ?? null) !== $source) {
             throw new \InvalidArgumentException("Source mismatch: attendu '{$source}', trouvé '" . ($data['source'] ?? 'null') . "'");
         }
+
+        $this->sourceCache[$source] = $data;
 
         return $data;
     }
@@ -68,6 +81,11 @@ final class ConfigLoader
      */
     public function loadEntity(string $source, string $entity): array
     {
+        $cacheKey = "{$source}:{$entity}";
+        if (isset($this->entityCache[$cacheKey])) {
+            return $this->entityCache[$cacheKey];
+        }
+
         $path = $this->baseDir . "/sources/{$source}/entities/{$entity}.json";
         $data = $this->readJson($path);
 
@@ -83,14 +101,30 @@ final class ConfigLoader
             throw new \InvalidArgumentException("Config entité '{$source}/{$entity}': 'endpoints' requis.");
         }
 
-        // Mapping : BDD (panneau admin) si présent, sinon fallback sur le JSON (tests, première install).
+        // Mapping runtime: BDD uniquement quand mappingService est injecté.
+        // Le JSON est une source de bootstrap/édition, mais pas la source applicative en production.
         $jsonMapping = is_array($data['mapping'] ?? null) ? $data['mapping'] : [];
+        $isCatalogOnly = (bool) (($data['meta']['catalogOnly'] ?? false) === true);
         if ($this->mappingService !== null) {
             $fromDb = $this->mappingService->getMappingForEntity($source, $entity);
-            $data['mapping'] = ($fromDb !== null && $fromDb !== []) ? $fromDb : $jsonMapping;
+            if ($fromDb === null || $fromDb === []) {
+                if ($isCatalogOnly) {
+                    // Entité catalogue-only : pas d'import/intégration, mapping BDD optionnel.
+                    $data['mapping'] = $jsonMapping;
+                } else {
+                    throw new \RuntimeException(
+                        "Aucun mapping BDD pour {$source}/{$entity}. " .
+                        "Exécutez le seeder ScrappingEntityMappingSeeder."
+                    );
+                }
+            } else {
+                $data['mapping'] = $fromDb;
+            }
         } else {
             $data['mapping'] = $jsonMapping;
         }
+
+        $this->entityCache[$cacheKey] = $data;
 
         return $data;
     }

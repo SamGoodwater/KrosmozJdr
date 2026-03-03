@@ -3,7 +3,7 @@
  * Admin Mapping effectId DofusDB → sous-effet Krosmoz (effets de sorts).
  * Liste des mappings ; création / édition / suppression.
  */
-import { computed, ref } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 import { Head, router } from '@inertiajs/vue3';
 import { usePageTitle } from '@/Composables/layout/usePageTitle';
 import Main from '@/Pages/Layouts/Main.vue';
@@ -15,6 +15,7 @@ import axios from 'axios';
 const { setPageTitle } = usePageTitle();
 
 const props = defineProps({
+    effectIdFilter: { type: String, default: '' },
     mappings: { type: Array, default: () => [] },
     subEffectsForSelect: { type: Array, default: () => [] },
     characteristicSourceOptions: { type: Array, default: () => [] },
@@ -35,6 +36,7 @@ const form = ref({
 });
 const formErrors = ref({});
 const formSaving = ref(false);
+const listFilter = ref(String(props.effectIdFilter || ''));
 
 const characteristicKeyOptions = computed(() => [
     { value: '', label: '— Aucune —' },
@@ -42,6 +44,38 @@ const characteristicKeyOptions = computed(() => [
 ]);
 
 const showCharacteristicKey = computed(() => form.value.characteristic_source === 'characteristic');
+const prefillEffectId = computed(() => {
+    const raw = String(props.effectIdFilter || '').trim();
+    const id = Number(raw);
+    return Number.isFinite(id) && id > 0 ? String(Math.floor(id)) : '';
+});
+const hasExactPrefillMatch = computed(() => {
+    if (!prefillEffectId.value) return false;
+    return (Array.isArray(props.mappings) ? props.mappings : []).some(
+        (m) => String(m?.dofusdb_effect_id ?? '') === prefillEffectId.value
+    );
+});
+const isQuickCreateFromAnalysis = computed(() =>
+    modalMode.value === 'create'
+    && showModal.value
+    && !!prefillEffectId.value
+    && !hasExactPrefillMatch.value
+);
+const filteredMappings = computed(() => {
+    const rows = Array.isArray(props.mappings) ? props.mappings : [];
+    const q = String(listFilter.value || '').trim().toLowerCase();
+    if (!q) {
+        return rows;
+    }
+
+    return rows.filter((m) => {
+        const effectId = String(m?.dofusdb_effect_id ?? '').toLowerCase();
+        const subEffect = String(m?.sub_effect_slug ?? '').toLowerCase();
+        const source = String(m?.characteristic_source ?? '').toLowerCase();
+        const characteristic = String(m?.characteristic_key ?? '').toLowerCase();
+        return effectId.includes(q) || subEffect.includes(q) || source.includes(q) || characteristic.includes(q);
+    });
+});
 
 function openCreate() {
     modalMode.value = 'create';
@@ -100,6 +134,14 @@ function confirmDelete(mapping) {
         router.reload({ only: ['mappings'] });
     });
 }
+
+onMounted(() => {
+    if (!prefillEffectId.value || hasExactPrefillMatch.value) {
+        return;
+    }
+    openCreate();
+    form.value.dofusdb_effect_id = prefillEffectId.value;
+});
 </script>
 
 <template>
@@ -117,16 +159,28 @@ function confirmDelete(mapping) {
 
             <div class="mb-4 flex flex-wrap items-center justify-between gap-2">
                 <h2 class="text-lg font-semibold">Mappings en base</h2>
-                <Btn variant="primary" size="sm" @click="openCreate">Ajouter un mapping</Btn>
+                <div class="flex items-center gap-2">
+                    <InputField
+                        v-model="listFilter"
+                        label="Filtrer"
+                        placeholder="effectId, slug, source…"
+                    />
+                    <Btn variant="primary" size="sm" @click="openCreate">Ajouter un mapping</Btn>
+                </div>
             </div>
 
             <div
-                v-if="mappings.length === 0"
+                v-if="filteredMappings.length === 0"
                 class="rounded-lg border border-base-300 bg-base-200/30 p-8 text-center text-base-content/70"
             >
-                Aucun mapping en base. Exécutez le seeder
-                <code class="rounded bg-base-300 px-1 text-xs">php artisan db:seed --class=DofusdbEffectMappingSeeder</code>
-                ou ajoutez des mappings manuellement.
+                <template v-if="mappings.length === 0">
+                    Aucun mapping en base. Exécutez le seeder
+                    <code class="rounded bg-base-300 px-1 text-xs">php artisan db:seed --class=DofusdbEffectMappingSeeder</code>
+                    ou ajoutez des mappings manuellement.
+                </template>
+                <template v-else>
+                    Aucun mapping ne correspond au filtre courant.
+                </template>
                 <br />
                 <button type="button" class="btn btn-primary btn-sm mt-4" @click="openCreate">
                     Ajouter un mapping
@@ -145,7 +199,7 @@ function confirmDelete(mapping) {
                         </tr>
                     </thead>
                     <tbody>
-                        <tr v-for="m in mappings" :key="m.id">
+                        <tr v-for="m in filteredMappings" :key="m.id">
                             <td class="font-mono font-semibold">{{ m.dofusdb_effect_id }}</td>
                             <td class="font-mono text-sm">{{ m.sub_effect_slug }}</td>
                             <td>{{ m.characteristic_source }}</td>
@@ -173,6 +227,13 @@ function confirmDelete(mapping) {
             <h3 class="text-lg font-bold">
                 {{ modalMode === 'create' ? 'Nouveau mapping effet DofusDB' : 'Modifier le mapping' }}
             </h3>
+            <div
+                v-if="isQuickCreateFromAnalysis"
+                class="mt-3 rounded border border-info/40 bg-info/10 p-2 text-xs text-info-content"
+            >
+                Création rapide depuis analyse :
+                <span class="font-mono">effectId {{ prefillEffectId }}</span>
+            </div>
             <form @submit.prevent="submitMapping" class="space-y-4 pt-4">
                 <InputField
                     v-model="form.dofusdb_effect_id"

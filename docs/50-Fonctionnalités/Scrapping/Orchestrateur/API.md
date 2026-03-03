@@ -3,7 +3,7 @@
 ### Objectif
 Cette page documente l’API interne utilisée par :
 - l’UI `/scrapping`,
-- la commande `php artisan scrapping`,
+- la commande `php artisan scrapping:run` (alias legacy : `scrapping`),
 - les tests.
 
 Elle couvre :
@@ -144,17 +144,17 @@ POST /api/scrapping/import/all
 
 ## CLI (commande unifiée)
 Pour les usages CLI (collect/search/import), voir :
-- `app/Console/Commands/ScrappingCommand.php`
+- `app/Console/Commands/ScrappingRunCommand.php` (commande canonique : `scrapping:run`, alias legacy : `scrapping`)
 
 Exemples :
 ```bash
 # Recherche + import (par défaut)
-php artisan scrapping --entity=monster --name="Bouftou" --limit=50 --max-pages=2 --json
+php artisan scrapping:run --entity=monster --name="Bouftou" --limit=50 --max-pages=2 --json
 
 # Import plusieurs entités à la suite
-php artisan scrapping --entity=monster,item --ids=31,32 --include-relations
+php artisan scrapping:run --entity=monster,item --ids=31,32 --include-relations
 
 # Simulation (sans écriture en base)
-php artisan scrapping --entity=item --id=15 --simulate --skip-cache
+php artisan scrapping:run --entity=item --id=15 --simulate --skip-cache
 ```
 

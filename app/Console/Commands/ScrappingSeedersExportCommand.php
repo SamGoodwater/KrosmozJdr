@@ -30,7 +30,7 @@ use ZipArchive;
  *
  * Disponible uniquement en environnement local et testing (désactivé en production pour limiter la surface d'attaque).
  */
-class ExportSeederDataCommand extends Command
+class ScrappingSeedersExportCommand extends Command
 {
     use GuardsProductionEnvironment;
 
@@ -40,7 +40,7 @@ class ExportSeederDataCommand extends Command
 
     private const BACKUP_MAX_AGE_DAYS = 7;
 
-    protected $signature = 'db:export-seeder-data
+    protected $signature = 'scrapping:seeders:export
                             {--characteristics : Exporter uniquement characteristics}
                             {--formulas : Exporter les formules de conversion (tables characteristic_creature/object/spell)}
                             {--spell-effect-types : Exporter uniquement spell_effect_types}
@@ -48,6 +48,7 @@ class ExportSeederDataCommand extends Command
                             {--item-types : Exporter resource_types, consumable_types, item_types (types item scrapping)}';
 
     protected $description = 'Exporte characteristics, formules, spell_effect_types, mapping scrapping et types item vers database/seeders/data/';
+    protected $aliases = ['db:export-seeder-data'];
 
     public function __construct(
         private readonly CharacteristicGetterService $getter
@@ -217,7 +218,7 @@ class ExportSeederDataCommand extends Command
                 ]
             )->all();
             $path = $dir . '/characteristics.php';
-            $content = "<?php\n\ndeclare(strict_types=1);\n\n/**\n * Table générale characteristics. Régénéré par : php artisan db:export-seeder-data --characteristics\n */\n\nreturn " . $this->varExportShort($data) . ";\n";
+            $content = "<?php\n\ndeclare(strict_types=1);\n\n/**\n * Table générale characteristics. Régénéré par : php artisan scrapping:seeders:export --characteristics\n */\n\nreturn " . $this->varExportShort($data) . ";\n";
             file_put_contents($path, $content);
             $this->info('Exported ' . count($data) . ' characteristics → ' . $path);
         }
@@ -238,7 +239,7 @@ class ExportSeederDataCommand extends Command
                 'conversion_krosmoz_sample' => $r->conversion_krosmoz_sample,
             ])->all();
             $path = $dir . '/characteristic_creature.php';
-            $content = "<?php\n\ndeclare(strict_types=1);\n\n/**\n * Groupe creature (monster, class, npc). Régénéré par : php artisan db:export-seeder-data --characteristics\n */\n\nreturn " . $this->varExportShort($data) . ";\n";
+            $content = "<?php\n\ndeclare(strict_types=1);\n\n/**\n * Groupe creature (monster, class, npc). Régénéré par : php artisan scrapping:seeders:export --characteristics\n */\n\nreturn " . $this->varExportShort($data) . ";\n";
             file_put_contents($path, $content);
             $this->info('Exported ' . count($data) . ' characteristic_creature → ' . $path);
         }
@@ -268,7 +269,7 @@ class ExportSeederDataCommand extends Command
                 'item_type_ids' => $r->allowedItemTypes->pluck('id')->values()->all(),
             ])->all();
             $path = $dir . '/characteristic_object.php';
-            $content = "<?php\n\ndeclare(strict_types=1);\n\n/**\n * Groupe object : item, consumable, resource, panoply.\n * Régénéré par : php artisan db:export-seeder-data --characteristics\n */\n\nreturn " . $this->varExportShort($data) . ";\n";
+            $content = "<?php\n\ndeclare(strict_types=1);\n\n/**\n * Groupe object : item, consumable, resource, panoply.\n * Régénéré par : php artisan scrapping:seeders:export --characteristics\n */\n\nreturn " . $this->varExportShort($data) . ";\n";
             file_put_contents($path, $content);
             $this->info('Exported ' . count($data) . ' characteristic_object → ' . $path);
         }
@@ -290,7 +291,7 @@ class ExportSeederDataCommand extends Command
                 'value_available' => $r->value_available,
             ])->all();
             $path = $dir . '/characteristic_spell.php';
-            $content = "<?php\n\ndeclare(strict_types=1);\n\n/**\n * Groupe spell. Régénéré par : php artisan db:export-seeder-data --characteristics\n */\n\nreturn " . $this->varExportShort($data) . ";\n";
+            $content = "<?php\n\ndeclare(strict_types=1);\n\n/**\n * Groupe spell. Régénéré par : php artisan scrapping:seeders:export --characteristics\n */\n\nreturn " . $this->varExportShort($data) . ";\n";
             file_put_contents($path, $content);
             $this->info('Exported ' . count($data) . ' characteristic_spell → ' . $path);
         }
@@ -322,16 +323,16 @@ class ExportSeederDataCommand extends Command
             ->all();
 
         $path = $dir . '/spell_effect_types.php';
-        $content = "<?php\n\ndeclare(strict_types=1);\n\n/**\n * Types d'effets de sort (export BDD).\n * Généré par php artisan db:export-seeder-data\n */\n\nreturn " . $this->varExportShort($rows) . ";\n";
+        $content = "<?php\n\ndeclare(strict_types=1);\n\n/**\n * Types d'effets de sort (export BDD).\n * Généré par php artisan scrapping:seeders:export\n */\n\nreturn " . $this->varExportShort($rows) . ";\n";
         file_put_contents($path, $content);
         $this->info('Exported ' . count($rows) . ' spell effect types → ' . $path);
     }
 
     private function exportItemTypes(string $dir): void
     {
-        $this->exportItemTypesTable($dir, ResourceType::query()->whereNotNull('dofusdb_type_id')->orderBy('dofusdb_type_id')->get(), 'resource_types', 'resource_types', 'Ressources (superType 9). Régénéré par : php artisan db:export-seeder-data --item-types');
-        $this->exportItemTypesTable($dir, ConsumableType::query()->whereNotNull('dofusdb_type_id')->orderBy('dofusdb_type_id')->get(), 'consumable_types', 'consumable_types', 'Consommables (superTypes 6, 70). Régénéré par : php artisan db:export-seeder-data --item-types');
-        $this->exportItemTypesTable($dir, ItemType::query()->whereNotNull('dofusdb_type_id')->orderBy('dofusdb_type_id')->get(), 'item_types', 'item_types', 'Équipements. Régénéré par : php artisan db:export-seeder-data --item-types');
+        $this->exportItemTypesTable($dir, ResourceType::query()->whereNotNull('dofusdb_type_id')->orderBy('dofusdb_type_id')->get(), 'resource_types', 'resource_types', 'Ressources (superType 9). Régénéré par : php artisan scrapping:seeders:export --item-types');
+        $this->exportItemTypesTable($dir, ConsumableType::query()->whereNotNull('dofusdb_type_id')->orderBy('dofusdb_type_id')->get(), 'consumable_types', 'consumable_types', 'Consommables (superTypes 6, 70). Régénéré par : php artisan scrapping:seeders:export --item-types');
+        $this->exportItemTypesTable($dir, ItemType::query()->whereNotNull('dofusdb_type_id')->orderBy('dofusdb_type_id')->get(), 'item_types', 'item_types', 'Équipements. Régénéré par : php artisan scrapping:seeders:export --item-types');
     }
 
     /**
@@ -381,13 +382,14 @@ class ExportSeederDataCommand extends Command
                 'from_lang_aware' => $r->from_lang_aware,
                 'characteristic_key' => $r->characteristic?->key,
                 'formatters' => $r->formatters,
+                'spell_level_aggregation' => $r->spell_level_aggregation,
                 'sort_order' => $r->sort_order,
                 'targets' => $targets,
             ];
         })->all();
 
         $path = $dir . '/scrapping_entity_mappings.php';
-        $content = "<?php\n\ndeclare(strict_types=1);\n\n/**\n * Règles de mapping scrapping (DofusDB → Krosmoz). Régénéré par : php artisan db:export-seeder-data --scrapping-mappings\n */\n\nreturn " . $this->varExportShort($data) . ";\n";
+        $content = "<?php\n\ndeclare(strict_types=1);\n\n/**\n * Règles de mapping scrapping (DofusDB → Krosmoz). Régénéré par : php artisan scrapping:seeders:export --scrapping-mappings\n */\n\nreturn " . $this->varExportShort($data) . ";\n";
         file_put_contents($path, $content);
         $this->info('Exported ' . count($data) . ' scrapping entity mappings → ' . $path);
     }

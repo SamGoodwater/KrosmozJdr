@@ -4,6 +4,24 @@ Ce document décrit la structure des données **effets** côté DofusDB (tout en
 
 ---
 
+## 0. Résumé : pipeline DofusDB → KrosmozJDR (sorts)
+
+**Modèle DofusDB** : un **spell** est lié à des **spell-level(s)** qui le décrivent. Dans chaque spell-level on trouve une table d’**effets spécifiques** (instances). Chaque instance a sa **zone** (`zoneDescr`) ; côté KrosmozJDR on assume une zone par niveau en prenant la **première** zone valide parmi les effets du niveau. Chaque instance renvoie vers un **effet généraliste** (`GET /effects/{effectId}`) qui décrit l’action (retirer PO, dommages eau, etc.) — cela correspond aux **sous-effets** KrosmozJDR.
+
+**KrosmozJDR dispose bien de la pipeline complète** pour créer des sorts avec leurs effets à partir de l’API DofusDB, en convertissant les valeurs selon les règles définies au niveau des caractéristiques (groupe spell) :
+
+| Étape | Service / source | Rôle |
+|-------|------------------|------|
+| **Collecte** | `CollectService` | `GET /spells/{id}` puis `GET /spell-levels?spellId=…&$sort=grade` → `raw` + `raw['levels']` |
+| **Conversion (propriétés sort)** | `ConversionService` + `spell.json` / `scrapping_entity_mappings` | Propriétés du sort (pa, po_min, po_max, name, sight_line, area au niveau spell, etc.) depuis `levels.0.*` |
+| **Conversion (effets)** | `SpellEffectsConversionService` | Pour chaque niveau : instances `effects[]` → effectId → `dofusdb_effect_mappings` → sous-effet Krosmoz ; zone = première `zoneDescr` du niveau ; `value_formula`, `value_converted`, `dice_formula` via règles **characteristic_spell** (Phase 3) |
+| **Validation** | `CharacteristicLimitService` | Clamp et validation des données converties |
+| **Intégration** | `IntegrationService::integrateSpell` + `integrateSpellEffectsForSpell` | Création/mise à jour du **Spell**, puis **EffectGroup**, **Effect** (par grade), **EffectSubEffect** (params dont value_converted), **EffectUsage** |
+
+Les valeurs numériques des effets (dégâts, soins, bonus PO/PO, etc.) sont converties selon les **formules de conversion** et **convertToDice** définies dans `characteristic_spell` (voir `SpellEffectConversionFormulaResolver`, `DofusConversionService`).
+
+---
+
 ## 1. Architecture DofusDB : tout est en IDs
 
 ### 1.1 Sorts : niveaux non embarqués
@@ -15,7 +33,7 @@ Les effets sont donc sur les **spell-levels**, pas sur le sort lui-même.
 
 ### 1.2 Spell-levels : instances d’effets par niveau
 
-- **`GET /spell-levels/{levelId}?lang=fr`** (ex. `1001`) renvoie un niveau avec :
+- **`GET /spell-levels?spellId=…&$sort=grade&lang=fr`** renvoie la liste des niveaux (fusionnée dans `raw['levels']`). Chaque niveau contient : portée = **`minRange`** et **`range`** (deux champs séparés), **`castTestLos`** (ligne de vue). Détails :
   - `id`, `spellId`, **`grade`** (degré 1, 2, 3…)
   - `apCost`, `minRange`, `range`, `maxCastPerTurn`, etc.
   - **`effects`** : tableau d’**instances d’effets**
@@ -31,7 +49,9 @@ Chaque élément de `effects[]` / `criticalEffect[]` contient notamment :
 | **`diceSide`**  | Faces du dé (ex. 18) |
 | `value`         | Valeur fixe (souvent 0 si dés) |
 | `effectElement` | Élément (parfois redondant avec le dictionnaire) |
-| `zoneDescr`     | Forme de zone (shape, param1, param2…) |
+| `zoneDescr`     | Forme de zone (shape, param1, param2…) ; shape 80 = 1 case (CAC) |
+
+Pour les chemins exacts (levels.0.minRange, levels.0.range, levels.0.castTestLos, etc.) et exemples JSON, voir [DOFUSDB_API_SPELLS_REFERENCE.md](./DOFUSDB_API_SPELLS_REFERENCE.md).
 
 ### 1.3 Dictionnaire des effets : définition par ID
 

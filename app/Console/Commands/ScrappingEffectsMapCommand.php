@@ -14,21 +14,22 @@ use Illuminate\Console\Command;
  * à coller dans DofusdbEffectMappingSeeder::MAPPINGS ou à écrire dans un fichier.
  *
  * Usage :
- *   php artisan dofusdb:fetch-effect-mappings
- *   php artisan dofusdb:fetch-effect-mappings --output=database/seeders/data/dofusdb_effect_mappings.php
- *   php artisan dofusdb:fetch-effect-mappings --lang=fr --no-cache
+ *   php artisan scrapping:effects:map
+ *   php artisan scrapping:effects:map --output=database/seeders/data/dofusdb_effect_mappings.php
+ *   php artisan scrapping:effects:map --lang=fr --no-cache
  *
  * @see docs/50-Fonctionnalités/Scrapping/PLAN_IMPLEMENTATION_MAPPING_EFFETS.md
  */
-class FetchDofusdbEffectMappingsCommand extends Command
+class ScrappingEffectsMapCommand extends Command
 {
-    protected $signature = 'dofusdb:fetch-effect-mappings
+    protected $signature = 'scrapping:effects:map
                             {--lang=fr : Langue pour les descriptions (détection du mapping)}
                             {--limit=100 : Nombre d’effets par page API}
                             {--output= : Fichier PHP où écrire le tableau (sinon stdout)}
                             {--no-cache : Ignorer le cache HTTP}';
 
     protected $description = 'Récupère les effets DofusDB via l’API et génère des propositions de mapping pour le seeder';
+    protected $aliases = ['dofusdb:fetch-effect-mappings'];
 
     private const BASE_URL = 'https://api.dofusdb.fr/effects';
 
@@ -88,7 +89,7 @@ class FetchDofusdbEffectMappingsCommand extends Command
         $allEffects = $this->fetchAllEffects($client, $lang, $limit, $skipCache);
         $this->info('Effets récupérés : ' . count($allEffects));
 
-        $mappings = $this->buildMappingsFromEffects($allEffects, $lang);
+        $mappings = $this->buildMappingsFromEffects($allEffects);
 
         $php = $this->formatMappingsAsPhp($mappings, $allEffects);
 
@@ -154,7 +155,7 @@ class FetchDofusdbEffectMappingsCommand extends Command
      * @param list<array{id: int, category: int, elementId: int, description_fr: string, boost: bool}> $effects
      * @return array<int, array{0: string, 1: string, 2: string|null}>
      */
-    private function buildMappingsFromEffects(array $effects, string $lang): array
+    private function buildMappingsFromEffects(array $effects): array
     {
         $mappings = [];
 
@@ -259,7 +260,7 @@ class FetchDofusdbEffectMappingsCommand extends Command
             '',
             '/**',
             ' * Mappings effectId DofusDB → [sub_effect_slug, characteristic_source, characteristic_key].',
-            ' * Généré par : php artisan dofusdb:fetch-effect-mappings --output=database/seeders/data/dofusdb_effect_mappings_suggested.php',
+            ' * Généré par : php artisan scrapping:effects:map --output=database/seeders/data/dofusdb_effect_mappings_suggested.php',
             ' * Utilisé par DofusdbEffectMappingSeeder si le fichier existe.',
             ' * characteristic_key est rempli automatiquement quand l’effet a une caractéristique DofusDB connue (voir DOFUSDB_CHARACTERISTIC_ID_TO_KROSMOZ_KEY dans la commande).',
             ' * Commentaires : description FR (API) + si source=characteristic, id carac. DofusDB.',

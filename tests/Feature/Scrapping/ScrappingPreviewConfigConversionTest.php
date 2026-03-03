@@ -6,11 +6,18 @@ use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
+use Tests\SeedsScrappingPipeline;
 use Tests\TestCase;
 
 class ScrappingPreviewConfigConversionTest extends TestCase
 {
-    use RefreshDatabase;
+    use RefreshDatabase, SeedsScrappingPipeline;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+        $this->seedScrappingPipeline();
+    }
 
     public function test_preview_monster_uses_config_driven_conversion_shape(): void
     {

@@ -132,6 +132,7 @@ erDiagram
   CHARACTERISTIC_CREATURE {
     id : bigint(20) unsigned
     characteristic_id : bigint(20) unsigned
+    dofusdb_characteristic_id : int(10) unsigned
     entity : varchar(32)
     db_column : varchar(64)
     min : varchar(512)
@@ -152,6 +153,7 @@ erDiagram
   CHARACTERISTIC_OBJECT {
     id : bigint(20) unsigned
     characteristic_id : bigint(20) unsigned
+    dofusdb_characteristic_id : int(10) unsigned
     entity : varchar(32)
     db_column : varchar(64)
     min : varchar(512)
@@ -182,6 +184,7 @@ erDiagram
   CHARACTERISTIC_SPELL {
     id : bigint(20) unsigned
     characteristic_id : bigint(20) unsigned
+    dofusdb_characteristic_id : int(10) unsigned
     entity : varchar(32)
     db_column : varchar(64)
     min : varchar(512)
@@ -811,6 +814,7 @@ erDiagram
     from_lang_aware : tinyint(1)
     characteristic_id : bigint(20) unsigned
     formatters : longtext
+    spell_level_aggregation : varchar(16)
     sort_order : smallint(5) unsigned
     created_at : timestamp
     updated_at : timestamp

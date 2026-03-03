@@ -65,6 +65,40 @@ class ScrappingMappingControllerTest extends TestCase
         );
     }
 
+    public function test_admin_index_accepts_mapping_key_query_param(): void
+    {
+        $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
+
+        $response = $this->actingAs($admin)->get(route('admin.scrapping-mappings.index', [
+            'source' => 'dofusdb',
+            'entity' => 'monster',
+            'mapping_key' => 'life',
+        ]));
+
+        $response->assertOk();
+        $response->assertInertia(fn ($page) => $page
+            ->component('Admin/scrapping-mappings/Index')
+            ->where('mappingKey', 'life')
+        );
+    }
+
+    public function test_admin_index_exposes_mapping_key_even_without_existing_rule(): void
+    {
+        $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
+
+        $response = $this->actingAs($admin)->get(route('admin.scrapping-mappings.index', [
+            'source' => 'dofusdb',
+            'entity' => 'monster',
+            'mapping_key' => 'missing_key',
+        ]));
+
+        $response->assertOk();
+        $response->assertInertia(fn ($page) => $page
+            ->component('Admin/scrapping-mappings/Index')
+            ->where('mappingKey', 'missing_key')
+        );
+    }
+
     public function test_admin_can_store_mapping(): void
     {
         $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);

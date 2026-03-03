@@ -55,7 +55,7 @@ Les **entités** dans `entities/` sont : `monster`, `spell`, `breed`, `item`, `i
 
 ### 2.5 item-super-types.json
 
-- **Lu par** : `DofusDbItemSuperTypeMappingService`, `ItemEntityTypeFilterService`, `ExtractObjectConversionSamplesCommand`, `ScrappingCommand` (pour filtrage par type).
+- **Lu par** : `DofusDbItemSuperTypeMappingService`, `ItemEntityTypeFilterService`, `ExtractObjectConversionSamplesCommand`, `ScrappingRunCommand` (pour filtrage par type).
 - **Clés** : `excludedTypeIds`, `excludedTypeIdsNotes`, `superTypesReference[]` (id, nameFr, krosmozCategory), `groups` (resource, consumable, equipment) avec strategy, superTypeIds ou excludeSuperTypeIds, notes.
 - **Rôle** : Définir quels typeIds/superTypeIds appartiennent à resource/consumable/equipment et quels typeIds sont exclus de la collecte.
 

@@ -12,7 +12,7 @@
 - **Résolution actuelle** : `IntegrationService::resolveItemTargetTable($typeId)` consulte les trois tables (ResourceType, ConsumableType, ItemType) puis fallback `ITEM_TYPE_TO_TABLE` (config codée).
 - **Filtrage des listes** : `ResourceTypeRegistryController::index()` utilise `getTypeIdsForGroup('resource')` qui s’appuie sur **config** (`item-super-types.json`) + **catalogue DofusDB** (`/item-types`), pas uniquement la BDD.
 - **Filtres de recherche** : `ItemEntityTypeFilterService` utilise en priorité les registres BDD (`getAllowedTypeIdsFromRegistry`), avec repli sur `getTypeIdsForGroup()` (config + catalogue) quand un registre est vide.
-- **Caractéristiques (référence)** : données en BDD, seeders depuis `database/seeders/data/*.php`, commande `db:export-seeder-data` pour réexporter la BDD vers ces fichiers, et extraction (ex. `characteristics:extract-object-samples`) pour alimenter des samples depuis DofusDB.
+- **Caractéristiques (référence)** : données en BDD, seeders depuis `database/seeders/data/*.php`, commande `scrapping:seeders:export` (alias legacy : `db:export-seeder-data`) pour réexporter la BDD vers ces fichiers, et extraction (ex. `characteristics:extract-object-samples`) pour alimenter des samples depuis DofusDB.
 
 ---
 
@@ -89,7 +89,7 @@
 
 1. **Source** : endpoint DofusDB **`/item-types`** (déjà utilisé par `DofusDbItemTypesCatalogService`). Chaque type a un `id`, `superTypeId`, `name`, etc.
 
-2. **Commande Artisan** (ex. `php artisan scrapping:extract-item-types`) :
+2. **Commande Artisan** (ex. `php artisan scrapping:types:extract`, alias legacy : `scrapping:extract-item-types`) :
    - Récupérer tous les item-types (paginer si besoin).
    - Pour chaque type : selon la **règle de catégorie** choisie :
      - **Option A** : utiliser encore une fois la config `item-super-types.json` pour attribuer resource / consumable / equipment (uniquement pour l’extraction, pas pour le runtime après Phase 2).
@@ -111,19 +111,19 @@
    - `ResourceTypeSeeder`, `ConsumableTypeSeeder`, `ItemTypeSeeder` (ou un seul `ItemTypeCategorySeeder` qui lit les trois fichiers et remplit les trois tables).
    - Logique : `updateOrCreate` sur `dofusdb_type_id` pour chaque table, sans écraser une catégorie déjà choisie en BDD si on souhaite préserver les changements faits en Phase 1 (sinon, écraser depuis le fichier).
 
-3. **Commande d’export** (comme `db:export-seeder-data`) :
+3. **Commande d’export** (comme `scrapping:seeders:export`) :
    - Option `--item-types` (ou `--resource-types`, `--consumable-types`, `--item-types`) pour exporter le contenu actuel des trois tables vers `database/seeders/data/resource_types.php` (et idem pour les deux autres).
    - Permet de « figer » en seed les changements faits en UI (dont les changements de catégorie de la Phase 1).
 
 ### 3.3 Workflow cible (implémenté)
 
 1. **Setup initial** : `php artisan db:seed` (ou seeders types) → tables remplies depuis les fichiers PHP.
-2. **Remplir depuis l’API** : `php artisan scrapping:seed-item-types` → récupère tout le catalogue DofusDB, écrit les 3 fichiers puis exécute les seeders (une commande, rien n’est oublié).
-3. **Mise à jour fichiers seuls** : `php artisan scrapping:extract-item-types` → régénère uniquement les trois fichiers.
+2. **Remplir depuis l’API** : `php artisan scrapping:types:seed` → récupère tout le catalogue DofusDB, écrit les 3 fichiers puis exécute les seeders (une commande, rien n’est oublié).
+3. **Mise à jour fichiers seuls** : `php artisan scrapping:types:extract` → régénère uniquement les trois fichiers.
 4. **Ajustements manuels** : via l’UI « Gérer les types » (décision, changement de catégorie).
-5. **Sauvegarde en seed** : `php artisan db:export-seeder-data --item-types` → les fichiers de data reflètent la BDD.
+5. **Sauvegarde en seed** : `php artisan scrapping:seeders:export --item-types` → les fichiers de data reflètent la BDD.
 
-**Remplir en une commande** : `php artisan scrapping:seed-item-types` récupère tout le catalogue via l’API DofusDB (superTypeId → Ressource / Consommable / Équipement), écrit les 3 fichiers puis exécute les seeders. Option `--no-files` pour n’exécuter que les seeders. Implémentation : `scrapping:extract-item-types`, `scrapping:seed-item-types`, `getCategoryForSuperTypeId()`, seeders `LoadsSeederDataFile` + `updateOrCreate`, export `--item-types`.
+**Remplir en une commande** : `php artisan scrapping:types:seed` récupère tout le catalogue via l’API DofusDB (superTypeId → Ressource / Consommable / Équipement), écrit les 3 fichiers puis exécute les seeders. Option `--no-files` pour n’exécuter que les seeders. Implémentation : `scrapping:types:extract`, `scrapping:types:seed`, `getCategoryForSuperTypeId()`, seeders `LoadsSeederDataFile` + `updateOrCreate`, export `--item-types`.
 
 ---
 
@@ -131,7 +131,7 @@
 
 1. **Phase 1** : Changer la catégorie d’un type (backend API + frontend listes). Pas de changement de source de vérité.
 2. **Phase 2** : Audit et modification du code pour ne plus utiliser config/catalogue pour « typeId → ressource/consommable/équipement » ; uniquement BDD.
-3. **Phase 3** : Commande d’extraction, fichiers de données, seeders et option d’export dans `db:export-seeder-data`.
+3. **Phase 3** : Commande d’extraction, fichiers de données, seeders et option d’export dans `scrapping:seeders:export`.
 
 ---
 

@@ -95,7 +95,15 @@ final class ConversionService
                 if (!isset($out[$model]) || !is_array($out[$model])) {
                     $out[$model] = [];
                 }
-                $out[$model][$field] = $value;
+                $writeValue = $value;
+                // Ne pas écrire un effectId (entier 1–5000) dans spells.area si le mapping pointe par erreur sur effectId.
+                if ($model === 'spells' && $field === 'area' && is_numeric($writeValue)) {
+                    $i = (int) $writeValue;
+                    if ($i >= 1 && $i <= 5000) {
+                        $writeValue = null;
+                    }
+                }
+                $out[$model][$field] = $writeValue;
             }
         }
 

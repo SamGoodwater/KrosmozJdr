@@ -12,6 +12,7 @@ use App\Models\Entity\Item;
 use App\Services\Scrapping\Core\Orchestrator\Orchestrator;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Http;
+use Tests\SeedsScrappingPipeline;
 use Tests\TestCase;
 use Tests\CreatesSystemUser;
 
@@ -22,7 +23,7 @@ use Tests\CreatesSystemUser;
  */
 class ScrappingRelationsTest extends TestCase
 {
-    use RefreshDatabase, CreatesSystemUser;
+    use RefreshDatabase, CreatesSystemUser, SeedsScrappingPipeline;
 
     private Orchestrator $orchestrator;
     private User $user;
@@ -30,6 +31,7 @@ class ScrappingRelationsTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
+        $this->seedScrappingPipeline();
         $this->createSystemUser();
         $this->user = User::factory()->create();
         $this->orchestrator = app(Orchestrator::class);

@@ -408,7 +408,7 @@ const seederImportLoading = ref(false);
 const seederMessage = ref({ type: '', text: '' });
 
 async function runExportSeederData() {
-    if (!confirm('Mettre à jour les fichiers seeders à partir de la BDD actuelle ? (db:export-seeder-data)\nDésactivé en production.')) return;
+    if (!confirm('Mettre à jour les fichiers seeders à partir de la BDD actuelle ? (scrapping:seeders:export)\nDésactivé en production.')) return;
     seederMessage.value = { type: '', text: '' };
     seederExportLoading.value = true;
     try {

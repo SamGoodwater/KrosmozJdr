@@ -13,7 +13,7 @@ use Illuminate\Database\Seeder;
  * Charge les mappings soit depuis le fichier généré par l’API (si présent), soit depuis
  * la constante MAPPINGS ci-dessous. Pour régénérer le fichier depuis DofusDB :
  *
- *   php artisan dofusdb:fetch-effect-mappings --output=database/seeders/data/dofusdb_effect_mappings_suggested.php
+ *   php artisan scrapping:effects:map --output=database/seeders/data/dofusdb_effect_mappings_suggested.php
  *
  * Puis exécuter ce seeder pour écrire en base. Tu peux aussi éditer MAPPINGS ou le fichier
  * data pour ajouter/corriger des lignes à la main.
@@ -28,7 +28,7 @@ use Illuminate\Database\Seeder;
  */
 class DofusdbEffectMappingSeeder extends Seeder
 {
-    /** Fichier de mappings suggérés généré par dofusdb:fetch-effect-mappings (optionnel). */
+    /** Fichier de mappings suggérés généré par scrapping:effects:map (optionnel). */
     private const DATA_FILE = __DIR__ . '/data/dofusdb_effect_mappings_suggested.php';
 
     /**

@@ -42,6 +42,7 @@ class ScrappingConfigController extends Controller
                 'filters' => $cfg['filters'] ?? new \stdClass(),
                 'relations' => array_keys((array) ($cfg['relations'] ?? [])),
                 'comparisonKeys' => $this->extractComparisonKeys($cfg),
+                'mappingDiagnostics' => $this->buildMappingDiagnostics($cfg, $source['source'], $configEntity),
             ];
             if ($configEntity === 'item') {
                 $itemConfig = $cfg;
@@ -64,6 +65,7 @@ class ScrappingConfigController extends Controller
                     'filters' => $itemLike['filters'],
                     'relations' => $itemLike['relations'],
                     'comparisonKeys' => $itemLike['comparisonKeys'],
+                    'mappingDiagnostics' => $this->buildMappingDiagnostics($itemConfig, $source['source'], 'item'),
                 ];
             }
         }
@@ -103,6 +105,177 @@ class ScrappingConfigController extends Controller
         }
 
         return $keys;
+    }
+
+    /**
+     * Calcule un diagnostic de couverture du mapping pour l'UI admin.
+     *
+     * @param array<string, mixed> $cfg
+     * @return array{
+     *   total: int,
+     *   valid: int,
+     *   invalid: int,
+     *   blocking: int,
+     *   improvable: int,
+     *   coveragePct: int,
+     *   sourcePath: int,
+     *   sourceExtract: int,
+     *   withTargets: int,
+     *   withFormatters: int,
+     *   warnings: list<array{
+     *     code: string,
+     *     severity: 'blocking'|'improvable',
+     *     message: string,
+     *     mappingKey: string,
+     *     actionUrl: string
+     *   }>
+     * }
+     */
+    private function buildMappingDiagnostics(array $cfg, string $source, string $entity): array
+    {
+        $mapping = $cfg['mapping'] ?? [];
+        if (! is_array($mapping) || $mapping === []) {
+            return [
+                'total' => 0,
+                'valid' => 0,
+                'invalid' => 0,
+                'blocking' => 1,
+                'improvable' => 0,
+                'coveragePct' => 0,
+                'sourcePath' => 0,
+                'sourceExtract' => 0,
+                'withTargets' => 0,
+                'withFormatters' => 0,
+                'warnings' => [[
+                    'code' => 'mapping.empty',
+                    'severity' => 'blocking',
+                    'message' => 'Aucune entrée de mapping trouvée.',
+                    'mappingKey' => '',
+                    'actionUrl' => route('admin.scrapping-mappings.index', ['source' => $source, 'entity' => $entity]),
+                ]],
+            ];
+        }
+
+        $total = 0;
+        $valid = 0;
+        $blocking = 0;
+        $improvable = 0;
+        $sourcePath = 0;
+        $sourceExtract = 0;
+        $withTargets = 0;
+        $withFormatters = 0;
+        $warnings = [];
+
+        foreach ($mapping as $index => $entry) {
+            if (! is_array($entry)) {
+                $warnings[] = [
+                    'code' => 'mapping.invalid_entry',
+                    'severity' => 'blocking',
+                    'message' => "Entrée #{$index} invalide (format non tableau).",
+                    'mappingKey' => "#{$index}",
+                    'actionUrl' => route('admin.scrapping-mappings.index', ['source' => $source, 'entity' => $entity]),
+                ];
+                $blocking++;
+                continue;
+            }
+
+            $total++;
+            $key = isset($entry['key']) && is_string($entry['key']) ? trim($entry['key']) : '';
+            $from = $entry['from'] ?? null;
+            $targets = $entry['to'] ?? [];
+            $formatters = $entry['formatters'] ?? [];
+
+            $hasPath = is_array($from) && isset($from['path']) && is_string($from['path']) && trim($from['path']) !== '';
+            $hasExtract = is_array($from) && array_key_exists('extract', $from);
+            if ($hasPath) {
+                $sourcePath++;
+            }
+            if ($hasExtract) {
+                $sourceExtract++;
+            }
+
+            $validTargets = 0;
+            if (is_array($targets)) {
+                foreach ($targets as $target) {
+                    if (is_array($target)
+                        && isset($target['model'], $target['field'])
+                        && is_string($target['model'])
+                        && is_string($target['field'])
+                        && trim($target['model']) !== ''
+                        && trim($target['field']) !== '') {
+                        $validTargets++;
+                    }
+                }
+            }
+            if ($validTargets > 0) {
+                $withTargets++;
+            }
+
+            $hasFormatters = is_array($formatters) && $formatters !== [];
+            if ($hasFormatters) {
+                $withFormatters++;
+            }
+
+            $isValid = $key !== '' && ($hasPath || $hasExtract) && $validTargets > 0;
+            if ($isValid) {
+                $valid++;
+                if (! $hasFormatters) {
+                    $improvable++;
+                    $warnings[] = [
+                        'code' => 'mapping.no_formatter',
+                        'severity' => 'improvable',
+                        'message' => "Règle {$key} valide sans formatter explicite.",
+                        'mappingKey' => $key,
+                        'actionUrl' => route('admin.scrapping-mappings.index', [
+                            'source' => $source,
+                            'entity' => $entity,
+                            'mapping_key' => $key,
+                        ]),
+                    ];
+                }
+                continue;
+            }
+
+            $parts = [];
+            if ($key === '') {
+                $parts[] = 'clé absente';
+            }
+            if (! $hasPath && ! $hasExtract) {
+                $parts[] = 'source absente';
+            }
+            if ($validTargets === 0) {
+                $parts[] = 'cible absente';
+            }
+            $label = $key !== '' ? $key : "#{$index}";
+            $warnings[] = [
+                'code' => 'mapping.incomplete',
+                'severity' => 'blocking',
+                'message' => "Règle {$label} incomplète (" . implode(', ', $parts) . ').',
+                'mappingKey' => $label,
+                'actionUrl' => route('admin.scrapping-mappings.index', [
+                    'source' => $source,
+                    'entity' => $entity,
+                    'mapping_key' => $key !== '' ? $key : null,
+                ]),
+            ];
+            $blocking++;
+        }
+
+        $invalid = max(0, $total - $valid);
+
+        return [
+            'total' => $total,
+            'valid' => $valid,
+            'invalid' => $invalid,
+            'blocking' => $blocking,
+            'improvable' => $improvable,
+            'coveragePct' => $total > 0 ? (int) round(($valid / $total) * 100) : 0,
+            'sourcePath' => $sourcePath,
+            'sourceExtract' => $sourceExtract,
+            'withTargets' => $withTargets,
+            'withFormatters' => $withFormatters,
+            'warnings' => array_slice($warnings, 0, 8),
+        ];
     }
 }
 

@@ -9,6 +9,7 @@ use App\Models\CharacteristicCreature;
 use App\Models\CharacteristicObject;
 use App\Models\CharacteristicSpell;
 use App\Services\Characteristic\Formula\FormulaResolutionService;
+use Illuminate\Support\Facades\Cache;
 
 /**
  * Getter généraliste : fournit les définitions d’une caractéristique par clé et entité.
@@ -203,9 +204,62 @@ final class CharacteristicGetterService
         return is_string($id) && trim($id) !== '' ? $id : null;
     }
 
+    /** Cache TTL pour le mapping dofusdb_id → characteristic_key par groupe (secondes). */
+    private const DOFUSDB_TO_KEY_CACHE_TTL = 3600;
+
+    /**
+     * Retourne le mapping complet dofusdb_characteristic_id → characteristic_key pour un groupe (une requête, mis en cache).
+     * À utiliser en batch pour éviter N+1 (ex. itemEffectsToKrosmozBonus avec plusieurs effets par item).
+     *
+     * @param  'object'|'creature'|'spell'  $group
+     * @return array<int, string> dofusdb_characteristic_id => characteristic key
+     */
+    public function getDofusdbToCharacteristicKeyMap(string $group): array
+    {
+        $cacheKey = 'characteristic.dofusdb_to_key.' . $group;
+
+        return Cache::remember($cacheKey, self::DOFUSDB_TO_KEY_CACHE_TTL, function () use ($group): array {
+            $query = match ($group) {
+                'object' => CharacteristicObject::whereNotNull('dofusdb_characteristic_id')->with('characteristic'),
+                'creature' => CharacteristicCreature::whereNotNull('dofusdb_characteristic_id')->with('characteristic'),
+                'spell' => CharacteristicSpell::whereNotNull('dofusdb_characteristic_id')->with('characteristic'),
+                default => null,
+            };
+            if ($query === null) {
+                return [];
+            }
+            $map = [];
+            foreach ($query->get() as $row) {
+                $char = $row->characteristic;
+                if ($char instanceof Characteristic && $char->key !== '') {
+                    $map[$row->dofusdb_characteristic_id] = $char->key;
+                }
+            }
+
+            return $map;
+        });
+    }
+
+    /**
+     * Résout un id DofusDB (GET /characteristics) vers la clé Krosmoz de la caractéristique (M2).
+     * Pour plusieurs résolutions (ex. boucle effets), préférer getDofusdbToCharacteristicKeyMap() pour éviter N+1.
+     *
+     * @param  'object'|'creature'|'spell'  $group  Groupe de caractéristiques (table de groupe)
+     * @example getCharacteristicKeyByDofusdbCharacteristicId(10, 'object') === 'strength_object'
+     */
+    public function getCharacteristicKeyByDofusdbCharacteristicId(int $dofusdbCharacteristicId, string $group): ?string
+    {
+        $map = $this->getDofusdbToCharacteristicKeyMap($group);
+
+        return $map[$dofusdbCharacteristicId] ?? null;
+    }
+
+    /** Invalide les caches du getter (dofusdb_id → key par groupe). À appeler après mise à jour des tables de groupe. */
     public function clearCache(): void
     {
-        // Cache optionnel à ajouter plus tard avec invalidation ciblée (tags ou clés).
+        foreach (['object', 'creature', 'spell'] as $group) {
+            Cache::forget('characteristic.dofusdb_to_key.' . $group);
+        }
     }
 
     /**

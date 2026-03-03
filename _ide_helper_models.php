@@ -71,6 +71,7 @@ namespace App\Models{
  *
  * @property int $id
  * @property int $characteristic_id
+ * @property int|null $dofusdb_characteristic_id Id DofusDB GET /characteristics
  * @property string $entity
  * @property string|null $db_column
  * @property string|null $min Valeur fixe, formule ou table JSON
@@ -100,6 +101,7 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicCreature whereCreatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicCreature whereDbColumn($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicCreature whereDefaultValue($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicCreature whereDofusdbCharacteristicId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicCreature whereEntity($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicCreature whereFormula($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicCreature whereFormulaDisplay($value)
@@ -119,6 +121,7 @@ namespace App\Models{
  *
  * @property int $id
  * @property int $characteristic_id
+ * @property int|null $dofusdb_characteristic_id Id DofusDB GET /characteristics (ex. item.effects[].characteristic)
  * @property string $entity
  * @property string|null $db_column
  * @property string|null $min Valeur fixe, formule ou table JSON
@@ -154,6 +157,7 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicObject whereCreatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicObject whereDbColumn($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicObject whereDefaultValue($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicObject whereDofusdbCharacteristicId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicObject whereEntity($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicObject whereForgemagieAllowed($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicObject whereForgemagieMax($value)
@@ -175,6 +179,7 @@ namespace App\Models{
  *
  * @property int $id
  * @property int $characteristic_id
+ * @property int|null $dofusdb_characteristic_id Id DofusDB GET /characteristics
  * @property string $entity
  * @property string|null $db_column
  * @property string|null $min Valeur fixe, formule ou table JSON
@@ -203,6 +208,7 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicSpell whereCreatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicSpell whereDbColumn($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicSpell whereDefaultValue($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicSpell whereDofusdbCharacteristicId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicSpell whereEntity($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicSpell whereFormula($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CharacteristicSpell whereFormulaDisplay($value)
@@ -1619,6 +1625,7 @@ namespace App\Models\Scrapping{
  * @property bool $from_lang_aware
  * @property int|null $characteristic_id
  * @property array|null $formatters
+ * @property string|null $spell_level_aggregation first|max|min|last (agrégation multi spell-level)
  * @property int $sort_order
  * @example ScrappingEntityMapping::where('source', 'dofusdb')->where('entity', 'monster')->orderBy('sort_order')->get();
  * @property \Illuminate\Support\Carbon|null $created_at
@@ -1641,6 +1648,7 @@ namespace App\Models\Scrapping{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ScrappingEntityMapping whereMappingKey($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ScrappingEntityMapping whereSortOrder($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ScrappingEntityMapping whereSource($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ScrappingEntityMapping whereSpellLevelAggregation($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ScrappingEntityMapping whereUpdatedAt($value)
  */
 	class ScrappingEntityMapping extends \Eloquent {}

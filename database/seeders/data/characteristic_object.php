@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 /**
  * Groupe object : item, consumable, resource, panoply.
- * Régénéré par : php artisan db:export-seeder-data --characteristics
+ * Régénéré par : php artisan scrapping:seeders:export --characteristics
  */
 
 return array (

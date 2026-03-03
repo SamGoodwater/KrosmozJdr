@@ -482,6 +482,24 @@ class ScrappingController extends Controller
     }
 
     /**
+     * Enrichit les données converties du sort pour la prévisualisation : ajoute "po" (affichage) à partir de po_min/po_max.
+     *
+     * @param array<string, mixed> $converted Structure convertie (modifiée en place)
+     */
+    private function enrichSpellConvertedForPreview(array &$converted): void
+    {
+        $spells = &$converted['spells'];
+        if (! is_array($spells)) {
+            return;
+        }
+        $min = $spells['spell_po_min'] ?? $spells['po_min'] ?? $spells['po'] ?? null;
+        $max = $spells['spell_po_max'] ?? $spells['po_max'] ?? $spells['po'] ?? null;
+        $min = $min !== null ? (string) $min : '1';
+        $max = $max !== null ? (string) $max : $min;
+        $spells['po'] = $min === $max ? $min : $min . '-' . $max;
+    }
+
+    /**
      * Import complet d'un type d'entité (pipeline Core).
      */
     public function importAll(Request $request): JsonResponse
@@ -512,6 +530,9 @@ class ScrappingController extends Controller
             $options = ['convert' => true, 'validate' => true, 'integrate' => false, 'dry_run' => true, 'force_update' => false, 'lang' => 'fr'];
             $result = $this->orchestrator->runOne($resolved['source'], $resolved['entity'], $id, $options);
             $converted = $result->getConverted();
+            if ($normalizedType === 'spell' && is_array($converted)) {
+                $this->enrichSpellConvertedForPreview($converted);
+            }
             $comparisonType = $this->entityTypeForComparison($normalizedType);
             $existingRecord = $comparisonType !== null && is_array($converted)
                 ? $this->integrationService->getExistingAttributesForComparison($comparisonType, $converted)
@@ -565,6 +586,9 @@ class ScrappingController extends Controller
                 try {
                     $result = $orchestrator->runOne($resolved['source'], $resolved['entity'], $id, $options);
                     $converted = $result->getConverted();
+                    if ($type === 'spell' && is_array($converted)) {
+                        $this->enrichSpellConvertedForPreview($converted);
+                    }
                     $existingRecord = $comparisonType !== null && is_array($converted)
                         ? $this->integrationService->getExistingAttributesForComparison($comparisonType, $converted)
                         : null;

@@ -47,7 +47,7 @@ Ce document décrit les **tâches restantes** pour considérer le service de scr
 
 **À faire** :
 - Tester de bout en bout : import d’un monstre avec `include_relations=true` (API et CLI) et vérifier que `creature_spell` et `creature_resource` sont bien remplis.
-- Si la CLI ne transmet pas `include_relations` aux options d’import : vérifier que `buildImportOptions()` dans `ScrappingCommand` inclut bien `include_relations` (déjà le cas si on s’appuie sur `extractCollectOptions()` / `buildImportOptions()` avec l’option `--include-relations`).
+- Si la CLI ne transmet pas `include_relations` aux options d’import : vérifier que `buildImportOptions()` dans `ScrappingRunCommand` inclut bien `include_relations` (déjà le cas si on s’appuie sur `extractCollectOptions()` / `buildImportOptions()` avec l’option `--include-relations`).
 
 ---
 

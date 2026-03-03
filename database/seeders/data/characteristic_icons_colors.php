@@ -368,7 +368,7 @@ return [
         'is_magic_spell' => 'Magique : jet de sauvegarde (DD 8 + mod + maîtrise). Physique : jet de touche contre CA. Règles 3.3.2.3.',
         'category_spell' => 'Catégorie du sort (offensif, soin, etc.).',
         'range_editable_spell' => 'Indique si la portée peut être modifiée par le PO du lanceur (3.3.2.2).',
-        'spell_range_min_spell' => 'Portée minimale du sort en cases (DofusDB levels.0.range.min).',
-        'spell_range_max_spell' => 'Portée maximale du sort en cases (DofusDB levels.0.range.max).',
+        'spell_range_min_spell' => 'Portée minimale du sort en cases (DofusDB levels.0.minRange).',
+        'spell_range_max_spell' => 'Portée maximale du sort en cases (DofusDB levels.0.range).',
     ],
 ];

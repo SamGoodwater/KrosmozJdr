@@ -22,7 +22,7 @@ Référence des **éléments supprimés** (ou dépréciés) et de ceux **conserv
 
 | Élément | Raison |
 |--------|--------|
-| Tables `type_spell_effect_types`, `spell_effects` et modèles `SpellEffectType`, `SpellEffect` | Données potentiellement existantes ; `SpellEffectTypeSeeder` et option `--spell-effect-types` de `db:export-seeder-data` conservés. Plus d'UI d'édition : utiliser le système unifié (effect / sub_effect / effect_usage). |
+| Tables `type_spell_effect_types`, `spell_effects` et modèles `SpellEffectType`, `SpellEffect` | Données potentiellement existantes ; `SpellEffectTypeSeeder` et option `--spell-effect-types` de `scrapping:seeders:export` conservés. Plus d'UI d'édition : utiliser le système unifié (effect / sub_effect / effect_usage). |
 | Table `dofusdb_conversion_formulas` : colonnes `formula_type` et `parameters` | Seeder et enregistrements existants. Fallback lorsque `conversion_formula` est vide (puis `config/dofusdb_conversion.php`). |
 | Config `config/dofusdb_conversion.php` | Fallback pour formules level, life, attributes, initiative, limites, mappings. La BDD prime si une formule est renseignée en base. |
 | Service `DataConversionService` | Pipeline de conversion du scrapping ; délègue à `DofusDbConversionFormulas` et `ValidationService` (V2). |

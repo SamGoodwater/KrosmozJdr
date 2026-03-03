@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 /**
- * Table générale characteristics. Régénéré par : php artisan db:export-seeder-data --characteristics
+ * Table générale characteristics. Régénéré par : php artisan scrapping:seeders:export --characteristics
  */
 
 return array (
@@ -134,7 +134,7 @@ return array (
     'short_name' => 'PA',
     'helper' => 'Points d\'action pour lancer le sort. Typique : 3–4 (simple), 5 (puissant/zone), 2–3 (bonus). Règles 3.3.2.1.',
     'descriptions' => 'Coût en points d\'action pour lancer le sort (règles 3.3.2.1).',
-    'icon' => 'castingTime.webp',
+    'icon' => 'pa.webp',
     'color' => '#1a73e8',
     'unit' => NULL,
     'type' => 'int',
@@ -204,35 +204,20 @@ return array (
   ),
   13 => 
   array (
-    'key' => 'range_spell',
-    'name' => 'Portée',
-    'short_name' => 'PO',
-    'helper' => 'Portée du sort (cases). Fixe, modifiable (base + PO lanceur) ou variable. Règles 3.3.2.2.',
-    'descriptions' => 'Portée du sort en cases (fixe, modifiable ou variable).',
-    'icon' => 'range.webp',
-    'color' => '#5c6bc0',
-    'unit' => NULL,
-    'type' => 'int',
-    'sort_order' => 2,
-    'group' => 'spell',
-    'linked_to_key' => NULL,
-  ),
-  14 => 
-  array (
     'key' => 'area_spell',
     'name' => 'Zone',
     'short_name' => 'Zone',
     'helper' => 'Taille de la zone d\'effet (cases).',
     'descriptions' => 'Taille de la zone d\'effet (ligne, cône, cercle, carré).',
-    'icon' => 'range.webp',
-    'color' => '#5c6bc0',
+    'icon' => 'area.webp',
+    'color' => '#3a9283',
     'unit' => NULL,
     'type' => 'int',
     'sort_order' => 3,
     'group' => 'spell',
     'linked_to_key' => NULL,
   ),
-  15 => 
+  14 => 
   array (
     'key' => 'movement_points_creature',
     'name' => 'Points de mouvement',
@@ -247,7 +232,7 @@ return array (
     'group' => 'creature',
     'linked_to_key' => NULL,
   ),
-  16 => 
+  15 => 
   array (
     'key' => 'weight_object',
     'name' => 'Poids',
@@ -262,7 +247,7 @@ return array (
     'group' => 'object',
     'linked_to_key' => NULL,
   ),
-  17 => 
+  16 => 
   array (
     'key' => 'element_spell',
     'name' => 'Élément',
@@ -277,7 +262,7 @@ return array (
     'group' => 'spell',
     'linked_to_key' => NULL,
   ),
-  18 => 
+  17 => 
   array (
     'key' => 'range_creature',
     'name' => 'Portée',
@@ -292,7 +277,7 @@ return array (
     'group' => 'creature',
     'linked_to_key' => NULL,
   ),
-  19 => 
+  18 => 
   array (
     'key' => 'initiative_creature',
     'name' => 'Initiative',
@@ -307,7 +292,7 @@ return array (
     'group' => 'creature',
     'linked_to_key' => NULL,
   ),
-  20 => 
+  19 => 
   array (
     'key' => 'power_spell',
     'name' => 'Puissance',
@@ -315,14 +300,14 @@ return array (
     'helper' => 'Indice de puissance du sort (dégâts/soins).',
     'descriptions' => 'Indice de puissance du sort (dégâts/soins).',
     'icon' => 'power.webp',
-    'color' => '#e91e63',
+    'color' => '#e0c54f',
     'unit' => NULL,
     'type' => 'int',
     'sort_order' => 5,
     'group' => 'spell',
     'linked_to_key' => NULL,
   ),
-  21 => 
+  20 => 
   array (
     'key' => 'armor_class_creature',
     'name' => 'Classe d\'armure',
@@ -337,37 +322,37 @@ return array (
     'group' => 'creature',
     'linked_to_key' => NULL,
   ),
-  22 => 
+  21 => 
   array (
     'key' => 'cast_per_turn_spell',
     'name' => 'Lancers par tour',
     'short_name' => 'Lanc./tour',
     'helper' => 'Nombre de fois que le sort peut être lancé par tour.',
     'descriptions' => 'Nombre de fois que le sort peut être lancé par tour.',
-    'icon' => 'castingTime.webp',
-    'color' => '#1a73e8',
+    'icon' => 'castPerTurn.webp',
+    'color' => '#603151',
     'unit' => NULL,
     'type' => 'int',
     'sort_order' => 6,
     'group' => 'spell',
     'linked_to_key' => NULL,
   ),
-  23 => 
+  22 => 
   array (
     'key' => 'cast_per_target_spell',
     'name' => 'Lancers par cible',
     'short_name' => 'Lanc./cible',
     'helper' => 'Nombre de fois que le sort peut toucher la même cible par tour.',
     'descriptions' => 'Nombre de fois que le sort peut toucher la même cible par tour.',
-    'icon' => 'castingTime.webp',
-    'color' => '#1a73e8',
+    'icon' => 'castPerTarget.webp',
+    'color' => '#2e4c3a',
     'unit' => NULL,
     'type' => 'int',
     'sort_order' => 7,
     'group' => 'spell',
     'linked_to_key' => NULL,
   ),
-  24 => 
+  23 => 
   array (
     'key' => 'sight_line_spell',
     'name' => 'Ligne de vue',
@@ -382,7 +367,7 @@ return array (
     'group' => 'spell',
     'linked_to_key' => NULL,
   ),
-  25 => 
+  24 => 
   array (
     'key' => 'number_between_two_cast_spell',
     'name' => 'Délai entre deux lancers',
@@ -397,7 +382,7 @@ return array (
     'group' => 'spell',
     'linked_to_key' => NULL,
   ),
-  26 => 
+  25 => 
   array (
     'key' => 'category_spell',
     'name' => 'Catégorie',
@@ -412,7 +397,7 @@ return array (
     'group' => 'spell',
     'linked_to_key' => NULL,
   ),
-  27 => 
+  26 => 
   array (
     'key' => 'hit_bonus_object',
     'name' => 'Bonus de touche',
@@ -427,7 +412,7 @@ return array (
     'group' => 'object',
     'linked_to_key' => NULL,
   ),
-  28 => 
+  27 => 
   array (
     'key' => 'vitality_creature',
     'name' => 'Vitalité',
@@ -442,7 +427,7 @@ return array (
     'group' => 'creature',
     'linked_to_key' => NULL,
   ),
-  29 => 
+  28 => 
   array (
     'key' => 'fixed_damage_neutral_object',
     'name' => 'Dommage fixe Neutre',
@@ -457,7 +442,7 @@ return array (
     'group' => 'object',
     'linked_to_key' => NULL,
   ),
-  30 => 
+  29 => 
   array (
     'key' => 'is_magic_spell',
     'name' => 'Sort magique',
@@ -472,7 +457,7 @@ return array (
     'group' => 'spell',
     'linked_to_key' => NULL,
   ),
-  31 => 
+  30 => 
   array (
     'key' => 'strength_creature',
     'name' => 'Force',
@@ -487,7 +472,7 @@ return array (
     'group' => 'creature',
     'linked_to_key' => NULL,
   ),
-  32 => 
+  31 => 
   array (
     'key' => 'agility_creature',
     'name' => 'Agilité',
@@ -502,7 +487,7 @@ return array (
     'group' => 'creature',
     'linked_to_key' => NULL,
   ),
-  33 => 
+  32 => 
   array (
     'key' => 'fixed_damage_earth_object',
     'name' => 'Dommage fixe Terre',
@@ -517,7 +502,7 @@ return array (
     'group' => 'object',
     'linked_to_key' => NULL,
   ),
-  34 => 
+  33 => 
   array (
     'key' => 'fixed_damage_fire_object',
     'name' => 'Dommage fixe Feu',
@@ -532,7 +517,7 @@ return array (
     'group' => 'object',
     'linked_to_key' => NULL,
   ),
-  35 => 
+  34 => 
   array (
     'key' => 'intelligence_creature',
     'name' => 'Intelligence',
@@ -547,7 +532,7 @@ return array (
     'group' => 'creature',
     'linked_to_key' => NULL,
   ),
-  36 => 
+  35 => 
   array (
     'key' => 'fixed_damage_air_object',
     'name' => 'Dommage fixe Air',
@@ -562,7 +547,7 @@ return array (
     'group' => 'object',
     'linked_to_key' => NULL,
   ),
-  37 => 
+  36 => 
   array (
     'key' => 'wisdom_creature',
     'name' => 'Sagesse',
@@ -577,7 +562,7 @@ return array (
     'group' => 'creature',
     'linked_to_key' => NULL,
   ),
-  38 => 
+  37 => 
   array (
     'key' => 'chance_creature',
     'name' => 'Chance',
@@ -592,7 +577,7 @@ return array (
     'group' => 'creature',
     'linked_to_key' => NULL,
   ),
-  39 => 
+  38 => 
   array (
     'key' => 'fixed_damage_water_object',
     'name' => 'Dommage fixe Eau',
@@ -607,7 +592,7 @@ return array (
     'group' => 'object',
     'linked_to_key' => NULL,
   ),
-  40 => 
+  39 => 
   array (
     'key' => 'fixed_damage_multiple_object',
     'name' => 'Dommage fixe multiple',
@@ -622,7 +607,7 @@ return array (
     'group' => 'object',
     'linked_to_key' => NULL,
   ),
-  41 => 
+  40 => 
   array (
     'key' => 'hit_bonus_creature',
     'name' => 'Bonus de touche',
@@ -637,7 +622,7 @@ return array (
     'group' => 'creature',
     'linked_to_key' => NULL,
   ),
-  42 => 
+  41 => 
   array (
     'key' => 'life_points_max_object',
     'name' => 'Points de vie',
@@ -652,7 +637,7 @@ return array (
     'group' => 'object',
     'linked_to_key' => NULL,
   ),
-  43 => 
+  42 => 
   array (
     'key' => 'summoning_creature',
     'name' => 'Nombre d\'invocations',
@@ -667,7 +652,7 @@ return array (
     'group' => 'creature',
     'linked_to_key' => NULL,
   ),
-  44 => 
+  43 => 
   array (
     'key' => 'vitality_object',
     'name' => 'Vitalité',
@@ -682,7 +667,7 @@ return array (
     'group' => 'object',
     'linked_to_key' => NULL,
   ),
-  45 => 
+  44 => 
   array (
     'key' => 'dodge_action_points_creature',
     'name' => 'Esquive PA',
@@ -697,7 +682,7 @@ return array (
     'group' => 'creature',
     'linked_to_key' => NULL,
   ),
-  46 => 
+  45 => 
   array (
     'key' => 'wisdom_object',
     'name' => 'Sagesse',
@@ -712,7 +697,7 @@ return array (
     'group' => 'object',
     'linked_to_key' => NULL,
   ),
-  47 => 
+  46 => 
   array (
     'key' => 'dodge_movement_points_creature',
     'name' => 'Esquive PM',
@@ -727,7 +712,7 @@ return array (
     'group' => 'creature',
     'linked_to_key' => NULL,
   ),
-  48 => 
+  47 => 
   array (
     'key' => 'save_vitality_wisdom_object',
     'name' => 'Bonus sauvegarde Vitalité',
@@ -742,7 +727,7 @@ return array (
     'group' => 'object',
     'linked_to_key' => NULL,
   ),
-  49 => 
+  48 => 
   array (
     'key' => 'dodge_creature',
     'name' => 'Fuite',
@@ -757,7 +742,7 @@ return array (
     'group' => 'creature',
     'linked_to_key' => NULL,
   ),
-  50 => 
+  49 => 
   array (
     'key' => 'skills_object',
     'name' => 'Compétences',
@@ -772,7 +757,7 @@ return array (
     'group' => 'object',
     'linked_to_key' => NULL,
   ),
-  51 => 
+  50 => 
   array (
     'key' => 'passive_skills_object',
     'name' => 'Compétences passives',
@@ -787,7 +772,7 @@ return array (
     'group' => 'object',
     'linked_to_key' => NULL,
   ),
-  52 => 
+  51 => 
   array (
     'key' => 'tackle_creature',
     'name' => 'Tacle',
@@ -802,7 +787,7 @@ return array (
     'group' => 'creature',
     'linked_to_key' => NULL,
   ),
-  53 => 
+  52 => 
   array (
     'key' => 'initiative_object',
     'name' => 'Initiative',
@@ -817,7 +802,7 @@ return array (
     'group' => 'object',
     'linked_to_key' => NULL,
   ),
-  54 => 
+  53 => 
   array (
     'key' => 'strength_object',
     'name' => 'Force',
@@ -832,7 +817,7 @@ return array (
     'group' => 'object',
     'linked_to_key' => NULL,
   ),
-  55 => 
+  54 => 
   array (
     'key' => 'intelligence_object',
     'name' => 'Intelligence',
@@ -847,7 +832,7 @@ return array (
     'group' => 'object',
     'linked_to_key' => NULL,
   ),
-  56 => 
+  55 => 
   array (
     'key' => 'chance_object',
     'name' => 'Chance',
@@ -862,7 +847,7 @@ return array (
     'group' => 'object',
     'linked_to_key' => NULL,
   ),
-  57 => 
+  56 => 
   array (
     'key' => 'agility_object',
     'name' => 'Agilité',
@@ -877,7 +862,7 @@ return array (
     'group' => 'object',
     'linked_to_key' => NULL,
   ),
-  58 => 
+  57 => 
   array (
     'key' => 'fixed_resistance_neutral_creature',
     'name' => 'Résistance fixe Neutre',
@@ -892,7 +877,7 @@ return array (
     'group' => 'creature',
     'linked_to_key' => NULL,
   ),
-  59 => 
+  58 => 
   array (
     'key' => 'fixed_resistance_earth_creature',
     'name' => 'Résistance fixe Terre',
@@ -907,7 +892,7 @@ return array (
     'group' => 'creature',
     'linked_to_key' => NULL,
   ),
-  60 => 
+  59 => 
   array (
     'key' => 'save_strength_intelligence_chance_agility_object',
     'name' => 'Bonus sauvegarde Force',
@@ -922,7 +907,7 @@ return array (
     'group' => 'object',
     'linked_to_key' => NULL,
   ),
-  61 => 
+  60 => 
   array (
     'key' => 'action_points_object',
     'name' => 'PA',
@@ -937,7 +922,7 @@ return array (
     'group' => 'object',
     'linked_to_key' => NULL,
   ),
-  62 => 
+  61 => 
   array (
     'key' => 'fixed_resistance_fire_creature',
     'name' => 'Résistance fixe Feu',
@@ -952,7 +937,7 @@ return array (
     'group' => 'creature',
     'linked_to_key' => NULL,
   ),
-  63 => 
+  62 => 
   array (
     'key' => 'dodge_action_points_object',
     'name' => 'Esquive PA',
@@ -967,7 +952,7 @@ return array (
     'group' => 'object',
     'linked_to_key' => NULL,
   ),
-  64 => 
+  63 => 
   array (
     'key' => 'fixed_resistance_air_creature',
     'name' => 'Résistance fixe Air',
@@ -982,7 +967,7 @@ return array (
     'group' => 'creature',
     'linked_to_key' => NULL,
   ),
-  65 => 
+  64 => 
   array (
     'key' => 'fixed_resistance_water_creature',
     'name' => 'Résistance fixe Eau',
@@ -997,7 +982,7 @@ return array (
     'group' => 'creature',
     'linked_to_key' => NULL,
   ),
-  66 => 
+  65 => 
   array (
     'key' => 'movement_points_object',
     'name' => 'PM',
@@ -1012,7 +997,7 @@ return array (
     'group' => 'object',
     'linked_to_key' => NULL,
   ),
-  67 => 
+  66 => 
   array (
     'key' => 'dodge_movement_points_object',
     'name' => 'Esquive PM',
@@ -1027,7 +1012,7 @@ return array (
     'group' => 'object',
     'linked_to_key' => NULL,
   ),
-  68 => 
+  67 => 
   array (
     'key' => 'summoning_object',
     'name' => 'Nombre d\'invocations',
@@ -1042,7 +1027,7 @@ return array (
     'group' => 'object',
     'linked_to_key' => NULL,
   ),
-  69 => 
+  68 => 
   array (
     'key' => 'range_object',
     'name' => 'PO',
@@ -1057,7 +1042,7 @@ return array (
     'group' => 'object',
     'linked_to_key' => NULL,
   ),
-  70 => 
+  69 => 
   array (
     'key' => 'tackle_object',
     'name' => 'Tacle',
@@ -1072,7 +1057,7 @@ return array (
     'group' => 'object',
     'linked_to_key' => NULL,
   ),
-  71 => 
+  70 => 
   array (
     'key' => 'dodge_object',
     'name' => 'Fuite',
@@ -1087,7 +1072,7 @@ return array (
     'group' => 'object',
     'linked_to_key' => NULL,
   ),
-  72 => 
+  71 => 
   array (
     'key' => 'fixed_damage_neutral_creature',
     'name' => 'Dommage fixe Neutre',
@@ -1102,7 +1087,7 @@ return array (
     'group' => 'creature',
     'linked_to_key' => NULL,
   ),
-  73 => 
+  72 => 
   array (
     'key' => 'wakfu_recharge_object',
     'name' => 'Recharge réserve Wakfu',
@@ -1117,7 +1102,7 @@ return array (
     'group' => 'object',
     'linked_to_key' => NULL,
   ),
-  74 => 
+  73 => 
   array (
     'key' => 'armor_class_object',
     'name' => 'Classe d\'armure',
@@ -1132,7 +1117,7 @@ return array (
     'group' => 'object',
     'linked_to_key' => NULL,
   ),
-  75 => 
+  74 => 
   array (
     'key' => 'fixed_damage_earth_creature',
     'name' => 'Dommage fixe Terre',
@@ -1147,7 +1132,7 @@ return array (
     'group' => 'creature',
     'linked_to_key' => NULL,
   ),
-  76 => 
+  75 => 
   array (
     'key' => 'fixed_damage_fire_creature',
     'name' => 'Dommage fixe Feu',
@@ -1162,7 +1147,7 @@ return array (
     'group' => 'creature',
     'linked_to_key' => NULL,
   ),
-  77 => 
+  76 => 
   array (
     'key' => 'fixed_resistance_neutral_object',
     'name' => 'Résistance fixe Neutre',
@@ -1177,7 +1162,7 @@ return array (
     'group' => 'object',
     'linked_to_key' => NULL,
   ),
-  78 => 
+  77 => 
   array (
     'key' => 'fixed_damage_air_creature',
     'name' => 'Dommage fixe Air',
@@ -1192,7 +1177,7 @@ return array (
     'group' => 'creature',
     'linked_to_key' => NULL,
   ),
-  79 => 
+  78 => 
   array (
     'key' => 'fixed_resistance_earth_object',
     'name' => 'Résistance fixe Terre',
@@ -1207,7 +1192,7 @@ return array (
     'group' => 'object',
     'linked_to_key' => NULL,
   ),
-  80 => 
+  79 => 
   array (
     'key' => 'fixed_damage_water_creature',
     'name' => 'Dommage fixe Eau',
@@ -1222,7 +1207,7 @@ return array (
     'group' => 'creature',
     'linked_to_key' => NULL,
   ),
-  81 => 
+  80 => 
   array (
     'key' => 'fixed_resistance_fire_object',
     'name' => 'Résistance fixe Feu',
@@ -1237,7 +1222,7 @@ return array (
     'group' => 'object',
     'linked_to_key' => NULL,
   ),
-  82 => 
+  81 => 
   array (
     'key' => 'fixed_resistance_air_object',
     'name' => 'Résistance fixe Air',
@@ -1252,7 +1237,7 @@ return array (
     'group' => 'object',
     'linked_to_key' => NULL,
   ),
-  83 => 
+  82 => 
   array (
     'key' => 'fixed_resistance_water_object',
     'name' => 'Résistance fixe Eau',
@@ -1267,7 +1252,7 @@ return array (
     'group' => 'object',
     'linked_to_key' => NULL,
   ),
-  84 => 
+  83 => 
   array (
     'key' => 'resistance_50_percent_object',
     'name' => 'Résistance 50%',
@@ -1282,7 +1267,7 @@ return array (
     'group' => 'object',
     'linked_to_key' => NULL,
   ),
-  85 => 
+  84 => 
   array (
     'key' => 'invulnerability_100_percent_object',
     'name' => 'Invulnérabilité 100%',
@@ -1297,7 +1282,7 @@ return array (
     'group' => 'object',
     'linked_to_key' => NULL,
   ),
-  86 => 
+  85 => 
   array (
     'key' => 'resistance_neutral_creature',
     'name' => 'Résistance Neutre %',
@@ -1312,7 +1297,7 @@ return array (
     'group' => 'creature',
     'linked_to_key' => NULL,
   ),
-  87 => 
+  86 => 
   array (
     'key' => 'resistance_earth_creature',
     'name' => 'Résistance Terre %',
@@ -1327,7 +1312,7 @@ return array (
     'group' => 'creature',
     'linked_to_key' => NULL,
   ),
-  88 => 
+  87 => 
   array (
     'key' => 'resistance_fire_creature',
     'name' => 'Résistance Feu %',
@@ -1342,7 +1327,7 @@ return array (
     'group' => 'creature',
     'linked_to_key' => NULL,
   ),
-  89 => 
+  88 => 
   array (
     'key' => 'resistance_air_creature',
     'name' => 'Résistance Air %',
@@ -1357,7 +1342,7 @@ return array (
     'group' => 'creature',
     'linked_to_key' => NULL,
   ),
-  90 => 
+  89 => 
   array (
     'key' => 'resistance_water_creature',
     'name' => 'Résistance Eau %',
@@ -1372,7 +1357,7 @@ return array (
     'group' => 'creature',
     'linked_to_key' => NULL,
   ),
-  91 => 
+  90 => 
   array (
     'key' => 'fixed_damage_multiple_creature',
     'name' => 'Dommage fixe Multiples',
@@ -1387,7 +1372,7 @@ return array (
     'group' => 'creature',
     'linked_to_key' => NULL,
   ),
-  92 => 
+  91 => 
   array (
     'key' => 'hit_dice_creature',
     'name' => 'Dés de vie',
@@ -1402,7 +1387,7 @@ return array (
     'group' => 'creature',
     'linked_to_key' => NULL,
   ),
-  93 => 
+  92 => 
   array (
     'key' => 'wakfu_reserve_creature',
     'name' => 'Réserve de Wakfu',
@@ -1417,7 +1402,7 @@ return array (
     'group' => 'creature',
     'linked_to_key' => NULL,
   ),
-  94 => 
+  93 => 
   array (
     'key' => 'mastery_bonus_creature',
     'name' => 'Bonus de maîtrise',
@@ -1432,7 +1417,7 @@ return array (
     'group' => 'creature',
     'linked_to_key' => NULL,
   ),
-  95 => 
+  94 => 
   array (
     'key' => 'modifier_vitality_creature',
     'name' => 'Modificateur de Vitalité',
@@ -1447,7 +1432,7 @@ return array (
     'group' => 'creature',
     'linked_to_key' => NULL,
   ),
-  96 => 
+  95 => 
   array (
     'key' => 'modifier_wisdom_creature',
     'name' => 'Modificateur de Sagesse',
@@ -1462,7 +1447,7 @@ return array (
     'group' => 'creature',
     'linked_to_key' => NULL,
   ),
-  97 => 
+  96 => 
   array (
     'key' => 'modifier_strength_creature',
     'name' => 'Modificateur de Force',
@@ -1477,7 +1462,7 @@ return array (
     'group' => 'creature',
     'linked_to_key' => NULL,
   ),
-  98 => 
+  97 => 
   array (
     'key' => 'modifier_intelligence_creature',
     'name' => 'Modificateur d\'Intelligence',
@@ -1492,7 +1477,7 @@ return array (
     'group' => 'creature',
     'linked_to_key' => NULL,
   ),
-  99 => 
+  98 => 
   array (
     'key' => 'modifier_chance_creature',
     'name' => 'Modificateur de Chance',
@@ -1507,7 +1492,7 @@ return array (
     'group' => 'creature',
     'linked_to_key' => NULL,
   ),
-  100 => 
+  99 => 
   array (
     'key' => 'modifier_agility_creature',
     'name' => 'Modificateur d\'Agilité',
@@ -1522,7 +1507,7 @@ return array (
     'group' => 'creature',
     'linked_to_key' => NULL,
   ),
-  101 => 
+  100 => 
   array (
     'key' => 'save_vitality_creature',
     'name' => 'Bonus jet de sauvegarde Vitalité',
@@ -1537,7 +1522,7 @@ return array (
     'group' => 'creature',
     'linked_to_key' => NULL,
   ),
-  102 => 
+  101 => 
   array (
     'key' => 'save_wisdom_creature',
     'name' => 'Bonus jet de sauvegarde Sagesse',
@@ -1552,7 +1537,7 @@ return array (
     'group' => 'creature',
     'linked_to_key' => NULL,
   ),
-  103 => 
+  102 => 
   array (
     'key' => 'save_strength_creature',
     'name' => 'Bonus jet de sauvegarde Force',
@@ -1567,7 +1552,7 @@ return array (
     'group' => 'creature',
     'linked_to_key' => NULL,
   ),
-  104 => 
+  103 => 
   array (
     'key' => 'save_intelligence_creature',
     'name' => 'Bonus jet de sauvegarde Intelligence',
@@ -1582,7 +1567,7 @@ return array (
     'group' => 'creature',
     'linked_to_key' => NULL,
   ),
-  105 => 
+  104 => 
   array (
     'key' => 'save_chance_creature',
     'name' => 'Bonus jet de sauvegarde Chance',
@@ -1597,7 +1582,7 @@ return array (
     'group' => 'creature',
     'linked_to_key' => NULL,
   ),
-  106 => 
+  105 => 
   array (
     'key' => 'save_agility_creature',
     'name' => 'Bonus jet de sauvegarde Agilité',
@@ -1612,7 +1597,7 @@ return array (
     'group' => 'creature',
     'linked_to_key' => NULL,
   ),
-  107 => 
+  106 => 
   array (
     'key' => 'range_editable_spell',
     'name' => 'Portée modifiable',
@@ -1627,7 +1612,7 @@ return array (
     'group' => 'spell',
     'linked_to_key' => NULL,
   ),
-  108 => 
+  107 => 
   array (
     'key' => 'number_between_two_cast_editable_spell',
     'name' => 'Délai entre lancers modifiable',
@@ -1642,7 +1627,7 @@ return array (
     'group' => 'spell',
     'linked_to_key' => NULL,
   ),
-  109 => 
+  108 => 
   array (
     'key' => 'spell_range_min_spell',
     'name' => 'Portée min',
@@ -1650,14 +1635,14 @@ return array (
     'helper' => 'Portée minimale du sort (cases). DofusDB levels.0.range.min.',
     'descriptions' => 'Portée minimale du sort en cases (DofusDB levels.0.range.min).',
     'icon' => 'range.webp',
-    'color' => '#5c6bc0',
+    'color' => '#469582',
     'unit' => NULL,
     'type' => 'int',
     'sort_order' => 72,
     'group' => 'spell',
     'linked_to_key' => NULL,
   ),
-  110 => 
+  109 => 
   array (
     'key' => 'spell_range_max_spell',
     'name' => 'Portée max',
@@ -1665,7 +1650,7 @@ return array (
     'helper' => 'Portée maximale du sort (cases). DofusDB levels.0.range.max.',
     'descriptions' => 'Portée maximale du sort en cases (DofusDB levels.0.range.max).',
     'icon' => 'range.webp',
-    'color' => '#5c6bc0',
+    'color' => '#469482',
     'unit' => NULL,
     'type' => 'int',
     'sort_order' => 73,

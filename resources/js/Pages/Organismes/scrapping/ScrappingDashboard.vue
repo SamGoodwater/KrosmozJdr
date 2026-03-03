@@ -58,6 +58,7 @@ const { success, error: showError, info } = notificationStore;
 
 const loadingMeta = ref(true);
 const loadingConfig = ref(true);
+const configLoadError = ref("");
 
 const metaEntityTypes = ref([]);
 const configEntitiesByKey = ref({});
@@ -83,6 +84,7 @@ const loadMeta = async () => {
 /** Charge la config scrapping par type d'entité (filtres supportés, etc.). */
 const loadConfig = async () => {
     loadingConfig.value = true;
+    configLoadError.value = "";
     try {
         const result = await getJson("/api/scrapping/config");
         if (result.ok && result.data?.success) {
@@ -93,10 +95,14 @@ const loadConfig = async () => {
             }
             configEntitiesByKey.value = map;
         } else {
-            showError(result.error || "Impossible de charger la config scrapping");
+            configEntitiesByKey.value = {};
+            configLoadError.value = result.error || "Impossible de charger la config scrapping";
+            showError(configLoadError.value);
         }
     } catch (e) {
-        showError("Config : " + (e?.message ?? "erreur"));
+        configEntitiesByKey.value = {};
+        configLoadError.value = "Config : " + (e?.message ?? "erreur");
+        showError(configLoadError.value);
     } finally {
         loadingConfig.value = false;
     }
@@ -535,12 +541,28 @@ const entityOptions = computed(() => {
     };
     const fromMeta = Array.isArray(metaEntityTypes.value) ? metaEntityTypes.value : [];
     return fromMeta
-        .filter((e) => e?.type && allowed.has(String(e.type)) && configEntitiesByKey.value?.[String(e.type)])
+        // Ne pas dépendre strictement de /api/scrapping/config : si ce endpoint échoue,
+        // on garde un select d'entités utilisable basé sur /api/scrapping/meta.
+        .filter((e) => e?.type && allowed.has(String(e.type)))
         .map((e) => ({
             value: String(e.type),
             label: String(labelOverrides[String(e.type)] || e.label || e.type),
         }));
 });
+
+watch(
+    [entityOptions, () => selectedEntityTypeStr.value],
+    ([options, current]) => {
+        const values = (Array.isArray(options) ? options : []).map((o) => String(o?.value ?? ""));
+        if (values.length === 0) {
+            return;
+        }
+        if (!values.includes(String(current || ""))) {
+            selectedEntityType.value = values[0];
+        }
+    },
+    { immediate: true }
+);
 
 // Composables Phase 1
 const status = useScrappingItemStatus({ entityTypeRef: selectedEntityTypeStr });
@@ -1060,6 +1082,15 @@ const clearEffectsAnalysis = () => {
     effectsAnalysisSummary.value = null;
 };
 
+/** Lien vers l'admin mapping des effects préfiltré par effectId DofusDB. */
+const effectMappingHref = (effectId) => {
+    const id = Number(effectId);
+    if (!Number.isFinite(id) || id <= 0) {
+        return "/admin/dofusdb-effect-mappings";
+    }
+    return `/admin/dofusdb-effect-mappings?effect_id=${encodeURIComponent(String(id))}`;
+};
+
 // Modal Comparer Krosmoz / DofusDB
 const compareModalOpen = ref(false);
 const compareEntityType = ref("");
@@ -1209,6 +1240,29 @@ const onCompareImported = () => {
             @clear-errors="batch.clearBatchErrors()"
             @export-errors-csv="exportBatchErrorsCsv"
         />
+
+        <Card
+            v-if="configLoadError"
+            class="border border-warning/40 bg-warning/10 p-4 text-sm text-warning-content"
+        >
+            <div class="flex flex-wrap items-center justify-between gap-2">
+                <p class="font-semibold">Mode degrade active</p>
+                <Btn
+                    size="sm"
+                    variant="outline"
+                    :disabled="loadingConfigUnwrapped"
+                    @click="loadConfig"
+                >
+                    <Loading v-if="loadingConfigUnwrapped" class="mr-2" />
+                    Reessayer
+                </Btn>
+            </div>
+            <p class="mt-1">
+                La configuration avancee du scrapping est indisponible pour le moment.
+                Les filtres metier dependants de cette config peuvent etre limites, mais la recherche/import de base reste disponible.
+            </p>
+            <p class="mt-2 text-xs opacity-80">{{ configLoadError }}</p>
+        </Card>
 
         <!-- Corps: tableau -->
         <Card class="p-6 space-y-4">
@@ -1412,6 +1466,7 @@ const onCompareImported = () => {
                             <th class="w-24">min</th>
                             <th class="w-24">max</th>
                             <th>Description (FR)</th>
+                            <th class="w-28">Action</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -1421,6 +1476,14 @@ const onCompareImported = () => {
                             <td class="font-mono">{{ u?.max ?? "—" }}</td>
                             <td class="text-sm">
                                 {{ u?.meta?.description_fr || "—" }}
+                            </td>
+                            <td>
+                                <a
+                                    :href="effectMappingHref(u?.effectId)"
+                                    class="btn btn-ghost btn-xs"
+                                >
+                                    Corriger
+                                </a>
                             </td>
                         </tr>
                     </tbody>

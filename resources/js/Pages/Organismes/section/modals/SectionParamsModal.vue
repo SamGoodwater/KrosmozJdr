@@ -20,7 +20,7 @@
  * @emits close - Événement émis quand le modal se ferme
  * @emits validated - Événement émis avec { title, slug, order, read_level, write_level, state, settings } validés
  */
-import { ref, computed, watch, nextTick } from 'vue';
+import { ref, computed, watch, nextTick, defineAsyncComponent } from 'vue';
 import { router } from '@inertiajs/vue3';
 import Modal from '@/Pages/Molecules/action/Modal.vue';
 import InputField from '@/Pages/Molecules/data-input/InputField.vue';
@@ -67,13 +67,24 @@ const templateConfig = computed(() => {
     return registry.getConfig(props.sectionTemplate);
 });
 
-// Paramètres du template
+// Paramètres du template (générique depuis config.parameters)
 const templateParameters = computed(() => {
     if (!templateConfig.value || !templateConfig.value.parameters) {
         return [];
     }
     return SectionParameterService.getParameterFields(templateConfig.value.parameters);
 });
+
+// Composant de paramètres dédié au template (si défini)
+const templateParamsComponent = computed(() => {
+    const config = templateConfig.value;
+    if (!config?.paramsComponent || typeof config.paramsComponent !== 'function') {
+        return null;
+    }
+    return defineAsyncComponent(config.paramsComponent);
+});
+
+const hasTemplateParamsView = computed(() => Boolean(templateConfig.value?.paramsComponent));
 
 // Options pour les selects
 const roleOptions = computed(() => SectionParameterService.getVisibilityOptions());
@@ -193,7 +204,16 @@ const initializeFormData = () => {
             }
         });
     }
-    
+
+    // entity_table : afficher filters en JSON string dans le textarea
+    if (props.sectionTemplate === 'entity_table' && formData.settings.filters != null && typeof formData.settings.filters === 'object') {
+        try {
+            formData.settings.filters = JSON.stringify(formData.settings.filters, null, 2);
+        } catch {
+            formData.settings.filters = '{}';
+        }
+    }
+
     return formData;
 };
 
@@ -522,14 +542,24 @@ const sectionTitle = computed(() => getSectionValue('title') || '');
                 />
             </div>
             
-            <!-- Section : Paramètres spécifiques au template -->
-            <div v-if="templateParameters.length > 0" class="space-y-4">
+            <!-- Section : Paramètres spécifiques au template (vue dédiée ou formulaire générique) -->
+            <div v-if="hasTemplateParamsView || templateParameters.length > 0" class="space-y-4">
                 <h4 class="text-md font-semibold text-base-content/80 border-b border-base-300 pb-2">
                     Paramètres du template
                 </h4>
-                
-                <!-- Génération automatique des champs depuis les paramètres -->
-                <template v-for="param in templateParameters" :key="param.key">
+
+                <!-- Vue dédiée du template (ex. entity_table) -->
+                <component
+                    v-if="hasTemplateParamsView && templateParamsComponent"
+                    :is="templateParamsComponent"
+                    :section="sectionModel"
+                    :settings="formData.settings"
+                    mode="edit"
+                    @update:settings="(v) => { Object.assign(formData.settings, v); formDataVersion++; }"
+                />
+
+                <!-- Sinon : génération automatique des champs depuis config.parameters -->
+                <template v-else-if="templateParameters.length > 0" v-for="param in templateParameters" :key="param.key">
                     <!-- Select -->
                     <SelectField
                         v-if="param.type === 'select'"

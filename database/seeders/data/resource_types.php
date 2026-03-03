@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 /**
- * resource_types – Ressources (superType 9). Régénéré par : php artisan db:export-seeder-data --item-types
+ * resource_types – Ressources (superType 9). Régénéré par : php artisan scrapping:seeders:export --item-types
  */
 
 return array (

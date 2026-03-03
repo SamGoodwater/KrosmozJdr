@@ -8,7 +8,7 @@ Ce document décrit **ce qui existe** : le pipeline, les services, les configs e
 
 | Élément | Description |
 |--------|-------------|
-| **Orchestrator** | Enchaîne Collect → Conversion → Validation → Intégration. Utilisé par l’API (`ScrappingController`, `POST /api/scrapping/import/*`), le dashboard et la CLI `php artisan scrapping`. |
+| **Orchestrator** | Enchaîne Collect → Conversion → Validation → Intégration. Utilisé par l’API (`ScrappingController`, `POST /api/scrapping/import/*`), le dashboard et la CLI `php artisan scrapping:run` (alias legacy : `scrapping`). |
 | **Formules / limites en BDD** | CharacteristicService (limites), DofusDbConversionFormulaService (formules), DofusDbConversionFormulas (level, life, attributs, ini, résistances). Handlers nommés (ex. résistances) + admin (sélection du handler). Le pipeline transmet un contexte (`entityType`, `lang`) à FormatterApplicator ; les formatters `dofusdb_level`, `dofusdb_life`, `dofusdb_attribute`, `dofusdb_ini` et le batch résistances sont utilisés pour **monster**. |
 
 ---
@@ -41,11 +41,11 @@ Ce document décrit **ce qui existe** : le pipeline, les services, les configs e
 
 ## 4. Points d’entrée
 
-- **CLI** : `php artisan scrapping --entity=monster [--entity=monster,item,...] [--id=31] [--simulate] [--no-validate] [--include-relations=1|0] [--json]` — par défaut récupère et importe ; `--simulate` pour ne pas écrire en base. `--no-validate` pour désactiver la validation. `--include-relations=1` (défaut) active la résolution des relations après intégration ; `--include-relations=0` n’importe que l’entité principale.
+- **CLI** : `php artisan scrapping:run --entity=monster [--entity=monster,item,...] [--id=31] [--simulate] [--no-validate] [--include-relations=1|0] [--json]` — par défaut récupère et importe ; `--simulate` pour ne pas écrire en base. `--no-validate` pour désactiver la validation. `--include-relations=1` (défaut) active la résolution des relations après intégration ; `--include-relations=0` n’importe que l’entité principale.
   - **Sortie** : `--output=raw|raw_useful|converted|verbose|summary` (avec `--json` pour le JSON). **raw** : données brutes DofusDB complètes (`entities[].items`, lourd, pour debug). **raw_useful** : uniquement les champs utiles à Krosmoz (valeurs extraites selon le mapping, sans le brut complet) dans `output_items[].raw_useful` ; `items` est réduit à des références légères (`dofusdb_id`). **converted** : données converties + validation_valid / validation_errors. **verbose** : par propriété Krosmoz, `raw_value`, `converted_value`, `valid`, `existing_value` (si entité en BDD). **summary** : comptes uniquement (collected, converted, validated, integrated).
   - **Filtres** : `--id`, `--ids`, `--name`, `--levelMin`, `--levelMax`, `--raceId`, `--breedId`, `--typeId`, `--limit` (0 = tout), `--start-skip`, `--max-pages`, `--max-items`.
 - **API** : **POST /api/scrapping/import/{entity}/{id}** (ScrappingController) pour class, monster, spell, item, panoply. Paramètres : `validate`, `dry_run`, `force_update`, `include_relations` (défaut `true`). Si `include_relations=true`, après intégration de l’entité principale (ex. monster), l’Orchestrator appelle RelationResolutionService et draine la pile (import des sorts/drops en cascade, sync des tables de liaison). Si `include_relations=false`, seul l’entité principale est importée.
-- **Tests** : unitaires dans `tests/Unit/Scrapping/Core/`, feature `tests/Feature/Scrapping/ScrappingCommandTest.php` (chaîne complète : collecte, conversion, validation, intégration pour toutes les entités et options principales) et tests relations/orchestrateur (`ScrappingOrchestratorTest`, etc.). Voir [TESTS_SCRAPPING_COMMANDE_CHAINE_COMPLETE.md](../../100-%20Done/TESTS_SCRAPPING_COMMANDE_CHAINE_COMPLETE.md).
+- **Tests** : unitaires dans `tests/Unit/Scrapping/Core/`, feature `tests/Feature/Scrapping/ScrappingRunCommandTest.php` (chaîne complète : collecte, conversion, validation, intégration pour toutes les entités et options principales) et tests relations/orchestrateur (`ScrappingOrchestratorTest`, etc.). Voir [TESTS_SCRAPPING_COMMANDE_CHAINE_COMPLETE.md](../../100-%20Done/TESTS_SCRAPPING_COMMANDE_CHAINE_COMPLETE.md).
 
 ---
 

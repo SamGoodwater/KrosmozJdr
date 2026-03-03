@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 /**
- * item_types – Équipements. Régénéré par : php artisan db:export-seeder-data --item-types
+ * item_types – Équipements. Régénéré par : php artisan scrapping:seeders:export --item-types
  */
 
 return array (

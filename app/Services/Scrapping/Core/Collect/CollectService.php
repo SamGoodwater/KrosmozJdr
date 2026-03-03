@@ -146,7 +146,8 @@ final class CollectService
         $sourceConfig = $this->configLoader->loadSource($source);
         $baseUrl = rtrim((string) ($sourceConfig['baseUrl'] ?? 'https://api.dofusdb.fr'), '/');
         $lang = (string) ($sourceConfig['defaultLanguage'] ?? 'fr');
-        $query = http_build_query(['spellId' => $spellId, 'lang' => $lang, '$limit' => 50], '', '&', PHP_QUERY_RFC3986);
+        $queryParams = ['spellId' => $spellId, 'lang' => $lang, '$limit' => 50, '$sort' => 'grade'];
+        $query = http_build_query($queryParams, '', '&', PHP_QUERY_RFC3986);
         $url = $baseUrl . '/spell-levels?' . $query;
 
         $response = $this->getJson($url, $options);

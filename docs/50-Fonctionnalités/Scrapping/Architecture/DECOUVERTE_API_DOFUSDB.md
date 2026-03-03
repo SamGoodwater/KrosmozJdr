@@ -185,16 +185,16 @@ Exemples :
 
 ```bash
 # Toutes les races de monstres (limit=0 = tout par défaut)
-php artisan scrapping --collect=monster-race --json
+php artisan scrapping:run --collect=monster-race --json
 
 # Tous les item-types (232)
-php artisan scrapping --collect=item-type --json
+php artisan scrapping:run --collect=item-type --json
 
 # Tous les superTypes uniques (dérivés des item-types)
-php artisan scrapping --collect=item-super-type --json
+php artisan scrapping:run --collect=item-super-type --json
 
 # Limiter à 100 objets, ou commencer à l'offset 50
-php artisan scrapping --collect=monster --limit=100 --offset=0 --json
+php artisan scrapping:run --collect=monster --limit=100 --offset=0 --json
 ```
 
 Ces entités sont en **catalogue seul** (`meta.catalogOnly`) : pas d’intégration en base ; `--integrate` est ignoré.

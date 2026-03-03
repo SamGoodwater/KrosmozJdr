@@ -154,6 +154,7 @@ Quelques lignes marquées *(visible: false)* dans l’API sont tout de même lis
 
 ## Fichiers liés
 
-- **Mapping utilisé en extraction** : `resources/scrapping/config/sources/dofusdb/dofusdb_characteristic_to_krosmoz.json`
+- **Mapping utilisé en extraction (objets)** : `resources/scrapping/config/sources/dofusdb/dofusdb_characteristic_to_krosmoz.json`
+- **Mapping pour effets de sorts** : `resources/scrapping/config/sources/dofusdb/dofusdb_characteristic_to_krosmoz_spell.json` — même référentiel d’IDs, clés Krosmoz du groupe spell (ex. 19 → po → range_spell). Voir [DOFUSDB_API_SPELLS_REFERENCE.md](../Scrapping/DOFUSDB_API_SPELLS_REFERENCE.md) § 4.1.
 - **Structure du JSON d’extraction** : [STRUCTURE_JSON_OBJECT_SAMPLES.md](./STRUCTURE_JSON_OBJECT_SAMPLES.md)
 - **API DofusDB** : https://api.dofusdb.fr/characteristics

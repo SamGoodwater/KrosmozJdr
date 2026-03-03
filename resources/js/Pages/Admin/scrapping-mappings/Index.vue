@@ -3,7 +3,7 @@
  * Admin Mapping scrapping (DofusDB → Krosmoz) par entité.
  * Liste des règles de mapping pour la source/entité choisie ; ajout / édition / suppression.
  */
-import { computed, ref } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 import { Head, router } from '@inertiajs/vue3';
 import { usePageTitle } from '@/Composables/layout/usePageTitle';
 import Main from '@/Pages/Layouts/Main.vue';
@@ -18,6 +18,7 @@ const props = defineProps({
     source: { type: String, default: 'dofusdb' },
     sources: { type: Array, default: () => [] },
     entity: { type: String, default: '' },
+    mappingKey: { type: String, default: '' },
     entities: { type: Array, default: () => [] },
     entitiesWithMapping: { type: Array, default: () => [] },
     mappings: { type: Array, default: () => [] },
@@ -30,6 +31,36 @@ setPageTitle('Mapping scrapping DofusDB → Krosmoz');
 function selectEntity(val) {
     router.get(route('admin.scrapping-mappings.index'), { source: props.source, entity: val || '' }, { preserveState: true });
 }
+
+const mappingFilter = ref(String(props.mappingKey || ''));
+const filteredMappings = computed(() => {
+    const rows = Array.isArray(props.mappings) ? props.mappings : [];
+    const q = String(mappingFilter.value || '').trim().toLowerCase();
+    if (!q) {
+        return rows;
+    }
+    return rows.filter((m) => {
+        const key = String(m?.mapping_key || '').toLowerCase();
+        const fromPath = String(m?.from_path || '').toLowerCase();
+        const targets = Array.isArray(m?.targets)
+            ? m.targets.map((t) => `${t?.target_model || ''}.${t?.target_field || ''}`).join(' ').toLowerCase()
+            : '';
+        return key.includes(q) || fromPath.includes(q) || targets.includes(q);
+    });
+});
+const prefillMappingKey = computed(() => String(props.mappingKey || '').trim());
+const hasExactPrefillMatch = computed(() => {
+    if (!prefillMappingKey.value) return false;
+    return (Array.isArray(props.mappings) ? props.mappings : []).some(
+        (m) => String(m?.mapping_key || '').trim() === prefillMappingKey.value
+    );
+});
+const isQuickCreateFromDiagnostic = computed(() =>
+    modalMode.value === 'create'
+    && showModal.value
+    && !!prefillMappingKey.value
+    && !hasExactPrefillMatch.value
+);
 
 const showModal = ref(false);
 const modalMode = ref('create');
@@ -164,6 +195,15 @@ function targetsSummary(mapping) {
     if (!mapping.targets?.length) return '—';
     return mapping.targets.map((t) => `${t.target_model}.${t.target_field}`).join(', ');
 }
+
+onMounted(() => {
+    if (!props.entity || !prefillMappingKey.value || hasExactPrefillMatch.value) {
+        return;
+    }
+    openCreate();
+    form.value.mapping_key = prefillMappingKey.value;
+    form.value.from_path = prefillMappingKey.value;
+});
 </script>
 
 <template>
@@ -197,7 +237,7 @@ function targetsSummary(mapping) {
             <div class="mb-4">
                 <h1 class="text-2xl font-bold">Règles de mapping</h1>
                 <p class="mt-1 text-sm text-base-content/70">
-                    Source de vérité en BDD. Après modification : <code class="rounded bg-base-300 px-1 text-xs">php artisan db:export-seeder-data</code>
+                    Source de vérité en BDD. Après modification : <code class="rounded bg-base-300 px-1 text-xs">php artisan scrapping:seeders:export</code>
                     puis <code class="rounded bg-base-300 px-1 text-xs">db:seed --class=ScrappingEntityMappingSeeder</code> pour recréer le paramétrage.
                 </p>
             </div>
@@ -205,11 +245,23 @@ function targetsSummary(mapping) {
             <template v-if="entity">
                 <div class="mb-4 flex flex-wrap items-center justify-between gap-2">
                     <h2 class="text-lg font-semibold">Entité : {{ entity }}</h2>
-                    <Btn variant="primary" size="sm" @click="openCreate">Ajouter une règle</Btn>
+                    <div class="flex items-center gap-2">
+                        <InputField
+                            v-model="mappingFilter"
+                            label="Filtrer les règles"
+                            placeholder="mapping_key, from_path, cible…"
+                        />
+                        <Btn variant="primary" size="sm" @click="openCreate">Ajouter une règle</Btn>
+                    </div>
                 </div>
 
-                <div v-if="mappings.length === 0" class="rounded-lg border border-base-300 bg-base-200/30 p-8 text-center text-base-content/70">
-                    Aucune règle en base pour cette entité. Ajoutez des règles pour que le pipeline puisse convertir les données.
+                <div v-if="filteredMappings.length === 0" class="rounded-lg border border-base-300 bg-base-200/30 p-8 text-center text-base-content/70">
+                    <template v-if="mappings.length === 0">
+                        Aucune règle en base pour cette entité. Ajoutez des règles pour que le pipeline puisse convertir les données.
+                    </template>
+                    <template v-else>
+                        Aucun résultat pour ce filtre. Ajustez la recherche ou videz le champ.
+                    </template>
                     <br />
                     <button type="button" class="btn btn-primary btn-sm mt-4" @click="openCreate">
                         Ajouter une règle
@@ -230,7 +282,7 @@ function targetsSummary(mapping) {
                             </tr>
                         </thead>
                         <tbody>
-                            <tr v-for="m in mappings" :key="m.id">
+                            <tr v-for="m in filteredMappings" :key="m.id">
                                 <td class="font-mono text-sm">{{ m.mapping_key }}</td>
                                 <td class="font-mono text-sm">{{ m.from_path }}</td>
                                 <td>{{ m.from_lang_aware ? 'Oui' : 'Non' }}</td>
@@ -264,6 +316,13 @@ function targetsSummary(mapping) {
     <dialog class="modal" :class="{ 'modal-open': showModal }">
         <div class="modal-box max-w-2xl">
             <h3 class="text-lg font-bold">{{ modalMode === 'create' ? 'Nouvelle règle de mapping' : 'Modifier la règle' }}</h3>
+            <div
+                v-if="isQuickCreateFromDiagnostic"
+                class="mt-3 rounded border border-info/40 bg-info/10 p-2 text-xs text-info-content"
+            >
+                Création rapide depuis diagnostic :
+                <span class="font-mono">{{ prefillMappingKey }}</span>
+            </div>
             <form @submit.prevent="submitMapping" class="space-y-4 pt-4">
                 <div class="grid gap-4 sm:grid-cols-2">
                     <InputField v-model="form.mapping_key" label="Clé logique" name="mapping_key" required placeholder="ex. level, name" />

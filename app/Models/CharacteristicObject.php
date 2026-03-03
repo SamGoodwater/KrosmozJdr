@@ -14,6 +14,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
  *
  * @property int $id
  * @property int $characteristic_id
+ * @property int|null $dofusdb_characteristic_id Id DofusDB GET /characteristics (ex. item.effects[].characteristic)
  * @property string $entity
  * @property string|null $db_column
  * @property string|null $min Valeur fixe, formule ou table JSON
@@ -55,6 +56,7 @@ class CharacteristicObject extends Model
     /** @var list<string> */
     protected $fillable = [
         'characteristic_id',
+        'dofusdb_characteristic_id',
         'entity',
         'db_column',
         'min',
@@ -76,6 +78,7 @@ class CharacteristicObject extends Model
 
     /** @var array<string, string> */
     protected $casts = [
+        'dofusdb_characteristic_id' => 'integer',
         'conversion_dofus_sample' => 'array',
         'conversion_krosmoz_sample' => 'array',
         'conversion_sample_rows' => 'array',

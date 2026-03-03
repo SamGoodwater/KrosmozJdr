@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 /**
- * Règles de mapping scrapping (DofusDB → Krosmoz). Régénéré par : php artisan db:export-seeder-data --scrapping-mappings
+ * Règles de mapping scrapping (DofusDB → Krosmoz). Régénéré par : php artisan scrapping:seeders:export --scrapping-mappings
  */
 
 return array (
@@ -25,6 +25,7 @@ return array (
         ),
       ),
     ),
+    'spell_level_aggregation' => NULL,
     'sort_order' => 0,
     'targets' => 
     array (
@@ -56,6 +57,7 @@ return array (
         ),
       ),
     ),
+    'spell_level_aggregation' => NULL,
     'sort_order' => 1,
     'targets' => 
     array (
@@ -87,6 +89,7 @@ return array (
         ),
       ),
     ),
+    'spell_level_aggregation' => NULL,
     'sort_order' => 2,
     'targets' => 
     array (
@@ -126,6 +129,7 @@ return array (
         ),
       ),
     ),
+    'spell_level_aggregation' => NULL,
     'sort_order' => 3,
     'targets' => 
     array (
@@ -165,6 +169,7 @@ return array (
         ),
       ),
     ),
+    'spell_level_aggregation' => NULL,
     'sort_order' => 4,
     'targets' => 
     array (
@@ -196,6 +201,7 @@ return array (
         ),
       ),
     ),
+    'spell_level_aggregation' => NULL,
     'sort_order' => 5,
     'targets' => 
     array (
@@ -225,6 +231,7 @@ return array (
         ),
       ),
     ),
+    'spell_level_aggregation' => NULL,
     'sort_order' => 0,
     'targets' => 
     array (
@@ -268,6 +275,7 @@ return array (
         ),
       ),
     ),
+    'spell_level_aggregation' => NULL,
     'sort_order' => 1,
     'targets' => 
     array (
@@ -311,6 +319,7 @@ return array (
         ),
       ),
     ),
+    'spell_level_aggregation' => NULL,
     'sort_order' => 2,
     'targets' => 
     array (
@@ -359,6 +368,7 @@ return array (
         ),
       ),
     ),
+    'spell_level_aggregation' => NULL,
     'sort_order' => 3,
     'targets' => 
     array (
@@ -400,6 +410,7 @@ return array (
         ),
       ),
     ),
+    'spell_level_aggregation' => NULL,
     'sort_order' => 4,
     'targets' => 
     array (
@@ -443,6 +454,7 @@ return array (
         ),
       ),
     ),
+    'spell_level_aggregation' => NULL,
     'sort_order' => 5,
     'targets' => 
     array (
@@ -484,6 +496,7 @@ return array (
         ),
       ),
     ),
+    'spell_level_aggregation' => NULL,
     'sort_order' => 6,
     'targets' => 
     array (
@@ -519,6 +532,7 @@ return array (
         ),
       ),
     ),
+    'spell_level_aggregation' => NULL,
     'sort_order' => 7,
     'targets' => 
     array (
@@ -548,6 +562,7 @@ return array (
         ),
       ),
     ),
+    'spell_level_aggregation' => NULL,
     'sort_order' => 8,
     'targets' => 
     array (
@@ -577,6 +592,7 @@ return array (
         ),
       ),
     ),
+    'spell_level_aggregation' => NULL,
     'sort_order' => 9,
     'targets' => 
     array (
@@ -618,6 +634,7 @@ return array (
         ),
       ),
     ),
+    'spell_level_aggregation' => NULL,
     'sort_order' => 10,
     'targets' => 
     array (
@@ -647,6 +664,7 @@ return array (
         ),
       ),
     ),
+    'spell_level_aggregation' => NULL,
     'sort_order' => 11,
     'targets' => 
     array (
@@ -676,6 +694,7 @@ return array (
         ),
       ),
     ),
+    'spell_level_aggregation' => NULL,
     'sort_order' => 12,
     'targets' => 
     array (
@@ -705,6 +724,7 @@ return array (
         ),
       ),
     ),
+    'spell_level_aggregation' => NULL,
     'sort_order' => 0,
     'targets' => 
     array (
@@ -736,6 +756,7 @@ return array (
         ),
       ),
     ),
+    'spell_level_aggregation' => NULL,
     'sort_order' => 1,
     'targets' => 
     array (
@@ -767,6 +788,7 @@ return array (
         ),
       ),
     ),
+    'spell_level_aggregation' => NULL,
     'sort_order' => 2,
     'targets' => 
     array (
@@ -796,6 +818,7 @@ return array (
         ),
       ),
     ),
+    'spell_level_aggregation' => NULL,
     'sort_order' => 3,
     'targets' => 
     array (
@@ -826,6 +849,7 @@ return array (
         ),
       ),
     ),
+    'spell_level_aggregation' => NULL,
     'sort_order' => 4,
     'targets' => 
     array (
@@ -856,6 +880,7 @@ return array (
         ),
       ),
     ),
+    'spell_level_aggregation' => NULL,
     'sort_order' => 5,
     'targets' => 
     array (
@@ -886,6 +911,7 @@ return array (
         ),
       ),
     ),
+    'spell_level_aggregation' => NULL,
     'sort_order' => 6,
     'targets' => 
     array (
@@ -916,6 +942,7 @@ return array (
         ),
       ),
     ),
+    'spell_level_aggregation' => NULL,
     'sort_order' => 7,
     'targets' => 
     array (
@@ -954,6 +981,7 @@ return array (
         ),
       ),
     ),
+    'spell_level_aggregation' => NULL,
     'sort_order' => 8,
     'targets' => 
     array (
@@ -984,6 +1012,7 @@ return array (
         ),
       ),
     ),
+    'spell_level_aggregation' => NULL,
     'sort_order' => 9,
     'targets' => 
     array (
@@ -1022,6 +1051,7 @@ return array (
         ),
       ),
     ),
+    'spell_level_aggregation' => NULL,
     'sort_order' => 10,
     'targets' => 
     array (
@@ -1060,6 +1090,7 @@ return array (
         ),
       ),
     ),
+    'spell_level_aggregation' => NULL,
     'sort_order' => 11,
     'targets' => 
     array (
@@ -1098,6 +1129,7 @@ return array (
         ),
       ),
     ),
+    'spell_level_aggregation' => NULL,
     'sort_order' => 12,
     'targets' => 
     array (
@@ -1136,6 +1168,7 @@ return array (
         ),
       ),
     ),
+    'spell_level_aggregation' => NULL,
     'sort_order' => 13,
     'targets' => 
     array (
@@ -1165,6 +1198,7 @@ return array (
         ),
       ),
     ),
+    'spell_level_aggregation' => NULL,
     'sort_order' => 14,
     'targets' => 
     array (
@@ -1194,6 +1228,7 @@ return array (
         ),
       ),
     ),
+    'spell_level_aggregation' => NULL,
     'sort_order' => 15,
     'targets' => 
     array (
@@ -1223,6 +1258,7 @@ return array (
         ),
       ),
     ),
+    'spell_level_aggregation' => NULL,
     'sort_order' => 16,
     'targets' => 
     array (
@@ -1252,6 +1288,7 @@ return array (
         ),
       ),
     ),
+    'spell_level_aggregation' => NULL,
     'sort_order' => 17,
     'targets' => 
     array (
@@ -1283,6 +1320,7 @@ return array (
         ),
       ),
     ),
+    'spell_level_aggregation' => NULL,
     'sort_order' => 18,
     'targets' => 
     array (
@@ -1313,6 +1351,7 @@ return array (
         ),
       ),
     ),
+    'spell_level_aggregation' => NULL,
     'sort_order' => 19,
     'targets' => 
     array (
@@ -1342,6 +1381,7 @@ return array (
         ),
       ),
     ),
+    'spell_level_aggregation' => NULL,
     'sort_order' => 20,
     'targets' => 
     array (
@@ -1371,6 +1411,7 @@ return array (
         ),
       ),
     ),
+    'spell_level_aggregation' => NULL,
     'sort_order' => 21,
     'targets' => 
     array (
@@ -1400,6 +1441,7 @@ return array (
         ),
       ),
     ),
+    'spell_level_aggregation' => NULL,
     'sort_order' => 22,
     'targets' => 
     array (
@@ -1429,6 +1471,7 @@ return array (
         ),
       ),
     ),
+    'spell_level_aggregation' => NULL,
     'sort_order' => 23,
     'targets' => 
     array (
@@ -1458,6 +1501,7 @@ return array (
         ),
       ),
     ),
+    'spell_level_aggregation' => NULL,
     'sort_order' => 24,
     'targets' => 
     array (
@@ -1487,6 +1531,7 @@ return array (
         ),
       ),
     ),
+    'spell_level_aggregation' => NULL,
     'sort_order' => 25,
     'targets' => 
     array (
@@ -1503,7 +1548,7 @@ return array (
     'source' => 'dofusdb',
     'entity' => 'spell',
     'mapping_key' => 'dofusdb_id',
-    'from_path' => 'id',
+    'from_path' => 'spell_global.id',
     'from_lang_aware' => false,
     'characteristic_key' => NULL,
     'formatters' => 
@@ -1516,6 +1561,7 @@ return array (
         ),
       ),
     ),
+    'spell_level_aggregation' => NULL,
     'sort_order' => 0,
     'targets' => 
     array (
@@ -1532,7 +1578,7 @@ return array (
     'source' => 'dofusdb',
     'entity' => 'spell',
     'mapping_key' => 'name',
-    'from_path' => 'name',
+    'from_path' => 'spell_global.name',
     'from_lang_aware' => true,
     'characteristic_key' => NULL,
     'formatters' => 
@@ -1547,6 +1593,7 @@ return array (
         ),
       ),
     ),
+    'spell_level_aggregation' => NULL,
     'sort_order' => 1,
     'targets' => 
     array (
@@ -1563,7 +1610,7 @@ return array (
     'source' => 'dofusdb',
     'entity' => 'spell',
     'mapping_key' => 'description',
-    'from_path' => 'description',
+    'from_path' => 'spell_global.description',
     'from_lang_aware' => true,
     'characteristic_key' => NULL,
     'formatters' => 
@@ -1578,6 +1625,7 @@ return array (
         ),
       ),
     ),
+    'spell_level_aggregation' => NULL,
     'sort_order' => 2,
     'targets' => 
     array (
@@ -1594,7 +1642,7 @@ return array (
     'source' => 'dofusdb',
     'entity' => 'spell',
     'mapping_key' => 'image',
-    'from_path' => 'img',
+    'from_path' => 'spell_global.img',
     'from_lang_aware' => false,
     'characteristic_key' => NULL,
     'formatters' => 
@@ -1609,6 +1657,7 @@ return array (
         ),
       ),
     ),
+    'spell_level_aggregation' => NULL,
     'sort_order' => 3,
     'targets' => 
     array (
@@ -1625,7 +1674,7 @@ return array (
     'source' => 'dofusdb',
     'entity' => 'spell',
     'mapping_key' => 'pa',
-    'from_path' => 'levels.0.apCost',
+    'from_path' => 'spell_global.apCost',
     'from_lang_aware' => false,
     'characteristic_key' => 'action_points_spell',
     'formatters' => 
@@ -1646,6 +1695,7 @@ return array (
         ),
       ),
     ),
+    'spell_level_aggregation' => NULL,
     'sort_order' => 4,
     'targets' => 
     array (
@@ -1662,9 +1712,9 @@ return array (
     'source' => 'dofusdb',
     'entity' => 'spell',
     'mapping_key' => 'po',
-    'from_path' => 'levels.0.range',
+    'from_path' => 'spell_global.range',
     'from_lang_aware' => false,
-    'characteristic_key' => 'range_spell',
+    'characteristic_key' => NULL,
     'formatters' => 
     array (
       0 => 
@@ -1690,6 +1740,7 @@ return array (
         ),
       ),
     ),
+    'spell_level_aggregation' => NULL,
     'sort_order' => 5,
     'targets' => 
     array (
@@ -1706,7 +1757,7 @@ return array (
     'source' => 'dofusdb',
     'entity' => 'spell',
     'mapping_key' => 'spell_po_min',
-    'from_path' => 'levels.0.range.min',
+    'from_path' => 'spell_global.minRange',
     'from_lang_aware' => false,
     'characteristic_key' => 'spell_range_min_spell',
     'formatters' => 
@@ -1727,6 +1778,7 @@ return array (
         ),
       ),
     ),
+    'spell_level_aggregation' => NULL,
     'sort_order' => 6,
     'targets' => 
     array (
@@ -1743,7 +1795,7 @@ return array (
     'source' => 'dofusdb',
     'entity' => 'spell',
     'mapping_key' => 'spell_po_max',
-    'from_path' => 'levels.0.range.max',
+    'from_path' => 'spell_global.range',
     'from_lang_aware' => false,
     'characteristic_key' => 'spell_range_max_spell',
     'formatters' => 
@@ -1764,6 +1816,7 @@ return array (
         ),
       ),
     ),
+    'spell_level_aggregation' => NULL,
     'sort_order' => 7,
     'targets' => 
     array (
@@ -1780,27 +1833,27 @@ return array (
     'source' => 'dofusdb',
     'entity' => 'spell',
     'mapping_key' => 'area',
-    'from_path' => 'levels.0.effects.0.zoneDescr.shape',
+    'from_path' => 'spell_global.area',
     'from_lang_aware' => false,
     'characteristic_key' => 'area_spell',
     'formatters' => 
     array (
       0 => 
       array (
-        'name' => 'nullableInt',
+        'name' => 'zoneDescrToNotation',
         'args' => 
         array (
         ),
       ),
       1 => 
       array (
-        'name' => 'clampToCharacteristic',
+        'name' => 'toString',
         'args' => 
         array (
-          'characteristicId' => 'area',
         ),
       ),
     ),
+    'spell_level_aggregation' => NULL,
     'sort_order' => 8,
     'targets' => 
     array (
@@ -1817,7 +1870,7 @@ return array (
     'source' => 'dofusdb',
     'entity' => 'spell',
     'mapping_key' => 'level',
-    'from_path' => 'levels.0.grade',
+    'from_path' => 'spell_global.grade',
     'from_lang_aware' => false,
     'characteristic_key' => 'level_spell',
     'formatters' => 
@@ -1845,6 +1898,7 @@ return array (
         ),
       ),
     ),
+    'spell_level_aggregation' => NULL,
     'sort_order' => 9,
     'targets' => 
     array (
@@ -1861,7 +1915,7 @@ return array (
     'source' => 'dofusdb',
     'entity' => 'spell',
     'mapping_key' => 'cast_per_turn',
-    'from_path' => 'levels.0.maxCastPerTurn',
+    'from_path' => 'spell_global.maxCastPerTurn',
     'from_lang_aware' => false,
     'characteristic_key' => 'cast_per_turn_spell',
     'formatters' => 
@@ -1889,6 +1943,7 @@ return array (
         ),
       ),
     ),
+    'spell_level_aggregation' => NULL,
     'sort_order' => 10,
     'targets' => 
     array (
@@ -1905,7 +1960,7 @@ return array (
     'source' => 'dofusdb',
     'entity' => 'spell',
     'mapping_key' => 'cast_per_target',
-    'from_path' => 'levels.0.maxCastPerTarget',
+    'from_path' => 'spell_global.maxCastPerTarget',
     'from_lang_aware' => false,
     'characteristic_key' => 'cast_per_target_spell',
     'formatters' => 
@@ -1933,6 +1988,7 @@ return array (
         ),
       ),
     ),
+    'spell_level_aggregation' => NULL,
     'sort_order' => 11,
     'targets' => 
     array (
@@ -1949,7 +2005,7 @@ return array (
     'source' => 'dofusdb',
     'entity' => 'spell',
     'mapping_key' => 'sight_line',
-    'from_path' => 'levels.0.needLineOfSight',
+    'from_path' => 'spell_global.castTestLos',
     'from_lang_aware' => false,
     'characteristic_key' => 'sight_line_spell',
     'formatters' => 
@@ -1970,6 +2026,7 @@ return array (
         ),
       ),
     ),
+    'spell_level_aggregation' => NULL,
     'sort_order' => 12,
     'targets' => 
     array (
@@ -1986,7 +2043,7 @@ return array (
     'source' => 'dofusdb',
     'entity' => 'spell',
     'mapping_key' => 'number_between_two_cast',
-    'from_path' => 'levels.0.minCastInterval',
+    'from_path' => 'spell_global.minCastInterval',
     'from_lang_aware' => false,
     'characteristic_key' => 'number_between_two_cast_spell',
     'formatters' => 
@@ -2014,6 +2071,7 @@ return array (
         ),
       ),
     ),
+    'spell_level_aggregation' => NULL,
     'sort_order' => 13,
     'targets' => 
     array (
@@ -2030,7 +2088,7 @@ return array (
     'source' => 'dofusdb',
     'entity' => 'spell',
     'mapping_key' => 'number_between_two_cast_editable',
-    'from_path' => 'levels.0.minCastIntervalEditable',
+    'from_path' => 'spell_global.minCastIntervalEditable',
     'from_lang_aware' => false,
     'characteristic_key' => 'number_between_two_cast_editable_spell',
     'formatters' => 
@@ -2051,6 +2109,7 @@ return array (
         ),
       ),
     ),
+    'spell_level_aggregation' => NULL,
     'sort_order' => 14,
     'targets' => 
     array (
@@ -2067,7 +2126,7 @@ return array (
     'source' => 'dofusdb',
     'entity' => 'spell',
     'mapping_key' => 'po_editable',
-    'from_path' => 'levels.0.rangeEditable',
+    'from_path' => 'spell_global.rangeCanBeBoosted',
     'from_lang_aware' => false,
     'characteristic_key' => 'range_editable_spell',
     'formatters' => 
@@ -2088,6 +2147,7 @@ return array (
         ),
       ),
     ),
+    'spell_level_aggregation' => NULL,
     'sort_order' => 15,
     'targets' => 
     array (
@@ -2104,7 +2164,7 @@ return array (
     'source' => 'dofusdb',
     'entity' => 'spell',
     'mapping_key' => 'element',
-    'from_path' => 'elementId',
+    'from_path' => 'spell_global.elementId',
     'from_lang_aware' => false,
     'characteristic_key' => 'element_spell',
     'formatters' => 
@@ -2125,6 +2185,7 @@ return array (
         ),
       ),
     ),
+    'spell_level_aggregation' => NULL,
     'sort_order' => 16,
     'targets' => 
     array (
@@ -2141,7 +2202,7 @@ return array (
     'source' => 'dofusdb',
     'entity' => 'spell',
     'mapping_key' => 'category',
-    'from_path' => 'categoryId',
+    'from_path' => 'spell_global.categoryId',
     'from_lang_aware' => false,
     'characteristic_key' => 'category_spell',
     'formatters' => 
@@ -2162,6 +2223,7 @@ return array (
         ),
       ),
     ),
+    'spell_level_aggregation' => NULL,
     'sort_order' => 17,
     'targets' => 
     array (
@@ -2178,7 +2240,7 @@ return array (
     'source' => 'dofusdb',
     'entity' => 'spell',
     'mapping_key' => 'is_magic',
-    'from_path' => 'levels.0.isMagic',
+    'from_path' => 'spell_global.isMagic',
     'from_lang_aware' => false,
     'characteristic_key' => 'is_magic_spell',
     'formatters' => 
@@ -2199,6 +2261,7 @@ return array (
         ),
       ),
     ),
+    'spell_level_aggregation' => NULL,
     'sort_order' => 18,
     'targets' => 
     array (
@@ -2215,7 +2278,7 @@ return array (
     'source' => 'dofusdb',
     'entity' => 'spell',
     'mapping_key' => 'powerful',
-    'from_path' => 'levels.0.powerful',
+    'from_path' => 'spell_global.powerful',
     'from_lang_aware' => false,
     'characteristic_key' => 'power_spell',
     'formatters' => 
@@ -2236,6 +2299,7 @@ return array (
         ),
       ),
     ),
+    'spell_level_aggregation' => NULL,
     'sort_order' => 19,
     'targets' => 
     array (

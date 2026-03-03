@@ -4,7 +4,7 @@
 
 ## Contenu
 
-- **ScrappingCommandTest** (`tests/Feature/Scrapping/ScrappingCommandTest.php`) :
+- **ScrappingRunCommandTest** (`tests/Feature/Scrapping/ScrappingRunCommandTest.php`) :
   - Utilise `RefreshDatabase` et `CreatesSystemUser` pour les imports réels.
   - **Validation / options** : entité requise, entité inconnue, plusieurs entités (monster, class).
   - **Collecte** : fetchMany (monster), fetchOne par `--id` (monster), `--ids` (item), resource (avec item-types), limit / max-items, start-skip, max-pages.

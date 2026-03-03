@@ -42,6 +42,22 @@ final class RelationImportStack
     /** Clés "entity:dofusdb_id" déjà ajoutées à la pile pour éviter doublons. */
     private array $processed = [];
 
+    /**
+     * Cache local des entités déjà résolues par dofusdb_id pour limiter les requêtes répétées.
+     *
+     * @var array<string, Resource|null>
+     */
+    private array $resourceByDofusdbId = [];
+
+    /** @var array<string, Item|null> */
+    private array $itemByDofusdbId = [];
+
+    /** @var array<string, Consumable|null> */
+    private array $consumableByDofusdbId = [];
+
+    /** @var array<string, Spell|null> */
+    private array $spellByDofusdbId = [];
+
     public function __construct()
     {
         $this->pending = new \SplQueue();
@@ -113,7 +129,7 @@ final class RelationImportStack
             $qty = (int) ($row['quantity'] ?? 1);
             $qty = max(1, $qty);
 
-            $existing = Resource::where('dofusdb_id', $dofusdbId)->first();
+            $existing = $this->findResourceByDofusdbId($dofusdbId);
             if ($existing !== null) {
                 $sync[$existing->id] = ['quantity' => (string) $qty];
                 continue;
@@ -153,7 +169,7 @@ final class RelationImportStack
             if ($dofusdbId === '') {
                 continue;
             }
-            $existing = Spell::where('dofusdb_id', $dofusdbId)->first();
+            $existing = $this->findSpellByDofusdbId($dofusdbId);
             if ($existing !== null) {
                 $sync[$existing->id] = [];
                 continue;
@@ -200,7 +216,7 @@ final class RelationImportStack
                     continue;
                 }
                 $dofusdbId = (string) $spellId;
-                $existing = Spell::where('dofusdb_id', $dofusdbId)->first();
+                $existing = $this->findSpellByDofusdbId($dofusdbId);
                 if ($existing !== null) {
                     $spellIdsToSync[] = $existing->id;
                     continue;
@@ -221,19 +237,19 @@ final class RelationImportStack
                 $qty = max(1, (int) ($dropData['quantity'] ?? 1));
                 $dofusdbId = (string) $itemId;
 
-                $existingResource = Resource::where('dofusdb_id', $dofusdbId)->first();
+                $existingResource = $this->findResourceByDofusdbId($dofusdbId);
                 if ($existingResource !== null) {
                     $prev = isset($resourceSync[$existingResource->id]) ? (int) $resourceSync[$existingResource->id]['quantity'] : 0;
                     $resourceSync[$existingResource->id] = ['quantity' => (string) ($prev + $qty)];
                     continue;
                 }
-                $existingItem = Item::where('dofusdb_id', $dofusdbId)->first();
+                $existingItem = $this->findItemByDofusdbId($dofusdbId);
                 if ($existingItem !== null) {
                     $prev = isset($itemSync[$existingItem->id]) ? (int) $itemSync[$existingItem->id]['quantity'] : 0;
                     $itemSync[$existingItem->id] = ['quantity' => $prev + $qty];
                     continue;
                 }
-                $existingConsumable = Consumable::where('dofusdb_id', $dofusdbId)->first();
+                $existingConsumable = $this->findConsumableByDofusdbId($dofusdbId);
                 if ($existingConsumable !== null) {
                     $prev = isset($consumableSync[$existingConsumable->id]) ? (int) $consumableSync[$existingConsumable->id]['quantity'] : 0;
                     $consumableSync[$existingConsumable->id] = ['quantity' => (string) ($prev + $qty)];
@@ -329,6 +345,8 @@ final class RelationImportStack
      */
     public function onImported(string $entity, string $dofusdbId, ?int $krosmozPrimaryId, ?string $table = null, bool $dryRun = false): void
     {
+        $this->warmEntityCacheOnImported($entity, $dofusdbId, $krosmozPrimaryId, $table);
+
         $k = $this->key($entity, $dofusdbId);
         $list = $this->dependents[$k] ?? [];
         unset($this->dependents[$k]);
@@ -486,5 +504,84 @@ final class RelationImportStack
     public function pendingCount(): int
     {
         return $this->pending->count();
+    }
+
+    private function findResourceByDofusdbId(string $dofusdbId): ?Resource
+    {
+        if (!array_key_exists($dofusdbId, $this->resourceByDofusdbId)) {
+            $this->resourceByDofusdbId[$dofusdbId] = Resource::where('dofusdb_id', $dofusdbId)->first();
+        }
+
+        return $this->resourceByDofusdbId[$dofusdbId];
+    }
+
+    private function findItemByDofusdbId(string $dofusdbId): ?Item
+    {
+        if (!array_key_exists($dofusdbId, $this->itemByDofusdbId)) {
+            $this->itemByDofusdbId[$dofusdbId] = Item::where('dofusdb_id', $dofusdbId)->first();
+        }
+
+        return $this->itemByDofusdbId[$dofusdbId];
+    }
+
+    private function findConsumableByDofusdbId(string $dofusdbId): ?Consumable
+    {
+        if (!array_key_exists($dofusdbId, $this->consumableByDofusdbId)) {
+            $this->consumableByDofusdbId[$dofusdbId] = Consumable::where('dofusdb_id', $dofusdbId)->first();
+        }
+
+        return $this->consumableByDofusdbId[$dofusdbId];
+    }
+
+    private function findSpellByDofusdbId(string $dofusdbId): ?Spell
+    {
+        if (!array_key_exists($dofusdbId, $this->spellByDofusdbId)) {
+            $this->spellByDofusdbId[$dofusdbId] = Spell::where('dofusdb_id', $dofusdbId)->first();
+        }
+
+        return $this->spellByDofusdbId[$dofusdbId];
+    }
+
+    private function warmEntityCacheOnImported(string $entity, string $dofusdbId, ?int $krosmozPrimaryId, ?string $table): void
+    {
+        if ($dofusdbId === '' || $krosmozPrimaryId === null || $krosmozPrimaryId <= 0) {
+            return;
+        }
+
+        if ($entity === 'spell') {
+            $spell = Spell::find($krosmozPrimaryId);
+            if ($spell !== null) {
+                $this->spellByDofusdbId[$dofusdbId] = $spell;
+            }
+
+            return;
+        }
+
+        if ($entity === 'item') {
+            if ($table === 'resources') {
+                $resource = Resource::find($krosmozPrimaryId);
+                if ($resource !== null) {
+                    $this->resourceByDofusdbId[$dofusdbId] = $resource;
+                }
+
+                return;
+            }
+
+            if ($table === 'items') {
+                $item = Item::find($krosmozPrimaryId);
+                if ($item !== null) {
+                    $this->itemByDofusdbId[$dofusdbId] = $item;
+                }
+
+                return;
+            }
+
+            if ($table === 'consumables') {
+                $consumable = Consumable::find($krosmozPrimaryId);
+                if ($consumable !== null) {
+                    $this->consumableByDofusdbId[$dofusdbId] = $consumable;
+                }
+            }
+        }
     }
 }

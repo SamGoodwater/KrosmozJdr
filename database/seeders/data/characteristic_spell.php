@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 /**
- * Groupe spell. Régénéré par : php artisan db:export-seeder-data --characteristics
+ * Groupe spell. Régénéré par : php artisan scrapping:seeders:export --characteristics
  */
 
 return array (
@@ -24,21 +24,6 @@ return array (
   ),
   1 => 
   array (
-    'characteristic_key' => 'range_spell',
-    'entity' => '*',
-    'db_column' => 'po_min',
-    'min' => '0',
-    'max' => NULL,
-    'formula' => NULL,
-    'formula_display' => 'Portée min (cases). Utiliser spell_range_min_spell / spell_range_max_spell pour min/max.',
-    'default_value' => '0',
-    'conversion_formula' => '[d]',
-    'conversion_dofus_sample' => NULL,
-    'conversion_krosmoz_sample' => NULL,
-    'value_available' => NULL,
-  ),
-  2 => 
-  array (
     'characteristic_key' => 'area_spell',
     'entity' => '*',
     'db_column' => 'area',
@@ -52,7 +37,7 @@ return array (
     'conversion_krosmoz_sample' => NULL,
     'value_available' => NULL,
   ),
-  3 => 
+  2 => 
   array (
     'characteristic_key' => 'element_spell',
     'entity' => '*',
@@ -84,7 +69,7 @@ return array (
       14 => 'Air-Eau',
     ),
   ),
-  4 => 
+  3 => 
   array (
     'characteristic_key' => 'power_spell',
     'entity' => '*',
@@ -111,7 +96,7 @@ return array (
     ),
     'value_available' => NULL,
   ),
-  5 => 
+  4 => 
   array (
     'characteristic_key' => 'cast_per_turn_spell',
     'entity' => '*',
@@ -126,7 +111,7 @@ return array (
     'conversion_krosmoz_sample' => NULL,
     'value_available' => NULL,
   ),
-  6 => 
+  5 => 
   array (
     'characteristic_key' => 'cast_per_target_spell',
     'entity' => '*',
@@ -141,7 +126,7 @@ return array (
     'conversion_krosmoz_sample' => NULL,
     'value_available' => NULL,
   ),
-  7 => 
+  6 => 
   array (
     'characteristic_key' => 'sight_line_spell',
     'entity' => '*',
@@ -156,7 +141,7 @@ return array (
     'conversion_krosmoz_sample' => NULL,
     'value_available' => NULL,
   ),
-  8 => 
+  7 => 
   array (
     'characteristic_key' => 'number_between_two_cast_spell',
     'entity' => '*',
@@ -171,7 +156,7 @@ return array (
     'conversion_krosmoz_sample' => NULL,
     'value_available' => NULL,
   ),
-  9 => 
+  8 => 
   array (
     'characteristic_key' => 'category_spell',
     'entity' => '*',
@@ -194,7 +179,7 @@ return array (
       5 => 'Debuff',
     ),
   ),
-  10 => 
+  9 => 
   array (
     'characteristic_key' => 'is_magic_spell',
     'entity' => '*',
@@ -209,7 +194,7 @@ return array (
     'conversion_krosmoz_sample' => NULL,
     'value_available' => NULL,
   ),
-  11 => 
+  10 => 
   array (
     'characteristic_key' => 'range_editable_spell',
     'entity' => '*',
@@ -224,7 +209,7 @@ return array (
     'conversion_krosmoz_sample' => NULL,
     'value_available' => NULL,
   ),
-  12 => 
+  11 => 
   array (
     'characteristic_key' => 'number_between_two_cast_editable_spell',
     'entity' => '*',
@@ -239,7 +224,7 @@ return array (
     'conversion_krosmoz_sample' => NULL,
     'value_available' => NULL,
   ),
-  13 => 
+  12 => 
   array (
     'characteristic_key' => 'spell_range_min_spell',
     'entity' => '*',
@@ -254,7 +239,7 @@ return array (
     'conversion_krosmoz_sample' => NULL,
     'value_available' => NULL,
   ),
-  14 => 
+  13 => 
   array (
     'characteristic_key' => 'spell_range_max_spell',
     'entity' => '*',

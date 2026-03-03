@@ -86,7 +86,7 @@ Aucune clé de groupe ne pointe vers une caractéristique manquante ou vers un m
 | Formule life_creature | Corrigé | Conserver `[vitality_creature]*10+[de_vie_creature]` ou adapter si les variables d’évaluation utilisent des noms courts ([vitality], [de_vie]) selon le contexte. |
 | Caractéristiques liées | OK | `level_spell` est la seule liée ; pas de ligne dans characteristic_spell (héritage maître). |
 | Type list | Non utilisé en main | Les types en base sont `int` ou `bool`. Si des listes sont ajoutées (ex. choix dans value_available), vérifier que le service Limite et l’UI gèrent bien le type `list`. |
-| Export BDD → seeders | À garder en tête | Après édition en admin, `php artisan db:export-seeder-data --characteristics` écrase les fichiers data ; les compléments de `characteristic_icons_colors.php` sont réappliqués au prochain seed si les champs exportés sont NULL. |
+| Export BDD → seeders | À garder en tête | Après édition en admin, `php artisan scrapping:seeders:export --characteristics` (alias legacy : `db:export-seeder-data`) écrase les fichiers data ; les compléments de `characteristic_icons_colors.php` sont réappliqués au prochain seed si les champs exportés sont NULL. |
 
 ---
 

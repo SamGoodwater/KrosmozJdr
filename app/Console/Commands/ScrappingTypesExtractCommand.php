@@ -13,17 +13,18 @@ use Illuminate\Console\Command;
  * vers database/seeders/data/ (resource_types.php, consumable_types.php, item_types.php).
  *
  * Phase 3 du plan types item BDD / seeders. À lancer une fois pour initialiser les fichiers,
- * puis utiliser db:export-seeder-data --item-types après réglages en UI.
+ * puis utiliser scrapping:seeders:export --item-types après réglages en UI.
  *
  * @see docs/50-Fonctionnalités/Scrapping/PLAN_TYPES_ITEM_BDD_SEEDER.md
  */
-class ExtractItemTypesCommand extends Command
+class ScrappingTypesExtractCommand extends Command
 {
-    protected $signature = 'scrapping:extract-item-types
+    protected $signature = 'scrapping:types:extract
                             {--lang=fr : Langue du catalogue DofusDB}
                             {--skip-cache : Ignorer le cache du catalogue}';
 
     protected $description = 'Extrait les types item DofusDB par catégorie (resource/consumable/equipment) vers database/seeders/data/';
+    protected $aliases = ['scrapping:extract-item-types'];
 
     public function __construct(
         private readonly DofusDbItemTypesCatalogService $catalogService,
@@ -97,8 +98,8 @@ class ExtractItemTypesCommand extends Command
     private function writeFile(string $path, array $data, string $label, string $comment): void
     {
         $content = "<?php\n\ndeclare(strict_types=1);\n\n/**\n * {$label} – {$comment}.\n"
-            . " * Généré par : php artisan scrapping:extract-item-types\n"
-            . " * Régénéré depuis la BDD par : php artisan db:export-seeder-data --item-types\n */\n\nreturn "
+            . " * Généré par : php artisan scrapping:types:extract\n"
+            . " * Régénéré depuis la BDD par : php artisan scrapping:seeders:export --item-types\n */\n\nreturn "
             . var_export($data, true) . ";\n";
         file_put_contents($path, $content);
         $this->line('  → ' . $path . ' (' . count($data) . ' entrées)');

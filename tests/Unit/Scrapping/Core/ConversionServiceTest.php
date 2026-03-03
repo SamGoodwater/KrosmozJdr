@@ -95,11 +95,15 @@ class ConversionServiceTest extends TestCase
     public function test_convert_spell_produces_spells_key(): void
     {
         $raw = [
-            'id' => 123,
-            'name' => ['fr' => 'Évaporation'],
-            'description' => ['fr' => 'Desc'],
-            'img' => null,
-            'levels' => [['apCost' => 4, 'range' => 5, 'maxCastPerTurn' => 2]],
+            'spell_global' => [
+                'id' => 123,
+                'name' => ['fr' => 'Évaporation'],
+                'description' => ['fr' => 'Desc'],
+                'img' => null,
+                'apCost' => 4,
+                'range' => 5,
+                'maxCastPerTurn' => 2,
+            ],
         ];
 
         $out = $this->service->convert('dofusdb', 'spell', $raw, ['lang' => 'fr']);

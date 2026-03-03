@@ -177,6 +177,8 @@ final class SpellEffectsConversionService
 
     /**
      * Convertisseur zoneDescr DofusDB (shape, param1, param2) → notation KrosmozJDR.
+     * Shapes DofusDB : 80 = case unique, 67 = cercle, 79 = anneau sans centre, 76 = ligne,
+     * 88 = croix pleine, 81 = croix sans centre, 71 = carré.
      *
      * @see docs/50-Fonctionnalités/Spell-Effects/ZONE_NOTATION.md
      * @param array{shape?: int, param1?: int, param2?: int} $zoneDescr
@@ -188,12 +190,52 @@ final class SpellEffectsConversionService
         $p2 = isset($zoneDescr['param2']) ? (int) $zoneDescr['param2'] : 0;
 
         return match (true) {
-            $shape === 0 => 'point',
+            $shape === 0, $shape === 80 => 'point',  // case unique (CAC)
+            $shape === 67, $shape === 79 => self::circleNotation($p1, $p2),  // 67 cercle, 79 anneau sans centre
+            $shape === 76 => 'line-1x' . max(1, $p1 ?: 1),  // ligne
+            $shape === 88 => self::crossNotation(0, $p1 ?: 1),  // croix pleine (min=0)
+            $shape === 81 => self::crossNotation(1, $p1 ?: 1),  // croix sans centre (min=1)
+            $shape === 71 => self::rectNotation($p1, $p2),  // carré (ou rect si p2)
+            // Anciens IDs (rétrocompat)
             $shape === 1 => 'line-1x' . max(1, $p1 ?: 1),
-            $shape === 2, $shape === 4 => 'cross-' . max(1, $p1 ?: 1),
-            $shape === 3 => 'circle-' . max(1, $p1 ?: 1),
-            default => $shape > 0 ? 'shape-' . $shape : null,
+            $shape === 2, $shape === 4 => self::crossNotation(0, $p1 ?: 1),
+            $shape === 3 => self::circleNotation($p1, $p2),
+            default => $shape > 0 ? 'shape-' . $shape . ($p1 !== 0 || $p2 !== 0 ? '-' . $p1 . '-' . $p2 : '') : null,
         };
+    }
+
+    /**
+     * Notation cercle : circle-{min}-{max} (rayon intérieur, rayon extérieur).
+     */
+    private static function circleNotation(int $p1, int $p2): string
+    {
+        if ($p2 <= 0) {
+            $radius = max(1, $p1);
+            return 'circle-0-' . $radius;
+        }
+        $min = max(0, $p1);
+        $max = max($min, $p2);
+        return 'circle-' . $min . '-' . $max;
+    }
+
+    /**
+     * Notation croix : cross-{min}-{max}. 0-N = pleine, 1-N = sans centre.
+     */
+    private static function crossNotation(int $min, int $max): string
+    {
+        $max = max(1, $max);
+        $min = max(0, min($min, $max));
+        return 'cross-' . $min . '-' . $max;
+    }
+
+    /**
+     * Notation rectangle / carré : rect-{W}x{H}. Si param2 = 0, carré NxN.
+     */
+    private static function rectNotation(int $p1, int $p2): string
+    {
+        $w = max(1, $p1 ?: 1);
+        $h = $p2 > 0 ? max(1, $p2) : $w;
+        return 'rect-' . $w . 'x' . $h;
     }
 
     /**
@@ -249,12 +291,31 @@ final class SpellEffectsConversionService
         $valueFormula = $this->buildValueFormula($instance);
         $description = $this->extractEffectDescription($definition, $lang);
         $value = $description !== '' ? $description : ($valueFormula ?? 'Effet non mappé');
-
-        return [
+        $params = [
             'value_formula' => $valueFormula,
             'value' => $value,
             'value_formula_crit' => null,
         ];
+        $this->addDurationToParams($instance, $params);
+
+        return $params;
+    }
+
+    /**
+     * Ajoute la durée (tours) aux params si présente dans l'instance (ex. "2 durée" sur la carte sort).
+     *
+     * @param array<string, mixed> $instance Instance d'effet (duration)
+     * @param array<string, mixed> $params Params à enrichir — modifié par référence
+     */
+    private function addDurationToParams(array $instance, array &$params): void
+    {
+        if (!array_key_exists('duration', $instance)) {
+            return;
+        }
+        $duration = $instance['duration'];
+        if (is_numeric($duration)) {
+            $params['duration'] = (int) $duration;
+        }
     }
 
     /**
@@ -290,6 +351,7 @@ final class SpellEffectsConversionService
             'value_formula' => $this->buildValueFormula($instance),
             'value_formula_crit' => null,
         ];
+        $this->addDurationToParams($instance, $params);
 
         if ($charSource === 'element') {
             $elementId = isset($instance['effectElement']) && is_numeric($instance['effectElement'])
@@ -308,9 +370,10 @@ final class SpellEffectsConversionService
 
     /**
      * Calcule la valeur Dofus « d » (moyenne des dés ou valeur fixe) pour la conversion.
+     * Quand diceSide est 0, diceNum porte souvent la valeur (ex. 10 = 10%, 50 = 50).
      *
      * @param array<string, mixed> $instance Instance d'effet (diceNum, diceSide, value)
-     * @return float|null Moyenne diceNum * (diceSide + 1) / 2, ou value si fixe, ou null
+     * @return float|null Moyenne diceNum*(diceSide+1)/2, ou diceNum si diceSide=0, ou value, ou null
      */
     private function computeDofusValueForConversion(array $instance): ?float
     {
@@ -318,6 +381,9 @@ final class SpellEffectsConversionService
         $diceSide = isset($instance['diceSide']) && is_numeric($instance['diceSide']) ? (int) $instance['diceSide'] : null;
         if ($diceNum !== null && $diceSide !== null && $diceNum > 0 && $diceSide > 0) {
             return $diceNum * ($diceSide + 1) / 2.0;
+        }
+        if ($diceNum !== null && $diceNum > 0 && ($diceSide === null || $diceSide === 0)) {
+            return (float) $diceNum;
         }
         $value = isset($instance['value']) && is_numeric($instance['value']) ? (float) $instance['value'] : null;
         if ($value !== null) {
@@ -363,6 +429,9 @@ final class SpellEffectsConversionService
     }
 
     /**
+     * Construit la formule de valeur : XdY (dés), ou valeur fixe (diceNum si diceSide=0, sinon value).
+     * Quand diceSide est 0, Dofus utilise souvent diceNum pour la valeur (ex. 10 = 10%, 50 = 50).
+     *
      * @param array<string, mixed> $instance
      */
     private function buildValueFormula(array $instance): ?string
@@ -371,6 +440,10 @@ final class SpellEffectsConversionService
         $diceSide = isset($instance['diceSide']) && is_numeric($instance['diceSide']) ? (int) $instance['diceSide'] : null;
         if ($diceNum !== null && $diceSide !== null && $diceNum > 0 && $diceSide > 0) {
             return $diceNum . 'd' . $diceSide;
+        }
+        // diceSide 0 ou absent : valeur fixe dans diceNum (ex. 10% bouclier) ou value
+        if ($diceNum !== null && $diceNum > 0 && ($diceSide === null || $diceSide === 0)) {
+            return (string) $diceNum;
         }
         $value = isset($instance['value']) && is_numeric($instance['value']) ? (int) $instance['value'] : null;
         if ($value !== null) {

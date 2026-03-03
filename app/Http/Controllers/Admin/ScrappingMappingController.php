@@ -35,6 +35,7 @@ class ScrappingMappingController extends Controller
     {
         $source = (string) $request->query('source', 'dofusdb');
         $entity = (string) $request->query('entity', '');
+        $mappingKey = trim((string) $request->query('mapping_key', ''));
 
         $entities = $this->configLoader->listEntities($source);
         $entitiesWithMapping = $this->mappingService->listEntitiesWithMapping($source);
@@ -54,6 +55,7 @@ class ScrappingMappingController extends Controller
             'source' => $source,
             'sources' => [['id' => 'dofusdb', 'label' => 'DofusDB']],
             'entity' => $entity,
+            'mappingKey' => $mappingKey,
             'entities' => $entities,
             'entitiesWithMapping' => $entitiesWithMapping,
             'mappings' => $mappings,

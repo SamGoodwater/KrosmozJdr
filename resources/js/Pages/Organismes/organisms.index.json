@@ -284,31 +284,22 @@
   },
   {
     "name": "SectionEntityTableRead",
-    "description": "SectionEntityTableRead Template",
+    "description": "SectionEntityTableRead Template Affiche un tableau d'entités chargé depuis l'API tables (api.tables.{entity}). Utilise settings.entity, settings.filters et settings.limit pour la requête.",
     "props": [],
     "slots": [],
     "file": "section/templates/entity_table/SectionEntityTableRead.vue"
   },
   {
+    "name": "SectionEntityTableParams",
+    "description": "Vue paramètres dédiée au template entity_table. Utilisée dans SectionParamsModal (édition) et CreateSectionModal (création). Émet update:settings avec { entity, filters, limit } pour que le parent fusionne dans formData.",
+    "props": [],
+    "slots": [],
+    "file": "section/templates/entity_table/SectionEntityTableParams.vue"
+  },
+  {
     "name": "SectionEntityTableEdit",
-    "description": "SectionEntityTableEdit Template",
-    "props": [
-      {
-        "name": "section",
-        "type": "Object",
-        "desc": "- Données complètes de la section"
-      },
-      {
-        "name": "data",
-        "type": "Object",
-        "desc": "- Données de contenu (section.data)"
-      },
-      {
-        "name": "settings",
-        "type": "Object",
-        "desc": "- Paramètres (section.settings)"
-      }
-    ],
+    "description": "SectionEntityTableEdit Template Édition des paramètres du tableau d'entités (type d'entité, filtres JSON, limite). Les valeurs sont stockées dans section.settings et sauvegardées via useSectionSave.",
+    "props": [],
     "slots": [],
     "file": "section/templates/entity_table/SectionEntityTableEdit.vue"
   },
@@ -360,19 +351,8 @@
   },
   {
     "name": "CreateSectionModal",
-    "description": "CreateSectionModal Component",
-    "props": [
-      {
-        "name": "open",
-        "type": "Boolean",
-        "desc": "- Contrôle l'ouverture du modal"
-      },
-      {
-        "name": "pageId",
-        "type": "Number",
-        "desc": "- ID de la page sur laquelle créer la section"
-      }
-    ],
+    "description": "CreateSectionModal Component Modal pour créer une nouvelle section sur une page. - Étape 1 : choix du type de section (et titre optionnel). - Étape 2 (si le template fournit paramsComponent) : vue dédiée des paramètres, puis création. - Sinon : création directe avec valeurs par défaut.",
+    "props": [],
     "slots": [],
     "file": "section/modals/CreateSectionModal.vue"
   },

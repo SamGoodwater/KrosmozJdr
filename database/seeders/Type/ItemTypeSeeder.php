@@ -12,8 +12,8 @@ use Illuminate\Database\Seeder;
 /**
  * Seed des types d'équipements (items) depuis database/seeders/data/item_types.php.
  *
- * Fichier généré par : php artisan scrapping:extract-item-types
- * Régénéré depuis la BDD par : php artisan db:export-seeder-data --item-types
+ * Fichier généré par : php artisan scrapping:types:extract
+ * Régénéré depuis la BDD par : php artisan scrapping:seeders:export --item-types
  *
  * @see docs/50-Fonctionnalités/Scrapping/PLAN_TYPES_ITEM_BDD_SEEDER.md
  */
@@ -28,7 +28,7 @@ class ItemTypeSeeder extends Seeder
         $path = base_path(self::DATA_FILE);
         if (!is_file($path)) {
             if ($this->command) {
-                $this->command->warn('Fichier absent : ' . self::DATA_FILE . ' — exécutez php artisan scrapping:extract-item-types');
+                $this->command->warn('Fichier absent : ' . self::DATA_FILE . ' — exécutez php artisan scrapping:types:extract');
             }
 
             return;

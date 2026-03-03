@@ -5,10 +5,12 @@ declare(strict_types=1);
 namespace App\Services\Scrapping\Core\Conversion\SpellEffects;
 
 /**
- * Mapping effectId DofusDB vers sous-effet KrosmozJDR.
- * Utilise par SpellEffectsConversionService.
+ * Mapping effectId DofusDB vers sous-effet KrosmozJDR (constante PHP).
  *
+ * @deprecated Phase 2 : préférer la table dofusdb_effect_mappings et DofusdbEffectMappingService.
+ *             Conservé comme fallback lorsque la BDD est vide (DofusdbEffectMappingService délègue ici).
  * @see docs/50-Fonctionnalités/Scrapping/DOFUSDB_EFFECTS_CONVERSION.md
+ * @see docs/50-Fonctionnalités/Scrapping/PLAN_REFONTE_SCRAPPING.md
  */
 final class DofusDbEffectMapping
 {

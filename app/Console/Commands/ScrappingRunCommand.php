@@ -4,7 +4,6 @@ namespace App\Console\Commands;
 
 use App\Models\Entity\Resource;
 use App\Models\Type\ResourceType;
-use App\Models\User;
 use App\Services\Scrapping\Catalog\DofusDbItemSuperTypeMappingService;
 use App\Services\Scrapping\Catalog\DofusDbItemTypesCatalogService;
 use App\Services\Scrapping\Catalog\DofusDbMonsterRacesCatalogService;
@@ -15,8 +14,6 @@ use App\Services\Scrapping\Core\Integration\IntegrationService;
 use App\Services\Scrapping\Core\Orchestrator\Orchestrator;
 use App\Services\Scrapping\Core\Preview\ScrappingPreviewBuilder;
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use Symfony\Component\Console\Helper\ProgressBar;
 
@@ -29,17 +26,15 @@ use Symfony\Component\Console\Helper\ProgressBar;
  * --entity peut contenir plusieurs entités (virgules) pour enchaîner les imports.
  *
  * @example
- * php artisan scrapping --entity=monster --id=31
- * php artisan scrapping --entity=monster,item --levelMin=1 --levelMax=50 --simulate
- * php artisan scrapping --entity=resource --type-name=Ressource --limit=100
+ * php artisan scrapping:run --entity=monster --id=31
+ * php artisan scrapping:run --entity=monster,item --levelMin=1 --levelMax=50 --simulate
+ * php artisan scrapping:run --entity=resource --type-name=Ressource --limit=100
  */
-class ScrappingCommand extends Command
+class ScrappingRunCommand extends Command
 {
-    protected $signature = 'scrapping
+    protected $signature = 'scrapping:run
         {--entity= : Entité(s) à traiter (ex: monster,item,resource,consumable,panoply,spell,class). Plusieurs possibles (virgules)}
         {--batch= : Fichier JSON d\'import en lot (tableau ou {entities:[...]})}
-        {--sync-resource-types : Sync item-types "Ressource" (superTypeId=9) dans resource_types}
-        {--decision=pending : (sync-resource-types) pending|allowed}
         {--simulate : Ne pas écrire en base (récupération + conversion uniquement)}
         {--compare : Prévisualise et compare (raw/converted/existing)}
         {--include-relations=1 : Inclure relations (1/0) pour import/preview}
@@ -79,6 +74,7 @@ class ScrappingCommand extends Command
         {--backfill-delay-ms=0 : (backfill-images) Pause entre téléchargements (ms)}';
 
     protected $description = 'Récupération et import DofusDB (--entity=... par défaut importe ; --simulate pour ne pas écrire ; --backfill-images pour rattraper les images).';
+    protected $aliases = ['scrapping'];
 
     private function isDebug(): bool
     {
@@ -99,10 +95,6 @@ class ScrappingCommand extends Command
 
     public function handle(CollectService $collectService, Orchestrator $orchestrator, IntegrationService $integrationService): int
     {
-        if ((bool) $this->option('sync-resource-types')) {
-            return $this->handleSyncResourceTypes();
-        }
-
         if ($this->option('batch')) {
             return $this->handleBatchImport($orchestrator);
         }
@@ -743,175 +735,6 @@ class ScrappingCommand extends Command
             }
         }
         return mb_strlen($err) > 120 ? mb_substr($err, 0, 117) . '…' : $err;
-    }
-
-    private function handleSyncResourceTypes(): int
-    {
-        $decision = (string) $this->option('decision');
-        if (!in_array($decision, [ResourceType::DECISION_PENDING, ResourceType::DECISION_ALLOWED], true)) {
-            $this->error("Option --decision invalide: {$decision}. Valeurs acceptées: pending|allowed");
-            return Command::FAILURE;
-        }
-
-        $limit = max(1, min(200, (int) $this->option('limit')));
-        $maxPages = max(0, (int) $this->option('max-pages'));
-        $dryRun = (bool) $this->option('simulate');
-
-        $baseUrl = (string) config('scrapping.data_collect.dofusdb_base_url', 'https://api.dofusdb.fr');
-        $lang = (string) config('scrapping.data_collect.default_language', 'fr');
-        $timeout = (int) config('scrapping.data_collect.timeout', 30);
-        $ua = (string) config('scrapping.data_collect.user_agent', 'KrosmozJDR-Scrapping/1.0');
-
-        $this->info('🚀 Sync DofusDB item-types (Ressource)');
-        $this->line("BaseUrl={$baseUrl} lang={$lang} limit={$limit} max-pages=" . ($maxPages ?: '∞') . ' decision=' . $decision . ' dry-run=' . ($dryRun ? 'yes' : 'no'));
-        $this->newLine();
-
-        $skip = max(0, (int) $this->option('start-skip'));
-        $page = 0;
-        $stats = [
-            'seen' => 0,
-            'resource_types' => 0,
-            'created' => 0,
-            'updated' => 0,
-            'skipped' => 0,
-            'errors' => 0,
-        ];
-
-        while (true) {
-            $page++;
-            if ($maxPages > 0 && $page > $maxPages) {
-                break;
-            }
-
-            $url = rtrim($baseUrl, '/') . '/item-types';
-            $query = [
-                'lang' => $lang,
-                '$limit' => $limit,
-                '$skip' => $skip,
-            ];
-
-            try {
-                $resp = Http::timeout($timeout)
-                    ->withHeaders([
-                        'User-Agent' => $ua,
-                        'Accept' => 'application/json',
-                    ])
-                    ->get($url, $query);
-
-                if (!$resp->successful()) {
-                    $stats['errors']++;
-                    $this->error("Erreur DofusDB ({$resp->status()}) sur /item-types");
-                    Log::warning('scrapping sync-resource-types dofusdb failed', [
-                        'status' => $resp->status(),
-                        'body' => $resp->body(),
-                    ]);
-                    return Command::FAILURE;
-                }
-
-                $payload = $resp->json();
-                $data = is_array($payload) ? ($payload['data'] ?? null) : null;
-                if (!is_array($data)) {
-                    $stats['errors']++;
-                    $this->error('Réponse inattendue de DofusDB (clé data manquante).');
-                    return Command::FAILURE;
-                }
-
-                if (count($data) === 0) {
-                    break;
-                }
-
-                $received = count($data);
-                $total = is_array($payload) && isset($payload['total']) ? (int) $payload['total'] : 0;
-                $apiLimit = is_array($payload) && isset($payload['limit']) ? (int) $payload['limit'] : 0;
-                $effectiveStep = $apiLimit > 0 ? $apiLimit : $received;
-
-                foreach ($data as $row) {
-                    $stats['seen']++;
-
-                    $typeId = isset($row['id']) ? (int) $row['id'] : 0;
-                    $superTypeId = isset($row['superTypeId']) ? (int) $row['superTypeId'] : 0;
-
-                    if ($typeId <= 0) {
-                        $stats['skipped']++;
-                        continue;
-                    }
-
-                    // Ressources uniquement: superTypeId=9
-                    if ($superTypeId !== 9) {
-                        continue;
-                    }
-
-                    $stats['resource_types']++;
-
-                    $name = null;
-                    if (isset($row['name']) && is_array($row['name'])) {
-                        $name = $row['name']['fr'] ?? $row['name'][$lang] ?? null;
-                        if (!is_string($name)) {
-                            $name = null;
-                        }
-                    }
-                    $label = $name ? $name : "DofusDB type #{$typeId}";
-
-                    if ($dryRun) {
-                        continue;
-                    }
-
-                    /** @var ResourceType $model */
-                    $model = ResourceType::firstOrNew(['dofusdb_type_id' => $typeId]);
-
-                    $wasExisting = $model->exists;
-                    $oldName = $model->name;
-                    $oldDecision = $model->decision;
-
-                    $model->name = $oldName && !str_starts_with($oldName, 'DofusDB type #') ? $oldName : $label;
-
-                    if (!$wasExisting) {
-                        $model->decision = $decision;
-                    } elseif (!in_array($oldDecision, [ResourceType::DECISION_ALLOWED, ResourceType::DECISION_BLOCKED, ResourceType::DECISION_PENDING], true)) {
-                        $model->decision = $decision;
-                    }
-
-                    if (!$wasExisting) {
-                        $model->state = ResourceType::STATE_PLAYABLE;
-                        $model->read_level = User::ROLE_GUEST;
-                        $model->write_level = User::ROLE_ADMIN;
-                    }
-
-                    $model->save();
-
-                    if ($wasExisting) {
-                        $stats['updated']++;
-                    } else {
-                        $stats['created']++;
-                    }
-                }
-
-                $this->line("Page {$page} OK (skip={$skip}) | seen={$stats['seen']} resource_types={$stats['resource_types']} created={$stats['created']} updated={$stats['updated']}");
-
-                $skip += $effectiveStep;
-
-                if ($total > 0 && $skip >= $total) {
-                    break;
-                }
-                if ($total <= 0 && $received < $limit) {
-                    break;
-                }
-            } catch (\Throwable $e) {
-                $stats['errors']++;
-                $this->error('Erreur réseau/HTTP: ' . $e->getMessage());
-                return Command::FAILURE;
-            }
-        }
-
-        $this->newLine();
-        $this->info('📊 Résumé sync resource-types');
-        $this->line('Seen rows: ' . $stats['seen']);
-        $this->line('Resource types found: ' . $stats['resource_types']);
-        $this->line('Created: ' . $stats['created']);
-        $this->line('Updated: ' . $stats['updated']);
-        $this->line('Errors: ' . $stats['errors']);
-
-        return Command::SUCCESS;
     }
 
     private function handleBatchImport(Orchestrator $orchestrator): int

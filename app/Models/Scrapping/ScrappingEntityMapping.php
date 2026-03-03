@@ -22,6 +22,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property bool $from_lang_aware
  * @property int|null $characteristic_id
  * @property array|null $formatters
+ * @property string|null $spell_level_aggregation first|max|min|last (agrégation multi spell-level)
  * @property int $sort_order
  *
  * @example
@@ -40,6 +41,7 @@ class ScrappingEntityMapping extends Model
         'from_lang_aware',
         'characteristic_id',
         'formatters',
+        'spell_level_aggregation',
         'sort_order',
     ];
 

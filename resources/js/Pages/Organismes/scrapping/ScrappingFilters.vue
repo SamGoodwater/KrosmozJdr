@@ -69,6 +69,19 @@ const entityTypeStr = computed(() => {
     if (v && typeof v === "object" && typeof v.value === "string") return v.value;
     return String(v ?? "");
 });
+
+const mappingDiagnostics = computed(() => {
+    const cfg = props.config?.[entityTypeStr.value];
+    const diag = cfg?.mappingDiagnostics;
+    return diag && typeof diag === "object" ? diag : null;
+});
+
+const coverageColor = computed(() => {
+    const pct = Number(mappingDiagnostics.value?.coveragePct ?? 0);
+    if (pct >= 90) return "success";
+    if (pct >= 70) return "warning";
+    return "error";
+});
 </script>
 
 <template>
@@ -98,6 +111,52 @@ const entityTypeStr = computed(() => {
         </div>
 
         <template v-else>
+            <div
+                v-if="mappingDiagnostics"
+                class="rounded-lg border border-base-300 bg-base-200/30 p-3 space-y-2"
+            >
+                <div class="flex flex-wrap items-center gap-2">
+                    <span class="text-sm font-semibold text-primary-100">Santé du mapping</span>
+                    <Badge :content="`${mappingDiagnostics.coveragePct}% couvert`" :color="coverageColor" size="sm" />
+                    <Badge :content="`${mappingDiagnostics.valid}/${mappingDiagnostics.total} règles valides`" color="neutral" size="sm" />
+                    <Badge v-if="mappingDiagnostics.invalid > 0" :content="`${mappingDiagnostics.invalid} incomplète(s)`" color="warning" size="sm" />
+                    <Badge v-if="Number(mappingDiagnostics.blocking || 0) > 0" :content="`${mappingDiagnostics.blocking} bloquante(s)`" color="error" size="sm" />
+                    <Badge v-if="Number(mappingDiagnostics.improvable || 0) > 0" :content="`${mappingDiagnostics.improvable} amélioration(s)`" color="info" size="sm" />
+                </div>
+                <div class="flex flex-wrap gap-2 text-xs text-primary-300">
+                    <span>from.path: <strong class="text-primary-100">{{ mappingDiagnostics.sourcePath }}</strong></span>
+                    <span>from.extract: <strong class="text-primary-100">{{ mappingDiagnostics.sourceExtract }}</strong></span>
+                    <span>cibles: <strong class="text-primary-100">{{ mappingDiagnostics.withTargets }}</strong></span>
+                    <span>formatters: <strong class="text-primary-100">{{ mappingDiagnostics.withFormatters }}</strong></span>
+                </div>
+                <div
+                    v-if="Array.isArray(mappingDiagnostics.warnings) && mappingDiagnostics.warnings.length"
+                    class="space-y-2"
+                >
+                    <div
+                        v-for="(w, idx) in mappingDiagnostics.warnings"
+                        :key="`mapping-warning-${idx}`"
+                        class="rounded border p-2 text-xs flex flex-wrap items-center gap-2"
+                        :class="w?.severity === 'blocking' ? 'border-error/40 bg-error/10 text-error-content' : 'border-info/40 bg-info/10 text-info-content'"
+                    >
+                        <Badge
+                            :content="w?.severity === 'blocking' ? 'Bloquant' : 'Amélioration'"
+                            :color="w?.severity === 'blocking' ? 'error' : 'info'"
+                            size="xs"
+                        />
+                        <span class="font-mono" v-if="w?.mappingKey">{{ w.mappingKey }}</span>
+                        <span>{{ w?.message || 'Avertissement mapping' }}</span>
+                        <a
+                            v-if="w?.actionUrl"
+                            :href="w.actionUrl"
+                            class="btn btn-ghost btn-xs ml-auto"
+                        >
+                            Corriger
+                        </a>
+                    </div>
+                </div>
+            </div>
+
             <div class="grid gap-3 md:grid-cols-3">
                 <InputField
                     :model-value="filterIds"

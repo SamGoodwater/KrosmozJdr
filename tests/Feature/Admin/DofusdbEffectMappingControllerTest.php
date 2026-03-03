@@ -65,6 +65,21 @@ class DofusdbEffectMappingControllerTest extends TestCase
         );
     }
 
+    public function test_admin_index_accepts_effect_id_query_param(): void
+    {
+        $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
+
+        $response = $this->actingAs($admin)->get(route('admin.dofusdb-effect-mappings.index', [
+            'effect_id' => 96,
+        ]));
+
+        $response->assertOk();
+        $response->assertInertia(fn ($page) => $page
+            ->component('Admin/dofusdb-effect-mappings/Index')
+            ->where('effectIdFilter', '96')
+        );
+    }
+
     public function test_admin_can_store_mapping(): void
     {
         $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);

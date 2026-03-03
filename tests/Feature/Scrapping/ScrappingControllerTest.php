@@ -6,6 +6,7 @@ use App\Models\User;
 use App\Models\Entity\Breed;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Http;
+use Tests\SeedsScrappingPipeline;
 use Tests\TestCase;
 
 /**
@@ -15,13 +16,14 @@ use Tests\TestCase;
  */
 class ScrappingControllerTest extends TestCase
 {
-    use RefreshDatabase;
+    use RefreshDatabase, SeedsScrappingPipeline;
 
     private User $admin;
 
     protected function setUp(): void
     {
         parent::setUp();
+        $this->seedScrappingPipeline();
         $this->admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
     }
 

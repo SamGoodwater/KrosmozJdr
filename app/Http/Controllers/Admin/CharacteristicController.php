@@ -514,7 +514,7 @@ class CharacteristicController extends Controller
     }
 
     /**
-     * Met à jour les fichiers seeders à partir de la BDD (php artisan db:export-seeder-data).
+     * Met à jour les fichiers seeders à partir de la BDD (php artisan scrapping:seeders:export).
      * Réservé admin / super_admin. Désactivé en production (commande guardée).
      */
     public function runExportSeederData(Request $request): JsonResponse
@@ -523,7 +523,7 @@ class CharacteristicController extends Controller
             return response()->json(['success' => false, 'message' => 'Accès non autorisé.'], 403);
         }
         try {
-            $exitCode = Artisan::call('db:export-seeder-data');
+            $exitCode = Artisan::call('scrapping:seeders:export');
             if ($exitCode !== 0) {
                 $out = trim(Artisan::output());
                 return response()->json([

@@ -175,9 +175,13 @@ Rend dynamiquement une section selon son type :
 
 ### Templates de sections
 
-Chaque template est un composant Vue dans `resources/js/Pages/Organismes/section/templates/` :
+Chaque template est un dossier dans `resources/js/Pages/Organismes/section/templates/<nom>/` contenant :
 
-#### `SectionText.vue`
+- **config.js** : configuration (name, value, parameters, defaultSettings, defaultData).
+- **SectionXxxRead.vue** / **SectionXxxEdit.vue** : affichage et édition du contenu.
+- **SectionXxxParams.vue** (optionnel) : vue dédiée pour les paramètres du template. Si présente, elle est utilisée dans le modal de paramètres (SectionParamsModal) et à la création (CreateSectionModal, étape 2). Le composant reçoit `section`, `settings` et émet `update:settings`. Les templates sans `paramsComponent` utilisent le formulaire générique construit à partir de `config.parameters`.
+
+#### `SectionText`
 - **Description** : Section de texte riche avec éditeur WYSIWYG
 - **Édition** : Directe via modal de paramètres (WYSIWYG)
 - **Paramètres** :
@@ -210,12 +214,13 @@ Chaque template est un composant Vue dans `resources/js/Pages/Organismes/section
   - `settings.autoplay` : Lecture automatique (booléen)
   - `settings.controls` : Afficher les contrôles (booléen)
 
-#### `SectionEntityTable.vue`
-- **Description** : Affiche un tableau d'entités avec filtres et options de tri
-- **Édition** : Modal de paramètres
-- **Paramètres** :
-  - `settings.entity` : Type d'entité à afficher
-  - `settings.filters` : Filtres à appliquer (JSON)
+#### `SectionEntityTable` (template `entity_table`)
+- **Description** : Affiche un tableau d'entités chargé depuis l'API tables (`api.tables.{entity}`), avec filtres optionnels. Les données sont récupérées côté client (format `entities`).
+- **Édition** : Modal de paramètres ou formulaire inline (type d'entité, filtres JSON, limite).
+- **Paramètres** (stockés dans `settings`) :
+  - `settings.entity` : Type d'entité (ex. `spells`, `monsters`, `campaigns`, `shops`, etc.).
+  - `settings.filters` : Filtres passés à l'API (objet JSON ou chaîne JSON), ex. `{"level": "50", "state": "playable"}`.
+  - `settings.limit` : Nombre max d'entrées affichées (1–500).
 
 ### Composants d'édition
 

@@ -132,7 +132,7 @@
   {
     "path": "100- Done/TESTS_SCRAPPING_COMMANDE_CHAINE_COMPLETE.md",
     "title": "Tests chaîne complète de la commande scrapping",
-    "description": "**Livré** : réécriture et extension des tests de la commande `php artisan scrapping` pour couvrir toute la chaîne (API → conversion → validation → intégration BDD) pour toutes les entités et les principaux paramètres."
+    "description": "**Livré** : réécriture et extension des tests de la commande `php artisan scrapping:run` (alias legacy : `scrapping`) pour couvrir toute la chaîne (API → conversion → validation → intégration BDD) pour toutes les entités et les principaux paramètres."
   },
   {
     "path": "100- Done/VERIFICATION_CONFIDENTIALITE_GITHUB.md",
@@ -250,6 +250,11 @@
     "description": "- [Convention des agents](./AGENTS_CONVENTION.md)"
   },
   {
+    "path": "20-Content/AUDIT_PAGES_SECTIONS_BETA.md",
+    "title": "Audit du système Pages et Sections — Version bêta",
+    "description": "**Date :** 2025-03-03"
+  },
+  {
     "path": "20-Content/CONTENT_OVERVIEW.md",
     "title": "Présentation du contenu — Sommaire",
     "description": "Ce document a été découpé pour plus de clarté et de synthèse. Retrouvez chaque section dans les fichiers dédiés :"
@@ -268,11 +273,6 @@
     "path": "20-Content/PAGES_SECTIONS_ARCHITECTURE.md",
     "title": "Architecture Sections et Pages - Flux de données",
     "description": "L'architecture des sections et pages suit un flux de données structuré qui sépare clairement les responsabilités :"
-  },
-  {
-    "path": "20-Content/AUDIT_PAGES_SECTIONS_BETA.md",
-    "title": "Audit du système Pages et Sections — Version bêta",
-    "description": "Vérification du système pages/sections pour une mise en ligne bêta : fonctionnel, cohérent, optimisé et abouti."
   },
   {
     "path": "20-Content/PAGES_SECTIONS_COMPOSABLES.md",
@@ -1192,7 +1192,7 @@
   {
     "path": "50-Fonctionnalités/Characteristics-DB/SEEDERS_DONNEES.md",
     "title": "Données des seeders de caractéristiques",
-    "description": "Ce document décrit le contenu des fichiers de données des seeders (`database/seeders/data/characteristics.php`, `characteristic_creature.php`, `characteristic_object.php`, `characteristic_spell.php`) et le lien avec les autres modules (équipements, effets de sorts). Pour **régénérer** ces fichiers à partir de la BDD : `php artisan db:export-seeder-data` (option `--characteristics`). Fichiers produits : `database/seeders/data/characteristics.php`, `characteristic_creature.php`, `characteristic_object.php`, `characteristic_spell.php`. Voir [ARCHITECTURE_SOUS_SERVICES.md](./ARCHITECTURE_SOUS_SERVICES.md) § 6."
+    "description": "Ce document décrit le contenu des fichiers de données des seeders (`database/seeders/data/characteristics.php`, `characteristic_creature.php`, `characteristic_object.php`, `characteristic_spell.php`) et le lien avec les autres modules (équipements, effets de sorts). Pour **régénérer** ces fichiers à partir de la BDD : `php artisan scrapping:seeders:export` (option `--characteristics`, alias legacy : `db:export-seeder-data`). Fichiers produits : `database/seeders/data/characteristics.php`, `characteristic_creature.php`, `characteristic_object.php`, `characteristic_spell.php`. Voir [ARCHITECTURE_SOUS_SERVICES.md](./ARCHITECTURE_SOUS_SERVICES.md) § 6."
   },
   {
     "path": "50-Fonctionnalités/Characteristics-DB/SOURCE_SAMPLES_KROSMOZ.md",
@@ -1265,6 +1265,11 @@
     "description": "Plan exécutable, phase par phase. Chaque phase se termine par un point de contrôle (tests / vérifications). Référence : [ESTIMATION_RENOMMAGE_CLASSE_EN_BREED.md](./ESTIMATION_RENOMMAGE_CLASSE_EN_BREED.md)."
   },
   {
+    "path": "50-Fonctionnalités/Scrapping/ANALYSE_GLOBALE_REFONTE_SCRAPPING.md",
+    "title": "Analyse globale — Refonte du service de scrapping",
+    "description": "**Date :** 2026-03-03"
+  },
+  {
     "path": "50-Fonctionnalités/Scrapping/ANALYSE_ZONES_RISQUE_NAMMING.md",
     "title": "Analyse des zones à risque de nommage (propriétés)",
     "description": "**Objectif** : Repérer tous les endroits du projet où des **noms de propriétés** sont définis ou utilisés, afin d’uniformiser les conventions et d’éviter les erreurs de mapping liées au naming."
@@ -1335,6 +1340,11 @@
     "description": "Ce document résume la vision, les points importants, l’architecture cible et les questions / difficultés anticipées. Il complète l’[audit (AUDIT_ETAT_DES_LIEUX.md)](./AUDIT_ETAT_DES_LIEUX.md)."
   },
   {
+    "path": "50-Fonctionnalités/Scrapping/BESOINS_CARACTERISTIQUES_ET_MAPPING.md",
+    "title": "Besoins — Caractéristiques et mapping DofusDB ↔ KrosmozJDR",
+    "description": "**Date :** 2026-03-03"
+  },
+  {
     "path": "50-Fonctionnalités/Scrapping/CARACTERISTIQUES_EFFETS_PAR_ACTION.md",
     "title": "Caractéristiques des effets de sort — Classification par action",
     "description": "**Contexte** : Ce document formalise le récapitulatif des besoins pour la conversion des effets de sorts DofusDB → KrosmozJDR : mapping des effectId, propriétés déjà converties, et **tri des caractéristiques par action** (quelle conversion appliquer selon l’action)."
@@ -1348,6 +1358,11 @@
     "path": "50-Fonctionnalités/Scrapping/DIVISION_TACHES_SCRAPPING.md",
     "title": "Division des tâches — Scrapping (backend / services / frontend)",
     "description": "Ce document décrit la répartition des responsabilités entre **contrôleurs** (API), **services** (métier) et **frontend** (UI) pour le module scrapping, et signale les incohérences éventuelles."
+  },
+  {
+    "path": "50-Fonctionnalités/Scrapping/DOFUSDB_API_SPELLS_REFERENCE.md",
+    "title": "Référence API DofusDB — Sorts et spell-levels",
+    "description": "Ce document décrit la **structure réelle** des réponses API DofusDB pour les sorts, telle que découverte sur les endpoints publics. Il sert de référence pour le mapping (chemins `from.path`) dans `spell.json` et le seeder `scrapping_entity_mappings`."
   },
   {
     "path": "50-Fonctionnalités/Scrapping/DOFUSDB_EFFECTS_CONVERSION.md",
@@ -1368,6 +1383,11 @@
     "path": "50-Fonctionnalités/Scrapping/EFFECTS_SYSTEM.md",
     "title": "Système d’effets (DofusDB → KrosmozJDR)",
     "description": "DofusDB modélise les effets selon les mécaniques de Dofus (ciblage, triggers, zones, etc.)."
+  },
+  {
+    "path": "50-Fonctionnalités/Scrapping/ETAT_DES_LIEUX_REFONTE_SCRAPPING.md",
+    "title": "État des lieux détaillé — Service de scrapping",
+    "description": "**Date :** 2026-03-03"
   },
   {
     "path": "50-Fonctionnalités/Scrapping/ETAT_LIEUX_AFFICHAGE_SCRAPPING.md",
@@ -1438,6 +1458,21 @@
     "path": "50-Fonctionnalités/Scrapping/PLAN_OPTIMISATION_SCRAPPING_UI.md",
     "title": "Plan d’optimisation — UI Scrapping (existant)",
     "description": "**Contexte :** Idées issues des échanges sur l’affichage scrapping et l’enregistrement. Ce plan vise à **optimiser l’existant** sans refonte complète."
+  },
+  {
+    "path": "50-Fonctionnalités/Scrapping/PLAN_REFONTE_SCRAPPING.md",
+    "title": "Plan de refonte — Service de scrapping",
+    "description": "**Date :** 2026-03-03"
+  },
+  {
+    "path": "50-Fonctionnalités/Scrapping/SIMPLIFICATIONS_SCRAPPING.md",
+    "title": "Simplifications possibles — Service de scrapping",
+    "description": "Constat sur les sources de complexité (sources de vérité multiples, FormatterApplicator fourre-tout, double pipeline) et pistes de simplification par priorité."
+  },
+  {
+    "path": "50-Fonctionnalités/Scrapping/PIPELINE_ET_MAPPING.md",
+    "title": "Pipeline de scrapping et où modifier le mapping",
+    "description": "Schéma du pipeline (Collecte → Conversion → Validation → Intégration), où modifier chaque type de règle, glossaire (mapping rule, from_path, characteristic_key, etc.)."
   },
   {
     "path": "50-Fonctionnalités/Scrapping/PLAN_REFONTE_UI_SCRAPPING.md",
@@ -1562,7 +1597,7 @@
   {
     "path": "50-Fonctionnalités/Spell-Effects/ZONE_NOTATION.md",
     "title": "Notation des zones d’effet (damier)",
-    "description": "Les zones d’impact des sorts, pièges et glyphes sont décrites par la propriété **`area`** sur le modèle **Effect**. La notation est une chaîne lisible et sans ambiguïté pour un damier (grille hexagonale ou carrée selon le jeu)."
+    "description": "Les zones d’impact des sorts, pièges et glyphes sont décrites par la propriété **`area`** sur le modèle **Effect**. La notation reprend le système **triple paramètre** de DofusDB : **forme (shape) + taille min (param1) + taille max (param2)**."
   },
   {
     "path": "50-Fonctionnalités/VISION_UI_ADMIN_MAPPING_ET_CARACTERISTIQUES.md",

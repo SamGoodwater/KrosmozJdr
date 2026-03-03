@@ -10,11 +10,11 @@ use Illuminate\Support\Facades\File;
 use Tests\TestCase;
 
 /**
- * Tests de la commande db:export-seeder-data (export, backup ZIP, nettoyage des anciens backups).
+ * Tests de la commande scrapping:seeders:export (export, backup ZIP, nettoyage des anciens backups).
  *
- * @see App\Console\Commands\ExportSeederDataCommand
+ * @see App\Console\Commands\ScrappingSeedersExportCommand
  */
-class ExportSeederDataCommandTest extends TestCase
+class ScrappingSeedersExportCommandTest extends TestCase
 {
     use RefreshDatabase;
 

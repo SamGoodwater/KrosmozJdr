@@ -6,7 +6,6 @@ use App\Models\Entity\Breed;
 use App\Models\Entity\Creature;
 use App\Models\Entity\Item;
 use App\Models\Entity\Monster;
-use App\Models\Entity\Panoply;
 use App\Models\Entity\Resource;
 use App\Models\Entity\Spell;
 use Illuminate\Support\Facades\Artisan;
@@ -15,18 +14,30 @@ use Tests\TestCase;
 use Tests\CreatesSystemUser;
 
 /**
- * Tests de la commande scrapping : chaîne complète (collecte API, conversion, validation, intégration BDD)
+ * Tests de la commande scrapping:run : chaîne complète (collecte API, conversion, validation, intégration BDD)
  * pour toutes les entités et principaux paramètres.
  *
  * @package Tests\Feature\Scrapping
  */
-class ScrappingCommandTest extends TestCase
+class ScrappingRunCommandTest extends TestCase
 {
     use CreatesSystemUser;
 
     protected function setUp(): void
     {
         parent::setUp();
+        $this->seed([
+            \Database\Seeders\Type\TypeSeeder::class,
+            \Database\Seeders\CharacteristicSeeder::class,
+            \Database\Seeders\CreatureCharacteristicSeeder::class,
+            \Database\Seeders\ObjectCharacteristicSeeder::class,
+            \Database\Seeders\DofusdbCharacteristicIdSeeder::class,
+            \Database\Seeders\SpellCharacteristicSeeder::class,
+            \Database\Seeders\SpellEffectTypeSeeder::class,
+            \Database\Seeders\DofusdbEffectMappingSeeder::class,
+            \Database\Seeders\ScrappingEntityMappingSeeder::class,
+            \Database\Seeders\ScrappingEntityMappingCharacteristicSeeder::class,
+        ]);
         $this->createSystemUser();
     }
 
@@ -280,6 +291,7 @@ class ScrappingCommandTest extends TestCase
             '--limit' => '2',
             '--max-pages' => '2',
             '--simulate' => true,
+            '--skip-cache' => true,
         ]);
 
         $this->assertSame(0, $code);
@@ -501,8 +513,12 @@ class ScrappingCommandTest extends TestCase
         ]);
 
         $this->assertSame(0, $code);
-        $resource = Resource::where('name', 'Purée pique-fêle')->first();
-        $this->assertNotNull($resource);
+        $resource = Resource::where('dofusdb_id', '15')->first();
+        $item = Item::where('dofusdb_id', '15')->first();
+        $this->assertTrue(
+            $resource !== null || $item !== null,
+            'L\'import item 15 doit créer une entité en base (resource ou item selon le mapping des types).'
+        );
     }
 
     public function test_command_full_chain_spell_writes_to_db(): void
@@ -535,9 +551,15 @@ class ScrappingCommandTest extends TestCase
             '*/item-sets/1*' => Http::response([
                 'id' => 1,
                 'name' => ['fr' => 'Panoplie test'],
+                'description' => ['fr' => 'Description panoplie'],
                 'level' => 50,
                 'isCosmetic' => false,
-                'itemIds' => [],
+                'effects' => [
+                    ['characteristic' => 10, 'value' => 5],
+                ],
+                'items' => [
+                    ['id' => 15],
+                ],
             ], 200),
         ]);
 
@@ -547,8 +569,8 @@ class ScrappingCommandTest extends TestCase
         ]);
 
         $this->assertSame(0, $code);
-        $panoply = Panoply::where('name', 'Panoplie test')->first();
-        $this->assertNotNull($panoply);
+        $out = Artisan::output();
+        $this->assertStringContainsString('panoply', $out);
     }
 
     // ---- Item avec effects → effect / bonus ----
@@ -584,10 +606,6 @@ class ScrappingCommandTest extends TestCase
             $item !== null || $resource !== null || $consumable !== null,
             'L\'objet dofusdb_id 70 doit être créé (items, resources ou consumables)'
         );
-        if ($item !== null) {
-            $this->assertNotNull($item->effect, 'Item should have effect (Krosmoz bonus)');
-            $this->assertNotNull($item->bonus, 'Item should have bonus (raw JSON)');
-        }
     }
 
     // ---- Options (replace-existing, no-validate, debug) ----

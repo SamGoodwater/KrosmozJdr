@@ -29,8 +29,10 @@ class DofusdbEffectMappingController extends Controller
     /**
      * Page liste des mappings + formulaire création/édition.
      */
-    public function index(): InertiaResponse
+    public function index(Request $request): InertiaResponse
     {
+        $effectIdFilter = trim((string) $request->query('effect_id', ''));
+
         $mappings = DofusdbEffectMapping::orderBy('dofusdb_effect_id')->get()
             ->map(fn (DofusdbEffectMapping $m) => $this->formatMappingForResponse($m))
             ->values()
@@ -55,6 +57,7 @@ class DofusdbEffectMappingController extends Controller
             ->all();
 
         return Inertia::render('Admin/dofusdb-effect-mappings/Index', [
+            'effectIdFilter' => $effectIdFilter,
             'mappings' => $mappings,
             'subEffectsForSelect' => $subEffectsForSelect,
             'characteristicSourceOptions' => $characteristicSourceOptions,

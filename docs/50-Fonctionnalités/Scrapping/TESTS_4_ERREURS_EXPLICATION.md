@@ -36,7 +36,7 @@ La conversion (formules / limites) ou le **CharacteristicLimitService** en envir
 
 ---
 
-## 3. `ScrappingCommandTest::test_command_replace_existing_updates_record`
+## 3. `ScrappingRunCommandTest::test_command_replace_existing_updates_record`
 
 **Erreur :** `Expected: Bouftou - To contain: mis à jour` (ligne 631 : le nom de la créature ne contient pas « mis à jour »).
 

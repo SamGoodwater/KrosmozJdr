@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 /**
- * consumable_types – Consommables (superTypes 6, 70). Régénéré par : php artisan db:export-seeder-data --item-types
+ * consumable_types – Consommables (superTypes 6, 70). Régénéré par : php artisan scrapping:seeders:export --item-types
  */
 
 return array (

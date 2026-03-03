@@ -1,6 +1,6 @@
 # Données des seeders de caractéristiques
 
-Ce document décrit le contenu des fichiers de données des seeders (`database/seeders/data/characteristics.php`, `characteristic_creature.php`, `characteristic_object.php`, `characteristic_spell.php`) et le lien avec les autres modules (équipements, effets de sorts). Pour **régénérer** ces fichiers à partir de la BDD : `php artisan db:export-seeder-data` (option `--characteristics`). Fichiers produits : `database/seeders/data/characteristics.php`, `characteristic_creature.php`, `characteristic_object.php`, `characteristic_spell.php`. Voir [ARCHITECTURE_SOUS_SERVICES.md](./ARCHITECTURE_SOUS_SERVICES.md) § 6.
+Ce document décrit le contenu des fichiers de données des seeders (`database/seeders/data/characteristics.php`, `characteristic_creature.php`, `characteristic_object.php`, `characteristic_spell.php`) et le lien avec les autres modules (équipements, effets de sorts). Pour **régénérer** ces fichiers à partir de la BDD : `php artisan scrapping:seeders:export` (option `--characteristics`, alias legacy : `db:export-seeder-data`). Fichiers produits : `database/seeders/data/characteristics.php`, `characteristic_creature.php`, `characteristic_object.php`, `characteristic_spell.php`. Voir [ARCHITECTURE_SOUS_SERVICES.md](./ARCHITECTURE_SOUS_SERVICES.md) § 6.
 
 ---
 

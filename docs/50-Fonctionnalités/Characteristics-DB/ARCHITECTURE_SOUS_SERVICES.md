@@ -131,7 +131,7 @@ Les **propriétés de conversion** (champ `conversion_formula` au format fixe / 
 Pour que l’initialisation du projet dispose déjà de caractéristiques bien définies, la base de données peut être **exportée** vers des fichiers PHP utilisables par les seeders.
 
 **Commande :**  
-`php artisan db:export-seeder-data`  
+`php artisan scrapping:seeders:export` (alias legacy : `db:export-seeder-data`)  
 Options : `--characteristics` (exporte uniquement les caractéristiques), `--formulas` (formules de conversion dans les tables de groupe), etc.
 
 **Fichiers générés (pour les caractéristiques) :**  

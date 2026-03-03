@@ -9,6 +9,7 @@ use Database\Seeders\CreatureCharacteristicSeeder;
 use Database\Seeders\ObjectCharacteristicSeeder;
 use Database\Seeders\SpellCharacteristicSeeder;
 use Database\Seeders\SpellEffectTypeSeeder;
+use Database\Seeders\DofusdbCharacteristicIdSeeder;
 use Database\Seeders\ScrappingEntityMappingSeeder;
 use Database\Seeders\ScrappingEntityMappingCharacteristicSeeder;
 
@@ -27,6 +28,7 @@ class DatabaseSeeder extends Seeder
             CharacteristicSeeder::class,
             CreatureCharacteristicSeeder::class,
             ObjectCharacteristicSeeder::class,
+            DofusdbCharacteristicIdSeeder::class,
             SpellCharacteristicSeeder::class,
             SpellEffectTypeSeeder::class,
             ScrappingEntityMappingSeeder::class,

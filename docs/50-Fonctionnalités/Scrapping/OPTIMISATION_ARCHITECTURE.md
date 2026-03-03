@@ -53,7 +53,7 @@ app/Services/Scrapping/
 ## 3. Collecte
 
 - **Service unique** : `Core\Collect\CollectService`.
-- **Usage** : orchestrateur (import, preview), recherche (ScrappingSearchController), batch (ScrappingCommand).
+- **Usage** : orchestrateur (import, preview), recherche (ScrappingSearchController), batch (ScrappingRunCommand).
 - **Comportement** : requêtes pilotées par la config (endpoints, pagination), encodage Feathers (tableaux en `key[]=v`) compatible DofusDB, filtres (id, idMin/Max, ids, name, raceId→race, typeId, levelMin/Max, etc.).
 - **HTTP** : `DofusDbClient` injecté (cache, retry) ; fallback `Http::get()` si absent.
 - **API** : `fetchOne(source, entity, id)`, `fetchMany(source, entity, filters, options)`, `fetchManyResult(source, entity, filters, options)` (retourne items + meta skip/pages/returned).

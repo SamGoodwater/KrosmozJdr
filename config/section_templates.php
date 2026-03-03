@@ -52,7 +52,11 @@ return [
         ],
     ],
     'entity_table' => [
-        'settings' => [],
+        'settings' => [
+            'entity' => 'spells',
+            'filters' => [],
+            'limit' => 50,
+        ],
         'data' => [
             'entity' => null,
             'filters' => [],

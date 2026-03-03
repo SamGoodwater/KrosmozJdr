@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 /**
  * Mappings effectId DofusDB → [sub_effect_slug, characteristic_source, characteristic_key].
- * Généré par : php artisan dofusdb:fetch-effect-mappings --output=database/seeders/data/dofusdb_effect_mappings_suggested.php
+ * Généré par : php artisan scrapping:effects:map --output=database/seeders/data/dofusdb_effect_mappings_suggested.php
  * Utilisé par DofusdbEffectMappingSeeder si le fichier existe.
  * Commentaires : description FR (API) + si source=characteristic, id carac. DofusDB (pour faire le lien vers characteristic_key).
  */

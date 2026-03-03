@@ -16,14 +16,15 @@ use Illuminate\Support\Facades\Artisan;
  *
  * @see docs/50-Fonctionnalités/Scrapping/PLAN_TYPES_ITEM_BDD_SEEDER.md
  */
-class SeedItemTypesFromApiCommand extends Command
+class ScrappingTypesSeedCommand extends Command
 {
-    protected $signature = 'scrapping:seed-item-types
+    protected $signature = 'scrapping:types:seed
                             {--lang=fr : Langue du catalogue DofusDB}
                             {--skip-cache : Ignorer le cache du catalogue}
                             {--no-files : Ne pas écrire les fichiers data (seulement exécuter les seeders sur les fichiers existants)}';
 
     protected $description = 'Remplit les types item (ressource / consommable / équipement) depuis l’API DofusDB puis les seeders';
+    protected $aliases = ['scrapping:seed-item-types'];
 
     public function handle(): int
     {
@@ -33,18 +34,32 @@ class SeedItemTypesFromApiCommand extends Command
 
         if (!$noFiles) {
             $this->info('Étape 1/2 : extraction depuis l’API DofusDB (item-types, toutes les pages)…');
-            $this->call(ExtractItemTypesCommand::class, [
+            $extractCode = $this->call(ScrappingTypesExtractCommand::class, [
                 '--lang' => $lang,
-                '--skip-cache' => true, // toujours refaire les appels API pour avoir les 232 types
+                '--skip-cache' => $skipCache,
             ]);
+            if ($extractCode !== self::SUCCESS) {
+                $this->error('Échec de l’extraction des types item.');
+                return self::FAILURE;
+            }
         } else {
             $this->info('Étape 1/2 : ignorée (--no-files). Utilisation des fichiers data existants.');
         }
 
         $this->info('Étape 2/2 : exécution des seeders (resource_types, consumable_types, item_types)…');
-        Artisan::call('db:seed', ['--class' => 'Database\\Seeders\\Type\\ResourceTypeSeeder']);
-        Artisan::call('db:seed', ['--class' => 'Database\\Seeders\\Type\\ConsumableTypeSeeder']);
-        Artisan::call('db:seed', ['--class' => 'Database\\Seeders\\Type\\ItemTypeSeeder']);
+        $seeders = [
+            'Database\\Seeders\\Type\\ResourceTypeSeeder',
+            'Database\\Seeders\\Type\\ConsumableTypeSeeder',
+            'Database\\Seeders\\Type\\ItemTypeSeeder',
+        ];
+        foreach ($seeders as $seederClass) {
+            $code = Artisan::call('db:seed', ['--class' => $seederClass, '--force' => true]);
+            $this->output->write(Artisan::output());
+            if ($code !== 0) {
+                $this->error("Échec du seeder {$seederClass}.");
+                return self::FAILURE;
+            }
+        }
 
         $this->info('Terminé. Les types sont à jour depuis l’API DofusDB.');
 

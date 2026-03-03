@@ -5,25 +5,32 @@ namespace App\Services\Scrapping\Core\Conversion;
 use App\Models\Type\ResourceType;
 use App\Services\Characteristic\Conversion\DofusConversionService;
 use App\Services\Characteristic\Getter\CharacteristicGetterService;
+use App\Services\Scrapping\Core\Conversion\SpellEffects\SpellEffectsConversionService;
 
 /**
- * Applique les formatters purs utilisés par la conversion.
+ * Applique les formatters utilisés par la conversion.
  *
- * Formatters supportés : toString, pickLang, toInt, clampInt, mapSizeToKrosmoz,
- * storeScrappedImage, truncate, clampToCharacteristic (limites BDD par entité).
- * Si DofusConversionService est injecté : dofusdb_level, dofusdb_life, dofusdb_attribute, dofusdb_ini.
- * Si la règle de mapping (context.mappingRule) a characteristic_key, dofusdb_attribute utilise
- * convertByCharacteristicKey pour formules/limites BDD.
+ * Formatters génériques : toString, pickLang, toInt, clampInt, toJson, truncate, etc.
+ * Formatters Dofus (si DofusConversionService injecté) : dofusdb_level, dofusdb_life, dofusdb_attribute, dofusdb_ini.
+ * Bloc métier : itemEffectsToKrosmozBonus → ItemEffectsToBonusConverter ; recipe → RecipeToResourceRecipeConverter.
  */
 final class FormatterApplicator
 {
     /** @var array<string, callable(mixed, array, array, array): mixed> */
     private array $registry = [];
 
+    private readonly ?ItemEffectsToBonusConverter $itemEffectsConverter;
+
+    private readonly RecipeToResourceRecipeConverter $recipeConverter;
+
     public function __construct(
         private readonly ?DofusConversionService $conversionService = null,
-        private readonly ?CharacteristicGetterService $getter = null
+        private readonly ?CharacteristicGetterService $getter = null,
+        ?ItemEffectsToBonusConverter $itemEffectsConverter = null,
+        ?RecipeToResourceRecipeConverter $recipeConverter = null
     ) {
+        $this->itemEffectsConverter = $itemEffectsConverter ?? ($getter !== null ? new ItemEffectsToBonusConverter($getter, $conversionService) : null);
+        $this->recipeConverter = $recipeConverter ?? new RecipeToResourceRecipeConverter();
         $this->registry = $this->buildRegistry();
     }
 
@@ -72,12 +79,25 @@ final class FormatterApplicator
             'defaultRarityByLevel' => function (mixed $v, array $a, array $r, array $c): int {
                 return $this->defaultRarityByLevel($v, $r, (string) ($c['entityType'] ?? 'item'));
             },
-            'recipeIdsToResourceRecipe' => fn (mixed $v): array => $this->recipeIdsToResourceRecipe($v),
-            'recipeToResourceRecipe' => function (mixed $v, array $a, array $r): array {
-                return $this->recipeToResourceRecipe($v, $r);
-            },
+            'recipeIdsToResourceRecipe' => fn (mixed $v): array => $this->recipeConverter->convertFromRecipeIds($v),
+            'recipeToResourceRecipe' => fn (mixed $v, array $a, array $r): array => $this->recipeConverter->convert($v, $r),
             'itemEffectsToKrosmozBonus' => function (mixed $v, array $a, array $r, array $c): ?string {
-                return $this->itemEffectsToKrosmozBonus($v, $r, $c);
+                return $this->itemEffectsConverter !== null ? $this->itemEffectsConverter->convert($v, $r, $c) : null;
+            },
+            'zoneDescrToNotation' => function (mixed $v): ?string {
+                if (is_array($v)) {
+                    $zone = $v;
+                } elseif (is_numeric($v)) {
+                    $i = (int) $v;
+                    // Entier seul : si c'est un effectId (typ. 1–5000), ne pas l'utiliser comme zone (mapping erroné).
+                    if ($i >= 1 && $i <= 5000 && !isset($v['shape'])) {
+                        return null;
+                    }
+                    $zone = ['shape' => $i];
+                } else {
+                    $zone = null;
+                }
+                return $zone !== null ? SpellEffectsConversionService::zoneDescrToNotation($zone) : null;
             },
         ];
 
@@ -105,78 +125,7 @@ final class FormatterApplicator
     }
 
     /**
-     * Convertit item.effects[] DofusDB (characteristic id + value) en JSON bonus Krosmoz
-     * (stats : intel, strong, etc.) pour la colonne effect.
-     * Utilise dofusdb_characteristic_to_krosmoz.json pour mapper id → characteristic_key.
-     *
-     * @param mixed $value item.effects (array)
-     * @param array<string, mixed> $raw item brut
-     * @param array<string, mixed> $context Contexte (convertedOutput, raw) pour les fonctions de conversion
-     * @return string|null JSON encodé ou null
-     */
-    private function itemEffectsToKrosmozBonus(mixed $value, array $raw, array $context = []): ?string
-    {
-        if (!is_array($value) || $value === []) {
-            return null;
-        }
-
-        $path = base_path('resources/scrapping/config/sources/dofusdb/dofusdb_characteristic_to_krosmoz.json');
-        if (!is_file($path)) {
-            return $this->toJson($value);
-        }
-
-        try {
-            $config = json_decode((string) file_get_contents($path), true, 512, JSON_THROW_ON_ERROR);
-        } catch (\JsonException) {
-            return $this->toJson($value);
-        }
-
-        $mapping = $config['mapping'] ?? [];
-        if (!is_array($mapping)) {
-            return $this->toJson($value);
-        }
-
-        $bonus = [];
-        foreach ($value as $effect) {
-            if (!is_array($effect)) {
-                continue;
-            }
-            $charId = isset($effect['characteristic']) ? (int) $effect['characteristic'] : null;
-            if ($charId === null) {
-                continue;
-            }
-            $charKey = $mapping[(string) $charId] ?? null;
-            if (!is_string($charKey) || $charKey === '') {
-                continue;
-            }
-            $from = isset($effect['from']) && is_numeric($effect['from']) ? (int) $effect['from'] : null;
-            $to = isset($effect['to']) && is_numeric($effect['to']) ? (int) $effect['to'] : null;
-            $val = $effect['value'] ?? $effect['min'] ?? $effect['max'] ?? null;
-            if ($val === null && $from !== null && $to !== null) {
-                $val = (int) round(($from + $to) / 2);
-            } elseif ($val === null && $to !== null) {
-                $val = $to;
-            } elseif ($val === null && $from !== null) {
-                $val = $from;
-            }
-            $val = is_numeric($val) ? (int) $val : 0;
-            $entityType = (string) ($context['entityType'] ?? 'item');
-            if ($this->conversionService !== null) {
-                $val = $this->conversionService->convertObjectAttribute($charKey, $val, $entityType, $context);
-            }
-            $shortKey = str_ends_with($charKey, '_object') ? substr($charKey, 0, -7) : $charKey;
-            $bonus[$shortKey] = ($bonus[$shortKey] ?? 0) + $val;
-        }
-
-        if ($bonus === []) {
-            return null;
-        }
-
-        return $this->toJson($bonus);
-    }
-
-    /**
-     * Encode en JSON (pour bonus panoplie, effects).
+     * Encode en JSON (pour bonus panoplie, effects, etc.).
      */
     private function toJson(mixed $value): ?string
     {
@@ -420,69 +369,4 @@ final class FormatterApplicator
         return $this->conversionService->convert('rarity_object', ['level' => $level], $entityType, (float) $fallback);
     }
 
-    /**
-     * Transforme l'objet recette DofusDB (ingredientIds + quantities) ou recipeIds en liste
-     * recipe_ingredients pour la table pivot resource_recipe.
-     * Préfère recipe (depuis /recipes?resultId=) pour avoir les quantités réelles ; sinon fallback sur recipeIds (qty 1).
-     *
-     * @return list<array{ingredient_dofusdb_id: string, quantity: int}>
-     */
-    private function recipeToResourceRecipe(mixed $value, array $raw): array
-    {
-        if (is_array($value) && isset($value['ingredientIds']) && isset($value['quantities'])) {
-            $ids = $value['ingredientIds'] ?? [];
-            $quantities = $value['quantities'] ?? [];
-            if (!is_array($ids) || !is_array($quantities)) {
-                return [];
-            }
-            $out = [];
-            foreach ($ids as $idx => $id) {
-                if (!is_numeric($id)) {
-                    continue;
-                }
-                $qty = isset($quantities[$idx]) && is_numeric($quantities[$idx])
-                    ? (int) $quantities[$idx]
-                    : 1;
-                $out[] = [
-                    'ingredient_dofusdb_id' => (string) $id,
-                    'quantity' => max(1, $qty),
-                ];
-            }
-
-            return $out;
-        }
-        $recipeIds = $raw['recipeIds'] ?? [];
-        return $this->recipeIdsToResourceRecipe(is_array($recipeIds) ? $recipeIds : []);
-    }
-
-    /**
-     * Fallback : transforme recipeIds (liste d'ids) en recipe_ingredients avec quantité 1 par id.
-     *
-     * @return list<array{ingredient_dofusdb_id: string, quantity: int}>
-     */
-    private function recipeIdsToResourceRecipe(mixed $value): array
-    {
-        if (!is_array($value)) {
-            return [];
-        }
-        $ids = [];
-        foreach ($value as $id) {
-            if (is_numeric($id)) {
-                $ids[] = (int) $id;
-            }
-        }
-        if ($ids === []) {
-            return [];
-        }
-        $byId = array_count_values($ids);
-        $out = [];
-        foreach ($byId as $dofusdbId => $quantity) {
-            $out[] = [
-                'ingredient_dofusdb_id' => (string) $dofusdbId,
-                'quantity' => (int) $quantity,
-            ];
-        }
-
-        return $out;
-    }
 }

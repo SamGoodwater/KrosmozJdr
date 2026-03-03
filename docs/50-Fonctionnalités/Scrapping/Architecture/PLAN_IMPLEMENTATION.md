@@ -16,7 +16,7 @@ Ce document décrit l’approche du scrapping : **config-driven**, CLI d’abord
 | Principe | Application |
 |----------|--------------|
 | **Config-driven** | Requêtes (endpoints, pagination, filtres) et mapping (source → cible + formatter) dans des JSON. Les formules complexes (level, life, attributs, résistances) sont déléguées à la BDD (`dofusdb_conversion_formulas`, handlers nommés). |
-| **CLI d’abord** | Tout testable en ligne de commande : `php artisan scrapping --collect=monster --id=31 [--convert] [--validate] [--integrate] [--dry-run]`. L’API et l’UI s’appuient sur les mêmes services. |
+| **CLI d’abord** | Tout testable en ligne de commande : `php artisan scrapping:run --collect=monster --id=31 [--convert] [--validate] [--integrate] [--dry-run]`. L’API et l’UI s’appuient sur les mêmes services. |
 | **Services indépendants** | Collect → Conversion → Validation → Intégration. Chaque brique a une responsabilité claire ; l’orchestrateur enchaîne sans logique métier DofusDB/KrosmozJDR. |
 
 ---

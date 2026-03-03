@@ -24,7 +24,7 @@ Le trait **HasCharacteristicValidation** expose `characteristicRules($field, $en
 
 ## 2. Export seeder : données manquantes
 
-**Commande :** `php artisan db:export-seeder-data --characteristics`  
+**Commande :** `php artisan scrapping:seeders:export --characteristics` (alias legacy : `db:export-seeder-data`)  
 **Fichiers générés :** `characteristics.php`, `characteristic_creature.php`, `characteristic_object.php`, `characteristic_spell.php`.
 
 **Manques identifiés :**
@@ -37,7 +37,7 @@ Le trait **HasCharacteristicValidation** expose `characteristicRules($field, $en
 
 **À faire :**
 - Ajouter `value_available` dans l’export des lignes `characteristic_object` et `characteristic_spell`.
-- Décider du format d’export pour la pivot `characteristic_object_item_type` (ex. un fichier `characteristic_object_item_type.php` listant les paires characteristic_key + entity + item_type_id, ou une section dans `characteristic_object.php`) et l’implémenter dans `ExportSeederDataCommand`. Adapter le seeder (ex. `ObjectCharacteristicSeeder` ou un seeder dédié) pour réimporter ces liaisons.
+- Décider du format d’export pour la pivot `characteristic_object_item_type` (ex. un fichier `characteristic_object_item_type.php` listant les paires characteristic_key + entity + item_type_id, ou une section dans `characteristic_object.php`) et l’implémenter dans `ScrappingSeedersExportCommand`. Adapter le seeder (ex. `ObjectCharacteristicSeeder` ou un seeder dédié) pour réimporter ces liaisons.
 
 ---
 
