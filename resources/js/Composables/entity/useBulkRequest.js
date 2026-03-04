@@ -15,7 +15,7 @@
  * })
  */
 
-import { useNotificationStore } from "@/Composables/store/useNotificationStore";
+import { useUxFeedback } from "@/Composables/utils/useUxFeedback";
 
 /**
  * @typedef {Object} BulkPatchJsonOptions
@@ -26,7 +26,7 @@ import { useNotificationStore } from "@/Composables/store/useNotificationStore";
  */
 
 export function useBulkRequest() {
-  const notificationStore = useNotificationStore();
+  const { notifySuccess, notifyError } = useUxFeedback();
 
   /**
    * @returns {string|null}
@@ -45,10 +45,7 @@ export function useBulkRequest() {
 
     const csrfToken = getCsrfToken();
     if (!csrfToken) {
-      notificationStore.addNotification({
-        type: "error",
-        message: "Token CSRF introuvable. Recharge la page.",
-      });
+      notifyError("Token CSRF introuvable. Recharge la page.");
       return false;
     }
 
@@ -71,10 +68,7 @@ export function useBulkRequest() {
       }
 
       if (!response.ok || !data?.success) {
-        notificationStore.addNotification({
-          type: "error",
-          message: data?.message || opts?.errorMessage || "Bulk update: erreur",
-        });
+        notifyError(data?.message || opts?.errorMessage || "Erreur lors de la mise à jour en masse.");
         return false;
       }
 
@@ -85,17 +79,11 @@ export function useBulkRequest() {
           ? `Mis à jour: ${updated}/${requested}`
           : "Mis à jour.";
 
-      notificationStore.addNotification({
-        type: "success",
-        message: opts?.successMessage || defaultSuccess,
-      });
+      notifySuccess(opts?.successMessage || defaultSuccess);
 
       return true;
     } catch (e) {
-      notificationStore.addNotification({
-        type: "error",
-        message: "Erreur bulk: " + (e?.message || "unknown"),
-      });
+      notifyError("Erreur lors de la mise à jour en masse: " + (e?.message || "unknown"));
       return false;
     }
   };

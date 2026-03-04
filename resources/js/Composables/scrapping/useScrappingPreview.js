@@ -86,13 +86,19 @@ export function useScrappingPreview(options) {
             if (itemStatusByKeyRef && !TERMINAL_STATUSES.has(statusNext[key]?.status)) {
                 statusNext[key] = { status: "converti" };
             }
-            if (item?.raw) {
-                try {
+            try {
+                const backendRelations = Array.isArray(item?.relations)
+                    ? item.relations.filter((r) => Number.isFinite(Number(r?.id)) && Number(r.id) > 0 && String(r?.type || "").trim() !== "")
+                        .map((r) => ({ type: String(r.type), id: Number(r.id) }))
+                    : [];
+                if (backendRelations.length) {
+                    relNext[key] = backendRelations;
+                } else if (item?.raw) {
                     const relations = extractRelationsFromRaw(entityType, item.raw);
                     if (relations.length) relNext[key] = relations;
-                } catch {
-                    // ignorer
                 }
+            } catch {
+                // ignorer
             }
         }
     }

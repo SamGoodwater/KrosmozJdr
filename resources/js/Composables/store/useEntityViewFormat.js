@@ -15,6 +15,7 @@ const DEFAULT_FORMAT = 'large';
 const STORAGE_PREFIX = 'entity_view_format_';
 const DEFAULT_MINIMAL_DISPLAY_MODE = 'hover';
 const STORAGE_MINIMAL_MODE_PREFIX = 'entity_view_minimal_display_mode_';
+const GLOBAL_ENTITY_KEY = 'global';
 
 /**
  * @param {string} entityType - Le type d'entité (optionnel, pour des préférences par type)
@@ -23,12 +24,14 @@ const STORAGE_MINIMAL_MODE_PREFIX = 'entity_view_minimal_display_mode_';
 export function useEntityViewFormat(entityType = 'default') {
     const storageKey = `${STORAGE_PREFIX}${entityType}`;
     const minimalModeStorageKey = `${STORAGE_MINIMAL_MODE_PREFIX}${entityType}`;
+    const globalStorageKey = `${STORAGE_PREFIX}${GLOBAL_ENTITY_KEY}`;
+    const globalMinimalModeStorageKey = `${STORAGE_MINIMAL_MODE_PREFIX}${GLOBAL_ENTITY_KEY}`;
     
-    // Charger depuis localStorage ou utiliser la valeur par défaut
-    const storedFormat = localStorage.getItem(storageKey);
+    // Charger d'abord la préférence spécifique entité, puis fallback global, puis défaut.
+    const storedFormat = localStorage.getItem(storageKey) || localStorage.getItem(globalStorageKey);
     const viewFormat = ref(storedFormat || DEFAULT_FORMAT);
 
-    const storedMinimalMode = localStorage.getItem(minimalModeStorageKey);
+    const storedMinimalMode = localStorage.getItem(minimalModeStorageKey) || localStorage.getItem(globalMinimalModeStorageKey);
     const minimalDisplayMode = ref(storedMinimalMode || DEFAULT_MINIMAL_DISPLAY_MODE);
     
     const availableFormats = [
@@ -52,6 +55,7 @@ export function useEntityViewFormat(entityType = 'default') {
         if (availableFormats.some(f => f.value === format)) {
             viewFormat.value = format;
             localStorage.setItem(storageKey, format);
+            localStorage.setItem(globalStorageKey, format);
         }
     };
 
@@ -63,16 +67,19 @@ export function useEntityViewFormat(entityType = 'default') {
         if (availableMinimalDisplayModes.some(m => m.value === mode)) {
             minimalDisplayMode.value = mode;
             localStorage.setItem(minimalModeStorageKey, mode);
+            localStorage.setItem(globalMinimalModeStorageKey, mode);
         }
     };
     
     // Sauvegarder automatiquement les changements
     watch(viewFormat, (newFormat) => {
         localStorage.setItem(storageKey, newFormat);
+        localStorage.setItem(globalStorageKey, newFormat);
     });
 
     watch(minimalDisplayMode, (newMode) => {
         localStorage.setItem(minimalModeStorageKey, newMode);
+        localStorage.setItem(globalMinimalModeStorageKey, newMode);
     });
     
     return {

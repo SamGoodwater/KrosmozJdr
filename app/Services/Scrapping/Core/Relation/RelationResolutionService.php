@@ -5,8 +5,10 @@ declare(strict_types=1);
 namespace App\Services\Scrapping\Core\Relation;
 
 use App\Models\Entity\Creature;
+use App\Models\Entity\Item;
 use App\Models\Entity\Panoply;
 use App\Models\Entity\Resource;
+use App\Models\Entity\Consumable;
 use App\Services\Scrapping\Core\Collect\CollectService;
 use App\Services\Scrapping\Core\Orchestrator\Orchestrator;
 use App\Services\Scrapping\Core\Orchestrator\OrchestratorResult;
@@ -344,6 +346,182 @@ final class RelationResolutionService
         }
 
         return ['synced' => true];
+    }
+
+    /**
+     * Résout les ingrédients de recette d'un équipement (item).
+     *
+     * @param list<array{ingredient_dofusdb_id?: string, quantity?: int}> $recipeIngredients
+     * @param array{integrate?: bool, dry_run?: bool, force_update?: bool, validate?: bool, skip_cache?: bool} $options
+     * @return array{imported: list<int>, synced: bool}
+     */
+    public function resolveAndSyncItemRecipe(array $recipeIngredients, int $itemId, array $options = []): array
+    {
+        $item = Item::find($itemId);
+        if ($item === null) {
+            return ['imported' => [], 'synced' => false];
+        }
+        if ($recipeIngredients === []) {
+            if (!(bool) ($options['dry_run'] ?? false)) {
+                $item->resources()->sync([]);
+            }
+
+            return ['imported' => [], 'synced' => true];
+        }
+
+        $dryRun = (bool) ($options['dry_run'] ?? false);
+        $runOptions = [
+            'convert' => true,
+            'validate' => ($options['validate'] ?? true) !== false,
+            'integrate' => ($options['integrate'] ?? true) && !$dryRun,
+            'dry_run' => $dryRun,
+            'force_update' => (bool) ($options['force_update'] ?? false),
+            'include_relations' => false,
+            'skip_cache' => (bool) ($options['skip_cache'] ?? false),
+        ];
+
+        $importedIds = [];
+        $dofusdbIdsToResolve = array_unique(array_filter(array_map(
+            static fn (array $row): string => (string) ($row['ingredient_dofusdb_id'] ?? ''),
+            $recipeIngredients
+        )));
+
+        foreach ($dofusdbIdsToResolve as $dofusdbId) {
+            if ($dofusdbId === '') {
+                continue;
+            }
+            $existing = Resource::where('dofusdb_id', $dofusdbId)->first();
+            if ($existing !== null) {
+                continue;
+            }
+            $result = $this->orchestrator->runOne('dofusdb', 'item', (int) $dofusdbId, $runOptions);
+            if ($result->isSuccess()) {
+                $intResult = $result->getIntegrationResult();
+                if ($intResult !== null && $intResult->isSuccess()) {
+                    $data = $intResult->getData();
+                    if (($data['table'] ?? '') === 'resources') {
+                        $id = $intResult->getPrimaryId();
+                        if ($id !== null) {
+                            $importedIds[] = $id;
+                        }
+                    }
+                }
+            } else {
+                Log::warning('RelationResolutionService: import ingrédient recette (item) échoué', [
+                    'dofusdb_id' => $dofusdbId,
+                    'message' => $result->getMessage(),
+                ]);
+            }
+        }
+
+        $resourceIdsByDofusdbId = Resource::whereIn(
+            'dofusdb_id',
+            array_values($dofusdbIdsToResolve)
+        )->pluck('id', 'dofusdb_id')->all();
+
+        $sync = [];
+        foreach ($recipeIngredients as $row) {
+            $dofusdbId = (string) ($row['ingredient_dofusdb_id'] ?? '');
+            $ingredientResourceId = $resourceIdsByDofusdbId[$dofusdbId] ?? null;
+            if ($ingredientResourceId !== null) {
+                $qty = (int) ($row['quantity'] ?? 1);
+                $sync[$ingredientResourceId] = ['quantity' => (string) max(1, $qty)];
+            }
+        }
+
+        if (!$dryRun) {
+            $item->resources()->sync($sync);
+        }
+
+        return ['imported' => $importedIds, 'synced' => true];
+    }
+
+    /**
+     * Résout les ingrédients de recette d'un consommable.
+     *
+     * @param list<array{ingredient_dofusdb_id?: string, quantity?: int}> $recipeIngredients
+     * @param array{integrate?: bool, dry_run?: bool, force_update?: bool, validate?: bool, skip_cache?: bool} $options
+     * @return array{imported: list<int>, synced: bool}
+     */
+    public function resolveAndSyncConsumableRecipe(array $recipeIngredients, int $consumableId, array $options = []): array
+    {
+        $consumable = Consumable::find($consumableId);
+        if ($consumable === null) {
+            return ['imported' => [], 'synced' => false];
+        }
+        if ($recipeIngredients === []) {
+            if (!(bool) ($options['dry_run'] ?? false)) {
+                $consumable->resources()->sync([]);
+            }
+
+            return ['imported' => [], 'synced' => true];
+        }
+
+        $dryRun = (bool) ($options['dry_run'] ?? false);
+        $runOptions = [
+            'convert' => true,
+            'validate' => ($options['validate'] ?? true) !== false,
+            'integrate' => ($options['integrate'] ?? true) && !$dryRun,
+            'dry_run' => $dryRun,
+            'force_update' => (bool) ($options['force_update'] ?? false),
+            'include_relations' => false,
+            'skip_cache' => (bool) ($options['skip_cache'] ?? false),
+        ];
+
+        $importedIds = [];
+        $dofusdbIdsToResolve = array_unique(array_filter(array_map(
+            static fn (array $row): string => (string) ($row['ingredient_dofusdb_id'] ?? ''),
+            $recipeIngredients
+        )));
+
+        foreach ($dofusdbIdsToResolve as $dofusdbId) {
+            if ($dofusdbId === '') {
+                continue;
+            }
+            $existing = Resource::where('dofusdb_id', $dofusdbId)->first();
+            if ($existing !== null) {
+                continue;
+            }
+            $result = $this->orchestrator->runOne('dofusdb', 'item', (int) $dofusdbId, $runOptions);
+            if ($result->isSuccess()) {
+                $intResult = $result->getIntegrationResult();
+                if ($intResult !== null && $intResult->isSuccess()) {
+                    $data = $intResult->getData();
+                    if (($data['table'] ?? '') === 'resources') {
+                        $id = $intResult->getPrimaryId();
+                        if ($id !== null) {
+                            $importedIds[] = $id;
+                        }
+                    }
+                }
+            } else {
+                Log::warning('RelationResolutionService: import ingrédient recette (consumable) échoué', [
+                    'dofusdb_id' => $dofusdbId,
+                    'message' => $result->getMessage(),
+                ]);
+            }
+        }
+
+        $resourceIdsByDofusdbId = Resource::whereIn(
+            'dofusdb_id',
+            array_values($dofusdbIdsToResolve)
+        )->pluck('id', 'dofusdb_id')->all();
+
+        $sync = [];
+        foreach ($recipeIngredients as $row) {
+            $dofusdbId = (string) ($row['ingredient_dofusdb_id'] ?? '');
+            $ingredientResourceId = $resourceIdsByDofusdbId[$dofusdbId] ?? null;
+            if ($ingredientResourceId !== null) {
+                $qty = (int) ($row['quantity'] ?? 1);
+                $sync[$ingredientResourceId] = ['quantity' => (string) max(1, $qty)];
+            }
+        }
+
+        if (!$dryRun) {
+            $consumable->resources()->sync($sync);
+        }
+
+        return ['imported' => $importedIds, 'synced' => true];
     }
 
     /**

@@ -11,8 +11,7 @@
  * await downloadPdf([entityId1, entityId2]); // Télécharge un PDF pour plusieurs entités
  */
 import { ref } from 'vue';
-import { router } from '@inertiajs/vue3';
-import { useNotificationStore } from '@/Composables/store/useNotificationStore';
+import { useUxFeedback } from '@/Composables/utils/useUxFeedback';
 
 /**
  * @param {string} entityType - Le type d'entité (item, spell, monster, etc.)
@@ -20,14 +19,14 @@ import { useNotificationStore } from '@/Composables/store/useNotificationStore';
  */
 export function useDownloadPdf(entityType) {
     const isDownloading = ref(false);
-    const { success, error } = useNotificationStore();
+    const { notifySuccess, notifyError } = useUxFeedback();
 
     /**
      * Télécharge un PDF pour une ou plusieurs entités
      * @param {number|number[]} entityIdOrIds - ID unique ou tableau d'IDs
      * @param {string} filename - Nom de fichier optionnel
      */
-    const downloadPdf = async (entityIdOrIds, filename = null) => {
+    const downloadPdf = async (entityIdOrIds) => {
         if (isDownloading.value) {
             return;
         }
@@ -69,10 +68,10 @@ export function useDownloadPdf(entityType) {
                 window.open(url, '_blank');
             }
 
-            success('Téléchargement du PDF en cours...', { duration: 3000, placement: 'top-right' });
+            notifySuccess('Téléchargement du PDF en cours...');
         } catch (err) {
             console.error('Erreur lors du téléchargement du PDF:', err);
-            error('Erreur lors du téléchargement du PDF', { duration: 5000, placement: 'top-right' });
+            notifyError('Erreur lors du téléchargement du PDF', { duration: 5000 });
         } finally {
             // Délai pour permettre au téléchargement de commencer
             setTimeout(() => {

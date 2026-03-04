@@ -97,10 +97,30 @@ const emit = defineEmits(["action"]);
 
 const showIcon = computed(() => props.display === "icon-only" || props.display === "icon-text");
 const showText = computed(() => props.display === "icon-text");
+const promotedActionKeys = ["quick-view", "view", "edit"];
 
 const handleAction = (actionKey) => {
   emit("action", actionKey);
 };
+
+const promotedActions = computed(() => {
+  // UX: sur cartes compactes/minimales (size xs), remonter 1-2 actions principales.
+  if (props.size !== "xs") return [];
+  const source = Array.isArray(props.actions) ? props.actions : [];
+  const selected = [];
+  for (const key of promotedActionKeys) {
+    const action = source.find((a) => a?.key === key);
+    if (action) selected.push(action);
+    if (selected.length >= 2) break;
+  }
+  return selected;
+});
+
+const menuActions = computed(() => {
+  if (!promotedActions.value.length) return props.actions;
+  const promotedKeys = new Set(promotedActions.value.map((a) => a.key));
+  return (props.actions || []).filter((a) => !promotedKeys.has(a?.key));
+});
 
 /**
  * Retourne les groupes d'actions dans l'ordre, avec les actions non groupées à la fin.
@@ -123,9 +143,10 @@ const orderedGroups = computed(() => {
  */
 const getGroupActions = (groupKey) => {
   if (groupKey === "all") {
-    return props.actions;
+    return menuActions.value;
   }
-  return props.groupedActions[groupKey] || [];
+  const promotedKeys = new Set(promotedActions.value.map((a) => a.key));
+  return (props.groupedActions[groupKey] || []).filter((a) => !promotedKeys.has(a?.key));
 };
 
 /**
@@ -149,16 +170,30 @@ const showEntityName = computed(() => Boolean(entityName.value));
 <template>
   <Dropdown :placement="placement" :close-on-content-click="true">
     <template #trigger>
-      <Btn
-        :size="size"
-        :variant="triggerVariant"
-        :color="color"
-        :class="iconOnlyTrigger ? 'btn-square' : ''"
-        :title="iconOnlyTrigger ? 'Actions' : null"
-      >
-        <Icon source="fa-solid fa-ellipsis-vertical" :size="size" />
-        <span v-if="!iconOnlyTrigger" class="ml-2">Actions</span>
-      </Btn>
+      <div class="flex items-center gap-1">
+        <Btn
+          v-for="action in promotedActions"
+          :key="action.key"
+          :size="size"
+          variant="ghost"
+          :color="color"
+          class="btn-square"
+          :title="action.tooltip || action.label"
+          @click.stop="handleAction(action.key)"
+        >
+          <Icon :source="action.icon" :size="size" />
+        </Btn>
+        <Btn
+          :size="size"
+          :variant="triggerVariant"
+          :color="color"
+          :class="iconOnlyTrigger ? 'btn-square' : ''"
+          :title="iconOnlyTrigger ? 'Actions' : null"
+        >
+          <Icon source="fa-solid fa-ellipsis-vertical" :size="size" />
+          <span v-if="!iconOnlyTrigger" class="ml-2">Actions</span>
+        </Btn>
+      </div>
     </template>
     <template #content>
       <ul class="menu bg-base-100 rounded-box z-[1] w-56 p-2 shadow-lg border border-base-300">

@@ -10,7 +10,10 @@ use App\Models\Entity\Monster;
 use App\Models\Entity\Resource;
 use App\Models\Entity\Item;
 use App\Models\Entity\Panoply;
+use App\Models\Entity\Consumable;
 use App\Models\Type\ItemType;
+use App\Models\Type\ResourceType;
+use App\Models\Type\ConsumableType;
 use App\Services\Scrapping\Core\Orchestrator\Orchestrator;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Http;
@@ -411,6 +414,391 @@ class ScrappingRelationsTest extends TestCase
         $this->assertNotNull(Item::where('dofusdb_id', '2001')->first());
         $this->assertNotNull(Item::where('dofusdb_id', '2002')->first());
         $this->assertDatabaseHas('item_panoply', ['panoply_id' => $panoply->id]);
+    }
+
+    /**
+     * Test que l'import d'un équipement avec recette crée les relations item_resource.
+     */
+    public function test_import_equipment_with_recipe_creates_item_resource_relations(): void
+    {
+        $this->createSystemUser();
+        ItemType::query()->firstOrCreate(
+            ['dofusdb_type_id' => 6],
+            ['name' => 'Type item test', 'state' => 'playable', 'read_level' => 0, 'write_level' => 2]
+        );
+        ResourceType::query()->firstOrCreate(
+            ['dofusdb_type_id' => 51],
+            ['name' => 'Type resource test', 'state' => 'playable', 'read_level' => 0, 'write_level' => 2]
+        );
+
+        $equipmentRaw = [
+            'id' => 3001,
+            'typeId' => 6,
+            'name' => ['fr' => 'Equipement recette test'],
+            'description' => ['fr' => 'Description equipement'],
+            'level' => 10,
+            'price' => 100,
+            'effects' => [],
+            'recipe' => [
+                'ingredientIds' => [274],
+                'quantities' => [2],
+            ],
+        ];
+        $ingredientResourceRaw = [
+            'id' => 274,
+            'typeId' => 51,
+            'name' => ['fr' => 'Ingrédient ressource test'],
+            'description' => ['fr' => 'Description ressource'],
+            'level' => 1,
+            'price' => 10,
+            'effects' => [],
+        ];
+
+        Http::fake(function ($request) use ($ingredientResourceRaw) {
+            $url = $request->url();
+            if (str_contains($url, '/items/274')) {
+                return Http::response($ingredientResourceRaw, 200);
+            }
+
+            return Http::response([], 404);
+        });
+
+        $r = $this->orchestrator->runOneWithRaw('dofusdb', 'item', $equipmentRaw, [
+            'convert' => true,
+            'validate' => true,
+            'integrate' => true,
+            'include_relations' => true,
+            'skip_cache' => true,
+        ]);
+        $result = $this->resultToArray($r);
+
+        $this->assertTrue($result['success'], $result['message'] ?? '');
+        $item = Item::where('dofusdb_id', '3001')->first();
+        $this->assertNotNull($item);
+        $resource = Resource::where('dofusdb_id', '274')->first();
+        $this->assertNotNull($resource);
+        $this->assertSame(1, $item->resources()->count());
+        $this->assertDatabaseHas('item_resource', [
+            'item_id' => $item->id,
+            'resource_id' => $resource->id,
+        ]);
+    }
+
+    /**
+     * Test qu'une panoplie importe aussi les recettes de ses équipements (item_resource).
+     */
+    public function test_import_panoply_resolves_equipment_recipe_relations(): void
+    {
+        $this->createSystemUser();
+        ItemType::query()->firstOrCreate(
+            ['dofusdb_type_id' => 6],
+            ['name' => 'Type item test', 'state' => 'playable', 'read_level' => 0, 'write_level' => 2]
+        );
+        ResourceType::query()->firstOrCreate(
+            ['dofusdb_type_id' => 51],
+            ['name' => 'Type resource test', 'state' => 'playable', 'read_level' => 0, 'write_level' => 2]
+        );
+
+        $panoplyRaw = [
+            'id' => 4100,
+            'name' => ['fr' => 'Panoplie recette test'],
+            'description' => ['fr' => 'Panoplie avec équipement craftable'],
+            'effects' => [],
+            'items' => [
+                ['id' => 4101],
+            ],
+            'isCosmetic' => false,
+        ];
+        $equipmentRaw = [
+            'id' => 4101,
+            'typeId' => 6,
+            'name' => ['fr' => 'Equipement panoplie recette'],
+            'description' => ['fr' => 'Description'],
+            'level' => 20,
+            'price' => 1000,
+            'effects' => [],
+            'recipe' => [
+                'ingredientIds' => [4102],
+                'quantities' => [3],
+            ],
+        ];
+        $ingredientRaw = [
+            'id' => 4102,
+            'typeId' => 51,
+            'name' => ['fr' => 'Ressource ingrédient panoplie'],
+            'description' => ['fr' => 'Description ressource'],
+            'level' => 1,
+            'price' => 5,
+            'effects' => [],
+        ];
+
+        Http::fake(function ($request) use ($panoplyRaw, $equipmentRaw, $ingredientRaw) {
+            $url = $request->url();
+            if (str_contains($url, '/item-sets/4100')) {
+                return Http::response($panoplyRaw, 200);
+            }
+            if (str_contains($url, '/items/4101')) {
+                return Http::response($equipmentRaw, 200);
+            }
+            if (str_contains($url, '/items/4102')) {
+                return Http::response($ingredientRaw, 200);
+            }
+
+            return Http::response([], 404);
+        });
+
+        $r = $this->orchestrator->runOne('dofusdb', 'panoply', 4100, [
+            'integrate' => true,
+            'dry_run' => false,
+            'force_update' => false,
+            'include_relations' => true,
+            'skip_cache' => true,
+        ]);
+        $result = $this->resultToArray($r);
+
+        $this->assertTrue($result['success'], $result['message'] ?? '');
+
+        $panoply = Panoply::where('dofusdb_id', '4100')->first();
+        $this->assertNotNull($panoply);
+        $item = Item::where('dofusdb_id', '4101')->first();
+        $this->assertNotNull($item);
+        $resource = Resource::where('dofusdb_id', '4102')->first();
+        $this->assertNotNull($resource);
+
+        $this->assertSame(1, $panoply->items()->count());
+        $this->assertSame(1, $item->resources()->count());
+        $this->assertDatabaseHas('item_resource', [
+            'item_id' => $item->id,
+            'resource_id' => $resource->id,
+        ]);
+    }
+
+    /**
+     * Test que l'import d'une ressource craftable crée des relations resource_recipe (resource -> resources).
+     */
+    public function test_import_resource_with_recipe_creates_resource_recipe_relations(): void
+    {
+        $this->createSystemUser();
+        ResourceType::query()->firstOrCreate(
+            ['dofusdb_type_id' => 51],
+            ['name' => 'Type resource test', 'state' => 'playable', 'read_level' => 0, 'write_level' => 2]
+        );
+
+        $resourceRaw = [
+            'id' => 6101,
+            'typeId' => 51,
+            'name' => ['fr' => 'Ressource craftable'],
+            'description' => ['fr' => 'Description ressource craftable'],
+            'level' => 10,
+            'price' => 100,
+            'effects' => [],
+            'recipe' => [
+                'ingredientIds' => [6102],
+                'quantities' => [4],
+            ],
+        ];
+        $ingredientRaw = [
+            'id' => 6102,
+            'typeId' => 51,
+            'name' => ['fr' => 'Ressource ingrédient'],
+            'description' => ['fr' => 'Description ingrédient'],
+            'level' => 1,
+            'price' => 10,
+            'effects' => [],
+        ];
+
+        Http::fake(function ($request) use ($ingredientRaw) {
+            $url = $request->url();
+            if (str_contains($url, '/items/6102')) {
+                return Http::response($ingredientRaw, 200);
+            }
+
+            return Http::response([], 404);
+        });
+
+        $r = $this->orchestrator->runOneWithRaw('dofusdb', 'item', $resourceRaw, [
+            'convert' => true,
+            'validate' => true,
+            'integrate' => true,
+            'include_relations' => true,
+            'skip_cache' => true,
+        ]);
+        $result = $this->resultToArray($r);
+
+        $this->assertTrue($result['success'], $result['message'] ?? '');
+        $resource = Resource::where('dofusdb_id', '6101')->first();
+        $this->assertNotNull($resource);
+        $ingredient = Resource::where('dofusdb_id', '6102')->first();
+        $this->assertNotNull($ingredient);
+        $this->assertSame(1, $resource->recipeIngredients()->count());
+        $this->assertDatabaseHas('resource_recipe', [
+            'resource_id' => $resource->id,
+            'ingredient_resource_id' => $ingredient->id,
+        ]);
+    }
+
+    /**
+     * Test que l'import d'un consommable craftable crée des relations consumable_resource.
+     */
+    public function test_import_consumable_with_recipe_creates_consumable_resource_relations(): void
+    {
+        $this->createSystemUser();
+        ConsumableType::query()->firstOrCreate(
+            ['dofusdb_type_id' => 12],
+            ['name' => 'Type consumable test', 'state' => 'playable', 'read_level' => 0, 'write_level' => 2]
+        );
+        ResourceType::query()->firstOrCreate(
+            ['dofusdb_type_id' => 51],
+            ['name' => 'Type resource test', 'state' => 'playable', 'read_level' => 0, 'write_level' => 2]
+        );
+
+        $consumableRaw = [
+            'id' => 6201,
+            'typeId' => 12,
+            'name' => ['fr' => 'Consommable craftable'],
+            'description' => ['fr' => 'Description consommable craftable'],
+            'level' => 20,
+            'price' => 50,
+            'effects' => [],
+            'recipe' => [
+                'ingredientIds' => [6202],
+                'quantities' => [2],
+            ],
+        ];
+        $ingredientRaw = [
+            'id' => 6202,
+            'typeId' => 51,
+            'name' => ['fr' => 'Ressource ingrédient consommable'],
+            'description' => ['fr' => 'Description ingrédient'],
+            'level' => 1,
+            'price' => 5,
+            'effects' => [],
+        ];
+
+        Http::fake(function ($request) use ($ingredientRaw) {
+            $url = $request->url();
+            if (str_contains($url, '/items/6202')) {
+                return Http::response($ingredientRaw, 200);
+            }
+
+            return Http::response([], 404);
+        });
+
+        $r = $this->orchestrator->runOneWithRaw('dofusdb', 'item', $consumableRaw, [
+            'convert' => true,
+            'validate' => true,
+            'integrate' => true,
+            'include_relations' => true,
+            'skip_cache' => true,
+        ]);
+        $result = $this->resultToArray($r);
+
+        $this->assertTrue($result['success'], $result['message'] ?? '');
+        $consumable = Consumable::where('dofusdb_id', '6201')->first();
+        $this->assertNotNull($consumable);
+        $resource = Resource::where('dofusdb_id', '6202')->first();
+        $this->assertNotNull($resource);
+        $this->assertSame(1, $consumable->resources()->count());
+        $this->assertDatabaseHas('consumable_resource', [
+            'consumable_id' => $consumable->id,
+            'resource_id' => $resource->id,
+        ]);
+    }
+
+    /**
+     * Test de boucle monster <-> spell (invocation) : pas de boucle infinie, relations créées.
+     */
+    public function test_monster_spell_invocation_loop_is_handled_and_relations_synced(): void
+    {
+        ItemType::query()->firstOrCreate(
+            ['dofusdb_type_id' => 6],
+            ['name' => 'Type item test', 'state' => 'playable', 'read_level' => 0, 'write_level' => 2]
+        );
+        ResourceType::query()->firstOrCreate(
+            ['dofusdb_type_id' => 51],
+            ['name' => 'Type resource test', 'state' => 'playable', 'read_level' => 0, 'write_level' => 2]
+        );
+
+        $monsterRaw = [
+            'id' => 7001,
+            'name' => ['fr' => 'Monstre boucle'],
+            'description' => ['fr' => 'Monstre qui invoque'],
+            'life' => 50,
+            'pa' => 3,
+            'pm' => 3,
+            'spells' => [7002],
+            'drops' => [
+                ['id' => 7003, 'quantity' => 1],
+            ],
+        ];
+        $spellRaw = [
+            'id' => 7002,
+            'name' => ['fr' => 'Sort invocation boucle'],
+            'description' => ['fr' => 'Invoque le même monstre'],
+            'apCost' => 3,
+            'range' => 1,
+            'minRange' => 0,
+            'maxCastPerTurn' => 1,
+            'castTestLos' => true,
+            'isMagic' => false,
+            'elementId' => 0,
+            'categoryId' => 0,
+            'powerful' => 0,
+            'summon' => ['id' => 7001, 'name' => ['fr' => 'Monstre boucle']],
+        ];
+        $ingredientDropRaw = [
+            'id' => 7003,
+            'typeId' => 51,
+            'name' => ['fr' => 'Drop boucle'],
+            'description' => ['fr' => 'Drop ressource'],
+            'level' => 1,
+            'price' => 1,
+            'effects' => [],
+        ];
+
+        Http::fake(function ($request) use ($monsterRaw, $spellRaw, $ingredientDropRaw) {
+            $url = $request->url();
+            if (str_contains($url, '/spells/7002')) {
+                return Http::response($spellRaw, 200);
+            }
+            if (str_contains($url, '/spell-levels')) {
+                return Http::response(['data' => []], 200);
+            }
+            if (str_contains($url, '/monsters/7001')) {
+                return Http::response($monsterRaw, 200);
+            }
+            if (str_contains($url, '/items/7003')) {
+                return Http::response($ingredientDropRaw, 200);
+            }
+
+            return Http::response([], 404);
+        });
+
+        $r = $this->orchestrator->runOneWithRaw('dofusdb', 'monster', $monsterRaw, [
+            'convert' => true,
+            'validate' => true,
+            'integrate' => true,
+            'include_relations' => true,
+            'skip_cache' => true,
+        ]);
+        $result = $this->resultToArray($r);
+        $this->assertTrue($result['success'], $result['message'] ?? '');
+
+        $monster = Monster::where('dofusdb_id', '7001')->first();
+        $this->assertNotNull($monster);
+        $creature = Creature::find($monster->creature_id);
+        $this->assertNotNull($creature);
+        $spell = Spell::where('dofusdb_id', '7002')->first();
+        $this->assertNotNull($spell);
+
+        $this->assertDatabaseHas('creature_spell', [
+            'creature_id' => $creature->id,
+            'spell_id' => $spell->id,
+        ]);
+        $this->assertDatabaseHas('spell_invocation', [
+            'spell_id' => $spell->id,
+            'monster_id' => $monster->id,
+        ]);
     }
 }
 

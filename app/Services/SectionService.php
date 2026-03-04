@@ -268,6 +268,7 @@ class SectionService
     public static function getDisplayableSections(Page $page, ?User $user = null): Collection
     {
         return Section::where('page_id', $page->id)
+            ->with('media')
             ->displayable($user)
             ->orderBy('order')
             ->get();
@@ -299,6 +300,7 @@ class SectionService
         // Sans filtre de visibilité ni d'état, car l'utilisateur doit pouvoir voir toutes les sections pour les éditer
         if ($user && $user->can('update', $page)) {
             return Section::where('page_id', $page->id)
+                ->with('media')
                 ->orderBy('order')
                 ->get();
         }

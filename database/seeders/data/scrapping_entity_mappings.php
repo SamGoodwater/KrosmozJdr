@@ -660,6 +660,18 @@ return array (
         'target_field' => 'recipe_ingredients',
         'sort_order' => 0,
       ),
+      1 => 
+      array (
+        'target_model' => 'consumables',
+        'target_field' => 'recipe_ingredients',
+        'sort_order' => 1,
+      ),
+      2 => 
+      array (
+        'target_model' => 'items',
+        'target_field' => 'recipe_ingredients',
+        'sort_order' => 2,
+      ),
     ),
   ),
   17 => 

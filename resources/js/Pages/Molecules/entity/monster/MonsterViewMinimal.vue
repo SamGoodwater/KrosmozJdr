@@ -184,7 +184,8 @@ const handleAction = async (actionKey) => {
 </script>
 
 <template>
-    <div 
+    <div
+        data-cy="entity-minimal-card"
         class="relative rounded-lg border border-base-300 transition-all duration-300 overflow-hidden"
         :class="{ 
             'bg-base-200 shadow-lg': isHovered,
@@ -204,7 +205,7 @@ const handleAction = async (actionKey) => {
         <div class="p-3">
             <EntityViewHeader mode="minimal">
                 <template #media>
-                    <Icon source="fa-solid fa-dragon" :alt="monster.creature?.name || 'Monstre'" size="sm" class="flex-shrink-0" />
+                    <Icon source="fa-solid fa-dragon" :alt="monster.creature?.name || 'Monstre'" size="sm" class="shrink-0" />
                 </template>
 
                 <template #title>
@@ -242,12 +243,14 @@ const handleAction = async (actionKey) => {
             </EntityViewHeader>
 
             <!-- Contenu supplémentaire au hover -->
-            <div 
-                v-if="isHovered" 
+            <div
+                v-if="isHovered"
+                data-cy="entity-minimal-expanded"
                 class="mt-2 pt-2 border-t border-base-300 space-y-2 text-xs text-primary-300 animate-fade-in">
                 <div
                     v-for="key in expandedFields"
                     :key="key"
+                    :data-field-key="key"
                     class="flex items-start gap-2"
                 >
                     <Tooltip
@@ -258,7 +261,7 @@ const handleAction = async (actionKey) => {
                             <Icon
                                 :source="getFieldIcon(key)"
                                 size="xs"
-                                class="text-primary-400 flex-shrink-0 mt-0.5"
+                                class="text-primary-400 shrink-0 mt-0.5"
                                 :style="getFieldIconStyle(key)"
                             />
                             <div class="flex-1 min-w-0">

@@ -165,6 +165,7 @@ class ItemEntityTypeFilterService
             if ($typeMode === self::TYPE_MODE_ALLOWED) {
                 $allowed = $this->getAllowedTypeIdsFromRegistry($entity);
                 if (!empty($allowed)) {
+                    $allowed = $this->disambiguateTypeIdsForEntity($entity, $allowed);
                     return in_array($typeId, $allowed, true);
                 }
                 return true;
@@ -198,7 +199,8 @@ class ItemEntityTypeFilterService
         if ($typeMode === self::TYPE_MODE_ALLOWED) {
             $allowed = $this->getAllowedTypeIdsFromRegistry('resource');
             if (!empty($allowed)) {
-                return ['typeIds' => $allowed];
+                $allowed = $this->disambiguateTypeIdsForEntity('resource', $allowed);
+                return !empty($allowed) ? ['typeIds' => $allowed] : [];
             }
         }
 
@@ -213,11 +215,43 @@ class ItemEntityTypeFilterService
         if ($typeMode === self::TYPE_MODE_ALLOWED) {
             $allowed = $this->getAllowedTypeIdsFromRegistry('consumable');
             if (!empty($allowed)) {
-                return ['typeIds' => $allowed];
+                $allowed = $this->disambiguateTypeIdsForEntity('consumable', $allowed);
+                return !empty($allowed) ? ['typeIds' => $allowed] : [];
             }
         }
 
         return [];
+    }
+
+    /**
+     * Supprime les ambiguïtés de typeId entre catégories.
+     *
+     * Priorité métier alignée avec l'intégration:
+     * equipment > consumable > resource.
+     *
+     * @param array<int,int> $typeIds
+     * @return array<int,int>
+     */
+    private function disambiguateTypeIdsForEntity(string $entity, array $typeIds): array
+    {
+        $entity = strtolower($entity);
+        $typeIds = array_values(array_unique(array_map('intval', $typeIds)));
+        if ($typeIds === []) {
+            return [];
+        }
+
+        $equipmentIds = $this->getTypeIdsFromRegistry('equipment');
+        $consumableIds = $this->getTypeIdsFromRegistry('consumable');
+
+        if ($entity === 'resource') {
+            return array_values(array_diff($typeIds, $equipmentIds, $consumableIds));
+        }
+
+        if ($entity === 'consumable') {
+            return array_values(array_diff($typeIds, $equipmentIds));
+        }
+
+        return $typeIds;
     }
 
     /**

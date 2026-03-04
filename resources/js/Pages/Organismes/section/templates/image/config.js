@@ -2,8 +2,8 @@
  * Configuration du template Image
  */
 export default {
-  name: 'Image',
-  description: 'Affiche une image unique avec légende optionnelle. Permet d\'uploader et de configurer l\'affichage d\'une image.',
+  name: 'Média',
+  description: 'Affiche un média (image ou PDF) avec légende optionnelle. Permet l\'upload direct ou l\'usage d\'une URL.',
   icon: 'fa-solid fa-image',
   value: 'image',
   supportsAutoSave: true, // Auto-save activé pour les modifications de données

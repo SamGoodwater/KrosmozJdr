@@ -65,6 +65,17 @@ const isInteractiveTarget = (event) => {
     return Boolean(el.closest('a,button,input,select,textarea,[role="button"],[data-no-row-select]'));
 };
 
+const handleRowKeydown = (event) => {
+    if (isInteractiveTarget(event)) return;
+    if (event.key === "Enter" || event.key === " ") {
+        event.preventDefault();
+        emit("row-click", props.row);
+    }
+    if (event.key === "Escape") {
+        closeContextMenu();
+    }
+};
+
 // Menu contextuel (clic droit)
 const contextMenuVisible = ref(false);
 const contextMenuPosition = ref({ x: 0, y: 0 });
@@ -179,10 +190,12 @@ const handleAction = (actionKey, entity) => {
 
 <template>
     <tr
-        class="hover:bg-base-200 transition-colors"
+        class="hover:bg-base-200 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60"
         :class="isSelected ? selectedBgClass : null"
+        tabindex="0"
         @click="(e) => { if (!isInteractiveTarget(e)) emit('row-click', row); }"
         @dblclick="(e) => { if (!isInteractiveTarget(e)) emit('row-dblclick', row); }"
+        @keydown="handleRowKeydown"
         @contextmenu="handleContextMenu"
     >
         <td v-if="showSelection" class="w-8 relative">

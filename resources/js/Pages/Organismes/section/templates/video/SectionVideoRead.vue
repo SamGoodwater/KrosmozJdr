@@ -13,7 +13,7 @@ const props = defineProps({
   settings: { type: Object, default: () => ({}) }
 });
 
-const videoUrl = computed(() => props.data?.url || '');
+const videoUrl = computed(() => props.data?.src || props.data?.url || '');
 const caption = computed(() => props.data?.caption || '');
 </script>
 

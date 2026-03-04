@@ -8,7 +8,7 @@
  * const { copyToClipboard } = useCopyToClipboard();
  * await copyToClipboard('https://example.com', 'URL copiée !');
  */
-import { useNotificationStore } from '@/Composables/store/useNotificationStore';
+import { useUxFeedback } from '@/Composables/utils/useUxFeedback';
 
 /**
  * Copie du texte dans le presse-papier et affiche une notification
@@ -17,7 +17,7 @@ import { useNotificationStore } from '@/Composables/store/useNotificationStore';
  * @returns {Promise<boolean>} True si la copie a réussi
  */
 export function useCopyToClipboard() {
-    const { success, error } = useNotificationStore();
+    const { notifySuccess, notifyError } = useUxFeedback();
 
     const copyToClipboard = async (text, successMessage = 'Copié dans le presse-papier') => {
         try {
@@ -45,21 +45,13 @@ export function useCopyToClipboard() {
                 }
             }
 
-            // Afficher une notification de succès
-            success(successMessage, {
-                duration: 3000,
-                placement: 'top-right'
-            });
+            notifySuccess(successMessage);
 
             return true;
         } catch (error) {
             console.error('Erreur lors de la copie dans le presse-papier:', error);
             
-            // Afficher une notification d'erreur
-            error('Erreur lors de la copie dans le presse-papier', {
-                duration: 3000,
-                placement: 'top-right'
-            });
+            notifyError('Erreur lors de la copie dans le presse-papier');
 
             return false;
         }

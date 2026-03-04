@@ -39,13 +39,13 @@
     { "key": "resource_type_id", "from": { "path": "typeId" }, "to": [{ "model": "resources", "field": "resource_type_id" }], "formatters": [{ "name": "resolveResourceTypeId", "args": {} }] },
     { "key": "weight", "from": { "path": "realWeight" }, "to": [{ "model": "resources", "field": "weight" }], "formatters": [{ "name": "nullableInt", "args": {} }] },
     { "key": "rarity", "from": { "path": "rarity" }, "to": [{ "model": "resources", "field": "rarity" }, { "model": "consumables", "field": "rarity" }, { "model": "items", "field": "rarity" }], "formatters": [{ "name": "defaultRarityByLevel", "args": {} }] },
-    { "key": "recipe_ingredients", "from": { "path": "recipe" }, "to": [{ "model": "resources", "field": "recipe_ingredients" }], "formatters": [{ "name": "recipeToResourceRecipe", "args": {} }] },
+    { "key": "recipe_ingredients", "from": { "path": "recipe" }, "to": [{ "model": "resources", "field": "recipe_ingredients" }, { "model": "consumables", "field": "recipe_ingredients" }, { "model": "items", "field": "recipe_ingredients" }], "formatters": [{ "name": "recipeToResourceRecipe", "args": {} }] },
     { "key": "effect", "from": { "path": "effects" }, "to": [{ "model": "resources", "field": "effect" }, { "model": "consumables", "field": "effect" }, { "model": "items", "field": "effect" }], "formatters": [{ "name": "itemEffectsToKrosmozBonus", "args": {} }] },
     { "key": "bonus", "from": { "path": "effects" }, "to": [{ "model": "items", "field": "bonus" }], "formatters": [{ "name": "toJson", "args": {} }] }
   ],
   "_mappingUnusedDocumentation": [
     { "dofusdbPath": "effects", "explanation": "Détail par effet : mappé globalement en effect (bonus Krosmoz) et bonus (JSON brut) ; pas de mapping champ par champ." },
-    { "dofusdbPath": "recipe", "explanation": "Structure complète de recette : mappée en recipe_ingredients pour les ressources ; champs secondaires non exposés." },
+    { "dofusdbPath": "recipe", "explanation": "Structure complète de recette : mappée en recipe_ingredients pour resources/consumables/items ; champs secondaires non exposés." },
     { "dofusdbPath": "itemSetId", "explanation": "Set d’objets Dofus ; non utilisé dans Krosmoz." },
     { "dofusdbPath": "criteria", "explanation": "Critères d’obtention ; non utilisés." },
     { "dofusdbPath": "possibleEffects", "explanation": "Effets possibles (aléatoires) ; non mappés." }

@@ -23,6 +23,7 @@
         "test:ui": "vitest --ui",
         "test:run": "vitest run",
         "test:coverage": "vitest run --coverage",
+        "test:e2e:minimal-order": "cypress run --spec \"cypress/e2e/entity/minimal-hover-order.cy.js\"",
         "lint": "eslint resources/js/Pages/Organismes/section resources/js/Pages/Pages/page resources/js/Utils/security resources/js/Composables/pages resources/js/Pages/Molecules/header/LoggedHeaderContainer.vue resources/js/Pages/Molecules/data-display/EntityTable.vue resources/js/Pages/Atoms/data-input/DateCore.vue"
     },
     "devDependencies": {
@@ -39,6 +40,7 @@
         "axios": "^1.13.2",
         "concurrently": "^9.2.1",
         "csso-cli": "^4.0.2",
+        "cypress": "^15.11.0",
         "daisyui": "^5.5.14",
         "eslint": "^9.39.2",
         "eslint-config-prettier": "^10.1.8",

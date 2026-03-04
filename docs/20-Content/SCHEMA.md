@@ -506,7 +506,7 @@ erDiagram
     level : varchar(255)
     description : varchar(255)
     effect : varchar(255)
-    bonus : varchar(255)
+    bonus : text
     recipe : varchar(255)
     price : varchar(255)
     rarity : int(11)
@@ -671,7 +671,7 @@ erDiagram
     dofusdb_id : varchar(255)
     name : varchar(255)
     description : varchar(255)
-    bonus : varchar(255)
+    bonus : text
     state : varchar(255)
     read_level : tinyint(4)
     write_level : tinyint(4)
@@ -730,6 +730,7 @@ erDiagram
     official_id : int(11)
     name : varchar(255)
     description : varchar(255)
+    effect : varchar(255)
     level : varchar(255)
     price : varchar(255)
     weight : varchar(255)

@@ -24,6 +24,7 @@ import TanStackTableToolbar from "@/Pages/Molecules/table/TanStackTableToolbar.v
 import TanStackTableFilters from "@/Pages/Molecules/table/TanStackTableFilters.vue";
 import TanStackTablePagination from "@/Pages/Molecules/table/TanStackTablePagination.vue";
 import { useTanStackTablePreferences } from "@/Composables/table/useTanStackTablePreferences";
+import { useUxFeedback } from "@/Composables/utils/useUxFeedback";
 import { BREAKPOINTS } from "@/Utils/Entity/Constants.js";
 import { getEntityConfig } from "@/Entities/entity-registry.js";
 import { logDev, warnDev } from "@/Utils/dev-logger";
@@ -66,6 +67,7 @@ const emit = defineEmits([
     "update:selected-ids",
     "action", // Émis pour chaque action d'entité
 ]);
+const { notifySuccess, notifyError, notifyInfo } = useUxFeedback();
 
 const columnsConfig = computed(() => Array.isArray(props.config?.columns) ? props.config.columns : []);
 
@@ -73,9 +75,29 @@ const columnsConfig = computed(() => Array.isArray(props.config?.columns) ? prop
  * UI (style global du tableau).
  * @see docs/30-UI/TANSTACK_TABLE.md
  */
-const uiSize = computed(() => String(props.config?.ui?.size || "md"));
+const configUiSize = computed(() => String(props.config?.ui?.size || "md"));
 const uiColor = computed(() => String(props.config?.ui?.color || "primary"));
 const debug = computed(() => Boolean(props.config?.ui?.debug));
+
+const tablePrefsNamespace = computed(() => String(props.config?.id || props.entityType || "table"));
+const densityStorageKey = computed(() => `tanstack_table_density_${tablePrefsNamespace.value}`);
+const presetsStorageKey = computed(() => `tanstack_table_filter_presets_${tablePrefsNamespace.value}`);
+
+const densityOptions = [
+    { value: "comfortable", label: "Confort", uiSize: "md" },
+    { value: "compact", label: "Compact", uiSize: "sm" },
+    { value: "dense", label: "Dense", uiSize: "xs" },
+];
+const densityMode = ref("comfortable");
+const uiSize = computed(() => {
+    const selected = densityOptions.find((opt) => opt.value === densityMode.value);
+    if (selected?.uiSize) return selected.uiSize;
+    return configUiSize.value;
+});
+const setDensityMode = (mode) => {
+    if (!densityOptions.some((opt) => opt.value === mode)) return;
+    densityMode.value = mode;
+};
 
 /**
  * Debug global (pratique quand la config n'est pas facile à éditer).
@@ -269,6 +291,230 @@ const prefs = useTanStackTablePreferences(props.config?.id, {
     pageSize: props.config?.features?.pagination?.perPage?.default ?? 25,
 });
 
+const filterPresets = ref([]);
+const selectedPresetId = ref("");
+const hasSavedPresets = computed(() => Array.isArray(filterPresets.value) && filterPresets.value.length > 0);
+const presetFileInput = ref(null);
+const ariaLiveMessage = ref("");
+const activePreset = computed(() => {
+    const id = String(selectedPresetId.value || "");
+    if (!id) return null;
+    return (filterPresets.value || []).find((preset) => preset.id === id) || null;
+});
+const defaultPreset = computed(() => {
+    return (filterPresets.value || []).find((preset) => preset.isDefault) || null;
+});
+const canRestoreDefaultPreset = computed(() => {
+    if (!defaultPreset.value) return false;
+    if (!activePreset.value) return true;
+    return defaultPreset.value.id !== activePreset.value.id;
+});
+const normalizeForPresetComparison = (value) => {
+    if (Array.isArray(value)) {
+        return value
+            .map((item) => normalizeForPresetComparison(item))
+            .sort((a, b) => String(a).localeCompare(String(b)));
+    }
+    if (value && typeof value === "object") {
+        const sortedKeys = Object.keys(value).sort();
+        const result = {};
+        for (const key of sortedKeys) {
+            result[key] = normalizeForPresetComparison(value[key]);
+        }
+        return result;
+    }
+    if (typeof value === "boolean") return value;
+    if (value === null || typeof value === "undefined") return "";
+    return String(value);
+};
+const isActivePresetDirty = computed(() => {
+    if (!activePreset.value) return false;
+    const presetSnapshot = {
+        searchText: String(activePreset.value.searchText || ""),
+        filters: normalizeForPresetComparison(activePreset.value.filters || {}),
+    };
+    const currentSnapshot = {
+        searchText: String(searchText.value || ""),
+        filters: normalizeForPresetComparison(activeFilters.value || {}),
+    };
+    return JSON.stringify(presetSnapshot) !== JSON.stringify(currentSnapshot);
+});
+
+const persistFilterPresets = () => {
+    try {
+        localStorage.setItem(presetsStorageKey.value, JSON.stringify(filterPresets.value || []));
+    } catch {
+        // ignore localStorage errors
+    }
+};
+
+const normalizePresetPayload = (rawPresets) => {
+    if (!Array.isArray(rawPresets)) return [];
+    return rawPresets
+        .map((preset) => {
+            const id = String(preset?.id || `${Date.now()}_${Math.random()}`);
+            const name = String(preset?.name || "").trim();
+            if (!name) return null;
+            return {
+                id,
+                name,
+                searchText: String(preset?.searchText || ""),
+                filters: typeof preset?.filters === "object" && preset?.filters !== null ? { ...preset.filters } : {},
+                createdAt: Number(preset?.createdAt || Date.now()),
+                isDefault: Boolean(preset?.isDefault),
+            };
+        })
+        .filter(Boolean)
+        .slice(0, 20);
+};
+
+const applySearchValue = (value) => {
+    const next = String(value ?? "");
+    searchText.value = next;
+    updateSearch(next);
+};
+
+const applyPresetById = (presetId) => {
+    const preset = (filterPresets.value || []).find((p) => p.id === presetId);
+    if (!preset) return;
+    setFilters(preset.filters || {});
+    applySearchValue(preset.searchText || "");
+    applyFilters();
+    selectedPresetId.value = preset.id;
+};
+
+const handlePresetSelectionChange = (event) => {
+    const presetId = String(event?.target?.value || "");
+    selectedPresetId.value = presetId;
+    if (!presetId) return;
+    applyPresetById(presetId);
+};
+
+const saveCurrentPreset = () => {
+    if (typeof window === "undefined") return;
+    const name = window.prompt("Nom du preset de filtres", "")?.trim();
+    if (!name) return;
+
+    const now = Date.now();
+    const snapshot = {
+        id: `${now}`,
+        name,
+        searchText: String(searchText.value || ""),
+        filters: { ...(activeFilters.value || {}) },
+        createdAt: now,
+        isDefault: false,
+    };
+
+    filterPresets.value = [snapshot, ...(filterPresets.value || [])].slice(0, 20);
+    selectedPresetId.value = snapshot.id;
+    persistFilterPresets();
+    notifySuccess(`Preset "${name}" sauvegardé.`);
+};
+
+const deleteSelectedPreset = () => {
+    const id = String(selectedPresetId.value || "");
+    if (!id) return;
+    const current = (filterPresets.value || []).find((p) => p.id === id);
+    filterPresets.value = (filterPresets.value || []).filter((p) => p.id !== id);
+    selectedPresetId.value = "";
+    persistFilterPresets();
+    notifyInfo(`Preset "${current?.name || id}" supprimé.`);
+};
+
+const renameSelectedPreset = () => {
+    const id = String(selectedPresetId.value || "");
+    if (!id || typeof window === "undefined") return;
+    const current = (filterPresets.value || []).find((p) => p.id === id);
+    if (!current) return;
+    const nextName = window.prompt("Nouveau nom du preset", current.name)?.trim();
+    if (!nextName) return;
+    filterPresets.value = (filterPresets.value || []).map((p) => (p.id === id ? { ...p, name: nextName } : p));
+    persistFilterPresets();
+    notifySuccess(`Preset renommé en "${nextName}".`);
+};
+
+const setSelectedPresetAsDefault = () => {
+    const id = String(selectedPresetId.value || "");
+    if (!id) return;
+    filterPresets.value = (filterPresets.value || []).map((preset) => ({
+        ...preset,
+        isDefault: preset.id === id,
+    }));
+    persistFilterPresets();
+    const current = (filterPresets.value || []).find((p) => p.id === id);
+    notifySuccess(`Preset "${current?.name || id}" défini par défaut.`);
+};
+
+const restoreDefaultPreset = () => {
+    if (!defaultPreset.value) return;
+    applyPresetById(defaultPreset.value.id);
+};
+
+const updateActivePresetInPlace = () => {
+    const active = activePreset.value;
+    if (!active) return;
+    filterPresets.value = (filterPresets.value || []).map((preset) => {
+        if (preset.id !== active.id) return preset;
+        return {
+            ...preset,
+            searchText: String(searchText.value || ""),
+            filters: { ...(activeFilters.value || {}) },
+        };
+    });
+    persistFilterPresets();
+    notifySuccess(`Preset "${active.name}" mis à jour.`);
+};
+
+const exportPresetsJson = () => {
+    if (!hasSavedPresets.value) return;
+    const payload = {
+        version: 1,
+        namespace: tablePrefsNamespace.value,
+        exportedAt: new Date().toISOString(),
+        presets: filterPresets.value,
+    };
+    const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `table-presets-${tablePrefsNamespace.value}.json`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+    notifyInfo("Presets exportés en JSON.");
+};
+
+const triggerImportPresets = () => {
+    presetFileInput.value?.click();
+};
+
+const importPresetsFromFile = async (event) => {
+    const file = event?.target?.files?.[0];
+    if (!file) return;
+    try {
+        const text = await file.text();
+        const parsed = JSON.parse(text);
+        const incoming = normalizePresetPayload(parsed?.presets || parsed);
+        if (!incoming.length) {
+            notifyError("Aucun preset valide trouvé dans le fichier importé.");
+            return;
+        }
+        const existing = Array.isArray(filterPresets.value) ? filterPresets.value : [];
+        const mergedByName = new Map();
+        for (const preset of [...existing, ...incoming]) {
+            mergedByName.set(preset.name, preset);
+        }
+        filterPresets.value = Array.from(mergedByName.values()).slice(0, 20);
+        persistFilterPresets();
+        notifySuccess(`${incoming.length} preset(s) importé(s).`);
+    } catch {
+        notifyError("Import JSON invalide.");
+    } finally {
+        if (event?.target) event.target.value = "";
+    }
+};
+
 // Utiliser directement le ref pour garantir la réactivité maximale
 // Le ref est déjà réactif et se met à jour automatiquement
 const visibleColumns = prefs.visibleColumns;
@@ -424,6 +670,15 @@ const resolvedFilterOptions = computed(() => {
     return out;
 });
 const activeFilters = ref({});
+const hasActiveFilters = computed(() => {
+    const filters = activeFilters.value || {};
+    return Object.values(filters).some((value) => {
+        if (Array.isArray(value)) return value.length > 0;
+        if (value === null || typeof value === "undefined") return false;
+        if (typeof value === "boolean") return value;
+        return String(value).trim() !== "";
+    });
+});
 let _filterDebugCount = 0;
 
 /**
@@ -500,6 +755,13 @@ const updateSearch = (value) => {
         searchText.value = v;
     }, Math.max(0, searchDebounceMs.value));
 };
+const clearSearch = () => {
+    applySearchValue("");
+};
+const clearAllQueryState = () => {
+    clearSearch();
+    resetFilters();
+};
 
 const normalize = (s) => {
     const v = String(s ?? "").toLowerCase();
@@ -532,6 +794,30 @@ const updateScreenSize = (forcedWidth = null) => {
 };
 
 onMounted(() => {
+    try {
+        const storedDensity = localStorage.getItem(densityStorageKey.value);
+        if (storedDensity && densityOptions.some((opt) => opt.value === storedDensity)) {
+            densityMode.value = storedDensity;
+        } else {
+            const byUiSize = densityOptions.find((opt) => opt.uiSize === configUiSize.value);
+            densityMode.value = byUiSize?.value || "comfortable";
+        }
+    } catch {
+        densityMode.value = "comfortable";
+    }
+
+    try {
+        const raw = localStorage.getItem(presetsStorageKey.value);
+        const parsed = raw ? JSON.parse(raw) : [];
+        filterPresets.value = normalizePresetPayload(parsed);
+    } catch {
+        filterPresets.value = [];
+    }
+    if (defaultPreset.value) {
+        applyPresetById(defaultPreset.value.id);
+        notifyInfo(`Preset par défaut appliqué : "${defaultPreset.value.name}".`);
+    }
+
     if (typeof window !== "undefined") {
         // Fallback : si ResizeObserver non supporté, on suit le resize fenêtre.
         window.addEventListener("resize", () => updateScreenSize());
@@ -550,6 +836,18 @@ onMounted(() => {
         }
     }
 });
+
+watch(
+    () => densityMode.value,
+    (mode) => {
+        try {
+            localStorage.setItem(densityStorageKey.value, String(mode));
+        } catch {
+            // ignore localStorage errors
+        }
+    },
+    { immediate: false },
+);
 
 onUnmounted(() => {
     if (typeof window !== "undefined") {
@@ -751,6 +1049,31 @@ const filteredRows = computed(() => {
         }
         return false;
     });
+});
+const emptyState = computed(() => {
+    const totalRows = Array.isArray(props.rows) ? props.rows.length : 0;
+    const hasSearch = String(searchText.value || "").trim().length > 0;
+    const hasFilters = hasActiveFilters.value;
+
+    if (totalRows === 0) {
+        return {
+            title: "Aucune donnée disponible",
+            description: "Aucun enregistrement n'est encore disponible pour cette vue.",
+            canReset: false,
+        };
+    }
+    if (hasSearch || hasFilters) {
+        return {
+            title: "Aucun résultat avec les filtres actuels",
+            description: "Essaie d'élargir la recherche ou de réinitialiser les filtres.",
+            canReset: true,
+        };
+    }
+    return {
+        title: "Aucun résultat",
+        description: "La liste ne contient aucun élément visible pour le moment.",
+        canReset: false,
+    };
 });
 
 watch(
@@ -1031,6 +1354,15 @@ const clearSelection = () => {
     emitSelection();
 };
 
+watch(
+    () => selectedCount.value,
+    (count, prev) => {
+        if (count === prev) return;
+        ariaLiveMessage.value = `${count} élément${count > 1 ? "s" : ""} sélectionné${count > 1 ? "s" : ""}.`;
+    },
+    { immediate: true },
+);
+
 const handleRowClick = (row) => {
     emit("row-click", row);
     if (!selectionEnabled.value || !clickToSelect.value) return;
@@ -1115,6 +1447,7 @@ const handleExport = () => {
 
 <template>
     <div class="space-y-2">
+        <div class="sr-only" aria-live="polite" aria-atomic="true">{{ ariaLiveMessage }}</div>
         <!-- Toolbar (Header) -->
         <div class="relative px-3 py-2" :class="[bgClass]">
             <TanStackTableToolbar
@@ -1134,6 +1467,19 @@ const handleExport = () => {
                 @export="handleExport"
                 @clear-selection="clearSelection"
             />
+            <div class="mt-2 flex items-center justify-end gap-2">
+                <span class="text-xs text-base-content/70">Densité</span>
+                <Btn
+                    v-for="option in densityOptions"
+                    :key="option.value"
+                    size="xs"
+                    :variant="densityMode === option.value ? 'glass' : 'ghost'"
+                    :color="uiColor"
+                    @click="setDensityMode(option.value)"
+                >
+                    {{ option.label }}
+                </Btn>
+            </div>
         </div>
 
         <!-- Filters -->
@@ -1142,6 +1488,123 @@ const handleExport = () => {
             class="relative px-3 py-2"
             :class="[bgClass]"
         >
+            <div v-if="activePreset" class="mb-2 flex items-center justify-between gap-2">
+                <div class="inline-flex items-center gap-2 text-xs">
+                    <span class="badge badge-soft badge-primary">
+                        Preset actif: {{ activePreset.name }}
+                    </span>
+                    <span v-if="activePreset.isDefault" class="badge badge-soft badge-info">
+                        Défaut
+                    </span>
+                    <span v-if="isActivePresetDirty" class="badge badge-soft badge-warning">
+                        Non sauvegardé
+                    </span>
+                </div>
+                <Btn
+                    v-if="defaultPreset"
+                    size="xs"
+                    variant="ghost"
+                    :color="uiColor"
+                    :disabled="!canRestoreDefaultPreset"
+                    title="Revenir au preset par défaut"
+                    @click="restoreDefaultPreset"
+                >
+                    Revenir au défaut
+                </Btn>
+                <Btn
+                    v-if="isActivePresetDirty"
+                    size="xs"
+                    variant="outline"
+                    :color="uiColor"
+                    title="Mettre à jour ce preset avec les filtres/recherche actuels"
+                    @click="updateActivePresetInPlace"
+                >
+                    Mettre à jour ce preset
+                </Btn>
+            </div>
+            <div class="mb-2 flex flex-wrap items-center justify-end gap-2">
+                <Btn
+                    size="xs"
+                    variant="outline"
+                    :color="uiColor"
+                    title="Sauvegarder un preset avec filtres et recherche"
+                    @click="saveCurrentPreset"
+                >
+                    Sauver preset
+                </Btn>
+                <select
+                    class="select select-xs select-bordered"
+                    :value="selectedPresetId"
+                    @change="handlePresetSelectionChange"
+                >
+                    <option value="">Presets de filtres</option>
+                    <option
+                        v-for="preset in filterPresets"
+                        :key="preset.id"
+                        :value="preset.id"
+                    >
+                        {{ preset.isDefault ? `★ ${preset.name}` : preset.name }}
+                    </option>
+                </select>
+                <Btn
+                    v-if="hasSavedPresets"
+                    size="xs"
+                    variant="ghost"
+                    :color="uiColor"
+                    :disabled="!selectedPresetId"
+                    title="Renommer le preset sélectionné"
+                    @click="renameSelectedPreset"
+                >
+                    Renommer
+                </Btn>
+                <Btn
+                    v-if="hasSavedPresets"
+                    size="xs"
+                    variant="ghost"
+                    :color="uiColor"
+                    :disabled="!selectedPresetId"
+                    title="Définir ce preset par défaut"
+                    @click="setSelectedPresetAsDefault"
+                >
+                    Par défaut
+                </Btn>
+                <Btn
+                    v-if="hasSavedPresets"
+                    size="xs"
+                    variant="ghost"
+                    :color="uiColor"
+                    title="Exporter les presets en JSON"
+                    @click="exportPresetsJson"
+                >
+                    Export JSON
+                </Btn>
+                <Btn
+                    size="xs"
+                    variant="ghost"
+                    :color="uiColor"
+                    title="Importer des presets JSON"
+                    @click="triggerImportPresets"
+                >
+                    Import JSON
+                </Btn>
+                <input
+                    ref="presetFileInput"
+                    type="file"
+                    class="hidden"
+                    accept="application/json,.json"
+                    @change="importPresetsFromFile"
+                >
+                <Btn
+                    v-if="hasSavedPresets"
+                    size="xs"
+                    variant="ghost"
+                    :color="uiColor"
+                    :disabled="!selectedPresetId"
+                    @click="deleteSelectedPreset"
+                >
+                    Supprimer preset
+                </Btn>
+            </div>
             <TanStackTableFilters
                 :columns="columnsWithoutActions"
                 :filter-values="activeFilters"
@@ -1152,6 +1615,24 @@ const handleExport = () => {
                 @apply="applyFilters"
                 @reset="resetFilters"
             />
+        </div>
+
+        <div
+            v-if="selectedCount > 0"
+            class="sticky bottom-2 z-20 rounded-lg border border-base-300 px-3 py-2 shadow-md flex items-center justify-between gap-2"
+            :class="[bgClass]"
+        >
+            <div class="text-sm font-medium">
+                {{ selectedCount }} élément(s) sélectionné(s)
+            </div>
+            <div class="flex items-center gap-2">
+                <Btn size="xs" variant="outline" :color="uiColor" @click="handleExport">
+                    Export sélection
+                </Btn>
+                <Btn size="xs" variant="ghost" :color="uiColor" @click="clearSelection">
+                    Vider sélection
+                </Btn>
+            </div>
         </div>
 
         <!-- Table -->
@@ -1202,7 +1683,23 @@ const handleExport = () => {
                 <tbody v-else>
                     <tr>
                         <td :colspan="visibleColumnsFromTable.length + (showSelectionCheckboxes ? 1 : 0) + (showActionsColumn ? 1 : 0)" class="text-center py-8 text-base-content/60">
-                            Aucune donnée
+                            <div class="flex flex-col items-center gap-2">
+                                <div class="font-medium text-base-content/80">
+                                    {{ emptyState.title }}
+                                </div>
+                                <div class="text-sm text-base-content/60">
+                                    {{ emptyState.description }}
+                                </div>
+                                <Btn
+                                    v-if="emptyState.canReset"
+                                    size="xs"
+                                    variant="outline"
+                                    :color="uiColor"
+                                    @click="clearAllQueryState"
+                                >
+                                    Réinitialiser filtres et recherche
+                                </Btn>
+                            </div>
                         </td>
                     </tr>
                 </tbody>

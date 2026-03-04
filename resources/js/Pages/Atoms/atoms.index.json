@@ -189,18 +189,31 @@
     "file": "navigation/MenuItem.vue"
   },
   {
+    "name": "GlassMenuSectionTitle",
+    "description": "GlassMenuSectionTitle Atom (Navigation Glass)",
+    "props": [
+      {
+        "name": "compact",
+        "type": "Boolean",
+        "desc": "- Réduit la hauteur du titre"
+      }
+    ],
+    "slots": [
+      {
+        "name": "default",
+        "desc": "- Texte du titre"
+      }
+    ],
+    "file": "navigation/GlassMenuSectionTitle.vue"
+  },
+  {
     "name": "GlassMenuPanel",
     "description": "GlassMenuPanel Atom (Navigation Glass Container)",
     "props": [
       {
         "name": "compact",
         "type": "Boolean",
-        "desc": "- Reduit les espacements internes"
-      },
-      {
-        "name": "id,",
-        "type": "String|Object",
-        "desc": "ariaLabel, role, tabindex, class - herites de commonProps"
+        "desc": "- Réduit les espacements internes"
       }
     ],
     "slots": [
@@ -210,94 +223,6 @@
       }
     ],
     "file": "navigation/GlassMenuPanel.vue"
-  },
-  {
-    "name": "GlassMenuSectionTitle",
-    "description": "GlassMenuSectionTitle Atom (Navigation Glass)",
-    "props": [
-      {
-        "name": "compact",
-        "type": "Boolean",
-        "desc": "- Reduit la hauteur du titre"
-      },
-      {
-        "name": "id,",
-        "type": "String|Object",
-        "desc": "ariaLabel, role, tabindex, class - herites de commonProps"
-      }
-    ],
-    "slots": [
-      {
-        "name": "default",
-        "desc": "- Texte du titre de section"
-      }
-    ],
-    "file": "navigation/GlassMenuSectionTitle.vue"
-  },
-  {
-    "name": "GlassMenuDivider",
-    "description": "GlassMenuDivider Atom (Navigation Glass)",
-    "props": [
-      {
-        "name": "compact",
-        "type": "Boolean",
-        "desc": "- Reduit les marges verticales"
-      },
-      {
-        "name": "id,",
-        "type": "String|Object",
-        "desc": "ariaLabel, role, tabindex, class - herites de commonProps"
-      }
-    ],
-    "slots": [],
-    "file": "navigation/GlassMenuDivider.vue"
-  },
-  {
-    "name": "GlassMenuGroup",
-    "description": "GlassMenuGroup Atom (Navigation Glass Disclosure)",
-    "props": [
-      {
-        "name": "open",
-        "type": "Boolean",
-        "desc": "- Ouvre le groupe par defaut"
-      },
-      {
-        "name": "compact",
-        "type": "Boolean",
-        "desc": "- Reduit les espacements"
-      },
-      {
-        "name": "icon",
-        "type": "String",
-        "desc": "- Icone FontAwesome (optionnel)"
-      },
-      {
-        "name": "iconAlt",
-        "type": "String",
-        "desc": "- Texte alternatif de l'icone"
-      },
-      {
-        "name": "iconPack",
-        "type": "String",
-        "desc": "- Pack FontAwesome (solid, regular, brands, duotone)"
-      },
-      {
-        "name": "id,",
-        "type": "String|Object",
-        "desc": "ariaLabel, role, tabindex, class - herites de commonProps"
-      }
-    ],
-    "slots": [
-      {
-        "name": "title",
-        "desc": "- Titre du summary"
-      },
-      {
-        "name": "default",
-        "desc": "- Contenu repliable du groupe"
-      }
-    ],
-    "file": "navigation/GlassMenuGroup.vue"
   },
   {
     "name": "GlassMenuItem",
@@ -336,12 +261,7 @@
       {
         "name": "compact",
         "type": "Boolean",
-        "desc": "- Reduit la hauteur et les paddings"
-      },
-      {
-        "name": "hover3d",
-        "type": "Boolean",
-        "desc": "- Active un effet 3D et lumiere au survol"
+        "desc": "- Réduit la hauteur et les paddings"
       },
       {
         "name": "danger",
@@ -351,17 +271,12 @@
       {
         "name": "disabled",
         "type": "Boolean",
-        "desc": "- Desactive l'item"
+        "desc": "- Désactive l'item"
       },
       {
         "name": "type",
         "type": "String",
-        "desc": "- Type HTML en mode bouton (button, submit, reset)"
-      },
-      {
-        "name": "id,",
-        "type": "String|Object",
-        "desc": "ariaLabel, role, tabindex, class - herites de commonProps"
+        "desc": "- Type HTML pour le mode bouton"
       }
     ],
     "slots": [
@@ -371,6 +286,61 @@
       }
     ],
     "file": "navigation/GlassMenuItem.vue"
+  },
+  {
+    "name": "GlassMenuGroup",
+    "description": "GlassMenuGroup Atom (Navigation Glass Disclosure)",
+    "props": [
+      {
+        "name": "open",
+        "type": "Boolean",
+        "desc": "- Ouvre le groupe par défaut"
+      },
+      {
+        "name": "compact",
+        "type": "Boolean",
+        "desc": "- Réduit les espacements"
+      },
+      {
+        "name": "icon",
+        "type": "String",
+        "desc": "- Icône FontAwesome (optionnel)"
+      },
+      {
+        "name": "iconAlt",
+        "type": "String",
+        "desc": "- Texte alternatif de l'icône"
+      },
+      {
+        "name": "iconPack",
+        "type": "String",
+        "desc": "- Pack FontAwesome (solid, regular, brands, duotone)"
+      }
+    ],
+    "slots": [
+      {
+        "name": "title",
+        "desc": "- Titre du summary"
+      },
+      {
+        "name": "default",
+        "desc": "- Contenu repliable"
+      }
+    ],
+    "file": "navigation/GlassMenuGroup.vue"
+  },
+  {
+    "name": "GlassMenuDivider",
+    "description": "GlassMenuDivider Atom (Navigation Glass)",
+    "props": [
+      {
+        "name": "compact",
+        "type": "Boolean",
+        "desc": "- Réduit les marges verticales"
+      }
+    ],
+    "slots": [],
+    "file": "navigation/GlassMenuDivider.vue"
   },
   {
     "name": "DockItem",

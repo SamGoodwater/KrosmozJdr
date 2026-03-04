@@ -768,6 +768,7 @@ class ScrappingController extends Controller
                         'converted' => $converted,
                         'existing' => $existingRecord !== null ? ['record' => $existingRecord] : null,
                         'spell_effects_simulation' => $spellEffectsSimulation,
+                        'relations' => $result->getRelations() ?? [],
                         'error' => $result->isSuccess() ? null : $result->getMessage(),
                     ];
                     if ($type === 'item') {

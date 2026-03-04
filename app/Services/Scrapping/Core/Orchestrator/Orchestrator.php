@@ -569,6 +569,9 @@ final class Orchestrator
 
         if ($entityType === 'resource' || $entityType === 'resources') {
             $primaryId = $integrationResult->getPrimaryId();
+            foreach ($this->extractRecipeRelationIds($converted['resources']['recipe_ingredients'] ?? []) as $id) {
+                $relations[] = ['type' => 'resource', 'id' => $id];
+            }
             if ($primaryId !== null) {
                 $recipeIngredients = $converted['resources']['recipe_ingredients'] ?? [];
                 $this->relationResolutionService->resolveAndSyncResourceRecipe(
@@ -578,7 +581,36 @@ final class Orchestrator
                     $stack
                 );
             }
+        } elseif ($entityType === 'item' || $entityType === 'items') {
+            $primaryId = $integrationResult->getPrimaryId();
+            foreach ($this->extractRecipeRelationIds($converted['items']['recipe_ingredients'] ?? []) as $id) {
+                $relations[] = ['type' => 'item', 'id' => $id];
+            }
+            if ($primaryId !== null) {
+                $recipeIngredients = $converted['items']['recipe_ingredients'] ?? [];
+                $this->relationResolutionService->resolveAndSyncItemRecipe(
+                    is_array($recipeIngredients) ? $recipeIngredients : [],
+                    (int) $primaryId,
+                    $relOptions
+                );
+            }
+        } elseif ($entityType === 'consumable' || $entityType === 'consumables') {
+            $primaryId = $integrationResult->getPrimaryId();
+            foreach ($this->extractRecipeRelationIds($converted['consumables']['recipe_ingredients'] ?? []) as $id) {
+                $relations[] = ['type' => 'item', 'id' => $id];
+            }
+            if ($primaryId !== null) {
+                $recipeIngredients = $converted['consumables']['recipe_ingredients'] ?? [];
+                $this->relationResolutionService->resolveAndSyncConsumableRecipe(
+                    is_array($recipeIngredients) ? $recipeIngredients : [],
+                    (int) $primaryId,
+                    $relOptions
+                );
+            }
         } elseif ($entityType === 'breed' || $entity === 'breed' || $entity === 'class') {
+            foreach ($this->extractBreedSpellIds($raw) as $id) {
+                $relations[] = ['type' => 'spell', 'id' => $id];
+            }
             $breedId = $integrationResult->getPrimaryId();
             $breedDofusdbId = isset($raw['id']) ? (int) $raw['id'] : 0;
             if ($breedId !== null && $breedDofusdbId > 0) {
@@ -594,6 +626,9 @@ final class Orchestrator
             $spellId = $integrationResult->getPrimaryId();
             $summon = $raw['summon'] ?? null;
             $monsterDofusdbId = (is_array($summon) && isset($summon['id'])) ? (string) $summon['id'] : '';
+            if (is_numeric($monsterDofusdbId) && (int) $monsterDofusdbId > 0) {
+                $relations[] = ['type' => 'monster', 'id' => (int) $monsterDofusdbId];
+            }
             if ($spellId !== null && $monsterDofusdbId !== '') {
                 $this->relationResolutionService->resolveAndSyncSpellInvocation(
                     (int) $spellId,
@@ -657,6 +692,56 @@ final class Orchestrator
     }
 
     /**
+     * @param mixed $recipeIngredients
+     * @return list<int>
+     */
+    private function extractRecipeRelationIds(mixed $recipeIngredients): array
+    {
+        if (!is_array($recipeIngredients)) {
+            return [];
+        }
+        $ids = [];
+        foreach ($recipeIngredients as $row) {
+            if (!is_array($row)) {
+                continue;
+            }
+            $id = $row['ingredient_dofusdb_id'] ?? $row['id'] ?? null;
+            if (is_numeric($id)) {
+                $n = (int) $id;
+                if ($n > 0) {
+                    $ids[] = $n;
+                }
+            }
+        }
+
+        return array_values(array_unique($ids));
+    }
+
+    /**
+     * @param array<string, mixed> $raw
+     * @return list<int>
+     */
+    private function extractBreedSpellIds(array $raw): array
+    {
+        $src = $raw['breedSpellsId'] ?? $raw['spells'] ?? [];
+        if (!is_array($src)) {
+            return [];
+        }
+        $ids = [];
+        foreach ($src as $value) {
+            $id = is_array($value) ? ($value['id'] ?? null) : $value;
+            if (is_numeric($id)) {
+                $n = (int) $id;
+                if ($n > 0) {
+                    $ids[] = $n;
+                }
+            }
+        }
+
+        return array_values(array_unique($ids));
+    }
+
+    /**
      * Vide la pile d'import des relations : pour chaque élément en attente, runOne puis
      * onImported pour mettre à jour toutes les tables de relation (recettes, breed_spell,
      * creature_spell, creature_resource, spell_invocation).
@@ -687,7 +772,9 @@ final class Orchestrator
 
             $primaryId = null;
             $table = null;
-            $existing = $this->resolveExistingRelationImportState($entity, $dofusdbId);
+            // Pour item: on force un runOne afin de rejouer la descente relationnelle
+            // (panoply -> item -> resources, et cascades) même si l'entité existe déjà.
+            $existing = $entity === 'item' ? null : $this->resolveExistingRelationImportState($entity, $dofusdbId);
             if ($existing !== null) {
                 $primaryId = $existing['primary_id'];
                 $table = $existing['table'];

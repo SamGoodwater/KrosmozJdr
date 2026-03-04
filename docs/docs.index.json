@@ -130,6 +130,11 @@
     "description": "Ce dossier est réservé aux **résumés descriptifs** de fonctionnalités livrées ou de décisions d’architecture, lorsqu’ils servent de référence (et non de journal chronologique)."
   },
   {
+    "path": "100- Done/SMOKE_TEST_2026-03-04.md",
+    "title": "🧪 RAPPORT DE SMOKE TEST FRONTEND - KrosmozJdr",
+    "description": "**Date**: 2026-03-04 15:06"
+  },
+  {
     "path": "100- Done/TESTS_SCRAPPING_COMMANDE_CHAINE_COMPLETE.md",
     "title": "Tests chaîne complète de la commande scrapping",
     "description": "**Livré** : réécriture et extension des tests de la commande `php artisan scrapping` pour couvrir toute la chaîne (API → conversion → validation → intégration BDD) pour toutes les entités et les principaux paramètres."
@@ -138,6 +143,16 @@
     "path": "100- Done/VERIFICATION_CONFIDENTIALITE_GITHUB.md",
     "title": "Vérification confidentialité — Données envoyées vers GitHub",
     "description": "**Date** : 2026-03-03"
+  },
+  {
+    "path": "100- Done/smoke-test-minimal-views-2026-03-04.md",
+    "title": "Smoke Test Visuel Frontend - Vues Minimal (Hover Extended)",
+    "description": "**Date**: 2026-03-04"
+  },
+  {
+    "path": "100- Done/smoke-test-minimal-views-summary.md",
+    "title": "Smoke Test Minimal Views - Résumé Exécutif",
+    "description": "**Date**: 2026-03-04"
   },
   {
     "path": "20-Content/21-Entities/ENTITIES_OVERVIEW.md",
