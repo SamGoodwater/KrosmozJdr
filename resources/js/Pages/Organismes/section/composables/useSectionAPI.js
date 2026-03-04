@@ -11,6 +11,7 @@
  */
 import { router } from '@inertiajs/vue3';
 import { Section } from '@/Models';
+import { logDev } from '@/Utils/dev-logger';
 
 /**
  * Composable pour gérer les appels API des sections
@@ -27,14 +28,14 @@ export function useSectionAPI() {
    */
   const createSection = (sectionData, options = {}) => {
     return new Promise((resolve, reject) => {
-      console.log('useSectionAPI - createSection called with:', sectionData);
-      console.log('useSectionAPI - Route:', route('sections.store'));
+      logDev('useSectionAPI - createSection called with:', sectionData);
+      logDev('useSectionAPI - Route:', route('sections.store'));
       
       router.post(route('sections.store'), sectionData, {
         preserveScroll: true,
         only: ['page'],
         onSuccess: (page) => {
-          console.log('useSectionAPI - onSuccess called with:', page);
+          logDev('useSectionAPI - onSuccess called with:', page);
           // Passer la réponse complète pour que le callback puisse accéder aux données
           resolve(page);
         },
@@ -43,7 +44,7 @@ export function useSectionAPI() {
           reject(errors);
         },
         onFinish: () => {
-          console.log('useSectionAPI - onFinish called');
+          logDev('useSectionAPI - onFinish called');
         },
         ...options
       });

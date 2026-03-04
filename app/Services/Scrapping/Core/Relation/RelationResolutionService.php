@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Services\Scrapping\Core\Relation;
 
 use App\Models\Entity\Creature;
+use App\Models\Entity\Panoply;
 use App\Models\Entity\Resource;
 use App\Services\Scrapping\Core\Collect\CollectService;
 use App\Services\Scrapping\Core\Orchestrator\Orchestrator;
@@ -78,6 +79,7 @@ final class RelationResolutionService
             'integrate' => $integrate && !$dryRun,
             'dry_run' => $dryRun,
             'force_update' => (bool) ($options['force_update'] ?? false),
+            'skip_cache' => (bool) ($options['skip_cache'] ?? false),
         ];
 
         $importedSpellIds = [];
@@ -203,7 +205,9 @@ final class RelationResolutionService
         ?RelationImportStack $stack = null
     ): array {
         $dryRun = (bool) ($options['dry_run'] ?? false);
-        $spellIds = $this->getCollectService()->fetchSpellIdsByBreedId($source, $breedDofusdbId, []);
+        $spellIds = $this->getCollectService()->fetchSpellIdsByBreedId($source, $breedDofusdbId, [
+            'skip_cache' => (bool) ($options['skip_cache'] ?? false),
+        ]);
 
         if ($stack !== null) {
             $pendingAdded = $stack->registerBreedSpellDependents($breedId, $spellIds, $dryRun);
@@ -218,6 +222,7 @@ final class RelationResolutionService
             'dry_run' => $dryRun,
             'force_update' => (bool) ($options['force_update'] ?? false),
             'include_relations' => true,
+            'skip_cache' => (bool) ($options['skip_cache'] ?? false),
         ];
         $importedSpellIds = [];
         foreach ($spellIds as $spellId) {
@@ -267,6 +272,7 @@ final class RelationResolutionService
             'dry_run' => $dryRun,
             'force_update' => (bool) ($options['force_update'] ?? false),
             'include_relations' => true,
+            'skip_cache' => (bool) ($options['skip_cache'] ?? false),
         ];
         $result = $this->orchestrator->runOne('dofusdb', 'monster', (int) $monsterDofusdbId, $v2Options);
         $monsterId = null;
@@ -279,6 +285,62 @@ final class RelationResolutionService
                 $current = $spell->monsters()->pluck('id')->all();
                 $spell->monsters()->sync(array_values(array_unique(array_merge($current, [$monsterId]))));
             }
+        }
+
+        return ['synced' => true];
+    }
+
+    /**
+     * Résout les items d'une panoplie : enregistre les dépendances sur la pile ou importe en inline.
+     *
+     * @param list<int> $itemDofusdbIds
+     * @param array{integrate?: bool, dry_run?: bool, force_update?: bool, validate?: bool, skip_cache?: bool} $options
+     * @return array{synced: bool, pending_added?: list<string>}
+     */
+    public function resolveAndSyncPanoplyItems(
+        int $panoplyId,
+        array $itemDofusdbIds,
+        array $options = [],
+        ?RelationImportStack $stack = null
+    ): array {
+        $dryRun = (bool) ($options['dry_run'] ?? false);
+        $itemDofusdbIds = array_values(array_unique(array_map('intval', $itemDofusdbIds)));
+        $itemDofusdbIds = array_values(array_filter($itemDofusdbIds, static fn (int $id): bool => $id > 0));
+
+        if ($stack !== null) {
+            $pendingAdded = $stack->registerPanoplyItemDependents($panoplyId, $itemDofusdbIds, $dryRun);
+
+            return ['synced' => true, 'pending_added' => $pendingAdded];
+        }
+
+        $v2Options = [
+            'convert' => true,
+            'validate' => ($options['validate'] ?? true) !== false,
+            'integrate' => ($options['integrate'] ?? true) && !$dryRun,
+            'dry_run' => $dryRun,
+            'force_update' => (bool) ($options['force_update'] ?? false),
+            'include_relations' => true,
+            'skip_cache' => (bool) ($options['skip_cache'] ?? false),
+        ];
+        $importedItemIds = [];
+        foreach ($itemDofusdbIds as $itemDofusdbId) {
+            $result = $this->orchestrator->runOne('dofusdb', 'item', $itemDofusdbId, $v2Options);
+            if ($result->isSuccess()) {
+                $intResult = $result->getIntegrationResult();
+                if ($intResult !== null && $intResult->isSuccess()) {
+                    $data = $intResult->getData();
+                    if (($data['table'] ?? '') === 'items') {
+                        $id = $intResult->getPrimaryId();
+                        if ($id !== null) {
+                            $importedItemIds[] = $id;
+                        }
+                    }
+                }
+            }
+        }
+        $panoply = Panoply::find($panoplyId);
+        if ($panoply !== null && !$dryRun && $importedItemIds !== []) {
+            $panoply->items()->sync(array_values(array_unique($importedItemIds)));
         }
 
         return ['synced' => true];
@@ -345,6 +407,7 @@ final class RelationResolutionService
             'dry_run' => $dryRun,
             'force_update' => (bool) ($options['force_update'] ?? false),
             'include_relations' => false,
+            'skip_cache' => (bool) ($options['skip_cache'] ?? false),
         ];
 
         $importedIds = [];

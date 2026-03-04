@@ -152,7 +152,7 @@ const handleAction = async (actionKey) => {
                         v-if="shop.image"
                         :src="shop.image"
                         :alt="shop.name || 'Shop'"
-                        class="w-16 h-16 rounded-lg object-cover flex-shrink-0"
+                        class="w-16 h-16 entity-radius-box object-cover flex-shrink-0"
                     />
                     <h2 class="text-2xl font-bold text-primary-100 break-words">
                         <CellRenderer
@@ -186,7 +186,7 @@ const handleAction = async (actionKey) => {
             <div
                 v-for="fieldKey in extendedFields"
                 :key="fieldKey"
-                class="p-3 bg-base-200 rounded-lg"
+                class="p-3 bg-base-200 entity-radius-box"
             >
                 <div class="flex flex-col gap-1">
                     <div class="flex items-center gap-2">
@@ -211,3 +211,9 @@ const handleAction = async (actionKey) => {
         </div>
     </div>
 </template>
+
+<style scoped>
+.entity-radius-box {
+    border-radius: var(--radius-box, 0.1rem);
+}
+</style>

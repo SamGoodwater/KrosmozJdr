@@ -121,13 +121,14 @@ const submit = () => {
                 const errorMessages = Object.values(errors).join(', ');
                 notificationStore.error('Erreur lors de l\'inscription : ' + errorMessages, { duration: 8000, placement: 'top-center' });
             }
-            console.error('Erreurs serveur:', errors);
+            if (import.meta.env.DEV) {
+                console.error('Erreurs serveur:', errors);
+            }
         },
         onSuccess: () => {
             if (notificationStore) {
                 notificationStore.success('Inscription réussie ! Bienvenue !', { duration: 3000, placement: 'top-center' });
             }
-            console.log('Inscription réussie !');
         },
         onFinish: () => form.reset("password", "password_confirmation"),
     });

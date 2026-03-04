@@ -540,12 +540,22 @@ class ScrappingOrchestratorTest extends TestCase
      */
     public function test_import_panoply_complete_workflow(): void
     {
+        Item::factory()->create(['dofusdb_id' => '101', 'name' => 'Item test 101']);
+        Item::factory()->create(['dofusdb_id' => '102', 'name' => 'Item test 102']);
+
         $mockPanoply = [
             'id' => 10,
             'name' => ['fr' => 'Panoplie du Bouftou'],
             'description' => ['fr' => 'Bonus de panoplie'],
             'effects' => [
-                ['characteristic' => 1, 'min' => 10, 'max' => 20],
+                [],
+                [
+                    ['characteristic' => 10, 'from' => 5, 'to' => 0],
+                    ['characteristic' => 15, 'from' => 5, 'to' => 0],
+                ],
+                [
+                    ['characteristic' => 10, 'from' => 10, 'to' => 0],
+                ],
             ],
             'items' => [
                 ['id' => 101],
@@ -567,6 +577,11 @@ class ScrappingOrchestratorTest extends TestCase
         $this->assertNotNull($panoply);
         $this->assertSame('Panoplie du Bouftou', $panoply->name);
         $this->assertNotNull($panoply->bonus);
+        $this->assertSame(2, $panoply->items()->count());
+        $decodedBonus = json_decode((string) $panoply->bonus, true);
+        $this->assertIsArray($decodedBonus);
+        $this->assertArrayHasKey('2', $decodedBonus);
+        $this->assertArrayHasKey('3', $decodedBonus);
     }
 }
 

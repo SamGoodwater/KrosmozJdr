@@ -44,11 +44,11 @@
 
 | Fichier / zone | Ce qui est nommé | Risque |
 |----------------|------------------|--------|
-| **characteristics.php** | `key` (ex. `level_creature`, `pv_max_object`, `objet_sav_agi_creature`). | **Source de vérité** pour l’identifiant logique. Incohérence avec les autres fichiers (icônes, DofusDB, effect_sub_effects) = mapping cassé. |
+| **characteristics.php** | `key` (ex. `level_creature`, `pv_object`, `objet_sav_agi_creature`). | **Source de vérité** pour l’identifiant logique. Incohérence avec les autres fichiers (icônes, DofusDB, effect_sub_effects) = mapping cassé. |
 | **characteristic_creature.php** | `characteristic_key`, `db_column`, `entity` (`*`, `monster`, `class`, `npc`). | `characteristic_key` doit être une `key` existante dans `characteristics`. `db_column` = colonne sur la table cible. |
 | **characteristic_object.php** | Idem + `item_type_ids`, etc. | Même logique que creature. |
 | **characteristic_spell.php** | Idem pour les sorts. | Cohérence avec `characteristics.key` et avec les colonnes des tables spells. |
-| **characteristic_icons_colors.php** | Clés du tableau `icons` et `colors` = **characteristic key** (ex. `life_creature`, `pa_object`). | Si une clé est renommée dans `characteristics.php` mais pas ici, les icônes/couleurs par défaut ne s’appliquent plus. **Incohérence connue** : `pv_object` dans icons/colors vs `pv_max_object` dans characteristics (voir § 2). |
+| **characteristic_icons_colors.php** | Clés du tableau `icons` et `colors` = **characteristic key** (ex. `life_creature`, `pa_object`). | Si une clé est renommée dans `characteristics.php` mais pas ici, les icônes/couleurs par défaut ne s’appliquent plus. **Incohérence connue** : `pv_object` dans icons/colors vs `pv_object` dans characteristics (voir § 2). |
 
 **Fichiers clés** :
 - `database/seeders/data/characteristics.php`
@@ -66,7 +66,7 @@
 | **effect_sub_effects.php** | `key` dans la liste des caractéristiques (ex. `pa`, `pm`, `vita`, `force`, `terre`, `feu`). | **Convention différente** : clés **courtes** sans suffixe `_creature`/`_object`/`_spell`. Utilisées pour les sous-effets (pattern action → caractéristique → valeur). Risque de confusion avec les `characteristic_key` du reste du projet. |
 | **scrapping_entity_mappings.php** | `mapping_key`, `from_path`, `characteristic_key` (nullable), `target_model`, `target_field`. | `target_field` = nom du champ côté Krosmoz (doit être un attribut du modèle cible). `characteristic_key` = `characteristics.key` (ex. `level_object`, `rarity_object`). |
 | **DofusDbEffectMapping** | Slugs de sous-effets (`frapper`, `autre`), noms d’éléments (`neutre`, `feu`, `eau`, `terre`, `air`). | Les éléments sont alignés avec les clés « courtes » de `effect_sub_effects.php`. Pas de lien direct avec les `characteristic_key` du type `do_fixe_feu_object`. |
-| **dofusdb_characteristic_to_krosmoz.json** | Mapping `id DofusDB` → `characteristic_key` Krosmoz (ex. `0` → `pv_object`, `10` → `strong_object`). | **Incohérence connue** : `pv_object` dans ce fichier alors que la caractéristique objet « Points de vie » est `pv_max_object` dans `characteristics.php` (voir § 2). |
+| **dofusdb_characteristic_to_krosmoz.json** | Mapping `id DofusDB` → `characteristic_key` Krosmoz (ex. `0` → `pv_object`, `10` → `strong_object`). | **Incohérence connue** : `pv_object` dans ce fichier alors que la caractéristique objet « Points de vie » est `pv_object` dans `characteristics.php` (voir § 2). |
 
 **Fichiers clés** :
 - `config/effect_sub_effects.php`
@@ -97,7 +97,7 @@
 
 | Fichier / zone | Ce qui est nommé | Risque |
 |----------------|------------------|--------|
-| **characteristic_icons_colors.php** | Clé = `characteristic_key` ; valeur = nom de fichier (ex. `life.webp`, `pa.webp`) ou chemin. | Voir incohérence `pv_object` vs `pv_max_object` (§ 2). |
+| **characteristic_icons_colors.php** | Clé = `characteristic_key` ; valeur = nom de fichier (ex. `life.webp`, `pa.webp`) ou chemin. | Voir incohérence `pv_object` vs `pv_object` (§ 2). |
 | **CharacteristicSeeder** | Complète `icon` et `color` depuis characteristic_icons_colors quand NULL. | Les clés du config doivent être exactement les `key` de la table `characteristics`. |
 | **MonsterTableController** (et autres APIs) | Préfixe `icons/caracteristics/` avant d’envoyer l’icône au frontend. | Côté front, la source attendue est du type `icons/caracteristics/pa.webp` (ImageService construit `/storage/images/{path}`). |
 | **ImageService.js** | Préfixe statique `icons/` ; URL finale `/storage/images/${path}`. | Si le backend envoie un chemin relatif sans le préfixe attendu, l’icône ne s’affiche pas. |
@@ -146,16 +146,16 @@
 
 ## 2. Incohérences repérées (à traiter)
 
-### 2.1 `pv_object` vs `pv_max_object`
+### 2.1 `pv_object` vs `pv_object`
 
-- **characteristics.php** et **characteristic_object.php** : la caractéristique « Points de vie » (objet) est **pv_max_object**.
+- **characteristics.php** et **characteristic_object.php** : la caractéristique « Points de vie » (objet) est **pv_object**.
 - **characteristic_icons_colors.php** (icons et colors) : entrées **pv_object**.
 - **dofusdb_characteristic_to_krosmoz.json** : id `0` (hitPoints) mappé vers **pv_object**.
 - **Documentation / commandes** (ExtractObjectConversionSamplesCommand, STRUCTURE_JSON_OBJECT_SAMPLES.md, etc.) : références à **pv_object**.
 
-**Impact** : Pour la conversion DofusDB → Krosmoz, le formatter s’attend à une characteristic_key ; si le code ou la config utilisent `pv_object` alors que la BDD ne connaît que `pv_max_object`, le mapping échoue ou les icônes/couleurs par défaut ne s’appliquent pas pour cette caractéristique.
+**Impact** : Pour la conversion DofusDB → Krosmoz, le formatter s’attend à une characteristic_key ; si le code ou la config utilisent `pv_object` alors que la BDD ne connaît que `pv_object`, le mapping échoue ou les icônes/couleurs par défaut ne s’appliquent pas pour cette caractéristique.
 
-**Recommandation** : Choisir une seule clé canonique (idéalement `pv_max_object` pour rester aligné avec la BDD) et remplacer `pv_object` partout (icons/colors, JSON DofusDB, docs, commandes).
+**Recommandation** : Choisir une seule clé canonique (idéalement `pv_object` pour rester aligné avec la BDD) et remplacer `pv_object` partout (icons/colors, JSON DofusDB, docs, commandes).
 
 ---
 
@@ -183,10 +183,10 @@ Ce n’est pas une erreur mais **deux espaces de nommage** : un pour les sous-ef
 
 Pour qu’un flux « DofusDB → conversion → intégration → affichage » soit fiable :
 
-1. **characteristics.key** = identifiant logique unique (ex. `level_object`, `pv_max_object`).
+1. **characteristics.key** = identifiant logique unique (ex. `level_object`, `pv_object`).
 2. **characteristic_creature / _object / _spell** : `characteristic_key` = une de ces `key` ; `db_column` = colonne sur l’entité cible (ex. `level`, `rarity`).
 3. **scrapping_entity_mappings** : `characteristic_key` = même `characteristics.key` ; `target_field` = même nom que `db_column` ou attribut du modèle cible.
-4. **characteristic_icons_colors** : les clés du tableau = **characteristics.key** (pas de variante comme `pv_object` si la BDD a `pv_max_object`).
+4. **characteristic_icons_colors** : les clés du tableau = **characteristics.key** (pas de variante comme `pv_object` si la BDD a `pv_object`).
 5. **dofusdb_characteristic_to_krosmoz.json** : les valeurs du mapping = **characteristics.key** (même convention).
 6. **IntegrationService** : les clés du payload = noms d’attributs des modèles (alignés sur les colonnes BDD et donc sur `db_column` / `target_field`).
 7. **Frontend** : affichage des caractéristiques par `key` ou par `db_column` selon le contexte ; icônes via chemin cohérent avec le backend (`icons/caracteristics/` + nom de fichier).

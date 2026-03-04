@@ -26,6 +26,7 @@ import TanStackTablePagination from "@/Pages/Molecules/table/TanStackTablePagina
 import { useTanStackTablePreferences } from "@/Composables/table/useTanStackTablePreferences";
 import { BREAKPOINTS } from "@/Utils/Entity/Constants.js";
 import { getEntityConfig } from "@/Entities/entity-registry.js";
+import { logDev, warnDev } from "@/Utils/dev-logger";
 import Btn from "@/Pages/Atoms/action/Btn.vue";
 
 const props = defineProps({
@@ -593,12 +594,14 @@ const getCellFor = (row, col) => {
             return cell;
         } else {
             // Debug: log si la cellule n'est pas générée
-            console.warn(`[TanStackTable] toCell returned null for fieldKey="${cellId}"`, {
-                entity: entity.constructor.name,
-                entityId: entity.id,
-                hasField: cellId in (entity._data || {}),
-                entityData: entity._data ? Object.keys(entity._data) : 'no _data',
-            });
+            if (debugEnabled.value) {
+                warnDev(`[TanStackTable] toCell returned null for fieldKey="${cellId}"`, {
+                    entity: entity.constructor.name,
+                    entityId: entity.id,
+                    hasField: cellId in (entity._data || {}),
+                    entityData: entity._data ? Object.keys(entity._data) : 'no _data',
+                });
+            }
         }
     }
 
@@ -660,7 +663,7 @@ const passesFilter = (row, col) => {
 
     if (debugEnabled.value && _filterDebugCount < 25) {
         _filterDebugCount++;
-        console.log("[TanStackTable] passesFilter", {
+        logDev("[TanStackTable] passesFilter", {
             columnId: col?.id,
             filterId: f.id,
             filterType: f.type,
@@ -754,7 +757,7 @@ watch(
     () => JSON.stringify(activeFilters.value),
     (v) => {
         if (!debugEnabled.value) return;
-        console.log("[TanStackTable] activeFilters changed", v);
+        logDev("[TanStackTable] activeFilters changed", v);
     },
 );
 
@@ -814,7 +817,7 @@ watch(
 );
 
 const setFilters = (v) => {
-    if (debugEnabled.value) console.log("[TanStackTable] update:filters", v);
+    if (debugEnabled.value) logDev("[TanStackTable] update:filters", v);
     activeFilters.value = v || {};
 };
 const resetFilters = () => {
@@ -1244,7 +1247,7 @@ const handleExport = () => {
         <div v-else class="text-xs text-base-content/70">
             <div class="relative p-3 rounded-lg border border-base-300" :class="[bgClass]">
                 <div class="font-semibold mb-2">Debug Table (filters)</div>
-                <pre class="whitespace-pre-wrap break-words">{{ JSON.stringify(debugSample, null, 2) }}</pre>
+                <pre class="whitespace-pre-wrap wrap-break-word">{{ JSON.stringify(debugSample, null, 2) }}</pre>
                 <div class="mt-2 opacity-70">
                     Activer/désactiver: <code>localStorage.tanstack_table_debug = "1"</code> / removeItem
                 </div>

@@ -122,6 +122,13 @@ export function getScenarioFieldDescriptors(ctx = {}) {
       key: "slug",
       label: "Slug",
       icon: "fa-solid fa-link",
+      table: {
+        sortable: true,
+        searchable: true,
+        filterable: { id: "slug", type: "text", defaultVisible: false },
+        defaultVisible: { xs: false, sm: false, md: false, lg: true, xl: true },
+        cell: { sizes: { xs: { mode: "text", truncate: 15 }, sm: { mode: "text", truncate: 20 }, md: { mode: "text", truncate: 30 }, lg: { mode: "text" }, xl: { mode: "text" } } },
+      },
       display: {
         sizes: {
           xs: { mode: "text", truncate: 15 },
@@ -145,6 +152,12 @@ export function getScenarioFieldDescriptors(ctx = {}) {
       key: "description",
       label: "Description",
       icon: "fa-solid fa-align-left",
+      table: {
+        searchable: true,
+        filterable: { id: "description", type: "text", defaultVisible: false },
+        defaultVisible: { xs: false, sm: false, md: false, lg: true, xl: true },
+        cell: { sizes: { xs: { mode: "text", truncate: 20 }, sm: { mode: "text", truncate: 30 }, md: { mode: "text", truncate: 50 }, lg: { mode: "text" }, xl: { mode: "text" } } },
+      },
       display: {
         sizes: {
           xs: { mode: "text", truncate: 20 },
@@ -167,6 +180,13 @@ export function getScenarioFieldDescriptors(ctx = {}) {
       key: "keyword",
       label: "Mot-clé",
       icon: "fa-solid fa-tag",
+      table: {
+        sortable: true,
+        searchable: true,
+        filterable: { id: "keyword", type: "text", defaultVisible: false },
+        defaultVisible: { xs: false, sm: false, md: true, lg: true, xl: true },
+        cell: { sizes: { xs: { mode: "text", truncate: 15 }, sm: { mode: "text", truncate: 20 }, md: { mode: "text", truncate: 30 }, lg: { mode: "text" }, xl: { mode: "text" } } },
+      },
       display: {
         sizes: {
           xs: { mode: "text", truncate: 15 },
@@ -252,6 +272,12 @@ export function getScenarioFieldDescriptors(ctx = {}) {
       key: "is_public",
       label: "Public",
       icon: "fa-solid fa-globe",
+      table: {
+        sortable: true,
+        filterable: { id: "is_public", type: "boolean", defaultVisible: false },
+        defaultVisible: { xs: false, sm: false, md: true, lg: true, xl: true },
+        cell: { sizes: { xs: { mode: "badge" }, sm: { mode: "badge" }, md: { mode: "badge" }, lg: { mode: "badge" }, xl: { mode: "badge" } } },
+      },
       display: {
         sizes: {
           xs: { mode: "badge" },
@@ -276,6 +302,12 @@ export function getScenarioFieldDescriptors(ctx = {}) {
       key: "read_level",
       label: "Lecture (min.)",
       icon: "fa-solid fa-eye",
+      table: {
+        sortable: true,
+        filterable: { id: "read_level", type: "multi", defaultVisible: false },
+        defaultVisible: { xs: false, sm: false, md: false, lg: false, xl: false },
+        cell: { sizes: { xs: { mode: "badge" }, sm: { mode: "badge" }, md: { mode: "badge" }, lg: { mode: "badge" }, xl: { mode: "badge" } } },
+      },
       display: {
         sizes: {
           xs: { mode: "badge" },
@@ -301,6 +333,12 @@ export function getScenarioFieldDescriptors(ctx = {}) {
       key: "write_level",
       label: "Écriture (min.)",
       icon: "fa-solid fa-pen-to-square",
+      table: {
+        sortable: true,
+        filterable: { id: "write_level", type: "multi", defaultVisible: false },
+        defaultVisible: { xs: false, sm: false, md: false, lg: false, xl: false },
+        cell: { sizes: { xs: { mode: "badge" }, sm: { mode: "badge" }, md: { mode: "badge" }, lg: { mode: "badge" }, xl: { mode: "badge" } } },
+      },
       display: {
         sizes: {
           xs: { mode: "badge" },

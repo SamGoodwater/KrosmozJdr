@@ -34,6 +34,7 @@ class ResourceFactory extends Factory
             'official_id' => fake()->optional()->numberBetween(1, 10000),
             'name' => fake()->unique()->words(2, true),
             'description' => fake()->optional()->sentence(),
+            'effect' => fake()->optional()->sentence(),
             'level' => (string) fake()->numberBetween(1, 200),
             'price' => (string) fake()->numberBetween(1, 10000),
             'weight' => (string) fake()->numberBetween(1, 100),

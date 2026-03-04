@@ -42,7 +42,7 @@ return array (
     'source' => 'dofusdb',
     'entity' => 'breed',
     'mapping_key' => 'name',
-    'from_path' => 'name',
+    'from_path' => 'shortName',
     'from_lang_aware' => true,
     'characteristic_key' => 'name_object',
     'formatters' => 
@@ -54,6 +54,14 @@ return array (
         array (
           'lang' => 'fr',
           'fallback' => 'fr',
+        ),
+      ),
+      1 => 
+      array (
+        'name' => 'truncate',
+        'args' => 
+        array (
+          'max' => 255,
         ),
       ),
     ),
@@ -88,6 +96,14 @@ return array (
           'fallback' => 'fr',
         ),
       ),
+      1 => 
+      array (
+        'name' => 'truncate',
+        'args' => 
+        array (
+          'max' => 255,
+        ),
+      ),
     ),
     'spell_level_aggregation' => NULL,
     'sort_order' => 2,
@@ -106,7 +122,7 @@ return array (
     'source' => 'dofusdb',
     'entity' => 'breed',
     'mapping_key' => 'description_fast',
-    'from_path' => 'shortDescription',
+    'from_path' => 'gameplayDescription',
     'from_lang_aware' => true,
     'characteristic_key' => NULL,
     'formatters' => 
@@ -670,9 +686,21 @@ return array (
     array (
       0 => 
       array (
-        'target_model' => 'items',
+        'target_model' => 'resources',
         'target_field' => 'effect',
         'sort_order' => 0,
+      ),
+      1 => 
+      array (
+        'target_model' => 'consumables',
+        'target_field' => 'effect',
+        'sort_order' => 1,
+      ),
+      2 => 
+      array (
+        'target_model' => 'items',
+        'target_field' => 'effect',
+        'sort_order' => 2,
       ),
     ),
   ),
@@ -1624,6 +1652,14 @@ return array (
           'fallback' => 'fr',
         ),
       ),
+      1 => 
+      array (
+        'name' => 'truncate',
+        'args' => 
+        array (
+          'max' => 255,
+        ),
+      ),
     ),
     'spell_level_aggregation' => NULL,
     'sort_order' => 2,
@@ -2309,6 +2345,177 @@ return array (
         'target_field' => 'powerful',
         'sort_order' => 0,
       ),
+    ),
+  ),
+  65 => 
+  array (
+    'source' => 'dofusdb',
+    'entity' => 'panoply',
+    'mapping_key' => 'dofusdb_id',
+    'from_path' => 'id',
+    'from_lang_aware' => false,
+    'characteristic_key' => NULL,
+    'formatters' => 
+    array (
+      0 => 
+      array (
+        'name' => 'toString',
+        'args' => 
+        array (
+        ),
+      ),
+    ),
+    'spell_level_aggregation' => NULL,
+    'sort_order' => 0,
+    'targets' => 
+    array (
+      0 => 
+      array (
+        'target_model' => 'panoplies',
+        'target_field' => 'dofusdb_id',
+        'sort_order' => 0,
+      ),
+    ),
+  ),
+  66 => 
+  array (
+    'source' => 'dofusdb',
+    'entity' => 'panoply',
+    'mapping_key' => 'name',
+    'from_path' => 'name',
+    'from_lang_aware' => true,
+    'characteristic_key' => NULL,
+    'formatters' => 
+    array (
+      0 => 
+      array (
+        'name' => 'pickLang',
+        'args' => 
+        array (
+          'lang' => 'fr',
+          'fallback' => 'fr',
+        ),
+      ),
+    ),
+    'spell_level_aggregation' => NULL,
+    'sort_order' => 1,
+    'targets' => 
+    array (
+      0 => 
+      array (
+        'target_model' => 'panoplies',
+        'target_field' => 'name',
+        'sort_order' => 0,
+      ),
+    ),
+  ),
+  67 => 
+  array (
+    'source' => 'dofusdb',
+    'entity' => 'panoply',
+    'mapping_key' => 'description',
+    'from_path' => 'description',
+    'from_lang_aware' => true,
+    'characteristic_key' => NULL,
+    'formatters' => 
+    array (
+      0 => 
+      array (
+        'name' => 'pickLang',
+        'args' => 
+        array (
+          'lang' => 'fr',
+          'fallback' => 'fr',
+        ),
+      ),
+    ),
+    'spell_level_aggregation' => NULL,
+    'sort_order' => 2,
+    'targets' => 
+    array (
+      0 => 
+      array (
+        'target_model' => 'panoplies',
+        'target_field' => 'description',
+        'sort_order' => 0,
+      ),
+    ),
+  ),
+  68 => 
+  array (
+    'source' => 'dofusdb',
+    'entity' => 'panoply',
+    'mapping_key' => 'bonus',
+    'from_path' => 'effects',
+    'from_lang_aware' => false,
+    'characteristic_key' => NULL,
+    'formatters' => 
+    array (
+      0 => 
+      array (
+        'name' => 'itemEffectsToKrosmozBonus',
+        'args' => 
+        array (
+        ),
+      ),
+    ),
+    'spell_level_aggregation' => NULL,
+    'sort_order' => 3,
+    'targets' => 
+    array (
+      0 => 
+      array (
+        'target_model' => 'panoplies',
+        'target_field' => 'bonus',
+        'sort_order' => 0,
+      ),
+    ),
+  ),
+  69 => 
+  array (
+    'source' => 'dofusdb',
+    'entity' => 'panoply',
+    'mapping_key' => 'item_dofusdb_ids',
+    'from_path' => 'items',
+    'from_lang_aware' => false,
+    'characteristic_key' => NULL,
+    'formatters' => 
+    array (
+      0 => 
+      array (
+        'name' => 'extractItemIds',
+        'args' => 
+        array (
+        ),
+      ),
+    ),
+    'spell_level_aggregation' => NULL,
+    'sort_order' => 4,
+    'targets' => 
+    array (
+      0 => 
+      array (
+        'target_model' => 'panoplies',
+        'target_field' => 'item_dofusdb_ids',
+        'sort_order' => 0,
+      ),
+    ),
+  ),
+  70 => 
+  array (
+    'source' => 'dofusdb',
+    'entity' => 'monster-race',
+    'mapping_key' => 'id',
+    'from_path' => 'id',
+    'from_lang_aware' => false,
+    'characteristic_key' => NULL,
+    'formatters' => 
+    array (
+    ),
+    'spell_level_aggregation' => NULL,
+    'sort_order' => 0,
+    'targets' => 
+    array (
     ),
   ),
 );

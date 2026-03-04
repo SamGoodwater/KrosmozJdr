@@ -28,7 +28,7 @@ import { useDownloadPdf } from '@/Composables/utils/useDownloadPdf';
 import { getEntityRouteConfig, resolveEntityRouteUrl } from '@/Composables/entity/entityRouteRegistry';
 import { getResourceFieldDescriptors } from '@/Entities/resource/resource-descriptors';
 import { usePermissions } from "@/Composables/permissions/usePermissions";
-import { getEntityFieldShortLabel, getEntityFieldTooltip, shouldOmitLabelInMeta } from "@/Utils/Entity/entity-view-ui";
+import { getEntityFieldShortLabel, shouldOmitLabelInMeta, resolveEntityFieldUi, resolveEntityBadgeUi } from "@/Utils/Entity/entity-view-ui";
 
 const props = defineProps({
     resource: {
@@ -200,15 +200,40 @@ const handleAction = async (actionKey) => {
 
 // Utiliser les descriptors pour les icônes
 const getFieldIcon = (fieldKey) => {
-    return descriptors.value[fieldKey]?.general?.icon || 'fa-solid fa-info-circle';
+    return resolveEntityFieldUi({
+        fieldKey,
+        descriptors: descriptors.value,
+        tableMeta: props.tableMeta,
+        entityType: 'resource',
+    }).icon;
 };
 
 const getFieldLabel = (fieldKey) => {
-    return descriptors.value?.[fieldKey]?.general?.label || fieldKey;
+    return resolveEntityFieldUi({
+        fieldKey,
+        descriptors: descriptors.value,
+        tableMeta: props.tableMeta,
+        entityType: 'resource',
+    }).label;
 };
 
 const getFieldTooltip = (fieldKey) => {
-    return getEntityFieldTooltip(descriptors.value?.[fieldKey]);
+    return resolveEntityFieldUi({
+        fieldKey,
+        descriptors: descriptors.value,
+        tableMeta: props.tableMeta,
+        entityType: 'resource',
+    }).tooltip;
+};
+
+const getFieldIconStyle = (fieldKey) => {
+    const color = resolveEntityFieldUi({
+        fieldKey,
+        descriptors: descriptors.value,
+        tableMeta: props.tableMeta,
+        entityType: 'resource',
+    }).color;
+    return color ? { color } : undefined;
 };
 
 // Génère une cellule pour un champ
@@ -235,12 +260,6 @@ const asTextCell = (cell) => {
 
 // Obtenir la couleur du badge selon le champ
 const getBadgeColor = (fieldKey) => {
-    const cell = getCell(fieldKey);
-    // Si la cellule a déjà une couleur définie, l'utiliser
-    if (cell?.params?.color) {
-        return cell.params.color;
-    }
-    // Sinon, utiliser des couleurs par défaut selon le champ
     const colorMap = {
         'resource_type': 'info',
         'level': 'warning',
@@ -258,27 +277,32 @@ const getBadgeColor = (fieldKey) => {
         'created_at': 'neutral',
         'updated_at': 'neutral',
     };
-    return colorMap[fieldKey] || 'neutral';
+    return resolveEntityBadgeUi({
+        fieldKey,
+        cell: getCell(fieldKey),
+        fieldUi: resolveEntityFieldUi({
+            fieldKey,
+            descriptors: descriptors.value,
+            tableMeta: props.tableMeta,
+            entityType: 'resource',
+        }),
+        localColorMap: colorMap,
+    }).color;
 };
 
 // Obtenir les paramètres auto-color pour les badges
 const getBadgeAutoParams = (fieldKey) => {
-    const cell = getCell(fieldKey);
-    if (fieldKey === 'rarity' && cell?.value) {
-        return {
-            autoLabel: String(cell.value),
-            autoScheme: 'rarity',
-            autoTone: 'mid',
-        };
-    }
-    if (fieldKey === 'level' && cell?.value) {
-        return {
-            autoLabel: String(cell.value),
-            autoScheme: 'level',
-            autoTone: 'mid',
-        };
-    }
-    return {};
+    const { autoLabel, autoScheme, autoTone } = resolveEntityBadgeUi({
+        fieldKey,
+        cell: getCell(fieldKey),
+        fieldUi: resolveEntityFieldUi({
+            fieldKey,
+            descriptors: descriptors.value,
+            tableMeta: props.tableMeta,
+            entityType: 'resource',
+        }),
+    });
+    return { autoLabel, autoScheme, autoTone };
 };
 </script>
 
@@ -317,7 +341,7 @@ const getBadgeAutoParams = (fieldKey) => {
                         }"
                     />
 
-                    <div v-else class="w-full h-full flex items-center justify-center bg-base-200 rounded-lg">
+                    <div v-else class="w-full h-full flex items-center justify-center bg-base-200 entity-radius-box">
                         <Icon source="fa-solid fa-gem" :alt="resource.name" size="xl" />
                     </div>
                 </div>
@@ -334,7 +358,7 @@ const getBadgeAutoParams = (fieldKey) => {
                         <Tooltip :content="getFieldTooltip(fieldKey)" placement="top">
                             <div class="flex items-start justify-between gap-2 min-w-0">
                                 <div class="flex items-center gap-2 min-w-0">
-                                    <Icon :source="getFieldIcon(fieldKey)" size="xs" class="text-primary-300 flex-shrink-0" />
+                                    <Icon :source="getFieldIcon(fieldKey)" size="xs" class="text-primary-300 flex-shrink-0" :style="getFieldIconStyle(fieldKey)" />
                                     <span
                                         v-if="!shouldOmitLabelInMeta(fieldKey)"
                                         class="text-xs uppercase font-semibold text-primary-300 truncate"
@@ -398,7 +422,7 @@ const getBadgeAutoParams = (fieldKey) => {
                 <template v-for="fieldKey in technicalFields" :key="fieldKey">
                     <Tooltip :content="getFieldTooltip(fieldKey)" placement="top">
                         <div class="inline-flex items-center gap-2 min-w-0">
-                            <Icon :source="getFieldIcon(fieldKey)" size="xs" class="text-primary-300 flex-shrink-0" />
+                            <Icon :source="getFieldIcon(fieldKey)" size="xs" class="text-primary-300 flex-shrink-0" :style="getFieldIconStyle(fieldKey)" />
                             <span class="uppercase tracking-wide text-primary-300">
                                 {{ getFieldLabel(fieldKey) }}
                             </span>
@@ -417,7 +441,7 @@ const getBadgeAutoParams = (fieldKey) => {
                 <template v-for="fieldKey in userCanEditFields" :key="fieldKey">
                     <Tooltip :content="getFieldTooltip(fieldKey)" placement="top">
                         <div class="inline-flex items-center gap-2 min-w-0">
-                            <Icon :source="getFieldIcon(fieldKey)" size="xs" class="text-primary-300 flex-shrink-0" />
+                            <Icon :source="getFieldIcon(fieldKey)" size="xs" class="text-primary-300 flex-shrink-0" :style="getFieldIconStyle(fieldKey)" />
                             <span class="uppercase tracking-wide text-primary-300">
                                 {{ getFieldLabel(fieldKey) }}
                             </span>
@@ -452,3 +476,9 @@ const getBadgeAutoParams = (fieldKey) => {
         </div>
     </div>
 </template>
+
+<style scoped>
+.entity-radius-box {
+    border-radius: var(--radius-box, 0.1rem);
+}
+</style>

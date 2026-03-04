@@ -65,7 +65,7 @@
 | Do not use | Use |
 |------------|-----|
 | pv | life_points |
-| pv_max | life_points_max |
+| pv | life_points_max |
 | do_fixe | fixed_damage |
 | res_fixe | fixed_resistance |
 | res (for %) | resistance |
@@ -184,7 +184,7 @@ When migrating existing data and code, use this mapping. Each row is “old iden
 | modificateur_* | modifier_* (e.g. modifier_vitality_creature) |
 | de_vie_creature | hit_dice_creature |
 | bonus_maitrise_creature | mastery_bonus_creature |
-| pv_max_object | life_points_max_object |
+| pv_object | life_points_max_object |
 | competences_object | skills_object |
 | competences_passives_object | passive_skills_object |
 | res_50_object | resistance_50_percent_object |

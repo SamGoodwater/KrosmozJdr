@@ -34,6 +34,7 @@ import { useSectionAPI } from '../composables/useSectionAPI';
 import { useTemplateRegistry } from '../composables/useTemplateRegistry';
 import { TransformService, SectionParameterService, SectionMapper } from '@/Utils/Services';
 import { Section } from '@/Models';
+import { logDev, warnDev } from '@/Utils/dev-logger';
 
 const props = defineProps({
     open: {
@@ -131,7 +132,7 @@ const getSectionValue = (key) => {
         try {
             return getterMap[key]();
         } catch (e) {
-            console.warn(`Erreur lors de l'accès au getter pour "${key}":`, e);
+            warnDev(`Erreur lors de l'accès au getter pour "${key}":`, e);
             // Fallback sur _data
             return model._data?.[key] ?? null;
         }
@@ -164,20 +165,18 @@ const initializeFormData = () => {
     const slug = existingSlug || generateSlug(title, sectionId);
     
     // Debug en développement
-    if (import.meta.env.DEV) {
-        console.log('SectionParamsModal - initializeFormData:', {
-            sectionId,
-            title,
-            existingSlug,
-            slug,
-            section: props.section,
-            sectionSettings,
-            readLevel: getSectionValue('read_level'),
-            writeLevel: getSectionValue('write_level'),
-            state: getSectionValue('state'),
-            order: getSectionValue('order'),
-        });
-    }
+    logDev('SectionParamsModal - initializeFormData:', {
+        sectionId,
+        title,
+        existingSlug,
+        slug,
+        section: props.section,
+        sectionSettings,
+        readLevel: getSectionValue('read_level'),
+        writeLevel: getSectionValue('write_level'),
+        state: getSectionValue('state'),
+        order: getSectionValue('order'),
+    });
     
     const formData = {
         // Paramètres communs
@@ -269,16 +268,14 @@ watch(() => [props.open, props.section], ([isOpen]) => {
             nextTick(() => {
                 const newData = initializeFormData();
                 
-                if (import.meta.env.DEV) {
-                    console.log('SectionParamsModal - FormData initialized:', {
-                        newData,
-                        title: newData.title,
-                        slug: newData.slug,
-                        sectionModel: sectionModel.value,
-                        sectionId: sectionModel.value?.id,
-                        formDataBefore: formData.value
-                    });
-                }
+                logDev('SectionParamsModal - FormData initialized:', {
+                    newData,
+                    title: newData.title,
+                    slug: newData.slug,
+                    sectionModel: sectionModel.value,
+                    sectionId: sectionModel.value?.id,
+                    formDataBefore: formData.value
+                });
                 
                 // Mettre à jour formData de manière réactive
                 // Réassigner complètement l'objet pour forcer la réactivité
@@ -293,24 +290,20 @@ watch(() => [props.open, props.section], ([isOpen]) => {
                     
                     // Forcer la mise à jour des computed en les touchant
                     // Cela garantit que les InputField reçoivent les nouvelles valeurs
-                    if (import.meta.env.DEV) {
-                        console.log('SectionParamsModal - Computed values after update:', {
-                            formTitleValue: formTitle.value,
-                            formSlugValue: formSlug.value,
-                            formDataTitle: formData.value.title,
-                            formDataSlug: formData.value.slug,
-                            formDataVersion: formDataVersion.value
-                        });
-                    }
+                    logDev('SectionParamsModal - Computed values after update:', {
+                        formTitleValue: formTitle.value,
+                        formSlugValue: formSlug.value,
+                        formDataTitle: formData.value.title,
+                        formDataSlug: formData.value.slug,
+                        formDataVersion: formDataVersion.value
+                    });
                 });
                 
-                if (import.meta.env.DEV) {
-                    console.log('SectionParamsModal - FormData after update:', {
-                        formDataAfter: formData.value,
-                        title: formData.value.title,
-                        slug: formData.value.slug
-                    });
-                }
+                logDev('SectionParamsModal - FormData after update:', {
+                    formDataAfter: formData.value,
+                    title: formData.value.title,
+                    slug: formData.value.slug
+                });
             });
         });
     }

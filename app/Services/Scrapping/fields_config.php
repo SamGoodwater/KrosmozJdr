@@ -712,6 +712,10 @@ return [
                     'field_name' => 'description',
                     'convert' => false,
                 ],
+                'effect' => [
+                    'field_name' => 'effects',
+                    'convert' => true,
+                ],
                 'level' => [
                     'field_name' => 'level',
                     'convert' => true,

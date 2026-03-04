@@ -957,8 +957,7 @@ final class IntegrationService
         $excludeFromUpdate = is_array($options['exclude_from_update'] ?? null) ? $options['exclude_from_update'] : [];
         $propertyWhitelist = is_array($options['property_whitelist'] ?? null) ? $options['property_whitelist'] : [];
 
-        $typeId = isset($convertedData['items']['type_id']) ? (int) $convertedData['items']['type_id'] : null;
-        $targetTable = $this->resolveItemTargetTable($typeId);
+        $targetTable = $this->getItemTargetTable($convertedData);
         $data = $convertedData[$targetTable] ?? $convertedData['items'] ?? $convertedData['resources'] ?? $convertedData['consumables'] ?? [];
         if ($data === []) {
             return IntegrationResult::fail('Données converties incomplètes (items/resources/consumables manquant).');
@@ -1019,9 +1018,11 @@ final class IntegrationService
             'rarity' => $rarity,
             'created_by' => $userId,
         ];
+        if (in_array($targetTable, ['items', 'resources', 'consumables'], true)) {
+            $effectRaw = $data['effect'] ?? null;
+            $payload['effect'] = is_string($effectRaw) ? $effectRaw : (is_array($effectRaw) ? json_encode($effectRaw, JSON_UNESCAPED_UNICODE) : null);
+        }
         if ($targetTable === 'items') {
-            $effectStr = $data['effect'] ?? null;
-            $payload['effect'] = is_string($effectStr) ? $effectStr : (is_array($data['effect'] ?? null) ? json_encode($data['effect'], JSON_UNESCAPED_UNICODE) : null);
             $bonusRaw = $data['bonus'] ?? null;
             $payload['bonus'] = is_string($bonusRaw) ? $bonusRaw : (is_array($bonusRaw) ? json_encode($bonusRaw, JSON_UNESCAPED_UNICODE) : null);
         }

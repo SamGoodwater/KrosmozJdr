@@ -173,7 +173,7 @@ export function getNpcFieldDescriptors(ctx = {}) {
       table: {
         sortable: true,
         searchable: true,
-        filterable: { id: "creature_state", type: "multi", defaultVisible: true },
+        filterable: { id: "creature_state", type: "multi", defaultVisible: false },
         defaultVisible: { xs: false, sm: false, md: false, lg: false, xl: false },
         cell: { sizes: { xs: { mode: "text" }, sm: { mode: "text" }, md: { mode: "text" }, lg: { mode: "text" }, xl: { mode: "text" } } },
       },
@@ -292,6 +292,12 @@ export function getNpcFieldDescriptors(ctx = {}) {
       key: "story",
       label: "Histoire",
       icon: "fa-solid fa-book",
+      table: {
+        searchable: true,
+        filterable: { id: "story", type: "text", defaultVisible: false },
+        defaultVisible: { xs: false, sm: false, md: false, lg: true, xl: true },
+        cell: { sizes: { xs: { mode: "text", truncate: 20 }, sm: { mode: "text", truncate: 30 }, md: { mode: "text", truncate: 50 }, lg: { mode: "text" }, xl: { mode: "text" } } },
+      },
       display: {
         sizes: {
           xs: { mode: "text", truncate: 20 },
@@ -315,6 +321,12 @@ export function getNpcFieldDescriptors(ctx = {}) {
       key: "historical",
       label: "Historique",
       icon: "fa-solid fa-scroll",
+      table: {
+        searchable: true,
+        filterable: { id: "historical", type: "text", defaultVisible: false },
+        defaultVisible: { xs: false, sm: false, md: false, lg: true, xl: true },
+        cell: { sizes: { xs: { mode: "text", truncate: 20 }, sm: { mode: "text", truncate: 30 }, md: { mode: "text", truncate: 50 }, lg: { mode: "text" }, xl: { mode: "text" } } },
+      },
       display: {
         sizes: {
           xs: { mode: "text", truncate: 20 },
@@ -338,6 +350,12 @@ export function getNpcFieldDescriptors(ctx = {}) {
       key: "age",
       label: "Âge",
       icon: "fa-solid fa-birthday-cake",
+      table: {
+        sortable: true,
+        filterable: { id: "age", type: "text", defaultVisible: false },
+        defaultVisible: { xs: false, sm: false, md: true, lg: true, xl: true },
+        cell: { sizes: { xs: { mode: "text" }, sm: { mode: "text" }, md: { mode: "text" }, lg: { mode: "text" }, xl: { mode: "text" } } },
+      },
       display: {
         sizes: {
           xs: { mode: "text" },
@@ -361,6 +379,12 @@ export function getNpcFieldDescriptors(ctx = {}) {
       key: "size",
       label: "Taille",
       icon: "fa-solid fa-expand",
+      table: {
+        sortable: true,
+        filterable: { id: "size", type: "text", defaultVisible: false },
+        defaultVisible: { xs: false, sm: false, md: true, lg: true, xl: true },
+        cell: { sizes: { xs: { mode: "text" }, sm: { mode: "text" }, md: { mode: "text" }, lg: { mode: "text" }, xl: { mode: "text" } } },
+      },
       display: {
         sizes: {
           xs: { mode: "text" },

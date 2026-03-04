@@ -205,6 +205,8 @@ export class Spell extends BaseModel {
             case 'spell_types':
             case 'spellTypes':
                 return this._toSpellTypesCell(format, size, options);
+            case 'spell_summary_profile':
+                return this._toSpellSummaryProfileCell(format, size, options);
             case 'created_by':
             case 'createdBy':
                 return this._toCreatedByCell(format, size, options);
@@ -498,6 +500,42 @@ export class Spell extends BaseModel {
                 tooltip: displayValue === '-' ? '' : displayValue,
                 sortValue: displayValue,
                 searchValue: displayValue === '-' ? '' : displayValue,
+            },
+        };
+    }
+
+    /**
+     * Génère une cellule résumé (type chips) pour le profil global d'un sort.
+     * @private
+     */
+    _toSpellSummaryProfileCell(format, size, options) {
+        const paValue = this.pa != null ? String(this.pa) : null;
+        const poValue = this.po ? String(this.po) : null;
+        const areaValue = this.area != null ? String(this.area) : null;
+        const elementValue = this.element ? String(this.element) : null;
+        const categoryValue = this.category ? String(this.category) : null;
+        const typeCount = Array.isArray(this.spellTypes) ? this.spellTypes.length : 0;
+        const typesValue = typeCount > 0 ? `${typeCount} type${typeCount > 1 ? 's' : ''}` : null;
+
+        const items = [
+            { icon: 'fa-solid fa-bolt', value: paValue, tooltip: paValue ? `PA: ${paValue}` : '' },
+            { icon: 'fa-solid fa-crosshairs', value: poValue, tooltip: poValue ? `Portée: ${poValue}` : '' },
+            { icon: 'fa-solid fa-expand', value: areaValue, tooltip: areaValue ? `Zone: ${areaValue}` : '' },
+            { icon: 'fa-solid fa-fire', value: elementValue, tooltip: elementValue ? `Élément: ${elementValue}` : '' },
+            { icon: 'fa-solid fa-tag', value: categoryValue, tooltip: categoryValue ? `Catégorie: ${categoryValue}` : '' },
+            { icon: 'fa-solid fa-tags', value: typesValue, tooltip: typesValue ? `Types: ${typesValue}` : '' },
+        ].filter((it) => it.value !== null && it.value !== undefined && String(it.value) !== '');
+
+        const searchValue = items.map((it) => String(it.value)).join(' ');
+
+        return {
+            type: 'chips',
+            value: '',
+            params: {
+                items,
+                sortValue: Number(this.level) || 0,
+                searchValue,
+                filterValue: searchValue,
             },
         };
     }

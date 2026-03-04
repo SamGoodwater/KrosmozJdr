@@ -15,8 +15,9 @@
  * const { getFieldIcon, getFieldGroup } = useEntityFieldHelpers(getResourceFieldDescriptors, ctx);
  */
 import { computed } from 'vue';
+import { resolveEntityFieldUi, resolveEntityBadgeUi } from '@/Utils/Entity/entity-view-ui';
 
-export function useEntityFieldHelpers(getDescriptorsFn, ctx = {}) {
+export function useEntityFieldHelpers(getDescriptorsFn, ctx = {}, options = {}) {
     // Mémoriser les descriptors pour éviter les recalculs
     const descriptors = computed(() => {
         if (typeof getDescriptorsFn !== 'function') return {};
@@ -72,10 +73,44 @@ export function useEntityFieldHelpers(getDescriptorsFn, ctx = {}) {
         return Array.from(groups.entries()).map(([title, keys]) => ({ title, keys }));
     };
 
+    /**
+     * Résout les métadonnées UI d'un champ (BDD -> descriptors -> fallback)
+     *
+     * @param {string} fieldKey
+     * @returns {{label:string, shortLabel:string, icon:string, tooltip:string, color:string, characteristic:any}}
+     */
+    const getFieldUi = (fieldKey) => {
+        return resolveEntityFieldUi({
+            fieldKey,
+            descriptors: descriptors.value,
+            tableMeta: options?.tableMeta || {},
+            entityType: options?.entityType || '',
+        });
+    };
+
+    /**
+     * Résout le style de badge d'un champ.
+     *
+     * @param {string} fieldKey
+     * @param {Object} cell
+     * @param {Record<string, string>} localColorMap
+     * @returns {{color:string, autoLabel?:string, autoScheme?:string, autoTone?:string}}
+     */
+    const getBadgeUi = (fieldKey, cell, localColorMap = {}) => {
+        return resolveEntityBadgeUi({
+            fieldKey,
+            cell,
+            fieldUi: getFieldUi(fieldKey),
+            localColorMap,
+        });
+    };
+
     return {
         getFieldIcon,
         getFieldGroup,
         groupFieldsByGroup,
+        getFieldUi,
+        getBadgeUi,
         descriptors, // Exposer pour usage avancé si nécessaire
     };
 }

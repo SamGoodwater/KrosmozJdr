@@ -20,7 +20,7 @@ import CharacteristicsCard from "@/Pages/Organismes/data-display/Characteristics
 import { buildCreatureCharacteristicGroups } from "@/Utils/Entity/buildCreatureCharacteristicGroups";
 import { usePermissions } from "@/Composables/permissions/usePermissions";
 import { getMonsterFieldDescriptors } from "@/Entities/monster/monster-descriptors";
-import { getEntityFieldShortLabel, getEntityFieldTooltip, shouldOmitLabelInMeta } from "@/Utils/Entity/entity-view-ui";
+import { getEntityFieldShortLabel, shouldOmitLabelInMeta, resolveEntityFieldUi } from "@/Utils/Entity/entity-view-ui";
 
 const props = defineProps({
     monster: {
@@ -80,16 +80,36 @@ const canShowField = (fieldKey) => {
 // Champs importants à afficher
 const importantFields = computed(() => ['monster_race', 'size', 'is_boss', 'dofus_version'].filter(canShowField));
 
-// Champs supplémentaires à afficher au hover
-const expandedFields = computed(() => [
-    'boss_pa',
-    'dofus_version',
-    'auto_update',
-].filter(canShowField));
+const technicalFieldsOrder = ['id', 'slug', 'state', 'is_public', 'read_level', 'write_level', 'created_at', 'updated_at', 'deleted_at'];
+const technicalFieldRank = new Map(technicalFieldsOrder.map((key, index) => [key, index]));
+const sortExtendedFields = (fields) => {
+    return [...fields].sort((a, b) => {
+        const rankA = technicalFieldRank.has(a) ? technicalFieldRank.get(a) : -1;
+        const rankB = technicalFieldRank.has(b) ? technicalFieldRank.get(b) : -1;
+
+        if (rankA === -1 && rankB === -1) return 0;
+        if (rankA === -1) return -1;
+        if (rankB === -1) return 1;
+        return rankA - rankB;
+    });
+};
+
+// En mode étendu, afficher toutes les propriétés visibles non principales.
+const expandedFields = computed(() => {
+    const excluded = new Set(['creature_name', 'image', 'creature_characteristics']);
+    const fields = Object.keys(descriptors.value || {}).filter((key) => {
+        return canShowField(key) && !importantFields.value.includes(key) && !excluded.has(key);
+    });
+    return sortExtendedFields(fields);
+});
 
 const getFieldIcon = (fieldKey) => {
-    const desc = descriptors.value?.[fieldKey];
-    return desc?.general?.icon ?? desc?.icon ?? 'fa-solid fa-info-circle';
+    return resolveEntityFieldUi({
+        fieldKey,
+        descriptors: descriptors.value,
+        tableMeta: props.tableMeta,
+        entityType: 'monster',
+    }).icon;
 };
 
 const getCell = (fieldKey) => {
@@ -100,10 +120,29 @@ const getCell = (fieldKey) => {
 };
 
 const getFieldLabel = (fieldKey) => {
-    const desc = descriptors.value?.[fieldKey];
-    return desc?.general?.label ?? desc?.label ?? fieldKey;
+    return resolveEntityFieldUi({
+        fieldKey,
+        descriptors: descriptors.value,
+        tableMeta: props.tableMeta,
+        entityType: 'monster',
+    }).label;
 };
-const getFieldTooltip = (fieldKey) => getEntityFieldTooltip(descriptors.value?.[fieldKey]);
+const getFieldTooltip = (fieldKey) => resolveEntityFieldUi({
+    fieldKey,
+    descriptors: descriptors.value,
+    tableMeta: props.tableMeta,
+    entityType: 'monster',
+}).tooltip;
+
+const getFieldIconStyle = (fieldKey) => {
+    const color = resolveEntityFieldUi({
+        fieldKey,
+        descriptors: descriptors.value,
+        tableMeta: props.tableMeta,
+        entityType: 'monster',
+    }).color;
+    return color ? { color } : undefined;
+};
 
 const characteristicsByDbColumn = computed(() =>
     props.tableMeta?.characteristics?.creature?.byDbColumn || {}
@@ -156,7 +195,8 @@ const handleAction = async (actionKey) => {
             minWidth: '150px',
             maxWidth: isHovered ? '300px' : '200px',
             height: isHovered ? 'auto' : '100px',
-            minHeight: '80px'
+            minHeight: '80px',
+            borderRadius: 'var(--radius-box, 0.1rem)'
         }"
         @mouseenter="canHoverExpand && (isHovered = true)"
         @mouseleave="canHoverExpand && (isHovered = false)">
@@ -179,7 +219,7 @@ const handleAction = async (actionKey) => {
                     <div class="flex items-center gap-2">
                         <template v-for="field in importantFields" :key="field">
                             <Tooltip :content="tooltipForField(field, getCell(field))" placement="top">
-                                <Icon :source="getFieldIcon(field)" size="xs" class="text-primary-400" />
+                                <Icon :source="getFieldIcon(field)" size="xs" class="text-primary-400" :style="getFieldIconStyle(field)" />
                             </Tooltip>
                         </template>
                     </div>
@@ -219,10 +259,11 @@ const handleAction = async (actionKey) => {
                                 :source="getFieldIcon(key)"
                                 size="xs"
                                 class="text-primary-400 flex-shrink-0 mt-0.5"
+                                :style="getFieldIconStyle(key)"
                             />
                             <div class="flex-1 min-w-0">
                                 <div class="font-semibold text-primary-400">
-                                    {{ key }}:
+                                    {{ getFieldLabel(key) }}:
                                 </div>
                                 <div class="text-primary-200 truncate">
                                     <CellRenderer

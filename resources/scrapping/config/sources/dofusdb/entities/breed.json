@@ -40,7 +40,7 @@
     },
     {
       "key": "name",
-      "from": { "path": "name", "langAware": true },
+      "from": { "path": "shortName", "langAware": true },
       "to": [{ "model": "breeds", "field": "name" }],
       "formatters": [{ "name": "pickLang", "args": { "lang": "fr", "fallback": "fr" } }]
     },
@@ -48,11 +48,14 @@
       "key": "description",
       "from": { "path": "description", "langAware": true },
       "to": [{ "model": "breeds", "field": "description" }],
-      "formatters": [{ "name": "pickLang", "args": { "lang": "fr", "fallback": "fr" } }]
+      "formatters": [
+        { "name": "pickLang", "args": { "lang": "fr", "fallback": "fr" } },
+        { "name": "truncate", "args": { "max": 255 } }
+      ]
     },
     {
       "key": "description_fast",
-      "from": { "path": "shortDescription", "langAware": true },
+      "from": { "path": "gameplayDescription", "langAware": true },
       "to": [{ "model": "breeds", "field": "description_fast" }],
       "formatters": [
         { "name": "pickLang", "args": { "lang": "fr", "fallback": "fr" } },

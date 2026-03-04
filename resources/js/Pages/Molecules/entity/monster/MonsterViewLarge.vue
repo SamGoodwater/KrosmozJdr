@@ -25,7 +25,7 @@ import { useDownloadPdf } from '@/Composables/utils/useDownloadPdf';
 import { getEntityRouteConfig, resolveEntityRouteUrl } from '@/Composables/entity/entityRouteRegistry';
 import { usePermissions } from "@/Composables/permissions/usePermissions";
 import { getMonsterFieldDescriptors } from "@/Entities/monster/monster-descriptors";
-import { getEntityFieldTooltip, getEntityFieldShortLabel, shouldOmitLabelInMeta } from "@/Utils/Entity/entity-view-ui";
+import { getEntityFieldShortLabel, shouldOmitLabelInMeta, resolveEntityFieldUi, resolveEntityBadgeUi } from "@/Utils/Entity/entity-view-ui";
 
 const props = defineProps({
     monster: {
@@ -107,15 +107,38 @@ const technicalFields = computed(() => ([
 ].filter(canShowField)));
 
 const getFieldLabel = (fieldKey) => {
-    const desc = descriptors.value?.[fieldKey];
-    return desc?.general?.label ?? desc?.label ?? fieldKey;
+    return resolveEntityFieldUi({
+        fieldKey,
+        descriptors: descriptors.value,
+        tableMeta: props.tableMeta,
+        entityType: 'monster',
+    }).label;
 };
 
-const getFieldTooltip = (fieldKey) => getEntityFieldTooltip(descriptors.value?.[fieldKey]);
+const getFieldTooltip = (fieldKey) => resolveEntityFieldUi({
+    fieldKey,
+    descriptors: descriptors.value,
+    tableMeta: props.tableMeta,
+    entityType: 'monster',
+}).tooltip;
 
 const getFieldIcon = (fieldKey) => {
-    const desc = descriptors.value?.[fieldKey];
-    return desc?.general?.icon ?? desc?.icon ?? 'fa-solid fa-info-circle';
+    return resolveEntityFieldUi({
+        fieldKey,
+        descriptors: descriptors.value,
+        tableMeta: props.tableMeta,
+        entityType: 'monster',
+    }).icon;
+};
+
+const getFieldIconStyle = (fieldKey) => {
+    const color = resolveEntityFieldUi({
+        fieldKey,
+        descriptors: descriptors.value,
+        tableMeta: props.tableMeta,
+        entityType: 'monster',
+    }).color;
+    return color ? { color } : undefined;
 };
 
 const getCell = (fieldKey) => {
@@ -138,8 +161,6 @@ const creatureCharacteristicsGroups = computed(() =>
 const hasCreatureCharacteristics = computed(() => !!creatureData.value);
 
 const getBadgeColor = (fieldKey) => {
-    const cell = getCell(fieldKey);
-    if (cell?.params?.color) return cell.params.color;
     const colorMap = {
         monster_race: 'info',
         size: 'secondary',
@@ -152,7 +173,17 @@ const getBadgeColor = (fieldKey) => {
         created_at: 'neutral',
         updated_at: 'neutral',
     };
-    return colorMap[fieldKey] || 'neutral';
+    return resolveEntityBadgeUi({
+        fieldKey,
+        cell: getCell(fieldKey),
+        fieldUi: resolveEntityFieldUi({
+            fieldKey,
+            descriptors: descriptors.value,
+            tableMeta: props.tableMeta,
+            entityType: 'monster',
+        }),
+        localColorMap: colorMap,
+    }).color;
 };
 
 const asTextCell = (cell) => {
@@ -224,7 +255,7 @@ const handleAction = async (actionKey) => {
                     />
                     <div
                         v-else
-                        class="w-full h-full rounded-lg bg-base-200 flex items-center justify-center border border-base-300"
+                        class="w-full h-full entity-radius-box bg-base-200 flex items-center justify-center border border-base-300"
                     >
                         <Icon source="fa-solid fa-dragon" :alt="monster.creature?.name || 'Monstre'" size="xl" class="text-primary-400" />
                     </div>
@@ -243,7 +274,7 @@ const handleAction = async (actionKey) => {
                         <Tooltip :content="getFieldTooltip(fieldKey)" placement="top">
                             <div class="flex items-start justify-between gap-2 min-w-0">
                                 <div class="flex items-center gap-2 min-w-0">
-                                    <Icon :source="getFieldIcon(fieldKey)" size="xs" class="text-primary-300 flex-shrink-0" />
+                                    <Icon :source="getFieldIcon(fieldKey)" size="xs" class="text-primary-300 flex-shrink-0" :style="getFieldIconStyle(fieldKey)" />
                                     <span
                                         v-if="!shouldOmitLabelInMeta(fieldKey)"
                                         class="text-xs uppercase font-semibold text-primary-300 truncate"
@@ -304,7 +335,7 @@ const handleAction = async (actionKey) => {
                 <template v-for="fieldKey in technicalFields" :key="fieldKey">
                     <Tooltip :content="getFieldTooltip(fieldKey)" placement="top">
                         <div class="inline-flex items-center gap-2 min-w-0">
-                            <Icon :source="getFieldIcon(fieldKey)" size="xs" class="text-primary-300 flex-shrink-0" />
+                            <Icon :source="getFieldIcon(fieldKey)" size="xs" class="text-primary-300 flex-shrink-0" :style="getFieldIconStyle(fieldKey)" />
                             <span class="uppercase tracking-wide text-primary-300">{{ getFieldLabel(fieldKey) }}</span>
                             <span class="min-w-0 break-words">
                                 <CellRenderer :cell="asTextCell(getCell(fieldKey))" ui-color="primary" />
@@ -320,7 +351,7 @@ const handleAction = async (actionKey) => {
                     <template v-for="fieldKey in userCanEditFields" :key="fieldKey">
                         <Tooltip :content="getFieldTooltip(fieldKey)" placement="top">
                             <div class="inline-flex items-center gap-2 min-w-0">
-                                <Icon :source="getFieldIcon(fieldKey)" size="xs" class="text-primary-300 flex-shrink-0" />
+                                <Icon :source="getFieldIcon(fieldKey)" size="xs" class="text-primary-300 flex-shrink-0" :style="getFieldIconStyle(fieldKey)" />
                                 <span class="uppercase tracking-wide text-primary-300">{{ getFieldLabel(fieldKey) }}</span>
                                 <span class="min-w-0 break-words">
                                     <template v-if="fieldKey === 'auto_update'">
@@ -347,3 +378,9 @@ const handleAction = async (actionKey) => {
         </div>
     </div>
 </template>
+
+<style scoped>
+.entity-radius-box {
+    border-radius: var(--radius-box, 0.1rem);
+}
+</style>

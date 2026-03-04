@@ -119,6 +119,7 @@ export function getItemFieldDescriptors(ctx = {}) {
       icon: "fa-solid fa-align-left",
       table: {
         searchable: true,
+        filterable: { id: "description", type: "text", defaultVisible: false },
         defaultVisible: { xs: false, sm: false, md: true, lg: true, xl: true },
         cell: { sizes: { xs: { mode: "text", truncate: 20 }, sm: { mode: "text", truncate: 30 }, md: { mode: "text", truncate: 50 }, lg: { mode: "text", truncate: 80 }, xl: { mode: "text" } } },
       },
@@ -274,6 +275,12 @@ export function getItemFieldDescriptors(ctx = {}) {
       key: "read_level",
       label: "Lecture (min.)",
       icon: "fa-solid fa-eye",
+      table: {
+        sortable: true,
+        filterable: { id: "read_level", type: "multi", defaultVisible: false },
+        defaultVisible: { xs: false, sm: false, md: false, lg: false, xl: false },
+        cell: { sizes: { xs: { mode: "badge" }, sm: { mode: "badge" }, md: { mode: "badge" }, lg: { mode: "badge" }, xl: { mode: "badge" } } },
+      },
       display: {
         sizes: {
           xs: { mode: "badge" },
@@ -299,6 +306,12 @@ export function getItemFieldDescriptors(ctx = {}) {
       key: "write_level",
       label: "Écriture (min.)",
       icon: "fa-solid fa-pen-to-square",
+      table: {
+        sortable: true,
+        filterable: { id: "write_level", type: "multi", defaultVisible: false },
+        defaultVisible: { xs: false, sm: false, md: false, lg: false, xl: false },
+        cell: { sizes: { xs: { mode: "badge" }, sm: { mode: "badge" }, md: { mode: "badge" }, lg: { mode: "badge" }, xl: { mode: "badge" } } },
+      },
       display: {
         sizes: {
           xs: { mode: "badge" },
@@ -324,6 +337,12 @@ export function getItemFieldDescriptors(ctx = {}) {
       key: "price",
       label: "Prix",
       icon: "fa-solid fa-coins",
+      table: {
+        sortable: true,
+        filterable: { id: "price", type: "text", defaultVisible: false },
+        defaultVisible: { xs: false, sm: false, md: true, lg: true, xl: true },
+        cell: { sizes: { xs: { mode: "text", truncate: 10 }, sm: { mode: "text", truncate: 15 }, md: { mode: "text", truncate: 20 }, lg: { mode: "text" }, xl: { mode: "text" } } },
+      },
       display: {
         sizes: {
           xs: { mode: "text", truncate: 10 },
@@ -348,6 +367,12 @@ export function getItemFieldDescriptors(ctx = {}) {
       key: "dofus_version",
       label: "Version Dofus",
       icon: "fa-solid fa-code-branch",
+      table: {
+        sortable: true,
+        filterable: { id: "dofus_version", type: "text", defaultVisible: false },
+        defaultVisible: { xs: false, sm: false, md: false, lg: true, xl: true },
+        cell: { sizes: { xs: { mode: "text" }, sm: { mode: "text" }, md: { mode: "text" }, lg: { mode: "text" }, xl: { mode: "text" } } },
+      },
       display: {
         sizes: {
           xs: { mode: "text" },
@@ -373,7 +398,7 @@ export function getItemFieldDescriptors(ctx = {}) {
       icon: "fa-solid fa-tags",
       table: {
         sortable: true,
-        filterable: { id: "item_type_id", type: "multi", defaultVisible: true },
+        filterable: { id: "item_type_id", type: "multi", defaultVisible: false },
         defaultVisible: { xs: false, sm: false, md: true, lg: true, xl: true },
         cell: { sizes: { xs: { mode: "text", truncate: 10 }, sm: { mode: "text", truncate: 15 }, md: { mode: "text", truncate: 20 }, lg: { mode: "text" }, xl: { mode: "text" } } },
       },
@@ -384,6 +409,26 @@ export function getItemFieldDescriptors(ctx = {}) {
           md: { mode: "text", truncate: 20 },
           lg: { mode: "text" },
           xl: { mode: "text" },
+        },
+      },
+    },
+    item_summary_meta: {
+      key: "item_summary_meta",
+      label: "Résumé",
+      icon: "fa-solid fa-layer-group",
+      table: {
+        type: "chips",
+        searchable: true,
+        defaultVisible: { xs: false, sm: false, md: true, lg: true, xl: true },
+        cell: { sizes: { xs: { mode: "chips" }, sm: { mode: "chips" }, md: { mode: "chips" }, lg: { mode: "chips" }, xl: { mode: "chips" } } },
+      },
+      display: {
+        sizes: {
+          xs: { mode: "chips" },
+          sm: { mode: "chips" },
+          md: { mode: "chips" },
+          lg: { mode: "chips" },
+          xl: { mode: "chips" },
         },
       },
     },

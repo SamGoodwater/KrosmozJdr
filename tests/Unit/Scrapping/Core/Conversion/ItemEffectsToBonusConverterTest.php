@@ -10,6 +10,7 @@ use Database\Seeders\CharacteristicSeeder;
 use Database\Seeders\DofusdbCharacteristicIdSeeder;
 use Database\Seeders\ObjectCharacteristicSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Log;
 use Tests\TestCase;
 
 /**
@@ -65,6 +66,7 @@ class ItemEffectsToBonusConverterTest extends TestCase
 
     public function test_convert_ignores_effects_with_unknown_characteristic_id(): void
     {
+        Log::spy();
         $effects = [
             ['characteristic' => 99999, 'value' => 5],
         ];
@@ -72,6 +74,7 @@ class ItemEffectsToBonusConverterTest extends TestCase
         $result = $this->converter->convert($effects, [], []);
 
         $this->assertNull($result);
+        Log::shouldHaveReceived('warning')->once();
     }
 
     public function test_convert_uses_from_to_when_value_missing(): void
@@ -85,5 +88,99 @@ class ItemEffectsToBonusConverterTest extends TestCase
         $this->assertIsString($result);
         $decoded = json_decode($result, true);
         $this->assertSame(6, $decoded['strength'] ?? null);
+    }
+
+    public function test_convert_uses_from_when_to_is_zero_for_fixed_value(): void
+    {
+        $effects = [
+            ['characteristic' => 10, 'from' => 5, 'to' => 0],
+        ];
+
+        $result = $this->converter->convert($effects, [], ['entityType' => 'panoply']);
+
+        $this->assertIsString($result);
+        $decoded = json_decode($result, true);
+        $this->assertSame(5, $decoded['strength'] ?? null);
+    }
+
+    public function test_convert_supports_tiered_panoply_effects(): void
+    {
+        $effectsByTier = [
+            [],
+            [
+                ['characteristic' => 10, 'from' => 5, 'to' => 0], // force +5
+                ['characteristic' => 15, 'from' => 5, 'to' => 0], // intel +5
+            ],
+            [
+                ['characteristic' => 10, 'from' => 10, 'to' => 0], // force +10
+            ],
+        ];
+
+        $result = $this->converter->convert($effectsByTier, [], ['entityType' => 'panoply']);
+
+        $this->assertIsString($result);
+        $decoded = json_decode($result, true);
+        $this->assertIsArray($decoded);
+        $this->assertSame(5, $decoded['2']['strength'] ?? null);
+        $this->assertSame(5, $decoded['2']['intelligence'] ?? null);
+        $this->assertSame(10, $decoded['3']['strength'] ?? null);
+    }
+
+    public function test_convert_supports_newly_mapped_heal_and_power_characteristics(): void
+    {
+        $effects = [
+            ['characteristic' => 49, 'value' => 20], // healBonus
+            ['characteristic' => 25, 'value' => 30], // damagePercent
+        ];
+
+        $result = $this->converter->convert($effects, [], ['entityType' => 'panoply']);
+
+        $this->assertIsString($result);
+        $decoded = json_decode($result, true);
+        $this->assertIsArray($decoded);
+        $this->assertArrayHasKey('heal_bonus', $decoded);
+        $this->assertArrayHasKey('power', $decoded);
+    }
+
+    public function test_convert_supports_push_and_ap_reduction_characteristics(): void
+    {
+        $effects = [
+            ['characteristic' => 84, 'value' => 25], // pushDamageBonus
+            ['characteristic' => 82, 'value' => 12], // apReduction
+        ];
+
+        $result = $this->converter->convert($effects, [], ['entityType' => 'panoply']);
+
+        $this->assertIsString($result);
+        $decoded = json_decode($result, true);
+        $this->assertIsArray($decoded);
+        $this->assertArrayHasKey('push_damage_bonus', $decoded);
+        $this->assertArrayHasKey('ap_reduction', $decoded);
+    }
+
+    public function test_convert_logs_id_38_as_unknown_without_polluting_bonus(): void
+    {
+        Log::spy();
+        $effects = [
+            ['characteristic' => 10, 'value' => 5],
+            ['characteristic' => 38, 'value' => 20],
+        ];
+
+        $result = $this->converter->convert($effects, ['id' => 1234], ['entityType' => 'panoply']);
+
+        $this->assertIsString($result);
+        $decoded = json_decode($result, true);
+        $this->assertIsArray($decoded);
+        $this->assertSame(5, $decoded['strength'] ?? null);
+        $this->assertArrayNotHasKey('38', $decoded);
+        $this->assertArrayNotHasKey('unknown', $decoded);
+
+        Log::shouldHaveReceived('warning')
+            ->withArgs(function (string $message, array $context): bool {
+                return str_contains($message, 'non mappés ignorés')
+                    && (($context['contains_id_38'] ?? false) === true)
+                    && ($context['source_id'] ?? null) === 1234;
+            })
+            ->once();
     }
 }

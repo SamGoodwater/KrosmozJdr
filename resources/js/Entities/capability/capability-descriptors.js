@@ -171,6 +171,12 @@ export function getCapabilityFieldDescriptors(ctx = {}) {
       key: "po",
       label: "PO",
       icon: "fa-solid fa-crosshairs",
+      table: {
+        sortable: true,
+        filterable: { id: "po", type: "text", defaultVisible: false },
+        defaultVisible: { xs: false, sm: false, md: true, lg: true, xl: true },
+        cell: { sizes: { xs: { mode: "text" }, sm: { mode: "text" }, md: { mode: "text" }, lg: { mode: "text" }, xl: { mode: "text" } } },
+      },
       display: {
         sizes: {
           xs: { mode: "text" },
@@ -233,6 +239,7 @@ export function getCapabilityFieldDescriptors(ctx = {}) {
       icon: "fa-solid fa-align-left",
       table: {
         searchable: true,
+        filterable: { id: "description", type: "text", defaultVisible: false },
         defaultVisible: { xs: false, sm: false, md: true, lg: true, xl: true },
         cell: { sizes: { xs: { mode: "text", truncate: 20 }, sm: { mode: "text", truncate: 30 }, md: { mode: "text", truncate: 50 }, lg: { mode: "text" }, xl: { mode: "text" } } },
       },
@@ -259,6 +266,12 @@ export function getCapabilityFieldDescriptors(ctx = {}) {
       key: "effect",
       label: "Effet",
       icon: "fa-solid fa-magic",
+      table: {
+        searchable: true,
+        filterable: { id: "effect", type: "text", defaultVisible: false },
+        defaultVisible: { xs: false, sm: false, md: false, lg: true, xl: true },
+        cell: { sizes: { xs: { mode: "text", truncate: 20 }, sm: { mode: "text", truncate: 30 }, md: { mode: "text", truncate: 50 }, lg: { mode: "text" }, xl: { mode: "text" } } },
+      },
       display: {
         sizes: {
           xs: { mode: "text", truncate: 20 },
@@ -282,6 +295,12 @@ export function getCapabilityFieldDescriptors(ctx = {}) {
       key: "time_before_use_again",
       label: "Temps avant réutilisation",
       icon: "fa-solid fa-clock",
+      table: {
+        sortable: true,
+        filterable: { id: "time_before_use_again", type: "text", defaultVisible: false },
+        defaultVisible: { xs: false, sm: false, md: false, lg: true, xl: true },
+        cell: { sizes: { xs: { mode: "text" }, sm: { mode: "text" }, md: { mode: "text" }, lg: { mode: "text" }, xl: { mode: "text" } } },
+      },
       display: {
         sizes: {
           xs: { mode: "text" },
@@ -305,6 +324,12 @@ export function getCapabilityFieldDescriptors(ctx = {}) {
       key: "casting_time",
       label: "Temps d'incantation",
       icon: "fa-solid fa-hourglass",
+      table: {
+        sortable: true,
+        filterable: { id: "casting_time", type: "text", defaultVisible: false },
+        defaultVisible: { xs: false, sm: false, md: false, lg: true, xl: true },
+        cell: { sizes: { xs: { mode: "text" }, sm: { mode: "text" }, md: { mode: "text" }, lg: { mode: "text" }, xl: { mode: "text" } } },
+      },
       display: {
         sizes: {
           xs: { mode: "text" },
@@ -328,6 +353,12 @@ export function getCapabilityFieldDescriptors(ctx = {}) {
       key: "duration",
       label: "Durée",
       icon: "fa-solid fa-stopwatch",
+      table: {
+        sortable: true,
+        filterable: { id: "duration", type: "text", defaultVisible: false },
+        defaultVisible: { xs: false, sm: false, md: false, lg: true, xl: true },
+        cell: { sizes: { xs: { mode: "text" }, sm: { mode: "text" }, md: { mode: "text" }, lg: { mode: "text" }, xl: { mode: "text" } } },
+      },
       display: {
         sizes: {
           xs: { mode: "text" },
@@ -347,10 +378,36 @@ export function getCapabilityFieldDescriptors(ctx = {}) {
         },
       },
     },
+    capability_summary_cast: {
+      key: "capability_summary_cast",
+      label: "Profil de cast",
+      icon: "fa-solid fa-layer-group",
+      table: {
+        type: "chips",
+        searchable: true,
+        defaultVisible: { xs: false, sm: false, md: true, lg: true, xl: true },
+        cell: { sizes: { xs: { mode: "chips" }, sm: { mode: "chips" }, md: { mode: "chips" }, lg: { mode: "chips" }, xl: { mode: "chips" } } },
+      },
+      display: {
+        sizes: {
+          xs: { mode: "chips" },
+          sm: { mode: "chips" },
+          md: { mode: "chips" },
+          lg: { mode: "chips" },
+          xl: { mode: "chips" },
+        },
+      },
+    },
     is_magic: {
       key: "is_magic",
       label: "Magique",
       icon: "fa-solid fa-wand-magic",
+      table: {
+        sortable: true,
+        filterable: { id: "is_magic", type: "boolean", defaultVisible: false },
+        defaultVisible: { xs: false, sm: false, md: true, lg: true, xl: true },
+        cell: { sizes: { xs: { mode: "badge" }, sm: { mode: "badge" }, md: { mode: "badge" }, lg: { mode: "badge" }, xl: { mode: "badge" } } },
+      },
       display: {
         sizes: {
           xs: { mode: "badge" },
@@ -375,6 +432,12 @@ export function getCapabilityFieldDescriptors(ctx = {}) {
       key: "ritual_available",
       label: "Rituel disponible",
       icon: "fa-solid fa-book",
+      table: {
+        sortable: true,
+        filterable: { id: "ritual_available", type: "boolean", defaultVisible: false },
+        defaultVisible: { xs: false, sm: false, md: true, lg: true, xl: true },
+        cell: { sizes: { xs: { mode: "badge" }, sm: { mode: "badge" }, md: { mode: "badge" }, lg: { mode: "badge" }, xl: { mode: "badge" } } },
+      },
       display: {
         sizes: {
           xs: { mode: "badge" },
@@ -399,6 +462,12 @@ export function getCapabilityFieldDescriptors(ctx = {}) {
       key: "powerful",
       label: "Puissance",
       icon: "fa-solid fa-star",
+      table: {
+        sortable: true,
+        filterable: { id: "powerful", type: "text", defaultVisible: false },
+        defaultVisible: { xs: false, sm: false, md: false, lg: true, xl: true },
+        cell: { sizes: { xs: { mode: "text", truncate: 10 }, sm: { mode: "text", truncate: 15 }, md: { mode: "text", truncate: 20 }, lg: { mode: "text" }, xl: { mode: "text" } } },
+      },
       display: {
         sizes: {
           xs: { mode: "text", truncate: 10 },
@@ -454,6 +523,8 @@ export function getCapabilityFieldDescriptors(ctx = {}) {
       label: "Lecture (min.)",
       icon: "fa-solid fa-eye",
       table: {
+        sortable: true,
+        filterable: { id: "read_level", type: "multi", defaultVisible: false },
         defaultVisible: { xs: false, sm: false, md: false, lg: false, xl: false },
         cell: { sizes: { xs: { mode: "badge" }, sm: { mode: "badge" }, md: { mode: "badge" }, lg: { mode: "badge" }, xl: { mode: "badge" } } },
       },
@@ -483,6 +554,8 @@ export function getCapabilityFieldDescriptors(ctx = {}) {
       label: "Écriture (min.)",
       icon: "fa-solid fa-pen-to-square",
       table: {
+        sortable: true,
+        filterable: { id: "write_level", type: "multi", defaultVisible: false },
         defaultVisible: { xs: false, sm: false, md: false, lg: false, xl: false },
         cell: { sizes: { xs: { mode: "badge" }, sm: { mode: "badge" }, md: { mode: "badge" }, lg: { mode: "badge" }, xl: { mode: "badge" } } },
       },

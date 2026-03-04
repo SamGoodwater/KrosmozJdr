@@ -15,6 +15,7 @@ import Btn from '@/Pages/Atoms/action/Btn.vue';
 import Icon from '@/Pages/Atoms/data-display/Icon.vue';
 import { useTemplateRegistry } from '../composables/useTemplateRegistry';
 import { useSectionAPI } from '../composables/useSectionAPI';
+import { logDev } from '@/Utils/dev-logger';
 
 const props = defineProps({
     open: {
@@ -148,24 +149,24 @@ const handleCreateSection = async (template = null, overrides = {}) => {
         data: overrides.data ?? defaults.data,
     };
 
-    console.log('CreateSectionModal - Creating section with payload:', sectionPayload);
+    logDev('CreateSectionModal - Creating section with payload:', sectionPayload);
     
     try {
         await createSection(sectionPayload, {
             onSuccess: (page) => {
-                console.log('CreateSectionModal - Section created successfully, page response:', page);
+                logDev('CreateSectionModal - Section created successfully, page response:', page);
                 
                 // Après la redirection, les props sont mises à jour via usePage()
                 // Mais onSuccess est appelé avant que les props soient mises à jour
                 // On utilise un petit délai pour attendre que les props soient disponibles
                 // OU on émet simplement le template et le parent attendra que les sections soient disponibles
-                console.log('CreateSectionModal - Emitting created event with template:', sectionTemplate);
+                logDev('CreateSectionModal - Emitting created event with template:', sectionTemplate);
                 emit('created', { 
                     template: sectionTemplate,
                     openEdit: true // Toujours ouvrir en mode édition
                 });
                 
-                console.log('CreateSectionModal - Closing modal');
+                logDev('CreateSectionModal - Closing modal');
                 handleClose();
             },
             onError: (errors) => {

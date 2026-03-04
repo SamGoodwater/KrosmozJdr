@@ -10,6 +10,7 @@ use App\Models\Entity\Creature;
 use App\Models\Entity\Item;
 use App\Models\Entity\Resource;
 use App\Models\Entity\Spell;
+use App\Models\Entity\Panoply;
 
 /**
  * Pile d'import pour toutes les relations : on empile ce qui reste à récupérer (sorts, monstres,
@@ -20,7 +21,7 @@ use App\Models\Entity\Spell;
  * Les drops monster sont catégorisés selon la table cible (resources, items, consumables) une fois
  * l'item importé ; le type d'enregistrement est creature_drop pour être résolu selon $table.
  *
- * Types de dépendances : recipe, breed_spell, creature_spell, creature_drop, spell_invocation.
+ * Types de dépendances : recipe, breed_spell, creature_spell, creature_drop, spell_invocation, panoply_item.
  *
  * @see RelationResolutionService
  * @see docs/50-Fonctionnalités/Scrapping/Architecture/RELATIONS.md
@@ -183,6 +184,46 @@ final class RelationImportStack
 
         if (!$dryRun && $sync !== []) {
             $breed->spells()->sync(array_keys($sync));
+        }
+
+        return $addedToPending;
+    }
+
+    /**
+     * Enregistre les dépendances items d'une panoplie : quand chaque item sera importé, on l'attache à la panoplie.
+     *
+     * @param list<int> $itemDofusdbIds IDs DofusDB des items de la panoplie
+     * @return list<string> item dofusdb_id ajoutés à la pile
+     */
+    public function registerPanoplyItemDependents(int $panoplyId, array $itemDofusdbIds, bool $dryRun = false): array
+    {
+        $panoply = Panoply::find($panoplyId);
+        if ($panoply === null) {
+            return [];
+        }
+
+        $sync = [];
+        $addedToPending = [];
+
+        foreach ($itemDofusdbIds as $itemId) {
+            $dofusdbId = (string) $itemId;
+            if ($dofusdbId === '') {
+                continue;
+            }
+            $existing = $this->findItemByDofusdbId($dofusdbId);
+            if ($existing !== null) {
+                $sync[$existing->id] = [];
+                continue;
+            }
+
+            $this->registerDependent('item', $dofusdbId, 'panoply_item', ['panoply_id' => $panoplyId]);
+            if ($this->pushPending(self::SOURCE_DOFUSDB, 'item', $dofusdbId)) {
+                $addedToPending[] = $dofusdbId;
+            }
+        }
+
+        if (!$dryRun && $sync !== []) {
+            $panoply->items()->sync(array_keys($sync));
         }
 
         return $addedToPending;
@@ -372,6 +413,8 @@ final class RelationImportStack
                 } elseif ($table === 'consumables') {
                     $this->resolveCreatureConsumable($payload, $krosmozPrimaryId);
                 }
+            } elseif ($type === 'panoply_item' && $entity === 'item' && $krosmozPrimaryId !== null && $krosmozPrimaryId > 0) {
+                $this->resolvePanoplyItem($payload, $krosmozPrimaryId);
             } elseif ($type === 'spell_invocation' && $entity === 'monster' && $krosmozPrimaryId !== null && $krosmozPrimaryId > 0) {
                 $this->resolveSpellInvocation($payload, $krosmozPrimaryId);
             }
@@ -496,6 +539,20 @@ final class RelationImportStack
         }
         $current = $spell->monsters()->pluck('id')->all();
         $spell->monsters()->sync(array_values(array_unique(array_merge($current, [$monsterId]))));
+    }
+
+    private function resolvePanoplyItem(array $payload, int $itemId): void
+    {
+        $panoplyId = (int) ($payload['panoply_id'] ?? 0);
+        if ($panoplyId <= 0) {
+            return;
+        }
+        $panoply = Panoply::find($panoplyId);
+        if ($panoply === null) {
+            return;
+        }
+        $current = $panoply->items()->pluck('id')->all();
+        $panoply->items()->sync(array_values(array_unique(array_merge($current, [$itemId]))));
     }
 
     /**

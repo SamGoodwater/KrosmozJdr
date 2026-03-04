@@ -4,7 +4,7 @@
   "entity": "item",
   "label": "Objets (ressources / consommables / équipements)",
   "meta": {
-    "description": "Items DofusDB. Un même mapping alimente resources, consumables et items selon le typeId. Champs communs : dofusdb_id, name, description, level, price, image, typeId, rarity. resources : + weight (realWeight). effect : effects[] converti en bonus Krosmoz ; bonus : effects[] brut JSON. _mappingUnusedDocumentation liste les champs DofusDB non mappés."
+    "description": "Items DofusDB. Un même mapping alimente resources, consumables et items selon le typeId. Champs communs : dofusdb_id, name, description, level, price, image, typeId, rarity. resources : + weight (realWeight). effect : effects[] converti en bonus Krosmoz pour resources/consumables/items ; bonus : effects[] brut JSON (items uniquement). _mappingUnusedDocumentation liste les champs DofusDB non mappés."
   },
   "endpoints": {
     "fetchOne": { "pathTemplate": "/items/{id}", "method": "GET", "queryDefaults": { "lang": "fr" } },
@@ -40,7 +40,7 @@
     { "key": "weight", "from": { "path": "realWeight" }, "to": [{ "model": "resources", "field": "weight" }], "formatters": [{ "name": "nullableInt", "args": {} }] },
     { "key": "rarity", "from": { "path": "rarity" }, "to": [{ "model": "resources", "field": "rarity" }, { "model": "consumables", "field": "rarity" }, { "model": "items", "field": "rarity" }], "formatters": [{ "name": "defaultRarityByLevel", "args": {} }] },
     { "key": "recipe_ingredients", "from": { "path": "recipe" }, "to": [{ "model": "resources", "field": "recipe_ingredients" }], "formatters": [{ "name": "recipeToResourceRecipe", "args": {} }] },
-    { "key": "effect", "from": { "path": "effects" }, "to": [{ "model": "items", "field": "effect" }], "formatters": [{ "name": "itemEffectsToKrosmozBonus", "args": {} }] },
+    { "key": "effect", "from": { "path": "effects" }, "to": [{ "model": "resources", "field": "effect" }, { "model": "consumables", "field": "effect" }, { "model": "items", "field": "effect" }], "formatters": [{ "name": "itemEffectsToKrosmozBonus", "args": {} }] },
     { "key": "bonus", "from": { "path": "effects" }, "to": [{ "model": "items", "field": "bonus" }], "formatters": [{ "name": "toJson", "args": {} }] }
   ],
   "_mappingUnusedDocumentation": [

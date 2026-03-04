@@ -16,7 +16,6 @@ import Icon from '@/Pages/Atoms/data-display/Icon.vue';
 import CellRenderer from "@/Pages/Atoms/data-display/CellRenderer.vue";
 import EntityActions from '@/Pages/Organismes/entity/EntityActions.vue';
 import { useCopyToClipboard } from '@/Composables/utils/useCopyToClipboard';
-import { useDownloadPdf } from '@/Composables/utils/useDownloadPdf';
 import { getEntityRouteConfig, resolveEntityRouteUrl } from '@/Composables/entity/entityRouteRegistry';
 import { usePermissions } from "@/Composables/permissions/usePermissions";
 import { getSpecializationFieldDescriptors } from "@/Entities/specialization/specialization-descriptors";
@@ -39,7 +38,6 @@ const props = defineProps({
 const emit = defineEmits(['edit', 'copy-link', 'download-pdf', 'refresh', 'view', 'quick-view', 'quick-edit', 'delete', 'action']);
 
 const { copyToClipboard } = useCopyToClipboard();
-const { downloadPdf } = useDownloadPdf('specialization');
 const permissions = usePermissions();
 
 const ctx = computed(() => {
@@ -136,7 +134,7 @@ const handleAction = async (actionKey) => {
                     v-if="specialization.image"
                     :src="specialization.image"
                     :alt="specialization.name || 'Specialization'"
-                    class="w-10 h-10 rounded object-cover flex-shrink-0"
+                    class="w-10 h-10 entity-radius-field object-cover flex-shrink-0"
                 />
                 <h3 class="text-lg font-semibold text-primary-100 truncate">
                     <CellRenderer
@@ -165,7 +163,7 @@ const handleAction = async (actionKey) => {
             <div
                 v-for="fieldKey in compactFields"
                 :key="fieldKey"
-                class="flex items-start gap-2 p-2 rounded hover:bg-base-200 transition-colors"
+                class="flex items-start gap-2 p-2 entity-radius-field hover:bg-base-200 transition-colors"
             >
                 <Icon
                     :source="getFieldIcon(fieldKey)"
@@ -189,3 +187,9 @@ const handleAction = async (actionKey) => {
         </div>
     </div>
 </template>
+
+<style scoped>
+.entity-radius-field {
+    border-radius: var(--radius-field, 0.1rem);
+}
+</style>

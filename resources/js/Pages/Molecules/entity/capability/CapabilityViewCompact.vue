@@ -16,10 +16,10 @@ import Icon from '@/Pages/Atoms/data-display/Icon.vue';
 import CellRenderer from "@/Pages/Atoms/data-display/CellRenderer.vue";
 import EntityActions from '@/Pages/Organismes/entity/EntityActions.vue';
 import { useCopyToClipboard } from '@/Composables/utils/useCopyToClipboard';
-import { useDownloadPdf } from '@/Composables/utils/useDownloadPdf';
 import { getEntityRouteConfig, resolveEntityRouteUrl } from '@/Composables/entity/entityRouteRegistry';
 import { usePermissions } from "@/Composables/permissions/usePermissions";
 import { getCapabilityFieldDescriptors } from "@/Entities/capability/capability-descriptors";
+import { resolveEntityFieldUi } from "@/Utils/Entity/entity-view-ui";
 
 const props = defineProps({
     capability: {
@@ -39,7 +39,6 @@ const props = defineProps({
 const emit = defineEmits(['edit', 'copy-link', 'download-pdf', 'refresh', 'view', 'quick-view', 'quick-edit', 'delete', 'action']);
 
 const { copyToClipboard } = useCopyToClipboard();
-const { downloadPdf } = useDownloadPdf('capability');
 const permissions = usePermissions();
 
 const ctx = computed(() => {
@@ -83,11 +82,31 @@ const compactFields = computed(() => [
 ].filter(canShowField));
 
 const getFieldLabel = (fieldKey) => {
-    return descriptors.value?.[fieldKey]?.general?.label || fieldKey;
+    return resolveEntityFieldUi({
+        fieldKey,
+        descriptors: descriptors.value,
+        tableMeta: props.tableMeta,
+        entityType: 'capability',
+    }).label;
 };
 
 const getFieldIcon = (fieldKey) => {
-    return descriptors.value?.[fieldKey]?.general?.icon || 'fa-solid fa-info-circle';
+    return resolveEntityFieldUi({
+        fieldKey,
+        descriptors: descriptors.value,
+        tableMeta: props.tableMeta,
+        entityType: 'capability',
+    }).icon;
+};
+
+const getFieldIconStyle = (fieldKey) => {
+    const color = resolveEntityFieldUi({
+        fieldKey,
+        descriptors: descriptors.value,
+        tableMeta: props.tableMeta,
+        entityType: 'capability',
+    }).color;
+    return color ? { color } : undefined;
 };
 
 const getCell = (fieldKey) => {
@@ -138,7 +157,7 @@ const handleAction = async (actionKey) => {
                     v-if="capability.image"
                     :src="capability.image"
                     :alt="capability.name || 'Capability'"
-                    class="w-10 h-10 rounded object-cover flex-shrink-0"
+                    class="w-10 h-10 entity-radius-field object-cover flex-shrink-0"
                 />
                 <h3 class="text-lg font-semibold text-primary-100 truncate">
                     <CellRenderer
@@ -167,12 +186,13 @@ const handleAction = async (actionKey) => {
             <div
                 v-for="fieldKey in compactFields"
                 :key="fieldKey"
-                class="flex items-start gap-2 p-2 rounded hover:bg-base-200 transition-colors"
+                class="flex items-start gap-2 p-2 entity-radius-field hover:bg-base-200 transition-colors"
             >
                 <Icon
                     :source="getFieldIcon(fieldKey)"
                     size="xs"
                     class="text-primary-400 flex-shrink-0 mt-0.5"
+                    :style="getFieldIconStyle(fieldKey)"
                 />
                 <div class="flex-1 min-w-0">
                     <div class="flex items-center justify-between gap-2">
@@ -191,3 +211,9 @@ const handleAction = async (actionKey) => {
         </div>
     </div>
 </template>
+
+<style scoped>
+.entity-radius-field {
+    border-radius: var(--radius-field, 0.1rem);
+}
+</style>

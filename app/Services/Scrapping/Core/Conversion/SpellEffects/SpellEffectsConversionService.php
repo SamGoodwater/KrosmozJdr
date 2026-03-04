@@ -102,11 +102,20 @@ final class SpellEffectsConversionService
             $mapping = $this->mappingService->getSubEffectForEffectId($effectId);
             $subEffectSlug = null;
             $charSource = null;
+            $mappedCharacteristicKey = null;
             $definition = [];
 
             if ($mapping !== null) {
-                [$subEffectSlug, $charSource] = $mapping;
-                if ($charSource === 'element') {
+                $subEffectSlug = isset($mapping[0]) && is_string($mapping[0]) && $mapping[0] !== ''
+                    ? $mapping[0]
+                    : DofusDbEffectMapping::SUB_EFFECT_SLUG_OTHER;
+                $charSource = isset($mapping[1]) && is_string($mapping[1]) && $mapping[1] !== ''
+                    ? $mapping[1]
+                    : 'none';
+                $mappedCharacteristicKey = isset($mapping[2]) && is_string($mapping[2]) && $mapping[2] !== ''
+                    ? $mapping[2]
+                    : null;
+                if ($charSource === 'element' || ($charSource === 'characteristic' && $mappedCharacteristicKey === null)) {
                     $definition = $this->effectCatalog->get($effectId, $lang);
                 }
             } else {
@@ -117,7 +126,7 @@ final class SpellEffectsConversionService
             $order = isset($instance['order']) ? (int) $instance['order'] : $index;
             $params = $subEffectSlug === DofusDbEffectMapping::SUB_EFFECT_SLUG_OTHER
                 ? $this->buildParamsForOther($instance, $definition, $lang)
-                : $this->buildParams($instance, $definition, $charSource ?? 'none', $subEffectSlug);
+                : $this->buildParams($instance, $definition, $charSource ?? 'none', $subEffectSlug, $mappedCharacteristicKey);
             $critOnly = false;
 
             $criticalInstance = $criticalList[$order] ?? null;
@@ -345,7 +354,13 @@ final class SpellEffectsConversionService
      * @param array<string, mixed> $definition Définition /effects/{id} (elementId, characteristic)
      * @return array<string, mixed> params pour le pivot (value_formula, characteristic, value_converted, value_formula_crit si fourni ailleurs)
      */
-    private function buildParams(array $instance, array $definition, string $charSource, string $subEffectSlug): array
+    private function buildParams(
+        array $instance,
+        array $definition,
+        string $charSource,
+        string $subEffectSlug,
+        ?string $mappedCharacteristicKey = null
+    ): array
     {
         $params = [
             'value_formula' => $this->buildValueFormula($instance),
@@ -362,10 +377,54 @@ final class SpellEffectsConversionService
                 $params['characteristic'] = $key;
             }
         }
+        if ($charSource === 'characteristic') {
+            $key = $mappedCharacteristicKey;
+            if (($key === null || $key === '') && isset($definition['characteristic']) && is_numeric($definition['characteristic'])) {
+                $dofusdbCharacteristicId = (int) $definition['characteristic'];
+                $key = $this->characteristicGetter->getCharacteristicKeyByDofusdbCharacteristicId(
+                    $dofusdbCharacteristicId,
+                    SpellEffectConversionFormulaResolver::ENTITY_SPELL
+                );
+                if ($key === null || $key === '') {
+                    $key = $this->resolveSpellCharacteristicKeyFromConfig($dofusdbCharacteristicId);
+                }
+            }
+            if (is_string($key) && $key !== '') {
+                $params['characteristic'] = $key;
+            }
+        }
 
         $this->applyValueConversion($instance, $subEffectSlug, $params);
 
         return $params;
+    }
+
+    /**
+     * Résout la clé caractéristique sort depuis la config JSON de référence (fallback runtime).
+     * Retourne une clé courte (ex. po, pa), ensuite normalisée vers *_spell par le resolver.
+     */
+    private function resolveSpellCharacteristicKeyFromConfig(int $dofusdbCharacteristicId): ?string
+    {
+        static $map = null;
+
+        if ($map === null) {
+            $map = [];
+            $path = resource_path('scrapping/config/sources/dofusdb/dofusdb_characteristic_to_krosmoz_spell.json');
+            if (is_file($path)) {
+                $content = @file_get_contents($path);
+                if ($content !== false) {
+                    $decoded = json_decode($content, true);
+                    $mapping = is_array($decoded['mapping'] ?? null) ? $decoded['mapping'] : [];
+                    foreach ($mapping as $id => $key) {
+                        if (is_numeric($id) && is_string($key) && $key !== '') {
+                            $map[(int) $id] = $key;
+                        }
+                    }
+                }
+            }
+        }
+
+        return $map[$dofusdbCharacteristicId] ?? null;
     }
 
     /**

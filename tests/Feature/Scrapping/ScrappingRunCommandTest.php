@@ -555,7 +555,10 @@ class ScrappingRunCommandTest extends TestCase
                 'level' => 50,
                 'isCosmetic' => false,
                 'effects' => [
-                    ['characteristic' => 10, 'value' => 5],
+                    [],
+                    [
+                        ['characteristic' => 10, 'from' => 5, 'to' => 0],
+                    ],
                 ],
                 'items' => [
                     ['id' => 15],

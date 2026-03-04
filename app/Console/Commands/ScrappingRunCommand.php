@@ -1180,6 +1180,7 @@ class ScrappingRunCommand extends Command
             'integrate' => !($options['dry_run'] ?? false) && !($options['validate_only'] ?? false),
             'dry_run' => (bool) ($options['dry_run'] ?? false),
             'force_update' => (bool) ($options['force_update'] ?? false),
+            'skip_cache' => (bool) ($options['skip_cache'] ?? false),
             'lang' => (string) ($options['lang'] ?? 'fr'),
             'exclude_from_update' => (array) ($options['exclude_from_update'] ?? []),
             'ignore_unvalidated' => (bool) ($options['ignore_unvalidated'] ?? false),

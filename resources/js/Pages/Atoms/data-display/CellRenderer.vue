@@ -27,6 +27,7 @@ import Icon from "@/Pages/Atoms/data-display/Icon.vue";
 import Route from "@/Pages/Atoms/action/Route.vue";
 import Tooltip from "@/Pages/Atoms/feedback/Tooltip.vue";
 import { getTruncateClass } from "@/Utils/entity/text-truncate";
+import { warnDev } from "@/Utils/dev-logger";
 
 const props = defineProps({
     cell: {
@@ -116,7 +117,7 @@ const customComponent = computed(() => {
     if (typeof component === 'string') {
         const loader = asyncComponents[component];
         if (!loader) {
-            console.warn("[CellRenderer] composant de cellule inconnu:", component);
+            warnDev("[CellRenderer] composant de cellule inconnu:", component);
             return null;
         }
         return defineAsyncComponent(loader);

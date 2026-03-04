@@ -4,7 +4,7 @@
   "entity": "panoply",
   "label": "Panoplies (sets avec bonus)",
   "meta": {
-    "description": "Panoplies DofusDB (item-sets). Seules les panoplies à bonus (stats) sont importées, les cosmétiques sont exclues.",
+    "description": "Panoplies DofusDB (item-sets). Seules les panoplies à bonus (stats) sont importées, les cosmétiques sont exclues. Le champ effects est traité en paliers (bonus par nombre de pièces équipées) et stocké en JSON structuré dans bonus.",
     "collectStrategy": {
       "filterOutCosmetic": true
     }

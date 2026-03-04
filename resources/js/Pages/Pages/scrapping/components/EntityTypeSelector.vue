@@ -6,6 +6,7 @@ import { computed, watch } from 'vue';
 import SelectField from '@/Pages/Molecules/data-input/SelectField.vue';
 import Badge from '@/Pages/Atoms/data-display/Badge.vue';
 import Icon from '@/Pages/Atoms/data-display/Icon.vue';
+import { logDev } from '@/Utils/dev-logger';
 
 const props = defineProps({
     modelValue: {
@@ -25,18 +26,15 @@ const props = defineProps({
 
 const emit = defineEmits(['update:modelValue']);
 
-// Variable pour le mode développement
-const isDev = import.meta.env.DEV;
-
 const selectedEntity = computed(() => {
     if (!props.entityTypes || props.entityTypes.length === 0) {
         return null;
     }
     const found = props.entityTypes.find(e => e.value === props.modelValue);
-    if (isDev && found) {
-        console.log('EntityTypeSelector - selectedEntity found:', found);
-    } else if (isDev && !found) {
-        console.log('EntityTypeSelector - selectedEntity NOT found for:', props.modelValue, 'Available:', props.entityTypes.map(e => e.value));
+    if (found) {
+        logDev('EntityTypeSelector - selectedEntity found:', found);
+    } else {
+        logDev('EntityTypeSelector - selectedEntity NOT found for:', props.modelValue, 'Available:', props.entityTypes.map(e => e.value));
     }
     return found;
 });
@@ -52,15 +50,13 @@ const entityTypeOptions = computed(() => {
 });
 
 // Debug: surveiller les changements (à retirer en production)
-if (isDev) {
-    watch(() => props.entityTypes, (newVal) => {
-        console.log('EntityTypeSelector - entityTypes changed:', newVal);
-    }, { deep: true });
+watch(() => props.entityTypes, (newVal) => {
+    logDev('EntityTypeSelector - entityTypes changed:', newVal);
+}, { deep: true });
 
-    watch(() => entityTypeOptions.value, (newVal) => {
-        console.log('EntityTypeSelector - entityTypeOptions:', newVal);
-    }, { deep: true });
-}
+watch(() => entityTypeOptions.value, (newVal) => {
+    logDev('EntityTypeSelector - entityTypeOptions:', newVal);
+}, { deep: true });
 </script>
 
 <template>
@@ -83,7 +79,7 @@ if (isDev) {
             </div>
         </div>
 
-        <div v-if="selectedEntity" class="flex items-center gap-2 text-sm flex-shrink-0">
+        <div v-if="selectedEntity" class="flex items-center gap-2 text-sm shrink-0">
             <Icon :source="`fa-solid ${selectedEntity.icon}`" :alt="selectedEntity.label" pack="solid" class="text-primary-300" />
             <span class="text-primary-200 font-medium">{{ selectedEntity.label }}</span>
             <Badge color="info" size="sm" :content="`${selectedEntity.maxId} max`" />

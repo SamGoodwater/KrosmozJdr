@@ -142,6 +142,8 @@ export class Item extends BaseModel {
             case 'item_type':
             case 'itemType':
                 return this._toItemTypeCell(format, size, options);
+            case 'item_summary_meta':
+                return this._toItemSummaryMetaCell(format, size, options);
             case 'created_by':
             case 'createdBy':
                 return this._toCreatedByCell(format, size, options);
@@ -324,6 +326,50 @@ export class Item extends BaseModel {
                 tooltip: typeName === '-' ? '' : typeName,
                 sortValue: typeName,
                 searchValue: typeName,
+            },
+        };
+    }
+
+    /**
+     * Génère une cellule résumé (type chips) pour les métadonnées clés de l'item.
+     * @private
+     */
+    _toItemSummaryMetaCell(format, size, options) {
+        const itemTypeName = this.itemType?.name || this.itemType?.label || null;
+        const rarityMap = {
+            0: 'Commun',
+            1: 'Peu commun',
+            2: 'Rare',
+            3: 'Très rare',
+            4: 'Légendaire',
+            5: 'Unique',
+        };
+        const rarityValue = this.rarity;
+        const rarityLabel = Number.isFinite(Number(rarityValue)) ? (rarityMap[Number(rarityValue)] || String(rarityValue)) : null;
+        const levelValue = this.level != null ? String(this.level) : null;
+        const priceValue = this.price != null && String(this.price) !== '' ? String(this.price) : null;
+        const versionValue = this.dofusVersion ? String(this.dofusVersion) : null;
+        const dofusdbValue = this.dofusdbId ? `#${this.dofusdbId}` : null;
+
+        const items = [
+            { icon: 'fa-solid fa-tags', value: itemTypeName, tooltip: itemTypeName ? `Type: ${itemTypeName}` : '' },
+            { icon: 'fa-solid fa-level-up-alt', value: levelValue, tooltip: levelValue ? `Niveau: ${levelValue}` : '' },
+            { icon: 'fa-solid fa-star', value: rarityLabel, tooltip: rarityLabel ? `Rareté: ${rarityLabel}` : '' },
+            { icon: 'fa-solid fa-coins', value: priceValue, tooltip: priceValue ? `Prix: ${priceValue}` : '' },
+            { icon: 'fa-solid fa-code-branch', value: versionValue, tooltip: versionValue ? `Version: ${versionValue}` : '' },
+            { icon: 'fa-solid fa-up-right-from-square', value: dofusdbValue, tooltip: dofusdbValue ? `DofusDB: ${dofusdbValue}` : '' },
+        ].filter((it) => it.value !== null && it.value !== undefined && String(it.value) !== '');
+
+        const searchValue = items.map((it) => String(it.value)).join(' ');
+
+        return {
+            type: 'chips',
+            value: '',
+            params: {
+                items,
+                sortValue: Number(this.level) || 0,
+                searchValue,
+                filterValue: searchValue,
             },
         };
     }

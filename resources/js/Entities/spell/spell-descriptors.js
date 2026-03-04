@@ -119,6 +119,7 @@ export function getSpellFieldDescriptors(ctx = {}) {
       icon: "fa-solid fa-align-left",
       table: {
         searchable: true,
+        filterable: { id: "description", type: "text", defaultVisible: false },
         defaultVisible: { xs: false, sm: false, md: true, lg: true, xl: true },
         cell: { sizes: { xs: { mode: "text", truncate: 20 }, sm: { mode: "text", truncate: 30 }, md: { mode: "text", truncate: 50 }, lg: { mode: "text" }, xl: { mode: "text" } } },
       },
@@ -207,6 +208,7 @@ export function getSpellFieldDescriptors(ctx = {}) {
       icon: "fa-solid fa-crosshairs",
       table: {
         sortable: true,
+        filterable: { id: "po", type: "text", defaultVisible: false },
         defaultVisible: { xs: false, sm: false, md: true, lg: true, xl: true },
         cell: { sizes: { xs: { mode: "text" }, sm: { mode: "text" }, md: { mode: "text" }, lg: { mode: "text" }, xl: { mode: "text" } } },
       },
@@ -399,6 +401,8 @@ export function getSpellFieldDescriptors(ctx = {}) {
       label: "Lecture (min.)",
       icon: "fa-solid fa-eye",
       table: {
+        sortable: true,
+        filterable: { id: "read_level", type: "multi", defaultVisible: false },
         defaultVisible: { xs: false, sm: false, md: false, lg: false, xl: false },
         cell: { sizes: { xs: { mode: "badge" }, sm: { mode: "badge" }, md: { mode: "badge" }, lg: { mode: "badge" }, xl: { mode: "badge" } } },
       },
@@ -428,6 +432,8 @@ export function getSpellFieldDescriptors(ctx = {}) {
       label: "Écriture (min.)",
       icon: "fa-solid fa-pen-to-square",
       table: {
+        sortable: true,
+        filterable: { id: "write_level", type: "multi", defaultVisible: false },
         defaultVisible: { xs: false, sm: false, md: false, lg: false, xl: false },
         cell: { sizes: { xs: { mode: "badge" }, sm: { mode: "badge" }, md: { mode: "badge" }, lg: { mode: "badge" }, xl: { mode: "badge" } } },
       },
@@ -506,6 +512,26 @@ export function getSpellFieldDescriptors(ctx = {}) {
           multiple: true,
           options: () => [{ value: "", label: "—" }, ...spellTypes.map((t) => ({ value: t.id, label: t.name }))],
           bulk: { enabled: false },
+        },
+      },
+    },
+    spell_summary_profile: {
+      key: "spell_summary_profile",
+      label: "Profil",
+      icon: "fa-solid fa-layer-group",
+      table: {
+        type: "chips",
+        searchable: true,
+        defaultVisible: { xs: false, sm: false, md: true, lg: true, xl: true },
+        cell: { sizes: { xs: { mode: "chips" }, sm: { mode: "chips" }, md: { mode: "chips" }, lg: { mode: "chips" }, xl: { mode: "chips" } } },
+      },
+      display: {
+        sizes: {
+          xs: { mode: "chips" },
+          sm: { mode: "chips" },
+          md: { mode: "chips" },
+          lg: { mode: "chips" },
+          xl: { mode: "chips" },
         },
       },
     },

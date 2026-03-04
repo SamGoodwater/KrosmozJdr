@@ -17,6 +17,7 @@ import RadioCore from "@/Pages/Atoms/data-input/RadioCore.vue";
 import Badge from "@/Pages/Atoms/data-display/Badge.vue";
 import { computed, unref, ref } from "vue";
 import { getLevelColor } from "@/Utils/Entity/SharedConstants.js";
+import { logDev } from "@/Utils/dev-logger";
 
 const props = defineProps({
     columns: { type: Array, required: true },
@@ -122,7 +123,7 @@ const isBooleanSelect = (col) => {
 const updateFilter = (filterId, value) => {
     const next = { ...(values.value || {}), [filterId]: value };
     if (props.debug) {
-        console.log("[TanStackTableFilters] updateFilter", { filterId, value, next });
+        logDev("[TanStackTableFilters] updateFilter", { filterId, value, next });
     }
     emit("update:filters", next);
 };
@@ -752,7 +753,7 @@ const clearAllActiveFilters = () => {
                         :glassy="Boolean(b.badge?.glassy)"
                         :variant="b.badge?.variant || 'soft'"
                         size="sm"
-                        class="max-w-[22rem]"
+                        class="max-w-88"
                     >
                         <span class="truncate">{{ b.label }}</span>
                     </Badge>

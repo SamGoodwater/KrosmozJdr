@@ -135,5 +135,26 @@ Un **sous-service du service de conversion** est dédié à cette logique, pour 
 - **DTO** : **`SpellEffectsConversionResult`** — expose `getEffectGroup()`, `getEffects()`, `hasEffects()`, `getEffectsCount()`.
 - **Mapping** : **`DofusDbEffectMapping`** — classe statique avec `getSubEffectForEffectId(int)`, `elementIdToCharacteristicKey(?int)`. Les entrées effectId → [sub_effect_slug, characteristic_source] sont extensibles (constante pour l’instant, puis config ou BDD si besoin).
 - **Sous-effet de repli « autre »** : tout `effectId` non présent dans le mapping est converti en sous-effet **`autre`** (slug `DofusDbEffectMapping::SUB_EFFECT_SLUG_OTHER`). Ce sous-effet ne prend pas de caractéristique ; ses params contiennent `value_formula` (dés/valeur de l’instance), `value` (description DofusDB du dictionnaire `/effects/{id}` pour affichage et sous-effets personnalisés) et éventuellement `value_formula_crit`. Cela permet de ne rien perdre à l’import et de créer ensuite des sous-effets spéciaux avec la description en valeur.
+- **Résolution de characteristic pour `characteristic_source=characteristic`** : la conversion utilise en priorité `characteristic_key` de `dofusdb_effect_mappings`. Si la clé est absente, elle est déduite depuis `GET /effects/{id}.characteristic` via les caractéristiques BDD (groupe `spell`), puis en fallback via `resources/scrapping/config/sources/dofusdb/dofusdb_characteristic_to_krosmoz_spell.json`. Cela évite de perdre `value_converted` sur des mappings partiels.
+
+### Commande de rattrapage des mappings existants
+
+Pour corriger en base les lignes `dofusdb_effect_mappings` avec `characteristic_source=characteristic` et `characteristic_key` vide :
+
+```bash
+php artisan scrapping:effects:backfill-characteristics --dry-run
+php artisan scrapping:effects:backfill-characteristics --ids=116,117
+```
+
+La commande résout la clé via `GET /effects/{id}.characteristic`, puis via les caractéristiques `spell` en BDD, avec fallback sur `dofusdb_characteristic_to_krosmoz_spell.json`.
+
+Pour prioriser les corrections restantes, un rapport est disponible :
+
+```bash
+php artisan scrapping:effects:report-missing-characteristics --limit=20
+php artisan scrapping:effects:report-missing-characteristics --json > storage/app/scrapping_missing_characteristics_report.json
+```
+
+Le rapport regroupe les lignes manquantes par `characteristic` DofusDB et les trie par fréquence (avec exemples d`effectId`).
 
 L’orchestrateur ou l’intégration peut injecter `SpellEffectsConversionService`, récupérer les spell-levels (après collecte du sort), appeler `convert()`, puis créer en BDD EffectGroup, Effects, EffectSubEffects et EffectUsages à partir du résultat.

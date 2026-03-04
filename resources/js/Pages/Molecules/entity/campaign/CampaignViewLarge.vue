@@ -202,7 +202,7 @@ const handleAction = async (actionKey) => {
                             class: 'w-full h-full',
                         }"
                     />
-                    <div v-else class="w-full h-full flex items-center justify-center bg-base-200 rounded-lg">
+                    <div v-else class="w-full h-full flex items-center justify-center bg-base-200 entity-radius-box">
                         <Icon source="fa-solid fa-flag" :alt="campaign.name || 'Campaign'" size="xl" />
                     </div>
                 </div>
@@ -300,3 +300,9 @@ const handleAction = async (actionKey) => {
         </div>
     </div>
 </template>
+
+<style scoped>
+.entity-radius-box {
+    border-radius: var(--radius-box, 0.1rem);
+}
+</style>

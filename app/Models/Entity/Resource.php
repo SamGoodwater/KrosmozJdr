@@ -25,6 +25,7 @@ use Spatie\MediaLibrary\HasMedia;
  * @property int|null $official_id
  * @property string $name
  * @property string|null $description
+ * @property string|null $effect
  * @property string $level
  * @property string|null $price
  * @property string|null $weight
@@ -62,6 +63,7 @@ use Spatie\MediaLibrary\HasMedia;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Resource whereCreatedBy($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Resource whereDeletedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Resource whereDescription($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Resource whereEffect($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Resource whereDofusVersion($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Resource whereDofusdbId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Resource whereId($value)
@@ -115,6 +117,7 @@ class Resource extends Model implements HasMedia
         'official_id',
         'name',
         'description',
+        'effect',
         'level',
         'price',
         'weight',

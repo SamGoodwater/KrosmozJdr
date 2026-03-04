@@ -3,13 +3,16 @@
 namespace Tests\Unit\Scrapping\Core;
 
 use App\Models\Entity\Breed;
+use App\Models\Entity\Consumable;
 use App\Models\Entity\Creature;
 use App\Models\Entity\Item;
 use App\Models\Entity\Monster;
 use App\Models\Entity\Panoply;
 use App\Models\Entity\Resource;
 use App\Models\Entity\Spell;
+use App\Models\Type\ConsumableType;
 use App\Models\Type\MonsterRace;
+use App\Models\Type\ResourceType;
 use App\Services\Scrapping\Core\Integration\IntegrationResult;
 use App\Services\Scrapping\Core\Integration\IntegrationService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -260,6 +263,84 @@ class IntegrationServiceTest extends TestCase
         $result = $this->service->integrate('item', [], []);
 
         $this->assertFalse($result->isSuccess());
+    }
+
+    public function test_integrate_item_routes_to_consumable_and_persists_effect(): void
+    {
+        $this->createSystemUser();
+        $consumableType = ConsumableType::factory()->create(['dofusdb_type_id' => 12001]);
+
+        $convertedData = [
+            'items' => [
+                'type_id' => $consumableType->dofusdb_type_id,
+                'dofusdb_id' => '9001',
+                'name' => 'Pain de test',
+                'description' => 'Desc',
+                'level' => '1',
+                'price' => null,
+                'effect' => '{"vitality":5}',
+                'rarity' => 0,
+            ],
+        ];
+
+        $result = $this->service->integrate('item', $convertedData, []);
+
+        $this->assertTrue($result->isSuccess());
+        $consumable = Consumable::where('dofusdb_id', '9001')->first();
+        $this->assertNotNull($consumable);
+        $this->assertSame('{"vitality":5}', $consumable->effect);
+    }
+
+    public function test_integrate_item_routes_to_resource_and_persists_effect(): void
+    {
+        $this->createSystemUser();
+        $resourceType = ResourceType::factory()->create(['dofusdb_type_id' => 13001]);
+
+        $convertedData = [
+            'items' => [
+                'type_id' => $resourceType->dofusdb_type_id,
+                'dofusdb_id' => '9002',
+                'name' => 'Ressource avec effet',
+                'description' => 'Desc',
+                'level' => '1',
+                'price' => null,
+                'effect' => '{"intel":3}',
+                'rarity' => 0,
+            ],
+        ];
+
+        $result = $this->service->integrate('item', $convertedData, []);
+
+        $this->assertTrue($result->isSuccess());
+        $resource = Resource::where('dofusdb_id', '9002')->first();
+        $this->assertNotNull($resource);
+        $this->assertSame('{"intel":3}', $resource->effect);
+    }
+
+    public function test_integrate_item_routes_to_resource_when_only_resources_block_is_present(): void
+    {
+        $this->createSystemUser();
+        $resourceType = ResourceType::factory()->create(['dofusdb_type_id' => 13002]);
+
+        $convertedData = [
+            'resources' => [
+                'type_id' => $resourceType->dofusdb_type_id,
+                'dofusdb_id' => '9003',
+                'name' => 'Ressource bloc resources',
+                'description' => 'Desc',
+                'level' => '1',
+                'price' => null,
+                'effect' => '{"chance":4}',
+                'rarity' => 0,
+            ],
+        ];
+
+        $result = $this->service->integrate('item', $convertedData, []);
+
+        $this->assertTrue($result->isSuccess());
+        $this->assertNotNull(Resource::where('dofusdb_id', '9003')->first());
+        $this->assertNull(Item::where('dofusdb_id', '9003')->first());
+        $this->assertNull(Consumable::where('dofusdb_id', '9003')->first());
     }
 
     public function test_integrate_breed_dispatches_to_class(): void

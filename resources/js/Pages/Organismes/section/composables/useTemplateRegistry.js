@@ -15,6 +15,8 @@
  */
 import { ref, computed, shallowRef } from 'vue';
 import { availableTemplates, getTemplateByValue } from '../templates';
+import { logDev, warnDev } from '@/Utils/dev-logger';
+const isDev = import.meta.env.DEV;
 
 // ============================================
 // CACHE GLOBAL (partagé entre toutes les instances)
@@ -78,7 +80,7 @@ function validateTemplateConfig(config) {
 function initializeRegistry() {
   if (registryInitialized) return;
   
-  console.group('🎨 Template Registry - Initialisation');
+  if (isDev) console.group('🎨 Template Registry - Initialisation');
   
   let validCount = 0;
   let invalidCount = 0;
@@ -89,16 +91,20 @@ function initializeRegistry() {
     
     if (validation.valid) {
       validCount++;
-      console.log(`✅ Template "${template.name}" (${template.value})`);
+      logDev(`✅ Template "${template.name}" (${template.value})`);
     } else {
       invalidCount++;
-      console.error(`❌ Template "${template.name}" (${template.value}):`);
-      validation.errors.forEach(error => console.error(`   - ${error}`));
+      if (isDev) {
+        console.error(`❌ Template "${template.name}" (${template.value}):`);
+        validation.errors.forEach(error => console.error(`   - ${error}`));
+      }
     }
   }
   
-  console.log(`\n📊 Résumé: ${validCount} valides, ${invalidCount} invalides`);
-  console.groupEnd();
+  if (isDev) {
+    logDev(`\n📊 Résumé: ${validCount} valides, ${invalidCount} invalides`);
+    console.groupEnd();
+  }
   
   registryInitialized = true;
 }
@@ -267,7 +273,7 @@ export function useTemplateRegistry() {
    */
   function clearCache() {
     componentCache.clear();
-    console.log('🧹 Cache du registry vidé');
+    logDev('🧹 Cache du registry vidé');
   }
   
   /**
@@ -314,7 +320,7 @@ export async function preloadCommonTemplates() {
   // NOTE : `entity_table` est un template legacy (caché côté UI).
   const commonTemplates = ['text', 'image', 'gallery'];
   
-  console.log('🚀 Préchargement des templates courants...');
+  logDev('🚀 Préchargement des templates courants...');
   
   // Filtrer uniquement les templates valides avant de précharger
   const validTemplates = commonTemplates.filter(t => registry.isValidTemplate(t));
@@ -323,9 +329,9 @@ export async function preloadCommonTemplates() {
     await Promise.all(
       validTemplates.map(template => registry.preload(template, 'both'))
     );
-    console.log(`✅ ${validTemplates.length} templates préchargés:`, validTemplates);
+    logDev(`✅ ${validTemplates.length} templates préchargés:`, validTemplates);
   } else {
-    console.warn('⚠️ Aucun template valide à précharger');
+    warnDev('⚠️ Aucun template valide à précharger');
   }
 }
 

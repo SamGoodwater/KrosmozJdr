@@ -211,4 +211,45 @@ class CollectServiceTest extends TestCase
         $this->assertNotNull($seenUrl);
         $this->assertStringContainsString('10', (string) $seenUrl);
     }
+
+    public function test_fetch_spell_ids_by_breed_uses_spell_breed_filter_and_paginates(): void
+    {
+        Http::fake(function ($request) {
+            $url = $request->url();
+            if (str_contains($url, '/spell-levels') && str_contains($url, '%24skip=0')) {
+                return Http::response([
+                    'data' => [
+                        ['spellId' => 101],
+                        ['spellId' => 101],
+                        ['spellId' => 102],
+                    ],
+                    'limit' => 3,
+                ], 200);
+            }
+            if (str_contains($url, '/spell-levels') && str_contains($url, '%24skip=3')) {
+                return Http::response([
+                    'data' => [
+                        ['spellId' => 103],
+                    ],
+                    'limit' => 3,
+                ], 200);
+            }
+
+            return Http::response(['data' => [], 'limit' => 3], 200);
+        });
+
+        $ids = $this->service->fetchSpellIdsByBreedId('dofusdb', 1, ['skip_cache' => true]);
+
+        $this->assertSame([101, 102, 103], $ids);
+        Http::assertSent(function (\Illuminate\Http\Client\Request $request): bool {
+            if (!str_contains($request->url(), '/spell-levels')) {
+                return false;
+            }
+
+            $query = parse_url($request->url(), PHP_URL_QUERY) ?? '';
+            parse_str($query, $params);
+
+            return (int) ($params['spellBreed'] ?? 0) === 1;
+        });
+    }
 }

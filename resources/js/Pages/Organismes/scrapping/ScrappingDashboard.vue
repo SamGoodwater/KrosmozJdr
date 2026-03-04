@@ -401,11 +401,26 @@ const batchScope = ref("selection");
 
 // Historique (console)
 const historyLines = ref([]);
+const lastRunId = ref(null);
 const showOptionsAndHistory = ref(false); // masqué par défaut
 
 const pushHistory = (line) => {
     const ts = new Date().toLocaleString("fr-FR");
     historyLines.value.unshift(`[${ts}] ${line}`);
+};
+
+const copyLastRunId = async () => {
+    const runId = String(currentRunId.value || "").trim();
+    if (!runId) {
+        showError("Aucun run_id à copier.");
+        return;
+    }
+    try {
+        await navigator.clipboard.writeText(runId);
+        success("run_id copié.");
+    } catch {
+        showError("Impossible de copier le run_id.");
+    }
 };
 
 const loadKnownTypes = async () => {
@@ -767,6 +782,9 @@ const batch = useScrappingBatch({
     onBatchErrors: () => { showOptionsAndHistory.value = true; },
 });
 
+const currentRunId = computed(() => batch.lastRunId?.value || preview.lastRunId?.value || lastRunId.value || null);
+const currentUnknownCharacteristics = computed(() => batch.lastUnknownCharacteristics?.value || preview.lastUnknownCharacteristics?.value || null);
+
 const selectedCount = computed(() => selectedIds.value?.size ?? 0);
 const allSelected = computed(() => {
     const ids = visibleItems.value.map((it) => Number(it?.id)).filter((n) => Number.isFinite(n));
@@ -1089,6 +1107,8 @@ const analyzeEffects = async () => {
         }
 
         const preview = json?.data || {};
+        lastRunId.value = json?.run_id ?? lastRunId.value;
+        const unknownSummary = json?.debug?.unknown_characteristics ?? null;
         const converted = preview?.converted || {};
         const { unmapped, summary } = extractUnmappedFromConverted(converted);
 
@@ -1096,10 +1116,16 @@ const analyzeEffects = async () => {
         effectsAnalysisSummary.value = summary || null;
 
         success(`Analyse effets OK (${effectsAnalysisUnmapped.value.length} non mappé(s))`);
-        pushHistory(`→ Analyse OK: ${effectsAnalysisUnmapped.value.length} effet(s) non mappé(s).`);
+        pushHistory(`→ Analyse OK: ${effectsAnalysisUnmapped.value.length} effet(s) non mappé(s). run_id=${lastRunId.value || "n/a"}`);
+        if (unknownSummary?.total_occurrences > 0) {
+            const ids = Object.entries(unknownSummary.ids || {})
+                .map(([id, c]) => `${id}(${c})`)
+                .join(", ");
+            pushHistory(`→ DEBUG unknown characteristic IDs: ${ids}. run_id=${lastRunId.value || "n/a"}`);
+        }
     } catch (e) {
         showError("Analyse effets : " + e.message);
-        pushHistory(`→ ERREUR analyse effets: ${e.message}`);
+        pushHistory(`→ ERREUR analyse effets: ${e.message}. run_id=${lastRunId.value || "n/a"}`);
     } finally {
         effectsAnalysisLoading.value = false;
     }
@@ -1267,10 +1293,13 @@ const onCompareImported = () => {
             v-model:opt-property-blacklist="optPropertyBlacklist"
             v-model:opt-replace-mode="optReplaceMode"
             :history-lines="historyLines"
+            :run-id="currentRunId"
+            :unknown-characteristics="currentUnknownCharacteristics"
             :batch-error-results="batch.lastBatchErrorResults"
             @clear-history="historyLines = []"
             @clear-errors="batch.clearBatchErrors()"
             @export-errors-csv="exportBatchErrorsCsv"
+            @copy-run-id="copyLastRunId"
         />
 
         <Card

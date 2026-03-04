@@ -176,21 +176,43 @@ final class CollectService
         $sourceConfig = $this->configLoader->loadSource($source);
         $baseUrl = rtrim((string) ($sourceConfig['baseUrl'] ?? 'https://api.dofusdb.fr'), '/');
         $lang = (string) ($sourceConfig['defaultLanguage'] ?? 'fr');
-        $query = http_build_query(['breedId' => $breedId, 'lang' => $lang, '$limit' => 500], '', '&', PHP_QUERY_RFC3986);
-        $url = $baseUrl . '/spell-levels?' . $query;
-        $response = $this->getJson($url, $options);
-        $data = $response['data'] ?? [];
-        if (!is_array($data)) {
-            return [];
-        }
         $spellIds = [];
-        foreach ($data as $row) {
-            if (!is_array($row)) {
-                continue;
+        $skip = 0;
+        $pageSize = 50;
+
+        while (true) {
+            // DofusDB expose le filtre "spellBreed" sur /spell-levels (et non "breedId").
+            $query = http_build_query([
+                'spellBreed' => $breedId,
+                'lang' => $lang,
+                '$limit' => $pageSize,
+                '$skip' => $skip,
+            ], '', '&', PHP_QUERY_RFC3986);
+            $url = $baseUrl . '/spell-levels?' . $query;
+            $response = $this->getJson($url, $options);
+            $data = $response['data'] ?? [];
+            if (!is_array($data)) {
+                $data = [];
             }
-            $id = $row['spellId'] ?? $row['spell_id'] ?? $row['id'] ?? null;
-            if ($id !== null && (is_int($id) || ctype_digit((string) $id))) {
-                $spellIds[] = (int) $id;
+
+            foreach ($data as $row) {
+                if (!is_array($row)) {
+                    continue;
+                }
+                $id = $row['spellId'] ?? $row['spell_id'] ?? $row['id'] ?? null;
+                if ($id !== null && (is_int($id) || ctype_digit((string) $id))) {
+                    $spellIds[] = (int) $id;
+                }
+            }
+
+            $effectiveLimit = (int) ($response['limit'] ?? $pageSize);
+            if ($effectiveLimit <= 0 || count($data) < $effectiveLimit) {
+                break;
+            }
+
+            $skip += $effectiveLimit;
+            if ($skip > 10000) {
+                break;
             }
         }
 
@@ -744,7 +766,7 @@ final class CollectService
                     break;
                 case 'breedId':
                     if (is_int($value) || (is_string($value) && ctype_digit($value))) {
-                        $q['breedId'] = (int) $value;
+                        $q['spellBreed'] = (int) $value;
                     }
                     break;
                 case 'typeId':

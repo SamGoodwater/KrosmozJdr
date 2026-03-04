@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Scrapping\Core\Conversion\SpellEffects;
 
+use App\Models\DofusdbEffectMapping;
 use App\Services\Characteristic\Conversion\DofusConversionService;
 use App\Services\Characteristic\Getter\CharacteristicGetterService;
 use App\Services\Jdr\DiceNotationService;
@@ -113,6 +114,90 @@ class SpellEffectsConversionServiceValueConvertedTest extends TestCase
         $params = $result->getEffects()[0]['sub_effects'][0]['params'] ?? [];
         $this->assertArrayHasKey('value_converted', $params);
         $this->assertSame('42', $params['value_formula'] ?? null);
+        $this->assertIsInt($params['value_converted']);
+    }
+
+    public function test_convert_uses_characteristic_key_from_mapping_when_present(): void
+    {
+        $catalog = $this->createMock(DofusDbEffectCatalog::class);
+        $catalog->method('get')->willReturn(['characteristic' => 19]);
+
+        DofusdbEffectMapping::query()->updateOrCreate(
+            ['dofusdb_effect_id' => 116],
+            ['sub_effect_slug' => 'booster', 'characteristic_source' => 'characteristic', 'characteristic_key' => 'po']
+        );
+        $mappingService = $this->app->make(DofusdbEffectMappingService::class);
+        $mappingService->clearCache();
+
+        $service = new SpellEffectsConversionService(
+            $catalog,
+            $mappingService,
+            new SpellEffectConversionFormulaResolver(),
+            $this->app->make(DofusConversionService::class),
+            $this->app->make(CharacteristicGetterService::class),
+            $this->app->make(DiceNotationService::class)
+        );
+
+        $result = $service->convert(
+            ['id' => 3, 'name' => ['fr' => 'Buff PO']],
+            [[
+                'grade' => 1,
+                'effects' => [[
+                    'effectId' => 116,
+                    'order' => 0,
+                    'diceNum' => 2,
+                    'diceSide' => 0,
+                ]],
+                'criticalEffect' => [],
+            ]],
+            ['lang' => 'fr']
+        );
+
+        $params = $result->getEffects()[0]['sub_effects'][0]['params'] ?? [];
+        $this->assertSame('po', $params['characteristic'] ?? null);
+        $this->assertArrayHasKey('value_converted', $params);
+        $this->assertIsInt($params['value_converted']);
+    }
+
+    public function test_convert_resolves_characteristic_key_from_definition_when_missing_in_mapping(): void
+    {
+        $catalog = $this->createMock(DofusDbEffectCatalog::class);
+        $catalog->method('get')->willReturn(['characteristic' => 19]);
+
+        DofusdbEffectMapping::query()->updateOrCreate(
+            ['dofusdb_effect_id' => 116],
+            ['sub_effect_slug' => 'booster', 'characteristic_source' => 'characteristic', 'characteristic_key' => null]
+        );
+        $mappingService = $this->app->make(DofusdbEffectMappingService::class);
+        $mappingService->clearCache();
+
+        $service = new SpellEffectsConversionService(
+            $catalog,
+            $mappingService,
+            new SpellEffectConversionFormulaResolver(),
+            $this->app->make(DofusConversionService::class),
+            $this->app->make(CharacteristicGetterService::class),
+            $this->app->make(DiceNotationService::class)
+        );
+
+        $result = $service->convert(
+            ['id' => 4, 'name' => ['fr' => 'Debuff PO']],
+            [[
+                'grade' => 1,
+                'effects' => [[
+                    'effectId' => 116,
+                    'order' => 0,
+                    'diceNum' => 1,
+                    'diceSide' => 0,
+                ]],
+                'criticalEffect' => [],
+            ]],
+            ['lang' => 'fr']
+        );
+
+        $params = $result->getEffects()[0]['sub_effects'][0]['params'] ?? [];
+        $this->assertSame('po', $params['characteristic'] ?? null);
+        $this->assertArrayHasKey('value_converted', $params);
         $this->assertIsInt($params['value_converted']);
     }
 }

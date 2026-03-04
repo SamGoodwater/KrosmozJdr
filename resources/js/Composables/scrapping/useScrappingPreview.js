@@ -47,7 +47,26 @@ export function useScrappingPreview(options) {
     const convertedByItemId = ref({});
     const convertedByRelationKey = ref({});
     const lastBatchRelationsByKey = ref({});
+    const lastRunId = ref(null);
+    const lastUnknownCharacteristics = ref(null);
     const loadingConverted = ref(false);
+    const mergeUnknown = (target, incoming) => {
+        if (!incoming || typeof incoming !== "object") return target;
+        const next = target && typeof target === "object"
+            ? { ...target, ids: { ...(target.ids || {}) } }
+            : { total_occurrences: 0, distinct_ids: 0, ids: {}, contains_id_38: false };
+        const ids = incoming.ids && typeof incoming.ids === "object" ? incoming.ids : {};
+        for (const [id, count] of Object.entries(ids)) {
+            const n = Number(count);
+            if (!Number.isFinite(n) || n <= 0) continue;
+            next.ids[id] = (Number(next.ids[id] || 0) || 0) + n;
+        }
+        next.total_occurrences = Object.values(next.ids).reduce((acc, n) => acc + (Number(n) || 0), 0);
+        next.distinct_ids = Object.keys(next.ids).length;
+        next.contains_id_38 = Boolean(next.ids["38"]) || Boolean(next.contains_id_38);
+        return next;
+    };
+
     /** Progression pour l'UI : { phase: 'main'|'relations', total, done } ou null si inactif. */
     const conversionProgress = ref(null);
 
@@ -95,6 +114,7 @@ export function useScrappingPreview(options) {
         const entityType = entityTypeRef.value;
         let statusNext = { ...(itemStatusByKeyRef?.value ?? {}) };
         let relNext = {};
+        let unknownSummary = null;
 
         try {
             // 1) Entités principales : par paquets pour mise à jour progressive et éviter timeout
@@ -112,6 +132,8 @@ export function useScrappingPreview(options) {
                     return;
                 }
                 const data = result.data;
+                lastRunId.value = data?.run_id ?? lastRunId.value;
+                unknownSummary = mergeUnknown(unknownSummary, data?.debug?.unknown_characteristics ?? null);
                 const items = Array.isArray(data?.data?.items) ? data.data.items : (Array.isArray(data?.items) ? data.items : []);
                 if (data?.success !== true || !items.length) {
                     if (mainChunks.length === 1) {
@@ -166,6 +188,8 @@ export function useScrappingPreview(options) {
                             if (relResult.aborted) break;
                             if (!relResult.ok) continue;
                             const relData = relResult.data;
+                            lastRunId.value = relData?.run_id ?? lastRunId.value;
+                            unknownSummary = mergeUnknown(unknownSummary, relData?.debug?.unknown_characteristics ?? null);
                             const relItems = Array.isArray(relData?.data?.items) ? relData.data.items : (Array.isArray(relData?.items) ? relData.items : []);
                             if (!relItems?.length || relData?.success !== true) continue;
                             for (const relItem of relItems) {
@@ -203,6 +227,7 @@ export function useScrappingPreview(options) {
                 }
             }
             convertedByRelationKey.value = relConv;
+            lastUnknownCharacteristics.value = unknownSummary;
         } catch (e) {
             notifyError("Valeurs converties : " + (e?.message ?? "erreur"));
         } finally {
@@ -215,6 +240,8 @@ export function useScrappingPreview(options) {
         convertedByItemId,
         convertedByRelationKey,
         lastBatchRelationsByKey,
+        lastRunId,
+        lastUnknownCharacteristics,
         loadingConverted,
         conversionProgress,
         fetchConvertedBatch,

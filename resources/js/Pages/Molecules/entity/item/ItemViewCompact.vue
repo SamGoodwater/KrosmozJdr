@@ -20,11 +20,10 @@ import EntityViewHeader from "@/Pages/Molecules/entity/shared/EntityViewHeader.v
 import ImageViewer from "@/Pages/Molecules/data-display/ImageViewer.vue";
 import EntityUsableDot from "@/Pages/Atoms/data-display/EntityUsableDot.vue";
 import { useCopyToClipboard } from '@/Composables/utils/useCopyToClipboard';
-import { useDownloadPdf } from '@/Composables/utils/useDownloadPdf';
 import { getEntityRouteConfig, resolveEntityRouteUrl } from '@/Composables/entity/entityRouteRegistry';
 import { usePermissions } from "@/Composables/permissions/usePermissions";
 import { getItemFieldDescriptors } from "@/Entities/item/item-descriptors";
-import { getEntityFieldShortLabel, getEntityFieldTooltip, shouldOmitLabelInMeta } from "@/Utils/Entity/entity-view-ui";
+import { getEntityFieldShortLabel, shouldOmitLabelInMeta, resolveEntityFieldUi, resolveEntityBadgeUi } from "@/Utils/Entity/entity-view-ui";
 
 const props = defineProps({
     item: {
@@ -44,7 +43,6 @@ const props = defineProps({
 const emit = defineEmits(['edit', 'copy-link', 'download-pdf', 'refresh', 'view', 'quick-view', 'quick-edit', 'delete', 'action']);
 
 const { copyToClipboard } = useCopyToClipboard();
-const { downloadPdf } = useDownloadPdf('item');
 const permissions = usePermissions();
 
 const ctx = computed(() => {
@@ -111,14 +109,39 @@ const technicalFields = computed(() => ([
 ].filter(canShowField)));
 
 const getFieldLabel = (fieldKey) => {
-    return descriptors.value?.[fieldKey]?.general?.label || fieldKey;
+    return resolveEntityFieldUi({
+        fieldKey,
+        descriptors: descriptors.value,
+        tableMeta: props.tableMeta,
+        entityType: 'item',
+    }).label;
 };
 
 const getFieldIcon = (fieldKey) => {
-    return descriptors.value?.[fieldKey]?.general?.icon || 'fa-solid fa-info-circle';
+    return resolveEntityFieldUi({
+        fieldKey,
+        descriptors: descriptors.value,
+        tableMeta: props.tableMeta,
+        entityType: 'item',
+    }).icon;
 };
 
-const getFieldTooltip = (fieldKey) => getEntityFieldTooltip(descriptors.value?.[fieldKey]);
+const getFieldTooltip = (fieldKey) => resolveEntityFieldUi({
+    fieldKey,
+    descriptors: descriptors.value,
+    tableMeta: props.tableMeta,
+    entityType: 'item',
+}).tooltip;
+
+const getFieldIconStyle = (fieldKey) => {
+    const color = resolveEntityFieldUi({
+        fieldKey,
+        descriptors: descriptors.value,
+        tableMeta: props.tableMeta,
+        entityType: 'item',
+    }).color;
+    return color ? { color } : undefined;
+};
 
 const getCell = (fieldKey) => {
     return props.item.toCell(fieldKey, {
@@ -134,8 +157,6 @@ const asTextCell = (cell) => {
 };
 
 const getBadgeColor = (fieldKey) => {
-    const cell = getCell(fieldKey);
-    if (cell?.params?.color) return cell.params.color;
     const colorMap = {
         item_type: 'info',
         level: 'warning',
@@ -152,14 +173,31 @@ const getBadgeColor = (fieldKey) => {
         created_at: 'neutral',
         updated_at: 'neutral',
     };
-    return colorMap[fieldKey] || 'neutral';
+    return resolveEntityBadgeUi({
+        fieldKey,
+        cell: getCell(fieldKey),
+        fieldUi: resolveEntityFieldUi({
+            fieldKey,
+            descriptors: descriptors.value,
+            tableMeta: props.tableMeta,
+            entityType: 'item',
+        }),
+        localColorMap: colorMap,
+    }).color;
 };
 
 const getBadgeAutoParams = (fieldKey) => {
-    const cell = getCell(fieldKey);
-    if (fieldKey === 'rarity' && cell?.value) return { autoLabel: String(cell.value), autoScheme: 'rarity', autoTone: 'mid' };
-    if (fieldKey === 'level' && cell?.value) return { autoLabel: String(cell.value), autoScheme: 'level', autoTone: 'mid' };
-    return {};
+    const { autoLabel, autoScheme, autoTone } = resolveEntityBadgeUi({
+        fieldKey,
+        cell: getCell(fieldKey),
+        fieldUi: resolveEntityFieldUi({
+            fieldKey,
+            descriptors: descriptors.value,
+            tableMeta: props.tableMeta,
+            entityType: 'item',
+        }),
+    });
+    return { autoLabel, autoScheme, autoTone };
 };
 
 const handleAction = async (actionKey) => {
@@ -227,7 +265,7 @@ const handleAction = async (actionKey) => {
                             class: 'w-full h-full',
                         }"
                     />
-                    <div v-else class="w-full h-full flex items-center justify-center bg-base-200 rounded-lg">
+                    <div v-else class="w-full h-full flex items-center justify-center bg-base-200 entity-radius-box">
                         <Icon source="fa-solid fa-box" :alt="item.name" size="md" />
                     </div>
                 </div>
@@ -258,7 +296,7 @@ const handleAction = async (actionKey) => {
                         <Tooltip :content="getFieldTooltip(fieldKey)" placement="top">
                             <div class="flex items-start justify-between gap-2 min-w-0">
                                 <div class="flex items-center gap-2 min-w-0">
-                                    <Icon :source="getFieldIcon(fieldKey)" size="xs" class="text-primary-300 flex-shrink-0" />
+                                    <Icon :source="getFieldIcon(fieldKey)" size="xs" class="text-primary-300 flex-shrink-0" :style="getFieldIconStyle(fieldKey)" />
                                     <span
                                         v-if="!shouldOmitLabelInMeta(fieldKey)"
                                         class="text-xs uppercase font-semibold text-primary-300 truncate"
@@ -289,7 +327,7 @@ const handleAction = async (actionKey) => {
                 <template v-for="fieldKey in technicalFields" :key="fieldKey">
                     <Tooltip :content="getFieldTooltip(fieldKey)" placement="top">
                         <div class="inline-flex items-center gap-2 min-w-0">
-                            <Icon :source="getFieldIcon(fieldKey)" size="xs" class="text-primary-300 flex-shrink-0" />
+                            <Icon :source="getFieldIcon(fieldKey)" size="xs" class="text-primary-300 flex-shrink-0" :style="getFieldIconStyle(fieldKey)" />
                             <span class="uppercase tracking-wide text-primary-300">{{ getFieldLabel(fieldKey) }}</span>
                             <span class="min-w-0 break-words">
                                 <CellRenderer :cell="asTextCell(getCell(fieldKey))" ui-color="primary" />
@@ -305,7 +343,7 @@ const handleAction = async (actionKey) => {
                     <template v-for="fieldKey in userCanEditFields" :key="fieldKey">
                         <Tooltip :content="getFieldTooltip(fieldKey)" placement="top">
                             <div class="inline-flex items-center gap-2 min-w-0">
-                                <Icon :source="getFieldIcon(fieldKey)" size="xs" class="text-primary-300 flex-shrink-0" />
+                                <Icon :source="getFieldIcon(fieldKey)" size="xs" class="text-primary-300 flex-shrink-0" :style="getFieldIconStyle(fieldKey)" />
                                 <span class="uppercase tracking-wide text-primary-300">{{ getFieldLabel(fieldKey) }}</span>
                                 <span class="min-w-0 break-words">
                                     <template v-if="fieldKey === 'auto_update'">
@@ -332,3 +370,9 @@ const handleAction = async (actionKey) => {
         </div>
     </div>
 </template>
+
+<style scoped>
+.entity-radius-box {
+    border-radius: var(--radius-box, 0.1rem);
+}
+</style>

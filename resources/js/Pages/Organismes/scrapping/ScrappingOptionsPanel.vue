@@ -18,10 +18,12 @@ defineProps({
     optPropertyBlacklist: { type: String, default: "" },
     optReplaceMode: { type: String, default: "draft_raw_only" },
     historyLines: { type: Array, default: () => [] },
+    runId: { type: String, default: "" },
+    unknownCharacteristics: { type: Object, default: null },
     batchErrorResults: { type: Array, default: () => [] },
 });
 
-const emit = defineEmits(["update:open", "update:optIncludeRelations", "update:optPropertyWhitelist", "update:optPropertyBlacklist", "update:optReplaceMode", "clear-history", "clear-errors", "export-errors-csv"]);
+const emit = defineEmits(["update:open", "update:optIncludeRelations", "update:optPropertyWhitelist", "update:optPropertyBlacklist", "update:optReplaceMode", "clear-history", "clear-errors", "export-errors-csv", "copy-run-id"]);
 </script>
 
 <template>
@@ -110,12 +112,31 @@ const emit = defineEmits(["update:open", "update:optIncludeRelations", "update:o
 
             <Card class="p-6 space-y-3">
                 <div class="flex items-center justify-between gap-2">
-                    <h4 class="font-semibold text-primary-100">Historique</h4>
-                    <Btn size="sm" variant="ghost" :disabled="!historyLines.length" @click="emit('clear-history')">
-                        Vider
-                    </Btn>
+                    <div>
+                        <h4 class="font-semibold text-primary-100">Historique</h4>
+                        <p v-if="runId" class="text-[11px] text-primary-300">
+                            Dernier run_id: <span class="font-mono">{{ runId }}</span>
+                        </p>
+                        <p
+                            v-if="unknownCharacteristics?.total_occurrences > 0"
+                            class="text-[11px] text-warning mt-1"
+                        >
+                            Debug unknown IDs:
+                            <span class="font-mono">
+                                {{ Object.entries(unknownCharacteristics.ids || {}).map(([id, c]) => `${id}(${c})`).join(", ") }}
+                            </span>
+                        </p>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <Btn v-if="runId" size="sm" variant="outline" @click="emit('copy-run-id')">
+                            Copier run_id
+                        </Btn>
+                        <Btn size="sm" variant="ghost" :disabled="!historyLines.length" @click="emit('clear-history')">
+                            Vider
+                        </Btn>
+                    </div>
                 </div>
-                <pre class="text-xs bg-base-300/30 border border-base-300 rounded p-3 max-h-80 overflow-auto whitespace-pre-wrap break-words">{{ historyLines.join("\n") }}</pre>
+                <pre class="text-xs bg-base-300/30 border border-base-300 rounded p-3 max-h-80 overflow-auto whitespace-pre-wrap wrap-break-word">{{ historyLines.join("\n") }}</pre>
             </Card>
 
             <Card v-if="batchErrorResults.length > 0" class="overflow-hidden border-error/30 bg-error/5">

@@ -14,14 +14,19 @@
  * @props {String} relationName - Nom de la relation (pour les labels et routes)
  * @props {Object} config - Configuration optionnelle (displayFields, searchFields, etc.)
  */
-import { ref, computed, watch } from 'vue';
-import { router, useForm } from '@inertiajs/vue3';
+import { ref, computed, watch, shallowRef, defineAsyncComponent } from 'vue';
+import { useForm } from '@inertiajs/vue3';
 import { useNotificationStore } from '@/Composables/store/useNotificationStore';
 import Btn from '@/Pages/Atoms/action/Btn.vue';
 import InputField from '@/Pages/Molecules/data-input/InputField.vue';
 import Badge from '@/Pages/Atoms/data-display/Badge.vue';
 import Container from '@/Pages/Atoms/data-display/Container.vue';
 import Tooltip from '@/Pages/Atoms/feedback/Tooltip.vue';
+import Icon from '@/Pages/Atoms/data-display/Icon.vue';
+import EntityModal from '@/Pages/Organismes/entity/EntityModal.vue';
+import { normalizeEntityType, getEntityResponseAdapter } from '@/Entities/entity-registry';
+import { resolveEntityViewComponent } from '@/Utils/entity/resolveEntityViewComponent';
+import { warnDev } from '@/Utils/dev-logger';
 
 const props = defineProps({
     relations: {
@@ -54,6 +59,7 @@ const props = defineProps({
             displayFields: ['name', 'description', 'level'],
             searchFields: ['name', 'description'],
             routeName: null, // Si null, construit automatiquement : entities.{entityType}.update{RelationType}
+            relatedEntityType: null, // Type de l'entité liée (fallback: relationType)
             itemLabel: 'élément',
             itemLabelPlural: 'éléments',
             pivotFields: null // Array de champs de pivot (ex: ['quantity'] ou ['quantity', 'price', 'comment'])
@@ -67,6 +73,95 @@ const notificationStore = useNotificationStore();
 
 // Relations locales (copie pour modification)
 const localRelations = ref([...props.relations]);
+
+const relationEntityType = computed(() =>
+    normalizeEntityType(props.config.relatedEntityType || props.relationType)
+);
+
+const relationTextViewComponent = shallowRef(null);
+
+const ENTITY_TEXT_PROP_MAP = {
+    resources: 'resource',
+    'resource-types': 'resourceType',
+    items: 'item',
+    spells: 'spell',
+    monsters: 'monster',
+    npcs: 'npc',
+    breeds: 'breed',
+    consumables: 'consumable',
+    campaigns: 'campaign',
+    scenarios: 'scenario',
+    attributes: 'attribute',
+    panoplies: 'panoply',
+    capabilities: 'capability',
+    specializations: 'specialization',
+    shops: 'shop',
+};
+
+const relatedEntityPropName = computed(() => {
+    return ENTITY_TEXT_PROP_MAP[relationEntityType.value] || null;
+});
+
+const toRelationViewEntity = (item) => {
+    const relatedType = relationEntityType.value;
+    const adapter = getEntityResponseAdapter(relatedType);
+    if (typeof adapter !== 'function') {
+        return item;
+    }
+    try {
+        const adapted = adapter({ entities: [item] });
+        return adapted?.rows?.[0]?.rowParams?.entity || item;
+    } catch (error) {
+        warnDev('[EntityRelationsManager] adaptation relation impossible', { relatedType, item, error });
+        return item;
+    }
+};
+
+const relationEntries = computed(() =>
+    localRelations.value.map((item) => ({
+        item,
+        viewEntity: toRelationViewEntity(item),
+    }))
+);
+
+watch(
+    relationEntityType,
+    async (type) => {
+        if (!type || !relatedEntityPropName.value) {
+            relationTextViewComponent.value = null;
+            return;
+        }
+        const component = await resolveEntityViewComponent(type, 'text');
+        relationTextViewComponent.value = component
+            ? defineAsyncComponent(() => Promise.resolve(component))
+            : null;
+    },
+    { immediate: true }
+);
+
+const isRelationModalOpen = ref(false);
+const selectedRelationEntity = ref(null);
+
+const canConsultRelation = computed(() =>
+    Boolean(relationTextViewComponent.value && relatedEntityPropName.value)
+);
+
+const openRelationModal = (viewEntity) => {
+    if (!canConsultRelation.value) return;
+    selectedRelationEntity.value = viewEntity;
+    isRelationModalOpen.value = true;
+};
+
+const closeRelationModal = () => {
+    isRelationModalOpen.value = false;
+    selectedRelationEntity.value = null;
+};
+
+const getRelationTextProps = (viewEntity) => {
+    const propName = relatedEntityPropName.value;
+    if (!propName) return {};
+    return { [propName]: viewEntity };
+};
 
 // Valeurs de pivot pour chaque relation (item_id => { field: value })
 const pivotValues = ref({});
@@ -257,7 +352,7 @@ const saveRelations = () => {
                 duration: 5000,
                 placement: 'top-center'
             });
-            console.error('Erreurs:', errors);
+            warnDev('[EntityRelationsManager] Erreurs sauvegarde relations', errors);
         }
     });
 };
@@ -287,26 +382,45 @@ const displayField = (item, field) => {
         <!-- Liste des éléments actuels -->
         <div v-if="localRelations.length > 0" class="space-y-2">
             <div
-                v-for="item in localRelations"
-                :key="item.id"
+                v-for="entry in relationEntries"
+                :key="entry.item.id"
                 class="p-3 bg-base-200 rounded-lg hover:bg-base-300 transition-colors"
             >
                 <div class="flex items-start justify-between gap-4">
-                    <div class="flex-1">
-                        <div class="font-medium">
-                            {{ displayField(item, config.displayFields[0] || 'name') }}
+                    <div class="flex-1 min-w-0">
+                        <button
+                            v-if="canConsultRelation"
+                            type="button"
+                            class="group inline-flex max-w-full items-center gap-2 rounded-md px-1 py-1 text-left transition-colors hover:bg-base-300/60"
+                            @click="openRelationModal(entry.viewEntity)"
+                        >
+                            <component
+                                :is="relationTextViewComponent"
+                                v-bind="getRelationTextProps(entry.viewEntity)"
+                            />
+                            <Tooltip content="Consulter dans une modale" placement="top">
+                                <Icon
+                                    source="fa-solid fa-up-right-from-square"
+                                    size="xs"
+                                    class="opacity-0 transition-opacity group-hover:opacity-70"
+                                />
+                            </Tooltip>
+                        </button>
+
+                        <div v-else class="font-medium">
+                            {{ displayField(entry.item, config.displayFields[0] || 'name') }}
                         </div>
-                        <div 
-                            v-if="config.displayFields[1] && displayField(item, config.displayFields[1])" 
+                        <div
+                            v-if="config.displayFields[1] && displayField(entry.item, config.displayFields[1])"
                             class="text-sm text-base-content/70 line-clamp-1"
                         >
-                            {{ displayField(item, config.displayFields[1]) }}
+                            {{ displayField(entry.item, config.displayFields[1]) }}
                         </div>
-                        <div 
-                            v-if="config.displayFields[2] && displayField(item, config.displayFields[2])" 
+                        <div
+                            v-if="config.displayFields[2] && displayField(entry.item, config.displayFields[2])"
                             class="text-xs text-base-content/50 mt-1"
                         >
-                            {{ config.displayFields[2] === 'level' ? `Niveau ${displayField(item, config.displayFields[2])}` : displayField(item, config.displayFields[2]) }}
+                            {{ config.displayFields[2] === 'level' ? `Niveau ${displayField(entry.item, config.displayFields[2])}` : displayField(entry.item, config.displayFields[2]) }}
                         </div>
                         
                         <!-- Champs de pivot -->
@@ -321,7 +435,7 @@ const displayField = (item, field) => {
                                 </label>
                                 <InputField
                                     v-if="pivotField !== 'comment'"
-                                    v-model="pivotValues[item.id][pivotField]"
+                                    v-model="pivotValues[entry.item.id][pivotField]"
                                     :type="pivotField === 'quantity' || pivotField === 'price' ? 'number' : 'text'"
                                     :placeholder="pivotField === 'quantity' ? '1' : pivotField === 'price' ? '0' : ''"
                                     size="sm"
@@ -329,7 +443,7 @@ const displayField = (item, field) => {
                                 />
                                 <InputField
                                     v-else
-                                    v-model="pivotValues[item.id][pivotField]"
+                                    v-model="pivotValues[entry.item.id][pivotField]"
                                     type="text"
                                     placeholder="Commentaire..."
                                     size="sm"
@@ -340,11 +454,11 @@ const displayField = (item, field) => {
                     </div>
                     <Tooltip :content="`Retirer cet ${config.itemLabel}`" placement="top">
                         <Btn
-                            @click="removeItem(item.id)"
+                            @click="removeItem(entry.item.id)"
                             variant="ghost"
                             size="sm"
                             color="error"
-                            class="flex-shrink-0"
+                            class="shrink-0"
                         >
                             <i class="fa-solid fa-times"></i>
                         </Btn>
@@ -423,6 +537,16 @@ const displayField = (item, field) => {
             </Btn>
         </div>
     </Container>
+
+    <EntityModal
+        v-if="selectedRelationEntity && relationEntityType"
+        :open="isRelationModalOpen"
+        :entity="selectedRelationEntity"
+        :entity-type="relationEntityType"
+        view="text"
+        :use-stored-format="false"
+        @close="closeRelationModal"
+    />
 </template>
 
 <style scoped>

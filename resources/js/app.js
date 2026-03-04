@@ -17,17 +17,17 @@ import { ZiggyVue } from "../../vendor/tightenco/ziggy";
 import { createPinia } from "pinia";
 import DefaultLayout from "@/Pages/Layouts/Main.vue";
 import { preloadCommonTemplates } from "@/Pages/Organismes/section/composables/useTemplateRegistry";
+import { warnDev } from "@/Utils/dev-logger";
 
 const appName = import.meta.env.VITE_APP_NAME || "KrosmozJDR";
 
 // Précharger les templates courants au démarrage (performance)
-preloadCommonTemplates().catch(err => console.warn('Template preload failed:', err));
+preloadCommonTemplates().catch((err) => warnDev("Template preload failed:", err));
 
 createInertiaApp({
     title: (title) => `${title} - ${appName}`,
-    resolve: (name) => {
-        const pages = import.meta.glob("./Pages/**/*.vue", { eager: true });
-        const page = pages[`./Pages/${name}.vue`];
+    resolve: async (name) => {
+        const page = await resolvePageComponent(`./Pages/${name}.vue`, import.meta.glob("./Pages/**/*.vue"));
         page.default.layout = page.default.layout || DefaultLayout;
         return page;
     },

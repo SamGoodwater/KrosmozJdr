@@ -20,7 +20,6 @@ import EntityActions from '@/Pages/Organismes/entity/EntityActions.vue';
 import EntityViewHeader from "@/Pages/Molecules/entity/shared/EntityViewHeader.vue";
 import ImageViewer from "@/Pages/Molecules/data-display/ImageViewer.vue";
 import { useCopyToClipboard } from '@/Composables/utils/useCopyToClipboard';
-import { useDownloadPdf } from '@/Composables/utils/useDownloadPdf';
 import { getEntityRouteConfig, resolveEntityRouteUrl } from '@/Composables/entity/entityRouteRegistry';
 import { usePermissions } from "@/Composables/permissions/usePermissions";
 import { getCampaignFieldDescriptors } from "@/Entities/campaign/campaign-descriptors";
@@ -44,7 +43,6 @@ const props = defineProps({
 const emit = defineEmits(['edit', 'copy-link', 'download-pdf', 'refresh', 'view', 'quick-view', 'quick-edit', 'delete', 'action']);
 
 const { copyToClipboard } = useCopyToClipboard();
-const { downloadPdf } = useDownloadPdf('campaign');
 const permissions = usePermissions();
 
 const ctx = computed(() => {
@@ -194,7 +192,7 @@ const handleAction = async (actionKey) => {
                             class: 'w-full h-full',
                         }"
                     />
-                    <div v-else class="w-full h-full flex items-center justify-center bg-base-200 rounded-lg">
+                    <div v-else class="w-full h-full flex items-center justify-center bg-base-200 entity-radius-box">
                         <Icon source="fa-solid fa-flag" :alt="campaign.name || 'Campaign'" size="md" />
                     </div>
                 </div>
@@ -286,3 +284,9 @@ const handleAction = async (actionKey) => {
         </div>
     </div>
 </template>
+
+<style scoped>
+.entity-radius-box {
+    border-radius: var(--radius-box, 0.1rem);
+}
+</style>

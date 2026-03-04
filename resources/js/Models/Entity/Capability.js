@@ -134,6 +134,8 @@ export class Capability extends BaseModel {
                 return this._toCastingTimeCell(format, size, options);
             case 'duration':
                 return this._toDurationCell(format, size, options);
+            case 'capability_summary_cast':
+                return this._toCapabilitySummaryCastCell(format, size, options);
             case 'element':
                 return this._toElementCell(format, size, options);
             case 'is_magic':
@@ -322,6 +324,39 @@ export class Capability extends BaseModel {
             params: {
                 sortValue: duration === '-' ? '' : duration,
                 searchValue: duration === '-' ? '' : duration,
+            },
+        };
+    }
+
+    /**
+     * Génère une cellule résumé (type chips) pour les informations de cast.
+     * @private
+     */
+    _toCapabilitySummaryCastCell(format, size, options) {
+        const paValue = this.pa != null ? String(this.pa) : null;
+        const poValue = this.po ? String(this.po) : null;
+        const castValue = this.castingTime ? String(this.castingTime) : null;
+        const durationValue = this.duration ? String(this.duration) : null;
+        const cooldownValue = this.timeBeforeUseAgain ? String(this.timeBeforeUseAgain) : null;
+
+        const items = [
+            { icon: 'fa-solid fa-bolt', value: paValue, tooltip: paValue ? `PA: ${paValue}` : '' },
+            { icon: 'fa-solid fa-crosshairs', value: poValue, tooltip: poValue ? `PO: ${poValue}` : '' },
+            { icon: 'fa-solid fa-hourglass', value: castValue, tooltip: castValue ? `Cast: ${castValue}` : '' },
+            { icon: 'fa-solid fa-stopwatch', value: durationValue, tooltip: durationValue ? `Durée: ${durationValue}` : '' },
+            { icon: 'fa-solid fa-clock', value: cooldownValue, tooltip: cooldownValue ? `Relance: ${cooldownValue}` : '' },
+        ].filter((it) => it.value !== null && it.value !== undefined && String(it.value) !== '');
+
+        const searchValue = items.map((it) => String(it.value)).join(' ');
+
+        return {
+            type: 'chips',
+            value: '',
+            params: {
+                items,
+                sortValue: Number(this.level) || 0,
+                searchValue,
+                filterValue: searchValue,
             },
         };
     }

@@ -102,6 +102,12 @@ export function getResourceTypeFieldDescriptors(ctx = {}) {
       icon: "fa-solid fa-database",
       format: "number",
       visibleIf: () => canUpdateAny,
+      table: {
+        sortable: true,
+        filterable: { id: "dofusdb_type_id", type: "text", defaultVisible: false },
+        defaultVisible: { xs: false, sm: false, md: true, lg: true, xl: true },
+        cell: { sizes: { xs: { mode: "text" }, sm: { mode: "text" }, md: { mode: "text" }, lg: { mode: "text" }, xl: { mode: "text" } } },
+      },
       display: {
         sizes: {
           xs: { mode: "text" },
@@ -188,6 +194,12 @@ export function getResourceTypeFieldDescriptors(ctx = {}) {
       label: "Lecture (min.)",
       icon: "fa-solid fa-eye",
       format: "enum",
+      table: {
+        sortable: true,
+        filterable: { id: "read_level", type: "multi", defaultVisible: false },
+        defaultVisible: { xs: false, sm: false, md: false, lg: false, xl: false },
+        cell: { sizes: { xs: { mode: "badge" }, sm: { mode: "badge" }, md: { mode: "badge" }, lg: { mode: "badge" }, xl: { mode: "badge" } } },
+      },
       display: {
         sizes: {
           xs: { mode: "badge" },
@@ -215,6 +227,12 @@ export function getResourceTypeFieldDescriptors(ctx = {}) {
       label: "Écriture (min.)",
       icon: "fa-solid fa-pen-to-square",
       format: "enum",
+      table: {
+        sortable: true,
+        filterable: { id: "write_level", type: "multi", defaultVisible: false },
+        defaultVisible: { xs: false, sm: false, md: false, lg: false, xl: false },
+        cell: { sizes: { xs: { mode: "badge" }, sm: { mode: "badge" }, md: { mode: "badge" }, lg: { mode: "badge" }, xl: { mode: "badge" } } },
+      },
       display: {
         sizes: {
           xs: { mode: "badge" },
@@ -241,6 +259,12 @@ export function getResourceTypeFieldDescriptors(ctx = {}) {
       label: "Détections",
       icon: "fa-solid fa-eye",
       format: "number",
+      table: {
+        sortable: true,
+        filterable: { id: "seen_count", type: "text", defaultVisible: false },
+        defaultVisible: { xs: false, sm: false, md: true, lg: true, xl: true },
+        cell: { sizes: { xs: { mode: "text" }, sm: { mode: "text" }, md: { mode: "text" }, lg: { mode: "text" }, xl: { mode: "text" } } },
+      },
       display: {
         sizes: {
           xs: { mode: "text" },
@@ -256,6 +280,11 @@ export function getResourceTypeFieldDescriptors(ctx = {}) {
       label: "Dernière détection",
       icon: "fa-solid fa-clock",
       format: "date",
+      table: {
+        sortable: true,
+        defaultVisible: { xs: false, sm: false, md: false, lg: true, xl: true },
+        cell: { sizes: { xs: { mode: "text" }, sm: { mode: "text" }, md: { mode: "text" }, lg: { mode: "text" }, xl: { mode: "text" } } },
+      },
       display: {
         sizes: {
           xs: { mode: "text" },
@@ -271,6 +300,12 @@ export function getResourceTypeFieldDescriptors(ctx = {}) {
       label: "Ressources",
       icon: "fa-solid fa-cubes",
       format: "number",
+      table: {
+        sortable: true,
+        filterable: { id: "resources_count", type: "text", defaultVisible: false },
+        defaultVisible: { xs: false, sm: false, md: true, lg: true, xl: true },
+        cell: { sizes: { xs: { mode: "text" }, sm: { mode: "text" }, md: { mode: "text" }, lg: { mode: "text" }, xl: { mode: "text" } } },
+      },
       display: {
         sizes: {
           xs: { mode: "text" },
@@ -287,6 +322,11 @@ export function getResourceTypeFieldDescriptors(ctx = {}) {
       icon: "fa-solid fa-calendar-plus",
       format: "date",
       visibleIf: () => canUpdateAny,
+      table: {
+        sortable: true,
+        defaultVisible: { xs: false, sm: false, md: false, lg: false, xl: false },
+        cell: { sizes: { xs: { mode: "text" }, sm: { mode: "text" }, md: { mode: "text" }, lg: { mode: "text" }, xl: { mode: "text" } } },
+      },
       display: {
         sizes: {
           xs: { mode: "text" },
@@ -303,6 +343,11 @@ export function getResourceTypeFieldDescriptors(ctx = {}) {
       icon: "fa-solid fa-calendar-check",
       format: "date",
       visibleIf: () => canUpdateAny,
+      table: {
+        sortable: true,
+        defaultVisible: { xs: false, sm: false, md: false, lg: false, xl: false },
+        cell: { sizes: { xs: { mode: "text" }, sm: { mode: "text" }, md: { mode: "text" }, lg: { mode: "text" }, xl: { mode: "text" } } },
+      },
       display: {
         sizes: {
           xs: { mode: "text" },

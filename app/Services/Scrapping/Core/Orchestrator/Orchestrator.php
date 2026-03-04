@@ -67,6 +67,7 @@ final class Orchestrator
     {
         return [
             'lang' => (string) ($options['lang'] ?? 'fr'),
+            'run_id' => isset($options['run_id']) ? (string) $options['run_id'] : null,
         ];
     }
 
@@ -561,6 +562,7 @@ final class Orchestrator
             'dry_run' => (bool) ($options['dry_run'] ?? false),
             'force_update' => (bool) ($options['force_update'] ?? false),
             'validate' => ($options['validate'] ?? true) !== false,
+            'skip_cache' => (bool) ($options['skip_cache'] ?? false),
         ];
 
         $relations = [];
@@ -622,6 +624,30 @@ final class Orchestrator
                         $relations[] = ['type' => 'item', 'id' => $id];
                     }
                 }
+            }
+        } elseif ($entityType === 'panoply') {
+            $panoplyId = $integrationResult->getPrimaryId();
+            if ($panoplyId !== null) {
+                $itemDofusdbIds = [];
+                $items = $raw['items'] ?? [];
+                if (is_array($items)) {
+                    foreach ($items as $itemRow) {
+                        if (!is_array($itemRow)) {
+                            continue;
+                        }
+                        $id = (int) ($itemRow['id'] ?? 0);
+                        if ($id > 0) {
+                            $itemDofusdbIds[] = $id;
+                            $relations[] = ['type' => 'item', 'id' => $id];
+                        }
+                    }
+                }
+                $this->relationResolutionService->resolveAndSyncPanoplyItems(
+                    (int) $panoplyId,
+                    $itemDofusdbIds,
+                    $relOptions,
+                    $stack
+                );
             }
         }
 

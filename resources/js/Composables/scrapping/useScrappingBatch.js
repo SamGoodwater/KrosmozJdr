@@ -72,8 +72,39 @@ export function useScrappingBatch(options) {
     const importing = ref(false);
     const lastBatchResults = ref(null);
     const importByPagesProgress = ref(null);
+    const lastRunId = ref(null);
+    const lastUnknownCharacteristics = ref(null);
 
     const selectedCount = computed(() => selectedIdsRef.value?.size ?? 0);
+
+    const mergeUnknown = (target, incoming) => {
+        if (!incoming || typeof incoming !== "object") return target;
+        const next = target && typeof target === "object"
+            ? { ...target, ids: { ...(target.ids || {}) } }
+            : { total_occurrences: 0, distinct_ids: 0, ids: {}, contains_id_38: false };
+        const ids = incoming.ids && typeof incoming.ids === "object" ? incoming.ids : {};
+        for (const [id, count] of Object.entries(ids)) {
+            const n = Number(count);
+            if (!Number.isFinite(n) || n <= 0) continue;
+            next.ids[id] = (Number(next.ids[id] || 0) || 0) + n;
+        }
+        next.total_occurrences = Object.values(next.ids).reduce((acc, n) => acc + (Number(n) || 0), 0);
+        next.distinct_ids = Object.keys(next.ids).length;
+        next.contains_id_38 = Boolean(next.ids["38"]) || Boolean(next.contains_id_38);
+        return next;
+    };
+
+    const unknownToInline = (summary) => {
+        if (!summary || !summary.ids || typeof summary.ids !== "object") return "";
+        const ids = Object.entries(summary.ids)
+            .map(([id, c]) => [Number(id), Number(c)])
+            .filter(([id, c]) => Number.isFinite(id) && Number.isFinite(c) && c > 0)
+            .sort((a, b) => b[1] - a[1])
+            .slice(0, 4)
+            .map(([id, c]) => `${id}(${c})`);
+        if (!ids.length) return "";
+        return `unknown characteristic IDs: ${ids.join(", ")}`;
+    };
 
     function buildBatchPayload(dryRun, scope = "auto") {
         const ids =
@@ -142,6 +173,8 @@ export function useScrappingBatch(options) {
 
             if (result.ok && result.data) {
                 const data = result.data;
+                lastRunId.value = data?.run_id ?? null;
+                lastUnknownCharacteristics.value = data?.debug?.unknown_characteristics ?? null;
                 setStatusFromBatchResults(data.results ?? [], dryRun);
                 const nextRel = { ...lastBatchRelationsByKeyRef.value };
                 for (const r of data.results ?? []) {
@@ -150,17 +183,20 @@ export function useScrappingBatch(options) {
                 lastBatchRelationsByKeyRef.value = nextRel;
                 const s = data.summary || {};
                 const errCount = s.errors ?? 0;
+                const runId = data?.run_id ? ` run_id=${data.run_id}` : "";
                 lastBatchResults.value = errCount > 0 ? (data.results ?? []) : null;
                 if (errCount > 0) {
                     const failed = (data.results ?? []).filter((r) => r && r.success === false);
                     const firstError = failed[0]?.error || failed[0]?.validation_errors?.[0] || "Erreur inconnue";
                     notifyError(`${label} : ${errCount} erreur(s). ${typeof firstError === "string" ? firstError : JSON.stringify(firstError)}. Voir Options & historique pour le détail.`);
-                    pushHistory(`→ ${label.toUpperCase()} OK: ${s.success ?? 0}/${s.total ?? targetCount} (erreurs: ${errCount})`);
+                    pushHistory(`→ ${label.toUpperCase()} OK: ${s.success ?? 0}/${s.total ?? targetCount} (erreurs: ${errCount})${runId}`);
                     onBatchErrors();
                 } else {
                     notifySuccess(`${label}: ${s.success ?? 0}/${s.total ?? targetCount}`);
-                    pushHistory(`→ ${label.toUpperCase()} OK: ${s.success ?? 0}/${s.total ?? targetCount}`);
+                    pushHistory(`→ ${label.toUpperCase()} OK: ${s.success ?? 0}/${s.total ?? targetCount}${runId}`);
                 }
+                const unknownInfo = unknownToInline(lastUnknownCharacteristics.value);
+                if (unknownInfo) pushHistory(`→ DEBUG ${unknownInfo}${runId}`);
             } else {
                 setStatusForEntities(payload.entities, "erreur", result.error || "batch");
                 lastBatchResults.value = null;
@@ -197,6 +233,7 @@ export function useScrappingBatch(options) {
         let totalErrors = 0;
         let totalEntities = 0;
         const accumulatedErrorResults = [];
+        let unknownSummary = null;
         const savedPageNumber = pageNumberRef.value;
 
         try {
@@ -224,6 +261,8 @@ export function useScrappingBatch(options) {
 
                 if (result.ok && result.data) {
                     const data = result.data;
+                    lastRunId.value = data?.run_id ?? lastRunId.value;
+                    unknownSummary = mergeUnknown(unknownSummary, data?.debug?.unknown_characteristics ?? null);
                     setStatusFromBatchResults(data.results ?? [], simulate);
                     const nextRel = { ...lastBatchRelationsByKeyRef.value };
                     for (const r of data.results ?? []) {
@@ -233,10 +272,11 @@ export function useScrappingBatch(options) {
                     const s = data.summary || {};
                     const ok = s.success ?? 0;
                     const err = s.errors ?? 0;
+                    const runId = data?.run_id ? ` run_id=${data.run_id}` : "";
                     totalSuccess += ok;
                     totalErrors += err;
                     (data.results ?? []).filter((r) => r && r.success === false).forEach((r) => accumulatedErrorResults.push(r));
-                    pushHistory(`→ Page ${p} : ${ok}/${s.total ?? payload.entities.length} (erreurs: ${err})`);
+                    pushHistory(`→ Page ${p} : ${ok}/${s.total ?? payload.entities.length} (erreurs: ${err})${runId}`);
                 } else {
                     setStatusForEntities(payload.entities, "erreur", result.error || "batch");
                     totalErrors += payload.entities.length;
@@ -245,6 +285,7 @@ export function useScrappingBatch(options) {
                 }
             }
             lastBatchResults.value = accumulatedErrorResults.length > 0 ? accumulatedErrorResults : null;
+            lastUnknownCharacteristics.value = unknownSummary;
             if (totalErrors > 0) {
                 const firstFailed = accumulatedErrorResults[0];
                 const firstError = firstFailed?.error || firstFailed?.validation_errors?.[0] || "Erreur inconnue";
@@ -254,6 +295,8 @@ export function useScrappingBatch(options) {
                 notifySuccess(`${label} par pages terminé : ${totalSuccess}/${totalEntities}`);
             }
             pushHistory(`→ ${label.toUpperCase()} PAR PAGES OK: ${totalSuccess}/${totalEntities} (erreurs: ${totalErrors})`);
+            const unknownInfo = unknownToInline(unknownSummary);
+            if (unknownInfo) pushHistory(`→ DEBUG ${unknownInfo}`);
         } catch (e) {
             notifyError(`${label} par pages : ` + (e?.message ?? "erreur"));
             pushHistory(`→ ${label.toUpperCase()} PAR PAGES ERREUR: ${e?.message}`);
@@ -285,6 +328,7 @@ export function useScrappingBatch(options) {
         let totalErrors = 0;
         let totalEntities = 0;
         const accumulatedErrorResults = [];
+        let unknownSummary = null;
         const savedPageNumber = pageNumberRef.value;
 
         try {
@@ -312,6 +356,8 @@ export function useScrappingBatch(options) {
 
                 if (result.ok && result.data) {
                     const data = result.data;
+                    lastRunId.value = data?.run_id ?? lastRunId.value;
+                    unknownSummary = mergeUnknown(unknownSummary, data?.debug?.unknown_characteristics ?? null);
                     setStatusFromBatchResults(data.results ?? [], simulate);
                     const nextRel = { ...lastBatchRelationsByKeyRef.value };
                     for (const r of data.results ?? []) {
@@ -321,10 +367,11 @@ export function useScrappingBatch(options) {
                     const s = data.summary || {};
                     const ok = s.success ?? 0;
                     const err = s.errors ?? 0;
+                    const runId = data?.run_id ? ` run_id=${data.run_id}` : "";
                     totalSuccess += ok;
                     totalErrors += err;
                     (data.results ?? []).filter((r) => r && r.success === false).forEach((r) => accumulatedErrorResults.push(r));
-                    pushHistory(`→ Page ${p} : ${ok}/${s.total ?? payload.entities.length} (erreurs: ${err})`);
+                    pushHistory(`→ Page ${p} : ${ok}/${s.total ?? payload.entities.length} (erreurs: ${err})${runId}`);
                 } else {
                     setStatusForEntities(payload.entities, "erreur", result.error || "batch");
                     totalErrors += payload.entities.length;
@@ -333,6 +380,7 @@ export function useScrappingBatch(options) {
                 }
             }
             lastBatchResults.value = accumulatedErrorResults.length > 0 ? accumulatedErrorResults : null;
+            lastUnknownCharacteristics.value = unknownSummary;
             if (totalErrors > 0) {
                 const firstFailed = accumulatedErrorResults[0];
                 const firstError = firstFailed?.error || firstFailed?.validation_errors?.[0] || "Erreur inconnue";
@@ -342,6 +390,8 @@ export function useScrappingBatch(options) {
                 notifySuccess(`${label} « Tous » terminé : ${totalSuccess}/${totalEntities}`);
             }
             pushHistory(`→ ${label.toUpperCase()} TOUS OK: ${totalSuccess}/${totalEntities} (erreurs: ${totalErrors})`);
+            const unknownInfo = unknownToInline(unknownSummary);
+            if (unknownInfo) pushHistory(`→ DEBUG ${unknownInfo}`);
         } catch (e) {
             notifyError(`${label} « Tous » : ` + (e?.message ?? "erreur"));
             pushHistory(`→ ${label.toUpperCase()} TOUS ERREUR: ${e?.message}`);
@@ -376,6 +426,8 @@ export function useScrappingBatch(options) {
         importByPagesProgress,
         lastBatchResults,
         lastBatchErrorResults,
+        lastRunId,
+        lastUnknownCharacteristics,
         selectedCount,
         buildBatchPayload,
         runBatch,

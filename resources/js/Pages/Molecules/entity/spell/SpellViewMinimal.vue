@@ -17,12 +17,9 @@ import CellRenderer from "@/Pages/Atoms/data-display/CellRenderer.vue";
 import EntityActions from '@/Pages/Organismes/entity/EntityActions.vue';
 import EntityViewHeader from "@/Pages/Molecules/entity/shared/EntityViewHeader.vue";
 import EntityUsableDot from "@/Pages/Atoms/data-display/EntityUsableDot.vue";
-import { useCopyToClipboard } from '@/Composables/utils/useCopyToClipboard';
-import { useDownloadPdf } from '@/Composables/utils/useDownloadPdf';
-import { getEntityRouteConfig, resolveEntityRouteUrl } from '@/Composables/entity/entityRouteRegistry';
 import { usePermissions } from "@/Composables/permissions/usePermissions";
 import { getSpellFieldDescriptors } from "@/Entities/spell/spell-descriptors";
-import { getEntityFieldShortLabel, getEntityFieldTooltip, shouldOmitLabelInMeta } from "@/Utils/Entity/entity-view-ui";
+import { getEntityFieldShortLabel, shouldOmitLabelInMeta, resolveEntityFieldUi } from "@/Utils/Entity/entity-view-ui";
 
 const props = defineProps({
     spell: {
@@ -48,8 +45,6 @@ const emit = defineEmits(['edit', 'copy-link', 'download-pdf', 'refresh', 'view'
 
 const isHovered = ref(props.displayMode === 'extended');
 const canHoverExpand = computed(() => props.displayMode === 'hover');
-const { copyToClipboard } = useCopyToClipboard();
-const { downloadPdf } = useDownloadPdf('spell');
 const permissions = usePermissions();
 
 const ctx = computed(() => {
@@ -85,18 +80,36 @@ const canShowField = (fieldKey) => {
 // Champs importants à afficher
 const importantFields = computed(() => ['level', 'pa', 'po', 'element', 'category', 'state', 'read_level'].filter(canShowField));
 
-// Champs supplémentaires à afficher au hover
-const expandedFields = computed(() => [
-    'area',
-    'cast_per_turn',
-    'cast_per_target',
-    'sight_line',
-    'is_magic',
-    'auto_update',
-].filter(canShowField));
+const technicalFieldsOrder = ['id', 'slug', 'state', 'is_public', 'read_level', 'write_level', 'created_at', 'updated_at', 'deleted_at'];
+const technicalFieldRank = new Map(technicalFieldsOrder.map((key, index) => [key, index]));
+const sortExtendedFields = (fields) => {
+    return [...fields].sort((a, b) => {
+        const rankA = technicalFieldRank.has(a) ? technicalFieldRank.get(a) : -1;
+        const rankB = technicalFieldRank.has(b) ? technicalFieldRank.get(b) : -1;
+
+        if (rankA === -1 && rankB === -1) return 0;
+        if (rankA === -1) return -1;
+        if (rankB === -1) return 1;
+        return rankA - rankB;
+    });
+};
+
+// En mode étendu, afficher toutes les propriétés visibles non principales.
+const expandedFields = computed(() => {
+    const excluded = new Set(['name', 'image']);
+    const fields = Object.keys(descriptors.value || {}).filter((key) => {
+        return canShowField(key) && !importantFields.value.includes(key) && !excluded.has(key);
+    });
+    return sortExtendedFields(fields);
+});
 
 const getFieldIcon = (fieldKey) => {
-    return descriptors.value?.[fieldKey]?.general?.icon || 'fa-solid fa-info-circle';
+    return resolveEntityFieldUi({
+        fieldKey,
+        descriptors: descriptors.value,
+        tableMeta: props.tableMeta,
+        entityType: 'spell',
+    }).icon;
 };
 
 const getCell = (fieldKey) => {
@@ -106,9 +119,26 @@ const getCell = (fieldKey) => {
     });
 };
 
+const getFieldLabel = (fieldKey) => resolveEntityFieldUi({
+    fieldKey,
+    descriptors: descriptors.value,
+    tableMeta: props.tableMeta,
+    entityType: 'spell',
+}).label;
+
+const getFieldIconStyle = (fieldKey) => {
+    const color = resolveEntityFieldUi({
+        fieldKey,
+        descriptors: descriptors.value,
+        tableMeta: props.tableMeta,
+        entityType: 'spell',
+    }).color;
+    return color ? { color } : undefined;
+};
+
 const tooltipForField = (fieldKey, cell) => {
     const value = (cell?.value === null || typeof cell?.value === 'undefined' || String(cell?.value) === '') ? '-' : cell.value;
-    const label = getEntityFieldShortLabel(fieldKey, descriptors.value?.[fieldKey]?.general?.label || fieldKey);
+    const label = getEntityFieldShortLabel(fieldKey, getFieldLabel(fieldKey));
     if (shouldOmitLabelInMeta(fieldKey)) return String(value);
     return `${label} : ${value}`;
 };
@@ -145,7 +175,8 @@ const handleAction = async (actionKey) => {
             minWidth: '150px',
             maxWidth: isHovered ? '300px' : '200px',
             height: isHovered ? 'auto' : '100px',
-            minHeight: '80px'
+            minHeight: '80px',
+            borderRadius: 'var(--radius-box, 0.1rem)'
         }"
         @mouseenter="canHoverExpand && (isHovered = true)"
         @mouseleave="canHoverExpand && (isHovered = false)">
@@ -184,7 +215,7 @@ const handleAction = async (actionKey) => {
                     <div class="flex items-center gap-2">
                         <template v-for="field in importantFields" :key="field">
                             <Tooltip :content="tooltipForField(field, getCell(field))" placement="top">
-                                <Icon :source="getFieldIcon(field)" size="xs" class="text-primary-400" />
+                                <Icon :source="getFieldIcon(field)" size="xs" class="text-primary-400" :style="getFieldIconStyle(field)" />
                             </Tooltip>
                         </template>
                     </div>
@@ -209,10 +240,11 @@ const handleAction = async (actionKey) => {
                                 :source="getFieldIcon(key)"
                                 size="xs"
                                 class="text-primary-400 flex-shrink-0 mt-0.5"
+                                :style="getFieldIconStyle(key)"
                             />
                             <div class="flex-1 min-w-0">
                                 <div class="font-semibold text-primary-400">
-                                    {{ descriptors?.[key]?.general?.label || key }}:
+                                    {{ getFieldLabel(key) }}:
                                 </div>
                                 <div class="text-primary-200 truncate">
                                     <CellRenderer

@@ -112,7 +112,7 @@ function handleMouseMove(event) {
     el.style.setProperty("--menu-my", `${y}px`);
     el.style.setProperty("--menu-rx", `${rotateX.toFixed(2)}deg`);
     el.style.setProperty("--menu-ry", `${rotateY.toFixed(2)}deg`);
-    el.style.setProperty("--menu-light-opacity", "0.95");
+    el.style.setProperty("--menu-light-opacity", "0.65");
 }
 
 function handleMouseLeave(event) {
@@ -220,7 +220,7 @@ onMounted(() => {
         translateX(var(--menu-shift-x, 0px));
     will-change: transform;
     transition:
-        transform 0.18s ease,
+        transform 0.22s ease,
         background-color 0.2s ease,
         color 0.2s ease,
         border-color 0.2s ease,
@@ -235,13 +235,13 @@ onMounted(() => {
     inset: -45%;
     pointer-events: none;
     background: radial-gradient(
-        circle 130px at var(--menu-mx, 50%) var(--menu-my, 50%),
-        color-mix(in srgb, var(--color-base-content) 24%, transparent) 0%,
-        color-mix(in srgb, var(--color-primary-400) 20%, transparent) 35%,
-        transparent 70%
+        circle 100px at var(--menu-mx, 50%) var(--menu-my, 50%),
+        color-mix(in srgb, var(--color-base-content) 16%, transparent) 0%,
+        color-mix(in srgb, var(--color-primary-400) 12%, transparent) 40%,
+        transparent 75%
     );
     opacity: var(--menu-light-opacity, 0);
-    transition: opacity 0.18s ease;
+    transition: opacity 0.22s ease;
 }
 
 .glass-menu-item-compact {

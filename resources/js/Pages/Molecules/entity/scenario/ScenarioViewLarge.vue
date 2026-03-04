@@ -152,7 +152,7 @@ const handleAction = async (actionKey) => {
                     :src="scenario.image"
                     :alt="scenario.name || 'Scenario'"
                     size="lg"
-                    class="rounded-lg"
+                    class="entity-radius-box"
                 />
             </div>
             
@@ -193,7 +193,7 @@ const handleAction = async (actionKey) => {
             <div
                 v-for="fieldKey in extendedFields"
                 :key="fieldKey"
-                class="p-3 bg-base-200 rounded-lg"
+                class="p-3 bg-base-200 entity-radius-box"
             >
                 <div class="flex flex-col gap-1">
                     <div class="flex items-center gap-2">
@@ -218,3 +218,9 @@ const handleAction = async (actionKey) => {
         </div>
     </div>
 </template>
+
+<style scoped>
+.entity-radius-box {
+    border-radius: var(--radius-box, 0.1rem);
+}
+</style>

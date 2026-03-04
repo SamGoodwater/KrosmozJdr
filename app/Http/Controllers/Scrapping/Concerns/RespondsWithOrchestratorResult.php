@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Http\Controllers\Scrapping\Concerns;
 
 use App\Services\Scrapping\Core\Config\CollectAliasResolver;
+use App\Services\Scrapping\Core\Conversion\UnknownCharacteristicRunTracker;
 use App\Services\Scrapping\Core\Orchestrator\OrchestratorResult;
 use Illuminate\Http\JsonResponse;
 
@@ -31,6 +32,9 @@ trait RespondsWithOrchestratorResult
             ];
             if ($runId !== null && $runId !== '') {
                 $payload['run_id'] = $runId;
+                $payload['debug'] = [
+                    'unknown_characteristics' => UnknownCharacteristicRunTracker::summary($runId),
+                ];
             }
 
             return response()->json($payload, $successStatus);
@@ -44,6 +48,9 @@ trait RespondsWithOrchestratorResult
         ];
         if ($runId !== null && $runId !== '') {
             $payload['run_id'] = $runId;
+            $payload['debug'] = [
+                'unknown_characteristics' => UnknownCharacteristicRunTracker::summary($runId),
+            ];
         }
 
         return response()->json($payload, 400);

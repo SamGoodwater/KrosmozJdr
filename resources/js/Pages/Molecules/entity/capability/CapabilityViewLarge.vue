@@ -20,6 +20,7 @@ import { useDownloadPdf } from '@/Composables/utils/useDownloadPdf';
 import { getEntityRouteConfig, resolveEntityRouteUrl } from '@/Composables/entity/entityRouteRegistry';
 import { usePermissions } from "@/Composables/permissions/usePermissions";
 import { getCapabilityFieldDescriptors } from "@/Entities/capability/capability-descriptors";
+import { resolveEntityFieldUi } from "@/Utils/Entity/entity-view-ui";
 
 const props = defineProps({
     capability: {
@@ -95,11 +96,31 @@ const extendedFields = computed(() => {
 });
 
 const getFieldLabel = (fieldKey) => {
-    return descriptors.value?.[fieldKey]?.general?.label || fieldKey;
+    return resolveEntityFieldUi({
+        fieldKey,
+        descriptors: descriptors.value,
+        tableMeta: props.tableMeta,
+        entityType: 'capability',
+    }).label;
 };
 
 const getFieldIcon = (fieldKey) => {
-    return descriptors.value?.[fieldKey]?.general?.icon || 'fa-solid fa-info-circle';
+    return resolveEntityFieldUi({
+        fieldKey,
+        descriptors: descriptors.value,
+        tableMeta: props.tableMeta,
+        entityType: 'capability',
+    }).icon;
+};
+
+const getFieldIconStyle = (fieldKey) => {
+    const color = resolveEntityFieldUi({
+        fieldKey,
+        descriptors: descriptors.value,
+        tableMeta: props.tableMeta,
+        entityType: 'capability',
+    }).color;
+    return color ? { color } : undefined;
 };
 
 const getCell = (fieldKey) => {
@@ -159,7 +180,7 @@ const handleAction = async (actionKey) => {
                         v-if="capability.image"
                         :src="capability.image"
                         :alt="capability.name || 'Capability'"
-                        class="w-16 h-16 rounded-lg object-cover flex-shrink-0"
+                        class="w-16 h-16 entity-radius-box object-cover flex-shrink-0"
                     />
                     <h2 class="text-2xl font-bold text-primary-100 break-words">
                         <CellRenderer
@@ -193,7 +214,7 @@ const handleAction = async (actionKey) => {
             <div
                 v-for="fieldKey in extendedFields"
                 :key="fieldKey"
-                class="p-3 bg-base-200 rounded-lg"
+                class="p-3 bg-base-200 entity-radius-box"
             >
                 <div class="flex flex-col gap-1">
                     <div class="flex items-center gap-2">
@@ -202,6 +223,7 @@ const handleAction = async (actionKey) => {
                             :alt="getFieldLabel(fieldKey)"
                             size="xs"
                             class="text-primary-400"
+                            :style="getFieldIconStyle(fieldKey)"
                         />
                         <span class="text-xs text-primary-400 uppercase font-semibold">
                             {{ getFieldLabel(fieldKey) }}
@@ -218,3 +240,9 @@ const handleAction = async (actionKey) => {
         </div>
     </div>
 </template>
+
+<style scoped>
+.entity-radius-box {
+    border-radius: var(--radius-box, 0.1rem);
+}
+</style>

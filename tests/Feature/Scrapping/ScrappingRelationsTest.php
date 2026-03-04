@@ -9,6 +9,8 @@ use App\Models\Entity\Creature;
 use App\Models\Entity\Monster;
 use App\Models\Entity\Resource;
 use App\Models\Entity\Item;
+use App\Models\Entity\Panoply;
+use App\Models\Type\ItemType;
 use App\Services\Scrapping\Core\Orchestrator\Orchestrator;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Http;
@@ -334,6 +336,81 @@ class ScrappingRelationsTest extends TestCase
         // Vérifier qu'aucune relation n'a été créée
         $spellsCount = $breed->spells()->count();
         $this->assertEquals(0, $spellsCount, 'Aucune relation ne devrait être créée sans include_relations');
+    }
+
+    /**
+     * Test que l'import d'une panoplie importe les items manquants et crée le pivot item_panoply.
+     */
+    public function test_import_panoply_with_items_imports_missing_items_and_creates_relations(): void
+    {
+        $this->createSystemUser();
+        ItemType::query()->firstOrCreate(
+            ['dofusdb_type_id' => 6],
+            ['name' => 'Type item test', 'state' => 'playable', 'read_level' => 0, 'write_level' => 2]
+        );
+
+        $panoplyData = [
+            'id' => 1001,
+            'name' => ['fr' => 'Panoplie relation test'],
+            'description' => ['fr' => 'Description panoplie'],
+            'effects' => [],
+            'items' => [
+                ['id' => 2001],
+                ['id' => 2002],
+            ],
+            'isCosmetic' => false,
+        ];
+
+        $itemData1 = [
+            'id' => 2001,
+            'typeId' => 6,
+            'name' => ['fr' => 'Item panoplie 1'],
+            'description' => ['fr' => 'Desc item 1'],
+            'level' => 10,
+            'price' => 100,
+            'effects' => [],
+        ];
+        $itemData2 = [
+            'id' => 2002,
+            'typeId' => 6,
+            'name' => ['fr' => 'Item panoplie 2'],
+            'description' => ['fr' => 'Desc item 2'],
+            'level' => 20,
+            'price' => 200,
+            'effects' => [],
+        ];
+
+        Http::fake(function ($request) use ($panoplyData, $itemData1, $itemData2) {
+            $url = $request->url();
+            if (str_contains($url, '/item-sets/1001')) {
+                return Http::response($panoplyData, 200);
+            }
+            if (str_contains($url, '/items/2001')) {
+                return Http::response($itemData1, 200);
+            }
+            if (str_contains($url, '/items/2002')) {
+                return Http::response($itemData2, 200);
+            }
+
+            return Http::response([], 404);
+        });
+
+        $r = $this->orchestrator->runOne('dofusdb', 'panoply', 1001, [
+            'integrate' => true,
+            'dry_run' => false,
+            'force_update' => false,
+            'include_relations' => true,
+            'skip_cache' => true,
+        ]);
+        $result = $this->resultToArray($r);
+
+        $this->assertTrue($result['success'], $result['message'] ?? '');
+        $panoply = Panoply::where('dofusdb_id', '1001')->first();
+        $this->assertNotNull($panoply);
+        $this->assertSame(2, $panoply->items()->count());
+        $this->assertNotNull(Item::where('dofusdb_id', '2001')->first());
+        $this->assertNotNull(Item::where('dofusdb_id', '2002')->first());
+        $this->assertDatabaseHas('item_panoply', ['panoply_id' => $panoply->id]);
     }
 }
 
