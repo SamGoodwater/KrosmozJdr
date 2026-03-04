@@ -14,6 +14,7 @@ import TanStackTablePagination from "@/Pages/Molecules/table/TanStackTablePagina
 import Card from "@/Pages/Atoms/data-display/Card.vue";
 import Badge from "@/Pages/Atoms/data-display/Badge.vue";
 import Icon from "@/Pages/Atoms/data-display/Icon.vue";
+import { getEntityConfigStatus } from "@/Composables/scrapping/useScrappingEntityConfigStatus";
 
 const props = defineProps({
     config: { type: Object, default: () => ({}) },
@@ -21,6 +22,8 @@ const props = defineProps({
     loadingConfig: { type: Boolean, default: false },
     entityOptions: { type: Array, default: () => [] },
     selectedEntityType: { type: [String, Object], default: "" },
+    showOnlyErrorEntities: { type: Boolean, default: false },
+    errorEntityCount: { type: Number, default: 0 },
     labelForTypeId: { type: Function, default: (id) => `#${id}` },
     filterIds: { type: String, default: "" },
     filterName: { type: String, default: "" },
@@ -56,7 +59,7 @@ const props = defineProps({
     cancelVisible: { type: Boolean, default: false },
 });
 
-const emit = defineEmits(["update:selectedEntityType", "update:filterIds", "update:filterName", "update:typeMode", "update:filterTypeIds", "update:filterTypeIdsNot", "update:selectedKnownTypeInclude", "update:selectedKnownTypeExclude", "update:raceMode", "update:filterRaceIds", "update:selectedKnownRace", "update:filterRaceId", "update:filterBreedId", "update:filterLevelMin", "update:filterLevelMax", "search", "open-type-manager", "add-known-type", "remove-known-type", "add-known-race", "remove-known-race", "prev", "next", "first", "last", "go", "set-page-size", "cancel"]);
+const emit = defineEmits(["update:selectedEntityType", "update:showOnlyErrorEntities", "update:filterIds", "update:filterName", "update:typeMode", "update:filterTypeIds", "update:filterTypeIdsNot", "update:selectedKnownTypeInclude", "update:selectedKnownTypeExclude", "update:raceMode", "update:filterRaceIds", "update:selectedKnownRace", "update:filterRaceId", "update:filterBreedId", "update:filterLevelMin", "update:filterLevelMax", "search", "open-type-manager", "add-known-type", "remove-known-type", "add-known-race", "remove-known-race", "prev", "next", "first", "last", "go", "set-page-size", "cancel"]);
 
 function supports(key) {
     const supported = props.config?.[entityTypeStr.value]?.filters?.supported;
@@ -70,11 +73,10 @@ const entityTypeStr = computed(() => {
     return String(v ?? "");
 });
 
-const mappingDiagnostics = computed(() => {
-    const cfg = props.config?.[entityTypeStr.value];
-    const diag = cfg?.mappingDiagnostics;
-    return diag && typeof diag === "object" ? diag : null;
-});
+const selectedEntityStatus = computed(() => getEntityConfigStatus(props.config, entityTypeStr.value));
+const mappingDiagnostics = computed(() => selectedEntityStatus.value.diagnostics);
+const selectedEntityConfigError = computed(() => selectedEntityStatus.value.configError);
+const selectedEntityBlockingWarning = computed(() => selectedEntityStatus.value.blockingWarning);
 
 const coverageColor = computed(() => {
     const pct = Number(mappingDiagnostics.value?.coveragePct ?? 0);
@@ -93,15 +95,38 @@ const coverageColor = computed(() => {
                     Choisis une entité, filtre, recherche, puis simule ou importe.
                 </p>
             </div>
-            <div class="min-w-[260px]">
-                <SelectSearchField
-                    label="Entité"
-                    :model-value="selectedEntityType"
-                    :options="entityOptions"
-                    placeholder="Choisir…"
-                    :disabled="loadingMeta || loadingConfig"
-                    @update:model-value="emit('update:selectedEntityType', $event)"
-                />
+            <div class="min-w-[260px] space-y-2">
+                <div class="flex items-end gap-2">
+                    <div class="flex-1">
+                        <SelectSearchField
+                            label="Entité"
+                            :model-value="selectedEntityType"
+                            :options="entityOptions"
+                            placeholder="Choisir…"
+                            :disabled="loadingMeta || loadingConfig"
+                            @update:model-value="emit('update:selectedEntityType', $event)"
+                        />
+                    </div>
+                    <a
+                        v-if="selectedEntityConfigError && selectedEntityBlockingWarning?.actionUrl"
+                        :href="selectedEntityBlockingWarning.actionUrl"
+                        class="btn btn-outline btn-warning btn-sm"
+                    >
+                        Corriger
+                    </a>
+                </div>
+                <label class="flex items-center gap-2 text-xs text-primary-300">
+                    <input
+                        type="checkbox"
+                        class="checkbox checkbox-xs"
+                        :checked="showOnlyErrorEntities"
+                        @change="emit('update:showOnlyErrorEntities', $event.target.checked)"
+                    />
+                    <span>
+                        Afficher uniquement les entités en erreur
+                        <span v-if="errorEntityCount > 0">({{ errorEntityCount }})</span>
+                    </span>
+                </label>
             </div>
         </div>
 
@@ -111,6 +136,26 @@ const coverageColor = computed(() => {
         </div>
 
         <template v-else>
+            <div
+                v-if="selectedEntityConfigError"
+                class="rounded-lg border border-warning/40 bg-warning/10 p-3 text-xs text-warning-content"
+            >
+                <div class="flex flex-wrap items-center justify-between gap-2">
+                    <p class="font-semibold">Configuration mapping incomplete pour cette entite</p>
+                    <a
+                        v-if="selectedEntityBlockingWarning?.actionUrl"
+                        :href="selectedEntityBlockingWarning.actionUrl"
+                        class="btn btn-ghost btn-xs"
+                    >
+                        Corriger
+                    </a>
+                </div>
+                <p class="mt-1">
+                    Le scrapping reste disponible, mais certaines conversions peuvent etre partielles sur cette entite.
+                </p>
+                <p class="mt-1 opacity-80">{{ selectedEntityConfigError }}</p>
+            </div>
+
             <div
                 v-if="mappingDiagnostics"
                 class="rounded-lg border border-base-300 bg-base-200/30 p-3 space-y-2"

@@ -132,7 +132,7 @@
   {
     "path": "100- Done/TESTS_SCRAPPING_COMMANDE_CHAINE_COMPLETE.md",
     "title": "Tests chaîne complète de la commande scrapping",
-    "description": "**Livré** : réécriture et extension des tests de la commande `php artisan scrapping:run` (alias legacy : `scrapping`) pour couvrir toute la chaîne (API → conversion → validation → intégration BDD) pour toutes les entités et les principaux paramètres."
+    "description": "**Livré** : réécriture et extension des tests de la commande `php artisan scrapping` pour couvrir toute la chaîne (API → conversion → validation → intégration BDD) pour toutes les entités et les principaux paramètres."
   },
   {
     "path": "100- Done/VERIFICATION_CONFIDENTIALITE_GITHUB.md",
@@ -1435,6 +1435,11 @@
     "description": "Cette page documente l’API interne utilisée par :"
   },
   {
+    "path": "50-Fonctionnalités/Scrapping/PIPELINE_ET_MAPPING.md",
+    "title": "Pipeline de scrapping et où modifier le mapping",
+    "description": "**Objectif :** un seul endroit pour comprendre le flux et savoir où changer une règle de mapping."
+  },
+  {
     "path": "50-Fonctionnalités/Scrapping/PLAN_FINALISATION_SCRAPPING.md",
     "title": "Plan de finalisation du service de scrapping",
     "description": "Ce document décrit les **tâches restantes** pour considérer le service de scrapping comme terminé (backend), dans l’ordre de priorité recommandé. Contexte : [ETAT_AVANCEMENT.md](./Architecture/ETAT_AVANCEMENT.md), [RESTE_A_FAIRE_SCRAPPING.md](./RESTE_A_FAIRE_SCRAPPING.md)."
@@ -1463,16 +1468,6 @@
     "path": "50-Fonctionnalités/Scrapping/PLAN_REFONTE_SCRAPPING.md",
     "title": "Plan de refonte — Service de scrapping",
     "description": "**Date :** 2026-03-03"
-  },
-  {
-    "path": "50-Fonctionnalités/Scrapping/SIMPLIFICATIONS_SCRAPPING.md",
-    "title": "Simplifications possibles — Service de scrapping",
-    "description": "Constat sur les sources de complexité (sources de vérité multiples, FormatterApplicator fourre-tout, double pipeline) et pistes de simplification par priorité."
-  },
-  {
-    "path": "50-Fonctionnalités/Scrapping/PIPELINE_ET_MAPPING.md",
-    "title": "Pipeline de scrapping et où modifier le mapping",
-    "description": "Schéma du pipeline (Collecte → Conversion → Validation → Intégration), où modifier chaque type de règle, glossaire (mapping rule, from_path, characteristic_key, etc.)."
   },
   {
     "path": "50-Fonctionnalités/Scrapping/PLAN_REFONTE_UI_SCRAPPING.md",
@@ -1518,6 +1513,11 @@
     "path": "50-Fonctionnalités/Scrapping/RESTE_A_FAIRE_SCRAPPING.md",
     "title": "Résumé — Ce qu’il reste à faire pour finir le scrapping (backend)",
     "description": "Ce document liste ce qui reste à faire pour **finaliser la partie backend** du scrapping (hors interface, à traiter plus tard)."
+  },
+  {
+    "path": "50-Fonctionnalités/Scrapping/SIMPLIFICATIONS_SCRAPPING.md",
+    "title": "Simplifications possibles — Service de scrapping",
+    "description": "**Contexte :** le pipeline (Collecte → Conversion → Validation → Intégration) et les mappings ont grandi par ajouts successifs. Ce document identifie ce qui alourdit le tout et propose des pistes pour simplifier **sans tout réécrire**."
   },
   {
     "path": "50-Fonctionnalités/Scrapping/SIMPLIFICATION_UI_MAPPING_DEPUIS_CARACTERISTIQUE.md",

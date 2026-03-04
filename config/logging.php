@@ -73,6 +73,14 @@ return [
             'replace_placeholders' => true,
         ],
 
+        'scrapping' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/scrapping.log'),
+            'level' => env('LOG_SCRAPPING_LEVEL', env('LOG_LEVEL', 'info')),
+            'days' => env('LOG_SCRAPPING_DAYS', 30),
+            'replace_placeholders' => true,
+        ],
+
         'slack' => [
             'driver' => 'slack',
             'url' => env('LOG_SLACK_WEBHOOK_URL'),

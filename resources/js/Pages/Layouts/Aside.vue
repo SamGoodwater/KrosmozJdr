@@ -19,12 +19,14 @@
  */
 import Route from "@/Pages/Atoms/action/Route.vue";
 import Image from "@/Pages/Atoms/data-display/Image.vue";
-import Menu from "@/Pages/Molecules/navigation/Menu.vue";
-import MenuItem from "@/Pages/Atoms/navigation/MenuItem.vue";
 import Dock from "@/Pages/Molecules/navigation/Dock.vue";
 import DockItem from "@/Pages/Atoms/navigation/DockItem.vue";
 import Tooltip from "@/Pages/Atoms/feedback/Tooltip.vue";
-import Icon from "@/Pages/Atoms/data-display/Icon.vue";
+import GlassMenuPanel from "@/Pages/Atoms/navigation/GlassMenuPanel.vue";
+import GlassMenuItem from "@/Pages/Atoms/navigation/GlassMenuItem.vue";
+import GlassMenuSectionTitle from "@/Pages/Atoms/navigation/GlassMenuSectionTitle.vue";
+import GlassMenuDivider from "@/Pages/Atoms/navigation/GlassMenuDivider.vue";
+import GlassMenuGroup from "@/Pages/Atoms/navigation/GlassMenuGroup.vue";
 import DynamicMenu from "@/Pages/Organismes/section/DynamicMenu.vue";
 import { ref, computed } from "vue";
 import { usePage } from "@inertiajs/vue3";
@@ -102,7 +104,7 @@ const footerItems = [
 <template>
     <aside class="h-full min-h-full flex flex-col justify-between flex-nowrap border-glass-r-xs bd-blur-md">
         <div class="flex flex-col justify-start flex-nowrap items-center flex-1 min-h-0 overflow-hidden">
-            <Route route="home" target="_self" class="hover:scale-105 focus:scale-95 my-5 flex-shrink-0">
+            <Route route="home" target="_self" class="hover:scale-105 focus:scale-95 my-5 shrink-0">
                 <template v-if="!logoError">
                     <Image source="logos/logo.webp" :alt="`Logo de ${appName}`" size="md" class="mx-auto"
                         @error="logoError = true" />
@@ -113,38 +115,46 @@ const footerItems = [
                     </div>
                 </template>
             </Route>
-            <p class="m-2 text-subtitle/80 text-sm flex-shrink-0">{{ appSlogan }}</p>
+            <p class="m-2 text-subtitle/80 text-sm shrink-0">{{ appSlogan }}</p>
             <div class="flex-1 min-h-0 w-full overflow-y-auto scrollbar-hide">
-                <Menu direction="vertical" size="md" class="my-5">
-                    <MenuItem v-for="item in navItems" :key="item.label" :route="item.route" :icon="item.icon"
-                        :pack="item.pack" :active="item.active($page)">
-                    {{ item.label }}
-                    </MenuItem>
-                    
-                    <!-- Menu Entités avec sous-menu -->
-                    <li>
-                        <details :open="isEntitiesMenuOpen">
-                            <summary class="flex items-center">
-                                <Icon source="fa-solid fa-database" alt="Entités" size="md" class="mr-2" />
-                                <span>Entités</span>
-                            </summary>
-                            <ul class="ml-4">
-                                <MenuItem 
-                                    v-for="entity in entityItems" 
-                                    :key="entity.key"
-                                    :route="entity.route"
-                                    :icon="`fa-solid ${entity.icon}`"
-                                    pack="solid"
-                                    :active="isEntityActive(entity.key)">
-                                    {{ entity.label }}
-                                </MenuItem>
-                            </ul>
-                        </details>
-                    </li>
-                    
-                    <!-- Menu dynamique des pages -->
+                <GlassMenuPanel class="my-5 mx-2">
+                    <GlassMenuSectionTitle>Navigation</GlassMenuSectionTitle>
+                    <GlassMenuItem
+                        v-for="item in navItems"
+                        :key="item.label"
+                        :route="item.route"
+                        :icon="item.icon"
+                        :icon-pack="item.pack"
+                        :active="item.active($page)"
+                        hover3d
+                    >
+                        {{ item.label }}
+                    </GlassMenuItem>
+
+                    <GlassMenuDivider compact />
+
+                    <GlassMenuGroup :open="isEntitiesMenuOpen" icon="fa-database" icon-alt="Entités" compact>
+                        <template #title>Entités</template>
+                        <template #default>
+                            <GlassMenuItem
+                                v-for="entity in entityItems"
+                                :key="entity.key"
+                                :route="entity.route"
+                                :icon="entity.icon"
+                                icon-pack="solid"
+                                compact
+                                :active="isEntityActive(entity.key)"
+                                hover3d
+                            >
+                                {{ entity.label }}
+                            </GlassMenuItem>
+                        </template>
+                    </GlassMenuGroup>
+
+                    <GlassMenuDivider compact />
+
                     <DynamicMenu :current-route="page.url" />
-                </Menu>
+                </GlassMenuPanel>
             </div>
         </div>
         <div id="footer">
@@ -187,4 +197,5 @@ const footerItems = [
     .scrollbar-hide::-webkit-scrollbar {
         display: none;  /* Chrome, Safari et Opera */
     }
+
 </style>

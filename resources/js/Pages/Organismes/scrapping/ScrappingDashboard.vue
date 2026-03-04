@@ -49,6 +49,7 @@ import { useScrappingSearch } from "@/Composables/scrapping/useScrappingSearch";
 import { useScrappingPreview } from "@/Composables/scrapping/useScrappingPreview";
 import { useScrappingCompare } from "@/Composables/scrapping/useScrappingCompare";
 import { useScrappingBatch } from "@/Composables/scrapping/useScrappingBatch";
+import { getEntityConfigStatus } from "@/Composables/scrapping/useScrappingEntityConfigStatus";
 
 const _initialScrapPrefs = loadScrappingPreferences();
 const _pref = (k) => _initialScrapPrefs[k] ?? SCRAP_DEFAULTS[k];
@@ -59,10 +60,12 @@ const { success, error: showError, info } = notificationStore;
 const loadingMeta = ref(true);
 const loadingConfig = ref(true);
 const configLoadError = ref("");
+const configHealth = ref(null);
 
 const metaEntityTypes = ref([]);
 const configEntitiesByKey = ref({});
 const selectedEntityType = ref(_pref("selectedEntityType"));
+const showOnlyErrorEntities = ref(false);
 
 /** Charge les métadonnées des types d'entité (liste pour le select Entité). */
 const loadMeta = async () => {
@@ -85,6 +88,7 @@ const loadMeta = async () => {
 const loadConfig = async () => {
     loadingConfig.value = true;
     configLoadError.value = "";
+    configHealth.value = null;
     try {
         const result = await getJson("/api/scrapping/config");
         if (result.ok && result.data?.success) {
@@ -94,6 +98,7 @@ const loadConfig = async () => {
                 if (e?.entity) map[String(e.entity)] = e;
             }
             configEntitiesByKey.value = map;
+            configHealth.value = result.data?.data?.health ?? null;
         } else {
             configEntitiesByKey.value = {};
             configLoadError.value = result.error || "Impossible de charger la config scrapping";
@@ -544,11 +549,36 @@ const entityOptions = computed(() => {
         // Ne pas dépendre strictement de /api/scrapping/config : si ce endpoint échoue,
         // on garde un select d'entités utilisable basé sur /api/scrapping/meta.
         .filter((e) => e?.type && allowed.has(String(e.type)))
-        .map((e) => ({
-            value: String(e.type),
-            label: String(labelOverrides[String(e.type)] || e.label || e.type),
-        }));
+        .map((e) => {
+            const type = String(e.type);
+            const baseLabel = String(labelOverrides[type] || e.label || type);
+            const { hasConfigError } = getEntityConfigStatus(configEntitiesByKey.value, type);
+            return {
+                value: type,
+                label: hasConfigError ? `${baseLabel} (!)` : baseLabel,
+                hasConfigError,
+            };
+        })
+        .filter((opt) => !showOnlyErrorEntities.value || opt.hasConfigError)
+        .map(({ value, label }) => ({ value, label }));
 });
+
+const entitiesWithConfigError = computed(() => {
+    const entries = Object.entries(configEntitiesByKey.value || {});
+    return entries
+        .filter(([, cfg]) => Boolean(cfg?.configError))
+        .map(([entity, cfg]) => {
+            const warnings = Array.isArray(cfg?.mappingDiagnostics?.warnings) ? cfg.mappingDiagnostics.warnings : [];
+            const blockingWarning = warnings.find((w) => w?.severity === "blocking") || null;
+            return {
+                entity,
+                label: String(cfg?.label || entity),
+                message: String(cfg?.configError || ""),
+                actionUrl: blockingWarning?.actionUrl || "",
+            };
+        });
+});
+const entitiesWithConfigErrorCount = computed(() => entitiesWithConfigError.value.length);
 
 watch(
     [entityOptions, () => selectedEntityTypeStr.value],
@@ -1181,6 +1211,8 @@ const onCompareImported = () => {
             :loading-config="loadingConfigUnwrapped"
             :entity-options="entityOptions"
             v-model:selected-entity-type="selectedEntityType"
+            v-model:show-only-error-entities="showOnlyErrorEntities"
+            :error-entity-count="entitiesWithConfigErrorCount"
             :label-for-type-id="labelForTypeId"
             v-model:filter-ids="filterIds"
             v-model:filter-name="filterName"
@@ -1242,12 +1274,33 @@ const onCompareImported = () => {
         />
 
         <Card
-            v-if="configLoadError"
-            class="border border-warning/40 bg-warning/10 p-4 text-sm text-warning-content"
+            v-if="configLoadError || entitiesWithConfigErrorCount > 0"
+            class="border border-warning/40 bg-warning/10 p-3 text-xs text-warning-content space-y-2"
         >
             <div class="flex flex-wrap items-center justify-between gap-2">
-                <p class="font-semibold">Mode degrade active</p>
+                <div class="flex flex-wrap items-center gap-2">
+                    <span class="font-semibold">Sante de configuration</span>
+                    <Badge
+                        v-if="entitiesWithConfigErrorCount > 0"
+                        :content="`${entitiesWithConfigErrorCount} entite(s) en erreur`"
+                        color="warning"
+                        size="xs"
+                    />
+                    <Badge
+                        v-if="configHealth?.status"
+                        :content="`etat: ${configHealth.status}`"
+                        :color="configHealth.status === 'ok' ? 'success' : (configHealth.status === 'partial' ? 'warning' : 'error')"
+                        size="xs"
+                    />
+                    <Badge
+                        v-if="configLoadError"
+                        content="Mode degrade"
+                        color="warning"
+                        size="xs"
+                    />
+                </div>
                 <Btn
+                    v-if="configLoadError"
                     size="sm"
                     variant="outline"
                     :disabled="loadingConfigUnwrapped"
@@ -1257,11 +1310,29 @@ const onCompareImported = () => {
                     Reessayer
                 </Btn>
             </div>
-            <p class="mt-1">
-                La configuration avancee du scrapping est indisponible pour le moment.
-                Les filtres metier dependants de cette config peuvent etre limites, mais la recherche/import de base reste disponible.
+
+            <p v-if="configLoadError" class="opacity-90">
+                Config avancee indisponible temporairement, mais la recherche/import de base reste active.
             </p>
-            <p class="mt-2 text-xs opacity-80">{{ configLoadError }}</p>
+            <p v-else-if="configHealth" class="opacity-90">
+                Entites saines: {{ configHealth.healthyCount }}/{{ configHealth.entityCount }}
+            </p>
+
+            <div v-if="entitiesWithConfigErrorCount > 0" class="flex flex-wrap gap-1.5">
+                <a
+                    v-for="row in entitiesWithConfigError"
+                    :key="`cfg-err-${row.entity}`"
+                    :href="row.actionUrl || '/admin/scrapping-mappings'"
+                    class="btn btn-ghost btn-xs"
+                    :title="row.message"
+                >
+                    {{ row.label }}
+                </a>
+            </div>
+
+            <p v-if="configLoadError" class="opacity-70">
+                {{ configLoadError }}
+            </p>
         </Card>
 
         <!-- Corps: tableau -->

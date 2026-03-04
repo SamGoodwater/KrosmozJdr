@@ -14,6 +14,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\Rule;
+use Illuminate\Support\Str;
 
 /**
  * Contrôleur principal pour le système de scrapping.
@@ -124,8 +125,8 @@ class ScrappingController extends Controller
         return $this->entityMeta->getMaxIdForType($type);
     }
 
-    /** @return array{convert: bool, validate: bool, integrate: bool, dry_run: bool, force_update: bool, replace_mode?: string, include_relations: bool, exclude_from_update: list<string>, property_whitelist: list<string>, download_images: bool, lang: string} */
-    private function optionsFromRequest(Request $request): array
+    /** @return array{convert: bool, validate: bool, integrate: bool, dry_run: bool, force_update: bool, replace_mode?: string, include_relations: bool, exclude_from_update: list<string>, property_whitelist: list<string>, download_images: bool, lang: string, run_id: string} */
+    private function optionsFromRequest(Request $request, ?string $runId = null): array
     {
         $replaceMode = $request->input('replace_mode');
         $replaceMode = is_string($replaceMode) && in_array($replaceMode, ['never', 'draft_raw_only', 'always'], true) ? $replaceMode : null;
@@ -170,7 +171,39 @@ class ScrappingController extends Controller
             'property_whitelist' => $propertyWhitelist,
             'download_images' => $downloadImages,
             'lang' => (string) $request->input('lang', 'fr'),
+            'run_id' => $runId ?? $this->runIdFromRequest($request),
         ];
+    }
+
+    private function runIdFromRequest(Request $request): string
+    {
+        $headerRunId = trim((string) $request->header('X-Scrapping-Run-Id', ''));
+        if ($headerRunId !== '') {
+            return $headerRunId;
+        }
+
+        return (string) Str::uuid();
+    }
+
+    /**
+     * @param array<string, mixed> $context
+     */
+    private function logScrapping(string $level, string $message, array $context = []): void
+    {
+        $logger = Log::channel('scrapping');
+        if ($level === 'warning') {
+            $logger->warning($message, $context);
+            return;
+        }
+        if ($level === 'error') {
+            $logger->error($message, $context);
+            return;
+        }
+        if ($level === 'debug') {
+            $logger->debug($message, $context);
+            return;
+        }
+        $logger->info($message, $context);
     }
 
     /**
@@ -192,17 +225,22 @@ class ScrappingController extends Controller
      */
     public function importClass(Request $request, int $id): JsonResponse
     {
+        $runId = $this->runIdFromRequest($request);
         try {
-            $options = $this->optionsFromRequest($request);
+            $options = $this->optionsFromRequest($request, $runId);
+            $this->logScrapping('info', 'scrapping.import.start', ['run_id' => $runId, 'type' => 'class', 'id' => $id]);
             $result = $this->orchestrator->runOne('dofusdb', 'breed', $id, $options);
-            return $this->resultToJson($result, 201);
+            $this->logScrapping('info', 'scrapping.import.done', ['run_id' => $runId, 'type' => 'class', 'id' => $id, 'success' => $result->isSuccess()]);
+            return $this->resultToJson($result, 201, $runId);
         } catch (\Throwable $e) {
-            Log::error('Erreur lors de l\'import de classe via API', ['id' => $id, 'error' => $e->getMessage()]);
+            $this->logScrapping('error', 'scrapping.import.error', ['run_id' => $runId, 'type' => 'class', 'id' => $id, 'error' => $e->getMessage()]);
+            Log::error('Erreur lors de l\'import de classe via API', ['id' => $id, 'error' => $e->getMessage(), 'run_id' => $runId]);
             return response()->json([
                 'success' => false,
                 'message' => 'Erreur lors de l\'import de la classe',
                 'error' => $e->getMessage(),
                 'timestamp' => now()->toISOString(),
+                'run_id' => $runId,
             ], 500);
         }
     }
@@ -212,17 +250,22 @@ class ScrappingController extends Controller
      */
     public function importMonster(Request $request, int $id): JsonResponse
     {
+        $runId = $this->runIdFromRequest($request);
         try {
-            $options = $this->optionsFromRequest($request);
+            $options = $this->optionsFromRequest($request, $runId);
+            $this->logScrapping('info', 'scrapping.import.start', ['run_id' => $runId, 'type' => 'monster', 'id' => $id]);
             $result = $this->orchestrator->runOne('dofusdb', 'monster', $id, $options);
-            return $this->resultToJson($result, 201);
+            $this->logScrapping('info', 'scrapping.import.done', ['run_id' => $runId, 'type' => 'monster', 'id' => $id, 'success' => $result->isSuccess()]);
+            return $this->resultToJson($result, 201, $runId);
         } catch (\Throwable $e) {
-            Log::error('Erreur lors de l\'import de monstre via API', ['id' => $id, 'error' => $e->getMessage()]);
+            $this->logScrapping('error', 'scrapping.import.error', ['run_id' => $runId, 'type' => 'monster', 'id' => $id, 'error' => $e->getMessage()]);
+            Log::error('Erreur lors de l\'import de monstre via API', ['id' => $id, 'error' => $e->getMessage(), 'run_id' => $runId]);
             return response()->json([
                 'success' => false,
                 'message' => 'Erreur lors de l\'import du monstre',
                 'error' => $e->getMessage(),
                 'timestamp' => now()->toISOString(),
+                'run_id' => $runId,
             ], 500);
         }
     }
@@ -232,17 +275,22 @@ class ScrappingController extends Controller
      */
     public function importItem(Request $request, int $id): JsonResponse
     {
+        $runId = $this->runIdFromRequest($request);
         try {
-            $options = $this->optionsFromRequest($request);
+            $options = $this->optionsFromRequest($request, $runId);
+            $this->logScrapping('info', 'scrapping.import.start', ['run_id' => $runId, 'type' => 'item', 'id' => $id]);
             $result = $this->orchestrator->runOne('dofusdb', 'item', $id, $options);
-            return $this->resultToJson($result, 201);
+            $this->logScrapping('info', 'scrapping.import.done', ['run_id' => $runId, 'type' => 'item', 'id' => $id, 'success' => $result->isSuccess()]);
+            return $this->resultToJson($result, 201, $runId);
         } catch (\Throwable $e) {
-            Log::error('Erreur lors de l\'import d\'objet via API', ['id' => $id, 'error' => $e->getMessage()]);
+            $this->logScrapping('error', 'scrapping.import.error', ['run_id' => $runId, 'type' => 'item', 'id' => $id, 'error' => $e->getMessage()]);
+            Log::error('Erreur lors de l\'import d\'objet via API', ['id' => $id, 'error' => $e->getMessage(), 'run_id' => $runId]);
             return response()->json([
                 'success' => false,
                 'message' => 'Erreur lors de l\'import de l\'objet',
                 'error' => $e->getMessage(),
                 'timestamp' => now()->toISOString(),
+                'run_id' => $runId,
             ], 500);
         }
     }
@@ -252,14 +300,18 @@ class ScrappingController extends Controller
      */
     public function importResource(Request $request, int $id): JsonResponse
     {
+        $runId = $this->runIdFromRequest($request);
         $resolved = $this->resolveEntityForImport('resource');
         try {
-            $options = $this->optionsFromRequest($request);
+            $options = $this->optionsFromRequest($request, $runId);
+            $this->logScrapping('info', 'scrapping.import.start', ['run_id' => $runId, 'type' => 'resource', 'id' => $id]);
             $result = $this->orchestrator->runOne($resolved['source'], $resolved['entity'], $id, $options);
-            return $this->resultToJson($result, 201);
+            $this->logScrapping('info', 'scrapping.import.done', ['run_id' => $runId, 'type' => 'resource', 'id' => $id, 'success' => $result->isSuccess()]);
+            return $this->resultToJson($result, 201, $runId);
         } catch (\Throwable $e) {
-            Log::error('Erreur import ressource via API', ['id' => $id, 'error' => $e->getMessage()]);
-            return response()->json(['success' => false, 'message' => 'Erreur lors de l\'import de la ressource', 'error' => $e->getMessage(), 'timestamp' => now()->toISOString()], 500);
+            $this->logScrapping('error', 'scrapping.import.error', ['run_id' => $runId, 'type' => 'resource', 'id' => $id, 'error' => $e->getMessage()]);
+            Log::error('Erreur import ressource via API', ['id' => $id, 'error' => $e->getMessage(), 'run_id' => $runId]);
+            return response()->json(['success' => false, 'message' => 'Erreur lors de l\'import de la ressource', 'error' => $e->getMessage(), 'timestamp' => now()->toISOString(), 'run_id' => $runId], 500);
         }
     }
 
@@ -268,14 +320,18 @@ class ScrappingController extends Controller
      */
     public function importConsumable(Request $request, int $id): JsonResponse
     {
+        $runId = $this->runIdFromRequest($request);
         $resolved = $this->resolveEntityForImport('consumable');
         try {
-            $options = $this->optionsFromRequest($request);
+            $options = $this->optionsFromRequest($request, $runId);
+            $this->logScrapping('info', 'scrapping.import.start', ['run_id' => $runId, 'type' => 'consumable', 'id' => $id]);
             $result = $this->orchestrator->runOne($resolved['source'], $resolved['entity'], $id, $options);
-            return $this->resultToJson($result, 201);
+            $this->logScrapping('info', 'scrapping.import.done', ['run_id' => $runId, 'type' => 'consumable', 'id' => $id, 'success' => $result->isSuccess()]);
+            return $this->resultToJson($result, 201, $runId);
         } catch (\Throwable $e) {
-            Log::error('Erreur import consommable via API', ['id' => $id, 'error' => $e->getMessage()]);
-            return response()->json(['success' => false, 'message' => 'Erreur lors de l\'import du consommable', 'error' => $e->getMessage(), 'timestamp' => now()->toISOString()], 500);
+            $this->logScrapping('error', 'scrapping.import.error', ['run_id' => $runId, 'type' => 'consumable', 'id' => $id, 'error' => $e->getMessage()]);
+            Log::error('Erreur import consommable via API', ['id' => $id, 'error' => $e->getMessage(), 'run_id' => $runId]);
+            return response()->json(['success' => false, 'message' => 'Erreur lors de l\'import du consommable', 'error' => $e->getMessage(), 'timestamp' => now()->toISOString(), 'run_id' => $runId], 500);
         }
     }
 
@@ -284,13 +340,17 @@ class ScrappingController extends Controller
      */
     public function importSpell(Request $request, int $id): JsonResponse
     {
+        $runId = $this->runIdFromRequest($request);
         try {
-            $options = $this->optionsFromRequest($request);
+            $options = $this->optionsFromRequest($request, $runId);
+            $this->logScrapping('info', 'scrapping.import.start', ['run_id' => $runId, 'type' => 'spell', 'id' => $id]);
             $result = $this->orchestrator->runOne('dofusdb', 'spell', $id, $options);
-            return $this->resultToJson($result, 201);
+            $this->logScrapping('info', 'scrapping.import.done', ['run_id' => $runId, 'type' => 'spell', 'id' => $id, 'success' => $result->isSuccess()]);
+            return $this->resultToJson($result, 201, $runId);
         } catch (\Throwable $e) {
-            Log::error('Erreur import sort via API', ['id' => $id, 'error' => $e->getMessage()]);
-            return response()->json(['success' => false, 'message' => 'Erreur lors de l\'import du sort', 'error' => $e->getMessage(), 'timestamp' => now()->toISOString()], 500);
+            $this->logScrapping('error', 'scrapping.import.error', ['run_id' => $runId, 'type' => 'spell', 'id' => $id, 'error' => $e->getMessage()]);
+            Log::error('Erreur import sort via API', ['id' => $id, 'error' => $e->getMessage(), 'run_id' => $runId]);
+            return response()->json(['success' => false, 'message' => 'Erreur lors de l\'import du sort', 'error' => $e->getMessage(), 'timestamp' => now()->toISOString(), 'run_id' => $runId], 500);
         }
     }
 
@@ -299,13 +359,17 @@ class ScrappingController extends Controller
      */
     public function importPanoply(Request $request, int $id): JsonResponse
     {
+        $runId = $this->runIdFromRequest($request);
         try {
-            $options = $this->optionsFromRequest($request);
+            $options = $this->optionsFromRequest($request, $runId);
+            $this->logScrapping('info', 'scrapping.import.start', ['run_id' => $runId, 'type' => 'panoply', 'id' => $id]);
             $result = $this->orchestrator->runOne('dofusdb', 'panoply', $id, $options);
-            return $this->resultToJson($result, 201);
+            $this->logScrapping('info', 'scrapping.import.done', ['run_id' => $runId, 'type' => 'panoply', 'id' => $id, 'success' => $result->isSuccess()]);
+            return $this->resultToJson($result, 201, $runId);
         } catch (\Throwable $e) {
-            Log::error('Erreur import panoplie via API', ['id' => $id, 'error' => $e->getMessage()]);
-            return response()->json(['success' => false, 'message' => 'Erreur lors de l\'import de la panoplie', 'error' => $e->getMessage(), 'timestamp' => now()->toISOString()], 500);
+            $this->logScrapping('error', 'scrapping.import.error', ['run_id' => $runId, 'type' => 'panoply', 'id' => $id, 'error' => $e->getMessage()]);
+            Log::error('Erreur import panoplie via API', ['id' => $id, 'error' => $e->getMessage(), 'run_id' => $runId]);
+            return response()->json(['success' => false, 'message' => 'Erreur lors de l\'import de la panoplie', 'error' => $e->getMessage(), 'timestamp' => now()->toISOString(), 'run_id' => $runId], 500);
         }
     }
 
@@ -314,14 +378,16 @@ class ScrappingController extends Controller
      */
     public function importBatch(Request $request): JsonResponse
     {
+        $runId = $this->runIdFromRequest($request);
         try {
             $request->validate([
                 'entities' => ['required', 'array', 'min:1'],
                 'entities.*.type' => ['required', 'string', 'in:class,monster,item,spell,panoply,resource,consumable,equipment'],
                 'entities.*.id' => ['required', 'integer', 'min:1'],
             ]);
-            $options = $this->optionsFromRequest($request);
+            $options = $this->optionsFromRequest($request, $runId);
             $entities = $request->input('entities');
+            $this->logScrapping('info', 'scrapping.batch.start', ['run_id' => $runId, 'count' => count($entities)]);
             $orchestrator = $this->orchestrator;
             $results = [];
             $successCount = 0;
@@ -353,18 +419,26 @@ class ScrappingController extends Controller
                 }
             }
             $statusCode = $errorCount === 0 ? 201 : 207;
+            $this->logScrapping('info', 'scrapping.batch.done', [
+                'run_id' => $runId,
+                'count' => count($entities),
+                'success' => $successCount,
+                'errors' => $errorCount,
+            ]);
             return response()->json([
                 'success' => $errorCount === 0,
                 'message' => $errorCount === 0 ? 'Tous les imports ont réussi' : 'Certains imports ont échoué',
                 'summary' => ['total' => count($entities), 'success' => $successCount, 'errors' => $errorCount],
                 'results' => $results,
                 'timestamp' => now()->toISOString(),
+                'run_id' => $runId,
             ], $statusCode);
         } catch (\Illuminate\Validation\ValidationException $e) {
-            return response()->json(['success' => false, 'message' => 'Erreur de validation', 'errors' => $e->errors(), 'timestamp' => now()->toISOString()], 422);
+            return response()->json(['success' => false, 'message' => 'Erreur de validation', 'errors' => $e->errors(), 'timestamp' => now()->toISOString(), 'run_id' => $runId], 422);
         } catch (\Throwable $e) {
-            Log::error('Erreur import en lot via API', ['count' => count($entities ?? []), 'error' => $e->getMessage()]);
-            return response()->json(['success' => false, 'message' => 'Erreur lors de l\'import en lot', 'error' => $e->getMessage(), 'timestamp' => now()->toISOString()], 500);
+            $this->logScrapping('error', 'scrapping.batch.error', ['run_id' => $runId, 'count' => count($entities ?? []), 'error' => $e->getMessage()]);
+            Log::error('Erreur import en lot via API', ['count' => count($entities ?? []), 'error' => $e->getMessage(), 'run_id' => $runId]);
+            return response()->json(['success' => false, 'message' => 'Erreur lors de l\'import en lot', 'error' => $e->getMessage(), 'timestamp' => now()->toISOString(), 'run_id' => $runId], 500);
         }
     }
 
@@ -373,6 +447,7 @@ class ScrappingController extends Controller
      */
     public function importWithMerge(Request $request): JsonResponse
     {
+        $runId = $this->runIdFromRequest($request);
         try {
             $validated = $request->validate([
                 'type' => ['required', 'string', 'in:class,monster,item,spell,panoply,resource,consumable,equipment'],
@@ -383,15 +458,15 @@ class ScrappingController extends Controller
             $type = (string) $validated['type'];
             $dofusdbId = (int) $validated['dofusdb_id'];
             $resolved = $this->resolveEntityForImport($type);
-            $options = $this->optionsFromRequest($request);
+            $options = $this->optionsFromRequest($request, $runId);
             $options['force_update'] = true;
             $result = $this->orchestrator->runOne($resolved['source'], $resolved['entity'], $dofusdbId, $options);
-            return $this->resultToJson($result, 201);
+            return $this->resultToJson($result, 201, $runId);
         } catch (\Illuminate\Validation\ValidationException $e) {
-            return response()->json(['success' => false, 'message' => 'Erreur de validation', 'errors' => $e->errors(), 'timestamp' => now()->toISOString()], 422);
+            return response()->json(['success' => false, 'message' => 'Erreur de validation', 'errors' => $e->errors(), 'timestamp' => now()->toISOString(), 'run_id' => $runId], 422);
         } catch (\Throwable $e) {
-            Log::error('Erreur import avec fusion', ['error' => $e->getMessage()]);
-            return response()->json(['success' => false, 'message' => 'Erreur lors de l\'import avec fusion', 'error' => $e->getMessage(), 'timestamp' => now()->toISOString()], 500);
+            Log::error('Erreur import avec fusion', ['error' => $e->getMessage(), 'run_id' => $runId]);
+            return response()->json(['success' => false, 'message' => 'Erreur lors de l\'import avec fusion', 'error' => $e->getMessage(), 'timestamp' => now()->toISOString(), 'run_id' => $runId], 500);
         }
     }
 
@@ -400,6 +475,7 @@ class ScrappingController extends Controller
      */
     public function importRange(Request $request): JsonResponse
     {
+        $runId = $this->runIdFromRequest($request);
         $validated = $request->validate([
             'type' => ['required', 'string', Rule::in($this->entityMeta->allowedTypes())],
             'start_id' => ['required', 'integer', 'min:1'],
@@ -409,15 +485,16 @@ class ScrappingController extends Controller
         $startId = (int) $validated['start_id'];
         $endId = (int) $validated['end_id'];
         if ($startId > $endId) {
-            return response()->json(['success' => false, 'message' => 'La valeur de début doit être inférieure ou égale à la valeur de fin'], 422);
+            return response()->json(['success' => false, 'message' => 'La valeur de début doit être inférieure ou égale à la valeur de fin', 'run_id' => $runId], 422);
         }
         $maxId = $this->getMaxIdForType($type);
         if ($startId < 1 || $endId > $maxId) {
-            return response()->json(['success' => false, 'message' => "La plage doit être comprise entre 1 et {$maxId}"], 422);
+            return response()->json(['success' => false, 'message' => "La plage doit être comprise entre 1 et {$maxId}", 'run_id' => $runId], 422);
         }
         $resolved = $this->resolveEntityForImport($type);
         try {
-            $options = $this->optionsFromRequest($request);
+            $options = $this->optionsFromRequest($request, $runId);
+            $this->logScrapping('info', 'scrapping.range.start', ['run_id' => $runId, 'type' => $type, 'start_id' => $startId, 'end_id' => $endId]);
             $options['limit'] = $endId - $startId + 1;
             $options['offset'] = 0;
             $filters = ['idMin' => $startId, 'idMax' => $endId];
@@ -431,6 +508,7 @@ class ScrappingController extends Controller
                     'errors' => $result->getValidationErrors(),
                     'range' => ['type' => $type, 'start' => $startId, 'end' => $endId],
                     'timestamp' => now()->toISOString(),
+                    'run_id' => $runId,
                 ], 400);
             }
 
@@ -454,6 +532,14 @@ class ScrappingController extends Controller
                 $success ? $successCount++ : $errorCount++;
             }
             $statusCode = $errorCount === 0 ? 201 : 207;
+            $this->logScrapping('info', 'scrapping.range.done', [
+                'run_id' => $runId,
+                'type' => $type,
+                'start_id' => $startId,
+                'end_id' => $endId,
+                'success' => $successCount,
+                'errors' => $errorCount,
+            ]);
             return response()->json([
                 'success' => $errorCount === 0,
                 'message' => $errorCount === 0 ? 'Import de plage terminé' : 'Import de plage avec erreurs',
@@ -461,10 +547,12 @@ class ScrappingController extends Controller
                 'results' => $results,
                 'range' => ['type' => $type, 'start' => $startId, 'end' => $endId],
                 'timestamp' => now()->toISOString(),
+                'run_id' => $runId,
             ], $statusCode);
         } catch (\Throwable $e) {
-            Log::error('Erreur import de plage', ['type' => $type, 'start_id' => $startId, 'end_id' => $endId, 'error' => $e->getMessage()]);
-            return response()->json(['success' => false, 'message' => 'Erreur lors de l\'import de la plage', 'error' => $e->getMessage(), 'timestamp' => now()->toISOString()], 500);
+            $this->logScrapping('error', 'scrapping.range.error', ['run_id' => $runId, 'type' => $type, 'start_id' => $startId, 'end_id' => $endId, 'error' => $e->getMessage()]);
+            Log::error('Erreur import de plage', ['type' => $type, 'start_id' => $startId, 'end_id' => $endId, 'error' => $e->getMessage(), 'run_id' => $runId]);
+            return response()->json(['success' => false, 'message' => 'Erreur lors de l\'import de la plage', 'error' => $e->getMessage(), 'timestamp' => now()->toISOString(), 'run_id' => $runId], 500);
         }
     }
 
@@ -517,17 +605,19 @@ class ScrappingController extends Controller
      */
     public function preview(string $type, int $id): JsonResponse
     {
+        $runId = (string) Str::uuid();
         $normalizedType = strtolower($type);
         if (!$this->entityMeta->isAllowedType($normalizedType)) {
-            return response()->json(['success' => false, 'message' => 'Type d\'entité non supporté'], 422);
+            return response()->json(['success' => false, 'message' => 'Type d\'entité non supporté', 'run_id' => $runId], 422);
         }
         $maxId = $this->getMaxIdForType($normalizedType);
         if ($id < 1 || $id > $maxId) {
-            return response()->json(['success' => false, 'message' => "L'identifiant doit être compris entre 1 et {$maxId}"], 422);
+            return response()->json(['success' => false, 'message' => "L'identifiant doit être compris entre 1 et {$maxId}", 'run_id' => $runId], 422);
         }
         $resolved = $this->resolveEntityForImport($normalizedType);
         try {
-            $options = ['convert' => true, 'validate' => true, 'integrate' => false, 'dry_run' => true, 'force_update' => false, 'lang' => 'fr'];
+            $options = ['convert' => true, 'validate' => true, 'integrate' => false, 'dry_run' => true, 'force_update' => false, 'lang' => 'fr', 'run_id' => $runId];
+            $this->logScrapping('info', 'scrapping.preview.start', ['run_id' => $runId, 'type' => $normalizedType, 'id' => $id]);
             $result = $this->orchestrator->runOne($resolved['source'], $resolved['entity'], $id, $options);
             $converted = $result->getConverted();
             if ($normalizedType === 'spell' && is_array($converted)) {
@@ -551,10 +641,12 @@ class ScrappingController extends Controller
                 'existing' => $existingRecord !== null ? ['record' => $existingRecord] : null,
                 'spell_effects_simulation' => $spellEffectsSimulation,
             ];
-            return response()->json(['success' => true, 'data' => $data, 'timestamp' => now()->toISOString()]);
+            $this->logScrapping('info', 'scrapping.preview.done', ['run_id' => $runId, 'type' => $normalizedType, 'id' => $id, 'success' => $result->isSuccess()]);
+            return response()->json(['success' => true, 'data' => $data, 'timestamp' => now()->toISOString(), 'run_id' => $runId]);
         } catch (\Throwable $e) {
-            Log::error('Erreur prévisualisation', ['type' => $type, 'id' => $id, 'error' => $e->getMessage()]);
-            return response()->json(['success' => false, 'message' => 'Erreur lors de la prévisualisation', 'error' => $e->getMessage(), 'timestamp' => now()->toISOString()], 500);
+            $this->logScrapping('error', 'scrapping.preview.error', ['run_id' => $runId, 'type' => $type, 'id' => $id, 'error' => $e->getMessage()]);
+            Log::error('Erreur prévisualisation', ['type' => $type, 'id' => $id, 'error' => $e->getMessage(), 'run_id' => $runId]);
+            return response()->json(['success' => false, 'message' => 'Erreur lors de la prévisualisation', 'error' => $e->getMessage(), 'timestamp' => now()->toISOString(), 'run_id' => $runId], 500);
         }
     }
 
@@ -564,6 +656,7 @@ class ScrappingController extends Controller
      */
     public function previewBatch(Request $request): JsonResponse
     {
+        $runId = $this->runIdFromRequest($request);
         try {
             $validated = $request->validate([
                 'type' => ['required', 'string', 'in:class,monster,item,spell,panoply,resource,consumable,equipment'],
@@ -573,9 +666,10 @@ class ScrappingController extends Controller
             $type = (string) $validated['type'];
             $ids = array_values(array_unique(array_map('intval', $validated['ids'])));
             $resolved = $this->resolveEntityForImport($type);
+            $this->logScrapping('info', 'scrapping.preview_batch.start', ['run_id' => $runId, 'type' => $type, 'count' => count($ids)]);
             $maxId = $this->getMaxIdForType($type);
             $comparisonType = $this->entityTypeForComparison($type);
-            $options = ['convert' => true, 'validate' => true, 'integrate' => false, 'dry_run' => true, 'force_update' => false, 'lang' => 'fr'];
+            $options = ['convert' => true, 'validate' => true, 'integrate' => false, 'dry_run' => true, 'force_update' => false, 'lang' => 'fr', 'run_id' => $runId];
             $orchestrator = $this->orchestrator;
             $items = [];
             foreach ($ids as $id) {
@@ -614,16 +708,23 @@ class ScrappingController extends Controller
                     $items[] = ['id' => $id, 'converted' => null, 'existing' => null, 'error' => $e->getMessage()];
                 }
             }
+            $this->logScrapping('info', 'scrapping.preview_batch.done', [
+                'run_id' => $runId,
+                'type' => $type,
+                'count' => count($ids),
+            ]);
             return response()->json([
                 'success' => true,
                 'data' => ['items' => $items],
                 'timestamp' => now()->toISOString(),
+                'run_id' => $runId,
             ]);
         } catch (\Illuminate\Validation\ValidationException $e) {
-            return response()->json(['success' => false, 'message' => 'Erreur de validation', 'errors' => $e->errors(), 'timestamp' => now()->toISOString()], 422);
+            return response()->json(['success' => false, 'message' => 'Erreur de validation', 'errors' => $e->errors(), 'timestamp' => now()->toISOString(), 'run_id' => $runId], 422);
         } catch (\Throwable $e) {
-            Log::error('Erreur prévisualisation batch', ['type' => $type ?? null, 'error' => $e->getMessage()]);
-            return response()->json(['success' => false, 'message' => 'Erreur lors de la prévisualisation en lot', 'error' => $e->getMessage(), 'timestamp' => now()->toISOString()], 500);
+            $this->logScrapping('error', 'scrapping.preview_batch.error', ['run_id' => $runId, 'type' => $type ?? null, 'error' => $e->getMessage()]);
+            Log::error('Erreur prévisualisation batch', ['type' => $type ?? null, 'error' => $e->getMessage(), 'run_id' => $runId]);
+            return response()->json(['success' => false, 'message' => 'Erreur lors de la prévisualisation en lot', 'error' => $e->getMessage(), 'timestamp' => now()->toISOString(), 'run_id' => $runId], 500);
         }
     }
 }

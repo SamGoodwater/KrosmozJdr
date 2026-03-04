@@ -19,11 +19,14 @@
  * @note Respecte la philosophie Atomic Design (niveau molecule, composition d'atoms).
  */
 import Btn from "@/Pages/Atoms/action/Btn.vue";
-import Route from "@/Pages/Atoms/action/Route.vue";
 import Avatar from "@/Pages/Atoms/data-display/Avatar.vue";
 import Dropdown from "@/Pages/Atoms/action/Dropdown.vue";
 import Icon from "@/Pages/Atoms/data-display/Icon.vue";
 import Tooltip from "@/Pages/Atoms/feedback/Tooltip.vue";
+import GlassMenuPanel from "@/Pages/Atoms/navigation/GlassMenuPanel.vue";
+import GlassMenuItem from "@/Pages/Atoms/navigation/GlassMenuItem.vue";
+import GlassMenuSectionTitle from "@/Pages/Atoms/navigation/GlassMenuSectionTitle.vue";
+import GlassMenuDivider from "@/Pages/Atoms/navigation/GlassMenuDivider.vue";
 import { usePage, router } from "@inertiajs/vue3";
 import { ref, watch, computed, onMounted, onUnmounted, inject, nextTick } from "vue";
 import { usePermissions } from "@/Composables/permissions/usePermissions";
@@ -72,7 +75,7 @@ async function fetchNotifications() {
         const json = await res.json();
         if (json.data) notifications.value = json.data;
         if (json.unread_count !== undefined) unreadCount.value = json.unread_count;
-    } catch (_) {
+    } catch {
         notifications.value = [];
     } finally {
         notificationsLoading.value = false;
@@ -476,64 +479,46 @@ const logout = () => {
                     </Btn>
                 </template>
                 <template #content>
-                    <div class="flex flex-col items-start gap-2">
-                        <Route route="user.show" class="w-full">
-                            <Btn
-                                variant="ghost"
-                                size="md"
-                                content="Mon compte"
-                            />
-                        </Route>
-                        <span class="border-glass-b-sm w-full h-px"></span>
+                    <GlassMenuPanel class="min-w-72">
+                        <div class="flex flex-col gap-0.5">
+                            <GlassMenuItem route="user.show" icon="fa-user" icon-alt="" hover3d>
+                                Mon compte
+                            </GlassMenuItem>
+                        </div>
+                        <GlassMenuDivider />
                         <template v-if="canAccess('adminPanel') || canAccess('effectsAdmin')">
-                            <div class="w-full">
-                                <p class="text-xs text-subtitle/60 px-2 py-1 font-semibold text-center">Administration</p>
-                                <Route v-if="canAccess('adminPanel')" route="admin.characteristics.index" class="w-full">
-                                    <Btn variant="ghost" size="md" class="w-full justify-start">
-                                        <Icon source="fa-sliders" pack="solid" size="sm" alt="Caractéristiques" class="mr-2"/>
-                                        <span>Caractéristiques</span>
-                                    </Btn>
-                                </Route>
-                                <Route v-if="canAccess('effectsAdmin')" route="admin.effects.index" class="w-full">
-                                    <Btn variant="ghost" size="md" class="w-full justify-start">
-                                        <Icon source="fa-bolt" pack="solid" size="sm" alt="Effets" class="mr-2"/>
-                                        <span>Effets</span>
-                                    </Btn>
-                                </Route>
-                                <Route v-if="canAccess('adminPanel') && canAccess('scrapping')" route="scrapping.index" class="w-full">
-                                    <Btn variant="ghost" size="md" class="w-full justify-start">
-                                        <Icon source="fa-magnifying-glass" pack="solid" size="sm" alt="Scrapping" class="mr-2"/>
-                                        <span>Scrapping</span>
-                                    </Btn>
-                                </Route>
-                                <Route v-if="canAccess('adminPanel')" route="user.index" class="w-full">
-                                    <Btn variant="ghost" size="md" class="w-full justify-start">
-                                        <Icon source="fa-users" pack="solid" size="sm" alt="Utilisateurs" class="mr-2"/>
-                                        <span>Utilisateurs</span>
-                                    </Btn>
-                                </Route>
+                            <div class="flex flex-col gap-0.5">
+                                <GlassMenuSectionTitle>Administration</GlassMenuSectionTitle>
+                                <GlassMenuItem v-if="canAccess('adminPanel')" route="admin.characteristics.index" icon="fa-sliders" icon-alt="Caractéristiques" hover3d>
+                                    Caractéristiques
+                                </GlassMenuItem>
+                                <GlassMenuItem v-if="canAccess('effectsAdmin')" route="admin.effects.index" icon="fa-bolt" icon-alt="Effets" hover3d>
+                                    Effets
+                                </GlassMenuItem>
+                                <GlassMenuItem v-if="canAccess('adminPanel') && canAccess('scrapping')" route="scrapping.index" icon="fa-magnifying-glass" icon-alt="Scrapping" hover3d>
+                                    Scrapping
+                                </GlassMenuItem>
+                                <GlassMenuItem v-if="canAccess('adminPanel')" route="user.index" icon="fa-users" icon-alt="Utilisateurs" hover3d>
+                                    Utilisateurs
+                                </GlassMenuItem>
                             </div>
-                            <span class="border-glass-b-sm w-full h-px"></span>
+                            <GlassMenuDivider />
                         </template>
                         <template v-if="canManagePages">
-                            <div class="w-full">
-                                <p v-if="!canAccess('adminPanel')" class="text-xs text-subtitle/60 px-2 py-1 font-semibold text-center">Gestion</p>
-                                <Route route="pages.index" class="w-full">
-                                    <Btn variant="ghost" size="md" class="w-full justify-start">
-                                        <Icon source="fa-file-lines" pack="solid" size="sm" alt="Pages" class="mr-2"/>
-                                        <span>Pages</span>
-                                    </Btn>
-                                </Route>
+                            <div class="flex flex-col gap-0.5">
+                                <GlassMenuSectionTitle v-if="!canAccess('adminPanel')">Gestion</GlassMenuSectionTitle>
+                                <GlassMenuItem route="pages.index" icon="fa-file-lines" icon-alt="Pages" hover3d>
+                                    Pages
+                                </GlassMenuItem>
                             </div>
-                            <span v-if="!canAccess('adminPanel')" class="border-glass-b-sm w-full h-px"></span>
+                            <GlassMenuDivider v-if="!canAccess('adminPanel')" />
                         </template>
-                        <Btn
-                            variant="ghost"
-                            size="sm"
-                            content="Se déconnecter"
-                            @click="logout"
-                        />
-                    </div>
+                        <div class="flex flex-col gap-0.5">
+                            <GlassMenuItem icon="fa-right-from-bracket" icon-alt="" danger hover3d @click="logout">
+                                Se déconnecter
+                            </GlassMenuItem>
+                        </div>
+                    </GlassMenuPanel>
                 </template>
             </Dropdown>
         </div>

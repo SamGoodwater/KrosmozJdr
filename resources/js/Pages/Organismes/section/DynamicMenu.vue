@@ -17,8 +17,9 @@
 import { computed } from 'vue';
 import { usePage } from '@inertiajs/vue3';
 import { useDynamicMenu } from '@/Composables/layout/useDynamicMenu';
-import MenuItem from '@/Pages/Atoms/navigation/MenuItem.vue';
-import Icon from '@/Pages/Atoms/data-display/Icon.vue';
+import GlassMenuItem from '@/Pages/Atoms/navigation/GlassMenuItem.vue';
+import GlassMenuSectionTitle from '@/Pages/Atoms/navigation/GlassMenuSectionTitle.vue';
+import GlassMenuGroup from '@/Pages/Atoms/navigation/GlassMenuGroup.vue';
 
 const page = usePage();
 const { menuItems, loading, error, isPageActive, shouldMenuBeOpen } = useDynamicMenu();
@@ -90,43 +91,43 @@ const formattedMenuItems = computed(() => {
 
         <!-- Menu items -->
         <template v-else-if="formattedMenuItems.length > 0">
+            <GlassMenuSectionTitle compact>Pages</GlassMenuSectionTitle>
             <template v-for="menuItem in formattedMenuItems" :key="menuItem.item.id">
                 <!-- Menu parent avec sous-menu -->
-                <li v-if="menuItem.type === 'parent'">
-                    <details :open="menuItem.isOpen">
-                        <summary class="flex items-center">
-                            <Icon 
-                                source="fa-file" 
-                                pack="solid"
-                                alt="Page" 
-                                size="md" 
-                                class="mr-2" 
-                            />
-                            <span>{{ menuItem.item.title }}</span>
-                        </summary>
-                        <ul class="ml-4">
-                            <MenuItem
+                <GlassMenuGroup
+                    v-if="menuItem.type === 'parent'"
+                    :open="menuItem.isOpen"
+                    icon="fa-file"
+                    icon-alt="Page"
+                    compact
+                >
+                    <template #title>{{ menuItem.item.title }}</template>
+                    <template #default>
+                            <GlassMenuItem
                                 v-for="child in menuItem.children"
                                 :key="child.item.id"
                                 :href="child.item.url"
+                                compact
                                 :active="child.isActive"
+                                hover3d
                             >
                                 {{ child.item.title }}
-                            </MenuItem>
-                        </ul>
-                    </details>
-                </li>
+                            </GlassMenuItem>
+                    </template>
+                </GlassMenuGroup>
 
                 <!-- Menu simple -->
-                <MenuItem
+                <GlassMenuItem
                     v-else
                     :href="menuItem.item.url"
                     :active="menuItem.isActive"
                     icon="fa-file"
-                    pack="solid"
+                    icon-pack="solid"
+                    compact
+                    hover3d
                 >
                     {{ menuItem.item.title }}
-                </MenuItem>
+                </GlassMenuItem>
             </template>
         </template>
 
@@ -139,7 +140,9 @@ const formattedMenuItems = computed(() => {
 
 <style scoped lang="scss">
 .dynamic-menu {
-    // Styles spécifiques au menu dynamique si nécessaire
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
 }
 </style>
 

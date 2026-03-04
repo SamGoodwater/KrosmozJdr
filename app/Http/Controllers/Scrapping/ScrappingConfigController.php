@@ -23,6 +23,7 @@ class ScrappingConfigController extends Controller
     public function index(): JsonResponse
     {
         $source = $this->loader->loadSource('dofusdb');
+        $fallbackLoader = new ConfigLoader(base_path('resources/scrapping/config'));
         $entities = $this->loader->listEntities('dofusdb');
         if (in_array('breed', $entities, true)) {
             $entities[] = 'class';
@@ -34,7 +35,17 @@ class ScrappingConfigController extends Controller
         foreach ($entities as $entity) {
             $aliasCfg = $this->aliasResolver->resolve($entity);
             $configEntity = ($aliasCfg !== null && isset($aliasCfg['entity'])) ? $aliasCfg['entity'] : $entity;
-            $cfg = $this->loader->loadEntity('dofusdb', $configEntity);
+            $configError = null;
+            try {
+                $cfg = $this->loader->loadEntity('dofusdb', $configEntity);
+            } catch (\Throwable $e) {
+                $configError = $e->getMessage();
+                $cfg = $fallbackLoader->loadEntity('dofusdb', $configEntity);
+            }
+            $diagnostics = $this->buildMappingDiagnostics($cfg, $source['source'], $configEntity);
+            if ($configError !== null) {
+                $diagnostics = $this->prependConfigErrorWarning($diagnostics, $source['source'], $configEntity, $configError);
+            }
             $entityConfigs[] = [
                 'entity' => $entity,
                 'label' => (($aliasCfg !== null ? ($aliasCfg['label'] ?? null) : null) ?? $cfg['label'] ?? ucfirst((string) $entity)),
@@ -42,7 +53,8 @@ class ScrappingConfigController extends Controller
                 'filters' => $cfg['filters'] ?? new \stdClass(),
                 'relations' => array_keys((array) ($cfg['relations'] ?? [])),
                 'comparisonKeys' => $this->extractComparisonKeys($cfg),
-                'mappingDiagnostics' => $this->buildMappingDiagnostics($cfg, $source['source'], $configEntity),
+                'mappingDiagnostics' => $diagnostics,
+                'configError' => $configError,
             ];
             if ($configEntity === 'item') {
                 $itemConfig = $cfg;
@@ -66,8 +78,24 @@ class ScrappingConfigController extends Controller
                     'relations' => $itemLike['relations'],
                     'comparisonKeys' => $itemLike['comparisonKeys'],
                     'mappingDiagnostics' => $this->buildMappingDiagnostics($itemConfig, $source['source'], 'item'),
+                    'configError' => null,
                 ];
             }
+        }
+
+        $totalEntities = count($entityConfigs);
+        $errorEntities = 0;
+        foreach ($entityConfigs as $cfg) {
+            if (!empty($cfg['configError'])) {
+                $errorEntities++;
+            }
+        }
+        $healthyEntities = max(0, $totalEntities - $errorEntities);
+        $status = 'ok';
+        if ($errorEntities > 0 && $healthyEntities > 0) {
+            $status = 'partial';
+        } elseif ($errorEntities > 0 && $healthyEntities === 0) {
+            $status = 'error';
         }
 
         return response()->json([
@@ -79,6 +107,12 @@ class ScrappingConfigController extends Controller
                     'baseUrl' => $source['baseUrl'] ?? null,
                 ],
                 'entities' => $entityConfigs,
+                'health' => [
+                    'status' => $status,
+                    'entityCount' => $totalEntities,
+                    'healthyCount' => $healthyEntities,
+                    'errorCount' => $errorEntities,
+                ],
             ],
             'timestamp' => now()->toISOString(),
         ]);
@@ -276,6 +310,32 @@ class ScrappingConfigController extends Controller
             'withFormatters' => $withFormatters,
             'warnings' => array_slice($warnings, 0, 8),
         ];
+    }
+
+    /**
+     * Ajoute un warning bloquant lié au chargement de config/mapping BDD.
+     *
+     * @param array<string, mixed> $diagnostics
+     * @return array<string, mixed>
+     */
+    private function prependConfigErrorWarning(array $diagnostics, string $source, string $entity, string $errorMessage): array
+    {
+        $warnings = $diagnostics['warnings'] ?? [];
+        if (! is_array($warnings)) {
+            $warnings = [];
+        }
+        array_unshift($warnings, [
+            'code' => 'mapping.bdd_missing',
+            'severity' => 'blocking',
+            'message' => "Mapping BDD indisponible: {$errorMessage}",
+            'mappingKey' => '',
+            'actionUrl' => route('admin.scrapping-mappings.index', ['source' => $source, 'entity' => $entity]),
+        ]);
+
+        $diagnostics['warnings'] = array_slice($warnings, 0, 8);
+        $diagnostics['blocking'] = (int) ($diagnostics['blocking'] ?? 0) + 1;
+
+        return $diagnostics;
     }
 }
 

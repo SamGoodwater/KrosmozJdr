@@ -19,26 +19,34 @@ trait RespondsWithOrchestratorResult
     /**
      * Convertit un OrchestratorResult en réponse JSON (succès ou erreur).
      */
-    protected function resultToJson(OrchestratorResult $result, int $successStatus = 200): JsonResponse
+    protected function resultToJson(OrchestratorResult $result, int $successStatus = 200, ?string $runId = null): JsonResponse
     {
         if ($result->isSuccess()) {
             $data = $result->getIntegrationResult()?->getData() ?? $result->getConverted();
-
-            return response()->json([
+            $payload = [
                 'success' => true,
                 'message' => $result->getMessage(),
                 'data' => $data,
                 'timestamp' => now()->toISOString(),
-            ], $successStatus);
-        }
+            ];
+            if ($runId !== null && $runId !== '') {
+                $payload['run_id'] = $runId;
+            }
 
-        return response()->json([
+            return response()->json($payload, $successStatus);
+        }
+        $payload = [
             'success' => false,
             'message' => $result->getMessage(),
             'error' => $result->getMessage(),
             'errors' => $result->getValidationErrors(),
             'timestamp' => now()->toISOString(),
-        ], 400);
+        ];
+        if ($runId !== null && $runId !== '') {
+            $payload['run_id'] = $runId;
+        }
+
+        return response()->json($payload, 400);
     }
 
     /**

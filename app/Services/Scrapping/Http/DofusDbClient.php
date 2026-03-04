@@ -43,7 +43,7 @@ class DofusDbClient
         $cacheTtl = $options['cache_ttl'] ?? ($this->config['cache_ttl'] ?? 3600);
 
         if (!$skipCache && Cache::has($cacheKey)) {
-            Log::info('Données récupérées depuis le cache', ['url' => $url]);
+            Log::channel('scrapping')->info('dofusdb.cache.hit', ['url' => $url]);
             return (array) Cache::get($cacheKey);
         }
 
@@ -69,7 +69,7 @@ class DofusDbClient
                 Cache::put($cacheKey, $data, (int) $cacheTtl);
             }
 
-            Log::info('Données récupérées depuis DofusDB', [
+            Log::channel('scrapping')->info('dofusdb.http.success', [
                 'url' => $url,
                 'status' => $response->status(),
                 'data_size' => strlen(json_encode($data)),
@@ -79,7 +79,7 @@ class DofusDbClient
             /** @var array<string, mixed> $data */
             return $data;
         } catch (\Throwable $e) {
-            Log::error('Erreur lors de la récupération depuis DofusDB', [
+            Log::channel('scrapping')->error('dofusdb.http.error', [
                 'url' => $url,
                 'error' => $e->getMessage(),
             ]);

@@ -430,7 +430,7 @@ final class CollectService
      */
     private function getJson(string $url, array $options = []): array
     {
-        Log::info('Collecte: GET', ['url' => $url]);
+        Log::channel('scrapping')->info('collect.http.get', ['url' => $url]);
 
         if ($this->dofusDbClient !== null) {
             return $this->dofusDbClient->getJson($url, [
