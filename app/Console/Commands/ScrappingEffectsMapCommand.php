@@ -42,7 +42,7 @@ class ScrappingEffectsMapCommand extends Command
     /**
      * DofusDB characteristic id → characteristic_key Krosmoz (effets de sorts / créature).
      * Source : DOFUSDB_CHARACTERISTIC_ID_REFERENCE.md, CARACTERISTIQUES_EFFETS_PAR_ACTION.md.
-     * Les clés sont en format court (spell/creature) ; ajouter _spell ou _creature si votre BDD l’exige.
+     * Les clés sont en format court (spell/creature) ; ajoute _spell ou _creature si ta BDD l’exige.
      */
     private const DOFUSDB_CHARACTERISTIC_ID_TO_KROSMOZ_KEY = [
         0 => 'pv',

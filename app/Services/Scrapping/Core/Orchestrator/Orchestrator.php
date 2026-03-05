@@ -92,7 +92,7 @@ final class Orchestrator
             'ignore_unvalidated' => (bool) ($options['ignore_unvalidated'] ?? false),
             'exclude_from_update' => $excludeList,
             'property_whitelist' => $propertyWhitelist,
-            'include_relations' => (bool) ($options['include_relations'] ?? true),
+            'include_relations' => (bool) ($options['include_relations'] ?? false),
             'download_images' => (bool) ($options['download_images'] ?? true),
             'spell_category_hint' => $options['spell_category_hint'] ?? null,
         ];
@@ -232,7 +232,7 @@ final class Orchestrator
             if (!$integrationResult->isSuccess()) {
                 return OrchestratorResult::fail($integrationResult->getMessage());
             }
-            if ($this->relationResolutionService !== null && ($options['include_relations'] ?? true)) {
+            if ($this->relationResolutionService !== null && ($options['include_relations'] ?? false)) {
                 $relations = $this->resolveRelationsAndDrain($source, $entity, $entityType, $raw, $converted, $integrationResult, $options);
             }
         }
@@ -360,7 +360,7 @@ final class Orchestrator
                         $this->integrationOptions($options)
                     );
                     $integrationResults[] = $intResult;
-                    if ($this->relationResolutionService !== null && ($options['include_relations'] ?? true) && $intResult->isSuccess()) {
+                    if ($this->relationResolutionService !== null && ($options['include_relations'] ?? false) && $intResult->isSuccess()) {
                         $this->resolveRelationsAndDrain($source, $entity, $entityTypeForItem, $raw, $converted, $intResult, $options);
                     }
                 } elseif (!empty($options['integrate']) && empty($entityConfig['meta']['catalogOnly'] ?? false) && !$itemValid) {
@@ -475,9 +475,8 @@ final class Orchestrator
             }
         }
 
-        if ($this->spellGlobalNormalizer !== null) {
-            $raw['spell_global'] = $this->spellGlobalNormalizer->build($raw);
-        }
+        $normalizer = $this->spellGlobalNormalizer ?? new SpellGlobalNormalizer();
+        $raw['spell_global'] = $normalizer->build($raw);
 
         return $raw;
     }

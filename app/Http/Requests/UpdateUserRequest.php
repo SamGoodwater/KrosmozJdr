@@ -17,8 +17,11 @@ class UpdateUserRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        // Adapter selon ta logique d'autorisation
-        return true;
+        $target = $this->route('user') ?? Auth::user();
+        if (!$target instanceof User) {
+            return false;
+        }
+        return (bool) $this->user()?->can('update', $target);
     }
 
     /**
@@ -40,7 +43,7 @@ class UpdateUserRequest extends FormRequest
             ],
             'notifications_enabled' => ['sometimes', 'boolean'],
             'notification_channels' => ['sometimes', 'array'],
-            'notification_channels.*' => ['sometimes', 'string', Rule::in(\App\Models\User::NOTIFICATION_CHANNELS)],
+            'notification_channels.*' => ['sometimes', 'string', Rule::in(['database', 'mail'])],
             'notification_preferences' => ['sometimes', 'nullable', 'array'],
             'notification_preferences.*' => ['sometimes', 'array'],
             'notification_preferences.*.channels' => ['sometimes', 'array'],
@@ -62,11 +65,6 @@ class UpdateUserRequest extends FormRequest
         if (!isset($data['notification_channels'])) {
             $this->merge([
                 'notification_channels' => [],
-            ]);
-        }
-        if (!isset($data['role'])) {
-            $this->merge([
-                'role' => User::ROLE_USER, // Utiliser la constante au lieu de l'array
             ]);
         }
     }

@@ -19,6 +19,34 @@ use Illuminate\Support\Facades\Log;
 class DofusDbClient
 {
     /**
+     * Émet un log "info" en privilégiant le canal scrapping, avec fallback.
+     *
+     * @param array<string, mixed> $context
+     */
+    private function logInfo(string $message, array $context = []): void
+    {
+        try {
+            Log::channel('scrapping')->info($message, $context);
+        } catch (\Throwable) {
+            Log::info($message, $context);
+        }
+    }
+
+    /**
+     * Émet un log "error" en privilégiant le canal scrapping, avec fallback.
+     *
+     * @param array<string, mixed> $context
+     */
+    private function logError(string $message, array $context = []): void
+    {
+        try {
+            Log::channel('scrapping')->error($message, $context);
+        } catch (\Throwable) {
+            Log::error($message, $context);
+        }
+    }
+
+    /**
      * @param array<string, mixed> $config
      */
     public function __construct(private array $config = [])
@@ -39,11 +67,14 @@ class DofusDbClient
     public function getJson(string $url, array $options = []): array
     {
         $skipCache = (bool) ($options['skip_cache'] ?? false);
+        if (app()->environment('testing')) {
+            $skipCache = true;
+        }
         $cacheKey = 'dofusdb_' . md5($url);
         $cacheTtl = $options['cache_ttl'] ?? ($this->config['cache_ttl'] ?? 3600);
 
         if (!$skipCache && Cache::has($cacheKey)) {
-            Log::channel('scrapping')->info('dofusdb.cache.hit', ['url' => $url]);
+            $this->logInfo('dofusdb.cache.hit', ['url' => $url]);
             return (array) Cache::get($cacheKey);
         }
 
@@ -69,7 +100,7 @@ class DofusDbClient
                 Cache::put($cacheKey, $data, (int) $cacheTtl);
             }
 
-            Log::channel('scrapping')->info('dofusdb.http.success', [
+            $this->logInfo('dofusdb.http.success', [
                 'url' => $url,
                 'status' => $response->status(),
                 'data_size' => strlen(json_encode($data)),
@@ -79,7 +110,7 @@ class DofusDbClient
             /** @var array<string, mixed> $data */
             return $data;
         } catch (\Throwable $e) {
-            Log::channel('scrapping')->error('dofusdb.http.error', [
+            $this->logError('dofusdb.http.error', [
                 'url' => $url,
                 'error' => $e->getMessage(),
             ]);

@@ -454,7 +454,7 @@ export function getMonsterFieldDescriptors(ctx = {}) {
       general: {
         label: 'Relations',
         icon: 'fa-solid fa-link',
-        tooltip: 'Résumé des liens gameplay (invocations, campagnes, scénarios)',
+        tooltip: 'Résumé des liens gameplay (invocations, ressources, équipements, consommables, campagnes, scénarios)',
       },
       table: {
         type: 'chips',

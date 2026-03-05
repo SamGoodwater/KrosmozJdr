@@ -34,7 +34,6 @@ Le projet utilise les dernières recommandations en matière de sécurité, de q
 - **pnpm** pour le frontend (spécifique ARM)
 - **Vitest** ou **Jest** pour les tests unitaires frontend (à préciser selon le choix du projet)
 - **PHPUnit** pour les tests backend Laravel
-- **Cypress** pour les tests end-to-end (recommandé)
 
 ## Intégration continue / Déploiement
 
@@ -83,7 +82,7 @@ Le projet utilise les dernières recommandations en matière de sécurité, de q
 - [Atomic Design](https://atomicdesign.bradfrost.com/)
 - [DaisyUI](https://daisyui.com/docs/install/)
 - [Tailwind CSS](https://v3.tailwindcss.com/docs/installation)
-- [Vitest](https://vitest.dev/) / [Jest](https://jestjs.io/) / [Cypress](https://www.cypress.io/)
+- [Vitest](https://vitest.dev/) / [Jest](https://jestjs.io/)
 
 ## Système de formules (calculs dynamiques)
 

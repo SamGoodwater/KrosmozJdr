@@ -27,7 +27,7 @@ const ACTIONS_CONFIGURATION = {
       destroy: false, // détruire l'action après l'utilisation
       notify: false, // notifier l'utilisateur après l'utilisation
       confirm: false, // demander confirmation avant l'action
-      confirmMessage: 'Êtes-vous sûr de vouloir réinitialiser ce champ ?',
+      confirmMessage: 'Es-tu sûr de vouloir réinitialiser ce champ ?',
     },
     icon: 'fa-solid fa-arrow-rotate-left',
     size: 'auto', // dépend de l'input
@@ -45,7 +45,7 @@ const ACTIONS_CONFIGURATION = {
       destroy: false, // détruire l'action après l'utilisation
       notify: false, // notifier l'utilisateur après l'utilisation
       confirm: false, // demander confirmation avant l'action
-      confirmMessage: 'Êtes-vous sûr de vouloir annuler la dernière modification ?',
+      confirmMessage: 'Es-tu sûr de vouloir annuler la dernière modification ?',
     },
     icon: 'fa-solid fa-rotate-left',
     size: 'auto', // dépend de l'input
@@ -63,7 +63,7 @@ const ACTIONS_CONFIGURATION = {
       destroy: false, // détruire l'action après l'utilisation
       notify: false, // notifier l'utilisateur après l'utilisation
       confirm: false, // demander confirmation avant l'action
-      confirmMessage: 'Êtes-vous sûr de vouloir vider ce champ ?',
+      confirmMessage: 'Es-tu sûr de vouloir vider ce champ ?',
     },
     icon: 'fa-solid fa-xmark',
     size: 'auto', // dépend de l'input

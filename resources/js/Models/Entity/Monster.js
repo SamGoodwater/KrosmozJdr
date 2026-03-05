@@ -81,6 +81,18 @@ export class Monster extends BaseModel {
         return Number(this._data.spell_invocations_count ?? this.spellInvocations.length ?? 0);
     }
 
+    get resourcesCount() {
+        return Number(this._data.resources_count ?? this.creature?.resources_count ?? 0);
+    }
+
+    get itemsCount() {
+        return Number(this._data.items_count ?? this.creature?.items_count ?? 0);
+    }
+
+    get consumablesCount() {
+        return Number(this._data.consumables_count ?? this.creature?.consumables_count ?? 0);
+    }
+
     get campaignsCount() {
         return Number(this._data.campaigns_count ?? this.campaigns.length ?? 0);
     }
@@ -354,6 +366,21 @@ export class Monster extends BaseModel {
                 tooltip: this.spellInvocationsCount > 0 ? `Sorts d'invocation: ${this.spellInvocationsCount}` : '',
             },
             {
+                icon: 'fa-solid fa-flask',
+                value: this.resourcesCount > 0 ? `${this.resourcesCount} ressource${this.resourcesCount > 1 ? 's' : ''}` : null,
+                tooltip: this.resourcesCount > 0 ? `Ressources: ${this.resourcesCount}` : '',
+            },
+            {
+                icon: 'fa-solid fa-sword',
+                value: this.itemsCount > 0 ? `${this.itemsCount} équipement${this.itemsCount > 1 ? 's' : ''}` : null,
+                tooltip: this.itemsCount > 0 ? `Équipements: ${this.itemsCount}` : '',
+            },
+            {
+                icon: 'fa-solid fa-mug-hot',
+                value: this.consumablesCount > 0 ? `${this.consumablesCount} consommable${this.consumablesCount > 1 ? 's' : ''}` : null,
+                tooltip: this.consumablesCount > 0 ? `Consommables: ${this.consumablesCount}` : '',
+            },
+            {
                 icon: 'fa-solid fa-flag',
                 value: this.campaignsCount > 0 ? `${this.campaignsCount} campagne${this.campaignsCount > 1 ? 's' : ''}` : null,
                 tooltip: this.campaignsCount > 0 ? `Campagnes: ${this.campaignsCount}` : '',
@@ -372,7 +399,13 @@ export class Monster extends BaseModel {
             value: '',
             params: {
                 items,
-                sortValue: items.length,
+                sortValue:
+                    this.spellInvocationsCount +
+                    this.resourcesCount +
+                    this.itemsCount +
+                    this.consumablesCount +
+                    this.campaignsCount +
+                    this.scenariosCount,
                 searchValue,
                 filterValue: searchValue,
             },

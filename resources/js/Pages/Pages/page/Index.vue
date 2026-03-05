@@ -101,7 +101,7 @@ const handleView = (pageSlug) => {
 };
 
 const handleDelete = (pageId, pageTitle) => {
-    if (confirm(`Êtes-vous sûr de vouloir supprimer la page "${pageTitle}" ?`)) {
+    if (confirm(`Es-tu sûr de vouloir supprimer la page "${pageTitle}" ?`)) {
         router.delete(route('pages.delete', pageId), {
             preserveScroll: true,
             onSuccess: () => {

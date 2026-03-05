@@ -223,7 +223,7 @@ defineExpose({
           <div class="mb-4">
             <i class="fa-solid fa-cloud-arrow-up text-6xl text-primary animate-bounce"></i>
           </div>
-          <p class="text-lg font-semibold text-primary">Déposez votre fichier ici</p>
+          <p class="text-lg font-semibold text-primary">Dépose ton fichier ici</p>
           <p class="text-sm text-base-content/70 mt-2">Relâchez pour téléverser</p>
         </div>
       </div>

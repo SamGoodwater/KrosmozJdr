@@ -107,6 +107,27 @@ export function getBreedFieldDescriptors(ctx = {}) {
         },
       },
     },
+    breed_summary_relations: {
+      key: "breed_summary_relations",
+      label: "Relations",
+      icon: "fa-solid fa-link",
+      tooltip: "Résumé des liens gameplay (sorts)",
+      table: {
+        sortable: false,
+        searchable: true,
+        defaultVisible: { xs: false, sm: false, md: true, lg: true, xl: true },
+        cell: { sizes: { xs: { mode: "chips" }, sm: { mode: "chips" }, md: { mode: "chips" }, lg: { mode: "chips" }, xl: { mode: "chips" } } },
+      },
+      display: {
+        sizes: {
+          xs: { mode: "chips" },
+          sm: { mode: "chips" },
+          md: { mode: "chips" },
+          lg: { mode: "chips" },
+          xl: { mode: "chips" },
+        },
+      },
+    },
     description: {
       key: "description",
       label: "Description",

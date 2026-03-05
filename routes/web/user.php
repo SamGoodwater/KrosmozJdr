@@ -22,7 +22,7 @@ Route::prefix('user')->name('user.')->middleware('auth')->group(function () {
     Route::middleware('role:admin')->group(function () {
         Route::get('/list', [UserController::class, 'index'])->name('index');
         Route::get('/create', [UserController::class, 'create'])->name('create');
-        Route::post('/{user}', [UserController::class, 'store'])->name('store');
+        Route::post('/', [UserController::class, 'store'])->name('store');
         Route::get('/{user}/edit', [UserController::class, 'edit'])->name('admin.edit');
         Route::patch('/{user}', [UserController::class, 'update'])->name('admin.update');
         Route::post('/{user}/avatar', [UserController::class, 'updateAvatar'])->name('admin.updateAvatar');

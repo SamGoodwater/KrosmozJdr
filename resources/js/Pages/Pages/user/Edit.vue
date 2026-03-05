@@ -24,7 +24,7 @@ import Tooltip from '@/Pages/Atoms/feedback/Tooltip.vue';
 
 const page = usePage();
 const { success, error } = useNotificationStore();
-const { isAdmin } = usePermissions();
+const { isAdmin, isSuperAdmin } = usePermissions();
 
 // Utilisateur à éditer
 // Le user est passé via page.props.user (UserResource)
@@ -340,13 +340,12 @@ const roleValidation = computed(() => {
             <h2 class="text-lg font-medium text-content-300">
                 {{
                     verifyRole(page.props.auth?.user?.role || 1, ROLES.ADMIN)
-                        ? `Modification du profil de ${user?.name || 'Utilisateur'}`
-                        : "Informations du profil"
+                        ? `Gestion du compte de ${user?.name || 'Utilisateur'}`
+                        : "Mon compte"
                 }}
             </h2>
             <p class="mt-1 text-sm text-content-600">
-                Mettez à jour les informations de votre compte et votre adresse
-                email.
+                Mettez à jour les informations principales et les accès de ce compte.
             </p>
             <Route
                 v-if="isSelfUpdate"
@@ -360,7 +359,7 @@ const roleValidation = computed(() => {
         <form @submit.prevent class="mt-6 space-y-6" autocomplete="off">
             <div class="flex flex-row gap-4">
                 <div class="flex flex-col gap-4 w-1/2">
-                    <Tooltip content="Déposer ou cliquer pour changer votre avatar" placement="top">
+                    <Tooltip content="Dépose ou clique pour changer ton avatar" placement="top">
                         <File
                             ref="avatarFileField"
                             v-model="avatarFile"
@@ -406,7 +405,7 @@ const roleValidation = computed(() => {
                     <div class="mt-2">
                         <BadgeRole :role="user?.role_name || 'user'" />
                     </div>
-                    <Tooltip content="Votre pseudo d'utilisateur" placement="top">
+                    <Tooltip content="Ton pseudo" placement="top">
                         <InputField
                             id="name"
                             class="mt-1 block w-full"
@@ -417,7 +416,7 @@ const roleValidation = computed(() => {
                             :validation="nameValidation"
                         />
                     </Tooltip>
-                    <Tooltip content="Votre adresse email" placement="top">
+                    <Tooltip content="Ton adresse email" placement="top">
                         <InputField
                             id="email"
                             class="mt-1 block w-full"
@@ -440,7 +439,7 @@ const roleValidation = computed(() => {
                         color="primary"
                         @click="updateProfile"
                     >
-                        Enregistrer le profil
+                        Enregistrer
                     </Btn>
                 </Tooltip>
                 <Tooltip content="Annuler les modifications" placement="top">
@@ -448,7 +447,7 @@ const roleValidation = computed(() => {
                         color="neutral"
                         @click="formProfile.reset()"
                     >
-                        Annuler
+                        Réinitialiser
                     </Btn>
                 </Tooltip>
             </div>
@@ -458,17 +457,17 @@ const roleValidation = computed(() => {
                 <hr class="border-gray-300 dark:border-gray-700 my-4" />
                 <div class="mt-6">
                     <h3 class="text-lg font-medium text-content-300">
-                        {{ isAdmin && !isSelfUpdate ? 'Actions administrateurs - Mot de passe' : 'Modifier le mot de passe' }}
+                        {{ isSuperAdmin && !isSelfUpdate ? 'Actions super administrateur - Mot de passe' : 'Modifier le mot de passe' }}
                     </h3>
                     <p class="mt-1 text-sm text-content-600">
-                        {{ isAdmin && !isSelfUpdate ? 'Modifiez le mot de passe de l\'utilisateur.' : 'Modifiez votre mot de passe.' }}
+                        {{ isSuperAdmin && !isSelfUpdate ? 'Définis un nouveau mot de passe pour ce compte.' : 'Mets à jour ton mot de passe.' }}
                     </p>
                 </div>
                 <div class="mt-6 space-y-4">
                     <!-- Champ current_password seulement si l'utilisateur modifie son propre mot de passe -->
-                    <Tooltip 
+                    <Tooltip
                         v-if="isSelfUpdate" 
-                        content="Entrez votre mot de passe actuel" 
+                        content="Entre ton mot de passe actuel" 
                         placement="top"
                     >
                         <InputField
@@ -482,7 +481,7 @@ const roleValidation = computed(() => {
                             @keyup.enter="updatePassword"
                         />
                     </Tooltip>
-                    <Tooltip content="Entrez votre nouveau mot de passe" placement="top">
+                    <Tooltip v-if="isSelfUpdate || isSuperAdmin" content="Entre ton nouveau mot de passe" placement="top">
                         <InputField
                             v-model="formPassword.password"
                             type="password"
@@ -494,7 +493,7 @@ const roleValidation = computed(() => {
                             @keyup.enter="updatePassword"
                         />
                     </Tooltip>
-                    <Tooltip content="Confirmez votre nouveau mot de passe" placement="top">
+                    <Tooltip v-if="isSelfUpdate || isSuperAdmin" content="Confirme ton nouveau mot de passe" placement="top">
                         <InputField
                             v-model="formPassword.password_confirmation"
                             type="password"
@@ -506,21 +505,28 @@ const roleValidation = computed(() => {
                             @keyup.enter="updatePassword"
                         />
                     </Tooltip>
-                    <div class="flex items-center gap-4">
+                    <div v-if="isSelfUpdate || isSuperAdmin" class="flex items-center gap-4">
                         <Tooltip content="Mettre à jour le mot de passe" placement="top">
                             <Btn
                                 color="primary"
                                 @click="updatePassword"
-                                >Enregistrer
+                                >Enregistrer le mot de passe
                             </Btn>
                         </Tooltip>
                         <Tooltip content="Annuler la modification" placement="top">
                             <Btn
                                 color="neutral"
                                 @click="formPassword.reset()"
-                                >Annuler
+                                >Réinitialiser
                             </Btn>
                         </Tooltip>
+                    </div>
+                    <div
+                        v-if="!isSelfUpdate && !isSuperAdmin"
+                        id="password-admin"
+                        class="alert alert-warning alert-soft"
+                    >
+                        Seul un super administrateur peut réinitialiser le mot de passe d'un autre compte.
                     </div>
                 </div>
             </div>
@@ -532,19 +538,19 @@ const roleValidation = computed(() => {
                 <hr class="border-gray-300 dark:border-gray-700 my-4" />
                 <div class="mt-6">
                     <h3 class="text-lg font-medium text-content-300">
-                        Actions administrateurs - Rôle
+                        Actions administrateur - Niveau d'accès
                     </h3>
                     <p class="mt-1 text-sm text-content-600">
-                        Modifiez le rôle de l'utilisateur.
+                        Choisissez le niveau d'accès de ce compte.
                     </p>
                 </div>
                 <div class="mt-6 space-y-4">
-                    <Tooltip content="Sélectionnez le rôle de l'utilisateur" placement="top">
+                    <Tooltip content="Sélectionnez le niveau d'accès de ce compte" placement="top">
                         <SelectField
                             v-model="formRole.role"
                             variant="glass"
                             color="primary"
-                            label="Rôle"
+                            label="Niveau d'accès"
                             :options="Object.values(ROLES).map(role => ({ 
                                 value: role, 
                                 label: getRoleTranslation(role) 
@@ -553,18 +559,18 @@ const roleValidation = computed(() => {
                         />
                     </Tooltip>
                     <div class="flex items-center gap-4">
-                        <Tooltip content="Mettre à jour le rôle" placement="top">
+                        <Tooltip content="Mettre à jour le niveau d'accès" placement="top">
                             <Btn
                                 color="primary"
                                 @click="updateRole"
-                                >Enregistrer</Btn
+                                >Enregistrer le niveau d'accès</Btn
                             >
                         </Tooltip>
                         <Tooltip content="Annuler la modification" placement="top">
                             <Btn
                                 color="neutral"
                                 @click="formRole.reset()"
-                                >Annuler</Btn
+                                >Réinitialiser</Btn
                             >
                         </Tooltip>
                     </div>

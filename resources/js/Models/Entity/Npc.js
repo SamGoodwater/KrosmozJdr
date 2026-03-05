@@ -400,7 +400,11 @@ export class Npc extends BaseModel {
             value: '',
             params: {
                 items,
-                sortValue: items.length,
+                sortValue:
+                    this.panopliesCount +
+                    this.campaignsCount +
+                    this.scenariosCount +
+                    (this.hasShop ? 1 : 0),
                 searchValue,
                 filterValue: searchValue,
             },

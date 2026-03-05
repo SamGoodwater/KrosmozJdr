@@ -24,7 +24,7 @@ import Icon from "@/Pages/Atoms/data-display/Icon.vue";
 const props = defineProps({
     open: { type: Boolean, default: false },
     title: { type: String, default: "Confirmer" },
-    message: { type: String, default: "Êtes-vous sûr ?" },
+    message: { type: String, default: "Es-tu sûr ?" },
     confirmLabel: { type: String, default: "Confirmer" },
     cancelLabel: { type: String, default: "Annuler" },
     confirmColor: { type: String, default: "error" },

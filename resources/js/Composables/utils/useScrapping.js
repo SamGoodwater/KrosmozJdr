@@ -73,7 +73,7 @@ export function useScrapping() {
     const refreshEntity = async (entityType, entityId, options = {}) => {
         const csrfToken = getCsrfToken();
         if (!csrfToken) {
-            showError('Token CSRF introuvable. Veuillez recharger la page.');
+            showError('Token CSRF introuvable. Recharge la page.');
             return false;
         }
 

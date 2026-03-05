@@ -75,6 +75,8 @@ const effectiveTooltip = computed(() => {
     :color="String(color)"
     :variant="variant"
     :size="size"
+    :strong="true"
+    text-color="#ffffff"
     :glassy="glassy"
     :content="label"
     :title="effectiveTooltip || undefined"

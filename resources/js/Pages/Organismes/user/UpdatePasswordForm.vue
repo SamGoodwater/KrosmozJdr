@@ -97,14 +97,14 @@ const passwordConfirmationValidation = computed(() => {
                     Mettre à jour le mot de passe
                 </h2>
                 <p class="mt-1 text-sm text-primary-200">
-                    Assurez-vous que votre compte utilise un mot de passe long et aléatoire pour rester sécurisé.
+                    Assure-toi que ton compte utilise un mot de passe long et aléatoire pour rester sécurisé.
                 </p>
             </header>
 
             <form @submit.prevent="updatePassword" class="mt-6 space-y-6">
                 <div class="space-y-2">
                     <InputLabel for="current_password" value="Mot de passe actuel" theme="primary" />
-                    <Tooltip content="Entrez votre mot de passe actuel" placement="top">
+                    <Tooltip content="Entre ton mot de passe actuel" placement="top">
                         <InputField id="current_password" ref="currentPasswordInput" v-model="form.current_password"
                             type="password" autocomplete="current-password"
                             :validation="currentPasswordValidation"
@@ -126,7 +126,7 @@ const passwordConfirmationValidation = computed(() => {
 
                 <div class="space-y-2">
                     <InputLabel for="password_confirmation" value="Confirmer le mot de passe" theme="primary" />
-                    <Tooltip content="Confirmez votre nouveau mot de passe" placement="top">
+                    <Tooltip content="Confirme ton nouveau mot de passe" placement="top">
                         <InputField id="password_confirmation" v-model="form.password_confirmation" type="password"
                             autocomplete="new-password"
                             :validation="passwordConfirmationValidation"

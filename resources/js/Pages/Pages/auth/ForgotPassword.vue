@@ -33,7 +33,7 @@ const submit = () => {
     <Head title="Mot de passe oublié" />
 
     <div class="mb-4 text-sm text-gray-600">
-        Mot de passe oublié ? Indiquez votre adresse email et nous vous enverrons un lien pour réinitialiser votre
+        Mot de passe oublié ? Indique ton adresse email et on t'enverra un lien pour réinitialiser ton
         mot de passe.
     </div>
 

@@ -29,6 +29,11 @@ const props = defineProps({
 const emit = defineEmits(["sort", "toggle-all"]);
 
 const isSortable = (col) => Boolean(col?.sort?.enabled);
+const getAriaSort = (col) => {
+    if (!isSortable(col)) return "none";
+    if (props.sortBy !== col?.id) return "none";
+    return props.sortOrder === "desc" ? "descending" : "ascending";
+};
 </script>
 
 <template>
@@ -49,15 +54,24 @@ const isSortable = (col) => Boolean(col?.sort?.enabled);
             <th
                 v-for="col in columns"
                 :key="col.id"
+                scope="col"
                 class="select-none"
-                :class="{ 'cursor-pointer hover:bg-base-200': isSortable(col) }"
-                @click="isSortable(col) && emit('sort', col)"
+                :aria-sort="getAriaSort(col)"
             >
-                <div class="flex items-center gap-2">
+                <button
+                    v-if="isSortable(col)"
+                    type="button"
+                    class="w-full flex items-center gap-2 text-left hover:bg-base-200 rounded px-1 py-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60"
+                    :aria-label="`Trier par ${col.label}`"
+                    @click="emit('sort', col)"
+                >
                     <span>{{ col.label }}</span>
-                    <span v-if="isSortable(col) && sortBy === col.id" class="text-xs opacity-70">
+                    <span v-if="sortBy === col.id" class="text-xs opacity-70">
                         {{ sortOrder === 'asc' ? '▲' : '▼' }}
                     </span>
+                </button>
+                <div v-else class="flex items-center gap-2 px-1 py-0.5">
+                    <span>{{ col.label }}</span>
                 </div>
             </th>
         </tr>

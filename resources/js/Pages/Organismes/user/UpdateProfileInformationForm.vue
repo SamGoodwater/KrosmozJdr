@@ -81,14 +81,14 @@ const emailValidation = computed(() => {
                     Informations du profil
                 </h2>
                 <p class="mt-1 text-sm text-primary-200">
-                    Mettez à jour les informations de votre compte et votre adresse email.
+                    Mets à jour les informations de ton compte et ton adresse email.
                 </p>
             </header>
 
             <form @submit.prevent="updateProfile" class="mt-6 space-y-6">
                 <div class="space-y-2">
                     <InputLabel for="name" value="Nom" theme="primary" />
-                    <Tooltip content="Votre nom d'affichage" placement="top">
+                    <Tooltip content="Ton nom d'affichage" placement="top">
                         <InputField id="name" v-model="form.name" type="text" required autofocus autocomplete="name"
                             :validation="nameValidation"
                             aria-label="Nom"
@@ -98,7 +98,7 @@ const emailValidation = computed(() => {
 
                 <div class="space-y-2">
                     <InputLabel for="email" value="Adresse email" theme="primary" />
-                    <Tooltip content="Votre adresse email" placement="top">
+                    <Tooltip content="Ton adresse email" placement="top">
                         <InputField id="email" v-model="form.email" type="email" required autocomplete="username"
                             :validation="emailValidation"
                             aria-label="Adresse email"
@@ -109,7 +109,7 @@ const emailValidation = computed(() => {
                 <div v-if="mustVerifyEmail && user.email_verified_at === null"
                     class="p-4 rounded-lg bg-warning-900/20 backdrop-blur-sm">
                     <p class="text-sm text-warning-100">
-                        Votre adresse email n'est pas vérifiée.
+                        Ton adresse email n'est pas vérifiée.
                         <Tooltip content="Renvoyer l'email de vérification" placement="top">
                             <Route route="verification.send" method="post"
                                 class="text-warning-200 hover:text-warning-100 underline">
@@ -118,7 +118,7 @@ const emailValidation = computed(() => {
                         </Tooltip>
                     </p>
                     <div v-show="status === 'verification-link-sent'" class="mt-2 text-sm font-medium text-success-500">
-                        Un nouvel email de vérification a été envoyé à votre adresse email.
+                        Un nouvel email de vérification a été envoyé à ton adresse email.
                     </div>
                 </div>
 

@@ -58,9 +58,9 @@ class ProfileModifiedNotification extends Notification implements ShouldQueue
     public function toMail($notifiable)
     {
         $mail = (new MailMessage)
-            ->subject('Votre profil a été modifié')
+            ->subject('Ton profil a été modifié')
             ->greeting('Bonjour !')
-            ->line("Votre profil a été modifié par {$this->modifier->name}.");
+            ->line("Ton profil a été modifié par {$this->modifier->name}.");
 
         if (!empty($this->changes)) {
             $mail->line('Changements principaux :');
@@ -82,7 +82,7 @@ class ProfileModifiedNotification extends Notification implements ShouldQueue
         }
 
         $mail->action('Voir mon profil', url("/users/{$this->modifiedUser->id}"))
-            ->line('Si vous n\'êtes pas à l\'origine de cette modification, contactez un administrateur.');
+            ->line('Si tu n\'es pas à l\'origine de cette modification, contacte un administrateur.');
         return $mail;
     }
 
@@ -110,7 +110,7 @@ class ProfileModifiedNotification extends Notification implements ShouldQueue
             'modified_user_id' => $this->modifiedUser->id,
             'modifier_id' => $this->modifier->id,
             'modifier_name' => $this->modifier->name,
-            'message' => "Votre profil a été modifié par {$this->modifier->name}.",
+            'message' => "Ton profil a été modifié par {$this->modifier->name}.",
             'url' => url("/users/{$this->modifiedUser->id}"),
             'changes' => $changes,
             'more_changes' => $more_changes,

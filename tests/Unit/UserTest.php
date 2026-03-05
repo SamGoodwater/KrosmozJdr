@@ -66,6 +66,6 @@ class UserTest extends TestCase
 
         // Test basique de la politique
         $this->assertTrue($policy->viewAny($admin));
-        $this->assertTrue($policy->viewAny($user));
+        $this->assertFalse($policy->viewAny($user));
     }
 }

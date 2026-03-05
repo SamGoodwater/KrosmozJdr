@@ -62,8 +62,44 @@ const getCell = (column) => {
 const isInteractiveTarget = (event) => {
     const el = event?.target;
     if (!el || typeof el.closest !== "function") return false;
-    return Boolean(el.closest('a,button,input,select,textarea,[role="button"],[data-no-row-select]'));
+    return Boolean(el.closest('a,button,input,select,textarea,[role="button"],[role="link"],[contenteditable="true"],[data-no-row-select]'));
 };
+
+const focusSiblingRow = (event, direction = 1) => {
+    const current = event?.currentTarget;
+    if (!current || typeof current !== "object") return;
+    const candidate = direction > 0 ? current.nextElementSibling : current.previousElementSibling;
+    if (candidate && typeof candidate.focus === "function") {
+        candidate.focus();
+    }
+};
+
+const focusEdgeRow = (event, edge = "first") => {
+    const current = event?.currentTarget;
+    const parent = current?.parentElement;
+    if (!parent) return;
+    const rows = parent.querySelectorAll("tr[tabindex='0']");
+    if (!rows?.length) return;
+    const target = edge === "last" ? rows[rows.length - 1] : rows[0];
+    if (target && typeof target.focus === "function") target.focus();
+};
+
+const rowAriaLabel = computed(() => {
+    const name = String(
+        rowEntity.value?.name
+        || rowEntity.value?._data?.name
+        || props.row?.name
+        || props.row?.id
+        || ""
+    ).trim();
+    if (name) return `Ligne ${name}`;
+    return "Ligne du tableau";
+});
+
+const selectionAriaLabel = computed(() => {
+    const state = props.isSelected ? "désélectionner" : "sélectionner";
+    return `${state} la ligne`;
+});
 
 const handleRowKeydown = (event) => {
     if (isInteractiveTarget(event)) return;
@@ -73,6 +109,22 @@ const handleRowKeydown = (event) => {
     }
     if (event.key === "Escape") {
         closeContextMenu();
+    }
+    if (event.key === "ArrowDown") {
+        event.preventDefault();
+        focusSiblingRow(event, 1);
+    }
+    if (event.key === "ArrowUp") {
+        event.preventDefault();
+        focusSiblingRow(event, -1);
+    }
+    if (event.key === "Home") {
+        event.preventDefault();
+        focusEdgeRow(event, "first");
+    }
+    if (event.key === "End") {
+        event.preventDefault();
+        focusEdgeRow(event, "last");
     }
 };
 
@@ -193,6 +245,8 @@ const handleAction = (actionKey, entity) => {
         class="hover:bg-base-200 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60"
         :class="isSelected ? selectedBgClass : null"
         tabindex="0"
+        :aria-label="rowAriaLabel"
+        :aria-selected="showSelection ? String(isSelected) : undefined"
         @click="(e) => { if (!isInteractiveTarget(e)) emit('row-click', row); }"
         @dblclick="(e) => { if (!isInteractiveTarget(e)) emit('row-dblclick', row); }"
         @keydown="handleRowKeydown"
@@ -210,6 +264,7 @@ const handleAction = (actionKey, entity) => {
                 :model-value="isSelected"
                 size="xs"
                 :color="uiColor"
+                :aria-label="selectionAriaLabel"
                 @click.stop
                 @update:model-value="(v) => emit('toggle-select', row, Boolean(v))"
             />

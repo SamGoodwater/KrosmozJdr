@@ -15,6 +15,15 @@ abstract class TestCase extends BaseTestCase
      */
     public function createApplication(): \Illuminate\Foundation\Application
     {
+        if (extension_loaded('pdo_sqlite')) {
+            putenv('DB_CONNECTION=sqlite');
+            putenv('DB_DATABASE=:memory:');
+            $_ENV['DB_CONNECTION'] = 'sqlite';
+            $_ENV['DB_DATABASE'] = ':memory:';
+            $_SERVER['DB_CONNECTION'] = 'sqlite';
+            $_SERVER['DB_DATABASE'] = ':memory:';
+        }
+
         $app = parent::createApplication();
         if (extension_loaded('pdo_sqlite')) {
             $app['config']->set('database.default', 'sqlite');

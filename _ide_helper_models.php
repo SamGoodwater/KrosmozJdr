@@ -1050,6 +1050,12 @@ namespace App\Models\Entity{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Monster whereBossPa($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Monster whereIsBoss($value)
  * @mixin \Eloquent
+ * @property string $state
+ * @property int $read_level
+ * @property int $write_level
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Monster whereReadLevel($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Monster whereState($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Monster whereWriteLevel($value)
  */
 	class Monster extends \Eloquent {}
 }
@@ -1091,6 +1097,12 @@ namespace App\Models\Entity{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Npc whereStory($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Npc whereUpdatedAt($value)
  * @mixin \Eloquent
+ * @property string $state
+ * @property int $read_level
+ * @property int $write_level
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Npc whereReadLevel($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Npc whereState($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Npc whereWriteLevel($value)
  */
 	class Npc extends \Eloquent {}
 }
@@ -1532,6 +1544,7 @@ namespace App\Models{
  * @property int $write_level
  * @property int|null $parent_id
  * @property int $menu_order
+ * @property string|null $menu_group
  * @property int|null $created_by
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
@@ -1557,6 +1570,7 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Page whereIsVisible($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Page whereMenuOrder($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Page whereParentId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Page whereMenuGroup($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Page whereSlug($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Page whereState($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Page whereTitle($value)
@@ -1577,6 +1591,48 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Page whereWriteLevel($value)
  */
 	class Page extends \Eloquent {}
+}
+
+namespace App\Models{
+/**
+ * @property string $id
+ * @property string $kind
+ * @property string $status
+ * @property string|null $run_id
+ * @property int|null $requested_by
+ * @property array<array-key, mixed> $payload
+ * @property array<array-key, mixed>|null $summary
+ * @property array<array-key, mixed>|null $results
+ * @property int $progress_done
+ * @property int $progress_total
+ * @property string|null $error
+ * @property \Illuminate\Support\Carbon|null $started_at
+ * @property \Illuminate\Support\Carbon|null $finished_at
+ * @property \Illuminate\Support\Carbon|null $cancelled_at
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \App\Models\User|null $user
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ScrappingJob newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ScrappingJob newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ScrappingJob query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ScrappingJob whereCancelledAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ScrappingJob whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ScrappingJob whereError($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ScrappingJob whereFinishedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ScrappingJob whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ScrappingJob whereKind($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ScrappingJob wherePayload($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ScrappingJob whereProgressDone($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ScrappingJob whereProgressTotal($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ScrappingJob whereRequestedBy($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ScrappingJob whereResults($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ScrappingJob whereRunId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ScrappingJob whereStartedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ScrappingJob whereStatus($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ScrappingJob whereSummary($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ScrappingJob whereUpdatedAt($value)
+ */
+	class ScrappingJob extends \Eloquent {}
 }
 
 namespace App\Models\Scrapping{

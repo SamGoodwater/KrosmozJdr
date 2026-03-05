@@ -78,9 +78,9 @@ const passwordValidation = computed(() => {
                     Supprimer le compte
                 </h2>
                 <p class="mt-1 text-sm text-error-200">
-                    Une fois votre compte supprimé, toutes ses ressources et données seront définitivement supprimées.
-                    Avant de supprimer votre compte, veuillez télécharger toutes les données ou informations que vous
-                    souhaitez conserver.
+                    Une fois ton compte supprimé, toutes ses ressources et données seront définitivement supprimées.
+                    Avant de supprimer ton compte, télécharge toutes les données ou informations que tu
+                    souhaites conserver.
                 </p>
             </header>
 
@@ -96,18 +96,18 @@ const passwordValidation = computed(() => {
             >
                 <Container class="p-6 space-y-6 bg-base-100 rounded-lg shadow-lg">
                     <h2 class="text-lg font-medium text-error-100">
-                        Êtes-vous sûr de vouloir supprimer votre compte ?
+                        Es-tu sûr de vouloir supprimer ton compte ?
                     </h2>
                     <p class="mt-1 text-sm text-error-200">
-                        Une fois votre compte supprimé, toutes ses ressources et données seront définitivement
+                        Une fois ton compte supprimé, toutes ses ressources et données seront définitivement
                         supprimées.
-                        Veuillez entrer votre mot de passe pour confirmer que vous souhaitez supprimer définitivement
-                        votre
+                        Entre ton mot de passe pour confirmer que tu souhaites supprimer définitivement
+                        ton
                         compte.
                     </p>
                     <div class="mt-6">
                         <InputLabel for="password" value="Mot de passe" class="sr-only" />
-                        <Tooltip content="Entrez votre mot de passe pour confirmer la suppression" placement="top">
+                        <Tooltip content="Entre ton mot de passe pour confirmer la suppression" placement="top">
                             <InputField id="password" ref="passwordInput" v-model="form.password" type="password"
                                 placeholder="Mot de passe" 
                                 :validation="passwordValidation"

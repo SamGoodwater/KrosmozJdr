@@ -32,9 +32,43 @@ class UserController extends Controller
     public function index(Request $request)
     {
         $this->authorize('viewAny', User::class);
-        $users = User::with(['scenarios', 'campaigns', 'pages', 'sections'])->paginate(20);
+
+        $search = trim((string) $request->input('search', ''));
+        $role = $request->input('role');
+        $status = (string) $request->input('status', 'active'); // active|trashed|all
+
+        $query = User::query()->with(['scenarios', 'campaigns', 'pages', 'sections']);
+
+        if ($search !== '') {
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                    ->orWhere('email', 'like', "%{$search}%");
+            });
+        }
+
+        if (is_numeric($role) && array_key_exists((int) $role, User::ROLES)) {
+            $query->where('role', (int) $role);
+        }
+
+        if ($status === 'trashed') {
+            $query->onlyTrashed();
+        } elseif ($status === 'all') {
+            $query->withTrashed();
+        }
+
+        $users = $query
+            ->latest('id')
+            ->paginate(20)
+            ->withQueryString();
+
         return Inertia::render('Pages/user/Index', [
             'users' => UserResource::collection($users),
+            'filters' => [
+                'search' => $search,
+                'role' => is_numeric($role) ? (int) $role : null,
+                'status' => $status,
+            ],
+            'roles' => User::ROLES,
         ]);
     }
 
@@ -79,6 +113,15 @@ class UserController extends Controller
     {
         $this->authorize('create', User::class);
         $data = $request->validated();
+
+        if (($data['role'] ?? User::ROLE_USER) === User::ROLE_SUPER_ADMIN) {
+            return back()->withErrors(['role' => 'Impossible de créer directement un super administrateur.']);
+        }
+
+        if (!isset($data['role']) || !array_key_exists((int) $data['role'], User::ROLES)) {
+            $data['role'] = User::ROLE_USER;
+        }
+
         if ($request->hasFile('avatar')) {
             unset($data['avatar']);
         }
@@ -95,7 +138,7 @@ class UserController extends Controller
             $media = $adder->toMediaCollection('avatars');
             $user->update(['avatar' => $media->getUrl()]);
         }
-        return redirect()->route('users.show', $user)->with('success', 'Utilisateur créé avec succès.');
+        return redirect()->route('user.admin.edit', $user)->with('success', 'Utilisateur créé avec succès.');
     }
 
     /**
@@ -196,7 +239,7 @@ class UserController extends Controller
         if ($user->id === Auth::id()) {
             return redirect()->route('user.show', $user)->with('success', 'Profil mis à jour.');
         }
-        return redirect()->route('user.show', $user)->with('success', 'Utilisateur mis à jour.');
+        return redirect()->route('user.admin.edit', $user)->with('success', 'Utilisateur mis à jour.');
     }
 
     /**
@@ -352,18 +395,20 @@ class UserController extends Controller
     public function updatePassword(\Illuminate\Http\Request $request, User $user = null)
     {
         $user = $user ?? Auth::user();
-        $this->authorize('update', $user);
-
         $isSelfUpdate = $user->id === Auth::id();
-        $isAdmin = Auth::user()->verifyRole(User::ROLE_ADMIN);
 
-        // Si l'utilisateur modifie son propre mot de passe, current_password est requis
-        // Si un admin modifie le mot de passe d'un autre utilisateur, current_password n'est pas requis
+        if ($isSelfUpdate) {
+            $this->authorize('update', $user);
+        } else {
+            $this->authorize('resetPassword', $user);
+        }
+
         $rules = [
             'password' => ['required', 'confirmed', \Illuminate\Validation\Rules\Password::defaults()],
         ];
 
-        if ($isSelfUpdate && !$isAdmin) {
+        // En mise à jour de son propre mot de passe, le mot de passe courant est toujours requis.
+        if ($isSelfUpdate) {
             $rules['current_password'] = ['required', 'current_password'];
         }
 

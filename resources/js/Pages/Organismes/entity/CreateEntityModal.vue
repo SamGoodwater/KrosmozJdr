@@ -268,7 +268,7 @@ const handleCancel = () => {
                 class="rounded-(--radius-field) border border-warning/40 bg-warning/10 px-3 py-2 text-xs text-warning-content"
             >
                 Certains champs avancés ne sont pas encore personnalisés pour ce type.
-                Vous pouvez continuer, puis compléter les détails ensuite.
+                Tu peux continuer, puis compléter les détails ensuite.
             </div>
 
             <div class="max-h-[70vh] overflow-y-auto pr-2">

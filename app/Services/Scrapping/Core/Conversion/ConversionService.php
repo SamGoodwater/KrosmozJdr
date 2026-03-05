@@ -51,6 +51,13 @@ final class ConversionService
             }
 
             $value = $this->getByPath($raw, $path);
+            // Compat mapping breed historique: certaines sources exposent "name"
+            // (et non "shortName"). On évite un nom vide en production/tests.
+            if ($value === null && $path === 'shortName') {
+                $value = $this->getByPath($raw, 'name');
+            } elseif ($value === null && str_ends_with($path, '.shortName')) {
+                $value = $this->getByPath($raw, substr($path, 0, -10) . '.name');
+            }
 
             $formatters = $map['formatters'] ?? [];
             if (is_array($formatters)) {

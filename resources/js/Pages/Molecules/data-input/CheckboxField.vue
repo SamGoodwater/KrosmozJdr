@@ -13,7 +13,7 @@
  * <CheckboxField 
  *   label="J'accepte les conditions" 
  *   v-model="accepted"
- *   :validation="{ state: 'error', message: 'Vous devez accepter les conditions' }"
+ *   :validation="{ state: 'error', message: 'Tu dois accepter les conditions' }"
  * />
  * 
  * // Avec helper

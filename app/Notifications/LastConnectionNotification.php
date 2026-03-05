@@ -28,7 +28,7 @@ class LastConnectionNotification extends Notification implements ShouldQueue
         return (new MailMessage)
             ->subject('Connexion enregistrée')
             ->greeting('Bonjour !')
-            ->line('Votre connexion a été enregistrée le ' . $this->loggedAtIso . '.');
+            ->line('Ta connexion a été enregistrée le ' . $this->loggedAtIso . '.');
     }
 
     public function toArray($notifiable): array

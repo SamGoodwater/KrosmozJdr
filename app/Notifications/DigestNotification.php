@@ -36,7 +36,7 @@ class DigestNotification extends Notification implements ShouldQueue
         $mail = (new MailMessage)
             ->subject('Récapitulatif : ' . $label)
             ->greeting('Bonjour !')
-            ->line('Voici le récapitulatif de vos notifications (' . count($this->items) . ' élément(s)).');
+            ->line('Voici le récapitulatif de tes notifications (' . count($this->items) . ' élément(s)).');
 
         $displayed = 0;
         foreach ($this->items as $item) {

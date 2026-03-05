@@ -963,7 +963,7 @@ function submitConvertToLinked() {
                 <!-- Formulaire principal (Nouvelle ou Copier) -->
                 <form v-if="createModeType !== 'link'" @submit.prevent="submit" class="space-y-6">
                     <div v-if="copyFromCharacteristic" class="alert alert-info mb-6">
-                        <span>Vous copiez depuis <strong>{{ copyFromCharacteristic.name }}</strong> [{{ copyFromCharacteristic.key }}].</span>
+                        <span>Tu copies depuis <strong>{{ copyFromCharacteristic.name }}</strong> [{{ copyFromCharacteristic.key }}].</span>
                     </div>
                     <div class="card bg-base-100 shadow bg-color-campaign-100">
                         <div class="card-body">
@@ -990,7 +990,7 @@ function submitConvertToLinked() {
                                     v-model="form.key"
                                     label="Clé (identifiant technique)"
                                     name="key"
-                                    helper="Lettres minuscules, chiffres et underscores. Si vous omettez le suffixe (_creature, _object, _spell), il sera ajouté automatiquement selon le groupe choisi (ex. life_dice → life_dice_creature)."
+                                    helper="Lettres minuscules, chiffres et underscores. Si tu omets le suffixe (_creature, _object, _spell), il sera ajouté automatiquement selon le groupe choisi (ex. life_dice → life_dice_creature)."
                                     required
                                 />
                                 <p v-if="createMode && form.key && form.group" class="text-xs text-base-content/60 mt-1">

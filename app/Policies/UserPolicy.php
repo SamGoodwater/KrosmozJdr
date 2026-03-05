@@ -39,7 +39,7 @@ class UserPolicy
      */
     public function viewAny(User $user): bool
     {
-        return true;
+        return $user->isAdmin();
     }
 
     /**
@@ -51,7 +51,7 @@ class UserPolicy
      */
     public function view(User $user, User $model): bool
     {
-        return true;
+        return $model->id === $user->id || $user->isAdmin();
     }
 
     /**
@@ -62,7 +62,7 @@ class UserPolicy
      */
     public function create(User $user): bool
     {
-        return true;
+        return $user->isAdmin();
     }
 
     /**
@@ -155,6 +155,15 @@ class UserPolicy
     public function forceDelete(User $user, User $model): bool
     {
         return $user->verifyRole(User::ROLE_SUPER_ADMIN); // super_admin = 5
+    }
+
+    /**
+     * Détermine si l'utilisateur peut réinitialiser le mot de passe d'un autre utilisateur.
+     * Règle métier V1: uniquement super_admin.
+     */
+    public function resetPassword(User $user, User $target): bool
+    {
+        return $user->isSuperAdmin() && $user->id !== $target->id;
     }
 
     /**

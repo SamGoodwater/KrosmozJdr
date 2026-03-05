@@ -64,6 +64,17 @@ watch(
 // Liste des notifications (centre de notifications)
 const notifications = ref([]);
 const notificationsLoading = ref(false);
+const lockPulseNotificationId = ref(null);
+
+function triggerLockPulse(notificationId) {
+    if (!notificationId) return;
+    lockPulseNotificationId.value = String(notificationId);
+    setTimeout(() => {
+        if (lockPulseNotificationId.value === String(notificationId)) {
+            lockPulseNotificationId.value = null;
+        }
+    }, 900);
+}
 
 async function fetchNotifications() {
     notificationsLoading.value = true;
@@ -128,13 +139,9 @@ function openNotification(item) {
 }
 
 async function deleteNotification(id) {
-    const current = notifications.value.find((n) => n.id === id);
+    const current = notifications.value.find((n) => String(n.id) === String(id));
     if (current?.is_scrapping_job && current?.data?.locked === true) {
-        notificationStore?.addNotification({
-            message: "Ce job est en cours, suppression indisponible.",
-            type: "info",
-            duration: 2500,
-        });
+        triggerLockPulse(id);
         return;
     }
     const token = getCsrfToken();
@@ -281,6 +288,7 @@ function handlePopoverKeydown(e) {
         if (id) {
             const notif = notifications.value.find((n) => String(n.id) === String(id));
             if (notif?.is_scrapping_job && notif?.data?.locked === true) {
+                triggerLockPulse(id);
                 return;
             }
             deleteNotification(id);
@@ -407,6 +415,7 @@ const logout = () => {
                                         <ScrappingJobNotificationCard
                                             v-if="item.is_scrapping_job"
                                             :item="item"
+                                            :lock-pulse="lockPulseNotificationId === String(item.id)"
                                             compact
                                             class="m-2"
                                             @open="openNotification(item)"

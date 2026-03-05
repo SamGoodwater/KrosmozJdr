@@ -85,7 +85,7 @@ class UserControllerUnitTest extends TestCase
     /**
      * Test : Un admin peut modifier le mot de passe d'un autre utilisateur sans current_password
      */
-    public function test_admin_can_update_other_user_password_without_current_password(): void
+    public function test_admin_cannot_update_other_user_password_without_current_password(): void
     {
         $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
         $targetUser = User::factory()->create([
@@ -101,10 +101,15 @@ class UserControllerUnitTest extends TestCase
         $request->setUserResolver(fn() => $admin);
 
         $controller = new UserController();
-        $response = $controller->updatePassword($request, $targetUser);
+        try {
+            $controller->updatePassword($request, $targetUser);
+            $this->fail('Authorization exception expected.');
+        } catch (\Illuminate\Auth\Access\AuthorizationException $e) {
+            $this->assertTrue(true);
+        }
 
         $targetUser->refresh();
-        $this->assertTrue(Hash::check('newpassword123', $targetUser->password));
+        $this->assertTrue(Hash::check('oldpassword', $targetUser->password));
     }
 
     /**

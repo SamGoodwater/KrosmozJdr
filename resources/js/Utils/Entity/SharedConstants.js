@@ -75,52 +75,52 @@ export const FIELD_ICONS = Object.freeze({
 
 /**
  * Dégradé de couleurs pour les niveaux (1-30)
- * Dégradé progressif du gris clair vers le violet foncé
+ * Version renforcée contraste: tons plus sombres pour garder une lecture nette.
  */
 export const LEVEL_COLORS = Object.freeze({
   // Niveau 0 : valeur “neutre” (fallback / non défini)
-  0: 'grey-200',
-  // Niveaux 1-5 : Gris clair → Gris moyen
-  1: 'grey-300',
-  2: 'grey-400',
-  3: 'grey-500',
-  4: 'grey-600',
-  5: 'grey-700',
+  0: 'slate-700',
+  // Niveaux 1-5 : Gris soutenu
+  1: 'slate-700',
+  2: 'slate-700',
+  3: 'slate-800',
+  4: 'slate-800',
+  5: 'slate-900',
   
-  // Niveaux 6-10 : Gris moyen → Bleu clair
-  6: 'blue-300',
-  7: 'blue-400',
-  8: 'blue-500',
-  9: 'blue-600',
-  10: 'blue-700',
+  // Niveaux 6-10 : Bleu soutenu
+  6: 'blue-700',
+  7: 'blue-700',
+  8: 'blue-800',
+  9: 'blue-800',
+  10: 'blue-900',
   
-  // Niveaux 11-15 : Bleu → Vert
-  11: 'green-300',
-  12: 'green-400',
-  13: 'green-500',
-  14: 'green-600',
-  15: 'green-700',
+  // Niveaux 11-15 : Vert soutenu
+  11: 'emerald-700',
+  12: 'emerald-700',
+  13: 'emerald-800',
+  14: 'emerald-800',
+  15: 'emerald-900',
   
-  // Niveaux 16-20 : Vert → Orange  
-  16: 'amber-300',
-  17: 'amber-400',
-  18: 'amber-500',
-  19: 'amber-600',
-  20: 'amber-700',
+  // Niveaux 16-20 : Orange soutenu
+  16: 'amber-700',
+  17: 'amber-700',
+  18: 'amber-800',
+  19: 'amber-800',
+  20: 'amber-900',
   
-  // Niveaux 21-25 : Orange → Rouge
-  21: 'red-300',
-  22: 'red-400',
-  23: 'red-500',
-  24: 'red-600',
-  25: 'red-700',
+  // Niveaux 21-25 : Rouge soutenu
+  21: 'red-700',
+  22: 'red-700',
+  23: 'red-800',
+  24: 'red-800',
+  25: 'red-900',
   
-  // Niveaux 26-30 : Rouge → Violet foncé (primary)
-  26: 'purple-500',
-  27: 'purple-600',
-  28: 'purple-700',
-  29: 'fuchsia-600',
-  30: 'fuchsia-700',
+  // Niveaux 26-30 : Violet / fuchsia foncé
+  26: 'purple-700',
+  27: 'purple-800',
+  28: 'purple-900',
+  29: 'fuchsia-800',
+  30: 'fuchsia-900',
 });
 
 /**

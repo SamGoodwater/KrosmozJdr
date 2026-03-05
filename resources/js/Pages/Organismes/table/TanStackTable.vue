@@ -29,7 +29,6 @@ import { useUxFeedback } from "@/Composables/utils/useUxFeedback";
 import { resolveEntityRouteHref } from "@/Composables/entity/entityRouteRegistry";
 import { BREAKPOINTS } from "@/Utils/Entity/Constants.js";
 import { getEntityConfig } from "@/Entities/entity-registry.js";
-import { logDev, warnDev } from "@/Utils/dev-logger";
 import Btn from "@/Pages/Atoms/action/Btn.vue";
 
 const props = defineProps({
@@ -93,7 +92,6 @@ const isNameLikeColumn = (col) => NAME_COLUMN_RE.test(buildColumnHaystack(col));
  */
 const configUiSize = computed(() => String(props.config?.ui?.size || "md"));
 const uiColor = computed(() => String(props.config?.ui?.color || "primary"));
-const debug = computed(() => Boolean(props.config?.ui?.debug));
 
 const tablePrefsNamespace = computed(() => String(props.config?.id || props.entityType || "table"));
 const densityStorageKey = computed(() => `tanstack_table_density_${tablePrefsNamespace.value}`);
@@ -114,36 +112,7 @@ const setDensityMode = (mode) => {
     densityMode.value = mode;
 };
 
-/**
- * Debug global (pratique quand la config n'est pas facile à éditer).
- * Active via:
- * - localStorage.setItem('tanstack_table_debug','1')
- * - window.__TANSTACK_TABLE_DEBUG__ = true
- */
-const debugEnabled = computed(() => {
-    if (debug.value) return true;
-    try {
-        if (typeof window !== "undefined" && window.__TANSTACK_TABLE_DEBUG__ === true) return true;
-        // Support URL param: ?tanstack_table_debug=1 (pratique sans console)
-        if (typeof window !== "undefined") {
-            const params = new URLSearchParams(window.location?.search || "");
-            if (params.get("tanstack_table_debug") === "1") return true;
-        }
-        if (typeof window !== "undefined" && window.localStorage?.getItem("tanstack_table_debug") === "1") return true;
-    } catch {
-        // ignore
-    }
-    return false;
-});
 
-const enableDebug = () => {
-    try {
-        window.localStorage?.setItem("tanstack_table_debug", "1");
-        window.location?.reload();
-    } catch {
-        // ignore
-    }
-};
 
 // Table variant (stripes)
 const uiTableVariant = computed(() => {
@@ -272,6 +241,11 @@ const tableVariantClass = computed(() => {
     if (uiTableVariant.value === "zebra" || uiTableVariant.value === "striped") return "table-zebra";
     if (uiTableVariant.value === "plain" || uiTableVariant.value === "default") return "";
     return "table-zebra";
+});
+const tableAriaLabel = computed(() => {
+    const entity = String(props.entityType || props.config?.id || "").trim();
+    if (entity) return `Tableau ${entity}`;
+    return "Tableau de données";
 });
 
 const tableSizeClass = computed(() => {
@@ -814,7 +788,6 @@ const hasActiveFilters = computed(() => {
         return String(value).trim() !== "";
     });
 });
-let _filterDebugCount = 0;
 
 /**
  * Appliquer des filtres par défaut (déclaratifs) si fournis sur les colonnes.
@@ -846,40 +819,6 @@ watch(
     { immediate: true },
 );
 
-const debugSample = computed(() => {
-    if (!debugEnabled.value) return null;
-    const sampleRow = (props.rows || [])[0] || null;
-    const items = (columnsWithoutActions.value || [])
-        .filter((c) => c?.filter?.id && c?.filter?.type)
-        .map((col) => {
-            const f = col.filter;
-            const raw = activeFilters.value?.[f.id];
-            const rowValue = sampleRow ? getFilterValueFor(sampleRow, col) : null;
-            return {
-                columnId: col.id,
-                filterId: f.id,
-                filterType: f.type,
-                raw: raw ?? null,
-                rowValue: rowValue ?? null,
-            };
-        });
-
-    return {
-        rowsTotal: (props.rows || []).length,
-        rowsFiltered: filteredRows.value.length,
-        screenSize: currentScreenSize.value,
-        tableContainerWidth: tableContainerWidth.value,
-        visibleColumnsPrefs: visibleColumns.value || {},
-        touchedColumns: touchedColumns.value || [],
-        effectiveVisibleColumns: effectiveVisibleColumns.value || {},
-        renderedColumnIds: (visibleColumnsFromTable.value || []).map((c) => c?.id).filter(Boolean),
-        activeFilters: activeFilters.value || {},
-        selectionInternal: Array.from(selectedIds.value || []),
-        selectionProp: Array.isArray(props.selectedIds) ? props.selectedIds : null,
-        sampleRowId: sampleRow?.id ?? null,
-        sample: items,
-    };
-});
 
 let _searchTimeout = null;
 const searchText = ref("");
@@ -1036,16 +975,6 @@ const getCellFor = (row, col) => {
             // IMPORTANT: Ne pas muter directement row.cells car cela peut causer des problèmes de réactivité
             // On retourne directement la cellule, le cache sera géré par le modèle lui-même
             return cell;
-        } else {
-            // Debug: log si la cellule n'est pas générée
-            if (debugEnabled.value) {
-                warnDev(`[TanStackTable] toCell returned null for fieldKey="${cellId}"`, {
-                    entity: entity.constructor.name,
-                    entityId: entity.id,
-                    hasField: cellId in (entity._data || {}),
-                    entityData: entity._data ? Object.keys(entity._data) : 'no _data',
-                });
-            }
         }
     }
 
@@ -1104,18 +1033,6 @@ const passesFilter = (row, col) => {
         if (typeof v === "boolean") return v ? "1" : "0";
         return String(v);
     };
-
-    if (debugEnabled.value && _filterDebugCount < 25) {
-        _filterDebugCount++;
-        logDev("[TanStackTable] passesFilter", {
-            columnId: col?.id,
-            filterId: f.id,
-            filterType: f.type,
-            raw,
-            rowValue,
-            rowId: row?.id,
-        });
-    }
 
     if (f.type === "boolean") {
         const want = String(raw) === "1" || String(raw).toLowerCase() === "true";
@@ -1222,14 +1139,6 @@ const emptyState = computed(() => {
     };
 });
 
-watch(
-    () => JSON.stringify(activeFilters.value),
-    (v) => {
-        if (!debugEnabled.value) return;
-        logDev("[TanStackTable] activeFilters changed", v);
-    },
-);
-
 // État de tri : utiliser directement le format TanStack Table
 const sortingState = ref([]);
 
@@ -1286,7 +1195,6 @@ watch(
 );
 
 const setFilters = (v) => {
-    if (debugEnabled.value) logDev("[TanStackTable] update:filters", v);
     activeFilters.value = v || {};
 };
 const resetFilters = () => {
@@ -1779,7 +1687,6 @@ const handleExport = () => {
                 :filter-values="activeFilters"
                 :filter-options="resolvedFilterOptions"
                 :ui-color="uiColor"
-                :debug="debugEnabled"
                 :presets-enabled="presetsEnabled"
                 :show-preset-panel="showPresetPanel"
                 :is-active-preset-dirty="isActivePresetDirty"
@@ -1811,7 +1718,13 @@ const handleExport = () => {
         <!-- Table -->
         <div class="relative overflow-hidden p-1 w-full" :class="[bgClass]">
             <div ref="tableContainerEl" class="overflow-x-auto w-full">
-                <table :key="columnsKey" class="table w-full tanstack-table-force-full" :class="[tableVariantClass, tableSizeClass]">
+                <table
+                    :key="columnsKey"
+                    class="table w-full tanstack-table-force-full"
+                    :class="[tableVariantClass, tableSizeClass]"
+                    :aria-label="tableAriaLabel"
+                    :aria-busy="loading ? 'true' : 'false'"
+                >
                 <TanStackTableHeader
                     :columns="visibleColumnsFromTable"
                     :sort-by="sortingState.length > 0 ? sortingState[0].id : ''"
@@ -1901,28 +1814,6 @@ const handleExport = () => {
             />
         </div>
 
-        <!-- Debug panel (opt-in) -->
-        <div v-if="!debugEnabled" class="text-xs text-base-content/60">
-            <div class="relative p-3 rounded-lg border border-base-300 flex items-center justify-between gap-3" :class="[bgClass]">
-                <div>
-                    <div class="font-semibold">Debug Table</div>
-                    <div class="opacity-70">Clique pour activer (recharge la page)</div>
-                </div>
-                <Btn size="xs" variant="outline" :color="uiColor" opacity="sm" backdrop="sm" type="button" @click="enableDebug">
-                    Activer debug
-                </Btn>
-            </div>
-        </div>
-
-        <div v-else class="text-xs text-base-content/70">
-            <div class="relative p-3 rounded-lg border border-base-300" :class="[bgClass]">
-                <div class="font-semibold mb-2">Debug Table (filters)</div>
-                <pre class="whitespace-pre-wrap wrap-break-word">{{ JSON.stringify(debugSample, null, 2) }}</pre>
-                <div class="mt-2 opacity-70">
-                    Activer/désactiver: <code>localStorage.tanstack_table_debug = "1"</code> / removeItem
-                </div>
-            </div>
-        </div>
     </div>
 </template>
 

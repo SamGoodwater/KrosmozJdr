@@ -475,7 +475,7 @@ export class Capability extends BaseModel {
             value: '',
             params: {
                 items,
-                sortValue: items.length,
+                sortValue: this.specializationsCount + this.creaturesCount,
                 searchValue,
                 filterValue: searchValue,
             },

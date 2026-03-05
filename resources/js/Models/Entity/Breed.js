@@ -79,6 +79,10 @@ export class Breed extends BaseModel {
         return this._data.spells || [];
     }
 
+    get spellsCount() {
+        return Number(this._data.spells_count ?? this.spells.length ?? 0);
+    }
+
     // ============================================
     // FORMATAGE DES CELLULES (surcharge pour champs spécifiques)
     // ============================================
@@ -117,6 +121,8 @@ export class Breed extends BaseModel {
                 return this._toImageCell(fieldKey, format, size, options);
             case 'created_by':
                 return this._toCreatedByCell(format, size, options);
+            case 'breed_summary_relations':
+                return this._toBreedSummaryRelationsCell(options);
             case 'created_at':
                 return this._toCreatedAtCell(format, size, options);
             case 'updated_at':
@@ -241,6 +247,33 @@ export class Breed extends BaseModel {
     _toCreatedByCell(format, size, options) {
         // Utiliser le UserFormatter via la méthode de base
         return super.toCell('created_by', options);
+    }
+
+    /**
+     * Colonne résumée : relations gameplay de la classe.
+     * @private
+     */
+    _toBreedSummaryRelationsCell(_options) {
+        const items = [
+            {
+                icon: 'fa-solid fa-wand-magic-sparkles',
+                value: this.spellsCount > 0 ? `${this.spellsCount} sort${this.spellsCount > 1 ? 's' : ''}` : null,
+                tooltip: this.spellsCount > 0 ? `Sorts: ${this.spellsCount}` : '',
+            },
+        ].filter((it) => it.value !== null);
+
+        const searchValue = items.map((it) => String(it.value)).join(' ');
+
+        return {
+            type: 'chips',
+            value: '',
+            params: {
+                items,
+                sortValue: this.spellsCount,
+                searchValue,
+                filterValue: searchValue,
+            },
+        };
     }
 
     /**

@@ -40,7 +40,7 @@
     },
     {
       "key": "name",
-      "from": { "path": "shortName", "langAware": true },
+      "from": { "path": "name", "langAware": true },
       "to": [{ "model": "breeds", "field": "name" }],
       "formatters": [{ "name": "pickLang", "args": { "lang": "fr", "fallback": "fr" } }]
     },

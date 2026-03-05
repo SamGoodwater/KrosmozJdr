@@ -1281,28 +1281,6 @@ return array (
   ),
   40 => 
   array (
-    'characteristic_key' => 'invulnerability_100_percent_object',
-    'entity' => '*',
-    'db_column' => NULL,
-    'min' => '0',
-    'max' => '1',
-    'formula' => NULL,
-    'formula_display' => NULL,
-    'default_value' => '0',
-    'conversion_formula' => '{"1":"0","95":"1","characteristic":"d"}',
-    'conversion_dofus_sample' => NULL,
-    'conversion_krosmoz_sample' => NULL,
-    'forgemagie_allowed' => false,
-    'forgemagie_max' => 0,
-    'base_price_per_unit' => '5000.00',
-    'rune_price_per_unit' => NULL,
-    'value_available' => NULL,
-    'item_type_ids' => 
-    array (
-    ),
-  ),
-  41 => 
-  array (
     'characteristic_key' => 'all_damage_bonus_object',
     'entity' => '*',
     'db_column' => NULL,
@@ -1318,6 +1296,28 @@ return array (
     'forgemagie_max' => 2,
     'base_price_per_unit' => '900.00',
     'rune_price_per_unit' => '1800.00',
+    'value_available' => NULL,
+    'item_type_ids' => 
+    array (
+    ),
+  ),
+  41 => 
+  array (
+    'characteristic_key' => 'invulnerability_100_percent_object',
+    'entity' => '*',
+    'db_column' => NULL,
+    'min' => '0',
+    'max' => '1',
+    'formula' => NULL,
+    'formula_display' => NULL,
+    'default_value' => '0',
+    'conversion_formula' => '{"1":"0","95":"1","characteristic":"d"}',
+    'conversion_dofus_sample' => NULL,
+    'conversion_krosmoz_sample' => NULL,
+    'forgemagie_allowed' => false,
+    'forgemagie_max' => 0,
+    'base_price_per_unit' => '5000.00',
+    'rune_price_per_unit' => NULL,
     'value_available' => NULL,
     'item_type_ids' => 
     array (

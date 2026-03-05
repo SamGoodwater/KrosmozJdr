@@ -318,7 +318,7 @@ const handleDeleteSection = async () => {
         <h3 class="font-bold">Template non trouvé</h3>
                 <p class="text-sm">
           Le template "{{ templateValue }}" n'est pas disponible.
-                    Veuillez contacter un administrateur.
+                    Contacte un administrateur.
                 </p>
             </div>
         </div>

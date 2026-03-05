@@ -149,7 +149,7 @@ async function openViewer() {
         import("photoswipe/lightbox"),
     ]);
 
-    // IMPORTANT: vos modals utilisent <dialog> (top layer).
+    // IMPORTANT: tes modals utilisent <dialog> (top layer).
     // Si PhotoSwipe est append sur <body>, il peut passer "derrière" une modal ouverte.
     // On append donc le viewer au dialog ouvert le plus haut quand il existe.
     const openDialogs = Array.from(document.querySelectorAll("dialog[open]"));

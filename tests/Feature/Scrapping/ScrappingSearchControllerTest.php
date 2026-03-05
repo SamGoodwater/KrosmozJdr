@@ -5,9 +5,18 @@ namespace Tests\Feature\Scrapping;
 use App\Models\User;
 use Illuminate\Support\Facades\Http;
 use Tests\TestCase;
+use Tests\SeedsScrappingPipeline;
 
 class ScrappingSearchControllerTest extends TestCase
 {
+    use SeedsScrappingPipeline;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+        $this->seedScrappingPipeline();
+    }
+
     public function test_search_endpoint_returns_items_and_meta(): void
     {
         $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);

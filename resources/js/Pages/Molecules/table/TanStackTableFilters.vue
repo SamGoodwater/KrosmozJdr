@@ -17,7 +17,6 @@ import RadioCore from "@/Pages/Atoms/data-input/RadioCore.vue";
 import Badge from "@/Pages/Atoms/data-display/Badge.vue";
 import { computed, unref, ref } from "vue";
 import { getLevelColor } from "@/Utils/Entity/SharedConstants.js";
-import { logDev } from "@/Utils/dev-logger";
 
 const props = defineProps({
     columns: { type: Array, required: true },
@@ -27,11 +26,6 @@ const props = defineProps({
      * Couleur UI (Design System) appliquée aux contrôles de filtres.
      */
     uiColor: { type: String, default: "primary" },
-    /**
-     * Debug (logs console).
-     * Activer via `config.ui.debug` dans TanStackTable.
-     */
-    debug: { type: Boolean, default: false },
     presetsEnabled: { type: Boolean, default: false },
     showPresetPanel: { type: Boolean, default: false },
     isActivePresetDirty: { type: Boolean, default: false },
@@ -106,6 +100,8 @@ const optionBadgeProps = (col, opt) => {
         autoTone: cfg.autoTone,
         variant: cfg.variant || "soft",
         glassy: Boolean(cfg.glassy),
+        strong: isLevelScheme,
+        textColor: isLevelScheme ? "#ffffff" : "",
     };
 };
 
@@ -125,9 +121,6 @@ const isBooleanSelect = (col) => {
 
 const updateFilter = (filterId, value) => {
     const next = { ...(values.value || {}), [filterId]: value };
-    if (props.debug) {
-        logDev("[TanStackTableFilters] updateFilter", { filterId, value, next });
-    }
     emit("update:filters", next);
 };
 
@@ -560,6 +553,8 @@ const clearAllActiveFilters = () => {
                                             :auto-tone="optionBadgeProps(col, opt).autoTone || undefined"
                                             :variant="optionBadgeProps(col, opt).variant"
                                             :glassy="Boolean(optionBadgeProps(col, opt).glassy)"
+                                            :strong="Boolean(optionBadgeProps(col, opt).strong)"
+                                            :text-color="optionBadgeProps(col, opt).textColor || ''"
                                             size="sm"
                                         >
                                             {{ opt.label }}
@@ -690,6 +685,8 @@ const clearAllActiveFilters = () => {
                                             :auto-tone="optionBadgeProps(col, opt).autoTone || undefined"
                                             :variant="optionBadgeProps(col, opt).variant"
                                             :glassy="Boolean(optionBadgeProps(col, opt).glassy)"
+                                            :strong="Boolean(optionBadgeProps(col, opt).strong)"
+                                            :text-color="optionBadgeProps(col, opt).textColor || ''"
                                             size="sm"
                                         >
                                             {{ opt.label }}
@@ -771,6 +768,8 @@ const clearAllActiveFilters = () => {
                         :auto-tone="b.badge?.autoTone || undefined"
                         :glassy="Boolean(b.badge?.glassy)"
                         :variant="b.badge?.variant || 'soft'"
+                        :strong="Boolean(b.badge?.strong)"
+                        :text-color="b.badge?.textColor || ''"
                         size="sm"
                         class="max-w-88"
                     >

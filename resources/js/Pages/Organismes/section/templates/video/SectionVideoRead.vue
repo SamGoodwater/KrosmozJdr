@@ -110,7 +110,7 @@ const shouldForceDirectDownload = computed(() => {
         :autoplay="autoplay"
         :controls="controls"
       >
-        Votre navigateur ne prend pas en charge la lecture vidéo.
+        Ton navigateur ne prend pas en charge la lecture vidéo.
       </video>
     </div>
     <p v-else class="text-center text-base-content/50 italic py-8">

@@ -19,7 +19,7 @@ const submit = () => {
     <Head title="Confirmation du mot de passe" />
 
     <div class="mb-4 text-sm text-gray-600">
-        Ceci est une zone sécurisée de l'application. Veuillez confirmer votre mot de passe avant de continuer.
+        Ceci est une zone sécurisée de l'application. Confirme ton mot de passe avant de continuer.
     </div>
 
     <form @submit.prevent="submit">

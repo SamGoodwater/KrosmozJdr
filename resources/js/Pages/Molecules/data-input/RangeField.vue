@@ -15,7 +15,7 @@
  *   v-model="age"
  *   :min="18"
  *   :max="100"
- *   :validation="{ state: 'error', message: 'Vous devez avoir au moins 18 ans' }"
+ *   :validation="{ state: 'error', message: 'Tu dois avoir au moins 18 ans' }"
  * />
  * 
  * // Avec helper et step
@@ -25,7 +25,7 @@
  *   :min="0"
  *   :max="1000"
  *   :step="10"
- *   helper="Sélectionnez votre budget maximum"
+ *   helper="Sélectionne ton budget maximum"
  * />
  */
 import { useSlots, useAttrs } from 'vue'

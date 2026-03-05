@@ -178,7 +178,7 @@ function goBackToProfile() {
                     </div>
                 </div>
                 <p v-else class="mt-4 text-sm text-content-500">
-                    Aucune préférence de notification configurée pour votre rôle.
+                    Aucune préférence de notification configurée pour ton niveau d'accès.
                 </p>
                 <div v-if="notificationTypesFiltered.length > 0" class="mt-4 flex items-center gap-2">
                     <Btn

@@ -116,7 +116,7 @@ function submit() {
     const isPasswordValid = form.password && form.password.length > 0;
     
     if (!isIdentifierValid || !isPasswordValid) {
-        notificationStore.error('Veuillez remplir tous les champs requis', {
+        notificationStore.error('Remplis tous les champs requis', {
             duration: 5000,
             placement: 'top-right'
         });
@@ -270,7 +270,7 @@ onMounted(() => {
                         :parent-control="true"
                         class="mt-4"
                         tabindex="2"
-                        helper="Ne partagez jamais votre mot de passe avec quelqu'un d'autre."
+                        helper="Ne partage jamais ton mot de passe avec quelqu'un d'autre."
                     />
 
                     <Checkbox

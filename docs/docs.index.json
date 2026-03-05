@@ -1530,6 +1530,11 @@
     "description": "Ce document liste ce qui reste à faire pour **finaliser la partie backend** du scrapping (hors interface, à traiter plus tard)."
   },
   {
+    "path": "50-Fonctionnalités/Scrapping/SCRAPPING_ASYNC_JOBS.md",
+    "title": "Scrapping asynchrone (Jobs)",
+    "description": "Permettre des imports/simulations de scrapping robustes en arriere-plan avec:"
+  },
+  {
     "path": "50-Fonctionnalités/Scrapping/SIMPLIFICATIONS_SCRAPPING.md",
     "title": "Simplifications possibles — Service de scrapping",
     "description": "**Contexte :** le pipeline (Collecte → Conversion → Validation → Intégration) et les mappings ont grandi par ajouts successifs. Ce document identifie ce qui alourdit le tout et propose des pistes pour simplifier **sans tout réécrire**."

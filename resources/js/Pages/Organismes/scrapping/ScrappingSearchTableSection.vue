@@ -215,7 +215,7 @@ const importSelected = async () => {
     importing.value = true;
     const csrf = getCsrfToken();
     if (!csrf) {
-        showError("Token CSRF introuvable. Veuillez recharger la page.");
+        showError("Token CSRF introuvable. Recharge la page.");
         importing.value = false;
         return;
     }

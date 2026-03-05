@@ -191,7 +191,7 @@ const deletePage = () => {
     const pageId = pageModel.value.id;
     const pageTitle = pageModel.value.title || 'cette page';
     
-    if (confirm(`Êtes-vous sûr de vouloir supprimer la page "${pageTitle}" ?`)) {
+    if (confirm(`Es-tu sûr de vouloir supprimer la page "${pageTitle}" ?`)) {
         router.delete(route('pages.delete', pageId), {
             preserveScroll: true,
             onSuccess: () => {

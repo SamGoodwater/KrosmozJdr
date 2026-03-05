@@ -13,7 +13,7 @@
  * <RadioField 
  *   label="Genre" 
  *   v-model="gender"
- *   :validation="{ state: 'error', message: 'Veuillez sélectionner un genre' }"
+ *   :validation="{ state: 'error', message: 'Sélectionne un genre' }"
  * />
  * 
  * // Avec options complexes

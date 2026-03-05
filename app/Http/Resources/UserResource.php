@@ -46,6 +46,7 @@ class UserResource extends JsonResource
             'last_login_at' => $this->last_login_at?->toISOString(),
             'created_at' => $this->created_at?->toISOString(),
             'updated_at' => $this->updated_at?->toISOString(),
+            'deleted_at' => $this->deleted_at?->toISOString(),
 
             // Relations (chargées uniquement si incluses)
             'scenarios' => $this->whenLoaded('scenarios'),
@@ -62,6 +63,8 @@ class UserResource extends JsonResource
                 'delete' => $user ? $user->can('delete', $this->resource) : false,
                 'forceDelete' => $user ? $user->can('forceDelete', $this->resource) : false,
                 'restore' => $user ? $user->can('restore', $this->resource) : false,
+                'updateRole' => $user ? $user->can('updateRole', $this->resource) : false,
+                'resetPassword' => $user ? $user->can('resetPassword', $this->resource) : false,
             ],
         ];
     }

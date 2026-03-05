@@ -26,9 +26,9 @@ const verificationLinkSent = computed(
     <Head title="Vérification de l'email" />
 
     <div class="mb-4 text-sm text-gray-600">
-        Merci pour votre inscription ! Avant de commencer, veuillez vérifier
-        votre adresse email en cliquant sur le lien que nous venons de vous
-        envoyer. Si vous n'avez pas reçu l'email, nous pouvons vous en renvoyer
+        Merci pour ton inscription ! Avant de commencer, vérifie
+        ton adresse email en cliquant sur le lien qu'on vient de t'envoyer.
+        Si tu n'as pas reçu l'email, on peut t'en renvoyer
         un.
     </div>
 
@@ -36,8 +36,8 @@ const verificationLinkSent = computed(
         class="mb-4 text-sm font-medium text-green-600"
         v-if="verificationLinkSent"
     >
-        Un nouveau lien de vérification a été envoyé à l'adresse email que vous
-        avez fournie lors de l'inscription.
+        Un nouveau lien de vérification a été envoyé à l'adresse email que tu
+        as fournie lors de l'inscription.
     </div>
 
     <form @submit.prevent="submit">

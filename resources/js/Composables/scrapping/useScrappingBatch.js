@@ -261,7 +261,7 @@ export function useScrappingBatch(options) {
 
         const csrf = getCsrfToken();
         if (!csrf) {
-            notifyError("Token CSRF introuvable. Veuillez recharger la page.");
+            notifyError("Token CSRF introuvable. Recharge la page.");
             return;
         }
 
@@ -351,7 +351,7 @@ export function useScrappingBatch(options) {
         if (shouldStop(signal)) return;
         const csrf = getCsrfToken();
         if (!csrf) {
-            notifyError("Token CSRF introuvable. Veuillez recharger la page.");
+            notifyError("Token CSRF introuvable. Recharge la page.");
             return;
         }
 
@@ -458,7 +458,7 @@ export function useScrappingBatch(options) {
         const pages = Array.from({ length: total }, (_, i) => i + 1);
         const csrf = getCsrfToken();
         if (!csrf) {
-            notifyError("Token CSRF introuvable. Veuillez recharger la page.");
+            notifyError("Token CSRF introuvable. Recharge la page.");
             return;
         }
 

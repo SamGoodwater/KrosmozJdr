@@ -359,7 +359,11 @@ export class Resource extends BaseModel {
             value: '',
             params: {
                 items,
-                sortValue: items.length,
+                sortValue:
+                    this.itemsCount +
+                    this.consumablesCount +
+                    this.creaturesCount +
+                    this.recipeIngredientsCount,
                 searchValue,
                 filterValue: searchValue,
             },

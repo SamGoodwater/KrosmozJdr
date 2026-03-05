@@ -2044,6 +2044,13 @@
     "file": "data-display/ImageViewer.vue"
   },
   {
+    "name": "CharacteristicInlineGroup",
+    "description": "CharacteristicInlineGroup — molécule d'affichage inline de caractéristiques.",
+    "props": [],
+    "slots": [],
+    "file": "data-display/CharacteristicInlineGroup.vue"
+  },
+  {
     "name": "CharacteristicGroup",
     "description": "CharacteristicGroup — Molécule regroupant des atomes de caractéristiques (Formula, Boolean, Badges).",
     "props": [

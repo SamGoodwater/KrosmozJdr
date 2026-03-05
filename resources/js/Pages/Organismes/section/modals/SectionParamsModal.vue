@@ -669,7 +669,7 @@ const canDeleteSection = computed(() => {
                 />
                 <div>
                     <p class="font-semibold mb-2">
-                        Êtes-vous sûr de vouloir supprimer cette section ?
+                        Es-tu sûr de vouloir supprimer cette section ?
                     </p>
                     <p v-if="sectionTitle" class="text-sm text-base-content/70">
                         Section : <strong>{{ sectionTitle }}</strong>

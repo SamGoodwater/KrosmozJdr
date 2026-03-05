@@ -247,7 +247,7 @@ onMounted(() => {
             <hr class="border-gray-300 dark:border-gray-700 my-4" />
 
             <div class="rounded-(--radius-box) border border-base-300 bg-base-200/30 p-4 space-y-3">
-                <h3 class="text-lg font-bold text-primary-100">Capacités selon votre rôle</h3>
+                <h3 class="text-lg font-bold text-primary-100">Capacités selon ton niveau d'accès</h3>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
                     <div
                         v-for="capability in roleCapabilities"
@@ -300,7 +300,7 @@ onMounted(() => {
 
                 <div v-else class="rounded-(--radius-field) border border-base-300 bg-base-100/60 p-3">
                     <p class="text-sm text-primary-200">
-                        Ces raccourcis de gestion sont disponibles a partir du role meneur de jeu.
+                        Ces raccourcis de gestion sont disponibles à partir du niveau meneur de jeu.
                     </p>
                 </div>
             </div>
@@ -308,7 +308,7 @@ onMounted(() => {
             <div class="rounded-(--radius-box) border border-base-300 bg-base-200/30 p-4 space-y-3">
                 <h3 class="text-lg font-bold text-primary-100">Accès personnalisés</h3>
                 <p class="text-sm text-primary-200">
-                    Voici les accès supplémentaires accordés sur certains contenus, en plus des droits liés à votre rôle.
+                    Voici les accès supplémentaires accordés sur certains contenus, en plus des droits liés à ton niveau d'accès.
                 </p>
 
                 <div v-if="hasSpecificAccess" class="space-y-4">

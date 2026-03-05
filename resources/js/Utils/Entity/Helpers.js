@@ -71,7 +71,7 @@ export function formatImageUrl(url, options = {}) {
     return url;
   }
 
-  // Sinon, construire l'URL complète (à adapter selon votre système)
+  // Sinon, construire l'URL complète (à adapter selon ton système)
   return url;
 }
 

@@ -30,15 +30,15 @@ onMounted(() => {
 
             <section class="space-y-6 text-base leading-8 text-base-content/90">
                 <p>
-                    Explorez des territoires mythiques, traversez des zones dangereuses et ecrivez votre propre
+                    Explore des territoires mythiques, traverse des zones dangereuses et ecris ta propre
                     legende. Chaque session met en avant la cooperation, la strategie et l'interpretation de role,
                     avec un systeme de progression qui valorise autant la narration que le gameplay.
                 </p>
 
                 <p>
                     Le projet s'appuie sur un bestiaire riche, des classes iconiques et des mecaniques adaptees
-                    au jeu de table. Que vous soyez meneur de jeu ou aventurier, vous trouverez des outils clairs
-                    pour preparer des scenarii, gerer vos personnages et faire evoluer vos parties.
+                    au jeu de table. Que tu sois meneur de jeu ou aventurier, tu trouveras des outils clairs
+                    pour preparer des scenarii, gerer tes personnages et faire evoluer tes parties.
                 </p>
 
                 <p>

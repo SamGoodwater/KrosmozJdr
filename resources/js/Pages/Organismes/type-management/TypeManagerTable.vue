@@ -230,7 +230,7 @@ const deleteOne = async (id) => {
 
     const csrfToken = getCsrfToken();
     if (!csrfToken) {
-        showError("Token CSRF introuvable. Veuillez recharger la page.");
+        showError("Token CSRF introuvable. Recharge la page.");
         return;
     }
 
@@ -262,7 +262,7 @@ const bulkApply = async () => {
 
     const csrfToken = getCsrfToken();
     if (!csrfToken) {
-        showError("Token CSRF introuvable. Veuillez recharger la page.");
+        showError("Token CSRF introuvable. Recharge la page.");
         return;
     }
 
@@ -295,7 +295,7 @@ const updateSingle = async (id, value) => {
     if (!isAdmin.value) return;
     const csrfToken = getCsrfToken();
     if (!csrfToken) {
-        showError("Token CSRF introuvable. Veuillez recharger la page.");
+        showError("Token CSRF introuvable. Recharge la page.");
         return;
     }
 
@@ -319,7 +319,7 @@ async function postMove(urlSuffix, body) {
     if (!base) return null;
     const csrfToken = getCsrfToken();
     if (!csrfToken) {
-        showError("Token CSRF introuvable. Veuillez recharger la page.");
+        showError("Token CSRF introuvable. Recharge la page.");
         return null;
     }
     const res = await fetch(`${base}${urlSuffix}`, {

@@ -256,7 +256,12 @@ export class Panoply extends BaseModel {
             value: '',
             params: {
                 items,
-                sortValue: items.length,
+                sortValue:
+                    this.itemsCount +
+                    this.npcsCount +
+                    this.campaignsCount +
+                    this.scenariosCount +
+                    this.shopsCount,
                 searchValue,
                 filterValue: searchValue,
             },

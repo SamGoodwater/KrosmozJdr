@@ -211,7 +211,7 @@ final class ScrappingEffectsQualityAuditCommand extends Command
                     $missingBySlug[$slug]['sample_ids'][] = (int) $row->id;
                 }
             }
-        }, 'es.id');
+        }, 'es.id', 'id');
 
         uasort($missingBySlug, static fn (array $a, array $b): int => $b['count'] <=> $a['count']);
 

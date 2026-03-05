@@ -27,7 +27,9 @@ class BreedTableController extends Controller
             $order = 'desc';
         }
 
-        $query = Breed::query()->with(['createdBy']);
+        $query = Breed::query()
+            ->with(['createdBy'])
+            ->withCount(['spells']);
 
         if ($search !== '') {
             $query->where(function ($q) use ($search) {
@@ -79,6 +81,7 @@ class BreedTableController extends Controller
                         'name' => $createdBy->name,
                         'email' => $createdBy->email,
                     ] : null,
+                    'spells_count' => (int) ($c->spells_count ?? 0),
                     'created_at' => $c->created_at?->toISOString(),
                     'updated_at' => $c->updated_at?->toISOString(),
                 ];
@@ -201,6 +204,7 @@ class BreedTableController extends Controller
                             'name' => $createdBy->name,
                             'email' => $createdBy->email,
                         ] : null,
+                        'spells_count' => (int) ($c->spells_count ?? 0),
                     ],
                 ],
             ];

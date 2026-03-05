@@ -71,7 +71,10 @@ class MonsterTableController extends Controller
         }
 
         $query = Monster::query()
-            ->with(['creature', 'monsterRace'])
+            ->with([
+                'creature' => fn ($q) => $q->withCount(['resources', 'items', 'consumables']),
+                'monsterRace',
+            ])
             ->withCount(['spellInvocations', 'campaigns', 'scenarios']);
 
         if ($search !== '') {
@@ -271,6 +274,9 @@ class MonsterTableController extends Controller
                         'name' => $m->monsterRace->name,
                     ] : null,
                     'spell_invocations_count' => (int) ($m->spell_invocations_count ?? 0),
+                    'resources_count' => (int) ($m->creature?->resources_count ?? 0),
+                    'items_count' => (int) ($m->creature?->items_count ?? 0),
+                    'consumables_count' => (int) ($m->creature?->consumables_count ?? 0),
                     'campaigns_count' => (int) ($m->campaigns_count ?? 0),
                     'scenarios_count' => (int) ($m->scenarios_count ?? 0),
                     'created_at' => $m->created_at?->toISOString(),
@@ -397,6 +403,9 @@ class MonsterTableController extends Controller
                             'name' => $m->monsterRace->name,
                         ] : null,
                         'spell_invocations_count' => (int) ($m->spell_invocations_count ?? 0),
+                        'resources_count' => (int) ($m->creature?->resources_count ?? 0),
+                        'items_count' => (int) ($m->creature?->items_count ?? 0),
+                        'consumables_count' => (int) ($m->creature?->consumables_count ?? 0),
                         'campaigns_count' => (int) ($m->campaigns_count ?? 0),
                         'scenarios_count' => (int) ($m->scenarios_count ?? 0),
                     ],

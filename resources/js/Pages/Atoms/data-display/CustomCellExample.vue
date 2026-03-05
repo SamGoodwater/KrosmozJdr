@@ -55,7 +55,7 @@ const props = defineProps({
     /**
      * Autres props personnalisées
      */
-    // ... autres props selon vos besoins
+    // ... autres props selon tes besoins
 });
 
 const formattedValue = computed(() => {

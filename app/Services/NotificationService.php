@@ -177,7 +177,7 @@ class NotificationService
         $payload = [
             'modified_user_id' => $user->id,
             'modifier_name' => $modifier->name,
-            'message' => "Votre profil a été modifié par {$modifier->name}.",
+            'message' => "Ton profil a été modifié par {$modifier->name}.",
             'url' => url('/users/' . $user->id),
             'changes' => $changes,
         ];

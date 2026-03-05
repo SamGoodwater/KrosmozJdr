@@ -65,7 +65,7 @@ const handleDelete = () => {
             controls
             class="w-full"
           >
-            Votre navigateur ne supporte pas la lecture audio.
+            Ton navigateur ne supporte pas la lecture audio.
           </audio>
           <div v-if="name || fileSizeFormatted" class="mt-1 text-xs text-content-600">
             <span v-if="name">{{ name }}</span>

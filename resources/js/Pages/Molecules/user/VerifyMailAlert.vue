@@ -25,7 +25,7 @@ const resendVerification = () => {
         preserveScroll: true,
         onSuccess: () => {
             success(
-                "Un nouveau lien de vérification a été envoyé à votre adresse email.",
+                "Un nouveau lien de vérification a été envoyé à ton adresse email.",
             );
         },
         onError: () => {

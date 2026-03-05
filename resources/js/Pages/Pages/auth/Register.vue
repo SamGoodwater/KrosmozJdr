@@ -262,9 +262,9 @@ onMounted(() => {
             <p class="max-w-80">
                 <small
                     >Nous nous engageons à ne partager aucune donnée avec des
-                    tiers. Vos informations ne seront pas utilisées à des fins
+                    tiers. Tes informations ne seront pas utilisées à des fins
                     statistiques. Aucune autre plateforme n'a accès aux
-                    informations que vous sauvegardez ici.</small
+                    informations que tu sauvegardes ici.</small
                 >
                 </p>
             </div>

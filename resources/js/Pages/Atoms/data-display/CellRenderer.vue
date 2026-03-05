@@ -206,6 +206,8 @@ const chipsUseColumnFlow = computed(() => Boolean(chipsMaxRows.value));
                 :auto-tone="params.autoTone || undefined"
                 :glassy="Boolean(params.glassy)"
                 :variant="params.variant || undefined"
+                :strong="Boolean(params.strong)"
+                :text-color="params.textColor || ''"
                 size="sm"
                 :class="effectiveTruncateClass"
             >
@@ -221,6 +223,8 @@ const chipsUseColumnFlow = computed(() => Boolean(chipsMaxRows.value));
             :auto-tone="params.autoTone || undefined"
             :glassy="Boolean(params.glassy)"
             :variant="params.variant || undefined"
+            :strong="Boolean(params.strong)"
+            :text-color="params.textColor || ''"
             size="sm"
         >
             {{ text }}

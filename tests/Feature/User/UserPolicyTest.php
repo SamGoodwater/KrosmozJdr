@@ -142,5 +142,46 @@ class UserPolicyTest extends TestCase
         // Ici on teste juste la policy, qui autorise (mais le contrôleur bloquera)
         $this->assertTrue($policy->updateRole($superAdmin, $targetSuperAdmin));
     }
+
+    /**
+     * Test : Seuls admin/super_admin peuvent voir la liste des utilisateurs.
+     */
+    public function test_only_admin_can_view_any_users(): void
+    {
+        $user = User::factory()->create(['role' => User::ROLE_USER]);
+        $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
+        $policy = new UserPolicy();
+
+        $this->assertFalse($policy->viewAny($user));
+        $this->assertTrue($policy->viewAny($admin));
+    }
+
+    /**
+     * Test : Seuls admin/super_admin peuvent créer un utilisateur.
+     */
+    public function test_only_admin_can_create_users(): void
+    {
+        $user = User::factory()->create(['role' => User::ROLE_USER]);
+        $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
+        $policy = new UserPolicy();
+
+        $this->assertFalse($policy->create($user));
+        $this->assertTrue($policy->create($admin));
+    }
+
+    /**
+     * Test : Réinitialisation du mot de passe d'un tiers réservée au super_admin.
+     */
+    public function test_only_super_admin_can_reset_other_user_password(): void
+    {
+        $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
+        $superAdmin = User::factory()->create(['role' => User::ROLE_SUPER_ADMIN]);
+        $target = User::factory()->create(['role' => User::ROLE_USER]);
+        $policy = new UserPolicy();
+
+        $this->assertFalse($policy->resetPassword($admin, $target));
+        $this->assertTrue($policy->resetPassword($superAdmin, $target));
+        $this->assertFalse($policy->resetPassword($superAdmin, $superAdmin));
+    }
 }
 

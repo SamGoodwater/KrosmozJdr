@@ -14,7 +14,7 @@
  *   label="Satisfaction" 
  *   v-model="satisfaction"
  *   :max="5"
- *   :validation="{ state: 'error', message: 'Veuillez donner une note' }"
+ *   :validation="{ state: 'error', message: 'Donne une note' }"
  * />
  * 
  * // Avec helper et icônes personnalisées

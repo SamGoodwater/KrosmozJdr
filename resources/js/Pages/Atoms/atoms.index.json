@@ -2299,6 +2299,13 @@
     "file": "data-display/CharacteristicFormula.vue"
   },
   {
+    "name": "CharacteristicChip",
+    "description": "CharacteristicChip — atome d'affichage d'une caractéristique (icône + valeur).",
+    "props": [],
+    "slots": [],
+    "file": "data-display/CharacteristicChip.vue"
+  },
+  {
     "name": "CharacteristicBoolean",
     "description": "CharacteristicBoolean — Atome d'affichage d'une caractéristique booléenne (oui/non).",
     "props": [
@@ -2474,6 +2481,16 @@
         "name": "autoTone",
         "type": "String",
         "desc": "- 'mid' | 'light' | 'dark' (défaut: 'mid')"
+      },
+      {
+        "name": "textColor",
+        "type": "String",
+        "desc": "- Force la couleur du texte (ex: '#fff')"
+      },
+      {
+        "name": "strong",
+        "type": "Boolean",
+        "desc": "- Force un texte plus gras"
       },
       {
         "name": "glassy",

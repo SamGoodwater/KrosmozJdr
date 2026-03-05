@@ -15,8 +15,7 @@ class StoreUserRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        // Adapter selon ta logique d'autorisation
-        return true;
+        return (bool) $this->user()?->can('create', User::class);
     }
 
     /**
@@ -36,9 +35,17 @@ class StoreUserRequest extends FormRequest
                 Rule::unique('users', 'email'),
             ],
             'password' => ['required', 'string', 'min:8'],
+            'password_confirmation' => ['required', 'string', 'same:password'],
+            'role' => ['required', 'integer', Rule::in([
+                User::ROLE_GUEST,
+                User::ROLE_USER,
+                User::ROLE_PLAYER,
+                User::ROLE_GAME_MASTER,
+                User::ROLE_ADMIN,
+            ])],
             'notifications_enabled' => ['sometimes', 'boolean'],
             'notification_channels' => ['sometimes', 'array'],
-            'notification_channels.*' => ['sometimes', 'string', Rule::in(User::NOTIFICATION_CHANNELS)],
+            'notification_channels.*' => ['sometimes', 'string', Rule::in(['database', 'mail'])],
             'avatar' => ['sometimes', 'nullable', 'image', 'max:5120'], // 5MB max
         ];
     }
@@ -54,6 +61,11 @@ class StoreUserRequest extends FormRequest
         if (!isset($data['notification_channels'])) {
             $this->merge([
                 'notification_channels' => [],
+            ]);
+        }
+        if (!isset($data['role']) || !is_numeric($data['role'])) {
+            $this->merge([
+                'role' => User::ROLE_USER,
             ]);
         }
     }

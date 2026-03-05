@@ -105,6 +105,8 @@ export class BaseFormatter {
    * @param {any} [options.sortValue] - Valeur pour le tri
    * @param {any} [options.filterValue] - Valeur pour le filtre
    * @param {string} [options.icon] - Icône FontAwesome (optionnel)
+   * @param {boolean} [options.strong] - Force un texte gras
+   * @param {string} [options.textColor] - Couleur de texte forcée (CSS)
    * @returns {Object} Objet Cell {type: 'badge', value, params}
    */
   static buildBadgeCell(label, color, options = {}) {
@@ -116,6 +118,8 @@ export class BaseFormatter {
         sortValue: options.sortValue ?? label,
         filterValue: options.filterValue,
         icon: options.icon,
+        strong: options.strong,
+        textColor: options.textColor,
       },
     };
   }

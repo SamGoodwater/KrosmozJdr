@@ -600,6 +600,9 @@ erDiagram
     is_boss : tinyint(1)
     boss_pa : varchar(255)
     monster_race_id : bigint(20) unsigned
+    state : varchar(255)
+    read_level : tinyint(4)
+    write_level : tinyint(4)
     created_at : timestamp
     updated_at : timestamp
   }
@@ -644,6 +647,9 @@ erDiagram
     size : varchar(255)
     breed_id : bigint(20) unsigned
     specialization_id : bigint(20) unsigned
+    state : varchar(255)
+    read_level : tinyint(4)
+    write_level : tinyint(4)
     created_at : timestamp
     updated_at : timestamp
   }
@@ -661,6 +667,7 @@ erDiagram
     in_menu : tinyint(1)
     parent_id : bigint(20) unsigned
     menu_order : int(11)
+    menu_group : varchar(255)
     created_by : bigint(20) unsigned
     created_at : timestamp
     updated_at : timestamp
@@ -817,6 +824,24 @@ erDiagram
     formatters : longtext
     spell_level_aggregation : varchar(16)
     sort_order : smallint(5) unsigned
+    created_at : timestamp
+    updated_at : timestamp
+  }
+  SCRAPPING_JOBS {
+    id : char(36)
+    kind : varchar(64)
+    status : varchar(32)
+    run_id : varchar(64)
+    requested_by : bigint(20) unsigned
+    payload : longtext
+    summary : longtext
+    results : longtext
+    progress_done : int(10) unsigned
+    progress_total : int(10) unsigned
+    error : text
+    started_at : timestamp
+    finished_at : timestamp
+    cancelled_at : timestamp
     created_at : timestamp
     updated_at : timestamp
   }
@@ -1140,6 +1165,7 @@ erDiagram
   SCRAPPING_ENTITY_MAPPING_CHARACTERISTIC }o--|| SCRAPPING_ENTITY_MAPPINGS : "FK scrapping_entity_mapping_id"
   SCRAPPING_ENTITY_MAPPING_TARGETS }o--|| SCRAPPING_ENTITY_MAPPINGS : "FK scrapping_entity_mapping_id"
   SCRAPPING_ENTITY_MAPPINGS }o--|| CHARACTERISTICS : "FK characteristic_id"
+  SCRAPPING_JOBS }o--|| USERS : "FK requested_by"
   SECTION_USER }o--|| SECTIONS : "FK section_id"
   SECTION_USER }o--|| USERS : "FK user_id"
   SECTIONS }o--|| USERS : "FK created_by"

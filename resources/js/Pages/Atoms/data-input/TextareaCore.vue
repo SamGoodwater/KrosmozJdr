@@ -18,7 +18,7 @@ defineOptions({ inheritAttrs: false });
  * @version DaisyUI v5.x
  *
  * @example
- * <TextareaCore v-model="bio" placeholder="Votre biographie" rows="4" />
+ * <TextareaCore v-model="bio" placeholder="Ta biographie" rows="4" />
  * <TextareaCore v-model="description" color="primary" size="lg" />
  * <TextareaCore v-model="notes" variant="glass" rounded="lg" />
  * 

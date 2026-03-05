@@ -82,10 +82,10 @@ class Run extends Command
             $this->error('Cela pourrait créer des fichiers avec des permissions root et causer des problèmes.');
             $this->line('');
             $this->line('Solutions :');
-            $this->line('1. Utilisez un utilisateur normal (non-root)');
-            $this->line('2. Si vous devez corriger les permissions, utilisez :');
+            $this->line('1. Utilise un utilisateur normal (non-root)');
+            $this->line('2. Si tu dois corriger les permissions, utilise :');
             $this->line('   php artisan run --update:privilege=nom_utilisateur');
-            $this->line('3. Ou utilisez sudo pour exécuter en tant qu\'utilisateur normal :');
+            $this->line('3. Ou utilise sudo pour exécuter en tant qu\'utilisateur normal :');
             $this->line('   sudo -u nom_utilisateur php artisan run [options]');
             $this->line('');
             return self::FAILURE;
@@ -369,14 +369,14 @@ class Run extends Command
         
         // 1. Vérifier que l'utilisateur est spécifié
         if (empty($user)) {
-            $this->error('Vous devez spécifier un utilisateur avec --update:privilege=nom_utilisateur');
+            $this->error('Tu dois spécifier un utilisateur avec --update:privilege=nom_utilisateur');
             return;
         }
         
         // 2. Nettoyer et valider le nom d'utilisateur
         $user = trim($user);
         if (!preg_match('/^[a-zA-Z0-9_-]+$/', $user)) {
-            $this->error('Nom d\'utilisateur invalide. Utilisez uniquement des lettres, chiffres, tirets et underscores.');
+            $this->error('Nom d\'utilisateur invalide. Utilise uniquement des lettres, chiffres, tirets et underscores.');
             return;
         }
         
@@ -405,14 +405,14 @@ class Run extends Command
         // 6. Demander confirmation si l'utilisateur est différent de l'utilisateur actuel
         $currentUser = trim(shell_exec('whoami'));
         if ($user !== $currentUser) {
-            $this->warn("Vous êtes actuellement connecté en tant que '$currentUser'");
-            $this->warn("Vous allez changer les permissions pour l'utilisateur '$user'");
+            $this->warn("Tu es actuellement connecté en tant que '$currentUser'");
+            $this->warn("Tu vas changer les permissions pour l'utilisateur '$user'");
             
             // En mode non-interactif, on continue automatiquement
             if ($this->option('no-interaction')) {
                 $this->info('Mode non-interactif : continuation automatique...');
             } else {
-                if (!$this->confirm('Êtes-vous sûr de vouloir continuer ?')) {
+                if (!$this->confirm('Es-tu sûr de vouloir continuer ?')) {
                     $this->info('Opération annulée.');
                     return;
                 }

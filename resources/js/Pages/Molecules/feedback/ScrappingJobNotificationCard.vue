@@ -6,6 +6,7 @@ import Icon from "@/Pages/Atoms/data-display/Icon.vue";
 const props = defineProps({
     item: { type: Object, required: true },
     compact: { type: Boolean, default: false },
+    lockPulse: { type: Boolean, default: false },
 });
 
 const emit = defineEmits(["open", "delete", "copy", "cancel"]);
@@ -63,11 +64,14 @@ function cancelItem(e) {
 <template>
     <div
         class="relative rounded-lg border border-base-content/15 bg-base-200/90 backdrop-blur-sm p-3 shadow-sm"
-        :class="compact ? 'text-sm' : ''"
+        :class="[compact ? 'text-sm' : '', lockPulse ? 'ring-2 ring-warning/70 border-warning/60' : '']"
     >
         <button
             type="button"
             class="w-full text-left pr-20"
+            data-keyboard-item
+            :data-notification-id="item.id"
+            :data-message="item.message"
             @click="openItem"
         >
             <div class="flex items-center gap-2 mb-1">
@@ -121,6 +125,14 @@ function cancelItem(e) {
             >
                 <Icon source="fa-times" pack="solid" size="xs" alt="" />
             </Btn>
+            <span
+                v-else
+                class="inline-flex items-center justify-center w-6 h-6 rounded-full text-base-content/45"
+                aria-label="Notification verrouillée"
+                title="Notification verrouillée pendant le job"
+            >
+                <Icon source="fa-lock" pack="solid" size="xs" alt="" />
+            </span>
         </div>
     </div>
 </template>

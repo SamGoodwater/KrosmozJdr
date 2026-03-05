@@ -68,6 +68,8 @@ export class LevelFormatter extends BaseFormatter {
       sortValue: numValue,
       filterValue: numValue,
       icon: 'fa-solid fa-level-up-alt',
+      strong: true,
+      textColor: '#ffffff',
     });
   }
 }

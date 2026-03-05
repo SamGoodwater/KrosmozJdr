@@ -16,7 +16,7 @@
  * @version DaisyUI v5.x
  *
  * @example
- * <Helper value="Votre mot de passe doit contenir au moins 8 caractères" />
+ * <Helper value="Ton mot de passe doit contenir au moins 8 caractères" />
  * <Helper helper="Message d'aide" color="primary" size="sm">
  *   <i class="fa-solid fa-info-circle"></i>
  *   Cliquez pour plus d'informations

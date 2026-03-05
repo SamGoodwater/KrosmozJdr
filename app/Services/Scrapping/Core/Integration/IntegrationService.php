@@ -414,14 +414,21 @@ final class IntegrationService
         }
 
         $existingSpell = null;
+        $existingByDofusId = false;
         if (!empty($data['dofusdb_id'])) {
             $existingSpell = Spell::where('dofusdb_id', (string) $data['dofusdb_id'])->first();
+            $existingByDofusId = $existingSpell !== null;
         }
         if (!$existingSpell && !empty($data['name'])) {
             $existingSpell = Spell::where('name', $data['name'])->first();
         }
 
         $doReplace = $this->shouldReplaceExisting($forceUpdate, $replaceMode, $existingSpell);
+        // Pour les sorts, un match dofusdb_id doit rester synchronisé à la source
+        // même sans force_update explicite.
+        if ($existingByDofusId) {
+            $doReplace = true;
+        }
         if ($existingSpell && !$doReplace) {
             return IntegrationResult::okEntity(
                 $existingSpell->id,
@@ -449,8 +456,8 @@ final class IntegrationService
         [$poMin, $poMax] = $this->buildSpellPoMinMax($data);
         $payload = [
             'dofusdb_id' => $data['dofusdb_id'] ?? null,
-            'name' => (string) ($data['name'] ?? ''),
-            'description' => (string) ($data['description'] ?? ''),
+            'name' => $this->localizedToString($data['name'] ?? null),
+            'description' => $this->localizedToString($data['description'] ?? null),
             'pa' => (string) ($data['pa'] ?? '3'),
             'po_min' => $poMin,
             'po_max' => $poMax,
@@ -931,8 +938,8 @@ final class IntegrationService
 
         $payload = [
             'dofusdb_id' => $data['dofusdb_id'] ?? null,
-            'name' => (string) ($data['name'] ?? ''),
-            'description' => (string) ($data['description'] ?? ''),
+            'name' => $this->localizedToString($data['name'] ?? null),
+            'description' => $this->localizedToString($data['description'] ?? null),
             'description_fast' => $data['description_fast'] ?? null,
             'life' => (string) ($data['life'] ?? ''),
             'life_dice' => (string) ($data['life_dice'] ?? ''),
@@ -1178,7 +1185,8 @@ final class IntegrationService
         if (isset($convertedData['items']) && is_array($convertedData['items']) && $convertedData['items'] !== []
             && (!isset($convertedData['resources']) || !is_array($convertedData['resources']) || $convertedData['resources'] === [])
             && (!isset($convertedData['consumables']) || !is_array($convertedData['consumables']) || $convertedData['consumables'] === [])) {
-            return 'items';
+            $typeId = isset($convertedData['items']['type_id']) ? (int) $convertedData['items']['type_id'] : null;
+            return $this->resolveItemTargetTable($typeId);
         }
 
         $typeId = isset($convertedData['items']['type_id']) ? (int) $convertedData['items']['type_id'] : null;
@@ -1473,5 +1481,25 @@ final class IntegrationService
         }
 
         throw new \RuntimeException('Aucun utilisateur disponible pour les imports. Exécutez le seeder.');
+    }
+
+    /**
+     * Convertit un champ potentiellement localisé ({fr,en,...}) vers une chaîne.
+     */
+    private function localizedToString(mixed $value): string
+    {
+        if (is_string($value)) {
+            return trim($value);
+        }
+        if (!is_array($value)) {
+            return '';
+        }
+        foreach (['fr', 'en'] as $lang) {
+            if (isset($value[$lang]) && is_string($value[$lang])) {
+                return trim($value[$lang]);
+            }
+        }
+        $first = reset($value);
+        return is_string($first) ? trim($first) : '';
     }
 }

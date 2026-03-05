@@ -61,7 +61,7 @@ final class SpellEffectConversionFormulaResolver
     private const SPELL_KEY_ALIASES = [
         'pa' => 'action_points_spell',
         'po' => 'range_spell',
-        'pm' => 'movement_points_spell',
+        'pm' => 'pm_spell',
         'range' => 'range_spell',
         'movement_points' => 'movement_points_spell',
         'retrait_pa' => 'ap_reduction_spell',

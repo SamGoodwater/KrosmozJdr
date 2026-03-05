@@ -32,9 +32,9 @@ onMounted(() => {
                         Rejoignez l'aventure collaborative
                     </h2>
                     <p>
-                        Le projet Krosmoz JDR est porté par une communauté de passionnés, et votre contribution peut
-                        faire toute la différence. Que vous souhaitiez partager vos idées, participer au développement
-                        ou simplement suivre l'évolution du projet, plusieurs options s'offrent à vous.
+                        Le projet Krosmoz JDR est porté par une communauté de passionnés, et ta contribution peut
+                        faire toute la différence. Que tu souhaites partager tes idées, participer au développement
+                        ou simplement suivre l'évolution du projet, plusieurs options s'offrent à toi.
                     </p>
                 </div>
             </section>
@@ -63,7 +63,7 @@ onMounted(() => {
                         <li>Etc.</li>
                     </ul>
                     <p class="text-content">
-                        Vos données sont protégées : elles ne sont ni divulguées ni utilisées à d'autres fins. Pour
+                        Tes données sont protégées : elles ne sont ni divulguées ni utilisées à d'autres fins. Pour
                         accéder à la plateforme, il y a besoin d'une inscription.
                     </p>
                     <Btn color="primary" variant="glass" class="mt-4" as="a" href="https://project.krosmoz-jdr.fr"
@@ -82,11 +82,11 @@ onMounted(() => {
                 </div>
                 <div class="relative">
                     <h3 class="text-lg font-bold text-title mb-4">
-                        2. Rejoignez-nous sur Discord
+                        2. Rejoins-nous sur Discord
                     </h3>
                     <p class="text-content">
                         Pour suivre les nouveautés du projet et échanger avec d'autres passionnés du jeu de rôle dans
-                        l'univers de Dofus, rendez-vous sur notre serveur Discord.
+                        l'univers de Dofus, rends-toi sur notre serveur Discord.
                     </p>
                     <Btn color="primary" variant="glass" class="mt-4" as="a"
                         href="https://discord.com/invite/XVu4VWFskj" target="_blank" rel="noopener noreferrer">
@@ -134,11 +134,11 @@ onMounted(() => {
             <section class="relative">
                 <div class="relative">
                     <h3 class="text-lg font-bold text-title mb-4">
-                        Votre contribution compte
+                        Ta contribution compte
                     </h3>
                     <p class="text-content">
-                        Chaque geste, qu'il soit petit ou grand, nous aide à faire grandir Krosmoz JDR. Merci de faire
-                        partie de cette aventure !
+                        Chaque geste, qu'il soit petit ou grand, nous aide à faire grandir Krosmoz JDR. Merci d'en faire
+                        partie !
                     </p>
                 </div>
             </section>

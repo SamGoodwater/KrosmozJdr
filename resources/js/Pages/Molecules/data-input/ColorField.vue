@@ -13,14 +13,14 @@
  * <ColorField 
  *   label="Couleur principale" 
  *   v-model="primaryColor"
- *   :validation="{ state: 'error', message: 'Veuillez sélectionner une couleur' }"
+ *   :validation="{ state: 'error', message: 'Sélectionne une couleur' }"
  * />
  * 
  * // Avec helper et format
  * <ColorField 
  *   label="Couleur de fond" 
  *   v-model="backgroundColor"
- *   helper="Choisissez la couleur de fond de votre thème"
+ *   helper="Choisis la couleur de fond de ton thème"
  * />
  */
 import { useSlots, useAttrs } from 'vue'

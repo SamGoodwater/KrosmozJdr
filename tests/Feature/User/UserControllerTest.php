@@ -96,7 +96,7 @@ class UserControllerTest extends TestCase
             'email' => 'updated@example.com',
         ]);
 
-        $response->assertRedirect(route('user.show', $targetUser));
+        $response->assertRedirect(route('user.admin.edit', $targetUser));
         $this->assertDatabaseHas('users', [
             'id' => $targetUser->id,
             'name' => 'Updated Name',
@@ -205,7 +205,7 @@ class UserControllerTest extends TestCase
     /**
      * Test : Un admin peut modifier le mot de passe d'un autre utilisateur sans current_password
      */
-    public function test_admin_can_update_other_user_password_without_current_password(): void
+    public function test_admin_cannot_update_other_user_password_without_current_password(): void
     {
         $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
         $targetUser = User::factory()->create([
@@ -217,9 +217,9 @@ class UserControllerTest extends TestCase
             'password_confirmation' => 'newpassword123',
         ]);
 
-        $response->assertRedirect();
+        $response->assertForbidden();
         $targetUser->refresh();
-        $this->assertTrue(Hash::check('newpassword123', $targetUser->password));
+        $this->assertTrue(Hash::check('oldpassword', $targetUser->password));
     }
 
     /**
@@ -358,6 +358,47 @@ class UserControllerTest extends TestCase
             ->component('Pages/user/Edit')
             ->has('user')
         );
+    }
+
+    /**
+     * Test : Un admin peut accéder à la liste utilisateurs.
+     */
+    public function test_admin_can_access_user_index_page(): void
+    {
+        $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
+        User::factory()->count(3)->create();
+
+        $response = $this->actingAs($admin)->get(route('user.index'));
+
+        $response->assertOk();
+        $response->assertInertia(fn ($page) => $page
+            ->component('Pages/user/Index')
+            ->has('users')
+        );
+    }
+
+    /**
+     * Test : Un utilisateur standard ne peut pas accéder à la liste utilisateurs.
+     */
+    public function test_standard_user_cannot_access_user_index_page(): void
+    {
+        $user = User::factory()->create(['role' => User::ROLE_USER]);
+
+        $response = $this->actingAs($user)->get(route('user.index'));
+
+        $response->assertForbidden();
+    }
+
+    /**
+     * Test : Un utilisateur standard ne peut pas accéder à la création utilisateur.
+     */
+    public function test_standard_user_cannot_access_user_create_page(): void
+    {
+        $user = User::factory()->create(['role' => User::ROLE_USER]);
+
+        $response = $this->actingAs($user)->get(route('user.create'));
+
+        $response->assertForbidden();
     }
 
     /**

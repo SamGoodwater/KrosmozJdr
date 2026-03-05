@@ -25,6 +25,17 @@ const messages = ref([]);
 const messagesMeta = ref({ current_page: 1, last_page: 1, total: 0 });
 const messagesLoading = ref(false);
 const unreadCount = ref(page.props.unreadCount ?? 0);
+const lockPulseNotificationId = ref(null);
+
+function triggerLockPulse(notificationId) {
+    if (!notificationId) return;
+    lockPulseNotificationId.value = String(notificationId);
+    setTimeout(() => {
+        if (lockPulseNotificationId.value === String(notificationId)) {
+            lockPulseNotificationId.value = null;
+        }
+    }, 900);
+}
 
 function getCsrfToken() {
     return document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
@@ -100,13 +111,9 @@ async function unpinNotification(id) {
 }
 
 async function deleteNotification(id) {
-    const current = messages.value.find((n) => n.id === id);
+    const current = messages.value.find((n) => String(n.id) === String(id));
     if (current?.is_scrapping_job && current?.data?.locked === true) {
-        notificationStore?.addNotification?.({
-            message: 'Ce job est en cours, suppression indisponible.',
-            type: 'info',
-            duration: 2500,
-        });
+        triggerLockPulse(id);
         return;
     }
     const token = getCsrfToken();
@@ -195,7 +202,10 @@ function handleCentreListKeydown(e) {
         const tempId = el.dataset.tempId;
         if (notifId) {
             const notif = messages.value.find((n) => String(n.id) === String(notifId));
-            if (notif?.is_scrapping_job && notif?.data?.locked === true) return;
+            if (notif?.is_scrapping_job && notif?.data?.locked === true) {
+                triggerLockPulse(notifId);
+                return;
+            }
             deleteNotification(notifId);
             const nextIdx = Math.min(idx, focusable.length - 2);
             focusable[nextIdx >= 0 ? nextIdx : 0]?.focus();
@@ -287,6 +297,7 @@ onMounted(() => { fetchMessages(); });
                         <template v-if="item.is_scrapping_job">
                             <ScrappingJobNotificationCard
                                 :item="item"
+                                :lock-pulse="lockPulseNotificationId === String(item.id)"
                                 @open="openMessage(item)"
                                 @copy="copyMessageContent(item)"
                                 @cancel="cancelScrappingJobNotification(item)"
@@ -428,7 +439,7 @@ onMounted(() => { fetchMessages(); });
                 />
             </div>
             <p class="text-sm text-base-content/60">
-                Les notifications temporaires sont les toasts affichés pendant votre session. Elles ne sont pas enregistrées.
+                Les notifications temporaires sont les toasts affichés pendant ta session. Elles ne sont pas enregistrées.
             </p>
             <template v-if="temporaryHistory.length === 0">
                 <p class="text-sm text-base-content/60 py-4">Aucune notification temporaire.</p>

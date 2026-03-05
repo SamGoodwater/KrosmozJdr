@@ -356,7 +356,12 @@ export class Consumable extends BaseModel {
             value: '',
             params: {
                 items,
-                sortValue: items.length,
+                sortValue:
+                    this.resourcesCount +
+                    this.creaturesCount +
+                    this.campaignsCount +
+                    this.scenariosCount +
+                    this.shopsCount,
                 searchValue,
                 filterValue: searchValue,
             },

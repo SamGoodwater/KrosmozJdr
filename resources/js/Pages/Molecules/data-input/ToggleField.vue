@@ -13,14 +13,14 @@
  * <ToggleField 
  *   label="Notifications" 
  *   v-model="notifications"
- *   :validation="{ state: 'error', message: 'Veuillez activer les notifications' }"
+ *   :validation="{ state: 'error', message: 'Active les notifications' }"
  * />
  * 
  * // Avec helper
  * <ToggleField 
  *   label="Mode sombre" 
  *   v-model="darkMode"
- *   helper="Activez le thème sombre pour une meilleure expérience"
+ *   helper="Active le thème sombre pour une meilleure expérience"
  * />
  */
 import { useSlots, useAttrs } from 'vue'

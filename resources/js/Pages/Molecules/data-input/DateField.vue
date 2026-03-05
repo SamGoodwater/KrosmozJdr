@@ -13,14 +13,14 @@
  * <DateField 
  *   label="Date de début" 
  *   v-model="startDate"
- *   :validation="{ state: 'error', message: 'Veuillez sélectionner une date' }"
+ *   :validation="{ state: 'error', message: 'Sélectionne une date' }"
  * />
  * 
  * // Avec helper et format
  * <DateField 
  *   label="Date limite" 
  *   v-model="deadline"
- *   helper="Sélectionnez la date limite du projet"
+ *   helper="Sélectionne la date limite du projet"
  * />
  */
 import { useSlots, useAttrs } from 'vue'
