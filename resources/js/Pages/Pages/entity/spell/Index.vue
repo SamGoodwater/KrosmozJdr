@@ -8,7 +8,7 @@
  * @props {Object} spells - Collection paginée des sorts
  */
 import { Head, router } from "@inertiajs/vue3";
-import { ref, computed, onBeforeUnmount } from "vue";
+import { ref, computed, watch } from "vue";
 import { usePageTitle } from "@/Composables/layout/usePageTitle";
 import { usePermissions } from "@/Composables/permissions/usePermissions";
 import { useBulkRequest } from "@/Composables/entity/useBulkRequest";
@@ -78,6 +78,8 @@ const selectedEntities = computed(() => {
     return Spell.fromArray(raw);
 });
 
+const filteredIds = computed(() => selectedIds.value || []);
+
 // Configuration du tableau avec permissions et contexte
 const tableConfig = computed(() => {
     const ctx = {
@@ -93,22 +95,40 @@ const tableConfig = computed(() => {
 });
 const serverUrl = computed(() => `${route('api.tables.spells')}?format=entities&limit=5000&_t=${refreshToken.value}`);
 
+watch(
+    () => canModify.value,
+    (allowed) => {
+        if (allowed) return;
+        selectedIds.value = [];
+    },
+    { immediate: true }
+);
+
 // Fields config pour les formulaires (généré depuis les descriptors)
+const spellDescriptors = computed(() =>
+    getSpellFieldDescriptors({
+        capabilities: { updateAny: canModify.value, createAny: canCreate.value },
+        spellTypes: props.spellTypes || [],
+    })
+);
 const fieldsConfig = computed(() => {
-  const ctx = { meta: { capabilities: { updateAny: canModify.value } } };
-  return createFieldsConfigFromDescriptors(getSpellFieldDescriptors(ctx));
+  return createFieldsConfigFromDescriptors(spellDescriptors.value, {
+      capabilities: { updateAny: canModify.value },
+      spellTypes: props.spellTypes || [],
+  });
 });
 
 const defaultEntity = computed(() => {
-  const ctx = { meta: { capabilities: { updateAny: canModify.value } } };
-  return createDefaultEntityFromDescriptors(getSpellFieldDescriptors(ctx));
+  return createDefaultEntityFromDescriptors(spellDescriptors.value);
 });
 
 const clearSelection = () => {
     selectedIds.value = [];
 };
 
-const handleBulkApplied = () => {
+const handleBulkApplied = async (payload) => {
+    const ok = await bulkPatchJson({ url: "/api/entities/spells/bulk", payload });
+    if (!ok) return;
     refreshToken.value++;
     selectedIds.value = [];
 };
@@ -265,7 +285,10 @@ const handleQuickEditSubmit = () => {
         </div>
 
         <!-- Grid layout pour permettre le scroll horizontal du tableau quand le quick edit est ouvert -->
-        <div class="xl:grid xl:grid-cols-[minmax(0,1fr)_380px] xl:gap-6">
+        <div
+            class="grid grid-cols-1 gap-4"
+            :class="{ 'xl:grid-cols-[minmax(0,1fr)_380px]': selectedEntities.length >= 1 }"
+        >
             <div class="min-w-0 overflow-x-auto">
                 <EntityTanStackTable
                     entity-type="spells"
@@ -280,14 +303,18 @@ const handleQuickEditSubmit = () => {
             </div>
 
             <!-- Quick Edit Panel -->
-            <EntityQuickEditPanel
-                v-if="canModify && selectedIds.length > 0"
-                entity-type="spells"
-                :selected-ids="selectedIds"
-                :fields-config="fieldsConfig"
-                :default-entity="defaultEntity"
-                @update="handleBulkUpdate"
-            />
+            <div v-if="canModify && selectedEntities.length >= 1" class="sticky top-4 self-start">
+                <EntityQuickEditPanel
+                    entity-type="spells"
+                    :selected-entities="selectedEntities"
+                    :is-admin="canModify"
+                    mode="client"
+                    :filtered-ids="filteredIds"
+                    :extra-ctx="{ spellTypes: props.spellTypes || [] }"
+                    @applied="handleBulkApplied"
+                    @clear="clearSelection"
+                />
+            </div>
         </div>
 
         <!-- Modal de création -->

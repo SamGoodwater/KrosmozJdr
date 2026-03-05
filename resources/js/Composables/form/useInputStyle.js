@@ -617,6 +617,17 @@ export function getInputStyle(inputType, styleConfig = {}, error = false) {
     
     // Classes de base
     const classes = [...styleData.classes];
+
+    // Les champs de saisie "contenu" doivent occuper toute la largeur disponible.
+    // (Évite les champs DaisyUI auto-size qui n'utilisent qu'une largeur minimale.)
+    const fullWidthInputTypes = new Set([
+        'input', 'text', 'email', 'password', 'url', 'tel', 'search', 'number',
+        'textarea', 'select', 'file', 'filter', 'date', 'color',
+    ]);
+    if (fullWidthInputTypes.has(inputType)) {
+        classes.push('w-full');
+        classes.push('max-w-none');
+    }
     
     // Classe de taille (utilise le mapping spécifique si disponible)
     // Ajustement design system: checkbox/toggle -> tailles plus compactes (md trop grand)

@@ -11,6 +11,7 @@ export default {
   defaultSettings: {
     autoplay: false,
     controls: true,
+    directVideoDisplayMode: 'preview',
   },
   // Paramètres configurables dans le modal
   parameters: [
@@ -27,6 +28,17 @@ export default {
       label: 'Afficher les contrôles',
       description: 'Afficher les contrôles de lecture (play, pause, volume, etc.)',
       default: true,
+    },
+    {
+      key: 'directVideoDisplayMode',
+      type: 'select',
+      label: 'Vidéo directe',
+      description: 'Choisir entre lecture intégrée et téléchargement uniquement pour les vidéos directes',
+      default: 'preview',
+      options: [
+        { value: 'preview', label: 'Lecture dans la page' },
+        { value: 'download', label: 'Téléchargement uniquement' },
+      ],
     },
   ],
   // Valeurs par défaut pour les data (contenu)

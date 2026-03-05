@@ -7,13 +7,15 @@
  *
  * @props {Object|null} resource - Données de la ressource (nullable en création via page /create)
  */
-import { ref, computed } from 'vue';
+import { computed } from 'vue';
 import { Head, usePage } from '@inertiajs/vue3';
 import { usePageTitle } from '@/Composables/layout/usePageTitle';
 import { Resource } from '@/Models/Entity/Resource';
 import EntityEditForm from '@/Pages/Organismes/entity/EntityEditForm.vue';
 import EntityRelationsManager from '@/Pages/Organismes/entity/EntityRelationsManager.vue';
 import Container from '@/Pages/Atoms/data-display/Container.vue';
+import Btn from '@/Pages/Atoms/action/Btn.vue';
+import Route from '@/Pages/Atoms/action/Route.vue';
 import { getResourceFieldDescriptors } from '@/Entities/resource/resource-descriptors';
 import { createFieldsConfigFromDescriptors } from '@/Utils/entity/descriptor-form';
 
@@ -59,8 +61,6 @@ const props = defineProps({
     },
 });
 
-const viewMode = ref('large');
-
 // Contexte pour les descriptors (options dynamiques, permissions, etc.)
 const ctx = computed(() => ({
     resourceTypes: props.resourceTypes,
@@ -89,13 +89,18 @@ setPageTitle(`Modifier la ressource : ${resource.value.name || 'Nouvelle ressour
     <Head :title="`Modifier la ressource : ${resource?.name || 'Nouvelle ressource'}`" />
 
     <Container class="space-y-6">
+        <Route route="entities.resources.index">
+            <Btn color="neutral" variant="ghost" size="sm" class="gap-2">
+                <i class="fa-solid fa-arrow-left" aria-hidden="true"></i>
+                Retour à la liste
+            </Btn>
+        </Route>
+
         <EntityEditForm
             :entity="resource"
             entity-type="resource"
-            :view-mode="viewMode"
             :fields-config="fieldsConfig"
             :is-updating="!!resource?.id"
-            @update:view-mode="viewMode = $event"
         />
 
         <!-- Recette : ingrédients (autres ressources) avec quantités -->

@@ -9,6 +9,7 @@ use App\Models\Entity\Item;
 use App\Models\Entity\Panoply;
 use App\Models\Entity\Resource;
 use App\Models\Entity\Consumable;
+use App\Models\Entity\Spell;
 use App\Services\Scrapping\Core\Collect\CollectService;
 use App\Services\Scrapping\Core\Orchestrator\Orchestrator;
 use App\Services\Scrapping\Core\Orchestrator\OrchestratorResult;
@@ -81,6 +82,7 @@ final class RelationResolutionService
             'integrate' => $integrate && !$dryRun,
             'dry_run' => $dryRun,
             'force_update' => (bool) ($options['force_update'] ?? false),
+            'spell_category_hint' => Spell::CATEGORY_CREATURE,
             'skip_cache' => (bool) ($options['skip_cache'] ?? false),
         ];
 
@@ -173,6 +175,10 @@ final class RelationResolutionService
             $validSpellIds = array_values(array_unique(array_filter($importedSpellIds)));
             if ($validSpellIds !== []) {
                 $creature->spells()->sync($validSpellIds);
+                Spell::query()
+                    ->whereIn('id', $validSpellIds)
+                    ->where('category', '!=', Spell::CATEGORY_CLASS)
+                    ->update(['category' => Spell::CATEGORY_CREATURE]);
             }
             if ($dropSyncByTable['resources'] !== []) {
                 $creature->resources()->sync($dropSyncByTable['resources']);
@@ -223,6 +229,7 @@ final class RelationResolutionService
             'integrate' => ($options['integrate'] ?? true) && !$dryRun,
             'dry_run' => $dryRun,
             'force_update' => (bool) ($options['force_update'] ?? false),
+            'spell_category_hint' => Spell::CATEGORY_CLASS,
             'include_relations' => true,
             'skip_cache' => (bool) ($options['skip_cache'] ?? false),
         ];
@@ -239,6 +246,9 @@ final class RelationResolutionService
         $breed = \App\Models\Entity\Breed::find($breedId);
         if ($breed !== null && !$dryRun && $importedSpellIds !== []) {
             $breed->spells()->sync(array_values(array_unique($importedSpellIds)));
+            Spell::query()
+                ->whereIn('id', array_values(array_unique($importedSpellIds)))
+                ->update(['category' => Spell::CATEGORY_CLASS]);
         }
 
         return ['synced' => true];

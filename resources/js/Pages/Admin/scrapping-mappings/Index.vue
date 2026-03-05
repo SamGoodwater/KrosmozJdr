@@ -196,6 +196,10 @@ function targetsSummary(mapping) {
     return mapping.targets.map((t) => `${t.target_model}.${t.target_field}`).join(', ');
 }
 
+function goBackToCharacteristics() {
+    router.visit(route('admin.characteristics.index'));
+}
+
 onMounted(() => {
     if (!props.entity || !prefillMappingKey.value || hasExactPrefillMatch.value) {
         return;
@@ -235,6 +239,10 @@ onMounted(() => {
         <!-- Panneau droit : règles de l'entité sélectionnée -->
         <main class="min-w-0 flex-1 overflow-y-auto p-6">
             <div class="mb-4">
+                <Btn color="neutral" variant="ghost" size="sm" class="gap-2 mb-2" @click="goBackToCharacteristics">
+                    <i class="fa-solid fa-arrow-left" aria-hidden="true"></i>
+                    Retour aux caractéristiques
+                </Btn>
                 <h1 class="text-2xl font-bold">Règles de mapping</h1>
                 <p class="mt-1 text-sm text-base-content/70">
                     Source de vérité en BDD. Après modification : <code class="rounded bg-base-300 px-1 text-xs">php artisan scrapping:seeders:export</code>

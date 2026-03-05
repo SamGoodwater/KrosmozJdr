@@ -22,6 +22,7 @@ class DatabaseSeeder extends Seeder
     {
         $this->call([
             UserSeeder::class,
+            CriticalPagesSeeder::class,
             PageSeeder::class,
             SectionSeeder::class,
             \Database\Seeders\Type\TypeSeeder::class,
@@ -31,6 +32,7 @@ class DatabaseSeeder extends Seeder
             DofusdbCharacteristicIdSeeder::class,
             SpellCharacteristicSeeder::class,
             SpellEffectTypeSeeder::class,
+            SubEffectSeeder::class,
             ScrappingEntityMappingSeeder::class,
             ScrappingEntityMappingCharacteristicSeeder::class,
         ]);

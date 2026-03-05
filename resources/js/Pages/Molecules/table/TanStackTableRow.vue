@@ -246,7 +246,7 @@ const handleAction = (actionKey, entity) => {
                         :class="[dotBgClass]"
                     />
                 </Tooltip>
-                <CellRenderer :cell="getCell(col)" :ui-color="uiColor" :entity="rowEntity" />
+                <CellRenderer :cell="getCell(col)" :ui-color="uiColor" :entity="rowEntity" :chips-default-max-rows="3" />
             </div>
         </td>
     </tr>

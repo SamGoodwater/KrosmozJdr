@@ -262,9 +262,52 @@ export function getResourceFieldDescriptors(ctx = {}) {
           required: false,
           rows: 4,
           validation: {
-            maxLength: 20,
+            maxLength: 2000,
             message: "La description ne peut pas dépasser 2000 caractères",
           },
+        },
+        bulk: {
+          enabled: true,
+          nullable: true,
+        },
+      },
+    },
+
+    effect: {
+      key: "effect",
+      general: {
+        label: "Effet",
+        icon: "fa-solid fa-sparkles",
+        tooltip: "Effets éventuels de la ressource",
+      },
+      table: {
+        sortable: false,
+        searchable: true,
+        filterable: {
+          id: "effect",
+          type: "text",
+        },
+        // Rare sur les ressources : masqué par défaut.
+        defaultVisible: { xs: false, sm: false, md: false, lg: false, xl: false },
+        cell: {
+          sizes: {
+            xs: { mode: "chips" },
+            sm: { mode: "chips" },
+            md: { mode: "chips" },
+            lg: { mode: "chips" },
+            xl: { mode: "chips" },
+          },
+        },
+      },
+      display: {
+        tooltip: "Effets éventuels de la ressource",
+      },
+      edition: {
+        form: {
+          type: "textarea",
+          group: "Contenu",
+          required: false,
+          rows: 3,
         },
         bulk: {
           enabled: true,
@@ -319,10 +362,10 @@ export function getResourceFieldDescriptors(ctx = {}) {
       },
       edition: {
         form: {
-          type: "number",
+          type: "text",
           group: "Métier",
           placeholder: "Ex: 5",
-          help: "Niveau de la ressource (entier positif max 20)",
+          help: "Niveau de la ressource (valeur ou formule, ex: 5, [level], 2+[bonus])",
           required: false,
           validation: {
             min: 0,
@@ -437,10 +480,10 @@ export function getResourceFieldDescriptors(ctx = {}) {
       },
       edition: {
         form: {
-          type: "number",
+          type: "text",
           group: "Métadonnées",
           placeholder: "Ex: 100",
-          help: "Prix de la ressource en kamas",
+          help: "Prix de la ressource en kamas (valeur ou formule)",
           required: false,
           validation: {
             min: 0,
@@ -481,10 +524,10 @@ export function getResourceFieldDescriptors(ctx = {}) {
       },
       edition: {
         form: {
-          type: "number",
+          type: "text",
           group: "Métadonnées",
           placeholder: "Ex: 1.5",
-          help: "Poids de la ressource",
+          help: "Poids de la ressource (valeur ou formule)",
           required: false,
           validation: {
             min: 0,

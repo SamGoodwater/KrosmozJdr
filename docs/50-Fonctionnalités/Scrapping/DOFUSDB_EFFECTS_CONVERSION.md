@@ -157,4 +157,63 @@ php artisan scrapping:effects:report-missing-characteristics --json > storage/ap
 
 Le rapport regroupe les lignes manquantes par `characteristic` DofusDB et les trie par fréquence (avec exemples d`effectId`).
 
+### Audit qualité global (robustesse conversion)
+
+Pour auditer en une commande la qualité du système (couverture mapping + sous-effets sans `value_converted`) :
+
+```bash
+php artisan scrapping:effects:audit-quality
+php artisan scrapping:effects:audit-quality --json > storage/app/scrapping_effects_quality_audit.json
+```
+
+L'audit remonte:
+- les mappings `characteristic_source=characteristic` sans `characteristic_key`,
+- les sous-effets de sorts qui devraient avoir `value_converted` (selon `SpellEffectConversionFormulaResolver`) mais ne l'ont pas.
+
+### Quality gate CI (seuils bloquants)
+
+Pour bloquer automatiquement un pipeline CI si la qualité est insuffisante:
+
+```bash
+php artisan scrapping:effects:quality-gate
+php artisan scrapping:effects:quality-gate --allow-empty
+php artisan scrapping:effects:quality-gate --min-coverage=99.5 --max-missing-mappings=0 --max-missing-value-converted=0 --json
+```
+
+Comportement:
+- la commande relance `scrapping:effects:audit-quality --json`,
+- échoue (`exit code 1`) si un seuil est dépassé,
+- échoue aussi si `conversion_expected_rows=0` (base vide) sauf si `--allow-empty` est fourni,
+- retourne un JSON exploitable en CI via `--json`.
+
+Raccourcis disponibles via la commande projet `run`:
+
+```bash
+php artisan run --check:effects-quality
+php artisan run --check:effects-quality:dev
+```
+
+- `--check:effects-quality` = mode strict (échoue si base d'effets vide),
+- `--check:effects-quality:dev` = mode dev (autorise base vide via `--allow-empty`).
+
+### Pipeline import + gate (enchaînement unique)
+
+Pour lancer un lot de sorts puis contrôler automatiquement la qualité:
+
+```bash
+php artisan scrapping:effects:pipeline --max-items=300 --limit=100
+php artisan scrapping:effects:pipeline --ids=201,202,203 --allow-empty --json
+```
+
+La commande enchaîne:
+1) `scrapping:run --entity=spell ...`
+2) `scrapping:effects:quality-gate ...`
+
+Raccourcis via `run`:
+
+```bash
+php artisan run --pipeline:effects-quality --max-items=300
+php artisan run --pipeline:effects-quality:dev --max-items=300 --simulate
+```
+
 L’orchestrateur ou l’intégration peut injecter `SpellEffectsConversionService`, récupérer les spell-levels (après collecte du sort), appeler `convert()`, puis créer en BDD EffectGroup, Effects, EffectSubEffects et EffectUsages à partir du résultat.

@@ -24,7 +24,9 @@ import TanStackTableToolbar from "@/Pages/Molecules/table/TanStackTableToolbar.v
 import TanStackTableFilters from "@/Pages/Molecules/table/TanStackTableFilters.vue";
 import TanStackTablePagination from "@/Pages/Molecules/table/TanStackTablePagination.vue";
 import { useTanStackTablePreferences } from "@/Composables/table/useTanStackTablePreferences";
+import { useTableFilterPresets } from "@/Composables/table/useTableFilterPresets";
 import { useUxFeedback } from "@/Composables/utils/useUxFeedback";
+import { resolveEntityRouteHref } from "@/Composables/entity/entityRouteRegistry";
 import { BREAKPOINTS } from "@/Utils/Entity/Constants.js";
 import { getEntityConfig } from "@/Entities/entity-registry.js";
 import { logDev, warnDev } from "@/Utils/dev-logger";
@@ -71,6 +73,19 @@ const { notifySuccess, notifyError, notifyInfo } = useUxFeedback();
 
 const columnsConfig = computed(() => Array.isArray(props.config?.columns) ? props.config.columns : []);
 
+const IMAGE_COLUMN_RE = /\b(image|images|img|icon|icone|avatar|portrait|thumbnail|thumb|illustration|visuel)\b/;
+const NAME_COLUMN_RE = /\b(name|nom|title|titre|libelle|label)\b/;
+
+const buildColumnHaystack = (col) => {
+    const id = String(col?.id || "").toLowerCase();
+    const cellId = String(col?.cellId || "").toLowerCase();
+    const label = String(col?.label || "").toLowerCase();
+    return `${id} ${cellId} ${label}`;
+};
+
+const isImageLikeColumn = (col) => IMAGE_COLUMN_RE.test(buildColumnHaystack(col));
+const isNameLikeColumn = (col) => NAME_COLUMN_RE.test(buildColumnHaystack(col));
+
 /**
  * UI (style global du tableau).
  * @see docs/30-UI/TANSTACK_TABLE.md
@@ -81,7 +96,6 @@ const debug = computed(() => Boolean(props.config?.ui?.debug));
 
 const tablePrefsNamespace = computed(() => String(props.config?.id || props.entityType || "table"));
 const densityStorageKey = computed(() => `tanstack_table_density_${tablePrefsNamespace.value}`);
-const presetsStorageKey = computed(() => `tanstack_table_filter_presets_${tablePrefsNamespace.value}`);
 
 const densityOptions = [
     { value: "comfortable", label: "Confort", uiSize: "md" },
@@ -295,7 +309,20 @@ const filterPresets = ref([]);
 const selectedPresetId = ref("");
 const hasSavedPresets = computed(() => Array.isArray(filterPresets.value) && filterPresets.value.length > 0);
 const presetFileInput = ref(null);
+const showPresetPanel = ref(false);
 const ariaLiveMessage = ref("");
+const { listPresets, createPreset, updatePreset, deletePreset } = useTableFilterPresets();
+const presetsLoading = ref(false);
+const presetsEnabled = computed(() => {
+    const fromProp = String(props.entityType || "");
+    const fromConfig = String(props.config?._metadata?.entityType || props.config?.entityType || "");
+    return Boolean(fromProp || fromConfig);
+});
+const presetEntityType = computed(() => {
+    const fromProp = String(props.entityType || "").trim();
+    if (fromProp) return fromProp;
+    return String(props.config?._metadata?.entityType || props.config?.entityType || "").trim();
+});
 const activePreset = computed(() => {
     const id = String(selectedPresetId.value || "");
     if (!id) return null;
@@ -340,14 +367,6 @@ const isActivePresetDirty = computed(() => {
     return JSON.stringify(presetSnapshot) !== JSON.stringify(currentSnapshot);
 });
 
-const persistFilterPresets = () => {
-    try {
-        localStorage.setItem(presetsStorageKey.value, JSON.stringify(filterPresets.value || []));
-    } catch {
-        // ignore localStorage errors
-    }
-};
-
 const normalizePresetPayload = (rawPresets) => {
     if (!Array.isArray(rawPresets)) return [];
     return rawPresets
@@ -366,6 +385,50 @@ const normalizePresetPayload = (rawPresets) => {
         })
         .filter(Boolean)
         .slice(0, 20);
+};
+
+const reloadPresetsFromApi = async () => {
+    if (!presetsEnabled.value || !presetEntityType.value) {
+        filterPresets.value = [];
+        selectedPresetId.value = "";
+        return;
+    }
+
+    presetsLoading.value = true;
+    try {
+        const presets = await listPresets({
+            entityType: presetEntityType.value,
+            tableId: tablePrefsNamespace.value,
+            includeGlobal: true,
+        });
+        filterPresets.value = normalizePresetPayload(presets.map((preset) => ({
+            id: preset.id,
+            name: preset.name,
+            searchText: preset.searchText,
+            filters: preset.filters,
+            createdAt: preset.createdAt,
+            isDefault: preset.isDefault,
+            tableId: preset.tableId,
+            entityType: preset.entityType,
+            limit: preset.limit,
+        })));
+
+        const hasSelected = selectedPresetId.value
+            && filterPresets.value.some((preset) => preset.id === selectedPresetId.value);
+        if (!hasSelected) {
+            selectedPresetId.value = "";
+        }
+
+        if (!hasSelected && defaultPreset.value) {
+            applyPresetById(defaultPreset.value.id);
+            notifyInfo(`Preset par défaut appliqué : "${defaultPreset.value.name}".`);
+        }
+    } catch {
+        notifyError("Impossible de charger les presets depuis la base.");
+        filterPresets.value = [];
+    } finally {
+        presetsLoading.value = false;
+    }
 };
 
 const applySearchValue = (value) => {
@@ -391,34 +454,42 @@ const handlePresetSelectionChange = (event) => {
 };
 
 const saveCurrentPreset = () => {
-    if (typeof window === "undefined") return;
+    if (typeof window === "undefined" || !presetsEnabled.value || !presetEntityType.value) return;
     const name = window.prompt("Nom du preset de filtres", "")?.trim();
     if (!name) return;
 
-    const now = Date.now();
-    const snapshot = {
-        id: `${now}`,
+    createPreset({
+        entityType: presetEntityType.value,
+        tableId: tablePrefsNamespace.value,
         name,
         searchText: String(searchText.value || ""),
         filters: { ...(activeFilters.value || {}) },
-        createdAt: now,
+        limit: Number(paginationState.value?.pageSize || 25),
         isDefault: false,
-    };
-
-    filterPresets.value = [snapshot, ...(filterPresets.value || [])].slice(0, 20);
-    selectedPresetId.value = snapshot.id;
-    persistFilterPresets();
-    notifySuccess(`Preset "${name}" sauvegardé.`);
+    })
+        .then(async (created) => {
+            await reloadPresetsFromApi();
+            selectedPresetId.value = created.id;
+            notifySuccess(`Preset "${name}" sauvegardé.`);
+        })
+        .catch(() => {
+            notifyError("Erreur lors de la sauvegarde du preset.");
+        });
 };
 
 const deleteSelectedPreset = () => {
     const id = String(selectedPresetId.value || "");
     if (!id) return;
     const current = (filterPresets.value || []).find((p) => p.id === id);
-    filterPresets.value = (filterPresets.value || []).filter((p) => p.id !== id);
-    selectedPresetId.value = "";
-    persistFilterPresets();
-    notifyInfo(`Preset "${current?.name || id}" supprimé.`);
+    deletePreset(id)
+        .then(async () => {
+            selectedPresetId.value = "";
+            await reloadPresetsFromApi();
+            notifyInfo(`Preset "${current?.name || id}" supprimé.`);
+        })
+        .catch(() => {
+            notifyError("Erreur lors de la suppression du preset.");
+        });
 };
 
 const renameSelectedPreset = () => {
@@ -428,21 +499,28 @@ const renameSelectedPreset = () => {
     if (!current) return;
     const nextName = window.prompt("Nouveau nom du preset", current.name)?.trim();
     if (!nextName) return;
-    filterPresets.value = (filterPresets.value || []).map((p) => (p.id === id ? { ...p, name: nextName } : p));
-    persistFilterPresets();
-    notifySuccess(`Preset renommé en "${nextName}".`);
+    updatePreset(id, { name: nextName })
+        .then(async () => {
+            await reloadPresetsFromApi();
+            notifySuccess(`Preset renommé en "${nextName}".`);
+        })
+        .catch(() => {
+            notifyError("Erreur lors du renommage du preset.");
+        });
 };
 
 const setSelectedPresetAsDefault = () => {
     const id = String(selectedPresetId.value || "");
     if (!id) return;
-    filterPresets.value = (filterPresets.value || []).map((preset) => ({
-        ...preset,
-        isDefault: preset.id === id,
-    }));
-    persistFilterPresets();
     const current = (filterPresets.value || []).find((p) => p.id === id);
-    notifySuccess(`Preset "${current?.name || id}" défini par défaut.`);
+    updatePreset(id, { isDefault: true })
+        .then(async () => {
+            await reloadPresetsFromApi();
+            notifySuccess(`Preset "${current?.name || id}" défini par défaut.`);
+        })
+        .catch(() => {
+            notifyError("Erreur lors de la définition du preset par défaut.");
+        });
 };
 
 const restoreDefaultPreset = () => {
@@ -450,19 +528,27 @@ const restoreDefaultPreset = () => {
     applyPresetById(defaultPreset.value.id);
 };
 
+const restoreActivePreset = () => {
+    if (!activePreset.value) return;
+    applyPresetById(activePreset.value.id);
+    notifyInfo(`Retour au preset actif : "${activePreset.value.name}".`);
+};
+
 const updateActivePresetInPlace = () => {
     const active = activePreset.value;
     if (!active) return;
-    filterPresets.value = (filterPresets.value || []).map((preset) => {
-        if (preset.id !== active.id) return preset;
-        return {
-            ...preset,
-            searchText: String(searchText.value || ""),
-            filters: { ...(activeFilters.value || {}) },
-        };
-    });
-    persistFilterPresets();
-    notifySuccess(`Preset "${active.name}" mis à jour.`);
+    updatePreset(active.id, {
+        searchText: String(searchText.value || ""),
+        filters: { ...(activeFilters.value || {}) },
+        limit: Number(paginationState.value?.pageSize || 25),
+    })
+        .then(async () => {
+            await reloadPresetsFromApi();
+            notifySuccess(`Preset "${active.name}" mis à jour.`);
+        })
+        .catch(() => {
+            notifyError("Erreur lors de la mise à jour du preset.");
+        });
 };
 
 const exportPresetsJson = () => {
@@ -489,6 +575,10 @@ const triggerImportPresets = () => {
     presetFileInput.value?.click();
 };
 
+const togglePresetPanel = () => {
+    showPresetPanel.value = !showPresetPanel.value;
+};
+
 const importPresetsFromFile = async (event) => {
     const file = event?.target?.files?.[0];
     if (!file) return;
@@ -500,13 +590,29 @@ const importPresetsFromFile = async (event) => {
             notifyError("Aucun preset valide trouvé dans le fichier importé.");
             return;
         }
-        const existing = Array.isArray(filterPresets.value) ? filterPresets.value : [];
-        const mergedByName = new Map();
-        for (const preset of [...existing, ...incoming]) {
-            mergedByName.set(preset.name, preset);
+
+        for (const preset of incoming) {
+            // Import en "upsert by name" simplifié côté client.
+            const exists = (filterPresets.value || []).find((p) => p.name === preset.name);
+            if (exists) {
+                await updatePreset(exists.id, {
+                    searchText: preset.searchText || "",
+                    filters: preset.filters || {},
+                    isDefault: Boolean(preset.isDefault),
+                });
+            } else {
+                await createPreset({
+                    entityType: presetEntityType.value,
+                    tableId: tablePrefsNamespace.value,
+                    name: preset.name,
+                    searchText: preset.searchText || "",
+                    filters: preset.filters || {},
+                    isDefault: Boolean(preset.isDefault),
+                });
+            }
         }
-        filterPresets.value = Array.from(mergedByName.values()).slice(0, 20);
-        persistFilterPresets();
+
+        await reloadPresetsFromApi();
         notifySuccess(`${incoming.length} preset(s) importé(s).`);
     } catch {
         notifyError("Import JSON invalide.");
@@ -543,7 +649,13 @@ const effectiveVisibleColumns = computed(() => {
         if (col?.hideable === false || col?.isMain) {
             next[col.id] = true;
             continue;
-            }
+        }
+
+        // Colonnes essentielles: toujours visibles pour garder "Actions > Image > Nom"
+        if (isImageLikeColumn(col) || isNameLikeColumn(col)) {
+            next[col.id] = true;
+            continue;
+        }
 
         // 1) choix explicite utilisateur (uniquement si la colonne a été "touchée")
         if (touched.has(col.id) && typeof prefsMap[col.id] === "boolean") {
@@ -594,12 +706,34 @@ watch(
 // On ne dépend pas de TanStack pour le rendu car on rend nos propres cellules.
 const visibleColumnsFromTable = computed(() => {
     const visCols = effectiveVisibleColumns.value || {};
-    return (columnsConfig.value || []).filter((col) => {
+    const visible = (columnsConfig.value || []).filter((col) => {
         if (!col?.id || col.id === "actions") return false;
         // Colonnes non masquables / main = toujours visibles
         if (col?.hideable === false || col?.isMain) return true;
         return visCols[col.id] !== false;
     });
+
+    const getColumnPriority = (col) => {
+        // Image en priorité (juste après "actions")
+        if (isImageLikeColumn(col)) {
+            return 1;
+        }
+
+        // Nom/titre immédiatement après l'image
+        if (isNameLikeColumn(col)) {
+            return 2;
+        }
+
+        return 10;
+    };
+
+    return visible
+        .map((col, index) => ({ col, index, priority: getColumnPriority(col) }))
+        .sort((a, b) => {
+            if (a.priority !== b.priority) return a.priority - b.priority;
+            return a.index - b.index;
+        })
+        .map((entry) => entry.col);
 });
 
 // Colonnes sans "actions" pour les filtres (utiliser toutes les colonnes configurées)
@@ -806,17 +940,7 @@ onMounted(() => {
         densityMode.value = "comfortable";
     }
 
-    try {
-        const raw = localStorage.getItem(presetsStorageKey.value);
-        const parsed = raw ? JSON.parse(raw) : [];
-        filterPresets.value = normalizePresetPayload(parsed);
-    } catch {
-        filterPresets.value = [];
-    }
-    if (defaultPreset.value) {
-        applyPresetById(defaultPreset.value.id);
-        notifyInfo(`Preset par défaut appliqué : "${defaultPreset.value.name}".`);
-    }
+    reloadPresetsFromApi();
 
     if (typeof window !== "undefined") {
         // Fallback : si ResizeObserver non supporté, on suit le resize fenêtre.
@@ -836,6 +960,13 @@ onMounted(() => {
         }
     }
 });
+
+watch(
+    () => `${presetEntityType.value}|${tablePrefsNamespace.value}`,
+    () => {
+        reloadPresetsFromApi();
+    },
+);
 
 watch(
     () => densityMode.value,
@@ -871,6 +1002,20 @@ const getCellFor = (row, col) => {
     if (entity && typeof entity.toCell === "function") {
         // Récupérer la configuration de la colonne pour le format
         const colFormat = col?.format?.[currentScreenSize.value] || col?.format?.md || {};
+        const entityId = row?.id;
+        let fallbackHref = "";
+        if (
+            props.entityType
+            && entityId !== null
+            && typeof entityId !== "undefined"
+            && !col?.cell?.href
+        ) {
+            fallbackHref = resolveEntityRouteHref(props.entityType, "show", entityId);
+            if (!fallbackHref) {
+                const entityTypePath = String(props.entityType || "").trim();
+                fallbackHref = entityTypePath ? `/entities/${entityTypePath}/${entityId}` : "";
+            }
+        }
         
         // Récupérer les descriptors avec le contexte complet stocké dans _metadata
         const context = props.config?._metadata?.context || {};
@@ -880,7 +1025,7 @@ const getCellFor = (row, col) => {
             size: currentScreenSize.value,
             context: "table",
             format: colFormat,
-            href: col?.cell?.href, // Pour les colonnes route, passer le href si défini
+            href: col?.cell?.href || fallbackHref, // fallback show route par entité si aucun href explicite
             ctx: context, // Contexte complet (meta serveur inclus: capabilities, filterOptions, characteristics, etc.)
             config: descriptors, // Passer les descriptors pour que BaseModel puisse utiliser display.cell
         });
@@ -1488,7 +1633,24 @@ const handleExport = () => {
             class="relative px-3 py-2"
             :class="[bgClass]"
         >
-            <div v-if="activePreset" class="mb-2 flex items-center justify-between gap-2">
+            <div v-if="presetsEnabled" class="mb-2 flex items-center justify-end gap-2">
+                <Btn
+                    size="xs"
+                    variant="ghost"
+                    :color="uiColor"
+                    :title="showPresetPanel ? 'Masquer les presets' : 'Afficher les presets'"
+                    :aria-label="showPresetPanel ? 'Masquer les presets' : 'Afficher les presets'"
+                    class="relative"
+                    @click="togglePresetPanel"
+                >
+                    <i class="fa-solid fa-bookmark"></i>
+                    <span
+                        v-if="isActivePresetDirty"
+                        class="absolute -top-1 -right-1 w-2 h-2 rounded-full bg-warning ring-1 ring-base-100"
+                    ></span>
+                </Btn>
+            </div>
+            <div v-if="presetsEnabled && showPresetPanel && activePreset" class="mb-2 flex items-center justify-between gap-2">
                 <div class="inline-flex items-center gap-2 text-xs">
                     <span class="badge badge-soft badge-primary">
                         Preset actif: {{ activePreset.name }}
@@ -1500,29 +1662,42 @@ const handleExport = () => {
                         Non sauvegardé
                     </span>
                 </div>
-                <Btn
-                    v-if="defaultPreset"
-                    size="xs"
-                    variant="ghost"
-                    :color="uiColor"
-                    :disabled="!canRestoreDefaultPreset"
-                    title="Revenir au preset par défaut"
-                    @click="restoreDefaultPreset"
-                >
-                    Revenir au défaut
-                </Btn>
-                <Btn
-                    v-if="isActivePresetDirty"
-                    size="xs"
-                    variant="outline"
-                    :color="uiColor"
-                    title="Mettre à jour ce preset avec les filtres/recherche actuels"
-                    @click="updateActivePresetInPlace"
-                >
-                    Mettre à jour ce preset
-                </Btn>
+                <div class="flex items-center gap-2">
+                    <Btn
+                        v-if="defaultPreset"
+                        size="xs"
+                        variant="ghost"
+                        :color="uiColor"
+                        :disabled="!canRestoreDefaultPreset"
+                        title="Revenir au preset par défaut"
+                        @click="restoreDefaultPreset"
+                    >
+                        Revenir au défaut
+                    </Btn>
+                    <Btn
+                        v-if="isActivePresetDirty"
+                        size="xs"
+                        variant="ghost"
+                        :color="uiColor"
+                        title="Annuler les changements et revenir au preset actif"
+                        @click="restoreActivePreset"
+                    >
+                        Revenir au preset actif
+                    </Btn>
+                    <Btn
+                        v-if="isActivePresetDirty"
+                        size="xs"
+                        variant="outline"
+                        :color="uiColor"
+                        title="Mettre à jour ce preset avec les filtres/recherche actuels"
+                        @click="updateActivePresetInPlace"
+                    >
+                        Mettre à jour ce preset
+                    </Btn>
+                </div>
             </div>
-            <div class="mb-2 flex flex-wrap items-center justify-end gap-2">
+            <div v-if="presetsEnabled && showPresetPanel" class="mb-2 flex flex-wrap items-center justify-end gap-2">
+                <span v-if="presetsLoading" class="text-xs text-base-content/70">Chargement des presets...</span>
                 <Btn
                     size="xs"
                     variant="outline"
@@ -1535,6 +1710,7 @@ const handleExport = () => {
                 <select
                     class="select select-xs select-bordered"
                     :value="selectedPresetId"
+                    aria-label="Sélectionner un preset de filtres"
                     @change="handlePresetSelectionChange"
                 >
                     <option value="">Presets de filtres</option>
@@ -1636,9 +1812,9 @@ const handleExport = () => {
         </div>
 
         <!-- Table -->
-        <div class="relative overflow-hidden p-1" :class="[bgClass]">
-            <div ref="tableContainerEl" class="overflow-x-auto">
-                <table :key="columnsKey" class="table w-full" :class="[tableVariantClass, tableSizeClass]">
+        <div class="relative overflow-hidden p-1 w-full" :class="[bgClass]">
+            <div ref="tableContainerEl" class="overflow-x-auto w-full">
+                <table :key="columnsKey" class="table w-full tanstack-table-force-full" :class="[tableVariantClass, tableSizeClass]">
                 <TanStackTableHeader
                     :columns="visibleColumnsFromTable"
                     :sort-by="sortingState.length > 0 ? sortingState[0].id : ''"
@@ -1754,3 +1930,9 @@ const handleExport = () => {
 </template>
 
 
+<style scoped lang="scss">
+.tanstack-table-force-full {
+    width: 100% !important;
+    min-width: 100%;
+}
+</style>

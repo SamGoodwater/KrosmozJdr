@@ -284,7 +284,7 @@
   },
   {
     "name": "SectionEntityTableRead",
-    "description": "SectionEntityTableRead Template Affiche un tableau d'entités chargé depuis l'API tables (api.tables.{entity}). Utilise settings.entity, settings.filters et settings.limit pour la requête.",
+    "description": "SectionEntityTableRead Template Rend un vrai TanStack Table d'entités via EntityTanStackTable. Source: API Table v2 (`api.tables.{entity}`) au format `entities`.",
     "props": [],
     "slots": [],
     "file": "section/templates/entity_table/SectionEntityTableRead.vue"
@@ -594,11 +594,6 @@
         "name": "entityType",
         "type": "String",
         "desc": "- Type d'entité (item, spell, monster, etc.)"
-      },
-      {
-        "name": "viewMode",
-        "type": "String",
-        "desc": "- Mode d'affichage ('large' | 'compact'), défaut 'large'"
       },
       {
         "name": "fieldsConfig",

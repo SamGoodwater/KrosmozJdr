@@ -51,7 +51,9 @@ class SpellTableController extends Controller
             $order = 'desc';
         }
 
-        $query = Spell::query()->with(['createdBy', 'spellTypes']);
+        $query = Spell::query()
+            ->with(['createdBy', 'spellTypes'])
+            ->withCount(['spellTypes', 'breeds', 'creatures', 'monsters']);
 
         if ($search !== '') {
             $query->where(function ($q) use ($search) {
@@ -119,10 +121,10 @@ class SpellTableController extends Controller
                 ['value' => '6', 'label' => '6+'],
             ],
             'category' => [
-                ['value' => '0', 'label' => 'Inconnu'],
-                ['value' => '1', 'label' => 'Offensif'],
-                ['value' => '2', 'label' => 'Défensif'],
-                ['value' => '3', 'label' => 'Utilitaire'],
+                ['value' => '0', 'label' => 'Sort de classe'],
+                ['value' => '1', 'label' => 'Sort de créature'],
+                ['value' => '2', 'label' => 'Sort apprenable'],
+                ['value' => '3', 'label' => 'Sort consommable'],
             ],
             'element' => collect(\App\Models\Entity\Spell::ELEMENT)
                 ->map(fn (string $label, int $value) => ['value' => (string) $value, 'label' => $label])
@@ -175,6 +177,10 @@ class SpellTableController extends Controller
                     'image' => $sp->image,
                     'auto_update' => (bool) $sp->auto_update,
                     'spellTypes' => $sp->spellTypes?->map(fn ($t) => ['id' => $t->id, 'name' => $t->name])->values()->all() ?? [],
+                    'spell_types_count' => (int) ($sp->spell_types_count ?? 0),
+                    'breeds_count' => (int) ($sp->breeds_count ?? 0),
+                    'creatures_count' => (int) ($sp->creatures_count ?? 0),
+                    'monsters_count' => (int) ($sp->monsters_count ?? 0),
                     'createdBy' => $createdBy ? [
                         'id' => $createdBy->id,
                         'name' => $createdBy->name,
@@ -337,6 +343,10 @@ class SpellTableController extends Controller
                         'image' => $sp->image,
                         'auto_update' => (bool) $sp->auto_update,
                         'spellTypes' => $sp->spellTypes?->map(fn ($t) => ['id' => $t->id, 'name' => $t->name])->values()->all() ?? [],
+                        'spell_types_count' => (int) ($sp->spell_types_count ?? 0),
+                        'breeds_count' => (int) ($sp->breeds_count ?? 0),
+                        'creatures_count' => (int) ($sp->creatures_count ?? 0),
+                        'monsters_count' => (int) ($sp->monsters_count ?? 0),
                         'createdBy' => $createdBy ? [
                             'id' => $createdBy->id,
                             'name' => $createdBy->name,

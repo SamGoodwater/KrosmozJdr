@@ -92,81 +92,101 @@ const submit = () => {
                     </li>
                 </ul>
             </Alert>
-                <!-- Titre -->
-                <InputField
-                    v-model="form.title"
-                    label="Titre"
-                    type="text"
-                    required
-                    :validation="titleValidation"
-                    placeholder="Titre de la page"
-                />
-                
-                <!-- Slug -->
-                <InputField
-                    v-model="form.slug"
-                    label="Slug"
-                    type="text"
-                    required
-                    :validation="slugValidation"
-                    placeholder="url-de-la-page"
-                    helper="L'URL de la page (généré automatiquement depuis le titre)"
-                    @input="handleSlugInput"
-                />
-                
-                <!-- Lecture (min.) -->
-                <SelectField
-                    v-model="form.read_level"
-                    label="Lecture (min.)"
-                    :options="roleOptions"
-                    required
-                    helper="Qui peut voir cette page ?"
-                />
-                
-                <!-- Écriture (min.) -->
-                <SelectField
-                    v-model="form.write_level"
-                    label="Écriture (min.)"
-                    :options="roleOptions"
-                    required
-                    helper="Rôle minimum requis pour modifier cette page (admin par défaut)"
-                />
-                
-                <!-- État -->
-                <SelectField
-                    v-model="form.state"
-                    label="État"
-                    :options="stateOptions"
-                    required
-                    helper="Cycle de vie de la page"
-                />
-                
-                <!-- Page parente -->
-                <SelectField
-                    v-model="form.parent_id"
-                    label="Page parente"
-                    :options="parentPageOptions"
-                    helper="Page parente pour créer un menu hiérarchique (optionnel)"
-                />
-                
-                <!-- Dans le menu -->
-                <ToggleField
-                    v-model="form.in_menu"
-                    label="Afficher dans le menu"
-                    helper="Si activé, la page apparaîtra dans le menu de navigation"
-                />
-                
-                <!-- Ordre dans le menu -->
-                <InputField
-                    v-model="form.menu_order"
-                    label="Ordre dans le menu"
-                    type="number"
-                    min="0"
-                    helper="Ordre d'affichage dans le menu (0 = premier)"
-                />
+                <div class="form-fields">
+                    <div class="form-field form-field--wide">
+                        <InputField
+                            v-model="form.title"
+                            label="Titre"
+                            type="text"
+                            required
+                            :validation="titleValidation"
+                            placeholder="Titre de la page"
+                        />
+                    </div>
+
+                    <div class="form-field form-field--wide">
+                        <InputField
+                            v-model="form.slug"
+                            label="Slug"
+                            type="text"
+                            required
+                            :validation="slugValidation"
+                            placeholder="url-de-la-page"
+                            helper="L'URL de la page (généré automatiquement depuis le titre)"
+                            @input="handleSlugInput"
+                        />
+                    </div>
+
+                    <div class="form-field">
+                        <SelectField
+                            v-model="form.read_level"
+                            label="Lecture (min.)"
+                            :options="roleOptions"
+                            required
+                            helper="Qui peut voir cette page ?"
+                        />
+                    </div>
+
+                    <div class="form-field">
+                        <SelectField
+                            v-model="form.write_level"
+                            label="Écriture (min.)"
+                            :options="roleOptions"
+                            required
+                            helper="Rôle minimum requis pour modifier cette page (admin par défaut)"
+                        />
+                    </div>
+
+                    <div class="form-field">
+                        <SelectField
+                            v-model="form.state"
+                            label="État"
+                            :options="stateOptions"
+                            required
+                            helper="Cycle de vie de la page"
+                        />
+                    </div>
+
+                    <div class="form-field">
+                        <SelectField
+                            v-model="form.parent_id"
+                            label="Page parente"
+                            :options="parentPageOptions"
+                            helper="Page parente pour créer un menu hiérarchique (optionnel)"
+                        />
+                    </div>
+
+                    <div class="form-field">
+                        <ToggleField
+                            v-model="form.in_menu"
+                            label="Afficher dans le menu"
+                            helper="Si activé, la page apparaîtra dans le menu de navigation"
+                        />
+                    </div>
+
+                    <div class="form-field">
+                        <InputField
+                            v-model="form.menu_order"
+                            label="Ordre dans le menu"
+                            type="number"
+                            min="0"
+                            helper="Ordre d'affichage dans le menu (0 = premier)"
+                        />
+                    </div>
+
+                    <div class="form-field form-field--full">
+                        <InputField
+                            v-model="form.menu_group"
+                            label="Titre de groupe dans le menu"
+                            type="text"
+                            placeholder="Ex: Règles, Bibliothèque, Informations"
+                            helper="Laisser vide pour afficher la page en tête sans titre de groupe (ex: Accueil)."
+                        />
+                    </div>
+                </div>
                 
                 <!-- Actions -->
-                <div class="flex justify-end gap-2 pt-4 border-t border-base-300">
+                <div class="flex flex-wrap justify-end gap-2 pt-4 border-t border-base-300">
                     <Btn
                         type="button"
                         variant="ghost"
@@ -188,5 +208,30 @@ const submit = () => {
 </template>
 
 <style scoped lang="scss">
-// Styles spécifiques si nécessaire
+.form-fields {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.form-field {
+    width: 100%;
+}
+
+@media (min-width: 768px) {
+    .form-field {
+        flex: 1 1 calc(50% - 0.5rem);
+        max-width: calc(50% - 0.5rem);
+    }
+
+    .form-field--wide {
+        flex-basis: calc(66.666% - 0.34rem);
+        max-width: calc(66.666% - 0.34rem);
+    }
+
+    .form-field--full {
+        flex-basis: 100%;
+        max-width: 100%;
+    }
+}
 </style>

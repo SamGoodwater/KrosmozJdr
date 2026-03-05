@@ -183,7 +183,11 @@ final class RelationImportStack
         }
 
         if (!$dryRun && $sync !== []) {
-            $breed->spells()->sync(array_keys($sync));
+            $spellIds = array_map('intval', array_keys($sync));
+            $breed->spells()->sync($spellIds);
+            Spell::query()
+                ->whereIn('id', $spellIds)
+                ->update(['category' => Spell::CATEGORY_CLASS]);
         }
 
         return $addedToPending;
@@ -307,6 +311,10 @@ final class RelationImportStack
         if (!$dryRun) {
             if ($spellIdsToSync !== []) {
                 $creature->spells()->sync(array_values(array_unique($spellIdsToSync)));
+                Spell::query()
+                    ->whereIn('id', array_values(array_unique($spellIdsToSync)))
+                    ->where('category', '!=', Spell::CATEGORY_CLASS)
+                    ->update(['category' => Spell::CATEGORY_CREATURE]);
             }
             if ($resourceSync !== []) {
                 $creature->resources()->sync($resourceSync);
@@ -452,6 +460,7 @@ final class RelationImportStack
         }
         $current = $breed->spells()->pluck('id')->all();
         $breed->spells()->sync(array_values(array_unique(array_merge($current, [$spellId]))));
+        Spell::whereKey($spellId)->update(['category' => Spell::CATEGORY_CLASS]);
     }
 
     private function resolveCreatureSpell(array $payload, int $spellId): void
@@ -466,6 +475,10 @@ final class RelationImportStack
         }
         $current = $creature->spells()->pluck('id')->all();
         $creature->spells()->sync(array_values(array_unique(array_merge($current, [$spellId]))));
+        Spell::query()
+            ->whereKey($spellId)
+            ->where('category', '!=', Spell::CATEGORY_CLASS)
+            ->update(['category' => Spell::CATEGORY_CREATURE]);
     }
 
     private function resolveCreatureResource(array $payload, int $resourceId): void

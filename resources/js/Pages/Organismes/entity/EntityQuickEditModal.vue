@@ -19,6 +19,7 @@ import { ref, watch, computed } from 'vue';
 import Modal from '@/Pages/Molecules/action/Modal.vue';
 import Btn from '@/Pages/Atoms/action/Btn.vue';
 import Icon from '@/Pages/Atoms/data-display/Icon.vue';
+import FormulaHelpHint from '@/Pages/Molecules/entity/FormulaHelpHint.vue';
 import { resolveEntityViewComponentSync } from '@/Utils/entity/resolveEntityViewComponent';
 
 const props = defineProps({
@@ -116,9 +117,12 @@ const canSubmit = computed(() => {
         @close="handleClose"
     >
         <template #header>
-            <h3 class="text-2xl font-bold text-primary-100">
-                Édition rapide : {{ getEntityName() }}
-            </h3>
+            <div class="space-y-2">
+                <h3 class="text-2xl font-bold text-primary-100">
+                    Édition rapide : {{ getEntityName() }}
+                </h3>
+                <FormulaHelpHint />
+            </div>
         </template>
 
         <div class="max-h-[70vh] overflow-y-auto pr-2" v-if="entity">

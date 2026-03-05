@@ -5,13 +5,15 @@
  * @description
  * Page d'édition d'un PNJ avec gestion des relations
  */
-import { ref, computed } from 'vue';
+import { computed } from 'vue';
 import { Head, usePage } from '@inertiajs/vue3';
 import { usePageTitle } from '@/Composables/layout/usePageTitle';
 import { Npc } from '@/Models/Entity/Npc';
 import EntityEditForm from '@/Pages/Organismes/entity/EntityEditForm.vue';
 import EntityRelationsManager from '@/Pages/Organismes/entity/EntityRelationsManager.vue';
 import Container from '@/Pages/Atoms/data-display/Container.vue';
+import Btn from '@/Pages/Atoms/action/Btn.vue';
+import Route from '@/Pages/Atoms/action/Route.vue';
 
 const page = usePage();
 const { setPageTitle } = usePageTitle();
@@ -34,8 +36,6 @@ const props = defineProps({
         default: () => []
     }
 });
-
-const viewMode = ref('large');
 
 const fieldsConfig = {
     story: { 
@@ -82,6 +82,13 @@ setPageTitle(`Modifier le PNJ : ${npcName.value}`);
     <Head :title="`Modifier le PNJ : ${npcName}`" />
     
     <Container class="space-y-6">
+        <Route route="entities.npcs.index">
+            <Btn color="neutral" variant="ghost" size="sm" class="gap-2">
+                <i class="fa-solid fa-arrow-left" aria-hidden="true"></i>
+                Retour à la liste
+            </Btn>
+        </Route>
+
         <div class="p-4 bg-base-200 rounded-lg">
             <p class="text-sm text-base-content/70">
                 <strong>Note :</strong> Le nom du PNJ est géré via la relation Creature. 
@@ -95,10 +102,8 @@ setPageTitle(`Modifier le PNJ : ${npcName.value}`);
         <EntityEditForm
             :entity="npc"
             entity-type="npc"
-            :view-mode="viewMode"
             :fields-config="fieldsConfig"
             :is-updating="true"
-            @update:view-mode="viewMode = $event"
         />
         
         <!-- Gestion des panoplies du PNJ -->

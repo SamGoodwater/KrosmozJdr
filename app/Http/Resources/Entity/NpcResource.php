@@ -27,6 +27,9 @@ class NpcResource extends JsonResource
             'size' => $this->size,
             'breed_id' => $this->breed_id,
             'specialization_id' => $this->specialization_id,
+            'state' => $this->state,
+            'read_level' => $this->read_level,
+            'write_level' => $this->write_level,
             'created_at' => $this->created_at?->toISOString(),
             'updated_at' => $this->updated_at?->toISOString(),
 

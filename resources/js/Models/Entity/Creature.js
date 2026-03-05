@@ -162,9 +162,29 @@ export class Creature extends BaseModel {
     toCell(fieldKey, options = {}) {
         // D'abord, essayer la méthode de base (gère les formatters automatiquement)
         const baseCell = super.toCell(fieldKey, options);
+        const characteristicOverrideFields = new Set([
+            'life',
+            'pa',
+            'pm',
+            'po',
+            'ini',
+            'invocation',
+            'touch',
+            'ca',
+            'dodge_pa',
+            'dodge_pm',
+            'fuite',
+            'tacle',
+            'vitality',
+            'sagesse',
+            'strong',
+            'intel',
+            'agi',
+            'chance',
+        ]);
         
         // Si la méthode de base a trouvé quelque chose (formatter ou valeur par défaut valide), l'utiliser
-        if (baseCell && (baseCell.type !== 'text' || (baseCell.value && baseCell.value !== '-'))) {
+        if (!characteristicOverrideFields.has(fieldKey) && baseCell && (baseCell.type !== 'text' || (baseCell.value && baseCell.value !== '-'))) {
             return baseCell;
         }
 
@@ -229,6 +249,27 @@ export class Creature extends BaseModel {
 
     _getCreatureData() {
         return this._data && typeof this._data === 'object' ? this._data : null;
+    }
+
+    /**
+     * Retourne la map des caractéristiques créature indexées par db_column.
+     * @private
+     */
+    _getCreatureCharacteristicsByColumn(options = {}) {
+        return options?.ctx?.characteristics?.creature?.byDbColumn || {};
+    }
+
+    /**
+     * Résout une caractéristique par ses colonnes candidates.
+     * @private
+     */
+    _getCreatureCharacteristicDef(options = {}, candidates = []) {
+        const byColumn = this._getCreatureCharacteristicsByColumn(options);
+        for (const key of candidates) {
+            const found = byColumn?.[key];
+            if (found) return found;
+        }
+        return null;
     }
 
     _toCreatureCharacteristicsCell(_options) {
@@ -379,6 +420,29 @@ export class Creature extends BaseModel {
     _toNumericCell(fieldKey, format, size, options) {
         const value = this[fieldKey] ?? null;
         const displayValue = value !== null && value !== '' ? String(value) : '-';
+        const characteristicDef = this._getCreatureCharacteristicDef(options, [fieldKey]);
+
+        if (characteristicDef && displayValue !== '-') {
+            const label = characteristicDef?.short_name || characteristicDef?.name || fieldKey.toUpperCase();
+            const numericSort = Number(value);
+            return {
+                type: 'chips',
+                value: '',
+                params: {
+                    items: [
+                        {
+                            icon: characteristicDef.icon || null,
+                            color: characteristicDef.color || null,
+                            value: displayValue,
+                            tooltip: `${label}: ${displayValue}`,
+                        },
+                    ],
+                    sortValue: Number.isFinite(numericSort) ? numericSort : displayValue,
+                    searchValue: displayValue,
+                    filterValue: displayValue,
+                },
+            };
+        }
         
         return {
             type: 'text',

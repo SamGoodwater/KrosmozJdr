@@ -1,12 +1,11 @@
 <script setup>
 /**
-* Dashboard component (Atomic Design refonte)
-* Affiche les infos utilisateur et des exemples de modules (campagnes, scénarios, PNJ) pour tests de design.
+* Page compte utilisateur.
 *
-* - Affichage profil utilisateur (avatar, nom, email, rôle, bouton éditer, alerte mail)
-* - Sections Campagnes, Scénarios, PNJ (titre, badge, bouton voir/créer, EntityCard de test)
-* - Utilise les atoms/molecules à jour (chemins, API)
-* - Pas de logique métier complexe, juste du design
+* - Affichage profil utilisateur (avatar, nom, email, rôle, actions)
+* - Bloc capacités selon rôle
+* - Bloc autorisations spécifiques via relations (accès dédiés)
+* - Sans visuels de démonstration non connectés
 */
 import { Head, usePage } from "@inertiajs/vue3";
 import { computed, onMounted } from "vue";
@@ -18,12 +17,14 @@ import Btn from '@/Pages/Atoms/action/Btn.vue';
 import Route from '@/Pages/Atoms/action/Route.vue';
 import BadgeRole from '@/Pages/Molecules/user/BadgeRole.vue';
 import Container from '@/Pages/Atoms/data-display/Container.vue';
-import Badge from '@/Pages/Atoms/data-display/Badge.vue';
-import EntityCard from '@/Pages/Molecules/entity/EntityCard.vue';
 import Tooltip from '@/Pages/Atoms/feedback/Tooltip.vue';
+import Icon from '@/Pages/Atoms/data-display/Icon.vue';
+import EntityLabel from '@/Pages/Atoms/data-display/EntityLabel.vue';
 import VerifyMailAlert from '@/Pages/Molecules/user/VerifyMailAlert.vue';
 
 const page = usePage();
+const RELATION_DISPLAY_LIMIT = 4;
+
 // Le user est passé via page.props.user (UserResource)
 // On utilise computed pour réactivité
 // Note: Si les données sont dans user.data (pagination), on les extrait
@@ -36,6 +37,164 @@ const user = computed(() => {
     return userData;
 });
 const { setPageTitle } = usePageTitle();
+
+const roleValue = computed(() => Number(user.value?.role ?? 0));
+const canManageEntities = computed(() => roleValue.value >= 3);
+
+const roleCapabilities = computed(() => {
+    const isGameMasterOrMore = roleValue.value >= 3;
+    const isAdminOrMore = roleValue.value >= 4;
+
+    return [
+        {
+            key: 'manage-entities',
+            label: 'Créer et gérer les contenus du jeu',
+            enabled: isGameMasterOrMore,
+            hint: isGameMasterOrMore
+                ? 'Disponible à partir du rôle meneur de jeu.'
+                : 'Réservé aux meneurs de jeu et aux administrateurs.',
+        },
+        {
+            key: 'manage-content',
+            label: 'Gérer les pages et les sections',
+            enabled: isAdminOrMore,
+            hint: isAdminOrMore
+                ? 'Disponible pour les administrateurs.'
+                : 'Réservé aux administrateurs.',
+        },
+    ];
+});
+
+const entityShortcuts = computed(() => ([
+    {
+        key: 'spells',
+        label: 'Gérer les sorts',
+        entityType: 'spell',
+        routeName: 'entities.spells.index',
+        colorVar: 'var(--color-spell-800)',
+    },
+    {
+        key: 'resources',
+        label: 'Gérer les ressources',
+        entityType: 'resource',
+        routeName: 'entities.resources.index',
+        colorVar: 'var(--color-resource-800)',
+    },
+    {
+        key: 'items',
+        label: 'Gérer les équipements',
+        entityType: 'item',
+        routeName: 'entities.items.index',
+        colorVar: 'var(--color-item-800)',
+    },
+    {
+        key: 'consumables',
+        label: 'Gérer les consommables',
+        entityType: 'consumable',
+        routeName: 'entities.consumables.index',
+        colorVar: 'var(--color-consumable-800)',
+    },
+    {
+        key: 'panoplies',
+        label: 'Gérer les panoplies',
+        entityType: 'panoply',
+        routeName: 'entities.panoplies.index',
+        colorVar: 'var(--color-panoply-800)',
+    },
+    {
+        key: 'breeds',
+        label: 'Gérer les classes',
+        entityType: 'breed',
+        routeName: 'entities.breeds.index',
+        colorVar: 'var(--color-breed-800)',
+    },
+    {
+        key: 'monsters',
+        label: 'Gérer les monstres',
+        entityType: 'monster',
+        routeName: 'entities.monsters.index',
+        colorVar: 'var(--color-monster-800)',
+    },
+]));
+
+const getShortcutCardStyle = (colorVar) => ({
+    backgroundColor: `color-mix(in srgb, ${colorVar} 8%, var(--color-base-100))`,
+    borderColor: `color-mix(in srgb, ${colorVar} 35%, var(--color-base-300))`,
+    boxShadow: `0 10px 24px -18px ${colorVar}`,
+});
+
+const relationGroups = computed(() => ([
+    {
+        key: 'pages',
+        label: 'Pages',
+        entityType: 'page',
+        routeName: 'pages.show',
+        indexRouteName: 'pages.index',
+    },
+    {
+        key: 'sections',
+        label: 'Sections',
+        entityType: 'section',
+        routeName: 'sections.show',
+        indexRouteName: 'sections.index',
+    },
+    {
+        key: 'campaigns',
+        label: 'Campagnes',
+        entityType: 'campaign',
+        routeName: 'entities.campaigns.show',
+        indexRouteName: 'entities.campaigns.index',
+    },
+    {
+        key: 'scenarios',
+        label: 'Scénarios',
+        entityType: 'scenario',
+        routeName: 'entities.scenarios.show',
+        indexRouteName: 'entities.scenarios.index',
+    },
+]));
+
+const accessGroups = computed(() => {
+    return relationGroups.value.map((group) => {
+        const all = Array.isArray(user.value?.[group.key]) ? user.value[group.key] : [];
+        return {
+            ...group,
+            total: all.length,
+            visible: all.slice(0, RELATION_DISPLAY_LIMIT),
+            hiddenCount: Math.max(0, all.length - RELATION_DISPLAY_LIMIT),
+        };
+    });
+});
+
+const hasSpecificAccess = computed(() => accessGroups.value.some((group) => group.total > 0));
+
+const resolveItemLabel = (item) => {
+    return item?.name || item?.title || item?.slug || (item?.id ? `#${item.id}` : 'Sans nom');
+};
+
+const resolveItemRouteParam = (item) => item?.slug || item?.id || null;
+
+const resolveItemHref = (routeName, item) => {
+    const routeParam = resolveItemRouteParam(item);
+    if (!routeParam || typeof route === 'undefined') return '#';
+    try {
+        return route(routeName, routeParam);
+    } catch {
+        return '#';
+    }
+};
+
+const hasPivotAccess = (item) => Boolean(item?.pivot);
+
+const levelSummary = (item) => {
+    const readLevel = Number.isInteger(item?.read_level) ? item.read_level : null;
+    const writeLevel = Number.isInteger(item?.write_level) ? item.write_level : null;
+    if (readLevel === null && writeLevel === null) return '';
+    if (readLevel !== null && writeLevel !== null) {
+        return `Lecture ${readLevel} - Édition ${writeLevel}`;
+    }
+    return readLevel !== null ? `Lecture ${readLevel}` : `Édition ${writeLevel}`;
+};
 
 onMounted(() => {
     setPageTitle('Mon Compte');
@@ -87,126 +246,132 @@ onMounted(() => {
             </div>
             <hr class="border-gray-300 dark:border-gray-700 my-4" />
 
-            <!-- Section Campagnes -->
-            <div class="flex flex-col items-start gap-4 my-5">
-                <div class="flex justify-between gap-4 items-center w-full">
-                    <h3 class="text-lg font-bold text-primary-100">
-                        Mes Campagnes
-                        <Badge class="ml-2 uppercase" color="primary">Campagne</Badge>
-                    </h3>
-                    <div>
-                        <Tooltip content="Aucune campagne en cours">
-                            <Route route="">
-                                <Btn color="neutral" variant="glass" size="sm">Voir mes campagnes</Btn>
-                            </Route>
-                        </Tooltip>
+            <div class="rounded-(--radius-box) border border-base-300 bg-base-200/30 p-4 space-y-3">
+                <h3 class="text-lg font-bold text-primary-100">Capacités selon votre rôle</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    <div
+                        v-for="capability in roleCapabilities"
+                        :key="capability.key"
+                        class="rounded-(--radius-field) border border-base-300 bg-base-100/60 px-3 py-2"
+                    >
+                        <div class="flex items-center gap-2">
+                            <Icon
+                                :source="capability.enabled ? 'fa-solid fa-circle-check' : 'fa-solid fa-circle-xmark'"
+                                size="sm"
+                                :class="capability.enabled ? 'text-success' : 'text-warning'"
+                            />
+                            <p class="font-semibold text-primary-100">{{ capability.label }}</p>
+                        </div>
+                        <p class="mt-1 text-sm text-primary-200">{{ capability.hint }}</p>
                     </div>
-                </div>
-                <div class="grid grid-cols-2 gap-4 max-sm:grid-cols-1 max-sm:gap-2 justify-items-center items-center">
-                    <EntityCard class="my-4" title="Ma Campagne"
-                        image="https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fexternal-preview.redd.it%2FgqAwVxC2dXU-5xVfOELCvNRYBotyqQH5I6QoLqQNOdE.jpg%3Fauto%3Dwebp%26s%3Deb300cd46e5373d222ef549427621df6aa44c31a&f=1&nofb=1&ipt=566b85f79c1f044372650b7fd3c0371313b4b9f8c60045bafa2f7773ba1dcb3d&ipo=images"
-                        :type="{ name: 'campagne', color: 'primary' }"
-                        :actions="['pin', 'favorite', 'view', 'edit', 'share']">
-                        <template #properties>
-                            <Badge size="sm" color="primary">Test</Badge>
-                        </template>
-                        <template #content>
-                            <p>Description de la campagne</p>
-                        </template>
-                        <template #hoverContent>
-                            <p class="text-primary-100">Description détaillée de la campagne. Lorem ipsum dolor sit amet
-                                consectetur adipisicing elit.</p>
-                        </template>
-                    </EntityCard>
-                    <Tooltip content="Créer une campagne">
-                        <Route route="">
-                            <Btn color="secondary" circle>
-                                <i class="text-2xl fa-solid fa-plus"></i>
-                            </Btn>
-                        </Route>
-                    </Tooltip>
                 </div>
             </div>
 
-            <!-- Section Scénarios -->
-            <div class="flex flex-col items-start gap-4 my-5">
-                <div class="flex justify-between gap-4 items-center w-full">
-                    <h3 class="text-lg font-bold text-primary-100">
-                        Mes Scénarios
-                        <Badge class="ml-2 uppercase" color="primary">Scénario</Badge>
-                    </h3>
-                    <div>
-                        <Tooltip content="Aucun scénario en cours">
-                            <Route route="">
-                                <Btn color="neutral" variant="glass" size="sm">Voir mes scénarios</Btn>
-                            </Route>
-                        </Tooltip>
-                    </div>
+            <div class="rounded-(--radius-box) border border-base-300 bg-base-200/30 p-4 space-y-3">
+                <h3 class="text-lg font-bold text-primary-100">Raccourcis de gestion</h3>
+                <p class="text-sm text-primary-200">
+                    Accès rapide aux contenus principaux du jeu.
+                </p>
+
+                <div v-if="canManageEntities" class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-2">
+                    <Route
+                        v-for="shortcut in entityShortcuts"
+                        :key="shortcut.key"
+                        :route="shortcut.routeName"
+                        class="no-underline"
+                    >
+                        <div
+                            class="rounded-(--radius-field) border px-3 py-2 transition-all duration-200 hover:-translate-y-px hover:brightness-105"
+                            :style="getShortcutCardStyle(shortcut.colorVar)"
+                        >
+                            <div class="flex items-center gap-2">
+                                <EntityLabel
+                                    :entity="shortcut.entityType"
+                                    variant="icon-inline"
+                                    size="xs"
+                                />
+                                <span class="text-sm font-semibold text-primary-100">
+                                    {{ shortcut.label }}
+                                </span>
+                            </div>
+                        </div>
+                    </Route>
                 </div>
-                <div class="grid grid-cols-2 gap-4 max-sm:grid-cols-1 max-sm:gap-2 justify-items-center items-center">
-                    <EntityCard class="my-4" title="Mon Scénario"
-                        image="https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Ftse1.mm.bing.net%2Fth%3Fid%3DOIP.KsyY2uAKnTa1N6HXbpg5swHaEI%26pid%3DApi&f=1&ipt=4d00f059f254b63c38cc6a12030cfb466843587d98f288fc5a1bfa5fd99a36bd&ipo=images"
-                        :type="{ name: 'scenario', color: 'primary' }"
-                        :actions="['pin', 'favorite', 'view', 'edit', 'share']">
-                        <template #properties>
-                            <Badge size="sm" color="primary">Test</Badge>
-                        </template>
-                        <template #content>
-                            <p class="text-primary-200">Description du scénario</p>
-                        </template>
-                        <template #hoverContent>
-                            <p class="text-primary-100">Description détaillée du scénario. Lorem ipsum dolor sit amet
-                                consectetur adipisicing elit.</p>
-                        </template>
-                    </EntityCard>
-                    <Tooltip content="Créer un scénario">
-                        <Route route="">
-                            <Btn color="secondary" circle>
-                                <i class="text-2xl fa-solid fa-plus"></i>
-                            </Btn>
-                        </Route>
-                    </Tooltip>
+
+                <div v-else class="rounded-(--radius-field) border border-base-300 bg-base-100/60 p-3">
+                    <p class="text-sm text-primary-200">
+                        Ces raccourcis de gestion sont disponibles a partir du role meneur de jeu.
+                    </p>
                 </div>
             </div>
 
-            <!-- Section PNJ -->
-            <div class="flex flex-col items-start gap-4 my-5">
-                <div class="flex justify-between gap-4 items-center w-full">
-                    <h3 class="text-lg font-bold text-primary-100">
-                        Mes PNJ
-                        <Badge class="ml-2 uppercase" color="primary">PNJ</Badge>
-                    </h3>
-                    <div>
-                        <Tooltip content="Aucun PNJ créé">
-                            <Route route="">
-                                <Btn color="neutral" variant="glass" size="sm">Voir mes PNJ</Btn>
+            <div class="rounded-(--radius-box) border border-base-300 bg-base-200/30 p-4 space-y-3">
+                <h3 class="text-lg font-bold text-primary-100">Accès personnalisés</h3>
+                <p class="text-sm text-primary-200">
+                    Voici les accès supplémentaires accordés sur certains contenus, en plus des droits liés à votre rôle.
+                </p>
+
+                <div v-if="hasSpecificAccess" class="space-y-4">
+                    <div
+                        v-for="group in accessGroups"
+                        :key="group.key"
+                        v-show="group.total > 0"
+                        class="space-y-2"
+                    >
+                        <div class="flex items-center justify-between gap-2">
+                            <p class="font-semibold text-primary-100">{{ group.label }}</p>
+                            <span class="badge badge-ghost badge-sm">{{ group.total }}</span>
+                        </div>
+
+                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-2">
+                            <div
+                                v-for="item in group.visible"
+                                :key="`${group.key}-${item.id || item.slug}`"
+                                class="flex items-center justify-between gap-3 rounded-(--radius-field) border border-base-300 bg-base-100/60 px-3 py-2"
+                            >
+                                <div class="flex items-center gap-2 min-w-0">
+                                    <EntityLabel
+                                        :entity="group.entityType"
+                                        variant="icon-inline"
+                                        size="xs"
+                                        :label="group.label"
+                                    />
+                                    <Route
+                                        :href="resolveItemHref(group.routeName, item)"
+                                        color="primary"
+                                        hover
+                                        class="truncate"
+                                    >
+                                        {{ resolveItemLabel(item) }}
+                                    </Route>
+                                </div>
+                                <div class="flex items-center gap-1 shrink-0">
+                                    <span v-if="hasPivotAccess(item)" class="badge badge-info badge-xs">Accès accordé</span>
+                                    <span v-if="levelSummary(item)" class="badge badge-ghost badge-xs">{{ levelSummary(item) }}</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <p v-if="group.hiddenCount > 0" class="text-xs text-primary-300">
+                            +{{ group.hiddenCount }} autre(s) {{ group.label.toLowerCase() }} non affiché(s) pour garder une vue compacte.
+                        </p>
+                        <div v-if="group.hiddenCount > 0" class="flex justify-end">
+                            <Route
+                                :route="group.indexRouteName"
+                                color="primary"
+                                hover
+                                class="text-xs"
+                            >
+                                Voir tout
                             </Route>
-                        </Tooltip>
+                        </div>
                     </div>
                 </div>
-                <div class="grid grid-cols-2 gap-4 max-sm:grid-cols-1 max-sm:gap-2 justify-items-center items-center">
-                    <EntityCard class="my-4" title="Mon PNJ"
-                        image="https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fi.pinimg.com%2Foriginals%2Fa7%2F4e%2F83%2Fa74e8393aa3abe1b4fd079e18517724d.jpg&f=1&nofb=1&ipt=61d0e34410ac05733ee0161fb2a1a6d767bc47b37f4b4542e8c5c8748c607d57&ipo=images"
-                        :type="{ name: 'npc', color: 'primary' }"
-                        :actions="['pin', 'favorite', 'view', 'edit', 'share']">
-                        <template #properties>
-                            <Badge size="sm" color="primary">Test</Badge>
-                        </template>
-                        <template #content>
-                            <p class="text-primary-200">Description du PNJ</p>
-                        </template>
-                        <template #hoverContent>
-                            <p class="text-primary-100">Description détaillée du PNJ. Lorem ipsum dolor sit amet
-                                consectetur adipisicing elit.</p>
-                        </template>
-                    </EntityCard>
-                    <Tooltip content="Créer un PNJ">
-                        <Route route="">
-                            <Btn color="secondary" circle>
-                                <i class="text-2xl fa-solid fa-plus"></i>
-                            </Btn>
-                        </Route>
-                    </Tooltip>
+
+                <div v-else class="rounded-(--radius-field) border border-base-300 bg-base-100/60 p-3">
+                    <p class="text-sm text-primary-200">
+                        Aucun accès personnalisé supplémentaire pour le moment.
+                    </p>
                 </div>
             </div>
         </div>

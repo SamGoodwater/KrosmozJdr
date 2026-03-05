@@ -35,7 +35,8 @@ export function usePageForm(initialData = null, options = {}) {
     in_menu: true,
     state: 'draft',
     parent_id: null,
-    menu_order: 0
+    menu_order: 0,
+    menu_group: null,
   };
   
   // Fusionner avec les données initiales si fournies

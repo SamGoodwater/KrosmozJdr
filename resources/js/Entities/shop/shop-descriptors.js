@@ -197,7 +197,7 @@ export function getShopFieldDescriptors(ctx = {}) {
       },
       edit: {
         form: {
-          type: "number",
+          type: "text",
           group: "Métier",
           placeholder: "Ex: 100",
           required: false,
@@ -349,7 +349,7 @@ export function getShopFieldDescriptors(ctx = {}) {
       },
       edit: {
         form: {
-          type: "number",
+          type: "text",
           group: "Métier",
           required: false,
           showInCompact: false,

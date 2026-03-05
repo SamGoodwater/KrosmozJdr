@@ -39,7 +39,31 @@ class UpdatePageRequest extends FormRequest
             'write_level' => ['sometimes', 'integer', 'min:0', 'max:5', 'gte:read_level'],
             'parent_id' => ['nullable', 'exists:pages,id'],
             'menu_order' => ['sometimes', 'integer'],
+            'menu_group' => ['nullable', 'string', 'max:100'],
         ];
+    }
+
+    public function withValidator(\Illuminate\Validation\Validator $validator): void
+    {
+        $validator->after(function (\Illuminate\Validation\Validator $validator): void {
+            $page = $this->route('page');
+            if (!$page instanceof Page) {
+                return;
+            }
+
+            if (!$page->isCriticalPage()) {
+                return;
+            }
+
+            if (!$this->has('slug')) {
+                return;
+            }
+
+            $requestedSlug = (string) $this->input('slug', '');
+            if ($requestedSlug !== (string) $page->slug) {
+                $validator->errors()->add('slug', 'Le slug des pages critiques ne peut pas être modifié.');
+            }
+        });
     }
 
     protected function prepareForValidation()
@@ -54,6 +78,10 @@ class UpdatePageRequest extends FormRequest
             $this->merge([
                 'in_menu' => filter_var($data['in_menu'], FILTER_VALIDATE_BOOLEAN),
             ]);
+        }
+        if (array_key_exists('menu_group', $data)) {
+            $group = trim((string) $data['menu_group']);
+            $this->merge(['menu_group' => $group === '' ? null : $group]);
         }
     }
 }

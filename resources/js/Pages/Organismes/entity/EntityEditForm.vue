@@ -3,13 +3,10 @@
  * EntityEditForm Organism
  * 
  * @description
- * Composant réutilisable pour l'édition des entités avec deux modes d'affichage :
- * - Mode Grand : Formulaire complet avec tous les champs visibles
- * - Mode Compact : Formulaire condensé avec champs essentiels uniquement
+ * Composant réutilisable pour la création/édition des contenus.
  * 
  * @props {Object} entity - Données de l'entité à éditer
  * @props {String} entityType - Type d'entité (item, spell, monster, etc.)
- * @props {String} viewMode - Mode d'affichage ('large' | 'compact'), défaut 'large'
  * @props {Object} fieldsConfig - Configuration des champs à afficher
  * @props {Boolean} isUpdating - Mode édition (true) ou création (false)
  */
@@ -24,6 +21,8 @@ import FileField from '@/Pages/Molecules/data-input/FileField.vue';
 import ToggleCore from '@/Pages/Atoms/data-input/ToggleCore.vue';
 import Btn from '@/Pages/Atoms/action/Btn.vue';
 import Tooltip from '@/Pages/Atoms/feedback/Tooltip.vue';
+import FormulaHelpHint from '@/Pages/Molecules/entity/FormulaHelpHint.vue';
+import { FORMULA_PLACEHOLDER } from '@/Utils/entity/formula-help';
 
 const props = defineProps({
     entity: {
@@ -33,11 +32,6 @@ const props = defineProps({
     entityType: {
         type: String,
         required: true
-    },
-    viewMode: {
-        type: String,
-        default: 'large',
-        validator: (value) => ['large', 'compact'].includes(value)
     },
     fieldsConfig: {
         type: Object,
@@ -68,12 +62,9 @@ const props = defineProps({
     }
 });
 
-const emit = defineEmits(['submit', 'cancel', 'update:viewMode']);
+const emit = defineEmits(['submit', 'cancel']);
 
 const notificationStore = useNotificationStore();
-
-// Mode d'affichage local (peut être modifié par l'utilisateur)
-const localViewMode = ref(props.viewMode);
 
 /**
  * Multi-edit quand on n'a pas d'ID et qu'on est en mode update.
@@ -129,14 +120,73 @@ const fieldsConfig = computed(() => {
     return { ...defaultFieldsConfig.value, ...props.fieldsConfig };
 });
 
-// Filtrage des champs selon le mode d'affichage
-// ⚠️ IMPORTANT : showInCompact n'existe plus dans les descriptors.
-// Les vues (Large/Compact) décident elles-mêmes quels champs afficher.
-// Ici, on affiche tous les champs pour les deux modes.
-// Si besoin de filtrage spécifique, il doit être fait dans les vues d'édition dédiées.
+const hiddenFieldKeys = new Set(['auto_update', 'dofus_version']);
+const topRowFieldKeys = ['name'];
+const secondaryFieldKeys = new Set([
+    'id', 'slug', 'read_level', 'write_level',
+    'created_by', 'updated_by', 'created_at', 'updated_at', 'deleted_at',
+    'dofusdb_id', 'dofusdb_type_id',
+    'source', 'source_url', 'source_ref',
+]);
+
+const isSecondaryField = (fieldKey, fieldConfig) => {
+    if (secondaryFieldKeys.has(fieldKey)) return true;
+    const group = String(fieldConfig?.group || '').toLowerCase();
+    if (!group) return false;
+    return group.includes('meta') || group.includes('statut') || group.includes('permission');
+};
+
 const visibleFields = computed(() => {
-    return Object.entries(fieldsConfig.value);
+    const entries = Object.entries(fieldsConfig.value).filter(([fieldKey]) => !hiddenFieldKeys.has(fieldKey));
+    const entryByKey = new Map(entries.map(([key, config]) => [key, { key, config }]));
+    const consumed = new Set();
+    const ordered = [];
+
+    for (const key of topRowFieldKeys) {
+        const entry = entryByKey.get(key);
+        if (!entry) continue;
+        ordered.push(entry);
+        consumed.add(key);
+    }
+
+    let descriptionEntry = null;
+    const important = [];
+    const secondary = [];
+
+    for (const [fieldKey, fieldConfig] of entries) {
+        if (consumed.has(fieldKey)) continue;
+        if (fieldKey === 'description') {
+            descriptionEntry = { key: fieldKey, config: fieldConfig };
+            continue;
+        }
+
+        if (isSecondaryField(fieldKey, fieldConfig)) {
+            secondary.push({ key: fieldKey, config: fieldConfig });
+            continue;
+        }
+
+        important.push({ key: fieldKey, config: fieldConfig });
+    }
+
+    ordered.push(...important);
+    if (descriptionEntry) ordered.push(descriptionEntry);
+    ordered.push(...secondary);
+
+    return ordered;
 });
+
+const stateField = computed(() => {
+    const entry = visibleFields.value.find((field) => field?.key === 'state');
+    return entry?.config ? entry : null;
+});
+
+const accessLevelFields = computed(() =>
+    visibleFields.value.filter((field) => ['read_level', 'write_level'].includes(field?.key))
+);
+
+const mainFields = computed(() =>
+    visibleFields.value.filter((field) => !['state', 'read_level', 'write_level'].includes(field?.key))
+);
 
 // Initialisation du formulaire avec les données de l'entité
 const initializeForm = () => {
@@ -328,6 +378,95 @@ const getFieldValidation = (fieldKey) => {
     };
 };
 
+const nonFormulaFieldKeys = new Set([
+    'id', 'name', 'title', 'slug', 'description', 'image', 'icon', 'state', 'decision',
+    'read_level', 'write_level', 'created_at', 'updated_at', 'deleted_at',
+]);
+
+const isFormulaFriendlyField = (fieldKey, fieldConfig) => {
+    if (!fieldConfig || fieldConfig.type !== 'text') return false;
+    if (nonFormulaFieldKeys.has(fieldKey)) return false;
+    return true;
+};
+
+const getFieldPlaceholder = (fieldKey, fieldConfig) => {
+    if (props.differentFields.includes(fieldKey)) return 'Valeurs différentes';
+    if (fieldConfig?.placeholder) return fieldConfig.placeholder;
+    if (isFormulaFriendlyField(fieldKey, fieldConfig)) return FORMULA_PLACEHOLDER;
+    return undefined;
+};
+
+const isImageField = (fieldKey, fieldConfig) => {
+    const key = String(fieldKey || '').toLowerCase();
+    const label = String(fieldConfig?.label || '').toLowerCase();
+    return key.includes('image') || key.includes('thumbnail') || label.includes('image');
+};
+
+const getFieldRenderType = (fieldKey, fieldConfig) => {
+    if (fieldConfig?.type === 'file') return 'file';
+    if (fieldConfig?.type === 'text' && isImageField(fieldKey, fieldConfig)) return 'file';
+    return fieldConfig?.type || 'text';
+};
+
+const getFileCurrentPath = (fieldKey) => {
+    const value = form[fieldKey];
+    return typeof value === 'string' ? value : null;
+};
+
+const getFileAccept = (fieldKey, fieldConfig) => {
+    if (fieldConfig?.accept) return fieldConfig.accept;
+    return isImageField(fieldKey, fieldConfig) ? 'image/*' : undefined;
+};
+
+const humanizeFieldKey = (fieldKey) => {
+    const raw = String(fieldKey || '')
+        .replace(/[_-]+/g, ' ')
+        .trim();
+    if (!raw) return '';
+    return raw.charAt(0).toUpperCase() + raw.slice(1);
+};
+
+const getFieldLabel = (fieldKey, fieldConfig) => {
+    if (fieldConfig?.label && String(fieldConfig.label).trim() !== '' && fieldConfig.label !== fieldKey) {
+        return fieldConfig.label;
+    }
+
+    const fallbackLabels = {
+        state: 'État',
+        read_level: 'Lecture (min.)',
+        write_level: 'Écriture (min.)',
+        ap_cost: 'Coût en PA',
+        pa: 'PA',
+        pm: 'PM',
+        po: 'PO',
+        po_min: 'PO min',
+        po_max: 'PO max',
+        aoe: 'Zone d’effet',
+    };
+
+    return fallbackLabels[fieldKey] || humanizeFieldKey(fieldKey);
+};
+
+const getFieldHelper = (fieldKey, fieldConfig) => {
+    if (fieldConfig?.help && String(fieldConfig.help).trim() !== '') return fieldConfig.help;
+
+    if (fieldKey === 'read_level') {
+        return "Niveau de privilège minimum requis pour consulter ce contenu.";
+    }
+    if (fieldKey === 'write_level') {
+        return "Niveau de privilège minimum requis pour modifier ce contenu.";
+    }
+
+    return undefined;
+};
+
+const getFieldWrapperClass = (fieldKey) => ([
+    'form-field',
+    props.differentFields.includes(fieldKey) ? 'opacity-60' : '',
+    fieldKey === 'name' ? 'form-field--wide' : '',
+    fieldKey === 'description' ? 'form-field--full' : '',
+].filter(Boolean));
+
 // Soumission du formulaire
 const submit = () => {
     // Si l'entité n'a pas d'ID (édition multiple), émettre directement les données
@@ -364,7 +503,7 @@ const submit = () => {
         preserveScroll: true,
         onSuccess: () => {
             notificationStore.success(
-                props.isUpdating ? 'Entité mise à jour avec succès' : 'Entité créée avec succès',
+                props.isUpdating ? 'Modifications enregistrées avec succès' : 'Création effectuée avec succès',
                 { duration: 3000, placement: 'top-right' }
             );
             emit('submit', form.data());
@@ -393,235 +532,266 @@ const cancel = () => {
     }
 };
 
-// Toggle du mode d'affichage
-const toggleViewMode = () => {
-    localViewMode.value = localViewMode.value === 'large' ? 'compact' : 'large';
-    emit('update:viewMode', localViewMode.value);
-};
-
 </script>
 
 <template>
-    <Container :class="[
-        'entity-edit-form',
-        viewMode === 'compact' ? 'compact-mode' : 'large-mode'
-    ]">
-        <!-- En-tête avec toggle du mode -->
+    <Container class="entity-edit-form">
         <div class="flex flex-col gap-4 mb-6">
-            <div class="flex justify-between items-center">
-                <h2 class="text-2xl font-bold">
-                    {{ isUpdating ? 'Modifier' : 'Créer' }} {{ entityType }}
-                </h2>
-                <Btn
-                    @click="toggleViewMode"
-                    variant="ghost"
-                    size="sm"
-                    :title="localViewMode === 'large' ? 'Mode compact' : 'Mode grand'"
+            <div class="top-tools-row">
+                <div class="top-tools-row__formula rounded-(--radius-field) border border-base-300 bg-base-100/60 px-3 py-2">
+                    <FormulaHelpHint placement="bottom-start" />
+                </div>
+
+                <div
+                    v-if="stateField?.config"
+                    class="state-field w-full md:w-[180px] md:min-w-[180px]"
                 >
-                    <i :class="localViewMode === 'large' ? 'fa-solid fa-compress' : 'fa-solid fa-expand'"></i>
-                    {{ localViewMode === 'large' ? 'Compact' : 'Grand' }}
-                </Btn>
+                    <SelectField
+                        v-model="form[stateField.key]"
+                        @update:model-value="() => markDirty(stateField.key)"
+                        :label="getFieldLabel(stateField.key, stateField.config)"
+                        :options="stateField.config.options || []"
+                        :required="stateField.config.required"
+                        :validation="getFieldValidation(stateField.key)"
+                    />
+                </div>
             </div>
         </div>
 
         <!-- Formulaire -->
         <form @submit.prevent="submit" class="space-y-6">
-            <div :class="[
-                'grid gap-6',
-                localViewMode === 'compact' ? 'grid-cols-1 md:grid-cols-2' : 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3'
-            ]">
-                <template v-for="[fieldKey, fieldConfig] in visibleFields" :key="fieldKey">
-                    <div :class="{ 'opacity-60': props.differentFields.includes(fieldKey) }">
-                        <Tooltip 
-                            :content="props.differentFields.includes(fieldKey) ? `${fieldConfig.label} (valeurs différentes)` : fieldConfig.label" 
-                            placement="top"
-                        >
-                            <!-- InputField -->
-                            <InputField
-                                v-if="fieldConfig.type === 'text' || !['textarea', 'select', 'file', 'number', 'checkbox'].includes(fieldConfig.type)"
-                                v-model="form[fieldKey]"
-                                @update:modelValue="() => markDirty(fieldKey)"
-                                :label="fieldConfig.label"
-                                :type="fieldConfig.type || 'text'"
-                                :required="fieldConfig.required"
-                                :validation="getFieldValidation(fieldKey)"
-                                :placeholder="props.differentFields.includes(fieldKey) ? 'Valeurs différentes' : undefined"
+            <div class="form-fields">
+                <template v-for="field in mainFields" :key="field.key">
+                    <template v-if="field?.config">
+                        <div :class="getFieldWrapperClass(field.key)">
+                            <Tooltip 
+                                class="w-full"
+                                :content="props.differentFields.includes(field.key) ? `${getFieldLabel(field.key, field.config)} (valeurs différentes)` : getFieldLabel(field.key, field.config)" 
+                                placement="top"
                             >
-                                <template
-                                    v-if="isMultiEdit && props.differentFields.includes(fieldKey) && fieldDirty.value?.[fieldKey]"
-                                    #overEnd
+                                <!-- InputField -->
+                                <InputField
+                                    v-if="getFieldRenderType(field.key, field.config) === 'text' || !['textarea', 'select', 'file', 'number', 'checkbox'].includes(getFieldRenderType(field.key, field.config))"
+                                    v-model="form[field.key]"
+                                    @update:model-value="() => markDirty(field.key)"
+                                    :label="getFieldLabel(field.key, field.config)"
+                                    :type="field.config.type || 'text'"
+                                    :required="field.config.required"
+                                    :helper="getFieldHelper(field.key, field.config)"
+                                    :validation="getFieldValidation(field.key)"
+                                    :placeholder="getFieldPlaceholder(field.key, field.config)"
                                 >
-                                    <Btn
-                                        size="xs"
-                                        variant="ghost"
-                                        title="Annuler la modification (ne pas modifier ce champ)"
-                                        @click.stop="resetFieldMultiEdit(fieldKey, fieldConfig.type || 'text')"
+                                    <template
+                                        v-if="isMultiEdit && props.differentFields.includes(field.key) && fieldDirty.value?.[field.key]"
+                                        #overEnd
                                     >
-                                        <i class="fa-solid fa-rotate-left"></i>
-                                    </Btn>
-                                </template>
-                            </InputField>
-                            
-                            <!-- TextareaField -->
-                            <TextareaField
-                                v-else-if="fieldConfig.type === 'textarea'"
-                                v-model="form[fieldKey]"
-                                @update:modelValue="() => markDirty(fieldKey)"
-                                :label="fieldConfig.label"
-                                :required="fieldConfig.required"
-                                :validation="getFieldValidation(fieldKey)"
-                                :placeholder="props.differentFields.includes(fieldKey) ? 'Valeurs différentes' : undefined"
-                            >
-                                <template
-                                    v-if="isMultiEdit && props.differentFields.includes(fieldKey) && fieldDirty.value?.[fieldKey]"
-                                    #overEnd
+                                        <Btn
+                                            size="xs"
+                                            variant="ghost"
+                                            title="Annuler la modification (ne pas modifier ce champ)"
+                                            @click.stop="resetFieldMultiEdit(field.key, field.config.type || 'text')"
+                                        >
+                                            <i class="fa-solid fa-rotate-left"></i>
+                                        </Btn>
+                                    </template>
+                                </InputField>
+                                
+                                <!-- TextareaField -->
+                                <TextareaField
+                                    v-else-if="getFieldRenderType(field.key, field.config) === 'textarea'"
+                                    v-model="form[field.key]"
+                                    @update:model-value="() => markDirty(field.key)"
+                                    :label="getFieldLabel(field.key, field.config)"
+                                    :required="field.config.required"
+                                    :helper="getFieldHelper(field.key, field.config)"
+                                    :validation="getFieldValidation(field.key)"
+                                    :placeholder="getFieldPlaceholder(field.key, field.config)"
                                 >
-                                    <Btn
-                                        size="xs"
-                                        variant="ghost"
-                                        title="Annuler la modification (ne pas modifier ce champ)"
-                                        @click.stop="resetFieldMultiEdit(fieldKey, 'textarea')"
+                                    <template
+                                        v-if="isMultiEdit && props.differentFields.includes(field.key) && fieldDirty.value?.[field.key]"
+                                        #overEnd
                                     >
-                                        <i class="fa-solid fa-rotate-left"></i>
-                                    </Btn>
-                                </template>
-                            </TextareaField>
-                            
-                            <!-- SelectField -->
-                            <SelectField
-                                v-else-if="fieldConfig.type === 'select'"
-                                v-model="form[fieldKey]"
-                                @update:modelValue="() => markDirty(fieldKey)"
-                                :label="fieldConfig.label"
-                                :options="fieldConfig.options || []"
-                                :required="fieldConfig.required"
-                                :validation="getFieldValidation(fieldKey)"
-                                :placeholder="props.differentFields.includes(fieldKey) ? 'Valeurs différentes' : undefined"
-                            >
-                                <template
-                                    v-if="isMultiEdit && props.differentFields.includes(fieldKey) && fieldDirty.value?.[fieldKey]"
-                                    #overEnd
+                                        <Btn
+                                            size="xs"
+                                            variant="ghost"
+                                            title="Annuler la modification (ne pas modifier ce champ)"
+                                            @click.stop="resetFieldMultiEdit(field.key, 'textarea')"
+                                        >
+                                            <i class="fa-solid fa-rotate-left"></i>
+                                        </Btn>
+                                    </template>
+                                </TextareaField>
+                                
+                                <!-- SelectField -->
+                                <SelectField
+                                    v-else-if="getFieldRenderType(field.key, field.config) === 'select'"
+                                    v-model="form[field.key]"
+                                    @update:model-value="() => markDirty(field.key)"
+                                    :label="getFieldLabel(field.key, field.config)"
+                                    :options="field.config.options || []"
+                                    :required="field.config.required"
+                                    :helper="getFieldHelper(field.key, field.config)"
+                                    :validation="getFieldValidation(field.key)"
+                                    :placeholder="getFieldPlaceholder(field.key, field.config)"
                                 >
-                                    <Btn
-                                        size="xs"
-                                        variant="ghost"
-                                        title="Annuler la modification (ne pas modifier ce champ)"
-                                        @click.stop="resetFieldMultiEdit(fieldKey, 'select')"
+                                    <template
+                                        v-if="isMultiEdit && props.differentFields.includes(field.key) && fieldDirty.value?.[field.key]"
+                                        #overEnd
                                     >
-                                        <i class="fa-solid fa-rotate-left"></i>
-                                    </Btn>
-                                </template>
-                            </SelectField>
-                            
-                            <!-- FileField -->
-                            <FileField
-                                v-else-if="fieldConfig.type === 'file'"
-                                v-model="form[fieldKey]"
-                                :label="fieldConfig.label"
-                                :required="fieldConfig.required"
-                                :validation="getFieldValidation(fieldKey)"
-                            />
-                            
-                            <!-- NumberField (using InputField with type number) -->
-                            <InputField
-                                v-else-if="fieldConfig.type === 'number'"
-                                v-model="form[fieldKey]"
-                                @update:modelValue="() => markDirty(fieldKey)"
-                                :label="fieldConfig.label"
-                                type="number"
-                                :required="fieldConfig.required"
-                                :validation="getFieldValidation(fieldKey)"
-                                :placeholder="props.differentFields.includes(fieldKey) ? 'Valeurs différentes' : undefined"
-                            >
-                                <template
-                                    v-if="isMultiEdit && props.differentFields.includes(fieldKey) && fieldDirty.value?.[fieldKey]"
-                                    #overEnd
+                                        <Btn
+                                            size="xs"
+                                            variant="ghost"
+                                            title="Annuler la modification (ne pas modifier ce champ)"
+                                            @click.stop="resetFieldMultiEdit(field.key, 'select')"
+                                        >
+                                            <i class="fa-solid fa-rotate-left"></i>
+                                        </Btn>
+                                    </template>
+                                </SelectField>
+                                
+                                <!-- FileField -->
+                                <FileField
+                                    v-else-if="getFieldRenderType(field.key, field.config) === 'file'"
+                                    v-model="form[field.key]"
+                                    :current-path="getFileCurrentPath(field.key)"
+                                    :accept="getFileAccept(field.key, field.config)"
+                                    :label="getFieldLabel(field.key, field.config)"
+                                    :required="field.config.required"
+                                    :helper="getFieldHelper(field.key, field.config)"
+                                    :validation="getFieldValidation(field.key)"
+                                />
+                                
+                                <!-- NumberField (using InputField with type number) -->
+                                <InputField
+                                    v-else-if="getFieldRenderType(field.key, field.config) === 'number'"
+                                    v-model="form[field.key]"
+                                    @update:model-value="() => markDirty(field.key)"
+                                    :label="getFieldLabel(field.key, field.config)"
+                                    type="number"
+                                    :required="field.config.required"
+                                    :helper="getFieldHelper(field.key, field.config)"
+                                    :validation="getFieldValidation(field.key)"
+                                    :placeholder="getFieldPlaceholder(field.key, field.config)"
                                 >
-                                    <Btn
-                                        size="xs"
-                                        variant="ghost"
-                                        title="Annuler la modification (ne pas modifier ce champ)"
-                                        @click.stop="resetFieldMultiEdit(fieldKey, 'number')"
+                                    <template
+                                        v-if="isMultiEdit && props.differentFields.includes(field.key) && fieldDirty.value?.[field.key]"
+                                        #overEnd
                                     >
-                                        <i class="fa-solid fa-rotate-left"></i>
-                                    </Btn>
-                                </template>
-                            </InputField>
-                            
-                            <!-- Bool (Toggle) -->
-                            <div v-else-if="fieldConfig.type === 'checkbox'" class="flex items-center justify-between gap-3">
-                                <div class="flex items-center gap-3">
-                                    <ToggleCore
-                                        variant="glass"
-                                        size="sm"
-                                        color="primary"
-                                        :model-value="Boolean(form[fieldKey])"
-                                        :indeterminate="props.differentFields.includes(fieldKey) && !checkboxDirty.value?.[fieldKey]"
-                                        @update:model-value="(v) => { checkboxDirty.value = { ...(checkboxDirty.value || {}), [fieldKey]: true }; form[fieldKey] = Boolean(v); }"
-                                    />
-                                    <span
-                                        class="text-sm transition-colors duration-200 flex items-center gap-1"
-                                        :class="{
-                                            'opacity-80': !(props.differentFields.includes(fieldKey) && !checkboxDirty.value?.[fieldKey]),
-                                            'text-warning font-semibold': props.differentFields.includes(fieldKey) && !checkboxDirty.value?.[fieldKey],
-                                        }"
-                                    >
-                                        <template v-if="props.differentFields.includes(fieldKey) && !checkboxDirty.value?.[fieldKey]">
-                                            <Icon source="fa-solid fa-exclamation-triangle" alt="Valeurs différentes" size="xs" />
-                                            Valeurs différentes
-                                        </template>
-                                        <template v-else>
-                                            {{ Boolean(form[fieldKey]) ? "Oui" : "Non" }}
-                                        </template>
-                                    </span>
-                                </div>
+                                        <Btn
+                                            size="xs"
+                                            variant="ghost"
+                                            title="Annuler la modification (ne pas modifier ce champ)"
+                                            @click.stop="resetFieldMultiEdit(field.key, 'number')"
+                                        >
+                                            <i class="fa-solid fa-rotate-left"></i>
+                                        </Btn>
+                                    </template>
+                                </InputField>
+                                
+                                <!-- Bool (Toggle) -->
+                                <div v-else-if="getFieldRenderType(field.key, field.config) === 'checkbox'" class="flex items-center justify-between gap-3">
+                                    <div class="flex items-center gap-3">
+                                        <ToggleCore
+                                            variant="glass"
+                                            size="sm"
+                                            color="primary"
+                                            :model-value="Boolean(form[field.key])"
+                                            :indeterminate="props.differentFields.includes(field.key) && !checkboxDirty.value?.[field.key]"
+                                            @update:model-value="(v) => { checkboxDirty.value = { ...(checkboxDirty.value || {}), [field.key]: true }; form[field.key] = Boolean(v); }"
+                                        />
+                                        <span
+                                            class="text-sm transition-colors duration-200 flex items-center gap-1"
+                                            :class="{
+                                                'opacity-80': !(props.differentFields.includes(field.key) && !checkboxDirty.value?.[field.key]),
+                                                'text-warning font-semibold': props.differentFields.includes(field.key) && !checkboxDirty.value?.[field.key],
+                                            }"
+                                        >
+                                            <template v-if="props.differentFields.includes(field.key) && !checkboxDirty.value?.[field.key]">
+                                                <Icon source="fa-solid fa-exclamation-triangle" alt="Valeurs différentes" size="xs" />
+                                                Valeurs différentes
+                                            </template>
+                                            <template v-else>
+                                                {{ Boolean(form[field.key]) ? "Oui" : "Non" }}
+                                            </template>
+                                        </span>
+                                    </div>
 
-                                <Btn
-                                    v-if="props.differentFields.includes(fieldKey) && checkboxDirty.value?.[fieldKey]"
-                                    size="xs"
-                                    variant="ghost"
-                                    title="Annuler la modification (ne pas modifier ce champ)"
-                                    @click.stop="resetBoolMultiEdit(fieldKey)"
-                                >
-                                    <i class="fa-solid fa-rotate-left"></i>
-                                </Btn>
-                            </div>
-                        </Tooltip>
-                    </div>
+                                    <Btn
+                                        v-if="props.differentFields.includes(field.key) && checkboxDirty.value?.[field.key]"
+                                        size="xs"
+                                        variant="ghost"
+                                        title="Annuler la modification (ne pas modifier ce champ)"
+                                        @click.stop="resetBoolMultiEdit(field.key)"
+                                    >
+                                        <i class="fa-solid fa-rotate-left"></i>
+                                    </Btn>
+                                </div>
+                            </Tooltip>
+                        </div>
+                    </template>
                 </template>
             </div>
 
             <!-- Actions -->
-            <div class="flex flex-col sm:flex-row gap-4 justify-end pt-6 border-t">
-                <Btn
-                    type="button"
-                    variant="outline"
-                    @click="cancel"
-                >
-                    Annuler
-                </Btn>
+            <div class="pt-6 border-glass-t-md">
+                <div class="footer-tools-row">
+                    <div
+                        v-if="accessLevelFields.length"
+                        class="access-levels"
+                    >
+                        <div
+                            v-for="field in accessLevelFields"
+                            :key="field.key"
+                            class="access-levels__item rounded-(--radius-field) border border-base-300/70 bg-base-100/35 px-2.5 py-1.5"
+                        >
+                            <SelectField
+                                v-model="form[field.key]"
+                                @update:model-value="() => markDirty(field.key)"
+                                :label="getFieldLabel(field.key, field.config)"
+                                :options="field.config.options || []"
+                                :required="field.config.required"
+                                :helper="getFieldHelper(field.key, field.config)"
+                                :validation="getFieldValidation(field.key)"
+                            />
+                        </div>
+                    </div>
 
-                <Tooltip
-                    content="Réinitialise le formulaire : revient aux valeurs chargées au moment de l’ouverture (ou dernière synchro). En multi‑édition, remet les champs ‘valeurs différentes’ en mode ‘ne pas modifier’."
-                    placement="top"
-                >
+                    <div class="footer-actions flex flex-wrap items-center justify-end gap-2 sm:gap-3">
                     <Btn
                         type="button"
-                        variant="ghost"
-                        @click="resetForm"
+                        variant="outline"
+                        class="order-1"
+                        @click="cancel"
                     >
-                        <i class="fa-solid fa-arrow-rotate-left mr-2"></i>
-                        Reset
+                        Annuler
                     </Btn>
-                </Tooltip>
-                <Btn
-                    type="submit"
-                    color="primary"
-                    :disabled="form.processing"
-                >
-                    <i class="fa-solid fa-save mr-2"></i>
-                    {{ form.processing ? 'Enregistrement...' : (isUpdating ? 'Mettre à jour' : 'Créer') }}
-                </Btn>
+
+                    <Tooltip
+                        content="Réinitialise le formulaire : revient aux valeurs chargées au moment de l’ouverture (ou dernière synchro). En multi‑édition, remet les champs ‘valeurs différentes’ en mode ‘ne pas modifier’."
+                        placement="top"
+                    >
+                        <Btn
+                            type="button"
+                            variant="outline"
+                            class="order-2"
+                            @click="resetForm"
+                        >
+                            <i class="fa-solid fa-arrow-rotate-left mr-2"></i>
+                            Reset
+                        </Btn>
+                    </Tooltip>
+
+                    <Btn
+                        type="submit"
+                        color="primary"
+                        class="order-3"
+                        :disabled="form.processing"
+                    >
+                        <i class="fa-solid fa-save mr-2"></i>
+                        {{ form.processing ? 'Enregistrement...' : (isUpdating ? 'Mettre à jour' : 'Créer') }}
+                    </Btn>
+                    </div>
+                </div>
             </div>
         </form>
     </Container>
@@ -629,18 +799,146 @@ const toggleViewMode = () => {
 
 <style scoped lang="scss">
 .entity-edit-form {
-    &.compact-mode {
-        // Styles pour le mode compact
-        .grid {
+    .top-tools-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.75rem;
+        align-items: flex-start;
+    }
+
+    .top-tools-row__formula {
+        flex: 1 1 320px;
+        min-width: 0;
+    }
+
+    .form-fields {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1.25rem;
+    }
+
+    .form-field {
+        width: 100%;
+    }
+
+    .footer-tools-row {
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+
+    .footer-actions {
+        width: 100%;
+    }
+
+    .access-levels {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.75rem;
+        width: 100%;
+    }
+
+    .access-levels__item {
+        width: 100%;
+    }
+
+    @media (min-width: 768px) {
+        .form-field {
+            flex: 1 1 calc(50% - 0.625rem);
+            max-width: calc(50% - 0.625rem);
+        }
+
+        .form-field--wide {
+            flex-basis: calc(66.666% - 0.42rem);
+            max-width: calc(66.666% - 0.42rem);
+        }
+
+        .form-field--full {
+            flex-basis: 100%;
+            max-width: 100%;
+        }
+
+        .footer-tools-row {
+            flex-direction: row;
+            align-items: flex-end;
+            justify-content: space-between;
             gap: 1rem;
+        }
+
+        .access-levels {
+            width: auto;
+            flex: 1 1 auto;
+        }
+
+        .access-levels__item {
+            width: auto;
+            min-width: 220px;
+            max-width: 260px;
+            flex: 1 1 220px;
+        }
+
+        .footer-actions {
+            width: auto;
+            flex: 0 0 auto;
+            justify-content: flex-end;
         }
     }
 
-    &.large-mode {
-        // Styles pour le mode grand
-        .grid {
-            gap: 1.5rem;
-        }
+    :deep(.field-template),
+    :deep(.field-template > div),
+    :deep(.input),
+    :deep(.select),
+    :deep(.textarea),
+    :deep(.file-input),
+    :deep(button.select) {
+        width: 100%;
+        max-width: none;
+    }
+
+    :deep(.input),
+    :deep(.select),
+    :deep(.file-input),
+    :deep(button.select) {
+        min-height: 2.75rem;
+    }
+
+    :deep(.textarea) {
+        min-height: 8rem;
+    }
+
+    .state-field :deep(label) {
+        display: none;
+    }
+
+    .access-levels :deep(label) {
+        font-size: 0.75rem;
+        opacity: 0.85;
+    }
+
+    .state-field :deep(.field-template) {
+        gap: 0;
+    }
+
+    .state-field :deep(.helper),
+    .state-field :deep(.field-template .text-xs),
+    .state-field :deep(.field-template .text-sm) {
+        display: none;
+    }
+
+    .state-field :deep(.select),
+    .state-field :deep(input),
+    .state-field :deep(button.select) {
+        min-height: 2.5rem;
+        height: 2.5rem;
+        font-size: 0.85rem;
+    }
+
+    .access-levels :deep(.select),
+    .access-levels :deep(input),
+    .access-levels :deep(button.select) {
+        min-height: 2rem;
+        height: 2rem;
+        font-size: 0.8rem;
     }
 }
 </style>

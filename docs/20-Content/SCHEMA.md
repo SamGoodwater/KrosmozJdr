@@ -989,6 +989,19 @@ erDiagram
     created_at : timestamp
     updated_at : timestamp
   }
+  TABLE_FILTER_PRESETS {
+    id : bigint(20) unsigned
+    user_id : bigint(20) unsigned
+    entity_type : varchar(120)
+    table_id : varchar(191)
+    name : varchar(120)
+    search_text : text
+    filters : longtext
+    limit : smallint(5) unsigned
+    is_default : tinyint(1)
+    created_at : timestamp
+    updated_at : timestamp
+  }
   USERS {
     id : bigint(20) unsigned
     name : varchar(255)
@@ -1143,4 +1156,5 @@ erDiagram
   SPELL_TYPE }o--|| SPELL_TYPES : "FK spell_type_id"
   SPELL_TYPES }o--|| USERS : "FK created_by"
   SPELLS }o--|| USERS : "FK created_by"
+  TABLE_FILTER_PRESETS }o--|| USERS : "FK user_id"
 ```

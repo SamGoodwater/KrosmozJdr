@@ -49,6 +49,14 @@ const props = defineProps({
         type: Object,
         default: null,
     },
+    /**
+     * Nombre de lignes max par défaut pour les cellules `chips`.
+     * Peut être surchargé par cellule via `cell.params.chipsLayout.maxRows`.
+     */
+    chipsDefaultMaxRows: {
+        type: Number,
+        default: null,
+    },
 });
 
 const type = computed(() => String(props.cell?.type || "text"));
@@ -151,6 +159,35 @@ const customComponentProps = computed(() => {
 });
 
 const hasCustomComponent = computed(() => customComponent.value !== null);
+
+const chipItems = computed(() =>
+    (params.value?.items || []).filter((item) => item && item.value != null && item.value !== "")
+);
+
+const chipsMaxRows = computed(() => {
+    const raw =
+        params.value?.chipsLayout?.maxRows ??
+        params.value?.maxRows ??
+        props.chipsDefaultMaxRows;
+    const n = Number(raw);
+    return Number.isFinite(n) && n > 0 ? Math.floor(n) : null;
+});
+
+const chipsUseColumnFlow = computed(() => Boolean(chipsMaxRows.value));
+
+const chipsContainerClass = computed(() => {
+    if (chipsUseColumnFlow.value) {
+        return "inline-grid grid-flow-col auto-cols-max items-center content-start gap-x-2 gap-y-0.5 max-w-full overflow-x-auto overflow-y-hidden align-middle";
+    }
+    return "inline-flex flex-wrap items-center gap-x-2 gap-y-0.5";
+});
+
+const chipsContainerStyle = computed(() => {
+    if (!chipsUseColumnFlow.value) return undefined;
+    return {
+        gridTemplateRows: `repeat(${chipsMaxRows.value}, minmax(0, max-content))`,
+    };
+});
 </script>
 
 <template>
@@ -269,10 +306,9 @@ const hasCustomComponent = computed(() => customComponent.value !== null);
     </span>
 
     <!-- chips : colonnes résumées (icône + valeur avec tooltip par item) -->
-    <span v-else-if="type === 'chips'" class="inline-flex flex-wrap items-center gap-x-2 gap-y-0.5">
-        <template v-for="(item, idx) in (params.items || [])" :key="idx">
+    <span v-else-if="type === 'chips'" :class="chipsContainerClass" :style="chipsContainerStyle">
+        <template v-for="(item, idx) in chipItems" :key="idx">
             <Tooltip
-                v-if="item.value != null && item.value !== ''"
                 :content="item.tooltip || item.label || String(item.value)"
                 placement="top"
                 class="inline-flex items-center gap-1"
@@ -288,7 +324,7 @@ const hasCustomComponent = computed(() => customComponent.value !== null);
                 <span class="text-xs" :style="item.color ? { color: item.color } : undefined">{{ item.value }}</span>
             </Tooltip>
         </template>
-        <span v-if="!(params.items || []).length || (params.items || []).every(i => i.value == null || i.value === '')" class="text-base-content/40">—</span>
+        <span v-if="!chipItems.length" class="text-base-content/40">—</span>
     </span>
 
     <!-- custom: sera géré plus tard (Phase 1: fallback text) -->

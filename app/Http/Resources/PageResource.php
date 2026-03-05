@@ -34,6 +34,7 @@ class PageResource extends JsonResource
             'write_level' => (int) ($page->write_level ?? 0),
             'parent_id' => $page->parent_id,
             'menu_order' => $page->menu_order,
+            'menu_group' => $page->menu_group,
             'created_by' => $page->created_by,
             'created_at' => $page->created_at?->toISOString(),
             'updated_at' => $page->updated_at?->toISOString(),

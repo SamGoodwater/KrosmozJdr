@@ -8,7 +8,22 @@ class FileService
     public const EXTENSIONS_IMAGE = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg'];
     public const EXTENSIONS_VIDEO = ['mp4', 'webm', 'ogg'];
     public const EXTENSIONS_AUDIO = ['mp3', 'wav', 'ogg'];
-    public const EXTENSIONS_DOCUMENT = ['pdf', 'doc', 'docx', 'xls', 'xlsx', 'txt'];
+    public const EXTENSIONS_DOCUMENT = [
+        'pdf',
+        'txt',
+        'csv',
+        'rtf',
+        'doc',
+        'docx',
+        'xls',
+        'xlsx',
+        'ppt',
+        'pptx',
+        'odt',
+        'ods',
+        'odp',
+    ];
+    public const EXTENSIONS_ARCHIVE = ['zip', 'rar', '7z', 'tar', 'gz'];
 
     // Taille maximale en Ko
     public const MAX_SIZE = 10240; // 10 Mo
@@ -34,7 +49,8 @@ class FileService
             self::EXTENSIONS_IMAGE,
             self::EXTENSIONS_VIDEO,
             self::EXTENSIONS_AUDIO,
-            self::EXTENSIONS_DOCUMENT
+            self::EXTENSIONS_DOCUMENT,
+            self::EXTENSIONS_ARCHIVE,
         );
     }
 }

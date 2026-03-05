@@ -263,6 +263,12 @@ const updateRole = () => {
     });
 };
 
+const backRouteName = computed(() => (isSelfUpdate.value ? 'user.show' : 'user.index'));
+const backButtonLabel = computed(() => (isSelfUpdate.value ? 'Retour au profil' : 'Retour à la liste'));
+const goBack = () => {
+    router.visit(route(backRouteName.value));
+};
+
 // Validation computed pour les champs du profil
 const nameValidation = computed(() => {
     if (!formProfile.errors.name) return null;
@@ -325,6 +331,12 @@ const roleValidation = computed(() => {
 <template>
     <section class="space-y-6">
         <header>
+            <div class="mb-3">
+                <Btn color="neutral" variant="ghost" size="sm" class="gap-2" @click="goBack">
+                    <i class="fa-solid fa-arrow-left" aria-hidden="true"></i>
+                    {{ backButtonLabel }}
+                </Btn>
+            </div>
             <h2 class="text-lg font-medium text-content-300">
                 {{
                     verifyRole(page.props.auth?.user?.role || 1, ROLES.ADMIN)
@@ -379,7 +391,7 @@ const roleValidation = computed(() => {
                                         v-if="canDelete"
                                         type="button"
                                         @click="deleteAvatar"
-                                        class="absolute top-0 right-0 opacity-0 group-hover:opacity-100 transition-opacity btn btn-sm btn-error btn-circle z-10 shadow-lg hover:shadow-xl transition-all"
+                                        class="absolute top-0 right-0 opacity-0 group-hover:opacity-100 transition-all btn btn-sm btn-error btn-circle z-10 shadow-lg hover:shadow-xl"
                                         aria-label="Supprimer l'avatar"
                                         title="Supprimer l'avatar"
                                     >

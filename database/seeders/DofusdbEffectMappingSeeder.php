@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Database\Seeders;
 
 use App\Models\DofusdbEffectMapping;
+use App\Services\Scrapping\Core\Conversion\SpellEffects\DofusdbEffectMappingService;
 use Illuminate\Database\Seeder;
 
 /**
@@ -59,6 +60,10 @@ class DofusdbEffectMappingSeeder extends Seeder
                 ]
             );
         }
+
+        // Le service de conversion met en cache les mappings : invalider après seed
+        // pour éviter de conserver des résolutions obsolètes dans les runs suivants.
+        app(DofusdbEffectMappingService::class)->clearCache();
     }
 
     /**

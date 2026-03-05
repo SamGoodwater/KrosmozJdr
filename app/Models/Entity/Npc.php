@@ -69,6 +69,19 @@ class Npc extends Model
         'size',
         'breed_id',
         'specialization_id',
+        'state',
+        'read_level',
+        'write_level',
+    ];
+
+    /**
+     * The attributes that should be cast.
+     *
+     * @var array<string, string>
+     */
+    protected $casts = [
+        'read_level' => 'integer',
+        'write_level' => 'integer',
     ];
 
     /**

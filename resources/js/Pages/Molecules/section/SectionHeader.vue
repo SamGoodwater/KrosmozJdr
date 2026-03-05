@@ -17,6 +17,7 @@
  * @emits toggle-edit - Basculer mode lecture/écriture
  * @emits open-params - Ouvrir modal paramètres
  * @emits copy-link - Copier le lien de la section
+ * @emits request-delete - Demander la suppression de la section
  */
 import { ref, watch } from 'vue';
 import Icon from '@/Pages/Atoms/data-display/Icon.vue';
@@ -34,13 +35,17 @@ const props = defineProps({
     type: Boolean,
     default: false
   },
+  canDelete: {
+    type: Boolean,
+    default: false
+  },
   isHovered: {
     type: Boolean,
     default: false
   }
 });
 
-const emit = defineEmits(['update:title', 'toggle-edit', 'open-params', 'copy-link']);
+const emit = defineEmits(['update:title', 'toggle-edit', 'open-params', 'copy-link', 'request-delete']);
 
 // Titre local pour l'input
 const localTitle = ref(props.title);
@@ -124,6 +129,17 @@ const handleTitleKeydown = (event) => {
         type="button"
       >
         <Icon source="fa-gear" pack="solid" alt="Paramètres" size="sm" />
+      </button>
+
+      <!-- Suppression rapide (si droits) -->
+      <button
+        v-if="canDelete"
+        @click="$emit('request-delete')"
+        class="btn btn-ghost btn-sm btn-square text-error"
+        title="Supprimer la section"
+        type="button"
+      >
+        <Icon source="fa-trash-can" pack="solid" alt="Supprimer la section" size="sm" />
       </button>
     </div>
   </div>

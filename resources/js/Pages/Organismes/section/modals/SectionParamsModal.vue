@@ -425,6 +425,12 @@ const modalTitle = computed(() => {
 // ID et titre de la section pour l'affichage
 const sectionId = computed(() => getSectionValue('id'));
 const sectionTitle = computed(() => getSectionValue('title') || '');
+const canDeleteSection = computed(() => {
+    const model = sectionModel.value;
+    if (!model) return false;
+    // Priorité à la permission explicite delete, fallback sur update pour rester cohérent UI.
+    return Boolean(model.canDelete ?? model.canUpdate ?? false);
+});
 </script>
 
 <template>
@@ -441,7 +447,7 @@ const sectionTitle = computed(() => getSectionValue('title') || '');
                     {{ modalTitle }}
                 </h3>
                 <Btn
-                    v-if="sectionId"
+                    v-if="sectionId && canDeleteSection"
                     color="error"
                     size="sm"
                     variant="ghost"
@@ -619,6 +625,15 @@ const sectionTitle = computed(() => getSectionValue('title') || '');
         </div>
 
         <template #actions>
+            <Btn
+                v-if="sectionId && canDeleteSection"
+                color="error"
+                variant="ghost"
+                @click="openDeleteConfirm"
+            >
+                <Icon source="fa-trash-can" pack="solid" alt="Supprimer la section" size="sm" class="mr-2" />
+                Supprimer
+            </Btn>
             <Btn variant="ghost" @click="handleClose">Annuler</Btn>
             <Btn 
                 color="primary" 

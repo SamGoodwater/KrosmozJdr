@@ -43,6 +43,19 @@ class Run extends Command
         {--optimise:ide : Générer les fichiers IDE Helper}
         {--optimise:laravel : Optimiser Laravel}
         {--optimise:all : Optimiser tout (ide + laravel)}
+        {--check:effects-quality : Exécuter la quality gate effets (mode strict)}
+        {--check:effects-quality:dev : Exécuter la quality gate effets (mode dev, allow-empty)}
+        {--pipeline:effects-quality : Import sorts + quality gate (mode strict)}
+        {--pipeline:effects-quality:dev : Import sorts + quality gate (mode dev, allow-empty)}
+        {--simulate : (pipeline effets) Import sans écriture BDD}
+        {--skip-cache : (pipeline effets) Ignorer le cache HTTP}
+        {--ids= : (pipeline effets) IDs DofusDB des sorts (virgules)}
+        {--levelMin= : (pipeline effets) Niveau minimum}
+        {--levelMax= : (pipeline effets) Niveau maximum}
+        {--limit=100 : (pipeline effets) Taille de page API}
+        {--max-pages=0 : (pipeline effets) Nombre max de pages (0=illimité)}
+        {--max-items=300 : (pipeline effets) Nombre max d\'items collectés}
+        {--include-relations=1 : (pipeline effets) Inclure relations (1/0)}
         {--dump : Composer dump-autoload}
         {--migrate : Exécuter les migrations}
         {--dev : Lancer le serveur en mode optimisé}
@@ -58,7 +71,7 @@ class Run extends Command
      */
     protected $description = 'Commande multifonction pour gérer, nettoyer, mettre à jour et lancer le projet (kill, clear, update, optimise, migrate, dev, etc.)';
 
-    public function handle()
+    public function handle(): int
     {
         // === VÉRIFICATIONS DE SÉCURITÉ ===
         
@@ -75,17 +88,19 @@ class Run extends Command
             $this->line('3. Ou utilisez sudo pour exécuter en tant qu\'utilisateur normal :');
             $this->line('   sudo -u nom_utilisateur php artisan run [options]');
             $this->line('');
-            return;
+            return self::FAILURE;
         }
         
         // 2. Vérifier l'environnement de production
         if (app()->environment('production')) {
             $this->error('Cette commande ne doit pas être lancée en production !');
-            return;
+            return self::FAILURE;
         }
 
         $actions = $this->collectActions();
-        $this->executeActions($actions);
+        $ok = $this->executeActions($actions);
+
+        return $ok ? self::SUCCESS : self::FAILURE;
     }
 
     /**
@@ -171,7 +186,13 @@ class Run extends Command
         // 5. MIGRATE (délégation à setup --db)
         if ($this->option('migrate') || $this->option('update:all') || $this->option('update:base') || $this->option('regenerate') || $this->option('all')) $actions[] = 'runSetupDb';
 
-        // 6. DEV
+        // 6. QUALITY CHECKS
+        if ($this->option('check:effects-quality')) $actions[] = 'checkEffectsQuality';
+        if ($this->option('check:effects-quality:dev')) $actions[] = 'checkEffectsQualityDev';
+        if ($this->option('pipeline:effects-quality')) $actions[] = 'pipelineEffectsQuality';
+        if ($this->option('pipeline:effects-quality:dev')) $actions[] = 'pipelineEffectsQualityDev';
+
+        // 7. DEV
         if ($this->option('dev') || $this->option('all')) $actions[] = 'runDev';
         if ($this->option('dev:watch')) $actions[] = 'runDevWatch';
 
@@ -182,15 +203,22 @@ class Run extends Command
     /**
      * Exécute les actions dans l'ordre logique.
      */
-    protected function executeActions(array $actions)
+    protected function executeActions(array $actions): bool
     {
         foreach ($actions as $action) {
             if (method_exists($this, $action)) {
-                $this->$action();
+                $result = $this->$action();
+                if (is_int($result) && $result !== 0) {
+                    $this->error("Action en échec : $action (code $result)");
+                    return false;
+                }
             } else {
                 $this->error("Action inconnue : $action");
+                return false;
             }
         }
+
+        return true;
     }
 
     // === Méthodes unitaires ===
@@ -262,8 +290,10 @@ class Run extends Command
         $this->call('ide-helper:meta');
     }
     protected function optimiseLaravel() {
-        $this->info('Optimisation du framework Laravel...');
-        $this->call('optimize');
+        $this->info('Nettoyage des optimisations Laravel (config/routes/views)...');
+        // En dev/test, on évite de recacher la config : cela peut figer DB=mysql
+        // et faire exécuter les tests contre la base locale.
+        $this->call('optimize:clear');
     }
     protected function resetAll() {
         $this->info('Réinitialisation de tout (pnpm, composer, css, docs, dump)...');
@@ -485,5 +515,61 @@ class Run extends Command
         } else {
             $this->error("Impossible de lancer $command");
         }
+    }
+
+    protected function checkEffectsQuality(): int
+    {
+        $this->info('Vérification qualité des effets de sorts (strict)...');
+        return $this->call('scrapping:effects:quality-gate');
+    }
+
+    protected function checkEffectsQualityDev(): int
+    {
+        $this->info('Vérification qualité des effets de sorts (dev, allow-empty)...');
+        return $this->call('scrapping:effects:quality-gate', ['--allow-empty' => true]);
+    }
+
+    protected function pipelineEffectsQuality(): int
+    {
+        $this->info('Pipeline effets de sorts (strict)...');
+        return $this->call('scrapping:effects:pipeline', $this->buildEffectsPipelineArgs(false));
+    }
+
+    protected function pipelineEffectsQualityDev(): int
+    {
+        $this->info('Pipeline effets de sorts (dev, allow-empty)...');
+        return $this->call('scrapping:effects:pipeline', $this->buildEffectsPipelineArgs(true));
+    }
+
+    /**
+     * @return array<string,mixed>
+     */
+    private function buildEffectsPipelineArgs(bool $allowEmpty): array
+    {
+        $args = [
+            '--limit' => max(1, (int) $this->option('limit')),
+            '--max-pages' => max(0, (int) $this->option('max-pages')),
+            '--max-items' => max(0, (int) $this->option('max-items')),
+            '--include-relations' => (int) $this->option('include-relations') === 0 ? 0 : 1,
+        ];
+
+        if ($allowEmpty) {
+            $args['--allow-empty'] = true;
+        }
+        if ((bool) $this->option('simulate')) {
+            $args['--simulate'] = true;
+        }
+        if ((bool) $this->option('skip-cache')) {
+            $args['--skip-cache'] = true;
+        }
+
+        foreach (['ids', 'levelMin', 'levelMax'] as $opt) {
+            $value = $this->option($opt);
+            if (is_string($value) && trim($value) !== '') {
+                $args['--' . $opt] = $value;
+            }
+        }
+
+        return $args;
     }
 }

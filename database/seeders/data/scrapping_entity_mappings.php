@@ -1586,6 +1586,177 @@ return array (
   45 => 
   array (
     'source' => 'dofusdb',
+    'entity' => 'monster-race',
+    'mapping_key' => 'id',
+    'from_path' => 'id',
+    'from_lang_aware' => false,
+    'characteristic_key' => NULL,
+    'formatters' => 
+    array (
+    ),
+    'spell_level_aggregation' => NULL,
+    'sort_order' => 0,
+    'targets' => 
+    array (
+    ),
+  ),
+  46 => 
+  array (
+    'source' => 'dofusdb',
+    'entity' => 'panoply',
+    'mapping_key' => 'dofusdb_id',
+    'from_path' => 'id',
+    'from_lang_aware' => false,
+    'characteristic_key' => NULL,
+    'formatters' => 
+    array (
+      0 => 
+      array (
+        'name' => 'toString',
+        'args' => 
+        array (
+        ),
+      ),
+    ),
+    'spell_level_aggregation' => NULL,
+    'sort_order' => 0,
+    'targets' => 
+    array (
+      0 => 
+      array (
+        'target_model' => 'panoplies',
+        'target_field' => 'dofusdb_id',
+        'sort_order' => 0,
+      ),
+    ),
+  ),
+  47 => 
+  array (
+    'source' => 'dofusdb',
+    'entity' => 'panoply',
+    'mapping_key' => 'name',
+    'from_path' => 'name',
+    'from_lang_aware' => true,
+    'characteristic_key' => NULL,
+    'formatters' => 
+    array (
+      0 => 
+      array (
+        'name' => 'pickLang',
+        'args' => 
+        array (
+          'lang' => 'fr',
+          'fallback' => 'fr',
+        ),
+      ),
+    ),
+    'spell_level_aggregation' => NULL,
+    'sort_order' => 1,
+    'targets' => 
+    array (
+      0 => 
+      array (
+        'target_model' => 'panoplies',
+        'target_field' => 'name',
+        'sort_order' => 0,
+      ),
+    ),
+  ),
+  48 => 
+  array (
+    'source' => 'dofusdb',
+    'entity' => 'panoply',
+    'mapping_key' => 'description',
+    'from_path' => 'description',
+    'from_lang_aware' => true,
+    'characteristic_key' => NULL,
+    'formatters' => 
+    array (
+      0 => 
+      array (
+        'name' => 'pickLang',
+        'args' => 
+        array (
+          'lang' => 'fr',
+          'fallback' => 'fr',
+        ),
+      ),
+    ),
+    'spell_level_aggregation' => NULL,
+    'sort_order' => 2,
+    'targets' => 
+    array (
+      0 => 
+      array (
+        'target_model' => 'panoplies',
+        'target_field' => 'description',
+        'sort_order' => 0,
+      ),
+    ),
+  ),
+  49 => 
+  array (
+    'source' => 'dofusdb',
+    'entity' => 'panoply',
+    'mapping_key' => 'bonus',
+    'from_path' => 'effects',
+    'from_lang_aware' => false,
+    'characteristic_key' => NULL,
+    'formatters' => 
+    array (
+      0 => 
+      array (
+        'name' => 'itemEffectsToKrosmozBonus',
+        'args' => 
+        array (
+        ),
+      ),
+    ),
+    'spell_level_aggregation' => NULL,
+    'sort_order' => 3,
+    'targets' => 
+    array (
+      0 => 
+      array (
+        'target_model' => 'panoplies',
+        'target_field' => 'bonus',
+        'sort_order' => 0,
+      ),
+    ),
+  ),
+  50 => 
+  array (
+    'source' => 'dofusdb',
+    'entity' => 'panoply',
+    'mapping_key' => 'item_dofusdb_ids',
+    'from_path' => 'items',
+    'from_lang_aware' => false,
+    'characteristic_key' => NULL,
+    'formatters' => 
+    array (
+      0 => 
+      array (
+        'name' => 'extractItemIds',
+        'args' => 
+        array (
+        ),
+      ),
+    ),
+    'spell_level_aggregation' => NULL,
+    'sort_order' => 4,
+    'targets' => 
+    array (
+      0 => 
+      array (
+        'target_model' => 'panoplies',
+        'target_field' => 'item_dofusdb_ids',
+        'sort_order' => 0,
+      ),
+    ),
+  ),
+  51 => 
+  array (
+    'source' => 'dofusdb',
     'entity' => 'spell',
     'mapping_key' => 'dofusdb_id',
     'from_path' => 'spell_global.id',
@@ -1613,7 +1784,7 @@ return array (
       ),
     ),
   ),
-  46 => 
+  52 => 
   array (
     'source' => 'dofusdb',
     'entity' => 'spell',
@@ -1645,7 +1816,7 @@ return array (
       ),
     ),
   ),
-  47 => 
+  53 => 
   array (
     'source' => 'dofusdb',
     'entity' => 'spell',
@@ -1685,7 +1856,7 @@ return array (
       ),
     ),
   ),
-  48 => 
+  54 => 
   array (
     'source' => 'dofusdb',
     'entity' => 'spell',
@@ -1717,7 +1888,7 @@ return array (
       ),
     ),
   ),
-  49 => 
+  55 => 
   array (
     'source' => 'dofusdb',
     'entity' => 'spell',
@@ -1755,7 +1926,7 @@ return array (
       ),
     ),
   ),
-  50 => 
+  56 => 
   array (
     'source' => 'dofusdb',
     'entity' => 'spell',
@@ -1800,7 +1971,7 @@ return array (
       ),
     ),
   ),
-  51 => 
+  57 => 
   array (
     'source' => 'dofusdb',
     'entity' => 'spell',
@@ -1838,7 +2009,7 @@ return array (
       ),
     ),
   ),
-  52 => 
+  58 => 
   array (
     'source' => 'dofusdb',
     'entity' => 'spell',
@@ -1876,7 +2047,7 @@ return array (
       ),
     ),
   ),
-  53 => 
+  59 => 
   array (
     'source' => 'dofusdb',
     'entity' => 'spell',
@@ -1913,7 +2084,7 @@ return array (
       ),
     ),
   ),
-  54 => 
+  60 => 
   array (
     'source' => 'dofusdb',
     'entity' => 'spell',
@@ -1958,7 +2129,7 @@ return array (
       ),
     ),
   ),
-  55 => 
+  61 => 
   array (
     'source' => 'dofusdb',
     'entity' => 'spell',
@@ -2003,7 +2174,7 @@ return array (
       ),
     ),
   ),
-  56 => 
+  62 => 
   array (
     'source' => 'dofusdb',
     'entity' => 'spell',
@@ -2048,7 +2219,7 @@ return array (
       ),
     ),
   ),
-  57 => 
+  63 => 
   array (
     'source' => 'dofusdb',
     'entity' => 'spell',
@@ -2086,7 +2257,7 @@ return array (
       ),
     ),
   ),
-  58 => 
+  64 => 
   array (
     'source' => 'dofusdb',
     'entity' => 'spell',
@@ -2131,7 +2302,7 @@ return array (
       ),
     ),
   ),
-  59 => 
+  65 => 
   array (
     'source' => 'dofusdb',
     'entity' => 'spell',
@@ -2169,7 +2340,7 @@ return array (
       ),
     ),
   ),
-  60 => 
+  66 => 
   array (
     'source' => 'dofusdb',
     'entity' => 'spell',
@@ -2207,7 +2378,7 @@ return array (
       ),
     ),
   ),
-  61 => 
+  67 => 
   array (
     'source' => 'dofusdb',
     'entity' => 'spell',
@@ -2245,7 +2416,7 @@ return array (
       ),
     ),
   ),
-  62 => 
+  68 => 
   array (
     'source' => 'dofusdb',
     'entity' => 'spell',
@@ -2283,7 +2454,7 @@ return array (
       ),
     ),
   ),
-  63 => 
+  69 => 
   array (
     'source' => 'dofusdb',
     'entity' => 'spell',
@@ -2321,7 +2492,7 @@ return array (
       ),
     ),
   ),
-  64 => 
+  70 => 
   array (
     'source' => 'dofusdb',
     'entity' => 'spell',
@@ -2357,177 +2528,6 @@ return array (
         'target_field' => 'powerful',
         'sort_order' => 0,
       ),
-    ),
-  ),
-  65 => 
-  array (
-    'source' => 'dofusdb',
-    'entity' => 'panoply',
-    'mapping_key' => 'dofusdb_id',
-    'from_path' => 'id',
-    'from_lang_aware' => false,
-    'characteristic_key' => NULL,
-    'formatters' => 
-    array (
-      0 => 
-      array (
-        'name' => 'toString',
-        'args' => 
-        array (
-        ),
-      ),
-    ),
-    'spell_level_aggregation' => NULL,
-    'sort_order' => 0,
-    'targets' => 
-    array (
-      0 => 
-      array (
-        'target_model' => 'panoplies',
-        'target_field' => 'dofusdb_id',
-        'sort_order' => 0,
-      ),
-    ),
-  ),
-  66 => 
-  array (
-    'source' => 'dofusdb',
-    'entity' => 'panoply',
-    'mapping_key' => 'name',
-    'from_path' => 'name',
-    'from_lang_aware' => true,
-    'characteristic_key' => NULL,
-    'formatters' => 
-    array (
-      0 => 
-      array (
-        'name' => 'pickLang',
-        'args' => 
-        array (
-          'lang' => 'fr',
-          'fallback' => 'fr',
-        ),
-      ),
-    ),
-    'spell_level_aggregation' => NULL,
-    'sort_order' => 1,
-    'targets' => 
-    array (
-      0 => 
-      array (
-        'target_model' => 'panoplies',
-        'target_field' => 'name',
-        'sort_order' => 0,
-      ),
-    ),
-  ),
-  67 => 
-  array (
-    'source' => 'dofusdb',
-    'entity' => 'panoply',
-    'mapping_key' => 'description',
-    'from_path' => 'description',
-    'from_lang_aware' => true,
-    'characteristic_key' => NULL,
-    'formatters' => 
-    array (
-      0 => 
-      array (
-        'name' => 'pickLang',
-        'args' => 
-        array (
-          'lang' => 'fr',
-          'fallback' => 'fr',
-        ),
-      ),
-    ),
-    'spell_level_aggregation' => NULL,
-    'sort_order' => 2,
-    'targets' => 
-    array (
-      0 => 
-      array (
-        'target_model' => 'panoplies',
-        'target_field' => 'description',
-        'sort_order' => 0,
-      ),
-    ),
-  ),
-  68 => 
-  array (
-    'source' => 'dofusdb',
-    'entity' => 'panoply',
-    'mapping_key' => 'bonus',
-    'from_path' => 'effects',
-    'from_lang_aware' => false,
-    'characteristic_key' => NULL,
-    'formatters' => 
-    array (
-      0 => 
-      array (
-        'name' => 'itemEffectsToKrosmozBonus',
-        'args' => 
-        array (
-        ),
-      ),
-    ),
-    'spell_level_aggregation' => NULL,
-    'sort_order' => 3,
-    'targets' => 
-    array (
-      0 => 
-      array (
-        'target_model' => 'panoplies',
-        'target_field' => 'bonus',
-        'sort_order' => 0,
-      ),
-    ),
-  ),
-  69 => 
-  array (
-    'source' => 'dofusdb',
-    'entity' => 'panoply',
-    'mapping_key' => 'item_dofusdb_ids',
-    'from_path' => 'items',
-    'from_lang_aware' => false,
-    'characteristic_key' => NULL,
-    'formatters' => 
-    array (
-      0 => 
-      array (
-        'name' => 'extractItemIds',
-        'args' => 
-        array (
-        ),
-      ),
-    ),
-    'spell_level_aggregation' => NULL,
-    'sort_order' => 4,
-    'targets' => 
-    array (
-      0 => 
-      array (
-        'target_model' => 'panoplies',
-        'target_field' => 'item_dofusdb_ids',
-        'sort_order' => 0,
-      ),
-    ),
-  ),
-  70 => 
-  array (
-    'source' => 'dofusdb',
-    'entity' => 'monster-race',
-    'mapping_key' => 'id',
-    'from_path' => 'id',
-    'from_lang_aware' => false,
-    'characteristic_key' => NULL,
-    'formatters' => 
-    array (
-    ),
-    'spell_level_aggregation' => NULL,
-    'sort_order' => 0,
-    'targets' => 
-    array (
     ),
   ),
 );

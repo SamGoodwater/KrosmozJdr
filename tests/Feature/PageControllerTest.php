@@ -202,6 +202,27 @@ class PageControllerTest extends TestCase
     }
 
     /**
+     * Test : Un admin ne peut pas supprimer la page critique accueil.
+     */
+    public function test_admin_cannot_delete_critical_home_page(): void
+    {
+        $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
+        $page = Page::factory()->create([
+            'slug' => 'accueil',
+            'created_by' => $admin->id,
+        ]);
+
+        $response = $this->actingAs($admin)
+            ->delete(route('pages.delete', $page));
+
+        $response->assertForbidden();
+        $this->assertDatabaseHas('pages', [
+            'id' => $page->id,
+            'deleted_at' => null,
+        ]);
+    }
+
+    /**
      * Test : La validation échoue si le titre est manquant
      */
     public function test_validation_fails_if_title_is_missing(): void
@@ -238,6 +259,33 @@ class PageControllerTest extends TestCase
                 'in_menu' => true,
                 'state' => Page::STATE_DRAFT,
                 'menu_order' => 0,
+            ]);
+
+        $response->assertSessionHasErrors('slug');
+    }
+
+    /**
+     * Test : Le slug d'une page critique ne peut pas être modifié.
+     */
+    public function test_validation_fails_if_changing_slug_of_critical_page(): void
+    {
+        $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
+        $page = Page::factory()->create([
+            'slug' => 'cgu',
+            'title' => 'Conditions Générales d\'Utilisation',
+            'created_by' => $admin->id,
+            'write_level' => User::ROLE_ADMIN,
+        ]);
+
+        $response = $this->actingAs($admin)
+            ->patch(route('pages.update', $page), [
+                'title' => 'CGU modifiées',
+                'slug' => 'cgu-2026',
+                'read_level' => $page->read_level,
+                'write_level' => $page->write_level,
+                'in_menu' => $page->in_menu,
+                'state' => $page->state,
+                'menu_order' => $page->menu_order,
             ]);
 
         $response->assertSessionHasErrors('slug');

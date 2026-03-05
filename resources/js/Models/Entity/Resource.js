@@ -31,6 +31,10 @@ export class Resource extends BaseModel {
         return this._data.description || '';
     }
 
+    get effect() {
+        return this._data.effect || null;
+    }
+
     get level() {
         return this._data.level ?? null;
     }
@@ -100,6 +104,111 @@ export class Resource extends BaseModel {
         return this._data.shops || [];
     }
 
+    get itemsCount() {
+        return Number(this._data.items_count ?? this.items.length ?? 0);
+    }
+
+    get consumablesCount() {
+        return Number(this._data.consumables_count ?? this.consumables.length ?? 0);
+    }
+
+    get creaturesCount() {
+        return Number(this._data.creatures_count ?? this.creatures.length ?? 0);
+    }
+
+    get recipeIngredientsCount() {
+        return Number(this._data.recipe_ingredients_count ?? this._data.recipeIngredientsCount ?? 0);
+    }
+
+    /**
+     * Retourne les métadonnées des caractéristiques resource indexées par db_column.
+     * @private
+     */
+    _getResourceCharacteristicsByColumn(options = {}) {
+        return options?.ctx?.characteristics?.resource?.byDbColumn || {};
+    }
+
+    /**
+     * Tente de parser une valeur JSON (objet/array), sinon null.
+     * @private
+     */
+    _parseJsonPayload(value) {
+        if (value && typeof value === 'object') return value;
+        if (typeof value !== 'string') return null;
+        const trimmed = value.trim();
+        if (!trimmed) return null;
+        if (!(trimmed.startsWith('{') || trimmed.startsWith('['))) return null;
+        try {
+            return JSON.parse(trimmed);
+        } catch {
+            return null;
+        }
+    }
+
+    /**
+     * Extrait des entrées clé/valeur depuis un payload d'effet (objet ou tableau).
+     * @private
+     */
+    _extractEffectEntries(payload) {
+        if (!payload) return [];
+
+        if (!Array.isArray(payload) && typeof payload === 'object') {
+            return Object.entries(payload).map(([key, value]) => ({ key: String(key), value }));
+        }
+
+        if (Array.isArray(payload)) {
+            return payload
+                .map((row) => {
+                    if (!row || typeof row !== 'object') return null;
+                    const key = row.db_column ?? row.key ?? row.characteristic ?? row.stat ?? row.name ?? row.label ?? null;
+                    const value = row.value ?? row.amount ?? row.val ?? row.to ?? row.max ?? row.min ?? null;
+                    if (!key || value === null || typeof value === 'undefined') return null;
+                    return { key: String(key), value };
+                })
+                .filter(Boolean);
+        }
+
+        return [];
+    }
+
+    /**
+     * Construit un rendu chips (icône/couleur) depuis effect si possible.
+     * @private
+     */
+    _buildEffectChips(options = {}) {
+        const byDb = this._getResourceCharacteristicsByColumn(options);
+        const effectPayload = this._parseJsonPayload(this.effect);
+        const rawEffectText = this.effect ? String(this.effect).trim() : '';
+        const entries = this._extractEffectEntries(effectPayload);
+        if (entries.length === 0) return null;
+
+        const items = entries.map(({ key, value }) => {
+            const def = byDb?.[key] || byDb?.[key.replace(/_object$/, '')];
+            const renderedValue = String(value);
+            const label = def?.short_name || def?.name || key;
+            return {
+                icon: def?.icon || 'fa-solid fa-circle-info',
+                color: def?.color || null,
+                value: renderedValue,
+                tooltip: `${label}: ${renderedValue}`,
+            };
+        });
+
+        const searchValue = items.map((it) => `${it.tooltip} ${it.value}`).join(' ').trim();
+        const filterValue = [rawEffectText, searchValue].filter(Boolean).join(' ').trim();
+
+        return {
+            type: 'chips',
+            value: '',
+            params: {
+                items,
+                sortValue: filterValue,
+                searchValue: filterValue,
+                filterValue,
+            },
+        };
+    }
+
     // ============================================
     // FORMATAGE DES CELLULES (surcharge pour champs spécifiques)
     // ============================================
@@ -119,10 +228,14 @@ export class Resource extends BaseModel {
             case 'resource_type':
             case 'resourceType':
                 return this._toResourceTypeCell(format, size, options);
+            case 'resource_summary_relations':
+                return this._toResourceSummaryRelationsCell(format, size, options);
             case 'name':
                 return this._toNameCell(format, size, options);
             case 'description':
                 return this._toDescriptionCell(format, size, options);
+            case 'effect':
+                return this._toEffectCell(format, size, options);
             case 'image':
                 return this._toImageCell(format, size, options);
             case 'created_by':
@@ -212,6 +325,32 @@ export class Resource extends BaseModel {
     }
 
     /**
+     * Génère une cellule pour l'effet.
+     * @private
+     */
+    _toEffectCell(format, size, options) {
+        const chipsCell = this._buildEffectChips(options);
+        if (chipsCell) return chipsCell;
+
+        const effect = this.effect || '';
+        const maxLength = format.truncate || (size === 'xs' || size === 'sm' ? 20 : 40);
+        const truncated = effect.length > maxLength
+            ? effect.slice(0, maxLength - 1) + '…'
+            : effect;
+
+        return {
+            type: 'text',
+            value: truncated || '-',
+            params: {
+                tooltip: effect || '',
+                sortValue: effect,
+                searchValue: effect,
+                filterValue: effect || null,
+            },
+        };
+    }
+
+    /**
      * Génère une cellule pour l'image (miniature)
      * @private
      * @param {Object} format - Format résolu
@@ -279,6 +418,48 @@ export class Resource extends BaseModel {
                 tooltip: typeName === '-' ? '' : typeName,
                 sortValue: typeName,
                 searchValue: typeName,
+            },
+        };
+    }
+
+    /**
+     * Génère une cellule résumé (chips) des relations métier.
+     * @private
+     */
+    _toResourceSummaryRelationsCell(_format, _size, _options) {
+        const items = [
+            {
+                icon: 'fa-solid fa-sword',
+                value: this.itemsCount > 0 ? `${this.itemsCount} équipement` : null,
+                tooltip: this.itemsCount > 0 ? `Utilisée par ${this.itemsCount} équipement(s)` : '',
+            },
+            {
+                icon: 'fa-solid fa-mug-hot',
+                value: this.consumablesCount > 0 ? `${this.consumablesCount} conso` : null,
+                tooltip: this.consumablesCount > 0 ? `Utilisée par ${this.consumablesCount} consommable(s)` : '',
+            },
+            {
+                icon: 'fa-solid fa-dragon',
+                value: this.creaturesCount > 0 ? `${this.creaturesCount} créature` : null,
+                tooltip: this.creaturesCount > 0 ? `Liée à ${this.creaturesCount} créature(s)` : '',
+            },
+            {
+                icon: 'fa-solid fa-flask',
+                value: this.recipeIngredientsCount > 0 ? `${this.recipeIngredientsCount} ingr.` : null,
+                tooltip: this.recipeIngredientsCount > 0 ? `Recette avec ${this.recipeIngredientsCount} ingrédient(s)` : '',
+            },
+        ].filter((it) => it.value !== null);
+
+        const searchValue = items.map((it) => String(it.value)).join(' ');
+
+        return {
+            type: 'chips',
+            value: '',
+            params: {
+                items,
+                sortValue: items.length,
+                searchValue,
+                filterValue: searchValue,
             },
         };
     }
@@ -358,6 +539,7 @@ export class Resource extends BaseModel {
             official_id: this.officialId,
             name: this.name,
             description: this.description,
+            effect: this.effect,
             level: this.level,
             price: this.price,
             weight: this.weight,

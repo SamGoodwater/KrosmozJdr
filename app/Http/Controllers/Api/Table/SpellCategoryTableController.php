@@ -10,17 +10,18 @@ use Illuminate\Http\Request;
  * SpellCategoryTableController
  *
  * Endpoint "Table v2" pour les catégories de sorts (liste statique, pas de modèle).
- * Retourne les 4 catégories utilisées par le modèle Spell (0=Inconnu, 1=Offensif, 2=Défensif, 3=Utilitaire).
+ * Retourne les 4 catégories utilisées par le modèle Spell
+ * (0=Sort de classe, 1=Sort de créature, 2=Sort apprenable, 3=Sort consommable).
  * Compatible moteur de recherche : format=entities, search (filtrage côté réponse), sort.
  */
 class SpellCategoryTableController extends Controller
 {
     /** Catégories de sorts (alignées avec SpellTableController filterOptions). */
     private const CATEGORIES = [
-        ['id' => 0, 'name' => 'Inconnu'],
-        ['id' => 1, 'name' => 'Offensif'],
-        ['id' => 2, 'name' => 'Défensif'],
-        ['id' => 3, 'name' => 'Utilitaire'],
+        ['id' => 0, 'name' => 'Sort de classe'],
+        ['id' => 1, 'name' => 'Sort de créature'],
+        ['id' => 2, 'name' => 'Sort apprenable'],
+        ['id' => 3, 'name' => 'Sort consommable'],
     ];
 
     public function index(Request $request): JsonResponse

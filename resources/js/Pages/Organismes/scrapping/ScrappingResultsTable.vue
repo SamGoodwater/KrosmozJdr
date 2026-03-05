@@ -19,7 +19,7 @@ const SCRAP_ENTITY_TO_LABEL = {
     consumable: "consumable",
     equipment: "item",
     class: "breed",
-    panoply: "item",
+    panoply: "panoply",
 };
 
 function entityKeyForRow(row, entityTypeStr, getRelationEntityType) {

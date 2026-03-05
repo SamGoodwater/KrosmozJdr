@@ -52,12 +52,15 @@ class ConsumableTableController extends Controller
             $order = 'desc';
         }
 
-        $query = Consumable::query()->with(['createdBy', 'consumableType']);
+        $query = Consumable::query()
+            ->with(['createdBy', 'consumableType'])
+            ->withCount(['resources', 'creatures', 'campaigns', 'scenarios', 'shops']);
 
         if ($search !== '') {
             $query->where(function ($q) use ($search) {
                 $q->where('name', 'like', "%{$search}%")
-                    ->orWhere('description', 'like', "%{$search}%");
+                    ->orWhere('description', 'like', "%{$search}%")
+                    ->orWhere('effect', 'like', "%{$search}%");
             });
         }
         if (array_key_exists('id', $filters) && $filters['id'] !== '' && $filters['id'] !== null) {
@@ -120,6 +123,11 @@ class ConsumableTableController extends Controller
                         'id' => $c->consumableType->id,
                         'name' => $c->consumableType->name,
                     ] : null,
+                    'resources_count' => (int) ($c->resources_count ?? 0),
+                    'creatures_count' => (int) ($c->creatures_count ?? 0),
+                    'campaigns_count' => (int) ($c->campaigns_count ?? 0),
+                    'scenarios_count' => (int) ($c->scenarios_count ?? 0),
+                    'shops_count' => (int) ($c->shops_count ?? 0),
                     'createdBy' => $createdBy ? [
                         'id' => $createdBy->id,
                         'name' => $createdBy->name,
@@ -195,6 +203,15 @@ class ConsumableTableController extends Controller
                             'searchValue' => (string) ($c->level ?? ''),
                         ],
                     ],
+                    'effect' => [
+                        'type' => 'text',
+                        'value' => $c->effect ?: '-',
+                        'params' => [
+                            'sortValue' => (string) ($c->effect ?? ''),
+                            'searchValue' => (string) ($c->effect ?? ''),
+                            'filterValue' => (string) ($c->effect ?? ''),
+                        ],
+                    ],
                     'rarity' => [
                         'type' => 'badge',
                         'value' => $rarityLabel,
@@ -244,6 +261,11 @@ class ConsumableTableController extends Controller
                             'id' => $c->consumableType->id,
                             'name' => $c->consumableType->name,
                         ] : null,
+                        'resources_count' => (int) ($c->resources_count ?? 0),
+                        'creatures_count' => (int) ($c->creatures_count ?? 0),
+                        'campaigns_count' => (int) ($c->campaigns_count ?? 0),
+                        'scenarios_count' => (int) ($c->scenarios_count ?? 0),
+                        'shops_count' => (int) ($c->shops_count ?? 0),
                         'createdBy' => $createdBy ? [
                             'id' => $createdBy->id,
                             'name' => $createdBy->name,

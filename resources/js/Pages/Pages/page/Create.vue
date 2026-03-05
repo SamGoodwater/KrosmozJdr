@@ -17,6 +17,7 @@ import InputField from '@/Pages/Molecules/data-input/InputField.vue';
 import SelectField from '@/Pages/Molecules/data-input/SelectField.vue';
 import ToggleField from '@/Pages/Molecules/data-input/ToggleField.vue';
 import Btn from '@/Pages/Atoms/action/Btn.vue';
+import Route from '@/Pages/Atoms/action/Route.vue';
 import Container from '@/Pages/Atoms/data-display/Container.vue';
 import Alert from '@/Pages/Atoms/feedback/Alert.vue';
 import { getEntityStateOptions, getUserRoleOptions } from '@/Utils/Entity/SharedConstants';
@@ -55,7 +56,8 @@ const form = useForm({
     in_menu: true,
     state: 'draft',
     parent_id: null,
-    menu_order: 0
+    menu_order: 0,
+    menu_group: null,
 });
 
 // Génération automatique du slug depuis le titre
@@ -101,6 +103,14 @@ const submit = () => {
     <Head title="Créer une page" />
     
     <Container class="max-w-4xl mx-auto p-4 md:p-8">
+        <div class="mb-2">
+            <Route route="pages.index">
+                <Btn color="neutral" variant="ghost" size="sm" class="gap-2">
+                    <i class="fa-solid fa-arrow-left" aria-hidden="true"></i>
+                    Retour à la liste
+                </Btn>
+            </Route>
+        </div>
         <div class="card bg-base-100 shadow-xl">
             <div class="card-body">
                 <h1 class="card-title text-3xl mb-6">Créer une nouvelle page</h1>
@@ -189,6 +199,14 @@ const submit = () => {
                         type="number"
                         min="0"
                         helper="Ordre d'affichage dans le menu (0 = premier)"
+                    />
+
+                    <InputField
+                        v-model="form.menu_group"
+                        label="Titre de groupe dans le menu"
+                        type="text"
+                        placeholder="Ex: Règles, Bibliothèque, Informations"
+                        helper="Laisser vide pour afficher la page en tête sans titre de groupe (ex: Accueil)."
                     />
                     
                     <!-- Actions -->

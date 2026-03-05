@@ -110,6 +110,11 @@ class Spell extends Model implements HasMedia
     public const STATE_PLAYABLE = 'playable';
     public const STATE_ARCHIVED = 'archived';
 
+    public const CATEGORY_CLASS = 0;
+    public const CATEGORY_CREATURE = 1;
+    public const CATEGORY_LEARNABLE = 2;
+    public const CATEGORY_CONSUMABLE = 3;
+
     /** Répertoire Media Library pour ce modèle. */
     public const MEDIA_PATH = 'images/entity/spells';
 

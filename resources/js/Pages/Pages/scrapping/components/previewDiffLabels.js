@@ -56,6 +56,10 @@ export const FIELD_LABELS = {
     number_between_two_cast: "Relance (tours)",
     number_between_two_cast_editable: "Relance modifiable",
     length: "Nombre d’éléments",
+    summary: "Résumé",
+    shape: "Forme (shape)",
+    param1: "Paramètre 1",
+    param2: "Paramètre 2",
 };
 
 /**

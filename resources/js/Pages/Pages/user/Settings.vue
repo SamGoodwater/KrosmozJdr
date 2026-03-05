@@ -5,13 +5,11 @@
  * L’ancre #notifications permet d’ouvrir directement l’onglet Notifications (ex. depuis le centre de notifications).
  */
 import { ref, computed, watch, onMounted, onUnmounted } from 'vue';
-import { useForm, usePage } from '@inertiajs/vue3';
+import { useForm, usePage, router } from '@inertiajs/vue3';
 import { useNotificationStore } from '@/Composables/store/useNotificationStore';
 import Tab from '@/Pages/Molecules/navigation/Tab.vue';
 import TabItem from '@/Pages/Atoms/navigation/TabItem.vue';
 import Btn from '@/Pages/Atoms/action/Btn.vue';
-import Icon from '@/Pages/Atoms/data-display/Icon.vue';
-import Route from '@/Pages/Atoms/action/Route.vue';
 
 const page = usePage();
 const { success, error } = useNotificationStore();
@@ -115,16 +113,26 @@ onUnmounted(() => {
 if (typeof window !== 'undefined') {
     window.addEventListener('hashchange', setActiveTabFromHash);
 }
+
+function goBackToProfile() {
+    router.visit(route('user.show'));
+}
 </script>
 
 <template>
     <div class="container mx-auto px-4 py-6 max-w-4xl">
         <div class="flex flex-wrap items-center justify-between gap-4 mb-6">
             <h1 class="text-2xl font-bold">Paramètres du compte</h1>
-            <Route :href="route('user.show')" class="btn btn-ghost btn-sm gap-2">
-                <Icon source="fa-arrow-left" pack="solid" size="sm" alt="" />
+            <Btn
+                color="neutral"
+                variant="ghost"
+                size="sm"
+                class="gap-2"
+                @click="goBackToProfile"
+            >
+                <i class="fa-solid fa-arrow-left" aria-hidden="true"></i>
                 Retour au profil
-            </Route>
+            </Btn>
         </div>
 
         <Tab variant="lift" size="md" class="mb-4">

@@ -7,6 +7,9 @@ use App\Models\Page;
 use App\Models\Section;
 use Illuminate\Validation\Rule;
 use App\Enums\SectionType;
+use App\Support\SectionTemplateValidationRules;
+use App\Support\SectionTemplatePayloadValidator;
+use Illuminate\Validation\Validator;
 
 /**
  * FormRequest pour la création d'une section dynamique.
@@ -60,8 +63,10 @@ class StoreSectionRequest extends FormRequest
             'template' => ['required_without:type', Rule::enum(SectionType::class)],
             'type' => ['required_without:template', Rule::enum(SectionType::class)],
             'settings' => ['sometimes', 'nullable', 'array'],
-            'data' => ['required_without:params', 'array'],
-            'params' => ['required_without:data', 'array'],
+            // Payload moderne/legacy : optionnel au niveau racine.
+            // Les règles template imposent ensuite les champs requis.
+            'data' => ['sometimes', 'array'],
+            'params' => ['sometimes', 'array'],
             'state' => ['sometimes', 'string', Rule::in([Section::STATE_RAW, Section::STATE_DRAFT, Section::STATE_PLAYABLE, Section::STATE_ARCHIVED])],
             'read_level' => ['sometimes', 'integer', 'min:0', 'max:5'],
             'write_level' => ['sometimes', 'integer', 'min:0', 'max:5', 'gte:read_level'],
@@ -86,49 +91,7 @@ class StoreSectionRequest extends FormRequest
      */
     protected function getTemplateValidationRules(SectionType $template): array
     {
-        return match($template) {
-            SectionType::TEXT => [
-                // Support legacy + moderne : exiger au moins un content (data ou params)
-                'data.content' => ['required_without:params.content', 'string'],
-                'params.content' => ['required_without:data.content', 'string'],
-                'settings.align' => ['sometimes', 'string', Rule::in(['left', 'center', 'right'])],
-                'settings.size' => ['sometimes', 'string', Rule::in(['sm', 'md', 'lg', 'xl'])],
-            ],
-            SectionType::IMAGE => [
-                // Les tests attendent que src/alt soient nullables à la création.
-                // On garde la compat legacy params.* mais sans obligation.
-                'data.src' => ['nullable', 'string'],
-                'data.alt' => ['nullable', 'string'],
-                'params.src' => ['nullable', 'string'],
-                'params.alt' => ['nullable', 'string'],
-                'data.caption' => ['sometimes', 'string', 'nullable'],
-                'settings.align' => ['sometimes', 'string', Rule::in(['left', 'center', 'right'])],
-                'settings.size' => ['sometimes', 'string', Rule::in(['sm', 'md', 'lg', 'xl', 'full'])],
-            ],
-            SectionType::GALLERY => [
-                // Lors de la création, images peut être un tableau vide
-                'data.images' => ['sometimes', 'array'],
-                'data.images.*.src' => ['required_with:data.images.*', 'string'],
-                'data.images.*.alt' => ['required_with:data.images.*', 'string'],
-                'data.images.*.caption' => ['sometimes', 'string', 'nullable'],
-                'settings.columns' => ['sometimes', 'integer', Rule::in([2, 3, 4])],
-                'settings.gap' => ['sometimes', 'string', Rule::in(['sm', 'md', 'lg'])],
-            ],
-            SectionType::VIDEO => [
-                'data.src' => ['required_without:params.src', 'string'],
-                'data.type' => ['required_without:params.type', 'string', Rule::in(['youtube', 'vimeo', 'direct'])],
-                'params.src' => ['required_without:data.src', 'string'],
-                'params.type' => ['required_without:data.type', 'string', Rule::in(['youtube', 'vimeo', 'direct'])],
-                'settings.autoplay' => ['sometimes', 'boolean'],
-                'settings.controls' => ['sometimes', 'boolean'],
-            ],
-            SectionType::ENTITY_TABLE => [
-                'data.entity' => ['required_without:params.entity', 'string'],
-                'params.entity' => ['required_without:data.entity', 'string'],
-                'data.filters' => ['sometimes', 'array'],
-                'data.columns' => ['sometimes', 'array'],
-            ],
-        };
+        return SectionTemplateValidationRules::forTemplate($template);
     }
 
     /**
@@ -149,6 +112,54 @@ class StoreSectionRequest extends FormRequest
             'data' => $data ?? $params,
             'params' => $params ?? $data,
         ]);
+    }
+
+    public function withValidator(Validator $validator): void
+    {
+        $validator->after(function (Validator $validator): void {
+            $templateRaw = $this->input('template') ?? $this->input('type');
+            if ($templateRaw instanceof SectionType) {
+                $templateRaw = $templateRaw->value;
+            }
+
+            $template = is_string($templateRaw) ? SectionType::tryFrom($templateRaw) : null;
+            if (!$template) {
+                return;
+            }
+
+            if ($template === SectionType::IMAGE) {
+                foreach (['data.src', 'params.src'] as $key) {
+                    $value = $this->input($key);
+                    if (!is_string($value) || trim($value) === '') {
+                        continue;
+                    }
+                    $error = SectionTemplatePayloadValidator::validateImageSource($value);
+                    if ($error) {
+                        $validator->errors()->add($key, $error);
+                    }
+                }
+            }
+
+            if ($template === SectionType::VIDEO) {
+                $dataType = $this->input('data.type') ?? $this->input('params.type') ?? '';
+
+                $dataSrc = $this->input('data.src');
+                if (is_string($dataSrc) && trim($dataSrc) !== '') {
+                    $error = SectionTemplatePayloadValidator::validateVideoSource((string) ($this->input('data.type') ?? $dataType), $dataSrc);
+                    if ($error) {
+                        $validator->errors()->add('data.src', $error);
+                    }
+                }
+
+                $paramsSrc = $this->input('params.src');
+                if (is_string($paramsSrc) && trim($paramsSrc) !== '') {
+                    $error = SectionTemplatePayloadValidator::validateVideoSource((string) ($this->input('params.type') ?? $dataType), $paramsSrc);
+                    if ($error) {
+                        $validator->errors()->add('params.src', $error);
+                    }
+                }
+            }
+        });
     }
 
     protected function prepareForValidation()

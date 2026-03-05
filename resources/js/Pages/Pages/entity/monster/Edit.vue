@@ -7,13 +7,15 @@
  * 
  * @props {Object} monster - Données du monstre à éditer
  */
-import { ref, computed } from 'vue';
+import { computed } from 'vue';
 import { Head, usePage } from '@inertiajs/vue3';
 import { usePageTitle } from '@/Composables/layout/usePageTitle';
 import { Monster } from '@/Models/Entity/Monster';
 import EntityEditForm from '@/Pages/Organismes/entity/EntityEditForm.vue';
 import EntityRelationsManager from '@/Pages/Organismes/entity/EntityRelationsManager.vue';
 import Container from '@/Pages/Atoms/data-display/Container.vue';
+import Btn from '@/Pages/Atoms/action/Btn.vue';
+import Route from '@/Pages/Atoms/action/Route.vue';
 
 const page = usePage();
 const { setPageTitle } = usePageTitle();
@@ -38,8 +40,6 @@ const props = defineProps({
 });
 
 // Mode d'affichage par défaut
-const viewMode = ref('large');
-
 // Configuration des champs pour les monstres
 // Note: Les monstres ont une relation avec Creature pour le nom
 const fieldsConfig = {
@@ -81,6 +81,13 @@ setPageTitle(`Modifier le monstre : ${monsterName.value}`);
     <Head :title="`Modifier le monstre : ${monsterName}`" />
     
     <Container class="space-y-6">
+        <Route route="entities.monsters.index">
+            <Btn color="neutral" variant="ghost" size="sm" class="gap-2">
+                <i class="fa-solid fa-arrow-left" aria-hidden="true"></i>
+                Retour à la liste
+            </Btn>
+        </Route>
+
         <div class="p-4 bg-base-200 rounded-lg">
             <p class="text-sm text-base-content/70">
                 <strong>Note :</strong> Le nom du monstre est géré via la relation Creature. 
@@ -94,10 +101,8 @@ setPageTitle(`Modifier le monstre : ${monsterName.value}`);
         <EntityEditForm
             :entity="monster"
             entity-type="monster"
-            :view-mode="viewMode"
             :fields-config="fieldsConfig"
             :is-updating="true"
-            @update:view-mode="viewMode = $event"
         />
         
         <!-- Gestion des scénarios du monstre -->

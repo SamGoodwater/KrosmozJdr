@@ -3,7 +3,7 @@
  * SectionImageEdit Template
  * 
  * @description
- * Template de section pour éditer un média (image/PDF) en mode écriture.
+ * Template de section pour éditer un média (image/PDF/documents/archives) en mode écriture.
  * - URL manuelle (fallback)
  * - Upload image/PDF via Media Library de la section
  * - Auto-save du contenu avec debounce
@@ -163,17 +163,17 @@ const deleteCurrentFile = async () => {
   <div class="section-image-edit space-y-4">
     <div class="space-y-2">
       <label class="label">
-        <span class="label-text">Fichier (image ou PDF)</span>
+        <span class="label-text">Fichier (image, PDF, Office, texte, archive)</span>
       </label>
       <input
         type="file"
-        accept="image/*,.pdf,application/pdf"
+        accept="image/*,.pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt,.csv,.zip,.rar,.7z,.odt,.ods,.odp"
         class="file-input file-input-bordered w-full"
         :disabled="isUploading"
         @change="uploadFile"
       />
       <p class="text-xs text-base-content/60">
-        Upload direct recommandé. L'URL manuelle ci-dessous reste disponible en fallback.
+        Upload direct recommandé. Tu peux remplacer le fichier plus tard depuis cette même section.
       </p>
       <p v-if="uploadError" class="text-error text-sm">{{ uploadError }}</p>
     </div>
@@ -233,7 +233,7 @@ const deleteCurrentFile = async () => {
       <i class="fa-solid fa-info-circle"></i>
       <div>
         <p class="text-sm">
-          Le template prend en charge les images et les PDF.
+          Le template prend en charge images, PDF, documents Office, textes et archives.
         </p>
       </div>
     </div>

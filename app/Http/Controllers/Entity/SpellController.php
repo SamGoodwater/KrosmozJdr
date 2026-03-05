@@ -7,6 +7,7 @@ use App\Http\Requests\Entity\StoreSpellRequest;
 use App\Http\Requests\Entity\UpdateSpellRequest;
 use App\Models\Effect;
 use App\Models\Entity\Spell;
+use App\Models\Type\SpellType;
 use App\Http\Resources\Entity\SpellResource;
 use App\Services\PdfService;
 use Illuminate\Http\Request;
@@ -52,10 +53,15 @@ class SpellController extends Controller
         }
         
         $spells = $query->paginate(20)->withQueryString();
+        $spellTypes = SpellType::query()
+            ->select(['id', 'name'])
+            ->orderBy('name')
+            ->get();
         
         return Inertia::render('Pages/entity/spell/Index', [
             'spells' => SpellResource::collection($spells),
             'filters' => request()->only(['search', 'level', 'pa']),
+            'spellTypes' => $spellTypes,
         ]);
     }
 

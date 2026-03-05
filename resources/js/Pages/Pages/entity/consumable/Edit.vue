@@ -11,13 +11,15 @@
  * @props {Array} availableEffects - Effets disponibles
  * @props {String} effectEntityType - Type entité pour l'API effets ('consumable')
  */
-import { ref, computed } from 'vue';
+import { computed } from 'vue';
 import { Head, usePage } from '@inertiajs/vue3';
 import { usePageTitle } from '@/Composables/layout/usePageTitle';
 import { Consumable } from '@/Models/Entity/Consumable';
 import EntityEditForm from '@/Pages/Organismes/entity/EntityEditForm.vue';
 import EffectUsagesManager from '@/Pages/Organismes/entity/EffectUsagesManager.vue';
 import Container from '@/Pages/Atoms/data-display/Container.vue';
+import Btn from '@/Pages/Atoms/action/Btn.vue';
+import Route from '@/Pages/Atoms/action/Route.vue';
 
 const page = usePage();
 const { setPageTitle } = usePageTitle();
@@ -35,8 +37,6 @@ const props = defineProps({
     availableEffects: { type: Array, default: () => [] },
     effectEntityType: { type: String, default: 'consumable' },
 });
-
-const viewMode = ref('large');
 
 const consumableTypeOptions = computed(() =>
     (props.availableConsumableTypes || []).map((t) => ({
@@ -134,13 +134,18 @@ setPageTitle(`Modifier le consommable : ${consumable.value.name || 'Sans nom'}`)
     <Head :title="`Modifier le consommable : ${consumable?.name || 'Sans nom'}`" />
 
     <Container class="space-y-6">
+        <Route route="entities.consumables.index">
+            <Btn color="neutral" variant="ghost" size="sm" class="gap-2">
+                <i class="fa-solid fa-arrow-left" aria-hidden="true"></i>
+                Retour à la liste
+            </Btn>
+        </Route>
+
         <EntityEditForm
             :entity="consumable"
             entity-type="consumable"
-            :view-mode="viewMode"
             :fields-config="fieldsConfig"
             :is-updating="true"
-            @update:view-mode="viewMode = $event"
         />
 
         <!-- Gestion des usages d'effets (système unifié) -->

@@ -17,12 +17,10 @@ export class CategoryFormatter extends BaseFormatter {
    * @type {Array<{value: number|string, label: string, color: string}>}
    */
   static options = [
-    // Exemples - à adapter selon les catégories réelles
-    { value: 1, label: 'Offensif', color: 'error' },
-    { value: 2, label: 'Défensif', color: 'success' },
-    { value: 3, label: 'Soin', color: 'info' },
-    { value: 4, label: 'Buff', color: 'primary' },
-    { value: 5, label: 'Debuff', color: 'warning' },
+    { value: 0, label: 'Sort de classe', color: 'info' },
+    { value: 1, label: 'Sort de créature', color: 'warning' },
+    { value: 2, label: 'Sort apprenable', color: 'success' },
+    { value: 3, label: 'Sort consommable', color: 'secondary' },
   ];
 
   /**

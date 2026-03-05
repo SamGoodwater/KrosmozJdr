@@ -32,6 +32,7 @@ use App\Models\Entity\Scenario;
  * @property int $write_level
  * @property int|null $parent_id
  * @property int $menu_order
+ * @property string|null $menu_group
  * @property int|null $created_by
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
@@ -57,6 +58,7 @@ use App\Models\Entity\Scenario;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Page whereIsVisible($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Page whereMenuOrder($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Page whereParentId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Page whereMenuGroup($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Page whereSlug($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Page whereState($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Page whereTitle($value)
@@ -78,6 +80,7 @@ class Page extends Model
     public const STATE_DRAFT = 'draft';
     public const STATE_PLAYABLE = 'playable';
     public const STATE_ARCHIVED = 'archived';
+    public const RESERVED_CRITICAL_SLUGS = ['accueil', 'cgu'];
 
     /**
      * The attributes that are mass assignable.
@@ -93,6 +96,7 @@ class Page extends Model
         'write_level',
         'parent_id',
         'menu_order',
+        'menu_group',
         'created_by',
     ];
 
@@ -341,5 +345,13 @@ class Page extends Model
     public function setDraft(): void
     {
         $this->update(['state' => self::STATE_DRAFT]);
+    }
+
+    /**
+     * Indique si la page est critique (slug réservé).
+     */
+    public function isCriticalPage(): bool
+    {
+        return in_array((string) $this->slug, self::RESERVED_CRITICAL_SLUGS, true);
     }
 }

@@ -85,7 +85,12 @@ const attrs = computed(() => getCommonAttrs(props));
                 size="sm"
                 :class="iconClasses"
             />
-            <slot name="title" />
+            <span class="glass-menu-group-title">
+                <slot name="title" />
+            </span>
+            <span class="glass-menu-group-caret" aria-hidden="true">
+                <i class="fa-solid fa-chevron-down glass-menu-group-caret-icon"></i>
+            </span>
         </summary>
         <div :class="contentClasses">
             <slot />
@@ -137,6 +142,34 @@ const attrs = computed(() => getCommonAttrs(props));
 }
 
 .glass-menu-group-summary-icon {
+    opacity: 0.9;
+}
+
+.glass-menu-group-title {
+    flex: 1 1 auto;
+    min-width: 0;
+}
+
+.glass-menu-group-caret {
+    margin-left: auto;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1rem;
+    height: 1rem;
+    opacity: 0.72;
+    transform: rotate(-90deg);
+    transform-origin: center;
+    transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+.glass-menu-group-caret-icon {
+    font-size: 0.72rem;
+    line-height: 1;
+}
+
+.glass-menu-group[open] > .glass-menu-group-summary .glass-menu-group-caret {
+    transform: rotate(0deg);
     opacity: 0.9;
 }
 

@@ -28,6 +28,9 @@ class UpdateMonsterRequest extends FormRequest
             'monster_race_id' => ['nullable', 'integer', 'exists:type_monster_races,id'],
             'dofus_version' => ['nullable', 'string', 'max:255'],
             'auto_update' => ['nullable', 'boolean'],
+            'state' => ['nullable', 'string', 'max:255'],
+            'read_level' => ['nullable', 'integer', 'min:0', 'max:4'],
+            'write_level' => ['nullable', 'integer', 'min:0', 'max:4'],
         ];
     }
 }

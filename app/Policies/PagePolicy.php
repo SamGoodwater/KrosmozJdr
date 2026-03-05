@@ -83,6 +83,9 @@ class PagePolicy
      */
     public function delete(User $user, Page $page): bool
     {
+        if ($page->isCriticalPage()) {
+            return false;
+        }
         return $page->canBeEditedBy($user);
     }
 
@@ -121,6 +124,9 @@ class PagePolicy
      */
     public function forceDelete(User $user, Page $page): bool
     {
+        if ($page->isCriticalPage()) {
+            return false;
+        }
         return $user->isAdmin();
     }
 }

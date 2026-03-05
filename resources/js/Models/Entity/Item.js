@@ -104,6 +104,124 @@ export class Item extends BaseModel {
         return this._data.shops || [];
     }
 
+    get resourcesCount() {
+        return Number(this._data.resources_count ?? this.resources.length ?? 0);
+    }
+
+    get panopliesCount() {
+        return Number(this._data.panoplies_count ?? this.panoplies.length ?? 0);
+    }
+
+    get shopsCount() {
+        return Number(this._data.shops_count ?? this.shops.length ?? 0);
+    }
+
+    get campaignsCount() {
+        return Number(this._data.campaigns_count ?? this.campaigns.length ?? 0);
+    }
+
+    get scenariosCount() {
+        return Number(this._data.scenarios_count ?? this.scenarios.length ?? 0);
+    }
+
+    /**
+     * Retourne les métadonnées des caractéristiques item indexées par db_column.
+     * @private
+     */
+    _getItemCharacteristicsByColumn(options = {}) {
+        return options?.ctx?.characteristics?.item?.byDbColumn || {};
+    }
+
+    /**
+     * Tente de parser une valeur JSON (objet/array), sinon null.
+     * @private
+     */
+    _parseJsonPayload(value) {
+        if (value && typeof value === 'object') return value;
+        if (typeof value !== 'string') return null;
+        const trimmed = value.trim();
+        if (!trimmed) return null;
+        if (!(trimmed.startsWith('{') || trimmed.startsWith('['))) return null;
+        try {
+            return JSON.parse(trimmed);
+        } catch {
+            return null;
+        }
+    }
+
+    /**
+     * Extrait des entrées clé/valeur depuis un payload d'effet (objet ou tableau).
+     * @private
+     */
+    _extractEffectEntries(payload) {
+        if (!payload) return [];
+
+        if (!Array.isArray(payload) && typeof payload === 'object') {
+            return Object.entries(payload).map(([key, value]) => ({ key: String(key), value }));
+        }
+
+        if (Array.isArray(payload)) {
+            return payload
+                .map((row) => {
+                    if (!row || typeof row !== 'object') return null;
+                    const key = row.db_column ?? row.key ?? row.characteristic ?? row.stat ?? row.name ?? row.label ?? null;
+                    const value = row.value ?? row.amount ?? row.val ?? row.to ?? row.max ?? row.min ?? null;
+                    if (!key || value === null || typeof value === 'undefined') return null;
+                    return { key: String(key), value };
+                })
+                .filter(Boolean);
+        }
+
+        return [];
+    }
+
+    /**
+     * Construit un rendu chips (icône/couleur) depuis effect/bonus si possible.
+     * @private
+     */
+    _buildEffectChips(options = {}) {
+        const byDb = this._getItemCharacteristicsByColumn(options);
+        const effectPayload = this._parseJsonPayload(this.effect);
+        const bonusPayload = this._parseJsonPayload(this.bonus);
+        const rawEffectText = this.effect ? String(this.effect).trim() : '';
+        const rawBonusText = this.bonus ? String(this.bonus).trim() : '';
+
+        const entries = [
+            ...this._extractEffectEntries(effectPayload),
+            ...this._extractEffectEntries(bonusPayload),
+        ];
+
+        if (entries.length === 0) {
+            return null;
+        }
+
+        const items = entries.map(({ key, value }) => {
+            const def = byDb?.[key] || byDb?.[key.replace(/_object$/, '')];
+            const renderedValue = String(value);
+            const label = def?.short_name || def?.name || key;
+            return {
+                icon: def?.icon || 'fa-solid fa-circle-info',
+                color: def?.color || null,
+                value: renderedValue,
+                tooltip: `${label}: ${renderedValue}`,
+            };
+        });
+
+        const searchValue = items.map((it) => `${it.tooltip} ${it.value}`).join(' ').trim();
+        const filterValue = [rawEffectText, rawBonusText, searchValue].filter(Boolean).join(' ').trim();
+
+        return {
+            type: 'chips',
+            value: '',
+            params: {
+                items,
+                sortValue: filterValue,
+                searchValue: filterValue,
+                filterValue,
+            },
+        };
+    }
+
     // ============================================
     // FORMATAGE DES CELLULES (surcharge pour champs spécifiques)
     // ============================================
@@ -117,9 +235,10 @@ export class Item extends BaseModel {
     toCell(fieldKey, options = {}) {
         // D'abord, essayer la méthode de base (gère les formatters automatiquement)
         const baseCell = super.toCell(fieldKey, options);
+        const overrideFields = new Set(['effect']);
         
         // Si la méthode de base a trouvé quelque chose (formatter ou valeur par défaut valide), l'utiliser
-        if (baseCell && (baseCell.type !== 'text' || (baseCell.value && baseCell.value !== '-'))) {
+        if (!overrideFields.has(fieldKey) && baseCell && (baseCell.type !== 'text' || (baseCell.value && baseCell.value !== '-'))) {
             return baseCell;
         }
 
@@ -205,6 +324,9 @@ export class Item extends BaseModel {
      * @private
      */
     _toEffectCell(format, size, options) {
+        const chipsCell = this._buildEffectChips(options);
+        if (chipsCell) return chipsCell;
+
         const effect = this.effect || '';
         const maxLength = format.truncate || (size === 'xs' || size === 'sm' ? 20 : 40);
         const truncated = effect.length > maxLength 
@@ -350,6 +472,11 @@ export class Item extends BaseModel {
         const priceValue = this.price != null && String(this.price) !== '' ? String(this.price) : null;
         const versionValue = this.dofusVersion ? String(this.dofusVersion) : null;
         const dofusdbValue = this.dofusdbId ? `#${this.dofusdbId}` : null;
+        const resourcesValue = this.resourcesCount > 0 ? `${this.resourcesCount} ingr.` : null;
+        const panopliesValue = this.panopliesCount > 0 ? `${this.panopliesCount} pano` : null;
+        const shopsValue = this.shopsCount > 0 ? `${this.shopsCount} boutique` : null;
+        const campaignsValue = this.campaignsCount > 0 ? `${this.campaignsCount} campagne` : null;
+        const scenariosValue = this.scenariosCount > 0 ? `${this.scenariosCount} scénario` : null;
 
         const items = [
             { icon: 'fa-solid fa-tags', value: itemTypeName, tooltip: itemTypeName ? `Type: ${itemTypeName}` : '' },
@@ -358,6 +485,11 @@ export class Item extends BaseModel {
             { icon: 'fa-solid fa-coins', value: priceValue, tooltip: priceValue ? `Prix: ${priceValue}` : '' },
             { icon: 'fa-solid fa-code-branch', value: versionValue, tooltip: versionValue ? `Version: ${versionValue}` : '' },
             { icon: 'fa-solid fa-up-right-from-square', value: dofusdbValue, tooltip: dofusdbValue ? `DofusDB: ${dofusdbValue}` : '' },
+            { icon: 'fa-solid fa-flask', value: resourcesValue, tooltip: resourcesValue ? `Ressources liées: ${this.resourcesCount}` : '' },
+            { icon: 'fa-solid fa-layer-group', value: panopliesValue, tooltip: panopliesValue ? `Panoplies liées: ${this.panopliesCount}` : '' },
+            { icon: 'fa-solid fa-store', value: shopsValue, tooltip: shopsValue ? `Boutiques liées: ${this.shopsCount}` : '' },
+            { icon: 'fa-solid fa-flag', value: campaignsValue, tooltip: campaignsValue ? `Campagnes liées: ${this.campaignsCount}` : '' },
+            { icon: 'fa-solid fa-scroll', value: scenariosValue, tooltip: scenariosValue ? `Scénarios liés: ${this.scenariosCount}` : '' },
         ].filter((it) => it.value !== null && it.value !== undefined && String(it.value) !== '');
 
         const searchValue = items.map((it) => String(it.value)).join(' ');

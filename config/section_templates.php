@@ -25,6 +25,9 @@ return [
         'settings' => [
             'align' => 'center',
             'size' => 'md',
+            'zoom' => 100,
+            'lazyLoad' => false,
+            'documentDisplayMode' => 'preview',
         ],
         'data' => [
             'src' => null,
@@ -45,6 +48,7 @@ return [
         'settings' => [
             'autoplay' => false,
             'controls' => true,
+            'directVideoDisplayMode' => 'preview',
         ],
         'data' => [
             'src' => null,

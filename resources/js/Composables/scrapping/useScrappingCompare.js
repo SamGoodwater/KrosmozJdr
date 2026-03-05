@@ -41,7 +41,7 @@ export function useScrappingCompare(options) {
         return val && typeof val === "object" ? val : null;
     }
 
-    function convertedName(converted, entityTypeStr) {
+    function convertedName(converted) {
         if (!converted || typeof converted !== "object") return null;
         const from = firstOrBlock(converted.creatures) ?? firstOrBlock(converted.monsters)
             ?? firstOrBlock(converted.spells) ?? firstOrBlock(converted.breeds) ?? firstOrBlock(converted.classes)
@@ -96,34 +96,36 @@ export function useScrappingCompare(options) {
     function flattenRawForCompare(obj, prefix = "") {
         if (!obj || typeof obj !== "object") return {};
         const out = {};
+        const maxDepth = 3;
+        function walk(value, keyPrefix, depth) {
+            if (value === null || typeof value !== "object") {
+                out[keyPrefix] = value;
+                return;
+            }
+            if (Array.isArray(value)) {
+                out[keyPrefix] = `[${value.length} élément(s)]`;
+                if (value.length > 0 && value[0] !== null && typeof value[0] === "object" && depth < maxDepth) {
+                    walk(value[0], `${keyPrefix}.0`, depth + 1);
+                }
+                return;
+            }
+            if (depth >= maxDepth) {
+                out[keyPrefix] = `{${Object.keys(value).length} clé(s)}`;
+                return;
+            }
+            const keys = Object.keys(value);
+            if (!keys.length) {
+                out[keyPrefix] = "{}";
+                return;
+            }
+            for (const k of keys) {
+                walk(value[k], `${keyPrefix}.${k}`, depth + 1);
+            }
+        }
         for (const key of Object.keys(obj)) {
             const val = obj[key];
             const fullKey = prefix ? `${prefix}.${key}` : key;
-            if (Array.isArray(val) && val.length > 0 && val[0] !== null && typeof val[0] === "object") {
-                for (const k2 of Object.keys(val[0])) {
-                    const v2 = val[0][k2];
-                    const key2 = `${fullKey}.0.${k2}`;
-                    if (v2 !== null && typeof v2 === "object" && (Array.isArray(v2) || (typeof v2 === "object" && Object.keys(v2).length > 0))) {
-                        out[key2] = Array.isArray(v2) ? `[${v2.length} élément(s)]` : `{${Object.keys(v2).length} clé(s)}`;
-                    } else {
-                        out[key2] = v2;
-                    }
-                }
-            } else if (val !== null && typeof val === "object" && !Array.isArray(val)) {
-                for (const k2 of Object.keys(val)) {
-                    const v2 = val[k2];
-                    const key2 = `${fullKey}.${k2}`;
-                    if (v2 !== null && typeof v2 === "object" && (Array.isArray(v2) || typeof v2 === "object")) {
-                        out[key2] = Array.isArray(v2) ? `[${v2.length} élément(s)]` : `{${Object.keys(v2).length} clé(s)}`;
-                    } else {
-                        out[key2] = v2;
-                    }
-                }
-            } else if (Array.isArray(val)) {
-                out[fullKey] = `[${val.length} élément(s)]`;
-            } else {
-                out[fullKey] = val;
-            }
+            walk(val, fullKey, 0);
         }
         return out;
     }
@@ -133,6 +135,11 @@ export function useScrappingCompare(options) {
         const suffix = `.${modelKey}`;
         const found = Object.keys(flat).find((k) => k === modelKey || k.endsWith(suffix));
         if (found !== undefined) return flat[found];
+        const langSuffixCandidates = [".fr", ".en", ".de", ".es", ".pt"];
+        const langExact = Object.keys(flat).find((k) => langSuffixCandidates.some((s) => k === `${modelKey}${s}`));
+        if (langExact !== undefined) return flat[langExact];
+        const langBySuffix = Object.keys(flat).find((k) => langSuffixCandidates.some((s) => k.endsWith(`${suffix}${s}`)));
+        if (langBySuffix !== undefined) return flat[langBySuffix];
         // Brut DofusDB : clés imbriquées (ex. "name.fr") alors que le converti a "name"
         const prefix = `${modelKey}.`;
         const prefixKey = Object.keys(flat).find((k) => k.startsWith(prefix));
@@ -145,6 +152,8 @@ export function useScrappingCompare(options) {
         if (Array.isArray(comparisonKeys) && comparisonKeys.length > 0) {
             if (comparisonKeys.includes(key)) return true;
             if (comparisonKeys.some((k) => key === k || key.endsWith("." + k))) return true;
+            if (comparisonKeys.some((k) => key.startsWith(k + "."))) return true;
+            if (comparisonKeys.some((k) => key.includes("." + k + "."))) return true;
             return false;
         }
         return true;
@@ -159,6 +168,80 @@ export function useScrappingCompare(options) {
         return Array.isArray(comparisonKeys) && comparisonKeys.length > 0;
     }
 
+    function summarizeSpellEffects(effects, maxEffects = 4, maxSubs = 4) {
+        if (!Array.isArray(effects) || effects.length === 0) return "—";
+        const chunks = [];
+        for (const ef of effects.slice(0, maxEffects)) {
+            if (!ef || typeof ef !== "object") continue;
+            const degree = ef.degree != null ? `D${ef.degree}` : "D?";
+            const subs = Array.isArray(ef.sub_effects) ? ef.sub_effects : [];
+            const area = ef.area != null ? `zone=${ef.area}` : null;
+            const targetType = ef.target_type != null ? `target=${ef.target_type}` : null;
+            const subLabel = subs
+                .slice(0, maxSubs)
+                .map((s) => {
+                    const slug = s?.sub_effect_slug ?? "?";
+                    const order = s?.order != null ? `o${s.order}` : null;
+                    const formula = s?.params?.value_formula ?? null;
+                    const formulaCrit = s?.params?.value_formula_crit ?? null;
+                    const converted = s?.params?.value_converted ?? null;
+                    const characteristic = s?.params?.characteristic ?? null;
+                    const duration = s?.params?.duration ?? null;
+                    const diceFormula = s?.params?.dice_formula ?? null;
+                    const critOnly = s?.crit_only === true ? "crit-only" : null;
+                    const details = [
+                        order,
+                        formula != null ? String(formula) : null,
+                        formulaCrit != null ? `crit:${formulaCrit}` : null,
+                        converted != null ? `=>${converted}` : null,
+                        diceFormula != null ? `dice:${diceFormula}` : null,
+                        characteristic != null ? `(${characteristic})` : null,
+                        duration != null ? `dur:${duration}` : null,
+                        critOnly,
+                    ].filter(Boolean).join(" ");
+                    return details ? `${slug} ${details}` : String(slug);
+                })
+                .join(" ; ");
+            const suffix = subs.length > maxSubs ? ` ; +${subs.length - maxSubs} autre(s)` : "";
+            const effectMeta = [area, targetType].filter(Boolean).join(", ");
+            const effectHead = effectMeta ? `${degree} [${effectMeta}]` : degree;
+            chunks.push(`${effectHead}: ${subLabel || "—"}${suffix}`);
+        }
+        if (effects.length > maxEffects) {
+            chunks.push(`+${effects.length - maxEffects} degré(s)`);
+        }
+        return chunks.join(" | ");
+    }
+
+    function summarizeRawSpellEffects(raw) {
+        const levels = Array.isArray(raw?.levels) ? raw.levels : [];
+        if (!levels.length) return "—";
+        const chunks = [];
+        for (const lvl of levels.slice(0, 4)) {
+            if (!lvl || typeof lvl !== "object") continue;
+            const grade = lvl.grade != null ? `D${lvl.grade}` : "D?";
+            const effects = Array.isArray(lvl.effects) ? lvl.effects : [];
+            const effLabel = effects
+                .slice(0, 3)
+                .map((e) => {
+                    const effectId = e?.effectId ?? "?";
+                    const diceNum = e?.diceNum ?? null;
+                    const diceSide = e?.diceSide ?? null;
+                    const formula = Number.isFinite(Number(diceNum)) && Number.isFinite(Number(diceSide)) && Number(diceNum) > 0
+                        ? (Number(diceSide) > 0 ? `${diceNum}d${diceSide}` : String(diceNum))
+                        : null;
+                    return formula ? `#${effectId} ${formula}` : `#${effectId}`;
+                })
+                .join(" ; ");
+            const suffix = effects.length > 3 ? ` ; +${effects.length - 3} autre(s)` : "";
+            chunks.push(`${grade}: ${effLabel || "—"}${suffix}`);
+        }
+        if (levels.length > 4) {
+            chunks.push(`+${levels.length - 4} degré(s)`);
+        }
+        return chunks.join(" | ");
+    }
+
     function comparisonRows(item, dataEntry, entityTypeOverride) {
         const existing = existingRecord(item, dataEntry);
         const data = dataEntry ?? byId()[Number(item?.id)];
@@ -166,14 +249,46 @@ export function useScrappingCompare(options) {
         const existingFlat = flattenForCompareShallow(existing ?? {});
         const convertedFlat = flattenForCompareShallow(data?.converted ?? {});
         const rawFlat = flattenRawForCompare(raw);
+        const typeForFilter = entityTypeOverride ?? entityType();
+
+        if (typeForFilter === "spell") {
+            const convertedEffects = data?.converted?.spell_effects?.effects ?? null;
+            if (Array.isArray(convertedEffects) && convertedEffects.length) {
+                convertedFlat["spell_effects.summary"] = summarizeSpellEffects(convertedEffects);
+            }
+            const rawEffectsSummary = summarizeRawSpellEffects(raw);
+            if (rawEffectsSummary !== "—") {
+                rawFlat["spell_effects.summary"] = rawEffectsSummary;
+            }
+            const zone = raw?.spell_global?.area ?? raw?.levels?.[0]?.effects?.[0]?.zoneDescr ?? null;
+            if (zone && typeof zone === "object") {
+                if (zone.shape !== undefined) rawFlat["spell_global.area.shape"] = zone.shape;
+                if (zone.param1 !== undefined) rawFlat["spell_global.area.param1"] = zone.param1;
+                if (zone.param2 !== undefined) rawFlat["spell_global.area.param2"] = zone.param2;
+            }
+        }
+
         let modelKeys = Object.keys(existingFlat).length > 0 ? Object.keys(existingFlat) : Object.keys(convertedFlat);
         if (modelKeys.length === 0) modelKeys = Object.keys(rawFlat);
         // Inclure les clés du brut pour afficher les données DofusDB (ex. relations où seul le converti était affiché)
         modelKeys = [...new Set([...modelKeys, ...Object.keys(rawFlat)])];
-        const typeForFilter = entityTypeOverride ?? entityType();
         // Toujours filtrer par comparisonKeys quand la config en définit : n'afficher que les propriétés "intéressantes" (mapping)
         if (modelKeys.length > 0 && hasComparisonKeysConfig(typeForFilter)) {
             modelKeys = filterAllowedComparisonKeys(modelKeys, typeForFilter);
+        }
+        if (typeForFilter === "spell") {
+            const forcedSpellKeys = [
+                "spell_effects.summary",
+                "spell_global.area.shape",
+                "spell_global.area.param1",
+                "spell_global.area.param2",
+                "spell_global.description.fr",
+            ];
+            for (const forcedKey of forcedSpellKeys) {
+                if (convertedFlat[forcedKey] !== undefined || rawFlat[forcedKey] !== undefined || existingFlat[forcedKey] !== undefined) {
+                    if (!modelKeys.includes(forcedKey)) modelKeys.push(forcedKey);
+                }
+            }
         }
         // Item (resource/consumable/equipment) : une seule ligne par propriété. Le brut a level/price/name à la racine,
         // le converti a resources.* / consumables.* / items.*. On garde uniquement la clé préfixée pour éviter les doublons.
@@ -208,7 +323,7 @@ export function useScrappingCompare(options) {
         return cellTriple(
             item,
             (r) => (r?.name != null ? String(r.name) : null),
-            (c) => convertedName(c, entityType()),
+            (c) => convertedName(c),
             (r) => formatName(r?.name),
             dataEntry
         );

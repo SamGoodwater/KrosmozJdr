@@ -7,13 +7,15 @@
  * 
  * @props {Object} panoply - Données de la panoplie à éditer
  */
-import { ref, computed } from 'vue';
+import { computed } from 'vue';
 import { Head, usePage } from '@inertiajs/vue3';
 import { usePageTitle } from '@/Composables/layout/usePageTitle';
 import { Panoply } from '@/Models/Entity/Panoply';
 import EntityEditForm from '@/Pages/Organismes/entity/EntityEditForm.vue';
 import EntityRelationsManager from '@/Pages/Organismes/entity/EntityRelationsManager.vue';
 import Container from '@/Pages/Atoms/data-display/Container.vue';
+import Btn from '@/Pages/Atoms/action/Btn.vue';
+import Route from '@/Pages/Atoms/action/Route.vue';
 import { getEntityStateOptions, getUserRoleOptions } from '@/Utils/Entity/SharedConstants';
 
 const page = usePage();
@@ -31,8 +33,6 @@ const props = defineProps({
 });
 
 // Mode d'affichage par défaut
-const viewMode = ref('large');
-
 // Configuration des champs pour les panoplies
 const fieldsConfig = {
     name: { 
@@ -89,13 +89,18 @@ setPageTitle(`Modifier la panoplie : ${panoply.value.name || 'Nouvelle panoplie'
     <Head :title="`Modifier la panoplie : ${panoply?.name || 'Nouvelle panoplie'}`" />
     
     <Container class="space-y-6">
+        <Route route="entities.panoplies.index">
+            <Btn color="neutral" variant="ghost" size="sm" class="gap-2">
+                <i class="fa-solid fa-arrow-left" aria-hidden="true"></i>
+                Retour à la liste
+            </Btn>
+        </Route>
+
         <EntityEditForm
             :entity="panoply"
             entity-type="panoply"
-            :view-mode="viewMode"
             :fields-config="fieldsConfig"
             :is-updating="true"
-            @update:view-mode="viewMode = $event"
         />
         
         <!-- Gestion des items de la panoplie -->

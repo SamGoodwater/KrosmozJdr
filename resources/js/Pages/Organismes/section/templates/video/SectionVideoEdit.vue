@@ -85,7 +85,7 @@ watch(localData, (newVal) => {
       <i class="fa-solid fa-info-circle"></i>
       <div>
         <p class="text-sm">
-          Pour YouTube/Vimeo, entrez uniquement l'ID de la vidéo.
+          Pour YouTube/Vimeo, entrez l'ID ou une URL complète.
           Pour les vidéos directes, entrez l'URL complète.
         </p>
       </div>

@@ -52,6 +52,10 @@ export class Page extends BaseModel {
         return this._data.menu_order || 0;
     }
 
+    get menuGroup() {
+        return this._data.menu_group || null;
+    }
+
 
     // ============================================
     // RELATIONS
@@ -145,7 +149,8 @@ export class Page extends BaseModel {
             in_menu: this.inMenu,
             state: this.state,
             parent_id: this.parentId,
-            menu_order: this.menuOrder
+            menu_order: this.menuOrder,
+            menu_group: this.menuGroup,
         };
     }
 

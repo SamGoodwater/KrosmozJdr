@@ -37,6 +37,7 @@ class StorePageRequest extends FormRequest
             'write_level' => ['sometimes', 'integer', 'min:0', 'max:5', 'gte:read_level'],
             'parent_id' => ['nullable', 'exists:pages,id'],
             'menu_order' => ['sometimes', 'integer'],
+            'menu_group' => ['nullable', 'string', 'max:100'],
         ];
     }
 
@@ -63,6 +64,10 @@ class StorePageRequest extends FormRequest
         }
         if (!isset($data['write_level'])) {
             $this->merge(['write_level' => \App\Models\User::ROLE_ADMIN]);
+        }
+        if (array_key_exists('menu_group', $data)) {
+            $group = trim((string) $data['menu_group']);
+            $this->merge(['menu_group' => $group === '' ? null : $group]);
         }
     }
 }

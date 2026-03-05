@@ -247,7 +247,7 @@ input[type="file"] {
         margin-right: 0.5rem;
         cursor: pointer;
         padding: 0.5rem 0.75rem;
-        border-radius: 0.75rem;
+        border-radius: var(--radius-field, 0.1rem);
         border: 1px solid color-mix(in srgb, var(--color) 30%, transparent);
         background-color: var(--color);
         color: white;
@@ -265,7 +265,7 @@ input[type="file"] {
     
     // Variant Glass - Effet glassmorphisme (utilise les classes de Btn)
     &.btn-glass-custom {
-        border-radius: 0.75rem;
+        border-radius: var(--radius-field, 0.1rem);
         backdrop-filter: blur(24px);
         box-shadow:
             0 0 10px 0 color-mix(in srgb, var(--color) 20%, transparent) inset,
@@ -293,7 +293,7 @@ input[type="file"] {
     
     // Variant Dash - Style pointillé
     &.btn-dash {
-        border-radius: 0.75rem;
+        border-radius: var(--radius-field, 0.1rem);
         border-style: dashed;
         border-width: 2px;
         background-color: color-mix(in srgb, var(--color) 5%, transparent);
@@ -311,7 +311,7 @@ input[type="file"] {
     
     // Variant Outline - Bordure visible
     &.btn-outline-custom {
-        border-radius: 0.75rem;
+        border-radius: var(--radius-field, 0.1rem);
         border-width: 2px;
         background-color: transparent;
         

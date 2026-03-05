@@ -94,6 +94,7 @@ final class Orchestrator
             'property_whitelist' => $propertyWhitelist,
             'include_relations' => (bool) ($options['include_relations'] ?? true),
             'download_images' => (bool) ($options['download_images'] ?? true),
+            'spell_category_hint' => $options['spell_category_hint'] ?? null,
         ];
     }
 

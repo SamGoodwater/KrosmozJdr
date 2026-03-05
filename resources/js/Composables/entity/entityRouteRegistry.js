@@ -30,6 +30,54 @@
 
 /** @type {Record<string, EntityRouteConfig>} */
 export const ENTITY_ROUTE_CONFIG = {
+  spell: {
+    show: { name: "entities.spells.show", paramsMode: "scalar" },
+  },
+  resource: {
+    show: { name: "entities.resources.show", paramsMode: "scalar" },
+  },
+  breed: {
+    show: { name: "entities.breeds.show", paramsMode: "scalar" },
+  },
+  specialization: {
+    show: { name: "entities.specializations.show", paramsMode: "scalar" },
+  },
+  consumable: {
+    show: { name: "entities.consumables.show", paramsMode: "scalar" },
+  },
+  shop: {
+    show: { name: "entities.shops.show", paramsMode: "scalar" },
+  },
+  creature: {
+    show: { name: "entities.creatures.show", paramsMode: "scalar" },
+  },
+  capability: {
+    show: { name: "entities.capabilities.show", paramsMode: "scalar" },
+  },
+  attribute: {
+    show: { name: "entities.attributes.show", paramsMode: "scalar" },
+  },
+  scenario: {
+    show: { name: "entities.scenarios.show", paramsMode: "scalar" },
+  },
+  panoply: {
+    show: { name: "entities.panoplies.show", paramsMode: "scalar" },
+  },
+  npc: {
+    show: { name: "entities.npcs.show", paramsMode: "scalar" },
+  },
+  campaign: {
+    show: { name: "entities.campaigns.show", paramsMode: "scalar" },
+  },
+  monster: {
+    show: { name: "entities.monsters.show", paramsMode: "scalar" },
+  },
+  item: {
+    show: { name: "entities.items.show", paramsMode: "scalar" },
+  },
+  "resource-type": {
+    show: { name: "entities.resource-types.show", paramsMode: "scalar" },
+  },
   // Exemples explicités (les autres tombent sur le fallback)
   resources: {
     show: { name: "entities.resources.show", paramsMode: "scalar" },

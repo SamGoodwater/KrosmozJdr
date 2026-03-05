@@ -135,6 +135,10 @@ function confirmDelete(mapping) {
     });
 }
 
+function goBackToEffects() {
+    router.visit(route('admin.effects.index'));
+}
+
 onMounted(() => {
     if (!prefillEffectId.value || hasExactPrefillMatch.value) {
         return;
@@ -149,6 +153,10 @@ onMounted(() => {
     <div class="flex h-full min-h-0 w-full">
         <main class="min-w-0 flex-1 overflow-y-auto p-6">
             <div class="mb-4">
+                <Btn color="neutral" variant="ghost" size="sm" class="gap-2 mb-2" @click="goBackToEffects">
+                    <i class="fa-solid fa-arrow-left" aria-hidden="true"></i>
+                    Retour aux effets
+                </Btn>
                 <h1 class="text-2xl font-bold">Mapping effectId DofusDB → sous-effet Krosmoz</h1>
                 <p class="mt-1 text-sm text-base-content/70">
                     Définit pour chaque effectId DofusDB l’action Krosmoz (sous-effet) et la source de caractéristique.

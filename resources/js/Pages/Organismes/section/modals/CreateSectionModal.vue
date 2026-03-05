@@ -285,9 +285,9 @@ function onParamsUpdateSettings(v) {
                 <Btn variant="ghost" @click="handleClose">Annuler</Btn>
             </template>
             <template v-else-if="createStep === 'params'">
-                <Btn variant="ghost" @click="handleBackToType">
+                <Btn color="neutral" variant="ghost" size="sm" class="gap-2" @click="handleBackToType">
                     <Icon source="fa-arrow-left" pack="solid" class="mr-2" />
-                    Retour
+                    Retour au choix du type
                 </Btn>
                 <Btn color="primary" @click="handleCreateFromParams">
                     Créer la section

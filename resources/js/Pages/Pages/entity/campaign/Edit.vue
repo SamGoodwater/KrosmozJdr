@@ -5,13 +5,15 @@
  * @description
  * Page d'édition d'une campagne avec gestion des relations
  */
-import { ref, computed } from 'vue';
+import { computed } from 'vue';
 import { Head, usePage } from '@inertiajs/vue3';
 import { usePageTitle } from '@/Composables/layout/usePageTitle';
 import { Campaign } from '@/Models/Entity/Campaign';
 import EntityEditForm from '@/Pages/Organismes/entity/EntityEditForm.vue';
 import EntityRelationsManager from '@/Pages/Organismes/entity/EntityRelationsManager.vue';
 import Container from '@/Pages/Atoms/data-display/Container.vue';
+import Btn from '@/Pages/Atoms/action/Btn.vue';
+import Route from '@/Pages/Atoms/action/Route.vue';
 import { getEntityStateOptions, getUserRoleOptions } from '@/Utils/Entity/SharedConstants';
 
 const page = usePage();
@@ -51,8 +53,6 @@ const props = defineProps({
         default: () => []
     }
 });
-
-const viewMode = ref('large');
 
 const fieldsConfig = {
     name: { 
@@ -127,13 +127,18 @@ setPageTitle(`Modifier la campagne : ${campaign.value.name || 'Nouvelle campagne
     <Head :title="`Modifier la campagne : ${campaign?.name || 'Nouvelle campagne'}`" />
     
     <Container class="space-y-6">
+        <Route route="entities.campaigns.index">
+            <Btn color="neutral" variant="ghost" size="sm" class="gap-2">
+                <i class="fa-solid fa-arrow-left" aria-hidden="true"></i>
+                Retour à la liste
+            </Btn>
+        </Route>
+
         <EntityEditForm
             :entity="campaign"
             entity-type="campaign"
-            :view-mode="viewMode"
             :fields-config="fieldsConfig"
             :is-updating="true"
-            @update:view-mode="viewMode = $event"
         />
         
         <!-- Gestion des utilisateurs de la campagne -->

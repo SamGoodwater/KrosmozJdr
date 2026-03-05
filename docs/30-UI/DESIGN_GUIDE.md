@@ -137,6 +137,46 @@ Le design system est structuré selon la méthodologie Atomic Design :
 - **Molecules** : combinaisons simples d'atoms, unités fonctionnelles.
 - **Organisms** : blocs complexes, assemblages de molecules et d'atoms.
 
+### 2.5. Navigation de retour (standard UI)
+
+Pour homogénéiser l'UX, tous les boutons de retour visibles doivent suivre le meme standard :
+
+- **Composant** : `Btn`
+- **Style** : `color="neutral"`, `variant="ghost"`, `size="sm"`, `class="gap-2"`
+- **Icône** : `fa-arrow-left` en prefixe
+- **Position** : en haut de la vue/page (avant le titre principal)
+
+#### Libellés recommandés
+
+Toujours preferer un libellé contextualisé a un simple "Retour" :
+
+- `Retour a la liste` (pages index/listing)
+- `Retour au profil` (compte utilisateur)
+- `Retour a la page` (edition d'une page de contenu)
+- `Retour aux notifications` (depuis une sous-vue notifications)
+- `Retour au choix du type` (wizard/modal multi-etapes)
+
+#### Comportement de navigation
+
+- **Fiable par defaut** : utiliser `router.visit(route('...'))` pour les boutons retour critiques.
+- **Route atomique possible** : `Route` reste autorise pour des liens simples stables.
+- **Fallback metier** : si le contexte change (ex: edition de son profil vs edition admin), calculer dynamiquement la destination et le libelle.
+
+#### Exemple de reference
+
+```vue
+<Btn
+  color="neutral"
+  variant="ghost"
+  size="sm"
+  class="gap-2"
+  @click="router.visit(route('entities.items.index'))"
+>
+  <i class="fa-solid fa-arrow-left" aria-hidden="true"></i>
+  Retour a la liste
+</Btn>
+```
+
 ## 3. Thèmes
 
 - Deux thèmes principaux : dark (par défaut) et light.

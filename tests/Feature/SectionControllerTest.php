@@ -143,6 +143,317 @@ class SectionControllerTest extends TestCase
     }
 
     /**
+     * Test : Validation template entity_table (entity invalide).
+     */
+    public function test_validation_fails_if_entity_table_entity_is_invalid(): void
+    {
+        $user = User::factory()->create(['role' => User::ROLE_ADMIN]);
+        $page = Page::factory()->create(['created_by' => $user->id]);
+
+        $response = $this->actingAs($user)
+            ->post(route('sections.store'), [
+                'page_id' => $page->id,
+                'template' => SectionType::ENTITY_TABLE->value,
+                'settings' => [
+                    'entity' => 'unknown_entity',
+                    'filters' => [],
+                    'limit' => 50,
+                ],
+                'state' => Section::STATE_DRAFT,
+                'read_level' => User::ROLE_GUEST,
+                'write_level' => User::ROLE_ADMIN,
+            ]);
+
+        $response->assertSessionHasErrors('settings.entity');
+    }
+
+    /**
+     * Test : Validation template entity_table (limit hors bornes).
+     */
+    public function test_validation_fails_if_entity_table_limit_is_out_of_range(): void
+    {
+        $user = User::factory()->create(['role' => User::ROLE_ADMIN]);
+        $page = Page::factory()->create(['created_by' => $user->id]);
+
+        $response = $this->actingAs($user)
+            ->post(route('sections.store'), [
+                'page_id' => $page->id,
+                'template' => SectionType::ENTITY_TABLE->value,
+                'settings' => [
+                    'entity' => 'spells',
+                    'filters' => [],
+                    'limit' => 900,
+                ],
+                'state' => Section::STATE_DRAFT,
+                'read_level' => User::ROLE_GUEST,
+                'write_level' => User::ROLE_ADMIN,
+            ]);
+
+        $response->assertSessionHasErrors('settings.limit');
+    }
+
+    /**
+     * Test : Création entity_table valide avec payload settings-only.
+     */
+    public function test_user_can_create_entity_table_section_with_settings_only_payload(): void
+    {
+        $user = User::factory()->create(['role' => User::ROLE_ADMIN]);
+        $page = Page::factory()->create(['created_by' => $user->id]);
+
+        $response = $this->actingAs($user)
+            ->post(route('sections.store'), [
+                'page_id' => $page->id,
+                'template' => SectionType::ENTITY_TABLE->value,
+                'settings' => [
+                    'entity' => 'spells',
+                    'filters' => ['state' => 'playable'],
+                    'limit' => 120,
+                ],
+                'state' => Section::STATE_DRAFT,
+                'read_level' => User::ROLE_GUEST,
+                'write_level' => User::ROLE_ADMIN,
+            ]);
+
+        $response->assertRedirect();
+        $this->assertDatabaseHas('sections', [
+            'page_id' => $page->id,
+            'template' => SectionType::ENTITY_TABLE->value,
+            'created_by' => $user->id,
+        ]);
+    }
+
+    /**
+     * Test : Validation image refuse les protocoles non sûrs.
+     */
+    public function test_validation_fails_if_image_source_uses_unsafe_protocol(): void
+    {
+        $user = User::factory()->create(['role' => User::ROLE_ADMIN]);
+        $page = Page::factory()->create(['created_by' => $user->id]);
+
+        $response = $this->actingAs($user)
+            ->post(route('sections.store'), [
+                'page_id' => $page->id,
+                'template' => SectionType::IMAGE->value,
+                'data' => [
+                    'src' => 'javascript:alert(1)',
+                    'alt' => 'Image test',
+                ],
+                'state' => Section::STATE_DRAFT,
+                'read_level' => User::ROLE_GUEST,
+                'write_level' => User::ROLE_ADMIN,
+            ]);
+
+        $response->assertSessionHasErrors('data.src');
+    }
+
+    /**
+     * Test : Validation vidéo youtube refuse une URL non-youtube.
+     */
+    public function test_validation_fails_if_youtube_video_source_is_not_youtube(): void
+    {
+        $user = User::factory()->create(['role' => User::ROLE_ADMIN]);
+        $page = Page::factory()->create(['created_by' => $user->id]);
+
+        $response = $this->actingAs($user)
+            ->post(route('sections.store'), [
+                'page_id' => $page->id,
+                'template' => SectionType::VIDEO->value,
+                'data' => [
+                    'type' => 'youtube',
+                    'src' => 'https://example.com/video.mp4',
+                ],
+                'state' => Section::STATE_DRAFT,
+                'read_level' => User::ROLE_GUEST,
+                'write_level' => User::ROLE_ADMIN,
+            ]);
+
+        $response->assertSessionHasErrors('data.src');
+    }
+
+    /**
+     * Test : Validation vidéo directe refuse les extensions non supportées.
+     */
+    public function test_validation_fails_if_direct_video_extension_is_not_supported(): void
+    {
+        $user = User::factory()->create(['role' => User::ROLE_ADMIN]);
+        $page = Page::factory()->create(['created_by' => $user->id]);
+
+        $response = $this->actingAs($user)
+            ->post(route('sections.store'), [
+                'page_id' => $page->id,
+                'template' => SectionType::VIDEO->value,
+                'data' => [
+                    'type' => 'direct',
+                    'src' => 'https://cdn.example.com/video.txt',
+                ],
+                'state' => Section::STATE_DRAFT,
+                'read_level' => User::ROLE_GUEST,
+                'write_level' => User::ROLE_ADMIN,
+            ]);
+
+        $response->assertSessionHasErrors('data.src');
+    }
+
+    /**
+     * Test : Validation vidéo youtube accepte un ID valide.
+     */
+    public function test_user_can_create_video_section_with_valid_youtube_id(): void
+    {
+        $user = User::factory()->create(['role' => User::ROLE_ADMIN]);
+        $page = Page::factory()->create(['created_by' => $user->id]);
+
+        $response = $this->actingAs($user)
+            ->post(route('sections.store'), [
+                'page_id' => $page->id,
+                'template' => SectionType::VIDEO->value,
+                'data' => [
+                    'type' => 'youtube',
+                    'src' => 'dQw4w9WgXcQ',
+                ],
+                'state' => Section::STATE_DRAFT,
+                'read_level' => User::ROLE_GUEST,
+                'write_level' => User::ROLE_ADMIN,
+            ]);
+
+        $response->assertRedirect();
+        $this->assertDatabaseHas('sections', [
+            'page_id' => $page->id,
+            'template' => SectionType::VIDEO->value,
+            'created_by' => $user->id,
+        ]);
+    }
+
+    /**
+     * Test : Création vidéo youtube avec URL complète (persistée telle quelle).
+     */
+    public function test_user_can_create_video_section_with_valid_youtube_url(): void
+    {
+        $user = User::factory()->create(['role' => User::ROLE_ADMIN]);
+        $page = Page::factory()->create(['created_by' => $user->id]);
+        $youtubeUrl = 'https://www.youtube.com/watch?v=dQw4w9WgXcQ';
+
+        $response = $this->actingAs($user)
+            ->post(route('sections.store'), [
+                'page_id' => $page->id,
+                'template' => SectionType::VIDEO->value,
+                'data' => [
+                    'type' => 'youtube',
+                    'src' => $youtubeUrl,
+                ],
+                'state' => Section::STATE_DRAFT,
+                'read_level' => User::ROLE_GUEST,
+                'write_level' => User::ROLE_ADMIN,
+            ]);
+
+        $response->assertRedirect();
+
+        $section = Section::query()
+            ->where('page_id', $page->id)
+            ->where('template', SectionType::VIDEO->value)
+            ->latest('id')
+            ->firstOrFail();
+
+        $this->assertSame('youtube', $section->data['type'] ?? null);
+        $this->assertSame($youtubeUrl, $section->data['src'] ?? null);
+    }
+
+    /**
+     * Test : Création vidéo vimeo avec URL complète (persistée telle quelle).
+     */
+    public function test_user_can_create_video_section_with_valid_vimeo_url(): void
+    {
+        $user = User::factory()->create(['role' => User::ROLE_ADMIN]);
+        $page = Page::factory()->create(['created_by' => $user->id]);
+        $vimeoUrl = 'https://vimeo.com/123456789';
+
+        $response = $this->actingAs($user)
+            ->post(route('sections.store'), [
+                'page_id' => $page->id,
+                'template' => SectionType::VIDEO->value,
+                'data' => [
+                    'type' => 'vimeo',
+                    'src' => $vimeoUrl,
+                ],
+                'state' => Section::STATE_DRAFT,
+                'read_level' => User::ROLE_GUEST,
+                'write_level' => User::ROLE_ADMIN,
+            ]);
+
+        $response->assertRedirect();
+
+        $section = Section::query()
+            ->where('page_id', $page->id)
+            ->where('template', SectionType::VIDEO->value)
+            ->latest('id')
+            ->firstOrFail();
+
+        $this->assertSame('vimeo', $section->data['type'] ?? null);
+        $this->assertSame($vimeoUrl, $section->data['src'] ?? null);
+    }
+
+    /**
+     * Test : Validation vidéo refuse un mode d'affichage direct invalide.
+     */
+    public function test_validation_fails_if_video_direct_display_mode_is_invalid(): void
+    {
+        $user = User::factory()->create(['role' => User::ROLE_ADMIN]);
+        $page = Page::factory()->create(['created_by' => $user->id]);
+
+        $response = $this->actingAs($user)
+            ->post(route('sections.store'), [
+                'page_id' => $page->id,
+                'template' => SectionType::VIDEO->value,
+                'settings' => [
+                    'directVideoDisplayMode' => 'invalid_mode',
+                ],
+                'data' => [
+                    'type' => 'direct',
+                    'src' => 'https://cdn.example.com/video.mp4',
+                ],
+                'state' => Section::STATE_DRAFT,
+                'read_level' => User::ROLE_GUEST,
+                'write_level' => User::ROLE_ADMIN,
+            ]);
+
+        $response->assertSessionHasErrors('settings.directVideoDisplayMode');
+    }
+
+    /**
+     * Test : Création vidéo directe avec mode téléchargement uniquement.
+     */
+    public function test_user_can_create_direct_video_section_with_download_only_mode(): void
+    {
+        $user = User::factory()->create(['role' => User::ROLE_ADMIN]);
+        $page = Page::factory()->create(['created_by' => $user->id]);
+
+        $response = $this->actingAs($user)
+            ->post(route('sections.store'), [
+                'page_id' => $page->id,
+                'template' => SectionType::VIDEO->value,
+                'settings' => [
+                    'directVideoDisplayMode' => 'download',
+                ],
+                'data' => [
+                    'type' => 'direct',
+                    'src' => 'https://cdn.example.com/video.mp4',
+                ],
+                'state' => Section::STATE_DRAFT,
+                'read_level' => User::ROLE_GUEST,
+                'write_level' => User::ROLE_ADMIN,
+            ]);
+
+        $response->assertRedirect();
+        $section = Section::query()
+            ->where('page_id', $page->id)
+            ->where('template', SectionType::VIDEO->value)
+            ->latest('id')
+            ->firstOrFail();
+
+        $this->assertSame('download', $section->settings['directVideoDisplayMode'] ?? null);
+        $this->assertSame('direct', $section->data['type'] ?? null);
+    }
+
+    /**
      * Test : Un utilisateur peut modifier une section qu'il a créée
      */
     public function test_user_can_update_own_section(): void
@@ -385,6 +696,126 @@ class SectionControllerTest extends TestCase
         $response->assertJsonPath('file.id', fn ($id) => is_numeric($id));
         $response->assertJsonPath('file.url', fn ($url) => is_string($url) && $url !== '');
         $this->assertCount(1, $section->fresh()->getMedia('files'));
+    }
+
+    /**
+     * Test : Upload d'une archive zip autorisée sur une section.
+     */
+    public function test_section_zip_file_upload_via_media_library(): void
+    {
+        Storage::fake('public');
+        $user = User::factory()->create(['role' => User::ROLE_ADMIN]);
+        $page = Page::factory()->create(['created_by' => $user->id]);
+        $section = Section::factory()->create([
+            'page_id' => $page->id,
+            'created_by' => $user->id,
+            'type' => SectionType::IMAGE->value,
+            'write_level' => User::ROLE_GUEST,
+        ]);
+        $page->update(['write_level' => User::ROLE_GUEST]);
+
+        $file = UploadedFile::fake()->create('documents.zip', 120, 'application/zip');
+
+        $response = $this->actingAs($user)
+            ->post(route('sections.files.store', $section), [
+                'file' => $file,
+                'title' => 'Archive test',
+            ]);
+
+        $response->assertOk();
+        $response->assertJson(['success' => true]);
+        $response->assertJsonPath('file.url', fn ($url) => is_string($url) && str_contains($url, '.zip'));
+        $this->assertCount(1, $section->fresh()->getMedia('files'));
+    }
+
+    /**
+     * Test : Validation média accepte une URL document (docx).
+     */
+    public function test_user_can_create_image_template_with_document_url_source(): void
+    {
+        $user = User::factory()->create(['role' => User::ROLE_ADMIN]);
+        $page = Page::factory()->create(['created_by' => $user->id]);
+
+        $response = $this->actingAs($user)
+            ->post(route('sections.store'), [
+                'page_id' => $page->id,
+                'template' => SectionType::IMAGE->value,
+                'data' => [
+                    'src' => 'https://cdn.example.com/guide.docx',
+                    'alt' => 'Guide',
+                ],
+                'state' => Section::STATE_DRAFT,
+                'read_level' => User::ROLE_GUEST,
+                'write_level' => User::ROLE_ADMIN,
+            ]);
+
+        $response->assertRedirect();
+        $this->assertDatabaseHas('sections', [
+            'page_id' => $page->id,
+            'template' => SectionType::IMAGE->value,
+            'created_by' => $user->id,
+        ]);
+    }
+
+    /**
+     * Test : Validation image refuse un mode d'affichage document invalide.
+     */
+    public function test_validation_fails_if_image_document_display_mode_is_invalid(): void
+    {
+        $user = User::factory()->create(['role' => User::ROLE_ADMIN]);
+        $page = Page::factory()->create(['created_by' => $user->id]);
+
+        $response = $this->actingAs($user)
+            ->post(route('sections.store'), [
+                'page_id' => $page->id,
+                'template' => SectionType::IMAGE->value,
+                'settings' => [
+                    'documentDisplayMode' => 'invalid_mode',
+                ],
+                'data' => [
+                    'src' => 'https://cdn.example.com/guide.pdf',
+                    'alt' => 'Guide',
+                ],
+                'state' => Section::STATE_DRAFT,
+                'read_level' => User::ROLE_GUEST,
+                'write_level' => User::ROLE_ADMIN,
+            ]);
+
+        $response->assertSessionHasErrors('settings.documentDisplayMode');
+    }
+
+    /**
+     * Test : Création image avec mode téléchargement uniquement.
+     */
+    public function test_user_can_create_image_template_with_download_only_document_mode(): void
+    {
+        $user = User::factory()->create(['role' => User::ROLE_ADMIN]);
+        $page = Page::factory()->create(['created_by' => $user->id]);
+
+        $response = $this->actingAs($user)
+            ->post(route('sections.store'), [
+                'page_id' => $page->id,
+                'template' => SectionType::IMAGE->value,
+                'settings' => [
+                    'documentDisplayMode' => 'download',
+                ],
+                'data' => [
+                    'src' => 'https://cdn.example.com/guide.pdf',
+                    'alt' => 'Guide',
+                ],
+                'state' => Section::STATE_DRAFT,
+                'read_level' => User::ROLE_GUEST,
+                'write_level' => User::ROLE_ADMIN,
+            ]);
+
+        $response->assertRedirect();
+        $section = Section::query()
+            ->where('page_id', $page->id)
+            ->where('template', SectionType::IMAGE->value)
+            ->latest('id')
+            ->firstOrFail();
+
+        $this->assertSame('download', $section->settings['documentDisplayMode'] ?? null);
     }
 
     /**

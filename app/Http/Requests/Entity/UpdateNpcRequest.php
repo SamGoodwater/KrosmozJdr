@@ -34,6 +34,9 @@ class UpdateNpcRequest extends FormRequest
             'size' => ['nullable', 'string', 'max:255'],
             'breed_id' => ['nullable', 'integer', 'exists:breeds,id'],
             'specialization_id' => ['nullable', 'integer', 'exists:specializations,id'],
+            'state' => ['nullable', 'string', 'max:255'],
+            'read_level' => ['nullable', 'integer', 'min:0', 'max:4'],
+            'write_level' => ['nullable', 'integer', 'min:0', 'max:4'],
         ];
     }
 }

@@ -118,7 +118,7 @@ export function getResourceTypeFieldDescriptors(ctx = {}) {
         },
       },
       edit: {
-        form: { type: "number", required: false, showInCompact: true, bulk: { enabled: false } },
+        form: { type: "text", required: false, showInCompact: true, bulk: { enabled: false } },
       },
     },
     decision: {

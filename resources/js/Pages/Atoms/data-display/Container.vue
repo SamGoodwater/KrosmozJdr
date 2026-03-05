@@ -47,7 +47,7 @@ const attrs = computed(() => getCommonAttrs(props));
 const atomClasses = computed(() =>
     mergeClasses(
         [
-            !props.fluid && (props.responsive ? `${props.responsive}:container` : 'container flex justify-center'),
+            !props.fluid && (props.responsive ? `${props.responsive}:container` : 'container'),
             !props.fluid && 'mx-auto',
             props.color,
             props.border && `${props.border} border-1 border-solid`,
@@ -60,7 +60,7 @@ const atomClasses = computed(() =>
 
 <template>
     <div :class="atomClasses" v-bind="attrs" v-on="$attrs">
-        <div>
+        <div class="w-full">
             <slot />
         </div>
     </div>

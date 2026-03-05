@@ -14,6 +14,8 @@
  * const descriptors = getNpcFieldDescriptors({ meta });
  */
 
+import { getEntityStateOptions, getUserRoleOptions } from '@/Utils/Entity/SharedConstants.js';
+
 /**
  * @typedef {Object} NpcFieldDescriptor
  * @property {string} key - Clé unique du champ
@@ -404,6 +406,99 @@ export function getNpcFieldDescriptors(ctx = {}) {
         },
       },
     },
+    state: {
+      key: "state",
+      label: "État",
+      icon: "fa-solid fa-circle-info",
+      table: {
+        sortable: true,
+        filterable: { id: "state", type: "multi", defaultVisible: true },
+        defaultVisible: { xs: false, sm: true, md: true, lg: true, xl: true },
+        cell: { sizes: { xs: { mode: "badge" }, sm: { mode: "badge" }, md: { mode: "badge" }, lg: { mode: "badge" }, xl: { mode: "badge" } } },
+      },
+      display: {
+        sizes: {
+          xs: { mode: "badge" },
+          sm: { mode: "badge" },
+          md: { mode: "badge" },
+          lg: { mode: "badge" },
+          xl: { mode: "badge" },
+        },
+      },
+      edit: {
+        form: {
+          type: "select",
+          group: "Statut",
+          required: false,
+          showInCompact: true,
+          options: getEntityStateOptions,
+          defaultValue: "draft",
+          bulk: { enabled: true, nullable: false, build: (v) => String(v) },
+        },
+      },
+    },
+    read_level: {
+      key: "read_level",
+      label: "Lecture (min.)",
+      icon: "fa-solid fa-eye",
+      table: {
+        sortable: true,
+        filterable: { id: "read_level", type: "multi", defaultVisible: false },
+        defaultVisible: { xs: false, sm: false, md: false, lg: false, xl: false },
+        cell: { sizes: { xs: { mode: "badge" }, sm: { mode: "badge" }, md: { mode: "badge" }, lg: { mode: "badge" }, xl: { mode: "badge" } } },
+      },
+      display: {
+        sizes: {
+          xs: { mode: "badge" },
+          sm: { mode: "badge" },
+          md: { mode: "badge" },
+          lg: { mode: "badge" },
+          xl: { mode: "badge" },
+        },
+      },
+      edit: {
+        form: {
+          type: "select",
+          group: "Statut",
+          required: false,
+          showInCompact: true,
+          options: getUserRoleOptions,
+          defaultValue: 0,
+          bulk: { enabled: true, nullable: false, build: (v) => Number(v) },
+        },
+      },
+    },
+    write_level: {
+      key: "write_level",
+      label: "Écriture (min.)",
+      icon: "fa-solid fa-pen-to-square",
+      table: {
+        sortable: true,
+        filterable: { id: "write_level", type: "multi", defaultVisible: false },
+        defaultVisible: { xs: false, sm: false, md: false, lg: false, xl: false },
+        cell: { sizes: { xs: { mode: "badge" }, sm: { mode: "badge" }, md: { mode: "badge" }, lg: { mode: "badge" }, xl: { mode: "badge" } } },
+      },
+      display: {
+        sizes: {
+          xs: { mode: "badge" },
+          sm: { mode: "badge" },
+          md: { mode: "badge" },
+          lg: { mode: "badge" },
+          xl: { mode: "badge" },
+        },
+      },
+      edit: {
+        form: {
+          type: "select",
+          group: "Statut",
+          required: false,
+          showInCompact: true,
+          options: getUserRoleOptions,
+          defaultValue: 3,
+          bulk: { enabled: true, nullable: false, build: (v) => Number(v) },
+        },
+      },
+    },
     created_at: {
       key: "created_at",
       label: "Créé le",
@@ -501,6 +596,9 @@ export function getNpcFieldDescriptors(ctx = {}) {
         "specialization_id",
         "age",
         "size",
+        "state",
+        "read_level",
+        "write_level",
       ],
     },};
 }

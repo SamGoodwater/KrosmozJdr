@@ -370,7 +370,7 @@ const logout = () => {
                                     @click.prevent="popoverTab = 'messages'"
                                 >
                                     <Icon source="fa-arrow-left" pack="solid" size="sm" alt="" />
-                                    <span>Retour</span>
+                                    <span>Retour aux notifications</span>
                                 </button>
                                 <template v-if="temporaryHistory.length === 0">
                                     <p class="text-sm text-base-content/60 p-4 text-center">

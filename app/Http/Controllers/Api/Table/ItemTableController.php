@@ -52,12 +52,16 @@ class ItemTableController extends Controller
             $order = 'desc';
         }
 
-        $query = Item::query()->with(['createdBy', 'itemType']);
+        $query = Item::query()
+            ->with(['createdBy', 'itemType'])
+            ->withCount(['resources', 'panoplies', 'shops', 'campaigns', 'scenarios']);
 
         if ($search !== '') {
             $query->where(function ($q) use ($search) {
                 $q->where('name', 'like', "%{$search}%")
-                    ->orWhere('description', 'like', "%{$search}%");
+                    ->orWhere('description', 'like', "%{$search}%")
+                    ->orWhere('effect', 'like', "%{$search}%")
+                    ->orWhere('bonus', 'like', "%{$search}%");
             });
         }
 
@@ -156,6 +160,11 @@ class ItemTableController extends Controller
                         'id' => $itemType->id,
                         'name' => $itemType->name,
                     ] : null,
+                    'resources_count' => (int) ($it->resources_count ?? 0),
+                    'panoplies_count' => (int) ($it->panoplies_count ?? 0),
+                    'shops_count' => (int) ($it->shops_count ?? 0),
+                    'campaigns_count' => (int) ($it->campaigns_count ?? 0),
+                    'scenarios_count' => (int) ($it->scenarios_count ?? 0),
                     'createdBy' => $createdBy ? [
                         'id' => $createdBy->id,
                         'name' => $createdBy->name,
@@ -231,6 +240,15 @@ class ItemTableController extends Controller
                             'filterValue' => (string) ($it->level ?? ''),
                             'sortValue' => is_numeric((string) $it->level) ? (int) $it->level : (string) ($it->level ?? ''),
                             'searchValue' => (string) ($it->level ?? ''),
+                        ],
+                    ],
+                    'effect' => [
+                        'type' => 'text',
+                        'value' => $it->effect ?: ($it->bonus ?: '-'),
+                        'params' => [
+                            'sortValue' => (string) ($it->effect ?? $it->bonus ?? ''),
+                            'searchValue' => trim((string) (($it->effect ?? '') . ' ' . ($it->bonus ?? ''))),
+                            'filterValue' => trim((string) (($it->effect ?? '') . ' ' . ($it->bonus ?? ''))),
                         ],
                     ],
                     'rarity' => [
@@ -310,6 +328,11 @@ class ItemTableController extends Controller
                             'id' => $it->itemType->id,
                             'name' => $it->itemType->name,
                         ] : null,
+                        'resources_count' => (int) ($it->resources_count ?? 0),
+                        'panoplies_count' => (int) ($it->panoplies_count ?? 0),
+                        'shops_count' => (int) ($it->shops_count ?? 0),
+                        'campaigns_count' => (int) ($it->campaigns_count ?? 0),
+                        'scenarios_count' => (int) ($it->scenarios_count ?? 0),
                         'createdBy' => $createdBy ? [
                             'id' => $createdBy->id,
                             'name' => $createdBy->name,

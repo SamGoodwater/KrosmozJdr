@@ -18,6 +18,7 @@ import InputField from '@/Pages/Molecules/data-input/InputField.vue';
 import SelectField from '@/Pages/Molecules/data-input/SelectField.vue';
 import ToggleField from '@/Pages/Molecules/data-input/ToggleField.vue';
 import Btn from '@/Pages/Atoms/action/Btn.vue';
+import Route from '@/Pages/Atoms/action/Route.vue';
 import Container from '@/Pages/Atoms/data-display/Container.vue';
 import Alert from '@/Pages/Atoms/feedback/Alert.vue';
 import { getEntityStateOptions, getUserRoleOptions } from '@/Utils/Entity/SharedConstants';
@@ -42,6 +43,11 @@ const { setPageTitle } = usePageTitle();
 const pageData = computed(() => {
     // Si props.page a une propriété data, utiliser data, sinon utiliser props.page directement
     return props.page?.data || props.page || {};
+});
+const criticalSlugs = ['accueil', 'cgu'];
+const isCriticalPage = computed(() => {
+    const slug = String(pageData.value?.slug || '').toLowerCase();
+    return criticalSlugs.includes(slug);
 });
 
 setPageTitle(`Modifier : ${pageData.value?.title || 'Page'}`);
@@ -69,7 +75,8 @@ const form = useForm({
     in_menu: pageData.value?.in_menu ?? true,
     state: pageData.value?.state || 'draft',
     parent_id: pageData.value?.parent_id || null,
-    menu_order: pageData.value?.menu_order || 0
+    menu_order: pageData.value?.menu_order || 0,
+    menu_group: pageData.value?.menu_group || null,
 });
 
 // Génération automatique du slug depuis le titre (seulement si le slug est vide)
@@ -121,6 +128,14 @@ const submit = () => {
     <Head :title="`Modifier : ${pageData.title || 'Page'}`" />
     
     <Container class="max-w-4xl mx-auto p-4 md:p-8 space-y-8">
+        <div class="mb-2">
+            <Route :href="route('pages.show', pageData.slug)">
+                <Btn color="neutral" variant="ghost" size="sm" class="gap-2">
+                    <i class="fa-solid fa-arrow-left" aria-hidden="true"></i>
+                    Retour à la page
+                </Btn>
+            </Route>
+        </div>
         <div class="card bg-base-100 shadow-xl">
             <div class="card-body">
                 <h1 class="card-title text-3xl mb-6">Modifier la page</h1>
@@ -136,6 +151,14 @@ const submit = () => {
                             {{ error }}
                         </li>
                     </ul>
+                </Alert>
+
+                <Alert
+                    v-if="isCriticalPage"
+                    type="info"
+                    class="mb-6"
+                >
+                    Cette page est critique. Le slug est verrouillé et la suppression est désactivée.
                 </Alert>
                 
                 <form @submit.prevent="submit" class="space-y-6">
@@ -155,9 +178,10 @@ const submit = () => {
                         label="Slug"
                         type="text"
                         required
+                        :disabled="isCriticalPage"
                         :validation="slugValidation"
                         placeholder="url-de-la-page"
-                        helper="L'URL de la page (généré automatiquement depuis le titre)"
+                        :helper="isCriticalPage ? 'Slug verrouillé pour les pages critiques (accueil/cgu).' : 'L\'URL de la page (généré automatiquement depuis le titre)'"
                     />
                     
                     <!-- Visibilité -->
@@ -209,6 +233,14 @@ const submit = () => {
                         type="number"
                         min="0"
                         helper="Ordre d'affichage dans le menu (0 = premier)"
+                    />
+
+                    <InputField
+                        v-model="form.menu_group"
+                        label="Titre de groupe dans le menu"
+                        type="text"
+                        placeholder="Ex: Règles, Bibliothèque, Informations"
+                        helper="Laisser vide pour afficher la page en tête sans titre de groupe (ex: Accueil)."
                     />
                     
                     <!-- Actions -->

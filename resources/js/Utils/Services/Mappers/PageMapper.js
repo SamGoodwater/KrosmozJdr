@@ -107,6 +107,7 @@ export class PageMapper extends BaseMapper {
             in_menu: extract('in_menu', false),
             parent_id: extract('parent_id', null),
             menu_order: extract('menu_order', 0),
+            menu_group: extract('menu_group', null),
             
             // Timestamps
             created_by: extract('created_by', null),
@@ -152,6 +153,7 @@ export class PageMapper extends BaseMapper {
             state: this.fromEnum(pageModel.state) || 'draft',
             parent_id: pageModel.parentId || null,
             menu_order: pageModel.menuOrder || 0,
+            menu_group: pageModel.menuGroup || null,
         };
     }
 

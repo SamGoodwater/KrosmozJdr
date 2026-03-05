@@ -142,6 +142,35 @@ export function getItemFieldDescriptors(ctx = {}) {
         },
       },
     },
+    effect: {
+      key: "effect",
+      label: "Effet",
+      icon: "fa-solid fa-sparkles",
+      table: {
+        searchable: true,
+        filterable: { id: "effect", type: "text", defaultVisible: false },
+        defaultVisible: { xs: false, sm: false, md: true, lg: true, xl: true },
+        cell: { sizes: { xs: { mode: "chips" }, sm: { mode: "chips" }, md: { mode: "chips" }, lg: { mode: "chips" }, xl: { mode: "chips" } } },
+      },
+      display: {
+        sizes: {
+          xs: { mode: "chips" },
+          sm: { mode: "chips" },
+          md: { mode: "chips" },
+          lg: { mode: "chips" },
+          xl: { mode: "chips" },
+        },
+      },
+      edit: {
+        form: {
+          type: "textarea",
+          group: "Contenu",
+          required: false,
+          showInCompact: false,
+          bulk: { enabled: true, nullable: true, build: (v) => (v === "" ? null : String(v)) },
+        },
+      },
+    },
     level: {
       key: "level",
       label: "Niveau",

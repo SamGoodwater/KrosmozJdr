@@ -216,6 +216,23 @@ class PagePolicyTest extends TestCase
     }
 
     /**
+     * Une page critique (accueil/cgu) ne peut pas être supprimée, même par un admin.
+     */
+    public function test_admin_cannot_delete_critical_page(): void
+    {
+        $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
+        $page = Page::factory()->create([
+            'slug' => 'accueil',
+            'created_by' => $admin->id,
+        ]);
+
+        $this->assertFalse(
+            $this->app->make(\App\Policies\PagePolicy::class)
+                ->delete($admin, $page)
+        );
+    }
+
+    /**
      * Un admin peut forceDelete une page
      */
     public function test_admin_can_force_delete_page(): void
@@ -231,6 +248,23 @@ class PagePolicyTest extends TestCase
         );
 
         $this->assertTrue(
+            $this->app->make(\App\Policies\PagePolicy::class)
+                ->forceDelete($admin, $page)
+        );
+    }
+
+    /**
+     * Une page critique (accueil/cgu) ne peut pas être forceDelete, même par un admin.
+     */
+    public function test_admin_cannot_force_delete_critical_page(): void
+    {
+        $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
+        $page = Page::factory()->create([
+            'slug' => 'cgu',
+            'created_by' => $admin->id,
+        ]);
+
+        $this->assertFalse(
             $this->app->make(\App\Policies\PagePolicy::class)
                 ->forceDelete($admin, $page)
         );

@@ -69,7 +69,7 @@ const sectionId = computed(() => {
 const { isEditing, toggleEditMode, setEditMode } = useSectionMode(sectionId);
 const { saveSectionImmediate } = useSectionSave();
 const registry = useTemplateRegistry();
-const { updateSection } = useSectionAPI();
+const { updateSection, deleteSection } = useSectionAPI();
 const { copyToClipboard } = useCopyToClipboard();
 
 // Activer automatiquement le mode édition si autoEdit est true
@@ -246,6 +246,28 @@ const handleDataUpdate = () => {
   // Les templates compatibles auto-save gèrent déjà la sauvegarde
   // Cette fonction est appelée pour informer le parent si nécessaire
 };
+
+/**
+ * Suppression rapide d'une section depuis l'en-tête.
+ */
+const handleDeleteSection = async () => {
+  const id = sectionId.value;
+  if (!id || !canEdit.value) return;
+
+  const label = sectionModel.value?.title || `Section #${id}`;
+  const confirmed = window.confirm(`Supprimer "${label}" ? Cette action est irréversible.`);
+  if (!confirmed) return;
+
+  try {
+    await deleteSection(id, {
+      onSuccess: () => {
+        router.reload({ only: ['page'] });
+      },
+    });
+  } catch (errors) {
+    console.error('Erreur lors de la suppression rapide de la section:', errors);
+  }
+};
 </script>
 
 <template>
@@ -264,11 +286,13 @@ const handleDataUpdate = () => {
       :title="section.title || sectionModel?.title"
       :isEditing="isEditing"
       :canEdit="canEdit"
+      :canDelete="canEdit"
       :isHovered="isHovered"
       @update:title="handleTitleUpdate"
       @toggle-edit="handleToggleEdit"
       @open-params="handleOpenParamsModal"
       @copy-link="handleCopyLink"
+      @request-delete="handleDeleteSection"
     />
     
     <!-- Contenu selon le mode -->

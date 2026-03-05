@@ -139,6 +139,10 @@ export class Npc extends BaseModel {
             case 'creature_summary_control':
                 return this._toSummaryControlCell(options);
             default:
+                if (fieldKey.startsWith('creature_')) {
+                    const creatureKey = fieldKey.slice(9);
+                    return this._toCreatureFieldCell(creatureKey, options);
+                }
                 // Fallback vers la méthode de base
                 return baseCell;
         }
@@ -147,6 +151,109 @@ export class Npc extends BaseModel {
     /** @private Données brutes de la créature (pour buildCreatureCharacteristicGroups). */
     _getCreatureData() {
         return this._data?.creature ?? null;
+    }
+
+    /**
+     * Retourne la map des caractéristiques créature indexées par db_column.
+     * @private
+     */
+    _getCreatureCharacteristicsByColumn(options = {}) {
+        return options?.ctx?.characteristics?.creature?.byDbColumn || {};
+    }
+
+    /**
+     * Résout une caractéristique par ses colonnes candidates (ex: pa, po, life).
+     * @private
+     */
+    _getCreatureCharacteristicDef(options = {}, candidates = []) {
+        const byColumn = this._getCreatureCharacteristicsByColumn(options);
+        for (const key of candidates) {
+            const found = byColumn?.[key];
+            if (found) return found;
+        }
+        return null;
+    }
+
+    /**
+     * Génère une cellule pour un champ de la créature (pa, pm, po, life, etc.).
+     * @private
+     */
+    _toCreatureFieldCell(creatureKey, options = {}) {
+        const creature = this._getCreatureData();
+        if (!creature || typeof creature !== 'object') {
+            return creatureKey === 'image'
+                ? { type: 'image', value: '', params: { sortValue: '', searchValue: '' } }
+                : { type: 'text', value: '-', params: { sortValue: '', searchValue: '', filterValue: null } };
+        }
+
+        const raw = creature[creatureKey];
+        if (creatureKey === 'image') {
+            const url = raw && String(raw).trim() ? String(raw) : '';
+            return {
+                type: 'image',
+                value: url,
+                params: { sortValue: url ? 1 : 0, searchValue: '', alt: creature?.name || 'Créature' },
+            };
+        }
+
+        const rawForFilter = raw !== null && raw !== undefined && raw !== '' ? String(raw) : null;
+        if (raw === null || raw === undefined || raw === '') {
+            return {
+                type: 'text',
+                value: '-',
+                params: { sortValue: '', searchValue: '', filterValue: null },
+            };
+        }
+
+        if (creatureKey === 'hostility') {
+            const labels = { 0: 'Amical', 1: 'Curieux', 2: 'Neutre', 3: 'Hostile', 4: 'Agressif' };
+            const displayRaw = labels[Number(raw)] ?? String(raw);
+            return {
+                type: 'text',
+                value: displayRaw,
+                params: {
+                    sortValue: Number(raw),
+                    searchValue: displayRaw,
+                    filterValue: String(raw),
+                },
+            };
+        }
+
+        const characteristicDef = this._getCreatureCharacteristicDef(options, [creatureKey]);
+        if (characteristicDef) {
+            const value = String(raw);
+            const label = characteristicDef?.short_name || characteristicDef?.name || creatureKey.toUpperCase();
+            const numericSort = Number(raw);
+            return {
+                type: 'chips',
+                value: '',
+                params: {
+                    items: [
+                        {
+                            icon: characteristicDef.icon || null,
+                            color: characteristicDef.color || null,
+                            value,
+                            tooltip: `${label}: ${value}`,
+                        },
+                    ],
+                    sortValue: Number.isFinite(numericSort) ? numericSort : value,
+                    searchValue: value,
+                    filterValue: rawForFilter ?? value,
+                },
+            };
+        }
+
+        const value = String(raw);
+        const sortValue = Number(raw);
+        return {
+            type: 'text',
+            value,
+            params: {
+                sortValue: Number.isFinite(sortValue) ? sortValue : value,
+                searchValue: value,
+                filterValue: rawForFilter ?? value,
+            },
+        };
     }
 
     /** @private Cellule niveau (créature). */

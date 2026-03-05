@@ -14,7 +14,12 @@
  * const descriptors = getSpellFieldDescriptors({ meta });
  */
 
-import { getEntityStateOptions, getUserRoleOptions } from "@/Utils/Entity/SharedConstants";
+import {
+  getEntityStateOptions,
+  getUserRoleOptions,
+  getSpellElementOptions,
+  getSpellCategoryOptions
+} from "@/Utils/Entity/SharedConstants";
 
 /**
  * @typedef {Object} SpellFieldDescriptor
@@ -179,7 +184,7 @@ export function getSpellFieldDescriptors(ctx = {}) {
       table: {
         sortable: true,
         filterable: { id: "pa", type: "text", defaultVisible: false },
-        defaultVisible: { xs: false, sm: false, md: true, lg: true, xl: true },
+        defaultVisible: { xs: false, sm: false, md: false, lg: false, xl: false },
         cell: { sizes: { xs: { mode: "text" }, sm: { mode: "text" }, md: { mode: "text" }, lg: { mode: "text" }, xl: { mode: "text" } } },
       },
       display: {
@@ -209,7 +214,7 @@ export function getSpellFieldDescriptors(ctx = {}) {
       table: {
         sortable: true,
         filterable: { id: "po", type: "text", defaultVisible: false },
-        defaultVisible: { xs: false, sm: false, md: true, lg: true, xl: true },
+        defaultVisible: { xs: false, sm: false, md: false, lg: false, xl: false },
         cell: { sizes: { xs: { mode: "text" }, sm: { mode: "text" }, md: { mode: "text" }, lg: { mode: "text" }, xl: { mode: "text" } } },
       },
       display: {
@@ -272,7 +277,7 @@ export function getSpellFieldDescriptors(ctx = {}) {
       },
       edit: {
         form: {
-          type: "number",
+          type: "text",
           group: "Métier",
           required: false,
           showInCompact: true,
@@ -304,6 +309,7 @@ export function getSpellFieldDescriptors(ctx = {}) {
           group: "Métier",
           required: false,
           showInCompact: true,
+          options: getSpellElementOptions,
           bulk: { enabled: true, nullable: true, build: (v) => (v === "" ? null : Number(v)) },
         },
       },
@@ -332,6 +338,7 @@ export function getSpellFieldDescriptors(ctx = {}) {
           group: "Métier",
           required: false,
           showInCompact: true,
+          options: getSpellCategoryOptions,
           bulk: { enabled: true, nullable: true, build: (v) => (v === "" ? null : Number(v)) },
         },
       },
@@ -343,7 +350,7 @@ export function getSpellFieldDescriptors(ctx = {}) {
       table: {
         sortable: true,
         filterable: { id: "state", type: "multi", defaultVisible: true },
-        defaultVisible: { xs: false, sm: true, md: true, lg: true, xl: true },
+        defaultVisible: { xs: false, sm: false, md: false, lg: false, xl: false },
         cell: { sizes: { xs: { mode: "badge" }, sm: { mode: "badge" }, md: { mode: "badge" }, lg: { mode: "badge" }, xl: { mode: "badge" } } },
       },
       display: {

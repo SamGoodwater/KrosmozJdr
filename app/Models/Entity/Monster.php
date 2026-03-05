@@ -89,6 +89,9 @@ class Monster extends Model
         'is_boss',
         'boss_pa',
         'monster_race_id',
+        'state',
+        'read_level',
+        'write_level',
     ];
 
     /**
@@ -99,6 +102,8 @@ class Monster extends Model
     protected $casts = [
         'size' => 'integer',
         'auto_update' => 'boolean',
+        'read_level' => 'integer',
+        'write_level' => 'integer',
     ];
 
     /**

@@ -99,6 +99,96 @@ export class Consumable extends BaseModel {
         return this._data.shops || [];
     }
 
+    /**
+     * Retourne les métadonnées des caractéristiques consumable indexées par db_column.
+     * @private
+     */
+    _getConsumableCharacteristicsByColumn(options = {}) {
+        return options?.ctx?.characteristics?.consumable?.byDbColumn || {};
+    }
+
+    /**
+     * Tente de parser une valeur JSON (objet/array), sinon null.
+     * @private
+     */
+    _parseJsonPayload(value) {
+        if (value && typeof value === 'object') return value;
+        if (typeof value !== 'string') return null;
+        const trimmed = value.trim();
+        if (!trimmed) return null;
+        if (!(trimmed.startsWith('{') || trimmed.startsWith('['))) return null;
+        try {
+            return JSON.parse(trimmed);
+        } catch {
+            return null;
+        }
+    }
+
+    /**
+     * Extrait des entrées clé/valeur depuis un payload d'effet (objet ou tableau).
+     * @private
+     */
+    _extractEffectEntries(payload) {
+        if (!payload) return [];
+
+        if (!Array.isArray(payload) && typeof payload === 'object') {
+            return Object.entries(payload).map(([key, value]) => ({ key: String(key), value }));
+        }
+
+        if (Array.isArray(payload)) {
+            return payload
+                .map((row) => {
+                    if (!row || typeof row !== 'object') return null;
+                    const key = row.db_column ?? row.key ?? row.characteristic ?? row.stat ?? row.name ?? row.label ?? null;
+                    const value = row.value ?? row.amount ?? row.val ?? row.to ?? row.max ?? row.min ?? null;
+                    if (!key || value === null || typeof value === 'undefined') return null;
+                    return { key: String(key), value };
+                })
+                .filter(Boolean);
+        }
+
+        return [];
+    }
+
+    /**
+     * Construit un rendu chips (icône/couleur) depuis effect si possible.
+     * Fallback texte si ce n'est pas une structure de caractéristiques.
+     * @private
+     */
+    _buildEffectChips(options = {}) {
+        const byDb = this._getConsumableCharacteristicsByColumn(options);
+        const effectPayload = this._parseJsonPayload(this.effect);
+        const rawEffectText = this.effect ? String(this.effect).trim() : '';
+        const entries = this._extractEffectEntries(effectPayload);
+        if (entries.length === 0) return null;
+
+        const items = entries.map(({ key, value }) => {
+            const def = byDb?.[key] || byDb?.[key.replace(/_object$/, '')];
+            const renderedValue = String(value);
+            const label = def?.short_name || def?.name || key;
+            return {
+                icon: def?.icon || 'fa-solid fa-circle-info',
+                color: def?.color || null,
+                value: renderedValue,
+                tooltip: `${label}: ${renderedValue}`,
+            };
+        });
+
+        const searchValue = items.map((it) => `${it.tooltip} ${it.value}`).join(' ').trim();
+        const filterValue = [rawEffectText, searchValue].filter(Boolean).join(' ').trim();
+
+        return {
+            type: 'chips',
+            value: '',
+            params: {
+                items,
+                sortValue: filterValue,
+                searchValue: filterValue,
+                filterValue,
+            },
+        };
+    }
+
     // ============================================
     // FORMATAGE DES CELLULES (surcharge pour champs spécifiques)
     // ============================================
@@ -112,9 +202,10 @@ export class Consumable extends BaseModel {
     toCell(fieldKey, options = {}) {
         // D'abord, essayer la méthode de base (gère les formatters automatiquement)
         const baseCell = super.toCell(fieldKey, options);
+        const overrideFields = new Set(['effect']);
         
         // Si la méthode de base a trouvé quelque chose (formatter ou valeur par défaut valide), l'utiliser
-        if (baseCell && (baseCell.type !== 'text' || (baseCell.value && baseCell.value !== '-'))) {
+        if (!overrideFields.has(fieldKey) && baseCell && (baseCell.type !== 'text' || (baseCell.value && baseCell.value !== '-'))) {
             return baseCell;
         }
 
@@ -173,7 +264,7 @@ export class Consumable extends BaseModel {
      * Génère une cellule pour la description (texte tronqué)
      * @private
      */
-    _toDescriptionCell(format, size, options) {
+    _toDescriptionCell(format, size, _options) {
         const description = this.description || '';
         const maxLength = format.truncate || (size === 'xs' || size === 'sm' ? 30 : 50);
         const truncated = description.length > maxLength 
@@ -196,6 +287,9 @@ export class Consumable extends BaseModel {
      * @private
      */
     _toEffectCell(format, size, options) {
+        const chipsCell = this._buildEffectChips(options);
+        if (chipsCell) return chipsCell;
+
         const effect = this.effect || '';
         const maxLength = format.truncate || (size === 'xs' || size === 'sm' ? 20 : 40);
         const truncated = effect.length > maxLength 
@@ -217,7 +311,7 @@ export class Consumable extends BaseModel {
      * Génère une cellule pour la recette
      * @private
      */
-    _toRecipeCell(format, size, options) {
+    _toRecipeCell(format, size, _options) {
         const recipe = this.recipe || '';
         const maxLength = format.truncate || (size === 'xs' || size === 'sm' ? 20 : 40);
         const truncated = recipe.length > maxLength 
@@ -239,7 +333,7 @@ export class Consumable extends BaseModel {
      * Génère une cellule pour l'image (miniature)
      * @private
      */
-    _toImageCell(format, size, options) {
+    _toImageCell(_format, size, _options) {
         const imageUrl = this.image || '';
         
         if (!imageUrl) {
@@ -272,7 +366,7 @@ export class Consumable extends BaseModel {
      * Génère une cellule pour le type de consommable
      * @private
      */
-    _toConsumableTypeCell(format, size, options) {
+    _toConsumableTypeCell(_format, _size, _options) {
         const consumableType = this.consumableType;
         
         if (!consumableType) {
@@ -303,7 +397,7 @@ export class Consumable extends BaseModel {
      * Génère une cellule pour le créateur
      * @private
      */
-    _toCreatedByCell(format, size, options) {
+    _toCreatedByCell(_format, _size, _options) {
         const createdBy = this.createdBy;
         
         if (!createdBy) {

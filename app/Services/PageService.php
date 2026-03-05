@@ -100,6 +100,7 @@ class PageService
             'slug' => $page->slug,
             'url' => route('pages.show', $page->slug),
             'order' => $page->menu_order,
+            'menu_group' => $page->menu_group,
             'children' => [],
         ];
 

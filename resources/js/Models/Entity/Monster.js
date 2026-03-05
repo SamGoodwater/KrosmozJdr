@@ -77,6 +77,50 @@ export class Monster extends BaseModel {
         return this._data.spellInvocations || [];
     }
 
+    /**
+     * Retourne la map des caractéristiques créature indexées par db_column.
+     * Source: meta API injectée dans `options.ctx.characteristics.creature.byDbColumn`.
+     * @private
+     */
+    _getCreatureCharacteristicsByColumn(options = {}) {
+        return options?.ctx?.characteristics?.creature?.byDbColumn || {};
+    }
+
+    /**
+     * Résout une caractéristique par ses colonnes candidates (ex: pa, po, life).
+     * @private
+     */
+    _getCreatureCharacteristicDef(options = {}, candidates = []) {
+        const byColumn = this._getCreatureCharacteristicsByColumn(options);
+        for (const key of candidates) {
+            const found = byColumn?.[key];
+            if (found) return found;
+        }
+        return null;
+    }
+
+    /**
+     * Retourne la map des caractéristiques créature indexées par db_column.
+     * Source: meta API injectée dans `options.ctx.characteristics.creature.byDbColumn`.
+     * @private
+     */
+    _getCreatureCharacteristicsByColumn(options = {}) {
+        return options?.ctx?.characteristics?.creature?.byDbColumn || {};
+    }
+
+    /**
+     * Résout une caractéristique par ses colonnes candidates (ex: pa, po, life).
+     * @private
+     */
+    _getCreatureCharacteristicDef(options = {}, candidates = []) {
+        const byColumn = this._getCreatureCharacteristicsByColumn(options);
+        for (const key of candidates) {
+            const found = byColumn?.[key];
+            if (found) return found;
+        }
+        return null;
+    }
+
     // ============================================
     // FORMATAGE DES CELLULES (surcharge pour champs spécifiques)
     // ============================================
@@ -183,6 +227,31 @@ export class Monster extends BaseModel {
                 },
             };
         }
+
+        const characteristicDef = this._getCreatureCharacteristicDef(_options, [creatureKey]);
+        if (characteristicDef) {
+            const value = String(raw);
+            const label = characteristicDef?.short_name || characteristicDef?.name || creatureKey.toUpperCase();
+            const numericSort = Number(raw);
+            return {
+                type: 'chips',
+                value: '',
+                params: {
+                    items: [
+                        {
+                            icon: characteristicDef.icon || null,
+                            color: characteristicDef.color || null,
+                            value,
+                            tooltip: `${label}: ${value}`,
+                        },
+                    ],
+                    sortValue: Number.isFinite(numericSort) ? numericSort : value,
+                    searchValue: value,
+                    filterValue: rawForFilter ?? value,
+                },
+            };
+        }
+
         const value = String(raw);
         const sortValue = Number(raw);
         return {
@@ -458,12 +527,34 @@ export class Monster extends BaseModel {
     _toBossPaCell(_format, _size, _options) {
         const rawPa = this.bossPa;
         const paNumber = rawPa !== null && Number(rawPa) > 0 && rawPa !== undefined && rawPa !== '' ? Number(rawPa) : null;
+        const paDef = this._getCreatureCharacteristicDef(_options, ['pa']);
 
         let display = '-';
         if (paNumber !== null && !Number.isNaN(paNumber) && paNumber > 0) {
             display = `${paNumber} PA`;
         } else if (rawPa && String(rawPa) !== '0') {
             display = `${rawPa} PA`;
+        }
+
+        if (display !== '-' && paDef) {
+            const paLabel = paDef?.short_name || paDef?.name || 'PA';
+            return {
+                type: 'chips',
+                value: '',
+                params: {
+                    items: [
+                        {
+                            icon: paDef.icon || 'fa-solid fa-bolt',
+                            color: paDef.color || null,
+                            value: String(paNumber ?? rawPa),
+                            tooltip: `${paLabel}: ${paNumber ?? rawPa}`,
+                        },
+                    ],
+                    sortValue: paNumber && !Number.isNaN(paNumber) ? paNumber : Number(rawPa) || 0,
+                    searchValue: String(display),
+                    filterValue: String(paNumber ?? rawPa),
+                },
+            };
         }
 
         return {

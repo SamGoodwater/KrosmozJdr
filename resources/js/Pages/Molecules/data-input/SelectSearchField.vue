@@ -169,7 +169,7 @@ defineExpose({
                     <button
                         type="button"
                         :class="[
-                            'select select-bordered w-full text-left',
+                            'select select-bordered w-full max-w-none text-left',
                             props.size === 'xs' ? 'select-xs' : props.size === 'sm' ? 'select-sm' : props.size === 'md' ? 'select-md' : props.size === 'lg' ? 'select-lg' : props.size === 'xl' ? 'select-xl' : '',
                             hasError ? 'select-error' : '',
                             (isReadonly || props.disabled) ? 'select-disabled' : '',
@@ -255,8 +255,9 @@ defineExpose({
     background: rgba(255, 255, 255, 0.1);
     backdrop-filter: blur(10px);
     border: 1px solid rgba(255, 255, 255, 0.2);
-    border-radius: 0.5rem;
+    border-radius: var(--radius-field, 0.1rem);
     transition: all 0.2s ease-in-out;
+    min-height: 2.75rem;
     
     &:hover:not(:disabled) {
         background: rgba(255, 255, 255, 0.15);

@@ -683,7 +683,7 @@ const entityBgClasses = {
     item: 'bg-color-item-100',
     consumable: 'bg-color-item-100',
     resource: 'bg-color-resource-100',
-    panoply: 'bg-color-item-100',
+    panoply: 'bg-color-panoply-100',
     spell: 'bg-color-spell-100',
 };
 
@@ -1027,7 +1027,7 @@ function submitConvertToLinked() {
                                     <p class="mt-1 text-xs text-base-content/70">Code hexadécimal (ex. #3b82f6).</p>
                                 </div>
                                 <div>
-                                    <InputField v-model="form.type" label="Type" name="type" :options="['int', 'string', 'array']" />
+                                    <InputField v-model="form.type" label="Type" name="type" :options="['int', 'string', 'array', 'bool']" />
                                 </div>
                                 <InputField v-model="form.unit" label="Unité" name="unit" />
                                 <InputField v-model="form.sort_order" label="Ordre" name="sort_order" type="number" />
@@ -1252,8 +1252,8 @@ function submitConvertToLinked() {
                                     <p class="mt-1 text-xs text-base-content/70">Code hexadécimal (ex. #3b82f6). Utilisée pour les badges, graphiques et indicateurs.</p>
                                 </div>
                                 <div>
-                                    <InputField v-model="form.type" label="Type" name="type" :options="['int', 'string', 'array']" />
-                                    <p class="mt-1 text-xs text-base-content/70">int = nombre, string = texte, array = liste de valeurs.</p>
+                                    <InputField v-model="form.type" label="Type" name="type" :options="['int', 'string', 'array', 'bool']" />
+                                    <p class="mt-1 text-xs text-base-content/70">int = nombre, string = texte, array = liste de valeurs, bool = vrai/faux.</p>
                                 </div>
                                 <InputField
                                     v-model="form.unit"

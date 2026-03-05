@@ -13,6 +13,7 @@ export default {
     size: 'md',
     zoom: 100,
     lazyLoad: false,
+    documentDisplayMode: 'preview',
   },
   // Paramètres configurables dans le modal
   parameters: [
@@ -60,6 +61,17 @@ export default {
       label: 'Chargement différé',
       description: 'Charger l\'image uniquement quand elle est visible à l\'écran',
       default: false,
+    },
+    {
+      key: 'documentDisplayMode',
+      type: 'select',
+      label: 'Affichage des documents',
+      description: 'Contrôle l\'affichage des PDF et autres fichiers non-image',
+      default: 'preview',
+      options: [
+        { value: 'preview', label: 'Aperçu dans le navigateur' },
+        { value: 'download', label: 'Téléchargement uniquement' },
+      ],
     },
   ],
   // Valeurs par défaut pour les data (contenu)

@@ -84,12 +84,15 @@ class ResourceTableController extends Controller
             $order = 'desc';
         }
 
-        $query = Resource::query()->with(['createdBy', 'resourceType']);
+        $query = Resource::query()
+            ->with(['createdBy', 'resourceType'])
+            ->withCount(['items', 'consumables', 'creatures', 'recipeIngredients']);
 
         if ($search !== '') {
             $query->where(function ($q) use ($search) {
                 $q->where('name', 'like', "%{$search}%")
-                    ->orWhere('description', 'like', "%{$search}%");
+                    ->orWhere('description', 'like', "%{$search}%")
+                    ->orWhere('effect', 'like', "%{$search}%");
             });
         }
 
@@ -185,6 +188,7 @@ class ResourceTableController extends Controller
                     'official_id' => $r->official_id,
                     'name' => $r->name,
                     'description' => $r->description,
+                    'effect' => $r->effect,
                     'level' => $r->level,
                     'price' => $r->price,
                     'weight' => $r->weight,
@@ -200,6 +204,10 @@ class ResourceTableController extends Controller
                         'id' => $resourceType->id,
                         'name' => $resourceType->name,
                     ] : null,
+                    'items_count' => (int) ($r->items_count ?? 0),
+                    'consumables_count' => (int) ($r->consumables_count ?? 0),
+                    'creatures_count' => (int) ($r->creatures_count ?? 0),
+                    'recipe_ingredients_count' => (int) ($r->recipe_ingredients_count ?? 0),
                     'createdBy' => $createdBy ? [
                         'id' => $createdBy->id,
                         'name' => $createdBy->name,
@@ -288,6 +296,15 @@ class ResourceTableController extends Controller
                             'filterValue' => $r->level ?: '',
                             'sortValue' => is_numeric((string) $r->level) ? (int) $r->level : (string) ($r->level ?? ''),
                             'searchValue' => (string) ($r->level ?? ''),
+                        ],
+                    ],
+                    'effect' => [
+                        'type' => 'text',
+                        'value' => $r->effect ?: '-',
+                        'params' => [
+                            'sortValue' => (string) ($r->effect ?? ''),
+                            'searchValue' => (string) ($r->effect ?? ''),
+                            'filterValue' => (string) ($r->effect ?? ''),
                         ],
                     ],
                     'resource_type' => [
@@ -381,6 +398,7 @@ class ResourceTableController extends Controller
                         'id' => $r->id,
                         'name' => $r->name,
                         'description' => $r->description,
+                        'effect' => $r->effect,
                         'level' => $r->level,
                         'price' => $r->price,
                         'weight' => $r->weight,
@@ -396,6 +414,10 @@ class ResourceTableController extends Controller
                             'id' => $r->resourceType->id,
                             'name' => $r->resourceType->name,
                         ] : null,
+                        'items_count' => (int) ($r->items_count ?? 0),
+                        'consumables_count' => (int) ($r->consumables_count ?? 0),
+                        'creatures_count' => (int) ($r->creatures_count ?? 0),
+                        'recipe_ingredients_count' => (int) ($r->recipe_ingredients_count ?? 0),
                         'createdBy' => $createdBy ? [
                             'id' => $createdBy->id,
                             'name' => $createdBy->name,

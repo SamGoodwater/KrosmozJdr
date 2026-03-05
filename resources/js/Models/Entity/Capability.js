@@ -91,6 +91,28 @@ export class Capability extends BaseModel {
         return this._data.creatures || [];
     }
 
+    /**
+     * Retourne la map des caractéristiques capability indexées par db_column.
+     * Source: meta API injectée dans `options.ctx.characteristics.capability.byDbColumn`.
+     * @private
+     */
+    _getCapabilityCharacteristicsByColumn(options = {}) {
+        return options?.ctx?.characteristics?.capability?.byDbColumn || {};
+    }
+
+    /**
+     * Résout une caractéristique par ses colonnes candidates (ex: pa, po).
+     * @private
+     */
+    _getCapabilityCharacteristicDef(options = {}, candidates = []) {
+        const byColumn = this._getCapabilityCharacteristicsByColumn(options);
+        for (const key of candidates) {
+            const found = byColumn?.[key];
+            if (found) return found;
+        }
+        return null;
+    }
+
     // ============================================
     // FORMATAGE DES CELLULES (surcharge pour champs spécifiques)
     // ============================================
@@ -104,9 +126,10 @@ export class Capability extends BaseModel {
     toCell(fieldKey, options = {}) {
         // D'abord, essayer la méthode de base (gère les formatters automatiquement)
         const baseCell = super.toCell(fieldKey, options);
+        const overrideFields = new Set(['pa', 'po', 'capability_summary_cast']);
         
         // Si la méthode de base a trouvé quelque chose (formatter ou valeur par défaut valide), l'utiliser
-        if (baseCell && (baseCell.type !== 'text' || (baseCell.value && baseCell.value !== '-'))) {
+        if (!overrideFields.has(fieldKey) && baseCell && (baseCell.type !== 'text' || (baseCell.value && baseCell.value !== '-'))) {
             return baseCell;
         }
 
@@ -230,6 +253,28 @@ export class Capability extends BaseModel {
      */
     _toPaCell(format, size, options) {
         const pa = this.pa || '-';
+        const paDef = this._getCapabilityCharacteristicDef(options, ['pa']);
+        const paLabel = paDef?.short_name || paDef?.name || 'PA';
+
+        if (paDef && pa !== '-') {
+            return {
+                type: 'chips',
+                value: '',
+                params: {
+                    items: [
+                        {
+                            icon: paDef.icon || 'fa-solid fa-bolt',
+                            color: paDef.color || null,
+                            value: String(pa),
+                            tooltip: `${paLabel}: ${pa}`,
+                        },
+                    ],
+                    sortValue: Number(pa) || String(pa),
+                    searchValue: String(pa),
+                    filterValue: String(pa),
+                },
+            };
+        }
         
         return {
             type: 'text',
@@ -247,6 +292,28 @@ export class Capability extends BaseModel {
      */
     _toPoCell(format, size, options) {
         const po = this.po || '-';
+        const poDef = this._getCapabilityCharacteristicDef(options, ['po', 'po_max', 'po_min']);
+        const poLabel = poDef?.short_name || poDef?.name || 'PO';
+
+        if (poDef && po !== '-') {
+            return {
+                type: 'chips',
+                value: '',
+                params: {
+                    items: [
+                        {
+                            icon: poDef.icon || 'fa-solid fa-crosshairs',
+                            color: poDef.color || null,
+                            value: String(po),
+                            tooltip: `${poLabel}: ${po}`,
+                        },
+                    ],
+                    sortValue: Number(po) || String(po),
+                    searchValue: String(po),
+                    filterValue: String(po),
+                },
+            };
+        }
         
         return {
             type: 'text',
@@ -338,10 +405,24 @@ export class Capability extends BaseModel {
         const castValue = this.castingTime ? String(this.castingTime) : null;
         const durationValue = this.duration ? String(this.duration) : null;
         const cooldownValue = this.timeBeforeUseAgain ? String(this.timeBeforeUseAgain) : null;
+        const paDef = this._getCapabilityCharacteristicDef(options, ['pa']);
+        const poDef = this._getCapabilityCharacteristicDef(options, ['po', 'po_max', 'po_min']);
+        const paLabel = paDef?.short_name || paDef?.name || 'PA';
+        const poLabel = poDef?.short_name || poDef?.name || 'PO';
 
         const items = [
-            { icon: 'fa-solid fa-bolt', value: paValue, tooltip: paValue ? `PA: ${paValue}` : '' },
-            { icon: 'fa-solid fa-crosshairs', value: poValue, tooltip: poValue ? `PO: ${poValue}` : '' },
+            {
+                icon: paDef?.icon || 'fa-solid fa-bolt',
+                color: paDef?.color || null,
+                value: paValue,
+                tooltip: paValue ? `${paLabel}: ${paValue}` : '',
+            },
+            {
+                icon: poDef?.icon || 'fa-solid fa-crosshairs',
+                color: poDef?.color || null,
+                value: poValue,
+                tooltip: poValue ? `${poLabel}: ${poValue}` : '',
+            },
             { icon: 'fa-solid fa-hourglass', value: castValue, tooltip: castValue ? `Cast: ${castValue}` : '' },
             { icon: 'fa-solid fa-stopwatch', value: durationValue, tooltip: durationValue ? `Durée: ${durationValue}` : '' },
             { icon: 'fa-solid fa-clock', value: cooldownValue, tooltip: cooldownValue ? `Relance: ${cooldownValue}` : '' },

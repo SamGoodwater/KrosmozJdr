@@ -594,33 +594,37 @@ final class IntegrationService
             $normalizedRows = $this->normalizeSubEffectsRowsForSignature($subEffectsRaw, $slugToId);
             $signature = $normalizedRows !== [] ? $this->computeEffectConfigSignature($normalizedRows) : null;
 
+            $effect = null;
             if ($signature !== null) {
-                $existingEffect = Effect::where('config_signature', $signature)->first();
-                if ($existingEffect !== null) {
-                    EffectUsage::firstOrCreate(
-                        [
-                            'entity_type' => 'spell',
-                            'entity_id' => $spell->id,
-                            'effect_id' => $existingEffect->id,
-                            'level_min' => $degree,
-                            'level_max' => $degree,
-                        ],
-                        []
-                    );
-                    continue;
-                }
+                $effect = Effect::where('config_signature', $signature)->first();
             }
 
-            $effect = Effect::create([
-                'effect_group_id' => $group->id,
-                'degree' => $degree,
-                'name' => $effectName,
-                'slug' => $effectSlug,
-                'description' => $effectRow['description'] ?? null,
-                'target_type' => (string) ($effectRow['target_type'] ?? \App\Models\Effect::TARGET_DIRECT),
-                'area' => isset($effectRow['area']) ? (string) $effectRow['area'] : null,
-                'config_signature' => $signature,
-            ]);
+            if ($effect === null) {
+                $effect = Effect::where('slug', $effectSlug)->first();
+                if ($effect !== null) {
+                    // Évite les collisions slug_unique quand une ancienne importation a créé l'effet sans signature.
+                    $effect->update([
+                        'effect_group_id' => $group->id,
+                        'degree' => $degree,
+                        'name' => $effectName,
+                        'description' => $effectRow['description'] ?? null,
+                        'target_type' => (string) ($effectRow['target_type'] ?? \App\Models\Effect::TARGET_DIRECT),
+                        'area' => isset($effectRow['area']) ? (string) $effectRow['area'] : null,
+                        'config_signature' => $signature,
+                    ]);
+                } else {
+                    $effect = Effect::create([
+                        'effect_group_id' => $group->id,
+                        'degree' => $degree,
+                        'name' => $effectName,
+                        'slug' => $effectSlug,
+                        'description' => $effectRow['description'] ?? null,
+                        'target_type' => (string) ($effectRow['target_type'] ?? \App\Models\Effect::TARGET_DIRECT),
+                        'area' => isset($effectRow['area']) ? (string) $effectRow['area'] : null,
+                        'config_signature' => $signature,
+                    ]);
+                }
+            }
 
             EffectUsage::firstOrCreate(
                 [
@@ -658,7 +662,7 @@ final class IntegrationService
                 $effect->effectSubEffects()->create([
                     'sub_effect_id' => $subId,
                     'order' => $order,
-                    'scope' => null,
+                    'scope' => Effect::SCOPE_GENERAL,
                     'params' => $params,
                     'crit_only' => $critOnly,
                 ]);
@@ -748,8 +752,32 @@ final class IntegrationService
         if ($slugs === []) {
             return [];
         }
+        $wantedSlugs = array_keys($slugs);
+        $slugToId = SubEffect::whereIn('slug', $wantedSlugs)->pluck('id', 'slug')->all();
+        $missingSlugs = array_values(array_diff($wantedSlugs, array_keys($slugToId)));
 
-        return SubEffect::whereIn('slug', array_keys($slugs))->pluck('id', 'slug')->all();
+        if ($missingSlugs !== []) {
+            foreach ($missingSlugs as $slug) {
+                SubEffect::updateOrCreate(
+                    ['slug' => $slug],
+                    [
+                        'type_slug' => $slug,
+                        'template_text' => 'Effet ' . $slug . '.',
+                        'variables_allowed' => [],
+                        'param_schema' => [
+                            'action' => $slug,
+                            'params' => [],
+                        ],
+                    ]
+                );
+            }
+            Log::warning('Sub-effects manquants auto-créés pendant import de sort.', [
+                'missing_slugs' => $missingSlugs,
+            ]);
+            $slugToId = SubEffect::whereIn('slug', $wantedSlugs)->pluck('id', 'slug')->all();
+        }
+
+        return $slugToId;
     }
 
     /**

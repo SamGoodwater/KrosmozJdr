@@ -14,6 +14,8 @@
  * const descriptors = getMonsterFieldDescriptors({ capabilities, creatures, monsterRaces });
  */
 
+import { getEntityStateOptions, getUserRoleOptions } from '@/Utils/Entity/SharedConstants.js';
+
 /**
  * @typedef {Object} MonsterFieldDescriptor
  * @property {string} key - Clé unique du champ
@@ -535,6 +537,105 @@ export function getMonsterFieldDescriptors(ctx = {}) {
       },
     },
 
+    state: {
+      key: 'state',
+      general: {
+        label: 'État',
+        icon: 'fa-solid fa-circle-info',
+        tooltip: 'État du monstre dans le cycle de contenu',
+      },
+      table: {
+        sortable: true,
+        filterable: { id: 'state', type: 'multi', defaultVisible: true },
+        defaultVisible: { xs: false, sm: true, md: true, lg: true, xl: true },
+        cell: {
+          sizes: {
+            xs: { mode: 'badge' },
+            sm: { mode: 'badge' },
+            md: { mode: 'badge' },
+            lg: { mode: 'badge' },
+            xl: { mode: 'badge' },
+          },
+        },
+      },
+      edition: {
+        form: {
+          type: 'select',
+          group: 'Statut',
+          required: false,
+          options: getEntityStateOptions,
+          defaultValue: 'draft',
+        },
+        bulk: { enabled: true, nullable: false },
+      },
+    },
+
+    read_level: {
+      key: 'read_level',
+      general: {
+        label: 'Lecture (min.)',
+        icon: 'fa-solid fa-eye',
+        tooltip: 'Rôle minimum requis pour consulter ce monstre',
+      },
+      table: {
+        sortable: true,
+        filterable: { id: 'read_level', type: 'multi', defaultVisible: false },
+        defaultVisible: { xs: false, sm: false, md: false, lg: false, xl: false },
+        cell: {
+          sizes: {
+            xs: { mode: 'badge' },
+            sm: { mode: 'badge' },
+            md: { mode: 'badge' },
+            lg: { mode: 'badge' },
+            xl: { mode: 'badge' },
+          },
+        },
+      },
+      edition: {
+        form: {
+          type: 'select',
+          group: 'Statut',
+          required: false,
+          options: getUserRoleOptions,
+          defaultValue: 0,
+        },
+        bulk: { enabled: true, nullable: false },
+      },
+    },
+
+    write_level: {
+      key: 'write_level',
+      general: {
+        label: 'Écriture (min.)',
+        icon: 'fa-solid fa-pen-to-square',
+        tooltip: 'Rôle minimum requis pour modifier ce monstre',
+      },
+      table: {
+        sortable: true,
+        filterable: { id: 'write_level', type: 'multi', defaultVisible: false },
+        defaultVisible: { xs: false, sm: false, md: false, lg: false, xl: false },
+        cell: {
+          sizes: {
+            xs: { mode: 'badge' },
+            sm: { mode: 'badge' },
+            md: { mode: 'badge' },
+            lg: { mode: 'badge' },
+            xl: { mode: 'badge' },
+          },
+        },
+      },
+      edition: {
+        form: {
+          type: 'select',
+          group: 'Statut',
+          required: false,
+          options: getUserRoleOptions,
+          defaultValue: 3,
+        },
+        bulk: { enabled: true, nullable: false },
+      },
+    },
+
     boss_pa: {
       key: 'boss_pa',
       general: {
@@ -820,6 +921,9 @@ export function getMonsterFieldDescriptors(ctx = {}) {
         'size',
         'is_boss',
         'boss_pa',
+        'state',
+        'read_level',
+        'write_level',
         'auto_update',
         'dofus_version',
         'dofusdb_id',

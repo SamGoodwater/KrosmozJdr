@@ -684,56 +684,6 @@
     "file": "entity/EntityFormField.vue"
   },
   {
-    "name": "EntityCard",
-    "description": "EntityCard Molecule (Atomic Design, DaisyUI)",
-    "props": [
-      {
-        "name": "title",
-        "type": "String",
-        "desc": "- Titre de l'entité (requis)"
-      },
-      {
-        "name": "image",
-        "type": "String",
-        "desc": "- URL de l'image (optionnel)"
-      },
-      {
-        "name": "description",
-        "type": "String",
-        "desc": "- Description (optionnel)"
-      },
-      {
-        "name": "type",
-        "type": "Object",
-        "desc": "- { name, color } (optionnel)"
-      },
-      {
-        "name": "actions",
-        "type": "Array",
-        "desc": "- Actions disponibles (ex: ['pin', 'favorite', 'view', 'edit', 'share'])"
-      }
-    ],
-    "slots": [
-      {
-        "name": "title",
-        "desc": "- Titre custom"
-      },
-      {
-        "name": "properties",
-        "desc": "- Propriétés custom"
-      },
-      {
-        "name": "content",
-        "desc": "- Contenu custom"
-      },
-      {
-        "name": "hoverContent",
-        "desc": "- Contenu au survol"
-      }
-    ],
-    "file": "entity/EntityCard.vue"
-  },
-  {
     "name": "EntityActionsList",
     "description": "EntityActionsList Molecule",
     "props": [],

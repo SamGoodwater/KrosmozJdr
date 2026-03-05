@@ -9,6 +9,7 @@
  * console.log(spell.name); // Accès normalisé
  */
 import { BaseModel } from '../BaseModel';
+import { resolveEntityRouteHref } from '@/Composables/entity/entityRouteRegistry';
 
 export class Spell extends BaseModel {
     // ============================================
@@ -149,6 +150,28 @@ export class Spell extends BaseModel {
         return this._data.monsters || [];
     }
 
+    /**
+     * Retourne la map des caractéristiques spell indexées par db_column.
+     * Source: meta API injectée dans `options.ctx.characteristics.spell.byDbColumn`.
+     * @private
+     */
+    _getSpellCharacteristicsByColumn(options = {}) {
+        return options?.ctx?.characteristics?.spell?.byDbColumn || {};
+    }
+
+    /**
+     * Résout une caractéristique par ses colonnes candidates (ex: pa, po, po_max).
+     * @private
+     */
+    _getCharacteristicDef(options = {}, candidates = []) {
+        const byColumn = this._getSpellCharacteristicsByColumn(options);
+        for (const key of candidates) {
+            const found = byColumn?.[key];
+            if (found) return found;
+        }
+        return null;
+    }
+
     // ============================================
     // FORMATAGE DES CELLULES (surcharge pour champs spécifiques)
     // ============================================
@@ -162,9 +185,10 @@ export class Spell extends BaseModel {
     toCell(fieldKey, options = {}) {
         // D'abord, essayer la méthode de base (gère les formatters automatiquement)
         const baseCell = super.toCell(fieldKey, options);
+        const overrideFields = new Set(['pa', 'po', 'spell_summary_profile']);
         
         // Si la méthode de base a trouvé quelque chose (formatter ou valeur par défaut valide), l'utiliser
-        if (baseCell && (baseCell.type !== 'text' || (baseCell.value && baseCell.value !== '-'))) {
+        if (!overrideFields.has(fieldKey) && baseCell && (baseCell.type !== 'text' || (baseCell.value && baseCell.value !== '-'))) {
             return baseCell;
         }
 
@@ -226,7 +250,7 @@ export class Spell extends BaseModel {
      */
     _toNameCell(format, size, options) {
         const name = this.name || '-';
-        const href = options.href || `/spells/${this.id}`;
+        const href = options.href || resolveEntityRouteHref('spells', 'show', this.id) || `/entities/spells/${this.id}`;
         
         return {
             type: 'route',
@@ -309,6 +333,29 @@ export class Spell extends BaseModel {
      */
     _toPoCell(format, size, options) {
         const po = this.po || '-';
+        const poDef = this._getCharacteristicDef(options, ['po', 'po_max', 'po_min']);
+        const poLabel = poDef?.short_name || poDef?.name || 'PO';
+
+        if (poDef && po !== '-') {
+            return {
+                type: 'chips',
+                value: '',
+                params: {
+                    items: [
+                        {
+                            icon: poDef.icon || 'fa-solid fa-crosshairs',
+                            color: poDef.color || null,
+                            value: String(po),
+                            tooltip: `${poLabel}: ${po}`,
+                        },
+                    ],
+                    sortValue: String(po),
+                    searchValue: String(po),
+                    filterValue: String(po),
+                },
+            };
+        }
+
         return {
             type: 'text',
             value: po,
@@ -341,6 +388,28 @@ export class Spell extends BaseModel {
      */
     _toPaCell(format, size, options) {
         const pa = this.pa || '-';
+        const paDef = this._getCharacteristicDef(options, ['pa']);
+        const paLabel = paDef?.short_name || paDef?.name || 'PA';
+
+        if (paDef && pa !== '-') {
+            return {
+                type: 'chips',
+                value: '',
+                params: {
+                    items: [
+                        {
+                            icon: paDef.icon || 'fa-solid fa-bolt',
+                            color: paDef.color || null,
+                            value: String(pa),
+                            tooltip: `${paLabel}: ${pa}`,
+                        },
+                    ],
+                    sortValue: String(pa),
+                    searchValue: String(pa),
+                    filterValue: String(pa),
+                },
+            };
+        }
         
         return {
             type: 'text',
@@ -516,10 +585,24 @@ export class Spell extends BaseModel {
         const categoryValue = this.category ? String(this.category) : null;
         const typeCount = Array.isArray(this.spellTypes) ? this.spellTypes.length : 0;
         const typesValue = typeCount > 0 ? `${typeCount} type${typeCount > 1 ? 's' : ''}` : null;
+        const paDef = this._getCharacteristicDef(options, ['pa']);
+        const poDef = this._getCharacteristicDef(options, ['po', 'po_max', 'po_min']);
+        const paLabel = paDef?.short_name || paDef?.name || 'PA';
+        const poLabel = poDef?.short_name || poDef?.name || 'PO';
 
         const items = [
-            { icon: 'fa-solid fa-bolt', value: paValue, tooltip: paValue ? `PA: ${paValue}` : '' },
-            { icon: 'fa-solid fa-crosshairs', value: poValue, tooltip: poValue ? `Portée: ${poValue}` : '' },
+            {
+                icon: paDef?.icon || 'fa-solid fa-bolt',
+                color: paDef?.color || null,
+                value: paValue,
+                tooltip: paValue ? `${paLabel}: ${paValue}` : '',
+            },
+            {
+                icon: poDef?.icon || 'fa-solid fa-crosshairs',
+                color: poDef?.color || null,
+                value: poValue,
+                tooltip: poValue ? `${poLabel}: ${poValue}` : '',
+            },
             { icon: 'fa-solid fa-expand', value: areaValue, tooltip: areaValue ? `Zone: ${areaValue}` : '' },
             { icon: 'fa-solid fa-fire', value: elementValue, tooltip: elementValue ? `Élément: ${elementValue}` : '' },
             { icon: 'fa-solid fa-tag', value: categoryValue, tooltip: categoryValue ? `Catégorie: ${categoryValue}` : '' },

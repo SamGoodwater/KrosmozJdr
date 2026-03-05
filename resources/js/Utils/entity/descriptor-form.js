@@ -56,6 +56,26 @@ export function resolveDescriptorOptions(field, ctx = {}) {
 }
 
 /**
+ * Compat helper: certains descriptors exposent `edit.form`, d'autres `edition.form`.
+ *
+ * @param {any} descriptor
+ * @returns {any}
+ */
+function getDescriptorForm(descriptor) {
+  return descriptor?.edit?.form || descriptor?.edition?.form || null;
+}
+
+/**
+ * Compat helper pour la config bulk.
+ *
+ * @param {any} descriptor
+ * @returns {any}
+ */
+function getDescriptorBulk(descriptor) {
+  return descriptor?.edit?.bulk || descriptor?.edition?.bulk || null;
+}
+
+/**
  * Génère le `fieldsConfig` attendu par `EntityEditForm` (create/edit).
  *
  * @param {Record<string, any>} descriptors
@@ -65,7 +85,7 @@ export function resolveDescriptorOptions(field, ctx = {}) {
 export function createFieldsConfigFromDescriptors(descriptors, ctx = {}) {
   const out = {};
   for (const [key, d] of Object.entries(descriptors || {})) {
-    const form = d?.edition?.form;
+    const form = getDescriptorForm(d);
     if (!form?.type) continue;
     const options = resolveDescriptorOptions(form, ctx);
     out[key] = {
@@ -123,7 +143,7 @@ export function createFieldsConfigFromDescriptors(descriptors, ctx = {}) {
 export function createDefaultEntityFromDescriptors(descriptors) {
   const out = {};
   for (const [key, d] of Object.entries(descriptors || {})) {
-    const form = d?.edition?.form;
+    const form = getDescriptorForm(d);
     if (!form) continue;
     if (typeof form.defaultValue !== "undefined") out[key] = form.defaultValue;
   }
@@ -140,7 +160,7 @@ export function createDefaultEntityFromDescriptors(descriptors) {
 export function createBulkFieldMetaFromDescriptors(descriptors, ctx = {}) {
   const out = {};
   for (const [key, d] of Object.entries(descriptors || {})) {
-    const bulk = d?.edition?.bulk;
+    const bulk = getDescriptorBulk(d);
     if (!bulk?.enabled) continue;
     // ⚠️ IMPORTANT : bulk.build est déprécié. Les transformations sont maintenant gérées par les mappers.
     // On crée quand même le fieldMeta pour permettre l'agrégation des valeurs, même sans build.
