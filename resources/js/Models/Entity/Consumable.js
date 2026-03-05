@@ -9,6 +9,7 @@
  * console.log(consumable.name); // Accès normalisé
  */
 import { BaseModel } from '../BaseModel';
+import { buildCharacteristicEffectCell } from '@/Composables/entity/useCharacteristicEffectFormatter';
 
 export class Consumable extends BaseModel {
     // ============================================
@@ -99,94 +100,24 @@ export class Consumable extends BaseModel {
         return this._data.shops || [];
     }
 
-    /**
-     * Retourne les métadonnées des caractéristiques consumable indexées par db_column.
-     * @private
-     */
-    _getConsumableCharacteristicsByColumn(options = {}) {
-        return options?.ctx?.characteristics?.consumable?.byDbColumn || {};
+    get resourcesCount() {
+        return Number(this._data.resources_count ?? this.resources.length ?? 0);
     }
 
-    /**
-     * Tente de parser une valeur JSON (objet/array), sinon null.
-     * @private
-     */
-    _parseJsonPayload(value) {
-        if (value && typeof value === 'object') return value;
-        if (typeof value !== 'string') return null;
-        const trimmed = value.trim();
-        if (!trimmed) return null;
-        if (!(trimmed.startsWith('{') || trimmed.startsWith('['))) return null;
-        try {
-            return JSON.parse(trimmed);
-        } catch {
-            return null;
-        }
+    get creaturesCount() {
+        return Number(this._data.creatures_count ?? this.creatures.length ?? 0);
     }
 
-    /**
-     * Extrait des entrées clé/valeur depuis un payload d'effet (objet ou tableau).
-     * @private
-     */
-    _extractEffectEntries(payload) {
-        if (!payload) return [];
-
-        if (!Array.isArray(payload) && typeof payload === 'object') {
-            return Object.entries(payload).map(([key, value]) => ({ key: String(key), value }));
-        }
-
-        if (Array.isArray(payload)) {
-            return payload
-                .map((row) => {
-                    if (!row || typeof row !== 'object') return null;
-                    const key = row.db_column ?? row.key ?? row.characteristic ?? row.stat ?? row.name ?? row.label ?? null;
-                    const value = row.value ?? row.amount ?? row.val ?? row.to ?? row.max ?? row.min ?? null;
-                    if (!key || value === null || typeof value === 'undefined') return null;
-                    return { key: String(key), value };
-                })
-                .filter(Boolean);
-        }
-
-        return [];
+    get campaignsCount() {
+        return Number(this._data.campaigns_count ?? this.campaigns.length ?? 0);
     }
 
-    /**
-     * Construit un rendu chips (icône/couleur) depuis effect si possible.
-     * Fallback texte si ce n'est pas une structure de caractéristiques.
-     * @private
-     */
-    _buildEffectChips(options = {}) {
-        const byDb = this._getConsumableCharacteristicsByColumn(options);
-        const effectPayload = this._parseJsonPayload(this.effect);
-        const rawEffectText = this.effect ? String(this.effect).trim() : '';
-        const entries = this._extractEffectEntries(effectPayload);
-        if (entries.length === 0) return null;
+    get scenariosCount() {
+        return Number(this._data.scenarios_count ?? this.scenarios.length ?? 0);
+    }
 
-        const items = entries.map(({ key, value }) => {
-            const def = byDb?.[key] || byDb?.[key.replace(/_object$/, '')];
-            const renderedValue = String(value);
-            const label = def?.short_name || def?.name || key;
-            return {
-                icon: def?.icon || 'fa-solid fa-circle-info',
-                color: def?.color || null,
-                value: renderedValue,
-                tooltip: `${label}: ${renderedValue}`,
-            };
-        });
-
-        const searchValue = items.map((it) => `${it.tooltip} ${it.value}`).join(' ').trim();
-        const filterValue = [rawEffectText, searchValue].filter(Boolean).join(' ').trim();
-
-        return {
-            type: 'chips',
-            value: '',
-            params: {
-                items,
-                sortValue: filterValue,
-                searchValue: filterValue,
-                filterValue,
-            },
-        };
+    get shopsCount() {
+        return Number(this._data.shops_count ?? this.shops.length ?? 0);
     }
 
     // ============================================
@@ -226,6 +157,8 @@ export class Consumable extends BaseModel {
             case 'consumable_type':
             case 'consumableType':
                 return this._toConsumableTypeCell(format, size, options);
+            case 'consumable_summary_relations':
+                return this._toConsumableSummaryRelationsCell(format, size, options);
             case 'created_by':
             case 'createdBy':
                 return this._toCreatedByCell(format, size, options);
@@ -287,24 +220,14 @@ export class Consumable extends BaseModel {
      * @private
      */
     _toEffectCell(format, size, options) {
-        const chipsCell = this._buildEffectChips(options);
-        if (chipsCell) return chipsCell;
-
-        const effect = this.effect || '';
-        const maxLength = format.truncate || (size === 'xs' || size === 'sm' ? 20 : 40);
-        const truncated = effect.length > maxLength 
-            ? effect.slice(0, maxLength - 1) + '…'
-            : effect;
-        
-        return {
-            type: 'text',
-            value: truncated || '-',
-            params: {
-                tooltip: effect || '',
-                sortValue: effect,
-                searchValue: effect,
-            },
-        };
+        return buildCharacteristicEffectCell({
+            rawValues: [this.effect],
+            options,
+            sourceGroups: ['consumable', 'item'],
+            format,
+            size,
+            chipsLayout: { maxRows: 3 },
+        });
     }
 
     /**
@@ -389,6 +312,53 @@ export class Consumable extends BaseModel {
                 tooltip: typeName === '-' ? '' : typeName,
                 sortValue: typeName,
                 searchValue: typeName,
+            },
+        };
+    }
+
+    /**
+     * Génère une cellule résumé (chips) des relations métier.
+     * @private
+     */
+    _toConsumableSummaryRelationsCell(_format, _size, _options) {
+        const items = [
+            {
+                icon: 'fa-solid fa-flask',
+                value: this.resourcesCount > 0 ? `${this.resourcesCount} ressource${this.resourcesCount > 1 ? 's' : ''}` : null,
+                tooltip: this.resourcesCount > 0 ? `Ressources de recette: ${this.resourcesCount}` : '',
+            },
+            {
+                icon: 'fa-solid fa-dragon',
+                value: this.creaturesCount > 0 ? `${this.creaturesCount} créature${this.creaturesCount > 1 ? 's' : ''}` : null,
+                tooltip: this.creaturesCount > 0 ? `Créatures: ${this.creaturesCount}` : '',
+            },
+            {
+                icon: 'fa-solid fa-flag',
+                value: this.campaignsCount > 0 ? `${this.campaignsCount} campagne${this.campaignsCount > 1 ? 's' : ''}` : null,
+                tooltip: this.campaignsCount > 0 ? `Campagnes: ${this.campaignsCount}` : '',
+            },
+            {
+                icon: 'fa-solid fa-scroll',
+                value: this.scenariosCount > 0 ? `${this.scenariosCount} scénario${this.scenariosCount > 1 ? 's' : ''}` : null,
+                tooltip: this.scenariosCount > 0 ? `Scénarios: ${this.scenariosCount}` : '',
+            },
+            {
+                icon: 'fa-solid fa-store',
+                value: this.shopsCount > 0 ? `${this.shopsCount} boutique${this.shopsCount > 1 ? 's' : ''}` : null,
+                tooltip: this.shopsCount > 0 ? `Boutiques: ${this.shopsCount}` : '',
+            },
+        ].filter((it) => it.value !== null);
+
+        const searchValue = items.map((it) => String(it.value)).join(' ');
+
+        return {
+            type: 'chips',
+            value: '',
+            params: {
+                items,
+                sortValue: items.length,
+                searchValue,
+                filterValue: searchValue,
             },
         };
     }

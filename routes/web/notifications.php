@@ -11,6 +11,8 @@ use Illuminate\Support\Facades\Route;
 
 Route::middleware('auth')->prefix('notifications')->name('notifications.')->group(function () {
     Route::get('/', [NotificationController::class, 'index'])->name('index');
+    Route::post('/scrapping/start', [NotificationController::class, 'startScrappingNotification'])->name('scrapping.start');
+    Route::patch('/scrapping/{id}', [NotificationController::class, 'updateScrappingNotification'])->name('scrapping.update');
     Route::post('/read-all', [NotificationController::class, 'markAllAsRead'])->name('markAllAsRead');
     Route::post('/{id}/read', [NotificationController::class, 'markAsRead'])->name('markAsRead');
     Route::post('/{id}/archive', [NotificationController::class, 'archive'])->name('archive');

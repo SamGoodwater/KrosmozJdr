@@ -64,6 +64,7 @@ const emit = defineEmits([
     "row-click",
     "row-dblclick",
     "sort-change",
+    "refresh",
     // Compat: selon les listeners (template) on peut avoir besoin de la forme kebab-case
     "update:selectedIds",
     "update:selected-ids",
@@ -1499,6 +1500,13 @@ const clearSelection = () => {
     emitSelection();
 };
 
+const handleRefresh = async () => {
+    emit("refresh");
+    applyFilters();
+    await reloadPresetsFromApi();
+    notifyInfo("Table actualisée.");
+};
+
 watch(
     () => selectedCount.value,
     (count, prev) => {
@@ -1605,11 +1613,13 @@ const handleExport = () => {
                 :columns="columnsConfig"
                     :visible-columns="effectiveVisibleColumns"
                 :export-enabled="exportEnabled"
+                :refresh-enabled="true"
                 :selection-count="selectedCount"
                 @update:search="updateSearch"
                 @toggle-column="toggleColumnVisibility"
                 @reset-columns="resetColumnsToDefaults"
                 @export="handleExport"
+                @refresh="handleRefresh"
                 @clear-selection="clearSelection"
             />
             <div class="mt-2 flex items-center justify-end gap-2">
@@ -1633,23 +1643,6 @@ const handleExport = () => {
             class="relative px-3 py-2"
             :class="[bgClass]"
         >
-            <div v-if="presetsEnabled" class="mb-2 flex items-center justify-end gap-2">
-                <Btn
-                    size="xs"
-                    variant="ghost"
-                    :color="uiColor"
-                    :title="showPresetPanel ? 'Masquer les presets' : 'Afficher les presets'"
-                    :aria-label="showPresetPanel ? 'Masquer les presets' : 'Afficher les presets'"
-                    class="relative"
-                    @click="togglePresetPanel"
-                >
-                    <i class="fa-solid fa-bookmark"></i>
-                    <span
-                        v-if="isActivePresetDirty"
-                        class="absolute -top-1 -right-1 w-2 h-2 rounded-full bg-warning ring-1 ring-base-100"
-                    ></span>
-                </Btn>
-            </div>
             <div v-if="presetsEnabled && showPresetPanel && activePreset" class="mb-2 flex items-center justify-between gap-2">
                 <div class="inline-flex items-center gap-2 text-xs">
                     <span class="badge badge-soft badge-primary">
@@ -1787,9 +1780,13 @@ const handleExport = () => {
                 :filter-options="resolvedFilterOptions"
                 :ui-color="uiColor"
                 :debug="debugEnabled"
+                :presets-enabled="presetsEnabled"
+                :show-preset-panel="showPresetPanel"
+                :is-active-preset-dirty="isActivePresetDirty"
                 @update:filters="setFilters"
                 @apply="applyFilters"
                 @reset="resetFilters"
+                @toggle-presets="togglePresetPanel"
             />
         </div>
 

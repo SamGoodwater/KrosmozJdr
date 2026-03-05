@@ -449,6 +449,21 @@ export function getMonsterFieldDescriptors(ctx = {}) {
         cell: { sizes: { xs: { mode: 'chips' }, sm: { mode: 'chips' }, md: { mode: 'chips' }, lg: { mode: 'chips' }, xl: { mode: 'chips' } } },
       },
     },
+    monster_summary_relations: {
+      key: 'monster_summary_relations',
+      general: {
+        label: 'Relations',
+        icon: 'fa-solid fa-link',
+        tooltip: 'Résumé des liens gameplay (invocations, campagnes, scénarios)',
+      },
+      table: {
+        type: 'chips',
+        sortable: false,
+        searchable: true,
+        defaultVisible: { xs: false, sm: false, md: true, lg: true, xl: true },
+        cell: { sizes: { xs: { mode: 'chips' }, sm: { mode: 'chips' }, md: { mode: 'chips' }, lg: { mode: 'chips' }, xl: { mode: 'chips' } } },
+      },
+    },
 
     size: {
       key: 'size',

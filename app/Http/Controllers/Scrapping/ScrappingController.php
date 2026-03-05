@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers\Scrapping;
 
+use App\Jobs\ProcessScrappingJob;
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\Scrapping\Concerns\RespondsWithOrchestratorResult;
+use App\Models\ScrappingJob;
 use App\Services\Scrapping\Core\Config\CollectAliasResolver;
 use App\Services\Scrapping\Core\Config\ConfigLoader;
 use App\Services\Scrapping\Core\Config\EntityMetaService;
@@ -468,6 +470,150 @@ class ScrappingController extends Controller
                 'debug' => $this->debugPayload($runId),
             ], 500);
         }
+    }
+
+    /**
+     * Crée un job asynchrone de scrapping (queue) et retourne son id pour polling.
+     */
+    public function createJob(Request $request): JsonResponse
+    {
+        $runId = $this->runIdFromRequest($request);
+        try {
+            $validated = $request->validate([
+                'kind' => ['nullable', 'string', Rule::in(['import_batch'])],
+                'entities' => ['required', 'array', 'min:1'],
+                'entities.*.type' => ['required', 'string', 'in:class,monster,item,spell,panoply,resource,consumable,equipment'],
+                'entities.*.id' => ['required', 'integer', 'min:1'],
+            ]);
+
+            $options = $this->optionsFromRequest($request, $runId);
+            $job = ScrappingJob::query()->create([
+                'kind' => (string) ($validated['kind'] ?? 'import_batch'),
+                'status' => ScrappingJob::STATUS_QUEUED,
+                'run_id' => $runId,
+                'requested_by' => optional($request->user())->id,
+                'payload' => [
+                    'entities' => $validated['entities'],
+                    'options' => $options,
+                ],
+                'progress_done' => 0,
+                'progress_total' => count($validated['entities']),
+            ]);
+
+            ProcessScrappingJob::dispatch($job->id);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Job de scrapping créé.',
+                'data' => [
+                    'job_id' => $job->id,
+                    'status' => $job->status,
+                    'progress' => [
+                        'done' => $job->progress_done,
+                        'total' => $job->progress_total,
+                    ],
+                ],
+                'run_id' => $runId,
+                'timestamp' => now()->toISOString(),
+            ], 202);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Erreur de validation',
+                'errors' => $e->errors(),
+                'run_id' => $runId,
+                'timestamp' => now()->toISOString(),
+            ], 422);
+        } catch (\Throwable $e) {
+            Log::error('Erreur création job scrapping', ['run_id' => $runId, 'error' => $e->getMessage()]);
+            return response()->json([
+                'success' => false,
+                'message' => 'Erreur lors de la création du job',
+                'error' => $e->getMessage(),
+                'run_id' => $runId,
+                'timestamp' => now()->toISOString(),
+            ], 500);
+        }
+    }
+
+    /**
+     * Retourne l'état d'un job de scrapping asynchrone.
+     */
+    public function jobStatus(string $jobId): JsonResponse
+    {
+        $job = ScrappingJob::query()->find($jobId);
+        if (! $job) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Job introuvable',
+                'timestamp' => now()->toISOString(),
+            ], 404);
+        }
+
+        return response()->json([
+            'success' => true,
+            'data' => [
+                'job_id' => $job->id,
+                'kind' => $job->kind,
+                'status' => $job->status,
+                'progress' => [
+                    'done' => (int) $job->progress_done,
+                    'total' => (int) $job->progress_total,
+                ],
+                'summary' => $job->summary,
+                'results' => $job->results,
+                'error' => $job->error,
+                'started_at' => $job->started_at?->toISOString(),
+                'finished_at' => $job->finished_at?->toISOString(),
+                'cancelled_at' => $job->cancelled_at?->toISOString(),
+                'run_id' => $job->run_id,
+            ],
+            'run_id' => $job->run_id,
+            'debug' => $job->run_id ? $this->debugPayload($job->run_id) : null,
+            'timestamp' => now()->toISOString(),
+        ]);
+    }
+
+    /**
+     * Annule un job asynchrone en attente/en cours.
+     */
+    public function cancelJob(string $jobId): JsonResponse
+    {
+        $job = ScrappingJob::query()->find($jobId);
+        if (! $job) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Job introuvable',
+                'timestamp' => now()->toISOString(),
+            ], 404);
+        }
+
+        if ($job->isTerminal()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Le job est déjà terminé.',
+                'data' => [
+                    'job_id' => $job->id,
+                    'status' => $job->status,
+                ],
+                'timestamp' => now()->toISOString(),
+            ]);
+        }
+
+        $job->status = ScrappingJob::STATUS_CANCELLED;
+        $job->cancelled_at = now();
+        $job->finished_at = now();
+        $job->save();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Job annulé.',
+            'data' => [
+                'job_id' => $job->id,
+                'status' => $job->status,
+            ],
+            'timestamp' => now()->toISOString(),
+        ]);
     }
 
     /**

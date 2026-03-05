@@ -54,7 +54,10 @@ class NpcTableController extends Controller
             $order = 'desc';
         }
 
-        $query = Npc::query()->with(['creature', 'breed', 'specialization']);
+        $query = Npc::query()
+            ->with(['creature', 'breed', 'specialization'])
+            ->withCount(['panoplies', 'campaigns', 'scenarios'])
+            ->withExists('shop');
 
         if ($search !== '') {
             $query->where(function ($q) use ($search) {
@@ -227,6 +230,10 @@ class NpcTableController extends Controller
                         'id' => $n->specialization->id,
                         'name' => $n->specialization->name,
                     ] : null,
+                    'panoplies_count' => (int) ($n->panoplies_count ?? 0),
+                    'campaigns_count' => (int) ($n->campaigns_count ?? 0),
+                    'scenarios_count' => (int) ($n->scenarios_count ?? 0),
+                    'has_shop' => (bool) ($n->shop_exists ?? false),
                     'created_at' => $n->created_at?->toISOString(),
                     'updated_at' => $n->updated_at?->toISOString(),
                 ];
@@ -333,6 +340,10 @@ class NpcTableController extends Controller
                             'id' => $n->specialization->id,
                             'name' => $n->specialization->name,
                         ] : null,
+                        'panoplies_count' => (int) ($n->panoplies_count ?? 0),
+                        'campaigns_count' => (int) ($n->campaigns_count ?? 0),
+                        'scenarios_count' => (int) ($n->scenarios_count ?? 0),
+                        'has_shop' => (bool) ($n->shop_exists ?? false),
                     ],
                 ],
             ];

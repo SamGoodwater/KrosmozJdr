@@ -22,6 +22,7 @@ import { ref, computed } from "vue";
  * @property {number} [fullDisplayTime] - Temps en mode full (40% de duration)
  * @property {number} [contractedDisplayTime] - Temps en mode contracted (60% de duration)
  * @property {number} [progress] - Progression personnalisée 0–100 (notifications dynamiques). Si défini, remplace la progression basée sur le temps.
+ * @property {boolean} [dismissible] - Si false, cache le bouton de fermeture et bloque la fermeture manuelle.
  *
  * @note Si duration = 0, la notification reste affichée indéfiniment jusqu'à fermeture manuelle
  * @note Pour des mises à jour en cours (processus en arrière-plan), utiliser updateNotification(id, { message, progress })
@@ -97,8 +98,11 @@ function limitNotificationsByPlacement(placement) {
     const notificationsForPlacement = notifications.value.filter(n => n.placement === placement);
     
     if (notificationsForPlacement.length > MAX_NOTIFICATIONS) {
-        // Supprimer les notifications les plus anciennes pour ce placement
-        const toRemove = notificationsForPlacement.slice(MAX_NOTIFICATIONS);
+        // Supprimer en priorité les notifications dismissibles les plus anciennes.
+        // Les notifications critiques (dismissible=false) sont conservées au maximum.
+        const removable = notificationsForPlacement.filter((n) => n.dismissible !== false);
+        const overflowCount = notificationsForPlacement.length - MAX_NOTIFICATIONS;
+        const toRemove = removable.slice(Math.max(0, removable.length - overflowCount));
         toRemove.forEach(notification => {
             removeNotification(notification.id);
         });

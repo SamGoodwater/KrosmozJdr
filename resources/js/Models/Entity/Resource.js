@@ -9,6 +9,7 @@
  * console.log(resource.name); // Accès normalisé
  */
 import { BaseModel } from '../BaseModel';
+import { buildCharacteristicEffectCell } from '@/Composables/entity/useCharacteristicEffectFormatter';
 
 export class Resource extends BaseModel {
     // ============================================
@@ -120,95 +121,6 @@ export class Resource extends BaseModel {
         return Number(this._data.recipe_ingredients_count ?? this._data.recipeIngredientsCount ?? 0);
     }
 
-    /**
-     * Retourne les métadonnées des caractéristiques resource indexées par db_column.
-     * @private
-     */
-    _getResourceCharacteristicsByColumn(options = {}) {
-        return options?.ctx?.characteristics?.resource?.byDbColumn || {};
-    }
-
-    /**
-     * Tente de parser une valeur JSON (objet/array), sinon null.
-     * @private
-     */
-    _parseJsonPayload(value) {
-        if (value && typeof value === 'object') return value;
-        if (typeof value !== 'string') return null;
-        const trimmed = value.trim();
-        if (!trimmed) return null;
-        if (!(trimmed.startsWith('{') || trimmed.startsWith('['))) return null;
-        try {
-            return JSON.parse(trimmed);
-        } catch {
-            return null;
-        }
-    }
-
-    /**
-     * Extrait des entrées clé/valeur depuis un payload d'effet (objet ou tableau).
-     * @private
-     */
-    _extractEffectEntries(payload) {
-        if (!payload) return [];
-
-        if (!Array.isArray(payload) && typeof payload === 'object') {
-            return Object.entries(payload).map(([key, value]) => ({ key: String(key), value }));
-        }
-
-        if (Array.isArray(payload)) {
-            return payload
-                .map((row) => {
-                    if (!row || typeof row !== 'object') return null;
-                    const key = row.db_column ?? row.key ?? row.characteristic ?? row.stat ?? row.name ?? row.label ?? null;
-                    const value = row.value ?? row.amount ?? row.val ?? row.to ?? row.max ?? row.min ?? null;
-                    if (!key || value === null || typeof value === 'undefined') return null;
-                    return { key: String(key), value };
-                })
-                .filter(Boolean);
-        }
-
-        return [];
-    }
-
-    /**
-     * Construit un rendu chips (icône/couleur) depuis effect si possible.
-     * @private
-     */
-    _buildEffectChips(options = {}) {
-        const byDb = this._getResourceCharacteristicsByColumn(options);
-        const effectPayload = this._parseJsonPayload(this.effect);
-        const rawEffectText = this.effect ? String(this.effect).trim() : '';
-        const entries = this._extractEffectEntries(effectPayload);
-        if (entries.length === 0) return null;
-
-        const items = entries.map(({ key, value }) => {
-            const def = byDb?.[key] || byDb?.[key.replace(/_object$/, '')];
-            const renderedValue = String(value);
-            const label = def?.short_name || def?.name || key;
-            return {
-                icon: def?.icon || 'fa-solid fa-circle-info',
-                color: def?.color || null,
-                value: renderedValue,
-                tooltip: `${label}: ${renderedValue}`,
-            };
-        });
-
-        const searchValue = items.map((it) => `${it.tooltip} ${it.value}`).join(' ').trim();
-        const filterValue = [rawEffectText, searchValue].filter(Boolean).join(' ').trim();
-
-        return {
-            type: 'chips',
-            value: '',
-            params: {
-                items,
-                sortValue: filterValue,
-                searchValue: filterValue,
-                filterValue,
-            },
-        };
-    }
-
     // ============================================
     // FORMATAGE DES CELLULES (surcharge pour champs spécifiques)
     // ============================================
@@ -245,7 +157,7 @@ export class Resource extends BaseModel {
                 return this._toCreatedAtCell(format, size, options);
             case 'updated_at':
                 return this._toUpdatedAtCell(format, size, options);
-            default:
+            default: {
                 // Pour les autres champs, essayer la méthode de base (gère les formatters automatiquement)
                 // La méthode de base vérifie si le champ existe dans _data, donc on peut l'appeler directement
                 const baseCell = super.toCell(fieldKey, options);
@@ -270,6 +182,7 @@ export class Resource extends BaseModel {
                 
                 // Fallback final si le champ n'existe pas du tout
                 return { type: 'text', value: '-', params: {} };
+            }
         }
     }
 
@@ -329,25 +242,14 @@ export class Resource extends BaseModel {
      * @private
      */
     _toEffectCell(format, size, options) {
-        const chipsCell = this._buildEffectChips(options);
-        if (chipsCell) return chipsCell;
-
-        const effect = this.effect || '';
-        const maxLength = format.truncate || (size === 'xs' || size === 'sm' ? 20 : 40);
-        const truncated = effect.length > maxLength
-            ? effect.slice(0, maxLength - 1) + '…'
-            : effect;
-
-        return {
-            type: 'text',
-            value: truncated || '-',
-            params: {
-                tooltip: effect || '',
-                sortValue: effect,
-                searchValue: effect,
-                filterValue: effect || null,
-            },
-        };
+        return buildCharacteristicEffectCell({
+            rawValues: [this.effect],
+            options,
+            sourceGroups: ['resource', 'item'],
+            format,
+            size,
+            chipsLayout: { maxRows: 3 },
+        });
     }
 
     /**
@@ -430,23 +332,23 @@ export class Resource extends BaseModel {
         const items = [
             {
                 icon: 'fa-solid fa-sword',
-                value: this.itemsCount > 0 ? `${this.itemsCount} équipement` : null,
-                tooltip: this.itemsCount > 0 ? `Utilisée par ${this.itemsCount} équipement(s)` : '',
+                value: this.itemsCount > 0 ? `${this.itemsCount} équipement${this.itemsCount > 1 ? 's' : ''}` : null,
+                tooltip: this.itemsCount > 0 ? `Équipements: ${this.itemsCount}` : '',
             },
             {
                 icon: 'fa-solid fa-mug-hot',
-                value: this.consumablesCount > 0 ? `${this.consumablesCount} conso` : null,
-                tooltip: this.consumablesCount > 0 ? `Utilisée par ${this.consumablesCount} consommable(s)` : '',
+                value: this.consumablesCount > 0 ? `${this.consumablesCount} consommable${this.consumablesCount > 1 ? 's' : ''}` : null,
+                tooltip: this.consumablesCount > 0 ? `Consommables: ${this.consumablesCount}` : '',
             },
             {
                 icon: 'fa-solid fa-dragon',
-                value: this.creaturesCount > 0 ? `${this.creaturesCount} créature` : null,
-                tooltip: this.creaturesCount > 0 ? `Liée à ${this.creaturesCount} créature(s)` : '',
+                value: this.creaturesCount > 0 ? `${this.creaturesCount} créature${this.creaturesCount > 1 ? 's' : ''}` : null,
+                tooltip: this.creaturesCount > 0 ? `Créatures: ${this.creaturesCount}` : '',
             },
             {
                 icon: 'fa-solid fa-flask',
-                value: this.recipeIngredientsCount > 0 ? `${this.recipeIngredientsCount} ingr.` : null,
-                tooltip: this.recipeIngredientsCount > 0 ? `Recette avec ${this.recipeIngredientsCount} ingrédient(s)` : '',
+                value: this.recipeIngredientsCount > 0 ? `${this.recipeIngredientsCount} ingrédient${this.recipeIngredientsCount > 1 ? 's' : ''}` : null,
+                tooltip: this.recipeIngredientsCount > 0 ? `Ingrédients de recette: ${this.recipeIngredientsCount}` : '',
             },
         ].filter((it) => it.value !== null);
 

@@ -70,7 +70,9 @@ class MonsterTableController extends Controller
             $order = 'desc';
         }
 
-        $query = Monster::query()->with(['creature', 'monsterRace']);
+        $query = Monster::query()
+            ->with(['creature', 'monsterRace'])
+            ->withCount(['spellInvocations', 'campaigns', 'scenarios']);
 
         if ($search !== '') {
             $query->where(function ($q) use ($search) {
@@ -268,6 +270,9 @@ class MonsterTableController extends Controller
                         'id' => $m->monsterRace->id,
                         'name' => $m->monsterRace->name,
                     ] : null,
+                    'spell_invocations_count' => (int) ($m->spell_invocations_count ?? 0),
+                    'campaigns_count' => (int) ($m->campaigns_count ?? 0),
+                    'scenarios_count' => (int) ($m->scenarios_count ?? 0),
                     'created_at' => $m->created_at?->toISOString(),
                     'updated_at' => $m->updated_at?->toISOString(),
                 ];
@@ -391,6 +396,9 @@ class MonsterTableController extends Controller
                             'id' => $m->monsterRace->id,
                             'name' => $m->monsterRace->name,
                         ] : null,
+                        'spell_invocations_count' => (int) ($m->spell_invocations_count ?? 0),
+                        'campaigns_count' => (int) ($m->campaigns_count ?? 0),
+                        'scenarios_count' => (int) ($m->scenarios_count ?? 0),
                     ],
                 ],
             ];

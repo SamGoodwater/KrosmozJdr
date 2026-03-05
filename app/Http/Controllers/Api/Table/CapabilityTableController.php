@@ -44,7 +44,9 @@ class CapabilityTableController extends Controller
             $order = 'desc';
         }
 
-        $query = Capability::query()->with(['createdBy']);
+        $query = Capability::query()
+            ->with(['createdBy'])
+            ->withCount(['specializations', 'creatures']);
 
         if ($search !== '') {
             $query->where(function ($q) use ($search) {
@@ -99,6 +101,8 @@ class CapabilityTableController extends Controller
                     'write_level' => (int) ($c->write_level ?? 0),
                     'image' => $c->image,
                     'created_by' => $c->created_by,
+                    'specializations_count' => (int) ($c->specializations_count ?? 0),
+                    'creatures_count' => (int) ($c->creatures_count ?? 0),
                     'createdBy' => $createdBy ? [
                         'id' => $createdBy->id,
                         'name' => $createdBy->name,
@@ -230,6 +234,8 @@ class CapabilityTableController extends Controller
                         'write_level' => (int) ($c->write_level ?? 0),
                         'image' => $c->image,
                         'created_by' => $c->created_by,
+                        'specializations_count' => (int) ($c->specializations_count ?? 0),
+                        'creatures_count' => (int) ($c->creatures_count ?? 0),
                         'createdBy' => $createdBy ? [
                             'id' => $createdBy->id,
                             'name' => $createdBy->name,

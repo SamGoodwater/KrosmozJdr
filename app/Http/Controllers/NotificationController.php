@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Notifications\ScrappingJobProgressNotification;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Notifications\DatabaseNotification;
@@ -16,6 +17,8 @@ use Inertia\Response;
  */
 class NotificationController extends Controller
 {
+    private const SCRAPPING_NOTIFICATION_TYPE = ScrappingJobProgressNotification::class;
+
     /**
      * Liste des notifications (API JSON) ou page plein écran (Inertia).
      * En JSON : filtre archived=0|1, pagination, unread_count.
@@ -69,6 +72,9 @@ class NotificationController extends Controller
     private function formatNotification(DatabaseNotification $notification): array
     {
         $data = is_array($notification->data) ? $notification->data : [];
+        $isScrappingJob = $notification->type === self::SCRAPPING_NOTIFICATION_TYPE
+            || (($data['kind'] ?? null) === 'scrapping_job');
+
         return [
             'id' => $notification->id,
             'type' => $notification->type,
@@ -78,8 +84,123 @@ class NotificationController extends Controller
             'archived_at' => isset($notification->archived_at) ? $notification->archived_at->toIso8601String() : null,
             'pinned_at' => isset($notification->pinned_at) ? $notification->pinned_at->toIso8601String() : null,
             'created_at' => $notification->created_at->toIso8601String(),
+            'is_scrapping_job' => $isScrappingJob,
             'data' => $data,
         ];
+    }
+
+    /**
+     * Crée une notification persistante dédiée à un job de scrapping.
+     */
+    public function startScrappingNotification(Request $request): JsonResponse
+    {
+        $validated = $request->validate([
+            'message' => ['required', 'string', 'max:255'],
+            'url' => ['nullable', 'string', 'max:512'],
+            'job_key' => ['required', 'string', 'max:100'],
+            'status' => ['required', 'string', 'in:running,cancelling,success,error,cancelled'],
+            'progress' => ['nullable', 'array'],
+            'progress.phase' => ['nullable', 'string', 'max:80'],
+            'progress.done' => ['nullable', 'integer', 'min:0'],
+            'progress.total' => ['nullable', 'integer', 'min:0'],
+            'progress.percent' => ['nullable', 'integer', 'min:0', 'max:100'],
+            'progress.label' => ['nullable', 'string', 'max:255'],
+            'run_id' => ['nullable', 'string', 'max:80'],
+            'error' => ['nullable', 'string', 'max:600'],
+            'meta' => ['nullable', 'array'],
+        ]);
+
+        $payload = [
+            'kind' => 'scrapping_job',
+            'message' => $validated['message'],
+            'url' => $validated['url'] ?? '/scrapping',
+            'job_key' => $validated['job_key'],
+            'status' => $validated['status'],
+            'progress' => $validated['progress'] ?? null,
+            'run_id' => $validated['run_id'] ?? null,
+            'error' => $validated['error'] ?? null,
+            'meta' => $validated['meta'] ?? [],
+            'locked' => in_array($validated['status'], ['running', 'cancelling'], true),
+            'opaque_visual' => true,
+        ];
+
+        $request->user()->notify(new ScrappingJobProgressNotification($payload));
+        $notification = $request->user()->notifications()
+            ->where('type', self::SCRAPPING_NOTIFICATION_TYPE)
+            ->latest('created_at')
+            ->first();
+
+        if (! $notification) {
+            return response()->json(['success' => false, 'message' => 'Notification non créée'], 500);
+        }
+
+        return response()->json([
+            'success' => true,
+            'data' => $this->formatNotification($notification),
+            'unread_count' => $request->user()->unreadNotifications()->whereNull('archived_at')->count(),
+        ], 201);
+    }
+
+    /**
+     * Met à jour une notification de job de scrapping existante.
+     */
+    public function updateScrappingNotification(Request $request, string $id): JsonResponse
+    {
+        $notification = $this->findNotification($request, $id);
+        if (! $notification) {
+            return response()->json(['success' => false, 'message' => 'Notification introuvable'], 404);
+        }
+        if ($notification->type !== self::SCRAPPING_NOTIFICATION_TYPE) {
+            return response()->json(['success' => false, 'message' => 'Type de notification non supporté'], 422);
+        }
+
+        $validated = $request->validate([
+            'message' => ['nullable', 'string', 'max:255'],
+            'url' => ['nullable', 'string', 'max:512'],
+            'status' => ['nullable', 'string', 'in:running,cancelling,success,error,cancelled'],
+            'progress' => ['nullable', 'array'],
+            'progress.phase' => ['nullable', 'string', 'max:80'],
+            'progress.done' => ['nullable', 'integer', 'min:0'],
+            'progress.total' => ['nullable', 'integer', 'min:0'],
+            'progress.percent' => ['nullable', 'integer', 'min:0', 'max:100'],
+            'progress.label' => ['nullable', 'string', 'max:255'],
+            'run_id' => ['nullable', 'string', 'max:80'],
+            'error' => ['nullable', 'string', 'max:600'],
+            'meta' => ['nullable', 'array'],
+        ]);
+
+        $data = is_array($notification->data) ? $notification->data : [];
+        if (array_key_exists('message', $validated)) {
+            $data['message'] = $validated['message'];
+        }
+        if (array_key_exists('url', $validated)) {
+            $data['url'] = $validated['url'];
+        }
+        if (array_key_exists('status', $validated)) {
+            $data['status'] = $validated['status'];
+            $data['locked'] = in_array($validated['status'], ['running', 'cancelling'], true);
+        }
+        if (array_key_exists('progress', $validated)) {
+            $data['progress'] = $validated['progress'];
+        }
+        if (array_key_exists('run_id', $validated)) {
+            $data['run_id'] = $validated['run_id'];
+        }
+        if (array_key_exists('error', $validated)) {
+            $data['error'] = $validated['error'];
+        }
+        if (array_key_exists('meta', $validated)) {
+            $data['meta'] = $validated['meta'];
+        }
+
+        $notification->data = $data;
+        $notification->save();
+
+        return response()->json([
+            'success' => true,
+            'data' => $this->formatNotification($notification),
+            'unread_count' => $request->user()->unreadNotifications()->whereNull('archived_at')->count(),
+        ]);
     }
 
     /**
@@ -214,6 +335,13 @@ class NotificationController extends Controller
         $notification = $this->findNotification($request, $id);
         if (! $notification) {
             return response()->json(['message' => 'Notification introuvable.'], 404);
+        }
+        $data = is_array($notification->data) ? $notification->data : [];
+        if ($notification->type === self::SCRAPPING_NOTIFICATION_TYPE && ($data['locked'] ?? false) === true) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Notification verrouillée pendant l’exécution du job.',
+            ], 423);
         }
         $notification->delete();
 

@@ -290,6 +290,19 @@ export function getNpcFieldDescriptors(ctx = {}) {
       },
       display: { sizes: { xs: { mode: "chips" }, sm: { mode: "chips" }, md: { mode: "chips" }, lg: { mode: "chips" }, xl: { mode: "chips" } } },
     },
+    npc_summary_relations: {
+      key: "npc_summary_relations",
+      label: "Relations",
+      icon: "fa-solid fa-link",
+      table: {
+        type: "chips",
+        sortable: false,
+        searchable: true,
+        defaultVisible: { xs: false, sm: false, md: true, lg: true, xl: true },
+        cell: { sizes: { xs: { mode: "chips" }, sm: { mode: "chips" }, md: { mode: "chips" }, lg: { mode: "chips" }, xl: { mode: "chips" } } },
+      },
+      display: { sizes: { xs: { mode: "chips" }, sm: { mode: "chips" }, md: { mode: "chips" }, lg: { mode: "chips" }, xl: { mode: "chips" } } },
+    },
     story: {
       key: "story",
       label: "Histoire",

@@ -200,3 +200,58 @@
 - [ARCHITECTURE_ENTITES_FRONTEND.md](./ARCHITECTURE_ENTITES_FRONTEND.md) — Architecture globale.
 - [CHARACTERISTICS_CARD_SCHEMA.md](../30-UI/CHARACTERISTICS_CARD_SCHEMA.md) — Schéma de la carte caractéristiques (atomes, groupe, carte).
 - Monster : `MonsterViewLarge.vue`, `Monster.js` (`_toSummaryGroupCell`), `monster-descriptors.js`, `MonsterTableController.php`.
+
+---
+
+## 7. Formatage centralisé des effets / bonus (implémenté)
+
+Pour éviter la duplication de logique entre `Item`, `Resource`, `Consumable`, `Panoply`, `Spell` et `Capability`, le formatage des champs `effect` / `bonus` est désormais centralisé dans un composable unique.
+
+### 7.1 Composable de référence
+
+- **Fichier** : `resources/js/Composables/entity/useCharacteristicEffectFormatter.js`
+- **Responsabilités** :
+  - parser les payloads JSON (objet / tableau) contenus dans `effect` et `bonus`,
+  - extraire des paires `clé/valeur` de caractéristiques,
+  - résoudre les métadonnées de caractéristique (`icon`, `color`, `short_name`, etc.) depuis `meta.characteristics.<group>.byDbColumn`,
+  - produire une cellule `chips` (`Cell{type,value,params}`) homogène,
+  - fallback en texte si la donnée n’est pas une caractéristique (cas fréquent sur certains consommables).
+
+### 7.2 Contrat d’usage côté modèles
+
+Les modèles appellent `buildCharacteristicEffectCell()` en fournissant :
+
+- `rawValues` : valeurs brutes à analyser (ex. `[this.effect, this.bonus]`),
+- `sourceGroups` : groupes de méta à utiliser dans l’ordre de priorité (ex. `['item', 'panoply']`),
+- `options` : options de cellule (`ctx`, etc.),
+- `format`, `size` : contexte d’affichage,
+- `chipsLayout` : options de rendu (ex. `{ maxRows: 3 }`).
+
+### 7.3 Groupes de caractéristiques actuellement utilisés
+
+| Entité | Champs formatés | Groupes meta |
+|--------|------------------|--------------|
+| `Item` | `effect`, `bonus` | `item`, `panoply` |
+| `Resource` | `effect` | `resource`, `item` |
+| `Consumable` | `effect` | `consumable`, `item` |
+| `Panoply` | `bonus` | `panoply`, `item` |
+| `Spell` | `effect` | `spell` |
+| `Capability` | `effect` | `capability`, `spell` |
+
+### 7.4 Backend requis
+
+Pour que le mapping visuel fonctionne, chaque table API en `format=entities` doit exposer :
+
+- `meta.characteristics.<group>.byDbColumn`
+
+Exemple déjà branché pour la panoplie :
+
+- `PanoplyTableController` expose `meta.characteristics.panoply.byDbColumn` via `CharacteristicMetaByDbColumnService::buildObjectByDbColumn(ENTITY_PANOPLY)`.
+
+### 7.5 Règle de maintenance
+
+Toute évolution du rendu d’effets/bonus (parsing, mapping, fallback, layout chips) doit être faite d’abord dans :
+
+- `useCharacteristicEffectFormatter.js`
+
+et non dupliquée localement dans chaque modèle.

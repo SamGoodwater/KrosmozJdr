@@ -77,26 +77,16 @@ export class Monster extends BaseModel {
         return this._data.spellInvocations || [];
     }
 
-    /**
-     * Retourne la map des caractéristiques créature indexées par db_column.
-     * Source: meta API injectée dans `options.ctx.characteristics.creature.byDbColumn`.
-     * @private
-     */
-    _getCreatureCharacteristicsByColumn(options = {}) {
-        return options?.ctx?.characteristics?.creature?.byDbColumn || {};
+    get spellInvocationsCount() {
+        return Number(this._data.spell_invocations_count ?? this.spellInvocations.length ?? 0);
     }
 
-    /**
-     * Résout une caractéristique par ses colonnes candidates (ex: pa, po, life).
-     * @private
-     */
-    _getCreatureCharacteristicDef(options = {}, candidates = []) {
-        const byColumn = this._getCreatureCharacteristicsByColumn(options);
-        for (const key of candidates) {
-            const found = byColumn?.[key];
-            if (found) return found;
-        }
-        return null;
+    get campaignsCount() {
+        return Number(this._data.campaigns_count ?? this.campaigns.length ?? 0);
+    }
+
+    get scenariosCount() {
+        return Number(this._data.scenarios_count ?? this.scenarios.length ?? 0);
     }
 
     /**
@@ -174,6 +164,8 @@ export class Monster extends BaseModel {
                 return this._toSummaryCombatCell(options);
             case 'creature_summary_control':
                 return this._toSummaryControlCell(options);
+            case 'monster_summary_relations':
+                return this._toMonsterSummaryRelationsCell(options);
             default:
                 if (fieldKey.startsWith('creature_')) {
                     const creatureKey = fieldKey.slice(9);
@@ -348,6 +340,43 @@ export class Monster extends BaseModel {
      */
     _toSummaryControlCell(_options) {
         return this._toSummaryGroupCell(_options, 'Contrôle', ['ca', 'dodge_pa', 'dodge_pm', 'fuite', 'tacle']);
+    }
+
+    /**
+     * Colonne résumée : relations gameplay du monstre.
+     * @private
+     */
+    _toMonsterSummaryRelationsCell(_options) {
+        const items = [
+            {
+                icon: 'fa-solid fa-wand-magic-sparkles',
+                value: this.spellInvocationsCount > 0 ? `${this.spellInvocationsCount} invocation${this.spellInvocationsCount > 1 ? 's' : ''}` : null,
+                tooltip: this.spellInvocationsCount > 0 ? `Sorts d'invocation: ${this.spellInvocationsCount}` : '',
+            },
+            {
+                icon: 'fa-solid fa-flag',
+                value: this.campaignsCount > 0 ? `${this.campaignsCount} campagne${this.campaignsCount > 1 ? 's' : ''}` : null,
+                tooltip: this.campaignsCount > 0 ? `Campagnes: ${this.campaignsCount}` : '',
+            },
+            {
+                icon: 'fa-solid fa-scroll',
+                value: this.scenariosCount > 0 ? `${this.scenariosCount} scénario${this.scenariosCount > 1 ? 's' : ''}` : null,
+                tooltip: this.scenariosCount > 0 ? `Scénarios: ${this.scenariosCount}` : '',
+            },
+        ].filter((it) => it.value !== null);
+
+        const searchValue = items.map((it) => String(it.value)).join(' ');
+
+        return {
+            type: 'chips',
+            value: '',
+            params: {
+                items,
+                sortValue: items.length,
+                searchValue,
+                filterValue: searchValue,
+            },
+        };
     }
 
     /**

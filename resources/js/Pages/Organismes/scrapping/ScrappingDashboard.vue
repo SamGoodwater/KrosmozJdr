@@ -11,7 +11,7 @@
  * - Actions sur sélection: reset / simuler / importer
  * - Options d'import + historique type "invite de commande"
  */
-import { computed, nextTick, onMounted, ref, watch } from "vue";
+import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from "vue";
 import Card from "@/Pages/Atoms/data-display/Card.vue";
 import Btn from "@/Pages/Atoms/action/Btn.vue";
 import Badge from "@/Pages/Atoms/data-display/Badge.vue";
@@ -49,6 +49,7 @@ import { useScrappingSearch } from "@/Composables/scrapping/useScrappingSearch";
 import { useScrappingPreview } from "@/Composables/scrapping/useScrappingPreview";
 import { useScrappingCompare } from "@/Composables/scrapping/useScrappingCompare";
 import { useScrappingBatch } from "@/Composables/scrapping/useScrappingBatch";
+import { useScrappingJobManager } from "@/Composables/scrapping/useScrappingJobManager";
 import { getEntityConfigStatus } from "@/Composables/scrapping/useScrappingEntityConfigStatus";
 
 const _initialScrapPrefs = loadScrappingPreferences();
@@ -56,6 +57,7 @@ const _pref = (k) => _initialScrapPrefs[k] ?? SCRAP_DEFAULTS[k];
 
 const notificationStore = useNotificationStore();
 const { success, error: showError, info } = notificationStore;
+const jobManager = useScrappingJobManager();
 
 const loadingMeta = ref(true);
 const loadingConfig = ref(true);
@@ -400,13 +402,12 @@ const pageRangeInput = ref("");
 const batchScope = ref("selection");
 
 // Historique (console)
-const historyLines = ref([]);
+const historyLines = jobManager.historyLines;
 const lastRunId = ref(null);
 const showOptionsAndHistory = ref(false); // masqué par défaut
 
 const pushHistory = (line) => {
-    const ts = new Date().toLocaleString("fr-FR");
-    historyLines.value.unshift(`[${ts}] ${line}`);
+    jobManager.appendHistory(line);
 };
 
 const copyLastRunId = async () => {
@@ -639,6 +640,18 @@ const preview = useScrappingPreview({
     getCsrfToken,
     itemStatusByKeyRef: status.itemStatusByKey,
     includeRelationsRef: optIncludeRelations,
+    onProgress: (p) => {
+        jobManager.updateProgress({
+            phase: p.phase,
+            done: p.done,
+            total: p.total,
+            label: p.phase === "relations" ? "Chargement des relations" : "Conversion des valeurs",
+        });
+    },
+    onRunMeta: ({ runId, unknownCharacteristics, jobId }) => {
+        if (runId) lastRunId.value = runId;
+        jobManager.setRunMeta(runId ?? null, unknownCharacteristics ?? null, jobId ?? null);
+    },
 });
 const compare = useScrappingCompare({
     convertedByItemIdRef: preview.convertedByItemId,
@@ -778,12 +791,24 @@ const batch = useScrappingBatch({
     notifySuccess: success,
     notifyInfo: info,
     pushHistory,
-    runSearch: runSearchAndPreview,
+    runSearch: (opts = {}) => runSearchAndPreview(opts),
     onBatchErrors: () => { showOptionsAndHistory.value = true; },
+    onProgress: (p) => {
+        jobManager.updateProgress({
+            phase: p.phase,
+            done: p.done,
+            total: p.total,
+            label: p.label,
+        });
+    },
+    onRunMeta: ({ runId, unknownCharacteristics, jobId }) => {
+        if (runId) lastRunId.value = runId;
+        jobManager.setRunMeta(runId ?? null, unknownCharacteristics ?? null, jobId ?? null);
+    },
 });
 
-const currentRunId = computed(() => batch.lastRunId?.value || preview.lastRunId?.value || lastRunId.value || null);
-const currentUnknownCharacteristics = computed(() => batch.lastUnknownCharacteristics?.value || preview.lastUnknownCharacteristics?.value || null);
+const currentRunId = computed(() => jobManager.state.value.runId || batch.lastRunId?.value || preview.lastRunId?.value || lastRunId.value || null);
+const currentUnknownCharacteristics = computed(() => jobManager.state.value.unknownCharacteristics || batch.lastUnknownCharacteristics?.value || preview.lastUnknownCharacteristics?.value || null);
 
 const selectedCount = computed(() => selectedIds.value?.size ?? 0);
 const allSelected = computed(() => {
@@ -882,6 +907,7 @@ const removeKnownTypeFrom = (target, id) => {
 
 /** Contrôleur d'annulation pour la recherche + conversion en cours. */
 const searchAbortControllerRef = ref(/** @type {AbortController | null} */ (null));
+const batchAbortControllerRef = ref(/** @type {AbortController | null} */ (null));
 
 async function applyStatusAndPreview(/** @type {AbortSignal | null | undefined} */ signal) {
     if (!search.rawItems.value?.length) return;
@@ -895,18 +921,58 @@ async function applyStatusAndPreview(/** @type {AbortSignal | null | undefined} 
 function cancelSearchAndConversion() {
     searchAbortControllerRef.value?.abort();
     searchAbortControllerRef.value = null;
+    batchAbortControllerRef.value?.abort();
+    batchAbortControllerRef.value = null;
+    jobManager.requestCancel();
 }
 
-async function runSearchAndPreview() {
-    searchAbortControllerRef.value = new AbortController();
-    const sig = searchAbortControllerRef.value.signal;
+async function runSearchAndPreview(options = {}) {
+    const useExistingSignal = options.signal instanceof AbortSignal;
+    const silentJob = options.silentJob === true;
+    searchAbortControllerRef.value = useExistingSignal ? searchAbortControllerRef.value : new AbortController();
+    const sig = useExistingSignal ? options.signal : searchAbortControllerRef.value.signal;
+    if (!silentJob) {
+        jobManager.startJob({
+            kind: "search-preview",
+            label: "Recherche et previsualisation",
+            canCancel: true,
+            cancelHandler: () => searchAbortControllerRef.value?.abort(),
+        });
+    }
     try {
+        if (!silentJob) {
+            jobManager.updateProgress({ phase: "search", done: 0, total: 1, label: "Recherche" });
+        }
         await search.runSearch({ signal: sig });
-        if (sig.aborted) return;
+        if (sig.aborted) {
+            if (!silentJob) jobManager.finishCancelled();
+            return;
+        }
+        if (!silentJob) {
+            jobManager.updateProgress({ phase: "search", done: 1, total: 1, label: "Recherche terminee" });
+        }
         await nextTick();
         await applyStatusAndPreview(sig);
+        if (sig.aborted) {
+            if (!silentJob) jobManager.finishCancelled();
+            return;
+        }
+        if (!silentJob) {
+            jobManager.finishSuccess("Recherche/preview terminee");
+        }
+    } catch (e) {
+        if (e?.name === "AbortError" || sig.aborted) {
+            if (!silentJob) jobManager.finishCancelled();
+            return;
+        }
+        if (!silentJob) {
+            jobManager.finishError(e?.message ?? "Erreur recherche/preview");
+        }
+        throw e;
     } finally {
-        searchAbortControllerRef.value = null;
+        if (!useExistingSignal) {
+            searchAbortControllerRef.value = null;
+        }
     }
     typeManagerRefreshTrigger.value += 1;
 }
@@ -967,6 +1033,43 @@ const handleLast = async () => {
     const tp = search.totalPages?.value ?? null;
     if (tp != null && Number.isFinite(tp)) await handlePaginationGo(tp - 1);
 };
+
+async function runBatchAction(mode) {
+    batchAbortControllerRef.value = new AbortController();
+    const sig = batchAbortControllerRef.value.signal;
+    const label = mode === "simulate" ? "Simulation" : "Import";
+    jobManager.startJob({
+        kind: mode === "simulate" ? "batch-simulate" : "batch-import",
+        label,
+        canCancel: true,
+        cancelHandler: () => batchAbortControllerRef.value?.abort(),
+    });
+    try {
+        await batch.runBatchOrByPages(mode, { signal: sig });
+        if (sig.aborted) {
+            jobManager.finishCancelled();
+            return;
+        }
+        if (batch.lastBatchErrorResults.value.length > 0) {
+            jobManager.finishError(`${batch.lastBatchErrorResults.value.length} erreur(s)`);
+            return;
+        }
+        jobManager.finishSuccess(`${label} termine`);
+    } catch (e) {
+        if (e?.name === "AbortError" || sig.aborted) {
+            jobManager.finishCancelled();
+            return;
+        }
+        jobManager.finishError(e?.message ?? `Erreur ${label.toLowerCase()}`);
+    } finally {
+        batchAbortControllerRef.value = null;
+    }
+}
+
+onBeforeUnmount(() => {
+    searchAbortControllerRef.value?.abort();
+    batchAbortControllerRef.value?.abort();
+});
 
 const exportBatchErrorsCsv = () => {
     const { headers, rows } = buildCsvFromErrorResults(batch.lastBatchErrorResults.value);
@@ -1270,7 +1373,7 @@ const onCompareImported = () => {
             :searching="searchingUnwrapped"
             :last-meta="lastMetaUnwrapped"
             :raw-items-length="rawItemsLength"
-            :cancel-visible="searchingUnwrapped || loadingConvertedUnwrapped"
+            :cancel-visible="searchingUnwrapped || loadingConvertedUnwrapped || batchImportingUnwrapped"
             @search="runSearchAndPreview"
             @cancel="cancelSearchAndConversion"
             @open-type-manager="handleOpenTypeManager"
@@ -1393,7 +1496,7 @@ const onCompareImported = () => {
                         </span>
                     </span>
                     <Btn
-                        v-if="searchingUnwrapped || loadingConvertedUnwrapped"
+                        v-if="searchingUnwrapped || loadingConvertedUnwrapped || batchImportingUnwrapped"
                         color="error"
                         variant="outline"
                         size="sm"
@@ -1442,7 +1545,7 @@ const onCompareImported = () => {
                         color="secondary"
                         :disabled="batchImportingUnwrapped || (batchScope !== 'pages' && !hasRawItems)"
                         title="Simule l'import sans écrire en base"
-                        @click="batch.runBatchOrByPages('simulate')"
+                        @click="runBatchAction('simulate')"
                     >
                         <Loading v-if="batchImportingUnwrapped" class="mr-2" />
                         {{ batchScope === 'pages' && batchImportByPagesProgressUnwrapped ? `Page ${batchImportByPagesProgressUnwrapped}` : 'Simuler' }}
@@ -1451,7 +1554,7 @@ const onCompareImported = () => {
                         color="success"
                         :disabled="batchImportingUnwrapped || (batchScope !== 'pages' && !hasRawItems)"
                         title="Importe en base (convert + validate + integrate)"
-                        @click="batch.runBatchOrByPages('import')"
+                        @click="runBatchAction('import')"
                     >
                         <Loading v-if="batchImportingUnwrapped" class="mr-2" />
                         {{ batchScope === 'pages' && batchImportByPagesProgressUnwrapped ? `Page ${batchImportByPagesProgressUnwrapped}` : 'Importer' }}

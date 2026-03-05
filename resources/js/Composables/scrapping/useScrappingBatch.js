@@ -5,12 +5,46 @@
  */
 
 import { computed, ref } from "vue";
-import { postJson } from "@/utils/scrapping/api";
+import { getJson, postJson } from "@/utils/scrapping/api";
 import { parsePageRange } from "@/utils/scrapping/parsePageRange";
+
+const JOB_POLL_INTERVAL_MS = 1500;
 
 function parseCommaList(str) {
     if (typeof str !== "string") return [];
     return str.split(",").map((s) => s.trim()).filter(Boolean);
+}
+
+function abortError() {
+    return new DOMException("Aborted", "AbortError");
+}
+
+function delay(ms, signal) {
+    return new Promise((resolve, reject) => {
+        const timer = setTimeout(() => {
+            cleanup();
+            resolve();
+        }, ms);
+
+        const onAbort = () => {
+            cleanup();
+            reject(abortError());
+        };
+
+        const cleanup = () => {
+            clearTimeout(timer);
+            signal?.removeEventListener?.("abort", onAbort);
+        };
+
+        if (signal) {
+            if (signal.aborted) {
+                cleanup();
+                reject(abortError());
+                return;
+            }
+            signal.addEventListener("abort", onAbort, { once: true });
+        }
+    });
 }
 
 /**
@@ -37,8 +71,10 @@ function parseCommaList(str) {
  *   notifySuccess: (msg: string) => void,
  *   notifyInfo?: (msg: string, opts?: any) => void,
  *   pushHistory?: (line: string) => void,
- *   runSearch: () => Promise<void>,
- *   onBatchErrors?: () => void
+ *   runSearch: (options?: { signal?: AbortSignal, silentJob?: boolean }) => Promise<void>,
+ *   onBatchErrors?: () => void,
+ *   onProgress?: (payload: { phase: string, done: number, total: number, label: string }) => void,
+ *   onRunMeta?: (payload: { runId?: string|null, unknownCharacteristics?: Record<string, any>|null }) => void
  * }} options
  */
 export function useScrappingBatch(options) {
@@ -67,6 +103,8 @@ export function useScrappingBatch(options) {
         pushHistory = () => {},
         runSearch,
         onBatchErrors = () => {},
+        onProgress = () => {},
+        onRunMeta = () => {},
     } = options;
 
     const importing = ref(false);
@@ -76,6 +114,7 @@ export function useScrappingBatch(options) {
     const lastUnknownCharacteristics = ref(null);
 
     const selectedCount = computed(() => selectedIdsRef.value?.size ?? 0);
+    const shouldStop = (signal) => signal?.aborted === true;
 
     const mergeUnknown = (target, incoming) => {
         if (!incoming || typeof incoming !== "object") return target;
@@ -93,6 +132,79 @@ export function useScrappingBatch(options) {
         next.contains_id_38 = Boolean(next.ids["38"]) || Boolean(next.contains_id_38);
         return next;
     };
+
+    async function executeBatchViaJob(payload, csrf, label, signal) {
+        if (shouldStop(signal)) throw abortError();
+        const createResult = await postJson("/api/scrapping/jobs", {
+            kind: "import_batch",
+            entities: payload.entities,
+            skip_cache: payload.skip_cache,
+            dry_run: payload.dry_run,
+            validate_only: payload.validate_only,
+            include_relations: payload.include_relations,
+            replace_mode: payload.replace_mode,
+            exclude_from_update: payload.exclude_from_update,
+            property_whitelist: payload.property_whitelist,
+        }, {
+            headers: { "X-CSRF-TOKEN": csrf },
+            signal,
+        });
+
+        // Fallback robuste: si endpoint jobs indisponible, on repasse en mode synchrone.
+        if (!createResult.ok || !createResult.data?.data?.job_id) {
+            return await postJson("/api/scrapping/import/batch", payload, {
+                headers: { "X-CSRF-TOKEN": csrf },
+                signal,
+            });
+        }
+
+        const jobId = createResult.data.data.job_id;
+        onRunMeta({ runId: createResult.data?.run_id ?? null, unknownCharacteristics: null, jobId });
+        let statusResult = null;
+        try {
+            // Polling jusqu'à statut terminal.
+            while (true) {
+                if (shouldStop(signal)) throw abortError();
+                statusResult = await getJson(`/api/scrapping/jobs/${encodeURIComponent(jobId)}`, { signal });
+                if (!statusResult.ok || !statusResult.data?.data) {
+                    throw new Error(statusResult.error || "Statut du job indisponible");
+                }
+
+                const data = statusResult.data.data;
+                const total = Number(data?.progress?.total ?? 0);
+                const done = Number(data?.progress?.done ?? 0);
+                onProgress({ phase: "job", done, total, label });
+                onRunMeta({
+                    runId: data?.run_id ?? null,
+                    unknownCharacteristics: statusResult.data?.debug?.unknown_characteristics ?? null,
+                    jobId,
+                });
+
+                if (["succeeded", "failed", "cancelled"].includes(String(data.status || ""))) {
+                    if (data.status === "cancelled") {
+                        throw abortError();
+                    }
+                    return {
+                        ok: true,
+                        data: {
+                            run_id: data?.run_id ?? null,
+                            summary: data?.summary ?? { total, success: done, errors: 0 },
+                            results: Array.isArray(data?.results) ? data.results : [],
+                            debug: statusResult.data?.debug ?? null,
+                        },
+                    };
+                }
+                await delay(JOB_POLL_INTERVAL_MS, signal);
+            }
+        } catch (e) {
+            if (e?.name === "AbortError") {
+                await postJson(`/api/scrapping/jobs/${encodeURIComponent(jobId)}/cancel`, {}, {
+                    headers: { "X-CSRF-TOKEN": csrf },
+                });
+            }
+            throw e;
+        }
+    }
 
     const unknownToInline = (summary) => {
         if (!summary || !summary.ids || typeof summary.ids !== "object") return "";
@@ -138,12 +250,14 @@ export function useScrappingBatch(options) {
         return list.filter((r) => r && r.success === false);
     });
 
-    async function runBatch(mode, scope = "auto") {
+    async function runBatch(mode, scope = "auto", options = {}) {
+        const signal = options.signal ?? null;
         const hasItems = scope === "all" ? (rawItemsRef.value?.length ?? 0) > 0 : (visibleItemsRef.value?.length ?? 0) > 0;
         if (!hasItems) {
             notifyError(scope === "all" ? "Aucun résultat chargé." : "Aucun résultat à traiter.");
             return;
         }
+        if (shouldStop(signal)) return;
 
         const csrf = getCsrfToken();
         if (!csrf) {
@@ -164,17 +278,23 @@ export function useScrappingBatch(options) {
         const label = dryRun ? "Simulation" : "Import";
         pushHistory(`${label} batch (${entityTypeRef.value}) sur ${targetCount} entité(s).`);
         notifyInfo(`${label} en cours…`, { duration: 1500 });
+        onProgress({ phase: "batch", done: 0, total: targetCount, label: `${label} batch` });
         setStatusForEntities(payload.entities, dryRun ? "simulation en cours" : "importation en cours");
 
         try {
-            const result = await postJson("/api/scrapping/import/batch", payload, {
-                headers: { "X-CSRF-TOKEN": csrf },
-            });
+            if (shouldStop(signal)) {
+                throw new DOMException("Aborted", "AbortError");
+            }
+            const result = await executeBatchViaJob(payload, csrf, `${label} batch`, signal);
+            if (result.aborted || shouldStop(signal)) {
+                throw new DOMException("Aborted", "AbortError");
+            }
 
             if (result.ok && result.data) {
                 const data = result.data;
                 lastRunId.value = data?.run_id ?? null;
                 lastUnknownCharacteristics.value = data?.debug?.unknown_characteristics ?? null;
+                onRunMeta({ runId: lastRunId.value, unknownCharacteristics: lastUnknownCharacteristics.value, jobId: null });
                 setStatusFromBatchResults(data.results ?? [], dryRun);
                 const nextRel = { ...lastBatchRelationsByKeyRef.value };
                 for (const r of data.results ?? []) {
@@ -182,6 +302,12 @@ export function useScrappingBatch(options) {
                 }
                 lastBatchRelationsByKeyRef.value = nextRel;
                 const s = data.summary || {};
+                onProgress({
+                    phase: "batch",
+                    done: Number(s.success ?? 0) + Number(s.errors ?? 0),
+                    total: targetCount,
+                    label: `${label} batch`,
+                });
                 const errCount = s.errors ?? 0;
                 const runId = data?.run_id ? ` run_id=${data.run_id}` : "";
                 lastBatchResults.value = errCount > 0 ? (data.results ?? []) : null;
@@ -202,8 +328,10 @@ export function useScrappingBatch(options) {
                 lastBatchResults.value = null;
                 notifyError(result.error || `Erreur ${label.toLowerCase()}`);
                 pushHistory(`→ ${label.toUpperCase()} ERREUR: ${result.error || "batch"}`);
+                onProgress({ phase: "batch", done: targetCount, total: targetCount, label: `${label} batch` });
             }
         } catch (e) {
+            if (e?.name === "AbortError") return;
             setStatusForEntities(payload.entities, "erreur", e?.message);
             notifyError(`Erreur ${label.toLowerCase()} : ` + (e?.message ?? "erreur"));
             pushHistory(`→ ${label.toUpperCase()} ERREUR: ${e?.message}`);
@@ -213,12 +341,14 @@ export function useScrappingBatch(options) {
         }
     }
 
-    async function runImportByPages(simulate = false) {
+    async function runImportByPages(simulate = false, options = {}) {
+        const signal = options.signal ?? null;
         const pages = parsePageRange(pageRangeRef.value || "");
         if (pages.length === 0) {
             notifyError("Saisis une plage de pages (ex: 1-6 ou 4,5).");
             return;
         }
+        if (shouldStop(signal)) return;
         const csrf = getCsrfToken();
         if (!csrf) {
             notifyError("Token CSRF introuvable. Veuillez recharger la page.");
@@ -229,6 +359,7 @@ export function useScrappingBatch(options) {
         pushHistory(`${label} par pages (${entityTypeRef.value}) : pages ${pages.join(", ")}.`);
         importing.value = true;
         importByPagesProgress.value = `0/${pages.length}`;
+        onProgress({ phase: "pages", done: 0, total: pages.length, label: `${label} par pages` });
         let totalSuccess = 0;
         let totalErrors = 0;
         let totalEntities = 0;
@@ -238,10 +369,16 @@ export function useScrappingBatch(options) {
 
         try {
             for (let i = 0; i < pages.length; i++) {
+                if (shouldStop(signal)) {
+                    throw new DOMException("Aborted", "AbortError");
+                }
                 const p = pages[i];
                 importByPagesProgress.value = `${i + 1}/${pages.length}`;
                 pageNumberRef.value = p;
-                await runSearch();
+                await runSearch({ signal, silentJob: true });
+                if (shouldStop(signal)) {
+                    throw new DOMException("Aborted", "AbortError");
+                }
 
                 if (!rawItemsRef.value?.length) {
                     pushHistory(`→ Page ${p} : aucun résultat, ignorée.`);
@@ -255,14 +392,16 @@ export function useScrappingBatch(options) {
                 totalEntities += payload.entities.length;
                 setStatusForEntities(payload.entities, simulate ? "simulation en cours" : "importation en cours");
 
-                const result = await postJson("/api/scrapping/import/batch", payload, {
-                    headers: { "X-CSRF-TOKEN": csrf },
-                });
+                const result = await executeBatchViaJob(payload, csrf, `${label} page ${p}`, signal);
+                if (result.aborted || shouldStop(signal)) {
+                    throw new DOMException("Aborted", "AbortError");
+                }
 
                 if (result.ok && result.data) {
                     const data = result.data;
                     lastRunId.value = data?.run_id ?? lastRunId.value;
                     unknownSummary = mergeUnknown(unknownSummary, data?.debug?.unknown_characteristics ?? null);
+                    onRunMeta({ runId: lastRunId.value, unknownCharacteristics: unknownSummary, jobId: null });
                     setStatusFromBatchResults(data.results ?? [], simulate);
                     const nextRel = { ...lastBatchRelationsByKeyRef.value };
                     for (const r of data.results ?? []) {
@@ -283,6 +422,7 @@ export function useScrappingBatch(options) {
                     payload.entities.forEach((ent) => accumulatedErrorResults.push({ type: ent.type, id: ent.id, success: false, error: result.error || "batch" }));
                     pushHistory(`→ Page ${p} ERREUR: ${result.error || "batch"}`);
                 }
+                onProgress({ phase: "pages", done: i + 1, total: pages.length, label: `${label} par pages` });
             }
             lastBatchResults.value = accumulatedErrorResults.length > 0 ? accumulatedErrorResults : null;
             lastUnknownCharacteristics.value = unknownSummary;
@@ -298,6 +438,7 @@ export function useScrappingBatch(options) {
             const unknownInfo = unknownToInline(unknownSummary);
             if (unknownInfo) pushHistory(`→ DEBUG ${unknownInfo}`);
         } catch (e) {
+            if (e?.name === "AbortError") return;
             notifyError(`${label} par pages : ` + (e?.message ?? "erreur"));
             pushHistory(`→ ${label.toUpperCase()} PAR PAGES ERREUR: ${e?.message}`);
             lastBatchResults.value = null;
@@ -310,7 +451,8 @@ export function useScrappingBatch(options) {
     }
 
     /** Import/simulation sur toutes les pages (1 à totalPages), une par une. */
-    async function runImportAllPages(simulate = false) {
+    async function runImportAllPages(simulate = false, options = {}) {
+        const signal = options.signal ?? null;
         const totalPages = getTotalPages();
         const total = Math.max(1, Math.floor(Number(totalPages)));
         const pages = Array.from({ length: total }, (_, i) => i + 1);
@@ -324,6 +466,7 @@ export function useScrappingBatch(options) {
         pushHistory(`${label} « Tous » (${entityTypeRef.value}) : ${pages.length} page(s).`);
         importing.value = true;
         importByPagesProgress.value = `0/${pages.length}`;
+        onProgress({ phase: "all-pages", done: 0, total: pages.length, label: `${label} toutes pages` });
         let totalSuccess = 0;
         let totalErrors = 0;
         let totalEntities = 0;
@@ -333,10 +476,16 @@ export function useScrappingBatch(options) {
 
         try {
             for (let i = 0; i < pages.length; i++) {
+                if (shouldStop(signal)) {
+                    throw new DOMException("Aborted", "AbortError");
+                }
                 const p = pages[i];
                 importByPagesProgress.value = `${i + 1}/${pages.length}`;
                 pageNumberRef.value = p;
-                await runSearch();
+                await runSearch({ signal, silentJob: true });
+                if (shouldStop(signal)) {
+                    throw new DOMException("Aborted", "AbortError");
+                }
 
                 if (!rawItemsRef.value?.length) {
                     pushHistory(`→ Page ${p} : aucun résultat, ignorée.`);
@@ -350,14 +499,16 @@ export function useScrappingBatch(options) {
                 totalEntities += payload.entities.length;
                 setStatusForEntities(payload.entities, simulate ? "simulation en cours" : "importation en cours");
 
-                const result = await postJson("/api/scrapping/import/batch", payload, {
-                    headers: { "X-CSRF-TOKEN": csrf },
-                });
+                const result = await executeBatchViaJob(payload, csrf, `${label} page ${p}`, signal);
+                if (result.aborted || shouldStop(signal)) {
+                    throw new DOMException("Aborted", "AbortError");
+                }
 
                 if (result.ok && result.data) {
                     const data = result.data;
                     lastRunId.value = data?.run_id ?? lastRunId.value;
                     unknownSummary = mergeUnknown(unknownSummary, data?.debug?.unknown_characteristics ?? null);
+                    onRunMeta({ runId: lastRunId.value, unknownCharacteristics: unknownSummary, jobId: null });
                     setStatusFromBatchResults(data.results ?? [], simulate);
                     const nextRel = { ...lastBatchRelationsByKeyRef.value };
                     for (const r of data.results ?? []) {
@@ -378,6 +529,7 @@ export function useScrappingBatch(options) {
                     payload.entities.forEach((ent) => accumulatedErrorResults.push({ type: ent.type, id: ent.id, success: false, error: result.error || "batch" }));
                     pushHistory(`→ Page ${p} ERREUR: ${result.error || "batch"}`);
                 }
+                onProgress({ phase: "all-pages", done: i + 1, total: pages.length, label: `${label} toutes pages` });
             }
             lastBatchResults.value = accumulatedErrorResults.length > 0 ? accumulatedErrorResults : null;
             lastUnknownCharacteristics.value = unknownSummary;
@@ -393,6 +545,7 @@ export function useScrappingBatch(options) {
             const unknownInfo = unknownToInline(unknownSummary);
             if (unknownInfo) pushHistory(`→ DEBUG ${unknownInfo}`);
         } catch (e) {
+            if (e?.name === "AbortError") return;
             notifyError(`${label} « Tous » : ` + (e?.message ?? "erreur"));
             pushHistory(`→ ${label.toUpperCase()} TOUS ERREUR: ${e?.message}`);
             lastBatchResults.value = null;
@@ -404,17 +557,17 @@ export function useScrappingBatch(options) {
         }
     }
 
-    async function runBatchOrByPages(mode) {
+    async function runBatchOrByPages(mode, options = {}) {
         const dryRun = mode === "simulate";
         if (batchScopeRef.value === "pages") {
-            await runImportByPages(dryRun);
+            await runImportByPages(dryRun, options);
             return;
         }
         if (batchScopeRef.value === "all") {
-            await runImportAllPages(dryRun);
+            await runImportAllPages(dryRun, options);
             return;
         }
-        await runBatch(mode, "auto");
+        await runBatch(mode, "auto", options);
     }
 
     function clearBatchErrors() {

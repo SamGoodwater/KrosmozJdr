@@ -38,11 +38,13 @@ function chunkArray(arr, chunkSize) {
  *   getCsrfToken: () => string | null,
  *   setStatusForEntities?: (entities: Array<{ type: string, id: number }>, status: string) => void,
  *   itemStatusByKeyRef?: import('vue').Ref<Record<string, { status?: string }>>,
- *   includeRelationsRef?: import('vue').Ref<boolean>
+ *   includeRelationsRef?: import('vue').Ref<boolean>,
+ *   onProgress?: (payload: { phase: string, done: number, total: number, label: string }) => void,
+ *   onRunMeta?: (payload: { runId?: string|null, unknownCharacteristics?: Record<string, any>|null }) => void
  * }} options
  */
 export function useScrappingPreview(options) {
-    const { entityTypeRef, rawItemsRef, notifyError, getCsrfToken, setStatusForEntities, itemStatusByKeyRef, includeRelationsRef } = options;
+    const { entityTypeRef, rawItemsRef, notifyError, getCsrfToken, setStatusForEntities, itemStatusByKeyRef, includeRelationsRef, onProgress, onRunMeta } = options;
 
     const convertedByItemId = ref({});
     const convertedByRelationKey = ref({});
@@ -114,6 +116,7 @@ export function useScrappingPreview(options) {
 
         loadingConverted.value = true;
         conversionProgress.value = { phase: "main", total: ids.length, done: 0 };
+        onProgress?.({ phase: "main", total: ids.length, done: 0, label: "Previsualisation" });
         convertedByItemId.value = {};
         convertedByRelationKey.value = {};
         lastBatchRelationsByKey.value = {};
@@ -140,6 +143,7 @@ export function useScrappingPreview(options) {
                 const data = result.data;
                 lastRunId.value = data?.run_id ?? lastRunId.value;
                 unknownSummary = mergeUnknown(unknownSummary, data?.debug?.unknown_characteristics ?? null);
+                onRunMeta?.({ runId: data?.run_id ?? null, unknownCharacteristics: unknownSummary });
                 const items = Array.isArray(data?.data?.items) ? data.data.items : (Array.isArray(data?.items) ? data.items : []);
                 if (data?.success !== true || !items.length) {
                     if (mainChunks.length === 1) {
@@ -152,6 +156,12 @@ export function useScrappingPreview(options) {
                 convertedByItemId.value = next;
                 lastBatchRelationsByKey.value = { ...lastBatchRelationsByKey.value, ...relNext };
                 conversionProgress.value = { phase: "main", total: ids.length, done: Object.keys(next).length };
+                onProgress?.({
+                    phase: "main",
+                    total: ids.length,
+                    done: Object.keys(next).length,
+                    label: "Conversion principale",
+                });
                 if (itemStatusByKeyRef) itemStatusByKeyRef.value = { ...statusNext };
                 else if (setStatusForEntities) {
                     const entities = items.filter((i) => Number.isFinite(Number(i?.id))).map((i) => ({ type: entityType, id: Number(i.id) }));
@@ -178,6 +188,7 @@ export function useScrappingPreview(options) {
                 let relationDone = 0;
                 if (relationTotal > 0) {
                     conversionProgress.value = { phase: "relations", total: relationTotal, done: 0 };
+                    onProgress?.({ phase: "relations", total: relationTotal, done: 0, label: "Relations" });
                 }
                 for (const [relType, idSet] of Object.entries(idsByType)) {
                     if (signal?.aborted) break;
@@ -196,6 +207,7 @@ export function useScrappingPreview(options) {
                             const relData = relResult.data;
                             lastRunId.value = relData?.run_id ?? lastRunId.value;
                             unknownSummary = mergeUnknown(unknownSummary, relData?.debug?.unknown_characteristics ?? null);
+                            onRunMeta?.({ runId: relData?.run_id ?? null, unknownCharacteristics: unknownSummary });
                             const relItems = Array.isArray(relData?.data?.items) ? relData.data.items : (Array.isArray(relData?.items) ? relData.items : []);
                             if (!relItems?.length || relData?.success !== true) continue;
                             for (const relItem of relItems) {
@@ -226,6 +238,7 @@ export function useScrappingPreview(options) {
                             }
                             relationDone += relChunkIds.length;
                             conversionProgress.value = { phase: "relations", total: relationTotal, done: relationDone };
+                            onProgress?.({ phase: "relations", total: relationTotal, done: relationDone, label: "Relations" });
                         } catch {
                             // ignorer erreur sur un paquet de relations
                         }
@@ -234,6 +247,7 @@ export function useScrappingPreview(options) {
             }
             convertedByRelationKey.value = relConv;
             lastUnknownCharacteristics.value = unknownSummary;
+            onRunMeta?.({ runId: lastRunId.value, unknownCharacteristics: unknownSummary });
         } catch (e) {
             notifyError("Valeurs converties : " + (e?.message ?? "erreur"));
         } finally {

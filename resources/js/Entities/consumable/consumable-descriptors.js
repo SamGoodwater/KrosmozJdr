@@ -412,6 +412,26 @@ export function getConsumableFieldDescriptors(ctx = {}) {
         },
       },
     },
+    consumable_summary_relations: {
+      key: "consumable_summary_relations",
+      label: "Relations",
+      icon: "fa-solid fa-link",
+      table: {
+        type: "chips",
+        searchable: true,
+        defaultVisible: { xs: false, sm: false, md: true, lg: true, xl: true },
+        cell: { sizes: { xs: { mode: "chips" }, sm: { mode: "chips" }, md: { mode: "chips" }, lg: { mode: "chips" }, xl: { mode: "chips" } } },
+      },
+      display: {
+        sizes: {
+          xs: { mode: "chips" },
+          sm: { mode: "chips" },
+          md: { mode: "chips" },
+          lg: { mode: "chips" },
+          xl: { mode: "chips" },
+        },
+      },
+    },
     image: {
       key: "image",
       label: "Image",

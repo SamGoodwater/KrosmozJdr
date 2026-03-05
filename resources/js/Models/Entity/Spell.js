@@ -10,6 +10,7 @@
  */
 import { BaseModel } from '../BaseModel';
 import { resolveEntityRouteHref } from '@/Composables/entity/entityRouteRegistry';
+import { buildCharacteristicEffectCell } from '@/Composables/entity/useCharacteristicEffectFormatter';
 
 export class Spell extends BaseModel {
     // ============================================
@@ -150,6 +151,22 @@ export class Spell extends BaseModel {
         return this._data.monsters || [];
     }
 
+    get spellTypesCount() {
+        return Number(this._data.spell_types_count ?? this.spellTypes.length ?? 0);
+    }
+
+    get breedsCount() {
+        return Number(this._data.breeds_count ?? this.breeds.length ?? 0);
+    }
+
+    get creaturesCount() {
+        return Number(this._data.creatures_count ?? this.creatures.length ?? 0);
+    }
+
+    get monstersCount() {
+        return Number(this._data.monsters_count ?? this.monsters.length ?? 0);
+    }
+
     /**
      * Retourne la map des caractéristiques spell indexées par db_column.
      * Source: meta API injectée dans `options.ctx.characteristics.spell.byDbColumn`.
@@ -185,7 +202,7 @@ export class Spell extends BaseModel {
     toCell(fieldKey, options = {}) {
         // D'abord, essayer la méthode de base (gère les formatters automatiquement)
         const baseCell = super.toCell(fieldKey, options);
-        const overrideFields = new Set(['pa', 'po', 'spell_summary_profile']);
+        const overrideFields = new Set(['pa', 'po', 'spell_summary_profile', 'effect']);
         
         // Si la méthode de base a trouvé quelque chose (formatter ou valeur par défaut valide), l'utiliser
         if (!overrideFields.has(fieldKey) && baseCell && (baseCell.type !== 'text' || (baseCell.value && baseCell.value !== '-'))) {
@@ -292,21 +309,14 @@ export class Spell extends BaseModel {
      * @private
      */
     _toEffectCell(format, size, options) {
-        const effect = this.effect || '';
-        const maxLength = format.truncate || (size === 'xs' || size === 'sm' ? 20 : 40);
-        const truncated = effect.length > maxLength 
-            ? effect.slice(0, maxLength - 1) + '…'
-            : effect;
-        
-        return {
-            type: 'text',
-            value: truncated || '-',
-            params: {
-                tooltip: effect || '',
-                sortValue: effect,
-                searchValue: effect,
-            },
-        };
+        return buildCharacteristicEffectCell({
+            rawValues: [this.effect],
+            options,
+            sourceGroups: ['spell'],
+            format,
+            size,
+            chipsLayout: { maxRows: 3 },
+        });
     }
 
     /**
@@ -583,8 +593,11 @@ export class Spell extends BaseModel {
         const areaValue = this.area != null ? String(this.area) : null;
         const elementValue = this.element ? String(this.element) : null;
         const categoryValue = this.category ? String(this.category) : null;
-        const typeCount = Array.isArray(this.spellTypes) ? this.spellTypes.length : 0;
+        const typeCount = this.spellTypesCount;
         const typesValue = typeCount > 0 ? `${typeCount} type${typeCount > 1 ? 's' : ''}` : null;
+        const breedsValue = this.breedsCount > 0 ? `${this.breedsCount} classe${this.breedsCount > 1 ? 's' : ''}` : null;
+        const creaturesValue = this.creaturesCount > 0 ? `${this.creaturesCount} créature${this.creaturesCount > 1 ? 's' : ''}` : null;
+        const monstersValue = this.monstersCount > 0 ? `${this.monstersCount} invocation${this.monstersCount > 1 ? 's' : ''}` : null;
         const paDef = this._getCharacteristicDef(options, ['pa']);
         const poDef = this._getCharacteristicDef(options, ['po', 'po_max', 'po_min']);
         const paLabel = paDef?.short_name || paDef?.name || 'PA';
@@ -606,6 +619,9 @@ export class Spell extends BaseModel {
             { icon: 'fa-solid fa-expand', value: areaValue, tooltip: areaValue ? `Zone: ${areaValue}` : '' },
             { icon: 'fa-solid fa-fire', value: elementValue, tooltip: elementValue ? `Élément: ${elementValue}` : '' },
             { icon: 'fa-solid fa-tag', value: categoryValue, tooltip: categoryValue ? `Catégorie: ${categoryValue}` : '' },
+            { icon: 'fa-solid fa-hat-wizard', value: breedsValue, tooltip: breedsValue ? `Classes: ${this.breedsCount}` : '' },
+            { icon: 'fa-solid fa-dragon', value: creaturesValue, tooltip: creaturesValue ? `Créatures: ${this.creaturesCount}` : '' },
+            { icon: 'fa-solid fa-ghost', value: monstersValue, tooltip: monstersValue ? `Invocations: ${this.monstersCount}` : '' },
             { icon: 'fa-solid fa-tags', value: typesValue, tooltip: typesValue ? `Types: ${typesValue}` : '' },
         ].filter((it) => it.value !== null && it.value !== undefined && String(it.value) !== '');
 

@@ -9,6 +9,7 @@
  * console.log(panoply.name); // Accès normalisé
  */
 import { BaseModel } from '../BaseModel';
+import { buildCharacteristicEffectCell } from '@/Composables/entity/useCharacteristicEffectFormatter';
 
 export class Panoply extends BaseModel {
     // ============================================
@@ -59,6 +60,26 @@ export class Panoply extends BaseModel {
         return this._data.shops || [];
     }
 
+    get itemsCount() {
+        return Number(this._data.items_count ?? this.items.length ?? 0);
+    }
+
+    get npcsCount() {
+        return Number(this._data.npcs_count ?? this.npcs.length ?? 0);
+    }
+
+    get campaignsCount() {
+        return Number(this._data.campaigns_count ?? this.campaigns.length ?? 0);
+    }
+
+    get scenariosCount() {
+        return Number(this._data.scenarios_count ?? this.scenarios.length ?? 0);
+    }
+
+    get shopsCount() {
+        return Number(this._data.shops_count ?? this.shops.length ?? 0);
+    }
+
     // ============================================
     // FORMATAGE DES CELLULES (surcharge pour champs spécifiques)
     // ============================================
@@ -72,9 +93,10 @@ export class Panoply extends BaseModel {
     toCell(fieldKey, options = {}) {
         // D'abord, essayer la méthode de base (gère les formatters automatiquement)
         const baseCell = super.toCell(fieldKey, options);
+        const overrideFields = new Set(['bonus']);
         
         // Si la méthode de base a trouvé quelque chose (formatter ou valeur par défaut valide), l'utiliser
-        if (baseCell && (baseCell.type !== 'text' || (baseCell.value && baseCell.value !== '-'))) {
+        if (!overrideFields.has(fieldKey) && baseCell && (baseCell.type !== 'text' || (baseCell.value && baseCell.value !== '-'))) {
             return baseCell;
         }
 
@@ -92,6 +114,8 @@ export class Panoply extends BaseModel {
                 return this._toDofusdbIdCell(format, size, options);
             case 'items_count':
                 return this._toItemsCountCell(format, size, options);
+            case 'panoply_summary_relations':
+                return this._toPanoplySummaryRelationsCell(format, size, options);
             case 'created_by':
                 return this._toCreatedByCell(format, size, options);
             case 'created_at':
@@ -148,17 +172,14 @@ export class Panoply extends BaseModel {
      * @private
      */
     _toBonusCell(format, size, options) {
-        const bonus = this.bonus || '-';
-        
-        return {
-            type: 'text',
-            value: bonus,
-            params: {
-                truncate: format.truncate || (size === 'xs' || size === 'sm' ? 20 : (size === 'md' ? 30 : null)),
-                searchValue: bonus === '-' ? '' : bonus,
-                sortValue: bonus,
-            },
-        };
+        return buildCharacteristicEffectCell({
+            rawValues: [this.bonus],
+            options,
+            sourceGroups: ['panoply', 'item'],
+            format,
+            size,
+            chipsLayout: { maxRows: 3 },
+        });
     }
 
     /**
@@ -183,7 +204,7 @@ export class Panoply extends BaseModel {
      * @private
      */
     _toItemsCountCell(format, size, options) {
-        const itemsCount = this.items?.length || this._data.items_count || 0;
+        const itemsCount = this.itemsCount;
         
         return {
             type: 'text',
@@ -191,6 +212,53 @@ export class Panoply extends BaseModel {
             params: {
                 sortValue: Number(itemsCount),
                 searchValue: String(itemsCount),
+            },
+        };
+    }
+
+    /**
+     * Génère une cellule résumé (chips) des relations métier de la panoplie.
+     * @private
+     */
+    _toPanoplySummaryRelationsCell(_format, _size, _options) {
+        const items = [
+            {
+                icon: 'fa-solid fa-sword',
+                value: this.itemsCount > 0 ? `${this.itemsCount} équipement${this.itemsCount > 1 ? 's' : ''}` : null,
+                tooltip: this.itemsCount > 0 ? `Équipements: ${this.itemsCount}` : '',
+            },
+            {
+                icon: 'fa-solid fa-user',
+                value: this.npcsCount > 0 ? `${this.npcsCount} PNJ` : null,
+                tooltip: this.npcsCount > 0 ? `PNJ: ${this.npcsCount}` : '',
+            },
+            {
+                icon: 'fa-solid fa-flag',
+                value: this.campaignsCount > 0 ? `${this.campaignsCount} campagne${this.campaignsCount > 1 ? 's' : ''}` : null,
+                tooltip: this.campaignsCount > 0 ? `Campagnes: ${this.campaignsCount}` : '',
+            },
+            {
+                icon: 'fa-solid fa-scroll',
+                value: this.scenariosCount > 0 ? `${this.scenariosCount} scénario${this.scenariosCount > 1 ? 's' : ''}` : null,
+                tooltip: this.scenariosCount > 0 ? `Scénarios: ${this.scenariosCount}` : '',
+            },
+            {
+                icon: 'fa-solid fa-store',
+                value: this.shopsCount > 0 ? `${this.shopsCount} boutique${this.shopsCount > 1 ? 's' : ''}` : null,
+                tooltip: this.shopsCount > 0 ? `Boutiques: ${this.shopsCount}` : '',
+            },
+        ].filter((it) => it.value !== null);
+
+        const searchValue = items.map((it) => String(it.value)).join(' ');
+
+        return {
+            type: 'chips',
+            value: '',
+            params: {
+                items,
+                sortValue: items.length,
+                searchValue,
+                filterValue: searchValue,
             },
         };
     }

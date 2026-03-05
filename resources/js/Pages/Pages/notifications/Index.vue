@@ -12,6 +12,7 @@ import Btn from '@/Pages/Atoms/action/Btn.vue';
 import Icon from '@/Pages/Atoms/data-display/Icon.vue';
 import Route from '@/Pages/Atoms/action/Route.vue';
 import Dropdown from '@/Pages/Atoms/action/Dropdown.vue';
+import ScrappingJobNotificationCard from '@/Pages/Molecules/feedback/ScrappingJobNotificationCard.vue';
 
 const page = usePage();
 const activeTab = ref('messages');
@@ -41,7 +42,7 @@ async function fetchMessages() {
         if (json.data) messages.value = json.data;
         if (json.unread_count !== undefined) unreadCount.value = json.unread_count;
         if (json.meta) messagesMeta.value = json.meta;
-    } catch (_) {
+    } catch {
         messages.value = [];
     } finally {
         messagesLoading.value = false;
@@ -99,6 +100,15 @@ async function unpinNotification(id) {
 }
 
 async function deleteNotification(id) {
+    const current = messages.value.find((n) => n.id === id);
+    if (current?.is_scrapping_job && current?.data?.locked === true) {
+        notificationStore?.addNotification?.({
+            message: 'Ce job est en cours, suppression indisponible.',
+            type: 'info',
+            duration: 2500,
+        });
+        return;
+    }
     const token = getCsrfToken();
     const res = await fetch(route('notifications.destroy', { id }), {
         method: 'DELETE',
@@ -109,6 +119,33 @@ async function deleteNotification(id) {
     if (json.success) {
         messages.value = messages.value.filter((n) => n.id !== id);
         if (json.unread_count !== undefined) unreadCount.value = json.unread_count;
+    }
+}
+
+async function cancelScrappingJobNotification(item) {
+    const token = getCsrfToken();
+    const jobId = item?.data?.meta?.job_id;
+    if (!jobId) return;
+    try {
+        await fetch(`/api/scrapping/jobs/${encodeURIComponent(jobId)}/cancel`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Accept': 'application/json', 'X-CSRF-TOKEN': token || '', 'X-Requested-With': 'XMLHttpRequest' },
+            credentials: 'same-origin',
+            body: JSON.stringify({}),
+        });
+        await fetch(route('notifications.scrapping.update', { id: item.id }), {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json', 'Accept': 'application/json', 'X-CSRF-TOKEN': token || '', 'X-Requested-With': 'XMLHttpRequest' },
+            credentials: 'same-origin',
+            body: JSON.stringify({
+                status: 'cancelled',
+                message: 'Scrapping annulé depuis le centre de notifications.',
+                progress: { ...(item?.data?.progress || {}) },
+            }),
+        });
+        fetchMessages();
+    } catch {
+        notificationStore?.addNotification?.({ message: "Impossible d'annuler le job pour le moment.", type: 'error', duration: 3000 });
     }
 }
 
@@ -157,7 +194,9 @@ function handleCentreListKeydown(e) {
         const notifId = el.dataset.notificationId;
         const tempId = el.dataset.tempId;
         if (notifId) {
-            deleteNotification(Number(notifId));
+            const notif = messages.value.find((n) => String(n.id) === String(notifId));
+            if (notif?.is_scrapping_job && notif?.data?.locked === true) return;
+            deleteNotification(notifId);
             const nextIdx = Math.min(idx, focusable.length - 2);
             focusable[nextIdx >= 0 ? nextIdx : 0]?.focus();
         } else if (tempId) {
@@ -245,6 +284,16 @@ onMounted(() => { fetchMessages(); });
                         class="relative border border-base-300 rounded-lg p-3 flex flex-col gap-2"
                         :class="{ 'bg-primary/5': !item.read_at }"
                     >
+                        <template v-if="item.is_scrapping_job">
+                            <ScrappingJobNotificationCard
+                                :item="item"
+                                @open="openMessage(item)"
+                                @copy="copyMessageContent(item)"
+                                @cancel="cancelScrappingJobNotification(item)"
+                                @delete="deleteNotification(item.id)"
+                            />
+                        </template>
+                        <template v-else>
                         <Btn
                             variant="ghost"
                             size="xs"
@@ -334,6 +383,7 @@ onMounted(() => { fetchMessages(); });
                             <Icon source="fa-thumbtack" pack="solid" size="xs" alt="" />
                             Épinglée
                         </div>
+                        </template>
                     </li>
                 </ul>
                 <div v-if="messagesMeta.last_page > 1" class="flex justify-center gap-2 pt-4">

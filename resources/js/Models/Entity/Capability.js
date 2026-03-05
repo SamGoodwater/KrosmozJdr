@@ -9,6 +9,7 @@
  * console.log(capability.name); // Accès normalisé
  */
 import { BaseModel } from '../BaseModel';
+import { buildCharacteristicEffectCell } from '@/Composables/entity/useCharacteristicEffectFormatter';
 
 export class Capability extends BaseModel {
     // ============================================
@@ -91,6 +92,14 @@ export class Capability extends BaseModel {
         return this._data.creatures || [];
     }
 
+    get specializationsCount() {
+        return Number(this._data.specializations_count ?? this.specializations.length ?? 0);
+    }
+
+    get creaturesCount() {
+        return Number(this._data.creatures_count ?? this.creatures.length ?? 0);
+    }
+
     /**
      * Retourne la map des caractéristiques capability indexées par db_column.
      * Source: meta API injectée dans `options.ctx.characteristics.capability.byDbColumn`.
@@ -126,7 +135,7 @@ export class Capability extends BaseModel {
     toCell(fieldKey, options = {}) {
         // D'abord, essayer la méthode de base (gère les formatters automatiquement)
         const baseCell = super.toCell(fieldKey, options);
-        const overrideFields = new Set(['pa', 'po', 'capability_summary_cast']);
+        const overrideFields = new Set(['pa', 'po', 'capability_summary_cast', 'effect']);
         
         // Si la méthode de base a trouvé quelque chose (formatter ou valeur par défaut valide), l'utiliser
         if (!overrideFields.has(fieldKey) && baseCell && (baseCell.type !== 'text' || (baseCell.value && baseCell.value !== '-'))) {
@@ -159,6 +168,8 @@ export class Capability extends BaseModel {
                 return this._toDurationCell(format, size, options);
             case 'capability_summary_cast':
                 return this._toCapabilitySummaryCastCell(format, size, options);
+            case 'capability_summary_relations':
+                return this._toCapabilitySummaryRelationsCell(format, size, options);
             case 'element':
                 return this._toElementCell(format, size, options);
             case 'is_magic':
@@ -225,17 +236,14 @@ export class Capability extends BaseModel {
      * @private
      */
     _toEffectCell(format, size, options) {
-        const effect = this.effect || '-';
-        
-        return {
-            type: 'text',
-            value: effect,
-            params: {
-                truncate: format.truncate || (size === 'xs' || size === 'sm' ? 20 : (size === 'md' ? 30 : null)),
-                searchValue: effect === '-' ? '' : effect,
-                sortValue: effect,
-            },
-        };
+        return buildCharacteristicEffectCell({
+            rawValues: [this.effect],
+            options,
+            sourceGroups: ['capability', 'spell'],
+            format,
+            size,
+            chipsLayout: { maxRows: 3 },
+        });
     }
 
     /**
@@ -436,6 +444,38 @@ export class Capability extends BaseModel {
             params: {
                 items,
                 sortValue: Number(this.level) || 0,
+                searchValue,
+                filterValue: searchValue,
+            },
+        };
+    }
+
+    /**
+     * Génère une cellule résumé (chips) des relations métier de la capacité.
+     * @private
+     */
+    _toCapabilitySummaryRelationsCell(_format, _size, _options) {
+        const items = [
+            {
+                icon: 'fa-solid fa-user-gear',
+                value: this.specializationsCount > 0 ? `${this.specializationsCount} spécialisation${this.specializationsCount > 1 ? 's' : ''}` : null,
+                tooltip: this.specializationsCount > 0 ? `Spécialisations: ${this.specializationsCount}` : '',
+            },
+            {
+                icon: 'fa-solid fa-dragon',
+                value: this.creaturesCount > 0 ? `${this.creaturesCount} créature${this.creaturesCount > 1 ? 's' : ''}` : null,
+                tooltip: this.creaturesCount > 0 ? `Créatures: ${this.creaturesCount}` : '',
+            },
+        ].filter((it) => it.value !== null);
+
+        const searchValue = items.map((it) => String(it.value)).join(' ');
+
+        return {
+            type: 'chips',
+            value: '',
+            params: {
+                items,
+                sortValue: items.length,
                 searchValue,
                 filterValue: searchValue,
             },

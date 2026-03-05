@@ -19,7 +19,6 @@
  */
 import { useNotificationStore } from '@/Composables/store/useNotificationStore';
 import NotificationToast from '@/Pages/Molecules/feedback/NotificationToast.vue';
-import { computed } from 'vue';
 
 const { notificationsByPlacement, removeNotification } = useNotificationStore();
 
@@ -83,7 +82,7 @@ const getAriaLive = (placement) => {
                         v-for="notif in notificationsByPlacement[placement] || []" 
                         :key="notif.id"
                         v-bind="notif" 
-                        :onClose="() => removeNotification(notif.id)"
+                        :onClose="notif.dismissible === false ? null : (() => removeNotification(notif.id))"
                     >
                         <template v-if="$slots.default" #default>
                             <slot name="default" :notification="notif" />

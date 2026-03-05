@@ -3,7 +3,9 @@
 namespace App\Http\Controllers\Api\Table;
 
 use App\Http\Controllers\Controller;
+use App\Models\CharacteristicObject;
 use App\Models\Entity\Panoply;
+use App\Services\Characteristic\CharacteristicMetaByDbColumnService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
@@ -17,6 +19,11 @@ use Illuminate\Support\Facades\Gate;
  */
 class PanoplyTableController extends Controller
 {
+    public function __construct(
+        private readonly CharacteristicMetaByDbColumnService $characteristicMeta
+    ) {
+    }
+
     public function index(Request $request): JsonResponse
     {
         $this->authorize('viewAny', Panoply::class);
@@ -38,7 +45,9 @@ class PanoplyTableController extends Controller
             $order = 'desc';
         }
 
-        $query = Panoply::query()->with(['createdBy'])->withCount('items');
+        $query = Panoply::query()
+            ->with(['createdBy'])
+            ->withCount(['items', 'npcs', 'campaigns', 'scenarios', 'shops']);
 
         if ($search !== '') {
             $query->where(function ($q) use ($search) {
@@ -66,10 +75,15 @@ class PanoplyTableController extends Controller
 
         // Mode "entities" : retourner les entités brutes
         if ($format === 'entities') {
+            $panoplyCharacteristicsByDbColumn = $this->characteristicMeta->buildObjectByDbColumn(CharacteristicObject::ENTITY_PANOPLY);
             $entities = $rows->map(function (Panoply $p) {
                 $createdBy = $p->createdBy;
                 return $p->toArray() + [
                     'items_count' => $p->items_count ?? 0,
+                    'npcs_count' => $p->npcs_count ?? 0,
+                    'campaigns_count' => $p->campaigns_count ?? 0,
+                    'scenarios_count' => $p->scenarios_count ?? 0,
+                    'shops_count' => $p->shops_count ?? 0,
                     'createdBy' => $createdBy ? [
                         'id' => $createdBy->id,
                         'name' => $createdBy->name,
@@ -91,6 +105,11 @@ class PanoplyTableController extends Controller
                     ],
                     'capabilities' => $capabilities,
                     'filterOptions' => [],
+                    'characteristics' => [
+                        'panoply' => [
+                            'byDbColumn' => $panoplyCharacteristicsByDbColumn,
+                        ],
+                    ],
                     'format' => 'entities',
                 ],
                 'entities' => $entities,
@@ -168,6 +187,11 @@ class PanoplyTableController extends Controller
                 ],
                 'rowParams' => [
                     'entity' => $p->toArray() + [
+                        'items_count' => $p->items_count ?? 0,
+                        'npcs_count' => $p->npcs_count ?? 0,
+                        'campaigns_count' => $p->campaigns_count ?? 0,
+                        'scenarios_count' => $p->scenarios_count ?? 0,
+                        'shops_count' => $p->shops_count ?? 0,
                         'createdBy' => $createdBy ? [
                             'id' => $createdBy->id,
                             'name' => $createdBy->name,

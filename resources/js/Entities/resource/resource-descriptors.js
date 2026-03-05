@@ -406,6 +406,32 @@ export function getResourceFieldDescriptors(ctx = {}) {
       },
       // Pas de section edition : champ en lecture seule (relation)
     },
+
+    resource_summary_relations: {
+      key: "resource_summary_relations",
+      general: {
+        label: "Relations",
+        icon: "fa-solid fa-link",
+        tooltip: "Résumé des liens métier (objets, consommables, créatures, ingrédients)",
+      },
+      table: {
+        sortable: false,
+        searchable: true,
+        defaultVisible: { xs: false, sm: false, md: true, lg: true, xl: true },
+        cell: {
+          sizes: {
+            xs: { mode: "chips" },
+            sm: { mode: "chips" },
+            md: { mode: "chips" },
+            lg: { mode: "chips" },
+            xl: { mode: "chips" },
+          },
+        },
+      },
+      display: {
+        tooltip: "Résumé des relations importantes de la ressource",
+      },
+    },
     
     rarity: {
       key: "rarity",

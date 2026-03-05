@@ -55,6 +55,8 @@ const props = defineProps({
     createdAt: { type: Number, default: 0 },
     fullDisplayTime: { type: Number, default: 0 },
     contractedDisplayTime: { type: Number, default: 0 },
+    progress: { type: [Number, null], default: null },
+    dismissible: { type: Boolean, default: true },
 });
 
 const { getProgressPercentage, getNotificationState } = useNotificationStore();
@@ -85,7 +87,8 @@ const iconSource = computed(() => {
 // Utilise currentTime pour forcer la réactivité
 const notificationState = computed(() => {
     // Force la dépendance réactive
-    currentTime.value; // eslint-disable-line no-unused-expressions
+    const _time = currentTime.value;
+    void _time;
     if (isHovered.value && isExpanded.value) return 'expanded';
     return getNotificationState(props);
 });
@@ -94,7 +97,8 @@ const notificationState = computed(() => {
 // Utilise currentTime pour forcer la réactivité
 const progressPercentage = computed(() => {
     // Force la dépendance réactive
-    currentTime.value; // eslint-disable-line no-unused-expressions
+    const _time = currentTime.value;
+    void _time;
     return getProgressPercentage(props);
 });
 
@@ -128,11 +132,6 @@ const notificationClasses = computed(() => {
 function handleClick() {
     if (props.onClick) {
         props.onClick();
-    } else {
-        // Par défaut, fermer la notification
-        if (props.onClose) {
-            props.onClose();
-        }
     }
 }
 
@@ -150,17 +149,21 @@ function handleMouseLeave() {
 
 function handleClose(e) {
     e.stopPropagation();
-    if (props.onClose) {
+    if (props.dismissible !== false && props.onClose) {
         props.onClose();
     }
 }
 
 // Mise à jour de la barre de progression et de l'état
 function startProgressUpdate() {
+    const hasDynamicProgress = props.progress !== null && props.progress !== undefined;
+    if (props.duration === 0 || hasDynamicProgress) {
+        return;
+    }
     progressInterval.value = setInterval(() => {
         // Mettre à jour currentTime pour forcer le recalcul des computed
         currentTime.value = Date.now();
-    }, 100);
+    }, 300);
 }
 
 function stopProgressUpdate() {
@@ -203,7 +206,7 @@ onUnmounted(() => {
             <!-- Contenu de la notification -->
             <div class="flex items-center gap-3 p-3">
                 <!-- Icône -->
-                <div class="flex-shrink-0">
+                <div class="shrink-0">
                     <Icon 
                         :source="iconSource" 
                         :alt="`Icône ${type}`" 
@@ -238,7 +241,7 @@ onUnmounted(() => {
             <!-- Bouton fermeture -->
              <Tooltip :content="'Fermer la notification'"  class="absolute top-2 right-2 z-10" placement="left">
                 <Btn 
-                    v-if="onClose && (notificationState === 'full' || notificationState === 'expanded')"
+                    v-if="dismissible && onClose && (notificationState === 'full' || notificationState === 'expanded')"
                     size="xs" 
                     variant="ghost" 
                     @click="handleClose"

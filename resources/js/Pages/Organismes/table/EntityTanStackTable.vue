@@ -50,6 +50,7 @@ const emit = defineEmits([
     "update:selectedIds",
     "update:selected-ids",
     "loaded",
+    "refresh",
     "action", // Émis pour chaque action d'entité
 ]);
 
@@ -224,6 +225,13 @@ const handleRowClick = (row) => {
 const handleAction = (actionKey, entity, row) => {
     emit("action", actionKey, entity, row);
 };
+
+const handleRefresh = async () => {
+    if (isServerEnabled.value) {
+        await fetchServer();
+    }
+    emit("refresh");
+};
 </script>
 
 <template>
@@ -244,6 +252,7 @@ const handleAction = (actionKey, entity, row) => {
         @update:selected-ids="(ids) => { emit('update:selectedIds', ids); emit('update:selected-ids', ids); }"
         @row-click="handleRowClick"
         @row-dblclick="(row) => emit('row-dblclick', row)"
+        @refresh="handleRefresh"
         @action="handleAction"
     />
 </template>

@@ -35,6 +35,7 @@ const props = defineProps({
     visibleColumns: { type: Object, default: () => ({}) },
 
     exportEnabled: { type: Boolean, default: false },
+    refreshEnabled: { type: Boolean, default: false },
 
     selectionCount: { type: Number, default: 0 },
 });
@@ -44,6 +45,7 @@ const emit = defineEmits([
     "toggle-column",
     "reset-columns",
     "export",
+    "refresh",
     "clear-selection",
 ]);
 
@@ -86,7 +88,7 @@ const actionBtnSize = computed(() => shiftUiSize(props.uiSize, -1));
             />
         </div>
 
-        <div class="flex items-center gap-2 justify-end">
+        <div class="flex w-full flex-wrap items-center justify-end gap-2 md:w-auto md:flex-nowrap">
             <Btn
                 v-if="selectionCount > 0"
                 :size="btnSize"
@@ -108,6 +110,17 @@ const actionBtnSize = computed(() => shiftUiSize(props.uiSize, -1));
                 ariaLabel="Exporter en CSV"
                 @click="emit('export')"
                 title="Exporter en CSV"
+            />
+
+            <ResponsiveActionButton
+                v-if="refreshEnabled"
+                :size="actionBtnSize"
+                :color="uiColor"
+                icon="fa-solid fa-rotate"
+                label="Actualiser"
+                ariaLabel="Actualiser les données"
+                @click="emit('refresh')"
+                title="Actualiser les données"
             />
 
             <Dropdown

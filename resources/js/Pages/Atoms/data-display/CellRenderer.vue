@@ -26,6 +26,7 @@ import Badge from "@/Pages/Atoms/data-display/Badge.vue";
 import Icon from "@/Pages/Atoms/data-display/Icon.vue";
 import Route from "@/Pages/Atoms/action/Route.vue";
 import Tooltip from "@/Pages/Atoms/feedback/Tooltip.vue";
+import CharacteristicInlineGroup from "@/Pages/Molecules/data-display/CharacteristicInlineGroup.vue";
 import { getTruncateClass } from "@/Utils/entity/text-truncate";
 import { warnDev } from "@/Utils/dev-logger";
 
@@ -160,10 +161,6 @@ const customComponentProps = computed(() => {
 
 const hasCustomComponent = computed(() => customComponent.value !== null);
 
-const chipItems = computed(() =>
-    (params.value?.items || []).filter((item) => item && item.value != null && item.value !== "")
-);
-
 const chipsMaxRows = computed(() => {
     const raw =
         params.value?.chipsLayout?.maxRows ??
@@ -174,20 +171,6 @@ const chipsMaxRows = computed(() => {
 });
 
 const chipsUseColumnFlow = computed(() => Boolean(chipsMaxRows.value));
-
-const chipsContainerClass = computed(() => {
-    if (chipsUseColumnFlow.value) {
-        return "inline-grid grid-flow-col auto-cols-max items-center content-start gap-x-2 gap-y-0.5 max-w-full overflow-x-auto overflow-y-hidden align-middle";
-    }
-    return "inline-flex flex-wrap items-center gap-x-2 gap-y-0.5";
-});
-
-const chipsContainerStyle = computed(() => {
-    if (!chipsUseColumnFlow.value) return undefined;
-    return {
-        gridTemplateRows: `repeat(${chipsMaxRows.value}, minmax(0, max-content))`,
-    };
-});
 </script>
 
 <template>
@@ -306,26 +289,11 @@ const chipsContainerStyle = computed(() => {
     </span>
 
     <!-- chips : colonnes résumées (icône + valeur avec tooltip par item) -->
-    <span v-else-if="type === 'chips'" :class="chipsContainerClass" :style="chipsContainerStyle">
-        <template v-for="(item, idx) in chipItems" :key="idx">
-            <Tooltip
-                :content="item.tooltip || item.label || String(item.value)"
-                placement="top"
-                class="inline-flex items-center gap-1"
-            >
-                <Icon
-                    v-if="item.icon"
-                    :source="item.icon"
-                    :alt="item.tooltip || item.label || ''"
-                    size="xs"
-                    class="shrink-0 opacity-80"
-                    :style="item.color ? { color: item.color } : undefined"
-                />
-                <span class="text-xs" :style="item.color ? { color: item.color } : undefined">{{ item.value }}</span>
-            </Tooltip>
-        </template>
-        <span v-if="!chipItems.length" class="text-base-content/40">—</span>
-    </span>
+    <CharacteristicInlineGroup
+        v-else-if="type === 'chips'"
+        :items="params.items || []"
+        :max-rows="chipsUseColumnFlow ? chipsMaxRows : null"
+    />
 
     <!-- custom: sera géré plus tard (Phase 1: fallback text) -->
     <span v-else>

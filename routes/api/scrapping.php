@@ -50,6 +50,12 @@ Route::prefix('scrapping')->group(function () {
         ->whereNumber('id');
     Route::post('/preview/batch', [App\Http\Controllers\Scrapping\ScrappingController::class, 'previewBatch'])
         ->name('scrapping.preview.batch');
+    Route::post('/jobs', [App\Http\Controllers\Scrapping\ScrappingController::class, 'createJob'])
+        ->name('scrapping.jobs.create');
+    Route::get('/jobs/{jobId}', [App\Http\Controllers\Scrapping\ScrappingController::class, 'jobStatus'])
+        ->name('scrapping.jobs.status');
+    Route::post('/jobs/{jobId}/cancel', [App\Http\Controllers\Scrapping\ScrappingController::class, 'cancelJob'])
+        ->name('scrapping.jobs.cancel');
     Route::get('/dofusdb/item-types', [App\Http\Controllers\Scrapping\DofusDbItemTypesCatalogController::class, 'index'])
         ->name('scrapping.dofusdb.item-types');
     Route::get('/dofusdb/characteristic-labels', [App\Http\Controllers\Scrapping\ScrappingController::class, 'dofusdbCharacteristicLabels'])

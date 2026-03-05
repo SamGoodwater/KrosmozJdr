@@ -32,9 +32,12 @@ const props = defineProps({
      * Activer via `config.ui.debug` dans TanStackTable.
      */
     debug: { type: Boolean, default: false },
+    presetsEnabled: { type: Boolean, default: false },
+    showPresetPanel: { type: Boolean, default: false },
+    isActivePresetDirty: { type: Boolean, default: false },
 });
 
-const emit = defineEmits(["update:filters", "reset", "apply"]);
+const emit = defineEmits(["update:filters", "reset", "apply", "toggle-presets"]);
 
 const filterableColumns = () => (Array.isArray(props.columns) ? props.columns : []).filter((c) => c?.filter?.id && c?.filter?.type);
 
@@ -364,9 +367,25 @@ const clearAllActiveFilters = () => {
 
 <template>
     <div class="flex flex-col gap-3">
-        <div class="flex items-center justify-between">
+        <div class="flex flex-wrap items-center justify-between gap-2 md:flex-nowrap">
             <div class="text-sm font-semibold">Filtres</div>
-            <div class="flex items-center gap-2">
+            <div class="flex w-full flex-wrap items-center justify-end gap-2 sm:w-auto">
+                <Btn
+                    v-if="presetsEnabled"
+                    size="xs"
+                    variant="ghost"
+                    :color="uiColor"
+                    :title="showPresetPanel ? 'Masquer les presets' : 'Afficher les presets'"
+                    :aria-label="showPresetPanel ? 'Masquer les presets' : 'Afficher les presets'"
+                    class="relative"
+                    @click="emit('toggle-presets')"
+                >
+                    <i class="fa-solid fa-bookmark"></i>
+                    <span
+                        v-if="isActivePresetDirty"
+                        class="absolute -top-1 -right-1 w-2 h-2 rounded-full bg-warning ring-1 ring-base-100"
+                    ></span>
+                </Btn>
                 <Btn
                     size="xs"
                     variant="outline"

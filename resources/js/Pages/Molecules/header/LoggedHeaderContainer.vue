@@ -23,6 +23,7 @@ import Avatar from "@/Pages/Atoms/data-display/Avatar.vue";
 import Dropdown from "@/Pages/Atoms/action/Dropdown.vue";
 import Icon from "@/Pages/Atoms/data-display/Icon.vue";
 import Tooltip from "@/Pages/Atoms/feedback/Tooltip.vue";
+import ScrappingJobNotificationCard from "@/Pages/Molecules/feedback/ScrappingJobNotificationCard.vue";
 import GlassMenuPanel from "@/Pages/Atoms/navigation/GlassMenuPanel.vue";
 import GlassMenuItem from "@/Pages/Atoms/navigation/GlassMenuItem.vue";
 import GlassMenuSectionTitle from "@/Pages/Atoms/navigation/GlassMenuSectionTitle.vue";
@@ -127,6 +128,15 @@ function openNotification(item) {
 }
 
 async function deleteNotification(id) {
+    const current = notifications.value.find((n) => n.id === id);
+    if (current?.is_scrapping_job && current?.data?.locked === true) {
+        notificationStore?.addNotification({
+            message: "Ce job est en cours, suppression indisponible.",
+            type: "info",
+            duration: 2500,
+        });
+        return;
+    }
     const token = getCsrfToken();
     const res = await fetch(route('notifications.destroy', { id }), {
         method: 'DELETE',
@@ -137,6 +147,51 @@ async function deleteNotification(id) {
     if (json.success) {
         notifications.value = notifications.value.filter((n) => n.id !== id);
         if (json.unread_count !== undefined) unreadCount.value = json.unread_count;
+    }
+}
+
+async function cancelScrappingJobNotification(item) {
+    const token = getCsrfToken();
+    const jobId = item?.data?.meta?.job_id;
+    if (!jobId) return;
+    try {
+        await fetch(`/api/scrapping/jobs/${encodeURIComponent(jobId)}/cancel`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                Accept: "application/json",
+                "X-CSRF-TOKEN": token || "",
+                "X-Requested-With": "XMLHttpRequest",
+            },
+            credentials: "same-origin",
+            body: JSON.stringify({}),
+        });
+
+        await fetch(route("notifications.scrapping.update", { id: item.id }), {
+            method: "PATCH",
+            headers: {
+                "Content-Type": "application/json",
+                Accept: "application/json",
+                "X-CSRF-TOKEN": token || "",
+                "X-Requested-With": "XMLHttpRequest",
+            },
+            credentials: "same-origin",
+            body: JSON.stringify({
+                status: "cancelled",
+                message: "Scrapping annulé depuis le centre de notifications.",
+                progress: {
+                    ...(item?.data?.progress || {}),
+                },
+            }),
+        });
+
+        fetchNotifications();
+    } catch {
+        notificationStore?.addNotification({
+            message: "Impossible d'annuler le job pour le moment.",
+            type: "error",
+            duration: 3000,
+        });
     }
 }
 
@@ -152,6 +207,16 @@ const temporaryHistory = computed(() => notificationStore?.temporaryHistory?.val
 
 function copyToClipboard(text) {
     navigator.clipboard.writeText(text).catch(() => {});
+}
+
+function copyMessageItem(item) {
+    const text = [item?.message, item?.url].filter(Boolean).join('\n');
+    copyToClipboard(text);
+    notificationStore?.addNotification({
+        message: 'Copié dans le presse-papiers',
+        type: 'success',
+        duration: 2500,
+    });
 }
 
 function copyTemporaryItem(t) {
@@ -214,7 +279,11 @@ function handlePopoverKeydown(e) {
         const id = current.dataset.notificationId;
         const tempId = current.dataset.tempId;
         if (id) {
-            deleteNotification(Number(id));
+            const notif = notifications.value.find((n) => String(n.id) === String(id));
+            if (notif?.is_scrapping_job && notif?.data?.locked === true) {
+                return;
+            }
+            deleteNotification(id);
             const nextIdx = Math.min(idx, focusable.length - 2);
             focusable[nextIdx >= 0 ? nextIdx : 0]?.focus();
         } else if (tempId) {
@@ -335,29 +404,41 @@ const logout = () => {
                                         class="relative group"
                                         :class="idx > 0 ? 'border-glass-t-xs' : ''"
                                     >
-                                        <button
-                                            type="button"
-                                            role="option"
-                                            data-keyboard-item
-                                            :data-notification-id="item.id"
-                                            :data-message="item.message"
-                                            class="w-full text-left px-3 py-2.5 pr-8 text-sm flex flex-col gap-0.5 transition-colors hover:bg-base-200/50"
-                                            @click="openNotification(item)"
-                                        >
-                                            <span class="line-clamp-2 text-base-content">{{ item.message }}</span>
-                                            <span class="text-xs text-base-content/50">{{ formatNotificationDate(item.created_at) }}</span>
-                                        </button>
-                                        <Btn
-                                            type="button"
-                                            variant="ghost"
-                                            size="xs"
-                                            circle
-                                            class="absolute top-1.5 right-1 opacity-40 hover:opacity-100 transition-opacity"
-                                            aria-label="Supprimer la notification"
-                                            @click.stop="deleteNotification(item.id)"
-                                        >
-                                            <Icon source="fa-times" pack="solid" size="xs" alt="" />
-                                        </Btn>
+                                        <ScrappingJobNotificationCard
+                                            v-if="item.is_scrapping_job"
+                                            :item="item"
+                                            compact
+                                            class="m-2"
+                                            @open="openNotification(item)"
+                                            @copy="copyMessageItem(item)"
+                                            @cancel="cancelScrappingJobNotification(item)"
+                                            @delete="deleteNotification(item.id)"
+                                        />
+                                        <template v-else>
+                                            <button
+                                                type="button"
+                                                role="option"
+                                                data-keyboard-item
+                                                :data-notification-id="item.id"
+                                                :data-message="item.message"
+                                                class="w-full text-left px-3 py-2.5 pr-8 text-sm flex flex-col gap-0.5 transition-colors hover:bg-base-200/50"
+                                                @click="openNotification(item)"
+                                            >
+                                                <span class="line-clamp-2 text-base-content">{{ item.message }}</span>
+                                                <span class="text-xs text-base-content/50">{{ formatNotificationDate(item.created_at) }}</span>
+                                            </button>
+                                            <Btn
+                                                type="button"
+                                                variant="ghost"
+                                                size="xs"
+                                                circle
+                                                class="absolute top-1.5 right-1 opacity-40 hover:opacity-100 transition-opacity"
+                                                aria-label="Supprimer la notification"
+                                                @click.stop="deleteNotification(item.id)"
+                                            >
+                                                <Icon source="fa-times" pack="solid" size="xs" alt="" />
+                                            </Btn>
+                                        </template>
                                     </div>
                                 </template>
                             </template>

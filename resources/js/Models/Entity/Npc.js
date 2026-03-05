@@ -78,6 +78,22 @@ export class Npc extends BaseModel {
         return this._data.shop || null;
     }
 
+    get panopliesCount() {
+        return Number(this._data.panoplies_count ?? this.panoplies.length ?? 0);
+    }
+
+    get campaignsCount() {
+        return Number(this._data.campaigns_count ?? this.campaigns.length ?? 0);
+    }
+
+    get scenariosCount() {
+        return Number(this._data.scenarios_count ?? this.scenarios.length ?? 0);
+    }
+
+    get hasShop() {
+        return Boolean(this._data.has_shop ?? this.shop);
+    }
+
     // ============================================
     // FORMATAGE DES CELLULES (surcharge pour champs spécifiques)
     // ============================================
@@ -138,6 +154,8 @@ export class Npc extends BaseModel {
                 return this._toSummaryStatsCell(options);
             case 'creature_summary_control':
                 return this._toSummaryControlCell(options);
+            case 'npc_summary_relations':
+                return this._toNpcSummaryRelationsCell(options);
             default:
                 if (fieldKey.startsWith('creature_')) {
                     const creatureKey = fieldKey.slice(9);
@@ -345,6 +363,48 @@ export class Npc extends BaseModel {
     /** @private */
     _toSummaryControlCell(_options) {
         return this._toSummaryGroupCell(_options, 'Contrôle', ['ca', 'dodge_pa', 'dodge_pm', 'fuite', 'tacle']);
+    }
+
+    /**
+     * Colonne résumée : relations gameplay du PNJ.
+     * @private
+     */
+    _toNpcSummaryRelationsCell(_options) {
+        const items = [
+            {
+                icon: 'fa-solid fa-layer-group',
+                value: this.panopliesCount > 0 ? `${this.panopliesCount} panoplie${this.panopliesCount > 1 ? 's' : ''}` : null,
+                tooltip: this.panopliesCount > 0 ? `Panoplies: ${this.panopliesCount}` : '',
+            },
+            {
+                icon: 'fa-solid fa-flag',
+                value: this.campaignsCount > 0 ? `${this.campaignsCount} campagne${this.campaignsCount > 1 ? 's' : ''}` : null,
+                tooltip: this.campaignsCount > 0 ? `Campagnes: ${this.campaignsCount}` : '',
+            },
+            {
+                icon: 'fa-solid fa-scroll',
+                value: this.scenariosCount > 0 ? `${this.scenariosCount} scénario${this.scenariosCount > 1 ? 's' : ''}` : null,
+                tooltip: this.scenariosCount > 0 ? `Scénarios: ${this.scenariosCount}` : '',
+            },
+            {
+                icon: 'fa-solid fa-store',
+                value: this.hasShop ? 'Boutique' : null,
+                tooltip: this.hasShop ? 'Ce PNJ possède une boutique' : '',
+            },
+        ].filter((it) => it.value !== null);
+
+        const searchValue = items.map((it) => String(it.value)).join(' ');
+
+        return {
+            type: 'chips',
+            value: '',
+            params: {
+                items,
+                sortValue: items.length,
+                searchValue,
+                filterValue: searchValue,
+            },
+        };
     }
 
     /**
