@@ -67,7 +67,7 @@ class SectionController extends Controller
      * - Visibilité initiale : `guest`
      * 
      * @param StoreSectionRequest $request Requête validée contenant les données de la section
-     * @return \Illuminate\Http\RedirectResponse Redirection vers la page parente
+     * @return \Illuminate\Http\RedirectResponse|\Illuminate\Http\JsonResponse Redirection Inertia ou réponse JSON
      * @throws \Illuminate\Auth\Access\AuthorizationException Si l'utilisateur n'a pas les droits
      */
     public function store(\App\Http\Requests\StoreSectionRequest $request): \Illuminate\Http\RedirectResponse
@@ -139,7 +139,7 @@ class SectionController extends Controller
      * @return \Illuminate\Http\RedirectResponse Redirection vers la page parente
      * @throws \Illuminate\Auth\Access\AuthorizationException Si l'utilisateur n'a pas les droits
      */
-    public function update(\App\Http\Requests\UpdateSectionRequest $request, \App\Models\Section $section): \Illuminate\Http\RedirectResponse
+    public function update(\App\Http\Requests\UpdateSectionRequest $request, \App\Models\Section $section): \Illuminate\Http\RedirectResponse|\Illuminate\Http\JsonResponse
     {
         $this->authorize('update', $section);
         
@@ -160,6 +160,16 @@ class SectionController extends Controller
         } catch (\Exception $e) {
             // Si les notifications échouent, on continue quand même (non bloquant)
             \Log::warning('Erreur lors de l\'envoi des notifications pour la section ' . $section->id . ': ' . $e->getMessage());
+        }
+
+        if ($request->expectsJson()) {
+            $section->load(['page', 'users', 'media', 'createdBy']);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Section mise à jour.',
+                'section' => new SectionResource($section),
+            ]);
         }
         
         // Toujours rediriger vers la page parente avec Inertia

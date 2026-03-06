@@ -11,6 +11,7 @@ import axios from 'axios';
 import InputField from '@/Pages/Molecules/data-input/InputField.vue';
 import Btn from '@/Pages/Atoms/action/Btn.vue';
 import Icon from '@/Pages/Atoms/data-display/Icon.vue';
+import InlineSaveStatus from '@/Pages/Atoms/feedback/InlineSaveStatus.vue';
 import { useSectionSave } from '../../composables/useSectionSave';
 
 const props = defineProps({
@@ -26,6 +27,21 @@ const isUploading = ref(false);
 const uploadError = ref('');
 const syncFromProps = ref(false);
 const lastEmittedSignature = ref('');
+const saveState = ref('idle'); // idle | saving | saved | error
+let saveStateTimer = null;
+
+const setSaveState = (state) => {
+  saveState.value = state;
+  if (saveStateTimer) {
+    clearTimeout(saveStateTimer);
+    saveStateTimer = null;
+  }
+  if (state === 'saved') {
+    saveStateTimer = setTimeout(() => {
+      saveState.value = 'idle';
+    }, 1600);
+  }
+};
 
 const localImages = ref(
   Array.isArray(props.data?.images)
@@ -61,7 +77,11 @@ watch(localImages, () => {
   if (signature === lastEmittedSignature.value) return;
   lastEmittedSignature.value = signature;
   const newData = { ...props.data, images: normalized };
-  saveSection(props.section.id, { data: newData });
+  saveSection(props.section.id, { data: newData }, {
+    onQueued: () => setSaveState('saving'),
+    onSuccess: () => setSaveState('saved'),
+    onError: () => setSaveState('error'),
+  });
   emit('data-updated', newData);
 }, { deep: true });
 
@@ -159,6 +179,9 @@ const addSectionFileToGallery = (file) => {
 
 <template>
   <div class="section-gallery-edit space-y-4">
+    <div class="flex justify-end">
+      <InlineSaveStatus :state="saveState" />
+    </div>
     <div class="space-y-2">
       <label class="label">
         <span class="label-text">Uploader des images</span>

@@ -1908,11 +1908,55 @@ namespace App\Models{
 /**
  * Référentiel local des états DofusDB appliqués par les sorts.
  *
+ * @property int $id
+ * @property int $dofusdb_id
+ * @property string|null $name
+ * @property string|null $icon
+ * @property string|null $image
+ * @property bool $prevents_spell_cast
+ * @property bool $prevents_fight
+ * @property bool $cant_be_moved
+ * @property bool $cant_be_pushed
+ * @property bool $cant_deal_damage
+ * @property bool $invulnerable
+ * @property bool $cant_switch_position
+ * @property bool $incurable
+ * @property bool $invulnerable_melee
+ * @property bool $invulnerable_range
+ * @property bool $cant_tackle
+ * @property bool $cant_be_tackled
+ * @property bool $display_turn_remaining
+ * @property bool $is_main_state
+ * @property array<array-key, mixed>|null $raw
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Entity\Spell> $spells
  * @property-read int|null $spells_count
  * @method static \Illuminate\Database\Eloquent\Builder<static>|SpellState newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|SpellState newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|SpellState query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SpellState whereCantBeMoved($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SpellState whereCantBePushed($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SpellState whereCantBeTackled($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SpellState whereCantDealDamage($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SpellState whereCantSwitchPosition($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SpellState whereCantTackle($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SpellState whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SpellState whereDisplayTurnRemaining($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SpellState whereDofusdbId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SpellState whereIcon($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SpellState whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SpellState whereImage($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SpellState whereIncurable($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SpellState whereInvulnerable($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SpellState whereInvulnerableMelee($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SpellState whereInvulnerableRange($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SpellState whereIsMainState($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SpellState whereName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SpellState wherePreventsFight($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SpellState wherePreventsSpellCast($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SpellState whereRaw($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SpellState whereUpdatedAt($value)
  */
 	class SpellState extends \Eloquent {}
 }

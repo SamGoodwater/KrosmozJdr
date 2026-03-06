@@ -10,6 +10,7 @@
  * await createSection({ page_id: 1, template: 'text' });
  */
 import { router } from '@inertiajs/vue3';
+import axios from 'axios';
 import { Section } from '@/Models';
 import { logDev } from '@/Utils/dev-logger';
 
@@ -70,18 +71,62 @@ export function useSectionAPI() {
       
       // Ziggy attend un objet avec la clé correspondant au paramètre de la route
       const routeParams = { section: sectionId };
-      router.patch(route('sections.update', routeParams), updates, {
-        preserveScroll: true,
-        only: ['page'],
-        onSuccess: (page) => {
-          resolve(page);
-        },
-        onError: (errors) => {
-          console.error('Erreur lors de la mise à jour de la section:', errors);
-          reject(errors);
-        },
-        ...options
-      });
+      const { silent = false, ...visitOptions } = options || {};
+      const patchWithInertia = () => {
+        router.patch(route('sections.update', routeParams), updates, {
+          preserveScroll: true,
+          only: ['page'],
+          onSuccess: (page) => {
+            resolve(page);
+          },
+          onError: (errors) => {
+            console.error('Erreur lors de la mise à jour de la section:', errors);
+            reject(errors);
+          },
+          ...visitOptions
+        });
+      };
+
+      if (silent) {
+        const csrfToken = typeof document !== 'undefined'
+          ? document.querySelector('meta[name="csrf-token"]')?.getAttribute('content')
+          : null;
+
+        axios
+          .patch(route('sections.update', routeParams), updates, {
+            withCredentials: true,
+            headers: {
+              Accept: 'application/json',
+              'X-Requested-With': 'XMLHttpRequest',
+              ...(csrfToken ? { 'X-CSRF-TOKEN': csrfToken } : {}),
+            },
+          })
+          .then((response) => {
+            // Si le backend renvoie une page HTML (redirect/session), on fallback sur Inertia.
+            const isJsonPayload = response?.data && typeof response.data === 'object';
+            if (!isJsonPayload) {
+              patchWithInertia();
+              return;
+            }
+            visitOptions.onSuccess?.(response?.data);
+            resolve(response?.data);
+          })
+          .catch((error) => {
+            const status = error?.response?.status;
+            // En cas de problème session/CSRF/auth, on retente via Inertia (flux historique fiable).
+            if (status === 401 || status === 403 || status === 419) {
+              patchWithInertia();
+              return;
+            }
+            const errors = error?.response?.data?.errors || error?.response?.data || error;
+            console.error('Erreur lors de la mise à jour silencieuse de la section:', errors);
+            visitOptions.onError?.(errors);
+            reject(errors);
+          });
+        return;
+      }
+
+      patchWithInertia();
     });
   };
 

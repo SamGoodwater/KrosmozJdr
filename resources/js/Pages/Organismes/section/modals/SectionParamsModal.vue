@@ -20,18 +20,15 @@
  * @emits close - Événement émis quand le modal se ferme
  * @emits validated - Événement émis avec { title, slug, order, read_level, write_level, state, settings } validés
  */
-import { ref, computed, watch, nextTick, defineAsyncComponent } from 'vue';
+import { ref, computed, watch, nextTick } from 'vue';
 import { router } from '@inertiajs/vue3';
 import Modal from '@/Pages/Molecules/action/Modal.vue';
 import InputField from '@/Pages/Molecules/data-input/InputField.vue';
 import SelectField from '@/Pages/Molecules/data-input/SelectField.vue';
 import TextareaField from '@/Pages/Molecules/data-input/TextareaField.vue';
-import ToggleField from '@/Pages/Molecules/data-input/ToggleField.vue';
-import ColorField from '@/Pages/Molecules/data-input/ColorField.vue';
 import Btn from '@/Pages/Atoms/action/Btn.vue';
 import Icon from '@/Pages/Atoms/data-display/Icon.vue';
 import { useSectionAPI } from '../composables/useSectionAPI';
-import { useTemplateRegistry } from '../composables/useTemplateRegistry';
 import { TransformService, SectionParameterService, SectionMapper } from '@/Utils/Services';
 import { Section } from '@/Models';
 import { logDev, warnDev } from '@/Utils/dev-logger';
@@ -59,33 +56,6 @@ const emit = defineEmits(['close', 'validated', 'deleted']);
 
 // Composables
 const { deleteSection } = useSectionAPI();
-
-// Registry de templates
-const registry = useTemplateRegistry();
-
-// Configuration du template (depuis le registry)
-const templateConfig = computed(() => {
-    return registry.getConfig(props.sectionTemplate);
-});
-
-// Paramètres du template (générique depuis config.parameters)
-const templateParameters = computed(() => {
-    if (!templateConfig.value || !templateConfig.value.parameters) {
-        return [];
-    }
-    return SectionParameterService.getParameterFields(templateConfig.value.parameters);
-});
-
-// Composant de paramètres dédié au template (si défini)
-const templateParamsComponent = computed(() => {
-    const config = templateConfig.value;
-    if (!config?.paramsComponent || typeof config.paramsComponent !== 'function') {
-        return null;
-    }
-    return defineAsyncComponent(config.paramsComponent);
-});
-
-const hasTemplateParamsView = computed(() => Boolean(templateConfig.value?.paramsComponent));
 
 // Options pour les selects
 const roleOptions = computed(() => SectionParameterService.getVisibilityOptions());
@@ -197,24 +167,6 @@ const initializeFormData = () => {
         },
     };
     
-    // Appliquer les valeurs par défaut des paramètres du template
-    if (templateConfig.value?.parameters) {
-        templateConfig.value.parameters.forEach(param => {
-            if (formData.settings[param.key] === undefined && param.default !== undefined) {
-                formData.settings[param.key] = param.default;
-            }
-        });
-    }
-
-    // entity_table : afficher filters en JSON string dans le textarea
-    if (props.sectionTemplate === 'entity_table' && formData.settings.filters != null && typeof formData.settings.filters === 'object') {
-        try {
-            formData.settings.filters = JSON.stringify(formData.settings.filters, null, 2);
-        } catch {
-            formData.settings.filters = '{}';
-        }
-    }
-
     return formData;
 };
 
@@ -418,11 +370,6 @@ const handleDelete = async () => {
  * Titre du modal selon le template
  */
 const modalTitle = computed(() => {
-    const config = templateConfig.value;
-    if (config && config.name) {
-        return `Paramètres de la section ${config.name.toLowerCase()}`;
-    }
-    
     return 'Paramètres de la section';
 });
 
@@ -545,89 +492,6 @@ const canDeleteSection = computed(() => {
                 />
             </div>
             
-            <!-- Section : Paramètres spécifiques au template (vue dédiée ou formulaire générique) -->
-            <div v-if="hasTemplateParamsView || templateParameters.length > 0" class="space-y-4">
-                <h4 class="text-md font-semibold text-base-content/80 border-b border-base-300 pb-2">
-                    Paramètres du template
-                </h4>
-
-                <!-- Vue dédiée du template (ex. entity_table) -->
-                <component
-                    v-if="hasTemplateParamsView && templateParamsComponent"
-                    :is="templateParamsComponent"
-                    :section="sectionModel"
-                    :settings="formData.settings"
-                    :data="formData.data"
-                    mode="edit"
-                    @update:settings="(v) => { Object.assign(formData.settings, v); formDataVersion++; }"
-                    @update:data="(v) => { formData.data = { ...(formData.data || {}), ...(v || {}) }; formDataVersion++; }"
-                />
-
-                <!-- Sinon : génération automatique des champs depuis config.parameters -->
-                <template v-else-if="templateParameters.length > 0" v-for="param in templateParameters" :key="param.key">
-                    <!-- Select -->
-                    <SelectField
-                        v-if="param.type === 'select'"
-                        v-model="formData.settings[param.key]"
-                        :label="param.label"
-                        :helper="param.description"
-                        :options="param.options"
-                    />
-                    
-                    <!-- Number -->
-                    <InputField
-                        v-else-if="param.type === 'number'"
-                        v-model.number="formData.settings[param.key]"
-                        type="number"
-                        :label="param.label"
-                        :helper="param.description"
-                        :min="param.min"
-                        :max="param.max"
-                        :step="param.step"
-                    >
-                        <template v-if="param.suffix" #overEnd>
-                            <span class="text-sm text-base-content/60 px-2">{{ param.suffix }}</span>
-                        </template>
-                    </InputField>
-                    
-                    <!-- Toggle -->
-                    <ToggleField
-                        v-else-if="param.type === 'toggle'"
-                        v-model="formData.settings[param.key]"
-                        :label="param.label"
-                        :helper="param.description"
-                    />
-                    
-                    <!-- Textarea -->
-                    <TextareaField
-                        v-else-if="param.type === 'textarea'"
-                        v-model="formData.settings[param.key]"
-                        :label="param.label"
-                        :helper="param.description"
-                        :placeholder="param.placeholder"
-                        :rows="param.rows"
-                        :maxlength="param.maxLength"
-                    />
-                    
-                    <!-- Color -->
-                    <ColorField
-                        v-else-if="param.type === 'color'"
-                        v-model="formData.settings[param.key]"
-                        :label="param.label"
-                        :helper="param.description"
-                    />
-                    
-                    <!-- Text (par défaut) -->
-                    <InputField
-                        v-else
-                        v-model="formData.settings[param.key]"
-                        :label="param.label"
-                        :helper="param.description"
-                        :placeholder="param.placeholder"
-                        :maxlength="param.maxLength"
-                    />
-                </template>
-            </div>
         </div>
 
         <template #actions>

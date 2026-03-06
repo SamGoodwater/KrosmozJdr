@@ -61,7 +61,7 @@ class SectionResource extends JsonResource
                     'id' => $media->id,
                     'file' => $media->getUrl(),
                     'url' => $media->getUrl(),
-                    'thumb_url' => $media->hasGeneratedConversions('thumb') ? $media->getUrl('thumb') : null,
+                    'thumb_url' => $media->hasGeneratedConversion('thumb') ? $media->getUrl('thumb') : null,
                     'title' => $media->getCustomProperty('title'),
                     'comment' => $media->getCustomProperty('comment'),
                     'description' => $media->getCustomProperty('description'),

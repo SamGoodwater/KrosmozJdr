@@ -19,8 +19,6 @@ export default {
     filters: {},
     columns: [],
   },
-  /** Composant Vue dédié pour la saisie des paramètres (modal + création) */
-  paramsComponent: () => import('./SectionEntityTableParams.vue'),
   parameters: [
     {
       key: 'entity',

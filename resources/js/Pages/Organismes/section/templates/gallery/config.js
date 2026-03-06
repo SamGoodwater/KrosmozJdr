@@ -43,7 +43,5 @@ export default {
   defaultData: {
     images: [],
   },
-  /** Composant Vue dédié pour la saisie des paramètres (création + édition) */
-  paramsComponent: () => import('./SectionGalleryParams.vue'),
 };
 

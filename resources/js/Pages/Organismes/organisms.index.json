@@ -304,13 +304,6 @@
     "file": "section/templates/entity_table/SectionEntityTableRead.vue"
   },
   {
-    "name": "SectionEntityTableParams",
-    "description": "Vue paramètres dédiée au template entity_table. Utilisée dans SectionParamsModal (édition) et CreateSectionModal (création). Émet update:settings avec { entity, filters, limit } pour que le parent fusionne dans formData.",
-    "props": [],
-    "slots": [],
-    "file": "section/templates/entity_table/SectionEntityTableParams.vue"
-  },
-  {
     "name": "SectionEntityTableEdit",
     "description": "SectionEntityTableEdit Template Édition des paramètres du tableau d'entités (type d'entité, filtres JSON, limite). Les valeurs sont stockées dans section.settings et sauvegardées via useSectionSave.",
     "props": [],
@@ -365,7 +358,7 @@
   },
   {
     "name": "CreateSectionModal",
-    "description": "CreateSectionModal Component Modal pour créer une nouvelle section sur une page. - Étape 1 : choix du type de section (et titre optionnel). - Étape 2 (si le template fournit paramsComponent) : vue dédiée des paramètres, puis création. - Sinon : création directe avec valeurs par défaut.",
+    "description": "CreateSectionModal Component Modal pour créer une nouvelle section sur une page. - Choix du type de section (et titre optionnel). - Création immédiate avec les valeurs par défaut du template. - La configuration détaillée se fait ensuite en édition inline.",
     "props": [],
     "slots": [],
     "file": "section/modals/CreateSectionModal.vue"

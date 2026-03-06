@@ -3,11 +3,11 @@
  * CreateSectionModal Component
  *
  * Modal pour créer une nouvelle section sur une page.
- * - Étape 1 : choix du type de section (et titre optionnel).
- * - Étape 2 (si le template fournit paramsComponent) : vue dédiée des paramètres, puis création.
- * - Sinon : création directe avec valeurs par défaut.
+ * - Choix du type de section (et titre optionnel).
+ * - Création immédiate avec les valeurs par défaut du template.
+ * - La configuration détaillée se fait ensuite en édition inline.
  */
-import { computed, ref, defineAsyncComponent } from 'vue';
+import { computed, ref } from 'vue';
 import { useForm } from '@inertiajs/vue3';
 import Modal from '@/Pages/Molecules/action/Modal.vue';
 import InputField from '@/Pages/Molecules/data-input/InputField.vue';
@@ -36,20 +36,7 @@ const registry = useTemplateRegistry();
 // Options des types de sections (depuis le registry)
 const sectionTypes = computed(() => registry.getOptions());
 
-// Étape de création : 'type' (choix) ou 'params' (vue paramètres du template)
-const createStep = ref('type');
-const pendingSettings = ref({});
-const pendingData = ref({});
 const submitError = ref('');
-
-const selectedTemplateConfig = computed(() =>
-  form.template ? registry.getConfig(form.template) : null
-);
-const templateParamsComponent = computed(() => {
-  const fn = selectedTemplateConfig.value?.paramsComponent;
-  if (typeof fn !== 'function') return null;
-  return defineAsyncComponent(fn);
-});
 
 /**
  * Parse une icône au format "fa-solid fa-xxx" ou "fa-xxx" et retourne { source, pack }
@@ -87,39 +74,13 @@ const form = useForm({
 const { createSection } = useSectionAPI();
 
 /**
- * Gère la sélection d'un template de section.
- * Si le template a une vue paramètres dédiée, on passe à l'étape "params" ; sinon on crée directement.
+ * Gère la sélection d'un template de section et crée immédiatement la section
+ * avec les valeurs par défaut du registry.
  */
 const handleSelectType = async (type) => {
     submitError.value = '';
     form.template = type.value;
-    const config = registry.getConfig(type.value);
-    const defaults = registry.getDefaults(type.value);
-
-    if (config?.paramsComponent) {
-        createStep.value = 'params';
-        pendingSettings.value = { ...defaults.settings };
-        pendingData.value = { ...defaults.data };
-        return;
-    }
     await handleCreateSection(type.value);
-};
-
-/**
- * Création à partir de l'étape paramètres (valeurs saisies dans la vue dédiée).
- */
-const handleCreateFromParams = async () => {
-    await handleCreateSection(form.template, {
-        settings: { ...pendingSettings.value },
-        data: { ...pendingData.value },
-    });
-};
-
-const handleBackToType = () => {
-    createStep.value = 'type';
-    form.template = null;
-    pendingSettings.value = {};
-    pendingData.value = {};
 };
 
 /**
@@ -202,19 +163,8 @@ const handleClose = () => {
     form.template = null;
     form.clearErrors();
     submitError.value = '';
-    createStep.value = 'type';
-    pendingSettings.value = {};
-    pendingData.value = {};
     emit('close');
 };
-
-function onParamsUpdateSettings(v) {
-    pendingSettings.value = { ...pendingSettings.value, ...v };
-}
-
-function onParamsUpdateData(v) {
-    pendingData.value = { ...pendingData.value, ...v };
-}
 </script>
 
 <template>
@@ -237,84 +187,54 @@ function onParamsUpdateData(v) {
                 <span>{{ submitError }}</span>
             </div>
 
-            <!-- Étape 1 : type + titre -->
-            <template v-if="createStep === 'type'">
-                <InputField
-                    v-model="form.title"
-                    label="Titre de la section (optionnel)"
-                    placeholder="Ex: Introduction, Description, etc."
-                    :error="form.errors.title"
-                />
-                <div>
-                    <label class="label">
-                        <span class="label-text font-semibold">Type de section</span>
-                    </label>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2">
-                        <button
-                            v-for="type in sectionTypes"
-                            :key="type.value"
-                            @click="handleSelectType(type)"
-                            :class="[
-                                'p-4 rounded-lg border-2 transition-all text-left',
-                                form.template === type.value
-                                    ? 'border-primary bg-primary/10'
-                                    : 'border-base-300 hover:border-primary/50 hover:bg-base-200'
-                            ]"
-                            type="button"
-                        >
-                            <div class="flex flex-col gap-2">
-                                <div class="flex items-center gap-3">
-                                    <Icon
-                                        :source="parseIcon(type.icon).source"
-                                        :pack="parseIcon(type.icon).pack"
-                                        :alt="type.label"
-                                        size="lg"
-                                        :class="form.template === type.value ? 'text-primary' : 'text-base-content'"
-                                    />
-                                    <span class="font-medium">{{ type.label }}</span>
-                                </div>
-                                <p v-if="type.description" class="text-sm text-base-content/70">
-                                    {{ type.description }}
-                                </p>
+            <InputField
+                v-model="form.title"
+                label="Titre de la section (optionnel)"
+                placeholder="Ex: Introduction, Description, etc."
+                :error="form.errors.title"
+            />
+            <div>
+                <label class="label">
+                    <span class="label-text font-semibold">Type de section</span>
+                </label>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2">
+                    <button
+                        v-for="type in sectionTypes"
+                        :key="type.value"
+                        @click="handleSelectType(type)"
+                        :class="[
+                            'p-4 rounded-lg border-2 transition-all text-left',
+                            form.template === type.value
+                                ? 'border-primary bg-primary/10'
+                                : 'border-base-300 hover:border-primary/50 hover:bg-base-200'
+                        ]"
+                        type="button"
+                    >
+                        <div class="flex flex-col gap-2">
+                            <div class="flex items-center gap-3">
+                                <Icon
+                                    :source="parseIcon(type.icon).source"
+                                    :pack="parseIcon(type.icon).pack"
+                                    :alt="type.label"
+                                    size="lg"
+                                    :class="form.template === type.value ? 'text-primary' : 'text-base-content'"
+                                />
+                                <span class="font-medium">{{ type.label }}</span>
                             </div>
-                        </button>
-                    </div>
-                    <div v-if="form.errors.template" class="label">
-                        <span class="label-text-alt text-error">{{ form.errors.template }}</span>
-                    </div>
+                            <p v-if="type.description" class="text-sm text-base-content/70">
+                                {{ type.description }}
+                            </p>
+                        </div>
+                    </button>
                 </div>
-            </template>
-
-            <!-- Étape 2 : vue paramètres dédiée du template -->
-            <template v-else-if="createStep === 'params' && templateParamsComponent">
-                <p class="text-sm text-base-content/70">
-                    Configurez les paramètres de la section « {{ selectedTemplateConfig?.name ?? form.template }} ».
-                </p>
-                <component
-                    :is="templateParamsComponent"
-                    :section="null"
-                    :settings="pendingSettings"
-                    :data="pendingData"
-                    mode="create"
-                    @update:settings="onParamsUpdateSettings"
-                    @update:data="onParamsUpdateData"
-                />
-            </template>
+                <div v-if="form.errors.template" class="label">
+                    <span class="label-text-alt text-error">{{ form.errors.template }}</span>
+                </div>
+            </div>
         </div>
 
         <template #actions>
-            <template v-if="createStep === 'type'">
-                <Btn variant="ghost" @click="handleClose">Annuler</Btn>
-            </template>
-            <template v-else-if="createStep === 'params'">
-                <Btn color="neutral" variant="ghost" size="sm" class="gap-2" @click="handleBackToType">
-                    <Icon source="fa-arrow-left" pack="solid" class="mr-2" />
-                    Retour au choix du type
-                </Btn>
-                <Btn color="primary" @click="handleCreateFromParams">
-                    Créer la section
-                </Btn>
-            </template>
+            <Btn variant="ghost" @click="handleClose">Annuler</Btn>
         </template>
     </Modal>
 </template>

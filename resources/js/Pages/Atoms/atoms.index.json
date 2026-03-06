@@ -676,6 +676,13 @@
     "file": "feedback/Loading.vue"
   },
   {
+    "name": "InlineSaveStatus",
+    "description": "InlineSaveStatus Atom",
+    "props": [],
+    "slots": [],
+    "file": "feedback/InlineSaveStatus.vue"
+  },
+  {
     "name": "Alert",
     "description": "Alert Atom (DaisyUI + Custom Utility)",
     "props": [

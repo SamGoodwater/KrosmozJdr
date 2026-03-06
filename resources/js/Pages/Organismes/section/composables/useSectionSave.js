@@ -55,13 +55,40 @@ const debouncedSaves = new Map();
 const sectionAPI = useSectionAPI();
 
 /**
+ * Normalise les options de sauvegarde.
+ *
+ * @param {Number|Object} delayOrOptions - Délai legacy (number) ou options.
+ * @returns {{delay:number,onQueued:function|null,onSuccess:function|null,onError:function|null}}
+ */
+const normalizeSaveOptions = (delayOrOptions) => {
+  if (typeof delayOrOptions === 'number') {
+    return {
+      delay: delayOrOptions,
+      onQueued: null,
+      onSuccess: null,
+      onError: null,
+    };
+  }
+
+  const opts = (delayOrOptions && typeof delayOrOptions === 'object') ? delayOrOptions : {};
+  return {
+    delay: Number(opts.delay) > 0 ? Number(opts.delay) : 500,
+    onQueued: typeof opts.onQueued === 'function' ? opts.onQueued : null,
+    onSuccess: typeof opts.onSuccess === 'function' ? opts.onSuccess : null,
+    onError: typeof opts.onError === 'function' ? opts.onError : null,
+  };
+};
+
+/**
  * Sauvegarde une section avec debounce (auto-save)
  * 
  * @param {Number|String} sectionId - ID de la section
  * @param {Object} updates - Données à mettre à jour { data, settings, title, etc. }
- * @param {Number} delay - Délai en ms (défaut: 500)
+ * @param {Number|Object} delayOrOptions - Délai legacy (number) ou options { delay, onQueued, onSuccess, onError }
  */
-const saveSection = (sectionId, updates, delay = 500) => {
+const saveSection = (sectionId, updates, delayOrOptions = 500) => {
+  const options = normalizeSaveOptions(delayOrOptions);
+
   // Si une sauvegarde debounced existe déjà, l'annuler
   if (debouncedSaves.has(sectionId)) {
     debouncedSaves.get(sectionId).cancel();
@@ -70,25 +97,29 @@ const saveSection = (sectionId, updates, delay = 500) => {
   // Créer une nouvelle fonction debounced
   const debouncedFn = debounce(() => {
     sectionAPI.updateSection(sectionId, updates, {
+      silent: true,
       onSuccess: () => {
+        options.onSuccess?.();
         // Nettoyer après sauvegarde réussie
         debouncedSaves.delete(sectionId);
       },
       onError: (errors) => {
         console.error('Erreur lors de la sauvegarde de la section:', errors);
+        options.onError?.(errors);
         debouncedSaves.delete(sectionId);
       }
     }).catch(() => {
       // Erreur déjà gérée dans onError
       debouncedSaves.delete(sectionId);
     });
-  }, delay);
+  }, options.delay);
   
   // Stocker la fonction debounced
   debouncedSaves.set(sectionId, debouncedFn);
   
   // Appeler la fonction debounced
   debouncedFn();
+  options.onQueued?.();
 };
 
 /**
@@ -96,15 +127,23 @@ const saveSection = (sectionId, updates, delay = 500) => {
  * 
  * @param {Number|String} sectionId - ID de la section
  * @param {Object} updates - Données à mettre à jour
+ * @param {Object} options - Options { onSuccess, onError }
  */
-const saveSectionImmediate = (sectionId, updates) => {
+const saveSectionImmediate = (sectionId, updates, options = {}) => {
   // Annuler toute sauvegarde debounced en cours
   if (debouncedSaves.has(sectionId)) {
     debouncedSaves.get(sectionId).cancel();
     debouncedSaves.delete(sectionId);
   }
   
-  sectionAPI.updateSection(sectionId, updates);
+  sectionAPI.updateSection(sectionId, updates, {
+    silent: true,
+    onSuccess: () => options?.onSuccess?.(),
+    onError: (errors) => {
+      console.error('Erreur lors de la sauvegarde immédiate de la section:', errors);
+      options?.onError?.(errors);
+    },
+  });
 };
 
 /**
